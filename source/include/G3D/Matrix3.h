@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2004-01-26
+  @edited  2004-02-13
  */
 
 #ifndef G3D_MATRIX3_H
@@ -24,14 +24,11 @@ namespace G3D {
   3x3 matrix.  Do not subclass.
  */
 class Matrix3 {
-private:
-    /**
-     Constructor.  Private so there is no confusion about whether
-     if is initialized, zero, or identity.
-     */
-    inline Matrix3() {}
-
 public:
+
+    /** Initial values are undefined for performance.  See also 
+        Matrix3::ZERO, Matrix3::IDENTITY, Matrix3::fromAxisAngle, etc.*/
+    inline Matrix3() {}
 
     Matrix3 (class BinaryInput& b);
     Matrix3 (const float aafEntry[3][3]);

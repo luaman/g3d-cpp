@@ -10,6 +10,15 @@ linking, and debugging programs that use G3D.
 Here are the common fixes.
 
 <P>
+<B>undefined
+symbol SDL_main</B>
+<BR>
+The linking error: undefined
+symbol SDL_main can result from a main() function that doesn't have argc
+and argv arguments.  For example:
+int main() {..}  is no good...  make sure you have  int main(int argc,
+char **argv) {..}
+<P>
 
 
   <B>Application Error: The application failed to initialize properly (0xc0000022). Click on OK to terminate the application.</B>
