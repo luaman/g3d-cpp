@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-01-03
+  @edited  2004-03-06
  */
 
 #ifndef G3D_SYSTEM_H
@@ -188,6 +188,9 @@ public:
        <A HREF="https://sourceforge.net/tracker/index.php?func=detail&aid=869864&group_id=76879&atid=548565">RFE [ 869864 ] OS/X G3D::System::getCycleCount</A>       
      */
     static uint64 getCycleCount();
+
+    /** Set an environment variable for the current process */
+    static void setEnv(const std::string& name, const std::string& value);
 };
 
 

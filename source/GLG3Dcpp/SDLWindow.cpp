@@ -23,11 +23,18 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 		exit(1);
 	}
 
-    #ifdef G3D_LINUX
+    #if defined(G3D_WIN32)
+        // Extract SDL HDC/HWND on Win32
+
+    #elif defined(G3D_LINUX)
         // Extract SDL's internal Display pointer on Linux
         SDL_SysWMinfo info;
         SDL_VERSION(&info.version);
         SDL_GetWMInfo(&info);
+        
+        _X11Display = info.info.x11.display;
+        _X11Window  = info.info.x11.window;
+
         G3D::_internal::X11Display = info.info.x11.display;
         G3D::_internal::X11Window  = info.info.x11.window;
     #endif
@@ -169,11 +176,15 @@ Rect2D SDLWindow::dimensions() const {
 
 void SDLWindow::setDimensions(const Rect2D& dims) {
     // Do nothing
+
+    // TODO: use platform API
 }
 
 
 void SDLWindow::setPosition(int x, int y) const  {
-    // DO nothing
+    // Do nothing
+
+    // TODO: use platform API
 }
 
 
@@ -411,5 +422,18 @@ bool SDLWindow::inputCapture() const {
     return _inputCapture;
 }
 
+
+#if defined(G3D_LINUX)
+
+Window SDLWindow::X11Window() const {
+    return _X11Window;
+}
+
+
+Display* SDLWindow::X11Display() const {
+    return _X11Display;
+}
+
+#endif
 
 } // namespace

@@ -790,7 +790,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0,0,2));
     app->debugCamera.lookAt(Vector3::ZERO);
 
-    mesh.import(IFSModel::create(app->dataDir + "ifs/elephant.ifs", Vector3(2, 1, .5))->pose(CoordinateFrame()));
+    //mesh.import(IFSModel::create(app->dataDir + "ifs/elephant.ifs", Vector3(2, 1, .5))->pose(CoordinateFrame()));
 }
 
 
@@ -872,7 +872,7 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    dataDir = "x:/libraries/g3d-6_02/data/";
+    dataDir = "d:/libraries/g3d-6_02/data/";
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
@@ -886,6 +886,7 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 
 int main(int argc, char** argv) {
+//    System::setEnv("SDL_VIDEO_WINDOW_POS", format("%d,%d", 400, 0));
 
     GAppSettings settings;
     settings.window.width       = 400;

@@ -46,6 +46,11 @@ private:
 
     bool                        _mouseVisible;
 
+    #if defined(G3D_LINUX)
+        Display*                _X11Display;
+        Window                  _X11Window;
+    #endif
+
 public:
 
     SDLWindow(const GWindowSettings& settings);
@@ -106,6 +111,11 @@ public:
 
     /** Returns the underlying SDL joystick pointer */
     ::SDL_Joystick* getSDL_Joystick(unsigned int num) const;
+
+    #if defined(G3D_LINUX)
+        Window   X11Window() const;
+        Display* X11Display() const;
+    #endif
 };
 
 } // namespace

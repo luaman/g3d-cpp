@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-01-27
+  @edited  2004-03-06
  */
 
 #include "G3D/platform.h"
@@ -972,6 +972,16 @@ void System::alignedFree(void* _ptr) {
 
     debugAssert(isValidHeapPointer((void*)truePtr));
     free(truePtr);
+}
+
+
+void System::setEnv(const std::string& name, const std::string& value) {
+    #ifdef G3D_WIN32
+        std::string cmd = name + "=" + value;
+        putenv(name.c_str());
+    #else
+        setenv(name.c_str(), value.c_str(), 1);
+    #endif
 }
 
 
