@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-10-31
+  @edited  2003-11-02
 */
 
 #include "GLG3D/GPUProgram.h"
@@ -20,29 +20,25 @@ void GPUProgram::ArgList::set(const std::string& var, const CoordinateFrame& val
 
 
 void GPUProgram::ArgList::set(const std::string& var, const Matrix4& val) {
-    debugAssert(! argNames.contains(var));
-    argNames.insert(var);
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
-    arg.name = var;
-    arg.size = 4;
+    arg.type = FLOAT4X4;
     for (int r = 0; r < 4; ++r) {
         arg.vector[r] = val.getRow(r);
     }
 
-    argArray.append(arg);
+    argTable.set(var, arg);
 }
 
 
 void GPUProgram::ArgList::set(const std::string& var, const Vector4& val) {
-    debugAssert(! argNames.contains(var));
-    argNames.insert(var);
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
-    arg.name = var;
-    arg.size = 1;
+    arg.type = FLOAT4;
     arg.vector[0] = val;
-    argArray.append(arg);
+    argTable.set(var, arg);
 }
 
 
@@ -62,8 +58,7 @@ void GPUProgram::ArgList::set(const std::string& var, float          val) {
 
 
 void GPUProgram::ArgList::clear() {
-    argNames.clear();
-    argArray.resize(0);
+    argTable.clear();
 }
 
 ///////////////////////////////////////////////////
@@ -182,6 +177,19 @@ void GPUProgram::loadProgram(const std::string& code) const {
 
     case ARB:
         glProgramStringARB(unit, GL_PROGRAM_FORMAT_ASCII_ARB, code.size(), code.c_str());
+        break;
+    }
+}
+
+
+void GPUProgram::loadConstant(int slot, const Vector4& value) const {
+    switch (extension) {
+    case NVIDIA:
+        glProgramParameter4fvNV(unit, slot, value);
+        break;
+
+    case ARB:
+        glProgramLocalParameter4fvARB(unit, slot, value);
         break;
     }
 }
@@ -367,6 +375,50 @@ void GPUProgram::disable() {
 }
 
 
+void GPUProgram::setArgs(const ArgList& args) {
+    int numVariables = 0;
+
+    for (int b = 0; b < bindingTable.bindingArray.size(); ++b) {
+        const BindingTable::Binding& binding = bindingTable.bindingArray[b];
+        
+        if (binding.source == VARIABLE) {
+            ++numVariables;
+            alwaysAssertM(args.argTable.containsKey(binding.name),
+                std::string("No value provided for GPUProgram variable \"") + binding.name + "\"");
+
+            const ArgList::Arg& arg = args.argTable[binding.name];
+
+            switch (binding.type) {
+            case FLOAT4:
+                // check the type
+                alwaysAssertM(arg.type == binding.type,
+                    std::string("Variable \"") + binding.name +
+                    "\" was declared as type float4 and the values supplied" +
+                    " at runtime had type float4x4");
+
+                loadConstant(binding.slot, arg.vector[0]);
+                break;
+                
+            case FLOAT4X4:
+                // check the type
+                alwaysAssertM(arg.type == binding.type,
+                    std::string("Variable \"") + binding.name +
+                    "\" was declared as type float4x4 and the values supplied" +
+                    " at runtime had type float4");
+
+                for (int s = 0; s < 4; ++s) {
+                    loadConstant(binding.slot + s, arg.vector[s]);
+                }
+                break;
+            }
+        }
+    }
+
+    alwaysAssertM(numVariables == args.argTable.size(), "Warning: extra argument(s) unused.");
+    
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -388,7 +440,7 @@ bool GPUProgram::BindingTable::consumeSymbol(TextInput& ti, const std::string& s
 
 void GPUProgram::BindingTable::nvBind(GLenum target) const {
     for (int b = 0; b < bindingArray.size(); ++b) {
-        const VPBinding& binding = bindingArray[b];
+        const Binding& binding = bindingArray[b];
 
         if ((binding.source == CONSTANT) && (binding.type == FLOAT4)) {
             glProgramParameter4fvNV(target, binding.slot, binding.vector);
@@ -400,11 +452,93 @@ void GPUProgram::BindingTable::nvBind(GLenum target) const {
 
 void GPUProgram::BindingTable::arbBind(GLenum target) const {
     for (int b = 0; b < bindingArray.size(); ++b) {
-        const VPBinding& binding = bindingArray[b];
+        const Binding& binding = bindingArray[b];
 
         if ((binding.source == CONSTANT) && (binding.type == FLOAT4)) {
-            alwaysAssertM(false, "TODO: should these be Env or Local params?");
-//                glProgramLocalParameter4fvARB(target, binding.slot, binding.vector);
+            glProgramLocalParameter4fvARB(target, binding.slot, binding.vector);
+        }
+    }
+}
+
+
+void GPUProgram::BindingTable::parseVariable(TextInput& ti) {
+
+    // #var float4 osLight :  : c[4] : 1 : 1
+    // #var float3 vin.v0 : $vin.POSITION : ATTR0 : 2 : 1
+
+    Token t = ti.peek();
+    if (t.type() == Token::SYMBOL) {
+        // get the binding's type
+        ti.readSymbol();
+        Type type;
+        if (t.string() == "float4x4") {
+            type = FLOAT4X4;
+        } else if (t.string() == "float4") {
+            type = FLOAT4;
+        } else if (t.string() == "float3") {
+            type = FLOAT4;
+        } else if (t.string() == "float2") {
+            type = FLOAT4;
+        } else if (t.string() == "float") {
+            type = FLOAT4;
+        } else {
+            alwaysAssertM(false, std::string("Unsupported type: \"") + t.string() + "\"");
+        }
+        
+        t = ti.peek();
+        if (t.type() == Token::SYMBOL) {
+            // read the binding name
+            std::string name = ti.readSymbol();
+            if (consumeSymbol(ti, ":")) {
+                // see if it is the vertex or a constant register
+                t = ti.peek();
+                if (t.type() == Token::SYMBOL) {
+                    ti.readSymbol();
+                    if (t.string() == ":") {
+                        // constant register, read the slot
+                        if (consumeSymbol(ti, "c") && consumeSymbol(ti, "[")) {
+                            t = ti.peek();
+                            if (t.type() == Token::NUMBER) {
+                                int slot = ti.readNumber();
+                                Binding binding;
+                                binding.source = VARIABLE;
+                                binding.type = type;
+                                binding.name = name;
+                                binding.slot = slot;
+                                bindingArray.append(binding);
+                            }
+                        }
+
+                    } else {
+                        // Vertex register; we don't care
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+void GPUProgram::BindingTable::parseConstant(TextInput& ti) {
+    if (consumeSymbol(ti, "c") && consumeSymbol(ti, "[")) {
+        // constant
+        Token t = ti.peek();
+
+        if (t.type() == Token::NUMBER) {
+            Binding binding;
+            binding.source = CONSTANT;
+            binding.type   = FLOAT4;
+            binding.slot   = ti.readNumber();
+
+            if (consumeSymbol(ti, "]") && consumeSymbol(ti, "=")) {
+                for (int i = 0; i < 4; ++i) {
+                    t = ti.peek();
+                    if (t.type() == Token::NUMBER) {
+                        binding.vector[i] = ti.readNumber(); 
+                    }
+                }
+                bindingArray.append(binding);
+            }
         }
     }
 }
@@ -418,30 +552,23 @@ void GPUProgram::BindingTable::parse(const std::string& code) {
     while (ti.hasMore()) {
         Token t = ti.read();
         // Scan for "#"
-        while (!symbolMatch(t, "#") && ti.hasMore()) {
+        while (! symbolMatch(t, "#") && ti.hasMore()) {
             t = ti.read();
         }
     
         if (ti.hasMore()) {
             // Read the comment line
-            if (consumeSymbol(ti, "const") && consumeSymbol(ti, "c") && consumeSymbol(ti, "[")) {
-                Token t = ti.peek();
+            Token t = ti.peek();
+            if (t.type() == Token::SYMBOL) {
+                ti.readSymbol();
+                if (t.string() == "var") {
 
-                if (t.type() == Token::NUMBER) {
-                    VPBinding binding;
-                    binding.source = CONSTANT;
-                    binding.type   = FLOAT4;
-                    binding.slot   = ti.readNumber();
+                    parseVariable(ti);
 
-                    if (consumeSymbol(ti, "]") && consumeSymbol(ti, "=")) {
-                        for (int i = 0; i < 4; ++i) {
-                            t = ti.peek();
-                            if (t.type() == Token::NUMBER) {
-                                binding.vector[i] = ti.readNumber(); 
-                            }
-                        }
-                        bindingArray.append(binding);
-                    }
+                } else if (t.string() == "const") {
+                    
+                    parseConstant(ti);
+
                 }
             }
         }

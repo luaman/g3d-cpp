@@ -73,6 +73,7 @@ PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB             = NU
 PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB              = NULL;
 PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NULL;
 PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
+PFNGLPROGRAMLOCALPARAMETER4FVARBPROC        glProgramLocalParameter4fvARB   = NULL;
 PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB     = NULL;
 PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB   = NULL;
 
@@ -313,6 +314,7 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glProgramStringARB);
     LOAD_EXTENSION(glProgramEnvParameter4fARB);
     LOAD_EXTENSION(glProgramLocalParameter4fARB);
+    LOAD_EXTENSION(glProgramLocalParameter4fvARB);
     LOAD_EXTENSION(glProgramEnvParameter4dvARB);
     LOAD_EXTENSION(glProgramLocalParameter4dvARB);
     LOAD_EXTENSION(glVertexAttribPointerARB);
@@ -545,6 +547,7 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n"             
              "%31s             %s\n"
              "%31s             %s\n"
@@ -601,6 +604,7 @@ bool RenderDevice::init(
              "glProgramStringARB", isOk(glProgramStringARB),
              "glProgramEnvParameter4fARB", isOk(glProgramEnvParameter4fARB),
              "glProgramLocalParameter4fARB", isOk(glProgramLocalParameter4fARB),
+             "glProgramLocalParameter4fvARB", isOk(glProgramLocalParameter4fvARB),
              "glPointParameterfARB", isOk(glPointParameterfARB),
              "glPointParameterfvARB", isOk(glPointParameterfvARB),
              "glMultiDrawArraysEXT", isOk(glMultiDrawArraysEXT),
@@ -1721,6 +1725,16 @@ void RenderDevice::setVertexProgram(const VertexProgramRef& vp) {
 
         state.vertexProgram = vp;
     }
+}
+
+
+void RenderDevice::setVertexProgram(
+    const VertexProgramRef& vp,
+    const GPUProgram::ArgList& args) {
+
+    setVertexProgram(vp);
+    
+    vp->setArgs(args);
 }
 
 

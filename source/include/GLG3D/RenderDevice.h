@@ -877,10 +877,13 @@ public:
     void setVertexProgram(const VertexProgramRef& vp);
 
     /**
+     Sets vertex program arguments for vertex programs outputted by Cg.
+     The names of arguments are read from comments.
+
      @param args must include *all* arguments or an assertion will fail
      */
     void setVertexProgram(const VertexProgramRef& vp,
-                          const Array<GPUProgram::ArgList>& args);
+                          const GPUProgram::ArgList& args);
 
     /**
      (Automatically enables pixel programs when they are set.) 
@@ -889,7 +892,7 @@ public:
      */
     void setPixelProgram(const PixelProgramRef& pp);
     void setPixelProgram(const PixelProgramRef& pp,
-                          const Array<GPUProgram::ArgList>& args);
+                         const GPUProgram::ArgList& args);
     
     /**
       Reads a depth buffer value (1 @ far plane, 0 @ near plane) from

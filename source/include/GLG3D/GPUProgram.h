@@ -33,7 +33,11 @@ typedef ReferenceCountedPointer<class GPUProgram> GPUProgramRef;
 
   <CODE>    # const c[N] = V0 V1 V2 V3</CODE>
 
-  You must track matrices and load variables yourself using the NVIDIA or ARB APIs. 
+  Likewise, variable bindings are detected in Cg output. Create an ArgList mapping
+  variable names to the actual parameters and provide it when you call
+  RenderDevice::setVertexProgram(). Alternately, you can track matrices and load
+  variables yourself using the NVIDIA or ARB APIs. 
+  
   For example:
 
   <PRE>
@@ -44,7 +48,15 @@ typedef ReferenceCountedPointer<class GPUProgram> GPUProgramRef;
 
  */
 class GPUProgram : public ReferenceCountedObject {
+public:
+    /** Internal use only */
+    enum Type {FLOAT4X4, FLOAT4};
+
+    /** Internal use only */
+    enum Source {VARIABLE, CONSTANT};
+
 private:
+    friend class RenderDevice;
 
     /**
      Manages the constants in a vertex or fragment program produced by Cg, where
@@ -55,14 +67,11 @@ private:
       where N, V0, V1, V2, and V3 are numbers.
      */
     class BindingTable {
-    private:
-        enum Type {FLOAT4X4, FLOAT4};
-        enum Source {VARIABLE, CONSTANT};
-
+    public:
         /**
          A constant, variable, or matrix binding for a vertex program.
          */
-        class VPBinding {
+        class Binding {
         public:
             /**
              Variable/constant name
@@ -81,7 +90,7 @@ private:
             Vector4             vector;
         };
 
-        Array<VPBinding>    bindingArray;
+        Array<Binding>          bindingArray;
 
         static bool symbolMatch(const Token& t, const std::string& s);
 
@@ -89,6 +98,12 @@ private:
          Returns true if it is able to consume the next symbol, which must match s.
          */
         static bool consumeSymbol(TextInput& ti, const std::string& s);
+
+        /** Called from parse() */
+        void parseVariable(TextInput& ti);
+
+        /** Called from parse() */
+        void parseConstant(TextInput& ti);
 
     public:
 
@@ -109,6 +124,47 @@ private:
 
     };
 
+public:
+        /**
+     Argument list for a vertex program.
+     See RenderDevice::setVertexProgram.
+     <PRE>
+        ArgList args;
+        args.set("MVP", renderDevice->getModelViewProjection());
+        args.set("height", 3);
+        args.set("viewer", Vector3(1, 2, 3));
+        renderDevice->setVertexProgram(toonShadeVP, args);
+     </PRE>
+     */
+    class ArgList {
+    private:
+        friend class GPUProgram;
+
+        class Arg {
+        public:
+
+            /** Row-major */ 
+            Vector4                    vector[4];
+
+            Type                       type;
+        };
+
+        Table<std::string, Arg>        argTable;
+
+    public:
+
+        void set(const std::string& var, const CoordinateFrame& val);
+        void set(const std::string& var, const Matrix4& val);
+        void set(const std::string& var, const Vector4& val);
+        void set(const std::string& var, const Vector3& val);
+        void set(const std::string& var, const Vector2& val);
+        void set(const std::string& var, float          val);
+        void clear();
+
+    };
+
+protected:
+    /** Formal parameters */
     BindingTable                bindingTable;
 
     /** e.g. GL_VERTEX_PROGRAM_ARB, GL_FRAGMENT_PROGRAM_ARB */
@@ -128,6 +184,7 @@ private:
     void genPrograms(int num, unsigned int* id) const;
     void bindProgram(int unit, unsigned int glProgram) const;
     void loadProgram(const std::string& code) const;
+    void loadConstant(int slot, const Vector4& value) const;
     void getProgramError(int& pos, const unsigned char*& msg) const;
     void deletePrograms(int num, unsigned int* id) const;
     
@@ -138,54 +195,18 @@ protected:
      */
     static GLenum getUnitFromCode(const std::string& code, Extension& extension);
 
+    /**
+        Called by RenderDevice::setVertexProgram() and RenderDevice::setPixelProgram()
+    */
+    void setArgs(const ArgList& args);
+
     GPUProgram(const std::string& name, const std::string& filename);
 
 public:
 
-    /**
-     Argument list for a vertex program.
-     See RenderDevice::setVertexProgram.
-     <PRE>
-        ArgList args;
-        args.set("MVP", renderDevice->getModelViewProjection());
-        args.set("height", 3);
-        args.set("viewer", Vector3(1, 2, 3));
-        renderDevice->setVertexProgram(toonShadeVP, args);
-     </PRE>
-     */
-    class ArgList {
-    private:
-        friend class RenderDevice;
-
-        class Arg {
-        public:
-
-            std::string name;
-
-            /** Row-major */ 
-            Vector4     vector[4];
-
-            /** 1..4 */
-            int         size;
-        };
-
-        Set<std::string>  argNames;
-        Array<Arg>        argArray;
-
-    public:
-
-        void set(const std::string& var, const CoordinateFrame& val);
-        void set(const std::string& var, const Matrix4& val);
-        void set(const std::string& var, const Vector4& val);
-        void set(const std::string& var, const Vector3& val);
-        void set(const std::string& var, const Vector2& val);
-        void set(const std::string& var, float          val);
-        void clear();
-
-    };
-
 
     ~GPUProgram();
+
 
     /** Reload from supplied code or from the original file that
         was specified (handy when debugging shaders) */

@@ -98,6 +98,17 @@ extern PFNGLGETPROGRAMPARAMETERFVNVPROC    glGetProgramParameterfvNV;
 extern PFNGLGETPROGRAMPARAMETERDVNVPROC    glGetProgramParameterdvNV;
 
 
+extern PFNGLGENPROGRAMSARBPROC                     glGenProgramsARB;
+extern PFNGLBINDPROGRAMARBPROC                     glBindProgramARB;
+extern PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB;
+extern PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB;
+extern PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB;
+extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB;
+extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC        glProgramLocalParameter4fvARB;
+extern PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB;
+extern PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB;
+
+
 extern PFNGLCOMBINERPARAMETERFVNVPROC               glCombinerParameterfvNV;
 extern PFNGLCOMBINERPARAMETERFNVPROC                glCombinerParameterfNV;
 extern PFNGLCOMBINERPARAMETERIVNVPROC               glCombinerParameterivNV;
