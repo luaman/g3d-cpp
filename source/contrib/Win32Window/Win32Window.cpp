@@ -257,6 +257,13 @@ bool Win32Window::pollEvent(GEvent& e) {
 		}
     }
 
+	RECT rect;
+	GetWindowRect(window, &rect);
+	settings.x = rect.left;
+	settings.y = rect.top;
+	settings.width = rect.right - rect.left;
+	settings.height = rect.bottom - rect.top;
+
     return false;
 }
 
@@ -333,4 +340,53 @@ LRESULT WINAPI Win32Window::window_proc(
     }
     
     return DefWindowProc(window, message, wparam, lparam);
+}
+
+
+void Win32Window::setRelativeMousePosition(double x, double y) {
+	SetCursorPos(iRound(x + settings.x), iRound(y + settings.y));
+}
+
+
+void Win32Window::setRelativeMousePosition(const Vector2& p) {
+    setRelativeMousePosition(p.x, p.y);
+}
+
+
+void Win32Window::getRelativeMouseState(Vector2& p, uint8& mouseButtons) const {
+    int x, y;
+    getRelativeMouseState(x, y, mouseButtons);
+    p.x = x;
+    p.y = y;
+}
+
+
+void Win32Window::getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const {
+	POINT point;
+	GetCursorPos(&point);
+	x = point.x - settings.x;
+	y = point.y - settings.y;
+	// TODO: buttons
+}
+
+
+void Win32Window::getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const {
+    int ix, iy;
+    getRelativeMouseState(ix, iy, mouseButtons);
+    x = ix;
+    y = iy;
+}
+
+
+void Win32Window::setInputCapture(bool c) {
+	if (c != _inputCapture) {
+		_inputCapture = c;
+
+		if (_inputCapture) {
+			RECT rect = {settings.x, settings.y, settings.width, settings.height};
+			ClipCursor(&rect);
+		} else {
+			ClipCursor(NULL);
+		}
+	}
 }

@@ -98,35 +98,23 @@ public:
 	
     virtual void notifyResize(int w, int h);
 	
-    virtual void setRelativeMousePosition(double x, double y) {
-		// TODO
-	}
+    virtual void setRelativeMousePosition(double x, double y);
 	
-    virtual void setRelativeMousePosition(const Vector2& p) {
-		// TODO
-	}
+    virtual void setRelativeMousePosition(const Vector2& p);
 	
     virtual bool pollEvent(GEvent& e);
 	
-    virtual void getRelativeMouseState(Vector2& position, uint8& mouseButtons) const {
-		// TODO
-	}
+    virtual void getRelativeMouseState(Vector2& position, uint8& mouseButtons) const;
 	
-    virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const {
-		// TODO
-	}
+    virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const;
 	
-    virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const {
-		// TODO
-	}
+    virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const;
 	
     virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
 		// TODO
 	}
 	
-    virtual void setInputCapture(bool c) {
-		// TODO
-	}
+    virtual void setInputCapture(bool c);
 	
     virtual bool inputCapture() const;
 	
