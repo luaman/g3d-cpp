@@ -136,6 +136,9 @@ public:
     Vector3& operator/= (const Vector3& v);
 
     double length() const;
+    inline double magnitude() const {
+        return length();
+    }
     
     /**
      The result is a nan vector if the length is almost zero.
