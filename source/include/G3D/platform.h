@@ -97,7 +97,7 @@
 
     // Multithreaded runtime
     #ifndef _MT
-	    #define _MT
+	    #define _MT 1
     #endif
 
     // Ensure that we aren't forced into the static lib

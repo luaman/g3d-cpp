@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2003-10-15
+ @edited  2004-01-06
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -322,7 +322,7 @@ inline float mul(float a, float b) {
  2^x
  */
 inline double exp2(double x) {
-    return pow(2, x);
+    return pow(2.0, x);
 }
 
 inline double rsqrt(double x) {
