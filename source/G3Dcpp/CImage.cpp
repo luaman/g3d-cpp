@@ -1127,7 +1127,7 @@ CImage::Format CImage::resolveFormat(
 
 CImage::CImage(
     const std::string&  filename,
-    Format              format) : pixel(NULL), width(0), height(0) {
+    Format              format) : width(0), height(0), pixel(NULL) {
     
     load(filename, format);
 }

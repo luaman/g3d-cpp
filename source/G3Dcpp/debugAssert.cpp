@@ -19,8 +19,10 @@
 #include <string>
 #include "../include/G3D/debugPrintf.h"
 
-// disable: "C++ exception handler used"
-#pragma warning (disable : 4530)
+#ifdef _MSC_VER
+    // disable: "C++ exception handler used"
+    #pragma warning (disable : 4530)
+#endif // _MSC_VER
 
 using namespace std;
 
