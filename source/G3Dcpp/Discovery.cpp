@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-06-26
-  @edited  2003-06-27
+  @edited  2005-02-14
  */
 
 #include "G3D/Discovery.h"
@@ -21,7 +21,7 @@ void DiscoveryAdvertisement::serialize(BinaryOutput& b) const {
 
 void DiscoveryAdvertisement::deserialize(BinaryInput& b) {
     address.deserialize(b);
-    lastUpdateTime = time(NULL);
+    lastUpdateTime = System::time();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -73,30 +73,21 @@ void DiscoveryServerAddressMessage::deserialize(BinaryInput& b) {
     }
 }
 
-
-uint32 DiscoveryServerAddressMessage::type() const {
-    return Discovery::SERVER_BROADCAST_MESSAGE;
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-uint32 DiscoveryServer::ShutdownMessage::type() const {
-    return G3D::Discovery::SERVER_SHUTDOWN_MESSAGE;
-}
 
 void DiscoveryServer::sendAnnouncement() const {
     NetAddress broadcast = NetAddress::broadcastAddress(settings->serverBroadcastPort);
 
-    net->send(broadcast, &addressMessage);
+    net->send(broadcast, SERVER_BROADCAST_MESSAGE, addressMessage);
 
-    const_cast<DiscoveryServer*>(this)->lastBroadcast = time(NULL);
+    const_cast<DiscoveryServer*>(this)->lastBroadcast = System::time();
 }
 
 
 void DiscoveryServer::sendShutDown() const {
     NetAddress broadcast = NetAddress::broadcastAddress(settings->serverBroadcastPort);
     ShutdownMessage s;
-    net->send(broadcast, &s);
+    net->send(broadcast, SERVER_SHUTDOWN_MESSAGE, s);
 }
 
 
@@ -143,9 +134,9 @@ void DiscoveryServer::doNetwork() {
         // (avoids having to figure out if the message return address
         // is correct).
         NetAddress dummy;
-        net->receive(NULL, dummy);
+        net->receive(dummy);
         sendAnnouncement();
-    } else if (time(NULL) > lastBroadcast + UNSOLICITED_BROADCAST_PERIOD) {
+    } else if (System::time() > lastBroadcast + UNSOLICITED_BROADCAST_PERIOD) {
         sendAnnouncement();
     }
 
@@ -154,7 +145,7 @@ void DiscoveryServer::doNetwork() {
     if (listener->clientWaiting()) {
         // Respond to this client
         ReliableConduitRef client = listener->waitForConnection();
-        client->send(advertisement);
+        client->send(SERVER_BROADCAST_MESSAGE, *advertisement);
     }
 }
 

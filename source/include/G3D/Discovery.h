@@ -34,7 +34,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-06-26
-  @edited  2004-01-01
+  @edited  2005-02-14
  */
 
 #ifndef G3D_DISCOVERY_H
@@ -120,7 +120,7 @@ public:
 
  Overrides must provide a default constructor.
  */
-class DiscoveryAdvertisement : public NetMessage {
+class DiscoveryAdvertisement {
 public:
 
     /**
@@ -152,7 +152,7 @@ public:
 /**
  Sent by servers to describe their location.
  */
-class DiscoveryServerAddressMessage : public NetMessage {
+class DiscoveryServerAddressMessage {
 public:
 
     /**
@@ -178,8 +178,6 @@ public:
 
     DiscoveryServerAddressMessage() {}
     DiscoveryServerAddressMessage(const DiscoverySettings* s) : settings(s) {}
-
-    uint32 type() const;
 
     void serialize(BinaryOutput& b) const;
 
@@ -218,10 +216,8 @@ public:
 class DiscoveryServer : private Discovery {
 private:
 
-    class ShutdownMessage : public NetMessage {
+    class ShutdownMessage {
     public:
-        uint32 type() const;
-
         void serialize(BinaryOutput& b) const {}
 
         void deserialize(BinaryInput& b) {}
@@ -324,12 +320,9 @@ public:
     Array<IncompatibleServerDescription> incompatibleServerList;
 
 private:
-    class BroadcastMessage : public NetMessage {
-    public:
-        uint32 type() const {
-            return G3D::Discovery::CLIENT_BROADCAST_MESSAGE;
-        }
 
+    class BroadcastMessage {
+    public:
         void serialize(BinaryOutput& b) const {}
 
         void deserialize(BinaryInput& b) {}
@@ -369,7 +362,7 @@ private:
      Adds a server to the incompatible list if it is not already there.
      */
     void addToIncompatibleList(const NetAddress& addr, uint32 p0, uint32 p1) {
-        const RealTime now = time(NULL);
+        const RealTime now = System::time();
         
         bool alreadyHere = false;
 
@@ -415,14 +408,12 @@ private:
         AdType advertisement;
 
         // Read the advertisement
-        RealTime stopWaiting = time(NULL) + TIMEOUT;
+        RealTime stopWaiting = System::time() + TIMEOUT;
         bool timedOut = false;
 
         while (! server->messageWaiting() && ! timedOut && server->ok()) {
-            #ifdef G3D_WIN32
-                Sleep(1);
-            #endif
-            timedOut = (time(NULL) > stopWaiting);
+            System::sleep(0.1);
+            timedOut = (System::time() > stopWaiting);
         }
 
         if (timedOut) {
@@ -515,14 +506,14 @@ public:
 
         Discovery::init(_netDevice, _settings);
 
-        lastServerCheck = time(NULL);
+        lastServerCheck = System::time();
 
         net = netDevice->createLightweightConduit(settings->serverBroadcastPort, true, true);
 
         // Send announcement
         NetAddress broadcast = NetAddress::broadcastAddress(settings->clientBroadcastPort);
         BroadcastMessage tmp;
-        net->send(broadcast, &tmp);
+        net->send(broadcast, CLIENT_BROADCAST_MESSAGE, tmp);
     }
 
     /** Shut down the discovery client. */
@@ -542,7 +533,7 @@ public:
             switch (net->waitingMessageType()) {
             case SERVER_SHUTDOWN_MESSAGE:
                 // Remove the server
-                net->receive(NULL, sender);
+                net->receive(sender);
                 removeServer(sender);
                 break;
 
@@ -570,7 +561,7 @@ public:
 
         // Periodically re-check servers in the list to see if they crashed
         // (if they shut down, they should have broadcast a shut down message).
-        RealTime now = time(NULL);
+        RealTime now = System::time();
         const RealTime UPDATE_TIME_INTERVAL = 30;
 
         if (now > lastServerCheck + UPDATE_TIME_INTERVAL) {

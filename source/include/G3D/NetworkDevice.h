@@ -602,7 +602,7 @@ public:
     */
     bool receive(NetMessage* m, NetAddress& sender);
 
-    template<typename T> inline bool receive(NetAddress& sender, T& message) {
+    template<typename T> inline bool receive(T& message, NetAddress& sender) {
         // This both checks to ensure that a message was waiting and
         // actively consumes the message from the network stream if
         // it has not been read yet.
