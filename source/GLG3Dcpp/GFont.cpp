@@ -176,6 +176,7 @@ Vector2 GFont::draw2D(
         0, 0, 1, 0,
         0, 0, 0, 1};
     renderDevice->pushState();
+        renderDevice->disableLighting();
         renderDevice->setTextureMatrix(0, m);
         renderDevice->setTexture(0, texture);
 
