@@ -32,7 +32,7 @@ help         - A build target to execute if no target is specified
 def dispatchOnTarget(validTargets, help):
 
     # Execute the appropriate target:
-    if len(sys.argv) == 1:
+    if (len(sys.argv) == 1) or (sys.argv[1] == "help"):
         # No arguments; print help
         help()
         sys.exit(-1)
