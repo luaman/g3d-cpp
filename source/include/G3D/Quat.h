@@ -182,7 +182,7 @@ public:
         // Solve for A in q = [sin(A)*v, cos(A)]
         Vector3 u(x, y, z);
         double len = u.magnitude();
-        double A = atan2(w, len);
+        double A = atan2((double)w, len);
         Vector3 v = u / len;
         
         return Quat(v * A, 0);
