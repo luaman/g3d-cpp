@@ -276,9 +276,7 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    const std::string path =
-        //"c:/morgan/data/";
-        "d:/games/data/";
+    const std::string path = "";
 
     double x = -5;
 
@@ -357,7 +355,7 @@ void App::main() {
     }
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/teapot.ifs", 1.5);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/teapot.ifs", 1.5);
 
         Color3 brass = Color3::fromARGB(0xFFFDDC01);
 
