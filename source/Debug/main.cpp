@@ -344,8 +344,102 @@ void setIcon(const GImage& image) {
     delete[] mask;
 }
 
+//////////////////////////////////////////////////////////
+
+double eval_y(double x, double r) {
+    return sqrt(square(r) - square(x));
+}
+
+double eval_int_y(double x, double r) {
+    return (x/2) * sqrt(square(r) - square(x)) + square(r)/2 * asin(x/r);
+}
+
+double halfFloor(double y) {
+    return floor(y + 0.5) - 0.5;
+}
+
+void disk2D(double r) {
+
+    // Plan: Compute ~> 1/4 of the matrix, then mirror it.
+    // (The Q matrix is actually 1/2 column more and 1/2 row less than
+    // one quarter of the matrix.)    
+	//Q = zeros(ceil(r + 0.5), ceil(r + 0.5));
+    int R = ceil(r + 0.5);
+    Array< Array<double> > Q(R);
+
+    for (int i = 0; i < R; ++i) {
+        Q[i].resize(R);
+    }
+
+    // The first column will only have 1/2 the values it actually should.
+	
+    // Piecewise integrate y = sqrt(r^2 - x^2).  We start at -.5
+	// because the center column covers the interval [-.5, .5].
+        
+    double x0 = 0;
+    
+    // We have to multiply values in the first column by 2 because we only
+    // integrate over half of it.
+    double s = 2;
+    
+    for (double x1 = 0.5; x1 <= (ceil(r - 0.5) + 0.5); ++x1) {
+        if (x1 > r) {
+            // TODO: we hit the end of the circle
+        } else {
+            // y values at the beginning and end of the interval.
+            double y0 = eval_y(x0, r);
+            double y1 = eval_y(x1, r);
+            
+            // Find the grid cell below y0 (recall that cells are on 0.5
+            // boundaries because of our shift).
+            double ya = halfFloor(y0);
+	
+            double Y0 = eval_int_y(x0, r);
+            double Y1 = eval_int_y(x1, r);
+	
+            int row = x1;
+            int col = ya + 0.5;
+        
+            if (y1 < ya) {
+                // There are at least two pixels with partial coverage in this
+                // column and (xa, ya) is where we crossed into the next lower
+                // pixel.
+                double xa = sqrt(square(r) - square(ya));
+                double Ya = eval_int_y(xa, r);
+	
+                double DY = Ya - Y0;            
+                Q[row][col] = (DY - halfFloor(DY)) * s;
+                
+                // TODO: now process the next lower pixel
+            } else {
+                // There is exactly one fractional pixel in this column.
+                double DY = Y1 - Y0;            
+                Q[row][col] = (DY - halfFloor(DY)) * s;
+                if (row > 1) {
+                    // TODO: fill other rows
+                }
+            }
+        }
+        x0 = x1;
+        s = 1;
+
+        debugPrintf("\n");
+        for (int i = 0; i < R; ++i) {
+            for (int j = 0; j < R; ++j) {
+                debugPrintf("%g, ", Q[i][j]);
+            }
+            debugPrintf("\n");
+        }
+    }
+}
+
 int main(int argc, char** argv) {
 
+    disk2D(1.5);
+
+    return 0;
+
+    /*
     // The SDL docs claim that we have to call the icon routines before
     // the first setVideo call (I believe this is not true), so I put 
     // this code here to allow us to test before video setup.
@@ -363,4 +457,5 @@ int main(int argc, char** argv) {
     App(settings).run();
 
     return 0;
+    */
 }

@@ -17,6 +17,7 @@
      <LI> [ 1032750 ] Fix: Grayscale JPG errors [Corey]
      <LI> Texture now supports DDS and PNG files [Corey]
      <LI> PosedModel::texCoords
+     <LI> IFSModel now loads IFS 1.1 [Peter]
      <LI> contrib/wxG3DCanvas [Morgan]
    </UL>
 

@@ -5,7 +5,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-10-22
-  @edited  2003-10-22
+  @edited  2004-10-10
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -107,9 +107,9 @@ Welder::Welder(
 
 void Welder::toGridCoords(Vector3 v, int& x, int& y, int& z) const {
     v = (v - offset) * scale;
-    x = iClamp(v.x * GRID_RES, 0, GRID_RES - 1);
-    y = iClamp(v.y * GRID_RES, 0, GRID_RES - 1);
-    z = iClamp(v.z * GRID_RES, 0, GRID_RES - 1);
+    x = iClamp(iFloor(v.x * GRID_RES), 0, GRID_RES - 1);
+    y = iClamp(iFloor(v.y * GRID_RES), 0, GRID_RES - 1);
+    z = iClamp(iFloor(v.z * GRID_RES), 0, GRID_RES - 1);
 }
 
 
