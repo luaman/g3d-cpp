@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-03-28
+# @edited  2004-03-29
 # Each build target is a procedure.
 #
 
@@ -51,6 +51,7 @@ TARGET     DESCRIPTION
 install    Create a user installation directory (what you probably want)
 
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
+fastlib    Build the lib target without reconfiguring (not recommended) 
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip
 doc        Run doxygen and copy the html directory
 clean      Delete the build, release, temp, and install directories
@@ -116,7 +117,7 @@ def linuxCheckVersion():
         sys.exit(-4)
 
 
-def lib(args):
+def lib(args, reconfigure = 1):
     x = 0
 
     copyIfNewer('source/include', installDir(args) + '/include')
@@ -138,30 +139,32 @@ def lib(args):
         # Linux build
     	# Check version of tools
 
-        linuxCheckVersion()
+        if reconfigure:
+            linuxCheckVersion()
 
-        run("./bootstrap",["-l " + libtoolize,
-                           "-a " + aclocal,
-                           "-h " + autoheader,
-                           "-m " + automake,
-                           "-c " + autoconf])
-        run("./configure", ['--enable-shared', '--enable-static'])
+            run("./bootstrap",["-l " + libtoolize,
+                               "-a " + aclocal,
+                               "-h " + autoheader,
+                               "-m " + automake,
+                               "-c " + autoconf])
+            run("./configure", ['--enable-shared', '--enable-static'])
+
         x = run("make")
 
         # Copy the lib's to the right directory
         if (x == 0):
-            # strip debug symbols
+            # strip debug symbols (don't strip debug builds)
             os.system("strip -g --strip-unneeded temp/release/g3d/.libs/libG3D.a")
             os.system("strip -g --strip-unneeded temp/release/glg3d/.libs/libGLG3D.a")
 
-            # The following code will strip line numbers, which is not desirable
-            # os.system("strip --strip-unneeded temp/debug/g3d/.libs/libG3D_debug.a")
-            # os.system("strip --strip-unneeded temp/debug/glg3d/.libs/libGLG3D_debug.a")
-
-            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            libdir + "/libG3D_debug.a")
-            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                libdir + "/libG3D.a")
-            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",        libdir + "/libGLG3D_debug.a")
-            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            libdir + "/libGLG3D.a")
+            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",
+                        libdir + "/libG3D_debug.a")
+            copyIfNewer("temp/release/g3d/.libs/libG3D.a",    
+                        libdir + "/libG3D.a")
+            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",
+                        libdir + "/libGLG3D_debug.a")
+            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",
+                        libdir + "/libGLG3D.a")
 
             # Dynamic libs (not currently used)
             #copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
@@ -181,6 +184,9 @@ def lib(args):
     # Copy any system libraries over
     copyIfNewer("source/" + platform + "-lib", libdir)
     setPermissions(args)
+
+def fastlib(args):
+    lib(args, 0)
 
 ###############################################################################
 #                                                                             #
@@ -299,4 +305,4 @@ def release(args):
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, install, doc, test, clean, release], buildHelp)
+dispatchOnTarget([lib, fastlib, install, doc, test, clean, release], buildHelp)
