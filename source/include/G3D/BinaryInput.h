@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2003-05-25
+ @edited  2004-03-30
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
  */
 
@@ -29,6 +29,12 @@
 #include "G3D/System.h"
 
 namespace G3D {
+
+#if defined(G3D_WIN32) || defined(G3D_LINUX)
+    // Allow writing of integers to non-word aligned locations.
+    // This is legal on x86, but not on other platforms.
+    #define G3D_ALLOW_UNALIGNED_WRITES
+#endif
 
 /**
  Sequential or random access byte-order independent binary file access.
@@ -167,14 +173,58 @@ public:
         return ((uint8*)buffer)[pos++];
     }
 
-    uint16 readUInt16();
+    uint16 inline readUInt16() {
+        debugAssertM(pos + 2 <= length, "Read past end of file");
+
+        pos += 2;
+        if (swapBytes) {
+            uint8 out[2];
+            out[0] = buffer[pos - 2];
+            out[1] = buffer[pos - 1];
+            return *(uint16*)out;
+        } else {
+            #ifdef G3D_ALLOW_UNALIGNED_WRITES
+                return *(uint16*)(&buffer[pos - 2]);
+            #else
+                uint8 out[2];
+                out[0] = buffer[pos - 1];
+                out[1] = buffer[pos - 2];
+                return *(uint16*)out;
+            #endif
+        }
+
+    }
 
     inline int16 readInt16() {
         uint16 a = readUInt16();
         return *(int16*)&a;
     }
 
-    uint32 readUInt32();
+    inline uint32 readUInt32() {
+        debugAssertM(pos + 4 <= length, "Read past end of file");
+
+        pos += 4;
+        if (swapBytes) {
+            uint8 out[4];
+            out[0] = buffer[pos - 1];
+            out[1] = buffer[pos - 2];
+            out[2] = buffer[pos - 3];
+            out[3] = buffer[pos - 4];
+            return *(uint32*)out;
+        } else {
+            #ifdef G3D_ALLOW_UNALIGNED_WRITES
+                return *(uint32*)(&buffer[pos - 4]);
+            #else
+                uint8 out[4];
+                out[0] = buffer[pos - 4];
+                out[1] = buffer[pos - 3];
+                out[2] = buffer[pos - 2];
+                out[3] = buffer[pos - 1];
+                return *(uint32*)out;
+            #endif
+        }
+    }
+
 
     inline int32 readInt32() {
         uint32 a = readUInt32();
@@ -231,7 +281,6 @@ public:
 
     Color4 readColor4();
     Color3 readColor3();
-
 
     /**
      Skips ahead n bytes.

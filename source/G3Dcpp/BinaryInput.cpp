@@ -180,44 +180,6 @@ void BinaryInput::readBytes(int n, void* bytes) {
 }
 
 
-uint16 BinaryInput::readUInt16() {
-    debugAssertM(pos + 2 <= length, "Read past end of file");
-    uint8 out[2];
-
-    if (swapBytes) {
-        out[0] = buffer[pos + 1];
-        out[1] = buffer[pos + 0];
-    } else {
-        out[0] = buffer[pos + 0];
-        out[1] = buffer[pos + 1];
-    }
-
-    pos += 2;
-    return *(uint16*)out;
-}
-
-
-uint32 BinaryInput::readUInt32() {
-    debugAssertM(pos + 4 <= length, "Read past end of file");
-    uint8 out[4];
-
-    if (swapBytes) {
-        out[0] = buffer[pos + 3];
-        out[1] = buffer[pos + 2];
-        out[2] = buffer[pos + 1];
-        out[3] = buffer[pos + 0];
-    } else {
-        out[0] = buffer[pos + 0];
-        out[1] = buffer[pos + 1];
-        out[2] = buffer[pos + 2];
-        out[3] = buffer[pos + 3];
-    }
-
-    pos += 4;
-    return *(uint32*)out;
-}
-
-
 uint64 BinaryInput::readUInt64() {
     debugAssertM(pos + 8 <= length, "Read past end of file");
     uint8 out[8];

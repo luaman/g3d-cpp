@@ -113,7 +113,6 @@ Vector3 GCamera::project(
     const Vector3&                      point,
     const Rect2D&                       viewport) const {
 
-
     int screenWidth  = (int)viewport.width();
     int screenHeight = (int)viewport.height();
 

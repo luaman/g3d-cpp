@@ -302,7 +302,8 @@
    <LI>Download and install SDL <B>version 1.2.7</B> from
    <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>
 
-   <LI>Ensure that you are using MSVC++ 6.0 with <A HREF="http://www.microsoft.com/downloads/details.aspx?FamilyId=A8494EDB-2E89-4676-A16A-5C5477CB9713&displaylang=en">Service Pack 6</A> and
+   <LI>Ensure that you are using MSVC++ 6.0 with <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A> (Service pack 6 does not 
+   support the processor pack) and
    the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.
 
    <LI>(<I>Optional</I>) Add the following lines to your Autoexp.dat file (usually in <CODE>C:\\Program Files\\Microsoft

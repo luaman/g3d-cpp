@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2002-02-20
- @edited  2003-06-24
+ @edited  2004-03-30
  */
 
 #include "G3D/platform.h"
