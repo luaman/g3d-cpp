@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-03-28
+  @edited  2004-04-19
 */
 
 #ifndef GLG3D_RENDERDEVICE_H

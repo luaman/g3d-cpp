@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-03-28
+ @edited  2004-04-16
  */
 
 
@@ -797,7 +797,6 @@ void RenderDevice::popState() {
 void RenderDevice::setState(
     const RenderState&          newState) {
 
-
     // The state change checks inside the individual
     // methods will (for the most part) minimize
     // the state changes so we can set all of the
@@ -854,6 +853,7 @@ void RenderDevice::setState(
         disableLighting();
     }
 
+    setAmbientLightColor(newState.ambient);
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
     
