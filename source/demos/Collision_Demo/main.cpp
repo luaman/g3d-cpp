@@ -71,7 +71,7 @@ Demo::~Demo() {
 
 void Demo::doSimulation(SimTime timeStep) {
 //    scene->simulate(1 / maxFrameRate);
-    scene.simulate(timeStep);
+//    scene.simulate(timeStep);
 }
 
 

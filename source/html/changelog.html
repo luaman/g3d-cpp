@@ -11,6 +11,10 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> Textures now support a DepthReadMode that can be used to perform hardware
+	     shadow map comparisions.  <B>RenderDevice::configureShadowMap now requires 
+		 an appropriately configured texture-- in previous releases it would
+		 reconfigure the texture for you.</B>
      <LI> Array::randomElement
 	 <LI> Optimized Array::randomize
      <LI> G3D::cyclicCatmullRomSpline
@@ -58,6 +62,8 @@
 	 <LI> GL_SAMPLER_1D_ARB, 2D, 3D, CUBE
 	 <LI> Win32Window mouse events
 	 <LI> Added normals to AABox collision results
+     <LI> Fix: ManualCameraController is prevented from looking precisely along the Y-axis, which would cause 
+	           a singularity.
 	 <LI> Fix: Added '?' as a valid symbol Token
 	 <LI> Fix: [ 946235 ] GFont::align right w/ fixed_spacing
 	 <LI> Fix: [ 1001033 ] RenderDevice with 0 texture units
@@ -72,7 +78,8 @@
 	 <LI> Fix: [ 973550 ] sampler2DRect now supported in GLSL shaders (NVIDIA only; ATI drivers are broken)
 	 <LI> Fix: [ 973490 ] Win32Window width/height off by non-client amount
      <LI> Fix: [ 961827 ] In debug mode, RenderDevice tries to access 
-	            GL_MAX_TEXTURE_IMAGE_UNITS_ARB and an assertion fails on cards that don't support it.
+	            GL_MAX_TEXTURE_IMAGE_UNITS_ARB and an assertion fails on cards that
+				don't support it.
 	 <LI> Fix: Texture binding for VertexAndPixelShader
    </UL>
 

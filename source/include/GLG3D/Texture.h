@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2004-06-21
+  @edited  2004-09-04
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -78,6 +78,21 @@ public:
 
     enum InterpolateMode {TRILINEAR_MIPMAP = 3, BILINEAR_NO_MIPMAP = 2, NO_INTERPOLATION = 1};
 
+    /** A depth texture can automatically perform the depth comparison used for shadow mapping
+        on a texture lookup.  The result of a texture lookup is thus the shadowed amount
+        (which will be percentage closer filtered on newer hardware) and <I>not</I> the 
+        actual depth from the light's point of view.
+       
+        This combines GL_TEXTURE_COMPARE_MODE_ARB and GL_TEXTURE_COMPARE_FUNC_ARB from
+        http://www.nvidia.com/dev_content/nvopenglspecs/GL_ARB_shadow.txt
+
+        For best results on pct closer hardware, create shadow maps as depth textures with 
+        BILINEAR_NO_MIPMAP sampling.
+
+        See also G3D::RenderDevice::configureShadowMap.
+     */
+    enum DepthReadMode {DEPTH_NORMAL = 0, DEPTH_LEQUAL = 1, DEPTH_GEQUAL = 2};
+
     /**
      Splits a filename around the '*' character-- used by cube maps to generate all filenames.
      */
@@ -100,6 +115,7 @@ private:
     int                             height;
     int                             depth;
     bool                            _opaque;
+    DepthReadMode                   _depthRead;
 
     Texture(
         const std::string&          _name,
@@ -108,7 +124,8 @@ private:
         const class TextureFormat*  _format,
         InterpolateMode             _interpolate,
         WrapMode                    _wrap,
-        bool                        __opaque);
+        bool                        _opaque,
+        DepthReadMode               _depthRead);
 
 public:
 
@@ -127,7 +144,8 @@ public:
         const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D);
+        Dimension                       dimension      = DIM_2D,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
     /**
      Wrap and interpolate will override the existing parameters on the
@@ -142,8 +160,8 @@ public:
         const class TextureFormat*      textureFormat,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D);
-
+        Dimension                       dimension      = DIM_2D,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
     /**
      Creates a texture from a single image.  The image must have a format understood
@@ -158,7 +176,8 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        double                          brighten       = 1.0);
+        double                          brighten       = 1.0,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
     /**
      Creates a cube map from six independently named files.  The first
@@ -170,7 +189,8 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        double                          brighten       = 1.0);
+        double                          brighten       = 1.0,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
     /**
      Creates a texture from the colors of filename and takes the alpha values
@@ -182,7 +202,8 @@ public:
         const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D);
+        Dimension                       dimension      = DIM_2D,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
     /**
      The bytes are described by byteFormat, which may differ from the
@@ -202,7 +223,8 @@ public:
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D);
+        Dimension                       dimension      = DIM_2D,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
 	static TextureRef fromMemory(
         const std::string&              name,
@@ -213,12 +235,13 @@ public:
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D) {
+        Dimension                       dimension      = DIM_2D,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL) {
 		const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 		b[0] = bytes;
 
 		return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
-			desiredFormat, wrap, interpolate, dimension);
+			desiredFormat, wrap, interpolate, dimension, depthRead);
 	}
 
     static TextureRef fromGImage(
@@ -227,7 +250,8 @@ public:
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D);
+        Dimension                       dimension      = DIM_2D,
+        DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
     /**
      Copies data from screen into an existing texture (replacing whatever was
@@ -311,6 +335,9 @@ public:
         return _opaque;
     }
 
+    inline DepthReadMode depthReadMode() const {
+        return _depthRead;
+    }
 
     inline unsigned int getOpenGLID() const {
         return textureID;

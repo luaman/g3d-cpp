@@ -43,7 +43,8 @@ static bool debugLightMap = false;
 
 Scene::Scene() {
     sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
-    shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(), Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP);
+    shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
+        Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
 }
 
 

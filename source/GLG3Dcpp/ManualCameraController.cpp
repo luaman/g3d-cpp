@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2004-02-28
+  @edited  2004-09-04
 */
 
 #include "G3D/platform.h"
@@ -110,7 +110,12 @@ void FPCameraController::doSimulation(
 	pitch += delta.y;
 
     // Clamp pitch (looking straight up or down)
-    pitch = clamp(pitch, -G3D_PI / 2, G3D_PI / 2);
+    //pitch = clamp(pitch, -G3D_PI / 2, G3D_PI / 2);
+
+    // As a patch for the setCoordinateFrame bug, we prevent 
+    // the camera from looking exactly along the y-axis.
+    // TODO: remove
+    pitch = clamp(pitch, -G3D_PI / 2 + 0.001, G3D_PI / 2 - 0.001);
 }
 
 
@@ -128,8 +133,24 @@ void FPCameraController::getCoordinateFrame(CoordinateFrame& c) const {
 
 
 void FPCameraController::setCoordinateFrame(const CoordinateFrame& c) {
+    Vector3 look = c.getLookVector();
+
     setPosition(c.translation);
-    lookAt(c.translation + c.getLookVector());
+
+    // this is work towards a patch for bug #1022341
+    /*
+    if (fuzzyEq(abs(look.dot(Vector3::unitY())), 1.0)) {
+        // Looking straight up or down; lookAt won't work
+        float dummy;
+        float y, p;
+        c.rotation.toEulerAnglesZYX(dummy, y, p);
+        yaw = -y;
+        pitch = -p;
+
+    } else {
+    */
+        lookAt(c.translation + look);
+//    }
 }
 
 

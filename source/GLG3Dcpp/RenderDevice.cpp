@@ -2638,8 +2638,14 @@ void RenderDevice::configureShadowMap(
     const Matrix4&      lightMVP,
     const TextureRef&   shadowMap) {
 
+    // http://www.nvidia.com/dev_content/nvopenglspecs/GL_ARB_shadow.txt
+
     debugAssertM(shadowMap->getFormat()->OpenGLBaseFormat == GL_DEPTH_COMPONENT,
         "Can only configure shadow maps from depth textures");
+
+    debugAssertM(shadowMap->depthReadMode() != Texture::DEPTH_NORMAL,
+        "Shadow maps must be configured for either Texture::DEPTH_LEQUAL"
+        " or Texture::DEPTH_GEQUAL comparisions.");
 
     debugAssertM(GLCaps::supports("GL_ARB_shadow"),
         "The device does not support shadow maps");
@@ -2672,8 +2678,6 @@ void RenderDevice::configureShadowMap(
 	glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 	glTexGenfv(GL_Q, GL_EYE_PLANE, textureProjectionMatrix2D[3]);
 	glEnable(GL_TEXTURE_GEN_Q);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 }
 
 

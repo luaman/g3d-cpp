@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2004-08-18
+ @edited  2004-09-03
 */
 
 #include "GLG3D/glcalls.h"
@@ -186,7 +186,8 @@ static void createMipMapTexture(
 static void setTexParameters(
     GLenum                          target,
     Texture::WrapMode               wrap,
-    Texture::InterpolateMode        interpolate) {
+    Texture::InterpolateMode        interpolate,
+    Texture::DepthReadMode          depthRead) {
 
     debugAssert(
         target == GL_TEXTURE_2D ||
@@ -245,6 +246,16 @@ static void setTexParameters(
     default:
         debugAssert(false);
     }
+
+
+    if (depthRead == Texture::DEPTH_NORMAL) {
+        glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+    } else {
+        glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+
+        glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC_ARB, 
+            (depthRead == Texture::DEPTH_LEQUAL) ? GL_LEQUAL : GL_GEQUAL);
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -257,12 +268,14 @@ Texture::Texture(
     const TextureFormat*    _format,
     InterpolateMode         _interpolate,
     WrapMode                _wrap,
-    bool                    __opaque) :
+    bool                    __opaque,
+    DepthReadMode           __dr) :
     
     textureID(_textureID),
     dimension(_dimension),
     format(_format),
-    _opaque(__opaque) {
+    _opaque(__opaque),
+    _depthRead(__dr) {
 
     debugAssert(_format);
 
@@ -285,7 +298,7 @@ Texture::Texture(
         
         interpolate         = _interpolate;
         wrap                = _wrap;
-        setTexParameters(target, wrap, interpolate);
+        setTexParameters(target, wrap, interpolate, _depthRead);
     glStatePop();
 }
 
@@ -296,11 +309,12 @@ TextureRef Texture::fromGLTexture(
     const TextureFormat*    textureFormat,
     WrapMode                wrap,
     InterpolateMode         interpolate,
-    Dimension               dimension) {
+    Dimension               dimension,
+    DepthReadMode           depthRead) {
 
     debugAssert(textureFormat);
 
-    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, textureFormat->opaque);
+    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, textureFormat->opaque, depthRead);
 }
 
 
@@ -330,7 +344,8 @@ TextureRef Texture::fromFile(
     WrapMode                        wrap,
     InterpolateMode                 interpolate,
     Dimension                       dimension,
-    double                          brighten) {
+    double                          brighten,
+    DepthReadMode                   depthRead) {
 
     std::string realFilename[6];
 
@@ -399,7 +414,8 @@ TextureRef Texture::fromFile(
     TextureRef t =
         Texture::fromMemory(filename[0], array, format,
             image[0].width, image[0].height, 1,
-            desiredFormat, wrap, interpolate, dimension);
+            desiredFormat, wrap, interpolate, dimension,
+            depthRead);
 
     return t;
 }
@@ -411,7 +427,8 @@ TextureRef Texture::fromFile(
     WrapMode                wrap,
     InterpolateMode         interpolate,
     Dimension               dimension,
-    double                  brighten) {
+    double                  brighten,
+    DepthReadMode           depthRead) {
 
     std::string f[6];
     f[0] = filename;
@@ -421,7 +438,7 @@ TextureRef Texture::fromFile(
     f[4] = "";
     f[5] = "";
 
-    return fromFile(f, desiredFormat, wrap, interpolate, dimension, brighten);
+    return fromFile(f, desiredFormat, wrap, interpolate, dimension, brighten, depthRead);
 }
 
 
@@ -431,7 +448,8 @@ TextureRef Texture::fromTwoFiles(
     const TextureFormat*    desiredFormat,
     WrapMode                wrap,
     InterpolateMode         interpolate,
-    Dimension               dimension) {
+    Dimension               dimension,
+    DepthReadMode           depthRead) {
 
     debugAssert(desiredFormat);
 
@@ -496,7 +514,7 @@ TextureRef Texture::fromTwoFiles(
 
     t = Texture::fromMemory(filename, array, TextureFormat::RGBA8,
             color[0].width, color[0].height, 1, 
-            desiredFormat, wrap, interpolate, dimension);
+            desiredFormat, wrap, interpolate, dimension, depthRead);
 
     if (color[0].channels == 3) {
         // Delete the data if it was dynamically allocated
@@ -532,7 +550,8 @@ TextureRef Texture::fromMemory(
     const TextureFormat*    desiredFormat,
     WrapMode                wrap,
     InterpolateMode         interpolate,
-    Dimension               dimension) {
+    Dimension               dimension,
+    DepthReadMode           depthRead) {
 
     // Create the texture
     GLuint textureID = newGLTextureID();
@@ -579,7 +598,7 @@ TextureRef Texture::fromMemory(
     }
 
     debugAssertGLOk();
-    TextureRef t = fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension);
+    TextureRef t = fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension, depthRead);
 
     t->width = width;
     t->height = height;
@@ -593,7 +612,8 @@ TextureRef Texture::fromGImage(
     const class TextureFormat*      desiredFormat,
     WrapMode                        wrap,
     InterpolateMode                 interpolate,
-    Dimension                       dimension) {
+    Dimension                       dimension,
+    DepthReadMode                   depthRead) {
 
     const TextureFormat* format = TextureFormat::RGB8;
     bool opaque = true;
@@ -615,7 +635,8 @@ TextureRef Texture::fromGImage(
     TextureRef t =
         Texture::fromMemory(name, array, format,
             image.width, image.height, 1,
-            desiredFormat, wrap, interpolate, dimension);
+            desiredFormat, wrap, interpolate, 
+            dimension, depthRead);
 
     return t;
 }
@@ -628,7 +649,8 @@ TextureRef Texture::createEmpty(
     const TextureFormat*             desiredFormat,
     Texture::WrapMode                wrap,
     Texture::InterpolateMode         interpolate,
-    Texture::Dimension               dimension) {
+    Texture::Dimension               dimension,
+    Texture::DepthReadMode           depthRead) {
 
     debugAssertM(desiredFormat, "desiredFormat may not be TextureFormat::AUTO");
 
@@ -640,7 +662,7 @@ TextureRef Texture::createEmpty(
         bytes[i] = data.getCArray();
     }
 
-    return Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, wrap, interpolate, dimension);
+    return Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, wrap, interpolate, dimension, depthRead);
 }
 
 
@@ -723,7 +745,7 @@ void Texture::copyFromScreen(
 
     debugAssertGLOk();
     // Reset the original properties
-    setTexParameters(target, wrap, interpolate);
+    setTexParameters(target, wrap, interpolate, _depthRead);
 
     debugAssertGLOk();
     glDisable(target);
