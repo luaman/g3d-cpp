@@ -420,8 +420,8 @@ NetListenerRef NetworkDevice::createListener(const uint16 port) {
 }
  
 
-void NetworkDevice::bind(SOCKET sock, const NetAddress& addr) const {
-    if (debugLog) { debugLog->printf("Binding socket %d on port %d    ", sock, htons(addr.addr.sin_port));}
+bool NetworkDevice::bind(SOCKET sock, const NetAddress& addr) const {
+    if (debugLog) { debugLog->printf("Binding socket %d on port %d  ", sock, htons(addr.addr.sin_port));}
 
     if (::bind(sock, (struct sockaddr*)&(addr.addr), sizeof(addr.addr)) == SOCKET_ERROR) {
         if (debugLog) {
@@ -429,10 +429,11 @@ void NetworkDevice::bind(SOCKET sock, const NetAddress& addr) const {
             debugLog->println(socketErrorCode());
         }
         closesocket(sock);
-        return;
+        return false;
     }
 
     if (debugLog) {debugLog->println("Ok");}
+    return true;
 }
 
 
@@ -998,12 +999,16 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
             nd->debugLog->printf("FAIL");
             nd->debugLog->println(socketErrorCode());
         }
-        nd->closesocket(sock);
         return;
     }
     if (nd->debugLog) {nd->debugLog->println("Ok");}
     
-    nd->bind(sock, NetAddress(0, port));
+    if (! nd->bind(sock, NetAddress(0, port))) {
+        if (nd->debugLog) {nd->debugLog->printf("Unable to bind!\n");}
+        nd->closesocket(sock);
+        sock = SOCKET_ERROR;
+        return;
+    }
 
     if (nd->debugLog) {nd->debugLog->printf("Listening on port %5d        ", port);}
     if (listen(sock, 100) == SOCKET_ERROR) {
@@ -1012,11 +1017,12 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
             nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
+        sock = SOCKET_ERROR;
         return;
     }
     if (nd->debugLog) {
         nd->debugLog->println("Ok");
-        nd->debugLog->printf("Listening on socket %d\n\n", sock);
+        nd->debugLog->printf("Now listening on socket %d.\n\n", sock);
     }
 }
 

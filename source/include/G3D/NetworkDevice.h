@@ -421,8 +421,8 @@ private:
     /** Utility method. */
     void closesocket(SOCKET& sock) const;
 
-    /** Utility method. */
-    void bind(SOCKET sock, const NetAddress& addr) const;
+    /** Utility method. Returns true on success.*/
+    bool bind(SOCKET sock, const NetAddress& addr) const;
 
 public:
 
