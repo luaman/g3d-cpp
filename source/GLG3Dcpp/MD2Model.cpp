@@ -437,67 +437,57 @@ void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
 
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
-        glPushAttrib(GL_LIGHTING_BIT);
+        // Quake's triangles are backwards of OpenGL in our coordinate
+        // system, so cull front faces instead of back faces.
 
-            float spec[] = {0.3f, 0.3f, 0.3f, 1.0f};
-            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 64);
-            glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-            glEnable(GL_COLOR_MATERIAL);
+        const Array<Vector3>& vertexArray   = interpolatedFrame.vertexArray;
+        const Array<Vector3>& normalArray   = interpolatedFrame.normalArray;
 
-            // Quake's triangles are backwards of OpenGL in our coordinate
-            // system, so cull front faces instead of back faces.
+        if (useVAR) {
+
+            // Upload the arrays (System::memcpy is no faster than memcpy for VAR memory)
+            varArea[nextVarArea]->reset();
+
+            VAR varTexCoord(_texCoordArray, varArea[nextVarArea]);
+            VAR varNormal  (normalArray,   varArea[nextVarArea]);
+            VAR varVertex  (vertexArray,   varArea[nextVarArea]);
+
+            renderDevice->setTextureMatrix(0, texFrame);
+
+            renderDevice->beginIndexedPrimitives();
+                renderDevice->setTexCoordArray(0, varTexCoord);
+                renderDevice->setNormalArray(varNormal);
+                renderDevice->setVertexArray(varVertex);
+                renderDevice->sendIndices(RenderDevice::TRIANGLES, indexArray);
+            renderDevice->endIndexedPrimitives();
+            
+            nextVarArea = (nextVarArea + 1) % NUM_VAR_AREAS;
+
+        } else {
+
+            // No VAR available; use the default rendering path
+
+            renderDevice->setCullFace(RenderDevice::CULL_FRONT);
+            for (int p = 0; p < primitiveArray.size(); ++p) {
     
-            const Array<Vector3>& vertexArray   = interpolatedFrame.vertexArray;
-            const Array<Vector3>& normalArray   = interpolatedFrame.normalArray;
+                const Primitive&          primitive = primitiveArray[p];
+                const int                 n         = primitive.pvertexArray.size();
+                const Primitive::PVertex* pvertex   = primitive.pvertexArray.getCArray();
 
-            if (useVAR) {
+                renderDevice->beginPrimitive(primitive.type);
 
-                // Upload the arrays (System::memcpy is no faster than memcpy for VAR memory)
-                varArea[nextVarArea]->reset();
+                    const Vector3* normal = normalArray.getCArray();
+                    const Vector3* vertex = vertexArray.getCArray();
 
-                VAR varTexCoord(_texCoordArray, varArea[nextVarArea]);
-                VAR varNormal  (normalArray,   varArea[nextVarArea]);
-                VAR varVertex  (vertexArray,   varArea[nextVarArea]);
-
-                renderDevice->setTextureMatrix(0, texFrame);
-
-                renderDevice->beginIndexedPrimitives();
-                    renderDevice->setTexCoordArray(0, varTexCoord);
-                    renderDevice->setNormalArray(varNormal);
-                    renderDevice->setVertexArray(varVertex);
-                    renderDevice->sendIndices(RenderDevice::TRIANGLES, indexArray);
-                renderDevice->endIndexedPrimitives();
-                
-                nextVarArea = (nextVarArea + 1) % NUM_VAR_AREAS;
-
-            } else {
-
-                // No VAR available; use the default rendering path
-
-                renderDevice->setCullFace(RenderDevice::CULL_FRONT);
-                for (int p = 0; p < primitiveArray.size(); ++p) {
-        
-                    const Primitive&          primitive = primitiveArray[p];
-                    const int                 n         = primitive.pvertexArray.size();
-                    const Primitive::PVertex* pvertex   = primitive.pvertexArray.getCArray();
-
-                    renderDevice->beginPrimitive(primitive.type);
-
-                        const Vector3* normal = normalArray.getCArray();
-                        const Vector3* vertex = vertexArray.getCArray();
-
-                        for (int i = 0; i < n; ++i) {
-                            const int v = pvertex[i].index;
-                            renderDevice->setTexCoord(0, pvertex[i].texCoord);
-                            renderDevice->setNormal(normal[v]);
-                            renderDevice->sendVertex(vertex[v]);
-                        }
-                    renderDevice->endPrimitive();
-                }
+                    for (int i = 0; i < n; ++i) {
+                        const int v = pvertex[i].index;
+                        renderDevice->setTexCoord(0, pvertex[i].texCoord);
+                        renderDevice->setNormal(normal[v]);
+                        renderDevice->sendVertex(vertex[v]);
+                    }
+                renderDevice->endPrimitive();
             }
-
-        glPopAttrib();
+        }
 
     renderDevice->popState();
     

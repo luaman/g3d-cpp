@@ -349,7 +349,9 @@ public:
     }
 
     /**
-     Fills the geometry out from the pose.
+     Fills the geometry out from the pose.  The geometry.normalArray 
+     values are interpolated and may have slightly less than unit
+     length.
      */
     void getGeometry(const Pose& pose, Geometry& geometry) const;
 

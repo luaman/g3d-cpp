@@ -684,6 +684,12 @@ bool RenderDevice::init(
     //glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
     glEnable(GL_NORMALIZE);
 
+    float spec[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 10);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+
     if (debugLog) debugLog->println("Setting initial rendering state.\n");
     glDisable(GL_LIGHT0);
     {

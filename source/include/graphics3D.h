@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-08-09
+ @edited  2003-09-14
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -58,15 +58,6 @@
 #endif
 
 
-#ifdef G3D_WIN32
-    // Old versions of MSVC (6.0 and previous) don't
-    // support C99 for loop scoping rules.  This fixes them.
-    #if (_MSC_VER <= 1200)
-        #define for if (false) {} else for
-    #endif
-#endif
-
-
 #include "G3D/Array.h"
 #include "G3D/Queue.h"
 #include "G3D/format.h"
@@ -112,6 +103,7 @@
 #include "G3D/Vector3int16.h"
 #include "G3D/ConvexPolyhedron.h"
 #include "G3D/Discovery.h"
+#include "G3D/MeshAlg.h"
 
 #endif
 

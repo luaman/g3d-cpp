@@ -42,6 +42,7 @@
 		G3D::Line,
 		G3D::LineSegment,
 		G3D::Matrix3,
+        G3D::MeshAlg,
         G3D::Quat,
 		G3D::Plane,
 		G3D::Ray,
@@ -628,6 +629,8 @@
 
    <P>
    <UL>
+     <LI> MeshAlg
+     <LI> RenderDevice now enables GL_COLOR_MATERIAL by default
      <LI> RenderDevice::drawFullScreenImage
      <LI> msgBox
      <LI> MD2 model gallery in documentation (Kevin)

@@ -58,4 +58,13 @@
     #endif
 #endif
 
+
+#ifdef G3D_WIN32
+    // Old versions of MSVC (6.0 and previous) don't
+    // support C99 for loop scoping rules.  This fixes them.
+    #if (_MSC_VER <= 1200)
+        #define for if (false) {} else for
+    #endif
+#endif
+
 #endif
