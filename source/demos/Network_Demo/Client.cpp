@@ -3,13 +3,18 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-30
+  @edited  2004-03-31
  */
 
 #include "Client.h"
 #include "Server.h"
 #include "App.h"
 #include "messages.h"
+
+// Windows.h defines DEFAULT_PITCH, which we use as a variable name
+#ifdef DEFAULT_PITCH
+#undef DEFAULT_PITCH
+#endif
 
 Client::Client(App* _app) : GApplet(_app), app(_app) {
     serverProxy = ServerProxy(_app, this);
@@ -165,6 +170,11 @@ void Client::doLogic() {
         const int YAW_RIGHT_KEY1         = 'd';
         const int YAW_RIGHT_KEY2         = SDLK_RIGHT;
 
+        const int PITCH_UP_KEY1          = ' ';
+        const int PITCH_UP_KEY2          = SDLK_BACKSPACE;
+        const int PITCH_DOWN_KEY1        = 'z';
+        const int PITCH_DOWN_KEY2        = SDLK_LCTRL;
+
         const double FORWARD_THROTTLE    =  1.0;
         const double DEFAULT_THROTTLE    =  0.0;
         const double BACKWARD_THROTTLE   = -0.5;
@@ -172,6 +182,10 @@ void Client::doLogic() {
         const double LEFT_YAW            =  1.0;
         const double DEFAULT_YAW         =  0.0;
         const double RIGHT_YAW           = -1.0;
+
+        const double UP_PITCH            =  1.0;
+        const double DEFAULT_PITCH       =  0.0;
+        const double DOWN_PITCH          = -1.0;
 
         // See which way the throttle is tipped
         if (app->userInput->keyDown(THROTTLE_FORWARD_KEY1) ||
@@ -204,6 +218,23 @@ void Client::doLogic() {
         } else {
 
             newControls.yaw = DEFAULT_YAW;
+        }
+
+
+        // See which way the pitch control points
+        if (app->userInput->keyDown(PITCH_UP_KEY1) ||
+            app->userInput->keyDown(PITCH_UP_KEY2)) {
+
+            newControls.pitch = UP_PITCH;
+
+        } else if (app->userInput->keyDown(PITCH_DOWN_KEY1) ||
+                   app->userInput->keyDown(PITCH_DOWN_KEY2)) {
+
+            newControls.pitch = DOWN_PITCH;
+
+        } else {
+
+            newControls.pitch = DEFAULT_PITCH;
         }
 
 

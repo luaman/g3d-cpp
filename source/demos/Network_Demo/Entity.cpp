@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-30
+  @edited  2004-03-31
  */
 
 #include "Entity.h"
@@ -81,6 +81,10 @@ CoordinateFrame Entity::smoothCoordinateFrame(RealTime now) const {
 
 
 void Entity::doSimulation(SimTime dt) {
+    // The simulation and control scheme for the demo is ridiculous-- it is
+    // just for demonstration purposes and needs to be replaced for any
+    // reasonable simulator.
+
     CoordinateFrame cframe = coordinateFrame();
 
     // MSVC 6.0 miscompiles this code in release mode if clampVel is computed
@@ -122,9 +126,20 @@ void Entity::doSimulation(SimTime dt) {
 
     const Vector3 dragDir = -velocity.directionOrZero();
 
+    const Vector3 lift = Vector3(0, clamp(controls.pitch * 10.0, -10.0, 10.0), 0);
+
+    // Slowly roll to an angle based on the change in elevation
+    double desiredPitch = lift.y / 10.0;
+    double pitchVel = sign(desiredPitch - frame.pitch) *
+        clamp(abs(desiredPitch - frame.pitch) * 3, -toRadians(45), toRadians(45)); 
+
+    frame.pitch += pitchVel * dt;
+
+
     const Vector3 acceleration =
         (thrustMag * thrustDir) +
-        (dragMag * dragDir);
+        (dragMag * dragDir) +
+        lift;
 
     velocity += acceleration * dt;
 
@@ -180,7 +195,7 @@ EulerFrame EulerFrame::lerp(const EulerFrame& other, double alpha) const {
 
 CoordinateFrame EulerFrame::toCoordinateFrame() const {
     return CoordinateFrame(
-        Matrix3::fromEulerAnglesYXZ(yaw, 0, roll), translation);
+        Matrix3::fromEulerAnglesYXZ(yaw, pitch, roll), translation);
 }
 
 

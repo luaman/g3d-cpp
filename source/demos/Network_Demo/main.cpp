@@ -8,9 +8,15 @@
   server program.  It also contains a "listen server" that runs in parallel with
   a client within a single thread.
 
+  In-game keys:
+    ESC     - Quit
+    W/S     - Forward/backward
+    A/D     - Left/right
+    Z/space - Down/up
+
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-28
+  @edited  2004-03-31
  */
 
 #include "App.h"
