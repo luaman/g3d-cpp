@@ -25,6 +25,17 @@ http://g3d-cpp.sourceforge.net/html/deprecated.html
 <P><B>The Demos Run Slow</B><P>
 Most of the G3D demos are designed to stress high-end hardware, and will likely choke lower-end systems. The most significant component affecting demo performance is the video card; even with a high-speed processor, a low-end graphics card will likely be the bottleneck in the rendering pipeline. Low performance in these demos doesn't mean G3D is "slow." The demos are intentionally constructed to test against the computational limits using methods which may not accurately represent the "real" 3D applications.
 
+<P><B>What are Index Arrays?</B><P>
+Say you have a shape with four distinct vertices, A, B, C, D, and the triangles you want to render are ABC and BCD. 
+with sendVertex, you'd: 
+ 
+sendVertex(A); sendVertex(B); sendVertex(C); 
+sendVertex(B); sendVertex(C); sendVertex(D); 
+ 
+with vertex arrays you make a VAR that contains A,B,C,D, and an Array<int> indexArray that contains 0,1,2 1,2,3. 
+
+In the VAR_Demo you will see an example of this in the 'main.cpp' file. The "Model" object has an array of Vector3 for vertex locations. Then, a VAR is created with a Vector3 array (one for verticies and one for normals). 
+
 <P><B>Using G3D with other libraries</B><P>
 G3D is a middle-level API that is used to encapsulate and assist with common graphics tasks. It also has a very thin high-level layer (G3D::App, G3D::Applet). This can be simply ignored if you intend use some other high-level functionality, such as a Windows app you're writing or a scenegraph library. In this way, the library will make calls to G3D to do the OpenGL rendering.
 
