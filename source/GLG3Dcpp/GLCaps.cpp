@@ -9,6 +9,7 @@
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
+#include "GLG3D/getOpenGLState.h"
 #include <sstream>
 
 #ifdef G3D_WIN32
