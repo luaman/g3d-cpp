@@ -34,7 +34,8 @@ Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
   </TD></TR>
   <TR><TD>
   <CENTER>
-  The BumpMapViewer tool (tools/BumpMapViewer) uses G3D::Shader with GLSL programs.
+  The GLSL_Shader_Demo in <A HREF="../demos/GLSL_Shader_Demo">demos/GLSL_Shader_Demo</A> shows parallax bump mapping with reflections.
+  The object in the image is a single quadrilateral and the perception of depth is created entirely in a pixel shader.
   </CENTER>
   </TD>
   </TR>
@@ -48,7 +49,9 @@ Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
   which are type safe.  Call G3D::RenderDevice::setShader to enable the shader
   and <CODE>RenderDevice::setShader(NULL)</CODE> to disable it.  When a shader
   is set, you can change the arguments and they will take effect immediately; there
-  is no need to set the shader again.
+  is no need to set the shader again.  <B>Be warned that the summer 2004 drivers from
+  NVIDIA are a little buggy and the ATI ones may crash outright on GLSL programs; 
+  better support is expected in the fall.</B>
 
   G3D::Shader uses G3D::VertexAndPixelShader internally to manage the low-level
   operations.  It is available to you, however it is unlikely you will ever
@@ -61,11 +64,13 @@ Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
   
   Assembly programs are loaded from strings or from 
   files with G3D::VertexProgram and G3D::PixelProgram.
+See <A HREF="../demos/ASM_Shader_Demo">demos/ASM_Shader_Demo</A>.  
 
   Cg programs must first be compiled to assembly.  The assembly can then be loaded
   with G3D::VertexProgram and G3D::PixelProgram, which know how to parse the special
   comments that Cg adds at the top of a file.
-  
+See <A HREF="../demos/Cg_Shader_Demo">demos/Cg_Shader_Demo</A>.  
+
   @section tools Tools
 	RenderMonkey (http://www.ati.com/developer/rendermonkey/index.html) and the
     OpenGL Shader Designer (http://www.typhoonlabs.com/) are high-level development

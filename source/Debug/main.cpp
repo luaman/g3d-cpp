@@ -157,21 +157,6 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 //        "uniform vec3 hi;\n"
 //        "uniform vec3 lo;\n"
    // Initialization
-   shader2 = Shader::fromStrings(STR(
-/*
-        void main(void) {
-            gl_Position = ftransform();
-            gl_Color = vec4(1,1,1,1);
-            // Scale vertex to range [-0.5, 0.5]
-            const vec3 H = vec3(0.5,0.5,0.5);
-            const vec3 L = vec3(-0.5,-0.5,-0.5);
-            const vec3 v = (gl_Vertex.xyz - 0.5) / (0.5 - -0.5) - 0.5;
-            const float PI2 = 2.0 * 3.1415927;
-            // Compute roll angle on [-PI, PI] and map to [0, 1]
-            gl_TexCoord[0] = vec4(atan2(v.x, v.y) / PI2, v.z, 0, 1) + vec4(0.5, 0.5, 0.0, 0.0);
-        }
-  */   
-     ), "");
     
 }
 

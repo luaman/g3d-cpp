@@ -11,6 +11,7 @@ const char* filetype[] = {".jpg", ".tga", ".bmp", ".pcx", ".ico", NULL};
 
 int main(int argc, char** argv) {
 	GAppSettings settings;
+    settings.debugFontName = "";
 	settings.window.width = 1024;
 	settings.window.height = 768;
 	App(settings).run();

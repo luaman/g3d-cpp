@@ -1521,7 +1521,7 @@ void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s,
                              const VertexAndPixelShader::ArgList& args) {
     setVertexAndPixelShader(s);
 
-    if (! s.isNull()) {
+    if (s.notNull()) {
         s->bindArgList(this, args);
     }
 }

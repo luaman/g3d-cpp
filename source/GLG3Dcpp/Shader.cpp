@@ -609,6 +609,7 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
 void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) const {
     validateArgList(args);
 
+
     // Iterate through the formal parameter list
     for (int u = 0; u < uniformArray.size(); ++u) {
         const UniformDeclaration& decl  = uniformArray[u];
@@ -697,7 +698,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
 
         case GL_FLOAT_MAT4_ARB:
             {
-                float m[9];
+                float m[16];
                 for (int i = 0, c = 0; c < 4; ++c) {
                     for (int r = 0; r < 4; ++r, ++i) {
                         m[i] = value.vector[r][c];
