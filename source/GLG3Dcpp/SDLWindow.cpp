@@ -11,7 +11,6 @@
 
 #define SDL_FSAA (SDL_MAJOR_VERSION * 100 + SDL_MINOR_VERSION * 10 + SDL_PATCHLEVEL > 125)
 
-
 namespace G3D {
 
 SDLWindow::SDLWindow(const GWindowSettings& settings) {
