@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-09-14
+ @edited  2004-10-19
  */
 
 
@@ -899,6 +899,10 @@ void testTextInput() {
 
         debugAssert(ti.readNumber() == 2);
         ti.readSymbol("x");
+    }
+    {
+        TextInput ti(TextInput::FROM_STRING, "1.E7");
+        debugAssert(ti.readNumber() == 1.E7);
     }
 
     {

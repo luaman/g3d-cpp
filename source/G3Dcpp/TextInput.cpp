@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2004-09-08
+ @edited  2004-10-18
  */
 
 #include "G3D/TextInput.h"
@@ -376,8 +376,8 @@ numLabel:
                 }
             }
 
-            if (c == 'e') {
-                t._string += "e";
+            if ((c == 'e') || (c == 'E')) {
+                t._string += c;
                 if ((peekNextChar() == '-') || (peekNextChar() == '+')) {
                     t._string += popNextChar();
                 }
