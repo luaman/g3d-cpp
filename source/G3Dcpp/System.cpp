@@ -333,7 +333,7 @@ void initIntel() {
 void initAMD() {
 	// Check if there is extended CPUID level support
 	if ((unsigned long)maxSupportedExtendedLevel >= 0x80000001) {
-		unsigned long edxreg;
+		unsigned long edxreg = 0;
 
 		// If we can access the extended CPUID level 0x80000001 we get the
 		// edx register

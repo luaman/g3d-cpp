@@ -78,8 +78,7 @@ void IFSModel::load(const std::string& filename, double scale) {
 
             geometry.vertexArray.resize(num);
 
-
-            for (int i = 0; i < num; ++i) {
+            for (int i = 0; i < (int)num; ++i) {
                 geometry.vertexArray[i] = bi.readVector3() * scale;
             }
 
@@ -189,10 +188,8 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
 
             // Face Normals (slow)
 
-            const int* indexArray = model->indexArray.getCArray();
             const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
-            const Vector3* faceNormalArray = model->faceNormalArray.getCArray();
-            const Vector3* normalArray = model->geometry.normalArray.getCArray();
+            const Vector3* faceNormalArray = model->faceNormalArray.getCArray();           
             const MeshAlg::Face* faceArray = model->faceArray.getCArray();
             int n = model->faceArray.size();
 

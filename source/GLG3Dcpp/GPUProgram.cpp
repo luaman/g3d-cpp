@@ -454,7 +454,17 @@ void GPUProgram::setArgs(RenderDevice* renderDevice, const ArgList& args) {
                 case FLOAT1:
                     loadConstant(binding.slot, arg.vector[0]);
                     break;
-                
+
+                case FLOAT2X2:
+                    alwaysAssertM(false, "FLOAT2X2 not implemented.");
+                    break;
+
+                case FLOAT3X3:
+                    for (int s = 0; s < 3; ++s) {
+                        loadConstant(binding.slot + s, arg.vector[s]);
+                    }
+                    break;
+
                 case FLOAT4X4:
                     for (int s = 0; s < 4; ++s) {
                         loadConstant(binding.slot + s, arg.vector[s]);
@@ -693,7 +703,7 @@ void GPUProgram::BindingTable::parseVariable(TextInput& ti) {
     t = ti.peek();
 
     if (t.type() == Token::NUMBER) {
-        int slot = ti.readNumber();
+        int slot = iRound(ti.readNumber());
         Binding binding;
         binding.source = VARIABLE;
         binding.type = type;
@@ -716,7 +726,7 @@ void GPUProgram::BindingTable::parseConstant(TextInput& ti) {
             Binding binding;
             binding.source = CONSTANT;
             binding.type   = FLOAT4;
-            binding.slot   = ti.readNumber();
+            binding.slot   = iRound(ti.readNumber());
 
             if (consumeSymbol(ti, "]") && consumeSymbol(ti, "=")) {
                 for (int i = 0; i < 4; ++i) {

@@ -576,7 +576,6 @@ void Matrix3::golubKahanStep (Matrix3& kA, Matrix3& kL,
 //----------------------------------------------------------------------------
 void Matrix3::singularValueDecomposition (Matrix3& kL, Vector3& kS,
         Matrix3& kR) const {
-    const int iMax = 16;
     int iRow, iCol;
 
     Matrix3 kA = *this;

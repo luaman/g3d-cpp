@@ -752,6 +752,9 @@ void GImage::decodeBMP(
     static const uint16 PICTURE_24BIT              = 0x0010;
     static const uint16 PICTURE_32BIT              = 0x0020;
 
+    (void)PICTURE_16BIT;
+    (void)PICTURE_32BIT;
+
     // This is a simple BMP loader that can handle uncompressed BMP files.
     // Verify this is a BMP file by looking for the BM tag.
     input.reset();
@@ -1155,6 +1158,8 @@ void GImage::decodePCX(
     uint16 paletteType  = input.readUInt16();
     input.skip(4 + 54);
 
+    (void)bytesPerLine;
+
     width  = xmax - xmin + 1;
     height = ymax - ymin + 1;
     channels = 3;
@@ -1295,8 +1300,6 @@ GImage::Format GImage::resolveFormat(
     }
 
     if (dataLen > 10) {
-        int j = memcmp(&data[6], "JFIF", 4);
-
         if ((dataLen > 11) && (data[0] == 0xFF) &&
             (memcmp(&data[6], "JFIF", 4) == 0)) {
             return JPEG;
@@ -1319,7 +1322,11 @@ GImage::Format GImage::resolveFormat(
 
 GImage::GImage(
     const std::string&  filename,
-    Format              format) : _byte(NULL), width(0), height(0), channels(0){
+    Format              format) : 
+    _byte(NULL), 
+    width(0),
+    height(0), 
+    channels(0){
     
     load(filename, format);
 }

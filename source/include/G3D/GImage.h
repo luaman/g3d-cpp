@@ -11,7 +11,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-08-07
+  @edited  2003-12-01
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -132,12 +132,13 @@ public:
 
     enum Format {JPEG, BMP, TGA, PCX, AUTODETECT, UNKNOWN};
 
+    int                     width;
+    int                     height;
+
     /**
      The number of channels; either 3 (RGB) or 4 (RGBA)
      */
     int                     channels;
-    int                     width;
-    int                     height;
 
     const uint8* byte() const {
         return _byte;

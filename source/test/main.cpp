@@ -443,12 +443,14 @@ void measureTriangleCollisionPerformance() {
     System::beginCycleCount(raw);
     for (i = 0; i < n; ++i) {
         double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, Triangle(v0, v1, v2), location, normal);
+        (void)t;
     }
     System::endCycleCount(raw);
 
     System::beginCycleCount(opt);
     for (i = 0; i < n; ++i) {
         double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, triangle, location, normal);
+        (void)t;
     }
     System::endCycleCount(opt);
 
@@ -624,9 +626,9 @@ void testCompression() {
 
     BinaryInput g("/tmp/out.t", G3D_LITTLE_ENDIAN, true);
     uint32 i = g.readUInt32();
-    debugAssert(i == 1234); i;
+    debugAssert(i == 1234); (void)i;
     double j = g.readFloat64();
-    debugAssert(j == 1.234); j;
+    debugAssert(j == 1.234); (void)j;
 }
 
 void testMemcpy() {
@@ -676,6 +678,9 @@ void testFloat() {
     bool b1  = (x < 0.0);
     bool b2  = (x >= 0.0);
     bool b3  = !(b1 || b2);
+    (void)b1;
+    (void)b2;
+    (void)b3;
 
     debugAssert(isNaN(NAN));
     debugAssert(! isNaN(4));

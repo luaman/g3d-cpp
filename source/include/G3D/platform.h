@@ -42,6 +42,10 @@
     #ifndef __cdecl
         #define __cdecl __attribute__((cdecl))
     #endif
+
+    #ifndef __stdcall
+        #define __stdcall __attribute__((stdcall))
+    #endif
 #endif
 
 #ifdef G3D_OSX

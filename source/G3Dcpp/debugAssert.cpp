@@ -206,6 +206,7 @@ void _handleErrorCheck_(
 
 
     int result = G3D::prompt("Error", m.c_str(), (const char**)choices, 1, useGuiPrompt);
+    (void)result;
 }
 
 

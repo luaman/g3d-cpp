@@ -5,13 +5,13 @@
   @cite by Morgan McGuire & Peter Sibley
 
   @created 2003-11-25
-  @edited  2003-11-26
+  @edited  2003-12-01
 */
 
 #ifndef G3D_TEXTUREMANAGER_H
 #define G3D_TEXTUREMANAGER_H
 
-#include "graphics3d.h"
+#include "graphics3D.h"
 #include "GLG3D/Texture.h"
 
 namespace G3D {
@@ -43,6 +43,7 @@ private:
         TextureArgs() : format(NULL) {}
         
         TextureArgs(const TextureFormat* _format) : format(_format) {}
+        virtual ~TextureArgs() {}
 
         unsigned int hashCode() const;
 

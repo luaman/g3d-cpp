@@ -101,7 +101,7 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
         GameTime upTime = animationLength(JUMP_UP);
 
         // Make the time on the right interval
-        GameTime time = iWrap(pose.time * 1000, 1000 * upTime * (2 + hangTimePct)) / 1000.0;
+        GameTime time = iWrap(iRound(pose.time * 1000), iRound(1000 * upTime * (2 + hangTimePct))) / 1000.0;
 
         if (time < upTime) {
             // Jump up
@@ -541,7 +541,7 @@ size_t MD2Model::mainMemorySize() const {
 
     size_t edgeSize    = edgeArray.size() * sizeof(MeshAlg::Edge);
 
-    return sizeof(MD2Model) + frameSize + indexSize + faceSize + valentSize + primitiveSize + texSize;
+    return sizeof(MD2Model) + frameSize + indexSize + faceSize + valentSize + primitiveSize + texSize + edgeSize;
 }
 
 

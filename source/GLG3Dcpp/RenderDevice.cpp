@@ -116,6 +116,11 @@ PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NU
 
 namespace G3D {
 
+
+static void glViewport(double a, double b, double c, double d) {
+    glViewport(iRound(a), iRound(b), iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
+}
+
 /**
  Dummy function to which unloaded extensions can be set.
  */
@@ -308,7 +313,7 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glActiveTextureARB);
 
     if (glActiveTextureARB == NULL) {
-        glActiveTextureARB = glIgnore;
+        glActiveTextureARB = (void(*)(unsigned int))glIgnore;
     }
 
     LOAD_EXTENSION(glClientActiveTextureARB);
@@ -495,7 +500,6 @@ bool RenderDevice::init(
     cardDescription = format("%s %s", glGetString(GL_RENDERER), ver.c_str());
 
     // Don't use more texture units than allowed at compile time.
-    int rawTextureUnits = _numTextureUnits;
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
 
     // NVIDIA cards have different numbers of texture coords, units, and textures
@@ -517,6 +521,9 @@ bool RenderDevice::init(
     SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
     SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
 #endif
+
+    // This call is here to make GCC realize that isOk is used.
+    (void)isOk(false);
 
     debugLog->printf(
              "Capability    Minimum   Desired   Received  Ok?\n"
@@ -2332,7 +2339,7 @@ void RenderDevice::setTexture(
     uint                unit,
     TextureRef          texture) {
 
-    bool fixedFunction = (unit < _numTextureUnits);
+    bool fixedFunction = ((int)unit < _numTextureUnits);
 
     debugAssertM(! inPrimitive, 
                  "Can't change textures while rendering a primitive.");
@@ -2369,7 +2376,7 @@ void RenderDevice::setTexture(
         GLint id = texture->getOpenGLID();
         GLint u = texture->getOpenGLTextureTarget();
 
-        if (currentlyBoundTexture[unit] != id) {
+        if ((GLint)currentlyBoundTexture[unit] != id) {
             glBindTexture(u, id);
             currentlyBoundTexture[unit] = id;
         }

@@ -19,8 +19,8 @@
   #include <direct.h>
 #endif
 
-#if G3D_VER != 60008
-    #error Requires G3D 6.00 b8
+#if G3D_VER != 60009
+    #error Requires G3D 6.00 b9
 #endif
 
 class Model {

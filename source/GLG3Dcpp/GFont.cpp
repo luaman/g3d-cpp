@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-11-23
+ @edited  2003-12-01
  */
 
 #include "GLG3D/GFont.h"
@@ -35,6 +35,7 @@ GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
 
     int ver = b.readInt32();
     debugAssertM(ver == 1, "Can't read font files other than version 1");
+    (void)ver;
 
     // Read the widths
     for (int c = 0; c < 128; ++c) {
@@ -137,6 +138,8 @@ void GFont::draw2D(
         double w = h * charWidth / charHeight;
         double fw = 1.0 / charWidth;
         double fh = 1.0 / charHeight;
+        (void)fw;
+        (void)fh;
 
         switch (xalign) {
         case XALIGN_RIGHT:
@@ -248,6 +251,7 @@ void GFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfil
     // Character widths
     for (int i = 0; i < 128; ++i) {
         int n = (int)ini.readNumber();
+        (void)n;
         debugAssert(n == i);
         ini.readSymbol("=");
         int cw = (int)ini.readNumber();
