@@ -1,0 +1,14 @@
+.PHONY: all clean tags
+
+all:
+	cd source/G3Dcpp ; make -f Makefile.OSX
+	cd source/IJG ; make -f Makefile.OSX
+	cd source/GLG3Dcpp ; make -f Makefile.OSX
+
+clean: 
+	cd source/G3Dcpp ; make -f Makefile.OSX clean
+	cd source/IJG ; make -f Makefile.OSX clean
+	cd source/GLG3Dcpp ; make -f Makefile.OSX clean
+
+tags:
+	etags source/G3Dcpp/*.?pp source/include/*.h source/IJG/*.c source/GLG3Dcpp/*.?pp

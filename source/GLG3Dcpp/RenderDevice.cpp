@@ -8,8 +8,16 @@
  */
 
 
+#include "G3D/platform.h"
+
+#if defined(G3D_OSX)
+#include <SDL/SDL.h>
+#include <SDL/SDL_syswm.h>
+#else
 #include <SDL.h>
 #include <SDL_syswm.h>
+#endif
+
 #include <sstream>
 #include "G3D/platform.h"
 #include "GLG3D/glcalls.h"

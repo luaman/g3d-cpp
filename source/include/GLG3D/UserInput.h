@@ -10,7 +10,14 @@
 #ifndef G3D_USERINPUT_H
 #define G3D_USERINPUT_H
 
+#include "G3D/platform.h"
+
+#if defined(G3D_OSX)
+#include <SDL/SDL.h>
+#else
 #include <SDL.h>
+#endif
+
 #include "graphics3D.h"
 
 namespace G3D {

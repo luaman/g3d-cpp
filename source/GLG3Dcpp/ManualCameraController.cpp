@@ -7,7 +7,13 @@
   @edited  2003-04-07
 */
 
+#include "G3D/platform.h"
+#if defined(G3D_OSX)
+#include <SDL/SDL.h>
+#else
 #include <SDL.h>
+#endif
+
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/UserInput.h"

@@ -12,6 +12,7 @@
 #include "G3D/Array.h"
 #include "G3D/Triangle.h"
 #include "GLG3D/glheaders.h"
+#include "G3D/platform.h"
 
 namespace G3D {
 
@@ -83,7 +84,11 @@ void tesselateComplexPolygon(Array<Vector3>& input, Array<Triangle>& output) {
 
     if (tobj == NULL) {
         tobj = gluNewTess();
+#if defined(G3D_OSX) 
+        #define CAST(x) reinterpret_cast<void (*)(void)>(x)
+#else
         #define CAST(x) reinterpret_cast<void (__stdcall *)(void)>(x) 
+#endif
         gluTessCallback(tobj, GLU_TESS_BEGIN_DATA,    CAST(_tesselateBegin));
         gluTessCallback(tobj, GLU_TESS_VERTEX_DATA,   CAST(_tesselateVertex));
         gluTessCallback(tobj, GLU_TESS_END_DATA,      CAST(_tesselateEnd));

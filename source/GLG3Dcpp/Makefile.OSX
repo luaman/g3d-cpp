@@ -1,0 +1,30 @@
+CPPFLAGS=-I../include -D__cdecl= -D__stdcall= -I/usr/X11R6/include -F$(HOME)/Library/Frameworks/
+
+OBJFILES=\
+	Camera.o \
+	Font.o \
+	G3DGameUnits.o \
+	GPUProgram.o \
+	LightingParameters.o \
+	ManualCameraController.o \
+	PixelProgram.o \
+	RenderDevice.o \
+	Sky.o \
+	Texture.o \
+	TextureFormat.o \
+	UserInput.o \
+	VAR.o \
+	VARSystem.o \
+	VertexProgram.o \
+	getOpenGLState.o \
+	glcalls.o \
+	glenumtostring.o \
+	tesselate.o 
+
+all: $(OBJFILES)
+
+.PHONY: clean 
+
+clean: 
+	-rm *.o
+
