@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-06-27
+  @edited  2003-06-29
  */
 
 #include "G3D/platform.h"
@@ -37,6 +37,7 @@
     #include <termios.h>
     #include <stropts.h>
     #include <unistd.h>
+    #include <sys/ioctl.h>
 
 #elif defined(G3D_OSX)
 
@@ -144,6 +145,7 @@ void init() {
     #endif
 
 	char cpuVendorTmp[13];
+    (void)cpuVendorTmp;
  
 	// First of all we check if the CPUID command is available
 	checkForCPUID();
@@ -657,9 +659,9 @@ std::string System::currentProgramFilename() {
 
 void System::sleep(RealTime t) {
     #ifdef G3D_WIN32
-        Sleep(t * 1e3);
+        Sleep((int)(t * 1e3));
     #else
-        usleep(t * 1e6);
+        usleep((int)(t * 1e6));
     #endif
 }
 
