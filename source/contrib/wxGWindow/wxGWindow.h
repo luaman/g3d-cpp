@@ -156,6 +156,10 @@ public:
     virtual bool mouseVisible () const ;
 
     virtual bool pollEvent(GEvent& e) ;
+
+    virtual bool requiresMainLoop() {
+        return true;
+    }
 };
 
 
@@ -196,6 +200,11 @@ public:
     void handleWindowMove(wxMoveEvent& event);
 
     void handleWindowClose(wxCloseEvent& event);
+
+    void handleIdle(wxIdleEvent& event) {
+        event.RequestMore(true);
+        _gWindow->executeLoopBody();
+    }
     
     DECLARE_EVENT_TABLE();
 };

@@ -9,7 +9,7 @@ class App : public GApp {
 
 protected:
 
-    void main() {}
+    void main();
 
 public:
 
@@ -20,8 +20,6 @@ public:
 class Demo : public GApplet {
 
 public:
-
-    bool            setupDebugMode;
 
     App*            app;
 
@@ -35,6 +33,14 @@ public:
 };
 
 
+void App::main() {
+	setDebugMode(true);
+	debugController.setActive(false);
+    Demo* demo = new Demo(this);
+    demo->run();
+}
+
+
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
 //    model = IFSModel::create("D:/libraries/g3d-6_05-b01/data/ifs/p51-mustang.ifs", 5);
@@ -45,7 +51,6 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 0, 10));
     app->debugCamera.lookAt(Vector3(0, 0, 0));
 
-    setupDebugMode = false;
 }
 
 
@@ -141,10 +146,6 @@ private:
 public:
 
     bool OnInit(void);
-
-    void OnIdle(wxIdleEvent& event);
-
-    DECLARE_EVENT_TABLE();
 };
 
 
@@ -154,11 +155,6 @@ public:
 
 IMPLEMENT_APP(MyApp)
 
-// wxWidgets event table
-BEGIN_EVENT_TABLE(MyApp, wxApp)
-    EVT_IDLE( MyApp::OnIdle )
-END_EVENT_TABLE()
-
 bool MyApp::OnInit(void) {
 
     // Create the main frame window
@@ -167,30 +163,17 @@ bool MyApp::OnInit(void) {
 
     frame->gWindow = new wxGWindow(GWindowSettings(), frame, -1);
 
-    App* gApp = new App(GAppSettings(), frame->gWindow);
-
-    demo = new Demo(gApp);
+//    demo = new Demo(gApp);
 
     // Show the frame
     frame->Show(true);
 
-    demo->app->setDebugMode(true);
-    demo->app->debugController.setActive(true);
-    demo->beginRun();
+//    demo->app->setDebugMode(true);
+//    demo->app->debugController.setActive(true);
+//    demo->
+
+    App* gApp = new App(GAppSettings(), frame->gWindow);
+    gApp->run();
 
     return true;
-}
-
-
-void MyApp::OnIdle(wxIdleEvent& event) {
-
-    demo->oneFrame();   
-
-    if (demo->app->endProgram) {
-        demo->endRun();
-        delete(frame);
-    } else {
-        // Register for more idle time
-        event.RequestMore(true);
-    }
 }

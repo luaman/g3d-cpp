@@ -21,6 +21,7 @@ BEGIN_EVENT_TABLE(wxG3DCanvas, wxGLCanvas)
   EVT_MOTION( wxG3DCanvas::handleMouseMove )
   EVT_MOVE( wxG3DCanvas::handleWindowMove )
   EVT_CLOSE( wxG3DCanvas::handleWindowClose )
+  EVT_IDLE( wxG3DCanvas::handleIdle )
 END_EVENT_TABLE()
 
 
@@ -48,7 +49,10 @@ wxGWindow::wxGWindow(
     wxWindow*               parent,
     wxWindowID              id)  : invisible(wxCURSOR_BLANK), arrow(wxCURSOR_ARROW) {
 
-    initWXKeys();
+    // For now a crude check to initialize once per process.
+    if (sdlKeyMap.size() == 0) {
+        initWXKeys();
+    }
 
     Array<int> attribList;
     makeAttribList(_settings, attribList);
@@ -514,7 +518,7 @@ static void initWXKeys() {
     sdlKeyMap.set(WXK_NUMPAD8, SDLK_KP8);
     sdlKeyMap.set(WXK_NUMPAD9, SDLK_KP9);
     sdlKeyMap.set(WXK_MULTIPLY, SDLK_KP_MULTIPLY);
-    sdlKeyMap.set(WXK_ADD, SDLK_KP_MULTIPLY);
+    sdlKeyMap.set(WXK_ADD, SDLK_KP_PLUS);
 //    sdlKeyMap.set(WXK_SEPARATOR, 
     sdlKeyMap.set(WXK_SUBTRACT, SDLK_MINUS);
     sdlKeyMap.set(WXK_DECIMAL, SDLK_PERIOD);
