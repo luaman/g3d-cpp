@@ -2563,7 +2563,7 @@ void RenderDevice::debugDrawVertexNormals(const MeshAlg::Geometry& geometry, con
         const Array<Vector3>& vertexArray = geometry.vertexArray;
         const Array<Vector3>& normalArray = geometry.normalArray;
 
-        const double D = clamp(8.0 / sqrt(vertexArray.size()), 0.1, 1) * scale;
+        const double D = clamp(5.0 / sqrt(vertexArray.size()), 0.1, .8) * scale;
         
         setColor(Color3::GREEN * .5);
         setLineWidth(1);
