@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2004-03-02
+ @edited  2004-03-24
  */
 
 #include "G3D/debugAssert.h"
@@ -250,13 +250,15 @@ void _releaseInputGrab_() {
             XUngrabPointer(X11Display, CurrentTime);
             XUngrabKeyboard(X11Display, CurrentTime);
             if (X11Window != 0) {
-                XUndefineCursor(X11Display, X11Window);
+                //XUndefineCursor(X11Display, X11Window);
                 // TODO: Note that we leak this cursor; it should be
                 // freed in the restore code.
                 Cursor c = XCreateFontCursor(X11Display, 68);
                 XDefineCursor(X11Display, X11Window, c);
             }
             XSync(X11Display, false);           
+            XAllowEvents(X11Display, AsyncPointer, CurrentTime);
+            XFlush(X11Display);
         }
     #elif defined(G3D_OSX)
         // TODO: OS X
