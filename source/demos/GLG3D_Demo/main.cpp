@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     sky		     = new Sky("Sky", DATA_DIR + "sky/", 
                            "null_plainsky512_ft.jpg", 1.0);
     userInput    = new UserInput();
-    model        = new Model(DATA_DIR + "ifs/buddha.ifs");
+    model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
 
     ManualCameraController controller(renderDevice);
 
@@ -349,8 +349,7 @@ void Model::render(const CoordinateFrame& c,
     renderDevice->configureDirectionalLight
       (1, -lighting.lightDirection, Color3::WHITE * .25);
 
-    {float c[] = {lighting.ambient.r,lighting.ambient.g,lighting.ambient.b,1};
-     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c);}
+    renderDevice->setAmbientLightLevel(lighting.ambient);
     
     renderDevice->setColor(Color3::WHITE);
 

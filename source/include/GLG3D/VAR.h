@@ -78,12 +78,9 @@ private:
 	// The following are called by the VARSystem.
 	void vertexPointer() const;
 
-
 	void normalPointer() const;
 
-
 	void colorPointer() const;
-
 
 	void texCoordPointer(uint unit) const;
 

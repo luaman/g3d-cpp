@@ -37,6 +37,7 @@ private:
 
     std::string                 name;
     GLuint                      glProgram;
+
     std::string                 filename;
 
     VertexProgram(const std::string& _name, const std::string& filename, const std::string& code);
@@ -48,6 +49,10 @@ public:
     static VertexProgram* fromCode(const std::string& name, const std::string& code);
 
     ~VertexProgram();
+
+    /** Reload from supplied code or from the original file that
+        was specified (handy when debugging shaders) */
+    void reload(const std::string& code = "");
 
     GLuint getOpenGLID() const;
 };

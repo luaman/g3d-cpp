@@ -16,36 +16,36 @@
 #include "GLG3D/Texture.h"
 #include "GLG3D/getOpenGLState.h"
 
-PFNGLMULTITEXCOORD1FARBPROC         glMultiTexCoord1fARB		= NULL;
-PFNGLMULTITEXCOORD1DARBPROC         glMultiTexCoord1dARB		= NULL;
+PFNGLMULTITEXCOORD1FARBPROC                 glMultiTexCoord1fARB		    = NULL;
+PFNGLMULTITEXCOORD1DARBPROC                 glMultiTexCoord1dARB		    = NULL;
 
-PFNGLMULTITEXCOORD2FARBPROC         glMultiTexCoord2fARB		= NULL;
-PFNGLMULTITEXCOORD2FVARBPROC        glMultiTexCoord2fvARB		= NULL;
-PFNGLMULTITEXCOORD2DVARBPROC        glMultiTexCoord2dvARB		= NULL;
+PFNGLMULTITEXCOORD2FARBPROC                 glMultiTexCoord2fARB		    = NULL;
+PFNGLMULTITEXCOORD2FVARBPROC                glMultiTexCoord2fvARB		    = NULL;
+PFNGLMULTITEXCOORD2DVARBPROC                glMultiTexCoord2dvARB		    = NULL;
 
-PFNGLMULTITEXCOORD3FVARBPROC        glMultiTexCoord3fvARB		= NULL;
-PFNGLMULTITEXCOORD3DVARBPROC        glMultiTexCoord3dvARB		= NULL;
+PFNGLMULTITEXCOORD3FVARBPROC                glMultiTexCoord3fvARB		    = NULL;
+PFNGLMULTITEXCOORD3DVARBPROC                glMultiTexCoord3dvARB		    = NULL;
 
-PFNGLMULTITEXCOORD4FVARBPROC        glMultiTexCoord4fvARB		= NULL;
-PFNGLMULTITEXCOORD4DVARBPROC        glMultiTexCoord4dvARB		= NULL;
+PFNGLMULTITEXCOORD4FVARBPROC                glMultiTexCoord4fvARB		    = NULL;
+PFNGLMULTITEXCOORD4DVARBPROC                glMultiTexCoord4dvARB		    = NULL;
 
-PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB 			= NULL;
-PFNGLCLIENTACTIVETEXTUREARBPROC     glClientActiveTextureARB	= NULL;
+PFNGLACTIVETEXTUREARBPROC                   glActiveTextureARB 			    = NULL;
+PFNGLCLIENTACTIVETEXTUREARBPROC             glClientActiveTextureARB	    = NULL;
 
-PFNWGLSWAPINTERVALEXTPROC           wglSwapIntervalEXT 			= NULL;
-PFNWGLCHOOSEPIXELFORMATARBPROC      wglChoosePixelFormatARB		= NULL;
-PFNWGLALLOCATEMEMORYNVPROC          wglAllocateMemoryNV 		= NULL;
-PFNWGLFREEMEMORYNVPROC              wglFreeMemoryNV 			= NULL;
+PFNWGLSWAPINTERVALEXTPROC                   wglSwapIntervalEXT 			    = NULL;
+PFNWGLCHOOSEPIXELFORMATARBPROC              wglChoosePixelFormatARB		    = NULL;
+PFNWGLALLOCATEMEMORYNVPROC                  wglAllocateMemoryNV 		    = NULL;
+PFNWGLFREEMEMORYNVPROC                      wglFreeMemoryNV 			    = NULL;
 
-PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV 		= NULL;
+PFNGLVERTEXARRAYRANGENVPROC                 glVertexArrayRangeNV 		    = NULL;
 
-PFNGLCOMPRESSEDTEXIMAGE2DARBPROC    glCompressedTexImage2DARB 	= NULL;
-PFNGLGETCOMPRESSEDTEXIMAGEARBPROC   glGetCompressedTexImageARB 	= NULL;
+PFNGLCOMPRESSEDTEXIMAGE2DARBPROC            glCompressedTexImage2DARB 	    = NULL;
+PFNGLGETCOMPRESSEDTEXIMAGEARBPROC           glGetCompressedTexImageARB 	    = NULL;
 
-PFNGLGENFENCESNVPROC				glGenFencesNV				= NULL;
-PFNGLDELETEFENCESNVPROC				glDeleteFencesNV			= NULL;
-PFNGLSETFENCENVPROC					glSetFenceNV				= NULL;
-PFNGLFINISHFENCENVPROC	  			glFinishFenceNV				= NULL;
+PFNGLGENFENCESNVPROC				        glGenFencesNV				    = NULL;
+PFNGLDELETEFENCESNVPROC				        glDeleteFencesNV			    = NULL;
+PFNGLSETFENCENVPROC					        glSetFenceNV				    = NULL;
+PFNGLFINISHFENCENVPROC	  			        glFinishFenceNV				    = NULL;
 
 PFNGLGENPROGRAMSARBPROC                     glGenProgramsARB                = NULL;
 PFNGLBINDPROGRAMARBPROC                     glBindProgramARB                = NULL;
@@ -54,6 +54,10 @@ PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB              = NU
 PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NULL;
 PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
 PFNGLISPROGRAMARBPROC                       glIsProgramARB                  = NULL;
+
+PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
+PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
+PFNGLDISABLEVERTEXATTRIBARRAYARBPROC        glDisableVertexAttribArrayARB   = NULL;
 
 namespace G3D {
 
@@ -154,6 +158,9 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glProgramStringARB);
     LOAD_EXTENSION(glProgramEnvParameter4fARB);
     LOAD_EXTENSION(glProgramLocalParameter4fARB);
+    LOAD_EXTENSION(glVertexAttribPointerARB);
+    LOAD_EXTENSION(glEnableVertexAttribArrayARB);
+    LOAD_EXTENSION(glDisableVertexAttribArrayARB);
 
     #undef LOAD_EXTENSION
 }

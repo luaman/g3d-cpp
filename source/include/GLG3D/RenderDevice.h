@@ -613,7 +613,7 @@ public:
 	void beginIndexedPrimitives();
 	void endIndexedPrimitives();
 
-    /** The vertex, normal, color, and tex coord arrays must all come from
+    /** The vertex, normal, color, and tex coord arrays need not come from
         the same VARArea. */
 	void setVertexArray(const class VAR& v);
 	void setNormalArray(const class VAR& v);

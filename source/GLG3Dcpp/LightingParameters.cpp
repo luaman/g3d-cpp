@@ -56,25 +56,25 @@ void LightingParameters::setTime(const GameTime _time) {
 
     {
         const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4,  SUNRISE + sunRiseAndSetTime, SUNSET - sunRiseAndSetTime, SUNSET - sunRiseAndSetTime / 2, SUNSET,                SUNSET + HOUR/2,       DAY};
-        const Color3 color[] = {Color3(.07, .07, .07),  Color3(.1, .1, .1),     Color3::BLACK,        Color3(.6, .6, 0),                 Color3::WHITE * .75,         Color3(.4, .4, .4),         Color3(.1, .1, .075),           Color3(.1, .05, .05),  Color3(.1, .1, .1), Color3(.07, .07, .07)};
+        const Color3 color[] = {Color3(.07, .07, .07),  Color3(.1, .1, .1),     Color3(0,0,0),        Color3(.6, .6, 0),                 Color3(1,1,1) * .75,         Color3(.4, .4, .4),         Color3(.1, .1, .075),           Color3(.1, .05, .05),  Color3(.1, .1, .1), Color3(.07, .07, .07)};
         lightColor = linearSpline(time, times, color, 10);
     }
 
     {
         const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4, SUNRISE + sunRiseAndSetTime, SUNSET - sunRiseAndSetTime, SUNSET - sunRiseAndSetTime / 2, SUNSET,               SUNSET + HOUR/2,     DAY};
-        const Color3 color[] = {Color3(0, .0, .1),      Color3(0, .0, .1),      Color3::BLACK,        Color3::BLACK,                   Color3::WHITE * .25,         Color3::WHITE * .25,        Color3(.5, .2, .2),             Color3(.05, .05, .1),   Color3(0, .0, .1), Color3(0, .0, .1)};
+        const Color3 color[] = {Color3(0, .0, .1),      Color3(0, .0, .1),      Color3(0,0,0),        Color3(0,0,0),                   Color3(1,1,1) * .25,         Color3(1,1,1) * .25,        Color3(.5, .2, .2),             Color3(.05, .05, .1),   Color3(0, .0, .1), Color3(0, .0, .1)};
         ambient = linearSpline(time, times, color, 10);
     }
 
     {
         const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 2, SUNRISE + sunRiseAndSetTime, SUNSET - sunRiseAndSetTime, SUNSET - sunRiseAndSetTime / 2, SUNSET,               SUNSET + HOUR/2, DAY};
-        const Color3 color[] = {Color3(.1, .1, .17),    Color3(.05, .06, .07),  Color3(.08, .08, .01),  Color3::WHITE *.75,              Color3::WHITE * .75,         Color3::WHITE * .25,        Color3(.5, .2, .2),             Color3(.05, .05, .1),   Color3(.06, .06, .07), Color3(.1, .1, .17)};
+        const Color3 color[] = {Color3(.1, .1, .17),    Color3(.05, .06, .07),  Color3(.08, .08, .01),  Color3(1,1,1) *.75,              Color3(1,1,1) * .75,         Color3(1,1,1) * .25,        Color3(.5, .2, .2),             Color3(.05, .05, .1),   Color3(.06, .06, .07), Color3(.1, .1, .17)};
         diffuseAmbient = linearSpline(time, times, color, 10);
     }
 
     {
         const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE - HOUR/2,      SUNRISE,                       SUNRISE + sunRiseAndSetTime,  SUNSET - sunRiseAndSetTime, SUNSET,                  SUNSET + HOUR/3,     DAY};
-        const Color3 color[] = {Color3::BLACK,          Color3::BLACK,          Color3(.2, .15, .01),   Color3(.2, .15, .01),           Color3::WHITE,                Color3::WHITE,              Color3(.4, .2, .05),     Color3::BLACK,       Color3::BLACK};
+        const Color3 color[] = {Color3(0,0,0),          Color3(0,0,0),          Color3(.2, .15, .01),   Color3(.2, .15, .01),           Color3(1,1,1),                Color3(1,1,1),              Color3(.4, .2, .05),     Color3(0,0,0),       Color3(0,0,0)};
         skyAmbient = linearSpline(time, times, color, 8);
     }
 

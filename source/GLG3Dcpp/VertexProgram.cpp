@@ -15,6 +15,11 @@ namespace G3D {
 
 
 VertexProgram::VertexProgram(const std::string& _name, const std::string& _filename, const std::string& _code) : name(_name), filename(_filename) {
+    reload(_code);
+}
+
+
+void VertexProgram::reload(const std::string& _code) {
     std::string code = _code;
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -29,11 +34,11 @@ VertexProgram::VertexProgram(const std::string& _name, const std::string& _filen
     // us there, then break in this code.  To reload the shader we jump back
     // to the top of the loading routine and try again.
      
-    bool reload = false;
+    bool reloadFromFile = (code == "");
 
 LOADSHADER:
 
-    if (reload) {
+    if (reloadFromFile) {
  
         if (fileExists(filename)) {
             code = readFileAsString(filename);
@@ -122,7 +127,7 @@ LOADSHADER:
                 //                                                                        //
                 ////////////////////////////////////////////////////////////////////////////
                 debugBreak();
-                reload = true;
+                reloadFromFile = true;
                 goto LOADSHADER;
                 break;
             }
@@ -147,12 +152,12 @@ LOADSHADER:
 
 
 VertexProgram* VertexProgram::fromFile(const std::string& name, const std::string& _filename) {
-    return new VertexProgram(name, _filename, readFileAsString(_filename));
+    return new VertexProgram(name, _filename, std::string(""));
 }
 
 
 VertexProgram* VertexProgram::fromCode(const std::string& name, const std::string& code) {
-    return new VertexProgram(name, name, code);
+    return new VertexProgram(name, std::string(""), code);
 }
 
 

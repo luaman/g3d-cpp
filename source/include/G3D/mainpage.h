@@ -502,6 +502,7 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> Fix: Strange compilation bug was causing Sky to be black for some programs
      <LI> resolveFilename
      <LI> GLProgram_Demo to show how to use vertex programs in G3D
      <LI> Support for GL_ARB_vertex_program 
