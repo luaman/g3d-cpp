@@ -124,6 +124,14 @@ def copyIfNewer(source, dest):
 
         os.path.walk(source, _copyIfNewerVisit, [len(source), dest])
     
+"""os.path.basename strips one extra character from the beginning.  
+This restores it."""
+def _basename(filename):
+    # Find the index of the last slash
+    i = max(string.rfind(filename, '/'), string.rfind(filename, '\\'))
+
+    # Copy from there on (whole string if no slashes)
+    return filename[(i + 1):]
 
 """Helper for copyIfNewer.
 
@@ -133,8 +141,12 @@ sourceDirname and the root of the destination tree.
 """
 def _copyIfNewerVisit(args, sourceDirname, names):
 
-    prefixLen      = args[0]
+    prefixLen   = args[0]
     destDirname = args[1] + sourceDirname[prefixLen:]
+    dirName     = _basename(destDirname)
+
+    if (excludeFromCopying.search(dirName) != None):
+        return
 
     # Create the corresponding destination dir if necessary
     mkdir(destDirname)
@@ -143,11 +155,8 @@ def _copyIfNewerVisit(args, sourceDirname, names):
     for name in names:
         source = sourceDirname + '/' + name
 
-        if (excludeFromCopying.search(name) != None):
-            # Remove excluded dirs and files
-            names.remove(name)
-
-        elif (not os.path.isdir(source)):
+        if ((excludeFromCopying.search(name) == None) and \
+            (not os.path.isdir(source))):
             # Copy files if newer
             dest = destDirname + '/' + name
             if (newer(source, dest)):
