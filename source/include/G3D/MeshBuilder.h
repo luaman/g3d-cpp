@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2004-09-09
+  @edited  2004-10-04
  */ 
 #ifndef G3D_MESHBUILDER_H
 #define G3D_MESHBUILDER_H
@@ -42,9 +42,10 @@ private:
     void centerTriList();
     void computeBounds(Vector3& min, Vector3& max);
 
+	bool _twoSided;
+
     /** Collapse radius */
     double close;
-	bool _twoSided;
 
 public:
 
