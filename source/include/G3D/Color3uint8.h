@@ -50,9 +50,9 @@ public:
 
     inline static Color3uint8 fromARGB(uint32 i) {
         Color3uint8 c;
-        c.r = (i >> 16) && 0xFF;
-        c.g = (i >> 8) && 0xFF;
-        c.b = i && 0xFF;
+        c.r = (i >> 16) & 0xFF;
+        c.g = (i >> 8) & 0xFF;
+        c.b = i & 0xFF;
         return c;
     }
 
