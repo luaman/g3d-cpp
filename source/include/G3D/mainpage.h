@@ -620,6 +620,10 @@
 
    <P>
    <UL>
+     <LI>Carbon, Crackman, Edenmill, Futurist, Interplanetary,
+         Iomanoid, Starlight, Lesser, and Wild fonts by Ray Larabie.
+         Like all of our fonts, they are free, but please consider a
+         donation to him if you like them.  http://www.larabiefonts.com/
      <LI> MD2Model_Demo
      <LI> G3D::MD2Model
      <LI> FIX: Fixed a bug in Array shrinking that could cause memory corruption

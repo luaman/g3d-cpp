@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-08-04
+# @edited  2003-08-13
 #
 # Each build target is a procedure.
 #
@@ -29,9 +29,9 @@ Syntax:
 
 TARGET     DESCRIPTION
 
+lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
 install    Create a user installation directory (what you probably want)
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip
-lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs
 doc        Run doxygen and copy the html directory
 clean      Delete the build, release, temp, and install directories
 help       Display this message
@@ -172,7 +172,7 @@ def install(copyData=1):
 
     if (copyData):
         copyIfNewer('source/demos', installDir + '/demos')
-        copyIfNewer('data', installDir + '/data')
+        copyIfNewer('../data', installDir + '/data')
 
 ###############################################################################
 #                                                                             #
