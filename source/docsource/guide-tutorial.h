@@ -22,6 +22,7 @@ you shouldn't have to do any math, just a lot of reading, thinking, and coding.
 
 You should make extensive use of the %G3D documentation at:
 http://g3d-cpp.sourceforge.net/html/index.html and <a href="index.html">as part of your %G3D install</a>.
+In particular, the <A HREF="indexedbytopic.html">Topic Index</A> will help you with this tutorial.
 
 That index page lists all of the classes in %G3D by functionality. It has links
 to alphabetic lists as well. Look at <a href="map.png">the Namespace Map</a> 
