@@ -323,6 +323,21 @@ int Win32Window::height() const {
 }
 
 
+void Win32Window::setDimensions(const Rect2D& dims) {
+
+    int W = ::GetSystemMetrics(SM_CXSCREEN);
+    int H = ::GetSystemMetrics(SM_CYSCREEN);
+
+    int x = iClamp(dims.x0(), 0, W);
+    int y = iClamp(dims.y0(), 0, H);
+    int w = iClamp(dims.width(), 1, W);
+    int h = iClamp(dims.height(), 1, H);
+
+    // Set dimensions and repaint.
+    ::MoveWindow(window, x, y, w, h, true);
+}
+
+
 Rect2D Win32Window::dimensions() const {
 	return Rect2D::xywh(clientX, clientY, width(), height());
 }

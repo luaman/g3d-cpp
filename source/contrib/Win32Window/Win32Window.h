@@ -76,12 +76,10 @@ public:
 	
     virtual Rect2D dimensions() const;
 	
-    virtual void setDimensions(const Rect2D& dims) {
-		// TODO
-	}
+    virtual void setDimensions(const Rect2D& dims);
 	
     virtual void setPosition(int x, int y) {
-		// TODO
+        setDimensions( Rect2D::xywh(x, y, settings.width, settings.height) );
 	}
 	
     virtual bool hasFocus() const;
