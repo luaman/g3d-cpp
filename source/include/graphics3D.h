@@ -71,7 +71,7 @@
 #include "G3D/Capsule.h"
 #include "G3D/Triangle.h"
 #include "G3D/Color3uint8.h"
-#include "G3D/Vector3uint16.h"
+#include "G3D/Vector3int16.h"
 
 #endif
 

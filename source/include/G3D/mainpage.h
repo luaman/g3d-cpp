@@ -26,7 +26,7 @@
      
      <UL>
      <LI>3D math
-        <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Vector3uint16, G3D::Vector4, 
+        <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Vector3int16, G3D::Vector4, 
         G3D::Quat, G3D::Color3, G3D::Color3uint8,
         G3D::Color4, G3D::Matrix3, G3D::CoordinateFrame, G3D::PhysicsFrame,
         G3D::Box, G3D::Cone, G3D::Line, G3D::LineSegment, G3D::Plane, G3D::Ray,
@@ -505,7 +505,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::sizeOfGLFormat
      <LI> G3D::glFormatOf
      <LI> G3D::Color3uint8
-     <LI> G3D::Vector3uint16
+     <LI> G3D::Vector3int16
      <LI> Modified ManualCameraController so that diagonal movement does not exceed
           maximum rate.
      <LI> Added support for non-GL_FLOAT vertex arrays to RenderDevice

@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-04-07
+  @edited  2003-04-08
  */
 
 #ifndef G3D_VECTOR3_H
@@ -32,7 +32,7 @@ public:
     Vector3(Real _x, Real _y, Real _z);
     Vector3(Real coordinate[3]);
     Vector3(const Vector3& rkVector);
-    Vector3(const class Vector3uint16& v);
+    Vector3(const class Vector3int16& v);
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);

@@ -18,7 +18,7 @@ namespace G3D {
  A Vector3 that packs its fields into uint16s.
  */
 // Switch to tight alignment
-#pragma pack(push, Vector3uint16_align)
+#pragma pack(push, Vector3int16_align)
 #pragma pack(2)
 class Vector3int16 {
 public:
@@ -33,7 +33,7 @@ public:
     void serialize(class BinaryOutput& bo) const;
     void deserialize(class BinaryInput& bi);
 };
-#pragma pack(pop, Vector3uint16_align)
+#pragma pack(pop, Vector3int16_align)
 
 }
 #endif

@@ -36,7 +36,7 @@ public:                                      \
 MAP( Vector2,       GL_FLOAT)
 MAP( Vector3,       GL_FLOAT)
 MAP( Vector4,       GL_FLOAT)
-MAP( Vector3uint16, GL_UNSIGNED_SHORT)
+MAP( Vector3int16,  GL_SHORT)
 MAP( Color3uint8,   GL_UNSIGNED_BYTE)
 MAP( Color3,        GL_FLOAT)
 MAP( Color4,        GL_FLOAT)

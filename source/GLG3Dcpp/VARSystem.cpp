@@ -208,6 +208,9 @@ bool VAR::ok() const {
 void VAR::vertexPointer() const {
 	debugAssert(ok());
 	glEnableClientState(GL_VERTEX_ARRAY);
+    debugAssertM(underlyingRepresentation != GL_UNSIGNED_INT, "OpenGL does not support GL_UNSIGNED_INT as a vertex format.");
+    debugAssertM(underlyingRepresentation != GL_UNSIGNED_SHORT, "OpenGL does not support GL_UNSIGNED_SHORT as a vertex format.");
+    debugAssertM(underlyingRepresentation != GL_UNSIGNED_BYTE, "OpenGL does not support GL_UNSIGNED_BYTE as a vertex format.");
 	glVertexPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
 }
 
@@ -215,6 +218,9 @@ void VAR::vertexPointer() const {
 void VAR::normalPointer() const {
 	debugAssert(ok());
 	debugAssert((double)elementSize / sizeOfGLFormat(underlyingRepresentation) == 3.0);
+    debugAssertM(underlyingRepresentation != GL_UNSIGNED_INT, "OpenGL does not support GL_UNSIGNED_INT as a normal format.");
+    debugAssertM(underlyingRepresentation != GL_UNSIGNED_SHORT, "OpenGL does not support GL_UNSIGNED_SHORT as a normal format.");
+    debugAssertM(underlyingRepresentation != GL_UNSIGNED_BYTE, "OpenGL does not support GL_UNSIGNED_BYTE as a normal format.");
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glNormalPointer(underlyingRepresentation, elementSize, pointer); 
 }
