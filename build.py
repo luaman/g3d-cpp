@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-01-27
+# @edited  2004-02-05
 #
 # Each build target is a procedure.
 #
@@ -12,7 +12,7 @@
 from buildlib import *
 
 # The library version number
-version = "6_00"
+version = "6_01"
 
 # Turn the platform into a name to put in the
 # "lib" directory name
