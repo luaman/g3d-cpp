@@ -178,6 +178,16 @@ Quat Quat::operator*(const Quat& other) const {
     return Quat(s1*v2 + s2*v1 + v1.cross(v2), s1*s2 - v1.dot(v2));
 }
 
+// From "Uniform Random Rotations", Ken Shoemake, Graphics Gems III.
+Quat Quat::unitRandom() {
+    double x0 = G3D::unitRandom();
+    double r1 = sqrt(1 - x0), r2 = sqrt(x0);
+    double t1 = G3D_TWO_PI * G3D::unitRandom(), t2 = G3D_TWO_PI * G3D::unitRandom();
+    double c1 = cos(t1), s1 = sin(t1);
+    double c2 = cos(t2), s2 = sin(t2);
+    return Quat(s1 * r1, c1 * r1, s2 * r2, c2 * r2);
+}
+
 
 
 // 2-char swizzles

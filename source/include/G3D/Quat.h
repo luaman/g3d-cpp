@@ -253,6 +253,9 @@ public:
     const float& operator[] (int i) const;
     float& operator[] (int i);
 
+    // Generate uniform random unit quaternion. 
+    static Quat unitRandom();
+
     // 2-char swizzles
 
     Vector2 xx() const;
