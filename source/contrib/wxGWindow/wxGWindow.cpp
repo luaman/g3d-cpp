@@ -279,6 +279,19 @@ bool wxGWindow::pollEvent(GEvent& e) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+static SDLKey wxKeyCodeToSDLCode(int w) {
+    if ((w >= 'A') && (w <= 'Z')) {
+        // Convert to lower case
+        return (SDLKey)(w - 'A' + 'a');
+    } else if ((w >= '0') && (w <= '9')) {
+        return (SDLKey)w;
+    } else if (sdlKeyMap.containsKey(w)) {
+        return (SDLKey)sdlKeyMap.get(w);
+    } else {
+        return (SDLKey)0;
+    }
+}
+
 void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
 {
     if (_gWindow->keyboardEvents.length() > 200) {
@@ -289,14 +302,7 @@ void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
     e.key.type = SDL_KEYUP;
     e.key.state = SDL_RELEASED;
     
-    if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
-        // Convert to lower case
-        e.key.keysym.sym = (SDLKey)(event.KeyCode() - 'A' + 'a');
-    } else {
-        if (sdlKeyMap.containsKey(event.KeyCode())) {
-            e.key.keysym.sym = (SDLKey)sdlKeyMap.get(event.KeyCode());
-        }
-    }
+    e.key.keysym.sym = wxKeyCodeToSDLCode(event.KeyCode());
 
 #if (wxUSE_UNICODE == 1)
     e.key.keysym.unicode = event.GetUnicodeKey();
@@ -326,13 +332,7 @@ void wxG3DCanvas::handleKeyDown(wxKeyEvent& event) {
     e.key.type = SDL_KEYDOWN;
     e.key.state = SDL_PRESSED;
     
-    if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
-        e.key.keysym.sym = (SDLKey)(event.KeyCode() - 'A' + 'a');
-    } else {
-        if (sdlKeyMap.containsKey(event.KeyCode())) {
-            e.key.keysym.sym = (SDLKey)sdlKeyMap.get(event.KeyCode());
-        }
-    }
+    e.key.keysym.sym = wxKeyCodeToSDLCode(event.KeyCode());
 
 #if (wxUSE_UNICODE == 1)
     e.key.keysym.unicode = event.GetUnicodeKey();
