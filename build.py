@@ -224,10 +224,7 @@ def release(args):
     rmdir('release')
 
     rmdir('../temp')
-    copyIfNewer('../cpp', '../temp/copy/cpp')
-    rmdir('../temp/copy/cpp/temp')
-    rmdir('../temp/copy/cpp/install')
-    rmdir('../temp/copy/cpp/release')
+    copyIfNewer('../cpp', '../temp/sourcecopy')
     rmdir('install')
 
     mkdir('release')
@@ -241,11 +238,11 @@ def release(args):
     zip('install/*', 'release/g3d-' + version + '.zip')
 
     # Source zip
-    zip('../temp/copy/*', 'release/g3d-src-' + version + '.zip')
+    zip('../temp/sourcecopy/*', 'release/g3d-src-' + version + '.zip')
 
     # Make a separate zipfile for the data
-    copyIfNewer('../data', '../temp/copy/data/data')
-    zip('../temp/copy/data/*', 'release/g3d-data-' + version + '.zip')
+    copyIfNewer('../data', '../temp/datacopy/data')
+    zip('../temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
 
 
 
