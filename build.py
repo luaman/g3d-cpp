@@ -250,17 +250,23 @@ def release(args):
     rmdir('release')
 
     rmdir('../temp')
-    copyIfNewer('../cpp', '../temp/sourcecopy')
+    copyIfNewer('../cpp/source', '../temp/sourcecopy')
     rmdir('install')
 
     mkdir('release')
 
     # TODO: Make sure the linux binaries are already built
-
     # TODO: Build the Windows demos
 
     # Install to the 'install' directory
     install([], 0)
+
+    # Copy Linux and OS X lib directories.  They should be
+    # manually placed in cpp/linux-lib and cpp/osx-lib before
+    # building this target.
+    copyIfNewer('linux-lib', installDir([]) + '/linux-lib')
+    copyIfNewer('osx-lib', installDir([]) + '/osx-lib')
+
     zip('install/*', 'release/g3d-' + version + '.zip')
 
     setPermissions(args)
