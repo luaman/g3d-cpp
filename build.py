@@ -341,6 +341,13 @@ def install(args, copyData=1):
 
     if (copyData):
         copyIfNewer('../data', installDir(args) + '/data')
+
+    # Build demos after install
+    curdir = os.getcwd()
+    os.chdir(installDir(args) + '/demos')
+    os.system('make')
+    os.chdir(curdir)    
+
     setPermissions(args)
 
 ###############################################################################
