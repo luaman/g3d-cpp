@@ -81,8 +81,9 @@ int main(int argc, char** argv) {
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("c:/tmp/teapot.3ds");
-    std::string outDir("c:/tmp/");
+//    std::string in("d:/graphics3d/book/data/ifs/teapot.ifs");
+    std::string in("d:/graphics3d/book/data/ifs/sphere.ifs");
+      std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
@@ -93,16 +94,19 @@ int main(int argc, char** argv) {
     for (int i = 0; i < filename.size(); ++i) {
         std::string base = getFilename(filename[i]);
         
+        /*
+        // Code to prevent recreation of models
         if (fileExists(outDir + base + ".ifs")) {
             // Skip this model
             continue;
         }
+        */
 
         model = new IFSModel(filename[i]);
         model->name = "Teapot";
         
         if (! pauseBetweenModels) {
-//            model->save(outDir + base + ".ifs");
+            model->save(outDir + base + ".ifs");
         }
         
         // Main loop (display 3D object)
@@ -155,6 +159,8 @@ void doGraphics() {
                 model->render();
                 renderDevice->push2D();
                 font->draw2DString(model->name, 10, 10, 20, Color3::WHITE, Color3::BLACK);
+                font->draw2DString(format("%d verts", model->numVertices()), 15, 40, 15, Color3::WHITE, Color3::BLACK);
+                font->draw2DString(format("%d faces", model->numFaces()), 15, 60, 15, Color3::WHITE, Color3::BLACK);
                 renderDevice->pop2D();
             }
 

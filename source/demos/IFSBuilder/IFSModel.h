@@ -24,6 +24,19 @@ private:
     Array<Vector3>          vertexArray;
     Array<Triangle>         triangleArray;
 
+    class Edge {
+    public:
+        int vertexIndex[2];
+    };
+
+    /**
+     An edge is broken if it appears in
+     only one face or if its faces do not
+     contain the vertices (happens with colocated vertices)
+     */
+    Array<MeshAlg::Edge>     brokenEdgeArray;
+    Array<Vector3>           normalArray;
+
     void loadIFS(const std::string& filename);
     void loadMD2(const std::string& filename);
     void load3DS(const std::string& filename);
@@ -40,6 +53,14 @@ public:
      Render the model.
      */
     void render();
+
+    int numVertices() const {
+        return vertexArray.size();
+    }
+
+    int numFaces() const {
+        return triangleArray.size();
+    }
 
     /**
      Write the IFS file to disk.

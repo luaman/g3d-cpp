@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-05-01
+  @edited  2003-09-16
  */
 
 #include "IFSModelBuilder.h"
@@ -34,6 +34,54 @@ void IFSModelBuilder::commit(IFSModel* model) {
             model->triangleArray.append(tri);
         }
     }
+
+
+    // Trilist reformatted as an index array
+    Array<int> indexArray(model->triangleArray.size() * 3);
+    for (int t = 0, i = 0; t < model->triangleArray.size(); ++t, i += 3) {
+        for (int j = 0; j < 3; ++j) {
+            indexArray[i + j] = model->triangleArray[t].index[j];
+        }
+    }
+
+    Array<MeshAlg::Face> faceArray;
+    Array<MeshAlg::Edge> edgeArray;
+    Array<Array<int> >   adjacentFaceArray;
+    Array<Vector3>       faceNormalArray;
+    MeshAlg::computeAdjacency(model->vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
+    MeshAlg::computeNormals(model->vertexArray, faceArray, adjacentFaceArray, model->normalArray, faceNormalArray);
+
+    // TODO: computeNormals doesn't need face array, it should take index array
+
+    // Find broken edges
+    model->brokenEdgeArray.resize(0);
+    for (int e = 0; e < edgeArray.size(); ++e) {
+        const MeshAlg::Edge& edge = edgeArray[e];
+
+        if ((edge.faceIndex[1] == MeshAlg::Face::NONE) || 
+            (edge.faceIndex[1] == edge.faceIndex[2])) {
+            // Dangling edge
+            model->brokenEdgeArray.append(edge);
+        } else {
+            // Each vertex must appear in each adjacent face
+            int numFound = 0;
+            for (int i = 0; i < 2; ++i) {
+                for (int f = 0; f < 2; ++f) {
+                    const MeshAlg::Face& face = faceArray[edge.faceIndex[f]];
+                    for (int j = 0; j < 3; ++j) {
+                        if (face.vertexIndex[j] == edge.vertexIndex[i]) {
+                            ++numFound;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (numFound < 4) {
+                model->brokenEdgeArray.append(edge);
+            }
+        }
+    }
 }
 
 
@@ -59,6 +107,7 @@ int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
     int iy = gridCoord(v.y);
     int iz = gridCoord(v.z);
 
+    // Check against all vertices within CLOSE of this grid cube
     const List& list = grid[ix][iy][iz];
 
     for (int i = 0; i < list.size(); ++i) {
@@ -70,7 +119,7 @@ int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
         }
     }
 
-    if (distanceSquared <= CLOSE) {
+    if (distanceSquared <= CLOSE * CLOSE) {
 
         return closestIndex;
 
@@ -81,16 +130,24 @@ int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
         model->vertexArray.append(v);
 
         // Create a new vertex and store its index in the
-        // neighboring grid cells. 
+        // neighboring grid cells (usually, only 1 neighbor)
 
         Set<List*> neighbors;
 
+        // TODO: what if CLOSE is larger than 1 grid cell?
+
+        const double CL = CLOSE * sqrt(2);
+        int ix = gridCoord(v.x);
+        int iy = gridCoord(v.y);
+        int iz = gridCoord(v.z);
+        neighbors.insert(&(grid[ix][iy][iz]));
+
         for (int dx = -1; dx <= +1; ++dx) { 
-            int ix = gridCoord(v.x + dx * CLOSE);
-            for (int dy = -1; dy <= +1; ++dy) { 
-                int iy = gridCoord(v.y + dy * CLOSE);
+            int ix = gridCoord(v.x + dx * CL);
+            for (int dy = -1; dy <= +1; ++dy) {
+                int iy = gridCoord(v.y + dy * CL);
                 for (int dz = -1; dz <= +1; ++dz) { 
-                    int iz = gridCoord(v.z + dz * CLOSE);
+                    int iz = gridCoord(v.z + dz * CL);
                     neighbors.insert(&(grid[ix][iy][iz]));
                 }
             }

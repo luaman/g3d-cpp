@@ -300,6 +300,30 @@ void IFSModel::render() {
             renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        // Normals
+        renderDevice->setColor(Color3::GREEN * .5);
+        renderDevice->setLineWidth(1);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * .05);
+                renderDevice->sendVertex(vertexArray[v]);
+            }
+        renderDevice->endPrimitive();
+
+
+
+        // Show broken edges
+        renderDevice->setColor(Color3::RED);
+        renderDevice->setLineWidth(3);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int b = 0; b < brokenEdgeArray.size(); ++b) {
+                for (int j = 0; j < 2; ++j) {
+                    renderDevice->sendVertex(vertexArray[brokenEdgeArray[b].vertexIndex[j]]);
+                }
+            }
+        renderDevice->endPrimitive();
+
         glDisable(GL_LINE_SMOOTH);
 
     renderDevice->popState();
