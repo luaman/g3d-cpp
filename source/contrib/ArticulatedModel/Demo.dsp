@@ -130,11 +130,11 @@ SOURCE=.\SuperShader.h
 # PROP Default_Filter "*.glsl,*.frag,*.vert"
 # Begin Source File
 
-SOURCE=.\SuperShader.glsl.frag
+SOURCE=.\SuperShader.glsl.frg
 # End Source File
 # Begin Source File
 
-SOURCE=.\SuperShader.glsl.vert
+SOURCE=.\SuperShader.glsl.vrt
 # End Source File
 # End Group
 # End Target
