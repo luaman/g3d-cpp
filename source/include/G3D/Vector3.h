@@ -127,7 +127,7 @@ public:
     /**
      Linear interpolation
      */
-    Vector3 lerp(double alpha, const Vector3& v) const {
+    inline Vector3 lerp(double alpha, const Vector3& v) const {
         return (*this) + (v - *this) * alpha; 
     }
 

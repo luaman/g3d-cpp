@@ -9,7 +9,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-05-13
+  @edited  2003-06-10
 */
 
 #ifndef G3D_VECTOR2_H
@@ -69,6 +69,13 @@ public:
     Vector2 operator/ (Real fScalar) const;
     Vector2 operator- () const;
     friend Vector2 operator* (Real fScalar, const Vector2& rkVector);
+    
+    /**
+     Linear interpolation
+     */
+    inline Vector2 lerp(double alpha, const Vector2& v) const {
+        return (*this) + (v - *this) * alpha; 
+    }
 
     // arithmetic updates
     Vector2& operator+= (const Vector2& rkVector);

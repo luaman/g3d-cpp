@@ -661,7 +661,8 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
-     <LI> Platform specific #defines
+     <LI> Vector2::lerp
+     <LI> Platform specific #defines G3D_WIN32, G3D_LINUX, G3D_OSX
      <LI> G3D::Array::contains
      <LI> G3D::Queue::contains
      <LI> G3D::TextureFormat
