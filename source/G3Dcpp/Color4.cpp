@@ -9,7 +9,7 @@
 
 
  @created 2002-06-25
- @edited  2003-04-13
+ @edited  2004-02-23
  */
 
 #include <stdlib.h>
@@ -119,7 +119,7 @@ Color4& Color4::operator/= (float fScalar) {
 //----------------------------------------------------------------------------
 
 std::string Color4::toString() const {
-    return G3D::format("(%g, %g, %g, %a)", r, g, b, a);
+    return G3D::format("(%g, %g, %g, %g)", r, g, b, a);
 }
 
 //----------------------------------------------------------------------------
