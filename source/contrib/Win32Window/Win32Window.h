@@ -21,6 +21,20 @@
 
 const UINT BLIT_BUFFER = 0xC001;
 
+// Define missing Virtual Keys
+#define VK_SEMICOLON	0xBA // ;
+#define VK_EQUALS	    0xBB // =
+#define VK_COMMA	    0xBC // ,
+#define VK_MINUS	    0xBD // -
+#define VK_PERIOD	    0xBE // .
+#define VK_SLASH	    0xBF // /
+#define VK_GRAVE	    0xC0 // ??
+#define VK_LBRACKET	    0xDB // [
+#define VK_BACKSLASH	0xDC // '\'
+#define VK_RBRACKET	    0xDD // ]
+#define VK_APOSTROPHE	0xDE // ??
+#define VK_BACKTICK	    0xDF // ??
+
 class Win32Window : public GWindow {
 private:
 	

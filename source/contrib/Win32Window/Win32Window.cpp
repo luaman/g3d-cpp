@@ -58,8 +58,6 @@ typedef struct {
 } di8InterfaceNamePair;
 
 Array< di8InterfaceNamePair >                   joysticks;
-// Used only in EnumDirectInput8Joysticks callback method.
-int                                             joystickCount;
 
 
 #define WGL_SAMPLE_BUFFERS_ARB	0x2041
@@ -67,10 +65,13 @@ int                                             joystickCount;
 
 static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
+static unsigned int _sdlKeys[SDLK_LAST];
+
 
 // Handle the DirectInput8 joystick enumeration
 BOOL CALLBACK EnumDirectInput8Joysticks(Win32Window_DI8::LPCDIDEVICEINSTANCEA lpddi, LPVOID pvRef) {
     
+    static int joystickCount = 0;
     joysticks.resize(joysticks.size() + 1, DONT_SHRINK_UNDERLYING_ARRAY);
     joysticks[joystickCount].name = lpddi->tszInstanceName;
 
@@ -135,6 +136,100 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 	_hDC = NULL;
 	_mouseVisible = true;
 	_inputCapture = false;
+
+    memset(_sdlKeys, 0, sizeof(_sdlKeys));
+
+	_sdlKeys[VK_BACK] = SDLK_BACKSPACE;
+	_sdlKeys[VK_TAB] = SDLK_TAB;
+	_sdlKeys[VK_CLEAR] = SDLK_CLEAR;
+	_sdlKeys[VK_RETURN] = SDLK_RETURN;
+	_sdlKeys[VK_PAUSE] = SDLK_PAUSE;
+	_sdlKeys[VK_ESCAPE] = SDLK_ESCAPE;
+	_sdlKeys[VK_SPACE] = SDLK_SPACE;
+	_sdlKeys[VK_APOSTROPHE] = SDLK_QUOTE;
+	_sdlKeys[VK_COMMA] = SDLK_COMMA;
+	_sdlKeys[VK_MINUS] = SDLK_MINUS;
+	_sdlKeys[VK_PERIOD] = SDLK_PERIOD;
+	_sdlKeys[VK_SLASH] = SDLK_SLASH;
+	_sdlKeys['0'] = SDLK_0;
+	_sdlKeys['1'] = SDLK_1;
+	_sdlKeys['2'] = SDLK_2;
+	_sdlKeys['3'] = SDLK_3;
+	_sdlKeys['4'] = SDLK_4;
+	_sdlKeys['5'] = SDLK_5;
+	_sdlKeys['6'] = SDLK_6;
+	_sdlKeys['7'] = SDLK_7;
+	_sdlKeys['8'] = SDLK_8;
+	_sdlKeys['9'] = SDLK_9;
+	_sdlKeys[VK_SEMICOLON] = SDLK_SEMICOLON;
+	_sdlKeys[VK_EQUALS] = SDLK_EQUALS;
+	_sdlKeys[VK_LBRACKET] = SDLK_LEFTBRACKET;
+	_sdlKeys[VK_BACKSLASH] = SDLK_BACKSLASH;
+	_sdlKeys[VK_RBRACKET] = SDLK_RIGHTBRACKET;
+	_sdlKeys[VK_GRAVE] = SDLK_BACKQUOTE;
+	_sdlKeys[VK_BACKTICK] = SDLK_BACKQUOTE;
+	_sdlKeys[VK_DELETE] = SDLK_DELETE;
+
+	_sdlKeys[VK_NUMPAD0] = SDLK_KP0;
+	_sdlKeys[VK_NUMPAD1] = SDLK_KP1;
+	_sdlKeys[VK_NUMPAD2] = SDLK_KP2;
+	_sdlKeys[VK_NUMPAD3] = SDLK_KP3;
+	_sdlKeys[VK_NUMPAD4] = SDLK_KP4;
+	_sdlKeys[VK_NUMPAD5] = SDLK_KP5;
+	_sdlKeys[VK_NUMPAD6] = SDLK_KP6;
+	_sdlKeys[VK_NUMPAD7] = SDLK_KP7;
+	_sdlKeys[VK_NUMPAD8] = SDLK_KP8;
+	_sdlKeys[VK_NUMPAD9] = SDLK_KP9;
+	_sdlKeys[VK_DECIMAL] = SDLK_KP_PERIOD;
+	_sdlKeys[VK_DIVIDE] = SDLK_KP_DIVIDE;
+	_sdlKeys[VK_MULTIPLY] = SDLK_KP_MULTIPLY;
+	_sdlKeys[VK_SUBTRACT] = SDLK_KP_MINUS;
+	_sdlKeys[VK_ADD] = SDLK_KP_PLUS;
+
+	_sdlKeys[VK_UP] = SDLK_UP;
+	_sdlKeys[VK_DOWN] = SDLK_DOWN;
+	_sdlKeys[VK_RIGHT] = SDLK_RIGHT;
+	_sdlKeys[VK_LEFT] = SDLK_LEFT;
+	_sdlKeys[VK_INSERT] = SDLK_INSERT;
+	_sdlKeys[VK_HOME] = SDLK_HOME;
+	_sdlKeys[VK_END] = SDLK_END;
+	_sdlKeys[VK_PRIOR] = SDLK_PAGEUP;
+	_sdlKeys[VK_NEXT] = SDLK_PAGEDOWN;
+
+	_sdlKeys[VK_F1] = SDLK_F1;
+	_sdlKeys[VK_F2] = SDLK_F2;
+	_sdlKeys[VK_F3] = SDLK_F3;
+	_sdlKeys[VK_F4] = SDLK_F4;
+	_sdlKeys[VK_F5] = SDLK_F5;
+	_sdlKeys[VK_F6] = SDLK_F6;
+	_sdlKeys[VK_F7] = SDLK_F7;
+	_sdlKeys[VK_F8] = SDLK_F8;
+	_sdlKeys[VK_F9] = SDLK_F9;
+	_sdlKeys[VK_F10] = SDLK_F10;
+	_sdlKeys[VK_F11] = SDLK_F11;
+	_sdlKeys[VK_F12] = SDLK_F12;
+	_sdlKeys[VK_F13] = SDLK_F13;
+	_sdlKeys[VK_F14] = SDLK_F14;
+	_sdlKeys[VK_F15] = SDLK_F15;
+
+	_sdlKeys[VK_NUMLOCK] = SDLK_NUMLOCK;
+	_sdlKeys[VK_CAPITAL] = SDLK_CAPSLOCK;
+	_sdlKeys[VK_SCROLL] = SDLK_SCROLLOCK;
+	_sdlKeys[VK_RSHIFT] = SDLK_RSHIFT;
+	_sdlKeys[VK_LSHIFT] = SDLK_LSHIFT;
+	_sdlKeys[VK_RCONTROL] = SDLK_RCTRL;
+	_sdlKeys[VK_LCONTROL] = SDLK_LCTRL;
+	_sdlKeys[VK_RMENU] = SDLK_RALT;
+	_sdlKeys[VK_LMENU] = SDLK_LALT;
+	_sdlKeys[VK_RWIN] = SDLK_RSUPER;
+	_sdlKeys[VK_LWIN] = SDLK_LSUPER;
+
+	_sdlKeys[VK_HELP] = SDLK_HELP;
+	_sdlKeys[VK_PRINT] = SDLK_PRINT;
+	_sdlKeys[VK_SNAPSHOT] = SDLK_PRINT;
+	_sdlKeys[VK_CANCEL] = SDLK_BREAK;
+	_sdlKeys[VK_APPS] = SDLK_MENU;
+
 
 	settings = s;
     
@@ -473,18 +568,105 @@ std::string Win32Window::caption() {
 
 
 static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
+    static uint16 currentMods = KMOD_NONE; 
 	char c = wparam;
-	e.key.keysym.unicode = c;
+
+	e.key.keysym.unicode = 0;
 
     if ((c >= 'A') && (c <= 'Z')) {
         // Make key codes lower case canonically
         e.key.keysym.sym = (SDLKey)(c - 'A' + 'a');
     } else {
-        e.key.keysym.sym = (SDLKey)c;
+        e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(wparam, 0, SDLK_LAST)];
     }
     e.key.keysym.scancode = (lparam >> 16) & 0x07;
 
     e.key.keysym.mod = KMOD_NONE;
+
+    if (e.key.state == SDL_PRESSED) {
+		switch (e.key.keysym.sym) {
+			case SDLK_NUMLOCK:
+				currentMods ^= KMOD_NUM;
+                if ( ! (currentMods&KMOD_NUM) ) {
+					e.key.state = SDL_RELEASED;
+                }
+				e.key.keysym.mod = (SDLMod)currentMods;
+				break;
+			case SDLK_CAPSLOCK:
+				currentMods ^= KMOD_CAPS;
+				if ( ! (currentMods&KMOD_CAPS) )
+					e.key.state = SDL_RELEASED;
+				e.key.keysym.mod = (SDLMod)currentMods;
+				break;
+			case SDLK_LCTRL:
+				currentMods |= KMOD_LCTRL;
+				break;
+			case SDLK_RCTRL:
+				currentMods |= KMOD_RCTRL;
+				break;
+			case SDLK_LSHIFT:
+				currentMods |= KMOD_LSHIFT;
+				break;
+			case SDLK_RSHIFT:
+				currentMods |= KMOD_RSHIFT;
+				break;
+			case SDLK_LALT:
+				currentMods |= KMOD_LALT;
+				break;
+			case SDLK_RALT:
+				currentMods |= KMOD_RALT;
+				break;
+			case SDLK_LMETA:
+				currentMods |= KMOD_LMETA;
+				break;
+			case SDLK_RMETA:
+				currentMods |= KMOD_RMETA;
+				break;
+			case SDLK_MODE:
+				currentMods |= KMOD_MODE;
+				break;
+		}
+	} else {
+		switch (e.key.keysym.sym) {
+			case SDLK_NUMLOCK:
+			case SDLK_CAPSLOCK:
+                break;
+            case SDLK_LCTRL:
+				currentMods &= ~KMOD_LCTRL;
+				break;
+			case SDLK_RCTRL:
+				currentMods &= ~KMOD_RCTRL;
+				break;
+			case SDLK_LSHIFT:
+				currentMods &= ~KMOD_LSHIFT;
+				break;
+			case SDLK_RSHIFT:
+				currentMods &= ~KMOD_RSHIFT;
+				break;
+			case SDLK_LALT:
+				currentMods &= ~KMOD_LALT;
+				break;
+			case SDLK_RALT:
+				currentMods &= ~KMOD_RALT;
+				break;
+			case SDLK_LMETA:
+				currentMods &= ~KMOD_LMETA;
+				break;
+			case SDLK_RMETA:
+				currentMods &= ~KMOD_RMETA;
+				break;
+			case SDLK_MODE:
+				currentMods &= ~KMOD_MODE;
+				break;
+		}
+    }
+
+    e.key.keysym.mod = (SDLMod)currentMods;
+
+    uint8 keyboardState[256];
+    uint8 ascii[2];
+    ::GetKeyboardState(keyboardState);
+    e.key.keysym.unicode = ::ToAscii(wparam, e.key.keysym.scancode, keyboardState, (uint16*)ascii, 0) == 1 ? ascii[0] : 0;
 
 	// Bit 24 is 1 if this is the right hand version of ALT or CTRL					
 }
@@ -534,6 +716,7 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.state = SDL_PRESSED;
 
 				if ((message.lParam & 0x0f) == 1) {
+                Log::common()->printf("Down: %x\n", message.wParam);
 					// This is not an autorepeat message
 					makeKeyEvent(message.wParam, message.lParam, e);
 					return true;
