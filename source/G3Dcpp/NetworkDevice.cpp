@@ -556,6 +556,7 @@ bool ReliableConduit::messageWaiting() const {
         // There is a message waiting on the network but we haven't 
         // read it yet.  Read it now and return true.
 
+        const_cast<ReliableConduit*>(this)->receiveHeader();
         const_cast<ReliableConduit*>(this)->receiveIntoBuffer();
         
         return true;
@@ -736,8 +737,6 @@ void ReliableConduit::receiveHeader() {
 
 
 bool ReliableConduit::receiveIntoBuffer() {
-
-    receiveHeader();
 
     ////////////////////////////////////////
     // Read the contents of the message

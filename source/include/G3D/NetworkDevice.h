@@ -195,7 +195,7 @@ private:
     uint32                          messageType;
 
     /** 
-     Total size of the incoming message. 
+     Total size of the incoming message (read from the header).
      */
     uint32                          messageSize;
 
@@ -255,6 +255,9 @@ private:
         goes wrong.*/
     bool receiveIntoBuffer();
 
+    /** Receives the messageType and messageSize from the socket. */
+    void receiveHeader();
+
 public:
 
     /** Closes the socket. */
@@ -273,6 +276,8 @@ public:
      */
     void send(const NetMessage* m);
 
+    // The message is actually copied from the socket to an internal buffer during
+    // this call.  Receive only deserializes.
     virtual bool messageWaiting() const;
 
     /**
