@@ -34,13 +34,13 @@
 /**
  Number of planes
  */
-const int                   N = 100;
+const int                   N = 50;
 
 /**
  Change this to change the model being rendered.
  */
-//const std::string modelName = "p51-mustang.ifs";
-const std::string           modelName = "trico.ifs";
+const std::string modelName = "p51-mustang.ifs";
+//const std::string           modelName = "angel.ifs";
 
 /**
  The path to the data directory from this program's directory.
@@ -105,8 +105,8 @@ int main(int argc, char** argv) {
     renderDevice->init(RenderDeviceSettings(), debugLog);
 
     // Allocate the two VARAreas used in this demo
-    varStatic  = VARArea::create(1024 * 640, VARArea::WRITE_ONCE);
-    varStream = VARArea::create(1024 * 1280, VARArea::WRITE_EVERY_FRAME);
+    varStatic  = VARArea::create(1024 * 640 * 5, VARArea::WRITE_ONCE);
+    varStream = VARArea::create(1024 * 1280 * 5, VARArea::WRITE_EVERY_FRAME);
     debugAssert(varStatic);
     debugAssert(varStream);
 
