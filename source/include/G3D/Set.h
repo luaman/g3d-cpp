@@ -81,9 +81,11 @@ public:
     private:
         friend class Set<T>;
 
+        // Note: this is a Table iterator, we are currently defining
+        // Set iterator
         typename Table<T, bool>::Iterator it;
 
-        Iterator(const Table<T, bool>::Iterator& it) : it(it) {}
+        Iterator(const typename Table<T, bool>::Iterator& it) : it(it) {}
 
     public:
         inline bool operator!=(const Iterator& other) const {

@@ -67,8 +67,8 @@ std::string wordWrap(
     int         len;
 
     // Don't make lines less than this length
-    int minLength = numCols / 4;
-    int     inLen = input.size();
+    int         minLength = numCols / 4;
+    size_t      inLen = input.size();
 
     bool first = true;
     while (c < inLen) {
