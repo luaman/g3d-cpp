@@ -567,6 +567,11 @@
 
    \section Contributors Contributors
 
+   The 6.0 team:
+   <BLOCKQUOTE>
+     <B>Morgan McGuire, James O'Sullivan, Kevin Egan, Nick Musurca, Ben Landon, Rob Hunter</B>
+   </BLOCKQUOTE>
+
    This library contains code and resources contributed by the
    following people, or based open code and articles by them:
 
@@ -601,6 +606,7 @@
    <BR>Justin Miller
    <BR>Kurt Miller
    <BR>Nate Miller
+   <BR>Nick Musurca
    <BR>Edward Resnick
    <BR>Nate Robbins
    <BR>Sebastian Schuberth
