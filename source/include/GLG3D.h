@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-05-23
+ @edited  2003-07-21
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -17,6 +17,22 @@
 #define G3D_GLG3D_H
 
 #include "graphics3D.h"
+
+// Set up the linker on Windows
+#ifdef G3D_WIN32
+    #ifdef _DEBUG
+        #pragma comment(lib, "GLG3D-debug.lib")
+    #else
+        #pragma comment(lib, "GLG3D.lib")
+    #endif
+
+    #pragma comment(lib, "opengl32.lib")
+    #pragma comment(lib, "glut32.lib")
+    #pragma comment(lib, "glu32.lib")
+    #pragma comment(lib, "sdl.lib")
+    #pragma comment(lib, "sdlmain.lib")
+#endif
+
 #include "GLG3D/glheaders.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"

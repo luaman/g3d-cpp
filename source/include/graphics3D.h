@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-06-26
+ @edited  2003-07-21
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -19,10 +19,10 @@
 
 #define NOMINMAX
 #ifdef min
-  #undef min
+    #undef min
 #endif
 #ifdef max
-  #undef max
+    #undef max
 #endif
 
 /**
@@ -31,6 +31,32 @@
 #define G3D_VER 6.00
 
 #include "G3D/platform.h"
+
+
+#ifdef G3D_WIN32
+    // Set up the linker on Windows
+    #define ZLIB_DLL
+
+    #pragma comment(linker, "/VERSION:6.00") 
+
+    #pragma comment(lib, "zlib.lib")
+    #pragma comment(lib, "ws2_32.lib")
+    #pragma comment(lib, "winmm.lib")
+    #pragma comment(lib, "imagehlp.lib")
+    #pragma comment(lib, "version.lib")
+
+    #ifdef _DEBUG
+        // zlib and SDL were linked against the release MSVCRT; force
+        // the debug version.
+        #pragma comment(linker, "/nodefaultlib:msvcrt.lib")
+
+        #pragma comment(lib, "G3D-debug.lib")
+    #else
+        #pragma comment(lib, "G3D.lib")
+    #endif
+
+#endif
+
 
 #ifdef G3D_WIN32
     // Old versions of MSVC (6.0 and previous) don't

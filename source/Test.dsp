@@ -50,7 +50,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 msvcprt.lib msvcrt.lib G3D.lib GLG3D.lib opengl32.lib glu32.lib sdl.lib sdlmain.lib zlibstat.lib ws2_32.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib version.lib /nologo /subsystem:console /machine:I386 /nodefaultlib /libpath:"..\temp\lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"..\temp\lib"
+# SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "Test - Win32 Debug"
 
@@ -74,7 +75,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 msvcprtd.lib msvcrtd.lib zlibstat.lib GLG3D-debug.lib opengl32.lib glu32.lib sdl.lib sdlmain.lib G3D-debug.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib version.lib /nologo /subsystem:console /incremental:no /debug /machine:I386 /nodefaultlib /pdbtype:sept /libpath:"..\temp\lib" /libpath:"lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /debug /machine:I386 /pdbtype:sept /libpath:"..\temp\lib" /libpath:"lib"
+# SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
 

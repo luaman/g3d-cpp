@@ -326,35 +326,11 @@
    (e.g. c:\\libraries\\g3d-6_00\\lib) to the library
    list.
    <LI>
-   <B>For each project you create:</B> 
-   
+   <B>For each project you create:
     <OL>
-     <LI>In the Project::Settings::Link::General panel, check 
-     "Ignore Default Libraries"
-     <LI>In the Project::Settings::Link::General panel, change 
-     your Object/Library modules to:
-      <BLOCKQUOTE>
-       <BR>
-       <PRE>
-msvcprtd.lib msvcrtd.lib G3D-debug.lib GLG3D-debug.lib opengl32.lib glut32.lib  glu32.lib sdl.lib sdlmain.lib  zlibstat.lib ws2_32.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib version.lib
-
-    ^^^        ^^^           ^^^                 ^^^             ^^^      ^^^^    ^^^       ^^^^     ^^^^                     ^^^         ^^^
-C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL            If you are using SDL            ZLIB compression  WinSock
-      </PRE>
-       <BR>
-       <P>
-       The corresponding release list is:
-       <BR><PRE>msvcprt.lib msvcrt.lib G3D.lib GLG3D.lib  opengl32.lib glu32.lib glut32.lib   sdl.lib sdlmain.lib   zlibstat.lib ws2_32.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib version.lib
-</PRE>
-       <P>
-
-       Note that the C++ and C runtime libs are linked first-- you
-       will get errors complaining about the standard library being
-       doubly defined if you do not link against them before all other
-       libraries.
-
-       </BLOCKQUOTE>
-      <LI>Go to Projects:Settings:C++:Code Generation and select
+      <LI> Copy SDL.dll, glut32.dll, and zlib.dll to your program directory.
+   
+      <LI> Go to Projects:Settings:C++:Code Generation and select
       "Multithreaded DLL" for use run-time library.  Use
       "Debug Multithreaded DLL" in your debug build.
     </OL>
@@ -374,47 +350,16 @@ C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL      
    There are a few misleading error messages you can run into.  Here are the 
    common fixes.
 
-   <B>LINK : warning LNK4098: defaultlib "LIBCD" conflicts with use of other 
-   libs; use /NODEFAULTLIB:library</B>
-   <BR>Go to Project:Settings:Link (General) and check the "Ignore default 
-   libraries" tab.
-
    <P>
 
    <B>../include/G3D/g3dmath.h:27: limits: No such file or directory</B>
-   <BR>You are using an old version of GCC. Add these lines to your .cshrc:<br>
+   <BR>You are using an old version of GCC on Linux. Add these lines to your .cshrc:<br>
    <ul>
    <li> setenv CC gcc-3.2
    <li> setenv CXX g++-3.2
    </ul>
 
    <P>
-   <B>GLG3D-debug.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _VerQueryValueA@16</B>
-   <P>
-   You need to add version.lib to your link list.
-  
-    <P>
-
-
-   <B>main.obj : error LNK2001: unresolved external symbol _SDL_GL_SwapBuffers
-   <BR>
-   msvcrtd.lib(crtexew.obj) : error LNK2001: unresolved external symbol _WinMain@16
-   </B>
-   <BR>Go to Project:Settings:Link (General) and add <CODE>SDLMain.lib SDL.lib</CODE> to your 
-   list of libraries to link against.
-
-   <P>
-   <B>main.obj : error LNK2001: unresolved external symbol __CrtIsValidHeapPointer</B>
-
-   <BR>G3D::isValidHeapPointer() can only be used in a build that is
-   linked against the debug VisualC runtime.  If you get this error
-   the debug version of your build, go to Project:Settings:Link
-   (General) and change <CODE>MSVCRT.lib</CODE> to
-   <CODE>MSVCRT<B>D</B>.lib</CODE>.  If you get it in the release
-   version, make sure you are linking against the release
-   (graphics3d.lib, glg3d.lib) versions of the G3D library and don't
-   call G3D::isValidHeapPointer() outside of debug statements.  <P>
-
    <B>array.h(233) : error C2512: 'X' : no appropriate default
    constructor available <BR>array.h(195) : while compiling
    class-template member function 'void __thiscall G3D::Array<class
@@ -423,11 +368,6 @@ C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL      
    arguments).  Define a default constructor for your class--
    G3D::Array needs it to initialize new elements when you invoke
    G3D::Array::resize().
-    <P><B>GLG3D.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _VerQueryValueA@16
-<BR>GLG3D.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _GetFileVersionInfoA@16
-<BR>GLG3D.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _GetFileVersionInfoSizeA@8</B>
-  You need to add version.lib to your link list.
-
 
     <P> <B>sdlmain.lib(SDL_main.obj) : error LNK2005: _main already
    defined in main.obj</B> <BR>You need to \#include <SDL.h> in your
@@ -439,11 +379,6 @@ C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL      
    and contains conflicting OpenGL drivers.
    <P>
 
-  <B>glg3d-debug.lib(BinaryInput.obj) : error LNK2001: unresolved
-external symbol _uncompress<BR> glg3d-debug.lib(BinaryOutput.obj) :
-error LNK2001: unresolved external symbol _compress2</B><BR>You need
-to add zlibstat.lib to your linker list.
-
    <B>main.cpp(9) : fatal error C1083: Cannot open include file:
    'G3DAll.h': No such file or directory</B> <BR> You need to add the
    graphics3d/include directory to your include path (instructions
@@ -452,11 +387,6 @@ to add zlibstat.lib to your linker list.
    <B>LINK : fatal error LNK1181: cannot open input file
    "glg3d.lib"</B> <BR> You need to add the graphics3d/lib directory
    to your library path (instructions above)
-
-   <B>MSVCRT.LIB(crtexe.obj) : error LNK2001: unresolved external
-        symbol _main fatal error LNK1120: 1 unresolved externals</B>
-        <BR> Don't \#include "G3DAll.h" unless you are going to link against
-        SDL; it includes the SDL header.
 
    <H3>Directories</H3>
    The distribution contains the following subdirectories:
@@ -686,6 +616,10 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> Switched from static to dynamic linking of zlib
+     <LI> Upgraded to zlib 1.1.3
+     <LI> On Win32 the lib list is automatically updated through pragmas
+          (5.xx programs should revert to linking against default libraries)
      <LI> Increased default sky quality to 1.00
      <LI> G3D::CFontRef
      <LI> RenderDevice now loads all register combiner extensions (NVIDIA only)

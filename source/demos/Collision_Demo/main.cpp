@@ -27,9 +27,8 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-07-15
+ @edited  2003-07-21
  */
-
 #include <G3DAll.h>
 #include "Model.h"
 #include "Object.h"
@@ -102,7 +101,7 @@ int main(int argc, char** argv) {
     userInput    = new UserInput();
 
     controller   = new ManualCameraController(renderDevice);
-    controller->setMoveRate(2);
+    controller->setMoveRate(4);
 
     controller->setPosition(Vector3(15, 20, 15));
     controller->lookAt(Vector3(-2,3,-5));
@@ -124,10 +123,16 @@ int main(int argc, char** argv) {
         lastTime = now;
 
         // Lock the frame rate
+        RealTime wait;
         do {
             now = getTime();
             timeStep = now - lastTime;
-        } while (timeStep <= 1 / (maxFrameRate + 0.5));
+
+            wait = 1 / (maxFrameRate + 0.5) - timeStep;
+            if (wait > 0) {
+                System::sleep(wait);
+            }
+        } while (wait > 0);
 
         doUserInput();
 
@@ -147,7 +152,6 @@ int main(int argc, char** argv) {
 
     // Cleanup
     Model::freeModels();
-    delete font;
     delete userInput;
     delete controller;
     renderDevice->cleanup();

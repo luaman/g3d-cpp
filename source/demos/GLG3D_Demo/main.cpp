@@ -30,7 +30,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-07-15
+ @edited  2003-07-21
  */
 
 #include <G3DAll.h>
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
 	renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
-	GameTime gameTime	= toSeconds(8, 00, 00, AM);
+	GameTime gameTime	= toSeconds(11, 00, 00, PM);
 
     // Main loop
     do {
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
         handleEvents();
 
         // Simulation
-//        gameTime = (int)(gameTime + MINUTE) % (int)DAY;
+//        gameTime = (int)(gameTime + MINUTE * 5) % (int)DAY;
         controller.doSimulation(.05, *userInput);
 	    camera->setCoordinateFrame(controller.getCoordinateFrame());
 
@@ -199,7 +199,6 @@ int main(int argc, char** argv) {
                      varDynamic->peakAllocatedSize());
 
     // Cleanup
-    delete font;
     delete sky;
     delete userInput;
     renderDevice->cleanup();
