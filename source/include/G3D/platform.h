@@ -16,7 +16,7 @@
  The version number of G3D in the form: MmmBB -> 
  version M.mm [beta BB]
  */
-#define G3D_VER 60300
+#define G3D_VER 60400
 
 
 #ifdef _MSC_VER 
