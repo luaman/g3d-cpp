@@ -156,8 +156,22 @@ void Editor::doLogic() {
        // ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
        // ofn.lpstrDefExt = "txt";
 
+  /*
+    if (app->userInput->keyPressed(' ')) {
+        OPENFILENAME ofn;
 
-        ofn.lStructSize = sizeof (OPENFILENAME);
+        char filename[255];
+        char title[255];
+        char filetitle[255];
+
+        ZeroMemory(&ofn, sizeof(ofn));
+
+        SDL_SysWMinfo info;
+        SDL_VERSION(&info.version);
+        SDL_GetWMInfo(&info);
+        HWND hWnd = info.window;
+
+        ofn.lStructSize = sizeof(OPENFILENAME);
         ofn.hwndOwner = NULL;
         ofn.hInstance = NULL;
         ofn.lpstrFilter = NULL;
@@ -181,7 +195,8 @@ void Editor::doLogic() {
         BOOL success = GetOpenFileName(&ofn);
         DWORD e =  CommDlgExtendedError();
         debugAssert(success);
-        */
+        }
+    */
 
     if (app->userInput->keyPressed('s')) {
         save();
@@ -375,11 +390,27 @@ void Editor::draw3DCurve() {
     int N = 200;
 
     for (int a = 0; a <= N; ++a) {
-        Vector2 x = evalCurve((double)a / N);
+        double t = (double)a / N;
+        Vector2 p0 = evalCurve(t - 0.001);
+        Vector2 p1 = evalCurve(t);
+        Vector2 p2 = evalCurve(t + 0.001);
 
         // Scale to -1..1 range
-        Vector3 x3d(x.x / 400 - 1, 1 - x.y / 300, 0);  
-        rd->sendVertex(x3d * 2);
+        Vector3 P0(p0.x / 400 - 1, 1 - p0.y / 300, 0);
+        Vector3 P1(p1.x / 400 - 1, 1 - p1.y / 300, 0);
+        Vector3 P2(p2.x / 400 - 1, 1 - p2.y / 300, 0);
+
+        // Direction of the curve
+        Vector3 dP = (P2 - P0).direction();
+        Vector3 U = Vector3::unitZ();
+        Vector3 V = U.cross(dP).direction();
+        U = dP.cross(V);
+
+        // dP, U, V is now an orthogonal basis that follows the curve
+        // TODO: Extrude
+
+        rd->setColor(Color3::white() * abs(dP.dot(Vector3::unitY())));
+        rd->sendVertex(P1 * 2);
     }
 
     rd->endPrimitive();
