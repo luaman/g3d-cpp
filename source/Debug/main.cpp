@@ -72,6 +72,7 @@ void Entity::doSimulation(SimTime dt) {
 void Entity::render(RenderDevice* renderDevice) {
     PosedModelRef pm = getPosedModel();
     pm->render(renderDevice);
+//    pm->renderNormals(renderDevice);
 }
 
 
@@ -97,6 +98,7 @@ public:
     virtual PosedModelRef getPosedModel() const {
         GMaterial mat;
         mat.color = Color3::RED;
+        mat.specularCoefficient = 1.0;
         return ifs->pose(pframe.toCoordinateFrame(), mat);
     }
 };
@@ -182,7 +184,8 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cube.ifs");
+//    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cow.ifs");
+    IFSModelRef cube   = IFSModel::create("C:/tmp/bump.ifs");
 
     entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }
@@ -274,6 +277,13 @@ void App::main() {
 
 
 int main(int argc, char** argv) {
+
+
+    for (int i = 0; i < 100; ++i) {
+        debugPrintf("%d \n", iRandom(0, 2));
+    }
+
+    exit(0);
 
     GAppSettings settings;
 
