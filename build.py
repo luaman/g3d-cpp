@@ -213,16 +213,16 @@ def _lib(args, libplatform, reconfigure = 1):
         # Copy the lib's to the right directory
         if (x == 0):
             # strip debug symbols (don't strip debug builds)
-            os.system("strip -g --strip-unneeded temp/release/g3d/.libs/libG3D.a")
-            os.system("strip -g --strip-unneeded temp/release/glg3d/.libs/libGLG3D.a")
+            os.system("strip -g --strip-unneeded temp/release/g3d/libG3D.a")
+            os.system("strip -g --strip-unneeded temp/release/glg3d/libGLG3D.a")
 
-            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",
+            copyIfNewer("temp/debug/g3d/libG3D_debug.a",
                         libdir + "/libG3D_debug.a")
-            copyIfNewer("temp/release/g3d/.libs/libG3D.a",    
+            copyIfNewer("temp/release/g3d/libG3D.a",    
                         libdir + "/libG3D.a")
-            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",
+            copyIfNewer("temp/debug/glg3d/libGLG3D_debug.a",
                         libdir + "/libGLG3D_debug.a")
-            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",
+            copyIfNewer("temp/release/glg3d/libGLG3D.a",
                         libdir + "/libGLG3D.a")
 
             # Dynamic libs (not currently used)
