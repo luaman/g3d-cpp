@@ -114,6 +114,11 @@ PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC      glGetCombinerStageParameterfvNV     
 
 PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NULL;
 
+PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
+PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
+PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
+PFNGLISBUFFERARBPROC glIsBufferARB = NULL;
+
 namespace G3D {
 
 
@@ -312,7 +317,9 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glMultiTexCoord4dvARB);
     LOAD_EXTENSION(glActiveTextureARB);
 
-    // Older machines can't
+    // Older machines can't handle multitexture, 
+    // so give it a version that will be safe for
+    // single texture GL
     if (glActiveTextureARB == NULL) {
         #ifdef G3D_WIN32
             *((void**)&glActiveTextureARB) = glIgnore;
@@ -374,6 +381,10 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glActiveStencilFaceEXT);
     LOAD_EXTENSION(glGetProgramParameterfvNV);
     LOAD_EXTENSION(glGetProgramParameterdvNV);
+    LOAD_EXTENSION(glBindBufferARB);
+    LOAD_EXTENSION(glDeleteBuffersARB);
+    LOAD_EXTENSION(glGenBuffersARB);
+    LOAD_EXTENSION(glIsBufferARB);
 
     #undef LOAD_EXTENSION
 }
