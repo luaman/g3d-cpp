@@ -686,8 +686,7 @@ bool ReliableConduit::receive(NetMessage* m) {
 }
 
 
-bool ReliableConduit::receiveIntoBuffer() {
-
+void ReliableConduit::receiveHeader() {
     debugAssert(! alreadyReadMessage);
 
     // Read the type
@@ -713,8 +712,32 @@ bool ReliableConduit::receiveIntoBuffer() {
         }
         nd->closesocket(sock);
         messageType = 0;
-        return false;
+        return;
     }
+
+    // Read the size
+    ret = recv(sock, (char*)&messageSize, sizeof(messageSize), 0);
+
+    if ((ret == SOCKET_ERROR) || (ret != sizeof(messageSize))) {
+        if (nd->debugLog) {
+            nd->debugLog->printf("Call to recv failed.  ret = %d,"
+                                 " sizeof(len) = %d\n", ret, sizeof(messageSize));
+            nd->debugLog->println(socketErrorCode());
+        }
+        nd->closesocket(sock);
+        messageType = 0;
+        return;
+    }
+
+    messageSize = ntohl(messageSize);
+    debugAssert(messageSize >= 0);
+    debugAssert(messageSize < 6e6);
+}
+
+
+bool ReliableConduit::receiveIntoBuffer() {
+
+    receiveHeader();
 
     ////////////////////////////////////////
     // Read the contents of the message
@@ -724,29 +747,12 @@ bool ReliableConduit::receiveIntoBuffer() {
         return false;
     }
 
-    // Read the size
-    uint32 len;
-    ret = recv(sock, (char*)&len, sizeof(len), 0);
+    receiveBufferUsedSize = messageSize;
 
-    if ((ret == SOCKET_ERROR) || (ret != sizeof(len))) {
-        if (nd->debugLog) {
-            nd->debugLog->printf("Call to recv failed.  ret = %d,"
-                                 " sizeof(len) = %d\n", ret, sizeof(len));
-            nd->debugLog->println(socketErrorCode());
-        }
-        nd->closesocket(sock);
-        return false;
-    }
-
-    len = ntohl(len);
-    debugAssert(len >= 0);
-    debugAssert(len < 6000000);
-    receiveBufferUsedSize = len;
-
-    if (len > receiveBufferTotalSize) {
+    if (messageSize > receiveBufferTotalSize) {
         // Extend the size of the buffer.
-        receiveBuffer = realloc(receiveBuffer, len);
-        receiveBufferTotalSize = len;
+        receiveBuffer = realloc(receiveBuffer, messageSize);
+        receiveBufferTotalSize = messageSize;
     }
 
     if (receiveBuffer == NULL) {
@@ -759,12 +765,12 @@ bool ReliableConduit::receiveIntoBuffer() {
     }
 
     // Read the data itself
-    ret = 0;
-    int left = len;
+    int ret = 0;
+    int left = messageSize;
     int count = 0;
     while ((ret != SOCKET_ERROR) && (left > 0) && (count < 12)) {
 
-        ret = recv(sock, ((char*)receiveBuffer) + (len - left), left, 0);
+        ret = recv(sock, ((char*)receiveBuffer) + (messageSize - left), left, 0);
 
         // Sometimes we get only part of a packet
         if (ret > 0) {
@@ -775,7 +781,7 @@ bool ReliableConduit::receiveIntoBuffer() {
                     nd->debugLog->printf("WARNING: recv() on partial "
                          "packet of length %d bytes, attempt #%d.  "
                          "Read %d bytes this time, %d bytes remaining\n",
-                         len, count + 1, ret, left);
+                         messageSize, count + 1, ret, left);
                 }
                 ++count;
 
@@ -796,11 +802,11 @@ bool ReliableConduit::receiveIntoBuffer() {
         if (nd->debugLog) {
             if (ret == SOCKET_ERROR) {
                 nd->debugLog->printf("Call to recv failed.  ret = %d,"
-                     " sizeof(len) = %d\n", ret, len);
+                     " sizeof(messageSize) = %d\n", ret, messageSize);
                 nd->debugLog->println(socketErrorCode());
             } else {
                 nd->debugLog->printf("Expected %d bytes from recv "
-                     "and got %d.", len, len - left);
+                     "and got %d.", messageSize, messageSize - left);
             }
         }
         nd->closesocket(sock);
@@ -808,7 +814,7 @@ bool ReliableConduit::receiveIntoBuffer() {
     }
 
     ++mReceived;
-    bReceived += len + 4;
+    bReceived += messageSize + 4;
     alreadyReadMessage = true;
 
     return true;
