@@ -805,5 +805,89 @@ SOURCE=.\IJG\jversion.h
 SOURCE=.\IJG\transupp.h
 # End Source File
 # End Group
+# Begin Group "png"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\png\png.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\png.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngconf.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngerror.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pnggccrd.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngget.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngmem.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngpread.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngread.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngrio.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngrtran.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngrutil.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngset.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngtest.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngtrans.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngvcrd.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngwio.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngwrite.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngwtran.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\png\pngwutil.c
+# End Source File
+# End Group
 # End Target
 # End Project
