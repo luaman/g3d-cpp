@@ -15,10 +15,11 @@
 #include "G3D/G3DGameUnits.h"
 #include "G3D/stringutils.h"
 #include "G3D/debug.h"
+#include "G3D/platform.h"
 
 namespace G3D {
 
-#ifndef _WIN32
+#if defined(G3D_LINUX) || defined(G3D_OSX)
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -72,7 +73,7 @@ static std::string windowsErrorCode() {
 #endif
 
 
-#ifdef _WIN32
+#if defined(G3D_WIN32) || defined(G3D_OSX)
     typedef int socklen_t;
 #endif
 

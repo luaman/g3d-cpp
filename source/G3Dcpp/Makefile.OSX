@@ -1,0 +1,65 @@
+#
+# $Id: Makefile.OSX,v 1.1 2003/06/11 01:44:44 professor_chaos Exp $
+# Makefile for Apple OS X using gnu make 3.79
+#
+# Maintained by Ben Landon
+#
+# This Makefile currently builds the .o files
+# in the same directory.  This should probably 
+# be fixed at some point.
+#
+#
+CXXFLAGS=-I../include -D__cdecl= -Wall 
+
+OBJFILES=\
+	BinaryInput.o \
+	BinaryOutput.o \
+	Box.o \
+	Capsule.o \
+	CImage.o \
+	CollisionDetection.o \
+	Color3.o \
+	Color3uint8.o \
+	Color4.o \
+	Color4uint8.o \
+	Cone.o \
+	ConvexPolyhedron.o \
+	CoordinateFrame.o \
+	Line.o \
+	LineSegment.o \
+	Log.o \
+	Matrix3.o \
+	NetworkDevice.o \
+	PhysicsFrame.o \
+	Plane.o \
+	Quat.o \
+	Ray.o \
+	Sphere.o \
+	System.o \
+	TextInput.o \
+	Triangle.o \
+	Vector2.o \
+	Vector3.o \
+	Vector3int16.o \
+	Vector4.o \
+	debugAssert.o \
+	fileutils.o \
+	format.o \
+	g3derror.o \
+	g3dmath.o \
+	prompt.o \
+	stringutils.o
+
+
+all: $(OBJFILES)
+
+# CImage needs a special rule because it depends on the IJG jpeg
+# library headers. 
+
+CImage.o: CImage.cpp
+	$(CXX) $(CXXFLAGS) -I../IJG -c $< -o $@
+
+.PHONY: clean
+
+clean: 
+	-rm *.o
