@@ -22,11 +22,14 @@
     #error Unknown platform 
 #endif
 
+#ifdef G3D_WIN32
+    // Linux doesn't provide __mm_malloc, which we need for aligned allocation.
+    #define SSE
+#endif
+
 
 // Verify that the supported compilers are being used and that this is a known
 // processor.
-
-#define SSE
 
 #ifdef G3D_LINUX
     #ifndef __GNUC__

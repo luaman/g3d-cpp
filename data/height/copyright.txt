@@ -1,0 +1,5 @@
+The grand canyon data is obtained from The United States Geological
+Survey (USGS), with processing by Chad McCabe of the Microsoft
+Geography Product Unit.  Downloaded from:
+
+http://www.cc.gatech.edu/projects/large_models/gcanyon.html

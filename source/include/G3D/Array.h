@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-08-08
+  @edited  2003-08-12
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -25,7 +25,7 @@
     #endif
 #endif
 
-#ifdef SSE
+#if defined(SSE)
     #include <xmmintrin.h>
 
     // Provide 16-byte alignment
@@ -37,7 +37,7 @@
         _mm_free(ptr);
     }
 #else
-    // Don't need alignment
+    // No alignment
     inline void* _arrayMalloc(size_t bytes) {
         return malloc(bytes);
     }

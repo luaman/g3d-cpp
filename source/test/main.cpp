@@ -659,7 +659,7 @@ void testCollision() {
 
 int main(int argc, char* argv[]) {
 
-    
+    /*    
     Window app;
 
     try {
@@ -682,7 +682,7 @@ int main(int argc, char* argv[]) {
     RenderDevice rd;
     Log debugLog("c:/tmp/log.txt");
     rd.init(800, 600, &debugLog);
-    
+    */
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureArrayPerformance();
