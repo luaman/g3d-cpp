@@ -61,7 +61,7 @@
             #define debugBreak() __asm__ __volatile__ ( "int $3" )
         #endif
     #else
-        #define debugBreak() #error "No debug break on OS X"
+        #define debugBreak() assert(false); /* No breakpoints on OS X yet */
     #endif
 
 
