@@ -126,7 +126,7 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
 
                         if (endsWith(toUpper(textureFile), "GIF")) {
                             // Load PNG instead of GIF, since we can't load GIF
-                            textureFile = textureFile.substr(0, textureFile.length() - 3) + ".png";
+                            textureFile = textureFile.substr(0, textureFile.length() - 3) + "png";
                         }
 
                         if (fileExists(textureFile)) {

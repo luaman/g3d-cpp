@@ -8,6 +8,7 @@
 
   Copyright 2004-2005, Morgan McGuire
  */
+//todo:hack reflections for cards w/o cube maps
 #include "ArticulatedModel.h"
 
 class PosedArticulatedModel : public PosedModel {

@@ -276,7 +276,9 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    const std::string path = "d:/games/data/";
+    const std::string path =
+        "c:/morgan/data/";
+        //"d:/games/data/";
 
     double x = -5;
 
@@ -324,8 +326,8 @@ void App::main() {
         x += 2;
     }
 
-    if (false) {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("3ds/legocar/legocar.3ds", 0.04);
+    if (true) {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/legocar/legocar.3ds", 0.04);
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
     }
@@ -433,13 +435,13 @@ void App::main() {
         triList.twoSided = true;
         triList.material.emit.constant = Color3::black();
         triList.material.diffuse.constant = Color3::white();
-        triList.material.diffuse.map = Texture::fromFile("collage.jpg", TextureFormat::AUTO, Texture::CLAMP);
+/*        triList.material.diffuse.map = Texture::fromFile("collage.jpg", TextureFormat::AUTO, Texture::CLAMP);
 
         GImage normalBumpMap;
         computeNormalMap(GImage("collage-bump.jpg"), normalBumpMap);
         triList.material.normalBumpMap =         
             Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
-
+*/
         triList.material.bumpMapScale = 0.1;
 
         triList.material.specular.constant = Color3::black();
