@@ -425,8 +425,6 @@ bool RenderDevice::init(
 
     debugAssert(! initialized());
 
-    std::istringstream extensions;
-
     debugLog = log;
 
     beginEndFrame = 0;
@@ -449,28 +447,6 @@ bool RenderDevice::init(
     const int desiredTextureUnits = 8;
 
     if (debugLog) {debugLog->println("Setting video mode");}
-
-
-    extensions.str((char*)glGetString(GL_EXTENSIONS));
-    {
-        // Parse the extensions into the supported set
-        std::string s;
-        while (extensions >> s) {
-            extensionSet.insert(s);
-        }
-
-        stencilWrapSupported        = supportsOpenGLExtension("GL_EXT_stencil_wrap");
-
-        // The constants are identical for NV_texture_rectangle and
-        // EXT_texture_rectangle
-        textureRectangleSupported   = supportsOpenGLExtension("GL_EXT_texture_rectangle") ||
-                                      supportsOpenGLExtension("GL_NV_texture_rectangle");
-        _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
-        _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
-        _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
-        _supportsVertexBufferObject = supportsOpenGLExtension("GL_ARB_vertex_buffer_object");
-        _supportsTwoSidedStencil    = supportsOpenGLExtension("GL_EXT_stencil_two_side");
-    }
 
     setVideoMode();
 
@@ -505,6 +481,7 @@ bool RenderDevice::init(
     bool stencilOk = stencilBits >= minimumStencilBits;
     computeVendor();
 
+
     std::string ver = getDriverVersion();
     if (debugLog) {
         debugLog->printf("Operating System: %s\n", System::operatingSystem().c_str());
@@ -528,7 +505,7 @@ bool RenderDevice::init(
 
         debugLog->printf(
             "GL extensions: \"%s\"\n\n",
-            extensions.str().c_str());
+            glGetString(GL_EXTENSIONS));
     }
  
 
@@ -761,6 +738,28 @@ void RenderDevice::setVideoMode() {
         // First time through, initialize extensions
         initGLExtensions();
         extensionsInitialized = true;
+    }
+
+    std::istringstream extensions;
+    extensions.str((char*)glGetString(GL_EXTENSIONS));
+    {
+        // Parse the extensions into the supported set
+        std::string s;
+        while (extensions >> s) {
+            extensionSet.insert(s);
+        }
+
+        stencilWrapSupported        = supportsOpenGLExtension("GL_EXT_stencil_wrap");
+
+        // The constants are identical for NV_texture_rectangle and
+        // EXT_texture_rectangle
+        textureRectangleSupported   = supportsOpenGLExtension("GL_EXT_texture_rectangle") ||
+                                      supportsOpenGLExtension("GL_NV_texture_rectangle");
+        _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
+        _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
+        _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
+        _supportsVertexBufferObject = supportsOpenGLExtension("GL_ARB_vertex_buffer_object");
+        _supportsTwoSidedStencil    = supportsOpenGLExtension("GL_EXT_stencil_two_side");
     }
 
     // Reset all state
