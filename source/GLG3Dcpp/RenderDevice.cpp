@@ -684,9 +684,15 @@ void RenderDevice::setVideoMode() {
     }
 
     // Enable proper specular lighting
-    if (debugLog) debugLog->println("Enabling separate specular lighting.\n");
-    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SEPARATE_SPECULAR_COLOR_EXT);
-    debugAssertGLOk();
+    // Enable proper specular lighting
+    if (supportsOpenGLExtension("EXT_separate_specular_color")) {
+        if (debugLog) debugLog->println("Enabling separate specular lighting.\n");
+        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SEPARATE_SPECULAR_COLOR_EXT);
+        debugAssertGLOk();
+    } else if (debugLog) {
+        debugLog->println("Cannot enable separate specular lighting, extension not supported.\n");
+    }
+
 
     // Make sure we use good interpolation
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -695,7 +701,10 @@ void RenderDevice::setVideoMode() {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POINT_SMOOTH);
     // glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
-    glEnable(GL_MULTISAMPLE_ARB);
+    if (supportsOpenGLExtension("GL_ARB_multisample")) {
+        glEnable(GL_MULTISAMPLE_ARB);
+    }
+
     debugAssertGLOk();
     if (vendor == NVIDIA) {
         glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
