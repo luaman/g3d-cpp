@@ -200,7 +200,6 @@ protected:
 
     static std::string      ignore;
 
-    ObjectShaderRef         _objectShader;
     VertexShaderRef         _vertexShader;
     PixelShaderRef          _pixelShader;
 
@@ -210,7 +209,6 @@ protected:
     std::string             _messages;
 
     VertexAndPixelShader(
-        const ObjectShaderRef& os,
         const VertexShaderRef& vs,
         const PixelShaderRef&  ps);
 
@@ -279,7 +277,7 @@ public:
 
     /**
      Passing NULL for any parameter selects the default shader for that stage.
-     The default object shader does nothing.  The default vertex shader is the
+     The default vertex shader is the
      OpenGL fixed-function vertex transform.  The default pixel shader is the
      OpenGL fixed-function fragment pipeline.
 
@@ -292,7 +290,6 @@ public:
      If an unrecoverable error occurs, ok() is false.
      */
     static VertexAndPixelShaderRef create(
-        const ObjectShaderRef& os,
         const VertexShaderRef& vs,
         const PixelShaderRef&  ps);
 
@@ -321,10 +318,6 @@ public:
     */
     GLhandleARB glProgramObject() const {
         return _glProgramObject;
-    }
-
-    inline ObjectShaderRef objectShader() const {
-        return _objectShader;
     }
 
     inline VertexShaderRef vertexShader() const {

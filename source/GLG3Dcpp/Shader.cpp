@@ -98,18 +98,11 @@ PixelShaderRef PixelShader::fromCode(const std::string& name, const std::string&
 ////////////////////////////////////////////////////////////////////////////////////
 
 VertexAndPixelShader::VertexAndPixelShader(
-    const ObjectShaderRef& os,
     const VertexShaderRef& vs,
     const PixelShaderRef&  ps) : 
-        _objectShader(os), 
         _vertexShader(vs), 
         _pixelShader(ps), 
         _ok(true) {
-
-    if (! os.isNull() && ! os->ok()) {
-        _ok = false;
-        _messages += os->messages() + "\n";
-    }
     
     if (! vs.isNull() && ! vs->ok()) {
         _ok = false;
@@ -207,11 +200,10 @@ void VertexAndPixelShader::computeUniformArray() {
 
 
 VertexAndPixelShaderRef VertexAndPixelShader::create(
-    const ObjectShaderRef& os,
     const VertexShaderRef& vs,
     const PixelShaderRef&  ps) {
 
-    return new VertexAndPixelShader(os, vs, ps);
+    return new VertexAndPixelShader(vs, ps);
 }
 
 

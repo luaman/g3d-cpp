@@ -95,7 +95,7 @@ void Demo::init()  {
         debugAssert(ps->ok());
     }
     
-    effect = VertexAndPixelShader::create(NULL, vs, ps);
+    effect = VertexAndPixelShader::create(vs, ps);
     debugPrintf(effect->messages().c_str());
     debugAssert(effect->ok());
 
