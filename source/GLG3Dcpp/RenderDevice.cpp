@@ -275,9 +275,11 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
         debugLog->printf("Driver version: %s\n\n", GLCaps::driverVersion().c_str());
 
+		std::string extStringCopy = (char*)glGetString(GL_EXTENSIONS);
+
         debugLog->printf(
             "GL extensions: \"%s\"\n\n",
-            glGetString(GL_EXTENSIONS));
+            extStringCopy.c_str());
     }
  
 

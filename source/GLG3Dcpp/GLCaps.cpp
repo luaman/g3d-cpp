@@ -321,12 +321,13 @@ void GLCaps::loadExtensions(Log* debugLog) {
 
 
     std::istringstream extensions;
-    extensions.str((char*)glGetString(GL_EXTENSIONS));
+	std::string extStringCopy = (char*)glGetString(GL_EXTENSIONS);
+    extensions.str(extStringCopy.c_str());
     {
         // Parse the extensions into the supported set
         std::string s;
         while (extensions >> s) {
-            extensionSet.insert(s);
+	        extensionSet.insert(s);
         }
 
         // We're going to need exactly the same code for each of 
