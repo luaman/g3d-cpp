@@ -59,8 +59,8 @@ int main(int argc, char** argv) {
     debugLog     = new Log();
     renderDevice = new RenderDevice();
     RenderDeviceSettings settings;
-    settings.width = 1280;
-    settings.height = 1024;
+    settings.width = 800;
+    settings.height = 600;
     settings.fsaaSamples = 4;
     renderDevice->init(settings, debugLog);
 
@@ -107,11 +107,11 @@ int main(int argc, char** argv) {
 
 	    controller->setActive(false);
         model = new XIFSModel(filename[i], true);
-        model->name = filename[i];
+        model->name = "GD";//filename[i];
 	    controller->setActive(true);
 
         //if (! pauseBetweenModels) {
-        //    model->save(outDir + base + ".ifs");
+        //    model->save("c:/tmp/halfgear.ifs");//outDir + base + ".ifs");
         //    exit(0);
         //}
 
@@ -171,7 +171,7 @@ void doGraphics() {
 
                 model->render();
 
-                /*
+                
                 renderDevice->push2D();
                     double y = 10;
                     font->draw2D(model->name, Vector2(10, y), 20, Color3::WHITE, Color3::BLACK); y += 30;
@@ -184,7 +184,7 @@ void doGraphics() {
                     y = renderDevice->getHeight();
                     font->draw2D(format("Vertices within radius %g collapsed", close), Vector2(10, y - 15), 10, Color3::BLACK);
                 renderDevice->pop2D();
-                */
+                
             }
             
         renderDevice->popState();

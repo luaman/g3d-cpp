@@ -94,6 +94,7 @@ private:
     // Since relatively few keys are pressed every frame, keeping an array of
     // key codes pressed is much more compact than clearing a large array of bools.
     Array<KeyCode>          justPressed;
+    Array<KeyCode>          justReleased;
 
     /**
      Function of key[x]
@@ -295,10 +296,16 @@ public:
     bool keyDown(KeyCode code) const;
 
     /**
-     Returns true if this key went down since the last call to
+     Returns true if this key went down at least once since the last call to
      poll().
      */
     bool keyPressed(KeyCode code) const;
+
+    /**
+     Returns true if this key came up since the last call to
+     poll().
+     */
+    bool keyReleased(KeyCode code) const;
 
     /**
      True if any key has been pressed since the last call to poll().
@@ -307,6 +314,7 @@ public:
 
     /** An array of all keys pressed since the last poll() call. */
     void pressedKeys(Array<KeyCode>& code) const;
+    void releasedKeys(Array<KeyCode>& code) const;
 
     /** Returns true when this app is in the "foreground" 
         (shortcut for window()->hasFocus()).

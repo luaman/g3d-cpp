@@ -72,8 +72,10 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
 
     std::string f = toLower(filename);
 
+    createHalfGear(); return;
+
     //createGrid(flat2D, 1024, true); return;
-    createGrid(lumpy2D, 1024, true); return;
+    //createGrid(lumpy2D, 1024, true); return;
     //createGrid(cliff2D, 1024, true); return;
     //createIsoGrid(cliff2D, 1024); return;
     //createGrid(bump2D, 900, true); return;
@@ -97,6 +99,124 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
     }
 }
 
+
+void XIFSModel::createHalfGear() {
+    IFSModelBuilder builder(false);
+    
+    // Outer tooth radius
+    double ro = 1;
+
+    // Center tooth radius
+    double rm = 0.7;
+
+    // Inner hole radius
+    double ri = 0.35;
+
+    // Half height
+    double sy = .125;
+
+    int n = 4;
+    for (int a = 0; a <= n; ++a) {
+        double a1, a2, a3, a4, a5;
+
+        if (a == 0) {
+            // Half-tooth on end
+            a1 = 0;
+            a4 = 0;
+        } else {
+            a1 = -(a - 0.3) * G3D_PI / n;
+            a4 = -(a - 0.20) * G3D_PI / n;
+        }
+
+        if (a == n) {
+            // Half-tooth on end
+            a2 = -G3D_PI;
+            a5 = -G3D_PI;
+        } else {
+            a2 = -(a + 0.3) * G3D_PI / n;
+            a5 = -(a + 0.20) * G3D_PI / n;
+        }
+
+        a3 = -(a + .7) * G3D_PI / n;
+
+        Vector3 A = Vector3(cos(a4) * ro, sy, sin(a4) * ro);
+        Vector3 B = Vector3(cos(a5) * ro, sy, sin(a5) * ro);
+        Vector3 C = Vector3(cos(a1) * rm, sy, sin(a1) * rm);
+        Vector3 D = Vector3(cos(a2) * rm, sy, sin(a2) * rm);
+        Vector3 E = Vector3(cos(a1) * ri, sy, sin(a1) * ri);
+        Vector3 F = Vector3(cos(a2) * ri, sy, sin(a2) * ri);
+        Vector3 G = Vector3(cos(a3) * rm, sy, sin(a3) * rm);
+        Vector3 H = Vector3(cos(a3) * ri, sy, sin(a3) * ri);
+
+        builder.addTriangle(A, B, D);
+        builder.addTriangle(A, D, C);
+
+        builder.addTriangle(C, D, F);
+        builder.addTriangle(C, F, E);
+
+        if (a < n) {
+            // Between teeth
+            builder.addTriangle(F, D, H);
+            builder.addTriangle(D, G, H);
+        }
+
+        // Bottom
+        Vector3 Y(0, -sy*2, 0);
+        Vector3 A2 = A + Y;
+        Vector3 B2 = B + Y;
+        Vector3 C2 = C + Y;
+        Vector3 D2 = D + Y;
+        Vector3 E2 = E + Y;
+        Vector3 F2 = F + Y;
+        Vector3 G2 = G + Y;
+        Vector3 H2 = H + Y;
+
+        builder.addTriangle(D2, B2, A2);
+        builder.addTriangle(C2, D2, A2);
+
+        builder.addTriangle(F2, D2, C2);
+        builder.addTriangle(E2, F2, C2);
+
+        if (a < n) {
+            // Between teeth
+            builder.addTriangle(H2, D2, F2);
+            builder.addTriangle(H2, G2, D2);
+        }
+
+        // Sides
+        builder.addTriangle(A, A2, B);
+        builder.addTriangle(A2, B2, B);
+
+        builder.addTriangle(B, B2, D);
+        builder.addTriangle(B2, D2, D);
+
+        if (a < n) {
+            builder.addTriangle(D, D2, G);
+            builder.addTriangle(D2, G2, G);
+
+            builder.addTriangle(H, H2, F);
+            builder.addTriangle(H2, F2, F);
+        }
+
+        builder.addTriangle(C, C2, A);
+        builder.addTriangle(C2, A2, A);
+
+        builder.addTriangle(F, F2, E);
+        builder.addTriangle(F2, E2, E);
+
+        if (a == 0) {
+            builder.addTriangle(E, E2, C);
+            builder.addTriangle(E2, C2, C);
+        }
+
+        if (a == n) {
+            builder.addTriangle(D, F2, F);
+            builder.addTriangle(D, D2, F2);
+        }
+    }
+
+    builder.commit(this);
+}
 
 static Vector3 isoToObjectSpace(int r, int c, int R, int C) {
     

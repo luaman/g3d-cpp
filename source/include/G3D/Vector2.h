@@ -176,10 +176,19 @@ public:
 
 };
 
+inline Vector2 operator*(double s, const Vector2& v) {
+    return v * s;
+}
+inline Vector2 operator*(int s, const Vector2& v) {
+    return v * s;
+}
 }
 
 // Intentionally outside namespace to avoid operator overloading confusion
 inline G3D::Vector2 operator*(double s, const G3D::Vector2& v) {
+    return v * s;
+}
+inline G3D::Vector2 operator*(int s, const G3D::Vector2& v) {
     return v * s;
 }
 

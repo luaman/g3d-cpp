@@ -19,18 +19,19 @@
 	     shadow map comparisions.  <B>RenderDevice::configureShadowMap now requires 
 		 an appropriately configured texture-- in previous releases it would
 		 reconfigure the texture for you.</B>
-     <LI> Array::randomElement
-	 <LI> Optimized Array::randomize
+     <LI> G3D::UserInput::keyReleased, G3D::UserInput::ReleasedKeys
+     <LI> G3D::Array::randomElement
+	 <LI> Optimized G3D::Array::randomize
      <LI> G3D::cyclicCatmullRomSpline
      <LI> G3D::wrap
      <LI> contrib/AudioDevice
-     <LI> System::time();
+     <LI> G3D::System::time();
 	 <LI> More precise System::sleep
-     <LI> AABSPTree::serializeStructure, deserializeStructure,
+     <LI> G3D::AABSPTree::serializeStructure, deserializeStructure,
      <LI> serialize(Vector3::Axis, BinaryOutput), deserialize(Vector3::Axis, BinaryInput),
      <LI> "glslc" GLSL compiler in the tools directory for getting compile-time errors from shaders 
      <LI> GLCaps::init now takes optional debug log
-	 <LI> VertexAndPixelShader static constructors take optional 'debug' argument
+	 <LI> G3D::VertexAndPixelShader static constructors take optional 'debug' argument
      <LI> GWindowSettings::visible; Win32Window can now start invisible
      <LI> [ 991147 ] glBlendEquationEXT, RenderDevice::BlendEq, min, max, subtract, reverse subtract alpha blending
      <LI> [ 989785 ] Draw::rect2D

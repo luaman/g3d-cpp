@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2004-02-28
+  @edited  2004-09-05
  */
 
 #include "GLG3D/UserInput.h"
@@ -150,6 +150,7 @@ void UserInput::beginEvents() {
     debugAssert(! inEventProcessing);
     inEventProcessing = true;
     justPressed.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+    justReleased.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
 }
 
 
@@ -274,6 +275,8 @@ void UserInput::processKey(KeyCode code, int event) {
 
         if (state) {
             justPressed.append(code);
+        } else {
+            justReleased.append(code);
         }
     }
 }
@@ -327,9 +330,26 @@ bool UserInput::keyPressed(KeyCode code) const {
 }
 
 
+bool UserInput::keyReleased(KeyCode code) const {
+    for (int i = justReleased.size() - 1; i >= 0; --i) {
+        if (code == justReleased[i]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 void UserInput::pressedKeys(Array<KeyCode>& code) const {
     code.resize(justPressed.size());
     memcpy(code.getCArray(), justPressed.getCArray(), sizeof(UserInput::KeyCode) * justPressed.size());
+}
+
+
+void UserInput::releasedKeys(Array<KeyCode>& code) const {
+    code.resize(justReleased.size());
+    memcpy(code.getCArray(), justReleased.getCArray(), sizeof(UserInput::KeyCode) * justReleased.size());
 }
 
 

@@ -64,6 +64,8 @@ private:
     void createGrid(double(*y)(double,double), int numPolys, bool consistentDiagonal = false);
     void createIsoGrid(double(*y)(double,double), int numPolys);
 
+    void createHalfGear();
+
 	bool _twoSided;
 public:
 

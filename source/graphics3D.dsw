@@ -54,7 +54,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "docs"=.\docs.dsp - Package Owner=<4>
+Project: "doc"=.\doc.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

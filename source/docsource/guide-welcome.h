@@ -15,13 +15,15 @@ users who are already familiar with C++ and DirectX or OpenGL.
 
 <TABLE BORDER=0 WIDTH=50%>
 <TR><TD COLSPAN=2>\link guidewelcome Welcome \endlink</TD></TR>
-<TR><TD></TD><TD>
+<TR><TD> </TD><TD>
   Documentation and Support,
   Platform and Functionality,
   Design Philosophy,
   Data Formats,
   Team,
   Working With Other Libraries,
+  Release Schedule,
+  Beta and Deprecated APIs,
   Notes for Expert Users</TD></TR>
 
   <TR><TD COLSPAN=2>\link guideinstall Installing G3D \endlink</TD></TR>
@@ -30,6 +32,13 @@ users who are already familiar with C++ and DirectX or OpenGL.
   Linux,
   OS X,
   Building the Library</TD></TR>
+
+  <TR><TD COLSPAN=2>\link guideconcepts Concepts \endlink</TD></TR>
+<TR><TD></TD><TD>
+  Immediate Mode Graphics,
+  Coordinate Systems,
+  Reference Counting,
+  STL vs. G3D</TD></TR>
 
 <TR><TD COLSPAN=2>\link guideshaders Shaders \endlink</TD></TR>
 <TR><TD></TD><TD>
@@ -68,7 +77,11 @@ hours and patches for critical user-discovered bugs are given top priority.  Wri
 to <A HREF="http://mailto:morgan3d@sf.net">Morgan McGuire</A> (morgan3d@sf.net) 
 if your project has special commercial support needs.
 
+
+
 @section platform Platform and Functionality
+
+<IMG SRC="platforms.png" ALIGN=RIGHT>
 G3D allows you to write code once that will compile and run on Windows, 
 Linux, and OS X.  It supports for all OpenGL implementations, from software 
 rasterization under Mesa to the latest GeForce and Radeon hardware accelerator 
@@ -80,6 +93,9 @@ OpenGL.  There are advantages to both APIs, but in the end they are equivalent e
 for the platform issue.  <B>You can implement any effect from any game in G3D</B>. Unlike
 higher level engines it does not restrict access to low-level features-- every graphics
 card function is available in OpenGL and exposed in G3D.
+
+Releases contain precompiled libraries for MSVC 6.0, Linux gcc, and XCode.  
+For other compilers you may need to build the library yourself.
 
 @section philosophy Design Philosophy
 Our philosophy is simple. The library should have the following properties:
@@ -112,9 +128,8 @@ The library contains code, documentation, and demos from over 30
 
 Morgan McGuire has been the G3D project manager since 2000.  He is a 3D
 software consultant with Masters degrees in electrical engineering and computer
-science from MIT and Brown University.  He designed major 3D systems in the graphics 
-industry and has written award winning research papers.  Morgan is currently in the PhD
-program at Brown University.
+science from MIT and Brown University.  He has been a senior architect at several 
+companies in the graphics  industry and published award-winning research papers.
 
 Gabe Taubman and Benjamin Landon provide OS X support.  Gabe has been a Mac user since 1998
 and took first prize in the 2004 undergraduate ACM SIGGRAPH Student Research Competition 
@@ -166,11 +181,51 @@ libraries to complement G3D:
     <LI>STLport (http://www.stlport.org/download.html)
 </UL>
 
+
+
+  @section b1 Release Schedule
+   G3D has a stable, backwards compatible API.  Most changes between versions add 
+   functionality and fix bugs.  Point releases are backwards compatible
+   to the last major release, except where critical bugs necessitate small API 
+   changes.  Point releases occur about once every two months and are announced 
+   on the <A HREF="http://sourceforge.net/forum/forum.php?forum_id=262426">User Forum</A>.
+   
+   Major releases may break source compatibility to fix critical bugs, match the 
+   changing hardware standards, and streamline the API.  Incompatible changes are marked
+   in the \link changelog Change Log \endlink and an upgrade path is recommended.
+   Major releases occur about once a year and are announced well in advance.
+   Migrating code across major releases generally takes a few hours of work for a 100,000 
+   line program.  We try to design changes so they will trigger compiler errors for 
+   older code instead of failing silently.
+
+   Beta releases occur between point releases to allow users to access new functionality
+   and provide feedback.  Beta releases are frequently Windows-only and are neither
+   supported nor guaranteed to be stable.  Any APIs in a Beta release may change without
+   notice.
+
+  @section beta Beta and Deprecated APIs
+
+   Even in official releases, some parts of G3D are marked as Beta in the documentation. 
+   These are previews of new APIs that are still under construction but are stable enough
+   to use.  They will likely change in small ways before becoming official APIs-- use at
+   your own risk.
+
+   Deprecated APIs have been replaced by some newer functionality but are supported and
+   guaranteed to be present until the next major release, at which point they will be 
+   removed. Avoid writing new code to deprecated APIs and consider migrating existing 
+   code away from them.
+
 @section experts Notes for Expert Users
 G3D is designed so that you can use as much or as little as you want.  You are
 welcome to rip out the source code for a single class like G3D::Texture and use 
 it standalone in your project, link against the library and use our main G3D::RenderDevice
 class, or let G3D::GApp provide the entire structure for your program.  
+
+Most G3D programs need not access OpenGL directly.  However, you can always execute OpenGL
+functions directly and mix them with RenderDevice calls <B>as long as you restore 
+GL state afterwards.</B>  If you change the GL state and do not restore it, RenderDevice
+will assume nothing has changed and may become corrupted.  Most classes, like Texture, expose
+the relevant OpenGL handles so you can work with them directly as needed.
 
 The routines are packaged as two static libraries, G3D and GLG3D, so that you can use 
 the low-level vector math without bringing in any of the SDL/OpenGL code.
@@ -181,3 +236,4 @@ and watch variables.  On Windows you should change the Debug Info level
 to Program Database from Line Numbers Only.
 
 */
+

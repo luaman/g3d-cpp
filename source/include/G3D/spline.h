@@ -93,6 +93,9 @@ template<class YType> YType cyclicCatmullRomSpline(
  the control points.  The spline
  will wrap from the last point back to the first.
 
+ The t parameter is on the range [0, controlY.size()],
+ where integers correspond to control points exactly.
+
  @cite http://www.mvps.org/directx/articles/catmull/
 */
 template<class YType> YType cyclicCatmullRomSpline(

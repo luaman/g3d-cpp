@@ -80,6 +80,10 @@ SOURCE=.\Doxyfile
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=".\docsource\guide-concepts.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-install.h"
 # End Source File
 # Begin Source File
