@@ -14,7 +14,7 @@ extern App* app;
 
 const RealTime Entity::networkLerpTime = 0.2;
 
-Entity::Entity() : id(NO_ID), velocity(Vector3::ZERO), oldFrameTime(-inf()) {
+Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::ZERO) {
 }
 
 
@@ -159,12 +159,12 @@ void simulateEntities(EntityTable& entityTable, SimTime dt) {
 
 ////////////////////////////////////////////////////////////////////////
 
-EulerFrame::EulerFrame() : roll(0), yaw(0), pitch(0), translation(Vector3::ZERO) {
+EulerFrame::EulerFrame() : yaw(0), roll(0), pitch(0), translation(Vector3::ZERO) {
 }
 
 
 EulerFrame::EulerFrame(double r, double y, double p, const Vector3& t) :
-    roll(r), yaw(y), pitch(p), translation(t) {
+    yaw(y), roll(r), pitch(p), translation(t) {
 }
 
 
