@@ -1184,12 +1184,6 @@ void testAdjacency() {
         MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
 
         MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
-        for (int e = 0; e < edgeArray.size(); ++e) {
-            printf("edge[%d] = [%d %d %d %d]\n",
-                e, edgeArray[e].vertexIndex[0], edgeArray[e].vertexIndex[1],
-                edgeArray[e].faceIndex[0], edgeArray[e].faceIndex[1]);
-        }
-
 
         debugAssert(faceArray.size() == 2);
         debugAssert(edgeArray.size() == 5);
@@ -1202,8 +1196,6 @@ void testAdjacency() {
         debugAssert(edgeArray[4].boundary());
 
     }
-        // TODO: TEST 
-        //PKNIGHT comes out with boundaries that shouldn't be there.
     
 }
 

@@ -15,3 +15,5 @@ stamp-h1
 *.ncb
 *.opt
 *.plg
+g3ddocs.tag
+log.txt
