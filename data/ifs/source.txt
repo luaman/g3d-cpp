@@ -1,11 +1,18 @@
-buddha      -
+buddha      - Stanford University Computer Graphics Library
 beethoven   -
-bunny       - Stanford
+bunny       - Stanford University Computer Graphics Library
 cow         -
 dinosaur    - SGI
-dragon      -
+dragon      - Stanford University Computer Graphics Library
 galleon     -
 horse       -
 p51-mustang -
 teapot      - Utah
 trico       - 
+
+Other good sources for models are:
+http://graphics.stanford.edu/data/3Dscanrep/
+http://graphics.stanford.edu/data/mich/
+http://www.cc.gatech.edu/projects/large_models/
+http://www.cyberware.com/
+
