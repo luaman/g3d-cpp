@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2002-10-16
+ @edited  2002-11-05
  */
 
 #ifndef G3D_GAMEUNITS_H
@@ -14,6 +14,7 @@ namespace G3D {
  Time, in seconds.
  */
 typedef double GameTime;
+typedef double SimTime;
 
 /**
  Actual wall clock time in seconds.

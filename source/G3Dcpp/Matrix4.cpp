@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-10-02
-  @edited  2003-11-01
+  @edited  2003-11-05
  */
 
 #include "G3D/Matrix4.h"
@@ -225,5 +225,29 @@ Matrix4 Matrix4::transpose() const {
 }
 
 
+bool Matrix4::operator!=(const Matrix4& other) const {
+    return ! (*this == other);
+}
+
+
+bool Matrix4::operator==(const Matrix4& other) const {
+
+    // If the bit patterns are identical, they must be
+    // the same matrix.  If not, they *might* still have
+    // equal elements due to floating point weirdness.
+    if (memcmp(this, &other, sizeof(Matrix4) == 0)) {
+        return true;
+    } 
+
+    for (int r = 0; r < 4; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            if (elt[r][c] != other.elt[r][c]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
 }

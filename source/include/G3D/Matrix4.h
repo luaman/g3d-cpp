@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-10-02
-  @edited  2003-11-01
+  @edited  2003-11-05
  */
 
 #ifndef G3D_MATRIX4_H
@@ -73,6 +73,9 @@ public:
     Vector4 operator*(const Vector4& vector) const;
 
     Matrix4 transpose() const;
+
+    bool operator!=(const Matrix4& other) const;
+    bool operator==(const Matrix4& other) const;
 };
 
 } // namespace

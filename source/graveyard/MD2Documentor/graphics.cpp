@@ -20,7 +20,7 @@ extern Array<TextureRef>       modelTexture;
 extern MD2Model                weapon;
 extern TextureRef              weaponTexture;
 extern MD2Model::Pose          pose;
-extern GameTime                gameTime;
+extern SimTime                gameTime;
 extern bool                    singleScreen;
 extern bool                    batchScreen;
 
