@@ -299,7 +299,7 @@ void Client::doGraphics() {
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
-    if (! app->sky.isNull()) {
+    if (app->sky.notNull()) {
         app->sky->render(lighting);
     }
 
@@ -323,7 +323,7 @@ void Client::doGraphics() {
 
     app->renderDevice->disableLighting();
 
-    if (! app->sky.isNull()) {
+    if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
     }
 
@@ -370,7 +370,7 @@ void ServerProxy::connect(const NetAddress& address) {
 
     net = app->networkDevice->createReliableConduit(address);
 
-    if ((net == (ReliableConduitRef)NULL) || ! net->ok()) {
+    if (net.isNull() || ! net->ok()) {
         app->debugLog->printf("\nConnect failed\n\n");
     } else {
         app->debugLog->printf("\nConnected to server\n\n");
@@ -381,5 +381,5 @@ void ServerProxy::connect(const NetAddress& address) {
 
 
 bool ServerProxy::ok() const {
-    return (net != NULL) && (net->ok());
+    return net.notNull() && (net->ok());
 }

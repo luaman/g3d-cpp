@@ -47,7 +47,10 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(RenderDeviceSettings(), debugLog);
+
+    RenderDeviceSettings settings;
+    settings.fsaaSamples = 4;
+    renderDevice->init(settings, debugLog);
     renderDevice->setCaption("G3D::MD2Model Demo");
     camera 	     = new GCamera();
 

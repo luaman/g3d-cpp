@@ -68,7 +68,7 @@ void doGraphics() {
             int n = 1;
         
             // Draw a bunch of characters
-            for (int z = 0; z < 6; ++z) {
+            for (int z = 0; z < 5; ++z) {
                 for (int x = -2; x <= 2; ++x) {
                     MD2Model::Pose pose(MD2Model::STAND, n + gameTime);
                 
