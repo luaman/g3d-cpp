@@ -27,15 +27,18 @@ typedef ReferenceCountedPointer<class GFont> GFontRef;
  */
 class GFont : public ReferenceCountedObject {
 public:
-    /** Constant for draw2DString.  Specifies the horizontal alignment of an entire string relative to the supplied x,y position */
+    /** Constant for draw2DString.  Specifies the horizontal alignment
+	of an entire string relative to the supplied x,y position */
     enum XAlign {XALIGN_RIGHT, XALIGN_LEFT, XALIGN_CENTER};
 
-    /** Constant for draw2DString.  Specifies the vertical alignment of the characters relative to the supplied x,y position.
+    /** Constant for draw2DString.  Specifies the vertical alignment
+	of the characters relative to the supplied x,y position.
       */
     enum YAlign {YALIGN_TOP, YALIGN_BASELINE, YALIGN_CENTER, YALIGN_BOTTOM};
 
-    /** Constant for draw2DString.  Proportional width (default) spaces characters based on their size.
-        Fixed spacing gives uniform spacing regardless of character width. */
+    /** Constant for draw2DString.  Proportional width (default)
+        spaces characters based on their size.  Fixed spacing gives
+        uniform spacing regardless of character width. */
     enum Spacing {PROPORTIONAL_SPACING, FIXED_SPACING};
 
 private:
@@ -67,19 +70,19 @@ private:
 public:
 
     /** The filename must be a FNT (proportional width font) file.
-        <P>
-        If a font file is not found, an assertion will fail, an exception will be thrown,
-        and texelSize() will return (0, 0).
-        <P>   
-        Several fonts in this format at varying resolutions are available in the data/font directory.
-        The large fonts require 500k of memory when loaded and look good when rendering characters up to
-        about 64 pixels high. The small fonts require 130k and look good up to about 32 pixels.
+        <P> If a font file is not found, an assertion will fail, an
+        exception will be thrown, and texelSize() will return (0, 0).
+        <P> Several fonts in this format at varying resolutions are
+        available in the data/font directory.  The large fonts require
+        500k of memory when loaded and look good when rendering
+        characters up to about 64 pixels high. The small fonts require
+        130k and look good up to about 32 pixels.
 
         See Font::convertTGAtoPWF for creating new fonts in the FNT format:
     
       <P>
-       This file is compressed by BinaryOutput::compress().  The contents after decompression 
-       have the following format (little endian): 
+       This file is compressed by BinaryOutput::compress().  The contents 
+       after decompression  have the following format (little endian): 
           <pre>
            int32                       Version number (must be 1)
            128 * int16                 Character widths, in texels

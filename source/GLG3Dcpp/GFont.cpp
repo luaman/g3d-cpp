@@ -79,8 +79,8 @@ Vector2 GFont::drawString(
     const double propW = w / charWidth;
     const int n = s.length();
 
-    // Shrink the vertical texture coordinates by 1 texel to avoid bilinear interpolation
-    // interactions with mipmapping.
+    // Shrink the vertical texture coordinates by 1 texel to avoid
+    // bilinear interpolation interactions with mipmapping.
     double sy = h / charHeight;
 
     double x0 = 0;
@@ -181,7 +181,8 @@ Vector2 GFont::draw2D(
         renderDevice->setTexture(0, texture);
 
         renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
-        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA,
+				   RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
         renderDevice->beginPrimitive(RenderDevice::QUADS);
@@ -195,7 +196,10 @@ Vector2 GFont::draw2D(
                 }
             }
 
-            renderDevice->setColor(Color4(color.r * renderDevice->getBrightScale(), color.g * renderDevice->getBrightScale(), color.b * renderDevice->getBrightScale(), color.a));
+            renderDevice->setColor(
+		 Color4(color.r * renderDevice->getBrightScale(),
+			color.g * renderDevice->getBrightScale(),
+			color.b * renderDevice->getBrightScale(), color.a));
             Vector2 bounds = drawString(s, x, y, w, h, spacing);
 
         renderDevice->endPrimitive();
@@ -270,21 +274,34 @@ Vector2 GFont::draw3D(
         renderDevice->setTexture(0, texture);
 
         renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
-        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, 
+				   RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
         renderDevice->beginPrimitive(RenderDevice::QUADS);
 
             if (border.a > 0.05) {
+
+	        // Make the equivalent of a 3D "1 pixel" offset (the
+	        // default 2D text size is 12-pt with a 1pix border)
+
+ 	        const double borderOffset = size / 12.0;
                 renderDevice->setColor(border);
                 for (int dy = -1; dy <= 1; dy += 2) {
                     for (int dx = -1; dx <= 1; dx += 2) {
-                        drawString(s, x + dx, y + dy, w, h, spacing);
+                        drawString(s,
+				   x + dx * borderOffset, 
+				   y + dy * borderOffset,
+				   w, h, spacing);
                     }
                 }
             }
 
-            renderDevice->setColor(Color4(color.r * renderDevice->getBrightScale(), color.g * renderDevice->getBrightScale(), color.b * renderDevice->getBrightScale(), color.a));
+            renderDevice->setColor(
+		    Color4(color.r * renderDevice->getBrightScale(),
+			   color.g * renderDevice->getBrightScale(), 
+			   color.b * renderDevice->getBrightScale(), 
+			   color.a));
             Vector2 bounds = drawString(s, x, y, w, h, spacing);
 
         renderDevice->endPrimitive();

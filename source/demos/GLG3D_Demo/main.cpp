@@ -98,7 +98,12 @@ int main(int argc, char** argv) {
     debugLog     = new Log();
     
     renderDevice = new RenderDevice();
-    renderDevice->init(RenderDeviceSettings(), debugLog);
+    RenderDeviceSettings settings;
+    settings.rgbBits = 0;
+    settings.alphaBits = 0;
+    settings.stencilBits = 0;
+    settings.depthBits = 16;
+    renderDevice->init(settings, debugLog);
 
     // Allocate the two VARAreas used in this demo
     varStatic  = VARArea::create(1024 * 640 * 5, VARArea::WRITE_ONCE);

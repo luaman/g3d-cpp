@@ -1,7 +1,37 @@
 #!/bin/sh
 
-libtoolize --force --copy
-aclocal-1.7 $ACLOCAL_FLAGS
-autoheader
-automake-1.7 --foreign --add-missing --copy --include-deps
-autoconf
+USAGE="bootstrap [-l libtoolize-cmd] [-a aclocal-cmd] [-h autoheader-cmd] [-m automake-cmd] [-c autoconf-cmd]"
+
+# Default versions of all dependency programs, override by 
+# setting arguments as described by usage above..
+LIBTOOL_CMD=libtoolize
+ACLOCAL_CMD=aclocal-1.7
+AUTOHEAD_CMD=autoheader
+AUTOMAKE_CMD=automake-1.7
+AUTOCONF_CMD=autoconf
+
+while getopts l:a:h:m:c: opt
+do
+  case "$opt" in
+      l)   LIBTOOL_CMD=$OPTARG;;
+      a)   ACLOCAL_CMD=$OPTARG;;
+      h)   AUTOHEAD_CMD=$OPTARG;;
+      m)   AUTOMAKE_CMD=$OPTARG;;
+      c)   AUTOCONF_CMD=$OPTARG;;
+      \?)  echo $USAGE
+	   exit 1;;
+  esac
+done
+
+$LIBTOOL_CMD --force --copy
+$ACLOCAL_CMD $ACLOCAL_FLAGS
+$AUTOHEAD_CMD
+$AUTOMAKE_CMD --foreign --add-missing --copy --include-deps
+$AUTOCONF_CMD
+
+
+#libtoolize --force --copy
+#aclocal-1.8 $ACLOCAL_FLAGS
+#autoheader
+#automake-1.8 --foreign --add-missing --copy --include-deps
+#autoconf

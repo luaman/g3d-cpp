@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-03-17
+# @edited  2004-02-25
 # Each build target is a procedure.
 #
 
@@ -12,6 +12,16 @@ from buildlib import *
 
 # The library version number
 version = "6_02"
+
+# Setup versions for supporting programs
+aclocal    = "aclocal-1.8"
+autoconf   = "autoconf"
+autoheader = "autoheader"
+automake   = "automake-1.8"
+doxygen    = "doxygen"
+libtoolize = "libtoolize"
+python     = "python2.2"
+
 
 # Turn the platform into a name to put in the
 # "lib" directory name
@@ -42,7 +52,7 @@ install    Create a user installation directory (what you probably want)
 
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip
-doc        Run doxygen and copy the html and contrib directories
+doc        Run doxygen and copy the html directory
 clean      Delete the build, release, temp, and install directories
 help       Display this message
 
@@ -89,17 +99,17 @@ def linuxCheckVersion():
     try:
         checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')
 	try:
-	        checkVersion('automake --version', '1.6', 'Requires automake 1.6 or later.')
+	        checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
 	except:
 	        checkVersion('automake-1.7 --version', '1.6', 'Requires automake 1.6 or later.')
 
 	try:
-	        checkVersion('aclocal --version', '1.6', 'Requires aclocal 1.6 or later.')
+	        checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
 	except:
 	        checkVersion('aclocal-1.7 --version', '1.6', 'Requires aclocal 1.6 or later.')
 
-        checkVersion('doxygen --version', '1.2', 'Requires doxygen 1.3 or later.')
-        checkVersion('python -V', '2.0', 'Requires Python 2.0 or later.', 1)
+        checkVersion(doxygen + ' --version', '1.2', 'Requires doxygen 1.3 or later.')
+        checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
 
     except Error, e:
         print e.value
@@ -130,7 +140,11 @@ def lib(args):
 
         linuxCheckVersion()
 
-        run("./bootstrap")
+        run("./bootstrap",["-l " + libtoolize,
+                           "-a " + aclocal,
+                           "-h " + autoheader,
+                           "-m " + automake,
+                           "-c " + autoconf])
         run("./configure", ['--enable-shared', '--enable-static'])
         x = run("make")
 
@@ -194,11 +208,10 @@ def test(args):
     
 def doc(args):
     os.chdir("source")
-    run('doxygen', [])
+    run(doxygen, [])
     os.chdir("..")
     copyIfNewer('source/html', installDir(args) + '/html')
     copyIfNewer('temp/html', installDir(args) + '/html')
-    copyIfNewer('source/contrib', installDir(args) + '/contrib')
     setPermissions(args)
 
 ###############################################################################
