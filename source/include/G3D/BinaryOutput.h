@@ -111,7 +111,7 @@ public:
      @param flush If true (default) the file is ready for reading when the method returns, otherwise 
       the method returns immediately and writes the file in the background.
     */
-    void commit(bool flush);
+    void commit(bool flush = true);
 
     /**
      Write the bytes to memory (which must be of
