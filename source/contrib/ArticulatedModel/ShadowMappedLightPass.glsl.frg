@@ -110,11 +110,11 @@ void main(void) {
 
     const float s = 0.5 / 512.0;
     vec3 shadow =
-         (shadow2D(shadowMap, shadowCoord.xyz).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0.0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3( s, -s, 0.0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  s, 0.0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0.0)).xyz) / 5.0;
+         (shadow2D(shadowMap, projShadowCoord.xyz).xyz +
+          shadow2D(shadowMap, projShadowCoord.xyz + vec3( s,  s, 0.0)).xyz +
+          shadow2D(shadowMap, projShadowCoord.xyz + vec3( s, -s, 0.0)).xyz +
+          shadow2D(shadowMap, projShadowCoord.xyz + vec3(-s,  s, 0.0)).xyz +
+          shadow2D(shadowMap, projShadowCoord.xyz + vec3(-s, -s, 0.0)).xyz) / 5.0;
 
     gl_FragColor.rgb =
             lightColor * shadow *
