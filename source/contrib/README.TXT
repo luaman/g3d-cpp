@@ -12,3 +12,5 @@ Win32Window   - Native Win32 GWindow implementation.  By Morgan McGuire <matrix@
 
 AudioDevice   - Sound interface that uses FMOD or SDL_Mixer.  By Morgan.
 
+CurveEditor   - GUI spline editor.  By Morgan
+
