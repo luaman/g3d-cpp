@@ -3,11 +3,6 @@
 
   Graphics hardware abstraction layer (wrapper for OpenGL).
 
-  Because per-pixel lighting interacts with texture units, this does
-  not abstract lighting.  If you want OpenGL lights, you have to
-  enable/disable and configure them yourself (render device will track
-  the glEnable(GL_LIGHTING) for you, however).
-
   You can freely mix OpenGL calls with RenderDevice, just make sure you put
   the state back the way you found it or you will confuse RenderDevice.
 
@@ -40,10 +35,10 @@ namespace G3D {
  */
 class Rect2D {
 public:
-    int                                 x;
-    int                                 y;
-    int                                 width;
-    int                                 height;
+    double                              x;
+    double                              y;
+    double                              width;
+    double                              height;
 
     Rect2D() : x(0), y(0), width(0), height(0) {}
     Rect2D(
@@ -51,10 +46,10 @@ public:
         double y,
         double width,
         double height) : 
-        x((int)x),
-        y((int)y),
-        width((int)width),
-        height((int)height) {}
+        x(x),
+        y(y),
+        width(width),
+        height(height) {}
 };
 
 
