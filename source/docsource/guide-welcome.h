@@ -33,6 +33,11 @@ Notes for Expert Users at the end of this chapter for more information.
 
 @section chapters Table of Contents
 
+This is the first release of the library to include this overview manual, and 
+not all sections are complete. However the individual entry points
+of the library are extensively documented and new overview content will
+arrive with each point release.
+
 <TABLE BORDER=0 WIDTH=75%>
  <TR><TD VALIGN=TOP WIDTH=33%><B>Chapter</B></TD><TD VALIGN=TOP><B>Topics</B></TD></TR>
 

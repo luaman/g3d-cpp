@@ -8,17 +8,20 @@ License</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
-  @section windows WindowsXP/2000
+  @section windows Windows XP & Windows 2000
 
    <OL>
    <LI>
    Download the latest g3d-xxx.zip from
    http://g3d-cpp.sf.net. 
    Unzip all of the files in the distribution to your
-   library directory (e.g. <CODE>c:\\libraries</CODE>).
+   library directory (e.g. <CODE>c:\\libraries</CODE>).  Note that the single download
+   contains precompiled binaries for MSVC++ 6, MSVC++ 7, gcc on Linux, and Xcode and gcc on OS X.
 
-   <LI>Download and install SDL <B>version 1.2.7</B> from
-   <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>
+   <LI>Download and install SDL version 1.2.7 from
+   <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>: <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.7-VC6.zip">Win32</A>, 
+   <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.7-1.i386.rpm">Linux</A>,
+   <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.7.pkg.tar.gz">OS X</A>
 
    <LI>Microsft Visual C++ 6.0 and Microsoft Visual C++ 7.0 (which comes as part of Microsoft Visual Studio .NET 2002 and 2003) 
 	require different versions of the library, and a few different installation steps. Precompiled binaries for MSVC 6 are located
@@ -26,8 +29,7 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 	G3D binaries, or you will have strange trouble, including linker errors and memory leaks. 
    </LI>
 
-   <LI>
-   If you're using MSVC 6:
+   <LI><B>MSVC++ 6:</B>
    <OL>
    <LI>Install 
    <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A>. 
@@ -64,22 +66,24 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
    include list.  Make sure it preceeds all other include directories.
    <LI>
    In Tools:Options:Directories, add the g3d lib directory 
-   (e.g. c:\\libraries\\g3d-6_00\\win32-lib for Windows.  On Linux
-   the directory is linux-lib and on OS/X it is osx-lib.) to the library
+   (e.g. c:\\libraries\\g3d-6_00\\win32-lib) to the library
    list.
-   <LI>
-
    </OL>
    </LI>
 
-   <LI>If you're using VC7:
-   Go to Tools:Options. Select the Projects heading, and within that heading, Visual C++
-   Directories. In that panel, select "Show Directories For: Include files." Add the %G3D
-   include directory, G3D_ROOT/include, and the SDL include directory, probably C:/SDL-1.2.7/include
-   In the same panel, select "Show Directories For: Library Files."
-   Add the %G3D library directory, G3D_ROOT/win32-7-lib.
+   <LI><B>MSVC++ 7 / .NET:</B>
+   <OL>
+   <LI>Go to Tools:Options. Select the Projects heading, and within that heading, Visual C++
+   Directories. 
+   <LI>In that panel, select "Show Directories For: Include files." 
+   <LI> Add the %G3D
+   include directory, G3D_ROOT/include, and the SDL include directory (e.g. C:/SDL-1.2.7/include)
+   <LI>In the same panel, select "Show Directories For: Library Files."
+   Add the %G3D library directory, G3D_ROOT/<B>win32-7-lib</B>.
+   </OL>
    </LI>
 
+  <LI>
    <B>For each project you create</B>, copy <CODE>SDL.dll</CODE>, <CODE>glut32.dll</CODE>, 
       and <CODE>zlib1.dll</CODE>
       to your program directory (or put them in Windows/System)
@@ -142,11 +146,11 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 
   You don't have to build %G3D to use %G3D; the instructions above walk you through 
   setting up your environment to use the precompiled %G3D binaries. You may <EM>want</em>
-  to build %G3D, in which case, we salute you! Reasons for wanting to build %G3D include...
+  to build %G3D in order to: 
   <UL>
-  <LI>Stepping into library functions while debugging
+  <LI>Step into library functions while debugging
   </LI>
-  <LI>Using an unsupported compiler
+  <LI>Use an unsupported compiler
   </LI>
   <LI>Customize the library code.
   </LI>
