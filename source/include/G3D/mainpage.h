@@ -544,8 +544,9 @@
 
    The 6.00 team:
    <BLOCKQUOTE>
-     <B>Morgan McGuire, James O'Sullivan, Kevin Egan, 
-        Nick Musurca, Ben Landon, Rob Hunter, Peter Sibley, Peter Hunt</B>
+     <B>Morgan McGuire, Dan Keefe, Peter Sibley,
+        James O'Sullivan, Kevin Egan, 
+        Nick Musurca, Ben Landon, Rob Hunter, Peter Hunt</B>
    </BLOCKQUOTE>
 
    This library contains code and resources contributed by the
@@ -594,6 +595,7 @@
    <BR>Sebastian Schuberth
    <BR>SGI
    <BR>Peter Sibley
+   <BR>Corey Taylor
    <BR>Pierre Terdiman
    <BR>Ben Trumbore
    <BR>Matthew Welch
