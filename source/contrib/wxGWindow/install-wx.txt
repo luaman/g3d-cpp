@@ -1,0 +1,30 @@
+Notes on installing wxWidgets 2.5.3 for Windows:
+
+
+Download wxWidgts 2.5.3 for windows:
+http://prdownloads.sourceforge.net/wxwindows/wxMSW-2.5.3-setup.zip
+
+2) Run installation and put it somewhere.  I put mine at C:\libraries\wxWidgets-2.5.3
+
+3) Open src/wxWindows.dsw into MSVC6.
+
+4) Edit the setup.h file under Headers/Setup folder under wxWindows to use:
+
+#define wxUSE_GLCANVAS       1
+
+5) Select the 'Release' target and then Rebuild All
+
+6) Select the 'Debug' target and then Rebuild All
+
+7) Add to your INCLUDE directories:
+   C:\libraries\wxWidgets-2.5.3\include    C:\libraries\wxWidgets-2.5.3\lib\vc_lib\msw
+
+8) Add to your LIBRARY directory:
+   C:\libraries\wxWidgets-2.5.3\lib\vc_lib
+
+
+To compile the demo project:
+
+1) Create a project and add cpp/source/contrib/wxGWindow/demo.cpp wxGWindow.cpp
+wxGWindow.h to it.
+
