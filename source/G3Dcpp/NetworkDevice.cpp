@@ -296,7 +296,22 @@ NetworkDevice::NetworkDevice() {
 
 
 std::string NetworkDevice::localHostName() const {
-    struct hostent* host = gethostbyname("localhost");
+
+    struct hostent* host = NULL;
+
+    /*    #ifdef G3D_WIN32
+        // On Windows, this returns the machine name.  On Linux
+        // it would just parrot back 'localhost'.
+        host = gethostbyname("localhost");
+    #else
+    */
+        char ac[128];
+        if (gethostname(ac, sizeof(ac)) == -1) {
+            if (debugLog) {debugLog->printf("Error while getting local host name\n");}
+            return "localhost";
+        }
+        host = gethostbyname(ac);
+        // #endif
     return host->h_name;
 }
 
