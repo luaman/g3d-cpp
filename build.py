@@ -349,16 +349,6 @@ def install(args, copyData=1):
     if (copyData):
         copyIfNewer('../data', installDir(args) + '/data')
 
-    # Build demos after install
-    curdir = os.getcwd()
-    os.chdir(installDir(args) + '/demos')
-    if (os.name != "nt"):
-        os.system('make')
-    else:
-       for demoName in demoList:
-           msdev(demoName + '/' + demoName + '.dsw', [demoName + ' - Win32 Debug'])
-    os.chdir(curdir)    
-
     setPermissions(args)
 
 ###############################################################################
