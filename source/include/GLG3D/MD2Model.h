@@ -306,11 +306,6 @@ public:
     const Array< Array<int> >& adjacentFaces() const;
 
     /**
-     TODO
-     */
-    const Array< Array<int> >& adjacentEdges() const;
-
-    /**
      @filename The tris.md2 file
      */
     virtual void load(const std::string& filename);

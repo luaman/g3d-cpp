@@ -348,7 +348,7 @@ void initAMD() {
 		}
 #else
         /*
-          TODO: ekern
+          TODO: james
 		asm(
 		"mov 0x8000001, %%eax                             "
 		"cpuid                                            "
