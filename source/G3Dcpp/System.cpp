@@ -40,6 +40,7 @@
     #include <stropts.h>
     #include <unistd.h>
     #include <sys/ioctl.h>
+    #include <sys/time.h>
 
 #elif defined(G3D_OSX)
 
@@ -50,6 +51,7 @@
     #include <sys/select.h>
     #include <termios.h>
     #include <unistd.h>
+    #include <sys/time.h>
 
 #endif
 
@@ -103,6 +105,13 @@ static bool					_cpuID              = false;
 static G3DEndian            _machineEndian      = G3D_LITTLE_ENDIAN;
 static std::string          _cpuArch            = "Unknown";
 static std::string          _operatingSystem    = "Unknown";
+
+#ifdef G3D_WIN32
+static LARGE_INTEGER        _start;
+static LARGE_INTEGER        _counterFrequency;
+#else
+static struct timeval       _start;
+#endif
 
 static int	 	 maxSupportedCPUIDLevel = 0;
 static int    maxSupportedExtendedLevel = 0;
@@ -306,6 +315,8 @@ void init() {
         _operatingSystem = "Linux";
         
 	#endif
+
+    System::setStartTick();
 
 	getStandardProcessorExtensions();
 }
@@ -767,8 +778,29 @@ int System::consoleReadKey() {
     #endif
 }
 
+void System::setStartTick() {
+#ifdef G3D_WIN32
+    if(QueryPerformanceFrequency(&_counterFrequency))
+    {
+        QueryPerformanceCounter(&_start);
+    }
+#else
+    gettimeofday(&_start, NULL);
+#endif
+}
+
 RealTime System::getTick() { 
-    return 0;
+#ifdef G3D_WIN32
+    LARGE_INTEGER now;
+    QueryPerformanceCounter(&now);
+
+    return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency);
+#else
+    struct timeval now;
+    gettimeofday(&now, NULL);
+
+    return ((now.tv_sec-_start.tv_sec)*1000+(now.tv_usec-_start.tv_usec)/1000);
+#endif
 }
 
 RealTime System::getLocalTime() {

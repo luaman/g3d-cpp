@@ -125,6 +125,12 @@ public:
     static int consoleReadKey();
 
     /**
+     * Sets the time of when init is executed.  
+     * This is used as a base to compare against in getTick().
+     * */
+    static void setStartTick();
+
+    /**
      * Returns a highly accurate time in milliseconds that
      * is relative to an arbitrary per-platform baseline
      * (e.g. the time the program started)
