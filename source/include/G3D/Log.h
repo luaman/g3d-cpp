@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @cite Backtrace by Aaron Orenstein
   @created 2001-08-04
-  @edited  2002-12-07
+  @edited  2003-03-30
  */
 
 #ifndef G3D_LOG_H
@@ -13,12 +13,11 @@
 #include <stdio.h>
 #include <string>
 
-#ifndef _WIN32
+#ifndef _MSC_VER
     #include <stdarg.h>
-#endif
-
-#ifndef __cdecl
-    #define __cdecl __attribute__((cdecl))
+    #ifndef __cdecl
+        #define __cdecl __attribute__((cdecl))
+    #endif
 #endif
 
 namespace G3D {

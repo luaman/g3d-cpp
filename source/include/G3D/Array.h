@@ -16,12 +16,12 @@
 
 #include "G3D/debug.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
     #include <new.h>
-#endif
-
-#ifndef __cdecl
-    #define __cdecl __attribute__((cdecl))
+#else
+    #ifndef __cdecl
+        #define __cdecl __attribute__((cdecl))
+    #endif
 #endif
 
 namespace G3D {

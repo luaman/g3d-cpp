@@ -23,8 +23,10 @@
     #include <stdarg.h>
 #endif
 
-#ifndef __cdecl
-    #define __cdecl __attribute__((cdecl))
+#ifndef _MSC_VER
+    #ifndef __cdecl
+        #define __cdecl __attribute__((cdecl))
+    #endif
 #endif
 
 namespace G3D {
