@@ -332,10 +332,11 @@ void init() {
             arch = "Unknown";
         }
 
+        uint32 maxAddr = (uint32)systemInfo.lpMaximumApplicationAddress;
         _cpuArch = format(
                     "%d x %d-bit %s processor",
                     systemInfo.dwNumberOfProcessors,
-                    (int)(::log((uint32)systemInfo.lpMaximumApplicationAddress) / ::log(2) + 2),
+                    (int)(::log((double)maxAddr) / ::log(2) + 2),
                     arch);
 
         OSVERSIONINFO osVersionInfo;

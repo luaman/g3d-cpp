@@ -264,7 +264,7 @@ void GFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfil
         out.writeInt16(cw);
     }
 
-    int width = (int)sqrt(pixel.size());
+    int width = (int)sqrt((double)pixel.size());
     
     // Autodetect baseline from capital E
     {

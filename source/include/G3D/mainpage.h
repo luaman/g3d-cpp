@@ -532,6 +532,7 @@
    following people, or based open code and articles by them:
 
    <BLOCKQUOTE>
+   <BR>David Baszucki
    <BR>Seth Block
    <BR>Nick Capens
    <BR>John Chisholm
