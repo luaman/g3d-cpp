@@ -20,8 +20,8 @@ AC_CHECK_LIB([GL], [glBegin], [], [
 			  AC_MSG_ERROR([Can't find libGL])])
 AC_CHECK_LIB([GLU], [gluBuild2DMipmaps], [], [
 			  AC_MSG_ERROR([Can't find libGLU])])
-AC_CHECK_LIB([SDL], [SDL_Init], [], [
-			  AC_MSG_ERROR([Can't find libSDL])]) 
+#AC_CHECK_LIB([SDL], [SDL_Init], [], [
+#			  AC_MSG_ERROR([Can't find libSDL])]) 
 AC_CHECK_LIB([jpeg], [main], [], [
 			  AC_MSG_ERROR([Can't find libjpeg])])
 # FIXME: Replace `main' with a function in `-lz':
@@ -80,6 +80,7 @@ AC_CONFIG_FILES([Makefile
 				 source/demos/IFS_Demo/Makefile
 				 source/demos/GLG3D_Demo/Makefile
 				 source/demos/Collision_Demo/Makefile
+				 source/demos/GLProgram_Demo/Makefile
 				 source/include/Makefile])
 
 AC_OUTPUT
