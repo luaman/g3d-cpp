@@ -15,7 +15,10 @@
 #define G3D_ARRAY_H
 
 #include "./debug.h"
-#include <new.h>
+
+#ifdef _WIN32
+    #include <new.h>
+#endif
 
 #ifndef _WIN32
   #define __cdecl
