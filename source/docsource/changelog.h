@@ -12,6 +12,13 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> VARArea now updates allocation sizes instead of VAR internally.  Added
+          more getter methods to VARArea to futher remove VAR from VARArea internals. [Corey]
+     <LI> VARSystem.cpp moved to VARArea.cpp - filename change only! [Corey]
+     <LI> Linux build system updated:
+          Builds only static libraries, Does not require libtool/libtoolize anymore,
+          Does not check for or require libraries that normally linked with the .so files,
+          Automatically builds Test and all Demo projects with iCompile during install. (add more) [Corey]
      <LI> G3D::Quat::deserialize, G3D::Quat::serialize
      <LI> G3D::PhysicsFrame::deserialize, G3D::PhysicsFrame::serialize
      <LI> G3D::TextInput::Options::singleQuotedStrings (defaults to true, changing the behavior
@@ -24,7 +31,7 @@
           the VARArea abstraction.
      <LI> GLG3D.h no longer links against SDLMain.lib on Windows if _CONSOLE is defined
           (since console programs have no WinMain).
-     <LI> SDL's redefinition of main is cleared when not linking sdlmain.lib
+     <LI> SDL's redefinition of main is cleared when not linking sdlmain.lib [Corey]
      <LI> Moved contrib/Win32Window to G3D::Win32Window
      <LI> contrib/Image [Morgan]
      <LI> contrib/wxGWindow [Morgan]
@@ -39,6 +46,11 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1038733 ] GWindow cannot set icon properly [Corey]
+     <LI> Fix: [ 939400 ] Linux mouse set position (Wild camera swinging on startup) [Corey]
+     <LI> Fix: [ 1042591 ] Software GL Causes Assertion [Corey]
+     <LI> Fix: [ 1036634 ] debugAssert doesn't work on MSVC 7 [Corey]
+     <LI> Fix: [ 1049024 ] Fix compile warnings from gcc/Linux build [Corey]
      <LI> Fix: [ 1051272 ] Win32Window doesn't use GWindowSettings properly. [Corey]
      <LI> Fix: Win32Window clips the proper cursor region during input capture. [Corey]
      <LI> Fix: GWindows now center and maximize on the primary monitor for Windows.
