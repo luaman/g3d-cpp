@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-06-12
+# @edited  2003-06-17
 #
 # Each build target is a procedure.
 #
@@ -47,24 +47,28 @@ installDir = 'install/g3d-' + version
 #                                                                             #
 ###############################################################################
 
-def shell(cmd):
-    mkdir('temp')
-    print cmd
-    os.system(cmd + ' > temp/system.tmp')
-    result = ''
-    for line in fileinput.input('temp/system.tmp'):
-        result = result + line
-
-    return result
    
 def linuxCheckVersion():
-    print 'This build script requires g++ 3.2, automake 1.7, aclocal 1.7, doxygen 1.2 and python 2.0.'
-    print 'You may experience problems if you are not using these.  Some information about your system:\n'
-    print shell(os.environ['CXX'] + ' --version')
-    print shell('automake-1.7 --version')
-    print shell('aclocal-1.7 --version')
-    print shell('doxygen --version')
-    print shell('python -V')
+    print 'Checking tool versions...'
+    print
+
+    compiler = ''
+    if os.environ.has_key('CXX'):
+        compiler = os.environ['CXX']
+    elif os.environ.has_key('CC'):
+        compiler = os.environ['CC']
+    else:
+        print '**Error: you need to set the CXX and CC environment variables.**'
+        print 'See readme.html'
+        sys.exit(-1)
+    
+
+    checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')
+    checkVersion('automake-1.7 --version', '1.7', 'Requires automake 1.7 or later.')
+    checkVersion('aclocal-1.7 --version', '1.7', 'Requires aclocal 1.7 or later.')
+    checkVersion('doxygen --version', '1.2', 'Requires doxygen 1.3 or later.')
+    checkVersion('python -V', '2.0', 'Requires Python 2.0 or later.', 1)
+
 
 def lib():
     x = 0

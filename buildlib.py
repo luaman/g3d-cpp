@@ -264,6 +264,8 @@ def removeQuotes(s):
     return s
 
 
+###############################################################################
+
 """Run a program with command line arguments.
 
 args must be a list.
@@ -296,3 +298,105 @@ def run(program, args = []):
     args.pop(0)
 
     return exitcode
+
+
+###############################################################################
+def isDigit(c):
+    return (c >= '0') and (c <= '9')
+
+"""
+  verInfo: A string containing (somewhere) a version number
+"""
+def findVersion(verInfo):
+
+    # Look for a number followed by a period.
+    for i in xrange(1, len(verInfo) - 1):
+        if verInfo[i] == '.' and \
+           isDigit(verInfo[i - 1]) and \
+           isDigit(verInfo[i + 1]):
+
+            # We've found a version number.  Walk back to the
+            # beginning.
+            i = i - 2
+            while (i > 0) and isDigit(verInfo[i]):
+                i = i - 1
+            i = i + 1
+
+            version = []
+            while (i < len(verInfo)) and isDigit(verInfo[i]):
+                d = ''
+
+                # Now walk forward
+                while (i < len(verInfo)) and isDigit(verInfo[i]):
+                    d = d + verInfo[i]
+                    i = i + 1
+
+                version.append(int(d))
+
+                # Skip the non-digit
+                i = i + 1
+           
+            return version     
+
+    return [0]
+
+###############################################################################
+
+"""
+  Errors out if the version number is not at least minVerString
+
+  e.g. checkVersion('python -V', '2.0', 'Requires python 2.0', 1)
+   
+  stderr: must be set to true if the program prints its version to stderr
+"""
+def checkVersion(verCmdString, minVerString, errString, stderr = 0):
+
+    actualVerString = shell(verCmdString, stderr)
+    print
+    print actualVerString
+
+    actualVer = findVersion(actualVerString)
+    minVer    = findVersion(minVerString)
+
+    # Make the lengths match
+
+    while (len(actualVer) < len(minVer)):
+        actualVer.append(0)
+
+    while (len(actualVer) > len(minVer)):
+        minVer.append(0)
+
+    # Check the version from most significant bit to least.
+    for i in xrange(0, len(minVer)):
+        if actualVer[i] < minVer[i]:
+            print "*** Error: unsupported tool version ***"
+            print errString
+            print
+            sys.exit(-4)
+        
+        if actualVer[i] > minVer[i]:
+            # We are over qualified
+            return
+
+    # If the for loop completes we exactly meet the min requirement.
+    
+###############################################################################
+
+def shell(cmd, stderr = 0):
+    mkdir('temp')
+    print cmd
+    
+    try:
+        os.remove('tmp/system.tmp')
+    except:
+        pass
+
+    if (stderr):
+        os.system(cmd + ' >& temp/system.tmp')
+    else:
+        os.system(cmd + ' > temp/system.tmp')
+    result = ''
+    for line in fileinput.input('temp/system.tmp'):
+        result = result + line
+
+    return result
