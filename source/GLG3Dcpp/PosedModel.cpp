@@ -138,8 +138,8 @@ const Array<MeshAlg::Edge>& PosedModelWrapper::edges() const {
 }
 
 
-const Array< Array<int> >& PosedModelWrapper::adjacentFaces() const {
-    return model->adjacentFaces();
+const Array<MeshAlg::Vertex>& PosedModelWrapper::vertices() const {
+    return model->vertices();
 }
 
 

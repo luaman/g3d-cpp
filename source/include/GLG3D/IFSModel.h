@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2004-02-15
+  @edited  2004-02-19
  */ 
 
 
@@ -48,7 +48,10 @@ private:
         virtual const MeshAlg::Geometry& objectSpaceGeometry() const;
         virtual const Array<MeshAlg::Face>& faces() const;
         virtual const Array<MeshAlg::Edge>& edges() const;
-        virtual const Array< Array<int> >& adjacentFaces() const;
+        virtual const Array<MeshAlg::Vertex>& vertices() const;
+        virtual const Array<MeshAlg::Face>& weldedFaces() const;
+        virtual const Array<MeshAlg::Edge>& weldedEdges() const;
+        virtual const Array<MeshAlg::Vertex>& weldedVertices() const;
         virtual const Array<int>& triangleIndices() const;
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
@@ -62,9 +65,12 @@ private:
     MeshAlg::Geometry           geometry;
     Array<int>                  indexArray;
     Array<Vector3>              faceNormalArray;
+    Array<MeshAlg::Face>        weldedFaceArray;
+    Array<MeshAlg::Edge>        weldedEdgeArray;
+    Array<MeshAlg::Vertex>      weldedVertexArray;
     Array<MeshAlg::Face>        faceArray;
-    Array< Array<int> >         adjacentFaceArray;
     Array<MeshAlg::Edge>        edgeArray;
+    Array<MeshAlg::Vertex>      vertexArray;
     Sphere                      boundingSphere;
     Box                         boundingBox;
     int                         numBrokenEdges;

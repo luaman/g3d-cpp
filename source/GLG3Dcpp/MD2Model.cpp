@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-08-07
- @edited  2004-02-16
+ @edited  2004-02-18
  */
 
 #include "G3D/platform.h"
@@ -65,15 +65,32 @@ bool MD2Model::Pose::operator==(const MD2Model::Pose& other) const {
 
 
 const Array<MeshAlg::Face>& MD2Model::faces() const {
-
 	return faceArray;
-
 }
 
 
-const Array<MeshAlg::Edge>& MD2Model::geometricEdges() const {
+const Array<MeshAlg::Edge>& MD2Model::edges() const {
 	return edgeArray;
+}
 
+
+const Array<MeshAlg::Vertex>& MD2Model::vertices() const {
+	return vertexArray;
+}
+
+
+const Array<MeshAlg::Face>& MD2Model::weldedFaces() const {
+	return weldedFaceArray;
+}
+
+
+const Array<MeshAlg::Edge>& MD2Model::weldedEdges() const {
+	return weldedEdgeArray;
+}
+
+
+const Array<MeshAlg::Vertex>& MD2Model::weldedVertices() const {
+	return weldedVertexArray;
 }
 
 
@@ -545,9 +562,10 @@ size_t MD2Model::mainMemorySize() const {
     size_t indexSize   = indexArray.size() * sizeof(int);
     size_t faceSize    = faceArray.size() * sizeof(MeshAlg::Face);
     size_t texSize     = _texCoordArray.size() * sizeof(Vector2int16);
-    size_t valentSize  = adjacentFaceArray.size() * sizeof(Array<int>);
-    for (int i = 0; i < adjacentFaceArray.size(); ++i) {
-        valentSize += adjacentFaceArray[i].size() * sizeof(int);
+    size_t valentSize  = vertexArray.size() * sizeof(Array<MeshAlg::Vertex>);
+    for (int i = 0; i < vertexArray.size(); ++i) {
+        valentSize += vertexArray[i].faceIndex.size() * sizeof(int);
+        valentSize += vertexArray[i].edgeIndex.size() * sizeof(int);
     }
 
     size_t primitiveSize  = primitiveArray.size() * sizeof(Primitive);
@@ -803,8 +821,23 @@ const Array<MeshAlg::Edge>& MD2Model::PosedMD2Model::edges() const {
 }
 
 
-const Array< Array<int> >& MD2Model::PosedMD2Model::adjacentFaces() const {
-    return model->adjacentFaceArray;
+const Array<MeshAlg::Vertex>& MD2Model::PosedMD2Model::vertices() const {
+    return model->vertexArray;
+}
+
+
+const Array<MeshAlg::Face>& MD2Model::PosedMD2Model::weldedFaces() const {
+    return model->weldedFaceArray;
+}
+
+
+const Array<MeshAlg::Edge>& MD2Model::PosedMD2Model::weldedEdges() const {
+    return model->weldedEdgeArray;
+}
+
+
+const Array<MeshAlg::Vertex>& MD2Model::PosedMD2Model::weldedVertices() const {
+    return model->weldedVertexArray;
 }
 
 

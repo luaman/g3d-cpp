@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2004-02-02
+  @edited  2004-02-18
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -51,9 +51,29 @@ MeshAlg::Geometry& MeshAlg::Geometry::operator=(const MeshAlg::Geometry& src) {
 
 
 void MeshAlg::computeNormals(
-    const Array<Vector3>&   vertexArray,
+    const Array<Vector3>&   vertexGeometry,
     const Array<Face>&      faceArray,
     const Array< Array<int> >& adjacentFaceArray,
+    Array<Vector3>&         vertexNormalArray,
+    Array<Vector3>&         faceNormalArray) {
+
+    // Construct a fake vertex array for backwards compatibility
+    Array<Vertex> fakeVertexArray(adjacentFaceArray.size());
+
+    for (int v = 0; v < adjacentFaceArray.size(); ++v) {
+        fakeVertexArray[v].faceIndex = adjacentFaceArray[v];
+        // We leave out the edges because they aren't used to compute normals
+    }
+
+    computeNormals(vertexGeometry, faceArray, fakeVertexArray, 
+        vertexNormalArray, faceNormalArray);
+}
+
+    
+void MeshAlg::computeNormals(
+    const Array<Vector3>&   vertexGeometry,
+    const Array<Face>&      faceArray,
+    const Array<Vertex>&    vertexArray,
     Array<Vector3>&         vertexNormalArray,
     Array<Vector3>&         faceNormalArray) {
 
@@ -64,18 +84,18 @@ void MeshAlg::computeNormals(
 
         Vector3 vertex[3];
         for (int j = 0; j < 3; ++j) {
-            vertex[j] = vertexArray[face.vertexIndex[j]];
+            vertex[j] = vertexGeometry[face.vertexIndex[j]];
         }
 
         faceNormalArray[f] = (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]).direction();
     }
 
     // Per-vertex normals, computed by averaging
-    vertexNormalArray.resize(vertexArray.size());
+    vertexNormalArray.resize(vertexGeometry.size());
     for (int v = 0; v < vertexNormalArray.size(); ++v) {
         Vector3 sum = Vector3::ZERO;
-        for (int k = 0; k < adjacentFaceArray[v].size(); ++k) {
-            int f = adjacentFaceArray[v][k];
+        for (int k = 0; k < vertexArray[v].faceIndex.size(); ++k) {
+            const int f = vertexArray[v].faceIndex[k];
             sum += faceNormalArray[f];
         }
         vertexNormalArray[v] = sum.direction();
@@ -549,5 +569,7 @@ void MeshAlg::computeTangentSpaceBasis(
         binormal[v] = binormal[v].direction();
     }
 }
+
+
 
 } // G3D namespace

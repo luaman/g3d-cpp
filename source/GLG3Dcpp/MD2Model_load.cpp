@@ -79,7 +79,7 @@ void MD2Model::reset() {
     indexArray.clear();
     _texCoordArray.clear();
     faceArray.clear();
-    adjacentFaceArray.clear();
+    vertexArray.clear();
     edgeArray.clear();
 }
 
@@ -265,7 +265,11 @@ void MD2Model::load(const std::string& filename) {
     }
 
 
-    MeshAlg::computeAdjacency(keyFrame[0].vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
+    MeshAlg::computeAdjacency(keyFrame[0].vertexArray, indexArray, faceArray, edgeArray, vertexArray);
+    weldedFaceArray = faceArray;
+    weldedEdgeArray = edgeArray;
+    weldedVertexArray = vertexArray;
+    MeshAlg::weldAdjacency(keyFrame[0].vertexArray, weldedFaceArray, weldedEdgeArray, weldedVertexArray);
 
     numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
 }

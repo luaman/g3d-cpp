@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2004-02-16
+ @edited  2004-02-18
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -188,7 +188,10 @@ protected:
         virtual const MeshAlg::Geometry& objectSpaceGeometry() const;
         virtual const Array<MeshAlg::Face>& faces() const;
         virtual const Array<MeshAlg::Edge>& edges() const;
-        virtual const Array< Array<int> >& adjacentFaces() const;
+        virtual const Array<MeshAlg::Vertex>& vertices() const;
+        virtual const Array<MeshAlg::Face>& weldedFaces() const;
+        virtual const Array<MeshAlg::Edge>& weldedEdges() const;
+        virtual const Array<MeshAlg::Vertex>& weldedVertices() const;
         virtual const Array<int>& triangleIndices() const;
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
@@ -326,9 +329,8 @@ protected:
      */
     virtual void reset();
 
-
     /**
-     Called from PosedMD2Model::render
+     Called from PosedMD2Model::render.
      */
     void render(RenderDevice* renderDevice, const Pose& pose);
 
@@ -341,8 +343,11 @@ protected:
 
     Array<Vector3>              faceNormalArray;
     Array<MeshAlg::Face>        faceArray;
-    Array< Array<int> >         adjacentFaceArray;
+    Array<MeshAlg::Vertex>      vertexArray;
     Array<MeshAlg::Edge>        edgeArray;
+    Array<MeshAlg::Face>        weldedFaceArray;
+    Array<MeshAlg::Vertex>      weldedVertexArray;
+    Array<MeshAlg::Edge>        weldedEdgeArray;
     Sphere                      boundingSphere;
     Box                         boundingBox;
     int                         numBrokenEdges;
@@ -377,23 +382,14 @@ public:
     }
 
     const Array<MeshAlg::Face>& faces() const;
+    const Array<MeshAlg::Face>& weldedFaces() const;
 
-    /**
-     Edges built by assuming colocated vertices are identical.
+    const Array<MeshAlg::Edge>& edges() const;
+    const Array<MeshAlg::Edge>& weldedEdges() const;
 
-     Assumes that vertices colocated in the 0 frame of the STAND animation 
-     are colocated for all frames.
-
-     When a degenerate polygon lies along an edge, that edge is present
-     in this array once, not three times.
-     */
-    const Array<MeshAlg::Edge>& geometricEdges() const;
-
-    /**
-     adjacentFaces()[v] is an array of indices of faces that touch vertex v.
-     Note that two vertices may be colocated but have different indices.
-     */
-    const Array< Array<int> >& adjacentFaces() const;
+    /** You must get the geometry for the vertex positions-- this only specifies adjacency */
+    const Array<MeshAlg::Vertex>& vertices() const;
+    const Array<MeshAlg::Vertex>& weldedVertices() const;
 
     /**
      Render the wireframe mesh.

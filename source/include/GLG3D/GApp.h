@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-01-28
+ @edited  2003-02-19
  */
 
 #ifndef G3D_GAPP_H
@@ -26,6 +26,16 @@ public:
     RenderDeviceSettings    window;
 
     /**
+     If "<AUTO>", G3D will search for the standard
+     data files.  It is recommended that you override this
+     default and set dataDir to a directory relative
+     to your executable (e.g. "./data/")
+     so your programs can be distributed to users who
+     do not have full the G3D data directory.
+     */
+    std::string             dataDir;
+
+    /**
      Can be relative to the G3D data directory (e.g. "font/dominant.fnt")
      or relative to the current directory.
      Default is "console-small.fnt"
@@ -35,7 +45,7 @@ public:
     /** When true, the networkDevice is initialized.  Defaults to true. */
     bool                    useNetwork;
 
-    GAppSettings() : debugFontName("console-small.fnt"), useNetwork(true) {
+    GAppSettings() : debugFontName("console-small.fnt"), useNetwork(true), dataDir("<AUTO>") {
     }
 };
 
@@ -86,6 +96,16 @@ protected:
 
 public:
 
+    /** Initialized to GAppSettings::dataDir, or if that is "<AUTO>", 
+        to System::demoFindData(). To make your program
+        distributable, override the default 
+        and copy all data files you need to a local directory.
+        Recommended setting is "data/" or "./", depending on where
+        you put your data relative to the executable.
+
+        Your data directory must contain the default debugging font, 
+        "console-small.fnt", unless you change it.
+    */
     std::string             dataDir;
     Log*                    debugLog;
     RenderDevice*           renderDevice;

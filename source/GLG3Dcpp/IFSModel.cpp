@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2004-02-16
+  @edited  2004-02-18
  */ 
 
 
@@ -32,7 +32,7 @@ void IFSModel::reset() {
     geometry.clear();
     indexArray.clear();
     faceArray.clear();
-    adjacentFaceArray.clear();
+    vertexArray.clear();
     edgeArray.clear();
 }
 
@@ -105,9 +105,12 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
     debugAssert(geometry.vertexArray.size() > 0);
     debugAssert(indexArray.size() > 0);
 
-    MeshAlg::computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
-    MeshAlg::computeNormals(geometry.vertexArray, faceArray, adjacentFaceArray, geometry.normalArray, faceNormalArray);
-
+    MeshAlg::computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, vertexArray);
+    weldedFaceArray = faceArray;
+    weldedEdgeArray = edgeArray;
+    weldedVertexArray = vertexArray;
+    MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
+    MeshAlg::computeNormals(geometry.vertexArray, faceArray, vertexArray, geometry.normalArray, faceNormalArray);
     MeshAlg::computeBounds(geometry.vertexArray, boundingBox, boundingSphere);
 
     numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
@@ -119,9 +122,10 @@ size_t IFSModel::mainMemorySize() const {
     size_t frameSize   = sizeof(MeshAlg::Geometry)  + (sizeof(Vector3) + sizeof(Vector3)) * geometry.vertexArray.size();
     size_t indexSize   = indexArray.size() * sizeof(int);
     size_t faceSize    = faceArray.size() * sizeof(MeshAlg::Face);
-    size_t valentSize  = adjacentFaceArray.size() * sizeof(Array<int>);
-    for (int i = 0; i < adjacentFaceArray.size(); ++i) {
-        valentSize += adjacentFaceArray[i].size() * sizeof(int);
+    size_t valentSize  = vertexArray.size() * sizeof(Array<MeshAlg::Vertex>);
+    for (int i = 0; i < vertexArray.size(); ++i) {
+        valentSize += vertexArray[i].faceIndex.size() * sizeof(int);
+        valentSize += vertexArray[i].edgeIndex.size() * sizeof(int);
     }
 
     size_t edgeSize    = edgeArray.size() * sizeof(MeshAlg::Edge);
@@ -266,8 +270,23 @@ const Array<MeshAlg::Edge>& IFSModel::PosedIFSModel::edges() const {
 }
 
 
-const Array< Array<int> >& IFSModel::PosedIFSModel::adjacentFaces() const {
-    return model->adjacentFaceArray;
+const Array<MeshAlg::Vertex>& IFSModel::PosedIFSModel::vertices() const {
+    return model->vertexArray;
+}
+
+
+const Array<MeshAlg::Face>& IFSModel::PosedIFSModel::weldedFaces() const {
+    return model->weldedFaceArray;
+}
+
+
+const Array<MeshAlg::Edge>& IFSModel::PosedIFSModel::weldedEdges() const {
+    return model->weldedEdgeArray;
+}
+
+
+const Array<MeshAlg::Vertex>& IFSModel::PosedIFSModel::weldedVertices() const {
+    return model->weldedVertexArray;
 }
 
 

@@ -1124,7 +1124,7 @@ void testAdjacency() {
         debugAssert(edgeArray[3].boundary());
         debugAssert(edgeArray[4].boundary());
     }
-{
+    {
         // Test Welding
 
 
@@ -1184,10 +1184,16 @@ void testAdjacency() {
         MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
 
         MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+        for (int e = 0; e < edgeArray.size(); ++e) {
+            printf("edge[%d] = [%d %d %d %d]\n",
+                e, edgeArray[e].vertexIndex[0], edgeArray[e].vertexIndex[1],
+                edgeArray[e].faceIndex[0], edgeArray[e].faceIndex[1]);
+        }
+
 
         debugAssert(faceArray.size() == 2);
         debugAssert(edgeArray.size() == 5);
-        debugAssert(vertexArray.size() == 5);
+        debugAssert(vertexArray.size() == 6);
 
         debugAssert(! edgeArray[0].boundary());
         debugAssert(edgeArray[1].boundary());

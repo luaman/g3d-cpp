@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2004-02-16
+  @edited  2004-02-18
  */ 
 
 #ifndef GLG3D_POSEDMODEL_H
@@ -87,11 +87,23 @@ public:
 
     // Returns a reference rather than filling out an array because most
     // PosedModels have this information available.
+    /**
+      Adjacency information respecting the underlying connectivity
+      of the mesh-- colocated vertices are treated as distinct.
+     */
     virtual const Array<MeshAlg::Face>& faces() const = 0;
 
     virtual const Array<MeshAlg::Edge>& edges() const = 0;
 
-    virtual const Array< Array<int> >& adjacentFaces() const = 0;
+    virtual const Array<MeshAlg::Vertex>& vertices() const = 0;
+
+    /** Contain adjacency information that merges colocated vertices
+        (see MeshAlg::weldAdjacency) */
+    virtual const Array<MeshAlg::Face>& weldedFaces() const = 0;
+
+    virtual const Array<MeshAlg::Edge>& weldedEdges() const = 0;
+
+    virtual const Array<MeshAlg::Vertex>& weldedVertices() const = 0;
 
     virtual const Array<int>& triangleIndices() const = 0;
 
@@ -150,11 +162,17 @@ public:
 
     virtual const Array<MeshAlg::Edge>& edges() const;
 
+    virtual const Array<MeshAlg::Vertex>& vertices() const;
+
+    virtual const Array<MeshAlg::Face>& weldedFaces() const;
+
+    virtual const Array<MeshAlg::Edge>& weldedEdges() const;
+
+    virtual const Array<MeshAlg::Vertex>& weldedVertices() const;
+
     virtual void getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
     virtual void getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
-
-    virtual const Array< Array<int> >& adjacentFaces() const;
 
     virtual const Array<int>& triangleIndices() const;
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-01-28
+ @edited  2004-02-19
  */
 
 #include "G3D/platform.h"
@@ -29,7 +29,11 @@ GApp::GApp(const GAppSettings& settings) {
     endProgram        = false;
     _debugControllerWasActive = false;
 
-    dataDir = demoFindData(false);
+    if (settings.dataDir == "<AUTO>") {
+        dataDir = demoFindData(false);
+    } else {
+        dataDir = settings.dataDir;
+    }
 
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
@@ -77,6 +81,12 @@ void GApp::loadFont(const std::string& fontName) {
     if (fileExists(filename)) {
         debugFont = GFont::fromFile(renderDevice, filename);
     } else {
+        debugLog->printf(
+            "Warning: G3D::GApp could not load font \"%s\".\n"
+            "This may be because the G3D::GAppSettings::dataDir was not\n"
+            "properly set in main().\n",
+            filename.c_str());
+
         debugFont = NULL;
     }
 }

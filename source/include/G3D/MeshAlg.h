@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2004-02-17
+ @edited  2004-02-18
 */
 
 #ifndef G3D_MESHALG_H
@@ -19,13 +19,15 @@
 namespace G3D {
 
 /**
-  Indexed mesh algorithms.  You have to build your own mesh class.
+  Indexed <B>mesh alg</B>orithms.  You have to build your own mesh class.
   <P>
-  (No mesh class is provided with G3D because there isn't an "ideal" 
-  mesh format-- you may want keyframed animation, skeletal animation,
-  texture coordinates, etc.)
-
-  */
+  No mesh class is provided with G3D because there isn't an "ideal" 
+  mesh format-- one application needs keyframed animation, another
+  skeletal animation, a third texture coordinates, a fourth
+  cannot precompute information, etc.  Instead of compromising, this
+  class implements the hard parts of mesh computation and you can write
+  your own ideal mesh class on top of it.
+  */ 
 class MeshAlg {
 public:
 
@@ -232,8 +234,8 @@ public:
      @param vertexArray Vertex positions to use when deciding colocation.
      @param indexArray  Order to traverse vertices to make triangles
      @param faceArray   <I>Output</I>
-     @param edgeArray   <I>Output</I> 
-     @param vertexArray   <I>Output</I> 
+     @param edgeArray   <I>Output</I>.  Sorted so that boundary edges are at the end of the array. 
+     @param vertexArray <I>Output</I> 
      */
     static void computeAdjacency(
         const Array<Vector3>&   vertexGeometry,
@@ -282,6 +284,12 @@ private:
         Vector3&        tangent, 
         Vector3&        binormal);
 
+    /** Helper for weldAdjacency */
+    static void weldBoundaryEdges(
+        Array<Face>&       faceArray,
+        Array<Edge>&       edgeArray,
+        Array<Vertex>&     vertexArray);
+
 public:
 
     /**
@@ -307,14 +315,22 @@ public:
         Array<Vector3>&             tangent,
         Array<Vector3>&             binormal);
 
+    /** @deprecated */
+    static void computeNormals(
+        const Array<Vector3>&   vertexArray,
+        const Array<Face>&      faceArray,
+        const Array< Array<int> >& adjacentFaceArray,
+        Array<Vector3>&         vertexNormalArray,
+        Array<Vector3>&         faceNormalArray);
+
     /**
      @param vertexNormalArray Output. Computed by averaging adjacent face normals
      @param faceNormalArray Output. 
     */
     static void computeNormals(
-        const Array<Vector3>&   vertexArray,
+        const Array<Vector3>&   vertexGeometry,
         const Array<Face>&      faceArray,
-        const Array< Array<int> >& adjacentFaceArray,
+        const Array<Vertex>&    vertexArray,
         Array<Vector3>&         vertexNormalArray,
         Array<Vector3>&         faceNormalArray);
 
@@ -352,9 +368,9 @@ public:
     /**
      Welds nearby and colocated elements of the <I>oldVertexArray</I> together so that
      <I>newVertexArray</I> contains no vertices within <I>radius</I> of one another.
+     Every vertex in newVertexPositions also appears in oldVertexPositions.
      This is useful for downsampling meshes and welding cracks created by artist errors
-     or numerical imprecision.  It is not guaranteed to fix cracks but the probability of
-     not fixing them (with a suitablly large radius) approaches zero.
+     or numerical imprecision.  
 
      The two integer arrays map indices back and forth between the arrays according to:
      <PRE>
@@ -362,8 +378,8 @@ public:
      oldVertexArray[oi] == newVertexArray[toNew[ni]]
      </PRE>
 
-     Note that newVertexArray is never longer than oldVertexArray and is shorter when
-     vertices are welded.
+     Note that newVertexPositions is never longer than oldVertexPositions
+     and is shorter when vertices are welded.
 
      Welding with a large radius will effectively compute a lower level of detail for
      the mesh.
@@ -372,16 +388,64 @@ public:
      a uniform spatial grid is used to achieve nearly constant time vertex collapses
      for uniformly distributed vertices.
 
+     It is sometimes desirable to keep the original vertex ordering but 
+     identify the unique vertices.  The following code computes 
+     array canonical s.t. canonical[v] = first occurance of 
+     a vertex near oldVertexPositions[v] in oldVertexPositions.
+
+     <PRE>
+        Array<int> canonical(oldVertexPositions.size()), toNew, toOld;
+        computeWeld(oldVertexPositions, Array<Vector3>(), toNew, toOld, radius);
+        for (int v = 0; v < canonical.size(); ++v) {
+            canonical[v] = toOld[toNew[v]];
+        }
+     </PRE>
+
+     See also G3D::MeshAlg::weldAdjacency.
+
      @cite The method is that described as the 'Grouper' in Baum, Mann, Smith, and Winget, 
      Making Radiosity Usable: Automatic Preprocessing and Meshing Techniques for
      the Generation of Accurate Radiosity Solutions, Computer Graphics vol 25, no 4, July 1991.
      */
     static void computeWeld(
-        const Array<Vector3>& oldVertexArray,
-        Array<Vector3>&       newVertexArray,
+        const Array<Vector3>& oldVertexPositions,
+        Array<Vector3>&       newVertexPositions,
         Array<int>&           toNew,
         Array<int>&           toOld,
-        double                radius);
+        double                radius = G3D::fuzzyEpsilon);
+
+    /**
+     Modifies the face, edge, and vertex arrays in place so that
+     colocated (within radius) vertices are treated as identical.
+     Note that the vertexArray and corresponding geometry will
+     contain elements that are no longer used.  In the vertexArray,
+     these elements are initialized to MeshAlg::Vertex() but not 
+     removed (because removal would change the indexing).
+     
+     This is a good preprocessing step for algorithms that are only
+     concerned with the shape of a mesh (e.g. cartoon rendering, fur, shadows)
+     and not the indexing of the vertices.
+
+     Use this method when you have already computed adjacency information
+     and want to collapse colocated vertices within that data without
+     disturbing the actual mesh vertices or indexing scheme.  
+     
+     If you have not computed adjacency already, use MeshAlg::computeWeld
+     instead and compute adjacency information after welding.
+
+     @param faceArray Mutated in place.  Size is maintained (degenerate
+            faces are <b>not</B> removed).
+     @param edgeArray Mutated in place.  May shrink if boundary edges
+            are welded together.
+     @param vertexArray Mutated in place.  Size is maintained (duplicate
+            vertices contain no adjacency info).
+    */
+    static void weldAdjacency(
+        const Array<Vector3>& originalGeometry,
+        Array<Face>&          faceArray,
+        Array<Edge>&          edgeArray,
+        Array<Vertex>&        vertexArray,
+        double                radius = G3D::fuzzyEpsilon);
 
 
     /**
@@ -427,6 +491,15 @@ public:
 
     */
     static void computeBounds(const Array<Vector3>& vertex, class Box& box, class Sphere& sphere);
+
+    /**
+     In debug mode, asserts that the adjacency references between the
+     face, edge, and vertex array are consistent.
+     */
+    static void debugCheckConsistency(
+        const Array<Face>&      faceArray,
+        const Array<Edge>&      edgeArray,
+        const Array<Vertex>&    vertexArray);
 
 protected:
 

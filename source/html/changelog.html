@@ -8,7 +8,17 @@
    previous major release.
    <P>
    Changes in 6.01:
-   <UL> 
+   <UL>
+     <LI> G3D::TextInput::peekLineNumber(), G3D::TextInput::peekCharacterNumber()
+     <LI> G3D::GAppSettings::dataDir
+     <LI> html/gettingstarted.html
+     <LI> G3D::MeshAlg::debugCheckConsistency
+     <LI> G3D::MD2Model and G3D::IFSModel now weld their adjacency information
+     <LI> Renamed/retyped G3D::PosedModel::adjacentFaces to G3D::PosedModel::vertices 
+	   (most programs can be fixed by changing the type from Array< Array<int> > to
+	   Array<MeshAlg::Vertex> and adjacentVertexArray[v] to vertexArray[v].faceIndex)
+	 <LI> Shadow volumes now use the welded adjacency information
+	 <LI> G3D::PosedModel now offers both welded and non-welded adjacency information
      <LI> G3D::contains for C-Arrays
      <LI> Generate .tag files in the build
      <LI> G3D::MeshAlg::computeAdjacency does not merge colocated vertices

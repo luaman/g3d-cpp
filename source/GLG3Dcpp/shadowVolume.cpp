@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-12-16
- @edited  2004-01-15
+ @edited  2004-02-19
  */
 
 #include "GLG3D/shadowVolume.h"
@@ -134,8 +134,8 @@ void markShadows(
 
     const MeshAlg::Geometry& geometry = model->objectSpaceGeometry();
     const Array<Vector3>& vertexArray = geometry.vertexArray;
-    const Array<MeshAlg::Edge>& edgeArray = model->edges();
-    const Array<MeshAlg::Face>& faceArray = model->faces();
+    const Array<MeshAlg::Edge>& edgeArray = model->weldedEdges();
+    const Array<MeshAlg::Face>& faceArray = model->weldedFaces();
 
     Array<bool> backface;
     MeshAlg::identifyBackfaces(vertexArray, faceArray, L, backface);

@@ -22,7 +22,11 @@
 namespace G3D {
 
 /**
- Routine used by the demos to find the data.
+ Routine used by the demos to find the data.  Searches in
+ ../data, ../../data, etc. up to 5 levels back.  Checks
+ common locations like c:\libraries\g3d-<version>\data
+ and some hard-coded paths on the Brown University file
+ system.
  */
 std::string demoFindData(bool errorIfNotFound = true);
 
