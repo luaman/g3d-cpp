@@ -130,11 +130,15 @@ public:
         }
 
         /** When geometry.vertexArray has been changed, invoke to recompute
-            geometry.normalArray and the tangent array. */
+            geometry.normalArray and the tangent array. The Part::indexArray must be
+            set before calling this.  If you compute the normals explicitly,
+            this routine does not need to be called.*/
         void updateNormals();
 
-        /** When geometry or texCoordArray is changed, invoke to update
-            (or allocate for the first time) the VAR data.*/
+        /** When geometry or texCoordArray is changed, invoke to
+            update (or allocate for the first time) the VAR data.  You
+            should either call updateNormals first, or write your own
+            normals into the array in geometry before calling this.*/
         void updateVAR();
 
         /** Invoke when the trilist materials have changed to recompute the shaders. */

@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added glDisableAllTextures()
      <LI> G3D::Shader::fromStrings now accepts optional names for the vertex and pixel shader
      <LI> G3D::Shader no longer requires values for declared but unused uniform variables
      <LI> G3D::RenderDevice now stores texture matrix at 32-bit precision (for faster push/popState)
@@ -174,6 +175,7 @@
      <LI> Fix: [ 1036225 ] Encode TGA support strips alpha channel [Corey]
      <LI> Fix: [ 1038631 ] CoordinateFrame::slerp (Quat::slerp has fix) [Corey]
      <LI> Fix: [ 1033686 ] GImage::GImage(filename) dies on certain (BMP) images [Corey]
+     <LI> Fix: Texture mapping modes for pre-OpenGL 1.3 cards [Dan & Morgan]
    </UL>
 
    <P>

@@ -59,6 +59,8 @@
   <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
     G3D::Draw,
     G3D::GLCaps,
+    G3D::glDisableAllTextures,
+    G3D::glToScreen,
     G3D::Milestone,
     G3D::ObjectShader,
     G3D::PixelProgram,

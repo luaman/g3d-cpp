@@ -8,6 +8,7 @@
 
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/GLCaps.h"
 
 #if defined(G3D_OSX)
 #include <mach-o/dyld.h>
@@ -322,6 +323,22 @@ Vector4 glToScreen(const Vector4& v) {
         (result.z * rhw) * (depthRange[1] - depthRange[0]) + depthRange[0],
         rhw);
 }
+
+void glDisableAllTextures() {
+  glDisable(GL_TEXTURE_2D);
+  if (GLCaps::supports_GL_EXT_texture_3D()) {
+    glDisable(GL_TEXTURE_3D);
+  }
+  if (GLCaps::supports_GL_EXT_texture_cube_map()) {
+    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+  }
+  glDisable(GL_TEXTURE_1D);
+  
+  if (GLCaps::supports_GL_EXT_texture_rectangle()) {
+    glDisable(GL_TEXTURE_RECTANGLE_EXT);
+  }
+}
+  
 
 #if defined(G3D_OSX)
 void* NSGLGetProcAddress(const char *name)

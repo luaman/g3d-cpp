@@ -42,13 +42,7 @@ static bool hasAutoMipMap() {
 }
 
 
-static void disableAllTextures() {
-    glDisable(GL_TEXTURE_1D);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_TEXTURE_3D);
-    glDisable(GL_TEXTURE_RECTANGLE_EXT);
-    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-}
+
 
 /**
  Pushes all OpenGL texture state.
@@ -269,32 +263,42 @@ static void setTexParameters(
     debugAssertGLOk();
 
     // Set the wrap and interpolate state
+
+    bool supports3D = GLCaps::supports_GL_EXT_texture_3D();
+    GLenum mode = GL_NONE;
+    
     switch (wrap) {
     case Texture::TILE:
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_REPEAT);
-        break;
+      mode = GL_REPEAT;
+      break;
 
-    case Texture::CLAMP:
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        break;
+    case Texture::CLAMP:  
+      if (GLCaps::supports_GL_EXT_texture_edge_clamp())
+        mode = GL_CLAMP_TO_EDGE;
+      else
+        mode = GL_CLAMP;
+      break;
 
     case Texture::TRANSPARENT_BORDER:
-        glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER_SGIS);
-        glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER_SGIS);
-        glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER_SGIS);
-        {
-            Color4 black(0,0,0,0);
-            glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, black);
-        }
-        break;
+      if (GLCaps::supports_GL_ARB_texture_border_clamp())
+        mode = GL_CLAMP_TO_BORDER_ARB;
+      else
+        mode = GL_CLAMP;
+      {
+        Color4 black(0,0,0,0);
+        glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, black);
+        debugAssertGLOk();
+      }
+      break;
 
     default:
         debugAssert(false);
     }
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, mode);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, mode);
+    if (supports3D)
+      glTexParameteri(target, GL_TEXTURE_WRAP_R, mode);
+
     debugAssertGLOk();
 
 
@@ -905,7 +909,7 @@ void Texture::copyFromScreen(
     if (GLCaps::supports_GL_ARB_multitexture()) {
         glActiveTextureARB(GL_TEXTURE0_ARB);
     }
-    disableAllTextures();
+    glDisableAllTextures();
     GLenum target = dimensionToTarget(dimension);
     glEnable(target);
 
@@ -964,7 +968,7 @@ void Texture::copyFromScreen(
     if (GLCaps::supports_GL_ARB_multitexture()) {
         glActiveTextureARB(GL_TEXTURE0_ARB);
     }
-    disableAllTextures();
+    glDisableAllTextures();
 
     glEnable(GL_TEXTURE_CUBE_MAP_ARB);
     glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, textureID);

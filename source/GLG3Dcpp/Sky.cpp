@@ -275,12 +275,12 @@ static void hackProjectionMatrix(RenderDevice* renderDevice) {
 void Sky::vertex(RenderDevice* renderDevice, 
                  float x, float y, float z, float s, float t) const {
     const double w = 0;
-    const bool cube = (cubeMap != NULL);
+    const bool cube = (cubeMap.notNull());
 
     if (cube) {
         renderDevice->setTexCoord(0, Vector3(x, y, z));
     } else {
-        renderDevice->setTexCoord(0, Vector2(s, t));
+      renderDevice->setTexCoord(0, Vector2(s, t));
     }
     
     renderDevice->sendVertex(Vector4(x,y,z,w));
@@ -290,10 +290,11 @@ void Sky::vertex(RenderDevice* renderDevice,
 void Sky::renderBox(RenderDevice* renderDevice) const {
     renderDevice->pushState();
 
-    bool cube = (cubeMap != NULL);
+    bool cube = (cubeMap.notNull());
 
     if (cube) {
         renderDevice->setTexture(0, cubeMap);
+
     } else {
         // In the 6-texture case, the sky box is rotated 90 degrees
         // (this is because the textures are loaded incorrectly)
@@ -304,14 +305,13 @@ void Sky::renderBox(RenderDevice* renderDevice) const {
     }
 
     double s = 1;
-
     renderDevice->beginPrimitive(RenderDevice::QUADS);
         vertex(renderDevice, -s, +s, -s, 0, 0);
         vertex(renderDevice, -s, -s, -s, 0, 1);
         vertex(renderDevice, +s, -s, -s, 1, 1);
         vertex(renderDevice, +s, +s, -s, 1, 0);
 	renderDevice->endPrimitive();
-
+        
     if (! cube) {
         renderDevice->setTexture(0, texture[LT]);
     }
@@ -369,6 +369,7 @@ void Sky::renderBox(RenderDevice* renderDevice) const {
 	renderDevice->endPrimitive();
 
     renderDevice->popState();
+
 }
 
 
@@ -395,7 +396,9 @@ void Sky::render(
 
 	    // Draw the sky box
         renderDevice->resetTextureUnit(0);
+        debugAssertGLOk();
         renderBox(renderDevice);
+        debugAssertGLOk();
 
         if (drawCelestialBodies) {   
             drawMoonAndStars(renderDevice, lighting);

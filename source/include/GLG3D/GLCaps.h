@@ -32,7 +32,7 @@ namespace G3D {
  using the GLCaps::supports method.
  
  For convenience, frequently used extensions have fast tests, e.g.,
- GLExt::supports_GL_EXT_texture_rectangle.
+ GLCaps::supports_GL_EXT_texture_rectangle.
 
  Note that GL_NV_texture_rectangle and GL_EXT_texture_rectangle
  have exactly the same constants, so supports_GL_EXT_texture_rectangle
@@ -49,6 +49,9 @@ namespace G3D {
     <LI>GL_ARB_vertex_buffer_object
     <LI>GL_ARB_fragment_program
     <LI>GL_ARB_multitexture
+    <LI>GL_EXT_texture_edge_clamp
+    <LI>GL_ARB_texture_border_clamp
+    <LI>GL_EXT_texture_r
     <LI>GL_EXT_stencil_wrap
     <LI>GL_EXT_stencil_two_side
     <LI>GL_EXT_texture_compression_s3tc
@@ -112,6 +115,9 @@ private:
     DECLARE_EXT(GL_ARB_vertex_buffer_object);
     DECLARE_EXT(GL_ARB_fragment_program);
     DECLARE_EXT(GL_ARB_multitexture);
+    DECLARE_EXT(GL_EXT_texture_edge_clamp);
+    DECLARE_EXT(GL_ARB_texture_border_clamp);
+    DECLARE_EXT(GL_EXT_texture_3D);
     DECLARE_EXT(GL_EXT_stencil_wrap);
     DECLARE_EXT(GL_EXT_stencil_two_side);
     DECLARE_EXT(GL_EXT_texture_compression_s3tc);

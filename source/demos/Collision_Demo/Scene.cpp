@@ -70,7 +70,7 @@ void Scene::renderingPass() const {
     }
 
     for (i = 0; i < sim.size(); ++i) {
-        sim[i]->render();
+      sim[i]->render();
     }
 
     // Draw::sphere(Sphere(debugPoint, .1), app->renderDevice);
@@ -129,14 +129,16 @@ void Scene::render(const LightingParameters& lighting) const {
         }
     }  
 
+    debugAssertGLOk();
     app->renderDevice->clear(sky == NULL, true, false);
+    debugAssertGLOk();
 
     if (sky != NULL) {
 		sky->render(lighting);
     }
-
+    debugAssertGLOk();
     app->renderDevice->pushState();
-
+    
         // Ambient and detail light pass. 
         app->renderDevice->enableLighting();
         app->renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::white() * .25));

@@ -237,6 +237,10 @@ inline void * glGetProcAddress(const char * name){
  */
 Vector4 glToScreen(const Vector4& v);
 
+/** Calls glDisable() for all supported texture types: 1D, 2D, 3D,
+    cube, rectangle. */
+void glDisableAllTextures();
+
 
 } // namespace
 

@@ -57,8 +57,10 @@ void Demo::init()  {
     app->debugCamera.lookAt(Vector3(-2,3,-5));
     app->debugController.setActive(false);
 
+    debugAssertGLOk();
     buildScene();
-
+    debugAssertGLOk();
+    
     gameTime     = G3D::toSeconds(10, 00, 00, AM); 
 
     simStartTime = System::time();
@@ -92,22 +94,27 @@ void Demo::doLogic() {
 
 
 void Demo::doGraphics() {
+  debugAssertGLOk();
     app->renderDevice->pushState();
-            
-        app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
-
+    
+    debugAssertGLOk();
+    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    debugAssertGLOk();
+        
         LightingParameters lighting(gameTime);
         lighting.lightDirection = (lighting.lightDirection + Vector3(0,0,.4)).direction();
         lighting.ambient = lighting.ambient + Color3(.3,.3,.4);
 
         debugAssertGLOk();
         scene.render(lighting);
-  
-    app->renderDevice->popState();        
+  debugAssertGLOk();
+    app->renderDevice->popState();
+    debugAssertGLOk();        
 }
 
 
 void App::main() {
+  debugAssertGLOk();
     setDebugMode(true);
     Demo(this).run();
 }

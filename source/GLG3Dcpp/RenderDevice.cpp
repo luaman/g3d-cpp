@@ -471,11 +471,8 @@ void RenderDevice::setVideoMode() {
         glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
     }
 
-    debugAssertGLOk();
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    debugAssertGLOk();
     glEnable(GL_COLOR_MATERIAL);
-    debugAssertGLOk();
 
     // Compute specular term correctly
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
@@ -2397,6 +2394,8 @@ void RenderDevice::beginPrimitive(Primitive p) {
     currentPrimitiveVertexCount = 0;
     currentPrimitive = p;
 
+    debugAssertGLOk();
+
     glBegin(primitiveToGLenum(p));
 }
 
@@ -2479,14 +2478,7 @@ void RenderDevice::setTexture(
 
     // Turn off whatever was on previously if this is a fixed function unit
     if (fixedFunction) {
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_TEXTURE_3D);
-        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-        glDisable(GL_TEXTURE_1D);
-        
-        if (supportsTextureRectangle()) {
-            glDisable(GL_TEXTURE_RECTANGLE_EXT);
-        }
+      glDisableAllTextures();
     }
 
     if (texture.notNull()) {
