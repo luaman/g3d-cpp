@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-02-11
+  @edited  2003-04-06
  */
 
 #ifndef G3D_VECTOR3_H
@@ -47,6 +47,14 @@ public:
     Real& operator[] (int i) const; 
     operator Real* ();
     operator const Real* () const;
+
+    enum Axis {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, DETECT_AXIS=-1};
+
+    /**
+     Returns the largest dimension.  Particularly convenient for determining
+     which plane to project a triangle onto for point-in-polygon tests.
+     */
+    Axis primaryAxis() const;
 
     // assignment and comparison
     Vector3& operator= (const Vector3& rkVector);

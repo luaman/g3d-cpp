@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2003-02-06
+ @edited  2003-04-06
 */
 
 #include "G3D/CoordinateFrame.h"
@@ -17,6 +17,20 @@
 namespace G3D {
 
 const Real CoordinateFrame::zLookDirection = -1;
+
+
+Triangle CoordinateFrame::toObjectSpace(const Triangle& t) const {
+    return Triangle(pointToObjectSpace(t.vertex(0)),
+        pointToObjectSpace(t.vertex(1)),
+        pointToObjectSpace(t.vertex(2)));
+}
+
+
+Triangle CoordinateFrame::toWorldSpace(const Triangle& t) const {
+    return Triangle(pointToWorldSpace(t.vertex(0)),
+        pointToWorldSpace(t.vertex(1)),
+        pointToWorldSpace(t.vertex(2)));
+}
 
 
 Box CoordinateFrame::toWorldSpace(const Box &b) const {

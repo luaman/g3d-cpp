@@ -75,7 +75,7 @@ Real Ray::intersectionTime(
 
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedTriangle(
-            origin, direction, CDTriangle(v0, v1, v2), dummy);
+            origin, direction, Triangle(v0, v1, v2), dummy);
 }
 
 }

@@ -6,14 +6,13 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2003-02-06
+ @edited  2003-04-06
 */
 
 #ifndef G3D_PLANE_H
 #define G3D_PLANE_H
 
 #include "G3D/Vector3.h"
-#include "G3D/CoordinateFrame.h"
 
 namespace G3D {
 
@@ -64,7 +63,7 @@ public:
         return fuzzyEq(point.dot(normal), distance);
     }
 
-    inline Vector3 getNormal() const {
+    inline const Vector3& getNormal() const {
         return normal;
     }
 

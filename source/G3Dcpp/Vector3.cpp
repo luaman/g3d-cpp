@@ -9,7 +9,7 @@
  
  
  @created 2001-06-02
- @edited  2003-02-15
+ @edited  2003-04-06
  */
 
 #include <limits>
@@ -29,6 +29,32 @@ const Vector3 Vector3::UNIT_Y(0, 1, 0);
 const Vector3 Vector3::UNIT_Z(0, 0, 1);
 const Vector3 Vector3::INF3(infReal, infReal, infReal);
 const Vector3 Vector3::NAN3(nan, nan, nan);
+
+Vector3::Axis Vector3::primaryAxis() const {
+    
+    Axis a = X_AXIS;
+
+    double nx = abs(x);
+    double ny = abs(y);
+    double nz = abs(z);
+
+    if (nx > ny) {
+        if (nx > nz) {
+            a = X_AXIS;
+        } else {
+            a = Z_AXIS;
+        }
+    } else {
+        if (ny > nz) {
+            a = Y_AXIS;
+        } else {
+            a = Z_AXIS;
+        }
+    }
+
+    return a;
+}
+
 
 unsigned int Vector3::hashCode() const {
     unsigned int xhash = (*(int*)(void*)(&x));

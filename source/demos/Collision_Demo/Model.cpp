@@ -122,7 +122,7 @@ Model::Model(const std::string& filename) {
 
     int i;
     for (i = 0; i < index.size(); i += 3) {
-        collisionTriangle.append(CDTriangle(vertex[index[i]], vertex[index[i + 1]], vertex[index[i + 2]]));
+        collisionTriangle.append(Triangle(vertex[index[i]], vertex[index[i + 1]], vertex[index[i + 2]]));
     }
 }
 

@@ -8,7 +8,7 @@
   @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2003-02-20
+  @edited  2003-04-06
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -19,7 +19,7 @@
 
 #include "G3D/Vector3.h"
 #include "G3D/Plane.h"
-
+#include "G3D/Triangle.h"
 
 namespace G3D {
 
@@ -53,17 +53,9 @@ namespace G3D {
  */
 class CollisionDetection {
 private:
-    friend class CDTriangle;
-
-    enum Axis {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, DETECT_AXIS=-1};
 
 	/** Provides the default argument for the location parameter */
 	static Vector3 ignore;
-
-    /**
-     non-unit normal
-     */
-    static Axis normalToPrimaryAxis(const Vector3& normal);
 
     // Static class!
     CollisionDetection() {}
@@ -95,7 +87,7 @@ public:
     static Real collisionTimeForMovingPointFixedTriangle(
         const Vector3&			point,
         const Vector3&			velocity,
-        const CDTriangle&       triangle,
+        const Triangle&       triangle,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
@@ -146,7 +138,7 @@ public:
     static Real collisionTimeForMovingSphereFixedTriangle(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
-        const CDTriangle&       triangle,
+        const Triangle&       triangle,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
@@ -257,7 +249,7 @@ public:
         const Vector3&			v2,
         const Vector3&			normal,
         const Vector3&			point,
-        CollisionDetection::Axis  primaryAxis = DETECT_AXIS);
+        Vector3::Axis  primaryAxis = Vector3::DETECT_AXIS);
 
     
     /**
@@ -313,32 +305,6 @@ public:
         const Vector3&			v2,
         const Vector3&			v3,
         const Vector3&			point);
-};
-
-
-
-/**
- Triangle for collision detection purposes.  This representation
- is efficient for performing collision detection but may be inefficient
- for other applications.
- */
-class CDTriangle {
-protected:
-    friend class CollisionDetection;
-
-    Vector3                     vertex[3];
-
-    /** edgeDirection[i] is the normalized vector v[i+1] - v[i] */
-    Vector3                     edgeDirection[3];
-    double                      edgeLength[3];
-    Plane                       plane;
-    CollisionDetection::Axis    primaryAxis;
-
-public:
-
-    CDTriangle() {}
-    virtual ~CDTriangle() {}
-    CDTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2);
 };
 
 } // namespace

@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-04-05
+ @edited  2003-04-06
  */
 
 #ifndef MODEL_H
@@ -26,7 +26,7 @@ protected:
 
 	Array<uint32>		                index;
 
-    Array<CDTriangle>                   collisionTriangle;
+    Array<Triangle>                     collisionTriangle;
 
     /**
      A table memoizing already loaded models.

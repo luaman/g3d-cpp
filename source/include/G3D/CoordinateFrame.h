@@ -7,7 +7,7 @@
        at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-03-04
- @edited  2003-02-06
+ @edited  2003-04-06
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -22,6 +22,7 @@
 #include "G3D/Matrix3.h"
 #include "G3D/Sphere.h"
 #include "G3D/Box.h"
+#include "G3D/Triangle.h"
 #include <math.h>
 #include <string>
 #include <stdio.h>
@@ -164,13 +165,17 @@ public:
         return rotation.transpose() * v;
     }
 
-    Box toWorldSpace(const Box &b) const;
+    Box toWorldSpace(const Box& b) const;
 
-    Sphere toWorldSpace(const Sphere &b) const;
+    Sphere toWorldSpace(const Sphere& b) const;
 
-    Box toObjectSpace(const Box &b) const;
+    Triangle toWorldSpace(const Triangle& t) const;
 
-    Sphere toObjectSpace(const Sphere &b) const;
+    Box toObjectSpace(const Box& b) const;
+
+    Sphere toObjectSpace(const Sphere& b) const;
+
+    Triangle toObjectSpace(const Triangle& t) const;
 
     CoordinateFrame operator*(const CoordinateFrame &other) const {
         return CoordinateFrame(rotation * other.rotation,

@@ -5,7 +5,7 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2003-03-18
+  @edited  2003-04-05
  */
 
 #include "G3D/CollisionDetection.h"
@@ -16,55 +16,11 @@
 #include "G3D/LineSegment.h"
 #include "G3D/Sphere.h"
 #include "G3D/Box.h"
+#include "G3D/Triangle.h"
 
 namespace G3D {
 
 Vector3	CollisionDetection::ignore;
-
-
-CDTriangle::CDTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2) : plane(v0, v1, v2) {
-    vertex[0] = v0;
-    vertex[1] = v1;
-    vertex[2] = v2;
-
-    static int next[] = {1,2,0};
-
-    for (int i = 0; i < 3; ++i) {
-        const Vector3 e  = vertex[next[i]] - vertex[i];
-        edgeLength[i]    = e.length();
-        edgeDirection[i] = e / edgeLength[i];
-    }
-
-    primaryAxis = CollisionDetection::normalToPrimaryAxis(plane.getNormal());
-}
-
-
-CollisionDetection::Axis CollisionDetection::normalToPrimaryAxis(
-    const Vector3& normal) {
-    
-    Axis primaryAxis = X_AXIS;
-
-    double nx = abs(normal.x);
-    double ny = abs(normal.y);
-    double nz = abs(normal.z);
-
-    if (nx > ny) {
-        if (nx > nz) {
-            primaryAxis = X_AXIS;
-        } else {
-            primaryAxis = Z_AXIS;
-        }
-    } else {
-        if (ny > nz) {
-            primaryAxis = Y_AXIS;
-        } else {
-            primaryAxis = Z_AXIS;
-        }
-    }
-
-    return primaryAxis;
-}
-
 
 
 Real CollisionDetection::collisionTimeForMovingPointFixedPlane(
@@ -177,18 +133,18 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedSphere(
 Real CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     const Vector3&			point,
     const Vector3&			velocity,
-    const CDTriangle&       triangle,
+    const Triangle&       triangle,
     Vector3&				outLocation,
     Vector3&                outNormal) {
 
-    Real time = collisionTimeForMovingPointFixedPlane(point, velocity, triangle.plane, outLocation, outNormal);
+    Real time = collisionTimeForMovingPointFixedPlane(point, velocity, triangle.plane(), outLocation, outNormal);
 
     if (time == infReal) {
         // No collision with the plane of the triangle.
         return infReal;
     }
 
-    if (isPointInsideTriangle(triangle.vertex[0], triangle.vertex[1], triangle.vertex[2], triangle.plane.getNormal(), outLocation, triangle.primaryAxis)) {
+    if (isPointInsideTriangle(triangle.vertex(0), triangle.vertex(1), triangle.vertex(2), triangle.normal(), outLocation, triangle.primaryAxis())) {
         // Collision occured inside the triangle
         return time;
     } else {
@@ -557,21 +513,21 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedPlane(
 Real CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
     const class Sphere&		sphere,
     const Vector3&		    velocity,
-    const CDTriangle&       triangle,
+    const Triangle&       triangle,
     Vector3&				outLocation,
     Vector3&                outNormal) {
 
     Vector3 dummy;
 
-    outNormal = triangle.plane.getNormal();
-    double time = collisionTimeForMovingSphereFixedPlane(sphere, velocity, triangle.plane, outLocation, dummy);
+    outNormal = triangle.normal();
+    double time = collisionTimeForMovingSphereFixedPlane(sphere, velocity, triangle.plane(), outLocation, dummy);
 
     if (time == infReal) {
         // No collision is ever going to happen
         return time;
     }
 
-    if (isPointInsideTriangle(triangle.vertex[0], triangle.vertex[1], triangle.vertex[2], triangle.plane.getNormal(), outLocation, triangle.primaryAxis)) {
+    if (isPointInsideTriangle(triangle.vertex(0), triangle.vertex(1), triangle.vertex(2), triangle.normal(), outLocation, triangle.primaryAxis())) {
         // The intersection point is inside the triangle; that is the location where
         // the sphere hits the triangle.
         return time;
@@ -581,7 +537,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
     // they will hit.
 
     // Closest point on the triangle to the sphere intersection with the plane.
-    Vector3 point = closestPointToTrianglePerimeter(triangle.vertex, triangle.edgeDirection, triangle.edgeLength, outLocation);
+    Vector3 point = closestPointToTrianglePerimeter(triangle._vertex, triangle.edgeDirection, triangle.edgeLength, outLocation);
 
     double t = collisionTimeForMovingPointFixedSphere(point, -velocity, sphere, dummy, dummy);
 
@@ -818,10 +774,10 @@ bool CollisionDetection::isPointInsideTriangle(
     const Vector3&			v2,
     const Vector3&			normal,
     const Vector3&			point,
-    CollisionDetection::Axis  primaryAxis) {
+    Vector3::Axis           primaryAxis) {
     
-    if (primaryAxis == DETECT_AXIS) {
-        primaryAxis = normalToPrimaryAxis(normal);
+    if (primaryAxis == Vector3::DETECT_AXIS) {
+        primaryAxis = normal.primaryAxis();
     }
 
     // Check that the point is within the triangle using a Barycentric
@@ -829,19 +785,19 @@ bool CollisionDetection::isPointInsideTriangle(
     int i, j;
 
     switch (primaryAxis) {
-    case X_AXIS:
-        i = Z_AXIS;
-        j = Y_AXIS;
+    case Vector3::X_AXIS:
+        i = Vector3::Z_AXIS;
+        j = Vector3::Y_AXIS;
         break;
 
-    case Y_AXIS:
-        i = Z_AXIS;
-        j = X_AXIS;
+    case Vector3::Y_AXIS:
+        i = Vector3::Z_AXIS;
+        j = Vector3::X_AXIS;
         break;
 
-    case Z_AXIS:
-        i = X_AXIS;
-        j = Y_AXIS;
+    case Vector3::Z_AXIS:
+        i = Vector3::X_AXIS;
+        j = Vector3::Y_AXIS;
         break;
 
     default:

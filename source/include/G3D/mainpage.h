@@ -29,8 +29,7 @@
         <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Quat, G3D::Color3,
         G3D::Color4, G3D::Matrix3, G3D::CoordinateFrame, G3D::PhysicsFrame,
         G3D::Box, G3D::Cone, G3D::Line, G3D::LineSegment, G3D::Plane, G3D::Ray,
-        G3D::Sphere,
-		G3D::Capsule, G3D::CollisionDetection, G3D::CDTriangle</BLOCKQUOTE>
+        G3D::Sphere, G3D::Capsule, G3D::CollisionDetection, G3D::Triangle</BLOCKQUOTE>
      
      <LI>Data structures
         <BR><BLOCKQUOTE>G3D::Array, G3D::Set, G3D::Table, 
@@ -505,6 +504,9 @@ to add zlibstat.lib to your linker list.
           be treated as two slashes instead of a comment
      <LI> Added support for Wavefront OBJ files to IFSBuilder
      <LI> Removed duplicate copies of SDL.dll from the source tree
+     <LI> Renamed G3D::CDTriangle to G3D::Triangle
+     <LI> Added several G3D::Triangle methods
+     <LI> Moved CollisionDetection::primaryAxis to Vector3::primaryAxis
    </UL>
 
 
