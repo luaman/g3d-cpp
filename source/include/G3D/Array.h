@@ -20,8 +20,8 @@
     #include <new.h>
 #endif
 
-#ifndef _WIN32
-  #define __cdecl
+#ifndef __cdecl
+    #define __cdecl __attribute__((cdecl))
 #endif
 
 namespace G3D {

@@ -14,7 +14,11 @@
 #include <string>
 
 #ifndef _WIN32
-   #include <stdarg.h>
+    #include <stdarg.h>
+#endif
+
+#ifndef __cdecl
+    #define __cdecl __attribute__((cdecl))
 #endif
 
 namespace G3D {
