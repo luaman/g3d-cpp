@@ -17,7 +17,7 @@ for your project and introduce you to the major features.
 However, it covers only a fraction of the functionality in %G3D!  The individual 
 entry points are extensively documented and can be accessed through the 
 \link indexedbytopic Topic Index\endlink.  The source code for the entire 
-library is available (http://cvs.sourceforge.net/viewcvs.py/%G3D-cpp/cpp/) and 
+library is available (http://cvs.sourceforge.net/viewcvs.py/g3d-cpp/cpp/) and 
 can often answer detailed questions.
 
 Post questions and feedback on the User Forum 
@@ -42,7 +42,7 @@ Write to <A HREF="http://mailto:morgan3d@sf.net">Morgan McGuire</A> (morgan3d@sf
 if your project has special commercial support needs.
 
 The latest version library is always available on the homepage,
-<A HREF="http://%G3D-cpp.sf.net">http://%G3D-cpp.sf.net</A>.
+<A HREF="http://g3d-cpp.sf.net">http://g3d-cpp.sf.net</A>.
 
 @section platform Platform and Functionality
 
@@ -110,7 +110,7 @@ and by hardware and technical support from NVIDIA Corporation and ATI.
 %G3D is compatible with most other libraries.  
 
 Although %G3D uses SDL 
-(http://www.libsdl.org) for platform window management, you can use the %G3D::GWindow API 
+(http://www.libsdl.org) for platform window management, you can use the G3D::GWindow API 
 to replace SDL with a platform-specific or alternative library.  Users have 
 contributed unsupported GWindow implementations for wxWindows, qtWindows, and the 
 Win32 API that can be found in the contrib directory.
@@ -119,7 +119,7 @@ The contrib directory also contains AudioDevice implementations for FMOD
 (http://www.fmod.org) and SDL_Mixer (http://www.libsdl.com/sdl_mixer).
 
 It is possible to use DirectX instead of OpenGL.  The easiest way is to link 
-against %G3D.lib only and use DirectX calls instead of the GL%G3D equivalents.  A more 
+against %G3D.lib only and use DirectX calls instead of the GLG3D equivalents.  A more 
 full-featured solution is to replace the RenderDevice and Texture implementations with 
 DirectX versions and rebuild the entire library.  We have not investigated the latter.  
 
@@ -131,7 +131,7 @@ type checking (RTTI), C++ exceptions, and a multithreaded, dynamically linked ru
 GFont, BinaryInput, and BinaryOutput use zlib; you can also call zlib functions directly 
 from your %G3D program without additional headers or linking steps.
 
-%G3D::SDLWindow uses SDL and #including %G3DAll.h %G3D automatically 
+G3D::SDLWindow uses SDL and #including G3DAll.h automatically 
 causes your program to link SDL.  SDL is not included with the %G3D installation and
 must be downloaded separately. 
 
@@ -183,9 +183,9 @@ libraries to complement %G3D:
 @section experts Notes for Expert Users
 
 %G3D is designed so that you can use as much or as little as you want.  You are
-welcome to rip out the source code for a single class like %G3D::Texture and use 
-it standalone in your project, link against the library and use our main %G3D::RenderDevice
-class, or let %G3D::GApp provide the entire structure for your program.  For example,
+welcome to rip out the source code for a single class like G3D::Texture and use 
+it standalone in your project, link against the library and use our main G3D::RenderDevice
+class, or let G3D::GApp provide the entire structure for your program.  For example,
 you might want to use the G3D::Vector3 and other low-level classes but provide your
 own rendering state abstraction, or use DirectX instead of OpenGL.
 
@@ -195,7 +195,7 @@ GL state afterwards.</B>  If you change the GL state and do not restore it, Rend
 will assume nothing has changed and may become corrupted.  Most classes, like Texture, expose
 the relevant OpenGL handles so you can work with them directly as needed.
 
-The routines are packaged as two static libraries, %G3D and GL%G3D, so that you can use 
+The routines are packaged as two static libraries, %G3D and GLG3D, so that you can use 
 the low-level vector math without bringing in any of the SDL/OpenGL code.
 
 You may find it easier (particularly on Windows) to debug code if you build %G3D on

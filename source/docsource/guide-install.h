@@ -13,7 +13,7 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
    <OL>
    <LI>
    Download the latest g3d-xxx.zip from
-   http://g3d-cpp.sf.net. 
+   http://g3d-cpp.sf.net <BR>
    Unzip all of the files in the distribution to your
    library directory (e.g. <CODE>c:\\libraries</CODE>).  Note that the single download
    contains precompiled binaries for MSVC++ 6, MSVC++ 7, gcc on Linux, and Xcode and gcc on OS X.
@@ -96,7 +96,7 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
   <OL>
    <LI>
    Download the latest g3d-xxx.zip from
-   http://g3d-cpp.sf.net. 
+   http://g3d-cpp.sf.net <BR>
    Unzip all of the files in the distribution to your
    library directory (e.g. <CODE>~/lib/</CODE>).
    </LI>
@@ -158,7 +158,7 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 
   To build %G3D, see the <A HREF="build-instructions.html">build instructions</A>.
   
-   \section defines \#defines
+   \section defines #defines
     G3D pays attention to the following #defines.
    <P>
      <B>SSE</B> - Allows the use of Intel PIII SSE instructions for faster math
@@ -174,9 +174,8 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
      <B>NO_SDL_MAIN</B> - Do not attempt to link against sdlmain.lib.
 
     <P>
-     <B>_DEBUG</B> - Build in in debug mode.  This enables debugAssert, 
+     <B>_DEBUG</B> - Build in debug mode.  This enables debugAssert, 
      debugBreak, debugAssertM, array bounds checks, etc.
-
     <P>
      <B>G3D_DEBUG_NOGUI</B> - When building in debug mode, this flag
       says to use stdout and not popups on Windows for assertion 
