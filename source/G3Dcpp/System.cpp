@@ -20,6 +20,16 @@
 
 #include "G3D/System.h"
 #include "G3D/debug.h"
+#include "G3D/g3derror.h"
+
+#ifndef _MSC_VER
+   // Unix
+   #include <stdlib.h>
+   #include <stdio.h>
+   #include <errno.h>
+   #include <sys/types.h>
+   #include <unistd.h>
+#endif
 
 namespace G3D {
 
@@ -97,7 +107,9 @@ void init() {
 
 	initialized = true;
 
-	unsigned long eaxreg, ebxreg, ecxreg, edxreg;
+	#ifdef _MSC_VER
+        unsigned long eaxreg, ebxreg, ecxreg, edxreg;
+    #endif
 
 	char cpuVendorTmp[13];
  
@@ -176,8 +188,8 @@ void initIntel() {
 
 
 void initAMD() {
-	// Then we check if theres an extended CPUID level support
-	if (maxSupportedExtendedLevel >= 0x80000001) {
+	// Check if there is extended CPUID level support
+	if ((unsigned long)maxSupportedExtendedLevel >= 0x80000001) {
 		unsigned long edxreg;
 
 		// If we can access the extended CPUID level 0x80000001 we get the
@@ -538,7 +550,6 @@ std::string System::currentProgramFilename() {
     #ifdef _MSC_VER
     {
         GetModuleFileName(NULL, filename, sizeof(filename));
-        return filename;
     } 
     #else
     {
@@ -551,9 +562,7 @@ std::string System::currentProgramFilename() {
 	    pid = getpid();
 	    
 	    if (snprintf(linkname, sizeof(linkname), "/proc/%i/exe", pid) < 0) {
-		    // This should only happen on large word systems. I'm not sure
-		    // what the proper response is here.  Since it really is an assert-like
-            // condition, aborting the program seems to be in order.
+		    // This should only happen on large word systems.
             error("Critical Error", "Unsupported filesystem", true);
             exit(-1);
         }
@@ -570,11 +579,11 @@ std::string System::currentProgramFilename() {
         debugAssert(sizeof(filename) > ret);
 	    
 	    // Ensure proper NULL termination
-	    buf[ret] = 0;
-	    
-	    return buf;
+	    filename[ret] = 0;	    
     }
     #endif
+
+    return filename;
 }
 
 }  // namespace
