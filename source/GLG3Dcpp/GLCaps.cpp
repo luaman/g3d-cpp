@@ -148,6 +148,26 @@ void GLCaps::loadExtensions() {
     LOAD_EXTENSION(glGetBufferPointervARB);
     LOAD_EXTENSION(glDrawRangeElements);
 
+    LOAD_EXTENSION(glDeleteObjectARB);
+    LOAD_EXTENSION(glGetHandleARB);
+    LOAD_EXTENSION(glDetachObjectARB);
+    LOAD_EXTENSION(glCreateShaderObjectARB);
+    LOAD_EXTENSION(glShaderSourceARB);
+    LOAD_EXTENSION(glCompileShaderARB);
+    LOAD_EXTENSION(glCreateProgramObjectARB);
+    LOAD_EXTENSION(glAttachObjectARB);
+    LOAD_EXTENSION(glLinkProgramARB);
+    LOAD_EXTENSION(glUseProgramObjectARB);
+    LOAD_EXTENSION(glValidateProgramARB);
+    LOAD_EXTENSION(glUniform1fvARB);
+    LOAD_EXTENSION(glUniform2fvARB);
+    LOAD_EXTENSION(glUniform3fvARB);
+    LOAD_EXTENSION(glUniform4fvARB);
+    LOAD_EXTENSION(glUniformMatrix2fvARB);
+    LOAD_EXTENSION(glUniformMatrix3fvARB);
+    LOAD_EXTENSION(glUniformMatrix4fvARB);
+    LOAD_EXTENSION(glGetInfoLogARB);
+    LOAD_EXTENSION(glGetUniformLocationARB);
     #undef LOAD_EXTENSION
 
 
