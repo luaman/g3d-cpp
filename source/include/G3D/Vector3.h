@@ -227,6 +227,14 @@ public:
     /** Random unit vector, uniformly distributed */
     static Vector3 random();
 
+    /** Random unit vector, distributed
+        so that the probability of V is proportional 
+        to max(V dot Normal, 0).
+
+        @cite Henrik Wann Jensen, Realistic Image Synthesis using Photon Mapping eqn 2.24
+    */
+    static Vector3 randomDiffuse(const Vector3& normal);
+
     // Input W must be initialize to a nonzero vector, output is {U,V,W}
     // an orthonormal basis.  A hint is provided about whether or not W
     // is already unit length.
