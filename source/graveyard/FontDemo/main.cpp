@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     device      = new RenderDevice();
     device->init(800, 600);
 
-    Font*       font[100];
+    CFont*       font[100];
 
     char*       name[] = 
     {"adventure", "anglo", "arialblack", "arial", "arialround", "bahaus",
@@ -24,12 +24,11 @@ int main(int argc, char** argv) {
     int n = 0;
 
 
-//    Font::convertRAWINItoPWF("c:/tmp/g3dfont/sansserif", "d:/graphics3d/book/cpp/data/font/sansserif.fnt");
-
+    //CFont::convertRAWINItoPWF("c:/tmp/kft/knight", "c:/tmp/kft/knight.fnt");
 
     std::string prefix = "d:/graphics3d/book/cpp/data/font/";
     while (std::string("") != name[n]) {
-        font[n] = new Font(device, prefix + name[n] + ".fnt");
+        font[n] = new CFont(device, prefix + name[n] + ".fnt");
         ++n;
     }
 

@@ -684,6 +684,7 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> #defined for on MSVC so that it obeys C99 scoping rules
      <LI> System::consoleKeyPressed
      <LI> System::consoleClearScreen
      <LI> System::consoleReadKey
