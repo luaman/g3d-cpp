@@ -1207,9 +1207,14 @@ void testSwizzle() {
     v2 = v1.xy() + v1.yz();
 }
 
+void foo(std::string x[2]) {
+    printf("hi");
+}
 
 int main(int argc, char* argv[]) {
 
+    std::string x[2];
+    foo(x);
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");

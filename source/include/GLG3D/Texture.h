@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-11-24
+  @edited  2004-03-17
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -160,6 +160,17 @@ public:
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0);
 
+    /**
+     Creates a cube map from six independently named files.  The first
+     becomes the name of the texture.
+     */
+    static TextureRef fromFile(
+        const std::string               filename[6],
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D,
+        double                          brighten       = 1.0);
 
     /**
      Creates a texture from the colors of filename and takes the alpha values
