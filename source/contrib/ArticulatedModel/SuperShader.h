@@ -47,6 +47,14 @@ public:
         inline bool isWhite() const {
             return (constant.r == 1) && (constant.g == 1) && (constant.b == 1) && map.isNull();
         }
+
+        /** Returns true if both components will produce similar non-zero terms in a
+            lighting equation */
+        inline bool similarTo(const Component& other) const{
+            return 
+                (isBlack() && other.isBlack()) ||
+                (map.isNull() == other.map.isNull());
+        }
     };
 
     /** Beta API; subject to change in future releases.
@@ -112,6 +120,10 @@ public:
         /** Configures the material arguments on a SuperShader for
             the opaque pass. */
         void configureShaderArgs(VertexAndPixelShader::ArgList& args) const;
+
+        /** Returns true if this material uses similar terms as other
+            (used by SuperShader), although the actual textures may differ. */
+        bool similarTo(const Material& other) const;
 	};
 
     class LightingEnvironment : public ReferenceCountedObject {
@@ -152,6 +164,26 @@ public:
     typedef ReferenceCountedPointer<LightingEnvironment> LightingEnvironmentRef;
 
 private:
+    class Cache {
+    private:
+
+        Array<Material>     materialArray;
+        Array<ShaderRef>    shaderArray;
+
+    public:
+
+        // TODO: mechansim for purging old shaders
+
+        /** Adds a shader to the list of cached ones.  Only call when 
+            getSimilar returned NULL.*/
+        void add(const Material& mat, ShaderRef shader);
+
+        /** Returns the shader for a similar material or 
+            NULL if one does not exist. */
+        ShaderRef getSimilar(const Material& mat) const;
+    };
+
+    static Cache cache;
 
     /** Classification of a graphics card. 
         FIXED_FUNCTION  Use OpenGL fixed function lighting only.
@@ -191,7 +223,7 @@ p = FIXED_FUNCTION; // TODO: remove
 
     Material                material;
 
-    /** Underlying shader.  May be shared between multiple supershaders */
+    /** Underlying shader.  May be shared between multiple SuperShaders. */
     ShaderRef               shader;
 
     explicit SuperShader(const Material& material);

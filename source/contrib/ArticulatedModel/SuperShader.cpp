@@ -1,3 +1,9 @@
+/**
+ @file SuperShader.cpp
+
+ @author Morgan McGuire, matrix@graphics3d.com
+ */
+
 #include "SuperShader.h"
 
 void SuperShader::configureFixedFunction(RenderDevice* rd) {
@@ -21,6 +27,7 @@ void SuperShader::configureFixedFunction(RenderDevice* rd) {
     rd->setColor(material.diffuse.constant);
     rd->setSpecularCoefficient(material.specular.constant.average());
     rd->setShininess(material.specularExponent.constant.average());
+    rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
 }
 
 
@@ -73,11 +80,17 @@ void SuperShader::Material::configureShaderArgs(
 
 
 ShaderRef SuperShader::getShader(const Material& material) {
-    // TODO: only enable terms needed by this material
-    // TODO: cache shaders
+ 
+    ShaderRef s = cache.getSimilar(material);
 
-    std::string path = "";//"../contrib/ArticulatedModel/";
-    return Shader::fromFiles(path + "SuperShader.glsl.vert", "SuperShader.glsl.frag");
+    if (s.isNull()) {
+        std::string path = "";//"../contrib/ArticulatedModel/";
+        // TODO: only enable terms needed by this material
+        s = Shader::fromFiles(path + "SuperShader.glsl.vert", "SuperShader.glsl.frag");
+        cache.add(material, s);
+    }
+
+    return s;
 }
 
 
@@ -87,7 +100,9 @@ SuperShaderRef SuperShader::create(const Material& mat) {
 
 
 SuperShader::SuperShader(const Material& mat) : material(mat) {
-    shader = getShader(material);
+    if (profile() != FIXED_FUNCTION) {
+        shader = getShader(material);
+    }
 }
 
 
@@ -108,6 +123,7 @@ void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
         material.configureShaderArgs(shader->args);
         lighting->configureShaderArgs(shader->args);
         shader->beforePrimitive(renderDevice);
+        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     }
 }
 
@@ -129,4 +145,36 @@ const std::string& SuperShader::messages() const {
 
 void SuperShader::setLighting(const LightingEnvironmentRef& lightingEnvironment) {
     lighting = lightingEnvironment;
+}
+
+////////////////////////////////////////////////////////////////////////////
+SuperShader::Cache SuperShader::cache;
+
+void SuperShader::Cache::add(const Material& mat, ShaderRef shader) {
+    materialArray.append(mat);
+    shaderArray.append(shader);
+}
+
+
+ShaderRef SuperShader::Cache::getSimilar(const Material& mat) const {
+    for (int m = 0; m < materialArray.size(); ++m) {
+        if (materialArray[m].similarTo(mat)) {
+            return shaderArray[m];
+        }
+    }
+
+    return NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+
+bool SuperShader::Material::similarTo(const Material& other) const {
+    return 
+        diffuse.similarTo(other.diffuse) &&
+        emit.similarTo(other.emit) &&
+        specular.similarTo(other.specular) &&
+        specularExponent.similarTo(other.specularExponent) &&
+        transmit.similarTo(other.transmit) &&
+        reflect.similarTo(other.reflect) &&
+        (normalMap.isNull() == other.normalMap.isNull());
 }
