@@ -208,7 +208,7 @@ public:
      @cite Dam98 pg 21
      */
     inline Quat pow(double x) const {
-        return exp(log() * x);
+        return (log() * x).exp();
     }
 
 
@@ -244,6 +244,19 @@ public:
     operator const float* () const;
 };
 
+inline Quat exp(const Quat& q) {
+    return q.exp();
+}
+
+inline Quat log(const Quat& q) {
+    return q.log();
+}
+
+} // Namespace G3D
+
+// Outside the namespace to avoid overloading confusion for C++
+inline G3D::Quat pow(const G3D::Quat& q, double x) {
+    return q.pow(x);
 }
 
 #include "Quat.inl"

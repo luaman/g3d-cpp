@@ -284,7 +284,7 @@ void Draw::vertexNormals(
         const Array<Vector3>& vertexArray = geometry.vertexArray;
         const Array<Vector3>& normalArray = geometry.normalArray;
 
-        const double D = clamp(5.0 / pow((double)vertexArray.size(), .25), 0.1, .8) * scale;
+        const double D = clamp(5.0 / ::pow((double)vertexArray.size(), .25), 0.1, .8) * scale;
         
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
