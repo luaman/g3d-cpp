@@ -64,6 +64,8 @@ public:
     /** Returns true if some part of this segment is inside the sphere */
     bool intersectsSolidSphere(const class Sphere& s) const;
 
+    Vector3 randomPoint() const;
+
 };
 
 } // namespace

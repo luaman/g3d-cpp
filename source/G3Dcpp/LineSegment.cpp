@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-02-08
- @edited  2003-02-15
+ @edited  2003-10-05
  */
 
 #include "G3D/LineSegment.h"
@@ -77,6 +77,10 @@ void LineSegment::serialize(class BinaryOutput& b) const {
 void LineSegment::deserialize(class BinaryInput& b) {
 	point.deserialize(b);
 	direction.deserialize(b);
+}
+
+Vector3 LineSegment::randomPoint() const {
+    return point + random(0, 1) * direction;
 }
 
 }
