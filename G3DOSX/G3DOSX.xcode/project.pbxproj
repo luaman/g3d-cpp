@@ -2109,7 +2109,7 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = jpeg;
 				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost";
+				WARNING_CFLAGS = "-Wmost -Wno-main";
 			};
 			dependencies = (
 			);
@@ -4187,6 +4187,126 @@
 			settings = {
 			};
 		};
+		0F90FD1106C507BB006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = TextOutput.h;
+			path = ../source/include/G3D/TextOutput.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD1206C507BB006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = spline.h;
+			path = ../source/include/G3D/spline.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD1306C507BB006932F7 = {
+			fileRef = 0F90FD1106C507BB006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F90FD1406C507BB006932F7 = {
+			fileRef = 0F90FD1206C507BB006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F90FD2E06C507FC006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TextOutput.cpp;
+			path = ../source/G3Dcpp/TextOutput.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD2F06C507FC006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = license.cpp;
+			path = ../source/G3Dcpp/license.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD3006C507FC006932F7 = {
+			fileRef = 0F90FD2E06C507FC006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F90FD3106C507FC006932F7 = {
+			fileRef = 0F90FD2F06C507FC006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F90FD6606C50889006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Shader.h;
+			path = ../source/include/GLG3D/Shader.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD6706C50889006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = GLCaps.h;
+			path = ../source/include/GLG3D/GLCaps.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD6806C50889006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = edgeFeatures.h;
+			path = ../source/include/GLG3D/edgeFeatures.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD6906C50889006932F7 = {
+			fileRef = 0F90FD6606C50889006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F90FD6A06C50889006932F7 = {
+			fileRef = 0F90FD6706C50889006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F90FD6B06C50889006932F7 = {
+			fileRef = 0F90FD6806C50889006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F90FD7806C5091F006932F7 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = edgeFeatures.cpp;
+			path = ../source/GLG3Dcpp/edgeFeatures.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F90FD7906C5091F006932F7 = {
+			fileRef = 0F90FD7806C5091F006932F7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		0F94622005D586F20078259B = {
 			fileRef = 0F897E0505B0B39D00D50B16;
 			isa = PBXBuildFile;
@@ -4225,6 +4345,9 @@
 				0F830ED105EA9844007CB4C3,
 				0F830ED205EA9844007CB4C3,
 				0F830ED305EA9844007CB4C3,
+				0F90FD6906C50889006932F7,
+				0F90FD6A06C50889006932F7,
+				0F90FD6B06C50889006932F7,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4262,6 +4385,7 @@
 				0F830EC705EA97E5007CB4C3,
 				0F3A65DB066198470001EFA4,
 				0F3A66050661993C0001EFA4,
+				0F90FD7906C5091F006932F7,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4724,10 +4848,12 @@
 		};
 		0FA15D2505B09082005402D6 = {
 			children = (
+				0F90FD6806C50889006932F7,
 				0F77C07E05B0E79F005917B7,
 				0F77C07F05B0E79F005917B7,
 				0F77C08005B0E79F005917B7,
 				0F77C08105B0E79F005917B7,
+				0F90FD6706C50889006932F7,
 				0F77C08205B0E79F005917B7,
 				0F77C08305B0E79F005917B7,
 				0F77C08405B0E79F005917B7,
@@ -4743,6 +4869,7 @@
 				0F77C08C05B0E79F005917B7,
 				0F77C08D05B0E79F005917B7,
 				0F830ED005EA9844007CB4C3,
+				0F90FD6606C50889006932F7,
 				0F77C08E05B0E79F005917B7,
 				0F77C08F05B0E79F005917B7,
 				0F77C09005B0E79F005917B7,
@@ -4753,6 +4880,7 @@
 				0F77C09505B0E79F005917B7,
 				0F77C09605B0E79F005917B7,
 				0F77C09705B0E79F005917B7,
+				0F90FD7806C5091F006932F7,
 				0FA15CF005B09073005402D6,
 				0FA15CF205B09073005402D6,
 				0FA15CF305B09073005402D6,
@@ -4911,10 +5039,12 @@
 				0F8314D305D276D40087D7DA,
 				0F8314D405D276D40087D7DA,
 				0F8314D505D276D40087D7DA,
+				0F90FD1206C507BB006932F7,
 				0F8314D605D276D40087D7DA,
 				0F8314D705D276D40087D7DA,
 				0F8314D805D276D50087D7DA,
 				0F8314D905D276D50087D7DA,
+				0F90FD1106C507BB006932F7,
 				0F8314DA05D276D50087D7DA,
 				0F8314DB05D276D50087D7DA,
 				0F8314DC05D276D50087D7DA,
@@ -4944,6 +5074,7 @@
 				0F8E5C9F05B08C03004B1E58,
 				0F8E5CA005B08C03004B1E58,
 				0F8E5CA105B08C03004B1E58,
+				0F90FD2F06C507FC006932F7,
 				0F8E5CA205B08C03004B1E58,
 				0F8E5CA305B08C03004B1E58,
 				0F8E5CA405B08C03004B1E58,
@@ -4962,6 +5093,7 @@
 				0F8E5CB105B08C03004B1E58,
 				0F8E5CB205B08C03004B1E58,
 				0F8E5CB305B08C03004B1E58,
+				0F90FD2E06C507FC006932F7,
 				0F8E5CB405B08C03004B1E58,
 				0F8E5CB505B08C03004B1E58,
 				0F8E5CB605B08C03004B1E58,
@@ -4987,6 +5119,8 @@
 		D2AAC07A0554694100DB518D = {
 			buildActionMask = 2147483647;
 			files = (
+				0F90FD1406C507BB006932F7,
+				0F90FD1306C507BB006932F7,
 				0F77C1B305B0ED8C005917B7,
 				0F77C1BA05B0EDAA005917B7,
 				0F77C27305B0F000005917B7,
@@ -5097,6 +5231,8 @@
 				0F8E5CDE05B08C03004B1E58,
 				0F8E5CDF05B08C03004B1E58,
 				0F1C59EF05B1E32C0024376D,
+				0F90FD3006C507FC006932F7,
+				0F90FD3106C507FC006932F7,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
