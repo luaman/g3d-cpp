@@ -117,6 +117,11 @@ public:
         return t;
     }
 
+    /** Returns true if this model has texture coordinates. */
+    virtual bool hasTexCoords() const {
+        return false;
+    }
+
 
     /** Contain adjacency information that merges colocated vertices
         (see MeshAlg::weldAdjacency) */
@@ -198,9 +203,7 @@ public:
 
     virtual const Array<MeshAlg::Edge>& edges() const;
 
-	virtual bool hasTexCoords() const {
-        return false;
-    }
+	virtual bool hasTexCoords() const;
 
     virtual const Array<Vector2>& texCoords() const;
 

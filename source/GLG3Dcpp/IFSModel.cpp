@@ -385,7 +385,7 @@ const Array<MeshAlg::Vertex>& IFSModel::PosedIFSModel::weldedVertices() const {
     return model->weldedVertexArray;
 }
 
-const bool IFSModel::PosedIFSModel::hasTexCoords() const {
+bool IFSModel::PosedIFSModel::hasTexCoords() const {
 	return (model->texArray.size() > 0);
 }
 
