@@ -941,6 +941,8 @@ bool LightweightConduit::receive(NetMessage* m, NetAddress& sender) {
         m->deserialize(b);
     }
 
+    alreadyReadMessage = false;
+
     return true;
 }
 
