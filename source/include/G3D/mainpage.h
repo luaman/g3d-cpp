@@ -607,6 +607,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3int16
      <LI> RenderDevice::setPointSize
+     <LI> RenderDevice::init now loads glPointParameterfvARB and glPointParameterfARB functions.
      <LI> GLenumToString(4) now returns "GL_TRIANGLES" instead of "GL_LINE_BIT" (both are correct)
      <LI> Added TextInput::Options to optionally allow C++ comments to
           be treated as two slashes instead of a comment

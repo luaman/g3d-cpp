@@ -62,6 +62,9 @@ extern PFNGLVERTEXATTRIBPOINTERARBPROC     glVertexAttribPointerARB;
 extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC glEnableVertexAttribArrayARB;
 extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC glDisableVertexAttribArrayARB;
 
+extern PFNGLPOINTPARAMETERFARBPROC         glPointParameterfARB;
+extern PFNGLPOINTPARAMETERFVARBPROC        glPointParameterfvARB;
+
 typedef BOOL (APIENTRY * PFNWGLGLSWAPINTERVALEXTPROC) (GLint interval);
 typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int* piFormats, UINT* nNumFormats);
 

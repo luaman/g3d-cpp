@@ -61,6 +61,9 @@ PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NU
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
 PFNGLDISABLEVERTEXATTRIBARRAYARBPROC        glDisableVertexAttribArrayARB   = NULL;
 
+PFNGLPOINTPARAMETERFARBPROC                 glPointParameterfARB            = NULL;
+PFNGLPOINTPARAMETERFVARBPROC                glPointParameterfvARB           = NULL;
+
 namespace G3D {
 
 static void frustum(
@@ -166,6 +169,9 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glVertexAttribPointerARB);
     LOAD_EXTENSION(glEnableVertexAttribArrayARB);
     LOAD_EXTENSION(glDisableVertexAttribArrayARB);
+
+    LOAD_EXTENSION(glPointParameterfARB);
+    LOAD_EXTENSION(glPointParameterfvARB);
 
     #undef LOAD_EXTENSION
 }
