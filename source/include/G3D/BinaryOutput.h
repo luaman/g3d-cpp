@@ -156,7 +156,7 @@ public:
      change the position of the next byte to be
      written unless n < size().
      */
-    inline void setLength(int n) {
+    inline void setLength(size_t n) {
         if (n < bufferLen) {
             pos = n;
         }
@@ -178,7 +178,7 @@ public:
      the file is padded with zeros up to one byte before the
      next to be written.
      */
-    inline void setPosition(int p) {
+    inline void setPosition(size_t p) {
         if (p > bufferLen) {
             setLength(p);
         }
@@ -282,7 +282,7 @@ public:
     /**
      Skips ahead n bytes.
      */
-    inline void skip(int n) {
+    inline void skip(size_t n) {
         if (pos + n > bufferLen) {
             setLength(pos + n);
         }
