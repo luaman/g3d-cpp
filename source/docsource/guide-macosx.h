@@ -105,6 +105,11 @@ been folded into <tt>libG3D.a</tt>. If you're using %G3D 6.03 or earlier,
 you might have to add <tt>libjpeg.a</tt> to your project.
 </li>
 
+<li><b>Add "-lz" to "Other Linker Flags".</b>
+This tells the linker to use the system's version of zlib, which G3D
+requires.
+</li>
+
 <li>
 <b>Very important: Set the link order of libraries.</b>
 This is non-obvious but very important. Failure to set the link order
@@ -140,6 +145,15 @@ needed for Windows code, but they don't do anything on OS X.  You can
 add <tt>__stdcall=</tt> and <tt>__cdecl=</tt> to the "Preprocessor Macros" section of
 the Project Info.
 </li>
+
+<li><b>Optional: Set relative paths.</b>
+In general when working in Xcode, make sure all source files have 
+Path Type "Relative to Enclosing
+Group" or "Relative to Project" selected in file info (rather than
+"Absolute Path"). This is so that if the Xcode project is
+moved or a directory name is changed, the project file links
+will not break. If you highlight all source and header files and
+press Cmd-I, you can set Path Type easily.</li>
 </ol>
 
 **/
