@@ -209,6 +209,13 @@ bool fuzzyLe(double a, double b);
  @cite Nick nicolas@capens.net
  */
 inline float rsq(float x) {
+    return 1.0f / sqrt(x);
+}
+
+/**
+ Uses SSE to implement rsq.
+ */
+inline float SSErsq(float x) {
 
     #ifdef SSE
         __asm {
