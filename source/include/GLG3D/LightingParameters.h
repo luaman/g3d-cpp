@@ -16,8 +16,16 @@
 
 namespace G3D {
 
-#define PROVIDENCE_LATITUDE 41.7333f
+#define BROWN_UNIVERSITY_LATITUDE 41.7333f
+#define BROWN_UNIVERSITY_LONGITUDE 71.4333f
 
+/* Initital star offset on Jan 1 1970 midnight */
+/* Definition of a sidereal day */
+#define SIDEREAL_DAY ((23*HOUR)+(56*MINUTE)+(4.071f*SECOND))
+	
+/** The actual time (measured in seconds since Jan 1 1970 midnight).
+    Adjusted for local timezone and daylight savings time. */
+//RealTime realWorldLocalTime();
 
 /**
  Provides a reasonable (but not remotely physically correct!) set of lighting parameters
@@ -45,26 +53,41 @@ public:
     Vector3                 lightDirection;
     enum {SUN, MOON}        source;
 
+    /** Using physically correct parameters. */
+    bool                    physicallyCorrect;
+
     /** The vector <B>to</B> the sun */
+    Vector3		    trueSunPosition;
     Vector3                 sunPosition;
 
     /** The vector <B>to</B> the moon */
+    Vector3		    trueMoonPosition;
     Vector3                 moonPosition;
 
-	/* Geographic position */
-	float                   geoLatitude;
+    /** The coordinate frame and vector related to the starfield */
+    CoordinateFrame	    starFrame;
+    Vector3		    starVec;
 
-	LightingParameters();
-	LightingParameters(const GameTime time);
+    /* Geographic position */
+    float                   geoLatitude;
+    //float		    geoLongitude;
+	
+    LightingParameters();
+
     /**
      Sets light parameters for the sun/moon based on the
-     specified time since midnight, as well as geographic
-	 latitude for starfield orientation (positive for north
-	 of the equator and negative for south). The latitude is
-	 set by default to that of Providence, RI, USA.
+     specified time since midnight, as well as geographic 
+     latitude for starfield orientation (positive for north 
+     of the equator and negative for south) and geographic 
+     longitude for sun positioning (postive for east of 
+     Greenwich, and negative for west). The latitude and 
+     longitude is set by default to that of Providence, RI, 
+     USA.
      */
-	LightingParameters(const GameTime _time, 
-		               float          _latitude);
+     LightingParameters(
+	 const GameTime     _time,
+	 bool 	            _physicallyCorrect = true,
+	 float              _latitude = BROWN_UNIVERSITY_LATITUDE);
 
     void setTime(const GameTime _time);
 	void setLatitude(float _latitude);
@@ -79,4 +102,5 @@ public:
 }
 
 #endif
+
 

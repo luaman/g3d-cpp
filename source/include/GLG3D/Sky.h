@@ -161,3 +161,4 @@ inline bool operator!=(const void* b, const SkyRef& a) {
 }
 
 #endif
+
