@@ -300,7 +300,10 @@ public:
 
 
 /**
- AdType must be a subclass of DiscoveryAdvertisement
+ Only one DiscoveryClient can be active on a given port at a time on 
+ a single computer.
+
+ AdType must be a subclass of DiscoveryAdvertisement.
  */
 template<class AdType> 
 class DiscoveryClient : private Discovery {
@@ -523,6 +526,11 @@ public:
         // Send announcement
         NetAddress broadcast = NetAddress::broadcastAddress(settings->clientBroadcastPort);
         net->send(broadcast, &BroadcastMessage());
+    }
+
+    /** Shut down the discovery client. */
+    void cleanup() {
+        net = NULL;
     }
 
     /**
