@@ -60,20 +60,22 @@ def lib():
                  "GLG3D - Win32 Debug"])
 
     else:
-        # Linux build (right now, only builds the debug release, dowsn't copy files)
+        # Linux build (right now, only builds the debug release, doesn't 
+        # copy files)
 
         # Exectute bootstrap and configure whenever the scripts change
-        if (newer("bootstrap", "configure") or newer("configure.ac", "configure")):
-            run("./bootstrap")
+        #if (newer("bootstrap", "configure") or newer("configure.ac", "configure")):
+        #    run("./bootstrap")
 
-        if (newer("configure", "config.h")):
-            run("./configure")
+        #if (newer("configure", "config.h")):
+        #    run("./configure")
 
+        run("./bootstrap")
+        run("./configure", ['--enable-shared', '--enable-static'])
         x = run("make")
 
-        # Copy the lib's to the right directory (temporary; the makefile
-        # should really be putting them here)
-	if (x != 0):
+        # Copy the lib's to the right directory
+        if (x != 0):
             mkdir("temp/lib")
             copyIfNewer("source/G3Dcpp/.libs/libG3D.a",                  "temp/lib/libG3D.a")
             copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",            "temp/lib/libG3D_debug.a")

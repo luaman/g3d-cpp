@@ -272,30 +272,31 @@
    At the end of this section is a short FAQ regarding compiler error messages.
 
    <P>
+   <B>Windows</B>
+
    <OL>
    <LI>
-   Download the latest g3d-cpp-xxx.zip and g3d-data-xxx.zip from
-   <A HREF="http://www.graphics3d.com/cpp">http://www.graphics3d.com/cpp</A>. 
-   Unzip all of the files in the distribution to a subdirectory of your
-   library directory (e.g. <CODE>c:\\libraries\\G3D</CODE>).
-   If you plan to use the GLG3D rendering code, you will also need the 
-   latest version of SDL 
-   from <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>.
+   Download the latest g3d-xxx.zip from
+   http://g3d-cpp.sourceforge.net. 
+   Unzip all of the files in the distribution to your
+   library directory (e.g. <CODE>c:\\libraries</CODE>).
 
-   <LI>
-     For MSVC, ensure that you are using MSVC++ 6.0 with Service Pack 5 and the Processor Pack.
+   <LI>Download and install the latest version of SDL from
+   <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>.
 
-  <LI>
-   For MSVC, add the following to your Autoexp.dat file (usually in 
-   <CODE>C:\\Program Files\\Microsoft Visual Studio\\Common\\MSDev98\\Bin</CODE>):
-   <PRE>
-    ;; graphics3D
-    G3D::Quat=Quat(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
-    G3D::Vector4=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
-    G3D::Vector3=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
-    G3D::Vector2=Vector2(&lt;x&gt;,&lt;y&gt;)
-    G3D::Color4=Color4(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
-    G3D::Color3=Color3(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
+   <LI>Ensure that you are using MSVC++ 6.0 with Service Pack 5 and
+   the Processor Pack.
+
+  <LI> Autoexp.dat file (usually in <CODE>C:\\Program Files\\Microsoft
+   Visual Studio\\Common\\MSDev98\\Bin</CODE>): 
+
+<PRE> ;; graphics3D
+   G3D::Quat=Quat(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
+   G3D::Vector4=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
+   G3D::Vector3=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
+   G3D::Vector2=Vector2(&lt;x&gt;,&lt;y&gt;)
+   G3D::Color4=Color4(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
+   G3D::Color3=Color3(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
 
     ;; Prevent stepping into certain functions
     [ExecutionControl]
@@ -304,12 +305,12 @@
    </PRE>
 
    <LI>
-   In Tools:Options:Directories, add the graphics3d include directory 
-   (e.g. c:\\libraries\\G3D\\include) to the
+   In Tools:Options:Directories, add the g3d include directory 
+   (e.g. c:\\libraries\\g3d-6_00\\include) to the
    include list.  Make sure it preceeds all other include directories.
    <LI>
-   In Tools:Options:Directories, add the graphics3d lib directory 
-   (e.g. c:\\libraries\\G3D\\lib) to the library
+   In Tools:Options:Directories, add the g3d lib directory 
+   (e.g. c:\\libraries\\g3d-6_00\\lib) to the library
    list.
    <LI>
    <B>For each project you create:</B> 
@@ -343,6 +344,12 @@ C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL      
       "Debug Multithreaded DLL" in your debug build.
     </OL>
    </OL>
+
+  <B>Linux</B> The current Linux build requires you to download
+  g3d-src-6_00.zip and build the library yourself.  See readme.html in
+  that distribution for build instructions.
+
+  <P>
 
   Note that G3D uses zlib, which is distributed as part of the library
   (as headers and a windows binary).  If you need zlib for your own platform 
