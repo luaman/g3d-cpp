@@ -857,6 +857,14 @@ private:
         bool                top,
         bool                bottom);
 
+    /**
+     Returns the scale due to perspective at
+     a point for a line.
+     */
+    static double perspectiveLineThickness(
+        RenderDevice*       rd,
+        const Vector3&      pt);
+
 public:
 
     static void wireBox(
@@ -906,53 +914,170 @@ public:
         const Color4&               color = Color3::GREEN * .5,
         double                      scale = 1);
 
-    /**
-     TODO
-     */
     void wireCapsule(
        const Capsule&       capsule, 
        RenderDevice*        renderDevice,
        const Color4&        color = Color3::PURPLE);
 
-
-    /**
-     TODO
-     */
     void capsule(
        const Capsule&       capsule, 
        RenderDevice*        renderDevice,
        const Color4&        color = Color3::PURPLE);
 
-
-    /**
-     TODO
-     */
+    static void ray(
+        const Ray&          ray,
+        RenderDevice*       renderDevice,
+        const Color4&       color = Color3::ORANGE,
+        double              scale = 1);
+    
     static void arrow(
         const Vector3&      start,
         const Vector3&      direction,
         RenderDevice*       renderDevice,
         const Color4&       color = Color3::ORANGE,
-        double              scale = 1.0);
-
-    static void ray(
-        const Ray&          ray,
-        RenderDevice*       renderDevice,
-        const Color4&       color = Color3::ORANGE) {
-        arrow(ray.origin, ray.direction, renderDevice, color);
+        double              scale = 1.0) {
+        ray(Ray::fromOriginAndDirection(start, direction * scale), renderDevice, color, scale);
     }
 
-    /** TODO */
     static void axes(
         const CoordinateFrame& cframe,
         RenderDevice*       renderDevice,
         double              scale = 1.0);
+
+    static void axes(
+        RenderDevice*       renderDevice,
+        double              scale = 1.0) {
+        axes(CoordinateFrame(), renderDevice, scale);
+    }
 };
+
+
+
+void Draw::axes(
+    const CoordinateFrame& cframe,
+    RenderDevice*       renderDevice,
+    double              scale) {
+
+    // TODO: set line thickness and text label scale based on
+    // distance to camera
+
+    Vector3 c = cframe.translation;
+    Vector3 x = cframe.rotation.getColumn(0).direction();
+    Vector3 y = cframe.rotation.getColumn(1).direction();
+    Vector3 z = cframe.rotation.getColumn(2).direction();
+
+    Draw::arrow(c, x, renderDevice, Color3::RED, scale);
+    Draw::arrow(c, y, renderDevice, Color3::GREEN, scale);
+    Draw::arrow(c, z, renderDevice, Color3::BLUE, scale);
+  
+    // Text label scale
+    const double xx = -3;
+    const double yy = xx * 1.4;
+
+    Vector3 xc2D = renderDevice->project(c + x * 1.2);
+    Vector3 yc2D = renderDevice->project(c + y * 1.2);
+    Vector3 zc2D = renderDevice->project(c + z * 1.2);
+
+    // If coordinates are behind the viewer, transform off screen
+    Vector2 x2D = (xc2D.z > 0) ? xc2D.xy() : Vector2(-1000, -1000);
+    Vector2 y2D = (yc2D.z > 0) ? yc2D.xy() : Vector2(-1000, -1000);
+    Vector2 z2D = (zc2D.z > 0) ? zc2D.xy() : Vector2(-1000, -1000);
+
+    double xS = (xc2D.z > 0) ? clamp(10 * xc2D.z, .1, 5) : 0;
+    double yS = (yc2D.z > 0) ? clamp(10 * yc2D.z, .1, 5) : 0;
+    double zS = (zc2D.z > 0) ? clamp(10 * zc2D.z, .1, 5) : 0;
+
+    renderDevice->push2D();
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        renderDevice->setLineWidth(2);
+
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            // X
+            renderDevice->setColor(Color3::RED);
+            renderDevice->sendVertex(Vector2(-xx,  yy) * xS + x2D);
+            renderDevice->sendVertex(Vector2( xx, -yy) * xS + x2D);
+            renderDevice->sendVertex(Vector2( xx,  yy) * xS + x2D);
+            renderDevice->sendVertex(Vector2(-xx, -yy) * xS + x2D);
+
+            // Y
+            renderDevice->setColor(Color3::GREEN);
+            renderDevice->sendVertex(Vector2(-xx,  yy) * yS + y2D);
+            renderDevice->sendVertex(Vector2(  0,  0) * yS + y2D);
+            renderDevice->sendVertex(Vector2(  0,  0) * yS + y2D);
+            renderDevice->sendVertex(Vector2(  0, -yy) * yS + y2D);
+            renderDevice->sendVertex(Vector2( xx,  yy) * yS + y2D);
+            renderDevice->sendVertex(Vector2(  0,  0) * yS + y2D);
+        renderDevice->endPrimitive();
+
+        renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
+            // Z
+            renderDevice->setColor(Color3::BLUE);    
+            renderDevice->sendVertex(Vector2( xx,  yy) * zS + z2D);
+            renderDevice->sendVertex(Vector2(-xx,  yy) * zS + z2D);
+            renderDevice->sendVertex(Vector2( xx, -yy) * zS + z2D);
+            renderDevice->sendVertex(Vector2(-xx, -yy) * zS + z2D);
+        renderDevice->endPrimitive();
+    renderDevice->pop2D();
+}
+
+
+void Draw::ray(
+    const Ray&          ray,
+    RenderDevice*       renderDevice,
+    const Color4&       color,
+    double              scale) {
+
+    Vector3 tip = ray.origin + ray.direction;
+    // Create a coordinate frame at the tip
+    Vector3 u = ray.direction.direction();
+    Vector3 v;
+    if (u.x == 0) {
+        v = Vector3::UNIT_X;
+    } else {
+        v = Vector3::UNIT_Y;
+    }
+    Vector3 w = u.cross(v).direction();
+    v = w.cross(u).direction();
+    Vector3 back = tip - u * 0.3 * scale;
+
+    lineSegment(LineSegment::fromTwoPoints(ray.origin, back), renderDevice, color);
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+
+
+        double r = scale * .1;
+        // Arrow head
+        renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
+            renderDevice->setNormal(u);
+            renderDevice->sendVertex(tip);
+            for (int a = 0; a <= 12; ++a) {
+                double angle = a * G3D_PI / 6;
+                Vector3 dir = cos(angle)  * v + sin(angle) * w;
+                renderDevice->setNormal(dir);
+                renderDevice->sendVertex(back + dir * r);
+            }
+        renderDevice->endPrimitive();
+
+        // Back of arrow head
+        renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
+            renderDevice->setNormal(-u);
+            for (int a = 0; a <= 12; ++a) {
+                double angle = a * G3D_PI / 6;
+                Vector3 dir = sin(angle) * v + cos(angle) * w;
+                renderDevice->sendVertex(back + dir * r);
+            }
+        renderDevice->endPrimitive();
+
+    renderDevice->popState();
+}
 
 
 void Draw::capsule(
    const Capsule&       capsule, 
    RenderDevice*        renderDevice,
    const Color4&        color) {
+    // TODO
 }
 
 
@@ -961,6 +1086,7 @@ void Draw::wireCapsule(
    RenderDevice*        renderDevice,
    const Color4&        color) {
 
+    // TODO
     /*
     pushState();
 
@@ -1120,13 +1246,31 @@ void Draw::lineSegment(
 
     renderDevice->pushState();
         renderDevice->setColor(color);
-        renderDevice->setLineWidth(2);
+        
+        // Compute perspective line width
+        Vector3 v0 = lineSegment.endPoint(0);
+        Vector3 v1 = lineSegment.endPoint(1);
+
+        Vector3 s0 = renderDevice->project(v0);
+        Vector3 s1 = renderDevice->project(v1);
+
+        double L = 2;
+        if ((s0.z > 0) && (s1.z > 0)) {
+            L = 15 * (s0.z + s1.z) / 2;
+        } else if (s0.z > 0) {
+            L = max(15 * s0.z, 10);
+        } else if (s1.z > 0) {
+            L = max(15 * s1.z, 10);
+        }
+
+        renderDevice->setLineWidth(L);
+
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
 
         renderDevice->beginPrimitive(RenderDevice::LINES);
-            renderDevice->sendVertex(lineSegment.endPoint(0));
-            renderDevice->sendVertex(lineSegment.endPoint(1));
+            renderDevice->sendVertex(v0);
+            renderDevice->sendVertex(v1);
         renderDevice->endPrimitive();
     renderDevice->popState();
 }
@@ -1322,9 +1466,13 @@ void doGraphics() {
 
             renderDevice->debugDrawAxes(2);
 
+            Draw::axes(CoordinateFrame(Vector3(0,4,0)), renderDevice);
+
             Draw::wireBox(Box(Vector3(-1,-1,-1), Vector3(1,1,1)), renderDevice);
 
             Draw::wireSphere(Sphere(Vector3(2,2,2), 1), renderDevice);
+
+            Draw::arrow(Vector3(-2, 2, 0), Vector3(1,1,1), renderDevice);
 
         renderDevice->popState();
 	    
