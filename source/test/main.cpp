@@ -224,6 +224,17 @@ void testRCP() {
 }
 
 
+void testWildcards() {
+    printf("filenameContainsWildcards\n");
+    debugAssert(!filenameContainsWildcards("file1.exe"));
+	debugAssert(filenameContainsWildcards("file?.exe"));
+	debugAssert(filenameContainsWildcards("f*.exe"));
+	debugAssert(filenameContainsWildcards("f*.e?e"));
+	debugAssert(filenameContainsWildcards("*1.exe"));
+	debugAssert(filenameContainsWildcards("?ile1.exe"));
+}
+
+
 void testBox() {
     printf("Box\n");
     Box box = Box(Vector3(0,0,0), Vector3(1,1,1));
@@ -1765,6 +1776,8 @@ int main(int argc, char* argv[]) {
     testAdjacency();
     printf("  passed\n");
     testSort();
+    printf("  passed\n");
+    testWildcards();
     printf("  passed\n");
     testRCP();
     printf("  passed\n");

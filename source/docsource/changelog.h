@@ -12,10 +12,12 @@
    <P>
    Changes in 6.05:
    <UL>
-     <LI> Created installer for Windows [Corey]
+     <LI> G3D::AABSPTree::insert(Array<T>)
+     <LI> G3D::Texture::_sizeOfAllTexturesInMemory
+     <LI> Created installer for Windows install [Corey]
      <LI> Reorganized the documentation topic index based on abstraction level, added hyperlinks to demo/contrib code
      <LI> G3D::ReliableConduit and G3D::LightweightConduit now send and receive
-          objects directly; no need to make a G3D::NetMessage.  NetMessage
+          objects directly; no need to make a G3D::NetMessage.  G3D::NetMessage
           and associated methods are now deprecated.
      <LI> Win32 GUI G3D::prompt now auto-expands \\n to \\r\\n in prompt string [Corey]
      <LI> G3D::Draw::frustum

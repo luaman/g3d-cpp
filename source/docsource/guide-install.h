@@ -165,7 +165,10 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
       routines.  On Win32, you will need the Visual Studio processor pack 
       (Free from http://msdn.microsoft.com/vstudio/downloads/ppack/default.asp)
       to build with this option.  Your code will only run on PIII or later
-      machines.
+      machines.  <B>If you have the student edition of MSVC</B>, you must
+      remove the #define SSE line from platform.h in order to build or you will get errors like <CODE>vector3.inl(24) : fatal error C1083: Cannot open include file:
+   'xmmintrin.h': No such file or directory</CODE>
+
 
     <P>
 	 <B>_MSC_VER</B> - Use Microsoft x86 assembly when assembly code is needed.

@@ -96,6 +96,9 @@ Physics and Ray Tracing <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></
   These functions are demonstrated in the <A HREF="../demos/Network_Demo">demo/Network_Demo</A>
   and <A HREF="../contrib/pingtest/pingtest">contrib/pingtest</A> application.
 
+  For a higher level, Open Source network API, consider the Torque Network Library, OpenTNL
+  <A HREF="http://www.opentnl.org/">http://www.opentnl.org/</A>.
+
   @section images Images
     
   G3D::GImage can load many kinds of image files.  It is used internally by G3D::Texture.

@@ -17,6 +17,118 @@
     #error Requires G3D 6.05
 #endif
 
+class Tri {
+public:
+    Vector3             vertex[3];
+
+    Tri() {}
+    
+    inline Tri(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
+        vertex[0] = v0;
+        vertex[1] = v1;
+        vertex[2] = v2;
+    }
+
+    void serialize(TextOutput& to) const {
+        for (int i = 0; i < 3; ++i) {
+            vertex[i].serialize(to);
+        }
+        to.writeNewline();
+    }
+
+    void deserialize(TextInput& ti) {
+        for (int i = 0; i < 3; ++i) {
+            vertex[i].deserialize(ti);
+        }
+    }
+
+    inline bool operator==(const Tri& B) const {
+        for (int i = 0; i < 3; ++i) {
+            if (vertex[i] != B.vertex[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+
+inline void getBounds(const Tri& tri, G3D::AABox& box) {
+    Vector3 lo = tri.vertex[0];
+    Vector3 hi = lo;
+
+    for (int i = 1; i < 3; ++i) {
+        lo = lo.min(tri.vertex[i]);
+        hi = hi.max(tri.vertex[i]);
+    }
+    
+    box.set(lo, hi);
+}
+
+
+inline unsigned int hashCode(const Tri& tri) {
+    return hashCode(tri.vertex[1]);
+}
+
+
+Array<Tri> triArray;
+AABSPTree<Tri> triSet;
+
+double elevationUnder(double x, double z, Vector3& N) {
+
+    double firstDistance = inf();
+
+    double startElevation = 1e6;
+    const Ray ray = Ray::fromOriginAndDirection(Vector3(x, startElevation, z), -Vector3::unitY());
+
+    typedef AABSPTree<Tri>::RayIntersectionIterator IT;
+    const IT end = triSet.endRayIntersection();
+
+    for (IT tri = triSet.beginRayIntersection(ray);
+        tri != end;
+        ++tri) {
+
+       Vector3 hitLocation, hitNormal;
+
+       const Vector3& A = tri->vertex[0];
+       const Vector3& B = tri->vertex[1];
+       const Vector3& C = tri->vertex[2];
+
+       double t = CollisionDetection::collisionTimeForMovingPointFixedTriangle(
+            ray.origin, ray.direction,
+            A, B, C, 
+            hitLocation, hitNormal);
+
+       static const double epsilon = 0.00001;
+       if ((t < firstDistance) && 
+           (t <= tri.maxDistance + epsilon) &&
+           (t >= tri.minDistance - epsilon)) {
+
+           // This is the new best collision time
+           firstDistance = t;
+           N = hitNormal;
+
+           // Even if we found an object we must keep iterating until
+           // we've exhausted all members at this node.
+	       tri.markBreakNode();
+       }
+    }
+     
+    if (firstDistance == inf()) {
+        N = Vector3::unitY();
+        return 0;
+    }
+
+    double d = startElevation - firstDistance;
+
+    debugAssert(d > -1000);
+    debugAssert(d < 1e6);
+
+    return d;
+}
+
+
 
 /**
  This simple demo applet uses the debug mode as the regular
@@ -73,6 +185,7 @@ void Demo::init()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
+
 }
 
 
@@ -122,9 +235,34 @@ void Demo::doGraphics() {
 
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
 
-        GCamera cam2;
-        GCamera::Frustum frustum = app->debugCamera.frustum(app->renderDevice->getViewport());
-        Draw::frustum(frustum, app->renderDevice);
+        app->renderDevice->setPolygonOffset(1);
+        app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
+        app->renderDevice->setColor(Color3::white());
+        for (int j = 0; j < 2; ++j) {
+            app->renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+            app->renderDevice->setNormal(Vector3::unitY());
+            for (int i = 0; i < triArray.size(); ++i) {
+                for (int v = 0; v < 3; ++v) {
+                    app->renderDevice->sendVertex(triArray[i].vertex[v] / 1e3);
+                }
+            }
+            app->renderDevice->endPrimitive();
+            app->renderDevice->setColor(Color3::black());
+            app->renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+            app->renderDevice->setPolygonOffset(0);
+        }
+        app->renderDevice->setRenderMode(RenderDevice::RENDER_SOLID);
+
+        for (int x = 0; x < 20; ++x) {
+            for (int z = 0; z < 20; ++z) {
+                double xx = x;// / 2.0;
+                double zz = z;// / 2.0;
+                Vector3 pos(xx, elevationUnder(xx*1e3, zz*1e3, Vector3()) / 1e3, zz);
+                Draw::box(
+                    AABox(pos - Vector3(.1,.1,.1), pos + Vector3(.1,.1,.1)),
+                    app->renderDevice, Color3::red(), Color3::black());
+            }
+        }
 
     app->renderDevice->disableLighting();
 
@@ -155,12 +293,28 @@ App::~App() {
 }
 
 
+
+
 int main(int argc, char** argv) {            
 
-    Triangle tri(Vector3(14775.8,0,19079.8), Vector3(14411.5,0,16194.8),Vector3(14775.8,0,19079.8));
+    {
+    TextInput ti("c:/tmp/tris.txt");
+    while (ti.hasMore()) {
+        triArray.next().deserialize(ti);
+        triSet.insert(triArray.last());
+    }
+
+    }
+//    triSet.insert(triArray);
+    triSet.balance();
+
+
+    double y = elevationUnder(9149, 10418, Vector3());
+
+
     GAppSettings settings;
-    settings.window.width = 400;
-    settings.window.height = 500;
+    settings.window.width = 800;
+    settings.window.height = 700;
     App(settings).run();
     return 0;
 }

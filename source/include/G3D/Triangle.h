@@ -8,10 +8,8 @@
 
  @cite Random point method by  Greg Turk, Generating random points in triangles.  In A. S. Glassner, ed., Graphics Gems, pp. 24-28. Academic Press, 1990
 
- Copyright 2000-2004, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
-  Copyright 2000-2004, Morgan McGuire.
-  All rights reserved.
  */
 
 #ifndef G3D_TRIANGLE_H

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2005-01-28
+  @edited  2005-02-05
 
   Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
@@ -637,6 +637,32 @@ public:
         
         // Insert into the node table
         memberTable.set(value, node);
+    }
+
+    /** Inserts each elements in the array in turn.  If the tree
+        begins empty (no structure and no elements), this is faster
+        than inserting each element in turn.  You still need to balance
+        the tree at the end.*/
+    void insert(const Array<T>& valueArray) {
+        if (root == NULL) {
+            // Optimized case for an empty tree; don't bother
+            // searching or reallocating the root node's valueArray
+            // as we incrementally insert.
+            root = new Node();
+            root->valueArray.resize(valueArray.size());
+            for (int i = 0; i < valueArray.size(); ++i) {
+                // Insert in opposite order so that we have the exact same
+                // data structure as if we inserted each (i.e., order is reversed
+                // from array).
+                root->valueArray[valueArray.size() - i - 1] = Handle(valueArray[i]);
+                memberTable.set(valueArray[i], root);
+            }
+        } else {
+            // Insert at appropriate tree depth.
+            for (int i = 0; i < valueArray.size(); ++i) {
+                insert(valueArray[i]);
+            }
+        }
     }
 
 

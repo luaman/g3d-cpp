@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2004-09-04
+  @edited  2005-02-05
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -118,6 +118,9 @@ private:
     int                             depth;
     bool                            _opaque;
     DepthReadMode                   _depthRead;
+
+    static size_t                   _sizeOfAllTexturesInMemory;
+
 
     Texture(
         const std::string&          _name,
@@ -351,9 +354,19 @@ public:
     bool invertY;
 
     /**
-     How much (texture) memory this texture occupies.
+     How much (texture) memory this texture occupies.  OpenGL backs
+     video memory textures with main memory, so the total memory 
+     is actually twice this number.
      */
-    int sizeInMemory() const;
+    size_t sizeInMemory() const;
+
+    /**
+     Video memory occupied by all OpenGL textures allocated using Texture
+     or maintained by pointers to a Texture.
+     */
+    inline static size_t sizeOfAllTexturesInMemory() {
+        return _sizeOfAllTexturesInMemory;
+    }
 
     /**
      True if this texture was created with an alpha channel.  Note that

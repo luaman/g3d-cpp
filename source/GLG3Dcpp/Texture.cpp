@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2004-09-03
+ @edited  2005-02-05
 */
 
 #include "GLG3D/glcalls.h"
@@ -22,6 +22,8 @@
 namespace G3D {
 
 static const char* cubeMapString[] = {"ft", "bk", "up", "dn", "rt", "lf"};
+
+size_t Texture::_sizeOfAllTexturesInMemory = 0;
 
 /**
  Returns true if the system supports automatic MIP-map generation.
@@ -38,6 +40,7 @@ static bool hasAutoMipMap() {
 
     return ham;
 }
+
 
 static void disableAllTextures() {
     glDisable(GL_TEXTURE_1D);
@@ -380,6 +383,8 @@ Texture::Texture(
         debugAssertGLOk();
     glStatePop();
     debugAssertGLOk();
+
+    _sizeOfAllTexturesInMemory += sizeInMemory();
 }
 
 
@@ -859,6 +864,7 @@ void Texture::splitFilenameAtWildCard(
 
 
 Texture::~Texture() {
+    _sizeOfAllTexturesInMemory -= sizeInMemory();
 	glDeleteTextures(1, &textureID);
 	textureID = 0;
 }
@@ -887,6 +893,8 @@ void Texture::copyFromScreen(
     } else {
         glReadBuffer(GL_FRONT);
     }    
+
+    _sizeOfAllTexturesInMemory -= sizeInMemory();
 
     // Set up new state
     this->width   = (int)rect.width();
@@ -928,6 +936,8 @@ void Texture::copyFromScreen(
     invertY = true;
 
     glStatePop();
+
+    _sizeOfAllTexturesInMemory += sizeInMemory();
 }
 
 
@@ -1011,7 +1021,7 @@ void Texture::getCameraRotation(CubeFace face, Matrix3& outMatrix) {
 }
 
 
-int Texture::sizeInMemory() const {
+size_t Texture::sizeInMemory() const {
 
     int base = (width * height * depth * format->hardwareBitsPerTexel) / 8;
 
