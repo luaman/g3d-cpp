@@ -765,6 +765,24 @@ void GImage::decodeICO(
 
 	debugAssert(count > 0);
 
+    const uint8* headerBuffer = input.getCArray() + input.getPosition();
+    int maxWidth = 0, maxHeight = 0;
+    int maxHeaderNum = 0;
+    for (int currentHeader = 0; currentHeader < count; ++currentHeader) {
+        
+        const uint8* curHeaderBuffer = headerBuffer + (currentHeader * 16);
+        int tmpWidth = curHeaderBuffer[0];
+        int tmpHeight = curHeaderBuffer[1];
+        // Just in case there is a non-square icon, checking area
+        if ((tmpWidth * tmpHeight) > (maxWidth * maxHeight)) {
+            maxWidth = tmpWidth;
+            maxHeight = tmpHeight;
+            maxHeaderNum = currentHeader;
+        }
+    }
+
+    input.skip(maxHeaderNum * 16);
+
 	width = input.readUInt8();
 	height = input.readUInt8();
 	int numColors = input.readUInt8();
@@ -793,6 +811,8 @@ void GImage::decodeICO(
 		mask      = 0xFF;
 		bitsPerPixel = 8;
 		break;
+    default:
+    	throw Error("Unsupported ICO color count.", input.getFilename());
 	}
 
 	input.skip(5);
@@ -800,17 +820,17 @@ void GImage::decodeICO(
 	int offset = input.readUInt32();
 
 	// Skip over any other icon descriptions
-	input.skip(16 * (count - 1));
+    input.setPosition(offset);
 
 	// Skip over bitmap header; it is redundant
 	input.skip(40);
 
-	Color4uint8 colorTable[256];
+	Color4uint8 palette[256];
 	for (int c = 0; c < numColors; ++c) {
-		colorTable[c].b = input.readUInt8();
-		colorTable[c].g = input.readUInt8();
-		colorTable[c].r = input.readUInt8();
-		colorTable[c].a = input.readUInt8();
+		palette[c].b = input.readUInt8();
+		palette[c].g = input.readUInt8();
+		palette[c].r = input.readUInt8();
+		palette[c].a = input.readUInt8();
 	}
 
 	// The actual image and mask follow
@@ -824,7 +844,7 @@ void GImage::decodeICO(
 	// same number of bytes. Color indices are zero based, meaning a pixel color 
 	// of 0 represents the first color table entry, a pixel color of 255 (if there
 	// are that many) represents the 256th entry.
-
+/*
 	int bitsPerRow  = width * bitsPerPixel;
 	int bytesPerRow = iCeil((double)bitsPerRow / 8);
 	// Rows are padded to 32-bit boundaries
@@ -842,11 +862,148 @@ void GImage::decodeICO(
 			}
 		}
 	}
+*/
+    int hStart = 0;
+    int hEnd   = 0;
+    int hDir   = 0;
 
+    if (height < 0) {
+        height = -height;
+        hStart = 0;
+        hEnd   = height;
+        hDir   = 1;
+    } else {
+        //height = height;
+        hStart = height - 1;
+        hEnd   = -1;
+        hDir   = -1;
+    }
+
+    int BMScanWidth;
+    uint8 BMGroup;
+    uint8 BMPixel8;
+    int currPixel;
+    int dest;
+
+    if (bitsPerPixel == 1) {
+        // Note that this file is not necessarily grayscale, since it's possible
+        // the palette is blue-and-white, or whatever. But of course most image
+        // programs only write 1-bit images if they're black-and-white.
+
+        // For bitmaps, each scanline is dword-aligned.
+        BMScanWidth = (width + 7) >> 3;
+        if (BMScanWidth & 3) {
+            BMScanWidth += 4 - (BMScanWidth & 3);
+        }
+
+        // Powers of 2
+        int pow2[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
+
+        for (int h = hStart; h != hEnd; h += hDir) {
+
+            currPixel = 0;
+            dest = 3 * h * width;
+
+            for (int w = 0; w < BMScanWidth; ++w) {
+
+                BMGroup = input.readUInt8();
+
+                // Now we read the pixels. Usually there are eight pixels per byte,
+                // since each pixel is represented by one bit, but if the width
+                // is not a multiple of eight, the last byte will have some bits
+                // set, with the others just being extra. Plus there's the
+                // dword-alignment padding. So we keep checking to see if we've
+                // already read "width" number of pixels.
+                for (int i = 7; i >= 0; --i) {
+                    if (currPixel < width) {
+                        int src  = ((BMGroup & pow2[i]) >> i);
+                    
+                        _byte[dest]     = palette[src].r;
+                        _byte[dest + 1] = palette[src].g;
+                        _byte[dest + 2] = palette[src].b;
+                    
+                        ++currPixel;
+                        dest += 4;
+                    }
+                }
+            }
+        }
+
+	} else if (bitsPerPixel == 4) {
+
+        // For bitmaps, each scanline is dword-aligned.
+        int BMScanWidth = (width+1) >> 1;
+        if (BMScanWidth & 3) {
+            BMScanWidth += 4 - (BMScanWidth & 3);
+        }
+
+        for (int h = hStart; h != hEnd; h += hDir) {
+
+            currPixel = 0;
+            dest = 4 * h * width;
+
+            for (int w = 0; w < BMScanWidth; w++) {
+
+                BMGroup = input.readUInt8();
+                int src[2];
+                src[0] = ((BMGroup & 0xF0) >> 4);
+                src[1] = (BMGroup & 0x0F);
+
+                // Now we read the pixels. Usually there are two pixels per byte,
+                // since each pixel is represented by four bits, but if the width
+                // is not a multiple of two, the last byte will have only four bits
+                // set, with the others just being extra. Plus there's the
+                // dword-alignment padding. So we keep checking to see if we've
+                // already read "Width" number of pixels.
+
+                for (int i = 0; i < 2; ++i) {
+                    if (currPixel < width) {
+                        int tsrc  = src[i];
+                    
+                        _byte[dest]     = palette[tsrc].r;
+                        _byte[dest + 1] = palette[tsrc].g;
+                        _byte[dest + 2] = palette[tsrc].b;
+
+                        ++currPixel;
+                        dest += 4;
+                    }
+                }
+            }
+        }
+
+	} else if (bitsPerPixel == 8) {
+        
+        // For bitmaps, each scanline is dword-aligned.
+        BMScanWidth = width;
+        if (BMScanWidth & 3) {
+            BMScanWidth += 4 - (BMScanWidth & 3);
+        }
+
+        for (int h = hStart; h != hEnd; h += hDir) {
+
+            currPixel = 0;
+
+            for (int w = 0; w < BMScanWidth; ++w) {
+
+                BMPixel8 = input.readUInt8();
+
+                if (currPixel < width) {
+                    dest = 4 * ((h * width) + currPixel);
+                    int src  = BMPixel8;
+                    
+                    _byte[dest]     = palette[src].r;
+                    _byte[dest + 1] = palette[src].g;
+                    _byte[dest + 2] = palette[src].b;
+                    
+                    ++currPixel;
+                }
+            }
+        }
+    }
 
 	// Read the mask into the alpha channel
-	bitsPerRow  = width;
-	bytesPerRow = iCeil((double)bitsPerRow / 8);
+	int bitsPerRow  = width;
+	int bytesPerRow = iCeil((double)bitsPerRow / 8);
 	for (int y = height - 1; y >= 0; --y) {
 		int x = 0;
 		// Read the row
