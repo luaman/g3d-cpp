@@ -215,6 +215,10 @@ void Demo::doLogic() {
 
     debugAssert(! app->userInput->keyPressed(' '));
 
+    //if (app->userInput->keyPressed(' ')) {
+    //    _asm { int 3 };
+    //}
+
 	app->debugPrintf("(%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
 }
 

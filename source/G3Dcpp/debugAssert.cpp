@@ -213,6 +213,7 @@ void _handleErrorCheck_(
 static HCURSOR oldCursor;
 static RECT    oldCursorRect;
 static POINT   oldCursorPos;
+static int     oldShowCursorCount;
 #endif
 
 void _releaseInputGrab_() {
@@ -221,8 +222,13 @@ void _releaseInputGrab_() {
         GetCursorPos(&oldCursorPos);
 
         // Stop hiding the cursor if the application hid it.
-        // If the application hid the cursor *twice*, this won't work.
-        ShowCursor(true);
+        oldShowCursorCount = ShowCursor(true) - 1;
+
+        if (oldShowCursorCount < -1) {
+            for (int c = oldShowCursorCount; c < -1; ++c) {
+                ShowCursor(true);
+            }
+        }
 
         // Set the default cursor in case the application
         // set the cursor to NULL.
@@ -252,10 +258,12 @@ void _restoreInputGrab_() {
         // Restore the old cursor
         SetCursor(oldCursor);
 
-        // Note that show/hide uses an internal count, so
-        // this will not hide a cursor that was visible before
-        // _releaseInputGrab_ (which is correct behavior).
-        ShowCursor(false);
+        // Restore old visibility count
+        if (oldShowCursorCount < 0) {
+            for (int c = 0; c > oldShowCursorCount; --c) {
+                ShowCursor(false);
+            }
+        }
         
     #elif defined(G3D_LINUX)
         // TODO: Linux
