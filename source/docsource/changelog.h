@@ -15,6 +15,7 @@
      <LI> Added support for full-screen antialiasing to Win32Window
      <LI> GWindows now center and maximize on the primary monitor for Windows.
      <LI> [ 1032750 ] Fix: Grayscale JPG errors [Corey]
+     <LI> PosedModel::texCoords
    </UL>
 
    <P>

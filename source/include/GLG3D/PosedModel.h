@@ -109,6 +109,14 @@ public:
 
     virtual const Array<MeshAlg::Vertex>& vertices() const = 0;
 
+    /** If this model has texture coordinates, returns per-vertex texture coordinates
+        in an array indexed the same as vertices() and geometry.vertexArray. */
+    virtual const Array<Vector2>& texCoords() const {
+        alwaysAssertM(false, "Model has no texture coordinates.");
+        static Array<Vector2> t;
+        return t;
+    }
+
     /** Contain adjacency information that merges colocated vertices
         (see MeshAlg::weldAdjacency) */
     virtual const Array<MeshAlg::Face>& weldedFaces() const = 0;
@@ -135,6 +143,7 @@ public:
 
     virtual Box worldSpaceBoundingBox() const;
 
+    /** Subclasses may choose to implement this in any reasonable way. */
     virtual void render(class RenderDevice* renderDevice) const = 0;
 
     /**
