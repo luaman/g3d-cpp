@@ -207,8 +207,8 @@ VertexAndPixelShader::VertexAndPixelShader(
 
     if (_ok) {
         computeUniformArray();
-        addUniformsFromCode(vsCode);
-        addUniformsFromCode(psCode);
+        addUniformsFromCode(vsFromFile ? readFileAsString(vsFilename) : vsCode);
+        addUniformsFromCode(psFromFile ? readFileAsString(psFilename) : psCode);
     }
 }
 
