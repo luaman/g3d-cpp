@@ -2,3 +2,4 @@ build
 install
 temp
 release
+*.pyc
