@@ -90,8 +90,8 @@ private:
     std::string                     name;
     InterpolateMode                 interpolate;
     WrapMode                        wrap;
-    const class TextureFormat*      format;
     Dimension                       dimension;
+    const class TextureFormat*      format;
     int                             width;
     int                             height;
     int                             depth;

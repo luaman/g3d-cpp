@@ -222,9 +222,9 @@ Texture::Texture(
     WrapMode                _wrap,
     bool                    __opaque) :
     
-    format(_format),
     textureID(_textureID),
     dimension(_dimension),
+    format(_format),
     _opaque(__opaque) {
 
     debugAssert(_format);

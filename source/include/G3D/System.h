@@ -123,6 +123,24 @@ public:
      that key.
      */
     static int consoleReadKey();
+
+    /**
+     * Returns a highly accurate time in milliseconds that
+     * is relative to an arbitrary per-platform baseline
+     * (e.g. the time the program started)
+     *
+     * Use differences in two tick times to measure
+     * events to a high degree of precision.
+     * */
+    static RealTime getTick();
+
+    /**
+     * The actual time (measured in seconds since
+     * Jan 1 1970 midnight).
+     *
+     * Adjusted for local timezone and daylight savings
+     * time. */
+    static RealTime getLocalTime();
 };
 
 

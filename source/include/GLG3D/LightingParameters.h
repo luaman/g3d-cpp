@@ -19,10 +19,6 @@ namespace G3D {
 #define PROVIDENCE_LATITUDE 41.7333f
 
 
-/** The actual time (measured in seconds since Jan 1 1970 midnight).
-    Adjusted for local timezone and daylight savings time. */
-RealTime realWorldLocalTime();
-
 /**
  Provides a reasonable (but not remotely physically correct!) set of lighting parameters
  based on the time of day.  The sun and moon travel in a perfectly east-west arc

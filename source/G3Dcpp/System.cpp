@@ -766,6 +766,41 @@ int System::consoleReadKey() {
     #endif
 }
 
+RealTime System::getTick() { 
+    return 0;
+}
+
+RealTime System::getLocalTime() {
+  
+#ifdef G3D_WIN32
+    struct _timeb t;
+    _ftime(&t);
+
+    return t.time - t.timezone * MINUTE + (t.dstflag ? HOUR : 0);
+
+#else
+
+    // "sse" = "seconds since epoch".  The time
+    // function returns the seconds since the epoch
+    // GMT (perhaps more correctly called UTC). 
+    time_t gmt = time(NULL);
+        
+    // No call to free or delete is needed, but subsequent
+    // calls to asctime, ctime, mktime, etc. might overwrite
+    // local_time_vals. 
+    tm* localTimeVals = localtime(&gmt);
+    
+    time_t local = gmt;
+        
+    if (localTimeVals) {
+        // tm_gmtoff is already corrected for daylight savings.
+        local = local + localTimeVals->tm_gmtoff;
+    }
+        
+    return RealTime(local);
+
+#endif
+}
 
 void* System::alignedMalloc(size_t bytes, size_t alignment) {
     alwaysAssertM(isPow2(alignment), "alignment must be a power of 2");
