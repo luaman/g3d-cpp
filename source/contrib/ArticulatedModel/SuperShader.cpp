@@ -6,63 +6,6 @@
 
 #include "SuperShader.h"
 
-void SuperShader::configureFixedFunction(RenderDevice* rd) {
-/*
-    // Set lighting
-    rd->enableLighting();
-
-    // Ambient
-    rd->setAmbientLightColor(lighting->global.ambientTop);
-    if (lighting->global.ambientBottom != lighting->global.ambientTop) {
-        rd->setLight(0, GLight::directional(-Vector3::unitY(), 
-            lighting->global.ambientBottom - lighting->global.ambientTop, false)); 
-    }
-
-    for (int L = 0; L < iMin(7, lighting->lightArray.size()); ++L) {
-        rd->setLight(L + 1, lighting->lightArray[L]);
-    }
-
-    // Set materials
-    rd->setTexture(0, material.diffuse.map);
-    rd->setColor(material.diffuse.constant);
-    rd->setSpecularCoefficient(material.specular.constant.average());
-    rd->setShininess(material.specularExponent.constant.average());
-    rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
-    */
-}
-
-/*
-void SuperShader::LightingEnvironment::set(GameTime time, SkyRef sky) {
-    LightingParameters lighting(time);
-    
-    if (sky.notNull()) {
-        environment.constant = lighting.skyAmbient;
-        environment.map = sky->getEnvironmentMap();
-    }
-
-    ambientTop = Color3(.9, .9, 1) * lighting.diffuseAmbient;
-    ambientBottom = Color3::brown() * lighting.diffuseAmbient;
-
-    lightArray.clear();
-    lightArray.append(lighting.directionalLight());
-    lightArray.last().color *= Color3(1, 1, .9);
-}
-*/
-
-/*
-void SuperShader::LightingEnvironment::configureShaderArgs(
-    VertexAndPixelShader::ArgList& args) const {
-
-    // TODO: special cases where all fields are not used
-    args.set("ambientTop", ambientTop);
-    args.set("ambientBottom", ambientBottom);
-    args.set("environmentConstant", environment.constant);
-    args.set("environmentMap", environment.map);
-    args.set("lightPos", lightArray[0].position);
-    args.set("lightColor", lightArray[0].color);
-}
-*/
-
 void SuperShader::Material::configureShaderArgs(
     VertexAndPixelShader::ArgList& args) const {
     
@@ -102,45 +45,27 @@ SuperShaderRef SuperShader::create(const Material& mat) {
 
 
 SuperShader::SuperShader(const Material& mat) : material(mat) {
-    if (profile() != FIXED_FUNCTION) {
-        shader = getShader(material);
-    }
+    shader = getShader(material);
 }
 
 
 bool SuperShader::ok() const {
-    if (profile() == FIXED_FUNCTION) {
-        return true;
-    } else {
-        return shader->ok();
-    }
+    return shader->ok();
 }
 
 
-
 void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
-    /*
-    if (profile() == FIXED_FUNCTION) {
-        renderDevice->pushState();
-        configureFixedFunction(renderDevice);
-    } else {
-        material.configureShaderArgs(shader->args);
-        lighting->configureShaderArgs(shader->args);
-        shader->beforePrimitive(renderDevice);
-        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-    }
-    */
+    material.configureShaderArgs(shader->args);
+
+    // TODO
+    //lighting->configureShaderArgs(shader->args);
+    shader->beforePrimitive(renderDevice);
+    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 }
 
 
 void SuperShader::afterPrimitive(RenderDevice* renderDevice) {
-/*
-    if (profile() == FIXED_FUNCTION) {
-        renderDevice->popState();
-    } else {
-        shader->afterPrimitive(renderDevice);
-    }
-    */
+    shader->afterPrimitive(renderDevice);
 }
 
 const std::string& SuperShader::messages() const {

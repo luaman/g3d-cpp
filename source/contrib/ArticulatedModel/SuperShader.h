@@ -19,7 +19,7 @@ typedef ReferenceCountedPointer<class SuperShader> SuperShaderRef;
  Instead set the material properties and lighting environment.
  */
 // TODO: subclass _Shader
-class SuperShader : public ReferenceCountedObject {
+class SuperShader : public Shader {
 public:
     /** Material property coefficients are specified as 
         a constant color times a texture map.  If the color
@@ -130,6 +130,7 @@ public:
     void configureShaderArgs(VertexAndPixelShader::ArgList& args) const;
 
 private:
+
     class Cache {
     private:
 
@@ -151,9 +152,9 @@ private:
 
     static Cache cache;
 
+#if 0
     /** Classification of a graphics card. 
         FIXED_FUNCTION  Use OpenGL fixed function lighting only.
-        PS14            
         PS20            Use pixel shader 2.0 (full feature)
      */
     enum GraphicsProfile {
@@ -177,13 +178,13 @@ p = FIXED_FUNCTION; // TODO: remove
         return p;
     }
 
+#endif
     /** Returns the SuperShader for this material, with arguments set. */
     static ShaderRef getShader(const Material& material);
 
     /** Configuration for a non-programmable card.
         No reflection map, single ambient color. */
     void configureFixedFunction(RenderDevice* rd);
-
 
     LightingRef             lighting;
 
@@ -201,10 +202,10 @@ public:
     virtual bool ok() const;
     virtual void beforePrimitive(RenderDevice* renderDevice);
     virtual void afterPrimitive(RenderDevice* renderDevice);
-    virtual const std::string& messages () const;
+    virtual const std::string& messages() const;
 
     /** Sets all lighting parameters from this lighting environment. The environment
-        will be pointed at, so future changes are automatically reflected without
+        will be referenced, so that future changes are automatically reflected without
         another call. */
     void setLighting(const LightingRef& lighting);
 
