@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-10
-  @edited  2004-01-10
+  @edited  2004-03-28
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -42,6 +42,10 @@ public:
     }
 
     inline AABox(const Vector3& low, const Vector3& high) {
+        set(low, high);
+    }
+
+    inline void set(const Vector3& low, const Vector3& high) {
         lo = low.min(high);
         hi = high.max(low);
     }

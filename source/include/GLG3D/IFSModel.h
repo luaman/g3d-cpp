@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2004-02-19
+  @edited  2004-03-28
  */ 
 
 
@@ -98,7 +98,10 @@ public:
      Throws an std::string describing the error if anything
      goes wrong.
      @param scale 3D scale factors to apply to vertices while loading (*after* cframe)
-     @param cframe Coordinate transform to apply to vertices while loading.
+     @param cframe Coordinate transform to apply to vertices while loading.  
+                   This is not part of the object to world transformation
+                   for the model when posed; it really modifies the object
+                   space geometry.
      */
     static IFSModelRef create(const std::string& filename, const Vector3& scale = Vector3(1,1,1), const CoordinateFrame& cframe = CoordinateFrame());
     static IFSModelRef create(const std::string& filename, const double scale, const CoordinateFrame& cframe = CoordinateFrame());

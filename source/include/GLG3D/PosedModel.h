@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2004-02-18
+  @edited  2004-03-28
  */ 
 
 #ifndef GLG3D_POSEDMODEL_H
@@ -75,7 +75,8 @@ public:
 
     virtual CoordinateFrame coordinateFrame() const;
 
-    /** Get the <B>object space</B> geometry (faster than getWorldSpaceGeometry). */
+    /** Get the <B>object space</B> geometry (faster than getWorldSpaceGeometry). 
+        Object and world space geometry only differ by a CoordinateFrame transformation.*/
     virtual const MeshAlg::Geometry& objectSpaceGeometry() const = 0;
 
     /** Get the <B>world space</B> geometry. */
