@@ -235,26 +235,16 @@ typedef struct __GLXcontextRec *GLXContext;
 typedef struct __GLXFBConfigRec *GLXFBConfig;
 typedef struct __GLXFBConfigRec *GLXFBConfigSGIX;
 
-typedef GLXPbuffer (*PFNGLXQUERYGLXPBUFFERSGIX) (Display *dpy, GLXFBConfig config,
-                                          unsigned int width,
-                                          unsigned int height,
-                                          const int *attrib_list);
+typedef GLXPbuffer (*PFNGLXCREATEGLXPBUFFERSGIX) (Display *dpy, GLXFBConfig config, unsigned int width, unsigned int height, const int *attrib_list);
 typedef void(*PFNGLXDESTROYGLXPBUFFERSGIX) (Display *dpy, GLXPbuffer pbuf);
-typedef void(*PFNGLXQUERYGLXPBUFFERSGIX) (Display *dpy, GLXPbuffer pbuf,
-                                   int attribute, unsigned int *value);
-typedef GLXFBConfigSGIX(*PFNGLXCHOOSEFBCONFIGSGIX)(Display *dpy, int screen,
-                                              const int *attrib_list,
-                                              int *nelements);
-typedef GLXContext(*PFNGLXCREATECONTEXTWITHCONFIGSGIX)(Display *dpy,
-                                                 GLXFBConfigSGIX config,
-                                                 int render_type,
-                                                 GLXContext share_list,
-                                                 Bool direct);
+typedef void(*PFNGLXQUERYGLXPBUFFERSGIX) (Display *dpy, GLXPbuffer pbuf, int attribute, unsigned int *value);
+typedef GLXFBConfigSGIX(*PFNGLXCHOOSEFBCONFIGSGIX)(Display *dpy, int screen, const int *attrib_list, int *nelements);
+typedef GLXContext(*PFNGLXCREATECONTEXTWITHCONFIGSGIX)(Display *dpy, GLXFBConfigSGIX config, int render_type, GLXContext share_list, Bool direct);
 
-extern PFNGLXQUERYGLXPBUFFERSGIX glXCreateGLXPbufferSGIX;
-extern PFNGLXDESTROYGLXPBUFFERSGIX glXDestroyGLXPbufferSGIX;
-extern PFNGLXQUERYGLXPBUFFERSGIX glXQueryGLXPbufferSGIX;
-extern PFNGLXCHOOSEFBCONFIGSGIX glXChooseFBConfigSGIX;
+extern PFNGLXCREATEGLXPBUFFERSGIX         glXCreateGLXPbufferSGIX;
+extern PFNGLXDESTROYGLXPBUFFERSGIX       glXDestroyGLXPbufferSGIX;
+extern PFNGLXQUERYGLXPBUFFERSGIX         glXQueryGLXPbufferSGIX;
+extern PFNGLXCHOOSEFBCONFIGSGIX          glXChooseFBConfigSGIX;
 extern PFNGLXCREATECONTEXTWITHCONFIGSGIX glXCreateContextWithConfigSGIX;
 
 #endif
