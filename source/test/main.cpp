@@ -22,28 +22,63 @@ void testBitSerialization() {
     printf("Bit Serialization\n");
     uint8 x[100];
 
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+    {
+        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
 
-    b.beginBits();
-        b.writeBits(0, 1);
-        b.writeBits(1, 1);
-    b.endBits();
+        b.beginBits();
+            b.writeBits(0, 1);
+            b.writeBits(1, 1);
+        b.endBits();
 
-    b.commit(x);
+        b.commit(x);
 
-    debugAssert(x[0] == 2);
+        debugAssert(x[0] == 2);
+    }
 
-    b.reset();
-    b.beginBits();
-        b.writeBits(0xF1234567, 32);
-    b.endBits();
+    {
+        BinaryInput b(x, 1, G3D_LITTLE_ENDIAN);
+        b.beginBits();
+            
+            uint8 a = b.readBits(1);
+            debugAssert(a == 0);
+            
+            a = b.readBits(1);
+            debugAssert(a == 1);
+        b.endBits();
+    }
 
-    b.commit(x);
+    {
+        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+        b.beginBits();
+            b.writeBits(0xF1234567, 32);
+        b.endBits();
 
-    debugAssert(x[0] == 0x67);
-    debugAssert(x[1] == 0x45);
-    debugAssert(x[2] == 0x23);
-    debugAssert(x[3] == 0xF1);
+        b.commit(x);
+
+        debugAssert(x[0] == 0x67);
+        debugAssert(x[1] == 0x45);
+        debugAssert(x[2] == 0x23);
+        debugAssert(x[3] == 0xF1);
+    }
+
+    {
+        BinaryInput b(x, 4, G3D_LITTLE_ENDIAN);
+        b.beginBits();
+            
+            uint8 a = b.readBits(8);
+            debugAssert(a == 0x67);
+            
+            a = b.readBits(8);
+            debugAssert(a == 0x45);
+            
+            a = b.readBits(8);
+            debugAssert(a == 0x23);
+
+            a = b.readBits(8);
+            debugAssert(a == 0xF1);
+
+        b.endBits();
+    }
 }
 
 

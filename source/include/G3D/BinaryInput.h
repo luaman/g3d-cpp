@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-01-17
+ @edited  2005-02-12
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -50,8 +50,6 @@ namespace G3D {
  in which a double is serialized and then deserialized as a float. 
  */
 class BinaryInput {
-public:
-
 private:
     /**
      is the file big or little endian
@@ -60,6 +58,18 @@ private:
     std::string     filename;
 
     bool            swapBytes;
+
+    /** Next position to read from in bitString during readBits. */
+    int             bitPos;
+
+    /** Bits currently being read by readBits.  
+        Contains at most 8 (low) bits.  Note that
+        beginBits/readBits actually consumes one extra byte, which
+        will be restored by writeBits.*/
+    uint32          bitString;
+
+    /** 1 when between beginBits and endBits, 0 otherwise. */
+    int             beginEndBits;
 
     /**
      Length of file, in bytes
@@ -300,6 +310,17 @@ public:
 	inline bool hasMore() const {
 		return pos < length;
 	}
+
+    /** Prepares for bit reading via readBits.  Only readBits can be
+        called between beginBits and endBits without corrupting the
+        data stream. */
+    void beginBits();
+
+    /** Can only be called between beginBits and endBits */
+    uint32 readBits(int numBits);
+
+    /** Ends bit-reading. */
+    void endBits();
 };
 
 

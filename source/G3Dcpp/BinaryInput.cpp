@@ -71,6 +71,8 @@ BinaryInput::BinaryInput(
     bool                copyMemory) {
 
     debugAssert(!compressed || !copyMemory);
+    beginEndBits = 0;
+    bitPos = 0;
 
     freeBuffer = copyMemory || compressed;
 
@@ -114,6 +116,8 @@ BinaryInput::BinaryInput(
 	buffer = NULL;
 	length = 0;
 	pos = 0;
+    beginEndBits = 0;
+    bitPos = 0;
 
     swapBytes = needSwapBytes(fileEndian);
 
@@ -297,6 +301,55 @@ Color3 BinaryInput::readColor3() {
     double g = readFloat32();
     double b = readFloat32();
     return Color3(r, g, b);
+}
+
+
+void BinaryInput::beginBits() {
+    debugAssert(beginEndBits == 0);
+    beginEndBits = 1;
+    bitPos = 0;
+
+    debugAssertM(hasMore(), "Can't call beginBits when at the end of a file");
+    bitString = readUInt8();
+}
+
+
+uint32 BinaryInput::readBits(int numBits) {
+    debugAssert(beginEndBits == 1);
+
+    uint32 out = 0;
+
+    const int total = numBits;
+    while (numBits > 0) {
+        if (bitPos > 7) {
+            // Consume a new byte for reading.  We do this at the beginning
+            // of the loop so that we don't try to read past the end of the file.
+            bitPos = 0;
+            bitString = readUInt8();
+        }
+
+        // Slide the lowest bit of the bitString into
+        // the correct position.
+        out |= (bitString & 1) << (total - numBits);
+
+        // Shift over to the next bit
+        bitString = bitString >> 1;
+        ++bitPos;
+        --numBits;
+    }
+
+    return out;
+}
+
+
+void BinaryInput::endBits() {
+    debugAssert(beginEndBits == 1);
+    if (bitPos == 0) {
+        // Put back the last byte we read
+        --pos;
+    }
+    beginEndBits = 0;
+    bitPos = 0;
 }
 
 }
