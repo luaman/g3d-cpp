@@ -207,7 +207,7 @@ public:
 private:
 
     void encodeBMP(
-        BinaryOutput&       out);
+        BinaryOutput&       out) const;
 
 
     /**
@@ -215,13 +215,13 @@ private:
      on the number of channels.
      */
     void encodeTGA(
-        BinaryOutput&       out);
+        BinaryOutput&       out) const;
 
     /**
      Converts this image into a JPEG
      */
     void encodeJPEG(
-        BinaryOutput&       out);
+        BinaryOutput&       out) const;
 
     /**
      Decodes the buffer into this image.
@@ -251,7 +251,7 @@ private:
         const std::string&  filename,
         const uint8*        data,
         int                 dataLen,
-        Format              maybeFormat);
+        Format              maybeFormat) const;
 
     void _copy(
         const GImage&       other);
@@ -366,7 +366,7 @@ public:
      */
     void save(
         const std::string& filename,
-        Format             format = AUTODETECT);
+        Format             format = AUTODETECT) const;
    
     /**
      The caller must delete the returned buffer.
@@ -374,14 +374,14 @@ public:
     void encode(
         Format              format,
         uint8*&             outData,
-        int&                outLength);
+        int&                outLength) const;
 
     /**
      Does not commit the BinaryOutput when done.
      */
     void GImage::encode(
         Format              format,
-        BinaryOutput&       out);
+        BinaryOutput&       out) const;
 };
 
 /**

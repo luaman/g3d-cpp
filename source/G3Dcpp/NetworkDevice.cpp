@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2004-04-01
+ @edited  2004-05-03
  */
 
 #include <stdlib.h>
@@ -680,10 +680,7 @@ uint32 ReliableConduit::waitingMessageType() {
 }
 
 
-void ReliableConduit::send(const NetMessage* m) {
-
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-
+void ReliableConduit::serializeMessage(const NetMessage* m, BinaryOutput& b) {
     if (m == NULL) {
         b.writeUInt32(1);
     } else {
@@ -708,7 +705,10 @@ void ReliableConduit::send(const NetMessage* m) {
     // Here we abuse BinaryOutput a bit and write directly into
     // its buffer, violating the abstraction.
     ((uint32*)b.getCArray())[1] = htonl(len);
+}
 
+
+void ReliableConduit::sendBuffer(const BinaryOutput& b) {
     int ret = ::send(sock, (const char*)b.getCArray(), b.getLength(), 0);
     
     if (ret == SOCKET_ERROR) {
@@ -725,6 +725,25 @@ void ReliableConduit::send(const NetMessage* m) {
 
     // Verify the packet was actually sent
     debugAssert(ret == b.getLength());
+}
+
+
+void ReliableConduit::send(const NetMessage* m) {
+
+    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+
+    serializeMessage(m, b);
+    sendBuffer(b);
+}
+
+
+void ReliableConduit::multisend(const Array<ReliableConduitRef>& array, const NetMessage* m) {
+    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+    serializeMessage(m, b);
+
+    for (int i = 0; i < array.size(); ++i) {
+        array[i]->sendBuffer(b);
+    }
 }
 
 
@@ -862,6 +881,7 @@ bool ReliableConduit::receive(NetMessage* m) {
     return true;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 
 LightweightConduit::LightweightConduit(
@@ -913,9 +933,7 @@ LightweightConduit::~LightweightConduit() {
 }
 
 
-void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
-
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+void LightweightConduit::serializeMessage(const NetMessage* m, BinaryOutput& b) const {
 
     if (m != NULL) {
         debugAssert(m->type() != 0);
@@ -924,9 +942,12 @@ void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
     } else {
         b.writeUInt32(1);
     }
+}
 
+
+void LightweightConduit::sendBuffer(const NetAddress& a, BinaryOutput& b) {
     if (sendto(sock, (const char*)b.getCArray(), b.getLength(), 0,
-           (struct sockaddr *) &(a.addr), sizeof(a.addr)) == SOCKET_ERROR) {
+       (struct sockaddr *) &(a.addr), sizeof(a.addr)) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->printf("Error occured while sending packet "
                                  "to %s\n", inet_ntoa(a.addr.sin_addr));
@@ -937,6 +958,27 @@ void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
         ++mSent;
         bSent += b.getLength();
     }
+}
+
+
+void LightweightConduit::send(const Array<NetAddress>& array, const NetMessage* m) {
+    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+
+    serializeMessage(m, b);
+
+    for (int i = 0; i < array.size(); ++i) {
+        sendBuffer(array[i], b);
+    }
+}
+
+
+void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
+
+    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+
+    serializeMessage(m, b);
+
+    sendBuffer(a, b);
 }
 
 

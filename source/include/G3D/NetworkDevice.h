@@ -215,6 +215,8 @@ public:
     bool ok() const;
 };
 
+typedef ReferenceCountedPointer<class ReliableConduit> ReliableConduitRef;
+
 
 // Messaging and stream APIs must be supported on a single class because
 // sometimes an application will switch modes on a single socket.  For
@@ -262,6 +264,14 @@ private:
                     const SOCKET& sock, 
                     const NetAddress& addr);
 
+    /**
+     ReliableConduit messages are serialized with the message size
+     (since TCP may divide it across packets) and the message type.
+     */
+    static void serializeMessage(const NetMessage* m, BinaryOutput& b);
+
+    void sendBuffer(const BinaryOutput& b);
+
 public:
 
     /** Closes the socket. */
@@ -277,6 +287,18 @@ public:
      doesn't have a concept of discrete messages.
      */
     void send(const NetMessage* m);
+
+    /** Send the same message to a number of conduits.  Useful for sending
+        data from a server to many clients (only serializes once). */
+    static void multisend(const Array<ReliableConduitRef>& array, const NetMessage* m);
+
+    inline static void multisend(const Array<ReliableConduitRef>& array, const NetMessage& m) {
+        multisend(array, &m);
+    }
+
+    inline static void multisend(const Array<ReliableConduitRef>& array) {
+        multisend(array, NULL);
+    }
 
     inline void send(const NetMessage& m) {
         send(&m);
@@ -305,9 +327,6 @@ public:
 
     NetAddress address() const;
 };
-
-
-typedef ReferenceCountedPointer<class ReliableConduit> ReliableConduitRef;
 
 
 /**
@@ -392,6 +411,15 @@ private:
 
     LightweightConduit(class NetworkDevice* _nd, uint16 receivePort, bool enableReceive, bool enableBroadcast);
 
+    
+    /**
+     LightweightConduit messages are serialized with the message type
+     (the size unnecessary because UDP is not allowed to divide messages).
+     */
+    void serializeMessage(const NetMessage* m, BinaryOutput& b) const;
+
+    void sendBuffer(const NetAddress& a, BinaryOutput& b);
+
 public:
 
     /** Closes the socket. */
@@ -402,6 +430,19 @@ public:
         are guaranteed to not be corrupted.  If the message is null,
         an empty message is still sent.*/
     void send(const NetAddress& a, const NetMessage* m);
+
+    /** Send the same message to multiple addresses (only serializes once).
+        Useful when server needs to send to a known list of addresses
+        (unlike direct UDP broadcast to all addresses on the subnet) */
+    void send(const Array<NetAddress>& a, const NetMessage* m);
+
+    inline void send(const Array<NetAddress>& a, const NetMessage& m) {
+        send(a, &m);
+    }
+
+    inline void send(const Array<NetAddress>& a) {
+        send(a, NULL);
+    }
 
     inline void send(const NetAddress& a, const NetMessage& m) {
         send(a, &m);

@@ -16,7 +16,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-31
+  @edited  2004-05-03
  */
 
 #include "App.h"

@@ -2,7 +2,7 @@
   @file GImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-09-02
+  @edited  2004-05-03
  */
 #include "G3D/platform.h"
 #include "G3D/GImage.h"
@@ -365,7 +365,7 @@ void flipRGBVertical(
 ////////////////////////////////////////////////////////////////////////////////////////
 
 void GImage::encodeBMP(
-    BinaryOutput&       out) {
+    BinaryOutput&       out) const {
 
     debugAssert(channels == 3);
     out.setEndian(G3D_LITTLE_ENDIAN);
@@ -481,7 +481,7 @@ void GImage::encodeBMP(
 
 
 void GImage::encodeTGA(
-    BinaryOutput&       out) {
+    BinaryOutput&       out) const {
 
     out.setEndian(G3D_LITTLE_ENDIAN);
 
@@ -543,7 +543,7 @@ void GImage::encodeTGA(
 
 
 void GImage::encodeJPEG(
-    BinaryOutput&           out) {
+    BinaryOutput&           out) const {
     debugAssert(channels == 3);
     out.setEndian(G3D_LITTLE_ENDIAN);
 
@@ -1266,7 +1266,7 @@ GImage::Format GImage::resolveFormat(
     const std::string&  filename,
     const uint8*        data,
     int                 dataLen,
-    Format              maybeFormat) {
+    Format              maybeFormat) const {
 
     // Return the provided format if it is specified.
     if (maybeFormat != AUTODETECT) {
@@ -1515,7 +1515,7 @@ GImage::Format GImage::stringToFormat(
 
 void GImage::save(
     const std::string& filename,
-    Format             format) {
+    Format             format) const {
 
     BinaryOutput b = BinaryOutput(filename, G3D_LITTLE_ENDIAN);
     encode(resolveFormat(filename, NULL, 0, format), b);
@@ -1526,7 +1526,7 @@ void GImage::save(
 void GImage::encode(
     Format              format,
     uint8*&             outData,
-    int&                outLength) {
+    int&                outLength) const {
 
     BinaryOutput out = BinaryOutput();
 
@@ -1541,7 +1541,7 @@ void GImage::encode(
 
 void GImage::encode(
     Format              format,
-    BinaryOutput&       out) {
+    BinaryOutput&       out) const {
 
     switch (format) {
     case JPEG:

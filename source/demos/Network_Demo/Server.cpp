@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-29
+  @edited  2004-05-03
  */
 
 #include "Server.h"
@@ -38,17 +38,18 @@ void Server::doNetwork() {
     // Check for messages from clients
     for (int c = 0; c < clientProxyArray.size(); ++c) {
         ClientProxy& clientProxy = clientProxyArray[c];
+        ReliableConduitRef& net =  clientConduitArray[c];
 
         // TODO: check if ok
 
-        switch (clientProxy.net->waitingMessageType()) {
+        switch (net->waitingMessageType()) {
         case NO_MSG:
             break;
 
         case EntityStateMessage_MSG:
             {
                 EntityStateMessage msg;
-                clientProxy.net->receive(&msg);
+                net->receive(&msg);
                 if (msg.id == clientProxy.id) {
                     Entity& entity = entityTable[msg.id];
 
@@ -59,7 +60,7 @@ void Server::doNetwork() {
                     // Send to other clients, but don't trust the client's state
                     // beyond the controls.
                     entity.makeStateMessage(msg);
-                    sendToAllClients(msg);
+                    ReliableConduit::multisend(clientConduitArray, msg);
                 } else {
                     app->debugLog->printf("SERVER: Client sent EntityStateMessage with wrong ID\n\n");
                 }
@@ -68,16 +69,9 @@ void Server::doNetwork() {
 
         default: 
             app->debugLog->printf("SERVER: Ignored unknown message type %d\n",
-                clientProxy.net->waitingMessageType());
-            clientProxy.net->receive(NULL);
+                net->waitingMessageType());
+            net->receive(NULL);
         }
-    }
-}
-
-
-void Server::sendToAllClients(const NetMessage& msg) const {
-    for (int c = 0; c < clientProxyArray.size(); ++c) {
-        clientProxyArray[c].net->send(&msg);
     }
 }
 
@@ -108,9 +102,10 @@ void Server::acceptIncomingClient() {
     app->debugLog->printf("Incoming client detected\n");
 
     ClientProxy client;
+    ReliableConduitRef net;
 
-    client.net = listener->waitForConnection();
-    if (client.net != NULL) {
+    net = listener->waitForConnection();
+    if (! net.isNull()) {
         client.id = newID();
 
         // Create a new object for the client
@@ -126,7 +121,7 @@ void Server::acceptIncomingClient() {
 
         // Tell the client their ID
         SignOnMessage msg(entity.id);
-        client.net->send(&msg);
+        net->send(&msg);
 
         // Tell the client about objects in the world
         // (A drawback of the single-threaded listen server
@@ -139,18 +134,16 @@ void Server::acceptIncomingClient() {
             CreateEntityMessage msg;
             for (EntityTable::Iterator e = entityTable.begin(); e != end; ++e) {
                 msg.entity = &e->value;
-                client.net->send(&msg);
+                net->send(&msg);
             }
 
             // Tell the other clients about this new entity
             msg.entity = &entity;
-            for (int c = 0; c < clientProxyArray.size(); ++c) {
-                clientProxyArray[c].net->send(&msg);
-            }
+            ReliableConduit::multisend(clientConduitArray, msg);
         }
 
         // Add this client to our list
-        clientProxyArray.append(client);
+        addClient(client, net);
 
     } else {
         app->debugLog->printf("Client failed to connect\n");
@@ -173,4 +166,16 @@ bool Server::ok() const {
 Server::~Server() {
     listener = NULL;
     discoveryServer.cleanup();
+}
+
+
+void Server::addClient(ClientProxy& p, ReliableConduitRef& r) {
+    clientProxyArray.append(p);
+    clientConduitArray.append(r);
+}
+
+
+void Server::fastRemoveClient(int i) {
+    clientProxyArray.fastRemove(i);
+    clientConduitArray.fastRemove(i);
 }

@@ -247,11 +247,11 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
     mouseButtons = 0;
 
     if (glXGetCurrentDisplay != NULL) {
-        G3D::_internal::X11Display = glXGetCurrentDisplay();
+        G3D::_internal::x11Display = glXGetCurrentDisplay();
     }
 
     if (glXGetCurrentDrawable != NULL) {
-        G3D::_internal::X11Window  = glXGetCurrentDrawable();
+        G3D::_internal::x11Window  = glXGetCurrentDrawable();
     }
 
     glutReshapeFunc(g_reshape);

@@ -18,13 +18,6 @@
  */
 class ClientProxy {
 public:
-
-    // Servers send all information over reliable network connections
-    // so that the LAN and internet structure of the game is identical.
-    // Only matchmaking uses unreliable connections.
-
-    ReliableConduitRef                  net;
-
     /**
      The ID of the object associated with this client.
      */
@@ -36,7 +29,7 @@ public:
     RealTime                            oneWayLatency;
 
     ClientProxy() {}
-    ClientProxy(ReliableConduitRef _net, ID _id) : net(_net), id(_id), oneWayLatency(0) {}
+    ClientProxy(ID _id) : id(_id), oneWayLatency(0) {}
 };
 
 
@@ -52,7 +45,19 @@ private:
 
     DiscoveryServer         discoveryServer;
 
+    // Servers send all information over reliable network connections
+    // so that the LAN and internet structure of the game is identical.
+    // Only matchmaking uses unreliable connections.
+
+    /** Array parallel to clientProxyArray.  Add/remove entries through
+        addClient/fastRemoveClient*/
+    Array<ReliableConduitRef>   clientConduitArray;
+
     Array<ClientProxy>      clientProxyArray;
+
+    void addClient(ClientProxy& p, ReliableConduitRef& r);
+
+    void fastRemoveClient(int i);
 
     /**
      Listens for new clients.  Handled in doNetwork.
@@ -66,8 +71,6 @@ private:
 
     /** Called from doNetwork when listener has an incoming client */
     void acceptIncomingClient();
-
-    void sendToAllClients(const NetMessage& msg) const;
 
 public:
 
