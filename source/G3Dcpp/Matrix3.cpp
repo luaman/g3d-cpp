@@ -109,6 +109,10 @@ Vector3 Matrix3::getColumn (int iCol) const {
                    m_aafEntry[2][iCol]);
 }
 
+Vector3 Matrix3::getRow (int iRow) const {
+    return Vector3(m_aafEntry[iRow][0], m_aafEntry[iRow][1], m_aafEntry[iRow][2]);
+}
+
 void Matrix3::setColumn(int iCol, const Vector3 &vector) {
     m_aafEntry[0][iCol] = vector.x;
     m_aafEntry[1][iCol] = vector.y;

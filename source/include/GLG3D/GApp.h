@@ -153,6 +153,14 @@ public:
     bool                    autoResize;
 
     /**
+      When true, there is an assertion failure if an exception is thrown during
+      GApplet::init().
+
+      Default is true.
+      */
+    bool                    catchCommonExceptionsOnInit;
+
+    /**
      If app->debugShowText is true, prints to an on-screen buffer that
      is cleared every frame.
      */

@@ -70,6 +70,8 @@ private:
     Array<Vector4>                              star;
     Array<float>                                starIntensity;
 
+    bool                                        drawCelestialBodies;
+
     class RenderDevice*                         renderDevice;
 
     /**
@@ -87,19 +89,20 @@ private:
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string&                      filename,
+        bool                                    drawCelestialBodies,
         double                                  quality);
 
 public:
     /**
-     @param directory A directory containing images for:
-      moon.jpg, moon-alpha.jpg, sun.jpg, lensflare.jpg, sun-rays.jpg
-      as well as the skybox.  If directory is not "" it should
+     @param directory If directory is not "" it should
       end in a trailing slash.
 
-     @param filename The name of the front face in series of image files
-     that are a skybox.  Each must have the format ffffffXXgggg where
-     XX is one of {up, lt, rt, bk, ft, dn}.  Filename should not include
-     the directory specified as the previous parameter.
+     @param filename A filename with "*" in place of {up, lt, rt, bk, ft, dn}.
+      The filename can be either fully qualified or relative to directory.
+
+     @param drawCelestialBodies If true, draw the sun, moon, and stars. Requires
+      moon.jpg, moon-alpha.jpg, sun.jpg, lensflare.jpg, sun-rays.jpg be present
+      in given directory. Defaults to true.
 
      @param quality Trade image quality for texture memory: 
        .5 -> 1/8  the texture memory of 1.0, 
@@ -110,6 +113,7 @@ public:
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string&                      filename = "null_plainsky512_*.jpg",
+        bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0);
 
     virtual ~Sky();

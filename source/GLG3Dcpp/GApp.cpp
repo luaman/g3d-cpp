@@ -69,13 +69,14 @@ void GApp::init(const GAppSettings& settings) {
     debugController.lookAt(Vector3(0, 0, 0));
     debugController.setActive(true);
 
-    autoResize              = true;
+    autoResize                  = true;
 
-    _debugMode              = false;
-    debugShowText           = true;
-    debugQuitOnEscape       = true;
-    debugTabSwitchCamera    = true;
-    debugShowRenderingStats = true;
+    _debugMode                  = false;
+    debugShowText               = true;
+    debugQuitOnEscape           = true;
+    debugTabSwitchCamera        = true;
+    debugShowRenderingStats     = true;
+    catchCommonExceptionsOnInit = true;
 }
 
 
@@ -177,8 +178,15 @@ void GApplet::run() {
 
     endApplet = false;
 
-    init();
-
+    if (app->catchCommonExceptionsOnInit) {
+        try {
+            init();
+        } catch (const CImage::Error& e) {
+            alwaysAssertM(false, e.reason + ": \"" + e.filename + "\"");
+        }
+    } else {
+        init();
+    }
     // Move the controller to the camera's location
     app->debugController.setCoordinateFrame(app->debugCamera.getCoordinateFrame());
 

@@ -146,8 +146,6 @@ public:
     Array<Entity*>      entityArray;
 
     Demo(GApp* app) : GApplet(app) {
-        tex = Texture::fromFile(app->dataDir + "image/lena.tga");
-        sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
     }
     
     virtual void init();
@@ -159,6 +157,10 @@ public:
 
 
 void Demo::init()  {
+    tex = Texture::fromFile(app->dataDir + "image/lena.tga");
+    //sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
+    sky = Sky::create(app->renderDevice, "c:/temp/testbox/","testcube_*.jpg",false);
+
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
@@ -245,7 +247,36 @@ void Demo::doGraphics() {
         entityArray[e]->render(app->renderDevice);
     }
 
-    Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+
+    app->renderDevice->pushState();
+    app->renderDevice->setTexture(0, sky->getEnvironmentMap());
+    // Texture coordinates will be generated in object space.
+    // Set the texture matrix to transform them into camera space.
+    CoordinateFrame cframe;
+    app->debugCamera.getCoordinateFrame(cframe);
+    // The environment map assumes we are always in the center,
+    // so zero the translation.
+    cframe.translation = Vector3::ZERO;
+    cframe.rotation.setRow(0, -cframe.rotation.getRow(0));
+
+    app->renderDevice->setTextureMatrix(0, cframe);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
+        glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
+        glEnable(GL_TEXTURE_GEN_R);
+
+        Draw::sphere(Sphere(Vector3(0,3,2), 2), app->renderDevice, Color3::WHITE);
+
+    glPopAttrib();
+    app->renderDevice->popState();
+
+
+
+    Draw::axes(CoordinateFrame(Vector3(0, 7, 0)), app->renderDevice);
     
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
@@ -284,7 +315,7 @@ int main(int argc, char** argv) {
     GApp app(settings);
 
     app.setDebugMode(true);
-//    app.debugController->setActive(true);
+    app.debugController.setActive(true);
 
     Demo applet(&app);
 

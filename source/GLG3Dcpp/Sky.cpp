@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-11-13
+  @edited  2003-11-22
   */
 
 #include "GLG3D/glcalls.h"
@@ -24,8 +24,9 @@ SkyRef Sky::create(
     RenderDevice*                       rd,
     const std::string&                  directory,
     const std::string&                  filename,
+    bool                                _drawCelestialBodies,
     double                              quality) {
-    return new Sky(rd, directory, filename, quality);
+    return new Sky(rd, directory, filename, _drawCelestialBodies, quality);
 }
 
 
@@ -33,7 +34,9 @@ Sky::Sky(
     RenderDevice*                       rd,
     const std::string&                  directory,
     const std::string&                  filename,
-    double                              quality) : renderDevice(rd) {
+    bool                                _drawCelestialBodies,
+    double                              quality) : renderDevice(rd),
+        drawCelestialBodies(_drawCelestialBodies) {
 
     debugAssertM((directory == "") || (directory[directory.size() - 1] == '/') 
         || (directory[directory.size() - 1] == '\\'), "Directory must end in a slash");
@@ -52,6 +55,19 @@ Sky::Sky(
         alphaFormat = TextureFormat::RGBA_DXT5;
     }
 
+    // Look for the filename
+    // Parse the filename into a base name and extension
+    std::string filenameBase;
+    std::string filenameExt;
+    std::string fullFilename = filename;
+
+    Texture::splitFilename(fullFilename, filenameBase, filenameExt);
+
+    if (! fileExists(filenameBase + "up" + filenameExt)) {
+        fullFilename = directory + filename;
+        Texture::splitFilename(fullFilename, filenameBase, filenameExt);
+    }
+
 
     if (renderDevice->supportsOpenGLExtension("GL_ARB_texture_cube_map")) {
    
@@ -61,14 +77,7 @@ Sky::Sky(
             texture[t] = NULL;
         }
 
-    } else {
-
-        // Parse the filename into a base name and extension
-        std::string filenameBase;
-        std::string filenameExt;
-
-        Texture::splitFilename(directory + filename, filenameBase, filenameExt);
-    
+    } else {    
         static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
     
 
@@ -78,47 +87,49 @@ Sky::Sky(
         }
     }
 
-    moon     = Texture::fromTwoFiles(directory + "moon.jpg", directory + "moon-alpha.jpg",
-        alphaFormat, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+    if (drawCelestialBodies) {
+        moon     = Texture::fromTwoFiles(directory + "moon.jpg", directory + "moon-alpha.jpg",
+            alphaFormat, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
 
-    sun      = Texture::fromFile(directory + "sun.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
-    disk     = Texture::fromFile(directory + "lensflare.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
-    sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+        sun      = Texture::fromFile(directory + "sun.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+        disk     = Texture::fromFile(directory + "lensflare.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+        sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     
-    int i = 0;
-    // Try to read actual star data
-    BinaryInput in = BinaryInput(directory + "real.str", G3D_LITTLE_ENDIAN, true);
-    if (in.getLength() > 0) {
-	    // If file exists, load the real starfield
-        int16 numStars;
-		float32 x, y, z;
+        int i = 0;
+        // Try to read actual star data
+        BinaryInput in = BinaryInput(directory + "real.str", G3D_LITTLE_ENDIAN, true);
+        if (in.getLength() > 0) {
+	        // If file exists, load the real starfield
+            int16 numStars;
+		    float32 x, y, z;
 
-	    std::string header = in.readString(5);
-	    debugAssert(header == "STARS"); (void)header;
+	        std::string header = in.readString(5);
+	        debugAssert(header == "STARS"); (void)header;
 
-	    numStars = in.readInt16();
-	    star.resize(numStars);
-	    starIntensity.resize(numStars);
+	        numStars = in.readInt16();
+	        star.resize(numStars);
+	        starIntensity.resize(numStars);
 
-		// Read X, Y, Z, and intensity
-		for(i = 0; i < numStars; i++) {
-			x = SHORT_TO_FLOAT(in.readInt16());
-			y = SHORT_TO_FLOAT(in.readInt16());
-			z = SHORT_TO_FLOAT(in.readInt16());
+		    // Read X, Y, Z, and intensity
+		    for(i = 0; i < numStars; i++) {
+			    x = SHORT_TO_FLOAT(in.readInt16());
+			    y = SHORT_TO_FLOAT(in.readInt16());
+			    z = SHORT_TO_FLOAT(in.readInt16());
 
-			star[i] = Vector4(x, y, z, 0);
+			    star[i] = Vector4(x, y, z, 0);
 
-			starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .7;
-	    }
-    } else {
-		// Create a random starfield
-   		star.resize(3000);
-    	starIntensity.resize(star.size());
-   		for (i = star.size() - 1; i >= 0; --i) {
-   			star[i] = Vector4(Vector3::random(), 0);
-   			starIntensity[i] = square(unitRandom()) + .3;
-   		}
- 	}
+			    starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .7;
+	        }
+        } else {
+		    // Create a random starfield
+   		    star.resize(3000);
+    	    starIntensity.resize(star.size());
+   		    for (i = star.size() - 1; i >= 0; --i) {
+   			    star[i] = Vector4(Vector3::random(), 0);
+   			    starIntensity[i] = square(unitRandom()) + .3;
+   		    }
+ 	    }
+    }
 
 }
 
@@ -379,12 +390,14 @@ void Sky::render(
         renderDevice->resetTextureUnit(0);
         renderBox();
 
-        // Ignore depth, make sure we're not clipped by the far plane
-        hackProjectionMatrix(renderDevice);
+        if (drawCelestialBodies) {
+            // Ignore depth, make sure we're not clipped by the far plane
+            hackProjectionMatrix(renderDevice);
    
-        drawMoonAndStars(lighting);
+            drawMoonAndStars(lighting);
 
-        drawSun(lighting);
+            drawSun(lighting);
+        }
 
     renderDevice->popState();
 }
@@ -460,6 +473,10 @@ void Sky::drawSun(const LightingParameters& lighting) {
 
 void Sky::renderLensFlare(
     const LightingParameters&           lighting) {
+
+    if (! drawCelestialBodies) {
+        return;
+    }
 
     if (lighting.sunPosition.y < -.1) {
         return;

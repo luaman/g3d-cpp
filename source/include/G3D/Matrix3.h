@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2003-10-04
+  @edited  2003-11-22
  */
 
 #ifndef G3D_MATRIX3_H
@@ -56,6 +56,7 @@ public:
     G3D::Real* operator[] (int iRow) const;
     operator G3D::Real* ();
     Vector3 getColumn (int iCol) const;
+    Vector3 getRow (int iRow) const;
     void setColumn(int iCol, const Vector3 &vector);
     void setRow(int iRow, const Vector3 &vector);
 
