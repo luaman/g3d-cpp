@@ -367,6 +367,11 @@ void UserInput::grabMouse() {
     uint8 dummy;
     // Save the old mouse position for when we deactivate
     _window->getRelativeMouseState(guiMouse, dummy);
+    
+    mouse = windowCenter;
+    _window->setRelativeMousePosition(mouse);
+    deltaMouse = Vector2(0,0);
+ 
     window()->setMouseVisible(false);
 
     #ifndef _DEBUG
@@ -375,8 +380,6 @@ void UserInput::grabMouse() {
         // can't move the mouse.
         window()->setInputCapture(true);
     #endif
-    mouse = windowCenter;
-    _window->setRelativeMousePosition(mouse);
 }
 
 
