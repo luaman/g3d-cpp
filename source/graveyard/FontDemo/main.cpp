@@ -50,15 +50,15 @@ int main(int argc, char** argv) {
     int k = iCeil(font.size() / 3.0);
     do {
         device->beginFrame();
-        device->setColorClearValue(Color3(0, .2, .1));
+        device->setColorClearValue(Color3(1, 1, 1));
         device->clear(true, true, true);
         device->push2D();
         for (int i = 0; i < k; ++i) {
 
-            font[i]->draw2D(name[i], Vector2(10, 10 + i * 30), 24, Color3::WHITE, Color3::BLACK);
-            font[i + k]->draw2D(name[i + k], Vector2(240, 10 + i * 30), 24, Color3::WHITE, Color3::BLACK);
+            font[i]->draw2D(name[i], Vector2(10, 10 + i * 32), 24, Color3::BLACK);
+            font[i + k]->draw2D(name[i + k], Vector2(255, 10 + i * 32), 24, Color3::BLACK);
             if (i + k * 2 < font.size()) {
-                font[i + k * 2]->draw2D(name[i + k * 2], Vector2(470, 10 + i * 30), 24, Color3::WHITE, Color3::BLACK);
+                font[i + k * 2]->draw2D(name[i + k * 2], Vector2(500, 10 + i * 32), 24, Color3::BLACK);
             }
         }
         device->pop2D();
