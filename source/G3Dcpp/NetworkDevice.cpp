@@ -614,11 +614,19 @@ uint32 ReliableConduit::waitingMessageType() {
     
     if (! alreadyReadType) {
         // Read the type
-        int ret = recv(sock, (char*)&messageType, sizeof(messageType), 0);
+        uint32 tmp;
+        int ret = recv(sock, (char*)&tmp, sizeof(tmp), 0);
         alreadyReadType = true;
 
-        // Comes across the wire in little endian format.
-        messageType = ntohl(messageType);
+        // The type is the first four bytes.  It is little endian.
+        if (System::machineEndian() == G3D_LITTLE_ENDIAN) {
+            messageType = tmp;
+        } else {
+            // Swap the byte order
+            for (int i = 0; i < 4; ++i) {
+                ((char*)&messageType)[i] = ((char*)&tmp)[3 - i];
+            }
+        }
 
         if ((ret == SOCKET_ERROR) || (ret != sizeof(messageType))) {
             if (nd->debugLog) {
@@ -632,6 +640,7 @@ uint32 ReliableConduit::waitingMessageType() {
 
     return messageType;
 }
+
 
 void ReliableConduit::send(const NetMessage* m, uint32 type) {
 
@@ -652,12 +661,12 @@ void ReliableConduit::send(const NetMessage* m, uint32 type) {
         b.writeUInt8(-1);
     }
     
-    int32 len = htonl(b.getLength() - 4);
+    uint32 len = b.getLength() - 8;
     
     // We send the length first to tell recv how much data to read.
     // Here we abuse BinaryOutput a bit and write directly into
     // its buffer, violating the abstraction.
-    ((uint32*)b.getCArray())[1] = len;
+    ((uint32*)b.getCArray())[1] = htonl(len);
 
     int ret = ::send(sock, (const char*)b.getCArray(), b.getLength(), 0);
     
@@ -702,7 +711,7 @@ bool ReliableConduit::receive(NetMessage* m) {
     bool freeBuffer      = true;
 
     // Read the size
-    int32 len;
+    uint32 len;
     int ret = recv(sock, (char*)&len, sizeof(len), 0);
 
     if ((ret == SOCKET_ERROR) || (ret != sizeof(len))) {
@@ -715,7 +724,6 @@ bool ReliableConduit::receive(NetMessage* m) {
     }
 
     len = ntohl(len);
-
     debugAssert(len >= 0);
     debugAssert(len < 100000);
 
@@ -900,8 +908,15 @@ uint32 LightweightConduit::waitingMessageType() {
 
         messageBuffer.resize(ret, DONT_SHRINK_UNDERLYING_ARRAY);
 
-        // The type is the first four bytes.
-        messageType = ntohl(*((uint32*)messageBuffer.getCArray()));
+        // The type is the first four bytes.  It is little endian.
+        if (System::machineEndian() == G3D_LITTLE_ENDIAN) {
+            messageType = *((uint32*)messageBuffer.getCArray());
+        } else {
+            // Swap the byte order
+            for (int i = 0; i < 4; ++i) {
+                ((char*)&messageType)[i] = messageBuffer[3 - i];
+            }
+        }
 
         alreadyReadMessage = true;
     }
