@@ -13,6 +13,17 @@ Files <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR
 User Input & Windowing
 G3D::UserInput, G3D::ManualCameraController
 G3D::GWindow
-Connecting to GUI libraries
+
+@section gui Connecting to GUI libraries
+
+  Instead of providing GUI support directly, the G3D::GWindow interface 
+  allows G3D to work with other off-the-shelf GUI libraries.
+
+  wxWindows: <A HREF="../contrib/wxG3DCanvas">contrib/wxG3DCanvas</A>, 
+  <A HREF="../contrib/CoreyGWindow">contrib/CoreyGWindow</A>/wxGWindow
+
+  Qt: <A HREF="../contrib/CoreyGWindow">contrib/CoreyGWindow</A>/QGWindow
+
+  Win32/MFC: <A HREF="../contrib/Win32Window">contrib/Win32Window</A>
 
   */

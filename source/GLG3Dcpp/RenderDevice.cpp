@@ -2410,62 +2410,6 @@ bool RenderDevice::supportsTextureFormat(const TextureFormat* fmt) {
 }
 
 
-/**
- Draws a capped cylinder between v0 and v1
- */
-static void drawCylinder(RenderDevice* device, const Vector3& v0, const Vector3& v1, double radius, int sides = 6, bool caps = true) {
-
-    int a;
-    sides = iMax(3, iMin(sides, 20));
-
-    Vector3 z = v0 - v1;
-
-    // Generate two axes perpendicular to v0 - v1
-    Vector3 x;
-    Vector3 y;
-
-    const Vector3 vector[3] = {Vector3::unitX(), Vector3::unitY(), Vector3::unitZ()};
-    for (a = 0; a < 3; ++a) {
-        x = z.cross(vector[a]);
-        if ((x.dot(x) > 0) && (z.dot(x) == 0)) {
-            break;
-        }
-    }
-
-    y = z.cross(x);
-
-    x = x.direction() * radius;
-    y = y.direction() * radius;
-
-    device->beginPrimitive(RenderDevice::QUAD_STRIP);
-        for (a = 0; a <= sides; ++a) {
-            const double angle = a * G3D_PI * 2.0 / sides;
-            const Vector3 offset(cos(angle) * x + sin(angle) * y);
-            device->sendVertex(v0 + offset);
-            device->sendVertex(v1 + offset);
-        }
-    device->endPrimitive();
-
-    if (caps) {
-        device->beginPrimitive(RenderDevice::TRIANGLE_FAN);
-            for (a = 0; a <= sides; ++a) {
-                const double angle = a * G3D_PI * 2.0 / sides;
-                const Vector3 offset(cos(angle) * x + sin(angle) * y);
-                device->sendVertex(v0 + offset);
-            }
-        device->endPrimitive();
-
-        device->beginPrimitive(RenderDevice::TRIANGLE_FAN);
-            for (a = 0; a <= sides; ++a) {
-                const double angle = a * G3D_PI * 2.0 / sides;
-                const Vector3 offset(cos(-angle) * x + sin(-angle) * y);
-                device->sendVertex(v1 + offset);
-            }
-        device->endPrimitive();
-    }
-}
-
-
 double RenderDevice::getFrameRate() const {
     return emwaFrameRate;
 }

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-04-27
+  @edited  2004-10-02
 */
 
 #ifndef G3D_GWINDOW_H
@@ -26,8 +26,15 @@ namespace G3D {
 typedef SDL_Event GEvent;
 
 /**
- Interface to Window APIs for window management, event processing,
- and OpenGL context management.  G3D assumes there is only one
+ Interface to window APIs for window management, event processing,
+ and OpenGL context management.  A GWindow may be a user-level window, 
+ with a minimize button and frame, or simply a rectangular area within 
+ a larger window.  In the latter case, several of the methods (e.g.,
+ setCaption) are likely to be ignored by the implementation.  See
+ G3D::SDLWindow and the wxWindows, Qt, and Glut implementations in
+ the contrib directory.
+   
+ Many parts of G3D assume that there is only one
  OS-level window, with one OpenGL context.  (Although you <B>can</B> have
  multiple non-GL windows if using a native windowing API and you can even have
  multiple OpenGL contexts if you manage switching between them yourself).
@@ -35,6 +42,9 @@ typedef SDL_Event GEvent;
  Subclass this interface to support your preferred window system
  (e.g. ActiveX window, OS/X Carbon, MFC window, glut) or use the 
  generic SDLWindow subclass that supports all platforms.
+
+ All dimensions are of the client area (inside the frame, if the
+ window has a frame).
 
  <B>Subclassing</B>
 
@@ -46,6 +56,7 @@ typedef SDL_Event GEvent;
  in a future revision.  For now it is limited to rendering
  and window management.  Consider writing your own UserInput
  replacement in the mean time.
+
 
  <B>Beta API!  This interface is experimental and is subject to change.</B>
 
