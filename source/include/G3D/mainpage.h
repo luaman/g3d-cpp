@@ -606,7 +606,8 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::Color4uint8
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3int16
-     <LI> GLenumToString(4) now returns GL_TRIANGLES instead of GL_LINE_BIT (both are correct)
+     <LI> RenderDevice::setPointSize
+     <LI> GLenumToString(4) now returns "GL_TRIANGLES" instead of "GL_LINE_BIT" (both are correct)
      <LI> Added TextInput::Options to optionally allow C++ comments to
           be treated as two slashes instead of a comment
      <LI> Added data/image/meter.jpg, a meter stick texture convenient for testing

@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-04-25
+  @edited  2003-05-02
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -74,6 +74,10 @@ public:
 
  <P> On Windows (_WIN32) RenderDevice supports a getHDC() method that
  returns the HDC for the window.
+
+ <P> NICEST line and point smoothing is enabled by default (however,
+ you need to set your alpha blending mode to see it).
+
 
  <P>
  Example
@@ -440,6 +444,12 @@ public:
      */
     void setLineWidth(
         double                          width);
+
+    /**
+     Equivalent to glPointSize
+     */
+    void setPointSize(
+        double                          diameter);
 
     /**
      This is not the OpenGL MODELVIEW matrix: it is a matrix that maps
@@ -830,6 +840,7 @@ private:
         Color4                      ambient;
 
         double                      lineWidth;
+        double                      pointSize;
 
         bool                        lighting;
         Color4                      color;

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-04-13
+ @edited  2003-05-02
  */
 
 
@@ -469,6 +469,9 @@ bool RenderDevice::init(
     // Make sure we use good interpolation
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POINT_SMOOTH);
     //glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
 
     if (debugLog) debugLog->println("Setting initial rendering state.\n");
@@ -493,6 +496,7 @@ bool RenderDevice::init(
         glDisable(GL_BLEND);
         glDisable(GL_POLYGON_OFFSET_FILL);
         glLineWidth(1);
+        glPointSize(1);
 
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.ambient);
 
@@ -849,6 +853,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     polygonOffset               = 0;
     lineWidth                   = 1;
+    pointSize                   = 1;
 
     ambient                     = Color4(0.25, 0.25, 0.25, 1.0);
 
@@ -962,6 +967,7 @@ void RenderDevice::setState(
 
     setPolygonOffset(newState.polygonOffset);
     setLineWidth(newState.lineWidth);
+    setPointSize(newState.pointSize);
 
     if (newState.lighting) {
         enableLighting();
@@ -1544,6 +1550,16 @@ void RenderDevice::setLineWidth(
     if (state.lineWidth != width) {
         glLineWidth(width);
         state.lineWidth = width;
+    }
+}
+
+
+void RenderDevice::setPointSize(
+    double               width) {
+    debugAssert(! inPrimitive);
+    if (state.pointSize != width) {
+        glPointSize(width);
+        state.pointSize = width;
     }
 }
 
