@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2002-07-09
-  @edited  2002-07-09
+  @edited  2003-06-07
  */
 
 #ifndef G3D_QUEUE_H
@@ -287,6 +287,20 @@ public:
         return data[index(n)];
     }
 
+
+    /**
+     Returns true if the given element is in the queue.
+     */
+    bool contains(const T& e) const {
+        for (int i = 0; i < size(); ++i) {
+            if ((*this)[i] == e) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
    /**
     Calls delete on all objects[0...size-1]
     and sets the size to zero.
@@ -294,7 +308,7 @@ public:
     void deleteAll() {
         FIND_ENDS;
         int i;
-	for (i = 0; i < secondEnd; ++i) {
+    	for (i = 0; i < secondEnd; ++i) {
             delete data[i];
         }
         for (i = head; i < firstEnd; ++i) {

@@ -656,6 +656,8 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> G3D::Array::contains
+     <LI> G3D::Queue::contains
      <LI> G3D::TextureFormat
      <LI> G3D::Texture constructors are completely changed from 5.01 (and hopefully easier to use)
      <LI> G3D::CImage now supports images with alpha

@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-03-20
+  @edited  2003-06-07
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -355,7 +355,8 @@ public:
         }
     }
 
-   inline void append(const T& v1, const T& v2, const T& v3, const T& v4) {
+
+    inline void append(const T& v1, const T& v2, const T& v3, const T& v4) {
         if (inArray(&v1) || inArray(&v2) || inArray(&v3) || inArray(&v4)) {
             T t1 = v1;
             T t2 = v2;
@@ -369,7 +370,20 @@ public:
             data[num - 2] = v3;
             data[num - 1] = v4;
         }
-   }
+    }
+
+    /**
+     Returns true if the given element is in the array.
+     */
+    bool contains(const T& e) const {
+        for (int i = 0; i < size(); ++i) {
+            if ((*this)[i] == e) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
    /**
     Append the elements of array.
