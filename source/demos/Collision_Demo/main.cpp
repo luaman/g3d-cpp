@@ -52,7 +52,7 @@ Camera*                 camera          = NULL;
 Scene*                  scene           = NULL;
 ManualCameraController* controller      = NULL;
 
-double                  maxFrameRate    = 30;
+double                  maxFrameRate    = 30.5;
 
 /** World time */
 GameTime                gameTime        = 0;

@@ -118,10 +118,6 @@ SOURCE=.\Scene.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\Matrix4.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\Model.h
 # End Source File
 # Begin Source File

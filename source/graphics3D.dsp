@@ -178,6 +178,10 @@ SOURCE=.\G3Dcpp\Matrix3.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Matrix4.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\MeshAlg.cpp
 # End Source File
 # Begin Source File
@@ -379,6 +383,10 @@ SOURCE=.\include\G3D\Log.h
 # Begin Source File
 
 SOURCE=.\include\G3D\Matrix3.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Matrix4.h
 # End Source File
 # Begin Source File
 

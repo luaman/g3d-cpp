@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2003-09-28
+  @edited  2003-10-04
  */
 
 #ifndef G3D_MATRIX3_H
@@ -170,47 +170,7 @@ protected:
 };
 
 
-/**
- Provided for DirectX/Cg support, not full featured.  Consider G3D::CoordinateFrame
- instead.
- */
-class Matrix4 {
-private:
-
-    float elt[4][4];
-
-public:
-    Matrix4(
-        float r1c1, float r1c2, float r1c3, float r1c4,
-        float r2c1, float r2c2, float r2c3, float r2c4,
-        float r3c1, float r3c2, float r3c3, float r3c4,
-        float r4c1, float r4c2, float r4c3, float r4c4);
-
-    /**
-     init should be <B>row major</B>.
-     */
-    Matrix4(const float* init);
-
-    Matrix4(const double* init);
-
-    Matrix4();
-
-    const float* operator[](int r) const;
-
-    float* operator[](int r);
-
-    Matrix4 operator*(const Matrix4& other) const;
-
-    void setRow(int r, const Vector4& v);
-
-    Matrix4 operator*(const double s) const;
-
-    Vector4 operator*(const Vector4& vector) const;
-
-    Matrix4 transpose() const;
-};
-
-}; // namespace
+} // namespace
 
 #endif
 
