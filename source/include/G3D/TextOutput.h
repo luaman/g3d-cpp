@@ -65,7 +65,8 @@ public:
           WRAP_NONE             Word wrapping is disabled
           WRAP_WHERE_POSSIBLE   Word-wrap, but don't break continuous lines that
                                 are longer than numColumns
-          WRAP_ALWAYS           Wrap even if it means breaking a continuous line
+          WRAP_ALWAYS           Wrap even if it means breaking a continuous line or
+                                a quoted string.
 
           Word wrapping is only allowed at whitespaces ('\n', '\r', '\t', ' '); it
           will not occur after commas, punctuation, minus signs, or any other characters
@@ -77,12 +78,6 @@ public:
         /** Is word-wrapping allowed to insert newlines inside double quotes?
             Default: false */
         bool                allowWordWrapInsideDoubleQuotes;
-
-        /** Is word-wrapping allowed to insert newlines inside single quotes?
-            If false, note that unbalanced single quotes (e.g.  "don't") will 
-            confuse word-wrapping.
-            Default: false */
-        bool                allowWordWrapInsideSingleQuotes;
 
         /** Number of columns for word wrapping. Default: 8 */
         int                 numColumns;
@@ -104,7 +99,6 @@ public:
         Options() :
             wordWrap(WRAP_WITHOUT_BREAKING),
             allowWordWrapInsideDoubleQuotes(false),
-            allowWordWrapInsideSingleQuotes(false),
             numColumns(80),
             spacesPerIndent(4),
             convertNewlines(true) {
@@ -128,6 +122,12 @@ private:
       */
     bool                    startingNewLine;
 
+    /** Number of characters at the end of the buffer since the last newline */
+    int                     currentColumn;
+
+    /** True if we have seen an open " and no close ".*/
+    bool                    inDQuote;
+
     /** Empty if there is none */
     std::string             filename;
 
@@ -135,8 +135,7 @@ private:
 
     Options                 option;
 
-    /** Number of indents to prepend before each line.  Always set using 
-setIndentLevel.*/
+    /** Number of indents to prepend before each line.  Always set using setIndentLevel.*/
     int                     indentLevel;
 
     void setIndentLevel(int i);
@@ -153,17 +152,17 @@ setIndentLevel.*/
     void convertNewlines(const std::string& in, std::string& out);
 
     /** Called from vprintf */
-    void wordWrap(const std::string& in, std::string& out);
+    void wordWrapIndentAppend(const std::string& str);
 
-    /** Indents str and appends to data.  Called from vprintf */
-    void indentAndAppend(const std::string& str);
+    /** Appends the character to data, indenting whenever a newline is encountered.
+        Called from wordWrapIndentAppend */
+    void indentAppend(char c);
 
 public:
 
     explicit TextOutput(const std::string& filename, const Options& options = Options());
 
-    /** Constructs a text output that can later be commited to a string instead of a 
-file.*/
+    /** Constructs a text output that can later be commited to a string instead of a file.*/
     explicit TextOutput(const Options& options = Options());
 
     /** Commit to the filename specified on the constructor */
@@ -213,7 +212,6 @@ file.*/
     void __cdecl printf(const std::string& fmt, ...);
     void __cdecl vprintf(const char* fmt, va_list argPtr);
 };
-
 
 // Primitive serializers
 void serialize(const bool& b, TextOutput& to);

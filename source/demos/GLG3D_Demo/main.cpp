@@ -22,7 +22,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-12-16
+ @edited  2004-06-23
  */
 
 #include <G3DAll.h>

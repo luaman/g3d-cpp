@@ -16,16 +16,20 @@ namespace G3D {
 TextOutput::TextOutput(const TextOutput::Options& opt) {
     setOptions(opt);
     filename = "";
-    indentLevel = 0;
+    setIndentLevel(0);
     startingNewLine = true;
+    currentColumn = 0;
+    inDQuote = false;
 }
 
 
 TextOutput::TextOutput(const std::string& fil, const TextOutput::Options& opt) {
     setOptions(opt);
     filename = fil;
-    indentLevel = 0;
+    setIndentLevel(0);
     startingNewLine = true;
+    currentColumn = 0;
+    inDQuote = false;
 }
 
 
@@ -34,8 +38,10 @@ void TextOutput::setIndentLevel(int i) {
 
     // If there were more pops than pushes, don't let that take us below 0 indent.
     // Don't ever indent more than the number of columns.
-    indentSpaces = iClamp(option.spacesPerIndent * indentLevel, 0, option.numColumns - 
-1);
+    indentSpaces = 
+        iClamp(option.spacesPerIndent * indentLevel, 
+               0, 
+               option.numColumns - 1);
 }
 
 
@@ -141,44 +147,182 @@ void TextOutput::convertNewlines(const std::string& in, std::string& out) {
 
 
 void TextOutput::writeNewline() {
-    indentAndAppend(newline);
+    for (int i = 0; i < newline.size(); ++i) {
+        indentAppend(newline[i]);
+    }
 }
 
 
 void TextOutput::writeNewlines(int numLines) {
     for (int i = 0; i < numLines; ++i) {
-        indentAndAppend(newline);
+        writeNewline();
     }
 }
 
 
-void TextOutput::wordWrap(const std::string& in, std::string& out) {
+void TextOutput::wordWrapIndentAppend(const std::string& str) {
+    // TODO: keep track of the last space character we saw so we don't
+    // have to always search.
+
     if (option.wordWrap == Options::WRAP_NONE) {
-        out = in;
+        // TODO: optimize for strings without newlines
+        for (int i = 0; i < str.size(); ++i) {
+            indentAppend(str[i]);
+        }
         return;
     }
 
     // Number of columns to wrap against
     int cols = option.numColumns - indentSpaces;
-    // TODO: implement 
-    out = in;
+    
+    // Copy forward until we exceed the column size, 
+    // and then back up and try to insert newlines as needed.
+    for (int i = 0; i < str.size(); ++i) {
+        indentAppend(str[i]);
+
+        if (currentColumn >= cols) {
+
+            debugAssertM(str[i] != '\n' && str[i] != '\r',
+                "Should never enter word-wrapping on a newline character");            
+
+            // True when we're allowed to treat a space as a space.
+            bool unquotedSpace = option.allowWordWrapInsideDoubleQuotes || ! inDQuote;
+
+            // Cases:
+            //
+            // 1. Currently in a series of spaces that ends with a newline
+            //     strip all spaces and let the newline
+            //     flow through.
+            //
+            // 2. Currently in a series of spaces that does not end with a newline
+            //     strip all spaces and replace them with single newline
+            //
+            // 3. Not in a series of spaces
+            //     search backwards for a space, then execute case 2.
+
+            // Index of most recent space
+            int lastSpace = data.size() - 1;
+
+            // How far back we had to look for a space
+            int k = 0;
+            int maxLookBackward = currentColumn - indentSpaces;
+
+            // Search backwards (from current character), looking for a space.
+            while ((k < maxLookBackward) &&
+                (lastSpace > 0) &&
+                (! ((data[lastSpace] == ' ') && unquotedSpace))) {
+                --lastSpace;
+                ++k;
+
+                if ((data[lastSpace] == '\"') && !option.allowWordWrapInsideDoubleQuotes) {
+                    unquotedSpace = ! unquotedSpace;
+                }
+            }
+
+            if (k == maxLookBackward) {
+                // We couldn't find a series of spaces
+
+                if (option.wordWrap == Options::WRAP_ALWAYS) {
+                    // Strip the last character we wrote, force a newline,
+                    // and replace the last character;
+                    data.pop();
+                    writeNewline();
+                    indentAppend(str[i]);
+                } else {
+                    // Must be Options::WRAP_WHEN_POSSIBLE
+                    //
+                    // Don't write the newline; we'll come back to
+                    // the word wrap code after writing another character
+                }
+            } else {
+                // We found a series of spaces.  If they continue 
+                // to the new string, strip spaces off both.  Otherwise
+                // strip spaces from data only and insert a newline.                
+
+                // Find the start of the spaces.  firstSpace is the index of the
+                // first non-space, looking backwards from lastSpace.
+                int firstSpace = lastSpace;
+                while ((k < maxLookBackward) &&
+                    (firstSpace > 0) &&
+                    (data[firstSpace] == ' ')) {
+                    --firstSpace;
+                    ++k;
+                }
+
+                if (k == maxLookBackward) {
+                    ++firstSpace;
+                }
+
+                if (lastSpace == data.size() - 1) {
+                    // Spaces continued up to the new string
+                    data.resize(firstSpace + 1);
+                    writeNewline();
+
+                    // Delete the spaces from the new string
+                    while ((i < str.size() - 1) && (str[i + 1] == ' ')) {
+                        ++i;
+                    }
+                } else {
+                    // Spaces were somewhere in the middle of the old string.
+                    // replace them with a newline.
+
+                    // Copy over the characters that should be saved
+                    Array<char> temp;
+                    for (int j = lastSpace + 1; j < data.size(); ++j) {
+                        char c = data[j];
+
+                        if (c == '\"') {
+                            // Undo changes to quoting (they will be re-done
+                            // when we paste these characters back on).
+                            inDQuote = !inDQuote;
+                        }
+                        temp.append(c);
+                    }
+
+                    // Remove those characters and replace with a newline.
+                    data.resize(firstSpace + 1);
+                    writeNewline();
+
+                    // Write them back
+                    for (int j = 0; j < temp.size(); ++j) {
+                        indentAppend(temp[j]);
+                    }
+
+                    // We are now free to continue adding from the
+                    // new string, which may or may not begin with spaces.
+
+                } // if spaces included new string
+            } // if hit indent
+        } // if line exceeded
+    } // iterate over str
 }
 
 
-void TextOutput::indentAndAppend(const std::string& str) {
+void TextOutput::indentAppend(char c) {
 
-    for (int i = 0; i < str.size(); ++i) {
-        
-        if (startingNewLine) {
-            for (int j = 0; j < indentSpaces; ++j) {
-                data.push(' ');
-            }
-            startingNewLine = true;
+    if (startingNewLine) {
+        for (int j = 0; j < indentSpaces; ++j) {
+            data.push(' ');
         }
+        startingNewLine = false;
+        currentColumn = indentSpaces;
+    }
 
-        data.push(str[i]);
-        
-        startingNewLine = (str[i] == '\n');
+    data.push(c);
+
+    // Don't increment the column count on return character
+    // newline is taken care of below.
+    if (c != '\r') {
+        ++currentColumn;
+    }
+    
+    if (c == '\"') {
+        inDQuote = ! inDQuote;
+    }
+
+    startingNewLine = (c == '\n');
+    if (startingNewLine) {
+        currentColumn = 0;
     }
 }
 
@@ -190,9 +334,7 @@ void TextOutput::vprintf(const char* formatString, va_list argPtr) {
     convertNewlines(str, clean);
 
     std::string wrapped;
-    wordWrap(clean, wrapped);
-
-    indentAndAppend(wrapped);
+    wordWrapIndentAppend(clean);
 }
 
 
@@ -216,6 +358,7 @@ std::string TextOutput::commitString() {
     commitString(str);
     return str;
 }
+
 
 
 /////////////////////////////////////////////////////////////////////
