@@ -149,7 +149,7 @@ void Demo::doGraphics() {
 			args.set("lightVec", Vector3(0,1,0));
 
 			try {
-				app->renderDevice->setShader(effect, args);
+				app->renderDevice->setVertexAndPixelShader(effect, args);
 			} catch (const VertexAndPixelShader::ArgumentError& e) {
 				alwaysAssertM(false, e.message);
 			}

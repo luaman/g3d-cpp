@@ -825,6 +825,9 @@ public:
 
 private:
 
+	/** Called immediately before a primitive group */
+	void runObjectShader();
+
     /**
      For performance, we don't actually unbind a texture when
      turning off a texture unit, we just disable it.  If it 

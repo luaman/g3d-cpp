@@ -849,6 +849,13 @@ void RenderDevice::setState(
 }
 
 
+void RenderDevice::runObjectShader() {
+	if (! state.objectShader.isNull()) {
+		state.objectShader->run(this);
+	}
+}
+
+
 void RenderDevice::setSpecularCoefficient(double s) {
     state.specular = s;
 
@@ -2070,6 +2077,8 @@ void RenderDevice::sendVertex(const Vector4& vertex) {
 
 void RenderDevice::beginPrimitive(Primitive p) {
     debugAssertM(! inPrimitive, "Already inside a primitive");
+
+	runObjectShader();
     
     inPrimitive = true;
     currentPrimitiveVertexCount = 0;
@@ -2602,6 +2611,8 @@ void RenderDevice::configureReflectionMap(
 
 void RenderDevice::sendSequentialIndices(RenderDevice::Primitive primitive, int numVertices) {
 
+	runObjectShader();
+
     glDrawArrays(primitiveToGLenum(primitive), 0, numVertices);
     // Mark all active arrays as busy.
     setVARAreaMilestone();
@@ -2615,6 +2626,8 @@ void RenderDevice::internalSendIndices(
     size_t                  indexSize, 
     int                     numIndices, 
     const void*             index) const {
+
+	runObjectShader();
 
 	GLenum i;
 

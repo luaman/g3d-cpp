@@ -26,18 +26,81 @@ typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 #endif
 
 /**
+  An ObjectShader is run once per primitive group.
   A primitive group is defined by either the pair of calls 
   RenderDevice::beginPrimitive...RenderDevice::endPrimitive
   or the single call RenderDevice::sendIndices.
+
+  To create an ObjectShader, subclass it and 
+  override the ObjectShader::run method to set up the
+  RenderDevice state as you wish.  Commonly, the ObjectShader
+  is used to compute certain world-space constants (e.g. lighting),
+  set the VertexAndPixelShader and 
+  
+  <B>Do not</B> make a public constructor for your subclass.
+  Instead, write static "create" method that calls a private constructor
+  and then returns an ObjectShaderRef (or your own subclass).
+
+  Example:
+  <PRE>
+	typedef ReferenceCountedPointer<class BumpShader> BumpShaderRef;
+
+	class BumpShader : ObjectShader {
+	private:
+		VertexAndPixelShaderRef			vps;
+		VertexAndPixelShader::ArgList	args;
+		Vector3							lightVector;
+
+		BumpShader() {
+			vps = VertexAndPixelShader::fromFiles("bump_vertex.glsl", "bump_pixel.glsl");
+		}
+
+	public:
+
+		void setBumpMap(TextureRef b) {
+			args.set("bumpMap", b);
+		}
+
+	    void setLight(const Vector3& L) {
+			lightVector = L;
+		}
+
+		static BumpShaderRef create() {
+			return new BumpShader();
+		}
+
+	    void run(RenderDevice* rd) {
+			args.set("osLightDirection", 
+				rd->objectToWorldMatrix().vectorToObjectSpace(lightVector));
+
+			rd->setVertexAndPixelShader(vps, args);
+		}
+	};
+
+  </PRE>
+
+
  */
 class ObjectShader : public ReferenceCountedObject {
 private:
     std::string     _messages;
+
+protected:
+
+	inline ObjectShader() {}
+
 public:
 
     bool ok() const {
         return true;
     }
+
+	/**
+	 Invoked by RenderDevice immediately before a primitive group.
+	 Use this to set state on the render device.  Do not call
+	 pushState from inside this method.
+	 */
+	virtual void run(class RenderDevice* renderDevice) = NULL;
 
     const std::string& messages() const {
         return _messages;
