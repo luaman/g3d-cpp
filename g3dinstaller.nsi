@@ -15,10 +15,10 @@
 SetCompressor lzma
 
 # The name of the installer
-Name "${VERSION} Installer"
+Name "graphics3D (${VERSION})"
 
 # The file to write
-OutFile "${VERSION}.exe"
+OutFile "release\${VERSION}_win32.exe"
 
 # The default installation directory
 InstallDir "C:\libraries\${VERSION}"
