@@ -8,6 +8,7 @@
 #include "G3D/GImage.h"
 #include "G3D/debug.h"
 #include "G3D/TextInput.h"
+#include "G3D/TextOutput.h"
 
 extern "C" {
 #ifdef G3D_WIN32
@@ -723,6 +724,25 @@ void GImage::encodePNG(
 
 void GImage::encodePPM(
     BinaryOutput&       out) const {
+
+    debugAssert(channels == 3);
+
+    TextOutput::Options ppmOptions;
+    ppmOptions.convertNewlines = false;
+    ppmOptions.numColumns = 70;
+    ppmOptions.wordWrap = TextOutput::Options::WRAP_WITHOUT_BREAKING;
+    TextOutput ppm(ppmOptions);
+    // Always write out a full-color ppm
+    ppm.printf("P3\n%d %d\n255\n", width, height);
+    
+    const Color3uint8* c = this->pixel3();
+    for (unsigned int i = 0; i < (width * height); ++i) {
+        ppm.printf("%d %d %d%c", c[i].r, c[i].g, c[i].b, 
+            ((i % ((width * 3) - 1)) == 0) ?
+            '\n' : ' '); 
+    }
+
+    out.writeString(ppm.commitString());
 }
 
 
@@ -1786,11 +1806,17 @@ void GImage::decodePPM(
     TextInput ppmInput(TextInput::FROM_STRING, inputStr, ppmOptions);
 
     //Skip first line in header P#
-    ppmInput.readSymbol();
+    std::string ppmType = ppmInput.readSymbol();
 
     ppmWidth = ppmInput.readNumber();
     ppmHeight = ppmInput.readNumber();
-    maxColor = ppmInput.readNumber();
+
+    // Everything but a PBM will have a max color value
+    if (ppmType != "P2") {
+        maxColor = ppmInput.readNumber();
+    } else {
+        maxColor = 255;
+    }
 
     if ((ppmWidth < 0) ||
         (ppmHeight < 0) ||
@@ -1815,9 +1841,22 @@ void GImage::decodePPM(
         // read in color and scale to max pixel defined in header
         // A max color less than 255 might need to be left alone and not scaled.
         Color3uint8& curPixel = *(this->pixel3() + i);
-        curPixel.r = ppmInput.readNumber() * (255.0 / maxColor);
-        curPixel.g = ppmInput.readNumber() * (255.0 / maxColor);
-        curPixel.b = ppmInput.readNumber() * (255.0 / maxColor);
+
+        if (ppmType == "P3") {
+            curPixel.r = ppmInput.readNumber() * (255.0 / maxColor);
+            curPixel.g = ppmInput.readNumber() * (255.0 / maxColor);
+            curPixel.b = ppmInput.readNumber() * (255.0 / maxColor);
+        } else if (ppmType == "P2") {
+            int pixel = ppmInput.readNumber() * (255.0 / maxColor);
+            curPixel.r = pixel;
+            curPixel.g = pixel;
+            curPixel.b = pixel;
+        } else if (ppmType == "P1") {
+            int pixel = ppmInput.readNumber() * maxColor;
+            curPixel.r = pixel;
+            curPixel.g = pixel;
+            curPixel.b = pixel;
+        }
     }
 }
 
@@ -1857,7 +1896,7 @@ GImage::Format GImage::resolveFormat(
     // We can't look at the character if it is null.
     debugAssert(data != NULL);              
 
-    if ((dataLen > 3) && !memcmp(data, "P3", 2)) {
+    if ((dataLen > 3) && (!memcmp(data, "P3", 2) || !memcmp(data, "P2", 2) || !memcmp(data, "P1", 2))) {
         return PPM;
     }
 
@@ -2120,9 +2159,14 @@ void GImage::encode(
     BinaryOutput&       out) const {
 
     switch (format) {
+    case PPM:
+        encodePPM(out);
+        break;
+
     case PNG:
         encodePNG(out);
         break;
+
     case JPEG:
         encodeJPEG(out);
         break;
