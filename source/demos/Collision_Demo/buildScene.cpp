@@ -115,7 +115,7 @@ void buildScene() {
 
     scene->insertStatic(new BoxObject(Box(Vector3(6, 0, 0), Vector3(7, 1, 8)), (Color3::GREEN + Color3::WHITE) / 2));
     scene->insertStatic(new GeneralObject(Model::getModel("cow.ifs"), CoordinateFrame(Vector3(-7,1.7,4)), Color3::YELLOW));
-    scene->insertStatic(new GeneralObject(Model::getModel("trico.ifs"), CoordinateFrame(Vector3(10,1,2)), Color3::ORANGE));
+    scene->insertStatic(new GeneralObject(Model::getModel("p51-mustang.ifs"), CoordinateFrame(Vector3(10,1,2)), Color3::ORANGE));
     scene->insertStatic(new GeneralObject(Model::getModel("knot.ifs"), CoordinateFrame(Vector3(7,2.2,-4)), (Color3::BLUE + Color3::WHITE) / 2));
 
     insertTray();

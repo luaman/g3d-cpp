@@ -787,6 +787,10 @@ SOURCE=.\Doxyfile
 # End Source File
 # Begin Source File
 
+SOURCE=.\html\error.html
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3D\mainpage.h
 # End Source File
 # Begin Source File

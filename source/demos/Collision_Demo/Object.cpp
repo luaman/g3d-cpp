@@ -185,6 +185,12 @@ void BoxObject::render() const {
         renderDevice->sendVertex(v3);
     }
     renderDevice->endPrimitive();
+
+    /* Messes up the shadow map for some reason.
+    renderDevice->pushState();
+        Draw::box(box, renderDevice, color, Color4::CLEAR);
+    renderDevice->popState();
+    */
 }
 
 
