@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-11-16
+  @edited  2004-04-25
 */
 
 #ifndef GLG3D_GPUPROGRAM_H
@@ -47,7 +47,8 @@ typedef ReferenceCountedPointer<class GPUProgram> GPUProgramRef;
     glTrackMatrixNV(GL_VERTEX_PROGRAM_NV, 4, GL_MODELVIEW, GL_INVERSE_NV);
     glProgramParameter4fvNV(GL_VERTEX_PROGRAM_NV, 8, Vector4(myVariable,0,0,0));
   </PRE>
-
+ @deprecated
+ Use the Shader class
  */
 class GPUProgram : public ReferenceCountedObject {
 public:

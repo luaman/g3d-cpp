@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-20
- @edited  2004-04-20
+ @edited  2004-04-25
  */
 
 #include "GLG3D/edgeFeatures.h"
@@ -13,7 +13,7 @@
 
 namespace G3D {
 
-void drawEdgeFeatures(RenderDevice* renderDevice, const PosedModelRef& model) {
+void drawFeatureEdges(RenderDevice* renderDevice, const PosedModelRef& model) {
 
     const Vector3 wsEye = renderDevice->getCameraToWorldMatrix().translation;
 

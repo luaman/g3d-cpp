@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-02-28
+ @edited  2004-04-25
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -64,5 +64,6 @@
 #include "GLG3D/GWindow.h"
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/edgeFeatures.h"
+#include "GLG3D/Shader.h"
 
 #endif

@@ -239,7 +239,7 @@
 
       <LI><B>Game/Demo Infrastructure</B> &nbsp; &nbsp;
         G3D::beginMarkShadows, G3D::endMarkShadows, G3D::markShadows,
-        G3D::drawEdgeFeatures,
+        G3D::drawFeatureEdges,
         G3D::GFont,
         G3D::GApp, G3D::GApplet, G3D::GAppSettings,
         G3D::GLight,

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2004-03-28
+  @edited  2004-04-25
 */
 
 #include "GLG3D/glcalls.h"
@@ -130,6 +130,7 @@ PFNGLUNIFORMMATRIX3FVARBPROC glUniformMatrix3fvARB = NULL;
 PFNGLUNIFORMMATRIX4FVARBPROC glUniformMatrix4fvARB = NULL;
 PFNGLGETINFOLOGARBPROC glGetInfoLogARB = NULL;
 PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB = NULL;
+PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB = NULL;
 
 
 namespace G3D {

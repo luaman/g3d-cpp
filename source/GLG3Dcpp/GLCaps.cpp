@@ -168,6 +168,8 @@ void GLCaps::loadExtensions() {
     LOAD_EXTENSION(glUniformMatrix4fvARB);
     LOAD_EXTENSION(glGetInfoLogARB);
     LOAD_EXTENSION(glGetUniformLocationARB);
+    LOAD_EXTENSION(glGetObjectParameterivARB);
+
     #undef LOAD_EXTENSION
 
 
