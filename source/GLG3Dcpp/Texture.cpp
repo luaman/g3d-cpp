@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-04-11
+ @edited  2003-04-21
 */
 
 #include "GLG3D/glcalls.h"
@@ -565,8 +565,8 @@ void Texture::copyFromScreen(int x, int y, int width, int height, int windowHeig
     // Restore texture state
     glActiveTextureARB(active);
     if (t1d) { glEnable(GL_TEXTURE_1D); }
-    if (t2d) { glEnable(GL_TEXTURE_1D); }
-    if (t3d) { glEnable(GL_TEXTURE_1D); }
+    if (t2d) { glEnable(GL_TEXTURE_2D); }
+    if (t3d) { glEnable(GL_TEXTURE_3D); }
     if (t2dr) { glEnable(GL_TEXTURE_RECTANGLE_NV); }
 }
 
