@@ -39,6 +39,9 @@ public:
 
     virtual ~Scene();
 
+    /** Deletes all objects */
+    void clear();
+
     void insertStatic(class Object*);
 
     /**

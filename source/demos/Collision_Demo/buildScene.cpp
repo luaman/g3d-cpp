@@ -129,7 +129,9 @@ void Demo::buildScene() {
     
     int i;
     for (i = 0; i < 10; ++i) {
-        scene.insertDynamic(new SimSphere(Sphere(Vector3(0, 7, 0), .25), Vector3::random() * 10, Color3::blue()));
+        scene.insertDynamic(new SimSphere(Sphere(Vector3(0, 7, 0), .25), 
+            Vector3::random() * 10, 
+            Color3::wheelRandom()));
     }   
     
     

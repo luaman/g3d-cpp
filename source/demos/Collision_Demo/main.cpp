@@ -60,6 +60,8 @@ void Demo::init()  {
     buildScene();
 
     gameTime     = G3D::toSeconds(10, 00, 00, AM); 
+
+    simStartTime = System::time();
 }
 
 
@@ -70,8 +72,13 @@ Demo::~Demo() {
 }
 
 void Demo::doSimulation(SimTime timeStep) {
-//    scene->simulate(1 / maxFrameRate);
-//    scene.simulate(timeStep);
+    if (simStartTime + 15 < System::time()) {
+        scene.clear();
+        buildScene();
+        simStartTime = System::time();
+    }
+
+    scene.simulate(timeStep);
 }
 
 
@@ -101,12 +108,6 @@ void Demo::doGraphics() {
 
 
 void App::main() {
-    // Verify we have the shadow extension
-//    if (! GLCaps::supports("GL_ARB_shadow")) {
-//        error("Critical Error", "This demo requires a graphics card with the ARB_shadow extension.", true);
-//        exit(-1);
-//    }
-   
     setDebugMode(true);
     Demo(this).run();
 }
@@ -121,19 +122,6 @@ int main(int argc, char** argv) {
     app = new App(GAppSettings());
     
     app->run();
-
-    /*
-    RealTime now = System::getTick() - 0.001;
-            now = System::getTick();
-            timeStep = now - lastTime;
-
-            wait = 1 / (maxFrameRate + 0.5) - timeStep;
-            if (wait > 0) {
-                System::sleep(wait);
-            }
-        } while (wait > 0);
-
-  */
 
     Model::freeModels();
 

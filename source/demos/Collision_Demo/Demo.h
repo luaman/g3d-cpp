@@ -31,6 +31,9 @@ public:
     /** World time */
     GameTime                gameTime;
 
+    /** Time at which the simulation started; used to reset when it gets boring.*/
+    RealTime                simStartTime;
+
     Demo(App* app);
     ~Demo();
 

@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2004-06-20
+ @edited  2004-09-05
  */
 
 #include "Scene.h"
@@ -43,12 +43,20 @@ static bool debugLightMap = false;
 
 Scene::Scene() {
     sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
-    shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
-        Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
+
+    if (GLCaps::supports("GL_ARB_shadow")) {
+        shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
+    }
 }
 
 
 Scene::~Scene() {
+    clear();
+}
+
+
+void Scene::clear(){
     object.deleteAll();
     sim.deleteAll();
 }
@@ -117,11 +125,12 @@ void Scene::render(const LightingParameters& lighting) const {
 
     Matrix4 lightMVP = lightProjectionMatrix * lightViewMatrix;
 
-    generateShadowMap(lightCFrame);
-    
-    if (debugLightMap) {
-        return;
-    }
+    if (GLCaps::supports("GL_ARB_shadow")) {
+        generateShadowMap(lightCFrame);
+        if (debugLightMap) {
+            return;
+        }
+    }  
 
     app->renderDevice->clear(sky == NULL, true, false);
 
@@ -146,7 +155,9 @@ void Scene::render(const LightingParameters& lighting) const {
 
         app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
-        app->renderDevice->configureShadowMap(1, lightMVP, shadowMap);
+        if (GLCaps::supports("GL_ARB_shadow")) {
+            app->renderDevice->configureShadowMap(1, lightMVP, shadowMap);
+        }
         renderingPass();
     app->renderDevice->popState();
 
