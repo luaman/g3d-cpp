@@ -324,8 +324,12 @@ public:
         Array<Vector3>&         faceNormalArray);
 
     /**
-     @param vertexNormalArray Output. Computed by averaging adjacent face normals
-     @param faceNormalArray Output. 
+     Vertex normals are weighted by the area of adjacent faces.
+     Nelson Max showed this is superior to uniform weighting for
+     general meshes in jgt.
+
+     @param vertexNormalArray Output. Unit length
+     @param faceNormalArray Output.   Unit length
     */
     static void computeNormals(
         const Array<Vector3>&   vertexGeometry,
@@ -336,7 +340,7 @@ public:
 
     /**
      Computes face normals only.  Significantly faster (especially if
-     normalize is true) than computeNormals.
+     normalize is false) than computeNormals.
      */
     static void computeFaceNormals(
         const Array<Vector3>&           vertexArray,

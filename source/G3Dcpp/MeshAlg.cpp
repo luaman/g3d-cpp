@@ -87,7 +87,7 @@ void MeshAlg::computeNormals(
             vertex[j] = vertexGeometry[face.vertexIndex[j]];
         }
 
-        faceNormalArray[f] = (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]).direction();
+        faceNormalArray[f] = (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]);
     }
 
     // Per-vertex normals, computed by averaging
@@ -100,6 +100,12 @@ void MeshAlg::computeNormals(
         }
         vertexNormalArray[v] = sum.direction();
     }
+
+
+    for (int f = 0; f < faceArray.size(); ++f) {
+        faceNormalArray[f] = faceNormalArray[f].direction();
+    }
+
 }
 
 
