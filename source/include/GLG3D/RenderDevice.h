@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-11-24
+  @edited  2003-12-07
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -259,6 +259,7 @@ private:
     bool                        _supportsNVVertexProgram2;
 
     bool                        _supportsVertexBufferObject;
+    bool                        _supportsTwoSidedStencil;
 
     /**
      True if GL_ARB_fragment_program is in the extension list.
@@ -438,12 +439,29 @@ public:
      the stencil op.
 
      Use KEEP, KEEP, KEEP to disable stencil writing.  Equivalent to a
-      combination of glStencilTest, glStencilFunc, and glStencilOp
+     combination of glStencilTest, glStencilFunc, and glStencilOp.
+
+
+     If there is no depth buffer, the depth test always passes.  If there
+     is no stencil buffer, the stencil test always passes.
      */
     void setStencilOp(
         StencilOp                       fail,
         StencilOp                       zfail,
         StencilOp                       zpass);
+
+    /**
+     When RenderDevice::supportsTwoSidedStencil is true, separate
+     stencil operations can be used for front and back faces.  This
+     is useful for rendering shadow volumes.
+     */
+    void setStencilOp(
+        StencilOp                       frontStencilFail,
+        StencilOp                       frontZFail,
+        StencilOp                       frontZPass,
+        StencilOp                       backStencilFail,
+        StencilOp                       backZFail,
+        StencilOp                       backZPass);
 
     /**
      Use BLEND_ZERO, BLEND_ONE to shut off blending.
@@ -862,9 +880,12 @@ private:
 
         CullFace                    cullFace;
 
-        StencilOp                   stencilFail;
-        StencilOp                   stencilZFail;
-        StencilOp                   stencilZPass;
+        StencilOp                   frontStencilFail;
+        StencilOp                   frontStencilZFail;
+        StencilOp                   frontStencilZPass;
+        StencilOp                   backStencilFail;
+        StencilOp                   backStencilZFail;
+        StencilOp                   backStencilZPass;
         
         BlendFunc                   srcBlendFunc;
         BlendFunc                   dstBlendFunc;
@@ -952,6 +973,17 @@ public:
 
     bool supportsOpenGLExtension(const std::string& extension) const;
 
+    /**
+      When true, the 6-argument version of RenderDevice::setStencilOp
+      can set the front and back operations to different values.
+      */
+    bool supportsTwoSidedStencil() const {
+        return _supportsTwoSidedStencil;
+    }
+
+    /**
+     When true, Texture::DIM_2D_RECT textures can be created.
+     */
     bool supportsTextureRectangle() const {
         return textureRectangleSupported;
     }
@@ -960,6 +992,10 @@ public:
         return _supportsVertexProgram;
     }
 
+    /**
+     When true, NVIDIA Vertex Program 2.0 vertex programs can
+     be loaded by VertexProgram.
+     */
     bool supportsVertexProgramNV2() const {
         return _supportsNVVertexProgram2;
     }

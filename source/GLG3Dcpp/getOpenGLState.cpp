@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Created by Morgan McGuire & Seth Block
   @created 2001-08-05
-  @edited  2003-04-08
+  @edited  2003-12-09
 */
 
 #include "GLG3D/glcalls.h"
@@ -398,10 +398,17 @@ std::string getOpenGLState(bool showDisabled) {
 
 
 	//stencil stuff
+    result += "///////////////////////////////////////////////////////////////////////\n";
+    result += "// Stencil\n\n";
+
 	result += enableEntry(GL_STENCIL_TEST);
 
-	result += format("glClearStencil(0x%x);\n", 
+    result += format("glClearStencil(0x%x);\n", 
         glGetInteger(GL_STENCIL_CLEAR_VALUE));
+
+    result += "glActiveStencilFaceEXT(GL_BACK);\n";
+
+    glActiveStencilFaceEXT(GL_BACK);
 
     if (showDisabled || glGetBoolean(GL_STENCIL_TEST)) {
         result += format("glStencilFunc(%s, %d, %d);\n",
@@ -418,7 +425,26 @@ std::string getOpenGLState(bool showDisabled) {
     result += format("glStencilMask(0x%x);\n",
         glGetInteger(GL_STENCIL_WRITEMASK));
 
-	result += ("\n");
+    result += "\nglActiveStencilFaceEXT(GL_FRONT);\n";
+
+    glActiveStencilFaceEXT(GL_FRONT);
+
+    if (showDisabled || glGetBoolean(GL_STENCIL_TEST)) {
+        result += format("glStencilFunc(%s, %d, %d);\n",
+            GLenumToString(glGetInteger(GL_STENCIL_FUNC)),
+            glGetInteger(GL_STENCIL_REF),
+		    glGetInteger(GL_STENCIL_VALUE_MASK));
+    }
+
+	result += format("glStencilOp(%s, %s, %s);\n",
+		GLenumToString(glGetInteger(GL_STENCIL_FAIL)),
+		GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_FAIL)),
+		GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_PASS)));
+
+    result += format("glStencilMask(0x%x);\n",
+        glGetInteger(GL_STENCIL_WRITEMASK));
+    
+    result += ("\n");
 
 	//misc
 	result += enableEntry(GL_NORMAL_ARRAY);

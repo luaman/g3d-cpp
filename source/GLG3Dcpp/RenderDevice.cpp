@@ -497,12 +497,13 @@ bool RenderDevice::init(
             extensionSet.insert(s);
         }
 
-        stencilWrapSupported        = supportsOpenGLExtension("EXT_stencil_wrap");
+        stencilWrapSupported        = supportsOpenGLExtension("GL_EXT_stencil_wrap");
         textureRectangleSupported   = supportsOpenGLExtension("GL_NV_texture_rectangle");
         _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
         _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
         _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
         _supportsVertexBufferObject = supportsOpenGLExtension("GL_ARB_vertex_buffer_object");
+        _supportsTwoSidedStencil    = supportsOpenGLExtension("GL_EXT_stencil_two_side");
     }
 
     std::string ver = getDriverVersion();
@@ -795,6 +796,11 @@ void RenderDevice::setVideoMode() {
     }
     glEnable(GL_NORMALIZE);
 
+
+    if (_supportsTwoSidedStencil) {
+        glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+    }
+
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
     debugAssertGLOk();
@@ -810,14 +816,23 @@ void RenderDevice::setVideoMode() {
         _glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
         glDepthMask(GL_TRUE);
         glColorMask(1,1,1,0);
-        glStencilMask(0x00);
+
+        if (_supportsTwoSidedStencil) {
+            glActiveStencilFaceEXT(GL_BACK);
+        }
+        for (int i = 0; i < 2; ++i) {
+            glStencilMask(~0);
+            glDisable(GL_STENCIL_TEST);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+            glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
+            glDisable(GL_ALPHA_TEST);
+            if (_supportsTwoSidedStencil) {
+                glActiveStencilFaceEXT(GL_FRONT);
+            }
+        }
 
         glDepthFunc(GL_LESS);
         glEnable(GL_DEPTH_TEST);
-        glDisable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-        glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
-        glDisable(GL_ALPHA_TEST);
 
         glDisable(GL_BLEND);
         glDisable(GL_POLYGON_OFFSET_FILL);
@@ -952,9 +967,12 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     srcBlendFunc                = BLEND_ONE;
     dstBlendFunc                = BLEND_ZERO;
 
-    stencilFail                 = STENCIL_KEEP;
-    stencilZFail                = STENCIL_KEEP;
-    stencilZPass                = STENCIL_KEEP;
+    frontStencilFail            = STENCIL_KEEP;
+    frontStencilZFail           = STENCIL_KEEP;
+    frontStencilZPass           = STENCIL_KEEP;
+    backStencilFail             = STENCIL_KEEP;
+    backStencilZFail            = STENCIL_KEEP;
+    backStencilZPass            = STENCIL_KEEP;
 
     polygonOffset               = 0;
     lineWidth                   = 1;
@@ -1104,7 +1122,9 @@ void RenderDevice::setState(
         }
     }
 
-    setStencilOp(newState.stencilFail, newState.stencilZFail, newState.stencilZPass);
+    setStencilOp(
+        newState.frontStencilFail, newState.frontStencilZFail, newState.frontStencilZPass,
+        newState.backStencilFail, newState.backStencilZFail, newState.backStencilZPass);
 
     setColor(newState.color);
     setNormal(newState.normal);
@@ -1487,7 +1507,17 @@ void RenderDevice::setStencilConstant(int reference) {
     debugAssert(! inPrimitive);
     if (state.stencilReference != reference) {
         state.stencilReference = reference;
+
+        if (_supportsTwoSidedStencil) {
+            glActiveStencilFaceEXT(GL_BACK);
+        }
+
         _setStencilTest(state.stencilTest, reference);
+
+        if (_supportsTwoSidedStencil) {
+            glActiveStencilFaceEXT(GL_FRONT);
+            _setStencilTest(state.stencilTest, reference);
+        }
     }
 }
 
@@ -1501,16 +1531,29 @@ void RenderDevice::setStencilTest(StencilTest test) {
         if (test == STENCIL_ALWAYS_PASS) {
 
             // Can't actually disable if the stencil op is using the test as well
-            if ((state.stencilFail == STENCIL_KEEP) &&
-                (state.stencilZFail == STENCIL_KEEP) &&
-                (state.stencilZPass == STENCIL_KEEP)) {
+            if ((state.frontStencilFail   == STENCIL_KEEP) &&
+                (state.frontStencilZFail  == STENCIL_KEEP) &&
+                (state.frontStencilZPass  == STENCIL_KEEP) &&
+                (! _supportsTwoSidedStencil ||
+                 ((state.backStencilFail  == STENCIL_KEEP) &&
+                  (state.backStencilZFail == STENCIL_KEEP) &&
+                  (state.backStencilZPass == STENCIL_KEEP)))) {
                 glDisable(GL_STENCIL_TEST);
             }
 
 
         } else {
 
+            if (_supportsTwoSidedStencil) {
+                glActiveStencilFaceEXT(GL_BACK);
+            }
+
             _setStencilTest(test, state.stencilReference);
+
+            if (_supportsTwoSidedStencil) {
+                glActiveStencilFaceEXT(GL_FRONT);
+                _setStencilTest(test, state.stencilReference);
+            }
         }
 
         state.stencilTest = test;
@@ -1717,22 +1760,56 @@ void RenderDevice::setPixelProgram(
 
 
 void RenderDevice::setStencilOp(
-    StencilOp           fail,
-    StencilOp           zfail,
-    StencilOp           zpass) {
-    debugAssert(! inPrimitive);
+    StencilOp                       frontStencilFail,
+    StencilOp                       frontZFail,
+    StencilOp                       frontZPass,
+    StencilOp                       backStencilFail,
+    StencilOp                       backZFail,
+    StencilOp                       backZPass) {
 
-    if ((fail  != state.stencilFail) ||
-        (zfail != state.stencilZFail) ||
-        (zpass != state.stencilZPass)) {
 
-        glStencilOp(toGLStencilOp(fail), toGLStencilOp(zfail), toGLStencilOp(zpass));
+    if ((frontStencilFail  != state.frontStencilFail) ||
+        (frontZFail        != state.frontStencilZFail) ||
+        (frontZPass        != state.frontStencilZPass) || 
+        (_supportsTwoSidedStencil && 
+        ((backStencilFail  != state.backStencilFail) ||
+         (backZFail        != state.backStencilZFail) ||
+         (backZPass        != state.backStencilZPass)))) { 
+
+        if (_supportsTwoSidedStencil) {
+            glActiveStencilFaceEXT(GL_FRONT);
+        }
+
+        // Set front face operation
+        glStencilOp(
+            toGLStencilOp(frontStencilFail),
+            toGLStencilOp(frontZFail),
+            toGLStencilOp(frontZPass));
+
+        // Set back face operation
+        if (_supportsTwoSidedStencil) {
+            glActiveStencilFaceEXT(GL_BACK);
+
+            glStencilOp(
+                toGLStencilOp(backStencilFail),
+                toGLStencilOp(backZFail),
+                toGLStencilOp(backZPass));
+            
+            glActiveStencilFaceEXT(GL_FRONT);
+        }
+
 
         // Need to manage the mask as well
-        if ((fail == STENCIL_KEEP) && (zpass == STENCIL_KEEP) && (zfail == STENCIL_KEEP)) {
-            // Turn off writing.  May need to turn off the stencil test.
-            glStencilMask(0);
 
+        if ((frontStencilFail  == STENCIL_KEEP) &&
+            (frontZPass        == STENCIL_KEEP) && 
+            (frontZFail        == STENCIL_KEEP) &&
+            (! _supportsTwoSidedStencil ||
+            ((backStencilFail  == STENCIL_KEEP) &&
+             (backZPass        == STENCIL_KEEP) &&
+             (backZFail        == STENCIL_KEEP)))) {
+
+            // Turn off writing.  May need to turn off the stencil test.
             if (state.stencilTest == STENCIL_ALWAYS_PASS) {
                 // Test doesn't need to be on
                 glDisable(GL_STENCIL_TEST);
@@ -1745,19 +1822,41 @@ void RenderDevice::setStencilOp(
 
             // Turn on writing.  We also need to turn on the
             // stencil test in this case.
-            glStencilMask(0xFFFFFFFF);
 
             if (state.stencilTest == STENCIL_ALWAYS_PASS) {
                 // Test is not already on
                 glEnable(GL_STENCIL_TEST);
+
+                if (_supportsTwoSidedStencil) {
+                    glActiveStencilFaceEXT(GL_BACK);
+                }
+
                 glStencilFunc(GL_ALWAYS, state.stencilReference, 0xFFFFFF);
+
+                if (_supportsTwoSidedStencil) {
+                    glActiveStencilFaceEXT(GL_FRONT);
+                    glStencilFunc(GL_ALWAYS, state.stencilReference, 0xFFFFFF);
+                }
             }
         }
 
-        state.stencilFail = fail;
-        state.stencilZFail = zfail;
-        state.stencilZPass = zpass;
+        state.frontStencilFail  = frontStencilFail;
+        state.frontStencilZFail = frontZFail;
+        state.frontStencilZPass = frontZPass;
+        state.backStencilFail   = backStencilFail;
+        state.backStencilZFail  = backZFail;
+        state.backStencilZPass  = backZPass;
     }
+}
+
+
+void RenderDevice::setStencilOp(
+    StencilOp           fail,
+    StencilOp           zfail,
+    StencilOp           zpass) {
+    debugAssert(! inPrimitive);
+
+    setStencilOp(fail, zfail, zpass, fail, zfail, zpass);
 }
 
 
