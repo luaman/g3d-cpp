@@ -174,6 +174,10 @@ SOURCE=.\G3Dcpp\GLight.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\license.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Line.cpp
 # End Source File
 # Begin Source File

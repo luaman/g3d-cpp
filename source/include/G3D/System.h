@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-03-06
+  @edited  2004-04-15
  */
 
 #ifndef G3D_SYSTEM_H
@@ -29,6 +29,13 @@ namespace G3D {
  system.
  */
 std::string demoFindData(bool errorIfNotFound = true);
+
+/** G3D, SDL, and IJG libraries require license documentation
+    to be distributed with your program.  This generates the
+    string that must appear in your documentation. 
+    <B>Your program can be commercial, closed-source</B> under
+    any license you want.*/
+std::string license();
 
 /**
  The order in which the bytes of an integer are stored on a machine.

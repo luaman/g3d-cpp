@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-03-03
+ @edited  2004-04-15
  */
 
 #include "G3D/platform.h"
@@ -22,6 +22,15 @@
 
 namespace G3D {
 
+/** Attempt to write license file */
+static void writeLicense() {
+    FILE* f = fopen("g3d-license.txt", "wt");
+    if (f != NULL) {
+        fprintf(f, "%s", license().c_str());
+        fclose(f);
+    }
+}
+
 
 GApp::GApp(const GAppSettings& settings) {
     debugLog          = NULL;
@@ -33,6 +42,11 @@ GApp::GApp(const GAppSettings& settings) {
         dataDir = demoFindData(false);
     } else {
         dataDir = settings.dataDir;
+    }
+
+
+    if (settings.writeLicenseFile && ! fileExists("g3d-license.txt")) {
+        writeLicense();
     }
 
     debugLog	 = new Log(settings.logFilename);

@@ -44,11 +44,16 @@ public:
 
     std::string             logFilename;
 
+    /** 
+      When true, GAapp ensures that g3d-license.txt exists in the current
+      directory.  That file is written from the return value of G3D::license() */
+    bool                    writeLicenseFile;
+
     /** When true, the networkDevice is initialized.  Defaults to true. */
     bool                    useNetwork;
 
     GAppSettings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), 
-        logFilename("log.txt"), useNetwork(true) {
+        logFilename("log.txt"), useNetwork(true), writeLicenseFile(true) {
     }
 };
 

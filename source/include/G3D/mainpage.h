@@ -146,7 +146,7 @@
          G3D::rsqrt
          
      <LI><B>String</B> &nbsp; &nbsp;
-        G3D::beginsWith, G3D::endsWith, G3D::stringSplit,
+        G3D::beginsWith, G3D::endsWith, G3D::license, G3D::stringSplit,
         G3D::stringJoin, G3D::format, G3D::vformat, G3D::wordWrap, 
         G3D::stringCompare, G3D::stringPtrCompare, G3D::toUpper, G3D::toLower,
         G3D::NEWLINE, G3D::trimWhitespace
@@ -455,7 +455,13 @@
    application help if you use the G3D::GImage class because it is based on
    the IJG library.  The OpenGL headers and ZLib headers included may
    be freely distributed provided their copyright notices remain
-   intact.
+   intact. 
+
+   <P>
+   For convenience, G3D::license is a function that returns the license
+   string you must put in your documentation.  G3D::GApp will automatically
+   write a file (g3d-license.txt) to disk with the contents of this
+   license unless you tell it not to.
    
    <P>
 
@@ -493,7 +499,7 @@
 
   <CODE>
    <IMG SRC="http://opensource.org/trademarks/osi-certified/web/osi-certified-120x100.gif">
-   <DT>Copyright &copy; 2000-2003, Morgan McGuire
+   <DT>Copyright &copy; 2000-2004, Morgan McGuire
    <DT>All rights reserved.
    <P>
    Redistribution and use in source and binary forms, with or without
