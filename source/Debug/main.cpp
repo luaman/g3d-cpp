@@ -213,6 +213,8 @@ void Demo::doLogic() {
         debugPrintf("%s\n", m.toString().c_str());
     }
 
+    debugAssert(! app->userInput->keyPressed(' '));
+
 	app->debugPrintf("(%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
 }
 
@@ -277,13 +279,6 @@ void App::main() {
 
 
 int main(int argc, char** argv) {
-
-
-    for (int i = 0; i < 100; ++i) {
-        debugPrintf("%d \n", iRandom(0, 2));
-    }
-
-    exit(0);
 
     GAppSettings settings;
 

@@ -17,9 +17,9 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-08-26
-  @edited  2003-08-05
+  @edited  2004-02-26
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
  */
 
@@ -28,37 +28,45 @@
 
 #include <string>
 
-
-/**
- * @def debugAssert(exp)
- * Breaks if the expression is false. If G3D_DEBUG_NOGUI is defined, prompts at
- * the console, otherwise pops up a dialog.  The user may then break (debug), 
- * ignore, ignore always, or halt the program.
- *
- * The assertion is also posted to the clipboard under Win32.
+ 
+ /**
+ @def debugBreak()
+ 
+ Break at the current location (i.e. don't push a procedure stack frame
+ before breaking).
  */
 
 /**
- * @def debugAssertM(exp, msg)
- * Breaks if the expression is false and displays a message. If G3D_DEBUG_NOGUI 
- * is defined, prompts at the console, otherwise pops up a dialog.  The user may
- * then break (debug), ignore, ignore always, or halt the program.
- *
- * The assertion is also posted to the clipboard under Win32.
+  @def debugAssert(exp)
+  Breaks if the expression is false. If G3D_DEBUG_NOGUI is defined, prompts at
+  the console, otherwise pops up a dialog.  The user may then break (debug), 
+  ignore, ignore always, or halt the program.
+ 
+  The assertion is also posted to the clipboard under Win32.
  */
 
 /**
- * @def __debugPromptShowDialog__
- * @internal
+  @def debugAssertM(exp, msg)
+  Breaks if the expression is false and displays a message. If G3D_DEBUG_NOGUI 
+  is defined, prompts at the console, otherwise pops up a dialog.  The user may
+  then break (debug), ignore, ignore always, or halt the program.
+ 
+  The assertion is also posted to the clipboard under Win32.
  */
+
+/**
+ @def __debugPromptShowDialog__
+ @internal
+ */
+
 
 #ifdef _DEBUG
 
     #ifndef G3D_OSX
         #ifdef _MSC_VER
-            #define debugBreak() _asm { int 3 }
+            #define debugBreak() G3D::_internal::_releaseInputGrab_(); _asm { int 3 } G3D::_internal::_restoreInputGrab_();
         #else
-            #define debugBreak() __asm__ __volatile__ ( "int $3" )
+            #define debugBreak() G3D::_internal::_releaseInputGrab_(); __asm__ __volatile__ ( "int $3" ); G3D::_internal::_restoreInputGrab_(); 
         #endif
     #else
         #define debugBreak() assert(false); /* No breakpoints on OS X yet */
@@ -108,13 +116,6 @@
 
 
 
-/**
- * @def debugBreak()
- *
- * Break at the current location (i.e. don't push a procedure stack frame
- * before breaking).
- */
-
 namespace G3D {  namespace _internal {
 
 /**
@@ -137,6 +138,15 @@ void _handleErrorCheck_(
     const char* filename,
     int         lineNumber,
     bool        useGuiPrompt);
+
+/** Attempts to give the user back their mouse and keyboard if they 
+    were locked to the current window.  
+    @internal*/
+void _releaseInputGrab_();
+
+/** Attempts to restore the state before _releaseInputGrab_.  
+    @internal*/
+void _restoreInputGrab_();
 
 }; }; // namespace
 

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2004-01-03
+ @edited  2004-02-26
  */
 
 #include "G3D/debugAssert.h"
@@ -29,7 +29,6 @@
 using namespace std;
 
 namespace G3D { namespace _internal {
-using namespace std;
 
 #ifdef G3D_WIN32
 static void postToClipboard(const char *text) {
@@ -207,6 +206,62 @@ void _handleErrorCheck_(
 
     int result = G3D::prompt("Error", m.c_str(), (const char**)choices, 1, useGuiPrompt);
     (void)result;
+}
+
+
+#ifdef G3D_WIN32
+static HCURSOR oldCursor;
+static RECT    oldCursorRect;
+static POINT   oldCursorPos;
+#endif
+
+void _releaseInputGrab_() {
+    #ifdef G3D_WIN32
+
+        GetCursorPos(&oldCursorPos);
+
+        // Stop hiding the cursor if the application hid it.
+        // If the application hid the cursor *twice*, this won't work.
+        ShowCursor(true);
+
+        // Set the default cursor in case the application
+        // set the cursor to NULL.
+        oldCursor = GetCursor();
+        SetCursor(LoadCursor(NULL, IDC_ARROW));
+
+        // Allow the cursor full access to the screen
+        GetClipCursor(&oldCursorRect);
+        ClipCursor(NULL);
+        
+    #elif defined(G3D_LINUX)
+        // TODO: Linux
+    #elif defined(G3D_OSX)
+        // TODO: OS X
+    #endif
+}
+
+
+void _restoreInputGrab_() {
+    #ifdef G3D_WIN32
+
+        // Restore the old clipping region
+        ClipCursor(&oldCursorRect);
+
+        SetCursorPos(oldCursorPos.x, oldCursorPos.y);
+
+        // Restore the old cursor
+        SetCursor(oldCursor);
+
+        // Note that show/hide uses an internal count, so
+        // this will not hide a cursor that was visible before
+        // _releaseInputGrab_ (which is correct behavior).
+        ShowCursor(false);
+        
+    #elif defined(G3D_LINUX)
+        // TODO: Linux
+    #elif defined(G3D_OSX)
+        // TODO: OS X
+    #endif
 }
 
 
