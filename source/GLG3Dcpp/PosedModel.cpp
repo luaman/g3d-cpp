@@ -127,6 +127,11 @@ void PosedModelWrapper::getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bo
     model->getWorldSpaceFaceNormals(faceNormals, normalize);
 }
 
+const Array<Vector3>& PosedModelWrapper::objectSpaceFaceNormals(bool normalize) const {
+	return model->objectSpaceFaceNormals(normalize);
+}
+
+
 
 const Array<MeshAlg::Face>& PosedModelWrapper::faces() const {
     return model->faces();
