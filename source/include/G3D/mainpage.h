@@ -50,7 +50,10 @@
 		G3D::Vector2,
 		G3D::Vector3,
 		G3D::Vector3int16,
-		G3D::Vector4
+		G3D::Vector4,
+        G3D::GameTime,
+        G3D::RealTime,
+        G3D::toSeconds 
 		</BLOCKQUOTE>
      
      <LI>Data structures
@@ -162,18 +165,26 @@
         G3D::G3DEndian,
         G3D::getFiles, 
         G3D::getDirs,
-        G3D::LightweightConduit,
-        G3D::NetAddress, 
-        G3D::NetListener, 
-        G3D::NetworkDevice, 
         G3D::parseFilename, 
         G3D::prompt, 
         G3D::readFileAsString,
         G3D::System,
-        G3D::ReliableConduit, 
         G3D::resolveFilename,
         G3D::TextInput,
         G3D::writeStringToFile
+        </BLOCKQUOTE>
+
+    <LI>Networking
+    <BR><BLOCKQUOTE>
+        G3D::DiscoveryAdvertisement,
+        G3D::DiscoveryClient,
+        G3D::DiscoveryServer,
+        G3D::DiscoverySettings,
+        G3D::LightweightConduit,
+        G3D::NetAddress,
+        G3D::NetListener, 
+        G3D::NetworkDevice, 
+        G3D::ReliableConduit
         </BLOCKQUOTE>
      </UL>
 
@@ -226,10 +237,8 @@
         G3D::CFont,
         G3D::Sky,
         G3D::Camera, 
-        G3D::GameTime,
         G3D::LightingParameters,
         G3D::realWorldLocalTime, 
-        G3D::toSeconds, 
         G3D::UserInput, 
         G3D::ManualCameraController
         </BLOCKQUOTE>

@@ -142,6 +142,10 @@ SOURCE=.\G3Dcpp\debugAssert.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Discovery.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\fileutils.cpp
 # End Source File
 # Begin Source File
@@ -311,6 +315,10 @@ SOURCE=.\include\G3D\debugAssert.h
 # Begin Source File
 
 SOURCE=.\include\G3D\debugPrintf.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Discovery.h
 # End Source File
 # Begin Source File
 

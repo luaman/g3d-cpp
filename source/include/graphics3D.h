@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-06-24
+ @edited  2003-06-26
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -74,6 +74,7 @@
 #include "G3D/Color4uint8.h"
 #include "G3D/Vector3int16.h"
 #include "G3D/ConvexPolyhedron.h"
+#include "G3D/Discovery.h"
 
 #endif
 
