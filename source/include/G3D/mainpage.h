@@ -280,7 +280,6 @@
    library can help with debugging and make your code cleaner.
 
    \section Installation Installation
-   At the end of this section is a short FAQ regarding compiler error messages.
 
    <P>
    <B>Windows</B>
@@ -288,17 +287,18 @@
    <OL>
    <LI>
    Download the latest g3d-xxx.zip from
-   http://g3d-cpp.sourceforge.net. 
+   http://g3d-cpp.sf.net. 
    Unzip all of the files in the distribution to your
    library directory (e.g. <CODE>c:\\libraries</CODE>).
 
    <LI>Download and install SDL <B>version 1.2.5</B> from
-   <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>.
+   <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>
+   (G3D is not compatible with SDL 1.2.6).
 
-   <LI>Ensure that you are using MSVC++ 6.0 with Service Pack 5 and
-   the Processor Pack.
+   <LI>Ensure that you are using MSVC++ 6.0 with <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A> and
+   the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.
 
-  <LI> Autoexp.dat file (usually in <CODE>C:\\Program Files\\Microsoft
+   <LI>(<I>Optional</I>) Add the following lines to your Autoexp.dat file (usually in <CODE>C:\\Program Files\\Microsoft
    Visual Studio\\Common\\MSDev98\\Bin</CODE>): 
 
 <PRE> ;; graphics3D
@@ -306,35 +306,34 @@
    G3D::Vector4=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
    G3D::Vector3=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
    G3D::Vector2=Vector2(&lt;x&gt;,&lt;y&gt;)
+   G3D::Vector4int16=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
+   G3D::Vector3int16=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
+   G3D::Vector2int16=Vector2(&lt;x&gt;,&lt;y&gt;)
    G3D::Color4=Color4(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
    G3D::Color3=Color3(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
+   G3D::Color4uint8=Color4uint8(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
+   G3D::Color3uint8=Color3uint8(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
    G3D::NetAddress=NetAddress(&lt;addr.sin_addr.S_un.S_un_b.s_b1,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b2,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b3,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b4,u&rt;)
 
-
-    ;; Prevent stepping into certain functions
+   ;; Prevent stepping into certain functions
     [ExecutionControl]
     std::*=NoStepInto
-    G3D::Array&lt;*&gt;=NoStepInto
    </PRE>
 
    <LI>
    In Tools:Options:Directories, add the g3d include directory 
-   (e.g. c:\\libraries\\g3d-6_00\\include) to the
+   (e.g. c:\\libraries\\g3d-6_00-b11\\include) to the
    include list.  Make sure it preceeds all other include directories.
    <LI>
    In Tools:Options:Directories, add the g3d lib directory 
-   (e.g. c:\\libraries\\g3d-6_00\\lib) to the library
+   (e.g. c:\\libraries\\g3d-6_00-b11\\lib) to the library
    list.
    <LI>
-   <B>For each project you create, copy SDL.dll, glut32.dll, and zlib.dll
+   <B>For each project you create, copy <CODE>SDL.dll</CODE>, <CODE>glut32.dll</CODE>, 
+      and <CODE>zlib1.dll</CODE>
       to your program directory (or put them in Windows/System)
-   
     </OL>
    </OL>
-
-  <B>Linux</B> The current Linux build requires you to download
-  g3d-src-6_00.zip and build the library yourself.  See readme.html in
-  that distribution for build instructions.
 
   <P>
 
@@ -372,9 +371,10 @@
        data           <I>Data root</I>
           image       <I>Test images</I>
           height      <I>height maps</I>
-          ifs         <I>3D models (see IFS_Demo for loading code)</I>
-          sky         <I>Images for use with G3D::Sky</I>
+          ifs         <I>Models for use with G3D::IFSModel</I>
+          sky         <I>Images and data for use with G3D::Sky</I>
           font        <I>Fonts for use with G3D::GFont</I>
+          quake2      <I>Models for use with G3D::MD2Model</I>
      </PRE>
 
    <HR>

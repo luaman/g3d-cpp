@@ -1,14 +1,6 @@
 /**
  @file GLG3D_Demo/main.cpp
 
-  To run this program:
-    1. Install OpenGL and SDL
-    2. Change the DATA_DIR constant (if necessary)
-    3. Compile and run
-    4. Use the mouse and W,A,S,D keys to move the camera about
-    5. Press SPACE to toggle different rendering styles.
-    6. Press ESC to exit
-
  This provides a compact infrastructure for building simple 3D apps like
  research demos and homework assignments.  It demonstrates the use of the
  GL_G3D classes RenderDevice, Log, Sky, UserInput, LightingParameters, and

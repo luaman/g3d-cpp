@@ -10,6 +10,27 @@ linking, and debugging programs that use G3D.
 Here are the common fixes.
 
 <P>
+
+
+  <B>Application Error: The application failed to initialize properly (0xc0000022). Click on OK to terminate the application.</B>
+  <BR>
+   At runtime, your program can't load the SDL.dll, zlib.dll, or glut32.dll dynamic libraries.
+
+   This is probably occurring because the current working directory is invalid or because
+   the files and directory exist but cannot be accessed.  This frequently occurs when a Windows
+   program is running from a Linux file system via Samba.  Make sure you have set the e<B>X</B>ecute
+
+   bit on the DLL's from Linux.
+   <P>
+
+<B><CODE>../include/G3D/g3dmath.h:27: limits: No such file or directory</CODE></B>
+
+<BR>You are using an old version of GCC on Linux. Add these lines to your .cshrc:<br>
+<PRE>
+   setenv CC gcc-3.2
+   setenv CXX g++-3.2
+</PRE>
+
    <PRE><B>
 msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::~basic_string<char,struct std::char_traits<char>,class std::allocator<char> >(void)" (??1?$basic_strin
 g@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ) already defined in main.obj
@@ -56,23 +77,6 @@ Debug/GLG3D_Demo.exe : fatal error LNK1169: one or more multiply defined symbols
    "Debug Multithreaded DLL" for your debug build and "Multithreaded DLL" for
    your release build.
    <P>
-
-  <B>Application Error: The application failed to initialize properly (0xc0000022). Click on OK to terminate the application.</B>
-  <BR>
-   At runtime, your program can't load the SDL.dll, zlib.dll, or glut32.dll dynamic libraries.
-   This is probably occurring because the current working directory is invalid or because
-   the files and directory exist but cannot be accessed.  This frequently occurs when a Windows
-   program is running from a Linux file system via Samba.  Make sure you have set the e<B>X</B>ecute
-   bit on the DLL's from Linux.
-   <P>
-
-<B><CODE>../include/G3D/g3dmath.h:27: limits: No such file or directory</CODE></B>
-
-<BR>You are using an old version of GCC on Linux. Add these lines to your .cshrc:<br>
-<PRE>
-   setenv CC gcc-3.2
-   setenv CXX g++-3.2
-</PRE>
 
 <P>
 <B><CODE>array.h(233) : error C2512: : no appropriate default constructor available 

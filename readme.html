@@ -11,24 +11,24 @@ the G3D C++ library.  It is for programmers who need to modify the
 library itself.  
 
 <P>
-<B>Windows programmers who do not need to modify the
-library should download precompiled binaries and link against them</B>
-instead of building the library themselves because building the library
-requires you to install several tools.
+<B>You do not need to build the library to use it!  Precompiled Win32 and Linux binaries are provided at <A HREF="http://g3d-cpp.sf.net">http://g3d-cpp.sf.net</A></B>
 <P>
 
-This distribution contains two CVS modules: <B>cpp</B> and <B>data</B>.
-Together these have all of
-the files you need to <I>build</I> and install the library on Windows or Linux.
-It is assumed that you obtained this source by checking it out of
-SourceForge.net CVS for the "g3d-cpp" project (<A
-HREF="http://sourceforge.net/projects/g3d-cpp">http://sourceforge.net/projects/g3d-cpp</A>)
+This distribution contains two CVS modules: <B>cpp</B> and
+<B>data</B>.  Together these have all of the files you need to
+<I>build</I> and install the library on Windows or Linux.  They
+also contain some files for building on OS/X.  OS/X is not
+a supported platform, however.
+<P>
+It is assumed that you obtained this source by checking
+it out of SourceForge.net CVS for the "g3d-cpp" project (<A
+HREF="http://sf.net/projects/g3d-cpp">http://sf.net/projects/g3d-cpp</A>)
 or downloading a release zipfile.  To check out via anonymous CVS:
 
 <PRE>
-cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/g3d-cpp login 
-cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/g3d-cpp co cpp
-cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/g3d-cpp co data
+cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/g3d-cpp login 
+cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/g3d-cpp co cpp
+cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/g3d-cpp co data
 </PRE>
 
 
@@ -49,7 +49,7 @@ install them separately if you have Cygwin.</I>
 <LI> Install the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Visual Studio 6.0 Processor Pack</A>.
 <LI> Install the <A HREF="http://www.python.org/ftp/python/2.2.3/Python-2.2.3.exe">Python 2.2.3 tool</A>.
 <LI> Install the <A HREF="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.3.2-setup.exe">Doxygen 1.3.2 tool</A>.
-<LI> Install the <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.5a-VC6.zip">SDL 1.2.5 Development Library</A>.
+<LI> Install the <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.5a-VC6.zip">SDL 1.2.5 Development Library</A> (G3D is not compatible with SDL 1.2.6).
 
 <LI> Add the paths for these tools to your PATH environment variable (Control Panel -> System -> Advanced -> Environment Variables).  These are usually <CODE>C:\Program Files\Microsoft Visual
 Studio\Common\MSDev98\Bin\;c:\doxygen;c:\python\bin</CODE>.
@@ -57,11 +57,7 @@ Studio\Common\MSDev98\Bin\;c:\doxygen;c:\python\bin</CODE>.
 <P>
 
 
-<LI>Run "<CODE>build install</CODE>" in the <CODE>cpp</CODE> directory
-
-<LI>Copy the contents of the <CODE>cpp/install</CODE> directory to wherever
-you install libraries.  You no longer need the source tree.
-
+<LI>Run "<CODE>build install <I>libdir</I></CODE>" in the <CODE>cpp</CODE> directory, where <I>libdir</I> is the parent directory you want to install into (e.g. "<CODE>c:\libraries</CODE>")
 </OL>
 
 <HR>
@@ -81,15 +77,14 @@ you install libraries.  You no longer need the source tree.
 <LI> Log out so all changes can take effect.
 <P>
 <LI>Run "<CODE>chmod u+x build</CODE>" in the <CODE>cpp</CODE> directory.
-<LI>Run "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory
-<LI>The library and demos will compile in the source tree
+<LI>Run "<CODE>./build install <I>libdir</I></CODE>" in the <CODE>cpp</CODE> directory, where <I>libdir</I> is the parent directory you want to install into (e.g. "<CODE>/u/$USER/lib</CODE>")
 </OL>
 
 <HR>
 <B><FONT SIZE=6><IMG SRC="source/html/osx.gif" VALIGN=CENTER> OS X</FONT></B>
 
 <P>
-<I>The OS X build infrastructure is currently under construction.</I>
+<I>The OS/X build infrastructure is currently under construction.  This is unsupported and may not work in the distribution you have downloaded.</I>
 <P>
 <OL>
 <LI> <I>gcc 3.1 came with your operating system.  There is no newer version for OS X</I>
@@ -118,9 +113,12 @@ a checkout of the <B>data</B> directory.   The subdirectories have
 the following structure:
 
 <PRE>
-|-<CODE>cpp</CODE>
+|-<CODE>cpp</CODE>                              <FONT COLOR="00700">The cpp module</FONT>
 |  |-<CODE>source</CODE>
-|  |  |-<CODE>demos</CODE>
+|  |  |-<CODE>data</CODE>                    
+|  |  |-<CODE>demos</CODE>                      <FONT COLOR="00700">A duplicate of some essential files from the data module</FONT>
+|  |  |  |-<CODE>font</CODE>
+|  |  |  ...
 |  |  |-<CODE>G3Dcpp</CODE>
 |  |  |-<CODE>GLG3Dcpp</CODE>
 |  |  |-<CODE>IJG</CODE>
@@ -128,17 +126,18 @@ the following structure:
 |  |  |-<CODE>include</CODE>
 |  |  |  |-<CODE>G3D</CODE>
 |  |  |  |-<CODE>GLG3D</CODE>
-|  |  |  '-<CODE>glh</CODE>                     <FONT COLOR="00700">The latest GL extensions.  G3D doesn't use the system GL headers.</FONT>
-|  |  |     |-<CODE>extgen</CODE>
-|  |  |     '-<CODE>GL</CODE>
+|  |  |  |-<CODE>glh</CODE>                     <FONT COLOR="00700">The latest GL extensions.  G3D doesn't use the system GL headers.</FONT>
+|  |  |  |  |-<CODE>extgen</CODE>
+|  |  |  |  '-<CODE>GL</CODE>
+|  |  |  '-<CODE>zlib</CODE>
 |  |  |-<CODE>lib</CODE>
 |  |  '-<CODE>test</CODE>
 |  |-<FONT COLOR="#C00000"><CODE>install</CODE></FONT>                       <FONT COLOR="#007000">The library ready for use (copy to the location of your choice)</FONT>
 |  |-<FONT COLOR="#C00000"><CODE>release</CODE></FONT>                       <FONT COLOR="#007000">Official G3D release zipfiles (only Morgan needs these)</FONT>
 |  '-<FONT COLOR="#C00000"><CODE>temp</CODE></FONT>
-'-<CODE>data</CODE>
+'-<CODE>data</CODE>                             <FONT COLOR="00700">The data module</FONT>
    |-<CODE>font</CODE>
-   |-<CODE>quake</CODE>
+   |-<CODE>quake2</CODE>
    ...
 </PRE>
 

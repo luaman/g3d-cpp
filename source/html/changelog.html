@@ -7,13 +7,16 @@
    compatible.  Minor versions are backwards compatible to the
    previous major release.
 
-   Changes in 6.00
 
    <BLOCKQUOTE>
-	   Tips for upgrading from 5.xx to 6.00:   
-	   <LI>Use the <B>default</B> Win32 linker list and uncheck "ignore default libraries"
-	   <LI>Add the line <CODE>controller->setActive(true);</CODE> to your G3D::ManualCameraController initialization process
-	   <LI>Add a G3D::UserInput pointer to the G3D::ManualCameraController constructor calls
+	   <B>Tips for upgrading from 5.xx to 6.00:</B>
+	   <LI>G3D 6.00 requires no custom project settings!  If you have customized your project settings for version 5.xx,
+	       revert to the <B>default</B> Win32 linker list and uncheck
+		    "ignore default libraries"
+	   <LI>Add the line <CODE>controller->setActive(true);</CODE> to your 
+	       G3D::ManualCameraController initialization process
+	   <LI>Add a G3D::UserInput pointer to the G3D::ManualCameraController
+	       constructor calls
 	   <LI>Delete ManualCameraControllers <B>before</B> UserInputs.
 	   <LI>Replace <CODE>new Font</CODE> with <CODE>CFont::fromFile</CODE>
 	   <LI>Replace <CODE>Font*</CODE> with <CODE>CFontRef</CODE> 
@@ -41,10 +44,13 @@
 	   <LI>VARArea* -> VARAreaRef
 	   <LI><CODE>renderDevice->createVARArea(size)</CODE> to <CODE>VARArea::create(size)</CODE>
 	   <LI>Real -> float
+	   <LI>Copy <CODE>zlib1.dll</CODE> (note the "1" in the name) to your distribution directory (replaces zlib.dll)
   </BLOCKQUOTE>
 
    <P>
+   Changes in 6.00:
    <UL>
+     <LI> Upgraded to zlib 1.2.1
      <LI> VAR::valid (Peter)
      <LI> System::getLocalTime, System::getTicks
 	 <LI> High-performance cycle count and time queries on Linux

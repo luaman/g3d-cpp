@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-06-09
- @edited  2003-11-18
+ @edited  2004-01-06
  */
 
 #ifndef G3D_PLATFORM_H
@@ -116,7 +116,7 @@
     // Now set up external linking
     #define ZLIB_DLL
 
-    #pragma comment(lib, "zlib.lib")
+    #pragma comment(lib, "zdll.lib")
     #pragma comment(lib, "ws2_32.lib")
     #pragma comment(lib, "winmm.lib")
     #pragma comment(lib, "imagehlp.lib")
