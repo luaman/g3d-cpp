@@ -57,16 +57,16 @@ int main(int argc, char** argv) {
         alwaysAssertM(false, e.message);
     }
 
-    rd->setColorClearValue(Color3::BLUE);
+    rd->setColorClearValue(Color3::blue());
     while (true) {
         rd->beginFrame();
             rd->clear();
             GCamera camera;
             camera.setPosition(Vector3(0,0,10));
-            camera.lookAt(Vector3::ZERO);
+            camera.lookAt(Vector3::zero());
 
             rd->setProjectionAndCameraMatrix(camera);
-            Draw::sphere(Sphere(Vector3::ZERO, 1), rd, Color3::WHITE, Color3::BLACK);
+            Draw::sphere(Sphere(Vector3::zero(), 1), rd, Color3::white(), Color3::black());
         rd->endFrame();
     }
 

@@ -90,7 +90,7 @@ Ray GCamera::worldRay(
 
     Ray out;
     // Set the origin to 0
-    out.origin = Vector3::ZERO3;
+    out.origin = Vector3::zero();
 
     double cx = screenWidth  / 2.0;
     double cy = screenHeight / 2.0;
@@ -120,7 +120,7 @@ Vector3 GCamera::project(
     double w = out.z * CoordinateFrame::zLookDirection;
 
     if (w <= 0) {
-        return Vector3::INF3;
+        return Vector3::inf();
     }
     debugAssert(w > 0);
 
@@ -209,16 +209,16 @@ void GCamera::getClipPlanes(
 	clip.append(Plane(Vector3(0,0,-1), Vector3(0,0,-nearPlane)));
 
     // Right
-    clip.append(Plane(Vector3(-cos(fovx/2), 0, -sin(fovx/2)), Vector3::ZERO));
+    clip.append(Plane(Vector3(-cos(fovx/2), 0, -sin(fovx/2)), Vector3::zero()));
 
 	// Left
-	clip.append(Plane(Vector3(-clip.last().normal().x, 0, clip.last().normal().z), Vector3::ZERO));
+	clip.append(Plane(Vector3(-clip.last().normal().x, 0, clip.last().normal().z), Vector3::zero()));
 
     // Top
-    clip.append(Plane(Vector3(0, -cos(fieldOfView/2), -sin(fieldOfView/2)), Vector3::ZERO));
+    clip.append(Plane(Vector3(0, -cos(fieldOfView/2), -sin(fieldOfView/2)), Vector3::zero()));
 
 	// Bottom
-	clip.append(Plane(Vector3(0, -clip.last().normal().y, clip.last().normal().z), Vector3::ZERO));
+	clip.append(Plane(Vector3(0, -clip.last().normal().y, clip.last().normal().z), Vector3::zero()));
 
     // Far
     if (farPlane < inf) {

@@ -30,7 +30,7 @@ protected:
 
 public:
 
-    inline LineSegment() : _point(Vector3::ZERO), direction(Vector3::ZERO) {}
+    inline LineSegment() : _point(Vector3::zero()), direction(Vector3::zero()) {}
 
 	LineSegment(class BinaryInput& b);
 

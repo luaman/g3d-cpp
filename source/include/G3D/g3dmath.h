@@ -257,7 +257,7 @@ double toDegrees(double rad);
  Example:
  <CODE>
     const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4, SUNRISE + sunRiseAndSetTime, SUNSET - sunRiseAndSetTime, SUNSET - sunRiseAndSetTime / 2, SUNSET,               SUNSET + HOUR/2,     DAY};
-    const Color3 color[] = {Color3(0, .0, .1),      Color3(0, .0, .1),      Color3::BLACK,        Color3::BLACK,                   Color3::WHITE * .25,         Color3::WHITE * .25,        Color3(.5, .2, .2),             Color3(.05, .05, .1),   Color3(0, .0, .1), Color3(0, .0, .1)};
+    const Color3 color[] = {Color3(0, .0, .1),      Color3(0, .0, .1),      Color3::black(),        Color3::black(),                   Color3::white() * .25,         Color3::white() * .25,        Color3(.5, .2, .2),             Color3(.05, .05, .1),   Color3(0, .0, .1), Color3(0, .0, .1)};
     ambient = linearSpline(time, times, color, 10);
  </CODE>
 

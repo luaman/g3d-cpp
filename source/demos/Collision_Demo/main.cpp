@@ -191,15 +191,15 @@ void doGraphics() {
 
                 font->draw2D(
                     format("%d fps", frameRate),
-                    Vector2(10, 10), 28, Color3::WHITE, Color3::BLACK);
+                    Vector2(10, 10), 28, Color3::white(), Color3::black());
 
                 font->draw2D(
                     format("%d tris", numTris),
-                    Vector2(10, 72), 20, Color3::WHITE, Color3::BLACK);
+                    Vector2(10, 72), 20, Color3::white(), Color3::black());
 
                 font->draw2D(
                     format("%d ktri/s", triRate),
-                    Vector2(10, 100), 20, Color3::WHITE, Color3::BLACK);
+                    Vector2(10, 100), 20, Color3::white(), Color3::black());
 
             renderDevice->pop2D();
         renderDevice->popState();

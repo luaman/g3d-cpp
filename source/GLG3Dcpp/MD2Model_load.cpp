@@ -109,8 +109,8 @@ void MD2Model::load(const std::string& filename) {
     Array<Vector3> frameMax(header.numFrames);
     Array<double>  frameRad(header.numFrames);
 
-    Vector3 min  = Vector3::INF3;
-    Vector3 max  = -Vector3::INF3;
+    Vector3 min  = Vector3::inf();
+    Vector3 max  = -Vector3::inf();
     double  rad  = 0;
 
     if (header.numVertices < 3) {
@@ -132,8 +132,8 @@ void MD2Model::load(const std::string& filename) {
         keyFrame[f].normalArray.resize(header.numVertices);
 
         // Per-pose bounds
-        Vector3 min_1  = Vector3::INF3;
-        Vector3 max_1  = -Vector3::INF3;
+        Vector3 min_1  = Vector3::inf();
+        Vector3 max_1  = -Vector3::inf();
         double  rad_1  = 0;
 
         // Quake's axes are permuted and scaled
@@ -188,11 +188,11 @@ void MD2Model::load(const std::string& filename) {
             }
 
             animationBoundingBox[a]    = Box(min, max);
-            animationBoundingSphere[a] = Sphere(Vector3::ZERO, rad);
+            animationBoundingSphere[a] = Sphere(Vector3::zero(), rad);
         } else {
             // This animation is not supported by this model
-            animationBoundingBox[a]    = Box(Vector3::ZERO, Vector3::ZERO);
-            animationBoundingSphere[a] = Sphere(Vector3::ZERO, 0);
+            animationBoundingBox[a]    = Box(Vector3::zero(), Vector3::zero());
+            animationBoundingSphere[a] = Sphere(Vector3::zero(), 0);
         }
     }
 
@@ -200,7 +200,7 @@ void MD2Model::load(const std::string& filename) {
     animationBoundingSphere[JUMP] = animationBoundingSphere[JUMP_DOWN];
 
     boundingBox    = Box(min, max);
-    boundingSphere = Sphere(Vector3::ZERO, sqrt(rad));
+    boundingSphere = Sphere(Vector3::zero(), sqrt(rad));
 
     // Load the texture coords
     texFrame.rotation[0][0] = 1.0 / header.skinWidth; 

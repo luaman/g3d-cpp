@@ -13,7 +13,7 @@ namespace G3D {
 
 GLight::GLight() {
     position        = Vector4(0, 0, 0, 0);
-    color           = Color3::WHITE;
+    color           = Color3::white();
     spotDirection   = Vector3(0, 0, -1);
     spotCutoff      = 180;
     enabled         = false;

@@ -14,6 +14,25 @@
 
 namespace G3D {
 
+const Matrix4& Matrix4::identity() {
+    static Matrix4 m(
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
+    return m;
+}
+
+const Matrix4& Matrix4::zero() {
+    static Matrix4 m(
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0);
+    return m;
+}
+
+// Deprecated.
 const Matrix4 Matrix4::IDENTITY
   = Matrix4(1, 0, 0, 0,
             0, 1, 0, 0,

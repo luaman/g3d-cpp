@@ -111,7 +111,7 @@ void Quat::toAxisAngleRotation(
 
 
 Matrix3 Quat::toRotationMatrix() const {
-    Matrix3 out = Matrix3::ZERO;
+    Matrix3 out = Matrix3::zero();
 
     toRotationMatrix(out);
 

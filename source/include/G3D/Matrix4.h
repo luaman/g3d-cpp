@@ -46,7 +46,15 @@ public:
 
     Matrix4();
 
+    // Special values.
+    // Intentionally not inlined: see Matrix3::identity() for details.
+    static const Matrix4& identity();
+    static const Matrix4& zero();
+
+    // Deprecated. See Matrix3::identity() for details.
+    /** @deprecated Use Matrix4::identity() */
     static const Matrix4 IDENTITY;
+    /** @deprecated Use Matrix4::zero() */
     static const Matrix4 ZERO;
 
     const float* operator[](int r) const;

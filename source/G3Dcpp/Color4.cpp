@@ -22,8 +22,15 @@
 
 namespace G3D {
 
-const Color4 Color4::ZERO   (0.0, 0.0, 0.0, 0.0);
-const Color4 Color4::CLEAR  (0.0, 0.0, 0.0, 0.0);
+const Color4& Color4::zero() {
+    static Color4 c(0.0, 0.0, 0.0, 0.0);
+    return c;
+}
+
+const Color4& Color4::clear() {
+    static Color4 c(0.0, 0.0, 0.0, 0.0);
+    return c;
+}
 
 Color4::Color4(const Vector4& v) {
     r = v.x;
@@ -31,6 +38,10 @@ Color4::Color4(const Vector4& v) {
     b = v.z;
     a = v.w;
 }
+
+// Deprecated.
+const Color4 Color4::ZERO   (0.0, 0.0, 0.0, 0.0);
+const Color4 Color4::CLEAR  (0.0, 0.0, 0.0, 0.0);
 
 
 Color4::Color4(const Color4uint8& c) {

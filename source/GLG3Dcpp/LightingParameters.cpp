@@ -64,8 +64,8 @@ void LightingParameters::setTime(const GameTime _time) {
     starVec.y = 0;
     starVec.z = sin(starRot);
     
-    starFrame.lookAt(starVec, Vector3::UNIT_Y);
-    trueStarFrame.lookAt(starVec, Vector3::UNIT_Y);
+    starFrame.lookAt(starVec, Vector3::unitY());
+    trueStarFrame.lookAt(starVec, Vector3::unitY());
 	trueStarFrame.rotation.toEulerAnglesXYZ(aX, aY, aZ);
     aX -= geoLatitude;
     trueStarFrame.rotation = Matrix3::fromEulerAnglesXYZ(aX, aY, aZ);
@@ -101,13 +101,13 @@ void LightingParameters::setTime(const GameTime _time) {
 	double moonOffset = ((-earthTilt+moonTilt)*sin(moonPhase*4)) - latRad;
 	double curMoonPhase = (moonPhase*G3D_PI*2);
 
-    Matrix3 rotMat = Matrix3::fromAxisAngle(Vector3::UNIT_Z.cross(sunPosition), sunOffset);
+    Matrix3 rotMat = Matrix3::fromAxisAngle(Vector3::unitZ().cross(sunPosition), sunOffset);
     trueSunPosition = rotMat * sunPosition;
     
 	Vector3 trueMoon = Vector3(sin(curMoonPhase + sourceAngle), 
 			                   -cos(curMoonPhase + sourceAngle), 
 							   0);
-    rotMat = Matrix3::fromAxisAngle(Vector3::UNIT_Z.cross(trueMoon), moonOffset);
+    rotMat = Matrix3::fromAxisAngle(Vector3::unitZ().cross(trueMoon), moonOffset);
 	trueMoonPosition = rotMat * trueMoon;
 
     // Determine which light source we observe.
@@ -135,8 +135,8 @@ void LightingParameters::setTime(const GameTime _time) {
 	}
     }
     
-    const Color3 dayAmbient = Color3::WHITE * .40;
-    const Color3 dayDiffuse = Color3::WHITE * .75;
+    const Color3 dayAmbient = Color3::white() * .40;
+    const Color3 dayDiffuse = Color3::white() * .75;
 
     {
         const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4,  SUNRISE + sunRiseAndSetTime,    SUNSET - sunRiseAndSetTime,     SUNSET - sunRiseAndSetTime / 2, SUNSET,                SUNSET + HOUR/2,       DAY};

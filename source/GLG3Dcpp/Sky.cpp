@@ -240,7 +240,7 @@ void Sky::renderBox() const {
         // In the 6-texture case, the sky box is rotated 90 degrees
         // (this is because the textures are loaded incorrectly)
         CoordinateFrame cframe;
-        cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, toRadians(-90));
+        cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(-90));
         renderDevice->setObjectToWorldMatrix(cframe);
         renderDevice->setTexture(0, texture[BK]);
     }
@@ -322,7 +322,7 @@ void Sky::render(
         hackProjectionMatrix(renderDevice);
 
         // Eliminate the translation of the camera
-        CoordinateFrame matrix(Vector3::ZERO);
+        CoordinateFrame matrix(Vector3::zero());
 	    matrix.rotation = renderDevice->getCameraToWorldMatrix().rotation;
         renderDevice->setCameraToWorldMatrix(matrix);
         renderDevice->setObjectToWorldMatrix(CoordinateFrame());
@@ -349,7 +349,7 @@ void Sky::drawMoonAndStars(const LightingParameters& lighting) {
     Vector3 moonPosition = lighting.physicallyCorrect ? lighting.trueMoonPosition : lighting.moonPosition;
 
     Vector4 L(moonPosition,0);
-    Vector3 LcrossZ = moonPosition.cross(Vector3::UNIT_Z).direction();
+    Vector3 LcrossZ = moonPosition.cross(Vector3::unitZ()).direction();
 	Vector4 X(LcrossZ, 0);
     Vector4 Y(moonPosition.cross(LcrossZ), 0);
 
@@ -375,8 +375,8 @@ void Sky::drawMoonAndStars(const LightingParameters& lighting) {
                 }
 
             // Get RenderDevice back in sync with real GL state
-            renderDevice->setColor(Color3::WHITE);
-            glColor(Color3::WHITE);
+            renderDevice->setColor(Color3::white());
+            glColor(Color3::white());
         renderDevice->popState();
     }
 
@@ -392,13 +392,13 @@ void Sky::drawSun(const LightingParameters& lighting) {
 	
     // Sun vector
     Vector4 L(sunPosition,0);
-    Vector3 LcrossZ = sunPosition.cross(Vector3::UNIT_Z).direction();
+    Vector3 LcrossZ = sunPosition.cross(Vector3::unitZ()).direction();
     Vector4 X(LcrossZ, 0);
     Vector4 Y(sunPosition.cross(LcrossZ), 0);
     
     renderDevice->setTexture(0, sun);
     renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-    Color3 c(Color3::WHITE * .8);
+    Color3 c(Color3::white() * .8);
 
     if (sunPosition.y < 0) {
         // Fade out the sun as it goes below the horizon
@@ -472,7 +472,7 @@ void Sky::renderLensFlare(
 
                 // Sun position
                 Vector4 L(sunPosition,0);
-                Vector3 LcrossZ = sunPosition.cross(Vector3::UNIT_Z).direction();
+                Vector3 LcrossZ = sunPosition.cross(Vector3::unitZ()).direction();
                 Vector4 X(LcrossZ, 0);
 				Vector4 Y(sunPosition.cross(LcrossZ), 0);
 
@@ -492,7 +492,7 @@ void Sky::renderLensFlare(
 
                 renderDevice->setTexture(0, sun);
                 drawCelestialSphere(renderDevice, L, X, Y, .13,
-                                    Color3::WHITE * fractionOfSunVisible * .5);
+                                    Color3::white() * fractionOfSunVisible * .5);
 
                 // Lens flare
                 Vector4 C(camera.getLookVector(), 0);

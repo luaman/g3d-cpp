@@ -48,7 +48,7 @@ void FPCameraController::reset() {
     _active      = false;
     yaw         = -G3D_PI/2;
     pitch       = 0;
-	translation = Vector3::ZERO;
+	translation = Vector3::zero();
     setMoveRate(10);
 	setTurnRate(G3D_PI / 4);
 }

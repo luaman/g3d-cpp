@@ -109,7 +109,7 @@ GameTime SphereObject::timeUntilCollisionWithMovingSphere(
 
 void SphereObject::render() const {
     glSpecular();
-    Draw::sphere(sphere, renderDevice, color, Color4::CLEAR);
+    Draw::sphere(sphere, renderDevice, color, Color4::clear());
 }
 
 
@@ -140,7 +140,7 @@ GameTime CapsuleObject::timeUntilCollisionWithMovingSphere(
 
 void CapsuleObject::render() const {
     glSpecular();
-    Draw::capsule(capsule, renderDevice, color, Color4::CLEAR);
+    Draw::capsule(capsule, renderDevice, color, Color4::clear());
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ void BoxObject::render() const {
 
     /* Messes up the shadow map for some reason.
     renderDevice->pushState();
-        Draw::box(box, renderDevice, color, Color4::CLEAR);
+        Draw::box(box, renderDevice, color, Color4::clear());
     renderDevice->popState();
     */
 }

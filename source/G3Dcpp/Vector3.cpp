@@ -23,13 +23,15 @@
 
 namespace G3D {
 
+// Deprecated.
 const Vector3 Vector3::ZERO(0, 0, 0);
 const Vector3 Vector3::ZERO3(0, 0, 0);
 const Vector3 Vector3::UNIT_X(1, 0, 0);
 const Vector3 Vector3::UNIT_Y(0, 1, 0);
 const Vector3 Vector3::UNIT_Z(0, 0, 1);
-const Vector3 Vector3::INF3(inf, inf, inf);
-const Vector3 Vector3::NAN3(nan, nan, nan);
+const Vector3 Vector3::INF3(G3D::inf, G3D::inf, G3D::inf);
+const Vector3 Vector3::NAN3(G3D::nan, G3D::nan, G3D::nan);
+
 
 Vector3::Axis Vector3::primaryAxis() const {
     
@@ -123,7 +125,7 @@ Vector3 Vector3::operator/ (double fScalar) const {
         kQuot.z = fInvScalar * z;
         return kQuot;
     } else {
-        return Vector3(inf, inf, inf);
+        return Vector3::inf();
     }
 }
 
@@ -135,9 +137,9 @@ Vector3& Vector3::operator/= (double fScalar) {
         y *= fInvScalar;
         z *= fInvScalar;
     } else {
-        x = inf;
-        y = inf;
-        z = inf;
+        x = G3D::inf;
+        y = G3D::inf;
+        z = G3D::inf;
     }
 
     return *this;
@@ -184,10 +186,10 @@ Vector3 Vector3::cosRandom(const Vector3& normal) {
 
     // Make a coordinate system
     Vector3 U = normal.direction();
-    Vector3 V = Vector3::UNIT_X;
+    Vector3 V = Vector3::unitX();
 
     if (abs(U.dot(V)) > .9) {
-        V = Vector3::UNIT_Y;
+        V = Vector3::unitY();
     }
 
     Vector3 W = U.cross(V).direction();
@@ -245,7 +247,7 @@ Vector3 Vector3::refractionDirection(
 
     if (det < 0) {
         // Total internal reflection
-        return Vector3::ZERO;
+        return Vector3::zero();
     } else {
         return -hRatio * (W - WdotN * N) - N * sqrt(det);
     }

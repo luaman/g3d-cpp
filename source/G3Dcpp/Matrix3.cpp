@@ -22,8 +22,21 @@
 namespace G3D {
 
 const float Matrix3::EPSILON = 1e-06;
+
+const Matrix3& Matrix3::zero() {
+    static Matrix3 m(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return m;
+}
+
+const Matrix3& Matrix3::identity() {
+    static Matrix3 m(1, 0, 0, 0, 1, 0, 0, 0, 1);
+    return m;
+}
+
+// Deprecated.
 const Matrix3 Matrix3::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0);
 const Matrix3 Matrix3::IDENTITY(1, 0, 0, 0, 1, 0, 0, 0, 1);
+
 const float Matrix3::ms_fSvdEpsilon = 1e-04;
 const int Matrix3::ms_iSvdMaxIterations = 32;
 
@@ -342,7 +355,7 @@ bool Matrix3::inverse (Matrix3& rkInverse, float fTolerance) const {
 
 //----------------------------------------------------------------------------
 Matrix3 Matrix3::inverse (float fTolerance) const {
-    Matrix3 kInverse = Matrix3::ZERO;
+    Matrix3 kInverse = Matrix3::zero();
     inverse(kInverse, fTolerance);
     return kInverse;
 }
@@ -402,7 +415,7 @@ void Matrix3::bidiagonalize (Matrix3& kA, Matrix3& kL,
         kL[2][2] = 1.0 + fT2 * afV[2] * afV[2];
         bIdentity = false;
     } else {
-        kL = Matrix3::IDENTITY;
+        kL = Matrix3::identity();
         bIdentity = true;
     }
 
@@ -431,7 +444,7 @@ void Matrix3::bidiagonalize (Matrix3& kA, Matrix3& kL,
         kR[1][2] = kR[2][1] = fT2 * afV[2];
         kR[2][2] = 1.0 + fT2 * afV[2] * afV[2];
     } else {
-        kR = Matrix3::IDENTITY;
+        kR = Matrix3::identity();
     }
 
     // map second column to (*,*,0)

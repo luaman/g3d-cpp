@@ -64,11 +64,11 @@ public:
      Initializes to the identity coordinate frame.
      */
     inline CoordinateFrame() : 
-        rotation(Matrix3::IDENTITY), translation(Vector3::ZERO) {
+        rotation(Matrix3::identity()), translation(Vector3::zero()) {
     }
 
 	CoordinateFrame(const Vector3& _translation) :
-        rotation(Matrix3::IDENTITY), translation(_translation) {
+        rotation(Matrix3::identity()), translation(_translation) {
 	}
 
     CoordinateFrame(const Matrix3 &rotation, const Vector3 &translation) :

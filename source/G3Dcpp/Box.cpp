@@ -45,7 +45,7 @@ void Box::serialize(class BinaryOutput& b) const {
 void Box::deserialize(class BinaryInput& b) {
 	int i;
 
-    _center = Vector3::ZERO;
+    _center = Vector3::zero();
     for (i = 0; i < 8; ++i) {
 		_corner[i].deserialize(b);
         _center += _corner[i];
@@ -87,9 +87,9 @@ Box::Box(
 
     _extent = max - min;
 
-    _axis[0] = Vector3::UNIT_X;
-    _axis[1] = Vector3::UNIT_Y;
-    _axis[2] = Vector3::UNIT_Z;
+    _axis[0] = Vector3::unitX();
+    _axis[1] = Vector3::unitY();
+    _axis[2] = Vector3::unitZ();
 
     _volume = _extent.x * _extent.y * _extent.z;
     _area = 2 * 

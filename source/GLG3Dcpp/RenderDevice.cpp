@@ -2342,7 +2342,7 @@ static void drawCylinder(RenderDevice* device, const Vector3& v0, const Vector3&
     Vector3 x;
     Vector3 y;
 
-    const Vector3 vector[3] = {Vector3::UNIT_X, Vector3::UNIT_Y, Vector3::UNIT_Z};
+    const Vector3 vector[3] = {Vector3::unitX(), Vector3::unitY(), Vector3::unitZ()};
     for (a = 0; a < 3; ++a) {
         x = z.cross(vector[a]);
         if ((x.dot(x) > 0) && (z.dot(x) == 0)) {
@@ -2614,7 +2614,7 @@ void RenderDevice::configureReflectionMap(
 
     // The environment map assumes we are always in the center,
     // so zero the translation.
-    cframe.translation = Vector3::ZERO;
+    cframe.translation = Vector3::zero();
 
     // The environment map is in world space.  The reflection vector
     // will automatically be multiplied by the object->camera space 

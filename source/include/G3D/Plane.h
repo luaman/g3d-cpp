@@ -34,7 +34,7 @@ private:
 
 public:
 
-    Plane() : _normal(Vector3::UNIT_Y), distance(0) {
+    Plane() : _normal(Vector3::unitY()), distance(0) {
     }
 
     /**

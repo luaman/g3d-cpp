@@ -21,10 +21,25 @@
 
 namespace G3D {
 
+const Vector2& Vector2::zero() {
+    static Vector2 v(0, 0);
+    return v;
+}
+
+const Vector2& Vector2::unitX() {
+    static Vector2 v(1, 0);
+    return v;
+}
+
+const Vector2& Vector2::unitY() {
+    static Vector2 v(0, 1);
+    return v;
+}
+
+// Deprecated.
 const Vector2 Vector2::ZERO(0, 0);
 const Vector2 Vector2::UNIT_S(1, 0);
 const Vector2 Vector2::UNIT_T(0, 1);
-
 
 unsigned int Vector2::hashCode() const {
     unsigned int xhash = (*(int*)(void*)(&x));

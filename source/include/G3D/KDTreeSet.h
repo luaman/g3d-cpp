@@ -350,7 +350,7 @@ private:
         int                   beginIndex,
         int                   endIndex) {
         
-        Vector3 lo = Vector3::INF3;
+        Vector3 lo = Vector3::inf();
         Vector3 hi = -lo;
 
         for (int p = beginIndex; p <= endIndex; ++p) {

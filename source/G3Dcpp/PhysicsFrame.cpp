@@ -12,7 +12,7 @@
 namespace G3D {
 
 PhysicsFrame::PhysicsFrame() {
-    translation = Vector3::ZERO;
+    translation = Vector3::zero();
     rotation    = Quat();
 }
 

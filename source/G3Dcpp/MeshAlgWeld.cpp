@@ -84,7 +84,7 @@ Welder::Welder(
 
     // Compute a scale factor that moves the range
     // of all ordinates to [0, 1]
-    Vector3 minBound = Vector3::INF3;
+    Vector3 minBound = Vector3::inf();
     Vector3 maxBound = -minBound;
 
     for (int i = 0; i < oldVertexArray.size(); ++i) {

@@ -55,8 +55,8 @@ Model::Model(const std::string& filename) {
 
     debugAssertM(b.getLength() > 0, std::string("File not found: \"") + DATA_DIR + "ifs/" + filename + "\"");
 
-    Vector3     min(Vector3::INF3);
-    Vector3     max(-Vector3::INF3);
+    Vector3     min(Vector3::inf());
+    Vector3     max(-Vector3::inf());
 
     std::string fmt         = b.readString32();
     float       version     = b.readFloat32();
@@ -84,7 +84,7 @@ Model::Model(const std::string& filename) {
         max = max.max(vertex[v]);
     }
 
-    boundingSphere = Sphere(Vector3::ZERO, radius);
+    boundingSphere = Sphere(Vector3::zero(), radius);
     boundingBox    = Box(min, max);
 
     // Per-vertex normals
@@ -151,7 +151,7 @@ GameTime Model::timeUntilCollisionWithMovingSphere(
     Vector3&            outLocation,
     Vector3&            outNormal) const {
 
-    outLocation = Vector3::INF3;
+    outLocation = Vector3::inf();
 
     // First test if the sphere passes near our bounding sphere.  We
     // construct the capsule that contains the sphere's motion, expand it

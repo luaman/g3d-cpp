@@ -69,41 +69,41 @@ public:
     Renders exact corners of a 2D polygon using lines.
     Assumes you already called push2D(). 
      */
-    static void poly2DOutline(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color = Color3::YELLOW);
-    static void poly2D(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color = Color3::YELLOW);
+    static void poly2DOutline(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color = Color3::yellow());
+    static void poly2D(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color = Color3::yellow());
 
 
     /**
-     Set the solid color or wire color to Color4::CLEAR to
+     Set the solid color or wire color to Color4::clear() to
      prevent rendering of surfaces or lines.
      */
     static void box(
         const Box&          box,
         RenderDevice*       rd,
         const Color4&       solidColor = Color4(1,.2,.2,.5),
-        const Color4&       wireColor  = Color3::BLACK);
+        const Color4&       wireColor  = Color3::black());
 
     static void box(
         const AABox&        box,
         RenderDevice*       rd,
         const Color4&       solidColor = Color4(1,.2,.2,.5),
-        const Color4&       wireColor  = Color3::BLACK);
+        const Color4&       wireColor  = Color3::black());
 
     static void sphere(
         const Sphere&       sphere,
         RenderDevice*       rd,
         const Color4&       solidColor = Color4(1, 1, 0, .5),
-        const Color4&       wireColor  = Color3::BLACK);
+        const Color4&       wireColor  = Color3::black());
 
     static void line(
         const Line&         line,
         RenderDevice*       rd,
-        const Color4&       color = Color3::BLACK);
+        const Color4&       color = Color3::black());
 
     static void lineSegment(
         const LineSegment&  lineSegment,
         RenderDevice*       rd,
-        const Color4&       color = Color3::BLACK);
+        const Color4&       color = Color3::black());
 
     /**
      Renders per-vertex normals as thin arrows.  The length
@@ -113,7 +113,7 @@ public:
     static void vertexNormals(
         const G3D::MeshAlg::Geometry&    geometry,
         RenderDevice*               renderDevice,
-        const Color4&               color = Color3::GREEN * .5,
+        const Color4&               color = Color3::green() * .5,
         double                      scale = 1);
 
     /**
@@ -123,41 +123,41 @@ public:
         const Array<Vector3>&       vertexArray,
         const Array<Vector3>&       directionArray,
         RenderDevice*               renderDevice,
-        const Color4&               color = Color3::RED * 0.5,
+        const Color4&               color = Color3::red() * 0.5,
         double                      scale = 1);
 
     static void capsule(
        const Capsule&       capsule, 
        RenderDevice*        renderDevice,
        const Color4&        solidColor = Color4(1,0,1,.5),
-       const Color4&        wireColor = Color3::BLACK);
+       const Color4&        wireColor = Color3::black());
 
     static void ray(
         const class Ray&          ray,
         RenderDevice*       renderDevice,
-        const Color4&       color = Color3::ORANGE,
+        const Color4&       color = Color3::orange(),
         double              scale = 1);
     
     static void arrow(
         const Vector3&      start,
         const Vector3&      direction,
         RenderDevice*       renderDevice,
-        const Color4&       color = Color3::ORANGE,
+        const Color4&       color = Color3::orange(),
         double              scale = 1.0);
 
     static void axes(
         const class CoordinateFrame& cframe,
         RenderDevice*       renderDevice,
-        const Color4&       xColor = Color3::RED,
-        const Color4&       yColor = Color3::GREEN,
-        const Color4&       zColor = Color3::BLUE,
+        const Color4&       xColor = Color3::red(),
+        const Color4&       yColor = Color3::green(),
+        const Color4&       zColor = Color3::blue(),
         double              scale = 1.0);
 
     static void axes(
         RenderDevice*       renderDevice,
-        const Color4&       xColor = Color3::RED,
-        const Color4&       yColor = Color3::GREEN,
-        const Color4&       zColor = Color3::BLUE,
+        const Color4&       xColor = Color3::red(),
+        const Color4&       yColor = Color3::green(),
+        const Color4&       zColor = Color3::blue(),
         double              scale = 1.0);
 
     /**

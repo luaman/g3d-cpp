@@ -180,36 +180,36 @@ void GApp::run() {
 void GApp::renderDebugInfo() {
     if (debugMode() && (debugFont != (CFontRef)NULL)) {
         renderDevice->push2D();
-            Color3 color = Color3::WHITE;
+            Color3 color = Color3::white();
             double size = 10;
 
             double x = 5;
             Vector2 pos(x, 5);
 
             if (debugShowRenderingStats) {
-                Color3 statColor = Color3::YELLOW;
+                Color3 statColor = Color3::yellow();
 
-                debugFont->draw2D(renderDevice->getCardDescription(), pos, size, color, Color3::BLACK);
+                debugFont->draw2D(renderDevice->getCardDescription(), pos, size, color, Color3::black());
 
                 pos.y += size * 1.5;
 
                 std::string s = format("%d fps", iRound(renderDevice->getFrameRate()));
-                debugFont->draw2D(s, pos, size, statColor, Color3::BLACK);
+                debugFont->draw2D(s, pos, size, statColor, Color3::black());
 
                 pos.x += size * 8;
                 s = format("%3.1gM tris", iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1);
-                debugFont->draw2D(s, pos, size, statColor, Color3::BLACK);
+                debugFont->draw2D(s, pos, size, statColor, Color3::black());
 
                 pos.x += size * 8;
                 s = format("%3.1gM tris/s", iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1);
-                debugFont->draw2D(s, pos, size, statColor, Color3::BLACK);
+                debugFont->draw2D(s, pos, size, statColor, Color3::black());
 
                 pos.x = x;
                 pos.y += size * 3;
             }
 
             for (int i = 0; i < debugText.length(); ++i) {
-                debugFont->draw2D(debugText[i], pos, size, color, Color3::BLACK);
+                debugFont->draw2D(debugText[i], pos, size, color, Color3::black());
                 pos.y += size * 1.5;
             }
 

@@ -132,7 +132,7 @@ void doSimulation(GameTime timeStep) {
 
 
 void doGraphics() {
-    renderDevice->setAmbientLightColor(Color3::WHITE * .5);
+    renderDevice->setAmbientLightColor(Color3::white() * .5);
     renderDevice->beginFrame();
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
@@ -157,7 +157,7 @@ void doGraphics() {
                 renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                 renderDevice->setPolygonOffset(-.25);
-                renderDevice->setColor(Color3::BLACK);
+                renderDevice->setColor(Color3::black());
                 renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
                 model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -285,11 +285,11 @@ void Model::render(const CoordinateFrame& c,
     // Setup lighting
     renderDevice->enableLighting();
     renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
+    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
 
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     renderDevice->setAmbientLightColor(lighting.ambient);
-    renderDevice->setColor(Color3::WHITE);
+    renderDevice->setColor(Color3::white());
 
     // Draw the model
 

@@ -30,7 +30,7 @@ public:
     Color4                  color;
     Array<TextureRef>       texture;
 
-    inline GMaterial() : specularCoefficient(0.2), shininess(10), color(Color3::WHITE) {}
+    inline GMaterial() : specularCoefficient(0.2), shininess(10), color(Color3::white()) {}
     /** Applies this material to the render device */
     void configure(class RenderDevice* rd) const;
 };

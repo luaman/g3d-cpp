@@ -136,7 +136,7 @@ public:
      <PRE>
     app->renderDevice->push2D();
         CoordinateFrame cframe(
-            Matrix3::fromAxisAngle(Vector3::UNIT_Z, toRadians(45)),
+            Matrix3::fromAxisAngle(Vector3::unitZ(), toRadians(45)),
             Vector3(100, 100, 0));
         app->renderDevice->setObjectToWorldMatrix(cframe);
         app->debugFont->draw2D("ANGLE", Vector2(0, 0), 20);
@@ -147,8 +147,8 @@ public:
         const std::string&  s,
         const Vector2&      pos2D,
         double              size    = 12,
-        const Color4&       color   = Color3::BLACK,
-        const Color4&       outline = Color4::CLEAR,
+        const Color4&       color   = Color3::black(),
+        const Color4&       outline = Color4::clear(),
         XAlign              xalign  = XALIGN_LEFT,
         YAlign              yalign  = YALIGN_TOP,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
@@ -166,8 +166,8 @@ public:
         const std::string&          s,
         const CoordinateFrame&      pos3D,
         double              size    = .1,
-        const Color4&       color   = Color3::BLACK,
-        const Color4&       outline = Color4::CLEAR,
+        const Color4&       color   = Color3::black(),
+        const Color4&       outline = Color4::clear(),
         XAlign              xalign  = XALIGN_LEFT,
         YAlign              yalign  = YALIGN_TOP,
         Spacing             spacing = PROPORTIONAL_SPACING) const;

@@ -92,7 +92,7 @@ public:
      returned coordinate uses pixmap addressing: x = right and y =
      down.  The resulting z value is <I>rhw</I>.
 
-     If the point is behind the camera, Vector3::INF3 is returned.
+     If the point is behind the camera, Vector3::inf() is returned.
      */
     G3D::Vector3 project(
         const G3D::Vector3&                     point,
@@ -190,7 +190,7 @@ public:
 
     void setPosition(const Vector3& t);
 
-    void lookAt(const Vector3& position, const Vector3& up = Vector3::UNIT_Y);
+    void lookAt(const Vector3& position, const Vector3& up = Vector3::unitY());
 
    /**
     Returns the clipping planes of the frustum, in world space.  The array

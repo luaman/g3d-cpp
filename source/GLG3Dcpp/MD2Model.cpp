@@ -542,7 +542,7 @@ void MD2Model::debugRenderWireframe(RenderDevice* renderDevice, const Pose& pose
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         renderDevice->setPolygonOffset(-.1);
-        renderDevice->setColor(Color3::BLACK);
+        renderDevice->setColor(Color3::black());
         
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
         for (int i = 0; i < indexArray.size(); ++i) {

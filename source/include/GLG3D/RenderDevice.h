@@ -90,7 +90,7 @@ class VAR;
     renderDevice->setCullFace(RenderDevice::CULL_NONE);
     renderDevice->setProjectionMatrix3D(-.2, .2, -.15, .15, .2, 200);
     renderDevice->setTexture(0, sprite);
-    renderDevice->setColor(Color3::WHITE);
+    renderDevice->setColor(Color3::white());
     renderDevice->beginPrimitive(RenderDevice::QUADS);
         renderDevice->setTexCoord(0,  Vector2(0, 1));
         renderDevice->sendVertex(Vector3(-3, -3, -5));

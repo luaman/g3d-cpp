@@ -62,7 +62,7 @@ public:
      before it is applied to surfaces.  1.0 is the default OpenGL value,
      higher numbers increase the quality of bright lighting at the expense of
      color depth.Default is 1.0.  Set
-        to 2.0 to make a Color3::WHITE light 50% of the maximum brightness. */
+        to 2.0 to make a Color3::white() light 50% of the maximum brightness. */
     double  lightSaturation;
 
     /** In cycles/sec */

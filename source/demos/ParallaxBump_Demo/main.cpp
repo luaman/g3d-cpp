@@ -215,7 +215,7 @@ void Demo::doGraphics() {
 
         CoordinateFrame cframe;
         // Rotate the quad
-        cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, System::getTick() * .1);
+        cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), System::getTick() * .1);
 
         app->renderDevice->pushState();
             GPUProgram::ArgList vertexArgs;
@@ -244,15 +244,15 @@ void Demo::doGraphics() {
 
     app->renderDevice->disableLighting();
 
-    Draw::sphere(Sphere(wsLight.xyz(), .1), app->renderDevice, Color3::WHITE, Color4::CLEAR);
+    Draw::sphere(Sphere(wsLight.xyz(), .1), app->renderDevice, Color3::white(), Color4::clear());
 
     if (! app->sky.isNull()) {
         app->sky->renderLensFlare(lighting);
     }
 
     app->renderDevice->push2D();
-        app->debugFont->draw2D("The surface is a single quad textured with parallax bump mapping and per-pixel shading.", Vector2(10, 10), 10, Color3::WHITE, Color3::BLACK);
-        app->debugFont->draw2D("Press TAB to toggle to first person camera controls.", Vector2(10, 30), 10, Color3::WHITE, Color3::BLACK);
+        app->debugFont->draw2D("The surface is a single quad textured with parallax bump mapping and per-pixel shading.", Vector2(10, 10), 10, Color3::white(), Color3::black());
+        app->debugFont->draw2D("Press TAB to toggle to first person camera controls.", Vector2(10, 30), 10, Color3::white(), Color3::black());
     app->renderDevice->pop2D();
 }
 

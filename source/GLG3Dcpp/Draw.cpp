@@ -148,9 +148,9 @@ void Draw::ray(
     Vector3 u = ray.direction.direction();
     Vector3 v;
     if (u.x == 0) {
-        v = Vector3::UNIT_X;
+        v = Vector3::unitX();
     } else {
-        v = Vector3::UNIT_Y;
+        v = Vector3::unitY();
     }
     Vector3 w = u.cross(v).direction();
     v = w.cross(u).direction();
@@ -206,7 +206,7 @@ void Draw::capsule(
     CoordinateFrame cframe(capsule.getPoint1());
 
     Vector3 Y = (capsule.getPoint2() - capsule.getPoint1()).direction();
-    Vector3 X = (abs(Y.dot(Vector3::UNIT_X)) > 0.9) ? Vector3::UNIT_Y : Vector3::UNIT_X;
+    Vector3 X = (abs(Y.dot(Vector3::unitX())) > 0.9) ? Vector3::unitY() : Vector3::unitX();
     Vector3 Z = X.cross(Y).direction();
     X = Y.cross(Z);        
     cframe.rotation.setColumn(0, X);
@@ -216,7 +216,7 @@ void Draw::capsule(
     double radius = capsule.getRadius();
     double height = (capsule.getPoint2() - capsule.getPoint1()).length();
 
-    Sphere sphere1(Vector3::ZERO, radius);
+    Sphere sphere1(Vector3::zero(), radius);
     Sphere sphere2(Vector3(0, height, 0), radius);
 
     Vector3 top(0, height, 0);
@@ -583,7 +583,7 @@ void Draw::wireSphereSection(
                 for (int p = start; p <= stop; ++p) {
                     const double pitch0 = p * G3D_PI / (sections * 0.5);
 
-                    Vector3 v0 = cos(pitch0) * x + Vector3::UNIT_Y * radius * sin(pitch0);
+                    Vector3 v0 = cos(pitch0) * x + Vector3::unitY() * radius * sin(pitch0);
                     renderDevice->setNormal(v0.direction());
                     renderDevice->sendVertex(v0 + center);
                 }

@@ -797,7 +797,7 @@ void Texture::getCameraRotation(CubeFace face, Matrix3& outMatrix) {
         break;
 
     case CUBE_NEG_Z:
-        outMatrix = Matrix3::fromAxisAngle(Vector3::UNIT_Z, G3D_PI);
+        outMatrix = Matrix3::fromAxisAngle(Vector3::unitZ(), G3D_PI);
         break;
     }
 }

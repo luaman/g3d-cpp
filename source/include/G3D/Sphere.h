@@ -25,7 +25,7 @@ public:
     float            radius;
 
     Sphere() {
-        center = Vector3::ZERO;
+        center = Vector3::zero();
         radius = 0;
     }
 

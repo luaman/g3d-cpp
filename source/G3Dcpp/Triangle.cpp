@@ -45,7 +45,7 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
 
 
 Triangle::Triangle() {
-    init(Vector3::ZERO, Vector3::ZERO, Vector3::ZERO);
+    init(Vector3::zero(), Vector3::zero(), Vector3::zero());
 }
     
 

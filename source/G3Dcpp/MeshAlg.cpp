@@ -93,7 +93,7 @@ void MeshAlg::computeNormals(
     // Per-vertex normals, computed by averaging
     vertexNormalArray.resize(vertexGeometry.size());
     for (int v = 0; v < vertexNormalArray.size(); ++v) {
-        Vector3 sum = Vector3::ZERO;
+        Vector3 sum = Vector3::zero();
         for (int k = 0; k < vertexArray[v].faceIndex.size(); ++k) {
             const int f = vertexArray[v].faceIndex[k];
             sum += faceNormalArray[f];
@@ -470,7 +470,7 @@ void MeshAlg::computeTangentVectors(
     // Normalize the tangent so it contributes
     // equally at the vertex (TODO: do we need this?)
     if (fuzzyEq(tangent.length(), 0.0)) {
-        tangent = Vector3::UNIT_X;
+        tangent = Vector3::unitX();
     } else {
         tangent = tangent.direction();
     }
@@ -515,7 +515,7 @@ void MeshAlg::computeTangentVectors(
     // an equal amount to the per-vertex value (TODO: do we need this? 
     // Nelson Max showed that we don't for computing per-vertex normals)
     if (fuzzyEq(binormal.length(), 0.0)) {
-        binormal = Vector3::UNIT_Z;
+        binormal = Vector3::unitZ();
     } else {
         binormal = binormal.direction();
     }

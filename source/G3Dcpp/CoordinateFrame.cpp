@@ -110,7 +110,7 @@ Box CoordinateFrame::toObjectSpace(const AABox& b) const {
 }
 
 
-CoordinateFrame::CoordinateFrame(class BinaryInput& b) : rotation(Matrix3::ZERO) {
+CoordinateFrame::CoordinateFrame(class BinaryInput& b) : rotation(Matrix3::zero()) {
     deserialize(b);
 }
 
@@ -148,7 +148,7 @@ Ray CoordinateFrame::toObjectSpace(const Ray& r) const {
 
 
 void CoordinateFrame::lookAt(const Vector3 &target) {
-    lookAt(target, Vector3::UNIT_Y);
+    lookAt(target, Vector3::unitY());
 }
 
 

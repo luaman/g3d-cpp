@@ -524,7 +524,7 @@ double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
 
     // Squared distance between the outside of the box and the
     // sphere center.
-    double d2 = Vector3::ZERO.max(distOutsideBox).squaredLength();
+    double d2 = Vector3::zero().max(distOutsideBox).squaredLength();
 
     if (d2 > square(sphere.radius)) {
         // There is no penetration because the distance is greater
@@ -612,9 +612,9 @@ double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
                 // Keep in mind that this is a normal to the sphere,
                 // so it is the inverse of the box normal.
                 if (center.x > 0) {
-                    contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::UNIT_X));
+                    contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::unitX()));
                 } else {
-                    contactNormals.append(boxFrame.normalToWorldSpace(Vector3::UNIT_X));
+                    contactNormals.append(boxFrame.normalToWorldSpace(Vector3::unitX()));
                 }
                 depth = -distOutsideBox.x;
             } else {
@@ -627,9 +627,9 @@ double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
             // Keep in mind that this is a normal to the sphere,
             // so it is the inverse of the box normal.
             if (center.y > 0) {
-                contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::UNIT_Y));
+                contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::unitY()));
             } else {
-                contactNormals.append(boxFrame.normalToWorldSpace(Vector3::UNIT_Y));
+                contactNormals.append(boxFrame.normalToWorldSpace(Vector3::unitY()));
             }
             depth = -distOutsideBox.y;
         } else {
@@ -639,9 +639,9 @@ ZAXIS:
             // Keep in mind that this is a normal to the sphere,
             // so it is the inverse of the box normal.
             if (center.z > 0) {
-                contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::UNIT_Z));
+                contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::unitZ()));
             } else {
-                contactNormals.append(boxFrame.normalToWorldSpace(Vector3::UNIT_Z));
+                contactNormals.append(boxFrame.normalToWorldSpace(Vector3::unitZ()));
             }
             depth = -distOutsideBox.z;
         }
@@ -763,13 +763,13 @@ double CollisionDetection::collisionTimeForMovingPointFixedPlane(
 
     if (vdotN >= 0) {
         // no collision will occur
-        location = Vector3::INF3;
+        location = Vector3::inf();
         return inf;
     }
 
     double t = -(pdotN + d) / vdotN;
     if (t < 0) {
-        location = Vector3::INF3;
+        location = Vector3::inf();
         return inf;
     } else {
         location = point + velocity * t;
@@ -797,14 +797,14 @@ double CollisionDetection::collisionTimeForMovingPointFixedSphere(
     double D2 = d * d;
 
     if ((d < 0) && (L2 > R2)) {
-        location = Vector3::INF3;
+        location = Vector3::inf();
         return inf;
     }
 
     double M2 = L2 - D2;
 
     if (M2 > R2) {
-        location = Vector3::INF3;
+        location = Vector3::inf();
         return inf;
     }
 
@@ -866,7 +866,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
         return time;
     } else {
         // Missed the triangle
-        outLocation = Vector3::INF3;
+        outLocation = Vector3::inf();
         return inf;
     }
 }*/
@@ -1352,7 +1352,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 		}
 	} else {
 		// No entering intersection discovered; return no intersection.
-		location = Vector3::INF3;
+		location = Vector3::inf();
 		return inf;
 	}
 }
@@ -1381,7 +1381,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedPlane(
 
     if (fuzzyGt(vdotN, 0)) {
         // No collision when the sphere is moving towards a backface.
-        location = Vector3::INF3;
+        location = Vector3::inf();
         return inf;
     }
 

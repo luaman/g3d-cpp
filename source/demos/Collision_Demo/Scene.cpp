@@ -18,7 +18,7 @@ extern Log*                 debugLog;
 
 static const Vector3 gravity(0, -60, 0);
 
-static Vector3 debugPoint = Vector3::ZERO;
+static Vector3 debugPoint = Vector3::zero();
 
 /**
  How much energy is preserved in a collision.
@@ -111,7 +111,7 @@ void Scene::render(const LightingParameters& lighting) const {
     Matrix4 lightProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
 
     CoordinateFrame lightCFrame;
-    lightCFrame.lookAt(-lighting.lightDirection, -Vector3::UNIT_Y);
+    lightCFrame.lookAt(-lighting.lightDirection, -Vector3::unitY());
     lightCFrame.translation = lighting.lightDirection * 20;
 
     CoordinateFrame lightCFrameInverse(lightCFrame.inverse());
@@ -135,13 +135,13 @@ void Scene::render(const LightingParameters& lighting) const {
 
         // Ambient and detail light pass
         renderDevice->enableLighting();
-        renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
+        renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
         renderDevice->setAmbientLightColor(lighting.ambient);
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
         renderingPass();
 
         // Sun light pass
-        renderDevice->setAmbientLightColor(Color3::BLACK);
+        renderDevice->setAmbientLightColor(Color3::black());
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         renderDevice->disableDepthWrite();
         renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
@@ -295,7 +295,7 @@ void Scene::simulate(GameTime duration) {
                             obj->velocity = obj->velocity.length() * collisionNormal;
                         }
                         delta = inf;
-                        acceleration = Vector3::ZERO;
+                        acceleration = Vector3::zero();
                     }
                 }
             #endif
@@ -313,7 +313,7 @@ void Scene::simulate(GameTime duration) {
                     CollisionDetection::bounceDirection(obj->sphere, obj->velocity, delta, collisionLocation, collisionNormal);
 
                 if (! bounceDirection.isFinite()) {
-                    bounceDirection = Vector3::ZERO;
+                    bounceDirection = Vector3::zero();
                 }
                 debugAssert(isFinite(bounceDirection.x));
 
@@ -388,7 +388,7 @@ void Scene::simulate(GameTime duration) {
                     const Vector3  parallel   = obj->velocity - nv * collisionNormal;
                     double len = parallel.length();
                     if (len < 0.00001) {
-                        obj->velocity = Vector3::ZERO;
+                        obj->velocity = Vector3::zero();
                     } else {
                         obj->velocity = parallel * obj->velocity.length() / len;
                     }
@@ -436,7 +436,7 @@ void Scene::simulate(GameTime duration) {
                         double align = bounceDirection.dot(acceleration.direction());
                         if (align < -.95) {
                             // The collision will cause us to bounce straight up; don't use the acceleration
-                            acceleration = Vector3::ZERO;
+                            acceleration = Vector3::zero();
                         }
                     }
                 }

@@ -35,7 +35,7 @@ public:
      */
     Vector3         direction;
 
-    Ray() : origin(Vector3::ZERO3), direction(Vector3::ZERO3) {}
+    Ray() : origin(Vector3::zero()), direction(Vector3::zero()) {}
 
 	Ray(class BinaryInput& b);
 	void serialize(class BinaryOutput& b) const;

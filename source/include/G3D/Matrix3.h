@@ -27,7 +27,7 @@ class Matrix3 {
 public:
 
     /** Initial values are undefined for performance.  See also 
-        Matrix3::ZERO, Matrix3::IDENTITY, Matrix3::fromAxisAngle, etc.*/
+        Matrix3::zero(), Matrix3::identity(), Matrix3::fromAxisAngle, etc.*/
     inline Matrix3() {}
 
     Matrix3 (class BinaryInput& b);
@@ -186,8 +186,33 @@ public:
     static void tensorProduct (const Vector3& rkU, const Vector3& rkV,
                                Matrix3& rkProduct);
 
-    static const float EPSILON;
+    static const float EPSILON; 
+
+    // Special values.
+    // The unguaranteed order of initialization of static variables across 
+    // translation units can be a source of annoying bugs, so now the static
+    // special values (like Vector3::ZERO, Color3::WHITE, ...) are wrapped
+    // inside static functions that return references to them. 
+    // These functions are intentionally not inlined, because: 
+    // "You might be tempted to write [...] them as inline functions 
+    // inside their respective header files, but this is something you 
+    // must definitely not do. An inline function can be duplicated 
+    // in every file in which it appears – and this duplication 
+    // includes the static object definition. Because inline functions 
+    // automatically default to internal linkage, this would result in 
+    // having multiple static objects across the various translation 
+    // units, which would certainly cause problems. So you must 
+    // ensure that there is only one definition of each wrapping 
+    // function, and this means not making the wrapping functions inline",
+    // according to Chapter 10 of "Thinking in C++, 2nd ed. Volume 1" by Bruce Eckel, 
+    // http://www.mindview.net/
+    static const Matrix3& zero();
+    static const Matrix3& identity(); 
+
+    // Deprecated. 
+    /** @deprecated Use Matrix3::zero() */
     static const Matrix3 ZERO;
+    /** @deprecated Use Matrix3::identity() */
     static const Matrix3 IDENTITY;
 
 protected:

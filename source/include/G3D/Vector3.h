@@ -173,13 +173,13 @@ public:
     
 
     /**
-     Returns Vector3::ZERO if the length is nearly zero, otherwise
+     Returns Vector3::zero() if the length is nearly zero, otherwise
      returns a unit vector.
      */
     inline Vector3 directionOrZero() const {
         double len = length();
         if (G3D::fuzzyEq(len, 0.0)) {
-            return Vector3::ZERO;
+            return Vector3::zero();
         } else if (G3D::fuzzyEq(len, 1.0)) {
             return *this;
         } else {
@@ -195,7 +195,7 @@ public:
      the result has length 1 and is 
      pointed <I>away</I> from the intersection.
 
-     Returns Vector3::ZERO in the case of total internal refraction.
+     Returns Vector3::zero() in the case of total internal refraction.
 
      @param iOutside The index of refraction (eta) outside
      (on the <I>positive</I> normal side) of the surface.
@@ -311,13 +311,28 @@ public:
         return sum() / 3.0;
     }
 
-    // special points
+    // Special values.
+    inline static const Vector3& zero()     { static Vector3 v(0, 0, 0); return v; }
+    inline static const Vector3& unitX()    { static Vector3 v(1, 0, 0); return v; }
+    inline static const Vector3& unitY()    { static Vector3 v(0, 1, 0); return v; }
+    inline static const Vector3& unitZ()    { static Vector3 v(0, 0, 1); return v; }
+    inline static const Vector3& inf()      { static Vector3 v(G3D::inf, G3D::inf, G3D::inf); return v; }
+    inline static const Vector3& nan()      { static Vector3 v(G3D::nan, G3D::nan, G3D::nan); return v; }
+
+    // Deprecated. See Matrix3::identity() for details.
+    /** @deprecated Use Vector3::zero() */
     static const Vector3 ZERO;
+    /** @deprecated Use Vector3::zero() */
     static const Vector3 ZERO3;
+    /** @deprecated Use Vector3::unitX() */
     static const Vector3 UNIT_X;
+    /** @deprecated Use Vector3::unitY() */
     static const Vector3 UNIT_Y;
+    /** @deprecated Use Vector3::unitZ() */
     static const Vector3 UNIT_Z;
+    /** @deprecated Use Vector3::inf() */
     static const Vector3 INF3;
+    /** @deprecated Use Vector3::nan() */
     static const Vector3 NAN3;
 
     // 2-char swizzles

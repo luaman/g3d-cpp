@@ -59,7 +59,7 @@ Vector3 Ray::intersection(const Plane& plane) const {
     double rate = direction.dot(normal);
 
     if (rate <= 0) {
-        return Vector3::INF3;
+        return Vector3::inf();
     } else {
         double t = -(d + origin.dot(normal)) / rate;
 

@@ -155,12 +155,12 @@ int main(int argc, char** argv) {
                     renderDevice->setSpecularCoefficient(1);
                     renderDevice->enableLighting();
                     renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-                    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
+                    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
                     renderDevice->setAmbientLightColor(lighting.ambient);
 
                     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
-                    static const Color3 color[] = {Color3::BLACK, Color3::WHITE, Color3::ORANGE, Color3::BLUE};
+                    static const Color3 color[] = {Color3::black(), Color3::white(), Color3::orange(), Color3::blue()};
                     double  t[2];
                     Vector3 c[2];
 
@@ -195,21 +195,21 @@ int main(int argc, char** argv) {
 
                     font->draw2D(
                       format("%d fps", iRound(renderDevice->getFrameRate())),
-                      Vector2(10, 10), 28, Color3::WHITE, Color3::BLACK);
+                      Vector2(10, 10), 28, Color3::white(), Color3::black());
   
                     font->draw2D(
                       format("%d tris", iRound(renderDevice->getTrianglesPerFrame())),
-                      Vector2(10, 72), 20, Color3::WHITE, Color3::BLACK);
+                      Vector2(10, 72), 20, Color3::white(), Color3::black());
 
                     font->draw2D(
                       format("%d ktri/s", 
                       iRound(renderDevice->getTriangleRate() / 1000)),
-                      Vector2(10, 100), 20, Color3::WHITE, Color3::BLACK);
+                      Vector2(10, 100), 20, Color3::white(), Color3::black());
 
                     font->draw2D(
                       format("%dx%d poly planes", 
                       N, model->numPolys()),
-                      Vector2(10, 150), 20, Color3::WHITE, Color3::BLACK);
+                      Vector2(10, 150), 20, Color3::white(), Color3::black());
 
                     char* str = NULL;
                     switch (renderMethod) {
@@ -228,7 +228,7 @@ int main(int argc, char** argv) {
                     default:;
                     }
     
-                   font->draw2D(str, Vector2(10, renderDevice->getHeight() - 40), 20, Color3::YELLOW, Color3::BLACK);
+                   font->draw2D(str, Vector2(10, renderDevice->getHeight() - 40), 20, Color3::yellow(), Color3::black());
 
                 renderDevice->pop2D();
             renderDevice->popState();
