@@ -285,6 +285,12 @@ void GApplet::oneFrame() {
 void GApplet::endRun() {
     cleanup();
 
+    Log::common()->section("Files Used");
+    for (int i = 0; i < _internal::currentFilesUsed.size(); ++i) {
+        Log::common()->println(_internal::currentFilesUsed[i]);
+    }
+    Log::common()->println("");
+
     if (app->window()->requiresMainLoop() && app->endProgram) {
         exit(0);
     }
