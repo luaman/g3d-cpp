@@ -1031,13 +1031,13 @@ void testCollision() {
 
         ray.origin.y = -ray.origin.y;
         t = ray.intersectionTime(v0, v1, v2);
-        debugAssert(t == inf);
+        debugAssert(t == inf());
 
         // One-sided test
         ray.direction.y = -ray.direction.y;
         ray.origin.y = -ray.origin.y;
         t = ray.intersectionTime(v0, v1, v2);
-        debugAssert(t == inf);
+        debugAssert(t == inf());
 
         // Time scale
         ray = Ray::fromOriginAndDirection(Vector3(-.15, 1,-.15), Vector3(0, -2, 0));
