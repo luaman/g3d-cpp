@@ -48,19 +48,22 @@ The latest version library is always available on the homepage,
 
 <IMG SRC="platforms.png" ALIGN=RIGHT>
 %G3D allows you to write code once that will compile and run on Windows, 
-Linux, and OS X.  It supports for all OpenGL implementations, from software 
+Linux, and OS X without <CODE>ifdef</CODE>s or modifications.  
+It supports all OpenGL implementations, from software 
 rasterization under Mesa to the latest GeForce and Radeon hardware accelerator 
-cards. 
+cards.
 
 %G3D is built on OpenGL because it is platform independent and allows access
 to newer features than DirectX.  Many top games (including Doom 3) are written with 
 OpenGL.  There are advantages to both APIs, but in the end they are equivalent except 
 for the platform issue.  <B>You can implement any effect from any game in %G3D</B>. Unlike
-higher level engines it does not restrict access to low-level features-- every graphics
-card function is available in OpenGL and exposed in %G3D.
+higher level engines %G3D does not restrict access to low-level features-- every graphics
+card function in OpenGL is exposed under %G3D, even if it isn't wrapped by a higher level
+API.  This means you can always drop down to raw OpenGL calls if needed.
 
-Releases contain precompiled libraries for MSVC 6.0, Linux gcc, and XCode.  
-For other compilers you may need to build the library yourself.
+Releases contain precompiled libraries for MSVC 6, MSVC 7 .NET, Linux g++, and XCode.  
+For other compilers you will need to write your own Makefiles or project files and 
+build the library yourself.
 
 @section philosophy Design Philosophy
 Our philosophy is simple. The library should have the following properties:
@@ -81,30 +84,38 @@ Our philosophy is simple. The library should have the following properties:
 
 
 @section formats Data Formats
-%G3D provides direct load/save access to images in PNG, TGA, BMP, JPG, PCX, PPM, PGM, PBM, DDS, and ICO format.  
-It has sample loaders for the IFS and MD2 3D mesh formats and comes with code 
-(in contrib/IFSBuilder and contrib/ArticulatedModel) to help you load other formats like 3DS and OBJ.  %G3D uses its own 
-font format to avoid legal issues with TrueType.  There is no official support for audio,
+%G3D provides direct load/save access to images in PNG, TGA, BMP, JPG, PCX, PPM, PGM, PBM, DDS, and ICO format. 
+It has sample loaders for the PLY2, IFS and MD2 3D mesh formats and comes with code 
+(in contrib/IFSBuilder and contrib/ArticulatedModel) to help you load other formats like 3DS and OBJ.
+%G3D uses its own font format to avoid legal issues with TrueType.  Over 20 popular fonts
+are provided in this format and the code contains a routine to help you make more from
+your TrueType and printer fonts. There is no official support for audio,
 however contrib/AudioDevice provides code to help you use some popular audio libraries 
 (SDLMixer, fMOD).
 
 @section team Team
 The library contains code, documentation, and demos from over 30 
-\link contributors contributors \endlink.
+\link contributors contributors \endlink.  The team leads are:
 
-Morgan McGuire has been the %G3D project manager since 2000.  He is a 3D
-software consultant with Masters degrees in electrical engineering and computer
+<B>Morgan McGuire</B> has been the %G3D project manager and Windows team lead 
+since 2000.  He is a 3D software consultant with Masters degrees in electrical engineering and computer
 science from MIT and Brown University.  He has been a senior architect at several 
 companies in the graphics  industry and published award-winning research papers.
 
-Gabe Taubman and Benjamin Landon provide OS X support.  Gabe has been a Mac user since 1998
+<B>Corey Taylor</B> is the %G3D Linux team lead.  
+His professional software 
+experience covers both Windows, Linux and RTOS fields developing flight control
+and planning software, video and input control systems, and embedded development
+and testing.  He has worked with G3D since early 2004.
+  
+<B>Gabe Taubman</B> and <B>Benjamin Landon</B> provide OS X support.  Gabe has been a Mac user since 1998
 and took first prize in the 2004 undergraduate ACM SIGGRAPH Student Research Competition 
 with his %G3D-based blast wave simulator.  He is currently a junior at Brown University.
 Ben is a senior engineer at Sensable Technologies and has 20 years of experience in 
 software development and scientific research.  
 
-%G3D is supported by donations from users (http://sourceforge.net/project/project_donations.php?group_id=76879), 
-and by hardware and technical support from NVIDIA Corporation and ATI.
+%G3D is supported by donations from users (http://sourceforge.net/project/project_donations.php?group_id=76879),
+and by hardware and technical support from NVIDIA Corporation and ATI. 
 
 
 @section otherlibs Working With Other Libraries

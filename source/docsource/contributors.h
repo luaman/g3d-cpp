@@ -1,8 +1,8 @@
 /**
 @page contributors Contributors
 
-The 6.04 release team:
-     <B>Morgan McGuire, Peter Sibley, Ben Landon, Peter Hunt, Giulio Mainardi, Gabe Taubman</B>
+The 6.05 release team:
+     <B>Morgan McGuire, Corey Taylor, Peter Sibley, and Ben Landon</B>
 
    This library contains code and resources contributed by the
    following people, or based open code and articles by them:
