@@ -18,7 +18,7 @@
 	   <LI>Replace <CODE>new Font</CODE> with <CODE>CFont::fromFile</CODE>
 	   <LI>Replace <CODE>Font*</CODE> with <CODE>CFontRef</CODE> 
 	   <LI>Remove <CODE>delete font;</CODE>
-	   <LI>Replace <CODE>draw2DString</CODE> with <CODE>draw2D</CODE>
+	   <LI>Replace <CODE>Font:::draw2DString(str, x, y, ...)</CODE> with <CODE>CFont:::draw2D(str, Vector2(x, y), ...)</CODE>
 	   <LI>Replace G3D::Sky constructor arguments of the form <CODE>"sky_ft.jpg"</CODE> with arguments of the form <CODE>"sky_*.jpg"</CODE>
 	   <LI>Replace v1.lerp(a, v2) with v1.lerp(v2, a)
 	   <LI>Replace clamp(L, x, H) with clamp(x, L, H)
@@ -83,7 +83,6 @@
      <LI> CFont::draw2DString renamed to CFont::draw2D (use a #define to port old code)
      <LI> MeshAlg
      <LI> RenderDevice now enables GL_COLOR_MATERIAL by default
-     <LI> RenderDevice::drawFullScreenImage
      <LI> msgBox
      <LI> MD2 model gallery in documentation (Kevin)
      <LI> MD2Documentor (Kevin)

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-09-18
+ @edited  2003-10-30
  */
 
 #ifndef G3D_FONT_H
@@ -118,14 +118,13 @@ public:
      texelSize().y / 1.5 to get 1:1 texel to pixel
 
      @param outline If this color has a non-zero alpha, a 1 pixel border of
-     this color is lain down about the text.
+     this color is drawn about the text.
 
      @param spacing Fixed width fonts are spaced based on the width of the 'M' character.
      */
     void draw2D(
-        const std::string&  s, 
-        double              x,
-        double              y,
+        const std::string&  s,
+        const Vector2&      pos2D,
         double              size    = 12,
         const Color4&       color   = Color3::BLACK,
         const Color4&       outline = Color4::CLEAR,

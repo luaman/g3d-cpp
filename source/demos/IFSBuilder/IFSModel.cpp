@@ -322,7 +322,7 @@ static void drawBillboardString(
     Vector3 screenPos = camera->project(pos);
 
     renderDevice->push2D();
-        font->draw2D(s, screenPos.x, screenPos.y, screenSize, color, outline, CFont::XALIGN_CENTER, CFont::YALIGN_CENTER);
+        font->draw2D(s, screenPos.xy(), screenSize, color, outline, CFont::XALIGN_CENTER, CFont::YALIGN_CENTER);
     renderDevice->pop2D();
 }
 

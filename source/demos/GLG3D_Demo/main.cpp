@@ -86,8 +86,7 @@ int main(int argc, char** argv) {
     debugLog	 = new Log();
     
 	renderDevice = new RenderDevice();
-    renderDevice->init(640, 480, debugLog, 1.0, false,
-                       1024 * 512, true, 8, 0, 16, 0);
+    renderDevice->init(RenderDeviceSettings(), debugLog);
     camera 	 = new Camera(renderDevice);
 
     // Allocate the two VARAreas used in this demo
@@ -151,16 +150,16 @@ int main(int argc, char** argv) {
                 renderDevice->push2D();
                     font->draw2D(
                       format("%d fps", iRound(renderDevice->getFrameRate())),
-                      10, 10, 28, Color3::WHITE, Color3::BLACK);
+                      Vector2(10, 10), 28, Color3::WHITE, Color3::BLACK);
   
                     font->draw2D(
                       format("%d tris", iRound(renderDevice->getTrianglesPerFrame())),
-                      10, 72, 20, Color3::WHITE, Color3::BLACK);
+                      Vector2(10, 72), 20, Color3::WHITE, Color3::BLACK);
 
                     font->draw2D(
                       format("%d ktri/s", 
                       iRound(renderDevice->getTriangleRate() / 1000)),
-                      10, 100, 20, Color3::WHITE, Color3::BLACK);
+                      Vector2(10, 100), 20, Color3::WHITE, Color3::BLACK);
 
                     char* str = NULL;
 	            switch (renderMethod) {
@@ -179,8 +178,7 @@ int main(int argc, char** argv) {
                     default:;
                     }
 	
-                   font->draw2D(str, 10,
-                      renderDevice->getHeight() - 40, 20, Color3::YELLOW, Color3::BLACK);
+                   font->draw2D(str, Vector2(10, renderDevice->getHeight() - 40), 20, Color3::YELLOW, Color3::BLACK);
 
                 renderDevice->pop2D();
             renderDevice->popState();

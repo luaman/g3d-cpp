@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog     = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(600, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+    renderDevice->init(RenderDeviceSettings(), debugLog);
     camera       = new Camera(renderDevice);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
@@ -166,15 +166,15 @@ void doGraphics() {
                 model->render();
                 renderDevice->push2D();
                     double y = 10;
-                    font->draw2D(model->name, 10, y, 20, Color3::WHITE, Color3::BLACK); y += 30;
-                    font->draw2D(format("%d verts", model->numVertices()), 15, y, 15, Color3::YELLOW, Color3::BLACK); y += 20;
-                    font->draw2D(format("%d faces", model->numFaces()), 15, y, 15, Color3::WHITE, Color3::BLACK); y += 20;
+                    font->draw2D(model->name, Vector2(10, y), 20, Color3::WHITE, Color3::BLACK); y += 30;
+                    font->draw2D(format("%d verts", model->numVertices()), Vector2(15, y), 15, Color3::YELLOW, Color3::BLACK); y += 20;
+                    font->draw2D(format("%d faces", model->numFaces()), Vector2(15, y), 15, Color3::WHITE, Color3::BLACK); y += 20;
                     if (model->numBrokenEdges() > 0) {
-                        font->draw2D(format("%d broken edges", model->numBrokenEdges()), 15, y, 15, Color3::RED, Color3::BLACK); y += 20;
+                        font->draw2D(format("%d broken edges", model->numBrokenEdges()), Vector2(15, y), 15, Color3::RED, Color3::BLACK); y += 20;
                     }
 
                     y = renderDevice->getHeight();
-                    font->draw2D(format("Vertices within radius %g collapsed", close), 10, y - 15, 10, Color3::BLACK);
+                    font->draw2D(format("Vertices within radius %g collapsed", close), Vector2(10, y - 15), 10, Color3::BLACK);
                 renderDevice->pop2D();
             }
             

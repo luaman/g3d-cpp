@@ -76,8 +76,9 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog     = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(800, 600, debugLog, 1.0, false,
-                       1024 * 1024 * 2, true, 8, 0, depthBits, 0);
+    RenderDeviceSettings settings;
+    settings.depthBits = depthBits;
+    renderDevice->init(settings, debugLog);
     camera       = new Camera(renderDevice);
 
     // Verify we have the shadow extension
@@ -203,15 +204,15 @@ void doGraphics() {
 
                 font->draw2D(
                     format("%d fps", frameRate),
-                    10, 10, 28, Color3::WHITE, Color3::BLACK);
+                    Vector2(10, 10), 28, Color3::WHITE, Color3::BLACK);
 
                 font->draw2D(
                     format("%d tris", numTris),
-                    10, 72, 20, Color3::WHITE, Color3::BLACK);
+                    Vector2(10, 72), 20, Color3::WHITE, Color3::BLACK);
 
                 font->draw2D(
                     format("%d ktri/s", triRate),
-                    10, 100, 20, Color3::WHITE, Color3::BLACK);
+                    Vector2(10, 100), 20, Color3::WHITE, Color3::BLACK);
 
             renderDevice->pop2D();
         renderDevice->popState();

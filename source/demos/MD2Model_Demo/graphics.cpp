@@ -134,24 +134,24 @@ void doGraphics() {
             double x = 10;
             double y = 10;
             double f = 16;
-            font->draw2D(format("%d fps", iRound(renderDevice->getFrameRate())), x, y, 20, Color3::YELLOW, Color3::BLACK); y += 30;
-            font->draw2D(format("%d characters", n), x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D(format("%1.1f MB", model.mainMemorySize() / 1e6), x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D(format("%1.0f Mtris/sec", renderDevice->getTriangleRate() / 1e6), x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D(format("%d fps", iRound(renderDevice->getFrameRate())), Vector2(x, y), 20, Color3::YELLOW, Color3::BLACK); y += 30;
+            font->draw2D(format("%d characters", n), Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D(format("%1.1f MB", model.mainMemorySize() / 1e6), Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D(format("%1.0f Mtris/sec", renderDevice->getTriangleRate() / 1e6), Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
 
-            font->draw2D(model.name, renderDevice->getWidth()/2, renderDevice->getHeight() - 45, 30, Color3::BLACK, Color3::WHITE, CFont::XALIGN_CENTER);
+            font->draw2D(model.name, Vector2(renderDevice->getWidth()/2, renderDevice->getHeight() - 45), 30, Color3::BLACK, Color3::WHITE, CFont::XALIGN_CENTER);
 
             x = renderDevice->getWidth() - 130;
             y = 10;
             f = 12;
-            font->draw2D("CLICK   attack", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D("SPACE  jump", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D("CTRL     crouch", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D("1 . . 5    taunt", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D("6 . . 8    die", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D("9 . . -    pain", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D("R/T       run/back", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
-            font->draw2D("e           new character", x, y, f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("CLICK   attack", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("SPACE  jump", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("CTRL     crouch", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("1 . . 5    taunt", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("6 . . 8    die", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("9 . . -    pain", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("R/T       run/back", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
+            font->draw2D("e           new character", Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
         renderDevice->pop2D();
 	   
     renderDevice->endFrame();

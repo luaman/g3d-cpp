@@ -1148,11 +1148,6 @@ public:
         double              quadraticAttenuationCoef);
 
     /**
-     This method is slow and is recommended for 2D GUI rendering only.
-     */
-    void drawFullScreenImage(const CImage& im);
-
-    /**
      You must also turn on lighting.
      */
     void setAmbientLightColor(

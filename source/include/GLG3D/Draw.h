@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2003-10-29
+ @edited  2003-10-30
  */
 
 #ifndef G3D_DRAW_H
@@ -130,6 +130,14 @@ public:
         const Color4&       yColor = Color3::GREEN,
         const Color4&       zColor = Color3::BLUE,
         double              scale = 1.0);
+
+    /**
+     This method is slow and is recommended for 2D GUI rendering only.
+     It is much faster to make a rectangular texture and draw using that.
+     */
+    static void fullScreenImage(
+        const class CImage& im,
+        RenderDevice*       renderDevice);
 };
 
 }

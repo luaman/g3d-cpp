@@ -9,6 +9,7 @@
  @mainpage
    <P>
     <CENTER><A HREF="http://sourceforge.net/forum/?group_id=76879">Forums</A> 
+
 	| <A HREF="error.html">Error FAQ</A> 
     |   \ref Introduction  |  \ref Installation  |
     \ref defines "\#defines"  |  \ref License  |  \ref Contributors   |
@@ -190,6 +191,7 @@
      <H2>GLG3D</H2>
      <UL>
       <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
+        G3D::Draw,
         G3D::Milestone,
         G3D::PixelProgram,
         G3D::reflectionMatrix,

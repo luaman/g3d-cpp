@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(400, 400, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+    renderDevice->init(RenderDeviceSettings(), debugLog);
 
     if (!renderDevice->supportsVertexProgram()) {
         error ("Critical Error", "This demo requires a graphics card and driver with OpenGL Vertex programs.", true);

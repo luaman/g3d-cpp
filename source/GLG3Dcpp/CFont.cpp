@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-09-18
+ @edited  2003-10-30
  */
 
 #include "GLG3D/CFont.h"
@@ -117,8 +117,7 @@ void CFont::drawString(
 
 void CFont::draw2D(
     const std::string&          s,
-    double                      x,
-    double                      y,
+    const Vector2&              pos2D,
     double                      size,
     const Color4&               color,
     const Color4&               border,
@@ -126,67 +125,75 @@ void CFont::draw2D(
     YAlign                      yalign,
     Spacing                     spacing) const {
 
+    double x = pos2D.x;
+    double y = pos2D.y;
+
     renderDevice->pushState();
 
-    renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-    renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
-    double h = size * 1.5;
-    double w = h * charWidth / charHeight;
-    double fw = 1.0 / charWidth;
-    double fh = 1.0 / charHeight;
+        double h = size * 1.5;
+        double w = h * charWidth / charHeight;
+        double fw = 1.0 / charWidth;
+        double fh = 1.0 / charHeight;
 
-    switch (xalign) {
-    case XALIGN_RIGHT:
-        x -= get2DStringBounds(s, size, spacing).x;
-        break;
+        switch (xalign) {
+        case XALIGN_RIGHT:
+            x -= get2DStringBounds(s, size, spacing).x;
+            break;
 
-    case XALIGN_CENTER:
-        x -= get2DStringBounds(s, size, spacing).x / 2;
-        break;
-    default:
-        break;
-    }
-
-    switch (yalign) {
-    case YALIGN_CENTER:
-        y -= h / 2.0;
-        break;
-
-    case YALIGN_BASELINE:
-        y -= baseline * h / (double)charHeight;
-        break;
-
-    case YALIGN_BOTTOM:
-        y -= h;
-        break;
-    default:
-        break;
-    }
-
-
-    double m[] = 
-       {1.0 / texture->getTexelWidth(), 0, 0, 0,
-        0, 1.0 / texture->getTexelHeight(), 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1};
-    renderDevice->setTexture(0, texture);
-    renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
-    renderDevice->setTextureMatrix(0, m);
-
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
-
-    if (border.a > 0.05) {
-        renderDevice->setColor(border);
-        for (int dy = -1; dy <= 1; dy += 2) {
-            for (int dx = -1; dx <= 1; dx += 2) {
-                drawString(s, x + dx, y + dy, w, h, spacing);
-            }
+        case XALIGN_CENTER:
+            x -= get2DStringBounds(s, size, spacing).x / 2;
+            break;
+        
+        default:
+            break;
         }
-    }
-    renderDevice->setColor(Color4(color.r * renderDevice->getBrightScale(), color.g * renderDevice->getBrightScale(), color.b * renderDevice->getBrightScale(), color.a));
-    drawString(s, x, y, w, h, spacing);
-    renderDevice->endPrimitive();
+
+        switch (yalign) {
+        case YALIGN_CENTER:
+            y -= h / 2.0;
+            break;
+
+        case YALIGN_BASELINE:
+            y -= baseline * h / (double)charHeight;
+            break;
+
+        case YALIGN_BOTTOM:
+            y -= h;
+            break;
+
+        default:
+            break;
+        }
+
+
+        double m[] = 
+           {1.0 / texture->getTexelWidth(), 0, 0, 0,
+            0, 1.0 / texture->getTexelHeight(), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1};
+
+        renderDevice->setTexture(0, texture);
+        renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
+        renderDevice->setTextureMatrix(0, m);
+
+        renderDevice->beginPrimitive(RenderDevice::QUADS);
+
+            if (border.a > 0.05) {
+                renderDevice->setColor(border);
+                for (int dy = -1; dy <= 1; dy += 2) {
+                    for (int dx = -1; dx <= 1; dx += 2) {
+                        drawString(s, x + dx, y + dy, w, h, spacing);
+                    }
+                }
+            }
+
+            renderDevice->setColor(Color4(color.r * renderDevice->getBrightScale(), color.g * renderDevice->getBrightScale(), color.b * renderDevice->getBrightScale(), color.a));
+            drawString(s, x, y, w, h, spacing);
+
+        renderDevice->endPrimitive();
 
     renderDevice->popState();
 }

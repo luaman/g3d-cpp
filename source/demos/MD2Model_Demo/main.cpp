@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(800, 600, debugLog, 1.0, false, 2*1024*1024, true, 8, 0, 24, 0);
+    renderDevice->init(RenderDeviceSettings(), debugLog);
     renderDevice->setCaption("G3D::MD2Model Demo");
     camera 	     = new Camera(renderDevice);
 
