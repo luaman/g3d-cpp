@@ -206,9 +206,7 @@ void init() {
 
 	initialized = true;
 
-	#ifdef G3D_WIN32
-        unsigned long eaxreg, ebxreg, ecxreg, edxreg;
-    #endif
+    unsigned long eaxreg, ebxreg, ecxreg, edxreg;
 
 	char cpuVendorTmp[13];
     (void)cpuVendorTmp;
