@@ -260,7 +260,7 @@ void parseFilename(
     }
 
     // Parse what remains into path.
-    int prev, cur = 0;
+    size_t prev, cur = 0;
 
     while (cur < f.size()) {
         prev = cur;

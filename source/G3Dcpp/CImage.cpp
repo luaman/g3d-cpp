@@ -2,7 +2,7 @@
   @file CImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-02-15
+  @edited  2003-04-01
  */
 #include "G3D/CImage.h"
 #include "G3D/debug.h"
@@ -727,7 +727,7 @@ void CImage::decodeBMP(
     uint8 blank;
 
 	// Only uncompressed bitmaps are supported by this code
-    if (compressionType != BI_RGB) {
+    if ((int32)compressionType != BI_RGB) {
         throw Error("BMP images must be uncompressed", input.getFilename());
     }
 

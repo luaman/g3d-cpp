@@ -27,7 +27,7 @@ bool beginsWith(
     const std::string& pattern) {
 
     if (test.size() >= pattern.size()) {
-        for (int i = 0; i < pattern.size(); ++i) {
+        for (size_t i = 0; i < pattern.size(); ++i) {
             if (pattern[i] != test[i]) {
                 return false;
             }
@@ -63,7 +63,7 @@ std::string wordWrap(
     int                     numCols) {
 
     std::string output;
-    int         c = 0;
+    size_t      c = 0;
     int         len;
 
     // Don't make lines less than this length
