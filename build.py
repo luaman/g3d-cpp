@@ -4,14 +4,14 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-05-14
+# @edited  2004-06-24
 # Each build target is a procedure.
 #
 
 from buildlib import *
 
 # The library version number
-version = "6_04-b02"
+version = "6_04-b03"
 
 # Setup versions for supporting programs
 aclocal    = "aclocal-1.8"

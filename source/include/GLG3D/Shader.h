@@ -78,8 +78,6 @@ typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 	};
 
   </PRE>
-
-
  */
 class ObjectShader : public ReferenceCountedObject {
 private:
@@ -134,6 +132,10 @@ public:
 
   <B>BETA API</B>
   This API is subject to change.
+  Due to a bug in the ATI drivers, VertexAndPixelShader and does not currently work
+  on ATI cards (new drivers are expected in September).  It works fine on NVIDIA cards
+  with June 2004 drivers and later.
+
  */
 class VertexAndPixelShader : public ReferenceCountedObject {
 public:
