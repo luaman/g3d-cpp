@@ -17,7 +17,6 @@
     #error Requires G3D 6.03
 #endif
 
-
 RenderDevice* rd;
 
 int main(int argc, char** argv) {
@@ -50,7 +49,7 @@ int main(int argc, char** argv) {
     }
 
     ShaderGroup::ArgList args;
-    args.set("lightVec", Vector3(1,0,0));
+    args.set("lightVec", Vector3(0,1,0));
 
     try {
         rd->setShader(effect, args);

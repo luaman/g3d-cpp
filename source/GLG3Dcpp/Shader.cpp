@@ -380,11 +380,27 @@ void ShaderGroup::bindArgList(RenderDevice* rd, const ArgList& args) const {
             break;
 
         case GL_FLOAT_MAT3_ARB:
-            alwaysAssertM(false, "TODO");
+            {
+                float m[9];
+                for (int i = 0, int c = 0; c < 3; ++c) {
+                    for (int r = 0; r < 3; ++r, ++i) {
+                        m[i] = value.vector[r][c];
+                    }
+                }
+                glUniformMatrix3fvARB(u, 1, GL_FALSE, m);
+            }            
             break;
 
         case GL_FLOAT_MAT4_ARB:
-            alwaysAssertM(false, "TODO");
+            {
+                float m[9];
+                for (int i = 0, int c = 0; c < 4; ++c) {
+                    for (int r = 0; r < 4; ++r, ++i) {
+                        m[i] = value.vector[r][c];
+                    }
+                }
+                glUniformMatrix4fvARB(u, 1, GL_FALSE, m);
+            }
             break;
 
         default:
