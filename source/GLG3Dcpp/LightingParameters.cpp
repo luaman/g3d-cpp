@@ -65,9 +65,10 @@ void LightingParameters::setTime(const GameTime _time) {
     starVec.z = sin(starRot);
     
     starFrame.lookAt(starVec, Vector3::UNIT_Y);
-    starFrame.rotation.toEulerAnglesXYZ(aX, aY, aZ);
+    trueStarFrame.lookAt(starVec, Vector3::UNIT_Y);
+	trueStarFrame.rotation.toEulerAnglesXYZ(aX, aY, aZ);
     aX -= geoLatitude;
-    starFrame.rotation.fromEulerAnglesXYZ(aX, aY, aZ);
+    trueStarFrame.rotation.fromEulerAnglesXYZ(aX, aY, aZ);
     
     // sunAngle = 0 at midnight
     double sourceAngle = 2 * G3D_PI * time / DAY;
@@ -93,12 +94,12 @@ void LightingParameters::setTime(const GameTime _time) {
 	// for a 5 degree margin of error at most.
     
 	double dayOfYearOffset = (_time - (_time*floor(_time / solarYear)))/DAY;
-    double curMoonPhase = floor(_time / moonPhaseInterval) + initialMoonPhase;
+    moonPhase = floor(_time / moonPhaseInterval) + initialMoonPhase;
 
 	double latRad = toRadians(geoLatitude);
 	double sunOffset = -earthTilt*cos(G3D_PI*(dayOfYearOffset-halfSolarYear)/halfSolarYear) - latRad;
-	double moonOffset = ((-earthTilt+moonTilt)*sin(curMoonPhase*4)) - latRad;
-	curMoonPhase = (curMoonPhase*G3D_PI*2);
+	double moonOffset = ((-earthTilt+moonTilt)*sin(moonPhase*4)) - latRad;
+	double curMoonPhase = (moonPhase*G3D_PI*2);
 
     Matrix3 rotMat = Matrix3(Matrix3::IDENTITY);
     rotMat.fromAxisAngle(Vector3::UNIT_Z.cross(sunPosition), sunOffset);
