@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-02-27
+  @edited  2002-04-03
  */ 
 
 #ifndef IFSMODEL_H
@@ -27,6 +27,7 @@ private:
     void loadIFS(const std::string& filename);
     void loadMD2(const std::string& filename);
     void load3DS(const std::string& filename);
+    void loadOBJ(const std::string& filename);
 
 public:
 

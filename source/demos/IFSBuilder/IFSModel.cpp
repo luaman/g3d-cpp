@@ -7,7 +7,7 @@
   @cite MD2 format by id software
 
   @created 2002-02-27
-  @edited  2002-02-27
+  @edited  2002-04-03
  */
 
 #include "IFSModel.h"
@@ -30,6 +30,8 @@ IFSModel::IFSModel(const std::string& filename) {
         loadMD2(filename);
     } else if (endsWith(f, ".3ds")) {
         load3DS(filename);
+    } else if (endsWith(f, ".obj")) {
+        loadOBJ(filename);
     } else {
         debugAssert(false);
     }
@@ -194,6 +196,65 @@ void IFSModel::load3DS(const std::string& filename) {
         default:
             b.setPosition(chunkEnd);
         }
+    }
+    
+    builder.setName(filename);
+
+    builder.commit(this);
+}
+
+
+
+void IFSModel::loadOBJ(const std::string& filename) {
+    IFSModelBuilder builder;
+    
+    TextInput t(filename);
+
+    Array<Vector3> va;
+
+    try {
+        while (t.hasMore()) {
+            Token tag = t.read();
+
+            if (tag.type() == Token::SYMBOL) {
+                if (tag.string() == "v") {
+                    // Vertex
+                    Vector3 vertex;
+                    vertex.x = t.readNumber();
+                    vertex.y = t.readNumber();
+                    vertex.z = t.readNumber();
+
+                    va.append(vertex);
+
+                } else if (tag.string() == "f") {
+                    // Face
+                    int v[3];
+                
+                    for (int i = 0; i < 3; ++i) {
+                        v[i] = t.readNumber();
+
+                        debugAssert(v[i] > 0);
+
+                        v[i] -= 1;
+
+                        // Skip over the slashes
+                        Token next = t.peek();
+                        while ((next.type() == Token::SYMBOL) && (next.string() == "/")) {
+                            next = t.read();
+                        }
+                    }
+
+                    builder.addTriangle(va[v[0]], va[v[1]], va[v[2]]);
+                }
+            }
+
+            // Read to the next line
+            while ((t.peek().line() == tag.line()) && t.hasMore()) {
+                t.read();
+            }
+        }
+    } catch (TextInput::WrongTokenType& e) {
+        debugAssert(e.expected != e.actual);
     }
     
     builder.setName(filename);

@@ -1,17 +1,22 @@
 /**
   @file IFSBuilder/main.cpp
 
+  A utility for converting some common 3D file formats into IFS format.
+  This only handles some "nice" cases of 3DS, OBJ, and MD2 files-- 
+  models in these formats certainly exist that cannot be converted
+  by this simple utility.
+
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-02-27
+  @edited  2002-04-03
  */ 
 
 #include <G3DAll.h>
 #include "IFSModel.h"
 #include "IFSModelBuilder.h"
 
-std::string             DATA_DIR        = "d:/libraries/graphics3d-5.00/data/";
+std::string             DATA_DIR        = "d:/libraries/g3d-5_00/data/";
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
@@ -55,12 +60,12 @@ int main(int argc, char** argv) {
 
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("D:/users/morgan/Projects/Silhouette/md2/");
+    std::string in("D:/tmp/obj/");
     std::string out("D:/users/morgan/Projects/Silhouette/models/");
 
-    model = new IFSModel(in + "blade.md2");
+    model = new IFSModel(in + "747.obj");
     model->name = "Blade";
-    model->save(out + "q2mdl-blade.ifs");
+    //model->save(out + "q2mdl-blade.ifs");
 
     // Main loop
     do {
