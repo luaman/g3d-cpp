@@ -441,9 +441,19 @@ bool RenderDevice::init(
     const int desiredTextureUnits = 8;
 
     if (debugLog) {debugLog->println("Setting video mode");}
-	setVideoMode(settings.width, settings.height, minimumDepthBits, desiredDepthBits, 
-		minimumStencilBits, desiredStencilBits, settings.rgbBits, settings.alphaBits,
-        settings.fullScreen, settings.fsaaSamples);
+	setVideoMode(
+        settings.width,
+        settings.height,
+        minimumDepthBits,
+        desiredDepthBits, 
+		minimumStencilBits,
+        desiredStencilBits,
+        settings.rgbBits,
+        settings.alphaBits,
+        settings.fullScreen,
+        settings.fsaaSamples,
+        settings.resizable,
+        settings.framed);
 
     // Get the number of texture units
     glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &_numTextureUnits);
@@ -865,16 +875,18 @@ void RenderDevice::setGamma(
 
 
 void RenderDevice::setVideoMode(
-    int width, 
-    int height, 
-	int minimumDepthBits, 
-    int desiredDepthBits, 
-	int minimumStencilBits, 
-    int desiredStencilBits,
-    int colorBits,
-    int alphaBits,
-    bool fullscreen,
-    int fsaaSamples) {
+    int         width, 
+    int         height, 
+	int         minimumDepthBits, 
+    int         desiredDepthBits, 
+	int         minimumStencilBits, 
+    int         desiredStencilBits,
+    int         colorBits,
+    int         alphaBits,
+    bool        fullscreen,
+    int         fsaaSamples,
+    bool        resizeable,
+    bool        framed) {
 
 	// Request various OpenGL parameters
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, desiredDepthBits);
@@ -891,7 +903,13 @@ void RenderDevice::setVideoMode(
 
 
 	// Create a width x height OpenGL screen 
-    int flags =  SDL_HWSURFACE | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0);
+    int flags = 
+        SDL_HWSURFACE |
+        SDL_OPENGL |
+        (fullscreen ? SDL_FULLSCREEN : 0) |
+        (resizeable ? SDL_RESIZABLE : 0) |
+        (framed ? 0 : SDL_NOFRAME);
+
 	if (SDL_SetVideoMode(width, height, 0, flags) == NULL) {
         debugAssert(false);
         if (debugLog) {debugLog->printf("Unable to create OpenGL screen: %s\n", SDL_GetError());}

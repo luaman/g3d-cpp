@@ -110,6 +110,13 @@ public:
     /** In cycles/sec */
     int     refreshRate;
 
+    bool    resizable;
+
+    /**
+     When true, a window frame and title bar are present.
+     */
+    bool    framed;
+
     RenderDeviceSettings(
         int     _width               = 800,
         int     _height              = 600,
@@ -123,7 +130,9 @@ public:
         int     _stencilBits         = 8,
         int     _fsaaSamples         = 1,
         bool    _hardware            = true,
-        int     _refreshRate         = 85) :
+        int     _refreshRate         = 85,
+        bool    _resizable           = false,
+        bool    _framed              = true) :
             width(_width),
             height(_height), 
             rgbBits(_rgbBits),
@@ -136,7 +145,9 @@ public:
             asychronous(_asychronous), 
             varVideoMemory(_varVideoMemory),
             lightSaturation(_lightSaturation),
-            refreshRate(_refreshRate) {}
+            refreshRate(_refreshRate),
+            resizable(_resizable),
+            framed(_framed) {}
 };
 
 /**
@@ -345,7 +356,9 @@ private:
         int                     colorBits,
         int                     alphaBits,
         bool                    fullscreen,
-        int                     fsaaSamples);
+        int                     fsaaSamples,
+        bool                    resizable,
+        bool                    framed);
 
     /**
      Initialize the OpenGL extensions.
