@@ -10,6 +10,8 @@
    <P>
    Changes in 6.02:
    <UL>
+     <LI> VARArea now tests for the presence of all VBO extensions, on the freak chance that
+	      a driver has only partial support (due to a bug)
      <LI> Linux build statically links OpenGL 1.2.1 and loads extensions through OpenGL 1.5
    	      to work around Wildcat Linux driver bug (Windows and Mac statically link OpenGL 1.1 
 		  and load extensions through OpenGL 1.5)
@@ -41,7 +43,8 @@
 			Fix: FSAA does not work under SDL
 			Fix: Default Win32 refresh rate
      <LI> Draw::vertexVectors
-     <LI> New meshes from Brown University: curvy.ifs, head.ifs, closed-low-poly-teapot.ifs, bump.ifs
+     <LI> New meshes from Brown University: hemisphere.ifs, curvy.ifs, head.ifs,
+	       closed-low-poly-teapot.ifs, bump.ifs
      <LI> GLight::specular
      <LI> SDLWindow::setWindowDimensions and setWindowPosition now work on Win32
      <LI> GWindowSettings::x, GWindowSettings::y, GWindowSettings::center

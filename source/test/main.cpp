@@ -1391,6 +1391,18 @@ void testRandom() {
         debugAssert(p.x <= 1.0);
         debugAssert(p.y <= 1.0);
     }
+
+
+    for (int i = 0; i < 100; i++) {
+         Vector3 point = tri.randomPoint();
+         debugAssert(CollisionDetection::isPointInsideTriangle(
+                 tri.vertex(0),
+                 tri.vertex(1),
+                 tri.vertex(2),
+                 tri.normal(),
+                 point));
+    }
+
 }
 
 

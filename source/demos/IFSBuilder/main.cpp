@@ -77,12 +77,11 @@ int main(int argc, char** argv) {
     camera.setNearPlaneZ(-.05);
     RealTime now = System::getTick() - 0.001, lastTime;
 
-//    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
-    std::string in("c:/tmp/models/elephant.sm");
+    std::string in("d:/libraries/g3d-6_02/data/ifs/hemisphere.ifs");
 
 //    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
 
-    //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
+    //std::string outDir("d:/tmp/");
     std::string outDir("d:/graphics3d/book/data/ifs/");
 
     Array<std::string> filename;
@@ -107,12 +106,12 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Saddle";
+        model->name = "Hemisphere";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");
         }
-        model->save(outDir + "low-poly-saddle.ifs");
+        //model->save(outDir + "lowhemi.ifs");
 
         // Main loop (display 3D object)
         do {

@@ -30,7 +30,10 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
 
     // See if we've determined the mode yet.
     if (mode == UNINITIALIZED) {
-        if (glGenBuffersARB != NULL) {
+        if ((glGenBuffersARB != NULL) && 
+            (glGenBuffersARB != NULL) &&
+            (glBufferDataARB != NULL) &&
+            (glDeleteBuffersARB != NULL)) {
             mode = VBO_MEMORY;
         } else {
             mode = MAIN_MEMORY;

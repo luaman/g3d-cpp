@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-12-06
+  @edited  2004-03-24
   */
 
 #include "GLG3D/glcalls.h"
@@ -26,6 +26,22 @@ SkyRef Sky::create(
     const std::string&                  filename,
     bool                                _drawCelestialBodies,
     double                              quality) {
+
+    std::string f[6];
+    f[0] = filename;
+    for (int i = 1; i < 6; ++i) {
+        f[i] = "";
+    }
+    return new Sky(rd, directory, f, _drawCelestialBodies, quality);
+}
+
+
+SkyRef Sky::create(
+    RenderDevice*                       rd,
+    const std::string&                  directory,
+    const std::string                   filename[6],
+    bool                                _drawCelestialBodies,
+    double                              quality) {
     return new Sky(rd, directory, filename, _drawCelestialBodies, quality);
 }
 
@@ -33,7 +49,7 @@ SkyRef Sky::create(
 Sky::Sky(
     RenderDevice*                       rd,
     const std::string&                  directory,
-    const std::string&                  filename,
+    const std::string                   _filename[6],
     bool                                _drawCelestialBodies,
     double                              quality) :
         drawCelestialBodies(_drawCelestialBodies),
@@ -47,6 +63,7 @@ Sky::Sky(
 
     const TextureFormat* format;
     const TextureFormat* alphaFormat;
+    std::string filename = _filename[0];
 
     if (quality > .66) {
         format      = TextureFormat::RGB8;
@@ -65,17 +82,23 @@ Sky::Sky(
     std::string filenameExt;
     std::string fullFilename = filename;
 
-    // First look relative to the current directory
-    Texture::splitFilenameAtWildCard(fullFilename, filenameBase, filenameExt);
+    if (_filename[1] == "") {
+        // First look relative to the current directory
+        Texture::splitFilenameAtWildCard(fullFilename, filenameBase, filenameExt);
 
-    if (! fileExists(filenameBase + "up" + filenameExt)) {
-        // Look relative to the specified directory
-        filenameBase = directory + filenameBase;
+        if (! fileExists(filenameBase + "up" + filenameExt)) {
+            // Look relative to the specified directory
+            filenameBase = directory + filenameBase;
+        }
     }
 
     if (renderDevice->supportsOpenGLExtension("GL_ARB_texture_cube_map")) {
    
-        cubeMap = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+        if (_filename[1] == "") {
+            cubeMap = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+        } else {
+            cubeMap = Texture::fromFile(_filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+        }
 
         for (int t = 0; t < 6; ++t) {
             texture[t] = NULL;
@@ -84,9 +107,16 @@ Sky::Sky(
     } else {    
         static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
 
-        for (int t = 0; t < 6; ++t) {
-            texture[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
-                format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+        if (_filename[1] == "") {
+            for (int t = 0; t < 6; ++t) {
+                texture[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
+                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+            }
+        } else {
+            for (int t = 0; t < 6; ++t) {
+                texture[t] = Texture::fromFile(_filename[t], 
+                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+            }
         }
     }
 

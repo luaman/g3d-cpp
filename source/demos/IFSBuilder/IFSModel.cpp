@@ -44,7 +44,7 @@ XIFSModel::XIFSModel(const std::string& filename) {
 
     std::string f = toLower(filename);
 
-    createGrid(saddle2D, false); return;
+    //createGrid(saddle2D, false); return;
     //createPolygon(); return;
     //createRing();  return;
 

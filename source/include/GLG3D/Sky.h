@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2004-01-06
+  @edited  2004-03-25
 */
 
 #ifndef G3D_SKY_H
@@ -86,7 +86,7 @@ private:
     Sky(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
-        const std::string&                      filename,
+        const std::string                       filename[6],
         bool                                    drawCelestialBodies,
         double                                  quality);
 
@@ -117,6 +117,13 @@ public:
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
+        bool                                    drawCelestialBodies = true,
+        double                                  quality = 1.0);
+
+    static SkyRef create(
+        class RenderDevice*                     renderDevice,
+        const std::string&                      directory,
+        const std::string                       filename[6],
         bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0);
 
