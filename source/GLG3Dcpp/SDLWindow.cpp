@@ -458,10 +458,10 @@ void SDLWindow::setIcon(const GImage& image) {
 
     if (image.channels == 3) {
         // Take away the 4th channel.
-        rmask = (rmask << 8) >> 16;
-        gmask = (gmask << 8) >> 16;
-        bmask = (bmask << 8) >> 16;
-        amask = (amask << 8) >> 16;
+        rmask = (rmask & 0xFFFFFF);
+        gmask = (gmask & 0xFFFFFF);
+        bmask = (bmask & 0xFFFFFF);
+        amask = (amask & 0xFFFFFF);
     }
 
     int pixelBitLen     = image.channels * 8;
