@@ -342,13 +342,16 @@ debugAssertGLOk();
     renderDevice->setSpecularCoefficient(0);
 debugAssertGLOk();    
     renderDevice->enableLighting();
-debugAssertGLOk();    
+debugAssertGLOk();
+debugLog->printf("Setting light 0\n"); 
     renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 debugAssertGLOk();    
+debugLog->printf("Setting light 1\n"); 
     renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
 debugAssertGLOk();    
     renderDevice->setAmbientLightColor(lighting.ambient);
 debugAssertGLOk();    
+debugLog->printf("Done lights.\n"); 
 
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     renderDevice->setColor(Color3::WHITE);

@@ -877,6 +877,7 @@ void RenderDevice::setVideoMode() {
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.ambient);
 
         glDisable(GL_LIGHTING);
+debugAssertGLOk();
         for (int i = 0; i < MAX_LIGHTS; ++i) {
             setLight(i, NULL, true);
         }
@@ -1141,8 +1142,8 @@ debugAssertGLOk();
     }
 
 
-debugAssertGLOk();    
     for (int i = 0; i < MAX_LIGHTS; ++i) {
+debugAssertGLOk();    
         if (newState.lightEnabled[i]) {
             setLight(i, newState.light[i]);
         } else {
@@ -1934,6 +1935,7 @@ void RenderDevice::setCameraToWorldMatrix(
     // Re-load lights since the camera matrix changed.
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (state.lightEnabled[i]) {
+debugAssertGLOk();    
             setLight(i, &state.light[i], true);
         }
     }
@@ -2609,6 +2611,7 @@ void RenderDevice::waitForMilestone(const MilestoneRef& m) {
 
 
 void RenderDevice::setLight(int i, const GLight& light) {
+debugAssertGLOk();    
     setLight(i, &light, false);
 }
 
@@ -2620,13 +2623,14 @@ void RenderDevice::setLight(int i, void* x) {
 
 
 void RenderDevice::setLight(int i, const GLight* _light, bool force) {
+debugAssertGLOk();    
     debugAssert(i >= 0);
     debugAssert(i < MAX_LIGHTS);
     int gi = GL_LIGHT0 + i;
 
     const GLight& light = *_light;
 
-debugAssertGLOk();    
+debugAssertGLOk();
     if (_light == NULL) {
 
         if (state.lightEnabled[i] || force) {

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-06-09
- @edited  2003-08-22
+ @edited  2003-11-18
  */
 
 #ifndef G3D_PLATFORM_H
@@ -65,6 +65,60 @@
     #if (_MSC_VER <= 1200)
         #define for if (false) {} else for
     #endif
+
+
+    // On MSVC, we need to link against the multithreaded DLL version of
+    // the C++ runtime because that is what SDL and ZLIB are compiled
+    // against.  This is not the default for MSVC, so we set the following
+    // defines to force correct linking.  
+    //
+    // For documentation on compiler options, see:
+    //  http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vccore/html/_core_.2f.md.2c_2f.ml.2c_2f.mt.2c_2f.ld.asp
+    //  http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vccore98/HTML/_core_Compiler_Reference.asp
+    //
+
+    // DLL runtime
+    #ifndef _DLL
+	    #define _DLL
+    #endif
+
+    // Multithreaded runtime
+    #ifndef _MT
+	    #define _MT
+    #endif
+
+    // Ensure that we aren't forced into the static lib
+    #ifdef _STATIC_CPPLIB
+	    #undef _STATIC_CPPLIB
+    #endif
+
+    #ifdef _DEBUG
+        #pragma comment(linker, "/NODEFAULTLIB:LIBCD.LIB")
+        #pragma comment(linker, "/DEFAULTLIB:MSVCRTD.LIB")
+    #else
+        #pragma comment(linker, "/NODEFAULTLIB:LIBC.LIB")
+        #pragma comment(linker, "/DEFAULTLIB:MSVCRT.LIB")
+    #endif
+
+    // Now set up external linking
+    #define ZLIB_DLL
+
+    #pragma comment(lib, "zlib.lib")
+    #pragma comment(lib, "ws2_32.lib")
+    #pragma comment(lib, "winmm.lib")
+    #pragma comment(lib, "imagehlp.lib")
+    #pragma comment(lib, "version.lib")
+
+    #ifdef _DEBUG
+        // zlib and SDL were linked against the release MSVCRT; force
+        // the debug version.
+        #pragma comment(linker, "/NODEFAULTLIB:MSVCRT.LIB")
+        #pragma comment(lib, "G3D-debug.lib")
+    #else
+        #pragma comment(lib, "G3D.lib")
+    #endif
+
 #endif
 
+// Header guard
 #endif

@@ -32,33 +32,6 @@
 #define G3D_VER 60008
 
 #include "G3D/platform.h"
-
-
-#ifdef G3D_WIN32
-    // Set up the linker on Windows
-    #define ZLIB_DLL
-
-    #pragma comment(linker, "/VERSION:6.00") 
-
-    #pragma comment(lib, "zlib.lib")
-    #pragma comment(lib, "ws2_32.lib")
-    #pragma comment(lib, "winmm.lib")
-    #pragma comment(lib, "imagehlp.lib")
-    #pragma comment(lib, "version.lib")
-
-    #ifdef _DEBUG
-        // zlib and SDL were linked against the release MSVCRT; force
-        // the debug version.
-        #pragma comment(linker, "/nodefaultlib:msvcrt.lib")
-
-        #pragma comment(lib, "G3D-debug.lib")
-    #else
-        #pragma comment(lib, "G3D.lib")
-    #endif
-
-#endif
-
-
 #include "G3D/Array.h"
 #include "G3D/Queue.h"
 #include "G3D/format.h"

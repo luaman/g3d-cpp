@@ -324,13 +324,9 @@
    (e.g. c:\\libraries\\g3d-6_00\\lib) to the library
    list.
    <LI>
-   <B>For each project you create:
-    <OL>
-      <LI> Copy SDL.dll, glut32.dll, and zlib.dll to your program directory.
+   <B>For each project you create, copy SDL.dll, glut32.dll, and zlib.dll
+      to your program directory (or put them in Windows/System)
    
-      <LI> Go to Projects:Settings:C++:Code Generation and select
-      "Multithreaded DLL" for use run-time library.  Use
-      "Debug Multithreaded DLL" in your debug build.
     </OL>
    </OL>
 
