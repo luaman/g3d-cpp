@@ -162,6 +162,9 @@ BinaryInput::BinaryInput(
     beginEndBits = 0;
     bitPos = 0;
 
+    // Update global file tracker
+    _internal::currentFilesUsed.append(filename);
+    
     swapBytes = needSwapBytes(fileEndian);
 
     // Figure out how big the file is and verify that it exists.

@@ -48,7 +48,13 @@ extern "C" {
     #define _stat stat
 #endif
 
+
 namespace G3D {
+    
+    namespace _internal {
+        extern Array<std::string> currentFilesUsed(0);
+    }
+
 
 std::string resolveFilename(const std::string& filename) {
     if (filename.size() >= 1) {
@@ -568,6 +574,11 @@ bool fileIsNewer(const std::string& src, const std::string& dst) {
     bool dexists = _stat(dst.c_str(), &dts) != -1;
 
     return sexists && ((! dexists) || (sts.st_mtime > dts.st_mtime));
+}
+
+
+Array<std::string> filesUsed() {
+    return _internal::currentFilesUsed;
 }
 
 }
