@@ -513,6 +513,7 @@ to add zlibstat.lib to your linker list.
      <LI> Vector3::NAN3
      <LI> Made Vector3::isUnit fuzzy
      <LI> Made Vector3::isZero fuzzy
+     <LI> Fix: Texture(std::string, std::string) constructor now works for alpha-only textures. 
      <LI> FIX: Array now calls copy constructor when resizing
      <LI> FIX: Triangle-sphere and rectangle-sphere collision detection
               returned an incorrect collision location; now fixed.

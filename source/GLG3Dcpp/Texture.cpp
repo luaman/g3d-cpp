@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-02-15
+ @edited  2003-03-24
 */
 
 #include "../include/GLG3D/glcalls.h"
@@ -151,6 +151,9 @@ Texture::Texture(
     colorChannelBits(colorChannelBits),
     alphaChannelBits(alphaChannelBits),
     invertY(false) {
+
+    width  = 0;
+    height = 0;
 
     // TODO: don't trash current texture state!
     int active;
@@ -348,7 +351,7 @@ void Texture::reload() {
         debugAssert(false);
     }
 
-    if (filename != "") {
+    if ((filename != "") || (alphaFilename != "")) {
         Data d;
         getData(d);
         width  = d.width;
@@ -371,31 +374,49 @@ void Texture::getData(
     Data&       d) {
 
     try {
-        CImage im = CImage(filename);
-        debugAssert((G3D::isPow2(im.width) && G3D::isPow2(im.height)) || (dimension == DIM_2D_RECT));
+        if (filename != "") {
+            CImage im = CImage(filename);
+            debugAssert((G3D::isPow2(im.width) && G3D::isPow2(im.height)) || (dimension == DIM_2D_RECT));
+            d.width  = im.width;
+            d.height = im.height;
 
-        d.width  = im.width;
-        d.height = im.height;
+            if (alphaFilename != "") {
+                CImage aim = CImage(alphaFilename);
 
-        if (alphaFilename != "") {
-            CImage aim = CImage(alphaFilename);
-
-            debugAssert(aim.width == im.width);
-            debugAssert(aim.height == im.height);
+                debugAssert(aim.width == im.width);
+                debugAssert(aim.height == im.height);
         
-            d.format    = GL_RGBA;
-            d.pixelSize = 4;
-            d.pixel     = (uint8*)malloc(d.width * d.height * d.pixelSize);
-            debugAssert(d.pixel);
+                d.format    = GL_RGBA;
+                d.pixelSize = 4;
+                d.pixel     = (uint8*)malloc(d.width * d.height * d.pixelSize);
+                debugAssert(d.pixel);
 
-            RGBxRGBtoRGBA(im.pixel, aim.pixel, d.pixel, im.width * im.height);
+                RGBxRGBtoRGBA(im.pixel, aim.pixel, d.pixel, im.width * im.height);
+            } else {
+                // Avoid copying the data by stealing it from the CImage.
+                d.format    = GL_RGB;
+                d.pixelSize = 3;
+                d.pixel     = im.pixel;
+                // Don't let the destructor dealloc the data on us.
+                im.pixel = NULL;
+            }
         } else {
-            // Avoid copying the data by stealing it from the CImage.
-            d.format    = GL_RGB;
-            d.pixelSize = 3;
-            d.pixel     = im.pixel;
-            // Don't let the destructor dealloc the data on us.
-            im.pixel = NULL;
+            // Alpha only texture
+            if (alphaFilename != "") {
+                CImage aim = CImage(alphaFilename);
+
+                d.width     = aim.width;
+                d.height    = aim.height;
+        
+                d.format    = GL_ALPHA;
+                d.pixelSize = 1;
+                d.pixel     = (uint8*)malloc(d.width * d.height * d.pixelSize);
+                debugAssert(d.pixel);
+
+                for (int i = 0; i < d.width * d.height; ++i) {
+                    d.pixel[i] = aim.pixel[3 * i];
+                }
+            }
         }
     } catch (CImage::Error e) {
         std::string msg = std::string("Error while loading '") + e.filename + "': " + e.reason;
