@@ -14,6 +14,8 @@
   All rights reserved.
  */
 
+#include "Vector2int16.h"
+
 namespace G3D {
 
 //----------------------------------------------------------------------------
@@ -51,6 +53,10 @@ inline Vector2::Vector2 (double afCoordinate[2]) {
 inline Vector2::Vector2 (const Vector2& rkVector) {
     x = rkVector.x;
     y = rkVector.y;
+}
+
+//----------------------------------------------------------------------------
+inline Vector2::Vector2 (const Vector2int16& v) : x(v.x), y(v.y) {
 }
 
 //----------------------------------------------------------------------------

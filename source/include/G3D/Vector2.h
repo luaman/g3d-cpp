@@ -42,6 +42,7 @@ public:
     Vector2(float coordinate[2]);
     Vector2(double coordinate[2]);
     Vector2(const Vector2& rkVector);
+    Vector2(const class Vector2int16& v); 
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
