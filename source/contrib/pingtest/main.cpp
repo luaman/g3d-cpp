@@ -18,7 +18,7 @@
 static const bool reliable = true;
 
 enum {PING_PORT=1201};
-NetworkDevice  networkDevice;
+NetworkDevice networkDevice;
 void reliableServer();
 void server();
 void client(const std::string& address);
