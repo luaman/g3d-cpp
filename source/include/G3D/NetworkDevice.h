@@ -5,8 +5,7 @@
  serialized messaging style that is more appropriate for games.  The
  performance has been tuned for sending many small messages.  The
  message protocol contains a header that prevents them from being used
- with raw UDP/TCP (e.g. connecting to an HTTP server).  A future
- stream API will address this.
+ with raw UDP/TCP (e.g. connecting to an HTTP server). 
 
  LightweightConduit and ReliableConduits have different interfaces
  because they have different semantics.  You would never want to
@@ -35,7 +34,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2004-03-30
+ @edited  2004-04-18
  */
 
 #ifndef NETWORKDEVICE_H
@@ -445,6 +444,17 @@ typedef ReferenceCountedPointer<class NetListener> NetListenerRef;
  An abstraction over sockets that provides a message based network
  infrastructure optimized for sending many small (>500 byte) messages.
  All functions always return immediately.
+ <P>
+ Create only one NetworkDevice per-process (WinSock restriction).
+ <P>
+ NetworkDevice is technically not thread safe.  However, as long as you
+ use different conduits on different threads, you will encounter no
+ problems sharing the single NetworkDevice across multiple threads.
+ This assumes that the underlying WinSock/BSD sockets implementation
+ is thread safe.  That is not guaranteed, but in practice seems
+ to always be true (e.g.
+ http://tangentsoft.net/wskfaq/intermediate.html#threadsafety)
+
  */
 class NetworkDevice {
 private:

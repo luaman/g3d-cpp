@@ -161,8 +161,9 @@ public:
         double              scale = 1.0);
 
     /**
-     This method is slow and is recommended for 2D GUI rendering only.
-     It is much faster to make a rectangular texture and draw using that.
+     This method is as hideously slow as it is convenient.  If you care
+     about performance, make a rectangular texture (without MIPMaps) 
+     and draw using that.
      */
     static void fullScreenImage(
         const class GImage& im,

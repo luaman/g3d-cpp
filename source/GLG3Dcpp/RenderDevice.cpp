@@ -2236,7 +2236,12 @@ void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer) const {
         glReadBuffer(GL_FRONT);
     }
     
-    dest.resize(getWidth(), getHeight(), 3);
+    if ((dest.channels != 3) ||
+        (dest.width != getWidth()) ||
+        (dest.height != getHeight())) {
+        // Only resize if the current size is not correct
+        dest.resize(getWidth(), getHeight(), 3);
+    }
     glReadPixels(0, 0, getWidth(), getHeight(), GL_RGB,
             GL_UNSIGNED_BYTE, dest.byte());
 

@@ -344,17 +344,19 @@ void flipRGBVertical(
     int                     width,
     int                     height) {
 
+    
     // Allocate a temp row so the operation
     // is still safe if in == out
     uint8* temp = (uint8*) malloc(width * 3);
+    alwaysAssertM(temp != NULL, "Out of memory");
 
     for (int i = 0; i < height / 2; ++i) {
         int oneRow = width * 3;
         int topOff = i * oneRow;
         int botOff = (height - i - 1) * oneRow;
-        memcpy(temp,         in + topOff, oneRow);
-        memcpy(out + topOff, in + botOff, oneRow);
-        memcpy(out + botOff, temp,        oneRow);
+        System::memcpy(temp,         in + topOff, oneRow);
+        System::memcpy(out + topOff, in + botOff, oneRow);
+        System::memcpy(out + botOff, temp,        oneRow);
     }
 
     free(temp);
@@ -1378,8 +1380,7 @@ GImage::GImage(
 void GImage::resize(
     int                 width,
     int                 height,
-    int                 channels)
-{
+    int                 channels) {
     debugAssert(width >= 0);
     debugAssert(height >= 0);
     debugAssert(channels >= 1);
