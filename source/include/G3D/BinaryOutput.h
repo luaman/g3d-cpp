@@ -81,29 +81,22 @@ private:
 
     void reserveBytesWhenOutOfMemory(size_t bytes);
 
+    void reallocBuffer(size_t bytes, size_t oldBufferLen);
+
     /**
      Make sure at least bytes can be written, resizing if
      necessary.
      */
-    void reserveBytes(int bytes) {
+    inline void reserveBytes(int bytes) {
         debugAssert(bytes > 0);
         size_t oldBufferLen = (size_t)bufferLen;
 
         bufferLen = iMax(bufferLen, (pos + bytes));
         if (bufferLen >= maxBufferLen) {
-            maxBufferLen = (int)(bufferLen * 1.5) + 100;
-            uint8* newBuffer = (uint8*)realloc(buffer, maxBufferLen);
-
-            if ((newBuffer == NULL) && (bytes > 0)) {
-                // Realloc failed; we're probably out of memory.
-                bufferLen = oldBufferLen;
-                reserveBytesWhenOutOfMemory(bytes);
-            } else {
-                buffer = newBuffer;
-            }
+            reallocBuffer(bytes, oldBufferLen);
         }
-
     }
+
 
 public:
 

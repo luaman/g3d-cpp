@@ -21,6 +21,20 @@
 
 namespace G3D {
 
+void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
+    maxBufferLen = (int)(bufferLen * 1.5) + 100;
+    uint8* newBuffer = (uint8*)realloc(buffer, maxBufferLen);
+
+    if ((newBuffer == NULL) && (bytes > 0)) {
+        // Realloc failed; we're probably out of memory.
+        bufferLen = oldBufferLen;
+        reserveBytesWhenOutOfMemory(bytes);
+    } else {
+        buffer = newBuffer;
+        debugAssert(isValidHeapPointer(buffer));
+    }
+}
+
 
 void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
     if (filename == "<memory>") {
@@ -54,7 +68,9 @@ void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
         pos -= writeBytes;
 
         // Shift the unwritten data back appropriately in the buffer.
+        debugAssert(isValidHeapPointer(buffer));
         System::memcpy(buffer, buffer + writeBytes, bufferLen);
+        debugAssert(isValidHeapPointer(buffer));
     }
 }
 
@@ -109,6 +125,7 @@ void BinaryOutput::reset() {
 
 
 BinaryOutput::~BinaryOutput() {
+    debugAssert(isValidHeapPointer(buffer));
     free(buffer);
     buffer = NULL;
     bufferLen = 0;
