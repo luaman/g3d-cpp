@@ -887,7 +887,7 @@ void RenderDevice::setVideoMode() {
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.ambient);
 
         glDisable(GL_LIGHTING);
-debugAssertGLOk();
+
         for (int i = 0; i < MAX_LIGHTS; ++i) {
             setLight(i, NULL, true);
         }
@@ -1099,7 +1099,7 @@ void RenderDevice::popState() {
 void RenderDevice::setState(
     const RenderState&          newState) {
 
-debugAssertGLOk();
+
     // The state change checks inside the individual
     // methods will (for the most part) minimize
     // the state changes so we can set all of the
@@ -1156,7 +1156,7 @@ debugAssertGLOk();
 
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
-debugAssertGLOk();    
+    
         if (newState.lightEnabled[i]) {
             setLight(i, newState.light[i]);
         } else {
@@ -1956,7 +1956,7 @@ void RenderDevice::setCameraToWorldMatrix(
     // Re-load lights since the camera matrix changed.
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (state.lightEnabled[i]) {
-debugAssertGLOk();    
+    
             setLight(i, &state.light[i], true);
         }
     }
@@ -2647,7 +2647,7 @@ void RenderDevice::waitForMilestone(const MilestoneRef& m) {
 
 
 void RenderDevice::setLight(int i, const GLight& light) {
-debugAssertGLOk();    
+    
     setLight(i, &light, false);
 }
 
@@ -2659,14 +2659,14 @@ void RenderDevice::setLight(int i, void* x) {
 
 
 void RenderDevice::setLight(int i, const GLight* _light, bool force) {
-debugAssertGLOk();    
+    
     debugAssert(i >= 0);
     debugAssert(i < MAX_LIGHTS);
     int gi = GL_LIGHT0 + i;
 
     const GLight& light = *_light;
 
-debugAssertGLOk();
+
     if (_light == NULL) {
 
         if (state.lightEnabled[i] || force) {
@@ -2674,20 +2674,20 @@ debugAssertGLOk();
             glDisable(gi);
         }
 
-debugAssertGLOk();    
+    
     } else {
 
         for (int j = 0; j < 3; ++j) {
             debugAssert(light.attenuation[j] >= 0);
         }
 
-debugAssertGLOk();    
+    
         if (! state.lightEnabled[i] || force) {
             glEnable(gi);
             state.lightEnabled[i] = true;
         }
 
-debugAssertGLOk();    
+    
         if ((state.light[i] != light) || force) {
             state.light[i] = light;
 
@@ -2712,7 +2712,7 @@ debugAssertGLOk();
             glMatrixMode(mm);
         }    
     }
-debugAssertGLOk();    
+    
 }
 
 
