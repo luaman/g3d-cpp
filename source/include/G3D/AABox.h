@@ -34,25 +34,6 @@ private:
     Vector3  lo;
     Vector3  hi;
 
-    /**
-	 @deprecated Use culledByFinite(Array<Plane>&)
-     */
-    bool culledByFinite(
-        const class Plane*  plane,
-        int                 numPlanes,
-		int32&				cullingPlaneIndex,
-		const uint32  		testMask,
-        uint32&             childMask) const;
-
-    /**
-	 @deprecated Use culledByFinite(Array<Plane>&)
-     */
-    bool culledByFinite(
-        const class Plane*  plane,
-        int                 numPlanes,
-		int32&				cullingPlaneIndex = dummy,
-		const uint32  		testMask = -1) const;
-
 public:
 
     /** Does not initialize the fields */
@@ -182,23 +163,10 @@ public:
 		const uint32  			testMask,
         uint32&                 childMask) const;
 
-    /** Same as culledBy, but assumes the box is finite (faster) */
-	bool culledByFinite(
-		const Array<Plane>&		plane,
-		int32&					cullingPlaneIndex,
-		const uint32  			testMask,
-        uint32&                 childMask) const;
-
     /**
      Conservative culling test that does not produce a mask for children.
      */
 	bool culledBy(
-		const Array<Plane>&		plane,
-		int32&					cullingPlaneIndex = dummy,
-		const uint32  			testMask		  = -1) const;
-
-    /** Same as culledBy, but assumes the box is finite (faster) */
-	bool culledByFinite(
 		const Array<Plane>&		plane,
 		int32&					cullingPlaneIndex = dummy,
 		const uint32  			testMask		  = -1) const;

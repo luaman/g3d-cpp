@@ -718,7 +718,7 @@ private:
 
         // Test values at this node against remaining planes
         for (int v = node->valueArray.size() - 1; v >= 0; --v) {
-            if (! node->valueArray[v].bounds.culledByFinite(plane, dummy, parentMask)) {
+            if (! node->valueArray[v].bounds.culledBy(plane, dummy, parentMask)) {
                 members.append(node->valueArray[v].value);
             }
         }
@@ -728,7 +728,7 @@ private:
         // Iterate through child nodes
         for (int c = 0; c < 2; ++c) {
             if (node->child[c] &&
-                ! node->child[c]->splitBounds.culledByFinite(plane, dummy, parentMask, childMask)) {
+                ! node->child[c]->splitBounds.culledBy(plane, dummy, parentMask, childMask)) {
                 // This node was node culled
                 getIntersectingMembers(plane, members, node->child[c], childMask);
             }

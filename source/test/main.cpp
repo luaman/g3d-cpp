@@ -39,6 +39,7 @@ void measureBSPPerformance() {
 
     uint64 bspcount, arraycount, boxcount;
 
+    // Run twice to get cache issues out of the way
     for (int it = 0; it < 2; ++it) {
         Array<Plane> plane;
         plane.append(Plane(Vector3(-1, 0, 0), Vector3(5, 0, 0)));
