@@ -1900,8 +1900,7 @@ int main(int argc, char* argv[]) {
         RenderDevice* renderDevice = new RenderDevice();
         renderDevice->init();
         measureRDPushPopPerformance(renderDevice);
-        while (true);
-
+       
         measureBSPPerformance();
         measureTriangleCollisionPerformance();
         measureAABoxCollisionPerformance();

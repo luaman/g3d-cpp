@@ -13,7 +13,7 @@
 #include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
 
-#if defined(G3D_OSX)
+#if (defined(G3D_OSX)||defined(G3D_MINGW32))
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 #else

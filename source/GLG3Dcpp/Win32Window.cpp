@@ -26,7 +26,9 @@
 using G3D::_internal::_DirectInput;
 
 #include <time.h>
+#if !defined(G3D_MINGW32)
 #include <crtdbg.h>
+#endif
 #include <sstream>
 
 /*
@@ -60,12 +62,12 @@ static bool keyStates[SDLK_LAST];
 static bool sdlKeysInitialized = false;
 
 // Prototype static helper functions at end of file
-bool ChangeResolution(int, int, int, int);
-void makeKeyEvent(int, int, GEvent&);
-void mouseButton(bool, int, DWORD, GEvent&);
-void initDI8KeyMap();
-void initWin32KeyMap();
-void printPixelFormatDescription(int, HDC, TextOutput&);
+static bool ChangeResolution(int, int, int, int);
+static void makeKeyEvent(int, int, GEvent&);
+static void mouseButton(bool, int, DWORD, GEvent&);
+static void initDI8KeyMap();
+static void initWin32KeyMap();
+static void printPixelFormatDescription(int, HDC, TextOutput&);
 
 Win32Window::Win32Window(const GWindowSettings& s) {
     initWGL();

@@ -14,7 +14,10 @@
 
 #include "Window.h"
 #include <time.h>
+
+#if !defined(__MINGW32__)
 #include <crtdbg.h>
+#endif
 
 bool Window::create(
     const std::string&  name,

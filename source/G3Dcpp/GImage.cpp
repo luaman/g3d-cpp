@@ -11,7 +11,7 @@
 #include "G3D/TextOutput.h"
 
 extern "C" {
-#ifdef G3D_WIN32
+#ifdef _MSC_VER
 	#include "../IJG/jconfig.h"
 	#include "../IJG/cdjpeg.h"
 #else

@@ -28,9 +28,15 @@
 #include <stdio.h>
 #include "G3D/BinaryOutput.h"
 
+#ifdef _MSC_VER
 extern "C" {
     #include "../IJG/jpeglib.h"
 }
+#else
+extern "C" {
+    #include <jpeglib.h>
+}
+#endif
 
 
 #ifdef G3D_WIN32
@@ -119,7 +125,7 @@ int64 fileLength(const std::string& filename) {
 
 FILE* createTempFile() {
     // Added to the G3D version of jpeglib
-#ifdef G3D_WIN32
+#ifdef _MSC_VER
     return _robustTmpfile();
 #else
     return tmpfile();

@@ -38,7 +38,7 @@ using _internal::_DirectInput;
 class Win32Window : public GWindow {
 private:
 	
-    friend Win32APIWindow;
+    friend class Win32APIWindow;
 
 	GWindowSettings		 settings;
 	int                  _width;
@@ -78,7 +78,6 @@ private:
 
     // Special private constuctor for Win32APIWindow
     explicit Win32Window() {}
-
     
 	/** Constructs from a new window */
 	explicit Win32Window(const GWindowSettings& settings);

@@ -131,7 +131,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,      settings.rgbBits);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,       settings.rgbBits);
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,      settings.alphaBits);
-    SDL_GL_SetAttribute(SDL_GL_STEREO,          settings.stereo);
+	SDL_GL_SetAttribute(SDL_GL_STEREO,          settings.stereo);
 
     #if SDL_FSAA
         if (settings.fsaaSamples > 1) {

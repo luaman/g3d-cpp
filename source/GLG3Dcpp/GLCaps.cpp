@@ -369,7 +369,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
             (glMultiTexCoord4fvARB == NULL))) {
             _supports_GL_ARB_multitexture = false;
             #ifdef G3D_WIN32
-                *((void**)&glActiveTextureARB) = glIgnore;
+                *((void**)&glActiveTextureARB) = (void*)glIgnore;
             #endif
         }
 

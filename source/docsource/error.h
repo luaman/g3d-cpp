@@ -146,11 +146,6 @@ etc...
 
 Odds are you're linking against the wrong version of the libraries. Current G3D distributions include two versions of windows libraries. For MSVC version 6, the libraries reside in win32-lib, and  for version 7.0 (MSVC dot net) win32-lib7. Note there are TWO MSVC "dot net" versions, 7.0 (2002) and 7.1 (2003). They are incompatible with each other. If you have the latest 7.1 version, or any more recent version (such as the free Visual C++ 2005 Express Beta) you will need to build the libraries on your own.
 
-<P><B>Building with Dev-C++</B><P>
-Dev-C++ is currently and unsupported build environment for G3D. That is, Windows MSVC++ 6, Windows Visual Studio .NET (MSVC++ 7.0), Linux x86 gcc 3.3, and OS X Xcode are the only supported build environments. Though there is no official effort to get it to work, there has been community interest in supporting Dev-C++.
-
-Committed developers can feel free to submit their progress to the G3D forums to contribute to the cause, but there are some considerable hurdles. Specifically, if you define an MSVC build, you will get CRT debug routines that don't exist in Dev C++. Your best bet might be to define a proper MSVC version in the build. Then, create a header which fills in missing data and defines which this build requires. Examples are CRT function calls and perhaps some other library calls. 
-
 <P><B>Building with Visual C++ 2005 Express Beta</B><P>
 To build G3D with Microsoft's free compiler, you will need to link against Windows platform libraries not included with the software. Specifically, user32.lib and gdi32.lib are included in the Windows Core SDK.
 

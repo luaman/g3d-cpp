@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added Dev C++ support
      <LI> Changed GLight== to not use memcpy (was causing issues due to byte padding on some compilers)
      <LI> Made CoordinateFrame destructor non-virtual (eliminates vtable)
      <LI> Added new FAQ documentation

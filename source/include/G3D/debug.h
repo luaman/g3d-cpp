@@ -14,7 +14,7 @@
 #define G3D_DEBUG_H
 
 #include "G3D/platform.h"
-#ifdef G3D_WIN32
+#ifdef _MSC_VER
     #include <crtdbg.h>
 #endif
 
@@ -36,7 +36,7 @@ namespace G3D {
  this will helpfully return "false" for a stack pointer.
  */
 inline bool isValidHeapPointer(const void* x) {
-    #ifdef G3D_WIN32
+    #ifdef _MSC_VER
         return (_CrtIsValidHeapPointer(x) != 0) && (x != (void*)0xcccccccc) && (x != (void*)0xdeadbeef) && (x != (void*)0xfeeefeee);
     #else
         return x != NULL;
@@ -49,7 +49,7 @@ inline bool isValidHeapPointer(const void* x) {
  Useful for debugging purposes.
  */
 inline bool isValidPointer(const void* x) {
-    #ifdef G3D_WIN32
+    #ifdef _MSC_VER
         return (_CrtIsValidPointer(x, 0, true) != 0) && (x != (void*)0xcccccccc) && (x != (void*)0xdeadbeef) && (x != (void*)0xfeeefeee);
     #else
         return x != NULL;

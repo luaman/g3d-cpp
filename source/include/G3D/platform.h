@@ -21,6 +21,9 @@
 
 #ifdef _MSC_VER 
     #define G3D_WIN32 
+#elif __MINGW32__
+    #define G3D_WIN32 
+    #define G3D_MINGW32 
 #elif __linux__ 
     #define G3D_LINUX
 #elif __APPLE__ 
@@ -29,7 +32,7 @@
     #error Unknown platform 
 #endif
 
-#if defined(G3D_WIN32)
+#ifdef _MSC_VER
     #define SSE
 #endif
 

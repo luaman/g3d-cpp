@@ -83,6 +83,25 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
    </OL>
    </LI>
 
+   <LI><B>Dev-C++</B>
+   
+   Dev-C++ libraries must be first built. The project files are are in the source directory: Graphics3D.dev and G3DGL.dev. Follow these steps to set up and build the library:
+   <OL>
+   <LI>Go to Tools:Check for Updates/Packages. Select the devpaks.org Community Devpaks server, click check for updates, and within 
+   the list, select <B>zlib, libjpeg, SDL</B>. Download and install these, then again for libpng. Libpng is dependent zlib so you need to first install zlib before you check libpng.
+   <LI>Go to Tools:Compiler Options, click the directories tab, and the C++ includes under that.
+   <LI> Add the %G3D
+   include directory, G3D_ROOT/include.
+   <LI>In the same panel, select "Libraries" tab.
+   Add the %G3D library directory, G3D_ROOT/<B>mingw-lib</B>.
+   <LI>Open and compile Graphics3D.dev
+   <LI>Open and compile GLG3D.dev
+   <LI>Copy the libraries G3D_ROOT/../temp/release/g3d/libG3D.a and G3D_ROOT/../temp/release/glg3d/libGLG3D.a to the mingw32-lib directory.
+   </OL>
+   
+   At this point you can now compile new G3D projects, and the demos included in the demo directories.
+   </LI>
+   
   <LI>
    <B>For each project you create</B>, copy <CODE>SDL.dll</CODE>, <CODE>glut32.dll</CODE>, 
       and <CODE>zlib1.dll</CODE>
@@ -194,6 +213,6 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
      <P>
 
      <B>G3D \#defines</B> one of the following based on the platform:
-     <B>G3D_WIN32, G3D_LINUX, G3D_OSX</B>
+     <B>G3D_WIN32, G3D_MINGW32, G3D_LINUX, G3D_OSX</B>
    <HR>
   */
