@@ -253,7 +253,7 @@ public:
             }
 
             // If the right child overlaps the box, recurse into it
-            if (child[1] != NULL) && (box.high()[splitAxis] > splitLocation)) {
+            if ((child[1] != NULL) && (box.high()[splitAxis] > splitLocation)) {
                 child[1]->getIntersectingMembers(box, members);
             }
         }
