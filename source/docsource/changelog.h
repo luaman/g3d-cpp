@@ -12,6 +12,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::VARArea::gl_vertexBufferObject and G3D::VARArea::gl_basePointer for breaking
+          the VARArea abstraction.
      <LI> GLG3D.h no longer links against SDLMain.lib on Windows if _CONSOLE is defined
           (since console programs have no WinMain).
      <LI> Moved contrib/Win32Window to G3D::Win32Window

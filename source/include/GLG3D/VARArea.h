@@ -125,6 +125,30 @@ public:
 	size_t peakAllocatedSize() const;
 
     /**
+     Provided for breaking the VARArea abstraction; use G3D::VAR and 
+     G3D::RenderDevice in general.
+
+     When using the OpenGL vertex buffer API, this is the underlying 
+     OpenGL vertex buffer object.  It is zero when using system memory.
+     The caller cannot control whether VBO is used or not; G3D selects
+     the best method automatically.
+     */
+    uint32 gl_vertexBufferObject() const {
+        return glbuffer;
+    }
+
+    /**
+     Provided for breaking the VARArea abstraction; use G3D::VAR and 
+     G3D::RenderDevice in general.
+
+     When using system memory, this is a pointer to the beginning of 
+     the system memory block in which data is stored.  Null when using VBO.
+     */
+    void*  gl_basePointer() const {
+        return basePointer;
+    }
+
+    /**
      Blocks the CPU until all rendering calls referencing 
      this area have completed.
      */
