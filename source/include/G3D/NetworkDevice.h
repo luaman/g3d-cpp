@@ -134,12 +134,18 @@ inline bool operator!=(const NetAddress& a, const NetAddress& b) {
 
 /**
  Interface for data sent through a conduit.
+ NetMessages automatically serialize and deserialize themselves when
+ sent through ReliableConduit and LightweightConduit.  An application
+ contains many subclasses of NetMessage, one for each kind of message
+ (e.g. SignOnMessage, CreatePlayer, ChatMessage, PlaySoundMessage, 
+ SignOffMessage).  Because the specific messages needed depend on the
+ application, they are not part of G3D.
  */
 class NetMessage {
 public:
     virtual ~NetMessage() {}
 
-    /** This must return a value even for an uninitalized method.
+    /** This must return a value even for an uninitalized instance.
        Create an enumeration for your message types and return
        one of those values.  It will be checked on both send and
        receive as a form of runtime type checking. 
@@ -286,10 +292,31 @@ typedef ReferenceCountedPointer<class ReliableConduit> ReliableConduitRef;
 
 
 /**
- Provides fast but unreliable transfer of messages.  LightweightConduits
- are implemented using UDP.  On a LAN messages are extremely likely to arrive.
- On the internet, some messages may be dropped.  The receive order of successively sent
- messages is not guaranteed.
+ Provides fast but unreliable transfer of messages. 
+ On a LAN, LightweightConduit will probably never drop messages but you <I>might</I>
+ get your messages out of order.  On an internet connection it might drop messages 
+ altogether.  Messages are never corrupted, however.  LightweightConduit requires a
+ little less setup and overhead than ReliableConduit.  ReliableConduit guarantees 
+ message delivery and order but requires a persistent connection.
+ 
+To set up a LightweightConduit (assuming you have already made subclasses of G3D::NetMessage based on your application's pcommunication protocol):
+
+[Server Side]
+<OL>
+<LI> Create a G3D::NetworkDevice on program startup (if you use G3D::GApp, it will do this for you)
+<LI> Call G3D::NetworkDevice::createLightweightConduit(port, true, false), where port is the port on which you will receive messages.
+<LI> Poll G3D::LightWeightcontuit::messageWaiting from your main loop.  When it is true (or, equivalently, when G3D::LightWeightcontuit::waitingMessageType is non-zero) there is an incoming message.
+<LI> To read the incoming message, call G3D::LightWeightconduit::receive with the appropriate subclass of G3D::NetMessage. G3D::LightWeightcontuit::waitingMessageType tells you what subclass is needed (you make up your own message constants for your program; numbers under 1000 are reserved for G3D's internal use).
+<LI> When done, simply set the G3D::LightweightConduitRef to NULL or let it go out of scope and the conduit cleans itself up automatically.
+</OL>
+
+[Client Side]
+<OL>
+<LI> Create a G3D::NetworkDevice on program startup (if you use G3D::GApp, it will do this for you)
+<LI> Call G3D::NetworkDevice::createLightweightConduit().  If you will broadcast to all servers on a LAN, set the third optional argument to true (the default is false for no broadcast).  You can also set up the receive port as if it was a server to send and receive from a single LightweightConduit.
+<LI> To send, call G3D::LightweightConduit::send with the target address and a pointer to an instance of the message you want to send.
+<LI> When done, simply set the G3D::LightweightConduitRef to NULL or let it go out of scope and the conduit cleans itself up automatically.
+</OL>
  */
 class LightweightConduit : public Conduit {
 private:
