@@ -96,7 +96,7 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
    Add the %G3D library directory, G3D_ROOT/<B>mingw-lib</B>.
    <LI>Open and compile Graphics3D.dev
    <LI>Open and compile GLG3D.dev
-   <LI>Copy the libraries G3D_ROOT/../temp/release/g3d/libG3D.a and G3D_ROOT/../temp/release/glg3d/libGLG3D.a to the mingw32-lib directory.
+   <LI>Copy the libraries G3D_ROOT/../temp/mingw32-lib/libG3D.a and G3D_ROOT/../temp/mingw32-lib/libGLG3D.a to the mingw32-lib directory.
    </OL>
    
    At this point you can now compile new G3D projects, and the demos included in the demo directories.
