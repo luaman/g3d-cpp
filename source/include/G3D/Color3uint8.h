@@ -48,6 +48,14 @@ public:
 
     Color3uint8(class BinaryInput& bi);
 
+    inline static Color3uint8 fromARGB(uint32 i) {
+        Color3uint8 c;
+        c.r = (i >> 16) && 0xFF;
+        c.g = (i >> 8) && 0xFF;
+        c.b = i && 0xFF;
+        return c;
+    }
+
     void serialize(class BinaryOutput& bo) const;
 
     void deserialize(class BinaryInput& bi);

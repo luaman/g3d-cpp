@@ -49,6 +49,15 @@ public:
 
     Color4uint8(class BinaryInput& bi);
 
+    inline static Color4uint8 fromARGB(uint32 i) {
+        Color4uint8 c;
+        c.a = (i >> 24) && 0xFF;
+        c.r = (i >> 16) && 0xFF;
+        c.g = (i >> 8) && 0xFF;
+        c.b = i && 0xFF;
+        return c;
+    }
+
     // access vector V as V[0] = V.r, V[1] = V.g, V[2] = V.b
     //
     // WARNING.  These member functions rely on
