@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-09-18
+ @edited  2003-10-06
 */
 
 #ifndef G3D_MESHALG_H
@@ -116,6 +116,36 @@ public:
         const Array< Array<int> >& adjacentFaceArray,
         Array<Vector3>&         vertexNormalArray,
         Array<Vector3>&         faceNormalArray);
+
+    /**
+     Welds nearby and colocated elements of the <I>oldVertexArray</I> together so that
+     <I>newVertexArray</I> contains no vertices within <I>radius</I> of one another.
+     This is useful for downsampling meshes and welding cracks created by artist errors
+     or numerical imprecision.  It is not guaranteed to fix cracks but the probability of
+     not fixing them (with a suitablly large radius) approaches zero.
+
+     The two integer arrays map indices back and forth between the arrays according to:
+     <PRE>
+     oldVertexArray[toOld[ni]] == newVertexArray[ni]
+     oldVertexArray[oi] == newVertexArray[toNew[ni]]
+     </PRE>
+
+     Note that newVertexArray is never longer than oldVertexArray and is shorter when
+     vertices are welded.
+
+     Welding with a large radius will effectively compute a lower level of detail for
+     the mesh.
+
+     The welding method runs in roughly linear time in the length of oldVertexArray--
+     a uniform spatial grid is used to achieve nearly constant time vertex collapses
+     for uniformly distributed vertices.
+     */
+    static void computeWeld(
+        const Array<Vector3>& oldVertexArray,
+        Array<Vector3>&       newVertexArray,
+        Array<int>&           toNew,
+        Array<int>&           toOld,
+        double                radius);
 
 protected:
 

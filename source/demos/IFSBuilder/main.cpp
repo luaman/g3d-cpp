@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
         */
 
         model = new IFSModel(filename[i]);
-        model->name = "Teapot";
+       // model->name = "Teapot";
         
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");

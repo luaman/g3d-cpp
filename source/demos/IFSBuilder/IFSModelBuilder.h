@@ -13,8 +13,6 @@
 
 #include <G3DAll.h>
 
-// We construct a grid to find neighboring vertices in O(n/g^3) time
-#define GRID_RES 1
 
 /**
  Used by IFSModel for loading.
@@ -24,16 +22,10 @@ public:
     /** Indices of vertices in <B>or near</B>  a grid cell. */
     typedef Array<int> List;
 
-    /** Vertices that are within this distance of each other are considered
-     close (colocated) */
     static const double CLOSE;
-
 private:
    
     std::string                 name;
-
-
-    List grid[GRID_RES][GRID_RES][GRID_RES];
     
     /**
      All of the triangles, as a long triangle list.
@@ -42,10 +34,6 @@ private:
 
     void centerTriList();
     void computeBounds(Vector3& min, Vector3& max);
-
-    /** Gets the index of a vertex, adding it to the
-        model's list if necessary. */
-    int getIndex(const Vector3& v, class IFSModel* model);
 
 public:
 

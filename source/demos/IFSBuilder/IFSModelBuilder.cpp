@@ -4,13 +4,14 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-09-18
+  @edited  2003-10-06
  */
 
 #include "IFSModelBuilder.h"
 #include "IFSModel.h"
 
-const double IFSModelBuilder::CLOSE = 0.02;
+const double IFSModelBuilder::CLOSE = 0.01;
+
 
 void IFSModelBuilder::setName(const std::string& n) {
     name = n;
@@ -23,17 +24,16 @@ void IFSModelBuilder::commit(IFSModel* model) {
     // Make the data fit in a unit cube
     centerTriList();
 
-    // Prime the vertex list
-    for (int i = 0; i < triList.size(); ++i) {
-        getIndex(triList[i], model);
-    }
+    Array<int> toNew, toOld;
+
+    MeshAlg::computeWeld(triList, model->geometry.vertexArray, toNew, toOld, CLOSE);
 
     // Construct triangles
     for (int t = 0; t < triList.size(); t += 3) {
         IFSModel::Triangle tri;
 
         for (int i = 0; i < 3; ++i) {
-           tri.index[i] = getIndex(triList[t + i], model);
+           tri.index[i] = toNew[t + i];
         }
 
         // Throw out zero size triangles
@@ -94,86 +94,6 @@ void IFSModelBuilder::commit(IFSModel* model) {
                 model->brokenEdgeArray.append(edge);
             }
         }
-    }
-}
-
-
-/**
- Computes the grid index from an ordinate on the range [-1, 1]
- */
-static int gridCoord(double x) {
-    return iClamp(iFloor((x + 1) * 0.5 * (GRID_RES - 1)), 0, GRID_RES - 1);
-}
-
-
-uint32 hashCode(const IFSModelBuilder::List* x) {
-    return (uint32)x;
-}
-
-
-int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
-
-    int closestIndex = -1;
-    double distanceSquared = inf;
-
-    int ix = gridCoord(v.x);
-    int iy = gridCoord(v.y);
-    int iz = gridCoord(v.z);
-
-    // Check against all vertices within CLOSE of this grid cube
-    const List& list = grid[ix][iy][iz];
-
-    for (int i = 0; i < list.size(); ++i) {
-        double d = (model->geometry.vertexArray[list[i]] - v).squaredLength();
-
-        if (d < distanceSquared) {
-            distanceSquared = d;
-            closestIndex = list[i];
-        }
-    }
-
-    if (distanceSquared <= CLOSE * CLOSE) {
-
-        return closestIndex;
-
-    } else {
-
-        // This is a new vertex
-        int newIndex = model->geometry.vertexArray.size();
-        model->geometry.vertexArray.append(v);
-
-        // Create a new vertex and store its index in the
-        // neighboring grid cells (usually, only 1 neighbor)
-
-        Set<List*> neighbors;
-
-        debugAssertM(CLOSE < (2.0 / GRID_RES), "CL must be less than one grid cell's width");
-
-        int ix = gridCoord(v.x);
-        int iy = gridCoord(v.y);
-        int iz = gridCoord(v.z);
-        neighbors.insert(&(grid[ix][iy][iz]));
-
-        for (int dx = -1; dx <= +1; ++dx) { 
-            int ix = gridCoord(v.x + dx * CLOSE);
-            for (int dy = -1; dy <= +1; ++dy) {
-                int iy = gridCoord(v.y + dy * CLOSE);
-                for (int dz = -1; dz <= +1; ++dz) { 
-                    int iz = gridCoord(v.z + dz * CLOSE);
-                    neighbors.insert(&(grid[ix][iy][iz]));
-                }
-            }
-        }
-
-        Set<List*>::Iterator neighbor(neighbors.begin());
-        Set<List*>::Iterator none(neighbors.end());
-
-        while (neighbor != none) {
-            (*neighbor)->append(newIndex);
-            ++neighbor;
-        }
-
-        return newIndex;
     }
 }
 
