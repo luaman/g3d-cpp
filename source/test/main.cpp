@@ -17,6 +17,7 @@ using namespace G3D;
 
 #ifdef _WIN32
 	#include "conio.h"
+    #include "Window.h"
 #endif
 #include <string>
 
@@ -658,14 +659,30 @@ void testCollision() {
 
 int main(int argc, char* argv[]) {
 
-    Triangle t(Vector3(-.413, -.49, -.52), Vector3(-.422, -.43, -.55), Vector3(-.402, -.39, -.61));
+    /*
+    Window app;
 
+    try {
+
+        G3D::CImage im("C:/tmp/md2/data/players/hunter/snowtiger.pcx");
+
+        app.create("Win32 Sample Program", im.width, im.height);
+        G3D::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
+
+    } catch (G3D::CImage::Error e) {
+
+        error("Critical Error", e.reason, true);
+        return -1;
+
+    }
+
+    app.run();
+
+    while (true);
     RenderDevice rd;
     Log debugLog("c:/tmp/log.txt");
     rd.init(800, 600, &debugLog);
-
-
-    while (true);
+    */
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");

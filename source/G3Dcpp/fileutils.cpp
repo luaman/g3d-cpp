@@ -4,15 +4,17 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2003-04-29
+ @edited  2003-08-10
  */
 
+#include "G3D/platform.h"
 #include "G3D/fileutils.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/g3dmath.h"
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifdef _MSC_VER
+
+#ifdef G3D_WIN32
    // Needed for _getcwd
    #include <direct.h>
    #include <io.h>
@@ -30,7 +32,7 @@ extern "C" {
 }
 
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
     // For CopyFile
     #include <windows.h>
     //for _mkdir and _stat
@@ -463,6 +465,21 @@ void getDirs(
 	bool						includePath) {
 
 	getFileOrDirList(filespec, files, false, includePath);
+}
+
+
+std::string basename(const std::string& filename) {
+    int i = filename.rfind("/");
+    int j = filename.rfind("\\");
+    if ((j < i) && (j >= 0)) {
+        i = j;
+    }
+
+    if (i == -1) {
+        return filename;
+    } else {
+        return filename.substr(i + 1, filename.length() - i);
+    }
 }
 
 }

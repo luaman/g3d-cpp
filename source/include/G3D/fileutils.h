@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2002-06-06
- @edited  2003-05-08
+ @edited  2003-08-10
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -116,6 +116,13 @@ void parseFilename(
     Array<std::string>& path,
     std::string&        base,
     std::string&        ext);
+
+
+/**
+ Returns the part of the filename that includes the base and ext from
+ parseFilename.
+ */
+std::string basename(const std::string& filename);
 
 } // namespace
 
