@@ -34,7 +34,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"
+				DebugInformationFormat="2"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -796,7 +796,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="G3Dcpp\NetMessage.cpp">
+				RelativePath="G3Dcpp\NetAddress.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
