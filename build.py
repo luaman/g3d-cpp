@@ -14,10 +14,10 @@ from buildlib import *
 version = "6_05-b04"
 
 # Setup versions for supporting programs
-aclocal    = "aclocal-1.7"
+aclocal    = "aclocal-1.6"
 autoconf   = "autoconf"
 autoheader = "autoheader"
-automake   = "automake-1.7"
+automake   = "automake-1.6"
 doxygen    = "doxygen"
 python     = "python"
 sdlconfig  = "sdl-config"
