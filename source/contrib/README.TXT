@@ -16,3 +16,5 @@ CurveEditor   - GUI spline editor.  By Morgan
 
 DrawLogo      - The code used to render the G3D logo.  By Morgan.
 
+Webcam        - Capture a live video feed to a G3D texture. By Peter Hunt, p222h@aol.com
+
