@@ -58,14 +58,16 @@ public:
 
     /** The vector <B>to</B> the sun */
     Vector3		    trueSunPosition;
-    Vector3                 sunPosition;
+    Vector3         sunPosition;
 
     /** The vector <B>to</B> the moon */
     Vector3		    trueMoonPosition;
-    Vector3                 moonPosition;
+    Vector3         moonPosition;
+	double			moonPhase;	
 
     /** The coordinate frame and vector related to the starfield */
     CoordinateFrame	    starFrame;
+	CoordinateFrame		trueStarFrame;
     Vector3		    starVec;
 
     /* Geographic position */
