@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-09-29
+ @edited  2003-10-01
  */
 
 
@@ -412,17 +412,8 @@ bool RenderDevice::supportsOpenGLExtension(
 
 
 bool RenderDevice::init(
-    int                 width, 
-    int                 height,
-    Log*                log,
-    double              lightSaturation,
-    bool                fullscreen,
-    size_t              varVideoMemory,
-    bool                asyncVideoRefresh,
-    int                 dcolorBits,
-    int                 dalphaBits,
-    int                 ddepthBits,
-    int                 dstencilBits) {
+    const RenderDeviceSettings& settings,
+    Log*                        log) {
 
     debugAssert(! initialized());
 
@@ -433,7 +424,7 @@ bool RenderDevice::init(
     beginEndFrame = 0;
     if (debugLog) {debugLog->section("Initialization");}
 
-    debugAssert((lightSaturation >= 0.5) && (lightSaturation <= 2.0));
+    debugAssert((settings.lightSaturation >= 0.5) && (settings.lightSaturation <= 2.0));
 
     // Under Windows, reset the last error so that our debug box
     // gives the correct results
@@ -441,17 +432,18 @@ bool RenderDevice::init(
         SetLastError(0);
     #endif
 
-	const int minimumDepthBits    = iMin(16, ddepthBits);
-	const int desiredDepthBits    = ddepthBits;
+	const int minimumDepthBits    = iMin(16, settings.depthBits);
+	const int desiredDepthBits    = settings.depthBits;
 
-	const int minimumStencilBits  = dstencilBits;
-	const int desiredStencilBits  = dstencilBits;
+	const int minimumStencilBits  = settings.stencilBits;
+	const int desiredStencilBits  = settings.stencilBits;
 
     const int desiredTextureUnits = 8;
 
     if (debugLog) {debugLog->println("Setting video mode");}
-	setVideoMode(width, height, minimumDepthBits, desiredDepthBits, 
-		minimumStencilBits, desiredStencilBits, dcolorBits,dalphaBits, fullscreen);
+	setVideoMode(settings.width, settings.height, minimumDepthBits, desiredDepthBits, 
+		minimumStencilBits, desiredStencilBits, settings.rgbBits, settings.alphaBits,
+        settings.fullScreen, settings.fsaaSamples);
 
     // Get the number of texture units
     glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &_numTextureUnits);
@@ -485,7 +477,7 @@ bool RenderDevice::init(
     }
 
     // Var must be initialized after extensions are loaded
-	varSystem = new VARSystem(this, varVideoMemory, debugLog);
+	varSystem = new VARSystem(this, settings.varVideoMemory, debugLog);
 
     if (debugLog) {
         debugLog->printf("Operating System: %s\n", System::operatingSystem().c_str());
@@ -605,9 +597,9 @@ bool RenderDevice::init(
 
              desiredTextureUnits, _numTextureUnits, rawTextureUnits, isOk(_numTextureUnits >= desiredTextureUnits),
 
-             width, "ok",
-             height, "ok",
-             (fullscreen ? "Fullscreen" : "Windowed"), "ok",
+             settings.width, "ok",
+             settings.height, "ok",
+             (settings.fullScreen ? "Fullscreen" : "Windowed"), "ok",
              
              "glMultiTexCoord2fvARB", isOk(glMultiTexCoord2fvARB),
              "glMultiTexCoord2fARB", isOk(glMultiTexCoord2fARB),
@@ -673,13 +665,13 @@ bool RenderDevice::init(
     // Set the refresh rate
     if (wglSwapIntervalEXT != NULL) {
         if (debugLog) {
-            if (asyncVideoRefresh) {
+            if (settings.asychronous) {
                 debugLog->printf("wglSwapIntervalEXT(0);\n");
             } else {
                 debugLog->printf("wglSwapIntervalEXT(1);\n");
             }
         }
-        wglSwapIntervalEXT(asyncVideoRefresh ? 0 : 1);
+        wglSwapIntervalEXT(settings.asychronous ? 0 : 1);
     }
 
     SDL_EnableUNICODE(1);
@@ -690,11 +682,11 @@ bool RenderDevice::init(
 	glClearDepth(1.0);
 
     {
-        if (debugLog) debugLog->printf("Setting brightness to %g\n", lightSaturation);
+        if (debugLog) debugLog->printf("Setting brightness to %g\n", settings.lightSaturation);
         // Adjust the gamma so that changing the 
         // light intensities won't affect the actual screen
         // brightness.  This method due to John Carmack.
-        this->lightSaturation = lightSaturation;
+        lightSaturation = settings.lightSaturation;
         brightScale = 1.0 / lightSaturation;
         setGamma(lightSaturation, 1.0);
         if (debugLog) debugLog->println("Brightness set.");
@@ -881,7 +873,8 @@ void RenderDevice::setVideoMode(
     int desiredStencilBits,
     int colorBits,
     int alphaBits,
-    bool fullscreen) {
+    bool fullscreen,
+    int fsaaSamples) {
 
 	// Request various OpenGL parameters
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, desiredDepthBits);
@@ -891,6 +884,11 @@ void RenderDevice::setVideoMode(
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, colorBits);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, colorBits);
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alphaBits);
+    if (fsaaSamples > 1) {
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, fsaaSamples);
+    }
+
 
 	// Create a width x height OpenGL screen 
     int flags =  SDL_HWSURFACE | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0);

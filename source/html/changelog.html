@@ -26,11 +26,15 @@
 	   <LI>Replace G3D::PI with G3D_PI
 	   <LI>Replace G3D::HALF_PI with G3D_HALF_PI
 	   <LI>Replace G3D::TWO_PI with G3D_TWO_PI
+	   <LI>Replace RenderDevice::init(w, h, log, ...) with RenderDevice::init(RenderDeviceSettings(w, h, ...), log)
   </BLOCKQUOTE>
 
 
    <P>
    <UL>
+     <LI> Deprecated old RenderDevice::init method.	      
+     <LI> Full screen anti-aliasing (FSAA)
+     <LI> G3D::RenderDeviceSettings
      <LI> All 2,3,4 character swizzles for Vector2, Vector3, Vector4 are defined.
      <LI> G3D::rsqrt
      <LI> Most vector methods are also defined as functions now

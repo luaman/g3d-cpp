@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-09-27
+  @edited  2003-10-01
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -57,6 +57,87 @@ public:
         height((int)height) {}
 };
 
+
+/**
+ Used by RenderDevice::init
+ */
+class RenderDeviceSettings {
+public:
+    int     width;
+    int     height;
+
+    /* The number of bits in <B>each</B> color channel of the frame buffer.
+       5, <B>8</B>.*/
+    int     rgbBits;
+
+    /* The number of bits in the alpha channel of the frame buffer. 0, 1, <B>8</B> */
+    int     alphaBits;
+
+    /** <B>8</B> */
+    int     stencilBits;
+
+    /** 16, <B>24</B>, 32 */
+    int     depthBits;
+
+    /** Will you accept a software rendering pipeline? */
+    bool    hardware;
+
+    bool    fullScreen;
+
+    /** Should buffer flips be un-hitched from refresh rate?  <B>true</B>, false.  True
+        generally gives higher frame rates.*/
+    bool    asychronous;
+
+    /** In cycles/sec */
+    int     refreshRate;
+
+
+    /** Number of samples per pixel for anti-aliasing purposes.  <B>1</B> (none), 4, 8 */
+    int     fsaaSamples;
+
+    /** The number of bytes of video memory to allocate
+      for vertex arrays.  If 0, the VAR system is not initialized.  <B>If nonzero,
+	  you cannot use glDrawArrays or any other vertex array call from raw OpenGL</B>.  
+      Use the corresponding RenderDevice methods instead.  If you prefer to use the raw
+	  OpenGL calls, do not initialize the VAR system.  Default is 
+        1MB = <B>1024*1024</B> bytes */
+    size_t  varVideoMemory;
+
+    /** Specify the value at which lighting saturates
+     before it is applied to surfaces.  1.0 is the default OpenGL value,
+     higher numbers increase the quality of bright lighting at the expense of
+     color depth.Default is 1.0.  Set
+        to 2.0 to make a Color3::WHITE light 50% of the maximum brightness. */
+    double  lightSaturation;
+
+    RenderDeviceSettings(
+        int     _width               = 800,
+        int     _height              = 600,
+        double  _lightSaturation     = 1.0,
+        bool    _fullScreen          = false,
+        size_t  _varVideoMemory      = 1024 * 1024,
+        bool    _asychronous         = true,
+        int     _rgbBits             = 8,
+        int     _alphaBits           = 8,
+        int     _depthBits           = 24,
+        int     _stencilBits         = 8,
+        int     _fsaaSamples         = 1,
+        bool    _hardware            = true,
+        int     _refreshRate         = 85) :
+            width(_width),
+            height(_height), 
+            rgbBits(_rgbBits),
+            alphaBits(_alphaBits),
+            depthBits(_depthBits),
+            stencilBits(_stencilBits),
+            fsaaSamples(_fsaaSamples),
+            hardware(_hardware),
+            fullScreen(_fullScreen),
+            asychronous(_asychronous), 
+            varVideoMemory(_varVideoMemory),
+            lightSaturation(_lightSaturation),
+            refreshRate(_refreshRate) {}
+};
 
 /**
  You must call RenderDevice::init() before using the RenderDevice.
@@ -263,7 +344,8 @@ private:
         int                     desiredStencilBits,
         int                     colorBits,
         int                     alphaBits,
-        bool                    fullscreen);
+        bool                    fullscreen,
+        int                     fsaaSamples);
 
     /**
      Initialize the OpenGL extensions.
@@ -1015,23 +1097,11 @@ public:
      rendered in a scene for profiling purposes.
      */
     int                 polygonCount;
-    
+ 
+    bool init(const RenderDeviceSettings& settings, class Log* log = NULL);
+
     /**
-     Call this exactly once to initialize the system.
-
-     @param lightSaturation Specify the value at which lighting saturates
-     before it is applied to surfaces.  1.0 is the default OpenGL value,
-     higher numbers increase the quality of bright lighting at the expense of
-     color depth.
-
-     @param varVideoMemory  The number of bytes of video memory to allocate
-      for vertex arrays.  If 0, the VAR system is not initialized.  <B>If nonzero,
-	  you cannot use glDrawArrays or any other vertex array call from raw OpenGL</B>.  
-      Use the corresponding RenderDevice methods instead.  If you prefer to use the raw
-	  OpenGL calls, do not initialize the VAR system.
-
-     @param colorBits The number of desired bits in each color channel of the frame buffer
-     @param alphaBits The number of desired bits in the alpha channel of the frame buffer
+     @deprecated
      */
     bool init(
         int             width,
@@ -1044,7 +1114,10 @@ public:
         int             colorBits         = 8,
         int             alphaBits         = 8,
         int             depthBits         = 24,
-        int             stencilBits       = 8);
+        int             stencilBits       = 8) {
+        return init(RenderDeviceSettings(width, height, lightSaturation, fullscreen, varVideoMemory,
+            asyncVideoRefresh, colorBits, alphaBits, depthBits, stencilBits), log);
+    }
 
     /** Returns true after RenderDevice::init has been called. */
     bool initialized() const;
