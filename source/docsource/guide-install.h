@@ -136,6 +136,8 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 
   @section osx OS X
 
+  See \link guidemacosx Setting Up a Project in Mac OS X\endlink for complete instructions on installing %G3D on the mac. 
+
   @section build Building G3D
 
   You don't have to build %G3D to use %G3D; the instructions above walk you through 

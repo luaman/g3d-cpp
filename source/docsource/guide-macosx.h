@@ -23,6 +23,20 @@ These instructions have been designed for OS X 10.3 (Panther) and Xcode 1.5.
 Previous versions should of Xcode should work acceptably. Project Builder
 might work, but hasn't been tested. 
 
+@section installg3d Installing G3D on Mac OS X
+<OL>
+<LI>
+Download the latest g3d_xxx.zip from <A HREF="http://g3d-cpp.sourceforge.net/#downloads">the sourceforge project page</A>. 
+</LI>
+<LI>
+Unzip the zip file. Put the directory g3d-xxx somewhere nice, such as <CODE>~/src/g3d/</CODE>. 
+</LI>
+<LI>Install <A HREF="http://libsdl.org">SDL</A> version 1.2.7. 
+</LI>
+That's it -- the rest of the "install" process is actually getting a project set up... which you'll have
+to do to experience %G3D, because we don't provide precompiled demos for the mac. (Sorry!)
+</OL>
+
 @section startingxcode Starting a new project in Xcode
 
 <ol>
@@ -72,6 +86,7 @@ Command-I (or the File/Get Info menu)
 <li>
 In the "All Settings" pane or in the "Search Paths" pane, add
 <tt>$(HOME)/Library/Frameworks</tt> to the "Framework Search Paths" entry.
+(In XCode 1.2: In the "Settings" drawer of the Styles pane, select General->Search Paths.)
 </li>
 </ol>
 
