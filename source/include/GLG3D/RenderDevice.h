@@ -965,7 +965,10 @@ private:
     friend class RenderDevice;
     friend class RenderDevice::VARSystem;
 
-    class RenderDevice* renderDevice;
+    /** The containing VARSystem.  This is needed 
+       so the VARArea can deregister itself on
+       deallocation.*/
+    RenderDevice::VARSystem*   varSystem;
 
 	/** Pointer to the memory. */
 	void*				basePointer;
@@ -986,7 +989,7 @@ private:
 	size_t				peakAllocated;
 
 	VARArea(
-        class RenderDevice* renderDevice, 
+        RenderDevice::VARSystem*  _varSystem,
         void*               _basePointer,
         size_t              _size);
 
