@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2002-12-07
+  @edited  2003-09-27
 */
 
 #ifndef G3D_MANUALCAMERACONTROLLER_H
@@ -23,7 +23,7 @@ namespace G3D {
     <LI> Create a G3D::RenderDevice
     <LI> Create a UserInput object (set the keyboard controls when creating it)
     <LI> Create a ManualCameraController
-    <LI> Invoke ManualCameraController::reset immediately before the rendering loop
+    <LI> Call ManualCameraController::setActive(true)
     <LI> Invoke ManualCameraController::doSimulation every time simulation is invoked (e.g. once per rendering iteration)
     <LI> Use ManualCameraController::getCoordinateFrame() to set the camera's position
   </OL>
@@ -40,29 +40,46 @@ class ManualCameraController {
     double                      pitch;
 	Vector3                     translation;
 
-    /** Used for tracking relative mouse movement.
-        These are in pixels. */
-    double                      oldMouseX;
-    double                      oldMouseY;
+    /** Where the first person camera system thinks the mouse is */
+    Vector2                     cameraMouse;
+
+    /**
+     Position from which we grabbed the mouse (where the
+     window system thinks the mouse is);
+     */
+    Vector2                     guiMouse;
 
     class RenderDevice*         renderDevice;
 
-    /** Mouse center in pixels */
-    int                         mCenterX;
-    int                         mCenterY;
+    /** Screen center in pixels */
+    Vector2                     center;
+
+    bool                        active;
+
+    /** Whether the app had focus on the previous call to simulate */
+    bool                        appHadFocus;
+
+    class UserInput*            userInput;
 
 public:
 
-    /** @param device The window that will lock the mouse. */
-	ManualCameraController(class RenderDevice* device);
+    /** You need to call setActive(true) before the controller will work. */
+	ManualCameraController(class RenderDevice* device, class UserInput* input);
+
+    /** Deactivates the controller */
+    virtual ~ManualCameraController();
+
+    /** When active, the ManualCameraController takes over the mouse.  It turns
+        off the mouse cursor and switches to first person controller style.
+
+        Use this to toggle between your menu system and first person camera control.*/
+    void setActive(bool a);
 
     /** Initial value is 10 */
     void setMoveRate(double metersPerSecond);
 
     /** Initial value is PI / 2 */
     void setTurnRate(double radiansPerSecond);
-
-    virtual ~ManualCameraController() {}
 
     /** Invoke immediately before entering the main game loop. */
     void reset();
@@ -72,8 +89,7 @@ public:
      Invoke once per simulation step.
 	 */
 	void doSimulation(
-        double                  elapsedTime,
-        class UserInput&        userInput);
+        double                  elapsedTime);
 
 	void setPosition(const Vector3& t) {
 		translation = t;

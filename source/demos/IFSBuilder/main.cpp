@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
     userInput    = new UserInput();
 
-    controller   = new ManualCameraController(renderDevice);
+    controller   = new ManualCameraController(renderDevice, userInput);
     controller->setMoveRate(.1);
 
     controller->setPosition(Vector3(1.5, 1.5, 1.5));
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     getFiles(in, filename, true);
 
     camera->setCoordinateFrame(controller->getCoordinateFrame());
-
+    controller->setActive(true);
 
     for (int i = 0; i < filename.size(); ++i) {
         std::string base = getFilename(filename[i]);
@@ -130,8 +130,8 @@ int main(int argc, char** argv) {
 
 
     // Cleanup
-    delete userInput;
     delete controller;
+    delete userInput;
     renderDevice->cleanup();
     delete renderDevice;
     delete debugLog;
@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
 
 void doSimulation(GameTime timeStep) {
     // Simulation
-    controller->doSimulation(max(0.1, min(0, timeStep)), *userInput);
+    controller->doSimulation(max(0.1, min(0, timeStep)));
     camera->setCoordinateFrame(controller->getCoordinateFrame());
 }
 

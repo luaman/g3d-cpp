@@ -11,7 +11,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2003-09-14
+  @edited  2003-09-27
  */ 
 
 #include <G3DAll.h>
@@ -37,15 +37,15 @@ public:
 };
 
 
-std::string             DATA_DIR        = "data/";
+std::string             DATA_DIR;
 
-Log*                    debugLog	= NULL;
+Log*                    debugLog	    = NULL;
 RenderDevice*           renderDevice	= NULL;
-CFontRef                font		= NULL;
-UserInput*              userInput	= NULL;
-Camera*			        camera		= NULL;
+CFontRef                font		    = NULL;
+UserInput*              userInput	    = NULL;
+Camera*			        camera		    = NULL;
 ManualCameraController* controller      = NULL;
-bool                    endProgram	= false;
+bool                    endProgram	    = false;
 Model*                  model           = NULL;
 VertexProgramRef        distort         = NULL;
 
@@ -67,8 +67,8 @@ int main(int argc, char** argv) {
     renderDevice->init(400, 400, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
 
     if (!renderDevice->supportsVertexProgram()) {
-      error ("Critical Error", "This demo requires a graphics card and driver with OpenGL Vertex programs.", true);
-      exit(-1);
+        error ("Critical Error", "This demo requires a graphics card and driver with OpenGL Vertex programs.", true);
+        exit(-1);
     }
 
 
@@ -80,11 +80,12 @@ int main(int argc, char** argv) {
 
     model        = new Model(DATA_DIR + "ifs/beethoven.ifs");
 
-    controller   = new ManualCameraController(renderDevice);
+    controller   = new ManualCameraController(renderDevice, userInput);
     controller->setMoveRate(1);
 
     controller->setPosition(Vector3(2, .2, -2));
     controller->lookAt(Vector3(-2,0,2));
+    controller->setActive(true);
 
     renderDevice->resetState();
     renderDevice->setColorClearValue(Color3(.1, .5, 1));
@@ -111,8 +112,8 @@ int main(int argc, char** argv) {
     } while (! endProgram);
 
     // Cleanup
-    delete userInput;
     delete controller;
+    delete userInput;
     renderDevice->cleanup();
     delete renderDevice;
     delete debugLog;
@@ -125,7 +126,7 @@ int main(int argc, char** argv) {
 
 void doSimulation(GameTime timeStep) {
     // Simulation
-    controller->doSimulation(max(0.1, min(0, timeStep)), *userInput);
+    controller->doSimulation(max(0.1, min(0, timeStep)));
 	camera->setCoordinateFrame(controller->getCoordinateFrame());
 }
 

@@ -96,11 +96,12 @@ int main(int argc, char** argv) {
 
     userInput    = new UserInput();
 
-    controller   = new ManualCameraController(renderDevice);
+    controller   = new ManualCameraController(renderDevice, userInput);
     controller->setMoveRate(4);
 
     controller->setPosition(Vector3(15, 20, 15));
     controller->lookAt(Vector3(-2,3,-5));
+    controller->setActive(true);
 
     scene        = new Scene();
 
@@ -149,8 +150,8 @@ int main(int argc, char** argv) {
 
     // Cleanup
     Model::freeModels();
-    delete userInput;
     delete controller;
+    delete userInput;
     renderDevice->cleanup();
     delete renderDevice;
     delete debugLog;
@@ -164,7 +165,7 @@ int main(int argc, char** argv) {
 
 void doSimulation(GameTime timeStep) {
     // Simulation
-    controller->doSimulation(max(0.1, min(0, timeStep)), *userInput);
+    controller->doSimulation(max(0.1, min(0, timeStep)));
     camera->setCoordinateFrame(controller->getCoordinateFrame());
 
     scene->simulate(1 / maxFrameRate);

@@ -101,10 +101,11 @@ int main(int argc, char** argv) {
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
 
-    ManualCameraController controller(renderDevice);
+    ManualCameraController* controller = new ManualCameraController(renderDevice, userInput);
 
-    controller.setPosition(Vector3(0, 10, -25));
-    controller.lookAt(Vector3::ZERO);
+    controller->setPosition(Vector3(0, 10, -25));
+    controller->lookAt(Vector3::ZERO);
+    controller->setActive(true);
 
 	renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
@@ -118,8 +119,8 @@ int main(int argc, char** argv) {
 
         // Simulation
 //        gameTime = (int)(gameTime + MINUTE * 5) % (int)DAY;
-        controller.doSimulation(.05, *userInput);
-	    camera->setCoordinateFrame(controller.getCoordinateFrame());
+        controller->doSimulation(.05);
+	    camera->setCoordinateFrame(controller->getCoordinateFrame());
 
         // Graphics
         renderDevice->beginFrame();
@@ -199,6 +200,7 @@ int main(int argc, char** argv) {
 
     // Cleanup
     delete sky;
+    delete controller;
     delete userInput;
     renderDevice->cleanup();
     delete renderDevice;

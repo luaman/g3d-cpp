@@ -147,7 +147,14 @@ public:
      */
 	void beginEvents();
 
+    /**
+     Sets the mouse position.
+     */
     void setMouseXY(int x, int y);
+
+    inline void setMouseXY(const Vector2& v) {
+        setMouseXY(v.x + 0.5, v.y + 0.5);
+    }
 
 	int getNumJoysticks() const;
 
@@ -163,6 +170,14 @@ public:
 	 Keyboard overrides joystick.
 	 */
 	double getY() const;
+
+    Vector2 getXY() const {
+        return Vector2(getX(), getY());
+    }
+
+    inline Vector2 getMouseXY() const {
+        return Vector2(mouseX, mouseY);
+    }
 
 	inline double getMouseX() const {
 		return mouseX;
@@ -191,6 +206,9 @@ public:
 
     /** An array of all keys pressed since the last poll() call. */
     void pressedKeys(Array<KeyCode>& code) const;
+
+    /** Returns true when this app is in the "foreground" */
+    bool appHasFocus() const;
 
 private:
 	/** Whether each direction key is up or down.*/

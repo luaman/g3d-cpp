@@ -444,8 +444,6 @@ bool RenderDevice::init(
 
     const int desiredTextureUnits = 8;
 
-    SDL_ShowCursor(SDL_DISABLE);
-
     if (debugLog) {debugLog->println("Setting video mode");}
 	setVideoMode(width, height, minimumDepthBits, desiredDepthBits, 
 		minimumStencilBits, desiredStencilBits, dcolorBits,dalphaBits, fullscreen);

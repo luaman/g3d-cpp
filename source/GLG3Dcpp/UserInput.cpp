@@ -4,12 +4,21 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2003-02-15
+  @edited  2003-09-27
  */
 
 #include "GLG3D/UserInput.h"
 
 namespace G3D {
+
+bool UserInput::appHasFocus() const {
+    uint8 s = SDL_GetAppState();
+    
+    return ((s & SDL_APPMOUSEFOCUS) != 0) &&
+           ((s & SDL_APPINPUTFOCUS) != 0) &&
+           ((s & SDL_APPACTIVE) != 0);
+}
+
 
 UserInput::UserInput(
     Table<KeyCode, UIFunction>* keyMapping) {
@@ -68,6 +77,7 @@ void UserInput::setKeyMapping(
     }
 }
 
+
 UserInput::~UserInput() {
 	// Close joystick, if opened
 	if (SDL_JoystickOpened(0)) {
@@ -107,6 +117,7 @@ void UserInput::beginEvents() {
     inEventProcessing = true;
     justPressed.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
 }
+
 
 void UserInput::endEvents() {
     debugAssert(inEventProcessing);

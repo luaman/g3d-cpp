@@ -7,12 +7,12 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-07-21
+  @edited  2003-09-27
  */ 
 
 #include <G3DAll.h>
 
-std::string             DATA_DIR        = "d:/libraries/g3d-6_00/data/";
+std::string             DATA_DIR;
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
@@ -35,6 +35,7 @@ void doUserInput();
 int main(int argc, char** argv) {
 
     // Initialize
+    DATA_DIR     = demoFindData();
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
     renderDevice->init(800, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
@@ -44,7 +45,7 @@ int main(int argc, char** argv) {
 
     userInput    = new UserInput();
 
-    controller   = new ManualCameraController(renderDevice);
+    controller   = new ManualCameraController(renderDevice, userInput);
     controller->setMoveRate(10);
 
     controller->setPosition(Vector3(15, 20, 15));
@@ -52,6 +53,8 @@ int main(int argc, char** argv) {
 
     renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
+
+    controller->setActive(true);
 
     RealTime now = getTime() - 0.001, lastTime;
 
@@ -71,8 +74,8 @@ int main(int argc, char** argv) {
 
 
     // Cleanup
-    delete userInput;
     delete controller;
+    delete userInput;
     renderDevice->cleanup();
     delete renderDevice;
     delete debugLog;
@@ -85,7 +88,7 @@ int main(int argc, char** argv) {
 
 void doSimulation(GameTime timeStep) {
     // Simulation
-    controller->doSimulation(clamp(0.0, timeStep, 0.1), *userInput);
+    controller->doSimulation(clamp(0.0, timeStep, 0.1));
 	camera->setCoordinateFrame(controller->getCoordinateFrame());
 }
 

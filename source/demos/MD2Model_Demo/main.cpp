@@ -43,25 +43,7 @@ RealTime getTime() {
 }
 
 
-void getModelNameArray() {
-    getDirs(DATA_DIR + "quake2/players/*", modelNameArray);
-
-    // Make sure these files all exist
-    for (int i = modelNameArray.size() - 1; i >= 0; --i) {
-        std::string s = modelNameArray[i];
-        if (! fileExists(DATA_DIR + "quake2/players/" + modelNameArray[i] + "/tris.md2")) {
-            modelNameArray.fastRemove(i);
-        }
-    }
-
-    if (modelNameArray.size() == 0) {
-        const char* choice[] = {"Ok"};
-        prompt("MD2 Demo Error", "No MD2 models found in data/players.  (Download some from polycount.com and expand them into the data directory)", choice, true);
-        exit(-1);
-    }
-
-    currentModel = 0;
-}
+void getModelNameArray();
 
 int main(int argc, char** argv) {
     DATA_DIR = demoFindData();
@@ -78,7 +60,7 @@ int main(int argc, char** argv) {
     userInput    = new UserInput();
 
     camera->setNearPlaneZ(-.1);
-    controller   = new ManualCameraController(renderDevice);
+    controller   = new ManualCameraController(renderDevice, userInput);
 
     controller->setPosition(Vector3(0, 1, -13));
     controller->lookAt(Vector3(0,1.6,-8));
@@ -94,6 +76,8 @@ int main(int argc, char** argv) {
     load(modelNameArray[currentModel]);
 
     RealTime now = getTime() - 0.001, lastTime;
+
+    controller->setActive(true);
 
     doSimulation(0);
     // Main loop
@@ -114,8 +98,8 @@ int main(int argc, char** argv) {
 
 
     // Cleanup
-    delete userInput;
     delete controller;
+    delete userInput;
     renderDevice->cleanup();
     delete renderDevice;
     delete debugLog;
@@ -125,7 +109,7 @@ int main(int argc, char** argv) {
 
 
 void doSimulation(GameTime timeStep) {
-    controller->doSimulation(clamp(0.0, timeStep, 0.1), *userInput);
+    controller->doSimulation(clamp(0.0, timeStep, 0.1));
     Vector3 v = controller->getPosition();
 
     // Keep the camera above the ground plane
@@ -206,3 +190,23 @@ void doUserInput() {
     userInput->endEvents();
 }
 
+
+void getModelNameArray() {
+    getDirs(DATA_DIR + "quake2/players/*", modelNameArray);
+
+    // Make sure these files all exist
+    for (int i = modelNameArray.size() - 1; i >= 0; --i) {
+        std::string s = modelNameArray[i];
+        if (! fileExists(DATA_DIR + "quake2/players/" + modelNameArray[i] + "/tris.md2")) {
+            modelNameArray.fastRemove(i);
+        }
+    }
+
+    if (modelNameArray.size() == 0) {
+        const char* choice[] = {"Ok"};
+        prompt("MD2 Demo Error", "No MD2 models found in data/players.  (Download some from polycount.com and expand them into the data directory)", choice, true);
+        exit(-1);
+    }
+
+    currentModel = 0;
+}

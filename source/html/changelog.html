@@ -9,8 +9,28 @@
 
    Changes in 6.00
 
+   <BLOCKQUOTE>
+	   Tips for upgrading from 5.xx to 6.00:   
+	   <LI>Use the <B>default</B> Win32 linker list and don't "ignore standard libraries"
+	   <LI>Add the line <CODE>controller->setActive(true);</CODE> to your G3D::ManualCameraController initialization
+	   <LI>Add a G3D::UserInput pointer to the G3D::ManualCameraController constructor calls
+	   <LI>Delete ManualCameraControllers <B>before</B> UserInputs.
+	   <LI>Replace <CODE>new Font</CODE> with <CODE>CFont::fromFile</CODE>
+	   <LI>Replace <CODE>Font*</CODE> with <CODE>CFontRef</CODE> 
+	   <LI>Remove <CODE>delete font;</CODE>
+	   <LI>Replace <CODE>draw2DString</CODE> with <CODE>draw2D</CODE>
+	   <LI>Replace G3D::Sky constructor arguments of the form <CODE>"sky_ft.jpg"</CODE> with arguments of the form <CODE>"sky_*.jpg"</CODE>
+  </BLOCKQUOTE>
+
+
    <P>
    <UL>
+     <LI> G3D::ManualCameraController::ManualCameraController now requires a G3D::UserInput
+	 <LI> G3D::UserInput::appHasFocus
+     <LI> G3D::ManualCameraController now stops tracking the mouse when the app loses focus
+     <LI> G3D::ManualCameraController::setActive
+	 <LI> G3D::ManualCameraController now manages the mouse cursor instead of G3D::RenderDevice
+	 <LI> G3D::UserInput::getMouseXY, G3D::UserInput::getXY
      <LI> RenderDevice::debugDrawVertexNormals
      <LI> GPUProgram, VertexProgram, and PixelProgram now recognize the output of the
 	      Cg compiler and automatically bind constants.

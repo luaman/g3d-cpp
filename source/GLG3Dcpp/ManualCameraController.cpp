@@ -4,15 +4,10 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-04-07
+  @edited  2003-09-27
 */
 
 #include "G3D/platform.h"
-#if defined(G3D_OSX)
-#include <SDL/SDL.h>
-#else
-#include <SDL.h>
-#endif
 
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/RenderDevice.h"
@@ -20,28 +15,51 @@
 
 namespace G3D {
 
-ManualCameraController::ManualCameraController(RenderDevice* device) :
-    renderDevice(device) {
+ManualCameraController::ManualCameraController(RenderDevice* device, UserInput* input) :
+    renderDevice(device), userInput(input) {
 
     debugAssert(renderDevice);
     debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a ManualCameraController");
-
-    mCenterX    = renderDevice->getWidth() / 2;
-    mCenterY    = renderDevice->getHeight() / 2;
 
     reset();
 }
 
 
+ManualCameraController::~ManualCameraController() {
+    setActive(false);
+}
+
+
 void ManualCameraController::reset() {
+    center      = Vector2(renderDevice->getWidth() / 2.0, renderDevice->getHeight() / 2.0);
+    cameraMouse = center;
+    SDL_ShowCursor(SDL_ENABLE);
+    guiMouse    = userInput->getMouseXY();
+    active      = false;
     yaw         = -G3D::PI/2;
     pitch       = 0;
 	translation = Vector3::ZERO;
     setMoveRate(10);
 	setTurnRate(G3D::PI / 4);
-    oldMouseX   = mCenterX;
-    oldMouseY   = mCenterY;
-    SDL_WarpMouse(mCenterX, mCenterY);
+}
+
+
+void ManualCameraController::setActive(bool a) {
+
+    if (a != active) {
+
+        active = a;
+
+        if (active) {
+            guiMouse = userInput->getMouseXY();
+            SDL_ShowCursor(SDL_DISABLE);
+            userInput->setMouseXY(cameraMouse);
+        } else {
+            userInput->setMouseXY(guiMouse);
+            SDL_ShowCursor(SDL_ENABLE);
+        }
+    }
+
 }
 
 
@@ -66,58 +84,76 @@ void ManualCameraController::lookAt(
 
 
 void ManualCameraController::doSimulation(
-    double              elapsedTime, 
-    UserInput&          userInput) {
+    double              elapsedTime) {
 
-    Vector2 direction(userInput.getX(), userInput.getY());
+    if (! active) {
+        return;
+    }
+            
+    bool focus = userInput->appHasFocus();
+
+    if (focus && ! appHadFocus) {
+        // We just gained focus.
+        guiMouse = userInput->getMouseXY();
+        
+        // Restore our mouse position
+        userInput->setMouseXY(cameraMouse);
+    }
+
+    Vector2 direction(userInput->getX(), userInput->getY());
     direction.unitize();
 
 	// Translate forward
 	translation += (getLookVector() * direction.y + getStrafeVector() * direction.x) * elapsedTime * maxMoveRate;
 	
-    double mouseX = userInput.getMouseX();
-    double mouseY = userInput.getMouseY();
+    Vector2 mouse;
     
-    if ((mouseX < 0) || (mouseX > 10000)) {
+    if (focus) {
+        mouse = userInput->getMouseXY();
+    } else {
+        mouse = cameraMouse;
+    }
+    
+    if ((mouse.x < 0) || (mouse.x > 10000)) {
         // Sometimes we get bad values on the first frame
-        mouseX = mCenterX;
-        mouseY = mCenterY;
+        mouse = center;
     }
 
-	double dx = (mouseX - oldMouseX) / 100.0;
-	double dy = (mouseY - oldMouseY) / 100.0;
+    Vector2 delta = (mouse - cameraMouse) / 100.0;
 
     // Reset the mouse periodically.  We can't do this every
     // frame or the mouse won't be able to move substantially
     // at high frame rates.
-    if ((mouseX < mCenterX / 2) || (mouseX > mCenterX * 1.5) ||
-        (mouseY < mCenterY / 2) || (mouseY > mCenterY * 1.5)) {
-        oldMouseX = mCenterX;
-        oldMouseY = mCenterY;
-        userInput.setMouseXY(mCenterX, mCenterY);
+    if ((mouse.x < center.x / 2) || (mouse.x > center.x * 1.5) ||
+        (mouse.x < center.y / 2) || (mouse.y > center.y * 1.5)) {
+        cameraMouse = center;
+        if (userInput->appHasFocus()) {
+            userInput->setMouseXY(cameraMouse);
+        }
     } else {
-        oldMouseX = mouseX;
-        oldMouseY = mouseY;
+        cameraMouse = mouse;
     }
 
     // Turn rate limiter
-    if (G3D::abs(dx) > maxTurnRate) {
-        dx = maxTurnRate * G3D::sign(dx);
+    if (G3D::abs(delta.x) > maxTurnRate) {
+        delta.x = maxTurnRate * G3D::sign(delta.x);
     }
 
-    if (G3D::abs(dy) > maxTurnRate) {
-        dy = maxTurnRate * G3D::sign(dy);
+    if (G3D::abs(delta.y) > maxTurnRate) {
+        delta.y = maxTurnRate * G3D::sign(delta.y);
     }
 
-    yaw   += dx;
-	pitch += dy;
+    yaw   += delta.x;
+	pitch += delta.y;
 
     // Clamp pitch (looking straight up or down)
 	if (pitch < -G3D::PI / 2) {
 		pitch = -G3D::PI / 2;
     } else if (pitch > G3D::PI / 2) {
 		pitch = G3D::PI / 2;
-	} 
+	}
+
+    appHadFocus = focus;
 }
 
 
