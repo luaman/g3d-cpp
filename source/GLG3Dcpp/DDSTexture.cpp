@@ -21,13 +21,28 @@
 
 namespace G3D {
 
-#ifndef DUMMYUNIONNAMEN
-#if defined(__cplusplus) || !defined(NONAMELESSUNION)
+// Define the Windows data types for linux/OSX
+#ifndef BYTE
+#define BYTE uint8
+#endif
+
+#ifndef WORD
+#define WORD uint16
+#endif
+
+#ifndef DWORD
+#define DWORD uint32
+#endif
+
+#ifndef LONG
+#define LONG uint32
+#endif
+
+#ifndef LPVOID
+#define LPVOID void*
+#endif
+
 #define DUMMYUNIONNAMEN(n)
-#else
-#define DUMMYUNIONNAMEN(n)      u##n
-#endif
-#endif
 
 #ifndef MAKEFOURCC
     #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
