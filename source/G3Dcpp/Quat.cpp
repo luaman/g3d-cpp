@@ -13,7 +13,7 @@
 
 namespace G3D {
 
-Quat Quat::fromAxisAngle(
+Quat Quat::fromAxisAngleRotation(
     const Vector3&      axis,
     double              angle) {
 
@@ -71,12 +71,10 @@ Quat::Quat(
 }
 
 
-void Quat::toAxisAngle(
+void Quat::toAxisAngleRotation(
     Vector3&            axis,
     double&             angle) const {
    
-
-
     // Decompose the quaternion into an angle and an axis.
     
     axis = Vector3(x, y, z);
@@ -167,63 +165,6 @@ Quat Quat::slerp(
         return scale0 * quat0 + scale1 * Quat(-quat1.y, quat1.x, -quat1.w, quat1.z);
     }
 }
-    
-    /*
-    // We might need to negate one in order to ensure that
-    // we're going the short way
-
-    Quat out;
-    double a, b;
-
-    a = (1.0 - alpha);
-    b = alpha;
-
-    // See if (p - q) dot (p - q) > (p + q) dot (p + q) in order to know
-    // if we're interpolating around the sphere the long way.  Note that this
-    // comparison expands to: 
-    //
-    //  sum(p[i]^2 - p[i]q[i] + q[i]^2) > sum(p[i]^2 + 2p[i]q[i] + q[i]^2)
-    //
-    // The squared terms cancel, leaving:
-    //
-    //                   sum(-p[i]q[i]) > sum(p[i]q[i])
-    //
-    //                   0 > 2 sum(p[i]q[i])
-    //         
-    //                   p dot q < 0
-    //
-    if (dot(other) < 0) {
-        // The difference between the orientations is greater than
-        // if we flip one by 2*PI (recall that quaternions have a 
-        // period of FOUR PI, not TWO PI).  This means we'll interpolate
-        // the long way around the sphere if we don't negate the second.
-        b *= -1;
-    }
-
-    // Interpolate and normalize
-    double mag = 0.0;
-    int i;
-    const float* p = *this;
-    const float* q = other;
-    for (i = 0; i < 4; i++) {
-        out[i] = p[i] * a + q[i] * b;
-        mag += out[i] * out[i];
-    }
-
-    // If mag == 0, the result is ambiguous; choose one.
-    if (mag == 0.0) {
-
-        return Quat();
-    
-    } else {
-
-        double invMag = 1 / mag;
-        for (i = 0; i < 4; i++) {
-            out[i] *= invMag;
-        }
-        return out;
-    }
-    */
 
 Quat Quat::operator*(const Quat& other) const {
 

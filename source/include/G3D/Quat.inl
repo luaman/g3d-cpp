@@ -34,15 +34,5 @@ inline Quat Quat::operator+(const Quat& other) const {
     return Quat(x + other.x, y + other.y, z + other.z, w + other.w);
 }
 
-
-inline Quat Quat::pow(double x) const {
-
-    Vector3 axis;
-    double  angle;
-    toAxisAngle(axis, angle);
-
-    return Quat::fromAxisAngle(axis, angle * x);
-}
-
 }
 
