@@ -45,7 +45,7 @@ public:
     /** When true, the networkDevice is initialized.  Defaults to true. */
     bool                    useNetwork;
 
-    GAppSettings() : debugFontName("console-small.fnt"), useNetwork(true), dataDir("<AUTO>") {
+    GAppSettings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), useNetwork(true) {
     }
 };
 
