@@ -39,7 +39,7 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
  aren't using RenderDevice, you must change the texture matrix to have
  a -1 in the Y column yourself.
 
- DIM_2D_RECT requires the NV_texture_rectangle extension.
+ DIM_2D_RECT requires the GL_EXT_texture_rectangle extension.
  Texture compression requires the EXT_texture_compression_s3tc extions.
  You can either query OpenGL for whether these are supported or
  use the RenderDevice facility for doing so.

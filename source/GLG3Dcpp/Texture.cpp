@@ -3,6 +3,11 @@
 
  @author Morgan McGuire, morgan@blueaxion.com
 
+ Notes:
+ <UL>
+ <LI>http://developer.apple.com/opengl/extensions/ext_texture_rectangle.html
+ </UL>
+
  @created 2001-02-28
  @edited  2003-11-24
 */
@@ -37,7 +42,7 @@ static void disableAllTextures() {
     glDisable(GL_TEXTURE_1D);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_TEXTURE_3D);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glDisable(GL_TEXTURE_RECTANGLE_EXT);
     glDisable(GL_TEXTURE_CUBE_MAP_ARB);
 }
 
@@ -68,7 +73,7 @@ static GLenum dimensionToTarget(Texture::Dimension d) {
         return GL_TEXTURE_2D;
 
     case Texture::DIM_2D_RECT:
-        return GL_TEXTURE_RECTANGLE_NV;
+        return GL_TEXTURE_RECTANGLE_EXT;
 
     default:
         debugAssert(false);
@@ -124,7 +129,7 @@ static void createTexture(
 
         // Intentionally fall through for power of 2 case
 
-    case GL_TEXTURE_RECTANGLE_NV:
+    case GL_TEXTURE_RECTANGLE_EXT:
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
         // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
         glTexImage2D(target, 0, textureFormat, width, height, 0, bytesFormat, GL_UNSIGNED_BYTE, bytes);
@@ -181,7 +186,7 @@ static void setTexParameters(
 
     debugAssert(
         target == GL_TEXTURE_2D ||
-        target == GL_TEXTURE_RECTANGLE_NV ||
+        target == GL_TEXTURE_RECTANGLE_EXT ||
         target == GL_TEXTURE_CUBE_MAP_ARB);
 
     // Set the wrap and interpolate state
@@ -771,7 +776,7 @@ unsigned int Texture::getOpenGLTextureTarget() const {
         return GL_TEXTURE_2D;
 
     case Texture::DIM_2D_RECT:
-        return GL_TEXTURE_RECTANGLE_NV;
+        return GL_TEXTURE_RECTANGLE_EXT;
 
     default:
         debugAssertM(false, "Fell through switch");

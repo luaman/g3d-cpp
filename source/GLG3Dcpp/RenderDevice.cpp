@@ -498,7 +498,11 @@ bool RenderDevice::init(
         }
 
         stencilWrapSupported        = supportsOpenGLExtension("GL_EXT_stencil_wrap");
-        textureRectangleSupported   = supportsOpenGLExtension("GL_NV_texture_rectangle");
+
+        // The constants are identical for NV_texture_rectangle and
+        // EXT_texture_rectangle
+        textureRectangleSupported   = supportsOpenGLExtension("GL_EXT_texture_rectangle") ||
+                                      supportsOpenGLExtension("GL_NV_texture_rectangle");
         _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
         _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
         _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
@@ -2406,7 +2410,7 @@ void RenderDevice::setTexture(
         glDisable(GL_TEXTURE_1D);
         
         if (supportsTextureRectangle()) {
-            glDisable(GL_TEXTURE_RECTANGLE_NV);
+            glDisable(GL_TEXTURE_RECTANGLE_EXT);
         }
     }
 

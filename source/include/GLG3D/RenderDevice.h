@@ -248,7 +248,7 @@ private:
     bool                        stencilWrapSupported;
 
     /**
-     True if GL_NV_texture_rectangle is in the extension list.
+     True if GL_EXT_texture_rectangle is in the extension list.
      */
     bool                        textureRectangleSupported;
 
