@@ -46,29 +46,21 @@ namespace G3D {
 
 #endif // _MSC_VER
 
-#define G3D_FLOAT 1
-#define G3D_DOUBLE 2
+//#define G3D_FLOAT 1
+//#define G3D_DOUBLE 2
 
 
 const double fuzzyEpsilon = 0.000001;
 
-#ifdef _MSC_VER
+inline const double& inf() {
+	static const double i = 1.0/sin(0.0);
+	return i;
+}
 
-const double inf = (std::numeric_limits<double>::infinity());
-const double nan = (std::numeric_limits<double>::quiet_NaN());
-const double NAN = (std::numeric_limits<double>::quiet_NaN());
-
-#else
-
-// On Linux, the std constants are incorrect at compile time, so we have
-// to trick the compiler into producing inf and nan without
-// producing a compile-time warning.  Since sin(0.0) == 0.0,
-// dividing by it hides the divide by zero at compile time
-// but produces the correct constants.
-const double inf = 1.0/sin(0.0);
-const double nan = 0.0/sin(0.0);
-
-#endif
+inline const double& nan() {
+	static const double n = 0.0/sin(0.0);
+	return n;
+}
 
 #define G3D_PI      (3.1415926535898)
 #define G3D_HALF_PI (1.5707963267949)

@@ -168,7 +168,7 @@ Color3 Color3::operator/ (double fScalar) const {
 
     } else {
 
-        return Color3(inf, inf, inf);
+        return Color3(G3D::inf(), G3D::inf(), G3D::inf());
     }
 }
 
@@ -180,9 +180,9 @@ Color3& Color3::operator/= (double fScalar) {
         g *= fInvScalar;
         b *= fInvScalar;
     } else {
-        r = inf;
-        g = inf;
-        b = inf;
+        r = G3D::inf();
+        g = G3D::inf();
+        b = G3D::inf();
     }
 
     return *this;

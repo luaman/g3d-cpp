@@ -7,9 +7,6 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER != 60300
-    #error Requires G3D 6.03
-#endif
 
 #define GLUT_API_VERSION 4
 #include <GL/glut.h>

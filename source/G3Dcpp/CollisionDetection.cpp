@@ -270,7 +270,7 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
     // test if the boxes can be separated by a plane normal to
     // any of the three axes of box1, any of the three axes of box2,
     // (test 9 possible cross products later)
-	double penetration = -G3D::inf;
+	double penetration = -G3D::inf();
     int penetrationAxisIndex = -1;
 
     for (int i = 0; i < 6; i++) {
@@ -437,11 +437,6 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
 
 
 
-
-
-
-
-
 double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
     const Sphere&   sphere,
     const Box&      box,
@@ -467,7 +462,7 @@ double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
     float d = 0;
 
     int    minAxis = -1;
-    float  minDist = inf;
+    float  minDist = inf();
 
     // Distance along each axis from the closest side of the box
     // to the sphere center.  Negative values are *inside* the box.
@@ -719,7 +714,7 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
     contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
     contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
 
-    double lowest = inf;
+    double lowest = inf();
     for (int i = 0; i < 8; ++i) {
         const Vector3 vertex = box.corner(i);
         
@@ -764,13 +759,13 @@ double CollisionDetection::collisionTimeForMovingPointFixedPlane(
     if (vdotN >= 0) {
         // no collision will occur
         location = Vector3::inf();
-        return inf;
+        return inf();
     }
 
     double t = -(pdotN + d) / vdotN;
     if (t < 0) {
         location = Vector3::inf();
-        return inf;
+        return inf();
     } else {
         location = point + velocity * t;
         outNormal = normal;
@@ -798,14 +793,14 @@ double CollisionDetection::collisionTimeForMovingPointFixedSphere(
 
     if ((d < 0) && (L2 > R2)) {
         location = Vector3::inf();
-        return inf;
+        return inf();
     }
 
     double M2 = L2 - D2;
 
     if (M2 > R2) {
         location = Vector3::inf();
-        return inf;
+        return inf();
     }
 
     double q = sqrt(R2 - M2);
@@ -835,7 +830,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedSphere(
 
     double time = collisionTimeForMovingPointFixedSphere(movingSphere.center, velocity, Sphere(fixedSphere.center, fixedSphere.radius + movingSphere.radius), location, outNormal);
 
-    if (time < inf) {
+    if (time < inf()) {
         // Location is now the center of the moving sphere at the collision time.
         // Adjust for the size of the moving sphere.  Two spheres always collide
         // along a line between their centers.
@@ -856,9 +851,9 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
 
     double time = collisionTimeForMovingPointFixedPlane(point, velocity, triangle.plane(), outLocation, outNormal);
 
-    if (time == inf) {
+    if (time == inf()) {
         // No collision with the plane of the triangle.
-        return inf;
+        return inf();
     }
 
     if (isPointInsideTriangle(triangle.vertex(0), triangle.vertex(1), triangle.vertex(2), triangle.normal(), outLocation, triangle.primaryAxis())) {
@@ -867,7 +862,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     } else {
         // Missed the triangle
         outLocation = Vector3::inf();
-        return inf;
+        return inf();
     }
 }*/
 
@@ -907,7 +902,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     const double det = DOT(edge1, pvec);
     
     if (det < EPSILON) {
-        return inf;
+        return inf();
     }
     
     // calculate distance from vert0 to ray origin
@@ -917,7 +912,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     u = DOT(tvec, pvec);
     if ((u < 0.0) || (u > det)) {
         // Hit the plane outside the triangle
-        return inf;
+        return inf();
     }
     
     // prepare to test V parameter
@@ -927,7 +922,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     v = DOT(dir, qvec);
     if ((v < 0.0) || (u + v > det)) {
         // Hit the plane outside the triangle
-        return inf;
+        return inf();
     }
     
     // calculate t, scale parameters, ray intersects triangle
@@ -948,7 +943,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
         return t / det;
     } else {
         // We had to travel backwards in time to intersect
-        return inf;
+        return inf();
     }
 
     #undef EPSILON
@@ -1001,7 +996,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     if (collisionLocationForMovingPointFixedAABox(origin, dir, box, location, Inside)) {
         return (location - origin).length();
     } else {
-        return inf;
+        return inf();
     }
 }
 
@@ -1096,7 +1091,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedRectangle(
 
     double time = collisionTimeForMovingPointFixedPlane(point, velocity, plane, location, outNormal);
 
-    if (time == inf) {
+    if (time == inf()) {
         // No collision is ever going to happen
         return time;
     }
@@ -1106,7 +1101,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedRectangle(
         // the point hits the rectangle.
         return time;
     } else {
-        return inf;
+        return inf();
     }
 }
 
@@ -1353,7 +1348,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 	} else {
 		// No entering intersection discovered; return no intersection.
 		location = Vector3::inf();
-		return inf;
+		return inf();
 	}
 }
 
@@ -1382,7 +1377,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedPlane(
     if (fuzzyGt(vdotN, 0)) {
         // No collision when the sphere is moving towards a backface.
         location = Vector3::inf();
-        return inf;
+        return inf();
     }
 
     double cdotN = sphere.center.dot(outNormal);
@@ -1416,7 +1411,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
     outNormal = triangle.normal();
     double time = collisionTimeForMovingSphereFixedPlane(sphere, velocity, triangle.plane(), outLocation, dummy);
 
-    if (time == inf) {
+    if (time == inf()) {
         // No collision is ever going to happen
         return time;
     }
@@ -1456,7 +1451,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
 
     double time = collisionTimeForMovingSphereFixedPlane(sphere, velocity, plane, location, outNormal);
 
-    if (time == inf) {
+    if (time == inf()) {
         // No collision is ever going to happen
         return time;
     }
@@ -1525,7 +1520,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
     Vector3 normal;
 	double time = collisionTimeForMovingPointFixedCapsule(sphere.center, velocity, _capsule, location, normal);
     
-    if (time < inf) {
+    if (time < inf()) {
         // Location is now the position of the center of the sphere at the time of collision.
         // We have to adjust the collision location for the size of the sphere.
         location -= sphere.radius * normal;

@@ -104,7 +104,7 @@ Color4 Color4::operator/ (double fScalar) const {
 
     } else {
 
-        return Color4(inf, inf, inf, inf);
+        return Color4(G3D::inf(), G3D::inf(), G3D::inf(), G3D::inf());
     }
 }
 
@@ -118,10 +118,10 @@ Color4& Color4::operator/= (double fScalar) {
         b *= fInvScalar;
         a *= fInvScalar;
     } else {
-        r = inf;
-        g = inf;
-        b = inf;
-        a = inf;
+        r = G3D::inf();
+        g = G3D::inf();
+        b = G3D::inf();
+        a = G3D::inf();
     }
 
     return *this;

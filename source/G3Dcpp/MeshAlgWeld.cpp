@@ -116,7 +116,7 @@ void Welder::toGridCoords(Vector3 v, int& x, int& y, int& z) const {
 int Welder::getIndex(const Vector3& vertex) {
 
     int closestIndex = -1;
-    double distanceSquared = inf;
+    double distanceSquared = inf();
 
     int ix, iy, iz;
     toGridCoords(vertex, ix, iy, iz);

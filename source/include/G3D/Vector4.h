@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2002-07-09
-  @edited  2003-09-29
+  @edited  2004-05-14
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -65,6 +65,9 @@ public:
     unsigned int hashCode() const;
     bool fuzzyEq(const Vector4& other) const;
     bool fuzzyNe(const Vector4& other) const;
+
+    inline static const Vector4& inf()      { static Vector4 v(G3D::inf(), G3D::inf(), G3D::inf(), G3D::inf()); return v; }
+    inline static const Vector4& nan()      { static Vector4 v(G3D::nan(), G3D::nan(), G3D::nan(), G3D::nan()); return v; }
 
     /** sqrt(this->dot(*this)) */
     double length() const;

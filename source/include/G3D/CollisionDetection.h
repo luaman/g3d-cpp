@@ -370,7 +370,7 @@ public:
         const Vector3& vert2,
         Vector3&       location) {
         double t = collisionTimeForMovingPointFixedTriangle(orig, dir, vert0, vert1, vert2);
-        if (t < inf) {
+        if (t < inf()) {
             location = orig + dir * t;
         }
         return t;
@@ -384,7 +384,7 @@ public:
         Vector3&        normal   = ignore) {
         double t = collisionTimeForMovingPointFixedTriangle(
             orig, dir, tri.vertex(0), tri.vertex(1), tri.vertex(2));
-        if ((t < inf) && (&location != &ignore)) {
+        if ((t < inf()) && (&location != &ignore)) {
             location = orig + dir * t;
             normal   = tri.normal();
         }
@@ -400,7 +400,7 @@ public:
         Vector3&       location,
         Vector3&       normal) {
         double t = collisionTimeForMovingPointFixedTriangle(orig, dir, vert0, vert1, vert2);
-        if (t < inf) {
+        if (t < inf()) {
             location = orig + dir * t;
             normal   = (vert2 - vert0).cross(vert1 - vert0).direction();
         }
@@ -409,7 +409,7 @@ public:
 
     /**
      Unlike other methods, does not support an output normal.
-     If the ray origin is inside the box, returns inf but inside
+     If the ray origin is inside the box, returns inf() but inside
      is set to true.
      <B>Beta API</B>
 
@@ -604,13 +604,13 @@ public:
         const Sphere&           sphere,
         const Vector3&          velocity,
         const Box&              box,
-        double                  timeLimit = inf);
+        double                  timeLimit = inf());
 
     static bool movingSpherePassesThroughFixedSphere(
         const Sphere&           sphere,
         const Vector3&          velocity,
         const Sphere&           fixedSphere,
-        double                  timeLimit = inf);
+        double                  timeLimit = inf());
 
     static bool fixedSolidSphereIntersectsFixedSolidSphere(
         const Sphere&           sphere1,

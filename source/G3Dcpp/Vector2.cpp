@@ -87,7 +87,7 @@ Vector2 Vector2::operator/ (double fScalar) const {
         kQuot.y = fInvScalar * y;
         return kQuot;
     } else {
-        return Vector2(inf, inf);
+        return Vector2(G3D::inf(), G3D::inf());
     }
 }
 
@@ -98,8 +98,8 @@ Vector2& Vector2::operator/= (double fScalar) {
         x *= fInvScalar;
         y *= fInvScalar;
     } else {
-        x = inf;
-        y = inf;
+        x = G3D::inf();
+        y = G3D::inf();
     }
 
     return *this;

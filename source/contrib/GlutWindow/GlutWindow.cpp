@@ -246,13 +246,15 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
 
     mouseButtons = 0;
 
-    if (glXGetCurrentDisplay != NULL) {
-        G3D::_internal::x11Display = glXGetCurrentDisplay();
-    }
+	#ifdef G3D_LINUX
+		if (glXGetCurrentDisplay != NULL) {
+			G3D::_internal::x11Display = glXGetCurrentDisplay();
+		}
 
-    if (glXGetCurrentDrawable != NULL) {
-        G3D::_internal::x11Window  = glXGetCurrentDrawable();
-    }
+		if (glXGetCurrentDrawable != NULL) {
+			G3D::_internal::x11Window  = glXGetCurrentDrawable();
+		}
+	#endif
 
     glutReshapeFunc(g_reshape);
     glutKeyboardFunc(g_keyboard);

@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2004-04-02
+  @edited  2004-05-14
 */
 
 #include "G3D/GCamera.h"
@@ -15,7 +15,7 @@ namespace G3D {
 
 GCamera::GCamera() {
     nearPlane   = 0.1;
-    farPlane    = inf;
+    farPlane    = inf();
 	setFieldOfView(toRadians(55));
 }
 
@@ -142,7 +142,7 @@ Vector3 GCamera::project(
 double GCamera::worldToScreenSpaceArea(double area, double z, const Rect2D& viewport) const {
 
     if (z >= 0) {
-        return inf;
+        return inf();
     }
 
     double zImagePlane = getImagePlaneDepth(viewport);
@@ -221,7 +221,7 @@ void GCamera::getClipPlanes(
 	clip.append(Plane(Vector3(0, -clip.last().normal().y, clip.last().normal().z), Vector3::zero()));
 
     // Far
-    if (farPlane < inf) {
+    if (farPlane < inf()) {
     	clip.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, -farPlane)));
     }
 

@@ -209,7 +209,7 @@ inline double Ray::intersectionTime(
     const double det = DOT(edge1, pvec);
     
     if (det < EPSILON) {
-        return inf;
+        return inf();
     }
     
     // calculate distance from vert0 to ray origin
@@ -219,7 +219,7 @@ inline double Ray::intersectionTime(
     u = DOT(tvec, pvec);
     if ((u < 0.0) || (u > det)) {
         // Hit the plane outside the triangle
-        return inf;
+        return inf();
     }
     
     // prepare to test V parameter
@@ -229,7 +229,7 @@ inline double Ray::intersectionTime(
     v = DOT(direction, qvec);
     if ((v < 0.0) || (u + v > det)) {
         // Hit the plane outside the triangle
-        return inf;
+        return inf();
     }
     
 
@@ -241,7 +241,7 @@ inline double Ray::intersectionTime(
         return t / det;
     } else {
         // We had to travel backwards in time to intersect
-        return inf;
+        return inf();
     }
 }
 
@@ -268,7 +268,7 @@ inline double Ray::intersectionTime(
     const double det = DOT(edge1, pvec);
     
     if (det < EPSILON) {
-        return inf;
+        return inf();
     }
     
     // calculate distance from vert0 to ray origin
@@ -278,7 +278,7 @@ inline double Ray::intersectionTime(
     u = DOT(tvec, pvec);
     if ((u < 0.0) || (u > det)) {
         // Hit the plane outside the triangle
-        return inf;
+        return inf();
     }
     
     // prepare to test V parameter
@@ -288,7 +288,7 @@ inline double Ray::intersectionTime(
     v = DOT(direction, qvec);
     if ((v < 0.0) || (u + v > det)) {
         // Hit the plane outside the triangle
-        return inf;
+        return inf();
     }
     
     double t = DOT(edge2, qvec);
@@ -306,7 +306,7 @@ inline double Ray::intersectionTime(
         return t;
     } else {
         // We had to travel backwards in time to intersect
-        return inf;
+        return inf();
     }
 }
 

@@ -1041,19 +1041,19 @@ void RenderDevice::endFrame() {
         emwaTriangleCount = lerp(emwaTriangleCount, triangleCount, A);
     }
 
-    if ((emwaFrameRate == inf) || (isNaN(emwaFrameRate))) {
+    if ((emwaFrameRate == inf()) || (isNaN(emwaFrameRate))) {
         emwaFrameRate = 1000000;
     } else if (emwaFrameRate < 0) {
         emwaFrameRate = 0;
     }
 
-    if ((emwaTriangleRate == inf) || (isNaN(emwaTriangleRate))) {
+    if ((emwaTriangleRate == inf()) || isNaN(emwaTriangleRate)) {
         emwaTriangleRate = 1e20;
     } else if (emwaTriangleRate < 0) {
         emwaTriangleRate = 0;
     }
 
-    if ((emwaTriangleCount == inf) || (emwaTriangleCount == nan)) {
+    if ((emwaTriangleCount == inf()) || isNaN(emwaTriangleCount)) {
         emwaTriangleRate = 1e20;
     } else if (emwaTriangleCount < 0) {
         emwaTriangleCount = 0;

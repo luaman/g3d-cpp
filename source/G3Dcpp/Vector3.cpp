@@ -29,8 +29,8 @@ const Vector3 Vector3::ZERO3(0, 0, 0);
 const Vector3 Vector3::UNIT_X(1, 0, 0);
 const Vector3 Vector3::UNIT_Y(0, 1, 0);
 const Vector3 Vector3::UNIT_Z(0, 0, 1);
-const Vector3 Vector3::INF3(G3D::inf, G3D::inf, G3D::inf);
-const Vector3 Vector3::NAN3(G3D::nan, G3D::nan, G3D::nan);
+const Vector3 Vector3::INF3(G3D::inf(), G3D::inf(), G3D::inf());
+const Vector3 Vector3::NAN3(G3D::nan(), G3D::nan(), G3D::nan());
 
 
 Vector3::Axis Vector3::primaryAxis() const {
@@ -142,9 +142,9 @@ Vector3& Vector3::operator/= (double fScalar) {
         y *= fInvScalar;
         z *= fInvScalar;
     } else {
-        x = G3D::inf;
-        y = G3D::inf;
-        z = G3D::inf;
+        x = G3D::inf();
+        y = G3D::inf();
+        z = G3D::inf();
     }
 
     return *this;

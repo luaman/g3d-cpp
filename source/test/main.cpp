@@ -131,7 +131,7 @@ void testAABoxCollision() {
         double rayaaTime = ray.intersectionTime(aabox);
 
         debugAssert(fuzzyEq(boxTime, aaTime));
-        if (boxTime < inf) {
+        if (boxTime < inf()) {
             debugAssert(boxlocation.fuzzyEq(aaboxlocation));
         }
 
@@ -884,21 +884,21 @@ void testMemset() {
 void testFloat() {
     printf("Test Float\n");
     /* changed from "nan" by ekern.  does this work on windows? */
-    double x = NAN;
+    double x = nan();
     bool b1  = (x < 0.0);
     bool b2  = (x >= 0.0);
     bool b3  = !(b1 || b2);
     (void)b1;
     (void)b2;
     (void)b3;
-    debugAssert(isNaN(NAN));
+    debugAssert(isNaN(nan()));
     debugAssert(! isNaN(4));
     debugAssert(! isNaN(0));
-    debugAssert(! isNaN(inf));
-    debugAssert(! isNaN(-inf));
-    debugAssert(! isFinite(NAN));
-    debugAssert(! isFinite(-inf));
-    debugAssert(! isFinite(inf));
+    debugAssert(! isNaN(inf()));
+    debugAssert(! isNaN(-inf()));
+    debugAssert(! isFinite(nan()));
+    debugAssert(! isFinite(-inf()));
+    debugAssert(! isFinite(inf()));
     debugAssert(isFinite(0));
 		    
 }

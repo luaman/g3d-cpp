@@ -84,7 +84,7 @@ Vector4 Vector4::operator/ (double fScalar) const {
         kQuot.w = fInvScalar * w;
         return kQuot;
     } else {
-        return Vector4(inf, inf, inf, inf);
+        return Vector4::inf();
     }
 }
 
@@ -97,10 +97,7 @@ Vector4& Vector4::operator/= (double fScalar) {
         z *= fInvScalar;
         w *= fInvScalar;
     } else {
-        x = inf;
-        y = inf;
-        z = inf;
-        w = inf;
+		*this = Vector4::inf();
     }
 
     return *this;

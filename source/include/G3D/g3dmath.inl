@@ -7,7 +7,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-09-28
+ @edited  2004-05-14
  */
 
 #include <stdlib.h>
@@ -22,7 +22,7 @@ inline bool isNaN(double x) {
 }
 
 inline bool isFinite(double x) {
-    return ! isNaN(x) && (x < inf) && (x > -inf);
+    return ! isNaN(x) && (x < G3D::inf()) && (x > -G3D::inf());
 }
 
 //----------------------------------------------------------------------------
@@ -243,7 +243,7 @@ inline double eps(double a, double b) {
     // will fail anyway.
     (void)b;
     const double aa = abs(a) + 1;
-    if (aa == inf) {
+    if (aa == inf()) {
         return fuzzyEpsilon;
     } else {
         return fuzzyEpsilon * aa;

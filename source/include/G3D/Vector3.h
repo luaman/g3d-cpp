@@ -317,8 +317,8 @@ public:
     inline static const Vector3& unitX()    { static Vector3 v(1, 0, 0); return v; }
     inline static const Vector3& unitY()    { static Vector3 v(0, 1, 0); return v; }
     inline static const Vector3& unitZ()    { static Vector3 v(0, 0, 1); return v; }
-    inline static const Vector3& inf()      { static Vector3 v(G3D::inf, G3D::inf, G3D::inf); return v; }
-    inline static const Vector3& nan()      { static Vector3 v(G3D::nan, G3D::nan, G3D::nan); return v; }
+    inline static const Vector3& inf()      { static Vector3 v(G3D::inf(), G3D::inf(), G3D::inf()); return v; }
+    inline static const Vector3& nan()      { static Vector3 v(G3D::nan(), G3D::nan(), G3D::nan()); return v; }
 
     // Deprecated. See Matrix3::identity() for details.
     /** @deprecated Use Vector3::zero() */
