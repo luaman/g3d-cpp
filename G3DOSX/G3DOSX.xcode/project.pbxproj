@@ -220,6 +220,7 @@
 				0F5500CF06DD5F29008DD4F8,
 				3EEEC97C07179E27007B8A7E,
 				3EFE6A250735D82A00E12815,
+				3EF42A8F077978740047B13F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -758,6 +759,7 @@
 				0F5500AF06DD5F29008DD4F8,
 				0F5500B006DD5F29008DD4F8,
 				3EEEC97B07179E27007B8A7E,
+				3EF42A8E077978740047B13F,
 			);
 			isa = PBXGroup;
 			name = Source;
@@ -4387,6 +4389,21 @@
 		};
 		3EEEC97C07179E27007B8A7E = {
 			fileRef = 3EEEC97B07179E27007B8A7E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3EF42A8E077978740047B13F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GWindow.cpp;
+			path = ../source/GLG3Dcpp/GWindow.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3EF42A8F077978740047B13F = {
+			fileRef = 3EF42A8E077978740047B13F;
 			isa = PBXBuildFile;
 			settings = {
 			};
