@@ -83,12 +83,14 @@ Box CoordinateFrame::toWorldSpace(const Box &b) const {
     Box out(b);
 
     for (int i = 0; i < 8; i++) {
-        out._corner[i] = rotation * out._corner[i] + translation;
+        out._corner[i] = pointToWorldSpace(out._corner[i]);
     }
 
     for (int i = 0; i < 3; i++) {
-        out._axis[i] = rotation * out._axis[i];
+        out._axis[i] = vectorToWorldSpace(out._axis[i]);
     }
+
+    out._center = pointToWorldSpace(out._center);
 
     return out;
 }

@@ -46,7 +46,9 @@ private:
      Unit axes.
      */
     Vector3 _axis[3];
-    
+   
+    Vector3 _center;
+
     /**
      Extent along each axis.
      */
@@ -79,7 +81,13 @@ public:
     /**
       Returns the centroid of the box.
      */
-    Vector3 getCenter() const;
+    inline Vector3 center() const {
+        return _center;
+    }
+
+    inline Vector3 getCenter() const {
+        return center();
+    }
 
     /**
      Returns a corner (0 <= i < 8)

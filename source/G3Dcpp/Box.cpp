@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2003-12-13
+  @edited  2003-12-22
 */
 
 #include "G3D/Box.h"
@@ -71,6 +71,8 @@ Box::Box(
         (_extent.x * _extent.y +
          _extent.y * _extent.z +
          _extent.z * _extent.x);
+
+    _center = (max + min) / 2;
 }
 
 
@@ -81,17 +83,6 @@ double Box::volume() const {
 
 double Box::surfaceArea() const {
     return _area;
-}
-
-
-Vector3 Box::getCenter() const {
-    Vector3 c = _corner[0];
-
-    for (int i = 1; i < 8; i++) {
-        c += _corner[i];
-    }
-
-    return c / 8;
 }
 
 
