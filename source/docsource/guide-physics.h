@@ -35,7 +35,7 @@
   G3D::Vector3::cosRandom
   G3D::Vector3::hemiRandom
 
-  G3D::GCamera::worldSpaceRay returns the ray that passes through a pixel
+  G3D::GCamera::worldRay returns the ray that passes through a pixel
   from the center of projection.
 
   @section bounding Bounding Volumes

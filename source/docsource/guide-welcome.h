@@ -27,12 +27,15 @@ users who are already familiar with C++ and DirectX or OpenGL.
   Beta and Deprecated APIs,
   Notes for Expert Users</TD></TR>
 
-
   <TR><TD VALIGN=TOP>\link guideinstall Installing G3D \endlink</TD><TD VALIGN=TOP>
   WindowsXP/2000,
   Linux,
   OS X,
   Building the Library</TD></TR>
+
+
+  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>
+  
 
   <TR><TD VALIGN=TOP>\link guideconcepts Concepts \endlink</TD><TD>
   Immediate Mode Graphics,
@@ -40,24 +43,34 @@ users who are already familiar with C++ and DirectX or OpenGL.
   Reference Counting,
   STL</TD></TR>
 
+  <TR><TD VALIGN=TOP>\link guideapp Application Framework \endlink</TD><TD VALIGN=TOP>
+   Applets, Models, Selection, FPS Controls
+  </TD></TR>
+
+  <TR><TD VALIGN=TOP>\link guidedebugging Debugging \endlink</TD><TD VALIGN=TOP>
+  </TD></TR>
+
   <TR><TD VALIGN=TOP>\link guidefiles Files \endlink</TD><TD VALIGN=TOP>
   File Management,
   Text Files,
   Binary Files,
   Network,
-    Images, Models
-      </TD></TR>
-
+  Images, Models
+  </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidephysics Physics and Ray Tracing \endlink</TD><TD VALIGN=TOP>
-   Physics,
-   Ray Tracing,
-   Bounding Volumes,
-   BSP Tree
+  Physics,
+  Ray Tracing,
+  Bounding Volumes,
+  BSP Tree
   </TD></TR>
-  
 
-<TR><TD VALIGN=TOP>\link guideshaders Shaders \endlink</TD><TD VALIGN=TOP>
+  <TR><TD VALIGN=TOP>\link guideeffects Effects \endlink</TD><TD VALIGN=TOP>
+  Cartoon Rendering, Shadows, Reflections
+  </TD></TR>
+
+  
+  <TR><TD VALIGN=TOP>\link guideshaders Shaders \endlink</TD><TD VALIGN=TOP>
   Supported Languages,
   Tools,
   Sample Shaders</TD></TR>

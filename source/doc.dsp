@@ -84,7 +84,23 @@ SOURCE=.\docsource\changelog.h
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-app.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-compiling.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-concepts.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-debug.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-effects.h"
 # End Source File
 # Begin Source File
 
