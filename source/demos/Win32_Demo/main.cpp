@@ -37,7 +37,7 @@ int WINAPI WinMain(
                 
         G3D::CImage im("Cirrus.jpg");
         app.create("Win32 Sample Program", im.width, im.height);
-        G3D::RGBtoBGRA(im.pixel, (unsigned char*)app.buffer, im.width * im.height);
+        G3D::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
 
     } catch (G3D::CImage::Error e) {
 
