@@ -2498,24 +2498,31 @@ static std::string currentDateString() {
 }
 
 
-void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer) const {
+void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer, bool getAlpha) const {
     if (useBackBuffer) {
         glReadBuffer(GL_BACK);
     } else {
         glReadBuffer(GL_FRONT);
     }
     
-    if ((dest.channels != 3) ||
+    int ch = getAlpha ? 4 : 3;
+
+    if ((dest.channels != ch) ||
         (dest.width != getWidth()) ||
         (dest.height != getHeight())) {
         // Only resize if the current size is not correct
-        dest.resize(getWidth(), getHeight(), 3);
+        dest.resize(getWidth(), getHeight(), ch);
     }
-    glReadPixels(0, 0, getWidth(), getHeight(), GL_RGB,
-            GL_UNSIGNED_BYTE, dest.byte());
+    glReadPixels(0, 0, getWidth(), getHeight(), 
+        getAlpha ? GL_RGBA : GL_RGB,
+        GL_UNSIGNED_BYTE, dest.byte());
 
     // Flip right side up
-    flipRGBVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
+    if (getAlpha) {
+        flipRGBAVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
+    } else {
+        flipRGBVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
+    }
 
     // Restore the read buffer to the back
     glReadBuffer(GL_BACK);
@@ -2533,8 +2540,12 @@ void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer) const {
             L[i] = iMin(255, iRound((double)i * s));
         }
 
-        for (i = dest.width * dest.height * 3 - 1; i >= 0; --i) {
-            data[i] = L[data[i]];
+        // skip the alpha channel if there is one
+        int sz = dest.width * dest.height * dest.channels;
+        for (i = 0; i < sz; i += ch) {
+            for (int c = 0; c < 3; ++c) {
+                data[i + c] = L[data[i + c]];
+            }
         }
     }
 }

@@ -79,7 +79,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-
+/*
     GImage frame0("c:/tmp/brunette-walk-I_P-009.png");
     GImage frame1("c:/tmp/brunette-walk-I_P-010.png");
 
@@ -139,8 +139,9 @@ void Demo::init()  {
     for (int i = 0; i < 8000; ++i) {
         debugAssert(frame1decompressed.byte()[i] == frame1.byte()[i]);
     }
-
+*/
     app->im = Texture::fromFile("c:/tmp/brunette-walk-I_P-009.png");
+    
 }
 
 
@@ -166,6 +167,11 @@ void Demo::doLogic() {
         app->endProgram = true;
     }
 
+    if (app->userInput->keyPressed(' ')) {
+        GImage im;
+        app->renderDevice->screenshotPic(im, false, true);
+        im.save("c:/tmp/foo.tga");
+    }
 	// Add other key handling here
 }
 
@@ -187,7 +193,6 @@ void Demo::doGraphics() {
     app->renderDevice->enableLighting();
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
-
        
     app->renderDevice->disableLighting();
 
@@ -228,6 +233,7 @@ int main(int argc, char** argv) {
     GAppSettings settings;
     settings.window.width = 800;
     settings.window.height = 700;
+    settings.window.alphaBits = 8;
     App(settings).run();
     return 0;
 }

@@ -81,6 +81,11 @@ void flipRGBVertical(
     int                     width,
     int                     height);
 
+void flipRGBAVertical(
+    const uint8*            in,
+    uint8*                  out,
+    int                     width,
+    int                     height);
 
 /**
  Given a tangent space bump map, computes a new image where the

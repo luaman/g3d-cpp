@@ -365,6 +365,31 @@ void flipRGBVertical(
     free(temp);
 }
 
+
+void flipRGBAVertical(
+    const uint8*            in,
+    uint8*                  out,
+    int                     width,
+    int                     height) {
+
+    
+    // Allocate a temp row so the operation
+    // is still safe if in == out
+    uint8* temp = (uint8*) malloc(width * 4);
+    alwaysAssertM(temp != NULL, "Out of memory");
+
+    for (int i = 0; i < height / 2; ++i) {
+        int oneRow = width * 4;
+        int topOff = i * oneRow;
+        int botOff = (height - i - 1) * oneRow;
+        System::memcpy(temp,         in + topOff, oneRow);
+        System::memcpy(out + topOff, in + botOff, oneRow);
+        System::memcpy(out + botOff, temp,        oneRow);
+    }
+
+    free(temp);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 void GImage::encodeBMP(

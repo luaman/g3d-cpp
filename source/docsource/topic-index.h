@@ -248,6 +248,7 @@
 		G3D::GImage::Error,	
 		G3D::computeNormalMap,
         G3D::flipRGBVertical,
+        G3D::flipRGBAVertical,
   	    G3D::RGBtoARGB,
 		G3D::RGBtoBGR,
 		G3D::RGBtoBGRA,

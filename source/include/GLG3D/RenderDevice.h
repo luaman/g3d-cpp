@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2005-01-30
+  @edited  2005-02-14
 
   Copyright 2001-2005, Morgan McGuire
 */
@@ -1244,8 +1244,11 @@ public:
 
     /**
      Takes a screenshot and puts the data into the G3D::GImage dest variable.
+     @param useBackBuffer If true, the image is read from the back buffer instead
+     of the front buffer (default false).
+     @param getAlpha If true, the alpha channel of the frame buffer is also read back.
      */
-    void screenshotPic(GImage& dest, bool useBackBuffer = false) const;
+    void screenshotPic(GImage& dest, bool useBackBuffer = false, bool getAlpha = false) const;
 
 	/**
      @deprecated
