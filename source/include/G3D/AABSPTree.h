@@ -924,7 +924,7 @@ public:
                 
                 // If the left child overlaps the box, push it onto the stack for
                 // processing.
-                if ((current->child[0] != NULL) &&
+                if ((node->child[0] != NULL) &&
                     (box.low()[node->splitAxis] < node->splitLocation)) {
                     stack.push(node->child[0]);
                 }
