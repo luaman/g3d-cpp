@@ -1146,6 +1146,7 @@ void RenderDevice::setViewport(const Rect2D& v) {
 void RenderDevice::setProjectionAndCameraMatrix(const GCamera& camera) {
     double pixelAspect = state.viewport.width() / state.viewport.height();
 
+    // Half extents of viewport
     double y = -camera.getNearPlaneZ() * tan(camera.getFieldOfView() / 2.0);
     double x = y * pixelAspect;
 

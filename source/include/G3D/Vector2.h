@@ -47,6 +47,8 @@ public:
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
 
+    void serialize(class TextOutput& t) const;
+    void deserialize(class TextInput& t);
 
     float& operator[] (int i) const;
     operator float* ();

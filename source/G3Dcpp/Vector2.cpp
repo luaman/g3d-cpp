@@ -9,7 +9,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-09-29
+ @edited  2004-09-06
  */
 
 #include <stdlib.h>
@@ -18,6 +18,8 @@
 #include "G3D/format.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
+#include "G3D/TextInput.h"
+#include "G3D/TextOutput.h"
 
 namespace G3D {
 
@@ -62,6 +64,24 @@ void Vector2::serialize(BinaryOutput& b) const {
     b.writeFloat32(y);
 }
 
+
+
+void Vector2::deserialize(TextInput& t) {
+    t.readSymbol("(");
+    x = t.readNumber();
+    t.readSymbol(",");
+    y = t.readNumber();
+    t.readSymbol(")");
+}
+
+
+void Vector2::serialize(TextOutput& t) const {
+   t.writeSymbol("(");
+   t.writeNumber(x);
+   t.writeSymbol(",");
+   t.writeNumber(y);
+   t.writeSymbol(")");
+}
 
 //----------------------------------------------------------------------------
 

@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2004-03-17
+  @edited  2004-09-06
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -270,6 +270,20 @@ public:
     */
    void resize(int n) {
       resize(n, true);
+   }
+
+
+   /**
+    Inserts at the specified index and shifts all other elements up by one.
+    */
+   void insert(int n, const T& value) {
+       // Add space for the extra element
+       resize(num + 1, false);
+
+       for (int i = num - 1; i > n; --i) {
+           data[i] = data[i - 1];
+       }
+       data[n] = value;
    }
 
 

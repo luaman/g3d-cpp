@@ -21,6 +21,7 @@
 		 reconfigure the texture for you.</B>
      <LI> G3D::UserInput::keyReleased, G3D::UserInput::ReleasedKeys
      <LI> G3D::Array::randomElement
+     <LI> G3D::Array::insert
 	 <LI> Optimized G3D::Array::randomize
      <LI> G3D::cyclicCatmullRomSpline
      <LI> G3D::wrap
