@@ -23,7 +23,16 @@
 
    @cite  Based on Meyer, Desbrun, Schroder, and Barr "Discrete 
    Differential-Geometry Operators for Triangulated 2-Manifolds." 
-   http://citeseer.nj.nec.com/meyer02discrete.html */
+   http://citeseer.nj.nec.com/meyer02discrete.html 
+
+   @author Tomer Moscovich
+   @maintainer Morgan McGuire
+
+  TODO: reduce redundant data storage
+  TODO: pass values that need to be computed in rather than recomputing them
+  TODO: use edge adjacency
+  TODO: convert to use Vertex
+*/
 class Curvatures {
 public:
     Curvatures() {}
@@ -38,43 +47,74 @@ public:
     /** Returns the Principal Curvatures for each vertex in _vertexArray */
     void principalCurvature( Array< double >& k1, Array< double >& k2) const;
 
-    /** Returns the Principal Direction for each vertex in _vertexArray */
+    /** Returns the Principal Direction for each vertex in _vertexArray
+      @cite principal directions based on Taubing G. "Estimating the Tensor of Curvature of a
+      Surface from a Polyhedral Approximation. Proc. ICCV 1995.
+      http://citeseer.nj.nec.com/taubin95estimating.html
+    */
     void principalDirections( Array< Vector3 >& T1, Array< Vector3 >& T2) const;
-   
-    void gaussianCurvature( Array< double >& curvatures ) const;
 
-    void meanCurvature( Array< double >& curvatures ) const;
+    /**
+     Gaussian curvature,
+     the product of the principal curvatures.
+    */
+    void gaussianCurvature(Array<double>& gaussianCurvaturePerVertex) const;
+
+    /**
+     Mean curvature at each point on a mesh.
+     Mean curvature is the mean of the normal curvatures,
+     and also the average of the principal curvatures.
+    */
+    void meanCurvature(Array<double>& meanCurvaturePerVertex) const;
 
 protected:
 
-    MeshAlg::Geometry      geometry;
-    Array< MeshAlg::Face > faces;
-    Array< MeshAlg::Edge > edges;
-    Array< Array< int > >  adjacentFaces;
+    MeshAlg::Geometry               geometry;
+    Array< MeshAlg::Face >          faces;
+    Array< MeshAlg::Edge >          edges;
+    Array< Array<int> >             adjacentFaces;
 
     /** angle at [vertex][face] */
-    Array< Table< int, float > > angleInner;
+    Array< Table<int, float> >      angleInner;
 
     /** angle at [adjacent vertex][face] */
-    Array< Table< int, float > > angleLeft;  
+    Array< Table<int, float> >      angleLeft;  
 
     /** angle at [other adjacent vertex][face] */
-    Array< Table< int, float > > angleRight; 
+    Array< Table<int, float> >      angleRight; 
 
     /** cotan of angles opposite each segment [i][j] */
-    Array< Table< int, double > > cota; 
-    Array< Table< int, double > > cotb;
+    Array< Table<int, double> >     cota; 
+    Array< Table<int, double> >     cotb;
 
-    /** Area of "Voronoi" region surrounding each vertex [i] */
-    Array< double > AMixed;
+    /** 
+     Area of the Voronoi region surrounding a vertex generalized to account
+     for obtuse triangles.
+    */
+    Array<double> AMixed;
 
+
+    /**
+     For each vertex i, calculate the angle at i for each adjacent face
+     */
     void initAngles();
-    void initCotans();
-    void initAMixed();
-    void givens(float &cost, float &sint, float a, float b) const;
-    void toString(Vector3 v) const;
-    void toString(Matrix3 m) const;
 
+    /** For each vertex i and an adjacent vertex j, find the cotans of 
+        the two angles (a and b) opposite edge ij. */
+    void initCotans();
+
+    void initAMixed();
+
+    /**
+     "Givens" rotation (based on Golub and Loan)
+     solves [c s; -s c]'*[a b]' = [r 0]' for c and s 
+     */
+    void givens(double& cost, double& sint, double a, double b) const;
+
+    /**
+     Returns a set of the 1-neighbors of the vertex with index v.
+     */
+    void get1Neighbors(int v, Set<int>& ringSet) const;
 };
 
 /** Angle between two vectors */
@@ -82,6 +122,29 @@ inline float vectorAngle(const Vector3& a, const Vector3& b){
     double d = a.dot(b);
     double m = sqrt(a.squaredLength() * b.squaredLength());
     return acos(d / m);
+}
+
+
+void Curvatures::get1Neighbors(int v, Set<int>& ringSet) const{
+
+    ringSet.clear();
+
+    const Array<int>& neighborFaces = adjacentFaces[v];
+    if (neighborFaces.size() > 0) {
+        // For each face
+        for (int j = neighborFaces.size() - 1; j >= 0; --j) {
+            const int f = neighborFaces[j];
+            const MeshAlg::Face& face = faces[f];
+
+            // Insert all vertices of this face
+            for (int i = 0; i < 3; ++i) {
+                ringSet.insert(face.vertexIndex[i]);  
+            }
+        }
+
+        // ringSet should contain 1-neighbors only, so remove the vertex itself.
+        ringSet.remove(v);
+    }
 }
 
 
@@ -104,269 +167,268 @@ Curvatures::Curvatures(
     initAMixed();
 }
 
+static const mod3[] = {0, 1, 2, 0, 1};
 
-// For each vertex i, calculate the angle at i for each adjacent face
+inline double cot(double angle) {
+    return 1.0 / tan(angle);
+}
+
+
 void Curvatures::initAngles() {
-    angleInner.resize(geometry.vertexArray.size()); // init
-    angleLeft.resize(geometry.vertexArray.size());
-    angleRight.resize(geometry.vertexArray.size());
-    Vector3 inner, left, right;
-    int faceIdx;
+    const int n = geometry.vertexArray.size();
 
-    for(int i = 0; i < geometry.vertexArray.size(); ++i) {  // For each vertex
-         for(int j = 0; j < adjacentFaces[i].size(); ++j) {// For each face
-            faceIdx = adjacentFaces[i][j];
-            //1 calculate cosine of angle at vertex
+    angleInner.resize(n);
+    angleLeft.resize(n);
+    angleRight.resize(n);
+
+    for (int v = 0; v < geometry.vertexArray.size(); ++v) {
+         for (int j = 0; j < adjacentFaces[v].size(); ++j) {
+            const int f = adjacentFaces[v][j];
+            const MeshAlg::Face& face = faces[f];
+
+            // 1 calculate cosine of angle at vertex
             
-            //1.1 find vertex b
-            int v;
-            if(faces[faceIdx].vertexIndex[0] == i)      v = 0;
-            else if(faces[faceIdx].vertexIndex[1] == i) v = 1;
-            else                                        v = 2;
+            // 1.1 find vertex b
+            int i;
+            if (face.vertexIndex[0] == v) {
+                i = 0;
+            } else if (face.vertexIndex[1] == v) {
+                i = 1;
+            } else {
+                i = 2;
+            }
 
-            //1.2 assign geometric vertices
-            inner = geometry.vertexArray[faces[faceIdx].vertexIndex[v]];
-            left  = geometry.vertexArray[faces[faceIdx].vertexIndex[(v+1)%3]];
-            right = geometry.vertexArray[faces[faceIdx].vertexIndex[(v+2)%3]];
+            // 1.2 assign geometric vertices
+            const Vector3& C = geometry.vertexArray[face.vertexIndex[i]];
+            const Vector3& L = geometry.vertexArray[face.vertexIndex[mod3[i + 1]]];
+            const Vector3& R = geometry.vertexArray[face.vertexIndex[mod3[i + 2]]];
 
-
-            //1.3 calculate cos of angle 
-            angleInner[i].set(faceIdx, vectorAngle( left-inner, right-inner ));
-            angleLeft[i].set( faceIdx, vectorAngle( inner-left, right-left ));
-            angleRight[i].set(faceIdx, vectorAngle( inner-right, left-right ));
+            // 1.3 calculate cos of angle 
+            angleInner[v].set(f, vectorAngle(L - C, R - C));
+            angleLeft[v]. set(f, vectorAngle(C - L, R - L));
+            angleRight[v].set(f, vectorAngle(C - R, L - R));
          }
     }
 }
 
 
-// For each vertex i and an adjacent vertex j, find the cotans of 
-// the two angles (a and b) opposite edge ij.
+
 void Curvatures::initCotans() {
     cota.resize(geometry.vertexArray.size());
     cotb.resize(geometry.vertexArray.size());
 
-    int i, j, a, b;
-    //Vector3 xi, xj, xa, xb;
     Array< MeshAlg::Face > aFaces;
     Array< int > aFacesIdx;
 
     // For each edge, calc cota/cotb
     for(int k = 0; k < edges.size(); ++k) { 
 
-        i = edges[k].vertexIndex[0];
-        j = edges[k].vertexIndex[1];
+        int i = edges[k].vertexIndex[0];
+        int j = edges[k].vertexIndex[1];
         aFaces.clear();
         aFacesIdx.clear();
 
         // Find faces that share this edge
-        for(int f = 0; f < adjacentFaces[i].size(); ++f) {
-            if( (faces[adjacentFaces[i][f]].vertexIndex[0] == j) ||
-                (faces[adjacentFaces[i][f]].vertexIndex[1] == j) ||
-                (faces[adjacentFaces[i][f]].vertexIndex[2] == j) ) {
+        for (int f = 0; f < adjacentFaces[i].size(); ++f) {
+            if ( (faces[adjacentFaces[i][f]].vertexIndex[0] == j) ||
+                 (faces[adjacentFaces[i][f]].vertexIndex[1] == j) ||
+                 (faces[adjacentFaces[i][f]].vertexIndex[2] == j) ) {
+                
                 aFaces.append(faces[adjacentFaces[i][f]]);
                 aFacesIdx.append(adjacentFaces[i][f]);
             }
         }
 
         debugAssertM(aFaces.size() >= 2, "initCotans: Fewer than 2 faces share an edge."); 
+
+        int a, b;
+
         // Find the points who's angle we need (ie not i and j)
-        for(int v = 0; v < 3; ++v) {
-            if( (aFaces[0].vertexIndex[v] !=i) && (aFaces[0].vertexIndex[v] != j) )
+        for (int v = 0; v < 3; ++v) {
+            if ( (aFaces[0].vertexIndex[v] !=i) && (aFaces[0].vertexIndex[v] != j) ) {
                 a = aFaces[0].vertexIndex[v];
-            if( (aFaces[1].vertexIndex[v] !=i) && (aFaces[1].vertexIndex[v] != j) )
+            }
+
+            if ( (aFaces[1].vertexIndex[v] !=i) && (aFaces[1].vertexIndex[v] != j) ) {
                 b = aFaces[1].vertexIndex[v];
+            }
         }
 
         // Find cota cotb
         if (angleInner[a].containsKey(aFacesIdx[0])) {
-            cota[i].set(j, 1/tan(angleInner[a][aFacesIdx[0]]));
-            cotb[j].set(i, 1/tan(angleInner[a][aFacesIdx[0]])); //TODO Don't edges go both ways?
+            //TODO Don't edges go both ways?
+            cota[i].set(j, cot(angleInner[a][aFacesIdx[0]]));
+            cotb[j].set(i, cot(angleInner[a][aFacesIdx[0]]));
         } else
             debugPrintf("\n1nokey kijab %d %d %d %d %d", k, i, j, a, b); 
 
         if (angleInner[b].containsKey(aFacesIdx[1])) {
-            cotb[i].set(j, 1/tan(angleInner[b][aFacesIdx[1]]));
-            cota[j].set(i, 1/tan(angleInner[b][aFacesIdx[1]]));  //TODO Don't edges go both ways?
+            //TODO Don't edges go both ways?
+            cotb[i].set(j, cot(angleInner[b][aFacesIdx[1]]));
+            cota[j].set(i, cot(angleInner[b][aFacesIdx[1]]));  
         } else {
             debugPrintf("\n2nokey kijab %d %d %d %d %d", k, i, j, a, b);
         }
     }
 }
 
-// Area of the Voronoi region surrounding a vertex generalized to account
-// for obtuse triangles.
+
 void Curvatures::initAMixed() {
-    Triangle tri;
-    MeshAlg::Face face;
-    int faceIdx;
-
-    int v, left, right;
-
-    // length of opposite sides
-    float lenLeft, lenRight;
 
     // Init Amixed
-    for (int i = 0; i < geometry.vertexArray.size(); ++i) {
-        AMixed.append(0);
+    AMixed.resize(geometry.vertexArray.size());
+    for (int v = 0; v < AMixed.size(); ++v) {
+        AMixed[v] = 0.0;
     }
 
     // For each vertex
-    for (int i = 0; i < geometry.vertexArray.size(); ++i) {  
+    for (int v = 0; v < geometry.vertexArray.size(); ++v) {  
         
         // For each face
-        for (int j = 0; j < adjacentFaces[i].size(); ++j) { 
-            faceIdx = adjacentFaces[i][j];
-            face = faces[faceIdx];
+        for (int j = 0; j < adjacentFaces[v].size(); ++j) { 
 
-            //find vertex i
-            if (face.vertexIndex[0] == i) {
-                v = 0;
-            } else if (face.vertexIndex[1] == i) {
-                v = 1;
+            const int f = adjacentFaces[v][j];
+            const MeshAlg::Face& face = faces[f];
+
+            int iCenter = 0;
+
+            // Circle around the vertices of the face until we find the index
+            // matching v.
+            if (face.vertexIndex[0] == v) {
+                iCenter = 0;
+            } else if (face.vertexIndex[1] == v) {
+                iCenter = 1;
             } else {
-                v = 2;
+                iCenter = 2;
             }
 
-            left  = (v + 1) % 3;
-            right = (v + 2) % 3;
+            const int iLeft  = mod3[iCenter + 1];
+            const int iRight = mod3[iCenter + 2];
 
-            // get geometry 
-            tri = Triangle(geometry.vertexArray[face.vertexIndex[v]],
-                           geometry.vertexArray[face.vertexIndex[left]],  //"Left"
-                           geometry.vertexArray[face.vertexIndex[right]]); //"Right"
+            // Get the geometry of triangle CLR
+            const Vector3& C = geometry.vertexArray[face.vertexIndex[iCenter]];
+            const Vector3& L = geometry.vertexArray[face.vertexIndex[iLeft]];
+            const Vector3& R = geometry.vertexArray[face.vertexIndex[iRight]];
 
-            if (fabs(angleInner[i][faceIdx]) > G3D_HALF_PI) {
+            const double thetaC = angleInner[v][f];
+            const double thetaL = angleLeft[face.vertexIndex[iLeft]][f];
+            const double thetaR = angleLeft[face.vertexIndex[iRight]][f];
 
-                // Angle at i is obtuse
-                AMixed[i] += tri.area() / 2.0;
+            // Figure out which angle is obtuse
 
-            } else if ((fabs(angleLeft[ face.vertexIndex[left]][faceIdx]) > G3D_HALF_PI) || 
-                       (fabs(angleRight[face.vertexIndex[right]][faceIdx]) > G3D_HALF_PI)) {   
+            if (abs(thetaC) > G3D_HALF_PI) {
+
+                // Angle at v is obtuse
+
+                const double area = (L - C).cross(R - C).length() / 2.0;
+                AMixed[v] += area / 2.0;
+
+            } else if ((abs(thetaL) > G3D_HALF_PI) || 
+                       (abs(thetaR) > G3D_HALF_PI)) {   
 
                 // The triangle is obtuse
-                AMixed[i] += tri.area() / 4.0;
+                const double area = (L - C).cross(R - C).length() / 2.0;
+                AMixed[v] += area / 4.0;
 
             } else { 
                 
-                // tri is not obtuse 
-                lenLeft   = (tri.vertex(0)-tri.vertex(1)).squaredLength();
-                lenRight  = (tri.vertex(0)-tri.vertex(2)).squaredLength();
+                // The triangle is *not* obtuse
+                double lenLeft   = (L - C).squaredLength();
+                double lenRight  = (R - C).squaredLength();
 
                 // Voronoi region
-                AMixed[i] += 
-                    0.125 * (lenLeft  * 1.0 / tan(angleLeft[face.vertexIndex[left]][faceIdx]) +   
-                             lenRight * 1.0 / tan(angleRight[face.vertexIndex[right]][faceIdx]));
+                AMixed[v] += 
+                    0.125 * (lenLeft  * cot(thetaL) +   
+                             lenRight * cot(thetaR));
             }
         }
     }
 }
 
 
-// Gaussian curvature.
-// (The product of the principal curvatures.)
-void Curvatures::gaussianCurvature(Array< double >& curvatures) const {
-    curvatures.clear();
+void Curvatures::gaussianCurvature(Array<double>& curvatures) const {
+    curvatures.resize(geometry.vertexArray.size(), DONT_SHRINK_UNDERLYING_ARRAY);
 
     // For each vertex
-    for (int i = 0; i < geometry.vertexArray.size(); ++i) {  
+    for (int v = 0; v < curvatures.size(); ++v) {  
          double theta = 0.0;
 
          // For each face
-         for (int j = 0; j < adjacentFaces[i].size(); ++j) {
-            theta += fabs(angleInner[i][adjacentFaces[i][j]]);  
+         for (int j = 0; j < adjacentFaces[v].size(); ++j) {
+            const int f = adjacentFaces[v][j];
+            theta += abs(angleInner[v][f]);  
          }
 
-         curvatures.append( (G3D_TWO_PI - theta) / AMixed[i] );  
+         curvatures[v] = (G3D_TWO_PI - theta) / AMixed[v];
     }
 }
 
-// Mean curvature at each point on a mesh.
-// Mean curvature is the mean of the normal curvatures,
-// and also the average of the principal curvatures.
-void Curvatures::meanCurvature(Array< double >& curvatures) const {
 
-    curvatures.clear();
+void Curvatures::meanCurvature(Array<double>& curvatures) const {
 
-    Set< int > ringSet;
-    Array< int > ring;
+    curvatures.resize(geometry.vertexArray.size(), DONT_SHRINK_UNDERLYING_ARRAY);
 
-    // Mean Curvature Normal
-    Vector3 K; 
+    // Set of indices of adjacent vertices
+    Set<int> ringSet;
 
     // For each vertex
-    for (int v = 0; v < geometry.vertexArray.size(); ++v) {  
+    for (int v = 0; v < curvatures.size(); ++v) {  
+         // Position of the current vertex
+         const Vector3& vPos = geometry.vertexArray[v];
 
-         // Find N1 ring of vertices
-         ringSet.clear();
-
+         get1Neighbors(v, ringSet);
          
-         const Array<int>& neighborFaces = adjacentFaces[v];
+         // Iterate over each edge exiting v, summing K's
 
-         if (neighborFaces.size() > 0) {
-             // For each face
-             for (int f = neighborFaces.size() - 1; f >= 0; --f) {
-                 const MeshAlg::Face& face = faces[neighborFaces[f]];
+         // Mean Curvature Normal
+         Vector3 K = Vector3::ZERO;
 
-                 for (int i = 0; i < 3; ++i) {
-                     ringSet.insert(face.vertexIndex[i]);  
-                 }
-             }
+         Set<int>::Iterator end = ringSet.end();
+         for (Set<int>::Iterator cur = ringSet.begin(); cur != end; ++cur) {
+             // Index of vertex at the other end of the edge
+             const int v2 = *cur;
 
-             // ringSet contains N1 ring only.  Remove the vertex itself.
-             ringSet.remove(v);
-         }
-
-         ring = ringSet.getMembers();
-         K = Vector3(0, 0, 0);
-         
-         // for each edge exiting v
-         for(int j = 0; j < ring.size(); ++j) {
              // K(xi) = 1/(2*Amixed)*sum(cota+cotb)*(Xj-Xi)
-             K += (cota[v][ring[j]] + cotb[v][ring[j]]) * 
-                  (geometry.vertexArray[ring[j]] - geometry.vertexArray[v]);
+             K += (cota[v][v2] + cotb[v][v2]) * 
+                  (geometry.vertexArray[v2] - vPos);
          }
-         K /= 2.0 * AMixed[v];
-         curvatures.append( 0.5 * K.length() );
 
+         K /= 2.0 * AMixed[v];
+         curvatures[v] = 0.5 * K.length();
     }
 }
 
 
-void Curvatures::principalCurvature(Array< double >& k1, Array< double >& k2) const {
+void Curvatures::principalCurvature(Array<double>& k1, Array<double>& k2) const {
 
     // mean and gaussian curvature
-    Array< double > kh, kg;
+    Array<double> kh, kg;
+
+    // TODO: pass in
     gaussianCurvature(kg);
     meanCurvature(kh);
 
     // For each vertex
-    for(int i = 0; i < geometry.vertexArray.size(); ++i) {  
-       double dxi = kh[i] * kh[i] - kg[i];
-       if (dxi < 0.0) {
-            // threshold at 0
-           dxi = 0.0;
-       }
-       
-       double sdxi = sqrt(dxi);
-       k1.append(kh[i] + sdxi);
-       k2.append(kh[i] - sdxi);
+    for(int v = geometry.vertexArray.size() - 1; v >= 0; --v) {  
+       const double sdxi = sqrt(max(kh[v] * kh[v] - kg[v], 0.0));       
+       k1.append(kh[v] + sdxi);
+       k2.append(kh[v] - sdxi);
     }
 }
 
 
-// principal directions based on Taubing G. "Estimating the Tensor of Curvature of a
-// Surface from a Polyhedral Approximation. Proc. ICCV 1995.
-// http://citeseer.nj.nec.com/taubin95estimating.html
-void Curvatures::principalDirections( Array< Vector3 >& T1, Array< Vector3 >& T2) const {
-    T1.clear();
-    T2.clear();
+void Curvatures::principalDirections(Array<Vector3>& T1, Array<Vector3>& T2) const {
+    const int n = geometry.vertexArray.size();
 
-    Set< int > ringSet;
+    T1.resize(n, DONT_SHRINK_UNDERLYING_ARRAY);
+    T2.resize(n, DONT_SHRINK_UNDERLYING_ARRAY);
 
-    // 1-ring neighbors of vi
-    Array< int > ring;        
+    Set<int> ringSet;
 
-    // vertex, neighbor, and vj-vi
+    // Members of the ringSet
+    Array<int> ring;
+
+    // vertex, neighbor, and vj - vi
     Vector3 vi, vj, dvji;     
 
     // Setup for Householder matrix
@@ -380,56 +442,34 @@ void Curvatures::principalDirections( Array< Vector3 >& T1, Array< Vector3 >& T2
     // Holds a vector for a N*N' that yields a 3x3 matrix
     Matrix3 NMat = Matrix3::ZERO; 
 
-    // Holds a vector for a T*T' that yields a 3x3 matrix
-    Matrix3 TMat = Matrix3::ZERO; 
-
-    // Holds a vector for a W*W' that yields a 3x3 matrix
-    Matrix3 WMat = Matrix3::ZERO; 
-
     // weight of k and T
-    Array< float > weight;    
+    Array<float> weight;    
 
     // normal curvature in direction vj
-    Array< float > k;   
+    Array<float> k;   
     
     // normalized projection of vj-vi onto tangent plane
-    Array< Vector3 > T; 
-    float EminusN, EplusN;
-    float cost, sint;
-    float wSum;
+    Array<Vector3> T; 
 
     // For each vertex
-    for (int i = 0; i < geometry.vertexArray.size(); ++i) {
-        vi = geometry.vertexArray[i];
+    for (int v = 0; v < n; ++v) {
+        vi = geometry.vertexArray[v];
 
-        // Find N1 ring of vertices
-        ring.clear();
-        ringSet.clear();
-
-        // For each face
-        for(int j = 0; j < adjacentFaces[i].size(); ++j) {
-            // add all verts
-            ringSet.insert(faces[adjacentFaces[i][j]].vertexIndex[0]);  
-            ringSet.insert(faces[adjacentFaces[i][j]].vertexIndex[1]);
-            ringSet.insert(faces[adjacentFaces[i][j]].vertexIndex[2]);
-        }
-
-        // ringSet contains N1 ring only
-        ringSet.remove(i); 
-        ring = ringSet.getMembers();
+        get1Neighbors(v, ringSet);
 
         // Calculate weights (proportional to inverse of |vi-vj|
         // (Hameiri'03 modification of Taubin)
-        wSum = 0;
-        weight.clear();
-        for(int j = 0; j < ring.size(); ++j) {
+        double wSum = 0.0;
+        ringSet.getMembers(ring);
+        weight.resize(ring.size(), DONT_SHRINK_UNDERLYING_ARRAY);
+        for (int j = 0; j < ring.size(); ++j) {
             vj = geometry.vertexArray[ring[j]];
-            weight.append((vi-vj).length());
+            weight[j] = (vi - vj).length();
             wSum += weight[j];
         }
 
         // Make weights sum to 1
-        for(int j = 0; j < ring.size(); ++j) {
+        for(int j = 0; j < weight.size(); ++j) {
             weight[j] /= wSum;
         }
     
@@ -439,39 +479,44 @@ void Curvatures::principalDirections( Array< Vector3 >& T1, Array< Vector3 >& T2
         // for matrix rep of vertex normal
         NMat = Matrix3::ZERO;
 
-        NMat.setColumn(0, geometry.normalArray[i]);
+        NMat.setColumn(0, geometry.normalArray[v]);
         T.clear();
-        for (int j = 0; j < ring.size(); ++j) { 
+        T.resize(ring.size());
+        for (int j = 0; j < T.size(); ++j) { 
             vj = geometry.vertexArray[ring[j]];
-            T.append( (Matrix3::IDENTITY - NMat*NMat.transpose())*(vi-vj) );
-            T[j] /= T[j].length();
+            T[j] = ((Matrix3::IDENTITY - NMat * NMat.transpose()) * (vi - vj)).direction();
         }
 
         // Calc normal curvature in direction of vi,vj
         k.clear();
-        for (int j = 0; j < ring.size(); ++j) {
-            dvji =  geometry.vertexArray[ring[j]] - vi;
-            k.append((2*geometry.normalArray[i].dot(dvji))/(dvji.length()*dvji.length()));
+        k.resize(ring.size());
+        for (int j = 0; j < k.size(); ++j) {
+            dvji = geometry.vertexArray[ring[j]] - vi;
+            const Vector3& N = geometry.normalArray[v];
+            k[j] =  (2.0 * N.dot(dvji)) / dvji.squaredLength();
         }
 
         // Estimate M as weighted sum over neighborhood
         M = Matrix3::ZERO;
         for (int j = 0; j < ring.size(); ++j) {
-            TMat = Matrix3::ZERO;
+            // Holds a vector for a T*T' that yields a 3x3 matrix
+            Matrix3 TMat = Matrix3::ZERO;
             TMat.setColumn(0, T[j]);
-            M = M + weight[j]*k[j]*(TMat*TMat.transpose()); 
+            M = M + weight[j] * k[j] * (TMat * TMat.transpose()); 
         }
 
         // Calculate W for Householder matrix
-        EminusN = (Vector3::UNIT_X - geometry.normalArray[i]).length();
-        EplusN  = (Vector3::UNIT_X + geometry.normalArray[i]).length();
+        double EminusN = (Vector3::UNIT_X - geometry.normalArray[v]).length();
+        double EplusN  = (Vector3::UNIT_X + geometry.normalArray[v]).length();
 
         if (EminusN > EplusN) {
-            W = (Vector3::UNIT_X - geometry.normalArray[i]) / EminusN; 
+            W = (Vector3::UNIT_X - geometry.normalArray[v]) / EminusN; 
         } else {
-            W = (Vector3::UNIT_X + geometry.normalArray[i]) / EplusN; 
+            W = (Vector3::UNIT_X + geometry.normalArray[v]) / EplusN; 
         }
-        WMat = Matrix3::ZERO;
+        
+        // Holds a vector for a W*W' that yields a 3x3 matrix
+        Matrix3 WMat = Matrix3::ZERO;
         WMat.setColumn(0, W);
 
         // Calc Householder matrix Q
@@ -481,25 +526,25 @@ void Curvatures::principalDirections( Array< Vector3 >& T1, Array< Vector3 >& T2
         QMQ = Q.transpose() * M * Q;
 
         // Find theta using Givens rotation
-        givens(cost, sint, QMQ[1][1], M[2][1] );
+        double cost, sint;
+        givens(cost, sint, QMQ[1][1], M[2][1]);
 
         // Principal directions (TODO: reversed?)
-        T1.append( cost * Q.getColumn(1) - sint * Q.getColumn(2) );
-        T2.append( sint * Q.getColumn(1) + cost * Q.getColumn(2) );
+        T1[v] = cost * Q.getColumn(1) - sint * Q.getColumn(2);
+        T2[v] = sint * Q.getColumn(1) + cost * Q.getColumn(2);
     }
 }
 
 
 
-// Givens rotation (based on Golub and Loan)
-// solves [c s; -s c]'*[a b]' = [r 0]' for c and s 
-void Curvatures::givens(float &cost, float &sint, float a, float b) const {
+
+void Curvatures::givens(double& cost, double& sint, double a, double b) const {
     double t;
 
     if (b == 0) {
         cost = 1.0;
         sint = 1.0;
-    } else if (abs(b)>abs(a)) {
+    } else if (abs(b) > abs(a)) {
         t    = -a / b;
         sint = 1.0 / sqrt(1.0 + t * t);
         cost = sint*t;
@@ -509,18 +554,6 @@ void Curvatures::givens(float &cost, float &sint, float a, float b) const {
         sint = cost*t;
     }
 }
-
-
-void Curvatures::toString(Vector3 v) const {
-    debugPrintf("[%f %f %f]", v[0], v[1], v[2]);
-}
-
-void Curvatures::toString(Matrix3 m) const {
-    debugPrintf("[%f %f %f; %f %f %f; %f %f %f]", m[0][0], m[0][1], m[0][2], 
-                                                  m[1][0], m[1][1], m[1][2], 
-                                                  m[2][0], m[2][1], m[2][2]);
-}
-
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -719,7 +752,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0,0,1));
     app->debugCamera.lookAt(Vector3::ZERO);
 
-    mesh.import(IFSModel::create(app->dataDir + "ifs/elephant.ifs")->pose(CoordinateFrame()));
+    mesh.import(IFSModel::create(app->dataDir + "ifs/cow.ifs")->pose(CoordinateFrame()));
 }
 
 
@@ -792,7 +825,7 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    dataDir = "z:/libraries/g3d-6_02/data/";
+    dataDir = "d:/libraries/g3d-6_02/data/";
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
