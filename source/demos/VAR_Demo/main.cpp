@@ -185,9 +185,11 @@ void Demo::doGraphics() {
     app->renderDevice->pushState();
         // Setup lighting
         app->renderDevice->setSpecularCoefficient(1);
+        app->renderDevice->setShininess(64);
+        debugAssertGLOk();
         app->renderDevice->enableLighting();
         app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-        app->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
+        app->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25, false));
         app->renderDevice->setAmbientLightColor(lighting.ambient);
 
         app->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
