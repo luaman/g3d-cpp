@@ -36,14 +36,38 @@ void Box::serialize(class BinaryOutput& b) const {
 	for (i = 0; i < 8; ++i) {
 		_corner[i].serialize(b);
 	}
+
+    // Other state can be reconstructed
 }
 
 
 void Box::deserialize(class BinaryInput& b) {
 	int i;
-	for (i = 0; i < 8; ++i) {
+
+    _center = Vector3::ZERO;
+    for (i = 0; i < 8; ++i) {
 		_corner[i].deserialize(b);
+        _center += _corner[i];
 	}
+
+    _center = _center / 8;
+    
+    // Reconstruct other state from the corners
+    _axis[0] = _corner[5] - _corner[4];
+    _axis[1] = _corner[7] - _corner[4];
+    _axis[2] = _corner[0] - _corner[4];
+
+    for (i = 0; i < 3; ++i) {
+        _extent[i] = _axis[i].length();
+        _axis[i] /= _extent[i];
+    }
+
+    _volume = _extent.x * _extent.y * _extent.z;
+
+    _area = 2 * 
+        (_extent.x * _extent.y +
+         _extent.y * _extent.z +
+         _extent.z * _extent.x);
 }
 
 
@@ -83,6 +107,24 @@ double Box::volume() const {
 
 double Box::surfaceArea() const {
     return _area;
+}
+
+
+void Box::getLocalFrame(CoordinateFrame& frame) const {
+
+    frame.rotation = Matrix3(
+        _axis[0][0], _axis[1][0], _axis[2][0],
+        _axis[0][1], _axis[1][1], _axis[2][1],
+        _axis[0][2], _axis[1][2], _axis[2][2]);
+
+    frame.translation = _center;
+}
+
+
+CoordinateFrame Box::localFrame() const {
+    CoordinateFrame out;
+    getLocalFrame(out);
+    return out;
 }
 
 

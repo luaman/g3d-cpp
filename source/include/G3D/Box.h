@@ -79,6 +79,17 @@ public:
     virtual ~Box() {}
 
     /**
+     Returns the object to world transformation for 
+     this box.  localFrame().worldToObject(...) takes
+     objects into the space where the box axes are
+     (1,0,0), (0,1,0), (0,0,1).  Note that there
+     is no scaling in this transformation.
+     */
+    CoordinateFrame localFrame() const;
+
+    void getLocalFrame(CoordinateFrame& frame) const;
+
+    /**
       Returns the centroid of the box.
      */
     inline Vector3 center() const {
