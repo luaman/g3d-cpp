@@ -20,6 +20,10 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 #endif
+// Setup the "main" linkage if not using SDL_main
+#if (defined(NO_SDL_MAIN) || defined(_CONSOLE)) && defined(main)
+    #undef main
+#endif
 
 namespace G3D {
 

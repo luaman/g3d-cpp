@@ -72,9 +72,5 @@
 #include "GLG3D/Win32Window.h"
 #endif
 
-// Setup the "main" linkage if not using SDL_main
-#if defined(NO_SDL_MAIN) || defined(_CONSOLE)
-    #undef main
-#endif
 
 #endif

@@ -17,6 +17,11 @@
 #else
 #include <SDL.h>
 #endif
+// Setup the "main" linkage if not using SDL_main
+#if (defined(NO_SDL_MAIN) || defined(_CONSOLE)) && defined(main)
+    #undef main
+#endif
+
 
 #include "graphics3D.h"
 #include "GLG3D/GWindow.h"
