@@ -15,7 +15,7 @@
 
 namespace G3D {
 
-Vector3int16::Vector3uint16(const class Vector3& v) {
+Vector3int16::Vector3int16(const class Vector3& v) {
     x = iRound(v.x * 32767);
     y = iRound(v.y * 32767);
     z = iRound(v.z * 32767);

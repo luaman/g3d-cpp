@@ -1,5 +1,5 @@
 /**
-  @file Vector3int16.cpp
+  @file Vector3int16.h
   
   @maintainer Morgan McGuire, matrix@brown.edu
 
@@ -22,14 +22,14 @@ namespace G3D {
 #pragma pack(2)
 class Vector3int16 {
 public:
-    int16              x;
-    int16              y;
-    int16              z;
+    G3D::int16              x;
+    G3D::int16              y;
+    G3D::int16              z;
 
-    Vector3uint16() : x(0), y(0), z(0) {}
-    Vector3uint16(int16 _x, int16 _y, int16 _z) : x(_x), y(_y), z(_z) {}
-    Vector3uint16(const class Vector3& v);
-    Vector3uint16(class BinaryInput& bi);
+    Vector3int16() : x(0), y(0), z(0) {}
+    Vector3int16(G3D::int16 _x, G3D::int16 _y, G3D::int16 _z) : x(_x), y(_y), z(_z) {}
+    Vector3int16(const class Vector3& v);
+    Vector3int16(class BinaryInput& bi);
     void serialize(class BinaryOutput& bo) const;
     void deserialize(class BinaryInput& bi);
 };

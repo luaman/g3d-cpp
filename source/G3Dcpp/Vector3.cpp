@@ -18,7 +18,7 @@
 #include "G3D/stringutils.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
-#include "G3D/Vector3uint16.h"
+#include "G3D/Vector3int16.h"
 
 namespace G3D {
 
