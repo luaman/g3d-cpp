@@ -12,6 +12,7 @@
  */
 
 #include <G3DAll.h>
+#include <memory.h>
 
 #if G3D_VER != 60300
     #error Requires G3D 6.03
@@ -21,10 +22,44 @@ class App : public GApp {
 protected:
     void main();
 public:
+
     SkyRef              sky;
+
+    /** The screen is read back into this buffer */
+    GImage              buffer;
 
     App(const GAppSettings& settings);
 };
+
+
+class VideoRecorder {
+public:
+
+    FILE*           file;
+    GImage          buffer;
+
+    VideoRecorder() : file(NULL) {}
+
+    void begin() {
+        end();
+        file = fopen("c:/tmp/temp.vid", "wb");
+        setbuf(file, (char*)malloc(1024*768*3));
+        debugAssert(file);
+    }
+
+    void snap(RenderDevice* rd) {
+        rd->screenshotPic(buffer, false);
+        fwrite(buffer.byte(), buffer.width * buffer.height * buffer.channels, 1, file);
+    }
+
+    void end() {
+        if (file != NULL) {
+            fclose(file);
+            file = NULL;
+        }
+    }
+};
+
 
 
 /**
@@ -40,6 +75,10 @@ public:
 
     class App*          app;
 
+    IFSModelRef         model;
+
+    VideoRecorder       recorder;
+    
     Demo(App* app);    
 
     virtual void init();
@@ -65,11 +104,15 @@ void Demo::init()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
+
+    model = IFSModel::create(app->dataDir + "ifs/cow.ifs", 4);
+    recorder.begin();
 }
 
 
 void Demo::cleanup() {
     // Called when Demo::run() exits
+    recorder.end();
 }
 
 
@@ -80,6 +123,17 @@ void Demo::doNetwork() {
 
 void Demo::doSimulation(SimTime dt) {
 	// Add physical simulation here
+
+  //  recorder.snap(app->renderDevice);
+    // screenshotPic
+//    app->renderDevice->screenshotPic(app->buffer, false);
+
+//    readBack(app->renderDevice, app->buffer, false);
+
+    // Memory mapping
+    // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dngenlib/html/msdn_manamemo.asp
+    // http://www.itworld.com/nl/lnx_tip/04272001/
+    // http://www.hmug.org/man/2/mmap.html
 }
 
 
@@ -113,6 +167,12 @@ void Demo::doGraphics() {
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+
+        model->pose(CoordinateFrame())->render(app->renderDevice);
+        model->pose(CoordinateFrame(Vector3(0,2,0)))->render(app->renderDevice);
+        model->pose(CoordinateFrame(Vector3(0,4,0)))->render(app->renderDevice);
+        model->pose(CoordinateFrame(Vector3(2,2,0)))->render(app->renderDevice);
+        model->pose(CoordinateFrame(Vector3(-2,2,0)))->render(app->renderDevice);
 
     app->renderDevice->disableLighting();
 

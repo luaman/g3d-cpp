@@ -90,6 +90,10 @@ SOURCE=.\GLG3Dcpp\Draw.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\edgeFeatures.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\G3DGameUnits.cpp
 # End Source File
 # Begin Source File
@@ -207,6 +211,10 @@ SOURCE=.\GLG3Dcpp\VertexProgram.cpp
 # Begin Source File
 
 SOURCE=.\include\GLG3D\Draw.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\edgeFeatures.h
 # End Source File
 # Begin Source File
 
