@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2004-06-21
+ @edited  2004-09-08
  */
 
 #include "G3D/TextInput.h"
@@ -142,7 +142,15 @@ Token TextInput::nextToken() {
                 // Just a regular division
                 whitespaceDone = true;
             }
+        } else if ((options.otherCommentCharacter != '\0') &&
+                   (c == options.otherCommentCharacter)) {
+            // Single line comment
+            whitespaceDone = false;
+            while (! isNewline(c) && (c != EOF)) {
+                c = popNextChar();
+            }
         }
+
     }  // While ! whitespaceDone
 
     t._line      = lineNumber;
@@ -154,9 +162,7 @@ Token TextInput::nextToken() {
     }
     
     switch (c) {
-
-    // Single character tokens are all going to be handled the same way; 
-    // by creating that token.
+    case '\\':
     case '(': 
     case ')':
     case ',':
@@ -274,6 +280,14 @@ Token TextInput::nextToken() {
                 }
             }
             break;
+
+        case '\\':
+            if ((options.otherCommentCharacter != '\0') &&
+                (peekNextChar() == options.otherCommentCharacter)) {
+                // Return the raw comment character instead of
+                // the backslash
+                t._string = popNextChar();
+            }
         }
 
         return t;
@@ -430,18 +444,22 @@ numLabel:
                 case 't':
                     t._string += '\t';
                     break;
-                case '\\':
-                    t._string += '\\';
-                    break;
                 case '0':
                     t._string += '\0';
                     break;
+
+                case '\\':
                 case '\"':
-                    t._string += '\"';
+                case '\'':
+                    t._string += c;
                     break;
+
                 default:
-                    // Some illegal escape sequence; skip it.
-                    break;
+                    if ((c == options.otherCommentCharacter) && 
+                        (options.otherCommentCharacter != '\0')) {
+                        t._string += options.otherCommentCharacter;
+                    } 
+                    // otherwise, some illegal escape sequence; skip it.
                 } // switch
             } else {
                 t._string += c;

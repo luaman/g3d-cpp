@@ -12,6 +12,9 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> G3D::TextInput allows ' inside quoted strings
+     <LI> G3D::TextInput allows \ as a symbol token
+     <LI> G3D::TextInput supports an arbitrary comment character (e.g. '#')
      <LI> Precompiled binaries for VisualC++ 7 (.NET 2002/2003)
      <LI> VisualC++ 7 (.NET 2002/2003) supported by build script
 	 <LI> Build now MOVEs binaries instead of COPYing them on Windows (allows

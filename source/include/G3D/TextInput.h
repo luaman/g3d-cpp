@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2004-06-21
+ @edited  2004-09-08
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -123,36 +123,44 @@ public:
 
 
   TextInput does not have helper functions for types with non-obvious formatting, or 
-  helpers that would be redundant.  You can use the following idioms for these:
-  
-	<dt><b>Bool:</b> <code>ti.readSymbol() != "false"</code>
-	<dt><b>Int:</b>  <code>iRound(ti.readNumber())</code>
-	<dt><b>Hex Color:</b>  <code>Color4::fromARGB(iRound(ti.readNumber()))</code>
-	<dt><b>Vector3:</b>  
-	  <pre>Vector3 v;
-	       ti.readSymbol("(");
-		   v.x = ti.readNumber();
-		   ti.readSymbol(",");
-		   v.y = ti.readNumber();
-		   ti.readSymbol(",");
-		   v.z = ti.readNumber();
-		   ti.readSymbol(")");
-	  </pre>
+  helpers that would be redundant.  Use the serialize methods instead for 
+  parsing specific types like int, Vector3, and Color3.
+
+  Inside quoted strings escape sequences are converted.  Thus the string
+  token for ["a\nb"] is 'a', followed by a newline, followed by 'b'.  Outside
+  of quoted strings, escape sequences are not converted, so the token sequence
+  for [a\nb] is symbol 'a', symbol '\', symbol nb (this matches what a C++ parser
+  would do).  The exception is that a specified TextInput::Options::otherCommentCharacter
+  preceeded by a backslash is assumed to be an escaped comment character and is
+  returned as a symbol token instead of being parsed as a comment 
+  (this is what a LaTex or VRML parser would do).
  */
 class TextInput {
 public:
 
     class Options {
     public:
-        /** If true, single line comments beginning with // are ignored.
+        /** If true, // begins a single line comment, the results of
+            which will not appear in
             Default is true. */
         bool                cppComments;
+
+        /** If non-null, specifies a character that begins single line 
+            comments ('#' and '%' are popular choices).  This 
+            is independent of the cppComments flag.  If the 
+            character appears in text with a backslash in front of 
+            it, it is considered escaped and is not treated as 
+            a comment character.
+
+            Default is '\0'.
+         */
+        char                otherCommentCharacter;
 
         /** If true, "-1" parses as the number -1 instead of the symbol "-" followed
             by the number 1.  Default is true.*/
         bool                signedNumbers;
 
-        Options () : cppComments(true), signedNumbers(true) {}
+        Options () : cppComments(true), otherCommentCharacter('\0'), signedNumbers(true) {}
     };
 
 private:

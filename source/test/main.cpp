@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-03-17
+ @edited  2004-09-08
  */
 
 
@@ -819,6 +819,42 @@ void testTextInput() {
     printf("TextInput\n");
  
     {
+        TextInput ti(TextInput::FROM_STRING, "\\123");
+        Token t;
+        t = ti.read();
+        debugAssert(t.type() == Token::SYMBOL);
+        debugAssert(t.string() == "\\");
+        t = ti.read();
+        debugAssert(t.type() == Token::NUMBER);
+        debugAssert(t.number() == 123);
+    }
+
+    {
+        TextInput::Options options;
+        options.otherCommentCharacter = '#';
+
+        TextInput ti(TextInput::FROM_STRING, "1#23\nA\\#2", options);
+        Token t;
+        t = ti.read();
+        debugAssert(t.type() == Token::NUMBER);
+        debugAssert(t.number() == 1);
+
+        // skip the comment
+        t = ti.read();
+        debugAssert(t.type() == Token::SYMBOL);
+        debugAssert(t.string() == "A");
+
+        // Read escaped comment character
+        t = ti.read();
+        debugAssert(t.type() == Token::SYMBOL);
+        debugAssert(t.string() == "#");
+
+        t = ti.read();
+        debugAssert(t.type() == Token::NUMBER);
+        debugAssert(t.number() == 2);
+    }
+
+    {
         TextInput ti(TextInput::FROM_STRING, "0xFEED");
 
         Token t;
@@ -1627,8 +1663,6 @@ int main(int argc, char* argv[]) {
     testSwizzle();
 
     printf("\nAll tests succeeded.\n");
-	
-    while(true);
 
     return 0;
 }
