@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-08-07
- @edited  2003-08-13
+ @edited  2003-09-11
 
  */
 
@@ -79,17 +79,12 @@ public:
    Vector3          scale;
    Vector3          translate;
    std::string      name;
-   //triangleVertex_t vertices[1];
 
-
-    void deserialize(BinaryInput& b) {
-
-        scale.deserialize(b);
-        translate.deserialize(b);
-        name = b.readString(16);
-
-        //triangleVertex_t vertices[1];
-    }
+   void deserialize(BinaryInput& b) {
+       scale.deserialize(b);
+       translate.deserialize(b);
+       name = b.readString(16);
+   }
 };
 
 
@@ -374,13 +369,65 @@ void MD2Model::computeTexCoords(
     }
 }
 
+
+/**
+ A directed edge for edgeTable.
+ */
+class MD2DirectedEdgeKey {
+public:
+    /**
+     vertex0, normal0, vertex1, normal1
+     */
+    Vector3 vertex[2];
+    uint8   normal[2];
+
+    MD2DirectedEdgeKey() {}
+    
+    MD2DirectedEdgeKey(
+        const Vector3& v0, uint8 n0,
+        const Vector3& v1, uint8 n1) {
+        vertex[0] = v0;
+        normal[0] = n0;
+
+        vertex[1] = v1;
+        normal[1] = n1;
+    }
+
+
+    bool operator==(const G3D::MD2DirectedEdgeKey& e2) const {
+        for (int i = 0; i < 2; ++i) {
+            if ((vertex[i] != e2.vertex[i]) || (normal[i] != e2.normal[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+}
+
+// Leave G3D namespace for a moment.
+
+unsigned int hashCode(const G3D::MD2DirectedEdgeKey& e) {
+    unsigned int h = 0;
+    for (int i = 0; i < 2; ++i) {
+        h = (h << 7) + e.vertex[i].hashCode() + e.normal[i];
+    }
+    return h;
+}
+
+namespace G3D {
+
 /**
  A 2-key hashtable for edges.  Used only during loading of MD2's.
  */
 class MD2EdgeTable {
 private:
-
-    Table<int, int>  table;
+    
+    /**
+     Maps edges to edge indices.
+     */
+    Table<MD2DirectedEdgeKey, int>  table;
 
 public:
     
@@ -399,10 +446,9 @@ public:
     /**
      Inserts the given edge into the table.
      */
-    void insert(int i0, int i1, int edgeIndex) {
-        const int key = i0 + (i1 << 16);
-        if (! table.containsKey(key)) {
-            table.set(key, edgeIndex);
+    void insert(const MD2DirectedEdgeKey& edge, int edgeIndex) {
+        if (! table.containsKey(edge)) {
+            table.set(edge, edgeIndex);
         }
     }
 
@@ -410,10 +456,9 @@ public:
      Returns the index of the edge from i0 to i1, NO_EDGE if
      there is no such edge.
      */
-    int get(int i0, int i1) {
-        const int key = i0 + (i1 << 16);
-        if (table.containsKey(key)) {
-            return table[key];
+    int get(const MD2DirectedEdgeKey& edge) {
+        if (table.containsKey(edge)) {
+            return table[edge];
         } else {
             return NO_EDGE;
         }
@@ -423,9 +468,33 @@ public:
 const int MD2EdgeTable::NO_EDGE = -1;
 
 /**
- Used during loading
+ Used during loading, cleared by MD2Model::computeAdjacency()
  */
 static MD2EdgeTable         edgeTable;
+
+
+/**
+ Area of faces to the left and right of an edge.
+ */
+class MD2FaceAreas {
+public:
+    double area[2];
+
+    MD2FaceAreas() {
+        // Initialize to -1 so that the first face
+        // will have greater area even if it is
+        // degenerate.
+        area[0] = -1;
+        area[1] = -1;
+    }
+};
+
+/**
+ Parallel to the edge array.  This tracks the area of the faces
+ on either side of an edge.
+ Used during loading, cleared by MD2Model::computeAdjacency()
+ */
+static Array<MD2FaceAreas> faceAreas;
 
 
 void MD2Model::computeAdjacency() {
@@ -433,49 +502,92 @@ void MD2Model::computeAdjacency() {
     valentArray.resize(keyFrame[0].vertexArray.size());
     faceArray.resize(indexArray.size() / 3);
     edgeArray.resize(0);
+    faceAreas.resize(0);
     edgeTable.clear();
 
     // Iterate through the triangle list
     for (int q = 0; q < indexArray.size(); q += 3) {
         const int f = q / 3;
 
-        const int i0 = indexArray[q];
-        const int i1 = indexArray[q + 1];
-        const int i2 = indexArray[q + 2];
-
         Face& face = faceArray[f];
 
-        face.vertexIndex[0] = i0;
-        face.vertexIndex[1] = i1;
-        face.vertexIndex[2] = i2;
+        // Vertex and normal
+        Vector3 v[3];
+        uint8   n[3];
 
-        valentArray[i0].append(f);
-        valentArray[i1].append(f);
-        valentArray[i2].append(f);
+        // Construct the face
+        for (int j = 0; j < 3; ++j) {
+            int i = indexArray[q + j];
 
-        face.edgeIndex[0] = findEdgeIndex(i0, i1, f);
-        face.edgeIndex[1] = findEdgeIndex(i1, i2, f);
-        face.edgeIndex[2] = findEdgeIndex(i2, i0, f);
+            face.vertexIndex[j] = i;
+            valentArray[i].append(f);
+            v[j] = keyFrame[0].vertexArray[i];
+            n[j] = keyFrame[0].normalArray[i];
+        }
+
+        const double area = (v[1] - v[0]).cross(v[2] - v[0]).length() * 0.5;
+        static const int nextIndex[] = {1, 2, 0};
+
+        // Find the indices of edges in the face
+        for (int j = 0; j < 3; ++j) {
+            int i0 = indexArray[q + j];
+            int i1 = indexArray[q + nextIndex[j]];
+
+            face.edgeIndex[j] = findEdgeIndex(i0, i1, f, area);
+        }
     }
 
     edgeTable.clear();
+    faceAreas.resize(0);
 }
 
 
-int MD2Model::findEdgeIndex(int i0, int i1, int f) {
-    int e = edgeTable.get(i0, i1);
+int MD2Model::findEdgeIndex(
+    int            i0,
+    int            i1,
+    int            f,
+    double         area) {
+
+    const Vector3& v0 = keyFrame[0].vertexArray[i0];
+    const uint8    n0 = keyFrame[0].normalArray[i0];
+
+    const Vector3& v1 = keyFrame[0].vertexArray[i1];
+    const uint8    n1 = keyFrame[0].normalArray[i1];
+
+
+    // First see if the forward directed edge already exists
+    const MD2DirectedEdgeKey forward (v0, n0, v1, n1);
+
+    int e = edgeTable.get(forward);
 
     if (e != MD2EdgeTable::NO_EDGE) {
+        // The edge already exists as a forward edge.  Update
+        // the edge pointers if the new face has more area.
+
+        if (area > faceAreas[e].area[0]) {
+            faceAreas[e].area[0]      = area;
+            edgeArray[e].faceIndex[0] = f;
+        }
+
         return e;
     }
     
-    e = edgeTable.get(i1, i0);
+    // Second see if the backward directed edge already exists
+    const MD2DirectedEdgeKey backward(v1, n1, v0, n0);
+    e = edgeTable.get(backward);
 
     if (e != MD2EdgeTable::NO_EDGE) {
-        edgeArray[e].faceIndex[1] = f;
+        // The edge already exists as a backward edge.  Update
+        // the edge pointers if the new face has more area.
+        
+        if (area > faceAreas[e].area[1]) {
+            faceAreas[e].area[1]      = area;
+            edgeArray[e].faceIndex[1] = f;
+        }
         return ~e;
     }
 
+    // Third, the edge must not exist so add it as a forward edge
     e = edgeArray.size();
     Edge& edge = edgeArray.next();
 
@@ -484,7 +596,9 @@ int MD2Model::findEdgeIndex(int i0, int i1, int f) {
     edge.faceIndex[0]   = f;
     edge.faceIndex[1]   = Face::NONE;
 
-    edgeTable.insert(i0, i1, e);
+    faceAreas.next().area[0] = area;
+
+    edgeTable.insert(forward, e);
 
     return e;
 }

@@ -625,7 +625,7 @@
      <LI> MD2Documentor (Kevin)
      <LI> debugAssertGLOk macro
      <LI> VertexProgram now supports NVIDIA Vertex Program 2.0
-     <LI> RenderDevice now loads glGenProgramsNV, glDeleteProgramsNV, glBindProgramNV, glLoadProgramNV, glTrackMatrixNV extensions
+     <LI> RenderDevice now loads glGenProgramsNV, glDeleteProgramsNV, glBindProgramNV, glLoadProgramNV, glTrackMatrixNV, glProgramParameter4fvNV extensions
      <LI> VertexProgram and PixelProgram static factory methods now return reference counted values.
      <LI> Split the reference value from RenderDevice::setStencilTest into setStencilConstant
      <LI> RenderDevice::STENCIL_INVERT, RenderDevice::STENCIL_REPLACE, RenderDevice::STENCIL_ZERO 

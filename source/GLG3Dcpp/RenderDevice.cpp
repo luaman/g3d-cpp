@@ -77,6 +77,7 @@ PFNGLDELETEPROGRAMSNVPROC                   glDeleteProgramsNV              = NU
 PFNGLBINDPROGRAMNVPROC                      glBindProgramNV                 = NULL;
 PFNGLLOADPROGRAMNVPROC                      glLoadProgramNV                 = NULL;
 PFNGLTRACKMATRIXNVPROC                      glTrackMatrixNV                 = NULL;
+PFNGLPROGRAMPARAMETER4FVNVPROC              glProgramParameter4fvNV         = NULL;
 
 PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
@@ -363,7 +364,7 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glBindProgramNV);
     LOAD_EXTENSION(glLoadProgramNV);
     LOAD_EXTENSION(glTrackMatrixNV);
-
+    LOAD_EXTENSION(glProgramParameter4fvNV);
     #undef LOAD_EXTENSION
 }
 
@@ -562,6 +563,7 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n\n"
 
              "* JOYSTICK\n"
@@ -632,6 +634,7 @@ bool RenderDevice::init(
              "glBindProgramNV", isOk(glBindProgramNV),
              "glLoadProgramNV", isOk(glLoadProgramNV),
              "glTrackMatrixNV", isOk(glTrackMatrixNV),
+             "glProgramParameter4fvNV", isOk(glProgramParameter4fvNV),
 
              SDL_NumJoysticks(), "ok"
              );

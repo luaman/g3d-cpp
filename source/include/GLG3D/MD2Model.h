@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-08-22
+ @edited  2003-09-11
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -31,6 +31,17 @@ namespace G3D {
 
  <P>This class is not threadsafe; you cannot
  even call methods on two different instances on different threads.
+
+ <P>
+ <IMG SRC="md2000.jpg">
+ <DT>
+ <IMG SRC="md2001.jpg">
+ <DT>
+ <IMG SRC="md2002.jpg">
+ <DT>
+ <IMG SRC="md2003.jpg">
+ <DT>
+
  */
 class MD2Model {
 public:
@@ -302,8 +313,16 @@ protected:
      already exists from i1 to i0, ~e is returned (the complement) and
      edgeArray[e] is set to f.  Otherwise, a new edge is created from i0 to i1
      with first face index f and its index is returned.
+    
+     (The normals are used during comparison
+      because the integer quantization of vertices can cause
+     two vertices that aren't supposed to be colocated to collapse for one frame.)
+
+     @param area Area of face f.  When multiple edges of the same direction 
+       are found between the same vertices (usually because of degenerate edges)
+       the face with larger area is kept in the edge table.
      */
-    int MD2Model::findEdgeIndex(int i0, int i1, int f);
+    int MD2Model::findEdgeIndex(int i0, int i1, int f, double area);
 
     /**
       Called from render() to create the vertex arrays.  Assumes VAR is
@@ -333,6 +352,14 @@ public:
 
     const Array<Face>& faces() const;
 
+    /**
+     Assumes that vertices colocated in the 0 frame of the STAND animation with
+     identical per-vertex normals are colocated for all frames.  If they are
+     not, some edges may be missing from this array.
+
+     When a degenerate polygon lies along an edge, that edge is present
+     in this array once, not three times.
+     */
     const Array<Edge>& edges() const;
 
     /**

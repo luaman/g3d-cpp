@@ -93,6 +93,7 @@ extern PFNGLDELETEPROGRAMSNVPROC           glDeleteProgramsNV;
 extern PFNGLBINDPROGRAMNVPROC              glBindProgramNV;
 extern PFNGLLOADPROGRAMNVPROC              glLoadProgramNV;
 extern PFNGLTRACKMATRIXNVPROC              glTrackMatrixNV;
+extern PFNGLPROGRAMPARAMETER4FVNVPROC      glProgramParameter4fvNV;
 
 extern PFNGLCOMBINERPARAMETERFVNVPROC               glCombinerParameterfvNV;
 extern PFNGLCOMBINERPARAMETERFNVPROC                glCombinerParameterfNV;

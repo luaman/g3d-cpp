@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-08-07
- @edited  2003-08-12
+ @edited  2003-09-11
 
  */
 
@@ -24,7 +24,7 @@ MD2Model::Pose  MD2Model::interpolatedPose;
 VARArea*        MD2Model::varArea[MD2Model::NUM_VAR_AREAS];
 int             MD2Model::nextVarArea            = MD2Model::NONE_ALLOCATED;
 const GameTime  MD2Model::PRE_BLEND_TIME         = 1.0 / 8.0;
-const double    MD2Model::hangTimePct           = 0.1;
+const double    MD2Model::hangTimePct            = 0.1;
 
 const MD2Model::MD2AnimInfo MD2Model::animationTable[MD2Model::MAX_ANIMATIONS] = 
 {
