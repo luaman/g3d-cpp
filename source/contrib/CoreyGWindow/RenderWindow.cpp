@@ -8,6 +8,15 @@
 #include <G3DAll.h>
 #include "RenderWindow.h"
 
+/* test sample
+extern Log* debugLog;
+extern RenderDevice* renderDevice;
+extern GFontRef gfont;
+extern UserInput* userInput;
+extern GCamera* camera;
+extern ManualCameraController* controller;
+*/
+
 RenderWindow::RenderWindow( const QGLFormat & format, QWidget* parent, const char* name, const QGLWidget* shareWidget, WFlags f)
 :QGLWidget(format, parent, name, shareWidget, f)
 {
@@ -16,6 +25,7 @@ RenderWindow::RenderWindow( const QGLFormat & format, QWidget* parent, const cha
 
 void RenderWindow::repaintGL()
 {
+/* test sample
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     renderDevice->beginFrame();
       // Cyan background
@@ -45,4 +55,5 @@ void RenderWindow::repaintGL()
         renderDevice->popState();
 	    
     renderDevice->endFrame();
+*/
 }

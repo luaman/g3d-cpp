@@ -2,7 +2,7 @@
   @file GImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2004-05-03
+  @edited  2004-05-15
  */
 #include "G3D/platform.h"
 #include "G3D/GImage.h"
@@ -1589,6 +1589,12 @@ GImage GImage::stripAlpha() const {
 
     return out;
 }
+
+
+int GImage::sizeInMemory() const {
+	return sizeof(GImage) + width * height * channels;
+}
+
 
 };
 

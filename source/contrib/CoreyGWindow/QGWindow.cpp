@@ -7,11 +7,10 @@
 
 #include <qgl.h>
 
-#include "..\Setup.h"
 #include "QGWindow.h"
 #include "RenderWindow.h"
 
-QGWindow::QGWindow(GWindowSettings &settings)
+QGWindow::QGWindow(GWindowSettings &settings, QWidget* _parent)
 {
 	QGLFormat format;
 	format.setDoubleBuffer(true);
@@ -21,8 +20,8 @@ QGWindow::QGWindow(GWindowSettings &settings)
 	if( settings.alphaBits > 0 ) format.setAlpha(true);
 	if( settings.stereo ) format.setStereo(true);
 	if( settings.stencilBits > 0 ) format.setStencil(true);
-	glWindow = new RenderWindow(format, aeGlobals.mainWindow);
-	glWindow->resize(800,600);
+	glWindow = new RenderWindow(format, _parent);
+	glWindow->resize( settings.width, settings.height);
 	glWindow->show();
 }
 
@@ -35,34 +34,38 @@ QGWindow::~QGWindow()
 
 void QGWindow::getSettings(GWindowSettings &settings) const
 {
+	//is there a way to map true/false to values correctly?
+	//do we need to do it manually from win32?  there's no guarantee anything will match.
 }
 
 
 int QGWindow::width() const
 {
-	return 800;
+	return glWindow->width();
 }
 
 
 int QGWindow::height() const
 {
-	return 600;
+	return glWindow->height();
 }
 
 
 Rect2D QGWindow::dimensions() const
 {
-	return Rect2D();
+	return Rect2D::xywh(0, 0, glWindow->width(), glWindow->height());
 }
 
 
 void QGWindow::setDimensions(const Rect2D &dims)
 {
+	glWindow->setGeometry(dims.x0(), dims.y0(), dims.width(), dims.height());
 }
 
 
-void QGWindow::setPosition(int x, int y) const
+void QGWindow::setPosition(int x, int y)
 {
+	glWindow->move(x, y);
 }
 
 
@@ -91,6 +94,7 @@ void QGWindow::setGammaRamp(const Array< uint16 > &gammaRamp)
 
 void QGWindow::setCaption(const std::string &caption)
 {
+	glWindow->setCaption(caption.c_str());
 }
 
 
@@ -108,12 +112,16 @@ Vector2 QGWindow::joystickPosition(int stickNum) const
 
 std::string QGWindow::caption()
 {
-	return std::string("no caption");
+	return glWindow->caption();
 }
 
 
 void QGWindow::setIcon(const GImage &image)
 {
+//	Don't know if len is accurate from width*height*channels
+//	QPixmap icon_tmp;
+//	icon_tmp.loadFromData(image.byte(), image.width*image.height*image.channels); 
+//	glWindow->setIcon(icon_tmp);
 }
 
 
@@ -125,53 +133,98 @@ void QGWindow::swapGLBuffers()
 
 void QGWindow::notifyResize(int w, int h)
 {
+	//needed?
 }
 
 
 void QGWindow::setRelativeMousePosition(double x, double y)
 {
+	//no known impl yet
 }
 
 
 void QGWindow::setRelativeMousePosition(const Vector2 &p)
 {
+	//no known impl yet
 }
 
 
 void QGWindow::getRelativeMouseState(Vector2 &position, uint8 &mouseButtons) const
 {
+	//no known impl yet
 }
 
 
 void QGWindow::getRelativeMouseState(int &x, int &y, uint8 &mouseButtons) const
 {
+	//no known impl yet
 }
 
 
 void QGWindow::getRelativeMouseState(double &x, double &y, uint8 &mouseButtons) const
 {
+	//no known impl yet
 }
 
 
 void QGWindow::setMouseCapture(bool c)
 {
+	if( c )
+		glWindow->grabMouse();
+	else
+		glWindow->releaseMouse();
 }
 
 
 bool QGWindow::mouseCapture() const
 {
-	return false;
+	if( QWidget::mouseGrabber() == glWindow )
+		return true;
+	else
+		return false;
 }
 
 
 void QGWindow::setMouseVisible(bool b)
 {
+	if( b )
+		glWindow->show();
+	else
+		glWindow->hide();
 }
 
 
 bool QGWindow::mouseVisible() const
 {
-	return true;
+	if( mouseCapture() )
+		return false;
+	else
+		return true;
+}
+
+bool QGWindow::inputCapture() const
+{
+	if( QWidget::keyboardGrabber() == glWindow )
+		return true;
+	else
+		return false;
+}
+
+void QGWindow::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button)
+{
+}
+
+void QGWindow::setInputCapture(bool c)
+{
+	if( c )
+		glWindow->grabKeyboard();
+	else
+		glWindow->releaseKeyboard();
+}
+
+std::string QGWindow::joystickName(unsigned int sticknum)
+{
+	return std::string("");
 }
 
 

@@ -11,7 +11,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2004-02-26
+  @edited  2004-05-14
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -382,6 +382,9 @@ public:
     void GImage::encode(
         Format              format,
         BinaryOutput&       out) const;
+
+	/** Returns the size of this object in bytes */
+	int sizeInMemory() const;
 };
 
 /**
