@@ -32,7 +32,7 @@ static bool hasAutoMipMap() {
     if (! initialized) {
         initialized = true;
         std::string ext = (char*)glGetString(GL_EXTENSIONS);
-        ham = (ext.find("GL_SGIS_generate_mipmap") >= 0);
+        ham = (ext.find("GL_SGIS_generate_mipmap") != std::string::npos);
     }
 
     return ham;

@@ -10,12 +10,13 @@
    <P>
    Changes in 6.01:
    <UL>
-     <LI> [ 852076 ] Compute better/faster vertex normals in MeshAlg
-	      MeshAlg::computeNormals now weighs adjacent faces by their area
      <LI> Default constructor for G3D::LineSegment
      <LI> Rect2D::clipPoly (Pete & Morgan)
 	 <LI> Draw::poly2D, Draw::poly2DOutline (Pete & Morgan)
 	 <LI> Added instructions for rotated text to G3D::GFont::draw2D
+     <LI> Fix: [ 852076 ] Compute better/faster vertex normals in MeshAlg
+	      MeshAlg::computeNormals now weighs adjacent faces by their area
+     <LI> Fix: [ 896028 ] Textures broken on Trident TabletPC (Dan Keefe)
 	 <LI> Fix: [ 860800 ] ManualCameraController cursor jumps
      <LI> Fix: G3D::UserInput no longer offsets the mouse position by 1/2 pixel
      <LI> Fix: Alt-Tab no longer toggles the GApp camera before switching windows
