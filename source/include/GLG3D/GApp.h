@@ -26,8 +26,9 @@ public:
     RenderDeviceSettings    window;
 
     /**
-     Can be relative to the G3D data direction (e.g. "font/dominant.fnt")
+     Can be relative to the G3D data directory (e.g. "font/dominant.fnt")
      or relative to the current directory.
+     Default is "console-small.fnt"
      */
     std::string             debugFontName;
 
@@ -57,6 +58,7 @@ public:
   (implemented inside the GApp::main) then chooses the next GApplet
   to run and invokes run() on it.  If anything sets GApp::endProgram to true,
   the entire program should quit.
+
  */
 class GApp {
 private:

@@ -11,6 +11,7 @@
 
 #include "GLG3D/RenderDevice.h"
 #include "G3D/Log.h"
+#include "GLG3D/glheaders.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VAR.h"
 #include "GLG3D/VARArea.h"
@@ -34,9 +35,9 @@ RenderDevice::VARSystem::VARSystem(
 
 	if (size > 0) {
     		// See if we can switch to the NVIDIA method
-		if (wglAllocateMemoryNV && 
-            wglFreeMemoryNV &&
-            glVertexArrayRangeNV &&
+		if ((wglAllocateMemoryNV != NULL) && 
+            (wglFreeMemoryNV != NULL) &&
+            (glVertexArrayRangeNV != NULL) &&
             rd->supportsOpenGLExtension("GL_NV_vertex_array_range2")) {
 
 			basePointer = wglAllocateMemoryNV(size, 0.0f, 0.0f, 1.0f);

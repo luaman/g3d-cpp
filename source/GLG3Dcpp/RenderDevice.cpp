@@ -312,11 +312,12 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glMultiTexCoord4dvARB);
     LOAD_EXTENSION(glActiveTextureARB);
 
+    // Older machines can't
     if (glActiveTextureARB == NULL) {
         #ifdef G3D_WIN32
-                glActiveTextureARB = glIgnore;
+            *((void**)&glActiveTextureARB) = glIgnore;
         #else
-                glActiveTextureARB = (void(*)(unsigned int))glIgnore;
+            *((void**)&glActiveTextureARB) = (void(*)(unsigned int))glIgnore;
         #endif
     }
 

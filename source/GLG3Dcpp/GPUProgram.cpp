@@ -172,7 +172,7 @@ void GPUProgram::genPrograms(int num, unsigned int* id) const {
 
     switch (extension) {
     case NVIDIA:
-        alwaysAssertM(glGenProgramsNV, "Requires an NVIDIA card with the GL_NV_vertex_program extension");
+        alwaysAssertM(glGenProgramsNV != NULL, "Requires an NVIDIA card with the GL_NV_vertex_program extension");
         glGenProgramsNV(1, id);
         break;
 

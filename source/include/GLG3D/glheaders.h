@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-09-29
+ @edited  2003-12-06
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -22,21 +22,27 @@
   #include "windows.h"
 #endif
 
-#include "glh/glh_extensions.h"
-#include "GL/glext.h"
-#ifndef _WIN32
-	// Can't include this on windows; it requires
-    // too many X types
-	#include "GL/glxext.h"
-	#include "GL/glx.h"
+#include "../GL/gl.h"
+#define GL_GLEXT_PROTOTYPES
+#include "../GL/glext.h"
+
+#ifdef G3D_WIN32
+//    #define WGL_WGLEXT_PROTOTYPES
+    #include "../GL/wglext.h"
 #endif
 
-#include "glh/glh_genext.h"
-#include "glh/glut.h"
-#include "GL/glext.h"
-#include "GL/wglext.h"
+#if defined(G3D_LINUX) || defined(G3D_OSX)
+//    #define GLX_GLXEXT_PROTOTYPES
+	#include "../GL/glxext.h"
+	#include "../GL/glx.h"
+#endif
+#include "../GL/glext.h"
+
+#include "../glh/glut.h"
 
 // OpenGL extensions
+
+
 extern PFNGLMULTITEXCOORD2FARBPROC         glMultiTexCoord2fARB;
 
 extern PFNGLMULTITEXCOORD1FARBPROC         glMultiTexCoord1fARB;
@@ -80,6 +86,7 @@ extern PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV;
 extern PFNGLMULTIDRAWARRAYSEXTPROC glMultiDrawArraysEXT;
 extern PFNGLMULTIDRAWELEMENTSEXTPROC glMultiDrawElementsEXT;
 
+  
 #ifdef GL_NV_fence
 extern PFNGLGENFENCESNVPROC				   glGenFencesNV;
 extern PFNGLDELETEFENCESNVPROC			   glDeleteFencesNV;
@@ -97,7 +104,6 @@ extern PFNGLPROGRAMPARAMETER4FVNVPROC      glProgramParameter4fvNV;
 extern PFNGLGETPROGRAMPARAMETERFVNVPROC    glGetProgramParameterfvNV;
 extern PFNGLGETPROGRAMPARAMETERDVNVPROC    glGetProgramParameterdvNV;
 
-
 extern PFNGLGENPROGRAMSARBPROC                     glGenProgramsARB;
 extern PFNGLBINDPROGRAMARBPROC                     glBindProgramARB;
 extern PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB;
@@ -107,7 +113,6 @@ extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB;
 extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC        glProgramLocalParameter4fvARB;
 extern PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB;
 extern PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB;
-
 
 extern PFNGLCOMBINERPARAMETERFVNVPROC               glCombinerParameterfvNV;
 extern PFNGLCOMBINERPARAMETERFNVPROC                glCombinerParameterfNV;
@@ -127,6 +132,14 @@ extern PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC       glGetCombinerStageParameterf
 
 extern PFNGLACTIVESTENCILFACEEXTPROC       glActiveStencilFaceEXT;
 
+
+extern PFNWGLALLOCATEMEMORYNVPROC           wglAllocateMemoryNV;
+extern PFNWGLFREEMEMORYNVPROC           wglFreeMemoryNV;
+
+
+#ifndef GL_CLAMP_TO_BORDER_SGIS
+#define GL_CLAMP_TO_BORDER_SGIS           0x812D
+#endif
 
 #ifndef  GL_TEXTURE_BINDING_3D
 #define  GL_TEXTURE_BINDING_3D   0x806A 
