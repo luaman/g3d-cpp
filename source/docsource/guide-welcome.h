@@ -108,6 +108,12 @@ arrive with each point release.
   BSP Tree
   </TD></TR>
 
+  <TR><TD VALIGN=TOP>\link guidecollision Collision Detection \endlink</TD><TD VALIGN=TOP>
+	Collision Detection,
+	Object Intersection
+  </TD></TR>
+
+
   <TR><TD VALIGN=TOP>\link guideeffects Effects \endlink</TD><TD VALIGN=TOP>
   Cartoon Rendering, Shadows, Reflections
   </TD></TR>

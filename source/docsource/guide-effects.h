@@ -3,8 +3,8 @@
 
   \htmlonly
 <TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
-<A HREF="guidephysics.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
-Physics and Ray Tracing</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidecollision.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Collision Detection</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 <A HREF="guideshaders.html">
 Shaders <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
