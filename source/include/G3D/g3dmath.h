@@ -281,6 +281,50 @@ YType linearSpline(double x, const XType* controlX, const YType* controlY, int n
 }
 
 
+/**
+ Returns true if x is not exactly equal to 0.0f.
+ */
+inline bool any(float x) {
+    return x != 0;
+}
+
+/**
+ Returns true if x is not exactly equal to 0.0f.
+ */
+inline bool all(float x) {
+    return x != 0;
+}
+
+/**
+ v / v (for DirectX/Cg support)
+ */
+inline float normalize(float v) {
+    return v / v;
+}
+
+/**
+ a * b (for DirectX/Cg support)
+ */
+inline float dot(float a, float b) {
+    return a * b;
+}
+
+
+/**
+ a * b (for DirectX/Cg support)
+ */
+inline float mul(float a, float b) {
+    return a * b;
+}
+
+/**
+ 2^x
+ */
+inline double exp2(double x) {
+    return pow(2, x);
+}
+
+
 } // namespace
 
 

@@ -8,13 +8,15 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2003-02-03
+  @edited  2003-09-28
  */
 
 #ifndef G3D_MATRIX3_H
 #define G3D_MATRIX3_H
 
 #include "G3D/Vector3.h"
+#include "G3D/Vector4.h"
+#include "G3D/debugAssert.h"
 
 namespace G3D {
 
@@ -165,6 +167,103 @@ protected:
     static G3D::Real maxCubicRoot (G3D::Real afCoeff[3]);
 
     G3D::Real m_aafEntry[3][3];
+};
+
+
+/**
+ Provided for DirectX/Cg support, not full featured.  Consider G3D::CoordinateFrame
+ instead.
+ */
+class Matrix4 {
+private:
+
+    float elt[4][4];
+
+public:
+    Matrix4(
+        float r1c1, float r1c2, float r1c3, float r1c4,
+        float r2c1, float r2c2, float r2c3, float r2c4,
+        float r3c1, float r3c2, float r3c3, float r3c4,
+        float r4c1, float r4c2, float r4c3, float r4c4) {
+        elt[0][0] = r1c1;  elt[0][1] = r1c2;  elt[0][2] = r1c3;  elt[0][3] = r1c4;
+        elt[1][0] = r2c1;  elt[1][1] = r2c2;  elt[1][2] = r2c3;  elt[1][3] = r2c4;
+        elt[2][0] = r3c1;  elt[2][1] = r3c2;  elt[2][2] = r3c3;  elt[2][3] = r3c4;
+        elt[3][0] = r4c1;  elt[3][1] = r4c2;  elt[3][2] = r4c3;  elt[3][3] = r4c4;
+    }
+
+    /**
+     init should be <B>row major</B>.
+     */
+    Matrix4(const float* init) {
+        for (int r = 0; r < 4; ++r) {
+            for (int c = 0; c < 4; ++c) {
+                elt[r][c] = init[r * 4 + c];
+            }
+        }
+    }
+
+    Matrix4(const double* init) {
+        for (int r = 0; r < 4; ++r) {
+            for (int c = 0; c < 4; ++c) {
+                elt[r][c] = init[r * 4 + c];
+            }
+        }
+    }
+
+    Matrix4() {
+        for (int r = 0; r < 4; ++r) {
+            for (int c = 0; c < 4; ++c) {
+                elt[r][c] = 0;
+            }
+        }
+    }
+
+    const float* operator[](int r) const {
+        debugAssert(r >= 0);
+        debugAssert(r < 4);
+        return elt[r];
+    }
+
+    float* operator[](int r) {
+        debugAssert(r >= 0);
+        debugAssert(r < 4);
+        return elt[r];
+    }
+
+    Matrix4 operator*(const Matrix4& other) const {
+        Matrix4 result;
+        for (int r = 0; r < 4; ++r) {
+            for (int c = 0; c < 4; ++c) {
+                for (int i = 0; i < 4; ++i) {
+                    result.elt[r][c] += elt[r][i] * other.elt[i][c];
+                }
+            }
+        }
+
+        return result;
+    }
+
+    Matrix4 operator*(const double s) const {
+        Matrix4 result;
+        for (int r = 0; r < 4; ++r) {
+            for (int c = 0; c < 4; ++c) {
+                result.elt[r][c] = elt[r][c] * s;
+            }
+        }
+
+        return result;
+    }
+
+    Vector4 operator*(const Vector4& vector) const {
+        Vector4 result(0,0,0,0);
+        for (int r = 0; r < 4; ++r) {
+            for (int c = 0; c < 4; ++c) {
+                result[r] += elt[r][c] * vector[c];
+            }
+        }
+
+        return result;
+    }
 };
 
 }; // namespace
