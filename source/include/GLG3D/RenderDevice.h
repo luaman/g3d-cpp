@@ -192,6 +192,11 @@ private:
 		 */
 		class VARArea* createArea(size_t areaSize);
 
+        /** Called by a VARArea's destructor to notify the
+            VARSystem that the area is no longer in use and
+            should not be tracked for automatic deletion. */
+        void notifyAreaDeleted(class VARArea*);
+
 		void beginIndexedPrimitives() const;
 
 		void sendIndices(Primitive primitive, size_t indexSize,
@@ -593,6 +598,11 @@ public:
 	 the resulting object-- the system will free it automatically
 	 on shut-down.
 	 */
+    // The only reason this is a pointer (and thus needs the complicated
+    // deletion scheme) is to avoid a cyclic friend reference: VARArea
+    // needs to be friends with VARSystem so that VARSystem can call its
+    // (private) constructor, but it can't be friends with an inner class
+    // as a forward declaration.
 	class VARArea* createVARArea(size_t areaSize);
 	void beginIndexedPrimitives();
 	void endIndexedPrimitives();
@@ -947,8 +957,8 @@ public:
 
 
 /**
- A memory chunk of VAR space.  
-
+ A memory chunk of VAR space (call RenderDevice::createVARArea to 
+ allocate).
 
  <P> A large buffer is allocated in video memory when the VAR system
  is initialized.  This buffer can be partitioned into multiple
@@ -959,16 +969,12 @@ public:
  <P> Typically, two VARAreas are created.  One is a dynamic area that
  is reset every frame, the other is a static area that is never reset.
  */
+// Deleting a VARArea does not free the memory associated with it.
 class VARArea {
 private:
 	friend class VAR;
     friend class RenderDevice;
     friend class RenderDevice::VARSystem;
-
-    /** The containing VARSystem.  This is needed 
-       so the VARArea can deregister itself on
-       deallocation.*/
-    RenderDevice::VARSystem*   varSystem;
 
 	/** Pointer to the memory. */
 	void*				basePointer;
@@ -989,7 +995,6 @@ private:
 	size_t				peakAllocated;
 
 	VARArea(
-        RenderDevice::VARSystem*  _varSystem,
         void*               _basePointer,
         size_t              _size);
 

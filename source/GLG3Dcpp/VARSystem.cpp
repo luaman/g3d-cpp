@@ -103,9 +103,7 @@ VARArea* RenderDevice::VARSystem::createArea(size_t areaSize) {
 
 	if (allocated + areaSize <= size) {
 		
-		VARArea* v = new VARArea(this,
-                                 (uint8*)basePointer + allocated, 
-                                 areaSize);
+		VARArea* v = new VARArea((uint8*)basePointer + allocated, areaSize);
 		allocated += areaSize;
 		areaList.append(v);
 
@@ -219,10 +217,9 @@ void RenderDevice::VARSystem::endIndexedPrimitives() const {
 
 
 VARArea::VARArea(
-    RenderDevice::VARSystem*  _varSystem,
     void*              _basePointer,
     size_t             _size) :
-   	varSystem(_varSystem), basePointer(_basePointer), size(_size) {
+   	basePointer(_basePointer), size(_size) {
 
     allocated     = 0;
 	generation    = 1;
