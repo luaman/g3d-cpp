@@ -2,7 +2,7 @@
 #include "App.h"
 
 Editor::Editor(App* _app) : GApplet(_app), app(_app) {
-    for (int i= 0; i < 16; ++i) {
+    for (int i= 0; i < 12; ++i) {
         control.append(Vector2(random(40, 760), random(40, 540)));
     }
 
@@ -369,6 +369,80 @@ void Editor::drawUI() {
 }
 
 
+void Editor::compute3DCurve(Array<Quad>& quadArray) {
+    // Number of strips
+    int N = 100;
+
+    // Number of quads per strip (ring)
+    int M = 12;
+
+    // Radius of rings
+    double r = .2;
+
+    for (int a = 0; a < N; ++a) {
+        // 'a' is this ring, 'b' is the next one
+
+        double ta = (double)a / N;
+        double tb = (double)(a + 1) / N;
+
+        Vector2 p0a = evalCurve(ta - 0.001);
+        Vector2 p1a = evalCurve(ta);
+        Vector2 p2a = evalCurve(ta + 0.001);
+
+        Vector2 p0b = evalCurve(tb - 0.001);
+        Vector2 p1b = evalCurve(tb);
+        Vector2 p2b = evalCurve(tb + 0.001);
+
+        // Scale to -1..1 range
+        Vector3 P0a(p0a.x / 400 - 1, 1 - p0a.y / 300, 0);
+        Vector3 P1a(p1a.x / 400 - 1, 1 - p1a.y / 300, 0);
+        Vector3 P2a(p2a.x / 400 - 1, 1 - p2a.y / 300, 0);
+
+        Vector3 P0b(p0b.x / 400 - 1, 1 - p0b.y / 300, 0);
+        Vector3 P1b(p1b.x / 400 - 1, 1 - p1b.y / 300, 0);
+        Vector3 P2b(p2b.x / 400 - 1, 1 - p2b.y / 300, 0);
+
+        // Direction of the curve
+        Vector3 dPa = (P2a - P0a).direction();
+        Vector3 Ua = Vector3::unitZ();
+        Vector3 Va = Ua.cross(dPa).direction();
+        Ua = -dPa.cross(Va);
+
+        Vector3 dPb = (P2b - P0b).direction();
+        Vector3 Ub = Vector3::unitZ();
+        Vector3 Vb = Ub.cross(dPb).direction();
+        Ub = -dPb.cross(Vb);
+
+        for (int m = 0; m < M; ++m) {
+            // Angle
+            double q0 = G3D_TWO_PI * m / M; 
+            double q1 = G3D_TWO_PI * (m + 1) / M;
+
+            Quad& quad = quadArray.next();
+
+            // Unit vertices relative to curve center
+            Vector3 v[4];
+            v[0] = Ua * cos(q0) + Va * sin(q0);
+            v[1] = Ua * cos(q1) + Va * sin(q1);
+            v[2] = Ub * cos(q1) + Vb * sin(q1);
+            v[3] = Ub * cos(q0) + Vb * sin(q0);
+
+            quad.vertex[0] = P1a + v[0] * r;
+            quad.normal[0] = v[0];
+
+            quad.vertex[1] = P1a + v[1] * r;
+            quad.normal[1] = v[1];
+
+            quad.vertex[2] = P1b + v[2] * r;
+            quad.normal[2] = v[2];
+
+            quad.vertex[3] = P1b + v[3] * r;
+            quad.normal[3] = v[3];
+        }
+    }
+}
+
+
 void Editor::draw3DCurve() {
     GCamera camera;
     camera.setPosition(Vector3(0,0,5));
@@ -384,38 +458,43 @@ void Editor::draw3DCurve() {
     rd->setProjectionAndCameraMatrix(camera);
     rd->setObjectToWorldMatrix(cframe);
 
-    rd->setLineWidth(4);
-    rd->beginPrimitive(RenderDevice::LINE_STRIP);
-    rd->setColor(Color3::white());
     int N = 200;
 
+    Array<Quad> quadArray;
+    compute3DCurve(quadArray);
 
-
-    for (int a = 0; a <= N; ++a) {
-        double t = (double)a / N;
-        Vector2 p0 = evalCurve(t - 0.001);
-        Vector2 p1 = evalCurve(t);
-        Vector2 p2 = evalCurve(t + 0.001);
-
-        // Scale to -1..1 range
-        Vector3 P0(p0.x / 400 - 1, 1 - p0.y / 300, 0);
-        Vector3 P1(p1.x / 400 - 1, 1 - p1.y / 300, 0);
-        Vector3 P2(p2.x / 400 - 1, 1 - p2.y / 300, 0);
-
-        // Direction of the curve
-        Vector3 dP = (P2 - P0).direction();
-        Vector3 U = Vector3::unitZ();
-        Vector3 V = U.cross(dP).direction();
-        U = dP.cross(V);
-
-        // dP, U, V is now an orthogonal basis that follows the curve
-        // TODO: Extrude
-
-        rd->setColor(Color3::white() * abs(dP.dot(Vector3::unitY())));
-        rd->sendVertex(P1 * 2);
-    }
-
+    rd->pushState();
+    rd->setCullFace(RenderDevice::CULL_BACK);
+    rd->enableLighting();
+    rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
+    rd->setAmbientLightColor(Color3::black());
+    rd->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white()));
+    rd->setLight(1, GLight::directional(Vector3(-.5,-1,-.2), Color3::blue()));
+    rd->setLight(2, GLight::directional(Vector3(-1,0,0), Color3::yellow() * 0.5));
+    rd->setLight(3, GLight::directional(Vector3(1,0,0), Color3::yellow() * 0.25));
+    rd->setSpecularCoefficient(0.7);
+    rd->beginPrimitive(RenderDevice::QUADS);
+        rd->setColor(Color3::fromARGB(0xFFF09621));
+        for (int q = 0; q < quadArray.size(); ++q) {
+            for (int v = 0; v < 4; ++v) {
+                rd->setNormal(quadArray[q].normal[v]);
+                rd->sendVertex(quadArray[q].vertex[v]);
+            }
+        }
     rd->endPrimitive();
+    rd->popState();
+
+    /*
+    // Show normals
+    rd->beginPrimitive(RenderDevice::LINES);
+        for (int q = 0; q < quadArray.size(); ++q) {
+            for (int v = 0; v < 4; ++v) {
+                rd->sendVertex(quadArray[q].vertex[v] + quadArray[q].normal[v] * .1);
+                rd->sendVertex(quadArray[q].vertex[v]);
+            }
+        }
+    rd->endPrimitive();
+    */
 }
 
 
@@ -438,8 +517,8 @@ void Editor::doGraphics() {
     app->renderDevice->pop2D();
 
     app->renderDevice->pushState();
-        Rect2D view = Rect2D::xywh(500, 400, 300, 200);
-        app->renderDevice->setViewport(view);
+//        Rect2D view = Rect2D::xywh(500, 400, 300, 200);
+//        app->renderDevice->setViewport(view);
         draw3DCurve();
     app->renderDevice->popState();
 

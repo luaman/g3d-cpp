@@ -3,6 +3,13 @@
 class Editor : public GApplet {
 private:
 
+    class Quad {
+    public:
+        Vector3         vertex[4];
+        Vector3         normal[4];
+    };
+
+
     static int          ignore0, ignore1;
 
     /** In the pixel coordinate system.  The first and last three points are duplicates */
@@ -32,6 +39,9 @@ private:
         and the indices of the two control points that most directly
         affect it.*/
     Vector2 evalCurve(double a, int& t0 = ignore0, int& t1 = ignore1) const;
+
+    /** Constructs the 3D surface surrounding the curve*/
+    void compute3DCurve(Array<Quad>& quadArray);
 
     /** Insert a point at the given location */
     void addPoint(const Vector2& mouse);
