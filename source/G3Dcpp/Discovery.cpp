@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-06-26
-  @edited  2003-06-26
+  @edited  2003-06-27
  */
 
 #include "G3D/Discovery.h"
@@ -70,6 +70,8 @@ void DiscoveryServerAddressMessage::deserialize(BinaryInput& b) {
     address.resize(b.readInt32());
     for (int i = 0; i < address.size(); ++i) {
         address[i].deserialize(b);
+        //std::string s = address[i].toString();
+        //printf("Received address: %s\n", s.c_str());
     }
 }
 

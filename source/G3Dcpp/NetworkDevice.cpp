@@ -341,7 +341,10 @@ bool NetworkDevice::init(class Log* _log) {
     
     if (debugLog) {debugLog->print("Open Socket                  ");}
     if (sock == SOCKET_ERROR) {
-        if (debugLog) {debugLog->println("FAIL");}
+        if (debugLog) {
+            debugLog->println("FAIL");
+            debugLog->println(windowsErrorCode());
+        }
         return false;
     }
     if (debugLog) { debugLog->println("Ok"); }
@@ -351,22 +354,29 @@ bool NetworkDevice::init(class Log* _log) {
 
     if (debugLog) {debugLog->print("Enable UDP Broadcast         ");}
     if (ret != 0) {
-        if (debugLog) { debugLog->println("FAIL"); }
+        if (debugLog) {
+            debugLog->println("FAIL");
+            debugLog->println(windowsErrorCode());
+        }
         return false;
     }
     if (debugLog) {debugLog->println("Ok");}
 
-    if (debugLog) {debugLog->print("UDP Broadcast                ");}
+    if (debugLog) {debugLog->print("Testing UDP Broadcast        ");}
     SOCKADDR_IN addr;
     int32 x;
     addr = NetAddress(0xFFFFFFFF, 23).addr;
     ret = sendto(sock, (const char*)&x, sizeof(x), 0, (struct sockaddr *) &addr, sizeof(addr));
     if (ret == SOCKET_ERROR) {
-        if (debugLog) {debugLog->println("FAIL");}
+        if (debugLog) {
+            debugLog->println("FAIL");
+            debugLog->println(windowsErrorCode());
+        }
         return false;
     }
     if (debugLog) {debugLog->println("Ok");}
 
+    if (debugLog) {debugLog->section("");}
     initialized = true;
 
     return true;
@@ -812,7 +822,7 @@ bool ReliableConduit::receive(NetMessage* m) {
 
 LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool enableReceive, bool enableBroadcast) : Conduit(_nd) {
 
-    if (nd->debugLog) {nd->debugLog->print("Creating a UDP socket  ");}
+    if (nd->debugLog) {nd->debugLog->print("Creating a UDP socket        ");}
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     
     if (sock == SOCKET_ERROR) {
@@ -963,7 +973,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     nd = _nd;
 
     // Start the listener socket
-    if (nd->debugLog) {nd->debugLog->print("Creating a listener      ");}
+    if (nd->debugLog) {nd->debugLog->print("Creating a listener        ");}
     sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     
     if (sock == SOCKET_ERROR) {
@@ -978,7 +988,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     
     nd->bind(sock, NetAddress(0, port));
 
-    if (nd->debugLog) {nd->debugLog->printf("Listening on port %d     ", port);}
+    if (nd->debugLog) {nd->debugLog->printf("Listening on port %5d   ", port);}
     if (listen(sock, 100) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("FAIL");
