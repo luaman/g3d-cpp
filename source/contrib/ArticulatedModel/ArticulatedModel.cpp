@@ -17,6 +17,8 @@ ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, cons
         model->initIFS(filename, scale);
     }
 
+    model->updateAll();
+
     return model;
 }
 
@@ -58,9 +60,6 @@ debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nod
             }
 
             part.texCoordArray = object.texCoordArray;
-
-            part.updateNormals();
-            part.updateVAR();
 
             if (object.faceMatArray.size() == 0) {
                 // Lump everything into one part
@@ -118,30 +117,79 @@ debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nod
 
 
 void ArticulatedModel::Part::updateNormals() {
-    MeshAlg::computeNormals(geometry, indexArray);
+    Array<MeshAlg::Face>    faceArray;
+    Array<MeshAlg::Vertex>  vertexArray;
+    Array<MeshAlg::Edge>    edgeArray;
+    Array<Vector3>          faceNormalArray;
+
+    MeshAlg::computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, vertexArray);
+
+    MeshAlg::computeNormals(geometry.vertexArray, faceArray, vertexArray, 
+                   geometry.normalArray, faceNormalArray);
+
+    // Compute a tangent space basis
+    if (texCoordArray.size() > 0) {
+        // We throw away the binormals and recompute
+        // them in the vertex shader.
+        MeshAlg::computeTangentSpaceBasis(
+            geometry.vertexArray,
+            texCoordArray,
+            geometry.normalArray,
+            faceArray,
+            tangentArray,
+            Array<Vector3>());
+
+    }
 }
 
 
 void ArticulatedModel::Part::updateVAR() {
     size_t vtxSize = sizeof(Vector3) * geometry.vertexArray.size();
     size_t texSize = sizeof(Vector2) * texCoordArray.size();
+    size_t tanSize = sizeof(Vector3) * tangentArray.size();
 
     if ((vertexVAR.maxSize() >= vtxSize) &&
         (normalVAR.maxSize() >= vtxSize) &&
-        (texCoord0VAR.maxSize() >= texSize)) {
+        ((tanSize == 0) || (tangentVAR.maxSize() >= tanSize)) &&
+        ((texSize == 0) || (texCoord0VAR.maxSize() >= texSize))) {
         
         // Update existing VARs
         vertexVAR.update(geometry.vertexArray);
         normalVAR.update(geometry.normalArray);
-        texCoord0VAR.update(texCoordArray);
+
+        if (texCoordArray.size() > 0) {
+            texCoord0VAR.update(texCoordArray);
+        }
+
+        if (tangentArray.size() > 0) {
+            tangentVAR.update(tangentArray);
+        }
 
     } else {
 
         // Allocate new VARs
-        VARAreaRef varArea = VARArea::create(vtxSize * 2 + texSize + 32, VARArea::WRITE_ONCE);
+        VARAreaRef varArea = VARArea::create(vtxSize * 2 + texSize + tanSize + 32, VARArea::WRITE_ONCE);
         vertexVAR    = VAR(geometry.vertexArray, varArea);
         normalVAR    = VAR(geometry.normalArray, varArea);
         texCoord0VAR = VAR(texCoordArray, varArea);
+        tangentVAR   = VAR(tangentArray, varArea);
+    }
+}
+
+
+void ArticulatedModel::Part::updateShaders() {
+    for (int t = 0; t < triListArray.size(); ++t) {
+        triListArray[t].shader = SuperShader::create(triListArray[t].material);
+    }
+}
+
+
+void ArticulatedModel::updateAll() {
+    for (int p = 0; p < partArray.size(); ++p) {
+        Part& part = partArray[p];
+        part.updateNormals();
+        part.updateVAR();
+        part.updateShaders();
     }
 }
 
@@ -158,7 +206,7 @@ void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale
         vertex[v] *= scale;
     }
 
-    // Convert to a part
+    // Convert to a Part
     Part& part = partArray.next();
 
     part.cframe = CoordinateFrame();
@@ -170,8 +218,6 @@ void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale
     part.keyframe = CoordinateFrame();
 
     part.indexArray = index;
-    part.updateNormals();
-    part.updateVAR();
 
     Part::TriList& triList = part.triListArray.next();
     triList.indexArray = index;

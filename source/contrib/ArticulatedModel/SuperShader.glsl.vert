@@ -25,8 +25,10 @@ void main(void) {
 	texCoord	= gl_MultiTexCoord0.st;
 
 	vec3 T = gl_MultiTexCoord1.xyz;
-	vec3 B = gl_MultiTexCoord2.xyz;
 	vec3 N = gl_Normal;
+
+    // T and N are guaranteed perpendicular, so B is normalized.
+	vec3 B = cross(N, T);
 
     vec3 osEyePos = (g3d_WorldToObjectMatrix * vec4(wsEyePos, 1)).xyz;
 

@@ -18,19 +18,19 @@ uniform vec3        environmentConstant;
 uniform samplerCube environmentMap;
 
 // Material
-uniform sampler2D   reflectMap
+uniform sampler2D   reflectMap;
 uniform vec3        reflectConstant;
 
-uniform sampler2D   specularMap
+uniform sampler2D   specularMap;
 uniform vec3        specularConstant;
 
-uniform sampler2D   specularExponentMap
+uniform sampler2D   specularExponentMap;
 uniform vec3        specularExponentConstant;
 
-uniform sampler2D   emitMap
+uniform sampler2D   emitMap;
 uniform vec3        emitConstant;
 
-uniform sampler2D   diffuseMap
+uniform sampler2D   diffuseMap;
 uniform vec3        diffuseConstant;
 
 /** Multiplier for bump map.  Typically on the range [0, 0.05]
@@ -59,7 +59,7 @@ void main(void) {
 
     vec2 offsetCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
 
-    vec4 surfColor = texture2D(texture, offsetCoord);
+    vec4 surfColor = texture2D(diffuseMap, offsetCoord);
 
 	// note that the columns might be slightly not orthogonal due to interpolation
 	mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
@@ -67,7 +67,7 @@ void main(void) {
     vec3 wsE = normalize(wsEyePos - wsPosition);
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
 
-	vec3 wsL = normalize(lightPos.xyz - wsPosition.xyz * lightPos.w);
+	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
 
     // Take the normal map values back to (-1, 1) range to compute a tangent space normal
     vec3 tsN = ((texture2D(normalBumpMap, offsetCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
@@ -87,8 +87,8 @@ void main(void) {
 
     gl_FragColor.rgb =
 	        (diffuse + ambient) * surfColor.rgb +
-			specular * specularity +
-			reflected * reflectivity;
+			specular * specularConstant +
+			reflected * reflectConstant;
 
 	gl_FragColor.a   = surfColor.a;
 }

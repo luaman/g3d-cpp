@@ -1,9 +1,26 @@
+/** 
+  @file SuperShader.h
+
+  A one-size-fits-all shader that combines most common illumination effects
+  efficiently.
+
+  @author Morgan McGuire, morgan@cs.brown.edu
+ */
+
 #ifndef SUPERSHADER_H
 #define SUPERSHADER_H
 
-class SuperShader {
-public:
+#include <G3DAll.h>
 
+typedef ReferenceCountedPointer<class SuperShader> SuperShaderRef;
+
+/**
+ Do not set the shader->args on a SuperShader; they are ignored.
+ Instead set the material properties and lighting environment.
+ */
+// TODO: subclass _Shader
+class SuperShader : public ReferenceCountedObject {
+public:
     /** Material property coefficients are specified as 
         a constant color times a texture map.  If the color
         is white the texture map entirely controls the result.
@@ -134,33 +151,65 @@ public:
 
     typedef ReferenceCountedPointer<LightingEnvironment> LightingEnvironmentRef;
 
+private:
+
     /** Classification of a graphics card. 
         FIXED_FUNCTION  Use OpenGL fixed function lighting only.
         PS14            
         PS20            Use pixel shader 2.0 (full feature)
      */
-    enum GraphicsCapabilities {
+    enum GraphicsProfile {
+        UNKNOWN = 0,
         FIXED_FUNCTION,
-        PS14,
         PS20};
 
-
     /** Measures the capabilities of this machine */
-    static GraphicsCapabilities graphicsCapabilities();
+    inline static GraphicsProfile profile() {
+        static GraphicsProfile p = UNKNOWN;
 
-public:
+        if (p == UNKNOWN) {
+            if (GLCaps::supports_GL_ARB_shader_objects()) {
+                p = PS20;
+            } else {
+                p = FIXED_FUNCTION;
+            }
+p = FIXED_FUNCTION; // TODO: remove
+        }
+
+        return p;
+    }
+
+    /** Returns the SuperShader for this material, with arguments set. */
+    static ShaderRef getShader(const Material& material);
 
     /** Configuration for a non-programmable card.
         No reflection map, single ambient color. */
-    static void configureFixedFunction(
-        RenderDevice*           rd,
-        LightingEnvironmentRef  env);
+    void configureFixedFunction(RenderDevice* rd);
 
-    /** Constructs a SuperShader for this material. */
-    static ShaderRef createShader(const Material& material);
+
+    LightingEnvironmentRef  lighting;
+
+    Material                material;
+
+    /** Underlying shader.  May be shared between multiple supershaders */
+    ShaderRef               shader;
+
+    explicit SuperShader(const Material& material);
+
+public:
+
+    static SuperShaderRef create(const Material& material);
+
+    virtual bool ok() const;
+    virtual void beforePrimitive(RenderDevice* renderDevice);
+    virtual void afterPrimitive(RenderDevice* renderDevice);
+    virtual const std::string& messages () const;
+
+    /** Sets all lighting parameters from this lighting environment. The environment
+        will be pointed at, so future changes are automatically reflected without
+        another call. */
+    void setLighting(const LightingEnvironmentRef& lightingEnvironment);
 
 }; // SuperShader
-
-
 
 #endif

@@ -12,10 +12,7 @@
 #ifndef G3D_ARTICULATEDMODEL
 #define G3D_ARTICULATEDMODEL
 
-
 #include "SuperShader.h"
-
-
 
 
 typedef ReferenceCountedPointer<class ArticulatedModel> ArticulatedModelRef;
@@ -40,11 +37,12 @@ public:
             Default is true. */
         bool                                    useMaterial;
 
+        SuperShader::LightingEnvironmentRef     lightingEnvironment;
+
         Pose() : useMaterial(true) {}
     };
 
     static const Pose DEFAULT_POSE;
-
 
     class Part {
     public:
@@ -58,6 +56,8 @@ public:
             /** In the same space as the vertices */
             Sphere                  sphereBounds;
             Box                     boxBounds;
+
+            SuperShaderRef          shader;
 
             TriList() : cullFace(RenderDevice::CULL_BACK) {}
 
@@ -76,10 +76,12 @@ public:
 
         VAR                         vertexVAR;
         VAR                         normalVAR;
+        VAR                         tangentVAR;
         VAR                         texCoord0VAR;
 
         MeshAlg::Geometry           geometry;
         Array<Vector2>              texCoordArray;
+        Array<Vector3>              tangentArray;
         Array<TriList>              triListArray;
 
         /** Indices into part array of sub-parts */
@@ -108,20 +110,26 @@ public:
         }
 
         /** When geometry.vertexArray has been changed, invoke to recompute
-            geometry.normalArray */
+            geometry.normalArray and the tangent array. */
         void updateNormals();
 
         /** When geometry or texCoordArray is changed, invoke to update
             (or allocate for the first time) the VAR data.*/
         void updateVAR();
+
+        /** Invoke when the trilist materials have changed to recompute the shaders. */
+        void updateShaders();
     };
 
     friend class PosedArticulatedModel;
 
-
     /** Returns the index in partArray of the part with this name */
     Table<std::string, int>     partNameToIndex;
     Array<Part>                 partArray;
+
+    /** Update normals, var, and shaders on all Parts.  If you modify Parts explicitly,
+        invoke this afterward to update dependent state. (slow)*/
+    void updateAll();
 
 private:
 
@@ -140,8 +148,7 @@ public:
         If the lighting environment is NULL the system will
         default using to whatever fixed function state is enabled
         (e.g., with renderDevice->setLight).  If the lighting
-        environment is specified and the graphics card supports 
-        pixel shaders 2.0 or later the SuperShader will be used,
+        environment is specified, the SuperShader will be used,
         providing detailed illuminaton.
     */
     void pose(

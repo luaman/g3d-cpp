@@ -1,29 +1,26 @@
 #include "SuperShader.h"
 
-void SuperShader::configureFixedFunction(
-    RenderDevice* rd,
-    LightingEnvironmentRef env) {
+void SuperShader::configureFixedFunction(RenderDevice* rd) {
 
+    // Set lighting
     rd->enableLighting();
 
     // Ambient
-    rd->setAmbientLightColor(env->ambientTop);
-    if (env->ambientBottom != env->ambientTop) {
-        rd->setLight(0, GLight::directional(-Vector3::unitY(), env->ambientBottom - env->ambientTop, false)); 
+    rd->setAmbientLightColor(lighting->ambientTop);
+    if (lighting->ambientBottom != lighting->ambientTop) {
+        rd->setLight(0, GLight::directional(-Vector3::unitY(), 
+            lighting->ambientBottom - lighting->ambientTop, false)); 
     }
 
-    for (int L = 0; L < iMin(7, env->lightArray.size()); ++L) {
-        rd->setLight(L + 1, env->lightArray[L]);
+    for (int L = 0; L < iMin(7, lighting->lightArray.size()); ++L) {
+        rd->setLight(L + 1, lighting->lightArray[L]);
     }
-}
 
-
-SuperShader::GraphicsCapabilities SuperShader::graphicsCapabilities() {
-    if (GLCaps::supports_GL_ARB_shader_objects()) {
-        return PS20;
-    } else {
-        return FIXED_FUNCTION;
-    }
+    // Set materials
+    rd->setTexture(0, material.diffuse.map);
+    rd->setColor(material.diffuse.constant);
+    rd->setSpecularCoefficient(material.specular.constant.average());
+    rd->setShininess(material.specularExponent.constant.average());
 }
 
 
@@ -75,12 +72,61 @@ void SuperShader::Material::configureShaderArgs(
 }
 
 
-
-ShaderRef SuperShader::createShader(const Material& material) {
+ShaderRef SuperShader::getShader(const Material& material) {
     // TODO: only enable terms needed by this material
     // TODO: cache shaders
 
-    std::string path = "../contrib/ArticulatedModel/";
+    std::string path = "";//"../contrib/ArticulatedModel/";
     return Shader::fromFiles(path + "SuperShader.glsl.vert", "SuperShader.glsl.frag");
 }
 
+
+SuperShaderRef SuperShader::create(const Material& mat) {
+    return new SuperShader(mat);
+}
+
+
+SuperShader::SuperShader(const Material& mat) : material(mat) {
+    shader = getShader(material);
+}
+
+
+bool SuperShader::ok() const {
+    if (profile() == FIXED_FUNCTION) {
+        return true;
+    } else {
+        return shader->ok();
+    }
+}
+
+
+void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
+    if (profile() == FIXED_FUNCTION) {
+        renderDevice->pushState();
+        configureFixedFunction(renderDevice);
+    } else {
+        material.configureShaderArgs(shader->args);
+        lighting->configureShaderArgs(shader->args);
+        shader->beforePrimitive(renderDevice);
+    }
+}
+
+
+void SuperShader::afterPrimitive(RenderDevice* renderDevice) {
+    if (profile() == FIXED_FUNCTION) {
+        renderDevice->popState();
+    } else {
+        shader->afterPrimitive(renderDevice);
+    }
+}
+
+
+const std::string& SuperShader::messages() const {
+    static const std::string t = "TODO";
+    return t;
+}
+
+
+void SuperShader::setLighting(const LightingEnvironmentRef& lightingEnvironment) {
+    lighting = lightingEnvironment;
+}

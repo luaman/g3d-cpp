@@ -125,9 +125,16 @@ void PosedArticulatedModel::render(
     rd->setObjectToWorldMatrix(cframe);
 
     const ArticulatedModel::Part& part = model->partArray[partIndex];
-    const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
+    
+    // Cast away the const so we can invoke shader functions
+    ArticulatedModel::Part::TriList& triList = 
+        const_cast<ArticulatedModel::Part::TriList&>(part.triListArray[listIndex]);
 
     rd->pushState();
+
+    debugAssert(triList.shader.notNull());
+
+    triList.shader->setLighting(lightingEnvironment);
 
     if (useMaterial) {
         bool makeTransparentPass = ! triList.material.transmit.isBlack();
@@ -140,6 +147,8 @@ void PosedArticulatedModel::render(
                 rd->setCullFace(RenderDevice::CULL_FRONT);
                 rd->disableDepthWrite();
                 for (int i = 0; i < 2; ++i) { 
+                    // No shader for transparent pass (TODO: special refraction shader)
+
                     // dst1 * transmission
                     rd->pushState();
                         rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
@@ -155,11 +164,9 @@ void PosedArticulatedModel::render(
                     rd->pushState();
                         rd->disableDepthWrite();
                         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-                        rd->setColor(triList.material.diffuse.constant);
-                        rd->setTexture(0, triList.material.diffuse.map);
-                        rd->setSpecularCoefficient(triList.material.specular.constant.average());
-                        rd->setShininess(triList.material.specularExponent.constant.average());
-                        renderGeometry(rd);
+                        triList.shader->beforePrimitive(rd);
+                            renderGeometry(rd);
+                        triList.shader->afterPrimitive(rd);
                     rd->popState();
                     rd->setCullFace(RenderDevice::CULL_BACK);
                 } // for i
@@ -181,21 +188,17 @@ void PosedArticulatedModel::render(
                 rd->pushState();
                     rd->disableDepthWrite();
                     rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-                    rd->setColor(triList.material.diffuse.constant);
-                    rd->setTexture(0, triList.material.diffuse.map);
-                    rd->setSpecularCoefficient(triList.material.specular.constant.average());
-                    rd->setShininess(triList.material.specularExponent.constant.average());
-                    renderGeometry(rd);
+                    triList.shader->beforePrimitive(rd);
+                        renderGeometry(rd);
+                    triList.shader->afterPrimitive(rd);
                 rd->popState();
             }
         } else {
             // No transparent pass.
-            rd->setColor(triList.material.diffuse.constant);
-            rd->setTexture(0, triList.material.diffuse.map);
-            rd->setSpecularCoefficient(triList.material.specular.constant.average());
-            rd->setShininess(triList.material.specularExponent.constant.average());
-        	rd->setCullFace(triList.cullFace);
-            renderGeometry(rd);
+            triList.shader->beforePrimitive(rd);
+        	    rd->setCullFace(triList.cullFace);
+                renderGeometry(rd);
+            triList.shader->afterPrimitive(rd);
         }
     } else {
         // No material; just draw the surface
@@ -221,6 +224,11 @@ void PosedArticulatedModel::renderGeometry(
             if (part.texCoordArray.size() > 0) {
                 rd->setTexCoordArray(0, part.texCoord0VAR);
             }
+
+            if (part.tangentArray.size() > 0) {
+                rd->setTexCoordArray(1, part.tangentVAR);
+            }
+
             rd->sendIndices(RenderDevice::TRIANGLES, triList.indexArray);
         rd->endIndexedPrimitives();
 
@@ -233,6 +241,9 @@ void PosedArticulatedModel::renderGeometry(
             int v = triList.indexArray[i];
             if (part.texCoordArray.size() > 0) {
                 rd->setTexCoord(0, part.texCoordArray[v]);
+            }
+            if (part.tangentArray.size() > 0) {
+                rd->setTexCoord(1, part.tangentArray[v]);
             }
             rd->setNormal(part.geometry.normalArray[v]);
             rd->sendVertex(part.geometry.vertexArray[v]);
