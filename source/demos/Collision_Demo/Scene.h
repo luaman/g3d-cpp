@@ -22,7 +22,7 @@ public:
     /** Dynamic objects */
     Array<class SimSphere*>     sim;
 
-    class Sky*                  sky;
+    SkyRef                      sky;
 
     GLuint                      shadowMap;
 

@@ -340,9 +340,18 @@ protected:
     Sphere                      boundingSphere;
     Box                         boundingBox;
     int                         numBrokenEdges;
-    std::string                 name;
+    std::string                 _name;
 
 public:
+
+    std::string name() const {
+        return _name;
+    }
+
+    virtual void setName(const std::string& n) {
+        _name = n;
+    }
+
     /**
      @filename The tris.md2 file
      */

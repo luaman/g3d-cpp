@@ -27,14 +27,14 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-11-07
+ @edited  2003-11-15
  */
 #include <G3DAll.h>
 #include "Model.h"
 #include "Object.h"
 #include "Scene.h"
 
-#if G3D_VER != 060008
+#if G3D_VER != 60008
     #error Requires G3D 6.00 b8
 #endif
 
@@ -53,7 +53,7 @@ CFontRef                font            = NULL;
 UserInput*              userInput       = NULL;
 VARArea*                varDynamic      = NULL;
 VARArea*                varStatic       = NULL;
-GCamera*                 camera          = NULL;
+GCamera*                camera          = NULL;
 Scene*                  scene           = NULL;
 ManualCameraController* controller      = NULL;
 
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     RenderDeviceSettings settings;
     settings.depthBits = depthBits;
     renderDevice->init(settings, debugLog);
-    camera       = new GCamera(renderDevice);
+    camera       = new GCamera();
 
     // Verify we have the shadow extension
     if (! renderDevice->supportsOpenGLExtension("GL_ARB_shadow")) {
@@ -197,7 +197,7 @@ void doGraphics() {
     renderDevice->beginFrame();
         renderDevice->pushState();
                 
-            camera->setProjectionAndCameraMatrix();
+            renderDevice->setProjectionAndCameraMatrix(*camera);
 
             LightingParameters lighting(gameTime);
             lighting.lightDirection = (lighting.lightDirection + Vector3(0,0,.4)).direction();

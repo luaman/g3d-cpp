@@ -14,20 +14,20 @@
 // Defined in main.cpp
 extern RenderDevice*           renderDevice;
 extern CFontRef                font;
-extern MD2Model                model;
+extern MD2ModelRef             model;
 extern Array<TextureRef>       modelTexture;
-extern MD2Model                weapon;
+extern MD2ModelRef             weapon;
 extern TextureRef              weaponTexture;
 extern std::string             DATA_DIR;
 
 void loadModels(const std::string& dir) {
-    model.load(dir + "tris.md2");
+    model = MD2Model::create(dir + "tris.md2");
 
     Array<std::string> weaponFilename;
     getFiles(dir + "w_*.md2", weaponFilename);
     getFiles(dir + "weapon.md2", weaponFilename);
 
-    weapon.load(dir + weaponFilename.last());
+    weapon = MD2Model::create(dir + weaponFilename.last());
 }
 
 
@@ -55,8 +55,8 @@ void loadSkins(const std::string& dir, double brighten) {
         }
     }
 
-    if (weapon.textureFilenames().size() > 0) {
-        std::string filename = "data/" + weapon.textureFilenames()[0];
+    if (weapon->textureFilenames().size() > 0) {
+        std::string filename = "data/" + weapon->textureFilenames()[0];
         if (fileExists(filename)) {
             weaponTexture = Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten);
         } else {
@@ -77,7 +77,7 @@ void load(const std::string& name) {
     std::string dir = std::string(DATA_DIR + "quake2/players/") + name + "/";
 
     loadModels(dir);
-    model.name = toUpper(name.substr(0, 1)) + name.substr(1, name.length() - 1);
+    model->setName(toUpper(name.substr(0, 1)) + name.substr(1, name.length() - 1));
 
     modelTexture.clear();
     weaponTexture = NULL;

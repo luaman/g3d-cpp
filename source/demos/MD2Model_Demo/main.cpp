@@ -25,9 +25,9 @@ GCamera*					camera			= NULL;
 ManualCameraController* controller      = NULL;
 bool                    endProgram		= false;
 GameTime                gameTime        = 0;
-MD2Model                model;
+MD2ModelRef             model;
 Array<TextureRef>       modelTexture;
-MD2Model                weapon;
+MD2ModelRef             weapon;
 TextureRef              weaponTexture;
 MD2Model::Pose          pose(MD2Model::STAND, 0);
 
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     renderDevice = new RenderDevice();
     renderDevice->init(RenderDeviceSettings(), debugLog);
     renderDevice->setCaption("G3D::MD2Model Demo");
-    camera 	     = new GCamera(renderDevice);
+    camera 	     = new GCamera();
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
@@ -124,35 +124,32 @@ void doSimulation(GameTime timeStep) {
 
 	camera->setCoordinateFrame(controller->getCoordinateFrame());
 
-    pose.time += timeStep;
-
-    if (model.animationDeath(pose.animation)) {
+    if (MD2Model::animationDeath(pose.animation)) {
         if (pose.time > 2) {
             // Bring back to life.
             pose.animation = MD2Model::STAND;
         }
 
-    } else {
-
-        pose = MD2Model::choosePose(pose,
-            userInput->keyDown(SDLK_LCTRL) || userInput->keyDown(SDLK_RCTRL) ||
-            userInput->keyDown(SDLK_LSHIFT) || userInput->keyDown(SDLK_RSHIFT),
-            userInput->keyDown('r'),
-            userInput->keyDown('t'),
-            userInput->keyPressed(SDL_LEFT_MOUSE_KEY),
-            userInput->keyPressed(' ') || userInput->keyPressed(SDLK_BACKSPACE),
-            userInput->keyPressed('1'),
-            userInput->keyPressed('2'),
-            userInput->keyPressed('3'),
-            userInput->keyPressed('4'),
-            userInput->keyPressed('5'),
-            userInput->keyPressed('6'),
-            userInput->keyPressed('7'),
-            userInput->keyPressed('8'),
-            userInput->keyPressed('9'),
-            userInput->keyPressed('0'),
-            userInput->keyPressed('-'));
     }
+
+    pose.doSimulation(timeStep,
+        userInput->keyDown(SDLK_LCTRL) || userInput->keyDown(SDLK_RCTRL) ||
+        userInput->keyDown(SDLK_LSHIFT) || userInput->keyDown(SDLK_RSHIFT),
+        userInput->keyDown('r'),
+        userInput->keyDown('t'),
+        userInput->keyPressed(SDL_LEFT_MOUSE_KEY),
+        userInput->keyPressed(' ') || userInput->keyPressed(SDLK_BACKSPACE),
+        userInput->keyPressed('1'),
+        userInput->keyPressed('2'),
+        userInput->keyPressed('3'),
+        userInput->keyPressed('4'),
+        userInput->keyPressed('5'),
+        userInput->keyPressed('6'),
+        userInput->keyPressed('7'),
+        userInput->keyPressed('8'),
+        userInput->keyPressed('9'),
+        userInput->keyPressed('0'),
+        userInput->keyPressed('-'));
 }
 
 

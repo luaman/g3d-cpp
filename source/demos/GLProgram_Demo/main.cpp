@@ -291,8 +291,8 @@ void Model::render(const CoordinateFrame& c,
 
     // Setup lighting
     renderDevice->enableLighting();
-    renderDevice->setLight(0, GLight(lighting.lightDirection, lighting.lightColor));
-    renderDevice->setLight(1, GLight(-lighting.lightDirection, Color3::WHITE * .25));
+    renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
 
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     renderDevice->setAmbientLightColor(lighting.ambient);

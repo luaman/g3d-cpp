@@ -70,13 +70,6 @@ Scene::~Scene() {
 }
 
 
-static GCamera getLightCamera(const Vector3& lightDirection) {
-    GCamera c(renderDevice);
-    debugAssert(false);
-    return c;
-}
-
-
 void Scene::renderingPass() const {
     int i;
 
@@ -157,19 +150,10 @@ void Scene::render(const LightingParameters& lighting) const {
     renderDevice->pushState();
 
     // Setup lighting
-    float black[] = {0.0f, 0.0f, 0.0f, 0.0f};
-    glMaterialfv(GL_FRONT, GL_SPECULAR, black);
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-
-    renderDevice->configureDirectionalLight
-      (0, -lighting.lightDirection, Color3::WHITE * .25);
-
+    renderDevice->enableLighting();
+    renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
     renderDevice->setAmbientLightColor(lighting.ambient);
+    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
     // Ambient and detail light pass
     renderingPass();
@@ -179,8 +163,7 @@ void Scene::render(const LightingParameters& lighting) const {
         renderDevice->setAmbientLightColor(Color3::BLACK);
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         renderDevice->disableDepthWrite();
-        renderDevice->configureDirectionalLight
-          (0, lighting.lightDirection, lighting.lightColor);
+        renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 
         renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
@@ -218,10 +201,6 @@ void Scene::render(const LightingParameters& lighting) const {
 
         glPopAttrib();
     renderDevice->popState();
-
-    // Turn off lighting
-    glDisable(GL_LIGHT0);
-    glDisable(GL_LIGHTING);
 
     renderDevice->popState();
 

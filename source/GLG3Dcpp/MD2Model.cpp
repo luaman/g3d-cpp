@@ -750,7 +750,7 @@ MD2Model::PosedMD2Model::PosedMD2Model(
 
 
 std::string MD2Model::PosedMD2Model::name() const {
-    return model->name;
+    return model->name();
 }
 
 
@@ -785,12 +785,12 @@ void MD2Model::PosedMD2Model::getAdjacentFaces(Array< Array<int> >& adjacentFace
 
 
 void MD2Model::PosedMD2Model::getObjectSpaceBoundingSphere(Sphere& s) const {
-    s = model->boundingSphere;
+    s = model->animationBoundingSphere[pose.animation];
 }
 
 
 void MD2Model::PosedMD2Model::getObjectSpaceBoundingBox(Box& b) const {
-    b = model->boundingBox;
+    b = model->animationBoundingBox[pose.animation];
 }
 
 
