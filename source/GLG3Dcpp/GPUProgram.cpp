@@ -37,6 +37,8 @@ void GPUProgram::reload(const std::string& _code) {
      
     bool reloadFromFile = (code == "");
 
+    bool ignore = false;
+
 LOADSHADER:
 
     if (reloadFromFile) {
@@ -53,12 +55,6 @@ LOADSHADER:
     // Clear the error flag.
     glGetError();
     glProgramStringARB(unit, GL_PROGRAM_FORMAT_ASCII_ARB, code.size(), code.c_str());
-
-    #ifdef _DEBUG
-        static bool ignore = false;
-    #else
-        static bool ignore = true;
-    #endif
 
     // Check for load errors
     if ((glGetError() == GL_INVALID_OPERATION) && (! ignore)) {
@@ -107,6 +103,12 @@ LOADSHADER:
             debugPrintf("%s%s(%d) : GPU Program Error : %s%s%s",
                    NEWLINE, fullFilename.c_str(), line, msg, NEWLINE, NEWLINE);
         }
+        #endif
+
+        #ifndef _DEBUG
+            Log::common()->print("\n******************************\n");
+            Log::common()->print(text);
+            exit(-1);
         #endif
 
         const char* choice[] = {"Debug", "Ignore", "Ignore All", "Exit"};

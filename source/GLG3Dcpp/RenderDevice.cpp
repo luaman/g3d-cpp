@@ -1070,6 +1070,7 @@ void RenderDevice::resetState() {
 
 void RenderDevice::popState() {
     debugAssert(! inPrimitive);
+    debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
     setState(stateStack.pop());
 }
 

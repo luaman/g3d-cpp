@@ -188,7 +188,6 @@ void _handleErrorCheck_(
     const std::string&  message,
     const char*         filename,
     int                 lineNumber,
-    bool&               ignoreAlways,
     bool                useGuiPrompt) {
 
     std::string dialogTitle = "Critical Error";
