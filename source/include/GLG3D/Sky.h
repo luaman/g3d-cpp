@@ -85,8 +85,9 @@ private:
 
     Sky(
         class RenderDevice*                     renderDevice,
+        TextureRef                              textures[6],
         const std::string&                      directory,
-        const std::string                       filename[6],
+        bool                                    useCubeMap,
         bool                                    drawCelestialBodies,
         double                                  quality);
 
@@ -125,6 +126,13 @@ public:
         const std::string&                      directory,
         const std::string                       filename[6],
         bool                                    drawCelestialBodies = true,
+        double                                  quality = 1.0);
+
+    static SkyRef fromCubeMap(
+        RenderDevice*                           rd,
+        TextureRef                              _cubeMap,
+        const std::string&                      directory,
+        bool                                    _drawCelestialBodies = true,
         double                                  quality = 1.0);
 
     virtual ~Sky();
