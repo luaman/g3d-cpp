@@ -155,6 +155,9 @@
    latest version of SDL 
    from <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>.
 
+   <LI>
+     For MSVC, ensure that you are using MSVC++ 6.0 with Service Pack 5 and the Processor Pack.
+
   <LI>
    For MSVC, add the following to your Autoexp.dat file (usually in 
    <CODE>C:\\Program Files\\Microsoft Visual Studio\\Common\\MSDev98\\Bin</CODE>):

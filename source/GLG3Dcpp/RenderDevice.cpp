@@ -53,6 +53,8 @@ PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB             = NU
 PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB              = NULL;
 PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NULL;
 PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
+PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB     = NULL;
+PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB   = NULL;
 PFNGLISPROGRAMARBPROC                       glIsProgramARB                  = NULL;
 
 PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
@@ -159,6 +161,8 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glProgramStringARB);
     LOAD_EXTENSION(glProgramEnvParameter4fARB);
     LOAD_EXTENSION(glProgramLocalParameter4fARB);
+    LOAD_EXTENSION(glProgramEnvParameter4dvARB);
+    LOAD_EXTENSION(glProgramLocalParameter4dvARB);
     LOAD_EXTENSION(glVertexAttribPointerARB);
     LOAD_EXTENSION(glEnableVertexAttribArrayARB);
     LOAD_EXTENSION(glDisableVertexAttribArrayARB);
