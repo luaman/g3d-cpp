@@ -249,8 +249,11 @@ public:
     */
     void beginRun();
 
-    /** A single frame of rendering, simulation, AI, events, networking, etc. 
+    /** 
+      A single frame of rendering, simulation, AI, events, networking, etc. 
       Invokes the doXXX methods.  For use with GWindows that require a main loop.
+      This if your GWindow does not require control of the main loop, GApp will
+      call this for you.
     */
     void oneFrame();
 

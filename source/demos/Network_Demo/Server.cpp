@@ -42,35 +42,38 @@ void Server::doNetwork() {
 
         // TODO: check if client is ok, tell others if not
 
-        switch (net->waitingMessageType()) {
-        case NO_MSG:
-            break;
+        // TODO: don't stay in this loop for too long
+        while (net->messageWaiting() && net->ok()) {
+            switch (net->waitingMessageType()) {
+            case NO_MSG:
+                break;
 
-        case EntityStateMessage_MSG:
-            {
-                EntityStateMessage msg;
-                net->receive(&msg);
-                if (msg.id == clientProxy.id) {
-                    Entity& entity = entityTable[msg.id];
+            case EntityStateMessage_MSG:
+                {
+                    EntityStateMessage msg;
+                    net->receive(&msg);
+                    if (msg.id == clientProxy.id) {
+                        Entity& entity = entityTable[msg.id];
 
-                    // Update the controls of this entity
-                    entity.controls = msg.controls;
-                    app->debugPrintf("SERVER: receive from %s", entity.name.c_str());
+                        // Update the controls of this entity
+                        entity.controls = msg.controls;
+                        app->debugPrintf("SERVER: receive from %s", entity.name.c_str());
                     
-                    // Send to other clients, but don't trust the client's state
-                    // beyond the controls.
-                    entity.makeStateMessage(msg);
-                    ReliableConduit::multisend(clientConduitArray, msg);
-                } else {
-                    app->debugLog->printf("SERVER: Client sent EntityStateMessage with wrong ID\n\n");
+                        // Send to other clients, but don't trust the client's state
+                        // beyond the controls.
+                        entity.makeStateMessage(msg);
+                        ReliableConduit::multisend(clientConduitArray, msg);
+                    } else {
+                        app->debugLog->printf("SERVER: Client sent EntityStateMessage with wrong ID\n\n");
+                    }
                 }
-            }
-            break;
+                break;
 
-        default: 
-            app->debugLog->printf("SERVER: Ignored unknown message type %d\n",
-                net->waitingMessageType());
-            net->receive(NULL);
+            default: 
+                app->debugLog->printf("SERVER: Ignored unknown message type %d\n",
+                    net->waitingMessageType());
+                net->receive(NULL);
+            }
         }
     }
 }

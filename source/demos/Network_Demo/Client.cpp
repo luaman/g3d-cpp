@@ -50,50 +50,52 @@ void Client::doNetwork() {
         app->hostingServer->doNetwork();
     }
 
-    switch (serverProxy.net->waitingMessageType()) {
-    case NO_MSG:
-        // No message waiting
-        break;
+    while (serverProxy.net->messageWaiting() && serverProxy.net->ok()) {
+        switch (serverProxy.net->waitingMessageType()) {
+        case NO_MSG:
+            // No message waiting
+            break;
 
-    case SignOnMessage_MSG:
-        {
-            SignOnMessage msg;
-            serverProxy.net->receive(&msg);
-            localID = msg.id;
-        }
-        break;
-
-    case CreateEntityMessage_MSG:
-        {
-            Entity entity;
-            CreateEntityMessage msg(&entity);
-            serverProxy.net->receive(&msg);
-            entityTable.set(entity.id, entity);
-
-            if (localID == entity.id) {
-                // This is the client's own entity.  Set the
-                // window caption.
-                app->renderDevice->setCaption(entity.name + " - G3D Network Demo");
+        case SignOnMessage_MSG:
+            {
+                SignOnMessage msg;
+                serverProxy.net->receive(&msg);
+                localID = msg.id;
             }
-            app->debugLog->printf("CLIENT: Created entity \"%s\"\n\n", 
-                entity.name.c_str());
-        }
-        break;
+            break;
 
-    case EntityStateMessage_MSG:
-        {
-            EntityStateMessage msg;
-            serverProxy.net->receive(&msg);
-            if (entityTable.containsKey(msg.id)) {
-                entityTable[msg.id].clientUpdateFromStateMessage(msg, localID);
+        case CreateEntityMessage_MSG:
+            {
+                Entity entity;
+                CreateEntityMessage msg(&entity);
+                serverProxy.net->receive(&msg);
+                entityTable.set(entity.id, entity);
+
+                if (localID == entity.id) {
+                    // This is the client's own entity.  Set the
+                    // window caption.
+                    app->renderDevice->setCaption(entity.name + " - G3D Network Demo");
+                }
+                app->debugLog->printf("CLIENT: Created entity \"%s\"\n\n", 
+                    entity.name.c_str());
             }
-        }
-        break;
+            break;
 
-    default:
-        app->debugLog->printf("CLIENT: Ignored unknown message type %d\n",
-            serverProxy.net->waitingMessageType());
-        serverProxy.net->receive(NULL);
+        case EntityStateMessage_MSG:
+            {
+                EntityStateMessage msg;
+                serverProxy.net->receive(&msg);
+                if (entityTable.containsKey(msg.id)) {
+                    entityTable[msg.id].clientUpdateFromStateMessage(msg, localID);
+                }
+            }
+            break;
+
+        default:
+            app->debugLog->printf("CLIENT: Ignored unknown message type %d\n",
+                serverProxy.net->waitingMessageType());
+            serverProxy.net->receive(NULL);
+        }
     }
 }
 
@@ -133,7 +135,7 @@ void Client::doSimulation(SimTime dt) {
  Allow other applications some time.
  */
 static void manageFrameRate() {
-    const double targetFrameRate = 30;
+    const double targetFrameRate = 40;
 
     // Sleep if we have more performance than needed
     static RealTime last = 0;
@@ -150,9 +152,9 @@ static void manageFrameRate() {
 
 void Client::doLogic() {
 
-//    if (! app->hostingServer) {
+    if (! app->hostingServer) {
         manageFrameRate();
-//    }
+    }
 
     if (app->userInput->keyPressed(SDLK_ESCAPE)) {
         // Quit back to main menu

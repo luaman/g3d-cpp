@@ -53,8 +53,8 @@ void Entity::clientUpdateFromStateMessage(class EntityStateMessage& msg, ID loca
     debugAssert(id == msg.id);
 
     // oldDeltaFrame = correct - estimated
-    oldDeltaFrame.translation = msg.frame.translation - frame.translation;
-    oldDeltaFrame.rotation = msg.frame.rotation * frame.rotation.inverse();
+    oldDeltaFrame.translation = frame.translation - msg.frame.translation;
+    oldDeltaFrame.rotation = frame.rotation * msg.frame.rotation.inverse();
     oldFrameTime = System::getTick();
     frame        = msg.frame;
     velocity     = msg.velocity;
