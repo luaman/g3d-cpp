@@ -248,6 +248,8 @@ void Win32Window::init(HWND hwnd) {
         iAttributes.append(WGL_STEREO_EXT,         settings.stereo);
         iAttributes.append(0, 0); // end sentinel
         
+		int pixelFormatARB = 0;
+
         // http://www.nvidia.com/dev_content/nvopenglspecs/WGL_ARB_pixel_format.txt
         uint32 numFormats;
         int valid = wglChoosePixelFormatARB(
@@ -255,20 +257,25 @@ void Win32Window::init(HWND hwnd) {
             iAttributes.getCArray(), 
             NULL,
             1,
-            &pixelFormat,
+            &pixelFormatARB,
             &numFormats);
 
-    // "If the function succeeds, the return value is TRUE. If the function
-    // fails the return value is FALSE. To get extended error information,
-    // call GetLastError. If no matching formats are found then nNumFormats
-    // is set to zero and the function returns TRUE."  -- I think this means
-    // that when numFormats == 0 some reasonable format is still selected.
+        // "If the function succeeds, the return value is TRUE. If the function
+        // fails the return value is FALSE. To get extended error information,
+        // call GetLastError. If no matching formats are found then nNumFormats
+        // is set to zero and the function returns TRUE."  -- I think this means
+        // that when numFormats == 0 some reasonable format is still selected.
 
  
         if (! valid) {
             // No valid format
-            pixelFormat = 0;
+            pixelFormatARB = 0;
         }
+
+		if (pixelFormatARB != 0) {
+			// Override previous
+			pixelFormat = pixelFormatARB;
+		}
     }
 
 	alwaysAssertM(pixelFormat != 0, "[0] Unsupported video mode");
