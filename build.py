@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-11-16
+# @edited  2005-01-29
 # Each build target is a procedure.
 #
 
@@ -340,6 +340,11 @@ def install(args, copyData=1, fromRelease=False):
 
                                 if dswFile != '' and dspFile != '':
                                     msdev(dir + '/' + dswFile, [dspFile + ' - Win32 Release'])
+                                
+                                # Attempt to remove any 'Debug' or 'Release' directories accidentally left
+                                rmdir(dir + '/Debug')
+                                rmdir(dir + '/Release')
+                                
                     os.chdir(curdir)    
             if has7:
                 lib7(args)
