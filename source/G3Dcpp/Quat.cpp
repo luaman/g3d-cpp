@@ -133,38 +133,37 @@ Quat Quat::slerp(
     // From: http://www.darwin3d.com/gamedev/articles/col0498.pdf
 
     const Quat& quat0 = *this;
+    Quat tmpQuat1;
     double omega, cosom, sinom, scale0, scale1;
 
     // Compute the cosine of the angle
     // between the quaternions
     
     cosom = quat0.dot(quat1);
-
-    // Choose the shorter path
-    if ((1.0 + cosom) > 0.001) {
-
-        if ((1.0 - cosom) > 0.001) {
-            // For large angles, slerp
-            omega = acos(cosom);
-            sinom = sin(omega);
-            scale0 = sin((1.0 - alpha) * omega) / sinom;
-            scale1 = sin(alpha * omega) / sinom;
-        } else {
-            // For small angles, linear interpolate
-            scale0 = 1.0 - alpha;
-            scale1 = alpha;
-        }
-
-        return quat0 * scale0 + quat1 * scale1;
-
+    
+    if (cosom < 0) {
+        // Change the sign to fix dot-product
+        tmpQuat1 = quat1 * (-1.0);
+        cosom = quat0.dot(tmpQuat1);
     } else {
-
-        // I don't understand why this is correct at all.
-        scale0 = sin((1.0 - alpha) * G3D_PI);
-        scale1 = sin(alpha * G3D_PI);
-
-        return scale0 * quat0 + scale1 * Quat(-quat1.y, quat1.x, -quat1.w, quat1.z);
+        tmpQuat1 = quat1;
     }
+
+    alwaysAssertM((cosom >= 0), "Quaternion slerp failed to find shortest path.");
+
+    if ((1.0 - cosom) > 0.001) {
+        // For large angles, slerp
+        omega = acos(cosom);
+        sinom = sin(omega);
+        scale0 = sin((1.0 - alpha) * omega) / sinom;
+        scale1 = sin(alpha * omega) / sinom;
+    } else {
+        // For small angles, linear interpolate
+        scale0 = 1.0 - alpha;
+        scale1 = alpha;
+    }
+
+    return quat0 * scale0 + tmpQuat1 * scale1;
 }
 
 Quat Quat::operator*(const Quat& other) const {
