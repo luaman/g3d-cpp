@@ -82,7 +82,7 @@ users who are already familiar with C++ and DirectX or OpenGL.
 
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
-<TD><TD>Index</TD>
+<TR><TD>Index</TD>
 <TD>
 <A HREF="index.html">By Topic</A>
 <A HREF="classes.html">Alphabetic Classes</A>
