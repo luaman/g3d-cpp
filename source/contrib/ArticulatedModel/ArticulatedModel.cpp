@@ -24,6 +24,8 @@ ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, cons
 
 
 void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale) {
+    // Note: vertices are actually mutated by scale; it is not carried along as
+    // part of the scene graph transformation.
 
     Load3DS load;
 
@@ -46,22 +48,28 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
             ++count;
             name = object.name + format("_#%d", count);
         }
-        part.keyframe = object.keyframe.approxCoordinateFrame();
-        part.keyframe.translation *= scale;
+
+        part.cframe = object.keyframe.approxCoordinateFrame();
+        part.cframe.translation *= scale;
+
         part.name = name;
         part.indexArray = object.indexArray;
         partNameToIndex.set(part.name, p);
 
-debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nodeID);
+//debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nodeID);
 
         if (part.hasGeometry()) {
+
+            // Convert to object space (there is no normal data at this point)
+            debugAssert(part.geometry.normalArray.size() == 0);
             for (int v = 0; v < part.geometry.vertexArray.size(); ++v) {
-                part.geometry.vertexArray[v] *= scale;
+                part.geometry.vertexArray[v] = part.cframe.pointToObjectSpace(part.geometry.vertexArray[v] * scale);
             }
 
             part.texCoordArray = object.texCoordArray;
 
             if (object.faceMatArray.size() == 0) {
+
                 // Lump everything into one part
                 Part::TriList& triList = part.triListArray.next();
                 triList.indexArray = object.indexArray;
@@ -103,7 +111,7 @@ debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nod
                         }
 
 			            triList.material.diffuse.constant = material.diffuse;
-                        triList.cullFace = material.twoSided ? RenderDevice::CULL_NONE : RenderDevice::CULL_BACK;
+                        triList.twoSided = material.twoSided;
                         triList.computeBounds(part);
 
                     } else {
@@ -218,13 +226,11 @@ void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale
     part.texCoordArray = texCoord;
     MeshAlg::computeNormals(part.geometry, index);
 
-    part.keyframe = CoordinateFrame();
-
     part.indexArray = index;
 
     Part::TriList& triList = part.triListArray.next();
     triList.indexArray = index;
-    triList.cullFace = RenderDevice::CULL_BACK;
+    triList.twoSided = false;
     triList.computeBounds(part);
 }
 

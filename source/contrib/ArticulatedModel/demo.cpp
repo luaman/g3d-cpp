@@ -113,8 +113,6 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
         shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
             
-        //shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::RGB8,
-        //    Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     }
 
 }
@@ -198,16 +196,14 @@ void Demo::doGraphics() {
     // Pose all
     Array<PosedModelRef> posedModels;
     for (int e = 0; e < app->entityArray.size(); ++e) {
-        /*
         static RealTime t0 = System::time();
         RealTime t = (System::time() - t0) * 10;
-        pose.cframe.set("m_rotor", 
+        app->entityArray[e]->pose.cframe.set("m_rotor", 
             CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t),
                             Vector3::zero()));
-        pose.cframe.set("t_rotor",
+        app->entityArray[e]->pose.cframe.set("t_rotor",
             CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
                             Vector3::zero()));
-                            */
 
         app->entityArray[e]->model->pose(posedModels, app->entityArray[e]->cframe, app->entityArray[e]->pose);
     }
@@ -273,7 +269,7 @@ void App::main() {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
+        model->partArray[0].triListArray[0].twoSided = true;
         material.diffuse = Color3::yellow() * .7;
         material.transmit = Color3(.5,.3,.3);
         material.reflect = Color3::white() * .1;
@@ -285,19 +281,11 @@ void App::main() {
         x += 2;
     }
     
-    if (false) {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(
-		"d:/games/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
-            );
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x+=2;
-    }
-
     if (false)  {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/venus-torso.ifs", 1.5);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
+        model->partArray[0].triListArray[0].twoSided = true;
         material.diffuse = Color3(.9, .9, .8);
         material.transmit = Color3::black();
         material.reflect = Color3::white() * .04;
@@ -312,7 +300,7 @@ void App::main() {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/jackolantern.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
+//        model->partArray[0].triListArray[0].twoSided = true;
         material.diffuse = Color3::fromARGB(0xF28900);
         material.transmit = Color3::black();
         material.reflect = Color3::black();
@@ -330,7 +318,6 @@ void App::main() {
         Color3 brass = Color3::fromARGB(0xFFFDDC01);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
         material.diffuse = brass * .4;
         material.reflect = brass * .5;
         material.specular = Color3::white() * .8;
@@ -343,12 +330,16 @@ void App::main() {
         x += 2;
     }
 
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
 
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/mech-part.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
         material.diffuse = Color3::red();
         material.reflect = Color3::black();
         material.specular = Color3::white();
@@ -362,7 +353,6 @@ void App::main() {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
         material.diffuse = Color3::white() * .8;
         material.specular = Color3::white() * .3;
         material.specularExponent = Color3::white() * 40;
@@ -372,18 +362,11 @@ void App::main() {
         x += 2;
     }
 
-    {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-    }
-
 
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/octagon.ifs", 10);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
         material.diffuse = Color3(.5,.3,0);
         material.specular = Color3::black();
         model->updateAll();

@@ -47,7 +47,8 @@ public:
                 p = FIXED_FUNCTION;
             }
         }
-        p=FIXED_FUNCTION;
+// TODO: Remove (here for testing)
+p = FIXED_FUNCTION;
         return p;
     }
 
@@ -71,16 +72,18 @@ public:
 	    public:
 		    Array<int>				indexArray;
             SuperShader::Material	material;
-    		RenderDevice::CullFace  cullFace;
 
-            /** In the same space as the vertices */
+            /** If true, object is rendered without backface culling.*/
+            bool                    twoSided;
+
+            /** In the same space as the vertices. */
             Sphere                  sphereBounds;
             Box                     boxBounds;
 
             ShaderRef               nonShadowedShader;
             ShaderRef               shadowMappedShader;
 
-            TriList() : cullFace(RenderDevice::CULL_BACK) {}
+            TriList() : twoSided(false) {}
 
             /** Recomputes the bounds */
             void computeBounds(const Part& parentPart);
@@ -90,10 +93,8 @@ public:
         /** Each part must have a unique name */
         std::string                 name;
 
-        /** Root position, relative to parent. Has already been applied to vertices!*/
+        /** Position of this part's reference frame <B>relative to parent</B> */
         CoordinateFrame             cframe;
-
-        CoordinateFrame             keyframe;
 
         VAR                         vertexVAR;
         VAR                         normalVAR;

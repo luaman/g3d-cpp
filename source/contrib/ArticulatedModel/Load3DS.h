@@ -2,13 +2,11 @@
 #include <G3DAll.h>
 
 
-// TODO: Create two polygons when MATTWOSIDE is detected
-// TODO: read material colors
-// TODO: 
+// TODO: Create two polygons when MATTWOSIDE is detected?
 
 /**
  This class maps the 3DS file format to a runtime object, which is then
- converted to a more useful runtime format and stored in D3DSModel.
+ converted to a more useful runtime format and stored in ArticulatedModel.
 
  @cite Keyframe chunks from http://www.republika.pl/design3d/delphi/004.html
  MLI chunks from  http://www.programmersheaven.com/zone10/cat454/941.htm
@@ -789,6 +787,9 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
 
                 case KFSCALE:
                     currentScale = readLin3Track();
+                    // The scale will have the x-coordinate flipped since our 
+                    // code always negates the x-axis (assuming it is reading a point).
+                    currentScale.x *= -1;
                     debugPrintf("scale = %s\n", currentScale.toString().c_str());
                     break;
 

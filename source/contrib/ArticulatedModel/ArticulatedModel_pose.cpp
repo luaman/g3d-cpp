@@ -149,9 +149,9 @@ void ArticulatedModel::Part::pose(
     CoordinateFrame frame;
 
     if (posex.cframe.containsKey(name)) {
-        frame = parent * keyframe * posex.cframe[name] * keyframe.inverse();
+        frame = parent * cframe * posex.cframe[name];
     } else {
-        frame = parent;
+        frame = parent * cframe;
     }
 
     if (hasGeometry()) {
@@ -169,7 +169,7 @@ void ArticulatedModel::Part::pose(
         }
     }
 
-    // TODO: sub-parts
+    // TODO: recursively render sub-parts an pass along our frame.
 }
 
 
@@ -346,10 +346,16 @@ void PosedArticulatedModel::renderNonShadowed(
         bool oldDepthWrite = rd->depthWrite();
 
         // Render backfaces first, and then front faces
-        rd->setCullFace(RenderDevice::CULL_FRONT);
-        for (int i = 0; i <= 1; ++i) {
-            rd->disableLighting();
+        int passes = triList.twoSided ? 2 : 1;
+
+        if (triList.twoSided) {
+            // We're going to render the front and backfaces separately.
+            rd->setCullFace(RenderDevice::CULL_FRONT);
             rd->enableTwoSidedLighting();
+        }
+
+        for (int i = 0; i < passes; ++i) {
+            rd->disableLighting();
 
             // Modulate background by transparent color
             rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
@@ -369,10 +375,16 @@ void PosedArticulatedModel::renderNonShadowed(
         // Opaque
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
 
+        if (triList.twoSided) {
+            rd->setCullFace(RenderDevice::CULL_NONE);
+            rd->enableTwoSidedLighting();
+        }
+
         bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
 
         if (! wroteDepth) {
-            // Draw black
+            // We failed to write to the depth buffer, so
+            // do so now.
             rd->disableLighting();
             rd->setColor(Color3::black());
             defaultRender(rd);
@@ -407,6 +419,12 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
     }
 
     rd->pushState();
+
+        if (triList.twoSided) {
+            rd->enableTwoSidedLighting();
+            rd->setCullFace(RenderDevice::CULL_NONE);
+        }
+
         switch (ArticulatedModel::profile()) {
         case ArticulatedModel::FIXED_FUNCTION:
             renderFFShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
