@@ -138,8 +138,12 @@ public:
 } // namespace
 
 inline unsigned int hashCode(const G3D::VARArea* v) {
-    // Disable 64-bit pointer truncation warning
+#if defined(G3D_WIN32)
+    // Disable 64-bit pointer truncation warning 
+	// on Win32.  We'll have to revisit this if we 
+	// port G3D to 64 bit Windows. 
     #pragma warning (disable : 4311)
+#endif
     return (unsigned int)v;
 }
 
