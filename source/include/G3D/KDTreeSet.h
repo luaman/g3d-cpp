@@ -706,6 +706,7 @@ private:
         Node*                       node,
         uint32                      parentMask) {
 
+        int dummy;
 
         // Test values at this node against remaining planes
         for (int v = node->valueArray.size() - 1; v >= 0; --v) {
@@ -714,13 +715,12 @@ private:
             }
         }
 
-        int dummy;
         uint32 childMask  = -1;
 
         // Iterate through child nodes
         for (int c = 0; c < 2; ++c) {
             if (node->child[c] &&
-                ! node->child[c].splitBounds.culledBy(plane, dummy, parentMask, childMask)) {
+                ! node->child[c]->splitBounds.culledBy(plane, dummy, parentMask, childMask)) {
                 // This node was node culled
                 getIntersectingMembers(plane, members, node->child[c], childMask);
             }
