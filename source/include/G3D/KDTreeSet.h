@@ -248,12 +248,12 @@ public:
             }
 
             // If the left child overlaps the box, recurse into it
-            if (box.low()[splitAxis] < splitLocation) {
+            if ((child[0] != NULL) && (box.low()[splitAxis] < splitLocation)) {
                 child[0]->getIntersectingMembers(box, members);
             }
 
             // If the right child overlaps the box, recurse into it
-            if (box.high()[splitAxis] > splitLocation) {
+            if (child[1] != NULL) && (box.high()[splitAxis] > splitLocation)) {
                 child[1]->getIntersectingMembers(box, members);
             }
         }
