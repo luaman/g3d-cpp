@@ -8,8 +8,8 @@
 /**
  @mainpage
    <P>
-    <CENTER><A HREF="http://sourceforge.net/forum/?group_id=76879">Forums</A> 
-
+    <CENTER><A HREF="http://sourceforge.net/forum/?group_id=76879">Forums</A>
+    | <A HREF="map.png">Namespace Map</A> 
 	| <A HREF="error.html">Error FAQ</A> 
     |   \ref Introduction  |  \ref Installation  |
     \ref defines "\#defines"  |  \ref License  |  \ref Contributors   |
