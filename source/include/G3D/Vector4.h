@@ -6,8 +6,9 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2002-07-09
-  @edited  2004-05-14
-  Copyright 2000-2004, Morgan McGuire.
+  @edited  2005-03-02
+
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
  */
 
@@ -89,6 +90,15 @@ public:
     // arithmetic operations
     Vector4 operator+ (const Vector4& rkVector) const;
     Vector4 operator- (const Vector4& rkVector) const;
+    
+    inline Vector4 operator*(const Vector4& rkVector) const {
+        return Vector4(x * rkVector.x, y * rkVector.y, z * rkVector.z, w * rkVector.w);
+    }
+
+    inline Vector4 operator/(const Vector4& rkVector) const {
+        return Vector4(x / rkVector.x, y / rkVector.y, z / rkVector.z, w / rkVector.w);
+    }
+
     Vector4 operator* (double fScalar) const;
     Vector4 operator/ (double fScalar) const;
     Vector4 operator- () const;

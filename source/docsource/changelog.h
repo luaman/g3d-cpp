@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::Vector4 * G3D::Vector4, Vector4 / Vector4
      <LI> G3D::Array::operator=(std::vector)
      <LI> glDisableAllTextures()
      <LI> G3D::setFailureHook
