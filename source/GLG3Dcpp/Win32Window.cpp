@@ -125,6 +125,9 @@ Win32Window::Win32Window(const GWindowSettings& s) {
             startY = s.y;
         }
     }
+
+    clientX = settings.x = startX;
+    clientY = settings.y = startY;
     
     HWND window = CreateWindow("window", 
         name.c_str(),
@@ -886,6 +889,9 @@ Win32APIWindow::Win32APIWindow(const GWindowSettings& s) {
             startY = s.y;
         }
     }
+
+    clientX = settings.x = startX;
+    clientY = settings.y = startY;
     
     HWND window = CreateWindow("window", 
         name.c_str(),
