@@ -27,6 +27,7 @@ using G3D::_internal::_DirectInput;
 
 #include <time.h>
 #include <crtdbg.h>
+#include <sstream>
 
 /*
     DirectInput8 support is added by loading dinupt8.dll if found.
@@ -50,7 +51,8 @@ static const UINT BLIT_BUFFER = 0xC001;
 #define WGL_SAMPLE_BUFFERS_ARB	0x2041
 #define WGL_SAMPLES_ARB		    0x2042
 
-static PFNWGLCHOOSEPIXELFORMATEXTPROC wglChoosePixelFormatEXT = NULL;
+static bool hasWGLMultiSampleSupport = false;
+
 static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
 static unsigned int _sdlKeys[SDLK_LAST];
@@ -194,27 +196,7 @@ void Win32Window::init(HWND hwnd) {
     // Setup the pixel format properties for the output device
     _hDC = GetDC(window);
 
-    int pixelFormat = 0;
-
-    PIXELFORMATDESCRIPTOR pixelFormatDesc;
-    ZeroMemory(&pixelFormatDesc, sizeof(PIXELFORMATDESCRIPTOR));
-
-    pixelFormatDesc.nSize        = sizeof(PIXELFORMATDESCRIPTOR);
-    pixelFormatDesc.nVersion     = 1; 
-    pixelFormatDesc.dwFlags      = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-    pixelFormatDesc.iPixelType   = PFD_TYPE_RGBA; 
-    pixelFormatDesc.cColorBits   = settings.rgbBits * 3;
-    pixelFormatDesc.cDepthBits   = settings.depthBits;
-    pixelFormatDesc.cStencilBits = settings.stencilBits;
-    pixelFormatDesc.iLayerType   = PFD_MAIN_PLANE; 
-    pixelFormatDesc.cRedBits     = settings.rgbBits;
-    pixelFormatDesc.cGreenBits   = settings.rgbBits;
-    pixelFormatDesc.cBlueBits    = settings.rgbBits;
-    pixelFormatDesc.cAlphaBits   = settings.alphaBits;
-
-    // Get the initial pixel format.  We'll override this below in a moment.
-    pixelFormat = ChoosePixelFormat(_hDC, &pixelFormatDesc);
-
+    /*
 #ifdef _DEBUG
     int numSupported = DescribePixelFormat(_hDC, 0, 0, NULL);
     TextOutput textOutFormat("pixelFormats.txt");
@@ -224,40 +206,50 @@ void Win32Window::init(HWND hwnd) {
     }
     textOutFormat.commit();
 #endif
+*/
+
+    bool foundARBFormat = false;
+    int pixelFormat = 0;
 
     if (wglChoosePixelFormatARB != NULL) {
-        // Use wglChoosePixelFormatEXT to override the pixel format choice for antialiasing.
+        // Use wglChoosePixelFormatARB to override the pixel format choice for antialiasing.
         // Based on http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=46
         // and http://oss.sgi.com/projects/ogl-sample/registry/ARB/wgl_pixel_format.txt
 
+        Array<float> fAttributes;
+        fAttributes.append(0.0, 0.0);
+
         Array<int> iAttributes;
 
-        iAttributes.append(WGL_DRAW_TO_WINDOW_EXT, GL_TRUE);
-		iAttributes.append(WGL_SUPPORT_OPENGL_EXT, GL_TRUE);
-		iAttributes.append(WGL_ACCELERATION_EXT,   WGL_FULL_ACCELERATION_EXT);
-        iAttributes.append(WGL_COLOR_BITS_EXT,     settings.rgbBits * 3);
-        iAttributes.append(WGL_RED_BITS_EXT,       settings.rgbBits);
-        iAttributes.append(WGL_GREEN_BITS_EXT,     settings.rgbBits);
-        iAttributes.append(WGL_BLUE_BITS_EXT,      settings.rgbBits);
-        iAttributes.append(WGL_ALPHA_BITS_EXT,     settings.alphaBits);
-        iAttributes.append(WGL_DEPTH_BITS_EXT,     settings.depthBits);
-        iAttributes.append(WGL_STENCIL_BITS_EXT,   settings.stencilBits);
-        iAttributes.append(WGL_DOUBLE_BUFFER_EXT,  GL_TRUE);
-        iAttributes.append(WGL_SAMPLE_BUFFERS_EXT, settings.fsaaSamples > 1);
-		iAttributes.append(WGL_SAMPLES_EXT,        settings.fsaaSamples);
-        iAttributes.append(WGL_STEREO_EXT,         settings.stereo);
+        iAttributes.append(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
+		iAttributes.append(WGL_SUPPORT_OPENGL_ARB, GL_TRUE);
+		iAttributes.append(WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB);
+        iAttributes.append(WGL_COLOR_BITS_ARB,     settings.rgbBits * 3);
+        iAttributes.append(WGL_RED_BITS_ARB,       settings.rgbBits);
+        iAttributes.append(WGL_GREEN_BITS_ARB,     settings.rgbBits);
+        iAttributes.append(WGL_BLUE_BITS_ARB,      settings.rgbBits);
+        iAttributes.append(WGL_ALPHA_BITS_ARB,     settings.alphaBits);
+        iAttributes.append(WGL_DEPTH_BITS_ARB,     settings.depthBits);
+        iAttributes.append(WGL_STENCIL_BITS_ARB,   settings.stencilBits);
+        iAttributes.append(WGL_DOUBLE_BUFFER_ARB,  GL_TRUE);
+        iAttributes.append(WGL_STEREO_ARB,         settings.stereo);
+        if (hasWGLMultiSampleSupport) {
+            iAttributes.append(WGL_SAMPLE_BUFFERS_ARB, settings.fsaaSamples > 1);
+		    iAttributes.append(WGL_SAMPLES_ARB,        settings.fsaaSamples);
+        } else {
+            // Report actual settings
+            settings.fsaaSamples = 0;
+        }
         iAttributes.append(0, 0); // end sentinel
         
-		int pixelFormatARB = 0;
-
         // http://www.nvidia.com/dev_content/nvopenglspecs/WGL_ARB_pixel_format.txt
         uint32 numFormats;
         int valid = wglChoosePixelFormatARB(
             _hDC,
             iAttributes.getCArray(), 
-            NULL,
+            fAttributes.getCArray(),
             1,
-            &pixelFormatARB,
+            &pixelFormat,
             &numFormats);
 
         // "If the function succeeds, the return value is TRUE. If the function
@@ -267,18 +259,39 @@ void Win32Window::init(HWND hwnd) {
         // that when numFormats == 0 some reasonable format is still selected.
 
  
-        if (! valid) {
-            // No valid format
-            pixelFormatARB = 0;
+        if ( valid && (pixelFormat > 0)) {
+            // Found a valid format
+            foundARBFormat = true;
         }
 
-		if (pixelFormatARB != 0) {
-			// Override previous
-			pixelFormat = pixelFormatARB;
-		}
     }
 
-	alwaysAssertM(pixelFormat != 0, "[0] Unsupported video mode");
+    PIXELFORMATDESCRIPTOR pixelFormatDesc;
+
+    if ( !foundARBFormat ) {
+
+        ZeroMemory(&pixelFormatDesc, sizeof(PIXELFORMATDESCRIPTOR));
+
+        pixelFormatDesc.nSize        = sizeof(PIXELFORMATDESCRIPTOR);
+        pixelFormatDesc.nVersion     = 1; 
+        pixelFormatDesc.dwFlags      = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+        pixelFormatDesc.iPixelType   = PFD_TYPE_RGBA; 
+        pixelFormatDesc.cColorBits   = settings.rgbBits * 3;
+        pixelFormatDesc.cDepthBits   = settings.depthBits;
+        pixelFormatDesc.cStencilBits = settings.stencilBits;
+        pixelFormatDesc.iLayerType   = PFD_MAIN_PLANE; 
+        pixelFormatDesc.cRedBits     = settings.rgbBits;
+        pixelFormatDesc.cGreenBits   = settings.rgbBits;
+        pixelFormatDesc.cBlueBits    = settings.rgbBits;
+        pixelFormatDesc.cAlphaBits   = settings.alphaBits;
+
+        // Get the initial pixel format.  We'll override this below in a moment.
+        pixelFormat = ChoosePixelFormat(_hDC, &pixelFormatDesc);
+    } else {
+        DescribePixelFormat(_hDC, pixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pixelFormatDesc);
+    }
+
+    alwaysAssertM(pixelFormat != 0, "[0] Unsupported video mode");
 
     if (SetPixelFormat(_hDC, pixelFormat, &pixelFormatDesc) == FALSE) {
 		alwaysAssertM(false, "[1] Unsupported video mode");
@@ -829,13 +842,30 @@ void Win32Window::initWGL() {
     // We've now brought OpenGL online.  Grab the pointers we need and 
     // destroy everything.
 
-    wglChoosePixelFormatEXT =
-        (PFNWGLCHOOSEPIXELFORMATEXTPROC)wglGetProcAddress("wglChoosePixelFormatEXT");
     wglChoosePixelFormatARB =
         (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
 
-    Log::common()->printf("wglChoosePixelFormatEXT = 0x%x\n", wglChoosePixelFormatEXT); 
-    Log::common()->printf("wglChoosePixelFormatARB = 0x%x\n", wglChoosePixelFormatARB); 
+    PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB =
+        (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+
+    if (wglGetExtensionsStringARB != NULL) {
+        
+        std::string wglExtensions = wglGetExtensionsStringARB(hDC);
+
+        std::istringstream extensionsStream;
+        extensionsStream.str(wglExtensions.c_str());
+        
+        std::string extension;
+        while ( extensionsStream >> extension ) {
+            if (extension == "WGL_ARB_multisample") {
+                hasWGLMultiSampleSupport = true;
+                break;
+            }
+        }
+
+    } else {
+        hasWGLMultiSampleSupport = false;
+    }
 
     // Now destroy the dummy windows
     wglDeleteContext(hRC);					
