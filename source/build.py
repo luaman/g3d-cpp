@@ -56,8 +56,6 @@ def lib():
 
     else:
         # Linux build
-        print "Don't know how to build libraries on non-Windows platforms"
-        
         # (Of course, we don't have to bootstrap *every* time... 
         #  TODO: what file changes that triggers a need to bootstrap/configure?)
         run("./bootstrap")
