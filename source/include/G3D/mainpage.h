@@ -433,12 +433,14 @@
    
    <P>
 
-   All of the data resources have either entered the public domain and have
+   Most of the data resources have either entered the public domain and have
    been in several published papers or are data that I have explicitly 
    received permission to distribute with G3D.  The G3D fonts are actually font
    images, not TrueType font descriptions and may be freely
-   distributed.  As a rule of thumb, you can freely use anything you find
-   in the data directory, even in a commercial product.
+   distributed.  As a rule of thumb, you can freely use and distribute
+   anything you find in the data directory but may need permission to use
+   it in a commercial product.  Check the various copyright.txt files
+   in the data directories for specific information.
 
    <P> 
 
@@ -451,7 +453,7 @@
    <P>
    
    Likewise, you are encouraged but not required to submit patches to
-   improve the library for the benefit of all.  E-mail with bugs,
+   improve the library for the benefit of all.  E-mail me with bugs,
    patches, and questions.  <P>
 
    -Morgan McGuire
@@ -514,9 +516,10 @@
 
    \section Contributors Contributors
 
-   The 6.0 team:
+   The 6.00 team:
    <BLOCKQUOTE>
-     <B>Morgan McGuire, James O'Sullivan, Kevin Egan, Nick Musurca, Ben Landon, Rob Hunter</B>
+     <B>Morgan McGuire, James O'Sullivan, Kevin Egan, 
+        Nick Musurca, Ben Landon, Rob Hunter</B>
    </BLOCKQUOTE>
 
    This library contains code and resources contributed by the
