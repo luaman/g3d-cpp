@@ -777,9 +777,26 @@ TextureRef Texture::fromGImage(
     // The six cube map faces, or the one texture and 5 dummys.
     const uint8* array[1];
 
-    if (image.channels == 4) {
+    switch (image.channels) {
+    case 4:
         format = TextureFormat::RGBA8;
         opaque = false;
+        break;
+
+    case 3:
+        format = TextureFormat::RGB8;
+        opaque = true;
+        break;
+
+    case 1:
+        format = TextureFormat::L8;
+        opaque = true;
+        break;
+
+    default:
+        alwaysAssertM(
+            false,
+            G3D::format("GImage has an unexpected number of channels (%d)", image.channels));
     }
 
     if (desiredFormat == NULL) {

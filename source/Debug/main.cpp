@@ -161,23 +161,13 @@ void Demo::doGraphics() {
     app->renderDevice->enableLighting();
         app->renderDevice->setAmbientLightColor(Color3::black());
         app->renderDevice->setSpecularCoefficient(0);
-       
-  
+
     // Rendering loop
     app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
-//    app->renderDevice->setShader(lambertian);
-//    lambertian->args.set("k_A", Color3(.2,.2,.3));
     model->pose()->render(app->renderDevice);
-//        Draw::box(AABox(Vector3(-2,-2,-2), Vector3(2,2,2)), app->renderDevice, Color3::white() * 0.5, Color4::clear());
 
     app->renderDevice->disableLighting();
-
-    /*
-    if (app->sky.notNull()) {
-        app->sky->renderLensFlare(lighting);
-    }
-    */
 
 }
 
@@ -189,7 +179,7 @@ void App::main() {
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
     
-    GImage im(100, 112, 3);
+    GImage im("c:/tmp/stone-bump.png");
 
     Texture::fromGImage("", im, TextureFormat::AUTO, Texture::TILE, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT);
 
