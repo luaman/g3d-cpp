@@ -126,9 +126,9 @@ BinaryInput::BinaryInput(
 
       	buffer = (uint8*)malloc(length);
 
-        unsigned long L;
+        uint32 L = length;
         // Decompress with zlib
-        int result = uncompress(buffer, &L, data + 4, dataLen - 4);
+        int result = uncompress(buffer, (unsigned long*)&L, data + 4, dataLen - 4);
         length = L;
         bufferLength = L;
         debugAssert(result == Z_OK); (void)result;
