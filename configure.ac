@@ -78,7 +78,6 @@ AC_CONFIG_FILES([Makefile
                  temp/release/Makefile
                  temp/release/g3d/Makefile
                  temp/release/glg3d/Makefile
-                 source/Makefile
-                 source/test/Makefile])
+                 source/Makefile])
 
 AC_OUTPUT
