@@ -820,7 +820,7 @@ bool Win32Window::pollEvent(GEvent& e) {
     if( _DirectInput::getKeyboardEvents(keyboardData, numKeyboardData) ) {
 
         for (int event = 0; event < numKeyboardData; ++event) {
-            e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYUP : SDL_KEYDOWN;
+            e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYDOWN : SDL_KEYUP;
             e.key.state = (keyboardData[event].dwData & 0x80) ? SDL_PRESSED : SDL_RELEASED;
 
             e.key.keysym.sym = (SDLKey)_sdlKeys[keyboardData[event].dwOfs];
