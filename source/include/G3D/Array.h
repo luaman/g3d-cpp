@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-10-06
+  @edited  2003-11-06
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -476,21 +476,36 @@ public:
     }
 
     /**
+     Returns the index of (the first occurance of) an index or -1 if
+     not found.
+     */
+    int findIndex(const T& value) const {
+        for (int i = 0; i < num; ++i) {
+            if (data[i] == value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
      Finds an element and returns the iterator to it.  If the element
      isn't found then returns end().
      */
-    Iterator find(const T &value) {
-        for (int i = 0; i < num; i++) {
-            if(data[i] == value)
+    Iterator find(const T& value) {
+        for (int i = 0; i < num; ++i) {
+            if (data[i] == value) {
                 return data + i;
+            }
         }
         return end();
     }
 
-    ConstIterator find(const T &value) const {
-        for (int i = 0; i < num; i++) {
-            if(data[i] == value)
+    ConstIterator find(const T& value) const {
+        for (int i = 0; i < num; ++i) {
+            if (data[i] == value) {
                 return data + i;
+            }
         }
         return end();
     }
