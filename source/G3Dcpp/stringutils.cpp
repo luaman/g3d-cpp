@@ -195,7 +195,7 @@ std::string trimWhitespace(
 
     int right = s.length() - 1;
     // Trim from right
-    while ((right > left) && iswspace(s[right])) {
+    while ((right > (int)left) && iswspace(s[right])) {
         --right;
     }
     
