@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2004-08-18
+  @edited  2004-09-09
 */
 
 #ifndef G3D_GCAMERA_H
@@ -87,7 +87,8 @@ public:
 	void setCoordinateFrame(const CoordinateFrame& c);
            
    /**
-	 Sets the horizontal field of view for a square image.  
+	 Sets the horizontal field of view, in radians.  The 
+     initial angle is toRadians(55).
 	 <UL>
 	  <LI> toRadians(50) - Telephoto
 	  <LI> toRadians(110) - Normal
