@@ -11,9 +11,9 @@
 */
 
 #include "Win32Window.h"
-#ifndef G3D_WIN32
-    #error This is a Win32-only file
-#endif
+
+#ifdef G3D_WIN32
+
 #include <time.h>
 #include <crtdbg.h>
 
@@ -42,6 +42,9 @@
 #define WIN32WINDOW_INCLUDE_DI8
 #include "Win32Window_di8.cpp"
 #undef WIN32WINDOW_INCLUDE_DI8
+
+namespace G3D {
+static const UINT BLIT_BUFFER = 0xC001;
 
 
 // Handle these interfaces manually instead of using ATL
@@ -1184,3 +1187,8 @@ void Win32Window::initWGL() {
 	DestroyWindow(hWnd);			
 	hWnd = 0;
 }
+
+
+} // G3D namespace
+
+#endif // G3D_WIN32

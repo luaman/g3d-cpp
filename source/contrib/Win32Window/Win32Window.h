@@ -3,23 +3,24 @@
   
  A GWindow that uses the Win32 API.
 
- @maintainer Morgan McGuire, matrix@graphics3d.com 
+ @maintainer Corey Taylor 
  @created 	  2004-05-21
- @edited  	  2004-10-08
+ @edited  	  2004-10-12
     
  Copyright 2000-2002, Morgan McGuire.
  All rights reserved.
 */
 
-#ifndef WIN32WINDOW_H
-#define WIN32WINDOW_H
+#ifndef G3D_WIN32WINDOW_H
+#define G3D_WIN32WINDOW_H
 
 #include <G3DAll.h>
+
+#ifdef G3D_WIN32
+
 #include <windows.h>
 #include <string>
 #include <time.h>
-
-const UINT BLIT_BUFFER = 0xC001;
 
 // Define missing Virtual Keys
 #define VK_SEMICOLON	0xBA // ;
@@ -34,6 +35,8 @@ const UINT BLIT_BUFFER = 0xC001;
 #define VK_RBRACKET	    0xDD // ]
 #define VK_APOSTROPHE	0xDE // ??
 #define VK_BACKTICK	    0xDF // ??
+
+namespace G3D {
 
 class Win32Window : public GWindow {
 private:
@@ -149,4 +152,9 @@ public:
     virtual bool requiresMainLoop() const;
 };
 
+}
+
+using G3D::Win32Window; // temporary backwards compatibility.
+
+#endif // G3D_WIN32
 #endif
