@@ -118,6 +118,10 @@ SOURCE=.\GLG3Dcpp\glenumtostring.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\GLight.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\GPUProgram.cpp
 # End Source File
 # Begin Source File
@@ -387,6 +391,10 @@ SOURCE=.\include\GLG3D.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\glheaders.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\GLight.h
 # End Source File
 # Begin Source File
 
