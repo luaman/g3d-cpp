@@ -290,6 +290,10 @@ SOURCE=.\include\G3D\AABox.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\G3D\AABSPTree.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3D\Array.h
 # End Source File
 # Begin Source File
@@ -403,10 +407,6 @@ SOURCE=.\include\G3D\GLight.h
 # Begin Source File
 
 SOURCE=.\include\graphics3D.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\G3D\KDTreeSet.h
 # End Source File
 # Begin Source File
 
