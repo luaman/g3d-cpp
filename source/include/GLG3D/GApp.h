@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-12-03
+ @edited  2003-12-10
  */
 
 #ifndef G3D_GAPP_H
@@ -74,12 +74,6 @@ private:
     void loadFont(const std::string& fontName);
 
 protected:
-
-    /**
-     Called from the constructor.  It is unlikely you will
-     need to override this, but you can.
-     */
-    virtual void init(const GAppSettings& settings);
 
     /**
      Called from run.  This is invoked inside of several

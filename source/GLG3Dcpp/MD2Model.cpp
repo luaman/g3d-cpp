@@ -58,11 +58,9 @@ MD2ModelRef MD2Model::create(const std::string& filename) {
 }
 
 
-
 bool MD2Model::Pose::operator==(const MD2Model::Pose& other) const {
     return (animation == other.animation) && fuzzyEq(time, other.time);
 }
-
 
 
 const Array<MeshAlg::Face>& MD2Model::faces() const {
@@ -72,16 +70,10 @@ const Array<MeshAlg::Face>& MD2Model::faces() const {
 }
 
 
-
-
-
 const Array<MeshAlg::Edge>& MD2Model::geometricEdges() const {
-
 	return edgeArray;
 
 }
-
-
 
 
 void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf1, double& alpha) {

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2003-11-03
+ @edited  2003-12-10
  */
 
 #include <SDL.h>
@@ -21,36 +21,6 @@ GApp::GApp(const GAppSettings& settings) {
     debugFont         = NULL;
     endProgram        = false;
     _debugControllerWasActive = false;
-
-    init(settings);
-}
-
-
-void GApp::loadFont(const std::string& fontName) {
-    std::string filename = fontName;
-    if (! fileExists(filename)) {
-
-        if (fileExists(dataDir + filename)) {
-            filename = dataDir + filename;
-        } else if (fileExists(dataDir + "font/" + filename)) {
-            filename = dataDir + "font/" + filename;
-        }
-    }
-
-    if (fileExists(filename)) {
-        debugFont = GFont::fromFile(renderDevice, filename);
-    } else {
-        debugFont = NULL;
-    }
-}
-
-
-void GApp::init(const GAppSettings& settings) {
-
-    static bool initialized = false;
-
-    debugAssertM(! initialized, "Can't initialize GApp twice");
-    initialized = true;
 
     dataDir = demoFindData(false);
 
@@ -77,6 +47,25 @@ void GApp::init(const GAppSettings& settings) {
     debugTabSwitchCamera        = true;
     debugShowRenderingStats     = true;
     catchCommonExceptions       = true;
+}
+
+
+void GApp::loadFont(const std::string& fontName) {
+    std::string filename = fontName;
+    if (! fileExists(filename)) {
+
+        if (fileExists(dataDir + filename)) {
+            filename = dataDir + filename;
+        } else if (fileExists(dataDir + "font/" + filename)) {
+            filename = dataDir + "font/" + filename;
+        }
+    }
+
+    if (fileExists(filename)) {
+        debugFont = GFont::fromFile(renderDevice, filename);
+    } else {
+        debugFont = NULL;
+    }
 }
 
 
