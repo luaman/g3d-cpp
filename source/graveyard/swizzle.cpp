@@ -1,7 +1,5 @@
 
-
-//Swizzle generation code:
-
+//
 // Creates:
 //  header#.h: prototype methods for all swizzles on Vector#
 //  cpp#.cpp:  implementation of all swizzles on Vector#
@@ -30,17 +28,41 @@ int main(int argc, char* argv[]) {
                     pos[j] = XYZW[(i / (int)pow(v, j)) % v];
                 }
 
+                // Header (const)
                 fprintf(header, "    Vector%d ", num);
                 for (int j = 0; j < num; ++j) {
                     fprintf(header, "%c", pos[j]);
                 }
                 fprintf(header, "() const;\n");
 
+                // Header (swizzle)
+                fprintf(header, "    VectorSwizzle%d ", num);
+                for (int j = 0; j < num; ++j) {
+                    fprintf(header, "%c", pos[j]);
+                }
+                fprintf(header, "();\n");
+
+
+                // Implementation (const)
                 fprintf(cpp, "Vector%d Vector%d::", num, v);
                 for (int j = 0; j < num; ++j) {
                     fprintf(cpp, "%c", pos[j]);
                 }
-                fprintf(cpp, "() const { return Vector%d(", num);
+                fprintf(cpp, "() const  { return Vector%d       (", num);
+                for (int j = 0; j < num; ++j) {
+                    fprintf(cpp, "%c", pos[j]);
+                    if (j < num - 1) {
+                        fprintf(cpp, ", ");
+                    }
+                }
+                fprintf(cpp, "); }\n");
+
+                // Implementation (swizzle)
+                fprintf(cpp, "VectorSwizzle%d Vector%d::", num, v);
+                for (int j = 0; j < num; ++j) {
+                    fprintf(cpp, "%c", pos[j]);
+                }
+                fprintf(cpp, "() { return VectorSwizzle%d(", num);
                 for (int j = 0; j < num; ++j) {
                     fprintf(cpp, "%c", pos[j]);
                     if (j < num - 1) {
@@ -83,4 +105,3 @@ int main(int argc, char* argv[]) {
 
 	return 0;
 }
-

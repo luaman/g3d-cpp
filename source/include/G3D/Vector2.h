@@ -20,8 +20,12 @@
 
 namespace G3D {
 
+class Vector2;    
 class Vector3;
 class Vector4;
+class VectorSwizzle2;
+class VectorSwizzle3;
+class VectorSwizzle4;
 
 /**
  Do not subclass-- this implementation makes assumptions about the
@@ -123,39 +127,68 @@ public:
     // 2-char swizzles
 
     Vector2 xx() const;
+    VectorSwizzle2 xx();
     Vector2 yx() const;
+    VectorSwizzle2 yx();
     Vector2 xy() const;
+    VectorSwizzle2 xy();
     Vector2 yy() const;
+    VectorSwizzle2 yy();
 
     // 3-char swizzles
 
     Vector3 xxx() const;
+    VectorSwizzle3 xxx();
     Vector3 yxx() const;
+    VectorSwizzle3 yxx();
     Vector3 xyx() const;
+    VectorSwizzle3 xyx();
     Vector3 yyx() const;
+    VectorSwizzle3 yyx();
     Vector3 xxy() const;
+    VectorSwizzle3 xxy();
     Vector3 yxy() const;
+    VectorSwizzle3 yxy();
     Vector3 xyy() const;
+    VectorSwizzle3 xyy();
     Vector3 yyy() const;
+    VectorSwizzle3 yyy();
 
     // 4-char swizzles
 
     Vector4 xxxx() const;
+    VectorSwizzle4 xxxx();
     Vector4 yxxx() const;
+    VectorSwizzle4 yxxx();
     Vector4 xyxx() const;
+    VectorSwizzle4 xyxx();
     Vector4 yyxx() const;
+    VectorSwizzle4 yyxx();
     Vector4 xxyx() const;
+    VectorSwizzle4 xxyx();
     Vector4 yxyx() const;
+    VectorSwizzle4 yxyx();
     Vector4 xyyx() const;
+    VectorSwizzle4 xyyx();
     Vector4 yyyx() const;
+    VectorSwizzle4 yyyx();
     Vector4 xxxy() const;
+    VectorSwizzle4 xxxy();
     Vector4 yxxy() const;
+    VectorSwizzle4 yxxy();
     Vector4 xyxy() const;
+    VectorSwizzle4 xyxy();
     Vector4 yyxy() const;
+    VectorSwizzle4 yyxy();
     Vector4 xxyy() const;
+    VectorSwizzle4 xxyy();
     Vector4 yxyy() const;
+    VectorSwizzle4 yxyy();
     Vector4 xyyy() const;
+    VectorSwizzle4 xyyy();
     Vector4 yyyy() const;
+    VectorSwizzle4 yyyy();
+
 };
 
 }
