@@ -10,6 +10,7 @@
 
 #include <SDL.h>
 #include <SDL_syswm.h>
+#include <sstream>
 #include "GLG3D/glcalls.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
@@ -176,6 +177,8 @@ bool RenderDevice::init(
     int                 ddepthBits,
     int                 dstencilBits) {
 
+    std::istringstream extensions;
+
     debugLog = log;
 
     beginEndFrame = 0;
@@ -218,24 +221,14 @@ bool RenderDevice::init(
     bool depthOk   = depthBits >= minimumDepthBits;
     bool stencilOk = stencilBits >= minimumStencilBits;
 
-    std::string extensions = (char*)glGetString(GL_EXTENSIONS);
+    extensions.str((char*)glGetString(GL_EXTENSIONS));
     {
         // Parse the extensions into the supported set
-        int prev = 0;
-        int cur  = -1;
-        int len  = extensions.length();
-
-        while (cur < len) {
-            ++cur;
-            if (extensions[cur] == ' ') {
-                std::string s = extensions.substr(prev, cur - prev);
-                extensionSet.insert(s);
-                prev = cur + 1;
-            }
+        std::string s;
+        while(extensions >> s)
+        {
+            extensionSet.insert(s);
         }
-
-        std::string s = extensions.substr(prev, cur - prev);
-        extensionSet.insert(s);
 
         stencilWrapSupported = supportsOpenGLExtension("EXT_stencil_wrap");
         textureRectangleSupported = supportsOpenGLExtension("GL_NV_texture_rectangle");
@@ -310,7 +303,7 @@ bool RenderDevice::init(
             glGetString(GL_VENDOR),
             glGetString(GL_RENDERER),
             glGetString(GL_VERSION),
-            extensions.c_str());
+            extensions.str().c_str());
     }
 
 
@@ -374,6 +367,7 @@ bool RenderDevice::init(
              
              "glMultiTexCoord2fvARB", isOk(glMultiTexCoord2fvARB),
              "glMultiTexCoord2fARB", isOk(glMultiTexCoord2fARB),
+             "glMultiTexCoord4dvARB", isOk(glMultiTexCoord4dvARB),
              "glActiveTextureARB", isOk(glActiveTextureARB),
 			 "glClientActiveTextureARB", isOk(glClientActiveTextureARB),
              "wglSwapIntervalEXT", isOk(wglSwapIntervalEXT),
