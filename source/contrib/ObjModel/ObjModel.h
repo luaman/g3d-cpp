@@ -58,7 +58,7 @@ public:
 	static VARAreaRef varArea;
 	static TextureManager textureManager;
 
-	void render(RenderDevice* render, const GMaterial& mat) const;
+	void render(RenderDevice* render, const GMaterial& mat, bool useMat) const;
 
     std::string name() const{
 		return modelName;
@@ -70,7 +70,7 @@ public:
 
 	//Reminder to finish defining pose class
 	PosedModelRef pose(const CoordinateFrame& cframe){
-		return new PosedObjModel(this, cframe);
+		return new PosedObjModel(this, cframe, GMaterial(), false);
 	}
 
 	bool modelExists;
@@ -82,8 +82,9 @@ protected:
 		ObjModelRef model;
 		CoordinateFrame frame;
 		GMaterial material;
+		bool useMat;
 
-		PosedObjModel::PosedObjModel(ObjModelRef modelref, const CoordinateFrame& pframe, const GMaterial& mat = NULL);
+		PosedObjModel::PosedObjModel(ObjModelRef modelref, const CoordinateFrame& pframe, const GMaterial& mat, bool useMat);
 		string name() const;
 		void getCoordinateFrame(CoordinateFrame& c) const;
 		const MeshAlg::Geometry& objectSpaceGeometry() const;

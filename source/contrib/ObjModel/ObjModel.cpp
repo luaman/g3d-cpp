@@ -22,7 +22,7 @@ ObjModel::~ObjModel()
 VARAreaRef ObjModel::varArea = NULL;
 TextureManager ObjModel::textureManager;
 
-void ObjModel::render(RenderDevice* renderDevice, const GMaterial& mat) const
+void ObjModel::render(RenderDevice* renderDevice, const GMaterial& mat, bool useMat) const
 {
 	if(!modelExists)
 		return;
@@ -30,7 +30,7 @@ void ObjModel::render(RenderDevice* renderDevice, const GMaterial& mat) const
 	renderDevice->setCullFace(RenderDevice::CULL_NONE);
 	renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
-	if(mat != NULL)
+	if(useMat)
 		mat.configure(renderDevice);
 /*
 	const size_t varSize = 2048 * 1024;
@@ -119,8 +119,8 @@ void ObjModel::render(RenderDevice* renderDevice, const GMaterial& mat) const
 
 //PosedObjModel class methods
 
-ObjModel::PosedObjModel::PosedObjModel(ObjModelRef modelref, const CoordinateFrame& pframe, const GMaterial& mat):
-model(modelref), frame(pframe), material(mat)
+ObjModel::PosedObjModel::PosedObjModel(ObjModelRef modelref, const CoordinateFrame& pframe, const GMaterial& mat, bool _useMat):
+model(modelref), frame(pframe), material(mat), useMat(_useMat)
 {
 }
 
@@ -206,7 +206,7 @@ void ObjModel::PosedObjModel::render(RenderDevice* renderDevice) const
 	//do more here?
 	renderDevice->pushState();
 	renderDevice->setObjectToWorldMatrix(coordinateFrame());
-	model->render(renderDevice, material);
+	model->render(renderDevice, material, useMat);
 	renderDevice->popState();
 }
 
