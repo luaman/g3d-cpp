@@ -877,7 +877,7 @@ private:
     // setState().
     class RenderState {
     public:
-        friend RenderDevice;
+        friend class RenderDevice;
 
         class TextureUnit {
         public:
