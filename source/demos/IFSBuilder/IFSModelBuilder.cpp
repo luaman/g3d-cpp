@@ -10,7 +10,7 @@
 #include "IFSModelBuilder.h"
 #include "IFSModel.h"
 
-const double IFSModelBuilder::CLOSE = 0.01;
+const double IFSModelBuilder::CLOSE = IFSModelBuilder::AUTO_WELD;
 
 
 void IFSModelBuilder::setName(const std::string& n) {
@@ -26,7 +26,19 @@ void IFSModelBuilder::commit(IFSModel* model) {
 
     Array<int> toNew, toOld;
 
-    MeshAlg::computeWeld(triList, model->geometry.vertexArray, toNew, toOld, CLOSE);
+    double close = CLOSE;
+    if (close < 0) {
+        Array<int> index;
+        MeshAlg::createIndexArray(triList.size(), index);
+        double minEdgeLen, maxEdgeLen, meanEdgeLen, medianEdgeLen;
+        double minFaceArea, maxFaceArea, meanFaceArea, medianFaceArea;
+        MeshAlg::computeAreaStatistics(triList, index,
+            minEdgeLen, meanEdgeLen, medianEdgeLen, maxEdgeLen,
+            minFaceArea, meanFaceArea, medianFaceArea, maxFaceArea);
+        close = minEdgeLen * 0.5;
+    }
+
+    MeshAlg::computeWeld(triList, model->geometry.vertexArray, toNew, toOld, close);
 
     // Construct triangles
     for (int t = 0; t < triList.size(); t += 3) {

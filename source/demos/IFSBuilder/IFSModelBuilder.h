@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-09-22
+  @edited  2003-10-18
  */ 
 
 
@@ -23,6 +23,13 @@ public:
     typedef Array<int> List;
 
     static const double CLOSE;
+
+    /**
+     Set close to AUTO_WELD to weld vertices closer than 1/2
+     the smalled edge length in a model.
+     */
+    enum {AUTO_WELD = -100};
+
 private:
    
     std::string                 name;
