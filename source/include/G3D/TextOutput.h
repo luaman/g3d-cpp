@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-06-21
-  @edited  2004-06-21
+  @edited  2004-10-10
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -209,7 +209,9 @@ public:
     /** Normal printf conventions.  Note that the output will be reformatted
         for word-wrapping and newlines */
     void __cdecl printf(const char* fmt, ...);
-    void __cdecl printf(const std::string& fmt, ...);
+
+    // Can't pass by reference because that confuses va_start
+    void __cdecl printf(const std::string fmt, ...);
     void __cdecl vprintf(const char* fmt, va_list argPtr);
 };
 

@@ -105,7 +105,7 @@ void TextOutput::writeSymbols(
 }
 
 
-void TextOutput::printf(const std::string& formatString, ...) {
+void TextOutput::printf(const std::string formatString, ...) {
     va_list argList;
     va_start(argList, formatString);
     this->vprintf(formatString.c_str(), argList);
