@@ -17,7 +17,7 @@
      <LI> BinaryOutput::reset (memory writing only; not supported for disk)
      <LI> Reduced overhead for G3D::ReliableConduit and 
           G3D::LightWeightConduit send routines
-     <LI> Added PPM support to GImage [Corey]
+     <LI> Added PPM/PGM/PBM ASCII encode/decode support to GImage [Corey]
      <LI> New G3D::PosedModel rendering methods appropriate for shadow casting
            (with efficient default implementations).
      <LI> G3D::Lighting
