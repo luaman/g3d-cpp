@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-12-18
+ @edited  2004-01-03
  */
 
 
@@ -797,6 +797,12 @@ void testSwizzle() {
 
 
 int main(int argc, char* argv[]) {
+
+    RealTime t0 = System::getLocalTime();
+    RealTime t1 = System::getTick();
+    while (true) {
+        printf("\r%f %f\n", System::getLocalTime() - t0, System::getTick() - t1);
+    }
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");

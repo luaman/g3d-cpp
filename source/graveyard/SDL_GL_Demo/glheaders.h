@@ -75,7 +75,7 @@
 
 void initGL();
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
 HDC getWindowHDC();
 #endif
 

@@ -120,6 +120,7 @@ static std::string          _cpuArch            = "Unknown";
 static std::string          _operatingSystem    = "Unknown";
 
 #ifdef G3D_WIN32
+/** Used by getTick() for timing */
 static LARGE_INTEGER        _start;
 static LARGE_INTEGER        _counterFrequency;
 #else
@@ -141,7 +142,7 @@ static void getStandardProcessorExtensions();
     already initialized). */
 static void init();
 
-
+/** Called from init */
 static void initTime();
 
 
@@ -846,17 +847,20 @@ void initTime() {
 
 
 RealTime System::getTick() { 
+    init();
     #ifdef G3D_WIN32
         LARGE_INTEGER now;
         QueryPerformanceCounter(&now);
 
-        return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency.QuadPart);
+        return (RealTime)(now.QuadPart - _start.QuadPart) /
+                _counterFrequency.QuadPart;
     #else
         // TODO: morgan query RDTSC
         struct timeval now;
         gettimeofday(&now, NULL);
 
-        return ((now.tv_sec-_start.tv_sec)*1000+(now.tv_usec-_start.tv_usec)/1000);
+        return (now.tv_sec  - _start.tv_sec) * 1000.0 +
+               (now.tv_usec - _start.tv_usec) / 1000.0;
     #endif
 }
 

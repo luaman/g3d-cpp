@@ -18,7 +18,7 @@ PFNWGLGLSWAPINTERVALEXTPROC         wglSwapIntervalEXT = NULL;
 void initGL() {
     // Under Windows, reset the last error so that our debug box
     // gives the correct results
-    #if _WIN32
+    #if G3D_WIN32
         SetLastError(0);
     #endif
 

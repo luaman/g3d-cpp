@@ -66,26 +66,10 @@ public:
 	/** */
     static const std::string& cpuArchitecture();
 
-    static uint64 getCycleCount();
-
     /**
      Returns the endianness of this machine.
      */
     static G3DEndian machineEndian();
-
-    /**
-     To count the number of cycles a given operation takes:
-
-     <PRE>
-     unsigned long count;
-     System::beginCycleCount(count);
-     ...
-     System::endCycleCount(count);
-     // count now contains the cycle count for the intervening operation.
-
-     */
-    static void beginCycleCount(uint64& cycleCount);
-    static void endCycleCount(uint64& cycleCount);
 
     /**
      Guarantees that the start of the array is aligned to the 
@@ -148,7 +132,11 @@ public:
      (e.g. the time the program started)
      
      Use differences in two tick times to measure
-     events to a high degree of precision.
+     events to a high degree of precision (e.g. for profiling,
+     frame rate counting).
+
+     This is as accurate as System::getCycleCount, but returns a time
+     in seconds instead of cycles.
      */
     static RealTime getTick();
 
@@ -159,6 +147,29 @@ public:
      Adjusted for local timezone and daylight savings
      time. */
     static RealTime getLocalTime();
+
+    /**
+     To count the number of cycles a given operation takes:
+
+     <PRE>
+     unsigned long count;
+     System::beginCycleCount(count);
+     ...
+     System::endCycleCount(count);
+     // count now contains the cycle count for the intervening operation.
+
+     */
+    static void beginCycleCount(uint64& cycleCount);
+    static void endCycleCount(uint64& cycleCount);
+
+    /**
+     Returns the number of cycles since some arbitrary baseline.
+     See also System::getTick.
+
+     Not supported on OS/X:
+       <A HREF="https://sourceforge.net/tracker/index.php?func=detail&aid=869864&group_id=76879&atid=548565">RFE [ 869864 ] OS/X G3D::System::getCycleCount</A>       
+     */
+    static uint64 getCycleCount();
 };
 
 
@@ -194,7 +205,7 @@ public:
 #elif defined(G3D_OSX)
 
     inline uint64 System::getCycleCount() {
-        // Not implemented on MAC
+        // Not implemented on Mac
         return 0;
     }
 
