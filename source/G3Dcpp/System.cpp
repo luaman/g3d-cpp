@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-11-02
+  @edited  2003-11-11
  */
 
 #include "G3D/platform.h"
@@ -134,6 +134,8 @@ static void init();
 static void initIntel();
 static void initAMD();
 static void initUnknown();
+static void initTime();
+
 
 
 bool System::hasSSE() {
@@ -318,7 +320,7 @@ void init() {
         
 	#endif
 
-    System::setStartTick();
+    initTime();
 
 	getStandardProcessorExtensions();
 }
@@ -780,62 +782,64 @@ int System::consoleReadKey() {
     #endif
 }
 
-void System::setStartTick() {
-#ifdef G3D_WIN32
-    if(QueryPerformanceFrequency(&_counterFrequency))
-    {
-        QueryPerformanceCounter(&_start);
-    }
-#else
-    gettimeofday(&_start, NULL);
-#endif
+
+void initTime() {
+    #ifdef G3D_WIN32
+        if (QueryPerformanceFrequency(&_counterFrequency)) {
+            QueryPerformanceCounter(&_start);
+        }
+    #else
+        gettimeofday(&_start, NULL);
+    #endif
 }
 
+
 RealTime System::getTick() { 
-#ifdef G3D_WIN32
-    LARGE_INTEGER now;
-    QueryPerformanceCounter(&now);
+    #ifdef G3D_WIN32
+        LARGE_INTEGER now;
+        QueryPerformanceCounter(&now);
 
-    return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency.QuadPart);
-#else
-    struct timeval now;
-    gettimeofday(&now, NULL);
+        return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency.QuadPart);
+    #else
+        struct timeval now;
+        gettimeofday(&now, NULL);
 
-    return ((now.tv_sec-_start.tv_sec)*1000+(now.tv_usec-_start.tv_usec)/1000);
-#endif
+        return ((now.tv_sec-_start.tv_sec)*1000+(now.tv_usec-_start.tv_usec)/1000);
+    #endif
 }
 
 RealTime System::getLocalTime() {
   
-#ifdef G3D_WIN32
-    struct _timeb t;
-    _ftime(&t);
+    #ifdef G3D_WIN32
+        struct _timeb t;
+        _ftime(&t);
 
-    return t.time - t.timezone * MINUTE + (t.dstflag ? HOUR : 0);
+        return t.time - t.timezone * MINUTE + (t.dstflag ? HOUR : 0);
 
-#else
+    #else
 
-    // "sse" = "seconds since epoch".  The time
-    // function returns the seconds since the epoch
-    // GMT (perhaps more correctly called UTC). 
-    time_t gmt = time(NULL);
+        // "sse" = "seconds since epoch".  The time
+        // function returns the seconds since the epoch
+        // GMT (perhaps more correctly called UTC). 
+        time_t gmt = time(NULL);
         
-    // No call to free or delete is needed, but subsequent
-    // calls to asctime, ctime, mktime, etc. might overwrite
-    // local_time_vals. 
-    tm* localTimeVals = localtime(&gmt);
+        // No call to free or delete is needed, but subsequent
+        // calls to asctime, ctime, mktime, etc. might overwrite
+        // local_time_vals. 
+        tm* localTimeVals = localtime(&gmt);
     
-    time_t local = gmt;
+        time_t local = gmt;
         
-    if (localTimeVals) {
-        // tm_gmtoff is already corrected for daylight savings.
-        local = local + localTimeVals->tm_gmtoff;
-    }
+        if (localTimeVals) {
+            // tm_gmtoff is already corrected for daylight savings.
+            local = local + localTimeVals->tm_gmtoff;
+        }
         
-    return RealTime(local);
+        return RealTime(local);
 
-#endif
+    #endif
 }
+
 
 void* System::alignedMalloc(size_t bytes, size_t alignment) {
     alwaysAssertM(isPow2(alignment), "alignment must be a power of 2");
