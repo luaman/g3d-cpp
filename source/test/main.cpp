@@ -533,7 +533,7 @@ void testAABoxCulledBy() {
 
     // Positive culled 
     box = AABox(Vector3(1.5, 0, 0), Vector3(2.5, 1, 1));
-    parentMask = -1; childMask = 0; index = 0;
+    parentMask = (uint32)-1; childMask = 0; index = 0;
     culled = box.culledBy(planes, index, parentMask, childMask);
     debugAssert(index == 0);
     debugAssert(culled);
@@ -1584,11 +1584,11 @@ void testAdjacency() {
     }
 
     {
-        //          2
-        //        /|\
-        //       / | \
-        //      /  |  \
-        //     /___|___\
+        //          2                       .
+        //        /|\                       .
+        //       / | \                      .
+        //      /  |  \                     . 
+        //     /___|___\                    . 
         //    0     1    3
         //
         //
