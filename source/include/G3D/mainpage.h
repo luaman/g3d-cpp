@@ -470,6 +470,8 @@ to add zlibstat.lib to your linker list.
    <HR>
    \section defines defines
    <P>
+    G3D pays attention to the following #defines.
+   <P>
      <B>SSE</B> - Allows the use of Intel PIII SSE instructions for faster math
       routines.  On Win32, you will need the Visual Studio processor pack 
       (Free from http://msdn.microsoft.com/vstudio/downloads/ppack/default.asp)
@@ -495,6 +497,9 @@ to add zlibstat.lib to your linker list.
      The static libraries themselves are built <I>without</I> SSE.  The 
      -debug versions have _DEBUG, the regular versions do not.
    
+     <P>
+     G3D defines one of the following based on the platform:
+     <B>G3D_WIN32, G3D_LINUX, G3D_OSX</B>
    <HR>
    \section License License
    <A NAME=\#License></A>
@@ -656,6 +661,7 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> Platform specific #defines
      <LI> G3D::Array::contains
      <LI> G3D::Queue::contains
      <LI> G3D::TextureFormat
