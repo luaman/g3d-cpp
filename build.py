@@ -75,9 +75,9 @@ def lib():
         # should really be putting them here)
         if (x != 0):
             mkdir("temp/lib")
-            copyIfNewer("source/G3Dcpp/libG3D.la", "temp/lib/libG3D.la")
-            copyIfNewer("source/GLG3Dcpp/libGLG3D.la", "temp/lib/libGLG3D.la")
-            copyIfNewer("source/G3Dcpp/libG3D_debug.la", "temp/lib/libG3D_debug.la")
+            copyIfNewer("source/G3Dcpp/libG3D.la",           "temp/lib/libG3D.la")
+            copyIfNewer("source/G3Dcpp/libG3D_debug.la",     "temp/lib/libG3D_debug.la")
+            copyIfNewer("source/GLG3Dcpp/libGLG3D.la",       "temp/lib/libGLG3D.la")
             copyIfNewer("source/GLG3Dcpp/libGLG3D_debug.la", "temp/lib/libGLG3D_debug.la")
 
     if (x != 0):

@@ -504,6 +504,7 @@ to add zlibstat.lib to your linker list.
    <UL>
      <LI> Color3::operator*=(const Color3&)
      <LI> Color3::operator*(const Color3&)
+     <LI> Eliminated duplicate GL headers [James O'Sullivan]
      <LI> Linux Makefiles [James O'Sullivan, Jordan Parker]
      <LI> RenderDevice::getProjectionMatrixParams
      <LI> RenderDevice::debugDrawCylinder
