@@ -82,7 +82,7 @@ You should build and run a few of the demos to insure that your installation is 
 	@subsection linux Linux Project Setup
 		Create a new directory for your project. 
 
-Copy the icompile script where ever you downloaded it 
+Copy the iCompile script where ever you downloaded it 
 to yor new project directory. You will use this script instead of a Makefile (though you
 may write your own Makefile if you prefer). iCompile automatically compiles 
 and links every C++ file in the directory it's run from, so you won't need 
@@ -193,6 +193,17 @@ class App: public GApp {
 #endif
 </pre>
 
+
+<B>LINUX WARNING:</B> <I>When an assertion fails (debugAssert, alwaysAssertM, or debugAssertM) or
+an uncaught exception is thrown %G3D will intercept the failure and display a debug dialog.
+On Windows this dialog appears as a GUI and on Linux and OS X it is at the command line.
+On Windows %G3D is able to release the mouse and keyboard so that you can operate the dialog.
+On Linux, if your application has grabbed input (G3D::UserInput::grabInput), which happens 
+when you press TAB to operate the debug camera, your mouse will not be released.  You need
+to use keyboard commands (like ALT-TAB; depends on your window manager) to return to
+the console that launched your program and tell it to debug, quit, or ignore.  The Linux
+build default is that the debug camera is disabled on startup, since that is when
+these failures are most likely occur.</I>
 
 @subsection more Filling out the new project
 
