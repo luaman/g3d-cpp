@@ -1545,6 +1545,8 @@ void RenderDevice::setStencilTest(StencilTest test) {
     debugAssert(! inPrimitive);
 
     if (state.stencilTest != test) {
+        glEnable(GL_STENCIL_TEST);
+
         if (test == STENCIL_ALWAYS_PASS) {
 
             // Can't actually disable if the stencil op is using the test as well
@@ -1554,9 +1556,9 @@ void RenderDevice::setStencilTest(StencilTest test) {
                 glDisable(GL_STENCIL_TEST);
             }
 
+
         } else {
 
-            glEnable(GL_STENCIL_TEST);
             _setStencilTest(test, state.stencilReference);
         }
 
