@@ -8,6 +8,7 @@
   @cite TGA code by Morgan McGuire
   @cite BMP code by John Chisholm, based on code by Edward "CGameProgrammer" Resnick <A HREF="mailto:cgp@gdnmail.net">mailto:cgp@gdnmail.net</A> at <A HREF="ftp://ftp.flipcode.com/cotd/LoadPicture.txt">ftp://ftp.flipcode.com/cotd/LoadPicture.txt</A>
   @cite PCX format described in the ZSOFT PCX manual http://www.nist.fss.ru/hr/doc/spec/pcx.htm#2
+  @cite PNG compress/decompressor is the <A HREF="http://www.libpng.org/pub/png/libpng.html">libpng library</A>, used in accordance with their license.
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
@@ -107,7 +108,7 @@ void computeNormalMap(const class GImage& bump, class GImage& normal);
   recommended over GImage (we don't include it directly in G3D because their license
   is more restrictive than the BSD one).
 
-  Supported formats (decode and encode): Color JPEG, TGA 24, TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
+  Supported formats (decode and encode): Color JPEG, PNG, (Uncompressed)TGA 24, (Uncompressed)TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
   8-bit paletted PCX, 24-bit PCX, and ICO are supported for decoding only.
 
   Sample usage:

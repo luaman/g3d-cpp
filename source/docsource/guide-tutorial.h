@@ -282,8 +282,8 @@ overview documentation on G3D::RenderDevice if you get stuck.
 
 Texture your ground plane. Add a new member variable of type
 G3D::TextureRef to the Demo class and initialize the texture in your Demo::init
-method, using G3D::Texture::fromFile. You can use any .JPG, .BMP, .TGA
-or .PCX ¯le you like for this. Modify your rendering code in doGraphics to
+method, using G3D::Texture::fromFile. You can use any .PNG, .JPG, .BMP, .TGA
+or .PCX file you like for this. Modify your rendering code in doGraphics to
 assign this texture to texture unit 0, and supply appropriate texture coordinates
 using G3D::RenderDevice. Again, the %G3D calls correspond directly to
 OpenGL calls.

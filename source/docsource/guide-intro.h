@@ -81,7 +81,7 @@ Our philosophy is simple. The library should have the following properties:
 
 
 @section formats Data Formats
-%G3D provides direct load/save access to images in TGA, BMP, JPG, PCX, and ICO format.  
+%G3D provides direct load/save access to images in PNG, TGA, BMP, JPG, PCX, and ICO format.  
 It has sample loaders for the IFS and MD2 3D mesh formats and comes with code 
 (in tools/IFSBuilder) to help you load other formats like 3DS and OBJ.  %G3D uses its own 
 font format to avoid legal issues with TrueType.  There is no official support for audio,
