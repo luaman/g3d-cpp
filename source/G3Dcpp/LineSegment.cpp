@@ -4,11 +4,12 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-02-08
- @edited  2003-10-05
+ @edited  2003-10-28
  */
 
 #include "G3D/LineSegment.h"
 #include "G3D/Sphere.h"
+#include "G3D/debug.h"
 
 namespace G3D {
 
@@ -16,7 +17,7 @@ namespace G3D {
 Vector3 LineSegment::closestPoint(const Vector3& p) const {
 
     // The vector from the end of the capsule to the point in question.
-    Vector3 v(p - point);
+    Vector3 v(p - _point);
 
     // Projection of v onto the line segment scaled by 
     // the length of direction.
@@ -30,7 +31,7 @@ Vector3 LineSegment::closestPoint(const Vector3& p) const {
     
         // The point falls within the segment.  Normalize direction,
         // divide t by the length of direction.
-        return point + direction * t / direction.squaredLength();
+        return _point + direction * t / direction.squaredLength();
     
     } else {
 
@@ -45,16 +46,31 @@ Vector3 LineSegment::closestPoint(const Vector3& p) const {
         if (d0Squared < d1Squared) {
 
             // Point 0 is closer
-            return point;
+            return _point;
 
         } else {
 
             // Point 1 is closer
-            return point + direction;
+            return _point + direction;
         
         }
     }
 
+}
+
+
+Vector3 LineSegment::endPoint(int i) const {
+    switch (i) {
+    case 0:
+        return _point;
+
+    case 1:
+        return _point + direction;
+
+    default:
+        debugAssertM(i == 0 || i == 1, "Argument to point must be 0 or 1");
+        return _point;
+    }
 }
 
 
@@ -69,18 +85,18 @@ LineSegment::LineSegment(class BinaryInput& b) {
 
 
 void LineSegment::serialize(class BinaryOutput& b) const {
-	point.serialize(b);
+	_point.serialize(b);
 	direction.serialize(b);
 }
 
 
 void LineSegment::deserialize(class BinaryInput& b) {
-	point.deserialize(b);
+	_point.deserialize(b);
 	direction.deserialize(b);
 }
 
 Vector3 LineSegment::randomPoint() const {
-    return point + random(0, 1) * direction;
+    return _point + random(0, 1) * direction;
 }
 
 }
