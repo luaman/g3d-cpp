@@ -93,6 +93,22 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 		exit(1);
 	}
 
+    // Set default icon if available
+    if (settings.defaultIconFilename != "nodefault") {
+
+        try {
+
+            GImage defaultIcon;
+            defaultIcon.load(settings.defaultIconFilename);
+
+            setIcon(defaultIcon);
+        } catch (const GImage::Error& e) {
+            // Throw away default icon
+            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
+        }
+    }
 
     if (! settings.fullScreen) {
         // This doesn't really work very well due to SDL bugs so we fix up 

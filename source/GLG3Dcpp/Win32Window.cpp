@@ -159,6 +159,23 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     }
 	init(window);
 
+    // Set default icon if available
+    if (settings.defaultIconFilename != "nodefault") {
+
+        try {
+
+            GImage defaultIcon;
+            defaultIcon.load(settings.defaultIconFilename);
+
+            setIcon(defaultIcon);
+        } catch (const GImage::Error& e) {
+            // Throw away default icon
+            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
+        }
+    }
+
     _DirectInput::createDevices(window);
 }
 
@@ -981,6 +998,23 @@ Win32APIWindow::Win32APIWindow(const GWindowSettings& s) {
         }
     }
 	init(window);
+
+    // Set default icon if available
+    if (settings.defaultIconFilename != "nodefault") {
+
+        try {
+
+            GImage defaultIcon;
+            defaultIcon.load(settings.defaultIconFilename);
+
+            setIcon(defaultIcon);
+        } catch (const GImage::Error& e) {
+            // Throw away default icon
+            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
+        }
+    }
 }
 
 

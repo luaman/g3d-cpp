@@ -138,8 +138,9 @@ public:
     virtual std::string caption() = 0;
 
     /** Set the icon (if supported).  Fails silently if not supported
-        or the window has no frame.
-        @param image May have any dimensions. */
+        or the window has no frame.  <I>May also fail if the GWindow implementation's
+        underlying GUI library is too limited.</I>
+        @param image May have any dimension supported by underlying OS.*/
     virtual void setIcon(const GImage& image) {}
 
 	virtual void setIcon(const std::string& imageFilename) {

@@ -84,6 +84,11 @@ public:
      */
     bool    visible;
 
+    /**
+     Default icon that the GWindow implementation tries to set initially.
+    */
+    std::string  defaultIconFilename;
+
     GWindowSettings() :
         width(800),
         height(600),
@@ -103,7 +108,8 @@ public:
         refreshRate(85),
         resizable(false),
         framed(true),
-        visible(true) {}
+        visible(true),
+        defaultIconFilename("nodefault") {}
 };
 
 // For backwards compatibility to 6.00
