@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-10-02
-  @edited  2004-10-12
+  @edited  2004-10-17
  */
 #ifndef G3D_wxGWindow_H
 #define G3D_wxGWindow_H
@@ -66,22 +66,7 @@ private:
      */
     static void makeAttribList(
         const GWindowSettings&  settings,
-        Array<int>&             attribList) {
-
-        attribList.clear();
-        attribList.append(WX_GL_RGBA, 1);
-        attribList.append(WX_GL_LEVEL, 0);
-        attribList.append(WX_GL_DOUBLEBUFFER, 1);
-        attribList.append(WX_GL_STEREO, settings.stereo ? 1 : 0);
-        attribList.append(WX_GL_MIN_RED, settings.rgbBits);
-        attribList.append(WX_GL_MIN_GREEN, settings.rgbBits);
-        attribList.append(WX_GL_MIN_BLUE, settings.rgbBits);
-        attribList.append(WX_GL_MIN_ALPHA, settings.alphaBits);
-        attribList.append(WX_GL_DEPTH_SIZE, 
-            (settings.depthBits == 24 || settings.depthBits == -1) ? 
-            32 : settings.depthBits);
-        attribList.append(WX_GL_STENCIL_SIZE, settings.stencilBits); 
-    }
+        Array<int>&             attribList) ;
 
     wxGLCanvas*                 window;
     GWindowSettings             settings;
@@ -95,166 +80,64 @@ public:
     wxGWindow(
         const GWindowSettings&  _settings,
         wxWindow*               parent,
-        wxWindowID              id = -1)  : invisible(wxCURSOR_BLANK), arrow(wxCURSOR_ARROW) {
+        wxWindowID              id = -1); 
 
-        Array<int> attribList;
-        makeAttribList(_settings, attribList);
-        settings = _settings;
-
-        wxPoint pos(_settings.x, _settings.y);
-        wxSize size(_settings.width, _settings.height);
-
-        window = new wxGLCanvas(
-            parent, id, pos, size, 0, 
-            "WxWindow", attribList.getCArray(), 
-            wxNullPalette);
-
-        if (settings.center) {
-            window->Center();
-        }
-
-        if (! settings.visible) {
-            window->Hide();
-        }
-
-        window->GetPosition(&settings.x, &settings.y);
-        window->GetClientSize(&settings.width, &settings.height);
-    }
-
-    wxGWindow(wxGLCanvas* canvas) : 
-        invisible(wxCURSOR_BLANK), 
-        arrow(wxCURSOR_ARROW), 
-        window(canvas) {
+    wxGWindow(wxGLCanvas* canvas) ;
     
-        window->GetPosition(&settings.x, &settings.y);
-        window->GetClientSize(&settings.width, &settings.height);
-        settings.visible = window->IsShown();
-    }
+    std::string getAPIVersion () const ;
 
-
-    std::string getAPIVersion () const {
-        return wxVERSION_STRING;
-    }
-
-    std::string getAPIName () const {
-        return "wxWindows";
-    }
+    std::string getAPIName () const ;
 
     /** The wxWindow represented by this object */
-    wxGLCanvas* wxHandle() const {
-        return window;
-    }
+    wxGLCanvas* wxHandle() const ;
 
-    virtual void swapGLBuffers() {
-        window->SwapBuffers();
-    }
+    virtual void swapGLBuffers() ;
 
-    virtual void getSettings (GWindowSettings& _settings) const {
-        wxG3DCanvas* t = const_cast<wxG3DCanvas*>(this);
-        window->GetPosition(&t->settings.x, &t->settings.y);
-        _settings = settings;
-    }
+    virtual void getSettings (GWindowSettings& _settings) const ;
 
-    virtual int	width() const {
-        return settings.width;
-    }
+    virtual int	width() const ;
 
-    virtual int height() const {
-        return settings.height;
-    }
+    virtual int height() const ;
 
-    virtual Rect2D dimensions () const {
-        wxG3DCanvas* t = const_cast<wxG3DCanvas*>(this);
-        window->GetPosition(&t->settings.x, &t->settings.y);
-        window->GetClientSize(&t->settings.width, &t->settings.height);
-        return Rect2D::xywh(settings.x, settings.y, settings.width, settings.height);
-    }
+    virtual Rect2D dimensions () const ;
 
-    virtual void setDimensions (const Rect2D &dims) {
-        window->SetSize(dims.x0(), dims.y0(), dims.width(), dims.height());
-    }
+    virtual void setDimensions (const Rect2D &dims) ;
 
-    virtual void setPosition (int x, int y) {
-        window->Move(x, y);
-    }
+    virtual void setPosition (int x, int y) ;
 
-    virtual bool hasFocus () const {
-        return window->IsEnabled() && (wxWindow::FindFocus() == window);
-    }
+    virtual bool hasFocus () const ;
 
-    virtual void setGammaRamp (const Array<uint16>& gammaRamp) {
-        // Ignore
-    }
+    virtual void setGammaRamp (const Array<uint16>& gammaRamp) ;
 
-    virtual void setCaption (const std::string& caption) {
-        window->SetTitle(caption.c_str());
-    }
+    virtual void setCaption (const std::string& caption) ;
 
-    virtual int numJoysticks () const {
-        return 0;
-    }
+    virtual int numJoysticks () const ;
 
-    virtual std::string joystickName (unsigned int sticknum) {
-        return "";
-    }
+    virtual std::string joystickName (unsigned int sticknum) ;
 
-    virtual std::string caption() {
-        return window->GetTitle();
-    }
+    virtual std::string caption() ;
 
-    virtual void notifyResize (int w, int h) {
-        window->GetPosition(&settings.x, &settings.y);
-        window->GetClientSize(&settings.width, &settings.height);
-    }
+    virtual void notifyResize (int w, int h) ;
 
-    virtual void setRelativeMousePosition(double x, double y) {
-        window->WarpPointer(x, y);
-    }
+    virtual void setRelativeMousePosition(double x, double y) ;
 
-    virtual void setRelativeMousePosition (const Vector2 &p) {
-        window->WarpPointer(p.x, p.y);
-    }
+    virtual void setRelativeMousePosition (const Vector2 &p) ;
 
-    virtual void getRelativeMouseState (Vector2 &position, uint8 &mouseButtons) const {
-        // TODO
-    }
+    virtual void getRelativeMouseState (Vector2 &position, uint8 &mouseButtons) const ;
 
-    virtual void getRelativeMouseState (int &x, int &y, uint8 &mouseButtons) const {
-        // TODO
-    }
+    virtual void getRelativeMouseState (int &x, int &y, uint8 &mouseButtons) const ;
 
-    virtual void getRelativeMouseState (double &x, double &y, uint8 &mouseButtons) const {
-        // TODO
-    }
+    virtual void getRelativeMouseState (double &x, double &y, uint8 &mouseButtons) const ;
 
-    virtual void getJoystickState (unsigned int stickNum, Array< float > &axis, Array< bool > &button) {
-        // Ignore
-    }
+    virtual void getJoystickState (unsigned int stickNum, Array< float > &axis, Array< bool > &button) ;
 
-    virtual void setInputCapture (bool c) {
-        if (c) {
-            window->CaptureMouse();
-        } else {
-            window->ReleaseMouse(); 
-        }
-    }
+    virtual void setInputCapture (bool c) ;
 
-    virtual bool inputCapture () const {
-        return window->HasCapture();
-    }
+    virtual bool inputCapture () const ;
 
-    virtual void setMouseVisible (bool b) {
-        _mouseVisible = b;
-        if (b) {
-            window->SetCursor(arrow);
-        } else {
-            window->SetCursor(invisible);
-        }
-    }
+    virtual void setMouseVisible (bool b) ;
 
-    virtual bool mouseVisible () const {
-        return _mouseVisible;
-    }
+    virtual bool mouseVisible () const ;
 };
 
 #endif
