@@ -7,7 +7,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-07-15
+  @edited  2003-07-16
  */ 
 
 #include <G3DAll.h>
@@ -71,7 +71,6 @@ int main(int argc, char** argv) {
 
 
     // Cleanup
-    delete font;
     delete userInput;
     delete controller;
     renderDevice->cleanup();
