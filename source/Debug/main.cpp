@@ -1379,6 +1379,7 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 int main(int argc, char** argv) {
     GAppSettings settings;
     settings.window.fsaaSamples = 4;
+    settings.window.depthBits = 0;
     App(settings).run();
     return 0;
 }

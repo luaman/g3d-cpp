@@ -165,6 +165,10 @@ inline void glNormal(const G3D::Vector3& n) {
 }
 
 
+inline void glTexCoord(const G3D::Vector4& t) {
+	glTexCoord4fv((const float*)&t);
+}
+
 inline void glTexCoord(const G3D::Vector3& t) {
 	glTexCoord3fv((const float*)&t);
 }
