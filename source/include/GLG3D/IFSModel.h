@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-12-16
+  @edited  2003-12-20
  */ 
 
 
@@ -73,7 +73,7 @@ private:
     IFSModel();
     
     /** Only called from create */
-    void load(const std::string& filename, double scale);
+    void load(const std::string& filename, const Vector3& scale, const CoordinateFrame& cframe);
 
     /** Only called from create */
     void reset();
@@ -85,8 +85,11 @@ public:
     /**
      Throws an std::string describing the error if anything
      goes wrong.
+     @param scale 3D scale factors to apply to vertices while loading (*after* cframe)
+     @param cframe Coordinate transform to apply to vertices while loading.
      */
-    static IFSModelRef create(const std::string& filename, double scale = 1);
+    static IFSModelRef create(const std::string& filename, const Vector3& scale = Vector3(1,1,1), const CoordinateFrame& cframe = CoordinateFrame());
+    static IFSModelRef create(const std::string& filename, const double scale, const CoordinateFrame& cframe = CoordinateFrame());
 
     /**
      If perVertexNormals is false, the model is rendered with per-face normals,

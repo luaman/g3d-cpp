@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-12-16
+  @edited  2003-12-20
  */ 
 
 
@@ -37,14 +37,19 @@ void IFSModel::reset() {
 }
 
 
-IFSModelRef IFSModel::create(const std::string& filename, double scale) {
+IFSModelRef IFSModel::create(const std::string& filename, double scale, const CoordinateFrame& cframe) {
+    return create(filename, Vector3(scale, scale, scale), cframe);
+}
+
+
+IFSModelRef IFSModel::create(const std::string& filename, const Vector3& scale, const CoordinateFrame& cframe) {
     IFSModel* ret = new IFSModel();
-    ret->load(filename, scale);
+    ret->load(filename, scale, cframe);
     return ret;
 }
 
 
-void IFSModel::load(const std::string& filename, double scale) {
+void IFSModel::load(const std::string& filename, const Vector3& scale, const CoordinateFrame& cframe) {
     reset();
 
     this->filename = filename;
@@ -79,7 +84,7 @@ void IFSModel::load(const std::string& filename, double scale) {
             geometry.vertexArray.resize(num);
 
             for (int i = 0; i < (int)num; ++i) {
-                geometry.vertexArray[i] = bi.readVector3() * scale;
+                geometry.vertexArray[i] = cframe.pointToWorldSpace(bi.readVector3() * scale);
             }
 
         } else if (str == "TRIANGLES") {
