@@ -36,7 +36,7 @@ public:
      */
     Color4 ();
 
-    Color4(const Color3& c3, G3D::Real a = 1.0);
+    Color4(const Color3& c3, float a = 1.0);
 
     Color4(const class Color4uint8& c);
 
@@ -47,12 +47,12 @@ public:
     /**
      * Initialize from G3D::Reals.
      */
-    Color4(G3D::Real r, G3D::Real g, G3D::Real b, G3D::Real a = 1.0);
+    Color4(float r, float g, float b, float a = 1.0);
     
     /**
      * Initialize from array of G3D::Reals.
      */
-    Color4(G3D::Real value[4]);
+    Color4(float value[4]);
 
     /**
      * Initialize from another color.
@@ -70,16 +70,16 @@ public:
     /**
      * Channel values.
      */
-    G3D::Real r, g, b, a;
+    float r, g, b, a;
 
     // access vector V as V[0] = V.r, V[1] = V.g, V[2] = V.b, v[3] = V.a
     //
     // WARNING.  These member functions rely on
     // (1) Color4 not having virtual functions
-    // (2) the data packed in a 3*sizeof(G3D::Real) memory block
-    G3D::Real& operator[] (int i) const;
-    operator G3D::Real* ();
-    operator const G3D::Real* () const;
+    // (2) the data packed in a 3*sizeof(float) memory block
+    float& operator[] (int i) const;
+    operator float* ();
+    operator const float* () const;
 
     // assignment and comparison
     Color4& operator= (const Color4& rkVector);
@@ -90,16 +90,16 @@ public:
     // arithmetic operations
     Color4 operator+ (const Color4& rkVector) const;
     Color4 operator- (const Color4& rkVector) const;
-    Color4 operator* (G3D::Real fScalar) const;
-    Color4 operator/ (G3D::Real fScalar) const;
+    Color4 operator* (float fScalar) const;
+    Color4 operator/ (float fScalar) const;
     Color4 operator- () const;
-    friend Color4 operator* (G3D::Real fScalar, const Color4& rkVector);
+    friend Color4 operator* (float fScalar, const Color4& rkVector);
 
     // arithmetic updates
     Color4& operator+= (const Color4& rkVector);
     Color4& operator-= (const Color4& rkVector);
-    Color4& operator*= (G3D::Real fScalar);
-    Color4& operator/= (G3D::Real fScalar);
+    Color4& operator*= (float fScalar);
+    Color4& operator/= (float fScalar);
 
     bool fuzzyEq(const Color4& other) const;
     bool fuzzyNe(const Color4& other) const;

@@ -27,13 +27,13 @@ inline Vector2::Vector2 () {
 
 //----------------------------------------------------------------------------
 
-inline Vector2::Vector2 (Real fS, Real fT) {
+inline Vector2::Vector2 (float fS, float fT) {
     x = fS;
     y = fT;
 }
 
 //----------------------------------------------------------------------------
-inline Vector2::Vector2 (Real afCoordinate[2]) {
+inline Vector2::Vector2 (float afCoordinate[2]) {
     x = afCoordinate[0];
     y = afCoordinate[1];
 }
@@ -45,17 +45,17 @@ inline Vector2::Vector2 (const Vector2& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Real& Vector2::operator[] (int i) const {
-    return ((Real*)this)[i];
+inline float& Vector2::operator[] (int i) const {
+    return ((float*)this)[i];
 }
 
 //----------------------------------------------------------------------------
-inline Vector2::operator Real* () {
-    return (Real*)this;
+inline Vector2::operator float* () {
+    return (float*)this;
 }
 
-inline Vector2::operator const Real* () const {
-    return (Real*)this;
+inline Vector2::operator const float* () const {
+    return (float*)this;
 }
 
 //----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ inline Vector2 Vector2::operator- (const Vector2& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector2 Vector2::operator* (Real fScalar) const {
+inline Vector2 Vector2::operator* (float fScalar) const {
     return Vector2(fScalar*x, fScalar*y);
 }
 
@@ -98,7 +98,7 @@ inline Vector2 Vector2::operator- () const {
 
 //----------------------------------------------------------------------------
 
-inline Vector2 operator* (Real fScalar, const Vector2& rkVector) {
+inline Vector2 operator* (float fScalar, const Vector2& rkVector) {
     return Vector2(fScalar*rkVector.x, fScalar*rkVector.y);
 }
 
@@ -120,7 +120,7 @@ inline Vector2& Vector2::operator-= (const Vector2& rkVector) {
 
 //----------------------------------------------------------------------------
 
-inline Vector2& Vector2::operator*= (Real fScalar) {
+inline Vector2& Vector2::operator*= (float fScalar) {
     x *= fScalar;
     y *= fScalar;
     return *this;
@@ -155,18 +155,18 @@ inline Vector2 Vector2::operator/ (const Vector2& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Real Vector2::squaredLength () const {
+inline float Vector2::squaredLength () const {
     return x*x + y*y;
 }
 
 //----------------------------------------------------------------------------
-inline Real Vector2::length () const {
+inline float Vector2::length () const {
     return sqrt(x*x + y*y);
 }
 
 //----------------------------------------------------------------------------
 inline Vector2 Vector2::direction () const {
-    Real lenSquared = x * x + y * y;
+    float lenSquared = x * x + y * y;
 
     if (lenSquared != 1.0) {
         return *this / sqrt(lenSquared);
@@ -177,7 +177,7 @@ inline Vector2 Vector2::direction () const {
 
 //----------------------------------------------------------------------------
 
-inline Real Vector2::dot (const Vector2& rkVector) const {
+inline float Vector2::dot (const Vector2& rkVector) const {
     return x*rkVector.x + y*rkVector.y;
 }
 

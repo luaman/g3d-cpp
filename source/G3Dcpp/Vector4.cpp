@@ -73,35 +73,35 @@ void Vector4::serialize(BinaryOutput& b) const {
 
 //----------------------------------------------------------------------------
 
-Vector4 Vector4::operator/ (G3D::Real fScalar) const {
+Vector4 Vector4::operator/ (float fScalar) const {
     Vector4 kQuot;
 
     if ( fScalar != 0.0 ) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         kQuot.x = fInvScalar * x;
         kQuot.y = fInvScalar * y;
         kQuot.z = fInvScalar * z;
         kQuot.w = fInvScalar * w;
         return kQuot;
     } else {
-        return Vector4(G3D::infReal, G3D::infReal,
-            G3D::infReal, G3D::infReal);
+        return Vector4(inf, inf,
+            inf, inf);
     }
 }
 
 //----------------------------------------------------------------------------
-Vector4& Vector4::operator/= (G3D::Real fScalar) {
+Vector4& Vector4::operator/= (float fScalar) {
     if (fScalar != 0.0) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         x *= fInvScalar;
         y *= fInvScalar;
         z *= fInvScalar;
         w *= fInvScalar;
     } else {
-        x = G3D::infReal;
-        y = G3D::infReal;
-        z = G3D::infReal;
-        w = G3D::infReal;
+        x = inf;
+        y = inf;
+        z = inf;
+        w = inf;
     }
 
     return *this;

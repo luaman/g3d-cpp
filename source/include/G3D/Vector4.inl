@@ -22,7 +22,7 @@ inline Vector4::Vector4 () {
 
 //----------------------------------------------------------------------------
 
-inline Vector4::Vector4 (Real fX, Real fY, Real fZ, Real fW) {
+inline Vector4::Vector4 (float fX, float fY, float fZ, float fW) {
     x = fX;
     y = fY;
     z = fZ;
@@ -30,7 +30,7 @@ inline Vector4::Vector4 (Real fX, Real fY, Real fZ, Real fW) {
 }
 
 //----------------------------------------------------------------------------
-inline Vector4::Vector4 (Real afCoordinate[4]) {
+inline Vector4::Vector4 (float afCoordinate[4]) {
     x = afCoordinate[0];
     y = afCoordinate[1];
     z = afCoordinate[2];
@@ -53,17 +53,17 @@ inline Vector4::Vector4(const Vector3& rkVector, float fW) {
 }
 
 //----------------------------------------------------------------------------
-inline Real& Vector4::operator[] (int i) const {
-    return ((Real*)this)[i];
+inline float& Vector4::operator[] (int i) const {
+    return ((float*)this)[i];
 }
 
 //----------------------------------------------------------------------------
-inline Vector4::operator Real* () {
-    return (Real*)this;
+inline Vector4::operator float* () {
+    return (float*)this;
 }
 
-inline Vector4::operator const Real* () const {
-    return (Real*)this;
+inline Vector4::operator const float* () const {
+    return (float*)this;
 }
 
 //----------------------------------------------------------------------------
@@ -96,7 +96,7 @@ inline Vector4 Vector4::operator- (const Vector4& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector4 Vector4::operator* (Real fScalar) const {
+inline Vector4 Vector4::operator* (float fScalar) const {
     return Vector4(fScalar*x, fScalar*y, fScalar*z, fScalar*w);
 }
 
@@ -106,7 +106,7 @@ inline Vector4 Vector4::operator- () const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector4 operator* (Real fScalar, const Vector4& rkVector) {
+inline Vector4 operator* (float fScalar, const Vector4& rkVector) {
     return Vector4(fScalar*rkVector.x, fScalar*rkVector.y,
                    fScalar*rkVector.z, fScalar*rkVector.w);
 }
@@ -137,7 +137,7 @@ inline Vector4 Vector4::lerp(const Vector4& v, double alpha) const {
 
 
 //----------------------------------------------------------------------------
-inline Vector4& Vector4::operator*= (Real fScalar) {
+inline Vector4& Vector4::operator*= (float fScalar) {
     x *= fScalar;
     y *= fScalar;
     z *= fScalar;
@@ -147,7 +147,7 @@ inline Vector4& Vector4::operator*= (Real fScalar) {
 
 
 //----------------------------------------------------------------------------
-inline Real Vector4::dot(const Vector4& rkVector) const {
+inline float Vector4::dot(const Vector4& rkVector) const {
     return x*rkVector.x + y*rkVector.y + z*rkVector.z + w*rkVector.w;
 }
 

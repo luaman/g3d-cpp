@@ -80,11 +80,11 @@ void Color4::serialize(BinaryOutput& bo) const {
 
 //----------------------------------------------------------------------------
 
-Color4 Color4::operator/ (G3D::Real fScalar) const {
+Color4 Color4::operator/ (float fScalar) const {
     Color4 kQuot;
 
     if (fScalar != 0.0) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         kQuot.r = fInvScalar * r;
         kQuot.g = fInvScalar * g;
         kQuot.b = fInvScalar * b;
@@ -93,24 +93,24 @@ Color4 Color4::operator/ (G3D::Real fScalar) const {
 
     } else {
 
-        return Color4(G3D::infReal, G3D::infReal, G3D::infReal, G3D::infReal);
+        return Color4(inf, inf, inf, inf);
     }
 }
 
 //----------------------------------------------------------------------------
 
-Color4& Color4::operator/= (G3D::Real fScalar) {
+Color4& Color4::operator/= (float fScalar) {
     if (fScalar != 0.0) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         r *= fInvScalar;
         g *= fInvScalar;
         b *= fInvScalar;
         a *= fInvScalar;
     } else {
-        r = G3D::infReal;
-        g = G3D::infReal;
-        b = G3D::infReal;
-        a = G3D::infReal;
+        r = inf;
+        g = inf;
+        b = inf;
+        a = inf;
     }
 
     return *this;

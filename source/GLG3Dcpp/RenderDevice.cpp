@@ -666,7 +666,7 @@ void RenderDevice::setGamma(
             (uint16)min(65535, 
                       max(0, 
                           pow((brightness * (i + 1)) / 256.0, gamma) * 
-                          65535 + Real(0.5)));
+                          65535 + 0.5));
 
         rgbGammaRamp[i] = gammaRamp[i];
         rgbGammaRamp[i + 256] = gammaRamp[i];

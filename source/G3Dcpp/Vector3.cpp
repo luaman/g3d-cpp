@@ -27,7 +27,7 @@ const Vector3 Vector3::ZERO3(0, 0, 0);
 const Vector3 Vector3::UNIT_X(1, 0, 0);
 const Vector3 Vector3::UNIT_Y(0, 1, 0);
 const Vector3 Vector3::UNIT_Z(0, 0, 1);
-const Vector3 Vector3::INF3(infReal, infReal, infReal);
+const Vector3 Vector3::INF3(inf, inf, inf);
 const Vector3 Vector3::NAN3(nan, nan, nan);
 
 Vector3::Axis Vector3::primaryAxis() const {
@@ -112,43 +112,42 @@ Vector3 Vector3::random() {
 }
 
 //----------------------------------------------------------------------------
-Vector3 Vector3::operator/ (G3D::Real fScalar) const {
+Vector3 Vector3::operator/ (float fScalar) const {
     Vector3 kQuot;
 
     if ( fScalar != 0.0 ) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         kQuot.x = fInvScalar * x;
         kQuot.y = fInvScalar * y;
         kQuot.z = fInvScalar * z;
         return kQuot;
     } else {
-        return Vector3(G3D::infReal, G3D::infReal,
-                       G3D::infReal);
+        return Vector3(inf, inf, inf);
     }
 }
 
 //----------------------------------------------------------------------------
-Vector3& Vector3::operator/= (G3D::Real fScalar) {
+Vector3& Vector3::operator/= (float fScalar) {
     if (fScalar != 0.0) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         x *= fInvScalar;
         y *= fInvScalar;
         z *= fInvScalar;
     } else {
-        x = G3D::infReal;
-        y = G3D::infReal;
-        z = G3D::infReal;
+        x = inf;
+        y = inf;
+        z = inf;
     }
 
     return *this;
 }
 
 //----------------------------------------------------------------------------
-G3D::Real Vector3::unitize (G3D::Real fTolerance) {
-	G3D::Real fLength = length();
+float Vector3::unitize (float fTolerance) {
+	float fLength = length();
 
     if (fLength > fTolerance) {
-		G3D::Real fInvLength = 1.0 / fLength;
+		float fInvLength = 1.0 / fLength;
         x *= fInvLength;
         y *= fInvLength;
         z *= fInvLength;
@@ -175,12 +174,12 @@ void Vector3::orthonormalize (Vector3 akVector[3]) {
     akVector[0].unitize();
 
     // compute u1
-	G3D::Real fDot0 = akVector[0].dot(akVector[1]);
+	float fDot0 = akVector[0].dot(akVector[1]);
     akVector[1] -= fDot0 * akVector[0];
     akVector[1].unitize();
 
     // compute u2
-	G3D::Real fDot1 = akVector[1].dot(akVector[2]);
+	float fDot1 = akVector[1].dot(akVector[2]);
     fDot0 = akVector[0].dot(akVector[2]);
     akVector[2] -= fDot0 * akVector[0] + fDot1 * akVector[1];
     akVector[2].unitize();

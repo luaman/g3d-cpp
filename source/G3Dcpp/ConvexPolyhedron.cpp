@@ -25,13 +25,13 @@ bool ConvexPolygon::isEmpty() const {
 }
 
 
-Real ConvexPolygon::getArea() const {
+float ConvexPolygon::getArea() const {
 
     if (_vertex.length() < 3) {
         return 0;
     }
 
-    Real sum = 0;
+    float sum = 0;
 
     int length = _vertex.length();
     // Split into triangle fan, compute individual area
@@ -76,7 +76,7 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
         Vector3 pt = _vertex[0];
 
         plane.getEquation(a,b,c,d);
-        Real r = (a * pt.x + b * pt.y + c * pt.z + d);
+        float r = (a * pt.x + b * pt.y + c * pt.z + d);
 
         if (fuzzyGe(r, 0)) {
             // The polygon is entirely in the plane.
@@ -199,7 +199,7 @@ ConvexPolyhedron::ConvexPolyhedron(const Array<ConvexPolygon>& _face) : face(_fa
     // Intentionally empty
 }
 
-Real ConvexPolyhedron::getVolume() const {
+float ConvexPolyhedron::getVolume() const {
 
     if (face.length() < 4) {
         return 0;
@@ -208,7 +208,7 @@ Real ConvexPolyhedron::getVolume() const {
     // The volume of any pyramid is 1/3 * h * base area.
     // Discussion at: http://nrich.maths.org/mathsf/journalf/oct01/art1/
 
-    Real sum = 0;
+    float sum = 0;
 
     // Choose the first _vertex of the first face as the origin.
     // This lets us skip one face, too, and avoids negative heights.
@@ -216,8 +216,8 @@ Real ConvexPolyhedron::getVolume() const {
     for (int f = 1; f < face.length(); f++) {        
         const ConvexPolygon& poly = face[f];
         
-        Real height = (poly._vertex[0] - v0).dot(poly.normal());
-        Real base   = poly.getArea();
+        float height = (poly._vertex[0] - v0).dot(poly.normal());
+        float base   = poly.getArea();
 
         sum += height * base;
     }
@@ -248,7 +248,7 @@ void ConvexPolyhedron::cut(const Plane& plane, ConvexPolyhedron &above, ConvexPo
 
         // This number has to be fairly large to prevent precision problems down
         // the road.
-        const Real eps = 0.005;
+        const float eps = 0.005;
         for (f = face.length() - 1; (f >= 0) && (!ruledOut); f--) {
             const ConvexPolygon& poly = face[f];
             for (int v = poly._vertex.length() - 1; (v >= 0) && (!ruledOut); v--) { 

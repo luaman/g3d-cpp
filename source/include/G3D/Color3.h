@@ -40,14 +40,14 @@ public:
     /**
      * Initialize from G3D::Reals.
      */
-    Color3(G3D::Real r, G3D::Real g, G3D::Real b);
+    Color3(float r, float g, float b);
 
     Color3(const class Vector3& v);
     
     /**
      * Initialize from array of G3D::Reals.
      */
-    Color3 (G3D::Real value[3]);
+    Color3 (float value[3]);
 
     /**
      * Initialize from another color.
@@ -64,7 +64,7 @@ public:
     /**
      * Channel value.
      */
-    G3D::Real r, g, b;
+    float r, g, b;
 
     void serialize(class BinaryOutput& bo) const;
     void deserialize(class BinaryInput& bi);
@@ -73,10 +73,10 @@ public:
     //
     // WARNING.  These member functions rely on
     // (1) Color3 not having virtual functions
-    // (2) the data packed in a 3*sizeof(G3D::Real) memory block
-    G3D::Real& operator[] (int i) const;
-    operator G3D::Real* ();
-    operator const G3D::Real* () const;
+    // (2) the data packed in a 3*sizeof(float) memory block
+    float& operator[] (int i) const;
+    operator float* ();
+    operator const float* () const;
 
     // assignment and comparison
     Color3& operator= (const Color3& rkVector);
@@ -87,34 +87,38 @@ public:
     // arithmetic operations
     Color3 operator+ (const Color3& rkVector) const;
     Color3 operator- (const Color3& rkVector) const;
-    Color3 operator* (G3D::Real fScalar) const;
+    Color3 operator* (float fScalar) const;
     Color3 operator* (const Color3& rkVector) const;
-    Color3 operator/ (G3D::Real fScalar) const;
+    Color3 operator/ (float fScalar) const;
     Color3 operator- () const;
-    friend Color3 operator* (G3D::Real fScalar, const Color3& rkVector);
+    friend Color3 operator* (float fScalar, const Color3& rkVector);
 
     // arithmetic updates
     Color3& operator+= (const Color3& rkVector);
     Color3& operator-= (const Color3& rkVector);
     Color3& operator*= (const Color3& rkVector);
-    Color3& operator*= (G3D::Real fScalar);
-    Color3& operator/= (G3D::Real fScalar);
+    Color3& operator*= (float fScalar);
+    Color3& operator/= (float fScalar);
 
     bool fuzzyEq(const Color3& other) const;
     bool fuzzyNe(const Color3& other) const;
 
     // vector operations
-    G3D::Real length () const;
+    float length () const;
     Color3 direction() const;
-    G3D::Real squaredLength () const;
-    G3D::Real dot (const Color3& rkVector) const;
-    G3D::Real unitize (G3D::Real fTolerance = 1e-06);
+    float squaredLength () const;
+    float dot (const Color3& rkVector) const;
+    float unitize (float fTolerance = 1e-06);
     Color3 cross (const Color3& rkVector) const;
     Color3 unitCross (const Color3& rkVector) const;
 
+
+
 	inline Color3 lerp(const Color3& other, double a) const {
         return (*this) + (other - *this) * a; 
+
     }
+
 
     std::string toString() const;
 

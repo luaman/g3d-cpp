@@ -63,39 +63,39 @@ Vector2 Vector2::random() {
 }
 
 //----------------------------------------------------------------------------
-Vector2 Vector2::operator/ (G3D::Real fScalar) const {
+Vector2 Vector2::operator/ (float fScalar) const {
     Vector2 kQuot;
 
     if ( fScalar != 0.0 ) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         kQuot.x = fInvScalar * x;
         kQuot.y = fInvScalar * y;
         return kQuot;
     } else {
-        return Vector2(G3D::infReal, G3D::infReal);
+        return Vector2(inf, inf);
     }
 }
 
 //----------------------------------------------------------------------------
-Vector2& Vector2::operator/= (G3D::Real fScalar) {
+Vector2& Vector2::operator/= (float fScalar) {
     if (fScalar != 0.0) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         x *= fInvScalar;
         y *= fInvScalar;
     } else {
-        x = G3D::infReal;
-        y = G3D::infReal;
+        x = inf;
+        y = inf;
     }
 
     return *this;
 }
 
 //----------------------------------------------------------------------------
-G3D::Real Vector2::unitize (G3D::Real fTolerance) {
-	G3D::Real fLength = length();
+float Vector2::unitize (float fTolerance) {
+	float fLength = length();
 
     if (fLength > fTolerance) {
-		G3D::Real fInvLength = 1.0 / fLength;
+		float fInvLength = 1.0 / fLength;
         x *= fInvLength;
         y *= fInvLength;
     } else {

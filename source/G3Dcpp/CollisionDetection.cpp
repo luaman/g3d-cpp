@@ -23,7 +23,7 @@ namespace G3D {
 Vector3	CollisionDetection::ignore;
 
 
-Real CollisionDetection::collisionTimeForMovingPointFixedPlane(
+float CollisionDetection::collisionTimeForMovingPointFixedPlane(
     const Vector3&  point,
     const Vector3&  velocity,
     const Plane&    plane,
@@ -48,13 +48,13 @@ Real CollisionDetection::collisionTimeForMovingPointFixedPlane(
     if (vdotN >= 0) {
         // no collision will occur
         location = Vector3::INF3;
-        return infReal;
+        return inf;
     }
 
     double t = -(pdotN + d) / vdotN;
     if (t < 0) {
         location = Vector3::INF3;
-        return infReal;
+        return inf;
     } else {
         location = point + velocity * t;
         outNormal = normal;
@@ -63,7 +63,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedPlane(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingPointFixedSphere(
+float CollisionDetection::collisionTimeForMovingPointFixedSphere(
     const Vector3&  point,
     const Vector3&  velocity,
     const Sphere&   sphere,
@@ -82,14 +82,14 @@ Real CollisionDetection::collisionTimeForMovingPointFixedSphere(
 
     if ((d < 0) && (L2 > R2)) {
         location = Vector3::INF3;
-        return infReal;
+        return inf;
     }
 
     double M2 = L2 - D2;
 
     if (M2 > R2) {
         location = Vector3::INF3;
-        return infReal;
+        return inf;
     }
 
     double q = sqrt(R2 - M2);
@@ -110,7 +110,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedSphere(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingSphereFixedSphere(
+float CollisionDetection::collisionTimeForMovingSphereFixedSphere(
     const Sphere&   movingSphere,
     const Vector3&  velocity,
     const Sphere&   fixedSphere,
@@ -130,18 +130,18 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedSphere(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingPointFixedTriangle(
+float CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     const Vector3&			point,
     const Vector3&			velocity,
     const Triangle&       triangle,
     Vector3&				outLocation,
     Vector3&                outNormal) {
 
-    Real time = collisionTimeForMovingPointFixedPlane(point, velocity, triangle.plane(), outLocation, outNormal);
+    float time = collisionTimeForMovingPointFixedPlane(point, velocity, triangle.plane(), outLocation, outNormal);
 
-    if (time == infReal) {
+    if (time == inf) {
         // No collision with the plane of the triangle.
-        return infReal;
+        return inf;
     }
 
     if (isPointInsideTriangle(triangle.vertex(0), triangle.vertex(1), triangle.vertex(2), triangle.normal(), outLocation, triangle.primaryAxis())) {
@@ -150,20 +150,20 @@ Real CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     } else {
         // Missed the triangle
         outLocation = Vector3::INF3;
-        return infReal;
+        return inf;
     }
 
 }
 
 
-Real CollisionDetection::collisionTimeForMovingPointFixedBox(
+float CollisionDetection::collisionTimeForMovingPointFixedBox(
     const Vector3&          point,
     const Vector3&          velocity,
     const Box&              box,
     Vector3&                location,
     Vector3&                outNormal) {
 
-    Real    bestTime;
+    float    bestTime;
 
     Vector3 normal;
     Vector3 v[4];
@@ -176,7 +176,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedBox(
     for (f = 1; f < 6; ++f) {
         Vector3 pos;
         box.getFaceCorners(f, v[0], v[1], v[2], v[3]);
-        Real time = collisionTimeForMovingPointFixedRectangle(point, velocity, v[0], v[1], v[2], v[3], pos, outNormal);
+        float time = collisionTimeForMovingPointFixedRectangle(point, velocity, v[0], v[1], v[2], v[3], pos, outNormal);
         if (time < bestTime) {
             bestTime = time;
             outNormal = normal;
@@ -188,7 +188,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedBox(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingPointFixedRectangle(
+float CollisionDetection::collisionTimeForMovingPointFixedRectangle(
     const Vector3&      point,
     const Vector3&      velocity,
     const Vector3&      v0,
@@ -202,7 +202,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedRectangle(
 
     double time = collisionTimeForMovingPointFixedPlane(point, velocity, plane, location, outNormal);
 
-    if (time == infReal) {
+    if (time == inf) {
         // No collision is ever going to happen
         return time;
     }
@@ -228,24 +228,24 @@ static int findRayCapsuleIntersectionAux(
 
     // set up quadratic Q(t) = a*t^2 + 2*b*t + c
     Vector3 kU, kV, kW = capsuleDirection;
-    Real fWLength = kW.unitize();
+    float fWLength = kW.unitize();
     Vector3::generateOrthonormalBasis(kU, kV, kW);
     Vector3 kD(kU.dot(rkDirection), kV.dot(rkDirection), kW.dot(rkDirection));
-    Real fDLength = kD.unitize();
+    float fDLength = kD.unitize();
 
-    Real fEpsilon = 1e-6f;
+    float fEpsilon = 1e-6f;
 
-    Real fInvDLength = 1.0f/fDLength;
+    float fInvDLength = 1.0f/fDLength;
     Vector3 kDiff = rkOrigin - rkCapsule.getPoint1();
     Vector3 kP(kU.dot(kDiff),kV.dot(kDiff),kW.dot(kDiff));
-    Real fRadiusSqr = square(rkCapsule.getRadius());
+    float fRadiusSqr = square(rkCapsule.getRadius());
 
-    Real fInv, fA, fB, fC, fDiscr, fRoot, fT, fTmp;
+    float fInv, fA, fB, fC, fDiscr, fRoot, fT, fTmp;
 
     // Is the velocity parallel to the capsule direction? (or zero)
     if ((abs(kD.z) >= 1.0f - fEpsilon) || (fDLength < fEpsilon)) {
 
-        Real fAxisDir = rkDirection.dot(capsuleDirection);
+        float fAxisDir = rkDirection.dot(capsuleDirection);
 
         fDiscr = fRadiusSqr - kP.x*kP.x - kP.y*kP.y;
         if ((fAxisDir < 0) && (fDiscr >= 0.0f)) {
@@ -417,7 +417,7 @@ static bool findRayCapsuleIntersection(
     return (riQuantity > 0);
 }
 
-Real CollisionDetection::collisionTimeForMovingPointFixedCapsule(
+float CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 	const Vector3&		point,
 	const Vector3&		velocity,
 	const Capsule&		capsule,
@@ -464,7 +464,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingSphereFixedPlane(
+float CollisionDetection::collisionTimeForMovingSphereFixedPlane(
     const Sphere&		sphere,
     const Vector3&		velocity,
     const Plane&		plane,
@@ -488,7 +488,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedPlane(
     if (fuzzyGt(vdotN, 0)) {
         // No collision when the sphere is moving towards a backface.
         location = Vector3::INF3;
-        return infReal;
+        return inf;
     }
 
     double cdotN = sphere.center.dot(outNormal);
@@ -510,7 +510,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedPlane(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
+float CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
     const class Sphere&		sphere,
     const Vector3&		    velocity,
     const Triangle&       triangle,
@@ -522,7 +522,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
     outNormal = triangle.normal();
     double time = collisionTimeForMovingSphereFixedPlane(sphere, velocity, triangle.plane(), outLocation, dummy);
 
-    if (time == infReal) {
+    if (time == inf) {
         // No collision is ever going to happen
         return time;
     }
@@ -548,7 +548,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
+float CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
     const Sphere&       sphere,
     const Vector3&      velocity,
     const Vector3&      v0,
@@ -562,7 +562,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
 
     double time = collisionTimeForMovingSphereFixedPlane(sphere, velocity, plane, location, outNormal);
 
-    if (time == infReal) {
+    if (time == inf) {
         // No collision is ever going to happen
         return time;
     }
@@ -588,14 +588,14 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingSphereFixedBox(
+float CollisionDetection::collisionTimeForMovingSphereFixedBox(
     const Sphere&       sphere,
     const Vector3&      velocity,
     const Box&          box,
     Vector3&            location,
     Vector3&            outNormal) {
 
-    Real    bestTime;
+    float    bestTime;
 
     Vector3 v[4];
     int f = 0;
@@ -605,7 +605,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedBox(
     for (f = 1; f < 6; ++f) {
         Vector3 pos, normal;
         box.getFaceCorners(f, v[0], v[1], v[2], v[3]);
-        Real time = collisionTimeForMovingSphereFixedRectangle(sphere, velocity, v[0], v[1], v[2], v[3], pos, normal);
+        float time = collisionTimeForMovingSphereFixedRectangle(sphere, velocity, v[0], v[1], v[2], v[3], pos, normal);
         if (time < bestTime) {
             bestTime  = time;
             location  = pos;
@@ -617,7 +617,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedBox(
 }
 
 
-Real CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
+float CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
 	const Sphere&		sphere,
 	const Vector3&		velocity,
 	const Capsule&		capsule,
@@ -642,7 +642,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
 Vector3 CollisionDetection::bounceDirection(
     const Sphere&   sphere,
     const Vector3&  velocity,
-    const Real      collisionTime,
+    const float      collisionTime,
     const Vector3&  collisionLocation,
     const Vector3&  collisionNormal) {
 
@@ -666,7 +666,7 @@ Vector3 CollisionDetection::bounceDirection(
 Vector3 CollisionDetection::slideDirection(
     const Sphere&   sphere,
     const Vector3&  velocity,
-    const Real      collisionTime,
+    const float      collisionTime,
     const Vector3&  collisionLocation) {
 
     Vector3 sphereLocation  = sphere.center + velocity * collisionTime;
@@ -812,17 +812,17 @@ bool CollisionDetection::isPointInsideTriangle(
     #define AREA2(d, e, f)  (((e)[i] - (d)[i]) * ((f)[j] - (d)[j]) - ((f)[i] - (d)[i]) * ((e)[j] - (d)[j]))
 
     // Area of the polygon
-    Real area = AREA2(v0, v1, v2);
+    float area = AREA2(v0, v1, v2);
 
     debugAssert(area != 0);
 
-    Real a = AREA2(point, v1, v2) / area;
+    float a = AREA2(point, v1, v2) / area;
 
     if (a < 0) {
         return false;
     }
 
-    Real b = AREA2(v0,  point, v2) / area;
+    float b = AREA2(v0,  point, v2) / area;
 
     if ((b < 0) || ((1 - (a + b)) < 0)) {
         return false;

@@ -87,14 +87,14 @@ public:
      is equal to the time.  If the direction does not have unit length,
      the distance = time * direction.length().
      */
-    Real intersectionTime(const class Sphere& sphere) const;
-    Real intersectionTime(const class Plane& plane) const;
-    Real intersectionTime(const class Box& box) const;
+    float intersectionTime(const class Sphere& sphere) const;
+    float intersectionTime(const class Plane& plane) const;
+    float intersectionTime(const class Box& box) const;
 
     /**
      Ray-triangle intersection
      */
-    Real intersectionTime(
+    float intersectionTime(
         const Vector3& v0,
         const Vector3& v1,
         const Vector3& v2) const;

@@ -22,7 +22,7 @@ namespace G3D {
 class Sphere {
 public:
     Vector3         center;
-    Real            radius;
+    float            radius;
 
     Sphere() {
         center = Vector3::ZERO;

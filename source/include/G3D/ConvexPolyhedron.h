@@ -82,7 +82,7 @@ public:
     /**
      O(n) in the number of edges
      */
-    Real getArea() const;
+    float getArea() const;
 
     inline Vector3 normal() const {
         debugAssert(_vertex.length() >= 3);
@@ -115,7 +115,7 @@ public:
     /**
      O(n) in the number of edges
      */
-    Real getVolume() const;
+    float getVolume() const;
 
     /**
        Cuts the polyhedron at the plane. If the polyhedron is entirely above or below

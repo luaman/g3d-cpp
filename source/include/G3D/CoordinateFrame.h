@@ -40,7 +40,7 @@ public:
     /**
      The direction an object "looks" relative to its own axes.
      */
-    static const Real				zLookDirection;
+    static const float				zLookDirection;
 
     /**
      Takes object space points to world space.
@@ -99,9 +99,9 @@ public:
      Returns the heading as an angle in radians, where
     north is 0 and west is PI/2
      */
-    inline Real getHeading() const {
+    inline float getHeading() const {
         Vector3 look = rotation.getColumn(2);
-        Real angle = (Real) atan2( -look.z, look.x);
+        float angle = (float) atan2( -look.z, look.x);
         return angle;
     }
 

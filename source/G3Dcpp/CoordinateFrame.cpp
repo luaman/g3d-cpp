@@ -20,7 +20,7 @@
 
 namespace G3D {
 
-const Real CoordinateFrame::zLookDirection = -1;
+const float CoordinateFrame::zLookDirection = -1;
 
 
 Matrix4 CoordinateFrame::toMatrix4() const {

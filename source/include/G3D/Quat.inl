@@ -11,16 +11,16 @@
 
 namespace G3D {
 
-inline Real& Quat::operator[] (int i) const {
-    return ((Real*)this)[i];
+inline float& Quat::operator[] (int i) const {
+    return ((float*)this)[i];
 }
 
-inline Quat::operator Real* () {
-    return (Real*)this;
+inline Quat::operator float* () {
+    return (float*)this;
 }
 
-inline Quat::operator const Real* () const {
-    return (Real*)this;
+inline Quat::operator const float* () const {
+    return (float*)this;
 }
 
 inline Quat Quat::operator- (const Quat& other) const {
@@ -31,7 +31,7 @@ inline double Quat::dot(const Quat& other) const {
     return (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w);
 }
 
-inline Real Quat::magnitude() const { 
+inline float Quat::magnitude() const { 
     return x*x + y*y + z*z + w*w; 
 }
 

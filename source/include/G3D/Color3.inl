@@ -24,14 +24,14 @@ inline Color3::Color3 () {
 
 //----------------------------------------------------------------------------
 
-inline Color3::Color3 (G3D::Real fX, G3D::Real fY, G3D::Real fZ) {
+inline Color3::Color3 (float fX, float fY, float fZ) {
     r = fX;
     g = fY;
     b = fZ;
 }
 
 //----------------------------------------------------------------------------
-inline Color3::Color3 (G3D::Real afCoordinate[3]) {
+inline Color3::Color3 (float afCoordinate[3]) {
     r = afCoordinate[0];
     g = afCoordinate[1];
     b = afCoordinate[2];
@@ -45,17 +45,17 @@ inline Color3::Color3 (const Color3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline G3D::Real& Color3::operator[] (int i) const {
-    return ((G3D::Real*)this)[i];
+inline float& Color3::operator[] (int i) const {
+    return ((float*)this)[i];
 }
 
 //----------------------------------------------------------------------------
-inline Color3::operator G3D::Real* () {
-    return (G3D::Real*)this;
+inline Color3::operator float* () {
+    return (float*)this;
 }
 
-inline Color3::operator const G3D::Real* () const {
-    return (G3D::Real*)this;
+inline Color3::operator const float* () const {
+    return (float*)this;
 }
 
 //----------------------------------------------------------------------------
@@ -100,7 +100,7 @@ inline Color3 Color3::operator- (const Color3& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Color3 Color3::operator* (G3D::Real fScalar) const {
+inline Color3 Color3::operator* (float fScalar) const {
     return Color3(fScalar*r, fScalar*g, fScalar*b);
 }
 
@@ -115,7 +115,7 @@ inline Color3 Color3::operator- () const {
 }
 
 //----------------------------------------------------------------------------
-inline Color3 operator* (G3D::Real fScalar, const Color3& rkVector) {
+inline Color3 operator* (float fScalar, const Color3& rkVector) {
     return Color3(fScalar*rkVector.r, fScalar*rkVector.g,
                   fScalar*rkVector.b);
 }
@@ -137,7 +137,7 @@ inline Color3& Color3::operator-= (const Color3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Color3& Color3::operator*= (G3D::Real fScalar) {
+inline Color3& Color3::operator*= (float fScalar) {
     r *= fScalar;
     g *= fScalar;
     b *= fScalar;
@@ -152,18 +152,18 @@ inline Color3& Color3::operator*= (const Color3& rkVector) {
     return *this;
 }
 //----------------------------------------------------------------------------
-inline G3D::Real Color3::squaredLength () const {
+inline float Color3::squaredLength () const {
     return r*r + g*g + b*b;
 }
 
 //----------------------------------------------------------------------------
-inline G3D::Real Color3::length () const {
+inline float Color3::length () const {
     return sqrt(r*r + g*g + b*b);
 }
 
 //----------------------------------------------------------------------------
 inline Color3 Color3::direction () const {
-    G3D::Real lenSquared = r * r + g * g + b * b;
+    float lenSquared = r * r + g * g + b * b;
 
     if (lenSquared != 1.0) {
         return *this / sqrt(lenSquared);
@@ -173,7 +173,7 @@ inline Color3 Color3::direction () const {
 }
 
 //----------------------------------------------------------------------------
-inline G3D::Real Color3::dot (const Color3& rkVector) const {
+inline float Color3::dot (const Color3& rkVector) const {
     return r*rkVector.r + g*rkVector.g + b*rkVector.b;
 }
 

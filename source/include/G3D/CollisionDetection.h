@@ -77,14 +77,14 @@ public:
       This is returned in location, if a collision occurs.  Otherwise location
       is the infinite vector.
      */
-    static Real collisionTimeForMovingPointFixedPlane(
+    static float collisionTimeForMovingPointFixedPlane(
         const Vector3&			point,
         const Vector3&			velocity,
         const class Plane&		plane,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static Real collisionTimeForMovingPointFixedTriangle(
+    static float collisionTimeForMovingPointFixedTriangle(
         const Vector3&			point,
         const Vector3&			velocity,
         const Triangle&       triangle,
@@ -92,14 +92,14 @@ public:
         Vector3&                outNormal = ignore);
 
 
-    static Real collisionTimeForMovingPointFixedSphere(
+    static float collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,
         const Vector3&			velocity,
         const class Sphere&		sphere,                                                       
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static Real collisionTimeForMovingPointFixedBox(
+    static float collisionTimeForMovingPointFixedBox(
         const Vector3&			point,
         const Vector3&			velocity,
         const class  Box&		box,
@@ -109,7 +109,7 @@ public:
 	/**
 	  The 4 vertices are assumed to form a rectangle.
 	 */
-    static Real collisionTimeForMovingPointFixedRectangle(
+    static float collisionTimeForMovingPointFixedRectangle(
         const Vector3&			point,
         const Vector3&			velocity,
         const Vector3&			v0,
@@ -119,7 +119,7 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-	static Real collisionTimeForMovingPointFixedCapsule(
+	static float collisionTimeForMovingPointFixedCapsule(
 		const Vector3&		    point,
 		const Vector3&		    velocity,
 		const class Capsule&	capsule,
@@ -128,21 +128,21 @@ public:
 
     /////////////////////////
 
-    static Real collisionTimeForMovingSphereFixedPlane(
+    static float collisionTimeForMovingSphereFixedPlane(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
         const class Plane&		plane,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static Real collisionTimeForMovingSphereFixedTriangle(
+    static float collisionTimeForMovingSphereFixedTriangle(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
         const Triangle&       triangle,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static Real collisionTimeForMovingSphereFixedRectangle(
+    static float collisionTimeForMovingSphereFixedRectangle(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
         const Vector3&	    	v0,
@@ -152,7 +152,7 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static Real collisionTimeForMovingSphereFixedBox(
+    static float collisionTimeForMovingSphereFixedBox(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
         const class Box&		box,
@@ -162,7 +162,7 @@ public:
     /**
       This won't detect a collision if the sphere is already interpenetrating the fixed sphere.
     */
-	static Real collisionTimeForMovingSphereFixedSphere(
+	static float collisionTimeForMovingSphereFixedSphere(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
 		const class Sphere&	    fixedSphere,
@@ -172,7 +172,7 @@ public:
     /**
       This won't detect a collision if the sphere is already interpenetrating the capsule
     */
-	static Real collisionTimeForMovingSphereFixedCapsule(
+	static float collisionTimeForMovingSphereFixedCapsule(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
 		const class Capsule&	capsule,
@@ -186,7 +186,7 @@ public:
     static Vector3 bounceDirection(
         const class Sphere&		sphere,
         const Vector3&			velocity,
-        const Real				collisionTime,
+        const float				collisionTime,
         const Vector3&			collisionLocation,
         const Vector3&          collisionNormal);
 
@@ -197,7 +197,7 @@ public:
     static Vector3 slideDirection(
         const class Sphere&		sphere,
         const Vector3&			velocity,
-        const Real				collisionTime,
+        const float				collisionTime,
         const Vector3&			collisionLocation);
 
     /**

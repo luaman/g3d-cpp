@@ -31,14 +31,14 @@ private:
     Vector3         direction;
 
     /** Angle from the center line to the edge. */
-    Real            angle;
+    float            angle;
 
 public:
 
     /**
      @param angle Angle from the center line to the edge, in radians
      */
-    Cone(const Vector3& tip, const Vector3& direction, Real angle);
+    Cone(const Vector3& tip, const Vector3& direction, float angle);
 
     /**
      Forms the smallest cone that contains the box.  Undefined if

@@ -20,10 +20,10 @@
 
 namespace G3D {
 
-const G3D::Real Matrix3::EPSILON = 1e-06;
+const float Matrix3::EPSILON = 1e-06;
 const Matrix3 Matrix3::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0);
 const Matrix3 Matrix3::IDENTITY(1, 0, 0, 0, 1, 0, 0, 0, 1);
-const G3D::Real Matrix3::ms_fSvdEpsilon = 1e-04;
+const float Matrix3::ms_fSvdEpsilon = 1e-04;
 const int Matrix3::ms_iSvdMaxIterations = 32;
 
 Matrix3::Matrix3(BinaryInput& b) {
@@ -37,29 +37,29 @@ Matrix3::Matrix3 () {
 
 //----------------------------------------------------------------------------
 
-Matrix3::Matrix3 (const G3D::Real aafEntry[3][3]) {
-    memcpy(m_aafEntry, aafEntry, 9*sizeof(G3D::Real));
+Matrix3::Matrix3 (const float aafEntry[3][3]) {
+    memcpy(m_aafEntry, aafEntry, 9*sizeof(float));
 }
 
 //----------------------------------------------------------------------------
 Matrix3::Matrix3 (const Matrix3& rkMatrix) {
-    memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9*sizeof(G3D::Real));
+    memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9*sizeof(float));
 }
 
 //----------------------------------------------------------------------------
 Matrix3::Matrix3(
-          G3D::Real fEntry00, G3D::Real fEntry01, G3D::Real fEntry02,
-          G3D::Real fEntry10, G3D::Real fEntry11, G3D::Real fEntry12,
-          G3D::Real fEntry20, G3D::Real fEntry21, G3D::Real fEntry22) {
+          float fEntry00, float fEntry01, float fEntry02,
+          float fEntry10, float fEntry11, float fEntry12,
+          float fEntry20, float fEntry21, float fEntry22) {
     set(fEntry00, fEntry01, fEntry02,
         fEntry10, fEntry11, fEntry12,
         fEntry20, fEntry21, fEntry22);
 }
 
 void Matrix3::set(
-          G3D::Real fEntry00, G3D::Real fEntry01, G3D::Real fEntry02,
-          G3D::Real fEntry10, G3D::Real fEntry11, G3D::Real fEntry12, 
-          G3D::Real fEntry20, G3D::Real fEntry21, G3D::Real fEntry22) {
+          float fEntry00, float fEntry01, float fEntry02,
+          float fEntry10, float fEntry11, float fEntry12, 
+          float fEntry20, float fEntry21, float fEntry22) {
 
     m_aafEntry[0][0] = fEntry00;
     m_aafEntry[0][1] = fEntry01;
@@ -93,12 +93,12 @@ void Matrix3::serialize(BinaryOutput& b) const {
 }
 
 //----------------------------------------------------------------------------
-G3D::Real* Matrix3::operator[] (int iRow) const {
-    return (G3D::Real*)&m_aafEntry[iRow][0];
+float* Matrix3::operator[] (int iRow) const {
+    return (float*)&m_aafEntry[iRow][0];
 }
 
 //----------------------------------------------------------------------------
-Matrix3::operator G3D::Real* () {
+Matrix3::operator float* () {
     return &m_aafEntry[0][0];
 }
 
@@ -128,7 +128,7 @@ void Matrix3::setRow(int iRow, const Vector3 &vector) {
 
 //----------------------------------------------------------------------------
 Matrix3& Matrix3::operator= (const Matrix3& rkMatrix) {
-    memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9 * sizeof(G3D::Real));
+    memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9 * sizeof(float));
     return *this;
 }
 
@@ -234,7 +234,7 @@ Matrix3 Matrix3::operator- () const {
 }
 
 //----------------------------------------------------------------------------
-Matrix3 Matrix3::operator* (G3D::Real fScalar) const {
+Matrix3 Matrix3::operator* (float fScalar) const {
     Matrix3 kProd;
 
     for (int iRow = 0; iRow < 3; iRow++) {
@@ -246,7 +246,7 @@ Matrix3 Matrix3::operator* (G3D::Real fScalar) const {
 }
 
 //----------------------------------------------------------------------------
-Matrix3 operator* (G3D::Real fScalar, const Matrix3& rkMatrix) {
+Matrix3 operator* (float fScalar, const Matrix3& rkMatrix) {
     Matrix3 kProd;
 
     for (int iRow = 0; iRow < 3; iRow++) {
@@ -270,7 +270,7 @@ Matrix3 Matrix3::transpose () const {
 }
 
 //----------------------------------------------------------------------------
-bool Matrix3::inverse (Matrix3& rkInverse, G3D::Real fTolerance) const {
+bool Matrix3::inverse (Matrix3& rkInverse, float fTolerance) const {
     // Invert a 3x3 using cofactors.  This is about 8 times faster than
     // the Numerical Recipes code which uses Gaussian elimination.
 
@@ -293,7 +293,7 @@ bool Matrix3::inverse (Matrix3& rkInverse, G3D::Real fTolerance) const {
     rkInverse[2][2] = m_aafEntry[0][0] * m_aafEntry[1][1] -
                       m_aafEntry[0][1] * m_aafEntry[1][0];
 
-    G3D::Real fDet =
+    float fDet =
         m_aafEntry[0][0] * rkInverse[0][0] +
         m_aafEntry[0][1] * rkInverse[1][0] +
         m_aafEntry[0][2] * rkInverse[2][0];
@@ -301,7 +301,7 @@ bool Matrix3::inverse (Matrix3& rkInverse, G3D::Real fTolerance) const {
     if ( G3D::abs(fDet) <= fTolerance )
         return false;
 
-    G3D::Real fInvDet = 1.0 / fDet;
+    float fInvDet = 1.0 / fDet;
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++)
@@ -312,22 +312,22 @@ bool Matrix3::inverse (Matrix3& rkInverse, G3D::Real fTolerance) const {
 }
 
 //----------------------------------------------------------------------------
-Matrix3 Matrix3::inverse (G3D::Real fTolerance) const {
+Matrix3 Matrix3::inverse (float fTolerance) const {
     Matrix3 kInverse = Matrix3::ZERO;
     inverse(kInverse, fTolerance);
     return kInverse;
 }
 
 //----------------------------------------------------------------------------
-G3D::Real Matrix3::determinant () const {
-    G3D::Real fCofactor00 = m_aafEntry[1][1] * m_aafEntry[2][2] -
+float Matrix3::determinant () const {
+    float fCofactor00 = m_aafEntry[1][1] * m_aafEntry[2][2] -
                        m_aafEntry[1][2] * m_aafEntry[2][1];
-    G3D::Real fCofactor10 = m_aafEntry[1][2] * m_aafEntry[2][0] -
+    float fCofactor10 = m_aafEntry[1][2] * m_aafEntry[2][0] -
                        m_aafEntry[1][0] * m_aafEntry[2][2];
-    G3D::Real fCofactor20 = m_aafEntry[1][0] * m_aafEntry[2][1] -
+    float fCofactor20 = m_aafEntry[1][0] * m_aafEntry[2][1] -
                        m_aafEntry[1][1] * m_aafEntry[2][0];
 
-    G3D::Real fDet =
+    float fDet =
         m_aafEntry[0][0] * fCofactor00 +
         m_aafEntry[0][1] * fCofactor10 +
         m_aafEntry[0][2] * fCofactor20;
@@ -338,8 +338,8 @@ G3D::Real Matrix3::determinant () const {
 //----------------------------------------------------------------------------
 void Matrix3::bidiagonalize (Matrix3& kA, Matrix3& kL,
                              Matrix3& kR) {
-    G3D::Real afV[3], afW[3];
-    G3D::Real fLength, fSign, fT1, fInvT1, fT2;
+    float afV[3], afW[3];
+    float fLength, fSign, fT1, fInvT1, fT2;
     bool bIdentity;
 
     // map first column to (*,0,0)
@@ -420,9 +420,9 @@ void Matrix3::bidiagonalize (Matrix3& kA, Matrix3& kL,
         kA[1][2] += afW[2];
         kA[2][2] += afV[2] * afW[2];
 
-        G3D::Real fA = 1.0 + fT2;
-        G3D::Real fB = fT2 * afV[2];
-        G3D::Real fC = 1.0 + fB * afV[2];
+        float fA = 1.0 + fT2;
+        float fB = fT2 * afV[2];
+        float fC = 1.0 + fB * afV[2];
 
         if ( bIdentity ) {
             kL[0][0] = 1.0;
@@ -433,8 +433,8 @@ void Matrix3::bidiagonalize (Matrix3& kA, Matrix3& kL,
             kL[2][2] = fC;
         } else {
             for (int iRow = 0; iRow < 3; iRow++) {
-                G3D::Real fTmp0 = kL[iRow][1];
-                G3D::Real fTmp1 = kL[iRow][2];
+                float fTmp0 = kL[iRow][1];
+                float fTmp1 = kL[iRow][2];
                 kL[iRow][1] = fA * fTmp0 + fB * fTmp1;
                 kL[iRow][2] = fB * fTmp0 + fC * fTmp1;
             }
@@ -445,25 +445,25 @@ void Matrix3::bidiagonalize (Matrix3& kA, Matrix3& kL,
 //----------------------------------------------------------------------------
 void Matrix3::golubKahanStep (Matrix3& kA, Matrix3& kL,
                               Matrix3& kR) {
-    G3D::Real fT11 = kA[0][1] * kA[0][1] + kA[1][1] * kA[1][1];
-    G3D::Real fT22 = kA[1][2] * kA[1][2] + kA[2][2] * kA[2][2];
-    G3D::Real fT12 = kA[1][1] * kA[1][2];
-    G3D::Real fTrace = fT11 + fT22;
-    G3D::Real fDiff = fT11 - fT22;
-    G3D::Real fDiscr = sqrt(fDiff * fDiff + 4.0 * fT12 * fT12);
-    G3D::Real fRoot1 = 0.5 * (fTrace + fDiscr);
-    G3D::Real fRoot2 = 0.5 * (fTrace - fDiscr);
+    float fT11 = kA[0][1] * kA[0][1] + kA[1][1] * kA[1][1];
+    float fT22 = kA[1][2] * kA[1][2] + kA[2][2] * kA[2][2];
+    float fT12 = kA[1][1] * kA[1][2];
+    float fTrace = fT11 + fT22;
+    float fDiff = fT11 - fT22;
+    float fDiscr = sqrt(fDiff * fDiff + 4.0 * fT12 * fT12);
+    float fRoot1 = 0.5 * (fTrace + fDiscr);
+    float fRoot2 = 0.5 * (fTrace - fDiscr);
 
     // adjust right
-    G3D::Real fY = kA[0][0] - (G3D::abs(fRoot1 - fT22) <=
+    float fY = kA[0][0] - (G3D::abs(fRoot1 - fT22) <=
                           G3D::abs(fRoot2 - fT22) ? fRoot1 : fRoot2);
-    G3D::Real fZ = kA[0][1];
-    G3D::Real fInvLength = 1.0 / sqrt(fY * fY + fZ * fZ);
-    G3D::Real fSin = fZ * fInvLength;
-    G3D::Real fCos = -fY * fInvLength;
+    float fZ = kA[0][1];
+    float fInvLength = 1.0 / sqrt(fY * fY + fZ * fZ);
+    float fSin = fZ * fInvLength;
+    float fCos = -fY * fInvLength;
 
-    G3D::Real fTmp0 = kA[0][0];
-    G3D::Real fTmp1 = kA[0][1];
+    float fTmp0 = kA[0][0];
+    float fTmp1 = kA[0][1];
     kA[0][0] = fCos * fTmp0 - fSin * fTmp1;
     kA[0][1] = fSin * fTmp0 + fCos * fTmp1;
     kA[1][0] = -fSin * kA[1][1];
@@ -582,9 +582,9 @@ void Matrix3::singularValueDecomposition (Matrix3& kL, Vector3& kS,
     bidiagonalize(kA, kL, kR);
 
     for (int i = 0; i < ms_iSvdMaxIterations; i++) {
-        G3D::Real fTmp, fTmp0, fTmp1;
-        G3D::Real fSin0, fCos0, fTan0;
-        G3D::Real fSin1, fCos1, fTan1;
+        float fTmp, fTmp0, fTmp1;
+        float fSin0, fCos0, fTan0;
+        float fSin1, fCos1, fTan1;
 
         bool bTest1 = (G3D::abs(kA[0][1]) <=
                        ms_fSvdEpsilon * (G3D::abs(kA[0][0]) + G3D::abs(kA[1][1])));
@@ -716,7 +716,7 @@ void Matrix3::orthonormalize () {
     // product of vectors A and B.
 
     // compute q0
-    G3D::Real fInvLength = 1.0 / sqrt(m_aafEntry[0][0] * m_aafEntry[0][0]
+    float fInvLength = 1.0 / sqrt(m_aafEntry[0][0] * m_aafEntry[0][0]
                                        + m_aafEntry[1][0] * m_aafEntry[1][0] +
                                        m_aafEntry[2][0] * m_aafEntry[2][0]);
 
@@ -725,7 +725,7 @@ void Matrix3::orthonormalize () {
     m_aafEntry[2][0] *= fInvLength;
 
     // compute q1
-    G3D::Real fDot0 =
+    float fDot0 =
         m_aafEntry[0][0] * m_aafEntry[0][1] +
         m_aafEntry[1][0] * m_aafEntry[1][1] +
         m_aafEntry[2][0] * m_aafEntry[2][1];
@@ -743,7 +743,7 @@ void Matrix3::orthonormalize () {
     m_aafEntry[2][1] *= fInvLength;
 
     // compute q2
-    G3D::Real fDot1 =
+    float fDot1 =
         m_aafEntry[0][1] * m_aafEntry[0][2] +
         m_aafEntry[1][1] * m_aafEntry[1][2] +
         m_aafEntry[2][1] * m_aafEntry[2][2];
@@ -797,14 +797,14 @@ void Matrix3::qDUDecomposition (Matrix3& kQ,
     // U stores the entries U[0] = u01, U[1] = u02, U[2] = u12
 
     // build orthogonal matrix Q
-    G3D::Real fInvLength = 1.0 / sqrt(m_aafEntry[0][0] * m_aafEntry[0][0]
+    float fInvLength = 1.0 / sqrt(m_aafEntry[0][0] * m_aafEntry[0][0]
                                        + m_aafEntry[1][0] * m_aafEntry[1][0] +
                                        m_aafEntry[2][0] * m_aafEntry[2][0]);
     kQ[0][0] = m_aafEntry[0][0] * fInvLength;
     kQ[1][0] = m_aafEntry[1][0] * fInvLength;
     kQ[2][0] = m_aafEntry[2][0] * fInvLength;
 
-    G3D::Real fDot = kQ[0][0] * m_aafEntry[0][1] + kQ[1][0] * m_aafEntry[1][1] +
+    float fDot = kQ[0][0] * m_aafEntry[0][1] + kQ[1][0] * m_aafEntry[1][1] +
                 kQ[2][0] * m_aafEntry[2][1];
     kQ[0][1] = m_aafEntry[0][1] - fDot * kQ[0][0];
     kQ[1][1] = m_aafEntry[1][1] - fDot * kQ[1][0];
@@ -832,7 +832,7 @@ void Matrix3::qDUDecomposition (Matrix3& kQ,
     kQ[2][2] *= fInvLength;
 
     // guarantee that orthogonal matrix has determinant 1 (no reflections)
-    G3D::Real fDet = kQ[0][0] * kQ[1][1] * kQ[2][2] + kQ[0][1] * kQ[1][2] * kQ[2][0] +
+    float fDet = kQ[0][0] * kQ[1][1] * kQ[2][2] + kQ[0][1] * kQ[1][2] * kQ[2][0] +
                 kQ[0][2] * kQ[1][0] * kQ[2][1] - kQ[0][2] * kQ[1][1] * kQ[2][0] -
                 kQ[0][1] * kQ[1][0] * kQ[2][2] - kQ[0][0] * kQ[1][2] * kQ[2][1];
 
@@ -871,7 +871,7 @@ void Matrix3::qDUDecomposition (Matrix3& kQ,
     kD[2] = kR[2][2];
 
     // the shear component
-    G3D::Real fInvD0 = 1.0 / kD[0];
+    float fInvD0 = 1.0 / kD[0];
 
     kU[0] = kR[0][1] * fInvD0;
 
@@ -881,29 +881,29 @@ void Matrix3::qDUDecomposition (Matrix3& kQ,
 }
 
 //----------------------------------------------------------------------------
-G3D::Real Matrix3::maxCubicRoot (G3D::Real afCoeff[3]) {
+float Matrix3::maxCubicRoot (float afCoeff[3]) {
     // Spectral norm is for A^T*A, so characteristic polynomial
-    // P(x) = c[0]+c[1]*x+c[2]*x^2+x^3 has three positive G3D::Real roots.
+    // P(x) = c[0]+c[1]*x+c[2]*x^2+x^3 has three positive float roots.
     // This yields the assertions c[0] < 0 and c[2]*c[2] >= 3*c[1].
 
     // quick out for uniform scale (triple root)
-    const G3D::Real fOneThird = 1.0 / 3.0;
-    const G3D::Real fEpsilon = 1e-06;
-    G3D::Real fDiscr = afCoeff[2] * afCoeff[2] - 3.0 * afCoeff[1];
+    const float fOneThird = 1.0 / 3.0;
+    const float fEpsilon = 1e-06;
+    float fDiscr = afCoeff[2] * afCoeff[2] - 3.0 * afCoeff[1];
 
     if ( fDiscr <= fEpsilon )
         return -fOneThird*afCoeff[2];
 
     // Compute an upper bound on roots of P(x).  This assumes that A^T*A
     // has been scaled by its largest entry.
-    G3D::Real fX = 1.0;
+    float fX = 1.0;
 
-    G3D::Real fPoly = afCoeff[0] + fX * (afCoeff[1] + fX * (afCoeff[2] + fX));
+    float fPoly = afCoeff[0] + fX * (afCoeff[1] + fX * (afCoeff[2] + fX));
 
     if ( fPoly < 0.0 ) {
         // uses a matrix norm to find an upper bound on maximum root
         fX = G3D::abs(afCoeff[0]);
-        G3D::Real fTmp = 1.0 + G3D::abs(afCoeff[1]);
+        float fTmp = 1.0 + G3D::abs(afCoeff[1]);
 
         if ( fTmp > fX )
             fX = fTmp;
@@ -915,7 +915,7 @@ G3D::Real Matrix3::maxCubicRoot (G3D::Real afCoeff[3]) {
     }
 
     // Newton's method to find root
-    G3D::Real fTwoC2 = 2.0 * afCoeff[2];
+    float fTwoC2 = 2.0 * afCoeff[2];
 
     for (int i = 0; i < 16; i++) {
         fPoly = afCoeff[0] + fX * (afCoeff[1] + fX * (afCoeff[2] + fX));
@@ -923,7 +923,7 @@ G3D::Real Matrix3::maxCubicRoot (G3D::Real afCoeff[3]) {
         if ( G3D::abs(fPoly) <= fEpsilon )
             return fX;
 
-        G3D::Real fDeriv = afCoeff[1] + fX * (fTwoC2 + 3.0 * fX);
+        float fDeriv = afCoeff[1] + fX * (fTwoC2 + 3.0 * fX);
 
         fX -= fPoly / fDeriv;
     }
@@ -932,10 +932,10 @@ G3D::Real Matrix3::maxCubicRoot (G3D::Real afCoeff[3]) {
 }
 
 //----------------------------------------------------------------------------
-G3D::Real Matrix3::spectralNorm () const {
+float Matrix3::spectralNorm () const {
     Matrix3 kP;
     int iRow, iCol;
-    G3D::Real fPmax = 0.0;
+    float fPmax = 0.0;
 
     for (iRow = 0; iRow < 3; iRow++) {
         for (iCol = 0; iCol < 3; iCol++) {
@@ -951,14 +951,14 @@ G3D::Real Matrix3::spectralNorm () const {
         }
     }
 
-    G3D::Real fInvPmax = 1.0 / fPmax;
+    float fInvPmax = 1.0 / fPmax;
 
     for (iRow = 0; iRow < 3; iRow++) {
         for (iCol = 0; iCol < 3; iCol++)
             kP[iRow][iCol] *= fInvPmax;
     }
 
-    G3D::Real afCoeff[3];
+    float afCoeff[3];
     afCoeff[0] = -(kP[0][0] * (kP[1][1] * kP[2][2] - kP[1][2] * kP[2][1]) +
                    kP[0][1] * (kP[2][0] * kP[1][2] - kP[1][0] * kP[2][2]) +
                    kP[0][2] * (kP[1][0] * kP[2][1] - kP[2][0] * kP[1][1]));
@@ -967,13 +967,13 @@ G3D::Real Matrix3::spectralNorm () const {
                  kP[1][1] * kP[2][2] - kP[1][2] * kP[2][1];
     afCoeff[2] = -(kP[0][0] + kP[1][1] + kP[2][2]);
 
-    G3D::Real fRoot = maxCubicRoot(afCoeff);
-    G3D::Real fNorm = sqrt(fPmax * fRoot);
+    float fRoot = maxCubicRoot(afCoeff);
+    float fNorm = sqrt(fPmax * fRoot);
     return fNorm;
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::toAxisAngle (Vector3& rkAxis, G3D::Real& rfRadians) const {
+void Matrix3::toAxisAngle (Vector3& rkAxis, float& rfRadians) const {
     // Let (x,y,z) be the unit-length axis and let A be an angle of rotation.
     // The rotation matrix is R = I + sin(A)*P + (1-cos(A))*P^2 where
     // I is the identity and
@@ -996,8 +996,8 @@ void Matrix3::toAxisAngle (Vector3& rkAxis, G3D::Real& rfRadians) const {
     // z^2-1.  We can solve these for axis (x,y,z).  Because the angle is pi,
     // it does not matter which sign you choose on the square roots.
 
-    G3D::Real fTrace = m_aafEntry[0][0] + m_aafEntry[1][1] + m_aafEntry[2][2];
-    G3D::Real fCos = 0.5 * (fTrace - 1.0);
+    float fTrace = m_aafEntry[0][0] + m_aafEntry[1][1] + m_aafEntry[2][2];
+    float fCos = 0.5 * (fTrace - 1.0);
     rfRadians = G3D::aCos(fCos);  // in [0,PI]
 
     if ( rfRadians > 0.0 ) {
@@ -1056,19 +1056,19 @@ void Matrix3::toAxisAngle (Vector3& rkAxis, G3D::Real& rfRadians) const {
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromAxisAngle (const Vector3& rkAxis, G3D::Real fRadians) {
-    G3D::Real fCos = cos(fRadians);
-    G3D::Real fSin = sin(fRadians);
-    G3D::Real fOneMinusCos = 1.0 - fCos;
-    G3D::Real fX2 = rkAxis.x * rkAxis.x;
-    G3D::Real fY2 = rkAxis.y * rkAxis.y;
-    G3D::Real fZ2 = rkAxis.z * rkAxis.z;
-    G3D::Real fXYM = rkAxis.x * rkAxis.y * fOneMinusCos;
-    G3D::Real fXZM = rkAxis.x * rkAxis.z * fOneMinusCos;
-    G3D::Real fYZM = rkAxis.y * rkAxis.z * fOneMinusCos;
-    G3D::Real fXSin = rkAxis.x * fSin;
-    G3D::Real fYSin = rkAxis.y * fSin;
-    G3D::Real fZSin = rkAxis.z * fSin;
+void Matrix3::fromAxisAngle (const Vector3& rkAxis, float fRadians) {
+    float fCos = cos(fRadians);
+    float fSin = sin(fRadians);
+    float fOneMinusCos = 1.0 - fCos;
+    float fX2 = rkAxis.x * rkAxis.x;
+    float fY2 = rkAxis.y * rkAxis.y;
+    float fZ2 = rkAxis.z * rkAxis.z;
+    float fXYM = rkAxis.x * rkAxis.y * fOneMinusCos;
+    float fXZM = rkAxis.x * rkAxis.z * fOneMinusCos;
+    float fYZM = rkAxis.y * rkAxis.z * fOneMinusCos;
+    float fXSin = rkAxis.x * fSin;
+    float fYSin = rkAxis.y * fSin;
+    float fZSin = rkAxis.z * fSin;
 
     m_aafEntry[0][0] = fX2 * fOneMinusCos + fCos;
     m_aafEntry[0][1] = fXYM - fZSin;
@@ -1091,7 +1091,7 @@ bool Matrix3::toEulerAnglesXYZ (float& rfXAngle, float& rfYAngle,
     if ( m_aafEntry[0][2] < 1.0 ) {
         if ( m_aafEntry[0][2] > -1.0 ) {
             rfXAngle = G3D::aTan2( -m_aafEntry[1][2], m_aafEntry[2][2]);
-            rfYAngle = (G3D::Real) G3D::aSin(m_aafEntry[0][2]);
+            rfYAngle = (float) G3D::aSin(m_aafEntry[0][2]);
             rfZAngle = G3D::aTan2( -m_aafEntry[0][1], m_aafEntry[0][0]);
             return true;
         } else {
@@ -1120,7 +1120,7 @@ bool Matrix3::toEulerAnglesXZY (float& rfXAngle, float& rfZAngle,
     if ( m_aafEntry[0][1] < 1.0 ) {
         if ( m_aafEntry[0][1] > -1.0 ) {
             rfXAngle = G3D::aTan2(m_aafEntry[2][1], m_aafEntry[1][1]);
-            rfZAngle = (G3D::Real) asin( -m_aafEntry[0][1]);
+            rfZAngle = (float) asin( -m_aafEntry[0][1]);
             rfYAngle = G3D::aTan2(m_aafEntry[0][2], m_aafEntry[0][0]);
             return true;
         } else {
@@ -1149,7 +1149,7 @@ bool Matrix3::toEulerAnglesYXZ (float& rfYAngle, float& rfXAngle,
     if ( m_aafEntry[1][2] < 1.0 ) {
         if ( m_aafEntry[1][2] > -1.0 ) {
             rfYAngle = G3D::aTan2(m_aafEntry[0][2], m_aafEntry[2][2]);
-            rfXAngle = (G3D::Real) asin( -m_aafEntry[1][2]);
+            rfXAngle = (float) asin( -m_aafEntry[1][2]);
             rfZAngle = G3D::aTan2(m_aafEntry[1][0], m_aafEntry[1][1]);
             return true;
         } else {
@@ -1178,7 +1178,7 @@ bool Matrix3::toEulerAnglesYZX (float& rfYAngle, float& rfZAngle,
     if ( m_aafEntry[1][0] < 1.0 ) {
         if ( m_aafEntry[1][0] > -1.0 ) {
             rfYAngle = G3D::aTan2( -m_aafEntry[2][0], m_aafEntry[0][0]);
-            rfZAngle = (G3D::Real) asin(m_aafEntry[1][0]);
+            rfZAngle = (float) asin(m_aafEntry[1][0]);
             rfXAngle = G3D::aTan2( -m_aafEntry[1][2], m_aafEntry[1][1]);
             return true;
         } else {
@@ -1207,7 +1207,7 @@ bool Matrix3::toEulerAnglesZXY (float& rfZAngle, float& rfXAngle,
     if ( m_aafEntry[2][1] < 1.0 ) {
         if ( m_aafEntry[2][1] > -1.0 ) {
             rfZAngle = G3D::aTan2( -m_aafEntry[0][1], m_aafEntry[1][1]);
-            rfXAngle = (G3D::Real) asin(m_aafEntry[2][1]);
+            rfXAngle = (float) asin(m_aafEntry[2][1]);
             rfYAngle = G3D::aTan2( -m_aafEntry[2][0], m_aafEntry[2][2]);
             return true;
         } else {
@@ -1258,7 +1258,7 @@ bool Matrix3::toEulerAnglesZYX (float& rfZAngle, float& rfYAngle,
 //----------------------------------------------------------------------------
 void Matrix3::fromEulerAnglesXYZ (float fYAngle, float fPAngle,
                                   float fRAngle) {
-    G3D::Real fCos, fSin;
+    float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
@@ -1278,7 +1278,7 @@ void Matrix3::fromEulerAnglesXYZ (float fYAngle, float fPAngle,
 //----------------------------------------------------------------------------
 void Matrix3::fromEulerAnglesXZY (float fYAngle, float fPAngle,
                                   float fRAngle) {
-    G3D::Real fCos, fSin;
+    float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
@@ -1298,7 +1298,7 @@ void Matrix3::fromEulerAnglesXZY (float fYAngle, float fPAngle,
 //----------------------------------------------------------------------------
 void Matrix3::fromEulerAnglesYXZ (float fYAngle, float fPAngle,
                                   float fRAngle) {
-    G3D::Real fCos, fSin;
+    float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
@@ -1318,7 +1318,7 @@ void Matrix3::fromEulerAnglesYXZ (float fYAngle, float fPAngle,
 //----------------------------------------------------------------------------
 void Matrix3::fromEulerAnglesYZX (float fYAngle, float fPAngle,
                                   float fRAngle) {
-    G3D::Real fCos, fSin;
+    float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
@@ -1338,7 +1338,7 @@ void Matrix3::fromEulerAnglesYZX (float fYAngle, float fPAngle,
 //----------------------------------------------------------------------------
 void Matrix3::fromEulerAnglesZXY (float fYAngle, float fPAngle,
                                   float fRAngle) {
-    G3D::Real fCos, fSin;
+    float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
@@ -1358,7 +1358,7 @@ void Matrix3::fromEulerAnglesZXY (float fYAngle, float fPAngle,
 //----------------------------------------------------------------------------
 void Matrix3::fromEulerAnglesZYX (float fYAngle, float fPAngle,
                                   float fRAngle) {
-    G3D::Real fCos, fSin;
+    float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
@@ -1376,7 +1376,7 @@ void Matrix3::fromEulerAnglesZYX (float fYAngle, float fPAngle,
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::tridiagonal (G3D::Real afDiag[3], G3D::Real afSubDiag[3]) {
+void Matrix3::tridiagonal (float afDiag[3], float afSubDiag[3]) {
     // Householder reduction T = Q^t M Q
     //   Input:
     //     mat, symmetric 3x3 matrix M
@@ -1385,22 +1385,22 @@ void Matrix3::tridiagonal (G3D::Real afDiag[3], G3D::Real afSubDiag[3]) {
     //     diag, diagonal entries of T
     //     subd, subdiagonal entries of T (T is symmetric)
 
-    G3D::Real fA = m_aafEntry[0][0];
-    G3D::Real fB = m_aafEntry[0][1];
-    G3D::Real fC = m_aafEntry[0][2];
-    G3D::Real fD = m_aafEntry[1][1];
-    G3D::Real fE = m_aafEntry[1][2];
-    G3D::Real fF = m_aafEntry[2][2];
+    float fA = m_aafEntry[0][0];
+    float fB = m_aafEntry[0][1];
+    float fC = m_aafEntry[0][2];
+    float fD = m_aafEntry[1][1];
+    float fE = m_aafEntry[1][2];
+    float fF = m_aafEntry[2][2];
 
     afDiag[0] = fA;
     afSubDiag[2] = 0.0;
 
     if ( G3D::abs(fC) >= EPSILON ) {
-        G3D::Real fLength = sqrt(fB * fB + fC * fC);
-        G3D::Real fInvLength = 1.0 / fLength;
+        float fLength = sqrt(fB * fB + fC * fC);
+        float fInvLength = 1.0 / fLength;
         fB *= fInvLength;
         fC *= fInvLength;
-        G3D::Real fQ = 2.0 * fB * fE + fC * (fF - fD);
+        float fQ = 2.0 * fB * fE + fC * (fF - fD);
         afDiag[1] = fD + fC * fQ;
         afDiag[2] = fF - fC * fQ;
         afSubDiag[0] = fLength;
@@ -1432,7 +1432,7 @@ void Matrix3::tridiagonal (G3D::Real afDiag[3], G3D::Real afSubDiag[3]) {
 }
 
 //----------------------------------------------------------------------------
-bool Matrix3::qLAlgorithm (G3D::Real afDiag[3], G3D::Real afSubDiag[3]) {
+bool Matrix3::qLAlgorithm (float afDiag[3], float afSubDiag[3]) {
     // QL iteration with implicit shifting to reduce matrix from tridiagonal
     // to diagonal
 
@@ -1444,7 +1444,7 @@ bool Matrix3::qLAlgorithm (G3D::Real afDiag[3], G3D::Real afSubDiag[3]) {
             int i1;
 
             for (i1 = i0; i1 <= 1; i1++) {
-                G3D::Real fSum = G3D::abs(afDiag[i1]) +
+                float fSum = G3D::abs(afDiag[i1]) +
                             G3D::abs(afDiag[i1 + 1]);
 
                 if ( G3D::abs(afSubDiag[i1]) + fSum == fSum )
@@ -1454,24 +1454,24 @@ bool Matrix3::qLAlgorithm (G3D::Real afDiag[3], G3D::Real afSubDiag[3]) {
             if ( i1 == i0 )
                 break;
 
-            G3D::Real fTmp0 = (afDiag[i0 + 1] - afDiag[i0]) / (2.0 * afSubDiag[i0]);
+            float fTmp0 = (afDiag[i0 + 1] - afDiag[i0]) / (2.0 * afSubDiag[i0]);
 
-            G3D::Real fTmp1 = sqrt(fTmp0 * fTmp0 + 1.0);
+            float fTmp1 = sqrt(fTmp0 * fTmp0 + 1.0);
 
             if ( fTmp0 < 0.0 )
                 fTmp0 = afDiag[i1] - afDiag[i0] + afSubDiag[i0] / (fTmp0 - fTmp1);
             else
                 fTmp0 = afDiag[i1] - afDiag[i0] + afSubDiag[i0] / (fTmp0 + fTmp1);
 
-            G3D::Real fSin = 1.0;
+            float fSin = 1.0;
 
-            G3D::Real fCos = 1.0;
+            float fCos = 1.0;
 
-            G3D::Real fTmp2 = 0.0;
+            float fTmp2 = 0.0;
 
             for (int i2 = i1 - 1; i2 >= i0; i2--) {
-                G3D::Real fTmp3 = fSin * afSubDiag[i2];
-                G3D::Real fTmp4 = fCos * afSubDiag[i2];
+                float fTmp3 = fSin * afSubDiag[i2];
+                float fTmp4 = fCos * afSubDiag[i2];
 
                 if (G3D::abs(fTmp3) >= G3D::abs(fTmp0)) {
                     fCos = fTmp0 / fTmp3;
@@ -1517,10 +1517,10 @@ bool Matrix3::qLAlgorithm (G3D::Real afDiag[3], G3D::Real afSubDiag[3]) {
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::eigenSolveSymmetric (G3D::Real afEigenvalue[3],
+void Matrix3::eigenSolveSymmetric (float afEigenvalue[3],
                                    Vector3 akEigenvector[3]) const {
     Matrix3 kMatrix = *this;
-    G3D::Real afSubDiag[3];
+    float afSubDiag[3];
     kMatrix.tridiagonal(afEigenvalue, afSubDiag);
     kMatrix.qLAlgorithm(afEigenvalue, afSubDiag);
 
@@ -1533,7 +1533,7 @@ void Matrix3::eigenSolveSymmetric (G3D::Real afEigenvalue[3],
     // make eigenvectors form a right--handed system
     Vector3 kCross = akEigenvector[1].cross(akEigenvector[2]);
 
-    G3D::Real fDet = akEigenvector[0].dot(kCross);
+    float fDet = akEigenvector[0].dot(kCross);
 
     if ( fDet < 0.0 ) {
         akEigenvector[2][0] = - akEigenvector[2][0];

@@ -32,7 +32,7 @@ void Ray::deserialize(class BinaryInput& b) {
 
 
 Vector3 Ray::intersection(const Plane& plane) const {
-    Real d;
+    float d;
     Vector3 normal = plane.normal();
     plane.getEquation(normal, d);
     double rate = direction.dot(normal);
@@ -47,28 +47,28 @@ Vector3 Ray::intersection(const Plane& plane) const {
 }
 
 
-Real Ray::intersectionTime(const class Sphere& sphere) const {
+float Ray::intersectionTime(const class Sphere& sphere) const {
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedSphere(
             origin, direction, sphere, dummy);
 }
 
 
-Real Ray::intersectionTime(const class Plane& plane) const {
+float Ray::intersectionTime(const class Plane& plane) const {
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedPlane(
             origin, direction, plane, dummy);
 }
 
 
-Real Ray::intersectionTime(const class Box& box) const {
+float Ray::intersectionTime(const class Box& box) const {
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedBox(
             origin, direction, box, dummy);
 }
 
 
-Real Ray::intersectionTime(
+float Ray::intersectionTime(
     const Vector3& v0,
     const Vector3& v1,
     const Vector3& v2) const {

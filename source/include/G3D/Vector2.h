@@ -34,19 +34,19 @@ public:
     // construction
     Vector2();
     Vector2(class BinaryInput& b);
-    Vector2(Real x, Real y);
-    Vector2(Real coordinate[2]);
+    Vector2(float x, float y);
+    Vector2(float coordinate[2]);
     Vector2(const Vector2& rkVector);
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
 
     // coordinates
-    Real x, y;
+    float x, y;
 
-    Real& operator[] (int i) const;
-    operator Real* ();
-    operator const Real* () const;
+    float& operator[] (int i) const;
+    operator float* ();
+    operator const float* () const;
 
     // assignment and comparison
     Vector2& operator= (const Vector2& rkVector);
@@ -67,12 +67,12 @@ public:
     // arithmetic operations
     Vector2 operator+ (const Vector2& rkVector) const;
     Vector2 operator- (const Vector2& rkVector) const;
-    Vector2 operator* (Real fScalar) const;
+    Vector2 operator* (float fScalar) const;
     Vector2 operator* (const Vector2& rkVector) const;
     Vector2 operator/ (const Vector2& rkVector) const;
-    Vector2 operator/ (Real fScalar) const;
+    Vector2 operator/ (float fScalar) const;
     Vector2 operator- () const;
-    friend Vector2 operator* (Real fScalar, const Vector2& rkVector);
+    friend Vector2 operator* (float fScalar, const Vector2& rkVector);
     
     /**
      Linear interpolation
@@ -96,17 +96,17 @@ public:
     // arithmetic updates
     Vector2& operator+= (const Vector2& rkVector);
     Vector2& operator-= (const Vector2& rkVector);
-    Vector2& operator*= (Real fScalar);
-    Vector2& operator/= (Real fScalar);
+    Vector2& operator*= (float fScalar);
+    Vector2& operator/= (float fScalar);
     Vector2& operator*= (const Vector2& rkVector);
     Vector2& operator/= (const Vector2& rkVector);
 
     // vector operations
-    Real length () const;
+    float length() const;
     Vector2 direction() const;
-    Real squaredLength () const;
-    Real dot (const Vector2& rkVector) const;
-    Real unitize (Real fTolerance = 1e-06);
+    float squaredLength () const;
+    float dot (const Vector2& rkVector) const;
+    float unitize (float fTolerance = 1e-06);
 
     Vector2 min(const Vector2 &v) const;
     Vector2 max(const Vector2 &v) const;

@@ -227,7 +227,7 @@ void GCamera::getClipPlanes(
 		// Since there is no scale factor, we don't have to 
 		// worry about the inverse transpose of the normal.
         Vector3 normal;
-        Real d;
+        float d;
 
         clip[p].getEquation(normal, d);
 		

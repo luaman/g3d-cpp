@@ -50,7 +50,7 @@ GLboolean glGetBoolean(GLenum which);
  */
 GLdouble glGetDouble(GLenum which);
 
-inline void glMultiTexCoord(GLint unit, G3D::Real v) {
+inline void glMultiTexCoord(GLint unit, float v) {
 	glMultiTexCoord1fARB(unit, v);
 }
 
@@ -115,33 +115,33 @@ inline void glColor(const G3D::Color4& c) {
 }
 
 
-inline void glColor(G3D::Real r, G3D::Real g, G3D::Real b, G3D::Real a) {
+inline void glColor(float r, float g, float b, float a) {
 	glColor4f(r, g, b, a);
 }
 
 
-inline void glColor(G3D::Real r, G3D::Real g, G3D::Real b) {
+inline void glColor(float r, float g, float b) {
 	glColor3f(r, g, b);
 }
 
 
-inline void glNormal(const G3D::Vector3 &n) {
+inline void glNormal(const G3D::Vector3& n) {
 	glNormal3fv((const float*)&n);
 }
 
 
-inline void glTexCoord(const G3D::Vector3 &t) {
-	glTexCoord3fv((const float *)&t);
+inline void glTexCoord(const G3D::Vector3& t) {
+	glTexCoord3fv((const float*)&t);
 }
 
 
-inline void glTexCoord(const G3D::Vector2 &t) {
-	glTexCoord2fv((const float *)&t);
+inline void glTexCoord(const G3D::Vector2& t) {
+	glTexCoord2fv((const float*)&t);
 }
 
 
-inline void glTexCoord(const G3D::Real t) {
-	glTexCoord1f((const float)t);
+inline void glTexCoord(const float t) {
+	glTexCoord1f(t);
 }
 
 

@@ -34,11 +34,11 @@ private:
 public:
 
     Matrix3(class BinaryInput& b);
-    Matrix3 (const G3D::Real aafEntry[3][3]);
+    Matrix3 (const float aafEntry[3][3]);
     Matrix3 (const Matrix3& rkMatrix);
-    Matrix3 (G3D::Real fEntry00, G3D::Real fEntry01, G3D::Real fEntry02,
-             G3D::Real fEntry10, G3D::Real fEntry11, G3D::Real fEntry12,
-             G3D::Real fEntry20, G3D::Real fEntry21, G3D::Real fEntry22);
+    Matrix3 (float fEntry00, float fEntry01, float fEntry02,
+             float fEntry10, float fEntry11, float fEntry12,
+             float fEntry20, float fEntry21, float fEntry22);
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
@@ -46,15 +46,15 @@ public:
     /**
      Sets all elements.
      */
-    void set(G3D::Real fEntry00, G3D::Real fEntry01, G3D::Real fEntry02,
-             G3D::Real fEntry10, G3D::Real fEntry11, G3D::Real fEntry12,
-             G3D::Real fEntry20, G3D::Real fEntry21, G3D::Real fEntry22);
+    void set(float fEntry00, float fEntry01, float fEntry02,
+             float fEntry10, float fEntry11, float fEntry12,
+             float fEntry20, float fEntry21, float fEntry22);
 
     /**
      * member access, allows use of construct mat[r][c]
      */
-    G3D::Real* operator[] (int iRow) const;
-    operator G3D::Real* ();
+    float* operator[] (int iRow) const;
+    operator float* ();
     Vector3 getColumn (int iCol) const;
     Vector3 getRow (int iRow) const;
     void setColumn(int iCol, const Vector3 &vector);
@@ -85,16 +85,16 @@ public:
     /**
      * matrix * scalar
      */
-    Matrix3 operator* (G3D::Real fScalar) const;
+    Matrix3 operator* (float fScalar) const;
 
     /** scalar * matrix */
-    friend Matrix3 operator* (G3D::Real fScalar, const Matrix3& rkMatrix);
+    friend Matrix3 operator* (float fScalar, const Matrix3& rkMatrix);
 
     // utilities
     Matrix3 transpose () const;
-    bool inverse (Matrix3& rkInverse, G3D::Real fTolerance = 1e-06) const;
-    Matrix3 inverse (G3D::Real fTolerance = 1e-06) const;
-    G3D::Real determinant () const;
+    bool inverse (Matrix3& rkInverse, float fTolerance = 1e-06) const;
+    Matrix3 inverse (float fTolerance = 1e-06) const;
+    float determinant () const;
 
     /** singular value decomposition */
     void singularValueDecomposition (Matrix3& rkL, Vector3& rkS,
@@ -110,11 +110,11 @@ public:
     void qDUDecomposition (Matrix3& rkQ, Vector3& rkD,
                            Vector3& rkU) const;
 
-    G3D::Real spectralNorm () const;
+    float spectralNorm () const;
 
     /** matrix must be orthonormal */
-    void toAxisAngle (Vector3& rkAxis, G3D::Real& rfRadians) const;
-    void fromAxisAngle (const Vector3& rkAxis, G3D::Real fRadians);
+    void toAxisAngle (Vector3& rkAxis, float& rfRadians) const;
+    void fromAxisAngle (const Vector3& rkAxis, float fRadians);
 
     /**
      * The matrix must be orthonormal.  The decomposition is yaw*pitch*roll
@@ -141,23 +141,23 @@ public:
     void fromEulerAnglesZYX (float fYAngle, float fPAngle, float fRAngle);
 
     /** eigensolver, matrix must be symmetric */
-    void eigenSolveSymmetric (G3D::Real afEigenvalue[3],
+    void eigenSolveSymmetric (float afEigenvalue[3],
                               Vector3 akEigenvector[3]) const;
 
     static void tensorProduct (const Vector3& rkU, const Vector3& rkV,
                                Matrix3& rkProduct);
 
-    static const G3D::Real EPSILON;
+    static const float EPSILON;
     static const Matrix3 ZERO;
     static const Matrix3 IDENTITY;
 
 protected:
     // support for eigensolver
-    void tridiagonal (G3D::Real afDiag[3], G3D::Real afSubDiag[3]);
-    bool qLAlgorithm (G3D::Real afDiag[3], G3D::Real afSubDiag[3]);
+    void tridiagonal (float afDiag[3], float afSubDiag[3]);
+    bool qLAlgorithm (float afDiag[3], float afSubDiag[3]);
 
     // support for singular value decomposition
-    static const G3D::Real ms_fSvdEpsilon;
+    static const float ms_fSvdEpsilon;
     static const int ms_iSvdMaxIterations;
     static void bidiagonalize (Matrix3& kA, Matrix3& kL,
                                Matrix3& kR);
@@ -165,9 +165,9 @@ protected:
                                 Matrix3& kR);
 
     // support for spectral norm
-    static G3D::Real maxCubicRoot (G3D::Real afCoeff[3]);
+    static float maxCubicRoot (float afCoeff[3]);
 
-    G3D::Real m_aafEntry[3][3];
+    float m_aafEntry[3][3];
 };
 
 

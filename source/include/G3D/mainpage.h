@@ -519,7 +519,7 @@
    The 6.00 team:
    <BLOCKQUOTE>
      <B>Morgan McGuire, James O'Sullivan, Kevin Egan, 
-        Nick Musurca, Ben Landon, Rob Hunter</B>
+        Nick Musurca, Ben Landon, Rob Hunter, Peter Sibley, Peter Hunt</B>
    </BLOCKQUOTE>
 
    This library contains code and resources contributed by the
@@ -563,6 +563,7 @@
    <BR>Nate Robbins
    <BR>Sebastian Schuberth
    <BR>SGI
+   <BR>Peter Sibley
    <BR>Matthew Welch
    <BR>Simon Winkelbach
    <BR>Laura Wollstadt

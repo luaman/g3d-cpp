@@ -51,8 +51,8 @@ public:
     // construction
     Vector3();
     Vector3(class BinaryInput& b);
-    Vector3(Real _x, Real _y, Real _z);
-    Vector3(Real coordinate[3]);
+    Vector3(float _x, float _y, float _z);
+    Vector3(float coordinate[3]);
     Vector3(const Vector3& rkVector);
     Vector3(const class Vector3int16& v);
 
@@ -60,16 +60,16 @@ public:
     void deserialize(class BinaryInput& b);
     
     // coordinates
-    Real x, y, z;
+    float x, y, z;
 
     // access vector V as V[0] = V.x, V[1] = V.y, V[2] = V.z
     //
     // WARNING.  These member functions rely on
     // (1) Vector3 not having virtual functions
-    // (2) the data packed in a 3*sizeof(Real) memory block
-    Real& operator[] (int i) const; 
-    operator Real* ();
-    operator const Real* () const;
+    // (2) the data packed in a 3*sizeof(float) memory block
+    float& operator[] (int i) const; 
+    operator float* ();
+    operator const float* () const;
 
     enum Axis {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, DETECT_AXIS=-1};
 
@@ -99,22 +99,22 @@ public:
     // arithmetic operations
     Vector3 operator+ (const Vector3& rkVector) const;
     Vector3 operator- (const Vector3& rkVector) const;
-    Vector3 operator* (Real fScalar) const;
-    Vector3 operator/ (Real fScalar) const;
+    Vector3 operator* (float fScalar) const;
+    Vector3 operator/ (float fScalar) const;
     Vector3 operator* (const Vector3& rkVecto) const;
     Vector3 operator/ (const Vector3& rkVecto) const;
     Vector3 operator- () const;
-    friend Vector3 operator* (Real fScalar, const Vector3& rkVector);
+    friend Vector3 operator* (float fScalar, const Vector3& rkVector);
 
     // arithmetic updates
     Vector3& operator+= (const Vector3& rkVector);
     Vector3& operator-= (const Vector3& rkVector);
-    Vector3& operator*= (Real fScalar);
-    Vector3& operator/= (Real fScalar);
+    Vector3& operator*= (float fScalar);
+    Vector3& operator/= (float fScalar);
     Vector3& operator*= (const Vector3& rkVector);
     Vector3& operator/= (const Vector3& rkVector);
 
-    Real length () const;
+    float length () const;
     
     /**
      The result is a nan vector if the length is almost zero.
@@ -135,9 +135,9 @@ public:
         return fastDirection();
     }
 
-    Real squaredLength () const;
-    Real dot (const Vector3& rkVector) const;
-    Real unitize (Real fTolerance = 1e-06);
+    float squaredLength () const;
+    float dot (const Vector3& rkVector) const;
+    float unitize (float fTolerance = 1e-06);
     Vector3 cross (const Vector3& rkVector) const;
     Vector3 unitCross (const Vector3& rkVector) const;
 

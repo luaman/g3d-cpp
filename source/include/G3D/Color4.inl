@@ -28,7 +28,7 @@ inline Color4::Color4 () {
 
 //----------------------------------------------------------------------------
 
-inline Color4::Color4(const Color3& c3, G3D::Real a) {
+inline Color4::Color4(const Color3& c3, float a) {
     r = c3.r;
     g = c3.g;
     b = c3.b;
@@ -38,15 +38,15 @@ inline Color4::Color4(const Color3& c3, G3D::Real a) {
 //----------------------------------------------------------------------------
 
 inline Color4::Color4(
-    G3D::Real       r,
-    G3D::Real       g,
-    G3D::Real       b,
-    G3D::Real       a) :
+    float       r,
+    float       g,
+    float       b,
+    float       a) :
     r(r), g(g), b(b), a(a) {
 }
 
 //----------------------------------------------------------------------------
-inline Color4::Color4 (G3D::Real afCoordinate[4]) {
+inline Color4::Color4 (float afCoordinate[4]) {
     r = afCoordinate[0];
     g = afCoordinate[1];
     b = afCoordinate[2];
@@ -66,17 +66,17 @@ inline Color4::Color4(
 
 //----------------------------------------------------------------------------
 
-inline G3D::Real& Color4::operator[] (int i) const {
-    return ((G3D::Real*)this)[i];
+inline float& Color4::operator[] (int i) const {
+    return ((float*)this)[i];
 }
 
 //----------------------------------------------------------------------------
-inline Color4::operator G3D::Real* () {
-    return (G3D::Real*)this;
+inline Color4::operator float* () {
+    return (float*)this;
 }
 
-inline Color4::operator const G3D::Real* () const {
-    return (G3D::Real*)this;
+inline Color4::operator const float* () const {
+    return (float*)this;
 }
 
 //----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ inline Color4 Color4::operator- (const Color4& rkVector) const {
 
 //----------------------------------------------------------------------------
 
-inline Color4 Color4::operator* (G3D::Real fScalar) const {
+inline Color4 Color4::operator* (float fScalar) const {
     return Color4(fScalar*r, fScalar*g, fScalar*b, fScalar*a);
 }
 
@@ -139,7 +139,7 @@ inline Color4 Color4::operator- () const {
 
 //----------------------------------------------------------------------------
 
-inline Color4 operator* (G3D::Real fScalar, const Color4& rkVector) {
+inline Color4 operator* (float fScalar, const Color4& rkVector) {
     return Color4(fScalar*rkVector.r, fScalar*rkVector.g,
                   fScalar*rkVector.b, fScalar*rkVector.a);
 }
@@ -166,7 +166,7 @@ inline Color4& Color4::operator-= (const Color4& rkVector) {
 
 //----------------------------------------------------------------------------
 
-inline Color4& Color4::operator*= (G3D::Real fScalar) {
+inline Color4& Color4::operator*= (float fScalar) {
     r *= fScalar;
     g *= fScalar;
     b *= fScalar;

@@ -33,7 +33,7 @@ private:
     
      In Watt & Watt's notation, s = w, v = (x, y, z)
      */
-    G3D::Real x, y, z, w;
+    float x, y, z, w;
 
     Quat(double x, double y, double z, double w) : x(x), y(y), z(z), w(w) {}
 
@@ -85,7 +85,7 @@ public:
     /**
      Quaternion magnitude (sum squares; no sqrt).
      */
-    inline Real magnitude() const;
+    inline float magnitude() const;
 
 
 private:
@@ -102,10 +102,10 @@ private:
     //
     // WARNING.  These member functions rely on
     // (1) Quat not having virtual functions
-    // (2) the data packed in a 4*sizeof(Real) memory block
-    G3D::Real& operator[] (int i) const;
-    operator G3D::Real* ();
-    operator const G3D::Real* () const;
+    // (2) the data packed in a 4*sizeof(float) memory block
+    float& operator[] (int i) const;
+    operator float* ();
+    operator const float* () const;
 
 
 };

@@ -50,13 +50,9 @@ namespace G3D {
 #define G3D_DOUBLE 2
 
 
-typedef float Real;
 const double fuzzyEpsilon = 0.0000001;
 
 #ifdef _MSC_VER
-
-const double infReal = std::numeric_limits<double>::infinity();
-const double nanReal = std::numeric_limits<double>::quiet_NaN();
 
 const double inf = (std::numeric_limits<double>::infinity());
 const double nan = (std::numeric_limits<double>::quiet_NaN());
@@ -64,13 +60,11 @@ const double NAN = (std::numeric_limits<double>::quiet_NaN());
 
 #else
 
-// On Linux, the std constants are incorrect, so we have
+// On Linux, the std constants are incorrect at compile time, so we have
 // to trick the compiler into producing inf and nan without
 // producing a compile-time warning.  Since sin(0.0) == 0.0,
 // dividing by it hides the divide by zero at compile time
 // but produces the correct constants.
-const double infReal = 1.0/sin(0.0);
-const double nanReal = 0.0/sin(0.0);
 const double inf = 1.0/sin(0.0);
 const double nan = 0.0/sin(0.0);
 

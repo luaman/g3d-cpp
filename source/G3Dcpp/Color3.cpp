@@ -92,11 +92,11 @@ Color3 Color3::random() {
 }
 
 //----------------------------------------------------------------------------
-Color3 Color3::operator/ (G3D::Real fScalar) const {
+Color3 Color3::operator/ (float fScalar) const {
     Color3 kQuot;
 
     if (fScalar != 0.0) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         kQuot.r = fInvScalar * r;
         kQuot.g = fInvScalar * g;
         kQuot.b = fInvScalar * b;
@@ -104,32 +104,32 @@ Color3 Color3::operator/ (G3D::Real fScalar) const {
 
     } else {
 
-        return Color3(G3D::infReal, G3D::infReal, G3D::infReal);
+        return Color3(inf, inf, inf);
     }
 }
 
 //----------------------------------------------------------------------------
-Color3& Color3::operator/= (G3D::Real fScalar) {
+Color3& Color3::operator/= (float fScalar) {
     if (fScalar != 0.0) {
-		G3D::Real fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0 / fScalar;
         r *= fInvScalar;
         g *= fInvScalar;
         b *= fInvScalar;
     } else {
-        r = G3D::infReal;
-        g = G3D::infReal;
-        b = G3D::infReal;
+        r = inf;
+        g = inf;
+        b = inf;
     }
 
     return *this;
 }
 
 //----------------------------------------------------------------------------
-G3D::Real Color3::unitize (G3D::Real fTolerance) {
-	G3D::Real fLength = length();
+float Color3::unitize (float fTolerance) {
+	float fLength = length();
 
     if ( fLength > fTolerance ) {
-		G3D::Real fInvLength = 1.0 / fLength;
+		float fInvLength = 1.0 / fLength;
         r *= fInvLength;
         g *= fInvLength;
         b *= fInvLength;

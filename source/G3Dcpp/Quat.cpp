@@ -36,7 +36,7 @@ Quat::Quat(
 
     if (tr > 0.0) {
         double c = sqrt(tr + 1.0);
-        w = (Real) c * 0.5;
+        w = (float) c * 0.5;
         c = 0.5 / c;
 
         x = (rot[1][2] - rot[2][1]) * c;
@@ -60,7 +60,7 @@ Quat::Quat(
 
         double c = sqrt((rot[i][i] - (rot[j][j] + rot[k][k])) + 1.0);
 
-        Real* v = (Real*)(*this);
+        float* v = (float*)(*this);
 
         v[i] = c * 0.5;
         c    = 0.5 / c;
@@ -189,8 +189,8 @@ Quat Quat::lerp(
     // Interpolate and normalize
     double mag = 0.0;
     int i;
-    const Real* p = *this;
-    const Real* q = other;
+    const float* p = *this;
+    const float* q = other;
     for (i = 0; i < 4; i++) {
         out[i] = p[i] * a + q[i] * b;
         mag += out[i] * out[i];

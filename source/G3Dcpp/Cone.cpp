@@ -16,7 +16,7 @@
 
 namespace G3D {
 
-Cone::Cone(const Vector3 &tip, const Vector3 &direction, Real angle) {
+Cone::Cone(const Vector3 &tip, const Vector3 &direction, float angle) {
     this->tip = tip;
     this->direction = direction.direction();
     this->angle = angle;

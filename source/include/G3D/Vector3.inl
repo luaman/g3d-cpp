@@ -28,14 +28,14 @@ inline Vector3::Vector3 () {
 
 //----------------------------------------------------------------------------
 
-inline Vector3::Vector3 (Real fX, Real fY, Real fZ) {
+inline Vector3::Vector3 (float fX, float fY, float fZ) {
     x = fX;
     y = fY;
     z = fZ;
 }
 
 //----------------------------------------------------------------------------
-inline Vector3::Vector3 (Real afCoordinate[3]) {
+inline Vector3::Vector3 (float afCoordinate[3]) {
     x = afCoordinate[0];
     y = afCoordinate[1];
     z = afCoordinate[2];
@@ -56,17 +56,17 @@ inline Vector3::Vector3 (const Vector3& rkVector) {
 //}
 
 //----------------------------------------------------------------------------
-inline Real& Vector3::operator[] (int i) const {
-    return ((Real*)this)[i];
+inline float& Vector3::operator[] (int i) const {
+    return ((float*)this)[i];
 }
 
 //----------------------------------------------------------------------------
-inline Vector3::operator Real* () {
-    return (Real*)this;
+inline Vector3::operator float* () {
+    return (float*)this;
 }
 
-inline Vector3::operator const Real* () const {
-    return (Real*)this;
+inline Vector3::operator const float* () const {
+    return (float*)this;
 }
 
 //----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ inline Vector3 Vector3::operator- (const Vector3& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3 Vector3::operator* (Real fScalar) const {
+inline Vector3 Vector3::operator* (float fScalar) const {
     return Vector3(fScalar*x, fScalar*y, fScalar*z);
 }
 
@@ -136,7 +136,7 @@ inline Vector3 Vector3::operator- () const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3 operator* (Real fScalar, const Vector3& rkVector) {
+inline Vector3 operator* (float fScalar, const Vector3& rkVector) {
     return Vector3(fScalar*rkVector.x, fScalar*rkVector.y,
                    fScalar*rkVector.z);
 }
@@ -158,7 +158,7 @@ inline Vector3& Vector3::operator-= (const Vector3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3& Vector3::operator*= (Real fScalar) {
+inline Vector3& Vector3::operator*= (float fScalar) {
     x *= fScalar;
     y *= fScalar;
     z *= fScalar;
@@ -182,19 +182,19 @@ inline Vector3& Vector3::operator/= (const Vector3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Real Vector3::squaredLength () const {
+inline float Vector3::squaredLength () const {
     return x*x + y*y + z*z;
 }
 
 //----------------------------------------------------------------------------
-inline Real Vector3::length () const {
+inline float Vector3::length () const {
     return sqrt(x*x + y*y + z*z);
 }
 
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::direction () const {
-    Real lenSquared = x * x + y * y + z * z;
-    Real invSqrt = 1/sqrt(lenSquared);
+    float lenSquared = x * x + y * y + z * z;
+    float invSqrt = 1/sqrt(lenSquared);
     return Vector3(x * invSqrt, y * invSqrt, z * invSqrt);
 }
 
@@ -202,8 +202,8 @@ inline Vector3 Vector3::direction () const {
 
 inline Vector3 Vector3::fastDirection () const {
 //    #ifdef SSE
-        Real lenSquared = x * x + y * y + z * z;
-        Real invSqrt = rsq(lenSquared);
+        float lenSquared = x * x + y * y + z * z;
+        float invSqrt = rsq(lenSquared);
         return Vector3(x * invSqrt, y * invSqrt, z * invSqrt);
 //    #else
 //        return direction();  
@@ -211,7 +211,7 @@ inline Vector3 Vector3::fastDirection () const {
 }
 
 //----------------------------------------------------------------------------
-inline Real Vector3::dot (const Vector3& rkVector) const {
+inline float Vector3::dot (const Vector3& rkVector) const {
     return x*rkVector.x + y*rkVector.y + z*rkVector.z;
 }
 

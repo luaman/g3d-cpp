@@ -24,7 +24,7 @@ private:
 
     /** normal.Dot(x,y,z) = distance */
     Vector3						_normal;
-    Real						distance;
+    float						distance;
 
     /**
      Assumes the normal has unit length.
