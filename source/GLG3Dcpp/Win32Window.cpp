@@ -51,6 +51,7 @@ static const UINT BLIT_BUFFER = 0xC001;
 #define WGL_SAMPLES_ARB		    0x2042
 
 static PFNWGLCHOOSEPIXELFORMATEXTPROC wglChoosePixelFormatEXT = NULL;
+static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
 static unsigned int _sdlKeys[SDLK_LAST];
 static bool keyStates[SDLK_LAST];
@@ -347,7 +348,7 @@ void Win32Window::init(HWND hwnd) {
     pixelFormat = ChoosePixelFormat(_hDC, &pixelFormatDesc);
 
     if (wglChoosePixelFormatEXT != NULL) {
-        // Use wglChoosePixelFormatARB to override the pixel format choice for antialiasing.
+        // Use wglChoosePixelFormatEXT to override the pixel format choice for antialiasing.
         // Based on http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=46
         // and http://oss.sgi.com/projects/ogl-sample/registry/ARB/wgl_pixel_format.txt
 
@@ -1105,8 +1106,15 @@ void Win32Window::setInputCapture(bool c) {
 	}
 }
 
-
 void Win32Window::initWGL() {
+    
+    // This function need only be called once
+    static bool wglInitialized = false;
+    if (wglInitialized) {
+        return;
+    }
+    wglInitialized = true;
+
     std::string name = "G3D";
     WNDCLASS window_class;
     
@@ -1172,10 +1180,13 @@ void Win32Window::initWGL() {
 
     wglChoosePixelFormatEXT =
         (PFNWGLCHOOSEPIXELFORMATEXTPROC)wglGetProcAddress("wglChoosePixelFormatEXT");
+    wglChoosePixelFormatARB =
+        (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
 
-    Log::common()->printf("wglChoosePixelFormat = 0x%x\n", wglChoosePixelFormatEXT); 
+    Log::common()->printf("wglChoosePixelFormatEXT = 0x%x\n", wglChoosePixelFormatEXT); 
+    Log::common()->printf("wglChoosePixelFormatARB = 0x%x\n", wglChoosePixelFormatARB); 
 
-    // Now destroy everything
+    // Now destroy the dummy windows
     wglDeleteContext(hRC);					
     hRC = 0;	
 	ReleaseDC(hWnd, hDC);	

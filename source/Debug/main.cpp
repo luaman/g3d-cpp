@@ -109,8 +109,9 @@ App::App(const GAppSettings& settings) : GApp(settings, Win32Window::create(sett
 
 int main(int argc, char** argv) {
     GAppSettings settings;
-    settings.window.depthBits = 24;
+/*    settings.window.depthBits = 24;
     settings.window.alphaBits = 8;
+    */
     App(settings).run();
     return 0;
 }
