@@ -3,57 +3,105 @@
 </HEAD>
 
 <BODY>
-<IMG SRC="source/html/G3D.gif" ALIGN=LEFT>
+<H1>Building G3D</H1>
+
+<A HREF="http://www.graphics3d.com"><IMG SRC="source/html/G3D.gif" ALIGN=RIGHT BORDER=0></A>
 This document describes the structure of the source distribution for
-the graphics3D C++ library (G3D).  This distribution contains all of
+the G3D C++ library.  It is for programmers who need to modify the
+library itself.  
+
+<P>
+<B>Windows programmers who do not need to modify the
+library should download precompiled binaries and link against them</B>
+instead of building the library themselves because building the library
+requires you to install several tools.
+<P>
+
+This distribution contains all of
 the files you need to <I>build</I> the library on Windows or Linux.
 It is assumed that you obtained this source by checking it out of
 SourceForge.net CVS for the "g3d-cpp" project (<A
-HREF="http://sourceforge.net/projects/g3d-cpp">http://sourceforge.net/projects/g3d-cpp</A>).
-If you obtained it by some other means, you should get the latest
-version directly from CVS.
+HREF="http://sourceforge.net/projects/g3d-cpp">http://sourceforge.net/projects/g3d-cpp</A>) or downloading a release zipfile.
 
-<P><B>If you are just want to <I>use</I> the library on Windows, you don't need
-the files refered to in this document.</B>  Download
-the latest precompiled binary (<CODE>g3d-?_??.zip</CODE>) from <A HREF="http://sourceforge.net/project/showfiles.php?group_id=76879">http://sourceforge.net/project/showfiles.php?group_id=76879</A> and follow the installation instructions on <A HREF="http://www.graphics3d.com/cpp">graphics3d.com</A>.
 
-<P>To build the library, you need to have installed <A
-HREF="http://www.doxygen.org">Doxygen 1.2</A>, <A
-HREF="http://www.python.org">Python 2.0</A>, <A
-HREF="http://www.libsdl.org">SDL 1.2.x</A>, OpenGL 1.3, automake 1.6,
-aclocal 1.6, autoconf 2.13, and either MSVC++ 6.0 (Windows) or g++ 3.1
-(Linux/OS X).
+<HR>
+<B><FONT SIZE=6><IMG SRC="source/html/win32.gif" VALIGN=CENTER> Windows 2000 or XP</FONT></B>
+<P>
 
-<P>To build the library on <B>Windows</B>:
+
+<P>
+<I> The Cygwin versions of doxygen and python do not execute correctly
+from a Windows command prompt, so you will have to download and
+install them separately if you have Cygwin.</I>
+
 <OL>
-<LI> Install the libraries listed above.  The Cygwin versions of doxygen and
-python may not execute correctly from a command prompt, so you may
-have to download and install them separately if you have Cygwin.
 
-<LI> Add doxygen, python, and msvc executables to your PATH environment variable.  These are usually <CODE>C:\Program Files\Microsoft Visual
-Studio\Common\MSDev98\Bin\</CODE>, <CODE>c:\doxygen</CODE>, <CODE>c:\python\bin</CODE>.  
+<LI> Install Microsoft Visual Studio 6.0.
+<LI> Install the <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Visual Studio 6.0 Service Pack 5</A>.
+<LI> Install the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Visual Studio 6.0 Processor Pack</A>.
+<LI> Install the <A HREF="http://www.python.org/ftp/python/2.2.3/Python-2.2.3.exe">Python 2.2.3 tool</A>.
+<LI> Install the <A HREF="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.3.2-setup.exe">Doxygen 1.3.2 tool</A>.
+<LI> Install the <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.5a-VC6.zip">SDL 1.2.5 Development Library</A>.
+
+<LI> Add the paths for these tools to your PATH environment variable (Control Panel -> System -> Advanced -> Environment Variables).  These are usually <CODE>C:\Program Files\Microsoft Visual
+Studio\Common\MSDev98\Bin\;c:\doxygen;c:\python\bin</CODE>.
+<LI> Log out so all changes can take effect.
+<P>
+
 
 <LI>Run "<CODE>build install</CODE>" in the <CODE>cpp</CODE> directory
 
-<LI>Copy the resulting <CODE>cpp/install</CODE> directory to wherever you install libraries.  You no longer need the source tree.
+<LI>Copy the contents of the <CODE>cpp/install</CODE> directory to wherever
+you install libraries.  You no longer need the source tree.
+
 </OL>
 
-<P>To build the library on <B>Linux and OS/X</B>:
+<HR>
+<B><FONT SIZE=6><IMG SRC="source/html/linux.gif" VALIGN=CENTER> Linux</FONT></B>
+<P>
 <OL>
+<LI> Install <A HREF="ftp://ftp.thewrittenword.com/packages/by-name/gcc-3.3/i686-pc-linux-gnu/gcc-3.3.rpm4.tar.Z">gcc 3.3</A>.
+<LI> Install the <A HREF="http://www.python.org/ftp/python/2.2.3/rpms/python-2.2.3-26.src.rpm">Python 2.2.3 tool</A>.
+<LI> Install the <A HREF="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.3.2.linux.bin.tar.gz">Doxygen 1.3.2 tool</A>.
+<LI> Install the <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.5-1.i386.rpm">SDL 1.2.5 Development Library</A>.
+<LI> Install the <A HREF="http://ftp.gnu.org/gnu/automake/automake-1.7.5.tar.gz">automake 1.7.5</A> tool (and the corresponding aclocal version).
+<LI> Install the <A HREF="http://ftp.gnu.org/gnu/autoconf/autoconf-2.57.tar.gz">autoconf 2.57</A> tool.
+<LI> Add the paths for these tools to your PATH environment variable (usually in your .cshrc, .tcshrc, or .bashrc file).
 
-<LI> Install the libraries listed above.
-<LI> Ensure that doxygen, python, and gcc are in your PATH environment variable
-<LI> Set your CXX environment variable.
-<LI>Run <CODE>"chmod u+x build"</CODE> and "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory
 <LI>TODO: set up LD_LIBRARY_PATH
+
+<LI> Log out so all changes can take effect.
+<P>
+<LI>Run "<CODE>chmod u+x build</CODE>" in the <CODE>cpp</CODE> directory.
+<LI>Run "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory
 <LI>The library and demos will compile in the source tree
-<LI>TODO: where are they?
 </OL>
 
-<P>Targets for making a release distribution
-(a.k.a. g3d-cpp-?_??.zip), which should only be done by the G3D team
-at Brown, are described below.
+<HR>
+<B><FONT SIZE=6><IMG SRC="source/html/osx.gif" VALIGN=CENTER> OS X</FONT></B>
 
+<P>
+<I>The OS X build infrastructure is currently under construction.</I>
+<P>
+<OL>
+<LI> <I>gcc 3.1 came with your operating system.  There is no newer version for OS X</I>
+<LI> Install the <A HREF="http://www.cwi.nl/ftp/jack/python/mac/MacPython222active.bin">Python 2.2.2 tool</A>.
+<LI> Install the <A HREF="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.3-rc3.macosx.bin.tar.gz">Doxygen 1.3.2 tool</A>.
+<LI> Install the <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.5.pkg.tar.gz">SDL 1.2.5 Development Library</A>.
+<LI> Install the <A HREF="http://ftp.gnu.org/gnu/automake/automake-1.7.5.tar.gz">automake 1.7.5</A> tool (and the corresponding aclocal version).
+<LI> Install the <A HREF="http://ftp.gnu.org/gnu/autoconf/autoconf-2.57.tar.gz">autoconf 2.57</A> tool.
+<LI> Add the paths for these tools to your PATH environment variable (usually in your .cshrc, .tcshrc, or .bashrc file).
+
+<LI>TODO: set up LD_LIBRARY_PATH
+
+<LI> Log out so all changes can take effect.
+<P>
+<LI>Run "<CODE>chmod u+x build</CODE>" in the <CODE>cpp</CODE> directory.
+<LI>Run "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory
+<LI>The library and demos will compile in the source tree
+</OL>
+
+<HR>
 <H1>Directories</H1>
 You are at the root of the directory tree for G3D (which is
 referred to as "cpp" in this document).  The subdirectories have
