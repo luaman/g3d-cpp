@@ -201,7 +201,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
             //     search backwards for a space, then execute case 2.
 
             // Index of most recent space
-            int lastSpace = data.size() - 1;
+            uint32 lastSpace = data.size() - 1;
 
             // How far back we had to look for a space
             int k = 0;
@@ -241,7 +241,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
 
                 // Find the start of the spaces.  firstSpace is the index of the
                 // first non-space, looking backwards from lastSpace.
-                int firstSpace = lastSpace;
+                uint32 firstSpace = lastSpace;
                 while ((k < maxLookBackward) &&
                     (firstSpace > 0) &&
                     (data[firstSpace] == ' ')) {
@@ -268,7 +268,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
 
                     // Copy over the characters that should be saved
                     Array<char> temp;
-                    for (int j = lastSpace + 1; j < data.size(); ++j) {
+                    for (uint32 j = lastSpace + 1; j < data.size(); ++j) {
                         char c = data[j];
 
                         if (c == '\"') {
@@ -284,7 +284,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
                     writeNewline();
 
                     // Write them back
-                    for (int j = 0; j < temp.size(); ++j) {
+                    for (uint32 j = 0; j < temp.size(); ++j) {
                         indentAppend(temp[j]);
                     }
 
