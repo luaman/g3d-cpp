@@ -451,36 +451,17 @@ void SDLWindow::setIcon(const GImage& image) {
             "Icons must be 32x32 on windows.");
     #endif
 
-    uint8* mask = NULL;
+    uint32 amask = 0xFF000000;
+    uint32 bmask = 0x00FF0000;
+    uint32 gmask = 0x0000FF00;
+    uint32 rmask = 0x000000FF;
 
-    uint32 rmask = 0xFF000000;
-    uint32 gmask = 0x00FF0000;
-    uint32 bmask = 0x0000FF00;
-    uint32 amask = 0x000000FF;
-
-    if (image.channels == 4) {
-        // Has an alpha channel; construct a mask
-        int len = iCeil(image.width / 8) * image.height;
-        mask = new uint8[len];
-        // Initialize the mask to transparent
-        System::memset(mask, 0, len);
-
-        // Set bits with an alpha value >= 127.
-        for (int y = 0; y < image.height; ++y) {
-            for (int x = 0; x < image.width; ++x) {
-                // Test this pixel
-                bool bit = image.pixel4()[y * image.width + x].a >= 127;
-
-                // Set the correct bit
-                mask[y * image.width + x / 8] |= (bit << (x % 8));
-            }
-        }
-    } else if (image.channels == 3) {
+    if (image.channels == 3) {
         // Take away the 4th channel.
-        rmask = rmask >> 8;
-        gmask = gmask >> 8;
-        bmask = bmask >> 8;
-        amask = amask >> 8;
+        rmask = (rmask << 8) >> 16;
+        gmask = (gmask << 8) >> 16;
+        bmask = (bmask << 8) >> 16;
+        amask = (amask << 8) >> 16;
     }
 
     int pixelBitLen     = image.channels * 8;
@@ -491,10 +472,13 @@ void SDLWindow::setIcon(const GImage& image) {
         pixelBitLen, scanLineByteLen, 
         rmask, gmask, bmask, amask);
 
-    SDL_WM_SetIcon(surface, mask);
+    alwaysAssertM((surface != NULL),
+        "Icon data failed to load into SDL.");
+
+    // Let SDL create mask from image data directly
+    SDL_WM_SetIcon(surface, NULL);
 
     SDL_FreeSurface(surface);
-    delete[] mask;
 }
 
 
