@@ -19,6 +19,22 @@ bool Shader::ok() const {
 }
 
 
+bool Shader::supportsPixelShaders() {
+    return
+        GLCaps::supports_GL_ARB_shader_objects() && 
+        GLCaps::supports_GL_ARB_shading_language_100() &&
+        GLCaps::supports_GL_ARB_fragment_shader();
+}
+
+
+bool Shader::supportsVertexShaders() {
+    return
+        GLCaps::supports_GL_ARB_shader_objects() && 
+        GLCaps::supports_GL_ARB_shading_language_100() &&
+        GLCaps::supports_GL_ARB_vertex_shader();
+}
+
+
 void Shader::beforePrimitive(class RenderDevice* renderDevice) {
     renderDevice->pushState();
 
@@ -116,7 +132,24 @@ void VertexAndPixelShader::GPUShader::init(
 	fromFile		= _fromFile;
 	_fixedFunction	= (name == "") && (code == "");
 
-	if (! _fixedFunction) {		
+	if (! _fixedFunction) {
+
+        switch (glType) {
+        case GL_VERTEX_SHADER_ARB:
+            if (! Shader::supportsVertexShaders()) {
+                _ok = false;
+                _messages = "This graphics card does not support vertex shaders.";
+            }
+            break;
+
+        case GL_FRAGMENT_SHADER_ARB:
+            if (! Shader::supportsPixelShaders()) {
+                _ok = false;
+                _messages = "This graphics card does not support pixel shaders.";
+            }
+            break;
+        }
+
 		if (fromFile) {
 			if (fileExists(_name)) {
 				_code = readFileAsString(_name);
@@ -244,6 +277,12 @@ VertexAndPixelShader::VertexAndPixelShader(
     bool                debug,
     UseG3DUniforms      uniforms) :
         _ok(true) {
+
+    if (! GLCaps::supports_GL_ARB_shader_objects()) {
+        _messages = "This graphics card does not support GL_ARB_shader_objects.";
+        _ok = false;
+        return;
+    }
 
 	vertexShader.init(vsFilename, vsCode, vsFromFile, debug, GL_VERTEX_SHADER_ARB, "Vertex Shader", uniforms);
 	pixelShader.init(psFilename, psCode, psFromFile, debug, GL_FRAGMENT_SHADER_ARB, "Pixel Shader", uniforms);

@@ -40,7 +40,6 @@ namespace G3D {
 
  GLCaps assumes all OpenGL contexts have the same capabilities.
 
-  <PRE>
   The following extensions are shortcutted with a method named
   similarly to GLCaps::supports_GL_EXT_texture_rectangle():
 

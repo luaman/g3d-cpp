@@ -559,6 +559,13 @@ public:
 
     virtual bool ok() const;
 
+    /** Returns true if this card supports vertex shaders */
+    static bool supportsVertexShaders();
+
+    /** Returns true if this card supports pixel shaders.  If vertex but not pixel
+        shaders are supported you can pass an empty string as the pixel shader. */
+    static bool supportsPixelShaders();
+
 	/**
 	 Invoked by RenderDevice immediately before a primitive group.
 	 Override to set state on the RenderDevice (including the underlying

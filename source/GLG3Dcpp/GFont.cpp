@@ -184,9 +184,6 @@ Vector2 GFont::draw2D(
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA,
 				   RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
 
-        // TODO: enable the alpha test.  This is temporarily disabled as a workaround
-        // for a specific driver version bug.
-
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
         renderDevice->beginPrimitive(RenderDevice::QUADS);
