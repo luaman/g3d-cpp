@@ -77,9 +77,9 @@ void Demo::init()  {
 
 
     std::string ps =
-        "uniform sampler2DRect T;  "
-        "void main (void) {           "
-        "   gl_FragColor    = texture2DRect(T, gl_TexCoord[0].st)); "
+        "uniform sampler2DRect T;"
+        "void main (void) {"
+        "   gl_FragColor = texture2DRect(T, gl_TexCoord[0].st);"
         "}";
 
     shader = VertexAndPixelShader::fromStrings("", ps);
@@ -102,8 +102,6 @@ void Demo::drawNailboard() {
 		
 		app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
 		app->renderDevice->disableLighting();
-
-//		app->renderDevice->setTexture(0, brush);
 
 		VertexAndPixelShader::ArgList args;
 		args.set("T", brush);

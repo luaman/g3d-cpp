@@ -179,10 +179,10 @@ VertexAndPixelShader::VertexAndPixelShader(
 
 
 bool VertexAndPixelShader::isSamplerType(GLenum e) {
-	// TODO: cube map
     return
        (e == GL_SAMPLER_1D_ARB) ||
        (e == GL_SAMPLER_2D_ARB) ||
+       (e == GL_SAMPLER_2DRECT_ARB) ||
        (e == GL_SAMPLER_3D_ARB) ||
        (e == GL_SAMPLER_CUBE_ARB);
 }
