@@ -307,13 +307,13 @@ def install(args, copyData=1):
         try:
             findBinary("msdev")
             has6 = 1
-        except Error:
+        except 'Error':
             0
 
         try:
             findBinary("devenv")
             has7 = 1
-        except Error:
+        except 'Error':
             0
         
         if (not has6 and not has7):
