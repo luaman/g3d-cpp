@@ -672,7 +672,7 @@ void measureTriangleCollisionPerformance() {
     Triangle triangle(v0, v1, v2);
     int n = 1024;
     int i;
-    Ray ray = Ray::fromOriginAndDirection(Vector3(-.25,-1,-.25), vel);
+    Ray ray = Ray::fromOriginAndDirection(Vector3(3,-1,-.25), vel);
 
     System::beginCycleCount(raw);
     for (i = 0; i < n; ++i) {
@@ -685,6 +685,7 @@ void measureTriangleCollisionPerformance() {
 
     printf("\n");
     System::beginCycleCount(opt);
+    double x = 0;
     for (i = 0; i < n; ++i) {
         double t = intersectTriangle(ray.origin, ray.direction, v0, v1, v2);
         (void)t;

@@ -98,13 +98,22 @@ public:
     double intersectionTime(const class AABox& box) const;
 
     /* One-sided triangle 
-       @cite http://www.acm.org/jgt/papers/MollerTrumbore97/
-       http://www.graphics.cornell.edu/pubs/1997/MT97.html
        */
     double intersectionTime(const class Triangle& triangle) const;
 
     /**
-     Ray-triangle intersection
+     The three extra arguments are the weights of vertices 0, 1, and 2
+     at the intersection point; they are useful for texture mapping
+     and interpolated normals.
+     */
+    double intersectionTime(
+        const Vector3& v0, const Vector3& v1, const Vector3& v2,
+        double& w0, double& w1, double& w2) const;
+
+    /**
+     Ray-triangle intersection for a 1-sided triangle
+       @cite http://www.acm.org/jgt/papers/MollerTrumbore97/
+       http://www.graphics.cornell.edu/pubs/1997/MT97.html
      */
     double intersectionTime(
         const Vector3& v0,
@@ -130,6 +139,19 @@ public:
 };
 
 
+#define EPSILON 0.000001
+#define CROSS(dest,v1,v2) \
+          dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
+          dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
+          dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
+
+#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
+
+#define SUB(dest,v1,v2) \
+          dest[0]=v1[0]-v2[0]; \
+          dest[1]=v1[1]-v2[1]; \
+          dest[2]=v1[2]-v2[2]; 
+
 inline double Ray::intersectionTime(
     const Vector3& vert0,
     const Vector3& vert1,
@@ -137,18 +159,6 @@ inline double Ray::intersectionTime(
 
     // Barycenteric coords
     double u, v;
-    #define EPSILON 0.000001
-    #define CROSS(dest,v1,v2) \
-              dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
-              dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
-              dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
-
-    #define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
-
-    #define SUB(dest,v1,v2) \
-              dest[0]=v1[0]-v2[0]; \
-              dest[1]=v1[1]-v2[1]; \
-              dest[2]=v1[2]-v2[2]; 
 
     double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
     
@@ -186,17 +196,8 @@ inline double Ray::intersectionTime(
         return inf;
     }
     
-    // calculate t, scale parameters, ray intersects triangle
-    // If we want u,v, we can compute this
-    // double t = DOT(edge2, qvec);
-    //const double inv_det = 1.0 / det;
-    //t *= inv_det;
-    //u *= inv_det;
-    //v *= inv_det;
-    // return t;
 
     // Case where we don't need correct (u, v):
-
     const double t = DOT(edge2, qvec);
     
     if (t >= 0) {
@@ -206,12 +207,79 @@ inline double Ray::intersectionTime(
         // We had to travel backwards in time to intersect
         return inf;
     }
-
-    #undef EPSILON
-    #undef CROSS
-    #undef DOT
-    #undef SUB
 }
+
+
+inline double Ray::intersectionTime(
+    const Vector3&  vert0,
+    const Vector3&  vert1,
+    const Vector3&  vert2,
+    double&         w0,
+    double&         w1,
+    double&         w2) const {
+
+    // Barycenteric coords
+    double u, v;
+
+    double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
+    
+    // find vectors for two edges sharing vert0
+    SUB(edge1, vert1, vert0);
+    SUB(edge2, vert2, vert0);
+    
+    // begin calculating determinant - also used to calculate U parameter
+    CROSS(pvec, direction, edge2);
+    
+    // if determinant is near zero, ray lies in plane of triangle
+    const double det = DOT(edge1, pvec);
+    
+    if (det < EPSILON) {
+        return inf;
+    }
+    
+    // calculate distance from vert0 to ray origin
+    SUB(tvec, origin, vert0);
+    
+    // calculate U parameter and test bounds
+    u = DOT(tvec, pvec);
+    if ((u < 0.0) || (u > det)) {
+        // Hit the plane outside the triangle
+        return inf;
+    }
+    
+    // prepare to test V parameter
+    CROSS(qvec, tvec, edge1);
+    
+    // calculate V parameter and test bounds
+    v = DOT(direction, qvec);
+    if ((v < 0.0) || (u + v > det)) {
+        // Hit the plane outside the triangle
+        return inf;
+    }
+    
+    double t = DOT(edge2, qvec);
+    
+    if (t >= 0) {
+        const double inv_det = 1.0 / det;
+        t *= inv_det;
+        u *= inv_det;
+        v *= inv_det;
+
+        w0 = (1.0 - u - v);
+        w1 = u;
+        w2 = v;
+
+        return t;
+    } else {
+        // We had to travel backwards in time to intersect
+        return inf;
+    }
+}
+
+#undef EPSILON
+#undef CROSS
+#undef DOT
+#undef SUB
 
 }// namespace
 
