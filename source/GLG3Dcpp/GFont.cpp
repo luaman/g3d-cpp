@@ -221,7 +221,7 @@ Vector2 GFont::get2DStringBounds(
     double w = h * charWidth / charHeight;
     double propW = w / charWidth;
     double x = 0;
-    double y = charHeight;
+    double y = h;
 
     if (spacing == PROPORTIONAL_SPACING) {
         for (int i = 0; i < n; ++i) {
