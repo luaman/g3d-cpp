@@ -79,6 +79,38 @@ void testBitSerialization() {
 
         b.endBits();
     }
+
+    {
+        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+
+        b.beginBits();
+            b.writeBits(0, 3);
+            b.writeBits(3, 3);
+            b.writeBits(4, 3);
+            b.writeBits(7, 3);
+        b.endBits();
+
+        b.commit(x);
+    }
+
+    {
+        BinaryInput b(x, 2, G3D_LITTLE_ENDIAN);
+        b.beginBits();
+            
+            uint8 a = b.readBits(3);
+            debugAssert(a == 0);
+            
+            a = b.readBits(3);
+            debugAssert(a == 3);
+
+            a = b.readBits(3);
+            debugAssert(a == 4);
+
+            a = b.readBits(3);
+            debugAssert(a == 7);
+        b.endBits();
+    }
+
 }
 
 
