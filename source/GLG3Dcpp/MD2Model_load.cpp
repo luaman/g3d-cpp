@@ -271,7 +271,8 @@ void MD2Model::load(const std::string& filename) {
     weldedVertexArray = vertexArray;
     MeshAlg::weldAdjacency(keyFrame[0].vertexArray, weldedFaceArray, weldedEdgeArray, weldedVertexArray);
 
-    numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
+    numBoundaryEdges = MeshAlg::countBoundaryEdges(edgeArray);
+    numWeldedBoundaryEdges = MeshAlg::countBoundaryEdges(weldedEdgeArray);
 }
 
 

@@ -196,7 +196,8 @@ protected:
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
         virtual void render(RenderDevice* renderDevice) const;
-        virtual int numBrokenEdges() const; 
+        virtual int numBoundaryEdges() const; 
+        virtual int numWeldedBoundaryEdges() const; 
     };
 
     friend class PosedMD2Model;
@@ -350,7 +351,8 @@ protected:
     Array<MeshAlg::Edge>        weldedEdgeArray;
     Sphere                      boundingSphere;
     Box                         boundingBox;
-    int                         numBrokenEdges;
+    int                         numBoundaryEdges;
+    int                         numWeldedBoundaryEdges;
     std::string                 _name;
 
 public:

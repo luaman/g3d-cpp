@@ -56,7 +56,8 @@ private:
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
         virtual void render(RenderDevice* renderDevice) const;
-        virtual int numBrokenEdges() const;
+        virtual int numBoundaryEdges() const;
+        virtual int numWeldedBoundaryEdges() const;
     };
 
     friend class PosedIFSModel;
@@ -73,7 +74,8 @@ private:
     Array<MeshAlg::Vertex>      vertexArray;
     Sphere                      boundingSphere;
     Box                         boundingBox;
-    int                         numBrokenEdges;
+    int                         numBoundaryEdges;
+    int                         numWeldedBoundaryEdges;
     std::string                 name;
 
     /** Shared by all models */

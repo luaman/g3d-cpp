@@ -113,7 +113,8 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
     MeshAlg::computeNormals(geometry.vertexArray, faceArray, vertexArray, geometry.normalArray, faceNormalArray);
     MeshAlg::computeBounds(geometry.vertexArray, boundingBox, boundingSphere);
 
-    numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
+    numBoundaryEdges = MeshAlg::countBoundaryEdges(edgeArray);
+    numWeldedBoundaryEdges = MeshAlg::countBoundaryEdges(weldedEdgeArray);
 }
 
 
@@ -300,8 +301,13 @@ void IFSModel::PosedIFSModel::getObjectSpaceBoundingBox(Box& b) const {
 }
 
 
-int IFSModel::PosedIFSModel::numBrokenEdges() const {
-    return model->numBrokenEdges;
+int IFSModel::PosedIFSModel::numBoundaryEdges() const {
+    return model->numBoundaryEdges;
+}
+
+
+int IFSModel::PosedIFSModel::numWeldedBoundaryEdges() const {
+    return model->numWeldedBoundaryEdges;
 }
 
 }

@@ -115,7 +115,7 @@ void markShadows(
 
     debugAssertM(inMarkShadows, "Must call beginMarkShadows before markShadows");
 
-    if (model->numBrokenEdges() > 0) {
+    if (model->numWeldedBoundaryEdges() > 0) {
         // Can't cast shadows for such an object
         return;
     }

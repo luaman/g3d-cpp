@@ -851,8 +851,13 @@ void MD2Model::PosedMD2Model::getObjectSpaceBoundingBox(Box& b) const {
 }
 
 
-int MD2Model::PosedMD2Model::numBrokenEdges() const {
-    return model->numBrokenEdges;
+int MD2Model::PosedMD2Model::numBoundaryEdges() const {
+    return model->numBoundaryEdges;
+}
+
+
+int MD2Model::PosedMD2Model::numWeldedBoundaryEdges() const {
+    return model->numWeldedBoundaryEdges;
 }
 
 

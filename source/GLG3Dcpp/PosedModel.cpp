@@ -118,11 +118,6 @@ void PosedModelWrapper::getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const
 }
 
 
-const Array<MeshAlg::Face>& PosedModelWrapper::faces() const {
-    return model->faces();
-}
-
-
 void PosedModelWrapper::getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize) const {
     model->getObjectSpaceFaceNormals(faceNormals, normalize);
 }
@@ -133,6 +128,11 @@ void PosedModelWrapper::getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bo
 }
 
 
+const Array<MeshAlg::Face>& PosedModelWrapper::faces() const {
+    return model->faces();
+}
+
+
 const Array<MeshAlg::Edge>& PosedModelWrapper::edges() const {
     return model->edges();
 }
@@ -140,6 +140,21 @@ const Array<MeshAlg::Edge>& PosedModelWrapper::edges() const {
 
 const Array<MeshAlg::Vertex>& PosedModelWrapper::vertices() const {
     return model->vertices();
+}
+
+
+const Array<MeshAlg::Face>& PosedModelWrapper::weldedFaces() const {
+    return model->weldedFaces();
+}
+
+
+const Array<MeshAlg::Edge>& PosedModelWrapper::weldedEdges() const {
+    return model->weldedEdges();
+}
+
+
+const Array<MeshAlg::Vertex>& PosedModelWrapper::weldedVertices() const {
+    return model->weldedVertices();
 }
 
 
@@ -193,9 +208,13 @@ void PosedModelWrapper::render(class RenderDevice* renderDevice) const {
 }
 
 
-int PosedModelWrapper::numBrokenEdges() const {
-    return model->numBrokenEdges();
+int PosedModelWrapper::numBoundaryEdges() const {
+    return model->numBoundaryEdges();
 }
 
+
+int PosedModelWrapper::numWeldedBoundaryEdges() const {
+    return model->numWeldedBoundaryEdges();
+}
 
 }

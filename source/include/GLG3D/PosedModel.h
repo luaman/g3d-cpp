@@ -124,10 +124,23 @@ public:
     virtual Box worldSpaceBoundingBox() const;
 
     virtual void render(class RenderDevice* renderDevice) const = 0;
+
     /**
-     Number of edges that have only one adjacent face.
+     Number of edges that have only one adjacent face in edges().
+     These boundary edges are all at the end of the edge list.
      */
-    virtual int numBrokenEdges() const = 0;
+    virtual int numBoundaryEdges() const = 0;
+
+    /**
+     Number of edges that have only one adjacent face in weldedEdges().
+     These boundary edges are all at the end of the edge list.
+     */
+    virtual int numWeldedBoundaryEdges() const = 0;
+
+    /** @deprecated */
+    inline int numBrokenEdges() const {
+        return numBoundaryEdges();
+    }
 };
 
 
@@ -194,7 +207,9 @@ public:
 
     virtual void render(class RenderDevice* renderDevice) const;
 
-    virtual int numBrokenEdges() const;
+    virtual int numBoundaryEdges() const = 0;
+
+    virtual int numWeldedBoundaryEdges() const = 0;
 };
 
 
