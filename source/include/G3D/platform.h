@@ -106,19 +106,19 @@
     #endif
 
     #ifdef _DEBUG
-#pragma comment (linker, "/NODEFAULTLIB:LIBCMTD.LIB")
-#pragma comment (linker, "/NODEFAULTLIB:LIBCPMTD.LIB")
-#pragma comment (linker, "/NODEFAULTLIB:LIBCPD.LIB")
-#pragma comment (linker, "/DEFAULTLIB:MSVCPRTD.LIB")
+        #pragma comment (linker, "/NODEFAULTLIB:LIBCMTD.LIB")
+        #pragma comment (linker, "/NODEFAULTLIB:LIBCPMTD.LIB")
+        #pragma comment (linker, "/NODEFAULTLIB:LIBCPD.LIB")
+        #pragma comment (linker, "/DEFAULTLIB:MSVCPRTD.LIB")
         #pragma comment(linker, "/NODEFAULTLIB:LIBCD.LIB")
         #pragma comment(linker, "/DEFAULTLIB:MSVCRTD.LIB")
     #else
         #pragma comment(linker, "/NODEFAULTLIB:LIBC.LIB")
         #pragma comment(linker, "/DEFAULTLIB:MSVCRT.LIB")
-#pragma comment (linker, "/NODEFAULTLIB:LIBCMT.LIB")
-#pragma comment (linker, "/NODEFAULTLIB:LIBCPMT.LIB")
-#pragma comment(linker, "/NODEFAULTLIB:LIBCP.LIB")
-#pragma comment (linker, "/DEFAULTLIB:MSVCPRT.LIB")
+        #pragma comment (linker, "/NODEFAULTLIB:LIBCMT.LIB")
+        #pragma comment (linker, "/NODEFAULTLIB:LIBCPMT.LIB")
+        #pragma comment(linker, "/NODEFAULTLIB:LIBCP.LIB")
+        #pragma comment (linker, "/DEFAULTLIB:MSVCPRT.LIB")
     #endif
 
     // Now set up external linking
