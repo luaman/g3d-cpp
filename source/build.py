@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-03-29
+# @edited  2003-03-30
 #
 # Each build target is a procedure.
 #
@@ -26,9 +26,7 @@ Syntax:
 
 TARGET     DESCRIPTION
 
-release    Build g3d-XXX
-data       Build g3d-data
-
+release    Build g3d-cpp-XXX, g3d-data
 
 install    Create a user installation directory
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs
@@ -113,22 +111,9 @@ def install(copyData=1):
     doc()
     copyIfNewer('../build', '../install')
     copyIfNewer('include', '../install/include')
-    copyIfNewer('demos', '../install/demos')
     if (copyData):
+        copyIfNewer('demos', '../install/demos')
         copyIfNewer('../data', '../install/data')
-
-
-###############################################################################
-#                                                                             #
-#                               data Target                                   #
-#                                                                             #
-###############################################################################
-
-def data():
-    mkdir('../release')
-    copyIfNewer('../data', '../temp/datacopy/data')
-    zip('../temp/datacopy/*', '../release/g3d-data-M_mm.zip')
-
 
 ###############################################################################
 #                                                                             #
@@ -145,17 +130,6 @@ def clean():
 
 ###############################################################################
 #                                                                             #
-#                            windows Target                                   #
-#                                                                             #
-###############################################################################
-
-def windows():
-    if (os.name != 'nt'):
-        raise 'Error', 'Can only build the Windows release on Windows.'
-
-
-###############################################################################
-#                                                                             #
 #                            release Target                                   #
 #                                                                             #
 ###############################################################################
@@ -164,11 +138,17 @@ def release():
     if (os.name != 'nt'):
         raise 'Error', 'Can only build the release on Windows.'
 
-    # Make sure the linux binaries are already built
+    # TODO: Make sure the linux binaries are already built
 
-    # Don't zip up the data directory
     install(0)
+    mkdir('../release')
+    copyIfNewer('../data', '../temp/datacopy/data')
+    copyIfNewer('demos', '../temp/datacopy/demos')
+    zip('../temp/datacopy/*', '../release/g3d-data-M_mm.zip')
+
+    # Don't zip up the data or demos directories
     rmdir('../install/data')
+    rmdir('../install/demos')
     mkdir('../release')
     zip('../install/*', '../release/g3d-M_mm.zip')
     data()
@@ -179,4 +159,4 @@ def release():
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, install, doc, test, data, clean, release], buildHelp)
+dispatchOnTarget([lib, install, doc, test, clean, release], buildHelp)
