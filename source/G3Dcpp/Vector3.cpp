@@ -160,7 +160,7 @@ float Vector3::unitize (float fTolerance) {
 
 //----------------------------------------------------------------------------
 
-Vector3 reflectAbout(const Vector3& normal) const {
+Vector3 Vector3::reflectAbout(const Vector3& normal) const {
 
     Vector3 out;
 

@@ -934,7 +934,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
 Vector3 CollisionDetection::bounceDirection(
     const Sphere&   sphere,
     const Vector3&  velocity,
-    const float      collisionTime,
+    const float     collisionTime,
     const Vector3&  collisionLocation,
     const Vector3&  collisionNormal) {
 

@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-10-04
+  @edited  2004-01-09
  */
 
 #ifndef G3D_VECTOR3_H
@@ -126,6 +126,22 @@ public:
      Only works if System::hasSSE is true.
      */
     Vector3 fastDirection() const;
+
+    /**
+     Reflect this vector about the (not necessarily unit) normal.
+     Note that if used for a collision or ray reflection you
+     must negate the resulting vector to get a direction pointing
+     <I>away</I> from the collision.
+
+     <PRE>
+       V'    N      V
+                 
+         r   ^   -,
+          \  |  /
+            \|/
+     </PRE>
+     */
+    Vector3 reflectAbout(const Vector3& normal) const;
     
     inline Vector3 unit() const {
         return direction();
