@@ -7,16 +7,16 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-02-27
+  @edited  2003-06-13
  */ 
 
 #include <G3DAll.h>
 
-std::string             DATA_DIR        = "d:/libraries/graphics3d-5.00/data/";
+std::string             DATA_DIR        = "d:/libraries/g3d-6.00/data/";
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
-Font*                   font			= NULL;
+CFont*                  font			= NULL;
 UserInput*              userInput		= NULL;
 Camera*					camera			= NULL;
 ManualCameraController* controller      = NULL;
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     renderDevice->init(800, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
     camera 	     = new Camera(renderDevice);
 
-    font         = new Font(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
 void doSimulation(GameTime timeStep) {
     // Simulation
-    controller->doSimulation(max(0.1, min(0, timeStep)), *userInput);
+    controller->doSimulation(clamp(0.0, timeStep, 0.1), *userInput);
 	camera->setCoordinateFrame(controller->getCoordinateFrame());
 }
 
@@ -96,9 +96,7 @@ void doGraphics() {
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
 			    
-		    camera->setProjectionAndCameraMatrix(renderDevice->getWidth(), 
-                                                 renderDevice->getHeight());
-
+		    camera->setProjectionAndCameraMatrix();
 
             renderDevice->debugDrawAxes(2);
 
