@@ -917,13 +917,16 @@ void GImage::decodeBMP(
 	// Create the palette if needed
     if (bitCount <= 8) {
 
-        int numColors = 1 << bitCount;
+        // Skip to the palette color count in the header
+        input.skip(12);
+
+        int numColors = input.readUInt32();
 
         palette = (uint8*)malloc(numColors * 3);
         debugAssert(palette);
 
         // Skip past the end of the header to the palette info
-        input.skip(20);
+        input.skip(4);
 
         int c;
         for(c = 0; c < numColors * 3; c += 3) {
