@@ -209,7 +209,9 @@ void Editor::doLogic() {
 
 
 void Editor::save() {
-    TextOutput to("c:/tmp/curve.txt");
+    
+    // Write out text data
+    TextOutput to("curve.txt");
     to.writeNumber(control.size() - 6);
     serialize(cyclic, to);
     for (int c = 3; c < control.size() - 3; ++c) {
@@ -217,20 +219,36 @@ void Editor::save() {
     }
     to.commit();
 
-    showMessage("Saved");
+    // Write out IFS data
+    Array<Quad> quadArray;
+    compute3DCurve(quadArray);
+    MeshBuilder builder;
+
+    for (int q = 0; q < quadArray.size(); ++q) {
+        Quad& quad = quadArray[q];
+        builder.addQuad(quad.vertex[0],quad.vertex[1],quad.vertex[2],quad.vertex[3]);
+    }
+
+    Array<int> index;
+    Array<Vector3> vertex;
+    std::string name;
+    builder.commit(name, index, vertex);
+    IFSModel::save("curve.ifs", "Curve", index, vertex);
+
+    showMessage("Saved curve.txt and curve.ifs");
 }
 
 
 
 void Editor::load() {
-    TextInput ti("c:/tmp/curve.txt");
+    TextInput ti("curve.txt");
     control.resize(ti.readNumber() + 6);
     deserialize(cyclic, ti);
     for (int c = 3; c < control.size() - 3; ++c) {
         control[c].deserialize(ti);
     }
 
-    showMessage("Loaded");
+    showMessage("Loaded curve.txt");
 }
 
 
