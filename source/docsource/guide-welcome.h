@@ -81,7 +81,9 @@ users who are already familiar with C++ and DirectX or OpenGL.
 <TR><TD>\link license License (BSD/IJG) \endlink</TD><TD></TD></TR>
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
-<TR><TD><A HREF="index.html">Index of Entry Points</A></TD><TD></TD></TR>
+<TR><TD><A HREF="index.html">Entry Points by Topic</A></TD><TD></TD></TR>
+<TR><TD><A HREF="classes.html">Alphabetic Class Index</A></TD><TD></TD></TR>
+<TR><TD><A HREF="globals_func.html">Alphabetic Function Index</A></TD><TD></TD></TR>
 </TABLE>
 
 @section documentation Documentation and Support
