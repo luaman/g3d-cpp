@@ -1133,13 +1133,13 @@ public:
         bool                skipAABoxTests;
 
 	    RayIntersectionIterator(const Ray& r, const Node* root, bool skip)
-		    : minDistance(0), maxDistance(inf), debugCounter(0),
+            : minDistance(0), maxDistance(G3D::inf()), debugCounter(0),
 		    ray(r), isEnd(root == NULL),
 		    stackLength(20), stackIndex(0), breakFrameIndex(-1),
             skipAABoxTests(skip)
 	    {
 		    stack.resize(stackLength);
-		    stack[stackIndex].init(root, ray, 0, inf);
+            stack[stackIndex].init(root, ray, 0, G3D::inf());
 
 		    ++(*this);
 	    }
