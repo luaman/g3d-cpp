@@ -574,6 +574,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedBox(
 }
 
 
+
 double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     const Vector3&          origin,
     const Vector3&          dir,
@@ -581,18 +582,25 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     Vector3&                location,
     bool&                   Inside) {
 
-    //double t = collisionTimeForMovingPointFixedBox(origin, dir, box.toBox(), location);
-    //Inside = t == 0;
-    //return t;
+    if (collisionLocationForMovingPointFixedAABox(origin, dir, box, location, Inside)) {
+        return (location - origin).length();
+    }
+}
 
-    const double RAYAABB_EPSILON = 0.0000;
+
+bool CollisionDetection::collisionLocationForMovingPointFixedAABox(
+    const Vector3&          origin,
+    const Vector3&          dir,
+    const AABox&            box,
+    Vector3&                location,
+    bool&                   Inside) {
 
     // Integer representation of a floating-point value.
     #define IR(x)	((uint32&)x)
 
     Inside = true;
-	Vector3 MinB = box.low();
-	Vector3 MaxB = box.high();
+	const Vector3& MinB = box.low();
+	const Vector3& MaxB = box.high();
 	Vector3 MaxT(-1.0f, -1.0f, -1.0f);
 
 	// Find candidate planes.
@@ -618,7 +626,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
 
 	if (Inside) {
     	// Ray origin inside bounding box
-		return inf;
+		return false;
 	}
 
 	// Get largest of the maxT's for final choice of intersection
@@ -634,22 +642,22 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
 	// Check final candidate actually inside box
     if (IR(MaxT[WhichPlane]) & 0x80000000) {
         // Miss the box
-        return inf;
+        return false;
     }
 
 	for (int i = 0; i < 3; ++i) {
         if (i != WhichPlane) {
 			location[i] = origin[i] + MaxT[WhichPlane] * dir[i];
-            if ((location[i] < MinB[i] - RAYAABB_EPSILON) ||
-                (location[i] > MaxB[i] + RAYAABB_EPSILON)) {
+            if ((location[i] < MinB[i]) ||
+                (location[i] > MaxB[i])) {
                 // On this plane we're outside the box extents, so
                 // we miss the box
-                return inf;
+                return false;
             }
 		}
 	}
 
-	return (location - origin).length();
+	return true;
 
     #undef IR
 }
