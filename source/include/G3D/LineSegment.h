@@ -20,12 +20,12 @@ namespace G3D {
 class LineSegment {
 protected:
 
-    Vector3             point;
+    Vector3             _point;
 
     /** Not normalized */
     Vector3             direction;
 
-    LineSegment(const Vector3& _point, const Vector3& _direction) : point(_point), direction(_direction) {
+    LineSegment(const Vector3& __point, const Vector3& _direction) : _point(__point), direction(_direction) {
     }
 
 public:
@@ -44,6 +44,10 @@ public:
     static LineSegment fromTwoPoints(const Vector3 &point1, const Vector3 &point2) {
         return LineSegment(point1, point2 - point1);
     }
+
+
+    /** Returns end point 0 or 1 */
+    Vector3 endPoint(int i) const;
 
     /**
      * Returns the closest point on the line segment to point.

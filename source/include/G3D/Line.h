@@ -22,15 +22,14 @@ class Plane;
  An infinite 3D line.
  */
 class Line {
+protected:
 
-private:
+    Vector3 _point;
+    Vector3 _direction;
 
-    Vector3 point;
-    Vector3 direction;
-
-    Line(const Vector3 &point, const Vector3 &direction) {
-        this->point = point;
-        this->direction = direction.direction();
+    Line(const Vector3& point, const Vector3& direction) {
+        _point     = point;
+        _direction = direction.direction();
     }
 
 public:
@@ -44,33 +43,36 @@ public:
     virtual ~Line() {}
 
     /**
-     * Constructs a line from two (not equal) points.
+      Constructs a line from two (not equal) points.
      */
     static Line fromTwoPoints(const Vector3 &point1, const Vector3 &point2) {
         return Line(point1, point2 - point1);
     }
 
     /**
-     * Creates a line from a point and a (nonzero) direction.
+      Creates a line from a point and a (nonzero) direction.
      */
-    static Line fromPointAndDirection(const Vector3 &point, const Vector3 &direction) {
+    static Line fromPointAndDirection(const Vector3& point, const Vector3& direction) {
         return Line(point, direction);
     }
 
     /**
-     * Returns the closest point on the line to point.
+      Returns the closest point on the line to point.
      */
-    Vector3 closestPoint(const Vector3 &point) const {
-        double t = direction.dot(point - this->point);
-        return this->point + direction * t;
-    }
+    Vector3 closestPoint(const Vector3& pt) const;
 
     /**
-     * Returns the distance between point and the line
+      Returns the distance between point and the line
      */
-    double distance(const Vector3 &point) const {
+    double distance(const Vector3& point) const {
         return (closestPoint(point) - point).length();
     }
+
+    /** Returns a point on the line */
+    Vector3 point() const;
+
+    /** Returns the direction (or negative direction) of the line */
+    Vector3 direction() const;
 
     /**
      Returns the point where the line and plane intersect.  If there

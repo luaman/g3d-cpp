@@ -710,40 +710,9 @@ void testSwizzle() {
 }
 
 
-
+/*
 int main(int argc, char* argv[]) {
 
-//    CImage im("c:/tmp/in.tga");
-//    im.save("c:/tmp/out.jpg");
-
-
-
-
-//    exit(0);
-    /*    
-    Window app;
-
-    try {
-
-        G3D::CImage im("C:/tmp/md2/data/players/LINFANG/LINFANG.pcx");
-
-        app.create("Win32 Sample Program", im.width, im.height);
-        G3D::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
-
-    } catch (G3D::CImage::Error e) {
-
-        error("Critical Error", e.reason, true);
-        return -1;
-
-    }
-
-    app.run();
-
-    while (true);
-    RenderDevice rd;
-    Log debugLog("c:/tmp/log.txt");
-    rd.init(800, 600, &debugLog);
-    */
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureArrayPerformance();
@@ -785,4 +754,614 @@ int main(int argc, char* argv[]) {
     while(true);
 
     return 0;
+}
+*/
+
+std::string             DATA_DIR;
+
+Log*                    debugLog		= NULL;
+RenderDevice*           renderDevice	= NULL;
+CFontRef                font			= NULL;
+UserInput*              userInput		= NULL;
+Camera*					camera			= NULL;
+ManualCameraController* controller      = NULL;
+bool                    endProgram		= false;
+
+
+RealTime getTime() {
+    return SDL_GetTicks() / 1000.0;
+}
+
+void doSimulation(GameTime timeStep);
+void doGraphics();
+void doUserInput();
+
+
+int main(int argc, char** argv) {
+
+    // Initialize
+    DATA_DIR     = demoFindData();
+    debugLog	 = new Log();
+    renderDevice = new RenderDevice();
+    renderDevice->init(800, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+    camera 	     = new Camera(renderDevice);
+
+    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
+
+    userInput    = new UserInput();
+
+    controller   = new ManualCameraController(renderDevice, userInput);
+    controller->setMoveRate(10);
+
+    controller->setPosition(Vector3(15, 20, 15));
+    controller->lookAt(Vector3(-2,3,-5));
+
+    renderDevice->resetState();
+	renderDevice->setColorClearValue(Color3(.1, .5, 1));
+
+    controller->setActive(true);
+
+    RealTime now = getTime() - 0.001, lastTime;
+
+    // Main loop
+    do {
+        lastTime = now;
+        now = getTime();
+        RealTime timeStep = now - lastTime;
+
+        doUserInput();
+
+        doSimulation(timeStep);
+
+        doGraphics();
+   
+    } while (! endProgram);
+
+
+    // Cleanup
+    delete controller;
+    delete userInput;
+    renderDevice->cleanup();
+    delete renderDevice;
+    delete debugLog;
+
+    return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+void doSimulation(GameTime timeStep) {
+    // Simulation
+    controller->doSimulation(clamp(timeStep, 0.0, 0.1));
+	camera->setCoordinateFrame(controller->getCoordinateFrame());
+}
+
+
+class Draw {
+private:
+
+    /** Called from wireSphere, wireCapsule */
+    static void wireSphereSection(
+        const Sphere&       sphere,
+        RenderDevice*       renderDevice,
+        const Color4&       color,
+        bool                top,
+        bool                bottom);
+
+
+    static void sphereSection(
+        const Sphere&       sphere,
+        RenderDevice*       renderDevice,
+        const Color4&       color,
+        bool                top,
+        bool                bottom);
+
+public:
+
+    static void wireBox(
+        const Box&          box,
+        RenderDevice*       rd,
+        const Color4&       color = Color3::RED);
+
+    static void box(
+        const Box&          box,
+        RenderDevice*       rd,
+        const Color4&       color = Color3::RED);
+
+    static void wireSphere(
+        const Sphere&       sphere,
+        RenderDevice*       rd,
+        const Color4&       color = Color3::YELLOW);
+
+    static void sphere(
+        const Sphere&       sphere,
+        RenderDevice*       rd,
+        const Color4&       color);
+
+    /** TODO */
+    static void wirePlane(
+        const Plane&        plane,
+        RenderDevice*       rd,
+        const Color4&       color = Color3::BLUE);
+
+    static void line(
+        const Line&         line,
+        RenderDevice*       rd,
+        const Color4&       color = Color3::BLACK);
+
+    static void lineSegment(
+        const LineSegment&  lineSegment,
+        RenderDevice*       rd,
+        const Color4&       color = Color3::BLACK);
+
+    /**
+     Renders per-vertex normals as thin arrows.  The length
+     of the normals is scaled inversely to the number of normals
+     rendered.
+     */
+    static void vertexNormals(
+        const MeshAlg::Geometry&    geometry,
+        RenderDevice*               renderDevice,
+        const Color4&               color = Color3::GREEN * .5,
+        double                      scale = 1);
+
+    /**
+     TODO
+     */
+    void wireCapsule(
+       const Capsule&       capsule, 
+       RenderDevice*        renderDevice,
+       const Color4&        color = Color3::PURPLE);
+
+
+    /**
+     TODO
+     */
+    void capsule(
+       const Capsule&       capsule, 
+       RenderDevice*        renderDevice,
+       const Color4&        color = Color3::PURPLE);
+
+
+    /**
+     TODO
+     */
+    static void arrow(
+        const Vector3&      start,
+        const Vector3&      direction,
+        RenderDevice*       renderDevice,
+        const Color4&       color = Color3::ORANGE,
+        double              scale = 1.0);
+
+    static void ray(
+        const Ray&          ray,
+        RenderDevice*       renderDevice,
+        const Color4&       color = Color3::ORANGE) {
+        arrow(ray.origin, ray.direction, renderDevice, color);
+    }
+
+    /** TODO */
+    static void axes(
+        const CoordinateFrame& cframe,
+        RenderDevice*       renderDevice,
+        double              scale = 1.0);
+};
+
+
+void Draw::capsule(
+   const Capsule&       capsule, 
+   RenderDevice*        renderDevice,
+   const Color4&        color) {
+}
+
+
+void Draw::wireCapsule(
+   const Capsule&       capsule, 
+   RenderDevice*        renderDevice,
+   const Color4&        color) {
+
+    /*
+    pushState();
+
+        setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        setCullFace(RenderDevice::CULL_BACK);
+
+        // Cylinder radius
+        const double cylRadius = edgeScale * 0.010;
+
+        CoordinateFrame cframe(capsule.getPoint1());
+
+        Vector3 Y = (capsule.getPoint2() - capsule.getPoint1()).direction();
+        Vector3 X = (abs(Y.dot(Vector3::UNIT_X)) > 0.9) ? Vector3::UNIT_Y : Vector3::UNIT_X;
+        Vector3 Z = X.cross(Y).direction();
+        X = Y.cross(Z);        
+        cframe.rotation.setColumn(0, X);
+        cframe.rotation.setColumn(1, Y);
+        cframe.rotation.setColumn(2, Z);
+
+        setObjectToWorldMatrix(getObjectToWorldMatrix() * cframe);
+  
+        double radius = capsule.getRadius();
+        double height = (capsule.getPoint2() - capsule.getPoint1()).length();
+
+        Sphere sphere1(Vector3::ZERO, radius);
+        Sphere sphere2(Vector3(0, height, 0), radius);
+
+        drawWireSphereSection(sphere1, cylRadius, color, false, true);
+        drawWireSphereSection(sphere2, cylRadius, color, true, false);
+
+        // Line around center
+        setColor(color);
+        Vector3 center(0, height / 2, 0);
+        double pitch = 0;
+        int y;
+        for (y = 0; y < 26; ++y) {
+            const double yaw0 = y * G3D_PI / 13;
+            const double yaw1 = (y + 1) * G3D_PI / 13;
+
+            Vector3 v0 = Vector3(cos(yaw0), sin(pitch), sin(yaw0)) * radius + center;
+            Vector3 v1 = Vector3(cos(yaw1), sin(pitch), sin(yaw1)) * radius + center;
+
+            drawCylinder(this, v0, v1, cylRadius, 6, false);
+        }
+
+        Vector3 top(0,height,0);
+        // Edge lines
+        for (y = 0; y < 8; ++y) {
+            const double yaw = y * G3D_PI / 4;
+            const Vector3 x(cos(yaw) * radius, 0, sin(yaw) * radius);
+        
+            drawCylinder(this, x, x + top, cylRadius, 6, false);        
+        }
+
+        drawFaceSphereSection(sphere1, color, false, true);
+        drawFaceSphereSection(sphere2, color, true, false);
+
+        // Cylinder faces
+        setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        setColor(Color4(color, .12));
+        setCullFace(RenderDevice::CULL_FRONT);
+        disableDepthWrite();
+
+        for (int i = 0; i < 2; ++i) {
+            beginPrimitive(RenderDevice::QUAD_STRIP);
+                for (y = 0; y <= 26; ++y) {
+                    const double yaw0 = y * G3D_PI / 13;
+                    Vector3 v0 = Vector3(cos(yaw0), sin(pitch), sin(yaw0)) * radius;
+
+                    sendVertex(v0);
+                    sendVertex(v0 + top);
+                }
+            endPrimitive();
+
+            setCullFace(RenderDevice::CULL_BACK);
+       }
+
+    popState();
+    */
+}
+
+
+void Draw::vertexNormals(
+    const MeshAlg::Geometry&    geometry,
+    RenderDevice*               renderDevice,
+    const Color4&               color,
+    double                      scale) {
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        const Array<Vector3>& vertexArray = geometry.vertexArray;
+        const Array<Vector3>& normalArray = geometry.normalArray;
+
+        const double D = clamp(5.0 / pow(vertexArray.size(), .25), 0.1, .8) * scale;
+        
+        renderDevice->setLineWidth(1);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D);
+                renderDevice->sendVertex(vertexArray[v]);
+            }
+        renderDevice->endPrimitive();
+        
+        renderDevice->setLineWidth(2);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .96);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+            }
+        renderDevice->endPrimitive();
+
+        renderDevice->setLineWidth(3);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .92);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+            }
+        renderDevice->endPrimitive();
+    renderDevice->popState();
+}
+
+
+void Draw::line(
+    const Line&         line,
+    RenderDevice*       rd,
+    const Color4&       color) {
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+        renderDevice->setLineWidth(2);
+        renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        Vector3 v0 = line.point();
+        Vector3 d  = line.direction();
+        renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
+            // Off to infinity
+            renderDevice->sendVertex(Vector4(-d, 0));
+
+            for (int i = -10; i <= 10; i += 2) {
+                renderDevice->sendVertex(v0 + i * d * 100);
+            }
+
+            // Off to infinity
+            renderDevice->sendVertex(Vector4(d, 0));
+        renderDevice->endPrimitive();
+    renderDevice->popState();
+}
+
+
+void Draw::lineSegment(
+    const LineSegment&  lineSegment,
+    RenderDevice*       rd,
+    const Color4&       color) {
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+        renderDevice->setLineWidth(2);
+        renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            renderDevice->sendVertex(lineSegment.endPoint(0));
+            renderDevice->sendVertex(lineSegment.endPoint(1));
+        renderDevice->endPrimitive();
+    renderDevice->popState();
+}
+
+
+void Draw::wireBox(
+    const Box&              box,
+    RenderDevice*           rd,
+    const Color4&           color) {
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+        renderDevice->setLineWidth(2);
+        renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        renderDevice->setCullFace(RenderDevice::CULL_BACK);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+
+            // Wire frame
+            for (int i = 0; i < 8; i += 4) {
+                for (int j = 0; j < 4; ++j) {
+                    renderDevice->sendVertex(box.getCorner(i + j));
+                    renderDevice->sendVertex(box.getCorner(i + ((j + 1) % 4)));
+                }
+            }
+
+            for (int i = 0; i < 4; ++i) {
+                renderDevice->sendVertex(box.getCorner(i));
+                renderDevice->sendVertex(box.getCorner(4 + i));
+            }
+
+        renderDevice->endPrimitive();
+
+        // Faces
+        renderDevice->disableDepthWrite();
+        renderDevice->setCullFace(RenderDevice::CULL_NONE);
+
+        Draw::box(box, renderDevice, Color4(color.r, color.g, color.b, min(color.a, 0.12)));
+
+    renderDevice->popState();
+}
+
+
+void Draw::box(
+    const Box&          box,
+    RenderDevice*       renderDevice,
+    const Color4&       color) {
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+        renderDevice->beginPrimitive(RenderDevice::QUADS);
+        for (int i = 0; i < 6; ++i) {
+            Vector3 v0, v1, v2, v3;
+            box.getFaceCorners(i, v0, v1, v2, v3);
+
+            Vector3 n = (v1 - v0).cross(v3 - v0);
+            renderDevice->setNormal(n.direction());
+            renderDevice->sendVertex(v0);
+            renderDevice->sendVertex(v1);
+            renderDevice->sendVertex(v2);
+            renderDevice->sendVertex(v3);
+        }
+        renderDevice->endPrimitive();
+    renderDevice->popState();
+}
+
+
+void Draw::wireSphereSection(
+    const Sphere&       sphere,
+    RenderDevice*       renderDevice,
+    const Color4&       color,
+    bool                top,
+    bool                bottom) {
+    
+    int sections = 32;
+    int start = top ? 0 : (sections / 2);
+    int stop = bottom ? sections : (sections / 2);
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+        renderDevice->setLineWidth(2);
+        renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        renderDevice->setCullFace(RenderDevice::CULL_BACK);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        double radius = sphere.radius;
+        const Vector3& center = sphere.center;
+
+        // Wire frame
+        for (int y = 0; y < 8; ++y) {
+            const double yaw = y * G3D_PI / 4;
+            const Vector3 x(cos(yaw) * radius, 0, sin(yaw) * radius);
+            //const Vector3 z(-sin(yaw) * radius, 0, cos(yaw) * radius);
+
+            renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
+                for (int p = start; p <= stop; ++p) {
+                    const double pitch0 = p * G3D_PI / (sections * 0.5);
+
+                    Vector3 v0 = cos(pitch0) * x + Vector3::UNIT_Y * radius * sin(pitch0) + center;
+                    renderDevice->sendVertex(v0);
+                }
+            renderDevice->endPrimitive();
+        }
+
+
+        int a = bottom ? -1 : 0;
+        int b = top ? 1 : 0; 
+        for (int p = a; p <= b; ++p) {
+            const double pitch = p * G3D_PI / 6;
+
+            renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
+                for (int y = 0; y <= sections; ++y) {
+                    const double yaw0 = y * G3D_PI / 13;
+                    Vector3 v0 = Vector3(cos(yaw0) * cos(pitch), sin(pitch), sin(yaw0) * cos(pitch)) * radius + center;
+                    renderDevice->sendVertex(v0);
+                }
+            renderDevice->endPrimitive();
+        }
+
+    renderDevice->popState();
+}
+
+
+void Draw::sphereSection(
+    const Sphere&       sphere,
+    RenderDevice*       renderDevice,
+    const Color4&       color,
+    bool                top,
+    bool                bottom) {
+
+    int sections = 26;
+    int start = top ? 0 : (sections / 2);
+    int stop = bottom ? sections : (sections / 2);
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+
+        for (int p = start; p < stop; ++p) {
+            const double pitch0 = p * G3D_PI / (double)sections;
+            const double pitch1 = (p + 1) * G3D_PI / (double)sections;
+
+            renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
+            for (int y = 0; y <= 26; ++y) {
+                const double yaw = -y * G3D_PI / 13;
+
+                Vector3 v0 = Vector3(cos(yaw) * sin(pitch0), cos(pitch0), sin(yaw) * sin(pitch0));
+                Vector3 v1 = Vector3(cos(yaw) * sin(pitch1), cos(pitch1), sin(yaw) * sin(pitch1));
+
+                renderDevice->setNormal(v0);
+                renderDevice->sendVertex(v0 * sphere.radius + sphere.center);
+
+                renderDevice->setNormal(v1);
+                renderDevice->sendVertex(v1 * sphere.radius + sphere.center);
+            }
+            renderDevice->endPrimitive();
+        }
+
+    renderDevice->popState();       
+}
+
+
+void Draw::wireSphere(
+    const Sphere&       sphere,
+    RenderDevice*       rd,
+    const Color4&       color) {
+
+    wireSphereSection(sphere, rd, color, true, true);
+
+    renderDevice->pushState();
+        renderDevice->disableDepthWrite();
+        renderDevice->setCullFace(RenderDevice::CULL_NONE);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        sphereSection(sphere, rd, Color4(color.r, color.g, color.b, min(color.a, 0.12)), true, true);
+    renderDevice->popState();
+}
+
+
+void Draw::sphere(
+    const Sphere&       sphere,
+    RenderDevice*       rd,
+    const Color4&       color) {
+
+    sphereSection(sphere, rd, color, true, true);
+}
+
+void doGraphics() {
+    renderDevice->beginFrame();
+        renderDevice->clear(true, true, true);
+        renderDevice->pushState();
+			    
+		    camera->setProjectionAndCameraMatrix();
+
+            renderDevice->debugDrawAxes(2);
+
+            Draw::wireBox(Box(Vector3(-1,-1,-1), Vector3(1,1,1)), renderDevice);
+
+            Draw::wireSphere(Sphere(Vector3(2,2,2), 1), renderDevice);
+
+        renderDevice->popState();
+	    
+    renderDevice->endFrame();
+}
+
+
+void doUserInput() {
+
+    userInput->beginEvents();
+
+    // Event handling
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch(event.type) {
+        case SDL_QUIT:
+	    endProgram = true;
+	    break;
+
+	    case SDL_KEYDOWN:
+            switch (event.key.keysym.sym) {
+            case SDLK_ESCAPE:
+                endProgram = true;
+                break;
+
+            // Add other key handlers here
+            default:;
+            }
+            break;
+
+        // Add other event handlers here
+
+        default:;
+        }
+
+        userInput->processEvent(event);
+    }
+
+    userInput->endEvents();
 }
