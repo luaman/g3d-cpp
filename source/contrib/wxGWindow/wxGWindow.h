@@ -24,11 +24,13 @@
 // Link against wxWindows
 #ifdef G3D_WIN32
     #ifdef _DEBUG
-        #pragma comment(lib, "wxmswd.lib")
-        #pragma comment(lib, "regexd.lib")
+        #pragma comment(lib, "wxbase25d.lib")
+        #pragma comment(lib, "wxmsw25d_core.lib")
+        #pragma comment(lib, "wxmsw25d_gl.lib")
     #else
-        #pragma comment(lib, "wxmsw.lib")
-        #pragma comment(lib, "regex.lib")
+        #pragma comment(lib, "wxbase25.lib")
+        #pragma comment(lib, "wxmsw25_core.lib")
+        #pragma comment(lib, "wxmsw25_gl.lib")
     #endif
 
     #pragma comment(lib, "rpcrt4.lib")
