@@ -105,13 +105,6 @@ public:
     };
 
 private:
-
-    #ifdef G3D_LINUX
-        #define CALL_HASHCODE hashCode
-    #else
-        #define CALL_HASHCODE ::hashCode
-    #endif
-
     /**
      Linked list nodes used internally by HashTable.
      */
@@ -437,7 +430,7 @@ public:
      key into a table is O(1), but may cause a potentially slow rehashing.
      */
     void set(const Key& key, const Value& value) {
-        unsigned int code = CALL_HASHCODE(key);
+        unsigned int code = ::hashCode(key);
         unsigned int b = code % numBuckets;
         
         // Go to the bucket
@@ -490,7 +483,7 @@ public:
     */
    void remove(const Key& key) {
       
-      unsigned int code = CALL_HASHCODE(key);
+      unsigned int code = ::hashCode(key);
       unsigned int b = code % numBuckets;
 
       // Go to the bucket
@@ -529,7 +522,7 @@ public:
     */
    Value& get(const Key& key) const {
 
-      unsigned int code = CALL_HASHCODE(key);
+      unsigned int code = ::hashCode(key);
       unsigned int b = code % numBuckets;
 
       Node* node = bucket[b];
@@ -551,7 +544,7 @@ public:
     Returns true if key is in the table.
     */
    bool containsKey(const Key& key) const {
-       unsigned int code = CALL_HASHCODE(key);
+       unsigned int code = ::hashCode(key);
        unsigned int b = code % numBuckets;
 
        Node* node = bucket[b];
