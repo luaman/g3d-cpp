@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2003-09-28
+ @edited  2003-10-15
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.

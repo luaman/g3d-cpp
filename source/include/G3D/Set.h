@@ -57,11 +57,11 @@ public:
         memberTable.remove(member);  
     }
 
-    G3D::Array<T> getMembers() const {
+    Array<T> getMembers() const {
         return memberTable.getKeys();
     }
 
-    void getMembers(G3D::Array<T>& keyArray) const {
+    void getMembers(Array<T>& keyArray) const {
         memberTable.getKeys(keyArray);
     }
 

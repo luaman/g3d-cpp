@@ -561,13 +561,13 @@ public:
     Returns an array of all of the keys in the table.
     You can iterate over the keys to get the values.
     */
-   G3D::Array<Key> getKeys() const {
+   Array<Key> getKeys() const {
        Array<Key> keyArray;
        getKeys(keyArray);
        return keyArray;
    }
 
-   void getKeys(G3D::Array<Key>& keyArray) const {
+   void getKeys(Array<Key>& keyArray) const {
        keyArray.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
        for (int i = 0; i < numBuckets; i++) {
            Node* node = bucket[i];

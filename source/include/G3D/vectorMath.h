@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created: 2001-06-02
-  @edited:  2003-10-04
+  @edited:  2003-10-15
  */
 
 #ifndef G3D_VECTORMATH_H
@@ -126,14 +126,6 @@ inline Vector3 cross(const Vector3& v1, const Vector3& v2) {
     return v1.cross(v2);
 }
 
-inline double degrees(double rad) {
-    return toDegrees(rad);
-}
-
-inline double radians(double deg) {
-    return toRadians(deg);
-}
-
 inline float determinant(const Matrix3& m) {
     return m.determinant();
 }
@@ -150,6 +142,17 @@ inline Vector4 min(const Vector4& v1, const Vector4& v2) {
     return v1.min(v2);
 }
 
+inline Vector2 sign(const Vector2& v) {
+    return Vector2(sign(v.x), sign(v.y));
+}
+
+inline Vector3 sign(const Vector3& v) {
+    return Vector3(sign(v.x), sign(v.y), sign(v.z));
+}
+
+inline Vector4 sign(const Vector4& v) {
+    return Vector4(sign(v.x), sign(v.y), sign(v.z), sign(v.w));
+}
 
 }
 
