@@ -1,7 +1,6 @@
-/** @mainpage guidewelcome Welcome to G3D
+/** @mainpage <CENTER>G3D Manual</CENTER>
 
 <IMG SRC="3dengine.jpg" ALIGN=RIGHT>
-
 G3D is a commercial-grade 3D Engine available as Open Source (BSD License).  
 It is used in games, tech demos, research papers, military simulators, and 
 university courses.  It provides a set of routines and structures so common 
