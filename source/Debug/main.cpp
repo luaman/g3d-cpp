@@ -123,7 +123,8 @@ void Demo::init()  {
     app->debugCamera.lookAt(Vector3::ZERO);
     entityArray.append(new SphereEntity(Vector3(0, 1, 0), 1, Color3::WHITE));
     entityArray.append(new SphereEntity(Vector3(-4, 1, 0), 1, Color3::GREEN));
-    entityArray.append(new IFSEntity(app->dataDir + "ifs/teapot.ifs", Vector3(4, 1, 0)));
+    entityArray.append(new IFSEntity(app->dataDir + "ifs/bunny.ifs", Vector3(4, 1, 0)));
+    entityArray.append(new IFSEntity(app->dataDir + "ifs/bunny.ifs", Vector3(4, 4, 0)));
     entityArray[1]->selected = true;
 }
 

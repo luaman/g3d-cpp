@@ -6,14 +6,19 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-12
+  @edited  2003-11-13
  */ 
 
 
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/IFSModel.h"
+#include "GLG3D/VARArea.h"
+#include "GLG3D/VAR.h"
 
 namespace G3D {
+
+VARArea* IFSModel::varArea = NULL;
+
 
 IFSModel::IFSModel() {
 }
@@ -29,21 +34,41 @@ void IFSModel::getGeometry(MeshAlg::Geometry& geometry) const {
 
 
 void IFSModel::render(RenderDevice* renderDevice, bool perVertexNormals) {
+    
+    const size_t varSize = 1024 * 1024;
+    if ((varArea == NULL) && (renderDevice->freeVARSize() <= varSize)) {
+        // Initialize VAR
+        varArea = renderDevice->createVARArea(varSize);
+    }
+
     if (perVertexNormals) {
         renderDevice->pushState();
             renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-            renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-                for (int i = 0; i < indexArray.size(); ++i) {
-                    const int v = indexArray[i];
-                    
-                    const Vector3& P = geometry.vertexArray[v];  
-                    const Vector3& N = geometry.normalArray[v];
+            if (varArea && (varArea->totalSize() <= sizeof(Vector3) * 2 * geometry.vertexArray.size())) {
+                varArea->reset();
 
-                    renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
-                    renderDevice->setNormal(N);
-                    renderDevice->sendVertex(P);
-                }
-            renderDevice->endPrimitive();
+                VAR vertex(geometry.vertexArray, varArea);
+                VAR normal(geometry.normalArray, varArea);
+
+                renderDevice->beginIndexedPrimitives();
+                    renderDevice->setNormalArray(normal);
+                    renderDevice->setVertexArray(vertex);
+                    renderDevice->sendIndices(RenderDevice::TRIANGLES, indexArray);
+                renderDevice->endIndexedPrimitives();
+            } else {
+                    renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+                        for (int i = 0; i < indexArray.size(); ++i) {
+                            const int v = indexArray[i];
+                    
+                            const Vector3& P = geometry.vertexArray[v];  
+                            const Vector3& N = geometry.normalArray[v];
+
+                            //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
+                            renderDevice->setNormal(N);
+                            renderDevice->sendVertex(P);
+                        }
+                    renderDevice->endPrimitive();
+            }
         renderDevice->popState();
     } else {
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
@@ -52,7 +77,7 @@ void IFSModel::render(RenderDevice* renderDevice, bool perVertexNormals) {
                 for (int j = 0; j < 3; ++j) {
                     
                     const Vector3& P = geometry.vertexArray[faceArray[f].vertexIndex[j]];  
-                    renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
+                    //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
                     renderDevice->sendVertex(P);
                 }
             }

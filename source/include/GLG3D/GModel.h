@@ -38,7 +38,7 @@ protected:
 
 public:
 
-    ~GModel() {}
+    virtual ~GModel() {}
 
     std::string name() const;
     virtual void setName(const std::string& n);

@@ -108,7 +108,17 @@
 		 G3D::aTan,
 		 G3D::aTan2,
          G3D::clamp,
+		 G3D::float32,
+         G3D::float64
+         G3D::fuzzyEq,
+         G3D::fuzzyNe,
+         G3D::fuzzyGt,
+         G3D::fuzzyGe,
+         G3D::fuzzyLt,
+         G3D::fuzzyLe,
+         G3D::fuzzyEpsilon,
          G3D::lerp,
+		 G3D::linearSpline,
          G3D::sign,
 		 G3D::rsq,
 		 G3D::unitRandom,
@@ -130,16 +140,6 @@
 		 G3D::PI, 
          G3D::HALF_PI,
 		 G3D::TWO_PI,
-		 G3D::linearSpline,
-		 G3D::float32,
-         G3D::float64
-         G3D::fuzzyEq,
-         G3D::fuzzyNe,
-         G3D::fuzzyGt,
-         G3D::fuzzyGe,
-         G3D::fuzzyLt,
-         G3D::fuzzyLe,
-         G3D::fuzzyEpsilon,
          G3D::rsqrt
          
      <LI><B>String</B> &nbsp; &nbsp;

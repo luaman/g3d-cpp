@@ -35,6 +35,9 @@ private:
     Array<int>                  indexArray;
     Array<Vector3>              faceNormalArray;
 
+    /** Shared by all models */
+    static VARArea*             varArea;
+
     void reset();
 
 public:
