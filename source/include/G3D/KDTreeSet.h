@@ -116,6 +116,23 @@ private:
         }
     };
 
+    /** Returns the bounds of the sub array. Used by makeNode. */
+    static AABox computeBounds(
+        const Array<Handle>&  point, 
+        int                   beginIndex,
+        int                   endIndex) {
+    
+        Vector3 lo = Vector3::inf();
+        Vector3 hi = -lo;
+
+        for (int p = beginIndex; p <= endIndex; ++p) {
+            lo = lo.min(point[p].bounds.low());
+            hi = hi.max(point[p].bounds.high());
+        }
+
+        return AABox(lo, hi);
+    }
+
 
     /**
      A sort predicate that returns true if the midpoint of the
@@ -186,24 +203,6 @@ private:
     };
 
     class Node {
-    private:
-        /** Returns the bounds of the sub array. Used by makeNode. */
-        static AABox computeBounds(
-            const Array<Handle>&  point, 
-            int                   beginIndex,
-            int                   endIndex) {
-        
-            Vector3 lo = Vector3::inf();
-            Vector3 hi = -lo;
-
-            for (int p = beginIndex; p <= endIndex; ++p) {
-                lo = lo.min(point[p].bounds.low());
-                hi = hi.max(point[p].bounds.high());
-            }
-
-            return AABox(lo, hi);
-        }
-
     public:
 
         /** Spatial bounds on all values at this node and its children, based purely on
