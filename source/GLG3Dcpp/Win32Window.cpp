@@ -791,7 +791,7 @@ void Win32Window::setInputCapture(bool c) {
 		_inputCapture = c;
 
 		if (_inputCapture) {
-			RECT rect = {settings.x, settings.y, settings.width, settings.height};
+			RECT rect = {clientX, clientY, (clientX + settings.width), (clientY + settings.height)};
 			ClipCursor(&rect);
 		} else {
 			ClipCursor(NULL);
