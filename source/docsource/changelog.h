@@ -16,6 +16,7 @@
           the VARArea abstraction.
      <LI> GLG3D.h no longer links against SDLMain.lib on Windows if _CONSOLE is defined
           (since console programs have no WinMain).
+     <LI> SDL's redefinition of main is cleared when not linking sdlmain.lib
      <LI> Moved contrib/Win32Window to G3D::Win32Window
      <LI> contrib/Image [Morgan]
      <LI> contrib/wxGWindow [Morgan]
@@ -30,6 +31,8 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1051272 ] Win32Window doesn't use GWindowSettings properly. [Corey]
+     <LI> Fix: Win32Window clips the proper cursor region during input capture. [Corey]
      <LI> Fix: GWindows now center and maximize on the primary monitor for Windows.
      <LI> Fix: [ 1052945 ] TextOutput wordWrap starts on newlines
      <LI> Fix: [ 1050957 ] TextInput readNumber support for capital 'E' numbers.
