@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-01-01
+ @edited  2004-01-28
  */
 
 #include "G3D/platform.h"
@@ -35,8 +35,12 @@ GApp::GApp(const GAppSettings& settings) {
     renderDevice = new RenderDevice();
     renderDevice->init(settings.window, debugLog);
 
-    networkDevice = new NetworkDevice();
-    networkDevice->init(debugLog);
+    if (settings.useNetwork) {
+        networkDevice = new NetworkDevice();
+        networkDevice->init(debugLog);
+    } else {
+        networkDevice = NULL;
+    }
 
     debugCamera  = GCamera();
 
@@ -107,8 +111,11 @@ void GApp::debugPrintf(const char* fmt ...) {
 
 
 GApp::~GApp() {
-    networkDevice->cleanup();
-    delete networkDevice;
+    if (networkDevice) {
+        networkDevice->cleanup();
+        delete networkDevice;
+    }
+
     debugFont = NULL;
     delete userInput;
     userInput = NULL;

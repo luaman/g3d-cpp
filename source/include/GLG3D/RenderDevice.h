@@ -43,7 +43,7 @@ public:
        5, <B>8</B>.*/
     int     rgbBits;
 
-    /* The number of bits in the alpha channel of the frame buffer. 0, 1, <B>8</B> */
+    /* The number of bits in the alpha channel of the frame buffer. <B>0</B>, 1, 8 */
     int     alphaBits;
 
     /** 16, <B>24</B>, 32 */
@@ -92,7 +92,7 @@ public:
         width(800),
         height(600),
         rgbBits(8),
-        alphaBits(8),
+        alphaBits(0),
         depthBits(24),
         stencilBits(8),
         fsaaSamples(1),
