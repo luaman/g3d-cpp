@@ -13,7 +13,7 @@ users who are already familiar with C++ and DirectX or OpenGL.
 
 @section contents Contents
 
-<TABLE BORDER=0>
+<TABLE BORDER=0 WIDTH=50%>
 <TR><TD COLSPAN=2>\link guidewelcome Welcome \endlink</TD></TR>
 <TR><TD></TD><TD>
   Documentation and Support,
@@ -24,8 +24,20 @@ users who are already familiar with C++ and DirectX or OpenGL.
   Working With Other Libraries,
   Notes for Expert Users</TD></TR>
 
-<TR><TD COLSPAN=2>\link guideshaders Shaders \endlink</TD></TR>
+  <TR><TD COLSPAN=2>\link guideinstall Installing G3D \endlink</TD></TR>
+<TR><TD></TD><TD>
+  WindowsXP/2000,
+  Linux,
+  OS X,
+  Building the Library</TD></TR>
 
+<TR><TD COLSPAN=2>\link guideshaders Shaders \endlink</TD></TR>
+<TR><TD></TD><TD>
+  Supported Languages,
+  Tools,
+  Sample Shaders</TD></TR>
+
+<TR><TD COLSPAN=2>\link license License (BSD/IJG) \endlink</TD></TR>
 <TR><TD COLSPAN=2>\link changelog Change Log \endlink</TD></TR>
 <TR><TD COLSPAN=2>\link errorfaq Error FAQ \endlink</TD></TR>
 <TR><TD COLSPAN=2><A HREF="index.html">Index of Entry Points</A></TD></TR>
@@ -113,8 +125,9 @@ software development and scientific research.
 G3D is supported by donations from users (http://sourceforge.net/project/project_donations.php?group_id=76879), 
 and by hardware and technical support from NVIDIA Corporation and ATI.
 
+
 @section otherlibs Working With Other Libraries
-G3D is compatible with many external libraries.  
+G3D is compatible with most other libraries.  
 
 Although G3D uses SDL 
 (http://www.libsdl.org) for platform window management, you can use the G3D::GWindow API 
@@ -134,9 +147,15 @@ To avoid memory leaks, ensure that all libraries you use have been compiled agai
 the same version of the C++ standard library.  G3D expects to be compiled with run-time
 type checking (RTTI), C++ exceptions, and a multithreaded, dynamically linked runtime.
 
-The G3D installation includes zlib and SDL and #including G3DAll.h G3D automatically 
-causes your program to link against these libraries and G3D on Windows.  The G3D installation
-includes GLUT but does not use it by default.  You may #include glut.h if you like.
+G3D uses zlib (http://www.gzip.org/zlib/), which is distributed as part of G3D (as headers and a windows .lib and .dll).
+GFont, BinaryInput, and BinaryOutput use zlib; you can also call zlib functions directly 
+from your G3D program without additional headers or linking steps.
+
+G3D::SDLWindow uses SDL and #including G3DAll.h G3D automatically 
+causes your program to link SDL.  SDL is not included with the G3D installation and
+must be downloaded separately. 
+
+The G3D installation includes GLUT but does not use it by default.  You may #include glut.h if you like.
 
 In addition to those mentioned above, you may be interested in using the following 
 libraries to complement G3D:

@@ -80,11 +80,19 @@ SOURCE=.\Doxyfile
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=".\docsource\guide-install.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-shaders.h"
 # End Source File
 # Begin Source File
 
 SOURCE=".\docsource\guide-welcome.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\docsource\license.html
 # End Source File
 # End Group
 # Begin Source File

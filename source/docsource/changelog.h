@@ -12,6 +12,9 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> G3D Guide overview documentation
+     <LI> Changelog and Error FAQ moved under Doxygen
+     <LI> Build scripts and documentation now under the 'doc' .dsp on Windows
      <LI> Textures now support a DepthReadMode that can be used to perform hardware
 	     shadow map comparisions.  <B>RenderDevice::configureShadowMap now requires 
 		 an appropriately configured texture-- in previous releases it would
