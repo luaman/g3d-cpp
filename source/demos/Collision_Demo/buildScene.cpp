@@ -27,7 +27,7 @@ void insertRestingContactSpheres() {
     scene->insertDynamic(new SimSphere(Sphere(Vector3(4, .49, 4.5), .5), Vector3(0, 0, 0), Color3::BLUE));
 
     // This sphere must come to rest (given non-unit restitution)
-    scene->insertDynamic(new SimSphere(Sphere(Vector3(5.5, 2, 3), .5), Vector3(0, 0, 0), Color3::BLUE));
+    scene->insertDynamic(new SimSphere(Sphere(Vector3(4, 2, 1), .5), Vector3(0, 0, 0), Color3::BLUE));
 }
 
 
@@ -120,19 +120,19 @@ void buildScene() {
 
     insertTray();
     insertRamps();
-    //insertSpiralSlide();
-    //insertRollingContactSpheres();
-    //insertRestingContactSpheres();
+    insertSpiralSlide();
+    insertRollingContactSpheres();
+    insertRestingContactSpheres();
    
     //scene->insertDynamic(new SimSphere(Sphere(Vector3(-4, 3, 4), .25), Vector3(-1, 0, 0), Color3::BLUE));
     
     // Spheres
     
-    /*int i;
+    int i;
     for (i = 0; i < 10; ++i) {
-        scene->insertDynamic(new SimSphere(Sphere(Vector3(0, 7, 0), .25), Vector3::random() * 14, Color3::BLUE));
-    }
-    */
+        scene->insertDynamic(new SimSphere(Sphere(Vector3(0, 7, 0), .25), Vector3::random() * 10, Color3::BLUE));
+    }   
+    
     
     /*
     {

@@ -18,7 +18,7 @@ extern RenderDevice*        renderDevice;
 extern int                  depthBits;
 extern Log*                 debugLog;
 
-static const Vector3 gravity(0, -50, 0);
+static const Vector3 gravity(0, -60, 0);
 //static const Vector3 gravity(0, 0, 0);
 
 static Vector3 debugPoint = Vector3::ZERO;
@@ -29,7 +29,7 @@ static Vector3 debugPoint = Vector3::ZERO;
  get the system to converge to zero energy (although
  it will be stable).
  */
-static const double coefficientOfRestitution = .9;
+static const double coefficientOfRestitution = 0.9;
 
 /**
  Width and height of shadow map.
@@ -275,6 +275,17 @@ GameTime Scene::timeUntilCollisionWithMovingSphere(
 }
 
 
+// Support for special kinds of contact beyond collisions
+
+/** Keeps resting objects from gaining energy. */
+#define RESTING_CONTACT 1
+
+/** Makes rolling objects stick to the surface along which they are rolling. */
+#define ROLLING_CONTACT 1
+
+/** Helps objects come to rest. */
+#define SUPER_DAMPING   1
+
 void Scene::simulate(GameTime duration) {
 
     for (int i = 0; i < sim.size(); ++i) {
@@ -292,81 +303,83 @@ void Scene::simulate(GameTime duration) {
 
             delta = timeUntilCollisionWithMovingSphere(obj->sphere, obj->velocity, duration, collisionLocation, collisionNormal);
 
-            // Resting contact and Stuck in a surface
-            if (fuzzyEq(delta, 0.0)) {
-                // Despite our best efforts, sometimes a sphere penetrates an object and
-                // becomes stuck.  When this occurs, the highest priority is resolving
-                // the interpenetration.  Our first method is to bump the object slightly 
-                // (it may just be resting on the surface) and see if that avoids the
-                // collision.
-                //
-                // If that fails, we'll redirect the object's velocity out of the surface
-                // and temporarily turn off all acceleration.
-
-                // Maximum distance at which interpenetration can be considered "resting"
-                // and not "stuck".
-                const double restingInterpenetration = 0.005;
-
-                if ((collisionLocation - obj->sphere.center).length() > 
-                        obj->sphere.radius - restingInterpenetration) {
-
-                    // The sphere is just resting on the surface, not stuck deeply within it.  Bump
-                    // the sphere away from the surface and find another collision.
-                    Sphere bumpedSphere(obj->sphere.center + collisionNormal * restingInterpenetration, obj->sphere.radius);
-                    delta = timeUntilCollisionWithMovingSphere(bumpedSphere, obj->velocity, duration, collisionLocation, collisionNormal);
-
-                    if (! fuzzyEq(delta, 0.0)) {
-                        // Resting
-
-                        // Move the sphere to the bumped location; we were
-                        // indeed just resting (or rolling).
-                        Vector3 deltaPosition = bumpedSphere.center - obj->sphere.center;
-                        obj->sphere.center = bumpedSphere.center;
-
-                        // This will add a little energy to the system, so take
-                        // away what we added.  The increase in potential energy 
-                        // was:
-                        //
-                        //   dPE = (dPosition dot acceleration) * mass
-                        //
-                        // We want a corresponding decrease in kinetic energy:
-                        //
-                        //   dKE = -dPE = KE1 - KE0
-                        // where KE0 = 1/2 mass * v0^2, KE1 = 1/2 mass * v1^2
-                        // 
-                        //   v1 = sqrt(2(dPosition dot accleration) + v0^2)
-                        double v0 = obj->velocity.length();
-
-                        if (! fuzzyEq(v0, 0.0)) {
-                            double v1 = sqrt(deltaPosition.dot(acceleration) + square(v0));
-                            obj->velocity = obj->velocity * v1 / v0;
-                        }
-                    }
-
-                    // If we didn't find a new collision that occurs after zero time, we'll
-                    // fall into the following IF statement.
-                }
-
-
+            #if (RESTING_CONTACT)
+                // Resting contact and stuck in a surface
                 if (fuzzyEq(delta, 0.0)) {
-                    // Stuck
+                    // Despite our best efforts, sometimes a sphere penetrates an object and
+                    // becomes stuck.  When this occurs, the highest priority is resolving
+                    // the interpenetration.  Our first method is to bump the object slightly 
+                    // (it may just be resting on the surface) and see if that avoids the
+                    // collision.
                     //
-                    // The object must really be stuck.  Ignore the collision as well,
-                    // as acceleration due to gravity and move the sphere out of the
-                    // surface by redirecting its velocity.
-                
-                    if (obj->velocity.squaredLength() < 1) {
-                        // The velocity is too low to move it out on its own.
-                        obj->velocity = collisionNormal;
-                    } else {
-                        // Redirect all velocity along the collision normal.
-                        obj->velocity = obj->velocity.length() * collisionNormal;
-                    }
-                    delta = inf;
-                    acceleration = Vector3::ZERO;
-                }
-            }
+                    // If that fails, we'll redirect the object's velocity out of the surface
+                    // and temporarily turn off all acceleration.
 
+                    // Maximum distance at which interpenetration can be considered "resting"
+                    // and not "stuck".
+                    const double restingInterpenetration = 0.005;
+
+                    if ((collisionLocation - obj->sphere.center).length() > 
+                            obj->sphere.radius - restingInterpenetration) {
+
+                        // The sphere is just resting on the surface, not stuck deeply within it.  Bump
+                        // the sphere away from the surface and find another collision.
+                        Sphere bumpedSphere(obj->sphere.center + collisionNormal * restingInterpenetration, obj->sphere.radius);
+                        delta = timeUntilCollisionWithMovingSphere(bumpedSphere, obj->velocity, duration, collisionLocation, collisionNormal);
+
+                        if (! fuzzyEq(delta, 0.0)) {
+                            // Resting
+
+                            // Move the sphere to the bumped location; we were
+                            // indeed just resting (or rolling).
+                            Vector3 deltaPosition = bumpedSphere.center - obj->sphere.center;
+                            obj->sphere.center = bumpedSphere.center;
+
+                            // This will add a little energy to the system, so take
+                            // away what we added.  The increase in potential energy 
+                            // was:
+                            //
+                            //   dPE = (dPosition dot acceleration) * mass
+                            //
+                            // We want a corresponding decrease in kinetic energy:
+                            //
+                            //   dKE = -dPE = KE1 - KE0
+                            // where KE0 = 1/2 mass * v0^2, KE1 = 1/2 mass * v1^2
+                            // 
+                            //   v1 = sqrt(2(dPosition dot accleration) + v0^2)
+                            double v0 = obj->velocity.length();
+
+                            if (! fuzzyEq(v0, 0.0)) {
+                                double v1 = sqrt(deltaPosition.dot(acceleration) + square(v0));
+                                obj->velocity = obj->velocity * v1 / v0;
+                            }
+                        }
+
+                        // If we didn't find a new collision that occurs after zero time, we'll
+                        // fall into the following IF statement.
+                    }
+
+
+                    if (fuzzyEq(delta, 0.0)) {
+                        // Stuck
+                        //
+                        // The object must really be stuck.  Ignore the collision as well,
+                        // as acceleration due to gravity and move the sphere out of the
+                        // surface by redirecting its velocity.
+                
+                        if (obj->velocity.squaredLength() < 1) {
+                            // The velocity is too low to move it out on its own.
+                            obj->velocity = collisionNormal;
+                        } else {
+                            // Redirect all velocity along the collision normal.
+                            obj->velocity = obj->velocity.length() * collisionNormal;
+                        }
+                        delta = inf;
+                        acceleration = Vector3::ZERO;
+                    }
+                }
+            #endif
+            
 
             if (fuzzyLt(time + delta, duration)) {
                 debugAssert(isFinite(delta));
@@ -434,7 +447,7 @@ void Scene::simulate(GameTime duration) {
                     av /= duration * pow(acceleration.squaredLength(), .75);
                 }
 
-                if ((an < 0) && (nv * duration <= 0.05)) {
+                if ((an < 0) && (nv * duration <= 0.05) && ROLLING_CONTACT) {
                     // Rolling contact
                     //
                     // After collision the sphere is travelling mostly parallel
@@ -460,12 +473,25 @@ void Scene::simulate(GameTime duration) {
                         obj->velocity = parallel * obj->velocity.length() / len;
                     }
 
-                } else if ((av < 0) && (av > -150)) {
+                } else if (SUPER_DAMPING) {
                     // The velocity is small and opposite acceleration.  This
                     // sphere may be trying to come to rest; take more energy
                     // away than we normally do.
 
-                    double alpha = max(0.0, min(-av / 150.0, 1.0));
+                    double d = -acceleration.dot(obj->velocity) / (acceleration.length() * obj->velocity.length());
+                    double alpha = 1;
+
+                    // TODO: take acceleration and duration into account
+                    if ((d > .85) && (obj->velocity.length() < 5)) {
+                        if (d > .95) {
+                            alpha = .01;
+                        } else if (d > .9) {
+                            alpha = .05;
+                        } else {
+                            alpha = .1;
+                        }
+                    }
+
                     obj->velocity *= alpha * coefficientOfRestitution;
 
                 } else {
@@ -479,6 +505,21 @@ void Scene::simulate(GameTime duration) {
                 // No collision occurs; finish off this time interval
                 delta = duration - time;
                 obj->sphere.center += delta * obj->velocity;
+
+                if (RESTING_CONTACT && obj->velocity.isZero() && ! acceleration.isZero()) {
+                    GameTime t = timeUntilCollisionWithMovingSphere(obj->sphere, acceleration * duration, duration, collisionLocation, collisionNormal);
+                    // See if acceleration will cause us to leave resting contact
+                    if (t < 0.01) {
+                        // If we accelerate, we'll immediately hit a surface
+                        Vector3 bounceDirection =
+                            CollisionDetection::bounceDirection(obj->sphere, acceleration * duration, t, collisionLocation, collisionNormal);
+                        double align = bounceDirection.dot(acceleration.direction());
+                        if (align < -.95) {
+                            // The collision will cause us to bounce straight up; don't use the acceleration
+                            acceleration = Vector3::ZERO;
+                        }
+                    }
+                }
 
                 // Apply acceleration over the time period we just simulated
                 obj->velocity += acceleration * delta;

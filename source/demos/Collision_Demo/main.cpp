@@ -11,8 +11,13 @@
  This demo uses the G3D collision detection routines to implement a simple physics
  system.  Shadow maps are rendered using the OpenGL SGIX_SHADOW extension to
  show how to use non-G3D calls with G3D.  A Matrix4 skeleton is provided as well.
+ <P>
 
- 
+ This is not the greatest collision simulation ever written-- see OPCODE for something much nicer.
+ The intent of the demo is to show how to use non-G3D OpenGL calls, test the collision
+ detection routines (which are really intended for character motion and ray tracing,
+ not physics), and show a good way of structuring a 3D application.
+  
  <P>
  Requires:
    OpenGL
@@ -36,7 +41,7 @@
 std::string DATA_DIR("data/");
 
 /** The same bit depth is used for the shadow map and the screen */
-int depthBits     = 24;
+int                     depthBits       = 24;
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
@@ -47,6 +52,8 @@ VARArea*				varStatic		= NULL;
 Camera*					camera			= NULL;
 Scene*                  scene           = NULL;
 ManualCameraController* controller      = NULL;
+
+double                  maxFrameRate    = 30;
 
 /** World time */
 GameTime                gameTime        = 0;
@@ -88,12 +95,10 @@ int main(int argc, char** argv) {
     userInput    = new UserInput();
 
     controller   = new ManualCameraController(renderDevice);
-    controller->setMoveRate(1);
+    controller->setMoveRate(2);
 
     controller->setPosition(Vector3(15, 20, 15));
     controller->lookAt(Vector3(-2,3,-5));
-//    controller->setPosition(Vector3(-8, 5, 10));
-//    controller->lookAt(Vector3(-8,5,-5));
 
     scene        = new Scene();
 
@@ -108,9 +113,14 @@ int main(int argc, char** argv) {
 
     // Main loop
     do {
+        RealTime timeStep;
         lastTime = now;
-        now = getTime();
-        RealTime timeStep = now - lastTime;
+
+        // Lock the frame rate
+        do {
+            now = getTime();
+            timeStep = now - lastTime;
+        } while (timeStep <= 1 / (maxFrameRate + 0.5));
 
         doUserInput();
 
@@ -149,7 +159,7 @@ void doSimulation(GameTime timeStep) {
     controller->doSimulation(max(0.1, min(0, timeStep)), *userInput);
 	camera->setCoordinateFrame(controller->getCoordinateFrame());
 
-    scene->simulate(timeStep);
+    scene->simulate(1 / maxFrameRate);
 }
 
 
