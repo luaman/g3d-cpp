@@ -15,10 +15,14 @@
      <LI> Added support for full-screen antialiasing to Win32Window
      <LI> GWindows now center and maximize on the primary monitor for Windows.
      <LI> [ 1032750 ] Fix: Grayscale JPG errors [Corey]
-     <LI> Texture now supports DDS and PNG files [Corey]
+     <LI> Texture now supports DDS(2D/CubeMap) and PNG files [Corey]
      <LI> PosedModel::texCoords
      <LI> IFSModel now loads IFS 1.1 [Peter]
      <LI> contrib/wxG3DCanvas [Morgan]
+     <LI> Win32Window handles all key events [Corey]
+     <LI> Win32Window handles joysticks through DirectInput8 [Corey]
+     <LI> Win32Window fully-implements GWindow [Corey]
+     <LI> Fix: TGA writes with alpha-channel properly [Corey]
    </UL>
 
    <P>
