@@ -150,7 +150,7 @@ void doUserInput() {
 
     // Event handling
     SDL_Event event;
-    while (SDL_PollEvent(&event)) {
+    while (renderDevice->window()->pollEvent(event)) {
         switch(event.type) {
         case SDL_QUIT:
 	    endProgram = true;
