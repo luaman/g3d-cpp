@@ -114,58 +114,6 @@ public:
 
     };
 
-    /**
-     Geometry information for a single pose.  The faces and edges are
-     needed to interpret these values.
-     */
-    class Geometry {
-    public:        
-        Array<Vector3>          vertexArray;
-
-        /** May be slightly less than unit length due to interpolation.*/
-        Array<Vector3>          normalArray;
-
-        void clear() {
-            vertexArray.clear();
-            normalArray.clear();
-        }
-    };
-
-
-    class Face {
-    public:
-        Face();
-
-        /**
-         Used by Edge::faceIndex to indicate a missing face.
-         */
-        static const int        NONE;
-
-
-        /**
-         Vertices in the face in counter-clockwise order
-         */
-        int                     vertexIndex[3];
-
-        /** If the edge index is negative, ~index is in this face
-            but is directed oppositely.
-         */
-        int                     edgeIndex[3];
-    };
-
-    
-    class Edge {
-    public:
-        Edge();
-
-        int                     vertexIndex[2];
-
-        /** The edge is directed forward in the first face and
-            backward in the second face.  Face index of MD2Model::Face::NONE
-            indicates a dangling edge.
-          */
-        int                     faceIndex[2];
-    };
 
 protected:
     
@@ -218,7 +166,7 @@ protected:
         interpolatedFrame is not yet initialized. */
     static MD2Model*            interpolatedModel;
     static Pose                 interpolatedPose;
-    static Geometry             interpolatedFrame;
+    static MeshAlg::Geometry             interpolatedFrame;
 
     enum {NUM_VAR_AREAS = 10, NONE_ALLOCATED = -1};
     /** Shared dynamic vertex arrays. Allocated by allocateVertexArrays.
@@ -244,7 +192,7 @@ protected:
 
         class PVertex {
         public:
-            /** Indices into a Geometry's vertexArray */
+            /** Indices into a MeshAlg::Geometry's vertexArray */
             int                 index;
 
             /** One texture coordinate for each index */
@@ -279,7 +227,7 @@ protected:
     /**
      Set on load by computeAdjacency().
      */
-    Array<Face>                 faceArray;
+    Array<MeshAlg::Face>                 faceArray;
 
     /**
      Set on load by computeAdjacency();
@@ -289,7 +237,7 @@ protected:
     /**
      Set on load by computeAdjacency().
      */
-    Array<Edge>                 edgeArray;
+    Array<MeshAlg::Edge>                 edgeArray;
 
     Sphere                      _boundingSphere;
 
@@ -300,11 +248,6 @@ protected:
 
     void loadTextureFilenames(BinaryInput& b, int num, int offset);
     
-    /**
-     Computes faceArray and edgeArray.  Called from load().
-     @param vertexArray Vertex positions to use when deciding colocation
-     */
-    void computeAdjacency(const Array<Vector3>& vertexArray);
 
     /**
      Creates a texCoordArray to parallel the vertex and normal arrays,
@@ -312,20 +255,6 @@ protected:
      @param inCoords Texture coords corresponding to the index array
      */
     void computeTexCoords(const Array<Vector2int16>& inCoords);
-
-    /**
-     Helper for computeAdjacency.  If a directed edge with index e already
-     exists from i0 to i1 then e is returned.  If a directed edge with index e
-     already exists from i1 to i0, ~e is returned (the complement) and
-     edgeArray[e] is set to f.  Otherwise, a new edge is created from i0 to i1
-     with first face index f and its index is returned.
-    
-     @param area Area of face f.  When multiple edges of the same direction 
-       are found between the same vertices (usually because of degenerate edges)
-       the face with larger area is kept in the edge table.
-     */
-    int MD2Model::findEdgeIndex(const Array<Vector3>& vertexArray,
-        int i0, int i1, int f, double area);
 
     /**
       Called from render() to create the vertex arrays.  Assumes VAR is
@@ -353,9 +282,9 @@ public:
      values are interpolated and may have slightly less than unit
      length.
      */
-    void getGeometry(const Pose& pose, Geometry& geometry) const;
+    void getGeometry(const Pose& pose, MeshAlg::Geometry& geometry) const;
 
-    const Array<Face>& faces() const;
+    const Array<MeshAlg::Face>& faces() const;
 
     /**
      Edges built by assuming colocated vertices are identical.
@@ -366,7 +295,7 @@ public:
      When a degenerate polygon lies along an edge, that edge is present
      in this array once, not three times.
      */
-    const Array<Edge>& geometricEdges() const;
+    const Array<MeshAlg::Edge>& geometricEdges() const;
 
     /**
      adjacentFaces()[v] is an array of indices of faces that touch vertex v.

@@ -17,8 +17,6 @@
 
 namespace G3D {
 
-const int       MD2Model::Face::NONE             = -100;
-
 MD2Model*       MD2Model::interpolatedModel      = NULL;
 MD2Model::Pose  MD2Model::interpolatedPose;
 VARArea*        MD2Model::varArea[MD2Model::NUM_VAR_AREAS];
@@ -575,12 +573,12 @@ const Box& MD2Model::boundingBox() const {
 }
 
 
-const Array<MD2Model::Face>& MD2Model::faces() const {
+const Array<MeshAlg::Face>& MD2Model::faces() const {
     return faceArray;
 }
 
 
-const Array<MD2Model::Edge>& MD2Model::geometricEdges() const {
+const Array<MeshAlg::Edge>& MD2Model::geometricEdges() const {
     return edgeArray;
 }
 
@@ -593,7 +591,7 @@ size_t MD2Model::mainMemorySize() const {
 
     size_t frameSize   = keyFrame.size() * (sizeof(PackedGeometry)  + (sizeof(Vector3) + sizeof(uint8)) * keyFrame[0].vertexArray.size());
     size_t indexSize   = indexArray.size() * sizeof(int);
-    size_t faceSize    = faceArray.size() * sizeof(Face);
+    size_t faceSize    = faceArray.size() * sizeof(MeshAlg::Face);
     size_t texSize     = _texCoordArray.size() * sizeof(Vector2int16);
     size_t valentSize  = adjacentFaceArray.size() * sizeof(Array<int>);
     for (int i = 0; i < adjacentFaceArray.size(); ++i) {
@@ -605,13 +603,13 @@ size_t MD2Model::mainMemorySize() const {
         primitiveSize += primitiveArray[i].pvertexArray.size() * sizeof(Primitive::PVertex);
     }
 
-    size_t edgeSize    = edgeArray.size() * sizeof(Edge);
+    size_t edgeSize    = edgeArray.size() * sizeof(MeshAlg::Edge);
 
     return sizeof(MD2Model) + frameSize + indexSize + faceSize + valentSize + primitiveSize + texSize;
 }
 
 
-MD2Model::Geometry MD2Model::interpolatedFrame;
+MeshAlg::Geometry MD2Model::interpolatedFrame;
 
 #ifdef G3D_WIN32
     // Supress warnings about mutating ebx and ebp; we 
@@ -621,7 +619,7 @@ MD2Model::Geometry MD2Model::interpolatedFrame;
     #pragma warning( disable : 4731 )
 #endif
 
-void MD2Model::getGeometry(const Pose& pose, Geometry& out) const {
+void MD2Model::getGeometry(const Pose& pose, MeshAlg::Geometry& out) const {
     if (! initialized) {
         return;
     }
