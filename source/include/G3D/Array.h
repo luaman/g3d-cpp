@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-11-06
+  @edited  2004-01-10
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.

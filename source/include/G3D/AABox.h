@@ -105,8 +105,24 @@ public:
 
     /** Returns true if there is any overlap */
     bool intersects(const AABox& other) const;
+
+    inline unsigned int hashCode() const {
+        return lo.hashCode() + hi.hashCode();
+    }
+
+    inline bool operator==(const G3D::AABox& b) {
+        return (lo == b.lo) && (hi == b.hi);
+    }
 };
 
 }
+
+/**
+ Hashing function for use with Table.
+ */
+inline unsigned int hashCode(const G3D::AABox& b) {
+	return b.hashCode();
+}
+
 
 #endif

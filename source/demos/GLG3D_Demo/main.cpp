@@ -32,11 +32,27 @@
 #endif
   
 /**
+ Number of planes
+ */
+const int                   N = 100;
+
+/**
+ Change this to change the model being rendered.
+ */
+//const std::string modelName = "p51-mustang.ifs";
+const std::string           modelName = "trico.ifs";
+
+/**
  The path to the data directory from this program's directory.
  */
-std::string DATA_DIR("data/");
+std::string                 DATA_DIR;
 
-
+/**
+ See also G3D::IFSModel and G3D::MD2Model.  This stripped-down
+ demo uses neither, but you can save yourself a lot of coding
+ by using the built-in classes (which are optimized for dynamic
+ var usage).
+ */
 class Model {
 
     VAR             varVertex;
@@ -52,6 +68,9 @@ public:
     virtual ~Model() {}
     void render(const CoordinateFrame& c, 
                 const LightingParameters& lighting) const;
+    int numPolys() const {
+        return index.size() / 3;
+    }
 };
 
 
@@ -60,7 +79,7 @@ RenderDevice*           renderDevice= NULL;
 CFontRef                font        = NULL;
 UserInput*              userInput   = NULL;
 SkyRef                  sky         = NULL;
-VARAreaRef              varStream  = NULL;
+VARAreaRef              varStream   = NULL;
 VARAreaRef              varStatic   = NULL;
 GCamera                 camera;
 
@@ -71,6 +90,7 @@ enum RenderMethod {TRIANGLES = 0, VARSTREAM, VARSTATIC, NUM_RENDER_METHODS} rend
 Model*                  model       = NULL;
 
 void handleEvents();
+
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -85,15 +105,15 @@ int main(int argc, char** argv) {
     renderDevice->init(RenderDeviceSettings(), debugLog);
 
     // Allocate the two VARAreas used in this demo
-    varStatic  = VARArea::create(1024 * 64, VARArea::WRITE_ONCE);
-    varStream = VARArea::create(1024 * 128, VARArea::WRITE_EVERY_FRAME);
+    varStatic  = VARArea::create(1024 * 640, VARArea::WRITE_ONCE);
+    varStream = VARArea::create(1024 * 1280, VARArea::WRITE_EVERY_FRAME);
     debugAssert(varStatic);
     debugAssert(varStream);
 
     font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
     sky          = Sky::create(renderDevice, DATA_DIR + "sky/");
     userInput    = new UserInput();
-    model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
+    model        = new Model(DATA_DIR + "ifs/" + modelName);
 
     ManualCameraController* controller = new ManualCameraController();
     controller->init(renderDevice, userInput);
@@ -144,7 +164,7 @@ int main(int argc, char** argv) {
                     t[0] = System::getTick();
                     t[1] = t[0] + 0.01;
 
-                    for (int x = 0; x < 50; ++x) {
+                    for (int x = 0; x < N; ++x) {
 
                         for (int i = 0; i < 2; ++i) {
                             double a = x + t[i] + 2; 
@@ -182,6 +202,11 @@ int main(int argc, char** argv) {
                       format("%d ktri/s", 
                       iRound(renderDevice->getTriangleRate() / 1000)),
                       Vector2(10, 100), 20, Color3::WHITE, Color3::BLACK);
+
+                    font->draw2D(
+                      format("%dx%d poly planes", 
+                      N, model->numPolys()),
+                      Vector2(10, 150), 20, Color3::WHITE, Color3::BLACK);
 
                     char* str = NULL;
                     switch (renderMethod) {
