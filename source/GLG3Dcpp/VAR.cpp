@@ -165,13 +165,18 @@ void VAR::colorPointer() const {
 
 void VAR::texCoordPointer(uint unit) const {
 	debugAssert(valid());
+    debugAssertM(GLCaps::supports_GL_ARB_multitexture() || (unit == 0),
+        "Graphics card does not support multitexture");
 
     if (GLCaps::supports_GL_ARB_multitexture()) {
 	    glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
-	    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	    glTexCoordPointer(elementSize / sizeOfGLFormat(underlyingRepresentation),
-                          underlyingRepresentation, elementSize, _pointer);
-	    glClientActiveTextureARB(GL_TEXTURE0_ARB);
+    }
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(elementSize / sizeOfGLFormat(underlyingRepresentation),
+                      underlyingRepresentation, elementSize, _pointer);
+
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glClientActiveTextureARB(GL_TEXTURE0_ARB);
     }
 }
 
