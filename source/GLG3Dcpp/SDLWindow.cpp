@@ -442,13 +442,20 @@ std::string SDLWindow::caption() {
 
 
 void SDLWindow::setIcon(const GImage& image) {
-    alwaysAssertM(image.channels > 2, "Icon image must have at least 3 channels.");
+    alwaysAssertM((image.channels == 3) ||
+                  (image.channels == 4), 
+                  "Icon image must have at least 3 channels.");
 
     uint8* mask = NULL;
 
+    uint32 rmask = 0xFF000000;
+    uint32 gmask = 0x00FF0000;
+    uint32 bmask = 0x0000FF00;
+    uint32 amask = 0x000000FF;
+
     if (image.channels == 4) {
         // Has an alpha channel; construct a mask
-        int len = iCeil(image.width/8) * image.height;
+        int len = iCeil(image.width / 8) * image.height;
         mask = new uint8[len];
         // Initialize the mask to transparent
         System::memset(mask, 0, len);
@@ -463,32 +470,26 @@ void SDLWindow::setIcon(const GImage& image) {
                 mask[y * image.width + x / 8] |= (bit << (x % 8));
             }
         }
-    }
-
-    uint32 rmask = 0xFF000000;
-    uint32 gmask = 0x00FF0000;
-    uint32 bmask = 0x0000FF00;
-    uint32 amask = 0x000000FF;
-
-    if (image.channels < 4) {
+    } else if (image.channels == 3) {
+        // Take away the 4th channel.
         rmask = rmask >> 8;
         gmask = gmask >> 8;
         bmask = bmask >> 8;
         amask = amask >> 8;
     }
 
-    int pixelByteLen    = image.channels;
-    int scanLineByteLen = pixelByteLen * image.width;
+    int pixelBitLen     = image.channels * 8;
+    int scanLineByteLen = image.channels * image.width;
 
     SDL_Surface* surface =
         SDL_CreateRGBSurfaceFrom((void*)image.byte(), image.width, image.height,
-        pixelByteLen, scanLineByteLen, 
+        pixelBitLen, scanLineByteLen, 
         rmask, gmask, bmask, amask);
 
     SDL_WM_SetIcon(surface, mask);
 
     SDL_FreeSurface(surface);
-    delete mask;
+    delete[] mask;
 }
 
 

@@ -281,15 +281,14 @@ void App::main() {
     Demo(this).run();    
 }
 
-App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
-//App::App(const GAppSettings& settings) : GApp(settings) {
-    /*
+//App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
+App::App(const GAppSettings& settings) : GApp(settings) {    
     try {
-        window()->setIcon("D:/media/VB/ICONS/OFFICE/clip07.ico");
+        window()->setIcon("d:/games/cpp/source/html/g3d.ico");
     } catch (GImage::Error e){
         debugAssertM(false, e.reason);
     }
-    */
+    
 }
 
 int main(int argc, char** argv) {
