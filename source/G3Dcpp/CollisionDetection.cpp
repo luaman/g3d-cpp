@@ -10,6 +10,7 @@
 
 #include "G3D/CollisionDetection.h"
 #include "G3D/debugAssert.h"
+#include "G3D/vectorMath.h"
 #include "G3D/Capsule.h"
 #include "G3D/Plane.h"
 #include "G3D/Line.h"
@@ -25,6 +26,422 @@ namespace G3D {
 bool CollisionDetection::ignoreBool;
 Vector3	CollisionDetection::ignore;
 Array<Vector3> CollisionDetection::ignoreArray;
+
+
+
+
+
+
+Vector3 CollisionDetection::separatingAxisForSolidBoxSolidBox(
+        const int separatingAxisIndex,
+        const Box & box1,
+        const Box & box2)
+{
+    debugAssert(separatingAxisIndex >= 0);
+    debugAssert(separatingAxisIndex < 15);
+    Vector3 axis;
+    if (separatingAxisIndex < 3) {
+        axis = box1.axis(separatingAxisIndex);
+    } else if (separatingAxisIndex < 6) {
+        axis = box2.axis(separatingAxisIndex - 3);
+    } else {
+        int box1Index = (separatingAxisIndex - 6) / 3;
+        int box2Index = (separatingAxisIndex - 6) % 3;
+        axis = cross(box1.axis(box1Index), box2.axis(box2Index));
+    }
+    return axis;
+}
+
+
+
+bool CollisionDetection::parallelAxisForSolidBoxSolidBox(
+        const double* ca,
+        const double epsilon,
+        int & axis1,
+        int & axis2)
+{
+    const double parallelDot = 1.0 - epsilon;
+    for (int i = 0; i < 9; i++) {
+        if (ca[i] >= parallelDot) {
+            axis1 = i / 3;
+            axis2 = i % 3;
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+
+
+
+void CollisionDetection::fillSolidBoxSolidBoxInfo(
+        const Box & box1,
+        const Box & box2,
+        Vector3 & a,
+        Vector3 & b,
+        Vector3 & D,
+        double* c,
+        double* ca,
+        double* ad,
+        double* bd)
+{
+    // length between center and each side of box1 and box2
+    a = box1.extent() * 0.5;
+    b = box2.extent() * 0.5;
+
+    // difference between centers of box1 and box2
+    D = box2.center() - box1.center();
+
+    // store the value of all possible dot products between the
+    // axes of box1 and box2, c_{row, col} in the Eberly paper
+    // corresponds to c[row * 3 + col] for this 9 element array.
+    //
+    // c[] holds signed values, ca[] hold absolute values
+    for (int i = 0; i < 9; i++) {
+        c[i] = dot(box1.axis(i / 3), box2.axis(i % 3));
+        ca[i] = fabs(c[i]);
+    }
+
+    // store all possible dot products between the axes of box1 and D,
+    // as well as the axes of box2 and D
+    for (int i = 0; i < 3; i++) {
+        ad[i] = dot(box1.axis(i), D);
+        bd[i] = dot(box2.axis(i), D);
+    }
+}
+
+
+
+bool CollisionDetection::conservativeBoxBoxTest(
+        const Vector3 & a, const Vector3 & b, const Vector3 & D)
+{
+    // do a quick bounding sphere test because it is relatively
+    // cheap, (three dot products, two sqrts, and a few others)
+    double boxRadius1 = a.length();
+    double boxRadius2 = b.length();
+    return (D.squaredLength() < square(boxRadius1 + boxRadius2));
+}
+
+
+
+
+bool CollisionDetection::fixedSolidBoxIntersectsFixedSolidBox(
+    const Box&      box1,
+    const Box&      box2,
+	const int		lastSeparatingAxis)
+{
+    // for explanations of the variable please refer to the
+    // paper and fillSolidBoxSolidBoxInfo()
+    Vector3 a;
+    Vector3 b;
+    Vector3 D;
+    double c[9];
+    double ca[9];
+    double ad[3];
+    double bd[3];
+
+    fillSolidBoxSolidBoxInfo(box1, box2, a, b, D, c, ca, ad, bd);
+
+    int dummy1, dummy2;
+    bool parallelAxes = parallelAxisForSolidBoxSolidBox(ca, 0.00001,
+            dummy1, dummy2);
+
+    // check the separating axis from the last time step
+    if (lastSeparatingAxis != -1 &&
+            (lastSeparatingAxis < 6 || !parallelAxes)) {
+        double projectedDistance = projectedDistanceForSolidBoxSolidBox(
+                lastSeparatingAxis, a, b, D, c, ca, ad, bd);
+
+        // the separating axis from the last time step is still
+        // valid, the boxes do not intersect
+        if (projectedDistance > 0.0) {
+            return false;
+        }
+    }
+
+    // test if the boxes can be separated by a plane normal to
+    // any of the three axes of box1, any of the three axes of box2,
+    // or any of the 9 possible cross products of axes from box1
+    // and box2
+    for (int i = 0; i < 15; i++) {
+        // do not need to check edge-edge cases if any two of
+        // the axes are parallel
+        if (parallelAxes && i == 6) {
+            return true;
+        }
+
+        double projectedDistance =
+            projectedDistanceForSolidBoxSolidBox(i, a, b, D, c, ca, ad, bd);
+
+        // found a separating axis, the boxes do not intersect
+        if (projectedDistance > 0.0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+
+void CollisionDetection::closestPointsBetweenLineAndLine(
+        const Line & line1,
+        const Line & line2,
+        Vector3 & closest1,
+        Vector3 & closest2)
+{
+    // TODO make accessors for Line that don't make a copy of data
+    Vector3 P0 = line1.point();
+    Vector3 u = line1.direction();
+    Vector3 Q0 = line2.point();
+    Vector3 v = line2.direction();
+    Vector3 w0 = P0 - Q0;
+
+    // a = 1.0, c = 1.0
+    double  b = dot(u, v);
+    double  d = dot(u, w0);
+    double  e = dot(v, w0);
+    double  D = 1.0 - b * b;
+    double  sc, tc;
+
+    static const double epsilon = 0.00001;
+
+    if (D < epsilon) {
+        // lines are parallel, choose P0 as one point, find the point
+        // on line2 that is closest to P0
+        sc = 0.0;
+        tc = (b > 1.0) ? (d / b) : (e / 1.0);
+    } else {
+        // lines are not parallel
+        sc = (b * e - 1.0 * d) / D;
+        tc = (1.0 * e - b * d) / D;
+    }
+
+    closest1 = P0 + (sc * u);
+    closest2 = Q0 + (tc * v);
+}
+
+
+
+double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
+    const Box&      box1,
+    const Box&      box2,
+    Array<Vector3>& contactPoints,
+    Array<Vector3>& contactNormals,
+    const int lastSeparatingAxis)
+{
+
+    contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+    contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+
+    Vector3 a;
+    Vector3 b;
+    Vector3 D;
+    double c[9];
+    double ca[9];
+    double ad[3];
+    double bd[3];
+
+    debugAssert(lastSeparatingAxis >= -1);
+    debugAssert(lastSeparatingAxis < 15);
+
+    fillSolidBoxSolidBoxInfo(box1, box2, a, b, D, c, ca, ad, bd);
+
+    int axis1, axis2;
+    bool parallelAxes = parallelAxisForSolidBoxSolidBox(ca, 0.00001,
+            axis1, axis2);
+
+
+    // check the separating axis from the last time step
+    if (lastSeparatingAxis != -1 &&
+            (lastSeparatingAxis < 6 || !parallelAxes)) {
+        double projectedDistance = projectedDistanceForSolidBoxSolidBox(
+                lastSeparatingAxis, a, b, D, c, ca, ad, bd);
+
+        // the separating axis from the last time step is still
+        // valid, the boxes do not intersect
+        if (projectedDistance > 0.0) {
+            return -projectedDistance;
+        }
+    }
+
+    // test if the boxes can be separated by a plane normal to
+    // any of the three axes of box1, any of the three axes of box2,
+    // or any of the 9 possible cross products of axes from box1
+    // and box2
+	double penetration = -G3D::inf;
+    int penetrationAxisIndex = -1;
+
+    // the magnitude for the edge-edge cases needs to be adjusted
+    // so save these values
+    double edgePenetration[9];
+
+    for (int i = 0; i < 15; i++) {
+
+        // do not need to check edge-edge cases if any two of
+        // the axes are parallel
+        if (parallelAxes && i == 6) {
+            break;
+        }
+
+        double projectedDistance =
+            projectedDistanceForSolidBoxSolidBox(i, a, b, D, c, ca, ad, bd);
+
+        // found a separating axis, the boxes do not intersect
+        if (projectedDistance > 0.0) {
+            return -projectedDistance;
+        }
+
+        if (i < 6) {
+            // keep track of the axis that is least violated
+            if (projectedDistance > penetration) {
+                penetration = projectedDistance;
+                penetrationAxisIndex = i;
+            }
+        } else {
+            // save the edge-edge penetration value for later, the
+            // magnitude gets adjusted after the for loop finishes
+            edgePenetration[i - 6] = projectedDistance;
+        }
+    }
+
+
+    // for each edge-edge case we have to adjust the magnitude of
+    // penetration since we did not include the dot(L, L) denominator
+    // that can be smaller than 1.0 for the edge-edge cases.
+    // This may change our decision as to which axis has the minimal
+    // amount of penetration
+    for (int i = 0; i < 9; i++) {
+        // find the negative penetration value with the smallest magnitude,
+        // the adjustment done for the edge-edge cases only increases
+        // magnitude by dividing by a number smaller than 1.0
+        double curPenetration = edgePenetration[i];
+        if (curPenetration > penetration) {
+            Vector3 L = separatingAxisForSolidBoxSolidBox(i + 6, box1, box2);
+            curPenetration /= dot(L, L);
+            if (curPenetration > penetration) {
+                penetration = curPenetration;
+                penetrationAxisIndex = i + 6;
+            }
+        }
+    }
+
+    Vector3 L = separatingAxisForSolidBoxSolidBox(penetrationAxisIndex,
+            box1, box2);
+
+    // set L to be the normal that faces away from box1
+    if (dot(L, D) < 0) {
+        L = -L;
+    }
+
+    /* NOTE to get a more balanced contact point you could average
+       vertices overlapping with the other box, instead of only
+       finding the deepest vertex */
+
+    Vector3 contactPoint;
+
+    if (penetrationAxisIndex < 6) {
+        // vertex to face collision, find deepest colliding vertex
+        const Box* vertexBox;
+        const Box* faceBox;
+        Vector3 faceNormal = L;
+
+        // L will be the outward facing normal for the faceBox
+        if (penetrationAxisIndex < 3) {
+            faceBox = & box1;
+            vertexBox = & box2;
+            if (dot(L, D) < 0) {
+                faceNormal = -L;
+            }
+        } else {
+            faceBox = & box2;
+            vertexBox = & box1;
+            if (dot(L, D) > 0) {
+                faceNormal = -L;
+            }
+        }
+
+        // find the vertex that is farthest away in the direction
+        // face normal direction
+        int deepestPointIndex = 0;
+        double deepestPointDot = dot(faceNormal, vertexBox->getCorner(0));
+        for (int i = 1; i < 8; i++) {
+            double dotProduct = dot(faceNormal, vertexBox->getCorner(i));
+            if (dotProduct < deepestPointDot) {
+                deepestPointDot = dotProduct;
+                deepestPointIndex = i;
+            }
+        }
+        
+        // return the point half way between the deepest point and the
+        // contacting face
+        contactPoint = vertexBox->getCorner(deepestPointIndex) +
+            (-penetration * 0.5 * faceNormal);
+    } else {
+        // edge-edge case, find the two ege lines
+        int edge1 = (penetrationAxisIndex - 6) / 3;
+        int edge2 = (penetrationAxisIndex - 6) % 3;
+        Vector3 linePoint1 = box1.center();
+        Vector3 linePoint2 = box2.center();
+        Vector3 lineDir1;
+        Vector3 lineDir2;
+
+        // find edge line by finding the edge axis, and the
+        // other two axes that are closest to the other box
+        for (int i = 0; i < 3; i++ ) {
+            if (i == edge1) {
+                lineDir1 = box1.axis(i);
+            } else {
+                Vector3 axis = box1.axis(i);
+                if (dot(axis, L) < 0) {
+                    axis = -axis;
+                }
+                linePoint1 += axis * a[i];
+            }
+
+            if (i == edge2) {
+                lineDir2 = box2.axis(i);
+            } else {
+                Vector3 axis = box2.axis(i);
+                if (dot(axis, L) > 0) {
+                    axis = -axis;
+                }
+                linePoint2 += axis * b[i];
+            }
+        }
+
+        // make lines from the two closest edges, and find
+        // the points that on each line that are closest to the other
+        Line line1 = Line::fromPointAndDirection(linePoint1, lineDir1);
+        Line line2 = Line::fromPointAndDirection(linePoint2, lineDir2);
+        Vector3 closest1;
+        Vector3 closest2;
+
+        closestPointsBetweenLineAndLine(line1, line2, closest1, closest2);
+        
+        // take the average of the two closest edge points for the final
+        // contact point
+        contactPoint = (closest1 + closest2) * 0.5;
+    }
+
+    contactPoints.push(contactPoint);
+    contactNormals.push(L);
+
+    return -penetration;
+
+}
+
+
+
+
+
+
+
+
+
+
 
 double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
     const Sphere&   sphere,
