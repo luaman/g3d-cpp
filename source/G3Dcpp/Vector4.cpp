@@ -27,11 +27,28 @@ unsigned int Vector4::hashCode() const {
     return xhash + (yhash * 37) + (zhash * 101) + (whash * 241);
 }
 
+
 Vector4::Vector4(const class Color4& c) {
     x = c.r;
     y = c.g;
     z = c.b;
     w = c.a;
+}
+
+
+Vector4::Vector4(const Vector2& v1, const Vector2& v2) {
+    x = v1.x;
+    y = v1.y;
+    z = v2.x;
+    w = v2.y;
+}
+
+
+Vector4::Vector4(const Vector2& v1, float fz, float fw) {
+    x = v1.x;
+    y = v1.y;
+    z = fz;
+    w = fw;
 }
 
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-09-27
+ @edited  2003-09-29
  */
 
 
@@ -78,6 +78,8 @@ PFNGLBINDPROGRAMNVPROC                      glBindProgramNV                 = NU
 PFNGLLOADPROGRAMNVPROC                      glLoadProgramNV                 = NULL;
 PFNGLTRACKMATRIXNVPROC                      glTrackMatrixNV                 = NULL;
 PFNGLPROGRAMPARAMETER4FVNVPROC              glProgramParameter4fvNV         = NULL;
+PFNGLGETPROGRAMPARAMETERFVNVPROC            glGetProgramParameterfvNV       = NULL;
+PFNGLGETPROGRAMPARAMETERDVNVPROC            glGetProgramParameterdvNV       = NULL;
 
 PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
@@ -379,6 +381,9 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glTrackMatrixNV);
     LOAD_EXTENSION(glProgramParameter4fvNV);
     LOAD_EXTENSION(glActiveStencilFaceEXT);
+    LOAD_EXTENSION(glGetProgramParameterfvNV);
+    LOAD_EXTENSION(glGetProgramParameterdvNV);
+
     #undef LOAD_EXTENSION
 }
 
@@ -583,8 +588,9 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n\n"
-
              "* JOYSTICK\n"
              "Number                              %4d    %s\n\n",
                          
@@ -654,7 +660,10 @@ bool RenderDevice::init(
              "glLoadProgramNV", isOk(glLoadProgramNV),
              "glTrackMatrixNV", isOk(glTrackMatrixNV),
              "glProgramParameter4fvNV", isOk(glProgramParameter4fvNV),
-             "glActiveStencilFaceEXT", isOk(glActiveStencilFaceEXT),
+             "glGetProgramParameterfvNV", isOk(glGetProgramParameterfvNV),
+             "glGetProgramParameterdvNV", isOk(glGetProgramParameterdvNV),
+
+            "glActiveStencilFaceEXT", isOk(glActiveStencilFaceEXT),
 
              SDL_NumJoysticks(), "ok"
              );

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-09-22
+ @edited  2003-09-29
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -94,6 +94,9 @@ extern PFNGLBINDPROGRAMNVPROC              glBindProgramNV;
 extern PFNGLLOADPROGRAMNVPROC              glLoadProgramNV;
 extern PFNGLTRACKMATRIXNVPROC              glTrackMatrixNV;
 extern PFNGLPROGRAMPARAMETER4FVNVPROC      glProgramParameter4fvNV;
+extern PFNGLGETPROGRAMPARAMETERFVNVPROC    glGetProgramParameterfvNV;
+extern PFNGLGETPROGRAMPARAMETERDVNVPROC    glGetProgramParameterdvNV;
+
 
 extern PFNGLCOMBINERPARAMETERFVNVPROC               glCombinerParameterfvNV;
 extern PFNGLCOMBINERPARAMETERFNVPROC                glCombinerParameterfNV;
