@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-29
-  @edited  2004-03-29
+  @edited  2004-10-04
  */
 
 #ifndef ENTITY_H
@@ -78,7 +78,7 @@ public:
 /**
  One of the objects in the world.
  */
-class Entity  {
+class Entity {
 public:
     /**
       Time period over which positions are lerped between
@@ -129,6 +129,8 @@ public:
 
     /** Makes an update message that can be sent between client and server or vice versa. */
     void makeStateMessage(class EntityStateMessage& msg) const;
+
+    virtual ~Entity() {}
 
     /** Update this entity's state from the message on the client side.
         (The server side only updates the controls, not the state.)

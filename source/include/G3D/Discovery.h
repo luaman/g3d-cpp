@@ -406,9 +406,6 @@ private:
 
         RealTime TIMEOUT = 2.0;
 
-        // Connect to the address and read the game advertisement.
-        bool canConnect = false;
-
         ReliableConduitRef server = netDevice->createReliableConduit(address);
 
         if (! server->ok()) {
@@ -525,7 +522,8 @@ public:
 
         // Send announcement
         NetAddress broadcast = NetAddress::broadcastAddress(settings->clientBroadcastPort);
-        net->send(broadcast, &BroadcastMessage());
+        BroadcastMessage tmp;
+        net->send(broadcast, &tmp);
     }
 
     /** Shut down the discovery client. */

@@ -50,6 +50,8 @@ public:
 
     Browse(App* app);
 
+    virtual ~Browse() {}
+
     virtual void init();
 
     virtual void doLogic();

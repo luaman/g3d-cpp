@@ -67,6 +67,8 @@ public:
     ServerAd            selectedServer;
 
     Client(App* app); 
+    
+    virtual ~Client(){}
 
     virtual void init();
 

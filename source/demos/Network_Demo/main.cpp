@@ -1,12 +1,12 @@
 /**
   @file Network_Demo/main.cpp
 
-  Optional command line argument is the name of the log file (useful when running
-  two clients on the same machine).
+  Optional command line argument is the name of the log file (useful
+  when running two clients on the same machine).
 
-  This demo shows how to set up network discovery (server browsing) and a client
-  server program.  It also contains a "listen server" that runs in parallel with
-  a client within a single thread.
+  This demo shows how to set up network discovery (server browsing)
+  and a client server program.  It also contains a "listen server"
+  that runs in parallel with a client within a single thread.
 
   In-game keys:
     ESC     - Quit
@@ -16,7 +16,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-05-03
+  @edited  2004-10-05
  */
 
 #include "App.h"
@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
 
 App::App(const GAppSettings& settings) : 
     GApp(settings),
-    discoverySettings("Demo Discovery Protocol", 1),
-    hostingServer(NULL) {
+    hostingServer(NULL),
+    discoverySettings("Demo Discovery Protocol", 1) {
 
     ::app = this;
 
