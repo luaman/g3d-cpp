@@ -1,3 +1,13 @@
+configure
+config.*
+autom4te.cache
+install-sh
+depcomp
+aclocal.m4
+ltmain.sh
+missing
+mkinstalldirs
+*~
 *.pyc
 *.ncb
 *.opt
