@@ -1,5 +1,9 @@
 #include "wxGWindow.h"
 
+// Static functions at end of file
+static void initWXKeys();
+
+
 // Hashtable to map wxWidgets keys to SDL keys
 static Table<int, int> sdlKeyMap;
 
@@ -40,6 +44,8 @@ wxGWindow::wxGWindow(
         const GWindowSettings&  _settings,
         wxWindow*               parent,
         wxWindowID              id)  : invisible(wxCURSOR_BLANK), arrow(wxCURSOR_ARROW) {
+
+        initWXKeys();
 
         Array<int> attribList;
         makeAttribList(_settings, attribList);
@@ -178,8 +184,10 @@ void wxGWindow::getJoystickState (unsigned int stickNum, Array< float > &axis, A
 void wxGWindow::setInputCapture (bool c) {
     if (c) {
         window->CaptureMouse();
+        setMouseVisible(false);
     } else {
-        window->ReleaseMouse(); 
+        window->ReleaseMouse();
+        setMouseVisible(true);
     }
 }
 
@@ -221,8 +229,8 @@ void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
     }
 
     GEvent e;
-    e.key.type = SDL_KEYDOWN;
-    e.key.state = SDL_PRESSED;
+    e.key.type = SDL_KEYUP;
+    e.key.state = SDL_RELEASED;
     
     if ((event.KeyCode() >= 'a') && (event.KeyCode() <= 'z')) {
         e.key.keysym.sym = (SDLKey)event.KeyCode();
@@ -259,8 +267,8 @@ void wxG3DCanvas::handleKeyDown(wxKeyEvent& event)
     }
 
     GEvent e;
-    e.key.type = SDL_KEYUP;
-    e.key.state = SDL_RELEASED;
+    e.key.type = SDL_KEYDOWN;
+    e.key.state = SDL_PRESSED;
     
     if ((event.KeyCode() >= 'a') && (event.KeyCode() <= 'z')) {
         e.key.keysym.sym = (SDLKey)event.KeyCode();
