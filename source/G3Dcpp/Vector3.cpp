@@ -3,12 +3,12 @@
  
  3D vector class
  
- @author Morgan McGuire and Laura Wollstadt, graphics3d.com
+ @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-04-07
+ @edited  2003-09-29
  */
 
 #include <limits>
@@ -213,5 +213,131 @@ std::string Vector3::toString() const {
     return G3D::format("(%g, %g, %g)", x, y, z);
 }
 //----------------------------------------------------------------------------
+// 2-char swizzles
 
-}; // namespace
+Vector2 Vector3::xx() const { return Vector2(x, x); }
+Vector2 Vector3::yx() const { return Vector2(y, x); }
+Vector2 Vector3::zx() const { return Vector2(z, x); }
+Vector2 Vector3::xy() const { return Vector2(x, y); }
+Vector2 Vector3::yy() const { return Vector2(y, y); }
+Vector2 Vector3::zy() const { return Vector2(z, y); }
+Vector2 Vector3::xz() const { return Vector2(x, z); }
+Vector2 Vector3::yz() const { return Vector2(y, z); }
+Vector2 Vector3::zz() const { return Vector2(z, z); }
+
+// 3-char swizzles
+
+Vector3 Vector3::xxx() const { return Vector3(x, x, x); }
+Vector3 Vector3::yxx() const { return Vector3(y, x, x); }
+Vector3 Vector3::zxx() const { return Vector3(z, x, x); }
+Vector3 Vector3::xyx() const { return Vector3(x, y, x); }
+Vector3 Vector3::yyx() const { return Vector3(y, y, x); }
+Vector3 Vector3::zyx() const { return Vector3(z, y, x); }
+Vector3 Vector3::xzx() const { return Vector3(x, z, x); }
+Vector3 Vector3::yzx() const { return Vector3(y, z, x); }
+Vector3 Vector3::zzx() const { return Vector3(z, z, x); }
+Vector3 Vector3::xxy() const { return Vector3(x, x, y); }
+Vector3 Vector3::yxy() const { return Vector3(y, x, y); }
+Vector3 Vector3::zxy() const { return Vector3(z, x, y); }
+Vector3 Vector3::xyy() const { return Vector3(x, y, y); }
+Vector3 Vector3::yyy() const { return Vector3(y, y, y); }
+Vector3 Vector3::zyy() const { return Vector3(z, y, y); }
+Vector3 Vector3::xzy() const { return Vector3(x, z, y); }
+Vector3 Vector3::yzy() const { return Vector3(y, z, y); }
+Vector3 Vector3::zzy() const { return Vector3(z, z, y); }
+Vector3 Vector3::xxz() const { return Vector3(x, x, z); }
+Vector3 Vector3::yxz() const { return Vector3(y, x, z); }
+Vector3 Vector3::zxz() const { return Vector3(z, x, z); }
+Vector3 Vector3::xyz() const { return Vector3(x, y, z); }
+Vector3 Vector3::yyz() const { return Vector3(y, y, z); }
+Vector3 Vector3::zyz() const { return Vector3(z, y, z); }
+Vector3 Vector3::xzz() const { return Vector3(x, z, z); }
+Vector3 Vector3::yzz() const { return Vector3(y, z, z); }
+Vector3 Vector3::zzz() const { return Vector3(z, z, z); }
+
+// 4-char swizzles
+
+Vector4 Vector3::xxxx() const { return Vector4(x, x, x, x); }
+Vector4 Vector3::yxxx() const { return Vector4(y, x, x, x); }
+Vector4 Vector3::zxxx() const { return Vector4(z, x, x, x); }
+Vector4 Vector3::xyxx() const { return Vector4(x, y, x, x); }
+Vector4 Vector3::yyxx() const { return Vector4(y, y, x, x); }
+Vector4 Vector3::zyxx() const { return Vector4(z, y, x, x); }
+Vector4 Vector3::xzxx() const { return Vector4(x, z, x, x); }
+Vector4 Vector3::yzxx() const { return Vector4(y, z, x, x); }
+Vector4 Vector3::zzxx() const { return Vector4(z, z, x, x); }
+Vector4 Vector3::xxyx() const { return Vector4(x, x, y, x); }
+Vector4 Vector3::yxyx() const { return Vector4(y, x, y, x); }
+Vector4 Vector3::zxyx() const { return Vector4(z, x, y, x); }
+Vector4 Vector3::xyyx() const { return Vector4(x, y, y, x); }
+Vector4 Vector3::yyyx() const { return Vector4(y, y, y, x); }
+Vector4 Vector3::zyyx() const { return Vector4(z, y, y, x); }
+Vector4 Vector3::xzyx() const { return Vector4(x, z, y, x); }
+Vector4 Vector3::yzyx() const { return Vector4(y, z, y, x); }
+Vector4 Vector3::zzyx() const { return Vector4(z, z, y, x); }
+Vector4 Vector3::xxzx() const { return Vector4(x, x, z, x); }
+Vector4 Vector3::yxzx() const { return Vector4(y, x, z, x); }
+Vector4 Vector3::zxzx() const { return Vector4(z, x, z, x); }
+Vector4 Vector3::xyzx() const { return Vector4(x, y, z, x); }
+Vector4 Vector3::yyzx() const { return Vector4(y, y, z, x); }
+Vector4 Vector3::zyzx() const { return Vector4(z, y, z, x); }
+Vector4 Vector3::xzzx() const { return Vector4(x, z, z, x); }
+Vector4 Vector3::yzzx() const { return Vector4(y, z, z, x); }
+Vector4 Vector3::zzzx() const { return Vector4(z, z, z, x); }
+Vector4 Vector3::xxxy() const { return Vector4(x, x, x, y); }
+Vector4 Vector3::yxxy() const { return Vector4(y, x, x, y); }
+Vector4 Vector3::zxxy() const { return Vector4(z, x, x, y); }
+Vector4 Vector3::xyxy() const { return Vector4(x, y, x, y); }
+Vector4 Vector3::yyxy() const { return Vector4(y, y, x, y); }
+Vector4 Vector3::zyxy() const { return Vector4(z, y, x, y); }
+Vector4 Vector3::xzxy() const { return Vector4(x, z, x, y); }
+Vector4 Vector3::yzxy() const { return Vector4(y, z, x, y); }
+Vector4 Vector3::zzxy() const { return Vector4(z, z, x, y); }
+Vector4 Vector3::xxyy() const { return Vector4(x, x, y, y); }
+Vector4 Vector3::yxyy() const { return Vector4(y, x, y, y); }
+Vector4 Vector3::zxyy() const { return Vector4(z, x, y, y); }
+Vector4 Vector3::xyyy() const { return Vector4(x, y, y, y); }
+Vector4 Vector3::yyyy() const { return Vector4(y, y, y, y); }
+Vector4 Vector3::zyyy() const { return Vector4(z, y, y, y); }
+Vector4 Vector3::xzyy() const { return Vector4(x, z, y, y); }
+Vector4 Vector3::yzyy() const { return Vector4(y, z, y, y); }
+Vector4 Vector3::zzyy() const { return Vector4(z, z, y, y); }
+Vector4 Vector3::xxzy() const { return Vector4(x, x, z, y); }
+Vector4 Vector3::yxzy() const { return Vector4(y, x, z, y); }
+Vector4 Vector3::zxzy() const { return Vector4(z, x, z, y); }
+Vector4 Vector3::xyzy() const { return Vector4(x, y, z, y); }
+Vector4 Vector3::yyzy() const { return Vector4(y, y, z, y); }
+Vector4 Vector3::zyzy() const { return Vector4(z, y, z, y); }
+Vector4 Vector3::xzzy() const { return Vector4(x, z, z, y); }
+Vector4 Vector3::yzzy() const { return Vector4(y, z, z, y); }
+Vector4 Vector3::zzzy() const { return Vector4(z, z, z, y); }
+Vector4 Vector3::xxxz() const { return Vector4(x, x, x, z); }
+Vector4 Vector3::yxxz() const { return Vector4(y, x, x, z); }
+Vector4 Vector3::zxxz() const { return Vector4(z, x, x, z); }
+Vector4 Vector3::xyxz() const { return Vector4(x, y, x, z); }
+Vector4 Vector3::yyxz() const { return Vector4(y, y, x, z); }
+Vector4 Vector3::zyxz() const { return Vector4(z, y, x, z); }
+Vector4 Vector3::xzxz() const { return Vector4(x, z, x, z); }
+Vector4 Vector3::yzxz() const { return Vector4(y, z, x, z); }
+Vector4 Vector3::zzxz() const { return Vector4(z, z, x, z); }
+Vector4 Vector3::xxyz() const { return Vector4(x, x, y, z); }
+Vector4 Vector3::yxyz() const { return Vector4(y, x, y, z); }
+Vector4 Vector3::zxyz() const { return Vector4(z, x, y, z); }
+Vector4 Vector3::xyyz() const { return Vector4(x, y, y, z); }
+Vector4 Vector3::yyyz() const { return Vector4(y, y, y, z); }
+Vector4 Vector3::zyyz() const { return Vector4(z, y, y, z); }
+Vector4 Vector3::xzyz() const { return Vector4(x, z, y, z); }
+Vector4 Vector3::yzyz() const { return Vector4(y, z, y, z); }
+Vector4 Vector3::zzyz() const { return Vector4(z, z, y, z); }
+Vector4 Vector3::xxzz() const { return Vector4(x, x, z, z); }
+Vector4 Vector3::yxzz() const { return Vector4(y, x, z, z); }
+Vector4 Vector3::zxzz() const { return Vector4(z, x, z, z); }
+Vector4 Vector3::xyzz() const { return Vector4(x, y, z, z); }
+Vector4 Vector3::yyzz() const { return Vector4(y, y, z, z); }
+Vector4 Vector3::zyzz() const { return Vector4(z, y, z, z); }
+Vector4 Vector3::xzzz() const { return Vector4(x, z, z, z); }
+Vector4 Vector3::yzzz() const { return Vector4(y, z, z, z); }
+Vector4 Vector3::zzzz() const { return Vector4(z, z, z, z); }
+
+
+} // namespace

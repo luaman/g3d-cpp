@@ -8,16 +8,19 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-08-08
+  @edited  2003-09-29
  */
 
 #ifndef G3D_VECTOR3_H
 #define G3D_VECTOR3_H
 
 #include "G3D/g3dmath.h"
+#include "G3D/Vector2.h"
 #include <string>
 
 namespace G3D {
+
+class Vector4;
 
 /**
  Do not subclass-- this implementation makes assumptions about the
@@ -164,6 +167,135 @@ public:
     static const Vector3 UNIT_Z;
     static const Vector3 INF3;
     static const Vector3 NAN3;
+
+    // 2-char swizzles
+
+    Vector2 xx() const;
+    Vector2 yx() const;
+    Vector2 zx() const;
+    Vector2 xy() const;
+    Vector2 yy() const;
+    Vector2 zy() const;
+    Vector2 xz() const;
+    Vector2 yz() const;
+    Vector2 zz() const;
+
+    // 3-char swizzles
+
+    Vector3 xxx() const;
+    Vector3 yxx() const;
+    Vector3 zxx() const;
+    Vector3 xyx() const;
+    Vector3 yyx() const;
+    Vector3 zyx() const;
+    Vector3 xzx() const;
+    Vector3 yzx() const;
+    Vector3 zzx() const;
+    Vector3 xxy() const;
+    Vector3 yxy() const;
+    Vector3 zxy() const;
+    Vector3 xyy() const;
+    Vector3 yyy() const;
+    Vector3 zyy() const;
+    Vector3 xzy() const;
+    Vector3 yzy() const;
+    Vector3 zzy() const;
+    Vector3 xxz() const;
+    Vector3 yxz() const;
+    Vector3 zxz() const;
+    Vector3 xyz() const;
+    Vector3 yyz() const;
+    Vector3 zyz() const;
+    Vector3 xzz() const;
+    Vector3 yzz() const;
+    Vector3 zzz() const;
+
+    // 4-char swizzles
+
+    Vector4 xxxx() const;
+    Vector4 yxxx() const;
+    Vector4 zxxx() const;
+    Vector4 xyxx() const;
+    Vector4 yyxx() const;
+    Vector4 zyxx() const;
+    Vector4 xzxx() const;
+    Vector4 yzxx() const;
+    Vector4 zzxx() const;
+    Vector4 xxyx() const;
+    Vector4 yxyx() const;
+    Vector4 zxyx() const;
+    Vector4 xyyx() const;
+    Vector4 yyyx() const;
+    Vector4 zyyx() const;
+    Vector4 xzyx() const;
+    Vector4 yzyx() const;
+    Vector4 zzyx() const;
+    Vector4 xxzx() const;
+    Vector4 yxzx() const;
+    Vector4 zxzx() const;
+    Vector4 xyzx() const;
+    Vector4 yyzx() const;
+    Vector4 zyzx() const;
+    Vector4 xzzx() const;
+    Vector4 yzzx() const;
+    Vector4 zzzx() const;
+    Vector4 xxxy() const;
+    Vector4 yxxy() const;
+    Vector4 zxxy() const;
+    Vector4 xyxy() const;
+    Vector4 yyxy() const;
+    Vector4 zyxy() const;
+    Vector4 xzxy() const;
+    Vector4 yzxy() const;
+    Vector4 zzxy() const;
+    Vector4 xxyy() const;
+    Vector4 yxyy() const;
+    Vector4 zxyy() const;
+    Vector4 xyyy() const;
+    Vector4 yyyy() const;
+    Vector4 zyyy() const;
+    Vector4 xzyy() const;
+    Vector4 yzyy() const;
+    Vector4 zzyy() const;
+    Vector4 xxzy() const;
+    Vector4 yxzy() const;
+    Vector4 zxzy() const;
+    Vector4 xyzy() const;
+    Vector4 yyzy() const;
+    Vector4 zyzy() const;
+    Vector4 xzzy() const;
+    Vector4 yzzy() const;
+    Vector4 zzzy() const;
+    Vector4 xxxz() const;
+    Vector4 yxxz() const;
+    Vector4 zxxz() const;
+    Vector4 xyxz() const;
+    Vector4 yyxz() const;
+    Vector4 zyxz() const;
+    Vector4 xzxz() const;
+    Vector4 yzxz() const;
+    Vector4 zzxz() const;
+    Vector4 xxyz() const;
+    Vector4 yxyz() const;
+    Vector4 zxyz() const;
+    Vector4 xyyz() const;
+    Vector4 yyyz() const;
+    Vector4 zyyz() const;
+    Vector4 xzyz() const;
+    Vector4 yzyz() const;
+    Vector4 zzyz() const;
+    Vector4 xxzz() const;
+    Vector4 yxzz() const;
+    Vector4 zxzz() const;
+    Vector4 xyzz() const;
+    Vector4 yyzz() const;
+    Vector4 zyzz() const;
+    Vector4 xzzz() const;
+    Vector4 yzzz() const;
+    Vector4 zzzz() const;
+
+
+
 };
 
 }

@@ -140,7 +140,8 @@
          G3D::fuzzyGe,
          G3D::fuzzyLt,
          G3D::fuzzyLe,
-         G3D::fuzzyEpsilon
+         G3D::fuzzyEpsilon,
+         G3D::rsqrt
          
      <LI><B>String</B> &nbsp; &nbsp;
         G3D::beginsWith, G3D::endsWith, G3D::stringSplit,

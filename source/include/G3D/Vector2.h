@@ -5,11 +5,11 @@
  
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
-  @cite   Portions by Laura Wollstadt
+  @cite Portions by Laura Wollstadt
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-09-27
+  @edited  2003-09-29
 */
 
 #ifndef G3D_VECTOR2_H
@@ -19,6 +19,9 @@
 #include <string>
 
 namespace G3D {
+
+class Vector3;
+class Vector4;
 
 /**
  Do not subclass-- this implementation makes assumptions about the
@@ -117,6 +120,42 @@ public:
 
     std::string toString() const;
 
+    // 2-char swizzles
+
+    Vector2 xx() const;
+    Vector2 yx() const;
+    Vector2 xy() const;
+    Vector2 yy() const;
+
+    // 3-char swizzles
+
+    Vector3 xxx() const;
+    Vector3 yxx() const;
+    Vector3 xyx() const;
+    Vector3 yyx() const;
+    Vector3 xxy() const;
+    Vector3 yxy() const;
+    Vector3 xyy() const;
+    Vector3 yyy() const;
+
+    // 4-char swizzles
+
+    Vector4 xxxx() const;
+    Vector4 yxxx() const;
+    Vector4 xyxx() const;
+    Vector4 yyxx() const;
+    Vector4 xxyx() const;
+    Vector4 yxyx() const;
+    Vector4 xyyx() const;
+    Vector4 yyyx() const;
+    Vector4 xxxy() const;
+    Vector4 yxxy() const;
+    Vector4 xyxy() const;
+    Vector4 yyxy() const;
+    Vector4 xxyy() const;
+    Vector4 yxyy() const;
+    Vector4 xyyy() const;
+    Vector4 yyyy() const;
 };
 
 }
