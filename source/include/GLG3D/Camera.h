@@ -188,6 +188,10 @@ public:
         int				height,
         double			polygonOffset = 0) const;
 
+    void setPosition(const Vector3& t);
+
+    void lookAt(const Vector3& position);
+
    /**
     Returns the six clipping planes of the frustum, in world space.  The array
     must have six elements allocated.  The planes have normals facing 

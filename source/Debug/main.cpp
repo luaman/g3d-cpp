@@ -56,8 +56,8 @@ public:
 
 
 void Demo::init()  {
-    app->debugController->setPosition(Vector3(0,4,10));
-    app->debugController->lookAt(Vector3::ZERO);
+    app->debugCamera->setPosition(Vector3(0,4,10));
+    app->debugCamera->lookAt(Vector3::ZERO);
     entityArray.append(new SphereEntity(Vector3(0,1,0),1,Color3::WHITE));
     entityArray.append(new SphereEntity(Vector3(-2.5,1,0),1,Color3::GREEN));
     entityArray.append(new SphereEntity(Vector3(2.5,1,0),1,Color3::YELLOW));

@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-11-03
+  @edited  2003-11-11
 */
 
 #include "GLG3D/Camera.h"
@@ -299,6 +299,14 @@ void Camera::get3DViewportCorners(
     outUL = cframe.pointToWorldSpace(outUL);
     outLR = cframe.pointToWorldSpace(outLR);
     outLL = cframe.pointToWorldSpace(outLL);
+}
+
+void Camera::setPosition(const Vector3& t) { 
+    cframe.translation = t;
+}
+
+void Camera::lookAt(const Vector3& position) { 
+    cframe.lookAt(position);
 }
 
 }
