@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-11-13
-  @created 2004-06-23
+  @created 2004-07-28
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -185,12 +185,19 @@ public:
         return (min != other.min) || (max != other.max);
     }
 
-    /** Returns the corners in the order: top left, bottom left, bottom right, top right */
+    /** Returns the corners in the order: (min,min), (max,min), (max,max), (min,max). */
     inline Vector2 corner(int i) const {
         debugAssert(i >= 0 && i < 4);
-        return Vector2(
-            (i < 3) ? min.x : max.x,
-            (i & 1) ? min.y : max.y);
+        switch (i & 3) {
+        case 0:
+            return Vector2(min.x, min.y);
+        case 1:
+            return Vector2(max.x, min.y);
+        case 2:
+            return Vector2(max.x, max.y);
+        case 3:
+            return Vector2(min.x, max.y);
+        }
     }
 
     /** 
