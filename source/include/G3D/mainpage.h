@@ -201,6 +201,7 @@
         G3D::tesselateComplexPolygon,
         G3D::Texture,
         G3D::TextureFormat,
+        G3D::TextureManager,
         G3D::VAR,
         G3D::VARArea, 
         G3D::VertexProgram
@@ -221,7 +222,7 @@
         G3D::sizeOfGLFormat, 
         G3D::glFormatOf, 
         G3D::glGetProcAddress,
-        G3D::getOpenGLState, 
+        G3D::getOpenGLState,
         G3D::glGetInteger, 
         G3D::glGetBoolean,
         G3D::glGetDouble, 

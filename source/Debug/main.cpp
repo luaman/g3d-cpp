@@ -173,6 +173,7 @@ void Demo::init()  {
     //sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
 //    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","testcube_*.jpg",false);
     sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","majestic512_*.jpg",false);
+//    sky = NULL;
 
     reflectionMap = Texture::createEmpty(128, 128, "Reflection Map", TextureFormat::RGB8,
         Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
@@ -256,6 +257,8 @@ void Demo::doGraphics() {
     CoordinateFrame cframe(Vector3(2, 4, 0));
 
     app->renderDevice->clear(sky == NULL, true, true);
+for (int i = 0; i < 4; ++i) {
+
     for (int f = 0; f < 6; ++f) {
         app->renderDevice->pushState();
             app->renderDevice->setViewport(rect);
@@ -283,7 +286,7 @@ void Demo::doGraphics() {
             }
         }
     }
-
+}
     // Render the scene to the full-screen
     app->debugPrintf("Mouse (%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
@@ -291,6 +294,7 @@ void Demo::doGraphics() {
     app->renderDevice->clear(sky == NULL, true, true);
     renderScene(lighting);
 
+    
     app->renderDevice->pushState();
         app->renderDevice->enableLighting();
 
@@ -306,16 +310,21 @@ void Demo::doGraphics() {
 
      //   teapot->pose(CoordinateFrame(Vector3(0, 4, 0)))->render(app->renderDevice);
     app->renderDevice->popState();
+    
 
     // The lens flare shouldn't be reflected, so it is only rendered
     // for the final composite image
-    sky->renderLensFlare(lighting);
+    if (sky != NULL) {
+        sky->renderLensFlare(lighting);
+    }
 }
 
 
 void Demo::renderScene(const LightingParameters& lighting) {
 
-    sky->render(lighting);
+    if (sky != NULL) {
+        sky->render(lighting);
+    }
     
     // Setup lighting
     app->renderDevice->enableLighting();
@@ -328,9 +337,7 @@ void Demo::renderScene(const LightingParameters& lighting) {
         entityArray[e]->render(app->renderDevice);
     }
 
-    Draw::axes(CoordinateFrame(Vector3(0, 7, 0)), app->renderDevice);
-    
-
+    //Draw::axes(CoordinateFrame(Vector3(0, 7, 0)), app->renderDevice);
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
     app->renderDevice->setColor(Color3::WHITE);

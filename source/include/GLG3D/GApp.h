@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-11-13
+ @edited  2003-11-26
  */
 
 #ifndef G3D_GAPP_H
@@ -14,6 +14,7 @@
 #include "G3D/GCamera.h"
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/RenderDevice.h"
+#include "GLG3D/TextureManager.h"
 
 namespace G3D {
 
@@ -88,6 +89,11 @@ public:
     CFontRef                debugFont;
     UserInput*              userInput;
     bool                    endProgram;
+
+    /**
+     A global texture manager.
+     */
+    TextureManager          textureManager;
 
     /**
      A default camera that is driven by the debugController.

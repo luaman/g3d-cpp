@@ -1351,9 +1351,9 @@ void RenderDevice::endFrame() {
     }
 
     {
-        // high frame rate: A is small
+        // high frame rate: A (interpolation parameter) is small
         // low frame rate: A is big
-        const double A = clamp(dt * 0.01, .01, 1);
+        const double A = clamp(dt, .07, 1);
     
         emwaFrameRate     = lerp(emwaFrameRate, 1 / dt, A);
         emwaTriangleRate  = lerp(emwaTriangleRate, triangleCount / dt, A);
