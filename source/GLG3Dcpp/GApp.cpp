@@ -47,7 +47,7 @@ void GApp::loadFont(const std::string& fontName) {
 
 void GApp::init(const GAppSettings& settings) {
 
-    static initialized = false;
+    static bool initialized = false;
 
     debugAssertM(! initialized, "Can't initialize GApp twice");
     initialized = true;
