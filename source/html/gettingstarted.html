@@ -77,5 +77,116 @@ Unlike a Makefile, it requires no configuration.  Just run "icompile --run".
 <A NAME="OSX">
 <H2>OS X</H2>
 
+
+Building applications G3D on OS X has only been tested on OS X 10.3
+(Panther) using Xcode.
+
+
+
+<OL>
+
+<LI> Make sure that the SDL framework is installed. Use the version
+of SDL from http://www.libsdl.org. 
+
+<P>
+
+<LI> Start Xcode 
+
+<P>
+
+<LI> Start a new project by selecting the menu item
+    File/New Project
+
+<P>
+
+<LI> Select Cocoa Project 
+
+<P>
+
+<LI> Selecting a new Cocoa Project automatically generates
+    main.m and a precompiled header (whose name depends 
+    on your project name, but it always ends in .pch).
+    If you want to use a precompiled header, you can 
+    place any includes in this .pch file, but you
+    should probably remove Cocoa.h.
+
+<P>
+
+<LI> Add SDLMain.m and SDLMain.h to your project.  you absolutely need
+    these. Use the Project/Add Files menu for this.
+
+<P>
+
+<LI> Add the OpenGL and SDL frameworks to your project.  Use the
+    Project/Add Frameworks menu for this.
+
+<P>
+
+<LI>Add the following libraries to your project libGLG3D.a, libG3D.a,
+    libjpeg.a to your project.  I often have to use the Finder to drag
+    and drop these files into my project.  I also typically put them
+    in the "Frameworks" section, before OpenGL.framework or
+    SDL.framework.
+  
+<P>
+
+<LI>Disable the ZeroLink flag in the Xcode settings for this project.
+    ZeroLink is an Xcode feature that allows for faster startup when
+    debugging or running a program from the Xcode IDE, but this
+    feature is not compatible with SDL.
+
+<P>
+
+<LI>Add the Zlib library to the project.  This can be done by 
+    adding '-lz' to "Other Linker Flags" in the project settings. 
+
+    To get to this setting, select the top-level icon in the left pane
+    of your Xcode project.  For example, if your project is called
+    "MyApp", there will be a blue Xcode with the label "MyApp" in the
+    "Groups and Files" pane of your Xcode project.  Select this icon,
+    and then select the menu item "Project/Get Info" (or use the key
+    equivalent Command-I). Select the "Styles" tab for the project
+    info.  Under the "Common Settings" pane, there is a setting called
+    "Other Linker Flags".  Add -lz to "Other Linker Flags" on all
+    build Styles.  Usually there is a build style for Development and
+    one for Deployment.
+
+<P>
+
+<LI>You'll have to add the appropriate header paths 
+    to your Xcode project so the compiler can find the
+    G3D header files.
+
+<P>
+
+<LI>Copy either <CODE><A
+    HREF="../demos/main.cpp">demos/main.cpp</A></CODE> or <CODE><A
+    HREF="../demos/main-no-GApp.cpp">demos/main-no-GApp.cpp</A></CODE>
+    to your project. 
+
+</OL>
+
+Caveats for G3D on OS X:
+
+<UL>
+
+<LI> There is a version of SDL available through Fink, the popular
+    open-source package manager for OS X.  We have no idea if the fink
+    version of SDL for OS X will work with G3D.  This document assumes
+    that you're using the SDL library for OS X that is downloaded from
+    www.libsdl.org or one of its mirrors.  We suspect that the version
+    of SDL for OS X available from fink uses X11, which is wholly
+    different from the windowing and rendering system that G3D for OS
+    X assumes.
+
+<P>
+
+<LI>
+    You can also use the command line tool 'xcodebuild' to build the G3D
+    libraries from the Xcode project files, but without using the Xcode
+    IDE.
+</UL>
+
+
 </BODY>
 </HTML>
