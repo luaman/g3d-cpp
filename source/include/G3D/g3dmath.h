@@ -188,14 +188,22 @@ int highestBit(uint32 x);
  */
 bool fuzzyEq(double a, double b);
 
+/** True if a is definitely not equal to b.  
+    Guaranteed false if a == b. 
+    Possibly false when a != b.*/
 bool fuzzyNe(double a, double b);
 
+/** Is a strictly greater than b? (Guaranteed false if a <= b).
+    (Possibly false if a > b) */
 bool fuzzyGt(double a, double b);
 
+/** Is a near or greater than b? */
 bool fuzzyGe(double a, double b);
 
+/** Is a strictly less than b? (Guaranteed false if a >= b)*/
 bool fuzzyLt(double a, double b);
 
+/** Is a near or less than b? */
 bool fuzzyLe(double a, double b);
 
 /**

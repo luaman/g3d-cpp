@@ -28,6 +28,7 @@
 #include "G3D/BinaryOutput.h"
 #include "G3D/stringutils.h"
 #include "G3D/Color3uint8.h"
+#include "G3D/Color4uint8.h"
 
 namespace G3D {
    
@@ -174,13 +175,13 @@ public:
     }
 
     /** Returns the pixel at (x, y), where (0,0) is the upper left. */
-    inline const Color4uint8& pixel3(int x, int y) const {
+    inline const Color4uint8& pixel4(int x, int y) const {
         debugAssert(x >= 0 && x < width);
         debugAssert(y >= 0 && y < height);
         return pixel4()[x + y * width];
     }
 
-    inline Color4uint8& pixel3(int x, int y) {
+    inline Color4uint8& pixel4(int x, int y) {
         debugAssert(x >= 0 && x < width);
         debugAssert(y >= 0 && y < height);
         return pixel4()[x + y * width];

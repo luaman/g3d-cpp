@@ -237,7 +237,12 @@ inline double toDegrees(double rad) {
  Computes an appropriate epsilon for comparing a and b.
  */
 inline double eps(double a, double b) {
-    double aa = abs(a) + 1;
+    // For a and b to be nearly equal, they must have nearly
+    // the same magnitude.  This means that we can ignore b
+    // since it either has the same magnitude or the comparison
+    // will fail anyway.
+    (void)b;
+    const double aa = abs(a) + 1;
     if (aa == inf) {
         return fuzzyEpsilon;
     } else {
