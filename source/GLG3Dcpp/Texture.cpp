@@ -112,8 +112,8 @@ static void createTexture(
         if ((! isPow2(width) || ! isPow2(height)) && 
             (! GLCaps::supports_GL_ARB_texture_non_power_of_two())) {
 
-            alwaysAssertM(! compressed,
-                "Compressed texture data must be power-of-two size.");
+            debugAssertM(! compressed,
+                "This device does not support NPOT compressed textures.");
 
             int oldWidth = width;
             int oldHeight = height;
@@ -145,7 +145,7 @@ static void createTexture(
             
             if (!GLCaps::supports_GL_ARB_texture_non_power_of_two()) {
                 alwaysAssertM((target != GL_TEXTURE_RECTANGLE_EXT),
-                    "Compressed texture data must be loaded into a DIM_2D texture.");
+                    "This device does not support NPOT compressed textures. (use DIM_2D)");
             }
 
             glCompressedTexImage2DARB(target, mipLevel, bytesActualFormat, width, height, 0, (bytesPerPixel * ((width + 3) / 4) * ((height + 3) / 4)), rawBytes);
@@ -415,6 +415,9 @@ TextureRef Texture::fromFile(
     }
 
     if (G3D::toUpper(ddsExt) == "DDS") {
+
+        debugAssertM(GLCaps::supports_GL_EXT_texture_compression_s3tc(),
+            "This device does not support s3tc compression formats.");
 
         DDSTexture ddsTexture(filename[0]);
         Array< Array< const void* > > byteMipMapFaces;
