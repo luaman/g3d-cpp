@@ -30,7 +30,7 @@ public:
     /** If true, overrides the x and y settings */
     bool    center;
 
-    /* The number of bits in <B>each</B> color channel of the frame buffer.
+    /** The number of bits in <B>each</B> color channel of the frame buffer.
        5, <B>8</B>.*/
     int     rgbBits;
 

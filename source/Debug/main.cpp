@@ -25,6 +25,7 @@
  */
 
 #include <G3DAll.h>
+#include "../contrib/Win32Window/Win32Window.cpp"
 
 #if G3D_VER < 60300
     #error Requires G3D 6.03
@@ -61,13 +62,7 @@ public:
 
     virtual void doLogic();
 
-	virtual void doNetwork();
-
-    virtual void doSimulation(SimTime dt);
-
     virtual void doGraphics();
-
-    virtual void cleanup();
 
 };
 
@@ -160,7 +155,8 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
+//App::App(const GAppSettings& settings) : GApp(settings) {
 }
 
 
