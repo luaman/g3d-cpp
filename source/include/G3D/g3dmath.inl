@@ -251,7 +251,7 @@ inline double eps(double a, double b) {
 }
 
 inline bool fuzzyEq(double a, double b) {
-    return abs(a - b) <= eps(a, b);
+    return (a == b) || (abs(a - b) <= eps(a, b));
 }
 
 inline bool fuzzyNe(double a, double b) {

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-12
- @edited  2004-03-14
+ @edited  2004-03-17
  */
 
 #include "G3D/Ray.h"
@@ -84,8 +84,28 @@ double Ray::intersectionTime(const class Plane& plane) const {
 
 double Ray::intersectionTime(const class Box& box) const {
     Vector3 dummy;
-    return CollisionDetection::collisionTimeForMovingPointFixedBox(
+    double time = CollisionDetection::collisionTimeForMovingPointFixedBox(
             origin, direction, box, dummy);
+
+    if ((time == inf) && (box.contains(origin))) {
+        return 0.0;
+    } else {
+        return time;
+    }
+}
+
+
+double Ray::intersectionTime(const class AABox& box) const {
+    Vector3 dummy;
+    bool inside;
+    double time = CollisionDetection::collisionTimeForMovingPointFixedAABox(
+            origin, direction, box, dummy, inside);
+
+    if ((time == inf) && inside) {
+        return 0.0;
+    } else {
+        return time;
+    }
 }
 
 
@@ -104,15 +124,6 @@ double Ray::intersectionTime(
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedTriangle(
             origin, direction, triangle, dummy);
-}
-
-
-double Ray::intersectionTime(
-    const AABox& box) const {
-    Vector3 dummy;
-
-    return CollisionDetection::collisionTimeForMovingPointFixedAABox(
-            origin, direction, box, dummy);
 }
 
 }

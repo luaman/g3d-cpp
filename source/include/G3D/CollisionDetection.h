@@ -8,7 +8,7 @@
   @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2004-03-14
+  @edited  2004-03-17
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -58,6 +58,7 @@ private:
 
 	/** Provides the default argument for the location parameter */
 	static Vector3 ignore;
+    static bool    ignoreBool;
     static Array<Vector3> ignoreArray;
 
     // Static class!
@@ -81,7 +82,7 @@ public:
     
     /**
      @cite Adapted from Jim Arvo's method in Graphics Gems
-     TODO: See also http://www.win.tue.nl/~gino/solid/gdc2001depth.pdf
+     See also http://www.win.tue.nl/~gino/solid/gdc2001depth.pdf
      */
     static double penetrationDepthForFixedSphereFixedBox(
         const Sphere&       sphere,
@@ -104,7 +105,7 @@ public:
     /**
      Returns the amount of time until the point intersects the plane 
      (the plane is one sided; the point can only hit the side the 
-     normal faces out of).  The return value is infReal if no 
+     normal faces out of).  The return value is inf if no 
      collision will occur, zero if the point is already in the plane.
      
      To perform a two sided collision, call twice, once for each direction
@@ -130,7 +131,8 @@ public:
 
     /**
      Unlike other methods, does not support an output normal.
-     If the ray origin is inside the box, returns 0 and outLocation = point.
+     If the ray origin is inside the box, returns inf but inside
+     is set to true.
      <B>Beta API</B>
 
      @cite Andrew Woo, from "Graphics Gems", Academic Press, 1990
@@ -142,7 +144,8 @@ public:
         const Vector3&			point,
         const Vector3&			velocity,
         const class AABox&      box,
-        Vector3&				outLocation);
+        Vector3&				outLocation,
+        bool&                   inside = ignoreBool);
 
     static double collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,
@@ -151,6 +154,7 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
+    /** If the point is already inside the box, no collision: inf is returned */
     static double collisionTimeForMovingPointFixedBox(
         const Vector3&			point,
         const Vector3&			velocity,
@@ -302,7 +306,6 @@ public:
         const Vector3&			normal,
         const Vector3&			point,
         Vector3::Axis  primaryAxis = Vector3::DETECT_AXIS);
-
     
     /**
      Returns true if any part of the sphere is inside the box

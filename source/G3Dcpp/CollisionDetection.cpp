@@ -5,7 +5,7 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2004-03-14
+  @edited  2004-03-17
  */
 
 #include "G3D/CollisionDetection.h"
@@ -22,6 +22,7 @@
 
 namespace G3D {
 
+bool CollisionDetection::ignoreBool;
 Vector3	CollisionDetection::ignore;
 Array<Vector3> CollisionDetection::ignoreArray;
 
@@ -462,7 +463,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedBox(
     Vector3&                location,
     Vector3&                outNormal) {
 
-    float    bestTime;
+    double    bestTime;
 
     Vector3 normal;
     Vector3 v[4];
@@ -475,7 +476,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedBox(
     for (f = 1; f < 6; ++f) {
         Vector3 pos;
         box.getFaceCorners(f, v[0], v[1], v[2], v[3]);
-        float time = collisionTimeForMovingPointFixedRectangle(point, velocity, v[0], v[1], v[2], v[3], pos, outNormal);
+        double time = collisionTimeForMovingPointFixedRectangle(point, velocity, v[0], v[1], v[2], v[3], pos, outNormal);
         if (time < bestTime) {
             bestTime = time;
             outNormal = normal;
@@ -491,7 +492,8 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     const Vector3&          origin,
     const Vector3&          dir,
     const AABox&            box,
-    Vector3&                location) {
+    Vector3&                location,
+    bool&                   Inside) {
 
     //return collisionTimeForMovingPointFixedBox(point, velocity, box.toBox(), location, outNormal);
 
@@ -500,7 +502,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     // Integer representation of a floating-point value.
     #define IR(x)	((uint32&)x)
 
-    bool  Inside = true;
+    Inside = true;
 	Vector3 MinB = box.low();
 	Vector3 MaxB = box.high();
 	Vector3 MaxT(-1.0f, -1.0f, -1.0f);
@@ -526,10 +528,9 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
 		}
 	}
 
-	// Ray origin inside bounding box
 	if (Inside) {
-		location = origin;
-		return 0.0;
+    	// Ray origin inside bounding box
+		return inf;
 	}
 
 	// Get largest of the maxT's for final choice of intersection
@@ -974,7 +975,9 @@ double CollisionDetection::collisionTimeForMovingSphereFixedBox(
     Vector3&            location,
     Vector3&            outNormal) {
 
-    float    bestTime;
+    // TODO: test if sphere is already inside box
+
+    double    bestTime;
 
     Vector3 v[4];
     int f = 0;

@@ -102,6 +102,44 @@ void testBox() {
 
 }
 
+
+
+void testAABoxCollision() {
+    printf("intersectionTimeForMovingPointFixedAABox\n");
+
+    Vector3 boxlocation, aaboxlocation, normal;
+
+    for (int i = 0; i < 1000; ++i) {
+
+        Vector3 pt1 = Vector3::random() * random(0, 10);
+        Vector3 vel1 = Vector3::random();
+
+        Vector3 low = Vector3::random() * 5;
+        Vector3 extent(random(0,4), random(0,4), random(0,4));
+        AABox aabox(low, low + extent);
+        Box   box = aabox.toBox();
+
+        double boxTime = CollisionDetection::collisionTimeForMovingPointFixedBox(
+            pt1, vel1, box, boxlocation, normal);
+
+        double aaTime = CollisionDetection::collisionTimeForMovingPointFixedAABox(
+            pt1, vel1, aabox, aaboxlocation);
+
+        Ray ray = Ray::fromOriginAndDirection(pt1, vel1);
+        double rayboxTime = ray.intersectionTime(box);
+
+        double rayaaTime = ray.intersectionTime(aabox);
+
+        debugAssert(fuzzyEq(boxTime, aaTime));
+        if (boxTime < inf) {
+            debugAssert(boxlocation.fuzzyEq(aaboxlocation));
+        }
+
+        debugAssert(fuzzyEq(rayboxTime, rayaaTime));
+    }
+}
+
+
 void testPlane() {
     printf("Plane\n");
     {
@@ -530,7 +568,6 @@ void measureTriangleCollisionPerformance() {
     printf("Sphere-Triangle collision detection on 3 vertices: %d cycles\n", (int)(raw / n));
     printf("Sphere-Triangle collision detection on CDTriangle: %d cycles\n", (int)(opt / n));
 }
-
 
 
 void measureAABoxCollisionPerformance() {
@@ -1244,20 +1281,13 @@ void testSwizzle() {
     v2 = v1.xy() + v1.yz();
 }
 
-void foo(std::string x[2]) {
-    printf("hi");
-}
 
 int main(int argc, char* argv[]) {
 
-    std::string x[2];
-    foo(x);
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureAABoxCollisionPerformance();
-// TODO: remove
-while(true);
         measureMatrix3Performance();
         measureArrayPerformance();
         measureMemcpyPerformance();
@@ -1269,6 +1299,8 @@ while(true);
 
     printf("\n\nTests:\n\n");
 
+    testAABoxCollision();
+    printf("  passed\n");
     testAdjacency();
     printf("  passed\n");
     testSort();

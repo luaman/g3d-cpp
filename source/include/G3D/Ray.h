@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-12
- @edited  2004-01-22
+ @edited  2004-03-17
  */
 
 #ifndef G3D_RAY_H
@@ -95,6 +95,8 @@ public:
 
     double intersectionTime(const class Box& box) const;
 
+    double intersectionTime(const class AABox& box) const;
+
     double intersectionTime(const class Triangle& triangle) const;
 
     /**
@@ -104,9 +106,6 @@ public:
         const Vector3& v0,
         const Vector3& v1,
         const Vector3& v2) const;
-
-    double intersectionTime(
-        const class AABox& box) const;
 
     /** Refracts about the normal
         using G3D::Vector3::refractionDirection
