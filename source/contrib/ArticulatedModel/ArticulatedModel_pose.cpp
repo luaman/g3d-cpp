@@ -1,3 +1,13 @@
+/**
+ @file ArticulatedModel_pose.cpp
+ Rendering and pose aspects of ArticulatedModel
+
+  @maintainer Morgan McGuire, matrix@graphics3d.com
+  @created 2004-11-20
+  @edited  2005-11-25
+
+  Copyright 2004-2005, Morgan McGuire
+ */
 #include "ArticulatedModel.h"
 
 class PosedArticulatedModel : public PosedModel {
@@ -16,16 +26,19 @@ private:
 
     std::string             _name;
 
-    bool                    useMaterial;
-
-    /** 
-      If NULL, use whatever OpenGL state is currently enabled.
-
-    */
-    SuperShader::LightingRef lighting;
+protected:
 
     /** Called from render to draw geometry after the material properties are set.*/
-    void renderGeometry(RenderDevice* rd) const;
+    void defaultRender(RenderDevice* rd) const;
+
+    /** Renders emission, reflection, and lighting for non-shadowed lights.
+        The first term rendered uses the current blending/depth mode
+        and subsequent terms use additive blending.  Returns true if  
+        anything was rendered, false if nothing was rendered (because 
+        all terms were black).  */ 
+    bool renderNonShadowedOpaqueTerms(
+        RenderDevice*       rd,
+        const LightingRef&  lighting) const;
 
 public:
 
@@ -61,7 +74,13 @@ public:
 
     virtual void getObjectSpaceBoundingBox(Box&) const;
 
-    virtual void render(class RenderDevice* renderDevice) const;
+    virtual void render(RenderDevice* renderDevice) const;
+    
+    virtual void renderNonShadowed(RenderDevice* rd, const LightingRef& lighting) const;
+    
+    virtual void renderShadowedLightPass(RenderDevice* rd, const GLight& light) const;
+
+    virtual void renderShadowMappedLightPass(RenderDevice* rd, const GLight& light, const Matrix4& lightMVP, const TextureRef& shadowMap) const;
 
     virtual int numBoundaryEdges() const;
 
@@ -72,12 +91,11 @@ public:
 void ArticulatedModel::pose(
     Array<PosedModelRef>&       posedArray, 
     const CoordinateFrame&      cframe, 
-    const Pose&                 posex,
-    SuperShader::LightingRef lighting) {
+    const Pose&                 posex) {
 
     for (int p = 0; p < partArray.size(); ++p) {
         const Part& part = partArray[p];
-        part.pose(this, p, posedArray, cframe, posex, lighting);
+        part.pose(this, p, posedArray, cframe, posex);
     }
 }
 
@@ -87,8 +105,7 @@ void ArticulatedModel::Part::pose(
     int                         partIndex,
     Array<PosedModelRef>&       posedArray,
     const CoordinateFrame&      parent, 
-    const Pose&                 posex,
-    SuperShader::LightingRef    lighting) const {
+    const Pose&                 posex) const {
 
     CoordinateFrame frame;
 
@@ -108,8 +125,6 @@ void ArticulatedModel::Part::pose(
             posed->partIndex = partIndex;
             posed->listIndex = t;
             posed->model = model;
-            posed->useMaterial = posex.useMaterial;
-            posed->lighting = lighting;
 
             posedArray.append(posed);
         }
@@ -119,99 +134,176 @@ void ArticulatedModel::Part::pose(
 }
 
 
-void PosedArticulatedModel::render(
-    RenderDevice*           rd) const {
 
-    rd->setObjectToWorldMatrix(cframe);
+void PosedArticulatedModel::render(RenderDevice* renderDevice) const {
+    // TODO
+    defaultRender(renderDevice);
+}
+
+
+/** 
+ Switches to additive rendering, if not already in that mode.
+ */
+static void setAdditive(RenderDevice* rd, bool& additive) {
+    if (!additive) {
+        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+        rd->setDepthWrite(false);
+        additive = true;
+    }
+}
+
+
+bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
+    RenderDevice*       rd,
+    const LightingRef&  lighting) const {
 
     const ArticulatedModel::Part& part = model->partArray[partIndex];
+    const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
+    const SuperShader::Material& material = triList.material;
+
+    bool renderedOnce = false;
+
+    // Emissive
+    if (! material.emit.isBlack()) {
+        rd->setColor(material.emit.constant);
+        rd->setTexture(0, material.emit.map);
+        defaultRender(rd);
+        setAdditive(rd, renderedOnce);
+    }
     
-    // Cast away the const so we can invoke shader functions
-    ArticulatedModel::Part::TriList& triList = 
-        const_cast<ArticulatedModel::Part::TriList&>(part.triListArray[listIndex]);
+    // Add reflective
+    if (! material.reflect.isBlack() && 
+        (lighting->environmentMapColor != Color3::black())) {
+
+        // Reflections are specular and not affected by surface texture, only
+        // the reflection coefficient
+        rd->setColor(material.reflect.constant * lighting->environmentMapColor);
+        rd->setTexture(0, material.reflect.map);
+
+        // Configure reflection map
+        rd->configureReflectionMap(1, lighting->environmentMap);
+
+        defaultRender(rd);
+        setAdditive(rd, renderedOnce);
+
+        // Disable reflection map
+        rd->setTexture(1, 0);
+    }
+
+    // Add ambient + lights
+    rd->enableLighting();
+    if (! material.diffuse.isBlack() || ! material.specular.isBlack()) {
+        rd->setTexture(0, material.diffuse.map);
+        rd->setColor(material.diffuse.constant);
+
+        // Fixed function does not receive specular texture maps, only constants.
+        rd->setSpecularCoefficient(material.specular.constant);
+        rd->setShininess(material.specularExponent.constant.average());
+
+        // Ambient
+        rd->setAmbientLightColor(lighting->ambientTop);
+        if (lighting->ambientBottom != lighting->ambientTop) {
+            rd->setLight(0, GLight::directional(-Vector3::unitY(), 
+                lighting->ambientBottom - lighting->ambientTop, false)); 
+        }
+
+        // Lights
+        for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
+            rd->setLight(L + 1, lighting->lightArray[L]);
+        }
+
+        defaultRender(rd);
+        setAdditive(rd, renderedOnce);
+    }
+
+    return renderedOnce;
+}
+
+
+void PosedArticulatedModel::renderNonShadowed(
+    RenderDevice*       rd,
+    const LightingRef&  lighting) const {
+
+    if (! rd->colorWrite()) {
+        // No need for fancy shading
+        defaultRender(rd);
+        return;
+    }
+
+    const ArticulatedModel::Part& part = model->partArray[partIndex];
+    const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
+    const SuperShader::Material& material = triList.material;
 
     rd->pushState();
 
-    debugAssert(triList.shader.notNull());
+        rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
-    triList.shader->setLighting(lighting);
+        if (! material.transmit.isBlack()) {
+            // Transparent
+            bool oldDepthWrite = rd->depthWrite();
 
-    if (useMaterial) {
-        bool makeTransparentPass = ! triList.material.transmit.isBlack();
-
-        if (makeTransparentPass) {
-            if (triList.cullFace == RenderDevice::CULL_NONE) {
-                // Two sided, transparent.  We need four passes: T back, D back, T front, D front
-
+            // Render backfaces first, and then front faces
+            rd->setCullFace(RenderDevice::CULL_FRONT);
+            for (int i = 0; i <= 1; ++i) {
+                rd->disableLighting();
                 rd->enableTwoSidedLighting();
-                rd->setCullFace(RenderDevice::CULL_FRONT);
-                rd->disableDepthWrite();
-                for (int i = 0; i < 2; ++i) { 
-                    // No shader for transparent pass (TODO: special refraction shader)
 
-                    // dst1 * transmission
-                    rd->pushState();
-                        rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
-                        rd->disableLighting();
-                        rd->setColor(triList.material.transmit.constant);
-                        rd->setTexture(0, triList.material.transmit.map);
-                        renderGeometry(rd);
-                    rd->popState();
+                // Modulate background by transparent color
+                rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
+                rd->setTexture(0, material.transmit.map);
+                rd->setColor(material.transmit.constant);
+                defaultRender(rd);
 
-                    //   SUM OVER LIGHTS {
-                    //     light * (diffuse * NdotL +
-                    //              specular * NdotH^specularExponent)}
-                    rd->pushState();
-                        rd->disableDepthWrite();
-                        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-                        triList.shader->beforePrimitive(rd);
-                            renderGeometry(rd);
-                        triList.shader->afterPrimitive(rd);
-                    rd->popState();
-                    rd->setCullFace(RenderDevice::CULL_BACK);
-                } // for i
-            } else {
-            	rd->setCullFace(triList.cullFace);
-                // Transparent, one sided.  We need two passes: T, D
-                // dst1 * transmission
-                rd->pushState();
-                    rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
-                    rd->disableLighting();
-                    rd->setColor(triList.material.transmit.constant);
-                    rd->setTexture(0, triList.material.transmit.map);
-                    renderGeometry(rd);
-                rd->popState();
-
-                //   SUM OVER LIGHTS {
-                //     light * (diffuse * NdotL +
-                //              specular * NdotH^specularExponent)}
-                rd->pushState();
-                    rd->disableDepthWrite();
-                    rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-                    triList.shader->beforePrimitive(rd);
-                        renderGeometry(rd);
-                    triList.shader->afterPrimitive(rd);
-                rd->popState();
+                bool alreadyAdditive = false;
+                setAdditive(rd, alreadyAdditive);
+                renderNonShadowedOpaqueTerms(rd, lighting);
+            
+                // restore depth write
+                rd->setDepthWrite(oldDepthWrite);
+                rd->setCullFace(RenderDevice::CULL_BACK);
             }
         } else {
-            // No transparent pass.
-            triList.shader->beforePrimitive(rd);
-        	    rd->setCullFace(triList.cullFace);
-                renderGeometry(rd);
-            triList.shader->afterPrimitive(rd);
+            // Opaque
+            rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
+
+            bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting);
+
+            if (! wroteDepth) {
+                // Draw black
+                rd->disableLighting();
+                rd->setColor(Color3::black());
+                defaultRender(rd);
+            }
         }
-    } else {
-        // No material; just draw the surface
-    	rd->setCullFace(triList.cullFace);
-        renderGeometry(rd);
-    }
 
     rd->popState();
 }
 
 
-void PosedArticulatedModel::renderGeometry(
+void PosedArticulatedModel::renderShadowedLightPass(
+    RenderDevice*       rd, 
+    const GLight&       light) const {
+
+    rd->setObjectToWorldMatrix(cframe);
+    // TODO
+}
+
+
+void PosedArticulatedModel::renderShadowMappedLightPass(
+    RenderDevice*       rd, 
+    const GLight&       light, 
+    const Matrix4&      lightMVP, 
+    const TextureRef&   shadowMap) const {
+    rd->setObjectToWorldMatrix(cframe);
+    // TODO
+}
+
+
+void PosedArticulatedModel::defaultRender(
     RenderDevice*           rd) const {
+
+    CoordinateFrame o2w = rd->getObjectToWorldMatrix();
+    rd->setObjectToWorldMatrix(cframe);
 
     const ArticulatedModel::Part& part = model->partArray[partIndex];
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
@@ -250,6 +342,8 @@ void PosedArticulatedModel::renderGeometry(
         }
         rd->endPrimitive();
     }
+
+    rd->setObjectToWorldMatrix(o2w);
 }
 
 
@@ -261,7 +355,7 @@ std::string PosedArticulatedModel::name() const {
 bool PosedArticulatedModel::hasTransparency() const {
     const ArticulatedModel::Part& part = model->partArray[partIndex];
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
-    return !(useMaterial && triList.material.transmit.isBlack());
+    return ! triList.material.transmit.isBlack();
 }
 
 

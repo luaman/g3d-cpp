@@ -125,72 +125,9 @@ public:
         bool similarTo(const Material& other) const;
 	};
 
-    class Lighting : public ReferenceCountedObject {
-    private:
-    
-        Lighting() {}
-
-    public:
-
-        /** */
-        class Global {
-        public:
-            /** Light reflected from the sky (usually slightly blue) */
-            Color3              ambientTop;
-
-            /** Light reflected from the ground.  A simpler code path is taken
-                if identical to ambientTop. */
-            Color3              ambientBottom;
-
-            /** Texture at infinity (skybox). */
-            Component           farEnvironment;
-
-            /** NEAR_USE_FAR:  Use the far environment; the near environment is undefined. 
-                NEAR_CUBE:     The near environment is this cube map (good for both reflection and refraction) 
-                NEAR_BEHIND:   A screen-size Rect2D picture of the scene behind an 
-                               object (good for fake refraction; use the far environment for reflections). 
-                               Usually read back after opaque objects are rendered, for use by transparent objects.
-              */
-            enum NearMode {
-                NEAR_USE_FAR,
-                NEAR_CUBE,
-                NEAR_BEHIND,
-            };
-
-            NearMode            nearMode;
-
-            /** Texture nearby (reflection map).                
-                Form is determined by nearMode. */
-            Component           nearEnvironment;
-        };
-
-        /** Global illumination terms. */
-        Global              global;
-
-        /** Local illumination sources that do not cast shadows. */
-        Array<GLight>       unshadowedLocalLightArray;
-
-        /** Local illumination sources that cast shadows. */
-        Array<GLight>       shadowedLocalLightArray;
-
-        /** Creates a (dark) environment. */
-        static ReferenceCountedPointer<Lighting> create() {
-            return new Lighting();
-        }
-
-        /** 
-         Configures from a sky and time.  The fields may also be set explicitly.
-         The ambient values are set from the lighting parameters.  
-         If the sky is NULL the sky settings
-         are not changed.
-         */
-        void set(GameTime time, SkyRef sky = NULL);
-
-        /** Configures the lighting arguments on a SuperShader.*/
-        void configureShaderArgs(VertexAndPixelShader::ArgList& args) const;
-    };
-
-    typedef ReferenceCountedPointer<Lighting> LightingRef;
+   
+    /** Configures the lighting arguments on a SuperShader.*/
+    void configureShaderArgs(VertexAndPixelShader::ArgList& args) const;
 
 private:
     class Cache {

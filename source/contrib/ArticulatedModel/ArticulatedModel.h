@@ -31,15 +31,7 @@ public:
          */
         Table<std::string, CoordinateFrame>     cframe;
 
-        /** If false, the object's material is ignored during rendering
-            (useful for shadow map creation and wireframe.  Transparent materials
-            will be rendered as opaque).
-            Default is true. */
-        bool                                    useMaterial;
-
-        SuperShader::LightingRef                lighting;
-
-        Pose() : useMaterial(true) {}
+        Pose() {}
     };
 
     static const Pose DEFAULT_POSE;
@@ -101,8 +93,7 @@ public:
             int                     partIndex,
             Array<PosedModelRef>&   posedArray,
             const CoordinateFrame&  parent, 
-            const Pose&             posex,
-            SuperShader::LightingRef lighting) const;
+            const Pose&             posex) const;
 
         /** Some parts have no geometry because they are interior nodes in the hierarchy */
         inline bool hasGeometry() const {
@@ -154,8 +145,7 @@ public:
     void pose(
         Array<PosedModelRef>&   posedModelArray, 
         const CoordinateFrame&  cframe = CoordinateFrame(),
-        const Pose&             pose = DEFAULT_POSE,
-        SuperShader::LightingRef lighting = NULL);
+        const Pose&             pose = DEFAULT_POSE);
 
     /** 
       Supports 3DS, IFS, PLY2 file formats.  The format of a file is detected by the extension. 

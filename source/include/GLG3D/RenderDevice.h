@@ -8,7 +8,9 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-12-26
+  @edited  2005-01-06
+
+  Copyright 2001-2005, Morgan McGuire
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -385,17 +387,29 @@ public:
 
     void setDepthRange(double low, double high);
 
+    /** @deprecated Use setColorWrite */
     void enableColorWrite();
     void disableColorWrite();
+    void setColorWrite(bool b);
 
     /** Returns true if colorWrite is enabled */
-    bool colorWriteEnabled() const;
+    bool colorWrite() const;
 
+    /** @deprecated Use setAlphaWrite */
     void enableAlphaWrite();
     void disableAlphaWrite();
+    void setAlphaWrite(bool b);
 
+    /** @deprecated Use setDepthWrite */
     void enableDepthWrite();
     void disableDepthWrite();
+    void setDepthWrite(bool b);
+
+    /** Returns true if depthWrite is enabled */
+    bool depthWrite() const;
+
+    /** Returns true if alphaWrite is enabled */
+    bool alphaWrite() const;
 
     /**
      Equivalent to glShadeModel
@@ -972,7 +986,7 @@ private:
 
         RenderMode                  renderMode;
 
-        double                      specular;
+        Color3                      specular;
         double                      shininess;
 
         double                      lowDepthRange;
@@ -1252,6 +1266,7 @@ public:
      highlight).
      */
     void setSpecularCoefficient(double s);
+    void setSpecularCoefficient(const Color3& c);
 
     /**
      Sets the current shininess exponent used in the lighting equation.

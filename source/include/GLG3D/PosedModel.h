@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2004-12-25
+  @edited  2005-01-05
  */ 
 
 #ifndef GLG3D_POSEDMODEL_H
@@ -12,6 +12,7 @@
 
 #include "graphics3D.h"
 #include "GLG3D/Texture.h"
+#include "GLG3D/LightingParameters.h"
 
 namespace G3D {
 
@@ -168,8 +169,13 @@ public:
 
     virtual Box worldSpaceBoundingBox() const;
 
-    /** Subclasses may choose to implement this in any reasonable way. */
-    virtual void render(class RenderDevice* renderDevice) const = 0;
+    /** Render using current fixed function lighting environment. Do not 
+        change the steBehavior 
+        with regard to stencil, shadowing, etc. is intentionally undefinded. 
+
+        Default implementation calls defaultRender.
+        */
+    virtual void render(class RenderDevice* renderDevice) const;
 
     /**
      Number of edges that have only one adjacent face in edges().
@@ -187,6 +193,59 @@ public:
     inline int numBrokenEdges() const {
         return numBoundaryEdges();
     }
+
+    /** 
+     Render all terms that are independent of shadowing 
+     (e.g., transparency, reflection, ambient illumination, 
+     emissive illumination, nonShadowCastingLights). Transparent objects are assumed to render additively 
+     (but should set the blend mode themselves). Restore all state to the original form
+     on exit.  Default implementation invokes render.
+
+     Implementation must obey the current stencil, depth write, color write, and depth test modes.
+     Implementation may freely set the blending, and alpha test modes.
+
+     The caller should invoke this in depth sorted back to front order for transparent objects.
+
+     The default implementation configures the non-shadow casting lights and calls render.
+
+     Implementation advice:
+      <UL>
+        <LI> If color write is disabled, don't bother performing any shading on this object.
+        <LI> It may be convenient to support multiple lights by invoking renderShadowedLightPass multiple times.
+      </UL>
+
+    */
+    virtual void renderNonShadowed(
+        RenderDevice* rd,
+        const LightingRef& lighting) const;
+
+    /** Render illumination from this light source additively. Implementation must set the
+        alpha blending mode to additive.  Must obey the current stencil, depth write, and depth test modes.
+        Default implementation enables a single light and calls render.
+    */
+    virtual void renderShadowedLightPass(
+        RenderDevice* rd, 
+        const GLight& light) const;
+
+    /** Render illumination from this source additively, held out by the shadow map (which the caller 
+        must have computed, probably using renderNonShadowed).  Default implementation
+        configures the shadow map in texture unit 1 and calls render. */
+    virtual void renderShadowMappedLightPass(
+        RenderDevice* rd, 
+        const GLight& light,
+        const Matrix4& lightMVP,
+        const TextureRef& shadowMap) const;
+
+protected:
+
+    /**
+       Implementation must obey the current stencil, depth write, color write, and depth test modes.
+       Implementation may freely set the blending, and alpha test modes.
+
+       Default implementation renders the triangles returned by getIndices
+       and getGeometry. 
+    */
+    virtual void defaultRender(RenderDevice* rd) const;
 };
 
 
@@ -263,10 +322,10 @@ public:
     virtual int numBoundaryEdges() const;
 
     virtual int numWeldedBoundaryEdges() const;
+
 };
 
 
-#if 0
 // Passes:
 //
 //   If Transparent:
@@ -282,66 +341,7 @@ public:
 // Fixed function computes each as a separate pass.
 // Programmable computes 1...3
 
-/** 
- Render all terms that are independent of shadowing 
- (e.g., transparency, reflection, ambient illumination, 
- emissive illumination, nonShadowCastingLights). Transparent objects are assumed to render additively 
- (but should set the blend mode themselves). Restore all state to the original form
- on exit.  Default implementation invokes render.
 
- Implementation must obey the current stencil, depth write, color write, and depth test modes.
- Implementation may freely set the blending, and alpha test modes.
-
- The caller should invoke this in depth sorted back to front order for transparent objects.
-
- The default implementation configures the non-shadow casting lights and calls render.
-
- Implementation advice:
-  <UL>
-    <LI> If color write is disabled, don't bother performing any shading on this object.
-    <LI> It may be convenient to support multiple lights by invoking renderShadowedLightPass multiple times.
-  </UL>
-
-*/
-virtual void renderNonShadowed(
-    RenderDevice*,
-    const LightingRef&);
-
-/** Render illumination from this light source additively. Implementation must set the
-    alpha blending mode to additive.  Must obey the current stencil, depth write, and depth test modes.
-    Default implementation enables a single light and calls render.
-*/
-virtual void renderShadowedLightPass(
-    RenderDevice*, 
-    const GLight&);
-
-/** Render illumination from this source additively, held out by the shadow map (which the caller 
-    must have computed, probably using renderNonShadowed).  Default implementation
-    configures the shadow map in texture unit 1 and calls render. */
-virtual void renderShadowMappedLightPass(
-    RenderDevice*, 
-    const GLight&,
-    const Matrix4& lightMVP,
-    const TextureRef& shadowMap);
-
-/**
-   Implementation must obey the current stencil, depth write, color write, and depth test modes.
-   Implementation may freely set the blending, and alpha test modes.
-
-   Default implementation renders the triangles returned by getIndices
-   and getGeometry. 
-*/
-virtual void defaultRender(RenderDevice*);
-
-/** Render using current fixed function lighting environment. Do not 
-    change the steBehavior 
-    with regard to stencil, shadowing, etc. is intentionally undefinded. 
-
-    Default implementation calls defaultRender.
-    */
-virtual void render(RenderDevice*);
-
-#endif
 
 }
 

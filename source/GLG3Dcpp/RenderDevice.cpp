@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-12-26
+ @edited  2005-01-06
  */
 
 
@@ -676,7 +676,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     renderMode                  = RenderDevice::RENDER_SOLID;
 
     shininess                   = 15;
-    specular                    = 0.8;
+    specular                    = Color3::white() * 0.8;
 
     ambient                     = Color4(0.25, 0.25, 0.25, 1.0);
 
@@ -931,14 +931,21 @@ void RenderDevice::afterPrimitive() {
 }
 
 
-void RenderDevice::setSpecularCoefficient(double s) {
-    state.specular = s;
+void RenderDevice::setSpecularCoefficient(const Color3& c) {
+    state.specular = c;
 
-    float spec[4];
-    spec[0] = spec[1] = spec[2] = s;
+    static float spec[4];
+    spec[0] = c[0];
+    spec[1] = c[1];
+    spec[2] = c[2];
     spec[3] = 1.0f;
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+}
+
+
+void RenderDevice::setSpecularCoefficient(double s) {
+    setSpecularCoefficient(s * Color3::white());
 }
 
 
@@ -1170,7 +1177,17 @@ void RenderDevice::endFrame(bool pageFlip) {
 }
 
 
-bool RenderDevice::colorWriteEnabled() const {
+bool RenderDevice::alphaWrite() const {
+    return state.alphaWrite;
+}
+
+
+bool RenderDevice::depthWrite() const {
+    return state.depthWrite;
+}
+
+
+bool RenderDevice::colorWrite() const {
     return state.colorWrite;
 }
 
@@ -1468,6 +1485,33 @@ void RenderDevice::setAlphaTest(AlphaTest test, double reference) {
 
         state.alphaTest = test;
         state.alphaReference = reference;
+    }
+}
+
+
+void RenderDevice::setAlphaWrite(bool a) {
+    if (a) {
+        enableAlphaWrite();
+    } else {
+        disableAlphaWrite();
+    }
+}
+
+
+void RenderDevice::setColorWrite(bool a) {
+    if (a) {
+        enableColorWrite();
+    } else {
+        disableColorWrite();
+    }
+}
+
+
+void RenderDevice::setDepthWrite(bool a) {
+    if (a) {
+        enableDepthWrite();
+    } else {
+        disableDepthWrite();
     }
 }
 

@@ -33,7 +33,7 @@ protected:
 public:
     SkyRef                      sky;
 
-    SuperShader::LightingRef    lighting;
+    LightingRef                 lighting;
 
     Array<ArticulatedModelRef>  modelArray;
     TextureRef                  texture;
@@ -121,20 +121,19 @@ void Demo::doGraphics() {
 
         Array<PosedModelRef> posedModels;
         for (int m = 0; m < app->modelArray.size(); ++m) {
-            app->modelArray[m]->pose(posedModels, CoordinateFrame(Vector3(2*m,0,0)), pose, app->lighting);
+            app->modelArray[m]->pose(posedModels, CoordinateFrame(Vector3(2*m,0,0)), pose);
         }
 
         Draw::axes(app->renderDevice);
 
-
-        app->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
         Array<PosedModelRef> opaque, transparent;
         PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
+
         for (int m = 0; m < opaque.size(); ++m) {
-            opaque[m]->render(app->renderDevice);
+            opaque[m]->renderNonShadowed(app->renderDevice, app->lighting);
         }
         for (int m = 0; m < transparent.size(); ++m) {
-            transparent[m]->render(app->renderDevice);
+            transparent[m]->renderNonShadowed(app->renderDevice, app->lighting);
         }
     app->renderDevice->popState();
 
@@ -156,28 +155,46 @@ void App::main() {
         model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
         material.diffuse = Color3::yellow() * .7;
         material.transmit = Color3(.5,.3,.3);
-        material.specular = Color3::white() * .5;
+        material.reflect = Color3::white() * .1;
+        material.specular = Color3::white() * .8;
         material.specularExponent = Color3::white() * 40;
         model->updateAll();
 
         modelArray.append(model);
     }
     
+    /*
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile(
 		"d:/games/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
             );
         modelArray.append(model);
     }
+    */
 
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/venus-torso.ifs", 1.5);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
-        material.diffuse = Color3::white() * .5;
-        material.transmit = Color3(.2,.3,.9);
-        material.specular = Color3::white() * .5;
+        material.diffuse = Color3(.9, .9, .8);
+        material.transmit = Color3::black();
+        material.reflect = Color3::white() * .04;
+        material.specular = Color3::white() * .3;
+        material.specularExponent = Color3::white() * 5;
+        model->updateAll();
+
+        modelArray.append(model);
+    }
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/jackolantern.ifs", 1);
+
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
+        material.diffuse = Color3::fromARGB(0xF28900);
+        material.transmit = Color3::black();
+        material.reflect = Color3::black();
+        material.specular = Color3::white() * .3;
         material.specularExponent = Color3::white() * 60;
         model->updateAll();
 
@@ -185,19 +202,35 @@ void App::main() {
     }
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/trumpet.ifs", 1);
+
+        Color3 brass = Color3::fromARGB(0xFFFDDC01);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
-        material.diffuse = Color3::white() * .2;
-        material.reflect = Color3::white() * .5;
-        material.specular = Color3::white() * .5;
-        material.specularExponent = Color3::white() * 40;
+        material.diffuse = brass * .4;
+        material.reflect = brass * .5;
+        material.specular = Color3::white() * .8;
+        material.specularExponent = Color3::white() * 25;
         model->updateAll();
 
         modelArray.append(model);
     }
 
+
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/mech-part.ifs", 1);
+
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
+        material.diffuse = Color3::red();
+        material.reflect = Color3::black();
+        material.specular = Color3::white();
+        material.specularExponent = Color3::white() * 30;
+        model->updateAll();
+
+        modelArray.append(model);
+    }
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
 
@@ -220,8 +253,27 @@ void App::main() {
 //		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
 
 
-    lighting = SuperShader::Lighting::create();
-    lighting->set(G3D::toSeconds(2, 00, 00, PM), sky);
+    lighting = Lighting::create();
+    {
+        LightingParameters params(G3D::toSeconds(2, 00, 00, PM));
+    
+        if (sky.notNull()) {
+            //lighting->environmentMap.constant = lighting.skyAmbient;
+            lighting->environmentMap = sky->getEnvironmentMap();
+            lighting->environmentMapColor = params.skyAmbient;
+        } else {
+            lighting->environmentMapColor = Color3::black();
+        }
+
+        lighting->ambientTop = Color3(.7, .7, 1) * params.diffuseAmbient;
+        lighting->ambientBottom = Color3::brown() * params.diffuseAmbient;
+
+        lighting->lightArray.clear();
+        lighting->lightArray.append(params.directionalLight());
+
+        // Decrease the blue since we're adding blue ambient
+        lighting->lightArray.last().color *= Color3(1.2, 1.2, 1);
+    }
 
     Demo(this).run();
 }

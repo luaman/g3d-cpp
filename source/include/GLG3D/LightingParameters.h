@@ -3,9 +3,9 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-11-26
+ @edited  2005-01-05
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
  */
 
@@ -13,6 +13,7 @@
 #define G3D_LIGHTINGPARAMETERS_H
 
 #include "graphics3D.h"
+#include "Texture.h"
 
 namespace G3D {
 
@@ -22,15 +23,11 @@ namespace G3D {
 /* Initital star offset on Jan 1 1970 midnight */
 /* Definition of a sidereal day */
 #define SIDEREAL_DAY ((23*HOUR)+(56*MINUTE)+(4.071f*SECOND))
-	
-/** The actual time (measured in seconds since Jan 1 1970 midnight).
-    Adjusted for local timezone and daylight savings time. */
-//RealTime realWorldLocalTime();
 
 /**
- Provides a reasonable (but not remotely physically correct!) set of lighting parameters
- based on the time of day.  The sun and moon travel in a perfectly east-west arc
- where +x = east and -x = west.
+ Provides a reasonable (but not 100% physically correct) set of lighting 
+ parameters based on the time of day.  See also G3D::Lighting, which describes
+ a rich lighting environment.
  */
 class LightingParameters {
 public:
@@ -53,22 +50,23 @@ public:
     Vector3                 lightDirection;
     enum {SUN, MOON}        source;
 
-    /** Using physically correct parameters. */
+    /** Using physically correct parameters.  When false, the sun and moon
+        travel in a perfectly east-west arc where +x = east and -x = west. */
     bool                    physicallyCorrect;
 
     /** The vector <B>to</B> the sun */
-    Vector3		    trueSunPosition;
-    Vector3         sunPosition;
+    Vector3		            trueSunPosition;
+    Vector3                 sunPosition;
 
     /** The vector <B>to</B> the moon */
-    Vector3		    trueMoonPosition;
-    Vector3         moonPosition;
-	double			moonPhase;	
+    Vector3		            trueMoonPosition;
+    Vector3                 moonPosition;
+	double			        moonPhase;	
 
     /** The coordinate frame and vector related to the starfield */
-    CoordinateFrame	    starFrame;
-	CoordinateFrame		trueStarFrame;
-    Vector3		    starVec;
+    CoordinateFrame	        starFrame;
+	CoordinateFrame		    trueStarFrame;
+    Vector3		            starVec;
 
     /* Geographic position */
     float                   geoLatitude;
@@ -100,6 +98,46 @@ public:
      */
     GLight directionalLight() const;
 };
+
+
+/** A rich environment lighting model that contains both global and local sources.
+    See also LightingParameters, a class that describes a sun and moon lighting 
+    model. */
+class Lighting : public ReferenceCountedObject {
+private:
+
+    Lighting() {}
+
+public:
+
+    /** Light reflected from the sky (usually slightly blue) */
+    Color3              ambientTop;
+
+    /** Light reflected from the ground.  A simpler code path is taken
+        if identical to ambientTop. */
+    Color3              ambientBottom;
+
+    /** Cube map of surrounding environment (often just the skybox, although 
+         it may be rendered per-object). */
+    TextureRef          environmentMap;
+
+    /** Color to modulate environment map by */
+    Color3              environmentMapColor;
+
+    /** Local illumination sources that do not cast shadows. */
+    Array<GLight>       lightArray;
+
+    /** Local illumination sources that cast shadows. */
+    Array<GLight>       shadowedLightArray;
+
+    /** Creates a (dark) environment. */
+    static ReferenceCountedPointer<Lighting> create() {
+        return new Lighting();
+    }
+
+};
+
+typedef ReferenceCountedPointer<Lighting> LightingRef;
 
 }
 

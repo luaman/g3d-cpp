@@ -7,7 +7,7 @@
 #include "SuperShader.h"
 
 void SuperShader::configureFixedFunction(RenderDevice* rd) {
-
+/*
     // Set lighting
     rd->enableLighting();
 
@@ -28,9 +28,10 @@ void SuperShader::configureFixedFunction(RenderDevice* rd) {
     rd->setSpecularCoefficient(material.specular.constant.average());
     rd->setShininess(material.specularExponent.constant.average());
     rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
+    */
 }
 
-
+/*
 void SuperShader::LightingEnvironment::set(GameTime time, SkyRef sky) {
     LightingParameters lighting(time);
     
@@ -46,8 +47,9 @@ void SuperShader::LightingEnvironment::set(GameTime time, SkyRef sky) {
     lightArray.append(lighting.directionalLight());
     lightArray.last().color *= Color3(1, 1, .9);
 }
+*/
 
-
+/*
 void SuperShader::LightingEnvironment::configureShaderArgs(
     VertexAndPixelShader::ArgList& args) const {
 
@@ -59,7 +61,7 @@ void SuperShader::LightingEnvironment::configureShaderArgs(
     args.set("lightPos", lightArray[0].position);
     args.set("lightColor", lightArray[0].color);
 }
-
+*/
 
 void SuperShader::Material::configureShaderArgs(
     VertexAndPixelShader::ArgList& args) const {
@@ -115,7 +117,9 @@ bool SuperShader::ok() const {
 }
 
 
+
 void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
+    /*
     if (profile() == FIXED_FUNCTION) {
         renderDevice->pushState();
         configureFixedFunction(renderDevice);
@@ -125,27 +129,30 @@ void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
         shader->beforePrimitive(renderDevice);
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     }
+    */
 }
 
 
 void SuperShader::afterPrimitive(RenderDevice* renderDevice) {
+/*
     if (profile() == FIXED_FUNCTION) {
         renderDevice->popState();
     } else {
         shader->afterPrimitive(renderDevice);
     }
+    */
 }
-
 
 const std::string& SuperShader::messages() const {
     static const std::string t = "TODO";
     return t;
 }
 
-
+/*
 void SuperShader::setLighting(const LightingEnvironmentRef& lightingEnvironment) {
     lighting = lightingEnvironment;
 }
+*/
 
 ////////////////////////////////////////////////////////////////////////////
 SuperShader::Cache SuperShader::cache;
