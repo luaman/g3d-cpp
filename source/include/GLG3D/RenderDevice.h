@@ -954,6 +954,9 @@ private:
     
         double                      polygonOffset;
 
+        double                      specular;
+        double                      shininess;
+
         double                      lowDepthRange;
         double                      highDepthRange;
 
@@ -1136,17 +1139,25 @@ public:
 
     /**
      You must also enableLighting.  Ambient light is handled separately.
-
-     @param toLightVector The vector <B>towards</B> the light, in world space.  
-     Unlike OpenGL, the current camera and object matrices are ignored.
-
-     @param lightNum between 0 and 7
-	 @param color Light color
+     Lighting is automatically adjusted to the lightSaturation value.
 
      setLight(i, NULL) disables a light
      */
     void setLight(int num, const GLight& light);
     void setLight(int num, void*);
+
+    /**
+     Sets the current specular coefficient used in the lighting equation.
+     Should be on the range 0 (perfectly diffuse) to 1 (bright specular
+     highlight).
+     */
+    void setSpecularCoefficient(double s);
+
+    /**
+     Sets the current shininess exponent used in the lighting equation.
+     On the range 0 (large highlight) to 255 (tiny, focussed highlight).
+     */
+    void setShininess(double s);
 
     /**
      You must also RenderDevice::enableLighting.

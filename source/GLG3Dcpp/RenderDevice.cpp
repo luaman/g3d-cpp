@@ -840,9 +840,6 @@ void RenderDevice::setVideoMode() {
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     glEnable(GL_NORMALIZE);
 
-    float spec[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 10);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
@@ -876,8 +873,11 @@ void RenderDevice::setVideoMode() {
         for (int i = 0; i < MAX_LIGHTS; ++i) {
             setLight(i, NULL, true);
         }
-        glColor4d(1,1,1,1);
-        glNormal3d(0,0,0);
+        glColor4d(1, 1, 1, 1);
+        glNormal3d(0, 0, 0);
+
+        setShininess(state.shininess);
+        setSpecularCoefficient(state.specular);
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -1000,6 +1000,9 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     lineWidth                   = 1;
     pointSize                   = 1;
 
+    shininess                   = 15;
+    specular                    = 0.8;
+
     ambient                     = Color4(0.25, 0.25, 0.25, 1.0);
 
     lighting                    = false;
@@ -1115,6 +1118,9 @@ void RenderDevice::setState(
     setLineWidth(newState.lineWidth);
     setPointSize(newState.pointSize);
 
+    setSpecularCoefficient(newState.specular);
+    setShininess(newState.shininess);
+
     if (newState.lighting) {
         enableLighting();
     } else {
@@ -1168,6 +1174,23 @@ void RenderDevice::setState(
     setCullFace(newState.cullFace);
 
     setDepthRange(newState.lowDepthRange, newState.highDepthRange);
+}
+
+
+void RenderDevice::setSpecularCoefficient(double s) {
+    state.specular = s;
+
+    float spec[4];
+    spec[0] = spec[1] = spec[2] = s;
+    spec[3] = 1.0f;
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+}
+
+
+void RenderDevice::setShininess(double s) {
+    state.shininess = s;
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, s);
 }
 
 
