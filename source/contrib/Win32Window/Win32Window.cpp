@@ -716,7 +716,6 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.state = SDL_PRESSED;
 
 				if ((message.lParam & 0x0f) == 1) {
-                Log::common()->printf("Down: %x\n", message.wParam);
 					// This is not an autorepeat message
 					makeKeyEvent(message.wParam, message.lParam, e);
 					return true;
