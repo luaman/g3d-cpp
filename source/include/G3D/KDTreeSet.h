@@ -8,22 +8,7 @@
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
-
-Attached is one nasty case.  The red line is split plane.  The green box is hit before the yellow box (which is a Box, the AABox around it shown in dashed lines), but the yellow box is be returned first by the iterator.  The correct result in this case is:
-
-Iterator returns Yellow.
-
-Caller tests for intersection but rejects it because the true intersection is past maxDist.
-
-Iterator returns Green.
-
-Caller tests for intersection and remembers that as the best intersection.
-
-Iterator returns Yellow.
-
-Caller tests for intersection-- it passes the minDist and maxDist tests but fails to be closer than the previous intersection.
-
-  <IMG SRc="aabsp-intersect.png">
+  
   */
 
 #ifndef G3D_AABSPTREE_H
@@ -141,11 +126,16 @@ private:
             const AABox& A = a.bounds;
             const AABox& B = b.bounds;
 
-            // Only compare distance along the sort axis.  It is faster
-            // to sum the low and high than average them.
-            return
-                (A.low()[sortAxis] + A.high()[sortAxis]) <
-                (B.low()[sortAxis] + B.high()[sortAxis]);
+            double d =
+                (B.low()[sortAxis] + B.high()[sortAxis]) -
+                (A.low()[sortAxis] + A.high()[sortAxis]);
+
+            // We need to compare against an epsilon or MSVC's
+            // std::sort can go into an infinite loop because
+            // A < B and B < A might *both* return true due to 
+            // roundoff.  This sort is for finding the median;
+            // it doesn't have to be precise anyway.
+            return (d > 1e-5);
         }
     };
 
@@ -328,11 +318,12 @@ private:
 
             // Compute the median along the axis
 
-            // Sort only the subarray 
+            // Sort only the subarray
             std::sort(
                 point.getCArray() + beginIndex,
                 point.getCArray() + endIndex + 1,
                 CenterLT(splitAxis));
+
             int midIndex = (beginIndex + endIndex) / 2;
 
             // Choose the split location between the two middle elements
@@ -769,7 +760,9 @@ public:
 			    // only one of this node's children will be searched
 			    // (the pre child). Therefore it is critical that
 			    // the correct child is gone to.
-			    if(splitTime <= minTime) splitTime = inf;
+                if (splitTime <= minTime) {
+                    splitTime = inf;
+                }
 
 			    startTime = minTime;
 			    endTime = min(maxTime, splitTime);
@@ -1024,7 +1017,7 @@ public:
 
 			    double t;
 			    if (s->preSide) {
-				    t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds.toBox());
+				    t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
 				    ++testCounter;
 				    s->intersectionCache[s->valIndex] = t;
 			    } else {
@@ -1131,6 +1124,9 @@ public:
            }
        }
      </PRE>
+
+    <IMG SRc="aabsp-intersect.png">
+
     */
 	RayIntersectionIterator beginRayIntersection(const Ray& ray) const {
 		return RayIntersectionIterator(ray, root);

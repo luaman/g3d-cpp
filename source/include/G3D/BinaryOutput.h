@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2003-05-25
+ @edited  2004-03-16
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -84,7 +84,7 @@ public:
     virtual ~BinaryOutput();
     
     /** Compresses the data in the buffer in place, preceeding it with a little-endian uint32.
-        Call immediately before compress().*/
+        Call immediately before commit().*/
     void compress();
 
     /**
