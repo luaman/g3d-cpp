@@ -529,7 +529,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::isNaN, G3D::isFinite
      <LI> Added a single triangle triangle.ifs file
      <LI> G3D::LineSegment
-     <LI> RenderDevice::debugDrawVector
+     <LI> RenderDevice::debugDrawRay
      <LI> CoordinateFrame::toObjectSpace(Ray&)
      <LI> CoordinateFrame::toObjectSpace(Box&)
      <LI> CoordinateFrame::toObjectSpace(Sphere&)

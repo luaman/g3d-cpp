@@ -27,7 +27,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-03-18
+  @edited  2003-03-24
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -680,8 +680,7 @@ public:
      */
     void debugDrawAxes(double scale = 1);
 
-    void debugDrawVector(const Vector3& vector, 
-                         const Vector3& pos = Vector3::ZERO, double scale = 1);
+    void debugDrawRay(const Ray& ray, const Color3& color = Color3::RED, double scale = 1);
 
     /**
      Render a box with wireframe edges and translucent faces.

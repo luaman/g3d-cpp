@@ -2303,10 +2303,10 @@ void RenderDevice::debugDrawBox(const Box& box, const Color3& color, double edge
 }
 
 
-void RenderDevice::debugDrawVector(const Vector3& vector, const Vector3& pos, double scale) {
+void RenderDevice::debugDrawRay(const Ray& ray, const Color3& color, double scale) {
 
     // Arrow tip
-    const double len = vector.length();
+    const double len = ray.direction.length();
 
     // Arrowhead radius
     const double r = scale * 0.12;
@@ -2326,13 +2326,14 @@ void RenderDevice::debugDrawVector(const Vector3& vector, const Vector3& pos, do
     pushState();
         CoordinateFrame c1 = state.objectToWorldMatrix;
         CoordinateFrame c2;
-        c2.lookAt(vector);
-        c2.translation = pos;
+        c2.lookAt(ray.direction);
+        c2.translation = ray.origin;
 
         setObjectToWorldMatrix(c2 * c1);
     
         double a;
         // Arrow head
+        setColor(color);
         beginPrimitive(RenderDevice::TRIANGLES);
             for (a = 0; a <= 12; ++a) {
                 double angle0 = a * PI / 6;
