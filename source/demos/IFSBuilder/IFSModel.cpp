@@ -241,11 +241,29 @@ void XIFSModel::load3DS(const std::string& filename) {
     Load3DS loader(b);
 
     for (int obj = 0; obj < loader.objectArray.size(); ++obj) {
+        Matrix4 keyframe(Matrix4::IDENTITY);
+        
+        Vector3 pivot = loader.objectArray[obj].pivot;
+
+        if (loader.objectArray[obj].keyframe.size() > 0) {
+            // Chose frame 0 of animation
+            keyframe = loader.objectArray[obj].keyframe[0];
+        }
+
         const Array<int>&     index   = loader.objectArray[obj].indexArray;
         const Array<Vector3>& vertex  = loader.objectArray[obj].vertexArray;
-        const Matrix4&        cframe  = loader.objectArray[obj].cframe;
 
-        #define vert(V) (cframe * Vector4(vertex[index[V]], 1)).xyz()
+        // The cframe has already been applied in the 3DS file.  If
+        // we change the Load3DS object representation to move
+        // coordinates back to object space, this is the code
+        // that will promote them to world space before constructing
+        // the mesh.
+
+        const Matrix4&        cframe  = loader.objectArray[obj].cframe;
+        //#define vert(V) (keyframe * cframe * Vector4(vertex[index[V]], 1)).xyz()
+
+        // TODO: Figure out correct transformation
+        #define vert(V) (keyframe * cframe.inverse() * Vector4(vertex[index[V]], 1)).xyz() + pivot
 
         for (int i = 0; i < index.size(); i += 3) {
             builder.addTriangle(
