@@ -153,7 +153,7 @@ public:
         std::string filename;
     };
 
-    enum Format {JPEG, BMP, TGA, PCX, ICO, AUTODETECT, UNKNOWN};
+    enum Format {JPEG, BMP, TGA, PCX, ICO, PNG, AUTODETECT, UNKNOWN};
 
     int                     width;
     int                     height;
@@ -262,6 +262,9 @@ private:
         BinaryInput&        input);
 
     void decodeICO(
+        BinaryInput&        input);
+
+    void decodePNG(
         BinaryInput&        input);
 
     /**

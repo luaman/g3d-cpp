@@ -18,6 +18,7 @@ extern "C" {
 #endif
 }
 
+#include "../png/png.h"
 #include "G3D/Log.h"
 #include <sys/stat.h>
 #include <assert.h>
@@ -617,6 +618,10 @@ void GImage::decode(
     Format              format) {
 
     switch (format) {
+    case PNG:
+        decodePNG(input);
+        break;
+
     case JPEG:
         decodeJPEG(input);
         break;
@@ -1380,6 +1385,147 @@ void GImage::decodePCX(
     }
 }
 
+//libpng required function signature
+void png_read_data(
+    png_structp png_ptr,
+    png_bytep data,
+    png_size_t length) {
+
+
+    debugAssert( png_ptr->io_ptr != NULL );
+    debugAssert( length >= 0 );
+    debugAssert( data != NULL );
+
+    ((BinaryInput*)png_ptr->io_ptr)->readBytes(length, data);
+}
+
+//libpng required function signature
+void png_write_data(png_structp png_ptr,
+    png_bytep data,
+    png_size_t length) {
+
+    //Do nothing.
+}
+
+//libpng required function signature
+void png_flush_data(
+    png_structp png_ptr) {
+
+    //Do nothing.
+}
+
+//libpng required function signature
+void png_error(
+    png_structp png_ptr,
+    png_const_charp error_msg) {
+
+    GImage::Error(error_msg, "libpng"); 
+}
+
+//libpng required function signature
+void png_warning(
+    png_structp png_ptr,
+    png_const_charp warning_msg) {
+
+    debugAssert( warning_msg != NULL );
+    Log::common()->println(warning_msg);
+}
+
+void GImage::decodePNG(
+    BinaryInput&        input) {
+
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, png_error, png_warning);
+    if (!png_ptr)
+        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
+
+    png_infop info_ptr = png_create_info_struct(png_ptr);
+    if (!info_ptr) {
+        png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
+    }
+
+    png_infop end_info = png_create_info_struct(png_ptr);
+    if (!end_info) {
+        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
+    }
+
+    //now that the libpng structures are setup, change the error handlers and read routines
+    //to use G3D functions so that BinaryInput can be used.
+
+    png_set_read_fn(png_ptr, (png_voidp)&input, png_read_data);
+
+//    png_set_write_fn(png_ptr, NULL, png_write_data, png_output_flush);
+//    png_set_error_fn(png_ptr, NULL, png_error, png_warning);
+
+    //turn on the libpng longjmp pointers
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
+    }
+
+    
+    //read in sequentially so that three copies of the file are not in memory at once
+    png_read_info(png_ptr, info_ptr);
+
+    uint32 png_width, png_height;
+    int bit_depth, color_type, interlace_type;
+    //this will validate the data it extracts from info_ptr
+    png_get_IHDR(png_ptr, info_ptr, (png_uint_32*)&png_width, (png_uint_32*)&png_height, &bit_depth, &color_type,
+       &interlace_type, int_p_NULL, int_p_NULL);
+
+    if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
+        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+        throw GImage::Error("Unsupported png color type - PNG_COLOR_TYPE_GRAY_ALPHA.", input.getFilename());
+    }
+
+    this->width = png_width;
+    this->height = png_height;
+
+    //swap bytes of 16 bit files to least significant byte first
+    png_set_swap(png_ptr);
+
+    png_set_strip_16(png_ptr);
+
+    //Expand paletted colors into true RGB triplets
+    if (color_type == PNG_COLOR_TYPE_PALETTE)
+        png_set_palette_to_rgb(png_ptr);
+
+    //Expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel
+    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+        png_set_gray_1_2_4_to_8(png_ptr);
+
+    //Expand paletted or RGB images with transparency to full alpha channels
+    //so the data will be available as RGBA quartets.
+    if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
+        png_set_tRNS_to_alpha(png_ptr);
+
+    if (color_type == PNG_COLOR_TYPE_RGBA) {
+        this->channels = 4;
+        this->_byte = (uint8*)malloc(width * height * 4);
+    }
+    else {
+        this->channels = 3;
+        this->_byte = (uint8*)malloc(width * height * 3);
+    }
+
+    //since we are reading row by row, required to handle interlacing
+    uint32 number_passes = png_set_interlace_handling(png_ptr);
+
+    png_read_update_info(png_ptr, info_ptr);
+
+    for (uint32 pass = 0; pass < number_passes; ++pass) {
+        for (uint32 y = 0; y < height; ++y) {
+            png_bytep rowPointer = &this->_byte[width * channels * y]; 
+            png_read_rows(png_ptr, &rowPointer, png_bytepp_NULL, 1);
+        }
+    }
+
+    png_read_end(png_ptr, info_ptr);
+
+    png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+}
+
 GImage::Format GImage::resolveFormat(
     const std::string&  filename,
     const uint8*        data,
@@ -1415,6 +1561,11 @@ GImage::Format GImage::resolveFormat(
 
     // We can't look at the character if it is null.
     debugAssert(data != NULL);              
+
+    if (dataLen > 8) {
+        if (!png_sig_cmp((png_bytep)data, 0, 8))
+            return PNG;
+    }
 
     if ((dataLen > 0) && (data[0] == 'B')) {
         return BMP;
@@ -1630,6 +1781,8 @@ GImage::Format GImage::stringToFormat(
         return PCX;
     } else if (extension == "ICO") {
         return ICO;
+    } else if (extension == "PNG") {
+        return PNG;
     } else {
         return UNKNOWN;
     }
