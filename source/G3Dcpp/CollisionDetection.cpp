@@ -495,9 +495,11 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     Vector3&                location,
     bool&                   Inside) {
 
-    //return collisionTimeForMovingPointFixedBox(point, velocity, box.toBox(), location, outNormal);
+    //double t = collisionTimeForMovingPointFixedBox(origin, dir, box.toBox(), location);
+    //Inside = t == 0;
+    //return t;
 
-    const double RAYAABB_EPSILON = 0.00001;
+    const double RAYAABB_EPSILON = 0.0000;
 
     // Integer representation of a floating-point value.
     #define IR(x)	((uint32&)x)
