@@ -194,12 +194,6 @@ void doGraphics() {
       
                 renderDevice->push2D();
 
-                if (scene->sim.size() > 0) {
-                        font->draw2DString(
-                            format("%g", scene->sim[0]->velocity.length()),
-                            200, 10, 28, Color3::WHITE, Color3::BLACK);
-                }
-
                 font->draw2DString(
                     format("%d fps", frameRate),
                     10, 10, 28, Color3::WHITE, Color3::BLACK);

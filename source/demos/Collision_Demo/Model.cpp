@@ -175,6 +175,7 @@ GameTime Model::timeUntilCollisionWithMovingSphere(
         Vector3 testLocation, testNormal;
         GameTime testTime;
 
+        Triangle t = collisionTriangle[i];
         testTime = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, velocity, collisionTriangle[i], testLocation, testNormal);
 
         if (testTime < outTime) {

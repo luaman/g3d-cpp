@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-04-03
+ @edited  2003-05-22
  */
 
 
@@ -656,40 +656,9 @@ void testCollision() {
 
 
 int main(int argc, char* argv[]) {
-/*
-    Array<Vector3>  in;
-    Array<Triangle> out;
 
-    in.append(Vector3(0, 0, 0));
-    in.append(Vector3(100, 0, 0));
-    in.append(Vector3(100, 25, 0));
-    in.append(Vector3(50, 25, 0));
-    in.append(Vector3(50, 75, 0));
-    in.append(Vector3(100, 75, 0));
-    in.append(Vector3(100, 100, 0));
-    in.append(Vector3(10, 100, 0));
+    Triangle t(Vector3(-.413, -.49, -.52), Vector3(-.422, -.43, -.55), Vector3(-.402, -.39, -.61));
 
-
-    tesselateComplexPolygon(in, out);
-
-    r.init(640, 480);
-
-    while (true) {
-        r.beginFrame();
-        r.push2D();
-        r.setCullFace(RenderDevice::CULL_FRONT);
-        r.beginPrimitive(RenderDevice::TRIANGLES);
-        for (int t = 0; t < out.size(); ++t) {
-            r.sendVertex(out[t].vertex(0));
-            r.sendVertex(out[t].vertex(1));
-            r.sendVertex(out[t].vertex(2));
-        }
-        r.endPrimitive();
-        r.pop2D();
-        r.endFrame();
-    }
-
-*/
     RenderDevice rd;
 
     #ifndef _DEBUG

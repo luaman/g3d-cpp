@@ -39,16 +39,12 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
 
 
 Triangle::Triangle() {
-    _vertex[0] = Vector3::ZERO;
-    _vertex[1] = Vector3::ZERO;
-    _vertex[2] = Vector3::ZERO;
+    init(Vector3::ZERO, Vector3::ZERO, Vector3::ZERO);
 }
     
 
 Triangle::Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
-    _vertex[0] = v0;
-    _vertex[1] = v1;
-    _vertex[2] = v2;
+    init(v0, v1, v2);
 }
 
     
@@ -72,6 +68,7 @@ void Triangle::deserialize(class BinaryInput& b) {
     _vertex[0].deserialize(b);
     _vertex[1].deserialize(b);
     _vertex[2].deserialize(b);
+    init (_vertex[0], _vertex[1], _vertex[2]);
 }
 
 
