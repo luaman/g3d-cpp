@@ -1,5 +1,5 @@
 /**
- @file Font.cpp
+ @file CFont.cpp
  
  @maintainer Morgan McGuire, morgan@graphics3d.com
 

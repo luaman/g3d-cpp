@@ -1,5 +1,5 @@
 /**
- @file Font.h
+ @file CFont.h
  
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
