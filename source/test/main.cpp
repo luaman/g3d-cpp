@@ -945,6 +945,44 @@ void testAdjacency() {
     }
 
     {
+        //      
+        //    0====1
+        //  (degenerate face)
+        //
+
+
+        MeshAlg::Geometry       geometry;
+        Array<int>              index;
+        Array<MeshAlg::Face>    faceArray;
+        Array<MeshAlg::Edge>    edgeArray;
+        Array< Array<int> >     facesAdjacentToVertex;
+
+        geometry.vertexArray.append(Vector3(0,0,0));
+        geometry.vertexArray.append(Vector3(1,0,0));
+
+        index.append(0, 1, 0);
+
+        MeshAlg::computeAdjacency(
+            geometry.vertexArray,
+            index,
+            faceArray,
+            edgeArray,
+            facesAdjacentToVertex);
+
+        debugAssert(faceArray.size() == 1);
+        debugAssert(edgeArray.size() == 2);
+
+        debugAssert(faceArray[0].containsVertex(0));
+        debugAssert(faceArray[0].containsVertex(1));
+
+        debugAssert(faceArray[0].containsEdge(0));
+        debugAssert(faceArray[0].containsEdge(1));
+
+        debugAssert(edgeArray[0].inFace(0));
+        debugAssert(edgeArray[1].inFace(0));
+    }
+
+    {
         //          2
         //        /|\
         //       / | \
