@@ -11,6 +11,7 @@
 
 #include "GLG3D/RenderDevice.h"
 #include "G3D/Log.h"
+#include "GLG3D/getOpenGLState.h"
 
 namespace G3D {
 
@@ -194,7 +195,7 @@ void RenderDevice::VARSystem::endIndexedPrimitives() const {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-VAR::VAR() : pointer(NULL), numElements(0), generation(0), elementSize(0) {
+VAR::VAR() : pointer(NULL), numElements(0), generation(0), elementSize(0), underlyingRepresentation(GL_FLOAT) {
 }
 
 
@@ -207,22 +208,22 @@ bool VAR::ok() const {
 void VAR::vertexPointer() const {
 	debugAssert(ok());
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(elementSize / sizeof(float), GL_FLOAT, elementSize, pointer);
+	glVertexPointer(elementSize / glFormatSize(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
 }
 
 
 void VAR::normalPointer() const {
 	debugAssert(ok());
-	debugAssert((double)elementSize / sizeof(float) == 3.0);
+	debugAssert((double)elementSize / glFormatSize(underlyingRepresentation) == 3.0);
 	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(GL_FLOAT, elementSize, pointer); 
+	glNormalPointer(underlyingRepresentation, elementSize, pointer); 
 }
 
 
 void VAR::colorPointer() const {
 	debugAssert(ok());
 	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(elementSize / sizeof(float), GL_FLOAT, elementSize, pointer); 
+	glColorPointer(elementSize / glFormatSize(underlyingRepresentation), underlyingRepresentation, elementSize, pointer); 
 }
 
 
@@ -230,7 +231,7 @@ void VAR::texCoordPointer(uint unit) const {
 	debugAssert(ok());
 	glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(elementSize / sizeof(float), GL_FLOAT, elementSize, pointer);
+	glTexCoordPointer(elementSize / glFormatSize(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
 	glClientActiveTextureARB(GL_TEXTURE0_ARB);
 }
 

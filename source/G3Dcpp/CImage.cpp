@@ -2,7 +2,7 @@
   @file CImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-04-01
+  @edited  2003-04-07
  */
 #include "G3D/CImage.h"
 #include "G3D/debug.h"

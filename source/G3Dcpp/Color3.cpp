@@ -9,7 +9,7 @@
 
 
  @created 2001-06-02
- @edited  2003-02-15
+ @edited  2003-04-07
  */
 
 #include <stdlib.h>
@@ -18,6 +18,7 @@
 #include "G3D/format.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
+#include "G3D/PackedColor3.h"
 
 namespace G3D {
 
@@ -55,6 +56,7 @@ void Color3::serialize(BinaryOutput& bo) const {
     bo.writeFloat32(b);
 }
 
+
 unsigned int Color3::hashCode() const {
     unsigned int rhash = (*(int*)(void*)(&r));
     unsigned int ghash = (*(int*)(void*)(&g));
@@ -63,10 +65,18 @@ unsigned int Color3::hashCode() const {
     return rhash + (ghash * 37) + (bhash * 101);
 }
 
+
 Color3::Color3(const Vector3& v) {
     r = v.x;
     g = v.y;
     b = v.z;
+}
+
+
+Color3::Color3(const class PackedColor3& other) {
+    r = other.r / 255.0;
+    g = other.g / 255.0;
+    b = other.b / 255.0;
 }
 
 

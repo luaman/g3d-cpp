@@ -170,6 +170,10 @@ SOURCE=.\G3Dcpp\NetworkDevice.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\PackedColor3.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\PhysicsFrame.cpp
 # End Source File
 # Begin Source File
@@ -351,6 +355,10 @@ SOURCE=.\include\G3D\Matrix3.h
 # Begin Source File
 
 SOURCE=.\include\G3D\NetworkDevice.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\PackedColor3.h
 # End Source File
 # Begin Source File
 

@@ -27,7 +27,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-03-24
+  @edited  2003-04-07
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -641,6 +641,9 @@ public:
 	class VARArea* createVARArea(size_t areaSize);
 	void beginIndexedPrimitives();
 	void endIndexedPrimitives();
+
+    /** The vertex, normal, color, and tex coord arrays must all come from
+        the same VARArea. */
 	void setVertexArray(const class VAR& v);
 	void setNormalArray(const class VAR& v);
 	void setColorArray(const class VAR& v);
@@ -1010,18 +1013,24 @@ private:
 
 	uint64				generation;
 
+    GLenum              underlyingRepresentation;
+
 	bool ok() const;
 
 	template<class T>
-	void init(const T* sourcePtr, int _numElements, VARArea* _area) {
+	void init(const T* sourcePtr, int _numElements, VARArea* _area, GLenum format) {
 
 		numElements = _numElements;
 		area		= _area;
+        underlyingRepresentation = format;
 
 		debugAssert(area);
 		debugAssert(area->basePointer);
 
 		elementSize = sizeof(T);
+
+        debugAssertM((elementSize % glFormatSize(format)) == 0,
+            "The elements of the provided array are not in the OpenGL format specified.");
 
 		pointer = (uint8*)area->basePointer + area->allocated;
 
@@ -1061,16 +1070,19 @@ public:
 	/**
 	 Uploads the memory.  The element type is inferred from the pointer type by the
 	 preprocessor.
-	 */
+
+       Format must be
+        GL_FLOAT, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_UNSIGNED_BYTE, GL_BYTE 
+    */
 	template<class T>
-	VAR(const T* sourcePtr, int _numElements, VARArea* _area) {
-		init(sourcePtr, _numElements, _area);
+	VAR(const T* sourcePtr, int _numElements, VARArea* _area, GLenum format = GL_FLOAT) {
+		init(sourcePtr, _numElements, _area, format);
 	}		
 
 
 	template<class T>
-	VAR(const Array<T>& source, VARArea* _area) {
-		init(source.getCArray(), source.size(), _area);
+	VAR(const Array<T>& source, VARArea* _area, GLenum format = GL_FLOAT) {
+		init(source.getCArray(), source.size(), _area, format);
 	}		
 };
 

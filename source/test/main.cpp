@@ -508,6 +508,29 @@ void testTextInput() {
 }
 
 
+void testPackedColor3Array() {
+    printf("Array<PackedColor3>\n");
+    Array<PackedColor3> x(2);
+
+    debugAssert(sizeof(PackedColor3) == 3);
+    x[0].r = 60;
+    x[0].g = 61;
+    x[0].b = 62;
+    x[1].r = 63;
+    x[1].g = 64;
+    x[1].b = 65;
+
+    uint8* y = (uint8*)x.getCArray();
+    debugAssert(y[0] == 60);
+    debugAssert(y[1] == 61);
+    debugAssert(y[2] == 62);
+    debugAssert(y[3] == 63);
+    debugAssert(y[4] == 64);
+    debugAssert(y[5] == 65);
+
+    exit(-1);
+}
+
 void testCompression() {
     printf("BinaryInput & BinaryOutput\n");
     BinaryOutput f("/tmp/out.t", G3D_LITTLE_ENDIAN);
@@ -653,6 +676,8 @@ int main(int argc, char* argv[]) {
     testBox();    
     printf("  passed\n");
     testCollision();    
+    printf("  passed\n");
+    testPackedColor3Array();
     printf("  passed\n");
 
     printf("\nAll tests succeeded.\n");

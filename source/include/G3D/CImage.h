@@ -10,7 +10,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2002-07-13
+  @edited  2003-04-07
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -26,7 +26,7 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/stringutils.h"
-
+#include "G3D/PackedColor3.h"
 
 namespace G3D {
    
@@ -129,9 +129,21 @@ public:
     int                     height;
 
     /**
-     RGB format.
+     RGB format.  
+     
+     WARNING: In the next major release, this will become a pointer to
+     PackedColor3 instead of uint8.
+     @deprecated
      */
     uint8*                  pixel;
+
+    uint8* bytes() const {
+        return pixel;
+    }
+
+    PackedColor3* pixels() const {
+        return (PackedColor3*)pixel;
+    }
 
 private:
 

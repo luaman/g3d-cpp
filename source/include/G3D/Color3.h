@@ -9,7 +9,7 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-06-02
- @edited  2003-02-03
+ @edited  2003-04-07
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -53,6 +53,8 @@ public:
      * Initialize from another color.
      */
     Color3 (const Color3& other);
+
+    Color3 (const class PackedColor3& other);
 
     /**
      Initialize from an HTML-style color (e.g. 0xFF0000 == RED)

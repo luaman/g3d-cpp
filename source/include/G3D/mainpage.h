@@ -26,7 +26,7 @@
      
      <UL>
      <LI>3D math
-        <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Quat, G3D::Color3,
+        <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Quat, G3D::Color3, G3D::PackedColor3,
         G3D::Color4, G3D::Matrix3, G3D::CoordinateFrame, G3D::PhysicsFrame,
         G3D::Box, G3D::Cone, G3D::Line, G3D::LineSegment, G3D::Plane, G3D::Ray,
         G3D::Sphere, G3D::Capsule, G3D::CollisionDetection, G3D::Triangle</BLOCKQUOTE>
@@ -93,10 +93,10 @@
         G3D::glMultInvMatrix, G3D::glMultMatrix, G3D::glVertex, G3D::glColor,
         G3D::glNormal, G3D::glTexCoord, G3D::glMultiTexCoord</BLOCKQUOTE>
 
-      <LI>Debugging
+      <LI>GL Debugging
         <BR><BLOCKQUOTE>G3D::getOpenGLState, G3D::glGetInteger, 
         G3D::glGetBoolean, G3D::glGetDouble, G3D::glGetFloat,
-        G3D::GLenumToString</BLOCKQUOTE>
+        G3D::GLenumToString, G3D::glFormatSize</BLOCKQUOTE>
 
       <LI>Game/Demo Infrastructure</LI>
         <BR><BLOCKQUOTE>G3D::Font, G3D::Sky, G3D::Camera, G3D::GameTime,
@@ -500,6 +500,9 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> G3D::glFormatSize(GLenum format)
+     <LI> G3D::PackedColor3
+     <LI> Added support for non-GL_FLOAT vertex arrays to RenderDevice
      <LI> Added TextInput::Options to optionally allow C++ comments to
           be treated as two slashes instead of a comment
      <LI> Added support for Wavefront OBJ files to IFSBuilder

@@ -4,13 +4,14 @@
  @author Morgan McGuire, graphics3d.com
   
  @created 2001-06-02
- @edited  2002-06-09
+ @edited  2003-04-07
  */
 
 #include "G3D/g3dmath.h"
 #include <stdlib.h>
 
 namespace G3D {
+
 
 int highestBit(uint32 x) {
     // Binary search.

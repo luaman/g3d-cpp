@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Created by Morgan McGuire & Seth Block
   @created 2001-08-05
-  @edited  2002-08-07
+  @edited  2003-04-07
 */
 
 #ifndef GETOPENGLSTATE_H
@@ -31,6 +31,14 @@ namespace G3D {
   lighting information is not shown).
  */
 std::string getOpenGLState(bool showDisabled=true);
+
+
+/**
+ Returns the number of bytes occupied by a value in
+ an OpenGL format (e.g. GL_FLOAT).  Returns 0 for unknown
+ formats.
+ */
+size_t glFormatSize(GLenum format);
 
 /**
  Pretty printer for GLenums.  Useful for debugging OpenGL

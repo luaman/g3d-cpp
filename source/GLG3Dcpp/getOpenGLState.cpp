@@ -4,13 +4,42 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Created by Morgan McGuire & Seth Block
   @created 2001-08-05
-  @edited  2003-02-15
+  @edited  2003-04-07
 */
 
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"
 
 namespace G3D {
+
+size_t glFormatSize(GLenum format) {
+    switch (format) {
+    case GL_FLOAT:
+        return sizeof(float);
+
+    case GL_UNSIGNED_SHORT:
+        return sizeof(unsigned short);
+        
+    case GL_SHORT:
+        return sizeof(short);
+        
+    case GL_UNSIGNED_INT:
+        return sizeof(unsigned int);
+        
+    case GL_INT:
+        return sizeof(int);
+        
+    case GL_UNSIGNED_BYTE:
+        return 1;
+
+    case GL_BYTE:
+        return 1;
+
+    default:
+        return 0;
+    }
+}
+
 
 GLint glGetTexParameteri(GLenum target, GLenum pname) {
     GLint result;
