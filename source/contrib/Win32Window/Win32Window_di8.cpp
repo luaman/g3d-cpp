@@ -20,6 +20,13 @@ namespace Win32Window_DI8 {
     #define DIRECTINPUT_VERSION 0x0800
     #include <initguid.h>
 
+    /*
+        These define the structures required to use IDirectInput8
+        and IDirectInputDevice8.  The only ones left not commented
+        out are the ones used.  Akward ordering is left in-case other
+        structures are needed later.
+    */
+
     // DIDEVICEINSTANCEA
     typedef struct DIDEVICEINSTANCEA {
         DWORD   dwSize;
@@ -32,7 +39,7 @@ namespace Win32Window_DI8 {
         GUID    guidFFDriver;
         WORD    wUsagePage;
         WORD    wUsage;
-    #endif /* DIRECTINPUT_VERSION >= 0x0500 */
+    #endif // DIRECTINPUT_VERSION >= 0x0500
     } DIDEVICEINSTANCEA, *LPDIDEVICEINSTANCEA;
 
     typedef const DIDEVICEINSTANCEA *LPCDIDEVICEINSTANCEA;
@@ -297,7 +304,12 @@ namespace Win32Window_DI8 {
 //    } DIDEVICEIMAGEINFOHEADERA, *LPDIDEVICEIMAGEINFOHEADERA;
 
 
-    // IDirectInputDevice8 declaration
+    /*
+        IDirectInputDevice8A
+
+        This defines the DirectInput8 interface needed to 
+        access a direct input device.  
+    */
     #undef INTERFACE
     #define INTERFACE IDirectInputDevice8A
 
@@ -373,7 +385,12 @@ namespace Win32Window_DI8 {
     typedef struct IDirectInputDevice8A *LPDIRECTINPUTDEVICE8A;
 
 
-    // IDirectInput8 declaration
+    /*
+        IDirectInput8A
+
+        This defines the DirectInput8 interface needed to 
+        find and create direct input device interfaces.  
+    */
     #undef INTERFACE
     #define INTERFACE IDirectInput8A
 
@@ -395,6 +412,14 @@ namespace Win32Window_DI8 {
         STDMETHOD(ConfigureDevices)(THIS_ LPVOID,LPVOID,DWORD,LPVOID) PURE;
     };
 
+    /*
+        dinput.h defines
+
+        These are the defines, turned into const uint32, that
+        are normally found in dinput.h . Only the ones needed
+        in the IDirectInput8A and IDirectInputDevice8A interface
+        methods are defined.
+    */
 
     const uint32 DIEDFL_ATTACHEDONLY   = 0x00000001;
     const uint32 DI8DEVCLASS_GAMECTRL  = 4;
@@ -432,6 +457,11 @@ namespace Win32Window_DI8 {
 
     DEFINE_GUID(GUID_POV,     0xA36D02F2,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00);
 
+    /*
+        These declarations mimic the structures
+        exported in dinput8.lib and are used
+        in GetDeviceState calls for joysticks
+    */
 
     struct G3DJOYDATA { 
         LONG lX;
