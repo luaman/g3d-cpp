@@ -21,6 +21,15 @@ automake   = "automake-1.7"
 doxygen    = "doxygen"
 python     = "python2.2"
 
+# Create demo list
+demoList = ["ASM_Shader_Demo", \
+    "Cg_Shader_Demo", \
+    "Collision_Demo", \
+    "GLSL_Demo", \
+    "MD2Model_Demo", \
+    "Network_Demo", \
+    "VAR_Demo", \
+    "Win32_Demo"]
 
 # Turn the platform into a name to put in the
 # "lib" directory name
@@ -343,7 +352,11 @@ def install(args, copyData=1):
     # Build demos after install
     curdir = os.getcwd()
     os.chdir(installDir(args) + '/demos')
-    os.system('make')
+    if (os.name != "nt"):
+        os.system('make')
+    else:
+       for demoName in demoList:
+           msdev(demoName + '/' + demoName + '.dsw', [demoName + ' - Win32 Debug'])
     os.chdir(curdir)    
 
     setPermissions(args)
