@@ -52,6 +52,7 @@
 				0F897D8D05B0B1D400D50B16,
 				0F897F1F05B0BD0200D50B16,
 				0F77C2DC05B0F116005917B7,
+				0F1C58D205B1DC160024376D,
 			);
 			isa = PBXGroup;
 			name = Products;
@@ -87,6 +88,7 @@
 				0F897D8C05B0B1D400D50B16,
 				0F897F1E05B0BD0200D50B16,
 				0F77C2DB05B0F116005917B7,
+				0F1C58D105B1DC160024376D,
 			);
 		};
 		0867D691FE84028FC02AAC07 = {
@@ -96,6 +98,7 @@
 				0F897D6B05B0B13000D50B16,
 				034768DFFF38A50411DB9C8B,
 				0F897DCB05B0B22F00D50B16,
+				0F1C597A05B1E0750024376D,
 				0F77C39705B0F496005917B7,
 				0F897D9805B0B20700D50B16,
 				0F897E0505B0B39D00D50B16,
@@ -116,239 +119,437 @@
 //0F2
 //0F3
 //0F4
+		0F1C58CE05B1DC160024376D = {
+			buildActionMask = 2147483647;
+			files = (
+				0F1C58E305B1DC3D0024376D,
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0F1C58CF05B1DC160024376D = {
+			buildActionMask = 2147483647;
+			files = (
+				0F1C58E405B1DC3D0024376D,
+				0F1C591905B1DC7B0024376D,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0F1C58D005B1DC160024376D = {
+			buildActionMask = 2147483647;
+			files = (
+				0F1C591405B1DC630024376D,
+				0F1C591305B1DC630024376D,
+				0F1C591205B1DC630024376D,
+				0F1C594505B1DF2B0024376D,
+				0F1C592505B1DCA20024376D,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0F1C58D105B1DC160024376D = {
+			buildPhases = (
+				0F1C58CE05B1DC160024376D,
+				0F1C58CF05B1DC160024376D,
+				0F1C58D005B1DC160024376D,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = /Users/brl/Library/Frameworks;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-lz";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = G3D_Test;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost";
+			};
+			dependencies = (
+				0F1C593605B1DD940024376D,
+				0F1C593805B1DD9E0024376D,
+			);
+			isa = PBXNativeTarget;
+			name = G3D_Test;
+			productName = G3D_Test;
+			productReference = 0F1C58D205B1DC160024376D;
+			productType = "com.apple.product-type.tool";
+		};
+		0F1C58D205B1DC160024376D = {
+			explicitFileType = "compiled.mach-o.executable";
+			includeInIndex = 0;
+			isa = PBXFileReference;
+			path = G3D_Test;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0F1C58E305B1DC3D0024376D = {
+			fileRef = 0F897F3505B0BD3A00D50B16;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C58E405B1DC3D0024376D = {
+			fileRef = 0F897F3605B0BD3A00D50B16;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C591205B1DC630024376D = {
+			fileRef = D2AAC07E0554694100DB518D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C591305B1DC630024376D = {
+			fileRef = 0FA15CEA05B08FFE005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C591405B1DC630024376D = {
+			fileRef = 0F897CB205B0B0CF00D50B16;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C591805B1DC7B0024376D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = main.cpp;
+			path = ../source/test/main.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F1C591905B1DC7B0024376D = {
+			fileRef = 0F1C591805B1DC7B0024376D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C592505B1DCA20024376D = {
+			fileRef = 0F897D9805B0B20700D50B16;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C593505B1DD940024376D = {
+			containerPortal = 0867D690FE84028FC02AAC07;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = G3D;
+		};
+		0F1C593605B1DD940024376D = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D;
+			targetProxy = 0F1C593505B1DD940024376D;
+		};
+		0F1C593705B1DD9E0024376D = {
+			containerPortal = 0867D690FE84028FC02AAC07;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 0FA15CE905B08FFE005402D6;
+			remoteInfo = GLG3D;
+		};
+		0F1C593805B1DD9E0024376D = {
+			isa = PBXTargetDependency;
+			target = 0FA15CE905B08FFE005402D6;
+			targetProxy = 0F1C593705B1DD9E0024376D;
+		};
+		0F1C594505B1DF2B0024376D = {
+			fileRef = 0F897F6705B0BDE900D50B16;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C597A05B1E0750024376D = {
+			children = (
+				0FBA3F8705B0BEDF005ECF2C,
+				0F1C597F05B1E0840024376D,
+			);
+			isa = PBXGroup;
+			name = Tests;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0F1C597F05B1E0840024376D = {
+			children = (
+				0F1C591805B1DC7B0024376D,
+			);
+			isa = PBXGroup;
+			name = "G3D Test";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0F1C59E805B1E31F0024376D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = AABox.h;
+			path = ../source/include/G3D/AABox.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F1C59E905B1E3200024376D = {
+			fileRef = 0F1C59E805B1E31F0024376D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F1C59EE05B1E32C0024376D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = AABox.cpp;
+			path = ../source/G3Dcpp/AABox.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F1C59EF05B1E32C0024376D = {
+			fileRef = 0F1C59EE05B1E32C0024376D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		0F77C07E05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Draw.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/Draw.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/Draw.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C07F05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = GApp.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/GApp.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/GApp.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08005B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = getOpenGLState.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/getOpenGLState.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/getOpenGLState.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08105B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = GFont.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/GFont.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/GFont.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08205B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = glcalls.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/glcalls.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/glcalls.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08305B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = glFormat.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/glFormat.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/glFormat.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08405B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = glheaders.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/glheaders.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/glheaders.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08505B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = GPUProgram.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/GPUProgram.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/GPUProgram.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08605B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = IFSModel.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/IFSModel.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/IFSModel.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08705B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = LightingParameters.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/LightingParameters.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/LightingParameters.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08805B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = ManualCameraController.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/ManualCameraController.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/ManualCameraController.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08905B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = MD2Model.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/MD2Model.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/MD2Model.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08A05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Milestone.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/Milestone.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/Milestone.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08B05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = PixelProgram.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/PixelProgram.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/PixelProgram.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08C05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = PosedModel.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/PosedModel.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/PosedModel.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08D05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = RenderDevice.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/RenderDevice.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/RenderDevice.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08E05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = shadowVolume.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/shadowVolume.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/shadowVolume.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C08F05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Sky.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/Sky.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/Sky.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09005B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = tesselate.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/tesselate.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/tesselate.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09105B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Texture.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/Texture.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/Texture.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09205B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = TextureFormat.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/TextureFormat.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/TextureFormat.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09305B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = TextureManager.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/TextureManager.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/TextureManager.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09405B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = UserInput.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/UserInput.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/UserInput.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09505B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = VAR.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/VAR.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/VAR.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09605B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = VARArea.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/VARArea.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/VARArea.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09705B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = VertexProgram.h;
-			path = /Users/brl/development/g3d/cpp/source/include/GLG3D/VertexProgram.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/GLG3D/VertexProgram.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C09805B0E79F005917B7 = {
 			fileRef = 0F77C07E05B0E79F005917B7;
@@ -511,9 +712,9 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Array.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Array.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Array.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C1B305B0ED8C005917B7 = {
 			fileRef = 0F77C1B205B0ED8C005917B7;
@@ -526,9 +727,9 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = GImage.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/GImage.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/GImage.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C1BA05B0EDAA005917B7 = {
 			fileRef = 0F77C1B905B0EDAA005917B7;
@@ -571,9 +772,9 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = BinaryInput.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/BinaryInput.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/BinaryInput.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C27305B0F000005917B7 = {
 			fileRef = 0F77C27205B0F000005917B7;
@@ -586,189 +787,189 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = BinaryOutput.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/BinaryOutput.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/BinaryOutput.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28005B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Box.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Box.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Box.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28105B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Capsule.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Capsule.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Capsule.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28205B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = CollisionDetection.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/CollisionDetection.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/CollisionDetection.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28305B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Color3.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Color3.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Color3.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28405B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Color3uint8.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Color3uint8.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Color3uint8.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28505B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Color4.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Color4.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Color4.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28605B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Color4uint8.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Color4uint8.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Color4uint8.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28705B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Cone.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Cone.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Cone.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28805B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = ConvexPolyhedron.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/ConvexPolyhedron.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/ConvexPolyhedron.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28905B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = CoordinateFrame.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/CoordinateFrame.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/CoordinateFrame.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28A05B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = debug.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/debug.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/debug.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28B05B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = debugAssert.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/debugAssert.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/debugAssert.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28C05B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = debugPrintf.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/debugPrintf.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/debugPrintf.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28D05B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Discovery.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/Discovery.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/Discovery.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28E05B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = fileutils.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/fileutils.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/fileutils.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C28F05B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = format.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/format.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/format.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C29005B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = g3derror.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/g3derror.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/g3derror.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C29105B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = G3DGameUnits.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/G3DGameUnits.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/G3DGameUnits.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C29205B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = g3dmath.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/g3dmath.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/g3dmath.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C29305B0F033005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = GCamera.h;
-			path = /Users/brl/development/g3d/cpp/source/include/G3D/GCamera.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/include/G3D/GCamera.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C29405B0F033005917B7 = {
 			fileRef = 0F77C27F05B0F033005917B7;
@@ -949,7 +1150,6 @@
 				HEADER_SEARCH_PATHS = ../../source/include/;
 				INFOPLIST_FILE = "Collision_Demo-Info.plist";
 				INSTALL_PATH = "$(USER_APPS_DIR)";
-				OPTIMIZATION_CFLAGS = "";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-lz";
 				OTHER_REZFLAGS = "";
@@ -1010,10 +1210,9 @@
 		0F77C2DE05B0F116005917B7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.xml;
-			name = "Collision_Demo-Info.plist";
-			path = "/Users/brl/development/g3d/cpp/G3DOSX/Collision_Demo-Info.plist";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = "Collision_Demo-Info.plist";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C2F705B0F136005917B7 = {
 			fileRef = 0F897F3505B0BD3A00D50B16;
@@ -1050,72 +1249,72 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = buildScene.cpp;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/buildScene.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/buildScene.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C30C05B0F169005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = main.cpp;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/main.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/main.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C30D05B0F169005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Model.cpp;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/Model.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/Model.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C30E05B0F169005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Model.h;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/Model.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/Model.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C30F05B0F169005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Object.cpp;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/Object.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/Object.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C31005B0F169005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Object.h;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/Object.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/Object.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C31105B0F169005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Scene.cpp;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/Scene.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/Scene.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C31205B0F169005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = Scene.h;
-			path = /Users/brl/development/g3d/cpp/source/demos/Collision_Demo/Scene.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/Collision_Demo/Scene.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F77C31305B0F169005917B7 = {
 			fileRef = 0F77C30B05B0F169005917B7;
@@ -1360,540 +1559,540 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = cderror.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/cderror.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/cderror.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CB605B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = cdjpeg.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/cdjpeg.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/cdjpeg.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CB705B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcapimin.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcapimin.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcapimin.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CB805B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcapistd.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcapistd.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcapistd.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CB905B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jccoefct.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jccoefct.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jccoefct.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CBA05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jccolor.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jccolor.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jccolor.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CBB05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcdctmgr.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcdctmgr.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcdctmgr.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CBC05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jchuff.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jchuff.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jchuff.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CBD05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jchuff.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jchuff.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jchuff.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CBE05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcinit.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcinit.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcinit.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CBF05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcmainct.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcmainct.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcmainct.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC005B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcmarker.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcmarker.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcmarker.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC105B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcmaster.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcmaster.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcmaster.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC205B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcomapi.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcomapi.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcomapi.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC305B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jconfig.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jconfig.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jconfig.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC405B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcparam.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcparam.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcparam.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC505B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcphuff.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcphuff.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcphuff.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC605B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcprepct.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcprepct.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcprepct.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC705B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jcsample.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jcsample.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jcsample.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC805B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jctrans.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jctrans.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jctrans.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CC905B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdapimin.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdapimin.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdapimin.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CCA05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdapistd.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdapistd.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdapistd.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CCB05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdatadst.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdatadst.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdatadst.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CCC05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdatasrc.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdatasrc.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdatasrc.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CCD05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdcoefct.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdcoefct.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdcoefct.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CCE05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdcolor.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdcolor.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdcolor.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CCF05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jdct.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdct.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdct.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD005B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jddctmgr.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jddctmgr.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jddctmgr.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD105B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdhuff.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdhuff.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdhuff.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD205B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jdhuff.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdhuff.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdhuff.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD305B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdinput.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdinput.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdinput.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD405B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdmainct.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdmainct.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdmainct.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD505B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdmarker.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdmarker.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdmarker.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD605B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdmaster.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdmaster.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdmaster.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD705B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdmerge.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdmerge.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdmerge.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD805B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdphuff.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdphuff.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdphuff.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CD905B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdpostct.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdpostct.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdpostct.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CDA05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdsample.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdsample.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdsample.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CDB05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jdtrans.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jdtrans.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jdtrans.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CDC05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jerror.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jerror.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jerror.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CDD05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jerror.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jerror.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jerror.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CDE05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jfdctflt.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jfdctflt.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jfdctflt.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CDF05B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jfdctfst.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jfdctfst.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jfdctfst.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE005B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jfdctint.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jfdctint.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jfdctint.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE105B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jidctflt.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jidctflt.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jidctflt.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE205B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jidctfst.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jidctfst.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jidctfst.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE305B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jidctint.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jidctint.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jidctint.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE405B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jidctred.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jidctred.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jidctred.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE505B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jinclude.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jinclude.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jinclude.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE605B0B11A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jmemansi.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jmemansi.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jmemansi.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE705B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jmemmgr.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jmemmgr.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jmemmgr.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE805B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jmemsys.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jmemsys.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jmemsys.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CE905B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jmorecfg.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jmorecfg.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jmorecfg.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CEA05B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jpegint.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jpegint.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jpegint.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CEB05B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jpeglib.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jpeglib.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jpeglib.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CEC05B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jquant1.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jquant1.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jquant1.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CED05B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jquant2.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jquant2.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jquant2.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CEE05B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			name = jutils.c;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jutils.c;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jutils.c;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CEF05B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = jversion.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/jversion.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/jversion.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CF005B0B11B00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = transupp.h;
-			path = /Users/brl/development/g3d/cpp/source/IJG/transupp.h;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/IJG/transupp.h;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897CF105B0B11B00D50B16 = {
 			fileRef = 0F897CB505B0B11A00D50B16;
@@ -2443,10 +2642,9 @@
 		0F897D8F05B0B1D400D50B16 = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.xml;
-			name = "GLG3D_Demo-Info.plist";
-			path = "/Users/brl/development/g3d/cpp/G3DOSX/GLG3D_Demo-Info.plist";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = "GLG3D_Demo-Info.plist";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897D9205B0B1DD00D50B16 = {
 			containerPortal = 0867D690FE84028FC02AAC07;
@@ -2489,7 +2687,6 @@
 		0F897DCB05B0B22F00D50B16 = {
 			children = (
 				0F77C32605B0F174005917B7,
-				0FBA3F8705B0BEDF005ECF2C,
 				0F897DCF05B0B23300D50B16,
 			);
 			isa = PBXGroup;
@@ -2513,9 +2710,9 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = main.cpp;
-			path = /Users/brl/development/g3d/cpp/source/demos/GLG3D_Demo/main.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/demos/GLG3D_Demo/main.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897DD605B0B26500D50B16 = {
 			fileRef = 0F897DD505B0B26500D50B16;
@@ -2643,26 +2840,25 @@
 		0F897F2105B0BD0200D50B16 = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.xml;
-			name = "SDL_Test-Info.plist";
-			path = "/Users/brl/development/g3d/cpp/G3DOSX/SDL_Test-Info.plist";
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = "SDL_Test-Info.plist";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897F3505B0BD3A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			path = SDLMain.h;
-			refType = 4;
-			sourceTree = "<group>";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897F3605B0BD3A00D50B16 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.objc;
 			path = SDLMain.m;
-			refType = 4;
-			sourceTree = "<group>";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F897F3705B0BD3A00D50B16 = {
 			fileRef = 0F897F3505B0BD3A00D50B16;
@@ -2762,54 +2958,54 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = BinaryOutput.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/BinaryOutput.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/BinaryOutput.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C8705B08B87004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Box.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Box.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Box.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C8805B08B87004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Capsule.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Capsule.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Capsule.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C8905B08B87004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = CollisionDetection.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/CollisionDetection.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/CollisionDetection.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C8A05B08B87004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Color3.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color3.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Color3.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C8B05B08B87004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Color3uint8.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color3uint8.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Color3uint8.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C8C05B08B87004B1E58 = {
 			fileRef = 0F8E5C8605B08B87004B1E58;
@@ -2852,108 +3048,108 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Color4.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color4.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Color4.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9505B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Color4uint8.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color4uint8.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Color4uint8.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9605B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Cone.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Cone.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Cone.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9705B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = ConvexPolyhedron.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/ConvexPolyhedron.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/ConvexPolyhedron.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9805B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = CoordinateFrame.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/CoordinateFrame.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/CoordinateFrame.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9905B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = debugAssert.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/debugAssert.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/debugAssert.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9A05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Discovery.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Discovery.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Discovery.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9B05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = fileutils.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/fileutils.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/fileutils.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9C05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = format.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/format.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/format.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9D05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = g3derror.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/g3derror.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/g3derror.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9E05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = g3dmath.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/g3dmath.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/g3dmath.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5C9F05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = GCamera.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/GCamera.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/GCamera.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA005B08C03004B1E58 = {
 			fileEncoding = 30;
@@ -2969,225 +3165,225 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = GLight.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/GLight.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/GLight.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA205B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Line.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Line.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Line.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA305B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = LineSegment.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/LineSegment.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/LineSegment.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA405B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Log.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Log.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Log.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA505B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Matrix3.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Matrix3.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Matrix3.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA605B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Matrix4.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Matrix4.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Matrix4.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA705B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MeshAlg.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/MeshAlg.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/MeshAlg.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA805B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MeshAlgAdjacency.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/MeshAlgAdjacency.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/MeshAlgAdjacency.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CA905B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MeshAlgWeld.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/MeshAlgWeld.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/MeshAlgWeld.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CAA05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = NetworkDevice.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/NetworkDevice.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/NetworkDevice.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CAB05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = PhysicsFrame.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/PhysicsFrame.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/PhysicsFrame.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CAC05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Plane.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Plane.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Plane.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CAD05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = prompt.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/prompt.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/prompt.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CAE05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Quat.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Quat.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Quat.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CAF05B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Ray.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Ray.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Ray.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB005B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Sphere.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Sphere.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Sphere.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB105B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = stringutils.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/stringutils.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/stringutils.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB205B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = System.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/System.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/System.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB305B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = TextInput.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/TextInput.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/TextInput.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB405B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Triangle.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Triangle.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Triangle.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB505B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Vector2.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector2.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Vector2.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB605B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Vector2int16.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector2int16.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Vector2int16.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB705B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Vector3.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector3.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Vector3.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB805B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Vector3int16.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector3int16.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Vector3int16.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB905B08C03004B1E58 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Vector4.cpp;
-			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector4.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/G3Dcpp/Vector4.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CBA05B08C03004B1E58 = {
 			fileRef = 0F8E5C9405B08C03004B1E58;
@@ -3541,27 +3737,27 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Draw.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Draw.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/Draw.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CEE05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = G3DGameUnits.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/G3DGameUnits.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/G3DGameUnits.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CEF05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = GApp.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/GApp.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/GApp.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF005B09073005402D6 = {
 			fileEncoding = 30;
@@ -3577,171 +3773,171 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = GFont.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/GFont.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/GFont.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF205B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = glcalls.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/glcalls.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/glcalls.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF305B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = glenumtostring.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/glenumtostring.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/glenumtostring.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF505B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = GPUProgram.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/GPUProgram.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/GPUProgram.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF605B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = IFSModel.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/IFSModel.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/IFSModel.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF705B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = LightingParameters.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/LightingParameters.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/LightingParameters.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF805B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = ManualCameraController.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/ManualCameraController.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/ManualCameraController.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CF905B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MD2Model_load.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/MD2Model_load.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/MD2Model_load.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CFA05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MD2Model.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/MD2Model.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/MD2Model.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CFB05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Milestone.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Milestone.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/Milestone.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CFC05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = PixelProgram.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/PixelProgram.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/PixelProgram.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CFD05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = PosedModel.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/PosedModel.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/PosedModel.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CFE05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = RenderDevice.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/RenderDevice.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/RenderDevice.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15CFF05B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = shadowVolume.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/shadowVolume.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/shadowVolume.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15D0005B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Sky.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Sky.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/Sky.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15D0105B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = tesselate.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/tesselate.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/tesselate.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15D0205B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Texture.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Texture.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/Texture.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15D0305B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = TextureFormat.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/TextureFormat.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/TextureFormat.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15D0405B09073005402D6 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = TextureManager.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/TextureManager.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/TextureManager.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15D0505B09073005402D6 = {
 			fileEncoding = 30;
@@ -3775,9 +3971,9 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = VertexProgram.cpp;
-			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/VertexProgram.cpp;
-			refType = 0;
-			sourceTree = "<absolute>";
+			path = ../source/GLG3Dcpp/VertexProgram.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FA15D0905B09073005402D6 = {
 			fileRef = 0FA15CED05B09073005402D6;
@@ -4010,8 +4206,8 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			path = sdl_test.cpp;
-			refType = 4;
-			sourceTree = "<group>";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		0FBA3F7C05B0BED2005ECF2C = {
 			fileRef = 0FBA3F7B05B0BED2005ECF2C;
@@ -4026,6 +4222,7 @@
 			);
 			isa = PBXGroup;
 			name = SDL_Test;
+			path = "";
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -4077,6 +4274,7 @@
 //324
 		32C88DFF0371C24200C91783 = {
 			children = (
+				0F1C59E805B1E31F0024376D,
 				0F77C1B205B0ED8C005917B7,
 				0F77C27205B0F000005917B7,
 				0F77C27F05B0F033005917B7,
@@ -4101,6 +4299,7 @@
 				0F77C29205B0F033005917B7,
 				0F77C29305B0F033005917B7,
 				0F77C1B905B0EDAA005917B7,
+				0F1C59EE05B1E32C0024376D,
 				0F8E5C7F05B08A99004B1E58,
 				0F8E5C8605B08B87004B1E58,
 				0F8E5C8705B08B87004B1E58,
@@ -4189,6 +4388,7 @@
 				0F77C2A605B0F033005917B7,
 				0F77C2A705B0F033005917B7,
 				0F77C2A805B0F033005917B7,
+				0F1C59E905B1E3200024376D,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4241,6 +4441,7 @@
 				0F8E5CDD05B08C03004B1E58,
 				0F8E5CDE05B08C03004B1E58,
 				0F8E5CDF05B08C03004B1E58,
+				0F1C59EF05B1E32C0024376D,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
