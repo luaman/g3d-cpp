@@ -627,6 +627,7 @@ bool RenderDevice::init(
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POINT_SMOOTH);
     //glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
+    glEnable(GL_NORMALIZE);
 
     if (debugLog) debugLog->println("Setting initial rendering state.\n");
     glDisable(GL_LIGHT0);

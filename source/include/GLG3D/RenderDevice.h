@@ -57,8 +57,6 @@ public:
 };
 
 
-
-
 /**
  You must call RenderDevice::init() before using the RenderDevice.
   
@@ -78,6 +76,8 @@ public:
  <P> NICEST line and point smoothing is enabled by default (however,
  you need to set your alpha blending mode to see it).
 
+ <P> glEnable(GL_NORMALIZE) is set by default.
+
 
  <P>
  Example
@@ -86,7 +86,7 @@ public:
    renderDevice->init(width, height);
   </PRE>
 
- RenderDevice requires SDL and OpenGL.
+ RenderDevice requires SDL and OpenGL.  
 
   <P>
   Example 2 (textured quad)

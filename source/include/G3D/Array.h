@@ -314,9 +314,19 @@ public:
 
     /**
      Add an element to the end of the array.  Will not shrink the underlying array
-     under any circumstances.
+     under any circumstances.  It is safe to append an element that is already
+     in the array.
      */
     inline void append(const T& value) {
+        /*
+        if (num < numAllocated) {
+            // This is a simple situation; just stick it in the next free slot using
+            // the copy constructor.
+            new (data + num) T(value);
+            ++num;
+        } else 
+            */
+            
         if (inArray(&value)) {
             // The value was in the original array; resizing
             // is dangerous because it may move the value
@@ -329,6 +339,7 @@ public:
         }
     }
 
+
     inline void append(const T& v1, const T& v2) {
         if (inArray(&v1) || inArray(&v2)) {
             T t1 = v1;
@@ -340,6 +351,7 @@ public:
             data[num - 1] = v2;
         }
     }
+
 
     inline void append(const T& v1, const T& v2, const T& v3) {
         if (inArray(&v1) || inArray(&v2) || inArray(&v3)) {
@@ -386,7 +398,8 @@ public:
     }
 
    /**
-    Append the elements of array.
+    Append the elements of array.  Cannot be called with this array
+    as an argument.
     */
    void append(const Array<T>& array) {
        debugAssert(this != &array);
@@ -398,6 +411,15 @@ public:
        for (int i = 0; i < arrayLength; i++) {
            data[oldNum + i] = array.data[i];
        }
+   }
+
+   /**
+    Pushes a new element onto the end and returns its address.
+    This is the same as A.resize(A.size() + 1); A.last()
+    */
+   inline T& next() {
+       resize(num + 1);
+       return last();
    }
 
    /**

@@ -618,6 +618,9 @@
 
    <P>
    <UL>
+     <LI> RenderDevice enables GL_NORMALIZE by default
+     <LI> Improved the performance of Array::append/Array::push/Array::next
+     <LI> Array::next
      <LI> Array::reverse
      <LI> PCX file loading
      <LI> Test images
