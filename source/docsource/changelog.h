@@ -31,10 +31,11 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> All files used during current execution are available via G3D::getFiles() [Corey]
      <LI> Implemented OSX version of glGetCurrentContext with CGL. [Corey + Derek]
      <LI> ReferenceCountedObject is-in-heap checks were removed to allow better multiple and virtual inheritance for reference counted objects.  ReferenceCountedPointer still appropriately checks does an is-in-heap check on assignment. [Corey]
      <LI> Added Dev C++ support
-     <LI> Changed GLight== to not use memcpy (was causing issues due to byte padding on some compilers)
+     <LI> Changed GLight == operator to not use memcpy (was causing issues due to byte padding on some compilers)
      <LI> Made CoordinateFrame destructor non-virtual (eliminates vtable)
      <LI> Added new FAQ documentation
      <LI> Added support to G3D::BinaryInput and G3D::BinaryOutput 
