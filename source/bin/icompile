@@ -40,13 +40,14 @@
 
 
 
-version = [0, 3, 0]
+version = [0, 3, 1]
 import sys, string, os, os.path, fileinput, tempfile, shutil, re
 import commands, pickle, time, ConfigParser
 from string import ljust
 
 if int(sys.version[:string.find(sys.version, '.')]) < 2:
-    print "iCompile requires Python 2.0 or later.  You are running Python " + sys.version
+    print ('iCompile requires Python 2.0 or later.  You are running Python '
+           + sys.version)
     sys.exit(-10)
 
 
@@ -393,8 +394,8 @@ def rm(file):
 ##############################################################################
 
 """ Runs a program and returns a string of its output. """
-def shell(cmd):
-    maybeColorPrint(cmd, COMMAND_COLOR)
+def shell(cmd, printCmd = True):
+    if printCmd: maybeColorPrint(cmd, COMMAND_COLOR)
     return commands.getoutput(cmd)
 
 
@@ -710,7 +711,7 @@ def copyIfNewer(source, dest):
         # children and executes the 2nd argument on them.  
         os.path.walk(source, _copyIfNewerVisit, [len(source), dest])
 
-    if not _copyIfNewerCopiedAnything:
+    if not _copyIfNewerCopiedAnything and not quiet:
         print dest + ' is up to date with ' + source
     
 """
@@ -836,9 +837,7 @@ def listCFilesVisitor(result, dirname, files):
     removelist = [];
     for f in files:
          if (excludeFromCompilation.search(f) != None):
-            if verbose:
-                print "  Ignoring '" + f + "'"
-                
+            if verbose: print "  Ignoring '" + f + "'"
             removelist.append(f)
             
          elif isCFile(f):
@@ -859,8 +858,7 @@ def listCFilesVisitor(result, dirname, files):
 Filenames must be relative to the "rootDir" directory.  dir will be
 a subdirectory of rootDir."""
 def listCFiles(dir = ''):
-    if (dir == ''):
-        dir = './'
+    if (dir == ''): dir = './'
 
     result = []
 
@@ -869,14 +867,12 @@ def listCFiles(dir = ''):
 
 """ Non-recursiver version of listCFiles. (not actually used) """
 def flatListCFiles(dir = ''):
-    if (dir == ''):
-        dir = './'
+    if (dir == ''): dir = './'
 
     all = os.listdir(dir)
     cfiles = []
     for f in all:
-        if isCFile(f):
-            cfiles.append(dir + f)
+        if isCFile(f): cfiles.append(dir + f)
 
     return cfiles
 
@@ -994,9 +990,8 @@ def loadCache(filename):
             if verbose:
                 print "Internal iCompile cache at " + filename + " corrupted."
 
-        if verbose:
-            print "cache = "
-            print cache
+        if verbose: print "cache = ", cache
+
 
         file.close()
     else:
@@ -1326,23 +1321,22 @@ def buildClean():
    of the compiler command.
    """
 def getDependencies(file, opt):
-
-    raw = shell(compilerName() + " --depend " + opt + " " + file)
+    raw = shell(compilerName() + " --depend " + opt + " " + file, verbose)
     
     result = []
-    for eachLine in string.split(raw, " \\\n  "):
-        result += string.split(eachLine, " ")
+    for eachLine in string.split(raw, ' \\\n  '):
+        result += string.split(eachLine, ' ')
 
     # The first element of result will be "file:", so strip it
     files = result[1:]
     result = []
 
-    # Add the "./" to raw files
+    # Add the './' to raw files
     for f in files:
-        if "/" in f:
+        if '/' in f:
             result.append(f)
         else:
-            result.append("./" + f)
+            result.append('./' + f)
 
     return result
 
@@ -1358,9 +1352,6 @@ def getDependencies(file, opt):
 """
 def getDependencyInformation():
     
-    if verbose:
-        maybePrint('\nComputing dependencies\n')
-
     # Hash table mapping C files to the list of all files
     # on which they depend.
     dependencies = {}
@@ -1373,10 +1364,7 @@ def getDependencyInformation():
     # Find all the c files
     allCFiles = listCFiles(rootDir)
 
-    if verbose:
-        print "Source files found:"
-        print allCFiles
-        print
+    if verbose: print 'Source files found:', allCFiles
 
     # Get the compiler options that will be needed for them.
     # Do not use warning or verbose options for this; they
@@ -1389,8 +1377,7 @@ def getDependencyInformation():
         dlist = getDependencies(cfile, opt)
 
         # Update the dependency set
-        for d in dlist:
-            dependencySet[d] = 1
+        for d in dlist: dependencySet[d] = 1
  
         dependencies[cfile] = dlist
     
@@ -1708,20 +1695,20 @@ def makeStaticLibrary(ofiles):
 def makeExecutable(ofiles, options):
     # Link
     opt = (string.split(options) +
-           ["-o", binaryDir + binaryName] +
+           ['-o', binaryDir + binaryName] +
             ofiles)
 
-    colorPrint('Linking...', SECTION_COLOR)
+    if not quiet: colorPrint('Linking...', SECTION_COLOR)
     ret = run(compilerName(), opt)
 
     if ret != 0:
         sys.exit(ret)
     else:
         if (stripDebugSymbols):
-            opt = ["-g"]
+            opt = ['-g']
             #if (verbose): opt += ["-v"]
             opt += [binaryDir + binaryName]
-	    run("strip", opt)
+	    run('strip', opt)
 
 #########################################################################
 
@@ -1732,7 +1719,7 @@ def buildBinary():
     # Create the temp directory for object files
     mkdir(objDir)
 
-    maybeColorPrint('Computing dependencies...', SECTION_COLOR)
+    if verbose: colorPrint('Computing dependencies...', SECTION_COLOR)
     (cfiles, dependencies, files) = getDependencyInformation()
 
     if verbose:
@@ -1936,8 +1923,9 @@ def runCompile(args, progArgs):
 def checkForProjectFile(args):
     # Assume default project file
     projectFile = 'ice.txt'
-    if os.path.exists(projectFile):
-        return
+    if os.path.exists(projectFile): return
+
+    # Everything below here executs only when there is no project file
 
     if ('--clean' in args) and not os.path.exists('_build'):
         print
@@ -1961,7 +1949,6 @@ def checkForProjectFile(args):
         colorPrint('You have never run iCompile in this directory before.',
                    WARNING_COLOR)
     print
-
     print '  Current Directory: ' + os.getcwd()
     
     cfiles = flatListCFiles()
@@ -2017,15 +2004,13 @@ def checkForProjectFile(args):
 """
 def setVariables(args):
     global rootDir, projectName, binaryType, verbose, target
-    global binaryName, binaryDir, objDir, quiet
+    global binaryName, binaryDir, objDir
 
     # Root directory
     rootDir                    = os.getcwd() + "/"
 
     # Project name
     projectName                = string.split(rootDir, ('/'))[-2]
-
-    quiet                      = ('--quiet' in args) or ('-q' in args)
 
     ext = string.lower(_extname(projectName))
     projectName = _rawfilename(projectName)
@@ -2208,8 +2193,8 @@ def processProjectFile(args):
     exclude = configGet(config, 'GLOBAL', 'exclude', False)
     excludeFromCompilation = re.compile(exclude)
 
-    if not quiet:
-        quiet = (configGet(config, 'GLOBAL', 'quiet', True) == 'True')
+    quiet = ((configGet(config, 'GLOBAL', 'quiet', True) == 'True') or
+             ('--quiet' in args) or ('-q' in args))
 
 
 def includePaths():
