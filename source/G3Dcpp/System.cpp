@@ -81,6 +81,7 @@ std::string demoFindData(bool errorIfNotFound) {
         potential.append(std::string("c:/") + lpath);
         potential.append(std::string("d:/") + lpath);
         potential.append(std::string("g:/") + lpath);
+        potential.append(std::string("x:/") + lpath);
         potential.append(std::string("c:/users/morgan/data/"));
     #else
         potential.append(std::string("/course/cs224/") + lpath);
