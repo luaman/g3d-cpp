@@ -509,7 +509,7 @@ bool RenderDevice::init(
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
     if (vendor == NVIDIA) {
         glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
-        _numTextureCoords = iMin(MAX_TEXTURE_UNITS, _numTextureCoords);
+        _numTextureCoords = iMin(MAX_TEXTURE_UNITS, iMax(_numTextureUnits, _numTextureCoords));
     } else {
         _numTextureCoords = _numTextureUnits;
     }
