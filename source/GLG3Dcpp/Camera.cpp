@@ -49,7 +49,7 @@ void Camera::setProjectionAndCameraMatrix() const {
     double pixelAspect = viewport[2] / viewport[3];
 
     double y = nearPlane * tan(fieldOfView / 2);
-    double x = y / pixelAspect;
+    double x = y * pixelAspect;
 
     double r, l, t, b, n, f;
     n = nearPlane;
@@ -59,7 +59,7 @@ void Camera::setProjectionAndCameraMatrix() const {
     t = y;
     b = -y;
 
-    renderDevice->setProjectionMatrix3D(l, r, b, t, n, f);
+    renderDevice->setProjectionMatrix(Matrix4::perspectiveProjection(l, r, b, t, n, f));
 	renderDevice->setCameraToWorldMatrix(cframe);
 }
 

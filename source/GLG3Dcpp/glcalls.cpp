@@ -113,7 +113,8 @@ void glMultMatrix(const CoordinateFrame &cf) {
 
 /**
  Takes an object space point to screen space using the current MODELVIEW and
- PROJECTION matrices. The resulting xy values are in <B>pixels</B>, the z 
+ PROJECTION matrices. The resulting xy values are in <B>pixels</B> and
+ are relative to the viewport origin, the z 
  value is on the glDepthRange scale, and the w value contains rhw (-1/z for
  camera space z), which is useful for scaling line and point size.
  */

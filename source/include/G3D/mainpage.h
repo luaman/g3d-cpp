@@ -287,7 +287,7 @@
    Unzip all of the files in the distribution to your
    library directory (e.g. <CODE>c:\\libraries</CODE>).
 
-   <LI>Download and install the latest version of SDL from
+   <LI>Download and install SDL <B>version 1.2.5</B> from
    <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>.
 
    <LI>Ensure that you are using MSVC++ 6.0 with Service Pack 5 and
@@ -373,7 +373,7 @@
           height      <I>height maps</I>
           ifs         <I>3D models (see IFS_Demo for loading code)</I>
           sky         <I>Images for use with G3D::Sky</I>
-          font        <I>Fonts for use with G3D::Font</I>
+          font        <I>Fonts for use with G3D::CFont</I>
      </PRE>
 
    <HR>

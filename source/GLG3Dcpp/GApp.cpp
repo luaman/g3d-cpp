@@ -197,7 +197,6 @@ void GApplet::run() {
         // Graphics
         app->renderDevice->beginFrame();
             app->renderDevice->pushState();
-                app->debugCamera->setProjectionAndCameraMatrix();
                 doGraphics();
             app->renderDevice->popState();
             app->renderDevice->pushState();

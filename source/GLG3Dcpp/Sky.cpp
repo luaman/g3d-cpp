@@ -161,17 +161,18 @@ static void drawCelestialSphere(
 }
 
 
-static void infiniteProjectionMatrix(RenderDevice* renderDevice) {
-    double l,r,t,b,n,f;
-    bool is3D;
+static void hackProjectionMatrix(RenderDevice* renderDevice) {
 
-    renderDevice->getProjectionMatrixParams(l,r,t,b,n,f,is3D);
-    
-    if (is3D) {
-        renderDevice->setProjectionMatrix3D(l,r,t,b,n,inf);
-    } else {
-        renderDevice->setProjectionMatrix2D(l,r,t,b,n,inf);
-    }
+    Matrix4 P = renderDevice->getProjectionMatrix();
+
+    // Set the 3rd row so the depth always is in the middle of the depth range.
+
+    P[3][0] = 0;
+    P[3][1] = 0;
+    P[3][2] = -0.5;
+    P[3][3] = 0;
+
+    renderDevice->setProjectionMatrix(P);
 }
 
 
@@ -381,8 +382,8 @@ void Sky::render(
     renderDevice->resetTextureUnit(0);
     renderBox();
 
-    infiniteProjectionMatrix(renderDevice);
-
+    // Ignore depth, make sure we're not clipped by the far plane
+    hackProjectionMatrix(renderDevice);
    
     // Draw the moon
     {
@@ -500,7 +501,7 @@ void Sky::renderLensFlare(
                 // We need to switch to an infinite projection matrix to draw the flares.
                 // Note that we must make this change *after* the depth buffer values have
                 // been read back.
-                infiniteProjectionMatrix(renderDevice);
+                hackProjectionMatrix(renderDevice);
 
                 renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 

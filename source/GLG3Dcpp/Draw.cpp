@@ -59,18 +59,20 @@ void Draw::axes(
     const double xx = -3;
     const double yy = xx * 1.4;
 
+    // Project the 3D locations of the labels
     Vector4 xc2D = renderDevice->project(c + x * 1.1);
     Vector4 yc2D = renderDevice->project(c + y * 1.1);
     Vector4 zc2D = renderDevice->project(c + z * 1.1);
 
     // If coordinates are behind the viewer, transform off screen
-    Vector2 x2D = (xc2D.z > 0) ? xc2D.xy() : Vector2(-1000, -1000);
-    Vector2 y2D = (yc2D.z > 0) ? yc2D.xy() : Vector2(-1000, -1000);
-    Vector2 z2D = (zc2D.z > 0) ? zc2D.xy() : Vector2(-1000, -1000);
+    Vector2 x2D = (xc2D.w > 0) ? xc2D.xy() : Vector2(-2000, -2000);
+    Vector2 y2D = (yc2D.w > 0) ? yc2D.xy() : Vector2(-2000, -2000);
+    Vector2 z2D = (zc2D.w > 0) ? zc2D.xy() : Vector2(-2000, -2000);
 
-    double xS = (xc2D.z > 0) ? clamp(10 * xc2D.w, .1, 5) : 0;
-    double yS = (yc2D.z > 0) ? clamp(10 * yc2D.w, .1, 5) : 0;
-    double zS = (zc2D.z > 0) ? clamp(10 * zc2D.w, .1, 5) : 0;
+    // Compute the size of the labels
+    double xS = (xc2D.w > 0) ? clamp(10 * xc2D.w, .1, 5) : 0;
+    double yS = (yc2D.w > 0) ? clamp(10 * yc2D.w, .1, 5) : 0;
+    double zS = (zc2D.w > 0) ? clamp(10 * zc2D.w, .1, 5) : 0;
 
     renderDevice->push2D();
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);

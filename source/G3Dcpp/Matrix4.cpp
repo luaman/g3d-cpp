@@ -28,7 +28,7 @@ Matrix4::Matrix4(const class CoordinateFrame& cframe) {
 }
 
 
-Matrix4 Matrix4::orthogonalProjectionMatrix(
+Matrix4 Matrix4::orthogonalProjection(
     double            left,
     double            right,
     double            bottom,
@@ -55,7 +55,7 @@ Matrix4 Matrix4::orthogonalProjectionMatrix(
 }
 
 
-Matrix4 Matrix4::perspectiveProjectionMatrix(
+Matrix4 Matrix4::perspectiveProjection(
     double left,    
     double right,
     double bottom,  

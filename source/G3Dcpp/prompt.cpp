@@ -315,9 +315,16 @@ INT_PTR CALLBACK PromptDlgProc(HWND hDlg, UINT msg,
       }
 
       break;
+
+    case WM_NCDESTROY:
+        // Under SDL 1.2.6 we get a NCDESTROY message for no reason and the
+        // window is immediately closed.  This is here to debug the problem.
+        {int x = 1;}
+        break;
+
     }
 
-  return FALSE;
+    return FALSE;
 }
 
 }; // namespace _internal
@@ -369,7 +376,46 @@ static int guiPrompt(
     params.message  = prompt;
     params.title    = windowTitle;
 
-    return DialogBoxIndirectParam(GetModuleHandle(0), dialogTemplate, NULL, (DLGPROC) PromptDlgProc, (DWORD)&params);
+    HMODULE module = GetModuleHandle(0);
+    int ret = DialogBoxIndirectParam(module, dialogTemplate, NULL, (DLGPROC) PromptDlgProc, (DWORD)&params);
+
+
+    /*
+     For debugging when DialogBoxIndirectParam fails:
+
+        // The last error value.  (Which is preserved across the call).
+        DWORD lastErr = GetLastError();
+    
+        // The decoded message from FormatMessage
+        LPTSTR formatMsg = NULL;
+
+        if (NULL == formatMsg) {
+            FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                          FORMAT_MESSAGE_IGNORE_INSERTS |
+                          FORMAT_MESSAGE_FROM_SYSTEM,
+                            NULL,
+                            lastErr,
+                            0,
+                            (LPTSTR)&formatMsg,
+                            0,
+                            NULL);
+        }
+
+        // Make sure the message got translated into something.
+        LPTSTR realLastErr;
+        if (NULL != formatMsg) {
+            realLastErr = formatMsg;
+        } else {
+            realLastErr = "Last error code does not exist.";
+        }
+
+        // Get rid of the allocated memory from FormatMessage.
+        if (NULL != formatMsg) {
+            LocalFree((LPVOID)formatMsg);
+        }
+        */
+
+    return ret;
 }
 
 #endif

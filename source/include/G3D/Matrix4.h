@@ -48,7 +48,7 @@ public:
     /**
      Constructs an orthogonal projection matrix from the given parameters.
      */
-    static Matrix4 orthogonalProjectionMatrix(
+    static Matrix4 orthogonalProjection(
         double            left,
         double            right,
         double            bottom,
@@ -56,7 +56,7 @@ public:
         double            nearval,
         double            farval);
 
-    static Matrix4 perspectiveProjectionMatrix(
+    static Matrix4 perspectiveProjection(
         double            left,
         double            right,
         double            bottom,

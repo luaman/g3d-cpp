@@ -10,9 +10,11 @@ class Demo : public GApplet {
 public:
 
     TextureRef          tex;
+    SkyRef              sky;
 
     Demo(GApp* app) : GApplet(app) {
         tex = Texture::fromFile(app->dataDir + "image/lena.tga");
+        sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
     }
 
     virtual void doLogic();
@@ -32,12 +34,14 @@ void Demo::doLogic() {
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
-    app->renderDevice->setViewport(Rect2D(0, 0, 400, 600));
+    app->renderDevice->setViewport(Rect2D(100, 0, 400, 600));
+    app->debugCamera->setProjectionAndCameraMatrix();
 
     // Cyan background
-	glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
-
+    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
     app->renderDevice->clear(true, true, true);
+
+    sky->render(lighting);
 
     // Setup lighting
     app->renderDevice->enableLighting();
@@ -49,12 +53,7 @@ void Demo::doGraphics() {
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
     Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
-
-    Vector3 nnear(0,0,0);
-    Vector4 ffar(0,0,-1,0);
-    Vector4 v = app->renderDevice->project(nnear);
-    app->debugPrintf(v.toString().c_str());
-
+        
     glDisable(GL_LIGHT0);
     app->renderDevice->disableLighting();
     
@@ -85,13 +84,18 @@ int main(int argc, char** argv) {
 
     GAppSettings settings;
     settings.window.fsaaSamples = 1;
-    settings.window.resizable = true;
-    settings.window.width  = 640;
-    settings.window.height = 480;
+    settings.window.resizable = false;
+    settings.window.width  = 800;
+    settings.window.height = 600;
 
- 
     GApp app(settings);
 
+    char* choice[] = {"Ok"}; 
+    prompt("Test", "Test", (const char**)choice, 1);
+
+
+
+    debugAssert(false);
     app.setDebugMode(true);
     app.debugController->setActive(true);
 

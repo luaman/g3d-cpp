@@ -601,50 +601,11 @@ public:
 
 
     /**
-     Equivalent to glFrustum. A reasonable way to compute values is:
-
-     <PRE>
-        double pixelAspect = device->getWidth() / (double)device->getHeight();
-        double y = nearPlane * tan(fieldOfView / 2);
-        double x = y * pixelAspect;
-        device->setProjectionMatrix3D(-x, x, -y, y, nearPlane, farPlane);
-     </PRE>
-
-     Some reasonable values are:
-     <PRE>
-      device->setProjectionMatrix3D(-.2, .2, -.15, .15, .2, 200);
-     </PRE>
-
-     The f value may be infinite (inf)
+    To set a typical 3D perspective matrix, use either
+     <CODE>renderDevice->setProjectionMatrix(Matrix4::perspectiveProjection(...)) </CODE>
+     or call Camera::setCameraAndProjectionMatrix.
      */
-    void setProjectionMatrix3D(
-        double l,
-        double r,
-        double b,
-        double t,
-        double n,
-        double f);
-
-    /** Returns the current projection matrix parameters.  Is3D is true
-        if this is a perspective projection matrix (i.e. setProjectionMatrix3D was called 
-        to create it). */
-    void getProjectionMatrixParams(
-        double& l,
-        double& r,
-        double& b,
-        double& t,
-        double& n,
-        double& f,
-        bool&   is3D);
-
-
-    void setProjectionMatrix2D(
-        double l,
-        double r,
-        double b,
-        double t,
-        double n,
-        double f);
+    void setProjectionMatrix(const Matrix4& P);
 
     /**
      m is a 16-element matrix in row major order for multiplying
@@ -1011,15 +972,8 @@ private:
         CoordinateFrame             objectToWorldMatrix;
         CoordinateFrame             cameraToWorldMatrix;
 
-        /**
-         LRBTNF
-         */
-        double                      projectionMatrixParams[6];
+        Matrix4                     projectionMatrix;
 
-        /**
-         When true, the projection matrix is 3D
-         */
-        bool                        proj3D;
         RenderState(int width = 1, int height = 1);
 
     };

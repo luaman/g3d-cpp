@@ -132,7 +132,7 @@ void doSimulation(GameTime timeStep) {
 
 
 void doGraphics() {
-    renderDevice->setAmbientLightLevel(Color3::WHITE * .5);
+    renderDevice->setAmbientLightColor(Color3::WHITE * .5);
     renderDevice->beginFrame();
         renderDevice->clear(true, true, true);
         renderDevice->pushState();

@@ -885,15 +885,8 @@ void RenderDevice::setVideoMode() {
         glClearDepth(1);
         glClearColor(0,0,0,1);
         glMatrixMode(GL_PROJECTION);
-
-        Matrix4 P = Matrix4::perspectiveProjectionMatrix(
-            state.projectionMatrixParams[0],
-            state.projectionMatrixParams[1],
-            state.projectionMatrixParams[2], 
-            state.projectionMatrixParams[3],
-            state.projectionMatrixParams[4],
-            state.projectionMatrixParams[5]);
-        glLoadMatrix(P);
+        glLoadMatrix(state.projectionMatrix);
+        glMatrixMode(GL_MODELVIEW);
 
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -1034,7 +1027,7 @@ void RenderDevice::push2D(const Rect2D& viewport) {
     setCullFace(CULL_NONE);
     disableDepthWrite();
     setViewport(viewport);
-    setProjectionMatrix2D(viewport.x, viewport.width - 1, viewport.height - 1, viewport.y, -1, 1); 
+    setProjectionMatrix(Matrix4::orthogonalProjection(viewport.x, viewport.x + viewport.width - 1, viewport.y + viewport.height - 1, viewport.y, -1, 1));
 }
 
 
@@ -1094,13 +1087,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     double aspect;
     aspect = (double)viewport.width / viewport.height;
 
-    proj3D                      = true;
-    projectionMatrixParams[0]   = -aspect;
-    projectionMatrixParams[1]   = aspect;
-    projectionMatrixParams[2]   = -1.0;
-    projectionMatrixParams[3]   = 1.0;
-    projectionMatrixParams[4]   = 0.1;
-    projectionMatrixParams[5]   = 100.0;
+    projectionMatrix = Matrix4::perspectiveProjection(-aspect, aspect, -1, 1, 0.1, 100.0);
 
     cullFace                    = CULL_BACK;
 
@@ -1227,11 +1214,7 @@ void RenderDevice::setState(
     setDepthClearValue(newState.depthClear);
     setColorClearValue(newState.colorClear);
 
-    if (newState.proj3D) {
-        setProjectionMatrix3D(newState.projectionMatrixParams[0], newState.projectionMatrixParams[1], newState.projectionMatrixParams[2], newState.projectionMatrixParams[3], newState.projectionMatrixParams[4], newState.projectionMatrixParams[5]);
-    } else {
-        setProjectionMatrix2D(newState.projectionMatrixParams[0], newState.projectionMatrixParams[1], newState.projectionMatrixParams[2], newState.projectionMatrixParams[3], newState.projectionMatrixParams[4], newState.projectionMatrixParams[5]);
-    }
+    setProjectionMatrix(newState.projectionMatrix);
 
     setCullFace(newState.cullFace);
 
@@ -1934,25 +1917,7 @@ CoordinateFrame RenderDevice::getCameraToWorldMatrix() const {
 
 
 Matrix4 RenderDevice::getProjectionMatrix() const {
-        
-    double l,r,b,t,n,f;
-    l = state.projectionMatrixParams[0];
-    r = state.projectionMatrixParams[1];
-    b = state.projectionMatrixParams[2];
-    t = state.projectionMatrixParams[3];
-    n = state.projectionMatrixParams[4];
-    f = state.projectionMatrixParams[5];
-
-
-    Matrix4 P;
-    
-    if (state.proj3D) {
-        P = Matrix4::perspectiveProjectionMatrix(l,r,b,t,n,f);
-    } else {
-        P = Matrix4::orthogonalProjectionMatrix(l,r,b,t,n,f);
-    }
-
-    return P;
+    return state.projectionMatrix;
 }
 
 
@@ -1966,53 +1931,12 @@ Matrix4 RenderDevice::getModelViewProjectionMatrix() const {
 }
 
 
-void RenderDevice::setProjectionMatrix3D(
-    double l,
-    double r,
-    double b,
-    double t,
-    double n,
-    double f) {
-    debugAssert(! inPrimitive);
-
-    double params[] = {l,r,b,t,n,f};
-
-    if ((! state.proj3D) ||
-        (memcmp(state.projectionMatrixParams, params, sizeof(double) * 6))) {
-
-        Matrix4 P = Matrix4::perspectiveProjectionMatrix(l,r,b,t,n,f);
+void RenderDevice::setProjectionMatrix(const Matrix4& P) {
+    if (state.projectionMatrix != P) {
+        state.projectionMatrix = P;
         glMatrixMode(GL_PROJECTION);
         glLoadMatrix(P);
-
-        memcpy(state.projectionMatrixParams, params, sizeof(double) * 6);
-        state.proj3D = true;
-
-    }
-}
-
-
-void RenderDevice::setProjectionMatrix2D(
-    double l,
-    double r,
-    double b,
-    double t,
-    double n,
-    double f) {
-
-    debugAssert(! inPrimitive);
-    
-    double params[] = {l,r,b,t,n,f};
-
-    if ((state.proj3D) ||
-        (memcmp(state.projectionMatrixParams, params, sizeof(double) * 6))) {
-
-        Matrix4 P = Matrix4::orthogonalProjectionMatrix(l,r,b,t,n,f);
-        glMatrixMode(GL_PROJECTION);
-        glLoadMatrix(P);
-
-        memcpy(state.projectionMatrixParams, params, sizeof(double) * 6);
-        state.proj3D = false;
-
+        glMatrixMode(GL_MODELVIEW);
     }
 }
 
@@ -2532,26 +2456,6 @@ static void drawCylinder(RenderDevice* device, const Vector3& v0, const Vector3&
             }
         device->endPrimitive();
     }
-}
-
-
-
-void RenderDevice::getProjectionMatrixParams(
-    double& l,
-    double& r,
-    double& b,
-    double& t,
-    double& n,
-    double& f,
-    bool&   is3D) {
-
-    l = state.projectionMatrixParams[0];
-    r = state.projectionMatrixParams[1];
-    b = state.projectionMatrixParams[2];
-    t = state.projectionMatrixParams[3];
-    n = state.projectionMatrixParams[4];
-    f = state.projectionMatrixParams[5];
-    is3D = state.proj3D;
 }
 
 
