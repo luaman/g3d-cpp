@@ -111,7 +111,10 @@ static void createTexture(
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
     case GL_TEXTURE_2D:
         if (! isPow2(width) || ! isPow2(height)) {
-            
+
+            alwaysAssertM((compressed),
+                "Compressed texture data must be power-of-two size.");
+
             // Supported formats as defined by: http://developer.3dlabs.com/openGL/glu_man_pages.pdf
             alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
                 (bytesFormat == GL_STENCIL_INDEX) ||
@@ -154,7 +157,7 @@ static void createTexture(
         if (compressed) {
             
             alwaysAssertM((target == GL_TEXTURE_RECTANGLE_EXT),
-                "Compressed texture data must be power-of-two size or loaded into a DIM_2D_RECT texture.");
+                "Compressed texture data must be loaded into a DIM_2D texture.");
 
             glCompressedTexImage2DARB(target, 0, textureFormat, width, height, 0, (bytesPerPixel * width * height), rawBytes);
             break;
