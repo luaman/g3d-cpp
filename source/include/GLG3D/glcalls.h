@@ -19,6 +19,10 @@
 #include "G3D/platform.h"
 #include "GLG3D/glheaders.h"
 
+#if defined(G3D_OSX)
+#include <mach-o/dyld.h>
+#endif
+
 namespace G3D {
 
 /**
@@ -174,9 +178,33 @@ void glMultMatrix(const CoordinateFrame& cf);
 /** platform independent version of wglGetProcAddress */
 inline void * glGetProcAddress(const char * name){
     #ifdef G3D_WIN32
-	    return (void *) wglGetProcAddress(name);
+	    return (void *)wglGetProcAddress(name);
+    #elif G3D_LINUX
+	    return (void *)glXGetProcAddressARB((const GLubyte*)name);
+    #elif defined(G3D_OSX)
+         /* This code is from Apple's tech note QA1188.
+	    Apple states that this can be called from Cocoa
+	    or Carbon applications, as long as they use Mach-O
+	    executable rather than CFM.  G3D certainly used
+	    Mach-O.
+	 */
+
+	    NSSymbol symbol;
+	    char *symbolName;
+
+	    // Prepend a '_' for the Unix C symbol mangling convention
+	    symbolName = malloc (strlen (name) + 2);
+	    strcpy(symbolName + 1, name);
+	    symbolName[0] = '_';
+	    symbol = NULL;
+	    
+	    if (NSIsSymbolNameDefined (symbolName))
+		symbol = NSLookupAndBindSymbol (symbolName);
+	    free (symbolName);
+	    
+	    return symbol ? NSAddressOfSymbol (symbol) : NULL;
     #else
-	    return (void *) glXGetProcAddressARB((const GLubyte*)name);
+    #error Must be WIN32, Linux or OS X. 
     #endif
 }
 

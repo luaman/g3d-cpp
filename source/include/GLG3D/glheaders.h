@@ -32,13 +32,13 @@
     #include "../GL/wglext.h"
 #endif
 
-#if defined(G3D_LINUX) || defined(G3D_OSX)
+#if defined(G3D_LINUX) 
 //    #define GLX_GLXEXT_PROTOTYPES
 	#include "../GL/glxext.h"
 	#include "../GL/glx.h"
 #endif
-#include "../GL/glext.h"
 
+#include "../GL/glext.h"
 #include "../glh/glut.h"
 
 // OpenGL extensions
