@@ -970,6 +970,47 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
     renderDevice->popState();
 }
 
+/*
+// Precomputed for a triangle:
+vector3 AB     = B - A;
+Vector3 AC     = C - A;
+double  dp     = AB.dot(AC);
+double  lenAB  = AB.length();
+double  lenAC  = AC.length();
+double  lenAB2 = lenAB * lenAB;
+double  lenAC2 = lenAC * lenAC;
+
+double  S2 = 1.0 - square(dp / (lenAB * lenAC));
+
+double  Q1 =   dp / (lenAB2 * lenAC2 * S2);
+double  Q2 = -1.0 / (lenAC2 * S2) - (dp / (lenAB2 * lenAC2 * S2);
+double  Q3 =  1.0 / (lenAC2 * S2);
+
+double  Q4 = -(1.0 + Q1 * dp) / lenAB2;
+double  Q5 =  (1.0 - Q2 * dp) / lenAB2;
+double  Q6 =  Q3 * dp / lenAB2;
+
+// Compute gammas given radial curvature at each vertex 
+// (note that the radial curvature is a function of the
+// view vector).
+//
+// These come from solving the following equations:
+//   kA + gradwk dot (B - A) = kB
+//   kB + gradwk dot (C - A) = kC
+//   gradwk = (B - A) g1 + (C - A) g2
+
+double g1 = kA * Q4 + kB * Q5 + kC * Q6;
+double g2 = kA * Q1 + kB * Q2 + kC * Q3;
+
+// Compute curvature gradient along w
+Vector3 w_tri = (V - V.dot(N)).direction();
+double gradwk = (AB * g1 + AC * g2).dot(w_tri);
+
+// Suggestive contour is the set of points that have
+// radial curvature = 0,
+// gradwk > (small threshold 1), and
+// V.dot(N) > cos(small threshold 2)
+*/
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
