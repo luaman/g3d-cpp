@@ -23,7 +23,7 @@
      <LI> Linux build system updated:
           Builds only static libraries, Does not require libtool/libtoolize anymore,
           Does not check for or require libraries that normally linked with the .so files,
-          Automatically builds Test and all Demo projects with iCompile during install. (add more) [Corey]
+          Automatically builds Test project with iCompile during install. (add more) [Corey]
      <LI> G3D::Quat::deserialize, G3D::Quat::serialize
      <LI> G3D::PhysicsFrame::deserialize, G3D::PhysicsFrame::serialize
      <LI> G3D::TextInput::Options::singleQuotedStrings (defaults to true, changing the behavior
