@@ -413,12 +413,16 @@ public:
     /**
      A bounding sphere on the model.  Covers all vertices in all animations.
      */
-    const Sphere& objectSpaceBoundingSphere() const;
+    inline const Sphere& objectSpaceBoundingSphere() const {
+        return boundingSphere;
+    }
 
     /**
      An oriented bounding box on the model.  Covers all vertices in all animations.
      */
-    const Box& objectSpaceBoundingBox() const;
+    inline const Box& objectSpaceBoundingBox() const {
+        return boundingBox;
+    }
 
     /**
      Returns the total time of the animation.  If the animation loops (e.g. walking)

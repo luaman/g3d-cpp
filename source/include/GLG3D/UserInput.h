@@ -75,7 +75,10 @@ enum CustomKeyCode {
     
     Note that UserInput uses the SDLEvent structures (defined in SDL.h), but not
     the SDL <B>library</B>.  This means you can write your own G3D::GWindow subclass 
-    that translates platform events into SDL_Events and not use SDL.dll at all.  
+    that translates platform events into SDL_Events and not use SDL.dll at all.
+
+  See http://www.libsdl.org/cgi/docwiki.cgi/SDLKey for a list of all SDL key codes.
+  %G3D also provides the extended values from G3D::CustomKeyCode.
 */
 class UserInput {
 public:
