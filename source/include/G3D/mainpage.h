@@ -502,6 +502,8 @@ to add zlibstat.lib to your linker list.
    <UL>
      <LI> G3D::glFormatSize(GLenum format)
      <LI> G3D::PackedColor3
+     <LI> Modified ManualCameraController so that diagonal movement does not exceed
+          maximum rate.
      <LI> Added support for non-GL_FLOAT vertex arrays to RenderDevice
      <LI> Added TextInput::Options to optionally allow C++ comments to
           be treated as two slashes instead of a comment

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-02-15
+  @edited  2003-04-07
 */
 
 #include <SDL.h>
@@ -60,11 +60,11 @@ void ManualCameraController::doSimulation(
     double              elapsedTime, 
     UserInput&          userInput) {
 
-	// Translate forward
-	translation += getLookVector() * userInput.getY() * elapsedTime * maxMoveRate;
+    Vector2 direction(userInput.getX(), userInput.getY());
+    direction.unitize();
 
-	// Strafe
-	translation += getStrafeVector() * userInput.getX() * elapsedTime * maxMoveRate;
+	// Translate forward
+	translation += (getLookVector() * direction.y + getStrafeVector() * direction.x) * elapsedTime * maxMoveRate;
 	
     double mouseX = userInput.getMouseX();
     double mouseY = userInput.getMouseY();

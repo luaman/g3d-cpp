@@ -346,10 +346,6 @@ SOURCE=.\include\G3D\Log.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\mainpage.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\Matrix3.h
 # End Source File
 # Begin Source File
@@ -712,6 +708,10 @@ SOURCE=..\buildlib.py
 # Begin Source File
 
 SOURCE=.\Doxyfile
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\mainpage.h
 # End Source File
 # Begin Source File
 
