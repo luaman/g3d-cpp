@@ -121,13 +121,13 @@ void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFram
 
                         std::string textureFile = texture1.filename;
 
-                        if (! fileExists(textureFile) && fileExists(path + textureFile)) {
-                            textureFile = path + textureFile;
-                        }
-
                         if (endsWith(toUpper(textureFile), "GIF")) {
                             // Load PNG instead of GIF, since we can't load GIF
                             textureFile = textureFile.substr(0, textureFile.length() - 3) + "png";
+                        }
+
+                        if (! fileExists(textureFile) && fileExists(path + textureFile)) {
+                            textureFile = path + textureFile;
                         }
 
                         if (fileExists(textureFile)) {
