@@ -106,6 +106,19 @@ public:
         Array<Edge>&            geometricEdgeArray,
         Array< Array<int> >&    adjacentFaceArray);
 
+
+    static void computeAreaStatistics(
+        const Array<Vector3>&   vertexArray,
+        const Array<int>&       indexArray,
+        double&                 minEdgeLength,
+        double&                 meanEdgeLength,
+        double&                 medianEdgeLength,
+        double&                 maxEdgeLength,
+        double&                 minFaceArea,
+        double&                 meanFaceArea,
+        double&                 medianFaceArea,
+        double&                 maxFaceArea);
+
    /**
      @param vertexNormalArray Output. Computed by averaging adjacent face normals
      @param faceNormalArray Output. 
@@ -141,7 +154,7 @@ public:
      for uniformly distributed vertices.
 
      @cite The method is that described as the 'Grouper' in Baum, Mann, Smith, and Winget, 
-     Making Radiosity Usable: Automatic PReprocessing and Meshing Techniques for
+     Making Radiosity Usable: Automatic Preprocessing and Meshing Techniques for
      the Generation of Accurate Radiosity Solutions, Computer Graphics vol 25, no 4, July 1991.
      */
     static void computeWeld(
@@ -157,6 +170,30 @@ public:
      MeshAlg::computeAdjacency) that have only one adjacent face.
      */
     static int countBrokenEdges(const Array<Edge>& edgeArray);
+
+    /**
+     Generates an array of integers from start to start + n - 1 that have run numbers
+     in series then omit the next skip before the next run.  Useful for turning
+     a triangle list into an indexed face set.
+
+     Example: 
+     <PRE>
+       createIndexArray(10, x);
+       // x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] 
+
+       createIndexArray(5, x, 2);
+       // x = [2, 3, 4, 5, 6, 7] 
+
+       createIndexArray(6, x, 0, 2, 1);
+       // x = [0, 1, 3, 4, 6, 7]
+     </PRE>
+     */
+    static void createIndexArray(
+        int                 n, 
+        Array<int>&         array,
+        int                 start   = 0,
+        int                 run     = 1,
+        int                 skip    = 0);
 
 protected:
 

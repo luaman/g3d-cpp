@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2003-10-06
+  @edited  2003-10-18
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -56,7 +56,6 @@ void MeshAlg::computeNormals(
         faceNormalArray[f] = (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]).direction();
     }
 
-
     // Per-vertex normals, computed by averaging
     vertexNormalArray.resize(vertexArray.size());
     for (int v = 0; v < vertexNormalArray.size(); ++v) {
@@ -67,6 +66,87 @@ void MeshAlg::computeNormals(
         }
         vertexNormalArray[v] = sum.direction();
     }
+}
+
+
+void MeshAlg::createIndexArray(int n, Array<int>& array, int start, int run, int skip) {
+    debugAssert(skip >= 0);
+    debugAssert(run >= 0);
+
+    array.resize(n);
+    if (skip == 0) {
+        for (int i = 0; i < n; ++i) {
+            array[i] = start + i;
+        }
+    } else {
+        int rcount = 0;
+        int j = start;
+        for (int i = 0; i < n; ++i) {
+            array[i] = j;
+
+            ++j;
+            ++rcount;
+
+            if (rcount == run) {
+                rcount = 0;
+                j += skip;
+            }
+        }
+    }
+}
+
+
+void MeshAlg::computeAreaStatistics(
+    const Array<Vector3>&   vertexArray,
+    const Array<int>&       indexArray,
+    double&                 minEdgeLength,
+    double&                 meanEdgeLength,
+    double&                 medianEdgeLength,
+    double&                 maxEdgeLength,
+    double&                 minFaceArea,
+    double&                 meanFaceArea,
+    double&                 medianFaceArea,
+    double&                 maxFaceArea) {
+
+    debugAssert(indexArray.size() % 3 == 0);
+
+    Array<double> area(indexArray.size() / 3);
+    Array<double> length(indexArray.size());
+
+    for (int i = 0; i < indexArray.size(); i += 3) {
+        double A, L;
+
+        const Vector3& v0 = vertexArray[indexArray[i]];
+        const Vector3& v1 = vertexArray[indexArray[i + 1]];
+        const Vector3& v2 = vertexArray[indexArray[i + 2]];
+
+        area[i / 3] = (v1 - v0).cross(v2 - v0).length() / 2;
+        length[i] = (v1 - v0).length();
+        length[i + 1] = (v2 - v1).length();
+        length[i + 2] = (v0 - v2).length();
+    }
+
+    area.sort();
+    length.sort();
+
+    minEdgeLength = length[0];
+    maxEdgeLength = length.last();
+    medianEdgeLength = length[length.size() / 2];
+    meanEdgeLength = 0;
+    for (int i = 0; i < length.size(); ++i) {
+        meanEdgeLength += length[i];
+    }
+    meanEdgeLength /= length.size();
+
+
+    minFaceArea = area[0];
+    maxFaceArea = area.last();
+    medianFaceArea = area[area.size() / 2];
+    meanEdgeLength = 0;
+    for (int i = 0; i < area.size(); ++i) {
+        meanFaceArea += area[i];
+    }
+    meanFaceArea /= area.size();
 }
 
 
