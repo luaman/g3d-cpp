@@ -56,36 +56,12 @@ static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 static unsigned int _sdlKeys[SDLK_LAST];
 static bool keyStates[SDLK_LAST];
 
-
-/** Changes the screen resolution */
-static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
-
-	if (refreshRate == 0) {
-		refreshRate = 85;
-	}
-
-    DEVMODE deviceMode;
-
-    ZeroMemory(&deviceMode, sizeof(DEVMODE));
-
-    deviceMode.dmSize       = sizeof(DEVMODE);
-	deviceMode.dmPelsWidth  = width;
-	deviceMode.dmPelsHeight = height;
-	deviceMode.dmBitsPerPel = bpp;
-	deviceMode.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
-    deviceMode.dmDisplayFrequency = refreshRate;
-
-    LONG result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
-
-    if (result != DISP_CHANGE_SUCCESSFUL) {
-        // If it didn't work, try just changing the resolution and not the
-        // refresh rate.
-        deviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-        result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
-    }
-
-    return result == DISP_CHANGE_SUCCESSFUL;
-}
+// Prototype static helper functions at end of file
+bool ChangeResolution(int, int, int, int);
+void makeKeyEvent(int, int, GEvent&);
+void mouseButton(bool, int, DWORD, GEvent&);
+void initDI8KeyMap();
+void initWin32KeyMap();
 
 
 Win32Window::Win32Window(const GWindowSettings& s) {
@@ -97,118 +73,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 
     memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
-    _sdlKeys[DIK_ESCAPE] = SDLK_ESCAPE;
-	_sdlKeys[DIK_1] = SDLK_1;
-	_sdlKeys[DIK_2] = SDLK_2;
-	_sdlKeys[DIK_3] = SDLK_3;
-	_sdlKeys[DIK_4] = SDLK_4;
-	_sdlKeys[DIK_5] = SDLK_5;
-	_sdlKeys[DIK_6] = SDLK_6;
-	_sdlKeys[DIK_7] = SDLK_7;
-	_sdlKeys[DIK_8] = SDLK_8;
-	_sdlKeys[DIK_9] = SDLK_9;
-	_sdlKeys[DIK_0] = SDLK_0;
-	_sdlKeys[DIK_MINUS] = SDLK_MINUS;
-	_sdlKeys[DIK_EQUALS] = SDLK_EQUALS;
-	_sdlKeys[DIK_BACK] = SDLK_BACKSPACE;
-	_sdlKeys[DIK_TAB] = SDLK_TAB;
-	_sdlKeys[DIK_Q] = SDLK_q;
-	_sdlKeys[DIK_W] = SDLK_w;
-	_sdlKeys[DIK_E] = SDLK_e;
-	_sdlKeys[DIK_R] = SDLK_r;
-	_sdlKeys[DIK_T] = SDLK_t;
-	_sdlKeys[DIK_Y] = SDLK_y;
-	_sdlKeys[DIK_U] = SDLK_u;
-	_sdlKeys[DIK_I] = SDLK_i;
-	_sdlKeys[DIK_O] = SDLK_o;
-	_sdlKeys[DIK_P] = SDLK_p;
-	_sdlKeys[DIK_LBRACKET] = SDLK_LEFTBRACKET;
-	_sdlKeys[DIK_RBRACKET] = SDLK_RIGHTBRACKET;
-	_sdlKeys[DIK_RETURN] = SDLK_RETURN;
-	_sdlKeys[DIK_LCONTROL] = SDLK_LCTRL;
-	_sdlKeys[DIK_A] = SDLK_a;
-	_sdlKeys[DIK_S] = SDLK_s;
-	_sdlKeys[DIK_D] = SDLK_d;
-	_sdlKeys[DIK_F] = SDLK_f;
-	_sdlKeys[DIK_G] = SDLK_g;
-	_sdlKeys[DIK_H] = SDLK_h;
-	_sdlKeys[DIK_J] = SDLK_j;
-	_sdlKeys[DIK_K] = SDLK_k;
-	_sdlKeys[DIK_L] = SDLK_l;
-	_sdlKeys[DIK_SEMICOLON] = SDLK_SEMICOLON;
-	_sdlKeys[DIK_APOSTROPHE] = SDLK_QUOTE;
-	_sdlKeys[DIK_GRAVE] = SDLK_BACKQUOTE;
-	_sdlKeys[DIK_LSHIFT] = SDLK_LSHIFT;
-	_sdlKeys[DIK_BACKSLASH] = SDLK_BACKSLASH;
-	_sdlKeys[DIK_OEM_102] = SDLK_BACKSLASH;
-	_sdlKeys[DIK_Z] = SDLK_z;
-	_sdlKeys[DIK_X] = SDLK_x;
-	_sdlKeys[DIK_C] = SDLK_c;
-	_sdlKeys[DIK_V] = SDLK_v;
-	_sdlKeys[DIK_B] = SDLK_b;
-	_sdlKeys[DIK_N] = SDLK_n;
-	_sdlKeys[DIK_M] = SDLK_m;
-	_sdlKeys[DIK_COMMA] = SDLK_COMMA;
-	_sdlKeys[DIK_PERIOD] = SDLK_PERIOD;
-	_sdlKeys[DIK_SLASH] = SDLK_SLASH;
-	_sdlKeys[DIK_RSHIFT] = SDLK_RSHIFT;
-	_sdlKeys[DIK_MULTIPLY] = SDLK_KP_MULTIPLY;
-	_sdlKeys[DIK_LMENU] = SDLK_LALT;
-	_sdlKeys[DIK_SPACE] = SDLK_SPACE;
-	_sdlKeys[DIK_CAPITAL] = SDLK_CAPSLOCK;
-	_sdlKeys[DIK_F1] = SDLK_F1;
-	_sdlKeys[DIK_F2] = SDLK_F2;
-	_sdlKeys[DIK_F3] = SDLK_F3;
-	_sdlKeys[DIK_F4] = SDLK_F4;
-	_sdlKeys[DIK_F5] = SDLK_F5;
-	_sdlKeys[DIK_F6] = SDLK_F6;
-	_sdlKeys[DIK_F7] = SDLK_F7;
-	_sdlKeys[DIK_F8] = SDLK_F8;
-	_sdlKeys[DIK_F9] = SDLK_F9;
-	_sdlKeys[DIK_F10] = SDLK_F10;
-	_sdlKeys[DIK_NUMLOCK] = SDLK_NUMLOCK;
-	_sdlKeys[DIK_SCROLL] = SDLK_SCROLLOCK;
-	_sdlKeys[DIK_NUMPAD7] = SDLK_KP7;
-	_sdlKeys[DIK_NUMPAD8] = SDLK_KP8;
-	_sdlKeys[DIK_NUMPAD9] = SDLK_KP9;
-	_sdlKeys[DIK_SUBTRACT] = SDLK_KP_MINUS;
-	_sdlKeys[DIK_NUMPAD4] = SDLK_KP4;
-	_sdlKeys[DIK_NUMPAD5] = SDLK_KP5;
-	_sdlKeys[DIK_NUMPAD6] = SDLK_KP6;
-	_sdlKeys[DIK_ADD] = SDLK_KP_PLUS;
-	_sdlKeys[DIK_NUMPAD1] = SDLK_KP1;
-	_sdlKeys[DIK_NUMPAD2] = SDLK_KP2;
-	_sdlKeys[DIK_NUMPAD3] = SDLK_KP3;
-	_sdlKeys[DIK_NUMPAD0] = SDLK_KP0;
-	_sdlKeys[DIK_DECIMAL] = SDLK_KP_PERIOD;
-	_sdlKeys[DIK_F11] = SDLK_F11;
-	_sdlKeys[DIK_F12] = SDLK_F12;
-
-	_sdlKeys[DIK_F13] = SDLK_F13;
-	_sdlKeys[DIK_F14] = SDLK_F14;
-	_sdlKeys[DIK_F15] = SDLK_F15;
-
-	_sdlKeys[DIK_NUMPADEQUALS] = SDLK_KP_EQUALS;
-	_sdlKeys[DIK_NUMPADENTER] = SDLK_KP_ENTER;
-	_sdlKeys[DIK_RCONTROL] = SDLK_RCTRL;
-	_sdlKeys[DIK_DIVIDE] = SDLK_KP_DIVIDE;
-	_sdlKeys[DIK_SYSRQ] = SDLK_SYSREQ;
-	_sdlKeys[DIK_RMENU] = SDLK_RALT;
-	_sdlKeys[DIK_PAUSE] = SDLK_PAUSE;
-	_sdlKeys[DIK_HOME] = SDLK_HOME;
-	_sdlKeys[DIK_UP] = SDLK_UP;
-	_sdlKeys[DIK_PRIOR] = SDLK_PAGEUP;
-	_sdlKeys[DIK_LEFT] = SDLK_LEFT;
-	_sdlKeys[DIK_RIGHT] = SDLK_RIGHT;
-	_sdlKeys[DIK_END] = SDLK_END;
-	_sdlKeys[DIK_DOWN] = SDLK_DOWN;
-	_sdlKeys[DIK_NEXT] = SDLK_PAGEDOWN;
-	_sdlKeys[DIK_INSERT] = SDLK_INSERT;
-	_sdlKeys[DIK_DELETE] = SDLK_DELETE;
-	_sdlKeys[DIK_LWIN] = SDLK_LMETA;
-	_sdlKeys[DIK_RWIN] = SDLK_RMETA;
-	_sdlKeys[DIK_APPS] = SDLK_MENU;
-
+    initDI8KeyMap();
 
 	settings = s;
     
@@ -564,247 +429,6 @@ void Win32Window::setCaption(const std::string& caption) {
 
 std::string Win32Window::caption() {
 	return _title;
-}
-
-
-static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
-    static uint16 currentMods = KMOD_NONE; 
-	char c = wparam;
-
-	e.key.keysym.unicode = 0;
-
-    if ((c >= 'A') && (c <= 'Z')) {
-        // Make key codes lower case canonically
-        e.key.keysym.sym = (SDLKey)(c - 'A' + 'a');
-    } else if ((wparam >= 0x10) && (wparam <= 0x12)) {
-        // Fix VK_SHIFT, VK_CONTROL, VK_MENU to Left/Right equivalents
-        switch (wparam) {
-            case VK_SHIFT:
-                if (!(currentMods & KMOD_LSHIFT) && !(currentMods & KMOD_RSHIFT)) {
-                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 1) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
-                    }
-                } else if ((currentMods & KMOD_LSHIFT) && (currentMods & KMOD_RSHIFT)) {
-                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 0) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
-                    }
-                } else {
-                    if (e.key.state == SDL_PRESSED) {
-                        if (currentMods & KMOD_LSHIFT) {
-                            e.key.keysym.sym = SDLK_RSHIFT;
-                        } else {
-                            e.key.keysym.sym = SDLK_LSHIFT;
-                        }
-                    } else {
-                        if (currentMods & KMOD_LSHIFT) {
-                            e.key.keysym.sym = SDLK_LSHIFT;
-                        } else {
-                            e.key.keysym.sym = SDLK_RSHIFT;
-                        }
-                    }
-                }
-                break;
-            case VK_CONTROL:
-                if (!(currentMods & KMOD_LCTRL) && !(currentMods & KMOD_RCTRL)) {
-                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 1) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
-                    }
-                } else if ((currentMods & KMOD_LCTRL) && (currentMods & KMOD_RCTRL)) {
-                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 0) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
-                    }
-                } else {
-                    if (e.key.state == SDL_PRESSED) {
-                        if (currentMods & KMOD_LCTRL) {
-                            e.key.keysym.sym = SDLK_RCTRL;
-                        } else {
-                            e.key.keysym.sym = SDLK_LCTRL;
-                        }
-                    } else {
-                        if (currentMods & KMOD_LCTRL) {
-                            e.key.keysym.sym = SDLK_LCTRL;
-                        } else {
-                            e.key.keysym.sym = SDLK_RCTRL;
-                        }
-                    }
-                }
-                break;
-            case VK_MENU:
-                if (!(currentMods & KMOD_LALT) && !(currentMods & KMOD_RALT)) {
-                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 1) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
-                    }
-                } else if ((currentMods & KMOD_LALT) && (currentMods & KMOD_RALT)) {
-                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 0) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
-                    }
-                } else {
-                    if (e.key.state == SDL_PRESSED) {
-                        if (currentMods & KMOD_LALT) {
-                            e.key.keysym.sym = SDLK_RALT;
-                        } else {
-                            e.key.keysym.sym = SDLK_LALT;
-                        }
-                    } else {
-                        if (currentMods & KMOD_LALT) {
-                            e.key.keysym.sym = SDLK_LALT;
-                        } else {
-                            e.key.keysym.sym = SDLK_RALT;
-                        }
-                    }
-                }
-                break;
-            default:
-                e.key.keysym.sym = (SDLKey)0;
-                e.key.keysym.scancode = (SDLKey)0;
-                return;
-                break;
-        }
-    } else {
-        e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(wparam, 0, SDLK_LAST)];
-    }
-
-    // Check to see if it is a repeat message
-    if ((e.key.state == SDL_PRESSED)) {
-        if (keyStates[e.key.keysym.sym]) {
-            e.key.keysym.sym = (SDLKey)(e.key.keysym.scancode = e.key.keysym.unicode = 0);
-            e.key.keysym.mod = KMOD_NONE;
-            return;
-        } else {
-            keyStates[e.key.keysym.sym] = true;
-        }
-    } else {
-        keyStates[e.key.keysym.sym] = false;
-    }
-
-    e.key.keysym.scancode = (lparam >> 16) & 0x07;
-
-    e.key.keysym.mod = KMOD_NONE;
-
-    if (e.key.state == SDL_PRESSED) {
-		switch (e.key.keysym.sym) {
-			case SDLK_NUMLOCK:
-				currentMods ^= KMOD_NUM;
-                if ( ! (currentMods&KMOD_NUM) ) {
-					e.key.state = SDL_RELEASED;
-                }
-				e.key.keysym.mod = (SDLMod)currentMods;
-				break;
-			case SDLK_CAPSLOCK:
-				currentMods ^= KMOD_CAPS;
-				if ( ! (currentMods&KMOD_CAPS) )
-					e.key.state = SDL_RELEASED;
-				e.key.keysym.mod = (SDLMod)currentMods;
-				break;
-			case SDLK_LCTRL:
-				currentMods |= KMOD_LCTRL;
-				break;
-			case SDLK_RCTRL:
-				currentMods |= KMOD_RCTRL;
-				break;
-			case SDLK_LSHIFT:
-				currentMods |= KMOD_LSHIFT;
-				break;
-			case SDLK_RSHIFT:
-				currentMods |= KMOD_RSHIFT;
-				break;
-			case SDLK_LALT:
-				currentMods |= KMOD_LALT;
-				break;
-			case SDLK_RALT:
-				currentMods |= KMOD_RALT;
-				break;
-			case SDLK_LMETA:
-				currentMods |= KMOD_LMETA;
-				break;
-			case SDLK_RMETA:
-				currentMods |= KMOD_RMETA;
-				break;
-			case SDLK_MODE:
-				currentMods |= KMOD_MODE;
-				break;
-		}
-	} else {
-		switch (e.key.keysym.sym) {
-			case SDLK_NUMLOCK:
-			case SDLK_CAPSLOCK:
-                e.key.keysym.unicode = 0;
-                e.key.keysym.sym = (SDLKey)0;
-                e.key.keysym.scancode = 0;
-                return;
-                break;
-            case SDLK_LCTRL:
-				currentMods &= ~KMOD_LCTRL;
-				break;
-			case SDLK_RCTRL:
-				currentMods &= ~KMOD_RCTRL;
-				break;
-			case SDLK_LSHIFT:
-				currentMods &= ~KMOD_LSHIFT;
-				break;
-			case SDLK_RSHIFT:
-				currentMods &= ~KMOD_RSHIFT;
-				break;
-			case SDLK_LALT:
-				currentMods &= ~KMOD_LALT;
-				break;
-			case SDLK_RALT:
-				currentMods &= ~KMOD_RALT;
-				break;
-			case SDLK_LMETA:
-				currentMods &= ~KMOD_LMETA;
-				break;
-			case SDLK_RMETA:
-				currentMods &= ~KMOD_RMETA;
-				break;
-			case SDLK_MODE:
-				currentMods &= ~KMOD_MODE;
-				break;
-		}
-    }
-
-    e.key.keysym.mod = (SDLMod)currentMods;
-
-    uint8 keyboardState[256];
-    uint8 ascii[2];
-    ::GetKeyboardState(keyboardState);
-    e.key.keysym.unicode = ::ToAscii(wparam, e.key.keysym.scancode, keyboardState, (uint16*)ascii, 0) == 1 ? ascii[0] : 0;
-
-	// Bit 24 is 1 if this is the right hand version of ALT or CTRL					
-}
-
-
-/** 
- Configures a mouse up/down event
- */
-static void mouseButton(bool down, int keyEvent, DWORD flags, GEvent& e) {
-	if (down) {
-		e.key.type  = SDL_KEYDOWN;
-		e.key.state = SDL_PRESSED;
-	} else {
-		e.key.type  = SDL_KEYUP;
-		e.key.state = SDL_RELEASED;
-	}
-
-    e.key.keysym.unicode = ' ';
-	e.key.keysym.sym = (SDLKey)keyEvent;
-
-
-    e.key.keysym.scancode = 0;
-    // TODO: fwKeys = wParam;        // key flags 
-    e.key.keysym.mod = KMOD_NONE;
 }
 
 
@@ -1210,97 +834,7 @@ Win32APIWindow::Win32APIWindow(const GWindowSettings& s) {
     System::memset(keyStates, 0, sizeof(keyStates));
     System::memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
-	_sdlKeys[VK_BACK] = SDLK_BACKSPACE;
-	_sdlKeys[VK_TAB] = SDLK_TAB;
-	_sdlKeys[VK_CLEAR] = SDLK_CLEAR;
-	_sdlKeys[VK_RETURN] = SDLK_RETURN;
-	_sdlKeys[VK_PAUSE] = SDLK_PAUSE;
-	_sdlKeys[VK_ESCAPE] = SDLK_ESCAPE;
-	_sdlKeys[VK_SPACE] = SDLK_SPACE;
-	_sdlKeys[VK_APOSTROPHE] = SDLK_QUOTE;
-	_sdlKeys[VK_COMMA] = SDLK_COMMA;
-	_sdlKeys[VK_MINUS] = SDLK_MINUS;
-	_sdlKeys[VK_PERIOD] = SDLK_PERIOD;
-	_sdlKeys[VK_SLASH] = SDLK_SLASH;
-	_sdlKeys['0'] = SDLK_0;
-	_sdlKeys['1'] = SDLK_1;
-	_sdlKeys['2'] = SDLK_2;
-	_sdlKeys['3'] = SDLK_3;
-	_sdlKeys['4'] = SDLK_4;
-	_sdlKeys['5'] = SDLK_5;
-	_sdlKeys['6'] = SDLK_6;
-	_sdlKeys['7'] = SDLK_7;
-	_sdlKeys['8'] = SDLK_8;
-	_sdlKeys['9'] = SDLK_9;
-	_sdlKeys[VK_SEMICOLON] = SDLK_SEMICOLON;
-	_sdlKeys[VK_EQUALS] = SDLK_EQUALS;
-	_sdlKeys[VK_LBRACKET] = SDLK_LEFTBRACKET;
-	_sdlKeys[VK_BACKSLASH] = SDLK_BACKSLASH;
-	_sdlKeys[VK_RBRACKET] = SDLK_RIGHTBRACKET;
-	_sdlKeys[VK_GRAVE] = SDLK_BACKQUOTE;
-	_sdlKeys[VK_BACKTICK] = SDLK_BACKQUOTE;
-	_sdlKeys[VK_DELETE] = SDLK_DELETE;
-
-	_sdlKeys[VK_NUMPAD0] = SDLK_KP0;
-	_sdlKeys[VK_NUMPAD1] = SDLK_KP1;
-	_sdlKeys[VK_NUMPAD2] = SDLK_KP2;
-	_sdlKeys[VK_NUMPAD3] = SDLK_KP3;
-	_sdlKeys[VK_NUMPAD4] = SDLK_KP4;
-	_sdlKeys[VK_NUMPAD5] = SDLK_KP5;
-	_sdlKeys[VK_NUMPAD6] = SDLK_KP6;
-	_sdlKeys[VK_NUMPAD7] = SDLK_KP7;
-	_sdlKeys[VK_NUMPAD8] = SDLK_KP8;
-	_sdlKeys[VK_NUMPAD9] = SDLK_KP9;
-	_sdlKeys[VK_DECIMAL] = SDLK_KP_PERIOD;
-	_sdlKeys[VK_DIVIDE] = SDLK_KP_DIVIDE;
-	_sdlKeys[VK_MULTIPLY] = SDLK_KP_MULTIPLY;
-	_sdlKeys[VK_SUBTRACT] = SDLK_KP_MINUS;
-	_sdlKeys[VK_ADD] = SDLK_KP_PLUS;
-
-	_sdlKeys[VK_UP] = SDLK_UP;
-	_sdlKeys[VK_DOWN] = SDLK_DOWN;
-	_sdlKeys[VK_RIGHT] = SDLK_RIGHT;
-	_sdlKeys[VK_LEFT] = SDLK_LEFT;
-	_sdlKeys[VK_INSERT] = SDLK_INSERT;
-	_sdlKeys[VK_HOME] = SDLK_HOME;
-	_sdlKeys[VK_END] = SDLK_END;
-	_sdlKeys[VK_PRIOR] = SDLK_PAGEUP;
-	_sdlKeys[VK_NEXT] = SDLK_PAGEDOWN;
-
-	_sdlKeys[VK_F1] = SDLK_F1;
-	_sdlKeys[VK_F2] = SDLK_F2;
-	_sdlKeys[VK_F3] = SDLK_F3;
-	_sdlKeys[VK_F4] = SDLK_F4;
-	_sdlKeys[VK_F5] = SDLK_F5;
-	_sdlKeys[VK_F6] = SDLK_F6;
-	_sdlKeys[VK_F7] = SDLK_F7;
-	_sdlKeys[VK_F8] = SDLK_F8;
-	_sdlKeys[VK_F9] = SDLK_F9;
-	_sdlKeys[VK_F10] = SDLK_F10;
-	_sdlKeys[VK_F11] = SDLK_F11;
-	_sdlKeys[VK_F12] = SDLK_F12;
-	_sdlKeys[VK_F13] = SDLK_F13;
-	_sdlKeys[VK_F14] = SDLK_F14;
-	_sdlKeys[VK_F15] = SDLK_F15;
-
-	_sdlKeys[VK_NUMLOCK] = SDLK_NUMLOCK;
-	_sdlKeys[VK_CAPITAL] = SDLK_CAPSLOCK;
-	_sdlKeys[VK_SCROLL] = SDLK_SCROLLOCK;
-	_sdlKeys[VK_RSHIFT] = SDLK_RSHIFT;
-	_sdlKeys[VK_LSHIFT] = SDLK_LSHIFT;
-	_sdlKeys[VK_RCONTROL] = SDLK_RCTRL;
-	_sdlKeys[VK_LCONTROL] = SDLK_LCTRL;
-	_sdlKeys[VK_RMENU] = SDLK_RALT;
-	_sdlKeys[VK_LMENU] = SDLK_LALT;
-	_sdlKeys[VK_RWIN] = SDLK_RSUPER;
-	_sdlKeys[VK_LWIN] = SDLK_LSUPER;
-
-	_sdlKeys[VK_HELP] = SDLK_HELP;
-	_sdlKeys[VK_PRINT] = SDLK_PRINT;
-	_sdlKeys[VK_SNAPSHOT] = SDLK_PRINT;
-	_sdlKeys[VK_CANCEL] = SDLK_BREAK;
-	_sdlKeys[VK_APPS] = SDLK_MENU;
-
+    initWin32KeyMap();
 
 	settings = s;
     
@@ -1491,6 +1025,501 @@ bool Win32APIWindow::pollEvent(GEvent& e) {
 	}
 
     return false;
+}
+
+
+
+/*
+    Static helper functions for Win32Window
+*/
+
+
+/** Changes the screen resolution */
+static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
+
+	if (refreshRate == 0) {
+		refreshRate = 85;
+	}
+
+    DEVMODE deviceMode;
+
+    ZeroMemory(&deviceMode, sizeof(DEVMODE));
+
+    deviceMode.dmSize       = sizeof(DEVMODE);
+	deviceMode.dmPelsWidth  = width;
+	deviceMode.dmPelsHeight = height;
+	deviceMode.dmBitsPerPel = bpp;
+	deviceMode.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+    deviceMode.dmDisplayFrequency = refreshRate;
+
+    LONG result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
+
+    if (result != DISP_CHANGE_SUCCESSFUL) {
+        // If it didn't work, try just changing the resolution and not the
+        // refresh rate.
+        deviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+        result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
+    }
+
+    return result == DISP_CHANGE_SUCCESSFUL;
+}
+
+
+static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
+    static uint16 currentMods = KMOD_NONE; 
+	char c = wparam;
+
+	e.key.keysym.unicode = 0;
+
+    if ((c >= 'A') && (c <= 'Z')) {
+        // Make key codes lower case canonically
+        e.key.keysym.sym = (SDLKey)(c - 'A' + 'a');
+    } else if ((wparam >= 0x10) && (wparam <= 0x12)) {
+        // Fix VK_SHIFT, VK_CONTROL, VK_MENU to Left/Right equivalents
+        switch (wparam) {
+            case VK_SHIFT:
+                if (!(currentMods & KMOD_LSHIFT) && !(currentMods & KMOD_RSHIFT)) {
+                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 1) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
+                    }
+                } else if ((currentMods & KMOD_LSHIFT) && (currentMods & KMOD_RSHIFT)) {
+                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 0) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
+                    }
+                } else {
+                    if (e.key.state == SDL_PRESSED) {
+                        if (currentMods & KMOD_LSHIFT) {
+                            e.key.keysym.sym = SDLK_RSHIFT;
+                        } else {
+                            e.key.keysym.sym = SDLK_LSHIFT;
+                        }
+                    } else {
+                        if (currentMods & KMOD_LSHIFT) {
+                            e.key.keysym.sym = SDLK_LSHIFT;
+                        } else {
+                            e.key.keysym.sym = SDLK_RSHIFT;
+                        }
+                    }
+                }
+                break;
+            case VK_CONTROL:
+                if (!(currentMods & KMOD_LCTRL) && !(currentMods & KMOD_RCTRL)) {
+                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 1) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
+                    }
+                } else if ((currentMods & KMOD_LCTRL) && (currentMods & KMOD_RCTRL)) {
+                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 0) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
+                    }
+                } else {
+                    if (e.key.state == SDL_PRESSED) {
+                        if (currentMods & KMOD_LCTRL) {
+                            e.key.keysym.sym = SDLK_RCTRL;
+                        } else {
+                            e.key.keysym.sym = SDLK_LCTRL;
+                        }
+                    } else {
+                        if (currentMods & KMOD_LCTRL) {
+                            e.key.keysym.sym = SDLK_LCTRL;
+                        } else {
+                            e.key.keysym.sym = SDLK_RCTRL;
+                        }
+                    }
+                }
+                break;
+            case VK_MENU:
+                if (!(currentMods & KMOD_LALT) && !(currentMods & KMOD_RALT)) {
+                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 1) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
+                    }
+                } else if ((currentMods & KMOD_LALT) && (currentMods & KMOD_RALT)) {
+                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 0) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
+                    }
+                } else {
+                    if (e.key.state == SDL_PRESSED) {
+                        if (currentMods & KMOD_LALT) {
+                            e.key.keysym.sym = SDLK_RALT;
+                        } else {
+                            e.key.keysym.sym = SDLK_LALT;
+                        }
+                    } else {
+                        if (currentMods & KMOD_LALT) {
+                            e.key.keysym.sym = SDLK_LALT;
+                        } else {
+                            e.key.keysym.sym = SDLK_RALT;
+                        }
+                    }
+                }
+                break;
+            default:
+                e.key.keysym.sym = (SDLKey)0;
+                e.key.keysym.scancode = (SDLKey)0;
+                return;
+                break;
+        }
+    } else {
+        e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(wparam, 0, SDLK_LAST)];
+    }
+
+    // Check to see if it is a repeat message
+    if ((e.key.state == SDL_PRESSED)) {
+        if (keyStates[e.key.keysym.sym]) {
+            e.key.keysym.sym = (SDLKey)(e.key.keysym.scancode = e.key.keysym.unicode = 0);
+            e.key.keysym.mod = KMOD_NONE;
+            return;
+        } else {
+            keyStates[e.key.keysym.sym] = true;
+        }
+    } else {
+        keyStates[e.key.keysym.sym] = false;
+    }
+
+    e.key.keysym.scancode = (lparam >> 16) & 0x07;
+
+    e.key.keysym.mod = KMOD_NONE;
+
+    if (e.key.state == SDL_PRESSED) {
+		switch (e.key.keysym.sym) {
+			case SDLK_NUMLOCK:
+				currentMods ^= KMOD_NUM;
+                if ( ! (currentMods&KMOD_NUM) ) {
+					e.key.state = SDL_RELEASED;
+                }
+				e.key.keysym.mod = (SDLMod)currentMods;
+				break;
+			case SDLK_CAPSLOCK:
+				currentMods ^= KMOD_CAPS;
+				if ( ! (currentMods&KMOD_CAPS) )
+					e.key.state = SDL_RELEASED;
+				e.key.keysym.mod = (SDLMod)currentMods;
+				break;
+			case SDLK_LCTRL:
+				currentMods |= KMOD_LCTRL;
+				break;
+			case SDLK_RCTRL:
+				currentMods |= KMOD_RCTRL;
+				break;
+			case SDLK_LSHIFT:
+				currentMods |= KMOD_LSHIFT;
+				break;
+			case SDLK_RSHIFT:
+				currentMods |= KMOD_RSHIFT;
+				break;
+			case SDLK_LALT:
+				currentMods |= KMOD_LALT;
+				break;
+			case SDLK_RALT:
+				currentMods |= KMOD_RALT;
+				break;
+			case SDLK_LMETA:
+				currentMods |= KMOD_LMETA;
+				break;
+			case SDLK_RMETA:
+				currentMods |= KMOD_RMETA;
+				break;
+			case SDLK_MODE:
+				currentMods |= KMOD_MODE;
+				break;
+		}
+	} else {
+		switch (e.key.keysym.sym) {
+			case SDLK_NUMLOCK:
+			case SDLK_CAPSLOCK:
+                e.key.keysym.unicode = 0;
+                e.key.keysym.sym = (SDLKey)0;
+                e.key.keysym.scancode = 0;
+                return;
+                break;
+            case SDLK_LCTRL:
+				currentMods &= ~KMOD_LCTRL;
+				break;
+			case SDLK_RCTRL:
+				currentMods &= ~KMOD_RCTRL;
+				break;
+			case SDLK_LSHIFT:
+				currentMods &= ~KMOD_LSHIFT;
+				break;
+			case SDLK_RSHIFT:
+				currentMods &= ~KMOD_RSHIFT;
+				break;
+			case SDLK_LALT:
+				currentMods &= ~KMOD_LALT;
+				break;
+			case SDLK_RALT:
+				currentMods &= ~KMOD_RALT;
+				break;
+			case SDLK_LMETA:
+				currentMods &= ~KMOD_LMETA;
+				break;
+			case SDLK_RMETA:
+				currentMods &= ~KMOD_RMETA;
+				break;
+			case SDLK_MODE:
+				currentMods &= ~KMOD_MODE;
+				break;
+		}
+    }
+
+    e.key.keysym.mod = (SDLMod)currentMods;
+
+    uint8 keyboardState[256];
+    uint8 ascii[2];
+    ::GetKeyboardState(keyboardState);
+    e.key.keysym.unicode = ::ToAscii(wparam, e.key.keysym.scancode, keyboardState, (uint16*)ascii, 0) == 1 ? ascii[0] : 0;
+
+	// Bit 24 is 1 if this is the right hand version of ALT or CTRL					
+}
+
+
+/** 
+ Configures a mouse up/down event
+ */
+static void mouseButton(bool down, int keyEvent, DWORD flags, GEvent& e) {
+	if (down) {
+		e.key.type  = SDL_KEYDOWN;
+		e.key.state = SDL_PRESSED;
+	} else {
+		e.key.type  = SDL_KEYUP;
+		e.key.state = SDL_RELEASED;
+	}
+
+    e.key.keysym.unicode = ' ';
+	e.key.keysym.sym = (SDLKey)keyEvent;
+
+
+    e.key.keysym.scancode = 0;
+    // TODO: fwKeys = wParam;        // key flags 
+    e.key.keysym.mod = KMOD_NONE;
+}
+
+
+/** 
+ Initializes SDL to DI8 key map
+ */
+static void initDI8KeyMap() {
+
+    _sdlKeys[DIK_ESCAPE] = SDLK_ESCAPE;
+	_sdlKeys[DIK_1] = SDLK_1;
+	_sdlKeys[DIK_2] = SDLK_2;
+	_sdlKeys[DIK_3] = SDLK_3;
+	_sdlKeys[DIK_4] = SDLK_4;
+	_sdlKeys[DIK_5] = SDLK_5;
+	_sdlKeys[DIK_6] = SDLK_6;
+	_sdlKeys[DIK_7] = SDLK_7;
+	_sdlKeys[DIK_8] = SDLK_8;
+	_sdlKeys[DIK_9] = SDLK_9;
+	_sdlKeys[DIK_0] = SDLK_0;
+	_sdlKeys[DIK_MINUS] = SDLK_MINUS;
+	_sdlKeys[DIK_EQUALS] = SDLK_EQUALS;
+	_sdlKeys[DIK_BACK] = SDLK_BACKSPACE;
+	_sdlKeys[DIK_TAB] = SDLK_TAB;
+	_sdlKeys[DIK_Q] = SDLK_q;
+	_sdlKeys[DIK_W] = SDLK_w;
+	_sdlKeys[DIK_E] = SDLK_e;
+	_sdlKeys[DIK_R] = SDLK_r;
+	_sdlKeys[DIK_T] = SDLK_t;
+	_sdlKeys[DIK_Y] = SDLK_y;
+	_sdlKeys[DIK_U] = SDLK_u;
+	_sdlKeys[DIK_I] = SDLK_i;
+	_sdlKeys[DIK_O] = SDLK_o;
+	_sdlKeys[DIK_P] = SDLK_p;
+	_sdlKeys[DIK_LBRACKET] = SDLK_LEFTBRACKET;
+	_sdlKeys[DIK_RBRACKET] = SDLK_RIGHTBRACKET;
+	_sdlKeys[DIK_RETURN] = SDLK_RETURN;
+	_sdlKeys[DIK_LCONTROL] = SDLK_LCTRL;
+	_sdlKeys[DIK_A] = SDLK_a;
+	_sdlKeys[DIK_S] = SDLK_s;
+	_sdlKeys[DIK_D] = SDLK_d;
+	_sdlKeys[DIK_F] = SDLK_f;
+	_sdlKeys[DIK_G] = SDLK_g;
+	_sdlKeys[DIK_H] = SDLK_h;
+	_sdlKeys[DIK_J] = SDLK_j;
+	_sdlKeys[DIK_K] = SDLK_k;
+	_sdlKeys[DIK_L] = SDLK_l;
+	_sdlKeys[DIK_SEMICOLON] = SDLK_SEMICOLON;
+	_sdlKeys[DIK_APOSTROPHE] = SDLK_QUOTE;
+	_sdlKeys[DIK_GRAVE] = SDLK_BACKQUOTE;
+	_sdlKeys[DIK_LSHIFT] = SDLK_LSHIFT;
+	_sdlKeys[DIK_BACKSLASH] = SDLK_BACKSLASH;
+	_sdlKeys[DIK_OEM_102] = SDLK_BACKSLASH;
+	_sdlKeys[DIK_Z] = SDLK_z;
+	_sdlKeys[DIK_X] = SDLK_x;
+	_sdlKeys[DIK_C] = SDLK_c;
+	_sdlKeys[DIK_V] = SDLK_v;
+	_sdlKeys[DIK_B] = SDLK_b;
+	_sdlKeys[DIK_N] = SDLK_n;
+	_sdlKeys[DIK_M] = SDLK_m;
+	_sdlKeys[DIK_COMMA] = SDLK_COMMA;
+	_sdlKeys[DIK_PERIOD] = SDLK_PERIOD;
+	_sdlKeys[DIK_SLASH] = SDLK_SLASH;
+	_sdlKeys[DIK_RSHIFT] = SDLK_RSHIFT;
+	_sdlKeys[DIK_MULTIPLY] = SDLK_KP_MULTIPLY;
+	_sdlKeys[DIK_LMENU] = SDLK_LALT;
+	_sdlKeys[DIK_SPACE] = SDLK_SPACE;
+	_sdlKeys[DIK_CAPITAL] = SDLK_CAPSLOCK;
+	_sdlKeys[DIK_F1] = SDLK_F1;
+	_sdlKeys[DIK_F2] = SDLK_F2;
+	_sdlKeys[DIK_F3] = SDLK_F3;
+	_sdlKeys[DIK_F4] = SDLK_F4;
+	_sdlKeys[DIK_F5] = SDLK_F5;
+	_sdlKeys[DIK_F6] = SDLK_F6;
+	_sdlKeys[DIK_F7] = SDLK_F7;
+	_sdlKeys[DIK_F8] = SDLK_F8;
+	_sdlKeys[DIK_F9] = SDLK_F9;
+	_sdlKeys[DIK_F10] = SDLK_F10;
+	_sdlKeys[DIK_NUMLOCK] = SDLK_NUMLOCK;
+	_sdlKeys[DIK_SCROLL] = SDLK_SCROLLOCK;
+	_sdlKeys[DIK_NUMPAD7] = SDLK_KP7;
+	_sdlKeys[DIK_NUMPAD8] = SDLK_KP8;
+	_sdlKeys[DIK_NUMPAD9] = SDLK_KP9;
+	_sdlKeys[DIK_SUBTRACT] = SDLK_KP_MINUS;
+	_sdlKeys[DIK_NUMPAD4] = SDLK_KP4;
+	_sdlKeys[DIK_NUMPAD5] = SDLK_KP5;
+	_sdlKeys[DIK_NUMPAD6] = SDLK_KP6;
+	_sdlKeys[DIK_ADD] = SDLK_KP_PLUS;
+	_sdlKeys[DIK_NUMPAD1] = SDLK_KP1;
+	_sdlKeys[DIK_NUMPAD2] = SDLK_KP2;
+	_sdlKeys[DIK_NUMPAD3] = SDLK_KP3;
+	_sdlKeys[DIK_NUMPAD0] = SDLK_KP0;
+	_sdlKeys[DIK_DECIMAL] = SDLK_KP_PERIOD;
+	_sdlKeys[DIK_F11] = SDLK_F11;
+	_sdlKeys[DIK_F12] = SDLK_F12;
+
+	_sdlKeys[DIK_F13] = SDLK_F13;
+	_sdlKeys[DIK_F14] = SDLK_F14;
+	_sdlKeys[DIK_F15] = SDLK_F15;
+
+	_sdlKeys[DIK_NUMPADEQUALS] = SDLK_KP_EQUALS;
+	_sdlKeys[DIK_NUMPADENTER] = SDLK_KP_ENTER;
+	_sdlKeys[DIK_RCONTROL] = SDLK_RCTRL;
+	_sdlKeys[DIK_DIVIDE] = SDLK_KP_DIVIDE;
+	_sdlKeys[DIK_SYSRQ] = SDLK_SYSREQ;
+	_sdlKeys[DIK_RMENU] = SDLK_RALT;
+	_sdlKeys[DIK_PAUSE] = SDLK_PAUSE;
+	_sdlKeys[DIK_HOME] = SDLK_HOME;
+	_sdlKeys[DIK_UP] = SDLK_UP;
+	_sdlKeys[DIK_PRIOR] = SDLK_PAGEUP;
+	_sdlKeys[DIK_LEFT] = SDLK_LEFT;
+	_sdlKeys[DIK_RIGHT] = SDLK_RIGHT;
+	_sdlKeys[DIK_END] = SDLK_END;
+	_sdlKeys[DIK_DOWN] = SDLK_DOWN;
+	_sdlKeys[DIK_NEXT] = SDLK_PAGEDOWN;
+	_sdlKeys[DIK_INSERT] = SDLK_INSERT;
+	_sdlKeys[DIK_DELETE] = SDLK_DELETE;
+	_sdlKeys[DIK_LWIN] = SDLK_LMETA;
+	_sdlKeys[DIK_RWIN] = SDLK_RMETA;
+	_sdlKeys[DIK_APPS] = SDLK_MENU;
+}
+
+
+/**
+ Initializes SDL to Win32 key map
+ */
+static void initWin32KeyMap() {
+
+	_sdlKeys[VK_BACK] = SDLK_BACKSPACE;
+	_sdlKeys[VK_TAB] = SDLK_TAB;
+	_sdlKeys[VK_CLEAR] = SDLK_CLEAR;
+	_sdlKeys[VK_RETURN] = SDLK_RETURN;
+	_sdlKeys[VK_PAUSE] = SDLK_PAUSE;
+	_sdlKeys[VK_ESCAPE] = SDLK_ESCAPE;
+	_sdlKeys[VK_SPACE] = SDLK_SPACE;
+	_sdlKeys[VK_APOSTROPHE] = SDLK_QUOTE;
+	_sdlKeys[VK_COMMA] = SDLK_COMMA;
+	_sdlKeys[VK_MINUS] = SDLK_MINUS;
+	_sdlKeys[VK_PERIOD] = SDLK_PERIOD;
+	_sdlKeys[VK_SLASH] = SDLK_SLASH;
+	_sdlKeys['0'] = SDLK_0;
+	_sdlKeys['1'] = SDLK_1;
+	_sdlKeys['2'] = SDLK_2;
+	_sdlKeys['3'] = SDLK_3;
+	_sdlKeys['4'] = SDLK_4;
+	_sdlKeys['5'] = SDLK_5;
+	_sdlKeys['6'] = SDLK_6;
+	_sdlKeys['7'] = SDLK_7;
+	_sdlKeys['8'] = SDLK_8;
+	_sdlKeys['9'] = SDLK_9;
+	_sdlKeys[VK_SEMICOLON] = SDLK_SEMICOLON;
+	_sdlKeys[VK_EQUALS] = SDLK_EQUALS;
+	_sdlKeys[VK_LBRACKET] = SDLK_LEFTBRACKET;
+	_sdlKeys[VK_BACKSLASH] = SDLK_BACKSLASH;
+	_sdlKeys[VK_RBRACKET] = SDLK_RIGHTBRACKET;
+	_sdlKeys[VK_GRAVE] = SDLK_BACKQUOTE;
+	_sdlKeys[VK_BACKTICK] = SDLK_BACKQUOTE;
+	_sdlKeys[VK_DELETE] = SDLK_DELETE;
+
+	_sdlKeys[VK_NUMPAD0] = SDLK_KP0;
+	_sdlKeys[VK_NUMPAD1] = SDLK_KP1;
+	_sdlKeys[VK_NUMPAD2] = SDLK_KP2;
+	_sdlKeys[VK_NUMPAD3] = SDLK_KP3;
+	_sdlKeys[VK_NUMPAD4] = SDLK_KP4;
+	_sdlKeys[VK_NUMPAD5] = SDLK_KP5;
+	_sdlKeys[VK_NUMPAD6] = SDLK_KP6;
+	_sdlKeys[VK_NUMPAD7] = SDLK_KP7;
+	_sdlKeys[VK_NUMPAD8] = SDLK_KP8;
+	_sdlKeys[VK_NUMPAD9] = SDLK_KP9;
+	_sdlKeys[VK_DECIMAL] = SDLK_KP_PERIOD;
+	_sdlKeys[VK_DIVIDE] = SDLK_KP_DIVIDE;
+	_sdlKeys[VK_MULTIPLY] = SDLK_KP_MULTIPLY;
+	_sdlKeys[VK_SUBTRACT] = SDLK_KP_MINUS;
+	_sdlKeys[VK_ADD] = SDLK_KP_PLUS;
+
+	_sdlKeys[VK_UP] = SDLK_UP;
+	_sdlKeys[VK_DOWN] = SDLK_DOWN;
+	_sdlKeys[VK_RIGHT] = SDLK_RIGHT;
+	_sdlKeys[VK_LEFT] = SDLK_LEFT;
+	_sdlKeys[VK_INSERT] = SDLK_INSERT;
+	_sdlKeys[VK_HOME] = SDLK_HOME;
+	_sdlKeys[VK_END] = SDLK_END;
+	_sdlKeys[VK_PRIOR] = SDLK_PAGEUP;
+	_sdlKeys[VK_NEXT] = SDLK_PAGEDOWN;
+
+	_sdlKeys[VK_F1] = SDLK_F1;
+	_sdlKeys[VK_F2] = SDLK_F2;
+	_sdlKeys[VK_F3] = SDLK_F3;
+	_sdlKeys[VK_F4] = SDLK_F4;
+	_sdlKeys[VK_F5] = SDLK_F5;
+	_sdlKeys[VK_F6] = SDLK_F6;
+	_sdlKeys[VK_F7] = SDLK_F7;
+	_sdlKeys[VK_F8] = SDLK_F8;
+	_sdlKeys[VK_F9] = SDLK_F9;
+	_sdlKeys[VK_F10] = SDLK_F10;
+	_sdlKeys[VK_F11] = SDLK_F11;
+	_sdlKeys[VK_F12] = SDLK_F12;
+	_sdlKeys[VK_F13] = SDLK_F13;
+	_sdlKeys[VK_F14] = SDLK_F14;
+	_sdlKeys[VK_F15] = SDLK_F15;
+
+	_sdlKeys[VK_NUMLOCK] = SDLK_NUMLOCK;
+	_sdlKeys[VK_CAPITAL] = SDLK_CAPSLOCK;
+	_sdlKeys[VK_SCROLL] = SDLK_SCROLLOCK;
+	_sdlKeys[VK_RSHIFT] = SDLK_RSHIFT;
+	_sdlKeys[VK_LSHIFT] = SDLK_LSHIFT;
+	_sdlKeys[VK_RCONTROL] = SDLK_RCTRL;
+	_sdlKeys[VK_LCONTROL] = SDLK_LCTRL;
+	_sdlKeys[VK_RMENU] = SDLK_RALT;
+	_sdlKeys[VK_LMENU] = SDLK_LALT;
+	_sdlKeys[VK_RWIN] = SDLK_RSUPER;
+	_sdlKeys[VK_LWIN] = SDLK_LSUPER;
+
+	_sdlKeys[VK_HELP] = SDLK_HELP;
+	_sdlKeys[VK_PRINT] = SDLK_PRINT;
+	_sdlKeys[VK_SNAPSHOT] = SDLK_PRINT;
+	_sdlKeys[VK_CANCEL] = SDLK_BREAK;
+	_sdlKeys[VK_APPS] = SDLK_MENU;
 }
 
 
