@@ -31,6 +31,7 @@ libGLG3D_debug_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                            ../../../source/GLG3Dcpp/GLCaps.cpp \
                            ../../../source/GLG3Dcpp/glenumtostring.cpp \
                            ../../../source/GLG3Dcpp/Shader.cpp \
- 				           ../../../source/GLG3Dcpp/SDLWindow.cpp
+ 				   ../../../source/GLG3Dcpp/SDLWindow.cpp \
+                           ../../../source/GLG3Dcpp/DDSTexture.cpp
 
 libGLG3D_debug_la_LIBADD= $(SDL_LIBS) -lGLU -L../g3d -lG3D_debug

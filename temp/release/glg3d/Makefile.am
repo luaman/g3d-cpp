@@ -9,7 +9,7 @@ libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/edgeFeatures.cpp \
                      ../../../source/GLG3Dcpp/GApp.cpp \
                      ../../../source/GLG3Dcpp/GPUProgram.cpp \
-    	    	     ../../../source/GLG3Dcpp/IFSModel.cpp \
+                     ../../../source/GLG3Dcpp/IFSModel.cpp \
                      ../../../source/GLG3Dcpp/LightingParameters.cpp \
                      ../../../source/GLG3Dcpp/MD2Model.cpp \
                      ../../../source/GLG3Dcpp/MD2Model_load.cpp \
@@ -31,6 +31,7 @@ libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/GLCaps.cpp \
                      ../../../source/GLG3Dcpp/glenumtostring.cpp \
                      ../../../source/GLG3Dcpp/Shader.cpp \
-				     ../../../source/GLG3Dcpp/SDLWindow.cpp
+                     ../../../source/GLG3Dcpp/SDLWindow.cpp \
+                     ../../../source/GLG3Dcpp/DDSTexture.cpp
 
 libGLG3D_la_LIBADD= $(SDL_LIBS) -lGLU -L../g3d -lG3D
