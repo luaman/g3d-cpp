@@ -770,28 +770,32 @@ void MD2Model::PosedMD2Model::getCoordinateFrame(CoordinateFrame& c) const {
 }
 
 
-void MD2Model::PosedMD2Model::getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const {
-    model->getGeometry(pose, geometry);
+const MeshAlg::Geometry& MD2Model::PosedMD2Model::objectSpaceGeometry() const {
+    if (geometry.vertexArray.size() == 0) {
+        model->getGeometry(pose, const_cast<PosedMD2Model*>(this)->geometry);
+    }
+
+    return geometry;
 }
 
 
-void MD2Model::PosedMD2Model::getTriangleIndices(Array<int>& index) const {
-    index = model->indexArray;
+const Array<int>& MD2Model::PosedMD2Model::triangleIndices() const {
+    return model->indexArray;
 }
 
 
-void MD2Model::PosedMD2Model::getFaces(Array<MeshAlg::Face>& faces) const {
-    faces = model->faceArray;
+const Array<MeshAlg::Face>& MD2Model::PosedMD2Model::faces() const {
+    return model->faceArray;
 }
 
 
-void MD2Model::PosedMD2Model::getEdges(Array<MeshAlg::Edge>& edges) const {
-    edges = model->edgeArray;
+const Array<MeshAlg::Edge>& MD2Model::PosedMD2Model::edges() const {
+    return model->edgeArray;
 }
 
 
-void MD2Model::PosedMD2Model::getAdjacentFaces(Array< Array<int> >& adjacentFaces) const {
-    adjacentFaces = model->adjacentFaceArray;
+const Array< Array<int> >& MD2Model::PosedMD2Model::adjacentFaces() const {
+    return model->adjacentFaceArray;
 }
 
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2003-12-09
+  @edited  2003-12-16
  */ 
 
 #include "GLG3D/PosedModel.h"
@@ -14,9 +14,10 @@ namespace G3D {
 void PosedModel::getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const {
     CoordinateFrame c;
     getCoordinateFrame(c);
-    getObjectSpaceGeometry(geometry);
-    c.pointToWorldSpace(geometry.vertexArray, geometry.vertexArray);
-    c.normalToWorldSpace(geometry.normalArray, geometry.normalArray);
+
+    const MeshAlg::Geometry& osgeometry = objectSpaceGeometry();
+    c.pointToWorldSpace(osgeometry.vertexArray, geometry.vertexArray);
+    c.normalToWorldSpace(osgeometry.normalArray, geometry.normalArray);
 }
 
 
@@ -72,11 +73,8 @@ Box PosedModel::worldSpaceBoundingBox() const {
 
 
 void PosedModel::getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize) const {
-    MeshAlg::Geometry geometry;
-    getObjectSpaceGeometry(geometry);
-
-    Array<MeshAlg::Face> faceArray;
-    getFaces(faceArray);
+    const MeshAlg::Geometry& geometry = objectSpaceGeometry();
+    const Array<MeshAlg::Face>& faceArray = faces();
 
     MeshAlg::computeFaceNormals(geometry.vertexArray, faceArray, faceNormals, normalize);
 }
@@ -86,8 +84,7 @@ void PosedModel::getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool norm
     MeshAlg::Geometry geometry;
     getWorldSpaceGeometry(geometry);
 
-    Array<MeshAlg::Face> faceArray;
-    getFaces(faceArray);
+    const Array<MeshAlg::Face>& faceArray = faces();
 
     MeshAlg::computeFaceNormals(geometry.vertexArray, faceArray, faceNormals, normalize);
 }
@@ -111,8 +108,8 @@ CoordinateFrame PosedModelWrapper::coordinateFrame() const {
 }
 
 
-void PosedModelWrapper::getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const {
-    model->getObjectSpaceGeometry(geometry);
+const MeshAlg::Geometry& PosedModelWrapper::objectSpaceGeometry() const {
+    return model->objectSpaceGeometry();
 }
 
 
@@ -121,8 +118,8 @@ void PosedModelWrapper::getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const
 }
 
 
-void PosedModelWrapper::getFaces(Array<MeshAlg::Face>& faces) const {
-    model->getFaces(faces);
+const Array<MeshAlg::Face>& PosedModelWrapper::faces() const {
+    return model->faces();
 }
 
 
@@ -135,18 +132,19 @@ void PosedModelWrapper::getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bo
     model->getWorldSpaceFaceNormals(faceNormals, normalize);
 }
 
-void PosedModelWrapper::getEdges(Array<MeshAlg::Edge>& edges) const {
-    model->getEdges(edges);
+
+const Array<MeshAlg::Edge>& PosedModelWrapper::edges() const {
+    return model->edges();
 }
 
 
-void PosedModelWrapper::getAdjacentFaces(Array< Array<int> >& adjacentFaces) const {
-    model->getAdjacentFaces(adjacentFaces);
+const Array< Array<int> >& PosedModelWrapper::adjacentFaces() const {
+    return model->adjacentFaces();
 }
 
 
-void PosedModelWrapper::getTriangleIndices(Array<int>& indices) const {
-    model->getTriangleIndices(indices);
+const Array<int>& PosedModelWrapper::triangleIndices() const {
+    return model->triangleIndices();
 }
 
 
@@ -201,4 +199,3 @@ int PosedModelWrapper::numBrokenEdges() const {
 
 
 }
-

@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-12-07
+  @edited  2003-12-16
  */ 
 
 
@@ -41,12 +41,11 @@ private:
         virtual ~PosedIFSModel() {}
         virtual std::string name() const;
         virtual void getCoordinateFrame(CoordinateFrame&) const;
-        virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
-        virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
-        virtual void getFaces(Array<MeshAlg::Face>& faces) const;
-        virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
-        virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
-        virtual void getTriangleIndices(Array<int>& indices) const;
+        virtual const MeshAlg::Geometry& objectSpaceGeometry() const;
+        virtual const Array<MeshAlg::Face>& faces() const;
+        virtual const Array<MeshAlg::Edge>& edges() const;
+        virtual const Array< Array<int> >& adjacentFaces() const;
+        virtual const Array<int>& triangleIndices() const;
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
         virtual void render(RenderDevice* renderDevice) const;

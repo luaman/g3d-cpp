@@ -62,10 +62,9 @@ void Entity::render(RenderDevice* renderDevice) {
         renderDevice->setColor(color);
         
         MeshAlg::Geometry geometry;
-        Array<int> index;
+        const Array<int>& index = pm->triangleIndices();
 
         pm->getWorldSpaceGeometry(geometry);
-        pm->getTriangleIndices(index);
 
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 

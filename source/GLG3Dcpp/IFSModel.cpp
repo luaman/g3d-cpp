@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-12-07
+  @edited  2003-12-16
  */ 
 
 
@@ -217,37 +217,28 @@ void IFSModel::PosedIFSModel::getCoordinateFrame(CoordinateFrame& c) const {
 }
 
 
-void IFSModel::PosedIFSModel::getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const {
-    geometry = model->geometry;
+const MeshAlg::Geometry& IFSModel::PosedIFSModel::objectSpaceGeometry() const {
+    return model->geometry;
 }
 
 
-void IFSModel::PosedIFSModel::getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const {
-    CoordinateFrame C;
-    getCoordinateFrame(C);
-
-    C.pointToWorldSpace(model->geometry.vertexArray, geometry.vertexArray);
-    C.normalToWorldSpace(model->geometry.normalArray, geometry.normalArray);
+const Array<int>& IFSModel::PosedIFSModel::triangleIndices() const {
+    return model->indexArray;
 }
 
 
-void IFSModel::PosedIFSModel::getTriangleIndices(Array<int>& index) const {
-    index = model->indexArray;
+const Array<MeshAlg::Face>& IFSModel::PosedIFSModel::faces() const {
+    return model->faceArray;
 }
 
 
-void IFSModel::PosedIFSModel::getFaces(Array<MeshAlg::Face>& faces) const {
-    faces = model->faceArray;
+const Array<MeshAlg::Edge>& IFSModel::PosedIFSModel::edges() const {
+    return model->edgeArray;
 }
 
 
-void IFSModel::PosedIFSModel::getEdges(Array<MeshAlg::Edge>& edges) const {
-    edges = model->edgeArray;
-}
-
-
-void IFSModel::PosedIFSModel::getAdjacentFaces(Array< Array<int> >& adjacentFaces) const {
-    adjacentFaces = model->adjacentFaceArray;
+const Array< Array<int> >& IFSModel::PosedIFSModel::adjacentFaces() const {
+    return model->adjacentFaceArray;
 }
 
 

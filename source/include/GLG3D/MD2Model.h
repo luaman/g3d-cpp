@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-12-07
+ @edited  2003-12-16
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -175,15 +175,18 @@ protected:
         CoordinateFrame         cframe;
         Pose                    pose;
 
+        /** Filled out the first time objectSpaceGeometry is called */
+        MeshAlg::Geometry       geometry;
+
         PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, const Pose& _pose);
         virtual ~PosedMD2Model() {}
         virtual std::string name() const;
         virtual void getCoordinateFrame(CoordinateFrame&) const;
-        virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
-        virtual void getFaces(Array<MeshAlg::Face>& faces) const;
-        virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
-        virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
-        virtual void getTriangleIndices(Array<int>& indices) const;
+        virtual const MeshAlg::Geometry& objectSpaceGeometry() const;
+        virtual const Array<MeshAlg::Face>& faces() const;
+        virtual const Array<MeshAlg::Edge>& edges() const;
+        virtual const Array< Array<int> >& adjacentFaces() const;
+        virtual const Array<int>& triangleIndices() const;
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
         virtual void render(RenderDevice* renderDevice) const;

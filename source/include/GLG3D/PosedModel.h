@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2003-12-09
+  @edited  2003-12-16
  */ 
 
 
@@ -54,22 +54,24 @@ public:
     virtual CoordinateFrame coordinateFrame() const;
 
     /** Get the <B>object space</B> geometry (faster than getWorldSpaceGeometry). */
-    virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const = 0;
+    virtual const MeshAlg::Geometry& objectSpaceGeometry() const = 0;
 
     /** Get the <B>world space</B> geometry. */
     virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
-
-    virtual void getFaces(Array<MeshAlg::Face>& faces) const = 0;
 
     virtual void getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
     virtual void getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
-    virtual void getEdges(Array<MeshAlg::Edge>& edges) const = 0;
+    // Returns a reference rather than filling out an array because most
+    // PosedModels have this information available.
+    virtual const Array<MeshAlg::Face>& faces() const = 0;
 
-    virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const = 0;
+    virtual const Array<MeshAlg::Edge>& edges() const = 0;
 
-    virtual void getTriangleIndices(Array<int>& indices) const = 0;
+    virtual const Array< Array<int> >& adjacentFaces() const = 0;
+
+    virtual const Array<int>& triangleIndices() const = 0;
 
     virtual void getObjectSpaceBoundingSphere(Sphere&) const = 0;
 
@@ -118,21 +120,21 @@ public:
 
     virtual CoordinateFrame coordinateFrame() const;
 
-    virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
+    virtual const MeshAlg::Geometry& objectSpaceGeometry() const;
 
     virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
 
-    virtual void getFaces(Array<MeshAlg::Face>& faces) const;
+    virtual const Array<MeshAlg::Face>& faces() const;
 
-    virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
+    virtual const Array<MeshAlg::Edge>& edges() const;
 
     virtual void getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
     virtual void getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
-    virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
+    virtual const Array< Array<int> >& adjacentFaces() const;
 
-    virtual void getTriangleIndices(Array<int>& indices) const;
+    virtual const Array<int>& triangleIndices() const;
 
     virtual void getObjectSpaceBoundingSphere(Sphere&) const;
 
