@@ -3893,10 +3893,12 @@
 		0FCB73B606DF60D7001A7213 = {
 			buildActionMask = 2147483647;
 			files = (
+				3E66D9B307F04A8200FFE893,
 				0FCB73C206DF6128001A7213,
 				0FCB73D106DF6202001A7213,
 				0FCB73F706DF6354001A7213,
 				3EDE8579071BDA660008417F,
+				3E66D9EF07F04B2700FFE893,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3909,7 +3911,7 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "\"$(HOME)/Library/Frameworks\" /Users/dbolli/Library/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = "\"$(HOME)/Library/Frameworks\"";
 				HEADER_SEARCH_PATHS = ../source/include;
 				INSTALL_PATH = /usr/local/bin;
 				OTHER_CFLAGS = "";
@@ -3985,6 +3987,7 @@
 		};
 		0FCB73D406DF6223001A7213 = {
 			children = (
+				3E66D9EE07F04B2700FFE893,
 				3EDE8578071BDA660008417F,
 				0FCB73F606DF6354001A7213,
 				0FCB73D006DF6202001A7213,
@@ -4060,6 +4063,26 @@
 //3E2
 //3E3
 //3E4
+		3E66D9B307F04A8200FFE893 = {
+			fileRef = 0F55008D06DD5F07008DD4F8;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3E66D9EE07F04B2700FFE893 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = OpenGL.framework;
+			path = /System/Library/Frameworks/OpenGL.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		3E66D9EF07F04B2700FFE893 = {
+			fileRef = 3E66D9EE07F04B2700FFE893;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		3ED14F8707C1DE3700FA7AE0 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
