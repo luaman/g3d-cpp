@@ -400,8 +400,9 @@ to add zlibstat.lib to your linker list.
    with portions controlled by the <A HREF="IJG-README.TXT">IJG license</A></I>
 
   <CODE>
-   <BR>Copyright &copy; 2000-2003, Morgan McGuire
-   <BR>All rights reserved.
+   <IMG SRC="http://opensource.org/trademarks/osi-certified/web/osi-certified-120x100.gif">
+   <DT>Copyright &copy; 2000-2003, Morgan McGuire
+   <DT>All rights reserved.
    <P>
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
