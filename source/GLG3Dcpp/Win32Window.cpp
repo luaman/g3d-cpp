@@ -62,7 +62,7 @@ void makeKeyEvent(int, int, GEvent&);
 void mouseButton(bool, int, DWORD, GEvent&);
 void initDI8KeyMap();
 void initWin32KeyMap();
-
+void printPixelFormatDescription(int, HDC, TextOutput&);
 
 Win32Window::Win32Window(const GWindowSettings& s) {
     initWGL();
@@ -214,6 +214,16 @@ void Win32Window::init(HWND hwnd) {
 
     // Get the initial pixel format.  We'll override this below in a moment.
     pixelFormat = ChoosePixelFormat(_hDC, &pixelFormatDesc);
+
+#ifdef _DEBUG
+    int numSupported = DescribePixelFormat(_hDC, 0, 0, NULL);
+    TextOutput textOutFormat("pixelFormats.txt");
+    textOutFormat.printf("%d Pixel Formats\n\n\n", numSupported);
+    for(int i = 1; i <= numSupported; ++i) {
+        printPixelFormatDescription(i, _hDC, textOutFormat);
+    }
+    textOutFormat.commit();
+#endif
 
     if (wglChoosePixelFormatEXT != NULL) {
         // Use wglChoosePixelFormatEXT to override the pixel format choice for antialiasing.
@@ -1526,6 +1536,73 @@ static void initWin32KeyMap() {
 	_sdlKeys[VK_SNAPSHOT] = SDLK_PRINT;
 	_sdlKeys[VK_CANCEL] = SDLK_BREAK;
 	_sdlKeys[VK_APPS] = SDLK_MENU;
+}
+
+
+static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
+
+    PIXELFORMATDESCRIPTOR pixelFormat;
+    DescribePixelFormat(hdc, format, sizeof(PIXELFORMATDESCRIPTOR), &pixelFormat);
+
+    /*
+    typedef struct tagPIXELFORMATDESCRIPTOR { // pfd   
+      WORD  nSize; 
+      WORD  nVersion; 
+      DWORD dwFlags; 
+      BYTE  iPixelType; 
+      BYTE  cColorBits; 
+      BYTE  cRedBits; 
+      BYTE  cRedShift; 
+      BYTE  cGreenBits; 
+      BYTE  cGreenShift; 
+      BYTE  cBlueBits; 
+      BYTE  cBlueShift; 
+      BYTE  cAlphaBits; 
+      BYTE  cAlphaShift; 
+      BYTE  cAccumBits; 
+      BYTE  cAccumRedBits; 
+      BYTE  cAccumGreenBits; 
+      BYTE  cAccumBlueBits; 
+      BYTE  cAccumAlphaBits; 
+      BYTE  cDepthBits; 
+      BYTE  cStencilBits; 
+      BYTE  cAuxBuffers; 
+      BYTE  iLayerType; 
+      BYTE  bReserved; 
+      DWORD dwLayerMask; 
+      DWORD dwVisibleMask; 
+      DWORD dwDamageMask; 
+    } PIXELFORMATDESCRIPTOR; 
+    */
+
+    out.printf("#%d Format Description\n", format);
+    out.printf("nSize:\t\t\t\t%d\n", pixelFormat.nSize);
+    out.printf("nVersion:\t\t\t%d\n", pixelFormat.nVersion);
+    out.printf("dwFlags:\t\t\t%d\n", pixelFormat.dwFlags);
+    out.printf("iPixelType:\t\t\t%d\n", pixelFormat.iPixelType);
+    out.printf("cColorBits:\t\t\t%d\n", pixelFormat.cColorBits);
+    out.printf("cRedBits:\t\t\t%d\n", pixelFormat.cRedBits);
+    out.printf("cRedShift:\t\t\t%d\n", pixelFormat.cRedShift);
+    out.printf("cGreenBits:\t\t\t%d\n", pixelFormat.cGreenBits);
+    out.printf("cGreenShift:\t\t\t%d\n", pixelFormat.cGreenShift);
+    out.printf("cBlueBits:\t\t\t%d\n", pixelFormat.cBlueBits);
+    out.printf("cBlueShift:\t\t\t%d\n", pixelFormat.cBlueShift);
+    out.printf("cAlphaBits:\t\t\t%d\n", pixelFormat.cAlphaBits);
+    out.printf("cAlphaShift:\t\t\t%d\n", pixelFormat.cAlphaShift);
+    out.printf("cAccumBits:\t\t\t%d\n", pixelFormat.cAccumBits);
+    out.printf("cAccumRedBits:\t\t\t%d\n", pixelFormat.cAccumRedBits);
+    out.printf("cAccumGreenBits:\t\t%d\n", pixelFormat.cAccumGreenBits);
+    out.printf("cAccumBlueBits:\t\t\t%d\n", pixelFormat.cAccumBlueBits);
+    out.printf("cAccumAlphaBits:\t\t%d\n", pixelFormat.cAccumAlphaBits);
+    out.printf("cDepthBits:\t\t\t%d\n", pixelFormat.cDepthBits);
+    out.printf("cStencilBits:\t\t\t%d\n", pixelFormat.cStencilBits);
+    out.printf("cAuxBuffers:\t\t\t%d\n", pixelFormat.cAuxBuffers);
+    out.printf("iLayerType:\t\t\t%d\n", pixelFormat.iLayerType);
+    out.printf("bReserved:\t\t\t%d\n", pixelFormat.bReserved);
+    out.printf("dwLayerMask:\t\t\t%d\n", pixelFormat.dwLayerMask);
+    out.printf("dwDamageMask:\t\t\t%d\n", pixelFormat.dwDamageMask);
+
+    out.printf("\n");
 }
 
 
