@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2002-07-09
-  @edited  2005-03-02
+  @edited  2005-03-28
 
   Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
@@ -63,6 +63,28 @@ public:
     Vector4& operator= (const Vector4& rkVector);
     bool operator== (const Vector4& rkVector) const;
     bool operator!= (const Vector4& rkVector) const;
+
+    inline void set(float _x, float _y, float _z, float _w) {
+        x = _x;
+        y = _y;
+        z = _z;
+        w = _w;
+    }
+
+    inline void set(const Vector3& v, float _w) {
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        w = _w;
+    }
+
+    inline void set(const Vector2& v, float _z, float _w) {
+        x = v.x;
+        y = v.y;
+        z = _z;
+        w = _w;
+    }
+
     unsigned int hashCode() const;
     bool fuzzyEq(const Vector4& other) const;
     bool fuzzyNe(const Vector4& other) const;
