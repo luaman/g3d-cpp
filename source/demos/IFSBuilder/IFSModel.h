@@ -56,6 +56,9 @@ private:
     /** Algorithmically generate a twisted ring model */
     void createRing();
 
+    /** Algorithmically generate a polygon */
+    void createPolygon();
+
 public:
 
     std::string             name;

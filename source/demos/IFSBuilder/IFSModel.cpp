@@ -27,6 +27,7 @@ XIFSModel::XIFSModel(const std::string& filename) {
 
     std::string f = toLower(filename);
 
+    //createPolygon(); return;
     //createRing();  return;
 
     if (endsWith(f, ".ifs")) {
@@ -42,6 +43,27 @@ XIFSModel::XIFSModel(const std::string& filename) {
     } else {
         debugAssert(false);
     }
+}
+
+
+void XIFSModel::createPolygon() {
+    IFSModelBuilder builder;
+
+    int sides = 8;
+
+    double shift = isEven(sides) ? (G3D_PI / sides) : 0;
+    for (int i = 1; i < sides - 1; ++i) {
+        double angle0 = 2 * G3D_PI * i / sides + shift;
+        double angle1 = 2 * G3D_PI * (i + 1) / sides + shift;
+
+        Vector3 a(sin(shift), 0, -cos(shift));
+        Vector3 b(sin(angle1), 0, -cos(angle1));
+        Vector3 c(sin(angle0), 0, -cos(angle0));
+
+        builder.addTriangle(a, b, c);
+    }
+
+    builder.commit(this);
 }
 
 

@@ -16,7 +16,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-12-10
+  @edited  2003-12-18
  */ 
 
 #include <G3DAll.h>
@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Mobius Strip with 3 Half-Twists";
+        model->name = "Octagon";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");
