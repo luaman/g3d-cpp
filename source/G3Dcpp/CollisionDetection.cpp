@@ -843,6 +843,10 @@ bool CollisionDetection::isPointInsideTriangle(
         i = X_AXIS;
         j = Y_AXIS;
         break;
+
+    case DETECT_AXIS:
+        debugAssertM(false, "Should not get here.");
+        break;
     }
 
 

@@ -4,19 +4,18 @@
  @author Morgan McGuire, graphics3d.com
 
  @created 2000-09-09
- @edited  2003-02-15
+ @edited  2003-04-01
 */
 
 #include "G3D/stringutils.h"
 #include "G3D/BinaryInput.h"
 #include <algorithm>
 
-// disable: "C++ exception handler used"
-#pragma warning (disable : 4530)
-
 namespace G3D {
 
 #if _WIN32
+    // disable: "C++ exception handler used"
+    #pragma warning (disable : 4530)
     const char* NEWLINE = "\r\n";
 #else
     const char* NEWLINE = "\n";

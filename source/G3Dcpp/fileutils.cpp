@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2003-02-15
+ @edited  2003-04-01
  */
 
 #include "G3D/fileutils.h"
@@ -230,10 +230,10 @@ void parseFilename(
     // Pull the extension off
     {
         // Find the period
-        int i = f.rfind('.');
+        size_t i = f.rfind('.');
 
         // Make sure it is before a slash!
-        int j = iMax(f.rfind('/'), f.rfind('\\'));
+        size_t j = iMax(f.rfind('/'), f.rfind('\\'));
         if ((i != std::string::npos) && (i > j)) {
             ext = f.substr(i + 1, f.size() - i - 1);
             f = f.substr(0, i);
@@ -243,9 +243,9 @@ void parseFilename(
     // Pull the basename off
     {
         // Find the last slash
-        int i = iMax(f.rfind('/'), f.rfind('\\'));
+        size_t i = iMax(f.rfind('/'), f.rfind('\\'));
         
-        if (i == -1) {
+        if (i == std::string::npos) {
             
             // There is no slash; the basename is the whole thing
             base = f;
@@ -266,8 +266,8 @@ void parseFilename(
         prev = cur;
         
         // Allow either slash
-        int i = f.find('/', prev + 1);
-        int j = f.find('\\', prev + 1);
+        size_t i = f.find('/', prev + 1);
+        size_t j = f.find('\\', prev + 1);
         if (i == std::string::npos) {
             i = f.size();
         }
