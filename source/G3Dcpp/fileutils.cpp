@@ -12,7 +12,7 @@
 #include "G3D/g3dmath.h"
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifdef _MSCVER
+#ifdef _MSC_VER
    // Needed for _getcwd
    #include <direct.h>
 #else

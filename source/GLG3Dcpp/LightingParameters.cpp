@@ -10,7 +10,7 @@
 #include <sys/timeb.h>
 #include <sys/types.h> 
 
-#ifndef _MSCVER
+#ifndef _MSC_VER
    #define _timeb timeb
    #define _ftime ftime
 #endif
