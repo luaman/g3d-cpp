@@ -83,6 +83,7 @@ wxGWindow::wxGWindow(
     window->GetClientSize(&settings.width, &settings.height);
 }
 
+
 wxGWindow::wxGWindow(wxG3DCanvas* canvas) : 
     invisible(wxCURSOR_BLANK), 
     arrow(wxCURSOR_ARROW), 
@@ -253,7 +254,7 @@ bool wxGWindow::pollEvent(GEvent& e) {
     return false;
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
 
 void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
 {
@@ -289,11 +290,11 @@ void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
 #endif
 
     _gWindow->keyboardEvents.pushBack(e);
+    event.Skip();
 }
 
 
-void wxG3DCanvas::handleKeyDown(wxKeyEvent& event)
-{
+void wxG3DCanvas::handleKeyDown(wxKeyEvent& event) {
     if (_gWindow->keyboardEvents.length() > 200) {
         _gWindow->keyboardEvents.clear();
     }
@@ -325,6 +326,7 @@ void wxG3DCanvas::handleKeyDown(wxKeyEvent& event)
 #endif
 
     _gWindow->keyboardEvents.pushBack(e);
+    event.Skip();
 }
 
 
@@ -344,6 +346,7 @@ void wxG3DCanvas::handleMouseLeftUp(wxMouseEvent& event) {
     _gWindow->keyboardEvents.pushBack(e);
 
     _gWindow->buttons[0] = 0;
+    event.Skip();
 }
 
 
@@ -363,6 +366,8 @@ void wxG3DCanvas::handleMouseLeftDown(wxMouseEvent& event) {
     _gWindow->keyboardEvents.pushBack(e);
 
     _gWindow->buttons[0] = 1;
+
+    event.Skip();
 }
 
 
@@ -382,6 +387,7 @@ void wxG3DCanvas::handleMouseRightUp(wxMouseEvent& event) {
     _gWindow->keyboardEvents.pushBack(e);
 
     _gWindow->buttons[2] = 0;
+    event.Skip();
 }
 
 
@@ -401,6 +407,7 @@ void wxG3DCanvas::handleMouseRightDown(wxMouseEvent& event) {
     _gWindow->keyboardEvents.pushBack(e);
 
     _gWindow->buttons[2] = 1;
+    event.Skip();
 }
 
 
@@ -420,6 +427,7 @@ void wxG3DCanvas::handleMouseMiddleUp(wxMouseEvent& event) {
     _gWindow->keyboardEvents.pushBack(e);
 
     _gWindow->buttons[1] = 0;
+    event.Skip();
 }
 
 
@@ -439,6 +447,7 @@ void wxG3DCanvas::handleMouseMiddleDown(wxMouseEvent& event) {
     _gWindow->keyboardEvents.pushBack(e);
 
     _gWindow->buttons[1] = 1;
+    event.Skip();
 }
 
 
@@ -446,6 +455,7 @@ void wxG3DCanvas::handleMouseMove(wxMouseEvent& event) {
 
     _gWindow->relativeX = event.m_x - _gWindow->clientX;
     _gWindow->relativeY = event.m_y - _gWindow->clientY;
+    event.Skip();
 }
 
 
@@ -457,6 +467,7 @@ void wxG3DCanvas::handleWindowMove(wxMoveEvent& event) {
 
     _gWindow->settings.x = point.x;
     _gWindow->settings.y = point.y;
+    event.Skip();
 }
 
 
@@ -470,6 +481,7 @@ void wxG3DCanvas::handleWindowClose(wxCloseEvent& event) {
     e.key.type = SDL_QUIT;
 
     _gWindow->keyboardEvents.pushBack(e);
+    event.Skip();
 }
 
 

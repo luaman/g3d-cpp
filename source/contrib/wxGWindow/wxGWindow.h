@@ -55,7 +55,7 @@
 #endif
 
 #include "wx/glcanvas.h"
-
+#include "wx/chkconf.h"
 
 // Defined for wxGWindow
 class wxG3DCanvas;

@@ -2,7 +2,6 @@
 // Demo of wxGWindow
 //
 #include "wxGWindow.h"
-#include "wx/chkconf.h"
 
 
 class App : public GApp {
