@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Moved contrib/Win32Window to G3D::Win32Window
      <LI> contrib/Image [Morgan]
      <LI> contrib/wxGWindow [Morgan]
      <LI> Added support for full-screen antialiasing to contrib/Win32Window

@@ -8,8 +8,6 @@ ObjModel      -  A class in the style of IFSModel and MD2Model for Maya obj file
 
 GlutWindow    -  GWindow implementation using the GLUT API.  Not compatible with GApp.  By Morgan and Dan Keefe
 
-Win32Window   - Native Win32 GWindow implementation.  By Morgan and Max McGuire
-
 AudioDevice   - Sound interface that uses FMOD or SDL_Mixer.  By Morgan.
 
 CurveEditor   - GUI spline editor.  By Morgan

@@ -212,10 +212,18 @@ SOURCE=.\GLG3Dcpp\VARSystem.cpp
 
 SOURCE=.\GLG3Dcpp\VertexProgram.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\Win32Window.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\directinput8.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\include\GLG3D\Draw.h
@@ -351,6 +359,10 @@ SOURCE=.\include\GLG3D\VARArea.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\VertexProgram.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\Win32Window.h
 # End Source File
 # End Group
 # Begin Group "GL Headers"

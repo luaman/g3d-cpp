@@ -5,7 +5,7 @@
 
  @maintainer Corey Taylor 
  @created 	  2004-05-21
- @edited  	  2004-10-12
+ @edited  	  2004-10-21
     
  Copyright 2000-2002, Morgan McGuire.
  All rights reserved.
@@ -14,14 +14,15 @@
 #ifndef G3D_WIN32WINDOW_H
 #define G3D_WIN32WINDOW_H
 
-#include <G3DAll.h>
+#include <G3D/platform.h>
 
+// This file is only used on Windows
 #ifdef G3D_WIN32
 
+#include "GLG3D/GWindow.h"
 #include <windows.h>
 #include <string>
 #include <time.h>
-
 
 namespace G3D {
 
@@ -70,24 +71,31 @@ private:
     // Special private constuctor for Win32APIWindow
     explicit Win32Window() {}
 
-public:
-
+    
 	/** Constructs from a new window */
 	explicit Win32Window(const GWindowSettings& settings);
 
 	/** Constructs from an existing window */
 	Win32Window(const GWindowSettings& settings, HWND hwnd);
+
+    HWND                 window;
+
+public:
+
 	
-    /** Detects where DirectInput8 is available or not
-        and uses Win32 API keyboard input appropriately. */
-    static Win32Window* createBestWindow(const GWindowSettings& settings);
+    /** Different subclasses will be returned depending on
+        whether DirectInput8 is available. You must delete 
+        the window returned when you are done with it. */
+    static Win32Window* create(const GWindowSettings& settings=GWindowSettings());
 
 	virtual ~Win32Window();
 	
 	void close();
 	
-	HWND                 window;
-	
+    inline HWND hwnd() const {
+        return window;
+    }
+
 	inline HDC hdc() const {
 		return _hDC;
 	}
@@ -155,7 +163,6 @@ public:
 
 
 class Win32APIWindow : public Win32Window {
-
 public:
 
     Win32APIWindow(const GWindowSettings& settings);
@@ -184,8 +191,6 @@ public:
 
 } // namespace G3D
 
-using G3D::Win32Window; // temporary backwards compatibility.
-using G3D::Win32APIWindow;
 
 #endif // G3D_WIN32
 

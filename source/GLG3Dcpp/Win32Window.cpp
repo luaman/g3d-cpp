@@ -2,19 +2,28 @@
   @file Win32Window.cpp
 
   @maintainer Morgan McGuire, matrix@graphics3d.com 
+  @cite       Written by Corey Taylor & Morgan McGuire
   @cite       Special thanks to Max McGuire of Ironlore
   @created 	  2004-05-21
-  @edited  	  2004-10-07
+  @edited  	  2004-10-17
     
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
 */
 
-#include "Win32Window.h"
-#include "directinput8.h"
-using G3D::_internal::_DirectInput;
+#include "G3D/platform.h"
 
+// This file is ignored on other platforms
 #ifdef G3D_WIN32
+
+#include "G3D/../graphics3d.h"
+#include "GLG3D/Win32Window.h"
+#include "GLG3D/glcalls.h"
+#include "directinput8.h"
+
+#include "GLG3D/UserInput.h"
+
+using G3D::_internal::_DirectInput;
 
 #include <time.h>
 #include <crtdbg.h>
@@ -30,8 +39,8 @@ using G3D::_internal::_DirectInput;
     The joystick axis order returned to users is: X, Y, Z, Slider1, Slider2, rX, rY, rZ.
 
     Important:  The cooperation level of Win32Window joysticks is Foreground:Non-Exclusive.
-        This means that other programs can get access to the joystick(preferably non-exclusive) and the joystick
-        is only aquired when Win32Window is in the foreground.
+    This means that other programs can get access to the joystick(preferably non-exclusive) and the joystick
+     is only aquired when Win32Window is in the foreground.
 */
 
 namespace G3D {
@@ -272,7 +281,7 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
 }
 
 
-Win32Window* Win32Window::createBestWindow(const GWindowSettings& settings) {
+Win32Window* Win32Window::create(const GWindowSettings& settings) {
 
     if (_DirectInput::libraryExists()) {
 

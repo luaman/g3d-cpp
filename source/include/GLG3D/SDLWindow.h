@@ -30,7 +30,7 @@ namespace G3D {
  On Windows, centering is relative to the primary monitor and full-screen
  means on the primary monitor.
 
- <B>Beta API!  This interface is experimental and is subject to change.</B>
+  @deprecated on Windows, use Win32Window instead.
  */
 class SDLWindow : public GWindow {
 private:

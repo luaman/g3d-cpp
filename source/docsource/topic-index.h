@@ -183,6 +183,7 @@
         G3D::Draw,
         G3D::GWindow,
         G3D::SDLWindow,
+        G3D::Win32Window,
         G3D::Milestone,
         G3D::PixelProgram,
         G3D::RenderDevice,
@@ -196,6 +197,11 @@
         G3D::VertexAndPixelShader,
         G3D::Shader,
         G3D::ObjectShader
+        
+        See also contrib code
+        <A HREF="../contrib/GlutWindow">GlutWindow</A>, 
+        <A HREF="../contrib/wxGWindow">wxGWindow</A>,
+        <A HREF="../contrib/CoreyGWindow">QtWindow</A>
 
       <LI><B>OpenGL Extension</B> &nbsp; &nbsp;
         debugAssertGLOk,

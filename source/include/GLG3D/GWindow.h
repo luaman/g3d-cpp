@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-10-08
+  @edited  2004-10-21
 */
 
 #ifndef G3D_GWINDOW_H
@@ -56,36 +56,6 @@ typedef SDL_Event GEvent;
  in a future revision.  For now it is limited to rendering
  and window management.  Consider writing your own UserInput
  replacement in the mean time.
-
-
- <B>Beta API!  This interface is experimental and is subject to change.</B>
-
-  I added a tentative G3D::Window interface in order to solicit comments.
-
-Previously, RenderDevice and UserInput used SDL to abstract the underlying 
-operating system's windowing and event APIs.  The major benefit of this 
-architecture is that G3D does not contain the large amount of ugly and 
-platform-specific code needed to map the platform APIs to a common API.  
-Through getHDC and exposure of the underlying SDL functions, developers 
-are still able to access platform specific features.  
-
-The drawback to the previous architecture is that it prevents G3D users 
-from initializing the window using a platform API.  An important case to 
-consider are ActiveX controls/COM objects, where the HDC already exists 
-before OpenGL is initialized.  Another is antialiasing, which is poorly 
-supported by SDL on Windows and can only be enabled during window creation.  
-A third case is negotiation with the platform for a compromise framebuffer
- when the ideal bit-depth or other features are not available. 
-
-Although I intend to later extend it into event handling, the new Window
-API only addresses platform features needed for RenderDevice.  G3D will 
-ship with platform-independent SDLWindow (which RenderDevice will use by 
-default).  A new init method for RenderDevice (and a new constructor for 
-GApp) will accept a Window* and route all platform calls through that. 
-Users will then be able to implement other subclasses, like HDCWindow, 
-without having to rebuild the library or edit the internals of RenderDevice.  
-This proposal is backwards compatible to the 6.00 API since everything will
-default to SDLWindow.  
  */
 class GWindow {
 private:
