@@ -12,7 +12,7 @@
 
 #include <G3DAll.h>
 
-std::string             DATA_DIR        = "d:/libraries/g3d-6.00/data/";
+std::string             DATA_DIR        = "d:/libraries/g3d-6_00/data/";
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
