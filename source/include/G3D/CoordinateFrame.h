@@ -68,7 +68,7 @@ public:
     Vector3							translation;
 
     inline bool operator==(const CoordinateFrame& other) const {
-        return (translation == translation) && (rotation == other.rotation);
+        return (translation == other.translation) && (rotation == other.rotation);
     }
 
     inline bool operator!=(const CoordinateFrame& other) const {

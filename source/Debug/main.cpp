@@ -79,69 +79,6 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-/*
-    GImage frame0("c:/tmp/brunette-walk-I_P-009.png");
-    GImage frame1("c:/tmp/brunette-walk-I_P-010.png");
-
-    debugAssert(frame0.channels == 3);
-    debugAssert(frame1.channels == 3);
-
-    VideoSerializer s;
-    s.frameFormat = VideoSerializer::FORMAT_R8G8B8;
-    s.width = frame0.width;
-    s.height = frame0.height;
-    s.preferredEncoding = VideoSerializer::ENCODING_SPACE_DIFF1;
-    s.previousFrame = frame0.byte();
-    s.currentFrame = frame1.byte();
-    s.zip = false;
-
-    int n = frame0.width * frame0.height * 3;
-    int num0 = 0, num1 = 0, num2 = 0, num3 = 0;
-
-    for (int i = 0; i < n; ++i) {
-        switch (iAbs(frame1.byte()[i] - frame0.byte()[i])) {
-        case 0:
-            ++num0;
-            break;
-        case 1:
-            ++num1;
-            break;
-        case 2:
-            ++num2;
-            break;
-        case 3:
-            ++num3;
-            break;
-        }
-    }
-
-    uint8* x = (uint8*)malloc(1024 * 1024 * 10);
-    int compressedSize = 0;
-    {
-        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-        s.serialize(b);
-        compressedSize = b.length();
-        b.commit(x);
-    }
-
-    int rawSize = frame0.width * frame0.height * 3;
-
-    GImage frame1decompressed(frame1.width, frame1.height, 3);
-    s.currentFrame = frame1decompressed.byte();
-    {
-        BinaryInput b(x, compressedSize, G3D_LITTLE_ENDIAN);
-        s.deserialize(b);
-    }
-
-    // r:1 ratio
-    double ratio = double(rawSize) / double(compressedSize);
-
-    for (int i = 0; i < 8000; ++i) {
-        debugAssert(frame1decompressed.byte()[i] == frame1.byte()[i]);
-    }
-
-    app->im = Texture::fromFile("c:/tmp/brunette-walk-I_P-009.png");
-*/    
 }
 
 
@@ -190,6 +127,8 @@ void Demo::doGraphics() {
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
        
+        Draw::sphere(Sphere(Vector3::zero(), 2), app->renderDevice);
+
     app->renderDevice->disableLighting();
 
     if (app->sky.notNull()) {
