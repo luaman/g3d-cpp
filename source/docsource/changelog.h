@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::Array::operator=(std::vector)
      <LI> glDisableAllTextures()
      <LI> G3D::setFailureHook
      <LI> G3D::Shader::fromStrings now accepts optional names for the vertex and pixel shader

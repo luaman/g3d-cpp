@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2005-02-24
+  @edited  2005-02-28
 
   Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
@@ -17,6 +17,7 @@
 #include "G3D/platform.h"
 #include "G3D/debug.h"
 #include "G3D/System.h"
+#include <vector>
 #include <algorithm>
 
 #ifdef G3D_WIN32
@@ -236,7 +237,15 @@ public:
     */
    Array& operator=(const Array& other) {
        resize(other.num);
-       for (int i = 0; i < num; i++) {
+       for (int i = 0; i < num; ++i) {
+           data[i] = other[i];
+       }
+       return *this;
+   }
+
+   Array& operator=(const std::vector<T>& other) {
+       resize((int)other.size());
+       for (int i = 0; i < num; ++i) {
            data[i] = other[i];
        }
        return *this;
