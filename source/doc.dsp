@@ -116,6 +116,10 @@ SOURCE=".\docsource\guide-shaders.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-tutorial.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-ui.h"
 # End Source File
 # Begin Source File

@@ -1,5 +1,5 @@
 /**
- @page effects Effects
+ @page guideeffects Effects
 
 	(insert md2 + shadow picture)
 

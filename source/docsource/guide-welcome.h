@@ -39,9 +39,7 @@ we recommend using one with G3D if your project has extensive UI needs.
   OS X,
   Building the Library</TD></TR>
 
-
-  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>
-  
+  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>  
 
   <TR><TD VALIGN=TOP>\link guideconcepts Concepts \endlink</TD><TD>
   Immediate Mode Graphics,
@@ -49,9 +47,13 @@ we recommend using one with G3D if your project has extensive UI needs.
   Reference Counting,
   STL</TD></TR>
 
+  <TR><TD VALIGN=TOP>\link guidetutorial Tutorial \endlink</TD><TD>
+  </TD></TR>
+
   <TR><TD VALIGN=TOP>\link guideapp Application Framework \endlink</TD><TD VALIGN=TOP>
    Applets, Models, Selection, FPS Controls
   </TD></TR>
+
 
   <TR><TD VALIGN=TOP>\link guideui User Input\endlink</TD><TD VALIGN=TOP>
   </TD></TR>
