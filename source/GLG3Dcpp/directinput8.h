@@ -1329,6 +1329,8 @@ private:
         tmpInfo.numAxes = joystickCaps.dwAxes;
         tmpInfo.numButtons = joystickCaps.dwButtons;
 
+        tmpInfo.name = lpddi->tszProductName;
+
         ((_DirectInput*)pvRef)->_joysticks.append(tmpInfo);
 
         return true;
