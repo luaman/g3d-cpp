@@ -13,6 +13,9 @@
    Changes in 6.04:
    <UL>
      <LI> G3D Manual! [ Morgan and Sascha ]
+     <LI> Initial MSVC7 build script.  MSVC7 is not an officially supported platform
+          however the release contains MSVC7 precompiled binaries and the build script
+          will automatically build on both 6 and 7.
      <LI> G3D::ReferenceCountedPointer assignment now allows compile time subtyping
      <LI> G3D::ReferenceCountedPointer != operator
      <LI> G3D::ReferenceCountedPointer::notNull

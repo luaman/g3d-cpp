@@ -103,18 +103,19 @@ def linuxCheckVersion():
  
     try:
         checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')
-	try:
-	    checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
-	except:
-	    checkVersion('automake-1.7 --version', '1.6', 'Requires automake 1.6 or later.')
 
-	try:
-	    checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
-	except:
-	    checkVersion('aclocal-1.7 --version', '1.6', 'Requires aclocal 1.6 or later.')
+        try:
+            checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
+        except:
+            checkVersion('automake-1.7 --version', '1.6', 'Requires automake 1.6 or later.')
 
-        checkVersion(doxygen + ' --version', '1.2', 'Requires doxygen 1.3 or later.')
-        checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
+        try:
+            checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
+        except:
+            checkVersion('aclocal-1.7 --version', '1.6', 'Requires aclocal 1.6 or later.')
+
+            checkVersion(doxygen + ' --version', '1.2', 'Requires doxygen 1.3 or later.')
+            checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
 
     except Error, e:
         print e.value
@@ -125,6 +126,42 @@ def lib7(args):
 
 def lib(args, reconfigure = 1):
     _lib(args, platform, reconfigure)
+
+
+"""
+  Verifies that the object files were built with the same compiler as we are 
+  currently using.  If they were not, deletes the object files and binaries.
+  Value is cached in lastplatform.txt
+
+  Currently used only on windows.
+"""
+def checkObjectFiles(libplatform, platform):
+    filename = "temp/lastplatform.txt"
+
+    last = ""
+
+    if os.path.exists(filename):
+        # the file doesn't exist.  Better delete to be safe
+        f = file(filename, "r")
+        last = f.read()
+        f.close()
+
+    if (last != libplatform):
+        # bad match
+        print 'Last compiler used does not match this one.  Deleting old object files.'
+
+        # delete object files
+        rmdir("temp/debug")
+        rmdir("temp/release")
+        
+        # delete lib files (they are in the platform, not libplatform directory)
+        rmdir("temp/" + platform)
+
+        # write out new platform file
+        mkdir("temp")
+        f = file(filename, "w")
+        f.write(libplatform)
+        f.close()
 
 """
   Used internally by lib routines
@@ -138,26 +175,28 @@ def _lib(args, libplatform, reconfigure = 1):
     mkdir(libdir)
 
     if (os.name == 'nt'):
-		# Windows
+        # Windows
 
-		if (libplatform == 'win32'):
-			# VC6
-			x = msdev('source/graphics3D.dsw',\
-					["graphics3D - Win32 Release",\
-					 "graphics3D - Win32 Debug",\
-					 "GLG3D - Win32 Release",\
-					 "GLG3D - Win32 Debug"])
-		else:
-			# VC7
-			x = devenv('source/graphics3D.sln',\
-					["graphics3D",\
-					 "GLG3D"])
+        checkObjectFiles(libplatform, platform)
 
-		copyIfNewer("temp/" + libplatform + "-lib", libdir)
+        if (libplatform == 'win32'):
+            # VC6
+            x = msdev('source/graphics3D.dsw',\
+                    ["graphics3D - Win32 Release",\
+                     "graphics3D - Win32 Debug",\
+                     "GLG3D - Win32 Release",\
+                     "GLG3D - Win32 Debug"])
+        else:
+            # VC7
+            x = devenv('source/graphics3D.sln',\
+                    ["graphics3D",\
+                     "GLG3D"])
+
+        copyIfNewer("temp/" + libplatform + "-lib", libdir)
 
     else:
         # Linux build
-    	# Check version of tools
+        # Check version of tools
 
         if reconfigure:
             linuxCheckVersion()
@@ -202,10 +241,14 @@ def _lib(args, libplatform, reconfigure = 1):
         sys.exit(x);        
 
     # Copy any system libraries over.  Note that this uses
-	# the global platform directory and not the local one, which 
-	# may be different on Win32
+    # the global platform directory and not the local one, which 
+    # may be different on Win32
     copyIfNewer("source/" + platform + "-lib", libdir)
     setPermissions(args)
+
+    print
+    print "Output written to " + libdir
+    print
 
 def fastlib(args):
     lib(args, 0)
@@ -255,7 +298,34 @@ def doc(args):
 """ If copyData is true, this also copies the data module (the source/data
     directory is always copied) """
 def install(args, copyData=1):
-    lib(args)
+
+    if (os.name == "nt"):
+
+        # see what compilers are installed on windows
+        has6 = 0
+        has7 = 0
+        try:
+            findBinary("msdev")
+            has6 = 1
+        except Error:
+            0
+
+        try:
+            findBinary("devenv")
+            has7 = 1
+        except Error:
+            0
+        
+        if (not has6 and not has7):
+            raise 'Error', 'No version of MSVC++ found on this machine.  Cannot build.'
+        else:
+            if has6:
+                lib(args)
+            if has7:
+                lib7(args)
+
+    else:
+        lib(args)
     doc(args)
     
     # Copy the demos

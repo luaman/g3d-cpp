@@ -218,7 +218,7 @@ def newer(file1, file2):
 
 """
 Finds an executable on Windows."""
-def _findBinary(program):     
+def findBinary(program):     
     # Paths that may contain the program
 
     PATH = os.getenv('PATH', '').split(';') + \
@@ -343,7 +343,7 @@ def run(program, args = []):
 
     # Windows doesn't support spawnvp, so we have to locate the binary
     if (os.name == 'nt'):
-        program = _findBinary(program)
+        program = findBinary(program)
 
     # spawn requires specification of argv[0]
     # Because the program name may contain spaces, we

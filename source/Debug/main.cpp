@@ -101,9 +101,11 @@ public:
 
     TextureRef                  texture;
 
-//    SphereMapRef                shader;
+    SphereMapRef                shader;
 
     ShaderRef                   shader2;
+
+    IFSModelRef                 model;
 
     Demo(App* app);    
 
@@ -117,7 +119,6 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-    Texture::createEmpty(128,128); 
 //  texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
     
     //shader = SphereMap::create();
@@ -149,7 +150,9 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
     std::string vs = "";
     std::string ps = "void main(void) { gl_FragColor = vec4(1,1,1,1); }\n";
-    shader2 = Shader::fromStrings(vs, ps);
+    //shader2 = Shader::fromStrings(vs, ps);
+
+    model = IFSModel::create("D:/games/data/ifs/low-poly-saddle.ifs");
     
 }
 
@@ -185,7 +188,26 @@ void Demo::doGraphics() {
     app->renderDevice->clear(true, true, true);
 
 
-	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
+//	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
+
+    app->renderDevice->enableLighting();
+    app->renderDevice->setLight(0, GLight::directional(Vector3(0,-1,1), Color3::yellow() * 0.5));
+    app->renderDevice->setLight(1, GLight::directional(Vector3(0,1,1), Color3::red() * 0.5));
+    app->renderDevice->setLight(2, GLight::directional(Vector3(1,0,1), Color3::blue() * 0.5));
+    app->renderDevice->setLight(3, GLight::directional(Vector3(-1,0,1), Color3::green() * 0.5));
+    app->renderDevice->setLight(4, GLight::directional(Vector3(0,1,-2), Color3::red() * 0.5));
+    CoordinateFrame cframe;
+    PosedModelRef posed = model->pose(cframe, false);
+    app->renderDevice->setColor(Color3::white());
+    app->renderDevice->setPolygonOffset(1);
+    posed->render(app->renderDevice);
+    app->renderDevice->setLineWidth(0.5);
+    app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+    app->renderDevice->setPolygonOffset(0);
+    app->renderDevice->disableLighting();
+    app->renderDevice->setColor(Color3::black());
+    app->renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+    posed->render(app->renderDevice);
 
     /*
     // Shader test
@@ -238,14 +260,7 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-
-
-    GImage im;
-    im.load("images/no_such_file.jpg", GImage::JPEG);
-
-    Demo(this).run();
-
-    
+    Demo(this).run();    
 }
 
 App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
