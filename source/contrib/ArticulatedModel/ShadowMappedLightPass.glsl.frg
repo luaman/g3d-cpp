@@ -46,6 +46,8 @@ void main(void) {
     vec3 wsE = normalize(wsEyePos - wsPosition);
     const vec3 wsR = (wsN * 2.0 * dot(wsN, wsE)) - wsE;
 
+//    vec3 shadow = shadow2DProj(shadowMap, shadowCoord).xyz;
+
     // Compute projected shadow coord.
     shadowCoord = shadowCoord / shadowCoord.w;
 
