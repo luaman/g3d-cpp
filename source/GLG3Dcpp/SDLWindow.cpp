@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-28
+  @edited  2004-03-01
 */
 
 #include "GLG3D/SDLWindow.h"
@@ -26,7 +26,10 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
     #ifdef G3D_LINUX
         // Extract SDL's internal Display pointer on Linux
-        //G3D::_internal::X11Display = ::current_video->hidden->X11_Display;
+        SDL_SysWMinfo info;
+        SDL_VERSION(&info.version);
+        SDL_GetWMInfo(&info);
+        G3D::_internal::X11Display = info.info.x11.display;
     #endif
 
     _mouseVisible = true;
@@ -45,7 +48,8 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     #if SDL_FSAA
         if (settings.fsaaSamples > 1) {
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, settings.fsaaSamples);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 
+                                settings.fsaaSamples);
         }
     #endif
 
@@ -59,8 +63,11 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
 	if (SDL_SetVideoMode(settings.width, settings.height, 0, flags) == NULL) {
         debugAssert(false);
-        Log::common()->printf("Unable to create OpenGL screen: %s\n", SDL_GetError());
-		error("Critical Error", format("Unable to create OpenGL screen: %s\n", SDL_GetError()).c_str(), true);
+        Log::common()->printf("Unable to create OpenGL screen: %s\n", 
+                              SDL_GetError());
+		error("Critical Error", 
+              format("Unable to create OpenGL screen: %s\n", 
+                     SDL_GetError()).c_str(), true);
 		SDL_Quit();
 		exit(2);
 	}
