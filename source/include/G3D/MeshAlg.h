@@ -139,6 +139,10 @@ public:
      The welding method runs in roughly linear time in the length of oldVertexArray--
      a uniform spatial grid is used to achieve nearly constant time vertex collapses
      for uniformly distributed vertices.
+
+     @cite The method is that described as the 'Grouper' in Baum, Mann, Smith, and Winget, 
+     Making Radiosity Usable: Automatic PReprocessing and Meshing Techniques for
+     the Generation of Accurate Radiosity Solutions, Computer Graphics vol 25, no 4, July 1991.
      */
     static void computeWeld(
         const Array<Vector3>& oldVertexArray,
