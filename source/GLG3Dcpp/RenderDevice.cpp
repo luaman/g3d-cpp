@@ -243,6 +243,7 @@ RenderDevice::RenderDevice() {
     _initialized = false;
     inPrimitive = false;
     _numTextureUnits = 0;
+    _numTextures = 0;
     _numTextureCoords = 0;
     emwaFrameRate = 0;
     lastTime = getTime();
@@ -486,12 +487,18 @@ bool RenderDevice::init(
     // Don't use more texture units than allowed at compile time.
     int rawTextureUnits = _numTextureUnits;
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
+
+    // NVIDIA cards have different numbers of texture coords, units, and textures
     if (vendor == NVIDIA) {
         glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
         _numTextureCoords = iMin(MAX_TEXTURE_UNITS, iMax(_numTextureUnits, _numTextureCoords));
+
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_NV, &_numTextures);
+        _numTextures = iMin(MAX_TEXTURE_UNITS, iMax(_numTextureUnits, _numTextures));
     } else {
         _numTextureCoords = _numTextureUnits;
     }
+
     if (debugLog) {
     debugLog->section("Video Status");
 
@@ -1149,8 +1156,10 @@ void RenderDevice::setState(
         if (memcmp(&(newState.textureUnit[u]), &(state.textureUnit[u]), sizeof(RenderState::TextureUnit))) {
             if (u < _numTextureUnits) {
                 setTexture(u, newState.textureUnit[u].texture);
-                setTextureCombineMode(u, newState.textureUnit[u].combineMode);
-                setTextureMatrix(u, newState.textureUnit[u].textureMatrix);
+                if (u < numTextureUnits()) {
+                    setTextureCombineMode(u, newState.textureUnit[u].combineMode);
+                    setTextureMatrix(u, newState.textureUnit[u].textureMatrix);
+                }
             }
             setTexCoord(u, newState.textureUnit[u].texCoord);
         }
@@ -2288,9 +2297,9 @@ void RenderDevice::setTexture(
     debugAssertM(! inPrimitive, 
                  "Can't change textures while rendering a primitive.");
 
-    debugAssertM(unit < _numTextureUnits,
-        format("Attempted to access texture unit %d"
-               " on a device with %d units.",
+    debugAssertM(unit < _numTextures,
+        format("Attempted to access texture %d"
+               " on a device with %d textures.",
                unit, _numTextureUnits));
 
     TextureRef oldTexture = state.textureUnit[unit].texture;

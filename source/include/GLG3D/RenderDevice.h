@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-11-13
+  @edited  2003-11-16
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -810,11 +810,20 @@ public:
         uint                textureUnit,
         TextureRef          texture);
 
-    /** Returns the number of texture units. */
+    /** Returns the number of textures available.  May be higher
+        than the number of texture units if the programmable
+        pipeline provides more textures than the fixed function
+        pipeline.*/
+    uint numTextures() const;
+
+    /** Returns the number of texture units 
+        (texture + reg combiner + matrix) available.
+        This only applies to the fixed function pipeline.
+    */
     uint numTextureUnits() const;
 
     /** Returns the number of texture coordinates allowed.
-        This may be greater than the number of texture units.*/
+        This may be greater than the number of texture matrices.*/
     uint numTextureCoords() const;
 
     /**
@@ -980,6 +989,8 @@ private:
 	bool						    inIndexedPrimitive;
 
     int                             _numTextureUnits;
+
+    int                             _numTextures;
 
     int                             _numTextureCoords;
 
