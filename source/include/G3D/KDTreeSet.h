@@ -302,8 +302,8 @@ private:
             //		debugPrintf("Verifying: split %d @ %f [%f, %f, %f], [%f, %f, %f]\n",
             //			    splitAxis, splitLocation, lo.x, lo.y, lo.z, hi.x, hi.y, hi.z);
 
-            debugAssert(lo == splitbounds.low());
-            debugAssert(hi == splitbounds.high());
+            debugAssert(lo == splitBounds.low());
+            debugAssert(hi == splitBounds.high());
 
 		    for(int i = 0; i < valueArray.length(); ++i) {
 			    const AABox& b = valueArray[i].bounds;
