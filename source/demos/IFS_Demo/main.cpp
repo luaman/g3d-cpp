@@ -4,9 +4,9 @@
  Loads and displays an IFS file supplied on the command line.
  Press "W" to see wireframe, ESC to exit.
 
- Although this file doesn't use it (in order to show how to use OpenGL
- directly), consider using G3D::RenderDevice to simplify your own OpenGL
- programs.  The GLG3D demo shows how to use G3D::RenderDevice.
+ This demo shows how to use OpenGL and SDL with G3D <B>without</B>
+ using the GLG3D library (and classes like G3D::RenderDevice).
+ The GLG3D demo shows how to use G3D::RenderDevice.
 
  You need SDL.DLL in the same directory as the executable.
 
@@ -14,12 +14,11 @@
    OpenGL
    SDL
    G3D
-   GLG3D
-
+ 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @cite       Written by Nate Miller, nathanm@uci.edu
  @created    2002-08-10
- @edited     2003-02-21
+ @edited     2003-03-30
  */
 
 #include "IFSReader.h"
@@ -131,7 +130,7 @@ int main(int argc, char** argv) {
     
     try {
         if (argc < 2) {
-            throw "Usage: viewer <mesh_name>";
+            throw std::string("You must supply a command line argument that is the name of an IFS file.  Usage: viewer <mesh_name>");
         }
         
         IFSReader reader;
@@ -144,6 +143,7 @@ int main(int argc, char** argv) {
     } catch (const std::string& s) {
         error("Critical Error", s, true);
         SDL_Quit();
+        exit(-1);
     }
     
     initGL();

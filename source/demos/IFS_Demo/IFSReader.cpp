@@ -35,8 +35,9 @@ void IFSReader::load(
 
    BinaryInput reader(name, G3D_LITTLE_ENDIAN);
 
-   if (!reader.getLength())
+   if (!reader.getLength()) {
       throw std::string("Failed to open " + name);
+   }
 
    processHeader(reader);
 
