@@ -48,3 +48,4 @@ libG3D_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/g3dmath.cpp \
                          ../../../source/G3Dcpp/prompt.cpp \
                          ../../../source/G3Dcpp/stringutils.cpp 
+
