@@ -10,6 +10,8 @@
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
  */
 
 #ifndef G3D_TRIANGLE_H

@@ -8,6 +8,8 @@
 
   @created 2001-04-22
   @edited  2003-10-06
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
  */
 
 #ifndef G3D_TABLE_H

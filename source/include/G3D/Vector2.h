@@ -10,6 +10,8 @@
  
   @created 2001-06-02
   @edited  2003-09-29
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
 */
 
 #ifndef G3D_VECTOR2_H

@@ -10,6 +10,8 @@
  
  @created 2001-06-02
  @edited  2003-05-13
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
  */
 
 namespace G3D {

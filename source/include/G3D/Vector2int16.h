@@ -5,6 +5,8 @@
 
   @created 2003-08-09
   @edited  2004-01-03
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
  */
 
 #ifndef VECTOR2INT16_H

@@ -9,6 +9,8 @@
 
  @created 2002-11-27
  @edited  2003-10-09
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
  */
 
 #ifndef G3D_TEXTINPUT_H

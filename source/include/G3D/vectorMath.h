@@ -7,6 +7,8 @@
  
   @created: 2001-06-02
   @edited:  2004-01-09
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
  */
 
 #ifndef G3D_VECTORMATH_H

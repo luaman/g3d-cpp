@@ -7,6 +7,8 @@
  
   @created 2002-07-09
   @edited  2003-09-29
+  Copyright 2000-2004, Morgan McGuire.
+  All rights reserved.
  */
 
 #ifndef G3D_VECTOR4_H
