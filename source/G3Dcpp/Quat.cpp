@@ -6,7 +6,7 @@
   @author Morgan McGuire, graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-01-23
+  @edited  2004-01-26
  */
 
 #include "G3D/Quat.h"
@@ -124,37 +124,51 @@ Matrix3 Quat::toRotationMatrix() const {
 void Quat::toRotationMatrix(
     Matrix3&            rot) const {
 
-    // Note: for a unit quaternion, s*s + v.dot(v) == 1
-    //    c = 2.0 / (s * s + v.dot(v));
-
-    const double c = 2.0;
-
-    double xc = x * c;
-    double yc = y * c;
-    double zc = z * c;
-
-    double xx = x * xc;
-    double xy = x * yc;
-    double xz = x * zc;
-
-    double wx = w * xc;
-    double wy = w * yc;
-    double wz = w * zc;
-
-    double yy = y * yc;
-    double yz = y * zc;
-    double zz = z * zc;
-
-    rot.set(1.0 - (yy + zz),          xy + wz,         xz - wy,
-                    xy - wz,  1.0 - (xx + zz),         yz + wx,
-                    xz + wy,            yz-wx, 1.0 - (xx + yy));
-}
+    rot = Matrix3(*this);}
 
     
 Quat Quat::slerp(
-    const Quat&         other,
+    const Quat&         quat1,
     double              alpha) const {
 
+    // From: http://www.darwin3d.com/gamedev/articles/col0498.pdf
+
+    const Quat& quat0 = *this;
+    double omega, cosom, sinom, scale0, scale1;
+
+    // Compute the cosine of the angle
+    // between the quaternions
+    
+    cosom = quat0.dot(quat1);
+
+    // Choose the shorter path
+    if ((1.0 + cosom) > 0.001) {
+
+        if ((1.0 - cosom) > 0.001) {
+            // For large angles, slerp
+            omega = acos(cosom);
+            sinom = sin(omega);
+            scale0 = sin((1.0 - alpha) * omega) / sinom;
+            scale1 = sin(alpha * omega) / sinom;
+        } else {
+            // For small angles, linear interpolate
+            scale0 = 1.0 - alpha;
+            scale1 = alpha;
+        }
+
+        return quat0 * scale0 + quat1 * scale1;
+
+    } else {
+
+        // I don't understand why this is correct at all.
+        scale0 = sin((1.0 - alpha) * G3D_PI);
+        scale1 = sin(alpha * G3D_PI);
+
+        return scale0 * quat0 + scale1 * Quat(-quat1.y, quat1.x, -quat1.w, quat1.z);
+    }
+}
+    
+    /*
     // We might need to negate one in order to ensure that
     // we're going the short way
 
@@ -209,7 +223,7 @@ Quat Quat::slerp(
         }
         return out;
     }
-}
+    */
 
 Quat Quat::operator*(const Quat& other) const {
 

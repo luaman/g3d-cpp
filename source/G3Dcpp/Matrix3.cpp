@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2003-11-02
+ @edited  2004-01-26
 */
 
 #include <memory.h>
@@ -17,6 +17,7 @@
 #include "G3D/g3dmath.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
+#include "G3D/Quat.h"
 
 namespace G3D {
 
@@ -31,8 +32,22 @@ Matrix3::Matrix3(BinaryInput& b) {
 }
 
 //----------------------------------------------------------------------------
-Matrix3::Matrix3 () {
-    // For efficiency reasons, do not initialize matrix.
+Matrix3::Matrix3(const Quat& q) {
+    double xx = 2.0 * q.x * q.x;
+    double xy = 2.0 * q.x * q.y;
+    double xz = 2.0 * q.x * q.z;
+    double xw = 2.0 * q.x * q.w;
+
+    double yy = 2.0 * q.y * q.y;
+    double yz = 2.0 * q.y * q.z;
+    double yw = 2.0 * q.y * q.w;
+
+    double zz = 2.0 * q.z * q.z;
+    double zw = 2.0 * q.z * q.w;
+
+    set(1.0 - xx - zz,    xy - zw,        xz + yw,
+        xy + zw,          1.0 - yy - zz,  yz - xw,
+        xz - yw,          yz + xw,        1.0 - xx - yy);
 }
 
 //----------------------------------------------------------------------------

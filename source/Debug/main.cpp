@@ -331,6 +331,9 @@ void App::main() {
 
 int main(int argc, char** argv) {
 
+    GImage("doesnotexist.jpg");
+
+    /*
     Ray ray = Ray::fromOriginAndDirection(Vector3(0,0,0), Vector3(0,0,-1));
     Sphere sphere(Vector3::ZERO, 1);
 
@@ -349,6 +352,7 @@ int main(int argc, char** argv) {
     app.setDebugMode(true);
     app.debugController.setActive(true);
     app.run();
+    */
 
     return 0;
 }

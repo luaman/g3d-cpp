@@ -29,16 +29,20 @@ private:
      Constructor.  Private so there is no confusion about whether
      if is initialized, zero, or identity.
      */
-    Matrix3 ();
+    inline Matrix3() {}
 
 public:
 
-    Matrix3(class BinaryInput& b);
+    Matrix3 (class BinaryInput& b);
     Matrix3 (const float aafEntry[3][3]);
     Matrix3 (const Matrix3& rkMatrix);
     Matrix3 (float fEntry00, float fEntry01, float fEntry02,
              float fEntry10, float fEntry11, float fEntry12,
              float fEntry20, float fEntry21, float fEntry22);
+
+    /** Constructs a matrix from a quaternion.
+        @cite Graphics Gems II, p. 351--354*/
+    Matrix3(const class Quat& q);
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
@@ -113,7 +117,7 @@ public:
     float spectralNorm () const;
 
     /** matrix must be orthonormal */
-    void toAxisAngle (Vector3& rkAxis, float& rfRadians) const;
+    void toAxisAngle(Vector3& rkAxis, float& rfRadians) const;
 
     static Matrix3 fromAxisAngle(const Vector3& rkAxis, float fRadians);
 

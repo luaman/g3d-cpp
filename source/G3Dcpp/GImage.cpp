@@ -1339,12 +1339,16 @@ void GImage::load(
 
     clear();
 
-    BinaryInput b = BinaryInput(filename, G3D_LITTLE_ENDIAN);
-    if (b.size() <= 0) {
-        throw Error("File not found.", filename);
-    }
+    try {
+        BinaryInput b = BinaryInput(filename, G3D_LITTLE_ENDIAN);
+        if (b.size() <= 0) {
+            throw Error("File not found.", filename);
+        }
 
-    decode(b, resolveFormat(filename, b.getCArray(), b.size(), format));
+        decode(b, resolveFormat(filename, b.getCArray(), b.size(), format));
+    } catch (const std::string& error) {
+        throw Error(error, filename);
+    }
 }
 
 

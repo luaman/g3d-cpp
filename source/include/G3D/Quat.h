@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-01-25
+  @edited  2004-01-26
  */
 
 #ifndef G3D_QUAT_H
