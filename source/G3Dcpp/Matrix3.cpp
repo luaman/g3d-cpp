@@ -44,6 +44,18 @@ Matrix3::Matrix3(BinaryInput& b) {
     deserialize(b);
 }
 
+bool Matrix3::fuzzyEq(const Matrix3& b) const {
+    for (int r = 0; r < 3; ++r) {
+        for (int c = 0; c < 3; ++c) {
+            if (! G3D::fuzzyEq(m_aafEntry[r][c], b[r][c])) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
 //----------------------------------------------------------------------------
 Matrix3::Matrix3(const Quat& _q) {
     // implementation from Watt and Watt, pg 362

@@ -37,6 +37,8 @@ public:
              float fEntry10, float fEntry11, float fEntry12,
              float fEntry20, float fEntry21, float fEntry22);
 
+	bool fuzzyEq(const Matrix3& b) const;
+
     /** Constructs a matrix from a quaternion.
         @cite Graphics Gems II, p. 351--354*/
     Matrix3(const class Quat& q);
