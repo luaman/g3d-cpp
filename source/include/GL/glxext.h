@@ -35,22 +35,13 @@ extern "C" {
 */
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
-	#define WIN32_LEAN_AND_MEAN 1
-	#include <windows.h>
-#else
-	#ifndef _WIN32
-		#include "GL/glx.h"
-	#endif
-#endif
-
-#ifdef _WIN32
-	typedef int XID;
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
 #endif
 
 #ifndef APIENTRY
 #define APIENTRY
 #endif
-
 
 /*************************************************************/
 
@@ -282,21 +273,6 @@ typedef struct {
     int width, height;
     int count;		  /* if nonzero, at least this many more */
 } GLXBufferClobberEventSGIX;
-#endif
-
-#ifdef GL_NV_vertex_array_range
-#ifndef PFNGLXALLOCATEMEMORYNVPROC
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern void *glXAllocateMemoryNV (GLsizei, GLfloat, GLfloat, GLfloat);
-#endif
-typedef void * ( * PFNGLXALLOCATEMEMORYNVPROC) (GLsizei, GLfloat, GLfloat, GLfloat);
-#endif
-#ifndef PFNGLXFREEMEMORYNVPROC
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern void glXFreeMemoryNV (void *);
-#endif
-typedef void ( * PFNGLXFREEMEMORYNVPROC) (void *);
-#endif
 #endif
 
 #ifndef GLX_VERSION_1_3
@@ -549,4 +525,3 @@ typedef Bool ( * PFNGLXSET3DFXMODEMESAPROC) (int mode);
 #endif
 
 #endif
-
