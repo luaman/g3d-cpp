@@ -34,7 +34,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="2"
+				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -796,6 +796,27 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="G3Dcpp\NetMessage.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="G3Dcpp\NetworkDevice.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1269,6 +1290,9 @@
 			</File>
 			<File
 				RelativePath="include\G3D\MeshBuilder.h">
+			</File>
+			<File
+				RelativePath="include\G3D\NetAddress.h">
 			</File>
 			<File
 				RelativePath="include\G3D\NetworkDevice.h">

@@ -103,6 +103,7 @@
      <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
      <LI> Fix: [ 1111534 ] Network Demo crashes starting 2nd server on same machine
+     <LI> Fix: [ 1102091 ] ReliableConduit::receive times out
      <LI> Fix: Implemented MD2Model::objectSpaceBoundingX methods.
      <LI> Fix: G3D::Triangle::area is now zero for zero-area triangles (was inf)
      <LI> Fix: AABSPTree with extent on MSVC 6 no longer enters infinite loop in std::sort
