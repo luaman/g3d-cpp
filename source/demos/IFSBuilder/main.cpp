@@ -16,7 +16,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-12-09
+  @edited  2003-12-10
  */ 
 
 #include <G3DAll.h>

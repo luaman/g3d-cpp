@@ -170,76 +170,15 @@ void XIFSModel::load3DS(const std::string& filename) {
 
     Load3DS loader(b);
 
-    /*
-
-    const int MAIN3DS   = 0x4D4D;
-    const int EDIT3DS   = 0x3D3D;
-    const int OBJECT    = 0x4000;
-    const int TRIG_MESH	= 0x4100;
-    const int VERT_LIST	= 0x4110;
-    const int FACE_DESC = 0x4120;
-
-    unsigned short chunkType;
-
-    long chunkLength;
-    long chunkEnd;
-    long fileLength;
-
-    chunkType = b.readUInt16();
-    fileLength = b.readUInt32();
-
-    debugAssert(chunkType == MAIN3DS);
-
-    Array<Vector3> va;
-
-    int numPrevVerts = 0;
-
-    while (b.hasMore()) {
-        chunkType   = b.readUInt16();
-        chunkLength = b.readInt32();
-        debugAssert(chunkLength < fileLength);
-
-        chunkEnd = b.getPosition() + chunkLength - 6;
-
-        int index;
-        switch (chunkType) {
-        case MAIN3DS:
-        case EDIT3DS:
-        case TRIG_MESH:
-            break;
-
-            
-        case OBJECT:
-            b.readString();
-            break;
-
-        case VERT_LIST:
-            for (index = b.readUInt16() - 1; index >= 0; --index) {
-                va.append(b.readVector3());
-            }
-            b.setPosition(chunkEnd);
-            break;
-
-        case FACE_DESC:
-            // Triangle
-            for (index = b.readUInt16() - 1; index >= 0; --index) {
-                int v0 = b.readUInt16();
-                int v1 = b.readUInt16();
-                int v2 = b.readUInt16();
-                b.skip(2);
-
-                builder.addTriangle(va[v0], va[v1], va[2]);
-            }
-            b.setPosition(chunkEnd);
-            break;
-
-        default:
-            b.setPosition(chunkEnd);
+    for (int obj = 0; obj < loader.objectArray.size(); ++obj) {
+        const Array<int>&     index  = loader.objectArray[obj].indexArray;
+        const Array<Vector3>& vertex = loader.objectArray[obj].vertexArray;
+        for (int i = 0; i < index.size(); i += 3) {
+            builder.addTriangle(vertex[index[i]], vertex[index[i + 1]], vertex[index[i + 2]]);
         }
     }
-    
-  */
-    builder.setName(filename);
+      
+    builder.setName(loader.objectArray[0].name);
 
     builder.commit(this);
 }
