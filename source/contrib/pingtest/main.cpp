@@ -84,6 +84,7 @@ void server() {
         switch (conduit->waitingMessageType()) {
         case 0:
             // No message
+            System::sleep(0.05);
             break;
 
         case PingMessage_MSG:
@@ -138,6 +139,8 @@ void reliableServer() {
 
             // Let the conduit go out of scope, so it 
             // is automatically freed.
+        } else {
+            System::sleep(0.05);
         }
     }
 }
