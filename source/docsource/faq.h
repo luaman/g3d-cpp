@@ -45,4 +45,20 @@ Most libraries with orthogonal functionality (such as audio libraries) should op
 
 For more details, see \link guideintro Working with Other Libraries \endlink.
  
+<P><B>Proximity and ray intersection with PosedModel</B><P>
+
+<i>I need to intersect a ray with a PosedModel in G3D, and/or find the closest point on a model to a given point (ideally, both). Is there a way to do this in the G3D library, or do you know if there is any already-written code that can do this for us?</i>
+
+You can get an indexed triangle list out of a posed model, which you can use to
+create an array of G3D::Triangles.  The triangles have a ray intersection
+method-- just choose the first intersection.  Use the posed model's bounding
+boxes to test conservatively if the ray could hit the model before performing
+the individual tests.
+
+To make this faster, only construct the triangle list once on startup since the
+constructor is kind of slow.  If your model is large and you're inside it (e.g.
+a quake map) then you should create an AABSPTree, which will perform only
+log(n) ray intersection tests on average for n triangles.
+
+
 */
