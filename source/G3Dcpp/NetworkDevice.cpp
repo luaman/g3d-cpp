@@ -494,15 +494,15 @@ uint64 Conduit::messagesReceived() const {
     return mReceived;
 }
 
-bool Conduit::messageWaiting() const {
-    return readWaiting(nd->debugLog, sock);
-}
-
 
 bool Conduit::ok() const {
     return sock != 0;
 }
 
+
+bool Conduit::messageWaiting() const {
+    return readWaiting(nd->debugLog, sock);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static double getTime() {
@@ -876,6 +876,12 @@ void LightweightConduit::send(const NetAddress& a, const NetMessage* m, uint32 t
 }
 
 
+bool LightweightConduit::messageWaiting() const {
+    // We may have already pulled the message off the network stream
+    return alreadyReadMessage || Conduit::messageWaiting();
+}
+
+
 uint32 LightweightConduit::waitingMessageType() {
     if (! messageWaiting()) {
         return 0;
@@ -935,13 +941,17 @@ bool LightweightConduit::receive(NetMessage* m, NetAddress& sender) {
     }
 
     sender = messageSender;
+    alreadyReadMessage = false;
+
+    if (messageBuffer.size() < 4) {
+        // Something went wrong
+        return false;
+    }
 
     if (m != NULL) {
         BinaryInput b((messageBuffer.getCArray() + 4), messageBuffer.size() - 4, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         m->deserialize(b);
     }
-
-    alreadyReadMessage = false;
 
     return true;
 }

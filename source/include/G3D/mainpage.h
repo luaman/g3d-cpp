@@ -297,6 +297,8 @@
    G3D::Vector2=Vector2(&lt;x&gt;,&lt;y&gt;)
    G3D::Color4=Color4(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
    G3D::Color3=Color3(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
+   G3D::NetAddress=NetAddress(&lt;addr.sin_addr.S_un.S_un_b.s_b1,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b2,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b3,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b4,u&rt;)
+
 
     ;; Prevent stepping into certain functions
     [ExecutionControl]

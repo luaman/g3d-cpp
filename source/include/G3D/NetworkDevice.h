@@ -168,7 +168,7 @@ public:
     /**
      If true, receive will return true.
      */
-    bool messageWaiting() const;
+    virtual bool messageWaiting() const;
 
     /**
      Returns the type of the waiting message (i.e. the type supplied with send).
@@ -309,6 +309,8 @@ public:
     bool receive(NetMessage* m, NetAddress& sender);
 
     virtual uint32 waitingMessageType();
+
+    virtual bool messageWaiting() const;
 };
 
 typedef ReferenceCountedPointer<class LightweightConduit> LightweightConduitRef;
