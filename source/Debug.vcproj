@@ -101,6 +101,7 @@
 				AssemblerListingLocation=".\..\temp\Debug\Release/"
 				ObjectFile=".\..\temp\Debug\Release/"
 				ProgramDataBaseFileName=".\..\temp\Debug\Release/"
+				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -169,7 +170,8 @@
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 		</Filter>
