@@ -40,7 +40,7 @@
 
 
 
-version = [0, 3, 1]
+version = [0, 3, 2]
 import sys, string, os, os.path, fileinput, tempfile, shutil, re
 import commands, pickle, time, ConfigParser
 from string import ljust
@@ -892,6 +892,105 @@ def listDirs(_dir = ''):
 
     return dirs
 
+
+##############################################################################
+#                            Topological Sort                                #
+##############################################################################
+
+"Return a list of all edges (v0, w) in E starting at v0. Used by topsort."
+def allEdgesFrom(v0, E):
+    resEdges = []
+    for v, w in E:
+        if v0 == v:
+            resEdges.append((v, w))
+    return resEdges
+
+
+def _topSort(v, E, visited, sorted, sortedIndices):
+    "Recursive topsort function."
+
+    # print "trying", v, visited, sorted, sortedIndices
+    visited[v] = 1
+    for v, w in allEdgesFrom(v, E):
+        # print "edge found", (v, w)
+        if not visited[w]:
+            _topSort(w, E, visited, sorted, sortedIndices)
+        else:
+            if not sorted[w]:
+                print 'Cyclic dependency in links.'
+                sys.exit(0)
+    sorted[v] = 1
+    sortedIndices.insert(0, v)
+
+"""
+
+Topsort by Nathan Wallace, Matthias Urlichs
+Hans Nowak, Snippet 302, Dinu C. Gherman
+http://www.faqts.com/knowledge_base/view.phtml/aid/4491
+"""
+def topSort(V, E):
+    "Top-level sorting function."
+
+    n = len(V)
+    visited = [0] * n   # Flags for (un-)visited elements.
+    sorted = [0] * n    # Flags for (un-)sorted elements.
+    sortedIndices = []  # The list of sorted element indices.
+
+    for v in range(n):
+        if not visited[v]:
+            _topSort(v, E, visited, sorted, sortedIndices)
+
+    # Build and return a list of elements from the sort indices.
+    sortedElements = []
+    for i in sortedIndices:
+        sortedElements.append(V[i])
+    return sortedElements
+
+
+""" For use in preparing input for topsort. """ 
+def dictionaryToPairs(dict):
+    pairs = [];
+    for k in dict:
+        for v in dict[k]:
+            pairs.append( (k, v) )
+
+    return pairs
+
+
+""" Sort predicate for static libraries. """
+def libSorter(x, y):
+ 
+    if not (libOrder.has_key(y) and libOrder.has_key(x)):
+        return 0
+    else:
+        return libOrder[x] - libOrder[y]
+
+    
+
+"""Convert an element pairs list into (verticesList, edgeIndexList)
+   for topsort.
+
+   E.g. wrap( [('a','b'), ('b','c'), ('c','a')] )
+         -> (['a','b','c'], [(0,1), (1,2), (2,0)])
+"""
+def pairsToVertexEdgeGraph(pairs):
+    e = []
+    v = []
+
+    # Make a list of unique vertices.
+    for x, y in pairs:
+        if x not in v:
+            v.append(x)
+        if y not in v:
+            v.append(y)
+
+    # Convert original element pairs into index pairs.
+    for x, y in pairs:
+        e.append((v.index(x), v.index(y)))
+
+    return v, e
+
+
 ##############################################################################
 #                            Doxygen Management                              #
 ##############################################################################
@@ -1509,14 +1608,6 @@ linkTable = {
     'pthread.h'    : (DYNAMIC,  'pthread',     'pthread'),
 }
 
-
-# Static libraries can depend on each other... this is the order 
-# in which they must be listed. 
-staticLinkDependencies = {
-    'GLG3D'        : ['G3D'],
-    'GLG3D_debug'  : ['G3D_debug']
-}
-
 # Static libraries may have their own dynamic dependencies.  Decoding 
 # these is pure guesswork.  This table maps symbols to the dynamic 
 # libraries that are likely to define the function you wanted.
@@ -1531,6 +1622,35 @@ extraLink = {
     'glBegin'             :   ('GL',           'GL'),
     'glVertex3'           :   ('GL',           'GL'),
 }
+
+# Static libraries can depend on each other... this specifies
+# those dependencies and the order in which they occur.
+# Recursive dependency chains are ok.
+staticLinkDependencies = {
+  # lib               depends on
+    'GLU'          : ['GL'],
+    'GLUT'         : ['GL'],
+    'G3D'          : ['z', 'jpeg'],
+    'G3D_debug'    : ['z', 'jpeg'],
+    'SDL'          : ['pthread'],
+    'GLG3D'        : ['G3D', 'SDL', 'GL'],
+    'GLG3D_debug'  : ['G3D_debug', 'SDL', 'GL']
+}
+
+""" Constructs a dictionary mapping a library name to its
+    relative dependency order in a library list. """
+def makeLibOrder():
+    pairList = dictionaryToPairs(staticLinkDependencies)
+    e, v = pairsToVertexEdgeGraph(pairList)
+    L = topSort(e, v)
+
+    order = {}
+    for i in xrange(1, len(L)):
+        order[L[i]] = i
+
+    return order
+
+libOrder = makeLibOrder()
 
 
 """Mutates dynamicLinkFiles to contain additional libraries that are probably
@@ -1606,57 +1726,17 @@ def getLinkerOptions(allFiles):
                 lfile = release
 
             if type == STATIC:
-                staticLinkFiles.append(lfile)
+                if not (lfile in staticLinkFiles):
+                    staticLinkFiles.append(lfile)
             else:
-                dynamicLinkFiles.append(lfile)
+                if not (lfile in dynamicLinkFiles):
+                    dynamicLinkFiles.append(lfile)
                 
             if verbose:
                 print '#include ' + file + ' triggered link to ' + lfile
-                    
-            """dynamicLinkFiles.append("-l" + lfile)
-                
-            if (type == DYNAMIC):
-                if verbose:
-                    print ("#include " + file +
-                         " triggered dynamic link to " + lfile)
-            
-                dynamicLinkFiles.append("-l" + lfile)
- 
-            else:
 
-                if verbose:
-                    print ("#include " + file + " triggering static link to "
-                           + lfile)
-                f = lfile
-                #f = findStaticLibrary(lfile)
-                if not (f in staticLinkFiles):
-                    staticLinkFiles.append(f)
-
-                if staticLinkDependencies.has_key(lfile):
-                    for lfile2 in staticLinkDependencies[lfile]:
-                        if verbose:
-                            print lfile + " triggered static link to " + lfile2
-
-                    f = findStaticLibrary(lfile2)
-
-                    if not (f in staticLinkFiles):
-                        staticLinkFiles.append(f)
-                        """
-    
-    # Now see if the static links trigger any additional requirements
-    # TODO: make this recursive, consider dynamic links triggered
-    # as well (Bug: https://sourceforge.net/tracker/index.php?func=detail&aid=1040802&group_id=98414&atid=620653)
-    additionalStaticLinks = []
-    for lfile in staticLinkFiles:
-        if staticLinkDependencies.has_key(lfile):
-            for lfile2 in staticLinkDependencies[lfile]:
-                if verbose: print lfile + ' triggered static link to ' + lfile2
-                if (not (lfile2 in staticLinkFiles) and
-                    not (lfile2 in additionalStaticLinks)):
-                    additionalStaticLinks.append(lfile2)
-                    
-    staticLinkFiles += additionalStaticLinks
-
+    # Seek out recursive dependencies
+    getMoreStaticLinks(staticLinkFiles)
     getAdditionalDynamicLinks(dynamicLinkFiles, staticLinkFiles)
     
     if verbose:
@@ -1665,11 +1745,18 @@ def getLinkerOptions(allFiles):
         
     allLinks = staticLinkFiles + dynamicLinkFiles
 
-    # TODO: topologically sort library list
-    # (Bug: https://sourceforge.net/tracker/index.php?func=detail&aid=998220&group_id=98414&atid=620653)
-    allLinks.reverse()
+    # Topologically sort library list so that the linker will be happy
+    if verbose: print 'Libraries before sort: ', allLinks
+    allLinks.sort(libSorter)
 
-    if verbose: print 'Link against: ', allLinks
+    tmp = allLinks
+    allLinks = []
+    # Remove duplicates
+    for f in tmp:
+        if not (f in allLinks):
+            allLinks.append(f)
+
+    if verbose: print 'Libraries after sort: ', allLinks
     
     # Prepend '-l' onto every library (whether static *or* dynamic)
     if allLinks != None:
@@ -1677,7 +1764,32 @@ def getLinkerOptions(allFiles):
     
     return (opt, allLinks)
 
+
+# Adds static links from the dependency table until
+# there are no new ones to add.  The input is mutated in place.
+def getMoreStaticLinks(staticLinks):
+    added = True
+
+    # Keep looping until we can add no more
+    while added:
+        addLinks = []
+        added = False
+        for lfile in staticLinks:
+            if staticLinkDependencies.has_key(lfile):
+                for lfile2 in staticLinkDependencies[lfile]:
+                    if (not (lfile2 in addLinks) and
+                        not (lfile2 in staticLinks)):
+                        
+                        # This is a new file
+                        addLinks.append(lfile2)
+                        added = True
+                        if verbose:
+                            print lfile + ' triggered link to ' + lfile2
+                            
+        staticLinks += addLinks
+
 #########################################################################
+
 """ Makes a static library from a list of object files. """
 def makeStaticLibrary(ofiles):
     print "Creating static library..."
@@ -2215,29 +2327,30 @@ def linkerOptions():
 #################################################################
 # Entry point
 
-(args, progArgs) = separateArgs(sys.argv[1:])
-if ('--version' in args):
-    printVersion()
-    sys.exit(0)
+if __name__ == '__main__':
+    (args, progArgs) = separateArgs(sys.argv[1:])
+    if ('--version' in args):
+        printVersion()
+        sys.exit(0)
 
-if ('--help' in args):
-    printHelp()
-    sys.exit(0)
+    if ('--help' in args):
+        printHelp()
+        sys.exit(0)
 
-checkForProjectFile(args)
-processProjectFile(args)
+    checkForProjectFile(args)
+    processProjectFile(args)
 
-cacheFilename = tempDir + '.icompile-cache'
-loadCache(cacheFilename)
+    cacheFilename = tempDir + '.icompile-cache'
+    loadCache(cacheFilename)
 
-setVariables(args)
-configureCompiler()
+    setVariables(args)
+    configureCompiler()
+    
+    ret = runCompile(args, progArgs)
 
-ret = runCompile(args, progArgs)
+    mkdir(tempDir)
+    saveCache(cacheFilename)
+    if (not quiet) and (configGet(config, 'GLOBAL', 'beep') == 'True'):
+        beep()
 
-mkdir(tempDir)
-saveCache(cacheFilename)
-if (not quiet) and (configGet(config, 'GLOBAL', 'beep') == 'True'):
-    beep()
-
-sys.exit(ret)
+    sys.exit(ret)
