@@ -62,7 +62,7 @@ inline unsigned int hashCode(const std::string& a) {
 	int i = 0;
 	unsigned int key = s;
 
-    s = iMin(s, 5);
+    s = G3D::iMin(s, 5);
 	while (i < s) {
 		key = key ^ ((unsigned int)a[i] << ((i & 3) * 8));
 		++i;
