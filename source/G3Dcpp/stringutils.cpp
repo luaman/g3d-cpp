@@ -172,7 +172,7 @@ std::string stringJoin(
 
     std::string out;
 
-    for (int i = 0; i < a.size() - 1; ++i) {
+    for (size_t i = 0; i < a.size() - 1; ++i) {
         out += a[i] + joinChar;
     }
 

@@ -150,15 +150,15 @@ public:
      Returns the length of the file in bytes.
      @deprecated use BinaryOutput.size
      */
-    inline int getLength() const {
+    inline size_t getLength() const {
         return bufferLen;
     }
 
-    inline int length() const {
+    inline size_t length() const {
         return bufferLen;
     }
 
-    inline int size() const {
+    inline size_t size() const {
         return bufferLen;
     }
 
@@ -181,7 +181,7 @@ public:
      Returns the current byte position in the file,
      where 0 is the beginning and getLength() - 1 is the end.
      */
-    inline int getPosition() const {
+    inline size_t getPosition() const {
         return pos;
     }
 

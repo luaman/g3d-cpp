@@ -121,7 +121,7 @@ void MD2Model::load(const std::string& filename) {
     loadTextureFilenames(b, header.numSkins, header.offsetSkins);
 
 
-    for (int f = 0; f < keyFrame.size(); ++f) {
+    for (size_t f = 0; f < keyFrame.size(); ++f) {
         MD2Frame md2Frame;
 
         b.setPosition(header.offsetFrames + f * header.frameSize);
@@ -208,7 +208,7 @@ void MD2Model::load(const std::string& filename) {
 
     Array<Vector2int16> fileTexCoords(header.numTexCoords);
     b.setPosition(header.offsetTexCoords);
-    for (int t = 0; t < fileTexCoords.size(); ++t) {
+    for (size_t t = 0; t < fileTexCoords.size(); ++t) {
         fileTexCoords[t].x = b.readUInt16();
         fileTexCoords[t].y = b.readUInt16();
     }
@@ -254,7 +254,7 @@ void MD2Model::load(const std::string& filename) {
 
             Array<Primitive::PVertex>&  pvertex = primitive.pvertexArray;
 
-            for (int i = 0; i < pvertex.size(); ++i) {
+            for (size_t i = 0; i < pvertex.size(); ++i) {
                 pvertex[i].texCoord.x = b.readFloat32();
                 pvertex[i].texCoord.y = b.readFloat32();
                 pvertex[i].index      = b.readInt32();
@@ -299,7 +299,7 @@ void MD2Model::computeTexCoords(
     _texCoordArray.resize(numVertices);
 
     // Walk through the index array and inCoords array
-    for (int i = 0; i < indexArray.size(); ++i) {
+    for (size_t i = 0; i < indexArray.size(); ++i) {
         // Texture coords
         const Vector2int16& coords = inCoords[i];
 
@@ -319,7 +319,7 @@ void MD2Model::computeTexCoords(
             bool foundMatch = false;
 
             // Walk through the clones and see if one has the same tex coords
-            for (int c = 0; c < cloneList.size(); ++c) {
+            for (size_t c = 0; c < cloneList.size(); ++c) {
                 const int clone = cloneList[c];
 
                 if (_texCoordArray[clone] == coords) {
@@ -347,7 +347,7 @@ void MD2Model::computeTexCoords(
                 _texCoordArray.append(coords);
 
                 // Clone the vertex in every key pose.
-                for (int k = 0; k < keyFrame.size(); ++k) {
+                for (size_t k = 0; k < keyFrame.size(); ++k) {
                     keyFrame[k].vertexArray.append(keyFrame[k].vertexArray[v]);
                     keyFrame[k].normalArray.append(keyFrame[k].normalArray[v]);
                 }

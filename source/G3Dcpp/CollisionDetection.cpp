@@ -1503,6 +1503,8 @@ double CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
 	Vector3&		    location,
     Vector3&            outNormal) {
 
+    (void)outNormal;
+
 	Capsule _capsule(capsule.getPoint1(), capsule.getPoint2(), capsule.getRadius() + sphere.radius);
 
     Vector3 normal;

@@ -115,7 +115,7 @@ void TextureManager::emptyCache() {
 void TextureManager::trimCache() {
     Array <TextureArgs> staleEntry;
     getStaleEntries(staleEntry);
-    for (int i = 0; i < staleEntry.length(); ++i) {
+    for (size_t i = 0; i < staleEntry.length(); ++i) {
         size -= cache[staleEntry[i]]->sizeInMemory();
             debugPrintf("TrimCache is removing %s   \n" , staleEntry.last().filename.c_str());
         cache.remove(staleEntry[i]);

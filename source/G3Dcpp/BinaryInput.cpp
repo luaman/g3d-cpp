@@ -65,7 +65,7 @@ static uint32 readUInt32(const uint8* data, bool swapBytes) {
 
 BinaryInput::BinaryInput(
     const uint8*        data,
-    int                 dataLen,
+    size_t              dataLen,
     G3DEndian           dataEndian,
     bool                compressed,
     bool                copyMemory) {
@@ -122,15 +122,18 @@ BinaryInput::BinaryInput(
     swapBytes = needSwapBytes(fileEndian);
 
     // Figure out how big the file is and verify that it exists.
-    length = fileLength(filename);
+    const int tmplength = fileLength(filename);
 
     // Read the file into memory
     FILE* file = fopen(filename.c_str(), "rb");
 
-	if (! file || (length == -1)) {
+	if (! file || (tmplength == -1)) {
         throw format("File not found: \"%s\"", filename.c_str());
 		return;
 	}
+
+    // Avoid having to use a signed length
+    length = (size_t)tmplength;
 
     buffer = (uint8*) malloc(length);
     debugAssert(buffer);

@@ -28,7 +28,7 @@ void Draw::poly2DOutline(const Array<Vector2>& polygon, RenderDevice* renderDevi
     
     renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
         renderDevice->setColor(color);
-        for (int i = 0; i < polygon.length(); ++i) {
+        for (size_t i = 0; i < polygon.length(); ++i) {
             renderDevice->sendVertex(polygon[i]);
         }
         renderDevice->sendVertex(polygon[0]);
@@ -43,7 +43,7 @@ void Draw::poly2D(const Array<Vector2>& polygon, RenderDevice* renderDevice, con
     
     renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
         renderDevice->setColor(color);
-        for (int i = 0; i < polygon.length(); ++i) {
+        for (size_t i = 0; i < polygon.length(); ++i) {
             renderDevice->sendVertex(polygon[i]);
         }
     renderDevice->endPrimitive();
@@ -321,7 +321,7 @@ void Draw::vertexNormals(
         
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
+            for (size_t v = 0; v < vertexArray.size(); ++v) {
                 renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D);
                 renderDevice->sendVertex(vertexArray[v]);
             }
@@ -329,7 +329,7 @@ void Draw::vertexNormals(
         
         renderDevice->setLineWidth(2);
         renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
+            for (size_t v = 0; v < vertexArray.size(); ++v) {
                 renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .96);
                 renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
             }
@@ -337,7 +337,7 @@ void Draw::vertexNormals(
 
         renderDevice->setLineWidth(3);
         renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
+            for (size_t v = 0; v < vertexArray.size(); ++v) {
                 renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .92);
                 renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
             }
@@ -361,7 +361,7 @@ void Draw::vertexVectors(
         
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
+            for (size_t v = 0; v < vertexArray.size(); ++v) {
                 renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D);
                 renderDevice->sendVertex(vertexArray[v]);
             }
@@ -369,7 +369,7 @@ void Draw::vertexVectors(
         
         renderDevice->setLineWidth(2);
         renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
+            for (size_t v = 0; v < vertexArray.size(); ++v) {
                 renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .96);
                 renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84);
             }
@@ -377,7 +377,7 @@ void Draw::vertexVectors(
 
         renderDevice->setLineWidth(3);
         renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
+            for (size_t v = 0; v < vertexArray.size(); ++v) {
                 renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .92);
                 renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84);
             }
@@ -841,9 +841,9 @@ void Draw::frustum(
 
     if (wire.a > 0) {
         rd->setColor(wire);
-        for (int f = 0; f < frustum.faceArray.size(); ++f) {
+        for (size_t f = 0; f < frustum.faceArray.size(); ++f) {
             rd->beginPrimitive(RenderDevice::LINE_STRIP);
-            for (int v = 0; v < 5; ++v) {
+            for (size_t v = 0; v < 5; ++v) {
                 rd->sendVertex(frustum.vertexPos[frustum.faceArray[f].vertexIndex[v % 4]]);
             }
             rd->endPrimitive();
@@ -856,7 +856,7 @@ void Draw::frustum(
         rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         rd->setColor(color);
         rd->beginPrimitive(RenderDevice::QUADS);
-        for (int f = 0; f < frustum.faceArray.size(); ++f) {
+        for (size_t f = 0; f < frustum.faceArray.size(); ++f) {
             rd->setNormal(frustum.faceArray[f].plane.normal());
             for (int v = 0; v < 4; ++v) {
                 rd->sendVertex(frustum.vertexPos[frustum.faceArray[f].vertexIndex[v]]);

@@ -191,7 +191,7 @@ void measureBSPPerformance() {
         point.clear();
 
         System::beginCycleCount(arraycount);
-        for (int i = 0; i < array.size(); ++i) {
+        for (size_t i = 0; i < array.size(); ++i) {
             if (! array[i].culledBy(plane)) {
                 point.append(array[i]);
             }

@@ -70,10 +70,10 @@ private:
     /** 0...num-1 are initialized elements, num...numAllocated-1 are not */
     T*              data;
 
-    int             num;
-    int             numAllocated;
+    size_t          num;
+    size_t          numAllocated;
 
-    void init(int n, int a) {
+    void init(size_t n, size_t a) {
         debugAssert(n <= a);
         debugAssert(n >= 0);
         this->num = 0;
@@ -88,7 +88,7 @@ private:
 
     void _copy(const Array &other) {
         init(other.num, other.num);
-        for (int i = 0; i < num; i++) {
+        for (size_t i = 0; i < num; i++) {
             data[i] = other.data[i];
         }
     }
@@ -113,7 +113,7 @@ private:
      oldNum elements from the old array to it.  Destructors are
      called for oldNum elements of the old array.
      */
-    void realloc(int oldNum) {
+    void realloc(size_t oldNum) {
          T* oldData = data;
          
          data = (T*)System::alignedMalloc(sizeof(T) * numAllocated, 16);
@@ -188,7 +188,7 @@ public:
    /**
     Creates an array of size.
     */
-   Array(int size) {
+   Array(size_t size) {
        init(size, size);
    }
 
@@ -208,7 +208,7 @@ public:
     */
    ~Array() {
        // Invoke the destructors on the elements
-       for (int i = 0; i < num; i++) {
+       for (size_t i = 0; i < num; i++) {
            (data + i)->~T();
        }
        
@@ -236,7 +236,7 @@ public:
     */
    Array& operator=(const Array& other) {
        resize(other.num);
-       for (int i = 0; i < num; i++) {
+       for (size_t i = 0; i < num; i++) {
            data[i] = other[i];
        }
        return *this;
@@ -245,7 +245,7 @@ public:
    /**
     Number of elements in the array.
     */
-   inline int size() const {
+   inline size_t size() const {
       return num;
    }
 
@@ -253,7 +253,7 @@ public:
     Number of elements in the array.  (Same as size; this is just
     here for convenience).
     */
-   inline int length() const {
+   inline size_t length() const {
       return size();
    }
 
@@ -261,7 +261,7 @@ public:
     Swaps element index with the last element in the array then
     shrinks the array by one.
     */
-   void fastRemove(int index) {
+   void fastRemove(size_t index) {
        debugAssert(index >= 0);
        debugAssert(index < num);
        data[index] = data[num - 1];
@@ -281,7 +281,7 @@ public:
    /**
     Inserts at the specified index and shifts all other elements up by one.
     */
-   void insert(int n, const T& value) {
+   void insert(size_t n, const T& value) {
        // Add space for the extra element
        resize(num + 1, false);
 
@@ -292,19 +292,19 @@ public:
    }
 
 
-   void resize(int n, bool shrinkIfNecessary) {
-      int oldNum = num;
+   void resize(size_t n, bool shrinkIfNecessary) {
+      size_t oldNum = num;
       num = n;
 
       if (num < oldNum) {
           // Call the destructors on newly hidden elements
-          for (int i = num; i < oldNum; i++) {
+          for (size_t i = num; i < oldNum; i++) {
              (data + i)->~T();
           }
       }
 
       // Allocate 8 elements or 32 bytes, whichever is higher.
-      const int minSize = iMax(8, 32 / sizeof(T));
+      const size_t minSize = iMax(8, 32 / sizeof(T));
 
       if (num > numAllocated) {
          
@@ -326,7 +326,7 @@ public:
       }
 
       // Call the constructors on newly revealed elements.
-      for (int i = oldNum; i < num; i++) {
+      for (size_t i = oldNum; i < num; i++) {
           new (data + i) T();
       }
    }
@@ -404,7 +404,7 @@ public:
      Returns true if the given element is in the array.
      */
     bool contains(const T& e) const {
-        for (int i = 0; i < size(); ++i) {
+        for (size_t i = 0; i < size(); ++i) {
             if ((*this)[i] == e) {
                 return true;
             }
@@ -462,7 +462,7 @@ public:
    /**
     Performs bounds checks in debug mode
     */
-   inline T& operator[](int n) {
+   inline T& operator[](size_t n) {
       debugAssert((n >= 0) && (n < num));
       return data[n];
    }
@@ -470,7 +470,7 @@ public:
    /**
     Performs bounds checks in debug mode
     */
-    inline const T& operator[](int n) const {
+    inline const T& operator[](size_t n) const {
         debugAssert((n >= 0) && (n < num));
         return data[n];
     }
@@ -547,7 +547,7 @@ public:
      Removes count elements from the array
      referenced either by index or Iterator.
      */
-    void remove(Iterator element, int count = 1) {
+    void remove(Iterator element, size_t count = 1) {
         debugAssert((element >= begin()) && (element < end()));
         debugAssert((count > 0) && (element + count) <= end());
         Iterator last = end() - count;
@@ -560,7 +560,7 @@ public:
         resize(num - count);
     }
 
-    void remove(int index, int count = 1) {
+    void remove(size_t index, size_t count = 1) {
         debugAssert((index >= 0) && (index < num));
         debugAssert((count > 0) && (index + count <= num));
         
@@ -640,7 +640,7 @@ public:
 
 
 /** Array::contains for C-arrays */
-template<class T> bool contains(const T* array, int len, const T& e) {
+template<class T> bool contains(const T* array, size_t len, const T& e) {
     for (int i = len - 1; i >= 0; --i) {
         if (array[i] == e) {
             return true;

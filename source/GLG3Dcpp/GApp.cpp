@@ -214,7 +214,7 @@ void GApp::renderDebugInfo() {
                 pos.y += size * 3;
             }
 
-            for (int i = 0; i < debugText.length(); ++i) {
+            for (size_t i = 0; i < debugText.length(); ++i) {
                 debugFont->draw2D(debugText[i], pos, size, color, Color3::black());
                 pos.y += size * 1.5;
             }

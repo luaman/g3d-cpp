@@ -204,6 +204,7 @@ static void skip_input_data(
  */
 static void term_source (
     j_decompress_ptr        cinfo) {
+    (void)cinfo;
 	// Intentionally empty
 }
 
@@ -660,7 +661,7 @@ void png_write_data(png_structp png_ptr,
 //libpng required function signature
 void png_flush_data(
     png_structp png_ptr) {
-
+    (void)png_ptr;
     //Do nothing.
 }
 
@@ -668,7 +669,8 @@ void png_flush_data(
 void png_error(
     png_structp png_ptr,
     png_const_charp error_msg) {
-
+    
+    (void)png_ptr;
     debugAssert( error_msg != NULL );
     throw GImage::Error(error_msg, "PNG"); 
 }
@@ -678,6 +680,7 @@ void png_warning(
     png_structp png_ptr,
     png_const_charp warning_msg) {
 
+    (void)png_ptr;
     debugAssert( warning_msg != NULL );
     Log::common()->println(warning_msg);
 }

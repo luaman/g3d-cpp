@@ -76,7 +76,7 @@ void MeshAlg::computeNormals(
     // Construct a fake vertex array for backwards compatibility
     Array<Vertex> fakeVertexArray(adjacentFaceArray.size());
 
-    for (int v = 0; v < adjacentFaceArray.size(); ++v) {
+    for (size_t v = 0; v < adjacentFaceArray.size(); ++v) {
         fakeVertexArray[v].faceIndex = adjacentFaceArray[v];
         // We leave out the edges because they aren't used to compute normals
     }
@@ -95,7 +95,7 @@ void MeshAlg::computeNormals(
 
     // Face normals (not unit length)
     faceNormalArray.resize(faceArray.size());
-    for (int f = 0; f < faceArray.size(); ++f) {
+    for (size_t f = 0; f < faceArray.size(); ++f) {
         const Face& face = faceArray[f];
 
         Vector3 vertex[3];
@@ -108,9 +108,9 @@ void MeshAlg::computeNormals(
 
     // Per-vertex normals, computed by averaging
     vertexNormalArray.resize(vertexGeometry.size());
-    for (int v = 0; v < vertexNormalArray.size(); ++v) {
+    for (size_t v = 0; v < vertexNormalArray.size(); ++v) {
         Vector3 sum = Vector3::zero();
-        for (int k = 0; k < vertexArray[v].faceIndex.size(); ++k) {
+        for (size_t k = 0; k < vertexArray[v].faceIndex.size(); ++k) {
             const int f = vertexArray[v].faceIndex[k];
             sum += faceNormalArray[f];
         }
@@ -118,7 +118,7 @@ void MeshAlg::computeNormals(
     }
 
 
-    for (int f = 0; f < faceArray.size(); ++f) {
+    for (size_t f = 0; f < faceArray.size(); ++f) {
         faceNormalArray[f] = faceNormalArray[f].directionOrZero();
     }
 
@@ -133,7 +133,7 @@ void MeshAlg::computeFaceNormals(
 
     faceNormals.resize(faceArray.size());
 
-    for (int f = 0; f < faceArray.size(); ++f) {
+    for (size_t f = 0; f < faceArray.size(); ++f) {
         const MeshAlg::Face& face = faceArray[f];
 
         const Vector3& v0 = vertexArray[face.vertexIndex[0]];
@@ -144,7 +144,7 @@ void MeshAlg::computeFaceNormals(
     }
 
     if (normalize) {
-        for (int f = 0; f < faceArray.size(); ++f) {
+        for (size_t f = 0; f < faceArray.size(); ++f) {
             faceNormals[f] = faceNormals[f].direction();
         }
     }
@@ -265,7 +265,7 @@ void MeshAlg::computeAreaStatistics(
     Array<double> area(indexArray.size() / 3);
     Array<double> length(indexArray.size());
 
-    for (int i = 0; i < indexArray.size(); i += 3) {
+    for (size_t i = 0; i < indexArray.size(); i += 3) {
         const Vector3& v0 = vertexArray[indexArray[i]];
         const Vector3& v1 = vertexArray[indexArray[i + 1]];
         const Vector3& v2 = vertexArray[indexArray[i + 2]];
@@ -283,7 +283,7 @@ void MeshAlg::computeAreaStatistics(
     maxEdgeLength = max(0, length.last());
     medianEdgeLength = max(0, length[length.size() / 2]);
     meanEdgeLength = 0;
-    for (int i = 0; i < length.size(); ++i) {
+    for (size_t i = 0; i < length.size(); ++i) {
         meanEdgeLength += length[i];
     }
     meanEdgeLength /= length.size();
@@ -292,7 +292,7 @@ void MeshAlg::computeAreaStatistics(
     maxFaceArea = max(0, area.last());
     medianFaceArea = max(0, area[area.size() / 2]);
     meanFaceArea = 0;
-    for (int i = 0; i < area.size(); ++i) {
+    for (size_t i = 0; i < area.size(); ++i) {
         meanFaceArea += area[i];
     }
     meanFaceArea /= area.size();
@@ -307,7 +307,7 @@ void MeshAlg::computeAreaStatistics(
 int MeshAlg::countBoundaryEdges(const Array<MeshAlg::Edge>& edgeArray) {
     int b = 0;
 
-    for (int i = 0; i < edgeArray.size(); ++i) {
+    for (size_t i = 0; i < edgeArray.size(); ++i) {
         if ((edgeArray[i].faceIndex[0] == MeshAlg::Face::NONE) !=
             (edgeArray[i].faceIndex[1] == MeshAlg::Face::NONE)) {
             ++b;
@@ -324,7 +324,7 @@ void MeshAlg::computeBounds(
     Sphere&                 sphere) {
 
     Array<Vector3> newArray(indexArray.size());
-    for (int i = 0; i < indexArray.size(); ++i) {
+    for (size_t i = 0; i < indexArray.size(); ++i) {
         newArray[i] = vertexArray[indexArray[i]];
     }
     computeBounds(newArray, box, sphere);
@@ -342,7 +342,7 @@ void MeshAlg::computeBounds(
     xmin.x = ymin.y = zmin.z = inf();
     xmax.x = ymax.y = zmax.z = -inf();
 
-    for (int v = 0; v < vertexArray.size(); ++v) {
+    for (size_t v = 0; v < vertexArray.size(); ++v) {
         const Vector3& vertex = vertexArray[v];
 
         if (vertex.x < xmin.x) {
@@ -411,7 +411,7 @@ void MeshAlg::computeBounds(
     // SECOND PASS: increment current sphere
     double old_to_p, old_to_new;
 
-    for (int v = 0; v < vertexArray.size(); ++v) {
+    for (size_t v = 0; v < vertexArray.size(); ++v) {
         const Vector3& vertex = vertexArray[v];
 
         d = vertex - center;
@@ -571,7 +571,7 @@ void MeshAlg::computeTangentSpaceBasis(
     System::memset(tangent.getCArray(), 0, sizeof(Vector3) * tangent.size());
     System::memset(binormal.getCArray(), 0, sizeof(Vector3) * binormal.size());
 
-    for (int f = 0; f < faceArray.size(); ++f) {
+    for (size_t f = 0; f < faceArray.size(); ++f) {
         const Face& face = faceArray[f];
 
         for (int v = 0; v < 3; ++v) {
@@ -594,7 +594,7 @@ void MeshAlg::computeTangentSpaceBasis(
     }
 
     // Normalize the basis vectors
-    for (int v = 0; v < vertexArray.size(); ++v) {
+    for (size_t v = 0; v < vertexArray.size(); ++v) {
         // Remove the component parallel to the normal
         const Vector3& N = vertexNormalArray[v];
         tangent[v]  -= tangent[v].dot(N) * N;

@@ -1509,7 +1509,7 @@ public:
 
     static void clearJoysticks() {
         //Release any joystick interfaces
-        for(int i = 0; i < _joysticks.length(); ++i) {
+        for(size_t i = 0; i < _joysticks.length(); ++i) {
             if (_joysticks[i].valid) {
                 _joysticks[i].device->Release();
                 _joysticks[i].device = NULL;

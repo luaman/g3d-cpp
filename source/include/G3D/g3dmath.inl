@@ -201,6 +201,36 @@ inline int iMax(int x, int y) {
 }
 
 //----------------------------------------------------------------------------
+inline unsigned int iMin(unsigned int x, unsigned int y) {
+    return (x >= y) ? y : x;
+}
+
+//----------------------------------------------------------------------------
+inline unsigned int iMax(unsigned int x, unsigned int y) {
+    return (x >= y) ? x : y;
+}
+
+//----------------------------------------------------------------------------
+inline int iMin(unsigned int x,int y) {
+    return ((int)x >= y) ? y : (int)x;
+}
+
+//----------------------------------------------------------------------------
+inline int iMax(unsigned int x,int y) {
+    return ((int)x >= y) ? (int)x : y;
+}
+
+//----------------------------------------------------------------------------
+inline int iMin(int x, unsigned int y) {
+    return (x >= (int)y) ? (int)y : x;
+}
+
+//----------------------------------------------------------------------------
+inline int iMax(int x, unsigned int y) {
+    return (x >= (int)y) ? x : (int)y;
+}
+
+//----------------------------------------------------------------------------
 inline int ceilPow2(unsigned int in) {
     in -= 1;
 

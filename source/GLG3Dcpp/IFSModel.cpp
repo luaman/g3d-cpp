@@ -58,7 +58,7 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
     debugAssert(geometry.vertexArray.size() > 0);
     debugAssert(indexArray.size() > 0);
 
-    for (int i = 0; i < geometry.vertexArray.size(); ++i) {
+    for (size_t i = 0; i < geometry.vertexArray.size(); ++i) {
         geometry.vertexArray[i] = cframe.pointToWorldSpace(geometry.vertexArray[i] * scale);
     }
 
@@ -82,7 +82,7 @@ size_t IFSModel::mainMemorySize() const {
     size_t indexSize   = indexArray.size() * sizeof(int);
     size_t faceSize    = faceArray.size() * sizeof(MeshAlg::Face);
     size_t valentSize  = vertexArray.size() * sizeof(Array<MeshAlg::Vertex>);
-    for (int i = 0; i < vertexArray.size(); ++i) {
+    for (size_t i = 0; i < vertexArray.size(); ++i) {
         valentSize += vertexArray[i].faceIndex.size() * sizeof(int);
         valentSize += vertexArray[i].edgeIndex.size() * sizeof(int);
     }
@@ -278,7 +278,7 @@ void IFSModel::load(
 
 void GMaterial::configure(class RenderDevice* rd) const {
     rd->setColor(color);
-    for (int t = 0; t < texture.size(); ++t) {
+    for (size_t t = 0; t < texture.size(); ++t) {
         rd->setTexture(t, texture[t]);
     }
     rd->setShininess(shininess);

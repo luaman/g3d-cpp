@@ -50,8 +50,8 @@ private:
     friend class TextInput;
 
     std::string             _string;
-    int                     _line;
-    int                     _character;
+    size_t                  _line;
+    size_t                  _character;
     Type                    _type;
 	ExtendedType            _extendedType;
 
@@ -75,11 +75,11 @@ public:
     }
 
 	/** Line from which this token was parsed.  Starts at 1. */
-    int line() const {
+    size_t line() const {
         return _line;
     }
 	/** Character position from which this token was parsed.  Starts at 1. */
-    int character() const {
+    size_t character() const {
         return _character;
     }
 
@@ -217,12 +217,12 @@ private:
      Last character index consumed.
      */
     int                     bufferLast;
-    int                     lineNumber;
+    size_t                  lineNumber;
 
     /**
      Number of characters from the beginning of the line. 
      */
-    int                     charNumber;
+    size_t                  charNumber;
 
     std::string             sourceFile;
     
@@ -275,8 +275,8 @@ public:
 
         TokenException(
             const std::string&  src,
-            int                 ln,
-            int                 ch);
+            size_t              ln,
+            size_t              ch);
 
     };
 
@@ -288,8 +288,8 @@ public:
 
         WrongTokenType(
             const std::string&  src,
-            int                 ln,
-            int                 ch,
+            size_t              ln,
+            size_t              ch,
             Token::Type         e,
             Token::Type         a);
     };
@@ -301,8 +301,8 @@ public:
 
         WrongSymbol(
             const std::string&  src,
-            int                 ln,
-            int                 ch,
+            size_t              ln,
+            size_t              ch,
             const std::string&  e,
             const std::string&  a);
     };

@@ -75,6 +75,7 @@ public:
      */
     ReferenceCountedObject(const ReferenceCountedObject& notUsed) : 
         ReferenceCountedObject_refCount(0) {
+        (void)notUsed;
         debugAssertM(isValidHeapPointer(this), 
             "Reference counted objects must be allocated on the heap.");
     }

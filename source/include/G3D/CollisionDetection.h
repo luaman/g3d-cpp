@@ -108,6 +108,8 @@ public:
             const double*       ad,
             const double*       bd)
     {
+        (void)D;
+
         double R0 = 0.0;
         double R1 = 0.0;
         double R = 0.0;

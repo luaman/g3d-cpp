@@ -204,7 +204,7 @@ private:
     /** Size occupied by the current message... so far.  This will be
         equal to messageSize when the whole message has arrived. 
       */
-    int                             receiveBufferUsedSize;
+    size_t                          receiveBufferUsedSize;
 
     ReliableConduit(class NetworkDevice* _nd, const NetAddress& addr);
 
@@ -314,7 +314,7 @@ public:
             array[0]->binaryOutput.reset();
             serializeMessage(type, m, array[0]->binaryOutput);
 
-            for (int i = 0; i < array.size(); ++i) {
+            for (size_t i = 0; i < array.size(); ++i) {
                 array[i]->sendBuffer(array[0]->binaryOutput);
             }
         }
@@ -490,7 +490,7 @@ private:
 
     /** Maximum transmission unit (packet size in bytes) for this socket.
         May vary between sockets. */
-    int                    MTU;
+    size_t                 MTU;
 
 
     template<typename T> 

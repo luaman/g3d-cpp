@@ -212,7 +212,7 @@ float ConvexPolyhedron::getVolume() const {
     // Choose the first _vertex of the first face as the origin.
     // This lets us skip one face, too, and avoids negative heights.
     Vector3 v0 = face[0]._vertex[0];
-    for (int f = 1; f < face.length(); f++) {        
+    for (size_t f = 1; f < face.length(); f++) {        
         const ConvexPolygon& poly = face[f];
         
         float height = (poly._vertex[0] - v0).dot(poly.normal());

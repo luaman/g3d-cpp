@@ -76,6 +76,7 @@ double GCamera::getViewportWidth(const Rect2D& viewport) const {
 
 
 double GCamera::getViewportHeight(const Rect2D& viewport) const {
+    (void)viewport;
     return nearPlane / imagePlaneDepth;
 }
 
@@ -196,7 +197,7 @@ void GCamera::getClipPlanes(
     Frustum fr;
     getFrustum(viewport, fr);
     clip.resize(fr.faceArray.size(), DONT_SHRINK_UNDERLYING_ARRAY);
-    for (int f = 0; f < clip.size(); ++f) {
+    for (size_t f = 0; f < clip.size(); ++f) {
         clip[f] = fr.faceArray[f].plane;
     }
 
@@ -344,12 +345,12 @@ void GCamera::getFrustum(const Rect2D& viewport, Frustum& fr) const {
     }
 
     // Transform vertices to world space
-    for (int v = 0; v < fr.vertexPos.size(); ++v) {
+    for (size_t v = 0; v < fr.vertexPos.size(); ++v) {
         fr.vertexPos[v] = cframe.toWorldSpace(fr.vertexPos[v]);
     }
 
 	// Transform planes to world space
-	for (int p = 0; p < fr.faceArray.size(); ++p) {
+	for (size_t p = 0; p < fr.faceArray.size(); ++p) {
 		// Since there is no scale factor, we don't have to 
 		// worry about the inverse transpose of the normal.
         Vector3 normal;

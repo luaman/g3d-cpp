@@ -102,7 +102,7 @@ void tesselateComplexPolygon(Array<Vector3>& input, Array<Triangle>& output) {
     }
 
     double v[3];
-    int i;
+    size_t i;
     TessData data;
 
     gluTessBeginPolygon(tobj, &data);
@@ -118,7 +118,7 @@ void tesselateComplexPolygon(Array<Vector3>& input, Array<Triangle>& output) {
     gluTessEndPolygon(tobj);
 
 
-    for (int p = 0; p < data.primitive.size(); ++p) {
+    for (size_t p = 0; p < data.primitive.size(); ++p) {
         const TessData::Primitive& primitive = data.primitive[p];
 
         // Turn the tesselated primitive into triangles

@@ -219,9 +219,9 @@ private:
 
     class ShutdownMessage {
     public:
-        void serialize(BinaryOutput& b) const {}
+        void serialize(BinaryOutput& b) const { (void)b; }
 
-        void deserialize(BinaryInput& b) {}
+        void deserialize(BinaryInput& b) { (void)b; }
     };
 
     /**
@@ -342,7 +342,7 @@ private:
      Returns -1 if there is none.  Only checks IP addresses.
      */
     int findServerListIndex(const NetAddress& addr) const {
-        for (int i = 0; i < serverList.size(); ++i) {
+        for (size_t i = 0; i < serverList.size(); ++i) {
             if (addr.ip() == serverList[i].address.ip()) {
                 return i;
             }
@@ -368,7 +368,7 @@ private:
         bool alreadyHere = false;
 
         // Incorrect protocol; add to the incompatible list
-        for (int i = 0; i < incompatibleServerList.size(); ++i) {
+        for (size_t i = 0; i < incompatibleServerList.size(); ++i) {
             IncompatibleServerDescription& server = incompatibleServerList[i];
 
             if (server.address == addr) {

@@ -196,7 +196,7 @@ void createDirectory(
     std::string p = root + ".";
 
     // Create any intermediate that doesn't exist
-    for (int i = 0; i < path.size(); ++i) {
+    for (size_t i = 0; i < path.size(); ++i) {
         p += "/" + path[i];
         if (! fileExists(p)) {
 	    // Windows only requires one argument to mkdir,

@@ -513,7 +513,7 @@ ReliableConduit::ReliableConduit(
 
     } else if (ret != 0) {
         if (nd->debugLog) {
-            sock = SOCKET_ERROR;
+            sock = (SOCKET)SOCKET_ERROR;
             nd->debugLog->println("FAIL");
             nd->debugLog->println(socketErrorCode());
         }
@@ -623,13 +623,14 @@ void ReliableConduit::sendBuffer(const BinaryOutput& b) {
     bSent += b.getLength();
 
     // Verify the packet was actually sent
-    debugAssert(ret == b.getLength());
+    // Conversion to unsigned is safe because -1 is caught earlier
+    debugAssert((size_t)ret == b.getLength());
 }
 
 
 void ReliableConduit::send(const NetMessage* m) {
     if (m == NULL) {
-        send(-1);
+        send((uint32)-1);
     } else {
         send(m->type(), *m);
     }
@@ -639,7 +640,7 @@ void ReliableConduit::send(const NetMessage* m) {
 /** Null serializer.  Used by reliable conduit::send(type) */
 class Dummy {
 public:
-    void serialize(BinaryOutput& b) const {}
+    void serialize(BinaryOutput& b) const { (void)b; }
 };
 
 
@@ -742,10 +743,11 @@ void ReliableConduit::receiveIntoBuffer() {
     debugAssert(state == RECEIVING);
     debugAssert(messageType != 0);
     debugAssertM(receiveBufferUsedSize < messageSize, "Message already received.");
+    debugAssertM(messageSize >= receiveBufferUsedSize, "Message size overflow.");
 
     // Read the data itself
     int ret = 0;
-    int left = messageSize - receiveBufferUsedSize;
+    uint32 left = messageSize - receiveBufferUsedSize;
     int count = 0;
     while ((ret != SOCKET_ERROR) && (left > 0) && (count < 10)) {
 
@@ -892,7 +894,7 @@ void LightweightConduit::send(const Array<NetAddress>& array,
     binaryOutput.reset();
     serializeMessage(m, binaryOutput);
 
-    for (int i = 0; i < array.size(); ++i) {
+    for (size_t i = 0; i < array.size(); ++i) {
         sendBuffer(array[i], binaryOutput);
     }
 }
@@ -1017,7 +1019,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     if (! nd->bind(sock, NetAddress(0, port))) {
         if (nd->debugLog) {nd->debugLog->printf("Unable to bind!\n");}
         nd->closesocket(sock);
-        sock = SOCKET_ERROR;
+        sock = (SOCKET)SOCKET_ERROR;
         return;
     }
 
@@ -1035,7 +1037,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
             nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
-        sock = SOCKET_ERROR;
+        sock = (SOCKET)SOCKET_ERROR;
         return;
     }
     if (nd->debugLog) {

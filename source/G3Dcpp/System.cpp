@@ -97,7 +97,7 @@ std::string demoFindData(bool errorIfNotFound) {
     #endif
 
     // Scan all potentials for the font directory
-    for (int p = 0; p < potential.size();  ++p) {
+    for (size_t p = 0; p < potential.size();  ++p) {
         std::string path = potential[p];
         if (fileExists(path + "data") && fileExists(path + "data/font")) {
             return path + "data/";

@@ -508,7 +508,7 @@ void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
             // No VAR available; use the default rendering path
             glFrontFace(GL_CW);
 
-            for (int p = 0; p < primitiveArray.size(); ++p) {
+            for (size_t p = 0; p < primitiveArray.size(); ++p) {
     
                 const Primitive&          primitive = primitiveArray[p];
                 const int                 n         = primitive.pvertexArray.size();
@@ -545,7 +545,7 @@ void MD2Model::debugRenderWireframe(RenderDevice* renderDevice, const Pose& pose
         renderDevice->setColor(Color3::black());
         
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-        for (int i = 0; i < indexArray.size(); ++i) {
+        for (size_t i = 0; i < indexArray.size(); ++i) {
             renderDevice->sendVertex(interpolatedFrame.vertexArray[indexArray[i]]);
         }
         renderDevice->endPrimitive();
@@ -563,13 +563,13 @@ size_t MD2Model::mainMemorySize() const {
     size_t faceSize    = faceArray.size() * sizeof(MeshAlg::Face);
     size_t texSize     = _texCoordArray.size() * sizeof(Vector2int16);
     size_t valentSize  = vertexArray.size() * sizeof(Array<MeshAlg::Vertex>);
-    for (int i = 0; i < vertexArray.size(); ++i) {
+    for (size_t i = 0; i < vertexArray.size(); ++i) {
         valentSize += vertexArray[i].faceIndex.size() * sizeof(int);
         valentSize += vertexArray[i].edgeIndex.size() * sizeof(int);
     }
 
     size_t primitiveSize  = primitiveArray.size() * sizeof(Primitive);
-    for (int i = 0; i < primitiveArray.size(); ++i) {
+    for (size_t i = 0; i < primitiveArray.size(); ++i) {
         primitiveSize += primitiveArray[i].pvertexArray.size() * sizeof(Primitive::PVertex);
     }
 
@@ -618,7 +618,7 @@ void MD2Model::getGeometry(const Pose& pose, MeshAlg::Geometry& out) const {
 
     computeFrameNumbers(pose, i0, i1, alpha);
 
-    if ((i0 >= keyFrame.size()) || (i1 >= keyFrame.size())) {
+    if (((size_t)i0 >= keyFrame.size()) || ((size_t)i1 >= keyFrame.size())) {
         // This animation is not supported by this model.
         i0 = 0;
         i1 = 0;

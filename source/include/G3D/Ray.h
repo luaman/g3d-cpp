@@ -198,6 +198,9 @@ inline double Ray::intersectionTime(
     const Vector3& edge1,
     const Vector3& edge2) const {
 
+    (void)vert1;
+    (void)vert2;
+
     // Barycenteric coords
     double u, v;
 
@@ -256,6 +259,9 @@ inline double Ray::intersectionTime(
     double&         w0,
     double&         w1,
     double&         w2) const {
+
+    (void)vert1;
+    (void)vert2;
 
     // Barycenteric coords
     double u, v;

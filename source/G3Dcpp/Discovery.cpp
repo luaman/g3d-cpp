@@ -34,7 +34,7 @@ void DiscoveryServerAddressMessage::serialize(BinaryOutput& b) const {
 
     // Send addresses
     b.writeInt32(address.size());
-    for (int i = 0; i < address.size(); ++i) {
+    for (size_t i = 0; i < address.size(); ++i) {
         address[i].serialize(b);
     }
 }
@@ -68,7 +68,7 @@ void DiscoveryServerAddressMessage::deserialize(BinaryInput& b) {
     correctProtocol = true;
 
     address.resize(b.readInt32());
-    for (int i = 0; i < address.size(); ++i) {
+    for (size_t i = 0; i < address.size(); ++i) {
         address[i].deserialize(b);
     }
 }
@@ -108,7 +108,7 @@ void DiscoveryServer::init(
     netDevice->localHostAddresses(addressMessage.address);
 
     // Set the port number
-    for (int i = 0; i < addressMessage.address.size(); ++i) {
+    for (size_t i = 0; i < addressMessage.address.size(); ++i) {
         addressMessage.address[i] =
             NetAddress(addressMessage.address[i].ip(),
                        settings->serverAdvertisementPort);

@@ -276,7 +276,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
 SDLWindow::~SDLWindow() {
 	// Close joysticks, if opened
-    for (int j = 0; j < joy.size(); ++j) {
+    for (size_t j = 0; j < joy.size(); ++j) {
   		SDL_JoystickClose(joy[j]);
 	}
 
@@ -428,13 +428,13 @@ void SDLWindow::getJoystickState(
 
     axis.resize(SDL_JoystickNumAxes(sdlstick), DONT_SHRINK_UNDERLYING_ARRAY);
 
-    for (int a = 0; a < axis.size(); ++a) {
+    for (size_t a = 0; a < axis.size(); ++a) {
         axis[a] = SDL_JoystickGetAxis(sdlstick, a) / 32768.0;
     }
 
     button.resize(SDL_JoystickNumButtons(sdlstick), DONT_SHRINK_UNDERLYING_ARRAY);
 
-    for (int b = 0; b < button.size(); ++b) {
+    for (size_t b = 0; b < button.size(); ++b) {
         button[b] = (SDL_JoystickGetButton(sdlstick, b) != 0);
     }
 }

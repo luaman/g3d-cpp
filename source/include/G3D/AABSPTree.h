@@ -303,7 +303,7 @@ private:
             debugAssert(lo == splitBounds.low());
             debugAssert(hi == splitBounds.high());
 
-		    for(int i = 0; i < valueArray.length(); ++i) {
+		    for(size_t i = 0; i < valueArray.length(); ++i) {
 			    const AABox& b = valueArray[i].bounds;
 
 			    for(int axis = 0; axis < 3; ++axis) {
@@ -401,7 +401,7 @@ private:
             bool                useSphere) const {
 
             // Test all values at this node
-            for (int v = 0; v < valueArray.size(); ++v) {
+            for (size_t v = 0; v < valueArray.size(); ++v) {
                 const AABox& bounds = valueArray[v].bounds;
                 if (bounds.intersects(box) &&
                     (! useSphere || bounds.intersects(sphere))) {

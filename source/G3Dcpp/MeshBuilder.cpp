@@ -39,7 +39,7 @@ void MeshBuilder::commit(std::string& n, Array<int>& indexArray, Array<Vector3>&
     MeshAlg::computeWeld(triList, outvertexArray, toNew, toOld, close);
 
     // Construct triangles
-    for (int t = 0; t < triList.size(); t += 3) {
+    for (size_t t = 0; t < triList.size(); t += 3) {
         int index[3];
 
         for (int i = 0; i < 3; ++i) {
@@ -69,7 +69,7 @@ void MeshBuilder::centerTriList() {
     Vector3 translation = vmin + diagonal / 2;
 
     // Center and scale all vertices in the input list
-    int v;
+    size_t v;
 
     //Matrix3 rot90 = Matrix3::fromAxisAngle(Vector3::UNIT_Y, toRadians(180)) * Matrix3::fromAxisAngle(Vector3::UNIT_X, toRadians(90));
     for (v = 0; v < triList.size(); ++v) {
@@ -83,7 +83,7 @@ void MeshBuilder::computeBounds(Vector3& min, Vector3& max) {
     min = Vector3::INF3; 
     max = -min;
 
-    int v;
+    size_t v;
     for (v = 0; v < triList.size(); ++v) {
         min = min.min(triList[v]);
         max = max.max(triList[v]);

@@ -72,14 +72,14 @@ void TextInput::push(const Token& t) {
 
 bool TextInput::hasMore() {
     return
-        (bufferLast <= buffer.length() - 1) &&
+        (bufferLast <= (int)buffer.length() - 1) &&
         (peek()._type != Token::END);
 }
 
 
 int TextInput::popNextChar() {
     // Don't go off the end
-    if (bufferLast == (buffer.length() - 1)) {
+    if (bufferLast == (int)(buffer.length() - 1)) {
         return EOF;
     }
 
@@ -595,6 +595,7 @@ TextInput::TextInput(const std::string& filename, const Options& opt) : options(
 
 
 TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : options(opt) {
+    (void)fs;
     init();
     if (str.length() < 14) {
         sourceFile = std::string("\"") + str + "\"";
@@ -610,8 +611,8 @@ TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : option
 
 TextInput::TokenException::TokenException(
     const std::string&  src,
-    int                 ln,
-    int                 ch) : sourceFile(src), line(ln), character(ch) {
+    size_t              ln,
+    size_t              ch) : sourceFile(src), line(ln), character(ch) {
 
     message = format("%s(%d) : ", sourceFile.c_str(), line);
 }
@@ -636,8 +637,8 @@ static const char* tokenTypeToString(Token::Type t) {
 
 TextInput::WrongTokenType::WrongTokenType(
     const std::string&  src,
-    int                 ln,
-    int                 ch,
+    size_t              ln,
+    size_t              ch,
     Token::Type         e,
     Token::Type         a) :
     TokenException(src, ln, ch), expected(e), actual(a) {
@@ -650,8 +651,8 @@ TextInput::WrongTokenType::WrongTokenType(
 
 TextInput::WrongSymbol::WrongSymbol(
     const std::string&  src,
-    int                 ln,
-    int                 ch,
+    size_t              ln,
+    size_t              ch,
     const std::string&  e,
     const std::string&  a) : 
     TokenException(src, ln, ch), expected(e), actual(a) {

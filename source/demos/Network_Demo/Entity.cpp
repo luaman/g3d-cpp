@@ -115,7 +115,7 @@ void Entity::doSimulation(SimTime dt) {
         const double maxAccel = 10;
         double a = controls.desiredVelocity[i] - velocity[i];
         // Obey maximum acceleration and don't overshoot the target velocity
-        acceleration[i] = sign(a) * min(abs(a)/dt, maxAccel);
+        acceleration[i] = sign(a) * min(::abs(a)/dt, maxAccel);
     }
 
     velocity = velocity + acceleration * dt;

@@ -74,13 +74,13 @@ private:
     /**
      Length of file, in bytes
      */
-    int             length;
+    size_t          length;
     uint8*          buffer;
 
     /**
      Next byte in file
      */
-    int             pos;
+    size_t          pos;
 
     /**
      When true, the buffer is freed in the deconstructor.
@@ -123,7 +123,7 @@ public:
      */
     BinaryInput(
         const uint8*        data,
-        int                 dataLen,
+        size_t              dataLen,
         G3DEndian           dataEndian,
         bool                compressed = false,
         bool                copyMemory = true);
@@ -147,7 +147,7 @@ public:
      the start of the file, not the current position.
      Seeks to the new position before reading.
      */
-    inline const uint8 operator[](int n) {
+    inline const uint8 operator[](size_t n) {
         setPosition(n);
         return readUInt8();
     }
@@ -155,11 +155,11 @@ public:
     /**
      Returns the length of the file in bytes.
      */
-    inline int getLength() const {
+    inline size_t getLength() const {
         return length;
     }
 
-    inline int size() const {
+    inline size_t size() const {
         return getLength();
     }
 
@@ -167,14 +167,14 @@ public:
      Returns the current byte position in the file,
      where 0 is the beginning and getLength() - 1 is the end.
      */
-    inline int getPosition() const {
+    inline size_t getPosition() const {
         return pos;
     }
 
     /**
      Sets the position.  Cannot set past length.
      */
-    inline void setPosition(int p) {
+    inline void setPosition(size_t p) {
         debugAssertM(p <= length, "Read past end of file");
         pos = p;
     }
@@ -228,7 +228,7 @@ public:
     }
 
     inline uint32 readUInt32() {
-        debugAssertM(pos + 4 <= length, "Read past end of file");
+        debugAssertM((pos + 4) <= length, "Read past end of file");
 
         pos += 4;
         if (swapBytes) {
@@ -321,7 +321,7 @@ public:
      Skips ahead n bytes.
      */
     inline void skip(size_t n) {
-        debugAssertM((int)(pos + n) <= length, "Read past end of file");
+        debugAssertM((pos + n) <= length, "Read past end of file");
         pos += n;
     }
 

@@ -36,7 +36,7 @@ void Server::doNetwork() {
     }
 
     // Check for messages from clients
-    for (int c = 0; c < clientProxyArray.size(); ++c) {
+    for (size_t c = 0; c < clientProxyArray.size(); ++c) {
         ClientProxy& clientProxy = clientProxyArray[c];
         ReliableConduitRef& net =  clientConduitArray[c];
 
