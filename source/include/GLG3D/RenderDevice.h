@@ -235,8 +235,12 @@ private:
     double                      emwaTriangleCount;
     double                      emwaTriangleRate;
 
-	/** Updates the polygon count based on the primitive */
-	void countPrimitive(RenderDevice::Primitive primitive, int numVertices);
+	/** Updates the triangle count based on the primitive.
+    
+        This method no longer counts the number of primitives but
+        calculates the triangles used in that number of primitives.
+        LINE and POINT primitives are given one triangle count each. */
+	void countTriangles(RenderDevice::Primitive primitive, int numVertices);
 
     std::string                 cardDescription;
 
@@ -750,7 +754,7 @@ public:
         // Mark all active arrays as busy.
         setVARAreaMilestone();
 
-		countPrimitive(primitive, numIndices);
+		countTriangles(primitive, numIndices);
 	}
 
     /**

@@ -91,6 +91,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1103619 ] RenderDevice::countPrimitive is wrong (changed to RenderDevice::countTriangles) [Corey]
      <LI> Fix: AABSPTree::BoxIntersectionIterator doesn't compile
      <LI> Fix: [ 1101680 ] copyfile won't overwrite (on Windows now overwrites) [Corey]
      <LI> Fix: [ 1101646 ] GCamera::frustum incorrect for non-square viewport

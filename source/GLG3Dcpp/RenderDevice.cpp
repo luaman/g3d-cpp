@@ -2326,7 +2326,7 @@ void RenderDevice::beginPrimitive(Primitive p) {
 void RenderDevice::endPrimitive() {
     debugAssertM(inPrimitive, "Call to endPrimitive() without matching beginPrimitive()");
 
-	countPrimitive(currentPrimitive, currentPrimitiveVertexCount);
+	countTriangles(currentPrimitive, currentPrimitiveVertexCount);
 
     glEnd();
     inPrimitive = false;
@@ -2335,35 +2335,35 @@ void RenderDevice::endPrimitive() {
 }
 
 
-void RenderDevice::countPrimitive(RenderDevice::Primitive primitive, int numVertices) {
+void RenderDevice::countTriangles(RenderDevice::Primitive primitive, int numVertices) {
 	switch (primitive) {
     case LINES:
-        triangleCount += numVertices;
+        triangleCount += (numVertices / 2);
         break;
 
     case LINE_STRIP:
-        triangleCount += (numVertices - 1) * 2;
+        triangleCount += (numVertices - 1);
         break;
 
     case TRIANGLES:
-        triangleCount += numVertices / 3;
+        triangleCount += (numVertices / 3);
         break;
 
     case TRIANGLE_STRIP:
     case TRIANGLE_FAN:
-        triangleCount += numVertices - 2;
-        break;
-
-    case QUADS:
-        triangleCount += numVertices / 4;
-        break;
-
-    case QUAD_STRIP:
         triangleCount += (numVertices - 2);
         break;
 
+    case QUADS:
+        triangleCount += ((numVertices / 4) / 2);
+        break;
+
+    case QUAD_STRIP:
+        triangleCount += (((numVertices / 2) - 1) / 2);
+        break;
+
     case POINTS:
-        triangleCount += (numVertices * 2);
+        triangleCount += numVertices;
         break;
     }
 }
@@ -2811,7 +2811,7 @@ void RenderDevice::sendSequentialIndices(RenderDevice::Primitive primitive, int 
     // Mark all active arrays as busy.
     setVARAreaMilestone();
 
-	countPrimitive(primitive, numVertices);
+	countTriangles(primitive, numVertices);
     afterPrimitive();
 }
 
