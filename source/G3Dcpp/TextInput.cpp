@@ -516,7 +516,7 @@ void TextInput::parseQuotedString(char delimiter, Token& t) {
 double TextInput::readNumber() {
     Token t(peek());
 
-    if ((t._type == Token::SYMBOL) && ((t._string == "-") || (t._string == "+"))) {
+    if ((t._type == Token::SYMBOL) && (! options.signedNumbers) && ((t._string == "-") || (t._string == "+"))) {
         // Read the token
         t = read();
 

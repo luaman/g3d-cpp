@@ -53,6 +53,7 @@
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
      <LI> Fix: Removed RenderDevice::polygonCount, which was never used.
+     <LI> Fix: TextInput::readNumber no longer accepts double preceeding +/- on numbers when Options::signedNumbers is true
      <LI> Fix: [ 1038733 ] GWindow cannot set icon properly [Corey]
      <LI> Fix: [ 939400 ] Linux mouse set position (Wild camera swinging on startup) [Corey]
      <LI> Fix: [ 1042591 ] Software GL Causes Assertion [Corey]
