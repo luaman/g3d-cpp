@@ -100,6 +100,8 @@ void GApp::debugPrintf(const char* fmt ...) {
 
 
 GApp::~GApp() {
+    networkDevice->cleanup();
+    delete networkDevice;
     debugFont = NULL;
     delete userInput;
     userInput = NULL;
