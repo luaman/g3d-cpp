@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2004-03-29
+  @edited  2004-08-18
 */
 
 #ifndef G3D_GCAMERA_H
@@ -22,6 +22,9 @@ namespace G3D {
   a screenWidth x screenHeight pixel grid on a
   renderDevice->getWidth() x renderDevice->getHeight()
   window.
+
+  All viewport arguments are the pixel bounds of the viewport-- e.g.,
+  RenderDevice::getViewport().
  */
 class GCamera  {
 private:

@@ -206,7 +206,12 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     debugAssertGLOk();
 
     if (debugLog) {
-		int t = glGetInteger(GL_MAX_TEXTURE_UNITS_ARB);
+		int t = 0;
+       
+        int t0 = 0;
+        if (GLCaps::supports_GL_ARB_multitexture()) {
+            t = t0 = glGetInteger(GL_MAX_TEXTURE_UNITS_ARB);
+        }
 
 		if (GLCaps::supports_GL_ARB_fragment_program()) {
 			t = glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS_ARB);
@@ -218,7 +223,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
                          "glGet(GL_MAX_TEXTURE_UNITS_ARB)       = %d\n"
                          "glGet(GL_MAX_TEXTURE_IMAGE_UNITS_ARB) = %d\n",
                          _numTextureCoords, _numTextures, _numTextureUnits,
-                         glGetInteger(GL_MAX_TEXTURE_UNITS_ARB),
+                         t0,
 						 t);
     }
 

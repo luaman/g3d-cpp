@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2004-06-16
+ @edited  2004-08-18
 */
 
 #include "GLG3D/glcalls.h"
@@ -17,6 +17,7 @@
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/GLCaps.h"
 
 namespace G3D {
 
@@ -52,7 +53,10 @@ static void disableAllTextures() {
 static void glStatePush() {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
+
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+    }
 }
 
 /**
@@ -694,7 +698,9 @@ void Texture::copyFromScreen(
     this->depth   = 1;
     debugAssert(this->dimension == DIM_2D || this->dimension == DIM_2D_RECT);
 
-    glActiveTextureARB(GL_TEXTURE0_ARB);
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+    }
     disableAllTextures();
     GLenum target = dimensionToTarget(dimension);
     glEnable(target);
@@ -749,7 +755,9 @@ void Texture::copyFromScreen(
     debugAssert(face >= 0);
     debugAssert(face < 6);
 
-    glActiveTextureARB(GL_TEXTURE0_ARB);
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+    }
     disableAllTextures();
 
     glEnable(GL_TEXTURE_CUBE_MAP_ARB);
