@@ -37,7 +37,6 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/Vector3.inl \
                        G3D/Vector4.h \
                        G3D/Vector4.inl \
-                       G3D/VectorSwizzle.h \
                        G3D/debug.h \
                        G3D/debugAssert.h \
                        G3D/debugPrintf.h \

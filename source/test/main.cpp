@@ -655,6 +655,13 @@ void testCollision() {
 }
 
 
+void testSwizzle() {
+    Vector4 v1(1,2,3,4);
+    Vector2 v2;
+
+    v2 = v1.xy() + v1.yz();
+}
+
 
 
 int main(int argc, char* argv[]) {
@@ -721,6 +728,7 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
     testglFormatOf();
     printf("  passed\n");
+    testSwizzle();
 
     printf("\nAll tests succeeded.\n");
 	

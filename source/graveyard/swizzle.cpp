@@ -35,13 +35,14 @@ int main(int argc, char* argv[]) {
                 }
                 fprintf(header, "() const;\n");
 
+                /*
                 // Header (swizzle)
                 fprintf(header, "    VectorSwizzle%d ", num);
                 for (int j = 0; j < num; ++j) {
                     fprintf(header, "%c", pos[j]);
                 }
                 fprintf(header, "();\n");
-
+                */
 
                 // Implementation (const)
                 fprintf(cpp, "Vector%d Vector%d::", num, v);
@@ -57,6 +58,7 @@ int main(int argc, char* argv[]) {
                 }
                 fprintf(cpp, "); }\n");
 
+                /*
                 // Implementation (swizzle)
                 fprintf(cpp, "VectorSwizzle%d Vector%d::", num, v);
                 for (int j = 0; j < num; ++j) {
@@ -70,6 +72,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
                 fprintf(cpp, "); }\n");
+                */
 
             }
             fprintf(header, "\n");

@@ -23,17 +23,13 @@ namespace G3D {
 class Vector2;    
 class Vector3;
 class Vector4;
-class VectorSwizzle2;
-class VectorSwizzle3;
-class VectorSwizzle4;
 
 /**
 
   <B>Swizzles</B>
  Vector classes have swizzle operators, e.g. <CODE>v.xy()</CODE>, that
- allow selection of arbitrary sub-fields.  These can be used as write 
- masks, although the implementation is a hack using proxy objects and
- can lead to confusing error messages.  Examples
+ allow selection of arbitrary sub-fields.  These cannot be used as write 
+ masks.  Examples
 
   <PRE>
 Vector3 v(1, 2, 3);
@@ -42,21 +38,8 @@ Vector2 b;
 
 b = v.xz();
 j = b.xx();
-j.xy() = b;
 </PRE>
 
-Of course, you can also get yourself into a lot of trouble, like:
-
-  <PRE>
-j.xy() = j.xx();
-j.xx() = b;
-
-// void foo(Vector2& v);
-foo(j.xy());
-
-</PRE>
-
-  So don't write code like that.
 
   <B>Warning</B>
 
@@ -208,245 +191,130 @@ public:
     // 2-char swizzles
 
     Vector2 xx() const;
-    VectorSwizzle2 xx();
     Vector2 yx() const;
-    VectorSwizzle2 yx();
     Vector2 zx() const;
-    VectorSwizzle2 zx();
     Vector2 xy() const;
-    VectorSwizzle2 xy();
     Vector2 yy() const;
-    VectorSwizzle2 yy();
     Vector2 zy() const;
-    VectorSwizzle2 zy();
     Vector2 xz() const;
-    VectorSwizzle2 xz();
     Vector2 yz() const;
-    VectorSwizzle2 yz();
     Vector2 zz() const;
-    VectorSwizzle2 zz();
 
     // 3-char swizzles
 
     Vector3 xxx() const;
-    VectorSwizzle3 xxx();
     Vector3 yxx() const;
-    VectorSwizzle3 yxx();
     Vector3 zxx() const;
-    VectorSwizzle3 zxx();
     Vector3 xyx() const;
-    VectorSwizzle3 xyx();
     Vector3 yyx() const;
-    VectorSwizzle3 yyx();
     Vector3 zyx() const;
-    VectorSwizzle3 zyx();
     Vector3 xzx() const;
-    VectorSwizzle3 xzx();
     Vector3 yzx() const;
-    VectorSwizzle3 yzx();
     Vector3 zzx() const;
-    VectorSwizzle3 zzx();
     Vector3 xxy() const;
-    VectorSwizzle3 xxy();
     Vector3 yxy() const;
-    VectorSwizzle3 yxy();
     Vector3 zxy() const;
-    VectorSwizzle3 zxy();
     Vector3 xyy() const;
-    VectorSwizzle3 xyy();
     Vector3 yyy() const;
-    VectorSwizzle3 yyy();
     Vector3 zyy() const;
-    VectorSwizzle3 zyy();
     Vector3 xzy() const;
-    VectorSwizzle3 xzy();
     Vector3 yzy() const;
-    VectorSwizzle3 yzy();
     Vector3 zzy() const;
-    VectorSwizzle3 zzy();
     Vector3 xxz() const;
-    VectorSwizzle3 xxz();
     Vector3 yxz() const;
-    VectorSwizzle3 yxz();
     Vector3 zxz() const;
-    VectorSwizzle3 zxz();
     Vector3 xyz() const;
-    VectorSwizzle3 xyz();
     Vector3 yyz() const;
-    VectorSwizzle3 yyz();
     Vector3 zyz() const;
-    VectorSwizzle3 zyz();
     Vector3 xzz() const;
-    VectorSwizzle3 xzz();
     Vector3 yzz() const;
-    VectorSwizzle3 yzz();
     Vector3 zzz() const;
-    VectorSwizzle3 zzz();
 
     // 4-char swizzles
 
     Vector4 xxxx() const;
-    VectorSwizzle4 xxxx();
     Vector4 yxxx() const;
-    VectorSwizzle4 yxxx();
     Vector4 zxxx() const;
-    VectorSwizzle4 zxxx();
     Vector4 xyxx() const;
-    VectorSwizzle4 xyxx();
     Vector4 yyxx() const;
-    VectorSwizzle4 yyxx();
     Vector4 zyxx() const;
-    VectorSwizzle4 zyxx();
     Vector4 xzxx() const;
-    VectorSwizzle4 xzxx();
     Vector4 yzxx() const;
-    VectorSwizzle4 yzxx();
     Vector4 zzxx() const;
-    VectorSwizzle4 zzxx();
     Vector4 xxyx() const;
-    VectorSwizzle4 xxyx();
     Vector4 yxyx() const;
-    VectorSwizzle4 yxyx();
     Vector4 zxyx() const;
-    VectorSwizzle4 zxyx();
     Vector4 xyyx() const;
-    VectorSwizzle4 xyyx();
     Vector4 yyyx() const;
-    VectorSwizzle4 yyyx();
     Vector4 zyyx() const;
-    VectorSwizzle4 zyyx();
     Vector4 xzyx() const;
-    VectorSwizzle4 xzyx();
     Vector4 yzyx() const;
-    VectorSwizzle4 yzyx();
     Vector4 zzyx() const;
-    VectorSwizzle4 zzyx();
     Vector4 xxzx() const;
-    VectorSwizzle4 xxzx();
     Vector4 yxzx() const;
-    VectorSwizzle4 yxzx();
     Vector4 zxzx() const;
-    VectorSwizzle4 zxzx();
     Vector4 xyzx() const;
-    VectorSwizzle4 xyzx();
     Vector4 yyzx() const;
-    VectorSwizzle4 yyzx();
     Vector4 zyzx() const;
-    VectorSwizzle4 zyzx();
     Vector4 xzzx() const;
-    VectorSwizzle4 xzzx();
     Vector4 yzzx() const;
-    VectorSwizzle4 yzzx();
     Vector4 zzzx() const;
-    VectorSwizzle4 zzzx();
     Vector4 xxxy() const;
-    VectorSwizzle4 xxxy();
     Vector4 yxxy() const;
-    VectorSwizzle4 yxxy();
     Vector4 zxxy() const;
-    VectorSwizzle4 zxxy();
     Vector4 xyxy() const;
-    VectorSwizzle4 xyxy();
     Vector4 yyxy() const;
-    VectorSwizzle4 yyxy();
     Vector4 zyxy() const;
-    VectorSwizzle4 zyxy();
     Vector4 xzxy() const;
-    VectorSwizzle4 xzxy();
     Vector4 yzxy() const;
-    VectorSwizzle4 yzxy();
     Vector4 zzxy() const;
-    VectorSwizzle4 zzxy();
     Vector4 xxyy() const;
-    VectorSwizzle4 xxyy();
     Vector4 yxyy() const;
-    VectorSwizzle4 yxyy();
     Vector4 zxyy() const;
-    VectorSwizzle4 zxyy();
     Vector4 xyyy() const;
-    VectorSwizzle4 xyyy();
     Vector4 yyyy() const;
-    VectorSwizzle4 yyyy();
     Vector4 zyyy() const;
-    VectorSwizzle4 zyyy();
     Vector4 xzyy() const;
-    VectorSwizzle4 xzyy();
     Vector4 yzyy() const;
-    VectorSwizzle4 yzyy();
     Vector4 zzyy() const;
-    VectorSwizzle4 zzyy();
     Vector4 xxzy() const;
-    VectorSwizzle4 xxzy();
     Vector4 yxzy() const;
-    VectorSwizzle4 yxzy();
     Vector4 zxzy() const;
-    VectorSwizzle4 zxzy();
     Vector4 xyzy() const;
-    VectorSwizzle4 xyzy();
     Vector4 yyzy() const;
-    VectorSwizzle4 yyzy();
     Vector4 zyzy() const;
-    VectorSwizzle4 zyzy();
     Vector4 xzzy() const;
-    VectorSwizzle4 xzzy();
     Vector4 yzzy() const;
-    VectorSwizzle4 yzzy();
     Vector4 zzzy() const;
-    VectorSwizzle4 zzzy();
     Vector4 xxxz() const;
-    VectorSwizzle4 xxxz();
     Vector4 yxxz() const;
-    VectorSwizzle4 yxxz();
     Vector4 zxxz() const;
-    VectorSwizzle4 zxxz();
     Vector4 xyxz() const;
-    VectorSwizzle4 xyxz();
     Vector4 yyxz() const;
-    VectorSwizzle4 yyxz();
     Vector4 zyxz() const;
-    VectorSwizzle4 zyxz();
     Vector4 xzxz() const;
-    VectorSwizzle4 xzxz();
     Vector4 yzxz() const;
-    VectorSwizzle4 yzxz();
     Vector4 zzxz() const;
-    VectorSwizzle4 zzxz();
     Vector4 xxyz() const;
-    VectorSwizzle4 xxyz();
     Vector4 yxyz() const;
-    VectorSwizzle4 yxyz();
     Vector4 zxyz() const;
-    VectorSwizzle4 zxyz();
     Vector4 xyyz() const;
-    VectorSwizzle4 xyyz();
     Vector4 yyyz() const;
-    VectorSwizzle4 yyyz();
     Vector4 zyyz() const;
-    VectorSwizzle4 zyyz();
     Vector4 xzyz() const;
-    VectorSwizzle4 xzyz();
     Vector4 yzyz() const;
-    VectorSwizzle4 yzyz();
     Vector4 zzyz() const;
-    VectorSwizzle4 zzyz();
     Vector4 xxzz() const;
-    VectorSwizzle4 xxzz();
     Vector4 yxzz() const;
-    VectorSwizzle4 yxzz();
     Vector4 zxzz() const;
-    VectorSwizzle4 zxzz();
     Vector4 xyzz() const;
-    VectorSwizzle4 xyzz();
     Vector4 yyzz() const;
-    VectorSwizzle4 yyzz();
     Vector4 zyzz() const;
-    VectorSwizzle4 zyzz();
     Vector4 xzzz() const;
-    VectorSwizzle4 xzzz();
     Vector4 yzzz() const;
-    VectorSwizzle4 yzzz();
     Vector4 zzzz() const;
-    VectorSwizzle4 zzzz();
+
+
 
 };
 
