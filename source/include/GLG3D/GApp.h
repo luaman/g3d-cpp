@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2004-03-29
+ @edited  2004-04-16
  */
 
 #ifndef G3D_GAPP_H
@@ -53,7 +53,7 @@ public:
     bool                    useNetwork;
 
     GAppSettings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), 
-        logFilename("log.txt"), useNetwork(true), writeLicenseFile(true) {
+        logFilename("log.txt"), writeLicenseFile(true), useNetwork(true) {
     }
 };
 
