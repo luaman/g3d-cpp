@@ -49,6 +49,7 @@ The 6.05 release team:
    <BR>Edward Resnick
    <BR>Jack Ritter
    <BR>Nate Robbins
+   <BR>Joshua Schpok
    <BR>Sebastian Schubert
    <BR>SGI
    <BR>Sascha Becker Shine

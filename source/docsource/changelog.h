@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added new FAQ documentation
      <LI> Added limited support to G3D::BinaryOutput for writing huge files to disk or 
           writing to disk when little memory is available.
      <LI> Tweaked allocation strategy for small G3D::Array
