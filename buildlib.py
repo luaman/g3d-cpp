@@ -342,6 +342,12 @@ def findVersion(verInfo):
 
 ###############################################################################
 
+class Error(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 """
   Errors out if the version number is not at least minVerString
 
@@ -369,10 +375,7 @@ def checkVersion(verCmdString, minVerString, errString, stderr = 0):
     # Check the version from most significant bit to least.
     for i in xrange(0, len(minVer)):
         if actualVer[i] < minVer[i]:
-            print "*** Error: unsupported tool version ***"
-            print errString
-            print
-            sys.exit(-4)
+	    raise Error, "*** Error: unsupported tool version ***\n" +errString
         
         if actualVer[i] > minVer[i]:
             # We are over qualified

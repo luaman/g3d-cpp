@@ -46,7 +46,6 @@ installDir = 'install/g3d-' + version
 #                              lib Target                                     #
 #                                                                             #
 ###############################################################################
-
    
 def linuxCheckVersion():
     print 'Checking tool versions...'
@@ -55,19 +54,27 @@ def linuxCheckVersion():
     compiler = ''
     if os.environ.has_key('CXX'):
         compiler = os.environ['CXX']
-    elif os.environ.has_key('CC'):
-        compiler = os.environ['CC']
     else:
-        print '**Error: you need to set the CXX and CC environment variables.**'
-        print 'See readme.html'
-        sys.exit(-1)
-    
+        compiler = 'gcc'
+ 
+    try:
+        checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')
+	try:
+	        checkVersion('automake --version', '1.6', 'Requires automake 1.6 or later.')
+	except:
+	        checkVersion('automake-1.7 --version', '1.6', 'Requires automake 1.6 or later.')
 
-    checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')
-    checkVersion('automake-1.7 --version', '1.7', 'Requires automake 1.7 or later.')
-    checkVersion('aclocal-1.7 --version', '1.7', 'Requires aclocal 1.7 or later.')
-    checkVersion('doxygen --version', '1.2', 'Requires doxygen 1.3 or later.')
-    checkVersion('python -V', '2.0', 'Requires Python 2.0 or later.', 1)
+	try:
+	        checkVersion('aclocal --version', '1.6', 'Requires aclocal 1.6 or later.')
+	except:
+	        checkVersion('aclocal-1.7 --version', '1.6', 'Requires aclocal 1.6 or later.')
+
+        checkVersion('doxygen --version', '1.2', 'Requires doxygen 1.3 or later.')
+        checkVersion('python -V', '2.0', 'Requires Python 2.0 or later.', 1)
+
+    except Error, e:
+        print e.value
+        sys.exit(-4)
 
 
 def lib():
