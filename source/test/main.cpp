@@ -117,13 +117,14 @@ void testBitSerialization() {
 void measureSerializerPerformance() {
     Array<uint8> x(1024);
     RealTime t0 = System::time();
+    Matrix4 M(Matrix4::identity());
     
     for (int i = 0; i < 100; ++i) {
         BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
         b.writeInt32(1);
         b.writeInt32(2);
         b.writeInt32(8);
-        Matrix4::identity().serialize(b);
+        M.serialize(b);
         b.commit(x.getCArray());
     }
     RealTime reallocTime = (System::time() - t0) / 100.0;
@@ -135,7 +136,7 @@ void measureSerializerPerformance() {
         b.writeInt32(1);
         b.writeInt32(2);
         b.writeInt32(8);
-        Matrix4::identity().serialize(b);
+        M.serialize(b);
         b.commit(x.getCArray());
         b.reset();
     }
