@@ -55,10 +55,16 @@ OBJFILES=\
 	jquant2.o \
 	jutils.o
 
-all: $(OBJFILES)
+all: libjpeg.a
+
+libjpeg.a: $(OBJFILES)
+	ar -rL $@ $(OBJFILES) 
+	ranlib -s $@
+	cp $@ ../../install/lib
 
 .PHONY: clean
 
 clean: 
 	-rm *.o
+	-rm libjpeg.a
 

@@ -1,0 +1,1524 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 39;
+	objects = {
+		014CEA440018CDF011CA2923 = {
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "__cdecl= ";
+				HEADER_SEARCH_PATHS = ../source/include;
+				OPTIMIZATION_CFLAGS = "-O0";
+				ZERO_LINK = YES;
+			};
+			isa = PBXBuildStyle;
+			name = Development;
+		};
+		014CEA450018CDF011CA2923 = {
+			buildRules = (
+			);
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				ZERO_LINK = NO;
+			};
+			isa = PBXBuildStyle;
+			name = Deployment;
+		};
+//010
+//011
+//012
+//013
+//014
+//030
+//031
+//032
+//033
+//034
+		034768DFFF38A50411DB9C8B = {
+			children = (
+				D2AAC07E0554694100DB518D,
+				0FA15CEA05B08FFE005402D6,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//030
+//031
+//032
+//033
+//034
+//080
+//081
+//082
+//083
+//084
+		0867D690FE84028FC02AAC07 = {
+			buildSettings = {
+			};
+			buildStyles = (
+				014CEA440018CDF011CA2923,
+				014CEA450018CDF011CA2923,
+			);
+			hasScannedForEncodings = 1;
+			isa = PBXProject;
+			mainGroup = 0867D691FE84028FC02AAC07;
+			productRefGroup = 034768DFFF38A50411DB9C8B;
+			projectDirPath = "";
+			targets = (
+				D2AAC07D0554694100DB518D,
+				0FA15CE905B08FFE005402D6,
+			);
+		};
+		0867D691FE84028FC02AAC07 = {
+			children = (
+				32C88DFF0371C24200C91783,
+				0FA15D2505B09082005402D6,
+				034768DFFF38A50411DB9C8B,
+			);
+			isa = PBXGroup;
+			name = G3DOSX;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//080
+//081
+//082
+//083
+//084
+//0F0
+//0F1
+//0F2
+//0F3
+//0F4
+		0F8E49D305B0A07C00D4031C = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = SDL.framework;
+			path = /Users/brl/Library/Frameworks/SDL.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E49D405B0A07C00D4031C = {
+			fileRef = 0F8E49D305B0A07C00D4031C;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E4A4505B0A46300D4031C = {
+			containerPortal = 0867D690FE84028FC02AAC07;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = G3D;
+		};
+		0F8E4A4605B0A46300D4031C = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D;
+			targetProxy = 0F8E4A4505B0A46300D4031C;
+		};
+		0F8E4A5B05B0A62700D4031C = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = OpenGL.framework;
+			path = /System/Library/Frameworks/OpenGL.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E4A5C05B0A62700D4031C = {
+			fileRef = 0F8E4A5B05B0A62700D4031C;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C7F05B08A99004B1E58 = {
+			explicitFileType = sourcecode.cpp.cpp;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = BinaryInput.cpp;
+			path = ../source/G3Dcpp/BinaryInput.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F8E5C8005B08A99004B1E58 = {
+			fileRef = 0F8E5C7F05B08A99004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C8605B08B87004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = BinaryOutput.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/BinaryOutput.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C8705B08B87004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Box.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Box.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C8805B08B87004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Capsule.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Capsule.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C8905B08B87004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = CollisionDetection.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/CollisionDetection.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C8A05B08B87004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Color3.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color3.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C8B05B08B87004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Color3uint8.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color3uint8.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C8C05B08B87004B1E58 = {
+			fileRef = 0F8E5C8605B08B87004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C8D05B08B87004B1E58 = {
+			fileRef = 0F8E5C8705B08B87004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C8E05B08B87004B1E58 = {
+			fileRef = 0F8E5C8805B08B87004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C8F05B08B87004B1E58 = {
+			fileRef = 0F8E5C8905B08B87004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C9005B08B87004B1E58 = {
+			fileRef = 0F8E5C8A05B08B87004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C9105B08B87004B1E58 = {
+			fileRef = 0F8E5C8B05B08B87004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5C9405B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Color4.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color4.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9505B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Color4uint8.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Color4uint8.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9605B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Cone.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Cone.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9705B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ConvexPolyhedron.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/ConvexPolyhedron.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9805B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = CoordinateFrame.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/CoordinateFrame.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9905B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = debugAssert.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/debugAssert.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9A05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Discovery.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Discovery.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9B05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = fileutils.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/fileutils.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9C05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = format.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/format.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9D05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = g3derror.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/g3derror.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9E05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = g3dmath.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/g3dmath.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5C9F05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GCamera.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/GCamera.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA005B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GImage.cpp;
+			path = ../source/G3Dcpp/GImage.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F8E5CA105B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GLight.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/GLight.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA205B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Line.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Line.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA305B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = LineSegment.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/LineSegment.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA405B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Log.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Log.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA505B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Matrix3.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Matrix3.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA605B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Matrix4.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Matrix4.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA705B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MeshAlg.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/MeshAlg.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA805B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MeshAlgAdjacency.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/MeshAlgAdjacency.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CA905B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MeshAlgWeld.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/MeshAlgWeld.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CAA05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NetworkDevice.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/NetworkDevice.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CAB05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = PhysicsFrame.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/PhysicsFrame.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CAC05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Plane.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Plane.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CAD05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = prompt.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/prompt.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CAE05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Quat.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Quat.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CAF05B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Ray.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Ray.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB005B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Sphere.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Sphere.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB105B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = stringutils.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/stringutils.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB205B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = System.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/System.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB305B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TextInput.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/TextInput.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB405B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Triangle.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Triangle.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB505B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Vector2.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector2.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB605B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Vector2int16.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector2int16.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB705B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Vector3.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector3.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB805B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Vector3int16.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector3int16.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CB905B08C03004B1E58 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Vector4.cpp;
+			path = /Users/brl/development/g3d/cpp/source/G3Dcpp/Vector4.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0F8E5CBA05B08C03004B1E58 = {
+			fileRef = 0F8E5C9405B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CBB05B08C03004B1E58 = {
+			fileRef = 0F8E5C9505B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CBC05B08C03004B1E58 = {
+			fileRef = 0F8E5C9605B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CBD05B08C03004B1E58 = {
+			fileRef = 0F8E5C9705B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CBE05B08C03004B1E58 = {
+			fileRef = 0F8E5C9805B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CBF05B08C03004B1E58 = {
+			fileRef = 0F8E5C9905B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC005B08C03004B1E58 = {
+			fileRef = 0F8E5C9A05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC105B08C03004B1E58 = {
+			fileRef = 0F8E5C9B05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC205B08C03004B1E58 = {
+			fileRef = 0F8E5C9C05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC305B08C03004B1E58 = {
+			fileRef = 0F8E5C9D05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC405B08C03004B1E58 = {
+			fileRef = 0F8E5C9E05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC505B08C03004B1E58 = {
+			fileRef = 0F8E5C9F05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC605B08C03004B1E58 = {
+			fileRef = 0F8E5CA005B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+				COMPILER_FLAGS = "-I../source/IJG/";
+			};
+		};
+		0F8E5CC705B08C03004B1E58 = {
+			fileRef = 0F8E5CA105B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC805B08C03004B1E58 = {
+			fileRef = 0F8E5CA205B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CC905B08C03004B1E58 = {
+			fileRef = 0F8E5CA305B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CCA05B08C03004B1E58 = {
+			fileRef = 0F8E5CA405B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CCB05B08C03004B1E58 = {
+			fileRef = 0F8E5CA505B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CCC05B08C03004B1E58 = {
+			fileRef = 0F8E5CA605B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CCD05B08C03004B1E58 = {
+			fileRef = 0F8E5CA705B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CCE05B08C03004B1E58 = {
+			fileRef = 0F8E5CA805B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CCF05B08C03004B1E58 = {
+			fileRef = 0F8E5CA905B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD005B08C03004B1E58 = {
+			fileRef = 0F8E5CAA05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD105B08C03004B1E58 = {
+			fileRef = 0F8E5CAB05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD205B08C03004B1E58 = {
+			fileRef = 0F8E5CAC05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD305B08C03004B1E58 = {
+			fileRef = 0F8E5CAD05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD405B08C03004B1E58 = {
+			fileRef = 0F8E5CAE05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD505B08C03004B1E58 = {
+			fileRef = 0F8E5CAF05B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD605B08C03004B1E58 = {
+			fileRef = 0F8E5CB005B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD705B08C03004B1E58 = {
+			fileRef = 0F8E5CB105B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD805B08C03004B1E58 = {
+			fileRef = 0F8E5CB205B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CD905B08C03004B1E58 = {
+			fileRef = 0F8E5CB305B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CDA05B08C03004B1E58 = {
+			fileRef = 0F8E5CB405B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CDB05B08C03004B1E58 = {
+			fileRef = 0F8E5CB505B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CDC05B08C03004B1E58 = {
+			fileRef = 0F8E5CB605B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CDD05B08C03004B1E58 = {
+			fileRef = 0F8E5CB705B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CDE05B08C03004B1E58 = {
+			fileRef = 0F8E5CB805B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F8E5CDF05B08C03004B1E58 = {
+			fileRef = 0F8E5CB905B08C03004B1E58;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15CE605B08FFE005402D6 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0FA15CE705B08FFE005402D6 = {
+			buildActionMask = 2147483647;
+			files = (
+				0FA15D0905B09073005402D6,
+				0FA15D0A05B09073005402D6,
+				0FA15D0B05B09073005402D6,
+				0FA15D0C05B09073005402D6,
+				0FA15D0D05B09073005402D6,
+				0FA15D0E05B09073005402D6,
+				0FA15D0F05B09073005402D6,
+				0FA15D1105B09073005402D6,
+				0FA15D1205B09073005402D6,
+				0FA15D1305B09073005402D6,
+				0FA15D1405B09073005402D6,
+				0FA15D1505B09073005402D6,
+				0FA15D1605B09073005402D6,
+				0FA15D1705B09073005402D6,
+				0FA15D1805B09073005402D6,
+				0FA15D1905B09073005402D6,
+				0FA15D1A05B09073005402D6,
+				0FA15D1B05B09073005402D6,
+				0FA15D1C05B09073005402D6,
+				0FA15D1D05B09073005402D6,
+				0FA15D1E05B09073005402D6,
+				0FA15D1F05B09073005402D6,
+				0FA15D2005B09073005402D6,
+				0FA15D2105B09073005402D6,
+				0FA15D2205B09073005402D6,
+				0FA15D2305B09073005402D6,
+				0FA15D2405B09073005402D6,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0FA15CE805B08FFE005402D6 = {
+			buildActionMask = 2147483647;
+			files = (
+				0F8E49D405B0A07C00D4031C,
+				0F8E4A5C05B0A62700D4031C,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0FA15CE905B08FFE005402D6 = {
+			buildPhases = (
+				0FA15CE605B08FFE005402D6,
+				0FA15CE705B08FFE005402D6,
+				0FA15CE805B08FFE005402D6,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = /Users/brl/Library/Frameworks;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				HEADER_SEARCH_PATHS = "";
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = "-D__stdcall=";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = GLG3D;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost";
+			};
+			dependencies = (
+				0F8E4A4605B0A46300D4031C,
+			);
+			isa = PBXNativeTarget;
+			name = GLG3D;
+			productName = GLG3D;
+			productReference = 0FA15CEA05B08FFE005402D6;
+			productType = "com.apple.product-type.library.static";
+		};
+		0FA15CEA05B08FFE005402D6 = {
+			explicitFileType = archive.ar;
+			includeInIndex = 0;
+			isa = PBXFileReference;
+			path = libGLG3D.a;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0FA15CED05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Draw.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Draw.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CEE05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = G3DGameUnits.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/G3DGameUnits.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CEF05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GApp.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/GApp.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF005B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = getOpenGLState.cpp;
+			path = ../source/GLG3Dcpp/getOpenGLState.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0FA15CF105B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GFont.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/GFont.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF205B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = glcalls.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/glcalls.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF305B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = glenumtostring.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/glenumtostring.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF505B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GPUProgram.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/GPUProgram.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF605B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = IFSModel.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/IFSModel.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF705B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = LightingParameters.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/LightingParameters.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF805B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ManualCameraController.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/ManualCameraController.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CF905B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MD2Model_load.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/MD2Model_load.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CFA05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MD2Model.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/MD2Model.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CFB05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Milestone.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Milestone.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CFC05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = PixelProgram.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/PixelProgram.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CFD05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = PosedModel.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/PosedModel.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CFE05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = RenderDevice.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/RenderDevice.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15CFF05B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = shadowVolume.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/shadowVolume.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15D0005B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Sky.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Sky.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15D0105B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = tesselate.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/tesselate.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15D0205B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Texture.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/Texture.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15D0305B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TextureFormat.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/TextureFormat.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15D0405B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TextureManager.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/TextureManager.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15D0505B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = UserInput.cpp;
+			path = ../source/GLG3Dcpp/UserInput.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0FA15D0605B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = VAR.cpp;
+			path = ../source/GLG3Dcpp/VAR.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0FA15D0705B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = VARSystem.cpp;
+			path = ../source/GLG3Dcpp/VARSystem.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0FA15D0805B09073005402D6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = VertexProgram.cpp;
+			path = /Users/brl/development/g3d/cpp/source/GLG3Dcpp/VertexProgram.cpp;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0FA15D0905B09073005402D6 = {
+			fileRef = 0FA15CED05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D0A05B09073005402D6 = {
+			fileRef = 0FA15CEE05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D0B05B09073005402D6 = {
+			fileRef = 0FA15CEF05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D0C05B09073005402D6 = {
+			fileRef = 0FA15CF005B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D0D05B09073005402D6 = {
+			fileRef = 0FA15CF105B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D0E05B09073005402D6 = {
+			fileRef = 0FA15CF205B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D0F05B09073005402D6 = {
+			fileRef = 0FA15CF305B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1105B09073005402D6 = {
+			fileRef = 0FA15CF505B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1205B09073005402D6 = {
+			fileRef = 0FA15CF605B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1305B09073005402D6 = {
+			fileRef = 0FA15CF705B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1405B09073005402D6 = {
+			fileRef = 0FA15CF805B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1505B09073005402D6 = {
+			fileRef = 0FA15CF905B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1605B09073005402D6 = {
+			fileRef = 0FA15CFA05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1705B09073005402D6 = {
+			fileRef = 0FA15CFB05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1805B09073005402D6 = {
+			fileRef = 0FA15CFC05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1905B09073005402D6 = {
+			fileRef = 0FA15CFD05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1A05B09073005402D6 = {
+			fileRef = 0FA15CFE05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1B05B09073005402D6 = {
+			fileRef = 0FA15CFF05B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1C05B09073005402D6 = {
+			fileRef = 0FA15D0005B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1D05B09073005402D6 = {
+			fileRef = 0FA15D0105B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1E05B09073005402D6 = {
+			fileRef = 0FA15D0205B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D1F05B09073005402D6 = {
+			fileRef = 0FA15D0305B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D2005B09073005402D6 = {
+			fileRef = 0FA15D0405B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D2105B09073005402D6 = {
+			fileRef = 0FA15D0505B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D2205B09073005402D6 = {
+			fileRef = 0FA15D0605B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D2305B09073005402D6 = {
+			fileRef = 0FA15D0705B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D2405B09073005402D6 = {
+			fileRef = 0FA15D0805B09073005402D6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0FA15D2505B09082005402D6 = {
+			children = (
+				0FA15CF005B09073005402D6,
+				0FA15CF205B09073005402D6,
+				0FA15CF305B09073005402D6,
+				0FA15CED05B09073005402D6,
+				0FA15CEF05B09073005402D6,
+				0FA15CF105B09073005402D6,
+				0FA15CF505B09073005402D6,
+				0FA15CEE05B09073005402D6,
+				0FA15CF605B09073005402D6,
+				0FA15CF705B09073005402D6,
+				0FA15CF805B09073005402D6,
+				0FA15CF905B09073005402D6,
+				0FA15CFA05B09073005402D6,
+				0FA15CFB05B09073005402D6,
+				0FA15CFC05B09073005402D6,
+				0FA15CFD05B09073005402D6,
+				0FA15CFE05B09073005402D6,
+				0FA15CFF05B09073005402D6,
+				0FA15D0005B09073005402D6,
+				0FA15D0105B09073005402D6,
+				0FA15D0205B09073005402D6,
+				0FA15D0305B09073005402D6,
+				0FA15D0405B09073005402D6,
+				0FA15D0505B09073005402D6,
+				0FA15D0605B09073005402D6,
+				0FA15D0705B09073005402D6,
+				0FA15D0805B09073005402D6,
+				0F8E4A5B05B0A62700D4031C,
+				0F8E49D305B0A07C00D4031C,
+			);
+			isa = PBXGroup;
+			name = "GLG3D Sources";
+			path = "";
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+//0F0
+//0F1
+//0F2
+//0F3
+//0F4
+//320
+//321
+//322
+//323
+//324
+		32C88DFF0371C24200C91783 = {
+			children = (
+				0F8E5C7F05B08A99004B1E58,
+				0F8E5C8605B08B87004B1E58,
+				0F8E5C8705B08B87004B1E58,
+				0F8E5C8805B08B87004B1E58,
+				0F8E5C8905B08B87004B1E58,
+				0F8E5C8A05B08B87004B1E58,
+				0F8E5C8B05B08B87004B1E58,
+				0F8E5C9405B08C03004B1E58,
+				0F8E5C9505B08C03004B1E58,
+				0F8E5C9605B08C03004B1E58,
+				0F8E5C9705B08C03004B1E58,
+				0F8E5C9805B08C03004B1E58,
+				0F8E5C9905B08C03004B1E58,
+				0F8E5C9A05B08C03004B1E58,
+				0F8E5C9B05B08C03004B1E58,
+				0F8E5C9C05B08C03004B1E58,
+				0F8E5C9D05B08C03004B1E58,
+				0F8E5C9E05B08C03004B1E58,
+				0F8E5C9F05B08C03004B1E58,
+				0F8E5CA005B08C03004B1E58,
+				0F8E5CA105B08C03004B1E58,
+				0F8E5CA205B08C03004B1E58,
+				0F8E5CA305B08C03004B1E58,
+				0F8E5CA405B08C03004B1E58,
+				0F8E5CA505B08C03004B1E58,
+				0F8E5CA605B08C03004B1E58,
+				0F8E5CA705B08C03004B1E58,
+				0F8E5CA805B08C03004B1E58,
+				0F8E5CA905B08C03004B1E58,
+				0F8E5CAA05B08C03004B1E58,
+				0F8E5CAB05B08C03004B1E58,
+				0F8E5CAC05B08C03004B1E58,
+				0F8E5CAD05B08C03004B1E58,
+				0F8E5CAE05B08C03004B1E58,
+				0F8E5CAF05B08C03004B1E58,
+				0F8E5CB005B08C03004B1E58,
+				0F8E5CB105B08C03004B1E58,
+				0F8E5CB205B08C03004B1E58,
+				0F8E5CB305B08C03004B1E58,
+				0F8E5CB405B08C03004B1E58,
+				0F8E5CB505B08C03004B1E58,
+				0F8E5CB605B08C03004B1E58,
+				0F8E5CB705B08C03004B1E58,
+				0F8E5CB805B08C03004B1E58,
+				0F8E5CB905B08C03004B1E58,
+			);
+			isa = PBXGroup;
+			name = "G3D Sources";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//320
+//321
+//322
+//323
+//324
+//D20
+//D21
+//D22
+//D23
+//D24
+		D2AAC07A0554694100DB518D = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07B0554694100DB518D = {
+			buildActionMask = 2147483647;
+			files = (
+				0F8E5C8005B08A99004B1E58,
+				0F8E5C8C05B08B87004B1E58,
+				0F8E5C8D05B08B87004B1E58,
+				0F8E5C8E05B08B87004B1E58,
+				0F8E5C8F05B08B87004B1E58,
+				0F8E5C9005B08B87004B1E58,
+				0F8E5C9105B08B87004B1E58,
+				0F8E5CBA05B08C03004B1E58,
+				0F8E5CBB05B08C03004B1E58,
+				0F8E5CBC05B08C03004B1E58,
+				0F8E5CBD05B08C03004B1E58,
+				0F8E5CBE05B08C03004B1E58,
+				0F8E5CBF05B08C03004B1E58,
+				0F8E5CC005B08C03004B1E58,
+				0F8E5CC105B08C03004B1E58,
+				0F8E5CC205B08C03004B1E58,
+				0F8E5CC305B08C03004B1E58,
+				0F8E5CC405B08C03004B1E58,
+				0F8E5CC505B08C03004B1E58,
+				0F8E5CC605B08C03004B1E58,
+				0F8E5CC705B08C03004B1E58,
+				0F8E5CC805B08C03004B1E58,
+				0F8E5CC905B08C03004B1E58,
+				0F8E5CCA05B08C03004B1E58,
+				0F8E5CCB05B08C03004B1E58,
+				0F8E5CCC05B08C03004B1E58,
+				0F8E5CCD05B08C03004B1E58,
+				0F8E5CCE05B08C03004B1E58,
+				0F8E5CCF05B08C03004B1E58,
+				0F8E5CD005B08C03004B1E58,
+				0F8E5CD105B08C03004B1E58,
+				0F8E5CD205B08C03004B1E58,
+				0F8E5CD305B08C03004B1E58,
+				0F8E5CD405B08C03004B1E58,
+				0F8E5CD505B08C03004B1E58,
+				0F8E5CD605B08C03004B1E58,
+				0F8E5CD705B08C03004B1E58,
+				0F8E5CD805B08C03004B1E58,
+				0F8E5CD905B08C03004B1E58,
+				0F8E5CDA05B08C03004B1E58,
+				0F8E5CDB05B08C03004B1E58,
+				0F8E5CDC05B08C03004B1E58,
+				0F8E5CDD05B08C03004B1E58,
+				0F8E5CDE05B08C03004B1E58,
+				0F8E5CDF05B08C03004B1E58,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07D0554694100DB518D = {
+			buildPhases = (
+				D2AAC07A0554694100DB518D,
+				D2AAC07B0554694100DB518D,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = G3DOSX_Prefix.pch;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_STYLE = STATIC;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = G3D;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost";
+			};
+			dependencies = (
+			);
+			isa = PBXNativeTarget;
+			name = G3D;
+			productName = G3DOSX;
+			productReference = D2AAC07E0554694100DB518D;
+			productType = "com.apple.product-type.library.static";
+		};
+		D2AAC07E0554694100DB518D = {
+			explicitFileType = archive.ar;
+			includeInIndex = 0;
+			isa = PBXFileReference;
+			path = libG3D.a;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+	};
+	rootObject = 0867D690FE84028FC02AAC07;
+}

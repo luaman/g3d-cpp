@@ -56,7 +56,11 @@ typedef unsigned short wchar_t;
 #endif
 
 #include "GL/gl.h"
+#if !defined(G3D_OSX)
 #include <GL/glu.h>
+#else
+#include <OpenGL/glu.h>
+#endif
 
 /* define APIENTRY and CALLBACK to null string if we aren't on Win32 */
 #if !defined(_WIN32)

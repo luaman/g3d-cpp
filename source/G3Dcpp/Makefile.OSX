@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.OSX,v 1.5 2004/01/02 19:18:55 professor_chaos Exp $
+# $Id: Makefile.OSX,v 1.6 2004/01/10 22:00:07 professor_chaos Exp $
 # Makefile for Apple OS X using gnu make 3.79
 #
 # Maintained by Ben Landon (professor_chaos @ users.sourceforge.net)
@@ -10,6 +10,7 @@
 #
 #
 
+INSTALL_PATH=$(HOME)/development/g3d/cpp/install/lib
 CXXFLAGS=-I../include -D__cdecl= -Wall -O2 -g 
 
 OBJFILES=\
@@ -59,10 +60,17 @@ OBJFILES=\
 	prompt.o \
 	stringutils.o
 
-all: libg3d.a
+all: libG3D_debug.a libG3D_debug.dylib
 
-libg3d.a: $(OBJFILES)
-	libtool $(OBJFILES) -s -static -o $@ 
+libG3D_debug.a: $(OBJFILES)
+	ar -rL $@ $(OBJFILES) 
+	ranlib -s $@
+	cp $@ ../../install/lib
+
+# 'strip -S' can be used to remove debugging symbols. 
+libG3D_debug.dylib: $(OBJFILES)
+	libtool -install_name $(INSTALL_PATH)/$@ -dynamic $(OBJFILES) ../../install/lib/libjpeg.a -o $@ -lz -lgcc -lstdc++ -lc
+	cp $@ ../../install/lib
 
 # GImage.cpp needs a special rule because it depends on the IJG jpeg
 # library headers.
@@ -74,4 +82,6 @@ GImage.o: GImage.cpp
 
 clean: 
 	-rm *.o
-	-rm libg3d.a
+	-rm libG3D_debug.a
+	-rm libG3D_debug.dylib
+
