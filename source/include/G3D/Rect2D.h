@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-11-13
-  @created 2004-02-21
+  @created 2004-02-23
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -28,14 +28,14 @@ private:
     /**
      Returns true if the whole polygon is clipped.
      @param p Value of the point
-     @param clipY Are we clipping the Y axis?
+     @param axis Index [0 or 1] of the axis to clip along?
      @param clipGreater Are we clipping greater than or less than the line?
      @param inPoly Polygon being clipped
      @param outPoly The clipped polygon
      */
     template<class T>
     static bool clipSide2D(
-        const double p, bool clipGreater, bool clipY, 
+        const double p, bool clipGreater, int axis, 
         const Array<T>& inPoly, Array<T>& outPoly) {
 
         outPoly.clear();
@@ -49,7 +49,7 @@ private:
         // Find a point that is not clipped
         for (i0 = 0; (i0 < inPoly.length()) && c1; ++i0) {
             pt1 = inPoly[i0];       
-            c1  = (negate * (clipY ? pt1.y : pt1.x)) < (negate * p);
+            c1  = (negate * pt1[axis]) < (negate * p);
         }
 
         // We incremented i0 one time to many
@@ -69,7 +69,7 @@ private:
         //     if the point is inside the side and the previous one was outside, cut the line    
         for (int i = 1; i <= inPoly.length(); ++i) {
             Vector2 pt2 = inPoly[(i + i0) % inPoly.length()];
-            bool    c2  = (negate * (clipY ? pt2.y : pt2.x)) < (negate * p);
+            bool    c2  = (negate * pt2[axis]) < (negate * p);
 
             if (c1 ^ c2) {
 
@@ -82,21 +82,10 @@ private:
 
 
                 double alpha;
-                if (! clipY) {
-                    // clipping on x axis
-                    if (pt2.x == pt1.x) { 
-                        // same point, so it doesn't matter where we cut it
-                        alpha = 0;
-                    } else {
-                        alpha = (p - pt1.x) / (pt2.x - pt1.x);
-                    }
+                if (pt2[axis] == pt1[axis]) {
+                    alpha = 0;
                 } else {
-                    // clipping on y axis
-                    if (pt2.y == pt1.y) {
-                        alpha = 0;
-                    } else {
-                        alpha = (p - pt1.y) / (pt2.y - pt1.y);
-                    }
+                    alpha = (p - pt1[axis]) / (pt2[axis] - pt1[axis]);
                 }
                 outPoly.append(pt1.lerp(pt2, alpha));
             } else if (! (c1 || c2) && (i != 1)) {
@@ -207,8 +196,8 @@ public:
 
         const bool greaterThan = true;
         const bool lessThan    = false;
-        const bool X = false;
-        const bool Y = true;
+        const int  X = 0;
+        const int  Y = 1;
 
         Array<T> temp;
 
