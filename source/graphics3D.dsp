@@ -166,6 +166,10 @@ SOURCE=.\G3Dcpp\GCamera.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\GLight.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Line.cpp
 # End Source File
 # Begin Source File

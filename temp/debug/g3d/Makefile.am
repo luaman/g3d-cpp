@@ -16,6 +16,7 @@ libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/ConvexPolyhedron.cpp \
                          ../../../source/G3Dcpp/CoordinateFrame.cpp \
                          ../../../source/G3Dcpp/Discovery.cpp \
+                         ../../../source/G3Dcpp/GLight.cpp \
                          ../../../source/G3Dcpp/GCamera.cpp \
                          ../../../source/G3Dcpp/Line.cpp \
                          ../../../source/G3Dcpp/LineSegment.cpp \

@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-11-12
+ @edited  2003-11-14
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -52,7 +52,6 @@
 #include "GLG3D/Draw.h"
 #include "GLG3D/tesselate.h"
 #include "GLG3D/GApp.h"
-#include "GLG3D/GLight.h"
 #include "GLG3D/GModel.h"
 #include "GLG3D/IFSModel.h"
 #include "GLG3D/MD2Model.h"

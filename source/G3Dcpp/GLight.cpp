@@ -7,7 +7,7 @@
   @edited  2003-11-13
 */
 
-#include "GLG3D/GLight.h"
+#include "G3D/GLight.h"
 
 namespace G3D {
 

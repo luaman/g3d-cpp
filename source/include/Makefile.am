@@ -13,6 +13,7 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/ConvexPolyhedron.h \
                        G3D/CoordinateFrame.h \
                        G3D/G3DGameUnits.h \
+                       G3D/GLight.h \
                        G3D/GCamera.h \
                        G3D/Line.h \
                        G3D/LineSegment.h \

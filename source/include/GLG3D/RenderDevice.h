@@ -19,7 +19,6 @@
 #include "GLG3D/Milestone.h"
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/PixelProgram.h"
-#include "GLG3D/GLight.h"
 
 typedef unsigned int uint;
 
