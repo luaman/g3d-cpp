@@ -711,10 +711,8 @@ TextureRef Texture::fromMemory(
                 debugAssertGLOk();
             }
 
-            if( bytesFormat->compressed ) {
-                mipWidth = max(1, mipWidth/2);
-                mipHeight = max(1, mipHeight/2);
-            }
+            mipWidth = max(1, mipWidth/2);
+            mipHeight = max(1, mipHeight/2);
         }
     glStatePop();
 
