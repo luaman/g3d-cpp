@@ -117,7 +117,7 @@ PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NU
 namespace G3D {
 
 
-static void glViewport(double a, double b, double c, double d) {
+static void _glViewport(double a, double b, double c, double d) {
     glViewport(iRound(a), iRound(b), iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
 }
 
@@ -313,7 +313,11 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glActiveTextureARB);
 
     if (glActiveTextureARB == NULL) {
-        glActiveTextureARB = (void(*)(unsigned int))glIgnore;
+        #ifdef G3D_WIN32
+                glActiveTextureARB = glIgnore;
+        #else
+                glActiveTextureARB = (void(*)(unsigned int))glIgnore;
+        #endif
     }
 
     LOAD_EXTENSION(glClientActiveTextureARB);
@@ -874,7 +878,7 @@ void RenderDevice::setVideoMode() {
         // RenderState constructor
         state = RenderState(getWidth(), getHeight());
 
-        glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
+        _glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
         glDepthMask(GL_TRUE);
         glColorMask(1,1,1,0);
         glStencilMask(0x00);
@@ -1429,7 +1433,7 @@ void RenderDevice::setColorClearValue(const Color4& c) {
 void RenderDevice::setViewport(const Rect2D& v) {
     if (state.viewport != v) {
         // Flip to OpenGL y-axis
-        glViewport(v.x0(), getHeight() - v.y1(), v.width(), v.height());
+        _glViewport(v.x0(), getHeight() - v.y1(), v.width(), v.height());
         state.viewport = v;
     }
 }
