@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2003-10-29
+ @edited  2003-11-25
  */
 
 #include "GLG3D/Draw.h"
@@ -409,6 +409,8 @@ void Draw::box(
                 numPasses = 2;
                 renderDevice->setCullFace(RenderDevice::CULL_FRONT);
                 renderDevice->disableDepthWrite();
+            } else {
+                renderDevice->setCullFace(RenderDevice::CULL_BACK);
             }
 
             renderDevice->setColor(solidColor);
@@ -585,6 +587,8 @@ void Draw::sphere(
                 renderDevice->setCullFace(RenderDevice::CULL_FRONT);
                 renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
                 renderDevice->disableDepthWrite();
+            } else {
+                renderDevice->setCullFace(RenderDevice::CULL_BACK);
             }
 
             if (wireColor.a > 0) {

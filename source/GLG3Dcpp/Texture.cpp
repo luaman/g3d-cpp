@@ -688,17 +688,41 @@ void Texture::copyFromScreen(
     double viewportHeight = viewport[3];
     debugAssertGLOk();
 
-//    glPixelZoom(1, -1);
     glCopyTexImage2D(target, 0, format->OpenGLFormat,
         rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
 
     debugAssertGLOk();
     glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-
-    // Once copied from the screen, the direction will be reversed.
-    //invertY = true;
-
     glStatePop();
+}
+
+
+void Texture::getCameraRotation(CubeFace face, Matrix3& outMatrix) {
+    switch (face) {
+    case CUBE_POS_X:
+        outMatrix.fromEulerAnglesYXZ(G3D_HALF_PI, G3D_PI, 0);
+        break;
+
+    case CUBE_NEG_X:
+        outMatrix.fromEulerAnglesYXZ(-G3D_HALF_PI, G3D_PI, 0);
+        break;
+
+    case CUBE_POS_Y:
+        outMatrix.fromEulerAnglesXYZ(G3D_HALF_PI, 0, 0);
+        break;
+
+    case CUBE_NEG_Y:
+        outMatrix.fromEulerAnglesXYZ(-G3D_HALF_PI, 0, 0);
+        break;
+
+    case CUBE_POS_Z:
+        outMatrix.fromEulerAnglesYZX(G3D_PI, G3D_PI, 0);
+        break;
+
+    case CUBE_NEG_Z:
+        outMatrix.fromAxisAngle(Vector3::UNIT_Z, G3D_PI);
+        break;
+    }
 }
 
 

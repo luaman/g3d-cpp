@@ -113,7 +113,9 @@ private:
 public:
 
     MD2Entity(MD2ModelRef _md2, const Vector3& pos, const TextureRef _texture): 
-      Entity(pos, Color3::WHITE, _texture), md2(_md2) {}
+      Entity(pos, Color3::WHITE, _texture), md2(_md2) {
+        pose.time = random(0, 20);
+    }
 
     virtual PosedModelRef getPosedModel() const {
         return md2->pose(cframe, pose);
@@ -139,13 +141,22 @@ public:
  rendering mode so you can fly around the scene.
  */
 class Demo : public GApplet {
+private:
+
+    /** Renders the scene, using the currently set camera and viewport. 
+        Called first to render the environment map, then to render
+        the visible frame. */
+    void renderScene(const LightingParameters& lighting);
+
 public:
 
     TextureRef          tex;
     SkyRef              sky;
     Array<Entity*>      entityArray;
+    TextureRef          reflectionMap;
 
     Demo(GApp* app) : GApplet(app) {
+        app->renderDevice->setSpecularCoefficient(0);
     }
     
     virtual void init();
@@ -156,17 +167,23 @@ public:
 };
 
 
+IFSModelRef teapot;
 void Demo::init()  {
     tex = Texture::fromFile(app->dataDir + "image/lena.tga");
     //sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
-    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","testcube_*.jpg",false);
-//    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","majestic512_*.jpg",false);
+//    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","testcube_*.jpg",false);
+    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","majestic512_*.jpg",false);
+
+    reflectionMap = Texture::createEmpty(128, 128, "Reflection Map", TextureFormat::RGB8,
+        Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+
+    debugAssert(reflectionMap->getTexelHeight() <= app->renderDevice->getHeight());
 
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
     IFSModelRef cube   = IFSModel::create(app->dataDir + "ifs/cube.ifs");
-    IFSModelRef teapot = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
+    teapot = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
 
     MD2ModelRef knight = 
         MD2Model::create(app->dataDir + "quake2/players/pknight/tris.md2");
@@ -176,10 +193,11 @@ void Demo::init()  {
                           TextureFormat::AUTO, Texture::CLAMP, Texture::TRILINEAR_MIPMAP,
                           Texture::DIM_2D, 2.0); 
 
-    entityArray.append(new IFSEntity(cube, Vector3(-5, 0, 0), Color3::BLUE));
-    entityArray.append(new IFSEntity(teapot, Vector3( 0, 0, 0), Color3::WHITE));
+//    entityArray.append(new IFSEntity(cube, Vector3(-5, 0, 0), Color3::BLUE));
+//    entityArray.append(new IFSEntity(teapot, Vector3( 0, 0, 0), Color3::WHITE));
     entityArray.append(new MD2Entity(knight, Vector3( 5, 0, 0), knightTexture));
-    entityArray[1]->selected = true;
+    entityArray.append(new MD2Entity(knight, Vector3( 0, 0, 0), knightTexture));
+    entityArray.append(new MD2Entity(knight, Vector3( -5, 0, 0), knightTexture));
 }
 
 
@@ -228,18 +246,74 @@ void Demo::doLogic() {
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    // Generate dynamic environment map
+    Rect2D rect   = Rect2D::xywh(0, 0, reflectionMap->getTexelWidth(), reflectionMap->getTexelHeight());
+
+    GCamera camera;
+    camera.setFieldOfView(toRadians(90));
+    camera.setNearPlaneZ(-.01);
+    camera.setFarPlaneZ(-inf);
+    CoordinateFrame cframe(Vector3(2, 4, 0));
+
     app->renderDevice->clear(sky == NULL, true, true);
+    for (int f = 0; f < 6; ++f) {
+        app->renderDevice->pushState();
+            app->renderDevice->setViewport(rect);
+            Texture::CubeFace face = (Texture::CubeFace)f;
+        
+            Texture::getCameraRotation(face, cframe.rotation);
+            camera.setCoordinateFrame(cframe);
 
-app->renderDevice->clear(true, true, true);
-app->renderDevice->push2D();
-    app->debugFont->draw2D(format("%g", random(0, 1)), Vector2(10, 10), 20, Color3::BLACK);
-app->renderDevice->pop2D();
-sky->getEnvironmentMap()->copyFromScreen(Rect2D::xywh(0,0,512,512), Texture::CUBE_POS_Z);
+            app->renderDevice->setProjectionAndCameraMatrix(camera);
+            renderScene(lighting);
+        app->renderDevice->popState();
+        reflectionMap->copyFromScreen(rect, face);
 
+        // Shift over and use a different part of the screen
+        // so we don't have to repeatedly clear the screen.
+        rect = rect + Vector2(rect.width(), 0);
+        if (rect.x1() > app->renderDevice->getWidth()) {
+            // Go to next row
+            rect = rect + Vector2(-rect.x0(), rect.height());
+
+            if (rect.y1() > app->renderDevice->getHeight()) {
+                // Move back to the beginning and clear the screen.
+                rect = rect - Vector2(rect.x0(), rect.y0());
+                app->renderDevice->clear(sky == NULL, true, true);
+            }
+        }
+    }
+
+    // Render the scene to the full-screen
     app->debugPrintf("Mouse (%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
+    app->renderDevice->clear(sky == NULL, true, true);
+    renderScene(lighting);
+
+    app->renderDevice->pushState();
+        app->renderDevice->enableLighting();
+
+        app->renderDevice->setColor(Color3::WHITE);
+        app->renderDevice->configureReflectionMap(0, reflectionMap);
+        CoordinateFrame boxframe(Vector3(2, 4, 0));
+        boxframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
+
+        app->renderDevice->setObjectToWorldMatrix(boxframe);
+
+        // Draw::box(Box(Vector3(-1,-1,-1), Vector3(1,1,1)), app->renderDevice, Color3::WHITE, Color4::CLEAR);
+        Draw::sphere(Sphere(Vector3(0, 0, 0), 1.3), app->renderDevice, Color3::WHITE, Color4::CLEAR);
+
+     //   teapot->pose(CoordinateFrame(Vector3(0, 4, 0)))->render(app->renderDevice);
+    app->renderDevice->popState();
+
+    // The lens flare shouldn't be reflected, so it is only rendered
+    // for the final composite image
+    sky->renderLensFlare(lighting);
+}
+
+
+void Demo::renderScene(const LightingParameters& lighting) {
 
     sky->render(lighting);
     
@@ -250,26 +324,13 @@ sky->getEnvironmentMap()->copyFromScreen(Rect2D::xywh(0,0,512,512), Texture::CUB
  
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-
-    app->renderDevice->pushState();
-
-        app->renderDevice->configureReflectionMap(2, sky->getEnvironmentMap());
-        CoordinateFrame boxframe(Vector3(3, 2, 0));
-        boxframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
-
-        app->renderDevice->setObjectToWorldMatrix(boxframe);
-
-        Draw::box(Box(Vector3(-1,-1,-1), Vector3(1,1,1)), app->renderDevice, Color3::WHITE);
-        Draw::sphere(Sphere(Vector3(0, 0, 0), 1.3), app->renderDevice, Color3::WHITE);
-
     for (int e = 0; e < entityArray.length(); ++e) { 
         entityArray[e]->render(app->renderDevice);
     }
-    app->renderDevice->popState();
-
 
     Draw::axes(CoordinateFrame(Vector3(0, 7, 0)), app->renderDevice);
     
+
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
     app->renderDevice->setColor(Color3::WHITE);
@@ -289,9 +350,6 @@ sky->getEnvironmentMap()->copyFromScreen(Rect2D::xywh(0,0,512,512), Texture::CUB
     app->renderDevice->endPrimitive();
 
     app->renderDevice->disableLighting();
-
-    sky->renderLensFlare(lighting);
-
 }
 
 

@@ -19,7 +19,6 @@ namespace G3D {
 
 typedef ReferenceCountedPointer<class Texture> TextureRef;
 
-
 /**
 
  Abstraction of OpenGL textures.  This class can be used with raw OpenGL, 
@@ -233,10 +232,21 @@ public:
         CUBE_NEG_Z = 5};
 
     /**
-     Copies into the specified face of a cube map.
+     Copies into the specified face of a cube map.  Because cube maps can't have
+     the Y direction inverted (and still do anything useful), you should render
+     the cube map faces <B>upside-down</B> before copying them into the map.  This
+     is an unfortunate side-effect of OpenGL's cube map convention.  
+     
+     Use G3D::Texture::getCameraRotation to generate the (upside-down) camera
+     orientations.
      */
     void copyFromScreen(const Rect2D& rect, CubeFace face, bool useBackBuffer = true);
 
+    /**
+     Returns the rotation matrix that should be used for rendering the
+     given cube map face.
+     */
+    static void getCameraRotation(CubeFace face, Matrix3& outMatrix);
 
     /**
      When true, rendering code that uses this texture is respondible for
