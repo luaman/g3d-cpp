@@ -1,9 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<!-- saved from url=(0051)http://oss.sgi.com/projects/ogl-sample/ABI/glxext.h -->
-<HTML><HEAD>
-<META content="text/html; charset=windows-1252" http-equiv=Content-Type>
-<META content="MSHTML 5.00.2614.3500" name=GENERATOR></HEAD>
-<BODY><XMP>#ifndef __glxext_h_
+#ifndef __glxext_h_
 #define __glxext_h_
 
 #ifdef __cplusplus
@@ -530,4 +525,3 @@ typedef Bool ( * PFNGLXSET3DFXMODEMESAPROC) (int mode);
 #endif
 
 #endif
-</XMP></BODY></HTML>
