@@ -1937,7 +1937,9 @@ void RenderDevice::setProjectionMatrix(const Matrix4& P) {
 
 void RenderDevice::forceSetTextureMatrix(int unit, const double* m) {
     memcpy(state.textureUnit[unit].textureMatrix, m, sizeof(double)*16);
-    glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+    }
 
     // Transpose the texture matrix
     double tt[16];
@@ -2048,7 +2050,9 @@ void RenderDevice::setTextureCombineMode(
 
         state.textureUnit[unit].combineMode = mode;
 
-        glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+        if (GLCaps::supports_GL_ARB_multitexture()) {
+            glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+        }
 
         switch (mode) {
         case TEX_REPLACE:
@@ -2271,7 +2275,9 @@ void RenderDevice::setTexture(
 
     state.textureUnit[unit].texture = texture;
 
-    glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+    }
 
     // Turn off whatever was on previously if this is a fixed function unit
     if (fixedFunction) {
@@ -2609,7 +2615,9 @@ void RenderDevice::configureShadowMap(
 	// Set up tex coord generation - all 4 coordinates required
     setTexture(unit, shadowMap);
     
-    glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+    }
 
     static const Matrix4 bias(
         0.5f, 0.0f, 0.0f, 0.5f,
