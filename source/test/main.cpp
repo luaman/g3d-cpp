@@ -61,7 +61,7 @@ void testBox() {
         n2 = (v2 - v1).cross(v0 - v1);
 
         debugAssert(n1 == n2);
-        debugAssert(n1 == n[i]);
+        debugAssert(n1 == n[i]);n;
     }
 
 }
@@ -74,7 +74,7 @@ void testPlane() {
                 Vector3(0, 0, 0));
 
         Vector3 n = p.getNormal();
-        debugAssert(n == Vector3(0,0,1));
+        debugAssert(n == Vector3(0,0,1));n;
     }
 
     {
@@ -83,7 +83,7 @@ void testPlane() {
                 Vector3(-.2, 6, -.1));
 
         Vector3 n = p.getNormal();
-        debugAssert(n.fuzzyEq(Vector3(0,-1,0)));
+        debugAssert(n.fuzzyEq(Vector3(0,-1,0)));n;
     }
 }
 
@@ -309,8 +309,8 @@ void measureMemcpyPerformance() {
     free(m1);
     free(m2);
 
-    printf("System::memcpy:                     %d cycles/kb\n", g3d / (n / 1024));
-    printf("::memcpy      :                     %d cycles/kb\n", native / (n / 1024));
+    printf("System::memcpy:                     %d cycles/kb\n", (int)(g3d / (n / 1024)));
+    printf("::memcpy      :                     %d cycles/kb\n", (int)(native / (n / 1024)));
 }
 
 
