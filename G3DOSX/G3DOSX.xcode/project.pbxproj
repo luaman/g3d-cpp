@@ -1312,6 +1312,7 @@
 		0F55FEC306DCC4E6008DD4F8 = {
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -1356,6 +1357,9 @@
 				0F55000606DCCB08008DD4F8,
 				3EEEC95607179716007B8A7E,
 				3EEEC95707179716007B8A7E,
+				3ED14F8A07C1DE3700FA7AE0,
+				3ED14F8B07C1DE3700FA7AE0,
+				3ED14F8C07C1DE3700FA7AE0,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1475,6 +1479,7 @@
 				3EEEC96707179716007B8A7E,
 				3EEEC96807179716007B8A7E,
 				3EFE6A2D0735E0C400E12815,
+				3ED14F8E07C1DE6000FA7AE0,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2263,6 +2268,7 @@
 		};
 		0F55FF3B06DCC5C1008DD4F8 = {
 			children = (
+				3ED14F8D07C1DE6000FA7AE0,
 				0F55FED806DCC59C008DD4F8,
 				0F55FED906DCC59C008DD4F8,
 				0F55FEDA06DCC59C008DD4F8,
@@ -2320,6 +2326,9 @@
 		};
 		0F55FF3C06DCC5E2008DD4F8 = {
 			children = (
+				3ED14F8707C1DE3700FA7AE0,
+				3ED14F8807C1DE3700FA7AE0,
+				3ED14F8907C1DE3700FA7AE0,
 				0F55FF3F06DCC5FE008DD4F8,
 				0F55FF4006DCC5FE008DD4F8,
 				0F55FF4106DCC5FE008DD4F8,
@@ -2352,11 +2361,9 @@
 				0F55FF5C06DCC5FE008DD4F8,
 				0F55FF5D06DCC5FE008DD4F8,
 				0F55FF5E06DCC5FE008DD4F8,
-				0F55FF5F06DCC5FE008DD4F8,
 				0F55FF6006DCC5FE008DD4F8,
 				0F55FF6106DCC5FE008DD4F8,
 				0F55FF6206DCC5FE008DD4F8,
-				0F55FF6306DCC5FE008DD4F8,
 				0F55FF6406DCC5FE008DD4F8,
 				0F55FF6506DCC5FE008DD4F8,
 				0F55FF6606DCC5FE008DD4F8,
@@ -2680,15 +2687,6 @@
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
-		0F55FF5F06DCC5FE008DD4F8 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = mainpage.h;
-			path = ../source/include/G3D/mainpage.h;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
 		0F55FF6006DCC5FE008DD4F8 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -2713,15 +2711,6 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = Line.h;
 			path = ../source/include/G3D/Line.h;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
-		0F55FF6306DCC5FE008DD4F8 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = KDTreeSet.h;
-			path = ../source/include/G3D/KDTreeSet.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -4070,6 +4059,66 @@
 //3E2
 //3E3
 //3E4
+		3ED14F8707C1DE3700FA7AE0 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NetAddress.h;
+			path = ../source/include/G3D/NetAddress.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3ED14F8807C1DE3700FA7AE0 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = AABSPTree.h;
+			path = ../source/include/G3D/AABSPTree.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3ED14F8907C1DE3700FA7AE0 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MeshBuilder.h;
+			path = ../source/include/G3D/MeshBuilder.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3ED14F8A07C1DE3700FA7AE0 = {
+			fileRef = 3ED14F8707C1DE3700FA7AE0;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3ED14F8B07C1DE3700FA7AE0 = {
+			fileRef = 3ED14F8807C1DE3700FA7AE0;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3ED14F8C07C1DE3700FA7AE0 = {
+			fileRef = 3ED14F8907C1DE3700FA7AE0;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3ED14F8D07C1DE6000FA7AE0 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NetAddress.cpp;
+			path = ../source/G3Dcpp/NetAddress.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3ED14F8E07C1DE6000FA7AE0 = {
+			fileRef = 3ED14F8D07C1DE6000FA7AE0;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		3EDE8578071BDA660008417F = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
