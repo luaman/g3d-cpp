@@ -268,14 +268,7 @@ void Curvatures::initCotans() {
             }
         }
 
-        // TODO: requires closed model
         debugAssertM(aFaces.size() >= 2, "initCotans: Fewer than 2 faces share an edge."); 
-
-// See if the faces array is the same as the edge.faceIndex array
-//debugAssert(aFaces.size() <= 2);
-//for (int x = 0; x < aFacesIdx.size(); ++x) {
-//    debugAssert(edge.inFace(aFacesIdx[x]));
-//}
 
         int a, b;
 
@@ -650,6 +643,9 @@ public:
     void import(const PosedModelRef& pm);
 
     void render(class App* app, RenderDevice* renderDevice);
+
+    void drawSmoothContours(App* app);
+
 };
 
 
@@ -717,11 +713,192 @@ void Mesh::import(const PosedModelRef& pm) {
 }
 
 
+/**
+ The zero line runs between two edges.  Given edges A-B and B-C, this function
+ operates on one of them depending on index (A-B when index == 0, B-C when index == 1).
+
+ It returns either (A, B) or (B, A) depending on whether A has a postive value
+ of func or not.  The returned values can be used to find the ends of the
+ zero-line segment via interpolation.
+ */
+static void computeVOrder(
+	const Vector3 		vertA,
+	const float 		funcA,
+	const Vector3 		vertB,
+	const float 		funcB,
+	const Vector3 		vertC,
+	const float 		funcC,
+	const int			index,
+	Vector3&	   	    vertPos,
+	float& 			    funcPos,
+	Vector3& 			vertNeg,
+	float& 			    funcNeg) {
+
+	if (index == 0) {
+		// This is edge A-B
+		if (funcA < 0) {
+			funcNeg	= funcA;
+			vertNeg	= vertA;
+			funcPos	= funcB;
+			vertPos	= vertB;
+		} else {
+			funcNeg	= funcB;
+			vertNeg	= vertB;
+			funcPos	= funcA;
+			vertPos	= vertA;
+		}
+	} else {
+		// This is edge B-C
+		if (funcB < 0) {
+			funcNeg	= funcB;
+			vertNeg	= vertB;
+			funcPos	= funcC;
+			vertPos	= vertC;
+		} else {
+			funcNeg	= funcC;
+			vertNeg	= vertC;
+			funcPos	= funcB;
+			vertPos	= vertB;
+		}
+	}
+
+    debugAssert(funcNeg <= 0);
+    debugAssert(funcPos >= 0);
+}
+
+void Mesh::drawSmoothContours(App* app) {
+    // Draw smooth contours
+    Vector3 eye = app->debugCamera.getCoordinateFrame().translation;
+
+    app->renderDevice->setLineWidth(3);
+
+    /*
+    // Code for debugging zero-crossings
+    for (int v = 0; v < geometry.vertexArray.size(); ++v) {
+        const Vector3& V = geometry.vertexArray[v];
+        // Normal
+        const Vector3& N = geometry.normalArray[v];
+        // to-Eye vector
+        const Vector3  E = (eye - V).direction();
+
+        Color3 color = (N.dot(E) > 0) ? Color3::BLACK : Color3::RED;
+        Draw::sphere(Sphere(geometry.vertexArray[v], .1), app->renderDevice, color, Color4::CLEAR);
+    }
+    */
+
+    app->renderDevice->setColor(Color3::BLACK);
+
+    // Just always show contours
+//    app->renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
+
+    app->renderDevice->beginPrimitive(RenderDevice::LINES);
+        for (int f = 0; f < faceArray.size(); ++f) {
+            const MeshAlg::Face& face = faceArray[f];
+
+            Vector3 vert[3];
+            double func[3];
+
+            // Compute the function for which we want zeros
+            for (int i = 0; i < 3; ++i) {
+                int v = face.vertexIndex[i];
+                // Vertex
+                const Vector3& V = geometry.vertexArray[v];
+                // Normal
+                const Vector3& N = geometry.normalArray[v];
+                // to-Eye vector
+                const Vector3  E = (eye - V).direction();
+
+                func[i] = N.dot(E);
+                vert[i] = V;
+            }
+
+	        // Find the (at most two) edges between vertices which have
+	        // func-coefficients with opposite signs. The zero-line
+	        // will go between these edges, if it exists.
+
+	        // For each edge, we mark it 1 if this edge contains an endpoint
+            // of a zero-line (i.e. a zero-crossing) and 0 otherwise
+	        int e01 = (sign(func[0]) != sign(func[1])) ? 1 : 0;
+	        int e12 = (sign(func[1]) != sign(func[2])) ? 1 : 0;
+	        int e20 = (sign(func[2]) != sign(func[0])) ? 1 : 0;
+    
+            if (e01 + e12 + e20 == 2) {
+
+		        //     *  vertPos : func > 0 
+		        //    / \
+		        //   /   \
+		        //  /     *    point where func == 0
+		        // /       \
+		        // .        \
+		        // .         \
+		        // ._________ *  vertNeg : func < 0
+
+                // Loop over both ends
+                for (int index = 0; index <= 1; ++index) {
+		            Vector3 vertPos, vertNeg;
+		            float funcPos, funcNeg;
+
+		            if (e01 == 0) {
+			            // e12 and e20 are the edges
+			            computeVOrder(vert[1], func[1], 
+                                      vert[2], func[2],
+						              vert[0], func[0],
+                                      index,
+						              vertPos, funcPos,
+                                      vertNeg, funcNeg);
+		            } else if (e12 == 0) {
+			            // e20 and e01 are the edges
+			            computeVOrder(vert[2], func[2],
+                                      vert[0], func[0],
+						              vert[1], func[1],
+                                      index,
+						              vertPos, funcPos,
+                                      vertNeg, funcNeg);
+		            } else {
+			            // e01 and e12 are the edges
+			            computeVOrder(vert[0], func[0], 
+                                      vert[1], func[1],
+                                      vert[2], func[2],
+                                      index,
+						              vertPos, funcPos,
+                                      vertNeg, funcNeg);
+		            }
+
+                    debugAssert(funcNeg <= 0);
+                    debugAssert(funcPos >= 0);
+
+		            // Compute a linear interpolation parameter that
+		            // takes us between vertPos and vertNeg
+                    //
+                    //  funcNeg           ~0            funcPos
+                    //    *----------------X-------------*
+                    //  vertNeg         midVert         vertPos
+                    //
+		            const double  alpha   = -funcNeg / (funcPos - funcNeg);
+		            const Vector3 midVert = lerp(vertNeg, vertPos, alpha);
+
+                    app->renderDevice->sendVertex(midVert);
+                }
+
+            } else {
+                // The zero-line does not run through this face
+
+                debugAssertM(e01 + e12 + e20 == 0,
+                    "Cannot have an odd number of zero-crossings");
+            }
+        }
+    app->renderDevice->endPrimitive();
+}
+
+
 void Mesh::render(App* app, RenderDevice* renderDevice) {
     renderDevice->pushState();
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
         renderDevice->setColor(Color3::WHITE);
+
+        renderDevice->setPolygonOffset(3);
+
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
 
             double L, H;
@@ -760,13 +937,21 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
                 renderDevice->sendVertex(geometry.vertexArray[i]);
             }
         renderDevice->endPrimitive();
+        
 
-        app->debugPrintf("[%g, %g]", L, H);
+        renderDevice->disableDepthWrite();
+        
+        //Draw::vertexNormals(geometry, app->renderDevice);
+
+        renderDevice->setPolygonOffset(0);
+
+        //app->debugPrintf("[%g, %g]", L, H);
+
         // Draw the edges
-        renderDevice->setColor(Color3::BLACK);
+        renderDevice->setColor(Color3::WHITE * .75);
         renderDevice->setLineWidth(0.5);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-
+        
         renderDevice->beginPrimitive(RenderDevice::LINES);
             for (int e = 0; e < edgeArray.size(); ++e) {
                 for (int a = 0; a < 2; ++a) {
@@ -777,6 +962,11 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
                 }
             }
         renderDevice->endPrimitive();
+        
+
+        // Draw contours
+        drawSmoothContours(app);
+
     renderDevice->popState();
 }
 
@@ -790,7 +980,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0,0,2));
     app->debugCamera.lookAt(Vector3::ZERO);
 
-    //mesh.import(IFSModel::create(app->dataDir + "ifs/elephant.ifs", Vector3(2, 1, .5))->pose(CoordinateFrame()));
+    mesh.import(IFSModel::create(app->dataDir + "ifs/cow.ifs")->pose(CoordinateFrame()));
 }
 
 
@@ -857,10 +1047,10 @@ void Demo::doGraphics() {
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-    	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
+    	//Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
-    app->renderDevice->disableLighting();
         mesh.render(app, app->renderDevice);
+    app->renderDevice->disableLighting();
 
     if (! app->sky.isNull()) {
         app->sky->renderLensFlare(lighting);
@@ -889,8 +1079,6 @@ int main(int argc, char** argv) {
 //    System::setEnv("SDL_VIDEO_WINDOW_POS", format("%d,%d", 400, 0));
 
     GAppSettings settings;
-    settings.window.width       = 400;
-    settings.window.height      = 400;
     settings.window.fsaaSamples = 4;
     App(settings).run();
     return 0;
