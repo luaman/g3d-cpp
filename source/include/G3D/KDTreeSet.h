@@ -646,7 +646,8 @@ public:
         // Delete the old tree
         clear();
 
-        root = makeNode(handleArray, 0, handleArray.size() - 1, valuesPerNode, numMeanSplits);
+        root = makeNode(handleArray, 0, handleArray.size() - 1, 
+            valuesPerNode, numMeanSplits);
 
         #ifdef _DEBUG
 	        root->verifyNode(Vector3(-inf, -inf, -inf), Vector3(inf, inf, inf));
@@ -852,11 +853,20 @@ public:
 		    Array<float> intersectionCache;
 		    
 		    void init(const Node* inNode, const Ray& ray, float inMinTime, float inMaxTime) {
-			    node = inNode;
-			    minTime = inMinTime;
-			    maxTime = inMaxTime;
+			    node     = inNode;
+			    minTime  = inMinTime;
+			    maxTime  = inMaxTime;
 			    valIndex = -1;
+
+			    intersectionCache.resize(node->valueArray.length());
 			    
+			    if (node->child[0] == NULL && node->child[1] == NULL) {
+				    startTime = minTime;
+				    endTime = maxTime;
+				    nextChild = -1;
+				    return;
+			    }
+
 			    Vector3::Axis splitAxis     = node->splitAxis;
 			    double        splitLocation = node->splitLocation;
 
@@ -897,8 +907,6 @@ public:
 			    } else {
 				    nextChild = 1;
 			    }
-			    
-			    intersectionCache.resize(node->valueArray.size());
 		    }
 	    };
 
@@ -1016,6 +1024,9 @@ public:
 					    s->nextChild = (s->nextChild >= 0) ?
 						    (1 - s->nextChild) : -1;
 
+					    // this could be changed somehow,
+					    // since Array already does the
+					    // power-of-two growth stuff
 					    if (stackIndex == stackLength) {
 						    stackLength *= 2;
 						    stack.resize(stackLength);
@@ -1062,16 +1073,32 @@ public:
 			    // this can be an exact equals because the two
 			    // variables are initialized to the same thing
 			    if (s->startTime == s->minTime) {
-				    t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
+                    Vector3 location;
+
+                    if (
+                        CollisionDetection::collisionLocationForMovingPointFixedAABox(
+                            ray.origin, ray.direction,
+                            s->node->valueArray[s->valIndex].bounds,
+                            location)) {
+                        // TODO: store t-squared 
+                        t = (location - ray.origin).length();
+                    } else {
+                        t = inf;
+                    }
+
+				    //t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
 				    s->intersectionCache[s->valIndex] = t;
 				    ++debugCounter;
 			    } else {
 				    t = s->intersectionCache[s->valIndex];
 			    }
 
-			    // maybe these should be epsiloned?
+			    // use minTime here because intersection may be
+			    // detected pre-split, but be valid post-split, too.
 			    if ((t >= s->minTime) && (t < s->endTime)) {
-				    minDistance = t;
+                    // Gives slightly tighter bounds but runs slower:
+                    // minDistance = max(t, s->startTime);
+				    minDistance = s->startTime;
 				    maxDistance = s->endTime;
 				    break;
 			    }
@@ -1152,7 +1179,8 @@ public:
 
                // Call your accurate intersection test here.  It is guaranteed
                // that the ray hits the bounding box of obj.
-               Ray newRay = Ray::fromOriginAndDirection(ray.origin + ray.direction * obj.minDistance, ray.direction);
+               Ray newRay = Ray::fromOriginAndDirection(
+                    ray.origin + ray.direction * obj.minDistance, ray.direction);
                double t = obj->distanceUntilIntersection(newRay) - obj.minDistance;
 
                // Often methods like "distanceUntilIntersection" can be made more
@@ -1278,3 +1306,4 @@ public:
 }
 
 #endif
+

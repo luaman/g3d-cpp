@@ -196,6 +196,16 @@ public:
         Vector3&				outLocation,
         bool&                   inside = ignoreBool);
 
+    /** Avoids the sqrt from collisionTimeForMovingPointFixedAABox.
+        Returns true if there is a collision, false otherwise.*/
+    static bool collisionLocationForMovingPointFixedAABox(
+        const Vector3&			point,
+        const Vector3&			velocity,
+        const class AABox&      box,
+        Vector3&				outLocation,
+        bool&                   inside = ignoreBool);
+
+
     static double collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,
         const Vector3&			velocity,
