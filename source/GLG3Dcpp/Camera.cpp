@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-10-11
+  @edited  2003-11-03
 */
 
 #include "GLG3D/Camera.h"
@@ -16,7 +16,7 @@ namespace G3D {
 Camera::Camera(RenderDevice* r) {
     debugAssert(r != NULL);
 	renderDevice = r;
-    nearPlane   = 0.5;
+    nearPlane   = 0.1;
     farPlane    = 300;
 	setFieldOfView(toRadians(55));
 }

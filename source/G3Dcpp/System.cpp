@@ -57,7 +57,7 @@
 
 namespace G3D {
 
-std::string demoFindData() {
+std::string demoFindData(bool errorIfNotFound) {
 
     Array<std::string> potential;
     potential.append("");
@@ -83,13 +83,15 @@ std::string demoFindData() {
     }
 
 
-    const char* choice[] = {"Exit"};
+    if (errorIfNotFound) {
+        const char* choice[] = {"Exit"};
 
-    prompt("Demo Error", "The demo could not locate the data directory.  "
-        "The data is required to run this demo.  If you have not downloaded "
-        "the data zipfile, get it from http://g3d-cpp.sf.net.  If you have "
-        "downloaded it, it needs to be no more than 4 directories above the "
-        "demo directory.", choice, 1, true);
+        prompt("Demo Error", "The demo could not locate the data directory.  "
+            "The data is required to run this demo.  If you have not downloaded "
+            "the data zipfile, get it from http://g3d-cpp.sf.net.  If you have "
+            "downloaded it, it needs to be no more than 4 directories above the "
+            "demo directory.", choice, 1, true);
+    }
 
     return "";
 }
@@ -794,7 +796,9 @@ RealTime System::getTick() {
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
 
-    return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency);
+    return 0;
+    // TODO: James
+//    return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency);
 #else
     struct timeval now;
     gettimeofday(&now, NULL);

@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-10-06
+  @edited  2003-11-03
  */
 
 #ifndef G3D_SYSTEM_H
@@ -23,7 +23,7 @@ namespace G3D {
 /**
  Routine used by the demos to find the data.
  */
-std::string demoFindData();
+std::string demoFindData(bool errorIfNotFound = true);
 
 /**
  The order in which the bytes of an integer are stored on a machine.

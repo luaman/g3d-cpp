@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-10-30
+ @edited  2003-11-03
  */
 
 
@@ -149,6 +149,11 @@ void RenderDevice::computeVendor() {
     } else {
         vendor = ARB;
     }
+}
+
+
+std::string RenderDevice::getCardDescription() const {
+    return cardDescription;
 }
 
 /**
@@ -449,6 +454,7 @@ bool RenderDevice::init(
     // Var must be initialized after extensions are loaded
 	varSystem = new VARSystem(this, settings.varVideoMemory, debugLog);
 
+    std::string ver = getDriverVersion();
     if (debugLog) {
         debugLog->printf("Operating System: %s\n", System::operatingSystem().c_str());
         debugLog->printf("Processor Architecture: %s\n\n", System::cpuArchitecture().c_str());
@@ -467,13 +473,16 @@ bool RenderDevice::init(
 
         debugLog->printf(
             "Driver version: %s\n\n",
-            getDriverVersion().c_str());
+            ver.c_str());
 
         debugLog->printf(
             "GL extensions: \"%s\"\n\n",
             extensions.str().c_str());
     }
  
+
+    cardDescription = format("%s %s", glGetString(GL_RENDERER), ver.c_str());
+
     // Don't use more texture units than allowed at compile time.
     int rawTextureUnits = _numTextureUnits;
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
@@ -749,7 +758,7 @@ void RenderDevice::setVideoMode() {
 
 	// Request various OpenGL parameters
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      settings.depthBits);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    GL_TRUE);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    1);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,    settings.stencilBits);
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,        settings.rgbBits);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,      settings.rgbBits);
@@ -1377,11 +1386,18 @@ void RenderDevice::endFrame() {
     double now = getTime();
     double dt = now - lastTime;
     if (dt == 0) {
-        dt = 0.001;
+        dt = 0.0001;
     }
-    emwaFrameRate     = (emwaFrameRate * 0.9) + (0.1 / dt);
-    emwaTriangleRate  = (emwaTriangleRate * 0.9) + (0.1 * triangleCount / dt);
-    emwaTriangleCount = (emwaTriangleCount * 0.9) + (0.1 * triangleCount);
+
+    {
+        // high frame rate: A is small
+        // low frame rate: A is big
+        const double A = clamp(dt * 0.01, .005, .1);
+    
+        emwaFrameRate     = lerp(emwaFrameRate, 1 / dt, A);
+        emwaTriangleRate  = lerp(emwaTriangleRate, triangleCount / dt, A);
+        emwaTriangleCount = lerp(emwaTriangleCount, triangleCount, A);
+    }
 
     if ((emwaFrameRate == inf) || (isNaN(emwaFrameRate))) {
         emwaFrameRate = 1000000;

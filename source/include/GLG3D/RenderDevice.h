@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-10-30
+  @edited  2003-11-03
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -409,6 +409,8 @@ private:
      Set by the setXXXArray methods, cleared by endIndexedPrimitives.
      */
     Set<VARArea*>               inUseVARArea;
+
+    std::string                 cardDescription;
 
     /**
      Adds this VAR to inUseVARArea
@@ -915,11 +917,15 @@ public:
         int                 y) const;
 
 
-    /** Call after vendor is set */
-    std::string getDriverVersion();
+    /**
+     Description of the graphics card and driver version.
+     */
+    std::string getCardDescription() const;
 
 
 private:
+    /** Call after vendor is set */
+    std::string getDriverVersion();
 
     /**
      For performance, we don't actually unbind a texture when

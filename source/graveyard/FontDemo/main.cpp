@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     
     // Initialize
     device      = new RenderDevice();
-    device->init(800, 600);
+    device->init(RenderDeviceSettings());
 
     Array<CFontRef>    font;
 
@@ -20,7 +20,8 @@ int main(int argc, char** argv) {
 
     
     std::string prefix = "d:/graphics3d/book/data/font/";
-    /*
+    
+    
     {
         // Convert fonts
         std::string srcDir = "c:/tmp/font/";
@@ -31,7 +32,8 @@ int main(int argc, char** argv) {
         }
         tname.clear();
     }
-    */
+    
+    
 
     getFiles(prefix + "*.fnt", tname);
 
@@ -53,10 +55,10 @@ int main(int argc, char** argv) {
         device->push2D();
         for (int i = 0; i < k; ++i) {
 
-            font[i]->draw2DString(name[i], 10, 10 + i * 30, 24, Color3::WHITE, Color3::BLACK);
-            font[i + k]->draw2DString(name[i + k], 240, 10 + i * 30, 24, Color3::WHITE, Color3::BLACK);
+            font[i]->draw2D(name[i], Vector2(10, 10 + i * 30), 24, Color3::WHITE, Color3::BLACK);
+            font[i + k]->draw2D(name[i + k], Vector2(240, 10 + i * 30), 24, Color3::WHITE, Color3::BLACK);
             if (i + k * 2 < font.size()) {
-                font[i + k * 2]->draw2DString(name[i + k * 2], 470, 10+ i * 30, 24, Color3::WHITE, Color3::BLACK);
+                font[i + k * 2]->draw2D(name[i + k * 2], Vector2(470, 10 + i * 30), 24, Color3::WHITE, Color3::BLACK);
             }
         }
         device->pop2D();
