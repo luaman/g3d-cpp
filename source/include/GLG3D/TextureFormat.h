@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-05-23
-  @edited  2003-05-23
+  @edited  2003-07-02
 */
 
 #ifndef GLG3D_TEXTUREFORMAT_H
@@ -123,6 +123,13 @@ public:
     static const TextureFormat* RGBA_DXT3;
 
     static const TextureFormat* RGBA_DXT5;
+
+    /**
+     NULL pointer; indicates that the texture class should choose
+     either RGBA8 or RGB8 depending on the presence of an alpha channel
+     in the input.
+     */
+    static const TextureFormat* AUTO;
 
 };
 

@@ -33,4 +33,6 @@ const TextureFormat* TextureFormat::RGBA_DXT3 = new TextureFormat(4, true, GL_CO
 
 const TextureFormat* TextureFormat::RGBA_DXT5 = new TextureFormat(4, true, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_RGBA, 0, 0, 0, 0, 0, 8, 8, false);
 
+const TextureFormat* TextureFormat::AUTO      = NULL;
+
 }

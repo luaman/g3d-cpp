@@ -12,6 +12,7 @@
 
 #include "graphics3D.h"
 #include "GLG3D/glheaders.h"
+#include "GLG3D/TextureFormat.h"
 
 namespace G3D {
 
@@ -42,7 +43,7 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
  To use Texture with straight OpenGL:
 
  <PRE>
-  TextureRef texture = new Texture("Logo", "logo.jpg");
+  TextureRef texture = new Texture("logo.jpg");
 
   ...
     
@@ -54,7 +55,7 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
  To use Texture with RenderDevice:
 
   <PRE>
-  TextureRef texture = new Texture("Logo", "logo.jpg");
+  TextureRef texture = new Texture("logo.jpg");
   ...
   renderDevice->setTexture(0, texture);
   // (to disable: renderDevice->setTexture(0, NULL);)
@@ -138,7 +139,7 @@ public:
      */
     static TextureRef fromFile(
         const std::string&              filename,
-        const class TextureFormat*      desiredFormat,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D);
@@ -151,7 +152,7 @@ public:
     static TextureRef fromTwoFiles(
         const std::string&              filename,
         const std::string&              alphaFilename,
-        const class TextureFormat*      desiredFormat,
+        const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D);
@@ -167,7 +168,7 @@ public:
         int                             width,
         int                             height,
         int                             depth,
-        const class TextureFormat*      desiredFormat,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D);

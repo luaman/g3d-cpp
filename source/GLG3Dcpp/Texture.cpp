@@ -202,6 +202,7 @@ Texture::Texture(
     dimension(_dimension),
     _opaque(__opaque) {
 
+    debugAssert(_format);
 
     glStatePush();
 
@@ -234,6 +235,8 @@ TextureRef Texture::fromGLTexture(
     Dimension               dimension,
     bool                    opaque) {
 
+    debugAssert(textureFormat);
+
     return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, opaque);
 }
 
@@ -255,6 +258,10 @@ TextureRef Texture::fromFile(
         opaque = false;
     }
 
+    if (desiredFormat == NULL) {
+        desiredFormat = format;
+    }
+
     TextureRef t =
         Texture::fromMemory(filename, data.byte(), format, data.width, data.height, 1, 
             desiredFormat, wrap, interpolate, dimension);
@@ -270,6 +277,8 @@ TextureRef Texture::fromTwoFiles(
     WrapMode                wrap,
     InterpolateMode         interpolate,
     Dimension               dimension) {
+
+    debugAssert(desiredFormat);
 
     // Compose the two images to a single RGBA
 
@@ -336,6 +345,11 @@ TextureRef Texture::fromMemory(
         }
 
     glStatePop();
+
+    if (dimension != DIM_2D_RECT) {
+        width  = nextPowerOf2(width);
+        height = nextPowerOf2(height);
+    }
 
     return fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension, bytesFormat->opaque);
 }
@@ -417,6 +431,7 @@ int Texture::sizeInMemory() const {
 
     return total;
 }
+
 
 unsigned int Texture::getOpenGLTextureTarget() const {
     switch (dimension) {
