@@ -834,6 +834,9 @@ public:
 
 		    /** the total checking bounds for this frame */
 		    float minTime;
+
+            /** minTime^2 */
+		    float minTime2;
 		    float maxTime;
 
 		    /** what we're checking right now, either from minTime to the
@@ -841,6 +844,9 @@ public:
 			there are edge cases) */
 		    float startTime;
 		    float endTime;
+
+            /** endTime^2 */
+		    float endTime2;
 		    
 		    int nextChild;
 
@@ -852,17 +858,20 @@ public:
 		       split so they don't need to be checked again after the split. */
 		    Array<float> intersectionCache;
 		    
-		    void init(const Node* inNode, const Ray& ray, float inMinTime, float inMaxTime) {
+		    void init(const Node* inNode, const Ray& ray,
+                      float inMinTime, float inMaxTime) {
 			    node     = inNode;
 			    minTime  = inMinTime;
 			    maxTime  = inMaxTime;
+                minTime2 = square(minTime);
 			    valIndex = -1;
 
 			    intersectionCache.resize(node->valueArray.length());
 			    
 			    if (node->child[0] == NULL && node->child[1] == NULL) {
 				    startTime = minTime;
-				    endTime = maxTime;
+				    endTime   = maxTime;
+				    endTime2  = square(maxTime);
 				    nextChild = -1;
 				    return;
 			    }
@@ -887,7 +896,8 @@ public:
 			    }
 			    
 			    startTime = minTime;
-			    endTime = min(maxTime, splitTime);
+			    endTime   = min(maxTime, splitTime);
+                endTime2  = square(endTime);
 
 			    double rayLocation = ray.origin[splitAxis] +
 				    ray.direction[splitAxis] * minTime;
@@ -929,11 +939,13 @@ public:
 	    int                 stackLength;
 	    int                 stackIndex;
 	    int                 breakFrameIndex;
+        bool                skipAABoxTests;
 
-	    RayIntersectionIterator(const Ray& r, const Node* root)
+	    RayIntersectionIterator(const Ray& r, const Node* root, bool skip)
 		    : minDistance(0), maxDistance(inf), debugCounter(0),
 		    ray(r), isEnd(root == NULL),
-		    stackLength(20), stackIndex(0), breakFrameIndex(-1)
+		    stackLength(20), stackIndex(0), breakFrameIndex(-1),
+            skipAABoxTests(skip)
 	    {
 		    stack.resize(stackLength);
 		    stack[stackIndex].init(root, ray, 0, inf);
@@ -1012,8 +1024,8 @@ public:
 				    
 				    Node* child = (s->nextChild >= 0) ?
 					    s->node->child[s->nextChild] : NULL;
-				        double childStartTime = s->startTime;
-				        double childEndTime   = s->endTime;
+				    double childStartTime = s->startTime;
+				    double childEndTime   = s->endTime;
 
 				    if (s->endTime < s->maxTime) {
 					    // we can come back to this frame,
@@ -1021,6 +1033,7 @@ public:
 					    s->valIndex  = -1;
 					    s->startTime = s->endTime;
 					    s->endTime   = s->maxTime;
+					    s->endTime2  = square(s->maxTime);
 					    s->nextChild = (s->nextChild >= 0) ?
 						    (1 - s->nextChild) : -1;
 
@@ -1069,39 +1082,46 @@ public:
                     continue;
 			    }
 
-			    double t;
-			    // this can be an exact equals because the two
-			    // variables are initialized to the same thing
-			    if (s->startTime == s->minTime) {
-                    Vector3 location;
-
-                    if (
-                        CollisionDetection::collisionLocationForMovingPointFixedAABox(
-                            ray.origin, ray.direction,
-                            s->node->valueArray[s->valIndex].bounds,
-                            location)) {
-                        // TODO: store t-squared 
-                        t = (location - ray.origin).length();
-                    } else {
-                        t = inf;
-                    }
-
-				    //t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
-				    s->intersectionCache[s->valIndex] = t;
-				    ++debugCounter;
-			    } else {
-				    t = s->intersectionCache[s->valIndex];
-			    }
-
-			    // use minTime here because intersection may be
-			    // detected pre-split, but be valid post-split, too.
-			    if ((t >= s->minTime) && (t < s->endTime)) {
-                    // Gives slightly tighter bounds but runs slower:
-                    // minDistance = max(t, s->startTime);
-				    minDistance = s->startTime;
+                if (skipAABoxTests) {
+                    // No AABox test-- return everything
+                    minDistance = s->startTime;
 				    maxDistance = s->endTime;
 				    break;
-			    }
+                } else {
+			        double t2;
+			        // this can be an exact equals because the two
+			        // variables are initialized to the same thing
+			        if (s->startTime == s->minTime) {
+                        Vector3 location;
+
+                        if (
+                            CollisionDetection::collisionLocationForMovingPointFixedAABox(
+                                ray.origin, ray.direction,
+                                s->node->valueArray[s->valIndex].bounds,
+                                location)) {
+                            // TODO: store t-squared 
+                            t2 = (location - ray.origin).squaredLength();
+                        } else {
+                            t2 = inf;
+                        }
+
+				        //t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
+				        s->intersectionCache[s->valIndex] = t2;
+				        ++debugCounter;
+			        } else {
+				        t2 = s->intersectionCache[s->valIndex];
+			        }
+
+			        // use minTime here because intersection may be
+			        // detected pre-split, but be valid post-split, too.
+			        if ((t2 >= s->minTime2) && (t2 < s->endTime2)) {
+                        // Gives slightly tighter bounds but runs slower:
+                        // minDistance = max(t, s->startTime);
+				        minDistance = s->startTime;
+				        maxDistance = s->endTime;
+				        break;
+			        }
+                }
 			    
 		    }
 
@@ -1207,10 +1227,17 @@ public:
 
     <!IMG SRc="aabsp-intersect.png">
 
+      @param skipAABoxTests Set to true when the intersection test for a
+      member is faster than an AABox-ray intersection test.  In that case, 
+      the iterator will not use a bounding box test on values that are
+      returned.  Leave false (the default) for objects with slow intersection
+      tests.  In that case, the iterator guarantees that the ray hits the
+      bounds of any object returned.
+     
      @cite Implementation by Pete Hopkins
     */
-	RayIntersectionIterator beginRayIntersection(const Ray& ray) const {
-		return RayIntersectionIterator(ray, root);
+	RayIntersectionIterator beginRayIntersection(const Ray& ray, bool skipAABoxTests = false) const {
+		return RayIntersectionIterator(ray, root, skipAABoxTests);
 	}
 	
 	RayIntersectionIterator endRayIntersection() const {
