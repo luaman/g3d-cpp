@@ -69,7 +69,9 @@ int main(int argc, char** argv) {
     userInput    = new UserInput();
 
     controller   = new ManualCameraController(renderDevice, userInput);
-    controller->setMoveRate(.1);
+
+    //controller->setMoveRate(.1);
+controller->setMoveRate(10);
 
     controller->setPosition(Vector3(1.5, 1.5, 1.5));
     controller->lookAt(Vector3(0,0,0));
@@ -82,8 +84,12 @@ int main(int argc, char** argv) {
 
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
+//    std::string in("c:/tmp/models/jackolantern1.3ds");
 //    std::string in("c:/tmp/diablo.3ds");
-    std::string in("c:/tmp/models/jackolantern1.3ds");
+
+//    std::string in("C:/tmp/load3ds2/title.3ds");
+    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
+//    std::string in("C:/Documents and Settings/morgan/Desktop/dropbox/teapots.3ds");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");

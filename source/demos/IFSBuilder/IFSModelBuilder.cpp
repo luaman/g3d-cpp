@@ -10,7 +10,7 @@
 #include "IFSModelBuilder.h"
 #include "IFSModel.h"
 
-const double IFSModelBuilder::CLOSE = 0;//IFSModelBuilder::AUTO_WELD;
+const double IFSModelBuilder::CLOSE = IFSModelBuilder::AUTO_WELD;
 
 
 void IFSModelBuilder::setName(const std::string& n) {
@@ -24,7 +24,8 @@ void IFSModelBuilder::commit(XIFSModel* model) {
     model->name = name;
 
     // Make the data fit in a unit cube
-    centerTriList();
+    // TODO: uncomment
+//    centerTriList();
 
     Array<int> toNew, toOld;
 

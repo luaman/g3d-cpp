@@ -171,11 +171,20 @@ void XIFSModel::load3DS(const std::string& filename) {
     Load3DS loader(b);
 
     for (int obj = 0; obj < loader.objectArray.size(); ++obj) {
-        const Array<int>&     index  = loader.objectArray[obj].indexArray;
-        const Array<Vector3>& vertex = loader.objectArray[obj].vertexArray;
+        const Array<int>&     index   = loader.objectArray[obj].indexArray;
+        const Array<Vector3>& vertex  = loader.objectArray[obj].vertexArray;
+        const Matrix4&        cframe  = loader.objectArray[obj].cframe;
+
+        #define vert(V) (cframe * Vector4(vertex[index[V]], 1)).xyz()
+
         for (int i = 0; i < index.size(); i += 3) {
-            builder.addTriangle(vertex[index[i]], vertex[index[i + 1]], vertex[index[i + 2]]);
+            builder.addTriangle(
+                vert(i),
+                vert(i + 1),
+                vert(i + 2));
         }
+
+        #undef vert
     }
       
     builder.setName(loader.objectArray[0].name);
@@ -306,7 +315,7 @@ void XIFSModel::render() {
             drawBillboardString(font, format("%d", v), geometry.vertexArray[v], S, Color3::YELLOW, Color3::BLACK);
         }
 
-        Draw::vertexNormals(geometry, renderDevice);
+//        Draw::vertexNormals(geometry, renderDevice);
 
         // Label edges
         //for (int e = 0; e < edgeArray.size(); ++e) {
@@ -326,6 +335,7 @@ void XIFSModel::render() {
             }
         renderDevice->endPrimitive();
 
+        Draw::axes(renderDevice);
         glDisable(GL_LINE_SMOOTH);
 
     renderDevice->popState();
