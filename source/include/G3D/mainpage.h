@@ -102,7 +102,7 @@
 
       <LI>Game/Demo Infrastructure</LI>
         <BR><BLOCKQUOTE>G3D::Font, G3D::Sky, G3D::Camera, G3D::GameTime,
-        G3D::LightingParameters, G3D::toSeconds, G3D::UserInput, 
+        G3D::LightingParameters, G3D::realWorldLocalTime, G3D::toSeconds, G3D::UserInput, 
         G3D::ManualCameraController</BLOCKQUOTE>
      </UL>
 
@@ -502,6 +502,7 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> G3D::realWorldLocalTime
      <LI> Texture::TRANSPARENT_BORDER
      <LI> DECLARE_GLFORMATOF
      <LI> Fix: Texture::sizeInMemory now accounts for MIP-map levels

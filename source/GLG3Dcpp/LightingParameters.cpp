@@ -3,14 +3,23 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-04-11
+ @edited  2003-04-13
  */
 
 #include "GLG3D/LightingParameters.h"
+#include <sys/timeb.h>
+#include <sys/types.h> 
 
 namespace G3D {
 
 static const double sunRiseAndSetTime  = HOUR;
+
+RealTime realWorldLocalTime() {
+    struct _timeb t;
+    _ftime(&t);
+
+    return t.time - t.timezone * MINUTE + (t.dstflag ? HOUR : 0);
+}
 
 LightingParameters::LightingParameters() {
     setTime(0);

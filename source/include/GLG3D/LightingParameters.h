@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-02-20
+ @edited  2003-04-13
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -15,6 +15,10 @@
 #include "graphics3D.h"
 
 namespace G3D {
+
+/** The actual time (measured in seconds since Jan 1 1970 midnight).
+    Adjusted for local timezone and daylight savings time. */
+RealTime realWorldLocalTime();
 
 /**
  Provides a reasonable (but not remotely physically correct!) set of lighting parameters
