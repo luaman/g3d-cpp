@@ -45,6 +45,7 @@ void Camera::setProjectionAndCameraMatrix() const {
     
     int screenWidth  = renderDevice->getWidth();
     int screenHeight = renderDevice->getHeight();
+    (void)screenHeight;
 
     // OpenGL wants the renderDevice ratio (not the viewport or
     // screen ratio) here.

@@ -3,7 +3,7 @@ INCLUDES=-I../include -Wall $(SDL_CFLAGS)
 lib_LTLIBRARIES=libGLG3D.la libGLG3D_debug.la
 
 libGLG3D_la_SOURCES= Camera.cpp \
-					 Font.cpp \
+					 CFont.cpp \
 					 G3DGameUnits.cpp \
 					 LightingParameters.cpp \
 					 ManualCameraController.cpp \
@@ -27,14 +27,14 @@ libGLG3D_la_SOURCES= Camera.cpp \
 libGLG3D_la_LIBADD= $(SDL_LIBS)
 
 libGLG3D_debug_la_SOURCES= Camera.cpp \
-					 Font.cpp \
+					 CFont.cpp \
 					 G3DGameUnits.cpp \
 					 LightingParameters.cpp \
 					 ManualCameraController.cpp \
 					 RenderDevice.cpp \
 					 Sky.cpp \
   					 TextureFormat.cpp \
-    				         Texture.cpp \
+    				 Texture.cpp \
 					 UserInput.cpp \
 					 VARSystem.cpp \
 					 VAR.cpp \
@@ -44,7 +44,7 @@ libGLG3D_debug_la_SOURCES= Camera.cpp \
 					 Milestone.cpp \
 					 MD2Model.cpp \
 					 MD2Model_load.cpp \
-				         getOpenGLState.cpp \
+				     getOpenGLState.cpp \
 					 glcalls.cpp \
 					 glenumtostring.cpp 
 
