@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2003-10-04
+ @edited  2003-11-02
 */
 
 #include <memory.h>
@@ -1233,6 +1233,7 @@ bool Matrix3::toEulerAnglesZYX (float& rfZAngle, float& rfYAngle,
     if ( m_aafEntry[2][0] < 1.0 ) {
         if ( m_aafEntry[2][0] > -1.0 ) {
             rfZAngle = G3D::aTan2(m_aafEntry[1][0], m_aafEntry[0][0]);
+            rfYAngle = G3D::aSin(-(double)m_aafEntry[2][1]);
             rfXAngle = G3D::aTan2(m_aafEntry[2][1], m_aafEntry[2][2]);
             return true;
         } else {

@@ -1754,6 +1754,16 @@ void RenderDevice::setPixelProgram(const PixelProgramRef& pp) {
 }
 
 
+void RenderDevice::setPixelProgram(
+    const PixelProgramRef& pp,
+    const GPUProgram::ArgList& args) {
+
+    setPixelProgram(pp);
+    
+    pp->setArgs(args);
+}
+
+
 void RenderDevice::setStencilOp(
     StencilOp           fail,
     StencilOp           zfail,
