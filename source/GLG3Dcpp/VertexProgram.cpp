@@ -48,8 +48,14 @@ LOADSHADER:
     glGetError();
     glProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, code.size(), code.c_str());
 
+    #ifdef _DEBUG
+        static bool ignore = false;
+    #else
+        static bool ignore = true;
+    #endif
+
     // Check for load errors
-    if (glGetError() == GL_INVALID_OPERATION) {
+    if ((glGetError() == GL_INVALID_OPERATION) && (! ignore)) {
         int                  pos = glGetInteger(GL_PROGRAM_ERROR_POSITION_ARB);
         const unsigned char* msg = glGetString(GL_PROGRAM_ERROR_STRING_ARB);
 
@@ -101,6 +107,7 @@ LOADSHADER:
 
         switch (prompt("Error Loading Program", text.c_str(), choice, 4, true)) {
         case 0:
+            // Debug
             {
                 ////////////////////////////////////////////////////////////////////////////
                 //                                                                        //
@@ -119,9 +126,18 @@ LOADSHADER:
                 goto LOADSHADER;
                 break;
             }
+
         case 1:
+            // Ignore
+            break;
+
         case 2:
+            // Ignore all
+            ignore = true;
+            break;
+
         case 3:
+            // Exit
             exit(-1);
         }
     }
