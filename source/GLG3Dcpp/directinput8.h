@@ -1421,6 +1421,7 @@ public:
                 return false;
             }
         }
+        return false;
     }
 
     static inline bool acquireKeyboard() {
@@ -1433,6 +1434,7 @@ public:
         } else {
             return false;
         }
+        return false;
     }
 
     static inline bool getJoystickState(unsigned int joystick, G3DJOYDATA& data) {
