@@ -42,6 +42,27 @@ RealTime getTime() {
     return SDL_GetTicks() / 1000.0;
 }
 
+
+void getModelNameArray() {
+    getDirs(DATA_DIR + "quake2/players/*", modelNameArray);
+
+    // Make sure these files all exist
+    for (int i = modelNameArray.size() - 1; i >= 0; --i) {
+        std::string s = modelNameArray[i];
+        if (! fileExists(DATA_DIR + "quake2/players/" + modelNameArray[i] + "/tris.md2")) {
+            modelNameArray.fastRemove(i);
+        }
+    }
+
+    if (modelNameArray.size() == 0) {
+        const char* choice[] = {"Ok"};
+        prompt("MD2 Demo Error", "No MD2 models found in data/players.  (Download some from polycount.com and expand them into the data directory)", choice, true);
+        exit(-1);
+    }
+
+    currentModel = 0;
+}
+
 int main(int argc, char** argv) {
     DATA_DIR = demoFindData();
 
@@ -67,16 +88,8 @@ int main(int argc, char** argv) {
     float spec[] = {0.1f, 0.1f, 0.1f, 1.0f};
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 60);
-    
-    getDirs(DATA_DIR + "quake2/players/*", modelNameArray);
 
-    if (modelNameArray.size() == 0) {
-        const char* choice[] = {"Ok"};
-        prompt("MD2 Demo Error", "No MD2 models found in data/players.  (Download some from polycount.com and expand them into the data directory)", choice, true);
-        exit(-1);
-    }
-
-    currentModel = 0;
+    getModelNameArray();
 
     load(modelNameArray[currentModel]);
 

@@ -50,8 +50,8 @@ void IFSModelBuilder::commit(IFSModel* model) {
     Array<MeshAlg::Face> faceArray;
     Array<Array<int> >   adjacentFaceArray;
     Array<Vector3>       faceNormalArray;
-    MeshAlg::computeAdjacency(model->vertexArray, indexArray, faceArray, model->edgeArray, adjacentFaceArray);
-    MeshAlg::computeNormals(model->vertexArray, faceArray, adjacentFaceArray, model->normalArray, faceNormalArray);
+    MeshAlg::computeAdjacency(model->geometry.vertexArray, indexArray, faceArray, model->edgeArray, adjacentFaceArray);
+    MeshAlg::computeNormals(model->geometry.vertexArray, faceArray, adjacentFaceArray, model->geometry.normalArray, faceNormalArray);
 
     // TODO: computeNormals doesn't need face array, it should take index array
 
@@ -118,7 +118,7 @@ int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
     const List& list = grid[ix][iy][iz];
 
     for (int i = 0; i < list.size(); ++i) {
-        double d = (model->vertexArray[list[i]] - v).squaredLength();
+        double d = (model->geometry.vertexArray[list[i]] - v).squaredLength();
 
         if (d < distanceSquared) {
             distanceSquared = d;
@@ -133,8 +133,8 @@ int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
     } else {
 
         // This is a new vertex
-        int newIndex = model->vertexArray.size();
-        model->vertexArray.append(v);
+        int newIndex = model->geometry.vertexArray.size();
+        model->geometry.vertexArray.append(v);
 
         // Create a new vertex and store its index in the
         // neighboring grid cells (usually, only 1 neighbor)

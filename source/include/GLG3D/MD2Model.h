@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-09-14
+ @edited  2003-09-27
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -330,11 +330,6 @@ public:
      Render the wireframe mesh.
      */
     void debugRenderWireframe(RenderDevice* renderDevice, const Pose& pose);
-
-    /**
-     Render the per-vertex normals.
-     */
-    void debugRenderNormals(RenderDevice* renderDevice, const Pose& pose);
 
     /**
      A bounding sphere on the model.  Covers all vertices in all animations.

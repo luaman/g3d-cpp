@@ -309,7 +309,7 @@ void IFSModel::render() {
             renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
                 for (t = 0; t < triangleArray.size(); ++t) {
                     for (i = 0; i < 3; ++i) {
-                        renderDevice->sendVertex(vertexArray[triangleArray[t].index[i]]);
+                        renderDevice->sendVertex(geometry.vertexArray[triangleArray[t].index[i]]);
                     }
                 }
             renderDevice->endPrimitive();
@@ -323,44 +323,18 @@ void IFSModel::render() {
 
         // Label vertices (when there are too many, don't draw all)
         const double S = 10;
-        int step = iMax(1, vertexArray.size() / 50);
-        for (int v = 0; v < vertexArray.size(); v += step) {
-            drawBillboardString(font, format("%d", v), vertexArray[v], S, Color3::YELLOW, Color3::BLACK);
+        int step = iMax(1, geometry.vertexArray.size() / 50);
+        for (int v = 0; v < geometry.vertexArray.size(); v += step) {
+            drawBillboardString(font, format("%d", v), geometry.vertexArray[v], S, Color3::YELLOW, Color3::BLACK);
         }
 
-        const double D = clamp(0.05, 4.0 / triangleArray.size(), 1);
-        
+        renderDevice->debugDrawVertexNormals(geometry);
+
         // Label edges
         //for (int e = 0; e < edgeArray.size(); ++e) {
-        //    const Vector3 pos = (vertexArray[edgeArray[e].vertexIndex[0]] + vertexArray[edgeArray[e].vertexIndex[1]]) / 2; 
+        //    const Vector3 pos = (geometry.vertexArray[edgeArray[e].vertexIndex[0]] + geometry.vertexArray[edgeArray[e].vertexIndex[1]]) / 2; 
         //    drawBillboardString(font, format("%d", e), pos, D * 20, Color3::BLUE, Color3::BLACK);
         //}
-
-        // Normals
-        renderDevice->setColor(Color3::GREEN * .5);
-        renderDevice->setLineWidth(1);
-        renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D);
-                renderDevice->sendVertex(vertexArray[v]);
-            }
-        renderDevice->endPrimitive();
-        
-        renderDevice->setLineWidth(2);
-        renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .96);
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
-            }
-        renderDevice->endPrimitive();
-
-        renderDevice->setLineWidth(3);
-        renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .92);
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
-            }
-        renderDevice->endPrimitive();
 
 
         // Show broken edges
@@ -369,7 +343,7 @@ void IFSModel::render() {
         renderDevice->beginPrimitive(RenderDevice::LINES);
             for (int b = 0; b < brokenEdgeArray.size(); ++b) {
                 for (int j = 0; j < 2; ++j) {
-                    renderDevice->sendVertex(vertexArray[brokenEdgeArray[b].vertexIndex[j]]);
+                    renderDevice->sendVertex(geometry.vertexArray[brokenEdgeArray[b].vertexIndex[j]]);
                 }
             }
         renderDevice->endPrimitive();
@@ -388,10 +362,10 @@ void IFSModel::save(const std::string& filename) {
     out.writeString32(name);
 
     out.writeString32("VERTICES");
-    out.writeUInt32(vertexArray.size());
+    out.writeUInt32(geometry.vertexArray.size());
     int i;
-    for (i = 0; i < vertexArray.size(); ++i) {
-        out.writeVector3(vertexArray[i]);
+    for (i = 0; i < geometry.vertexArray.size(); ++i) {
+        out.writeVector3(geometry.vertexArray[i]);
     }
 
     out.writeString32("TRIANGLES");

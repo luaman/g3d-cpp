@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-08-07
- @edited  2003-09-11
+ @edited  2003-09-27
 
  */
 
@@ -512,27 +512,6 @@ void MD2Model::debugRenderWireframe(RenderDevice* renderDevice, const Pose& pose
 
         renderDevice->setPolygonOffset(0.0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    renderDevice->popState();
-}
-
-
-void MD2Model::debugRenderNormals(RenderDevice* renderDevice, const Pose& pose) {
-    if (! initialized) {
-        return;
-    }
-    getGeometry(pose, interpolatedFrame);
-
-    renderDevice->pushState();
-        renderDevice->setLineWidth(1.5);
-        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-        renderDevice->setColor(Color3::RED);
-        
-        renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int v = 0; v < interpolatedFrame.vertexArray.size(); ++v) {
-                renderDevice->sendVertex(interpolatedFrame.vertexArray[v]);
-                renderDevice->sendVertex(interpolatedFrame.vertexArray[v] + interpolatedFrame.normalArray[v] * .3);
-            }
-        renderDevice->endPrimitive();
     renderDevice->popState();
 }
 

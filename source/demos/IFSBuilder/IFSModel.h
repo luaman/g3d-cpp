@@ -21,7 +21,7 @@ private:
         int                 index[3];
     };
 
-    Array<Vector3>          vertexArray;
+    MeshAlg::Geometry       geometry;
     Array<Triangle>         triangleArray;
 
     class Edge {
@@ -37,8 +37,6 @@ private:
     Array<MeshAlg::Edge>     brokenEdgeArray;
 
     Array<MeshAlg::Edge>     edgeArray;
-
-    Array<Vector3>           normalArray;
 
     void loadIFS(const std::string& filename);
     void loadMD2(const std::string& filename);
@@ -58,7 +56,7 @@ public:
     void render();
 
     int numVertices() const {
-        return vertexArray.size();
+        return geometry.vertexArray.size();
     }
 
     int numFaces() const {
