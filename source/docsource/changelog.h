@@ -22,7 +22,10 @@
      <LI> Win32Window handles all key events [Corey]
      <LI> Win32Window handles joysticks through DirectInput8 [Corey]
      <LI> Win32Window fully-implements GWindow [Corey]
-     <LI> Fix: TGA writes with alpha-channel properly [Corey]
+     <LI> [ 1036225 ] Fix: Encode TGA support strips alpha channel [Corey]
+     <LI> [ 1038631 ] Fix: CoordinateFrame::slerp (Quat::slerp has fix) [Corey]
+     <LI> [ 1033686 ] Fix: GImage::GImage(filename) dies on certain (BMP) images [Corey]
+     <LI> Automatically switch to glCompressedTexImage2D in Texture::fromMemory [Corey]
    </UL>
 
    <P>
