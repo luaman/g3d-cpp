@@ -122,7 +122,7 @@ private:
 
         CenterLT(Vector3::Axis a) : sortAxis(a) {}
 
-        inline bool operator()(const Handle& a, const Handle& b) {
+        inline bool operator()(const Handle& a, const Handle& b) const {
             const AABox& A = a.bounds;
             const AABox& B = b.bounds;
 
@@ -139,6 +139,43 @@ private:
         }
     };
 
+
+    /**
+       A sort predicate based on a box's location on the specified axis. Each
+       box is given a value -1, 0, or 1 based on whether it is strictly less
+       than, overlapping, or strictly greater than the value on the specified
+       axis. This predicate compares the values for two boxes. The result is
+       that the array is separated into three contiguous (though possibly empty)
+       groups: less than, overlapping, or greater than.
+    */
+    class PivotLT {
+    public:
+	    Vector3::Axis sortAxis;
+	    float sortLocation;
+
+	    PivotLT(Vector3::Axis a, float l) : sortAxis(a), sortLocation(l) {}
+
+	    inline int location(const AABox& box) const {
+		    if(box.low()[sortAxis] < sortLocation) {
+			    if(box.high()[sortAxis] < sortLocation) {
+				    return -1;
+			    } else {
+				    return 0;
+			    }
+		    } else if(box.low()[sortAxis] > sortLocation) {
+			    return 1;
+		    } else {
+			    return 0;
+		    }
+	    }
+
+	    inline bool operator()(const Handle&a, const Handle& b) const {
+		    const AABox& A = a.bounds;
+		    const AABox& B = b.bounds;
+
+		    return location(A) < location(B);
+	    }
+    };
 
     class Node {
     public:
@@ -296,77 +333,88 @@ private:
      Recursively subdivides the subarray.
      Begin and end indices are inclusive.
      */
-    Node* makeNode(Array<Handle>& point, int beginIndex, int endIndex, int valuesPerNode) {
-        Node* node = NULL;
+    Node* makeNode(Array<Handle>& point, int beginIndex, int endIndex, int valuesPerNode)  {
+	    Node* node = NULL;
+	    
+	    if (endIndex - beginIndex + 1 <= valuesPerNode) {
+		    // Make a new leaf node
+		    node = new Node(point, beginIndex, endIndex);
+		    
+		    // Set the pointers in the memberTable
+		    for (int i = beginIndex; i <= endIndex; ++i) {
+			    memberTable.set(point[i].value, node);
+		    }
+		    
+	    } else {
+		    // Make a new internal node
+		    node = new Node();
+		    
+		    Vector3 extent = computeExtent(point, beginIndex, endIndex);
+		    
+		    Vector3::Axis splitAxis = extent.primaryAxis();
+		    
+		    // Compute the median along the axis
+		    
+		    // Sort only the subarray
+		    std::sort(
+			    point.getCArray() + beginIndex,
+			    point.getCArray() + endIndex + 1,
+			    CenterLT(splitAxis));
+		    
+            // Intentional integer divide
+		    int midIndex = (beginIndex + endIndex) / 2;
+		    
+		    // Choose the split location between the two middle elements
+		    const Vector3 median = 
+			    (point[midIndex].bounds.high() +
+			     point[iMin(midIndex + 1, point.size() - 1)].bounds.low()) * 0.5;
+		    
+		    // Re-sort around the split. This will allow us to easily
+		    // test for overlap
+		    std::sort(
+			    point.getCArray() + beginIndex,
+			    point.getCArray() + endIndex + 1,
+			    PivotLT(splitAxis, median[splitAxis]));
 
-        if (endIndex - beginIndex + 1 <= valuesPerNode) {
-            // Make a new leaf node
-            node = new Node(point, beginIndex, endIndex);
-
-            // Set the pointers in the memberTable
-            for (int i = beginIndex; i <= endIndex; ++i) {
-                memberTable.set(point[i].value, node);
-            }
-
-        } else {
-            // Make a new internal node
-            node = new Node();
-
-            Vector3 extent = computeExtent(point, beginIndex, endIndex);
-
-            Vector3::Axis splitAxis = extent.primaryAxis();
-
-            // Compute the median along the axis
-
-            // Sort only the subarray
-            std::sort(
-                point.getCArray() + beginIndex,
-                point.getCArray() + endIndex + 1,
-                CenterLT(splitAxis));
-
-            int midIndex = (beginIndex + endIndex) / 2;
-
-            // Choose the split location between the two middle elements
-            const Vector3 median = 
-                (point[midIndex].bounds.high() +
-                 point[iMin(midIndex + 1, point.size() - 1)].bounds.low()) * 0.5;
-
-	        // Some number of nodes around midIndex may actually overlap the
-	        // midddle, so they must be found and added to *this* node, not one
-	        // of its children
-	        int loEndIndex, hiStartIndex;
-
-	        for (loEndIndex = midIndex;
-		     (loEndIndex >= beginIndex) &&
-			     (point[loEndIndex].bounds.high()[splitAxis] >= median[splitAxis]);
-		         --loEndIndex) {}
-
-		    for (hiStartIndex = midIndex + 1;
-		         (hiStartIndex <= endIndex) &&
-			         (point[hiStartIndex].bounds.low()[splitAxis] <= median[splitAxis]);
-          		     ++hiStartIndex) {}
-
-	        for (int i = loEndIndex + 1; i < hiStartIndex; ++i) {
-		        node->valueArray.push(point[i]);
-		        memberTable.set(point[i].value, node);
-	        }
-
-            node->splitAxis     = splitAxis;
-            node->splitLocation = median[splitAxis];
-
-	        if (loEndIndex >= beginIndex) {
-		        node->child[0]      = 
-			        makeNode(point, beginIndex, loEndIndex, valuesPerNode);
-	        }
-
-	        if (hiStartIndex <= endIndex) {
-		        node->child[1]      = 
-			        makeNode(point, hiStartIndex, endIndex, valuesPerNode);
-	        }
-
-        }
-
-        return node;
+		    // Some number of nodes may actually overlap the midddle, so
+		    // they must be found and added to *this* node, not one of
+		    // its children
+		    int overlapBeginIndex, overlapEndIndex;
+		    
+		    for (overlapBeginIndex = beginIndex;
+			 (overlapBeginIndex <= endIndex) &&
+				 (point[overlapBeginIndex].bounds.high()[splitAxis] <
+				  median[splitAxis]);
+		         ++overlapBeginIndex) {}
+		    
+		    for (overlapEndIndex = endIndex;
+		         (overlapEndIndex >= beginIndex) &&
+			         (point[overlapEndIndex].bounds.low()[splitAxis] >
+				  median[splitAxis]);
+			 --overlapEndIndex) {}
+		    
+		    // put overlapping boxes in this node
+		    for (int i = overlapBeginIndex; i <= overlapEndIndex; ++i) {
+			    node->valueArray.push(point[i]);
+			    memberTable.set(point[i].value, node);
+		    }
+		    
+		    node->splitAxis     = splitAxis;
+		    node->splitLocation = median[splitAxis];
+		    
+		    if (overlapBeginIndex > beginIndex) {
+			    node->child[0]      = 
+				    makeNode(point, beginIndex, overlapBeginIndex - 1, valuesPerNode);
+		    }
+		    
+		    if (overlapEndIndex < endIndex) {
+			    node->child[1]      = 
+				    makeNode(point, overlapEndIndex + 1, endIndex, valuesPerNode);
+		    }
+		    
+	    }
+	    
+	    return node;
     }
 
     /**
@@ -941,12 +989,6 @@ public:
 				    continue;
 			    }
 
-			    // TODO: remove these three lines when aabox testing is better
-			    //minDistance = s->startTime;
-			    //maxDistance = s->endTime;
-			    //break;
-			    // -----------------------------------------------------
-
 			    double t;
 			    // this can be an exact equals because the two
 			    // variables are initialized to the same thing
@@ -1023,13 +1065,15 @@ public:
 
      <PRE>
 
-       typedef AABSPTree<Object*>::RayIntersectionIterator IT;
-       void findFirstIntersection(const Ray& ray, Object*& firstObject, double& 
-firstTime) {
+       void findFirstIntersection(
+            const Ray&  ray,
+            Object*&    firstObject,
+            double&     firstTime) {
 
            firstObject   = NULL;
            firstDistance = inf;
 
+           typedef AABSPTree<Object*>::RayIntersectionIterator IT;
            const IT end = tree.endRayIntersection();
 
            for (IT obj = tree.beginRayIntersection(ray);
@@ -1045,9 +1089,10 @@ firstTime) {
                // to give up looking for an intersection; that is, 
                // obj.minDistance and iMin(firstDistance, nomad.maxDistance).
 
+               static const double epsilon = 0.00001;
                if ((t < firstDistance) && 
-                   (t < obj.maxDistance) &&
-                   (t >= obj.minDistance)) {
+                   (t <= obj.maxDistance + epsilon) &&
+                   (t >= obj.minDistance - epsilon)) {
                    // This is the new best collision time
                    firstObject   = obj;
                    firstDistance = t;
@@ -1060,9 +1105,9 @@ firstTime) {
        }
      </PRE>
 
-    <IMG SRc="aabsp-intersect.png">
+    <!IMG SRc="aabsp-intersect.png">
 
-     @cite Pete Hopkins
+     @cite Implementation by Pete Hopkins
     */
 	RayIntersectionIterator beginRayIntersection(const Ray& ray) const {
 		return RayIntersectionIterator(ray, root);
@@ -1161,4 +1206,3 @@ firstTime) {
 }
 
 #endif
-
