@@ -52,8 +52,8 @@ void beginMarkShadows(RenderDevice* renderDevice) {
 
 
 void endMarkShadows(RenderDevice* renderDevice) {
-    debugAssert(inMarkShadows);
-    inMarkShadows = false;
+        debugAssert(inMarkShadows);
+        inMarkShadows = false;
     renderDevice->popState();
 }
 

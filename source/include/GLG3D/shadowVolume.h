@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-12-16
- @edited  2004-01-13
+ @edited  2004-01-31
  */
 
 #ifndef G3D_SHADOWVOLUME_H
@@ -53,17 +53,18 @@ void endMarkShadows(RenderDevice* renderDevice);
             model[m]->render(renderDevice);
         }
 
-        renderDevice->disableDepthWrite();
-        renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-        renderDevice->setStencilTest(RenderDevice::STENCIL_EQUAL);
-        renderDevice->setAmbientLightColor(Color3::BLACK);
-    
+        renderDevice->disableDepthWrite();    
           for (int L = 0; L < light.size(); ++L) {
             beginMarkShadows(renderDevice);
                 for (int m = 0; m < model.size(); ++m) {
                     markShadows(renderDevice, model[m], light[L]);
                 }
             endMarkShadows(renderDevice);
+
+            renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+            renderDevice->setStencilTest(RenderDevice::STENCIL_EQUAL);
+            renderDevice->setAmbientLightColor(Color3::BLACK);
+            renderDevice->setDepthTest(RenderDevice::LEQUAL);
 
             renderDevice->setLight(0, light[L]);
             for (int m = 0; m < model.size(); ++m) {
