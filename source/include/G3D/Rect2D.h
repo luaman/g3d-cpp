@@ -250,8 +250,8 @@ public:
         while maintaining the aspect ratio of x:y
     */
     Rect2D largestCenteredSubRect(double ww, double hh) const {
-        double textureAspect = dimensions.y / dimensions.x;
-        double viewAspect = hh / ww;
+        double textureAspect = hh / ww;
+        double viewAspect = height() / width();
 
         // The sub-window we'll render video to
         Rect2D rect;
