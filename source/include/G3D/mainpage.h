@@ -164,7 +164,8 @@
       <LI>OpenGL Abstraction
         <BR><BLOCKQUOTE>G3D::RenderDevice, G3D::VAR, G3D::VARArea, 
         G3D::Texture, G3D::TextureRef, G3D::VertexProgram,
-        G3D::VertexProgramRef, G3D:PixelProgram, G3D::PixelProgramRef</BLOCKQUOTE>
+        G3D::VertexProgramRef, G3D:PixelProgram, G3D::PixelProgramRef,
+        G3D::tesselateComplexPolygon</BLOCKQUOTE>
 
       <LI>OpenGL 
         <BR><BLOCKQUOTE>G3D::glLoadMatrix, G3D::glLoadInvMatrix, 
@@ -583,6 +584,7 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> G3D::tesselateComplexPolygon
 	 <LI> G3D::ConvexPolygon
 	 <LI> G3D::ConvexPolyhedron
      <LI> G3D::iClamp
@@ -604,12 +606,14 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::Color4uint8
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3int16
+     <LI> GLenumToString(4) now returns GL_TRIANGLES instead of GL_LINE_BIT (both are correct)
      <LI> Added TextInput::Options to optionally allow C++ comments to
           be treated as two slashes instead of a comment
      <LI> Added data/image/meter.jpg, a meter stick texture convenient for testing
      <LI> Added sansserif, news, and terminal fonts based on Bitstream's <A HREF="http://www.gnome.org/fonts/">free fonts</A>
      <LI> RenderDevice::numTextureUnits
      <LI> Added stars to night Sky
+     <LI> Added classic GL dinosaur model as data/ifs/dinosaur.ifs
      <LI> Documented G3D::glGetProcAddress
      <LI> Fix: Texture now restored GL_ENABLE bits properly after creation
      <LI> Fix: Texture::sizeInMemory now accounts for MIP-map levels

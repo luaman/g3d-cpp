@@ -34,6 +34,7 @@ public:
     std::string             name;
 
     IFSModel(const std::string& filename);
+    IFSModel() {}
 
     /**
      Render the model.

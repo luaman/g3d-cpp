@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-02-27
+  @edited  2003-05-01
  */
 
 #include "IFSModelBuilder.h"
@@ -140,6 +140,12 @@ void IFSModelBuilder::computeBounds(Vector3& min, Vector3& max) {
     }
 }
 
+
 void IFSModelBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vector3& c) {
     triList.append(a, b, c);
+}
+
+
+void IFSModelBuilder::addTriangle(const Triangle& t) {
+    triList.append(t.vertex(0), t.vertex(1), t.vertex(2));
 }

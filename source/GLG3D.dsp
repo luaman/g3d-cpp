@@ -133,6 +133,10 @@ SOURCE=.\GLG3Dcpp\Sky.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\tesselate.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\Texture.cpp
 # End Source File
 # Begin Source File
@@ -374,6 +378,10 @@ SOURCE=.\include\GLG3D\RenderDevice.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\Sky.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\tesselate.h
 # End Source File
 # Begin Source File
 

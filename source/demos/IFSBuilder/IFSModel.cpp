@@ -281,7 +281,9 @@ void IFSModel::render() {
         int t, i, j;
 
         renderDevice->setColor(Color3::WHITE);
+        renderDevice->setLineWidth(.5);
 
+        renderDevice->setPolygonOffset(1);
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         for (j = 0; j < 2; ++j) {
             renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
@@ -291,10 +293,14 @@ void IFSModel::render() {
                     }
                 }
             renderDevice->endPrimitive();
+            renderDevice->setPolygonOffset(0);
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             renderDevice->setColor(Color3::BLACK);
+            glEnable(GL_LINE_SMOOTH);
+            renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDisable(GL_LINE_SMOOTH);
 
     renderDevice->popState();
 }

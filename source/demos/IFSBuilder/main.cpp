@@ -6,19 +6,26 @@
   format.
 
   A utility for converting some common 3D file formats into IFS format.
-  This only handles some "nice" cases of 3DS, OBJ, and MD2 files-- 
+  This only handles a subset of all possible 3DS, OBJ, and MD2 files-- 
   models in these formats certainly exist that cannot be converted
-  by this simple utility.
+  by this simple utility.  You can use IFSModelBuilder to create
+  IFS files from triangle soups and write them out.  This also doubles
+  as a model viewer, but it is not as nice as the IFSDemo one which
+  has smoothed surface normals and lighting.
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-04-04
+  @edited  2002-05-01
  */ 
 
 #include <G3DAll.h>
 #include "IFSModel.h"
 #include "IFSModelBuilder.h"
+
+//TODO: remove
+IFSModelBuilder builder;
+
 
 std::string             DATA_DIR        = "data/";
 
@@ -32,7 +39,7 @@ bool                    endProgram		= false;
 
 IFSModel*               model           = NULL;
 
-bool                    pauseBetweenModels = false;
+bool                    pauseBetweenModels = true;
 
 RealTime getTime() {
     return SDL_GetTicks() / 1000.0;
@@ -42,17 +49,11 @@ void doSimulation(GameTime timeStep);
 void doGraphics();
 void doUserInput();
 
-/** Expands a file spec's wildcards and returns a list of
-    fully qualified filenames matching it (on Windows).  The result
-    array is not cleared before files are added.
-    
-    On Linux, this just returns the str name in result. */
-void expandWildcard(const std::string& str, Array<std::string>& result);
 /**
  Returns the base name (between the last slash and the extension).
  */
 std::string getFilename(const std::string& filename);
-
+IFSModel* makeDinosaur();
 
 
 int main(int argc, char** argv) {
@@ -84,28 +85,28 @@ int main(int argc, char** argv) {
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("c:/inputDir/");
-    std::string out("c:/outputDir/");
+    std::string in("c:/*.ifs");
+    std::string outDir("c:/tmp/");
 
     Array<std::string> filename;
-
-    expandWildcard(in + "*", filename);
+    getFiles(in, filename, true);
 
     camera->setCoordinateFrame(controller->getCoordinateFrame());
+
 
     for (int i = 0; i < filename.size(); ++i) {
         std::string base = getFilename(filename[i]);
         
-        if (fileExists(out + base + ".ifs")) {
+        if (fileExists(outDir + base + ".ifs")) {
             // Skip this model
             continue;
         }
 
         model = new IFSModel(filename[i]);
-        model->name = base;
+//        model->name = base;
         
         if (! pauseBetweenModels) {
-            model->save(out + base + ".ifs");
+//            model->save(outDir + base + ".ifs");
         }
         
         // Main loop (display 3D object)

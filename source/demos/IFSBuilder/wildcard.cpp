@@ -76,36 +76,3 @@ std::string getExtension(
 	return (std::string)(x.c_str() + (i + 1));
 }
 
-
-void expandWildcard(
-    const std::string& str,
-    Array<std::string>& result) {
-
-#ifdef WIN32
-    if (hasWildcard(str)) {
-
-        //  Separate the path and wildcard
-        std::string path = getPath(str);
-
-        WIN32_FIND_DATA foundFile;
-        HANDLE searchHandle = FindFirstFile(str.c_str(), &foundFile);
-
-        if (searchHandle != INVALID_HANDLE_VALUE) {
-            do {
-                std::string inFile = foundFile.cFileName;
-                result.append(path + inFile);
-            } while (FindNextFile(searchHandle, &foundFile));
-
-            FindClose(searchHandle);
-        }
-    } else {
-        result.append(str);
-    }
-
-#else // !WIN32
-
-    result.append(str);
-
-#endif // WIN32
-
-}

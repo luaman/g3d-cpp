@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-02-27
+  @edited  2003-05-01
  */ 
 
 
@@ -48,13 +48,14 @@ private:
 
 public:
 
-    /** You have to delete the model you create */
+    /** Writes out the model data into the passed in object. */
     void commit(class IFSModel* model);
 
     /**
      Adds a new triangle to the model.
      */
     void addTriangle(const Vector3& a, const Vector3& b, const Vector3& c);
+    void addTriangle(const Triangle& t);
 
     void setName(const std::string& n);
 

@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-04-10
+ @edited  2003-05-01
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -33,5 +33,7 @@
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/Camera.h"
 #include "GLG3D/VertexProgram.h"
+
+#include "GLG3D/tesselate.h"
 
 #endif

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Written by Seth Block
   @created 2001-08-05
-  @edited  2003-02-15
+  @edited  2003-05-01
 */
 
 #include "GLG3D/getOpenGLState.h"
@@ -38,7 +38,7 @@ const char* GLenumToString(GLenum i) {
 
 	//S(GL_CURRENT_BIT);
 	S(GL_POINT_BIT);
-	S(GL_LINE_BIT);
+	//S(GL_LINE_BIT);
 	S(GL_POLYGON_BIT);
 	S(GL_POLYGON_STIPPLE_BIT);
 	S(GL_PIXEL_MODE_BIT);
@@ -57,7 +57,7 @@ const char* GLenumToString(GLenum i) {
 	//S(GL_LINES);
 	//S(GL_LINE_LOOP);
 	S(GL_LINE_STRIP);
-	//S(GL_TRIANGLES);
+	S(GL_TRIANGLES);
 	S(GL_TRIANGLE_STRIP);
 	S(GL_TRIANGLE_FAN);
 	S(GL_QUADS);
