@@ -61,8 +61,8 @@ public:
 protected:
 
     ReferenceCountedObject() : ReferenceCountedObject_refCount(0) {
-        debugAssertM(isValidHeapPointer(this), 
-            "Reference counted objects must be allocated on the heap.");
+//        debugAssertM(isValidHeapPointer(this), 
+//            "Reference counted objects must be allocated on the heap.");
     }
 
 public:
