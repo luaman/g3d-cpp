@@ -284,7 +284,6 @@ int main(int argc, char** argv) {
     App app(settings);
 
     app.setDebugMode(true);
-//    app.debugController.setActive(false);
     app.run();
 
     return 0;

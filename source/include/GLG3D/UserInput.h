@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-28
-  @edited  2004-02-12
+  @edited  2004-02-22
  */
 
 #ifndef G3D_USERINPUT_H
@@ -181,12 +181,14 @@ public:
 	void beginEvents();
 
     /**
-     Sets the mouse position.
+     Sets the mouse position.  That new position will
+     be returned by getMouseXY until the next endEvents()
+     statement.
      */
     void setMouseXY(double x, double y);
 
     inline void setMouseXY(const Vector2& v) {
-        setMouseXY(v.x + 0.5, v.y + 0.5);
+        setMouseXY(v.x, v.y);
     }
 
 	int getNumJoysticks() const;
@@ -209,15 +211,15 @@ public:
     }
 
     inline Vector2 getMouseXY() const {
-        return Vector2(mouseX, mouseY);
+        return mouse;
     }
 
 	inline double getMouseX() const {
-		return mouseX;
+		return mouse.x;
 	}
 
 	inline double getMouseY() const {
-		return mouseY;
+		return mouse.y;
 	}
 
     /**
@@ -268,8 +270,7 @@ private:
     /**
      In pixels
      */
-	int                     mouseX;
-	int                     mouseY;
+    Vector2                 mouse;
 
     /**
      Expects SDL_MOUSEBUTTONDOWN, etc. to be translated into key codes.

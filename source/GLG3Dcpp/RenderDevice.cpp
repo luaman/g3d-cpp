@@ -1238,6 +1238,7 @@ void RenderDevice::beginFrame() {
 void RenderDevice::endFrame() {
     --beginEndFrame;
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
+    debugAssertM(stateStack.size() == 0, "Missing RenderDevice::popState or RenderDevice::pop2D.");
 
     _window->swapGLBuffers();
 

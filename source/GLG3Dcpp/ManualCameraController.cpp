@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2004-02-15
+  @edited  2004-02-22
 */
 
 #include "G3D/platform.h"
@@ -15,12 +15,14 @@
 
 namespace G3D {
 
-FPCameraController::FPCameraController(){}
+FPCameraController::FPCameraController() {}
+
 
 FPCameraController::FPCameraController(
     RenderDevice* rd, UserInput* ui) {
     init(rd, ui);
 }
+
 
 void FPCameraController::init(class RenderDevice* device, class UserInput* input) {
     renderDevice = device;
@@ -33,6 +35,7 @@ void FPCameraController::init(class RenderDevice* device, class UserInput* input
 
 }
 
+
 FPCameraController::~FPCameraController() {
 }
 
@@ -43,7 +46,9 @@ bool FPCameraController::active() const {
 
 
 void FPCameraController::reset() {
-    center      = Vector2(renderDevice->getWidth() / 2.0, renderDevice->getHeight() / 2.0);
+    center      = Vector2(iRound(renderDevice->getWidth() / 2.0), 
+                          iRound(renderDevice->getHeight() / 2.0));
+
     cameraMouse = center;
     SDL_ShowCursor(SDL_ENABLE);
     guiMouse    = userInput->getMouseXY();
@@ -56,6 +61,39 @@ void FPCameraController::reset() {
 }
 
 
+void FPCameraController::grabMouse() {
+    // Save the old mouse position for when we deactivate
+    guiMouse = userInput->getMouseXY();
+    SDL_ShowCursor(SDL_DISABLE);
+
+    #ifndef _DEBUG
+        // In debug mode, don't grab the cursor because
+        // it is annoying when you hit a breakpoint and
+        // can't move the mouse.
+        SDL_WM_GrabInput(SDL_GRAB_ON);
+    #endif
+    cameraMouse = center;
+    userInput->setMouseXY(cameraMouse);
+}
+
+
+void FPCameraController::releaseMouse() {
+    #ifndef _DEBUG
+        // In debug mode, don't grab the cursor because
+        // it is annoying when you hit a breakpoint and
+        // cannot move the mouse.
+        SDL_WM_GrabInput(SDL_GRAB_OFF);
+    #endif
+
+    cameraMouse = center;
+
+    // Restore the old mouse position
+    userInput->setMouseXY(guiMouse);
+
+    SDL_ShowCursor(SDL_ENABLE);
+}
+
+
 void FPCameraController::setActive(bool a) {
 
     if (a != _active) {
@@ -63,26 +101,9 @@ void FPCameraController::setActive(bool a) {
         _active = a;
 
         if (_active) {
-            guiMouse = userInput->getMouseXY();
-            SDL_ShowCursor(SDL_DISABLE);
-            userInput->setMouseXY(cameraMouse);
-
-            #ifndef DEBUG
-                // In debug mode, don't grab the cursor because
-                // it is annoying when you hit a breakpoint and
-                // can't move the mouse.
-                SDL_WM_GrabInput(SDL_GRAB_ON);
-            #endif
-
+            grabMouse();
         } else {
-            #ifndef DEBUG
-                // In debug mode, don't grab the cursor because
-                // it is annoying when you hit a breakpoint and
-                // can't move the mouse.
-                SDL_WM_GrabInput(SDL_GRAB_OFF);
-            #endif
-            userInput->setMouseXY(guiMouse);
-            SDL_ShowCursor(SDL_ENABLE);
+            releaseMouse();
         }
     }
 
@@ -116,48 +137,54 @@ void FPCameraController::doSimulation(
         return;
     }
             
+    center      = Vector2(iRound(renderDevice->getWidth() / 2.0), 
+                          iRound(renderDevice->getHeight() / 2.0));
+
     bool focus = userInput->appHasFocus();
 
     if (focus && ! appHadFocus) {
-        // We just gained focus.
-        guiMouse = userInput->getMouseXY();
-        
-        // Restore our mouse position
-        userInput->setMouseXY(cameraMouse);
+        // We just gained focus (this is the same as the activate/deactivate code).
+        grabMouse();
+    } else if (! focus && appHadFocus) {
+        releaseMouse();
     }
 
+    // Translation direction
     Vector2 direction(userInput->getX(), userInput->getY());
     direction.unitize();
 
 	// Translate forward
-	translation += (getLookVector() * direction.y + getStrafeVector() * direction.x) * elapsedTime * maxMoveRate;
+	translation += (getLookVector() * direction.y + 
+        getStrafeVector() * direction.x) * elapsedTime * maxMoveRate;
 	
-    Vector2 mouse;
+    Vector2& oldMouse = cameraMouse;
+    Vector2 newMouse;
     
     if (focus) {
-        mouse = userInput->getMouseXY();
+        newMouse = userInput->getMouseXY();
     } else {
-        mouse = cameraMouse;
+        // We don't have focus; don't move the mouse
+        newMouse = oldMouse;
     }
     
-    if ((mouse.x < 0) || (mouse.x > 10000)) {
-        // Sometimes we get bad values on the first frame
-        mouse = center;
+    if ((newMouse.x < 0) || (newMouse.x > 10000)) {
+        // Sometimes we get bad values on the first frame;
+        // ignore them.
+        newMouse = oldMouse;
     }
 
-    Vector2 delta = (mouse - cameraMouse) / 100.0;
+    Vector2 delta = (newMouse - oldMouse) / 100.0;
 
     // Reset the mouse periodically.  We can't do this every
     // frame or the mouse won't be able to move substantially
     // at high frame rates.
-    if ((mouse.x < center.x / 2) || (mouse.x > center.x * 1.5) ||
-        (mouse.x < center.y / 2) || (mouse.y > center.y * 1.5)) {
-        cameraMouse = center;
+    if ((newMouse.x < center.x * 0.5) || (newMouse.x > center.x * 1.5) ||
+        (newMouse.x < center.y * 0.5) || (newMouse.y > center.y * 1.5)) {
+        
+        newMouse = center;
         if (userInput->appHasFocus()) {
-            userInput->setMouseXY(cameraMouse);
+            userInput->setMouseXY(newMouse);
         }
-    } else {
-        cameraMouse = mouse;
     }
 
     // Turn rate limiter
@@ -175,6 +202,8 @@ void FPCameraController::doSimulation(
     // Clamp pitch (looking straight up or down)
     pitch = clamp(pitch, -G3D_PI / 2, G3D_PI / 2);
 
+    // Update for the next frame
+    oldMouse = newMouse;
     appHadFocus = focus;
 }
 

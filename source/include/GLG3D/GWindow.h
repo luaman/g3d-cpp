@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-02-10
+  @edited  2004-02-22
 */
 
 #ifndef G3D_GWINDOW_H
@@ -144,10 +144,10 @@ public:
         must be preserved across calls).*/
     virtual void notifyResize(int w, int h) = 0;
 
-    virtual void setMousePosition(double x, double y) = 0;
+    virtual void setRelativeMousePosition(double x, double y) = 0;
 
     /** Relative to the window origin */
-    virtual void setMousePosition(const Vector2& p) = 0;
+    virtual void setRelativeMousePosition(const Vector2& p) = 0;
 
 
     /** Returns the current mouse position and the state of the mouse buttons.

@@ -5,15 +5,22 @@
 
    Major version numbers introduce API changes that are not backwards
    compatible.  Minor versions are backwards compatible to the
-   previous major release.
+   previous major release [except for bug fixes].
+
    <P>
    Changes in 6.01:
    <UL>
      <LI> Default constructor for G3D::LineSegment
-     <LI> Fix: Alt-Tab no longer toggles the GApp camera before switching windows
-     <LI> Rect2D::clipPoly  (Pete & Morgan)
+     <LI> Rect2D::clipPoly (Pete & Morgan)
 	 <LI> Draw::poly2D, Draw::poly2DOutline (Pete & Morgan)
+	 <LI> Added instructions for rotated text to G3D::GFont::draw2D
+	 <LI> Fix: [ 860800 ] ManualCameraController cursor jumps
+     <LI> Fix: G3D::UserInput no longer offsets the mouse position by 1/2 pixel
+     <LI> Fix: Alt-Tab no longer toggles the GApp camera before switching windows
      <LI> Fix: [ 901248 ] Font bounds y-value incorrect
+	 <LI> Fix: G3D::PhysicsFrame::toCoordinateFrame() was rotated by 90 degrees
+     <LI> Fix: [ 895493 ] Radeon 7500 Cube Map
+	 <LI> Fix: G3D::MeshAlg::computeWeld produces linker errors on Linux
      <LI> G3D::TextInput::peekLineNumber(), G3D::TextInput::peekCharacterNumber()
      <LI> G3D::GAppSettings::dataDir
      <LI> html/gettingstarted.html
@@ -33,10 +40,7 @@
      <LI> G3D::GMaterial
      <LI> ManualCameraController renamed to G3D::FPCameraController
      <LI> glGetCurrentContext (beta)
-	 <LI> Fix: G3D::PhysicsFrame::toCoordinateFrame() was rotated by 90 degrees
-     <LI> Fix: [ 895493 ] Radeon 7500 Cube Map
      <LI> G3D::RenderDevice::supportsTextureFormat
-	 <LI> Fix: G3D::MeshAlg::computeWeld produces linker errors on Linux
      <LI> G3D::Vector3::magnitude
      <LI> G3D::Vector3::cross() [returns Matrix3]
      <LI> G3D::Quat changes (API is still in beta)

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-12-16
+ @edited  2004-02-22
  */
 
 #ifndef G3D_GFONT_H
@@ -126,6 +126,19 @@ public:
      @param spacing Fixed width fonts are spaced based on the width of the 'M' character.
 
      @return Returns the x and y bounds (ala get2DStringBounds) of the printed string.
+
+     You can draw rotated text by setting the RenderDevice object to world matrix
+     manually.  The following example renders the word "ANGLE" on a 45-degree angle
+     at (100, 100).
+     <PRE>
+    app->renderDevice->push2D();
+        CoordinateFrame cframe(
+            Matrix3::fromAxisAngle(Vector3::UNIT_Z, toRadians(45)),
+            Vector3(100, 100, 0));
+        app->renderDevice->setObjectToWorldMatrix(cframe);
+        app->debugFont->draw2D("ANGLE", Vector2(0, 0), 20);
+    app->renderDevice->pop2D();
+     </PRE>
      */
     Vector2 draw2D(
         const std::string&  s,

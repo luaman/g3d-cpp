@@ -298,13 +298,13 @@ void SDLWindow::notifyResize(int w, int h) {
 }
 
 
-void SDLWindow::setMousePosition(double x, double y) {
+void SDLWindow::setRelativeMousePosition(double x, double y) {
     SDL_WarpMouse(iRound(x), iRound(y));
 }
 
 
-void SDLWindow::setMousePosition(const Vector2& p) {
-    setMousePosition(p.x, p.y);
+void SDLWindow::setRelativeMousePosition(const Vector2& p) {
+    setRelativeMousePosition(p.x, p.y);
 }
 
 

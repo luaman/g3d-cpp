@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2004-02-15
+  @edited  2004-02-22
 */
 
 #ifndef G3D_MANUALCAMERACONTROLLER_H
@@ -42,12 +42,13 @@ class FPCameraController {
     double                      pitch;
 	Vector3                     translation;
 
-    /** Where the first person camera system thinks the mouse is */
+    /** Where the first person camera system thinks the mouse is
+       (generally, where the mouse was <B>last</B> frame)*/
     Vector2                     cameraMouse;
 
     /**
      Position from which we grabbed the mouse (where the
-     window system thinks the mouse is);
+     window system thinks the mouse is)
      */
     Vector2                     guiMouse;
 
@@ -63,8 +64,11 @@ class FPCameraController {
 
     class UserInput*            userInput;
 
-public:
+    void grabMouse();
+    
+    void releaseMouse();
 
+public:
 
 	FPCameraController();
 
@@ -77,11 +81,15 @@ public:
     /** Deactivates the controller */
     virtual ~FPCameraController();
 
-    /** When active, the ManualCameraController takes over the mouse.  It turns
+    /** When active, the FPCameraController takes over the mouse.  It turns
         off the mouse cursor and switches to first person controller style.
         Use this to toggle between your menu system and first person camera control.
+
+        When deactivated, the mouse cursor is restored and the mouse is located
+        where it was when the camera controller was activated.
+
         In release mode, the cursor movement is restricted to the window
-        while the controller is active.  This doesn't occur in debug mode because
+        while the controller is active.  This does not occur in debug mode because
         you might hit a breakpoint while the controller is active and it
         would be annoying to not be able to move the mouse.*/
     void setActive(bool a);

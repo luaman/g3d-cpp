@@ -83,9 +83,9 @@ public:
 
     virtual Vector2 joystickPosition(int stickNum) const;
 
-    virtual void setMousePosition(double x, double y);
+    virtual void setRelativeMousePosition(double x, double y);
 
-    virtual void setMousePosition(const Vector2& p);
+    virtual void setRelativeMousePosition(const Vector2& p);
 
     virtual void getRelativeMouseState(Vector2& p, uint8& mouseButtons) const;
     virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const;

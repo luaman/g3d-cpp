@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2004-02-12
+  @edited  2004-02-22
  */
 
 #include "GLG3D/UserInput.h"
@@ -92,6 +92,7 @@ void UserInput::init(
     }
 
     useJoystick = _window->numJoysticks() > 0;
+    _window->getRelativeMouseState(mouse, mouseButtons);
 }
 
 
@@ -153,7 +154,7 @@ void UserInput::endEvents() {
         Vector2 j = _window->joystickPosition(0);
     }
 
-    _window->getRelativeMouseState(mouseX, mouseY, mouseButtons);
+    _window->getRelativeMouseState(mouse, mouseButtons);
 }
 
 
@@ -223,9 +224,9 @@ void UserInput::processKey(KeyCode code, int event) {
 
 
 void UserInput::setMouseXY(double x, double y) {
-    mouseX = iRound(x);
-    mouseY = iRound(y);
-    _window->setMousePosition(x, y);
+    mouse.x = x;
+    mouse.y = y;
+    _window->setRelativeMousePosition(mouse);
 }
 
 
