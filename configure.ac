@@ -78,14 +78,7 @@ AC_CONFIG_FILES([Makefile
                  temp/release/Makefile
                  temp/release/g3d/Makefile
                  temp/release/glg3d/Makefile
-				 source/Makefile
-                 source/test/Makefile
-				 source/demos/Makefile
-                 source/demos/MD2Model_Demo/Makefile
-				 source/demos/Collision_Demo/Makefile
-				 source/demos/VAR_Demo/Makefile
-				 source/include/Makefile])
+                 source/Makefile
+                 source/test/Makefile])
 
-#				 source/G3Dcpp/Makefile
-#				 source/GLG3Dcpp/Makefile
 AC_OUTPUT
