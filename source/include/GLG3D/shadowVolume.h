@@ -47,7 +47,7 @@ void endMarkShadows(RenderDevice* renderDevice);
     renderDevice->pushState();
         renderDevice->enableLighting()
         // Configure ambient light
-        renderDevice->setAmbientLightLevel(Color3::WHITE * .25);
+        renderDevice->setAmbientLightColor(Color3::WHITE * .25);
 
         for (int m = 0; m < model.size(); ++m) {
             model[m]->render(renderDevice);
@@ -56,7 +56,7 @@ void endMarkShadows(RenderDevice* renderDevice);
         renderDevice->disableDepthWrite();
         renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
         renderDevice->setStencilTest(RenderDevice::STENCIL_EQUAL);
-        renderDevice->setAmbientLightLevel(Color3::BLACK);
+        renderDevice->setAmbientLightColor(Color3::BLACK);
     
           for (int L = 0; L < light.size(); ++L) {
             beginMarkShadows(renderDevice);
