@@ -643,8 +643,8 @@ public:
     enum RenderStyle {WHITE, GAUSSIAN, MEAN, RADIAL} renderStyle;
     bool renderTangentSpace;
 
-    Mesh() : renderStyle(WHITE), renderTangentSpace(false), t_d(-0.2), t_c(0.36) {}
-    Mesh(const PosedModelRef& pm) : renderStyle(WHITE), renderTangentSpace(false), t_d(-0.2), t_c(0.36) {
+    Mesh() : renderStyle(WHITE), renderTangentSpace(false), t_d(0.09), t_c(0.21) {}
+    Mesh(const PosedModelRef& pm) : renderStyle(WHITE), renderTangentSpace(false), t_d(0.9), t_c(0.21) {
         import(pm);
     }
 
@@ -906,7 +906,7 @@ void Mesh::drawSmoothContours(App* app) {
 void Mesh::drawSuggestiveContours(App* app) {
     Vector3 eye = app->debugCamera.getCoordinateFrame().translation;
 
-    app->renderDevice->setLineWidth(3);
+    app->renderDevice->setLineWidth(2);
 
     /*
     // Code for debugging zero-crossings
@@ -1047,15 +1047,18 @@ void Mesh::drawSuggestiveContours(App* app) {
 		            const Vector3 midVert = lerp(vertNeg, vertPos, a);
 
                     // Compute the gradient along this edge
-                    // TODO: put funcPos - funcNeg in there!
-                    double grad = face_W.dot(vertPos - vertNeg);
+                    const Vector3 edge = vertPos - vertNeg;
+                    const Vector3 grad = (funcPos - funcNeg) * edge / edge.squaredLength();
 
-                    // if the gradient is less than t_d, don't stroke
-                    if (grad < t_d) {
+                    // Gradient in the direction of w
+                    double gradW = grad.dot(face_W);
+
+                    if (gradW >= t_d) {
+                        // Stroke when gradient > 0
+                        endPoint[index] = midVert;
+                    } else {
                         stroke = false;
                         break;
-                    } else {
-                        endPoint[index] = midVert;
                     }
 
                 }
@@ -1189,7 +1192,7 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
 
         app->debugPrintf("# faces: %d", faceArray.size());
         drawSmoothContours(app);
-        //drawSuggestiveContours(app);
+        drawSuggestiveContours(app);
 
     renderDevice->popState();
 }
@@ -1246,14 +1249,17 @@ void Demo::init()  {
     app->debugCamera.lookAt(Vector3::ZERO);
 
     std::string name = 
+        //"angel";
         //"venus-torso";
         "hippo";
-        // "duck";
+        //"duck";
         //"cow";
         //"bump";
         //"saddle";
 
-    mesh.import(IFSModel::create(app->dataDir + "ifs/" + name + ".ifs")->pose(CoordinateFrame()));
+//    const Vector3 scale(1.0, 0.25, 1.0);
+    const Vector3 scale(1.0, 1.0, 1.0);
+    mesh.import(IFSModel::create(app->dataDir + "ifs/" + name + ".ifs", scale)->pose(CoordinateFrame()));
 }
 
 
@@ -1343,8 +1349,6 @@ void Demo::doGraphics() {
         app->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, amb, false));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-    	//Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
-
         mesh.render(app, app->renderDevice);
     app->renderDevice->disableLighting();
 
@@ -1359,7 +1363,7 @@ void App::main() {
 	debugController.setActive(false);
     debugController.setMoveRate(1);
 
-    dataDir = "d:/libraries/g3d-6_02/data/";
+    dataDir = "x:/libraries/g3d-6_02/data/";
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
@@ -1373,8 +1377,6 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 
 int main(int argc, char** argv) {
-//    System::setEnv("SDL_VIDEO_WINDOW_POS", format("%d,%d", 400, 0));
-
     GAppSettings settings;
     settings.window.fsaaSamples = 4;
     App(settings).run();
