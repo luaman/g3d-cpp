@@ -63,7 +63,7 @@ void GLCaps::loadExtensions() {
     #define LOAD_EXTENSION(name) \
        if (debugLog) {debugLog->print("Loading " #name " extension");} \
         *((void**)&name) = glGetProcAddress(#name); \
-       if (debugLog) {debugLog->printf("(0x%x)\n", #name);}
+       if (debugLog) {debugLog->printf("(0x%x)\n", name);}
 
     // Don't load the multitexture extensions when they are
     // statically linked
