@@ -67,7 +67,7 @@ def lib():
             run("./bootstrap")
 
         if (newer("configure", "config.h")):
-            run("./configure", ["--enable-debugging"])
+            run("./configure")
 
         x = run("make")
 
