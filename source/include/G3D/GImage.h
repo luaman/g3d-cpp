@@ -116,7 +116,7 @@ void computeNormalMap(const class GImage& bump, class GImage& normal, bool lowPa
   is more restrictive than the BSD one).
 
   Supported formats (decode and encode): Color JPEG, PNG, (Uncompressed)TGA 24, (Uncompressed)TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
-  8-bit paletted PCX, 24-bit PCX, and ICO are supported for decoding only.
+  8-bit paletted PCX, 24-bit PCX, ICO and PPM_ASCII are supported for decoding only.
 
   Sample usage:
 

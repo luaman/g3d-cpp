@@ -1773,25 +1773,42 @@ void GImage::decodePNG(
     png_set_strip_16(png_ptr);
 
     //Expand paletted colors into true RGB triplets
-    if (color_type == PNG_COLOR_TYPE_PALETTE)
+    if (color_type == PNG_COLOR_TYPE_PALETTE) {
         png_set_palette_to_rgb(png_ptr);
+    }
 
     //Expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel
-    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
         png_set_gray_1_2_4_to_8(png_ptr);
+    }
 
     //Expand paletted or RGB images with transparency to full alpha channels
     //so the data will be available as RGBA quartets.
-    if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
+    if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
         png_set_tRNS_to_alpha(png_ptr);
+    }
 
-    if (color_type == PNG_COLOR_TYPE_RGBA) {
+    // Fix sub-8 bit_depth to 8bit
+    if (bit_depth < 8) {
+        png_set_packing(png_ptr);
+    }
+
+    // This fixes strange grayscale bitdepth vs channels
+    if (color_type == PNG_COLOR_TYPE_GRAY) {
+        png_set_gray_to_rgb(png_ptr);
+        bit_depth = 24;
+        color_type = PNG_COLOR_TYPE_RGB;
+    }
+
+    if ((color_type == PNG_COLOR_TYPE_RGBA) &&
+        (bit_depth == 32)) {
         this->channels = 4;
         this->_byte = (uint8*)malloc(width * height * 4);
-    }
-    else {
+    } else if ((bit_depth == 24) || (bit_depth == 8)) {
         this->channels = 3;
         this->_byte = (uint8*)malloc(width * height * 3);
+    } else {
+        throw GImage::Error("Unsupported PNG bit-depth or type.", input.getFilename());
     }
 
     //since we are reading row by row, required to handle interlacing
