@@ -265,38 +265,38 @@ private:
             }
         }
 
-	void verifyNode(const Vector3& lo, const Vector3& hi) {
-//		debugPrintf("Verifying: split %d @ %f [%f, %f, %f], [%f, %f, %f]\n",
-//			    splitAxis, splitLocation, lo.x, lo.y, lo.z, hi.x, hi.y, hi.z);
+	    void verifyNode(const Vector3& lo, const Vector3& hi) {
+            //		debugPrintf("Verifying: split %d @ %f [%f, %f, %f], [%f, %f, %f]\n",
+            //			    splitAxis, splitLocation, lo.x, lo.y, lo.z, hi.x, hi.y, hi.z);
 
-		for(int i = 0; i < valueArray.length(); ++i) {
-			const AABox& b = valueArray[i].bounds;
+		    for(int i = 0; i < valueArray.length(); ++i) {
+			    const AABox& b = valueArray[i].bounds;
 
-			for(int axis = 0; axis < 3; ++axis) {
-				debugAssert(b.low()[axis] <= b.high()[axis]);
-				debugAssert(b.low()[axis] > lo[axis]);
-				debugAssert(b.high()[axis] < hi[axis]);
-			}
-		}
+			    for(int axis = 0; axis < 3; ++axis) {
+				    debugAssert(b.low()[axis] <= b.high()[axis]);
+				    debugAssert(b.low()[axis] > lo[axis]);
+				    debugAssert(b.high()[axis] < hi[axis]);
+			    }
+		    }
 
-		if(child[0] || child[1]) {
-			debugAssert(lo[splitAxis] < splitLocation);
-			debugAssert(hi[splitAxis] > splitLocation);
-		}
+		    if (child[0] || child[1]) {
+			    debugAssert(lo[splitAxis] < splitLocation);
+			    debugAssert(hi[splitAxis] > splitLocation);
+		    }
 
-		Vector3 newLo = lo;
-		newLo[splitAxis] = splitLocation;
-		Vector3 newHi = hi;
-		newHi[splitAxis] = splitLocation;
+		    Vector3 newLo = lo;
+		    newLo[splitAxis] = splitLocation;
+		    Vector3 newHi = hi;
+		    newHi[splitAxis] = splitLocation;
 
-		if(child[0] != NULL) {
-			child[0]->verifyNode(lo, newHi);
-		}
+		    if (child[0] != NULL) {
+			    child[0]->verifyNode(lo, newHi);
+		    }
 
-		if(child[1] != NULL) {
-			child[1]->verifyNode(newLo, hi);
-		}
-	}
+		    if (child[1] != NULL) {
+			    child[1]->verifyNode(newLo, hi);
+		    }
+	    }
 
 
         /** Returns the deepest node that completely contains bounds. */
@@ -344,8 +344,8 @@ private:
         }
     };
 
-    /** Returns the X, Y, and Z extents of the point sub array. */
-    static Vector3 computeExtent(
+    /** Returns the bounds of the sub array. */
+    static AABox computeBounds(
         const Array<Handle>&  point, 
         int                   beginIndex,
         int                   endIndex) {
@@ -358,7 +358,7 @@ private:
             hi = hi.max(point[p].bounds.high());
         }
 
-        return hi - lo;
+        return AABox(lo, hi);
     }
 
 
@@ -366,7 +366,7 @@ private:
      Recursively subdivides the subarray.
      Begin and end indices are inclusive.
      */
-    Node* makeNode(Array<Handle>& point, int beginIndex, int endIndex, int valuesPerNode)  {
+    static Node* makeNode(Array<Handle>& point, int beginIndex, int endIndex, int valuesPerNode, int numMeanSplits)  {
 	    Node* node = NULL;
 	    
 	    if (endIndex - beginIndex + 1 <= valuesPerNode) {
@@ -382,32 +382,46 @@ private:
 		    // Make a new internal node
 		    node = new Node();
 		    
-		    Vector3 extent = computeExtent(point, beginIndex, endIndex);
+            const AABox bounds = computeBounds(point, beginIndex, endIndex);
+		    const Vector3 extent = bounds.high() - bounds.low();
 		    
 		    Vector3::Axis splitAxis = extent.primaryAxis();
 		    
-		    // Compute the median along the axis
+            double splitLocation;
+
+            if (numMeanSplits > 0) {
+                // Compute the mean along the axis
+
+                splitLocation = (bounds.high()[splitAxis] + bounds.low()[splitAxis]) / 2.0;
+
+            } else {
+
+                // Compute the median along the axis
+		        
+		        // Sort only the subarray
+		        std::sort(
+			        point.getCArray() + beginIndex,
+			        point.getCArray() + endIndex + 1,
+			        CenterLT(splitAxis));
+		        
+                // Intentional integer divide
+		        int midIndex = (beginIndex + endIndex) / 2;
+		        
+		        // Choose the split location between the two middle elements
+		        const Vector3 median = 
+			        (point[midIndex].bounds.high() +
+			         point[iMin(midIndex + 1, point.size() - 1)].bounds.low()) * 0.5;
+
+                splitLocation = median[splitAxis];
+            }
 		    
-		    // Sort only the subarray
-		    std::sort(
-			    point.getCArray() + beginIndex,
-			    point.getCArray() + endIndex + 1,
-			    CenterLT(splitAxis));
-		    
-            // Intentional integer divide
-		    int midIndex = (beginIndex + endIndex) / 2;
-		    
-		    // Choose the split location between the two middle elements
-		    const Vector3 median = 
-			    (point[midIndex].bounds.high() +
-			     point[iMin(midIndex + 1, point.size() - 1)].bounds.low()) * 0.5;
-		    
+
 		    // Re-sort around the split. This will allow us to easily
 		    // test for overlap
 		    std::sort(
 			    point.getCArray() + beginIndex,
 			    point.getCArray() + endIndex + 1,
-			    PivotLT(splitAxis, median[splitAxis]));
+			    PivotLT(splitAxis, splitLocation));
 
 		    // Some number of nodes may actually overlap the midddle, so
 		    // they must be found and added to *this* node, not one of
@@ -417,13 +431,13 @@ private:
 		    for (overlapBeginIndex = beginIndex;
 			 (overlapBeginIndex <= endIndex) &&
 				 (point[overlapBeginIndex].bounds.high()[splitAxis] <
-				  median[splitAxis]);
+				  splitLocation);
 		         ++overlapBeginIndex) {}
 		    
 		    for (overlapEndIndex = endIndex;
 		         (overlapEndIndex >= beginIndex) &&
 			         (point[overlapEndIndex].bounds.low()[splitAxis] >
-				  median[splitAxis]);
+				  splitLocation);
 			 --overlapEndIndex) {}
 		    
 		    // put overlapping boxes in this node
@@ -437,12 +451,12 @@ private:
 		    
 		    if (overlapBeginIndex > beginIndex) {
 			    node->child[0]      = 
-				    makeNode(point, beginIndex, overlapBeginIndex - 1, valuesPerNode);
+				    makeNode(point, beginIndex, overlapBeginIndex - 1, valuesPerNode, numMeanSplits - 1);
 		    }
 		    
 		    if (overlapEndIndex < endIndex) {
 			    node->child[1]      = 
-				    makeNode(point, overlapEndIndex + 1, endIndex, valuesPerNode);
+				    makeNode(point, overlapEndIndex + 1, endIndex, valuesPerNode, numMeanSplits - 1);
 		    }
 		    
 	    }
@@ -598,10 +612,23 @@ public:
      have moved substantially from their original positions
      (which unbalances the tree and causes the spatial
      queries to be slow).
+     
      @param valuesPerNode Maximum number of elements to put at
      a node.
+
+     @param numMeanSplits numMeanSplits = 0 gives a 
+     fully axis aligned BSP-tree, where the balance operation attempts to balance
+     the tree so that every splitting plane has an equal number of left
+     and right children (i.e. it is a <B>median</B> split along that axis).  
+     This tends to maximize average performance.  
+
+     You can override this behavior by
+     setting a number of <B>mean</B> (average) splits.  numMeanSplits = MAX_INT
+     creates a full oct-tree, which tends to optimize peak performance at the expense of
+     average performance.  It tends to have better clustering behavior when
+     members are not uniformly distributed.
      */
-    void balance(int valuesPerNode = 5) {
+    void balance(int valuesPerNode = 5, int numMeanSplits = 3) {
         if (root == NULL) {
             // Tree must be empty
             return;
@@ -613,9 +640,11 @@ public:
         // Delete the old tree
         clear();
 
-        root = makeNode(handleArray, 0, handleArray.size() - 1, valuesPerNode);
+        root = makeNode(handleArray, 0, handleArray.size() - 1, valuesPerNode, numMeanSplits);
 
-	    //root->verifyNode(Vector3(-inf, -inf, -inf), Vector3(inf, inf, inf));
+        #ifdef _DEBUG
+	        root->verifyNode(Vector3(-inf, -inf, -inf), Vector3(inf, inf, inf));
+        #endif
     }
 
 
