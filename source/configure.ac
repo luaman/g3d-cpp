@@ -60,6 +60,7 @@ fi
 
 AC_CONFIG_FILES([Makefile
                  G3Dcpp/Makefile
+                 test/Makefile
                  GLG3Dcpp/Makefile])
 #                 demos/GLG3D_Demo/Makefile
 #                 include/glh/extgen/Makefile
