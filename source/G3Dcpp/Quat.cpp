@@ -39,9 +39,9 @@ Quat::Quat(
         w = (float) c * 0.5;
         c = 0.5 / c;
 
-        x = (rot[1][2] - rot[2][1]) * c;
-        y = (rot[2][0] - rot[0][2]) * c;
-        z = (rot[0][1] - rot[1][0]) * c;
+        x = -(rot[1][2] - rot[2][1]) * c;
+        y = -(rot[2][0] - rot[0][2]) * c;
+        z = -(rot[0][1] - rot[1][0]) * c;
     } else {
 
         // Find the largest diagonal component
@@ -62,11 +62,11 @@ Quat::Quat(
 
         float* v = (float*)(this);
 
-        v[i] = c * 0.5;
+        v[i] = -c * 0.5;
         c    = 0.5 / c;
         w    = (rot[j][k] - rot[k][j]) * c;
-        v[j] = (rot[i][j] + rot[j][i]) * c;
-        v[k] = (rot[i][k] + rot[k][i]) * c;
+        v[j] = -(rot[i][j] + rot[j][i]) * c;
+        v[k] = -(rot[i][k] + rot[k][i]) * c;
     }
 }
 
