@@ -30,7 +30,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-03-21
+ @edited  2003-03-24
  */
 
 #include <G3DAll.h>
@@ -38,7 +38,7 @@
 /**
  The path to the data directory from this program's directory.
  */
-const std::string DATA_DIR("d:/libraries/g3d-5.00/data/");
+const std::string DATA_DIR("d:/libraries/Graphics3D-5.00b/data/");
 
 class Model {
 
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
                         model->render(c, lighting);
                     }
                 renderDevice->popState();
-		
+
                 if (sky) {
                     sky->renderLensFlare(renderDevice, 
                                camera->getCoordinateFrame(), lighting);

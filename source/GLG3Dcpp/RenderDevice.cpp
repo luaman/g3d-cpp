@@ -2384,6 +2384,24 @@ void RenderDevice::debugDrawRay(const Ray& ray, const Color3& color, double scal
 }
 
 
+void RenderDevice::getProjectionMatrixParams(
+    double& l,
+    double& r,
+    double& b,
+    double& t,
+    double& n,
+    double& f,
+    bool&   is3D) {
+
+    l = state.projectionMatrixParams[0];
+    r = state.projectionMatrixParams[1];
+    b = state.projectionMatrixParams[2];
+    t = state.projectionMatrixParams[3];
+    n = state.projectionMatrixParams[4];
+    f = state.projectionMatrixParams[5];
+    is3D = state.proj3D;
+}
+
 void RenderDevice::debugDrawAxes(double scale) {
     // Angle index
     int a;

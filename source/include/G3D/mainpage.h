@@ -486,6 +486,7 @@ to add zlibstat.lib to your linker list.
      <LI> Color3::operator*=(const Color3&)
      <LI> Color3::operator*(const Color3&)
      <LI> Linux Makefiles [Jordan]
+     <LI> RenderDevice::getProjectionMatrixParams
      <LI> RenderDevice::debugDrawCylinder
      <LI> Added data/ifs/sphere.ifs
      <LI> Added data/ifs/spikeball.ifs

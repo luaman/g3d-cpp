@@ -528,6 +528,18 @@ public:
         double n,
         double f);
 
+    /** Returns the current projection matrix parameters.  Is3D is true
+        if this is a perspective projection matrix (i.e. setProjectionMatrix3D was called 
+        to create it). */
+    void getProjectionMatrixParams(
+        double& l,
+        double& r,
+        double& b,
+        double& t,
+        double& n,
+        double& f,
+        bool&   is3D);
+
     void setProjectionMatrix2D(
         double l,
         double r,

@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-02-15
+  @edited  2003-03-24
   */
 
 #include "../include/GLG3D/glcalls.h"
@@ -237,72 +237,85 @@ void Sky::renderLensFlare(
 
     renderDevice->pushState();
 
-	CoordinateFrame matrix;
-	matrix.rotation = camera.rotation;
-    renderDevice->setCameraToWorldMatrix(matrix);
-	renderDevice->setObjectToWorldMatrix(CoordinateFrame());
+	    CoordinateFrame matrix;
+	    matrix.rotation = camera.rotation;
+        renderDevice->setCameraToWorldMatrix(matrix);
+	    renderDevice->setObjectToWorldMatrix(CoordinateFrame());
 
-    renderDevice->setColor(lighting.skyAmbient);
-    renderDevice->setCullFace(RenderDevice::CULL_BACK);
-    renderDevice->disableDepthWrite();
-    renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
-    renderDevice->resetTextureUnit(0);
+        renderDevice->setColor(lighting.skyAmbient);
+        renderDevice->setCullFace(RenderDevice::CULL_BACK);
+        renderDevice->disableDepthWrite();
+        renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
+        renderDevice->resetTextureUnit(0);
 
-    // Compute the sun's position using the 3D transformation
-    Vector3 pos = renderDevice->project(Vector4(lighting.sunPosition, 0));
+        // Compute the sun's position using the 3D transformation
+        Vector3 pos = renderDevice->project(Vector4(lighting.sunPosition, 0));
 
-    if (lighting.sunPosition.dot(camera.getLookVector()) > 0) {
+        if (lighting.sunPosition.dot(camera.getLookVector()) > 0) {
 
-        // Number of visible points on the sun
-        int visible = 0;
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                double distanceToSun = renderDevice->getDepthBufferValue(iRound(pos.x + dx * 15.0), iRound(pos.y + dy * 15.0));
-                visible += (distanceToSun >= .99999) ? 1 : 0;
+            // Number of visible points on the sun
+            int visible = 0;
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dy = -1; dy <= 1; ++dy) {
+                    double distanceToSun = renderDevice->getDepthBufferValue(iRound(pos.x + dx * 15.0), iRound(pos.y + dy * 15.0));
+                    visible += (distanceToSun >= .99999) ? 1 : 0;
+                }
+            }
+
+            double fractionOfSunVisible = visible / 9.0;
+
+            if (fractionOfSunVisible > 0.0) {
+
+                // We need to switch to an infinite projection matrix to draw the flares.
+                // Note that we must make this change *after* the depth buffer values have
+                // been read back.
+                double l,r,t,b,n,f;
+                bool is3D;
+                renderDevice->getProjectionMatrixParams(l,r,t,b,n,f,is3D);
+                if (is3D) {
+                    renderDevice->setProjectionMatrix3D(l,r,t,b,n,inf);
+                } else {
+                    renderDevice->setProjectionMatrix2D(l,r,t,b,n,inf);
+                }
+
+                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+
+                // Make flares fade out near sunset and sunrise
+                double flareBrightness = max(0, sqrt(lighting.sunPosition.y * 4));
+
+                // Sun position
+                Vector4 L(lighting.sunPosition,0);
+                Vector4 X(lighting.sunPosition.cross(Vector3::UNIT_Z).direction(), 0);
+                Vector4 Y(Vector3::UNIT_Z, 0);
+
+                // Sun rays at dawn
+                if ((lighting.sunPosition.x > 0) && (lighting.sunPosition.y >= -.1)) {
+                    renderDevice->setTexture(0, sunRays);
+                    double occlusionAttenuation = (1 - square(2*fractionOfSunVisible - 1));
+                    drawCelestialSphere(renderDevice, L, X , Y, .6, occlusionAttenuation * Color4(1,1,1,1) * .4 * max(0, min(1, 1 - lighting.sunPosition.y * 2 / sqrt(2.0))));
+                }
+
+                renderDevice->setTexture(0, sun);
+                drawCelestialSphere(renderDevice, L, X, Y, .1, Color3::WHITE * fractionOfSunVisible * .5);
+
+                // Lens flare
+                Vector4 C(camera.getLookVector(), 0);
+                double position[] = { .5,                    .5,                    -.25,                     -.75,                .45,                      .6,                    -.5,                   -.1,                   .55,                     -1.5,                       -2,                         1};
+                double size[]     = { .12,                   .05,                    .02,                      .02,                .02,                      .02,                    .01,                  .01,                   .01,                     .01,                        .01,                        0.05}; 
+                Color3 color[]    = {Color3(6, 4, 0) / 255, Color3(6, 4, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(10, 0, 0) /255,  Color3(0, 12, 0) / 255, Color3(10,0,0) / 255, Color3::fromARGB(0x192125)/10,   Color3::fromARGB(0x1F2B1D)/10, Color3::fromARGB(0x1F2B1D)/10};
+                int numFlares     = 12;
+
+                renderDevice->setTexture(0, disk);
+                for (int i = 0; i < numFlares; ++i) {
+                    drawCelestialSphere(renderDevice, C + (C - L) * position[i], X, Y, size[i], Color4(color[i] * flareBrightness, 1));
+                }
             }
         }
-
-        double fractionOfSunVisible = visible / 9.0;
-
-        if (fractionOfSunVisible > 0.0) {
-            //renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-
-            // Make flares fade out near sunset and sunrise
-            double flareBrightness = max(0, sqrt(lighting.sunPosition.y * 4));
-
-            // Sun position
-            Vector4 L(lighting.sunPosition,0);
-            Vector4 X(lighting.sunPosition.cross(Vector3::UNIT_Z).direction(), 0);
-            Vector4 Y(Vector3::UNIT_Z, 0);
-
-            // Sun rays at dawn
-            if ((lighting.sunPosition.x > 0) && (lighting.sunPosition.y >= -.1)) {
-                renderDevice->setTexture(0, sunRays);
-                double occlusionAttenuation = (1 - square(2*fractionOfSunVisible - 1));
-                drawCelestialSphere(renderDevice, L, X , Y, .6, occlusionAttenuation * Color4(1,1,1,1) * .4 * max(0, min(1, 1 - lighting.sunPosition.y * 2 / sqrt(2.0))));
-            }
-
-            renderDevice->setTexture(0, sun);
-            drawCelestialSphere(renderDevice, L, X, Y, .1, Color3::WHITE * fractionOfSunVisible * .5);
-
-            // Lens flare
-            Vector4 C(camera.getLookVector(), 0);
-            double position[] = { .5,                    .5,                    -.25,                     -.75,                .45,                      .6,                    -.5,                   -.1,                   .55,                     -1.5,                       -2,                         1};
-            double size[]     = { .12,                   .05,                    .02,                      .02,                .02,                      .02,                    .01,                  .01,                   .01,                     .01,                        .01,                        0.05}; 
-            Color3 color[]    = {Color3(6, 4, 0) / 255, Color3(6, 4, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(10, 0, 0) /255,  Color3(0, 12, 0) / 255, Color3(10,0,0) / 255, Color3::fromARGB(0x192125)/10,   Color3::fromARGB(0x1F2B1D)/10, Color3::fromARGB(0x1F2B1D)/10};
-            int numFlares     = 12;
-
-            renderDevice->setTexture(0, disk);
-            for (int i = 0; i < numFlares; ++i) {
-                drawCelestialSphere(renderDevice, C + (C - L) * position[i], X, Y, size[i], Color4(color[i] * flareBrightness, 1));
-            }
-        }
-    }
 
     renderDevice->popState();
 }
 
-}
+} // namespace
 
 
 
