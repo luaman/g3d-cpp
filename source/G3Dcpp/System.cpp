@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-06-29
+  @edited  2003-11-02
  */
 
 #include "G3D/platform.h"
@@ -27,6 +27,7 @@
 #ifdef G3D_WIN32
 
     #include <conio.h>
+    #include <sys/timeb.h>
 
 #elif defined(G3D_LINUX) 
 
