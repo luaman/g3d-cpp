@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-04-22
+  @edited  2003-05-15
  */
 
 #ifndef G3D_SYSTEM_H
@@ -70,6 +70,16 @@ public:
 	    one on some processors.  Guaranteed to have the same behavior as memset
 		in all cases. */
 	static void memset(void* dst, uint8 value, size_t numBytes);
+
+    /**
+     Returns the fully qualified filename for the currently running executable.
+     This is more reliable than arg[0], which may be intentionally set to an incorrect
+     value by a calling program, relative to a now non-current directory, or obfuscated
+     by sym-links.
+
+     @cite Linux version written by Nicolai Haehnle <prefect_@gmx.net>, http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-getexename&forum=cotd&id=-1
+     */
+    static std::string currentProgramFilename();
 };
 
 

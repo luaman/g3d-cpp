@@ -9,7 +9,7 @@
  
  
  @created 2001-06-02
- @edited  2003-01-25
+ @edited  2003-05-13
  */
 
 namespace G3D {
@@ -91,16 +91,19 @@ inline Vector2 Vector2::operator* (Real fScalar) const {
 }
 
 //----------------------------------------------------------------------------
+
 inline Vector2 Vector2::operator- () const {
     return Vector2( -x, -y);
 }
 
 //----------------------------------------------------------------------------
+
 inline Vector2 operator* (Real fScalar, const Vector2& rkVector) {
     return Vector2(fScalar*rkVector.x, fScalar*rkVector.y);
 }
 
 //----------------------------------------------------------------------------
+
 inline Vector2& Vector2::operator+= (const Vector2& rkVector) {
     x += rkVector.x;
     y += rkVector.y;
@@ -108,6 +111,7 @@ inline Vector2& Vector2::operator+= (const Vector2& rkVector) {
 }
 
 //----------------------------------------------------------------------------
+
 inline Vector2& Vector2::operator-= (const Vector2& rkVector) {
     x -= rkVector.x;
     y -= rkVector.y;
@@ -115,10 +119,39 @@ inline Vector2& Vector2::operator-= (const Vector2& rkVector) {
 }
 
 //----------------------------------------------------------------------------
+
 inline Vector2& Vector2::operator*= (Real fScalar) {
     x *= fScalar;
     y *= fScalar;
     return *this;
+}
+
+//----------------------------------------------------------------------------
+
+inline Vector2& Vector2::operator*= (const Vector2& rkVector) {
+    x *= rkVector.x;
+    y *= rkVector.y;
+    return *this;
+}
+
+//----------------------------------------------------------------------------
+
+inline Vector2& Vector2::operator/= (const Vector2& rkVector) {
+    x /= rkVector.x;
+    y /= rkVector.y;
+    return *this;
+}
+
+//----------------------------------------------------------------------------
+
+inline Vector2 Vector2::operator* (const Vector2& rkVector) const {
+    return Vector2(x * rkVector.x, y * rkVector.y);
+}
+
+//----------------------------------------------------------------------------
+
+inline Vector2 Vector2::operator/ (const Vector2& rkVector) const {
+    return Vector2(x / rkVector.x, y / rkVector.y);
 }
 
 //----------------------------------------------------------------------------

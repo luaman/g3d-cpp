@@ -23,10 +23,6 @@
 #include "IFSModel.h"
 #include "IFSModelBuilder.h"
 
-//TODO: remove
-IFSModelBuilder builder;
-
-
 std::string             DATA_DIR        = "data/";
 
 Log*                    debugLog		= NULL;
@@ -85,7 +81,7 @@ int main(int argc, char** argv) {
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("c:/*.ifs");
+    std::string in("c:/tmp/teapot.3ds");
     std::string outDir("c:/tmp/");
 
     Array<std::string> filename;
@@ -103,7 +99,7 @@ int main(int argc, char** argv) {
         }
 
         model = new IFSModel(filename[i]);
-//        model->name = base;
+        model->name = "Teapot";
         
         if (! pauseBetweenModels) {
 //            model->save(outDir + base + ".ifs");

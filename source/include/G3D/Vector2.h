@@ -5,11 +5,11 @@
  
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
-  @cite   Portions by Laura Wollstadt, graphics3d.com
+  @cite   Portions by Laura Wollstadt
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-04-08
+  @edited  2003-05-13
 */
 
 #ifndef G3D_VECTOR2_H
@@ -64,6 +64,8 @@ public:
     Vector2 operator+ (const Vector2& rkVector) const;
     Vector2 operator- (const Vector2& rkVector) const;
     Vector2 operator* (Real fScalar) const;
+    Vector2 operator* (const Vector2& rkVector) const;
+    Vector2 operator/ (const Vector2& rkVector) const;
     Vector2 operator/ (Real fScalar) const;
     Vector2 operator- () const;
     friend Vector2 operator* (Real fScalar, const Vector2& rkVector);
@@ -73,6 +75,8 @@ public:
     Vector2& operator-= (const Vector2& rkVector);
     Vector2& operator*= (Real fScalar);
     Vector2& operator/= (Real fScalar);
+    Vector2& operator*= (const Vector2& rkVector);
+    Vector2& operator/= (const Vector2& rkVector);
 
     // vector operations
     Real length () const;

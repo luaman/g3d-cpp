@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-04-22
+  @edited  2003-05-15
  */
 
 #include "G3D/System.h"
@@ -529,6 +529,52 @@ void System::memset(void* dst, uint8 value, size_t numBytes) {
 	} else {
 		::memset(dst, value, numBytes);
 	}
+}
+
+
+std::string System::currentProgramFilename() {
+    char filename[2048];
+
+    #ifdef _MSC_VER
+    {
+        GetModuleFileName(NULL, filename, sizeof(filename));
+        return filename;
+    } 
+    #else
+    {
+	    char linkname[64]; // /proc/<pid>/exe
+	    pid_t pid;
+	    int ret;
+	    
+	    // Get our PID and build the name of the link in /proc
+
+	    pid = getpid();
+	    
+	    if (snprintf(linkname, sizeof(linkname), "/proc/%i/exe", pid) < 0) {
+		    // This should only happen on large word systems. I'm not sure
+		    // what the proper response is here.  Since it really is an assert-like
+            // condition, aborting the program seems to be in order.
+            error("Critical Error", "Unsupported filesystem", true);
+            exit(-1);
+        }
+
+	    // Now read the symbolic link
+	    ret = readlink(linkname, filename, sizeof(filename));
+	    
+	    // In case of an error, leave the handling up to the caller
+
+        if (ret == -1) {
+		    return "";
+        }
+	    
+        debugAssert(sizeof(filename) > ret);
+	    
+	    // Ensure proper NULL termination
+	    buf[ret] = 0;
+	    
+	    return buf;
+    }
+    #endif
 }
 
 }  // namespace
