@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2005-01-13
+ @edited  2005-02-06
  */
 
 #include "GLG3D/Draw.h"
@@ -18,6 +18,8 @@ namespace G3D {
 const int Draw::WIRE_SPHERE_SECTIONS = 26;
 const int Draw::SPHERE_SECTIONS = 40;
 
+const int Draw::SPHERE_PITCH_SECTIONS = 20;
+const int Draw::SPHERE_YAW_SECTIONS = 40;
 
 void Draw::poly2DOutline(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color) {
     if (polygon.length() == 0) {
@@ -620,35 +622,81 @@ void Draw::sphereSection(
     bool                top,
     bool                bottom) {
 
-    int sections = SPHERE_SECTIONS;
-    int start = top ? 0 : (sections / 2);
-    int stop = bottom ? sections : (sections / 2);
+    // The first time this is invoked we create a series of quad strips in a vertex array.
+    // Future calls then render from the array. 
+
+    CoordinateFrame cframe = renderDevice->getObjectToWorldMatrix();
+
+    // Auto-normalization will take care of normal length
+    cframe.rotation = cframe.rotation * sphere.radius;
+    cframe.translation += sphere.center;
+
+    glPushAttrib(GL_ENABLE_BIT);
+    glDisable(GL_NORMALIZE);
+    glEnable(GL_RESCALE_NORMAL);
 
     renderDevice->pushState();
+        renderDevice->setObjectToWorldMatrix(cframe);
+
         renderDevice->setColor(color);
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
-        for (int p = start; p < stop; ++p) {
-            const double pitch0 = p * G3D_PI / (double)sections;
-            const double pitch1 = (p + 1) * G3D_PI / (double)sections;
+        static bool initialized = false;
+        static int numIndices = 0;
+        static VAR vbuffer;
+        static Array< Array<uint16> > stripIndexArray;
 
-            renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
-            for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                const double yaw = -y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+        if (! initialized) {
+            // The normals are the same as the vertices for a sphere
+            Array<Vector3> vertex;
 
-                Vector3 v0 = Vector3(cos(yaw) * sin(pitch0), cos(pitch0), sin(yaw) * sin(pitch0));
-                Vector3 v1 = Vector3(cos(yaw) * sin(pitch1), cos(pitch1), sin(yaw) * sin(pitch1));
+            int s = 0;
+            int i = 0;
 
-                renderDevice->setNormal(v0);
-                renderDevice->sendVertex(v0 * sphere.radius + sphere.center);
+            for (int p = 0; p < SPHERE_PITCH_SECTIONS; ++p) {
+                const double pitch0 = p * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
+                const double pitch1 = (p + 1) * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
 
-                renderDevice->setNormal(v1);
-                renderDevice->sendVertex(v1 * sphere.radius + sphere.center);
+                stripIndexArray.next();
+
+                for (int y = 0; y <= SPHERE_YAW_SECTIONS; ++y) {
+                    const double yaw = -y * G3D_PI * 2.0 / SPHERE_YAW_SECTIONS;
+
+                    float cy = cos(yaw);
+                    float sy = sin(yaw);
+                    float sp0 = sin(pitch0);
+                    float sp1 = sin(pitch1);
+
+                    Vector3 v0 = Vector3(cy * sp0, cos(pitch0), sy * sp0);
+                    Vector3 v1 = Vector3(cy * sp1, cos(pitch1), sy * sp1);
+
+                    vertex.append(v0, v1);
+                    stripIndexArray.last().append(i, i + 1);
+                    i += 2;
+                }
             }
-            renderDevice->endPrimitive();
+
+            VARAreaRef area = VARArea::create(vertex.size() * sizeof(Vector3), VARArea::WRITE_ONCE);
+            vbuffer = VAR(vertex, area);
+            numIndices = vertex.size();
+            initialized = true;
         }
 
-    renderDevice->popState();       
+
+        int start = top ? 0 : (SPHERE_PITCH_SECTIONS / 2);
+        int stop = bottom ? SPHERE_PITCH_SECTIONS : (SPHERE_PITCH_SECTIONS / 2);
+
+        renderDevice->beginIndexedPrimitives();
+            renderDevice->setNormalArray(vbuffer);
+            renderDevice->setVertexArray(vbuffer);
+            for (int s = start; s < stop; ++s) {
+                renderDevice->sendIndices(RenderDevice::QUAD_STRIP, stripIndexArray[s]);
+            }
+        renderDevice->endIndexedPrimitives();
+
+    renderDevice->popState();
+
+    glPopAttrib();
 }
 
 

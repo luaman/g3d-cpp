@@ -5,9 +5,9 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2004-09-06
+  @edited  2005-02-06
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
  */
 
@@ -218,12 +218,17 @@ public:
 
 
    /**
-    Removes all elements.  Use resize(0, false) if you want to 
+    Removes all elements.  Use resize(0, false) or fastClear if you want to 
     remove all elements without deallocating the underlying array
     so that future append() calls will be faster.
     */
    void clear() {
        resize(0);
+   }
+
+   /** resize(0, false) */
+   void fastClear() {
+       resize(0, false);
    }
 
    /**

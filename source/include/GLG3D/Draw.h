@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2005-01-14
+ @edited  2005-02-06
  */
 
 #ifndef G3D_DRAW_H
@@ -40,6 +40,8 @@ private:
 
     static const int WIRE_SPHERE_SECTIONS;
     static const int SPHERE_SECTIONS;
+    static const int SPHERE_YAW_SECTIONS;
+    static const int SPHERE_PITCH_SECTIONS;
 
     /** Called from wireSphere, wireCapsule */
     static void wireSphereSection(

@@ -1451,7 +1451,6 @@ public:
        }
      </PRE>
 
-    <!IMG SRc="aabsp-intersect.png">
 
       @param skipAABoxTests Set to true when the intersection test for a
       member is faster than an AABox-ray intersection test.  In that case, 
