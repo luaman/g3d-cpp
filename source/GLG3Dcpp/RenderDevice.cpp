@@ -219,6 +219,9 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     GWindowSettings settings;
     window->getSettings(settings);
+    
+    // Load the OpenGL extensions if they have not already been loaded.
+    GLCaps::loadExtensions();
 
     debugAssert(! initialized());
 
@@ -439,8 +442,6 @@ void RenderDevice::setVideoMode() {
 
     debugAssertM(stateStack.size() == 0, "Cannot call setVideoMode between pushState and popState");
     debugAssertM(beginEndFrame == 0, "Cannot call setVideoMode between beginFrame and endFrame");
-
-    GLCaps::loadExtensions();
 
     // Reset all state
 
