@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     settings.window.resizable = true;
     settings.window.width  = 640;
     settings.window.height = 480;
-
+ 
     GApp app(settings);
 
     app.setDebugMode(true);

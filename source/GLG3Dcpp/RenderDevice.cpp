@@ -1752,7 +1752,7 @@ void RenderDevice::setVertexProgram(
 
     setVertexProgram(vp);
     
-    vp->setArgs(args);
+    vp->setArgs(this, args);
 }
 
 
@@ -1778,7 +1778,7 @@ void RenderDevice::setPixelProgram(
 
     setPixelProgram(pp);
     
-    pp->setArgs(args);
+    pp->setArgs(this, args);
 }
 
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-10-31
+  @edited  2003-11-04
 */
 
 #ifndef GLG3D_GPUPROGRAM_H
@@ -12,6 +12,7 @@
 
 #include "graphics3D.h"
 #include "GLG3D/glheaders.h"
+#include "GLG3D/Texture.h"
 
 namespace G3D {
 
@@ -50,10 +51,23 @@ typedef ReferenceCountedPointer<class GPUProgram> GPUProgramRef;
 class GPUProgram : public ReferenceCountedObject {
 public:
     /** Internal use only */
-    enum Type {FLOAT4X4, FLOAT4};
+    enum Type {
+		FLOAT4X4, FLOAT3X3, FLOAT2X2, 
+		FLOAT4, FLOAT3, FLOAT2, FLOAT1,
+		SAMPLER1D, SAMPLER2D, SAMPLER3D, SAMPLERCUBE, SAMPLERRECT
+	};
 
     /** Internal use only */
     enum Source {VARIABLE, CONSTANT};
+
+   /** Internal use only
+	 Converts a string name (e.g. "float4") to a Cg type.
+	 Returns false if it can't match the type.
+	*/
+	static bool CgType(const std::string& s, Type& t);
+
+    /** Internal use only.  For printing error messages. */
+	static std::string toString(const Type& t);
 
 private:
     friend class RenderDevice;
@@ -87,7 +101,9 @@ private:
 
             Source              source;
 
+			/** Used by constants only */
             Vector4             vector;
+
         };
 
         Array<Binding>          bindingArray;
@@ -139,6 +155,7 @@ public:
 
             /** Row-major */ 
             Vector4                    vector[4];
+			TextureRef				   texture;
 
             Type                       type;
         };
@@ -147,6 +164,7 @@ public:
 
     public:
 
+		void set(const std::string& var, const TextureRef& val);
         void set(const std::string& var, const CoordinateFrame& val);
         void set(const std::string& var, const Matrix4& val);
         void set(const std::string& var, const Vector4& val);
@@ -192,7 +210,7 @@ protected:
     /**
         Called by RenderDevice::setVertexProgram() and RenderDevice::setPixelProgram()
     */
-    void setArgs(const ArgList& args);
+    void setArgs(class RenderDevice*, const ArgList& args);
 
     GPUProgram(const std::string& name, const std::string& filename);
 
