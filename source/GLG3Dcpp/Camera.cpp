@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-08-20
+  @edited  2003-10-11
 */
 
 #include "GLG3D/Camera.h"

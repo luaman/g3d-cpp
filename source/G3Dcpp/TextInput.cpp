@@ -179,22 +179,57 @@ Token TextInput::nextToken() {
         // Complex symbols
         switch (c) {
         case '-':
-            // Could be a negative number, -, --, -=, or ->
-            switch (peekNextChar()) {
-            case '>':
-            case '-':
-            case '=':
-                t._string += popNextChar();
-                return t;
+            {
+                char c2 = peekNextChar();
+
+                // Could be a negative number, -, --, -=, or ->
+                switch (c2) {
+                case '>':
+                case '-':
+                case '=':
+                    t._string += popNextChar();
+                    return t;
+                }
+
+                // need to read ahead 1 more
+                c2 = popNextChar();
+
+                if (options.signedNumbers && 
+                    (isDigit(c2) || 
+                    ((c2 == '.') && isDigit(peekNextChar())))) {
+                    // Negative number
+                    c = c2;
+                    goto numLabel;
+                } else {
+                    pushNextChar(c2);
+                }
             }
+
             break;
 
         case '+':
-            switch (peekNextChar()) {
-            case '+':
-            case '=':
-                t._string += popNextChar();
-                return t;
+            {
+                char c2 = peekNextChar();
+
+                switch (c2) {
+                case '+':
+                case '=':
+                    t._string += popNextChar();
+                    return t;
+                }
+
+                // need to read ahead 1 more
+                c2 = popNextChar();
+
+                if (options.signedNumbers &&
+                    (isDigit(c2) || 
+                    ((c2 == '.') && isDigit(peekNextChar())))) {
+                    // Positive number
+                    c = c2;
+                    goto numLabel;
+                } else {
+                    pushNextChar(c2);
+                }
             }
             break;
 
@@ -266,7 +301,7 @@ Token TextInput::nextToken() {
         return t;
     } // switch c
 
-
+numLabel:
     if (isDigit(c) || (c == '.')) {
 
         // A number.  Note-- single dots have been
@@ -275,7 +310,11 @@ Token TextInput::nextToken() {
     
         // [0-9]*(\.[0-9]+) or [0-9]+
 
-        t._string = ""; 
+        if (t._string != "-") {
+            // If we picked up a leading "-" sign above, keep it,
+            // otherwise drop the string parsed thus far
+            t._string = "";
+        }
         t._type = Token::NUMBER;
 
         // Read the part before the decimal.

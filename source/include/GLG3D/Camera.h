@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2003-08-20
+  @edited  2003-10-11
 */
 
 #ifndef G3D_CAMERA_H
@@ -190,7 +190,7 @@ public:
 
    /**
     Returns the six clipping planes of the frustum, in world space.  The array
-    must have enough space allocated.  The planes have normals facing 
+    must have six elements allocated.  The planes have normals facing 
     <B>into</B> the view frustum.
 
     The 6th plane is always the far plane, which may be at infinity.

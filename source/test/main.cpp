@@ -426,6 +426,8 @@ void measureTriangleCollisionPerformance() {
 void testTextInput() {
     printf("TextInput\n");
 
+    
+
     TextInput::Options opt;
     opt.cppComments = false;
     TextInput ti(TextInput::FROM_STRING, 
@@ -506,6 +508,51 @@ void testTextInput() {
     debugAssert(s.string() == "bar");
 
     debugAssert(t.type() == Token::END);
+    
+    {
+        TextInput ti(TextInput::FROM_STRING, "-1 +1 2.6");
+
+        Token t;
+   
+        t = ti.peek();
+        debugAssert(t.type() == Token::NUMBER);
+        double n = ti.readNumber();
+        debugAssert(n == -1);
+
+        t = ti.peek();
+        debugAssert(t.type() == Token::NUMBER);
+        n = ti.readNumber();
+        debugAssert(n == 1);
+
+        t = ti.peek();
+        debugAssert(t.type() == Token::NUMBER);
+        n = ti.readNumber();
+        debugAssert(n == 2.6);
+    }
+
+    {
+        TextInput ti(TextInput::FROM_STRING, "- 1 ---.51");
+
+        Token t;
+   
+        t = ti.peek();
+        debugAssert(t.type() == Token::SYMBOL);
+        ti.readSymbol("-");
+
+        t = ti.peek();
+        debugAssert(t.type() == Token::NUMBER);
+        double n = ti.readNumber();
+        debugAssert(n == 1);
+
+        t = ti.peek();
+        debugAssert(t.type() == Token::SYMBOL);
+        ti.readSymbol("--");
+
+        t = ti.peek();
+        debugAssert(t.type() == Token::NUMBER);
+        n = ti.readNumber();
+        debugAssert(n == -.51);
+    }
 }
 
 
@@ -670,17 +717,9 @@ int main(int argc, char* argv[]) {
 //    im.save("c:/tmp/out.jpg");
 
 
-    Array<int> x;
-    x.append(0,1,2,3);
-    x.append(4,5,6,7);
 
-    x.randomize();
 
-    for (int i = 0; i < x.size(); ++i) {
-        debugPrintf("%d ", x[i]);
-    }
-
-    exit(0);
+//    exit(0);
     /*    
     Window app;
 

@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2003-04-03
+ @edited  2003-10-09
  */
 
 #ifndef G3D_TEXTINPUT_H
@@ -90,7 +90,7 @@ public:
 
   e.g.
   <pre>
-  TextInput i(TextInput::fromString("name = \"Max\", height = 6");
+  TextInput i(TextInput::FROM_STRING, "name = \"Max\", height = 6");
 
   Token d;
 
@@ -115,10 +115,15 @@ public:
 
     class Options {
     public:
-        /** If true, single line comments beginning with // are ignored */
+        /** If true, single line comments beginning with // are ignored.
+            Default is true. */
         bool                cppComments;
 
-        Options () : cppComments(true) {}
+        /** If true, "-1" parses as the number -1 instead of the symbol "-" followed
+            by the number 1.  Default is true.*/
+        bool                signedNumbers;
+
+        Options () : cppComments(true), signedNumbers(true) {}
     };
 
 private:
@@ -206,10 +211,18 @@ public:
 
     /** Read the next token (which will be the END token if ! hasMore()).
     
+        Signed numbers can be handled in one of two modes.  If the option 
+        TextInput::Options::signedNumbers is true,
+        A '+' or '-' immediately before a number is prepended onto that number and
+        if there is intervening whitespace, it is read as a separate symbol.
+
+        If TextInput::Options::signedNumbers is false,
         read() does not distinguish between a plus or minus symbol next
         to a number and a positive/negative number itself.  For example, "x - 1" and "x -1"
-        will be parsed the same way by read().  Use readNumber() if you know
-        the next group of characters are a number and it will handle this case for you.
+        will be parsed the same way by read().  
+        
+        In both cases, readNumber() will contract a leading "-" or "+" onto
+        a number.
     */
     Token read();
 
