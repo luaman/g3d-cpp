@@ -64,13 +64,13 @@ private:
     /**
      Length of file, in bytes
      */
-    size_t          length;
+    int             length;
     uint8*          buffer;
 
     /**
      Next byte in file
      */
-    size_t          pos;
+    int             pos;
 
     /**
      When true, the buffer is freed in the deconstructor.
@@ -151,7 +151,7 @@ public:
     /**
      Sets the position.  Cannot set past length.
      */
-    inline void setPosition(size_t p) {
+    inline void setPosition(int p) {
         debugAssertM(p <= length, "Read past end of file");
         pos = p;
     }
@@ -290,7 +290,7 @@ public:
      Skips ahead n bytes.
      */
     inline void skip(size_t n) {
-        debugAssertM(pos + n <= length, "Read past end of file");
+        debugAssertM((int)(pos + n) <= length, "Read past end of file");
         pos += n;
     }
 

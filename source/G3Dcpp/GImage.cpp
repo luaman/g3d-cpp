@@ -663,7 +663,7 @@ void GImage::encodePNG(
 
     debugAssert( channels == 3 || channels == 4 );
 
-    if (this->height > (uint32)(PNG_UINT_32_MAX/png_sizeof(png_bytep)))
+    if (this->height > (int)(PNG_UINT_32_MAX/png_sizeof(png_bytep)))
         throw GImage::Error("Unsupported PNG height.", out.getFilename());
 
     out.setEndian(G3D_LITTLE_ENDIAN);
@@ -1808,8 +1808,8 @@ void GImage::decodePPM(
     //Skip first line in header P#
     std::string ppmType = ppmInput.readSymbol();
 
-    ppmWidth = ppmInput.readNumber();
-    ppmHeight = ppmInput.readNumber();
+    ppmWidth = (int)ppmInput.readNumber();
+    ppmHeight = (int)ppmInput.readNumber();
 
     // Everything but a PBM will have a max color value
     if (ppmType != "P2") {
@@ -1843,16 +1843,16 @@ void GImage::decodePPM(
         Color3uint8& curPixel = *(this->pixel3() + i);
 
         if (ppmType == "P3") {
-            curPixel.r = ppmInput.readNumber() * (255.0 / maxColor);
-            curPixel.g = ppmInput.readNumber() * (255.0 / maxColor);
-            curPixel.b = ppmInput.readNumber() * (255.0 / maxColor);
+            curPixel.r = (uint8)(ppmInput.readNumber() * (255.0 / maxColor));
+            curPixel.g = (uint8)(ppmInput.readNumber() * (255.0 / maxColor));
+            curPixel.b = (uint8)(ppmInput.readNumber() * (255.0 / maxColor));
         } else if (ppmType == "P2") {
-            int pixel = ppmInput.readNumber() * (255.0 / maxColor);
+            uint8 pixel = (uint8)(ppmInput.readNumber() * (255.0 / maxColor));
             curPixel.r = pixel;
             curPixel.g = pixel;
             curPixel.b = pixel;
         } else if (ppmType == "P1") {
-            int pixel = ppmInput.readNumber() * maxColor;
+            int pixel = (uint8)(ppmInput.readNumber() * maxColor);
             curPixel.r = pixel;
             curPixel.g = pixel;
             curPixel.b = pixel;
