@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added PPM support to GImage [Corey]
      <LI> New G3D::PosedModel rendering methods appropriate for shadow casting
            (with efficient default implementations).
      <LI> G3D::Lighting
