@@ -205,6 +205,7 @@ public:
     virtual void init(
         NetworkDevice*           _netDevice,
         const DiscoverySettings* _settings) {
+        debugAssert(_netDevice);
         netDevice = _netDevice;
         settings  = _settings;
     }

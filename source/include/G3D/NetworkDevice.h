@@ -220,9 +220,10 @@ private:
 
         size_t L = b.length();
         m.serialize(b);
-        if (b.length() == L) {
+        if ((size_t)b.length() == L) {
+            // No data was created by serialization.
             // We need to send at least one byte because receive assumes that
-            // a zero length packet is an error.
+            // a zero length message is an error.
             b.writeUInt8(-1);
         }
     
