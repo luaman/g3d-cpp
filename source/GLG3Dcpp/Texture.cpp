@@ -114,7 +114,7 @@ static void createTexture(
     case GL_TEXTURE_2D:
         if (! isPow2(width) || ! isPow2(height)) {
 
-            alwaysAssertM((compressed),
+            alwaysAssertM(! compressed,
                 "Compressed texture data must be power-of-two size.");
 
             // Supported formats as defined by: http://developer.3dlabs.com/openGL/glu_man_pages.pdf
@@ -665,8 +665,8 @@ TextureRef Texture::fromMemory(
     debugAssert(bytesFormat);
     
     // Check for at least one miplevel
-   int numMipMaps = bytes.length();
-   debugAssert( numMipMaps > 0 );
+    int numMipMaps = bytes.length();
+    debugAssert( numMipMaps > 0 );
 
     // Create the texture
     GLuint textureID = newGLTextureID();
