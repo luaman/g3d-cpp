@@ -41,9 +41,9 @@ std::string             DATA_DIR        = "data/";
 
 Log*                    debugLog	= NULL;
 RenderDevice*           renderDevice	= NULL;
-G3D::Font*              font		= NULL;
+CFont*                  font		= NULL;
 UserInput*              userInput	= NULL;
-Camera*			camera		= NULL;
+Camera*			        camera		= NULL;
 ManualCameraController* controller      = NULL;
 bool                    endProgram	= false;
 Model*                  model           = NULL;
