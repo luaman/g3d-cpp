@@ -63,11 +63,20 @@ GLight GLight::spot(const Vector3& pos, const Vector3& pointDirection, double cu
 }
 
 
-bool GLight::operator==(const GLight& other) {
-    return memcmp(this, &other, sizeof(GLight)) == 0;
+bool GLight::operator==(const GLight& other) const {
+    return (position == other.position) && 
+        (spotDirection == other.spotDirection) &&
+        (spotCutoff == other.spotCutoff) &&
+        (attenuation[0] == other.attenuation[0]) &&
+        (attenuation[1] == other.attenuation[1]) &&
+        (attenuation[2] == other.attenuation[2]) &&
+        (color == other.color) &&
+        (enabled == other.enabled) &&
+        (specular == other.specular) &&
+        (diffuse == other.diffuse);
 }
 
-bool GLight::operator!=(const GLight& other) {
+bool GLight::operator!=(const GLight& other) const {
     return !(*this == other);
 }
 

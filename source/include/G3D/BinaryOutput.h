@@ -168,20 +168,21 @@ public:
      */
     void reset();
 
+
+    inline int length() const {
+        return (int)bufferLen + (int)alreadyWritten;
+    }
+
     /**
      Returns the length of the file in bytes.
      @deprecated use BinaryOutput.size
      */
     inline int getLength() const {
-        return bufferLen + alreadyWritten;
-    }
-
-    inline int length() const {
-        return bufferLen + alreadyWritten;
+        return length();
     }
 
     inline int size() const {
-        return bufferLen + alreadyWritten;
+        return length();
     }
 
     /**
@@ -194,7 +195,7 @@ public:
      than its current length.
      */
     inline void setLength(int n) {
-        n = n - alreadyWritten;
+        n = n - (int)alreadyWritten;
 
         if (n < 0) {
             throw "Cannot resize huge files to be shorter.";
@@ -213,7 +214,7 @@ public:
      where 0 is the beginning and getLength() - 1 is the end.
      */
     inline int getPosition() const {
-        return pos + alreadyWritten;
+        return (int)pos + (int)alreadyWritten;
     }
 
     /**
@@ -224,10 +225,10 @@ public:
      May throw a char* exception when seeking backwards on a huge file.
      */
     inline void setPosition(int p) {
-        p = p - alreadyWritten;
+        p = p - (int)alreadyWritten;
 
         if (p > bufferLen) {
-            setLength(p + alreadyWritten);
+            setLength(p + (int)alreadyWritten);
         }
 
         if (p < 0) {
@@ -341,7 +342,7 @@ public:
      */
     inline void skip(int n) {
         if (pos + n > bufferLen) {
-            setLength(pos + alreadyWritten + n);
+            setLength((int)pos + (int)alreadyWritten + n);
         }
         pos += n;
     }

@@ -948,7 +948,8 @@ public:
     void enableTwoSidedLighting();
     void disableTwoSidedLighting();
 
-private:
+//private: // TODO
+    public:
 
 	/** Called immediately before a primitive group 
         @deprecated*/
@@ -988,15 +989,78 @@ private:
             float                   LODBias;
 
             TextureUnit();
+
+            inline bool operator==(const TextureUnit& other) const {
+                return 
+                    (texCoord == other.texCoord) &&
+                    (texture == other.texture) &&
+                    (memcmp(textureMatrix, other.textureMatrix, sizeof(float)*16) == 0) &&
+                    (combineMode == other.combineMode) &&
+                    (LODBias == other.LODBias);
+            }
+
+            inline bool operator!=(const TextureUnit& other) const {
+                return !(*this == other);
+            }
         };
 
+        class Lights {
+        public:
+            GLight                      light[MAX_LIGHTS];
+            bool                        lightEnabled[MAX_LIGHTS];
+            bool                        twoSidedLighting;
+
+            // Ambient light level
+            Color4                      ambient;
+            bool                        lighting;
+
+            bool operator==(const Lights& other) const;
+
+            inline bool operator!=(const Lights& other) const {
+                return !(*this == other);
+            }
+        };
+
+        class Stencil {
+        public:
+            StencilTest                 stencilTest;
+            int                         stencilReference;
+            int                         stencilClear;
+            StencilOp                   frontStencilFail;
+            StencilOp                   frontStencilZFail;
+            StencilOp                   frontStencilZPass;
+            StencilOp                   backStencilFail;
+            StencilOp                   backStencilZFail;
+            StencilOp                   backStencilZPass;
+          
+            bool operator==(const Stencil& other) const;
+
+            inline bool operator!=(const Stencil& other) const {
+                return !(*this == other);
+            }
+        };
+
+        class Matrices {
+        public:
+            CoordinateFrame             objectToWorldMatrix;
+            CoordinateFrame             cameraToWorldMatrix;
+            CoordinateFrame             cameraToWorldMatrixInverse;
+            Matrix4                     projectionMatrix;
+
+            bool operator==(const Matrices& other) const;
+
+            inline bool operator!=(const Matrices& other) const {
+                return !(*this == other);
+            }
+        };
+
+        Lights                      lights;
 
         Rect2D                      viewport;
         Rect2D                      clip2D;
         bool                        useClip2D;
 
-        GLight                      light[MAX_LIGHTS];
-        bool                        lightEnabled[MAX_LIGHTS];
+
         bool                        depthWrite;
         bool                        colorWrite;
         bool                        alphaWrite;
@@ -1004,25 +1068,15 @@ private:
         Buffer                      drawBuffer;
 
         DepthTest                   depthTest;
-        StencilTest                 stencilTest;
-        int                         stencilReference;
         AlphaTest                   alphaTest;
         double                      alphaReference;
 
-        int                         stencilClear;
         double                      depthClear;
         Color4                      colorClear;
 
-        bool                        twoSidedLighting;
-
         CullFace                    cullFace;
 
-        StencilOp                   frontStencilFail;
-        StencilOp                   frontStencilZFail;
-        StencilOp                   frontStencilZPass;
-        StencilOp                   backStencilFail;
-        StencilOp                   backStencilZFail;
-        StencilOp                   backStencilZPass;
+        Stencil                     stencil;
         
         BlendFunc                   srcBlendFunc;
         BlendFunc                   dstBlendFunc;
@@ -1052,25 +1106,17 @@ private:
         /** @deprecated */
         PixelProgramRef             pixelProgram;
 
-        // Ambient light level
-        Color4                      ambient;
-
         double                      lineWidth;
         double                      pointSize;
 
-        bool                        lighting;
         Color4                      color;
         Vector3                     normal;
         TextureUnit                 textureUnit[GLCaps::G3D_MAX_TEXTURE_UNITS];
-    
-        CoordinateFrame             objectToWorldMatrix;
-        CoordinateFrame             cameraToWorldMatrix;
-        CoordinateFrame             cameraToWorldMatrixInverse;
-
-        Matrix4                     projectionMatrix;
+        Matrices                    matrices;
 
         RenderState(int width = 1, int height = 1);
 
+        bool operator==(const RenderState& other) const;
     };
 
     GLint toGLStencilOp(RenderDevice::StencilOp op) const;

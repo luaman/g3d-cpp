@@ -107,10 +107,10 @@ private:
 
     /** Verifies that at least this number of bytes can be read.*/
     inline void prepareToRead(size_t bytes) {
-        debugAssertM(pos + bytes + alreadyRead <= length, "Read past end of file.");
+        debugAssertM((int)pos + (int)bytes + (int)alreadyRead <= (int)length, "Read past end of file.");
 
-        if (pos + bytes > bufferLength) {
-            loadIntoMemory(pos + alreadyRead, bytes);    
+        if ((int)pos + (int)bytes > (int)bufferLength) {
+            loadIntoMemory((int)pos + (int)alreadyRead, (int)bytes);    
         }
     }
 
@@ -200,7 +200,7 @@ public:
      where 0 is the beginning and getLength() - 1 is the end.
      */
     inline int getPosition() const {
-        return pos + alreadyRead;
+        return (int)pos + (int)alreadyRead;
     }
 
     /**
@@ -209,9 +209,9 @@ public:
      */
     inline void setPosition(int p) {
         debugAssertM(p <= length, "Read past end of file");
-        pos = p - alreadyRead;
+        pos = (int)p - (int)alreadyRead;
         if ((pos < 0) || (pos > bufferLength)) {
-            loadIntoMemory(pos + alreadyRead);
+            loadIntoMemory((int)pos + (int)alreadyRead);
         }
     }
 
@@ -357,14 +357,14 @@ public:
      Skips ahead n bytes.
      */
     inline void skip(int n) {
-        setPosition(pos + alreadyRead + n);
+        setPosition((int)pos + (int)alreadyRead + n);
     }
 
 	/**
 	 Returns true if the position is not at the end of the file
 	 */
 	inline bool hasMore() const {
-		return pos + alreadyRead < length;
+		return (int)pos + (int)alreadyRead < (int)length;
 	}
 
     /** Prepares for bit reading via readBits.  Only readBits can be

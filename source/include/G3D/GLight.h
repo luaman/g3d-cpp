@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-12
-  @edited  2003-11-14
+  @edited  2005-03-08
 */
 
 #ifndef G3D_GLIGHT_H
@@ -51,8 +51,8 @@ public:
     static GLight point(const Vector3& pos, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true, bool diffuse = true);
     static GLight spot(const Vector3& pos, const Vector3& pointDirection, double cutOffAngleDegrees, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true, bool diffuse = true);
 
-    bool operator==(const GLight& other);
-    bool operator!=(const GLight& other);
+    bool operator==(const GLight& other) const;
+    bool operator!=(const GLight& other) const;
 };
 
 } // namespace

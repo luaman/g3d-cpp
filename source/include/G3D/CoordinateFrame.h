@@ -67,6 +67,14 @@ public:
      */
     Vector3							translation;
 
+    inline bool operator==(const CoordinateFrame& other) const {
+        return (translation == translation) && (rotation == other.rotation);
+    }
+
+    inline bool operator!=(const CoordinateFrame& other) const {
+        return !(*this == other);
+    }
+
     /**
      Initializes to the identity coordinate frame.
      */
@@ -101,7 +109,7 @@ public:
         return out;
     }
 
-    virtual ~CoordinateFrame() {}
+    inline ~CoordinateFrame() {}
 
     /** See also Matrix4::approxCoordinateFrame */
     class Matrix4 toMatrix4() const;

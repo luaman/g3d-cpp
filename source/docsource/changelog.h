@@ -31,6 +31,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Changed GLight== to not use memcpy (was causing issues due to byte padding on some compilers)
+     <LI> Made CoordinateFrame destructor non-virtual (eliminates vtable)
      <LI> Added new FAQ documentation
      <LI> Added support to G3D::BinaryInput and G3D::BinaryOutput 
           reading and writing huge (larger than available memory) files.

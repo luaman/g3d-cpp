@@ -121,7 +121,7 @@ void VideoSerializer::serializeTimeDiff1(BinaryOutput& b) const {
     b.beginBits();
 
     // Iterate over the bytes in the frames
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         int P = previousFrame[i];
         int C = currentFrame[i];
 
@@ -159,7 +159,7 @@ void VideoSerializer::deserializeTimeDiff1(BinaryInput& b) {
 
     b.beginBits();
 
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         int a = b.readBits(BITS);
 
         if (a < ESCAPE) {
@@ -198,7 +198,7 @@ void VideoSerializer::serializeSpaceDiff1(BinaryOutput& b) const {
     b.beginBits();
 
     // Iterate over the bytes in the frame.
-    for (int i = PStride; i < n; ++i) {
+    for (size_t i = PStride; i < n; ++i) {
         int P = currentFrame[i - PStride];
         int C = currentFrame[i];
         int delta = C - P + MAXDELTA;
@@ -247,7 +247,7 @@ void VideoSerializer::deserializeSpaceDiff1(BinaryInput& b) {
 
     b.beginBits();
 
-    for (int i = PStride; i < n; ++i) {
+    for (size_t i = PStride; i < n; ++i) {
         int delta = b.readBits(BITS);
 
         if (delta >= ESCAPE) {

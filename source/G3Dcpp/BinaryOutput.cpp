@@ -56,7 +56,7 @@ void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
 void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
     if (filename == "<memory>") {
         throw "Out of memory while writing to memory in BinaryOutput (no RAM left).";
-    } else if (bytes > maxBufferLen) {
+    } else if ((int)bytes > (int)maxBufferLen) {
         throw "Out of memory while writing to disk in BinaryOutput (could not create a large enough buffer).";
     } else {
 

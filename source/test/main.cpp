@@ -1874,11 +1874,34 @@ void testSwizzle() {
     v2 = v1.xy() + v1.yz();
 }
 
+void measureRDPushPopPerformance(RenderDevice* rd) {
+    uint64 identityCycles;
+
+    int N = 500;
+    rd->pushState();
+    rd->popState();
+
+    System::beginCycleCount(identityCycles);
+    for (int i = 0; i < N; ++i) {
+        rd->pushState();
+        rd->popState();
+    }
+    System::endCycleCount(identityCycles);
+
+    printf("RenderDevice::push+pop:             %g cycles\n", identityCycles / (double)N);
+}
 
 int main(int argc, char* argv[]) {    
 
+    GLight array[4];
+
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
+        RenderDevice* renderDevice = new RenderDevice();
+        renderDevice->init();
+        measureRDPushPopPerformance(renderDevice);
+        while (true);
+
         measureBSPPerformance();
         measureTriangleCollisionPerformance();
         measureAABoxCollisionPerformance();
@@ -1889,6 +1912,7 @@ int main(int argc, char* argv[]) {
         measureMemsetPerformance();
         measureNormalizationPerformance();
         measureSerializerPerformance();
+
         return 0;
     #endif
 

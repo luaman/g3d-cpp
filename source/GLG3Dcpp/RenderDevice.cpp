@@ -18,8 +18,6 @@
 #include "GLG3D/VAR.h"
 #ifdef G3D_WIN32
     #include "GLG3D/Win32Window.h"
-// TODO: remove
-    #include "GLG3D/SDLWindow.h"    
 #else
     #include "GLG3D/SDLWindow.h"    
 #endif
@@ -513,8 +511,8 @@ void RenderDevice::setVideoMode() {
         glLineWidth(1);
         glPointSize(1);
 
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.ambient);
-        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, state.twoSidedLighting);
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.lights.ambient);
+        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, state.lights.twoSidedLighting);
 
         glDisable(GL_LIGHTING);
 
@@ -540,7 +538,7 @@ void RenderDevice::setVideoMode() {
         glClearDepth(1);
         glClearColor(0,0,0,1);
         glMatrixMode(GL_PROJECTION);
-        glLoadMatrix(state.projectionMatrix);
+        glLoadMatrix(state.matrices.projectionMatrix);
         glMatrixMode(GL_MODELVIEW);
 
         glEnable(GL_CULL_FACE);
@@ -656,11 +654,9 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     colorWrite                  = true;
     alphaWrite                  = false;
 
-    twoSidedLighting            = false;
+    lights.twoSidedLighting     = false;
 
     depthTest                   = DEPTH_LEQUAL;
-    stencilTest                 = STENCIL_ALWAYS_PASS;
-    stencilReference            = 0;
     alphaTest                   = ALPHA_ALWAYS_PASS;
     alphaReference              = 0.0;
 
@@ -670,12 +666,14 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     drawBuffer                  = BUFFER_BACK;
 
-    frontStencilFail            = STENCIL_KEEP;
-    frontStencilZFail           = STENCIL_KEEP;
-    frontStencilZPass           = STENCIL_KEEP;
-    backStencilFail             = STENCIL_KEEP;
-    backStencilZFail            = STENCIL_KEEP;
-    backStencilZPass            = STENCIL_KEEP;
+    stencil.stencilTest         = STENCIL_ALWAYS_PASS;
+    stencil.stencilReference    = 0;
+    stencil.frontStencilFail    = STENCIL_KEEP;
+    stencil.frontStencilZFail   = STENCIL_KEEP;
+    stencil.frontStencilZPass   = STENCIL_KEEP;
+    stencil.backStencilFail     = STENCIL_KEEP;
+    stencil.backStencilZFail    = STENCIL_KEEP;
+    stencil.backStencilZPass    = STENCIL_KEEP;
 
     polygonOffset               = 0;
     lineWidth                   = 1;
@@ -686,19 +684,19 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     shininess                   = 15;
     specular                    = Color3::white() * 0.8;
 
-    ambient                     = Color4(0.25, 0.25, 0.25, 1.0);
+    lights.ambient              = Color4(0.25, 0.25, 0.25, 1.0);
 
-    lighting                    = false;
+    lights.lighting             = false;
     color                       = Color4(1,1,1,1);
     normal                      = Vector3(0,0,0);
 
     // Note: texture units and lights initialize themselves
 
-    objectToWorldMatrix         = CoordinateFrame();
-    cameraToWorldMatrix         = CoordinateFrame();
-    cameraToWorldMatrixInverse  = CoordinateFrame();
+    matrices.objectToWorldMatrix         = CoordinateFrame();
+    matrices.cameraToWorldMatrix         = CoordinateFrame();
+    matrices.cameraToWorldMatrixInverse  = CoordinateFrame();
 
-    stencilClear                = 0;
+    stencil.stencilClear        = 0;
     depthClear                  = 1;
     colorClear                  = Color4(0,0,0,1);
 
@@ -711,14 +709,14 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     pixelProgram                = NULL;
 
     for (int i = 0; i < MAX_LIGHTS; ++i) {
-        lightEnabled[i] = false;
+        lights.lightEnabled[i] = false;
     }
 
     // Set projection matrix
     double aspect;
     aspect = (double)viewport.width() / viewport.height();
 
-    projectionMatrix = Matrix4::perspectiveProjection(-aspect, aspect, -1, 1, 0.1, 100.0);
+    matrices.projectionMatrix = Matrix4::perspectiveProjection(-aspect, aspect, -1, 1, 0.1, 100.0);
 
     cullFace                    = CULL_BACK;
 
@@ -760,6 +758,42 @@ void RenderDevice::popState() {
     glPopAttrib();
 }
 
+bool RenderDevice::RenderState::Lights::operator==(const Lights& other) const {
+    for (int L = 0; L < MAX_LIGHTS; ++L) {
+        if ((lightEnabled[L] != other.lightEnabled[L]) ||
+            (lightEnabled[L] && (light[L] != other.light[L]))) {
+            return false;
+        }
+    }
+
+    return 
+        (lighting == other.lighting) && 
+        (ambient == other.ambient) &&
+        (twoSidedLighting == other.twoSidedLighting);
+}
+
+
+bool RenderDevice::RenderState::Stencil::operator==(const Stencil& other) const {
+    return 
+        (stencilTest == other.stencilTest) &&
+        (stencilReference == other.stencilReference) &&
+        (stencilClear == other.stencilClear) &&
+        (frontStencilFail == other.frontStencilFail) &&
+        (frontStencilZFail == other.frontStencilZFail) &&
+        (frontStencilZPass == other.frontStencilZPass) &&
+        (backStencilFail == other.backStencilFail) &&
+        (backStencilZFail == other.backStencilZFail) &&
+        (backStencilZPass == other.backStencilZPass);
+}
+
+
+bool RenderDevice::RenderState::Matrices::operator==(const Matrices& other) const {
+    return
+        (objectToWorldMatrix == other.objectToWorldMatrix) &&
+        (cameraToWorldMatrix == other.cameraToWorldMatrix) &&
+        (projectionMatrix == other.projectionMatrix);
+}
+
 
 void RenderDevice::setState(
     const RenderState&          newState) {
@@ -768,11 +802,6 @@ void RenderDevice::setState(
     // methods will (for the most part) minimize
     // the state changes so we can set all of the
     // new state explicitly.
-
-    if (! memcmp(&newState, &state, sizeof(RenderState))) {
-        // The new state is identical to the old state.
-        return;
-    }
 
     setViewport(newState.viewport);
 
@@ -800,20 +829,27 @@ void RenderDevice::setState(
         disableAlphaWrite();
     }
 
-    if (newState.twoSidedLighting) {
-        enableTwoSidedLighting();
-    } else {
-        disableTwoSidedLighting();
-    }
-
     setDrawBuffer(newState.drawBuffer);
 
     setShadeMode(newState.shadeMode);
     setDepthTest(newState.depthTest);
 
-    setStencilConstant(newState.stencilReference);
-    setStencilTest(newState.stencilTest);
-    
+    if (newState.stencil != state.stencil) {
+        setStencilConstant(newState.stencil.stencilReference);
+
+        setStencilTest(newState.stencil.stencilTest);
+
+        setStencilOp(
+            newState.stencil.frontStencilFail, newState.stencil.frontStencilZFail, newState.stencil.frontStencilZPass,
+            newState.stencil.backStencilFail, newState.stencil.backStencilZFail, newState.stencil.backStencilZPass);
+
+        setStencilClearValue(newState.stencil.stencilClear);
+    }
+
+    setDepthClearValue(newState.depthClear);
+
+    setColorClearValue(newState.colorClear);
+
     setAlphaTest(newState.alphaTest, newState.alphaReference);
 
     setBlendFunc(newState.srcBlendFunc, newState.dstBlendFunc, newState.blendEq);
@@ -826,34 +862,35 @@ void RenderDevice::setState(
     setSpecularCoefficient(newState.specular);
     setShininess(newState.shininess);
 
-    if (newState.lighting) {
-        enableLighting();
-    } else {
-        disableLighting();
-    }
-
-    setAmbientLightColor(newState.ambient);
-
-    for (int i = 0; i < MAX_LIGHTS; ++i) {
-    
-        if (newState.lightEnabled[i]) {
-            setLight(i, newState.light[i]);
+    if (newState.lights != state.lights) {
+        if (newState.lights.lighting) {
+            enableLighting();
         } else {
-            setLight(i, NULL);
+            disableLighting();
+        }
+
+        if (newState.lights.twoSidedLighting) {
+            enableTwoSidedLighting();
+        } else {
+            disableTwoSidedLighting();
+        }
+
+        setAmbientLightColor(newState.lights.ambient);
+
+        for (int i = 0; i < MAX_LIGHTS; ++i) {
+            if (newState.lights.lightEnabled[i]) {
+                setLight(i, newState.lights.light[i]);
+            } else {
+                setLight(i, NULL);
+            }
         }
     }
-
-    setStencilOp(
-        newState.frontStencilFail, newState.frontStencilZFail, newState.frontStencilZPass,
-        newState.backStencilFail, newState.backStencilZFail, newState.backStencilZPass);
 
     setColor(newState.color);
     setNormal(newState.normal);
 
     for (int u = iMax(_numTextures, _numTextureCoords) - 1; u >= 0; --u) {
-        if (memcmp(&(newState.textureUnit[u]), 
-                   &(state.textureUnit[u]), 
-                   sizeof(RenderState::TextureUnit))) {
+        if (newState.textureUnit[u] != state.textureUnit[u]) {
 
             if (u < (int)numTextures()) {
                 setTexture(u, newState.textureUnit[u].texture);
@@ -869,13 +906,20 @@ void RenderDevice::setState(
         }
     }
 
+    setCullFace(newState.cullFace);
 
-    if (memcmp(&newState.cameraToWorldMatrix, &state.cameraToWorldMatrix, sizeof(CoordinateFrame))) {
-        setCameraToWorldMatrix(newState.cameraToWorldMatrix);
-    }
+    setDepthRange(newState.lowDepthRange, newState.highDepthRange);
 
-    if (memcmp(&newState.objectToWorldMatrix, &state.objectToWorldMatrix, sizeof(CoordinateFrame))) {
-        setObjectToWorldMatrix(newState.objectToWorldMatrix);
+    if (newState.matrices != state.matrices) { 
+        if (newState.matrices.cameraToWorldMatrix != state.matrices.cameraToWorldMatrix) {
+            setCameraToWorldMatrix(newState.matrices.cameraToWorldMatrix);
+        }
+
+        if (newState.matrices.objectToWorldMatrix != state.matrices.objectToWorldMatrix) {
+            setObjectToWorldMatrix(newState.matrices.objectToWorldMatrix);
+        }
+
+        setProjectionMatrix(newState.matrices.projectionMatrix);
     }
 
     setVertexAndPixelShader(newState.vertexAndPixelShader);
@@ -889,31 +933,21 @@ void RenderDevice::setState(
     if (supportsPixelProgram()) {
         setPixelProgram(newState.pixelProgram);
     }
-
-    setStencilClearValue(newState.stencilClear);
-    setDepthClearValue(newState.depthClear);
-    setColorClearValue(newState.colorClear);
-
-    setProjectionMatrix(newState.projectionMatrix);
-
-    setCullFace(newState.cullFace);
-
-    setDepthRange(newState.lowDepthRange, newState.highDepthRange);
 }
 
 
 void RenderDevice::enableTwoSidedLighting() {
-    if (! state.twoSidedLighting) {
+    if (! state.lights.twoSidedLighting) {
         glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
-        state.twoSidedLighting = true;
+        state.lights.twoSidedLighting = true;
     }
 }
 
 
 void RenderDevice::disableTwoSidedLighting() {
-    if (state.twoSidedLighting) {
+    if (state.lights.twoSidedLighting) {
         glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
-        state.twoSidedLighting = false;
+        state.lights.twoSidedLighting = false;
     }
 }
 
@@ -946,15 +980,17 @@ void RenderDevice::afterPrimitive() {
 
 
 void RenderDevice::setSpecularCoefficient(const Color3& c) {
-    state.specular = c;
+    if (state.specular != c) {
+        state.specular = c;
 
-    static float spec[4];
-    spec[0] = c[0];
-    spec[1] = c[1];
-    spec[2] = c[2];
-    spec[3] = 1.0f;
+        static float spec[4];
+        spec[0] = c[0];
+        spec[1] = c[1];
+        spec[2] = c[2];
+        spec[3] = 1.0f;
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    }
 }
 
 
@@ -964,8 +1000,10 @@ void RenderDevice::setSpecularCoefficient(double s) {
 
 
 void RenderDevice::setShininess(double s) {
-    state.shininess = s;
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, s);
+    if (state.shininess != s) {
+        state.shininess = s;
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, s);
+    }
 }
 
 
@@ -1229,9 +1267,9 @@ bool RenderDevice::colorWrite() const {
 
 void RenderDevice::setStencilClearValue(int s) {
     debugAssert(! inPrimitive);
-    if (state.stencilClear != s) {
+    if (state.stencil.stencilClear != s) {
         glClearStencil(s);
-        state.stencilClear = s;
+        state.stencil.stencilClear = s;
     }
 }
 
@@ -1406,18 +1444,18 @@ static void _setStencilTest(RenderDevice::StencilTest test, int reference) {
 
 void RenderDevice::setStencilConstant(int reference) {
     debugAssert(! inPrimitive);
-    if (state.stencilReference != reference) {
-        state.stencilReference = reference;
+    if (state.stencil.stencilReference != reference) {
+        state.stencil.stencilReference = reference;
 
         if (GLCaps::supports_GL_EXT_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_BACK);
         }
 
-        _setStencilTest(state.stencilTest, reference);
+        _setStencilTest(state.stencil.stencilTest, reference);
 
         if (GLCaps::supports_GL_EXT_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_FRONT);
-            _setStencilTest(state.stencilTest, reference);
+            _setStencilTest(state.stencil.stencilTest, reference);
         }
     }
 }
@@ -1431,19 +1469,19 @@ void RenderDevice::setStencilTest(StencilTest test) {
 
     debugAssert(! inPrimitive);
 
-    if (state.stencilTest != test) {
+    if (state.stencil.stencilTest != test) {
         glEnable(GL_STENCIL_TEST);
 
         if (test == STENCIL_ALWAYS_PASS) {
 
             // Can't actually disable if the stencil op is using the test as well
-            if ((state.frontStencilFail   == STENCIL_KEEP) &&
-                (state.frontStencilZFail  == STENCIL_KEEP) &&
-                (state.frontStencilZPass  == STENCIL_KEEP) &&
+            if ((state.stencil.frontStencilFail   == STENCIL_KEEP) &&
+                (state.stencil.frontStencilZFail  == STENCIL_KEEP) &&
+                (state.stencil.frontStencilZPass  == STENCIL_KEEP) &&
                 (! GLCaps::supports_GL_EXT_stencil_two_side() ||
-                 ((state.backStencilFail  == STENCIL_KEEP) &&
-                  (state.backStencilZFail == STENCIL_KEEP) &&
-                  (state.backStencilZPass == STENCIL_KEEP)))) {
+                 ((state.stencil.backStencilFail  == STENCIL_KEEP) &&
+                  (state.stencil.backStencilZFail == STENCIL_KEEP) &&
+                  (state.stencil.backStencilZPass == STENCIL_KEEP)))) {
                 glDisable(GL_STENCIL_TEST);
             }
 
@@ -1454,15 +1492,15 @@ void RenderDevice::setStencilTest(StencilTest test) {
                 glActiveStencilFaceEXT(GL_BACK);
             }
 
-            _setStencilTest(test, state.stencilReference);
+            _setStencilTest(test, state.stencil.stencilReference);
 
             if (GLCaps::supports_GL_EXT_stencil_two_side()) {
                 glActiveStencilFaceEXT(GL_FRONT);
-                _setStencilTest(test, state.stencilReference);
+                _setStencilTest(test, state.stencil.stencilReference);
             }
         }
 
-        state.stencilTest = test;
+        state.stencil.stencilTest = test;
 
     }
 }
@@ -1748,36 +1786,36 @@ void RenderDevice::setStencilOp(
     StencilOp                       backZPass) {
 
 	if (frontStencilFail == STENCILOP_CURRENT) {
-		frontStencilFail = state.frontStencilFail;
+		frontStencilFail = state.stencil.frontStencilFail;
 	}
 	
 	if (frontZFail == STENCILOP_CURRENT) {
-		frontZFail = state.frontStencilZFail;
+		frontZFail = state.stencil.frontStencilZFail;
 	}
 	
 	if (frontZPass == STENCILOP_CURRENT) {
-		frontZPass = state.frontStencilZPass;
+		frontZPass = state.stencil.frontStencilZPass;
 	}
 
 	if (backStencilFail == STENCILOP_CURRENT) {
-		backStencilFail = state.backStencilFail;
+		backStencilFail = state.stencil.backStencilFail;
 	}
 	
 	if (backZFail == STENCILOP_CURRENT) {
-		backZFail = state.backStencilZFail;
+		backZFail = state.stencil.backStencilZFail;
 	}
 	
 	if (backZPass == STENCILOP_CURRENT) {
-		backZPass = state.backStencilZPass;
+		backZPass = state.stencil.backStencilZPass;
 	}
     
-	if ((frontStencilFail  != state.frontStencilFail) ||
-        (frontZFail        != state.frontStencilZFail) ||
-        (frontZPass        != state.frontStencilZPass) || 
+	if ((frontStencilFail  != state.stencil.frontStencilFail) ||
+        (frontZFail        != state.stencil.frontStencilZFail) ||
+        (frontZPass        != state.stencil.frontStencilZPass) || 
         (GLCaps::supports_GL_EXT_stencil_two_side() && 
-        ((backStencilFail  != state.backStencilFail) ||
-         (backZFail        != state.backStencilZFail) ||
-         (backZPass        != state.backStencilZPass)))) { 
+        ((backStencilFail  != state.stencil.backStencilFail) ||
+         (backZFail        != state.stencil.backStencilZFail) ||
+         (backZPass        != state.stencil.backStencilZPass)))) { 
 
         if (GLCaps::supports_GL_EXT_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_FRONT);
@@ -1813,7 +1851,7 @@ void RenderDevice::setStencilOp(
              (backZFail        == STENCIL_KEEP)))) {
 
             // Turn off writing.  May need to turn off the stencil test.
-            if (state.stencilTest == STENCIL_ALWAYS_PASS) {
+            if (state.stencil.stencilTest == STENCIL_ALWAYS_PASS) {
                 // Test doesn't need to be on
                 glDisable(GL_STENCIL_TEST);
             }
@@ -1826,7 +1864,7 @@ void RenderDevice::setStencilOp(
             // Turn on writing.  We also need to turn on the
             // stencil test in this case.
 
-            if (state.stencilTest == STENCIL_ALWAYS_PASS) {
+            if (state.stencil.stencilTest == STENCIL_ALWAYS_PASS) {
                 // Test is not already on
                 glEnable(GL_STENCIL_TEST);
 
@@ -1834,21 +1872,21 @@ void RenderDevice::setStencilOp(
                     glActiveStencilFaceEXT(GL_BACK);
                 }
 
-                glStencilFunc(GL_ALWAYS, state.stencilReference, 0xFFFFFF);
+                glStencilFunc(GL_ALWAYS, state.stencil.stencilReference, 0xFFFFFF);
 
                 if (GLCaps::supports_GL_EXT_stencil_two_side()) {
                     glActiveStencilFaceEXT(GL_FRONT);
-                    glStencilFunc(GL_ALWAYS, state.stencilReference, 0xFFFFFF);
+                    glStencilFunc(GL_ALWAYS, state.stencil.stencilReference, 0xFFFFFF);
                 }
             }
         }
 
-        state.frontStencilFail  = frontStencilFail;
-        state.frontStencilZFail = frontZFail;
-        state.frontStencilZPass = frontZPass;
-        state.backStencilFail   = backStencilFail;
-        state.backStencilZFail  = backZFail;
-        state.backStencilZPass  = backZPass;
+        state.stencil.frontStencilFail  = frontStencilFail;
+        state.stencil.frontStencilZFail = frontZFail;
+        state.stencil.frontStencilZPass = frontZPass;
+        state.stencil.backStencilFail   = backStencilFail;
+        state.stencil.backStencilZFail  = backZFail;
+        state.stencil.backStencilZPass  = backZPass;
     }
 }
 
@@ -1988,7 +2026,7 @@ void RenderDevice::setAmbientLightColor(
     const Color4&        color) {
     debugAssert(! inPrimitive);
 
-    if (color != state.ambient) {
+    if (color != state.lights.ambient) {
         float c[] =
             {color.r / lightSaturation,
              color.g / lightSaturation,
@@ -1996,7 +2034,7 @@ void RenderDevice::setAmbientLightColor(
              1.0f};
     
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c);
-        state.ambient = color;
+        state.lights.ambient = color;
     }
 }
 
@@ -2009,18 +2047,18 @@ void RenderDevice::setAmbientLightColor(
 
 void RenderDevice::enableLighting() {
     debugAssert(! inPrimitive);
-    if (! state.lighting) {
+    if (! state.lights.lighting) {
         glEnable(GL_LIGHTING);
-        state.lighting = true;
+        state.lights.lighting = true;
     }
 }
 
 
 void RenderDevice::disableLighting() {
     debugAssert(! inPrimitive);
-    if (state.lighting) {
+    if (state.lights.lighting) {
         glDisable(GL_LIGHTING);
-        state.lighting = false;
+        state.lights.lighting = false;
     }
 }
 
@@ -2030,14 +2068,16 @@ void RenderDevice::setObjectToWorldMatrix(
     
     debugAssert(! inPrimitive);
 
-    state.objectToWorldMatrix = cFrame;
+    // No test to see if it is already equal; this is called frequently and is
+    // usually different.
+    state.matrices.objectToWorldMatrix = cFrame;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrix(state.cameraToWorldMatrixInverse * state.objectToWorldMatrix);
+    glLoadMatrix(state.matrices.cameraToWorldMatrixInverse * state.matrices.objectToWorldMatrix);
 }
 
 
 const CoordinateFrame& RenderDevice::getObjectToWorldMatrix() const {
-    return state.objectToWorldMatrix;
+    return state.matrices.objectToWorldMatrix;
 }
 
 
@@ -2046,33 +2086,33 @@ void RenderDevice::setCameraToWorldMatrix(
 
     debugAssert(! inPrimitive);
     
-    state.cameraToWorldMatrix = cFrame;
-    state.cameraToWorldMatrixInverse = cFrame.inverse();
+    state.matrices.cameraToWorldMatrix = cFrame;
+    state.matrices.cameraToWorldMatrixInverse = cFrame.inverse();
 
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrix(state.cameraToWorldMatrixInverse * state.objectToWorldMatrix);
+    glLoadMatrix(state.matrices.cameraToWorldMatrixInverse * state.matrices.objectToWorldMatrix);
 
     // Reload lights since the camera matrix changed.
     for (int i = 0; i < MAX_LIGHTS; ++i) {
-        if (state.lightEnabled[i]) {
-            setLight(i, &state.light[i], true);
+        if (state.lights.lightEnabled[i]) {
+            setLight(i, &state.lights.light[i], true);
         }
     }
 }
 
 
 const CoordinateFrame& RenderDevice::getCameraToWorldMatrix() const {
-    return state.cameraToWorldMatrix;
+    return state.matrices.cameraToWorldMatrix;
 }
 
 
 Matrix4 RenderDevice::getProjectionMatrix() const {
-    return state.projectionMatrix;
+    return state.matrices.projectionMatrix;
 }
 
 
 CoordinateFrame RenderDevice::getModelViewMatrix() const {
-    return state.cameraToWorldMatrixInverse * getObjectToWorldMatrix();
+    return state.matrices.cameraToWorldMatrixInverse * getObjectToWorldMatrix();
 }
 
 
@@ -2082,8 +2122,8 @@ Matrix4 RenderDevice::getModelViewProjectionMatrix() const {
 
 
 void RenderDevice::setProjectionMatrix(const Matrix4& P) {
-    if (state.projectionMatrix != P) {
-        state.projectionMatrix = P;
+    if (state.matrices.projectionMatrix != P) {
+        state.matrices.projectionMatrix = P;
         glMatrixMode(GL_PROJECTION);
         glLoadMatrix(P);
         glMatrixMode(GL_MODELVIEW);
@@ -2742,11 +2782,11 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
 
     const GLight& light = *_light;
 
-
     if (_light == NULL) {
 
-        if (state.lightEnabled[i] || force) {
-            state.lightEnabled[i] = false;
+        if (state.lights.lightEnabled[i] || force) {
+            // Don't bother copying this light over
+            state.lights.lightEnabled[i] = false;
             glDisable(gi);
         }
 
@@ -2758,14 +2798,14 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
         }
 
     
-        if (! state.lightEnabled[i] || force) {
+        if (! state.lights.lightEnabled[i] || force) {
             glEnable(gi);
-            state.lightEnabled[i] = true;
+            state.lights.lightEnabled[i] = true;
         }
 
     
-        if ((state.light[i] != light) || force) {
-            state.light[i] = light;
+        if ((state.lights.light[i] != light) || force) {
+            state.lights.light[i] = light;
 
             Color4 zero(0, 0, 0, 1);
             Color4 brightness(light.color / lightSaturation, 1);
@@ -2774,7 +2814,7 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
                 glLoadIdentity();
-                glLoadMatrix(state.cameraToWorldMatrixInverse);
+                glLoadMatrix(state.matrices.cameraToWorldMatrixInverse);
                 glLightfv(gi, GL_POSITION,              light.position);
                 glLightfv(gi, GL_SPOT_DIRECTION,        light.spotDirection);
                 glLightf (gi, GL_SPOT_CUTOFF,           light.spotCutoff);
@@ -2824,7 +2864,7 @@ void RenderDevice::configureShadowMap(
     // identity.
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadMatrix(state.cameraToWorldMatrixInverse);
+    glLoadMatrix(state.matrices.cameraToWorldMatrixInverse);
 
     setTexture(unit, shadowMap);
     
