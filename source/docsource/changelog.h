@@ -24,6 +24,7 @@
      <LI> G3D::Lighting
      <LI> G3D::GLight::diffuse
      <LI> Rect2D::contains is now const
+     <LI> Rewrote G3D::BinaryOutput to not use G3D::Array
      <LI> MD2Model::textureMatrix
      <LI> MeshAlg::computeBounds(vertex, index, ...)
      <LI> RenderDevice::colorWriteEnabled(), depthWriteEnabled, alphaWriteEnabled

@@ -4,13 +4,14 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2002-02-20
- @edited  2004-11-05
+ @edited  2005-01-15
  */
 
 #include "G3D/platform.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/fileutils.h"
 #include "G3D/stringutils.h"
+#include "G3D/Array.h"
 #ifdef G3D_WIN32
   #include "zlib/zlib.h"
 #else
@@ -24,6 +25,9 @@ BinaryOutput::BinaryOutput() {
     swapBytes = false;
     pos       = 0;
     filename  = "<memory>";
+    buffer = NULL;
+    bufferLen = 0;
+    maxBufferLen = 0;
 }
 
 
@@ -34,6 +38,9 @@ BinaryOutput::BinaryOutput(
     pos = 0;
     setEndian(fileEndian);
     this->filename = filename;
+    buffer = NULL;
+    bufferLen = 0;
+    maxBufferLen = 0;
 }
 
 
@@ -41,13 +48,17 @@ void BinaryOutput::reset() {
     alwaysAssertM(filename == "<memory>", 
         "Can only reset a BinaryOutput that writes to memory.");
 
+    // Do not reallocate, just clear the size of the buffer.
     pos = 0;
-    buffer.resize(0, false);
+    bufferLen = 0;
 }
 
 
 BinaryOutput::~BinaryOutput() {
-    // Nothing to do
+    free(buffer);
+    buffer = NULL;
+    bufferLen = 0;
+    maxBufferLen = 0;
 }
 
 
@@ -58,16 +69,15 @@ void BinaryOutput::setEndian(G3DEndian fileEndian) {
 
 void BinaryOutput::compress() {
     // Old buffer size
-    uint32 L       = buffer.size();
+    uint32 L       = bufferLen;
     uint8* convert = (uint8*)&L;
 
     // Zlib requires the output buffer to be this big
-    uint8* temp = (uint8*)malloc(iCeil(buffer.size() * 1.01) + 12);
+    uint8* temp = (uint8*)malloc(iCeil(bufferLen * 1.01) + 12);
     uLongf newSize;
-    int result = compress2 (temp, &newSize, buffer.getCArray(), buffer.size(), 9); 
+    int result = compress2(temp, &newSize, buffer, bufferLen, 9); 
 
     debugAssert(result == Z_OK); (void)result;
-
 
     // Write the header
     if (swapBytes) {
@@ -83,9 +93,13 @@ void BinaryOutput::compress() {
     }
 
     // Write the data
-    buffer.resize(newSize + 4);
-    memcpy(buffer.getCArray() + 4, temp, newSize);
-    pos = buffer.size();
+    if (newSize + 4 > maxBufferLen) {
+        maxBufferLen = newSize + 4;
+        buffer = (uint8*)realloc(buffer, maxBufferLen);
+    }
+    bufferLen = newSize + 4;
+    System::memcpy(buffer + 4, temp, newSize);
+    pos = bufferLen;
 
     free(temp);
 }
@@ -107,7 +121,7 @@ void BinaryOutput::commit(bool flush) {
     debugAssert(file);
 
 
-    fwrite(buffer.getCArray(), buffer.size(), 1, file);
+    fwrite(buffer, bufferLen, 1, file);
     if (flush) {
         fflush(file);
     }
@@ -119,7 +133,7 @@ void BinaryOutput::commit(bool flush) {
 void BinaryOutput::commit(
     uint8*                  out) {
 
-    memcpy(out, buffer.getCArray(), buffer.size());
+    System::memcpy(out, buffer, bufferLen);
 }
 
 
@@ -195,7 +209,7 @@ void BinaryOutput::writeString(const char* s) {
     int len = strlen(s) + 1;
 
     reserveBytes(len);
-    memcpy(buffer.getCArray() + pos, s, len);
+    System::memcpy(buffer + pos, s, len);
     pos += len;
 }
 
@@ -205,7 +219,7 @@ void BinaryOutput::writeStringEven(const char* s) {
     int len = strlen(s) + 1;
 
     reserveBytes(len);
-    memcpy(buffer.getCArray() + pos, s, len);
+    System::memcpy(buffer + pos, s, len);
     pos += len;
 
     // Pad with another NULL

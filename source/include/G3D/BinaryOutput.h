@@ -24,7 +24,6 @@
 #include "G3D/Vector3.h"
 #include "G3D/Vector2.h"
 #include "G3D/g3dmath.h"
-#include "G3D/Array.h"
 #include "G3D/debug.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/System.h"
@@ -43,7 +42,13 @@ private:
     // True if the file endianess does not match the machine endian
     bool            swapBytes;
 
-    Array<uint8>    buffer;
+    uint8*          buffer;
+    
+    /** Size of the elements used */
+    size_t          bufferLen;
+
+    /** Underlying size of memory allocaded */
+    size_t          maxBufferLen;
 
     // Next byte in file
     int             pos;
@@ -56,9 +61,12 @@ private:
      necessary.
      */
     void reserveBytes(int bytes) {
-        if (pos + bytes >= buffer.length()) {
-            buffer.resize(pos + bytes, false);
+        bufferLen = iMax(bufferLen, pos + bytes);
+        if (bufferLen >= maxBufferLen) {
+            maxBufferLen = bufferLen * 1.5 + 100;
+            buffer = (uint8*)realloc(buffer, maxBufferLen);
         }
+
     }
 
 public:
@@ -77,7 +85,7 @@ public:
         const std::string&  filename,
         G3DEndian           fileEndian);
 
-    virtual ~BinaryOutput();
+    ~BinaryOutput();
     
     /** Compresses the data in the buffer in place, 
         preceeding it with a little-endian uint32 indicating 
@@ -88,8 +96,8 @@ public:
     /**
      Returns a pointer to the internal memory buffer.
      */
-    const uint8* getCArray() const {
-        return buffer.getCArray();
+    inline const uint8* getCArray() const {
+        return buffer;
     }
 
     void setEndian(G3DEndian fileEndian);
@@ -128,26 +136,33 @@ public:
 
     /**
      Returns the length of the file in bytes.
+     @deprecated use BinaryOutput.size
      */
     inline int getLength() const {
-        return buffer.size();
+        return bufferLen;
+    }
+
+    inline int length() const {
+        return bufferLen;
     }
 
     inline int size() const {
-        return buffer.size();
+        return bufferLen;
     }
 
     /**
      Sets the length of the file to n, padding
      with 0's past the current end.  Does not
      change the position of the next byte to be
-     written unless n < getLength().
+     written unless n < size().
      */
     inline void setLength(int n) {
-        if (n < buffer.size()) {
+        if (n < bufferLen) {
             pos = n;
         }
-        buffer.resize(n);
+        if (n > bufferLen) {
+            reserveBytes(n - bufferLen);
+        }
     }
 
     /**
@@ -164,7 +179,7 @@ public:
      next to be written.
      */
     inline void setPosition(int p) {
-        if (p > buffer.size()) {
+        if (p > bufferLen) {
             setLength(p);
         }
         pos = p;
@@ -175,7 +190,7 @@ public:
         int                 count) {
 
         reserveBytes(count);
-        memcpy(buffer.getCArray() + pos, b, count);
+        System::memcpy(buffer + pos, b, count);
         pos += count;
     }
 
@@ -268,7 +283,7 @@ public:
      Skips ahead n bytes.
      */
     inline void skip(int n) {
-        if (pos + n > buffer.size()) {
+        if (pos + n > bufferLen) {
             setLength(pos + n);
         }
         pos += n;

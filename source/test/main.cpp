@@ -1,12 +1,11 @@
 /**
  @file Test/main.cpp
 
- This file contains some unit tests for G3D, as well as commented 
- out scratch code useful when debugging.
+ This file contains some unit tests for G3D.
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-10-26
+ @edited  2005-01-17
  */
 
 #include "../include/G3DAll.h"
@@ -18,6 +17,37 @@ using namespace G3D;
 	#include "conio.h"
 #endif
 #include <string>
+
+
+void measureSerializerPerformance() {
+    Array<uint8> x(1024);
+    RealTime t0 = System::time();
+    
+    for (int i = 0; i < 100; ++i) {
+        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+        b.writeInt32(1);
+        b.writeInt32(2);
+        b.writeInt32(8);
+        Matrix4::identity().serialize(b);
+        b.commit(x.getCArray());
+    }
+    RealTime reallocTime = (System::time() - t0) / 100.0;
+    printf("BinaryOutput time with re-allocation: %gs\n", reallocTime);
+
+    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+    t0 = System::time();    
+    for (int i = 0; i < 100; ++i) {
+        b.writeInt32(1);
+        b.writeInt32(2);
+        b.writeInt32(8);
+        Matrix4::identity().serialize(b);
+        b.commit(x.getCArray());
+        b.reset();
+    }
+    RealTime resetTime = (System::time() - t0) / 100.0;
+    printf("BinaryOutput time with BinaryOutpu::reset: %gs\n\n", resetTime);
+    
+}
 
 
 void measureBSPPerformance() {
@@ -1131,6 +1161,7 @@ void testCompression() {
     debugAssert(j == 1.234); (void)j;
 }
 
+
 void testMemcpy() {
     printf("System::memcpy\n");
 	static const int k = 50000;
@@ -1706,37 +1737,6 @@ void testSwizzle() {
 
 
 int main(int argc, char* argv[]) {    
-    /*
-    Array<uint8> x(1024);
-    RealTime t0 = System::time();
-    
-    for (int i = 0; i < 100; ++i) {
-        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-        b.writeInt32(1);
-        b.writeInt32(2);
-        b.writeInt32(8);
-        Matrix4::identity().serialize(b);
-        b.commit(x.getCArray());
-    }
-    RealTime reallocTime = System::time() - t0;
-    printf("Reallocation Time: %gs\n", reallocTime);
-
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-    t0 = System::time();    
-    for (int i = 0; i < 100; ++i) {
-        b.writeInt32(1);
-        b.writeInt32(2);
-        b.writeInt32(8);
-        Matrix4::identity().serialize(b);
-        b.commit(x.getCArray());
-        b.reset();
-    }
-    RealTime resetTime = System::time() - t0;
-    printf("Reset Time: %gs\n", resetTime);
-    
-    while(true);
-return 0;
-*/
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
@@ -1749,6 +1749,7 @@ return 0;
         measureMemcpyPerformance();
         measureMemsetPerformance();
         measureNormalizationPerformance();
+        measureSerializerPerformance();
         return 0;
     #endif
 
