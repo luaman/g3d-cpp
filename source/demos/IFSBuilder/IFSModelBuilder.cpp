@@ -10,7 +10,7 @@
 #include "IFSModelBuilder.h"
 #include "IFSModel.h"
 
-const double IFSModelBuilder::CLOSE = 0.1;
+const double IFSModelBuilder::CLOSE = 0.02;
 
 void IFSModelBuilder::setName(const std::string& n) {
     name = n;
@@ -23,6 +23,12 @@ void IFSModelBuilder::commit(IFSModel* model) {
     // Make the data fit in a unit cube
     centerTriList();
 
+    // Prime the vertex list
+    for (int i = 0; i < triList.size(); ++i) {
+        getIndex(triList[i], model);
+    }
+
+    // Construct triangles
     for (int t = 0; t < triList.size(); t += 3) {
         IFSModel::Triangle tri;
 

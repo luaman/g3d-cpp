@@ -83,8 +83,8 @@ int main(int argc, char** argv) {
 
 //    std::string in("d:/graphics3d/book/data/ifs/bunny.ifs");
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/ROCKHRSE.ifs");
-//    std::string in("d:/libraries/g3d-6_00/data/ifs/teapot.ifs");
-    std::string in("d:/libraries/g3d-6_00/data/ifs/dinosaur.ifs");
+    std::string in("d:/libraries/g3d-6_00/data/ifs/teapot.ifs");
+//    std::string in("d:/libraries/g3d-6_00/data/ifs/sphere.ifs");
     std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
 
     Array<std::string> filename;
