@@ -478,18 +478,19 @@ void Win32Window::setIcon(const GImage& image) {
     if (image.channels == 3) {
         
         GImage alpha(image.width, image.height, 1);
-        memset(alpha.byte(), 255, (image.width * image.height));
+        System::memset(alpha.byte(), 255, (image.width * image.height));
         icon = image.insertRedAsAlpha(alpha);
     } else {
         icon = image;
     }
 
     int colorMaskIdx = 0;
-    memset(bwMaskData, 0x00, 128);
+    System::memset(bwMaskData, 0x00, 128);
     for (int y = 0; y < 32; ++y) {
         for (int x = 0; x < 32; ++x) {
             bwMaskData[ (y * 4) + (x / 8) ] |= ((icon.pixel4(x, y).a > 127) ? 1 : 0) << (x % 8);
 
+            // Windows icon images are BGRA like a lot of windows image data
             colorMaskData[colorMaskIdx] = icon.pixel4()[y * 32 + x].b;
             colorMaskData[colorMaskIdx + 1] = icon.pixel4()[y * 32 + x].g;
             colorMaskData[colorMaskIdx + 2] = icon.pixel4()[y * 32 + x].r;
@@ -509,15 +510,24 @@ void Win32Window::setIcon(const GImage& image) {
     iconInfo.fIcon = true;
 
     HICON hicon = ::CreateIconIndirect(&iconInfo);
+    _usedIcons.insert((int)hicon);
 
     // Purposely leak any icon created indirectly like hicon becase we don't know.
     HICON hsmall = (HICON)::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hicon);
     HICON hlarge = (HICON)::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hicon);
 
+    if (_usedIcons.contains((int)hsmall)) {
+        ::DestroyIcon(hsmall);
+        _usedIcons.remove((int)hsmall);
+    }
+    
+    if (_usedIcons.contains((int)hlarge)) {
+        ::DestroyIcon(hlarge);
+        _usedIcons.remove((int)hlarge);
+    }
 
     ::DeleteObject(bwMask);
     ::DeleteObject(colorMask);
-//    ::DestroyIcon(hicon);
 }
 
 

@@ -51,6 +51,8 @@ private:
         [0] - left, [1] - middle, [2] - right */
     bool                 _mouseButtons[3];
 
+    G3D::Set< int >   _usedIcons;
+
 	/** Coordinates of the client area in screen coordinates */
 	int				     clientX;
 	int					 clientY;
