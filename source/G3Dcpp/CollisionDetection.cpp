@@ -443,12 +443,8 @@ double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
     // Transform the sphere to the box's coordinate frame.
     Vector3 center = boxFrame.pointToObjectSpace(sphere.center);
 
-    // Find the square of the distance
-    // from the sphere to the box
-    float d = 0;
+    // Find the square of the distance from the sphere to the box
 
-    int    minAxis = -1;
-    float  minDist = inf();
 
     // Distance along each axis from the closest side of the box
     // to the sphere center.  Negative values are *inside* the box.
