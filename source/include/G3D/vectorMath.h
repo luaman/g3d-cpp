@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created: 2001-06-02
-  @edited:  2003-09-28
+  @edited:  2003-10-04
  */
 
 #ifndef G3D_VECTORMATH_H
@@ -20,11 +20,6 @@
 
 namespace G3D {
 
-typedef Matrix4 float4x4;
-typedef Matrix3 float3x3;
-typedef Vector4 float4;
-typedef Vector3 float3;
-typedef Vector2 float2;
 
 inline Matrix4 mul(const Matrix4& a, const Matrix4& b) {
     return a * b;
