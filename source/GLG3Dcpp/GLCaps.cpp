@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-28
+  @edited  2004-04-25
 */
 
 #include "GLG3D/GLCaps.h"
@@ -43,6 +43,9 @@ Set<std::string> GLCaps::extensionSet;
     DECLARE_EXT(GL_EXT_texture_compression_s3tc);
     DECLARE_EXT(GL_EXT_texture_cube_map);
     DECLARE_EXT(GL_ARB_shadow);
+    DECLARE_EXT(GL_ARB_shader_objects);
+    DECLARE_EXT(GL_ARB_fragment_shader);
+    DECLARE_EXT(GL_ARB_vertex_shader);
 #undef DECLARE_EXT
 
 
@@ -75,7 +78,6 @@ void GLCaps::loadExtensions() {
         LOAD_EXTENSION(glMultiTexCoord4dvARB);
         LOAD_EXTENSION(glActiveTextureARB);
         LOAD_EXTENSION(glClientActiveTextureARB);
-
     #endif
 
     #ifdef G3D_WIN32
@@ -171,6 +173,9 @@ void GLCaps::loadExtensions() {
             DECLARE_EXT(GL_EXT_texture_compression_s3tc);
             DECLARE_EXT(GL_EXT_texture_cube_map);
             DECLARE_EXT(GL_ARB_shadow);
+            DECLARE_EXT(GL_ARB_shader_objects);
+            DECLARE_EXT(GL_ARB_fragment_shader);
+            DECLARE_EXT(GL_ARB_vertex_shader);
         #undef DECLARE_EXT
 
         // Verify that multitexture loaded correctly
