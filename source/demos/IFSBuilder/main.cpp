@@ -9,14 +9,14 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-04-03
+  @edited  2002-04-04
  */ 
 
 #include <G3DAll.h>
 #include "IFSModel.h"
 #include "IFSModelBuilder.h"
 
-std::string             DATA_DIR        = "d:/libraries/g3d-5_00/data/";
+std::string             DATA_DIR        = "data/";
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
@@ -28,6 +28,8 @@ bool                    endProgram		= false;
 
 IFSModel*               model           = NULL;
 
+bool                    pauseBetweenModels = false;
+
 RealTime getTime() {
     return SDL_GetTicks() / 1000.0;
 }
@@ -36,13 +38,30 @@ void doSimulation(GameTime timeStep);
 void doGraphics();
 void doUserInput();
 
+/** Expands a file spec's wildcards and returns a list of
+    fully qualified filenames matching it (on Windows).  The result
+    array is not cleared before files are added.
+    
+    On Linux, this just returns the str name in result. */
+void expandWildcard(const std::string& str, Array<std::string>& result);
+/**
+ Returns the base name (between the last slash and the extension).
+ */
+std::string getFilename(const std::string& filename);
+
+
 
 int main(int argc, char** argv) {
+
+    // Search for the data
+    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "font/dominant.fnt")); ++count) {
+        DATA_DIR = std::string("../") + DATA_DIR;
+    }
 
     // Initialize
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(800, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+    renderDevice->init(400, 400, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
     camera 	     = new Camera(renderDevice);
 
     font         = new Font(renderDevice, DATA_DIR + "font/dominant.fnt");
@@ -52,7 +71,7 @@ int main(int argc, char** argv) {
     controller   = new ManualCameraController(renderDevice);
     controller->setMoveRate(.1);
 
-    controller->setPosition(Vector3(0, 2, 3));
+    controller->setPosition(Vector3(2, 2, 2));
     controller->lookAt(Vector3(0,0,0));
 
     renderDevice->resetState();
@@ -64,24 +83,31 @@ int main(int argc, char** argv) {
     std::string in("D:/tmp/obj/");
     std::string out("D:/users/morgan/Projects/Silhouette/models/");
 
-    std::string name = "CAVATAP2";
-    model = new IFSModel(in + name + ".obj");
-    model->name = name;
-    //model->save(out + name + ".ifs");
+    Array<std::string> filename;
 
-    // Main loop
-    do {
-        lastTime = now;
-        now = getTime();
-        RealTime timeStep = now - lastTime;
+    expandWildcard(in + "*.obj", filename);
 
-        doUserInput();
+    for (int i = 0; i < filename.size(); ++i) {
+        std::string base = getFilename(filename[i]);
+        model = new IFSModel(filename[i]);
+        model->name = base;
+        model->save(out + base + ".ifs");
+        
+        // Main loop (display 3D object)
+        do {
+            lastTime = now;
+            now = getTime();
+            RealTime timeStep = now - lastTime;
 
-        doSimulation(timeStep);
+            doUserInput();
 
-        doGraphics();
+            doSimulation(timeStep);
+
+            doGraphics();
    
-    } while (! endProgram);
+        } while (! endProgram && pauseBetweenModels);
+        
+    }
 
 
     // Cleanup
@@ -117,9 +143,12 @@ void doGraphics() {
 
             if (model != NULL) {
                 model->render();
+                renderDevice->push2D();
+                font->draw2DString(model->name, 10, 10, 20, Color3::WHITE, Color3::BLACK);
+                renderDevice->pop2D();
             }
 
-            renderDevice->debugDrawAxes(2);
+            //renderDevice->debugDrawAxes(2);
 
         renderDevice->popState();
 	    
@@ -158,3 +187,4 @@ void doUserInput() {
 
     userInput->endEvents();
 }
+
