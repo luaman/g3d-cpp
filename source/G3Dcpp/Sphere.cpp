@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-04-17
- @edited  2003-12-13
+ @edited  2004-01-11
  */
 
 #include "G3D/Sphere.h"
@@ -14,6 +14,7 @@
 #include "G3D/Plane.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/BinaryInput.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 
@@ -89,5 +90,10 @@ double Sphere::surfaceArea() const {
     return G3D_PI * 4 * pow(radius, 2);
 }
 
+
+void Sphere::getBounds(AABox& out) const {
+    Vector3 extent(radius, radius, radius);
+    out = AABox(center - extent, center + extent);
+}
 
 } // namespace

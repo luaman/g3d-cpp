@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-06-02
- @edited  2003-10-04
+ @edited  2004-01-11
  */
 
 #ifndef G3D_SPHERE_H
@@ -73,6 +73,8 @@ public:
      Uniformly distributed on the interior (includes surface)
      */
     Vector3 randomInteriorPoint() const;
+
+    void getBounds(class AABox& out) const;
 };
 
 } // namespace

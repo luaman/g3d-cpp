@@ -77,6 +77,7 @@
 #include "G3D/Rect2D.h"
 #include "G3D/GCamera.h"
 #include "G3D/GLight.h"
+#include "G3D/KDTreeSet.h"
 
 #endif
 

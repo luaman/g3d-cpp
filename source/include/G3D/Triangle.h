@@ -4,11 +4,11 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-04-05
- @edited  2003-04-05
+ @edited  2004-01-11
 
  @cite Random point method by  Greg Turk, Generating random points in triangles.  In A. S. Glassner, ed., Graphics Gems, pp. 24-28. Academic Press, 1990
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
  */
 
@@ -74,8 +74,32 @@ public:
     /** Returns a random point in the triangle. */
     Vector3 randomPoint() const;
 
+    /**
+     For two triangles to be equal they must have
+     the same vertices <I>in the same order</I>.
+     That is, vertex[0] == vertex[0], etc.
+     */
+    inline bool operator==(const Triangle& other) {
+        for (int i = 0; i < 3; ++i) {
+            if (_vertex[i] != other._vertex[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    inline unsigned int hashCode() const {
+        return
+            _vertex[0].hashCode() +
+            (_vertex[1].hashCode() >> 2) +
+            _vertex[2].hashCode();
+    }
+
+    void getBounds(class AABox&) const;
+
 };
 
-}
+} // namespace
 
 #endif

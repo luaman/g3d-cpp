@@ -171,6 +171,8 @@ public:
      Uniformly distributed on the interior (includes surface)
      */
     Vector3 randomInteriorPoint() const;
+
+    void getBounds(class AABox&) const;
 };
 
 }

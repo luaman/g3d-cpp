@@ -34,20 +34,28 @@ public:
     /** Does not initialize the fields */
     inline AABox() {}
 
+    /**
+     Constructs a zero-area AABox at v.
+     */
+    inline AABox(const Vector3& v) {
+        lo = hi = v;
+    }
+
     inline AABox(const Vector3& low, const Vector3& high) {
         lo = low.min(high);
         hi = high.max(low);
     }
 
 	void serialize(class BinaryOutput& b) const;
+
 	void deserialize(class BinaryInput& b);
 
-    /**
-     Axis aligned bounds (always exact for this object!)
-     */
-    inline void aabb(Vector3& L, Vector3& H) const {
-        L = lo;
-        H = hi;
+    inline const Vector3& low() const {
+        return lo;
+    }
+
+    inline const Vector3& high() const {
+        return hi;
     }
 
     /**
@@ -112,6 +120,10 @@ public:
 
     inline bool operator==(const G3D::AABox& b) {
         return (lo == b.lo) && (hi == b.hi);
+    }
+
+    void getBounds(AABox& out) const {
+        out = *this;
     }
 };
 

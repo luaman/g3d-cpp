@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-04-06
- @edited  2003-04-06
+ @edited  2004-01-11
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
  */
 
@@ -15,6 +15,7 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/debugAssert.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 
@@ -105,4 +106,17 @@ Vector3 Triangle::randomPoint() const {
     return (U * (s * edgeLength[0])) + (V * (t * -edgeLength[2])) + _vertex[0];
 }
 
+
+void Triangle::getBounds(AABox& out) const {
+    Vector3 lo = _vertex[0];
+    Vector3 hi = lo;
+
+    for (int i = 1; i < 3; ++i) {
+        lo = lo.min(_vertex[i]);
+        hi = hi.max(_vertex[i]);
+    }
+
+    out = AABox(lo, hi);
 }
+
+} // G3D

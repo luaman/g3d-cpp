@@ -5,12 +5,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2004-01-10
+  @edited  2004-01-11
 */
 
 #include "G3D/Box.h"
 #include "G3D/debug.h"
 #include "G3D/Plane.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 
@@ -256,5 +257,21 @@ Vector3 Box::randomInteriorPoint() const {
 
     return sum;
 }
+
+
+void Box::getBounds(class AABox& aabb) const {
+
+    Vector3 lo = _corner[0];
+    Vector3 hi = lo;
+
+    for (int v = 1; v < 8; ++v) {
+        const Vector3& C = _corner[v];
+        lo = lo.min(C);
+        hi = hi.max(C);
+    }
+
+    aabb = AABox(lo, hi);
+}
+
 
 } // namespace
