@@ -76,6 +76,8 @@ public:
     double                  bumpScale;
 
     Viewer(App* app);    
+    
+    virtual ~Viewer() {}
 
     virtual void init();
 

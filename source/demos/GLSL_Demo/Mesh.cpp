@@ -46,7 +46,10 @@ Mesh::Mesh(
 	Array<Vector3> binormal;
 	Array<Vector3> tangent;
 	Array<MeshAlg::Face> face;
-	MeshAlg::computeAdjacency(vertex, index, face, Array<MeshAlg::Edge>(), Array<MeshAlg::Vertex>()); 
+    Array<MeshAlg::Edge> tmpEdge;
+    Array<MeshAlg::Vertex> tmpVertex; 
+	MeshAlg::computeAdjacency(vertex, index, face, tmpEdge, tmpVertex);
+
 	MeshAlg::computeTangentSpaceBasis(vertex, tex, normal, face, tangent, binormal);
 
     // Negate the binormal
