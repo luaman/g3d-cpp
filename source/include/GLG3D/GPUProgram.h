@@ -125,16 +125,10 @@ private:
     };
 
 public:
-        /**
+     /**
      Argument list for a vertex program.
      See RenderDevice::setVertexProgram.
-     <PRE>
-        ArgList args;
-        args.set("MVP", renderDevice->getModelViewProjection());
-        args.set("height", 3);
-        args.set("viewer", Vector3(1, 2, 3));
-        renderDevice->setVertexProgram(toonShadeVP, args);
-     </PRE>
+     
      */
     class ArgList {
     private:

@@ -486,7 +486,7 @@ bool RenderDevice::init(
     if (debugLog) {
     debugLog->section("Video Status");
 
-    int actualFSAABuffers = 1, actualFSAASamples = 1;
+    int actualFSAABuffers = 0, actualFSAASamples = 17;
 #ifdef SDL_1_26
     SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
     SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
@@ -502,8 +502,8 @@ bool RenderDevice::init(
              "Red                             %4d bits   %s\n"
              "Green                           %4d bits   %s\n"
              "Blue                            %4d bits   %s\n"
-             "TextureUnits              %4d    %3d/%3d   %s\n"
-             "FSAA                      %2d/%2d    %2d/%2d %s\n"
+             "TextureUnits              %4d    %3d:%3d   %s\n"
+             "FSAA                      %2d:%2d    %2d:%2d    %s\n"
 
              "Width             %8d pixels           %s\n"
              "Height            %8d pixels           %s\n"
@@ -573,7 +573,7 @@ bool RenderDevice::init(
              greenBits, "ok", 
              blueBits, "ok", 
 
-             desiredTextureUnits, _numTextureUnits, rawTextureUnits, isOk(_numTextureUnits >= desiredTextureUnits),
+             desiredTextureUnits, _numTextureUnits, _numTextureCoords, isOk(_numTextureUnits >= desiredTextureUnits),
              1, settings.fsaaSamples, actualFSAABuffers, actualFSAASamples, isOk(settings.fsaaSamples == actualFSAASamples),
 
              settings.width, "ok",
@@ -758,7 +758,7 @@ void RenderDevice::setVideoMode() {
     SDL_GL_SetAttribute(SDL_GL_STEREO,          settings.stereo);
 
 #ifdef SDL_1_26
-    if (fsaaSamples > 1) {
+    if (settings.fsaaSamples > 1) {
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, settings.fsaaSamples);
     }
@@ -826,7 +826,9 @@ void RenderDevice::setVideoMode() {
     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POINT_SMOOTH);
-    //glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
+    // glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
+    glEnable(GL_MULTISAMPLE_ARB);
+    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     glEnable(GL_NORMALIZE);
 
     float spec[] = {1.0f, 1.0f, 1.0f, 1.0f};

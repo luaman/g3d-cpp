@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-10-06
+ @edited  2003-11-02
  */
 
 
@@ -786,10 +786,14 @@ int main(int argc, char** argv) {
     renderDevice = new RenderDevice();
     {
         RenderDeviceSettings settings;
-        settings.fsaaSamples = 1;
+        settings.fsaaSamples = 4;
         settings.resizable = true;
+        settings.width  = 460;
+        settings.height = 480;
         renderDevice->init(settings, debugLog);
     }
+
+
     camera 	     = new Camera(renderDevice);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");

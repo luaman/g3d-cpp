@@ -880,6 +880,14 @@ public:
      Sets vertex program arguments for vertex programs outputted by Cg.
      The names of arguments are read from comments.
 
+     <PRE>
+        ArgList args;
+        args.set("MVP", renderDevice->getModelViewProjection());
+        args.set("height", 3);
+        args.set("viewer", Vector3(1, 2, 3));
+        renderDevice->setVertexProgram(toonShadeVP, args);
+     </PRE>
+
      @param args must include *all* arguments or an assertion will fail
      */
     void setVertexProgram(const VertexProgramRef& vp,
