@@ -104,17 +104,16 @@ def lib():
         x = run("make")
 
         # Copy the lib's to the right directory
-        if (x != 0):
-            mkdir("temp/lib")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D.a",                  installDir + "/lib/libG3D.a")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",            installDir + "/lib/libG3D_debug.a")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D.so.0.0.0",           installDir + "/lib/libG3D.so")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.so.0.0.0",     installDir + "/lib/libG3D_debug.so")
-            
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.a",              installDir + "/lib/libGLG3D.a")
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.a",        installDir + "/lib/libGLG3D_debug.a")
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.so.0.0.0",       installDir + "/lib/libGLG3D.so")
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
+        if (x == 0):
+            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            installDir + "/lib/libG3D_debug.a")
+            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.so.0.0.0",     installDir + "/lib/libG3D_debug.so.0")
+            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                installDir + "/lib/libG3D.a")
+            copyIfNewer("temp/release/g3d/.libs/libG3D.so.0.0.0",         installDir + "/lib/libG3D.so.0")
+
+            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",        installDir + "/lib/libGLG3D_debug.a")
+            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so.0")
+            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            installDir + "/lib/libGLG3D.a")
+            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.so.0.0.0",     installDir + "/lib/libGLG3D.so.0")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."
