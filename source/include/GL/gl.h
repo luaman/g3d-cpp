@@ -1764,7 +1764,7 @@ GLAPI void GLAPIENTRY glGetSeparableFilter( GLenum target, GLenum format,
 #define GL_CLIENT_ACTIVE_TEXTURE_ARB		0x84E1
 #define GL_MAX_TEXTURE_UNITS_ARB		0x84E2
 
-#if 0
+#ifdef G3D_GL_ARB_multitexture_static
 GLAPI void GLAPIENTRY glActiveTextureARB(GLenum texture);
 GLAPI void GLAPIENTRY glClientActiveTextureARB(GLenum texture);
 GLAPI void GLAPIENTRY glMultiTexCoord1dARB(GLenum target, GLdouble s);

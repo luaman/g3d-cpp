@@ -54,19 +54,19 @@ GLdouble glGetDouble(GLenum which);
 
 #ifdef G3D_WIN32
 
-/**
- OpenGL context (argument to glMakeCurrent, return value of glGetCurrentContext).
- <B>BETA API-- subject to change</B>
- */
-typedef HGLRC GLContext;
+    /**
+     OpenGL context (argument to glMakeCurrent, return value of glGetCurrentContext).
+     <B>BETA API-- subject to change</B>
+     */
+    typedef HGLRC GLContext;
 
-/**
- Returns the current OpenGL context if more than one is in use.
- <B>BETA API-- subject to change</B>
- */
-inline GLContext glGetCurrentContext() {
-    return wglGetCurrentContext();
-}
+    /**
+     Returns the current OpenGL context if more than one is in use.
+     <B>BETA API-- subject to change</B>
+     */
+    inline GLContext glGetCurrentContext() {
+        return wglGetCurrentContext();
+    }
 
 #elif defined(G3D_LINUX)
 
@@ -76,12 +76,11 @@ inline GLContext glGetCurrentContext() {
 }
 
 #elif defined(G3D_OSX)
-
-typedef void* GLContext;
-inline GLContext glGetCurrentContxt() {
-	/* This needs an implementation.  See 902986 */
-	return NULL;
-}
+    typedef void* GLContext;
+    inline GLContext glGetCurrentContext() {
+	    /* This needs an implementation.  See 902986 */
+	    return NULL;
+    }
 #endif
 
 

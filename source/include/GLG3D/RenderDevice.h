@@ -202,6 +202,9 @@ private:
      True if GL_ARB_fragment_program is in the extension list.
      */
     bool                        _supportsFragmentProgram;
+
+    static bool                 _supportsMultitexture;
+
     /**
      For counting the number of beginFrame/endFrames.
      */
@@ -259,7 +262,9 @@ private:
 
     ////////////////////////////////////////////////////////////////////
 public:
+
     RenderDevice();
+
     ~RenderDevice();
 
     /**
@@ -947,6 +952,16 @@ public:
      */
     bool supportsTextureRectangle() const {
         return textureRectangleSupported;
+    }
+
+    /**
+     Returns true if glActiveTextureARB and similar are supported
+     on the last renderdevice initialized on this system.
+
+     <B>BETA API</B> This will eventually be a non-static method.
+     */
+    static bool supportsMultitexture() {
+        return _supportsMultitexture;
     }
 
     bool supportsVertexProgram() const {

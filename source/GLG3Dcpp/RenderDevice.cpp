@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-03-09
+ @edited  2004-03-24
  */
 
 
@@ -23,6 +23,9 @@
     #include <winver.h>
 #endif
 
+bool G3D::RenderDevice::_supportsMultitexture = false;
+
+#ifndef G3D_GL_ARB_multitexture_static
 PFNGLMULTITEXCOORD1FARBPROC                 glMultiTexCoord1fARB		    = NULL;
 PFNGLMULTITEXCOORD1DARBPROC                 glMultiTexCoord1dARB		    = NULL;
 
@@ -38,6 +41,7 @@ PFNGLMULTITEXCOORD4DVARBPROC                glMultiTexCoord4dvARB		    = NULL;
 
 PFNGLACTIVETEXTUREARBPROC                   glActiveTextureARB 			    = NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC             glClientActiveTextureARB	    = NULL;
+#endif
 
 #ifdef G3D_WIN32
 PFNWGLSWAPINTERVALEXTPROC                   wglSwapIntervalEXT 			    = NULL;
@@ -285,30 +289,38 @@ void RenderDevice::initGLExtensions() {
         *((void**)&name) = glGetProcAddress(#name); \
        if (debugLog) {debugLog->printf("(0x%x)\n", #name);}
 
+    // Don't load the multitexture extensions when they are
+    // statically linked
+    #ifndef G3D_GL_ARB_multitexture_static
+        LOAD_EXTENSION(glMultiTexCoord2fARB);
+        LOAD_EXTENSION(glMultiTexCoord1fARB);
+        LOAD_EXTENSION(glMultiTexCoord2fvARB);
+        LOAD_EXTENSION(glMultiTexCoord3fvARB);
+        LOAD_EXTENSION(glMultiTexCoord4fvARB);
+        LOAD_EXTENSION(glMultiTexCoord1dARB);
+        LOAD_EXTENSION(glMultiTexCoord2dvARB);
+        LOAD_EXTENSION(glMultiTexCoord3dvARB);
+        LOAD_EXTENSION(glMultiTexCoord4dvARB);
+        LOAD_EXTENSION(glActiveTextureARB);
 
-    LOAD_EXTENSION(glMultiTexCoord2fARB);
-    LOAD_EXTENSION(glMultiTexCoord1fARB);
-    LOAD_EXTENSION(glMultiTexCoord2fvARB);
-    LOAD_EXTENSION(glMultiTexCoord3fvARB);
-    LOAD_EXTENSION(glMultiTexCoord4fvARB);
-    LOAD_EXTENSION(glMultiTexCoord1dARB);
-    LOAD_EXTENSION(glMultiTexCoord2dvARB);
-    LOAD_EXTENSION(glMultiTexCoord3dvARB);
-    LOAD_EXTENSION(glMultiTexCoord4dvARB);
-    LOAD_EXTENSION(glActiveTextureARB);
+        // Older machines can't handle multitexture, 
+        // so give it a version that will be safe for
+        // single texture GL
+        if (glActiveTextureARB == NULL) {
+            _supportsMultitexture = false;
+            #ifdef G3D_WIN32
+                *((void**)&glActiveTextureARB) = glIgnore;
+            #else
+                glActiveTextureARB = (void(*)(unsigned int))glIgnore;
+            #endif
+        } else {
+            _supportsMultitexture = (glMultiTexCoord4fvARB != NULL);
+        }
 
-    // Older machines can't handle multitexture, 
-    // so give it a version that will be safe for
-    // single texture GL
-    if (glActiveTextureARB == NULL) {
-        #ifdef G3D_WIN32
-            *((void**)&glActiveTextureARB) = glIgnore;
-        #else
-            glActiveTextureARB = (void(*)(unsigned int))glIgnore;
-        #endif
-    }
+        LOAD_EXTENSION(glClientActiveTextureARB);
 
-    LOAD_EXTENSION(glClientActiveTextureARB);
+    #endif
+
     #ifdef G3D_WIN32
         LOAD_EXTENSION(wglSwapIntervalEXT);
         LOAD_EXTENSION(wglChoosePixelFormatARB);
@@ -468,7 +480,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         _numTextures      = _numTextureUnits;
     }
 
-    if ((glActiveTextureARB == NULL) || (glMultiTexCoord4fvARB == NULL)) {
+    if (! supportsMultitexture()) {
         // No multitexture
         if (debugLog) {debugLog->println("No multitexture support: forcing number of texture units to no more than 1");}
         _numTextureCoords = iMax(1, _numTextureCoords);
@@ -2205,7 +2217,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
         unit, _numTextureCoords));
 
     state.textureUnit[unit].texCoord = texCoord;
-    if (glMultiTexCoord4fvARB != NULL) {
+    if (supportsMultitexture()) {
         glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
     } else {
         debugAssertM(unit == 0, "This machine has only one texture unit");

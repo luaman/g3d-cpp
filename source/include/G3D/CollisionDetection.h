@@ -44,7 +44,7 @@ namespace G3D {
 
   Collisions are detected for single-sided objects only.  That is,
   no collision is detected when <I>leaving</I> a primitive or passing
-  through a plane or triangle opposite the normal.
+  through a plane or triangle opposite the normal... except for point-sphere.
 
   For a sphere, the collision location returned is the point in world
   space where the surface of the sphere and the fixed object meet.
@@ -205,7 +205,7 @@ public:
         Vector3&				outLocation,
         bool&                   inside = ignoreBool);
 
-
+    /** When the ray is already inside, detects the exiting intersection */
     static double collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,
         const Vector3&			velocity,

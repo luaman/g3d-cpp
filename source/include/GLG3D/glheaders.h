@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-01-12
+ @edited  2004-03-24
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -21,6 +21,15 @@
     #define WIN32_LEAN_AND_MEAN
   #endif
   #include "windows.h"
+#endif
+
+#ifdef G3D_LINUX
+// On Linux, we require OpenGL 1.2.1 to be installed.  On Windows we
+// are more forgiving and link OpenGL 1.1 statically and load the 
+// extensions for multitexture dynamically.  We should be able to
+// load both platforms dynamically, but the Wildcat drivers on Linux
+// don't support dynamic loading of multitexture.
+#define G3D_GL_ARB_multitexture_static
 #endif
 
 #include "../GL/gl.h"
@@ -44,6 +53,11 @@
 #endif
 
 // OpenGL extensions
+
+
+// OpenGL 1.2.1 and later define these as part of the static link; don't 
+// define them.
+#ifndef G3D_GL_ARB_multitexture_static
 extern PFNGLMULTITEXCOORD2FARBPROC         glMultiTexCoord2fARB;
 
 extern PFNGLMULTITEXCOORD1FARBPROC         glMultiTexCoord1fARB;
@@ -59,6 +73,7 @@ extern PFNGLMULTITEXCOORD4FVARBPROC        glMultiTexCoord4fvARB;
 extern PFNGLMULTITEXCOORD4DVARBPROC        glMultiTexCoord4dvARB;
 extern PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
 extern PFNGLCLIENTACTIVETEXTUREARBPROC     glClientActiveTextureARB;
+#endif
 
 extern PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV;
 extern PFNGLFLUSHVERTEXARRAYRANGENVPROC    glFlushVertexArrayRangeNV;

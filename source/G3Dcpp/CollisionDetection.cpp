@@ -584,6 +584,8 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
 
     if (collisionLocationForMovingPointFixedAABox(origin, dir, box, location, Inside)) {
         return (location - origin).length();
+    } else {
+        return inf;
     }
 }
 

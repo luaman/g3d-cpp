@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2003-11-19
+  @edited  2004-03-24
 */
 
 #include "GLG3D/glcalls.h"

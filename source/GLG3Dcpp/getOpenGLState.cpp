@@ -9,6 +9,7 @@
 
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/RenderDevice.h"
 
 namespace G3D {
 
@@ -228,16 +229,19 @@ static std::string getMatrixState() {
 
 static std::string getTextureState(bool showDisabled) {
 
+    if (! RenderDevice::supportsMultitexture()) {
+        return "//NO MULTITEXTURE\n";
+    }
+
     int numUnits = glGetInteger(GL_MAX_TEXTURE_UNITS_ARB);
     int active = glGetInteger(GL_ACTIVE_TEXTURE_ARB);
 
     std::string result;
 
     // Iterate over all of the texture units
-
     for (int t = 0; t < numUnits; ++t) {
     
-        result += format("// Texture Unit %d\n", t); 
+        result += format("// Texture Unit %d\n", t);
         result += format("glActiveTextureARB(GL_TEXTURE0_ARB + %d);\n", t);
         glActiveTextureARB(GL_TEXTURE0_ARB + t);
 
@@ -245,7 +249,7 @@ static std::string getTextureState(bool showDisabled) {
         GLenum tname[]  = {GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D};
         GLenum tname2[] = {GL_TEXTURE_BINDING_1D, GL_TEXTURE_BINDING_2D, GL_TEXTURE_BINDING_3D};
 
-	int tt;
+    	int tt;
         // See if this unit is on
         bool enabled = false;
         for (tt = 0; tt < 3; ++tt) {
