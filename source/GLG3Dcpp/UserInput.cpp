@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2003-12-20
+  @edited  2004-01-01
  */
 
 #include "GLG3D/UserInput.h"
@@ -239,6 +239,11 @@ bool UserInput::keyPressed(KeyCode code) const {
 void UserInput::pressedKeys(Array<KeyCode>& code) const {
     code.resize(justPressed.size());
     memcpy(code.getCArray(), justPressed.getCArray(), sizeof(UserInput::KeyCode) * justPressed.size());
+}
+
+
+bool UserInput::anyKeyPressed() const {
+    return (justPressed.size() > 0);
 }
 
 

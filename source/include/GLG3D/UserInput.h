@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-28
-  @edited  2003-11-13
+  @edited  2004-01-01
  */
 
 #ifndef G3D_USERINPUT_H
@@ -203,6 +203,11 @@ public:
      poll().
      */
     bool keyPressed(KeyCode code) const;
+
+    /**
+     True if any key has been pressed since the last call to poll().
+     */
+    bool anyKeyPressed() const;
 
     /** An array of all keys pressed since the last poll() call. */
     void pressedKeys(Array<KeyCode>& code) const;
