@@ -38,7 +38,7 @@ void ManualCameraController::reset() {
     pitch       = 0;
 	translation = Vector3::ZERO;
     setMoveRate(10);
-	setTurnRate(G3D::PI / 2);
+	setTurnRate(G3D::PI / 4);
     oldMouseX   = mCenterX;
     oldMouseY   = mCenterY;
     SDL_WarpMouse(mCenterX, mCenterY);

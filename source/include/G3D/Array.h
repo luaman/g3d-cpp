@@ -318,16 +318,13 @@ public:
      in the array.
      */
     inline void append(const T& value) {
-        /*
+        
         if (num < numAllocated) {
             // This is a simple situation; just stick it in the next free slot using
             // the copy constructor.
             new (data + num) T(value);
             ++num;
-        } else 
-            */
-            
-        if (inArray(&value)) {
+        } else if (inArray(&value)) {
             // The value was in the original array; resizing
             // is dangerous because it may move the value
             // we have a reference to.

@@ -618,6 +618,7 @@
 
    <P>
    <UL>
+     <LI> Decreased the default camera movement rate by 50% for better resolution.
      <LI> RenderDevice enables GL_NORMALIZE by default
      <LI> Improved the performance of Array::append/Array::push/Array::next
      <LI> Array::next
@@ -625,6 +626,7 @@
      <LI> PCX file loading
      <LI> Test images
      <LI> Color3uint8 as uint8[] addressing
+     <LI> Color4uint8 as uint8[] addressing
      <LI> Removed const from VAR::pointer
      <LI> ReferenceCountedPointer::isNull
      <LI> alwaysAssertM
