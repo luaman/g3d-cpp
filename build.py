@@ -21,16 +21,6 @@ automake   = "automake-1.7"
 doxygen    = "doxygen"
 python     = "python2.2"
 
-# Create demo list
-demoList = ["ASM_Shader_Demo", \
-    "Cg_Shader_Demo", \
-    "Collision_Demo", \
-    "GLSL_Demo", \
-    "MD2Model_Demo", \
-    "Network_Demo", \
-    "VAR_Demo", \
-    "Win32_Demo"]
-
 # Turn the platform into a name to put in the
 # "lib" directory name
 
@@ -408,8 +398,7 @@ def release(args):
     mkdir('release')
 
     # TODO: Make sure the linux binaries are already built
-    # TODO: Build the Windows demos
-
+    
     # Install to the 'install' directory
     install([], 0)
 
@@ -418,6 +407,30 @@ def release(args):
     # building this target.
     copyIfNewer('linux-lib', installDir([]) + '/linux-lib')
     copyIfNewer('osx-lib', installDir([]) + '/osx-lib')
+
+    # Build demos after install
+    curdir = os.getcwd()
+    os.chdir(installDir([]) + '/demos')
+
+    if (os.name == "nt"):
+        for dir in os.listdir('.'):
+            if os.path.isdir(dir):
+                #os.chdir(dir)
+                dspFile = ''
+                dswFile = ''
+                dirFiles = os.listdir(dir)
+                
+                for file in dirFiles:
+                    base, ext = os.path.splitext(file)
+                    if ext == '.dsw':
+                        dswFile = file
+                    elif ext == '.dsp':
+                        dspFile = base
+
+                if dswFile != '' and dspFile != '':
+                    msdev(dir + '/' + dswFile, [dspFile + ' - Win32 Release'])
+     
+    os.chdir(curdir)    
 
     zip('install/*', 'release/g3d-' + version + '.zip')
 
