@@ -877,6 +877,8 @@ private:
     // setState().
     class RenderState {
     public:
+        friend RenderDevice;
+
         class TextureUnit {
         public:
             Vector4             texCoord;

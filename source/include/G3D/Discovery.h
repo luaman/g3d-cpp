@@ -26,7 +26,7 @@
  of players.
  <P>
  On the client, create an instance of DiscoveryClient<your advertisement subclass>.
- On the server, creeate an instance of DiscoveryServer and initialize it with an
+ On the server, create an instance of DiscoveryServer and initialize it with an
  instance of your advertisement subclass.  From your main loop, call doNetwork()
  on the client and server instances.  When your server shuts down, invoke cleanup()
  on it.

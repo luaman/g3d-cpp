@@ -350,6 +350,7 @@ void VertexAndPixelShader::computeUniformArray() {
         uniformArray[i].name = name;
         uniformArray[i].size = size;
         uniformArray[i].type = type;
+        uniformArray[i].dummy = false;
 
         if (isSamplerType(type)) {
             ++lastTextureUnit;
