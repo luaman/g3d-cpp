@@ -652,7 +652,7 @@ TextureRef Texture::fromMemory(
                     target = cubeFaceTarget[f];
                 }
 
-                if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap()) {
+                if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap() && (numMipMaps == 1)) {
 
                     alwaysAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
 
