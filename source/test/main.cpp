@@ -9,7 +9,6 @@
  @edited  2004-10-19
  */
 
-
 #include "../include/G3DAll.h"
 #include <iostream>
 

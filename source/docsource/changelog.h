@@ -31,6 +31,7 @@
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
      <LI> Fix: GWindows now center and maximize on the primary monitor for Windows.
+     <LI> Fix: [ 1052945 ] TextOutput wordWrap starts on newlines
      <LI> Fix: [ 1050957 ] TextInput readNumber support for capital 'E' numbers.
      <LI> Fix: [ 1049674 ] TextInput failes on X. numbers.
      <LI> Fix: [ 1044028 ] Linux TextOutput Warning

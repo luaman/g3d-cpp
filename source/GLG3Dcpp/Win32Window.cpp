@@ -1578,7 +1578,7 @@ static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
     out.printf("#%d Format Description\n", format);
     out.printf("nSize:\t\t\t\t%d\n", pixelFormat.nSize);
     out.printf("nVersion:\t\t\t%d\n", pixelFormat.nVersion);
-    out.printf("dwFlags:\t\t\t%s\n", (std::string((pixelFormat.dwFlags&PFD_DRAW_TO_WINDOW) ? "PFD_DRAW_TO_WINDOW|" : "") + 
+    std::string s = (std::string((pixelFormat.dwFlags&PFD_DRAW_TO_WINDOW) ? "PFD_DRAW_TO_WINDOW|" : "") + 
                                      std::string((pixelFormat.dwFlags&PFD_DRAW_TO_BITMAP) ? "PFD_DRAW_TO_BITMAP|" : "") + 
                                      std::string((pixelFormat.dwFlags&PFD_SUPPORT_GDI) ? "PFD_SUPPORT_GDI|" : "") + 
                                      std::string((pixelFormat.dwFlags&PFD_SUPPORT_OPENGL) ? "PFD_SUPPORT_OPENGL|" : "") + 
@@ -1588,7 +1588,9 @@ static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
                                      std::string((pixelFormat.dwFlags&PFD_NEED_SYSTEM_PALETTE) ? "PFD_NEED_SYSTEM_PALETTE|" : "") + 
                                      std::string((pixelFormat.dwFlags&PFD_DOUBLEBUFFER) ? "PFD_DOUBLEBUFFER|" : "") + 
                                      std::string((pixelFormat.dwFlags&PFD_STEREO) ? "PFD_STEREO|" : "") +
-                                     std::string((pixelFormat.dwFlags&PFD_SWAP_LAYER_BUFFERS) ? "PFD_SWAP_LAYER_BUFFERS" : "")).c_str());
+                                     std::string((pixelFormat.dwFlags&PFD_SWAP_LAYER_BUFFERS) ? "PFD_SWAP_LAYER_BUFFERS" : ""));
+
+    out.printf("dwFlags:\t\t\t%s\n", s.c_str());
     out.printf("iPixelType:\t\t\t%d\n", pixelFormat.iPixelType);
     out.printf("cColorBits:\t\t\t%d\n", pixelFormat.cColorBits);
     out.printf("cRedBits:\t\t\t%d\n", pixelFormat.cRedBits);

@@ -3,13 +3,14 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-06-21
-  @edited  2004-06-21
+  @edited  2004-10-21
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
 
 #include "G3D/TextOutput.h"
+#include "G3D/Log.h"
 
 namespace G3D {
 
@@ -178,10 +179,15 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
     // Copy forward until we exceed the column size, 
     // and then back up and try to insert newlines as needed.
     for (uint32 i = 0; i < str.size(); ++i) {
+
         indentAppend(str[i]);
+        if ((str[i] == '\r') && (i + 1 < str.size()) && (str[i + 1] == '\n')) {
+            // \r\n, we need to hit the \n to enter word wrapping.
+            ++i;
+            indentAppend(str[i]);
+        }
 
         if (currentColumn >= cols) {
-
             debugAssertM(str[i] != '\n' && str[i] != '\r',
                 "Should never enter word-wrapping on a newline character");            
 
@@ -332,8 +338,6 @@ void TextOutput::vprintf(const char* formatString, va_list argPtr) {
 
     std::string clean;
     convertNewlines(str, clean);
-
-    std::string wrapped;
     wordWrapIndentAppend(clean);
 }
 
