@@ -79,10 +79,9 @@ inline GLContext glGetCurrentContext() {
 }
 
 #elif defined(G3D_OSX)
-    typedef void* GLContext;
+    typedef CGLContextObj GLContext;
     inline GLContext glGetCurrentContext() {
-	    /* This needs an implementation.  See 902986 */
-	    return NULL;
+        return CGLGetCurrentContext();
     }
 #endif
 

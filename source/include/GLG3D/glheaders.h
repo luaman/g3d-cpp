@@ -51,6 +51,7 @@
 
 #ifdef G3D_OSX
 #include <OpenGL/glu.h>
+#include <OpenGL/OpenGL.h>
 #else
 #include <GL/glu.h>
 #endif
