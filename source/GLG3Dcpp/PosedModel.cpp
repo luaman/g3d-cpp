@@ -71,6 +71,27 @@ Box PosedModel::worldSpaceBoundingBox() const {
 }
 
 
+void PosedModel::getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize) const {
+    MeshAlg::Geometry geometry;
+    getObjectSpaceGeometry(geometry);
+
+    Array<MeshAlg::Face> faceArray;
+    getFaces(faceArray);
+
+    MeshAlg::computeFaceNormals(geometry.vertexArray, faceArray, faceNormals, normalize);
+}
+
+
+void PosedModel::getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize) const {
+    MeshAlg::Geometry geometry;
+    getWorldSpaceGeometry(geometry);
+
+    Array<MeshAlg::Face> faceArray;
+    getFaces(faceArray);
+
+    MeshAlg::computeFaceNormals(geometry.vertexArray, faceArray, faceNormals, normalize);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -104,6 +125,15 @@ void PosedModelWrapper::getFaces(Array<MeshAlg::Face>& faces) const {
     model->getFaces(faces);
 }
 
+
+void PosedModelWrapper::getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize) const {
+    model->getObjectSpaceFaceNormals(faceNormals, normalize);
+}
+
+
+void PosedModelWrapper::getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize) const {
+    model->getWorldSpaceFaceNormals(faceNormals, normalize);
+}
 
 void PosedModelWrapper::getEdges(Array<MeshAlg::Edge>& edges) const {
     model->getEdges(edges);

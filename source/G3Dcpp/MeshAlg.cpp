@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2003-11-15
+  @edited  2003-12-09
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -78,6 +78,102 @@ void MeshAlg::computeNormals(
             sum += faceNormalArray[f];
         }
         vertexNormalArray[v] = sum.direction();
+    }
+}
+
+
+void MeshAlg::computeFaceNormals(
+    const Array<Vector3>&           vertexArray,
+    const Array<MeshAlg::Face>&     faceArray,
+    Array<Vector3>&                 faceNormals,
+    bool                            normalize) {
+
+    faceNormals.resize(faceArray.size());
+
+    for (int f = 0; f < faceArray.size(); ++f) {
+        const MeshAlg::Face& face = faceArray[f];
+
+        const Vector3& v0 = vertexArray[face.vertexIndex[0]];
+        const Vector3& v1 = vertexArray[face.vertexIndex[1]];
+        const Vector3& v2 = vertexArray[face.vertexIndex[2]];
+        
+        faceNormals[f] = (v1 - v0).cross(v2 - v0);
+    }
+
+    if (normalize) {
+        for (int f = 0; f < faceArray.size(); ++f) {
+            faceNormals[f] = faceNormals[f].direction();
+        }
+    }
+}
+
+
+void MeshAlg::identifyBackfaces(
+    const Array<Vector3>&           vertexArray,
+    const Array<MeshAlg::Face>&     faceArray,
+    const Vector4&                  _P,
+    Array<bool>&                    backface) {
+
+    Vector3 P = _P.xyz();
+
+    backface.resize(faceArray.size());
+
+    if (fuzzyEq(_P.w, 0.0)) {
+        // Infinite case
+        for (int f = faceArray.size() - 1; f >= 0; ++f) {
+            const MeshAlg::Face& face = faceArray[f];
+
+            const Vector3& v0 = vertexArray[face.vertexIndex[0]];
+            const Vector3& v1 = vertexArray[face.vertexIndex[1]];
+            const Vector3& v2 = vertexArray[face.vertexIndex[2]];
+        
+            const Vector3 N = (v1 - v0).cross(v2 - v0);
+
+            backface[f] = N.dot(P) < 0;
+        }
+    } else {
+        // Finite case
+        for (int f = faceArray.size() - 1; f >= 0; ++f) {
+            const MeshAlg::Face& face = faceArray[f];
+
+            const Vector3& v0 = vertexArray[face.vertexIndex[0]];
+            const Vector3& v1 = vertexArray[face.vertexIndex[1]];
+            const Vector3& v2 = vertexArray[face.vertexIndex[2]];
+        
+            const Vector3 N = (v1 - v0).cross(v2 - v0);
+
+            backface[f] = N.dot(P - v0) < 0;
+        }
+    }
+}
+
+
+void MeshAlg::identifyBackfaces(
+    const Array<Vector3>&           vertexArray,
+    const Array<MeshAlg::Face>&     faceArray,
+    const Array<Vector3>&           faceNormals,
+    const Vector4&                  _P,
+    Array<bool>&                    backface) {
+
+    Vector3 P = _P.xyz();
+
+    backface.resize(faceArray.size());
+
+    if (fuzzyEq(_P.w, 0.0)) {
+        // Infinite case
+        for (int f = faceArray.size() - 1; f >= 0; ++f) {
+            const Vector3& N = faceNormals[f];
+            backface[f] = N.dot(P) < 0;
+        }
+    } else {
+        // Finite case
+        for (int f = faceArray.size() - 1; f >= 0; ++f) {
+            const MeshAlg::Face& face = faceArray[f];        
+            const Vector3& v0 = vertexArray[face.vertexIndex[0]];
+            const Vector3& N = faceNormals[f];
+
+            backface[f] = N.dot(P - v0) < 0;
+        }
     }
 }
 

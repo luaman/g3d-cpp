@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-12-01
+ @edited  2003-12-09
 */
 
 #ifndef G3D_MESHALG_H
@@ -157,6 +157,35 @@ public:
         const Array< Array<int> >& adjacentFaceArray,
         Array<Vector3>&         vertexNormalArray,
         Array<Vector3>&         faceNormalArray);
+
+    /**
+     Computes face normals only.  Significantly faster (especially if
+     normalize is true) than computeNormals.
+     */
+    static void computeFaceNormals(
+        const Array<Vector3>&           vertexArray,
+        const Array<Face>&              faceArray,
+        Array<Vector3>&                 faceNormals,
+        bool                            normalize = true);
+
+    /**
+     Classifies each face as a backface or a front face relative
+     to the observer point P (which is at infinity when P.w = 0).
+     A face with normal exactly perpendicular to the observer vector
+     may be classified as either a front or a back face arbitrarily.
+     */
+    static void identifyBackfaces(
+        const Array<Vector3>&           vertexArray,
+        const Array<Face>&              faceArray,
+        const Vector4&                  P,
+        Array<bool>&                    backface);
+
+    static void identifyBackfaces(
+        const Array<Vector3>&           vertexArray,
+        const Array<Face>&              faceArray,
+        const Array<Vector3>&           faceNormals,
+        const Vector4&                  P,
+        Array<bool>&                    backface);
 
     /**
      Welds nearby and colocated elements of the <I>oldVertexArray</I> together so that

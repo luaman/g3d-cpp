@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2003-11-15
+  @edited  2003-12-09
  */ 
 
 
@@ -60,6 +60,10 @@ public:
     virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
 
     virtual void getFaces(Array<MeshAlg::Face>& faces) const = 0;
+
+    virtual void getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
+
+    virtual void getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
     virtual void getEdges(Array<MeshAlg::Edge>& edges) const = 0;
 
@@ -121,6 +125,10 @@ public:
     virtual void getFaces(Array<MeshAlg::Face>& faces) const;
 
     virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
+
+    virtual void getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
+
+    virtual void getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
     virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
 
