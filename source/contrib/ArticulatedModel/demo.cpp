@@ -490,7 +490,7 @@ void App::main() {
         triList.twoSided = true;
         triList.material.emit.constant = Color3::black();
 
-        triList.material.diffuse.constant = Color3::white() * 0.1;
+        triList.material.diffuse.constant = Color3::white() * 0.2;
 
         GImage normalBumpMap;
         computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap);
