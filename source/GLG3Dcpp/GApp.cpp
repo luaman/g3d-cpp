@@ -4,21 +4,16 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-04-15
+ @edited  2004-04-25
  */
 
 #include "G3D/platform.h"
-
-#if defined(G3D_OSX)
-#include <SDL/SDL.h>
-#else 
-#include <SDL.h>
-#endif
 
 #include "GLG3D/GApp.h"
 #include "G3D/GCamera.h"
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/UserInput.h"
+#include "GLG3D/GWindow.h"
 
 namespace G3D {
 
@@ -32,7 +27,7 @@ static void writeLicense() {
 }
 
 
-GApp::GApp(const GAppSettings& settings) {
+GApp::GApp(const GAppSettings& settings, GWindow* window) {
     debugLog          = NULL;
     debugFont         = NULL;
     endProgram        = false;
@@ -51,7 +46,13 @@ GApp::GApp(const GAppSettings& settings) {
 
     debugLog	 = new Log(settings.logFilename);
     renderDevice = new RenderDevice();
-    renderDevice->init(settings.window, debugLog);
+    if (window != NULL) {
+        renderDevice->init(window, debugLog);
+    } else {
+        renderDevice->init(settings.window, debugLog);
+    }
+
+    _window = renderDevice->window();
 
     if (settings.useNetwork) {
         networkDevice = new NetworkDevice();
@@ -274,8 +275,8 @@ void GApplet::doUserInput() {
     app->userInput->beginEvents();
 
     // Event handling
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
+    GEvent event;
+    while (app->window()->pollEvent(event)) {
         switch(event.type) {
         case SDL_QUIT:
 	        app->endProgram = true;

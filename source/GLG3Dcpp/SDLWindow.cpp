@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-03-06
+  @edited  2004-04-25
 */
 
 #include "GLG3D/SDLWindow.h"
@@ -556,6 +556,11 @@ void SDLWindow::setInputCapture(bool c) {
             SDL_WM_GrabInput(SDL_GRAB_OFF);
         }
     }
+}
+
+
+bool SDLWindow::pollEvent(GEvent& e) {
+    return (SDL_PollEvent(&e) != 0);
 }
 
 

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-03-04
+  @edited  2004-04-25
 */
 
 #ifndef G3D_GWINDOW_H
@@ -12,7 +12,16 @@
 #include "graphics3D.h"
 #include "GLG3D/GWindowSettings.h"
 
+// For SDL_Event
+#if defined(G3D_OSX)
+#include <SDL/SDL_Events.h>
+#else 
+#include <SDL_Events.h>
+#endif
+
 namespace G3D {
+
+typedef SDL_Event GEvent;
 
 /**
  Interface to Window APIs for window management, event processing,
@@ -107,10 +116,10 @@ public:
         (i.e. is in the foreground, not minimized, recieves keystrokes.) */
     virtual bool hasFocus() const = 0;
 
-    /** Description of the windowing API for logging purposes. */
+    /** Description of the windowing API for logging purposes (e.g. "1.2.7" for SDL 1.2.7). */
     virtual std::string getAPIVersion() const = 0;
 
-    /** Description of the windowing API for logging purposes. */
+    /** Description of the windowing API for logging purposes (e.g. "SDL"). */
     virtual std::string getAPIName() const = 0;
 
     /** gammaRamp.length() = 256 */
@@ -130,7 +139,7 @@ public:
     /** Set the icon (if supported).  Fails silently if not supported
         or the window has no frame.
         @param image May have any dimensions. */
-    virtual void setIcon(const GImage& image) = 0;
+    virtual void setIcon(const GImage& image) {}
 
     /** Swap the OpenGL front and back buffers.  Called by RenderDevice::endFrame. */
     virtual void swapGLBuffers() = 0;
@@ -150,6 +159,13 @@ public:
     /** Relative to the window origin */
     virtual void setRelativeMousePosition(const Vector2& p) = 0;
 
+    /** Checks to see if any events are waiting.  If there is an event,
+        returns true and fills out the GEvent structure.  Otherwise
+        returns false.  The caller is responsible for invoking GWindow::notifyResize
+        with any resize events; the GWindow does not notify itself. */
+    virtual bool GWindow::pollEvent(GEvent& e) {
+        return false;
+    }
 
     /** Returns the current mouse position and the state of the mouse buttons.
         It is essential to sample both simultaneously so that the mouse has

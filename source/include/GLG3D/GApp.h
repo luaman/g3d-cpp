@@ -93,6 +93,8 @@ private:
     /** Called from init. */
     void loadFont(const std::string& fontName);
 
+    GWindow*                _window;
+
 protected:
 
     /**
@@ -145,6 +147,10 @@ public:
      Strings that have been printed with debugPrint.
      */
     Array<std::string>      debugText;
+
+    inline GWindow* window() const {
+        return _window;
+    }
 
     /** Returns the state of debugMode.
         All debugX options are only in effect
@@ -215,7 +221,12 @@ public:
      */
     virtual void renderDebugInfo();
 
-    GApp(const GAppSettings& settings = GAppSettings());
+    /**
+     @param window If null, a SDLWindow will be created for you. This
+         argument is useful for substituting a different window
+         system (e.g. GlutWindow)
+     */
+    GApp(const GAppSettings& settings = GAppSettings(), GWindow* window = NULL);
 
     virtual ~GApp();
 

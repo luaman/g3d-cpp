@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-03-04
+  @edited  2004-04-25
 */
 
 #ifndef G3D_SDLWINDOW_H
@@ -113,6 +113,8 @@ public:
     virtual void setInputCapture(bool c);
 
     virtual bool inputCapture() const;
+
+    virtual bool pollEvent(GEvent& e);
 
     /** Returns the underlying SDL joystick pointer */
     ::SDL_Joystick* getSDL_Joystick(unsigned int num) const;
