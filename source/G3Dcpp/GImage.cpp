@@ -825,7 +825,8 @@ void GImage::decodeICO(
 	// Skip over bitmap header; it is redundant
 	input.skip(40);
 
-	Color4uint8 palette[256];
+	Array<Color4uint8> palette;
+    palette.resize(numColors, true);
 	for (int c = 0; c < numColors; ++c) {
 		palette[c].b = input.readUInt8();
 		palette[c].g = input.readUInt8();
