@@ -541,6 +541,14 @@ std::string filenamePath(const std::string& filename) {
     }
 }
 
+
+bool isDirectory(const std::string& filename) {
+    struct _stat st;
+    bool exists = _stat(filename.c_str(), &st) != -1;
+    return exists && ((st.st_mode & S_IFDIR) != 0);
+}
+
+
 }
 
 #ifndef G3D_WIN32

@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> isDirectory
      <LI> filenamePath
      <LI> Draw::lineSegment now accepts a scale (allowing arrows and axes to thicken appropriately)
      <LI> Rect2D::largestCenteredSubRect

@@ -178,11 +178,6 @@ void ArticulatedModel::Part::render(
     }
 
     rd->setObjectToWorldMatrix(frame);
-
-    if (name == "m_rotor") {
-        Draw::axes(keyframe, rd);
-    }
-
     rd->setTexture(0, texture1);
 
     rd->beginPrimitive(RenderDevice::TRIANGLES);
@@ -287,7 +282,6 @@ void Demo::doGraphics() {
         CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
                         Vector3::zero()));
 
-    app->renderDevice->setTexture(0, app->texture);
     app->model->render(app->renderDevice, pose);
     app->renderDevice->pushState();
         app->renderDevice->setTexture(0, NULL);
@@ -305,8 +299,8 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    model = ArticulatedModel::fromFile("c:/tmp/3ds/fs.3ds");
-    texture = Texture::fromFile("d:/games/cpp/source/data/image/checkerboard.jpg");
+//    model = ArticulatedModel::fromFile("c:/tmp/3ds/fs.3ds");
+//    model = ArticulatedModel::fromFile("c:/tmp/car35/car35.3ds");
 
     Demo(this).run();
 }

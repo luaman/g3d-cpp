@@ -71,6 +71,9 @@ void getDirs(
 	bool						includePath = false);
 
 
+/** Returns true if the specified path exists and is a directory */
+bool isDirectory(const std::string& filespec);
+
 /** Returns the length of the file, -1 if it does not exist */
 int64 fileLength(const std::string& filename);
 
