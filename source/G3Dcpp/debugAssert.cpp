@@ -6,11 +6,12 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2003-02-15
+ @edited  2003-06-25
  */
 
 #include "G3D/debugAssert.h"
-#if _WIN32
+#include "G3D/platform.h"
+#ifdef G3D_WIN32
     #include "windows.h"
     #include <tchar.h>
 #endif
@@ -19,10 +20,10 @@
 #include <string>
 #include "G3D/debugPrintf.h"
 
-#ifdef _MSC_VER
+#ifdef G3_WIN32
     // disable: "C++ exception handler used"
     #pragma warning (disable : 4530)
-#endif // _MSC_VER
+#endif
 
 using namespace std;
 

@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-06-13
+  @edited  2003-06-25
  */
 
 #include "G3D/platform.h"
@@ -386,8 +386,7 @@ void getStandardProcessorExtensions() {
 
 
 /** Michael Herf's fast memcpy */
-#ifdef _MSC_VER
-
+#if defined(G3D_WIN32) && defined(SSE)
 
 // On x86 processors, use MMX
 void memcpy2(void *dst, const void *src, int nbytes) {
@@ -402,13 +401,13 @@ void memcpy2(void *dst, const void *src, int nbytes) {
 
 	loop1: 
 			movq mm1,  0[ESI] // Read in source data 
-			movq mm2,  8[ESI] 
-			movq mm3, 16[ESI] 
+			movq mm2,  8[ESI]
+			movq mm3, 16[ESI]
 			movq mm4, 24[ESI] 
-			movq mm5, 32[ESI] 
-			movq mm6, 40[ESI] 
-			movq mm7, 48[ESI] 
-			movq mm0, 56[ESI] 
+			movq mm5, 32[ESI]
+			movq mm6, 40[ESI]
+			movq mm7, 48[ESI]
+			movq mm0, 56[ESI]
 
 			movntq  0[EDI], mm1 // Non-temporal stores 
 			movntq  8[EDI], mm2 
@@ -424,7 +423,7 @@ void memcpy2(void *dst, const void *src, int nbytes) {
 			dec ecx 
 			jnz loop1 
 
-			emms 
+			emms
 		}
 		remainingBytes -= ((nbytes >> 6) << 6); 
 	}
@@ -532,15 +531,14 @@ static void memcpy4(void *dst, const void *src, int nbytes) {
 
 #else
 
-// On x86 processors, use MMX
-void memcpy2(void *dst, const void *src, int nbytes) {
-	memcpy(dst, src, nbytes);
-}
+    // Fall back to memcpy
+    void memcpy2(void *dst, const void *src, int nbytes) {
+	    memcpy(dst, src, nbytes);
+    }
 
-// For non x86 processors, fall back to memcpy
-static void memcpy4(void *dst, const void *src, int nbytes) {
-	memcpy(dst, src, nbytes);
-}
+    static void memcpy4(void *dst, const void *src, int nbytes) {
+	    memcpy(dst, src, nbytes);
+    }
 
 #endif
 
@@ -556,7 +554,7 @@ void System::memcpy(void* dst, const void* src, size_t numBytes) {
 
 /** Michael Herf's fastest memset. n32 must be filled with the same
     character repeated. */
-#ifdef _MSC_VER
+#if defined(G3D_WIN32) && defined(SSE)
 
 // On x86 processors, use MMX
 void memfill(void *dst, int n32, unsigned long i) {
@@ -615,7 +613,7 @@ void System::memset(void* dst, uint8 value, size_t numBytes) {
 std::string System::currentProgramFilename() {
     char filename[2048];
 
-    #ifdef _MSC_VER
+    #ifdef G3D_WIN32
     {
         GetModuleFileName(NULL, filename, sizeof(filename));
     } 
