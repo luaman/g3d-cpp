@@ -6,7 +6,7 @@
  @cite Font setting code by Kurt Miller, kurt@flipcode.com
 
  @created 2000-08-26
- @edited  2003-09-13
+ @edited  2005-01-14
  */
 
 #include "G3D/prompt.h"
@@ -20,7 +20,6 @@
     #include <conio.h>
 #else
     #define _getch getchar
-//    #include <curses.h>
 #endif
 
 #ifdef G3D_OSX
@@ -377,13 +376,47 @@ static int guiPrompt(
         
     }
 
+    // Convert all single \n characters to \r\n for proper printing
+    int strLen = 0;
+    const char* pStr = prompt;
+
+    while (*pStr != '\0') {
+        if ((*pStr == '\n') && (pStr != prompt)) {
+            if (*(pStr - 1) != '\r') {
+                ++strLen;
+            }
+        }
+        ++strLen;
+        ++pStr;
+    }
+
+    char* newStr = (char*)malloc(strLen + 1);
+    
+    const char* pStr2 = prompt;
+    char* pNew = newStr;
+
+    while (*pStr2 != '\0') {
+        if ((*pStr2 == '\n') && (pStr2 != prompt)) {
+            if (*(pStr2 - 1) != '\r') {
+                *pNew = '\r';
+                ++pNew;
+            }
+        }
+        *pNew = *pStr2;
+        ++pNew;
+        ++pStr2;
+    }
+
+    *pNew = '\0';
+
     PromptParams params;
-    params.message  = prompt;
+    params.message  = newStr;;
     params.title    = windowTitle;
 
     HMODULE module = GetModuleHandle(0);
     int ret = DialogBoxIndirectParam(module, dialogTemplate, NULL, (DLGPROC) PromptDlgProc, (DWORD)&params);
 
+    free(newStr);
 
     /*
      For debugging when DialogBoxIndirectParam fails:
