@@ -60,8 +60,8 @@ def lib():
         
         # (Of course, we don't have to bootstrap *every* time... 
         #  TODO: what file changes that triggers a need to bootstrap/configure?)
-        run("/bootstrap")
-        run("/configure", ["--enable-debugging"])
+        run("./bootstrap")
+        run("./configure", ["--enable-debugging"])
         run("make")
 
     copyIfNewer("lib", "../build/lib")
