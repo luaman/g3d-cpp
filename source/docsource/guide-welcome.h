@@ -87,7 +87,7 @@ users who are already familiar with C++ and DirectX or OpenGL.
 <A HREF="index.html">By Topic</A>
 <A HREF="classes.html">Alphabetic Classes</A>
 <A HREF="globals_func.html">Alphabetic Functions</A>
-\link frequent Frequently Used (bookmark this)</A></TD></TR> 
+\link frequent Frequently Used (bookmark this)\endlink</TD></TR> 
 </TABLE>
 
 @section documentation Documentation and Support
