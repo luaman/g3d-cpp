@@ -62,9 +62,8 @@ Debug/GLG3D_Demo.exe : fatal error LNK1169: one or more multiply defined symbols
    At runtime, your program can't load the SDL.dll, zlib.dll, or glut32.dll dynamic libraries.
    This is probably occurring because the current working directory is invalid or because
    the files and directory exist but cannot be accessed.  This frequently occurs when a Windows
-   and Linux file system don't get along-- we've seen the problem occur under
-   Cygwin when permissions are not set to 777 and on Samba shares.
-
+   program is running from a Linux file system via Samba.  Make sure you have set the e<B>X</B>ecute
+   bit on the DLL's from Linux.
    <P>
 
 <B><CODE>../include/G3D/g3dmath.h:27: limits: No such file or directory</CODE></B>
