@@ -479,14 +479,14 @@ double TextInput::readNumber() {
         } else {
             push(t);
             // Push back the first token and throw an exception
-            throw WrongTokenType(Token::NUMBER, t._type);
+            throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::NUMBER, t._type);
         }
 
     } else if (t._type == Token::NUMBER) {
         // Consume the token
         return read().number();
     } else {
-        throw WrongTokenType(Token::NUMBER, t._type);
+        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::NUMBER, t._type);
         return 0;
     }
 }
@@ -497,7 +497,7 @@ std::string TextInput::readString() {
     if (t._type == Token::STRING) {
         return read()._string;
     } else {
-        throw WrongTokenType(Token::STRING, t._type);
+        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::STRING, t._type);
     }
 }
 
@@ -507,7 +507,7 @@ std::string TextInput::readSymbol() {
     if (t._type == Token::SYMBOL) {
         return read()._string;
     } else {
-        throw WrongTokenType(Token::SYMBOL, t._type);
+        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::SYMBOL, t._type);
     }
 }
 
@@ -519,10 +519,10 @@ void TextInput::readSymbol(const std::string& symbol) {
             // Consume the token
             read();
         } else {
-            throw WrongSymbol(symbol, t._string);
+            throw WrongSymbol(sourceFile, lineNumber, charNumber, symbol, t._string);
         }
     } else {
-        throw WrongTokenType(Token::SYMBOL, t._type);
+        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::SYMBOL, t._type);
     }
 }
 
@@ -541,6 +541,59 @@ TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : option
     init();
     buffer.resize(str.length());
     System::memcpy(buffer.getCArray(), str.c_str(), buffer.size());
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+
+TextInput::TokenException::TokenException(
+    const std::string&  src,
+    int                 ln,
+    int                 ch) : sourceFile(src), line(ln), character(ch) {
+
+    message = format("%s(%d) : ", sourceFile.c_str(), line);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+
+static const char* tokenTypeToString(Token::Type t) {
+    switch (t) {
+    case Token::SYMBOL:
+        return "Token::SYMBOL";
+    case Token::STRING:
+        return "Token::STRING";
+    case Token::NUMBER:
+        return "Token::NUMBER";
+    default:
+        debugAssertM(false, "Fell through switch");
+        return "?";
+    }
+}
+
+TextInput::WrongTokenType::WrongTokenType(
+    const std::string&  src,
+    int                 ln,
+    int                 ch,
+    Token::Type         e,
+    Token::Type         a) :
+    TokenException(src, ln, ch), expected(e), actual(a) {
+         
+    message += 
+        format("Expected token of type %s, found type %s.",
+        tokenTypeToString(e), tokenTypeToString(a));
+}
+
+
+TextInput::WrongSymbol::WrongSymbol(
+    const std::string&  src,
+    int                 ln,
+    int                 ch,
+    const std::string&  e,
+    const std::string&  a) : 
+    TokenException(src, ln, ch), expected(e), actual(a) {
+
+    message += 
+        format("Expected symbol '%s', found symbol '%s'.",
+                e.c_str(), a.c_str());
 }
 
 } // namespace

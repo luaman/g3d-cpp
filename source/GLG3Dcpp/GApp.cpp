@@ -116,13 +116,9 @@ void GApp::run() {
         } catch (const std::string& s) {
             alwaysAssertM(false, s);
         } catch (const TextInput::WrongTokenType& t) {
-            // TODO: improve this message
-            (void)t;
-            alwaysAssertM(false, "Wrong token type");
+            alwaysAssertM(false, t.message);
         } catch (const TextInput::WrongSymbol& t) {
-            // TODO: improve this message
-            (void)t;
-            alwaysAssertM(false, "Wrong token symbol");
+            alwaysAssertM(false, t.message);
         }
     } else {
         main();

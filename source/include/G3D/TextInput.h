@@ -193,19 +193,50 @@ private:
 
 public:
 
+    class TokenException {
+    public:
+        std::string     sourceFile;
+        int             line;
+        int             character;
+
+        /** Pre-formatted error message */
+        std::string     message;
+
+        virtual ~TokenException() {}
+    protected:
+
+        TokenException(
+            const std::string&  src,
+            int                 ln,
+            int                 ch);
+
+    };
+
     /** Thrown by the read methods. */
-    class WrongTokenType {
+    class WrongTokenType : public TokenException {
     public:
         Token::Type     expected;
         Token::Type     actual;
-        WrongTokenType(Token::Type e, Token::Type a) : expected(e), actual(a) {}
+
+        WrongTokenType(
+            const std::string&  src,
+            int                 ln,
+            int                 ch,
+            Token::Type         e,
+            Token::Type         a);
     };
 
-    class WrongSymbol {
+    class WrongSymbol : public TokenException {
     public:
-        std::string     expected;
-        std::string     actual;
-        WrongSymbol(const std::string& e, const std::string& a) : expected(e), actual(a) {}
+        std::string             expected;
+        std::string             actual;
+
+        WrongSymbol(
+            const std::string&  src,
+            int                 ln,
+            int                 ch,
+            const std::string&  e,
+            const std::string&  a);
     };
 
     TextInput(const std::string& filename, const Options& options = Options());
