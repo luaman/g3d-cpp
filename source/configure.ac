@@ -11,24 +11,20 @@ AC_PROG_INSTALL
 
 AM_PROG_LIBTOOL
 
+# Check for X paths
+AC_PATH_X
+LIBS="$LIBS -L$x_libraries"
+
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lG3D':
-#AC_CHECK_LIB([G3D], [main])
-# FIXME: Replace `main' with a function in `-lG3Dd':
-#AC_CHECK_LIB([G3Dd], [main])
-# FIXME: Replace `main' with a function in `-lGL':
-AC_CHECK_LIB([GL], [main])
-# FIXME: Replace `main' with a function in `-lGLG3D':
-AC_CHECK_LIB([SDL], [SDL_Init]) 
-# FIXME: Replace `main' with a function in `-lglut':
-AC_CHECK_LIB([glut], [main])
+AC_CHECK_LIB([GL], [glBegin], [], [AC_MSG_ERROR([Can't find libGL])])
+AC_CHECK_LIB([GLU], [gluBuild2DMipmaps], [], [AC_MSG_ERROR([Can't find libGLU])])
+AC_CHECK_LIB([SDL], [SDL_Init], [], [AC_MSG_ERROR([Can't find libSDL])]) 
 # FIXME: Replace `main' with a function in `-ljpeg':
 AC_CHECK_LIB([jpeg], [main])
 # FIXME: Replace `main' with a function in `-lz':
 AC_CHECK_LIB([z], [main])
 
 # Checks for header files.
-AC_PATH_X
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h float.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h unistd.h])
 
@@ -75,6 +71,7 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
 				 demos/Makefile
 				 demos/GLG3D_Demo/Makefile
+				 include/Makefile
                  GLG3Dcpp/Makefile])
 #                 include/glh/extgen/Makefile])
 AC_OUTPUT
