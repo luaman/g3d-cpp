@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-04-06
- @edited  2004-03-14
+ @edited  2004-03-21
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -35,7 +35,12 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
         edgeDirection[i] = e / edgeLength[i];
     }
 
+    edge01 = _vertex[1] - _vertex[0];
+    edge02 = _vertex[2] - _vertex[0];
+
     _primaryAxis = _plane.normal().primaryAxis();
+    _area =  edgeDirection[0].cross(edgeDirection[2]).length() * (edgeLength[0] * edgeLength[2]);
+
 }
 
 
@@ -69,12 +74,12 @@ void Triangle::deserialize(class BinaryInput& b) {
     _vertex[0].deserialize(b);
     _vertex[1].deserialize(b);
     _vertex[2].deserialize(b);
-    init (_vertex[0], _vertex[1], _vertex[2]);
+    init(_vertex[0], _vertex[1], _vertex[2]);
 }
 
 
 double Triangle::area() const {
-    return edgeDirection[0].cross(edgeDirection[2]).length() * (edgeLength[0] * edgeLength[2]);
+    return _area;
 }
 
 

@@ -34,6 +34,7 @@ namespace G3D {
 class Triangle {
 private:
     friend class CollisionDetection;
+    friend class Ray;
 
     Vector3                     _vertex[3];
 
@@ -42,6 +43,13 @@ private:
     double                      edgeLength[3];
     Plane                       _plane;
     Vector3::Axis               _primaryAxis;
+
+    /** vertex[1] - vertex[0] */
+    Vector3                     edge01;
+    /** vertex[2] - vertex[0] */
+    Vector3                     edge02;
+
+    double                      _area;
 
     void init(const Vector3& v0, const Vector3& v1, const Vector3& v2);
 

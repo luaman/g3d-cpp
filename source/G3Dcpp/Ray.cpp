@@ -108,11 +108,4 @@ double Ray::intersectionTime(const class AABox& box) const {
     }
 }
 
-double Ray::intersectionTime(
-    const Triangle& triangle) const {
-
-    return CollisionDetection::collisionTimeForMovingPointFixedTriangle(
-            origin, direction, triangle);
-}
-
 }

@@ -6,13 +6,14 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-12
- @edited  2004-03-17
+ @edited  2004-03-21
  */
 
 #ifndef G3D_RAY_H
 #define G3D_RAY_H
 
 #include "G3D/Vector3.h"
+#include "G3D/Triangle.h"
 
 namespace G3D {
 
@@ -97,10 +98,6 @@ public:
 
     double intersectionTime(const class AABox& box) const;
 
-    /* One-sided triangle 
-       */
-    double intersectionTime(const class Triangle& triangle) const;
-
     /**
      The three extra arguments are the weights of vertices 0, 1, and 2
      at the intersection point; they are useful for texture mapping
@@ -108,17 +105,58 @@ public:
      */
     double intersectionTime(
         const Vector3& v0, const Vector3& v1, const Vector3& v2,
+        const Vector3& edge01, const Vector3& edge02,
         double& w0, double& w1, double& w2) const;
 
-    /**
-     Ray-triangle intersection for a 1-sided triangle
+     /**
+     Ray-triangle intersection for a 1-sided triangle.  Fastest version.
        @cite http://www.acm.org/jgt/papers/MollerTrumbore97/
        http://www.graphics.cornell.edu/pubs/1997/MT97.html
      */
-    double intersectionTime(
-        const Vector3& v0,
-        const Vector3& v1,
-        const Vector3& v2) const;
+    inline double Ray::intersectionTime(
+        const Vector3& vert0,
+        const Vector3& vert1,
+        const Vector3& vert2,
+        const Vector3& edge01,
+        const Vector3& edge02) const;
+
+
+    inline double Ray::intersectionTime(
+        const Vector3& vert0,
+        const Vector3& vert1,
+        const Vector3& vert2) const {
+
+        return intersectionTime(vert0, vert1, vert2, vert1 - vert0, vert2 - vert0);
+    }
+
+
+    inline double Ray::intersectionTime(
+        const Vector3&  vert0,
+        const Vector3&  vert1,
+        const Vector3&  vert2,
+        double&         w0,
+        double&         w1,
+        double&         w2) const {
+
+        return intersectionTime(vert0, vert1, vert2, vert1 - vert0, vert2 - vert0, w0, w1, w2);
+    }
+
+    /* One-sided triangle 
+       */
+    inline double Ray::intersectionTime(const Triangle& triangle) const {
+        return intersectionTime(
+            triangle.vertex(0), triangle.vertex(1), triangle.vertex(2),
+            triangle.edge01, triangle.edge02);
+    }
+
+    inline double Ray::intersectionTime(
+        const Triangle& triangle,
+        double&         w0,
+        double&         w1,
+        double&         w2) const {
+        return intersectionTime(triangle.vertex(0), triangle.vertex(1), triangle.vertex(2),
+            triangle.edge01, triangle.edge02, w0, w1, w2);
+    }
 
     /** Refracts about the normal
         using G3D::Vector3::refractionDirection
@@ -155,16 +193,14 @@ public:
 inline double Ray::intersectionTime(
     const Vector3& vert0,
     const Vector3& vert1,
-    const Vector3& vert2) const {
+    const Vector3& vert2,
+    const Vector3& edge1,
+    const Vector3& edge2) const {
 
     // Barycenteric coords
     double u, v;
 
-    double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
-    
-    // find vectors for two edges sharing vert0
-    SUB(edge1, vert1, vert0);
-    SUB(edge2, vert2, vert0);
+    double tvec[3], pvec[3], qvec[3];
     
     // begin calculating determinant - also used to calculate U parameter
     CROSS(pvec, direction, edge2);
@@ -214,6 +250,8 @@ inline double Ray::intersectionTime(
     const Vector3&  vert0,
     const Vector3&  vert1,
     const Vector3&  vert2,
+    const Vector3&  edge1,
+    const Vector3&  edge2,
     double&         w0,
     double&         w1,
     double&         w2) const {
@@ -221,12 +259,8 @@ inline double Ray::intersectionTime(
     // Barycenteric coords
     double u, v;
 
-    double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
-    
-    // find vectors for two edges sharing vert0
-    SUB(edge1, vert1, vert0);
-    SUB(edge2, vert2, vert0);
-    
+    double tvec[3], pvec[3], qvec[3];
+
     // begin calculating determinant - also used to calculate U parameter
     CROSS(pvec, direction, edge2);
     
