@@ -621,6 +621,8 @@
 
    <P>
    <UL>
+     <LI> MD2 model gallery in documentation (Kevin)
+     <LI> MD2Documentor (Kevin)
      <LI> debugAssertGLOk macro
      <LI> VertexProgram now supports NVIDIA Vertex Program 2.0
      <LI> RenderDevice now loads glGenProgramsNV, glDeleteProgramsNV, glBindProgramNV, glLoadProgramNV, glTrackMatrixNV extensions
