@@ -609,7 +609,7 @@ public:
 
 
 /** Array::contains for C-arrays */
-template<class T> bool contains(T* array, int len, const T& e) {
+template<class T> bool contains(const T* array, int len, const T& e) {
     for (int i = len - 1; i >= 0; --i) {
         if (array[i] == e) {
             return true;
