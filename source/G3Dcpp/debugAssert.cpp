@@ -6,7 +6,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2003-06-25
+ @edited  2003-08-04
  */
 
 #include "G3D/debugAssert.h"
@@ -19,6 +19,7 @@
 #include "G3D/prompt.h"
 #include <string>
 #include "G3D/debugPrintf.h"
+#include "G3D/Log.h"
 
 #ifdef G3_WIN32
     // disable: "C++ exception handler used"
@@ -49,15 +50,18 @@ static void postToClipboard(const char *text) {
 }
 #endif
 
-bool _handleDebugAssert_(const char* expression,
-                         const std::string& message,
-                         const char* filename,
-                         int   lineNumber,
-                         bool &ignoreAlways,
-                         bool  useGuiPrompt) {
+/**
+ outTitle should be set before the call
+ */
+static void createErrorMessage(
+    const char*         expression,
+    const std::string&  message,
+    const char*         filename,
+    int                 lineNumber,
+    std::string&        outTitle,
+    std::string&        outMessage) {
 
     std::string le = "";
-    std::string title = "Assertion failure";
     char* newline = "\n";
 
     #if _WIN32
@@ -102,20 +106,34 @@ bool _handleDebugAssert_(const char* expression,
         GetModuleFileName(NULL, modulePath, MAX_PATH);
 
         const char* moduleName = strrchr(modulePath, '\\');
-        title = title + string(" - ") + string(moduleName ? (moduleName + 1) : modulePath);
+        outTitle = outTitle + string(" - ") + string(moduleName ? (moduleName + 1) : modulePath);
 
     #endif
 
     // Build the message.
-        std::string outputMessageText;
-
-    outputMessageText = 
+    outMessage =
         G3D::format("%s%s%sExpression: %s%s%s:%d%s%s%s", 
                  message.c_str(), newline, newline, expression, newline, 
                  filename, lineNumber, newline, newline, le.c_str());
+}
+
+
+bool _handleDebugAssert_(
+    const char*         expression,
+    const std::string&  message,
+    const char*         filename,
+    int                 lineNumber,
+    bool&               ignoreAlways,
+    bool                useGuiPrompt) {
+
+    std::string dialogTitle = "Assertion Failure";
+    std::string dialogText = "";
+
+    createErrorMessage(expression, message, filename, lineNumber, dialogTitle, dialogText);
 
     #if _WIN32
-        postToClipboard(outputMessageText.c_str());
+        DWORD lastErr = GetLastError();
+        postToClipboard(dialogText.c_str());
     #endif
 
     const int cBreak = 0;
@@ -125,7 +143,10 @@ bool _handleDebugAssert_(const char* expression,
 
     static char* choices[] = {"Debug", "Ignore", "Ignore Always", "Exit"};
 
-    int result = G3D::prompt(title.c_str(), outputMessageText.c_str(), (const char**)choices, 4, useGuiPrompt);
+    // Log the error
+    Log::common()->print(std::string("\n**************************\n\n") + dialogTitle + "\n" + dialogText);
+
+    int result = G3D::prompt(dialogTitle.c_str(), dialogText.c_str(), (const char**)choices, 4, useGuiPrompt);
 
     #if _WIN32
         // Put the incoming last error back.
@@ -160,6 +181,34 @@ bool _handleDebugAssert_(const char* expression,
     }
 
 }
+
+
+void _handleErrorCheck_(    
+    const char*         expression,
+    const std::string&  message,
+    const char*         filename,
+    int                 lineNumber,
+    bool&               ignoreAlways,
+    bool                useGuiPrompt) {
+
+    std::string dialogTitle = "Critical Error";
+    std::string dialogText = "";
+
+    createErrorMessage(expression, message, filename, lineNumber, dialogTitle, dialogText);
+
+    // Log the error
+    Log::common()->print(std::string("\n**************************\n\n") + dialogTitle + "\n" + dialogText);
+
+    static char* choices[] = {"Ok"};
+
+    std::string m = 
+        std::string("An internal error has occured in your program and it will now close.  Details about the error have been reported in \"") +
+            Log::getCommonLogFilename() + "\".";
+
+
+    int result = G3D::prompt("Error", m.c_str(), (const char**)choices, 1, useGuiPrompt);
+}
+
 
 }; }; // namespace
 

@@ -151,7 +151,7 @@
         <BR><B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
         G3D::isValidPointer,
         <B>G3D::debugAssertM</B>, G3D::debugPrintf, G3D::error, 
-        G3D::Log</BLOCKQUOTE>
+        G3D::Log, G3D::errorCheck</BLOCKQUOTE>
 
      <LI>I/O
         <BR><BLOCKQUOTE>
@@ -616,6 +616,8 @@
 
    <P>
    <UL>
+     <LI> errorCheck
+     <LI> Log::common, Log::getCommonLogFilename
      <LI> Switched from static to dynamic linking of zlib
      <LI> Upgraded to zlib 1.1.3
      <LI> On Win32 the lib list is automatically updated through pragmas

@@ -17,7 +17,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-08-26
-  @edited  2003-01-25
+  @edited  2003-08-04
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -76,14 +76,30 @@
         } \
     }
 
+    #define errorCheck debugAssertM
+
 #else  // Release
+    #ifdef G3D_DEBUG_NOGUI
+        #define __debugPromptShowDialog__ false
+    #else
+        #define __debugPromptShowDialog__ true
+    #endif
 
     // In the release build, just define away assertions.
     #define debugAssert(exp)
     #define debugAssertM(exp, message)
     #define debugBreak()
 
+    #define errorCheck(exp, message) { \
+        if (!(exp)) { \
+            G3D::_internal::_handleErrorCheck_(#exp, message, __FILE__, __LINE__, __debugPromptShowDialog__)) { \
+            exit(-1); \
+        } \
+    }
+
 #endif  // if debug
+
+
 
 /**
  * @def debugBreak()
@@ -106,6 +122,13 @@ bool _handleDebugAssert_(
     const char* filename,
     int         lineNumber,
     bool&       ignoreAlways,
+    bool        useGuiPrompt);
+
+void _handleErrorCheck_(
+    const char* expression,
+    const std::string& message,
+    const char* filename,
+    int         lineNumber,
     bool        useGuiPrompt);
 
 }; }; // namespace

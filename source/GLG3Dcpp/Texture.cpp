@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-07-02
+ @edited  2003-08-04
 */
 
 #include "GLG3D/glcalls.h"
@@ -126,6 +126,8 @@ static void createTexture(
                 GL_UNSIGNED_BYTE,
                 bytes);
         }
+
+        // Intentionally fall through
 
     case GL_TEXTURE_RECTANGLE_NV:
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
@@ -487,6 +489,9 @@ Texture::~Texture() {
 unsigned int Texture::newGLTextureID() {
     unsigned int t;
     glGenTextures(1, &t);
+
+    errorCheck(glGetError() != GL_INVALID_OPERATION, "GL_INVALID_OPERATION: Probably caused by invoking glGenTextures between glBegin and glEnd.");
+
     return t;
 }
 
@@ -520,6 +525,8 @@ void Texture::copyFromScreen(int x, int y, int width, int height, int windowHeig
     glEnable(target);
 
     glBindTexture(target, textureID);
+    errorCheck(glGetError() == GL_NONE, "Error encountered during glBindTexture");
+        
     glCopyTexImage2D(target, 0, format->OpenGLFormat, x, windowHeight - (y + height), width, height, 0);
 
     setTexParameters(target, wrap, interpolate);

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @cite Backtrace by Aaron Orenstein
   @created 2001-08-04
-  @edited  2003-03-30
+  @edited  2003-08-04
  */
 
 #ifndef G3D_LOG_H
@@ -12,18 +12,19 @@
 
 #include <stdio.h>
 #include <string>
+#include "G3D/platform.h"
 
-#ifndef _MSC_VER
+#ifndef G3D_WIN32
     #include <stdarg.h>
-    #ifndef __cdecl
-        #define __cdecl __attribute__((cdecl))
-    #endif
 #endif
 
 namespace G3D {
 
 /**
- System log for debugging purposes.
+ System log for debugging purposes.  The first log opened
+ is the "common log" and can be accessed with the static
+ method common().  If you access common() and a common log
+ does not yet exist, one is created for you.
  */
 class Log {
 private:
@@ -32,6 +33,10 @@ private:
      Log messages go here.
      */
     FILE*                   logFile;
+
+    std::string             filename;
+
+    static Log*             commonLog;
 
     int                     stripFromStackBottom;
 
@@ -68,6 +73,10 @@ public:
      Given arguments like printf, writes characters to the debug text overlay.
      */
     void __cdecl printf(const char* fmt ...);
+
+    static Log* common();
+
+    static std::string getCommonLogFilename();
 
     void print(const std::string& s);
 

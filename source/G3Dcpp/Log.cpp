@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @cite       Backtrace by Aaron Orenstein
   @created 2001-08-04
-  @edited  2003-02-15
+  @edited  2003-08-04
  */
 
 #include "G3D/Log.h"
@@ -24,8 +24,12 @@
 
 namespace G3D {
 
+Log* Log::commonLog = NULL;
+
 Log::Log(const std::string& filename, int stripFromStackBottom) : 
     stripFromStackBottom(stripFromStackBottom) {
+
+    this->filename = filename;
 
     logFile = fopen(filename.c_str(), "w");
 
@@ -59,18 +63,40 @@ Log::Log(const std::string& filename, int stripFromStackBottom) :
     time(&t);
     fprintf(logFile, "Start: %s\n", ctime(&t));
     fflush(logFile);
+
+    if (commonLog == NULL) {
+        commonLog = this;
+    }
 }
 
 
 Log::~Log() {
     section("Shutdown");
     println("Closing log file");
+    
+    // Make sure we don't leave a dangling pointer
+    if (Log::commonLog == this) {
+        Log::commonLog = NULL;
+    }
+
     fclose(logFile);
 }
 
 
 FILE* Log::getFile() const {
     return logFile;
+}
+
+Log* Log::common() {
+    if (commonLog == NULL) {
+        commonLog = new Log();
+    }
+    return commonLog;
+}
+
+
+std::string Log::getCommonLogFilename() {
+    return common()->filename;
 }
 
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2000-08-26
-  @created 2002-02-23
+  @created 2002-08-04
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.

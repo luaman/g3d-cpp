@@ -34,6 +34,10 @@
     #ifndef __i386__
         #error G3D only supports x86 machines on Linux.
     #endif
+
+    #ifndef __cdecl
+        #define __cdecl __attribute__((cdecl))
+    #endif
 #endif
 
 #ifdef G3D_OSX
@@ -44,7 +48,10 @@
     #ifndef __POWERPC__
         #error G3D only supports PowerPC processors on OS X.
     #endif
-#endif
 
+    #ifndef __cdecl
+        #define __cdecl __attribute__((cdecl))
+    #endif
+#endif
 
 #endif
