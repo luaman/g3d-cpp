@@ -1,1 +1,1 @@
-SUBDIRS = include test demos
+SUBDIRS = test
