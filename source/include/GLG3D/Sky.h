@@ -128,6 +128,9 @@ public:
         bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0);
 
+    /**
+     @param _cubeMap This must be a Texture of dimension - DIM_CUBE_MAP.
+     */
     static SkyRef fromCubeMap(
         RenderDevice*                           rd,
         TextureRef                              _cubeMap,
