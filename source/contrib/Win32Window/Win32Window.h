@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com 
  @created 	  2004-05-21
- @edited  	  2004-06-15
+ @edited  	  2004-09-25
     
  Copyright 2000-2002, Morgan McGuire.
  All rights reserved.
@@ -41,6 +41,10 @@ private:
 
 	/** Called from both constructors */
 	void init(HWND hwnd);
+
+    /** Initializes the WGL extensions by creating and then destroying a window.  Also registers
+        our window class.*/
+    static void initWGL();
 
 public:
 
