@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2004-03-28
+  @edited  2004-09-09
  */ 
 
 
@@ -121,6 +121,14 @@ public:
     virtual PosedModelRef pose(const CoordinateFrame& cframe, const GMaterial& material, bool perVertexNormals = true);
 
     virtual size_t mainMemorySize() const;
+
+    /** Writes an IFS file from data in arrays */
+    static void save(const std::string& filename, const std::string& name,
+             const Array<int>& index, const Array<Vector3>& vertex);
+
+    /** Parses an IFS file from disk into arrays; does no cleanup or welding */
+    static void load(const std::string& filename, std::string& name,
+        Array<int>& index, Array<Vector3>& vertex);
 };
 
 }

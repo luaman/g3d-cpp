@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-10-18
+  @edited  2004-09-09
  */ 
 
 
@@ -50,10 +50,18 @@ public:
     /** Writes out the model data into the passed in object. */
     void commit(class XIFSModel* model);
 
+    /** Writes out the model data to an ifs file. */
+    void commit(const std::string& filename);
+
     /**
-     Adds a new triangle to the model.
+     Adds a new triangle to the model. (Counter clockwise)
      */
     void addTriangle(const Vector3& a, const Vector3& b, const Vector3& c);
+    /**
+     Adds two new triangles to the model. (Counter clockwise)
+     */
+    void addQuad(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d);
+
     void addTriangle(const Triangle& t);
 
     void setName(const std::string& n);

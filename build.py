@@ -153,7 +153,7 @@ def _lib(args, libplatform, reconfigure = 1):
 					["graphics3D",\
 					 "GLG3D"])
 
-		moveIfNewer("temp/" + libplatform, libdir)
+		copyIfNewer("temp/" + libplatform + "-lib", libdir)
 
     else:
         # Linux build

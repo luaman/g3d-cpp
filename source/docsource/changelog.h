@@ -12,6 +12,7 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> static G3D::IFSModel::save/load for writing/reading IFS files
      <LI> G3D::TextInput allows ' inside quoted strings
      <LI> G3D::TextInput allows \ as a symbol token
      <LI> G3D::TextInput supports an arbitrary comment character (e.g. '#')

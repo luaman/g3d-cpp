@@ -389,6 +389,8 @@ void Editor::draw3DCurve() {
     rd->setColor(Color3::white());
     int N = 200;
 
+
+
     for (int a = 0; a <= N; ++a) {
         double t = (double)a / N;
         Vector2 p0 = evalCurve(t - 0.001);

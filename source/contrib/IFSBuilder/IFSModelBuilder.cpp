@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-10-06
+  @edited  2004-09-09
  */
 
 #include "IFSModelBuilder.h"
@@ -21,51 +21,10 @@ void IFSModelBuilder::setName(const std::string& n) {
 double close;
 
 void IFSModelBuilder::commit(XIFSModel* model) {
-    model->name = name;
+    std::string temp = "_scratch.ifs";
+    commit(temp);
 
-    // Make the data fit in a unit cube
-    centerTriList();
-
-    Array<int> toNew, toOld;
-
-    close = CLOSE;
-    if (close == IFSModelBuilder::AUTO_WELD) {
-        Array<int> index;
-        MeshAlg::createIndexArray(triList.size(), index);
-        double minEdgeLen, maxEdgeLen, meanEdgeLen, medianEdgeLen;
-        double minFaceArea, maxFaceArea, meanFaceArea, medianFaceArea;
-        MeshAlg::computeAreaStatistics(triList, index,
-            minEdgeLen, meanEdgeLen, medianEdgeLen, maxEdgeLen,
-            minFaceArea, meanFaceArea, medianFaceArea, maxFaceArea);
-        close = minEdgeLen * 0.1;
-    }
-
-    MeshAlg::computeWeld(triList, model->geometry.vertexArray, toNew, toOld, close);
-
-    // Construct triangles
-    for (int t = 0; t < triList.size(); t += 3) {
-        XIFSModel::Triangle tri;
-
-        for (int i = 0; i < 3; ++i) {
-           tri.index[i] = toNew[t + i];
-        }
-
-        // Throw out zero size triangles
-        if ((tri.index[0] != tri.index[1]) &&
-            (tri.index[1] != tri.index[2]) &&
-            (tri.index[2] != tri.index[0])) {
-            model->triangleArray.append(tri);
-        }
-    }
-
-    // Trilist reformatted as an index array
-    Array<int> indexArray(model->triangleArray.size() * 3);
-    for (int t = 0, i = 0; t < model->triangleArray.size(); ++t, i += 3) {
-        for (int j = 0; j < 3; ++j) {
-            indexArray[i + j] = model->triangleArray[t].index[j];
-        }
-    }
-
+/*
     Array<MeshAlg::Face> faceArray;
     Array<Array<int> >   adjacentFaceArray;
     MeshAlg::computeAdjacency(model->geometry.vertexArray, indexArray, faceArray, model->edgeArray, adjacentFaceArray);
@@ -108,6 +67,66 @@ void IFSModelBuilder::commit(XIFSModel* model) {
             }
         }
     }
+*/    
+    model->loadIFS(temp);
+}
+
+class IndexTri {
+public:
+    int                 index[3];
+};
+
+
+void IFSModelBuilder::commit(const std::string& filename) {
+//    model->name = name;
+
+    // Make the data fit in a unit cube
+    centerTriList();
+
+    Array<int> toNew, toOld;
+
+    close = CLOSE;
+    if (close == IFSModelBuilder::AUTO_WELD) {
+        Array<int> index;
+        MeshAlg::createIndexArray(triList.size(), index);
+        double minEdgeLen, maxEdgeLen, meanEdgeLen, medianEdgeLen;
+        double minFaceArea, maxFaceArea, meanFaceArea, medianFaceArea;
+        MeshAlg::computeAreaStatistics(triList, index,
+            minEdgeLen, meanEdgeLen, medianEdgeLen, maxEdgeLen,
+            minFaceArea, meanFaceArea, medianFaceArea, maxFaceArea);
+        close = minEdgeLen * 0.1;
+    }
+
+    Array<Vector3> outvertexArray;
+    MeshAlg::computeWeld(triList, outvertexArray, toNew, toOld, close);
+
+    Array<IndexTri> outtriArray;
+
+    // Construct triangles
+    for (int t = 0; t < triList.size(); t += 3) {
+        IndexTri tri;
+
+        for (int i = 0; i < 3; ++i) {
+           tri.index[i] = toNew[t + i];
+        }
+
+        // Throw out zero size triangles
+        if ((tri.index[0] != tri.index[1]) &&
+            (tri.index[1] != tri.index[2]) &&
+            (tri.index[2] != tri.index[0])) {
+            outtriArray.append(tri);
+        }
+    }
+
+    // Trilist reformatted as an index array
+    Array<int> indexArray(outtriArray.size() * 3);
+    for (int t = 0, i = 0; t < outtriArray.size(); ++t, i += 3) {
+        for (int j = 0; j < 3; ++j) {
+            indexArray[i + j] = outtriArray[t].index[j];
+        }
+    }
+
+    IFSModel::save(filename, name, indexArray,  outvertexArray);
 }
 
 
@@ -152,6 +171,12 @@ void IFSModelBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vect
 	if (_twoSided) {
 	    triList.append(c, b, a);
 	}
+}
+
+
+void IFSModelBuilder::addQuad(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d) {
+    addTriangle(a, b, c);
+    addTriangle(a, c, d);
 }
 
 

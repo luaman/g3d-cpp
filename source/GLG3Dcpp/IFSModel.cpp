@@ -53,57 +53,14 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
     reset();
 
     this->filename = filename;
-    BinaryInput bi(filename, G3D_LITTLE_ENDIAN);
-
-    if (bi.getLength() == 0) {
-        throw std::string("Failed to open " + filename);
-    }
-
-    std::string header = bi.readString32();
-    if (header != "IFS") {
-       throw std::string("File is not an IFS file");
-    }
-
-    if (bi.readFloat32() != 1.0f) {
-       throw std::string("Bad IFS version, expecting 1.0");
-    }
-
-    name = bi.readString32();
-
-    while (bi.hasMore()) {
-        std::string str = bi.readString32();
-
-        if (str == "VERTICES") {
-            debugAssertM(geometry.vertexArray.size() == 0, "Multiple vertex fields!");
-            uint32 num = bi.readUInt32();
-
-            if ((num <= 0) || (num > 10000000)) {
-                throw std::string("Bad number of vertices");
-            }
-
-            geometry.vertexArray.resize(num);
-
-            for (int i = 0; i < (int)num; ++i) {
-                geometry.vertexArray[i] = cframe.pointToWorldSpace(bi.readVector3() * scale);
-            }
-
-        } else if (str == "TRIANGLES") {
-            debugAssertM(faceArray.size() == 0, "Multiple triangle fields!");
-            uint32 num = bi.readUInt32();
-
-            if ((num <= 0) || (num > 10000000)) {
-                throw std::string("Bad number of triangles");
-            }
-
-            indexArray.resize(num * 3);
-            for (int i = 0; i < indexArray.size(); ++i) {
-                indexArray[i] = bi.readUInt32();
-            }
-        }
-    }
+    load(filename, name, indexArray, geometry.vertexArray);
 
     debugAssert(geometry.vertexArray.size() > 0);
     debugAssert(indexArray.size() > 0);
+
+    for (int i = 0; i < geometry.vertexArray.size(); ++i) {
+        geometry.vertexArray[i] = cframe.pointToWorldSpace(geometry.vertexArray[i] * scale);
+    }
 
     MeshAlg::computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, vertexArray);
     weldedFaceArray = faceArray;
@@ -144,6 +101,93 @@ PosedModelRef IFSModel::pose(const CoordinateFrame& cframe, const GMaterial& mat
 }
 
 //////////////////////////////////////////////////////////////////////////
+void IFSModel::save(
+    const std::string&          filename,
+    const std::string&          name,
+    const Array<int>&           index,
+    const Array<Vector3>&       vertex) {
+
+    BinaryOutput b(filename, G3D_LITTLE_ENDIAN);
+
+    b.writeString32("IFS");
+    b.writeFloat32(1.0);
+    b.writeString32(name);
+
+    b.writeString32("VERTICES");
+
+    b.writeUInt32(vertex.size());
+
+    for (int v = 0; v < vertex.size(); ++v) {
+        vertex[v].serialize(b);
+    }
+
+    b.writeString32("TRIANGLES");
+
+    b.writeUInt32(index.size() / 3);
+    for (int i = 0; i < index.size(); ++i) {
+        b.writeUInt32(index[i]);
+    }
+    b.commit();
+}
+
+
+void IFSModel::load(
+    const std::string&      filename,
+    std::string&            name,
+    Array<int>&             index, 
+    Array<Vector3>&         vertex) {
+
+    BinaryInput bi(filename, G3D_LITTLE_ENDIAN);
+
+    if (bi.getLength() == 0) {
+        throw std::string("Failed to open " + filename);
+    }
+
+    std::string header = bi.readString32();
+    if (header != "IFS") {
+       throw std::string("File is not an IFS file");
+    }
+
+    if (bi.readFloat32() != 1.0f) {
+       throw std::string("Bad IFS version, expecting 1.0");
+    }
+
+    name = bi.readString32();
+
+    while (bi.hasMore()) {
+        std::string str = bi.readString32();
+
+        if (str == "VERTICES") {
+            debugAssertM(vertex.size() == 0, "Multiple vertex fields!");
+            uint32 num = bi.readUInt32();
+
+            if ((num <= 0) || (num > 10000000)) {
+                throw std::string("Bad number of vertices");
+            }
+
+            vertex.resize(num);
+
+            for (int i = 0; i < (int)num; ++i) {
+                vertex[i].deserialize(bi);
+            }
+
+        } else if (str == "TRIANGLES") {
+            debugAssertM(index.size() == 0, "Multiple triangle fields!");
+            uint32 num = bi.readUInt32();
+
+            if ((num <= 0) || (num > 100000000)) {
+                throw std::string("Bad number of triangles");
+            }
+
+            index.resize(num * 3);
+            for (int i = 0; i < index.size(); ++i) {
+                index[i] = bi.readUInt32();
+            }
+        }
+    }
+
+}
+
 
 void GMaterial::configure(class RenderDevice* rd) const {
     rd->setColor(color);

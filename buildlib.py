@@ -125,6 +125,7 @@ def moveIfNewer(source, dest):
 not copy files matching the excludeFromCopying patterns.
 """
 def copyIfNewer(source, dest, move = 0):
+
     if source == dest:
         # Copying in place
         return
