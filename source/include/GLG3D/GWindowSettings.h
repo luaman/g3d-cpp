@@ -3,18 +3,18 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-02-10
+  @edited  2004-02-11
 */
 
-#ifndef G3D_WINDOWSETTINGS_H
-#define G3D_WINDOWSETTINGS_H
+#ifndef G3D_GWINDOWSETTINGS_H
+#define G3D_GWINDOWSETTINGS_H
 
 namespace G3D {
 
 /**
  Used by RenderDevice::init
  */
-class WindowSettings {
+class GWindowSettings {
 public:
 
     int     width;
@@ -70,7 +70,7 @@ public:
      */
     bool    framed;
 
-    WindowSettings() :
+    GWindowSettings() :
         width(800),
         height(600),
         rgbBits(8),
@@ -89,7 +89,7 @@ public:
 };
 
 // For backwards compatibility to 6.00
-typedef WindowSettings RenderDeviceSettings;
+typedef GWindowSettings RenderDeviceSettings;
 
 } // namespace
 

@@ -3,15 +3,15 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-10
+  @edited  2004-02-11
 */
 
 #ifndef G3D_SDLWINDOW_H
 #define G3D_SDLWINDOW_H
 
 #include "graphics3d.h"
-#include "GLG3D/WindowSettings.h"
-#include "GLG3D/Window.h"
+#include "GLG3D/GWindowSettings.h"
+#include "GLG3D/GWindow.h"
 
 #if defined(G3D_OSX)
 #include <SDL/SDL.h>
@@ -30,7 +30,7 @@ namespace G3D {
 
  <B>Beta API!  This interface is experimental and is subject to change.</B>
  */
-class SDLWindow : public Window {
+class SDLWindow : public GWindow {
 private:
 
 #ifdef G3D_WIN32
@@ -48,15 +48,15 @@ private:
     /** API version */
     std::string         _version;
 
-    WindowSettings      _settings;
+    GWindowSettings     _settings;
 
 public:
 
-    SDLWindow(const WindowSettings& settings);
+    SDLWindow(const GWindowSettings& settings);
 
     virtual ~SDLWindow();
 
-    virtual void getSettings(WindowSettings& settings) const;
+    virtual void getSettings(GWindowSettings& settings) const;
 
     virtual int width() const;
 

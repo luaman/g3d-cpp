@@ -20,8 +20,8 @@
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/PixelProgram.h"
 #include "GLG3D/VARArea.h"
-#include "GLG3D/WindowSettings.h"
-#include "GLG3D/Window.h"
+#include "GLG3D/GWindowSettings.h"
+#include "GLG3D/GWindow.h"
 
 typedef unsigned int uint;
 
@@ -127,6 +127,8 @@ private:
     friend class VAR;
     friend class VARArea;
     friend class Milestone;
+
+    GWindow*                    window;
 
     enum Vendor {NVIDIA, ATI, ARB};
 

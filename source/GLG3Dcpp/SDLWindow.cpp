@@ -3,17 +3,70 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-10
+  @edited  2004-02-11
 */
 
 #include "GLG3D/SDLWindow.h"
+#include "GLG3D/glcalls.h"
 
 namespace G3D {
 
-SDLWindow::SDLWindow(const WindowSettings& settings) {
-    // TODO: init, settings
+SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
+	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0 ) {
+        fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
+		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
+		exit(1);
+	}
  
+	// Request various OpenGL parameters
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      settings.depthBits);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    1);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,    settings.stencilBits);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,        settings.rgbBits);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,      settings.rgbBits);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,       settings.rgbBits);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,      settings.alphaBits);
+    SDL_GL_SetAttribute(SDL_GL_STEREO,          settings.stereo);
+
+    #ifdef SDL_1_26
+        if (settings.fsaaSamples > 1) {
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+            SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, settings.fsaaSamples);
+        }
+    #endif
+
+	// Create a width x height OpenGL screen 
+    int flags = 
+        SDL_HWSURFACE |
+        SDL_OPENGL |
+        (settings.fullScreen ? SDL_FULLSCREEN : 0) |
+        (settings.resizable ? SDL_RESIZABLE : 0) |
+        (settings.framed ? 0 : SDL_NOFRAME);
+
+	if (SDL_SetVideoMode(settings.width, settings.height, 0, flags) == NULL) {
+        debugAssert(false);
+        Log::common()->printf("Unable to create OpenGL screen: %s\n", SDL_GetError());
+		error("Critical Error", format("Unable to create OpenGL screen: %s\n", SDL_GetError()).c_str(), true);
+		SDL_Quit();
+		exit(2);
+	}
+
+    // See what video mode we really got
+    _settings = settings;
+    int depthBits, stencilBits, redBits, greenBits, blueBits, alphaBits;
+    glGetIntegerv(GL_DEPTH_BITS, &depthBits);
+    glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
+
+    glGetIntegerv(GL_RED_BITS,   &redBits);
+    glGetIntegerv(GL_GREEN_BITS, &greenBits);
+    glGetIntegerv(GL_BLUE_BITS,  &blueBits);
+    glGetIntegerv(GL_ALPHA_BITS, &alphaBits);
+    _settings.rgbBits     = iMin(iMin(redBits, greenBits), blueBits);
+    _settings.alphaBits   = alphaBits;
+    _settings.stencilBits = stencilBits;
+    _settings.depthBits   = depthBits;
+
     SDL_version ver;
     SDL_VERSION(&ver);
     _version = format("%d,%0d.%0d", ver.major, ver.minor, ver.patch);
@@ -63,7 +116,7 @@ SDLWindow::~SDLWindow() {
 }
 
 
-void SDLWindow::getSettings(WindowSettings& settings) const {
+void SDLWindow::getSettings(GWindowSettings& settings) const {
     settings = _settings;
 }
 

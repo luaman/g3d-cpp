@@ -6,11 +6,11 @@
   @edited  2004-02-10
 */
 
-#ifndef G3D_WINDOW_H
-#define G3D_WINDOW_H
+#ifndef G3D_GWINDOW_H
+#define G3D_GWINDOW_H
 
 #include "graphics3d.h"
-#include "GLG3D/WindowSettings.h"
+#include "GLG3D/GWindowSettings.h"
 
 namespace G3D {
 
@@ -27,7 +27,7 @@ namespace G3D {
 
  <B>Subclassing</B>
 
- It is common to accept a WindowSettings as an argument to the 
+ It is common to accept a GWindowSettings as an argument to the 
  constructor.
 
  <B>Input</B>
@@ -65,17 +65,17 @@ without having to rebuild the library or edit the internals of RenderDevice.
 This proposal is backwards compatible to the 6.00 API since everything will
 default to SDLWindow.  
  */
-class Window {
+class GWindow {
 public:
     /** Closes the window and frees any resources associated with it.
         When subclassing, put any shutdown code (e.g. SDL_Quit()) in 
         your destructor.  Put initialization code (e.g. SDL_Init()) in
         the constructor. */
-    virtual ~Window() {}
+    virtual ~GWindow() {}
 
     /** Return the <I>actual</I> properties of this window (as opposed to
         the desired settings from which it was initialized) */
-    virtual void getSettings(WindowSettings& settings) const = 0;
+    virtual void getSettings(GWindowSettings& settings) const = 0;
 
     /**
      Measured in pixels.
