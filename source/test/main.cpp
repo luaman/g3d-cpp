@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-11-02
+ @edited  2003-11-17
  */
 
 
@@ -25,6 +25,40 @@ using namespace G3D;
 // Useful for testing image loading
 //#include "test/Window.h"
 
+int numRCPFoo = 0;
+class RCPFoo : public G3D::ReferenceCountedObject {
+public:
+    int x;
+    RCPFoo() {
+        ++numRCPFoo;
+    }
+    ~RCPFoo() {
+        --numRCPFoo;
+    }
+};
+
+typedef G3D::ReferenceCountedPointer<RCPFoo> RCPFooRef;
+
+void testRCP() {
+    printf("ReferenceCountedPointer");
+
+    debugAssert(numRCPFoo == 0);
+    RCPFooRef a = new RCPFoo();
+    debugAssert(numRCPFoo == 1);
+    debugAssert(a.isLastReference());
+
+    {
+        RCPFooRef b = new RCPFoo();
+        debugAssert(numRCPFoo == 2);
+        b = a;
+        debugAssert(numRCPFoo == 1);
+        debugAssert(! a.isLastReference());
+        debugAssert(! b.isLastReference());
+    }
+
+    debugAssert(a.isLastReference());
+    debugAssert(numRCPFoo == 1);
+}
 
 void testBox() {
     printf("Box\n");
@@ -725,6 +759,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testRCP();
+    printf("  passed\n");
     testFloat();
     printf("  passed\n");
 	testMemset();

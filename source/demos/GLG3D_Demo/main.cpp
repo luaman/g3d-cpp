@@ -331,65 +331,71 @@ void Model::render(const CoordinateFrame& c,
                    const LightingParameters& lighting) const {
 
 
+debugAssertGLOk();    
     renderDevice->setObjectToWorldMatrix(c);
 
+debugAssertGLOk();    
     renderDevice->pushState();
+debugAssertGLOk();    
 
     // Setup lighting
-    float black[] = {0.0f, 0.0f, 0.0f, 0.0f};
-    glMaterialfv(GL_FRONT, GL_SPECULAR, black);
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    renderDevice->setSpecularCoefficient(0);
+debugAssertGLOk();    
     renderDevice->enableLighting();
+debugAssertGLOk();    
     renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+debugAssertGLOk();    
     renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
+debugAssertGLOk();    
     renderDevice->setAmbientLightColor(lighting.ambient);
+debugAssertGLOk();    
 
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     renderDevice->setColor(Color3::WHITE);
 
-    // Draw the model
-    switch (renderMethod) {
-    case TRIANGLES:
-        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-        {
-            for (int i = 0; i < index.size(); ++i) {
-                renderDevice->setNormal(normal[index[i]]);
-                renderDevice->sendVertex(vertex[index[i]]);
+        // Draw the model
+        switch (renderMethod) {
+        case TRIANGLES:
+            renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+            {
+                for (int i = 0; i < index.size(); ++i) {
+                    renderDevice->setNormal(normal[index[i]]);
+                    renderDevice->sendVertex(vertex[index[i]]);
+                }
             }
+            renderDevice->endPrimitive();
+            break;
+
+
+        case VARDYNAMIC:
+            renderDevice->beginIndexedPrimitives();
+            {
+                VAR n(normal, varDynamic);
+                VAR v(vertex, varDynamic);
+
+                renderDevice->setNormalArray(n);
+                renderDevice->setVertexArray(v);
+                renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+            }
+            renderDevice->endIndexedPrimitives();
+            break;
+
+
+        case VARSTATIC:
+            renderDevice->beginIndexedPrimitives();
+            {
+                renderDevice->setNormalArray(varNormal);
+                renderDevice->setVertexArray(varVertex);
+                renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+            }
+            renderDevice->endIndexedPrimitives();
+            break;
+
+        default:;
         }
-        renderDevice->endPrimitive();
-        break;
-
-
-    case VARDYNAMIC:
-        renderDevice->beginIndexedPrimitives();
-        {
-            VAR n(normal, varDynamic);
-            VAR v(vertex, varDynamic);
-
-            renderDevice->setNormalArray(n);
-            renderDevice->setVertexArray(v);
-            renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
-        }
-        renderDevice->endIndexedPrimitives();
-        break;
-
-
-    case VARSTATIC:
-        renderDevice->beginIndexedPrimitives();
-        {
-            renderDevice->setNormalArray(varNormal);
-            renderDevice->setVertexArray(varVertex);
-            renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
-        }
-        renderDevice->endIndexedPrimitives();
-        break;
-
-    default:;
-    }
 
     renderDevice->popState();
+	debugAssertGLOk();    
 }
 
 

@@ -34,7 +34,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-06-26
-  @edited  2003-06-26
+  @edited  2003-11-17
  */
 
 /**

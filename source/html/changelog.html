@@ -12,7 +12,7 @@
    <BLOCKQUOTE>
 	   Tips for upgrading from 5.xx to 6.00:   
 	   <LI>Use the <B>default</B> Win32 linker list and uncheck "ignore default libraries"
-	   <LI>Add the line <CODE>controller->setActive(true);</CODE> to your G3D::ManualCameraController initialization
+	   <LI>Add the line <CODE>controller->setActive(true);</CODE> to your G3D::ManualCameraController initialization process
 	   <LI>Add a G3D::UserInput pointer to the G3D::ManualCameraController constructor calls
 	   <LI>Delete ManualCameraControllers <B>before</B> UserInputs.
 	   <LI>Replace <CODE>new Font</CODE> with <CODE>CFont::fromFile</CODE>
@@ -40,6 +40,7 @@
 
    <P>
    <UL>
+     <LI> ReferenceCountedPointer::isLastReference
      <LI> Support for textures beyond the number of texture units (which occurs on NVIDIA cards)
      <LI> G3D::PosedModel
 	 <LI> G3D::IFSModel

@@ -31,7 +31,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2003-06-29
+ @edited  2003-11-17
  */
 
 #ifndef NETWORKDEVICE_H
@@ -164,10 +164,10 @@ protected:
     SOCKET                          sock;
 
     Conduit(class NetworkDevice* _nd);
-    virtual ~Conduit();
 
 public:
 
+    virtual ~Conduit();
     uint64 bytesSent() const;
     uint64 messagesSent() const;
     uint64 bytesReceived() const;
@@ -230,10 +230,10 @@ private:
 
     ReliableConduit(class NetworkDevice* _nd, const SOCKET& sock, const NetAddress& addr);
 
+public:
+
     /** Closes the socket. */
     ~ReliableConduit();
-
-public:
 
     /**
      Serializes the message and schedules it to be sent as soon as possible,
@@ -297,10 +297,10 @@ private:
 
     LightweightConduit(class NetworkDevice* _nd, uint16 receivePort, bool enableReceive, bool enableBroadcast);
 
+public:
+
     /** Closes the socket. */
     ~LightweightConduit();
-
-public:
 
     /** Serializes and sends the message immediately. Data may not arrive and may
         arrive out of order, but individual messages are guaranteed to not be
@@ -335,9 +335,10 @@ private:
 
     /** Port is in host byte order. */
     NetListener(class NetworkDevice* _nd, uint16 port);
-    ~NetListener();
 
 public:
+
+    ~NetListener();
 
     /** Block until a connection is received.  Returns NULL if 
         something went wrong. */

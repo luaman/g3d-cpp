@@ -50,8 +50,6 @@ private:
 
     Milestone(const std::string& n);
 
-    ~Milestone();
-
     /** Set the milestone. */
     void set();
 
@@ -59,6 +57,7 @@ private:
     void wait();
 
 public:
+    ~Milestone();
 
     inline const std::string& name() const {
         return _name;
