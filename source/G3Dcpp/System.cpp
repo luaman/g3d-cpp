@@ -15,14 +15,15 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-05-15
+  @edited  2003-06-13
  */
 
+#include "G3D/platform.h"
 #include "G3D/System.h"
 #include "G3D/debug.h"
 #include "G3D/g3derror.h"
 
-#ifndef _MSC_VER
+#if defined(G3D_LINUX) || defined(G3D_OSX)
    // Unix
    #include <stdlib.h>
    #include <stdio.h>
@@ -33,14 +34,16 @@
 
 namespace G3D {
 
-static bool					_mmx        = false;
-static bool					_sse        = false;
-static bool					_sse2		= false;
-static bool					_3dnow      = false;
-static std::string			_cpuVendor  = "Unknown";
-static bool					initialized = false;
-static bool					_cpuID      = false;
-static G3DEndian         _machineEndian = G3D_LITTLE_ENDIAN;
+static bool					_mmx                = false;
+static bool					_sse                = false;
+static bool					_sse2		        = false;
+static bool					_3dnow              = false;
+static std::string			_cpuVendor          = "Unknown";
+static bool					initialized         = false;
+static bool					_cpuID              = false;
+static G3DEndian            _machineEndian      = G3D_LITTLE_ENDIAN;
+static std::string          _cpuArch            = "Unknown";
+static std::string          _operatingSystem    = "Unknown";
 
 static int	 	 maxSupportedCPUIDLevel = 0;
 static int    maxSupportedExtendedLevel = 0;
@@ -87,7 +90,7 @@ bool System::has3DNow() {
 }
 
 
-std::string System::cpuVendor() {
+const std::string& System::cpuVendor() {
 	init();
 	return _cpuVendor;
 }
@@ -96,6 +99,17 @@ std::string System::cpuVendor() {
 G3DEndian System::machineEndian() {
     init();
     return _machineEndian;
+}
+
+const std::string& System::operatingSystem() {
+    init();
+    return _operatingSystem;
+}
+        
+
+const std::string& System::cpuArchitecture() {
+    init();
+    return _cpuArch;
 }
 
 
@@ -107,7 +121,7 @@ void init() {
 
 	initialized = true;
 
-	#ifdef _MSC_VER
+	#ifdef G3D_WIN32
         unsigned long eaxreg, ebxreg, ecxreg, edxreg;
     #endif
 
@@ -130,7 +144,7 @@ void init() {
 		return;
 	}
 
-	#ifdef _MSC_VER
+	#if defined(G3D_WIN32)
 		// We read the standard CPUID level 0x00000000 which should
 		// be available on every x86 processor
 		__asm {
@@ -177,6 +191,60 @@ void init() {
 			initUnknown();
 			break;
 		}
+
+        SYSTEM_INFO systemInfo;
+        GetSystemInfo(&systemInfo);
+        char* arch;
+        switch (systemInfo.wProcessorArchitecture) {
+        case PROCESSOR_ARCHITECTURE_INTEL:
+            arch = "Intel";
+            break;
+    
+        case PROCESSOR_ARCHITECTURE_MIPS:
+            arch = "MIPS";
+            break;
+
+        case PROCESSOR_ARCHITECTURE_ALPHA:
+            arch = "Alpha";
+            break;
+
+        case PROCESSOR_ARCHITECTURE_PPC:
+            arch = "Power PC";
+            break;
+
+        default:
+            arch = "Unknown";
+        }
+
+        _cpuArch = format(
+                    "%d x %d-bit %s processor",
+                    systemInfo.dwNumberOfProcessors,
+                    (int)(::log((uint32)systemInfo.lpMaximumApplicationAddress) / ::log(2) + 2),
+                    arch);
+
+        OSVERSIONINFO osVersionInfo;
+        osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+        bool success = GetVersionEx(&osVersionInfo) != 0;
+
+        if (success) {
+            _operatingSystem = format("Windows %d.%d build %d Platform %d %s",
+                osVersionInfo.dwMajorVersion, 
+                osVersionInfo.dwMinorVersion,
+                osVersionInfo.dwBuildNumber,
+                osVersionInfo.dwPlatformId,
+                osVersionInfo.szCSDVersion);
+        } else {
+            _operatingSystem = "Windows";
+        }
+    
+    #elif defined(G3D_LINUX)
+
+        _operatingSystem = "Linux";
+
+    #elif defined(G3D_OSX)
+
+        _operatingSystem = "Linux";
+        
 	#endif
 
 	getStandardProcessorExtensions();

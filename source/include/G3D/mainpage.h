@@ -323,14 +323,16 @@
       <BLOCKQUOTE>
        <BR>
        <PRE>
-msvcprtd.lib msvcrtd.lib G3D-debug.lib GLG3D-debug.lib opengl32.lib glut32.lib  glu32.lib sdl.lib sdlmain.lib  zlibstat.lib ws2_32.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib
+msvcprtd.lib msvcrtd.lib G3D-debug.lib GLG3D-debug.lib opengl32.lib glut32.lib  glu32.lib sdl.lib sdlmain.lib  zlibstat.lib ws2_32.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib version.lib
+
     ^^^        ^^^           ^^^                 ^^^             ^^^      ^^^^    ^^^       ^^^^     ^^^^                     ^^^         ^^^
 C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL            If you are using SDL            ZLIB compression  WinSock
       </PRE>
        <BR>
        <P>
        The corresponding release list is:
-       <BR><PRE>msvcprt.lib msvcrt.lib G3D.lib GLG3D.lib  opengl32.lib glu32.lib glut32.lib   sdl.lib sdlmain.lib   zlibstat.lib ws2_32.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib</PRE>
+       <BR><PRE>msvcprt.lib msvcrt.lib G3D.lib GLG3D.lib  opengl32.lib glu32.lib glut32.lib   sdl.lib sdlmain.lib   zlibstat.lib ws2_32.lib winmm.lib imagehlp.lib kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib uuid.lib version.lib
+</PRE>
        <P>
 
        Note that the C++ and C runtime libs are linked first-- you
@@ -661,6 +663,9 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> Library list has changed for Win32
+     <LI> System::cpuArchitecture
+     <LI> System::operatingSystem
      <LI> Plane::fromEquation
      <LI> double-precision Plane::getEquation
      <LI> Vector2::lerp

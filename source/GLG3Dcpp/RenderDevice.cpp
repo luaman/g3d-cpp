@@ -4,17 +4,21 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-05-22
+ @edited  2003-06-13
  */
 
 
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <sstream>
+#include "G3D/platform.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/getOpenGLState.h"
+#ifdef G3D_WIN32
+    #include <winver.h>
+#endif
 
 PFNGLMULTITEXCOORD1FARBPROC                 glMultiTexCoord1fARB		    = NULL;
 PFNGLMULTITEXCOORD1DARBPROC                 glMultiTexCoord1dARB		    = NULL;
@@ -114,6 +118,73 @@ static void frustum(
 static double getTime() {
     return SDL_GetTicks() / 1000.0;
 }
+
+
+/**
+ Returns the version string for the video driver.
+ */
+static std::string getDriverVersion() {
+    #ifdef G3D_WIN32
+    
+        std::string driver;
+
+        std::string vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+
+        // Locate the windows\system directory
+        {
+            char sysDir[1024];
+            int sysSize = GetSystemDirectory(sysDir, 1024);
+            if (sysSize == 0) {
+                return "Unknown (can't find Windows directory)";
+            }
+            driver = sysDir;
+        }
+
+        if (vendor == "ATI Technologies Inc.") {
+
+            driver = driver + "\\ati2dvag.dll";
+
+        } else if (vendor =="NVIDIA Corporation") {
+
+            driver = driver + "\\nv4_disp.dll";
+
+        } else {
+
+            return "Unknown (Unknown vendor)";
+
+        }
+
+        char* lpdriver = const_cast<char*>(driver.c_str());
+        DWORD dummy;
+
+        int size = GetFileVersionInfoSize(lpdriver, &dummy);
+        if (size == 0) {
+            return "Unknown (Can't find driver)";
+        }
+
+        char* buffer = (char*)malloc(size);
+
+        void* version;
+        uint len;
+
+        int ret = GetFileVersionInfo(lpdriver, NULL, size, buffer);
+        ret = VerQueryValue(buffer, TEXT("\\StringFileInfo\\040904E4\\FileVersion"), &version, &len);
+
+        if (ret == 0) {
+            free(buffer);
+            return "Unknown (no info in driver)";
+        }
+
+        std::string result = std::string(reinterpret_cast<char*>(version));
+
+        free(buffer);
+
+        return result;
+    #else
+        return "Unknown";
+    #endif
+}
+
 
 RenderDevice::RenderDevice() {
 
@@ -277,76 +348,23 @@ bool RenderDevice::init(
 
 	varSystem = new VARSystem(this, varVideoMemory, debugLog);
 
-
-    #ifdef _WIN32
-        {
-            OSVERSIONINFO osVersionInfo;
-            osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-            bool success = GetVersionEx(&osVersionInfo) != 0;
-
-            if (debugLog) {
-                if (success) {
-                    debugLog->printf("\nWindows %d.%d build %d Platform %d %s\n",
-                        osVersionInfo.dwMajorVersion, 
-                        osVersionInfo.dwMinorVersion,
-                        osVersionInfo.dwBuildNumber,
-                        osVersionInfo.dwPlatformId,
-                        osVersionInfo.szCSDVersion);
-                } else {
-                    debugLog->println("Error: Could not obtain Windows version information.");
-                }
-            }
-
-            SYSTEM_INFO systemInfo;
-            GetSystemInfo(&systemInfo);
-
-            char* arch = NULL;
-
-            switch (systemInfo.wProcessorArchitecture) {
-            case PROCESSOR_ARCHITECTURE_INTEL:
-                arch = "Intel";
-                break;
-            
-            case PROCESSOR_ARCHITECTURE_MIPS:
-                arch = "MIPS";
-                break;
-
-            case PROCESSOR_ARCHITECTURE_ALPHA:
-                arch = "Alpha";
-                break;
-
-            case PROCESSOR_ARCHITECTURE_PPC:
-                arch = "Power PC";
-                break;
-
-            default:
-                arch = "Unknown";
-            }
-
-            if (debugLog) {
-                debugLog->printf(
-                    "Processor Architecture: %d-bit %s\n (x%d)\n",
-                    (int)(::log((uint32)systemInfo.lpMaximumApplicationAddress) / ::log(2) + 2),
-                    arch,
-                    systemInfo.dwNumberOfProcessors);
-            }
-        }
-    #endif
-
-    // Report the capabilities discovered.
     if (debugLog) {
+        debugLog->printf("Operating System: %s\n", System::operatingSystem().c_str());
+        debugLog->printf("Processor Architecture: %s\n\n", System::cpuArchitecture().c_str());
+
         debugLog->printf(
             "GL Vendor:     %s\n"
             "GL Renderer:   %s\n"
             "GL Version:    %s\n\n"
-            "GL extensions: \"%s\"\n\n",
+            "GL extensions: \"%s\"\n",
             glGetString(GL_VENDOR),
             glGetString(GL_RENDERER),
             glGetString(GL_VERSION),
             extensions.str().c_str());
+
+        std::string s = getDriverVersion();
+        debugLog->printf("Driver version: %s\n\n", s.c_str());
     }
-
-
  
     // Don't use more texture units than allowed at compile time.
     int rawTextureUnits = _numTextureUnits;

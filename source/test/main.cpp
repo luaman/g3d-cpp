@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-05-22
+ @edited  2003-06-13
  */
 
 
@@ -660,6 +660,8 @@ int main(int argc, char* argv[]) {
     Triangle t(Vector3(-.413, -.49, -.52), Vector3(-.422, -.43, -.55), Vector3(-.402, -.39, -.61));
 
     RenderDevice rd;
+    Log debugLog("c:/tmp/log.txt");
+    rd.init(800, 600, &debugLog);
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
