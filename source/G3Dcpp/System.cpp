@@ -55,27 +55,40 @@
 namespace G3D {
 
 std::string demoFindData() {
-    std::string path = "";
+
+    Array<std::string> potential;
+    potential.append("");
 
     // Search for the data
-    for (int count = 0; (count < 5) && (! fileExists(path + "data")); ++count) {
-        path = std::string("../") + path;
+    for (int count = 0; count < 5; ++count) {
+        potential.append("../");
     }
 
-    if (fileExists(path + "data")) {
-        return path + "data/";
-    } else {
+    #ifdef G3D_WIN32
+        potential.append("d:/libraries/g3d-6_00/");
+        potential.append("g:/libraries/g3d-6_00-b6/");
+        potential.append("c:/libraries/g3d-6_00/");
+    #else
+        potential.append("/map/gfx0/common/games/libraries/g3d-6_00-b6/");
+    #endif
 
-        const char* choice[] = {"Exit"};
-
-        prompt("Demo Error", "The demo could not locate the data directory.  "
-            "The data is required to run this demo.  If you have not downloaded "
-            "the data zipfile, get it from http://g3d-cpp.sf.net.  If you have "
-            "downloaded it, it needs to be no more than 4 directories above the "
-            "demo directory.", choice, 1, true);
-
-        return "";
+    for (int p = 0; p < potential.size();  ++p) {
+        std::string path = potential[p];
+        if (fileExists(path + "data") && fileExists(path + "data/font")) {
+            return path + "data/";
+        }
     }
+
+
+    const char* choice[] = {"Exit"};
+
+    prompt("Demo Error", "The demo could not locate the data directory.  "
+        "The data is required to run this demo.  If you have not downloaded "
+        "the data zipfile, get it from http://g3d-cpp.sf.net.  If you have "
+        "downloaded it, it needs to be no more than 4 directories above the "
+        "demo directory.", choice, 1, true);
+
+    return "";
 }
 
 
