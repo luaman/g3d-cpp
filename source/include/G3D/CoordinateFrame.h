@@ -102,7 +102,6 @@ public:
      */
     std::string toXML() const;
 
-
     /*
      Returns the heading as an angle in radians, where
     north is 0 and west is PI/2

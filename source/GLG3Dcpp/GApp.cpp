@@ -220,8 +220,7 @@ GApplet::GApplet(GApp* _app) : app(_app) {
 }
 
 
-void GApplet::run() {
-
+void GApplet::beginRun() {
     endApplet = false;
 
     init();
@@ -229,44 +228,59 @@ void GApplet::run() {
     // Move the controller to the camera's location
     app->debugController.setCoordinateFrame(app->debugCamera.getCoordinateFrame());
 
-    RealTime now = System::getTick() - 0.001, lastTime;
+    now = System::getTick() - 0.001;
+}
+
+
+void GApplet::oneFrame() {
+    lastTime = now;
+    now = System::getTick();
+    RealTime timeStep = now - lastTime;
+
+    // User input
+    doUserInput();
+
+    // Network
+    doNetwork();
+
+    // Simulation
+    if (app->debugController.active()) {
+        app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
+    	app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
+    }
+    doSimulation(timeStep);
+
+    // Logic
+    doLogic();
+
+    // Graphics
+    app->renderDevice->beginFrame();
+        app->renderDevice->pushState();
+            doGraphics();
+        app->renderDevice->popState();
+        app->renderDevice->pushState();
+            app->renderDebugInfo();
+        app->renderDevice->popState();
+    app->renderDevice->endFrame();
+    app->debugText.clear();
+}
+
+
+void GApplet::endRun() {
+    cleanup();
+}
+
+
+void GApplet::run() {
+
+    beginRun();
 
     // Main loop
     do {
-        lastTime = now;
-        now = System::getTick();
-        RealTime timeStep = now - lastTime;
-
-        // User input
-        doUserInput();
-
-        // Network
-        doNetwork();
-
-        // Simulation
-        if (app->debugController.active()) {
-            app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-    	    app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
-        }
-        doSimulation(timeStep);
-
-        // Logic
-        doLogic();
-
-        // Graphics
-        app->renderDevice->beginFrame();
-            app->renderDevice->pushState();
-                doGraphics();
-            app->renderDevice->popState();
-            app->renderDevice->pushState();
-                app->renderDebugInfo();
-            app->renderDevice->popState();
-        app->renderDevice->endFrame();
-        app->debugText.clear();
-   
+        oneFrame();   
     } while (! app->endProgram && ! endApplet);
 
-    cleanup();
+    endRun();
 }
 
 

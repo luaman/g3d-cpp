@@ -83,6 +83,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
         fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
+        Log::common()->printf("Unable to initialize SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
 

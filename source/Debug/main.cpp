@@ -68,16 +68,10 @@ private:
     /** Where to send GLUT events */
     static GlutWindow*      currentGlutWindow;
 
-    /** 
-      We make GLUT run on its own thread and
-     */
-//    SDL_Thread*             thread;
-
     /** Adds an event to the queue-- is synchronized! */
     void postEvent(GEvent& evt);
 
     // Glut callbacks:
-    static void g_draw();
     static void g_reshape(int width, int height);
     static void g_keyboard(unsigned char c, int x, int y);
     static void g_keyboardspecial(int key, int x, int y);
@@ -85,10 +79,7 @@ private:
     static void g_keyboardspecialup(int key, int x, int y);
     static void g_mousemotion(int x, int y);
     static void g_mousebtn(int b, int s, int x, int y);
-    static void g_idle() {
-        // Force continuous redraw
-        glutPostRedisplay();
-    }
+    static void g_idle();
 
 public:
 
@@ -112,6 +103,12 @@ public:
     virtual void swapGLBuffers();
     virtual void notifyResize(int w, int h);
     virtual bool pollEvent(GEvent& e);
+
+    virtual bool requiresMainLoop() const {
+        return true;
+    }
+
+    virtual void runMainLoop(void (*callback)(void));
     virtual void setRelativeMousePosition(double x, double y);
     virtual void setRelativeMousePosition(const Vector2& p);
     virtual void getRelativeMouseState(Vector2& position, uint8& mouseButtons) const;
@@ -131,8 +128,9 @@ void GlutWindow::postEvent(GEvent& evt) {
     eventQueue.pushBack(evt);
 }
 
-void GlutWindow::g_draw() {
-    // TODO
+void GlutWindow::g_idle() {
+    // Request another redisplay
+    glutPostRedisplay();
 }
 
 
@@ -342,7 +340,6 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
             (glutGet(GLUT_SCREEN_HEIGHT) - settings.height) / 2);            
     }
 
-
     if (settings.fullScreen) {
         glutFullScreen();
     }
@@ -361,7 +358,6 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
     mouseButtons = 0;
 
     glutReshapeFunc(g_reshape);
-    glutDisplayFunc(g_draw);
     glutKeyboardFunc(g_keyboard);
     glutKeyboardUpFunc(g_keyboardup);
     glutSpecialFunc(g_keyboardspecial);
@@ -369,9 +365,20 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
     glutMotionFunc(g_mousemotion);
     glutPassiveMotionFunc(g_mousemotion);
     glutMouseFunc(g_mousebtn);
-
     glutIdleFunc(g_idle);
 
+    // Make sure SDL is initialized
+    if (SDL_WasInit(SDL_INIT_EVERYTHING) == 0) {
+        // Initialize SDL
+        SDL_Init(0);
+    }
+}
+
+
+void GlutWindow::runMainLoop(void (*callback)(void)) {
+    debugAssert(callback != NULL);
+    glutDisplayFunc(callback);
+    glutMainLoop();
 }
 
 
@@ -658,23 +665,40 @@ void Demo::doGraphics() {
 }
 
 
+Demo* demo;
+App* app;
+
+void callback() {
+    demo->oneFrame();
+}
+
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(true);
+	debugController.setActive(false);
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
+
+    // TODO: remove
+    demo = new Demo(this);    
+    demo->beginRun();
+    window()->runMainLoop(callback);
+    demo->endRun();
     
-    Demo(this).run();
+    //Demo(this).run();
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings, new GlutWindow(settings.window)) {
+//App::App(const GAppSettings& settings) : GApp(settings, new GlutWindow(settings.window)) {
+App::App(const GAppSettings& settings) : GApp(settings) {
 }
 
 
 int main(int argc, char** argv) {
     GAppSettings settings;
+
+ //   settings.window.fullScreen = true;
     App(settings).run();
+
     return 0;
 }

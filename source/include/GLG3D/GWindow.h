@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-04-25
+  @edited  2004-04-26
 */
 
 #ifndef G3D_GWINDOW_H
@@ -199,6 +199,82 @@ public:
     virtual void setMouseVisible(bool b) = 0;
 
     virtual bool mouseVisible() const = 0;
+
+    /** Windows for which this is true require a program
+        to hand control of the main loop to GWindow::startMainLoop.
+        The program's functionality may then be implemented through
+        the idleCallback and graphicsCallback.
+    
+        That is, if requiresMainLoop returns true, you must use
+        the following structure:
+        <PRE>
+           void doEvents() {
+              GEvent e;
+              while (window->pollEvent(e)) {
+                  ... // Event handling
+              } 
+           }
+
+           void doGraphics() {
+              renderDevice->beginFrame();
+                  renderDevice->clear(true, true, true);
+                  ...  // draw stuff
+              renderDevice->endFrame();
+           }
+
+           void callback() {
+              // all per-frame code; event-handling, physics, networking, AI, etc.
+              doEvents();
+              doLogic();
+              doNetwork();
+              doAI();
+              doGraphics();
+           }
+
+           window->startMainLoop(callback); // doesn't return
+        </PRE>
+
+        When requiresMainLoop returns false, you may use either the
+        above structure or the following one (which puts you in more
+        control of when graphics vs. other code is executed):
+
+        <PRE>
+            while (true) {
+              doEvents();
+              doLogic();
+              doNetwork();
+              doAI();
+              doGraphics();
+            }       
+        </PRE>
+
+        This design is necessary because some underlying Window APIs
+        (e.g. ActiveX, GLUT) enforce an event-driven structure.
+    */
+    virtual bool requiresMainLoop() const {
+        return false;
+    }
+
+    /**
+     Executes an event loop, invoking callback repeatedly.  Put everything
+     that you want to execute once per frame into the callback function.
+     It is guaranteed safe to call pollEvents and all other GWindow methods
+     from the callback function.
+     
+     The default implementation (for requiresMainLoop() == false GWindows)
+     just calls the callback continuously.
+     */
+    virtual void runMainLoop(void (*callback)(void)) {
+        
+        alwaysAssertM(requiresMainLoop() == false,
+            "This GWindow implementation failed to overwrite runMainLoop "
+            "even though it requires a main loop.");
+
+        while (true) {
+            callback();
+        }
+    }
+
 };
 
 } // namespace

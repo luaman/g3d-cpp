@@ -242,6 +242,7 @@ class GApplet {
 private:
     GApp*               app;
 
+    RealTime            now, lastTime;
 
 public:
 
@@ -250,12 +251,28 @@ public:
 
     /**
       Run until app->endProgram or endApplet is set to true. 
+      Calls beginRun(), then oneFrame in a loop, then endRun().
+      
+      For use with GWindows that do not require a main loop.
+    */
+    void run();
+
+    /**
+     Prepare for running.
       The default implementation sets endApplet to false,
       calls init(), copies the debug camera position to the debug camera controller,
-      and then calls the doXXX methods.  Invokes cleanup() before exiting.
-      It is not usually necessary to override this method.
     */
-    virtual void run();
+    void beginRun();
+
+    /** A single frame of rendering, simulation, AI, events, networking, etc. 
+      Invokes the doXXX methods.  For use with GWindows that require a main loop.
+    */
+    void oneFrame();
+
+    /**
+      Invokes cleanup().
+    */
+    void endRun();
 
 protected:
 
@@ -345,9 +362,10 @@ protected:
      */
     virtual void cleanup() {}
 
-private:
     /**
-     Updates the userInput.  Called from run.
+     Updates the userInput.  Called from run.  Rarely needs to be
+     called by user programs.
+
      Never overriden by a subclass.
      Instead, override GApp::processEvent to handle your own events.
      */
