@@ -16,6 +16,14 @@
        <LI>G3D::GFont::fromFile method will no longer accept a G3D::RenderDevice.
        <LI>All accessor "get" methods will have their prefix removed (e.g. G3D::RenderDevice::getObjectToWorldMatrix -> G3D::RenderDevice::objectToWorldMatrix).
        <LI>All <A HREF="deprecated.html">deprecated</A> functionality will be removed.
+       <LI>GApplet methods will change to:
+          <UL>
+            <LI> doUserInput(UserInput*) (current doUserInput will be renamed and private)
+            <LI> doGraphics(RenderDevice*)
+            <LI> doSimulation(RealTime time, RealTime timeStep)
+            <LI> doNetwork()
+            <LI> doLogic()
+          </UL>
      </UL>
    </TD></TR></TABLE>
 

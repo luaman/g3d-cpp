@@ -49,7 +49,7 @@ void main(void) {
 	offsetCoord.x = texCoord.x + tsE.x * bump;
 	offsetCoord.y = texCoord.y - tsE.y * bump;
 */
-    vec2 offsetCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
+    vec2 offsetCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump / tsE.z;
 
     const vec4 surfColor = texture2D(texture, offsetCoord);
 

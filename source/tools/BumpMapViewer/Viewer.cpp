@@ -21,7 +21,7 @@ void Viewer::init()  {
 	entityArray.append(Entity::create(Mesh::quad(), CoordinateFrame()));
 //	entityArray.last()->cframe.translation.x = -3;
 
-	bumpEffect->load(app->fileArray[1]);
+	bumpEffect->load(app->fileArray[0]);
 	bumpEffect->light = Vector4(0,1,1,1);
     bumpEffect->environmentMap = app->sky->getEnvironmentMap();
 }

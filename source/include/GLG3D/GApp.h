@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2004-04-27
+ @edited  2005-02-20
  */
 
 #ifndef G3D_GAPP_H
@@ -343,6 +343,9 @@ protected:
 
      Never overriden by a subclass.
      Instead, override GApp::processEvent to handle your own events.
+
+     @deprecated In 7.0, will be private and doUserInput will be a function
+      you can override to handle events.
      */
     void doUserInput();
 };

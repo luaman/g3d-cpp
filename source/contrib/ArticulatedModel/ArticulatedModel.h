@@ -47,7 +47,7 @@ public:
                 p = FIXED_FUNCTION;
             }
         }
-//        p=FIXED_FUNCTION;
+        p=FIXED_FUNCTION;
         return p;
     }
 
