@@ -53,7 +53,7 @@ def lib():
 
     if (os.name == 'nt'):
         # Windows build
-        x = msdev('graphics3D.dsw',\
+        x = msdev('source/graphics3D.dsw',\
                 ["graphics3D - Win32 Release",\
                  "graphics3D - Win32 Debug",\
                  "GLG3D - Win32 Release",\
@@ -73,14 +73,14 @@ def lib():
 
         # Copy the lib's to the right directory
         if (x != 0):
-            copy("source/G3Dcpp/*.la", "build/lib")
-            copy("source/GLG3Dcpp/*.la", "build/lib")
+            copy("source/G3Dcpp/*.la", "temp/lib")
+            copy("source/GLG3Dcpp/*.la", "temp/lib")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."
         sys.exit(x);        
 
-    copyIfNewer("source/lib", "build/lib")
+    copyIfNewer("source/lib", "temp/lib")
 
 ###############################################################################
 #                                                                             #
@@ -90,7 +90,7 @@ def lib():
 
 def test():
     if (os.name == 'nt'):
-        x = msdev('graphics3D.dsw',\
+        x = msdev('source/graphics3D.dsw',\
                 ["Test - Win32 Release",\
                  "Test - Win32 Debug"])
     else:
@@ -106,10 +106,12 @@ def test():
 ###############################################################################
     
 def doc():
-    chdir("source")
+    os.chdir("source")
     run('doxygen', [])
-    copyIfNewer('html', '../build/html')
-    chdir("..")
+    os.chdir("..")
+    copyIfNewer('source/html', installDir + '/html')
+    copyIfNewer('temp/html', installDir + '/html')
+
 
 ###############################################################################
 #                                                                             #
@@ -120,7 +122,7 @@ def doc():
 def install(copyData=1):
     lib()
     doc()
-    copyIfNewer('build', installDir)
+    copyIfNewer('temp/lib', installDir + '/lib')
     copyIfNewer('source/include', installDir + '/include')
     if (copyData):
         copyIfNewer('source/demos', installDir + '/demos')

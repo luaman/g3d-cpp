@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = Graphics3D
 PROJECT_NUMBER         = "version 5.00 2002-04-01"
-OUTPUT_DIRECTORY       = ../build/
+OUTPUT_DIRECTORY       = ../temp/html
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = NO
