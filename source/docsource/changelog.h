@@ -16,12 +16,13 @@
      <LI> Initial MSVC7 build script.  MSVC7 is not an officially supported platform
           however the release contains MSVC7 precompiled binaries and the build script
           will automatically build on both 6 and 7.
+     <LI> Improved performance of G3D::writeStringToFile
      <LI> G3D::ReferenceCountedPointer assignment now allows compile time subtyping
      <LI> G3D::ReferenceCountedPointer != operator
      <LI> G3D::ReferenceCountedPointer::notNull
      <LI> G3D::GLight::directional now normalizes the light vector
      <LI> G3D::setAssertionHook
-     <LI> G3D::Shader / G3D::VertexAndPixelShader define g3d_ uniforms inside shaders
+     <LI> [ 1029256 ] G3D::Shader / G3D::VertexAndPixelShader define g3d_ uniforms inside shaders
      <LI> static G3D::IFSModel::save/load for writing/reading IFS files
      <LI> G3D::TextInput allows ' inside quoted strings
      <LI> G3D::TextInput allows \ as a symbol token

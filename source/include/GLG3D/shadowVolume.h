@@ -77,9 +77,15 @@ void endMarkShadows(RenderDevice* renderDevice);
 
   <B>Limitations</B>
 
-  This function currently works only for directional lights (light.w == 0).
-  This function requires the far clipping plane at z = -inf (the
-  default for GCamera).
+    This function requires the far clipping plane at z = -inf (the
+    default for GCamera).
+
+    Assumes that render calls do
+    not set the blend func or stencil funcs, or change the
+    camera matrix or projection matrix.
+
+    Transparent objects should not be used
+    with shadow marking.
  */
 void markShadows(
     RenderDevice*           renderDevice, 

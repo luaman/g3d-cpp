@@ -54,12 +54,14 @@ Mesh::Mesh(
         binormal[i] = -binormal[i];
     }
     
+    
     // TODO: remove
     // Force the TBN space to be identity for testing
     for (int i = 0; i < binormal.length(); ++i) {
         tangent[i]  = Vector3(1,0,0);
         binormal[i] = Vector3(0,1,0);
     }
+    
     
     for (int i = 0; i < binormal.length(); ++i) {
         debugPrintf("%s %s %s\n", 

@@ -119,7 +119,7 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-//  texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
+  texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
     
     //shader = SphereMap::create();
 
@@ -154,14 +154,23 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
     model = IFSModel::create("D:/games/data/ifs/teapot.ifs");
 
+//        "uniform vec3 hi;\n"
+//        "uniform vec3 lo;\n"
    // Initialization
    shader2 = Shader::fromStrings(STR(
-       uniform vec3 k_A;
-     void main(void) {
-        gl_Position = ftransform();
-        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightSource[0].diffuse + k_A;
-     }
-     
+/*
+        void main(void) {
+            gl_Position = ftransform();
+            gl_Color = vec4(1,1,1,1);
+            // Scale vertex to range [-0.5, 0.5]
+            const vec3 H = vec3(0.5,0.5,0.5);
+            const vec3 L = vec3(-0.5,-0.5,-0.5);
+            const vec3 v = (gl_Vertex.xyz - 0.5) / (0.5 - -0.5) - 0.5;
+            const float PI2 = 2.0 * 3.1415927;
+            // Compute roll angle on [-PI, PI] and map to [0, 1]
+            gl_TexCoord[0] = vec4(atan2(v.x, v.y) / PI2, v.z, 0, 1) + vec4(0.5, 0.5, 0.0, 0.0);
+        }
+  */   
      ), "");
     
 }
@@ -222,10 +231,14 @@ void Demo::doGraphics() {
     */
 
     // Rendering loop
+    app->renderDevice->pushState();
+
     app->renderDevice->setShader(shader2);
-    app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
-    shader2->args.set("k_A", Color3(.2,.2,.3));
+//    app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
+    app->renderDevice->setTexture(0, texture);
     model->pose()->render(app->renderDevice);
+
+    app->renderDevice->popState();
 
 
     /*
@@ -288,8 +301,6 @@ App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings
 
 int main(int argc, char** argv) {
     GAppSettings settings;
-    settings.dataDir = "";
-    settings.debugFontName = "";
     App(settings).run();
 
     return 0;

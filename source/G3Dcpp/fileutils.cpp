@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2003-08-10
+ @edited  2004-09-17
  */
 
 #include "G3D/platform.h"
@@ -13,6 +13,7 @@
 #include "G3D/g3dmath.h"
 #include <sys/stat.h>
 #include <sys/types.h>
+#include "G3D/stringutils.h"
 
 #ifdef G3D_WIN32
    // Needed for _getcwd
@@ -131,10 +132,22 @@ void writeStringToFile(
     const std::string&          str,
     const std::string&          filename) {
 
-    // TODO: don't use BinaryOutput
-    BinaryOutput b = BinaryOutput(filename, G3D_LITTLE_ENDIAN);
-    b.writeString(str);
-    b.commit();
+    // Make sure the directory exists.
+    std::string root, base, ext, path;
+    Array<std::string> pathArray;
+    parseFilename(filename, root, pathArray, base, ext); 
+
+    path = root + stringJoin(pathArray, '/');
+    if (! fileExists(path)) {
+        createDirectory(path);
+    }
+
+    FILE* file = fopen(filename.c_str(), "wb");
+
+    debugAssert(file);
+
+    fwrite(str.c_str(), str.size(), 1, file);
+    fclose(file);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

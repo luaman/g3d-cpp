@@ -114,7 +114,8 @@ void FPCameraController::doSimulation(
 
     // As a patch for the setCoordinateFrame bug, we prevent 
     // the camera from looking exactly along the y-axis.
-    // TODO: remove
+
+    // Remove when bug is fixed
     pitch = clamp(pitch, -G3D_PI / 2 + 0.001, G3D_PI / 2 - 0.001);
 }
 
