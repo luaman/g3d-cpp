@@ -1456,14 +1456,6 @@ void GImage::decodePNG(
     png_set_read_fn(png_ptr, (png_voidp)&input, png_read_data);
 
 //    png_set_write_fn(png_ptr, NULL, png_write_data, png_output_flush);
-//    png_set_error_fn(png_ptr, NULL, png_error, png_warning);
-
-    //turn on the libpng longjmp pointers
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
-    }
-
     
     //read in sequentially so that three copies of the file are not in memory at once
     png_read_info(png_ptr, info_ptr);
