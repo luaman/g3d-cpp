@@ -57,6 +57,8 @@ Section "G3D Core Files"
   File /r "install\${VERSION}\data\*"
   SetOutPath "$INSTDIR\demos"  
   File /r "install\${VERSION}\demos\*"
+  SetOutPath "$INSTDIR\html"  
+  File /r "install\${VERSION}\html\*"
   
 SectionEnd
 
@@ -109,7 +111,7 @@ Section "Modify MSVC6 autoexp.dat for G3D datatypes (recommended)"
 Read_autoexp_loop:    
   FileRead $0 $R1
   IfErrors Finished_autoexp_read
-  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)" Autoexp_settings_exists Read_autoexp_loop
+  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)$\n" Autoexp_settings_exists Read_autoexp_loop
 
 Finished_autoexp_read:
   FileSeek $0 0 END
@@ -144,7 +146,7 @@ Modify_autoexp:
 Read_autoexp_loop:    
   FileRead $0 $R1
   IfErrors Finished_autoexp_read
-  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)" Autoexp_settings_exists Read_autoexp_loop
+  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)$\n" Autoexp_settings_exists Read_autoexp_loop
 
 Finished_autoexp_read:
   FileSeek $0 0 END
@@ -164,12 +166,93 @@ Section "Add G3D directories to MSVC6 paths (recommended)"
 
   SectionIn 1
 
+  ReadRegStr $R0 HKEY_CURRENT_USER "SOFTWARE\Microsoft\DevStudio\6.0\Build System\Components\Platforms\Win32 (x86)\Directories" "Include Dirs"
+  IfErrors No_include
+
+  StrCpy $R1 $R0
+  Push $R0
+  Push "$INSTDIR\include"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Add_include
+  Goto Check_lib
+Add_include:
+  StrCpy $R1 "$R1;$INSTDIR\include"
+  WriteRegStr HKEY_CURRENT_USER "SOFTWARE\Microsoft\DevStudio\6.0\Build System\Components\Platforms\Win32 (x86)\Directories" "Include Dirs" $R1 
+
+Check_lib:
+  ReadRegStr $R0 HKEY_CURRENT_USER "SOFTWARE\Microsoft\DevStudio\6.0\Build System\Components\Platforms\Win32 (x86)\Directories" "Library Dirs"
+  IfErrors No_include
+
+  StrCpy $R1 $R0
+  Push $R0
+  Push "$INSTDIR\win32-lib"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Add_lib
+  Goto No_include
+Add_lib:
+  StrCpy $R1 "$R1;$INSTDIR\win32-lib"
+  WriteRegStr HKEY_CURRENT_USER "SOFTWARE\Microsoft\DevStudio\6.0\Build System\Components\Platforms\Win32 (x86)\Directories" "Library Dirs" $R1
+
+No_include:
 
 SectionEnd
 
-Section "Add G3D directories to MSVC7 paths (recommended)"
+Section "Set MSVC6 script syntax parsing (recommended)"
 
   SectionIn 1
+
+  ReadRegStr $R0 HKEY_CURRENT_USER "SOFTWARE\Microsoft\DevStudio\6.0\Text Editor\Tabs/Language Settings\C/C++" "FileExtensions"
+  IfErrors No_syntax_settings
+
+  StrCpy $R1 $R0
+  Push $R0
+  Push "gls"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Add_gls
+  Goto Check_frg
+Add_gls:
+  StrCpy $R1 "$R1;gls"
+Check_frg:
+  Push $R0
+  Push "frg"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Add_frg
+  Goto Check_pix
+Add_frg:
+  StrCpy $R1 "$R1;frg"
+Check_pix:
+  Push $R0
+  Push "pix"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Add_pix
+  Goto Check_vrt
+Add_pix:
+  StrCpy $R1 "$R1;pix"
+Check_vrt:
+  Push $R0
+  Push "vrt"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Add_vrt
+  Goto Finish_check
+Add_vrt:
+  StrCpy $R1 "$R1;vrt"
+
+Finish_check:
+  WriteRegStr HKEY_CURRENT_USER "SOFTWARE\Microsoft\DevStudio\6.0\Text Editor\Tabs/Language Settings\C/C++" "FileExtensions" $R1
+  
+No_syntax_settings:  
 
 SectionEnd
 
@@ -178,7 +261,7 @@ Section "Create desktop icon for documentation"
   SectionIn 1
 
   ; Create desktop shortcut
-  CreateShortCut "$DESKTOP\Graphics3D.lnk" "$INSTDIR\html\index.html" "" "$INSTDIR\html\g3d.ico" 0
+  CreateShortCut "$DESKTOP\Graphics3D.lnk" "$INSTDIR\html\index.html" "" "$INSTDIR\html\g3d.ico"
 
 SectionEnd
 
@@ -190,3 +273,48 @@ Section "View G3D Manual"
   Exec "$INSTDIR\html\index.html"  
 
 SectionEnd
+
+
+;; Functions
+
+; StrStr
+ ; input, top of stack = string to search for
+ ;        top of stack-1 = string to search in
+ ; output, top of stack (replaces with the portion of the string remaining)
+ ; modifies no other variables.
+ ;
+ ; Usage:
+ ;   Push "this is a long ass string"
+ ;   Push "ass"
+ ;   Call StrStr
+ ;   Pop $R0
+ ;  ($R0 at this point is "ass string")
+
+ Function StrStr
+   Exch $R1 ; st=haystack,old$R1, $R1=needle
+   Exch    ; st=old$R1,haystack
+   Exch $R2 ; st=old$R1,old$R2, $R2=haystack
+   Push $R3
+   Push $R4
+   Push $R5
+   StrLen $R3 $R1
+   StrCpy $R4 0
+   ; $R1=needle
+   ; $R2=haystack
+   ; $R3=len(needle)
+   ; $R4=cnt
+   ; $R5=tmp
+   loop:
+     StrCpy $R5 $R2 $R3 $R4
+     StrCmp $R5 $R1 done
+     StrCmp $R5 "" done
+     IntOp $R4 $R4 + 1
+     Goto loop
+ done:
+   StrCpy $R1 $R2 "" $R4
+   Pop $R5
+   Pop $R4
+   Pop $R3
+   Pop $R2
+   Exch $R1
+ FunctionEnd
