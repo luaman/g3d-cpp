@@ -13,6 +13,31 @@
 
 namespace G3D {
 
+#ifdef G3D_WIN32
+static int screenWidth() {
+    int w = GetSystemMetrics(SM_XVIRTUALSCREEN);
+
+    if (w == 0) {
+        // This call is not supported on older versions of windows
+        return GetSystemMetrics(SM_CXFULLSCREEN);
+    } else {
+        return w;
+    }
+}
+
+
+static int screenHeight() {
+    int h = GetSystemMetrics(SM_YVIRTUALSCREEN);
+
+    if (h == 0) {
+        // This call is not supported on older versions of windows
+        return GetSystemMetrics(SM_CYFULLSCREEN);
+    } else {
+        return h;
+    }
+}
+#endif
+
 SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
 	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | 
@@ -126,8 +151,8 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     // Adjust window position
     #ifdef G3D_WIN32
         if (! settings.fullScreen) {
-            int screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
-            int screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
+            int screenWidth = screenWidth();
+            int screenHeight = screenHeight();
             int x = iClamp(settings.x, 0, screenWidth);
             int y = iClamp(settings.y, 0, screenHeight);
 
@@ -204,15 +229,16 @@ Rect2D SDLWindow::dimensions() const {
 
 void SDLWindow::setDimensions(const Rect2D& dims) {
     #ifdef G3D_WIN32
-        int screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
-        int screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
+        int W = screenWidth();
+        int H = screenHeight();
 
-        int x = iClamp(dims.x0(), 0, screenWidth);
-        int y = iClamp(dims.y0(), 0, screenHeight);
-        int w = iClamp(dims.width(),  1, screenWidth);
-        int h = iClamp(dims.height(),  1, screenHeight);
+        int x = iClamp(dims.x0(), 0, W);
+        int y = iClamp(dims.y0(), 0, H);
+        int w = iClamp(dims.width(), 1, W);
+        int h = iClamp(dims.height(), 1, H);
 
         SetWindowPos(_Win32HWND, NULL, x, y, w, h, SWP_NOZORDER);
+        // Do not update settings-- wait for an event to notify us
     #endif
 
     // TODO: X11
@@ -222,13 +248,14 @@ void SDLWindow::setDimensions(const Rect2D& dims) {
 
 void SDLWindow::setPosition(int x, int y) const  {
     #ifdef G3D_WIN32
-        int screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
-        int screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
+        int W = screenWidth();
+        int H = screenHeight();
 
-        x = iClamp(x, 0, screenWidth);
-        y = iClamp(y, 0, screenHeight);
+        x = iClamp(x, 0, W);
+        y = iClamp(y, 0, H);
 
         SetWindowPos(_Win32HWND, NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+        // Do not update settings-- wait for an event to notify us
     #endif
     // TODO: X11
     // TODO: OS X
