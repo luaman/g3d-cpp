@@ -376,6 +376,11 @@ C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL      
    </ul>
 
    <P>
+   <B>GLG3D-debug.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _VerQueryValueA@16</B>
+   <P>
+   You need to add version.lib to your link list.
+  
+    <P>
 
 
    <B>main.obj : error LNK2001: unresolved external symbol _SDL_GL_SwapBuffers
@@ -405,6 +410,11 @@ C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL      
    arguments).  Define a default constructor for your class--
    G3D::Array needs it to initialize new elements when you invoke
    G3D::Array::resize().
+    <P><B>GLG3D.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _VerQueryValueA@16
+<BR>GLG3D.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _GetFileVersionInfoA@16
+<BR>GLG3D.lib(RenderDevice.obj) : error LNK2001: unresolved external symbol _GetFileVersionInfoSizeA@8</B>
+  You need to add version.lib to your link list.
+
 
     <P> <B>sdlmain.lib(SDL_main.obj) : error LNK2005: _main already
    defined in main.obj</B> <BR>You need to \#include <SDL.h> in your
