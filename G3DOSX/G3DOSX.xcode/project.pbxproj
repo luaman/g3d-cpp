@@ -1305,6 +1305,7 @@
 		0F55FEC206DCC4E6008DD4F8 = {
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "__cdecl= __stdcall= _DEBUG";
 			};
 			isa = PBXBuildStyle;
 			name = Development;
