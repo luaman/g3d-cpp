@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-04-25
+ @edited  2004-04-26
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -197,20 +197,21 @@ extern PFNWGLENABLEGENLOCKI3D wglEnableGenlockI3D;
 #elif defined(G3D_OSX) || defined(G3D_LINUX)
 
 typedef BOOL (*PFNGLXJOINSWAPGROUPNV) (Display*, GLXDrawable, GLuint);
-extern PFNGLXJOINSWAPGROUPNV glXJoinSwapGroupNV;
-
-/*extern Bool glXBindSwapBarrierNV(Display *dpy, GLuint group, GLuint barrier);
-
-extern Bool glXQuerySwapGroupNV(Display *dpy, GLXDrawable drawable,
+typedef BOOL (*PFNGLXBINDSWAPBARRIERNV) (Display *dpy, GLuint group, GLuint barrier);
+typedef BOOL (*PFNGLXQUERYSWAPGROUPNV)(Display *dpy, GLXDrawable drawable,
                                 GLuint *group, GLuint *barrier);
-
-extern Bool glXQueryMaxSwapGroupsNV(Display *dpy, int screen,
+typedef BOOL (*PFNGLXQUERYMAXSWAPGROUPSNV)(Display *dpy, int screen,
                                     GLuint *maxGroups, GLuint *maxBarriers);
+typedef BOOL (*PFNGLXQUERYFRAMECOUNTNV) (Display *dpy, int screen, GLuint *count);
+typedef BOOL (*PFNGLXRESETFRAMECOUNTNV)(Display *dpy, int screen);
 
-extern Bool glXQueryFrameCountNV(Display *dpy, int screen, GLuint *count);
- 
-extern Bool glXResetFrameCountNV(Display *dpy, int screen);
-*/
+extern PFNGLXJOINSWAPGROUPNV glXJoinSwapGroupNV;
+extern PFNGLXBINDSWAPBARRIERNV glXBindSwapBarrierNV;
+extern PFNGLXQUERYSWAPGROUPNV glXQuerySwapGroupNV;
+extern PFNGLXQUERYMAXSWAPGROUPSNV glXQueryMaxSwapGroupsNV;
+extern PFNGLXQUERYFRAMECOUNTNV glXQueryFrameCountNV;
+extern PFNGLXRESETFRAMECOUNTNV glXResetFrameCountNV;
+
 #endif
 
 

@@ -174,6 +174,11 @@ void GLCaps::loadExtensions() {
         LOAD_EXTENSION(wglEnableGenlockI3D);
     #elif defined(G3D_OSX) || defined(G3D_LINUX)
         LOAD_EXTENSION(glXJoinSwapGroupNV);
+        LOAD_EXTENSION(glXBindSwapBarrierNV);
+        LOAD_EXTENSION(glXQuerySwapGroupNV);
+        LOAD_EXTENSION(glXQueryMaxSwapGroupsNV);
+        LOAD_EXTENSION(glXQueryFrameCountNV);
+        LOAD_EXTENSION(glXResetFrameCountNV);
     #endif
 
     #undef LOAD_EXTENSION

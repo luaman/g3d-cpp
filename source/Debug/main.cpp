@@ -18,6 +18,8 @@
     #error Requires G3D 6.03
 #endif
 
+#ifndef GLUTWINDOW_H
+#define GLUTWINDOW_H
 #define GLUT_API_VERSION 4
 #include <GL/glut.h>
 
@@ -559,6 +561,7 @@ bool GlutWindow::mouseVisible() const {
     return _mouseVisible;
 }
 
+#endif
 
 class App : public GApp {
 protected:
