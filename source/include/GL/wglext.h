@@ -39,6 +39,21 @@ extern "C" {
 #include <windows.h>
 #endif
 
+//disgusting hooks for linux
+#ifndef _WIN32
+  typedef unsigned long HDC;
+  typedef unsigned long HGLRC;
+  typedef unsigned long HANDLE;
+  typedef unsigned int UINT;
+  typedef void VOID;
+  typedef unsigned int BOOL;
+  typedef float FLOAT;
+  typedef unsigned int HPBUFFERARB; // we don't think this should be this.
+  typedef unsigned int HPBUFFEREXT; // ditto.
+  #define WINAPI
+  #define DECLARE_HANDLE(x)
+#endif
+
 #ifndef APIENTRY
 #define APIENTRY
 #endif
@@ -190,8 +205,73 @@ extern "C" {
 #define WGL_PBUFFER_HEIGHT_EXT         0x2035
 #endif
 
+#ifndef WGL_ARB_render_texture
+#define WGL_BIND_TO_TEXTURE_RGB_ARB        0x2070
+#define WGL_BIND_TO_TEXTURE_RGBA_ARB       0x2071
+#define WGL_TEXTURE_FORMAT_ARB             0x2072
+#define WGL_TEXTURE_TARGET_ARB             0x2073
+#define WGL_MIPMAP_TEXTURE_ARB             0x2074
+#define WGL_TEXTURE_RGB_ARB                0x2075
+#define WGL_TEXTURE_RGBA_ARB               0x2076
+#define WGL_NO_TEXTURE_ARB                 0x2077
+#define WGL_TEXTURE_CUBE_MAP_ARB           0x2078
+#define WGL_TEXTURE_1D_ARB                 0x2079
+#define WGL_TEXTURE_2D_ARB                 0x207A
+#define WGL_MIPMAP_LEVEL_ARB               0x207B
+#define WGL_CUBE_MAP_FACE_ARB              0x207C
+#define WGL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB 0x207D
+#define WGL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB 0x207E
+#define WGL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB 0x207F
+#define WGL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB 0x2080
+#define WGL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB 0x2081
+#define WGL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB 0x2082
+#define WGL_FRONT_LEFT_ARB                 0x2083
+#define WGL_FRONT_RIGHT_ARB                0x2084
+#define WGL_BACK_LEFT_ARB                  0x2085
+#define WGL_BACK_RIGHT_ARB                 0x2086
+#define WGL_AUX0_ARB                       0x2087
+#define WGL_AUX1_ARB                       0x2088
+#define WGL_AUX2_ARB                       0x2089
+#define WGL_AUX3_ARB                       0x208A
+#define WGL_AUX4_ARB                       0x208B
+#define WGL_AUX5_ARB                       0x208C
+#define WGL_AUX6_ARB                       0x208D
+#define WGL_AUX7_ARB                       0x208E
+#define WGL_AUX8_ARB                       0x208F
+#define WGL_AUX9_ARB                       0x2090
+#endif
+
 #ifndef WGL_EXT_depth_float
-#define WGL_DEPTH_FLOAT_EXT            0x2040
+#define WGL_DEPTH_FLOAT_EXT                0x2040
+#endif
+
+#ifndef WGL_NV_float_buffer
+#define WGL_FLOAT_COMPONENTS_NV                     0x20B0
+#define WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_R_NV    0x20B1
+#define WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RG_NV   0x20B2
+#define WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGB_NV  0x20B3
+#define WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV 0x20B4
+
+#define WGL_TEXTURE_FLOAT_R_NV                      0x20B5
+#define WGL_TEXTURE_FLOAT_RG_NV                     0x20B6
+#define WGL_TEXTURE_FLOAT_RGB_NV                    0x20B7
+#define WGL_TEXTURE_FLOAT_RGBA_NV                   0x20B8
+#endif
+
+#ifndef WGL_NV_render_texture_rectangle
+#define WGL_BIND_TO_TEXTURE_RECTANGLE_RGB_NV        0x20A0
+#define WGL_BIND_TO_TEXTURE_RECTANGLE_RGBA_NV       0x20A1
+
+#define WGL_TEXTURE_RECTANGLE_NV                    0x20A2
+#endif
+
+
+#ifndef WGL_NV_render_depth_texture
+#define WGL_TEXTURE_DEPTH_COMPONENT_NV          0x20A6
+#define WGL_DEPTH_TEXTURE_FORMAT_NV             0x20A5
+#define WGL_BIND_TO_TEXTURE_DEPTH_NV            0x20A3
+#define WGL_BIND_TO_TEXTURE_RECTANGLE_DEPTH_NV  0x20A4
+#define WGL_DEPTH_COMPONENT_NV                  0x20A7
 #endif
 
 #ifndef WGL_3DFX_multisample
@@ -391,6 +471,24 @@ typedef void * (APIENTRY * PFNWGLALLOCATEMEMORYNVPROC) (int size, float readfreq
 typedef void (APIENTRY * PFNWGLFREEMEMORYNVPROC) (void *pointer);
 #endif
 
+#ifndef WGL_ARB_render_texture
+#define WGL_ARB_render_texture 1
+typedef BOOL (WINAPI * PFNWGLBINDTEXIMAGEARBPROC) (HPBUFFERARB hPbuffer, int iBuffer);
+typedef BOOL (WINAPI * PFNWGLRELEASETEXIMAGEARBPROC) (HPBUFFERARB hPbuffer, int iBuffer);
+typedef BOOL (WINAPI * PFNWGLSETPBUFFERATTRIBARBPROC) (HPBUFFERARB hPbuffer, const int * piAttribList);
+#endif
+
+#ifndef WGL_NV_float_buffer
+#define WGL_NV_float_buffer 1
+#endif
+
+#ifndef WGL_NV_render_texture_rectangle
+#define WGL_NV_render_texture_rectangle 1
+#endif
+
+#ifndef WGL_NV_render_depth_texture
+#define WGL_NV_render_depth_texture 1
+#endif
 
 #ifdef __cplusplus
 }
