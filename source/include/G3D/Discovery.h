@@ -541,7 +541,7 @@ public:
             case SERVER_BROADCAST_MESSAGE:
                 // Check the G3D protocol and the network protocol, then read the ad
                 DiscoveryServerAddressMessage msg(settings);
-                net->receive(msg, sender);
+                net->receive(sender, msg);
 
                 if (msg.correctProtocol && (msg.address.size() > 0)) {
                     // Add the actual return address as the first one to be tried.

@@ -965,7 +965,7 @@ uint32 LightweightConduit::waitingMessageType() {
 }
 
 
-bool LightweightConduit::receive(NetMessage* m, NetAddress& sender) {
+bool LightweightConduit::receive(NetAddress& sender, NetMessage* m) {
 
     // This both checks to ensure that a message was waiting and
     // actively consumes the message from the network stream if

@@ -209,7 +209,7 @@ void Client::doLogic() {
 
         double mx = mouse.x;
         // Create a dead zone
-        mx = max(0, ::abs(mx) - 0.25) * sign(mx);
+        mx = max(0, G3D::abs(mx) - 0.25) * sign(mx);
 
         newControls.desiredYawVelocity = mx * toRadians(180);
 

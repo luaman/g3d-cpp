@@ -601,7 +601,7 @@ public:
         returns false.  If m is NULL, the message is consumed but not
         deserialized.
     */
-    bool receive(NetMessage* m, NetAddress& sender);
+    bool receive(NetAddress& sender, NetMessage* m);
 
     template<typename T> inline bool receive(NetAddress& sender, T& message) {
         // This both checks to ensure that a message was waiting and
@@ -628,12 +628,12 @@ public:
         return true;
     }
 
-    inline bool receive(NetMessage& m, NetAddress& sender) {
-        return receive(&m, sender);
+    inline bool receive(NetAddress& sender, NetMessage& m) {
+        return receive(sender, &m);
     }
 
     inline bool receive(NetAddress& sender) {
-        return receive((NetMessage*)NULL, sender);
+        return receive(sender, (NetMessage*)NULL);
     }
 
     inline bool receive() {
