@@ -14,10 +14,10 @@ from buildlib import *
 version = "6_05-b04"
 
 # Setup versions for supporting programs
-aclocal    = "aclocal-1.6"
+aclocal    = "aclocal"
 autoconf   = "autoconf"
 autoheader = "autoheader"
-automake   = "automake-1.6"
+automake   = "automake"
 doxygen    = "doxygen"
 python     = "python"
 sdlconfig  = "sdl-config"
@@ -106,14 +106,17 @@ def linuxCheckVersion():
         try:
             checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
         except:
-            checkVersion('automake --version', '1.6', 'Requires automake 1.6 or later.')
-	        automake = 'automake'
+            # Brown university has a bizarre setup
+            automake = 'automake-1.7'
+            checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
 
         try:
             checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
         except:
-            checkVersion('aclocal --version', '1.6', 'Requires aclocal 1.6 or later.')
-	        aclocal = 'aclocal'
+            # Brown university has a bizarre setup
+            aclocal = 'aclocal-1.7'
+            checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
+            
 
         checkVersion(doxygen + ' --version', '1.3', 'Requires doxygen 1.3 or later.')
         checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
