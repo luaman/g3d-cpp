@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-06-07
+  @edited  2003-08-07
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -504,6 +504,20 @@ public:
         debugAssert((count > 0) && (index + count <= num));
         
         remove(begin() + index, count);
+    }
+
+    /**
+     Reverse the elements of the array in place.
+     */
+    void reverse() {
+        T temp;
+        
+        int n2 = num / 2;
+        for (int i = 0; i < n2; ++i) {
+            temp = data[num - 1 - i];
+            data[num - 1 - i] = data[i];
+            data[i] = temp;
+        }
     }
 
     void sort(int (__cdecl *compare)(const T* elem1, const T* elem2)) {

@@ -171,6 +171,8 @@
         G3D::System,
         G3D::resolveFilename,
         G3D::TextInput,
+        G3D::TextInput::Token,
+        G3D::TextInput::WrongTokenType,
         G3D::writeStringToFile
         </BLOCKQUOTE>
 
@@ -616,6 +618,7 @@
 
    <P>
    <UL>
+     <LI> Array::reverse
      <LI> PCX file loading
      <LI> Test images
      <LI> Color3uint8 as uint8[] addressing
