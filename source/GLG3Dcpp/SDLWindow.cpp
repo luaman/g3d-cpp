@@ -9,6 +9,9 @@
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/glcalls.h"
 
+// Code for testing FSAA:
+//#define SDL_1_26
+
 namespace G3D {
 
 SDLWindow::SDLWindow(const GWindowSettings& settings) {
@@ -62,10 +65,16 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     glGetIntegerv(GL_GREEN_BITS, &greenBits);
     glGetIntegerv(GL_BLUE_BITS,  &blueBits);
     glGetIntegerv(GL_ALPHA_BITS, &alphaBits);
+    int actualFSAABuffers = 0, actualFSAASamples = 0;
+#ifdef SDL_1_26
+    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
+    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
+#endif
     _settings.rgbBits     = iMin(iMin(redBits, greenBits), blueBits);
     _settings.alphaBits   = alphaBits;
     _settings.stencilBits = stencilBits;
     _settings.depthBits   = depthBits;
+    _settings.fsaaSamples = actualFSAASamples;
 
     SDL_version ver;
     SDL_VERSION(&ver);
@@ -165,7 +174,7 @@ std::string SDLWindow::getAPIName() const {
 }
 
 
-void setGammaRamp(const Array<uint16>& gammaRamp) {
+void SDLWindow::setGammaRamp(const Array<uint16>& gammaRamp) {
     alwaysAssertM(gammaRamp.size() >= 256, "Gamma ramp must have at least 256 entries");
 
     Log* debugLog = Log::common();

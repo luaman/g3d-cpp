@@ -251,7 +251,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-    IFSModelRef cube   = IFSModel::create("d:/libraries/g3d-6_01/data/ifs/buddha.ifs");
+    IFSModelRef cube   = IFSModel::create("d:/libraries/g3d-6_01/data/ifs/sphere.ifs");
 
     entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }

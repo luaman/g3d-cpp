@@ -242,6 +242,14 @@ SOURCE=.\include\GLG3D\GPUProgram.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\GWindow.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\GWindowSettings.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\IFSModel.h
 # End Source File
 # Begin Source File
@@ -315,14 +323,6 @@ SOURCE=.\include\GLG3D\VARArea.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\VertexProgram.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\GLG3D\Window.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\GLG3D\WindowSettings.h
 # End Source File
 # End Group
 # End Target

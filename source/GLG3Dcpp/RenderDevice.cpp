@@ -4,19 +4,11 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-01-11
+ @edited  2004-02-11
  */
 
 
 #include "G3D/platform.h"
-
-#if defined(G3D_OSX)
-#include <SDL/SDL.h>
-#include <SDL/SDL_syswm.h>
-#else
-#include <SDL.h>
-#include <SDL_syswm.h>
-#endif
 
 #include <sstream>
 #include "GLG3D/glcalls.h"
@@ -25,14 +17,11 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
+#include "GLG3D/SDLWindow.h"
 
 #ifdef G3D_WIN32
     #include <winver.h>
 #endif
-
-// Code for testing FSAA:
-//#define SDL_1_26
-
 
 PFNGLMULTITEXCOORD1FARBPROC                 glMultiTexCoord1fARB		    = NULL;
 PFNGLMULTITEXCOORD1DARBPROC                 glMultiTexCoord1dARB		    = NULL;
@@ -268,12 +257,6 @@ RenderDevice::RenderDevice() {
     emwaFrameRate = 0;
     lastTime = System::getTick();
 
-	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0 ) {
-        fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
-		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
-
     for (int i = 0; i < MAX_TEXTURE_UNITS; ++i) {
         currentlyBoundTexture[i] = 0;
     }
@@ -429,6 +412,8 @@ bool RenderDevice::init(
 
     beginEndFrame = 0;
     if (debugLog) {debugLog->section("Initialization");}
+
+    window = new SDLWindow(_settings);
 
     debugAssert((settings.lightSaturation >= 0.5) && (settings.lightSaturation <= 2.0));
 
@@ -603,34 +588,7 @@ bool RenderDevice::initialized() const {
 #ifdef G3D_WIN32
 
 HDC RenderDevice::getWindowHDC() const {
-    // Get Windows HDC
-    SDL_SysWMinfo info;
-
-    if (debugLog) {
-        debugLog->println("Getting HDC... ");
-    }
-    SDL_VERSION(&info.version);
-
-    int result = SDL_GetWMInfo(&info);
-
-    if (result != 1) {
-        if (debugLog) {
-            debugLog->println(SDL_GetError());
-        }
-        debugAssertM(false, SDL_GetError());
-    }
-
-    HDC hdc = GetDC(info.window);
-
-    if (hdc == 0) {
-        if (debugLog) {
-            debugLog->println("hdc == 0");
-        }
-        debugAssert(hdc != 0);
-    }
-
-    if (debugLog) {debugLog->println("HDC acquired.");}
-    return hdc;
+    return window->getHDC();
 }
 
 #endif
@@ -654,6 +612,7 @@ void RenderDevice::setGamma(
         rgbGammaRamp[i + 512] = gammaRamp[i];
 	}
 
+    // TODO: change to SDLWindow call
 
     #ifdef WIN32
         BOOL success = SetDeviceGammaRamp(getWindowHDC(), rgbGammaRamp);
@@ -675,21 +634,7 @@ void RenderDevice::setGamma(
 
 
 void RenderDevice::notifyResize(int w, int h) {
-    debugAssert(w > 0);
-    debugAssert(h > 0);
-    settings.width = w;
-    settings.height = h;
-
-	// Mutate the SDL surface (which one is not supposed to do).
-	// We can't resize the actual surface or SDL will destroy
-	// our GL context, however.
-	SDL_Surface* surface = SDL_GetVideoSurface();
-	surface->w = w;
-	surface->h = h;
-	surface->clip_rect.x = 0;
-	surface->clip_rect.y = 0;
-	surface->clip_rect.w = w;
-	surface->clip_rect.h = h;
+    window->notifyResize(w, h);
 }
 
 
@@ -697,39 +642,6 @@ void RenderDevice::setVideoMode() {
 
     debugAssertM(stateStack.size() == 0, "Cannot call setVideoMode between pushState and popState");
     debugAssertM(beginEndFrame == 0, "Cannot call setVideoMode between beginFrame and endFrame");
-
-	// Request various OpenGL parameters
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      settings.depthBits);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    1);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,    settings.stencilBits);
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,        settings.rgbBits);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,      settings.rgbBits);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,       settings.rgbBits);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,      settings.alphaBits);
-    SDL_GL_SetAttribute(SDL_GL_STEREO,          settings.stereo);
-
-#ifdef SDL_1_26
-    if (settings.fsaaSamples > 1) {
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, settings.fsaaSamples);
-    }
-#endif
-
-	// Create a width x height OpenGL screen 
-    int flags = 
-        SDL_HWSURFACE |
-        SDL_OPENGL |
-        (settings.fullScreen ? SDL_FULLSCREEN : 0) |
-        (settings.resizable ? SDL_RESIZABLE : 0) |
-        (settings.framed ? 0 : SDL_NOFRAME);
-
-	if (SDL_SetVideoMode(settings.width, settings.height, 0, flags) == NULL) {
-        debugAssert(false);
-        if (debugLog) {debugLog->printf("Unable to create OpenGL screen: %s\n", SDL_GetError());}
-		error("Critical Error", format("Unable to create OpenGL screen: %s\n", SDL_GetError()).c_str(), true);
-		SDL_Quit();
-		exit(2);
-	}
 
     static bool extensionsInitialized = false;
     if (! extensionsInitialized) {
@@ -775,8 +687,6 @@ void RenderDevice::setVideoMode() {
             wglSwapIntervalEXT(settings.asychronous ? 0 : 1);
         }
     #endif
-
-    SDL_EnableUNICODE(1);
 
 	glClearDepth(1.0);
 
@@ -906,8 +816,7 @@ void RenderDevice::setVideoMode() {
 
 
 void RenderDevice::setCaption(const std::string& caption) {
-	// Set the title bar
-	SDL_WM_SetCaption(caption.c_str(), NULL);
+    window->setCaption(caption);
 }
 
 
@@ -942,7 +851,7 @@ void RenderDevice::cleanup() {
     setGamma(1, 1);
 
     if (debugLog) {debugLog->println("Shutting down SDL.");}
-    SDL_Quit();
+    delete window;
 }
 
 
@@ -1335,7 +1244,7 @@ void RenderDevice::beginFrame() {
 void RenderDevice::endFrame() {
     --beginEndFrame;
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
-    SDL_GL_SwapBuffers();
+    window->swapGLBuffers();
 
     double now = System::getTick();
     double dt = now - lastTime;
