@@ -209,6 +209,34 @@ public:
         DepthReadMode                   depthRead      = DEPTH_NORMAL);
 
     /**
+    bytes[miplevel][cubeface] is a pointer to the bytes
+    for that miplevel and cube
+    face. If the outer array has only one element and the
+    interpolation mode is
+    TRILINEAR_MIPMAP, mip-maps are automatically generated.
+    There must be exactly
+    6 cube faces per mip-level if the dimensions are
+    DIM_CUBE and and 1 per
+    mip-level otherwise. You may specify compressed and
+    uncompressed formats for
+    both the bytesformat and the desiredformat.
+
+    depth must be 1 (reserved for future 3D textures).
+    */
+    static TextureRef fromMemory(
+        const std::string&                  name,
+        const Array< Array<const void*> >&  bytes,
+        const TextureFormat*                bytesFormat,
+        int                                 width,
+        int                                 height,
+        int                                 depth,
+        const TextureFormat*                desiredFormat  = TextureFormat::AUTO,
+        WrapMode                            wrap           = TILE,
+        InterpolateMode                     interpolate    = TRILINEAR_MIPMAP,
+        Dimension                           dimension      = DIM_2D,
+        DepthReadMode                       depthRead      = DEPTH_NORMAL);
+
+    /**
      The bytes are described by byteFormat, which may differ from the
      format you want the graphics card to use (desiredFormat).
      If dimenion is DIM_CUBE_MAP bytes is an array of six images (for the faces)

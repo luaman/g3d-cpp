@@ -94,6 +94,7 @@ static void createTexture(
     int             height,
     GLenum          textureFormat,
     int             bytesPerPixel,
+    int             mipLevel = 0,
     bool            compressed = false) {
 
     uint8* bytes = const_cast<uint8*>(rawBytes);
@@ -159,7 +160,7 @@ static void createTexture(
             alwaysAssertM((target == GL_TEXTURE_RECTANGLE_EXT),
                 "Compressed texture data must be loaded into a DIM_2D texture.");
 
-            glCompressedTexImage2DARB(target, 0, textureFormat, width, height, 0, (bytesPerPixel * width * height), rawBytes);
+            glCompressedTexImage2DARB(target, mipLevel, textureFormat, width, height, 0, (bytesPerPixel * width * height), rawBytes);
             break;
         }
 
@@ -183,7 +184,7 @@ static void createTexture(
 
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
         // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-        glTexImage2D(target, 0, textureFormat, width, height, 0, bytesFormat, GL_UNSIGNED_BYTE, bytes);
+        glTexImage2D(target, mipLevel, textureFormat, width, height, 0, bytesFormat, GL_UNSIGNED_BYTE, bytes);
         break;
 
     default:
@@ -601,19 +602,23 @@ static const GLenum cubeFaceTarget[] =
      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
 
 TextureRef Texture::fromMemory(
-    const std::string&      name,
-    const uint8**           bytes,
-    const TextureFormat*    bytesFormat,
-    int                     width,
-    int                     height,
-    int                     depth,
-    const TextureFormat*    desiredFormat,
-    WrapMode                wrap,
-    InterpolateMode         interpolate,
-    Dimension               dimension,
-    DepthReadMode           depthRead) {
+    const std::string&                  name,
+    const Array< Array<const void*> >&  bytes,
+    const TextureFormat*                bytesFormat,
+    int                                 width,
+    int                                 height,
+    int                                 depth,
+    const TextureFormat*                desiredFormat,
+    WrapMode                            wrap,
+    InterpolateMode                     interpolate,
+    Dimension                           dimension,
+    DepthReadMode                       depthRead) {
 
     debugAssert(bytesFormat);
+    
+    // Check for at least one miplevel
+   int numMipMaps = bytes.length();
+   debugAssert( numMipMaps > 0 );
 
     // Create the texture
     GLuint textureID = newGLTextureID();
@@ -627,34 +632,45 @@ TextureRef Texture::fromMemory(
 
         glEnable(target);
         glBindTexture(target, textureID);
-        if ((interpolate == TRILINEAR_MIPMAP) && hasAutoMipMap()) {
-            // Enable hardware MIP-map genera
+        if ((interpolate == TRILINEAR_MIPMAP) && hasAutoMipMap() && (numMipMaps == 1)) {
+            // Enable hardware MIP-map generation
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
         }
 
+        int mipWidth = width;
+        int mipHeight = height;
+        for (int mipLevel = 0; mipLevel < numMipMaps; ++mipLevel) {
 
-        int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
+            int numFaces = bytes[mipLevel].length();
+            
+            debugAssert(((dimension == DIM_CUBE_MAP) ? 6 : 1) == numFaces);
         
-        for (int f = 0; f < numFaces; ++f) {
-            if (dimension == DIM_CUBE_MAP) {
-                // Choose the appropriate face target
-                target = cubeFaceTarget[f];
+            for (int f = 0; f < numFaces; ++f) {
+        
+                if (dimension == DIM_CUBE_MAP) {
+                    // Choose the appropriate face target
+                    target = cubeFaceTarget[f];
+                }
+
+                if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap()) {
+
+                    alwaysAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
+
+                    createMipMapTexture(target, const_cast<const uint8*>(bytes[mipLevel][f]),
+                                  bytesFormat->OpenGLBaseFormat,
+                                  width, height, desiredFormat->OpenGLFormat);
+                } else {
+                    createTexture(target, const_cast<const uint8*>(bytes[mipLevel][f]), bytesFormat->OpenGLBaseFormat,
+                                  width, height, desiredFormat->OpenGLFormat, 
+                                  bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed);
+                }
+
+                debugAssertGLOk();
             }
 
-            if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap()) {
-
-                alwaysAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
-
-                createMipMapTexture(target, bytes[f],
-                              bytesFormat->OpenGLBaseFormat,
-                              width, height, desiredFormat->OpenGLFormat);
-            } else {
-                createTexture(target, bytes[f], bytesFormat->OpenGLBaseFormat,
-                              width, height, desiredFormat->OpenGLFormat, 
-                              bytesFormat->packedBitsPerTexel / 8, bytesFormat->compressed);
-            }
+            mipWidth = max(1, mipWidth/2);
+            mipHeight = max(1, mipHeight/2);
         }
-        debugAssertGLOk();
     glStatePop();
 
     if (dimension != DIM_2D_RECT) {
@@ -668,6 +684,33 @@ TextureRef Texture::fromMemory(
     t->width = width;
     t->height = height;
     return t;
+}
+
+
+TextureRef Texture::fromMemory(
+    const std::string&      name,
+    const uint8**           bytes,
+    const TextureFormat*    bytesFormat,
+    int                     width,
+    int                     height,
+    int                     depth,
+    const TextureFormat*    desiredFormat,
+    WrapMode                wrap,
+    InterpolateMode         interpolate,
+    Dimension               dimension,
+    DepthReadMode           depthRead) {
+
+    Array< Array<const void* > > arrayMipMapFaces(1);
+
+    int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
+        
+
+    for (int f = 0; f < numFaces; ++f) {
+
+        arrayMipMapFaces[0].append(bytes[f]);
+    }
+
+    return Texture::fromMemory(name, arrayMipMapFaces, bytesFormat, width, height, depth, desiredFormat, wrap, interpolate, dimension, depthRead);
 }
 
 
