@@ -410,7 +410,7 @@ public:
     /**
      Does not commit the BinaryOutput when done.
      */
-    void GImage::encode(
+    void encode(
         Format              format,
         BinaryOutput&       out) const;
 
