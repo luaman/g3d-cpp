@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\..\temp\Debug"
-			IntermediateDirectory=".\..\temp\Debug"
+			OutputDirectory=".\..\temp\Debug\Debug"
+			IntermediateDirectory=".\..\temp\Debug\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -21,17 +21,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="5"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\..\temp\Debug/Debug.pch"
-				AssemblerListingLocation=".\..\temp\Debug/"
-				ObjectFile=".\..\temp\Debug/"
-				ProgramDataBaseFileName=".\..\temp\Debug/"
-				BrowseInformation="1"
+				PrecompiledHeaderFile=".\..\temp\Debug\Debug/Debug.pch"
+				AssemblerListingLocation=".\..\temp\Debug\Debug/"
+				ObjectFile=".\..\temp\Debug\Debug/"
+				ProgramDataBaseFileName=".\..\temp\Debug\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
@@ -40,12 +39,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\..\temp\Debug/Debug.exe"
+				OutputFile=".\..\temp\Debug\Debug/Debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\temp\win32-lib,..\win32-lib"
+				AdditionalLibraryDirectories="..\temp\win32-lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\..\temp\Debug/Debug.pdb"
+				ProgramDatabaseFile=".\..\temp\Debug\Debug/Debug.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -54,7 +53,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\..\temp\Debug/Debug.tlb"
+				TypeLibraryName=".\..\temp\Debug\Debug/Debug.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -79,8 +78,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\..\temp\Release\test"
-			IntermediateDirectory=".\..\temp\Release\test"
+			OutputDirectory=".\..\temp\Debug\Release"
+			IntermediateDirectory=".\..\temp\Debug\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -89,17 +88,17 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../include"
+				AdditionalIncludeDirectories="include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="4"
 				EnableFunctionLevelLinking="TRUE"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\..\temp\Release\test/Debug.pch"
-				AssemblerListingLocation=".\..\temp\Release\test/"
-				ObjectFile=".\..\temp\Release\test/"
-				ProgramDataBaseFileName=".\..\temp\Release\test/"
-				BrowseInformation="1"
+				PrecompiledHeaderFile=".\..\temp\Debug\Release/Debug.pch"
+				AssemblerListingLocation=".\..\temp\Debug\Release/"
+				ObjectFile=".\..\temp\Debug\Release/"
+				ProgramDataBaseFileName=".\..\temp\Debug\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -107,11 +106,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\..\temp\Release\test/Debug.exe"
+				OutputFile=".\..\temp\Debug\Release/Debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\temp\win32-lib,..\win32-lib"
-				ProgramDatabaseFile=".\..\temp\Release\test/Debug.pdb"
+				AdditionalLibraryDirectories="..\temp\,..\temp\win32-lib"
+				ProgramDatabaseFile=".\..\temp\Debug\Release/Debug.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -120,7 +119,7 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\..\temp\Release\test/Debug.tlb"
+				TypeLibraryName=".\..\temp\Debug\Release/Debug.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -151,7 +150,7 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="main.cpp">
+				RelativePath="Debug\main.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -159,8 +158,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
+						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
@@ -168,14 +166,17 @@
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 		</Filter>
 	</Files>
 	<Globals>
