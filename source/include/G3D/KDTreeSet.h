@@ -190,7 +190,7 @@ public:
         /** Deletes the children (but not the values) */
         ~Node() {
             for (int i = 0; i < 2; ++i) {
-                delete child[0];
+                delete child[i];
             }
         }
 
