@@ -681,7 +681,6 @@ void testFloat() {
     (void)b1;
     (void)b2;
     (void)b3;
-
     debugAssert(isNaN(NAN));
     debugAssert(! isNaN(4));
     debugAssert(! isNaN(0));
