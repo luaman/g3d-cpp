@@ -337,7 +337,9 @@ void App::main() {
         material.specularExponent = Color3::white() * 25;
         model->updateAll();
 
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        CoordinateFrame cframe(Vector3(x,0,0));
+        cframe.lookAt(Vector3(5,0,5));
+        entityArray.append(Entity::create(model, cframe));
         x += 2;
     }
 
@@ -405,7 +407,7 @@ void App::main() {
 
     lighting = Lighting::create();
     {
-        LightingParameters params(G3D::toSeconds(2, 00, 00, PM));
+        LightingParameters params(G3D::toSeconds(12, 00, 00, PM));
     
         if (sky.notNull()) {
             //lighting->environmentMap.constant = lighting.skyAmbient;

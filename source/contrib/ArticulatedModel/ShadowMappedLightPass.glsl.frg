@@ -46,17 +46,16 @@ void main(void) {
     vec3 wsE = normalize(wsEyePos - wsPosition);
     const vec3 wsR = (wsN * 2.0 * dot(wsN, wsE)) - wsE;
 
-//    vec3 shadow = shadow2DProj(shadowMap, shadowCoord).xyz;
-
     // Compute projected shadow coord.
     shadowCoord = shadowCoord / shadowCoord.w;
 
     const float s = 1.0 / 512.0;
     vec3 shadow = 
-        (shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0)).xyz +
-         shadow2D(shadowMap, shadowCoord.xyz + vec3( s, -s, 0)).xyz +
-         shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0)).xyz +
-         shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  s, 0)).xyz) / 4.0;
+         shadow2D(shadowMap, shadowCoord.xyz).xyz / 3.0 +
+         (shadow2D(shadowMap, shadowCoord.xyz + vec3( 0,  s, 0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3( 0, -s, 0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  0, 0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  0, 0)).xyz) / 6.0;
 
     gl_FragColor.rgb =
         lightColor * shadow *

@@ -86,21 +86,7 @@ void SuperShader::configureShadowShader(
         0.0f, 0.0f, 0.5f, 0.5f - .000001,
         0.0f, 0.0f, 0.0f, 1.0f);
 
-    // We may have to invert the texture coordinates on the shadow map
-    double ymax = 1.0;
-    if (shadowMap->getDimension() == Texture::DIM_2D_RECT) {
-        ymax = shadowMap->getTexelHeight();
-    }
-
-    Matrix4 textureMatrix = 
-        shadowMap->invertY 
-        ? Matrix4(1,  0, 0, 0,
-                  0, -1, 0, ymax,
-                  0,  0, 1, 0,
-                  0,  0, 0, 1)
-        : Matrix4::identity();
-
-    args.set("lightMVP",        textureMatrix * bias * lightMVP);
+    args.set("lightMVP",        bias * lightMVP);
 }
 
 

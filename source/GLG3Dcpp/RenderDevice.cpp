@@ -2778,8 +2778,16 @@ void RenderDevice::configureShadowMap(
 
     debugAssertM(GLCaps::supports_GL_ARB_shadow(),
         "The device does not support shadow maps");
-    
-	// Set up tex coord generation - all 4 coordinates required
+
+
+    // Texture coordinate generation will use the current MV matrix
+    // to determine OpenGL "eye" space.  We want OpenGL "eye" space to
+    // be our world space, so set the object to world matrix to be the
+    // identity.
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadMatrix(state.cameraToWorldMatrix.inverse());
+
     setTexture(unit, shadowMap);
     
     if (GLCaps::supports_GL_ARB_multitexture()) {
@@ -2797,6 +2805,7 @@ void RenderDevice::configureShadowMap(
 	Matrix4 textureProjectionMatrix2D =
         textureMatrix * bias * lightMVP;
 
+	// Set up tex coord generation - all 4 coordinates required
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 	glTexGenfv(GL_S, GL_EYE_PLANE, textureProjectionMatrix2D[0]);
 	glEnable(GL_TEXTURE_GEN_S);
@@ -2809,6 +2818,9 @@ void RenderDevice::configureShadowMap(
 	glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 	glTexGenfv(GL_Q, GL_EYE_PLANE, textureProjectionMatrix2D[3]);
 	glEnable(GL_TEXTURE_GEN_Q);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 }
 
 
