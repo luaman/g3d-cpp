@@ -28,6 +28,9 @@ BinaryOutput::BinaryOutput() {
     buffer = NULL;
     bufferLen = 0;
     maxBufferLen = 0;
+    beginEndBits = 0;
+    bitString = 0;
+    bitPos = 0;
 }
 
 
@@ -41,16 +44,23 @@ BinaryOutput::BinaryOutput(
     buffer = NULL;
     bufferLen = 0;
     maxBufferLen = 0;
+    beginEndBits = 0;
+    bitString = 0;
+    bitPos = 0;
 }
 
 
 void BinaryOutput::reset() {
+    debugAssert(beginEndBits == 0);
     alwaysAssertM(filename == "<memory>", 
         "Can only reset a BinaryOutput that writes to memory.");
 
     // Do not reallocate, just clear the size of the buffer.
     pos = 0;
     bufferLen = 0;
+    beginEndBits = 0;
+    bitString = 0;
+    bitPos = 0;
 }
 
 
@@ -106,6 +116,8 @@ void BinaryOutput::compress() {
 
 
 void BinaryOutput::commit(bool flush) {
+    debugAssertM(beginEndBits == 0, "Missing endBits before commit");
+
     // Make sure the directory exists.
     std::string root, base, ext, path;
     Array<std::string> pathArray;
@@ -159,6 +171,8 @@ void BinaryOutput::writeUInt32(uint32 u) {
 
     uint8* convert = (uint8*)&u;
 
+    debugAssert(beginEndBits == 0);
+
     if (swapBytes) {
         buffer[pos]     = convert[3];
         buffer[pos + 1] = convert[2];
@@ -208,6 +222,7 @@ void BinaryOutput::writeString(const char* s) {
     // +1 is because strlen doesn't count the null
     int len = strlen(s) + 1;
 
+    debugAssert(beginEndBits == 0);
     reserveBytes(len);
     System::memcpy(buffer + pos, s, len);
     pos += len;
@@ -268,6 +283,45 @@ void BinaryOutput::writeColor3(const Color3& v) {
     writeFloat32(v.r);
     writeFloat32(v.g);
     writeFloat32(v.b);
+}
+
+
+void BinaryOutput::beginBits() {
+    debugAssertM(beginEndBits == 0, "Already in beginBits...endBits");
+    bitString = 0x00;
+    bitPos = 0;
+    beginEndBits = 1;
+}
+
+
+void BinaryOutput::writeBits(uint32 value, int numBits) {
+
+    while (numBits > 0) {
+        // Extract the current bit of value and
+        // insert it into the current byte
+        bitString |= (value & 1) << bitPos;
+        ++bitPos;
+        value = value >> 1;
+        --numBits;
+
+        if (bitPos > 7) {
+            // We've reached the end of this byte
+            writeUInt8(bitString);
+            bitString = 0x00;
+            bitPos = 0;
+        }
+    }
+}
+
+
+void BinaryOutput::endBits() {
+    debugAssertM(beginEndBits == 1, "Not in beginBits...endBits");
+    if (bitPos > 0) {
+        writeUInt8(bitString);
+    }
+    bitString = 0;
+    bitPos = 0;
+    beginEndBits = 0;
 }
 
 }

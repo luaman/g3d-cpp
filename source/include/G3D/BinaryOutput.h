@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-01-13
+ @edited  2005-02-13
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -38,6 +38,18 @@ namespace G3D {
 class BinaryOutput {
 private:
     std::string     filename;
+
+
+    /** 0 outside of beginBits...endBits, 1 inside */
+    int             beginEndBits;
+
+    /** The current string of bits being built up by beginBits...endBits.
+        This string is treated semantically, as if the lowest bit was
+        on the left and the highest was on the right.*/
+    int8            bitString;
+
+    /** Position (from the lowest bit) currently used in bitString.*/
+    int             bitPos;
 
     // True if the file endianess does not match the machine endian
     bool            swapBytes;
@@ -186,7 +198,7 @@ public:
     }
 
     void writeBytes(
-        const void*        b,
+        const void*         b,
         int                 count) {
 
         reserveBytes(count);
@@ -222,6 +234,7 @@ public:
     void writeUInt32(uint32 u);
 
     inline void writeInt32(int32 i) {
+        debugAssert(beginEndBits == 0);
         writeUInt32(*(uint32*)&i);
     }
 
@@ -232,6 +245,7 @@ public:
     }
 
     inline void writeFloat32(float32 f) {
+        debugAssert(beginEndBits == 0);
         writeUInt32(*(uint32*)&f);
     }
 
@@ -288,6 +302,26 @@ public:
         }
         pos += n;
     }
+
+    /** Call before a series of BinaryOutput::writeBits calls. Only writeBits 
+        can be called between beginBits and endBits without corrupting the stream.*/
+    void beginBits();
+
+    /** Write numBits from bitString to the output stream.  Bits are numbered from
+        low to high.
+    
+        Can only be 
+        called between beginBits and endBits.  Bits written are semantically
+        little-endian, regardless of the actual endian-ness of the system.  That is,
+        <CODE>writeBits(0xABCD, 16)</CODE> writes 0xCD to the first byte and 
+        0xAB to the second byte.  However, if used with BinaryInput::readBits, the ordering
+        is transparent to the caller.
+      */
+    void writeBits(uint32 bitString, int numBits);
+
+    /** Call after a series of BinaryOutput::writeBits calls. This will
+        finish out with zeros the last byte into which bits were written.*/
+    void endBits();
 };
 
 }

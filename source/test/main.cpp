@@ -18,6 +18,34 @@ using namespace G3D;
 #endif
 #include <string>
 
+void testBitSerialization() {
+    printf("Bit Serialization\n");
+    uint8 x[100];
+
+    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+
+    b.beginBits();
+        b.writeBits(0, 1);
+        b.writeBits(1, 1);
+    b.endBits();
+
+    b.commit(x);
+
+    debugAssert(x[0] == 2);
+
+    b.reset();
+    b.beginBits();
+        b.writeBits(0xF1234567, 32);
+    b.endBits();
+
+    b.commit(x);
+
+    debugAssert(x[0] == 0x67);
+    debugAssert(x[1] == 0x45);
+    debugAssert(x[2] == 0x23);
+    debugAssert(x[3] == 0xF1);
+}
+
 
 void measureSerializerPerformance() {
     Array<uint8> x(1024);
@@ -1765,12 +1793,19 @@ int main(int argc, char* argv[]) {
     #endif
 
     printf("\n\nTests:\n\n");
+
+    testBitSerialization();
+    printf("  passed\n");
+
     testPlane();
     printf("  passed\n");
+
     testAABoxCulledBy();
     printf("  passed\n");
+
     testRandom();
     printf("  passed\n");
+
     testAABoxCollision();
     printf("  passed\n");
     testAdjacency();

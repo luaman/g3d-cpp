@@ -550,7 +550,7 @@ bool isDirectory(const std::string& filename) {
 
 
 bool filenameContainsWildcards(const std::string& filename) {
-    return (filename.find('*') >= 0) || (filename.find('?') >= 0);
+    return (filename.find('*') != std::string::npos) || (filename.find('?') != std::string::npos);
 }
 
 
