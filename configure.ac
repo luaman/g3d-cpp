@@ -59,16 +59,16 @@ else
   	AC_MSG_ERROR([sdl-config not found!])
 fi
 
-AC_MSG_CHECKING([whether to enable debugging])
-AC_ARG_ENABLE(debugging, [
-  --enable-debugging		(Default: disabled)], [
-	    if test x$enablevar = xno; then
-            AC_MSG_RESULT(no)
-        else
-            AC_MSG_RESULT(yes)
-            AC_DEFINE(_DEBUG, 1, [Debugging on])
-        fi
-    ],[AC_MSG_RESULT(no)])
+#AC_MSG_CHECKING([whether to enable debugging])
+#AC_ARG_ENABLE(debugging, [
+#  --enable-debugging		(Default: disabled)], [
+#	    if test x$enablevar = xno; then
+#            AC_MSG_RESULT(no)
+#        else
+#            AC_MSG_RESULT(yes)
+#            AC_DEFINE(_DEBUG, 1, [Debugging on])
+#        fi
+#    ],[AC_MSG_RESULT(no)])
 
 AC_CONFIG_FILES([Makefile
 				 source/Makefile
