@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-07-07
+  @edited  2004-07-11
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -22,6 +22,7 @@
 #include "G3D/Box.h"
 #include "G3D/Triangle.h"
 #include "G3D/Ray.h"
+#include "G3D/GCamera.h"
 #include <algorithm>
 
 inline void getBounds(const G3D::Vector3& v, G3D::AABox& out) {
@@ -362,23 +363,32 @@ private:
         }
 
 
-        /** Appends all members that intersect the box */
-        void getIntersectingMembers(const AABox& box, Array<T>& members) const {
+        /** Appends all members that intersect the box. 
+            If useSphere is true, members that pass the box test
+            face a second test against the sphere. */
+        void getIntersectingMembers(
+            const AABox&        box, 
+            const Sphere&       sphere,
+            Array<T>&           members,
+            bool                useSphere) const {
+
             // Test all values at this node
             for (int v = 0; v < valueArray.size(); ++v) {
-                if (valueArray[v].bounds.intersects(box)) {
+                const AABox& bounds = valueArray[v].bounds;
+                if (bounds.intersects(box) &&
+                    (! useSphere || bounds.intersects(sphere))) {
                     members.append(valueArray[v].value);
                 }
             }
 
             // If the left child overlaps the box, recurse into it
             if ((child[0] != NULL) && (box.low()[splitAxis] < splitLocation)) {
-                child[0]->getIntersectingMembers(box, members);
+                child[0]->getIntersectingMembers(box, sphere, members, useSphere);
             }
 
             // If the right child overlaps the box, recurse into it
             if ((child[1] != NULL) && (box.high()[splitAxis] > splitLocation)) {
-                child[1]->getIntersectingMembers(box, members);
+                child[1]->getIntersectingMembers(box, sphere, members, useSphere);
             }
         }
 
@@ -716,21 +726,36 @@ private:
 
         int dummy;
 
-        // Test values at this node against remaining planes
-        for (int v = node->valueArray.size() - 1; v >= 0; --v) {
-            if (! node->valueArray[v].bounds.culledBy(plane, dummy, parentMask)) {
+        if (parentMask == 0) {
+            // None of these planes can cull anything
+            for (int v = node->valueArray.size() - 1; v >= 0; --v) {
                 members.append(node->valueArray[v].value);
             }
-        }
 
-        uint32 childMask  = -1;
+            // Iterate through child nodes
+            for (int c = 0; c < 2; ++c) {
+                if (node->child[c]) {
+                    getIntersectingMembers(plane, members, node->child[c], 0);
+                }
+            }
+        } else {
 
-        // Iterate through child nodes
-        for (int c = 0; c < 2; ++c) {
-            if (node->child[c] &&
-                ! node->child[c]->splitBounds.culledBy(plane, dummy, parentMask, childMask)) {
-                // This node was node culled
-                getIntersectingMembers(plane, members, node->child[c], childMask);
+            // Test values at this node against remaining planes
+            for (int v = node->valueArray.size() - 1; v >= 0; --v) {
+                if (! node->valueArray[v].bounds.culledBy(plane, dummy, parentMask)) {
+                    members.append(node->valueArray[v].value);
+                }
+            }
+
+            uint32 childMask  = -1;
+
+            // Iterate through child nodes
+            for (int c = 0; c < 2; ++c) {
+                if (node->child[c] &&
+                    ! node->child[c]->splitBounds.culledBy(plane, dummy, parentMask, childMask)) {
+                    // This node was not culled
+                    getIntersectingMembers(plane, members, node->child[c], childMask);
+                }
             }
         }
     }
@@ -738,19 +763,8 @@ private:
 public:
 
     /**
-     Returns all members inside the set of planes.  Typically used to find all visible
-     objects inside the view frustum (see GCamera::getClipPlanes)... i.e. all objects
-     <B>not<B> culled by the set of planes.
-
-     Example:
-      <PRE>
-        Array<Object*>  visible;
-        Array<Plane>    frustum;
-        camera.getClipPlanes(frustum);
-        tree.getIntersectingMembers(frustum, visible);
-
-        // ... Draw all objects in the visible array.
-      </PRE>
+     Returns all members inside the set of planes.  
+      @param members The results are appended to this array.
      */
     void getIntersectingMembers(const Array<Plane>& plane, Array<T>& members) const {
         if (root == NULL) {
@@ -758,6 +772,29 @@ public:
         }
 
         getIntersectingMembers(plane, members, root, -1);
+    }
+
+    /**
+     Typically used to find all visible
+     objects inside the view frustum (see also GCamera::getClipPlanes)... i.e. all objects
+     <B>not<B> culled by frustum.
+
+     Example:
+      <PRE>
+        Array<Object*>  visible;
+        tree.getIntersectingMembers(camera.frustum(), visible);
+        // ... Draw all objects in the visible array.
+      </PRE>
+      @param members The results are appended to this array.
+      */
+    void getIntersectingMembers(const GCamera::Frustum& frustum, Array<T>& members) const {
+        Array<Plane> plane;
+        
+        for (int i = 0; i < frustum.faceArray.size(); ++i) {
+            plane.append(frustum.faceArray[i].plane);
+        }
+
+        getIntersectingMembers(plane, members);
     }
 
     /**
@@ -923,9 +960,23 @@ public:
         if (root == NULL) {
             return;
         }
-        root->getIntersectingMembers(box, members);
-    }    
+        root->getIntersectingMembers(box, Sphere(Vector3::ZERO, 0), members, false);
+    }
 
+
+    /**
+      @param members The results are appended to this array.
+     */
+    void getIntersectingMembers(const Sphere& sphere, Array<T>& members) const {
+        if (root == NULL) {
+            return;
+        }
+
+        AABox box;
+        sphere.getBounds(box)
+        root->getIntersectingMembers(box, sphere, members, true);
+
+    }
 
     /** See AABSPTree::beginRayIntersection */
     class RayIntersectionIterator {

@@ -4,12 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2004-01-10
-  @edited  2004-07-05
+  @edited  2004-07-11
 */
 
 #include "G3D/AABox.h"
 #include "G3D/Box.h"
 #include "G3D/Plane.h"
+#include "G3D/Sphere.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 
@@ -277,6 +278,23 @@ bool AABox::culledBy(
     // None of the planes could cull this box
 	cullingPlane = -1;
     return false;
+}
+
+
+bool AABox::intersects(const class Sphere& sphere) const {
+    double d = 0; 
+
+    //find the square of the distance
+    //from the sphere to the box
+    for (int i = 0; i < 3; ++i) {
+        if (sphere.center[i] < lo[i]) {
+            d += square(sphere.center[i] - lo[i]);
+        } else if (sphere.center[i] > hi[i]) {
+            d += square(sphere.center[i] - hi[i]);
+        }
+    }
+
+    return d <= square(sphere.radius);
 }
 
 

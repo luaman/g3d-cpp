@@ -14,9 +14,12 @@
      <LI> GCamera::getFrustum, GCamera::frustum, GCamera::Frustum, GCamera::Frustum::Face
      <LI> Plane constructor that accepts Vector4s (possibly at infinity)
      <LI> AABox::inf, AABox::zero, AABox::maxFinite
+     <LI> AABox::intersects(Sphere)
      <LI> Vector3::minFinite, Vector3::maxFinite
 	 <LI> Plane::halfSpaceContainsFinite
-     <LI> AABSPTree::getIntersectingMembers(Array<Plane>) for view-frustum culling.
+     <LI> AABSPTree::getIntersectingMembers(Array<Plane>) 
+	 <LI> AABSPTree::getIntersectingMembers(GCamera::Frustum) for view-frustum culling
+	 <LI> AABSPTree::getIntersectingMembers(Sphere)
      <LI> AABox::split
      <LI> Extended AABox::culledBy, Box::culledBy, and Sphere::culledBy with extra
 	        information for bounding volume hierarchies

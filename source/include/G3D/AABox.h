@@ -201,6 +201,10 @@ public:
     /** Returns true if there is any overlap */
     bool intersects(const AABox& other) const;
 
+    /** Returns true if there is any overlap.
+        @cite Jim Arvo's algorithm from Graphics Gems II*/
+    bool intersects(const class Sphere& other) const;
+
     /** Return the intersection of the two boxes */
     AABox intersect(const AABox& other) const {
         Vector3 H = hi.min(other.hi);

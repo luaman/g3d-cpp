@@ -29,14 +29,10 @@ Array<Vector3> CollisionDetection::ignoreArray;
 
 
 
-
-
-
 Vector3 CollisionDetection::separatingAxisForSolidBoxSolidBox(
         const int separatingAxisIndex,
         const Box & box1,
-        const Box & box2)
-{
+        const Box & box2) {
     debugAssert(separatingAxisIndex >= 0);
     debugAssert(separatingAxisIndex < 15);
     Vector3 axis;
@@ -58,8 +54,7 @@ bool CollisionDetection::parallelAxisForSolidBoxSolidBox(
         const double* ca,
         const double epsilon,
         int & axis1,
-        int & axis2)
-{
+        int & axis2) {
     const double parallelDot = 1.0 - epsilon;
     for (int i = 0; i < 9; i++) {
         if (ca[i] >= parallelDot) {
@@ -74,8 +69,6 @@ bool CollisionDetection::parallelAxisForSolidBoxSolidBox(
 
 
 
-
-
 void CollisionDetection::fillSolidBoxSolidBoxInfo(
         const Box & box1,
         const Box & box2,
@@ -85,8 +78,7 @@ void CollisionDetection::fillSolidBoxSolidBoxInfo(
         double* c,
         double* ca,
         double* ad,
-        double* bd)
-{
+        double* bd) {
     // length between center and each side of box1 and box2
     a = box1.extent() * 0.5;
     b = box2.extent() * 0.5;
@@ -115,8 +107,7 @@ void CollisionDetection::fillSolidBoxSolidBoxInfo(
 
 
 bool CollisionDetection::conservativeBoxBoxTest(
-        const Vector3 & a, const Vector3 & b, const Vector3 & D)
-{
+        const Vector3 & a, const Vector3 & b, const Vector3 & D) {
     // do a quick bounding sphere test because it is relatively
     // cheap, (three dot products, two sqrts, and a few others)
     double boxRadius1 = a.length();
@@ -130,8 +121,7 @@ bool CollisionDetection::conservativeBoxBoxTest(
 bool CollisionDetection::fixedSolidBoxIntersectsFixedSolidBox(
     const Box&      box1,
     const Box&      box2,
-	const int		lastSeparatingAxis)
-{
+	const int		lastSeparatingAxis) {
     // for explanations of the variable please refer to the
     // paper and fillSolidBoxSolidBoxInfo()
     Vector3 a;
@@ -190,8 +180,7 @@ void CollisionDetection::closestPointsBetweenLineAndLine(
         const Line & line1,
         const Line & line2,
         Vector3 & closest1,
-        Vector3 & closest2)
-{
+        Vector3 & closest2) {
     // TODO make accessors for Line that don't make a copy of data
     Vector3 P0 = line1.point();
     Vector3 u = line1.direction();
@@ -230,8 +219,7 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
     const Box&      box2,
     Array<Vector3>& contactPoints,
     Array<Vector3>& contactNormals,
-    const int lastSeparatingAxis)
-{
+    const int lastSeparatingAxis) {
 
     contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
     contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
@@ -431,8 +419,6 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
     return -penetration;
 
 }
-
-
 
 
 
