@@ -396,7 +396,7 @@ void flipRGBAVertical(
 void GImage::encodeBMP(
     BinaryOutput&       out) const {
 
-    debugAssert(channels == 3);
+    debugAssert(channels == 1 || channels == 3);
     out.setEndian(G3D_LITTLE_ENDIAN);
 
     uint8 red;
@@ -491,15 +491,21 @@ void GImage::encodeBMP(
         dest = channels * h * width;
         for (int w = 0; w < width; ++w) {
 
-            red   = _byte[dest];
-            green = _byte[dest + 1];
-            blue  = _byte[dest + 2];
+            if (channels == 3) {
+                red   = _byte[dest];
+                green = _byte[dest + 1];
+                blue  = _byte[dest + 2];
+            } else {
+                red   = _byte[dest];
+                green = _byte[dest];
+                blue  = _byte[dest];
+            }
 
             out.writeUInt8(blue);
             out.writeUInt8(green);
             out.writeUInt8(red);
 
-            dest += 3;
+            dest += channels;
         }
 
         if (BMPadding) {
@@ -688,7 +694,7 @@ void png_warning(
 void GImage::encodePNG(
     BinaryOutput&           out) const {
 
-    debugAssert( channels == 3 || channels == 4 );
+    debugAssert( channels == 1 || channels == 3 || channels == 4 );
 
     if (this->height > (int)(PNG_UINT_32_MAX/png_sizeof(png_bytep)))
         throw GImage::Error("Unsupported PNG height.", out.getFilename());
@@ -714,6 +720,10 @@ void GImage::encodePNG(
     }
     else if (channels == 4) {
         png_set_IHDR(png_ptr, info_ptr, this->width, this->height, 8, PNG_COLOR_TYPE_RGBA,
+            PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+    }
+    else if (channels == 1) {
+        png_set_IHDR(png_ptr, info_ptr, this->width, this->height, 8, PNG_COLOR_TYPE_GRAY,
             PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
     }
     else {
@@ -812,7 +822,7 @@ void GImage::decode(
 
     debugAssert(width >= 0);
     debugAssert(height >= 0);
-    debugAssert(channels == 3 || channels == 4);
+    debugAssert(channels == 1 || channels == 3 || channels == 4);
     debugAssert(_byte != NULL);
 }
 
@@ -1793,20 +1803,15 @@ void GImage::decodePNG(
         png_set_packing(png_ptr);
     }
 
-    // This fixes strange grayscale bitdepth vs channels
-    if (color_type == PNG_COLOR_TYPE_GRAY) {
-        png_set_gray_to_rgb(png_ptr);
-        bit_depth = 24;
-        color_type = PNG_COLOR_TYPE_RGB;
-    }
-
-    if ((color_type == PNG_COLOR_TYPE_RGBA) &&
-        (bit_depth == 32)) {
+    if (color_type == PNG_COLOR_TYPE_RGBA) {
         this->channels = 4;
         this->_byte = (uint8*)malloc(width * height * 4);
-    } else if ((bit_depth == 24) || (bit_depth == 8)) {
+    } else if (color_type == PNG_COLOR_TYPE_RGB) {
         this->channels = 3;
         this->_byte = (uint8*)malloc(width * height * 3);
+    } else if (color_type == PNG_COLOR_TYPE_GRAY) {
+        this->channels = 1;
+        this->_byte = (uint8*)malloc(width * height);
     } else {
         throw GImage::Error("Unsupported PNG bit-depth or type.", input.getFilename());
     }
@@ -1818,7 +1823,7 @@ void GImage::decodePNG(
 
     for (uint32 pass = 0; pass < number_passes; ++pass) {
         for (uint32 y = 0; y < (uint32)height; ++y) {
-            png_bytep rowPointer = &this->_byte[width * channels * y]; 
+            png_bytep rowPointer = &this->_byte[width * this->channels * y]; 
             png_read_rows(png_ptr, &rowPointer, png_bytepp_NULL, 1);
         }
     }
