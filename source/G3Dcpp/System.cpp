@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-07-23
+  @edited  2004-08-24
  */
 
 #include "G3D/platform.h"
@@ -61,27 +61,33 @@ namespace G3D {
 
 std::string demoFindData(bool errorIfNotFound) {
 
+    // Directories that might contain the data
     Array<std::string> potential;
-    
-        potential.append("");
-        potential.append("../");
-        potential.append("../../");
-        potential.append("../../../");
-        potential.append("../../../../");
-        potential.append("../../../../../");
-        
-        int ver = G3D_VER;
-        std::string lname = format("g3d-%d_%02d", ver / 10000, (ver / 100) % 100);
 
-        if (G3D_VER % 10 != 0) {
-                lname = lname + format("-b%02d/", ver % 100);
-        } else {
-                lname = lname + "/";
-        }
+    // Look back up the directory tree
+    std::string x = "../";
+    std::string f = "";
+    for (int i = 0; i < 6; ++i) {
+        potential.append(f);
+        f = f + x;
+    }
+    
+    // Hard-code in likely install directories
+    int ver = G3D_VER;
+    std::string lname = format("g3d-%d_%02d", ver / 10000, (ver / 100) % 100);
+
+    if (G3D_VER % 10 != 0) {
+        lname = lname + format("-b%02d/", ver % 100);
+    } else {
+        lname = lname + "/";
+    }
+
     std::string lpath = "libraries/" + lname;
     #ifdef G3D_WIN32
         potential.append(std::string("c:/") + lpath);
         potential.append(std::string("d:/") + lpath);
+        potential.append(std::string("e:/") + lpath);
+        potential.append(std::string("f:/") + lpath);
         potential.append(std::string("g:/") + lpath);
         potential.append(std::string("x:/") + lpath);
         potential.append(std::string("c:/users/morgan/data/"));
@@ -90,13 +96,13 @@ std::string demoFindData(bool errorIfNotFound) {
         potential.append(std::string("/map/gfx0/common/games/") + lpath);
     #endif
 
+    // Scan all potentials for the font directory
     for (int p = 0; p < potential.size();  ++p) {
         std::string path = potential[p];
         if (fileExists(path + "data") && fileExists(path + "data/font")) {
             return path + "data/";
         }
     }
-
 
     if (errorIfNotFound) {
         const char* choice[] = {"Exit"};
@@ -134,8 +140,8 @@ static struct timeval       _start;
 #endif
 
 #ifdef G3D_OSX
-        long System::m_OSXCPUSpeed;
-        double System:: m_secondsPerNS;
+    long System::m_OSXCPUSpeed;
+    double System:: m_secondsPerNS;
 #endif
 
 /** The Real-World time of System::getTick() time 0.  Set by initTime */
@@ -143,7 +149,7 @@ static RealTime             realWorldGetTickTime0;
 
 
 static int               maxSupportedCPUIDLevel = 0;
-static int    maxSupportedExtendedLevel = 0;
+static int            maxSupportedExtendedLevel = 0;
 
 #define checkBit(var, bit)   ((var & (1 << bit)) ? true : false)
 
@@ -162,38 +168,38 @@ static void initTime();
 
 
 bool System::hasRDTSC() {
-        init();
-        return _rdtsc;
+    init();
+    return _rdtsc;
 }
 
 
 bool System::hasSSE() {
-        init();
-        return _sse;
+    init();
+    return _sse;
 }
 
 
 bool System::hasSSE2() {
-        init();
-        return _sse2;
+    init();
+    return _sse2;
 }
 
 
 bool System::hasMMX() {
-        init();
-        return _mmx;
+    init();
+    return _mmx;
 }
 
 
 bool System::has3DNow() {
-        init();
-        return _3dnow;
+    init();
+    return _3dnow;
 }
 
 
 const std::string& System::cpuVendor() {
-        init();
-        return _cpuVendor;
+    init();
+    return _cpuVendor;
 }
 
 
@@ -214,18 +220,17 @@ const std::string& System::cpuArchitecture() {
 }
 
 
-void 
-System::init() {
+void System::init() {
 
-        if (System::initialized) {
-                return;
-        }
+    if (System::initialized) {
+        return;
+    }
 
-        System::initialized = true;
+    System::initialized = true;
 
     unsigned long eaxreg, ebxreg, ecxreg, edxreg;
 
-        char cpuVendorTmp[13];
+    char cpuVendorTmp[13];
     (void)cpuVendorTmp;
  
         // First of all we check if the CPUID command is available
@@ -241,21 +246,21 @@ System::init() {
         }
     }
 
-        if (_cpuID) {
-        // Process the CPUID information
+    if (_cpuID) {
+    // Process the CPUID information
 
-            // We read the standard CPUID level 0x00000000 which should
-            // be available on every x86 processor.  This fills out
-        // a string with the processor vendor tag.
-            #ifdef _MSC_VER
-                    __asm {
-                            mov eax, 0
-                            cpuid
-                            mov eaxreg, eax
-                            mov ebxreg, ebx
-                            mov edxreg, edx
-                            mov ecxreg, ecx
-                    }
+        // We read the standard CPUID level 0x00000000 which should
+        // be available on every x86 processor.  This fills out
+    // a string with the processor vendor tag.
+        #ifdef _MSC_VER
+            __asm {
+                mov eax, 0
+                cpuid
+                mov eaxreg, eax
+                mov ebxreg, ebx
+                mov edxreg, edx
+                mov ecxreg, ecx
+            }
         #elif defined(__GNUC__) && defined(i386)
             // TODO: linux
             ebxreg = 0;
@@ -267,23 +272,23 @@ System::init() {
             ecxreg = 0;
         #endif
 
-                // Then we connect the single register values to the vendor string
-                *((unsigned long *) cpuVendorTmp)       = ebxreg;
-                *((unsigned long *) (cpuVendorTmp + 4)) = edxreg;
-                *((unsigned long *) (cpuVendorTmp + 8)) = ecxreg;
-                cpuVendorTmp[12] = '\0';
-                _cpuVendor = cpuVendorTmp;
+        // Then we connect the single register values to the vendor string
+        *((unsigned long *) cpuVendorTmp)       = ebxreg;
+        *((unsigned long *) (cpuVendorTmp + 4)) = edxreg;
+        *((unsigned long *) (cpuVendorTmp + 8)) = ecxreg;
+        cpuVendorTmp[12] = '\0';
+        _cpuVendor = cpuVendorTmp;
 
-                // We can also read the max. supported standard CPUID level
-                maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
+        // We can also read the max. supported standard CPUID level
+        maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
 
-                // Then we read the ext. CPUID level 0x80000000
-            #ifdef _MSC_VER
-                    __asm {
-                            mov eax, 0x80000000
-                            cpuid
-                            mov eaxreg, eax
-                    }
+        // Then we read the ext. CPUID level 0x80000000
+        #ifdef _MSC_VER
+            __asm {
+                mov eax, 0x80000000
+                cpuid
+                mov eaxreg, eax
+            }
         #elif defined(__GNUC__) && defined(i386)
             // TODO: Linux
             eaxreg = 0;
@@ -291,30 +296,30 @@ System::init() {
             eaxreg = 0;
         #endif
 
-                // ...to check the max. supported extended CPUID level
-                maxSupportedExtendedLevel = eaxreg;
+        // ...to check the max. supported extended CPUID level
+        maxSupportedExtendedLevel = eaxreg;
 
-                // Then we switch to the specific processor vendors.
+        // Then we switch to the specific processor vendors.
         // Fill out _cpuArch based on this information.  It will
         // be overwritten by the next block of code on Windows,
         // but on Linux will stand.
-                switch (ebxreg) {
-                case 0x756E6547:        // GenuineIntel
+        switch (ebxreg) {
+        case 0x756E6547:        // GenuineIntel
             _cpuArch = "Intel Processor";
-                        break;
-                
-                case 0x68747541:        // AuthenticAMD
+            break;
+            
+        case 0x68747541:        // AuthenticAMD
             _cpuArch = "AMD Processor";
-                        break;
+            break;
 
-                case 0x69727943:        // CyrixInstead
+        case 0x69727943:        // CyrixInstead
             _cpuArch = "Cyrix Processor";
             break;
 
-                default:
+        default:
             _cpuArch = "Unknown Processor Vendor";
-                        break;
-                }
+            break;
+        }
     }
 
     #ifdef G3D_WIN32
@@ -386,45 +391,45 @@ System::init() {
 
     #elif defined(G3D_OSX)
 
-                //Operating System:
-                SInt32 macVersion;
-                Gestalt(gestaltSystemVersion, &macVersion);
-                
-                int major = 10;
-                int minor = (macVersion >> 4) & 0xF;
-                int revision = macVersion & 0xF;
-                
-                std::ostringstream ss;
-                ss << "OS X " << major << "." << minor << "." << revision;
-                _operatingSystem = ss.str();
-                
-                //Clock Cycle Timing Information:
-                Gestalt('pclk', &System::m_OSXCPUSpeed);
-                m_secondsPerNS = 1.0 / 1.0e9;
-                
-                //System Architecture:
-                SInt32 CPUtype;
-                Gestalt('cpuf', &CPUtype);
-                switch (CPUtype){
-                        case 0x0108:
-                                _cpuArch = "PPC G3";
-                                _cpuVendor = "Motorola";
-                        break;
-                        case 0x010C:
-                                _cpuArch = "PPC G4";
-                                _cpuVendor = "Motorola";
-                        break;
-                        case 0x0139:
-                                _cpuArch = "PPC G5";
-                                _cpuVendor = "IBM";
-                        break;
-                }
+        //Operating System:
+        SInt32 macVersion;
+        Gestalt(gestaltSystemVersion, &macVersion);
+        
+        int major = 10;
+        int minor = (macVersion >> 4) & 0xF;
+        int revision = macVersion & 0xF;
+        
+        std::ostringstream ss;
+        ss << "OS X " << major << "." << minor << "." << revision;
+        _operatingSystem = ss.str();
+        
+        //Clock Cycle Timing Information:
+        Gestalt('pclk', &System::m_OSXCPUSpeed);
+        m_secondsPerNS = 1.0 / 1.0e9;
+        
+        //System Architecture:
+        SInt32 CPUtype;
+        Gestalt('cpuf', &CPUtype);
+        switch (CPUtype){
+        case 0x0108:
+            _cpuArch = "PPC G3";
+            _cpuVendor = "Motorola";
+            break;
+        case 0x010C:
+            _cpuArch = "PPC G4";
+            _cpuVendor = "Motorola";
+            break;
+        case 0x0139:
+            _cpuArch = "PPC G5";
+            _cpuVendor = "IBM";
+            break;
+        }
             
-        #endif
+    #endif
 
     initTime();
 
-        getStandardProcessorExtensions();
+    getStandardProcessorExtensions();
 }
 
 
