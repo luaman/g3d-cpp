@@ -467,6 +467,17 @@ void testAABoxCulledBy() {
     const uint32 b00000111 = 7;
     const uint32 b00001000 = 8;
 
+    // Avoid unused variable warnings
+    (void)b00000000;
+    (void)b00000001;
+    (void)b00000010;
+    (void)b00000011;
+    (void)b00000100;
+    (void)b00000101;
+    (void)b00000110;
+    (void)b00000111;
+    (void)b00001000;
+
     printf("AABox::culledBy\n");
 
     Array<Plane> planes;

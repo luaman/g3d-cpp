@@ -203,7 +203,7 @@ public:
         XAlign              xalign  = XALIGN_LEFT,
         YAlign              yalign  = YALIGN_TOP,
         Spacing             spacing = PROPORTIONAL_SPACING) const {
-        draw3D(renderDevice, s, pos3D, size, color, outline, xalign, yalign, spacing);
+        return draw3D(renderDevice, s, pos3D, size, color, outline, xalign, yalign, spacing);
     }
 
     /**
