@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-04-13
+  @edited  2003-04-14
   */
 
 #include "GLG3D/glcalls.h"

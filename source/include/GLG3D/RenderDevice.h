@@ -60,6 +60,8 @@ public:
 
 
 /**
+ You must call RenderDevice::init() before using the RenderDevice.
+  
  Rendering interface that abstracts OpenGL.  OpenGL is a basically
  good API with some rough spots.  Three of these are addressed by
  RenderDevice.  First, OpenGL state management is both tricky and
@@ -877,7 +879,9 @@ private:
     /**
      Amount to multiply colors by due to gamma.
      */
-    double brightScale;
+    double                          brightScale;
+
+    bool                            _initialized;
 
     // Helpers for debug drawing routines
     void drawWireSphereSection(const Sphere& sphere, double cylRadius, const Color3& color, bool top, bool bottom);
@@ -950,6 +954,9 @@ public:
         int             alphaBits         = 8,
         int             depthBits         = 24,
         int             stencilBits       = 8);
+
+    /** Returns true after RenderDevice::init has been called. */
+    bool initialized() const;
 
 	/**
 	 Shuts down the system.  This should be the last call you make.

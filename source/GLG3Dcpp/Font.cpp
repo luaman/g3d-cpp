@@ -14,6 +14,9 @@ namespace G3D {
 
 Font::Font(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 
+    debugAssert(renderDevice);
+    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a Font");
+
     if (! fileExists(filename)) {
         debugAssertM(false, format("ERROR: Could not load font: %s", filename.c_str()));
         charWidth  = 0;

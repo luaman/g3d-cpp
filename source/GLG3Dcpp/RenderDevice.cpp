@@ -109,6 +109,7 @@ static double getTime() {
 
 RenderDevice::RenderDevice() {
 
+    _initialized = false;
     inPrimitive = false;
     _numTextureUnits = 0;
     emwaFrameRate = 0;
@@ -197,6 +198,8 @@ bool RenderDevice::init(
     int                 dalphaBits,
     int                 ddepthBits,
     int                 dstencilBits) {
+
+    debugAssert(! initialized());
 
     std::istringstream extensions;
 
@@ -529,7 +532,14 @@ bool RenderDevice::init(
 	inIndexedPrimitive = false;
 
     if (debugLog) debugLog->println("Done initializing RenderDevice.\n");
+
+    _initialized = true;
     return true;
+}
+
+
+bool RenderDevice::initialized() const {
+    return _initialized;
 }
 
 
@@ -777,6 +787,7 @@ void RenderDevice::setAmbientLightLevel(
 
 
 void RenderDevice::cleanup() {
+    debugAssert(initialized());
 	delete varSystem;
 	varSystem = NULL;
 

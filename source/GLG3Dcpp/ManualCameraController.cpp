@@ -16,7 +16,10 @@ namespace G3D {
 
 ManualCameraController::ManualCameraController(RenderDevice* device) :
     renderDevice(device) {
-    
+
+    debugAssert(renderDevice);
+    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a ManualCameraController");
+
     mCenterX    = renderDevice->getWidth() / 2;
     mCenterY    = renderDevice->getHeight() / 2;
 
