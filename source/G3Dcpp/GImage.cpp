@@ -1188,7 +1188,7 @@ void GImage::decodeJPEG(
 
             // Expand to three channels
             {
-                uint8* scan     = &(_byte[width * cinfo.output_scanline * 3]);
+                uint8* scan     = &(_byte[loc * 3]);
                 uint8* endScan  = scan + (width * 3);
                 uint8* t        = *temp;
 
@@ -1222,7 +1222,7 @@ void GImage::decodeJPEG(
 
             // Drop the 3rd channel
             {
-                uint8* scan     = &(_byte[width * cinfo.output_scanline * 3]);
+                uint8* scan     = &(_byte[loc * 3]);
                 uint8* endScan  = scan + width * 3;
                 uint8* t        = *temp;
 
