@@ -17,6 +17,7 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/LineSegment.h \
                        G3D/Log.h \
                        G3D/Matrix3.h \
+                       G3D/MeshAlg.h \
                        G3D/NetworkDevice.h \
                        G3D/PhysicsFrame.h \
                        G3D/Plane.h \
@@ -49,7 +50,10 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/stringutils.h \
                        G3D/vectorMath.h \
                        GLG3D/Camera.h \
-                       GLG3D/Font.h \
+                       GLG3D/CFont.h \
+                       GLG3D/GPUProgram.h \
+                       GLG3D/VertexProgram.h \
+                       GLG3D/PixelProgram.h \
                        GLG3D/LightingParameters.h \
                        GLG3D/ManualCameraController.h \
                        GLG3D/RenderDevice.h \

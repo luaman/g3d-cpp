@@ -275,7 +275,7 @@ static void brightenImage(uint8* byte, int n, double brighten, int skipAlpha) {
     // Make a lookup table
     uint8 bright[256];
     for (int i = 0; i < 256; ++i) {
-        bright[i] = clamp(0, iRound(i * brighten), 255);
+        bright[i] = iClamp(0, iRound(i * brighten), 255);
     }
 
     for (int i = 0; i < n; i += skipAlpha) {

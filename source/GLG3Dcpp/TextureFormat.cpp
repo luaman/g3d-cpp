@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-05-23
- @edited  2003-07-02
+ @edited  2003-09-24
  */
 
 #include "GLG3D/TextureFormat.h"
