@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::pi(), G3D::halfPi(), G3D::twoPi() added to replace defines [Corey]
      <LI> contrib/Q3Map
      <LI> Increased G3D::Draw::sphere performance using vertex arrays.
      <LI> G3D::Array::fastClear
