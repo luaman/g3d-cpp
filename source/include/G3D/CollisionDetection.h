@@ -8,7 +8,7 @@
   @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2003-12-22
+  @edited  2004-01-04
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -78,6 +78,16 @@ public:
         Array<Vector3>&         contactPoints,
         Vector3&                outNormalA = ignore);
     
+    /**
+     @cite Adapted from Jim Arvo's method in Graphics Gems
+     TODO: See also http://www.win.tue.nl/~gino/solid/gdc2001depth.pdf
+     */
+    static float penetrationDepthForFixedSphereFixedBox(
+        const Sphere&   sphere,
+        const Box&      box,
+        Array<Vector3>& contactPoints,
+        Vector3&        outNormal);
+                                                                 
     static float penetrationDepthForFixedSphereFixedPlane(
         const Sphere&           sphereA,
         const class Plane&      planeB,

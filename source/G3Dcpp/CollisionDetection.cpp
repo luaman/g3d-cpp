@@ -22,6 +22,218 @@ namespace G3D {
 
 Vector3	CollisionDetection::ignore;
 
+float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
+    const Sphere&   sphere,
+    const Box&      box,
+    Array<Vector3>& contactPoints,
+    Vector3&        outNormal) {
+
+    contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+
+    // In its local coordinate frame, the box measures
+    // 2 * halfExtent[a] along dimesion a.
+    Vector3 halfExtent(box.extent(0), box.extent(1), box.extent(2));
+    halfExtent *= 0.5;
+
+    CoordinateFrame boxFrame;
+    box.getLocalFrame(boxFrame);
+
+    // Transform the sphere to the box's coordinate frame.
+    Vector3 center = boxFrame.pointToObjectSpace(sphere.center);
+
+    // Find the square of the distance
+    // from the sphere to the box
+    float d = 0;
+
+    int    minAxis = -1;
+    float  minDist = inf;
+
+    // Distance along each axis from the closest side of the box
+    // to the sphere center.  Negative values are *inside* the box.
+    Vector3 distOutsideBox;
+
+    // Divide space up into the 27 regions corresponding
+    // to {+|-|0}X, {+|-|0}Y, {+|-|0}Z and classify the
+    // sphere center into one of them.
+    Vector3 centerRegion;
+
+    // In the edge collision case, the edge is between vertices
+    // (constant + variable) and (constant - variable).
+    Vector3 constant, variable;
+
+    int numNonZero = 0;
+
+    // Iterate over axes
+    for (int a = 0; a < 3; ++a) { 
+        // For each (box side), see which direction the sphere
+        // is outside the box (positive or negative).  Add the
+        // square of that distance to the total distance from 
+        // the box.
+
+        double distanceFromLow  = -halfExtent[a] - center[a];
+        double distanceFromHigh = center[a] - halfExtent[a];
+
+        if (abs(distanceFromLow) < abs(distanceFromHigh)) {
+            distOutsideBox[a] = distanceFromLow;
+        } else {
+            distOutsideBox[a] = distanceFromHigh;
+        }
+
+        if (distanceFromLow < 0.0) {
+            if (distanceFromHigh < 0.0) {
+                // Inside the box
+                centerRegion[a] = 0.0;
+                variable[a]     = 1.0;
+            } else {
+                // Off the high side
+                centerRegion[a] = 1.0;
+                constant[a]     = halfExtent[a];
+                ++numNonZero;
+            }
+        } else if (distanceFromHigh < 0.0) {
+            // Off the low side
+            centerRegion[a] = -1.0;
+            constant[a]     = -halfExtent[a];
+            ++numNonZero;
+        } else {
+            debugAssertM(false, 
+                "distanceFromLow and distanceFromHigh cannot both be positive");
+        }
+    }
+
+    // Squared distance between the outside of the box and the
+    // sphere center.
+    double d2 = Vector3::ZERO.max(distOutsideBox).squaredLength();
+
+    if (d2 > square(sphere.radius)) {
+        // There is no penetration because the distance is greater
+        // than the radius of the sphere.  This is the common case
+        // and we quickly exit.
+        return -1;
+    }
+
+    // We know there is some penetration but need to classify it.
+    //
+    // Examine the region that contains the center of the sphere. If
+    // there is exactly one non-zero axis, the collision is with a 
+    // plane.  If there are exactly two non-zero axes, the collision
+    // is with an edge.  If all three axes are non-zero, the collision is
+    // with a vertex.  If there are no non-zero axes, the center is inside
+    // the box.
+
+    double depth = -1;
+
+    switch (numNonZero) {
+    case 3: // Vertex collision
+        // The collision point is the vertex at constant, the normal
+        // is the vector from there to the sphere center.
+        outNormal = boxFrame.normalToWorldSpace(constant - center);
+        contactPoints.append(boxFrame.pointToWorldSpace(constant));
+        depth = sphere.radius - sqrt(d2);
+        break;
+
+    case 2: // Edge collision
+        {
+            // TODO: unwrapping the edge constructor and closest point
+            // code will probably make it faster.
+
+            // Determine the edge
+            Line line = Line::fromPointAndDirection(constant, variable);
+
+            // Penetration depth:
+            depth = sphere.radius - sqrt(d2);
+
+            // The contact point is the closes point to the sphere on the line 
+            Vector3 X = line.closestPoint(center);
+            outNormal = boxFrame.normalToWorldSpace(X - center).direction();
+            contactPoints.append(boxFrame.pointToWorldSpace(X));
+        }
+        break;
+
+    case 1: // Plane collision
+
+        // The plane normal is the centerRegion vector,
+        // so the sphere normal is the negative.  Take
+        // it to world space from box-space.
+
+        // Center region doesn't need to be normalized because
+        // it is known to contain only one non-zero value
+        // and that value is +/- 1.
+        outNormal = boxFrame.normalToWorldSpace(-centerRegion);
+
+        // Penetration depth:
+        depth = sphere.radius - sqrt(d2);
+
+        // Compute the contact point from the penetration depth
+        contactPoints.append(sphere.center + outNormal * (sphere.radius - depth));
+        break;
+
+    case 0: // Volume collision
+
+        // The sphere center is inside the box.  This is an easy case
+        // to handle.  Note that all axes of distOutsideBox must
+        // be negative.  
+    
+        // Arbitratily choose the sphere center as a contact point
+        contactPoints.append(sphere.center);
+
+        // Find the least-negative penetration axis.
+        //
+        // We could have computed this during the loop over the axes,
+        // but since volume collisions are rare (they only occur with
+        // large time steps), this case will seldom be executed and
+        // should not be optimized at the expense of the others.
+        if (distOutsideBox.x > distOutsideBox.y) {
+            if (distOutsideBox.x > distOutsideBox.z) {
+                // Smallest penetration on x-axis
+                // Chose normal based on which side we're closest to.
+                // Keep in mind that this is a normal to the sphere,
+                // so it is the inverse of the box normal.
+                if (center.x > 0) {
+                    outNormal = boxFrame.normalToWorldSpace(-Vector3::UNIT_X);
+                } else {
+                    outNormal = boxFrame.normalToWorldSpace(Vector3::UNIT_X);
+                }
+                depth = -distOutsideBox.x;
+            } else {
+                // Smallest penetration on z-axis
+                goto ZAXIS;
+            }
+        } else if (distOutsideBox.y > distOutsideBox.z) {
+            // Smallest penetration on y-axis
+            // Chose normal based on which side we're closest to.
+            // Keep in mind that this is a normal to the sphere,
+            // so it is the inverse of the box normal.
+            if (center.y > 0) {
+                outNormal = boxFrame.normalToWorldSpace(-Vector3::UNIT_Y);
+            } else {
+                outNormal = boxFrame.normalToWorldSpace(Vector3::UNIT_Y);
+            }
+            depth = -distOutsideBox.y;
+        } else {
+            // Smallest on z-axis
+ZAXIS:
+            // Chose normal based on which side we're closest to.
+            // Keep in mind that this is a normal to the sphere,
+            // so it is the inverse of the box normal.
+            if (center.z > 0) {
+                outNormal = boxFrame.normalToWorldSpace(-Vector3::UNIT_Z);
+            } else {
+                outNormal = boxFrame.normalToWorldSpace(Vector3::UNIT_Z);
+            }
+            depth = -distOutsideBox.z;
+        }
+        break;
+
+    default:
+        debugAssertM(false, "Fell through switch");
+        break;
+    }
+
+    return depth;
+}
+
+
 float CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
     const Sphere&           sphereA,
     const Sphere&           sphereB,
