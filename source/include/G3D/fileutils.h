@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2002-06-06
- @edited  2003-04-10
+ @edited  2003-04-29
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -35,9 +35,35 @@ void createDirectory(
     const std::string&          dir);
 
 /**
- Fully qualifies a filename.
+ Fully qualifies a filename.  The filename may contain wildcards,
+ in which case the wildcards will be preserved in the returned value.
  */
 std::string resolveFilename(const std::string& filename);
+
+/**
+ Appends all files matching filespec to the files array.  The names
+ will not contain paths unless includePath == true.  These may be
+ relative to the current directory unless the filespec is fully qualified
+ (can be done with resolveFilename).
+ Wildcards can only appear to the right of the last slash in filespec.
+ */
+void getFiles(
+	const std::string&			filespec,
+	Array<std::string>&			files,
+	bool						includePath    = false);
+
+/**
+ Appends all directories matching filespec to the files array. The names
+ will not contain paths unless includePath == true.  These may be
+ relative to the current directory unless the filespec is fully qualified
+ (can be done with resolveFilename).
+ Does not append special directories "." or "..".
+ */
+void getDirs(
+	const std::string&			filespec,
+	Array<std::string>&			files,
+	bool						includePath = false);
+
 
 /** Returns the length of the file, -1 if it does not exist */
 int64 fileLength(const std::string& filename);

@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2003-04-14
+ @edited  2003-04-29
  */
 
 #include "G3D/fileutils.h"
@@ -15,9 +15,13 @@
 #ifdef _MSC_VER
    // Needed for _getcwd
    #include <direct.h>
+   #include <io.h>
 #else
    #include <unistd.h>
+   #include <dir.h>
    #define _getcwd getcwd
+   #define _findfile findfile
+   #define _nextfile nextfile
 #endif
 #include <stdio.h>
 #include "G3D/BinaryOutput.h"
@@ -324,6 +328,84 @@ void parseFilename(
         path.append(f.substr(prev, cur - prev));
         ++cur;
     }
+}
+
+
+
+
+/**
+ Helper for getFileList and getDirectoryList.
+
+ @param wantFiles       If false, returns the directories, otherwise returns the files.
+ @param includePath     If true, the names include paths
+ */
+static void getFileOrDirList(
+	const std::string&		filespec,
+	Array<std::string>&		files,
+	bool					wantFiles,
+	bool					includePath) {
+
+	int test = wantFiles ? true : false;
+
+	std::string prefix = "";
+
+	if (includePath) {
+		// Find the place where the path ends and the file-spec begins
+		int i = filespec.rfind('/');
+		int j = filespec.rfind('\\');
+
+		// Drive letters on Windows can separate a path
+		int k = filespec.rfind(':');
+
+		if ((j != std::string::npos) && (j > i) ||
+			(i == std::string::npos)) {
+			i = j;
+		}
+
+		if ((k != std::string::npos) && (k > i) ||
+			(i == std::string::npos)) {
+			i = k;
+		}
+
+		// If there is a path, pull it off
+		if (i != std::string::npos) {
+			prefix = filespec.substr(0, i + 1);
+		}
+	}
+
+	struct _finddata_t fileinfo;
+
+	long handle = _findfirst(filespec.c_str(), &fileinfo);
+	int result = handle;
+
+	while (result != -1) {
+		if ((((fileinfo.attrib & _A_SUBDIR) == 0) == test) && 
+		     strcmp(fileinfo.name, ".") &&
+			 strcmp(fileinfo.name, "..")) {
+
+			files.append(prefix + fileinfo.name);
+		}
+	
+		result = _findnext(handle, &fileinfo);
+	}
+}
+
+
+void getFiles(
+	const std::string&			filespec,
+	Array<std::string>&			files,
+	bool						includePath) {
+
+	getFileOrDirList(filespec, files, true, includePath);
+}
+
+
+void getDirs(
+	const std::string&			filespec,
+	Array<std::string>&			files,
+	bool						includePath) {
+
+	getFileOrDirList(filespec, files, false, includePath);
 }
 
 }

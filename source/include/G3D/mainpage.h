@@ -80,7 +80,7 @@
         G3D::copyFile, G3D::writeStringToFile, G3D::prompt, G3D::fileLength,
         G3D::createTempFile, G3D::NetworkDevice, G3D::G3DEndian,
         G3D::NetAddress, G3D::ReliableConduit, G3D::LightweightConduit,
-        G3D::NetListener, G3D::System, G3D::resolveFilename</BLOCKQUOTE>
+        G3D::NetListener, G3D::System, G3D::resolveFilename, G3D::getFiles, G3D::getDirs</BLOCKQUOTE>
      </UL>
 
      Link against glg3d.lib and \#include "glg3d.h" to gain access to:
@@ -507,6 +507,9 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> G3D::getFiles
+     <LI> G3D::getDirs
+     <LI> Added data/image/meter.jpg, a meter stick texture convenient for testing
      <LI> System::machineEndian
      <LI> Added sansserif, news, and terminal fonts based on Bitstream's <A HREF="http://www.gnome.org/fonts/">free fonts</A>
      <LI> RenderDevice::numTextureUnits
