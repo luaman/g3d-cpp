@@ -1,14 +1,12 @@
 #include "Model.h"
 
 void PositionOverride::beforePrimitive(RenderDevice* renderDevice) {
-    Shader::beforePrimitive(renderDevice);
     renderDevice->setObjectToWorldMatrix(cframe);
     material.configure(renderDevice);
 }
 
 
 void PositionOverride::afterPrimitive(RenderDevice* renderDevice) {
-    Shader::afterPrimitive(renderDevice);
 }
 
 
@@ -20,7 +18,7 @@ Helicopter::Helicopter(const std::string& dataDir) {
 
     body  = bodyModel->pose();
     rotor = rotorModel->pose();
-    positionShader = new PositionOverride();
+    positionShader = PositionOverrideRef(new PositionOverride());
 }
 
 
@@ -34,6 +32,7 @@ void Helicopter::render(
     const CoordinateFrame&  cframe, 
     const Pose&             pose, 
     const GMaterial&        material) const {
+
     rd->setShader(positionShader);
 
     positionShader->material = material;
