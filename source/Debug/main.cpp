@@ -14,10 +14,8 @@
 
 #include <G3DAll.h>
 
-#include "../contrib/Image/Image.h"
-
-#if G3D_VER < 60400
-    #error Requires G3D 6.04
+#if G3D_VER < 60500
+    #error Requires G3D 6.05
 #endif
 
 
@@ -148,7 +146,7 @@ dwDamageMask:			0
     settings.window.stencilBits = 8;
     settings.window.alphaBits = 0;
     settings.window.rgbBits = 8;
-    settings.window.fsaaSamples = 1;
+    settings.window.fsaaSamples = 4;
     App(settings).run();
     return 0;
 }

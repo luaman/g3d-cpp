@@ -248,6 +248,7 @@ void Win32Window::init(HWND hwnd) {
         iAttributes.append(WGL_STEREO_EXT,         settings.stereo);
         iAttributes.append(0, 0); // end sentinel
         
+        // http://www.nvidia.com/dev_content/nvopenglspecs/WGL_ARB_pixel_format.txt
         uint32 numFormats;
         int valid = wglChoosePixelFormatARB(
             _hDC,
@@ -257,10 +258,13 @@ void Win32Window::init(HWND hwnd) {
             &pixelFormat,
             &numFormats);
 
+        // "If the function succeeds, the return value is TRUE. If the function
+        // fails the return value is FALSE. To get extended error information,
+        // call GetLastError. If no matching formats are found then nNumFormats
+        // is set to zero and the function returns TRUE."  -- I think this means
+        // that when numFormats == 0 some reasonable format is still selected.
 
-        // TODO vejita: On Morgan's NVIDIA card, numFormats is always zero!
-        // I removed the check that sets pixelFormat to 0 when that is the case.
-
+ 
         if (! valid) {
             // No valid format
             pixelFormat = 0;
