@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-05-22
+ @edited  2003-07-30
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -56,7 +56,6 @@ extern PFNGLCLIENTACTIVETEXTUREARBPROC     glClientActiveTextureARB;
 extern PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV;
 extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC    glCompressedTexImage2DARB;
 extern PFNGLGETCOMPRESSEDTEXIMAGEARBPROC   glGetCompressedTexImageARB;
-extern PFNGLISPROGRAMARBPROC               glIsProgram;
 
 extern PFNGLVERTEXATTRIBPOINTERARBPROC     glVertexAttribPointerARB;
 extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC glEnableVertexAttribArrayARB;

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-06-13
+ @edited  2003-07-01
  */
 
 
@@ -59,7 +59,6 @@ PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NU
 PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
 PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB     = NULL;
 PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB   = NULL;
-PFNGLISPROGRAMARBPROC                       glIsProgramARB                  = NULL;
 
 PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
@@ -373,8 +372,7 @@ bool RenderDevice::init(
     {
         // Parse the extensions into the supported set
         std::string s;
-        while(extensions >> s)
-        {
+        while (extensions >> s) {
             extensionSet.insert(s);
         }
 
@@ -384,24 +382,31 @@ bool RenderDevice::init(
         _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
     }
 
-
+    // Var must be initialized after extensions are loaded
 	varSystem = new VARSystem(this, varVideoMemory, debugLog);
 
     if (debugLog) {
         debugLog->printf("Operating System: %s\n", System::operatingSystem().c_str());
         debugLog->printf("Processor Architecture: %s\n\n", System::cpuArchitecture().c_str());
-        std::string s = getDriverVersion();
 
         debugLog->printf(
-            "GL Vendor:     %s\n"
-            "GL Renderer:   %s\n"
-            "GL Version:    %s\n",
+            "GL Vendor:      %s\n",
+            glGetString(GL_VENDOR));
+
+        debugLog->printf(
+            "GL Renderer:     %s\n",
+            glGetString(GL_RENDERER));
+
+        debugLog->printf(
+            "GL Version:     %s\n",
+            glGetString(GL_VERSION));
+
+        debugLog->printf(
             "Driver version: %s\n\n",
-            "GL extensions: \"%s\"\n",
-            glGetString(GL_VENDOR),
-            glGetString(GL_RENDERER),
-            glGetString(GL_VERSION),
-            s.c_str(),
+            getDriverVersion().c_str());
+
+        debugLog->printf(
+            "GL extensions: \"%s\"\n\n",
             extensions.str().c_str());
     }
  
@@ -410,6 +415,7 @@ bool RenderDevice::init(
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
     
     if (debugLog) {
+    debugLog->section("Video Status");
 
     debugLog->printf(
              "Capability    Minimum   Desired   Received  Ok?\n"
@@ -428,7 +434,6 @@ bool RenderDevice::init(
              "Mode                 %10s             %s\n\n"
 
              "* GL EXTENSIONS\n"
-             "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
@@ -496,7 +501,6 @@ bool RenderDevice::init(
              "glProgramStringARB", isOk(glProgramStringARB),
              "glProgramEnvParameter4fARB", isOk(glProgramEnvParameter4fARB),
              "glProgramLocalParameter4fARB", isOk(glProgramLocalParameter4fARB),
-             "glIsProgramARB", isOk(glIsProgramARB),
              "glPointParameterfARB", isOk(glPointParameterfARB),
              "glPointParameterfvARB", isOk(glPointParameterfvARB),
              "glMultiDrawArraysEXT", isOk(glMultiDrawArraysEXT),
