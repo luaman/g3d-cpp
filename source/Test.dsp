@@ -90,6 +90,15 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=.\Test\main.cpp
+
+!IF  "$(CFG)" == "Test - Win32 Release"
+
+# ADD CPP /FAs
+
+!ELSEIF  "$(CFG)" == "Test - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
