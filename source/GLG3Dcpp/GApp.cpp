@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-04-25
+ @edited  2004-04-26
  */
 
 #include "G3D/platform.h"
@@ -53,6 +53,9 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
     }
 
     _window = renderDevice->window();
+    alwaysAssert(! _window->requiresMainLoop(),
+        "GApp cannot be used with a GWindow that requires "
+        "control of the main loop.  Use another GWindow (like SDLWindow).");
 
     if (settings.useNetwork) {
         networkDevice = new NetworkDevice();
