@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-04-25
+ @edited  2004-04-27
  */
 
 
@@ -312,12 +312,14 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     debugAssertGLOk();
 
     if (debugLog) {
-        debugLog->printf("numTextureCoords          = %d\n"
-                         "numTextures               = %d\n"
-                         "numTextureUnits           = %d\n"
-                         "GL_MAX_TEXTURE_UNITS_ARB  = %d\n",
+        debugLog->printf("numTextureCoords                      = %d\n"
+                         "numTextures                           = %d\n"
+                         "numTextureUnits                       = %d\n"
+                         "glGet(GL_MAX_TEXTURE_UNITS_ARB)       = %d\n"
+                         "glGet(GL_MAX_TEXTURE_IMAGE_UNITS_ARB) = %d\n",
                          _numTextureCoords, _numTextures, _numTextureUnits,
-                         glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
+                         glGetInteger(GL_MAX_TEXTURE_UNITS_ARB),
+                         glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS_ARB));
     }
 
     if (debugLog) {debugLog->println("Setting video mode");}

@@ -170,8 +170,31 @@ public:
 
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/shader_objects.txt
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_shader.txt
+
+  <B>BETA API</B>
+  This API is subject to change.
  */
 class ShaderGroup : public ReferenceCountedObject {
+public:
+
+    class UniformDeclaration {
+    public:
+        /** Name of the variable.  May include [] and . (e.g.
+            "foo[1].normal")*/
+        std::string         name;
+
+        /** OpenGL type of the variable (e.g. GL_INT) */
+        GLenum              type;
+
+        /** Unknown... appears to always be 1 */
+        int                 size;
+
+        /**
+         Index of the texture unit in which this value
+         is stored.  -1 for uniforms that are not textures. */  
+        int                 textureUnit;
+    };
+
 protected:
     static std::string      ignore;
 
@@ -197,14 +220,10 @@ protected:
         program object.  Called from the constructor */
     void computeUniformArray();
 
-    class UniformDeclaration {
-    public:
-        std::string         name;
-        GLenum              type;
-        int                 size;
-    };
-
     Array<UniformDeclaration>   uniformArray;
+
+    /** Returns true for types that are textures (e.g. GL_TEXTURE_2D) */
+    static bool isSamplerType(GLenum e);
 
 public:
 
@@ -299,6 +318,17 @@ public:
 
     inline PixelShaderRef pixelShader() const {
         return _pixelShader;
+    }
+
+    int numArgs() const {
+        return uniformArray.size();
+    }
+
+    /** Returns information about one of the arguments expected
+        by this ShaderGroup.  There are ShaderGroup::numArgs()
+        total.*/
+    const UniformDeclaration& arg(int i) const {
+        return uniformArray[i];
     }
 };
 

@@ -154,6 +154,16 @@ ShaderGroup::ShaderGroup(
 }
 
 
+bool ShaderGroup::isSamplerType(GLenum e) {
+    return
+       (e == GL_TEXTURE_1D) ||
+       (e == GL_TEXTURE_2D) ||
+       (e == GL_TEXTURE_3D) ||
+       (e == GL_TEXTURE_RECTANGLE_EXT) ||
+       (e == GL_TEXTURE_CUBE_MAP_ARB);
+}
+
+
 void ShaderGroup::computeUniformArray() {
     uniformArray.clear();
 
@@ -168,6 +178,7 @@ void ShaderGroup::computeUniformArray() {
 
     GLcharARB* name = (GLcharARB *) malloc(maxLength * sizeof(GLcharARB));
     
+    int lastTextureUnit = -1;
     // Loop over glGetActiveUniformARB and store the results away.
     for (int i = 0; i < uniformCount; ++i) {
 
@@ -180,6 +191,13 @@ void ShaderGroup::computeUniformArray() {
         uniformArray[i].name = name;
         uniformArray[i].size = size;
         uniformArray[i].type = type;
+
+        if (isSamplerType(type)) {
+            ++lastTextureUnit;
+            uniformArray[i].textureUnit = lastTextureUnit;
+        } else {
+            uniformArray[i].textureUnit = -1;
+        }
     }
 
     free(name);
@@ -236,30 +254,11 @@ GLenum ShaderGroup::canonicalType(GLenum e) {
 
 ////////////////////////////////////////////////////////////////////////
 
-
 void ShaderGroup::ArgList::set(const std::string& var, const TextureRef& val) {
-
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
-
-	switch (val->getDimension()) {
-	case Texture::DIM_2D:
-        // TODO
-//	    arg.type = SAMPLER2D;
-		break;
-
-	case Texture::DIM_2D_RECT:
-        // TODO
-//	    arg.type = SAMPLERRECT;
-		break;
-
-	case Texture::DIM_CUBE_MAP:
-        // TODO
-//	    arg.type = SAMPLERCUBE;
-		break;
-	}
-
+    arg.type    = val->getOpenGLTextureTarget();
     arg.texture = val;
     argTable.set(var, arg);
 
