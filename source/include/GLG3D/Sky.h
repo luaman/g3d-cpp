@@ -25,22 +25,25 @@ typedef ReferenceCountedPointer<class Sky> SkyRef;
  
  Copy the images from data/sky to your project directory to use this
  class or provide your own.
+
+ If you already have a preloaded CubeMap texture, use Sky::fromCubeMap.
    
  Example:
 
   <PRE>
-    Sky sky(renderDevice);
+    // Showing the default filename mask for clarity
+    SkyRef sky = Sky::fromFile(renderDevice, "data/sky/", "plainsky/null_plainsky512_*.jpg");
     LightingParameters lighting(toSeconds(9, 00, 00, AM));
 
     ...
 
     // Rendering loop
-        sky.render(lighting);
+        sky->render(lighting);
         
         // Draw the rest of the scene
         ...
 
-        sky.renderLensFlare(lighting);
+        sky->renderLensFlare(lighting);
         ...
   </PRE>
 
