@@ -797,7 +797,6 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
-    /*
     testRCP();
     printf("  passed\n");
     testFloat();
@@ -816,16 +815,14 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
     testBox();    
     printf("  passed\n");
-    */
     testCollision();    
     printf("  passed\n");
-    /*
     testColor3uint8Array();
     printf("  passed\n");
     testglFormatOf();
     printf("  passed\n");
     testSwizzle();
-*/
+
     printf("\nAll tests succeeded.\n");
 	
     while(true);

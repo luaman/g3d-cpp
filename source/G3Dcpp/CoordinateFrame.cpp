@@ -49,7 +49,7 @@ Plane CoordinateFrame::toObjectSpace(const Plane& p) const {
     p.getEquation(N, d);
     P = N * d;
     P = pointToObjectSpace(P);
-    N = normalToObjectSpace(P);
+    N = normalToObjectSpace(N);
     return Plane(N, P);
 }
 
@@ -60,7 +60,7 @@ Plane CoordinateFrame::toWorldSpace(const Plane& p) const {
     p.getEquation(N, d);
     P = N * d;
     P = pointToWorldSpace(P);
-    N = normalToWorldSpace(P);
+    N = normalToWorldSpace(N);
     return Plane(N, P);
 }
 
