@@ -11,6 +11,7 @@
 #include "G3D/platform.h"
 #ifdef G3D_WIN32
     #include <windows.h>
+    #include <math.h>
     #define vsnprintf _vsnprintf
     #define NEWLINE "\r\n"
 #else
@@ -37,8 +38,10 @@ std::string __cdecl format(const char* fmt,...) {
     return result;
 }
 
-#if defined(G3D_WIN32) &&  (_MSC_VER < 1300)
-// MSVC 6 uses the pre-C99 vsnprintf, which has different behavior
+#if defined(G3D_WIN32) && (_MSC_VER >= 1300)
+// Both MSVC6 and 7 seem to use the non-standard vsnprintf
+// so we are using vscprintf to determine buffer size, however
+// only MSVC7 headers include vscprintf for some reason.
 std::string vformat(const char *fmt, va_list argPtr) {
     // We draw the line at a 1MB string.
     const int maxSize = 1000000;
@@ -49,36 +52,76 @@ std::string vformat(const char *fmt, va_list argPtr) {
     const int bufSize = 161;
 	char stackBuffer[bufSize];
 
-    int attemptedSize = bufSize - 1;
+    int actualSize = _vscprintf(fmt, argPtr) + 1;
 
-    int numChars = vsnprintf(stackBuffer, attemptedSize, fmt, argPtr);
+    if (actualSize > bufSize) {
 
-    if (numChars >= 0) {
-        // Got it on the first try.
+        // Now use the heap.
+        char* heapBuffer = NULL;
+
+        if (actualSize < maxSize) {
+
+            heapBuffer = (char*)malloc(maxSize + 1);
+            vsnprintf(heapBuffer, maxSize, fmt, argPtr);
+            heapBuffer[maxSize] = '\0';
+        } else {
+            heapBuffer = (char*)malloc(actualSize);
+            vsprintf(heapBuffer, fmt, argPtr);            
+        }
+
+        std::string formattedString(heapBuffer);
+        free(heapBuffer);
+        return formattedString;
+    } else {
+
+        vsprintf(stackBuffer, fmt, argPtr);
         return std::string(stackBuffer);
     }
+}
 
-    // Now use the heap.
-    char* heapBuffer = NULL;
+#elif defined(G3D_WIN32) && (_MSC_VER < 1300)
 
-    while ((numChars == -1) && (attemptedSize < maxSize)) {
-        // Try a bigger size
-        attemptedSize *= 2;
-        heapBuffer = (char*)realloc(heapBuffer, attemptedSize + 1);
-        numChars = vsnprintf(heapBuffer, attemptedSize, fmt, argPtr);
+std::string vformat(const char *fmt, va_list argPtr) {
+    // We draw the line at a 1MB string.
+    const int maxSize = 1000000;
+
+    // If the string is less than 161 characters,
+    // allocate it on the stack because this saves
+    // the malloc/free time.
+    const int bufSize = 161;
+	char stackBuffer[bufSize];
+
+    int actualWritten = vsnprintf(stackBuffer, bufSize, fmt, argPtr);
+
+    // Not a big enough buffer, bufSize characters written
+    if (actualWritten == -1) {
+
+        int heapSize = 512;
+        double powSize = 1.0;
+        char* heapBuffer = (char*)malloc(heapSize);
+        
+        while ((vsnprintf(heapBuffer, heapSize, fmt, argPtr) == -1) &&
+            (heapSize  < maxSize)) {
+
+            heapSize *= ::pow((double)2.0, powSize++);
+            heapBuffer = (char*)realloc(heapBuffer, heapSize);
+        }
+
+        heapBuffer[heapSize-1] = '\0';
+
+        std::string heapString(heapBuffer);
+        free(heapBuffer);
+
+        return heapString;
+    } else {
+
+        return std::string(stackBuffer);
     }
-
-    std::string result(heapBuffer);
-
-    free(heapBuffer);
-
-    return result;
-
 }
 
 #else
 
-// glibc 2.1 and MSVC 7 have been updated to the C99 standard
+// glibc 2.1 has been updated to the C99 standard
 std::string vformat(const char* fmt, va_list argPtr) {
     // If the string is less than 161 characters,
     // allocate it on the stack because this saves
