@@ -32,7 +32,7 @@
 #endif
 
 #include "glh/glh_genext.h"
-#include "GL/glu.h"
+#include "GL/glut.h"
 #include "GL/glext.h"
 #include "GL/wglext.h"
 
