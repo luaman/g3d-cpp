@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2004-02-28
+ @edited  2004-03-02
  */
 
 #include "G3D/debugAssert.h"
@@ -245,7 +245,9 @@ void _releaseInputGrab_() {
         ClipCursor(NULL);
         
     #elif defined(G3D_LINUX)
+        printf("X11Display = 0x%x\n", X11Display);
         if (X11Display != NULL) {
+            printf("Releasing input\n");
             XUngrabPointer(X11Display, CurrentTime);
             XUngrabKeyboard(X11Display, CurrentTime);
             XSync(X11Display, false);           

@@ -17,7 +17,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-08-26
-  @edited  2004-02-28
+  @edited  2004-01-02
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -71,15 +71,16 @@
 
     #ifndef G3D_OSX
         #ifdef _MSC_VER
-            #define debugBreak() G3D::_internal::_releaseInputGrab_(); _asm { int 3 } G3D::_internal::_restoreInputGrab_();
+            #define rawBreak()  _asm { int 3 }
         #else
-            #define debugBreak() G3D::_internal::_releaseInputGrab_(); __asm__ __volatile__ ( "int $3" ); G3D::_internal::_restoreInputGrab_(); 
+            #define rawBreak() __asm__ __volatile__ ( "int $3" ); 
         #endif
     #else
         #define debugBreak() assert(false); /* No breakpoints on OS X yet */
     #endif
 
 
+    #define debugBreak() G3D::_internal::_releaseInputGrab_(); rawBreak(); G3D::_internal::_restoreInputGrab_();
     #define debugAssert(exp) debugAssertM(exp, "Debug assertion failure")
 
     #ifdef G3D_DEBUG_NOGUI
@@ -91,9 +92,11 @@
     #define debugAssertM(exp, message) { \
         static bool __debugAssertIgnoreAlways__ = false; \
         if (!__debugAssertIgnoreAlways__ && !(exp)) { \
+            G3D::_internal::_releaseInputGrab_(); \
             if (G3D::_internal::_handleDebugAssert_(#exp, message, __FILE__, __LINE__, __debugAssertIgnoreAlways__, __debugPromptShowDialog__)) { \
-                 debugBreak(); \
+                 rawBreak(); \
             } \
+            G3D::_internal::_restoreInputGrab_(); \
         } \
     }
 
@@ -114,6 +117,7 @@
     // But keep the always assertions
     #define alwaysAssertM(exp, message) { \
         if (!(exp)) { \
+            G3D::_internal::_releaseInputGrab_(); \
             G3D::_internal::_handleErrorCheck_(#exp, message, __FILE__, __LINE__, __debugPromptShowDialog__); \
             exit(-1); \
         } \
