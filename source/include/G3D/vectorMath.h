@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created: 2001-06-02
-  @edited:  2004-01-09
+  @edited:  2004-01-15
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -126,19 +126,19 @@ inline Vector4 lerp(const Vector4& v1, const Vector4& v2, float f) {
     return v1.lerp(v2, f);
 }
 
-
 inline Color3 lerp(const Color3& v1, const Color3& v2, float f) {
-
     return v1.lerp(v2, f);
-
 }
-
 
 inline Vector3 cross(const Vector3& v1, const Vector3& v2) {
     return v1.cross(v2);
 }
 
-inline float determinant(const Matrix3& m) {
+inline double determinant(const Matrix3& m) {
+    return m.determinant();
+}
+
+inline double determinant(const Matrix4& m) {
     return m.determinant();
 }
 
@@ -152,6 +152,34 @@ inline Vector3 min(const Vector3& v1, const Vector3& v2) {
 
 inline Vector4 min(const Vector4& v1, const Vector4& v2) {
     return v1.min(v2);
+}
+
+inline Color3 min(const Color3& v1, const Color3& v2) {
+    return v1.min(v2);
+}
+
+inline Color4 min(const Color4& v1, const Color4& v2) {
+    return v1.min(v2);
+}
+
+inline Vector2 max(const Vector2& v1, const Vector2& v2) {
+    return v1.max(v2);
+}
+
+inline Vector3 max(const Vector3& v1, const Vector3& v2) {
+    return v1.max(v2);
+}
+
+inline Vector4 max(const Vector4& v1, const Vector4& v2) {
+    return v1.max(v2);
+}
+
+inline Color3 max(const Color3& v1, const Color3& v2) {
+    return v1.max(v2);
+}
+
+inline Color4 max(const Color4& v1, const Color4& v2) {
+    return v1.max(v2);
 }
 
 inline Vector2 sign(const Vector2& v) {

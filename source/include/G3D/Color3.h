@@ -9,7 +9,7 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-06-02
- @edited  2004-01-09
+ @edited  2004-01-015
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -110,6 +110,13 @@ public:
     Color3 unitCross (const Color3& rkVector) const;
 
 
+    inline Color3 max(const Color3& other) const {
+        return Color3(G3D::max(r, other.r), G3D::max(g, other.g), G3D::max(b, other.b));
+    }
+
+    inline Color3 min(const Color3& other) const {
+        return Color3(G3D::min(r, other.r), G3D::min(g, other.g), G3D::min(b, other.b));
+    }
 
 	inline Color3 lerp(const Color3& other, double a) const {
         return (*this) + (other - *this) * a; 

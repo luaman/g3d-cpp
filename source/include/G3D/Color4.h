@@ -106,6 +106,13 @@ public:
 
     std::string toString() const;
 
+    inline Color4 max(const Color4& other) const {
+        return Color4(G3D::max(r, other.r), G3D::max(g, other.g), G3D::max(b, other.b), G3D::max(a, other.a));
+    }
+
+    inline Color4 min(const Color4& other) const {
+        return Color4(G3D::min(r, other.r), G3D::min(g, other.g), G3D::min(b, other.b), G3D::min(a, other.a));
+    }
 
     // special colors
     static const Color4 ZERO;
