@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-04-30
+ @edited  2005-01-30
  */
 
 #include "G3D/platform.h"

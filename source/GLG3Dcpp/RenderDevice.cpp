@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2005-01-06
+ @edited  2005-01-30
  */
 
 
@@ -146,6 +146,7 @@ GWindow* RenderDevice::window() const {
 bool RenderDevice::init(GWindow* window, Log* log) {
     debugAssert(! initialized());
 
+    _swapBuffersAutomatically = true;
     _window = window;
 
     GWindowSettings settings;
@@ -1121,6 +1122,11 @@ uint RenderDevice::numTextureCoords() const {
 
 
 void RenderDevice::beginFrame() {
+    if (swapGLBuffersPending) {
+        _window->swapGLBuffers();
+        swapGLBuffersPending = false;
+    }
+
     ++beginEndFrame;
     triangleCount = 0;
     debugAssertM(beginEndFrame == 1, "Mismatched calls to beginFrame/endFrame");
@@ -1128,16 +1134,32 @@ void RenderDevice::beginFrame() {
 }
 
 
-void RenderDevice::endFrame(bool pageFlip) {
+void RenderDevice::setSwapBuffersAutomatically(bool b) {
+    if (b == _swapBuffersAutomatically) {
+        // Setting to current state; nothing to do.
+        return;
+    }
+
+    if (swapGLBuffersPending) {
+        // Process the pending swap buffers call
+        _window->swapGLBuffers();
+        swapGLBuffersPending = false;
+    }
+
+    _swapBuffersAutomatically = b;
+}
+
+
+void RenderDevice::endFrame() {
     --beginEndFrame;
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
 
     popState();
-    debugAssertM(stateStack.size() == 0, "Missing RenderDevice::popState or RenderDevice::pop2D.");
 
-    if (pageFlip) {
-        _window->swapGLBuffers();
-    }
+    // Schedule a swap buffer iff we are handling them automatically.
+    swapGLBuffersPending = _swapBuffersAutomatically;
+
+    debugAssertM(stateStack.size() == 0, "Missing RenderDevice::popState or RenderDevice::pop2D.");
 
     double now = System::getTick();
     double dt = now - lastTime;

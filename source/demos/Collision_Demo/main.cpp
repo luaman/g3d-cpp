@@ -72,7 +72,7 @@ Demo::~Demo() {
 }
 
 void Demo::doSimulation(SimTime timeStep) {
-    if (simStartTime + 15 < System::time()) {
+    if (simStartTime + 10 < System::time()) {
         scene.clear();
         buildScene();
         simStartTime = System::time();

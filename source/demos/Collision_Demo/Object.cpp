@@ -168,6 +168,8 @@ GameTime BoxObject::timeUntilCollisionWithMovingSphere(
 
 void BoxObject::render() const {
 
+    // TODO: switch to using VAR to radically improve performance.
+
     // Draw the six faces
     Vector3 v0, v1, v2, v3;
 

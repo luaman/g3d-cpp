@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2005-01-06
+  @edited  2005-01-30
 
   Copyright 2001-2005, Morgan McGuire
 */
@@ -206,6 +206,13 @@ private:
      */
     int                         beginEndFrame;
 
+    bool                        _swapBuffersAutomatically;
+
+    /** True after endFrame until swapGLBuffers is invoked.
+        Used to correctly manage value changes of _swapBuffersAutomatically
+        so that a frame not intended to be seen is never rendered.*/
+    bool                        swapGLBuffersPending;
+
     /** Sets the texture matrix without checking to see if it needs to
         be changed.*/
     void forceSetTextureMatrix(int unit, const double* m);
@@ -340,10 +347,31 @@ public:
     void beginFrame();
 
     /**
-     Call to end the current frame.  If pageFlip is true (Default), swaps the
-     back and front buffers.
+     Call to end the current frame and schedules a GWindow::swapGLBuffers call
+     to occur some time before beginFrame.  Because that swapGLBuffers might not
+     actually occur until the next beginFrame, there is up to one frame of latency
+     on the image displayed.  This allows the CPU to execute while 
+     the GPU is still rendering, providing net higher performance.
      */
-    void endFrame(bool pageFlip = true);
+    void endFrame();
+
+    inline bool swapBuffersAutomatically() const {
+        return _swapBuffersAutomatically;
+    }
+
+    /** 
+        By default, GWindow::swapGLBuffers is invoked automatically
+        between RenderDevice::endFrame and the following RenderDevice::beginFrame
+        to update the front buffer (what the user sees) from the back buffer (where
+        rendering commands occur).  You may want to suppress this behavior, for example,
+        in order
+        to render to the back buffer and capture the result in a texture.
+    
+        The state of swapBuffersAutomatically is <B>not</B> stored by
+        RenderDevice::pushState because it is usually invoked outside
+        of RenderDevice::beginFrame / endFrame. 
+    */
+    void setSwapBuffersAutomatically(bool b);
 
     /**
      Returns an estimate of the number of frames rendered per second.

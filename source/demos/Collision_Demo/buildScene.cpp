@@ -107,10 +107,8 @@ void Demo::insertRamps() {
     }     
 }
 
-void Demo::buildScene() {
-    //    scene.insertStatic(new SphereObject(Sphere(Vector3(-8, 1, 4), 1), (Color3::red() + Color3::white()) / 2));
-    
-    scene.insertStatic(new CapsuleObject(Capsule(Vector3(-9, 1, 4), Vector3(-9, 4, 4), 1), (Color3::red() + Color3::white()) / 2));
+void Demo::buildScene() {    
+//    scene.insertStatic(new CapsuleObject(Capsule(Vector3(-9, 1, 4), Vector3(-9, 4, 4), 1), (Color3::red() + Color3::white()) / 2));
 
     scene.insertStatic(new BoxObject(Box(Vector3(6, 0, 0), Vector3(7, 1, 8)), (Color3::green() + Color3::white()) / 2));
     scene.insertStatic(new GeneralObject(Model::getModel("cow.ifs"), CoordinateFrame(Vector3(-7,1.7,4)), Color3::yellow()));
@@ -120,15 +118,15 @@ void Demo::buildScene() {
     insertTray();
     insertRamps();
     insertSpiralSlide();
-    insertRollingContactSpheres();
-    insertRestingContactSpheres();
+    //insertRollingContactSpheres();
+    //insertRestingContactSpheres();
    
-    //scene.insertDynamic(new SimSphere(Sphere(Vector3(-4, 3, 4), .25), Vector3(-1, 0, 0), Color3::blue()));
-    
-    // Spheres
-    
+    // Spheres    
     int i;
-    for (i = 0; i < 10; ++i) {
+    scene.insertDynamic(new SimSphere(Sphere(Vector3(0, 7, 0), .5), 
+        Vector3::random() * 10, 
+        Color3::wheelRandom()));
+    for (i = 0; i < 5; ++i) {
         scene.insertDynamic(new SimSphere(Sphere(Vector3(0, 7, 0), .25), 
             Vector3::random() * 10, 
             Color3::wheelRandom()));
