@@ -64,8 +64,10 @@ public:
     /** @deprecated Use Matrix4::zero() */
     static const Matrix4 ZERO;
 
-    const float* operator[](int r) const;
-    float* operator[](int r);
+    float* operator[] (int r);
+    const float* operator[] (int r) const;
+    operator float* ();
+    operator const float* () const;
 
     Matrix4 operator*(const Matrix4& other) const;
 

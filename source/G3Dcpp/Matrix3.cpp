@@ -135,13 +135,27 @@ void Matrix3::serialize(BinaryOutput& b) const {
 }
 
 //----------------------------------------------------------------------------
-float* Matrix3::operator[] (int iRow) const {
+float* Matrix3::operator[] (int iRow) {
+    debugAssert(iRow >= 0);
+    debugAssert(iRow < 3);
     return (float*)&m_aafEntry[iRow][0];
 }
 
 //----------------------------------------------------------------------------
+const float* Matrix3::operator[] (int iRow) const {
+    debugAssert(iRow >= 0);
+    debugAssert(iRow < 3);
+    return (const float*)&m_aafEntry[iRow][0];
+}
+
+//----------------------------------------------------------------------------
 Matrix3::operator float* () {
-    return &m_aafEntry[0][0];
+    return (float*)&m_aafEntry[0][0];
+}
+
+//----------------------------------------------------------------------------
+Matrix3::operator const float* () const{
+    return (const float*)&m_aafEntry[0][0];
 }
 
 //----------------------------------------------------------------------------

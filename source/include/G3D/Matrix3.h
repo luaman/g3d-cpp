@@ -56,8 +56,10 @@ public:
     /**
      * member access, allows use of construct mat[r][c]
      */
-    float* operator[] (int iRow) const;
+    float* operator[] (int iRow);
+    const float* operator[] (int iRow) const;
     operator float* ();
+    operator const float* () const;
     Vector3 getColumn (int iCol) const;
     Vector3 getRow (int iRow) const;
     void setColumn(int iCol, const Vector3 &vector);

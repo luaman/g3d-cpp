@@ -194,19 +194,25 @@ Vector4 Matrix4::getColumn(int c) const {
 }
 
 
-const float* Matrix4::operator[](int r) const {
-    debugAssert(r >= 0);
-    debugAssert(r < 4);
-    return elt[r];
-}
-
-
 float* Matrix4::operator[](int r) {
     debugAssert(r >= 0);
     debugAssert(r < 4);
-    return elt[r];
+    return (float*)&elt[r];
 }
 
+const float* Matrix4::operator[](int r) const {
+    debugAssert(r >= 0);
+    debugAssert(r < 4);
+    return (const float*)&elt[r];
+}
+
+Matrix4::operator float* () {
+    return (float*)&elt[0][0];
+}
+
+Matrix4::operator const float* () const {
+    return (const float*)&elt[0][0];
+}
 
 Matrix4 Matrix4::operator*(const Matrix4& other) const {
     Matrix4 result;
