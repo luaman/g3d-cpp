@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-04-10
+ @edited  2003-04-13
  */
 
 
@@ -2630,6 +2630,13 @@ void RenderDevice::setVertexArray(const class VAR& v) {
 	varSystem->setVertexArray(v);
 }
 
+
+void RenderDevice::setVertexAttribArray(unsigned int attribNum, const class VAR& v, bool normalize) {
+	debugAssert(inIndexedPrimitive);
+	debugAssert(! inPrimitive);
+
+	varSystem->setVertexAttribArray(attribNum, v, normalize);
+}
 
 void RenderDevice::setNormalArray(const class VAR& v) {
 	debugAssert(inIndexedPrimitive);

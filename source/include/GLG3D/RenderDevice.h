@@ -8,26 +8,12 @@
   enable/disable and configure them yourself (render device will track
   the glEnable(GL_LIGHTING) for you, however).
 
-  In general, you can't use OpenGL or GLU calls in combination with
-  RenderDevice or you will corrupt the state.  However, you *can* use:
-
-  <PRE>
-    glEnable(GL_LIGHTn)
-    glDisable(GL_LIGHTn)
-    glHint
-    glPolyMode
-    glLight
-    glTexGen
-    glEnable(GL_FOG)
-    glFog
-    glPixelZoom
-    glRasterPos2d
-    glDrawPixels
-  </PRE>
+  You can freely mix OpenGL calls with RenderDevice, just make sure you put
+  the state back the way you found it or you will confuse RenderDevice.
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-04-10
+  @edited  2003-04-13
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -210,6 +196,8 @@ private:
 		void setColorArray(const class VAR& v) const;
 
 		void setTexCoordArray(unsigned int unit, const class VAR& v) const;
+
+        void setVertexAttribArray(unsigned int attribNum, const class VAR& v, bool normalize) const;
 
 		void endIndexedPrimitives() const;
 	};
@@ -614,11 +602,80 @@ public:
 	void endIndexedPrimitives();
 
     /** The vertex, normal, color, and tex coord arrays need not come from
-        the same VARArea. */
+        the same VARArea. 
+
+        The format of a VAR array is restricted depending on its use.  The
+        following table (from http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_program.txt)
+        shows the underlying OpenGL restrictions:
+
+     <PRE>
+
+                                       Normal    
+      Command                 Sizes    ized?   Types
+      ----------------------  -------  ------  --------------------------------
+      VertexPointer           2,3,4     no     short, int, float, double
+      NormalPointer           3         yes    byte, short, int, float, double
+      ColorPointer            3,4       yes    byte, ubyte, short, ushort,
+                                               int, uint, float, double
+      IndexPointer            1         no     ubyte, short, int, float, double
+      TexCoordPointer         1,2,3,4   no     short, int, float, double
+      EdgeFlagPointer         1         no     boolean
+      VertexAttribPointerARB  1,2,3,4   flag   byte, ubyte, short, ushort,
+                                               int, uint, float, double
+      WeightPointerARB        >=1       yes    byte, ubyte, short, ushort,
+                                               int, uint, float, double
+      VertexWeightPointerEXT  1         n/a    float
+      SecondaryColor-         3         yes    byte, ubyte, short, ushort,
+        PointerEXT                             int, uint, float, double
+      FogCoordPointerEXT      1         n/a    float, double
+      MatrixIndexPointerARB   >=1       no     ubyte, ushort, uint
+
+      Table 2.4: Vertex array sizes (values per vertex) and data types.  The
+      "normalized" column indicates whether fixed-point types are accepted
+      directly or normalized to [0,1] (for unsigned types) or [-1,1] (for
+      singed types). For generic vertex attributes, fixed-point data are
+      normalized if and only if the <normalized> flag is set.
+
+  </PRE>
+    
+    */
 	void setVertexArray(const class VAR& v);
 	void setNormalArray(const class VAR& v);
 	void setColorArray(const class VAR& v);
 	void setTexCoordArray(unsigned int unit, const class VAR& v);
+
+    /**
+     Vertex attributes are a generalization of the various per-vertex
+     attributes that relaxes the format restrictions.  There are at least
+     16 attributes on any card (some allow more).  These attributes have
+     special meaning under the fixed function pipeline, as follows:
+
+    <PRE>
+    Generic
+    Attribute   Conventional Attribute       Conventional Attribute Command
+    ---------   ------------------------     ------------------------------
+         0      vertex position              Vertex
+         1      vertex weights 0-3           WeightARB, VertexWeightEXT
+         2      normal                       Normal
+         3      primary color                Color
+         4      secondary color              SecondaryColorEXT
+         5      fog coordinate               FogCoordEXT
+         6      -                            -
+         7      -                            -
+         8      texture coordinate set 0     MultiTexCoord(TEXTURE0, ...)
+         9      texture coordinate set 1     MultiTexCoord(TEXTURE1, ...)
+        10      texture coordinate set 2     MultiTexCoord(TEXTURE2, ...)
+        11      texture coordinate set 3     MultiTexCoord(TEXTURE3, ...)
+        12      texture coordinate set 4     MultiTexCoord(TEXTURE4, ...)
+        13      texture coordinate set 5     MultiTexCoord(TEXTURE5, ...)
+        14      texture coordinate set 6     MultiTexCoord(TEXTURE6, ...)
+        15      texture coordinate set 7     MultiTexCoord(TEXTURE7, ...)
+       8+n      texture coordinate set n     MultiTexCoord(TEXTURE0+n, ...)
+    </PRE>
+
+      @param normalize If true, the coordinates are forced to a [0, 1] scale
+    */
+    void setVertexAttribArray(unsigned int attribNum, const class VAR& v, bool normalize);
 
 	template<class T>
 	void sendIndices(RenderDevice::Primitive primitive, int numIndices, 

@@ -62,7 +62,7 @@ Sky::Sky(
     starIntensity.resize(star.size());
     for (i = star.size() - 1; i >= 0; --i) {
         star[i] = Vector4(Vector3::random(), 0);
-        starIntensity[i] = square(unitRandom()) * .9 + .1;
+        starIntensity[i] = square(unitRandom()) + .3;
     }
 
 	this->name = name;

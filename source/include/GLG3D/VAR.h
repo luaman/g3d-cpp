@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-04-08
+  @edited  2003-04-13
 */
 
 #ifndef GLG3D_VAR_H
@@ -25,7 +25,7 @@ private:
 	class VARArea*		area;
 
 	/** Pointer to the block of uploaded memory */
-	void*				pointer;
+	void*				_pointer;
 
 	/** Size of one element */
 	size_t				elementSize;
@@ -56,22 +56,21 @@ private:
             "Sanity check failed on OpenGL data format; you may"
             " be using an unsupported type in a vertex array.");
 
-		pointer = (uint8*)area->basePointer + area->allocated;
+		_pointer = (uint8*)area->basePointer + area->allocated;
 
 		// Ensure that the next memory address is 8-byte aligned
-		pointer = ((uint8*)pointer +      
-   			       ((8 - (size_t)pointer % 8) % 8));
+		_pointer = ((uint8*)_pointer +      
+   			       ((8 - (size_t)_pointer % 8) % 8));
 
 		generation = area->generation;
 		
 		size_t size = elementSize * numElements;
 		debugAssert(size + area->allocated <= area->size);
-		area->allocated = (size_t)pointer + size - (size_t)area->basePointer;
+		area->allocated = (size_t)_pointer + size - (size_t)area->basePointer;
 
 		// Upload the data
-		memcpy(pointer, sourcePtr, size);
+		memcpy(_pointer, sourcePtr, size);
 	}
-
 
 	friend class RenderDevice::VARSystem;
 
@@ -83,6 +82,8 @@ private:
 	void colorPointer() const;
 
 	void texCoordPointer(uint unit) const;
+
+    void vertexAttribPointer(uint attribNum, bool normalize) const;
 
 public:
 
@@ -111,7 +112,19 @@ public:
 	template<class T>
 	VAR(const Array<T>& source, VARArea* _area) {
 		init(source.getCArray(), source.size(), _area);
-	}		
+	}
+
+    /**
+     Returns a pointer to the underlying memory.  This is potentially
+     in AGP/video memory and may be slow (uncached) to write/read
+     from.  Generally, you should use the RenderDevice methods like
+     RenderDevice::setVertexPointer instead touching this method-- it is 
+     provided only for when you need to perform an OpenGL call
+     that is not supported by RenderDevice.
+     */
+    const void* pointer() const {
+        return _pointer;
+    }
 };
 
 }

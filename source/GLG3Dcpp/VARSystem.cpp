@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2003-04-08
+ @edited  2003-04-13
  */
 
 #include "GLG3D/RenderDevice.h"
@@ -205,6 +205,14 @@ void RenderDevice::VARSystem::setTexCoordArray(
     unsigned int          unit, 
     const class VAR&      v) const {
 	v.texCoordPointer(unit);
+}
+
+
+void RenderDevice::VARSystem::setVertexAttribArray(
+    unsigned int          attribNum, 
+    const class VAR&      v,
+    bool                  normalize) const {
+	v.vertexAttribPointer(attribNum, normalize);
 }
 
 

@@ -15,12 +15,12 @@
 
 namespace G3D {
 
-VAR::VAR() : pointer(NULL), numElements(0), generation(0), elementSize(0), underlyingRepresentation(GL_FLOAT) {
+VAR::VAR() : _pointer(NULL), numElements(0), generation(0), elementSize(0), underlyingRepresentation(GL_FLOAT) {
 }
 
 
 bool VAR::ok() const {
-	return pointer && (generation == area->generation);
+	return _pointer && (generation == area->generation);
 }
 
 
@@ -35,7 +35,7 @@ void VAR::vertexPointer() const {
     debugAssertM(underlyingRepresentation != GL_UNSIGNED_BYTE, 
               "OpenGL does not support GL_UNSIGNED_BYTE as a vertex format.");
 	glVertexPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), 
-                    underlyingRepresentation, elementSize, pointer);
+                    underlyingRepresentation, elementSize, _pointer);
 }
 
 
@@ -49,7 +49,7 @@ void VAR::normalPointer() const {
     debugAssertM(underlyingRepresentation != GL_UNSIGNED_BYTE,
               "OpenGL does not support GL_UNSIGNED_BYTE as a normal format.");
 	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(underlyingRepresentation, elementSize, pointer); 
+	glNormalPointer(underlyingRepresentation, elementSize, _pointer); 
 }
 
 
@@ -57,7 +57,7 @@ void VAR::colorPointer() const {
 	debugAssert(ok());
 	glEnableClientState(GL_COLOR_ARRAY);
 	glColorPointer(elementSize / sizeOfGLFormat(underlyingRepresentation),
-                   underlyingRepresentation, elementSize, pointer); 
+                   underlyingRepresentation, elementSize, _pointer); 
 }
 
 
@@ -66,8 +66,16 @@ void VAR::texCoordPointer(uint unit) const {
 	glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(elementSize / sizeOfGLFormat(underlyingRepresentation),
-                      underlyingRepresentation, elementSize, pointer);
+                      underlyingRepresentation, elementSize, _pointer);
 	glClientActiveTextureARB(GL_TEXTURE0_ARB);
+}
+
+
+void VAR::vertexAttribPointer(uint attribNum, bool normalize) const {
+	debugAssert(ok());
+	glEnableVertexAttribArrayARB(attribNum);
+	glVertexAttribPointerARB(attribNum, elementSize / sizeOfGLFormat(underlyingRepresentation),
+                      underlyingRepresentation, normalize, elementSize, _pointer);
 }
 
 }

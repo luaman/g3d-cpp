@@ -503,6 +503,8 @@ to add zlibstat.lib to your linker list.
    Changes in 5.01
    <UL>
      <LI> Added stars to night Sky
+     <LI> Support for vertex attributes through RenderDevice::setVertexAttrib
+     <LI> VAR::pointer
      <LI> G3D::realWorldLocalTime
      <LI> Texture::TRANSPARENT_BORDER
      <LI> DECLARE_GLFORMATOF
