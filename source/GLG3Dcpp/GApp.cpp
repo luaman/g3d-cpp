@@ -284,7 +284,9 @@ void GApplet::doUserInput() {
                 break;
 
             case SDLK_TAB:
-                if (app->debugMode() && app->debugTabSwitchCamera) {
+                // Make sure it wasn't ALT-TAB that was pressed !
+                if (app->debugMode() && app->debugTabSwitchCamera && 
+                    ! (app->userInput->keyDown(SDLK_RALT) || app->userInput->keyDown(SDLK_LALT))) {
                     app->debugController.setActive(! app->debugController.active());
                 }
                 break;
