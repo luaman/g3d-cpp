@@ -65,4 +65,4 @@ public:
         Vector3&            outNormal) const;
 };
 
-#endif MODEL_H
+#endif //MODEL_H

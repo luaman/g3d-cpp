@@ -9,18 +9,21 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_INSTALL
 
-AM_PROG_LIBTOOL
+AC_PROG_LIBTOOL
 
 # Check for X paths
 AC_PATH_X
 LIBS="$LIBS -L$x_libraries"
 
 # Checks for libraries.
-AC_CHECK_LIB([GL], [glBegin], [], [AC_MSG_ERROR([Can't find libGL])])
-AC_CHECK_LIB([GLU], [gluBuild2DMipmaps], [], [AC_MSG_ERROR([Can't find libGLU])])
-AC_CHECK_LIB([SDL], [SDL_Init], [], [AC_MSG_ERROR([Can't find libSDL])]) 
-# FIXME: Replace `main' with a function in `-ljpeg':
-AC_CHECK_LIB([jpeg], [main])
+AC_CHECK_LIB([GL], [glBegin], [], [
+			  AC_MSG_ERROR([Can't find libGL])])
+AC_CHECK_LIB([GLU], [gluBuild2DMipmaps], [], [
+			  AC_MSG_ERROR([Can't find libGLU])])
+AC_CHECK_LIB([SDL], [SDL_Init], [], [
+			  AC_MSG_ERROR([Can't find libSDL])]) 
+AC_CHECK_LIB([jpeg], [main], [], [
+			  AC_MSG_ERROR([Can't find libjpeg])])
 # FIXME: Replace `main' with a function in `-lz':
 AC_CHECK_LIB([z], [main])
 

@@ -1,5 +1,4 @@
-#Note: -D__cdecl= is temporary until I find a better place to define it
-INCLUDES=-I../include -D__cdecl= -Wall @SDL_INCDIR@
+INCLUDES=-I../include -Wall @SDL_INCDIR@
 
 lib_LTLIBRARIES=libGLG3D.la
 
