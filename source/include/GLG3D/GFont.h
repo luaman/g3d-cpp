@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2004-02-28
+ @edited  2005-02-10
  */
 
 #ifndef G3D_GFONT_H
@@ -42,6 +42,7 @@ public:
     enum Spacing {PROPORTIONAL_SPACING, FIXED_SPACING};
 
 private:
+
     /** The actual width of the character. */ 
     int subWidth[128];
 
@@ -56,6 +57,7 @@ private:
 
     /** Assumes you are already inside of beginPrimitive(QUADS) */
     Vector2 drawString(
+        class RenderDevice*     renderDevice,
         const std::string&      s,
         double                  x,
         double                  y,
@@ -91,6 +93,8 @@ public:
            (pow(width, 2) / 2) * int8  Texture data
           </pre>
         The width of a character's bounding box is always width / 16.  The height is always width / 8.
+
+     @param renderDevice May be NULL.
     */
     static GFontRef fromFile(class RenderDevice* renderDevice, const std::string& filename);
 
@@ -145,6 +149,7 @@ public:
      </PRE>
      */
     Vector2 draw2D(
+        RenderDevice*       renderDevice,
         const std::string&  s,
         const Vector2&      pos2D,
         double              size    = 12,
@@ -153,6 +158,20 @@ public:
         XAlign              xalign  = XALIGN_LEFT,
         YAlign              yalign  = YALIGN_TOP,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
+
+    /** @deprecated  Use the version that accepts a RenderDevice as the 1st argument.
+     */
+    Vector2 draw2D(
+        const std::string&  s,
+        const Vector2&      pos2D,
+        double              size    = 12,
+        const Color4&       color   = Color3::black(),
+        const Color4&       outline = Color4::clear(),
+        XAlign              xalign  = XALIGN_LEFT,
+        YAlign              yalign  = YALIGN_TOP,
+        Spacing             spacing = PROPORTIONAL_SPACING) const {
+        return draw2D(renderDevice, s, pos2D, size, color, outline, xalign, yalign, spacing);
+    }
 
     /**
      Text is visible from behind.  The text is oriented so that it
@@ -164,6 +183,7 @@ public:
      @param size In meters.
      */
     Vector2 draw3D(
+        RenderDevice*               renderDevice,
         const std::string&          s,
         const CoordinateFrame&      pos3D,
         double              size    = .1,
@@ -172,6 +192,19 @@ public:
         XAlign              xalign  = XALIGN_LEFT,
         YAlign              yalign  = YALIGN_TOP,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
+
+    /** @deprecated Use the version that accepts a RenderDevice as the 1st argument.*/
+    Vector2 draw3D(
+        const std::string&          s,
+        const CoordinateFrame&      pos3D,
+        double              size    = .1,
+        const Color4&       color   = Color3::black(),
+        const Color4&       outline = Color4::clear(),
+        XAlign              xalign  = XALIGN_LEFT,
+        YAlign              yalign  = YALIGN_TOP,
+        Spacing             spacing = PROPORTIONAL_SPACING) const {
+        draw3D(renderDevice, s, pos3D, size, color, outline, xalign, yalign, spacing);
+    }
 
     /**
      Useful for drawing centered text and boxes around text.

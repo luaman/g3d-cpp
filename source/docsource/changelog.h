@@ -9,9 +9,22 @@
    previous major release [except for bug fixes].  Deprecated functionality
    will be supported until (at least) the next major release.
 
+   <TABLE><TR><TD>
+   Changes proposed for 7.00:  
+     <UL>
+       <LI>G3D::Sky create methods will no longer accept a G3D::RenderDevice.
+       <LI>G3D::GFont::fromFile method will no longer accept a G3D::RenderDevice.
+       <LI>All accessor "get" methods will have their prefix removed (e.g. G3D::RenderDevice::getObjectToWorldMatrix -> G3D::RenderDevice::objectToWorldMatrix).
+       <LI>All <A HREF="deprecated.html">deprecated</A> functionality will be removed.
+     </UL>
+   </TD></TR></TABLE>
+
+
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::Sky can now be initialized with a NULL renderDevice, provided a non-null one
+          is used with the G3D::Sky::render method.
      <LI> G3D::pi(), G3D::halfPi(), G3D::twoPi() added to replace defines [Corey]
      <LI> contrib/Q3Map
      <LI> Increased G3D::Draw::sphere performance using vertex arrays.

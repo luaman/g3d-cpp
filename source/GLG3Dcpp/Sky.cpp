@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2004-03-24
+  @edited  2005-02-11
   */
 
 #include "GLG3D/glcalls.h"
@@ -272,7 +272,8 @@ static void hackProjectionMatrix(RenderDevice* renderDevice) {
 }
 
 
-void Sky::vertex(float x, float y, float z, float s, float t) const {
+void Sky::vertex(RenderDevice* renderDevice, 
+                 float x, float y, float z, float s, float t) const {
     const double w = 0;
     const bool cube = (cubeMap != NULL);
 
@@ -286,7 +287,7 @@ void Sky::vertex(float x, float y, float z, float s, float t) const {
 }
 
 
-void Sky::renderBox() const {
+void Sky::renderBox(RenderDevice* renderDevice) const {
     renderDevice->pushState();
 
     bool cube = (cubeMap != NULL);
@@ -305,10 +306,10 @@ void Sky::renderBox() const {
     double s = 1;
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-        vertex(-s, +s, -s, 0, 0);
-        vertex(-s, -s, -s, 0, 1);
-        vertex(+s, -s, -s, 1, 1);
-        vertex(+s, +s, -s, 1, 0);
+        vertex(renderDevice, -s, +s, -s, 0, 0);
+        vertex(renderDevice, -s, -s, -s, 0, 1);
+        vertex(renderDevice, +s, -s, -s, 1, 1);
+        vertex(renderDevice, +s, +s, -s, 1, 0);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -316,10 +317,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-        vertex(-s, +s, +s, 0, 0);
-        vertex(-s, -s, +s, 0, 1);
-        vertex(-s, -s, -s, 1, 1);
-        vertex(-s, +s, -s, 1, 0);
+        vertex(renderDevice, -s, +s, +s, 0, 0);
+        vertex(renderDevice, -s, -s, +s, 0, 1);
+        vertex(renderDevice, -s, -s, -s, 1, 1);
+        vertex(renderDevice, -s, +s, -s, 1, 0);
 	renderDevice->endPrimitive();
 
     
@@ -328,10 +329,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-        vertex(+s, +s, +s, 0, 0);
-        vertex(+s, -s, +s, 0, 1);
-        vertex(-s, -s, +s, 1, 1);
-        vertex(-s, +s, +s, 1, 0);
+        vertex(renderDevice, +s, +s, +s, 0, 0);
+        vertex(renderDevice, +s, -s, +s, 0, 1);
+        vertex(renderDevice, -s, -s, +s, 1, 1);
+        vertex(renderDevice, -s, +s, +s, 1, 0);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -339,10 +340,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-        vertex(+s, +s, +s, 1, 0);
-        vertex(+s, +s, -s, 0, 0);
-        vertex(+s, -s, -s, 0, 1);
-        vertex(+s, -s, +s, 1, 1);
+        vertex(renderDevice, +s, +s, +s, 1, 0);
+        vertex(renderDevice, +s, +s, -s, 0, 0);
+        vertex(renderDevice, +s, -s, -s, 0, 1);
+        vertex(renderDevice, +s, -s, +s, 1, 1);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -350,10 +351,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-        vertex(+s, +s, +s, 1, 1);
-        vertex(-s, +s, +s, 1, 0);
-        vertex(-s, +s, -s, 0, 0);
-        vertex(+s, +s, -s, 0, 1);
+        vertex(renderDevice, +s, +s, +s, 1, 1);
+        vertex(renderDevice, -s, +s, +s, 1, 0);
+        vertex(renderDevice, -s, +s, -s, 0, 0);
+        vertex(renderDevice, +s, +s, -s, 0, 1);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -361,10 +362,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-        vertex(+s, -s, -s, 0, 0);
-        vertex(-s, -s, -s, 0, 1);
-        vertex(-s, -s, +s, 1, 1);
-        vertex(+s, -s, +s, 1, 0);
+        vertex(renderDevice, +s, -s, -s, 0, 0);
+        vertex(renderDevice, -s, -s, -s, 0, 1);
+        vertex(renderDevice, -s, -s, +s, 1, 1);
+        vertex(renderDevice, +s, -s, +s, 1, 0);
 	renderDevice->endPrimitive();
 
     renderDevice->popState();
@@ -372,7 +373,10 @@ void Sky::renderBox() const {
 
 
 void Sky::render(
+    RenderDevice* renderDevice,
     const LightingParameters&           lighting) {
+
+    debugAssert(renderDevice != NULL);
 
     renderDevice->pushState();
         // Ignore depth, make sure we're not clipped by the far plane
@@ -391,18 +395,19 @@ void Sky::render(
 
 	    // Draw the sky box
         renderDevice->resetTextureUnit(0);
-        renderBox();
+        renderBox(renderDevice);
 
         if (drawCelestialBodies) {   
-            drawMoonAndStars(lighting);
+            drawMoonAndStars(renderDevice, lighting);
 
-            drawSun(lighting);
+            drawSun(renderDevice, lighting);
         }
 
     renderDevice->popState();
 }
 
-void Sky::drawMoonAndStars(const LightingParameters& lighting) {
+
+void Sky::drawMoonAndStars(RenderDevice* renderDevice, const LightingParameters& lighting) {
     Vector3 moonPosition = lighting.physicallyCorrect ? lighting.trueMoonPosition : lighting.moonPosition;
 
     Vector4 L(moonPosition,0);
@@ -446,7 +451,7 @@ void Sky::drawMoonAndStars(const LightingParameters& lighting) {
 }
 
 
-void Sky::drawSun(const LightingParameters& lighting) {
+void Sky::drawSun(RenderDevice* renderDevice, const LightingParameters& lighting) {
     Vector3 sunPosition = lighting.physicallyCorrect ? lighting.trueSunPosition : lighting.sunPosition;
 	
     // Sun vector
@@ -469,8 +474,11 @@ void Sky::drawSun(const LightingParameters& lighting) {
 
 
 void Sky::renderLensFlare(
+    RenderDevice* renderDevice, 
     const LightingParameters&           lighting) {
 	
+    debugAssert(renderDevice != NULL);
+
     if (! drawCelestialBodies) {
         return;
     }
@@ -554,9 +562,9 @@ void Sky::renderLensFlare(
 
                 // Lens flare
                 Vector4 C(camera.getLookVector(), 0);
-                double position[] = { .5,                    .5,                    -.25,                     -.75,                .45,                      .6,                    -.5,                   -.1,                   .55,                     -1.5,                       -2,                         1};
-                double size[]     = { .12,                   .05,                    .02,                      .02,                .02,                      .02,                    .01,                  .01,                   .01,                     .01,                        .01,                        0.05}; 
-                Color3 color[]    = {Color3(6, 4, 0) / 255, Color3(6, 4, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(10, 0, 0) /255,  Color3(0, 12, 0) / 255, Color3(10,0,0) / 255, Color3::fromARGB(0x192125)/10,   Color3::fromARGB(0x1F2B1D)/10, Color3::fromARGB(0x1F2B1D)/10};
+                static const double position[] = { .5,                    .5,                    -.25,                     -.75,                .45,                      .6,                    -.5,                   -.1,                   .55,                     -1.5,                       -2,                         1};
+                static const double size[]     = { .12,                   .05,                    .02,                      .02,                .02,                      .02,                    .01,                  .01,                   .01,                     .01,                        .01,                        0.05}; 
+                static const Color3 color[]    = {Color3(6, 4, 0) / 255, Color3(6, 4, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(10, 0, 0) /255,  Color3(0, 12, 0) / 255, Color3(10,0,0) / 255, Color3::fromARGB(0x192125)/10,   Color3::fromARGB(0x1F2B1D)/10, Color3::fromARGB(0x1F2B1D)/10};
                 int numFlares     = 12;
 
                 renderDevice->setTexture(0, disk);

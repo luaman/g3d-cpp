@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2004-02-28
+ @edited  2005-02-10
  */
 
 #include "GLG3D/GFont.h"
@@ -20,7 +20,6 @@ CFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
 
 GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 
-    debugAssert(renderDevice);
     debugAssertM(renderDevice->initialized(), 
         "You must call RenderDevice::init before constructing a GFont");
     debugAssertM(renderDevice->supportsTextureFormat(TextureFormat::A8),
@@ -70,6 +69,7 @@ Vector2 GFont::texelSize() const {
 
 
 Vector2 GFont::drawString(
+    RenderDevice*       renderDevice,
     const std::string&  s,
     double              x,
     double              y,
@@ -77,6 +77,7 @@ Vector2 GFont::drawString(
     double              h,
     Spacing             spacing) const {
 
+    debugAssert(renderDevice != NULL);
     const double propW = w / charWidth;
     const int n = s.length();
 
@@ -86,7 +87,7 @@ Vector2 GFont::drawString(
 
     double x0 = 0;
     for (int i = 0; i < n; ++i) {
-        char c   = s[i] & 127;
+        char c = s[i] & 127;
 
         if (c != ' ') {
             int row   = c / 16;
@@ -124,6 +125,7 @@ Vector2 GFont::drawString(
 
 
 Vector2 GFont::draw2D(
+    RenderDevice*               renderDevice,
     const std::string&          s,
     const Vector2&              pos2D,
     double                      size,
@@ -193,7 +195,7 @@ Vector2 GFont::draw2D(
                 renderDevice->setColor(border);
                 for (int dy = -1; dy <= 1; dy += 2) {
                     for (int dx = -1; dx <= 1; dx += 2) {
-                        drawString(s, x + dx, y + dy, w, h, spacing);
+                        drawString(renderDevice, s, x + dx, y + dy, w, h, spacing);
                     }
                 }
             }
@@ -201,7 +203,7 @@ Vector2 GFont::draw2D(
 		        Color4(color.r * renderDevice->getBrightScale(),
 			    color.g * renderDevice->getBrightScale(),
 			    color.b * renderDevice->getBrightScale(), color.a));
-          Vector2 bounds = drawString(s, x, y, w, h, spacing);
+          Vector2 bounds = drawString(renderDevice, s, x, y, w, h, spacing);
         renderDevice->endPrimitive();
 
     renderDevice->popState();
@@ -211,6 +213,7 @@ Vector2 GFont::draw2D(
 
 
 Vector2 GFont::draw3D(
+    RenderDevice*               renderDevice,
     const std::string&          s,
     const CoordinateFrame&      pos3D,
     double                      size,
@@ -290,20 +293,20 @@ Vector2 GFont::draw3D(
                 renderDevice->setColor(border);
                 for (int dy = -1; dy <= 1; dy += 2) {
                     for (int dx = -1; dx <= 1; dx += 2) {
-                        drawString(s,
-				   x + dx * borderOffset, 
-				   y + dy * borderOffset,
-				   w, h, spacing);
+                        drawString(renderDevice, s,
+				           x + dx * borderOffset, 
+				           y + dy * borderOffset,
+				           w, h, spacing);
                     }
                 }
             }
 
             renderDevice->setColor(
-		    Color4(color.r * renderDevice->getBrightScale(),
-			   color.g * renderDevice->getBrightScale(), 
-			   color.b * renderDevice->getBrightScale(), 
-			   color.a));
-            Vector2 bounds = drawString(s, x, y, w, h, spacing);
+		        Color4(color.r * renderDevice->getBrightScale(),
+			       color.g * renderDevice->getBrightScale(), 
+			       color.b * renderDevice->getBrightScale(), 
+			       color.a));
+            Vector2 bounds = drawString(renderDevice, s, x, y, w, h, spacing);
 
         renderDevice->endPrimitive();
 

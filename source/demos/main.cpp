@@ -112,7 +112,7 @@ void Demo::doGraphics() {
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(lighting);
+        app->sky->render(app->renderDevice, lighting);
     }
 
     // Setup lighting
@@ -125,7 +125,7 @@ void Demo::doGraphics() {
     app->renderDevice->disableLighting();
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(lighting);
+        app->sky->renderLensFlare(app->renderDevice, lighting);
     }
 }
 
@@ -135,7 +135,7 @@ void App::main() {
 	debugController.setActive(true);
 
     // Load objects here
-    sky = Sky::create(renderDevice, dataDir + "sky/");
+    sky = Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
 }

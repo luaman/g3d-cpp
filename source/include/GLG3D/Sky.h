@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2004-03-25
+  @edited  2005-02-11
 */
 
 #ifndef G3D_SKY_H
@@ -73,18 +73,19 @@ private:
 
     bool                                        drawCelestialBodies;
 
+    /** @deprecated To be removed in 7.00 */
     class RenderDevice*                         renderDevice;
 
     /**
      Renders the sky box.
      */
-    void renderBox() const;
+    void renderBox(RenderDevice* rd) const;
 
     /** Draw the sun, called by render() */
-    void drawSun(const class LightingParameters&);
+    void drawSun(RenderDevice* rd, const class LightingParameters&);
 
     /** Draw the night sky, called by render() */
-    void drawMoonAndStars(const class LightingParameters&);
+    void drawMoonAndStars(RenderDevice* rd, const class LightingParameters&);
 
     Sky(
         class RenderDevice*                     renderDevice,
@@ -96,9 +97,10 @@ private:
 
     /** Draws a single sky-box vertex.  Called from renderBox. (s,t) are
         texture coordinates for the case where the cube map is not used.*/
-    void vertex(float x, float y, float z, float s, float t) const;
+    void vertex(RenderDevice* renderDevice, float x, float y, float z, float s, float t) const;
 
 public:
+
     /**
      @param directory If directory is not "" it should
       end in a trailing slash.  This is the location of the real.str file
@@ -116,6 +118,8 @@ public:
        .5 -> 1/8  the texture memory of 1.0, 
         0 -> 1/16 the texture memory of 1.0.
         Color banding will occur at low quality settings.
+
+     @param renderDevice May be NULL, if a non-NULL argument is provided to G3D::Sky::render.
      */
     static SkyRef fromFile(
         class RenderDevice*                     renderDevice,
@@ -170,14 +174,28 @@ public:
      Will restore all state it changes.
      */
 	void render(
+        RenderDevice* renderDevice,
         const class LightingParameters&         lighting);
+
+    /** @deprecated Use render(RenderDevice, LightingParameters) */
+    void render(
+        const class LightingParameters&         lighting) {
+        render(renderDevice, lighting);
+    }
 
     /**
      Call at the very end of your rendering routine.
      Will restore all state it changes.
      */
     void renderLensFlare(
+        RenderDevice*                           renderDevice,
         const class LightingParameters&         lighting);
+
+    /** @deprecated Use renderLensFlare(RenderDevice, LightingParameters) */
+    void renderLensFlare(
+        const class LightingParameters&         lighting) {
+        renderLensFlare(renderDevice, lighting);
+    }
 
     /**
      Returns an environment map (NULL if cube maps are not supported
