@@ -150,7 +150,7 @@ public:
     /**
      Sets the mouse position.
      */
-    void setMouseXY(int x, int y);
+    void setMouseXY(double x, double y);
 
     inline void setMouseXY(const Vector2& v) {
         setMouseXY(v.x + 0.5, v.y + 0.5);

@@ -17,6 +17,10 @@ namespace G3D {
 
 ManualCameraController::ManualCameraController(){}
 
+ManualCameraController::ManualCameraController(
+    RenderDevice* rd, UserInput* ui) {
+    init(rd, ui);
+}
 
 void ManualCameraController::init(class RenderDevice* device, class UserInput* input) {
     renderDevice = device;

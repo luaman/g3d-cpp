@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     }
 
 
-    camera 	     = new GCamera(renderDevice);
+    camera 	     = new GCamera();
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
@@ -144,7 +144,7 @@ void doGraphics() {
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
 			    
-		    camera->setProjectionAndCameraMatrix();
+		    renderDevice->setProjectionAndCameraMatrix(*camera);
 
             renderDevice->pushState();
                 renderDevice->setVertexProgram(distort);
@@ -290,24 +290,12 @@ void Model::render(const CoordinateFrame& c,
     renderDevice->pushState();
 
     // Setup lighting
-    float black[] = {0.0f, 0.0f, 0.0f, 0.0f};
-    glMaterialfv(GL_FRONT, GL_SPECULAR, black);
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
+    renderDevice->enableLighting();
+    renderDevice->setLight(0, GLight(lighting.lightDirection, lighting.lightColor));
+    renderDevice->setLight(1, GLight(-lighting.lightDirection, Color3::WHITE * .25));
+
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-
-    renderDevice->configureDirectionalLight
-      (0, lighting.lightDirection, lighting.lightColor);
-
-    renderDevice->configureDirectionalLight
-      (1, -lighting.lightDirection, Color3::WHITE * .25);
-
-    {float c[] = {lighting.ambient.r,lighting.ambient.g,lighting.ambient.b,1};
-     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c);}
-    
+    renderDevice->setAmbientLightColor(lighting.ambient);
     renderDevice->setColor(Color3::WHITE);
 
     // Draw the model
@@ -320,11 +308,6 @@ void Model::render(const CoordinateFrame& c,
         }
     }
     renderDevice->endPrimitive();
-
-    // Turn off lighting
-    glDisable(GL_LIGHT0);
-    glDisable(GL_LIGHT1);
-    glDisable(GL_LIGHTING);
 
     renderDevice->popState();
 }

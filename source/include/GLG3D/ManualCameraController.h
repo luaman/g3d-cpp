@@ -63,9 +63,13 @@ class ManualCameraController {
 
 public:
 
-    /** You need to call setActive(true) before the controller will work. */
+
 	ManualCameraController();
+
+    /** Creates and initializes */
+	ManualCameraController(class RenderDevice*, class UserInput*);
     
+    /** You need to call setActive(true) before the controller will work. */
     void init(class RenderDevice* device, class UserInput* input);
 
     /** Deactivates the controller */

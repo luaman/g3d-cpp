@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2003-09-27
+  @edited  2003-11-14
  */
 
 #include "GLG3D/UserInput.h"
@@ -197,10 +197,10 @@ void UserInput::processKey(KeyCode code, int event) {
 }
 
 
-void UserInput::setMouseXY(int x, int y) {
-    SDL_WarpMouse(x, y);
-    mouseX = x;
-    mouseY = y;
+void UserInput::setMouseXY(double x, double y) {
+    mouseX = iRound(x);
+    mouseY = iRound(y);
+    SDL_WarpMouse(mouseX, mouseY);
 }
 
 

@@ -13,6 +13,7 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/ConvexPolyhedron.h \
                        G3D/CoordinateFrame.h \
                        G3D/G3DGameUnits.h \
+                       G3D/GCamera.h \
                        G3D/Line.h \
                        G3D/LineSegment.h \
                        G3D/Log.h \
@@ -49,7 +50,6 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/prompt.h \
                        G3D/stringutils.h \
                        G3D/vectorMath.h \
-                       GLG3D/Camera.h \
                        GLG3D/CFont.h \
                        GLG3D/GPUProgram.h \
                        GLG3D/VertexProgram.h \
@@ -60,6 +60,6 @@ nobase_include_HEADERS=G3D/Array.h \
                        GLG3D/Sky.h \
                        GLG3D/Texture.h \
                        GLG3D/UserInput.h \
-                       GLG3D/getOpenGLState.h
-                       #GLG3D/glcalls.h \
-                       #GLG3D/glheaders.h
+                       GLG3D/getOpenGLState.h \
+                       GLG3D/glcalls.h \
+                       GLG3D/glheaders.h
