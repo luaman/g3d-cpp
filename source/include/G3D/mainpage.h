@@ -89,11 +89,11 @@
         <BR><BLOCKQUOTE>G3D::RenderDevice, G3D::VAR, G3D::VARArea, 
         G3D::Texture, G3D::TextureRef</BLOCKQUOTE>
 
-      <LI>OpenGL -> G3D compatibility
+      <LI>OpenGL 
         <BR><BLOCKQUOTE>G3D::glLoadMatrix, G3D::glLoadInvMatrix, 
         G3D::glMultInvMatrix, G3D::glMultMatrix, G3D::glVertex, G3D::glColor,
         G3D::glNormal, G3D::glTexCoord, G3D::glMultiTexCoord,
-        G3D::sizeOfGLFormat, G3D::glFormatOf</BLOCKQUOTE>
+        G3D::sizeOfGLFormat, G3D::glFormatOf, G3D::glGetProcAddress</BLOCKQUOTE>
 
       <LI>GL Debugging
         <BR><BLOCKQUOTE>G3D::getOpenGLState, G3D::glGetInteger, 
@@ -502,8 +502,10 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> Support for GL_ARB_vertex_program 
+     <LI> Documented G3D::glGetProcAddress
      <LI> G3D::sizeOfGLFormat
-     <LI> G3D::glFormatOf
+     <LI> glFormatOf
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3int16
      <LI> Modified ManualCameraController so that diagonal movement does not exceed

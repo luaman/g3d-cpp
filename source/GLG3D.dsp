@@ -341,6 +341,10 @@ SOURCE=.\include\GLG3D.h
 # End Source File
 # Begin Source File
 
+SOURCE="..\..\..\..\libraries\g3d-5_01\include\GLG3D\glheaders.h"
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\LightingParameters.h
 # End Source File
 # Begin Source File

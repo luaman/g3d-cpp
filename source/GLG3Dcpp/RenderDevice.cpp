@@ -47,7 +47,12 @@ PFNGLDELETEFENCESNVPROC				glDeleteFencesNV			= NULL;
 PFNGLSETFENCENVPROC					glSetFenceNV				= NULL;
 PFNGLFINISHFENCENVPROC	  			glFinishFenceNV				= NULL;
 
-
+PFNGLGENPROGRAMSARBPROC                     glGenProgramsARB                = NULL;
+PFNGLBINDPROGRAMARBPROC                     glBindProgramARB                = NULL;
+PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB             = NULL;
+PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB              = NULL;
+PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NULL;
+PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
 namespace G3D {
 
 static void frustum(
@@ -114,8 +119,9 @@ RenderDevice::RenderDevice() {
 void RenderDevice::initGLExtensions() {
 
     #define LOAD_EXTENSION(name) \
-       if (debugLog) {debugLog->println("Loading " #name " extension");} \
-        *((void**)&name) = glGetProcAddress(#name);
+       if (debugLog) {debugLog->print("Loading " #name " extension");} \
+        *((void**)&name) = glGetProcAddress(#name); \
+       if (debugLog) {debugLog->printf("(0x%x)\n", #name);}
 
 
     LOAD_EXTENSION(glMultiTexCoord2fARB);
@@ -140,6 +146,12 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glDeleteFencesNV);
     LOAD_EXTENSION(glSetFenceNV);
     LOAD_EXTENSION(glFinishFenceNV);
+    LOAD_EXTENSION(glGenProgramsARB);
+    LOAD_EXTENSION(glBindProgramARB);
+    LOAD_EXTENSION(glDeleteProgramsARB);
+    LOAD_EXTENSION(glProgramStringARB);
+    LOAD_EXTENSION(glProgramEnvParameter4fARB);
+    LOAD_EXTENSION(glProgramLocalParameter4fARB);
 
     #undef LOAD_EXTENSION
 }

@@ -81,7 +81,7 @@ void handleEvents();
 int main(int argc, char** argv) {
 
     // Search for the data
-    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/p51-mustang.ifs")); ++count) {
+    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "font/dominant.fnt")); ++count) {
         DATA_DIR = std::string("../") + DATA_DIR;
     }
 
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     sky		     = new Sky("Sky", DATA_DIR + "sky/", 
                            "null_plainsky512_ft.jpg", 1.0);
     userInput    = new UserInput();
-    model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
+    model        = new Model(DATA_DIR + "ifs/buddha.ifs");
 
     ManualCameraController controller(renderDevice);
 

@@ -14,6 +14,7 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VAR.h"
 
+
 namespace G3D {
 
 
@@ -85,8 +86,7 @@ RenderDevice::VARSystem::~VARSystem() {
 		break;
 
     case VAR_NONE:
-        error("Critical Error", "No vertex array memory available.", true);
-        exit(-1);
+        break;
 	}
 
 	areaList.deleteAll();
