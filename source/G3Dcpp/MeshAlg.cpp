@@ -451,7 +451,8 @@ void MeshAlg::computeTangentVectors(
     if (fuzzyEq(t[2].y, t[0].y)) {
         amount = 1.0;
     } else {
-        amount = (t[1].y - t[0].y) / (t[2].y - t[0].y);
+        // Solve lerp(t[0].y, t[2].y, amount) = t[1].y for amount
+        amount = (t[1].y - t[0].y) / (t[2].y - 2.0 * t[0].y);
     }
 
     tangent = lerp(v[0], v[2], amount) - v[1];
@@ -497,7 +498,7 @@ void MeshAlg::computeTangentVectors(
     if (fuzzyEq(t[2].x, t[0].x)) {
         amount = 1.0;
     } else {
-        amount = (t[1].x - t[0].x) / (t[2].x - t[0].x);
+        amount = (t[1].x - t[0].x) / (t[2].x - 2.0 * t[0].x);
     }
 
     binormal = lerp(v[0], v[2], amount) - v[1];

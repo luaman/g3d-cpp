@@ -20,6 +20,7 @@
      <LI> Fix: GFont::draw2D now returns correct y value (used to be too small)
 	 <LI> Fix: NetworkDevice now returns useful hostname on Linux (used to be "localhost")
 	 <LI> Fix: The conduit returned from NetworkDevice::createReliableConduit now has ok() == false when connect fails
+	 <LI> Fix: Tangent space computation of constant u, v now correct (was missing a factor of 2, leading to slight errors) [Max McGuire]
    </UL>
 
    <P>
