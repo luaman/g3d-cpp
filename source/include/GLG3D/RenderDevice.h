@@ -27,7 +27,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-04-07
+  @edited  2003-04-10
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -35,6 +35,7 @@
 
 #include "graphics3D.h"
 #include "GLG3D/Texture.h"
+#include "GLG3D/VertexProgram.h"
 
 typedef unsigned int uint;
 
@@ -276,6 +277,11 @@ private:
      True if GL_NV_texture_rectangle is in the extension list.
      */
     bool                        textureRectangleSupported;
+
+    /**
+     True if GL_ARB_vertex_program is in the extension list.
+     */
+    bool                        _supportsVertexProgram;
 
     /**
      For counting the number of beginFrame/endFrames.
@@ -639,6 +645,14 @@ public:
         uint                textureUnit,
         TextureRef          texture);
 
+
+    /**
+     Automatically enables vertex programs when they are set. 
+     Assumes supportsVertexProgram() is true.
+     @param vp Set to NULL to use the fixed function pipeline.
+     */
+    void setVertexProgram(const VertexProgramRef& vp);
+
     /**
       Reads a depth buffer value (1 @ far plane, 0 @ near plane) from
       the given screen coordinates (x, y) where (0,0) is the top left
@@ -736,6 +750,8 @@ private:
         double                      lowDepthRange;
         double                      highDepthRange;
 
+        VertexProgramRef            vertexProgram;
+
         // Ambient light level
         Color4                      ambient;
 
@@ -802,6 +818,10 @@ public:
 
     bool supportsTextureRectangle() const {
         return textureRectangleSupported;
+    }
+
+    bool supportsVertexProgram() const {
+        return _supportsVertexProgram;
     }
 
     /**

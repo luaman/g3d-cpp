@@ -36,6 +36,12 @@ public:
 
     static VertexProgram* fromFile(const std::string& name, const std::string& filename);
 
+    /**
+
+     The vertex program must be written in the ARB vertex program assembly language
+     specified by:
+     http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_program.txt
+    */
     static VertexProgram* fromCode(const std::string& name, const std::string& code);
 
     ~VertexProgram();

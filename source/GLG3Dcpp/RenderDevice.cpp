@@ -246,6 +246,7 @@ bool RenderDevice::init(
 
         stencilWrapSupported = supportsOpenGLExtension("EXT_stencil_wrap");
         textureRectangleSupported = supportsOpenGLExtension("GL_NV_texture_rectangle");
+        _supportsVertexProgram = supportsOpenGLExtension("GL_ARB_vertex_program");
     }
 
 
@@ -359,6 +360,13 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n\n"
 
              "* JOYSTICK\n"
@@ -396,7 +404,13 @@ bool RenderDevice::init(
  			 "glDeleteFencesNV", isOk(glDeleteFencesNV),
 			 "glSetFenceNV", isOk(glSetFenceNV),
 			 "glFinishFenceNV", isOk(glFinishFenceNV),
-
+             "glGenProgramsARB", isOk(glGenProgramsARB),
+             "glBindProgramARB", isOk(glBindProgramARB),
+             "glDeleteProgramsARB", isOk(glDeleteProgramsARB),
+             "glProgramStringARB", isOk(glProgramStringARB),
+             "glProgramEnvParameter4fARB", isOk(glProgramEnvParameter4fARB),
+             "glProgramLocalParameter4fARB", isOk(glProgramLocalParameter4fARB),
+             "glIsProgramARB", isOk(glIsProgramARB),
 
              SDL_NumJoysticks(), "ok"
              );
@@ -830,6 +844,8 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     shadeMode                   = SHADE_FLAT;
 
+    vertexProgram               = NULL;
+
     // Set projection matrix
     double aspect;
     aspect = viewport.width / viewport.height;
@@ -947,6 +963,10 @@ void RenderDevice::setState(
         memcmp(&newState.objectToWorldMatrix, &state.objectToWorldMatrix, sizeof(CoordinateFrame))) {
         setObjectToWorldMatrix(newState.objectToWorldMatrix);
         setCameraToWorldMatrix(newState.cameraToWorldMatrix);
+    }
+
+    if (supportsVertexProgram()) {
+        setVertexProgram(newState.vertexProgram);
     }
 
     setStencilClearValue(newState.stencilClear);
@@ -1364,6 +1384,20 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
     default:
         debugAssertM(false, "Fell through switch");
         return GL_KEEP;
+    }
+}
+
+
+void RenderDevice::setVertexProgram(const VertexProgramRef& vp) {
+    if (vp != state.vertexProgram) {
+        state.vertexProgram = vp;
+        if (vp == (VertexProgramRef)NULL) {
+            glDisable(GL_VERTEX_PROGRAM_ARB);
+        } else  {
+            debugAssert(supportsVertexProgram());
+            glEnable(GL_VERTEX_PROGRAM_ARB);
+            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, vp->getOpenGLID());
+        }
     }
 }
 
