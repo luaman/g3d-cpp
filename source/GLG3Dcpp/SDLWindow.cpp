@@ -11,15 +11,23 @@
 
 #define SDL_FSAA (SDL_MAJOR_VERSION * 100 + SDL_MINOR_VERSION * 10 + SDL_PATCH_LEVEL > 125)
 
+
 namespace G3D {
 
 SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
-	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0 ) {
+	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | 
+                 SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0 ) {
+
         fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
+
+    #ifdef G3D_LINUX
+        // Extract SDL's internal Display pointer on Linux
+        //G3D::_internal::X11Display = ::current_video->hidden->X11_Display;
+    #endif
 
     _mouseVisible = true;
     _mouseCapture = false;
@@ -72,6 +80,9 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     #if SDL_FSAA
         SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
         SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
+    #else
+        (void)actualFSAABuffers;
+        (void)actualFSAASamples;
     #endif
     _settings.rgbBits     = iMin(iMin(redBits, greenBits), blueBits);
     _settings.alphaBits   = alphaBits;

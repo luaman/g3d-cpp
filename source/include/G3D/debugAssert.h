@@ -17,7 +17,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-08-26
-  @edited  2004-02-26
+  @edited  2004-02-28
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -27,8 +27,16 @@
 #define G3D_DEBUGASSERT_H
 
 #include <string>
+#include "G3D/platform.h"
 
- 
+#ifdef G3D_LINUX
+    // Needed so we can define a global display
+    // pointer for debugAssert.
+    #include <X11/Xlib.h>
+    #include <X11/Xutil.h>
+    #include <X11/Xatom.h>
+#endif
+
  /**
  @def debugBreak()
  
@@ -58,7 +66,6 @@
  @def __debugPromptShowDialog__
  @internal
  */
-
 
 #ifdef _DEBUG
 
@@ -117,6 +124,16 @@
 
 
 namespace G3D {  namespace _internal {
+
+#ifdef G3D_LINUX
+    /**
+     A pointer to the X11 display.  Initially NULL.  If set to a
+     non-null value (e.g. by SDLWindow), debugAssert attempts to use
+     this display to release the mouse/input grab when an assertion
+     fails.
+     */
+    extern Display*      X11Display;
+#endif
 
 /**
  Pops up an assertion dialog or prints an assertion

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2004-02-26
+ @edited  2004-02-28
  */
 
 #include "G3D/debugAssert.h"
@@ -29,6 +29,11 @@
 using namespace std;
 
 namespace G3D { namespace _internal {
+
+#ifdef G3D_LINUX
+    Display*      X11Display = NULL;
+#endif
+
 
 #ifdef G3D_WIN32
 static void postToClipboard(const char *text) {
@@ -240,7 +245,11 @@ void _releaseInputGrab_() {
         ClipCursor(NULL);
         
     #elif defined(G3D_LINUX)
-        // TODO: Linux
+        if (X11Display != NULL) {
+            XUngrabPointer(X11Display, CurrentTime);
+            XUngrabKeyboard(X11Display, CurrentTime);
+            XSync(X11Display, false);           
+        }
     #elif defined(G3D_OSX)
         // TODO: OS X
     #endif
