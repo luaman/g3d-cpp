@@ -81,10 +81,9 @@ AC_CONFIG_FILES([Makefile
 				 source/Makefile
                  source/test/Makefile
 				 source/demos/Makefile
-				 source/demos/GLG3D_Demo/Makefile
                  source/demos/MD2Model_Demo/Makefile
 				 source/demos/Collision_Demo/Makefile
-				 source/demos/GLProgram_Demo/Makefile
+				 source/demos/VAR_Demo/Makefile
 				 source/include/Makefile])
 
 #				 source/G3Dcpp/Makefile
