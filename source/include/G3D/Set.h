@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-12-09
-  @edited  2003-03-21
+  @edited  2004-03-10
  */
 
 #ifndef G3D_SET_H
@@ -21,9 +21,13 @@ namespace G3D {
 /**
  An unordered data structure that has at most one of each element.
  O(1) insert, remove, contains.
+
+ There are is copy constructor or assignment operator defined because
+ the default ones are correct for Set.
  */
 template<class T> 
 class Set {
+
     /**
      If an object is a member, it is contained in
      this table.

@@ -7,7 +7,7 @@
   @cite Bug fix by Darius Jazayeri, jazayeri@MIT.EDU
 
   @created 2001-04-22
-  @edited  2004-02-13
+  @edited  2004-03-10
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -228,8 +228,13 @@ public:
         this->copyFrom(h);
     }
 
-    Table& operator= (const Table<Key, Value>& h) {
-        this->copyFrom(h);
+    Table& operator=(const Table<Key, Value>& h) {
+        // No need to copy if the argument is this
+        if (this != &h) {
+            // Free the existing nodes
+            freeMemory();
+            this->copyFrom(h);
+        }
         return *this;
     }
 
