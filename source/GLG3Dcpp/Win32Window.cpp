@@ -225,7 +225,7 @@ void Win32Window::init(HWND hwnd) {
     textOutFormat.commit();
 #endif
 
-    if (wglChoosePixelFormatEXT != NULL) {
+    if (wglChoosePixelFormatARB != NULL) {
         // Use wglChoosePixelFormatEXT to override the pixel format choice for antialiasing.
         // Based on http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=46
         // and http://oss.sgi.com/projects/ogl-sample/registry/ARB/wgl_pixel_format.txt
@@ -249,8 +249,7 @@ void Win32Window::init(HWND hwnd) {
         iAttributes.append(0, 0); // end sentinel
         
         uint32 numFormats;
-
-        int valid = wglChoosePixelFormatEXT(
+        int valid = wglChoosePixelFormatARB(
             _hDC,
             iAttributes.getCArray(), 
             NULL,
@@ -258,7 +257,11 @@ void Win32Window::init(HWND hwnd) {
             &pixelFormat,
             &numFormats);
 
-        if ((numFormats < 1) || ! valid) {
+
+        // TODO vejita: On Morgan's NVIDIA card, numFormats is always zero!
+        // I removed the check that sets pixelFormat to 0 when that is the case.
+
+        if (! valid) {
             // No valid format
             pixelFormat = 0;
         }

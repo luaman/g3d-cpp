@@ -114,9 +114,41 @@ App::App(const GAppSettings& settings) : GApp(settings, Win32Window::create(sett
 
 
 int main(int argc, char** argv) {
+    /*
+
+#9 Format Description
+nSize:				40
+nVersion:			1
+dwFlags:			PFD_DRAW_TO_WINDOW|PFD_SUPPORT_OPENGL|PFD_DOUBLEBUFFER|
+iPixelType:			0
+cColorBits:			32
+cRedBits:			8
+cRedShift:			16
+cGreenBits:			8
+cGreenShift:			8
+cBlueBits:			8
+cBlueShift:			0
+cAlphaBits:			0
+cAlphaShift:			0
+cAccumBits:			64
+cAccumRedBits:			16
+cAccumGreenBits:		16
+cAccumBlueBits:			16
+cAccumAlphaBits:		16
+cDepthBits:			24
+cStencilBits:			8
+cAuxBuffers:			4
+iLayerType:			0
+bReserved:			0
+dwLayerMask:			0
+dwDamageMask:			0
+    */
     GAppSettings settings;
     settings.window.depthBits = 24;
-    settings.window.alphaBits = 8;
+    settings.window.stencilBits = 8;
+    settings.window.alphaBits = 0;
+    settings.window.rgbBits = 8;
+    settings.window.fsaaSamples = 1;
     App(settings).run();
     return 0;
 }
