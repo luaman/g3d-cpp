@@ -180,12 +180,14 @@ public:
         const Vector4&                  P,
         Array<bool>&                    backface);
 
+    /** A faster version of identifyBackfaces for the case where
+        face normals have already been computed */
     static void identifyBackfaces(
         const Array<Vector3>&           vertexArray,
         const Array<Face>&              faceArray,
-        const Array<Vector3>&           faceNormals,
         const Vector4&                  P,
-        Array<bool>&                    backface);
+        Array<bool>&                    backface,
+        const Array<Vector3>&           faceNormals);
 
     /**
      Welds nearby and colocated elements of the <I>oldVertexArray</I> together so that
