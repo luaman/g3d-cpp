@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-09-17
+  @edited  2003-09-25
 */
 
 #include "GLG3D/GPUProgram.h"
@@ -22,32 +22,51 @@ GPUProgram::GPUProgram(
 GLenum GPUProgram::getUnitFromCode(const std::string& code, Extension& extension) {
 
     if (beginsWith(code, "!!ARBvp1.0")) {
+
 		extension = ARB;
+
         return GL_VERTEX_PROGRAM_ARB;
 
     } if (beginsWith(code, "!!ARBfp1.0")) {
+
 		extension = ARB;
+
         return GL_FRAGMENT_PROGRAM_ARB;
 
     } if (beginsWith(code, "!!VP2.0")) {
+
 		extension = NVIDIA;
+
         return GL_VERTEX_PROGRAM_NV;
+
 
     } if (beginsWith(code, "!!VP1.0")) {
+
 		extension = NVIDIA;
+
         return GL_VERTEX_PROGRAM_NV;
 
+
     } if (beginsWith(code, "!!FP1.0")) {
+
 		extension = NVIDIA;
+
         return GL_FRAGMENT_PROGRAM_NV;
+
 
     } if (beginsWith(code, "!!FP1.1")) {
+
 		extension = NVIDIA;
+
         return GL_FRAGMENT_PROGRAM_NV;
 
+
     } if (beginsWith(code, "!!FP2.0")) {
+
 		extension = NVIDIA;
+
         return GL_FRAGMENT_PROGRAM_NV;
+
 
     } else {
         return GL_NONE;
@@ -87,10 +106,12 @@ void GPUProgram::deletePrograms(int num, unsigned int* id) const {
 void GPUProgram::bindProgram(int unit, unsigned int glProgram) const {
     switch (extension) {
     case NVIDIA:
+        bindingTable.nvBind(unit);
         glBindProgramNV(unit, glProgram);
         break;
 
     case ARB:
+        bindingTable.arbBind(unit);
         glBindProgramARB(unit, glProgram);
         break;
     }
@@ -124,6 +145,7 @@ void GPUProgram::getProgramError(int& pos, const unsigned char*& msg) const {
         break;
     }
 }
+
 
 void GPUProgram::reload(const std::string& _code) {
     std::string code = _code;
@@ -261,6 +283,7 @@ LOADSHADER:
             exit(-1);
         }
     }
+    bindingTable.parse(code);
 
     glPopAttrib();
 }
@@ -285,6 +308,88 @@ void GPUProgram::bind() {
 
 void GPUProgram::disable() {
     glDisable(unit);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+
+bool GPUProgram::BindingTable::symbolMatch(const Token& t, const std::string& s) {
+    return (t.type() == Token::SYMBOL) && (t.string() == s);
+}
+
+
+bool GPUProgram::BindingTable::consumeSymbol(TextInput& ti, const std::string& s) {
+    Token t = ti.peek();
+    if (symbolMatch(t, s)) {
+        ti.readSymbol(s);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+void GPUProgram::BindingTable::nvBind(GLenum target) const {
+    for (int b = 0; b < bindingArray.size(); ++b) {
+        const VPBinding& binding = bindingArray[b];
+
+        if ((binding.source == CONSTANT) && (binding.type == FLOAT4)) {
+            glProgramParameter4fvNV(target, binding.slot, binding.vector);
+        }
+    }
+}
+
+
+
+void GPUProgram::BindingTable::arbBind(GLenum target) const {
+    for (int b = 0; b < bindingArray.size(); ++b) {
+        const VPBinding& binding = bindingArray[b];
+
+        if ((binding.source == CONSTANT) && (binding.type == FLOAT4)) {
+            alwaysAssertM(false, "TODO: should these be Env or Local params?");
+//                glProgramLocalParameter4fvARB(target, binding.slot, binding.vector);
+        }
+    }
+}
+
+
+void GPUProgram::BindingTable::parse(const std::string& code) {
+    bindingArray.resize(0);
+
+    TextInput ti(TextInput::FROM_STRING, code);
+    
+    while (ti.hasMore()) {
+        Token t = ti.read();
+        // Scan for "#"
+        while (!symbolMatch(t, "#") && ti.hasMore()) {
+            t = ti.read();
+        }
+    
+        if (ti.hasMore()) {
+            // Read the comment line
+            if (consumeSymbol(ti, "const") && consumeSymbol(ti, "c") && consumeSymbol(ti, "[")) {
+                Token t = ti.peek();
+
+                if (t.type() == Token::NUMBER) {
+                    VPBinding binding;
+                    binding.source = CONSTANT;
+                    binding.type   = FLOAT4;
+                    binding.slot   = ti.readNumber();
+
+                    if (consumeSymbol(ti, "]") && consumeSymbol(ti, "=")) {
+                        for (int i = 0; i < 4; ++i) {
+                            t = ti.peek();
+                            if (t.type() == Token::NUMBER) {
+                                binding.vector[i] = ti.readNumber(); 
+                            }
+                        }
+                        bindingArray.append(binding);
+                    }
+                }
+            }
+        }
+    }
 }
 
 
