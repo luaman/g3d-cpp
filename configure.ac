@@ -48,16 +48,17 @@ AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit floor gethostbyname gethostname inet_ntoa memset mkdir pow select socket sqrt strchr strdup strrchr strstr])
 
-# Check for sdl-config program
-AC_PATH_PROG([SDL_CONFIG], [sdl-config], [no])
-if test x$SDL_CONFIG != xno ; then
-    SDL_INCDIR=`$SDL_CONFIG --cflags`
-	SDL_LDFLAGS=`$SDL_CONFIG --libs`
-	AC_SUBST(SDL_INCDIR)
-	AC_SUBST(SDL_LDFLAGS)
-else
-  	AC_MSG_ERROR([sdl-config not found!])
-fi
+AM_PATH_SDL(1.2.0, [], [AC_MSG_ERROR([Can't find SDL on your system])])
+## Check for sdl-config program
+#AC_PATH_PROG([SDL_CONFIG], [sdl-config], [no])
+#if test x$SDL_CONFIG != xno ; then
+#    SDL_INCDIR=`$SDL_CONFIG --cflags`
+#	SDL_LDFLAGS=`$SDL_CONFIG --libs`
+#	AC_SUBST(SDL_INCDIR)
+#	AC_SUBST(SDL_LDFLAGS)
+#else
+#  	AC_MSG_ERROR([sdl-config not found!])
+#fi
 
 #AC_MSG_CHECKING([whether to enable debugging])
 #AC_ARG_ENABLE(debugging, [
