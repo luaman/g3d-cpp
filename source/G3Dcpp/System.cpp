@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-12-04
+  @edited  2003-12-07
  */
 
 #include "G3D/platform.h"
@@ -67,7 +67,7 @@ std::string demoFindData(bool errorIfNotFound) {
         potential.append("../");
     }
 
-    std::string lpath = "libraries/g3d-6_00-b9/";
+    std::string lpath = "libraries/g3d-6_00-b10/";
     #ifdef G3D_WIN32
         potential.append(std::string("c:/") + lpath);
         potential.append(std::string("d:/") + lpath);
