@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-04-15
+  @edited  2004-04-29
  */
 
 #ifndef G3D_SYSTEM_H
@@ -84,7 +84,7 @@ public:
 
 	static const std::string& cpuVendor();
 	
-	/** */
+	/** e.g. "Windows", "GNU/Linux" */
     static const std::string& operatingSystem();
 
 	/** */

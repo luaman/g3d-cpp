@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-03-06
+  @edited  2004-04-29
  */
 
 #include "G3D/platform.h"
@@ -357,7 +357,23 @@ void init() {
     
     #elif defined(G3D_LINUX)
 
-        _operatingSystem = "Linux";
+        {
+            // Shell out to the 'uname' command
+
+            FILE* f = popen("uname -a", "r");
+
+            int len = 100;
+            char* r = (char*)malloc(len * sizeof(char));
+            fgets(r, len, f);
+            // Remove trailing newline
+            if (r[strlen(r) - 1] == '\n') {
+                r[strlen(r) - 1] = '\0';
+            }
+            fclose(f);
+
+            _operatingSystem = r;
+            free(r);
+        }
 
     #elif defined(G3D_OSX)
 
