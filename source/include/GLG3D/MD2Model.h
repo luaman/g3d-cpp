@@ -16,6 +16,7 @@
 #include "graphics3D.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
+#include "GLG3D/GModel.h"
 
 namespace G3D {
 
@@ -43,7 +44,7 @@ namespace G3D {
  <DT>
 
  */
-class MD2Model {
+class MD2Model : public GModel {
 public:
 
     /**
@@ -166,9 +167,10 @@ protected:
         interpolatedFrame is not yet initialized. */
     static MD2Model*            interpolatedModel;
     static Pose                 interpolatedPose;
-    static MeshAlg::Geometry             interpolatedFrame;
+    static MeshAlg::Geometry    interpolatedFrame;
 
     enum {NUM_VAR_AREAS = 10, NONE_ALLOCATED = -1};
+
     /** Shared dynamic vertex arrays. Allocated by allocateVertexArrays.
         We cycle through multiple VARAreas because the models are so small
         that we can send data to the card faster than it can be rendered
@@ -207,13 +209,6 @@ protected:
     Array<Primitive>            primitiveArray;
 
     /**
-     Triangle list array useful for generating all of the triangles,
-     e.g. for collision detection.  For rendering we use the
-     Primitive array.
-     */
-    Array<int>                  indexArray;
-
-    /**
      Texture array that parallels vertex and normal arrays.
      Set up by computeTexCoords
      */
@@ -223,27 +218,6 @@ protected:
      Matrix mapping int16 texture coordinates to floats.
      */
     CoordinateFrame             texFrame;
-
-    /**
-     Set on load by computeAdjacency().
-     */
-    Array<MeshAlg::Face>        faceArray;
-
-    /**
-     Set on load by computeAdjacency();
-     */
-    Array< Array<int> >         adjacentFaceArray;
-
-    /**
-     Set on load by computeAdjacency().
-     */
-    Array<MeshAlg::Edge>        edgeArray;
-
-    Sphere                      _boundingSphere;
-
-    Box                         _boundingBox;
-
-    int                         _numBrokenEdges;
 
     Sphere                      animationBoundingSphere[MAX_ANIMATIONS]; 
     Box                         animationBoundingBox[MAX_ANIMATIONS]; 
@@ -264,12 +238,13 @@ protected:
      */
     void allocateVertexArrays(RenderDevice* renderDevice);
 
-public:
-
     /**
-     Not set by the load() routine.
+     Triangle list array useful for generating all of the triangles,
+     e.g. for collision detection.  Not used for rendering.
      */
-    std::string             name;
+    Array<int>                  indexArray;
+
+public:
 
     MD2Model() : initialized(false) {}
 
@@ -451,6 +426,6 @@ public:
     size_t mainMemorySize() const;
 };
 
-#endif
-
 }
+
+#endif

@@ -558,6 +558,7 @@
    <BR>Nate Miller
    <BR>Nick Musurca
    <BR>Edward Resnick
+   <BR>Jack Ritter
    <BR>Nate Robbins
    <BR>Sebastian Schuberth
    <BR>SGI
@@ -566,7 +567,6 @@
    <BR>Laura Wollstadt
    </BLOCKQUOTE>
    <HR>
-
 
    <IMG SRC="G3D.gif">
   

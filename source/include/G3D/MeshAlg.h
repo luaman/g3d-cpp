@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-10-22
+ @edited  2003-11-12
 */
 
 #ifndef G3D_MESHALG_H
@@ -24,7 +24,8 @@ namespace G3D {
   (No mesh class is provided with G3D because there isn't an "ideal" 
   mesh format-- you may want keyframed animation, skeletal animation,
   texture coordinates, etc.)
- */
+
+  */
 class MeshAlg {
 public:
 
@@ -207,6 +208,14 @@ public:
         int                 start   = 0,
         int                 run     = 1,
         int                 skip    = 0);
+
+    /**
+     Computes a conservative, near-optimal axis aligned bounding box and sphere. 
+
+      @cite The bounding sphere uses the method from J. Ritter. An effcient bounding sphere. In Andrew S. Glassner, editor, Graphics Gems. Academic Press, Boston, MA, 1990.
+
+    */
+    static void computeBounds(const Array<Vector3>& vertex, class Box& box, class Sphere& sphere);
 
 protected:
 

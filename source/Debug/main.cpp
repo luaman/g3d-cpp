@@ -17,6 +17,9 @@ public:
     virtual RealTime getIntersectionTime(const Ray&) = NULL;
 };
 
+
+////////////////////////////////////////////////////////////////
+
 class SphereEntity : public Entity {
 private:
     Sphere sphere;
@@ -44,6 +47,45 @@ RealTime SphereEntity::getIntersectionTime(const Ray& ray) {
 }
 
 
+////////////////////////////////////////////////////////////////
+
+
+class IFSEntity : public Entity {
+private:
+    CoordinateFrame cframe;
+    IFSModel        model;
+
+public:
+    IFSEntity(const std::string& filename, const Vector3& pos);
+
+    virtual void render(RenderDevice*);
+    virtual RealTime getIntersectionTime(const Ray&);
+
+};
+
+
+IFSEntity::IFSEntity(const std::string& filename, const Vector3& pos) {
+    model.load(filename);
+    cframe = CoordinateFrame(pos);
+}
+
+
+void IFSEntity::render(RenderDevice* device) {
+    device->pushState();
+        device->setObjectToWorldMatrix(cframe);
+        model.render(device);
+        Draw::sphere(model.boundingSphere(), device);
+        Draw::box(model.boundingBox(), device);
+    device->popState();
+}
+
+
+RealTime IFSEntity::getIntersectionTime(const Ray& ray) {
+    return inf;
+}
+
+
+///////////////////////////////////////////////////////////////
 /**
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
@@ -70,9 +112,9 @@ public:
 void Demo::init()  {
     app->debugCamera->setPosition(Vector3(0,4,10));
     app->debugCamera->lookAt(Vector3::ZERO);
-    entityArray.append(new SphereEntity(Vector3(0,1,0),1,Color3::WHITE));
-    entityArray.append(new SphereEntity(Vector3(-2.5,1,0),1,Color3::GREEN));
-    entityArray.append(new SphereEntity(Vector3(2.5,1,0),1,Color3::YELLOW));
+    entityArray.append(new SphereEntity(Vector3(0, 1, 0), 1, Color3::WHITE));
+    entityArray.append(new SphereEntity(Vector3(-4, 1, 0), 1, Color3::GREEN));
+    entityArray.append(new IFSEntity(app->dataDir + "ifs/teapot.ifs", Vector3(4, 1, 0)));
     entityArray[1]->selected = true;
 }
 
@@ -160,6 +202,7 @@ void Demo::doGraphics() {
 
     sky->renderLensFlare(lighting);
 }
+
 
 void Demo::cleanup() {
     entityArray.deleteAll();

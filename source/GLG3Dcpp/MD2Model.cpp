@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-08-07
- @edited  2003-10-18
+ @edited  2003-11-12
  */
 
 #if defined(G3D_WIN32) && defined(SSE)
@@ -539,39 +539,7 @@ const Box& MD2Model::boundingBox(Animation a) const {
     return animationBoundingBox[(Animation)iAbs(a)];
 }
 
-
-const Sphere& MD2Model::boundingSphere() const {
-    if (! initialized) {
-        static Sphere s(Vector3::ZERO, 0);
-        return s;
-    }
-    return _boundingSphere;
-}
-
-
-const Box& MD2Model::boundingBox() const {
-    if (! initialized) {
-        static Box b(Vector3::ZERO, Vector3::ZERO);
-        return b;
-    }
-    return _boundingBox;
-}
-
-
-const Array<MeshAlg::Face>& MD2Model::faces() const {
-    return faceArray;
-}
-
-
-const Array<MeshAlg::Edge>& MD2Model::geometricEdges() const {
-    return edgeArray;
-}
-
-const Array< Array<int> >& MD2Model::adjacentFaces() const {
-    return adjacentFaceArray;
-}
-
-
+ 
 size_t MD2Model::mainMemorySize() const {
 
     size_t frameSize   = keyFrame.size() * (sizeof(PackedGeometry)  + (sizeof(Vector3) + sizeof(uint8)) * keyFrame[0].vertexArray.size());

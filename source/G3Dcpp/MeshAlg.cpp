@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2003-10-21
+  @edited  2003-11-12
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -13,6 +13,8 @@
 #include "G3D/MeshAlg.h"
 #include "G3D/Table.h"
 #include "G3D/Set.h"
+#include "G3D/Box.h"
+#include "G3D/Sphere.h"
 
 namespace G3D {
 
@@ -163,6 +165,112 @@ int MeshAlg::countBrokenEdges(const Array<MeshAlg::Edge>& edgeArray) {
     }
 
     return b;
+}
+
+
+void MeshAlg::computeBounds(
+    const Array<Vector3>&   vertexArray,
+    Box&                    box, 
+    Sphere&                 sphere) {
+
+    Vector3 xmin, xmax, ymin, ymax, zmin, zmax;
+
+    // FIRST PASS: find 6 minima/maxima points
+    xmin.x = ymin.y = zmin.z = inf;
+    xmax.x = ymax.y = zmax.z = -inf;
+
+    for (int v = 0; v < vertexArray.size(); ++v) {
+        const Vector3& vertex = vertexArray[v];
+
+        if (vertex.x < xmin.x) {
+    		xmin = vertex;
+        }
+
+        if (vertex.x > xmax.x) {
+    		xmax = vertex;
+        }
+
+        if (vertex.y < ymin.y) {
+    		ymin = vertex;
+        }
+
+        if (vertex.y > ymax.y) {
+		    ymax = vertex;
+        }
+
+        if (vertex.z < zmin.z) {
+		    zmin = vertex;
+        }
+
+        if (vertex.z > zmax.z) {
+		    zmax = vertex;
+        }
+	}
+
+    // Set xspan = distance between the 2 points xmin & xmax (squared)
+    double xspan = (xmax - xmin).squaredLength();
+
+    // Same for y & z spans
+    double yspan = (ymax - ymin).squaredLength();
+    double zspan = (zmax - zmin).squaredLength();
+
+    // Set points dia1 & dia2 to the maximally separated pair
+    Vector3 dia1 = xmin; 
+    Vector3 dia2 = xmax;
+    
+    double maxspan = xspan;
+    if (yspan > maxspan) {
+	    maxspan = yspan;
+	    dia1    = ymin;
+        dia2    = ymax;
+	}
+
+    if (zspan > maxspan) {
+        maxspan = zspan;
+    	dia1 = zmin;
+        dia2 = zmax;
+	}
+
+
+    // dia1,dia2 is a diameter of initial sphere
+    // calc initial center
+    Vector3 center = (dia1 + dia2) / 2;
+
+    // calculate initial radius^2 and radius 
+    Vector3 d = dia2 - sphere.center;
+
+    double radSq = d.squaredLength();
+    double rad  = sqrt(rad2);
+
+    // SECOND PASS: increment current sphere
+    double old_to_p, old_to_new;
+
+    for (int v = 0; v < vertexArray.size(); ++v) {
+        const Vector3& vertex = vertexArray[v];
+
+        d = vertex - center;
+
+        double old_to_p_sq = d.squaredLength();
+
+    	// do r^2 test first 
+        if (old_to_p_sq > radSq) {
+		 	// this point is outside of current sphere
+    		old_to_p = sqrt(old_to_p_sq);
+
+    		// calc radius of new sphere
+		    rad = (rad + old_to_p) / 2.0;
+
+            // for next r^2 compare
+		    radSq = rad * rad; 	
+		    old_to_new = old_to_p - rad;
+
+		    // calc center of new sphere
+            center = (rad * center + old_to_new * vertex) / old_to_p;
+		}	
+	}
+
+    box = Box(Vector3(xmin.x, ymin.y, zmin.z), Vector3(xmax.x, ymax.y, zmax.z));
+    sphere = Sphere(center, rad);
 }
 
 } // G3D namespace
