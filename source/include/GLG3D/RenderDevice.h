@@ -115,6 +115,8 @@ public:
         framed(true) {}
 };
 
+class VAR;
+
 /**
  You must call RenderDevice::init() before using the RenderDevice.
   
@@ -134,7 +136,8 @@ public:
  <P> NICEST line and point smoothing is enabled by default (however,
  you need to set your alpha blending mode to see it).
 
- <P> glEnable(GL_NORMALIZE) is set by default.  glEnable(GL_COLOR_MATERIAL) is enabled by default.
+ <P> glEnable(GL_NORMALIZE) is set by default.  glEnable(GL_COLOR_MATERIAL) 
+     is enabled by default.
 
  <P> For stereo rendering, set <CODE>RenderDeviceSettings::stereo = true</CODE>
      and use glDrawBuffer to switch which eye is being rendered.  Only
@@ -191,8 +194,6 @@ public:
     renderDevice->cleanup();
     </PRE>
  */
-class VAR;
-
 class RenderDevice {
 public:
     enum Primitive {LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP,
@@ -695,7 +696,16 @@ public:
 
     void setProjectionAndCameraMatrix(const class GCamera& camera);
 
+    /**
+     Analogous to glBegin.  See the example in the detailed description
+     section of this page.
+     */
     void beginPrimitive(Primitive p);
+
+    /**
+     Analogous to glEnd.  See the example in the detailed description
+     section of this page.
+     */
     void endPrimitive();
 
 	/**
