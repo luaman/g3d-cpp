@@ -32,17 +32,32 @@ class VARArea : public ReferenceCountedObject {
 public:
 
     /**
-     Use WRITE_EVERY_FRAME if you write at least once per frame.
+     These values are <B>hints</B>. Your program will work correctly
+     regardless of which you use, but using the appropriate value
+     lets the renderer optimize for your useage patterns and can
+     increase performance.
 
-     Correspond to:
+     Use WRITE_EVERY_FRAME if you write <I>at least</I> once per frame
+     (e.g. software animation).
+
+     Use WRITE_EVERY_FEW_FRAMES if you write to the area as part of
+     the rendering loop, but not every frame (e.g. impostors, deformable
+     data).
+
+     Use WRITE_ONCE if you do not write to the area inside the rendering
+     loop (e.g. rigid bodies loaded once at the beginning of a game level).  
+     This does not mean you can't write multiple times
+     to the area, just that writing might be very slow compared to rendering.
+
+     Correspond to OpenGL hints: 
       WRITE_ONCE : GL_STATIC_DRAW_ARB
       WRITE_EVERY_FRAME : GL_STREAM_DRAW_ARB
       WRITE_EVERY_FEW_FRAMEs : GL_STATIC_DRAW_ARB
      */
     enum UsageHint {
         WRITE_ONCE,
-        WRITE_EVERY_FRAME,
-        WRITE_EVERY_FEW_FRAMES};
+        WRITE_EVERY_FEW_FRAMES,
+        WRITE_EVERY_FRAME};
 
 private:
 

@@ -225,6 +225,7 @@ public:
      If false, the texture is created from the front buffer.
 
      @param rect The rectangle to copy (relative to the viewport)
+     See also RenderDevice::screenShotPic
      */
     void copyFromScreen(const Rect2D& rect, bool useBackBuffer = true);
 

@@ -2438,11 +2438,13 @@ static std::string currentDateString() {
     return format("%d-%02d-%02d", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday); 
 }
 
-void RenderDevice::screenshotPic(GImage& dest) const {
-    // TODO: adjust for gamma
 
-    // Read back the front buffer
-    glReadBuffer(GL_FRONT);
+void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer) const {
+    if (useBackBuffer) {
+        glReadBuffer(GL_BACK);
+    } else {
+        glReadBuffer(GL_FRONT);
+    }
     
     dest.resize(getWidth(), getHeight(), 3);
     glReadPixels(0, 0, getWidth(), getHeight(), GL_RGB,

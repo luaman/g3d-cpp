@@ -1050,10 +1050,9 @@ public:
     void notifyResize(int w, int h);
 
     /**
-     Takes a screenshot of the front buffer and
-     puts the data into the G3D::GImage dest variable.
+     Takes a screenshot and puts the data into the G3D::GImage dest variable.
      */
-    void screenshotPic(GImage& dest) const;
+    void screenshotPic(GImage& dest, bool useBackBuffer = false) const;
 
 	/**
      @deprecated

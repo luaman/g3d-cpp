@@ -117,6 +117,12 @@ public:
 		update(sourcePtr, _numElements, glFormatOf(T), sizeof(T));
 	}
 
+    /**
+     Overwrites existing data with data of the same size or smaller.
+     Convenient for changing part of a G3D::VARArea without 
+     reseting the area (and thereby deallocating the other G3D::VAR
+     arrays in it).
+     */
     template<class T>
 	void update(const Array<T>& source) {
 		update(source.getCArray(), source.size(), glFormatOf(T), sizeof(T));

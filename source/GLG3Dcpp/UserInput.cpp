@@ -54,7 +54,6 @@ void UserInput::init(
     alwaysAssertM(window != NULL, "Window must not be NULL");
 
     _window = window;
-
     windowCenter = Vector2(window->width() / 2, window->height() / 2);
 
     keyState.resize(SDL_CUSTOM_LAST);

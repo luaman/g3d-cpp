@@ -1,290 +1,166 @@
-#include "../include/G3DAll.h"
-#include <string>
-
-class Entity {
-protected:
-
-    Vector3                     basePos;
-    //CoordinateFrame             cframe;
-    PhysicsFrame                pframe;
-    Color4                      color;
-    TextureRef                  texture;
-
-public:
-
-    bool selected;
-    
-    Entity(
-        const Vector3&          pos,
-        const Color4&           _color,
-        const TextureRef        _texture);
-
-    virtual ~Entity() {}
-
-    virtual void doSimulation(SimTime dt);
-
-    virtual PosedModelRef getPosedModel() const = 0;
-
-    void render(RenderDevice*);
-
-    /**
-      Returns amount of time to intersection starting on ray.origin and
-      travels at ray.velocity.
-     */
-    RealTime getIntersectionTime(const Ray&);
-};
-
-
-Entity::Entity(
-    const Vector3&         pos,
-    const Color4&          _color,
-    const TextureRef       _texture) : 
-    color(_color),
-    texture(_texture),
-    basePos(pos),
-    selected(false) {}
-
-
-void Entity::doSimulation(SimTime dt) {
-    // Put the base on the ground
-    //cframe.translation = basePos - 
-    //    Vector3::UNIT_Y * getPosedModel()->objectSpaceBoundingBox().getCorner(0).y;
-    pframe.translation = basePos -
-           Vector3::UNIT_Y * getPosedModel()->objectSpaceBoundingBox().getCorner(0).y;
-    // Face the viewer
-    //cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, G3D_PI);
-    Quat q1 = Quat::fromAxisAngleRotation(Vector3::UNIT_Y, G3D_PI / 2);
-    Quat q2 = Quat::fromAxisAngleRotation(Vector3::UNIT_X, toRadians(45));
-    //pframe.rotation = Quat::fromAxisAngleRotation(Vector3::UNIT_Y, G3D_PI);
-
-    static double t = 0;
-    t += dt * .1;
-    if (t > 1) {
-        t = 0;
-    }
-
-    pframe.rotation = q1.slerp(q2, t);
-
-    //CoordinateFrame cframe = pframe.toCoordinateFrame();
-}
-
-
-void Entity::render(RenderDevice* renderDevice) {
-    PosedModelRef pm = getPosedModel();
-    pm->render(renderDevice);
-//    pm->renderNormals(renderDevice);
-}
-
-
-RealTime Entity::getIntersectionTime(const Ray& ray) {
-    PosedModelRef pm = getPosedModel();
-    Vector3 dummy;
-    return CollisionDetection::collisionTimeForMovingPointFixedBox(ray.origin, 
-        ray.direction, pm->worldSpaceBoundingBox(), dummy);
-}
-
-////////////////////////////////////////////////////////////////
-
-class IFSEntity : public Entity {
-private:
-
-    IFSModelRef     ifs;
-
-public:
-
-    IFSEntity(IFSModelRef _ifs, const Vector3& pos, const Color4& _color): 
-      Entity(pos, _color, NULL), ifs(_ifs) {}
-
-    virtual PosedModelRef getPosedModel() const {
-        GMaterial mat;
-        mat.color = Color3::RED;
-        mat.specularCoefficient = 1.0;
-        return ifs->pose(pframe.toCoordinateFrame(), mat);
-    }
-};
-
-////////////////////////////////////////////////////////////////
-
-class MD2Entity : public Entity {
-private:
-
-    MD2ModelRef     md2;
-    MD2Model::Pose  pose;
-
-public:
-
-    MD2Entity(MD2ModelRef _md2, const Vector3& pos, const TextureRef _texture): 
-      Entity(pos, Color3::WHITE, _texture), md2(_md2) {
-        pose.time = random(0, 20);
-    }
-
-    virtual PosedModelRef getPosedModel() const {
-        return md2->pose(pframe.toCoordinateFrame(), pose);
-    }
-
-    virtual void doSimulation(SimTime dt) {
-        // Jump/wave periodically
-        bool jump = random(0, 10.0 / dt) <= 0.5;
-        bool wave = random(0, 10.0 / dt) <= 0.5;
-
-        Entity::doSimulation(dt);
-
-        pose.doSimulation(dt, false, false, false, false, jump, 
-            false, false, false, wave, false, false, false, false, 
-            false, false, false);
-    }
-};
-
-///////////////////////////////////////////////////////////////
-
-class App : public GApp {
-public:
-
-    App(const GAppSettings& settings) : GApp(settings) {
-    }
-
-    void main();
-};
-
-
 /**
- This simple demo applet uses the debug mode as the regular
- rendering mode so you can fly around the scene.
- */
-class Demo : public GApplet {
-private:
+  @file demos/main.cpp
 
-    /** Renders the scene, using the currently set camera and viewport. 
-        Called first to render the environment map, then to render
-        the visible frame. */
-    void renderScene(const LightingParameters& lighting);
+  This is a prototype main.cpp to use for your programs.  It is a good
+  infrastructure for building an interactive demo.  See also G3D::GApp
+  and G3D::GApplet for a more object-oriented approach (that automates
+  most of the boilerplate).
+  
+  @maintainer Morgan McGuire, matrix@graphics3d.com
 
-    App*                app;
+  @created 2002-02-27
+  @edited  2004-03-02
+ */ 
 
-public:
-
-    SkyRef              sky;
-    Array<Entity*>      entityArray;
-
-    Demo(App* _app) : GApplet(_app), app(_app) {
-        app->renderDevice->setSpecularCoefficient(0);
-    }
-    
-    virtual void init();
-    virtual void doLogic();
-    virtual void doSimulation(SimTime dt);
-    virtual void doGraphics();
-    virtual void cleanup();
-};
+#include <G3DAll.h>
 
 
-void Demo::init()  {
-    sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
+std::string             DATA_DIR;
 
-    app->debugCamera.setPosition(Vector3(0, 0.5, 2));
-    app->debugCamera.lookAt(Vector3(0, 0.5, 0));
+Log*                    debugLog		= NULL;
+RenderDevice*           renderDevice	= NULL;
+CFontRef                font			= NULL;
+UserInput*              userInput		= NULL;
+ManualCameraController* controller      = NULL;
+GCamera  				camera;
+bool                    endProgram		= false;
 
-    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cube.ifs");
-
-    entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
-}
-
-
-void Demo::doSimulation(SimTime dt) {
-    for (int e = 0; e < entityArray.length(); ++e) { 
-        entityArray[e]->doSimulation(dt);
-    }
-}
-
-
-void Demo::doLogic() {
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
-        // Even when we aren't in debug mode, quit on escape.
-        endApplet = true;
-        app->endProgram = true;
-    }
-
-    if (app->userInput->keyPressed('y')) {
-        app->userInput->setPureDeltaMouse( ! app->userInput->pureDeltaMouse());
-    }
-
-    debugAssert(! app->userInput->keyPressed(' '));
-
-	app->debugPrintf("%s", app->userInput->mouseXY().toString().c_str());
-    app->debugPrintf("%s", app->userInput->mouseDXY().toString().c_str());
-
-//    System::sleep(0.1);
-}
-
-
-void Demo::doGraphics() {
-    LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
-
-    app->renderDevice->clear(true, true, true);
-     
-    
-    // Render the scene to the full-screen
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
-
-    app->renderDevice->clear(sky == NULL, true, true);
-    renderScene(lighting);
-
-
-    // The lens flare shouldn't be reflected, so it is only rendered
-    // for the final composite image
-    if (sky != NULL) {
-        sky->renderLensFlare(lighting);
-    }
-    
-}
-
-
-void Demo::renderScene(const LightingParameters& lighting) {
-
-    if (sky != NULL) {
-        sky->render(lighting);
-    }
-    
-    // Setup lighting
-    app->renderDevice->enableLighting();
-
-    app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
- 
-    app->renderDevice->setAmbientLightColor(lighting.ambient);
-
-    for (int e = 0; e < entityArray.length(); ++e) { 
-        entityArray[e]->render(app->renderDevice);
-    }
-
-}
-
-
-void Demo::cleanup() {
-    entityArray.deleteAll();
-}
-
-
-void App::main() {
-    Demo applet(this);
-    applet.run();
-}
+void doSimulation(GameTime timeStep);
+void doGraphics();
+void doUserInput();
 
 
 int main(int argc, char** argv) {
 
-    GAppSettings settings;
+    // Initialize
+    DATA_DIR     = demoFindData();
+    debugLog	 = new Log();
+    renderDevice = new RenderDevice();
+    RenderDeviceSettings settings;
+    settings.fsaaSamples = 1;
+    settings.resizable = true;
+    renderDevice->init(settings, debugLog);
 
-	settings.window.resizable = true;
-    settings.window.width = 640;
-    settings.window.height = 480;
+    userInput    = new UserInput();
 
-    App app(settings);
+    font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
-    app.setDebugMode(true);
-    app.run();
+    controller   = new ManualCameraController(renderDevice, userInput);
+    controller->setMoveRate(10);
+
+    controller->setPosition(Vector3(0, 0, 4));
+    controller->lookAt(Vector3(-2,3,-5));
+
+    renderDevice->resetState();
+	renderDevice->setColorClearValue(Color3(.1, .5, 1));
+
+    controller->setActive(true);
+
+    RealTime now = System::getTick() - 0.001, lastTime;
+
+    // Main loop
+    do {
+        lastTime = now;
+        now = System::getTick();
+        RealTime timeStep = now - lastTime;
+
+        doUserInput();
+
+        doSimulation(timeStep);
+
+        doGraphics();
+   
+    } while (! endProgram);
+
+    // Cleanup
+    delete controller;
+    delete userInput;
+    renderDevice->cleanup();
+    delete renderDevice;
+    delete debugLog;
 
     return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////////
 
 
+void doSimulation(GameTime timeStep) {
+    // Simulation
+    controller->doSimulation(clamp(timeStep, 0.0, 0.1));
+	camera.setCoordinateFrame(controller->getCoordinateFrame());
+}
+
+
+
+void doGraphics() {
+
+    LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
+
+    renderDevice->beginFrame();
+        // Cyan background
+	    glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
+
+        renderDevice->clear(true, true, true);
+        renderDevice->pushState();
+
+            renderDevice->setProjectionAndCameraMatrix(camera);
+
+            renderDevice->enableLighting();
+            renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+            renderDevice->setAmbientLightColor(lighting.ambient);
+
+            Draw::axes(renderDevice);
+
+        renderDevice->popState();
+	    
+    renderDevice->endFrame();
+}
+
+
+void doUserInput() {
+
+    userInput->beginEvents();
+
+    // Event handling
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch(event.type) {
+        case SDL_QUIT:
+	        endProgram = true;
+	        break;
+
+        case SDL_VIDEORESIZE:
+            {
+                renderDevice->notifyResize(event.resize.w, event.resize.h);
+                Rect2D full = Rect2D::xywh(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
+                renderDevice->setViewport(full);
+            }
+            break;
+
+
+	    case SDL_KEYDOWN:
+            switch (event.key.keysym.sym) {
+            case SDLK_ESCAPE:
+                endProgram = true;
+                break;
+
+            case SDLK_TAB:
+                controller->setActive(! controller->active());
+                break;
+
+            // Add other key handlers here
+            default:;
+            }
+            break;
+
+        // Add other event handlers here
+
+        default:;
+        }
+
+        userInput->processEvent(event);
+    }
+
+    userInput->endEvents();
+}
