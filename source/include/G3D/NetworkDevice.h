@@ -615,7 +615,7 @@ public:
 
     template<typename T> inline void send(const NetAddress& a, uint32 type, const T& msg) {
         binaryOutput.reset();
-        serializeMessage(type, m, binaryOutput);
+        serializeMessage(type, msg, binaryOutput);
         sendBuffer(a, binaryOutput);
     }
 
@@ -632,8 +632,8 @@ public:
         binaryOutput.reset();
         serializeMessage(type, m, binaryOutput);
 
-        for (int i = 0; i < array.size(); ++i) {
-            sendBuffer(array[i], binaryOutput);
+        for (int i = 0; i < a.size(); ++i) {
+            sendBuffer(a[i], binaryOutput);
         }
     }
 
@@ -683,7 +683,7 @@ public:
         BinaryInput b((messageBuffer.getCArray() + 4), 
                       messageBuffer.size() - 4, 
                       G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
-        m.deserialize(b);
+        message.deserialize(b);
 
         return true;
     }
