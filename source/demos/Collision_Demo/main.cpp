@@ -27,7 +27,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-05-24
+ @edited  2003-05-29
  */
 
 #include <G3DAll.h>
@@ -73,9 +73,10 @@ void doUserInput();
 
 int main(int argc, char** argv) {
     // Search for the data
-    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/p51-mustang.ifs")); ++count) {
-        DATA_DIR = std::string("../") + DATA_DIR;
-    }
+//    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/cow.ifs")); ++count) {
+//        DATA_DIR = std::string("../") + DATA_DIR;
+//    }
+    DATA_DIR = "D:/tmp/shadow/data/";
 
     // Initialize
     debugLog     = new Log();
@@ -83,6 +84,13 @@ int main(int argc, char** argv) {
     renderDevice->init(800, 600, debugLog, 1.0, false,
                        1024 * 1024 * 2, true, 8, 0, depthBits, 0);
     camera       = new Camera(renderDevice);
+
+    // Verify we have the shadow extension
+    if (! renderDevice->supportsOpenGLExtension("GL_ARB_shadow")) {
+        error("Critical Error", "This demo requires a graphics card with the ARB_shadow extension.", true);
+        exit(-1);
+    }
+
 
     // Allocate the two VARAreas used in this demo
     varStatic  = renderDevice->createVARArea(1024 * 1024);

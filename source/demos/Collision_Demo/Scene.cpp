@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-04-05
+ @edited  2003-05-29
  */
 
 #include "Scene.h"
@@ -217,8 +217,7 @@ void Scene::render(const LightingParameters& lighting) const {
 	    glTexGenfv(GL_Q, GL_EYE_PLANE, textureProjectionMatrix2D[3]);
 	    glEnable(GL_TEXTURE_GEN_Q);
 	    
-	    //Use SGIX_shadow comparison
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_SGIX, true);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 
         renderingPass();
 
