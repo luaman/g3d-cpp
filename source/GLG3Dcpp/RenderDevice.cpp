@@ -121,7 +121,24 @@ static double getTime() {
 
 
 /**
+ Used by the Windows version of getDriverVersion().
+ @cite Based on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
+ */
+struct VS_VERSIONINFO { 
+    WORD                wLength; 
+    WORD                wValueLength; 
+    WORD                wType; 
+    WCHAR               szKey[1]; 
+    WORD                Padding1[1]; 
+    VS_FIXEDFILEINFO    Value; 
+    WORD                Padding2[1]; 
+    WORD                Children[1]; 
+};
+
+/**
  Returns the version string for the video driver.
+
+ @cite Based in part on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
  */
 static std::string getDriverVersion() {
     #ifdef G3D_WIN32
@@ -146,7 +163,7 @@ static std::string getDriverVersion() {
 
         } else if (vendor =="NVIDIA Corporation") {
 
-            driver = driver + "\\OpenGL32.dll";//"\\nv4_disp.dll";
+            driver = driver + "\\nv4_disp.dll";
 
         } else {
 
@@ -169,37 +186,29 @@ static std::string getDriverVersion() {
             return "Unknown";
         }
 
-        LPVOID valPtr;
-        UINT valLen;
+	    // Interpret the VS_VERSIONINFO header pseudo-struct
+	    VS_VERSIONINFO* pVS = (VS_VERSIONINFO*)buffer;
+        debugAssert(!wcscmp(pVS->szKey, L"VS_VERSION_INFO"));
 
-	    // Get the translation information.
-	    // Translation table consistes of an array of two WORD entries.
-	    // First entry is langauge Id and second one is character set
-	    // This translation is to be used in subsequent queries for info
+	    uint8* pVt = (uint8*) &pVS->szKey[wcslen(pVS->szKey) + 1];
 
-	    if (VerQueryValue(buffer, "\\VarFileInfo\\Translation", &valPtr, &valLen) == 0) {
-            delete buffer;
-            return "Unknown (no translation)";
-	    }
-	    
-        uint16* translation = reinterpret_cast<uint16*>(valPtr);
-        std::string key =
-            format("\\StringFileInfo\\%04x%04x\\ProductVersion",
-                   translation[0], translation[1]);
+        #define roundoffs(a,b,r)	(((uint8*)(b) - (uint8*)(a) + ((r) - 1)) & ~((r) - 1))
+        #define roundpos(b, a, r)	(((uint8*)(a)) + roundoffs(a, b, r))
 
-        valPtr = NULL;
-        valLen = 0;
+	    VS_FIXEDFILEINFO* pValue = (VS_FIXEDFILEINFO*) roundpos(pVt, pVS, 4);
 
-delete buffer;
-return "Unknown";
+        #undef roundoffs
+        #undef roundpos
 
-// TODO (Bug 754230): the following line of code crashes
-        if (VerQueryValue(buffer, const_cast<char*>(key.c_str()), (LPVOID*)valPtr, &valLen) == 0) {
-            delete buffer;
-            return "Unknown (no ProductVersion in driver)";
+        std::string result = "Unknown (No information)";
+
+	    if (pVS->wValueLength) {
+	        result = format("%d.%d.%d.%d",
+                pValue->dwProductVersionMS >> 16,
+                pValue->dwProductVersionMS & 0xFFFF,
+	            pValue->dwProductVersionLS >> 16,
+                pValue->dwProductVersionLS & 0xFFFF);
         }
-
-        std::string result = std::string(reinterpret_cast<char*>(valPtr));
 
         delete buffer;
 
@@ -277,10 +286,18 @@ void RenderDevice::initGLExtensions() {
 
 
 /**
- Used by init.
+ Used by RenderDevice::init.
  */
 static const char* isOk(bool x) {
     return x ? "ok" : "UNSUPPORTED";
+}
+
+/**
+ Used by RenderDevice::init.
+ */
+static const char* isOk(void* x) {
+    // GCC incorrectly claims this function is not called.
+    return isOk(x != NULL);
 }
 
 
