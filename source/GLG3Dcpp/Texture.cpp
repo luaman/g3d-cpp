@@ -423,29 +423,6 @@ TextureRef Texture::fromFile(
 
     int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
 
-    if (dimension == DIM_CUBE_MAP) {
-        if (filename[1] == "") {
-            // Wildcard format
-            // Parse the filename into a base name and extension
-            std::string filenameBase, filenameExt;
-            splitFilenameAtWildCard(filename[0], filenameBase, filenameExt);
-            for (int f = 0; f < 6; ++f) {
-                realFilename[f] = filenameBase + cubeMapString[f] + filenameExt;
-            }
-        } else {
-            // Separate filenames have been provided
-            realFilename[0] = filename[0];
-            for (int f = 1; f < 6; ++f) {
-                debugAssert(filename[f] != "");
-                realFilename[f] = filename[f];
-            }
-        }
-    } else {
-        debugAssertM(filename[1] == "",
-            "Can't specify more than one filename unless loading a cube map");
-        realFilename[0] = filename[0];
-    }
-
     // Check for DDS file and load separately.
     std::string ddsExt;
 
@@ -491,6 +468,29 @@ TextureRef Texture::fromFile(
         }
 
         return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead);
+    }
+
+    if (dimension == DIM_CUBE_MAP) {
+        if (filename[1] == "") {
+            // Wildcard format
+            // Parse the filename into a base name and extension
+            std::string filenameBase, filenameExt;
+            splitFilenameAtWildCard(filename[0], filenameBase, filenameExt);
+            for (int f = 0; f < 6; ++f) {
+                realFilename[f] = filenameBase + cubeMapString[f] + filenameExt;
+            }
+        } else {
+            // Separate filenames have been provided
+            realFilename[0] = filename[0];
+            for (int f = 1; f < 6; ++f) {
+                debugAssert(filename[f] != "");
+                realFilename[f] = filename[f];
+            }
+        }
+    } else {
+        debugAssertM(filename[1] == "",
+            "Can't specify more than one filename unless loading a cube map");
+        realFilename[0] = filename[0];
     }
 
     for (int f = 0; f < numFaces; ++f) {

@@ -19,7 +19,33 @@ namespace G3D {
 
 #define SHORT_TO_FLOAT(x) ((2.0f*x+1.0f)*(1.0f/65535.0f))
 
+
+SkyRef Sky::fromCubeMap(
+    RenderDevice*                       rd,
+    TextureRef                          _cubeMap,
+    const std::string&                  directory,
+    bool                                _drawCelestialBodies,
+    double                              quality) {
+
+    debugAssertM(
+        (directory == "") || 
+        (directory[directory.size() - 1] == '/') || 
+        (directory[directory.size() - 1] == '\\'), 
+        "Directory must end in a slash");
+
+    debugAssert( _cubeMap.notNull() );
+    debugAssert( _cubeMap->getDimension() == Texture::DIM_CUBE_MAP );
+
+    TextureRef t[6];
+    t[0] = _cubeMap;
+    for (int i = 1; i < 6; ++i) {
+        t[i] = NULL;
+    }    
+
+    return new Sky(rd, t, directory, true, _drawCelestialBodies, quality);
+}
     
+
 SkyRef Sky::create(
     RenderDevice*                       rd,
     const std::string&                  directory,
@@ -32,28 +58,16 @@ SkyRef Sky::create(
     for (int i = 1; i < 6; ++i) {
         f[i] = "";
     }
-    return new Sky(rd, directory, f, _drawCelestialBodies, quality);
+    return Sky::create(rd, directory, f, _drawCelestialBodies, quality);
 }
 
 
 SkyRef Sky::create(
     RenderDevice*                       rd,
     const std::string&                  directory,
-    const std::string                   filename[6],
-    bool                                _drawCelestialBodies,
-    double                              quality) {
-    return new Sky(rd, directory, filename, _drawCelestialBodies, quality);
-}
-
-
-Sky::Sky(
-    RenderDevice*                       rd,
-    const std::string&                  directory,
     const std::string                   _filename[6],
     bool                                _drawCelestialBodies,
-    double                              quality) :
-        drawCelestialBodies(_drawCelestialBodies),
-        renderDevice(rd) {
+    double                              quality) {
 
     debugAssertM(
         (directory == "") || 
@@ -92,32 +106,75 @@ Sky::Sky(
         }
     }
 
-    if (renderDevice->supportsOpenGLExtension("GL_ARB_texture_cube_map")) {
+    TextureRef faceTextures[6];
+    bool useCubeMap;
+
+    if (rd->supportsOpenGLExtension("GL_ARB_texture_cube_map")) {
    
         if (_filename[1] == "") {
-            cubeMap = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+            faceTextures[0] = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
         } else {
-            cubeMap = Texture::fromFile(_filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+            faceTextures[0] = Texture::fromFile(_filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
         }
 
-        for (int t = 0; t < 6; ++t) {
-            texture[t] = NULL;
+        for (int t = 1; t < 6; ++t) {
+            faceTextures[t] = NULL;
         }
+
+        useCubeMap = true;
 
     } else {    
         static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
 
         if (_filename[1] == "") {
             for (int t = 0; t < 6; ++t) {
-                texture[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
+                faceTextures[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
                     format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
             }
         } else {
             for (int t = 0; t < 6; ++t) {
-                texture[t] = Texture::fromFile(_filename[t], 
+                faceTextures[t] = Texture::fromFile(_filename[t], 
                     format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
             }
         }
+
+        useCubeMap = false;
+    }
+    
+    return new Sky(rd, faceTextures, directory, useCubeMap, _drawCelestialBodies, quality);
+}
+
+
+Sky::Sky(
+    RenderDevice*                       rd,
+    TextureRef                          textures[6],
+    const std::string&                   directory,
+    bool                                useCubeMap,
+    bool                                _drawCelestialBodies,
+    double                              quality) :
+    drawCelestialBodies(_drawCelestialBodies),
+    renderDevice(rd) {
+
+    if (useCubeMap) {
+        cubeMap = textures[0];
+    } else {
+        for (int i = 0; i < 6; ++i) {
+            texture[i] = textures[i];
+        }
+    }
+
+    const TextureFormat* format;
+    const TextureFormat* alphaFormat;
+
+    if (quality > .66) {
+        format      = TextureFormat::RGB8;
+        alphaFormat = TextureFormat::RGBA8;
+    } else if (quality > .33) {
+        format      = TextureFormat::RGB_DXT1;
+        alphaFormat = TextureFormat::RGBA_DXT1;
+    } else {
+        format      = TextureFormat::RGBA_DXT5;
+        alphaFormat = TextureFormat::RGBA_DXT5;
     }
 
     if (drawCelestialBodies) {
