@@ -128,7 +128,7 @@ public:
         bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0);
 
-    /** Converted to Sky::fromFile @depreciated */
+    /** @deprecated Converted to Sky::fromFile */
     static SkyRef create(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
@@ -139,7 +139,7 @@ public:
         return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality);
     }
 
-    /** Converted to Sky::fromFile @depreciated */
+    /** @deprecated Converted to Sky::fromFile */
     static SkyRef create(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,

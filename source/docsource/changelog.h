@@ -23,7 +23,7 @@
      <LI> G3d::IFSModel now loads and saves PLY2 files (plain text IFS format) [Peter]
      <LI> Automatically switch to glCompressedTexImage2D in G3d::Texture::fromMemory [Corey]
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
-     <LI> Added Sky::fromFile and depreciated Sky::create [Corey]
+     <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile which is included [Corey]
      <LI> Fix: GWindows now center and maximize on the primary monitor for Windows.
      <LI> Fix: [ 1049674 ] TextInput failes on X. numbers.
