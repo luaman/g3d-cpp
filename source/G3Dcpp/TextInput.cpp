@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2003-02-15
+ @edited  2003-04-03
  */
 
 #include "G3D/TextInput.h"
@@ -115,7 +115,7 @@ Token TextInput::nextToken() {
         if (c == '/') {
             int c2 = peekNextChar();
 
-            if (c2 == '/') {
+            if ((c2 == '/') && options.cppComments) {
                 // Single line comment
                 whitespaceDone = false;
                 while (! isNewline(c) && (c != EOF)) {
@@ -467,7 +467,7 @@ void TextInput::readSymbol(const std::string& symbol) {
 
 
 
-TextInput::TextInput(const std::string& filename) {
+TextInput::TextInput(const std::string& filename, const Options& opt) : options(opt) {
     init();
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
     buffer.resize(b.getLength());
@@ -475,7 +475,7 @@ TextInput::TextInput(const std::string& filename) {
 }
 
 
-TextInput::TextInput(FS fs, const std::string& str) {
+TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : options(opt) {
     init();
     buffer.resize(str.length());
     memcpy(buffer.getCArray(), str.c_str(), buffer.size());

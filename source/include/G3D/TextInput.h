@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2002-12-04
+ @edited  2003-04-03
  */
 
 #ifndef G3D_TEXTINPUT_H
@@ -90,7 +90,7 @@ public:
 
   e.g.
   <pre>
-  TextInput i(TextuInput::fromString("name = \"Max\", height = 6");
+  TextInput i(TextInput::fromString("name = \"Max\", height = 6");
 
   Token d;
 
@@ -111,7 +111,18 @@ public:
 
  */
 class TextInput {
+public:
+
+    class Options {
+    public:
+        /** If true, single line comments beginning with // are ignored */
+        bool                cppComments;
+
+        Options () : cppComments(true) {}
+    };
+
 private:
+
     std::deque<Token>       stack;
 
     /**
@@ -136,6 +147,8 @@ private:
     int                     charNumber;
     std::string             sourceFile;
     
+    Options                 options;
+
     void init() {
         sourceFile = "";
         charNumber = 0;
@@ -181,12 +194,12 @@ public:
         WrongSymbol(const std::string& e, const std::string& a) : expected(e), actual(a) {}
     };
 
-    TextInput(const std::string& filename);
+    TextInput(const std::string& filename, const Options& options = Options());
 
     enum FS {FROM_STRING};
     /** Creates input directly from a string.
         The first argument must be TextInput::FROM_STRING.*/
-    TextInput(FS fs, const std::string& str);
+    TextInput(FS fs, const std::string& str, const Options& options = Options());
 
     /** Returns true while there are tokens remaining. */
     bool hasMore();

@@ -499,6 +499,14 @@ to add zlibstat.lib to your linker list.
    previous major release.
 
    <P>
+   Changes in 5.01
+   <UL>
+     <LI> Added TextInput::Options to optionally allow C++ comments to
+          be treated as two slashes instead of a comment
+     <LI> Added support for Wavefront OBJ files to IFSBuilder
+     <LI> Removed duplicate copies of SDL.dll from the source tree
+   </UL>
+
 
    Changes in 5.00
    <UL>
