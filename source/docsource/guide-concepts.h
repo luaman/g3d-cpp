@@ -12,6 +12,14 @@
   to the graphics card.  Triangles are specified by a series of vertices, each 
   with its own texture coordinate, color, and surface normal.  Animation is achieved by
   drawing frames in rapid succession.
+
+  To render a set of triangles, call <CODE>G3D::RenderDevice::beginPrimitives(G3D::RenderDevice::TRIANGLES)</CODE>
+  invoke G3D::RenderDevice::sendVertex multiple times, and then call
+  G3D::RenderDevice::endPrimitives.  For higher performance, first load the vertices
+  into a vertex array (G3D::VAR) in a memory area (G3D::VARArea).  G3D::Texture abstracts 
+  the various texture mechanisms.  G3D::GFont can render text on screen using a series of 
+  rectangles with letter textures.  See <A HREF="../demos/GLG3D_Demo">demos/GLG3D_Demo</A>
+  for examples of each kind of rendering.
   
   The basic concepts of immediate mode graphics are not explained in this manual or
   in the G3D documentation.  Refer to the OpenGL manual for an introduction to immediate mode

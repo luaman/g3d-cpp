@@ -46,7 +46,7 @@
   The Discovery API (G3D::DiscoveryClient and G3D::DiscoveryServer) simplifies
   LAN server browsing and peer-to-peer networking. 
 
-  These functions are demonstrated in the <A HREF="../demos/NetworkDemo">demo/NetworkDemo</A>. 
+  These functions are demonstrated in the <A HREF="../demos/Network_Demo">demo/Network_Demo</A>. 
 
   @section images Images
     

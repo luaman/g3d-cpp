@@ -47,6 +47,9 @@ users who are already familiar with C++ and DirectX or OpenGL.
    Applets, Models, Selection, FPS Controls
   </TD></TR>
 
+  <TR><TD VALIGN=TOP>\link guideui User Input\endlink</TD><TD VALIGN=TOP>
+  </TD></TR>
+
   <TR><TD VALIGN=TOP>\link guidedebugging Debugging \endlink</TD><TD VALIGN=TOP>
   </TD></TR>
 
