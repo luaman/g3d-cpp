@@ -120,6 +120,7 @@ static double getTime() {
 }
 
 
+#ifdef G3D_WIN32
 /**
  Used by the Windows version of getDriverVersion().
  @cite Based on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
@@ -134,6 +135,7 @@ struct VS_VERSIONINFO {
     WORD                Padding2[1]; 
     WORD                Children[1]; 
 };
+#endif
 
 /**
  Returns the version string for the video driver.
