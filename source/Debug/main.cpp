@@ -43,9 +43,16 @@ public:
 
     IFSModelRef                 model;
 
+    PhysicsFrame                current;
+
+    PhysicsFrame                frame;
+    PhysicsFrame                oldDeltaFrame;
+
     Demo(App* app);    
 
     virtual void init();
+
+    virtual void doSimulation(RealTime dt);
 
     virtual void doLogic();
 
@@ -56,7 +63,7 @@ public:
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
-    model = IFSModel::create("D:/libraries/g3d-6_05-b01/data/ifs/cube.ifs");
+    model = IFSModel::create("D:/libraries/g3d-6_05-b01/data/ifs/p51-mustang.ifs", 5);
 
 }
 
@@ -65,6 +72,35 @@ void Demo::init()  {
 	// Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 0, 10));
     app->debugCamera.lookAt(Vector3(0, 0, 0));
+}
+
+
+void Demo::doSimulation(RealTime dt) {
+    RealTime t = System::time();
+
+    // Original frame
+    PhysicsFrame estimated(CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(-45)), Vector3(.4,0,0)));
+
+    // Where we should have been
+    PhysicsFrame correct(CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitZ(), toRadians(0)), Vector3(0,0,0)));
+
+    // Eventual goal (not generally known)
+    PhysicsFrame target(CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitZ(), toRadians(90)), Vector3(0,2,0)));
+
+    // Highest velocity at 0.5
+    double alpha = (cos(t) + 1.0) / 2.0;
+    // Where we *should* be (usually computed by simulation)
+    current = correct.lerp(target, alpha);
+
+    // old Delta, "correct - estimated"
+    PhysicsFrame D;
+    D.translation = correct.translation - estimated.translation;
+    D.rotation = correct.rotation * estimated.rotation.inverse();
+
+    // Compose: position = current + delta;
+    PhysicsFrame scaledDelta = D.lerp(PhysicsFrame(), alpha);
+    frame.translation = current.translation + scaledDelta.translation;
+    frame.rotation = current.rotation * scaledDelta.rotation;
 }
 
 
@@ -92,10 +128,22 @@ void Demo::doGraphics() {
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
     app->renderDevice->clear(true, true, true);
+    app->renderDevice->enableLighting();
+    app->renderDevice->setLight(0, lighting.directionalLight());
+    app->renderDevice->setLight(1, GLight::directional(-Vector3::unitY(), Color3::brown() * .5, false));
+    app->renderDevice->setAmbientLightColor(lighting.ambient);
+
     Draw::axes(app->renderDevice);
 
-//    debugAssertM(false, "Intentional assertion");
+    PosedModelRef posed = model->pose(frame.toCoordinateFrame());
+    posed->render(app->renderDevice);
 
+    app->renderDevice->pushState();
+        app->renderDevice->setColor(Color4(0,.5, 1,0.5));
+        app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        posed = model->pose(current.toCoordinateFrame());
+        posed->render(app->renderDevice);
+    app->renderDevice->popState();
 }
 
 

@@ -6,10 +6,12 @@
   @author Morgan McGuire, graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-01-26
+  @edited  2004-10-25
  */
 
 #include "G3D/Quat.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 
 namespace G3D {
 
@@ -187,6 +189,21 @@ Quat Quat::unitRandom() {
     return Quat(s1 * r1, c1 * r1, s2 * r2, c2 * r2);
 }
 
+
+void Quat::deserialize(class BinaryInput& b) {
+    x = b.readFloat32();
+    y = b.readFloat32();
+    z = b.readFloat32();
+    w = b.readFloat32();
+}
+
+
+void Quat::serialize(class BinaryOutput& b) const {
+    b.writeFloat32(x);
+    b.writeFloat32(y);
+    b.writeFloat32(z);
+    b.writeFloat32(w);
+}
 
 
 // 2-char swizzles

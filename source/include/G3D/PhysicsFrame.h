@@ -27,7 +27,6 @@ namespace G3D {
   This interface is in "Beta" and will change in the next release.
  */
 class PhysicsFrame {
-
 public:
 
     Quat    rotation;
@@ -49,19 +48,23 @@ public:
 
     PhysicsFrame(const CoordinateFrame& coordinateFrame);
 
+    /** Compose: create the transformation that is <I>other</I> followed by <I>this</I>.*/
+    PhysicsFrame operator*(const PhysicsFrame& other) const;
+
     virtual ~PhysicsFrame() {}
 
     CoordinateFrame toCoordinateFrame() const;
 
     /**
-     Linear interpolation.
+     Linear interpolation (spherical linear for the rotations).
      */
     PhysicsFrame lerp(
         const PhysicsFrame&     other,
-        double                  alpha);
+        double                  alpha) const;
 
     /** 
      this + t * dx
+     @deprecated
      */
     PhysicsFrame integrate(
         double                  t,
@@ -69,11 +72,16 @@ public:
 
     /** 
      this + t * dx + t*t * ddx
+     @deprecated
      */
     PhysicsFrame integrate(
         double                  t,
         const PhysicsFrame&     dx,
         const PhysicsFrame&     ddx);
+
+
+    void deserialize(class BinaryInput& b);
+    void serialize(class BinaryOutput& b) const;
 };
 
 }; // namespace

@@ -4,10 +4,12 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-09
- @edited  2003-02-15
+ @edited  2004-10-25
 */
 
 #include "G3D/PhysicsFrame.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 
 namespace G3D {
 
@@ -25,6 +27,16 @@ PhysicsFrame::PhysicsFrame(
 }
 
 
+PhysicsFrame PhysicsFrame::operator*(const PhysicsFrame& other) const {
+    PhysicsFrame result;
+
+    result.rotation = rotation * other.rotation;
+    result.translation = translation + rotation.toRotationMatrix() * other.translation;
+
+    return result;
+}
+
+
 CoordinateFrame PhysicsFrame::toCoordinateFrame() const {
     CoordinateFrame f;
     
@@ -37,7 +49,7 @@ CoordinateFrame PhysicsFrame::toCoordinateFrame() const {
 
 PhysicsFrame PhysicsFrame::lerp(
     const PhysicsFrame&     other,
-    double                  alpha) {
+    double                  alpha) const {
 
     PhysicsFrame result;
 
@@ -74,6 +86,19 @@ PhysicsFrame PhysicsFrame::integrate(
 
     return result;
 }
+
+
+void PhysicsFrame::deserialize(class BinaryInput& b) {
+    translation.deserialize(b);
+    rotation.deserialize(b);
+}
+
+
+void PhysicsFrame::serialize(class BinaryOutput& b) const {
+    translation.serialize(b);
+    rotation.serialize(b);
+}
+
 
 }; // namespace
 

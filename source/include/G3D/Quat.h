@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-04-13
+  @edited  2004-10-24
  */
 
 #ifndef G3D_QUAT_H
@@ -108,8 +108,8 @@ public:
         Matrix3&            rot) const;
     
     /**
-     Computes the linear interpolation of this to
-     other at time alpha.
+     Spherical linear interpolation: linear interpolation along the 
+     shortest (3D) great-circle route between two quaternions.
      */
     Quat slerp(
         const Quat&         other,
@@ -253,8 +253,11 @@ public:
     const float& operator[] (int i) const;
     float& operator[] (int i);
 
-    // Generate uniform random unit quaternion. 
+    /** Generate uniform random unit quaternion (i.e. random "direction") */
     static Quat unitRandom();
+
+    void deserialize(class BinaryInput& b);
+    void serialize(class BinaryOutput& b) const;
 
     // 2-char swizzles
 

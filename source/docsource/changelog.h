@@ -12,6 +12,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::Quat::deserialize, G3D::Quat::serialize
+     <LI> G3D::PhysicsFrame::deserialize, G3D::PhysicsFrame::serialize
      <LI> G3D::TextInput::Options::singleQuotedStrings (defaults to true, changing the behavior
 	      from previous versions).
 	 <LI> G3D::Token::extendedType returns information disambiguating characters and strings

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2004-07-29
+ @edited  2004-10-24
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -212,6 +212,7 @@ public:
 
     Triangle toObjectSpace(const Triangle& t) const;
 
+    /** Compose: create the transformation that is <I>other</I> followed by <I>this</I>.*/
     CoordinateFrame operator*(const CoordinateFrame &other) const {
         return CoordinateFrame(rotation * other.rotation,
                                pointToWorldSpace(other.translation));
@@ -258,7 +259,8 @@ public:
     }
 
     /**
-     Uses Quat.lerp to interpolate between two coordinate frames.
+     Linearly interpolates between two coordinate frames, using
+     Quat::slerp for the rotations.
      */
     CoordinateFrame lerp(
         const CoordinateFrame&  other,
