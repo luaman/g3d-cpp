@@ -106,7 +106,7 @@ public:
 	 Use this to set state on the render device.  Do not call
 	 pushState from inside this method.
 	 */
-	virtual void run(class RenderDevice* renderDevice) = NULL;
+	virtual void run(class RenderDevice* renderDevice) = 0;
 
     const std::string& messages() const {
         return _messages;
