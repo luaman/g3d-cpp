@@ -9,13 +9,35 @@
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/glcalls.h"
 
+#ifdef G3D_WIN32
+    // GetSystemMetrics parameters missing in header files
+    #ifndef SM_XVIRTUALSCREEN
+    #define SM_XVIRTUALSCREEN       76
+    #endif
+    #ifndef SM_YVIRTUALSCREEN
+    #define SM_YVIRTUALSCREEN       77
+    #endif
+    #ifndef SM_CXVIRTUALSCREEN
+    #define SM_CXVIRTUALSCREEN      78
+    #endif
+    #ifndef SM_CYVIRTUALSCREEN
+    #define SM_CYVIRTUALSCREEN      79
+    #endif
+    #ifndef SM_CMONITORS
+    #define SM_CMONITORS            80
+    #endif
+    #ifndef SM_SAMEDISPLAYFORMAT
+    #define SM_SAMEDISPLAYFORMAT    81
+    #endif
+#endif
+
 #define SDL_FSAA (SDL_MAJOR_VERSION * 100 + SDL_MINOR_VERSION * 10 + SDL_PATCHLEVEL > 125)
 
 namespace G3D {
 
 #ifdef G3D_WIN32
 static int screenWidth() {
-    int w = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    int w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 
     if (w == 0) {
         // This call is not supported on older versions of windows
@@ -27,7 +49,7 @@ static int screenWidth() {
 
 
 static int screenHeight() {
-    int h = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    int h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
     if (h == 0) {
         // This call is not supported on older versions of windows
@@ -151,14 +173,14 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     // Adjust window position
     #ifdef G3D_WIN32
         if (! settings.fullScreen) {
-            int screenWidth = screenWidth();
-            int screenHeight = screenHeight();
-            int x = iClamp(settings.x, 0, screenWidth);
-            int y = iClamp(settings.y, 0, screenHeight);
+            int W = screenWidth();
+            int H = screenHeight();
+            int x = iClamp(settings.x, 0, W);
+            int y = iClamp(settings.y, 0, H);
 
             if (settings.center) {
-                x = (screenWidth  - settings.width) / 2;
-                y = (screenHeight - settings.height) / 2;
+                x = (W  - settings.width) / 2;
+                y = (H - settings.height) / 2;
             }
 
             SetWindowPos(_Win32HWND, NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);

@@ -38,6 +38,7 @@ private:
     /** API version */
     std::string                 _version;
 
+    /** The x, y fields are not updated when the window moves. */
     GWindowSettings             _settings;
 
     bool                        _inputCapture;
