@@ -30,7 +30,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-02-02
+ @edited  2003-03-21
  */
 
 #include <G3DAll.h>
@@ -38,7 +38,7 @@
 /**
  The path to the data directory from this program's directory.
  */
-const std::string DATA_DIR("d:/libraries/graphics3d-5.00b/data/");
+const std::string DATA_DIR("d:/libraries/g3d-5.00/data/");
 
 class Model {
 
@@ -59,13 +59,13 @@ public:
 
 
 Log*                    debugLog	= NULL;
-RenderDevice*           renderDevice	= NULL;
+RenderDevice*           renderDevice= NULL;
 G3D::Font*              font		= NULL;
 UserInput*              userInput	= NULL;
-Sky*                    sky		= NULL;
-VARArea*		varDynamic	= NULL;
-VARArea*		varStatic	= NULL;
-Camera*			camera		= NULL;
+Sky*                    sky		    = NULL;
+VARArea*		        varDynamic	= NULL;
+VARArea*		        varStatic	= NULL;
+Camera*			        camera		= NULL;
 
 bool                    endProgram	= false;
 
