@@ -707,6 +707,8 @@ public:
         uint                textureUnit,
         TextureRef          texture);
 
+    /** Returns the number of texture units. */
+    uint numTextureUnits() const;
 
     /**
      Automatically enables vertex programs when they are set. 
@@ -857,8 +859,7 @@ private:
 
 	bool						    inIndexedPrimitive;
 
-
-    int                             numTextureUnits;
+    int                             _numTextureUnits;
 
     /**
      Current render state.

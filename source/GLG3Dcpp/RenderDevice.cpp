@@ -110,7 +110,7 @@ static double getTime() {
 RenderDevice::RenderDevice() {
 
     inPrimitive = false;
-    numTextureUnits = 0;
+    _numTextureUnits = 0;
     emwaFrameRate = 0;
     lastTime = getTime();
 
@@ -228,7 +228,7 @@ bool RenderDevice::init(
 		minimumStencilBits, desiredStencilBits, dcolorBits,dalphaBits, fullscreen);
 
     // Get the number of texture units
-    glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &numTextureUnits);
+    glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &_numTextureUnits);
 
     int depthBits, stencilBits, redBits, greenBits, blueBits, alphaBits;
     glGetIntegerv(GL_DEPTH_BITS, &depthBits);
@@ -332,8 +332,8 @@ bool RenderDevice::init(
 
  
     // Don't use more texture units than allowed at compile time.
-    int rawTextureUnits = numTextureUnits;
-    numTextureUnits = iMin(MAX_TEXTURE_UNITS, numTextureUnits);
+    int rawTextureUnits = _numTextureUnits;
+    _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
     
     if (debugLog) {
 
@@ -389,7 +389,7 @@ bool RenderDevice::init(
              greenBits, "ok", 
              blueBits, "ok", 
 
-             desiredTextureUnits, numTextureUnits, rawTextureUnits, isOk(numTextureUnits >= desiredTextureUnits),
+             desiredTextureUnits, _numTextureUnits, rawTextureUnits, isOk(_numTextureUnits >= desiredTextureUnits),
 
              width, "ok",
              height, "ok",
@@ -516,7 +516,7 @@ bool RenderDevice::init(
         glDepthRange(0, 1);
 
         // Set up the texture units.
-        for (int t = numTextureUnits - 1; t >= 0; --t) {
+        for (int t = _numTextureUnits - 1; t >= 0; --t) {
             double d[] = {0,0,0,1};
             glMultiTexCoord4dvARB(GL_TEXTURE0_ARB + t, d);
         }
@@ -959,7 +959,7 @@ void RenderDevice::setState(
     setColor(newState.color);
     setNormal(newState.normal);
 
-    for (int u = numTextureUnits - 1; u >= 0; --u) {
+    for (int u = _numTextureUnits - 1; u >= 0; --u) {
         if (memcmp(&(newState.textureUnit[u]), &(state.textureUnit[u]), sizeof(RenderState::TextureUnit))) {
             setTexture(u, newState.textureUnit[u].texture);
             setTexCoord(u, newState.textureUnit[u].texCoord);
@@ -1077,6 +1077,10 @@ void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
     popState();
 }
 
+
+uint RenderDevice::numTextureUnits() const {
+    return _numTextureUnits;
+}
 
 void RenderDevice::beginFrame() {
     ++beginEndFrame;
@@ -1716,9 +1720,9 @@ void RenderDevice::setTextureMatrix(
     const double*        m) {
 
     debugAssert(! inPrimitive);
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        unit, _numTextureUnits));
 
     if (memcmp(m, state.textureUnit[unit].textureMatrix, sizeof(double)*16)) {
         forceSetTextureMatrix(unit, m);
@@ -1745,9 +1749,9 @@ void RenderDevice::setTextureCombineMode(
     uint                    unit,
     const CombineMode       mode) {
 
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        unit, _numTextureUnits));
 
     if ((state.textureUnit[unit].combineMode != mode)) {
 
@@ -1781,9 +1785,9 @@ void RenderDevice::setTextureCombineMode(
 
 void RenderDevice::resetTextureUnit(
     uint                    unit) {
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        unit, _numTextureUnits));
 
     RenderState newState(state);
     state.textureUnit[unit] = RenderState::TextureUnit();
@@ -1830,9 +1834,9 @@ void RenderDevice::setNormal(const Vector3& normal) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        unit, _numTextureUnits));
 
     state.textureUnit[unit].texCoord = texCoord;
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
@@ -1840,27 +1844,27 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        unit, _numTextureUnits));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        unit, _numTextureUnits));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }
 
 
 void RenderDevice::setTexCoord(uint unit, double texCoord) {
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        unit, _numTextureUnits));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 0, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }
@@ -1984,10 +1988,10 @@ void RenderDevice::setTexture(
     debugAssertM(! inPrimitive, 
                  "Can't change textures while rendering a primitive.");
 
-    debugAssertM(unit < numTextureUnits,
+    debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d"
                " on a device with %d units.",
-               unit, numTextureUnits));
+               unit, _numTextureUnits));
 
     TextureRef oldTexture = state.textureUnit[unit].texture;
 

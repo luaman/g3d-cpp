@@ -504,6 +504,7 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> RenderDevice::numTextureUnits
      <LI> Added stars to night Sky
      <LI> Support for vertex attributes through RenderDevice::setVertexAttrib
      <LI> VAR::pointer

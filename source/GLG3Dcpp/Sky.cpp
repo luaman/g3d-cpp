@@ -229,7 +229,7 @@ void Sky::render(
             glPopAttrib();
             */
 
-            double k = square((1 - lighting.skyAmbient.length())) * renderDevice->getBrightScale();
+            double k = (1 - lighting.skyAmbient.length()) * renderDevice->getBrightScale();
             renderDevice->pushState();
                 // rotate stars
                 CoordinateFrame m;
