@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-06-25
+  @edited  2003-06-27
  */
 
 #include "G3D/platform.h"
@@ -23,13 +23,31 @@
 #include "G3D/debug.h"
 #include "G3D/g3derror.h"
 
-#if defined(G3D_LINUX) || defined(G3D_OSX)
-   // Unix
-   #include <stdlib.h>
-   #include <stdio.h>
-   #include <errno.h>
-   #include <sys/types.h>
-   #include <unistd.h>
+#ifdef G3D_WIN32
+
+    #include <conio.h>
+
+#elif defined(G3D_LINUX) 
+
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <errno.h>
+    #include <sys/types.h>
+    #include <sys/select.h>
+    #include <termios.h>
+    #include <stropts.h>
+    #include <unistd.h>
+
+#elif defined(G3D_OSX)
+
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <errno.h>
+    #include <sys/types.h>
+    #include <sys/select.h>
+    #include <termios.h>
+    #include <unistd.h>
+
 #endif
 
 namespace G3D {
@@ -634,6 +652,77 @@ std::string System::currentProgramFilename() {
     #endif
 
     return filename;
+}
+
+
+void System::sleep(RealTime t) {
+    #ifdef G3D_WIN32
+        Sleep(t * 1e3);
+    #else
+        usleep(t * 1e6);
+    #endif
+}
+
+
+void System::consoleClearScreen() {
+    #ifdef G3D_WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+
+bool System::consoleKeyPressed() {
+    #ifdef G3D_WIN32
+    
+        return _kbhit() != 0;
+
+    #else
+    
+        static const int STDIN = 0;
+        static bool initialized = false;
+
+        if (! initialized) {
+            // Use termios to turn off line buffering
+            termios term;
+            tcgetattr(STDIN, &term);
+            term.c_lflag &= ~ICANON;
+            tcsetattr(STDIN, TCSANOW, &term);
+            setbuf(stdin, NULL);
+            initialized = true;
+        }
+
+        #ifdef G3D_LINUX
+
+            int bytesWaiting;
+            ioctl(STDIN, FIONREAD, &bytesWaiting);
+            return bytesWaiting;
+
+        #else
+
+            timeval timeout;
+            fd_set rdset;
+
+            FD_ZERO(&rdset);
+            FD_SET(STDIN, &rdset);
+            timeout.tv_sec  = 0;
+            timeout.tv_usec = 0;
+
+            return select(STDIN + 1, &rdset, NULL, NULL, &timeout);
+        #endif
+    #endif
+}
+
+
+int System::consoleReadKey() {
+    #ifdef G3D_WIN32
+        return _getch();
+    #else
+        char c;
+        read(0, &c, 1);
+        return c;
+    #endif
 }
 
 }  // namespace

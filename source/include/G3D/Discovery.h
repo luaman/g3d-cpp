@@ -113,7 +113,6 @@ public:
         serverAdvertisementPort(_serverAdvertisementPort) {}
 };
 
-
 /**
  Make your own subclass of this advertisement.  Add fields
  (e.g. numPlayers, currentScore) to increase the amount
@@ -194,9 +193,10 @@ protected:
     NetworkDevice*              netDevice;
     const DiscoverySettings*    settings;
 
-    static const uint32         SERVER_SHUTDOWN_MESSAGE;
-    static const uint32         SERVER_BROADCAST_MESSAGE;
-    static const uint32         CLIENT_BROADCAST_MESSAGE;
+    enum MessageConstants {
+        SERVER_SHUTDOWN_MESSAGE  = 2,
+        SERVER_BROADCAST_MESSAGE = 3,
+        CLIENT_BROADCAST_MESSAGE = 4};
 
 public:
 

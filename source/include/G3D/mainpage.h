@@ -25,7 +25,7 @@
      to gain access to the following members of the <CODE>G3D</CODE> namespace.
      
      <UL>
-     <LI>3D math
+     <LI>Geometry
         <BR><BLOCKQUOTE>
         G3D::Box,
 		G3D::Capsule,
@@ -684,6 +684,9 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> System::consoleKeyPressed
+     <LI> System::consoleClearScreen
+     <LI> System::consoleReadKey
      <LI> Changed the Conduit message protocol to include a message type.
           The API is backwards compatible to 5.01 even though the protocol is not.
      <LI> Removed optional argument maxSize from LightweightConduit::receive.

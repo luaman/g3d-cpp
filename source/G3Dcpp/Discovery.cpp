@@ -13,10 +13,6 @@
 
 namespace G3D {
 
-const uint32 Discovery::SERVER_SHUTDOWN_MESSAGE  = 2;
-const uint32 Discovery::SERVER_BROADCAST_MESSAGE = 3;
-const uint32 Discovery::CLIENT_BROADCAST_MESSAGE = 4;
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 void DiscoveryAdvertisement::serialize(BinaryOutput& b) const {

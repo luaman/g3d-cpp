@@ -8,13 +8,14 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-06-13
+  @edited  2003-06-27
  */
 
 #ifndef G3D_SYSTEM_H
 #define G3D_SYSTEM_H
 
 #include "G3D/g3dmath.h"
+#include "G3D/G3DGameUnits.h"
 #include <string>
 
 namespace G3D {
@@ -82,10 +83,34 @@ public:
      @cite Linux version written by Nicolai Haehnle <prefect_@gmx.net>, http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-getexename&forum=cotd&id=-1
      */
     static std::string currentProgramFilename();
+
+    /**
+     Causes the current thread to yield for the specified duration.
+     */
+    static void sleep(RealTime t);
+
+    /**
+     Clears the console.
+     Console programs only.
+     */
+    static void consoleClearScreen();
+
+    /**
+     Returns true if a key is waiting.
+     Console programs only.
+     */
+    static bool consoleKeyPressed();
+    
+    /**
+     Blocks until a key is read (use consoleKeyPressed to determine if
+     a key is waiting to be read) then returns the character code for
+     that key.
+     */
+    static int consoleReadKey();
 };
 
 
-#ifdef _MSC_VER
+#ifdef G3D_WIN32
     inline uint64 System::getCycleCount() {
        uint32 timehi, timelo;
 
@@ -101,9 +126,8 @@ public:
        return ((uint64)timehi << 32) + (uint64)timelo;
     }
 
-#else
+#elif defined(G3D_LINUX)
 
-    // Not the Microsoft compiler; unknown assembly syntax
     inline uint64 System::getCycleCount() {
        uint32 timehi, timelo;
 
@@ -113,15 +137,13 @@ public:
             "=d" (timehi)
           : );
        return ((uint64)timehi << 32) + (uint64)timelo;
-       /*
-          "mov %%edx, %0 \n\t"
-          "mov %%eax, %1 \n\t"
-          : "=r" (timehi, timelo)
-            "=r" (timehi, timelo)
-          : 
-          : "%eax");
+    }
+
+#elif defined(G3D_OSX)
+
+    inline uint64 System::getCycleCount() {
+        // Not implemented on MAC
         return 0;
-        */
     }
 
 #endif

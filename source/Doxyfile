@@ -3,8 +3,8 @@
 #---------------------------------------------------------------------------
 # General configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = Graphics3D
-PROJECT_NUMBER         = "version 6.00 2003-05-24"
+PROJECT_NAME           = G3D
+PROJECT_NUMBER         = "version 6.00 2003-06-27"
 OUTPUT_DIRECTORY       = ../temp
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
