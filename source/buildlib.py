@@ -76,6 +76,7 @@ _excludePatterns =\
     '^stdout.txt$', \
     '\.log$', \
     '^graveyard$', \
+    '^CVS$', \
     '^Debug$', \
     '^Release$']
 
