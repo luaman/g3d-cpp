@@ -15,7 +15,7 @@
 #define G3D_BINARYOUTPUT_H
 
 #include <assert.h>
-#include "string"
+#include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>

@@ -70,8 +70,10 @@ inline unsigned int hashCode(const std::string& a) {
 
 namespace G3D {
 
-// Debug name too long warning
-#pragma warning (disable : 4786)
+#ifdef _MSC_VER
+    // Debug name too long warning
+    #pragma warning (disable : 4786)
+#endif // _MSC_VER
 
 /**
  An unordered data structure mapping keys to values.

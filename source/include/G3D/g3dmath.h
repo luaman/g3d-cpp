@@ -32,15 +32,18 @@
 
 namespace G3D {
 
-// disable: "conversion from 'double' to 'float', possible loss of
-// data
-#pragma warning (disable : 4244)
+#ifdef _MSC_VER
+    // disable: "conversion from 'double' to 'float', possible loss of
+    // data
+    #pragma warning (disable : 4244)
 
-// disable: "truncation from 'double' to 'float'
-#pragma warning (disable : 4305)
+    // disable: "truncation from 'double' to 'float'
+    #pragma warning (disable : 4305)
 
-// disable: "C++ exception handler used"
-#pragma warning (disable : 4530)
+    // disable: "C++ exception handler used"
+    #pragma warning (disable : 4530)
+
+#endif // _MSC_VER
 
 #define G3D_FLOAT 1
 #define G3D_DOUBLE 2
