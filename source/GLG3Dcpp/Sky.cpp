@@ -46,7 +46,7 @@ SkyRef Sky::fromCubeMap(
 }
     
 
-SkyRef Sky::create(
+SkyRef Sky::fromFile(
     RenderDevice*                       rd,
     const std::string&                  directory,
     const std::string&                  filename,
@@ -62,7 +62,7 @@ SkyRef Sky::create(
 }
 
 
-SkyRef Sky::create(
+SkyRef Sky::fromFile(
     RenderDevice*                       rd,
     const std::string&                  directory,
     const std::string                   _filename[6],

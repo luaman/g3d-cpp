@@ -114,19 +114,41 @@ public:
         0 -> 1/16 the texture memory of 1.0.
         Color banding will occur at low quality settings.
      */
-    static SkyRef create(
+    static SkyRef fromFile(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
         bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0);
 
-    static SkyRef create(
+    static SkyRef fromFile(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string                       filename[6],
         bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0);
+
+    /** Converted to Sky::fromFile @depreciated */
+    static SkyRef create(
+        class RenderDevice*                     renderDevice,
+        const std::string&                      directory,
+        const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
+        bool                                    drawCelestialBodies = true,
+        double                                  quality = 1.0) {
+
+        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality);
+    }
+
+    /** Converted to Sky::fromFile @depreciated */
+    static SkyRef create(
+        class RenderDevice*                     renderDevice,
+        const std::string&                      directory,
+        const std::string                       filename[6],
+        bool                                    drawCelestialBodies = true,
+        double                                  quality = 1.0) {
+
+        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality);
+    }
 
     /**
      @param _cubeMap This must be a Texture of dimension - DIM_CUBE_MAP.
