@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-11-13
+  @edited  2003-12-16
 */
 
 #include "G3D/platform.h"
@@ -66,7 +66,21 @@ void ManualCameraController::setActive(bool a) {
             guiMouse = userInput->getMouseXY();
             SDL_ShowCursor(SDL_DISABLE);
             userInput->setMouseXY(cameraMouse);
+
+            #ifndef DEBUG
+                // In debug mode, don't grab the cursor because
+                // it is annoying when you hit a breakpoint and
+                // can't move the mouse.
+                SDL_WM_GrabInput(SDL_GRAB_ON);
+            #endif
+
         } else {
+            #ifndef DEBUG
+                // In debug mode, don't grab the cursor because
+                // it is annoying when you hit a breakpoint and
+                // can't move the mouse.
+                SDL_WM_GrabInput(SDL_GRAB_OFF);
+            #endif
             userInput->setMouseXY(guiMouse);
             SDL_ShowCursor(SDL_ENABLE);
         }

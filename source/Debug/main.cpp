@@ -335,6 +335,7 @@ int main(int argc, char** argv) {
 
     app.setDebugMode(true);
     app.debugController.setActive(true);
+    app.run();
 
     return 0;
 }

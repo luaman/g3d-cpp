@@ -77,8 +77,11 @@ public:
 
     /** When active, the ManualCameraController takes over the mouse.  It turns
         off the mouse cursor and switches to first person controller style.
-
-        Use this to toggle between your menu system and first person camera control.*/
+        Use this to toggle between your menu system and first person camera control.
+        In release mode, the cursor movement is restricted to the window
+        while the controller is active.  This doesn't occur in debug mode because
+        you might hit a breakpoint while the controller is active and it
+        would be annoying to not be able to move the mouse.*/
     void setActive(bool a);
 
     bool active() const;
