@@ -324,6 +324,10 @@ inline double exp2(double x) {
     return pow(2, x);
 }
 
+inline double rsqrt(double x) {
+    return 1.0 / sqrt(x);
+}
+
 
 } // namespace
 
