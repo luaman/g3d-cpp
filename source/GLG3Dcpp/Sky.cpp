@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-03-24
+  @edited  2003-04-11
   */
 
 #include "GLG3D/glcalls.h"
@@ -107,7 +107,7 @@ void Sky::render(
 	matrix.rotation = camera.rotation;
     renderDevice->setCameraToWorldMatrix(matrix);
 
-    renderDevice->setColor(lighting.skyAmbient);
+    renderDevice->setColor(lighting.skyAmbient * renderDevice->getBrightScale());
     renderDevice->setCullFace(RenderDevice::CULL_BACK);
     renderDevice->disableDepthWrite();
     renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);

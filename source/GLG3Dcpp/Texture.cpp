@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-04-07
+ @edited  2003-04-11
 */
 
 #include "GLG3D/glcalls.h"
@@ -345,6 +345,16 @@ void Texture::reload() {
         glTexParameteri(t, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(t, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(t, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        break;
+
+    case TRANSPARENT_BORDER:
+        glTexParameteri(t, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(t, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(t, GL_TEXTURE_WRAP_R, GL_CLAMP);
+        {
+            Color4 black(0,0,0,0);
+            glTexParameterfv(t, GL_TEXTURE_BORDER_COLOR, black);
+        }
         break;
 
     default:

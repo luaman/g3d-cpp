@@ -1792,14 +1792,14 @@ void RenderDevice::setPolygonOffset(
 
 
 void RenderDevice::setColor(const Color4& color) {
-    state.color = Color4(color.r * brightScale, color.g * brightScale, color.b * brightScale, color.a);
-    glColor4fv(color);
+    state.color = color;
+    glColor4fv(state.color);
 }
 
 
 void RenderDevice::setColor(const Color3& color) {
-    state.color = Color4(color * brightScale, 1);
-    glColor3fv(color);
+    state.color = Color4(color, 1);
+    glColor3fv(state.color);
 }
 
 

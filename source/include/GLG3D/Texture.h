@@ -64,7 +64,9 @@ public:
 
     enum Channels        {LUMINANCE = 1, RGB = 3, RGBA = 4, ALPHA = 5};
     enum Dimension       {DIM_2D = 2, DIM_2D_RECT = 4};
-    enum WrapMode        {TILE = 1, CLAMP = 0};
+
+    /** TRANSPARENT_BORDER provides a border of Color4(0,0,0,0) and clamps to it. */
+    enum WrapMode        {TILE = 1, CLAMP = 0, TRANSPARENT_BORDER = 2};
     enum InterpolateMode {TRILINEAR_MIPMAP = 3, BILINEAR_NO_MIPMAP = 2, NO_INTERPOLATION = 1};
 
 private:

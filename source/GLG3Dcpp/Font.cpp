@@ -167,7 +167,7 @@ void Font::draw2DString(
             }
         }
     }
-    renderDevice->setColor(color);
+    renderDevice->setColor(Color4(color.r * renderDevice->getBrightScale(), color.g * renderDevice->getBrightScale(), color.b * renderDevice->getBrightScale(), color.a));
     drawString(s, x, y, w, h, spacing);
     renderDevice->endPrimitive();
 

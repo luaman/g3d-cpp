@@ -93,7 +93,7 @@
         <BR><BLOCKQUOTE>G3D::glLoadMatrix, G3D::glLoadInvMatrix, 
         G3D::glMultInvMatrix, G3D::glMultMatrix, G3D::glVertex, G3D::glColor,
         G3D::glNormal, G3D::glTexCoord, G3D::glMultiTexCoord,
-        G3D::sizeOfGLFormat, G3D::glFormatOf, G3D::glGetProcAddress</BLOCKQUOTE>
+        G3D::sizeOfGLFormat, G3D::glFormatOf, DECLARE_GLFORMATOF, G3D::glGetProcAddress</BLOCKQUOTE>
 
       <LI>GL Debugging
         <BR><BLOCKQUOTE>G3D::getOpenGLState, G3D::glGetInteger, 
@@ -502,6 +502,9 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> Texture::TRANSPARENT_BORDER
+     <LI> DECLARE_GLFORMATOF
+     <LI> Fix: Fonts and skies now adjust their brightness for the screen gamma level
      <LI> Fix: Strange compilation bug was causing Sky to be black for some programs
      <LI> resolveFilename
      <LI> GLProgram_Demo to show how to use vertex programs in G3D
