@@ -50,8 +50,6 @@ private:
      */
     size_t              maxSize;
 
-	bool ok() const;
-
 	void init(const void* sourcePtr, int _numElements, VARAreaRef _area,
         GLenum glformat, size_t eltSize);
 
@@ -74,6 +72,7 @@ private:
 
 public:
 
+    /** Creates an invalid VAR */
 	VAR();
 
 	/**
@@ -122,6 +121,14 @@ public:
 	void update(const Array<T>& source) {
 		update(source.getCArray(), source.size(), glFormatOf(T), sizeof(T));
 	}
+
+    /**
+     Returns true if this VAR can be used for rendering
+     (i.e. contains data and the parent VARArea has not been
+     reset).
+     */
+    bool valid() const;
+
 };
 
 }
