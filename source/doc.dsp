@@ -74,6 +74,10 @@ SOURCE=..\buildlib.py
 
 SOURCE=.\Doxyfile
 # End Source File
+# Begin Source File
+
+SOURCE=..\g3dinstaller.nsi
+# End Source File
 # End Group
 # Begin Group "Guide"
 
