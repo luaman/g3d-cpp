@@ -13,8 +13,6 @@
  */
 
 #include <G3DAll.h>
-#include "../contrib/Win32Window/Win32Window.h"
-#include "../contrib/Win32Window/Win32Window.cpp"
 
 #include "../contrib/Image/Image.h"
 
@@ -282,8 +280,8 @@ void App::main() {
     Demo(this).run();    
 }
 
-//App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
-App::App(const GAppSettings& settings) : GApp(settings) {    
+App::App(const GAppSettings& settings) : GApp(settings, Win32Window::create(settings.window)) {
+//App::App(const GAppSettings& settings) : GApp(settings) {    
 }
 
 
@@ -348,6 +346,12 @@ void setIcon(const GImage& image) {
 //////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
+    App(GAppSettings()).run();
+    return 0;
+}
+
+/*
+int main(int argc, char** argv) {
 
     Image<double> im(8, 4);
 
@@ -384,3 +388,4 @@ int main(int argc, char** argv) {
     return 0;
 
 }
+*/
