@@ -76,12 +76,11 @@ extern PFNGLMULTITEXCOORD4FVARBPROC        glMultiTexCoord4fvARB;
 extern PFNGLMULTITEXCOORD4DVARBPROC        glMultiTexCoord4dvARB;
 extern PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
 extern PFNGLCLIENTACTIVETEXTUREARBPROC     glClientActiveTextureARB;
+
 #endif
 
-#ifndef GL_EXT_blend_minmax
+
 extern PFNGLBLENDEQUATIONEXTPROC           glBlendEquationEXT;
-#endif
-
 
 extern PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV;
 extern PFNGLFLUSHVERTEXARRAYRANGENVPROC    glFlushVertexArrayRangeNV;

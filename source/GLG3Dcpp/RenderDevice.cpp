@@ -1744,7 +1744,7 @@ void RenderDevice::setBlendFunc(
         } else {
             glEnable(GL_BLEND);
             glBlendFunc(toGLBlendFunc(src), toGLBlendFunc(dst));
-            glBlendEquation(toGLBlendEq(eq));
+            glBlendEquationEXT(toGLBlendEq(eq));
         }
         state.dstBlendFunc = dst;
         state.srcBlendFunc = src;
