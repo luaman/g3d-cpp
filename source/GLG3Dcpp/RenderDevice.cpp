@@ -2625,7 +2625,7 @@ void RenderDevice::internalSendIndices(
     RenderDevice::Primitive primitive,
     size_t                  indexSize, 
     int                     numIndices, 
-    const void*             index) const {
+    const void*             index) {
 
 	runObjectShader();
 

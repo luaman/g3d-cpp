@@ -99,20 +99,6 @@ void Demo::init()  {
 }
 
 
-void Demo::cleanup() {
-    // Called when Demo::run() exits
-}
-
-
-void Demo::doNetwork() {
-	// Poll net messages here
-}
-
-
-void Demo::doSimulation(SimTime dt) {
-	// Add physical simulation here
-}
-
 
 void Demo::doLogic() {
     if (app->userInput->keyPressed(SDLK_ESCAPE)) {
@@ -120,8 +106,6 @@ void Demo::doLogic() {
         endApplet = true;
         app->endProgram = true;
     }
-
-	// Add other key handling here
 }
 
 
