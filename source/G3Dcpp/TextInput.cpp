@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2004-10-26
+ @edited  2005-01-07
  */
 
 #include "G3D/TextInput.h"
@@ -588,8 +588,9 @@ TextInput::TextInput(const std::string& filename, const Options& opt) : options(
     BinaryInput input(filename, G3D_LITTLE_ENDIAN);
     sourceFile = filename;
     int n = input.size();
-    buffer.resize(n);
+    buffer.resize(n + 1);
     System::memcpy(buffer.getCArray(), input.getCArray(), n);
+    buffer.last() = EOF;
 }
 
 
@@ -600,8 +601,9 @@ TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : option
     } else {
         sourceFile = std::string("\"") + str.substr(0, 10) + "...\"";
     }
-    buffer.resize(str.length());
-    System::memcpy(buffer.getCArray(), str.c_str(), buffer.size());
+    buffer.resize(str.length() + 1);
+    System::memcpy(buffer.getCArray(), str.c_str(), buffer.size() - 1);
+    buffer.last() = EOF;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

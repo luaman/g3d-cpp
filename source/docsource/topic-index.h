@@ -240,6 +240,7 @@
         G3D::GLight,
         G3D::GMaterial,
         G3D::Sky,
+        G3D::Lighting,
         G3D::LightingParameters,
         G3D::MD2Model,
         G3D::IFSModel,

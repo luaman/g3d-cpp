@@ -16,7 +16,8 @@
            (with efficient default implementations).
      <LI> G3D::Lighting
      <LI> MeshAlg::computeBounds(vertex, index, ...)
-     <LI> RenderDevice::colorWriteEnabled()
+     <LI> RenderDevice::colorWriteEnabled(), depthWriteEnabled, alphaWriteEnabled
+     <LI> RenderDevice::setSpecularCoefficient(Color3)
      <LI> VAR::maxSize
      <LI> RenderDevice::enableTwoSidedLighting
      <LI> PosedModel::hasTransparency
@@ -77,6 +78,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: TextInput now returns end of file token for files without trailing whitespace
      <LI> Fix: [ 1094166 ] 6.05: Release mouse stuck on x-axis [Corey + Morgan]
      <LI> Fix: Recognize buggy ATI Radeon Mobility cube maps and work around
      <LI> Fix: Textures now initialize without setting error bit on cards without GL_ARB_shadow

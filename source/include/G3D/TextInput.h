@@ -243,7 +243,6 @@ private:
 
     inline char peekNextChar() {
         return buffer[bufferLast + 1];
-
     }
 
     inline void pushNextChar(char c) {
