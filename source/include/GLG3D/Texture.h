@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-05-24
+  @edited  2003-07-02
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -30,6 +30,9 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
 
  If you enable texture compression, textures will be compressed on the fly.
  This can be slow (up to a second).
+
+ Unless DIM_2D_RECT is used, texture automatically scales non-power of 2
+ size textures up to the next power of 2 (hardware requirement).
 
  DIM_2D_RECT requires the NV_texture_rectangle extension.
  Texture compression requires the EXT_texture_compression_s3tc extions.

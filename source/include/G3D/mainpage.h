@@ -684,6 +684,8 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> G3D::Texture resizes non-power of two textures
+
      <LI> #defined for on MSVC so that it obeys C99 scoping rules
      <LI> System::consoleKeyPressed
      <LI> System::consoleClearScreen

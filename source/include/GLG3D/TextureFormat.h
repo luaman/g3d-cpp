@@ -63,7 +63,13 @@ public:
      because graphics cards need to pad to the nearest 1, 2, or
      4 bytes.
      */
-    int                 bitsPerTexel;
+    int                 hardwareBitsPerTexel;
+
+    /**
+     Sum of the per-channel bits, plus any additional bits required
+     for byte alignment.
+     */
+    int                 packedBitsPerTexel;
 
 private:
 
@@ -77,7 +83,8 @@ private:
         int             _redBits,
         int             _greenBits,
         int             _blueBits,
-        int             _bitsPerTexel,
+        int             _hardwareBitsPerTexel,
+        int             _packedBitsPerTexel,
         bool            _opaque) : 
         numComponents(_numComponents),
         compressed(_compressed),
@@ -88,7 +95,8 @@ private:
         redBits(_redBits),
         greenBits(_greenBits),
         blueBits(_blueBits),
-        bitsPerTexel(_bitsPerTexel),
+        packedBitsPerTexel(_packedBitsPerTexel),
+        hardwareBitsPerTexel(_hardwareBitsPerTexel),
         opaque(_opaque) {
     }
 

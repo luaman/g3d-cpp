@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-05-24
+ @edited  2003-07-02
 */
 
 #include "GLG3D/glcalls.h"
@@ -72,14 +72,43 @@ static void createMipMapTexture(
 
 static void createTexture(
     GLenum          target,
-    const uint8*    bytes,
+    const uint8*    rawBytes,
     GLenum          bytesFormat,
     int             width,
     int             height,
-    GLenum          textureFormat) {
+    GLenum          textureFormat,
+    int             bytesPerPixel) {
+
+    uint8* bytes = const_cast<uint8*>(rawBytes);
+
+    // If true, we're supposed to free the byte array at the end of
+    // the function.
+    bool   freeBytes = false; 
 
     switch (target) {
     case GL_TEXTURE_2D:
+        if (! isPow2(width) || ! isPow2(height)) {
+
+            int oldWidth = width;
+            int oldHeight = height;
+            width  = nextPowerOf2(width);
+            height = nextPowerOf2(height);
+
+            bytes = new uint8[width * height * bytesPerPixel];
+
+            // Rescale the image to a power of 2
+            gluScaleImage(
+                bytesFormat,
+                oldWidth,
+                oldHeight,
+                GL_UNSIGNED_BYTE,
+                rawBytes,
+                width,
+                height,
+                GL_UNSIGNED_BYTE,
+                bytes);
+        }
+
     case GL_TEXTURE_RECTANGLE_NV:
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
         // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
@@ -90,6 +119,10 @@ static void createTexture(
         debugAssertM(false, "Fell through switch");
     }
 
+    if (freeBytes) {
+        // Texture was resized; free the temporary.
+        delete bytes;
+    }
 }
 
 
@@ -299,7 +332,7 @@ TextureRef Texture::fromMemory(
         if (interpolate == TRILINEAR_MIPMAP) {
             createMipMapTexture(target, bytes, bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat);
         } else {
-            createTexture(target, bytes, bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat);
+            createTexture(target, bytes, bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat, bytesFormat->packedBitsPerTexel / 8);
         }
 
     glStatePop();
@@ -361,11 +394,9 @@ void Texture::copyFromScreen(int x, int y, int width, int height, int windowHeig
 }
 
 
-
-
 int Texture::sizeInMemory() const {
 
-    int base = (width * height * depth * format->bitsPerTexel) / 8;
+    int base = (width * height * depth * format->hardwareBitsPerTexel) / 8;
 
     int total = 0;
 
