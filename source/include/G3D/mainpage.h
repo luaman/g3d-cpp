@@ -70,7 +70,8 @@
 
      <LI><B>Image formats</B> &nbsp; &nbsp;
 		G3D::GImage,
-		G3D::GImage::Error,		
+		G3D::GImage::Error,	
+		G3D::computeNormalMap,
         G3D::flipRGBVertical,
   	    G3D::RGBtoARGB,
 		G3D::RGBtoBGR,

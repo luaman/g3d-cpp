@@ -82,6 +82,23 @@ void flipRGBVertical(
 
 
 /**
+ Given a tangent space bump map, computes a new image where the
+ RGB channels are a tangent space normal map and the alpha channel
+ is the original bump map.  Assumes the input image is tileable.
+
+ Particularly useful as part of the idiom:
+ <PRE>
+ 	GImage normal;
+	computeNormalMap(GImage(filename), normal);
+	return Texture::fromGImage(filename, normal);
+ </PRE>
+
+ @cite ATI demo
+ */
+void computeNormalMap(const class GImage& bump, class GImage& normal);
+
+
+/**
   Interface to image compression & file formats. The free Image Magick Magick Wand API 
   (http://www.imagemagick.org/www/api/magick_wand.html) provides a more powerful
   API for image manipulation and wider set of image load/save formats.  It is 

@@ -1720,5 +1720,63 @@ int GImage::sizeInMemory() const {
 }
 
 
+
+void computeNormalMap(const GImage& bump, GImage& normal) {
+    const int w = bump.width;
+    const int h = bump.height;
+    const int stride = bump.channels;
+
+    normal.resize(w, h, 4);
+
+    const uint8* const B = bump.byte();
+    Color4uint8* const N = normal.pixel4();
+
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            // Index into normal map pixel
+            int i = x + y * w;
+
+            // Index into bump map *byte*
+            int j = stride * i;
+
+            // Copy over the bump value into the alpha channel
+            N[i].a = B[j];
+
+            Vector3 delta;
+
+            // Get a value from B (with wrapping lookup) relative to (x, y)
+            // and divide by 255
+            #define height(DX, DY) ((B[(((DX + x + w) % w) + \
+                                        ((DY + y + h) % h) * w) * stride]) / 255.0)
+
+            // Sobel filter to compute the normal.  
+            //
+            // Y Filter (X filter is the transpose)
+            //  [ -1 -2 -1 ]
+            //  [  0  0  0 ]
+            //  [  1  2  1 ]
+
+            // Write the Y value directly into the x-component so we don't have
+            // to explicitly compute a cross product at the end.
+            delta.x = height(-1, -1) *  1 + height( 0, -1) *  2 + height( 1, -1) *  1 +
+                      height(-1,  1) * -1 + height( 0,  1) * -2 + height( 1,  1) * -1;
+
+            delta.y = height(-1, -1) * -1 + height( 1, -1) * 1 + 
+                      height(-1,  0) * -2 + height( 1,  0) * 2 + 
+                      height(-1,  1) * -1 + height( 1,  1) * 1;
+
+            delta.z = 1.0;
+
+            #undef height
+
+            // Pack into byte range
+            delta = delta.direction() * 127.5 + Vector3(127.5, 127.5, 127.5);
+            N[i].r = iClamp(iRound(delta.x), 0, 255);
+            N[i].g = iClamp(iRound(delta.y), 0, 255);
+            N[i].b = iClamp(iRound(delta.z), 0, 255);
+        }
+    }
+}
+
 };
 
