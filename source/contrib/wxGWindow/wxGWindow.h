@@ -57,6 +57,8 @@
 #include "wx/glcanvas.h"
 
 
+// Defined for wxGWindow
+class wxG3DCanvas;
 
 /** wxWindows implementation of G3D::GWindow.  Can either wrap an 
     existing wxGLCanvas so that it can be used with RenderDevice
@@ -70,12 +72,16 @@ private:
         const GWindowSettings&  settings,
         Array<int>&             attribList) ;
 
-    wxGLCanvas*                 window;
+    friend wxG3DCanvas;
+
+    wxG3DCanvas*                window;
     GWindowSettings             settings;
     bool                        _mouseVisible;
 
     wxCursor                    invisible;
     wxCursor                    arrow;
+
+    G3D::Queue< GEvent >        keyboardEvents;
 
 public:
 
@@ -84,7 +90,7 @@ public:
         wxWindow*               parent,
         wxWindowID              id = -1); 
 
-    wxGWindow(wxGLCanvas* canvas) ;
+    wxGWindow(wxG3DCanvas* canvas) ;
     
     std::string getAPIVersion () const ;
 
@@ -140,6 +146,44 @@ public:
     virtual void setMouseVisible (bool b) ;
 
     virtual bool mouseVisible () const ;
+
+    virtual bool pollEvent(GEvent& e) ;
+};
+
+
+class wxG3DCanvas : public wxGLCanvas {
+
+private:
+
+    wxGWindow*                  _gWindow;
+
+public:
+
+    wxG3DCanvas(wxGWindow* gWindow, wxWindow *parent, wxWindowID id = wxID_ANY,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize, long style = 0,
+        const wxString& name = wxGLCanvasName, int *attribList = 0,
+        const wxPalette& palette = wxNullPalette) :
+            wxGLCanvas(parent, id, pos, size, style, name, attribList, palette),
+            _gWindow(gWindow) {};
+
+    void handleKeyUp(wxKeyEvent& event);
+
+    void handleKeyDown(wxKeyEvent& event);
+
+    void handleMouseLeftUp(wxMouseEvent& event);
+
+    void handleMouseLeftDown(wxMouseEvent& event);
+
+    void handleMouseRightUp(wxMouseEvent& event);
+
+    void handleMouseRightDown(wxMouseEvent& event);
+    
+    void handleMouseMiddleUp(wxMouseEvent& event);
+    
+    void handleMouseMiddleDown(wxMouseEvent& event);
+
+    DECLARE_EVENT_TABLE();
 };
 
 #endif

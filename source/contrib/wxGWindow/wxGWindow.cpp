@@ -1,5 +1,22 @@
 #include "wxGWindow.h"
 
+// Hashtable to map wxWidgets keys to SDL keys
+static Table<int, int> sdlKeyMap;
+
+
+// wxWidgets event table
+BEGIN_EVENT_TABLE(wxG3DCanvas, wxGLCanvas)
+  EVT_KEY_DOWN( wxG3DCanvas::handleKeyDown )
+  EVT_KEY_UP( wxG3DCanvas::handleKeyUp )
+  EVT_LEFT_DOWN( wxG3DCanvas::handleMouseLeftDown )
+  EVT_LEFT_UP( wxG3DCanvas::handleMouseLeftUp )
+  EVT_RIGHT_DOWN( wxG3DCanvas::handleMouseRightDown )
+  EVT_RIGHT_UP( wxG3DCanvas::handleMouseRightUp )
+  EVT_MIDDLE_DOWN( wxG3DCanvas::handleMouseMiddleDown )
+  EVT_MIDDLE_UP( wxG3DCanvas::handleMouseMiddleUp )
+END_EVENT_TABLE()
+
+
 void wxGWindow::makeAttribList(
         const GWindowSettings&  settings,
         Array<int>&             attribList) {
@@ -31,7 +48,7 @@ wxGWindow::wxGWindow(
         wxPoint pos(_settings.x, _settings.y);
         wxSize size(_settings.width, _settings.height);
 
-        window = new wxGLCanvas(
+        window = new wxG3DCanvas( this,
             parent, id, pos, size, 0, 
             "WxWindow", attribList.getCArray(), 
             wxNullPalette);
@@ -48,7 +65,7 @@ wxGWindow::wxGWindow(
         window->GetClientSize(&settings.width, &settings.height);
 }
 
-wxGWindow::wxGWindow(wxGLCanvas* canvas) : 
+wxGWindow::wxGWindow(wxG3DCanvas* canvas) : 
         invisible(wxCURSOR_BLANK), 
         arrow(wxCURSOR_ARROW), 
         window(canvas) {
@@ -181,4 +198,289 @@ void wxGWindow::setMouseVisible (bool b) {
 
 bool wxGWindow::mouseVisible () const {
     return _mouseVisible;
+}
+
+
+bool wxGWindow::pollEvent(GEvent& e) {
+
+    if (keyboardEvents.length() > 0) {
+        e = keyboardEvents.popFront();
+
+        return true;
+    }
+
+    return false;
+}
+
+
+
+void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
+{
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYDOWN;
+    e.key.state = SDL_PRESSED;
+    
+    if ((event.KeyCode() >= 'a') && (event.KeyCode() <= 'z')) {
+        e.key.keysym.sym = (SDLKey)event.KeyCode();
+    } else if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
+        e.key.keysym.sym = (SDLKey)event.KeyCode();
+    } else {
+        if (sdlKeyMap.containsKey(event.KeyCode())) {
+            e.key.keysym.sym = (SDLKey)sdlKeyMap.get(event.KeyCode());
+        }
+    }
+
+#if (wxUSE_UNICODE == 1)
+    e.key.keysym.unicode = event.GetUnicodeKey();
+#elif defined(wxHAS_RAW_KEY_CODES)
+    e.key.keysym.unicode = event.GetRawKeyCode();
+#else
+    e.key.keysym.unicode = e.key.keysym.sym;
+#endif
+
+#if defined(wxHAS_RAW_KEY_CODES)
+    e.key.keysym.scancode = event.GetRawKeyCode();
+#else
+    e.key.keysym.scancode = 0;
+#endif
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+void wxG3DCanvas::handleKeyDown(wxKeyEvent& event)
+{
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYUP;
+    e.key.state = SDL_RELEASED;
+    
+    if ((event.KeyCode() >= 'a') && (event.KeyCode() <= 'z')) {
+        e.key.keysym.sym = (SDLKey)event.KeyCode();
+    } else if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
+        e.key.keysym.sym = (SDLKey)event.KeyCode();
+    } else {
+        if (sdlKeyMap.containsKey(event.KeyCode())) {
+            e.key.keysym.sym = (SDLKey)sdlKeyMap.get(event.KeyCode());
+        }
+    }
+
+#if (wxUSE_UNICODE == 1)
+    e.key.keysym.unicode = event.GetUnicodeKey();
+#elif defined(wxHAS_RAW_KEY_CODES)
+    e.key.keysym.unicode = event.GetRawKeyCode();
+#else
+    e.key.keysym.unicode = e.key.keysym.sym;
+#endif
+
+#if defined(wxHAS_RAW_KEY_CODES)
+    e.key.keysym.scancode = event.GetRawKeyCode();
+#else
+    e.key.keysym.scancode = 0;
+#endif
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+void wxG3DCanvas::handleMouseLeftUp(wxMouseEvent& event) {
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYUP;
+    e.key.state = SDL_RELEASED;
+    e.key.keysym.sym = (SDLKey)SDL_LEFT_MOUSE_KEY;
+    e.key.keysym.unicode = ' ';
+    e.key.keysym.scancode = 0;
+    e.key.keysym.mod = KMOD_NONE;
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+void wxG3DCanvas::handleMouseLeftDown(wxMouseEvent& event) {
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYDOWN;
+    e.key.state = SDL_PRESSED;
+    e.key.keysym.sym = (SDLKey)SDL_LEFT_MOUSE_KEY;
+    e.key.keysym.unicode = ' ';
+    e.key.keysym.scancode = 0;
+    e.key.keysym.mod = KMOD_NONE;
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+void wxG3DCanvas::handleMouseRightUp(wxMouseEvent& event) {
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYUP;
+    e.key.state = SDL_RELEASED;
+    e.key.keysym.sym = (SDLKey)SDL_RIGHT_MOUSE_KEY;
+    e.key.keysym.unicode = ' ';
+    e.key.keysym.scancode = 0;
+    e.key.keysym.mod = KMOD_NONE;
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+void wxG3DCanvas::handleMouseRightDown(wxMouseEvent& event) {
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYDOWN;
+    e.key.state = SDL_PRESSED;
+    e.key.keysym.sym = (SDLKey)SDL_RIGHT_MOUSE_KEY;
+    e.key.keysym.unicode = ' ';
+    e.key.keysym.scancode = 0;
+    e.key.keysym.mod = KMOD_NONE;
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+void wxG3DCanvas::handleMouseMiddleUp(wxMouseEvent& event) {
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYUP;
+    e.key.state = SDL_RELEASED;
+    e.key.keysym.sym = (SDLKey)SDL_MIDDLE_MOUSE_KEY;
+    e.key.keysym.unicode = ' ';
+    e.key.keysym.scancode = 0;
+    e.key.keysym.mod = KMOD_NONE;
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+void wxG3DCanvas::handleMouseMiddleDown(wxMouseEvent& event) {
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_KEYDOWN;
+    e.key.state = SDL_PRESSED;
+    e.key.keysym.sym = (SDLKey)SDL_MIDDLE_MOUSE_KEY;
+    e.key.keysym.unicode = ' ';
+    e.key.keysym.scancode = 0;
+    e.key.keysym.mod = KMOD_NONE;
+
+    _gWindow->keyboardEvents.pushBack(e);
+}
+
+
+static void initWXKeys() {
+
+    sdlKeyMap.set(WXK_BACK, SDLK_BACKSPACE);
+    sdlKeyMap.set(WXK_TAB, SDLK_TAB);
+    sdlKeyMap.set(WXK_RETURN, SDLK_RETURN);
+    sdlKeyMap.set(WXK_ESCAPE, SDLK_ESCAPE);
+    sdlKeyMap.set(WXK_SPACE, SDLK_SPACE);
+    sdlKeyMap.set(WXK_DELETE, SDLK_DELETE);
+
+//    sdlKeyMap.set(WXK_START, SDLK_START);
+    sdlKeyMap.set(WXK_LBUTTON, SDL_LEFT_MOUSE_KEY);
+    sdlKeyMap.set(WXK_RBUTTON, SDL_RIGHT_MOUSE_KEY);
+//    sdlKeyMap.set(WXK_CANCEL, SDLK_CANCEL);
+    sdlKeyMap.set(WXK_MBUTTON, SDL_MIDDLE_MOUSE_KEY);
+    sdlKeyMap.set(WXK_CLEAR, SDLK_CLEAR);
+//    sdlKeyMap.set(WXK_SHIFT, SDLK_SHIFT);
+//    sdlKeyMap.set(WXK_CONTROL, SDLK_CONTROL);
+//    sdlKeyMap.set(WXK_MENU, SDLK_ALT);
+    sdlKeyMap.set(WXK_PAUSE, SDLK_PAUSE);
+    sdlKeyMap.set(WXK_CAPITAL, SDLK_CAPSLOCK);
+//    sdlKeyMap.set(WXK_PRIOR, SDLK_PRIOR);
+//    sdlKeyMap.set(WXK_NEXT, SDLK_NEXT);
+    sdlKeyMap.set(WXK_END, SDLK_END);
+    sdlKeyMap.set(WXK_HOME, SDLK_HOME);
+    sdlKeyMap.set(WXK_LEFT, SDLK_LEFT);
+    sdlKeyMap.set(WXK_UP, SDLK_UP);
+    sdlKeyMap.set(WXK_RIGHT, SDLK_RIGHT);
+    sdlKeyMap.set(WXK_DOWN, SDLK_DOWN);
+//    sdlKeyMap.set(WXK_SELECT, SDLK_SELECT);
+    sdlKeyMap.set(WXK_PRINT, SDLK_PRINT);
+//    sdlKeyMap.set(WXK_EXECUTE, SDLK_EXECUTE);
+    sdlKeyMap.set(WXK_SNAPSHOT, SDLK_PRINT);
+    sdlKeyMap.set(WXK_INSERT, SDLK_INSERT);
+    sdlKeyMap.set(WXK_HELP, SDLK_HELP);
+    sdlKeyMap.set(WXK_NUMPAD0, SDLK_KP0);
+    sdlKeyMap.set(WXK_NUMPAD1, SDLK_KP1);
+    sdlKeyMap.set(WXK_NUMPAD2, SDLK_KP2);
+    sdlKeyMap.set(WXK_NUMPAD3, SDLK_KP3);
+    sdlKeyMap.set(WXK_NUMPAD4, SDLK_KP4);
+    sdlKeyMap.set(WXK_NUMPAD5, SDLK_KP5);
+    sdlKeyMap.set(WXK_NUMPAD6, SDLK_KP6);
+    sdlKeyMap.set(WXK_NUMPAD7, SDLK_KP7);
+    sdlKeyMap.set(WXK_NUMPAD8, SDLK_KP8);
+    sdlKeyMap.set(WXK_NUMPAD9, SDLK_KP9);
+    sdlKeyMap.set(WXK_MULTIPLY, SDLK_KP_MULTIPLY);
+    sdlKeyMap.set(WXK_ADD, SDLK_KP_MULTIPLY);
+//    sdlKeyMap.set(WXK_SEPARATOR, 
+    sdlKeyMap.set(WXK_SUBTRACT, SDLK_MINUS);
+    sdlKeyMap.set(WXK_DECIMAL, SDLK_PERIOD);
+    sdlKeyMap.set(WXK_DIVIDE, SDLK_SLASH);
+    sdlKeyMap.set(WXK_F1, SDLK_F1);
+    sdlKeyMap.set(WXK_F2, SDLK_F2);
+    sdlKeyMap.set(WXK_F3, SDLK_F3);
+    sdlKeyMap.set(WXK_F4, SDLK_F4);
+    sdlKeyMap.set(WXK_F5, SDLK_F5);
+    sdlKeyMap.set(WXK_F6, SDLK_F6);
+    sdlKeyMap.set(WXK_F7, SDLK_F7);
+    sdlKeyMap.set(WXK_F8, SDLK_F8);
+    sdlKeyMap.set(WXK_F9, SDLK_F9);
+    sdlKeyMap.set(WXK_F10, SDLK_F10);
+    sdlKeyMap.set(WXK_F11, SDLK_F11);
+    sdlKeyMap.set(WXK_F12, SDLK_F12);
+    sdlKeyMap.set(WXK_F13, SDLK_F13);
+    sdlKeyMap.set(WXK_F14, SDLK_F14);
+    sdlKeyMap.set(WXK_F15, SDLK_F15);
+//    sdlKeyMap.set(WXK_F16, SDLK_F16);
+//    sdlKeyMap.set(WXK_F17, SDLK_F17);
+//    sdlKeyMap.set(WXK_F18, SDLK_F18);
+//    sdlKeyMap.set(WXK_F19, SDLK_F19);
+//    sdlKeyMap.set(WXK_F20, SDLK_F20);
+//    sdlKeyMap.set(WXK_F21, SDLK_F21);
+//    sdlKeyMap.set(WXK_F22, SDLK_F22);
+//    sdlKeyMap.set(WXK_F23, SDLK_F23);
+//    sdlKeyMap.set(WXK_F24, SDLK_F24);
+    sdlKeyMap.set(WXK_NUMLOCK, SDLK_NUMLOCK);
+    sdlKeyMap.set(WXK_SCROLL, SDLK_SCROLLOCK);
+    sdlKeyMap.set(WXK_PAGEUP, SDLK_PAGEUP);
+    sdlKeyMap.set(WXK_PAGEDOWN, SDLK_PAGEDOWN);
+
+//    sdlKeyMap.set(WXK_NUMPAD_SPACE, SDLK_KP_SPACE);
+//    sdlKeyMap.set(WXK_NUMPAD_TAB, SDLK_KP_TAB);
+    sdlKeyMap.set(WXK_NUMPAD_ENTER, SDLK_KP_ENTER);
+//    sdlKeyMap.set(WXK_NUMPAD_EQUALS, SDLK_KP_EQUALS);
+//    sdlKeyMap.set(WXK_NUMPAD_SUBSTRACT, SDLK_KP_MINUS);
+    sdlKeyMap.set(WXK_NUMPAD_DIVIDE, SDLK_KP_DIVIDE);
+    sdlKeyMap.set(WXK_NUMPAD_DECIMAL, SDLK_KP_PERIOD);
+
+    // the following key codes are only generated under Windows currently
+    sdlKeyMap.set(WXK_WINDOWS_LEFT, SDLK_LSUPER);
+    sdlKeyMap.set(WXK_WINDOWS_RIGHT, SDLK_RSUPER);
+    sdlKeyMap.set(WXK_WINDOWS_MENU, SDLK_MENU);
 }
