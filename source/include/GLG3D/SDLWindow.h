@@ -33,15 +33,6 @@ namespace G3D {
 class SDLWindow : public GWindow {
 private:
 
-#ifdef G3D_WIN32
-    /** Computed by _win32HDC() */
-    HDC                 hdc;
-#endif
-
-    /** Sets hdc on Win32, does nothing on other platforms.
-        Called from the constructor.*/
-    void _win32HDC();
-
     /** Window title */
     std::string         _caption;
 
@@ -79,10 +70,6 @@ public:
     virtual void setGammaRamp(const Array<uint16>& gammaRamp);
 
     virtual void setCaption(const std::string& caption);
-    
-    #ifdef G3D_WIN32
-        virtual HDC getHDC() const;
-    #endif
 
     virtual std::string caption();
 

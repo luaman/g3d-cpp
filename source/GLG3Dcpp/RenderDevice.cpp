@@ -588,7 +588,7 @@ bool RenderDevice::initialized() const {
 #ifdef G3D_WIN32
 
 HDC RenderDevice::getWindowHDC() const {
-    return _window->getHDC();
+    return wglGetCurrentDC();
 }
 
 #endif
@@ -1234,6 +1234,7 @@ void RenderDevice::beginFrame() {
 void RenderDevice::endFrame() {
     --beginEndFrame;
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
+
     _window->swapGLBuffers();
 
     double now = System::getTick();

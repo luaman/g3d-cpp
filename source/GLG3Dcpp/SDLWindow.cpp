@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-11
+  @edited  2004-02-15
 */
 
 #include "GLG3D/SDLWindow.h"
@@ -82,7 +82,6 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
     SDL_EnableUNICODE(1);
     setCaption("G3D");
-    _win32HDC();
 
 	if (numJoysticks() > 0) {
         SDL_JoystickEventState(SDL_ENABLE);
@@ -90,40 +89,6 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         _joy = SDL_JoystickOpen(0);
         debugAssert(_joy);
 	}
-}
-
-
-void SDLWindow::_win32HDC() {
-#ifdef G3D_WIN32
-    Log* debugLog = Log::common();
-
-    SDL_SysWMinfo info;
-
-    if (debugLog) {
-        debugLog->println("Getting HDC... ");
-    }
-    SDL_VERSION(&info.version);
-
-    int result = SDL_GetWMInfo(&info);
-
-    if (result != 1) {
-        if (debugLog) {
-            debugLog->println(SDL_GetError());
-        }
-        debugAssertM(false, SDL_GetError());
-    }
-
-    hdc = GetDC(info.window);
-
-    if (hdc == 0) {
-        if (debugLog) {
-            debugLog->println("hdc == 0");
-        }
-        debugAssert(hdc != 0);
-    }
-
-    if (debugLog) {debugLog->println("HDC acquired.");}
-#endif
 }
 
 
@@ -216,7 +181,7 @@ void SDLWindow::setGammaRamp(const Array<uint16>& gammaRamp) {
         for (int i = 0; i < 256; ++i) {
             wptr[i] = wptr[i + 256] = wptr[i + 512] = ptr[i]; 
         }
-        BOOL success = SetDeviceGammaRamp(getHDC(), wptr);
+        BOOL success = SetDeviceGammaRamp(wglGetCurrentDC(), wptr);
     #else
         bool success = (SDL_SetGammaRamp(ptr, ptr, ptr) != -1);
     #endif
@@ -251,13 +216,6 @@ void SDLWindow::setCaption(const std::string& caption) {
     _caption = caption;
 	SDL_WM_SetCaption(_caption.c_str(), NULL);
 }
-
-
-#ifdef G3D_WIN32
-HDC SDLWindow::getHDC() const {
-    return hdc;
-}
-#endif
 
 
 std::string SDLWindow::caption() {
@@ -351,7 +309,6 @@ void SDLWindow::setMousePosition(const Vector2& p) {
 
 
 void SDLWindow::getRelativeMouseState(Vector2& p, uint8& mouseButtons) const {
-
     int x, y;
     getRelativeMouseState(x, y, mouseButtons);
     p.x = x;

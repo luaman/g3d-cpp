@@ -51,6 +51,33 @@ GLboolean glGetBoolean(GLenum which);
  */
 GLdouble glGetDouble(GLenum which);
 
+
+#ifdef G3D_WIN32
+
+/**
+ OpenGL context (argument to glMakeCurrent, return value of glGetCurrentContext).
+ <B>BETA API-- subject to change</B>
+ */
+typedef HGLRC GLContext;
+
+/**
+ Returns the current OpenGL context if more than one is in use.
+ <B>BETA API-- subject to change</B>
+ */
+inline GLContext glGetCurrentContext() {
+    return wglGetCurrentContext();
+}
+
+#else 
+
+typedef GLXContext GLContext;
+inline GLContext glGetCurrentContext() {
+    return glXGetCurrentContext();
+}
+
+#endif
+
+
 inline void glMultiTexCoord(GLint unit, float v) {
 	glMultiTexCoord1fARB(unit, v);
 }

@@ -123,18 +123,6 @@ public:
         with y = up. */
     virtual Vector2 joystickPosition(int stickNum) const = 0;
 
-    #ifdef G3D_WIN32
-        /** On Windows, returns the HDC.  Not present on other platforms. */
-        //  This is part of the base class API because different
-        //  Window subclasses provide access to the HDC on Win32 and
-        //  the consumer of a Window should not need to know which 
-        //  subclass.  We could provide a separate Win32Window interface 
-        //  for those subclasses but were we to have separate "mix-ins"
-        //  for each special property it would become unweildy given
-        //  C++'s inheritance system.
-        virtual HDC getHDC() const = 0;
-    #endif
-
     /** The window title */
     virtual std::string caption() = 0;
 
