@@ -7,7 +7,7 @@
        at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-03-04
- @edited  2003-09-28
+ @edited  2003-10-31
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -89,23 +89,12 @@ public:
 
     virtual ~CoordinateFrame() {}
 
+    class Matrix4 toMatrix4() const;
 
     /**
      Produces an XML serialization of this coordinate frame.
      */
-    std::string toXML() const {
-        char buffer[1024];
-
-        int count = sprintf(buffer, "<COORDINATEFRAME>\n  %lf,%lf,%lf,%lf,\n  %lf,%lf,%lf,%lf,\n  %lf,%lf,%lf,%lf,\n  %lf,%lf,%lf,%lf\n</COORDINATEFRAME>\n",
-                            rotation[0][0], rotation[0][1], rotation[0][2], translation.x,
-                            rotation[1][0], rotation[1][1], rotation[1][2], translation.y,
-                            rotation[2][0], rotation[2][1], rotation[2][2], translation.z,
-                            0.0, 0.0, 0.0, 1.0);
-        assert(count < 1024);
-
-        std::string s = buffer;
-        return s;
-    }
+    std::string toXML() const;
 
 
     /*

@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-10-02
-  @edited  2003-10-04
+  @edited  2003-11-01
  */
 
 #ifndef G3D_MATRIX4_H
@@ -15,8 +15,7 @@
 namespace G3D {
 
 /**
- Provided for DirectX/Cg support, not full featured.  Consider G3D::CoordinateFrame
- instead.
+ Not full featured.  Consider G3D::CoordinateFrame instead.
  */
 class Matrix4 {
 private:
@@ -56,6 +55,15 @@ public:
         double            top,
         double            nearval,
         double            farval);
+
+    static Matrix4 perspectiveProjectionMatrix(
+        double            left,
+        double            right,
+        double            bottom,
+        double            top,
+        double            nearval,
+        double            farval);
+
     void setRow(int r, const class Vector4& v);
     void setColumn(int c, const Vector4& v);
     Vector4 getRow(int r) const;

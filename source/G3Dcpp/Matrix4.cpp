@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-10-02
-  @edited  2003-10-04
+  @edited  2003-11-01
  */
 
 #include "G3D/Matrix4.h"
@@ -52,6 +52,42 @@ Matrix4 Matrix4::orthogonalProjectionMatrix(
                 0.0,  y , 0.0,  ty,
                 0.0, 0.0,  z ,  tz,
                 0.0, 0.0, 0.0, 1.0);
+}
+
+
+Matrix4 Matrix4::perspectiveProjectionMatrix(
+    double left,    
+    double right,
+    double bottom,  
+    double top,
+    double nearval, 
+    double farval) {
+
+    debugAssert(right == -left);
+    debugAssert(top == -bottom);
+
+    double x, y, a, b, c, d;
+    double m[16];
+
+    x = (2.0*nearval) / (right-left);
+    y = (2.0*nearval) / (top-bottom);
+    a = (right+left) / (right-left);
+    b = (top+bottom) / (top-bottom);
+
+    if ((float)farval >= (float)inf) {
+       // Infinite view frustum
+       c = -1.0;
+       d = -2.0 * nearval;
+    } else {
+       c = -(farval+nearval) / (farval-nearval);
+       d = -(2.0*farval*nearval) / (farval-nearval);
+    }
+
+    return Matrix4(
+        x,  0,  a,  0,
+        0,  y,  b,  0,
+        0,  0,  c,  d,
+        0,  0, -1,  0);
 }
 
 
