@@ -670,7 +670,8 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     shadeMode                   = SHADE_FLAT;
 
-    shader                      = NULL;
+    vertexAndPixelShader        = NULL;
+	objectShader				= NULL;
     vertexProgram               = NULL;
     pixelProgram                = NULL;
 
@@ -825,7 +826,8 @@ void RenderDevice::setState(
         setCameraToWorldMatrix(newState.cameraToWorldMatrix);
     }
 
-    setShader(newState.shader);
+    setVertexAndPixelShader(newState.vertexAndPixelShader);
+	setObjectShader(newState.objectShader);
 
     if (supportsVertexProgram()) {
         setVertexProgram(newState.vertexProgram);
@@ -1442,10 +1444,17 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 }
 
 
-void RenderDevice::setShader(const VertexAndPixelShaderRef& s) {
-    if (s != state.shader) {
+void RenderDevice::setObjectShader(const ObjectShaderRef& s) {
+	if (s != state.objectShader) {
+		state.objectShader = s;
+	}
+}
 
-        state.shader = s;
+
+void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s) {
+    if (s != state.vertexAndPixelShader) {
+
+        state.vertexAndPixelShader = s;
         if (s.isNull()) {
             // Disables the programmable pipeline
             glUseProgramObjectARB(0);
@@ -1458,9 +1467,9 @@ void RenderDevice::setShader(const VertexAndPixelShaderRef& s) {
 }
 
 
-void RenderDevice::setShader(const VertexAndPixelShaderRef& s,
+void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s,
                              const VertexAndPixelShader::ArgList& args) {
-    setShader(s);
+    setVertexAndPixelShader(s);
 
     if (! s.isNull()) {
         s->bindArgList(this, args);

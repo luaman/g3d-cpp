@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-05-14
+  @edited  2004-05-15
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -738,17 +738,18 @@ public:
     uint numTextureCoords() const;
 
     /**
-     Set the current shader (combination of pixel shader, vertex shader,
-     and object shader).  You may call VertexAndPixelShader::bindArgList either
+     Set the current shader.  You may call VertexAndPixelShader::bindArgList either
      before or after this, or use the variation of this call that
-     includes an arg list.
+     includes an arg list.  Typically called by your ObjectShader subclass.
      */
-    void setShader(const VertexAndPixelShaderRef& s);
+    void setVertexAndPixelShader(const VertexAndPixelShaderRef& s);
 
     /** Throws VertexAndPixelShader::ArgumentError if the arguments provided
       do not match the arguments declared */
-    void setShader(const VertexAndPixelShaderRef& s,
+    void setVertexAndPixelShader(const VertexAndPixelShaderRef& s,
             const VertexAndPixelShader::ArgList& args);
+
+	void setObjectShader(const ObjectShaderRef& s);
 
     /**
      Automatically enables vertex programs when they are set. 
@@ -896,7 +897,9 @@ private:
         double                      lowDepthRange;
         double                      highDepthRange;
 
-        VertexAndPixelShaderRef              shader;
+        VertexAndPixelShaderRef     vertexAndPixelShader;
+		ObjectShaderRef				objectShader;
+
         /** @deprecated */
         VertexProgramRef            vertexProgram;
         /** @deprecated */
