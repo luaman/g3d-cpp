@@ -47,6 +47,7 @@
         G3D::Quat,
 		G3D::Plane,
 		G3D::Ray,
+        G3D::Rect2D,
         G3D::Sphere,
 		G3D::Triangle,
 		G3D::Vector2,

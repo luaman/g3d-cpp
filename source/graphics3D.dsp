@@ -346,10 +346,6 @@ SOURCE=.\include\G3D\fileutils.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\Font.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\format.h
 # End Source File
 # Begin Source File
@@ -435,6 +431,10 @@ SOURCE=.\include\G3D\Queue.h
 # Begin Source File
 
 SOURCE=.\include\G3D\Ray.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Rect2D.h
 # End Source File
 # Begin Source File
 

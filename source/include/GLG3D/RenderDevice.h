@@ -30,28 +30,6 @@ namespace G3D {
  */
 #define MAX_TEXTURE_UNITS 8
 
-/**
- Parameters controlling the viewport and scissor region for
- rendering.
- */
-class Rect2D {
-public:
-    double                              x;
-    double                              y;
-    double                              width;
-    double                              height;
-
-    Rect2D() : x(0), y(0), width(0), height(0) {}
-    Rect2D(
-        double x,
-        double y,
-        double width,
-        double height) : 
-        x(x),
-        y(y),
-        width(width),
-        height(height) {}
-};
 
 
 /**

@@ -89,11 +89,11 @@ void Draw::axes(
             // Y
             renderDevice->setColor(yColor);
             renderDevice->sendVertex(Vector2(-xx,  yy) * yS + y2D);
-            renderDevice->sendVertex(Vector2(  0,  0) * yS + y2D);
-            renderDevice->sendVertex(Vector2(  0,  0) * yS + y2D);
+            renderDevice->sendVertex(Vector2(  0,  0)  * yS + y2D);
+            renderDevice->sendVertex(Vector2(  0,  0)  * yS + y2D);
             renderDevice->sendVertex(Vector2(  0, -yy) * yS + y2D);
             renderDevice->sendVertex(Vector2( xx,  yy) * yS + y2D);
-            renderDevice->sendVertex(Vector2(  0,  0) * yS + y2D);
+            renderDevice->sendVertex(Vector2(  0,  0)  * yS + y2D);
         renderDevice->endPrimitive();
 
         renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);

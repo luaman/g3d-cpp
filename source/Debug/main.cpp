@@ -207,6 +207,8 @@ void Demo::doGraphics() {
         app->renderDevice->sendVertex(Vector3(5, 0, 2.5));
     app->renderDevice->endPrimitive();
 
+    Vector4 p = app->renderDevice->project(Vector3::ZERO);
+    app->debugPrintf("%g, %g", p.x, p.y);
     app->renderDevice->disableLighting();
 
     sky->renderLensFlare(lighting);

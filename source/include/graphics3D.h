@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-11-12
+ @edited  2003-11-13
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -106,6 +106,7 @@
 #include "G3D/Discovery.h"
 #include "G3D/MeshAlg.h"
 #include "G3D/vectorMath.h"
+#include "G3D/Rect2D.h"
 
 #endif
 

@@ -850,7 +850,7 @@ void RenderDevice::setVideoMode() {
         // RenderState constructor
         state = RenderState(getWidth(), getHeight());
 
-        glViewport(state.viewport.x, state.viewport.y, state.viewport.width, state.viewport.height);
+        glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
         glDepthMask(GL_TRUE);
         glColorMask(1,1,1,0);
         glStencilMask(0x00);
@@ -966,7 +966,7 @@ void RenderDevice::push2D(const Rect2D& viewport) {
     setCullFace(CULL_NONE);
     disableDepthWrite();
     setViewport(viewport);
-    setProjectionMatrix(Matrix4::orthogonalProjection(viewport.x, viewport.x + viewport.width - 1, viewport.y + viewport.height - 1, viewport.y, -1, 1));
+    setProjectionMatrix(Matrix4::orthogonalProjection(viewport.x0(), viewport.x0() + viewport.width() - 1, viewport.y0() + viewport.height() - 1, viewport.y0(), -1, 1));
 }
 
 
@@ -979,7 +979,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     // WARNING: this must be kept in sync with the initialization code
     // in init();
-    viewport                    = Rect2D(0, 0, width, height);
+    viewport                    = Rect2D::xywh(0, 0, width, height);
 
     depthWrite                  = true;
     colorWrite                  = true;
@@ -1033,7 +1033,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     // Set projection matrix
     double aspect;
-    aspect = (double)viewport.width / viewport.height;
+    aspect = (double)viewport.width() / viewport.height();
 
     projectionMatrix = Matrix4::perspectiveProjection(-aspect, aspect, -1, 1, 0.1, 100.0);
 
@@ -1388,12 +1388,8 @@ void RenderDevice::setColorClearValue(const Color4& c) {
 
 
 void RenderDevice::setViewport(const Rect2D& v) {
-    if ((state.viewport.x != v.x) ||
-        (state.viewport.y != v.y) ||
-        (state.viewport.width != v.width) ||
-        (state.viewport.height != v.height)) {
-
-        glViewport(v.x, v.y, v.width, v.height);
+    if (state.viewport != v) {
+        glViewport(v.x0(), v.y0(), v.width(), v.height());
         state.viewport = v;
     }
 }

@@ -240,7 +240,7 @@ void GApplet::doUserInput() {
         case SDL_VIDEORESIZE:
             if (app->autoResize) {
                 app->renderDevice->notifyResize(event.resize.w, event.resize.h);
-                Rect2D full(0, 0, app->renderDevice->getWidth(), app->renderDevice->getHeight());
+                Rect2D full = Rect2D::xywh(0, 0, app->renderDevice->getWidth(), app->renderDevice->getHeight());
                 app->renderDevice->setViewport(full);
             }
             break;
