@@ -8,8 +8,8 @@
 #include "G3D/debug.h"
 
 extern "C" {
-#include "IJG/jconfig.h"
-#include "IJG/cdjpeg.h"
+#include "../IJG/jconfig.h"
+#include "../IJG/cdjpeg.h"
 }
 #include <sys/stat.h>
 #include <assert.h>
