@@ -64,13 +64,13 @@ private:
     /**
      Length of file, in bytes
      */
-    int             length;
+    size_t          length;
     uint8*          buffer;
 
     /**
      Next byte in file
      */
-    int             pos;
+    size_t          pos;
 
     /**
      When true, the buffer is freed in the deconstructor.
@@ -151,7 +151,7 @@ public:
     /**
      Sets the position.  Cannot set past length.
      */
-    inline void setPosition(int p) {
+    inline void setPosition(size_t p) {
         debugAssertM(p <= length, "Read past end of file");
         pos = p;
     }
@@ -255,14 +255,14 @@ public:
     /**
      Returns the data in bytes.
      */
-    void readBytes(int n, void* bytes);
+    void readBytes(size_t n, void* bytes);
 
     /**
      Reads an n character string.  The string is not
      required to end in NULL in the file but will
      always be a proper std::string when returned.
      */
-    std::string readString(int n);
+    std::string readString(size_t n);
 
     /**
      Reads until NULL or the end of the file is encountered.
@@ -289,7 +289,7 @@ public:
     /**
      Skips ahead n bytes.
      */
-    inline void skip(int n) {
+    inline void skip(size_t n) {
         debugAssertM(pos + n <= length, "Read past end of file");
         pos += n;
     }

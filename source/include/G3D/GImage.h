@@ -154,7 +154,7 @@ public:
         std::string filename;
     };
 
-    enum Format {JPEG, BMP, TGA, PCX, ICO, PNG, PPM, AUTODETECT, UNKNOWN};
+    enum Format {JPEG, BMP, TGA, PCX, ICO, PNG, PPM_ASCII, AUTODETECT, UNKNOWN};
 
     int                     width;
     int                     height;

@@ -736,7 +736,7 @@ void GImage::encodePPM(
     ppm.printf("P3\n%d %d\n255\n", width, height);
     
     const Color3uint8* c = this->pixel3();
-    for (unsigned int i = 0; i < (width * height); ++i) {
+    for (uint32 i = 0; i < (uint32)(width * height); ++i) {
         ppm.printf("%d %d %d%c", c[i].r, c[i].g, c[i].b, 
             ((i % ((width * 3) - 1)) == 0) ?
             '\n' : ' '); 
@@ -751,7 +751,7 @@ void GImage::decode(
     Format              format) {
 
     switch (format) {
-    case PPM:
+    case PPM_ASCII:
         decodePPM(input);
         break;
 
@@ -1837,7 +1837,7 @@ void GImage::decodePPM(
 
     // Read in the image data.  I am not validating if the values match the maxColor
     // requirements.  I only scale if needed to fit within the byte available.
-    for (unsigned int i = 0; i < (width * height); ++i) {
+    for (uint32 i = 0; i < (uint32)(width * height); ++i) {
         // read in color and scale to max pixel defined in header
         // A max color less than 255 might need to be left alone and not scaled.
         Color3uint8& curPixel = *(this->pixel3() + i);
@@ -1897,7 +1897,7 @@ GImage::Format GImage::resolveFormat(
     debugAssert(data != NULL);              
 
     if ((dataLen > 3) && (!memcmp(data, "P3", 2) || !memcmp(data, "P2", 2) || !memcmp(data, "P1", 2))) {
-        return PPM;
+        return PPM_ASCII;
     }
 
     if (dataLen > 8) {
@@ -2159,7 +2159,7 @@ void GImage::encode(
     BinaryOutput&       out) const {
 
     switch (format) {
-    case PPM:
+    case PPM_ASCII:
         encodePPM(out);
         break;
 

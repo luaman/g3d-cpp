@@ -51,7 +51,7 @@ private:
     size_t          maxBufferLen;
 
     // Next byte in file
-    int             pos;
+    size_t          pos;
 
     // is this initialized?
     bool            init;
@@ -60,10 +60,10 @@ private:
      Make sure at least bytes can be written, resizing if
      necessary.
      */
-    void reserveBytes(int bytes) {
+    void reserveBytes(size_t bytes) {
         bufferLen = iMax(bufferLen, pos + bytes);
         if (bufferLen >= maxBufferLen) {
-            maxBufferLen = bufferLen * 1.5 + 100;
+            maxBufferLen = (size_t)(bufferLen * 1.5) + 100;
             buffer = (uint8*)realloc(buffer, maxBufferLen);
         }
 
