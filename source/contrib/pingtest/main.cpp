@@ -15,7 +15,7 @@
 #include <G3DAll.h>
 
 /** Change this constant to build a test for ReliableConduit */
-static const bool reliable = true;
+static const bool reliable = false;
 
 enum {PING_PORT=1201};
 NetworkDevice networkDevice;
@@ -125,8 +125,6 @@ void reliableServer() {
         }
 
         if (listener->clientWaiting()) {
-            printf("Here\n");
-
             ReliableConduitRef conduit =
                 listener->waitForConnection();
 

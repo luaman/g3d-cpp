@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2004-03-31
+ @edited  2004-04-01
  */
 
 #include <stdlib.h>
@@ -106,7 +106,8 @@ static void logSocketInfo(Log* debugLog, const SOCKET& sock) {
 
 /////////////////////////////////////////////////////////////////////////////
 
-/** Invokes select on one socket.  Returns SOCKET_ERROR on error. */
+/** Invokes select on one socket.  Returns SOCKET_ERROR on error, 0 if
+    there is no read pending, sock if there a read pending. */
 static int selectOneReadSocket(const SOCKET& sock) {
     // 0 time timeout is specified to poll and return immediately
     struct timeval timeout;
@@ -118,9 +119,7 @@ static int selectOneReadSocket(const SOCKET& sock) {
     FD_ZERO(&socketSet); 
     FD_SET(sock, &socketSet);
 
-    int ret = select(1, &socketSet, NULL, NULL, &timeout);
-
-    //printf("FD_ISSET(0, &socketSet) = %d\n", FD_ISSET(0, &socketSet));
+    int ret = select(sock + 1, &socketSet, NULL, NULL, &timeout);
 
     return ret;
 }
@@ -142,20 +141,13 @@ static bool readWaiting(Log* debugLog, const SOCKET& sock) {
     case 0:
         return false;
 
-    case 1:
-        return true;
-
     default:
-        if (debugLog) {
-            debugLog->printf("WARNING: selectOneReadSocket returned "
-                             "%d in readWaiting().\n", ret);
-        }
         return true;
     }
 }
 
 
-/** Invokes select on one socket */
+/** Invokes select on one socket.   */
 static int selectOneWriteSocket(const SOCKET& sock) {
     // 0 time timeout is specified to poll and return immediately
     struct timeval timeout;
@@ -167,7 +159,7 @@ static int selectOneWriteSocket(const SOCKET& sock) {
     FD_ZERO(&socketSet); 
     FD_SET(sock, &socketSet);
 
-    return select(1, NULL, &socketSet, NULL, &timeout);
+    return select(sock + 1, NULL, &socketSet, NULL, &timeout);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -614,7 +606,7 @@ ReliableConduit::ReliableConduit(
 
     if (ret == WSAEWOULDBLOCK) {
         RealTime t = System::getTick() + 5;
-        // Non-blocking; we must wait in select
+        // Non-blocking; we must wait until select returns non-zero
         while ((selectOneWriteSocket(sock) == 0) && (System::getTick() < t)) {
             System::sleep(0.02);
         }
