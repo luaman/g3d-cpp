@@ -1,6 +1,10 @@
 #include "../include/G3DAll.h"
 #include <string>
 
+GLuint vertexBuffer;
+GLuint normalBuffer;
+
+
 class Entity {
 protected:
 
@@ -58,22 +62,58 @@ void Entity::render(RenderDevice* renderDevice) {
     PosedModelRef pm = getPosedModel();
 
     renderDevice->pushState();
-        if (selected) {
-            renderDevice->pushState();
-                renderDevice->setColor(Color3::BLACK);
-                renderDevice->setLineWidth(3);
-                renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
-                renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-                pm->render(renderDevice);
-            renderDevice->popState();
-        }
-
-        // Draw bounding box:
-        // Draw::box(pm->worldSpaceBoundingBox(), renderDevice);
-
         renderDevice->setTexture(0, texture);
         renderDevice->setColor(color);
-        pm->render(renderDevice);
+        
+        MeshAlg::Geometry geometry;
+        Array<int> index;
+
+        pm->getWorldSpaceGeometry(geometry);
+        pm->getTriangleIndices(index);
+
+        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+
+
+
+        glGenBuffersARB(1, &vertexBuffer);
+
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vertexBuffer);
+
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, 
+            geometry.vertexArray.size() * sizeof(Vector3),
+            geometry.vertexArray.getCArray(),
+            GL_STREAM_DRAW_ARB);
+
+        glVertexPointer(3, GL_FLOAT, 0, 0);
+
+//        glNormalPointer(3, 0, 0);
+        glEnableClientState(GL_VERTEX_ARRAY);
+//        glEnableClientState(GL_NORMAL_ARRAY);
+        glDrawRangeElements(GL_TRIANGLES, 
+            0, geometry.vertexArray.size(),
+            index.size(), GL_UNSIGNED_INT, 
+            index.getCArray());
+
+        /*
+        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+        for (int i = 0; i < index.size(); ++i) {
+            renderDevice->setNormal(geometry.normalArray[index[i]]);
+            renderDevice->sendVertex(geometry.vertexArray[index[i]]);
+        }
+        renderDevice->endPrimitive();
+        */
+
+        glDeleteBuffersARB(1, &normalBuffer);
+        glDeleteBuffersARB(1, &vertexBuffer);
+
+        glPopClientAttrib();
+        glPopAttrib();
+
+        //pm->render(renderDevice);
     renderDevice->popState();
 }
 
@@ -150,10 +190,8 @@ private:
 
 public:
 
-    TextureRef          tex;
     SkyRef              sky;
     Array<Entity*>      entityArray;
-    TextureRef          reflectionMap;
 
     Demo(GApp* app) : GApplet(app) {
         app->renderDevice->setSpecularCoefficient(0);
@@ -167,38 +205,15 @@ public:
 };
 
 
-IFSModelRef teapot;
 void Demo::init()  {
-    tex = Texture::fromFile(app->dataDir + "image/lena.tga");
-    //sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
-//    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","testcube_*.jpg",false);
     sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","majestic512_*.jpg",false);
-//    sky = NULL;
 
-    reflectionMap = Texture::createEmpty(128, 128, "Reflection Map", TextureFormat::RGB8,
-        Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+    app->debugCamera.setPosition(Vector3(0, 0.5, 2));
+    app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-    debugAssert(reflectionMap->getTexelHeight() <= app->renderDevice->getHeight());
+    IFSModelRef cube   = IFSModel::create(app->dataDir + "ifs/knot.ifs");
 
-    app->debugCamera.setPosition(Vector3(0, 2, 10));
-    app->debugCamera.lookAt(Vector3(0, 2, 0));
-
-    IFSModelRef cube   = IFSModel::create(app->dataDir + "ifs/cube.ifs");
-    teapot = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
-
-    MD2ModelRef knight = 
-        MD2Model::create(app->dataDir + "quake2/players/pknight/tris.md2");
-
-    TextureRef  knightTexture = 
-        Texture::fromFile(app->dataDir + "quake2/players/pknight/knight.pcx", 
-                          TextureFormat::AUTO, Texture::CLAMP, Texture::TRILINEAR_MIPMAP,
-                          Texture::DIM_2D, 2.0); 
-
-//    entityArray.append(new IFSEntity(cube, Vector3(-5, 0, 0), Color3::BLUE));
-//    entityArray.append(new IFSEntity(teapot, Vector3( 0, 0, 0), Color3::WHITE));
-    entityArray.append(new MD2Entity(knight, Vector3( 5, 0, 0), knightTexture));
-    entityArray.append(new MD2Entity(knight, Vector3( 0, 0, 0), knightTexture));
-    entityArray.append(new MD2Entity(knight, Vector3( -5, 0, 0), knightTexture));
+    entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }
 
 
@@ -215,103 +230,20 @@ void Demo::doLogic() {
         endApplet = true;
         app->endProgram = true;
     }
-
-    if (app->userInput->keyPressed(SDL_LEFT_MOUSE_KEY)) {
-
-        Ray ray = app->debugCamera.worldRay(app->userInput->getMouseX(), app->userInput->getMouseY(), app->renderDevice->getViewport());
-
-        // Deselect all
-        for (int i = 0; i < entityArray.length(); ++i) {
-            entityArray[i]->selected = false;
-        }
-
-        // Find the *first* selected one
-        int i = -1;
-        RealTime t = infReal;
-        for (int e = 0; e < entityArray.length(); ++e) {
-            Entity* entity = entityArray[e];
-            RealTime test = entity->getIntersectionTime(ray);
-            if (test < t) {
-                i = e;
-                t = test;
-            }
-        }
-
-        if (i >= 0) {
-            entityArray[i]->selected = true;
-        }
-    }
 }
 
 
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
-    // Generate dynamic environment map
-    Rect2D rect   = Rect2D::xywh(0, 0, reflectionMap->getTexelWidth(), reflectionMap->getTexelHeight());
-
-    GCamera camera;
-    camera.setFieldOfView(toRadians(90));
-    camera.setNearPlaneZ(-.01);
-    camera.setFarPlaneZ(-inf);
-    CoordinateFrame cframe(Vector3(2, 4, 0));
-
     app->renderDevice->clear(sky == NULL, true, true);
-for (int i = 0; i < 4; ++i) {
-
-    for (int f = 0; f < 6; ++f) {
-        app->renderDevice->pushState();
-            app->renderDevice->setViewport(rect);
-            Texture::CubeFace face = (Texture::CubeFace)f;
-        
-            Texture::getCameraRotation(face, cframe.rotation);
-            camera.setCoordinateFrame(cframe);
-
-            app->renderDevice->setProjectionAndCameraMatrix(camera);
-            renderScene(lighting);
-        app->renderDevice->popState();
-        reflectionMap->copyFromScreen(rect, face);
-
-        // Shift over and use a different part of the screen
-        // so we don't have to repeatedly clear the screen.
-        rect = rect + Vector2(rect.width(), 0);
-        if (rect.x1() > app->renderDevice->getWidth()) {
-            // Go to next row
-            rect = rect + Vector2(-rect.x0(), rect.height());
-
-            if (rect.y1() > app->renderDevice->getHeight()) {
-                // Move back to the beginning and clear the screen.
-                rect = rect - Vector2(rect.x0(), rect.y0());
-                app->renderDevice->clear(sky == NULL, true, true);
-            }
-        }
-    }
-}
+     
     // Render the scene to the full-screen
-    app->debugPrintf("Mouse (%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
     app->renderDevice->clear(sky == NULL, true, true);
     renderScene(lighting);
-
-    
-    app->renderDevice->pushState();
-        app->renderDevice->enableLighting();
-
-        app->renderDevice->setColor(Color3::WHITE);
-        app->renderDevice->configureReflectionMap(0, reflectionMap);
-        CoordinateFrame boxframe(Vector3(2, 4, 0));
-        boxframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
-
-        app->renderDevice->setObjectToWorldMatrix(boxframe);
-
-        // Draw::box(Box(Vector3(-1,-1,-1), Vector3(1,1,1)), app->renderDevice, Color3::WHITE, Color4::CLEAR);
-        Draw::sphere(Sphere(Vector3(0, 0, 0), 1.3), app->renderDevice, Color3::WHITE, Color4::CLEAR);
-
-     //   teapot->pose(CoordinateFrame(Vector3(0, 4, 0)))->render(app->renderDevice);
-    app->renderDevice->popState();
-    
-
+        
     // The lens flare shouldn't be reflected, so it is only rendered
     // for the final composite image
     if (sky != NULL) {
@@ -336,27 +268,6 @@ void Demo::renderScene(const LightingParameters& lighting) {
     for (int e = 0; e < entityArray.length(); ++e) { 
         entityArray[e]->render(app->renderDevice);
     }
-
-    //Draw::axes(CoordinateFrame(Vector3(0, 7, 0)), app->renderDevice);
-    app->renderDevice->setTexture(0, tex);
-    app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
-    app->renderDevice->setColor(Color3::WHITE);
-    app->renderDevice->beginPrimitive(RenderDevice::QUADS);
-        app->renderDevice->setNormal(Vector3::UNIT_Y);
-        app->renderDevice->setTexCoord(0, Vector2(2, 0));
-        app->renderDevice->sendVertex(Vector3(7, 0, -3.5));
-
-        app->renderDevice->setTexCoord(0, Vector2(0, 0));
-        app->renderDevice->sendVertex(Vector3(-7, 0, -3.5));
-
-        app->renderDevice->setTexCoord(0, Vector2(0, 1));
-        app->renderDevice->sendVertex(Vector3(-7, 0, 3.5));
-
-        app->renderDevice->setTexCoord(0, Vector2(2, 1));
-        app->renderDevice->sendVertex(Vector3(7, 0, 3.5));
-    app->renderDevice->endPrimitive();
-
-    app->renderDevice->disableLighting();
 }
 
 
