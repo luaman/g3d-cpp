@@ -78,7 +78,7 @@ std::string wordWrap(
             output += NEWLINE;
         }
 
-        if ((int)inLen - c - 1 < numCols) {
+        if ((int)inLen - (int)c - 1 < numCols) {
             // The end
             output += input.substr(c, inLen - c);
             break;
