@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-05-23
+ @edited  2003-05-24
 */
 
 #include "GLG3D/glcalls.h"
@@ -50,7 +50,7 @@ static GLenum dimensionToTarget(Texture::Dimension d) {
 
 static void createMipMapTexture(    
     GLenum          target,
-    uint8*          bytes,
+    const uint8*    bytes,
     int             bytesFormat,
     int             width,
     int             height,
@@ -72,7 +72,7 @@ static void createMipMapTexture(
 
 static void createTexture(
     GLenum          target,
-    uint8*          bytes,
+    const uint8*    bytes,
     GLenum          bytesFormat,
     int             width,
     int             height,
@@ -278,7 +278,7 @@ TextureRef Texture::fromTwoFiles(
 
 TextureRef Texture::fromMemory(
     const std::string&      name,
-    uint8*                  bytes,
+    const uint8*            bytes,
     const TextureFormat*    bytesFormat,
     int                     width,
     int                     height,

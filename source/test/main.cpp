@@ -73,7 +73,7 @@ void testPlane() {
                 Vector3(0, 1, 0),
                 Vector3(0, 0, 0));
 
-        Vector3 n = p.getNormal();
+        Vector3 n = p.normal();
         debugAssert(n == Vector3(0,0,1));
     }
 
@@ -82,7 +82,7 @@ void testPlane() {
                 Vector3(-.2, 6, .1),
                 Vector3(-.2, 6, -.1));
 
-        Vector3 n = p.getNormal();
+        Vector3 n = p.normal();
         debugAssert(n.fuzzyEq(Vector3(0,-1,0)));
     }
 }
@@ -401,13 +401,13 @@ void measureTriangleCollisionPerformance() {
     Sphere sphere(Vector3(.5,1,-.5), 1);
     Vector3 vel(0, -1, 0);
     Vector3 location, normal;
-    CDTriangle triangle(v0, v1, v2);
+    Triangle triangle(v0, v1, v2);
     int n = 1024;
     int i;
 
     System::beginCycleCount(raw);
     for (i = 0; i < n; ++i) {
-        double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, CDTriangle(v0, v1, v2), location, normal);
+        double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, Triangle(v0, v1, v2), location, normal);
     }
     System::endCycleCount(raw);
 

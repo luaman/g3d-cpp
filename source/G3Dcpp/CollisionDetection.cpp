@@ -207,7 +207,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedRectangle(
         return time;
     }
 
-    if (isPointInsideRectangle(v0, v1, v2, v3, plane.getNormal(), location)) {
+    if (isPointInsideRectangle(v0, v1, v2, v3, plane.normal(), location)) {
         // The intersection point is inside the rectangle; that is the location where
         // the point hits the rectangle.
         return time;
@@ -567,7 +567,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
         return time;
     }
 
-    if (isPointInsideRectangle(v0, v1, v2, v3, plane.getNormal(), location)) {
+    if (isPointInsideRectangle(v0, v1, v2, v3, plane.normal(), location)) {
         // The intersection point is inside the rectangle; that is the location where
         // the sphere hits the rectangle.
         return time;
@@ -910,9 +910,9 @@ Vector3 CollisionDetection::closestPointToRectangle(
     plane.getEquation(a, b, c, d);
     
     double distance = a*point.x + b*point.y + c*point.z + d;
-    Vector3 planePoint = point - distance * plane.getNormal();
+    Vector3 planePoint = point - distance * plane.normal();
 
-    if (isPointInsideRectangle(v0, v1, v2, v3, plane.getNormal(), planePoint)) {
+    if (isPointInsideRectangle(v0, v1, v2, v3, plane.normal(), planePoint)) {
         return planePoint;
     } else {
         return closestPointToRectanglePerimeter(v0, v1, v2, v3, planePoint);

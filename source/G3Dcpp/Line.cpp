@@ -3,11 +3,10 @@
  
   Line class
  
-  @author Morgan McGuire and Laura Wollstadt, graphics3d.com
- 
+  @maintainer Morgan McGuire, graphics3d.com
  
   @created 2001-06-02
-  @edited  2003-02-15
+  @edited  2003-05-24
  */
 
 #include "G3D/Line.h"
@@ -17,12 +16,14 @@ namespace G3D {
 
 Vector3 Line::intersection(const Plane &plane) const {
     Real d;
-    Vector3 normal = plane.getNormal();
+    Vector3 normal = plane.normal();
     plane.getEquation(normal, d);
     double rate = direction.dot(normal);
 
     if (rate == 0) {
+
         return Vector3::INF3;
+
     } else {
         double t = -(d + point.dot(normal)) / rate;
 

@@ -65,7 +65,7 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
 
 
     Vector3 polyNormal = normal();
-    Vector3 planeNormal= plane.getNormal();
+    Vector3 planeNormal= plane.normal();
 
     // See if the polygon is *in* the plane.
     if (planeNormal.fuzzyEq(polyNormal) || planeNormal.fuzzyEq(-polyNormal)) {

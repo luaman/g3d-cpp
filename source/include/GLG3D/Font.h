@@ -15,11 +15,9 @@
 namespace G3D {
 
 /**
- Font class for use with RenderDevice.  Use the name "CFont" instead 
- of "Font".
- @deprecated
+ Font class for use with RenderDevice.
  */
-class Font {
+class CFont {
 public:
     /** Constant for draw2DString.  Specifies the horizontal alignment of an entire string relative to the supplied x,y position */
     enum XAlign {XALIGN_RIGHT, XALIGN_LEFT, XALIGN_CENTER};
@@ -78,7 +76,7 @@ public:
           </pre>
         The width of a character's bounding box is always width / 16.  The height is always width / 8.
     */
-    Font(class RenderDevice* renderDevice, const std::string& filename);
+    CFont(class RenderDevice* renderDevice, const std::string& filename);
 
     /**
      Converts an 8-bit RAW font texture and INI file as produced by the Bitmap Font Builder program
@@ -133,8 +131,6 @@ public:
         double              size = 12,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 };
-
-    typedef Font CFont;
 
 }
 #endif

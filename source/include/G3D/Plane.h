@@ -64,13 +64,6 @@ public:
         return fuzzyEq(point.dot(_normal), distance);
     }
 
-	/**
-	 @deprecated
-	 */
-    inline const Vector3& getNormal() const {
-        return _normal;
-    }
-
 	inline const Vector3& normal() const {
 		return _normal;
 	}

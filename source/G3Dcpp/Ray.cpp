@@ -33,7 +33,7 @@ void Ray::deserialize(class BinaryInput& b) {
 
 Vector3 Ray::intersection(const Plane& plane) const {
     Real d;
-    Vector3 normal = plane.getNormal();
+    Vector3 normal = plane.normal();
     plane.getEquation(normal, d);
     double rate = direction.dot(normal);
 

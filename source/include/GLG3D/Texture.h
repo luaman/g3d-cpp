@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-05-23
+  @edited  2003-05-24
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -159,7 +159,7 @@ public:
      */
     static TextureRef fromMemory(
         const std::string&              name,
-        uint8*                          bytes,
+        const uint8*                    bytes,
         const class TextureFormat*      bytesFormat,
         int                             width,
         int                             height,

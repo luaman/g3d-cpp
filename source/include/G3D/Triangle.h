@@ -76,10 +76,6 @@ public:
 
 };
 
-
-/** @deprecated */
-typedef Triangle CDTriangle;
-
 }
 
 #endif

@@ -225,13 +225,13 @@ void Camera::getClipPlanes(
     clip[1] = Plane(Vector3(-cos(fovx/2), 0, -sin(fovx/2)), Vector3::ZERO);
 
 	// Left
-	clip[2] = Plane(Vector3(-clip[1].getNormal().x, 0, clip[1].getNormal().z), Vector3::ZERO);
+	clip[2] = Plane(Vector3(-clip[1].normal().x, 0, clip[1].normal().z), Vector3::ZERO);
 
     // Top
     clip[4] = Plane(Vector3(0, -cos(fieldOfView/2), -sin(fieldOfView/2)), Vector3::ZERO);
 
 	// Bottom
-	clip[3] = Plane(Vector3(0, -clip[4].getNormal().y, clip[4].getNormal().z), Vector3::ZERO);
+	clip[3] = Plane(Vector3(0, -clip[4].normal().y, clip[4].normal().z), Vector3::ZERO);
 
     // Far
 	clip[5] = Plane(Vector3(0,0,1), Vector3(0,0,-farPlane));

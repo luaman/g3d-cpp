@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-05-23
+ @edited  2003-05-24
  */
 
 #include "GLG3D/Font.h"
@@ -13,10 +13,10 @@
 
 namespace G3D {
 
-Font::Font(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
+CFont::CFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 
     debugAssert(renderDevice);
-    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a Font");
+    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a CFont");
 
     if (! fileExists(filename)) {
         debugAssertM(false, format("ERROR: Could not load font: %s", filename.c_str()));
@@ -53,12 +53,12 @@ Font::Font(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 }
 
 
-Vector2 Font::texelSize() const {
+Vector2 CFont::texelSize() const {
     return Vector2(charWidth, charHeight);
 }
 
 
-void Font::drawString(
+void CFont::drawString(
     const std::string&  s,
     double              x,
     double              y,
@@ -109,7 +109,7 @@ void Font::drawString(
 }
 
 
-void Font::draw2DString(
+void CFont::draw2DString(
     const std::string&          s,
     double                      x,
     double                      y,
@@ -182,7 +182,7 @@ void Font::draw2DString(
 }
 
 
-Vector2 Font::get2DStringBounds(
+Vector2 CFont::get2DStringBounds(
     const std::string&  s,
     double              size,
     Spacing             spacing) const {
@@ -208,7 +208,7 @@ Vector2 Font::get2DStringBounds(
 }
 
 
-void Font::convertRAWINItoPWF(const std::string& infileBase, std::string outfile) {
+void CFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfile) {
     debugAssert(fileExists(infileBase + ".raw"));
     debugAssert(fileExists(infileBase + ".ini"));
 

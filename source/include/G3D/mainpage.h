@@ -223,7 +223,7 @@
 
       <LI>Game/Demo Infrastructure</LI>
         <BR><BLOCKQUOTE>
-        G3D::Font,
+        G3D::CFont,
         G3D::Sky,
         G3D::Camera, 
         G3D::GameTime,
@@ -652,6 +652,9 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::TextureFormat
      <LI> G3D::Texture constructors are completely changed from 5.01 (and hopefully easier to use)
      <LI> G3D::CImage now supports images with alpha
+     <LI> Removed Plane::getNormal (use Plane::normal instead)
+     <LI> Removed CDTriangle (use G3D::Triangle instead)
+     <LI> Removed Font (use G3D::CFont instead)
    </UL>
 
    <P>

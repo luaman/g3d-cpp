@@ -34,7 +34,7 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
         edgeDirection[i] = e / edgeLength[i];
     }
 
-    _primaryAxis = _plane.getNormal().primaryAxis();
+    _primaryAxis = _plane.normal().primaryAxis();
 }
 
 
@@ -78,7 +78,7 @@ double Triangle::area() const {
 
 
 const Vector3& Triangle::normal() const {
-    return _plane.getNormal();
+    return _plane.normal();
 }
 
 
