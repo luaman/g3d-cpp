@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2002-07-09
-  @edited  2003-06-07
+  @edited  2004-03-10
  */
 
 #ifndef G3D_QUEUE_H
@@ -253,6 +253,7 @@ public:
     Assignment operator.
     */
    Queue& operator=(const Queue& other) {
+       clear();
        _copy(other);
        return *this;
    }
