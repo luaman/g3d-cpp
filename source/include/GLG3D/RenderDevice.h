@@ -650,6 +650,12 @@ public:
 	}
 
     /**
+     Renders sequential vertices from the current vertex array.
+     (Equivalent to glDrawArrays)
+     */
+    void sendSequentialIndices(RenderDevice::Primitive primitive, int numVertices);
+
+    /**
      Draws the specified kind of primitive from the current vertex array.
      */
 	template<class T>

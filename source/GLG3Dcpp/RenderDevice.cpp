@@ -61,6 +61,39 @@ void RenderDevice::computeVendor() {
 }
 
 
+static GLenum primitiveToGLenum(RenderDevice::Primitive primitive) {
+	switch (primitive) {
+    case RenderDevice::LINES:
+		return GL_LINES;
+
+    case RenderDevice::LINE_STRIP:
+		return GL_LINE_STRIP;
+
+    case RenderDevice::TRIANGLES:
+		return GL_TRIANGLES;
+
+    case RenderDevice::TRIANGLE_STRIP:
+		return GL_TRIANGLE_STRIP;
+
+    case RenderDevice::TRIANGLE_FAN:
+		return GL_TRIANGLE_FAN;
+
+    case RenderDevice::QUADS:
+		return GL_QUADS;
+
+    case RenderDevice::QUAD_STRIP:
+		return GL_QUAD_STRIP;
+
+    case RenderDevice::POINTS:
+        return GL_POINTS;
+
+    default:
+        debugAssertM(false, "Fell through switch");
+        return 0;
+    }
+}
+
+
 std::string RenderDevice::getCardDescription() const {
     return cardDescription;
 }
@@ -2046,42 +2079,7 @@ void RenderDevice::beginPrimitive(Primitive p) {
     currentPrimitiveVertexCount = 0;
     currentPrimitive = p;
 
-    switch (p) {
-    case LINES:
-        glBegin(GL_LINES);
-        break;
-
-    case LINE_STRIP:
-        glBegin(GL_LINE_STRIP);
-        break;
-
-    case TRIANGLES:
-        glBegin(GL_TRIANGLES);
-        break;
-
-    case TRIANGLE_STRIP:
-        glBegin(GL_TRIANGLE_STRIP);
-        break;
-
-    case TRIANGLE_FAN:
-        glBegin(GL_TRIANGLE_FAN);
-        break;
-
-    case QUADS:
-        glBegin(GL_QUADS);
-        break;
-
-    case QUAD_STRIP:
-        glBegin(GL_QUAD_STRIP);
-        break;
-
-    case POINTS:
-        glBegin(GL_POINTS);
-        break;
-
-    default:
-        debugAssertM(false, "Fell through switch");
-    }
+    glBegin(primitiveToGLenum(p));
 }
 
 
@@ -2606,6 +2604,15 @@ void RenderDevice::configureReflectionMap(
 }
 
 
+void RenderDevice::sendSequentialIndices(RenderDevice::Primitive primitive, int numVertices) {
+
+    glDrawArrays(primitiveToGLenum(primitive), 0, numVertices);
+    // Mark all active arrays as busy.
+    setVARAreaMilestone();
+
+	countPrimitive(primitive, numVertices);
+}
+
 
 void RenderDevice::internalSendIndices(
     RenderDevice::Primitive primitive,
@@ -2613,7 +2620,7 @@ void RenderDevice::internalSendIndices(
     int                     numIndices, 
     const void*             index) const {
 
-	GLenum i, p;
+	GLenum i;
 
 	switch (indexSize) {
 	case sizeof(uint32):
@@ -2633,43 +2640,7 @@ void RenderDevice::internalSendIndices(
         i = 0;
 	}
 
-
-	switch (primitive) {
-    case LINES:
-		p = GL_LINES;
-        break;
-
-    case LINE_STRIP:
-		p = GL_LINE_STRIP;
-        break;
-
-    case TRIANGLES:
-		p = GL_TRIANGLES;
-        break;
-
-    case TRIANGLE_STRIP:
-		p = GL_TRIANGLE_STRIP;
-		break;
-
-    case TRIANGLE_FAN:
-		p = GL_TRIANGLE_FAN;
-        break;
-
-    case QUADS:
-		p = GL_QUADS;
-        break;
-
-    case QUAD_STRIP:
-		p = GL_QUAD_STRIP;
-        break;
-
-    case POINTS:
-        p = GL_POINTS;
-        break;
-    default:
-        debugAssertM(false, "Fell through switch");
-        p = 0;
-    }
+    GLenum p = primitiveToGLenum(primitive);
 
 	glDrawElements(p, numIndices, i, index);
 }
