@@ -973,7 +973,7 @@ public:
         }
 
         AABox box;
-        sphere.getBounds(box)
+        sphere.getBounds(box);
         root->getIntersectingMembers(box, sphere, members, true);
 
     }
