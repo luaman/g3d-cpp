@@ -111,7 +111,7 @@
 				OutputFile=".\..\temp\Debug\Release/Debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\temp\,..\temp\win32-lib"
+				AdditionalLibraryDirectories="..\temp\win32-lib,win32-lib"
 				ProgramDatabaseFile=".\..\temp\Debug\Release/Debug.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>

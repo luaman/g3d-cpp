@@ -16,26 +16,28 @@
     G3D::PosedModel,
     G3D::PosedModelWrapper
     G3D::Sky
-<P>
-  See also contrib & demo code 
+    <BR>See also contrib & demo code 
     <A HREF="../contrib/ArticulatedModel">ArticulatedModel</A>, 
     <A HREF="../contrib/IFSBuilder">IFSBuilder</A>,
     <A HREF="../contrib/ObjModel">ObjModel</A>,
     <A HREF="../demos/MD2Model_Demo">MD2Model_Demo</A>
 
   <LI><B>Application Structure</B> &nbsp; &nbsp;
-    G3D::GApp, G3D::GApplet, G3D::GAppSettings,
-    G3D::UserInput, 
+    G3D::GApp, 
+    G3D::GApplet, 
+    G3D::GAppSettings,
+    G3D::UserInput,
     G3D::ManualCameraController
-<P>
+  <BR>
   See also demo code
     <A HREF="../demos/main.cpp">main.cpp</A>, 
 
   <LI><B>Effects</B> &nbsp; &nbsp;
-    G3D::beginMarkShadows, G3D::endMarkShadows, G3D::markShadows,
-    G3D::Draw,
+    G3D::beginMarkShadows, 
+    G3D::endMarkShadows, 
+    G3D::markShadows,
     G3D::drawFeatureEdges,
-    <P>
+    <BR>
   See also contrib & demo code
     <A HREF="../contrib/shaders">Shaders</A>, 
     <A HREF="../demos/GLSL_Demo">GLSL_Demo</A>, 
@@ -44,10 +46,9 @@
    </UL>
 
   For GUIs see also contrib code
-    <A HREF="../contrib/wxGWindow">wxGWindow</A> (using wxWidgest),
+    <A HREF="../contrib/wxGWindow">wxGWindow</A> (using wxWidgets),
     <A HREF="../contrib/CurveEditor">CurveEditor</A> (GUI example from scratch)
-    <P>
-  For audio see also contrib code
+  <BR>For audio see also contrib code
     <A HREF="../contrib/AudioDevice">AudioDevice</A>
 
 @section gl Hardware Rendering (G3DAll.h, glg3d.lib)
@@ -55,6 +56,7 @@
 
  <UL>
   <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
+    G3D::Draw,
     G3D::GLCaps,
     G3D::Milestone,
     G3D::ObjectShader,
@@ -75,7 +77,7 @@
     G3D::GWindow,
     G3D::SDLWindow,
     G3D::Win32Window,
-        <P>
+        <BR>
     See also contrib & demo code
     <A HREF="../contrib/GlutWindow">GlutWindow</A>, 
     <A HREF="../contrib/wxGWindow">wxGWindow</A>,
@@ -210,8 +212,6 @@
 		 G3D::isFinite,
          G3D::inf,
 		 G3D::nan,
-		 G3D::infReal,
-		 G3D::nanReal,
          G3D::wrap,
 		 G3D_PI, 
          G3D_HALF_PI,
@@ -219,10 +219,21 @@
          G3D::rsqrt
          
      <LI><B>String</B> &nbsp; &nbsp;
-        G3D::beginsWith, G3D::endsWith, G3D::license, G3D::stringSplit,
-        G3D::stringJoin, G3D::format, G3D::vformat, G3D::wordWrap, 
-        G3D::stringCompare, G3D::stringPtrCompare, G3D::toUpper, G3D::toLower,
-        G3D::NEWLINE, G3D::trimWhitespace, STR
+        G3D::beginsWith, 
+        G3D::endsWith, 
+        G3D::license, 
+        G3D::stringSplit,
+        G3D::stringJoin, 
+        G3D::format, 
+        G3D::vformat, 
+        G3D::wordWrap, 
+        G3D::stringCompare, 
+        G3D::stringPtrCompare, 
+        G3D::toUpper, 
+        G3D::toLower,
+        G3D::NEWLINE, 
+        G3D::trimWhitespace, 
+        STR
 
      <LI><B>Data structures</B> &nbsp; &nbsp;
         G3D::AABSPTree,
@@ -241,17 +252,21 @@
 		G3D::RGBtoBGRA,
         G3D::RGBtoRGBA,
 		G3D::RGBxRGBtoRGBA
-        <P>
+        <BR>
     See also contrib code
     <A HREF="../contrib/Image">Image</A>, 
     <A HREF="../contrib/Webcam">Webcam</A>, 
 
 
      <LI><B>Debug</B> &nbsp; &nbsp;
-        debugAssert, G3D::isValidHeapPointer,  
+        debugAssert, 
+        debugAssertM, 
+        G3D::isValidHeapPointer,  
         G3D::isValidPointer,
-        debugAssertM, G3D::debugPrintf,
-        G3D::Log, G3D::alwaysAssertM, G3D::setAssertionHook
+        G3D::debugPrintf,
+        G3D::Log, 
+        G3D::alwaysAssertM, 
+        G3D::setAssertionHook
 
      <LI><B>I/O</B> &nbsp; &nbsp;
         G3D::BinaryInput, 
@@ -293,7 +308,7 @@
         G3D::NetMessage,
         G3D::NetworkDevice, 
         G3D::ReliableConduit
-<P>
+<BR>
   See also contrib & demo code 
     <A HREF="../contrib/pingtest">pingtest</A>, 
     <A HREF="../demos/Network_Demo">Network_Demo</A>, 
