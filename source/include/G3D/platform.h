@@ -126,9 +126,16 @@
         // zlib and SDL were linked against the release MSVCRT; force
         // the debug version.
         #pragma comment(linker, "/NODEFAULTLIB:MSVCRT.LIB")
-        #pragma comment(lib, "G3D-debug.lib")
+
+        // Don't link against G3D when building G3D itself.
+        #ifndef G3D_BUILDING_LIBRARY_DLL
+           #pragma comment(lib, "G3D-debug.lib")
+        #endif
     #else
-        #pragma comment(lib, "G3D.lib")
+        // Don't link against G3D when building G3D itself.
+        #ifndef G3D_BUILDING_LIBRARY_DLL
+            #pragma comment(lib, "G3D.lib")
+        #endif
     #endif
 
 #endif

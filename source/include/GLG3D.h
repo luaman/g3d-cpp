@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-12-16
+ @edited  2004-01-07
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -20,10 +20,12 @@
 
 // Set up the linker on Windows
 #ifdef G3D_WIN32
-    #ifdef _DEBUG
-        #pragma comment(lib, "GLG3D-debug.lib")
-    #else
-        #pragma comment(lib, "GLG3D.lib")
+    #ifndef GLG3D_BUILDING_LIBRARY_DLL
+        #ifdef _DEBUG
+            #pragma comment(lib, "GLG3D-debug.lib")        
+        #else
+            #pragma comment(lib, "GLG3D.lib")
+        #endif
     #endif
 
     #pragma comment(lib, "opengl32.lib")
