@@ -2,7 +2,7 @@
 AC_INIT([g3d-cpp], [5.01], [matrix@graphics3d.com])
 AM_INIT_AUTOMAKE([1.6.1 foreign no-installinfo no-installman subdir-objects])
 AC_CONFIG_SRCDIR([G3Dcpp/Box.cpp])
-AC_CONFIG_HEADER([config.h])
+AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
