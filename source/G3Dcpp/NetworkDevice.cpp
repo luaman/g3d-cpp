@@ -715,7 +715,6 @@ void ReliableConduit::receiveHeader() {
     }
 
     messageSize = ntohl(messageSize);
-    debugAssert(messageSize >= 0);
     debugAssert(messageSize < 6e6);
 
     debugAssert(receiveBufferUsedSize == 0);

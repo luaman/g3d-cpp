@@ -244,7 +244,7 @@ protected:
 
   }
 
-  void AppendData(void* data, int dataLength) {
+  void AppendData(const void* data, int dataLength) {
 
       EnsureSpace(dataLength);
 

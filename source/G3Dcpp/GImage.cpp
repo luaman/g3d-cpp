@@ -627,7 +627,6 @@ void png_write_data(png_structp png_ptr,
     png_size_t length) {
 
     debugAssert( png_ptr->io_ptr != NULL );
-    debugAssert( length >= 0 );
     debugAssert( data != NULL );
 
     ((BinaryOutput*)png_ptr->io_ptr)->writeBytes(data, length);
