@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-07-05
+  @edited  2004-07-07
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -107,12 +107,15 @@ private:
     class Handle {
     public:
         T                   value;
+
+        /** The bounds of each object are constrained to AABox::maxFinite */
         AABox               bounds;
 
         Handle() {}
 
         inline Handle(const T& v) : value(v) {
             getBounds(v, bounds);
+            bounds = bounds.intersect(AABox::maxFinite());
         }
     };
 
@@ -611,7 +614,12 @@ public:
     /**
      Removes an object from the set in O(1) time.
      It is an error to remove members that are not already
-     present.  May unbalance the tree.
+     present.  May unbalance the tree.  
+     
+     Removing an element never causes a node (split plane) to be removed...
+     nodes are only changed when the tree is rebalanced.  This behavior
+     is desirable because it allows the split planes to be serialized,
+     and then deserialized into an empty tree which can be repopulated.
     */
     void remove(const T& value) {
         debugAssertM(contains(value),
@@ -688,10 +696,10 @@ public:
 
         // Walk the tree, assigning splitBounds.  We start with unbounded
         // space.
-        root->assignSplitBounds(AABox(-Vector3::inf(), Vector3::inf()));
+        root->assignSplitBounds(AABox::maxFinite());
 
         #ifdef _DEBUG
-            root->verifyNode(-Vector3::inf(), Vector3::inf());
+            root->verifyNode(AABox::maxFinite());
         #endif
     }
 
@@ -710,7 +718,7 @@ private:
 
         // Test values at this node against remaining planes
         for (int v = node->valueArray.size() - 1; v >= 0; --v) {
-            if (! node->valueArray[v].bounds.culledBy(plane, dummy, parentMask)) {
+            if (! node->valueArray[v].bounds.culledByFinite(plane, dummy, parentMask)) {
                 members.append(node->valueArray[v].value);
             }
         }
@@ -720,7 +728,7 @@ private:
         // Iterate through child nodes
         for (int c = 0; c < 2; ++c) {
             if (node->child[c] &&
-                ! node->child[c]->splitBounds.culledBy(plane, dummy, parentMask, childMask)) {
+                ! node->child[c]->splitBounds.culledByFinite(plane, dummy, parentMask, childMask)) {
                 // This node was node culled
                 getIntersectingMembers(plane, members, node->child[c], childMask);
             }

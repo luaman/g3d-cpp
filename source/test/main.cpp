@@ -37,20 +37,30 @@ void measureBSPPerformance() {
 
     tree.balance();
 
-    uint64 bspcount, arraycount;
+    uint64 bspcount, arraycount, boxcount;
 
-    for (int it = 0; it < 4; ++it) {
+    for (int it = 0; it < 2; ++it) {
         Array<Plane> plane;
         plane.append(Plane(Vector3(-1, 0, 0), Vector3(5, 0, 0)));
         plane.append(Plane(Vector3(1, 0, 0), Vector3(0, 0, 0)));
         plane.append(Plane(Vector3(0, 0, -1), Vector3(0, 0, 5)));
         plane.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, 0)));
+        plane.append(Plane(Vector3(0,-1, 0), Vector3(0, 5, 0)));
+        plane.append(Plane(Vector3(0, 1, 0), Vector3(0, -5, 0)));
+
+        AABox box(Vector3(-5, -5, -5), Vector3(5,5,5));
 
         Array<AABox> point;
 
         System::beginCycleCount(bspcount);
         tree.getIntersectingMembers(plane, point);
         System::endCycleCount(bspcount);
+
+        point.clear();
+
+        System::beginCycleCount(boxcount);
+        tree.getIntersectingMembers(box, point);
+        System::endCycleCount(boxcount);
 
         point.clear();
 
@@ -63,8 +73,12 @@ void measureBSPPerformance() {
         System::endCycleCount(arraycount);
     }
 
-    printf("AABSPTree<AABox>::getIntersectingMembers       %d cycles\n"
-           "Culled by on Array<AABox>                      %d cycles\n\n", bspcount, arraycount);
+    printf("AABSPTree<AABox>::getIntersectingMembers(plane) %g Mcycles\n"
+           "AABSPTree<AABox>::getIntersectingMembers(box)   %g Mcycles\n"
+           "Culled by on Array<AABox>                       %g Mcycles\n\n", 
+           bspcount / 1e6, 
+           boxcount / 1e6,
+           arraycount / 1e6);
 }
 
 int numRCPFoo = 0;
@@ -1537,7 +1551,6 @@ int main(int argc, char* argv[]) {
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureBSPPerformance();
-        while (true);
         measureTriangleCollisionPerformance();
         measureAABoxCollisionPerformance();
         measureAABoxCollisionPerformance();
