@@ -59,7 +59,6 @@ libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/png/pngrtran.c \
                          ../../../source/png/pngrutil.c \
                          ../../../source/png/pngset.c \
-                         ../../../source/png/pngtest.c \
                          ../../../source/png/pngtrans.c \
                          ../../../source/png/pngvcrd.c \
                          ../../../source/png/pngwio.c \
