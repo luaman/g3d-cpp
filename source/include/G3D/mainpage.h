@@ -28,7 +28,7 @@
      <LI>3D math
         <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Vector3int16, G3D::Vector4, 
         G3D::Quat, G3D::Color3, G3D::Color3uint8,
-        G3D::Color4, G3D::Matrix3, G3D::CoordinateFrame, G3D::PhysicsFrame,
+        G3D::Color4, G3D::Color4uint8, G3D::Matrix3, G3D::CoordinateFrame, G3D::PhysicsFrame,
         G3D::Box, G3D::Cone, G3D::Line, G3D::LineSegment, G3D::Plane, G3D::Ray,
         G3D::Sphere, G3D::Capsule, G3D::CollisionDetection, G3D::Triangle</BLOCKQUOTE>
      
@@ -504,6 +504,7 @@ to add zlibstat.lib to your linker list.
    <UL>
      <LI> Texture::TRANSPARENT_BORDER
      <LI> DECLARE_GLFORMATOF
+     <LI> Fix: Texture::sizeInMemory now accounts for MIP-map levels
      <LI> Fix: Fonts and skies now adjust their brightness for the screen gamma level
      <LI> Fix: Strange compilation bug was causing Sky to be black for some programs
      <LI> resolveFilename
@@ -513,6 +514,7 @@ to add zlibstat.lib to your linker list.
      <LI> Documented G3D::glGetProcAddress
      <LI> G3D::sizeOfGLFormat
      <LI> glFormatOf
+     <LI> G3D::Color4uint8
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3int16
      <LI> Modified ManualCameraController so that diagonal movement does not exceed

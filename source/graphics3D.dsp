@@ -122,6 +122,10 @@ SOURCE=.\G3Dcpp\Color4.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Color4uint8.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Cone.cpp
 # End Source File
 # Begin Source File
@@ -279,6 +283,10 @@ SOURCE=.\include\G3D\Color4.h
 # Begin Source File
 
 SOURCE=.\include\G3D\Color4.inl
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Color4uint8.h
 # End Source File
 # Begin Source File
 

@@ -38,6 +38,8 @@ public:
 
     Color4(const Color3& c3, G3D::Real a = 1.0);
 
+    Color4(const class Color4uint8& c);
+
     Color4(class BinaryInput& bi);
 
     Color4(const class Vector4& v);

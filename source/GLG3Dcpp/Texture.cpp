@@ -655,7 +655,26 @@ int Texture::sizeInMemory() const {
         bpp = 4;
     }
 
-    return (width * height * depth * bpp) / 8;
+    int base = (width * height * depth * bpp) / 8;
+
+    int total = 0;
+
+    if (interpolate == TRILINEAR_MIPMAP) {
+        int w = width;
+        int h = height;
+
+        while ((w > 2) && (h > 2)) {
+            total += base;
+            base /= 4;
+            w /= 2;
+            h /= 2;
+        }
+
+    } else {
+        total = base;
+    }
+
+    return total;
 }
 
 

@@ -1,5 +1,5 @@
 /** 
-  @file Color3uint8.h
+  @file Color4uint8.h
  
   @maintainer Morgan McGuire, graphics3d.com
  
@@ -10,38 +10,39 @@
   All rights reserved.
  */
 
-#ifndef COLOR3UINT8_H
-#define COLOR3UINT8_H
+#ifndef Color4UINT8_H
+#define Color4UINT8_H
 
 #include "G3D/g3dmath.h"
 
 namespace G3D {
 
 /**
- Represents a Color3 as a packed integer.  Convenient
+ Represents a Color4 as a packed integer.  Convenient
  for creating unsigned int vertex arrays.  Used by
  CImage as the underlying format.
 
  <B>WARNING</B>: Integer color formats are different than
  integer vertex formats.  The color channels are automatically
  scaled by 255 (because OpenGL automatically scales integer
- colors back by this factor).  So Color3(1,1,1) == Color3uint8(255,255,255)
+ colors back by this factor).  So Color4(1,1,1) == Color4uint8(255,255,255)
  but Vector3(1,1,1) == Vector3int16(1,1,1).
 
  */
 // Switch to tight alignment
 #pragma pack(push, 1)
-class Color3uint8 {
+class Color4uint8 {
 public:
     uint8       r;
     uint8       g;
     uint8       b;
+    uint8       a;
 
-    Color3uint8() : r(0), g(0), b(0) {}
+    Color4uint8() : r(0), g(0), b(0), a(0) {}
 
-    Color3uint8(const class Color3& c);
+    Color4uint8(const class Color4& c);
 
-    Color3uint8(class BinaryInput& bi);
+    Color4uint8(class BinaryInput& bi);
 
     void serialize(class BinaryOutput& bo) const;
 

@@ -9,11 +9,12 @@
 
 
  @created 2002-06-25
- @edited  2003-02-15
+ @edited  2003-04-13
  */
 
 #include <stdlib.h>
 #include "G3D/Color4.h"
+#include "G3D/Color4uint8.h"
 #include "G3D/Vector4.h"
 #include "G3D/format.h"
 #include "G3D/BinaryInput.h"
@@ -29,6 +30,14 @@ Color4::Color4(const Vector4& v) {
     g = v.y;
     b = v.z;
     a = v.w;
+}
+
+
+Color4::Color4(const Color4uint8& c) {
+    r = c.r / 255.0;
+    g = c.g / 255.0;
+    b = c.b / 255.0;
+    a = c.a / 255.0;
 }
 
 unsigned int Color4::hashCode() const {
