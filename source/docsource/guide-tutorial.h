@@ -136,6 +136,9 @@ Visual C++ Project, then "Win32 Project". Give it a name, and click okay.
 This brings up the Win32 Application Wizard. You need to tell it to make an
 empty project. Do this by clcking on "Application Settings" in the Wizard
 window, and checking the "Empty project" checkbox. Click "Finish."
+
+@section macrefer Mac OS X Setup
+Refer to @link guidemacosx Setting up a Project in Mac OS X @endlink. 
  
 @section emptyworld Create an Empty World
 Create a main.cpp file and an App.h file with the following respective contents:
