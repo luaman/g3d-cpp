@@ -20,6 +20,7 @@ BEGIN_EVENT_TABLE(wxG3DCanvas, wxGLCanvas)
   EVT_MIDDLE_UP( wxG3DCanvas::handleMouseMiddleUp )
   EVT_MOTION( wxG3DCanvas::handleMouseMove )
   EVT_MOVE( wxG3DCanvas::handleWindowMove )
+  EVT_CLOSE( wxG3DCanvas::handleWindowClose )
 END_EVENT_TABLE()
 
 
@@ -438,6 +439,19 @@ void wxG3DCanvas::handleWindowMove(wxMoveEvent& event) {
     wxPoint& point = event.GetPosition();
     _gWindow->clientX = point.x;
     _gWindow->clientY = point.y;
+}
+
+
+void wxG3DCanvas::handleWindowClose(wxCloseEvent& event) {
+
+    if (_gWindow->keyboardEvents.length() > 200) {
+        _gWindow->keyboardEvents.clear();
+    }
+
+    GEvent e;
+    e.key.type = SDL_QUIT;
+
+    _gWindow->keyboardEvents.pushBack(e);
 }
 
 

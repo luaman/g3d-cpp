@@ -194,6 +194,8 @@ public:
     void handleMouseMove(wxMouseEvent& event);
 
     void handleWindowMove(wxMoveEvent& event);
+
+    void handleWindowClose(wxCloseEvent& event);
     
     DECLARE_EVENT_TABLE();
 };
