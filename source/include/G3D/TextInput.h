@@ -43,9 +43,9 @@ private:
 public:
 
 
-    Token() : _type(END), _string(""), _line(0), _character(0) {}
+    Token() : _string(""), _line(0), _character(0), _type(END) {}
 
-    Token(Type t, const std::string& s, int L, int c) : _type(t), _string(s), _line(L), _character(c) {}
+    Token(Type t, const std::string& s, int L, int c) : _string(s), _line(L), _character(c), _type(t) {}
 
 
     Type type() const {
