@@ -170,11 +170,6 @@ void Matrix3::setRow(int iRow, const Vector3 &vector) {
     m_aafEntry[iRow][2] = vector.z;
 }
 
-//----------------------------------------------------------------------------
-Matrix3& Matrix3::operator= (const Matrix3& rkMatrix) {
-    memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9 * sizeof(float));
-    return *this;
-}
 
 //----------------------------------------------------------------------------
 bool Matrix3::operator== (const Matrix3& rkMatrix) const {

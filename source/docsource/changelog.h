@@ -23,6 +23,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::RenderDevice now stores texture matrix at 32-bit precision (for faster push/popState)
+     <LI> G3D::RenderDevice::setTextureLODBias
      <LI> G3D::Shader now supports shadow map arguments
      <LI> Shader::ArgList checks to see if Texture arguments are null
      <LI> G3D::RenderDevice::setAlphaWrite now defaults to true if the GWindow has an alpha channel.
@@ -38,6 +40,8 @@
      <LI> G3D::AABSPTree::insert(Array<T>)
      <LI> G3D::Texture::sizeOfAllTexturesInMemory
      <LI> G3D::VARArea::sizeOfAllVARAreasInMemory
+     <LI> G3D::RenderDevice stores cameraToWorldMatrixInverse for faster coordinate system changes.
+     <LI> inlined G3D::Matrix3::operator= for performance
      <LI> Created installer for Windows install [Corey]
      <LI> Reorganized the documentation topic index based on abstraction level, added hyperlinks to demo/contrib code
      <LI> G3D::ReliableConduit and G3D::LightweightConduit now send and receive

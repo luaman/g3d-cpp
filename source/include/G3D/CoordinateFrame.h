@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2005-01-30
+ @edited  2005-02-17
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -53,6 +53,7 @@ public:
 
     /**
      The direction an object "looks" relative to its own axes.
+     @deprecated This is always -1 and will be fixed at that value in future releases.
      */
     static const float				zLookDirection;
 
@@ -84,6 +85,7 @@ public:
     CoordinateFrame(class BinaryInput& b);
 
     void deserialize(class BinaryInput& b);
+
     void serialize(class BinaryOutput& b) const;
 
     CoordinateFrame(const CoordinateFrame &other) :
@@ -168,6 +170,7 @@ public:
     }
 
     Ray toObjectSpace(const Ray& r) const;
+
     Ray toWorldSpace(const Ray& r) const;
 
     /**

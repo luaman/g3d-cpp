@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2005-02-14
+  @edited  2005-02-17
 
   Copyright 2001-2005, Morgan McGuire
 */
@@ -48,14 +48,12 @@ class VAR;
  Third, OpenGL intialization is complicated.  This interface
  simplifies it significantly.
 
- <P> On Windows (G3D_WIN32) RenderDevice supports a getHDC() method that
- returns the HDC for the window.
-
  <P> NICEST line and point smoothing is enabled by default (however,
  you need to set your alpha blending mode to see it).
 
  <P> glEnable(GL_NORMALIZE) is set by default.  glEnable(GL_COLOR_MATERIAL) 
-     is enabled by default.
+     is enabled by default.  You may be able to get a slight speed increase
+     by disabling GL_NORMALIZE or using GL_SCALE_NORMAL instead.
 
  <P> For stereo rendering, set <CODE>GWindowSettings::stereo = true</CODE>
      and use RenderDevice::setDrawBuffer to switch which eye is being rendered.  Only
@@ -145,9 +143,6 @@ class VAR;
   GLCaps loads the relevant extensions for you, but you must make
   the synchronizing calls yourself (typically, immediately before
   you call swap buffers).
-}
-
-
 
  */
 class RenderDevice {
@@ -215,6 +210,7 @@ private:
 
     /** Sets the texture matrix without checking to see if it needs to
         be changed.*/
+    void forceSetTextureMatrix(int unit, const float* m);
     void forceSetTextureMatrix(int unit, const double* m);
 
     /** Time at which the previous endFrame() was called */
@@ -586,6 +582,10 @@ public:
      */
     void setTextureMatrix(
         uint                    textureUnit,
+        const float*            m);
+
+    void setTextureMatrix(
+        uint                    textureUnit,
         const double*           m);
 
     void setTextureMatrix(
@@ -595,6 +595,17 @@ public:
     void setTextureMatrix(
         uint                    textureUnit,
         const CoordinateFrame&  c);
+
+    /** A bias affects which MIP-map level is used. bias = 0 uses the MIP-map level
+        automatically computed.  Bias > 0 selects a blurrier mipmap (avoids aliasing
+        artifacts).  Bias < 0 selects a sharper mipmap (avoids blur).  Integer
+        values correspond to a whole mip-level shift.  Default is 0.
+
+        See also http://oss.sgi.com/projects/ogl-sample/registry/EXT/texture_lod_bias.txt.
+    */
+    void setTextureLODBias(
+        uint                    unit,
+        float                   bias);
 
     /**
      The matrix returned may not be the same as the
@@ -968,12 +979,13 @@ private:
 
         class TextureUnit {
         public:
-            Vector4             texCoord;
+            Vector4                 texCoord;
 
             /** NULL if not bound */
-            TextureRef          texture;
-            double              textureMatrix[16];
-            CombineMode         combineMode;
+            TextureRef              texture;
+            float                   textureMatrix[16];
+            CombineMode             combineMode;
+            float                   LODBias;
 
             TextureUnit();
         };
@@ -1053,6 +1065,7 @@ private:
     
         CoordinateFrame             objectToWorldMatrix;
         CoordinateFrame             cameraToWorldMatrix;
+        CoordinateFrame             cameraToWorldMatrixInverse;
 
         Matrix4                     projectionMatrix;
 

@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2004-02-13
+  @edited  2005-02-17
  */
 
 #ifndef G3D_MATRIX3_H
@@ -64,7 +64,11 @@ public:
     void setRow(int iRow, const Vector3 &vector);
 
     // assignment and comparison
-    Matrix3& operator= (const Matrix3& rkMatrix);
+    inline Matrix3& operator= (const Matrix3& rkMatrix) {
+        memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9 * sizeof(float));
+        return *this;
+    }
+
     bool operator== (const Matrix3& rkMatrix) const;
     bool operator!= (const Matrix3& rkMatrix) const;
 

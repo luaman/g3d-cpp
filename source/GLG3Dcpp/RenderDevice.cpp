@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2005-02-14
+ @edited  2005-02-18
  */
 
 
@@ -699,6 +699,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     objectToWorldMatrix         = CoordinateFrame();
     cameraToWorldMatrix         = CoordinateFrame();
+    cameraToWorldMatrixInverse  = CoordinateFrame();
 
     stencilClear                = 0;
     depthClear                  = 1;
@@ -729,14 +730,14 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 }
 
 
-RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL) {
+RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0) {
     texCoord        = Vector4(0,0,0,1);
     combineMode     = TEX_MODULATE;
 
     // Identity texture matrix
-    memset(textureMatrix, 0, sizeof(double) * 16);
+    memset(textureMatrix, 0, sizeof(float) * 16);
     for (int i = 0; i < 4; ++i) {
-        textureMatrix[i + i * 4] = 1.0;
+        textureMatrix[i + i * 4] = (float)1.0;
     }
 }
 
@@ -863,16 +864,21 @@ void RenderDevice::setState(
                 if (u < (int)numTextureUnits()) {
                     setTextureCombineMode(u, newState.textureUnit[u].combineMode);
                     setTextureMatrix(u, newState.textureUnit[u].textureMatrix);
+
+                    setTextureLODBias(u, newState.textureUnit[u].LODBias);
                 }
             }
             setTexCoord(u, newState.textureUnit[u].texCoord);
         }
     }
 
-    if (memcmp(&newState.cameraToWorldMatrix, &state.cameraToWorldMatrix, sizeof(CoordinateFrame)) ||
-        memcmp(&newState.objectToWorldMatrix, &state.objectToWorldMatrix, sizeof(CoordinateFrame))) {
-        setObjectToWorldMatrix(newState.objectToWorldMatrix);
+
+    if (memcmp(&newState.cameraToWorldMatrix, &state.cameraToWorldMatrix, sizeof(CoordinateFrame))) {
         setCameraToWorldMatrix(newState.cameraToWorldMatrix);
+    }
+
+    if (memcmp(&newState.objectToWorldMatrix, &state.objectToWorldMatrix, sizeof(CoordinateFrame))) {
+        setObjectToWorldMatrix(newState.objectToWorldMatrix);
     }
 
     setVertexAndPixelShader(newState.vertexAndPixelShader);
@@ -2029,7 +2035,7 @@ void RenderDevice::setObjectToWorldMatrix(
 
     state.objectToWorldMatrix = cFrame;
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrix(state.cameraToWorldMatrix.inverse() * state.objectToWorldMatrix);
+    glLoadMatrix(state.cameraToWorldMatrixInverse * state.objectToWorldMatrix);
 }
 
 
@@ -2044,13 +2050,14 @@ void RenderDevice::setCameraToWorldMatrix(
     debugAssert(! inPrimitive);
     
     state.cameraToWorldMatrix = cFrame;
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrix(state.cameraToWorldMatrix.inverse() * state.objectToWorldMatrix);
+    state.cameraToWorldMatrixInverse = cFrame.inverse();
 
-    // Re-load lights since the camera matrix changed.
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrix(state.cameraToWorldMatrixInverse * state.objectToWorldMatrix);
+
+    // Reload lights since the camera matrix changed.
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (state.lightEnabled[i]) {
-    
             setLight(i, &state.light[i], true);
         }
     }
@@ -2068,7 +2075,7 @@ Matrix4 RenderDevice::getProjectionMatrix() const {
 
 
 CoordinateFrame RenderDevice::getModelViewMatrix() const {
-    return getCameraToWorldMatrix().inverse() * getObjectToWorldMatrix();
+    return state.cameraToWorldMatrixInverse * getObjectToWorldMatrix();
 }
 
 
@@ -2088,39 +2095,49 @@ void RenderDevice::setProjectionMatrix(const Matrix4& P) {
 
 
 void RenderDevice::forceSetTextureMatrix(int unit, const double* m) {
-    memcpy(state.textureUnit[unit].textureMatrix, m, sizeof(double)*16);
+    float f[16];
+    for (int i = 0; i < 16; ++i) {
+        f[i] = m[i];
+    }
+
+    forceSetTextureMatrix(unit, f);
+}
+
+
+void RenderDevice::forceSetTextureMatrix(int unit, const float* m) {
+    memcpy(state.textureUnit[unit].textureMatrix, m, sizeof(float)*16);
     if (GLCaps::supports_GL_ARB_multitexture()) {
         glActiveTextureARB(GL_TEXTURE0_ARB + unit);
     }
 
     // Transpose the texture matrix
-    double tt[16];
+    float tt[16];
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             tt[i + j * 4] = m[j + i * 4];
         }
     }
     glMatrixMode(GL_TEXTURE);
-    glLoadMatrixd(tt);
+    glLoadMatrixf(tt);
 
     TextureRef texture = state.textureUnit[unit].texture;
 
     // invert y
     if ((texture != NULL) && texture->invertY) {
 
-        double ymax = 1.0;
+        float ymax = 1.0;
     
         if (texture->getDimension() == Texture::DIM_2D_RECT) {
             ymax = texture->getTexelHeight();
         }
 
-        double m[16] = 
+        float m[16] = 
         { 1,  0,  0,  0,
           0, -1,  0,  0,
           0,  0,  1,  0,
           0,  ymax,  0,  1};
 
-        glMultMatrixd(m);
+        glMultMatrixf(m);
     }
 
 }
@@ -2131,7 +2148,7 @@ Matrix4 RenderDevice::getTextureMatrix(uint unit) {
         format("Attempted to access texture unit %d on a device with %d units.",
         unit, _numTextureUnits));
 
-    const double* M = state.textureUnit[unit].textureMatrix;
+    const float* M = state.textureUnit[unit].textureMatrix;
 
     return Matrix4(M[0], M[4], M[8],  M[12],
                    M[1], M[5], M[9],  M[13],
@@ -2145,14 +2162,14 @@ void RenderDevice::setTextureMatrix(
     uint                 unit,
 	const Matrix4&	     m) {
 
-	double d[16];
+	float f[16];
 	for (int r = 0; r < 4; ++r) {
 		for (int c = 0; c < 4; ++c) {
-			d[r * 4 + c] = m[r][c];
+			f[r * 4 + c] = m[r][c];
 		}
 	}
 
-	setTextureMatrix(unit, d);
+	setTextureMatrix(unit, f);
 }
 
 
@@ -2165,10 +2182,22 @@ void RenderDevice::setTextureMatrix(
         format("Attempted to access texture unit %d on a device with %d units.",
         unit, _numTextureUnits));
 
-    if (memcmp(m, state.textureUnit[unit].textureMatrix, sizeof(double)*16)) {
+    forceSetTextureMatrix(unit, m);
+}
+
+
+void RenderDevice::setTextureMatrix(
+    uint                 unit,
+    const float*        m) {
+
+    debugAssert(! inPrimitive);
+    debugAssertM((int)unit < _numTextureUnits,
+        format("Attempted to access texture unit %d on a device with %d units.",
+        unit, _numTextureUnits));
+
+    if (memcmp(m, state.textureUnit[unit].textureMatrix, sizeof(float)*16)) {
         forceSetTextureMatrix(unit, m);
     }
-
 }
 
 
@@ -2176,13 +2205,30 @@ void RenderDevice::setTextureMatrix(
     uint                    unit,
     const CoordinateFrame&  c) {
 
-    double m[16] = 
+    float m[16] = 
     {c.rotation[0][0], c.rotation[0][1], c.rotation[0][2], c.translation.x,
      c.rotation[1][0], c.rotation[1][1], c.rotation[1][2], c.translation.y,
      c.rotation[2][0], c.rotation[2][1], c.rotation[2][2], c.translation.z,
                     0,                0,                0,               1};
 
     setTextureMatrix(unit, m);
+}
+
+
+void RenderDevice::setTextureLODBias(
+    uint                    unit,
+    float                   bias) {
+
+    if (state.textureUnit[unit].LODBias != bias) {
+
+        if (GLCaps::supports_GL_ARB_multitexture()) {
+            glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+        }
+
+        state.textureUnit[unit].LODBias = bias;
+
+        glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
+    }
 }
 
 
@@ -2736,7 +2782,7 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
                 glLoadIdentity();
-                glLoadMatrix(state.cameraToWorldMatrix.inverse());
+                glLoadMatrix(state.cameraToWorldMatrixInverse);
                 glLightfv(gi, GL_POSITION,              light.position);
                 glLightfv(gi, GL_SPOT_DIRECTION,        light.spotDirection);
                 glLightf (gi, GL_SPOT_CUTOFF,           light.spotCutoff);
@@ -2786,7 +2832,7 @@ void RenderDevice::configureShadowMap(
     // identity.
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadMatrix(state.cameraToWorldMatrix.inverse());
+    glLoadMatrix(state.cameraToWorldMatrixInverse);
 
     setTexture(unit, shadowMap);
     
