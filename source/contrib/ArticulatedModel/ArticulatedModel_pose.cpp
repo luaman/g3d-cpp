@@ -136,8 +136,20 @@ void ArticulatedModel::Part::pose(
 
 
 void PosedArticulatedModel::render(RenderDevice* renderDevice) const {
-    // TODO
-    defaultRender(renderDevice);
+
+    const ArticulatedModel::Part& part = model->partArray[partIndex];
+    const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
+    const SuperShader::Material& material = triList.material;
+
+    renderDevice->pushState();
+        renderDevice->setTexture(0, material.diffuse.map);
+        renderDevice->setColor(material.diffuse.constant);
+
+        renderDevice->setSpecularCoefficient(material.specular.constant);
+        renderDevice->setShininess(material.specularExponent.constant.average());
+
+        defaultRender(renderDevice);
+    renderDevice->popState();
 }
 
 

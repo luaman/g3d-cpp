@@ -285,14 +285,13 @@ void App::main() {
         x += 2;
     }
     
-    /*
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile(
 		"d:/games/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
             );
-        modelArray.append(model);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x+=2;
     }
-    */
 
   if (false)  {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/venus-torso.ifs", 1.5);
@@ -395,13 +394,13 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-5,0))));
     }
 
-//		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/f16/f16b.3ds"
-//		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/cube.3ds"
-//		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/jeep/jeep.3ds", 0.1
-//		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/house/house.3ds", 0.01
-//		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/delorean/delorean.3ds", 0.1
-//		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/car35/car35.3ds", 0.1
-//		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
+//		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
+//		"contrib/ArticulatedModel/3ds/cube.3ds"
+//		"contrib/ArticulatedModel/3ds/jeep/jeep.3ds", 0.1
+//		"contrib/ArticulatedModel/3ds/house/house.3ds", 0.01
+//		"contrib/ArticulatedModel/3ds/delorean/delorean.3ds", 0.1
+//		"contrib/ArticulatedModel/3ds/car35/car35.3ds", 0.1
+//		"contrib/ArticulatedModel/3ds/fs/fs.3ds"
 
 
     lighting = Lighting::create();
