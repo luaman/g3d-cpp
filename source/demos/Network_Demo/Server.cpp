@@ -51,7 +51,7 @@ void Server::doNetwork() {
             case EntityStateMessage_MSG:
                 {
                     EntityStateMessage msg;
-                    net->receive(&msg);
+                    net->receive(msg);
                     if (msg.id == clientProxy.id) {
                         Entity& entity = entityTable[msg.id];
 
@@ -62,7 +62,7 @@ void Server::doNetwork() {
                         // Send to other clients, but don't trust the client's state
                         // beyond the controls.
                         entity.makeStateMessage(msg);
-                        ReliableConduit::multisend(clientConduitArray, msg);
+                        ReliableConduit::multisend(clientConduitArray, EntityStateMessage_MSG, msg);
                     } else {
                         app->debugLog->printf("SERVER: Client sent EntityStateMessage with wrong ID\n\n");
                     }
@@ -72,7 +72,7 @@ void Server::doNetwork() {
             default: 
                 app->debugLog->printf("SERVER: Ignored unknown message type %d\n",
                     net->waitingMessageType());
-                net->receive(NULL);
+                net->receive();
             }
         }
     }
@@ -118,7 +118,7 @@ void Server::acceptIncomingClient() {
 
         // Tell the client their ID
         SignOnMessage msg(entity.id);
-        net->send(&msg);
+        net->send(SignOnMessage_MSG, msg);
 
         // Tell the client about objects in the world
         // (A drawback of the single-threaded listen server
@@ -128,15 +128,12 @@ void Server::acceptIncomingClient() {
 
         {
             EntityTable::Iterator end = entityTable.end();
-            CreateEntityMessage msg;
             for (EntityTable::Iterator e = entityTable.begin(); e != end; ++e) {
-                msg.entity = &e->value;
-                net->send(&msg);
+                net->send(CreateEntityMessage_MSG, e->value);
             }
 
             // Tell the other clients about this new entity
-            msg.entity = &entity;
-            ReliableConduit::multisend(clientConduitArray, msg);
+            ReliableConduit::multisend(clientConduitArray, CreateEntityMessage_MSG, entity);
         }
 
         // Add this client to our list

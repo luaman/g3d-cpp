@@ -434,7 +434,6 @@ public:
         determine the type of the message (and therefore, the class
         of message) using G3D::ReliableConduit::waitingMessageType().        
      */
-    // TODO: add receive() that just ignores the message.
     // TODO: use receive buffer.
     template<typename T> inline bool receive(T& message) {
         bool success = receiveIntoBuffer();
@@ -451,6 +450,11 @@ public:
         receiveBufferLen = 0;
 
         return true;
+    }
+
+    /** Removes the current message from the queue. */
+    inline void receive() {
+        receive((NetMessage*)NULL);
     }
 
     NetAddress address() const;
@@ -693,7 +697,12 @@ public:
     }
 
     inline bool receive(NetAddress& sender) {
-        return receive(NULL, sender);
+        return receive((NetMessage*)NULL, sender);
+    }
+
+    inline bool receive() {
+        static NetAddress ignore;
+        return receive(ignore);
     }
 
     virtual uint32 waitingMessageType();

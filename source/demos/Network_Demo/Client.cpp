@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-10-25
+  @edited  2005-01-22
  */
 
 #include "Client.h"
@@ -59,7 +59,7 @@ void Client::doNetwork() {
         case SignOnMessage_MSG:
             {
                 SignOnMessage msg;
-                serverProxy.net->receive(&msg);
+                serverProxy.net->receive(msg);
                 localID = msg.id;
             }
             break;
@@ -67,8 +67,7 @@ void Client::doNetwork() {
         case CreateEntityMessage_MSG:
             {
                 Entity entity;
-                CreateEntityMessage msg(&entity);
-                serverProxy.net->receive(&msg);
+                serverProxy.net->receive(entity);
                 entityTable.set(entity.id, entity);
 
                 if (localID == entity.id) {
@@ -84,7 +83,7 @@ void Client::doNetwork() {
         case EntityStateMessage_MSG:
             {
                 EntityStateMessage msg;
-                serverProxy.net->receive(&msg);
+                serverProxy.net->receive(msg);
                 if (entityTable.containsKey(msg.id)) {
                     entityTable[msg.id].clientUpdateFromStateMessage(msg, localID);
                 }
@@ -94,7 +93,7 @@ void Client::doNetwork() {
         default:
             app->debugLog->printf("CLIENT: Ignored unknown message type %d\n",
                 serverProxy.net->waitingMessageType());
-            serverProxy.net->receive(NULL);
+            serverProxy.net->receive();
         }
     }
 }
@@ -222,7 +221,7 @@ void Client::doLogic() {
             entity.controls = newControls;
             EntityStateMessage msg;
             entity.makeStateMessage(msg);
-            serverProxy.net->send(&msg);
+            serverProxy.net->send(EntityStateMessage_MSG, msg);
         }
     }
 

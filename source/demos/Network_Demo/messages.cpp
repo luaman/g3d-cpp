@@ -3,23 +3,11 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-30
-  @edited  2004-03-30
+  @edited  2005-01-22
  */
 
 #include "messages.h"
 #include "Entity.h"
-
-
-void CreateEntityMessage::serialize(BinaryOutput& b) const {
-    debugAssert(entity);
-    entity->serialize(b);
-}
-
-
-void CreateEntityMessage::deserialize(BinaryInput& b) {
-    debugAssert(entity);
-    entity->deserialize(b);
-}
 
 
 void EntityStateMessage::serialize(BinaryOutput& b) const {
