@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-13
+  @edited  2003-11-15
  */ 
 
 
@@ -137,13 +137,13 @@ IFSModel::PosedIFSModel::PosedIFSModel(
     const CoordinateFrame&      _cframe,
     bool                        _pvn) :
      model(_model), 
-     cframe(_cframe), 
+     cframe(_cframe),
      perVertexNormals(_pvn) {
 }
 
 
 void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
-    
+   
     const size_t varSize = 1024 * 1024;
     if ((IFSModel::varArea == NULL) && (renderDevice->freeVARSize() <= varSize)) {
         // Initialize VAR
@@ -165,29 +165,35 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
                     renderDevice->sendIndices(RenderDevice::TRIANGLES, model->indexArray);
                 renderDevice->endIndexedPrimitives();
             } else {
-                    renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-                        for (int i = 0; i < model->indexArray.size(); ++i) {
-                            const int v = model->indexArray[i];
-                    
-                            const Vector3& P = model->geometry.vertexArray[v];  
-                            const Vector3& N = model->geometry.normalArray[v];
+                const int* indexArray = model->indexArray.getCArray();
+                const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
+                const Vector3* normalArray = model->geometry.normalArray.getCArray();
+                int n = model->indexArray.size();
 
-                            //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
-                            renderDevice->setNormal(N);
-                            renderDevice->sendVertex(P);
-                        }
-                    renderDevice->endPrimitive();
+                renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+                    for (int i = 0; i < n; ++i) {
+                        const int v = indexArray[i];            
+                        renderDevice->setNormal(normalArray[v]);
+                        renderDevice->sendVertex(vertexArray[v]);
+                    }
+                renderDevice->endPrimitive();
             }
         renderDevice->popState();
+
     } else {
+
+        const int* indexArray = model->indexArray.getCArray();
+        const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
+        const Vector3* faceNormalArray = model->faceNormalArray.getCArray();
+        const Vector3* normalArray = model->geometry.normalArray.getCArray();
+        const MeshAlg::Face* faceArray = model->faceArray.getCArray();
+        int n = model->faceArray.size();
+
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-            for (int f = 0; f < model->faceArray.size(); ++f) {
-                renderDevice->setNormal(model->faceNormalArray[f]);
-                for (int j = 0; j < 3; ++j) {
-                    
-                    const Vector3& P = model->geometry.vertexArray[model->faceArray[f].vertexIndex[j]];  
-                    //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
-                    renderDevice->sendVertex(P);
+            for (int f = 0; f < n; ++f) {
+                renderDevice->setNormal(faceNormalArray[f]);
+                for (int j = 0; j < 3; ++j) {                    
+                    renderDevice->sendVertex(vertexArray[faceArray[f].vertexIndex[j]]);
                 }
             }
         renderDevice->endPrimitive();
@@ -200,8 +206,8 @@ std::string IFSModel::PosedIFSModel::name() const {
 }
 
 
-CoordinateFrame IFSModel::PosedIFSModel::coordinateFrame() const {
-    return cframe;
+void IFSModel::PosedIFSModel::getCoordinateFrame(CoordinateFrame& c) const {
+    c = cframe;
 }
 
 
@@ -211,8 +217,16 @@ void IFSModel::PosedIFSModel::getObjectSpaceGeometry(MeshAlg::Geometry& geometry
 
 
 void IFSModel::PosedIFSModel::getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const {
-    cframe.pointToWorldSpace(model->geometry.vertexArray, geometry.vertexArray);
-    cframe.normalToWorldSpace(model->geometry.normalArray, geometry.normalArray);
+    CoordinateFrame C;
+    getCoordinateFrame(C);
+
+    C.pointToWorldSpace(model->geometry.vertexArray, geometry.vertexArray);
+    C.normalToWorldSpace(model->geometry.normalArray, geometry.normalArray);
+}
+
+
+void IFSModel::PosedIFSModel::getTriangleIndices(Array<int>& index) const {
+    index = model->indexArray;
 }
 
 
@@ -231,23 +245,13 @@ void IFSModel::PosedIFSModel::getAdjacentFaces(Array< Array<int> >& adjacentFace
 }
 
 
-Sphere IFSModel::PosedIFSModel::objectSpaceBoundingSphere() const {
-    return model->boundingSphere;
+void IFSModel::PosedIFSModel::getObjectSpaceBoundingSphere(Sphere& s) const {
+    s = model->boundingSphere;
 }
 
 
-Sphere IFSModel::PosedIFSModel::worldSpaceBoundingSphere() const {
-    return cframe.toWorldSpace(model->boundingSphere);
-}
-
-
-Box IFSModel::PosedIFSModel::objectSpaceBoundingBox() const {
-    return model->boundingBox;
-}
-
-
-Box IFSModel::PosedIFSModel::worldSpaceBoundingBox() const {
-    return cframe.toWorldSpace(model->boundingBox);
+void IFSModel::PosedIFSModel::getObjectSpaceBoundingBox(Box& b) const {
+    b = model->boundingBox;
 }
 
 

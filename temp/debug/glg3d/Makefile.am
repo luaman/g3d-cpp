@@ -13,6 +13,7 @@ libGLG3D_debug_la_SOURCES= ../../../source/GLG3Dcpp/CFont.cpp \
                            ../../../source/GLG3Dcpp/MD2Model_load.cpp \
                            ../../../source/GLG3Dcpp/ManualCameraController.cpp \
                            ../../../source/GLG3Dcpp/Milestone.cpp \
+                           ../../../source/GLG3Dcpp/PosedModel.cpp \
                            ../../../source/GLG3Dcpp/PixelProgram.cpp \
                            ../../../source/GLG3Dcpp/RenderDevice.cpp \
                            ../../../source/GLG3Dcpp/Sky.cpp \

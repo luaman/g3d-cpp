@@ -114,10 +114,6 @@ SOURCE=.\GLG3Dcpp\glenumtostring.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GLG3Dcpp\GModel.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\GLG3Dcpp\GPUProgram.cpp
 # End Source File
 # Begin Source File
@@ -147,6 +143,10 @@ SOURCE=.\GLG3Dcpp\Milestone.cpp
 # Begin Source File
 
 SOURCE=.\GLG3Dcpp\PixelProgram.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\PosedModel.cpp
 # End Source File
 # Begin Source File
 
@@ -387,10 +387,6 @@ SOURCE=.\include\GLG3D.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\glheaders.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\GLG3D\GModel.h
 # End Source File
 # Begin Source File
 

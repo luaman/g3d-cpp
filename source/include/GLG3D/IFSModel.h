@@ -40,16 +40,15 @@ private:
         PosedIFSModel(IFSModelRef _model, const CoordinateFrame& _cframe, bool _pvn);
         virtual ~PosedIFSModel() {}
         virtual std::string name() const;
-        virtual CoordinateFrame coordinateFrame() const;
+        virtual void getCoordinateFrame(CoordinateFrame&) const;
         virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
         virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
         virtual void getFaces(Array<MeshAlg::Face>& faces) const;
         virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
         virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
-        virtual Sphere objectSpaceBoundingSphere() const;
-        virtual Sphere worldSpaceBoundingSphere() const;
-        virtual Box objectSpaceBoundingBox() const;
-        virtual Box worldSpaceBoundingBox() const;
+        virtual void getTriangleIndices(Array<int>& indices) const;
+        virtual void getObjectSpaceBoundingSphere(Sphere&) const;
+        virtual void getObjectSpaceBoundingBox(Box&) const;
         virtual void render(RenderDevice* renderDevice) const;
         virtual int numBrokenEdges() const;
     };

@@ -20,52 +20,22 @@ public:
 
 ////////////////////////////////////////////////////////////////
 
-class SphereEntity : public Entity {
-private:
-    Sphere sphere;
-    Color4 color;
-public:
-    SphereEntity(const Vector3& position, double radius, const Color4& _color = Color3::BLUE);
-    virtual void render(RenderDevice*);
-    virtual RealTime getIntersectionTime(const Ray&);
-};
-
-SphereEntity::SphereEntity(const Vector3& position, double radius, const Color4& _color) {
-    sphere = Sphere(position,radius);
-    color = _color;
-}
-
-void SphereEntity::render(RenderDevice* renderDevice) {
-    Draw::sphere(sphere, renderDevice, color, selected ? Color3::BLACK : Color4::CLEAR);
-}
-
-RealTime SphereEntity::getIntersectionTime(const Ray& ray) {
-    Vector3 dummy;
-    return G3D::CollisionDetection::collisionTimeForMovingPointFixedSphere(ray.origin,ray.direction,
-        sphere, dummy);
-}
-
-
-////////////////////////////////////////////////////////////////
-
-
 class IFSEntity : public Entity {
 private:
     CoordinateFrame cframe;
     IFSModelRef     ifs;
+    Color4          color;
 
 public:
-    IFSEntity(const std::string& filename, const Vector3& pos);
+    IFSEntity(IFSModelRef _ifs, const Vector3& pos, const Color4& _color);
 
     virtual void render(RenderDevice*);
     virtual RealTime getIntersectionTime(const Ray&);
 
 };
 
-
-IFSEntity::IFSEntity(const std::string& filename, const Vector3& pos) {
-    ifs = IFSModel::create(filename);
-    cframe = CoordinateFrame(pos);
+IFSEntity::IFSEntity(IFSModelRef _ifs, const Vector3& pos, const Color4& _color) : 
+    ifs(_ifs), cframe(pos), color(_color) {
 }
 
 void IFSEntity::render(RenderDevice* renderDevice) {
@@ -84,7 +54,7 @@ void IFSEntity::render(RenderDevice* renderDevice) {
             renderDevice->popState();
         }
 
-        renderDevice->setColor(Color3::WHITE);
+        renderDevice->setColor(color);
         pm->render(renderDevice);
     renderDevice->popState();
 }
@@ -124,9 +94,13 @@ public:
 void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0,4,10));
     app->debugCamera.lookAt(Vector3::ZERO);
-    entityArray.append(new SphereEntity(Vector3(0, 1, 0), 1, Color3::WHITE));
-    entityArray.append(new SphereEntity(Vector3(-4, 1, 0), 1, Color3::GREEN));
-    entityArray.append(new IFSEntity(app->dataDir + "ifs/teapot.ifs", Vector3(4, 1, 0)));
+
+    IFSModelRef cube   = IFSModel::create(app->dataDir + "ifs/cube.ifs");
+    IFSModelRef teapot = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
+
+    entityArray.append(new IFSEntity(cube, Vector3(-5, 1, 0), Color3::BLUE));
+    entityArray.append(new IFSEntity(teapot, Vector3( 0, 1, 0), Color3::YELLOW));
+    entityArray.append(new IFSEntity(cube, Vector3( 5, 1, 0), Color3::WHITE));
     entityArray[1]->selected = true;
 }
 
@@ -190,7 +164,7 @@ void Demo::doGraphics() {
         entityArray[e]->render(app->renderDevice);
     }
 
-    Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
+    Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
     
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
@@ -198,16 +172,16 @@ void Demo::doGraphics() {
     app->renderDevice->beginPrimitive(RenderDevice::QUADS);
         app->renderDevice->setNormal(Vector3::UNIT_Y);
         app->renderDevice->setTexCoord(0, Vector2(2, 0));
-        app->renderDevice->sendVertex(Vector3(5, 0, -2.5));
+        app->renderDevice->sendVertex(Vector3(7, 0, -3.5));
 
         app->renderDevice->setTexCoord(0, Vector2(0, 0));
-        app->renderDevice->sendVertex(Vector3(-5, 0, -2.5));
+        app->renderDevice->sendVertex(Vector3(-7, 0, -3.5));
 
         app->renderDevice->setTexCoord(0, Vector2(0, 1));
-        app->renderDevice->sendVertex(Vector3(-5, 0, 2.5));
+        app->renderDevice->sendVertex(Vector3(-7, 0, 3.5));
 
         app->renderDevice->setTexCoord(0, Vector2(2, 1));
-        app->renderDevice->sendVertex(Vector3(5, 0, 2.5));
+        app->renderDevice->sendVertex(Vector3(7, 0, 3.5));
     app->renderDevice->endPrimitive();
 
     Vector4 p = app->renderDevice->project(Vector3::ZERO);
