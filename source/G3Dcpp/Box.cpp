@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2004-01-11
+  @edited  2004-01-13
 */
 
 #include "G3D/Box.h"
@@ -161,11 +161,10 @@ void Box::getFaceCorners(int f, Vector3& v0, Vector3& v1, Vector3& v2, Vector3& 
 }
 
 
-bool Box::culledBy(const Plane* plane, int numPlanes) const {
-
+bool Box::culledBy(const Array<Plane>& plane) const {
     // See if there is one plane for which all
     // of the vertices are on the wrong side
-    for (int p = 0; p < numPlanes; p++) {
+    for (int p = 0; p < plane.size(); p++) {
         bool culled = true;
         int v = 0;
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2003-11-25
+  @edited  2004-01-13
 */
 
 #ifndef G3D_GCAMERA_H
@@ -191,15 +191,16 @@ public:
     void lookAt(const Vector3& position, const Vector3& up = Vector3::UNIT_Y);
 
    /**
-    Returns the six clipping planes of the frustum, in world space.  The array
+    Returns the clipping planes of the frustum, in world space.  The array
     must have six elements allocated.  The planes have normals facing 
     <B>into</B> the view frustum.
 
-    The 6th plane is always the far plane, which may be at infinity.
+    If the far plane is at infinity, the resulting array will have 
+    5 planes, otherwise there will be 6.
     */
    void getClipPlanes(
-       const Rect2D& viewport, 
-       G3D::Plane*		clip) const;
+       const Rect2D& viewport,
+       Array<Plane>& outClip) const;
 };
 
 }

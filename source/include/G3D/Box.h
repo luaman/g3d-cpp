@@ -7,7 +7,7 @@
  
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   @created 2001-06-02
-  @edited  2004-01-10
+  @edited  2004-01-13
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -152,8 +152,7 @@ public:
      even though it is actually outside the set of planes.
      */
     bool culledBy(
-        const class Plane*  plane,
-        int                 numPlanes) const;
+        const Array<Plane>& planeArray) const;
 
     bool contains(
         const Vector3&      point) const;

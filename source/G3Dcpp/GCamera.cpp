@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-11-13
+  @edited  2004-01-13
 */
 
 #include "G3D/GCamera.h"
@@ -192,7 +192,9 @@ double GCamera::getZValue(
 
 void GCamera::getClipPlanes(
     const Rect2D&       viewport,
-    Plane*              clip) const {
+    Array<Plane>&       clip) const {
+
+    clip.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
 
     double screenWidth  = viewport.width();
     double screenHeight = viewport.height();
@@ -205,25 +207,27 @@ void GCamera::getClipPlanes(
 
 	// Near (recall that nearPlane, farPlane are positive numbers, so
 	// we need to negate them to produce actual z values.)
-	clip[0] = Plane(Vector3(0,0,-1), Vector3(0,0,-nearPlane));
+	clip.append(Plane(Vector3(0,0,-1), Vector3(0,0,-nearPlane)));
 
     // Right
-    clip[1] = Plane(Vector3(-cos(fovx/2), 0, -sin(fovx/2)), Vector3::ZERO);
+    clip.append(Plane(Vector3(-cos(fovx/2), 0, -sin(fovx/2)), Vector3::ZERO));
 
 	// Left
-	clip[2] = Plane(Vector3(-clip[1].normal().x, 0, clip[1].normal().z), Vector3::ZERO);
+	clip.append(Plane(Vector3(-clip[1].normal().x, 0, clip[1].normal().z), Vector3::ZERO));
 
     // Top
-    clip[4] = Plane(Vector3(0, -cos(fieldOfView/2), -sin(fieldOfView/2)), Vector3::ZERO);
+    clip.append(Plane(Vector3(0, -cos(fieldOfView/2), -sin(fieldOfView/2)), Vector3::ZERO));
 
 	// Bottom
-	clip[3] = Plane(Vector3(0, -clip[4].normal().y, clip[4].normal().z), Vector3::ZERO);
+	clip.append(Plane(Vector3(0, -clip[4].normal().y, clip[4].normal().z), Vector3::ZERO));
 
     // Far
-	clip[5] = Plane(Vector3(0, 0, 1), Vector3(0, 0, -farPlane));
+    if (farPlane < inf) {
+    	clip.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, -farPlane)));
+    }
 
 	// Now transform the planes to world space
-	for (int p = 0; p < 6; ++p) {
+	for (int p = 0; p < clip.size(); ++p) {
 		// Since there is no scale factor, we don't have to 
 		// worry about the inverse transpose of the normal.
         Vector3 normal;
