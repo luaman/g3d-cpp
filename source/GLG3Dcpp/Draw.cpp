@@ -47,9 +47,9 @@ void Draw::axes(
     double              scale) {
 
     Vector3 c = cframe.translation;
-    Vector3 x = cframe.rotation.getColumn(0).direction() * 2;
-    Vector3 y = cframe.rotation.getColumn(1).direction() * 2;
-    Vector3 z = cframe.rotation.getColumn(2).direction() * 2;
+    Vector3 x = cframe.rotation.getColumn(0).direction() * 2 * scale;
+    Vector3 y = cframe.rotation.getColumn(1).direction() * 2 * scale;
+    Vector3 z = cframe.rotation.getColumn(2).direction() * 2 * scale;
 
     Draw::arrow(c, x, renderDevice, xColor, scale);
     Draw::arrow(c, y, renderDevice, yColor, scale);
@@ -70,9 +70,9 @@ void Draw::axes(
     Vector2 z2D = (zc2D.w > 0) ? zc2D.xy() : Vector2(-2000, -2000);
 
     // Compute the size of the labels
-    double xS = (xc2D.w > 0) ? clamp(10 * xc2D.w, .1, 5) : 0;
-    double yS = (yc2D.w > 0) ? clamp(10 * yc2D.w, .1, 5) : 0;
-    double zS = (zc2D.w > 0) ? clamp(10 * zc2D.w, .1, 5) : 0;
+    double xS = (xc2D.w > 0) ? clamp(10 * xc2D.w * scale, .1, 5) : 0;
+    double yS = (yc2D.w > 0) ? clamp(10 * yc2D.w * scale, .1, 5) : 0;
+    double zS = (zc2D.w > 0) ? clamp(10 * zc2D.w * scale, .1, 5) : 0;
 
     renderDevice->push2D();
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);

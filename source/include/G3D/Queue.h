@@ -158,7 +158,7 @@ public:
      */
     inline void pushFront(const T& e) {
         if (num == numAllocated) {
-            repackAndRealloc(numAllocated * 1.5 + 2);
+            repackAndRealloc(iRound(numAllocated * 1.5 + 2));
         }
 
         int i = index(-1);
@@ -174,7 +174,7 @@ public:
     */
     inline void pushBack(const T& e) {
         if (num == numAllocated) {
-            repackAndRealloc(numAllocated * 1.5 + 2);
+            repackAndRealloc(iRound(numAllocated * 1.5 + 2));
         }
 
         int i = index(num);

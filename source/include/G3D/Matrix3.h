@@ -94,6 +94,41 @@ public:
     /** scalar * matrix */
     friend Matrix3 operator* (float fScalar, const Matrix3& rkMatrix);
 
+private:
+    /** Multiplication where out != A and out != B */
+    static void _mul(const Matrix3& A, const Matrix3& B, Matrix3& out);
+public:
+
+    /** Optimized implementation of out = A * B.  It is safe (but slow) to call 
+        with A, B, and out possibly pointer equal to one another.*/
+    // This is a static method so that it is not ambiguous whether "this"
+    // is an input or output argument.
+    inline static void mul(const Matrix3& A, const Matrix3& B, Matrix3& out) {
+        if ((&out == &A) || (&out == &B)) {
+            // We need a temporary anyway, so revert to the stack method.
+            out = A * B;
+        } else {
+            // Optimized in-place multiplication.
+            _mul(A, B, out);
+        }
+    }
+
+private:
+    static void _transpose(const Matrix3& A, Matrix3& out);
+public:
+
+    /** Optimized implementation of out = A.transpose().  It is safe (but slow) to call 
+        with A and out possibly pointer equal to one another.*/
+    // This is a static method so that it is not ambiguous whether "this"
+    // is an input or output argument.
+    inline static void transpose(const Matrix3& A, Matrix3& out) {
+        if (&A == &out) {
+            out = A.transpose();
+        } else {
+            _transpose(A, out);
+        }
+    }
+
     // utilities
     Matrix3 transpose () const;
     bool inverse (Matrix3& rkInverse, float fTolerance = 1e-06) const;

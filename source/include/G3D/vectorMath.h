@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created: 2001-06-02
-  @edited:  2004-01-15
+  @edited:  2004-02-02
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -21,6 +21,7 @@
 #include "G3D/Matrix3.h"
 #include "G3D/Matrix4.h"
 #include "G3D/Color3.h"
+#include "G3D/Color4.h"
 
 
 namespace G3D {
@@ -114,19 +115,19 @@ inline Vector4 clamp(const Vector4& v, const Vector4& a, const Vector4& b) {
     return v.clamp(a, b);
 }
 
-inline Vector2 lerp(const Vector2& v1, const Vector2& v2, float f) {
+inline Vector2 lerp(const Vector2& v1, const Vector2& v2, double f) {
     return v1.lerp(v2, f);
 }
 
-inline Vector3 lerp(const Vector3& v1, const Vector3& v2, float f) {
+inline Vector3 lerp(const Vector3& v1, const Vector3& v2, double f) {
     return v1.lerp(v2, f);
 }
 
-inline Vector4 lerp(const Vector4& v1, const Vector4& v2, float f) {
+inline Vector4 lerp(const Vector4& v1, const Vector4& v2, double f) {
     return v1.lerp(v2, f);
 }
 
-inline Color3 lerp(const Color3& v1, const Color3& v2, float f) {
+inline Color3 lerp(const Color3& v1, const Color3& v2, double f) {
     return v1.lerp(v2, f);
 }
 

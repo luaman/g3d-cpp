@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2004-01-26
+ @edited  2004-02-01
 */
 
 #include <memory.h>
@@ -265,8 +265,9 @@ Matrix3 operator* (float fScalar, const Matrix3& rkMatrix) {
     Matrix3 kProd;
 
     for (int iRow = 0; iRow < 3; iRow++) {
-        for (int iCol = 0; iCol < 3; iCol++)
+        for (int iCol = 0; iCol < 3; iCol++) {
             kProd[iRow][iCol] = fScalar * rkMatrix.m_aafEntry[iRow][iCol];
+        }
     }
 
     return kProd;
@@ -277,8 +278,9 @@ Matrix3 Matrix3::transpose () const {
     Matrix3 kTranspose;
 
     for (int iRow = 0; iRow < 3; iRow++) {
-        for (int iCol = 0; iCol < 3; iCol++)
+        for (int iCol = 0; iCol < 3; iCol++) {
             kTranspose[iRow][iCol] = m_aafEntry[iCol][iRow];
+        }
     }
 
     return kTranspose;
@@ -1573,6 +1575,71 @@ void Matrix3::tensorProduct (const Vector3& rkU, const Vector3& rkV,
 }
 
 //----------------------------------------------------------------------------
+
+// Runs in 52 cycles on AMD
+// I was unable to improve performance by flattening the matrices
+// into float*'s.  -morgan
+void Matrix3::_mul(const Matrix3& A, const Matrix3& B, Matrix3& out) {
+    const float* ARowPtr = A.m_aafEntry[0];
+    float* outRowPtr     = out.m_aafEntry[0];
+        outRowPtr[0] =
+            ARowPtr[0] * B.m_aafEntry[0][0] +
+            ARowPtr[1] * B.m_aafEntry[1][0] +
+            ARowPtr[2] * B.m_aafEntry[2][0];
+        outRowPtr[1] =
+            ARowPtr[0] * B.m_aafEntry[0][1] +
+            ARowPtr[1] * B.m_aafEntry[1][1] +
+            ARowPtr[2] * B.m_aafEntry[2][1];
+        outRowPtr[2] =
+            ARowPtr[0] * B.m_aafEntry[0][2] +
+            ARowPtr[1] * B.m_aafEntry[1][2] +
+            ARowPtr[2] * B.m_aafEntry[2][2];
+
+    ARowPtr       = A.m_aafEntry[1];
+    outRowPtr     = out.m_aafEntry[1];
+
+        outRowPtr[0] =
+            ARowPtr[0] * B.m_aafEntry[0][0] +
+            ARowPtr[1] * B.m_aafEntry[1][0] +
+            ARowPtr[2] * B.m_aafEntry[2][0];
+        outRowPtr[1] =
+            ARowPtr[0] * B.m_aafEntry[0][1] +
+            ARowPtr[1] * B.m_aafEntry[1][1] +
+            ARowPtr[2] * B.m_aafEntry[2][1];
+        outRowPtr[2] =
+            ARowPtr[0] * B.m_aafEntry[0][2] +
+            ARowPtr[1] * B.m_aafEntry[1][2] +
+            ARowPtr[2] * B.m_aafEntry[2][2];
+
+    ARowPtr       = A.m_aafEntry[2];
+    outRowPtr     = out.m_aafEntry[2];
+
+        outRowPtr[0] =
+            ARowPtr[0] * B.m_aafEntry[0][0] +
+            ARowPtr[1] * B.m_aafEntry[1][0] +
+            ARowPtr[2] * B.m_aafEntry[2][0];
+        outRowPtr[1] =
+            ARowPtr[0] * B.m_aafEntry[0][1] +
+            ARowPtr[1] * B.m_aafEntry[1][1] +
+            ARowPtr[2] * B.m_aafEntry[2][1];
+        outRowPtr[2] =
+            ARowPtr[0] * B.m_aafEntry[0][2] +
+            ARowPtr[1] * B.m_aafEntry[1][2] +
+            ARowPtr[2] * B.m_aafEntry[2][2];
+}
+
+//----------------------------------------------------------------------------
+void Matrix3::_transpose(const Matrix3& A, Matrix3& out) {
+    out[0][0] = A.m_aafEntry[0][0];
+    out[0][1] = A.m_aafEntry[1][0];
+    out[0][2] = A.m_aafEntry[2][0];
+    out[1][0] = A.m_aafEntry[0][1];
+    out[1][1] = A.m_aafEntry[1][1];
+    out[1][2] = A.m_aafEntry[2][1];
+    out[2][0] = A.m_aafEntry[0][2];
+    out[2][1] = A.m_aafEntry[1][2];
+    out[2][2] = A.m_aafEntry[2][2];
+}
 
 } // namespace
 

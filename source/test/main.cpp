@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-01-03
+ @edited  2004-02-02
  */
 
 
@@ -371,6 +371,80 @@ void measureMemsetPerformance() {
     printf("System::memset:                     %d cycles/kb\n", (int)(g3d / (n / 1024)));
     printf("::memset      :                     %d cycles/kb\n", (int)(native / (n / 1024)));
 }
+
+
+void measureMatrix3Performance() {
+    printf("----------------------------------------------------------\n");
+    printf("Matrix3 performance:\n");
+    uint64 raw, opt, overhead;
+    int n = 10 * 1024 * 1024;
+
+    // Use two copies to avoid nice cache behavior
+    Matrix3 A = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2);
+    Matrix3 B = Matrix3::fromAxisAngle(Vector3(0, 1, -1), .2);
+    Matrix3 C = Matrix3::ZERO;
+
+    Matrix3 D = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2);
+    Matrix3 E = Matrix3::fromAxisAngle(Vector3(0, 1, -1), .2);
+    Matrix3 F = Matrix3::ZERO;
+
+    int i;
+    System::beginCycleCount(overhead);
+    for (i = n - 1; i >= 0; --i) {
+    }
+    System::endCycleCount(overhead);
+
+    System::beginCycleCount(raw);
+    for (i = n - 1; i >= 0; --i) {
+        C = A.transpose();
+        F = D.transpose();
+        C = B.transpose();
+    }
+    System::endCycleCount(raw);
+
+    System::beginCycleCount(opt);
+    for (i = n - 1; i >= 0; --i) {
+        Matrix3::transpose(A, C);
+        Matrix3::transpose(D, F);
+        Matrix3::transpose(B, C);
+    }
+    System::endCycleCount(opt);
+
+    raw -= overhead;
+    opt -= overhead;
+
+    printf("   C = A.transpose(): %g cycles/mul\n", 
+        (double)raw / (3*n));
+    printf("     transpose(A, C): %g cycles/mul\n\n", 
+        (double)opt / (3*n));
+    
+while(true);
+
+    System::beginCycleCount(raw);
+    for (i = n - 1; i >= 0; --i) {
+        C = A * B;
+        F = D * E;
+        C = A * D;
+    }
+    System::endCycleCount(raw);
+
+    System::beginCycleCount(opt);
+    for (i = n - 1; i >= 0; --i) {
+        Matrix3::mul(A, B, C);
+        Matrix3::mul(D, E, F);
+        Matrix3::mul(A, D, C);
+    }
+    System::endCycleCount(opt);
+
+    raw -= overhead;
+    opt -= overhead;
+
+    printf("     C = A * B: %g cycles/mul\n", 
+        (double)raw / (3*n));
+    printf("  mul(A, B, C): %g cycles/mul\n\n", 
+        (double)opt / (3*n));
+}
+
 
 void measureNormalizationPerformance() {
     printf("----------------------------------------------------------\n");
@@ -837,12 +911,14 @@ int main(int argc, char* argv[]) {
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
+        measureMatrix3Performance();
+        while (true);
         measureArrayPerformance();
         measureMemcpyPerformance();
         measureMemsetPerformance();
         measureTriangleCollisionPerformance();
         measureNormalizationPerformance();
-        exit(1);
+        return 0;
     #endif
 
     printf("\n\nTests:\n\n");

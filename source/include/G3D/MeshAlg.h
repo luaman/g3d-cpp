@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-12-09
+ @edited  2004-02-02
 */
 
 #ifndef G3D_MESHALG_H
@@ -174,7 +174,46 @@ public:
         double&                 medianFaceArea,
         double&                 maxFaceArea);
 
-   /**
+private:
+    /**
+     Computes the tangent space basis vectors for
+     a counter-clockwise oriented face.
+
+     @cite Max McGuire
+     */
+    static void computeTangentVectors(
+        const Vector3&  normal,
+        const Vector3   position[3],
+        const Vector2   texCoord[3],
+        Vector3&        tangent, 
+        Vector3&        binormal);
+
+public:
+
+    /**
+     Computes tangent and binormal vectors,
+     which provide a (mostly) consistent
+     parameterization over the surface for
+     effects like bump mapping.
+
+     The vertex, texCoord, tangent, and binormal
+     arrays are parallel arrays.
+
+     The resulting tangent and binormal might not be exactly
+     perpendicular to each other.  They are guaranteed to
+     be perpendicular to the normal.
+
+     @cite Max McGuire
+    */
+    static void computeTangentSpaceBasis(
+        const Array<Vector3>&       vertexArray,
+        const Array<Vector2>&       texCoordArray,
+        const Array<Vector3>&       vertexNormalArray,
+        const Array<Face>&          faceArray,
+        Array<Vector3>&             tangent,
+        Array<Vector3>&             binormal);
+
+    /**
      @param vertexNormalArray Output. Computed by averaging adjacent face normals
      @param faceNormalArray Output. 
     */

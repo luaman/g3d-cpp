@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2003-12-09
+  @edited  2004-02-02
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -15,6 +15,7 @@
 #include "G3D/Set.h"
 #include "G3D/Box.h"
 #include "G3D/Sphere.h"
+#include "G3D/vectorMath.h"
 
 namespace G3D {
 
@@ -381,6 +382,172 @@ void MeshAlg::computeBounds(
 
     box = Box(Vector3(xmin.x, ymin.y, zmin.z), Vector3(xmax.x, ymax.y, zmax.z));
     sphere = Sphere(center, rad);
+}
+
+
+void MeshAlg::computeTangentVectors(
+    const Vector3&  normal,
+    const Vector3   position[3],
+    const Vector2   texCoord[3],
+    Vector3&        tangent, 
+    Vector3&        binormal) {
+
+    Vector3 v[3];
+    Vector2 t[3];
+    
+    for (int i = 0; i < 3; ++i) {
+        v[i] = position[i];
+        t[i] = texCoord[i];
+    }
+
+    /////////////////////////////////////////////////
+    // Begin by computing the tangent
+
+    // Sort the vertices by texture coordinate y.
+    if (t[0].y < t[1].y) {
+        std::swap(v[0], v[1]);
+        std::swap(t[0], t[1]);
+    }
+
+    if (t[0].y < t[2].y) {
+        std::swap(v[0], v[2]);
+        std::swap(t[0], t[2]);
+    }
+
+    if (t[1].y < t[2].y) {
+        std::swap(v[1], v[2]);
+        std::swap(t[1], t[2]);
+    }
+
+    double amount;
+
+    // Compute the direction of constant y.
+    if (fuzzyEq(t[2].y, t[0].y)) {
+        amount = 1.0;
+    } else {
+        amount = (t[1].y - t[0].y) / (t[2].y - t[0].y);
+    }
+
+    tangent = lerp(v[0], v[2], amount) - v[1];
+
+    // Make sure the tangent points in the right direction and is 
+    // perpendicular to the normal.
+    if (lerp(t[0].x, t[2].x, amount) < t[1].x) {
+        tangent = -tangent;
+    }
+
+    // TODO: do we need this?  We take this component off
+    // at the end anyway
+    tangent -= tangent.dot(normal) * normal;
+
+    // Normalize the tangent so it contributes
+    // equally at the vertex (TODO: do we need this?)
+    if (fuzzyEq(tangent.length(), 0.0)) {
+        tangent = Vector3::UNIT_X;
+    } else {
+        tangent = tangent.direction();
+    }
+
+    //////////////////////////////////////////////////
+    // Now compute the binormal
+
+    // Sort the vertices by texture coordinate x.
+    if (t[0].x < t[1].x) {
+        std::swap(v[0], v[1]);
+        std::swap(t[0], t[1]);
+    }
+
+    if (t[0].x < t[2].x) {
+        std::swap(v[0], v[2]);
+        std::swap(t[0], t[2]);
+    }
+
+    if (t[1].x < t[2].x) {
+        std::swap(v[1], v[2]);
+        std::swap(t[1], t[2]);
+    }
+
+    // Compute the direction of constant x.
+    if (fuzzyEq(t[2].x, t[0].x)) {
+        amount = 1.0;
+    } else {
+        amount = (t[1].x - t[0].x) / (t[2].x - t[0].x);
+    }
+
+    binormal = lerp(v[0], v[2], amount) - v[1];
+
+    // Make sure the binormal points in the right direction and is 
+    // perpendicular to the normal.
+    if (lerp(t[0].y, t[2].y, amount) < t[1].y) {
+        binormal = -binormal;
+    }
+
+    binormal -= binormal.dot(normal) * normal;
+
+    // Normalize the binormal so that it contributes
+    // an equal amount to the per-vertex value (TODO: do we need this? 
+    // Nelson Max showed that we don't for computing per-vertex normals)
+    if (fuzzyEq(binormal.length(), 0.0)) {
+        binormal = Vector3::UNIT_Z;
+    } else {
+        binormal = binormal.direction();
+    }
+
+}
+
+
+void MeshAlg::computeTangentSpaceBasis(
+    const Array<Vector3>&       vertexArray,
+    const Array<Vector2>&       texCoordArray,
+    const Array<Vector3>&       vertexNormalArray,
+    const Array<Face>&          faceArray,
+    Array<Vector3>&             tangent,
+    Array<Vector3>&             binormal) {
+
+    Vector3 position[3];
+    Vector2 texCoord[3];
+    Vector3 normal;
+    Vector3 t, b;
+
+    tangent.resize(vertexArray.size());
+    binormal.resize(vertexArray.size());
+    // Zero the arrays.
+    System::memset(tangent.getCArray(), 0, sizeof(Vector3) * tangent.size());
+    System::memset(binormal.getCArray(), 0, sizeof(Vector3) * binormal.size());
+
+    for (int f = 0; f < faceArray.size(); ++f) {
+        const Face& face = faceArray[f];
+
+        for (int v = 0; v < 3; ++v) {
+            int i = face.vertexIndex[v];
+            position[v] = vertexArray[i];
+            texCoord[v] = texCoordArray[i];
+        }
+
+        normal = (position[1] - position[0]).cross(position[2] - position[0]).direction();
+        computeTangentVectors(normal, position, texCoord, t, b);
+
+        // We average the tangent and binormal vectors as if they were
+        // normals.
+
+        for (int v = 0; v < 3; ++v) {
+            int i = face.vertexIndex[v];
+            tangent[i] += t;
+            binormal[i] += b;
+        }
+    }
+
+    // Normalize the basis vectors
+    for (int v = 0; v < vertexArray.size(); ++v) {
+        // Remove the component parallel to the normal
+        const Vector3& N = vertexNormalArray[v];
+        tangent[v]  -= tangent[v].dot(N) * N;
+        binormal[v] -= binormal[v].dot(N) * N;
+
+        // Note that the tangent and binormal might not be perpendicular anymore
+        tangent[v]  = tangent[v].direction();
+        binormal[v] = binormal[v].direction();
+    }
 }
 
 } // G3D namespace
