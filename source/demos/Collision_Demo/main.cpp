@@ -26,15 +26,15 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-11-23
+ @edited  2003-12-01
  */
 #include <G3DAll.h>
 #include "Model.h"
 #include "Object.h"
 #include "Scene.h"
 
-#if G3D_VER != 60008
-    #error Requires G3D 6.00 b8
+#if G3D_VER != 60009
+    #error Requires G3D 6.00 b9
 #endif
 
 /**

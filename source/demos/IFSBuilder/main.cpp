@@ -16,7 +16,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-10-22
+  @edited  2003-12-01
  */ 
 
 #include <G3DAll.h>
@@ -84,7 +84,8 @@ int main(int argc, char** argv) {
 
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
-    std::string in("c:/tmp/diablo.3ds");
+//    std::string in("c:/tmp/diablo.3ds");
+    std::string in("d:/tmp/cracked-tetra.sm");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");
@@ -109,7 +110,7 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "";
+        model->name = "Cracked Tetrahedron";
         
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");

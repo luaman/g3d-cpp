@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-11-15
+ @edited  2003-12-01
 */
 
 #ifndef G3D_MESHALG_H
@@ -69,10 +69,18 @@ public:
 
         /**
          The edge is directed forward in the first face and
-         backward in the second face. Face index of MD2Model::Face::NONE
-         indicates a dangling edge.
+         backward in the second face. Face index of MeshAlg::Face::NONE
+         indicates a broken edge.
          */
         int                     faceIndex[2];
+
+        /**
+         Returns true if either faceIndex is NONE.
+         */
+        inline bool broken() const {
+            return (faceIndex[0] == Face::NONE) ||
+                   (faceIndex[1] == Face::NONE);
+        }
     };
     
 

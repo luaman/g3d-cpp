@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-11-23
+ @edited  2003-12-01
  */
 
 #ifndef G3D_GFONT_H
@@ -14,7 +14,7 @@
 
 namespace G3D {
 
-typedef ReferenceCountedPointer<class GFont> CFontRef;
+typedef ReferenceCountedPointer<class GFont> GFontRef;
 
 /**
  Font class for use with RenderDevice.
@@ -86,7 +86,7 @@ public:
           </pre>
         The width of a character's bounding box is always width / 16.  The height is always width / 8.
     */
-    static CFontRef fromFile(class RenderDevice* renderDevice, const std::string& filename);
+    static GFontRef fromFile(class RenderDevice* renderDevice, const std::string& filename);
 
     /**
      Converts an 8-bit RAW font texture and INI file as produced by the Bitmap Font Builder program
@@ -145,6 +145,11 @@ public:
  @deprecated
  */
 typedef GFont CFont;
+
+/**
+ @deprecated
+ */
+typedef GFontRef CFontRef;
 
 }
 #endif

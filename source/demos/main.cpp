@@ -13,7 +13,7 @@
  */
 
 
-#include "../include/G3DAll.h"
+#include <G3DAll.h>
 
 
 /**
