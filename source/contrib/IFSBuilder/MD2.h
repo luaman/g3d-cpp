@@ -7,15 +7,20 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2003-02-21
- @edited  2003-02-27
+ @edited  2004-10-27
  */
 
 #ifndef MD2_H
 #define MD2_H
 
+#include <G3DAll.h>
+
+#ifdef G3D_WIN32
 // Prevent the compiler from adding extra space to the MD2 headers
 #pragma pack(push, MD2)
 #pragma pack(1)
+#endif
+
 struct MD2ModelHeader {
    int magic; 
    int version; 
@@ -36,12 +41,6 @@ struct MD2ModelHeader {
    int offsetEnd; 
 };
 
-// Unused in this program
-struct MD2Vertex {
-   byte vertex[3];
-   byte lightNormalIndex;
-};
-  
 
 struct MD2Frame {
    float scale[3];
@@ -57,6 +56,8 @@ struct MD2Triangle {
    short textureIndices[3];
 };
 
+#ifdef G3D_WIN32
 #pragma pack(pop, MD2)
+#endif
 
 #endif

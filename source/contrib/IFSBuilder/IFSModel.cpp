@@ -7,7 +7,7 @@
   @cite MD2 format by id software
 
   @created 2002-02-27
-  @edited  2004-09-09
+  @edited  2004-10-27
  */
 
 #include "IFSModel.h"
@@ -713,7 +713,7 @@ void XIFSModel::loadSM(const std::string& filename) {
     TextInput ti(filename);
 
     // Read vertices
-    Array<Vector3> va(ti.readNumber());
+    Array<Vector3> va((int)ti.readNumber());
     for (int v = 0; v < va.size(); ++v) {
         for (int i = 0; i < 3; ++i) {
             va[v][i] = ti.readNumber();
@@ -721,13 +721,13 @@ void XIFSModel::loadSM(const std::string& filename) {
     }
 
     // Read faces
-    int n = ti.readNumber();
+    int n = (int)ti.readNumber();
 
     int t;
     for (t = 0; t < n; ++t) {
-        int v0 = ti.readNumber();
-        int v1 = ti.readNumber();
-        int v2 = ti.readNumber();
+        int v0 = (int)ti.readNumber();
+        int v1 = (int)ti.readNumber();
+        int v2 = (int)ti.readNumber();
 
         builder.addTriangle(va[v0], va[v1], va[v2]);
     }
@@ -812,6 +812,7 @@ void XIFSModel::load3DS(const std::string& filename) {
         // the mesh.
 
         const Matrix4&        cframe  = loader.objectArray[obj].cframe;
+        (void)cframe;
         //#define vert(V) (keyframe * cframe * Vector4(vertex[index[V]], 1)).xyz()
 
         // TODO: Figure out correct transformation
@@ -865,7 +866,7 @@ void XIFSModel::loadOBJ(const std::string& filename) {
                     Array<int> vertexIndex;
             
                     while ((t.peek().line() == tag.line()) && t.hasMore()) {  
-                        vertexIndex.append(t.readNumber());
+                        vertexIndex.append((int)t.readNumber());
                         debugAssert(vertexIndex.last() > 0);
                         --vertexIndex.last();
 
@@ -898,7 +899,7 @@ void XIFSModel::loadOBJ(const std::string& filename) {
         }
     } catch (TextInput::WrongTokenType& e) {
         debugAssert(e.expected != e.actual);
-        e;
+        (void)e;
     }
     
     builder.setName(filename);

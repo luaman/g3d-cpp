@@ -244,7 +244,7 @@ public:
 	/**
 	 @param t Should polygons be two sided?
 	 */
-    Load3DS(BinaryInput& _b) : b(_b), currentRotation(Matrix3::IDENTITY) {
+    Load3DS(BinaryInput& _b) : currentRotation(Matrix3::IDENTITY), b(_b) {
 
         fileVersion     = 0;
         meshVersion     = 0;
@@ -393,6 +393,7 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
                                 int v2 = b.readUInt16();
 
                                 uint16 flags = b.readUInt16();
+                                (void)flags;
 
                                 /*
                                 Here's the only documentation I've found on the flags:
@@ -581,32 +582,39 @@ void Load3DS::readTCB() {
     };
     
     int tcbframe = b.readInt32();
+    (void)tcbframe;
     int tcbflags = b.readUInt16();
 
     if (tcbflags & USE_TENSION) {
         float tcbtens = b.readFloat32();
+        (void)tcbtens;
     }
 
     if (tcbflags & USE_CONTINUITY) {
         float tcbcont = b.readFloat32();
+        (void)tcbcont;
     }
 
     if (tcbflags & USE_BIAS) {
         float tcbbias = b.readFloat32();
+        (void)tcbbias;
     }
 
     if (tcbflags & USE_EASE_TO) {
         float tcbeaseto = b.readFloat32();
+        (void)tcbeaseto;
     }
 
     if (tcbflags & USE_EASE_FROM) {
         float tcbeasefrom = b.readFloat32();
+        (void)tcbeasefrom;
     }                                           
 }
 
 
 Vector3 Load3DS::readLin3Track() {
     int trackflags = b.readUInt16();
+    (void)trackflags;
     b.readUInt32();
     b.readUInt32();
 
@@ -629,6 +637,7 @@ Vector3 Load3DS::readLin3Track() {
 
 Matrix3 Load3DS::readRotTrack() {
     int trackflags = b.readUInt16();
+    (void)trackflags;
 	b.readUInt32();
 	b.readUInt32();
 

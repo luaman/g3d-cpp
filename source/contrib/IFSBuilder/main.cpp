@@ -34,7 +34,7 @@ bool                    endProgram      = false;
 
 XIFSModel*              model           = NULL;
 
-double                  close  = 0;
+double                  closeDistance  = 0;  
 bool                    pauseBetweenModels = true;
 
 void doSimulation(GameTime timeStep);
@@ -180,7 +180,7 @@ void doGraphics() {
                     }
 
                     y = renderDevice->getHeight();
-                    font->draw2D(format("Vertices within radius %g collapsed", close), Vector2(10, y - 15), 10, Color3::BLACK);
+                    font->draw2D(format("Vertices within radius %g collapsed", closeDistance), Vector2(10, y - 15), 10, Color3::BLACK);
                 renderDevice->pop2D();
                 
             }
@@ -210,10 +210,11 @@ void doUserInput() {
                 break;
 
             // Add other key handlers here
-
+            default:;
             }
             break;
 
+        default:;
             // Add other event handlers here
         }
 
