@@ -1,1 +1,1 @@
-SUBDIRS = source
+SUBDIRS = temp source

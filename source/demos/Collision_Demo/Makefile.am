@@ -4,4 +4,5 @@ noinst_PROGRAMS = collision
 
 collision_SOURCES = main.cpp Model.cpp Object.cpp Scene.cpp buildScene.cpp
 collision_LDFLAGS= -lglut
-collision_LDADD=../../GLG3Dcpp/libGLG3D.la ../../G3Dcpp/libG3D.la
+collision_LDADD=../../../temp/release/glg3d/libGLG3D.la \
+                ../../../temp/release/g3d/libG3D.la

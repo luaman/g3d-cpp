@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT([g3d-cpp], [5.01], [matrix@graphics3d.com])
-AM_INIT_AUTOMAKE([1.6.1 foreign no-installinfo no-installman subdir-objects])
+AM_INIT_AUTOMAKE([1.6.1 foreign no-installinfo no-installman])
 AC_CONFIG_SRCDIR([source/G3Dcpp/Box.cpp])
 AM_CONFIG_HEADER(source/config.h)
 
@@ -16,12 +16,11 @@ AC_PATH_X
 LIBS="$LIBS -L$x_libraries"
 
 # Checks for libraries.
-AC_CHECK_LIB([GL], [glBegin], [], [
+AC_CHECK_LIB([GL], [main], [], [
 			  AC_MSG_ERROR([Can't find libGL])])
-AC_CHECK_LIB([GLU], [gluBuild2DMipmaps], [], [
-			  AC_MSG_ERROR([Can't find libGLU])])
-#AC_CHECK_LIB([SDL], [SDL_Init], [], [
-#			  AC_MSG_ERROR([Can't find libSDL])]) 
+AC_CHECK_LIB([GLU], [main], LIBGLU="-lGLU", LIBGLU="", -pthread)
+#AC_CHECK_LIB([GLU], [main], [], [
+#			  AC_MSG_ERROR([Can't find libGLU])])
 AC_CHECK_LIB([jpeg], [main], [], [
 			  AC_MSG_ERROR([Can't find libjpeg])])
 # FIXME: Replace `main' with a function in `-lz':
@@ -72,9 +71,14 @@ AM_PATH_SDL(1.2.0, [], [AC_MSG_ERROR([Can't find SDL on your system])])
 #    ],[AC_MSG_RESULT(no)])
 
 AC_CONFIG_FILES([Makefile
+                 temp/Makefile
+                 temp/debug/Makefile
+                 temp/debug/g3d/Makefile
+                 temp/debug/glg3d/Makefile
+                 temp/release/Makefile
+                 temp/release/g3d/Makefile
+                 temp/release/glg3d/Makefile
 				 source/Makefile
-				 source/G3Dcpp/Makefile
-				 source/GLG3Dcpp/Makefile
                  source/test/Makefile
 				 source/demos/Makefile
 				 source/demos/IFS_Demo/Makefile
@@ -83,4 +87,6 @@ AC_CONFIG_FILES([Makefile
 				 source/demos/GLProgram_Demo/Makefile
 				 source/include/Makefile])
 
+#				 source/G3Dcpp/Makefile
+#				 source/GLG3Dcpp/Makefile
 AC_OUTPUT

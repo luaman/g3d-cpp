@@ -56,6 +56,6 @@ nobase_include_HEADERS=G3D/Array.h \
                        GLG3D/Sky.h \
                        GLG3D/Texture.h \
                        GLG3D/UserInput.h \
-                       GLG3D/getOpenGLState.h \
-                       GLG3D/glcalls.h \
-                       GLG3D/glheaders.h
+                       GLG3D/getOpenGLState.h
+                       #GLG3D/glcalls.h \
+                       #GLG3D/glheaders.h

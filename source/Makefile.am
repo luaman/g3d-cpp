@@ -1,1 +1,1 @@
-SUBDIRS = include G3Dcpp GLG3Dcpp test demos
+SUBDIRS = include test demos #G3Dcpp GLG3Dcpp
