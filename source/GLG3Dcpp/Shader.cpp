@@ -442,8 +442,6 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
 ////////////////////////////////////////////////////////////////////////
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, const TextureRef& val) {
-    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
-
     Arg arg;
     arg.type    = val->getOpenGLTextureTarget();
     arg.texture = val;
@@ -458,8 +456,6 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, const Coordinate
 
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, const Matrix4& val) {
-    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
-
     Arg arg;
     arg.type = GL_FLOAT_MAT4_ARB;
     for (int r = 0; r < 4; ++r) {
@@ -471,8 +467,6 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, const Matrix4& v
 
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector4& val) {
-    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
-
     Arg arg;
     arg.type = GL_FLOAT_VEC4_ARB;
     arg.vector[0] = val;
@@ -481,8 +475,6 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector4& v
 
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector3& val) {
-    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
-
     Arg arg;
     arg.type = GL_FLOAT_VEC3_ARB;
     arg.vector[0] = Vector4(val, 0);
@@ -492,8 +484,6 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector3& v
 
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector2& val) {
-    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
-
     Arg arg;
     arg.type = GL_FLOAT_VEC2_ARB;
     arg.vector[0] = Vector4(val, 0, 0);
@@ -502,8 +492,6 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector2& v
 
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, float          val) {
-    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
-
     Arg arg;
     arg.type = GL_FLOAT;
     arg.vector[0] = Vector4(val, 0, 0, 0);
@@ -514,7 +502,6 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, float          v
 void VertexAndPixelShader::ArgList::clear() {
     argTable.clear();
 }
-
 
 
 }
