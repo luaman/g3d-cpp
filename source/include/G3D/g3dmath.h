@@ -50,6 +50,9 @@ namespace G3D {
 
 const double fuzzyEpsilon = 0.000001;
 
+/** Returns a reference to a static double.
+    This value should not be tested against directly, instead
+    G3D::isNan() and G3D::isFinite() will return reliable results. */
 inline const double& inf() {
 
 // We already have <limits> included but
@@ -63,6 +66,9 @@ inline const double& inf() {
 	return i;
 }
 
+/** Returns a reference to a static double.
+    This value should not be tested against directly, instead
+    G3D::isNan() and G3D::isFinite() will return reliable results. */
 inline const double& nan() {
 
 // We already have <limits> included but
@@ -76,8 +82,32 @@ inline const double& nan() {
 	return n;
 }
 
+/** Returns a reference to a static double. Use instead of G3D_PI. */
+inline const double& g3d_pi() {
+    static const double p = 3.1415926535898;
+    return p;
+}
+
+/** Returns a reference to a static double. Use instead of G3D_HALF_PI. */
+inline const double& g3d_half_pi() {
+    static const double p = 1.5707963267949;
+    return p;
+}
+
+/** Returns a reference to a static double. Use instead of G3D_TWO_PI. */
+inline const double& g3d_two_pi() {
+    static const double p = 6.283185;
+    return p;
+}
+
+/** @def G3D_PI
+    @deprecated */
 #define G3D_PI      (3.1415926535898)
+/** @def G3D_HALF_PI
+    @deprecated */
 #define G3D_HALF_PI (1.5707963267949)
+/** @def G3D_TWO_PI
+    @deprecated */
 #define G3D_TWO_PI  (6.283185)
 
 typedef signed char		int8;
