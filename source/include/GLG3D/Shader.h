@@ -11,10 +11,12 @@
 #define G3D_SHADER_H
 
 #include "graphics3D.h"
+#include "glheaders.h"
 
 namespace G3D {
 
 typedef ReferenceCountedPointer<class ShaderGroup>  ShaderGroupRef;
+typedef ReferenceCountedPointer<class GPUShader>    GPUShaderRef;
 typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 typedef ReferenceCountedPointer<class VertexShader> VertexShaderRef;
 typedef ReferenceCountedPointer<class PixelShader>  PixelShaderRef;
@@ -26,23 +28,89 @@ public:
 };
 
 class GPUShader : public ReferenceCountedObject {
-public:
+protected:
 
+    /** argument for output on subclasses */
+    static std::string          ignore;
+
+    std::string                 _name;
+    std::string                 _code;
+    bool                        fromFile;
+
+    GLhandleARB                 glShaderObject;
+
+    GPUShader(const std::string& name, const std::string& code, bool fromFile);
+
+    bool                        _ok;
+    std::string                 _message;
+
+    /** Returns true on success.  Called from init. */
+    void compile();
+
+    /** Initialize a shader object and returns object.  
+        Called from subclass create methods. */
+    static GPUShader*           init(GPUShader* shader);
+
+    /** Deletes the underlying glShaderObject.  Between GL's reference
+        counting and G3D's reference counting, an underlying object
+        can never be deleted while in use. */
+    ~GPUShader();
+
+public:
+    /** Shader type, e.g. GL_VERTEX_SHADER_ARB */
+    virtual GLenum glShaderType() const = 0;
+
+    /** Why compilation failed, or any compiler warnings if it succeeded.*/
+    inline std::string message() const {
+        return _message;
+    }
+
+    /** Returns true if compilation and loading succeeded.  If they failed,
+        check the message string.*/
+    inline bool ok() const {
+        return _ok;
+    }
 };
 
+
 class VertexShader : public GPUShader {
+private:
+
+    VertexShader(const std::string& name, const std::string& code, bool fromFile) :
+       GPUShader(name, code, fromFile) {}
+
 public:
+    virtual GLenum glShaderType() const {
+        return GL_VERTEX_SHADER_ARB;
+    }
+
+    /** In the event of a fatal error, the returned VertexShader will not be GPUShader::ok(). */
     static VertexShaderRef fromFile(const std::string& filename);
+
+    /** @param name For debugging purposes.  Typically, the name of the file from which
+             the shader was loaded. */
     static VertexShaderRef fromCode(const std::string& name, const std::string& code);
 };
 
 
 class PixelShader : public GPUShader {
+private:
+
+    PixelShader(const std::string& name, const std::string& code, bool fromFile) :
+       GPUShader(name, code, fromFile) {}
+
 public:
+    virtual GLenum glShaderType() const {
+        return GL_FRAGMENT_SHADER_ARB;
+    }
+
+    /** In the event of a fatal error, the returned PixelShader will not be GPUShader::ok(). */
     static PixelShaderRef fromFile(const std::string& filename);
+
+    /** @param name For debugging purposes.  Typically, the name of the file from which
+             the shader was loaded. */
     static PixelShaderRef fromCode(const std::string& name, const std::string& code);
 };
-
 
 
 /**
@@ -76,6 +144,14 @@ public:
   Multiple ShaderGroups may share object, vertex, and pixel shaders.
  */
 class ShaderGroup : public ReferenceCountedObject {
+protected:
+
+    static std::string ignore;
+
+    ObjectShaderRef         objectShader;
+    VertexShaderRef         vertexShader;
+    PixelShaderRef          pixelShader;
+
 public:
 
     /**
@@ -97,7 +173,7 @@ public:
         const ObjectShaderRef& os,
         const VertexShaderRef& vs,
         const PixelShaderRef&  ps,
-        std::string&           output = std::string(""));
+        std::string&           output = ignore);
 
     /**
      Returns GLCaps::supports_GL_ARB_shader_objects() && 

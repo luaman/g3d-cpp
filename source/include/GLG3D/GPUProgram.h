@@ -210,9 +210,7 @@ protected:
     void loadConstant(int slot, const Vector4& value) const;
     void getProgramError(int& pos, const unsigned char*& msg) const;
     void deletePrograms(int num, unsigned int* id) const;
-    
-protected:
-
+ 
     /**
      Determines which unit and extension API a shader uses from the first line.
      */
