@@ -131,6 +131,8 @@ static void infiniteProjectionMatrix(RenderDevice* renderDevice) {
 
 
 void Sky::renderBox() const {
+    renderDevice->pushState();
+
     double s = 50;
 
     bool cube = (cubeMap != NULL);
@@ -167,8 +169,9 @@ void Sky::renderBox() const {
         renderDevice->setTextureMatrix(0, cframe);
 
     } else {
-        CoordinateFrame matrix;
-        renderDevice->setTextureMatrix(0, matrix);
+        CoordinateFrame cframe;
+        cframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(-90));
+        renderDevice->setObjectToWorldMatrix(cframe);
 
         renderDevice->setTexture(0, texture[BK]);
     }
@@ -310,7 +313,8 @@ void Sky::renderBox() const {
 	    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
         glPopAttrib();
     }
-    renderDevice->setTextureMatrix(0, CoordinateFrame());
+
+    renderDevice->popState();
 }
 
 

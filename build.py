@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-06-17
+# @edited  2003-07-07
 #
 # Each build target is a procedure.
 #
@@ -158,7 +158,7 @@ def doc():
     
 def install(copyData=1):
     lib()
-    doc()
+    #doc()
     copyIfNewer('temp/lib', installDir + '/lib')
 
     if (os.name != 'nt'):
