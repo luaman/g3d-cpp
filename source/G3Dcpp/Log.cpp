@@ -28,6 +28,8 @@ Log* Log::commonLog = NULL;
 Log::Log(const std::string& filename, int stripFromStackBottom) : 
     stripFromStackBottom(stripFromStackBottom) {
 
+    _internal::currentFilesUsed.append(filename);
+
     this->filename = filename;
 
     logFile = fopen(filename.c_str(), "w");
@@ -52,6 +54,8 @@ Log::Log(const std::string& filename, int stripFromStackBottom) :
         #endif
 
         logFile = fopen(logName.c_str(), "w");
+
+        _internal::currentFilesUsed.append(logName);
     }
 
     // Turn off buffering.

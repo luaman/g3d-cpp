@@ -20,6 +20,7 @@ namespace G3D {
 
 /** Attempt to write license file */
 static void writeLicense() {
+    _internal::currentFilesUsed.append("g3d-license.txt");
     FILE* f = fopen("g3d-license.txt", "wt");
     if (f != NULL) {
         fprintf(f, "%s", license().c_str());

@@ -95,6 +95,8 @@ std::string resolveFilename(const std::string& filename) {
 std::string readFileAsString(
     const std::string& filename) {
 
+    _internal::currentFilesUsed.append(filename);
+
     int64 length = fileLength(filename);
 
     if (length == -1) {
@@ -144,6 +146,8 @@ void writeStringToFile(
     const std::string&          str,
     const std::string&          filename,
     bool                        flush) {
+
+    _internal::currentFilesUsed.append(filename);
 
     // Make sure the directory exists.
     std::string root, base, ext, path;
