@@ -795,13 +795,13 @@ void testSwizzle() {
 }
 
 
+    #include <sys/timeb.h>
 
 int main(int argc, char* argv[]) {
-
     RealTime t0 = System::getLocalTime();
     RealTime t1 = System::getTick();
     while (true) {
-        printf("\r%f %f\n", System::getLocalTime() - t0, System::getTick() - t1);
+        printf("\r%f %f\n", System::getLocalTime() - t0, System::getTick());
     }
 
     #ifndef _DEBUG

@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-01-02
+  @edited  2004-01-03
  */
 
 #include "G3D/platform.h"
@@ -126,6 +126,10 @@ static LARGE_INTEGER        _counterFrequency;
 #else
 static struct timeval       _start;
 #endif
+
+/** The Real-World time of System::getTick() time 0.  Set by initTime */
+static RealTime             realWorldGetTickTime0;
+
 
 static int	 	 maxSupportedCPUIDLevel = 0;
 static int    maxSupportedExtendedLevel = 0;
@@ -840,8 +844,32 @@ void initTime() {
         if (QueryPerformanceFrequency(&_counterFrequency)) {
             QueryPerformanceCounter(&_start);
         }
+
+        struct _timeb t;
+        _ftime(&t);
+
+        realWorldGetTickTime0 = (RealTime)t.time - t.timezone * MINUTE + (t.dstflag ? HOUR : 0);
+
     #else
         gettimeofday(&_start, NULL);
+        // "sse" = "seconds since epoch".  The time
+        // function returns the seconds since the epoch
+        // GMT (perhaps more correctly called UTC). 
+        time_t gmt = time(NULL);
+        
+        // No call to free or delete is needed, but subsequent
+        // calls to asctime, ctime, mktime, etc. might overwrite
+        // local_time_vals. 
+        tm* localTimeVals = localtime(&gmt);
+    
+        time_t local = gmt;
+        
+        if (localTimeVals) {
+            // tm_gmtoff is already corrected for daylight savings.
+            local = local + localTimeVals->tm_gmtoff;
+        }
+        
+        realWorldGetTickTime0 = local;
     #endif
 }
 
@@ -866,36 +894,8 @@ RealTime System::getTick() {
 
 
 RealTime System::getLocalTime() {
-  
-    #ifdef G3D_WIN32
-        struct _timeb t;
-        _ftime(&t);
-
-        return t.time - t.timezone * MINUTE + (t.dstflag ? HOUR : 0);
-
-    #else
-
-        // "sse" = "seconds since epoch".  The time
-        // function returns the seconds since the epoch
-        // GMT (perhaps more correctly called UTC). 
-        time_t gmt = time(NULL);
-        
-        // No call to free or delete is needed, but subsequent
-        // calls to asctime, ctime, mktime, etc. might overwrite
-        // local_time_vals. 
-        tm* localTimeVals = localtime(&gmt);
-    
-        time_t local = gmt;
-        
-        if (localTimeVals) {
-            // tm_gmtoff is already corrected for daylight savings.
-            local = local + localTimeVals->tm_gmtoff;
-        }
-        
-        return RealTime(local);
-
-    #endif
-}
+    return getTick() + realWorldGetTickTime0;
+}        
 
 
 void* System::alignedMalloc(size_t bytes, size_t alignment) {

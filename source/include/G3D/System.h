@@ -145,7 +145,8 @@ public:
      Jan 1 1970 midnight).
      
      Adjusted for local timezone and daylight savings
-     time. */
+     time.   This is as accurate as getTick().
+    */
     static RealTime getLocalTime();
 
     /**
