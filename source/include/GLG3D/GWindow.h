@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-10-21
+  @edited  2005-01-05
 */
 
 #ifndef G3D_GWINDOW_H
@@ -218,7 +218,7 @@ public:
     virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) = 0;
 
     /** 
-      Capture the keyboard and mouse focus, locking the mouse to this window.
+      Capture the keyboard and mouse focus, locking the mouse to the client area of this window.
      */
     virtual void setInputCapture(bool c) = 0;
 
