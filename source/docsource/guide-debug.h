@@ -36,6 +36,7 @@ Application Framework <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 
     Note that you can choose to ignore the violation and continue your program.
 
+    You can supply your own assertion handler with G3D::setAssertionHook
 
 	G3D::getOpenGLState
 	G3D::Log

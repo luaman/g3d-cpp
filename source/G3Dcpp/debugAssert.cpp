@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2004-03-24
+ @edited  2004-09-16
  */
 
 #include "G3D/debugAssert.h"
@@ -29,6 +29,8 @@
 using namespace std;
 
 namespace G3D { namespace _internal {
+
+AssertionHook _debugHook = _handleDebugAssert_;
 
 #ifdef G3D_LINUX
     Display*      x11Display = NULL;

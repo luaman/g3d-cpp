@@ -30,7 +30,7 @@ Tutorial <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD><
   for examples of each kind of rendering.
   
   The basic concepts of immediate mode graphics are not explained in this manual or
-  in the G3D documentation.  Refer to the OpenGL manual for an introduction to immediate mode
+  in the G3D documentation.  Refer to the OpenGL manual or <A HREF="#glsites">websites</A> for an introduction to immediate mode
   hardware graphics rendering and to a textbook like <I>Computer Graphics: Principles and
   Practice</I> for information about lighting and transformations.
 
@@ -117,4 +117,69 @@ Tutorial <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD><
   and locations like <CODE>c:\libraries\<g3d release name>\data</CODE> that 
   are common install dirs.
 
- */
+  <HR>
+  @section glsites OpenGL Websites
+<I>(from Dominic Curran's OPENGL-GAMEDEV-L post)</I>
+
+The Official OpenGL Site - News, downloads, tutorials, books & links:- 
+http://www.opengl.org/
+
+The archive for this mailing list can be found at:- 
+http://www.egroups.com/list/opengl-gamedev-l/
+
+The OpenGL GameDev FAQ:- 
+http://www.rush3d.com/opengl/
+
+The EFnet OpenGL FAQ:- 
+http://www.geocities.com/SiliconValley/Park/5625/opengl/
+
+The Omniverous Biped's FAQ:-
+http://www.sjbaker.org/steve/omniv
+
+OpenGL 1.1 Reference - This is pretty much the Blue book on-line:- 
+http://tc1.chemie.uni-bielefeld.de/doc/OpenGL/hp/Reference.html
+
+Red Book online:-
+http://fly.cc.fer.hr/~unreal/theredbook/
+
+Manual Pages:- 
+http://pyopengl.sourceforge.net/documentation/manual/reference-GL.html
+
+Information on the GLUT API:- 
+http://www.opengl.org/developers/documentation/glut.html
+
+The Mesa 3-D graphics library:-
+http://www.mesa3d.org
+
+SGI OpenGL Sample Implementation (downloadable source):- 
+http://oss.sgi.com/projects/ogl-sample/
+
+OpenGL site with a focused on Delphi (+ OpenGL Hardware Registry):- 
+http://www.delphi3d.net/
+
+Game Tutorials - A number of OpenGL tutorials:- 
+http://www.gametutorials.com/
+
+Some nice OpenGL tutorials for beginners:- 
+http://nehe.gamedev.net/
+
+Humus - Some cool samples with code:- 
+http://esprit.campus.luth.se/~humus/
+
+Nate Robins OpenGL Page (some tutorials and code) 
+http://www.xmission.com/~nate/opengl.html
+
+Developer Sites for Apple, ATI & Nvidia:- 
+http://developer.apple.com/opengl/
+http://mirror.ati.com/developer/index.html
+http://developer.nvidia.com/
+
+OpenGL Extension Registry:- 
+http://oss.sgi.com/projects/ogl-sample/registry/
+
+The Charter for this mailing list can be found at OpenGl GameDev Site:-
+http://www.geocities.com/SiliconValley/Hills/9956/OpenGL/
+
+OpenGL Usenet groups:-
+news:comp.graphics.api.opengl 
+*/

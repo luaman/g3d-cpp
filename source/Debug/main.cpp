@@ -239,14 +239,18 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
+
+    GImage im;
+    im.load("images/no_such_file.jpg", GImage::JPEG);
+
     Demo(this).run();
+
     
 }
 
 App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
 
 }
-
 
 int main(int argc, char** argv) {
     GAppSettings settings;

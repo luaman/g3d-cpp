@@ -37,7 +37,7 @@
     #include <X11/Xatom.h>
 #endif
 
- /**
+/**
  @def debugBreak()
  
  Break at the current location (i.e. don't push a procedure stack frame
@@ -61,6 +61,28 @@
  
   The assertion is also posted to the clipboard under Win32.
  */
+
+namespace G3D {
+typedef bool (*AssertionHook)(
+    const char* _expression,
+    const std::string& message,
+    const char* filename,
+    int lineNumber,
+    bool& ignoreAlways,
+    bool useGuiPrompt);
+
+
+/** 
+  Allows customization of the global function invoked when a debugAssert fails.
+  The initial value is G3D::_internal::_handleDebugAssert_.  G3D will invoke
+  rawBreak if the hook returns true.  If NULL, assertions are not handled.
+*/
+void setAssertionHook(AssertionHook hook);
+
+namespace _internal {
+    extern AssertionHook _debugHook;
+} // internal
+} // G3D
 
 /**
  @def __debugPromptShowDialog__
@@ -93,7 +115,8 @@
         static bool __debugAssertIgnoreAlways__ = false; \
         if (!__debugAssertIgnoreAlways__ && !(exp)) { \
             G3D::_internal::_releaseInputGrab_(); \
-            if (G3D::_internal::_handleDebugAssert_(#exp, message, __FILE__, __LINE__, __debugAssertIgnoreAlways__, __debugPromptShowDialog__)) { \
+            if ((G3D::_internal::_debugHook != NULL) && \
+                G3D::_internal::_debugHook(#exp, message, __FILE__, __LINE__, __debugAssertIgnoreAlways__, __debugPromptShowDialog__)) { \
                  rawBreak(); \
             } \
             G3D::_internal::_restoreInputGrab_(); \

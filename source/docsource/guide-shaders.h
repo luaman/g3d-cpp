@@ -78,7 +78,8 @@ Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
 
   @section sample Sample Shaders
     Hundreds of sample shaders are available in all languages.
-    The OpenGL Shading Language book (http://www.aw-bc.com/catalog/academic/product/0,1144,0321197895,00.html)
+    The OpenGL Shading Language book 
+    (\htmlonly <A HREF="http://www.aw-bc.com/catalog/academic/product/0,1144,0321197895,00.html">http://www.aw-bc.com/catalog/academic/product/0,1144,0321197895,00.html</A>\endhtmlonly)
     is the official GLSL spec and contains many examples.  NVIDIA, ATI, and 3DLabs 
     each provide SDKs with tons more.
     

@@ -16,6 +16,7 @@
      <LI> G3D::ReferenceCountedPointer assignment now allows compile time subtyping
      <LI> G3D::ReferenceCountedPointer != operator
      <LI> G3D::ReferenceCountedPointer::notNull
+     <LI> G3D::setAssertionHook
      <LI> static G3D::IFSModel::save/load for writing/reading IFS files
      <LI> G3D::TextInput allows ' inside quoted strings
      <LI> G3D::TextInput allows \ as a symbol token
