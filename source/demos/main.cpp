@@ -11,7 +11,6 @@
   @author Morgan McGuire, matrix@graphics3d.com
  */
 
-
 #include <G3DAll.h>
 
 #if G3D_VER != 60011
@@ -22,6 +21,8 @@ class App : public GApp {
 protected:
     void main();
 public:
+    SkyRef              sky;
+
     App(const GAppSettings& settings);
 };
 
@@ -38,8 +39,6 @@ public:
     // state, put it in the App.
 
     class App*          app;
-
-    SkyRef              sky;
 
     Demo(App* app);    
 
@@ -58,21 +57,19 @@ public:
 };
 
 
-Demo::Demo(GApp* _app) : GApplet(_app), app(_app) {
-	// Load objects here
-    sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
+Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 
 void Demo::init()  {
+    // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
-	// Create scene here (called every time Demo::run() is invoked)
 }
 
 
 void Demo::cleanup() {
-	// Destroy scene here (called every time Demo::run() is invoked)
+    // Called when Demo::run() exits
 }
 
 
@@ -105,9 +102,10 @@ void Demo::doGraphics() {
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
-    app->renderDevice->clear(sky == NULL, true, true);
-    sky->render(lighting);
-   
+    app->renderDevice->clear(app->sky.isNull(), true, true);
+    if (! app->sky.isNull()) {
+        app->sky->render(lighting);
+    }
 
     // Setup lighting
     app->renderDevice->enableLighting();
@@ -118,18 +116,25 @@ void Demo::doGraphics() {
 
     app->renderDevice->disableLighting();
 
-    sky->renderLensFlare(lighting);
+    if (! app->sky.isNull()) {
+        app->sky->renderLensFlare(lighting);
+    }
 }
 
 
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(true);
-	Demo(this).run();
+
+    // Load objects here
+    sky = Sky::create(renderDevice, dataDir + "sky/");
+    
+    Demo(this).run();
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {}
+App::App(const GAppSettings& settings) : GApp(settings) {
+}
 
 
 int main(int argc, char** argv) {
@@ -137,7 +142,3 @@ int main(int argc, char** argv) {
     App(settings).run();
     return 0;
 }
-
-
-
-
