@@ -27,7 +27,7 @@ libG3D_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
 						 ../../../source/G3Dcpp/MeshAlgWeld.cpp \
                          ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
                          ../../../source/G3Dcpp/NetworkDevice.cpp \
-                         ../../../source/G3Dcpp/NetAddress.cpp \
+                         ../../../source/G3Dcpp/NetMessage.cpp \
                          ../../../source/G3Dcpp/PhysicsFrame.cpp \
                          ../../../source/G3Dcpp/Plane.cpp \
                          ../../../source/G3Dcpp/Quat.cpp \
