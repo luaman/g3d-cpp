@@ -1489,6 +1489,7 @@
 			buildPhases = (
 				0F55FECB06DCC502008DD4F8,
 				0F55FECC06DCC502008DD4F8,
+				3E2E5B0D0800136B00EEBE06,
 			);
 			buildRules = (
 			);
@@ -3992,6 +3993,7 @@
 				3EDE8578071BDA660008417F,
 				0FCB73F606DF6354001A7213,
 				0FCB73D006DF6202001A7213,
+				3E2E5B140800138A00EEBE06,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -4064,6 +4066,28 @@
 //3E2
 //3E3
 //3E4
+		3E2E5B0D0800136B00EEBE06 = {
+			buildActionMask = 2147483647;
+			files = (
+				3E2E5B150800138A00EEBE06,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E2E5B140800138A00EEBE06 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = CoreServices.framework;
+			path = /System/Library/Frameworks/CoreServices.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		3E2E5B150800138A00EEBE06 = {
+			fileRef = 3E2E5B140800138A00EEBE06;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		3E66D9B307F04A8200FFE893 = {
 			fileRef = 0F55008D06DD5F07008DD4F8;
 			isa = PBXBuildFile;

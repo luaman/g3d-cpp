@@ -41,6 +41,11 @@
     #include <X11/Xatom.h>
 #endif
 
+#ifdef G3D_OSX
+    // Need this for DebugStr()
+    #import <CoreServices/CoreServices.h>
+#endif
+
 /**
  @def debugBreak()
  
@@ -116,7 +121,7 @@ namespace _internal {
             #define rawBreak() __asm__ __volatile__ ( "int $3" ); 
         #endif
     #else
-        #define rawBreak() assert(false); /* No breakpoints on OS X yet */
+        #define rawBreak() DebugStr("\pG3D: Invoking breakpoint in debugger."); /* XCode must be set to break on Debugger()/DebugStr() */
     #endif
 
 
