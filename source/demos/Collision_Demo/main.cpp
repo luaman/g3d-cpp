@@ -43,13 +43,13 @@ std::string DATA_DIR("data/");
 /** The same bit depth is used for the shadow map and the screen */
 int                     depthBits       = 24;
 
-Log*                    debugLog		= NULL;
+Log*                    debugLog	= NULL;
 RenderDevice*           renderDevice	= NULL;
-Font*                   font			= NULL;
-UserInput*              userInput		= NULL;
-VARArea*				varDynamic		= NULL;
-VARArea*				varStatic		= NULL;
-Camera*					camera			= NULL;
+G3D::Font*              font		= NULL;
+UserInput*              userInput	= NULL;
+VARArea*		varDynamic	= NULL;
+VARArea*		varStatic	= NULL;
+Camera*			camera		= NULL;
 Scene*                  scene           = NULL;
 ManualCameraController* controller      = NULL;
 
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     varDynamic = renderDevice->createVARArea(1024 * 1);
     debugAssert(varDynamic);
 
-    font         = new Font(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = new G3D::Font(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 

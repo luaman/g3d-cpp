@@ -308,6 +308,17 @@ C++ Debug  C Debug</PRE>  G3D Debug                If you are using OpenGL      
    libraries" tab.
 
    <P>
+
+   <B>../include/G3D/g3dmath.h:27: limits: No such file or directory</B>
+   <BR>You are using an old version of GCC. Add these lines to your .cshrc:<br>
+   <ul>
+   <li> setenv CC gcc-3.2
+   <li> setenv CXX g++-3.2
+   </ul>
+
+   <P>
+
+
    <B>main.obj : error LNK2001: unresolved external symbol _SDL_GL_SwapBuffers
    <BR>
    msvcrtd.lib(crtexew.obj) : error LNK2001: unresolved external symbol _WinMain@16

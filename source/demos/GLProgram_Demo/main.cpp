@@ -15,7 +15,9 @@
  */ 
 
 #include <G3DAll.h>
-#include <direct.h>
+#ifdef _MSC_VER
+  #include <direct.h>
+#endif
 
 class Model {
 
@@ -37,13 +39,13 @@ public:
 
 std::string             DATA_DIR        = "data/";
 
-Log*                    debugLog		= NULL;
+Log*                    debugLog	= NULL;
 RenderDevice*           renderDevice	= NULL;
-Font*                   font			= NULL;
-UserInput*              userInput		= NULL;
-Camera*					camera			= NULL;
+G3D::Font*              font		= NULL;
+UserInput*              userInput	= NULL;
+Camera*			camera		= NULL;
 ManualCameraController* controller      = NULL;
-bool                    endProgram		= false;
+bool                    endProgram	= false;
 Model*                  model           = NULL;
 VertexProgramRef        distort         = NULL;
 
@@ -66,9 +68,16 @@ int main(int argc, char** argv) {
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
     renderDevice->init(400, 400, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+
+    if (!renderDevice->supportsVertexProgram()) {
+      error ("Critical Error", "This demo requires a graphics card and driver with OpenGL Vertex programs.", true);
+      exit(-1);
+    }
+
+
     camera 	     = new Camera(renderDevice);
 
-    font         = new Font(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 
@@ -81,7 +90,7 @@ int main(int argc, char** argv) {
     controller->lookAt(Vector3(-2,0,2));
 
     renderDevice->resetState();
-	renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    renderDevice->setColorClearValue(Color3(.1, .5, 1));
     renderDevice->setCaption("G3D Vertex Program Demo");
 
     RealTime now = getTime() - 0.001, lastTime;
