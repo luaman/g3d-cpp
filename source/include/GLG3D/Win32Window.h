@@ -29,6 +29,12 @@ namespace G3D {
 // Forward declaration so friend works
 class Win32APIWindow;
 
+// Forward declaration so directinput8.h is included in cpp
+namespace _internal {
+class _DirectInput;
+}
+using _internal::_DirectInput;
+
 class Win32Window : public GWindow {
 private:
 	
@@ -48,6 +54,8 @@ private:
     bool                 _mouseButtons[3];
 
     G3D::Queue< GEvent > _keyboardEvents;
+
+    _DirectInput*    _diDevices;
 
     G3D::Set< int >      _usedIcons;
 
