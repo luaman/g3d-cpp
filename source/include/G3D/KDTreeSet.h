@@ -265,6 +265,39 @@ private:
             }
         }
 
+	void verifyNode(const Vector3& lo, const Vector3& hi) {
+//		debugPrintf("Verifying: split %d @ %f [%f, %f, %f], [%f, %f, %f]\n",
+//			    splitAxis, splitLocation, lo.x, lo.y, lo.z, hi.x, hi.y, hi.z);
+
+		for(int i = 0; i < valueArray.length(); ++i) {
+			const AABox& b = valueArray[i].bounds;
+
+			for(int axis = 0; axis < 3; ++axis) {
+				debugAssert(b.low()[axis] <= b.high()[axis]);
+				debugAssert(b.low()[axis] > lo[axis]);
+				debugAssert(b.high()[axis] < hi[axis]);
+			}
+		}
+
+		if(child[0] || child[1]) {
+			debugAssert(lo[splitAxis] < splitLocation);
+			debugAssert(hi[splitAxis] > splitLocation);
+		}
+
+		Vector3 newLo = lo;
+		newLo[splitAxis] = splitLocation;
+		Vector3 newHi = hi;
+		newHi[splitAxis] = splitLocation;
+
+		if(child[0] != NULL) {
+			child[0]->verifyNode(lo, newHi);
+		}
+
+		if(child[1] != NULL) {
+			child[1]->verifyNode(newLo, hi);
+		}
+	}
+
 
         /** Returns the deepest node that completely contains bounds. */
         Node* findDeepestContainingNode(const AABox& bounds) {
@@ -581,6 +614,8 @@ public:
         clear();
 
         root = makeNode(handleArray, 0, handleArray.size() - 1, valuesPerNode);
+
+	    //root->verifyNode(Vector3(-inf, -inf, -inf), Vector3(inf, inf, inf));
     }
 
 
@@ -787,8 +822,8 @@ public:
 			    maxTime = inMaxTime;
 			    valIndex = -1;
 			    
-			    register Vector3::Axis splitAxis = node->splitAxis;
-			    register float splitLocation = node->splitLocation;
+			    Vector3::Axis splitAxis     = node->splitAxis;
+			    double        splitLocation = node->splitLocation;
 
 			    // this is the time along the ray until the split.
 			    // could be negative if the split is behind.
@@ -796,12 +831,12 @@ public:
 				    (splitLocation - ray.origin[splitAxis]) /
 				    ray.direction[splitAxis];
 			    
-			    // if splitTime <= minTime we'll never reach the
-			    // split, so set it to inf so as not to confuse endTime
-			    // it will be noted below that when splitTime is inf
+			    // If splitTime <= minTime we'll never reach the
+			    // split, so set it to inf so as not to confuse endTime.
+			    // It will be noted below that when splitTime is inf
 			    // only one of this node's children will be searched
 			    // (the pre child). Therefore it is critical that
-			    // the correct child is gone to.
+			    // the correct child is gone too.
 			    if (splitTime <= minTime) {
 				    splitTime = inf;
 			    }
@@ -809,17 +844,16 @@ public:
 			    startTime = minTime;
 			    endTime = min(maxTime, splitTime);
 
-			    
-			    float rayLocation = ray.origin[splitAxis] +
+			    double rayLocation = ray.origin[splitAxis] +
 				    ray.direction[splitAxis] * minTime;
 
-			    if(rayLocation == splitLocation) {
-				    // we're right on the split. Look ahead.
+			    if (rayLocation == splitLocation) {
+				    // We're right on the split. Look ahead.
 				    rayLocation = ray.origin[splitAxis] +
 					    ray.direction[splitAxis] * maxTime;
 			    }
 			    
-			    if(rayLocation == splitLocation) {
+			    if (rayLocation == splitLocation) {
 				    // right on the split, looking exactly along
 				    // it, so consider no children.
 				    nextChild = -1;
@@ -842,8 +876,7 @@ public:
 
 	    /** Counts how many bounding box intersection tests have been made so
 	        far. */
-	    int testCounter;
-
+	    int debugCounter;
 
     private:
 	    Ray                 ray;
@@ -855,7 +888,7 @@ public:
 	    int                 breakFrameIndex;
 
 	    RayIntersectionIterator(const Ray& r, const Node* root)
-		    : minDistance(0), maxDistance(inf), testCounter(0),
+		    : minDistance(0), maxDistance(inf), debugCounter(0),
 		    ray(r), isEnd(root == NULL),
 		    stackLength(20), stackIndex(0), breakFrameIndex(-1)
 	    {
@@ -936,19 +969,19 @@ public:
 				    
 				    Node* child = (s->nextChild >= 0) ?
 					    s->node->child[s->nextChild] : NULL;
-				    float childStartTime = s->startTime;
-				    float childEndTime = s->endTime;
+				        double childStartTime = s->startTime;
+				        double childEndTime   = s->endTime;
 
-				    if(s->endTime < s->maxTime) {
+				    if (s->endTime < s->maxTime) {
 					    // we can come back to this frame,
 					    // so reset it
-					    s->valIndex = -1;
+					    s->valIndex  = -1;
 					    s->startTime = s->endTime;
-					    s->endTime = s->maxTime;
+					    s->endTime   = s->maxTime;
 					    s->nextChild = (s->nextChild >= 0) ?
 						    (1 - s->nextChild) : -1;
 
-					    if(stackIndex == stackLength) {
+					    if (stackIndex == stackLength) {
 						    stackLength *= 2;
 						    stack.resize(stackLength);
 					    }
@@ -957,7 +990,7 @@ public:
 					    // back to this frame, so we can
 					    // remove it.
 
-					    if(stackIndex == breakFrameIndex) {
+					    if (stackIndex == breakFrameIndex) {
 						    // This will be the case if the
 						    // break frame is set on a node, but
 						    // the node is exhausted so it won't
@@ -965,28 +998,28 @@ public:
 						    // decrement the break frame so that
 						    // the break occurs when the current
 						    // frame's parent is resumed.
-						    breakFrameIndex--;
+						    --breakFrameIndex;
 					    }
 
-					    stackIndex--;
+					    --stackIndex;
 				    }
 
-				    // there could have been a resize, so
-				    // DON'T USE s!
+				    // There could have been a resize on the array, so
+				    // do not use s (pointer into the array)!
 
-				    if(child != NULL) {
-					    stackIndex++;
-					    stack[stackIndex].init(child, ray,
-								   childStartTime, childEndTime);
+				    if (child != NULL) {
+					    ++stackIndex;
+					    stack[stackIndex].init(
+                            child, ray,
+							childStartTime, childEndTime);
 				    }
 
-				    if (stackIndex < 0 || stackIndex == breakFrameIndex) {
+				    if ((stackIndex < 0) || (stackIndex == breakFrameIndex)) {
 					    isEnd = true;
 					    break;
 				    }
 
 				    s = &stack[stackIndex];
-				    continue;
 			    }
 
 			    double t;
@@ -995,12 +1028,13 @@ public:
 			    if (s->startTime == s->minTime) {
 				    t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
 				    s->intersectionCache[s->valIndex] = t;
-				    ++testCounter;
+				    ++debugCounter;
 			    } else {
 				    t = s->intersectionCache[s->valIndex];
 			    }
 
-			    if (t >= s->startTime && t < s->endTime) {
+			    // maybe these should be epsiloned?
+			    if ((t >= s->minTime) && (t < s->endTime)) {
 				    minDistance = t;
 				    maxDistance = s->endTime;
 				    break;
@@ -1082,7 +1116,8 @@ public:
 
                // Call your accurate intersection test here.  It is guaranteed
                // that the ray hits the bounding box of obj.
-               double t = obj->distanceUntilIntersection(ray);
+               Ray newRay = Ray::fromOriginAndDirection(ray.origin + ray.direction * obj.minDistance, ray.direction);
+               double t = obj->distanceUntilIntersection(newRay) - obj.minDistance;
 
                // Often methods like "distanceUntilIntersection" can be made more
                // efficient by providing them with the time at which to start and
@@ -1093,6 +1128,7 @@ public:
                if ((t < firstDistance) && 
                    (t <= obj.maxDistance + epsilon) &&
                    (t >= obj.minDistance - epsilon)) {
+
                    // This is the new best collision time
                    firstObject   = obj;
                    firstDistance = t;
