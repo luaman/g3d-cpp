@@ -59,7 +59,10 @@ public:
 
 protected:
 
-    ReferenceCountedObject() : ReferenceCountedObject_refCount(0) {}
+    ReferenceCountedObject() : ReferenceCountedObject_refCount(0) {
+        debugAssertM(isValidHeapPointer(this), 
+            "Reference counted objects must be allocated on the heap.");
+    }
 
 public:
 
@@ -70,7 +73,10 @@ public:
       references like any other object.
      */
     ReferenceCountedObject(const ReferenceCountedObject& notUsed) : 
-        ReferenceCountedObject_refCount(0) {}   
+        ReferenceCountedObject_refCount(0) {
+        debugAssertM(isValidHeapPointer(this), 
+            "Reference counted objects must be allocated on the heap.");
+    }
 };
 
 
