@@ -84,6 +84,11 @@ namespace G3D {
 #endif
 
 
+std::ostream& NetAddress::operator<<(std::ostream& os) const {
+    return os << toString();
+}
+
+
 static void logSocketInfo(Log* debugLog, const SOCKET& sock) {
     uint32 val;
     socklen_t sz = 4;
@@ -528,6 +533,36 @@ bool Conduit::messageWaiting() const {
     return readWaiting(nd->debugLog, sock);
 }
 
+
+/**
+ Increases the send and receive sizes of a socket to 200k from 8k
+ */
+static void increaseBufferSize(SOCKET sock, Log* debugLog) {
+
+    // Increase the buffer size; the default (8192) is too easy to
+    // overflow when the network latency is high.
+    {
+        uint32 val = 262144;
+        if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, 
+                       (char*)&val, sizeof(val)) == SOCKET_ERROR) {
+            if (debugLog) {
+                debugLog->printf("WARNING: Increasing socket "
+                                     "receive buffer to %d failed.\n", val);
+                debugLog->println(socketErrorCode());
+            }
+        }
+
+        if (setsockopt(sock, SOL_SOCKET, SO_SNDBUF, 
+                       (char*)&val, sizeof(val)) == SOCKET_ERROR) {
+            if (debugLog) {
+                debugLog->printf("WARNING: Increasing socket "
+                                     "send buffer to %d failed.\n", val);
+                debugLog->println(socketErrorCode());
+            }
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 ReliableConduit::ReliableConduit(
@@ -570,28 +605,7 @@ ReliableConduit::ReliableConduit(
         logSocketInfo(nd->debugLog, sock);
     }
 
-    // Increase the buffer size; the default (8192) is too easy to
-    // overflow when the network latency is high.
-    {
-        uint32 val = 262144;
-        if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, 
-                       (char*)&val, sizeof(val)) == SOCKET_ERROR) {
-            if (nd->debugLog) {
-                nd->debugLog->printf("WARNING: Increasing socket "
-                                     "receive buffer to %d failed.\n", val);
-                nd->debugLog->println(socketErrorCode());
-            }
-        }
-
-        if (setsockopt(sock, SOL_SOCKET, SO_SNDBUF, 
-                       (char*)&val, sizeof(val)) == SOCKET_ERROR) {
-            if (nd->debugLog) {
-                nd->debugLog->printf("WARNING: Increasing socket "
-                                     "send buffer to %d failed.\n", val);
-                nd->debugLog->println(socketErrorCode());
-            }
-        }
-    }
+    increaseBufferSize(sock, nd->debugLog);
 
     if (nd->debugLog) {nd->debugLog->printf("Created TCP socket %d\n", sock);}
 
@@ -911,7 +925,9 @@ LightweightConduit::LightweightConduit(
 
     // Figuring out the MTU seems very complicated, so we just set it to 1000,
     // which is likely to be safe.  See IP_MTU for more information.
-    MTU = 1000;    
+    MTU = 1000;
+
+    increaseBufferSize(sock, nd->debugLog);
 
     if (enableBroadcast) {
         int TR = true;
@@ -945,7 +961,6 @@ void LightweightConduit::serializeMessage(const NetMessage* m,
         debugAssert(m->type() != 0);
         b.writeUInt32(m->type());
         m->serialize(b);
-    } else {
         b.writeUInt32(1);
     }
     

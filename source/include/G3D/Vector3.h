@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2004-02-13
+  @edited  2004-05-13
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -18,6 +18,7 @@
 
 #include "G3D/g3dmath.h"
 #include "G3D/Vector2.h"
+#include <iostream>
 #include <string>
 
 namespace G3D {
@@ -276,6 +277,8 @@ public:
     inline Vector3 lerp(const Vector3& v, double alpha) const {
         return (*this) + (v - *this) * alpha; 
     }
+
+    std::ostream& operator<<(std::ostream& os) const;
 
     /** Gram-Schmidt orthonormalization. */
     static void orthonormalize (Vector3 akVector[3]);

@@ -42,6 +42,7 @@
 
 #include "G3D/platform.h"
 #include <string>
+#include <iostream>
 #include "G3D/g3dmath.h"
 #ifdef _WIN32
     #include <winsock.h>
@@ -113,6 +114,7 @@ public:
     std::string ipString() const;
     std::string toString() const;
 
+    std::ostream& operator<<(std::ostream& os) const;
 };
 
 

@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2004-02-13
+ @edited  2004-05-13
  */
 
 #include <limits>
@@ -66,6 +66,11 @@ unsigned int Vector3::hashCode() const {
 
     return xhash + (yhash * 37) + (zhash * 101);
 }
+
+std::ostream& Vector3::operator<<(std::ostream& os) const {
+    return os << toString();
+}
+
 
 //----------------------------------------------------------------------------
 
