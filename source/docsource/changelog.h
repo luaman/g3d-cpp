@@ -23,6 +23,8 @@
            (with efficient default implementations).
      <LI> G3D::Lighting
      <LI> G3D::GLight::diffuse
+     <LI> Rect2D::contains is now const
+     <LI> MD2Model::textureMatrix
      <LI> MeshAlg::computeBounds(vertex, index, ...)
      <LI> RenderDevice::colorWriteEnabled(), depthWriteEnabled, alphaWriteEnabled
      <LI> RenderDevice::setSpecularCoefficient(Color3)

@@ -4,9 +4,9 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-11-13
-  @created 2004-12-10
+  @created 2005-01-16
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
  */
 
@@ -157,7 +157,7 @@ public:
         return xyxy(x, y, x + w, y + h);
     }
 
-    inline bool contains(const Vector2& v) {
+    inline bool contains(const Vector2& v) const {
         return (v.x >= min.x) && (v.y >= min.y) && (v.x <= max.x) && (v.y <= max.y);
     }
 

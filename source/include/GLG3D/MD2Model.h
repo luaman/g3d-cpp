@@ -398,6 +398,13 @@ public:
     const Array<MeshAlg::Vertex>& weldedVertices() const;
 
     /**
+     Matrix mapping int16 texture coordinates to floats.
+     */    
+    const CoordinateFrame textureMatrix() const {
+        return texFrame;
+    }
+
+    /**
      Render the wireframe mesh.
      */
     void debugRenderWireframe(RenderDevice* renderDevice, const Pose& pose);

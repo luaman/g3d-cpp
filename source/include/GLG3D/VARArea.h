@@ -56,7 +56,7 @@ public:
      Correspond to OpenGL hints: 
       WRITE_ONCE : GL_STATIC_DRAW_ARB
       WRITE_EVERY_FRAME : GL_STREAM_DRAW_ARB
-      WRITE_EVERY_FEW_FRAMEs : GL_STATIC_DRAW_ARB
+      WRITE_EVERY_FEW_FRAMEs : DYNAMIC_DRAW_ARB
      */
     enum UsageHint {
         WRITE_ONCE,

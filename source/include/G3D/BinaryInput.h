@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2004-03-30
+ @edited  2005-01-17
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -24,7 +24,6 @@
 #include "G3D/Vector3.h"
 #include "G3D/Vector2.h"
 #include "G3D/g3dmath.h"
-#include "G3D/Array.h"
 #include "G3D/debug.h"
 #include "G3D/System.h"
 
@@ -42,8 +41,13 @@ namespace G3D {
  size are transparently decompressed when the compressed = true flag is
  specified to the constructor.
 
- Several classes contain serialize/deserialize and deserializing
- constructor methods.  See Vector3 for the design pattern.
+ Most classes define serialize/deserialize methods that use BinaryInput,
+ BinaryOutput, TextInput, and TextOutput.  There are text serializer 
+ functions for primitive types (e.g. int, std::string, float, double) but not 
+ binary serializers-- you <B>must</b> call the BinaryInput::readInt32 or
+ other appropriate function.  This is because it would be very hard to 
+ debug the error sequence: <CODE>serialize(1.0, bo); ... float f; deserialize(f, bi);</CODE>
+ in which a double is serialized and then deserialized as a float. 
  */
 class BinaryInput {
 public:

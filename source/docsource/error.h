@@ -4,6 +4,14 @@
 There are a few confusing error messages you can run into when compiling,
 linking, and debugging programs that use G3D.  Here are the common fixes.
 
+<P>
+<B>MSVCPRT.LIB(MSVCP60.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::assign(class s
+td::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,unsigned int,unsigned int)" (?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ABV12@II@Z) already defined in xxx(yyy)</B>
+<P>
+G3D changes the linker settings for files, so you should generally #include <G3DAll.h> or #include<graphics3d.h> before any other includes and use it in every source (or header) file.  Also, include all of G3D and not just the specific class you are using. 
+
+
+
 <P>  
 <B><CODE>Error C2440: 'delete' : cannot convert from 'class G3D::ReferenceCountedPointer<class G3D::GFont>' to '' No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called</CODE></B>
 <P>
