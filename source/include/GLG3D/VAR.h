@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-12-06
+  @edited  2004-01-06
 */
 
 #ifndef GLG3D_VAR_H
@@ -18,8 +18,11 @@ namespace G3D {
 
 /**
  A pointer to an array of vertices, colors, or normals in video memory.
- It is safe to copy these.  There is no destructor; it doesn't matter
- when you throw these objects away.  
+ It is safe to copy these (the pointer will be copied, not the video 
+ memory).  
+ 
+ There is no destructor because the memory referenced is freed when
+ the parent VARArea is reset or freed.
  */
 class VAR {
 private:

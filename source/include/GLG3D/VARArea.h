@@ -2,7 +2,7 @@
   @file VARArea.h
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2003-08-09
-  @edited  2003-08-09
+  @edited  2004-01-06
 */
 
 #ifndef GLG3D_VARAREA_H
@@ -16,10 +16,17 @@ namespace G3D {
 typedef ReferenceCountedPointer<class VARArea> VARAreaRef;
 
 /**
-
  Wrapper for OpenGL Vertex Buffer Object
  http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_buffer_object.txt
  http://developer.nvidia.com/docs/IO/8230/GDC2003_OGL_BufferObjects.ppt
+
+ Allocate a VARArea, then allocate VARs within it.  VARAreas are garbage
+ collected.  When no pointers remain to VARs inside it or the VARArea itself,
+ it will automatically be reclaimed by the system.
+
+ You cannot mix pointers from different VARAreas when rendering.  For
+ example, if the vertex VAR is in one VARArea, the normal VAR and color
+ VAR must come from the same area.
  */
 class VARArea : public ReferenceCountedObject {
 public:
