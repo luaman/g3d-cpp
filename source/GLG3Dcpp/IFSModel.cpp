@@ -175,7 +175,6 @@ void IFSModel::load(
     Array<Vector3>&         vertex,
 	Array<Vector2>&			texCoord) {
 
-	debugPrintf("Filename %s\n ext %s\n", filename.c_str(), filenameExt(filename).c_str());
 
 	if (filenameExt(filename) == "ifs" ) {
 		BinaryInput bi(filename, G3D_LITTLE_ENDIAN);
@@ -241,7 +240,7 @@ void IFSModel::load(
 				}
 			}
 		} else if ("ply2" == filenameExt(filename)) {	
-//TODO: Check after textInput is fixed that this works on other Shin Models.
+
 			TextInput ti(filename);
 
 			const int nV = iFloor(ti.readNumber());
