@@ -38,10 +38,15 @@
 	   <LI>Camera -> GCamera
 	   <LI>CImage -> GImage
 	   <LI>CFont  -> GFont
+	   <LI>VARArea* -> VARAreaRef
+	   <LI><CODE>renderDevice->createVARArea(size)</CODE> to <CODE>VARArea::create(size)</CODE>
   </BLOCKQUOTE>
 
    <P>
    <UL>
+     <LI> Switched vertex arrays to use the new ARB_vertex_buffer_object extension.
+	      Compared to 5.xx rendering speed: NVIDIA/Win32 is the same (fast),
+		  ATI and Linux rendering are about 50x faster.
      <LI> Disabled the "conditional is constant" level 4 warning on Windows
 	      that is triggered by the for-loop scoping fix.
      <LI> G3D::LightingParameters::directionalLight

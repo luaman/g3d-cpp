@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-08-04
+  @edited  2003-12-06
 */
 
 #ifndef GLG3D_VAR_H
@@ -12,6 +12,7 @@
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/glFormat.h"
+#include "GLG3D/VARArea.h"
 
 namespace G3D {
 
@@ -25,61 +26,39 @@ private:
 
     friend class RenderDevice;
 
-	class VARArea*		area;
+	VARAreaRef	        area;
 
-	/** Pointer to the block of uploaded memory */
+	/** For VBO_MEMORY, this is the offset.  For
+        MAIN_MEMORY, this is a pointer to the block
+        of uploaded memory */
 	void*				_pointer;
 
 	/** Size of one element */
 	size_t				elementSize;
 
-	/** Pointer to the block of uploaded memory */
 	int					numElements;
 
 	uint64				generation;
 
     GLenum              underlyingRepresentation;
 
+    /**
+     The initial size this VAR was allocated with.
+     */
+    int                 maxSize;
+
 	bool ok() const;
 
-	template<class T>
-	void init(const T* sourcePtr, int _numElements, VARArea* _area) {
+	void init(const void* sourcePtr, int _numElements, VARAreaRef _area,
+        GLenum glformat, size_t eltSize);
 
-		numElements = _numElements;
-		area		= _area;
-        underlyingRepresentation = glFormatOf(T);
+	void update(const void* sourcePtr, int _numElements,
+        GLenum glformat, size_t eltSize);
 
-		debugAssert(area);
-		debugAssert(area->basePointer);
+    /** Performs the actual memory transfer (like memcpy) */
+    void uploadToCard(const void* sourcePtr, size_t size);
 
-		elementSize = sizeof(T);
-
-        debugAssertM(
-            (elementSize % sizeOfGLFormat(underlyingRepresentation)) == 0,
-            "Sanity check failed on OpenGL data format; you may"
-            " be using an unsupported type in a vertex array.");
-
-		_pointer = (uint8*)area->basePointer + area->allocated;
-
-		// Ensure that the next memory address is 8-byte aligned
-		_pointer = ((uint8*)_pointer +      
-   			       ((8 - (size_t)_pointer % 8) % 8));
-
-		generation = area->generation;
-		
-		size_t size = elementSize * numElements;
-		debugAssert(size + area->allocated <= area->size);
-		area->allocated = (size_t)_pointer + size - (size_t)area->basePointer;
-
-        area->peakAllocated = iMax(area->peakAllocated, area->allocated);
-
-		// Upload the data
-        memcpy(_pointer, sourcePtr, size);
-	}
-
-	friend class RenderDevice::VARSystem;
-
-	// The following are called by the VARSystem.
+	// The following are called by RenderDevice
 	void vertexPointer() const;
 
 	void normalPointer() const;
@@ -100,33 +79,57 @@ public:
 
      
 	  <PRE>
-	    VARArea* dynamicArea = renderDevice->createVARArea(1024 * 1024);
+	    // Once at the beginning of the program
+        VARAreaRef area = VARArea::create(1024 * 1024);
+
+        //----------
+        // Store data in main memory
 	    Array<Vector3> vertex;
-		//...
-		VAR varray(vertex, dynamicArea);
+        Array<int>     index;
 		
+        //... fill out vertex & index arrays
+
+        //------------
+        // Upload to graphics card every frame
+        area.reset();
+		VAR varray(vertex, area);
+        renderDevice->beginIndexedPrimitives();
+    		renderDevice->setVertexArray(varray);
+            renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+        renderDevice->endIndexedPrimitives();
 	  </PRE>
 		See GLG3D_Demo for examples.
     */
 	template<class T>
 	VAR(const T* sourcePtr, int _numElements, VARArea* _area) {
-		init(sourcePtr, _numElements, _area);
+		init(sourcePtr, _numElements, _area, glFormatOf(T), sizeof(T));
 	}		
-
 
 	template<class T>
 	VAR(const Array<T>& source, VARArea* _area) {
-		init(source.getCArray(), source.size(), _area);
+		init(source.getCArray(), source.size(), _area, glFormatOf(T), sizeof(T));
+	}
+
+	template<class T>
+	void update(const T* sourcePtr, int _numElements) {
+		update(sourcePtr, _numElements, glFormatOf(T), sizeof(T));
+	}
+
+    template<class T>
+	void update(const Array<T>& source) {
+		update(source.getCArray(), source.size(), glFormatOf(T), sizeof(T));
 	}
 
     /**
+     TODO: remove
      Returns a pointer to the underlying memory.  This is potentially
      in AGP/video memory and may be slow (uncached) to write/read
      from.  Generally, you should use the RenderDevice methods like
      RenderDevice::setVertexPointer instead touching this method-- it is 
      provided only for when you need to perform an OpenGL call
      that is not supported by RenderDevice or to overwrite an existing
-     vertex array (you should invoke finish on the underlying VARArea before doing that).
+     vertex array (you should invoke finish on the internal VARArea
+     before doing that).
      */
     void* pointer() {
         return _pointer;

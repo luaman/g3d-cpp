@@ -11,7 +11,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2003-11-07
+  @edited  2003-12-07
  */ 
 
 #include <G3DAll.h>
@@ -19,18 +19,18 @@
   #include <direct.h>
 #endif
 
-#if G3D_VER != 60009
-    #error Requires G3D 6.00 b9
+#if G3D_VER != 60010
+    #error Requires G3D 6.00 b10
 #endif
 
 class Model {
 
-    VAR			varVertex;
-    VAR			varNormal;
+    VAR         varVertex;
+    VAR         varNormal;
 
-    Array<uint32>	index;
-    Array<Vector3>	vertex;
-    Array<Vector3>	normal;
+    Array<uint32>   index;
+    Array<Vector3>  vertex;
+    Array<Vector3>  normal;
 
 public:
 
@@ -43,13 +43,13 @@ public:
 
 std::string             DATA_DIR;
 
-Log*                    debugLog	    = NULL;
-RenderDevice*           renderDevice	= NULL;
-CFontRef                font		    = NULL;
-UserInput*              userInput	    = NULL;
-GCamera*			        camera		    = NULL;
+Log*                    debugLog        = NULL;
+RenderDevice*           renderDevice    = NULL;
+CFontRef                font            = NULL;
+UserInput*              userInput       = NULL;
+GCamera                 camera;
 ManualCameraController* controller      = NULL;
-bool                    endProgram	    = false;
+bool                    endProgram      = false;
 Model*                  model           = NULL;
 VertexProgramRef        distort         = NULL;
 
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     DATA_DIR = demoFindData();
  
     // Initialize
-    debugLog	 = new Log();
+    debugLog     = new Log();
     renderDevice = new RenderDevice();
     renderDevice->init(RenderDeviceSettings(), debugLog);
 
@@ -74,9 +74,6 @@ int main(int argc, char** argv) {
         error ("Critical Error", "This demo requires a graphics card and driver with OpenGL Vertex programs.", true);
         exit(-1);
     }
-
-
-    camera 	     = new GCamera();
 
     font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
@@ -98,8 +95,11 @@ int main(int argc, char** argv) {
     RealTime now = getTime() - 0.001, lastTime;
 
     {
-        std::string p = "";
-        distort = VertexProgram::fromFile(p + "GLProgram_Demo/twist.vp");
+        std::string p = "GLProgram_Demo/";
+        if (! fileExists(p + "twist.vp")) {
+            p = "../" + p;
+        }
+        distort = VertexProgram::fromFile(p + "twist.vp");
     }
 
     // Main loop
@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
 void doSimulation(GameTime timeStep) {
     // Simulation
     controller->doSimulation(max(0.1, min(0, timeStep)));
-	camera->setCoordinateFrame(controller->getCoordinateFrame());
+    camera.setCoordinateFrame(controller->getCoordinateFrame());
 }
 
 
@@ -143,8 +143,8 @@ void doGraphics() {
     renderDevice->beginFrame();
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
-			    
-		    renderDevice->setProjectionAndCameraMatrix(*camera);
+                
+            renderDevice->setProjectionAndCameraMatrix(camera);
 
             renderDevice->pushState();
                 renderDevice->setVertexProgram(distort);
@@ -173,7 +173,7 @@ void doGraphics() {
             Draw::axes(renderDevice);
 
         renderDevice->popState();
-	    
+        
     renderDevice->endFrame();
 }
 
@@ -187,10 +187,10 @@ void doUserInput() {
     while (SDL_PollEvent(&event)) {
         switch(event.type) {
         case SDL_QUIT:
-	    endProgram = true;
-	    break;
+        endProgram = true;
+        break;
 
-	    case SDL_KEYDOWN:
+        case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 endProgram = true;

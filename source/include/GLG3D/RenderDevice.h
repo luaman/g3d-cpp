@@ -19,6 +19,7 @@
 #include "GLG3D/Milestone.h"
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/PixelProgram.h"
+#include "GLG3D/VARArea.h"
 
 typedef unsigned int uint;
 
@@ -66,15 +67,6 @@ public:
     /** Allocate a stereo display context. true, <B>false</B> */
     bool    stereo;
 
-
-    /** The number of bytes of video memory to allocate
-      for vertex arrays.  If 0, the VAR system is not initialized.  <B>If nonzero,
-	  you cannot use glDrawArrays or any other vertex array call from raw OpenGL</B>.  
-      Use the corresponding RenderDevice methods instead.  If you prefer to use the raw
-	  OpenGL calls, do not initialize the VAR system.  Default is 
-        1MB = <B>1024*1024</B> bytes */
-    size_t  varVideoMemory;
-
     /** Specify the value at which lighting saturates
      before it is applied to surfaces.  1.0 is the default OpenGL value,
      higher numbers increase the quality of bright lighting at the expense of
@@ -108,7 +100,6 @@ public:
         fullScreen(false),
         asychronous(true),
         stereo(false),
-        varVideoMemory(4 * 1024 * 1024),
         lightSaturation(1.0),
         refreshRate(85),
         resizable(false),
@@ -212,84 +203,6 @@ private:
 
     enum Vendor {NVIDIA, ATI, ARB};
 
-	class VARSystem {
-	private:
-        RenderDevice*           renderDevice;
-
-		/**
-		 Vertex Array method
-		 */
-		enum VARMethod {VAR_NONE, VAR_NVIDIA, VAR_MALLOC};
-
-		/** The base pointer for the entire VAR system */
-		void*					basePointer;
-
-		/** Size of the memory block referenced by varPtr */
-		size_t					size;
-
-		/** Number of bytes that have been allocated to VARAreas. */
-		size_t					allocated;
-
-		/**
-		 We allocate a dynamic buffer that is uploaded every frame and
-		 a static buffer that is changed much less frequently.
-		 */
-		VARMethod				method;
-
-		Log*					debugLog;
-
-		/**
-		 All of the areas that have been allocated; stored so they can
-		 be deleted when the var system shuts down.
-		 */
-		Array<class VARArea*>	areaList;
-
-	public:
-
-		VARSystem(
-			RenderDevice*		rd,
-			size_t				_size, 
-			Log*				debugLog);
-
-
-		~VARSystem();
-
-        size_t memoryFree() const {
-            return size - allocated;
-        }
-
-		/**
-		 Once allocated, VARAreas cannot be deallocated.  They are
-		 automatically deleted when you shut down the VAR system.
-		 */
-		class VARArea* createArea(size_t areaSize);
-
-        /** Called by a VARArea's destructor to notify the
-            VARSystem that the area is no longer in use and
-            should not be tracked for automatic deletion. */
-        void notifyAreaDeleted(class VARArea*);
-
-		void beginIndexedPrimitives() const;
-
-		void sendIndices(Primitive primitive, size_t indexSize,
-                         int numIndices, const void* index) const;
-
-		void setVertexArray(const class VAR& v) const;
-
-		void setNormalArray(const class VAR& v) const;
-
-		void setColorArray(const class VAR& v) const;
-
-		void setTexCoordArray(unsigned int unit, const class VAR& v) const;
-
-        void setVertexAttribArray(unsigned int attribNum, const class VAR& v, bool normalize) const;
-
-		void endIndexedPrimitives() const;
-	};
-
-
-	VARSystem*					varSystem;
-
     /**
      Status and debug statements are written to this log.
      */
@@ -345,6 +258,8 @@ private:
     bool                        _supportsVertexProgram;
     bool                        _supportsNVVertexProgram2;
 
+    bool                        _supportsVertexBufferObject;
+
     /**
      True if GL_ARB_fragment_program is in the extension list.
      */
@@ -373,7 +288,14 @@ private:
 
     /** Number of vertices since last beginPrimitive() */
     int                         currentPrimitiveVertexCount;
-    
+   
+    /** Helper for setXXXArray.  Sets the currentVARArea and
+        makes some consistency checks.*/
+    void setVARAreaFromVAR(const class VAR& v);
+
+    /** The area used inside of an indexedPrimitives call. */
+    VARAreaRef                  currentVARArea;
+
     /** Number of triangles since last beginFrame() */
     int                         triangleCount;
 
@@ -383,26 +305,19 @@ private:
 	/** Updates the polygon count based on the primitive */
 	void countPrimitive(RenderDevice::Primitive primitive, int numVertices);
 
-    /**
-     List of all VARAreas in use when rendering indexed primitives.
-     This is needed so that on a sendIndices call their corresponding
-     milestones can be set up.
-
-     Set by the setXXXArray methods, cleared by endIndexedPrimitives.
-     */
-    Set<VARArea*>               inUseVARArea;
-
     std::string                 cardDescription;
 
     /**
-     Adds this VAR to inUseVARArea
+     Sets the milestones on the currentVARArea.
      */
-    void usingVARArea(VARArea* v);
+    void setVARAreaMilestone();
 
-    /**
-     Sets the milestones on all inUseVARAreas.
-     */
-    void setVARAreaMilestones();
+    /** Called by sendIndices. */
+    void internalSendIndices(
+        RenderDevice::Primitive primitive,
+        size_t                  indexSize, 
+        int                     numIndices, 
+        const void*             index) const;
 
     ////////////////////////////////////////////////////////////////////
 public:
@@ -515,11 +430,6 @@ public:
      Equivalent to glShadeModel
      */
     void setShadeMode(ShadeMode s);
-
-    /**
-     Returns the amount of free memory in the VAR heap.
-    */
-    size_t freeVARSize() const;
 
     /**
      If wrapping is not supported on the device, the nearest mode is
@@ -708,17 +618,6 @@ public:
      */
     void endPrimitive();
 
-	/**
-	 Allocate a space in which to create vertex arrays. Don't delete
-	 the resulting object-- the system will free it automatically
-	 on shut-down.
-	 */
-    // The only reason this is a pointer (and thus needs the complicated
-    // deletion scheme) is to avoid a cyclic friend reference: VARArea
-    // needs to be friends with VARSystem so that VARSystem can call its
-    // (private) constructor, but it can't be friends with an inner class
-    // as a forward declaration.
-	class VARArea* createVARArea(size_t areaSize);
 	void beginIndexedPrimitives();
 	void endIndexedPrimitives();
 
@@ -805,10 +704,10 @@ public:
 	void sendIndices(RenderDevice::Primitive primitive, int numIndices, 
                      const T* index) {
 		
-        varSystem->sendIndices(primitive, sizeof(T), numIndices, index);
+        internalSendIndices(primitive, sizeof(T), numIndices, index);
 
         // Mark all active arrays as busy.
-        setVARAreaMilestones();
+        setVARAreaMilestone();
 
 		countPrimitive(primitive, numIndices);
 	}
@@ -1067,6 +966,14 @@ public:
 
     bool supportsPixelProgram() const {
         return _supportsFragmentProgram;
+    }
+
+    /**
+     When true, VAR arrays will be in video, not main memory,
+     and much faster.
+     */
+    bool supportsVertexBufferObject() const { 
+        return _supportsVertexBufferObject;
     }
 
     /**

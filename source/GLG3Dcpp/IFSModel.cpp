@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-19
+  @edited  2003-12-07
  */ 
 
 
@@ -17,7 +17,7 @@
 
 namespace G3D {
 
-VARArea* IFSModel::varArea = NULL;
+VARAreaRef IFSModel::varArea = NULL;
 
 
 IFSModel::IFSModel() {
@@ -145,9 +145,9 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
         renderDevice->setObjectToWorldMatrix(coordinateFrame());
 
         const size_t varSize = 1024 * 1024;
-        if ((IFSModel::varArea == NULL) && (renderDevice->freeVARSize() <= varSize)) {
+        if (IFSModel::varArea.isNull()) {
             // Initialize VAR
-            IFSModel::varArea = renderDevice->createVARArea(varSize);
+            IFSModel::varArea = VARArea::create(varSize);
         }
 
         if (perVertexNormals) {

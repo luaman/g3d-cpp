@@ -9,7 +9,7 @@
 #include "Model.h"
 
 extern Log*                 debugLog;
-extern VARArea*		        varStatic;
+extern VARAreaRef           varStatic;
 extern RenderDevice*        renderDevice;
 
 Table<std::string, Model*>  Model::table;

@@ -18,227 +18,70 @@
 
 namespace G3D {
 
-RenderDevice::VARSystem::VARSystem(
-	RenderDevice*		rd,
-	size_t				_size, 
-	Log*				_debugLog) : renderDevice(rd) {
+VARArea::Mode VARArea::mode = VARArea::UNINITIALIZED;
 
-	// Where the memory was allocated
-	char* memLoc = "ERROR";
-	debugLog     = _debugLog;
-	method		 = VAR_NONE;
-	basePointer  = NULL;
-	size         = _size;
-	allocated    = 0;
 
-	if (debugLog) {debugLog->section("VAR System");}
-
-	if (size > 0) {
-        // See if we can switch to the NVIDIA method
-        #ifdef G3D_WIN32
-		    if ((wglAllocateMemoryNV != NULL) && 
-                (wglFreeMemoryNV != NULL) &&
-                (glVertexArrayRangeNV != NULL) &&
-                rd->supportsOpenGLExtension("GL_NV_vertex_array_range2")) {
-                
-                basePointer = wglAllocateMemoryNV(size, 0.0f, 0.0f, 1.0f);
-                if (basePointer) {
-                    glVertexArrayRangeNV(size, basePointer);
-                    glEnableClientState(GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV);
-                    method = VAR_NVIDIA;
-                    memLoc = "wglAllocateMemoryNV";
-                }
-            }
-        #endif
-
-		if (! basePointer) {
-			memLoc      = "malloc";
-			method		= VAR_MALLOC;
-			basePointer = malloc(size);
-		}
-
-		if (debugLog) {
-			if (basePointer) {
-				debugLog->printf("Allocated %d bytes of VAR"
-                                 " memory using %s.\n\n", size, memLoc);
-			} else {
-				debugLog->printf("Unable to allocate VAR memory.\n");
-			}
-		}
-	} else {
-		if (debugLog) {
-			debugLog->println("VAR system not initialized.");
-		}
-	}
+VARAreaRef VARArea::create(size_t s, UsageHint h) {
+    return new VARArea(s, h);
 }
 
 
+VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
 
-RenderDevice::VARSystem::~VARSystem() {
-
-	switch (method) {
-	case VAR_NVIDIA:
-		glDisableClientState(GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV);
-        #ifdef G3D_WIN32
-            if (wglFreeMemoryNV != 0) {
-                wglFreeMemoryNV(basePointer);
-            }
-        #endif
-		break;
-
-	case VAR_MALLOC:
-		free(basePointer);
-		break;
-
-    case VAR_NONE:
-        break;
-	}
-
-	areaList.deleteAll();
-	basePointer       = NULL;
-	size			  = 0;
-	allocated         = 0;
-}
-
-
-
-VARArea* RenderDevice::VARSystem::createArea(size_t areaSize) {
-	debugAssertM(basePointer, "Cannot allocate a VARArea before"
-                 " initializing the VAR system.");
-
-	if (allocated + areaSize <= size) {
-		
-		VARArea* v = new VARArea(renderDevice, (uint8*)basePointer + allocated, areaSize);
-		allocated += areaSize;
-		areaList.append(v);
-
-		return v;
-
-	} else {
-		
-		return NULL;
-
-	}
-}
-
-
-void RenderDevice::VARSystem::sendIndices(
-    RenderDevice::Primitive primitive,
-    size_t                  indexSize, 
-    int                     numIndices, 
-    const void*             index) const {
-
-	GLenum i, p;
-
-	switch (indexSize) {
-	case sizeof(uint32):
-		i = GL_UNSIGNED_INT;
-		break;
-
-	case sizeof(uint16):
-		i = GL_UNSIGNED_SHORT;
-		break;
-
-	case sizeof(uint8):
-		i = GL_UNSIGNED_BYTE;
-		break;
-
-	default:
-		debugAssertM(false, "Indices must be either 8, 16, or 32-bytes each.");
-        i = 0;
-	}
-
-
-	switch (primitive) {
-    case LINES:
-		p = GL_LINES;
-        break;
-
-    case LINE_STRIP:
-		p = GL_LINE_STRIP;
-        break;
-
-    case TRIANGLES:
-		p = GL_TRIANGLES;
-        break;
-
-    case TRIANGLE_STRIP:
-		p = GL_TRIANGLE_STRIP;
-		break;
-
-    case TRIANGLE_FAN:
-		p = GL_TRIANGLE_FAN;
-        break;
-
-    case QUADS:
-		p = GL_QUADS;
-        break;
-
-    case QUAD_STRIP:
-		p = GL_QUAD_STRIP;
-        break;
-
-    case POINTS:
-        p = GL_POINTS;
-        break;
-    default:
-        debugAssertM(false, "Fell through switch");
-        p = 0;
+    // See if we've determined the mode yet.
+    if (mode == UNINITIALIZED) {
+        if (glGenBuffersARB != NULL) {
+            mode = VBO_MEMORY;
+        } else {
+            mode = MAIN_MEMORY;
+        }
     }
 
-	glDrawElements(p, numIndices, i, index);
-}
+    switch (mode) {
+    case VBO_MEMORY:
+        {
+            glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+                glGenBuffersARB(1, &glbuffer);
+                glBindBufferARB(GL_ARRAY_BUFFER_ARB, glbuffer);
 
+                GLenum usage;
 
-void RenderDevice::VARSystem::beginIndexedPrimitives() const {
-	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT); 
-}
+                switch (hint) {
+                case WRITE_EVERY_FRAME:
+                    usage = GL_STREAM_DRAW_ARB;
+                    break;
 
+                case WRITE_ONCE:
+                    usage = GL_STATIC_DRAW_ARB;
+                    break;
 
-void RenderDevice::VARSystem::setVertexArray(const class VAR& v) const {
-	v.vertexPointer();
-}
+                case WRITE_EVERY_FEW_FRAMES:
+                    usage = GL_DYNAMIC_DRAW_ARB;
+                    break;
+                }
 
+                // Load some (undefined) data to initialize the buffer
+                glBufferDataARB(GL_ARRAY_BUFFER_ARB, size, NULL, usage);
 
-void RenderDevice::VARSystem::setNormalArray(const class VAR& v) const {
-	v.normalPointer();
-}
+                // The basePointer is always NULL for a VBO
+                basePointer = NULL;
 
+            glPopClientAttrib();
+        }
+        break;
 
-void RenderDevice::VARSystem::setColorArray(const class VAR& v) const {
-	v.colorPointer();
-}
+    case MAIN_MEMORY:
+        // Use the base pointer
+        glbuffer = 0;
+        basePointer = malloc(size);
+        debugAssert(basePointer);
+        break;
 
-
-void RenderDevice::VARSystem::setTexCoordArray(
-    unsigned int          unit, 
-    const class VAR&      v) const {
-	v.texCoordPointer(unit);
-}
-
-
-void RenderDevice::VARSystem::setVertexAttribArray(
-    unsigned int          attribNum, 
-    const class VAR&      v,
-    bool                  normalize) const {
-	v.vertexAttribPointer(attribNum, normalize);
-}
-
-
-void RenderDevice::VARSystem::endIndexedPrimitives() const {
-	glPopClientAttrib();
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-
-
-VARArea::VARArea(
-    RenderDevice*      _renderDevice,
-    void*              _basePointer,
-    size_t             _size) :
-    renderDevice(_renderDevice),
-   	basePointer(_basePointer), size(_size) {
+    default:
+        alwaysAssertM(false, "Fell through switch.");
+        glbuffer = 0;
+        basePointer = NULL;
+    }
 
     milestone     = NULL;
     allocated     = 0;
@@ -248,7 +91,22 @@ VARArea::VARArea(
 
 
 VARArea::~VARArea() {
-    // TODO: remove from the RenderDevice's list
+    switch (mode) {
+    case VBO_MEMORY:
+        // Delete the vertex buffer
+        glDeleteBuffersARB(1, &glbuffer);
+        glbuffer = 0;
+        break;
+
+    case MAIN_MEMORY:
+        // Free the buffer
+        free(basePointer);
+        basePointer = NULL;
+        break;
+
+    default:
+        alwaysAssertM(false, "Fell through switch.");
+    }
 }
 
 

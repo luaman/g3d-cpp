@@ -47,12 +47,12 @@ std::string DATA_DIR("data/");
 
 class Model {
 
-    VAR			varVertex;
-    VAR			varNormal;
+    VAR             varVertex;
+    VAR             varNormal;
 
-    Array<uint32>	index;
-    Array<Vector3>	vertex;
-    Array<Vector3>	normal;
+    Array<uint32>   index;
+    Array<Vector3>  vertex;
+    Array<Vector3>  normal;
 
 public:
 
@@ -63,20 +63,20 @@ public:
 };
 
 
-Log*                    debugLog	= NULL;
+Log*                    debugLog    = NULL;
 RenderDevice*           renderDevice= NULL;
-CFontRef                font		= NULL;
-UserInput*              userInput	= NULL;
-SkyRef                  sky		    = NULL;
-VARArea*		        varDynamic	= NULL;
-VARArea*		        varStatic	= NULL;
-GCamera*			        camera		= NULL;
+CFontRef                font        = NULL;
+UserInput*              userInput   = NULL;
+SkyRef                  sky         = NULL;
+VARAreaRef              varStream  = NULL;
+VARAreaRef              varStatic   = NULL;
+GCamera                 camera;
 
-bool                    endProgram	= false;
+bool                    endProgram  = false;
 
-enum RenderMethod {TRIANGLES = 0, VARDYNAMIC, VARSTATIC, NUM_RENDER_METHODS} renderMethod = TRIANGLES;
+enum RenderMethod {TRIANGLES = 0, VARSTREAM, VARSTATIC, NUM_RENDER_METHODS} renderMethod = VARSTATIC;
 
-Model*                  model		= NULL;
+Model*                  model       = NULL;
 
 void handleEvents();
 
@@ -87,34 +87,31 @@ int main(int argc, char** argv) {
     DATA_DIR = demoFindData();
 
     // Initialize
-    debugLog	 = new Log();
+    debugLog     = new Log();
     
-	renderDevice = new RenderDevice();
+    renderDevice = new RenderDevice();
     renderDevice->init(RenderDeviceSettings(), debugLog);
-    camera 	 = new GCamera();
-debugAssertGLOk();    
+
     // Allocate the two VARAreas used in this demo
-    varStatic  = renderDevice->createVARArea(1024 * 64);
-    varDynamic = renderDevice->createVARArea(1024 * 128);
+    varStatic  = VARArea::create(1024 * 64, VARArea::WRITE_ONCE);
+    varStream = VARArea::create(1024 * 128, VARArea::WRITE_EVERY_FRAME);
     debugAssert(varStatic);
-    debugAssert(varDynamic);
+    debugAssert(varStream);
 
     font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
-    sky		     = Sky::create(renderDevice, DATA_DIR + "sky/");
+    sky          = Sky::create(renderDevice, DATA_DIR + "sky/");
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
 
     ManualCameraController* controller = new ManualCameraController();
     controller->init(renderDevice, userInput);
 
-    controller->setPosition(Vector3(0, 10, -25));
-    controller->lookAt(Vector3::ZERO);
+    controller->setPosition(Vector3(-25, 2, 0));
+    controller->lookAt(Vector3(-20, 2.5, 1));
     controller->setActive(true);
-debugAssertGLOk();    
-	renderDevice->resetState();
-	renderDevice->setColorClearValue(Color3(.1, .5, 1));
-debugAssertGLOk();    
-    GameTime gameTime	= G3D::toSeconds(11, 00, 00, AM);
+    renderDevice->resetState();
+    renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    GameTime gameTime   = G3D::toSeconds(8, 00, 00, AM);
 
     // Main loop
     do {
@@ -122,37 +119,65 @@ debugAssertGLOk();
         handleEvents();
 
         // Simulation
-//        gameTime = (int)(gameTime + MINUTE * 5) % (int)DAY;
+        //gameTime = (int)(gameTime + MINUTE * 5) % (int)DAY;
         controller->doSimulation(.05);
-	    camera->setCoordinateFrame(controller->getCoordinateFrame());
+        camera.setCoordinateFrame(controller->getCoordinateFrame());
 
         // Graphics
         renderDevice->beginFrame();
-	    renderDevice->clear(sky == NULL, true, false);
+        renderDevice->clear(sky == NULL, true, false);
             renderDevice->pushState();
-				
-                renderDevice->setProjectionAndCameraMatrix(*camera);
-debugAssertGLOk();    
+                
+                renderDevice->setProjectionAndCameraMatrix(camera);
                 LightingParameters lighting(gameTime);
-debugAssertGLOk();    
+
                 if (sky) {
                    sky->render(lighting);
                 }
-debugAssertGLOk();    
-                Draw::axes(renderDevice, Color3::RED, Color3::GREEN, Color3::BLUE, 1.5);
-				debugAssertGLOk();    
+                                
                 renderDevice->pushState();
-                    for (int x = 0; x < 3; ++x) {
-                        CoordinateFrame c(Vector3((x - 1) * 6, 0, 0));
-                        model->render(c, lighting);
+                    // Setup lighting
+                    renderDevice->setSpecularCoefficient(1);
+                    renderDevice->enableLighting();
+                    renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+                    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
+                    renderDevice->setAmbientLightColor(lighting.ambient);
+
+                    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+
+                    static const Color3 color[] = {Color3::BLACK, Color3::WHITE, Color3::ORANGE, Color3::BLUE};
+                    double  t[2];
+                    Vector3 c[2];
+
+                    t[0] = SDL_GetTicks() / 1000.0;
+                    t[1] = t[0] + 0.01;
+
+                    for (int x = 0; x < 50; ++x) {
+
+                        for (int i = 0; i < 2; ++i) {
+                            double a = x + t[i] + 2; 
+                            double a2 = t[i] * (x + 1) * .01 + 1005.1;
+                            c[i] = Vector3(cos(a) * (10 + x / 2.0), sin(a2) * 10, sin(a) * 15);
+                        }
+
+                        CoordinateFrame cframe(c[0]);
+
+                        double a = t[0] * (x + 1) * .1; 
+                        cframe.lookAt(c[1], Vector3(cos(a), 3, sin(a)).direction());
+
+
+                        renderDevice->setColor(color[x % 4]);
+                        model->render(cframe, lighting);
                     }
                 renderDevice->popState();
-debugAssertGLOk();    
+
+
                 if (sky) {
                     sky->renderLensFlare(lighting);
                 }
-debugAssertGLOk();    
+                
                 renderDevice->push2D();
+
                     font->draw2D(
                       format("%d fps", iRound(renderDevice->getFrameRate())),
                       Vector2(10, 10), 28, Color3::WHITE, Color3::BLACK);
@@ -167,29 +192,29 @@ debugAssertGLOk();
                       Vector2(10, 100), 20, Color3::WHITE, Color3::BLACK);
 
                     char* str = NULL;
-	            switch (renderMethod) {
+                    switch (renderMethod) {
                     case TRIANGLES:
                         str = "Using begin/end (SPACE to change)";
                         break;
 
-                    case VARDYNAMIC:
-                        str = "Using dynamic VAR (SPACE to toggle)";
+                    case VARSTREAM:
+                        str = "Using streaming vertex array (SPACE to change)";
                         break;
  
                     case VARSTATIC:
-                        str = "Using static VAR (SPACE to toggle)";
+                        str = "Using static vertex array (SPACE to change)";
                         break;
 
                     default:;
                     }
-	
+    
                    font->draw2D(str, Vector2(10, renderDevice->getHeight() - 40), 20, Color3::YELLOW, Color3::BLACK);
 
                 renderDevice->pop2D();
             renderDevice->popState();
-			debugAssertGLOk();    
+            debugAssertGLOk();    
         renderDevice->endFrame();
-        varDynamic->reset();
+        varStream->reset();
 
     } while (! endProgram);
 
@@ -198,8 +223,8 @@ debugAssertGLOk();
 
     debugLog->printf("Static VAR peak size was  %d bytes.\n",
                      varStatic->peakAllocatedSize());
-    debugLog->printf("Dynamic VAR peak size was %d bytes.\n", 
-                     varDynamic->peakAllocatedSize());
+    debugLog->printf("Streaming VAR peak size was %d bytes.\n", 
+                     varStream->peakAllocatedSize());
 
     // Cleanup
     delete controller;
@@ -222,10 +247,10 @@ void handleEvents() {
     while (SDL_PollEvent(&event)) {
         switch(event.type) {
         case SDL_QUIT:
-	    endProgram = true;
-	    break;
+        endProgram = true;
+        break;
 
-	    case SDL_KEYDOWN:
+        case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 endProgram = true;
@@ -330,75 +355,57 @@ Model::Model(const std::string& filename) {
 void Model::render(const CoordinateFrame& c,
                    const LightingParameters& lighting) const {
 
-
-debugAssertGLOk();    
     renderDevice->setObjectToWorldMatrix(c);
 
-debugAssertGLOk();    
-    renderDevice->pushState();
-debugAssertGLOk();    
-
-    // Setup lighting
-    renderDevice->setSpecularCoefficient(0);
-debugAssertGLOk();    
-    renderDevice->enableLighting();
-debugAssertGLOk();
-debugLog->printf("Setting light 0\n"); 
-    renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-debugAssertGLOk();    
-debugLog->printf("Setting light 1\n"); 
-    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
-debugAssertGLOk();    
-    renderDevice->setAmbientLightColor(lighting.ambient);
-debugAssertGLOk();    
-debugLog->printf("Done lights.\n"); 
-
-    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-    renderDevice->setColor(Color3::WHITE);
-
-        // Draw the model
-        switch (renderMethod) {
-        case TRIANGLES:
-            renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-            {
-                for (int i = 0; i < index.size(); ++i) {
-                    renderDevice->setNormal(normal[index[i]]);
-                    renderDevice->sendVertex(vertex[index[i]]);
-                }
+    // Draw the model
+    switch (renderMethod) {
+    case TRIANGLES:
+        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+        {
+            for (int i = 0; i < index.size(); ++i) {
+                renderDevice->setNormal(normal[index[i]]);
+                renderDevice->sendVertex(vertex[index[i]]);
             }
-            renderDevice->endPrimitive();
-            break;
-
-
-        case VARDYNAMIC:
-            renderDevice->beginIndexedPrimitives();
-            {
-                VAR n(normal, varDynamic);
-                VAR v(vertex, varDynamic);
-
-                renderDevice->setNormalArray(n);
-                renderDevice->setVertexArray(v);
-                renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
-            }
-            renderDevice->endIndexedPrimitives();
-            break;
-
-
-        case VARSTATIC:
-            renderDevice->beginIndexedPrimitives();
-            {
-                renderDevice->setNormalArray(varNormal);
-                renderDevice->setVertexArray(varVertex);
-                renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
-            }
-            renderDevice->endIndexedPrimitives();
-            break;
-
-        default:;
         }
+        renderDevice->endPrimitive();
+        break;
 
-    renderDevice->popState();
-	debugAssertGLOk();    
+
+    case VARSTREAM:
+        renderDevice->beginIndexedPrimitives();
+
+        // This implementation would work fine for a number of *different*
+        // models.  We happen to keep uploading the same model every time
+        // because it is a test.
+
+        {
+            if (varStream->freeSize() < normal.size() * sizeof(Vector3) * 2) {
+                // There isn't enough head room left, so reset.
+                varStream->reset();
+            }
+            VAR n(normal, varStream);
+            VAR v(vertex, varStream);
+
+            renderDevice->setNormalArray(n);
+            renderDevice->setVertexArray(v);
+            renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+        }
+        renderDevice->endIndexedPrimitives();
+        break;
+
+
+    case VARSTATIC:
+        renderDevice->beginIndexedPrimitives();
+        {
+            renderDevice->setNormalArray(varNormal);
+            renderDevice->setVertexArray(varVertex);
+            renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+        }
+        renderDevice->endIndexedPrimitives();
+        break;
+
+    default:;
+    }
+
 }
-
 

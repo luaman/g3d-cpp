@@ -9,30 +9,38 @@
 #define GLG3D_VARAREA_H
 
 #include "graphics3D.h"
-#include "GLG3D/RenderDevice.h"
 #include "GLG3D/Milestone.h"
 
 namespace G3D {
 
+typedef ReferenceCountedPointer<class VARArea> VARAreaRef;
+
 /**
- A memory chunk of VAR space (call RenderDevice::createVARArea to 
- allocate, don't ever deallocate manually).
 
- <P> A large buffer is allocated in video memory when the VAR system
- is initialized.  This buffer can be partitioned into multiple
- VARAreas.  Vertex arrays are uploaded to these areas by creating VAR
- objects.  Once used, those vertex arrays are dropped from memory by
- calling reset() on the corresponding VARArea.
-
- <P> Typically, two VARAreas are created.  One is a dynamic area that
- is reset every frame, the other is a static area that is never reset.
+ Wrapper for OpenGL Vertex Buffer Object
+ http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_buffer_object.txt
+ http://developer.nvidia.com/docs/IO/8230/GDC2003_OGL_BufferObjects.ppt
  */
-// Deleting a VARArea does not free the memory associated with it.
-class VARArea {
+class VARArea : public ReferenceCountedObject {
+public:
+
+    /**
+     Use WRITE_EVERY_FRAME if you write at least once per frame.
+
+     Correspond to:
+      WRITE_ONCE : GL_STATIC_DRAW_ARB
+      WRITE_EVERY_FRAME : GL_STREAM_DRAW_ARB
+      WRITE_EVERY_FEW_FRAMEs : GL_STATIC_DRAW_ARB
+     */
+    enum UsageHint {
+        WRITE_ONCE,
+        WRITE_EVERY_FRAME,
+        WRITE_EVERY_FEW_FRAMES};
+
 private:
+
 	friend class VAR;
     friend class RenderDevice;
-    friend class RenderDevice::VARSystem;
 
     /**
      The milestone is used for finish().  It is created
@@ -41,12 +49,13 @@ private:
      */
     MilestoneRef        milestone;
 
-	/** Number of bytes allocated. */
+	/** Number of bytes currently allocated out of size total. */
 	size_t				allocated;
 
 	/**
-	 These prevent vertex arrays that have been freed from
-	 accidentally being used.
+	 This count prevents vertex arrays that have been freed from
+	 accidentally being used-- it is incremented every time
+     the VARArea is reset.
 	 */
 	uint64				generation;
 
@@ -55,19 +64,28 @@ private:
 
     RenderDevice*       renderDevice;
 
-	/** Pointer to the memory. */
-	void*				basePointer;
 
 	/** Total  number of bytes in this area. */
 	size_t				size;
-	
 
-	VARArea(
-        RenderDevice*   _renderDevice,
-        void*           _basePointer,
-        size_t          _size);
+    /**
+     The OpenGL buffer object associated with this area
+     (only used when mode == VBO_MEMORY)
+     */
+    uint32              glbuffer;
+
+	/** Pointer to the memory (NULL when
+        the VBO extension is not present). */
+	void*				basePointer;
+
+    enum Mode {UNINITIALIZED, VBO_MEMORY, MAIN_MEMORY};
+    static Mode         mode;
+
+	VARArea(size_t _size, UsageHint h);
 
 public:
+
+    static VARAreaRef create(size_t s , UsageHint h = WRITE_EVERY_FRAME);
 
     ~VARArea();
 
@@ -80,7 +98,8 @@ public:
 	size_t peakAllocatedSize() const;
 
     /**
-     Blocks the CPU until all rendering calls referencing this area have completed.
+     Blocks the CPU until all rendering calls referencing 
+     this area have completed.
      */
     void finish();
 

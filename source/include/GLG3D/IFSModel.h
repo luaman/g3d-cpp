@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-23
+  @edited  2003-12-07
  */ 
 
 
@@ -68,7 +68,7 @@ private:
     std::string                 name;
 
     /** Shared by all models */
-    static VARArea*             varArea;
+    static VARAreaRef           varArea;
 
     /** Only called from create */
     IFSModel();

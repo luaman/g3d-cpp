@@ -526,6 +526,7 @@ TextureRef Texture::fromMemory(
                               bytesFormat->packedBitsPerTexel / 8);
             }
         }
+        debugAssertGLOk();
     glStatePop();
 
     if (dimension != DIM_2D_RECT) {

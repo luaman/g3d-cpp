@@ -1,10 +1,6 @@
 #include "../include/G3DAll.h"
 #include <string>
 
-GLuint vertexBuffer;
-GLuint normalBuffer;
-
-
 class Entity {
 protected:
 
@@ -73,32 +69,73 @@ void Entity::render(RenderDevice* renderDevice) {
 
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
-        glPushAttrib(GL_ALL_ATTRIB_BITS);
-        glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+        
+        // Using beginIndexedPrimitives
+        VARAreaRef area = VARArea::create(geometry.vertexArray.size() * sizeof(Vector3) * 2, VARArea::WRITE_EVERY_FRAME);
+        VAR vertex(geometry.vertexArray, area);
+        VAR normal(geometry.normalArray, area);
+        renderDevice->beginIndexedPrimitives();
+            debugAssertGLOk();
+            renderDevice->setVertexArray(vertex);
+            debugAssertGLOk();
+            renderDevice->setNormalArray(normal);
+            debugAssertGLOk();
+            renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+        renderDevice->endIndexedPrimitives();
+       
+        
+        /*
+        // GL_ARB_vertex_buffer_object extension
+        glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 
+        GLuint vbo;
+        glGenBuffersARB(1, &vbo);
 
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
 
-
-        glGenBuffersARB(1, &vertexBuffer);
-
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vertexBuffer);
-
+        // Allocate memory for both the vertex and normal pointers
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, 
-            geometry.vertexArray.size() * sizeof(Vector3),
-            geometry.vertexArray.getCArray(),
+            geometry.vertexArray.size() * sizeof(Vector3) * 2,
+            NULL,
             GL_STREAM_DRAW_ARB);
 
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,
+            0,
+            geometry.vertexArray.size() * sizeof(Vector3),
+            geometry.vertexArray.getCArray());
+
+        glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(3, GL_FLOAT, 0, 0);
 
-//        glNormalPointer(3, 0, 0);
-        glEnableClientState(GL_VERTEX_ARRAY);
-//        glEnableClientState(GL_NORMAL_ARRAY);
+        debugAssertGLOk();
+        
+        void* N = (void*)(geometry.vertexArray.size() * sizeof(Vector3));
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,
+            (GLintptrARB)N,
+            geometry.normalArray.size() * sizeof(Vector3),
+            geometry.normalArray.getCArray());
+
+        debugAssertGLOk();
+        glEnableClientState(GL_NORMAL_ARRAY);
+        debugAssertGLOk();
+        glNormalPointer(GL_FLOAT, 0, N);
+       
+        debugAssertGLOk();
+
         glDrawRangeElements(GL_TRIANGLES, 
             0, geometry.vertexArray.size(),
             index.size(), GL_UNSIGNED_INT, 
             index.getCArray());
 
+        glDeleteBuffersARB(1, &vbo);
+
+        glPopClientAttrib();
+        */
+
+
+
         /*
+        // Using beginPrimitive
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
         for (int i = 0; i < index.size(); ++i) {
             renderDevice->setNormal(geometry.normalArray[index[i]]);
@@ -107,11 +144,6 @@ void Entity::render(RenderDevice* renderDevice) {
         renderDevice->endPrimitive();
         */
 
-        glDeleteBuffersARB(1, &normalBuffer);
-        glDeleteBuffersARB(1, &vertexBuffer);
-
-        glPopClientAttrib();
-        glPopAttrib();
 
         //pm->render(renderDevice);
     renderDevice->popState();

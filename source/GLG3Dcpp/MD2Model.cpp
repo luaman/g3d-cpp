@@ -19,7 +19,7 @@ namespace G3D {
 
 MD2Model*       MD2Model::interpolatedModel      = NULL;
 MD2Model::Pose  MD2Model::interpolatedPose;
-VARArea*        MD2Model::varArea[MD2Model::NUM_VAR_AREAS];
+VARAreaRef      MD2Model::varArea[MD2Model::NUM_VAR_AREAS];
 int             MD2Model::nextVarArea            = MD2Model::NONE_ALLOCATED;
 const GameTime  MD2Model::PRE_BLEND_TIME         = 1.0 / 8.0;
 const double    MD2Model::hangTimePct            = 0.1;
@@ -58,19 +58,30 @@ MD2ModelRef MD2Model::create(const std::string& filename) {
 }
 
 
+
 bool MD2Model::Pose::operator==(const MD2Model::Pose& other) const {
     return (animation == other.animation) && fuzzyEq(time, other.time);
 }
 
 
+
 const Array<MeshAlg::Face>& MD2Model::faces() const {
+
 	return faceArray;
+
 }
+
+
+
 
 
 const Array<MeshAlg::Edge>& MD2Model::geometricEdges() const {
+
 	return edgeArray;
+
 }
+
+
 
 
 void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf1, double& alpha) {
@@ -414,16 +425,11 @@ void MD2Model::allocateVertexArrays(RenderDevice* renderDevice) {
 
     size_t size = maxVARVerts * (sizeof(Vector3) * 2 + sizeof(Vector2));
 
-    if (renderDevice->freeVARSize() < size * NUM_VAR_AREAS) {
-        // Not enough VAR memory (maybe none)
-        return;
-    }
-
     for (int i = 0; i < NUM_VAR_AREAS; ++i) {
-        varArea[i] = renderDevice->createVARArea(size);
+        varArea[i] = VARArea::create(size);
     }
 
-    if (varArea[NUM_VAR_AREAS - 1] == NULL) {
+    if (varArea[NUM_VAR_AREAS - 1].isNull()) {
         nextVarArea = NONE_ALLOCATED;
         Log::common()->println("\n*******\nCould not allocate vertex arrays.");
         return;
@@ -464,8 +470,10 @@ void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
         if (useVAR) {
 
             // Upload the arrays (System::memcpy is no faster than memcpy for VAR memory)
+            debugAssert(! varArea[nextVarArea].isNull());
             varArea[nextVarArea]->reset();
 
+            debugAssert(! varArea[nextVarArea].isNull());
             VAR varTexCoord(_texCoordArray, varArea[nextVarArea]);
             VAR varNormal  (normalArray,   varArea[nextVarArea]);
             VAR varVertex  (vertexArray,   varArea[nextVarArea]);

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-11-26
+ @edited  2003-12-07
  */
 
 
@@ -170,7 +170,7 @@ void RenderDevice::computeVendor() {
 
     if (s == "ATI Technologies Inc.") {
         vendor = ATI;
-    } else if (s =="NVIDIA Corporation") {
+    } else if (s == "NVIDIA Corporation") {
         vendor = NVIDIA;
     } else {
         vendor = ARB;
@@ -286,23 +286,12 @@ RenderDevice::RenderDevice() {
 }
 
 
-void RenderDevice::usingVARArea(VARArea* v) {
-    inUseVARArea.insert(v);
-}
-
-
-void RenderDevice::setVARAreaMilestones() {
-    Set<VARArea*>::Iterator begin = inUseVARArea.begin();
-    Set<VARArea*>::Iterator end   = inUseVARArea.end();
-
+void RenderDevice::setVARAreaMilestone() {
     MilestoneRef milestone = createMilestone("VAR Milestone");
     setMilestone(milestone);
 
-    while (begin != end) {
-        // Overwrite whatever milestone was previously there
-        (*begin)->milestone = milestone;
-        ++begin;
-    }
+    // Overwrite any preexisting milestone
+    currentVARArea->milestone = milestone;
 }
 
 
@@ -469,6 +458,17 @@ bool RenderDevice::init(
 
     setVideoMode();
 
+    if (!strcmp((char*)glGetString(GL_RENDERER), "GDI Generic") && debugLog) {
+        debugLog->printf("\n*********************************************************\n");
+        debugLog->printf("* WARNING: This computer does not have correctly        *\n");
+        debugLog->printf("*          installed graphics drivers and is using      *\n");
+        debugLog->printf("*          the default Microsoft OpenGL implementation. *\n");
+        debugLog->printf("*          Most graphics capabilities are disabled.  To *\n");
+        debugLog->printf("*          correct this problem, download and install   *\n");
+        debugLog->printf("*          the latest drivers for the graphics card.    *\n");
+        debugLog->printf("*********************************************************\n\n");
+    }
+
     setCaption("Graphics3D");
 
 	glViewport(0, 0, getWidth(), getHeight());
@@ -502,10 +502,8 @@ bool RenderDevice::init(
         _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
         _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
         _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
+        _supportsVertexBufferObject = supportsOpenGLExtension("GL_ARB_vertex_buffer_object");
     }
-
-    // Var must be initialized after extensions are loaded
-	varSystem = new VARSystem(this, settings.varVideoMemory, debugLog);
 
     std::string ver = getDriverVersion();
     if (debugLog) {
@@ -517,7 +515,7 @@ bool RenderDevice::init(
             glGetString(GL_VENDOR));
 
         debugLog->printf(
-            "GL Renderer:     %s\n",
+            "GL Renderer:    %s\n",
             glGetString(GL_RENDERER));
 
         debugLog->printf(
@@ -899,8 +897,6 @@ Vector4 RenderDevice::project(const Vector4& v) const {
 
 void RenderDevice::cleanup() {
     debugAssert(initialized());
-	delete varSystem;
-	varSystem = NULL;
 
     if (debugLog) {debugLog->println("Restoring gamma.");}
     setGamma(1, 1);
@@ -2500,7 +2496,7 @@ void RenderDevice::beginIndexedPrimitives() {
 	debugAssert(! inPrimitive);
 	debugAssert(! inIndexedPrimitive);
 
-	varSystem->beginIndexedPrimitives();
+	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT); 
 
 	inIndexedPrimitive = true;
 }
@@ -2510,66 +2506,59 @@ void RenderDevice::endIndexedPrimitives() {
 	debugAssert(! inPrimitive);
 	debugAssert(inIndexedPrimitive);
 
-	varSystem->endIndexedPrimitives();
-    inUseVARArea.clear();
+	glPopClientAttrib();
 	inIndexedPrimitive = false;
+    currentVARArea = NULL;
+}
+
+
+void RenderDevice::setVARAreaFromVAR(const class VAR& v) {
+	debugAssert(inIndexedPrimitive);
+	debugAssert(! inPrimitive);
+    alwaysAssertM(currentVARArea.isNull() || (v.area == currentVARArea), 
+        "All vertex arrays used within a single begin/endIndexedPrimitive"
+        " block must share the same VARArea.");
+
+
+    if (v.area != currentVARArea) {
+        currentVARArea = const_cast<VAR&>(v).area;
+
+        if (VARArea::mode == VARArea::VBO_MEMORY) {
+            // Bind the buffer (for MAIN_MEMORY, we need do nothing)
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentVARArea->glbuffer);
+        }
+    }
+
 }
 
 
 void RenderDevice::setVertexArray(const class VAR& v) {
-	debugAssert(inIndexedPrimitive);
-	debugAssert(! inPrimitive);
-
-    usingVARArea(v.area);
-	varSystem->setVertexArray(v);
+    setVARAreaFromVAR(v);
+	v.vertexPointer();
 }
 
 
 void RenderDevice::setVertexAttribArray(unsigned int attribNum, const class VAR& v, bool normalize) {
-	debugAssert(inIndexedPrimitive);
-	debugAssert(! inPrimitive);
-
-    usingVARArea(v.area);
-	varSystem->setVertexAttribArray(attribNum, v, normalize);
+    setVARAreaFromVAR(v);
+	v.vertexAttribPointer(attribNum, normalize);
 }
 
 
 void RenderDevice::setNormalArray(const class VAR& v) {
-	debugAssert(inIndexedPrimitive);
-	debugAssert(! inPrimitive);
-
-    usingVARArea(v.area);
-	varSystem->setNormalArray(v);
+    setVARAreaFromVAR(v);
+	v.normalPointer();
 }
 
 
 void RenderDevice::setColorArray(const class VAR& v) {
-	debugAssert(inIndexedPrimitive);
-	debugAssert(! inPrimitive);
-
-    usingVARArea(v.area);
-	varSystem->setColorArray(v);
+    setVARAreaFromVAR(v);
+	v.colorPointer();
 }
 
 
 void RenderDevice::setTexCoordArray(unsigned int unit, const class VAR& v) {
-	debugAssert(inIndexedPrimitive);
-	debugAssert(! inPrimitive);
-
-    usingVARArea(v.area);
-	varSystem->setTexCoordArray(unit, v);
-}
-
-
-VARArea* RenderDevice::createVARArea(size_t areaSize) {
-	debugAssert(varSystem);
-	return varSystem->createArea(areaSize);
-}
-
-
-size_t RenderDevice::freeVARSize() const {
-    debugAssert(varSystem);
-    return varSystem->memoryFree();
+    setVARAreaFromVAR(v);
+	v.texCoordPointer(unit);
 }
 
 
@@ -2733,5 +2722,75 @@ void RenderDevice::configureReflectionMap(
     glEnable(GL_TEXTURE_GEN_T);
     glEnable(GL_TEXTURE_GEN_R);
 }
+
+
+
+void RenderDevice::internalSendIndices(
+    RenderDevice::Primitive primitive,
+    size_t                  indexSize, 
+    int                     numIndices, 
+    const void*             index) const {
+
+	GLenum i, p;
+
+	switch (indexSize) {
+	case sizeof(uint32):
+		i = GL_UNSIGNED_INT;
+		break;
+
+	case sizeof(uint16):
+		i = GL_UNSIGNED_SHORT;
+		break;
+
+	case sizeof(uint8):
+		i = GL_UNSIGNED_BYTE;
+		break;
+
+	default:
+		debugAssertM(false, "Indices must be either 8, 16, or 32-bytes each.");
+        i = 0;
+	}
+
+
+	switch (primitive) {
+    case LINES:
+		p = GL_LINES;
+        break;
+
+    case LINE_STRIP:
+		p = GL_LINE_STRIP;
+        break;
+
+    case TRIANGLES:
+		p = GL_TRIANGLES;
+        break;
+
+    case TRIANGLE_STRIP:
+		p = GL_TRIANGLE_STRIP;
+		break;
+
+    case TRIANGLE_FAN:
+		p = GL_TRIANGLE_FAN;
+        break;
+
+    case QUADS:
+		p = GL_QUADS;
+        break;
+
+    case QUAD_STRIP:
+		p = GL_QUAD_STRIP;
+        break;
+
+    case POINTS:
+        p = GL_POINTS;
+        break;
+    default:
+        debugAssertM(false, "Fell through switch");
+        p = 0;
+    }
+
+	glDrawElements(p, numIndices, i, index);
+}
+
 
 } // namespace

@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-11-15
+ @edited  2003-12-07
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -241,7 +241,7 @@ protected:
         We cycle through multiple VARAreas because the models are so small
         that we can send data to the card faster than it can be rendered
         and we end up spending all of our time waiting on the GPU.*/
-    static VARArea*             varArea[NUM_VAR_AREAS];
+    static VARAreaRef            varArea[NUM_VAR_AREAS];
 
     /**
      When NONE_ALLOCATED, the vertex arrays have not been allocated. 

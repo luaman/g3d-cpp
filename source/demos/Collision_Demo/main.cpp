@@ -26,15 +26,15 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-12-01
+ @edited  2003-12-07
  */
 #include <G3DAll.h>
 #include "Model.h"
 #include "Object.h"
 #include "Scene.h"
 
-#if G3D_VER != 60009
-    #error Requires G3D 6.00 b9
+#if G3D_VER != 60010
+    #error Requires G3D 6.00 b10
 #endif
 
 /**
@@ -46,8 +46,7 @@ Log*                    debugLog        = NULL;
 RenderDevice*           renderDevice    = NULL;
 CFontRef                font            = NULL;
 UserInput*              userInput       = NULL;
-VARArea*                varDynamic      = NULL;
-VARArea*                varStatic       = NULL;
+VARAreaRef              varStatic       = NULL;
 GCamera*                camera          = NULL;
 Scene*                  scene           = NULL;
 ManualCameraController* controller      = NULL;
@@ -87,10 +86,8 @@ int main(int argc, char** argv) {
     }
 
     // Allocate the two VARAreas used in this demo
-    varStatic  = renderDevice->createVARArea(1024 * 1024);
+    varStatic  = VARArea::create(1024 * 1024);
     debugAssert(varStatic);
-    varDynamic = renderDevice->createVARArea(1024 * 1);
-    debugAssert(varDynamic);
 
     font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
@@ -145,8 +142,6 @@ int main(int argc, char** argv) {
 
     debugLog->printf("Static VAR peak size was  %d bytes.\n",
                      varStatic->peakAllocatedSize());
-    debugLog->printf("Dynamic VAR peak size was %d bytes.\n", 
-                     varDynamic->peakAllocatedSize());
 
     // Cleanup
     Model::freeModels();
@@ -218,7 +213,6 @@ void doGraphics() {
         renderDevice->popState();
         
     renderDevice->endFrame();
-    varDynamic->reset();
 }
 
 

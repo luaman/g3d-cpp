@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I "include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# SUBTRACT CPP /Z<none> /Fr
+# SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "../temp/debug/glg3d"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Zd /Od /I "include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -192,170 +192,6 @@ SOURCE=.\GLG3Dcpp\VertexProgram.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Group "GLH"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\include\glh\GL\fgl.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\fglu.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\fglut.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\gl.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glext.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_array.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_combiners.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_convenience.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_cube_map.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_extensions.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_genext.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_glut.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_glut2.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_glut_callfunc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_glut_replay.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_glut_text.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_interactors.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_linear.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_mipmaps.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_nveb.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_obs.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glh_text.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glsmap.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glu.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glut.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\glut.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glut.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\GLwDrawA.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\GLwDrawAP.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\GLwMDrawA.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\GLwMDrawAP.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glx.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glxext.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glxint.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glxmd.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glxproto.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\glxtokens.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\osmesa.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\tube.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\glh\GL\wglext.h
-# End Source File
-# End Group
 # Begin Source File
 
 SOURCE=.\include\GLG3D\Draw.h
