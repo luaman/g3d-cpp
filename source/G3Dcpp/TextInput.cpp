@@ -156,11 +156,17 @@ Token TextInput::nextToken() {
     case '/':
     case ':':
     case ';':
+    case '&':
+    case '|':
     case '{':
     case '}':
     case '[':
     case ']':
     case '^':
+    case '#':
+    case '$':
+    case '@':
+    case '~':
     case '-':
     case '+':
     case '>':
@@ -202,8 +208,9 @@ Token TextInput::nextToken() {
         case '*':
         case '/':
         case '!':
+        case '~':
         case '=':
-            // ==, *=, /=, !=
+            // ==, *=, /=, !=, ~=
             if (peekNextChar() == '=') {
                 t._string += popNextChar();
                 return t;
