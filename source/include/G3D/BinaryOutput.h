@@ -28,6 +28,7 @@
 #include "G3D/Array.h"
 #include "G3D/debug.h"
 #include "G3D/BinaryInput.h"
+#include "G3D/System.h"
 
 namespace G3D {
 

@@ -78,7 +78,7 @@
         G3D::BinaryInput, G3D::BinaryOutput, G3D::readFileAsString,
         G3D::fileExists, G3D::parseFilename, G3D::createDirectory,
         G3D::copyFile, G3D::writeStringToFile, G3D::prompt, G3D::fileLength,
-        G3D::createTempFile, G3D::NetworkDevice,
+        G3D::createTempFile, G3D::NetworkDevice, G3D::G3DEndian,
         G3D::NetAddress, G3D::ReliableConduit, G3D::LightweightConduit,
         G3D::NetListener, G3D::System, G3D::resolveFilename</BLOCKQUOTE>
      </UL>
@@ -504,6 +504,7 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> System::machineEndian
      <LI> Added sansserif, news, and terminal fonts based on Bitstream's <A HREF="http://www.gnome.org/fonts/">free fonts</A>
      <LI> RenderDevice::numTextureUnits
      <LI> Added stars to night Sky
@@ -512,6 +513,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::realWorldLocalTime
      <LI> Texture::TRANSPARENT_BORDER
      <LI> DECLARE_GLFORMATOF
+     <LI> Fix: Texture now restored GL_ENABLE bits properly after creation
      <LI> Fix: Texture::sizeInMemory now accounts for MIP-map levels
      <LI> Fix: Fonts and skies now adjust their brightness for the screen gamma level
      <LI> Fix: Strange compilation bug was causing Sky to be black for some programs

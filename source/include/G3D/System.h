@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-02-13
+  @edited  2003-04-22
  */
 
 #ifndef G3D_SYSTEM_H
@@ -18,6 +18,14 @@
 #include <string>
 
 namespace G3D {
+
+/**
+ The order in which the bytes of an integer are stored on a machine.
+ Intel/AMD chips tend to be G3D_LITTLE_ENDIAN, Mac PPC's and Suns are
+ G3D_BIG_ENDIAN.  However, this is primarily used to specify the byte
+ order of file formats, which are fixed.
+ */
+enum G3DEndian {G3D_BIG_ENDIAN, G3D_LITTLE_ENDIAN};
 
 /**
  OS and processor abstraction.  The first time any method is called the processor
@@ -33,6 +41,11 @@ public:
 	static std::string cpuVendor();
 
     static uint64 getCycleCount();
+
+    /**
+     Returns the endianness of this machine.
+     */
+    static G3DEndian machineEndian();
 
     /**
      To count the number of cycles a given operation takes:

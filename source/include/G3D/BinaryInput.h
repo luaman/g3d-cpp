@@ -26,16 +26,9 @@
 #include "G3D/g3dmath.h"
 #include "G3D/Array.h"
 #include "G3D/debug.h"
+#include "G3D/System.h"
 
 namespace G3D {
-
-/**
- The order in which the bytes of an integer are stored on a machine.
- Intel/AMD chips tend to be G3D_LITTLE_ENDIAN, Mac PPC's and Suns are
- G3D_BIG_ENDIAN.  However, this is primarily used to specify the byte
- order of file formats, which are fixed.
- */
-enum G3DEndian {G3D_BIG_ENDIAN, G3D_LITTLE_ENDIAN};
 
 /**
  Sequential or random access byte-order independent binary file access.

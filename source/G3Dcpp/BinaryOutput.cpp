@@ -41,20 +41,8 @@ BinaryOutput::~BinaryOutput() {
 }
 
 
-void BinaryOutput::setEndian(
-    G3DEndian fileEndian) {
-
-    // Figure out if this machine is little or big endian.
-    G3DEndian machineEndian;
-    
-    int32 a = 1;
-    if (*(uint8*)&a == 1) {
-        machineEndian = G3D_LITTLE_ENDIAN;
-    } else {
-        machineEndian = G3D_BIG_ENDIAN;
-    }
-
-    swapBytes = (fileEndian != machineEndian);
+void BinaryOutput::setEndian(G3DEndian fileEndian) {
+    swapBytes = (fileEndian != System::machineEndian());
 }
 
 

@@ -44,17 +44,7 @@ namespace G3D {
 const bool BinaryInput::NO_COPY = false;
     
 static bool needSwapBytes(G3DEndian fileEndian) {
-    // Figure out if this machine is little or big endian.
-    G3DEndian machineEndian;
-    
-    int32 a = 1;
-    if (*(uint8*)&a == 1) {
-        machineEndian = G3D_LITTLE_ENDIAN;
-    } else {
-        machineEndian = G3D_BIG_ENDIAN;
-    }
-
-    return (fileEndian != machineEndian);
+    return (fileEndian != System::machineEndian());
 }
 
 

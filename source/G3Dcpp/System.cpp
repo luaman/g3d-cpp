@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-02-15
+  @edited  2003-04-22
  */
 
 #include "G3D/System.h"
@@ -30,6 +30,7 @@ static bool					_3dnow      = false;
 static std::string			_cpuVendor  = "Unknown";
 static bool					initialized = false;
 static bool					_cpuID      = false;
+static G3DEndian         _machineEndian = G3D_LITTLE_ENDIAN;
 
 static int	 	 maxSupportedCPUIDLevel = 0;
 static int    maxSupportedExtendedLevel = 0;
@@ -82,6 +83,12 @@ std::string System::cpuVendor() {
 }
 
 
+G3DEndian System::machineEndian() {
+    init();
+    return _machineEndian;
+}
+
+
 void init() {
 
 	if (initialized) {
@@ -96,6 +103,16 @@ void init() {
  
 	// First of all we check if the CPUID command is available
 	checkForCPUID();
+
+    // Figure out if this machine is little or big endian.
+    {
+        int32 a = 1;
+        if (*(uint8*)&a == 1) {
+            _machineEndian = G3D_LITTLE_ENDIAN;
+        } else {
+            _machineEndian = G3D_BIG_ENDIAN;
+        }
+    }
 
 	if (! _cpuID) {
 		return;
