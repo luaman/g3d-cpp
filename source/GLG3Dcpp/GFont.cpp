@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-12-01
+ @edited  2003-12-08
  */
 
 #include "GLG3D/GFont.h"
@@ -21,7 +21,8 @@ CFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
 GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 
     debugAssert(renderDevice);
-    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a GFont");
+    debugAssertM(renderDevice->initialized(), 
+        "You must call RenderDevice::init before constructing a GFont");
 
     if (! fileExists(filename)) {
         debugAssertM(false, format("ERROR: Could not load font: %s", filename.c_str()));
@@ -55,8 +56,8 @@ GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
     const uint8* ptr = ((uint8*)b.getCArray()) + b.getPosition();
     texture = 
         Texture::fromMemory(filename, &ptr,
-        TextureFormat::A8, width, height, 1, TextureFormat::A8, Texture::CLAMP,
-        Texture::TRILINEAR_MIPMAP, Texture::DIM_2D);
+            TextureFormat::A8, width, height, 1, TextureFormat::A8, 
+            Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D);
 }
 
 
@@ -129,58 +130,58 @@ void GFont::draw2D(
     double x = pos2D.x;
     double y = pos2D.y;
 
-    renderDevice->pushState();
+ 
+    double h = size * 1.5;
+    double w = h * charWidth / charHeight;
+    double fw = 1.0 / charWidth;
+    double fh = 1.0 / charHeight;
+    (void)fw;
+    (void)fh;
 
+    switch (xalign) {
+    case XALIGN_RIGHT:
+        x -= get2DStringBounds(s, size, spacing).x;
+        break;
+
+    case XALIGN_CENTER:
+        x -= get2DStringBounds(s, size, spacing).x / 2;
+        break;
+    
+    default:
+        break;
+    }
+
+    switch (yalign) {
+    case YALIGN_CENTER:
+        y -= h / 2.0;
+        break;
+
+    case YALIGN_BASELINE:
+        y -= baseline * h / (double)charHeight;
+        break;
+
+    case YALIGN_BOTTOM:
+        y -= h;
+        break;
+
+    default:
+        break;
+    }
+
+
+    double m[] = 
+       {1.0 / texture->getTexelWidth(), 0, 0, 0,
+        0, 1.0 / texture->getTexelHeight(), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1};
+
+    renderDevice->pushState();
+        renderDevice->setTextureMatrix(0, m);
+        renderDevice->setTexture(0, texture);
+
+        renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
-
-        double h = size * 1.5;
-        double w = h * charWidth / charHeight;
-        double fw = 1.0 / charWidth;
-        double fh = 1.0 / charHeight;
-        (void)fw;
-        (void)fh;
-
-        switch (xalign) {
-        case XALIGN_RIGHT:
-            x -= get2DStringBounds(s, size, spacing).x;
-            break;
-
-        case XALIGN_CENTER:
-            x -= get2DStringBounds(s, size, spacing).x / 2;
-            break;
-        
-        default:
-            break;
-        }
-
-        switch (yalign) {
-        case YALIGN_CENTER:
-            y -= h / 2.0;
-            break;
-
-        case YALIGN_BASELINE:
-            y -= baseline * h / (double)charHeight;
-            break;
-
-        case YALIGN_BOTTOM:
-            y -= h;
-            break;
-
-        default:
-            break;
-        }
-
-
-        double m[] = 
-           {1.0 / texture->getTexelWidth(), 0, 0, 0,
-            0, 1.0 / texture->getTexelHeight(), 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1};
-
-        renderDevice->setTexture(0, texture);
-        renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
-        renderDevice->setTextureMatrix(0, m);
 
         renderDevice->beginPrimitive(RenderDevice::QUADS);
 

@@ -281,6 +281,11 @@ void Demo::doGraphics() {
     if (sky != NULL) {
         sky->renderLensFlare(lighting);
     }
+
+    app->renderDevice->push2D();
+        app->debugFont->draw2D("1st draw, default colors", Vector2(100, 100), 30);
+        app->debugFont->draw2D("2nd draw, default colors", Vector2(100, 140), 30);
+    app->renderDevice->pop2D();
 }
 
 

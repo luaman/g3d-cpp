@@ -546,6 +546,7 @@ bool RenderDevice::init(
         _numTextures = iMin(MAX_TEXTURE_UNITS, iMax(_numTextureUnits, _numTextures));
     } else {
         _numTextureCoords = _numTextureUnits;
+        _numTextures = _numTextureUnits;
     }
 
     if (debugLog) {
@@ -779,6 +780,7 @@ void RenderDevice::setVideoMode() {
     // Enable proper specular lighting
     if (debugLog) debugLog->println("Enabling separate specular lighting.\n");
     glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SEPARATE_SPECULAR_COLOR_EXT);
+    debugAssertGLOk();
 
     // Make sure we use good interpolation
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -788,11 +790,14 @@ void RenderDevice::setVideoMode() {
     glEnable(GL_POINT_SMOOTH);
     // glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
     glEnable(GL_MULTISAMPLE_ARB);
-    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+    if (vendor == NVIDIA) {
+        glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+    }
     glEnable(GL_NORMALIZE);
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
+    debugAssertGLOk();
 
     if (debugLog) debugLog->println("Setting initial rendering state.\n");
     glDisable(GL_LIGHT0);
@@ -2270,6 +2275,10 @@ void RenderDevice::setTexture(
     uint                unit,
     TextureRef          texture) {
 
+    // NVIDIA cards have more textures than texture units.
+    // "fixedFunction" textures have an associated unit 
+    // and must be glEnabled.  Programmable units *cannot*
+    // be enabled.
     bool fixedFunction = ((int)unit < _numTextureUnits);
 
     debugAssertM(! inPrimitive, 
@@ -2295,7 +2304,6 @@ void RenderDevice::setTexture(
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_TEXTURE_3D);
         glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-        glDisable(GL_TEXTURE_RECTANGLE_NV);
         glDisable(GL_TEXTURE_1D);
         
         if (supportsTextureRectangle()) {
