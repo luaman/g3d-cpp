@@ -11,6 +11,8 @@
 */
 
 #include "Win32Window.h"
+#include "directinput8.h"
+using G3D::_internal::_DirectInput;
 
 #ifdef G3D_WIN32
 
@@ -23,45 +25,18 @@
     COM calls are not used to limit the style of code and includes needed.
     DirectInput8 has a special creation function that lets us do this properly.
 
-    The dinput.h definitions are emulated with Win32Window_di8.cpp.
-    The IDirectInputDevice8 interface is modified to allow only defining the structures of
-        the methods actually used to limited pre-processing and confusion for bug-fixing.
-    This method works because DI8's COM system uses the GUID to specify which interface signature
-        to pass back, not the actual interface definition.  This should not be done in anything
-        more extensive and COM based.
+    The joystick state structure used simulates the exports found in dinput8.lib
 
-    The joystick state structure used is a custom definition to replace extern's found in dinput8.lib
-    The joystick axis order returned to users is: X, Y, Z, Slider1, Slider2, rX, rY, rZ
+    The joystick axis order returned to users is: X, Y, Z, Slider1, Slider2, rX, rY, rZ.
 
     Important:  The cooperation level of Win32Window joysticks is Foreground:Non-Exclusive.
         This means that other programs can get access to the joystick(preferably non-exclusive) and the joystick
         is only aquired when Win32Window is in the foreground.
 */
 
-// This is to try and limit the compiling of Win32Window_di8.cpp to here only.
-#define WIN32WINDOW_INCLUDE_DI8
-#include "Win32Window_di8.cpp"
-#undef WIN32WINDOW_INCLUDE_DI8
-
 namespace G3D {
+
 static const UINT BLIT_BUFFER = 0xC001;
-
-
-// Handle these interfaces manually instead of using ATL
-Win32Window_DI8::IDirectInput8A*                di8Interface = NULL;
-
-// It is pointless to try and keep these in the class
-// when everything that initializes them is global
-typedef struct {
-    Win32Window_DI8::IDirectInputDevice8A*      device;
-    std::string                                 name;
-    bool                                        valid;
-    unsigned int                                numAxes;
-    unsigned int                                numButtons;
-} di8InterfaceNamePair;
-
-Array< di8InterfaceNamePair >                   joysticks;
-
 
 #define WGL_SAMPLE_BUFFERS_ARB	0x2041
 #define WGL_SAMPLES_ARB		    0x2042
@@ -69,38 +44,8 @@ Array< di8InterfaceNamePair >                   joysticks;
 static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
 static unsigned int _sdlKeys[SDLK_LAST];
+static bool keyStates[SDLK_LAST];
 
-
-// Handle the DirectInput8 joystick enumeration
-BOOL CALLBACK EnumDirectInput8Joysticks(Win32Window_DI8::LPCDIDEVICEINSTANCEA lpddi, LPVOID pvRef) {
-    
-    static int joystickCount = 0;
-    joysticks.resize(joysticks.size() + 1, DONT_SHRINK_UNDERLYING_ARRAY);
-    joysticks[joystickCount].name = lpddi->tszInstanceName;
-
-    if (di8Interface->CreateDevice(lpddi->guidInstance, &joysticks[joystickCount].device, NULL) == S_OK) {
-        Win32Window_DI8::IDirectInputDevice8A* device = joysticks[joystickCount].device;
-
-        joysticks[joystickCount].valid = true;
-        
-        // Setup device and retreive axis/button count
-        device->SetCooperativeLevel((HWND)pvRef, (Win32Window_DI8::DISCL_FOREGROUND | Win32Window_DI8::DISCL_NONEXCLUSIVE));
-
-        Win32Window_DI8::DIDEVCAPS joystickCaps;
-        joystickCaps.dwSize = sizeof(Win32Window_DI8::DIDEVCAPS);
-        
-        device->GetCapabilities(&joystickCaps);
-        joysticks[joystickCount].numAxes = joystickCaps.dwAxes;
-        joysticks[joystickCount].numButtons = joystickCaps.dwButtons;
-
-        device->SetDataFormat(&Win32Window_DI8::G3DJOYDF);
-    } else {
-        joysticks[joystickCount].device = NULL;
-    }
-
-    joystickCount++;
-    return true;
-}
 
 /** Changes the screen resolution */
 static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
@@ -142,96 +87,117 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 
     memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
-	_sdlKeys[VK_BACK] = SDLK_BACKSPACE;
-	_sdlKeys[VK_TAB] = SDLK_TAB;
-	_sdlKeys[VK_CLEAR] = SDLK_CLEAR;
-	_sdlKeys[VK_RETURN] = SDLK_RETURN;
-	_sdlKeys[VK_PAUSE] = SDLK_PAUSE;
-	_sdlKeys[VK_ESCAPE] = SDLK_ESCAPE;
-	_sdlKeys[VK_SPACE] = SDLK_SPACE;
-	_sdlKeys[VK_APOSTROPHE] = SDLK_QUOTE;
-	_sdlKeys[VK_COMMA] = SDLK_COMMA;
-	_sdlKeys[VK_MINUS] = SDLK_MINUS;
-	_sdlKeys[VK_PERIOD] = SDLK_PERIOD;
-	_sdlKeys[VK_SLASH] = SDLK_SLASH;
-	_sdlKeys['0'] = SDLK_0;
-	_sdlKeys['1'] = SDLK_1;
-	_sdlKeys['2'] = SDLK_2;
-	_sdlKeys['3'] = SDLK_3;
-	_sdlKeys['4'] = SDLK_4;
-	_sdlKeys['5'] = SDLK_5;
-	_sdlKeys['6'] = SDLK_6;
-	_sdlKeys['7'] = SDLK_7;
-	_sdlKeys['8'] = SDLK_8;
-	_sdlKeys['9'] = SDLK_9;
-	_sdlKeys[VK_SEMICOLON] = SDLK_SEMICOLON;
-	_sdlKeys[VK_EQUALS] = SDLK_EQUALS;
-	_sdlKeys[VK_LBRACKET] = SDLK_LEFTBRACKET;
-	_sdlKeys[VK_BACKSLASH] = SDLK_BACKSLASH;
-	_sdlKeys[VK_RBRACKET] = SDLK_RIGHTBRACKET;
-	_sdlKeys[VK_GRAVE] = SDLK_BACKQUOTE;
-	_sdlKeys[VK_BACKTICK] = SDLK_BACKQUOTE;
-	_sdlKeys[VK_DELETE] = SDLK_DELETE;
+    _sdlKeys[DIK_ESCAPE] = SDLK_ESCAPE;
+	_sdlKeys[DIK_1] = SDLK_1;
+	_sdlKeys[DIK_2] = SDLK_2;
+	_sdlKeys[DIK_3] = SDLK_3;
+	_sdlKeys[DIK_4] = SDLK_4;
+	_sdlKeys[DIK_5] = SDLK_5;
+	_sdlKeys[DIK_6] = SDLK_6;
+	_sdlKeys[DIK_7] = SDLK_7;
+	_sdlKeys[DIK_8] = SDLK_8;
+	_sdlKeys[DIK_9] = SDLK_9;
+	_sdlKeys[DIK_0] = SDLK_0;
+	_sdlKeys[DIK_MINUS] = SDLK_MINUS;
+	_sdlKeys[DIK_EQUALS] = SDLK_EQUALS;
+	_sdlKeys[DIK_BACK] = SDLK_BACKSPACE;
+	_sdlKeys[DIK_TAB] = SDLK_TAB;
+	_sdlKeys[DIK_Q] = SDLK_q;
+	_sdlKeys[DIK_W] = SDLK_w;
+	_sdlKeys[DIK_E] = SDLK_e;
+	_sdlKeys[DIK_R] = SDLK_r;
+	_sdlKeys[DIK_T] = SDLK_t;
+	_sdlKeys[DIK_Y] = SDLK_y;
+	_sdlKeys[DIK_U] = SDLK_u;
+	_sdlKeys[DIK_I] = SDLK_i;
+	_sdlKeys[DIK_O] = SDLK_o;
+	_sdlKeys[DIK_P] = SDLK_p;
+	_sdlKeys[DIK_LBRACKET] = SDLK_LEFTBRACKET;
+	_sdlKeys[DIK_RBRACKET] = SDLK_RIGHTBRACKET;
+	_sdlKeys[DIK_RETURN] = SDLK_RETURN;
+	_sdlKeys[DIK_LCONTROL] = SDLK_LCTRL;
+	_sdlKeys[DIK_A] = SDLK_a;
+	_sdlKeys[DIK_S] = SDLK_s;
+	_sdlKeys[DIK_D] = SDLK_d;
+	_sdlKeys[DIK_F] = SDLK_f;
+	_sdlKeys[DIK_G] = SDLK_g;
+	_sdlKeys[DIK_H] = SDLK_h;
+	_sdlKeys[DIK_J] = SDLK_j;
+	_sdlKeys[DIK_K] = SDLK_k;
+	_sdlKeys[DIK_L] = SDLK_l;
+	_sdlKeys[DIK_SEMICOLON] = SDLK_SEMICOLON;
+	_sdlKeys[DIK_APOSTROPHE] = SDLK_QUOTE;
+	_sdlKeys[DIK_GRAVE] = SDLK_BACKQUOTE;
+	_sdlKeys[DIK_LSHIFT] = SDLK_LSHIFT;
+	_sdlKeys[DIK_BACKSLASH] = SDLK_BACKSLASH;
+	_sdlKeys[DIK_OEM_102] = SDLK_BACKSLASH;
+	_sdlKeys[DIK_Z] = SDLK_z;
+	_sdlKeys[DIK_X] = SDLK_x;
+	_sdlKeys[DIK_C] = SDLK_c;
+	_sdlKeys[DIK_V] = SDLK_v;
+	_sdlKeys[DIK_B] = SDLK_b;
+	_sdlKeys[DIK_N] = SDLK_n;
+	_sdlKeys[DIK_M] = SDLK_m;
+	_sdlKeys[DIK_COMMA] = SDLK_COMMA;
+	_sdlKeys[DIK_PERIOD] = SDLK_PERIOD;
+	_sdlKeys[DIK_SLASH] = SDLK_SLASH;
+	_sdlKeys[DIK_RSHIFT] = SDLK_RSHIFT;
+	_sdlKeys[DIK_MULTIPLY] = SDLK_KP_MULTIPLY;
+	_sdlKeys[DIK_LMENU] = SDLK_LALT;
+	_sdlKeys[DIK_SPACE] = SDLK_SPACE;
+	_sdlKeys[DIK_CAPITAL] = SDLK_CAPSLOCK;
+	_sdlKeys[DIK_F1] = SDLK_F1;
+	_sdlKeys[DIK_F2] = SDLK_F2;
+	_sdlKeys[DIK_F3] = SDLK_F3;
+	_sdlKeys[DIK_F4] = SDLK_F4;
+	_sdlKeys[DIK_F5] = SDLK_F5;
+	_sdlKeys[DIK_F6] = SDLK_F6;
+	_sdlKeys[DIK_F7] = SDLK_F7;
+	_sdlKeys[DIK_F8] = SDLK_F8;
+	_sdlKeys[DIK_F9] = SDLK_F9;
+	_sdlKeys[DIK_F10] = SDLK_F10;
+	_sdlKeys[DIK_NUMLOCK] = SDLK_NUMLOCK;
+	_sdlKeys[DIK_SCROLL] = SDLK_SCROLLOCK;
+	_sdlKeys[DIK_NUMPAD7] = SDLK_KP7;
+	_sdlKeys[DIK_NUMPAD8] = SDLK_KP8;
+	_sdlKeys[DIK_NUMPAD9] = SDLK_KP9;
+	_sdlKeys[DIK_SUBTRACT] = SDLK_KP_MINUS;
+	_sdlKeys[DIK_NUMPAD4] = SDLK_KP4;
+	_sdlKeys[DIK_NUMPAD5] = SDLK_KP5;
+	_sdlKeys[DIK_NUMPAD6] = SDLK_KP6;
+	_sdlKeys[DIK_ADD] = SDLK_KP_PLUS;
+	_sdlKeys[DIK_NUMPAD1] = SDLK_KP1;
+	_sdlKeys[DIK_NUMPAD2] = SDLK_KP2;
+	_sdlKeys[DIK_NUMPAD3] = SDLK_KP3;
+	_sdlKeys[DIK_NUMPAD0] = SDLK_KP0;
+	_sdlKeys[DIK_DECIMAL] = SDLK_KP_PERIOD;
+	_sdlKeys[DIK_F11] = SDLK_F11;
+	_sdlKeys[DIK_F12] = SDLK_F12;
 
-	_sdlKeys[VK_NUMPAD0] = SDLK_KP0;
-	_sdlKeys[VK_NUMPAD1] = SDLK_KP1;
-	_sdlKeys[VK_NUMPAD2] = SDLK_KP2;
-	_sdlKeys[VK_NUMPAD3] = SDLK_KP3;
-	_sdlKeys[VK_NUMPAD4] = SDLK_KP4;
-	_sdlKeys[VK_NUMPAD5] = SDLK_KP5;
-	_sdlKeys[VK_NUMPAD6] = SDLK_KP6;
-	_sdlKeys[VK_NUMPAD7] = SDLK_KP7;
-	_sdlKeys[VK_NUMPAD8] = SDLK_KP8;
-	_sdlKeys[VK_NUMPAD9] = SDLK_KP9;
-	_sdlKeys[VK_DECIMAL] = SDLK_KP_PERIOD;
-	_sdlKeys[VK_DIVIDE] = SDLK_KP_DIVIDE;
-	_sdlKeys[VK_MULTIPLY] = SDLK_KP_MULTIPLY;
-	_sdlKeys[VK_SUBTRACT] = SDLK_KP_MINUS;
-	_sdlKeys[VK_ADD] = SDLK_KP_PLUS;
+	_sdlKeys[DIK_F13] = SDLK_F13;
+	_sdlKeys[DIK_F14] = SDLK_F14;
+	_sdlKeys[DIK_F15] = SDLK_F15;
 
-	_sdlKeys[VK_UP] = SDLK_UP;
-	_sdlKeys[VK_DOWN] = SDLK_DOWN;
-	_sdlKeys[VK_RIGHT] = SDLK_RIGHT;
-	_sdlKeys[VK_LEFT] = SDLK_LEFT;
-	_sdlKeys[VK_INSERT] = SDLK_INSERT;
-	_sdlKeys[VK_HOME] = SDLK_HOME;
-	_sdlKeys[VK_END] = SDLK_END;
-	_sdlKeys[VK_PRIOR] = SDLK_PAGEUP;
-	_sdlKeys[VK_NEXT] = SDLK_PAGEDOWN;
-
-	_sdlKeys[VK_F1] = SDLK_F1;
-	_sdlKeys[VK_F2] = SDLK_F2;
-	_sdlKeys[VK_F3] = SDLK_F3;
-	_sdlKeys[VK_F4] = SDLK_F4;
-	_sdlKeys[VK_F5] = SDLK_F5;
-	_sdlKeys[VK_F6] = SDLK_F6;
-	_sdlKeys[VK_F7] = SDLK_F7;
-	_sdlKeys[VK_F8] = SDLK_F8;
-	_sdlKeys[VK_F9] = SDLK_F9;
-	_sdlKeys[VK_F10] = SDLK_F10;
-	_sdlKeys[VK_F11] = SDLK_F11;
-	_sdlKeys[VK_F12] = SDLK_F12;
-	_sdlKeys[VK_F13] = SDLK_F13;
-	_sdlKeys[VK_F14] = SDLK_F14;
-	_sdlKeys[VK_F15] = SDLK_F15;
-
-	_sdlKeys[VK_NUMLOCK] = SDLK_NUMLOCK;
-	_sdlKeys[VK_CAPITAL] = SDLK_CAPSLOCK;
-	_sdlKeys[VK_SCROLL] = SDLK_SCROLLOCK;
-	_sdlKeys[VK_RSHIFT] = SDLK_RSHIFT;
-	_sdlKeys[VK_LSHIFT] = SDLK_LSHIFT;
-	_sdlKeys[VK_RCONTROL] = SDLK_RCTRL;
-	_sdlKeys[VK_LCONTROL] = SDLK_LCTRL;
-	_sdlKeys[VK_RMENU] = SDLK_RALT;
-	_sdlKeys[VK_LMENU] = SDLK_LALT;
-	_sdlKeys[VK_RWIN] = SDLK_RSUPER;
-	_sdlKeys[VK_LWIN] = SDLK_LSUPER;
-
-	_sdlKeys[VK_HELP] = SDLK_HELP;
-	_sdlKeys[VK_PRINT] = SDLK_PRINT;
-	_sdlKeys[VK_SNAPSHOT] = SDLK_PRINT;
-	_sdlKeys[VK_CANCEL] = SDLK_BREAK;
-	_sdlKeys[VK_APPS] = SDLK_MENU;
+	_sdlKeys[DIK_NUMPADEQUALS] = SDLK_KP_EQUALS;
+	_sdlKeys[DIK_NUMPADENTER] = SDLK_KP_ENTER;
+	_sdlKeys[DIK_RCONTROL] = SDLK_RCTRL;
+	_sdlKeys[DIK_DIVIDE] = SDLK_KP_DIVIDE;
+	_sdlKeys[DIK_SYSRQ] = SDLK_SYSREQ;
+	_sdlKeys[DIK_RMENU] = SDLK_RALT;
+	_sdlKeys[DIK_PAUSE] = SDLK_PAUSE;
+	_sdlKeys[DIK_HOME] = SDLK_HOME;
+	_sdlKeys[DIK_UP] = SDLK_UP;
+	_sdlKeys[DIK_PRIOR] = SDLK_PAGEUP;
+	_sdlKeys[DIK_LEFT] = SDLK_LEFT;
+	_sdlKeys[DIK_RIGHT] = SDLK_RIGHT;
+	_sdlKeys[DIK_END] = SDLK_END;
+	_sdlKeys[DIK_DOWN] = SDLK_DOWN;
+	_sdlKeys[DIK_NEXT] = SDLK_PAGEDOWN;
+	_sdlKeys[DIK_INSERT] = SDLK_INSERT;
+	_sdlKeys[DIK_DELETE] = SDLK_DELETE;
+	_sdlKeys[DIK_LWIN] = SDLK_LMETA;
+	_sdlKeys[DIK_RWIN] = SDLK_RMETA;
+	_sdlKeys[DIK_APPS] = SDLK_MENU;
 
 
 	settings = s;
@@ -294,28 +260,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     }
 	init(window);
 
-    // Detect DirectInput8 only and create the joystick interfaces
-    HMODULE di8Module = ::LoadLibrary("dinput8.dll");
-    if (di8Module == NULL) {
-        return;
-    }
-
-    // DI8 function pointers
-    HRESULT (WINAPI* DirectInput8Create_G3D)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN);
-    DirectInput8Create_G3D = (HRESULT (WINAPI*)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN))::GetProcAddress(di8Module, "DirectInput8Create");
-    if (DirectInput8Create_G3D == NULL) {
-        ::FreeLibrary(di8Module);
-        return;
-    }
-
-    if (DirectInput8Create_G3D( ::GetModuleHandle(NULL), DIRECTINPUT_VERSION, Win32Window_DI8::IID_IDirectInput8A, reinterpret_cast< void** >(&di8Interface), NULL) != S_OK) {
-        ::FreeLibrary(di8Module);
-        return;
-    }
-    
-    di8Interface->EnumDevices(Win32Window_DI8::DI8DEVCLASS_GAMECTRL, EnumDirectInput8Joysticks, window, Win32Window_DI8::DIEDFL_ATTACHEDONLY);
-
-    ::FreeLibrary(di8Module);
+    _DirectInput::createDevices(window);
 }
 
 
@@ -324,6 +269,21 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
 
 	settings = s;
 	init(hwnd);
+}
+
+
+Win32Window* Win32Window::createBestWindow(const GWindowSettings& settings) {
+
+    if (_DirectInput::libraryExists()) {
+
+        // Create Win32Window which defaults to DI8 Keyboard
+        return new Win32Window(settings);
+        
+    } else {
+
+        // Create Win32APIWindow
+        return new Win32APIWindow(settings);
+    }
 }
 
 
@@ -556,16 +516,7 @@ void Win32Window::close() {
 Win32Window::~Win32Window() {
     close();
 
-    //Release any joystick interfaces
-    for(int i = 0; i < joysticks.length(); ++i) {
-        if (joysticks[i].valid) {
-            joysticks[i].device->Release();
-            joysticks[i].device = NULL;
-            joysticks[i].valid = false;
-        }
-    }
-    joysticks.clear();
-    joysticks.resize(0, true);
+    _DirectInput::clearJoysticks();
 }
 
 
@@ -695,6 +646,20 @@ static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
     } else {
         e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(wparam, 0, SDLK_LAST)];
     }
+
+    // Check to see if it is a repeat message
+    if ((e.key.state == SDL_PRESSED)) {
+        if (keyStates[e.key.keysym.sym]) {
+            e.key.keysym.sym = (SDLKey)(e.key.keysym.scancode = e.key.keysym.unicode = 0);
+            e.key.keysym.mod = KMOD_NONE;
+            return;
+        } else {
+            keyStates[e.key.keysym.sym] = true;
+        }
+    } else {
+        keyStates[e.key.keysym.sym] = false;
+    }
+
     e.key.keysym.scancode = (lparam >> 16) & 0x07;
 
     e.key.keysym.mod = KMOD_NONE;
@@ -818,6 +783,33 @@ bool Win32Window::pollEvent(GEvent& e) {
 	MSG message;
 
 	bool done = false;
+            
+    DIDEVICEOBJECTDATA keyboardData[16];
+    DWORD numKeyboardData = 16;
+
+    // Check for DI_OK or DI_BUFFEROVERFLOW
+    if( _DirectInput::getKeyboardEvents(keyboardData, numKeyboardData) ) {
+
+        for (int event = 0; event < numKeyboardData; ++event) {
+            e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYUP : SDL_KEYDOWN;
+            e.key.state = (keyboardData[event].dwData & 0x80) ? SDL_PRESSED : SDL_RELEASED;
+
+            e.key.keysym.sym = (SDLKey)_sdlKeys[keyboardData[event].dwOfs];
+
+            e.key.keysym.scancode = keyboardData[event].dwOfs;
+            
+            int tmpVirualKey = ::MapVirtualKey(_sdlKeys[keyboardData[event].dwOfs], 1);
+
+            char tmpAscii[2];
+            BYTE tmpKeyboard[256];
+
+            ::GetKeyboardState(tmpKeyboard);
+
+            e.key.keysym.unicode = ToAscii(tmpVirualKey, e.key.keysym.scancode, tmpKeyboard, (WORD*)tmpAscii, 0);
+
+            _keyboardEvents.pushBack(e);
+        }
+    }
 
 	while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&message);
@@ -831,32 +823,6 @@ bool Win32Window::pollEvent(GEvent& e) {
 
                 break;
 
-			case WM_KEYDOWN:
-				e.key.type = SDL_KEYDOWN;
-				e.key.state = SDL_PRESSED;
-
-                // Need the repeat messages to find LSHIFT and RSHIFT
-				//if (((message.lParam >> 30) & 0x01) == 0) {
-                if ((message.lParam & 0x0f) == 1) {
-					// This is not an autorepeat message
-					makeKeyEvent(message.wParam, message.lParam, e);
-					return true;
-				}
-				break;
-
-			case WM_KEYUP:
-				e.key.type = SDL_KEYUP;
-				e.key.state = SDL_RELEASED;
-
-                // Need the repeat messages to find LSHIFT and RSHIFT
-				//if (((message.lParam  >> 30 )& 0x01) == 0) {
-                if ((message.lParam & 0x0f) == 1) {
-					// This is not an autorepeat message
-					makeKeyEvent(message.wParam, message.lParam, e);
-					return true;
-				}
-				break;
-
 			case WM_ACTIVATE:
                 // TODO
                 /*
@@ -864,6 +830,7 @@ bool Win32Window::pollEvent(GEvent& e) {
                 fMinimized = (BOOL) HIWORD(wParam); // minimized flag 
                 hwndPrevious = (HWND) lParam;       // window handle 
                 */
+                _DirectInput::acquireKeyboard();
                 break;
 
             case WM_LBUTTONDOWN:
@@ -916,6 +883,11 @@ bool Win32Window::pollEvent(GEvent& e) {
 		clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
 		clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
 	}
+
+    if (_keyboardEvents.length() > 0) {
+        memcpy(&e, &_keyboardEvents.popFront(), sizeof(GEvent));
+        return true;
+    }
 
     return false;
 }
@@ -1035,65 +1007,59 @@ void Win32Window::getRelativeMouseState(double& x, double& y, uint8& mouseButton
 
 
 int Win32Window::numJoysticks() const {
-    return joysticks.length();
+    return _DirectInput::getNumJoysticks();
 }
 
 
 std::string Win32Window::joystickName(unsigned int sticknum)
 {
-    if (joysticks.length() > sticknum) {
-        return joysticks[sticknum].name;
-    } else {
-        debugAssert( joysticks.length() <= sticknum );
-    }
-    return std::string("No Device.");
+    return _DirectInput::getJoystickName(sticknum);
 }
 
 
 void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
-    if (joysticks.length() > stickNum) {
-        
-        Win32Window_DI8::G3DJOYDATA joystickState;
-        memset(&joystickState, 0, sizeof(joystickState));
-        
-        joysticks[stickNum].device->Acquire();
-        joysticks[stickNum].device->Poll();
 
-        joysticks[stickNum].device->GetDeviceState(sizeof(joystickState), &joystickState);
+    if (!_DirectInput::joystickExists(stickNum)) {
+        return;
+    }
 
-        button.resize(joysticks[stickNum].numButtons, false);
-        for (int b = 0; (b < joysticks[stickNum].numButtons) && (b < 32); ++b) {
-            button[b] = (joystickState.rgbButtons[b] & 128) ? true : false;
-        }
+    G3DJOYDATA joystickState;
 
-        axis.resize(joysticks[stickNum].numAxes, false);
-        const int numaxes = joysticks[stickNum].numAxes;
-        if (numaxes > 0) {
-            axis[0] = (float)( ((float)joystickState.lX - 32768) / 32768 );
-        }
-        if (numaxes > 1) {
-            axis[1] = (float)( ((float)joystickState.lY - 32768) / 32768 );
-        }
-        if (numaxes > 2) {
-            axis[2] = (float)( ((float)joystickState.lZ - 32768) / 32768 );
-        }
-        if (numaxes > 3) {
-            axis[3] = (float)( ((float)joystickState.rglSlider[0] - 32768) / 32768 );
-        }
-        if (numaxes > 4) {
-            axis[4] = (float)( ((float)joystickState.rglSlider[1] - 32768) / 32768 );
-        }
-        if (numaxes > 5) {
-            axis[5] = (float)( ((float)joystickState.lRx - 32768) / 32768 );
-        }
-        if (numaxes > 6) {
-            axis[6] = (float)( ((float)joystickState.lRy - 32768) / 32768 );
-        }
-        if (numaxes > 7) {
-            axis[7] = (float)( ((float)joystickState.lRz - 32768) / 32768 );
-        }
-    } else {
-        debugAssert( joysticks.length() <= stickNum );
+    _DirectInput::getJoystickState(stickNum, joystickState);
+
+    unsigned int numButtons, numAxes;
+    _DirectInput::getJoystickInfo(stickNum, numButtons, numAxes);
+
+    button.resize(numButtons, false);
+    for (int b = 0; (b < numButtons) && (b < 32); ++b) {
+        button[b] = (joystickState.rgbButtons[b] & 128) ? true : false;
+    }
+
+    axis.resize(numAxes, false);
+
+    if (numAxes > 0) {
+        axis[0] = (float)( ((float)joystickState.lX - 32768) / 32768 );
+    }
+    if (numAxes > 1) {
+        axis[1] = (float)( ((float)joystickState.lY - 32768) / 32768 );
+    }
+    if (numAxes > 2) {
+        axis[2] = (float)( ((float)joystickState.lZ - 32768) / 32768 );
+    }
+    if (numAxes > 3) {
+        axis[3] = (float)( ((float)joystickState.rglSlider[0] - 32768) / 32768 );
+    }
+    if (numAxes > 4) {
+        axis[4] = (float)( ((float)joystickState.rglSlider[1] - 32768) / 32768 );
+    }
+    if (numAxes > 5) {
+        axis[5] = (float)( ((float)joystickState.lRx - 32768) / 32768 );
+    }
+    if (numAxes > 6) {
+        axis[6] = (float)( ((float)joystickState.lRy - 32768) / 32768 );
+    }
+    if (numAxes > 7) {
+        axis[7] = (float)( ((float)joystickState.lRz - 32768) / 32768 );
     }
 }
 
@@ -1186,6 +1152,285 @@ void Win32Window::initWGL() {
 	hWnd = 0;				
 	DestroyWindow(hWnd);			
 	hWnd = 0;
+}
+
+
+/*
+    Win32APIWindow methods for non-DirectInput8 keyboard
+*/
+
+Win32APIWindow::Win32APIWindow(const GWindowSettings& s) {
+    initWGL();
+
+	_hDC = NULL;
+	_mouseVisible = true;
+	_inputCapture = false;
+
+    System::memset(keyStates, 0, sizeof(keyStates));
+    System::memset(_sdlKeys, 0, sizeof(_sdlKeys));
+
+	_sdlKeys[VK_BACK] = SDLK_BACKSPACE;
+	_sdlKeys[VK_TAB] = SDLK_TAB;
+	_sdlKeys[VK_CLEAR] = SDLK_CLEAR;
+	_sdlKeys[VK_RETURN] = SDLK_RETURN;
+	_sdlKeys[VK_PAUSE] = SDLK_PAUSE;
+	_sdlKeys[VK_ESCAPE] = SDLK_ESCAPE;
+	_sdlKeys[VK_SPACE] = SDLK_SPACE;
+	_sdlKeys[VK_APOSTROPHE] = SDLK_QUOTE;
+	_sdlKeys[VK_COMMA] = SDLK_COMMA;
+	_sdlKeys[VK_MINUS] = SDLK_MINUS;
+	_sdlKeys[VK_PERIOD] = SDLK_PERIOD;
+	_sdlKeys[VK_SLASH] = SDLK_SLASH;
+	_sdlKeys['0'] = SDLK_0;
+	_sdlKeys['1'] = SDLK_1;
+	_sdlKeys['2'] = SDLK_2;
+	_sdlKeys['3'] = SDLK_3;
+	_sdlKeys['4'] = SDLK_4;
+	_sdlKeys['5'] = SDLK_5;
+	_sdlKeys['6'] = SDLK_6;
+	_sdlKeys['7'] = SDLK_7;
+	_sdlKeys['8'] = SDLK_8;
+	_sdlKeys['9'] = SDLK_9;
+	_sdlKeys[VK_SEMICOLON] = SDLK_SEMICOLON;
+	_sdlKeys[VK_EQUALS] = SDLK_EQUALS;
+	_sdlKeys[VK_LBRACKET] = SDLK_LEFTBRACKET;
+	_sdlKeys[VK_BACKSLASH] = SDLK_BACKSLASH;
+	_sdlKeys[VK_RBRACKET] = SDLK_RIGHTBRACKET;
+	_sdlKeys[VK_GRAVE] = SDLK_BACKQUOTE;
+	_sdlKeys[VK_BACKTICK] = SDLK_BACKQUOTE;
+	_sdlKeys[VK_DELETE] = SDLK_DELETE;
+
+	_sdlKeys[VK_NUMPAD0] = SDLK_KP0;
+	_sdlKeys[VK_NUMPAD1] = SDLK_KP1;
+	_sdlKeys[VK_NUMPAD2] = SDLK_KP2;
+	_sdlKeys[VK_NUMPAD3] = SDLK_KP3;
+	_sdlKeys[VK_NUMPAD4] = SDLK_KP4;
+	_sdlKeys[VK_NUMPAD5] = SDLK_KP5;
+	_sdlKeys[VK_NUMPAD6] = SDLK_KP6;
+	_sdlKeys[VK_NUMPAD7] = SDLK_KP7;
+	_sdlKeys[VK_NUMPAD8] = SDLK_KP8;
+	_sdlKeys[VK_NUMPAD9] = SDLK_KP9;
+	_sdlKeys[VK_DECIMAL] = SDLK_KP_PERIOD;
+	_sdlKeys[VK_DIVIDE] = SDLK_KP_DIVIDE;
+	_sdlKeys[VK_MULTIPLY] = SDLK_KP_MULTIPLY;
+	_sdlKeys[VK_SUBTRACT] = SDLK_KP_MINUS;
+	_sdlKeys[VK_ADD] = SDLK_KP_PLUS;
+
+	_sdlKeys[VK_UP] = SDLK_UP;
+	_sdlKeys[VK_DOWN] = SDLK_DOWN;
+	_sdlKeys[VK_RIGHT] = SDLK_RIGHT;
+	_sdlKeys[VK_LEFT] = SDLK_LEFT;
+	_sdlKeys[VK_INSERT] = SDLK_INSERT;
+	_sdlKeys[VK_HOME] = SDLK_HOME;
+	_sdlKeys[VK_END] = SDLK_END;
+	_sdlKeys[VK_PRIOR] = SDLK_PAGEUP;
+	_sdlKeys[VK_NEXT] = SDLK_PAGEDOWN;
+
+	_sdlKeys[VK_F1] = SDLK_F1;
+	_sdlKeys[VK_F2] = SDLK_F2;
+	_sdlKeys[VK_F3] = SDLK_F3;
+	_sdlKeys[VK_F4] = SDLK_F4;
+	_sdlKeys[VK_F5] = SDLK_F5;
+	_sdlKeys[VK_F6] = SDLK_F6;
+	_sdlKeys[VK_F7] = SDLK_F7;
+	_sdlKeys[VK_F8] = SDLK_F8;
+	_sdlKeys[VK_F9] = SDLK_F9;
+	_sdlKeys[VK_F10] = SDLK_F10;
+	_sdlKeys[VK_F11] = SDLK_F11;
+	_sdlKeys[VK_F12] = SDLK_F12;
+	_sdlKeys[VK_F13] = SDLK_F13;
+	_sdlKeys[VK_F14] = SDLK_F14;
+	_sdlKeys[VK_F15] = SDLK_F15;
+
+	_sdlKeys[VK_NUMLOCK] = SDLK_NUMLOCK;
+	_sdlKeys[VK_CAPITAL] = SDLK_CAPSLOCK;
+	_sdlKeys[VK_SCROLL] = SDLK_SCROLLOCK;
+	_sdlKeys[VK_RSHIFT] = SDLK_RSHIFT;
+	_sdlKeys[VK_LSHIFT] = SDLK_LSHIFT;
+	_sdlKeys[VK_RCONTROL] = SDLK_RCTRL;
+	_sdlKeys[VK_LCONTROL] = SDLK_LCTRL;
+	_sdlKeys[VK_RMENU] = SDLK_RALT;
+	_sdlKeys[VK_LMENU] = SDLK_LALT;
+	_sdlKeys[VK_RWIN] = SDLK_RSUPER;
+	_sdlKeys[VK_LWIN] = SDLK_LSUPER;
+
+	_sdlKeys[VK_HELP] = SDLK_HELP;
+	_sdlKeys[VK_PRINT] = SDLK_PRINT;
+	_sdlKeys[VK_SNAPSHOT] = SDLK_PRINT;
+	_sdlKeys[VK_CANCEL] = SDLK_BREAK;
+	_sdlKeys[VK_APPS] = SDLK_MENU;
+
+
+	settings = s;
+    
+	std::string name = "G3D";
+    
+    // Add the non-client area
+	RECT rect;
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = settings.width;
+	rect.bottom = settings.height;
+
+	DWORD style = 0;
+	
+	if (s.framed) {
+
+        // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/Windowing/Windows/WindowReference/WindowStyles.asp
+		style |= WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
+
+		if (s.resizable) {
+			style |= WS_SIZEBOX;
+		}
+
+        if (s.visible) {
+            style |= WS_VISIBLE;
+        }
+	}
+
+	AdjustWindowRect(&rect, style, false);
+
+	int total_width  = rect.right - rect.left;
+	int total_height = rect.bottom - rect.top;
+    
+    HWND window = CreateWindow("window", 
+        name.c_str(),
+        style,
+        (GetSystemMetrics(SM_CXSCREEN) - total_width) / 2,
+        (GetSystemMetrics(SM_CYSCREEN) - total_height) / 2,
+        total_width,
+        total_height,
+        NULL,
+        NULL,
+        GetModuleHandle(NULL),
+        NULL);
+
+    alwaysAssertM(window != NULL, "");
+
+    if (s.visible) {
+        ShowWindow(window, SW_SHOW);
+    } 
+            
+    SetWindowLong(window, GWL_USERDATA, (LONG)this);
+
+    if (settings.fullScreen) {
+	    // Change the desktop resolution if we are running in fullscreen mode
+        if (!ChangeResolution(settings.width, settings.height, settings.rgbBits * 3, settings.refreshRate)) {
+			alwaysAssertM(false, "Failed to change resolution");
+        }
+    }
+	init(window);
+}
+
+
+Win32APIWindow::~Win32APIWindow() {
+}
+
+
+bool Win32APIWindow::pollEvent(GEvent& e) {
+	MSG message;
+
+	bool done = false;
+
+	while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&message);
+		DispatchMessage(&message);
+
+		if (message.hwnd == window) {
+			switch (message.message) {
+            case WM_CLOSE:
+            case WM_QUIT:
+                e.type = SDL_QUIT;
+
+                break;
+
+			case WM_KEYDOWN:
+				e.key.type = SDL_KEYDOWN;
+				e.key.state = SDL_PRESSED;
+
+                // Need the repeat messages to find LSHIFT and RSHIFT
+				//if (((message.lParam >> 30) & 0x01) == 0) {
+                if ((message.lParam & 0x0f) == 1) {
+					// This is not an autorepeat message
+					makeKeyEvent(message.wParam, message.lParam, e);
+					return true;
+				}
+				break;
+
+			case WM_KEYUP:
+				e.key.type = SDL_KEYUP;
+				e.key.state = SDL_RELEASED;
+
+                // Need the repeat messages to find LSHIFT and RSHIFT
+				//if (((message.lParam  >> 30 )& 0x01) == 0) {
+                if ((message.lParam & 0x0f) == 1) {
+					// This is not an autorepeat message
+					makeKeyEvent(message.wParam, message.lParam, e);
+					return true;
+				}
+				break;
+
+			case WM_ACTIVATE:
+                // TODO
+                /*
+                fActive = LOWORD(wParam);           // activation flag 
+                fMinimized = (BOOL) HIWORD(wParam); // minimized flag 
+                hwndPrevious = (HWND) lParam;       // window handle 
+                */
+                break;
+
+            case WM_LBUTTONDOWN:
+				mouseButton(true, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[0] = true;
+				return true;
+
+            case WM_MBUTTONDOWN:
+				mouseButton(true, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[1] = true;
+				return true;
+
+            case WM_RBUTTONDOWN:
+				mouseButton(true, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[2] = true;
+				return true;
+
+            case WM_LBUTTONUP:
+				mouseButton(false, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[0] = false;
+				return true;
+
+            case WM_MBUTTONUP:
+				mouseButton(false, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[1] = false;
+				return true;
+
+            case WM_RBUTTONUP:
+				mouseButton(false, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[2] = false;
+				return true;
+			} // switch
+		} // if
+    } // while
+
+	RECT rect;
+	GetWindowRect(window, &rect);
+	settings.x = rect.left;
+	settings.y = rect.top;
+
+	GetClientRect(window, &rect);
+	settings.width = rect.right - rect.left;
+	settings.height = rect.bottom - rect.top;
+
+	clientX = settings.x;
+	clientY = settings.y;
+
+	if (settings.framed) {
+		// Add the border offset
+		clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
+		clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
+	}
+
+    return false;
 }
 
 

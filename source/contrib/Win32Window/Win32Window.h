@@ -22,25 +22,17 @@
 #include <string>
 #include <time.h>
 
-// Define missing Virtual Keys
-#define VK_SEMICOLON	0xBA // ;
-#define VK_EQUALS	    0xBB // =
-#define VK_COMMA	    0xBC // ,
-#define VK_MINUS	    0xBD // -
-#define VK_PERIOD	    0xBE // .
-#define VK_SLASH	    0xBF // /
-#define VK_GRAVE	    0xC0 // ??
-#define VK_LBRACKET	    0xDB // [
-#define VK_BACKSLASH	0xDC // '\'
-#define VK_RBRACKET	    0xDD // ]
-#define VK_APOSTROPHE	0xDE // ??
-#define VK_BACKTICK	    0xDF // ??
 
 namespace G3D {
+
+// Forward declaration so friend works
+class Win32APIWindow;
 
 class Win32Window : public GWindow {
 private:
 	
+    friend Win32APIWindow;
+
 	GWindowSettings		 settings;
 	int                  _width;
     int                  _height;
@@ -54,7 +46,9 @@ private:
         [0] - left, [1] - middle, [2] - right */
     bool                 _mouseButtons[3];
 
-    G3D::Set< int >   _usedIcons;
+    G3D::Queue< GEvent > _keyboardEvents;
+
+    G3D::Set< int >      _usedIcons;
 
 	/** Coordinates of the client area in screen coordinates */
 	int				     clientX;
@@ -73,6 +67,9 @@ private:
         extensions can't be called until after a window has already been created. */
     static void initWGL();
 
+    // Special private constuctor for Win32APIWindow
+    explicit Win32Window() {}
+
 public:
 
 	/** Constructs from a new window */
@@ -81,6 +78,10 @@ public:
 	/** Constructs from an existing window */
 	Win32Window(const GWindowSettings& settings, HWND hwnd);
 	
+    /** Detects where DirectInput8 is available or not
+        and uses Win32 API keyboard input appropriately. */
+    static Win32Window* createBestWindow(const GWindowSettings& settings);
+
 	virtual ~Win32Window();
 	
 	void close();
@@ -152,9 +153,40 @@ public:
     virtual bool requiresMainLoop() const;
 };
 
-}
+
+class Win32APIWindow : public Win32Window {
+
+public:
+
+    Win32APIWindow(const GWindowSettings& settings);
+
+    ~Win32APIWindow();
+
+    virtual bool pollEvent(GEvent& e);
+
+    virtual int numJoysticks() const {
+        return 0;
+    }
+	
+    virtual std::string joystickName(unsigned int sticknum) {
+        return std::string("");
+    }
+
+    virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
+        axis.clear();
+        button.clear();
+        axis.resize(0);
+        button.resize(0);
+    }
+    
+};
+
+
+} // namespace G3D
 
 using G3D::Win32Window; // temporary backwards compatibility.
+using G3D::Win32APIWindow;
 
 #endif // G3D_WIN32
-#endif
+
+#endif // G3D_WIN32WINDOW_H
