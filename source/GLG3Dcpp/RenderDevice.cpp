@@ -1156,10 +1156,11 @@ debugAssertGLOk();
     setColor(newState.color);
     setNormal(newState.normal);
 
-    for (int u = _numTextureCoords - 1; u >= 0; --u) {
+    for (int u = max(_numTextures, _numTextureCoords) - 1; u >= 0; --u) {
         if (memcmp(&(newState.textureUnit[u]), &(state.textureUnit[u]), sizeof(RenderState::TextureUnit))) {
-            if (u < _numTextureUnits) {
+            if (u < numTextures()) {
                 setTexture(u, newState.textureUnit[u].texture);
+
                 if (u < numTextureUnits()) {
                     setTextureCombineMode(u, newState.textureUnit[u].combineMode);
                     setTextureMatrix(u, newState.textureUnit[u].textureMatrix);
