@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2002-07-09
-  @edited  2003-02-03
+  @edited  2003-08-05
  */
 #ifndef G3D_VECTOR4_H
 #define G3D_VECTOR4_H
@@ -29,6 +29,7 @@ public:
     Vector4(Real fX, Real fY, Real fZ, Real fW);
     Vector4(Real afCoordinate[4]);
     Vector4(const Vector4& rkVector);
+    Vector4(const class Color4& c);
     Vector4(const Vector3& rkVector, Real fW);
     Vector4(class BinaryInput& b);
     void serialize(class BinaryOutput& b) const;

@@ -782,6 +782,14 @@ public:
                          double edgeScale = 1);
 
 private:
+
+    /**
+     For performance, we don't actually unbind a texture when
+     turning off a texture unit, we just disable it.  If it 
+     is enabled with the same texture, we've saved a swap.
+    */
+    uint32               currentlyBoundTexture[MAX_TEXTURE_UNITS];
+
     /**
      Snapshot of the state maintained by the render device.
      */
@@ -793,6 +801,7 @@ private:
         class TextureUnit {
         public:
             Vector4             texCoord;
+
             /** NULL if not bound */
             TextureRef          texture;
             double              textureMatrix[16];

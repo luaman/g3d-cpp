@@ -4,12 +4,13 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
   
  @created 2001-07-09
- @edited  2003-02-03
+ @edited  2003-08-04
  */
 
 #include <stdlib.h>
 #include <limits>
 #include "G3D/Vector4.h"
+#include "G3D/Color4.h"
 #include "G3D/g3dmath.h"
 #include "G3D/stringutils.h"
 #include "G3D/BinaryInput.h"
@@ -24,6 +25,13 @@ unsigned int Vector4::hashCode() const {
     unsigned int whash = (*(int*)(void*)(&w));
 
     return xhash + (yhash * 37) + (zhash * 101) + (whash * 241);
+}
+
+Vector4::Vector4(const class Color4& c) {
+    x = c.r;
+    y = c.g;
+    z = c.b;
+    w = c.a;
 }
 
 

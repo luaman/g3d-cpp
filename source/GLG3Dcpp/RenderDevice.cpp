@@ -258,6 +258,10 @@ RenderDevice::RenderDevice() {
 		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
+
+    for (int i = 0; i < MAX_TEXTURE_UNITS; ++i) {
+        currentlyBoundTexture[i] = 0;
+    }
 }
 
 void RenderDevice::initGLExtensions() {
@@ -2198,9 +2202,18 @@ void RenderDevice::setTexture(
     }
 
     if ((Texture*)texture != NULL) {
+        GLint id = texture->getOpenGLID();
         GLint u = texture->getOpenGLTextureTarget();
+
+        if (currentlyBoundTexture[unit] != id) {
+            glBindTexture(u, id);
+            currentlyBoundTexture[unit] = id;
+        }
+
         glEnable(u);
-        glBindTexture(u, texture->getOpenGLID());
+    } else {
+        // Disabled texture unit
+        currentlyBoundTexture[unit] = 0;
     }
 
     // Force a reload of the texture matrix if invertY != old invertY
