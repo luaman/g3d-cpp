@@ -10,6 +10,7 @@
 #define GLG3D_VAR_H
 
 #include "GLG3D/RenderDevice.h"
+#include "GLG3D/getOpenGLState.h"
 #include "GLG3D/glFormat.h"
 
 namespace G3D {

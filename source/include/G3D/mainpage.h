@@ -243,6 +243,7 @@
         G3D::Sky,
         G3D::Camera, 
         G3D::LightingParameters,
+        G3D::MD2Model,
         G3D::realWorldLocalTime, 
         G3D::UserInput, 
         G3D::ManualCameraController
@@ -619,6 +620,7 @@
 
    <P>
    <UL>
+     <LI> G3D::MD2Model
      <LI> FIX: Fixed a bug in Array shrinking that could cause memory corruption
      <LI> FIX: Windows with an aspect ratio of less than 1 now allowed.
      <LI> VARArea::reset() now waits for rendering calls using its vertex

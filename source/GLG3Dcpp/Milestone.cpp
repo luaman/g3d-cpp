@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-08-09
-  @edited  2003-08-09
+  @edited  2003-08-12
 */
 
 #include "GLG3D/Milestone.h"
@@ -35,6 +35,13 @@ Milestone::~Milestone() {
         if (factory.getCArray() != NULL) {
             // Save it for later
             factory.push(glfence);
+
+            if (factory.size() > 20) {
+                // We've deallocated an awful lot, so free some
+                glDeleteFencesNV(factory.size() - 5, &(factory.last()) - 5);
+                factory.resize(20);
+            }
+
         } else {
             glDeleteFencesNV(1, &glfence);
         }

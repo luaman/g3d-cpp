@@ -17,6 +17,8 @@ libGLG3D_la_SOURCES= Camera.cpp \
 					 VertexProgram.cpp \
 					 PixelProgram.cpp \
 					 Milestone.cpp \
+					 MD2Model.cpp \
+					 MD2Model_load.cpp \
 					 GPUProgram.cpp \
 					 getOpenGLState.cpp \
 					 glcalls.cpp \
@@ -40,6 +42,8 @@ libGLG3D_debug_la_SOURCES= Camera.cpp \
 					 PixelProgram.cpp \
 					 GPUProgram.cpp \
 					 Milestone.cpp \
+					 MD2Model.cpp \
+					 MD2Model_load.cpp \
 				         getOpenGLState.cpp \
 					 glcalls.cpp \
 					 glenumtostring.cpp 
