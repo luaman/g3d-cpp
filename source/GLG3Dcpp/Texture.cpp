@@ -467,7 +467,6 @@ TextureRef Texture::fromMemory(
 
         glEnable(target);
         glBindTexture(target, textureID);
-    debugAssertGLOk();
 
         int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
         
@@ -484,7 +483,6 @@ TextureRef Texture::fromMemory(
 
                 target = cubeFaceTarget[f];
             }
-    debugAssertGLOk();
 
             if (interpolate == TRILINEAR_MIPMAP) {
                 createMipMapTexture(target, bytes[f],
@@ -496,7 +494,6 @@ TextureRef Texture::fromMemory(
                               bytesFormat->packedBitsPerTexel / 8);
             }
         }
-    debugAssertGLOk();
     glStatePop();
 
     if (dimension != DIM_2D_RECT) {
@@ -586,16 +583,18 @@ void Texture::copyFromScreen(
     this->width   = (int)rect.width();
     this->height  = (int)rect.height();
     this->depth   = 1;
-    this->dimension = DIM_2D;
-    
+    debugAssert(this->dimension == DIM_2D || this->dimension == DIM_2D_RECT);
+
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glDisable(GL_TEXTURE_1D);
+    glDisable(GL_TEXTURE_2D);
     glDisable(GL_TEXTURE_3D);
     glDisable(GL_TEXTURE_RECTANGLE_NV);
     glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-    glEnable(GL_TEXTURE_2D);
+    GLenum target = dimensionToTarget(dimension);
+    glEnable(target);
 
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(target, textureID);
     int e = glGetError();
     alwaysAssertM(e == GL_NONE, 
         std::string("Error encountered during glBindTexture: ") + GLenumToString(e));
@@ -603,15 +602,17 @@ void Texture::copyFromScreen(
     double viewport[4];
     glGetDoublev(GL_VIEWPORT, viewport);
     double viewportHeight = viewport[3];
+    debugAssertGLOk();
     
-    glCopyTexImage2D(GL_TEXTURE_2D, 0, format->OpenGLFormat,
+    glCopyTexImage2D(target, 0, format->OpenGLFormat,
         rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
 
+    debugAssertGLOk();
     // Reset the original properties
-    setTexParameters(GL_TEXTURE_2D, wrap, interpolate);
+    setTexParameters(target, wrap, interpolate);
 
-    debugAssert(glGetError() == GL_NO_ERROR);
-    glDisable(GL_TEXTURE_2D);
+    debugAssertGLOk();
+    glDisable(target);
 
     // Once copied from the screen, the direction will be reversed.
     invertY = true;

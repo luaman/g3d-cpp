@@ -15,53 +15,30 @@
 
 namespace G3D {
 
-
-
-
 void GPUProgram::ArgList::set(const std::string& var, const TextureRef& val) {
 
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
-
-
     Arg arg;
 
 	switch (val->getDimension()) {
-
 	case Texture::DIM_2D:
-
 	    arg.type = SAMPLER2D;
-
 		break;
-
-
 
 	case Texture::DIM_2D_RECT:
-
 	    arg.type = SAMPLERRECT;
-
 		break;
-
-
 
 	case Texture::DIM_CUBE_MAP:
-
 	    arg.type = SAMPLERCUBE;
-
 		break;
-
 	}
 
-
-
     arg.texture = val;
-
-
-
     argTable.set(var, arg);
 
 }
-
 
 
 void GPUProgram::ArgList::set(const std::string& var, const CoordinateFrame& val) {
@@ -95,14 +72,9 @@ void GPUProgram::ArgList::set(const std::string& var, const Vector4& val) {
 void GPUProgram::ArgList::set(const std::string& var, const Vector3& val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
-
-
     Arg arg;
-
     arg.type = FLOAT3;
-
     arg.vector[0] = Vector4(val, 0);
-
     argTable.set(var, arg);
 
 }
@@ -111,14 +83,9 @@ void GPUProgram::ArgList::set(const std::string& var, const Vector3& val) {
 void GPUProgram::ArgList::set(const std::string& var, const Vector2& val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
-
-
     Arg arg;
-
     arg.type = FLOAT2;
-
     arg.vector[0] = Vector4(val, 0, 0);
-
     argTable.set(var, arg);
 }
 
@@ -126,14 +93,9 @@ void GPUProgram::ArgList::set(const std::string& var, const Vector2& val) {
 void GPUProgram::ArgList::set(const std::string& var, float          val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
-
-
     Arg arg;
-
     arg.type = FLOAT1;
-
     arg.vector[0] = Vector4(val, 0, 0, 0);
-
     argTable.set(var, arg);
 }
 
@@ -575,67 +537,36 @@ void GPUProgram::BindingTable::arbBind(GLenum target) const {
 bool GPUProgram::CgType(const std::string& s, GPUProgram::Type& t) {
 
 	if (s == "float4x4") {
-
 		t = FLOAT4X4;
-
 	} else if (s == "float3x3") {
-
 		t = FLOAT3X3;
-
 	} else if (s == "float2x2") {
-
 		t = FLOAT2X2;
-
 	} else if (s == "float4") {
-
 		t = FLOAT4;
-
 	} else if (s == "float3") {
-
 		t = FLOAT3;
-
 	} else if (s == "float2") {
-
 		t = FLOAT2;
-
 	} else if (s == "float1") {
-
 		t = FLOAT1;
-
 	} else if (s == "float") {
-
 		t = FLOAT1;
-
 	} else if (s == "sampler1D") {
-
 		t = SAMPLER1D;
-
 	} else if (s == "sampler2D") {
-
 		t = SAMPLER2D;
-
 	} else if (s == "sampler3D") {
-
 		t = SAMPLER3D;
-
 	} else if (s == "samplerCUBE") {
-
 		t = SAMPLERCUBE;
-
 	} else if (s == "samplerRECT") {
-
 		t = SAMPLERRECT;
-
 	} else {
-
 		return false;
-
 	}
 
-
-
 	return true;
-
 }
 
 
@@ -643,59 +574,33 @@ bool GPUProgram::CgType(const std::string& s, GPUProgram::Type& t) {
 std::string GPUProgram::toString(const Type& t) {
 
 	switch (t) {
-
 	case FLOAT4X4:
-
 		return "float4x4";
-
 	case FLOAT3X3:
-
 		return "float3x3";
-
 	case FLOAT2X2:
-
 		return "float2x2";
-
 	case FLOAT4:
-
 		return "float4";
-
 	case FLOAT3:
-
 		return "float3";
-
 	case FLOAT2:
-
 		return "float2";
-
 	case FLOAT1:
-
 		return "float1";
-
 	case SAMPLER1D:
-
 		return "sampler1D";
-
 	case SAMPLER2D:
-
 		return "sampler2D";
-
 	case SAMPLER3D:
-
 		return "sampler3D";
-
 	case SAMPLERCUBE:
-
 		return "samplerCUBE";
-
 	case SAMPLERRECT:
-
 		return "samplerRECT";
-
 	}
 
 	return "** unknown type**";
-
 }
 
 
@@ -726,11 +631,9 @@ void GPUProgram::BindingTable::parseVariable(TextInput& ti) {
     // read the binding name
     name = ti.readSymbol();
 
-
     if (! consumeSymbol(ti, ":")) {
 		goto abort;
 	}
-
 
     // see if it is the vertex or a constant register
     t = ti.peek();
