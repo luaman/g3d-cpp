@@ -25,6 +25,7 @@ libG3D_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Matrix3.cpp \
                          ../../../source/G3Dcpp/Matrix4.cpp \
                          ../../../source/G3Dcpp/MeshAlg.cpp \
+						 ../../../source/G3Dcpp/MeshAlgWeld.cpp \
                          ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
                          ../../../source/G3Dcpp/NetworkDevice.cpp \
                          ../../../source/G3Dcpp/PhysicsFrame.cpp \

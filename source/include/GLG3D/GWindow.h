@@ -9,7 +9,7 @@
 #ifndef G3D_GWINDOW_H
 #define G3D_GWINDOW_H
 
-#include "graphics3d.h"
+#include "graphics3D.h"
 #include "GLG3D/GWindowSettings.h"
 
 namespace G3D {

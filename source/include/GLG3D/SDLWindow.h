@@ -3,13 +3,13 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-11
+  @edited  2004-02-14
 */
 
 #ifndef G3D_SDLWINDOW_H
 #define G3D_SDLWINDOW_H
 
-#include "graphics3d.h"
+#include "graphics3D.h"
 #include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
 

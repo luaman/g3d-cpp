@@ -8,7 +8,7 @@ libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
                      ../../../source/GLG3Dcpp/GApp.cpp \
                      ../../../source/GLG3Dcpp/GPUProgram.cpp \
-    	  	     ../../../source/GLG3Dcpp/IFSModel.cpp \
+    	    	     ../../../source/GLG3Dcpp/IFSModel.cpp \
                      ../../../source/GLG3Dcpp/LightingParameters.cpp \
                      ../../../source/GLG3Dcpp/MD2Model.cpp \
                      ../../../source/GLG3Dcpp/MD2Model_load.cpp \
@@ -27,6 +27,7 @@ libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/shadowVolume.cpp \
                      ../../../source/GLG3Dcpp/getOpenGLState.cpp \
                      ../../../source/GLG3Dcpp/glcalls.cpp \
-                     ../../../source/GLG3Dcpp/glenumtostring.cpp 
+                     ../../../source/GLG3Dcpp/glenumtostring.cpp \
+				     ../../../source/GLG3Dcpp/SDLWindow.cpp
 
 libGLG3D_la_LIBADD= $(SDL_LIBS) -lGLU -L../g3d -lG3D
