@@ -17,3 +17,6 @@ stamp-h1
 *.plg
 g3ddocs.tag
 log.txt
+g3d-license.txt
+stderr.txt
+stdout.txt
