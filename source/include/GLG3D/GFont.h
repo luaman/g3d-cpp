@@ -78,7 +78,7 @@ public:
         characters up to about 64 pixels high. The small fonts require
         130k and look good up to about 32 pixels.
 
-        See Font::convertTGAtoPWF for creating new fonts in the FNT format:
+        See GFont::convertTGAtoPWF for creating new fonts in the FNT format:
     
       <P>
        This file is compressed by BinaryOutput::compress().  The contents 
@@ -96,18 +96,19 @@ public:
 
     /**
      Converts an 8-bit RAW font texture and INI file as produced by the Bitmap Font Builder program
-     to a graphics3d PWF font.  inFile should have no extension-- .tga and .ini will be appended to
+     to a graphics3d PWF font.  inFile should have no extension-- .raw and .ini will be appended to
      it.  outfile should end with ".FNT" or be "" for the default.
      <P>
       The Bitmap Font Builder program can be downloaded from http://www.lmnopc.com/bitmapfontbuilder/
-      Write out RAW files with characters CENTER aligned and right side up using this program.  Use the
-      full ASCII character set; the conversion will strip infrequently used characters automatically.
-      
+      Use the full ASCII character set; the conversion will strip infrequently used characters
+	  automatically. Write out RAW files with characters CENTER aligned and right side up using 
+	  this program.  
+	  Then, also write out an INI file; this contains the width of each character in the font. 
       Example:
       <PRE>
-          Font::convertRAWINItoPWF("c:/tmp/g3dfont/news", "d:/graphics3d/book/cpp/data/font/news.fnt");
+          GFont::convertRAWINItoPWF("c:/tmp/g3dfont/news", "d:/graphics3d/book/cpp/data/font/news.fnt");
       </PRE>
-	  @param infileBase The name of the tga/ini files
+	  @param infileBase The name of the raw/ini files
       @param outfile Defaults to infileBase + ".fnt"
      */
     static void convertRAWINItoPWF(const std::string& infileBase, std::string outfile = "");
