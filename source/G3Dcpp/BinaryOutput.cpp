@@ -28,22 +28,33 @@ void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
     }else if (bytes > maxBufferLen) {
         throw "Out of memory while writing to disk in BinaryOutput (could not create a large enough buffer).";
     } else {
-        // Dump the contents to disk.
+        // Dump the contents to disk.  In order to enable seeking, we keep the last
+        // 10 MB in memory.
+
+        size_t writeBytes = bufferLen - 10 * 1024 * 1024;
+
+        if (writeBytes < bufferLen / 3) {
+            // We're going to write less than 1/3 of the file;
+            // give up and just write the whole thing.
+            writeBytes = bufferLen;
+        }
+
         FILE* file = fopen(filename.c_str(), "ab");
         debugAssert(file);
 
-        size_t count = fwrite(buffer, 1, bufferLen, file);
-        debugAssert(count == bufferLen);
+        size_t count = fwrite(buffer, 1, writeBytes, file);
+        debugAssert(count == writeBytes);
 
         fclose(file);
         file = NULL;
 
         // Record that we saved this data.
-        alreadyWritten += bufferLen;
+        alreadyWritten += writeBytes;
+        bufferLen -= writeBytes;
+        pos -= writeBytes;
 
-        // Re-use the existing buffer; no need to allocate
-        pos = 0;
-        bufferLen = bytes + pos;
+        // Shift the unwritten data back appropriately in the buffer.
+        System::memcpy(buffer, buffer + writeBytes, bufferLen);
     }
 }
 

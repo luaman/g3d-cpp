@@ -238,7 +238,7 @@ public:
         }
 
         if (p < 0) {
-            throw "Cannot seek backwards on huge files.";
+            throw "Cannot seek more than 10 MB backwards on huge files.";
         }
 
         pos = p;
