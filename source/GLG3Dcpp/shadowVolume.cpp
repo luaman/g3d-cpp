@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-12-16
- @edited  2003-12-16
+ @edited  2004-01-15
  */
 
 #include "GLG3D/shadowVolume.h"
@@ -25,7 +25,7 @@ void beginMarkShadows(RenderDevice* renderDevice) {
         // Render only to the stencil buffer.
         renderDevice->disableDepthWrite();
         renderDevice->disableColorWrite();
-
+        app->renderDevice->setDepthTest(RenderDevice::DEPTH_LESS);
 
         // z-fail; decrement for front faces and increment
         // for back faces.

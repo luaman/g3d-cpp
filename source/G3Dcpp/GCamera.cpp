@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2004-01-13
+  @edited  2004-01-15
 */
 
 #include "G3D/GCamera.h"
@@ -15,7 +15,7 @@ namespace G3D {
 
 GCamera::GCamera() {
     nearPlane   = 0.1;
-    farPlane    = 300;
+    farPlane    = inf;
 	setFieldOfView(toRadians(55));
 }
 
