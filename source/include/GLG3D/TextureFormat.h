@@ -162,4 +162,8 @@ public:
 
 }
 
+inline unsigned int hashCode(const G3D::TextureFormat* f) {
+    return reinterpret_cast<unsigned int>(f);
+}
+
 #endif

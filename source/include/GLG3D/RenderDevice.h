@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-02-10
+  @edited  2004-02-12
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -905,9 +905,19 @@ private:
 
     bool                            _initialized;
 
+    /** Cache of values supplied to supportsTextureFormat.
+        Works on pointers since there is no way for users
+        to construct their own TextureFormats.
+     */
+    Table<TextureFormat*, bool>      _supportedTextureFormat;
+
 public:
 
     bool supportsOpenGLExtension(const std::string& extension) const;
+
+    /** Returns true if the given texture format is supported on this device.
+        Cannot be called between beginPrimitive and endPrimitive*/
+    bool supportsTextureFormat(TextureFormat* const fmt);
 
     /**
       When true, the 6-argument version of RenderDevice::setStencilOp

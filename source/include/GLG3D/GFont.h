@@ -67,6 +67,9 @@ private:
 public:
 
     /** The filename must be a FNT (proportional width font) file.
+        <P>
+        If a font file is not found, an assertion will fail, an exception will be thrown,
+        and texelSize() will return (0, 0).
         <P>   
         Several fonts in this format at varying resolutions are available in the data/font directory.
         The large fonts require 500k of memory when loaded and look good when rendering characters up to

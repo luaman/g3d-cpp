@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-05-23
- @edited  2003-11-19
+ @edited  2004-02-13
  */
 
 #include "GLG3D/TextureFormat.h"
@@ -65,6 +65,5 @@ const TextureFormat* TextureFormat::depth(int depthBits) {
         return DEPTH32;
     }
 }
-
 
 }
