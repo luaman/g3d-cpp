@@ -31,6 +31,8 @@ public:
     // Add state that should be visible to this applet.
     // If you have multiple applets that need to share
     // state, put it in the App.
+    
+    float x, y;
 
     class App*          app;
 
@@ -139,9 +141,9 @@ void Demo::init()  {
     for (int i = 0; i < 8000; ++i) {
         debugAssert(frame1decompressed.byte()[i] == frame1.byte()[i]);
     }
-*/
+
     app->im = Texture::fromFile("c:/tmp/brunette-walk-I_P-009.png");
-    
+*/    
 }
 
 
@@ -168,6 +170,13 @@ void Demo::doLogic() {
     }
 
 	// Add other key handling here
+    Array<float> axes;
+    Array<bool> buttons;
+    app->window()->getJoystickState(0, axes, buttons); 
+    if (axes.length() > 1) {
+        x = axes[0];
+        y = axes[1];
+    }
 }
 
 
@@ -197,15 +206,16 @@ void Demo::doGraphics() {
     }
 
     app->renderDevice->push2D();
-        app->renderDevice->setTexture(0, app->im);
-        Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice);
+//        app->renderDevice->setTexture(0, app->im);
+//        Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice);
+        app->debugFont->draw2D(format("X: %f  Y: %f", x, y), Vector2(5, 30));
     app->renderDevice->pop2D();
 }
 
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(true);
+	debugController.setActive(false);
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
