@@ -154,7 +154,7 @@ public:
         std::string filename;
     };
 
-    enum Format {JPEG, BMP, TGA, PCX, ICO, PNG, AUTODETECT, UNKNOWN};
+    enum Format {JPEG, BMP, TGA, PCX, ICO, PNG, PPM, AUTODETECT, UNKNOWN};
 
     int                     width;
     int                     height;
@@ -248,6 +248,9 @@ private:
     void encodePNG(
         BinaryOutput&       out) const;
 
+    void encodePPM(
+        BinaryOutput&       out) const;
+
     /**
      Decodes the buffer into this image.
      @format Guaranteed correct format.
@@ -272,6 +275,9 @@ private:
         BinaryInput&        input);
 
     void decodePNG(
+        BinaryInput&        input);
+
+    void decodePPM(
         BinaryInput&        input);
 
     /**

@@ -7,6 +7,7 @@
 #include "G3D/platform.h"
 #include "G3D/GImage.h"
 #include "G3D/debug.h"
+#include "G3D/TextInput.h"
 
 extern "C" {
 #ifdef G3D_WIN32
@@ -720,11 +721,20 @@ void GImage::encodePNG(
     png_destroy_write_struct(&png_ptr, &info_ptr);
 }
 
+void GImage::encodePPM(
+    BinaryOutput&       out) const {
+}
+
+
 void GImage::decode(
     BinaryInput&        input,
     Format              format) {
 
     switch (format) {
+    case PPM:
+        decodePPM(input);
+        break;
+
     case PNG:
         decodePNG(input);
         break;
@@ -1754,6 +1764,63 @@ void GImage::decodePNG(
     png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
 }
 
+void GImage::decodePPM(
+    BinaryInput&        input) {
+
+    int ppmWidth;
+    int ppmHeight;
+
+    double maxColor;
+
+    // Create a TextInput object to parse ascii format
+    // Mixed binary/ascii formats will require more 
+
+    const std::string inputStr = input.readString();
+
+    TextInput::Options ppmOptions;
+    ppmOptions.cppComments = false;
+    ppmOptions.otherCommentCharacter = '#';
+    ppmOptions.signedNumbers = true;
+    ppmOptions.singleQuotedStrings = false;
+
+    TextInput ppmInput(TextInput::FROM_STRING, inputStr, ppmOptions);
+
+    //Skip first line in header P#
+    ppmInput.readSymbol();
+
+    ppmWidth = ppmInput.readNumber();
+    ppmHeight = ppmInput.readNumber();
+    maxColor = ppmInput.readNumber();
+
+    if ((ppmWidth < 0) ||
+        (ppmHeight < 0) ||
+        (maxColor <= 0)) {
+        throw GImage::Error("Invalid PPM Header.", input.getFilename());
+    }
+
+    // I don't think it's proper to scale values less than 255
+    if (maxColor <= 255.0) {
+        maxColor = 255.0;
+    }
+
+    this->width = ppmWidth;
+    this->height = ppmHeight;
+    this->channels = 3;
+    // always scale down to 1byte per channel
+    this->_byte = (uint8*)malloc(width * height * 3);
+
+    // Read in the image data.  I am not validating if the values match the maxColor
+    // requirements.  I only scale if needed to fit within the byte available.
+    for (unsigned int i = 0; i < (width * height); ++i) {
+        // read in color and scale to max pixel defined in header
+        // A max color less than 255 might need to be left alone and not scaled.
+        Color3uint8& curPixel = *(this->pixel3() + i);
+        curPixel.r = ppmInput.readNumber() * (255.0 / maxColor);
+        curPixel.g = ppmInput.readNumber() * (255.0 / maxColor);
+        curPixel.b = ppmInput.readNumber() * (255.0 / maxColor);
+    }
+}
+
 GImage::Format GImage::resolveFormat(
     const std::string&  filename,
     const uint8*        data,
@@ -1789,6 +1856,10 @@ GImage::Format GImage::resolveFormat(
 
     // We can't look at the character if it is null.
     debugAssert(data != NULL);              
+
+    if ((dataLen > 3) && !memcmp(data, "P3", 2)) {
+        return PPM;
+    }
 
     if (dataLen > 8) {
         if (!png_sig_cmp((png_bytep)data, 0, 8))
