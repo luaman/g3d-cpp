@@ -218,6 +218,8 @@ public:
     enum Primitive {LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP,
                     TRIANGLE_FAN, QUADS, QUAD_STRIP, POINTS};
 
+    enum RenderMode {RENDER_SOLID, RENDER_WIREFRAME, RENDER_POINTS};
+
     
     enum {MAX_LIGHTS = 8};
 
@@ -507,6 +509,8 @@ public:
      */
     void setDepthTest(DepthTest test);
     void setStencilTest(StencilTest test);
+
+    void setRenderMode(RenderMode mode);
 
     /**
      Sets the constant used in the stencil test and operation (if op == STENCIL_REPLACE)
@@ -953,6 +957,8 @@ private:
         ShadeMode                   shadeMode;
     
         double                      polygonOffset;
+
+        RenderMode                  renderMode;
 
         double                      specular;
         double                      shininess;

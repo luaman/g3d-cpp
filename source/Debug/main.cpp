@@ -69,7 +69,6 @@ IFSEntity::IFSEntity(const std::string& filename, const Vector3& pos) {
     cframe = CoordinateFrame(pos);
 }
 
-
 void IFSEntity::render(RenderDevice* device) {
     device->pushState();
         device->setObjectToWorldMatrix(cframe);
@@ -87,7 +86,6 @@ void IFSEntity::render(RenderDevice* device) {
         model.render(device);
     device->popState();
 }
-
 
 RealTime IFSEntity::getIntersectionTime(const Ray& ray) {
     Vector3 dummy;

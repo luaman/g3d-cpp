@@ -122,7 +122,15 @@ SOURCE=.\GLG3Dcpp\GLight.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\GModel.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\GPUProgram.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\IFSModel.cpp
 # End Source File
 # Begin Source File
 
@@ -398,7 +406,15 @@ SOURCE=.\include\GLG3D\GLight.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\GModel.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\GPUProgram.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\IFSModel.h
 # End Source File
 # Begin Source File
 

@@ -876,6 +876,8 @@ void RenderDevice::setVideoMode() {
         glColor4d(1, 1, 1, 1);
         glNormal3d(0, 0, 0);
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
         setShininess(state.shininess);
         setSpecularCoefficient(state.specular);
 
@@ -1000,6 +1002,8 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     lineWidth                   = 1;
     pointSize                   = 1;
 
+    renderMode                  = RenderDevice::RENDER_SOLID;
+
     shininess                   = 15;
     specular                    = 0.8;
 
@@ -1009,7 +1013,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     color                       = Color4(1,1,1,1);
     normal                      = Vector3(0,0,0);
 
-    // Note: texture units initialize themselves
+    // Note: texture units and lights initialize themselves
 
     objectToWorldMatrix         = CoordinateFrame();
     cameraToWorldMatrix         = CoordinateFrame();
@@ -1114,6 +1118,7 @@ void RenderDevice::setState(
 
     setBlendFunc(newState.srcBlendFunc, newState.dstBlendFunc);
 
+    setRenderMode(newState.renderMode);
     setPolygonOffset(newState.polygonOffset);
     setLineWidth(newState.lineWidth);
     setPointSize(newState.pointSize);
@@ -1191,6 +1196,26 @@ void RenderDevice::setSpecularCoefficient(double s) {
 void RenderDevice::setShininess(double s) {
     state.shininess = s;
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, s);
+}
+
+
+void RenderDevice::setRenderMode(RenderMode m) {
+    if (state.renderMode != m) {
+        state.renderMode = m;
+        switch (m) {
+        case RENDER_SOLID:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            break;
+
+        case RENDER_WIREFRAME:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            break;
+
+        case RENDER_POINTS:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+            break;
+        }
+    }
 }
 
 
