@@ -1,1 +1,1 @@
-SUBDIRS = GLG3D_Demo MD2Model_Demo
+SUBDIRS = VAR_Demo MD2Model_Demo

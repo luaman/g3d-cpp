@@ -1,0 +1,5 @@
+*.ncb
+*.opt
+Debug
+log.txt
+Release
