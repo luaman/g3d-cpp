@@ -184,8 +184,23 @@ public:
         return *this;
     }
 
-    inline int operator== (const ReferenceCountedPointer<T> &y) const { 
+    inline bool operator==(const ReferenceCountedPointer<T>& y) const { 
         return (pointer == y.pointer); 
+    }
+
+
+    inline bool operator!=(const ReferenceCountedPointer<T>& y) const { 
+        return (pointer != y.pointer); 
+    }
+
+
+    inline bool operator>(const ReferenceCountedPointer<T>& y) const { 
+        return (pointer > y.pointer); 
+    }
+
+
+    inline bool operator<(const ReferenceCountedPointer<T>& y) const { 
+        return (pointer < y.pointer); 
     }
 
 
@@ -199,15 +214,19 @@ public:
     }
 
 
-    inline operator T*() const {
+/*    inline operator T*() const {
         return pointer;
     }
+    */
 
 
     inline bool isNull() const {
         return (pointer == NULL);
     }
 
+    inline bool notNull() const {
+        return (pointer != NULL);
+    }
 
     /**
      Returns true if this is the last reference to an object.

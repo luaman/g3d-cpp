@@ -84,7 +84,6 @@ Vector2 GFont::drawString(
     double sy = h / charHeight;
 
     double x0 = 0;
-
     for (int i = 0; i < n; ++i) {
         char c   = s[i] & 127;
 
@@ -110,6 +109,7 @@ Vector2 GFont::drawString(
 
             renderDevice->setTexCoord(0, Vector2((col + 1) * charWidth - 1, row * charHeight + 1));
             renderDevice->sendVertex(Vector2(x + w - sx, y + sy));
+                        
         }
 
         if (spacing == PROPORTIONAL_SPACING) {
@@ -118,7 +118,6 @@ Vector2 GFont::drawString(
             x += propW * subWidth[(int)'M'] * 0.85;
         }
     }
-
     return Vector2(x - x0, h);
 }
 
@@ -175,18 +174,18 @@ Vector2 GFont::draw2D(
         0, 1.0 / texture->getTexelHeight(), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1};
-
     renderDevice->pushState();
         renderDevice->setTextureMatrix(0, m);
         renderDevice->setTexture(0, texture);
 
         renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
+
+        // This is BLEND_SRC_ALPHA because the texture has no luminance, only alpha
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA,
 				   RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
         renderDevice->beginPrimitive(RenderDevice::QUADS);
-
             if (border.a > 0.05) {
                 renderDevice->setColor(border);
                 for (int dy = -1; dy <= 1; dy += 2) {
@@ -195,13 +194,11 @@ Vector2 GFont::draw2D(
                     }
                 }
             }
-
             renderDevice->setColor(
 		        Color4(color.r * renderDevice->getBrightScale(),
 			    color.g * renderDevice->getBrightScale(),
 			    color.b * renderDevice->getBrightScale(), color.a));
-            Vector2 bounds = drawString(s, x, y, w, h, spacing);
-
+          Vector2 bounds = drawString(s, x, y, w, h, spacing);
         renderDevice->endPrimitive();
 
     renderDevice->popState();

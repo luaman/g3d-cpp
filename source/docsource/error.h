@@ -1,12 +1,15 @@
 /** @page errorfaq Error FAQ
 
 
-<IMG SRC="G3D.gif" ALIGN=RIGHT>
-<P>
-
-
 There are a few confusing error messages you can run into when compiling,
 linking, and debugging programs that use G3D.  Here are the common fixes.
+
+<P>  
+<B><CODE>Error C2440: 'delete' : cannot convert from 'class G3D::ReferenceCountedPointer<class G3D::GFont>' to '' No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called</CODE></B>
+<P>
+You called <CODE>delete</CODE> on a reference counted class.  You do not need to delete G3D::GFontRef, G3D::TextureRef or any other Ref class; just 
+set them to NULL when you don't need them and the underlying memory will be recovered.
+
 
 <P>
 <B>Program crashes inside ReferenceCountedPointer methods</B>

@@ -103,12 +103,12 @@ public:
 		See GLG3D_Demo for examples.
     */
 	template<class T>
-	VAR(const T* sourcePtr, int _numElements, VARArea* _area) {
+	VAR(const T* sourcePtr, int _numElements, VARAreaRef _area) {
 		init(sourcePtr, _numElements, _area, glFormatOf(T), sizeof(T));
 	}		
 
 	template<class T>
-	VAR(const Array<T>& source, VARArea* _area) {
+	VAR(const Array<T>& source, VARAreaRef _area) {
 		init(source.getCArray(), source.size(), _area, glFormatOf(T), sizeof(T));
 	}
 

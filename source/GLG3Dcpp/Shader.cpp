@@ -68,7 +68,11 @@ void VertexAndPixelShader::GPUShader::init(
 		}
 
 		if (debug) {
-			alwaysAssertM(ok(), messages());
+            // Check for compilation errors
+            if (! ok()) {
+                debugPrintf("%s", messages());
+    			alwaysAssertM(ok(), messages());
+            }
 		}
 	}
 

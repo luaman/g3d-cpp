@@ -230,7 +230,9 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
 
         if (perVertexNormals) {
             renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-            if (IFSModel::varArea && (varArea->totalSize() <= sizeof(Vector3) * 2 * model->geometry.vertexArray.size())) {
+            if (! IFSModel::varArea.isNull() && 
+                (varArea->totalSize() <= 
+                  sizeof(Vector3) * 2 * model->geometry.vertexArray.size())) {
 
                 // Can use VAR
 

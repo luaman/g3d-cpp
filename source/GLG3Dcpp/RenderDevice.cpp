@@ -2274,7 +2274,7 @@ void RenderDevice::setTexture(
         }
     }
 
-    if ((Texture*)texture != NULL) {
+    if (texture.isNull()) {
         GLint id = texture->getOpenGLID();
         GLint u = texture->getOpenGLTextureTarget();
 
@@ -2293,8 +2293,8 @@ void RenderDevice::setTexture(
 
     // Force a reload of the texture matrix if invertY != old invertY.
     // This will take care of flipping the texture when necessary.
-    if (((Texture*)oldTexture == NULL) ||
-        ((Texture*)texture == NULL) ||
+    if (oldTexture.isNull() ||
+        texture.isNull() ||
         (oldTexture->invertY != texture->invertY)) {
 
         if (fixedFunction) {

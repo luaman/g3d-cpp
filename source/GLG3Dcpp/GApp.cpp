@@ -180,7 +180,7 @@ void GApp::run() {
 
 
 void GApp::renderDebugInfo() {
-    if (debugMode() && (debugFont != (CFontRef)NULL)) {
+    if (debugMode() && ! debugFont.isNull()) {
         renderDevice->push2D();
             Color3 color = Color3::white();
             double size = 10;
@@ -192,7 +192,6 @@ void GApp::renderDebugInfo() {
                 Color3 statColor = Color3::yellow();
 
                 debugFont->draw2D(renderDevice->getCardDescription(), pos, size, color, Color3::black());
-
                 pos.y += size * 1.5;
 
                 std::string s = format("%d fps", iRound(renderDevice->getFrameRate()));
