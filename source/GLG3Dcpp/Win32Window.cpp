@@ -234,18 +234,37 @@ Win32Window::Win32Window(const GWindowSettings& s) {
         if (s.visible) {
             style |= WS_VISIBLE;
         }
-	}
+    } else {
+
+        // Show nothing but the client area (cannot move window with mouse)
+        style |= WS_POPUP;
+    }
 
 	AdjustWindowRect(&rect, style, false);
 
 	int total_width  = rect.right - rect.left;
 	int total_height = rect.bottom - rect.top;
+
+    int startX = 0;
+    int startY = 0;
+
+    if (!s.fullScreen) {
+        if (s.center) {
+            
+            startX = (GetSystemMetrics(SM_CXSCREEN) - total_width) / 2;
+            startY = (GetSystemMetrics(SM_CYSCREEN) - total_height) / 2;
+        } else {
+
+            startX = s.x;
+            startY = s.y;
+        }
+    }
     
     HWND window = CreateWindow("window", 
         name.c_str(),
         style,
-        (GetSystemMetrics(SM_CXSCREEN) - total_width) / 2,
-        (GetSystemMetrics(SM_CYSCREEN) - total_height) / 2,
+        startX,
+        startY,
         total_width,
         total_height,
         NULL,
@@ -263,7 +282,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 
     if (settings.fullScreen) {
 	    // Change the desktop resolution if we are running in fullscreen mode
-        if (!ChangeResolution(settings.width, settings.height, settings.rgbBits * 3, settings.refreshRate)) {
+        if (!ChangeResolution(settings.width, settings.height, (settings.rgbBits * 3) + settings.alphaBits, settings.refreshRate)) {
 			alwaysAssertM(false, "Failed to change resolution");
         }
     }
