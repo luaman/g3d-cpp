@@ -18,3 +18,6 @@ DrawLogo      - The code used to render the G3D logo.  By Morgan.
 
 Webcam        - Capture a live video feed to a G3D texture. By Peter Hunt, p222h@aol.com
 
+Image         - A templated image class that provides interpolated sampling.  By Morgan
+
+wxGWindow     - GWindow implementation for wxWindows.  By Morgan

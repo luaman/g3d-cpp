@@ -13,10 +13,10 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-10-02
-  @edited  2004-10-02
+  @edited  2004-10-12
  */
-#ifndef G3D_WXG3DCANVAS_H
-#define G3D_WXG3DCANVAS_H
+#ifndef G3D_wxGWindow_H
+#define G3D_wxGWindow_H
 
 #define NO_SDL_MAIN
 #include <G3DAll.h>
@@ -59,7 +59,7 @@
 /** wxWindows implementation of G3D::GWindow.  Can either wrap an 
     existing wxGLCanvas so that it can be used with RenderDevice
     or create the wxGLCanvas for you from GWindowSettings.  */
-class wxG3DCanvas : public GWindow {
+class wxGWindow : public GWindow {
 private:
     /**
      @param attribList  NULL terminated wxGLCanvas attribute list
@@ -92,7 +92,7 @@ private:
 
 public:
 
-    wxG3DCanvas(
+    wxGWindow(
         const GWindowSettings&  _settings,
         wxWindow*               parent,
         wxWindowID              id = -1)  : invisible(wxCURSOR_BLANK), arrow(wxCURSOR_ARROW) {
@@ -121,7 +121,7 @@ public:
         window->GetClientSize(&settings.width, &settings.height);
     }
 
-    wxG3DCanvas(wxGLCanvas* canvas) : 
+    wxGWindow(wxGLCanvas* canvas) : 
         invisible(wxCURSOR_BLANK), 
         arrow(wxCURSOR_ARROW), 
         window(canvas) {

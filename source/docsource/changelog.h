@@ -12,20 +12,21 @@
    <P>
    Changes in 6.05:
    <UL>
-     <LI> Added support for full-screen antialiasing to Win32Window
-     <LI> GWindows now center and maximize on the primary monitor for Windows.
-     <LI> [ 1032750 ] Fix: Grayscale JPG errors [Corey]
-     <LI> Texture now supports DDS(2D/CubeMap) and PNG files [Corey]
-     <LI> PosedModel::texCoords
-     <LI> IFSModel now loads IFS 1.1 [Peter]
-     <LI> contrib/wxG3DCanvas [Morgan]
-     <LI> Win32Window handles all key events [Corey]
-     <LI> Win32Window handles joysticks through DirectInput8 [Corey]
+     <LI> contrib/Image [Morgan]
+     <LI> contrib/wxGWindow [Morgan]
+     <LI> Added support for full-screen antialiasing to contrib/Win32Window
+     <LI> Added joystick support to contrib/Win32Window [Corey]
      <LI> Win32Window fully-implements GWindow [Corey]
-     <LI> [ 1036225 ] Fix: Encode TGA support strips alpha channel [Corey]
-     <LI> [ 1038631 ] Fix: CoordinateFrame::slerp (Quat::slerp has fix) [Corey]
-     <LI> [ 1033686 ] Fix: GImage::GImage(filename) dies on certain (BMP) images [Corey]
-     <LI> Automatically switch to glCompressedTexImage2D in Texture::fromMemory [Corey]
+     <LI> Texture now supports DDS(2D/CubeMap) and PNG files [Corey]
+     <LI> G3D::PosedModel::texCoords
+     <LI> G3d::IFSModel now loads IFS 1.1 [Peter]
+     <LI> Automatically switch to glCompressedTexImage2D in G3d::Texture::fromMemory [Corey]
+     <LI> Fix: GWindows now center and maximize on the primary monitor for Windows.
+     <LI> Fix: [ 1044028 ] Linux TextOutput Warning
+     <LI> Fix: [ 1032750 ] Grayscale JPG errors [Corey]
+     <LI> Fix: [ 1036225 ] Encode TGA support strips alpha channel [Corey]
+     <LI> Fix: [ 1038631 ] CoordinateFrame::slerp (Quat::slerp has fix) [Corey]
+     <LI> Fix: [ 1033686 ] GImage::GImage(filename) dies on certain (BMP) images [Corey]
    </UL>
 
    <P>

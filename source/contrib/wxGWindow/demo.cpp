@@ -1,7 +1,7 @@
 //
-// Demo of wxG3DCanvas
+// Demo of wxGWindow
 //
-#include "wxG3DCanvas.h"
+#include "wxGWindow.h"
 
 // Define a new application type
 class MyApp: public wxApp
@@ -258,10 +258,10 @@ void TestGLCanvas::Render()
     // This demo is a quick hack on the glCanvas demo.
     // A better implementation would perform this
     // RenderDevice initialization on startup and 
-    // delete the wxG3DCanvas and RenderDevice on shutdown.
+    // delete the wxGWindow and RenderDevice on shutdown.
     static RenderDevice* renderDevice = NULL;
     if (renderDevice == NULL) {
-        wxG3DCanvas* w = new wxG3DCanvas(this);
+        wxGWindow* w = new wxGWindow(this);
         renderDevice = new RenderDevice();
         renderDevice->init(w);
     }
