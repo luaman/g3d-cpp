@@ -92,7 +92,7 @@
 
     #define errorCheck(exp, message) { \
         if (!(exp)) { \
-            G3D::_internal::_handleErrorCheck_(#exp, message, __FILE__, __LINE__, __debugPromptShowDialog__)) { \
+            G3D::_internal::_handleErrorCheck_(#exp, message, __FILE__, __LINE__, __debugPromptShowDialog__); \
             exit(-1); \
         } \
     }
