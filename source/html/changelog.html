@@ -23,6 +23,7 @@
 	 <LI> Fix: NetworkDevice now returns useful hostname on Linux (used to be "localhost")
 	 <LI> Fix: The conduit returned from NetworkDevice::createReliableConduit now has ok() == false when connect fails
 	 <LI> Fix: Tangent space computation of constant u, v now correct (was missing a factor of 2, leading to slight errors) [Max McGuire]
+	 <LI> Fix: [ 925456 ] select broken on Linux (Networking was broken on Linux)
    </UL>
 
    <P>
