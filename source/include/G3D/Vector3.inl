@@ -6,14 +6,21 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
   @created 2001-06-02
-  @edited  2004-01-30
+  @edited  2004-05-21
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
 
 //----------------------------------------------------------------------------
 #ifdef SSE
-    // MMX & SSE extensions
+	// If you receive an error on this line, it is because you do not have the file
+	// xmmintrin.h needed for MMX & SSE extensions.  Download and install
+    //
+    // http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe
+	// and
+    // http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe
+    //
+    // to get this file.
     #include <xmmintrin.h>
 #endif
 
