@@ -806,17 +806,20 @@ void RenderDevice::setVideoMode() {
     glEnable(GL_POINT_SMOOTH);
     // glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
     glEnable(GL_MULTISAMPLE_ARB);
+    debugAssertGLOk();
     if (vendor == NVIDIA) {
         glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     }
     glEnable(GL_NORMALIZE);
 
-
+    debugAssertGLOk();
     if (_supportsTwoSidedStencil) {
         glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
     }
 
+    debugAssertGLOk();
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    debugAssertGLOk();
     glEnable(GL_COLOR_MATERIAL);
     debugAssertGLOk();
 
