@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2004-03-19
+ @edited  2004-06-16
 */
 
 #include "GLG3D/glcalls.h"
@@ -533,6 +533,10 @@ TextureRef Texture::fromMemory(
     // Create the texture
     GLuint textureID = newGLTextureID();
     GLenum target = dimensionToTarget(dimension);
+
+    if (desiredFormat == TextureFormat::AUTO) {
+        desiredFormat = bytesFormat;
+    }
 
     glStatePush();
 
