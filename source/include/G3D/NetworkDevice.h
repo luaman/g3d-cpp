@@ -374,6 +374,13 @@ public:
 
     NetworkDevice();
 
+    /**
+     Returns the log this was initialized with.
+     */
+    Log* log() const {
+        return debugLog;
+    }
+
     /** Returns the name of this computer */
     std::string localHostName() const;
 
