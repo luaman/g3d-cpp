@@ -26,6 +26,8 @@ typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 #endif
 
 /**
+TODO: remove
+
   An ObjectShader is run once per primitive group.
   A primitive group is defined by either the pair of calls 
   RenderDevice::beginPrimitive...RenderDevice::endPrimitive
@@ -107,7 +109,7 @@ public:
 
 
 /**
-  A compatible vertex and pixel shader.
+  A compatible vertex and pixel shader.  Commonly used to implement a Shader.
 
   Only newer graphics cards with recent drivers (e.g. GeForceFX cards with driver version 57 or greater)
   support this API.  Use the VertexAndPixelShader::fullySupported method to determine at run-time
@@ -298,13 +300,7 @@ public:
 	static VertexAndPixelShaderRef fromStrings(
 		const std::string& vertexShader,
 		const std::string& pixelShader,
-        bool debugErrors = 
-#if _DEBUG
-        true
-#else
-        false
-#endif
-        );
+        bool debugErrors = DEBUG_SHADER);
 
 	/**
 	 To use the fixed function pipeline for part of the
@@ -319,13 +315,7 @@ public:
 	static VertexAndPixelShaderRef fromFiles(
 		const std::string& vertexShader,
 		const std::string& pixelShader,
-        bool debugErrors = 
-#if _DEBUG
-        true
-#else
-        false
-#endif
-        );
+        bool debugErrors = DEBUG_SHADER);
 
     /**
      Bindings of values to uniform variables for a VertexAndPixelShader.
@@ -434,6 +424,151 @@ public:
     const UniformDeclaration& arg(int i) const {
         return uniformArray[i];
     }
+};
+
+
+typedef ReferenceCountedPointer<class Shader>  ShaderRef;
+typedef ReferenceCountedPointer<class SimpleShader> SimpleShaderRef;
+
+/**
+ A Shader is a set of fixed function or programmable state that 
+ is set immediately before primitives are rendered, commonly 
+ to simulate a given material, e.g., "Glass", 
+ "Parallax Bump Mapping", or "Cook-Torrance Reflection".
+
+ Create Shaders once at the beginning of your program.  Shaders can be
+ selected using RenderDevice::setShader().
+
+ You can either write your own subclass of Shader using the guidelines
+ below or use SimpleShader, which provides the most common shader 
+ functionality through a generic interface.
+
+ <B>Subclassing</B>
+
+ Never return a Shader&, Shader*, or Shader-- always make static 
+ create methods that return ShaderRef or subclass (a Shader* will 
+ be automatically converted to a ShaderRef when returned).
+
+  Here's a sample shader.  Note that it uses GLSL to perform most
+  of the work (see the G3D demos for the actual GLSL code):
+
+  <PRE>
+      typedef ReferenceCountedPointer<class BumpShader> BumpShaderRef;
+
+      class BumpShader : public Shader {
+      private:
+
+        VertexAndPixelShader::ArgList   _args;
+        VertexAndPixelShaderRef         _vertexAndPixelShader;
+
+         BumpShader() {
+            _vertexAndPixelShader =
+              VertexAndPixelShader::fromFiles("bump_vertex.glsl", "bump_pixel.glsl");
+         }
+
+      public:
+
+         TextureRef    bumpMap;
+         Vector4       light;
+
+         BumpShaderRef create() {
+            return new BumpShader();
+         }
+
+         void beforePrimitive(class RenderDevice* rd) {
+			_args.set("osLight", 
+				rd->objectToWorldMatrix().toObjectSpace(lightVector));
+
+            rd->pushState();
+			rd->setVertexAndPixelShader(_vertexAndPixelShader, _args);
+ 	 	 }        
+         
+         void afterPrimitive(class RenderDevice* renderDevice) {
+            rd->popState();
+         }
+
+         const std::string& messages() const {
+            return _vertexAndPixelShader->messages();
+         }
+
+         bool ok() const {
+            return _vertexAndPixelShader->ok();
+         }
+
+      };
+    
+   </PRE>
+  <B>BETA API</B>
+  This API is subject to change.
+ */
+class Shader : public ReferenceCountedObject {
+public:
+	/**
+	 Invoked by RenderDevice immediately before a primitive group.
+	 Use this to set state on the RenderDevice (including the underlying
+     vertex and pixel shader).
+	 */
+    virtual void beforePrimitive(class RenderDevice* renderDevice) = 0;
+
+    virtual void afterPrimitive(class RenderDevice* renderDevice) = 0;
+
+    virtual const std::string& messages() const = 0;
+
+    virtual bool ok() const = 0;
+};
+
+
+/**
+  A G3D::Shader subclass that can be used to directly load 
+  and set the parameters of OpenGL Shading Language (GLSL)
+  programs that run on the graphics card.  This is a
+  convenient way to quickly add GLSL functionality to your
+  program.
+
+  <P>
+  For more flexibility and robustness, consider writing your 
+  own subclass of G3D::Shader that abstracts the program
+  arguments instead of exposing an ArgList directly.
+
+  <B>BETA API</B>
+  This API is subject to change.
+ */
+class SimpleShader : public Shader {
+protected:
+
+    VertexAndPixelShaderRef         _vertexAndPixelShader;
+
+    inline SimpleShader(VertexAndPixelShaderRef v) : _vertexAndPixelShader(v) {}
+
+public:
+
+    VertexAndPixelShader::ArgList   args;
+
+    static SimpleShaderRef fromFiles(
+        const std::string& vertexFile, 
+        const std::string& pixelFile) {
+        return new SimpleShader(VertexAndPixelShader::fromFiles(vertexFile, pixelFile));
+    }
+
+    static SimpleShaderRef fromStrings(
+        const std::string& vertexCode, 
+        const std::string& pixelCode) {
+        return new SimpleShader(VertexAndPixelShader::fromStrings(vertexCode, pixelCode));
+    }
+
+    virtual bool ok() const;
+
+	/**
+     Pushes state and loads the vertex and pixel shader.
+	 */
+    virtual void beforePrimitive(class RenderDevice* renderDevice);
+
+    /**
+     Pops state.
+     */
+    virtual void afterPrimitive(class RenderDevice* renderDevice);
+
+    const std::string& messages() const;
 };
 
 

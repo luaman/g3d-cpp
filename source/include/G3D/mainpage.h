@@ -59,6 +59,7 @@
 		G3D::Vector4,
         G3D::GameTime,
         G3D::RealTime,
+        G3D::tesselateComplexPolygon,
         G3D::toSeconds 
      
      <LI><B>Data structures</B> &nbsp; &nbsp;
@@ -198,7 +199,6 @@
         G3D::ReliableConduit
      </UL>
 
-     <H2>GLG3D</H2>
      <UL>
       <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
         G3D::Draw,
@@ -208,7 +208,6 @@
         G3D::PixelProgram,
         G3D::RenderDevice,
         G3D::RenderDeviceSettings,
-        G3D::tesselateComplexPolygon,
         G3D::Texture,
         G3D::TextureFormat,
         G3D::TextureManager,
@@ -216,9 +215,11 @@
         G3D::VARArea, 
         G3D::VertexProgram,
         G3D::VertexAndPixelShader,
+        G3D::Shader,
+        G3D::SimpleShader,
         G3D::ObjectShader
 
-      <LI><B>OpenGL</B> &nbsp; &nbsp;
+      <LI><B>OpenGL Extension</B> &nbsp; &nbsp;
         debugAssertGLOk,
         DECLARE_GLFORMATOF,
         G3D::glLoadMatrix, 

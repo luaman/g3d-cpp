@@ -14,6 +14,28 @@
 
 namespace G3D {
 
+bool SimpleShader::ok() const {
+    return _vertexAndPixelShader->ok();
+}
+
+
+void SimpleShader::beforePrimitive(class RenderDevice* renderDevice) {
+    renderDevice->pushState();
+    renderDevice->setVertexAndPixelShader(_vertexAndPixelShader, args);
+}
+
+
+void SimpleShader::afterPrimitive(class RenderDevice* renderDevice) {
+    renderDevice->popState();
+}
+
+
+const std::string& SimpleShader::messages() const {
+    return _vertexAndPixelShader->messages();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void VertexAndPixelShader::GPUShader::init(
 	const std::string&	name,
 	const std::string&	code,
