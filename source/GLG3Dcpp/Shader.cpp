@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-05-31
+ @edited  2004-07-18
  */
 
 #include "GLG3D/Shader.h"
@@ -118,26 +118,29 @@ VertexAndPixelShader::GPUShader::~GPUShader() {
 ////////////////////////////////////////////////////////////////////////////////////
 
 VertexAndPixelShader::VertexAndPixelShader(
-	const std::string& vsCode,
-	const std::string& vsFilename,
-	bool vsFromFile,
-	const std::string& psCode,
-	const std::string& psFilename,
-	bool psFromFile) :
+	const std::string&  vsCode,
+	const std::string&  vsFilename,
+	bool                vsFromFile,
+	const std::string&  psCode,
+	const std::string&  psFilename,
+	bool                psFromFile,
+    bool                debug) :
         _ok(true) {
 
-	vertexShader.init(vsFilename, vsCode, vsFromFile, false, GL_VERTEX_SHADER_ARB, "Vertex Shader");
-	pixelShader.init(psFilename, psCode, psFromFile, false, GL_FRAGMENT_SHADER_ARB, "Pixel Shader");
+	vertexShader.init(vsFilename, vsCode, vsFromFile, debug, GL_VERTEX_SHADER_ARB, "Vertex Shader");
+	pixelShader.init(psFilename, psCode, psFromFile, debug, GL_FRAGMENT_SHADER_ARB, "Pixel Shader");
     
     if (! vertexShader.ok()) {
         _ok = false;
+        _vertCompileMessages += vertexShader.messages();
         _messages += 
 			std::string("Compiling ") + vertexShader.shaderType() + " " + vsFilename + NEWLINE +
 			vertexShader.messages() + NEWLINE + NEWLINE;
-    }    
+    }
 
     if (! pixelShader.ok()) {
         _ok = false;
+        _fragCompileMessages += pixelShader.messages();
         _messages += 
 			std::string("Compiling ") + pixelShader.shaderType() + " " + psFilename + NEWLINE +
 			pixelShader.messages() + NEWLINE + NEWLINE;
@@ -168,6 +171,7 @@ VertexAndPixelShader::VertexAndPixelShader(
 	    glGetInfoLogARB(_glProgramObject, maxLength, &length, pInfoLog);
 
         _messages += std::string("Linking\n") + std::string(pInfoLog) + "\n";
+        _linkMessages += std::string(pInfoLog);
 	    free(pInfoLog);
         _ok = _ok && (linked == GL_TRUE);
     }
@@ -230,15 +234,17 @@ void VertexAndPixelShader::computeUniformArray() {
 
 VertexAndPixelShaderRef VertexAndPixelShader::fromStrings(
 	const std::string& vs,
-    const std::string& ps) {
+    const std::string& ps,
+    bool debugErrors) {
 
-    return new VertexAndPixelShader(vs, "", false, ps, "", false);
+    return new VertexAndPixelShader(vs, "", false, ps, "", false, debugErrors);
 }
 
 
 VertexAndPixelShaderRef VertexAndPixelShader::fromFiles(
 	const std::string& vsFilename,
-    const std::string& psFilename) {
+    const std::string& psFilename,
+    bool debugErrors) {
 
 	std::string vs;
 	std::string ps;
@@ -251,7 +257,7 @@ VertexAndPixelShaderRef VertexAndPixelShader::fromFiles(
 		ps = readFileAsString(ps);
 	}
 
-    return new VertexAndPixelShader(vs, vsFilename, true, ps, psFilename, true);
+    return new VertexAndPixelShader(vs, vsFilename, true, ps, psFilename, true, debugErrors);
 }
 
 

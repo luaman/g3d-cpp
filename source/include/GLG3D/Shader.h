@@ -244,6 +244,10 @@ protected:
     bool                    _ok;
     std::string             _messages;
 
+    std::string             _fragCompileMessages;
+    std::string             _vertCompileMessages;
+    std::string             _linkMessages;
+
 
     /** Converts from int and bool types to float types (e.g. GL_INT_VEC2_ARB -> GL_FLOAT_VEC2_ARB).
         Other types are left unmodified.*/
@@ -259,12 +263,13 @@ protected:
     static bool isSamplerType(GLenum e);
 
 	VertexAndPixelShader(
-		const std::string& vsCode,
-		const std::string& vsFilename,
-		bool vsFromFile,
-		const std::string& psCode,
-		const std::string& psFilename,
-		bool psFromFile);
+		const std::string&  vsCode,
+		const std::string&  vsFilename,
+		bool                vsFromFile,
+		const std::string&  psCode,
+		const std::string&  psFilename,
+		bool                psFromFile,
+        bool                debug);
 
 public:
 
@@ -282,15 +287,35 @@ public:
 	 */
 	static VertexAndPixelShaderRef fromStrings(
 		const std::string& vertexShader,
-		const std::string& pixelShader);
+		const std::string& pixelShader,
+        bool debugErrors = 
+#if _DEBUG
+        true
+#else
+        false
+#endif
+        );
 
 	/**
 	 To use the fixed function pipeline for part of the
 	 shader, pass an empty string.
+
+     @param debugErrors If true, a debugging dialog will
+        appear when there are syntax errors in the shaders.
+        If false, failures will occur silently; check
+        VertexAndPixelShader::ok() to see if the files
+        compiled correctly.
 	 */
 	static VertexAndPixelShaderRef fromFiles(
 		const std::string& vertexShader,
-		const std::string& pixelShader);
+		const std::string& pixelShader,
+        bool debugErrors = 
+#if _DEBUG
+        true
+#else
+        false
+#endif
+        );
 
     /**
      Bindings of values to uniform variables for a VertexAndPixelShader.
@@ -344,8 +369,25 @@ public:
         return _ok;
     }
 
+    /**
+     All compilation and linking messages, with additional formatting.
+     For details about a specific part of the process, see 
+     vertexErrors, pixelErrors, and linkErrors.
+     */
     inline const std::string& messages() const {
         return _messages;
+    }
+
+    inline const std::string& vertexErrors() const {
+        return _vertCompileMessages;
+    }
+
+    inline const std::string& pixelErrors() const {
+        return _fragCompileMessages;
+    }
+
+    inline const std::string& linkErrors() const {
+        return _linkMessages;
     }
 
     /** The underlying OpenGL object for the vertex/pixel shader pair.
