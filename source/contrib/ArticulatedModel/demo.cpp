@@ -180,7 +180,7 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         // We can choose to use a large bias or render from
         // the backfaces in order to avoid front-face self
         // shadowing.  Here, we use a large offset.
-        app->renderDevice->setPolygonOffset(4);
+        app->renderDevice->setPolygonOffset(5);
 
         for (int s = 0; s < shadowCaster.size(); ++s) {
             shadowCaster[s]->renderNonShadowed(app->renderDevice, NULL);
@@ -211,7 +211,7 @@ void Demo::doGraphics() {
     Array<PosedModelRef> opaque, transparent;
     PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
 
-    if (GLCaps::supports_GL_ARB_shadow()) {        
+    if (GLCaps::supports_GL_ARB_shadow() && (app->lighting->shadowedLightArray.size() > 0)) {        
         // Generate shadow map
         generateShadowMap(app->lighting->shadowedLightArray[0], opaque);
     }
@@ -377,9 +377,10 @@ void App::main() {
         material.specularExponent = Color3::white() * 30;
         model->updateAll();
 
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,3,0))));
+//        x += 2;
     }
+
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/sphere.ifs", 1);
 
@@ -393,17 +394,63 @@ void App::main() {
         x += 2;
     }
 
+    if (true) {
+        ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
-    {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/octagon.ifs", 10);
+        model->name = "Ground Plane";
+        ArticulatedModel::Part& part = model->partArray.next();
+        part.cframe = CoordinateFrame();
+        part.name = "root";
+    
+        const double S = 10.0;
+        part.geometry.vertexArray.append(
+            Vector3(-S, 0, -S),
+            Vector3(-S, 0, S),
+            Vector3(S, 0, S),
+            Vector3(S, 0, -S));
 
-        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        material.diffuse = Color3(.5,.3,0);
-        material.specular = Color3::black();
-        model->updateAll();
+        part.geometry.normalArray.append(
+            Vector3::unitY(),
+            Vector3::unitY(),
+            Vector3::unitY(),
+            Vector3::unitY());
+
+        part.texCoordArray.append(
+            Vector2(0,0),
+            Vector2(0,1),
+            Vector2(1,1),
+            Vector2(1,0));
+
+        part.tangentArray.append(
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX());
+
+        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
+        triList.indexArray.clear();
+        triList.indexArray.append(0, 1, 2);
+        triList.indexArray.append(0, 2, 3);
+
+        triList.twoSided = true;
+        triList.material.emit.constant = Color3::black();
+        triList.material.diffuse.constant = Color3::white();
+        triList.material.specular.constant = Color3::black();
+        triList.material.specularExponent.constant = Color3::white() * 60;
+        triList.material.reflect.constant = Color3::black();
+
+        triList.computeBounds(part);
+
+        part.indexArray = triList.indexArray;
+
+        part.computeIndexArray();
+        part.updateVAR();
+        part.updateShaders();
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
+    
+
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"contrib/ArticulatedModel/3ds/cube.3ds"
 //		"contrib/ArticulatedModel/3ds/jeep/jeep.3ds", 0.1
@@ -430,6 +477,7 @@ void App::main() {
         lighting->lightArray.clear();
 
         lighting->shadowedLightArray.clear();
+
         lighting->shadowedLightArray.append(params.directionalLight());
 
         // Decrease the blue since we're adding blue ambient

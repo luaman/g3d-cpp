@@ -73,21 +73,23 @@ void main(void) {
     // Compute projected shadow coord.
     shadowCoord = shadowCoord / shadowCoord.w;
 
-    const float s = 0.71 / 512.0;
-    vec3 shadow = 
-         shadow2D(shadowMap, shadowCoord.xyz).xyz / 3.0 +
-         (shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0)).xyz +
+    const float s = .5 / 512.0;
+    vec3 shadow =
+         (shadow2D(shadowMap, shadowCoord.xyz).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0)).xyz +
           shadow2D(shadowMap, shadowCoord.xyz + vec3( s, -s, 0)).xyz +
           shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  s, 0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0)).xyz) / 6.0;
+          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0)).xyz) / 5.0;
 
     gl_FragColor.rgb =
-        lightColor * shadow *
+            lightColor * shadow *
+        ( 
+#          if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
+              // Diffuse
+                max(dot(wsL, wsN), 0) * diffuseColor +
+#          endif
 
-          // Diffuse
-        ( max(dot(wsL, wsN), 0) * diffuseColor +
-
-          // Specular
-          pow(max(dot(wsL, wsR), 0), specularExponentConstant) * specularConstant);
+           // Specular
+           pow(max(dot(wsL, wsR), 0), specularExponentConstant) * specularConstant);
 }
 

@@ -8,6 +8,22 @@
 
 const ArticulatedModel::Pose ArticulatedModel::DEFAULT_POSE;
 
+ArticulatedModel::GraphicsProfile ArticulatedModel::profile() {
+    static GraphicsProfile p = UNKNOWN;
+
+    if (p == UNKNOWN) {
+        if (GLCaps::supports_GL_ARB_shader_objects()) {
+            p = PS20;
+        } else {
+            p = FIXED_FUNCTION;
+        }
+    }
+// TODO: Remove (here for testing)
+//p = FIXED_FUNCTION;
+    return p;
+}
+
+
 ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, const Vector3& scale) {
     ArticulatedModel* model = new ArticulatedModel();
 
@@ -20,6 +36,11 @@ ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, cons
     model->updateAll();
 
     return model;
+}
+
+
+ArticulatedModelRef ArticulatedModel::createEmpty() {
+    return new ArticulatedModel();
 }
 
 
@@ -53,7 +74,6 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
         part.cframe.translation *= scale;
 
         part.name = name;
-        part.indexArray = object.indexArray;
         partNameToIndex.set(part.name, p);
 
 //debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nodeID);
@@ -129,7 +149,7 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
 }
 
 
-void ArticulatedModel::Part::updateNormals() {
+void ArticulatedModel::Part::computeNormalsAndTangentSpace() {
     Array<MeshAlg::Face>    faceArray;
     Array<MeshAlg::Vertex>  vertexArray;
     Array<MeshAlg::Edge>    edgeArray;
@@ -212,7 +232,8 @@ void ArticulatedModel::Part::updateShaders() {
 void ArticulatedModel::updateAll() {
     for (int p = 0; p < partArray.size(); ++p) {
         Part& part = partArray[p];
-        part.updateNormals();
+        part.computeIndexArray();
+        part.computeNormalsAndTangentSpace();
         part.updateVAR();
         part.updateShaders();
     }
@@ -238,9 +259,6 @@ void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale
     part.name = "root";
     part.geometry.vertexArray = vertex;
     part.texCoordArray = texCoord;
-    MeshAlg::computeNormals(part.geometry, index);
-
-    part.indexArray = index;
 
     Part::TriList& triList = part.triListArray.next();
     triList.indexArray = index;
@@ -251,6 +269,14 @@ void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale
 
 void ArticulatedModel::Part::TriList::computeBounds(const Part& parentPart) {
     MeshAlg::computeBounds(parentPart.geometry.vertexArray, indexArray, boxBounds, sphereBounds);
+}
+
+
+void ArticulatedModel::Part::computeIndexArray() {
+    indexArray.clear();
+    for (int t = 0; t < triListArray.size(); ++t) {
+        indexArray.append(triListArray[t].indexArray);
+    }
 }
 
 

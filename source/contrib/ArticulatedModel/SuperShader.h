@@ -35,9 +35,9 @@ public:
         /** Color that varies over position.  NULL means white.*/
         TextureRef          map;
 
-        inline Component() : constant(Color3::black()), map(NULL) {}
+        inline Component() : constant(0, 0, 0), map(NULL) {}
         inline Component(const Color3& c) : constant(c), map(NULL) {}
-        inline Component(double c) : constant(c,c,c), map(NULL) {}
+        inline Component(double c) : constant(c, c, c), map(NULL) {}
 
         /** True if this material is definitely (0,0,0) everywhere */
         inline bool isBlack() const {

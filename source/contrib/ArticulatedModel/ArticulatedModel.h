@@ -40,20 +40,7 @@ public:
         PS20};
 
     /** Measures the capabilities of this machine */
-    inline static GraphicsProfile profile() {
-        static GraphicsProfile p = UNKNOWN;
-
-        if (p == UNKNOWN) {
-            if (GLCaps::supports_GL_ARB_shader_objects()) {
-                p = PS20;
-            } else {
-                p = FIXED_FUNCTION;
-            }
-        }
-// TODO: Remove (here for testing)
-//p = FIXED_FUNCTION;
-        return p;
-    }
+    static GraphicsProfile profile();
 
     class Pose {
     public:
@@ -79,16 +66,20 @@ public:
             /** If true, object is rendered without backface culling.*/
             bool                    twoSided;
 
-            /** In the same space as the vertices. */
+            /** In the same space as the vertices. Computed by computeBounds() */
             Sphere                  sphereBounds;
+            /** In the same space as the vertices. Computed by computeBounds() */
             Box                     boxBounds;
 
+            /** Set by Part::updateShader */
             ShaderRef               nonShadowedShader;
+            /** Set by Part::updateShader */
             ShaderRef               shadowMappedShader;
 
             TriList() : twoSided(false) {}
 
-            /** Recomputes the bounds */
+            /** Recomputes the bounds.  Called automatically by initIFS and init3DS.
+                Must be invoked manually if the geometry is later changed. */
             void computeBounds(const Part& parentPart);
 	    };
 
@@ -112,7 +103,10 @@ public:
         /** Indices into part array of sub-parts */
         Array<int>                  subPartArray;
 
-        /** All faces.  Used for updateNormals and rendering without materials. */
+        /** All faces.  Used for updateNormals and rendering without materials. 
+            Call computeIndexArray to update this automatically (which
+            might be less efficient than computing it manually if there are split 
+            vertices) */
         Array<int>                  indexArray;
 
         /**
@@ -137,7 +131,10 @@ public:
             geometry.normalArray and the tangent array. The Part::indexArray must be
             set before calling this.  If you compute the normals explicitly,
             this routine does not need to be called.*/
-        void updateNormals();
+        void computeNormalsAndTangentSpace();
+
+        /** Called automatically by updateAll */
+        void computeIndexArray();
 
         /** When geometry or texCoordArray is changed, invoke to
             update (or allocate for the first time) the VAR data.  You
@@ -189,6 +186,12 @@ public:
       @param scale Transform all vertices by this scale factor on load
       */
     static ArticulatedModelRef fromFile(const std::string& filename, const Vector3& scale);
+
+    /**
+     Creates a new articulated model that you can construct by
+     editing the partArray. 
+     */
+    static ArticulatedModelRef createEmpty();
 
     static ArticulatedModelRef fromFile(const std::string& filename, float scale = 1.0) {
         return fromFile(filename, Vector3(scale, scale, scale));

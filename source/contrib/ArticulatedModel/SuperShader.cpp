@@ -25,7 +25,8 @@ void SuperShader::configureShader(
     args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
     args.set("specularConstant",        material.specular.constant);
     args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
-    args.set("specularExponentConstant",material.specularExponent.constant);
+    // If specular exponent is black we get into trouble-- pow(x, 0) doesn't work right in shaders for some reason
+    args.set("specularExponentConstant",Color3::white().max(material.specularExponent.constant));
     args.set("reflectMap",              material.reflect.map.notNull() ? material.reflect.map : whiteMap);
     args.set("reflectConstant",         material.reflect.constant);
     args.set("emitMap",                 material.emit.map.notNull() ? material.emit.map : whiteMap);
@@ -43,7 +44,7 @@ void SuperShader::configureShader(
         args.set("lightPosition",   lighting->lightArray[0].position);
         args.set("lightColor",      lighting->lightArray[0].color);
     } else {
-        args.set("lightPosition",   Vector4(0,0,0,1));
+        args.set("lightPosition",   Vector4(0,1,0,0));
         args.set("lightColor",      Color3::black());
     }
 

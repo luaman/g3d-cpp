@@ -150,16 +150,18 @@ void main(void) {
     vec3 ambient = ambientTop + (ambientTop - ambientBottom) * min(wsN.y, 0);
 
     gl_FragColor.rgb =
-        #if defined(EMITCONSTANT) || defined(EMITMAP)
+#       if defined(EMITCONSTANT) || defined(EMITMAP)
             // Emissive
             emitColor +
-        #endif
+#       endif
 
-        // Ambient
-        diffuseColor * ambient +
+#       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
+            // Ambient
+            diffuseColor * ambient +
 
-        // Diffuse
-        max(dot(wsL, wsN), 0) * lightColor * diffuseColor +
+            // Diffuse
+            max(dot(wsL, wsN), 0) * lightColor * diffuseColor +
+#       endif
 
         // Specular
         pow(max(dot(wsL, wsR), 0), specularExponentConstant) * lightColor * specularConstant +
