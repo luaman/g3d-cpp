@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-11-12
+ @edited  2003-11-15
 */
 
 #ifndef G3D_MESHALG_H
@@ -59,6 +59,7 @@ public:
         int                     edgeIndex[3];
     };
 
+
     /** Oriented, indexed edge */
     class Edge {
     public:
@@ -84,6 +85,11 @@ public:
     public:        
         Array<Vector3>          vertexArray;
         Array<Vector3>          normalArray;
+
+        /**
+         Assignment is optimized using SSE.
+         */
+        Geometry& operator=(const Geometry& src);
 
         void clear() {
             vertexArray.clear();

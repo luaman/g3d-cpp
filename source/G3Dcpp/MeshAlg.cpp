@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2003-11-12
+  @edited  2003-11-15
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -35,6 +35,17 @@ MeshAlg::Edge::Edge() {
         // Negative face indices are faces that don't exist
         faceIndex[i]     = -1;
     }
+}
+
+
+MeshAlg::Geometry& MeshAlg::Geometry::operator=(const MeshAlg::Geometry& src) {
+    vertexArray.resize(src.vertexArray.size());
+    normalArray.resize(src.vertexArray.size());
+
+    System::memcpy(vertexArray.getCArray(), src.vertexArray.getCArray(), sizeof(Vector3)*vertexArray.size());
+    System::memcpy(normalArray.getCArray(), src.normalArray.getCArray(), sizeof(Vector3)*normalArray.size());
+
+    return *this;
 }
 
 
