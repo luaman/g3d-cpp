@@ -31,7 +31,8 @@ Application Framework <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 
     A prompt will appear when an assertion is violated.  On Linux the prompt will
     appear at the command line.  On Windows and OS X it will be a GUI dialog.
- 	<IMG SRC="debug.jpg">
+
+ 	<IMG SRC="assert.jpg">
 
     Note that you can choose to ignore the violation and continue your program.
 
