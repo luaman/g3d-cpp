@@ -188,7 +188,8 @@
         G3D::DiscoverySettings,
         G3D::LightweightConduit,
         G3D::NetAddress,
-        G3D::NetListener, 
+        G3D::NetListener,
+        G3D::NetMessage,
         G3D::NetworkDevice, 
         G3D::ReliableConduit
      </UL>
