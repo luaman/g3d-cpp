@@ -437,7 +437,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     Vector3&				outLocation,
     Vector3&                outNormal) {
 
-    float time = collisionTimeForMovingPointFixedPlane(point, velocity, triangle.plane(), outLocation, outNormal);
+    double time = collisionTimeForMovingPointFixedPlane(point, velocity, triangle.plane(), outLocation, outNormal);
 
     if (time == inf) {
         // No collision with the plane of the triangle.
