@@ -147,6 +147,9 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 
     alwaysAssertM(window != NULL, "");
 
+    // Set early so windows messages have value
+    this->window = window;
+
     SetWindowLong(window, GWL_USERDATA, (LONG)this);
 
     if (s.visible) {
@@ -159,6 +162,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 			alwaysAssertM(false, "Failed to change resolution");
         }
     }
+
 	init(window);
 
     // Set default icon if available
@@ -666,9 +670,10 @@ LRESULT WINAPI Win32Window::window_proc(
     
     if (message == WM_ACTIVATE) {
         if ((LOWORD(wparam) != WA_INACTIVE) &&
-            (HIWORD(wparam) == 0)) { // non-zero is minimized 
+            (HIWORD(wparam) == 0) &&
+            ((HWND)lparam != this_window->hwnd())) { // non-zero is minimized 
             this_window->_windowActive = true;
-        } else {
+        } else if ((HWND)lparam != this_window->hwnd()) {
             this_window->_windowActive = false;
         }
     }
