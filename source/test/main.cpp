@@ -783,7 +783,12 @@ int main(int argc, char** argv) {
     DATA_DIR     = demoFindData();
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(800, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+    {
+        RenderDeviceSettings settings;
+        settings.fsaaSamples = 1;
+        settings.resizable = true;
+        renderDevice->init(settings, debugLog);
+    }
     camera 	     = new Camera(renderDevice);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
@@ -799,7 +804,7 @@ int main(int argc, char** argv) {
     renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
-    controller->setActive(true);
+//    controller->setActive(true);
 
     RealTime now = getTime() - 0.001, lastTime;
 
@@ -839,12 +844,14 @@ void doSimulation(GameTime timeStep) {
 
 
 
-
 void doGraphics() {
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
     renderDevice->beginFrame();
+        // Cyan background
+	    glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
+
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
 
@@ -887,8 +894,16 @@ void doUserInput() {
     while (SDL_PollEvent(&event)) {
         switch(event.type) {
         case SDL_QUIT:
-	    endProgram = true;
-	    break;
+	        endProgram = true;
+	        break;
+
+        case SDL_VIDEORESIZE:
+            {
+                renderDevice->resize(event.resize.w, event.resize.h);
+                Rect2D full(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
+                renderDevice->setViewport(full);
+            }
+            break;
 
 	    case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {

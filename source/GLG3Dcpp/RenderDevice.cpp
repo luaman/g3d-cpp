@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-10-18
+ @edited  2003-10-30
  */
 
 
@@ -30,6 +30,10 @@
 #ifdef G3D_WIN32
     #include <winver.h>
 #endif
+
+// Code for testing FSAA:
+//#define SDL_1_26
+
 
 PFNGLMULTITEXCOORD1FARBPROC                 glMultiTexCoord1fARB		    = NULL;
 PFNGLMULTITEXCOORD1DARBPROC                 glMultiTexCoord1dARB		    = NULL;
@@ -412,8 +416,10 @@ bool RenderDevice::supportsOpenGLExtension(
 
 
 bool RenderDevice::init(
-    const RenderDeviceSettings& settings,
+    const RenderDeviceSettings& _settings,
     Log*                        log) {
+
+    settings = _settings;
 
     debugAssert(! initialized());
 
@@ -441,19 +447,12 @@ bool RenderDevice::init(
     const int desiredTextureUnits = 8;
 
     if (debugLog) {debugLog->println("Setting video mode");}
-	setVideoMode(
-        settings.width,
-        settings.height,
-        minimumDepthBits,
-        desiredDepthBits, 
-		minimumStencilBits,
-        desiredStencilBits,
-        settings.rgbBits,
-        settings.alphaBits,
-        settings.fullScreen,
-        settings.fsaaSamples,
-        settings.resizable,
-        settings.framed);
+
+    setVideoMode();
+
+    setCaption("Graphics3D");
+
+	glViewport(0, 0, getWidth(), getHeight());
 
     // Get the number of texture units
     glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &_numTextureUnits);
@@ -526,6 +525,12 @@ bool RenderDevice::init(
     if (debugLog) {
     debugLog->section("Video Status");
 
+    int actualFSAABuffers = 1, actualFSAASamples = 1;
+#ifdef SDL_1_26
+    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
+    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
+#endif
+
     debugLog->printf(
              "Capability    Minimum   Desired   Received  Ok?\n"
              "-------------------------------------------------\n"
@@ -537,6 +542,7 @@ bool RenderDevice::init(
              "Green                           %4d bits   %s\n"
              "Blue                            %4d bits   %s\n"
              "TextureUnits              %4d    %3d/%3d   %s\n"
+             "FSAA                      %2d/%2d    %2d/%2d %s\n"
 
              "Width             %8d pixels           %s\n"
              "Height            %8d pixels           %s\n"
@@ -606,6 +612,7 @@ bool RenderDevice::init(
              blueBits, "ok", 
 
              desiredTextureUnits, _numTextureUnits, rawTextureUnits, isOk(_numTextureUnits >= desiredTextureUnits),
+             1, settings.fsaaSamples, actualFSAABuffers, actualFSAASamples, isOk(settings.fsaaSamples == actualFSAASamples),
 
              settings.width, "ok",
              settings.height, "ok",
@@ -672,6 +679,155 @@ bool RenderDevice::init(
     }
 
 
+
+	inPrimitive        = false;
+	inIndexedPrimitive = false;
+
+    if (debugLog) debugLog->println("Done initializing RenderDevice.\n");
+
+    _initialized = true;
+    return true;
+}
+
+
+bool RenderDevice::initialized() const {
+    return _initialized;
+}
+
+
+#ifdef _WIN32
+
+extern HWND SDL_Window;
+
+HDC RenderDevice::getWindowHDC() const {
+    // Get Windows HDC
+    SDL_SysWMinfo info;
+
+    if (debugLog) {
+        debugLog->println("Getting HDC... ");
+    }
+    SDL_VERSION(&info.version);
+
+    int result = SDL_GetWMInfo(&info);
+
+    if (result != 1) {
+        if (debugLog) {
+            debugLog->println(SDL_GetError());
+        }
+        debugAssertM(false, SDL_GetError());
+    }
+
+    HDC hdc = GetDC(info.window);
+
+    if (hdc == 0) {
+        if (debugLog) {
+            debugLog->println("hdc == 0");
+        }
+        debugAssert(hdc != 0);
+    }
+
+    if (debugLog) {debugLog->println("HDC acquired.");}
+    return hdc;
+}
+
+#endif
+
+void RenderDevice::setGamma(
+    double              brightness,
+    double              gamma) {
+    
+    uint16 gammaRamp[256];
+    uint16 rgbGammaRamp[256 * 3];
+
+    for (int i = 0; i < 256; ++i) {
+        gammaRamp[i] =
+            (uint16)min(65535, 
+                      max(0, 
+                          pow((brightness * (i + 1)) / 256.0, gamma) * 
+                          65535 + Real(0.5)));
+
+        rgbGammaRamp[i] = gammaRamp[i];
+        rgbGammaRamp[i + 256] = gammaRamp[i];
+        rgbGammaRamp[i + 512] = gammaRamp[i];
+	}
+
+
+    #ifdef WIN32
+        BOOL success = SetDeviceGammaRamp(getWindowHDC(), rgbGammaRamp);
+    #else
+        bool success = (SDL_SetGammaRamp(gammaRamp, gammaRamp, gammaRamp) != -1);
+    #endif
+    
+    if (! success) {
+        if (debugLog) {debugLog->println("Error setting brightness!");}
+
+        #ifdef WIN32
+            debugAssertM(false, "Failed to set brightness");
+        #else
+            if (debugLog) {debugLog->println(SDL_GetError());}
+            debugAssertM(false, SDL_GetError());
+        #endif
+    }
+}
+
+
+void RenderDevice::resize(int w, int h) {
+    debugAssert(w > 0);
+    debugAssert(h > 0);
+    settings.width = w;
+    settings.height = h;
+
+	setVideoMode();
+}
+
+
+void RenderDevice::setVideoMode() {
+
+    debugAssertM(stateStack.size() == 0, "Cannot call setVideoMode between pushState and popState");
+    debugAssertM(beginEndFrame == 0, "Cannot call setVideoMode between beginFrame and endFrame");
+
+	// Request various OpenGL parameters
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      settings.depthBits);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    GL_TRUE);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,    settings.stencilBits);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,        settings.rgbBits);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,      settings.rgbBits);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,       settings.rgbBits);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,      settings.alphaBits);
+    SDL_GL_SetAttribute(SDL_GL_STEREO,          settings.stereo);
+
+#ifdef SDL_1_26
+    if (fsaaSamples > 1) {
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, settings.fsaaSamples);
+    }
+#endif
+
+	// Create a width x height OpenGL screen 
+    int flags = 
+        SDL_HWSURFACE |
+        SDL_OPENGL |
+        (settings.fullScreen ? SDL_FULLSCREEN : 0) |
+        (settings.resizable ? SDL_RESIZABLE : 0) |
+        (settings.framed ? 0 : SDL_NOFRAME);
+
+	if (SDL_SetVideoMode(settings.width, settings.height, 0, flags) == NULL) {
+        debugAssert(false);
+        if (debugLog) {debugLog->printf("Unable to create OpenGL screen: %s\n", SDL_GetError());}
+		error("Critical Error", format("Unable to create OpenGL screen: %s\n", SDL_GetError()).c_str(), true);
+		SDL_Quit();
+		exit(2);
+	}
+
+    static bool extensionsInitialized = false;
+    if (! extensionsInitialized) {
+        // First time through, initialize extensions
+        initGLExtensions();
+        extensionsInitialized = true;
+    }
+
+    // Reset all state
+
     // Set the refresh rate
     if (wglSwapIntervalEXT != NULL) {
         if (debugLog) {
@@ -685,9 +841,6 @@ bool RenderDevice::init(
     }
 
     SDL_EnableUNICODE(1);
-
-    // Cyan background
-	glClearColor(0.0f, 0.8f, 1.0f, 0.0f);
 
 	glClearDepth(1.0);
 
@@ -782,147 +935,6 @@ bool RenderDevice::init(
         glActiveTextureARB(GL_TEXTURE0_ARB);
 
     }
-
-	inPrimitive        = false;
-	inIndexedPrimitive = false;
-
-    if (debugLog) debugLog->println("Done initializing RenderDevice.\n");
-
-    _initialized = true;
-    return true;
-}
-
-
-bool RenderDevice::initialized() const {
-    return _initialized;
-}
-
-
-#ifdef _WIN32
-
-extern HWND SDL_Window;
-
-HDC RenderDevice::getWindowHDC() const {
-    // Get Windows HDC
-    SDL_SysWMinfo info;
-
-    if (debugLog) {
-        debugLog->println("Getting HDC... ");
-    }
-    SDL_VERSION(&info.version);
-
-    int result = SDL_GetWMInfo(&info);
-
-    if (result != 1) {
-        if (debugLog) {
-            debugLog->println(SDL_GetError());
-        }
-        debugAssertM(false, SDL_GetError());
-    }
-
-    HDC hdc = GetDC(info.window);
-
-    if (hdc == 0) {
-        if (debugLog) {
-            debugLog->println("hdc == 0");
-        }
-        debugAssert(hdc != 0);
-    }
-
-    if (debugLog) {debugLog->println("HDC acquired.");}
-    return hdc;
-}
-
-#endif
-
-void RenderDevice::setGamma(
-    double              brightness,
-    double              gamma) {
-    
-    uint16 gammaRamp[256];
-    uint16 rgbGammaRamp[256 * 3];
-
-    for (int i = 0; i < 256; ++i) {
-        gammaRamp[i] =
-            (uint16)min(65535, 
-                      max(0, 
-                          pow((brightness * (i + 1)) / 256.0, gamma) * 
-                          65535 + Real(0.5)));
-
-        rgbGammaRamp[i] = gammaRamp[i];
-        rgbGammaRamp[i + 256] = gammaRamp[i];
-        rgbGammaRamp[i + 512] = gammaRamp[i];
-	}
-
-
-    #ifdef WIN32
-        BOOL success = SetDeviceGammaRamp(getWindowHDC(), rgbGammaRamp);
-    #else
-        bool success = (SDL_SetGammaRamp(gammaRamp, gammaRamp, gammaRamp) != -1);
-    #endif
-    
-    if (! success) {
-        if (debugLog) {debugLog->println("Error setting brightness!");}
-
-        #ifdef WIN32
-            debugAssertM(false, "Failed to set brightness");
-        #else
-            if (debugLog) {debugLog->println(SDL_GetError());}
-            debugAssertM(false, SDL_GetError());
-        #endif
-    }
-}
-
-
-void RenderDevice::setVideoMode(
-    int         width, 
-    int         height, 
-	int         minimumDepthBits, 
-    int         desiredDepthBits, 
-	int         minimumStencilBits, 
-    int         desiredStencilBits,
-    int         colorBits,
-    int         alphaBits,
-    bool        fullscreen,
-    int         fsaaSamples,
-    bool        resizeable,
-    bool        framed) {
-
-	// Request various OpenGL parameters
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, desiredDepthBits);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, GL_TRUE);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, desiredStencilBits);
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, colorBits);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, colorBits);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, colorBits);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alphaBits);
-    if (fsaaSamples > 1) {
-      //  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-      //  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, fsaaSamples);
-    }
-
-
-	// Create a width x height OpenGL screen 
-    int flags = 
-        SDL_HWSURFACE |
-        SDL_OPENGL |
-        (fullscreen ? SDL_FULLSCREEN : 0) |
-        (resizeable ? SDL_RESIZABLE : 0) |
-        (framed ? 0 : SDL_NOFRAME);
-
-	if (SDL_SetVideoMode(width, height, 0, flags) == NULL) {
-        debugAssert(false);
-        if (debugLog) {debugLog->printf("Unable to create OpenGL screen: %s\n", SDL_GetError());}
-		error("Critical Error", format("Unable to create OpenGL screen: %s\n", SDL_GetError()).c_str(), true);
-		SDL_Quit();
-		exit(2);
-	}
-
-    initGLExtensions();
-
-    setCaption("Graphics3D");
-
-	glViewport(0, 0, getWidth(), getHeight());
 }
 
 

@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-10-29
+  @edited  2003-10-30
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -91,6 +91,9 @@ public:
         generally gives higher frame rates.*/
     bool    asychronous;
 
+    /** Allocate a stereo display context. true, <B>false</B> */
+    bool    stereo;
+
 
     /** The number of bytes of video memory to allocate
       for vertex arrays.  If 0, the VAR system is not initialized.  <B>If nonzero,
@@ -110,6 +113,10 @@ public:
     /** In cycles/sec */
     int     refreshRate;
 
+    /**
+     If true, you should set up your event loop as described in the 
+     docs for RenderDevice::resize.
+     */
     bool    resizable;
 
     /**
@@ -117,37 +124,23 @@ public:
      */
     bool    framed;
 
-    RenderDeviceSettings(
-        int     _width               = 800,
-        int     _height              = 600,
-        double  _lightSaturation     = 1.0,
-        bool    _fullScreen          = false,
-        size_t  _varVideoMemory      = 1024 * 1024,
-        bool    _asychronous         = true,
-        int     _rgbBits             = 8,
-        int     _alphaBits           = 8,
-        int     _depthBits           = 24,
-        int     _stencilBits         = 8,
-        int     _fsaaSamples         = 1,
-        bool    _hardware            = true,
-        int     _refreshRate         = 85,
-        bool    _resizable           = false,
-        bool    _framed              = true) :
-            width(_width),
-            height(_height), 
-            rgbBits(_rgbBits),
-            alphaBits(_alphaBits),
-            depthBits(_depthBits),
-            stencilBits(_stencilBits),
-            fsaaSamples(_fsaaSamples),
-            hardware(_hardware),
-            fullScreen(_fullScreen),
-            asychronous(_asychronous), 
-            varVideoMemory(_varVideoMemory),
-            lightSaturation(_lightSaturation),
-            refreshRate(_refreshRate),
-            resizable(_resizable),
-            framed(_framed) {}
+    RenderDeviceSettings() :
+        width(800),
+        height(600),
+        lightSaturation(1.0),
+        fullScreen(false),
+        varVideoMemory(4 * 1024 * 1024),
+        asychronous(true),
+        rgbBits(8),
+        alphaBits(8),
+        depthBits(24),
+        stencilBits(8),
+        fsaaSamples(1),
+        stereo(false),
+        hardware(true),
+        refreshRate(85),
+        resizable(false),
+        framed(true) {}
 };
 
 /**
@@ -171,12 +164,16 @@ public:
 
  <P> glEnable(GL_NORMALIZE) is set by default.
 
+ <P> For stereo rendering, set <CODE>RenderDeviceSettings::stereo = true</CODE>
+     and use glDrawBuffer to switch which eye is being rendered.  Only
+     use RenderDevice::beginFrame/RenderDevice::endFrame once per frame,
+     but do clear both buffers separately.
 
  <P>
  Example
   <PRE>
    RenderDevice renderDevice = new RenderDevice();
-   renderDevice->init(width, height);
+   renderDevice->init(RenderDeviceSettings());
   </PRE>
 
  RenderDevice requires SDL and OpenGL.  
@@ -343,19 +340,7 @@ private:
      */
     double                      lightSaturation;
 
-	void setVideoMode(  
-        int                     width,
-        int                     height, 
-		int                     minimumDepthBits,
-        int                     desiredDepthBits, 
-		int                     minimumStencilBits,
-        int                     desiredStencilBits,
-        int                     colorBits,
-        int                     alphaBits,
-        bool                    fullscreen,
-        int                     fsaaSamples,
-        bool                    resizable,
-        bool                    framed);
+	void setVideoMode();
 
     /**
      Initialize the OpenGL extensions.
@@ -1025,6 +1010,8 @@ private:
 
     bool                            _initialized;
 
+    RenderDeviceSettings            settings;
+
 public:
 
     bool supportsOpenGLExtension(const std::string& extension) const;
@@ -1069,25 +1056,6 @@ public:
  
     bool init(const RenderDeviceSettings& settings, class Log* log = NULL);
 
-    /**
-     @deprecated
-     */
-    bool init(
-        int             width,
-        int             height,
-        class Log*      log               = NULL,
-        double          lightSaturation   = 1.0,
-        bool            fullscreen        = false,
-        size_t          varVideoMemory    = 0,
-        bool            asyncVideoRefresh = false,
-        int             colorBits         = 8,
-        int             alphaBits         = 8,
-        int             depthBits         = 24,
-        int             stencilBits       = 8) {
-        return init(RenderDeviceSettings(width, height, lightSaturation, fullscreen, varVideoMemory,
-            asyncVideoRefresh, colorBits, alphaBits, depthBits, stencilBits), log);
-    }
-
     /** Returns true after RenderDevice::init has been called. */
     bool initialized() const;
 
@@ -1107,6 +1075,28 @@ public:
      Example: renderDevice->screenshot("screens/"); 
      */
     std::string screenshot(const std::string& filepath) const;
+
+    /**
+     Resize the window.  Typically called in response to a user resize event:
+     <PRE>
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch(event.type) {
+            case SDL_VIDEORESIZE:
+                {
+                    renderDevice->resize(event.resize.w, event.resize.h);
+                    Rect2D full(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
+                    renderDevice->setViewport(full);
+                }
+                break;
+            }
+        }
+
+     </PRE>
+
+      Resets all rendering state to the initial values.
+     */
+    void resize(int w, int h);
 
     /**
      Takes a screenshot of the front buffer and
