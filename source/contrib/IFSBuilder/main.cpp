@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 
     controller->setMoveRate(.1);
 
-    controller->setPosition(Vector3(2, 5, 3));
+    controller->setPosition(Vector3(2, 2, 2));
     controller->lookAt(Vector3(0,-.25,0));
 
     renderDevice->resetState();
@@ -80,8 +80,8 @@ int main(int argc, char** argv) {
     camera.setNearPlaneZ(-.05);
     RealTime now = System::getTick() - 0.001, lastTime;
 
-    std::string in("c:/tmp/palm1.3ds");
-    std::string outDir("c:/tmp/");
+    std::string in("d:/tmp/ah64rotr.3ds");
+    std::string outDir("d:/tmp/");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
@@ -104,12 +104,12 @@ int main(int argc, char** argv) {
         */
 
 	    controller->setActive(false);
-        model = new XIFSModel(filename[i], true);
-        model->name = "GD";//filename[i];
+        model = new XIFSModel(filename[i], false);
+        model->name = "AH-64 Apache Attack Helicopter Rotor";//filename[i];
 	    controller->setActive(true);
 
         //if (! pauseBetweenModels) {
-        //    model->save("c:/tmp/halfgear.ifs");//outDir + base + ".ifs");
+        //    model->save("d:/games/cpp/source/data/ifs/ah64-rotor.ifs");//outDir + base + ".ifs");
         //    exit(0);
         //}
 

@@ -3,13 +3,14 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-29
-  @edited  2004-10-04
+  @edited  2004-10-24
  */
 
 #ifndef ENTITY_H
 #define ENTITY_H
 
 #include <G3DAll.h>
+#include "Model.h"
 
 typedef int ID;
 enum {NO_ID = 0};
@@ -80,6 +81,9 @@ public:
  */
 class Entity {
 public:
+
+    enum ModelType {NONE = 0, HELICOPTER};
+
     /**
       Time period over which positions are lerped between
       the client value and the server value when there
@@ -91,7 +95,9 @@ public:
 
     Color3              color;
 
-    std::string         modelFilename;
+    Pose                pose;
+
+    ModelType           modelType;
 
     std::string         name;
 

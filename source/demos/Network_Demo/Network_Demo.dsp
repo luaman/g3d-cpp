@@ -111,6 +111,10 @@ SOURCE=.\messages.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Model.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Server.cpp
 # End Source File
 # Begin Source File
@@ -140,6 +144,10 @@ SOURCE=.\Entity.h
 # Begin Source File
 
 SOURCE=.\messages.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Model.h
 # End Source File
 # Begin Source File
 

@@ -22,8 +22,6 @@ public:
 
     GFontRef            font;
 
-    Table<std::string, IFSModelRef>     modelManager;
-
     /** NULL if not hosting.  Client is responsible
         for calling doSimulation and doNetwork
         on the hostingServer when it is non-null.

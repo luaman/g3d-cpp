@@ -77,7 +77,7 @@ void MeshAlg::computeNormals(
     Array<Vector3>&         vertexNormalArray,
     Array<Vector3>&         faceNormalArray) {
 
-    // Face normals
+    // Face normals (not unit length)
     faceNormalArray.resize(faceArray.size());
     for (int f = 0; f < faceArray.size(); ++f) {
         const Face& face = faceArray[f];

@@ -21,7 +21,7 @@ Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::ZERO) {
 void Entity::serialize(BinaryOutput& b) const {
     b.writeInt32(id);
     color.serialize(b);
-    b.writeString(modelFilename);
+    b.writeUInt32(modelType);
     frame.serialize(b);
     b.writeString(name);
     velocity.serialize(b);
@@ -32,7 +32,7 @@ void Entity::serialize(BinaryOutput& b) const {
 void Entity::deserialize(BinaryInput& b) {
     id = b.readInt32();
     color.deserialize(b);
-    modelFilename = b.readString();
+    modelType = (ModelType)b.readUInt32();
     frame.deserialize(b);
     name = b.readString();
     velocity.deserialize(b);
@@ -94,6 +94,8 @@ void Entity::doSimulation(SimTime dt) {
     const double yawVel   = clampYaw * toRadians(45) * clampVel * 
                             -sign(velocity.dot(cframe.rotation.getColumn(2)));
     const double dYaw     = yawVel * dt;
+
+    pose.rotorAngle = wrap(pose.rotorAngle - dt * 20, -G3D_PI * 100, G3D_PI * 100);
 
     frame.yaw += dYaw;
 

@@ -43,6 +43,8 @@ public:
 
     class App*					app;
 
+    IFSModelRef                 model;
+
     Demo(App* app);    
 
     virtual void init();
@@ -55,6 +57,8 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
+
+    model = IFSModel::create("D:/libraries/g3d-6_05-b01/data/ifs/cube.ifs");
 
 }
 

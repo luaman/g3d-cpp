@@ -12,6 +12,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added data/ah64-body and ah64-rotor
+     <LI> demos/Network_Demo now uses a helicopter model instead of a plane
      <LI> G3D::VARArea::gl_vertexBufferObject and G3D::VARArea::gl_basePointer for breaking
           the VARArea abstraction.
      <LI> GLG3D.h no longer links against SDLMain.lib on Windows if _CONSOLE is defined

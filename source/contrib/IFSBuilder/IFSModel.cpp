@@ -75,9 +75,18 @@ void XIFSModel::set(MeshBuilder& builder) {
         }
     }
 
-
     Array<MeshAlg::Face> faceArray;
     Array<Array<int> >   adjacentFaceArray;
+
+    // Apply a transformation.
+    /*
+    CoordinateFrame cframe;
+    cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, toRadians(180));
+    for (int i = 0; i < geometry.vertexArray.size(); ++i) {
+        geometry.vertexArray[i] = cframe.pointToWorldSpace(geometry.vertexArray[i]);
+    }
+    */
+
     MeshAlg::computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
     MeshAlg::computeNormals(geometry.vertexArray, faceArray, adjacentFaceArray, geometry.normalArray, faceNormalArray);
 
@@ -129,8 +138,7 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
 
     std::string f = toLower(filename);
 
-    createHalfGear(); return;
-
+    //createHalfGear(); return;
     //createGrid(flat2D, 1024, true); return;
     //createGrid(lumpy2D, 1024, true); return;
     //createGrid(cliff2D, 1024, true); return;
@@ -784,7 +792,7 @@ void XIFSModel::loadMD2(const std::string& filename) {
 
 void XIFSModel::load3DS(const std::string& filename) {
     MeshBuilder builder(_twoSided);
-    
+
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
     Load3DS loader(b);
@@ -952,10 +960,9 @@ void XIFSModel::render() {
         int step = iMax(1, geometry.vertexArray.size() / 50);
         for (int v = 0; v < geometry.vertexArray.size(); v += step) {
             drawBillboardString(font, format("%d", v), geometry.vertexArray[v], S, Color3::YELLOW, Color3::BLACK);
-        }
-        */
+        }*/
 
-        // Draw::vertexNormals(geometry, renderDevice);
+        //Draw::vertexNormals(geometry, renderDevice);
 
         // Label edges
         //for (int e = 0; e < edgeArray.size(); ++e) {
@@ -984,27 +991,12 @@ void XIFSModel::render() {
 
 
 void XIFSModel::save(const std::string& filename) {
-    BinaryOutput out(filename, G3D_LITTLE_ENDIAN);
 
-    out.writeString32("IFS");
-    out.writeFloat32(1.0);
-    out.writeString32(name);
-
-    out.writeString32("VERTICES");
-    out.writeUInt32(geometry.vertexArray.size());
-    int i;
-    for (i = 0; i < geometry.vertexArray.size(); ++i) {
-        out.writeVector3(geometry.vertexArray[i]);
+    Array<int> index;
+    for (int i = 0; i < triangleArray.size(); ++i) {
+        index.append(triangleArray[i].index[0], triangleArray[i].index[1], triangleArray[i].index[2]);
     }
 
-    out.writeString32("TRIANGLES");
-    out.writeUInt32(triangleArray.size());
-    for (i = 0; i < triangleArray.size(); ++i) {
-        out.writeUInt32(triangleArray[i].index[0]);
-        out.writeUInt32(triangleArray[i].index[1]);
-        out.writeUInt32(triangleArray[i].index[2]);
-    }
-    
-    out.commit();
+    IFSModel::save(filename, name, index, geometry.vertexArray, texCoordArray);
 }
 

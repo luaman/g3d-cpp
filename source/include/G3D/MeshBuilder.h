@@ -23,8 +23,8 @@ class MeshBuilder {
 public:
 
     /**
-     Set close to AUTO_WELD to weld vertices closer than 1/2
-     the smalled edge length in a model.
+     Set setWeldRadius to AUTO_WELD to weld vertices closer than 1/2
+     the smallest edge length in a model.
      */
     enum {AUTO_WELD = -100};
 
@@ -70,7 +70,7 @@ public:
     void setName(const std::string& n);
 
     /** Vertices within this distance are considered identical.  
-        Use AUTO_WELD to have the distance be a function of the model size (default).*/
+        Use AUTO_WELD (the default) to have the distance be a function of the model size.*/
     void setWeldRadius(double r) {
         close = r;
     }

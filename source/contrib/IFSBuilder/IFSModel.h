@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2004-05-14
+  @edited  2004-10-24
  */ 
 
 #ifndef XIFSModel_H
@@ -21,6 +21,7 @@ private:
     };
 
     MeshAlg::Geometry       geometry;
+    Array<Vector2>          texCoordArray;
     Array<Vector3>          faceNormalArray;
     Array<Triangle>         triangleArray;
 

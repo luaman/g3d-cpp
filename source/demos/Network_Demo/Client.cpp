@@ -252,19 +252,11 @@ void Client::doLogic() {
 
 
 void Client::renderEntity(const Entity& entity) {
-    const std::string modelFilename = entity.modelFilename;
+    static HelicopterRef model;
 
-    if (! app->modelManager.containsKey(modelFilename)) {
-        // Load a model the first time it is used.
-        std::string filename = app->dataDir + modelFilename;
-        app->debugLog->printf("Loading \"%s\"....", filename.c_str());
-        app->modelManager.set(modelFilename,
-            IFSModel::create(filename, 10));
-        app->debugLog->printf("Done.\n\n");
+    if (model.isNull()) {
+        model = Helicopter::create(app->dataDir);
     }
-
-    // Get the model
-    IFSModelRef model = app->modelManager[modelFilename];
 
     // Lerp between old and new values
     CoordinateFrame cframe = entity.smoothCoordinateFrame();
@@ -273,10 +265,8 @@ void Client::renderEntity(const Entity& entity) {
     GMaterial material;
     material.color = entity.color;
     material.specularCoefficient = 1.0;
-    PosedModelRef posedModel = model->pose(cframe, material);
+    model->render(app->renderDevice, cframe, entity.pose, material);
 
-    // Render the model
-    posedModel->render(app->renderDevice);
 }
 
 

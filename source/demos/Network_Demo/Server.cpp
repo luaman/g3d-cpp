@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-05-03
+  @edited  2004-10-24
  */
 
 #include "Server.h"
@@ -99,8 +99,14 @@ void Server::acceptIncomingClient() {
         // Create a new object for the client
         Entity entity;
         entity.id                   = client.id;
-        entity.color                = Color3::wheelRandom();
-        entity.modelFilename        = "ifs/p51-mustang.ifs";
+        if (client.id == 1) {
+            // Force the first object to black so a single 
+            // player helicopter will look good.
+            entity.color            = Color3::black();
+        } else {
+            entity.color            = Color3::wheelRandom();
+        }
+        entity.modelType            = Entity::HELICOPTER;
         entity.frame.translation    = Vector3::random() * 10;
         entity.frame.yaw            = random(0, G3D_TWO_PI);
         entity.name                 = randomName();
