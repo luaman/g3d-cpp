@@ -378,7 +378,7 @@ private:
 			    memberTable.set(point[i].value, node);
 		    }
 		    
-	    } else {
+        } else {
 		    // Make a new internal node
 		    node = new Node();
 		    
