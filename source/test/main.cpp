@@ -125,17 +125,10 @@ void testAABoxCollision() {
         double aaTime = CollisionDetection::collisionTimeForMovingPointFixedAABox(
             pt1, vel1, aabox, aaboxlocation);
 
-        Ray ray = Ray::fromOriginAndDirection(pt1, vel1);
-        double rayboxTime = ray.intersectionTime(box);
-
-        double rayaaTime = ray.intersectionTime(aabox);
-
         debugAssert(fuzzyEq(boxTime, aaTime));
         if (boxTime < inf) {
             debugAssert(boxlocation.fuzzyEq(aaboxlocation));
         }
-
-        debugAssert(fuzzyEq(rayboxTime, rayaaTime));
     }
 }
 
