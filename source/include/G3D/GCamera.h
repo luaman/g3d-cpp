@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2003-11-19
+  @edited  2003-11-25
 */
 
 #ifndef G3D_GCAMERA_H
@@ -26,16 +26,16 @@ namespace G3D {
 class GCamera  {
 private:
 
-	/**
-	 Vertical field of view (in radians)
-  	 */
-	double						fieldOfView;
+    /**
+    Vertical field of view (in radians)
+    */
+    double						fieldOfView;
 
-	/**
-	 The image plane depth corresponding to a vertical field of 
-     view, where the film size is 1x1.
-	 */
-	double						imagePlaneDepth;
+    /** 
+     The image plane depth corresponding to a vertical field of 
+     view, where the film size is 1x1.  
+     */
+    double						imagePlaneDepth;
 
     /**
      Clipping plane, *not* imaging plane.  Positive numbers.
@@ -47,8 +47,7 @@ private:
      */
     double						farPlane;
 
-
-	CoordinateFrame				cframe;
+    CoordinateFrame                                     cframe;
 
 public:
 
@@ -124,7 +123,6 @@ public:
     double getImagePlaneDepth(
         const class Rect2D&                     viewport) const;
 
-    void setProjectionAndCameraMatrix() const;
 
     /**
       Returns the world space ray passing through the center of pixel
