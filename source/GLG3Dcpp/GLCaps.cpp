@@ -300,8 +300,11 @@ void GLCaps::loadExtensions(Log* debugLog) {
     LOAD_EXTENSION(glGetObjectParameterivARB);
     LOAD_EXTENSION(glGetActiveUniformARB);
 
+    LOAD_EXTENSION(glTexImage3DEXT);
+
     #ifdef G3D_WIN32
         LOAD_EXTENSION(wglEnableGenlockI3D);
+        
     #elif defined(G3D_LINUX) 
         LOAD_EXTENSION(glXJoinSwapGroupNV);
         LOAD_EXTENSION(glXBindSwapBarrierNV);

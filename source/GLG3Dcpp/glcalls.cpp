@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2004-05-02
+  @edited  2004-11-20
 */
 
 #include "GLG3D/glcalls.h"
@@ -32,9 +32,12 @@ PFNGLACTIVETEXTUREARBPROC                   glActiveTextureARB 			    = NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC             glClientActiveTextureARB	    = NULL;
 #endif
 
+
 PFNGLBLENDEQUATIONEXTPROC                   glBlendEquationEXT              = NULL;
+PFNGLTEXIMAGE3DEXTPROC                      glTexImage3DEXT                 = NULL;
 
 #ifdef G3D_WIN32
+
 PFNWGLSWAPINTERVALEXTPROC                   wglSwapIntervalEXT 			    = NULL;
 PFNWGLCHOOSEPIXELFORMATARBPROC              wglChoosePixelFormatARB		    = NULL;
 PFNWGLALLOCATEMEMORYNVPROC                  wglAllocateMemoryNV 		    = NULL;
