@@ -49,10 +49,25 @@ public:
         int                     vertexIndex[3];
 
         /**
-         If the edge index is negative, ~index is in this face
-         but is directed oppositely.  The index on the edgeIndex
-         array has no correspondence with the index on the vertexIndex
-         array.  
+         Edge indices in counter-clockwise order.  Edges are
+         undirected, so it is important to know which way 
+         each edge is pointing in a face.  This is encoded
+         using negative indices.
+         
+         If <CODE>edgeIndex[i] >= 0</CODE> then this face
+         contains the directed edge
+         between vertex indices  
+         <CODE>edgeArray[face.edgeIndex[i]].vertexIndex[0]</CODE>
+         and
+         <CODE>edgeArray[face.edgeIndex[i]].vertexIndex[1]</CODE>.
+         
+         If <CODE>edgeIndex[i] < 0</CODE> then 
+         <CODE>~edgeIndex[i]</CODE> (i.e. the two's
+         complement of) is used and this face contains the directed
+         edge between vertex indices
+         <CODE>edgeArray[~face.edgeIndex[i]].vertexIndex[0]</CODE>
+         and
+         <CODE>edgeArray[~face.edgeIndex[i]].vertexIndex[1]</CODE>.
          */
         // Temporarily takes on the value Face::NONE during adjacency
         // computation to indicate an edge that has not yet been assigned.
@@ -68,9 +83,9 @@ public:
         int                     vertexIndex[2];
 
         /**
-         The edge is directed forward in the first face and
-         backward in the second face. Face index of MeshAlg::Face::NONE
-         indicates a broken edge.
+         The edge is directed <B>forward</B> in face 0
+         <B>backward</B> in face 1. Face index of MeshAlg::Face::NONE
+         indicates a broken (a.k.a. crack, boundary) edge.
          */
         int                     faceIndex[2];
 
@@ -81,13 +96,25 @@ public:
             return (faceIndex[0] == Face::NONE) ||
                    (faceIndex[1] == Face::NONE);
         }
+
+        /**
+         Returns the reversed edge.
+         */
+        inline Edge reverse() const {
+            Edge e;
+            e.vertexIndex[0] = vertexIndex[1];
+            e.vertexIndex[1] = vertexIndex[0];
+            e.faceIndex[0]   = faceIndex[1];
+            e.faceIndex[1]   = faceIndex[0];
+            return e;
+        }
     };
     
 
     /**
      Convenient for passing around the data that changes under
-     animation.
-     The faces and edges are needed to interpret these values.
+     animation. The faces and edges are needed to interpret 
+     these values.
      */
     class Geometry {
     public:        

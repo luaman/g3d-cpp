@@ -52,8 +52,8 @@ public:
 
         vertexIndex[0] = i0;
         vertexIndex[1] = i1;
-        vertex[0]    = v0;
-        vertex[1]    = v1;
+        vertex[0]      = v0;
+        vertex[1]      = v1;
 
         // Find the smaller vertex.
         for (int i = 0; i < 3; ++i) {
@@ -303,8 +303,13 @@ void MeshAlg::computeAdjacency(
                 edge.faceIndex[1] = Face::NONE;
                 assignEdgeIndex(faceArray[f0], e); 
             } else {
+                // The face indices above are two's complemented.
+                // this code restores them to regular indices.
+                debugAssert((~f0) >= 0);
                 edge.faceIndex[1] = ~f0;
                 edge.faceIndex[0] = Face::NONE;
+
+                // The edge index *does* need to be inverted, however.
                 assignEdgeIndex(faceArray[~f0], ~e); 
             }
 
@@ -327,6 +332,32 @@ void MeshAlg::computeAdjacency(
     }
 
     edgeTable.clear();
+
+    // Now order the edge indices inside the faces correctly.
+    for (int f = 0; f < faceArray.size(); ++f) {
+        Face& face = faceArray[f];
+        int e0 = face.edgeIndex[0];
+        int e1 = face.edgeIndex[1];
+        int e2 = face.edgeIndex[2];
+
+        // e0 will always remain first.  The only 
+        // question is whether e1 and e2 should be swapped.
+    
+        // See if e1 begins at the vertex where e1 ends.
+        const Vector3& e0End = (e0 < 0) ? 
+            vertexArray[edgeArray[~e0].vertexIndex[0]] :
+            vertexArray[edgeArray[e0].vertexIndex[1]];
+
+        const Vector3& e1Begin = (e1 < 0) ? 
+            vertexArray[edgeArray[~e1].vertexIndex[1]] :
+            vertexArray[edgeArray[e1].vertexIndex[0]];
+
+        if (e0End != e1Begin) {
+            // We must swap e1 and e2
+            face.edgeIndex[1] = e2;
+            face.edgeIndex[2] = e1;
+        }
+    }
 }
 
 } // G3D namespace
