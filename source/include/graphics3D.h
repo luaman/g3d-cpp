@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-04-05
+ @edited  2003-04-07
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -70,7 +70,8 @@
 #include "G3D/LineSegment.h"
 #include "G3D/Capsule.h"
 #include "G3D/Triangle.h"
-#include "G3D/PackedColor3.h"
+#include "G3D/Color3uint8.h"
+#include "G3D/Vector3uint16.h"
 
 #endif
 

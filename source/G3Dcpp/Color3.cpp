@@ -18,7 +18,7 @@
 #include "G3D/format.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
-#include "G3D/PackedColor3.h"
+#include "G3D/Color3uint8.h"
 
 namespace G3D {
 
@@ -73,7 +73,7 @@ Color3::Color3(const Vector3& v) {
 }
 
 
-Color3::Color3(const class PackedColor3& other) {
+Color3::Color3(const class Color3uint8& other) {
     r = other.r / 255.0;
     g = other.g / 255.0;
     b = other.b / 255.0;

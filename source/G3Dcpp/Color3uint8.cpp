@@ -15,14 +15,14 @@
 
 namespace G3D {
 
-Color3uint8::PackedColor3(const class Color3& c) {
+Color3uint8::Color3uint8(const class Color3& c) {
     r = iMin(255, iRound(c.r * 256));
     g = iMin(255, iRound(c.g * 256));
     b = iMin(255, iRound(c.b * 256));
 }
 
 
-Color3uint8::PackedColor3(class BinaryInput& bi) {
+Color3uint8::Color3uint8(class BinaryInput& bi) {
     deserialize(bi);
 }
 

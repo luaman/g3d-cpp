@@ -1,5 +1,5 @@
 /** 
-  @file PackedColor3.h
+  @file Color3uint8.h
  
   @maintainer Morgan McGuire, graphics3d.com
  
@@ -10,8 +10,8 @@
   All rights reserved.
  */
 
-#ifndef PACKEDCOLOR3_H
-#define PACKEDCOLOR3_H
+#ifndef COLOR3UINT8_H
+#define COLOR3UINT8_H
 
 #include "G3D/g3dmath.h"
 
@@ -29,25 +29,25 @@ namespace G3D {
  value.
  */
 // Switch to tight alignment
-#pragma pack(push, PackedColor3_align)
+#pragma pack(push, Color3uint8_align)
 #pragma pack(1)
-class PackedColor3 {
+class Color3uint8 {
 public:
     uint8       r;
     uint8       g;
     uint8       b;
 
-    PackedColor3() : r(0), g(0), b(0) {}
+    Color3uint8() : r(0), g(0), b(0) {}
 
-    PackedColor3(const class Color3& c);
+    Color3uint8(const class Color3& c);
 
-    PackedColor3(class BinaryInput& bi);
+    Color3uint8(class BinaryInput& bi);
 
     void serialize(class BinaryOutput& bo) const;
 
     void deserialize(class BinaryInput& bi);
 };
-#pragma pack(pop, PackedColor3_align)
+#pragma pack(pop, Color3uint8_align)
 
 }
 

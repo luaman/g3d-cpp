@@ -1071,8 +1071,9 @@ public:
 	 Uploads the memory.  The element type is inferred from the pointer type by the
 	 preprocessor.
 
-       Format must be
-        GL_FLOAT, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_UNSIGNED_BYTE, GL_BYTE 
+     @format Format of the *underlying* data (e.g. if you pass an array of Vector3, you
+        want GL_FLOAT). Must be
+        GL_FLOAT, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_UNSIGNED_BYTE, GL_BYTE. 
     */
 	template<class T>
 	VAR(const T* sourcePtr, int _numElements, VARArea* _area, GLenum format = GL_FLOAT) {

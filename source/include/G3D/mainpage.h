@@ -26,7 +26,8 @@
      
      <UL>
      <LI>3D math
-        <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Quat, G3D::Color3, G3D::PackedColor3,
+        <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Vector3uint16, G3D::Vector4, 
+        G3D::Quat, G3D::Color3, G3D::Color3uint8,
         G3D::Color4, G3D::Matrix3, G3D::CoordinateFrame, G3D::PhysicsFrame,
         G3D::Box, G3D::Cone, G3D::Line, G3D::LineSegment, G3D::Plane, G3D::Ray,
         G3D::Sphere, G3D::Capsule, G3D::CollisionDetection, G3D::Triangle</BLOCKQUOTE>
@@ -501,7 +502,8 @@ to add zlibstat.lib to your linker list.
    Changes in 5.01
    <UL>
      <LI> G3D::glFormatSize(GLenum format)
-     <LI> G3D::PackedColor3
+     <LI> G3D::Color3uint8
+     <LI> G3D::Vector3uint16
      <LI> Modified ManualCameraController so that diagonal movement does not exceed
           maximum rate.
      <LI> Added support for non-GL_FLOAT vertex arrays to RenderDevice

@@ -7,9 +7,8 @@
  
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
- 
  @created 2001-06-02
- @edited  2003-04-06
+ @edited  2003-04-07
  */
 
 #include <limits>
@@ -19,6 +18,7 @@
 #include "G3D/stringutils.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
+#include "G3D/Vector3uint16.h"
 
 namespace G3D {
 
@@ -73,6 +73,13 @@ double frand() {
 
 Vector3::Vector3(BinaryInput& b) {
     deserialize(b);
+}
+
+
+Vector3::Vector3(const class Vector3uint16& v) {
+    x = v.x / 65535.0;
+    y = v.y / 65535.0;
+    z = v.z / 65535.0;
 }
 
 

@@ -26,7 +26,7 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/stringutils.h"
-#include "G3D/PackedColor3.h"
+#include "G3D/Color3uint8.h"
 
 namespace G3D {
    
@@ -141,8 +141,8 @@ public:
         return pixel;
     }
 
-    PackedColor3* pixels() const {
-        return (PackedColor3*)pixel;
+    Color3uint8* pixels() const {
+        return (Color3uint8*)pixel;
     }
 
 private:

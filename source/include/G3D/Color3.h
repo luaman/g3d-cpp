@@ -54,7 +54,7 @@ public:
      */
     Color3 (const Color3& other);
 
-    Color3 (const class PackedColor3& other);
+    Color3 (const class Color3uint8& other);
 
     /**
      Initialize from an HTML-style color (e.g. 0xFF0000 == RED)

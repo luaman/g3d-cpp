@@ -508,11 +508,11 @@ void testTextInput() {
 }
 
 
-void testPackedColor3Array() {
-    printf("Array<PackedColor3>\n");
-    Array<PackedColor3> x(2);
+void testColor3uint8Array() {
+    printf("Array<Color3uint8>\n");
+    Array<Color3uint8> x(2);
 
-    debugAssert(sizeof(PackedColor3) == 3);
+    debugAssert(sizeof(Color3uint8) == 3);
     x[0].r = 60;
     x[0].g = 61;
     x[0].b = 62;
@@ -677,7 +677,7 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
     testCollision();    
     printf("  passed\n");
-    testPackedColor3Array();
+    testColor3uint8Array();
     printf("  passed\n");
 
     printf("\nAll tests succeeded.\n");
