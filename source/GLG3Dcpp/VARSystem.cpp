@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2003-11-11
+ @edited  2004-03-31
  */
 
 #include "GLG3D/RenderDevice.h"
@@ -15,6 +15,7 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VAR.h"
 #include "GLG3D/VARArea.h"
+#include "GLG3D/GLCaps.h"
 
 namespace G3D {
 
@@ -30,7 +31,8 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
 
     // See if we've determined the mode yet.
     if (mode == UNINITIALIZED) {
-        if ((glGenBuffersARB != NULL) && 
+        if (GLCaps::supports_GL_ARB_vertex_buffer_object() &&
+            (glGenBuffersARB != NULL) && 
             (glGenBuffersARB != NULL) &&
             (glBufferDataARB != NULL) &&
             (glDeleteBuffersARB != NULL)) {
