@@ -474,22 +474,27 @@ void Win32Window::setIcon(const GImage& image) {
     uint8 colorMaskData[1024*4];
 
 
+    GImage icon;
     if (image.channels == 3) {
-        memset(bwMaskData, 0xFF, 128);
-        memcpy(colorMaskData, image.byte(), (1024 * 3));
+        
+        GImage alpha(image.width, image.height, 1);
+        memset(alpha.byte(), 255, (image.width * image.height));
+        icon = image.insertRedAsAlpha(alpha);
     } else {
-        int colorMaskIdx = 0;
-        memset(bwMaskData, 0x00, 128);
-        for (int y = 0; y < 32; ++y) {
-            for (int x = 0; x < 32; ++x) {
-                bwMaskData[ (y * 4) + (x / 8) ] |= (image.pixel4(x, y).a > 0) << (x % 8);
+        icon = image;
+    }
 
-                colorMaskData[colorMaskIdx] = image.pixel4()[y * 32 + x].r;
-                colorMaskData[colorMaskIdx + 1] = image.pixel4()[y * 32 + x].g;
-                colorMaskData[colorMaskIdx + 2] = image.pixel4()[y * 32 + x].b;
-                colorMaskData[colorMaskIdx + 3] = image.pixel4()[y * 32 + x].a;
-                colorMaskIdx += 4;
-            }
+    int colorMaskIdx = 0;
+    memset(bwMaskData, 0x00, 128);
+    for (int y = 0; y < 32; ++y) {
+        for (int x = 0; x < 32; ++x) {
+            bwMaskData[ (y * 4) + (x / 8) ] |= ((icon.pixel4(x, y).a > 127) ? 1 : 0) << (x % 8);
+
+            colorMaskData[colorMaskIdx] = icon.pixel4()[y * 32 + x].b;
+            colorMaskData[colorMaskIdx + 1] = icon.pixel4()[y * 32 + x].g;
+            colorMaskData[colorMaskIdx + 2] = icon.pixel4()[y * 32 + x].r;
+            colorMaskData[colorMaskIdx + 3] = icon.pixel4()[y * 32 + x].a;
+            colorMaskIdx += 4;
         }
     }
 
@@ -503,14 +508,16 @@ void Win32Window::setIcon(const GImage& image) {
     iconInfo.hbmMask = bwMask;
     iconInfo.fIcon = true;
 
-    HICON icon = ::CreateIconIndirect(&iconInfo);
+    HICON hicon = ::CreateIconIndirect(&iconInfo);
 
-    ::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)icon);
-    ::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)icon);
+    // Purposely leak any icon created indirectly like hicon becase we don't know.
+    HICON hsmall = (HICON)::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hicon);
+    HICON hlarge = (HICON)::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hicon);
+
 
     ::DeleteObject(bwMask);
     ::DeleteObject(colorMask);
-    ::DestroyIcon(icon);
+//    ::DestroyIcon(hicon);
 }
 
 
