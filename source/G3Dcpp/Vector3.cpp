@@ -112,7 +112,7 @@ Vector3 Vector3::random() {
 }
 
 //----------------------------------------------------------------------------
-Vector3 Vector3::operator/ (float fScalar) const {
+Vector3 Vector3::operator/ (double fScalar) const {
     Vector3 kQuot;
 
     if ( fScalar != 0.0 ) {
@@ -127,7 +127,7 @@ Vector3 Vector3::operator/ (float fScalar) const {
 }
 
 //----------------------------------------------------------------------------
-Vector3& Vector3::operator/= (float fScalar) {
+Vector3& Vector3::operator/= (double fScalar) {
     if (fScalar != 0.0) {
 		float fInvScalar = 1.0 / fScalar;
         x *= fInvScalar;
@@ -143,8 +143,8 @@ Vector3& Vector3::operator/= (float fScalar) {
 }
 
 //----------------------------------------------------------------------------
-float Vector3::unitize (float fTolerance) {
-	float fLength = length();
+double Vector3::unitize (double fTolerance) {
+	double fLength = length();
 
     if (fLength > fTolerance) {
 		float fInvLength = 1.0 / fLength;

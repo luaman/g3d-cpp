@@ -6,7 +6,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
   @created 2001-06-02
-  @edited  2003-02-10
+  @edited  2004-01-30
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -30,7 +30,7 @@ inline Vector3::Vector3 () {
 
 //----------------------------------------------------------------------------
 
-inline Vector3::Vector3 (float fX, float fY, float fZ) {
+inline Vector3::Vector3 (double fX, double fY, double fZ) {
     x = fX;
     y = fY;
     z = fZ;
@@ -38,6 +38,12 @@ inline Vector3::Vector3 (float fX, float fY, float fZ) {
 
 //----------------------------------------------------------------------------
 inline Vector3::Vector3 (float afCoordinate[3]) {
+    x = afCoordinate[0];
+    y = afCoordinate[1];
+    z = afCoordinate[2];
+}
+//----------------------------------------------------------------------------
+inline Vector3::Vector3 (double afCoordinate[3]) {
     x = afCoordinate[0];
     y = afCoordinate[1];
     z = afCoordinate[2];
@@ -118,7 +124,7 @@ inline Vector3 Vector3::operator- (const Vector3& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3 Vector3::operator* (float fScalar) const {
+inline Vector3 Vector3::operator* (double fScalar) const {
     return Vector3(fScalar*x, fScalar*y, fScalar*z);
 }
 
@@ -160,7 +166,7 @@ inline Vector3& Vector3::operator-= (const Vector3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3& Vector3::operator*= (float fScalar) {
+inline Vector3& Vector3::operator*= (double fScalar) {
     x *= fScalar;
     y *= fScalar;
     z *= fScalar;
@@ -184,12 +190,12 @@ inline Vector3& Vector3::operator/= (const Vector3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline float Vector3::squaredLength () const {
+inline double Vector3::squaredLength () const {
     return x*x + y*y + z*z;
 }
 
 //----------------------------------------------------------------------------
-inline float Vector3::length () const {
+inline double Vector3::length() const {
     return sqrt(x*x + y*y + z*z);
 }
 
@@ -213,7 +219,7 @@ inline Vector3 Vector3::fastDirection () const {
 }
 
 //----------------------------------------------------------------------------
-inline float Vector3::dot (const Vector3& rkVector) const {
+inline double Vector3::dot (const Vector3& rkVector) const {
     return x*rkVector.x + y*rkVector.y + z*rkVector.z;
 }
 

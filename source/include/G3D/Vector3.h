@@ -71,8 +71,9 @@ public:
     // construction
     Vector3();
     Vector3(class BinaryInput& b);
-    Vector3(float _x, float _y, float _z);
+    Vector3(double _x, double _y, double _z);
     Vector3(float coordinate[3]);
+    Vector3(double coordinate[3]);
     Vector3(const Vector3& rkVector);
     Vector3(const class Vector3int16& v);
 
@@ -117,24 +118,24 @@ public:
     bool isUnit() const;
     
     // arithmetic operations
-    Vector3 operator+ (const Vector3& rkVector) const;
-    Vector3 operator- (const Vector3& rkVector) const;
-    Vector3 operator* (float fScalar) const;
-    Vector3 operator/ (float fScalar) const;
-    Vector3 operator* (const Vector3& rkVecto) const;
-    Vector3 operator/ (const Vector3& rkVecto) const;
+    Vector3 operator+ (const Vector3& v) const;
+    Vector3 operator- (const Vector3& v) const;
+    Vector3 operator* (double s) const;
+    Vector3 operator/ (double s) const;
+    Vector3 operator* (const Vector3& v) const;
+    Vector3 operator/ (const Vector3& v) const;
     Vector3 operator- () const;
-    friend Vector3 operator* (float fScalar, const Vector3& rkVector);
+    friend Vector3 operator* (float s, const Vector3& v);
 
     // arithmetic updates
-    Vector3& operator+= (const Vector3& rkVector);
-    Vector3& operator-= (const Vector3& rkVector);
-    Vector3& operator*= (float fScalar);
-    Vector3& operator/= (float fScalar);
-    Vector3& operator*= (const Vector3& rkVector);
-    Vector3& operator/= (const Vector3& rkVector);
+    Vector3& operator+= (const Vector3& v);
+    Vector3& operator-= (const Vector3& v);
+    Vector3& operator*= (double s);
+    Vector3& operator/= (double s);
+    Vector3& operator*= (const Vector3& v);
+    Vector3& operator/= (const Vector3& v);
 
-    float length () const;
+    double length() const;
     
     /**
      The result is a nan vector if the length is almost zero.
@@ -201,15 +202,15 @@ public:
         return fastDirection();
     }
 
-    float squaredLength () const;
+    double squaredLength () const;
 
     inline double norm() const {
         return squaredLength();
     }
 
-    float dot (const Vector3& rkVector) const;
-    float unitize (float fTolerance = 1e-06);
-    Vector3 cross (const Vector3& rkVector) const;
+    double dot(const Vector3& rkVector) const;
+    double unitize(double fTolerance = 1e-06);
+    Vector3 cross(const Vector3& rkVector) const;
     Vector3 unitCross (const Vector3& rkVector) const;
 
     Vector3 min(const Vector3 &v) const;
