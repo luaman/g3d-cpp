@@ -691,10 +691,10 @@ void Draw::sphere(
 
 void Draw::fullScreenImage(const GImage& im, RenderDevice* renderDevice) {
     renderDevice->push2D();
-        glPixelZoom(renderDevice->getWidth() / (float)im.width, 
-                   -renderDevice->getHeight() / (float)im.height);
-        glRasterPos2d(0, 0);
-        glDrawPixels(im.width, im.height, (im.channels == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)im.byte());
+        glPixelZoom((float)renderDevice->getWidth() / (float)im.width, 
+                   -(float)renderDevice->getHeight() / (float)im.height);
+        glRasterPos4i(0.0, 0.0, 0.0, 1.0);
+        glDrawPixels(im.width, im.height, (im.channels == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid*)im.byte());
     renderDevice->pop2D();
 }
 
