@@ -72,10 +72,10 @@ _excludePatterns =\
     '~$', \
     '\.old$' \
     '^log.txt$', \
-    '^stderr.txt$', \
-    '^stdout.txt$', \
+    '^stderr\.txt$', \
+    '^stdout\.txt$', \
     '\.log$', \
-    '\^.cvsignore$', \
+    '\.cvsignore$', \
     '^graveyard$', \
     '^CVS$', \
     '^Debug$', \
