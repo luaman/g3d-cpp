@@ -141,10 +141,7 @@ static void getStandardProcessorExtensions();
     already initialized). */
 static void init();
 
-/** Called from init */
-static void initIntel();
-static void initAMD();
-static void initUnknown();
+
 static void initTime();
 
 
@@ -229,24 +226,31 @@ void init() {
         }
     }
 
-	if (! _cpuID) {
-		return;
-	}
+	if (_cpuID) {
+        // Process the CPUID information
 
-	#if defined(G3D_WIN32)
-		// We read the standard CPUID level 0x00000000 which should
-		// be available on every x86 processor.  This instruction
-        // creates a bit string that indicates the presence of several
-        // useful features.
-
-		__asm {
-			mov eax, 0
-			cpuid
-			mov eaxreg, eax
-			mov ebxreg, ebx
-			mov edxreg, edx
-			mov ecxreg, ecx
-		}
+	    // We read the standard CPUID level 0x00000000 which should
+	    // be available on every x86 processor.  This fills out
+        // a string with the processor vendor tag.
+	    #ifdef _MSC_VER
+		    __asm {
+			    mov eax, 0
+			    cpuid
+			    mov eaxreg, eax
+			    mov ebxreg, ebx
+			    mov edxreg, edx
+			    mov ecxreg, ecx
+		    }
+        #elif defined(__GNUC__) && defined(i386)
+            // TODO: linux
+            ebxreg = 0;
+            edxreg = 0;
+            ecxreg = 0;
+        #else
+            ebxreg = 0;
+            edxreg = 0;
+            ecxreg = 0;
+        #endif
 
 		// Then we connect the single register values to the vendor string
 		*((unsigned long *) cpuVendorTmp)       = ebxreg;
@@ -259,31 +263,46 @@ void init() {
 		maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
 
 		// Then we read the ext. CPUID level 0x80000000
-		__asm {
-			mov eax, 0x80000000
-			cpuid
-			mov eaxreg, eax
-		}
+	    #ifdef _MSC_VER
+		    __asm {
+			    mov eax, 0x80000000
+			    cpuid
+			    mov eaxreg, eax
+		    }
+        #elif defined(__GNUC__) && defined(i386)
+            // TODO: Linux
+            eaxreg = 0;
+        #else
+            eaxreg = 0;
+        #endif
 
 		// ...to check the max. supported extended CPUID level
 		maxSupportedExtendedLevel = eaxreg;
 
-		// Then we switch to the specific processor vendors
+		// Then we switch to the specific processor vendors.
+        // Fill out _cpuArch based on this information.  It will
+        // be overwritten by the next block of code on Windows,
+        // but on Linux will stand.
 		switch (ebxreg)	{
 		case 0x756E6547:	// GenuineIntel
-			initIntel();
+            _cpuArch = "Intel Processor";
 			break;
 		
 		case 0x68747541:	// AuthenticAMD
-			initAMD();
+            _cpuArch = "AMD Processor";
 			break;
 
 		case 0x69727943:	// CyrixInstead
+            _cpuArch = "Cyrix Processor";
+            break;
+
 		default:
-			initUnknown();
+            _cpuArch = "Unknown Processor Vendor";
 			break;
 		}
+    }
 
+    #ifdef G3D_WIN32
         SYSTEM_INFO systemInfo;
         GetSystemInfo(&systemInfo);
         char* arch;
@@ -335,59 +354,13 @@ void init() {
 
     #elif defined(G3D_OSX)
 
-        _operatingSystem = "Linux";
+        _operatingSystem = "OS X";
         
 	#endif
 
     initTime();
 
 	getStandardProcessorExtensions();
-}
-
-
-void initIntel() {
-}
-
-
-void initAMD() {
-	// Check if there is extended CPUID level support
-	if ((unsigned long)maxSupportedExtendedLevel >= 0x80000001) {
-		unsigned long edxreg = 0;
-
-		// If we can access the extended CPUID level 0x80000001 we get the
-		// edx register
-
-
-#ifdef _MSC_VER
-		__asm
-		{
-			mov eax, 0x80000001
-			cpuid
-			mov edxreg, edx
-		}
-#else
-        /*
-          TODO: morgan
-		asm(
-		"mov 0x8000001, %%eax                             "
-		"cpuid                                            "
-		"mov %%edx, %0                                    "
-		: "r"(edxreg)
-		);
-        */
-#endif
-		
-		// Now we can mask some AMD specific cpu extensions
-		// EMMX_MultimediaExtensions                 = checkBit(edxreg, 22);
-		// AA64_AMD64BitArchitecture                 = checkBit(edxreg, 29);
-		//CPUInfo._Ext._E3DNOW_InstructionExtensions = checkBit(edxreg, 30);
-		_3dnow                                       = checkBit(edxreg, 31);
-	}
-
-}
-
-
-void initUnknown() {
 }
 
 
@@ -532,6 +505,7 @@ void getStandardProcessorExtensions() {
 	// HT_HyterThreadingSiblings = (ebxreg >> 16) & 0xFF;
 	// TM_ThermalMonitor								= checkBit(features, 29);
 	// IA64_Intel64BitArchitecture						= checkBit(features, 30);
+	_3dnow                                              = checkBit(features, 31);
 }
 
 
@@ -880,6 +854,7 @@ RealTime System::getTick() {
 
         return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency.QuadPart);
     #else
+        // TODO: morgan query RDTSC
         struct timeval now;
         gettimeofday(&now, NULL);
 
@@ -971,7 +946,6 @@ void System::alignedFree(void* _ptr) {
     debugAssert(isValidHeapPointer((void*)truePtr));
     free(truePtr);
 }
-
 
 
 }  // namespace
