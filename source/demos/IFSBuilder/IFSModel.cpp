@@ -241,14 +241,9 @@ void XIFSModel::load3DS(const std::string& filename) {
     Load3DS loader(b);
 
     for (int obj = 0; obj < loader.objectArray.size(); ++obj) {
-        Matrix4 keyframe(Matrix4::IDENTITY);
+        const Matrix4& keyframe = loader.objectArray[obj].keyframe;
         
         Vector3 pivot = loader.objectArray[obj].pivot;
-
-        if (loader.objectArray[obj].keyframe.size() > 0) {
-            // Chose frame 0 of animation
-            keyframe = loader.objectArray[obj].keyframe[0];
-        }
 
         const Array<int>&     index   = loader.objectArray[obj].indexArray;
         const Array<Vector3>& vertex  = loader.objectArray[obj].vertexArray;
@@ -263,7 +258,10 @@ void XIFSModel::load3DS(const std::string& filename) {
         //#define vert(V) (keyframe * cframe * Vector4(vertex[index[V]], 1)).xyz()
 
         // TODO: Figure out correct transformation
-        #define vert(V) (keyframe * cframe.inverse() * Vector4(vertex[index[V]], 1)).xyz() + pivot
+        #define vert(V) \
+          ((keyframe * \
+           ( Vector4(vertex[index[V]], 1) - Vector4(pivot, 0)) \
+           )).xyz() 
 
         for (int i = 0; i < index.size(); i += 3) {
             builder.addTriangle(

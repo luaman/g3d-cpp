@@ -450,6 +450,28 @@ bool RenderDevice::init(
 
     if (debugLog) {debugLog->println("Setting video mode");}
 
+
+    extensions.str((char*)glGetString(GL_EXTENSIONS));
+    {
+        // Parse the extensions into the supported set
+        std::string s;
+        while (extensions >> s) {
+            extensionSet.insert(s);
+        }
+
+        stencilWrapSupported        = supportsOpenGLExtension("GL_EXT_stencil_wrap");
+
+        // The constants are identical for NV_texture_rectangle and
+        // EXT_texture_rectangle
+        textureRectangleSupported   = supportsOpenGLExtension("GL_EXT_texture_rectangle") ||
+                                      supportsOpenGLExtension("GL_NV_texture_rectangle");
+        _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
+        _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
+        _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
+        _supportsVertexBufferObject = supportsOpenGLExtension("GL_ARB_vertex_buffer_object");
+        _supportsTwoSidedStencil    = supportsOpenGLExtension("GL_EXT_stencil_two_side");
+    }
+
     setVideoMode();
 
     if (!strcmp((char*)glGetString(GL_RENDERER), "GDI Generic") && debugLog) {
@@ -482,27 +504,6 @@ bool RenderDevice::init(
     bool depthOk   = depthBits >= minimumDepthBits;
     bool stencilOk = stencilBits >= minimumStencilBits;
     computeVendor();
-
-    extensions.str((char*)glGetString(GL_EXTENSIONS));
-    {
-        // Parse the extensions into the supported set
-        std::string s;
-        while (extensions >> s) {
-            extensionSet.insert(s);
-        }
-
-        stencilWrapSupported        = supportsOpenGLExtension("GL_EXT_stencil_wrap");
-
-        // The constants are identical for NV_texture_rectangle and
-        // EXT_texture_rectangle
-        textureRectangleSupported   = supportsOpenGLExtension("GL_EXT_texture_rectangle") ||
-                                      supportsOpenGLExtension("GL_NV_texture_rectangle");
-        _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
-        _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
-        _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
-        _supportsVertexBufferObject = supportsOpenGLExtension("GL_ARB_vertex_buffer_object");
-        _supportsTwoSidedStencil    = supportsOpenGLExtension("GL_EXT_stencil_two_side");
-    }
 
     std::string ver = getDriverVersion();
     if (debugLog) {
