@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
 
 // Arbitrary constant greater than 1000 to identify our messages
 enum {PingMessage_MSG = 1008};
+
 class PingMessage {
 public:
 
@@ -69,15 +70,11 @@ public:
     PingMessage() : text("") {}
     PingMessage(const std::string& s) : text(s) {}
 
-    virtual uint32 type() const {
-        return PingMessage_MSG;
-    }
-
-    virtual void serialize(BinaryOutput& b) const {
+    void serialize(BinaryOutput& b) const {
         b.writeString(text);
     }
  
-    virtual void deserialize(BinaryInput& b) {
+    void deserialize(BinaryInput& b) {
         text = b.readString();
     }
 };
