@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2003-11-22
+  @edited  2004-01-26
  */
 
 #ifndef G3D_MATRIX3_H
@@ -114,7 +114,8 @@ public:
 
     /** matrix must be orthonormal */
     void toAxisAngle (Vector3& rkAxis, float& rfRadians) const;
-    void fromAxisAngle (const Vector3& rkAxis, float fRadians);
+
+    static Matrix3 fromAxisAngle(const Vector3& rkAxis, float fRadians);
 
     /**
      * The matrix must be orthonormal.  The decomposition is yaw*pitch*roll
@@ -133,12 +134,12 @@ public:
                            float& rfRAngle) const;
     bool toEulerAnglesZYX (float& rfYAngle, float& rfPAngle,
                            float& rfRAngle) const;
-    void fromEulerAnglesXYZ (float fYAngle, float fPAngle, float fRAngle);
-    void fromEulerAnglesXZY (float fYAngle, float fPAngle, float fRAngle);
-    void fromEulerAnglesYXZ (float fYAngle, float fPAngle, float fRAngle);
-    void fromEulerAnglesYZX (float fYAngle, float fPAngle, float fRAngle);
-    void fromEulerAnglesZXY (float fYAngle, float fPAngle, float fRAngle);
-    void fromEulerAnglesZYX (float fYAngle, float fPAngle, float fRAngle);
+    static Matrix3 fromEulerAnglesXYZ (float fYAngle, float fPAngle, float fRAngle);
+    static Matrix3 fromEulerAnglesXZY (float fYAngle, float fPAngle, float fRAngle);
+    static Matrix3 fromEulerAnglesYXZ (float fYAngle, float fPAngle, float fRAngle);
+    static Matrix3 fromEulerAnglesYZX (float fYAngle, float fPAngle, float fRAngle);
+    static Matrix3 fromEulerAnglesZXY (float fYAngle, float fPAngle, float fRAngle);
+    static Matrix3 fromEulerAnglesZYX (float fYAngle, float fPAngle, float fRAngle);
 
     /** eigensolver, matrix must be symmetric */
     void eigenSolveSymmetric (float afEigenvalue[3],

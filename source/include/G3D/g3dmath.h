@@ -330,6 +330,19 @@ inline double rsqrt(double x) {
 }
 
 
+/**
+ sin(x)/x
+ */
+inline double sinc(double x) {
+    double r = sin(x) / x;
+
+    if (isNaN(r)) {
+        return 1.0;
+    } else {
+        return r;
+    }
+}
+
 } // namespace
 
 

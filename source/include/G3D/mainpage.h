@@ -129,6 +129,7 @@
          G3D::min,
 		 G3D::max,
 		 G3D::square,
+         G3D::sinc,
 		 G3D::sumSquares,
 		 G3D::distance,
          G3D::toRadians,

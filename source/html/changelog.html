@@ -13,6 +13,7 @@
 	   <LI>G3D 6.00 requires no custom project settings!  If you have customized your project settings for version 5.xx,
 	       revert to the <B>default</B> Win32 linker list and uncheck
 		    "ignore default libraries"
+	   <LI>Change your library path from '.../lib' to '.../win32-lib' (or the name of your platform)
 	   <LI>Add the line <CODE>controller->setActive(true);</CODE> to your 
 	       G3D::ManualCameraController initialization process
 	   <LI>Add a G3D::UserInput pointer to the G3D::ManualCameraController
@@ -50,6 +51,9 @@
    <P>
    Changes in 6.00:
    <UL>
+     <LI> Matrix3::fromX methods became factory methods
+     <LI> G3D::sinc
+     <LI> Multi-platform lib directories
      <LI> Vector3::average(), Color3::average(), Vector3::sum(), Color3::sum()
      <LI> Ray::reflect, Ray::refract
      <LI> Physically correct sky model

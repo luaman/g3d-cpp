@@ -1056,7 +1056,9 @@ void Matrix3::toAxisAngle (Vector3& rkAxis, float& rfRadians) const {
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromAxisAngle (const Vector3& rkAxis, float fRadians) {
+Matrix3 Matrix3::fromAxisAngle (const Vector3& rkAxis, float fRadians) {
+    Matrix3 m;
+
     float fCos = cos(fRadians);
     float fSin = sin(fRadians);
     float fOneMinusCos = 1.0 - fCos;
@@ -1070,15 +1072,17 @@ void Matrix3::fromAxisAngle (const Vector3& rkAxis, float fRadians) {
     float fYSin = rkAxis.y * fSin;
     float fZSin = rkAxis.z * fSin;
 
-    m_aafEntry[0][0] = fX2 * fOneMinusCos + fCos;
-    m_aafEntry[0][1] = fXYM - fZSin;
-    m_aafEntry[0][2] = fXZM + fYSin;
-    m_aafEntry[1][0] = fXYM + fZSin;
-    m_aafEntry[1][1] = fY2 * fOneMinusCos + fCos;
-    m_aafEntry[1][2] = fYZM - fXSin;
-    m_aafEntry[2][0] = fXZM - fYSin;
-    m_aafEntry[2][1] = fYZM + fXSin;
-    m_aafEntry[2][2] = fZ2 * fOneMinusCos + fCos;
+    m.m_aafEntry[0][0] = fX2 * fOneMinusCos + fCos;
+    m.m_aafEntry[0][1] = fXYM - fZSin;
+    m.m_aafEntry[0][2] = fXZM + fYSin;
+    m.m_aafEntry[1][0] = fXYM + fZSin;
+    m.m_aafEntry[1][1] = fY2 * fOneMinusCos + fCos;
+    m.m_aafEntry[1][2] = fYZM - fXSin;
+    m.m_aafEntry[2][0] = fXZM - fYSin;
+    m.m_aafEntry[2][1] = fYZM + fXSin;
+    m.m_aafEntry[2][2] = fZ2 * fOneMinusCos + fCos;
+
+    return m;
 }
 
 //----------------------------------------------------------------------------
@@ -1256,7 +1260,7 @@ bool Matrix3::toEulerAnglesZYX (float& rfZAngle, float& rfYAngle,
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromEulerAnglesXYZ (float fYAngle, float fPAngle,
+Matrix3 Matrix3::fromEulerAnglesXYZ (float fYAngle, float fPAngle,
                                   float fRAngle) {
     float fCos, fSin;
 
@@ -1272,12 +1276,13 @@ void Matrix3::fromEulerAnglesXYZ (float fYAngle, float fPAngle,
     fSin = sin(fRAngle);
     Matrix3 kZMat(fCos, -fSin, 0.0, fSin, fCos, 0.0, 0.0, 0.0, 1.0);
 
-    *this = kXMat * (kYMat * kZMat);
+    return kXMat * (kYMat * kZMat);
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromEulerAnglesXZY (float fYAngle, float fPAngle,
+Matrix3 Matrix3::fromEulerAnglesXZY (float fYAngle, float fPAngle,
                                   float fRAngle) {
+
     float fCos, fSin;
 
     fCos = cos(fYAngle);
@@ -1292,11 +1297,11 @@ void Matrix3::fromEulerAnglesXZY (float fYAngle, float fPAngle,
     fSin = sin(fRAngle);
     Matrix3 kYMat(fCos, 0.0, fSin, 0.0, 1.0, 0.0, -fSin, 0.0, fCos);
 
-    *this = kXMat * (kZMat * kYMat);
+    return kXMat * (kZMat * kYMat);
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromEulerAnglesYXZ (float fYAngle, float fPAngle,
+Matrix3 Matrix3::fromEulerAnglesYXZ (float fYAngle, float fPAngle,
                                   float fRAngle) {
     float fCos, fSin;
 
@@ -1312,11 +1317,11 @@ void Matrix3::fromEulerAnglesYXZ (float fYAngle, float fPAngle,
     fSin = sin(fRAngle);
     Matrix3 kZMat(fCos, -fSin, 0.0, fSin, fCos, 0.0, 0.0, 0.0, 1.0);
 
-    *this = kYMat * (kXMat * kZMat);
+    return kYMat * (kXMat * kZMat);
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromEulerAnglesYZX (float fYAngle, float fPAngle,
+Matrix3 Matrix3::fromEulerAnglesYZX (float fYAngle, float fPAngle,
                                   float fRAngle) {
     float fCos, fSin;
 
@@ -1332,11 +1337,11 @@ void Matrix3::fromEulerAnglesYZX (float fYAngle, float fPAngle,
     fSin = sin(fRAngle);
     Matrix3 kXMat(1.0, 0.0, 0.0, 0.0, fCos, -fSin, 0.0, fSin, fCos);
 
-    *this = kYMat * (kZMat * kXMat);
+    return kYMat * (kZMat * kXMat);
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromEulerAnglesZXY (float fYAngle, float fPAngle,
+Matrix3 Matrix3::fromEulerAnglesZXY (float fYAngle, float fPAngle,
                                   float fRAngle) {
     float fCos, fSin;
 
@@ -1352,11 +1357,11 @@ void Matrix3::fromEulerAnglesZXY (float fYAngle, float fPAngle,
     fSin = sin(fRAngle);
     Matrix3 kYMat(fCos, 0.0, fSin, 0.0, 1.0, 0.0, -fSin, 0.0, fCos);
 
-    *this = kZMat * (kXMat * kYMat);
+    return kZMat * (kXMat * kYMat);
 }
 
 //----------------------------------------------------------------------------
-void Matrix3::fromEulerAnglesZYX (float fYAngle, float fPAngle,
+Matrix3 Matrix3::fromEulerAnglesZYX (float fYAngle, float fPAngle,
                                   float fRAngle) {
     float fCos, fSin;
 
@@ -1372,7 +1377,7 @@ void Matrix3::fromEulerAnglesZYX (float fYAngle, float fPAngle,
     fSin = sin(fRAngle);
     Matrix3 kXMat(1.0, 0.0, 0.0, 0.0, fCos, -fSin, 0.0, fSin, fCos);
 
-    *this = kZMat * (kYMat * kXMat);
+    return kZMat * (kYMat * kXMat);
 }
 
 //----------------------------------------------------------------------------
