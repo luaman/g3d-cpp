@@ -229,7 +229,8 @@ def findBinary(program):
            'C:/Program Files/Microsoft Visual Studio .NET/Common7/IDE',\
            'C:/python',\
            'C:/doxygen/bin',\
-           'C:\Program Files\PKZIP']
+           'C:/Program Files/doxygen/bin',\
+           'C:/Program Files/PKZIP']
 
     for path in PATH:
         filename = path + '/' + program + '.exe'
