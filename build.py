@@ -340,11 +340,7 @@ def install(args, copyData=1, fromRelease=False):
 
                                 if dswFile != '' and dspFile != '':
                                     msdev(dir + '/' + dswFile, [dspFile + ' - Win32 Release'])
-                                
-                                # Attempt to remove any 'Debug' or 'Release' directories accidentally left
-                                rmdir(dir + '/Debug')
-                                rmdir(dir + '/Release')
-                                
+                                                                
                     os.chdir(curdir)    
             if has7:
                 lib7(args)
@@ -417,6 +413,13 @@ def source(args):
 def release(args):
     if (os.name != 'nt'):
         raise 'Error', 'Can only build the release on Windows.'
+
+    # Check for Line Number debug information settings only
+    for line in fileinput.input(('source/GLG3D.dsp', 'source/graphics3D.dsp')):
+        if (re.search("/Zi", line) != None):
+            print filename
+            print line
+            raise 'Error', 'There is a Program Database setting in one of the projects.'
 
     rmdir('release')
 
