@@ -796,9 +796,7 @@ RealTime System::getTick() {
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
 
-    return 0;
-    // TODO: James
-//    return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency);
+    return RealTime(((now.QuadPart-_start.QuadPart)*1000)/_counterFrequency.QuadPart);
 #else
     struct timeval now;
     gettimeofday(&now, NULL);
