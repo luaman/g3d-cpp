@@ -3,3 +3,4 @@ temp
 release
 *.pyc
 autom4te.cache
+release-log.txt
