@@ -30,7 +30,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-04-03
+ @edited  2003-07-02
  */
 
 #include <G3DAll.h>
@@ -100,8 +100,7 @@ int main(int argc, char** argv) {
     debugAssert(varDynamic);
 
     font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
-    sky		     = new Sky("Sky", DATA_DIR + "sky/", 
-                           "null_plainsky512_ft.jpg", 1.0);
+    sky		     = new Sky("Sky", DATA_DIR + "sky/", "null_plainsky512_*.jpg", 1.0);
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
 

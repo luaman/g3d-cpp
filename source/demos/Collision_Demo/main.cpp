@@ -27,7 +27,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-05-29
+ @edited  2003-07-02
  */
 
 #include <G3DAll.h>
@@ -73,10 +73,9 @@ void doUserInput();
 
 int main(int argc, char** argv) {
     // Search for the data
-//    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/cow.ifs")); ++count) {
-//        DATA_DIR = std::string("../") + DATA_DIR;
-//    }
-    DATA_DIR = "D:/tmp/shadow/data/";
+    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/cow.ifs")); ++count) {
+        DATA_DIR = std::string("../") + DATA_DIR;
+    }
 
     // Initialize
     debugLog     = new Log();
@@ -115,7 +114,7 @@ int main(int argc, char** argv) {
     renderDevice->resetState();
     renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
-    gameTime     = toSeconds(10, 00, 00, AM);
+    gameTime     = G3D::toSeconds(10, 00, 00, AM);
     
     RealTime now = getTime() - 0.001, lastTime;
 

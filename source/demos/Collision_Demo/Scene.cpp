@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-05-29
+ @edited  2003-07-02
  */
 
 #include "Scene.h"
@@ -48,7 +48,7 @@ static bool debugLightMap = false;
 
 
 Scene::Scene() {
-    sky = new Sky("Sky", DATA_DIR + "sky/", "null_plainsky512_ft.jpg", 1.0);
+    sky = new Sky("Sky", DATA_DIR + "sky/", "null_plainsky512_*.jpg", 1.0);
 	glGenTextures(1, &shadowMap);
 
     // Prep the shadow map texture
