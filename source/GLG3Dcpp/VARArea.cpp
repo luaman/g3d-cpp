@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2004-10-28
+ @edited  2005-02-06
  */
 
 #include "GLG3D/RenderDevice.h"
@@ -21,6 +21,7 @@ namespace G3D {
 
 VARArea::Mode VARArea::mode = VARArea::UNINITIALIZED;
 
+size_t VARArea::_sizeOfAllVARAreasInMemory = 0;
 
 VARAreaRef VARArea::create(size_t s, UsageHint h) {
     return new VARArea(s, h);
@@ -40,6 +41,8 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
             mode = MAIN_MEMORY;
         }
     }
+
+    _sizeOfAllVARAreasInMemory += size;
 
     switch (mode) {
     case VBO_MEMORY:
@@ -101,6 +104,8 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
 
 
 VARArea::~VARArea() {
+    _sizeOfAllVARAreasInMemory -= size;
+
     switch (mode) {
     case VBO_MEMORY:
         // Delete the vertex buffer

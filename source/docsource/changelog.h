@@ -13,7 +13,8 @@
    Changes in 6.05:
    <UL>
      <LI> G3D::AABSPTree::insert(Array<T>)
-     <LI> G3D::Texture::_sizeOfAllTexturesInMemory
+     <LI> G3D::Texture::sizeOfAllTexturesInMemory
+     <LI> G3D::VARArea::sizeOfAllVARAreasInMemory
      <LI> Created installer for Windows install [Corey]
      <LI> Reorganized the documentation topic index based on abstraction level, added hyperlinks to demo/contrib code
      <LI> G3D::ReliableConduit and G3D::LightweightConduit now send and receive

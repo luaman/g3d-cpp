@@ -2,7 +2,7 @@
   @file VARArea.h
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2003-08-09
-  @edited  2004-01-06
+  @edited  2005-02-06
 */
 
 #ifndef GLG3D_VARAREA_H
@@ -113,6 +113,8 @@ private:
         peakAllocated = iMax(peakAllocated, allocated);
     }
 
+    static size_t       _sizeOfAllVARAreasInMemory;
+
 	VARArea(size_t _size, UsageHint h);
 
 public:
@@ -149,7 +151,6 @@ public:
         return generation;
     }
 
-
     /**
      Provided for breaking the VARArea abstraction; use G3D::VAR and 
      G3D::RenderDevice in general.
@@ -170,7 +171,7 @@ public:
      When using system memory, this is a pointer to the beginning of 
      the system memory block in which data is stored.  Null when using VBO.
      */
-    inline void*  gl_basePointer() const {
+    inline void* gl_basePointer() const {
         return basePointer;
     }
 
@@ -182,6 +183,13 @@ public:
 
 	/** Finishes, then frees all VAR memory inside this area.*/ 
 	void reset();
+
+    /** Returns the total size of all VARAreas allocated.  Note that not all
+        will be in video memory, and some will be backed by main memory 
+        even if nominally stored in video memory, so the total size may
+        exceed the video memory size.*/
+    static size_t sizeOfAllVARAreasInMemory();
+
 };
 
 
