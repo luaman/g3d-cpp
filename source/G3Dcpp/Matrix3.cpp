@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2004-02-01
+ @edited  2004-02-22
 */
 
 #include <memory.h>
@@ -131,6 +131,7 @@ Vector3 Matrix3::getRow (int iRow) const {
 }
 
 void Matrix3::setColumn(int iCol, const Vector3 &vector) {
+    debugAssert((iCol >= 0) && (iCol < 3));
     m_aafEntry[0][iCol] = vector.x;
     m_aafEntry[1][iCol] = vector.y;
     m_aafEntry[2][iCol] = vector.z;
@@ -138,6 +139,7 @@ void Matrix3::setColumn(int iCol, const Vector3 &vector) {
 
 
 void Matrix3::setRow(int iRow, const Vector3 &vector) {
+    debugAssert((iRow >= 0) && (iRow < 3));
     m_aafEntry[iRow][0] = vector.x;
     m_aafEntry[iRow][1] = vector.y;
     m_aafEntry[iRow][2] = vector.z;
