@@ -96,19 +96,13 @@ inline Vector4 Vector4::operator- (const Vector4& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector4 Vector4::operator* (float fScalar) const {
+inline Vector4 Vector4::operator* (double fScalar) const {
     return Vector4(fScalar*x, fScalar*y, fScalar*z, fScalar*w);
 }
 
 //----------------------------------------------------------------------------
 inline Vector4 Vector4::operator- () const {
     return Vector4( -x, -y, -z, -w);
-}
-
-//----------------------------------------------------------------------------
-inline Vector4 operator* (float fScalar, const Vector4& rkVector) {
-    return Vector4(fScalar*rkVector.x, fScalar*rkVector.y,
-                   fScalar*rkVector.z, fScalar*rkVector.w);
 }
 
 //----------------------------------------------------------------------------
@@ -137,7 +131,7 @@ inline Vector4 Vector4::lerp(const Vector4& v, double alpha) const {
 
 
 //----------------------------------------------------------------------------
-inline Vector4& Vector4::operator*= (float fScalar) {
+inline Vector4& Vector4::operator*= (double fScalar) {
     x *= fScalar;
     y *= fScalar;
     z *= fScalar;

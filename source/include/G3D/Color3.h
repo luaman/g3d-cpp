@@ -37,10 +37,7 @@ public:
 
     Color3(class BinaryInput& bi);
 
-    /**
-     * Initialize from G3D::Reals.
-     */
-    Color3(const float r, const float g, const float b);
+    Color3(double r, double g, double b);
 
     Color3(const class Vector3& v);
     
@@ -71,9 +68,8 @@ public:
     // WARNING.  These member functions rely on
     // (1) Color3 not having virtual functions
     // (2) the data packed in a 3*sizeof(float) memory block
-    float& operator[] (int i) const;
-    operator float* ();
-    operator const float* () const;
+    const float& operator[] (int i) const;
+    float& operator[] (int i);
 
     // assignment and comparison
     Color3& operator= (const Color3& rkVector);
@@ -84,11 +80,10 @@ public:
     // arithmetic operations
     Color3 operator+ (const Color3& rkVector) const;
     Color3 operator- (const Color3& rkVector) const;
-    Color3 operator* (float fScalar) const;
+    Color3 operator* (double fScalar) const;
     Color3 operator* (const Color3& rkVector) const;
-    Color3 operator/ (float fScalar) const;
+    Color3 operator/ (double fScalar) const;
     Color3 operator- () const;
-    friend Color3 operator* (float fScalar, const Color3& rkVector);
 
     // arithmetic updates
     Color3& operator+= (const Color3& rkVector);
@@ -99,6 +94,14 @@ public:
 
     bool fuzzyEq(const Color3& other) const;
     bool fuzzyNe(const Color3& other) const;
+
+    inline operator float* () {
+        return (float*)this;
+    }
+
+    operator const float* () const {
+        return (float*)this;
+    }
 
     // vector operations
     float length () const;
@@ -154,7 +157,14 @@ public:
 
 };
 
+inline G3D::Color3 operator* (double s, const G3D::Color3& c) {
+    return c * s;
+}
+
 } // namespace
+
+
+
 
 #include "Color3.inl"
 

@@ -73,26 +73,25 @@ void Vector4::serialize(BinaryOutput& b) const {
 
 //----------------------------------------------------------------------------
 
-Vector4 Vector4::operator/ (float fScalar) const {
+Vector4 Vector4::operator/ (double fScalar) const {
     Vector4 kQuot;
 
     if ( fScalar != 0.0 ) {
-		float fInvScalar = 1.0 / fScalar;
+		double fInvScalar = 1.0 / fScalar;
         kQuot.x = fInvScalar * x;
         kQuot.y = fInvScalar * y;
         kQuot.z = fInvScalar * z;
         kQuot.w = fInvScalar * w;
         return kQuot;
     } else {
-        return Vector4(inf, inf,
-            inf, inf);
+        return Vector4(inf, inf, inf, inf);
     }
 }
 
 //----------------------------------------------------------------------------
-Vector4& Vector4::operator/= (float fScalar) {
+Vector4& Vector4::operator/= (double fScalar) {
     if (fScalar != 0.0) {
-		float fInvScalar = 1.0 / fScalar;
+		double fInvScalar = 1.0 / fScalar;
         x *= fInvScalar;
         y *= fInvScalar;
         z *= fInvScalar;

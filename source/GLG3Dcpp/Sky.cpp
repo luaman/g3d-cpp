@@ -454,8 +454,10 @@ void Sky::renderLensFlare(
                     double occlusionAttenuation = 
                         (1 - square(2*fractionOfSunVisible - 1));
 
-                    drawCelestialSphere(renderDevice, L, X , Y, .6,
-                                        occlusionAttenuation * Color4(1,1,1,1) * .4 * max(0, min(1, 1 - sunPosition.y * 2 / sqrt(2.0))));
+                    Color4 col =
+                        Color4(1,1,1,1) * (occlusionAttenuation *
+                            0.4 * max(0.0, min(1.0, 1.0 - sunPosition.y * 2.0 / sqrt(2.0))));
+                    drawCelestialSphere(renderDevice, L, X , Y, 0.6, col);
                 }
 
                 renderDevice->setTexture(0, sun);

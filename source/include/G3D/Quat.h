@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-01-26
+  @edited  2004-03-04
  */
 
 #ifndef G3D_QUAT_H
@@ -134,6 +134,8 @@ public:
         return Quat(x * s, y * s, z * s, w * s);
     }
 
+    friend Quat operator* (double s, const Quat& q);
+
     inline Quat operator/(double s) const {
         return Quat(x / s, y / s, z / s, w / s);
     }
@@ -244,11 +246,10 @@ public:
     // WARNING.  These member functions rely on
     // (1) Quat not having virtual functions
     // (2) the data packed in a 4*sizeof(float) memory block
-    float& operator[] (int i) const;
-    operator float* ();
-    operator const float* () const;
+    const float& operator[] (int i) const;
+    float& operator[] (int i);
 
-// 2-char swizzles
+    // 2-char swizzles
 
     Vector2 xx() const;
     Vector2 yx() const;
@@ -602,12 +603,18 @@ inline Quat log(const Quat& q) {
     return q.log();
 }
 
+inline G3D::Quat operator*(double s, const G3D::Quat& q) {
+    return q * s;
+}
+
 } // Namespace G3D
 
 // Outside the namespace to avoid overloading confusion for C++
 inline G3D::Quat pow(const G3D::Quat& q, double x) {
     return q.pow(x);
 }
+
+
 
 #include "Quat.inl"
 

@@ -43,17 +43,6 @@ public:
       */
     Curvatures(const Array< Vector3 >& _vertexArray, 
                            const Array< int >& _indexArray);
-
-    /** Returns the Principal Curvatures for each vertex in _vertexArray */
-    void principalCurvature( Array< double >& k1, Array< double >& k2) const;
-
-    /** Returns the Principal Direction for each vertex in _vertexArray
-      @cite principal directions based on Taubing G. "Estimating the Tensor of Curvature of a
-      Surface from a Polyhedral Approximation. Proc. ICCV 1995.
-      http://citeseer.nj.nec.com/taubin95estimating.html
-    */
-    void principalDirections( Array< Vector3 >& T1, Array< Vector3 >& T2) const;
-
     /**
      Gaussian curvature,
      the product of the principal curvatures.
@@ -66,6 +55,20 @@ public:
      and also the average of the principal curvatures.
     */
     void meanCurvature(Array<double>& meanCurvaturePerVertex) const;
+
+    /** Returns the Principal Curvatures for each vertex in _vertexArray */
+    void principalCurvature(
+        const Array<double>& gaussianCurvature,
+        const Array<double>& meanCurvature,
+        Array<double>&       k1,
+        Array<double>&       k2) const;
+
+    /** Returns the Principal Direction for each vertex in _vertexArray
+      @cite principal directions based on Taubing G. "Estimating the Tensor of Curvature of a
+      Surface from a Polyhedral Approximation. Proc. ICCV 1995.
+      http://citeseer.nj.nec.com/taubin95estimating.html
+    */
+    void principalDirections(Array<Vector3>& T1, Array<Vector3>& T2) const;
 
 protected:
 
@@ -389,8 +392,7 @@ void Curvatures::meanCurvature(Array<double>& curvatures) const {
              const int v2 = *cur;
 
              // K(xi) = 1/(2*Amixed)*sum(cota+cotb)*(Xj-Xi)
-             K += (cota[v][v2] + cotb[v][v2]) * 
-                  (geometry.vertexArray[v2] - vPos);
+             K += (geometry.vertexArray[v2] - vPos) * (cota[v][v2] + cotb[v][v2]);
          }
 
          K /= 2.0 * AMixed[v];
@@ -399,14 +401,11 @@ void Curvatures::meanCurvature(Array<double>& curvatures) const {
 }
 
 
-void Curvatures::principalCurvature(Array<double>& k1, Array<double>& k2) const {
-
-    // mean and gaussian curvature
-    Array<double> kh, kg;
-
-    // TODO: pass in
-    gaussianCurvature(kg);
-    meanCurvature(kh);
+void Curvatures::principalCurvature(
+    const Array<double>&    kg,
+    const Array<double>&    kh,
+    Array<double>&          k1,
+    Array<double>&          k2) const {
 
     // For each vertex
     for(int v = geometry.vertexArray.size() - 1; v >= 0; --v) {  
@@ -520,7 +519,7 @@ void Curvatures::principalDirections(Array<Vector3>& T1, Array<Vector3>& T2) con
         WMat.setColumn(0, W);
 
         // Calc Householder matrix Q
-        Q = Matrix3::IDENTITY - 2.0 * (WMat * WMat.transpose());
+        Q = Matrix3::IDENTITY - (WMat * WMat.transpose()) * 2.0;
          
         // Q'MQ contain the upper bit of M?
         QMQ = Q.transpose() * M * Q;
@@ -534,8 +533,6 @@ void Curvatures::principalDirections(Array<Vector3>& T1, Array<Vector3>& T2) con
         T2[v] = sint * Q.getColumn(1) + cost * Q.getColumn(2);
     }
 }
-
-
 
 
 void Curvatures::givens(double& cost, double& sint, double a, double b) const {
@@ -602,6 +599,9 @@ public:
 
     /** On the range [-inf to inf] */
     Array<double>               meanCurvature;
+
+    Array<double>               principleCurvature[2];
+    Array<Vector3>              principleDirection[2];
 
     enum RenderStyle {WHITE, GAUSSIAN, MEAN} renderStyle;
 
@@ -674,6 +674,8 @@ void Mesh::import(const PosedModelRef& pm) {
     Curvatures curvature(geometry.vertexArray, indexArray);
     curvature.gaussianCurvature(gaussianCurvature);
     curvature.meanCurvature(meanCurvature);
+    curvature.principalCurvature(gaussianCurvature, meanCurvature, principleCurvature[0], principleCurvature[1]);
+    curvature.principalDirections(principleDirection[0], principleDirection[1]);
 }
 
 
@@ -839,6 +841,7 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 
 int main(int argc, char** argv) {
+
     GAppSettings settings;
     settings.window.width       = 400;
     settings.window.height      = 400;

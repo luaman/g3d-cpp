@@ -60,7 +60,7 @@ Quat::Quat(
 
         double c = sqrt((rot[i][i] - (rot[j][j] + rot[k][k])) + 1.0);
 
-        float* v = (float*)(*this);
+        float* v = (float*)(this);
 
         v[i] = c * 0.5;
         c    = 0.5 / c;

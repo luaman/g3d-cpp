@@ -361,7 +361,7 @@ void Draw::line(
             renderDevice->sendVertex(Vector4(-d, 0));
 
             for (int i = -10; i <= 10; i += 2) {
-                renderDevice->sendVertex(v0 + i * d * 100);
+                renderDevice->sendVertex(v0 + d * i * 100.0);
             }
 
             // Off to infinity

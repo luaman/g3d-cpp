@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2004-01-09
+ @edited  2004-03-04
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -22,7 +22,7 @@ inline Color3::Color3 () {
 
 //----------------------------------------------------------------------------
 
-inline Color3::Color3(const float fX, const float fY, const float fZ) {
+inline Color3::Color3(double fX, double fY, double fZ) {
     r = fX;
     g = fY;
     b = fZ;
@@ -43,17 +43,14 @@ inline Color3::Color3 (const Color3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline float& Color3::operator[] (int i) const {
+inline float& Color3::operator[] (int i) {
     return ((float*)this)[i];
 }
 
 //----------------------------------------------------------------------------
-inline Color3::operator float* () {
-    return (float*)this;
-}
 
-inline Color3::operator const float* () const {
-    return (float*)this;
+inline const float& Color3::operator[] (int i) const {
+    return ((float*)this)[i];
 }
 
 //----------------------------------------------------------------------------
@@ -98,7 +95,7 @@ inline Color3 Color3::operator- (const Color3& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Color3 Color3::operator* (float fScalar) const {
+inline Color3 Color3::operator* (double fScalar) const {
     return Color3(fScalar*r, fScalar*g, fScalar*b);
 }
 
@@ -110,12 +107,6 @@ inline Color3 Color3::operator* (const Color3& rkVector) const {
 //----------------------------------------------------------------------------
 inline Color3 Color3::operator- () const {
     return Color3( -r, -g, -b);
-}
-
-//----------------------------------------------------------------------------
-inline Color3 operator* (float fScalar, const Color3& rkVector) {
-    return Color3(fScalar*rkVector.r, fScalar*rkVector.g,
-                  fScalar*rkVector.b);
 }
 
 //----------------------------------------------------------------------------

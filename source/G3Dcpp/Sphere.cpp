@@ -55,7 +55,7 @@ bool Sphere::culledBy(
     for (int p = 0; p < numPlanes; ++p) {
         // Shift the center towards the plane by the
         // radius.
-        if (! plane[p].halfSpaceContains(center + radius * plane[p].normal())) {
+        if (! plane[p].halfSpaceContains(center + plane[p].normal() * radius)) {
             return true;
         }
     }

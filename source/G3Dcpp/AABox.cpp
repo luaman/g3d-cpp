@@ -13,6 +13,7 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 
+
 namespace G3D {
 
 Box AABox::toBox() const {

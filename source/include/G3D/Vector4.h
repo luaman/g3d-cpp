@@ -86,16 +86,16 @@ public:
     // arithmetic operations
     Vector4 operator+ (const Vector4& rkVector) const;
     Vector4 operator- (const Vector4& rkVector) const;
-    Vector4 operator* (float fScalar) const;
-    Vector4 operator/ (float fScalar) const;
+    Vector4 operator* (double fScalar) const;
+    Vector4 operator/ (double fScalar) const;
     Vector4 operator- () const;
-    friend Vector4 operator* (float fScalar, const Vector4& rkVector);
+    friend Vector4 operator* (double fScalar, const Vector4& rkVector);
 
     // arithmetic updates
     Vector4& operator+= (const Vector4& rkVector);
     Vector4& operator-= (const Vector4& rkVector);
-    Vector4& operator*= (float fScalar);
-    Vector4& operator/= (float fScalar);
+    Vector4& operator*= (double fScalar);
+    Vector4& operator/= (double fScalar);
 
     inline Vector4 clamp(const Vector4& low, const Vector4& high) const {
         return Vector4(
@@ -472,6 +472,10 @@ public:
 
 };
 
+}
+
+inline G3D::Vector4 operator* (double s, const G3D::Vector4& v) {
+    return v * s;
 }
 
 unsigned int hashCode(const G3D::Vector4& v);

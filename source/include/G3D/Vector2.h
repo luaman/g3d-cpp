@@ -31,20 +31,21 @@ class Vector4;
  memory layout.
  */
 class Vector2 {
-
 public:
+    // coordinates
+    float x, y;
+
     // construction
     Vector2();
     Vector2(class BinaryInput& b);
-    Vector2(float x, float y);
+    Vector2(double x, double y);
     Vector2(float coordinate[2]);
+    Vector2(double coordinate[2]);
     Vector2(const Vector2& rkVector);
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
 
-    // coordinates
-    float x, y;
 
     float& operator[] (int i) const;
     operator float* ();
@@ -69,12 +70,11 @@ public:
     // arithmetic operations
     Vector2 operator+ (const Vector2& rkVector) const;
     Vector2 operator- (const Vector2& rkVector) const;
-    Vector2 operator* (float fScalar) const;
+    Vector2 operator* (double fScalar) const;
     Vector2 operator* (const Vector2& rkVector) const;
     Vector2 operator/ (const Vector2& rkVector) const;
-    Vector2 operator/ (float fScalar) const;
+    Vector2 operator/ (double fScalar) const;
     Vector2 operator- () const;
-    friend Vector2 operator* (float fScalar, const Vector2& rkVector);
 
     inline double sum() const {
         return x + y;
@@ -102,17 +102,17 @@ public:
     // arithmetic updates
     Vector2& operator+= (const Vector2& rkVector);
     Vector2& operator-= (const Vector2& rkVector);
-    Vector2& operator*= (float fScalar);
-    Vector2& operator/= (float fScalar);
+    Vector2& operator*= (double fScalar);
+    Vector2& operator/= (double fScalar);
     Vector2& operator*= (const Vector2& rkVector);
     Vector2& operator/= (const Vector2& rkVector);
 
     // vector operations
-    float length() const;
+    double length() const;
     Vector2 direction() const;
-    float squaredLength () const;
-    float dot (const Vector2& rkVector) const;
-    float unitize (float fTolerance = 1e-06);
+    double squaredLength () const;
+    double dot (const Vector2& rkVector) const;
+    double unitize (double fTolerance = 1e-06);
 
     Vector2 min(const Vector2 &v) const;
     Vector2 max(const Vector2 &v) const;
@@ -167,6 +167,12 @@ public:
 };
 
 }
+
+// Intentionally outside namespace to avoid operator overloading confusion
+inline G3D::Vector2 operator*(double s, const G3D::Vector2& v) {
+    return v * s;
+}
+
 
 inline unsigned int hashCode(const G3D::Vector2& v);
 

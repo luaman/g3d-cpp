@@ -51,18 +51,14 @@ inline Vector3::Vector3 (const Vector3& V) : x(V.x), y(V.y), z(V.z) {
 //}
 
 //----------------------------------------------------------------------------
-inline float& Vector3::operator[] (int i) const {
+inline const float& Vector3::operator[] (int i) const {
     return ((float*)this)[i];
 }
 
-//----------------------------------------------------------------------------
-inline Vector3::operator float* () {
-    return (float*)this;
+inline float& Vector3::operator[] (int i) {
+    return ((float*)this)[i];
 }
 
-inline Vector3::operator const float* () const {
-    return (float*)this;
-}
 
 //----------------------------------------------------------------------------
 inline Vector3& Vector3::operator= (const Vector3& rkVector) {
@@ -128,12 +124,6 @@ inline Vector3 Vector3::operator/ (const Vector3& rkVector) const {
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::operator- () const {
     return Vector3(-x, -y, -z);
-}
-
-//----------------------------------------------------------------------------
-inline Vector3 operator* (float fScalar, const Vector3& rkVector) {
-    return Vector3(fScalar*rkVector.x, fScalar*rkVector.y,
-                   fScalar*rkVector.z);
 }
 
 //----------------------------------------------------------------------------
@@ -242,4 +232,3 @@ inline bool Vector3::isUnit() const {
 }
 
 }
-

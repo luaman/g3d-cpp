@@ -63,11 +63,11 @@ Vector2 Vector2::random() {
 }
 
 //----------------------------------------------------------------------------
-Vector2 Vector2::operator/ (float fScalar) const {
+Vector2 Vector2::operator/ (double fScalar) const {
     Vector2 kQuot;
 
     if ( fScalar != 0.0 ) {
-		float fInvScalar = 1.0 / fScalar;
+		double fInvScalar = 1.0 / fScalar;
         kQuot.x = fInvScalar * x;
         kQuot.y = fInvScalar * y;
         return kQuot;
@@ -77,9 +77,9 @@ Vector2 Vector2::operator/ (float fScalar) const {
 }
 
 //----------------------------------------------------------------------------
-Vector2& Vector2::operator/= (float fScalar) {
+Vector2& Vector2::operator/= (double fScalar) {
     if (fScalar != 0.0) {
-		float fInvScalar = 1.0 / fScalar;
+		double fInvScalar = 1.0 / fScalar;
         x *= fInvScalar;
         y *= fInvScalar;
     } else {
@@ -91,11 +91,11 @@ Vector2& Vector2::operator/= (float fScalar) {
 }
 
 //----------------------------------------------------------------------------
-float Vector2::unitize (float fTolerance) {
-	float fLength = length();
+double Vector2::unitize (double fTolerance) {
+	double fLength = length();
 
     if (fLength > fTolerance) {
-		float fInvLength = 1.0 / fLength;
+		double fInvLength = 1.0 / fLength;
         x *= fInvLength;
         y *= fInvLength;
     } else {

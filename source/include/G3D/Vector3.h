@@ -88,9 +88,16 @@ public:
     // WARNING.  These member functions rely on
     // (1) Vector3 not having virtual functions
     // (2) the data packed in a 3*sizeof(float) memory block
-    float& operator[] (int i) const; 
-    operator float* ();
-    operator const float* () const;
+    const float& operator[] (int i) const;
+    float& operator[] (int i);
+
+    inline operator float* () {
+        return (float*)this;
+    }
+
+    operator const float* () const {
+        return (float*)this;
+    }
 
     enum Axis {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, DETECT_AXIS=-1};
 
@@ -125,7 +132,6 @@ public:
     Vector3 operator* (const Vector3& v) const;
     Vector3 operator/ (const Vector3& v) const;
     Vector3 operator- () const;
-    friend Vector3 operator* (float s, const Vector3& v);
 
     // arithmetic updates
     Vector3& operator+= (const Vector3& v);
@@ -440,6 +446,19 @@ public:
     Vector4 yzzz() const;
     Vector4 zzzz() const;
 };
+
+
+inline G3D::Vector3 operator*(double s, const G3D::Vector3& v) {
+    return v * s;
+}
+
+inline G3D::Vector3 operator*(float s, const G3D::Vector3& v) {
+    return v * s;
+}
+
+inline G3D::Vector3 operator*(int s, const G3D::Vector3& v) {
+    return v * s;
+}
 
 }
 

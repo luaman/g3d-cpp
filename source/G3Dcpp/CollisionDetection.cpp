@@ -17,6 +17,7 @@
 #include "G3D/Sphere.h"
 #include "G3D/Box.h"
 #include "G3D/Triangle.h"
+#include "G3D/Vector3.h"
 
 namespace G3D {
 
@@ -420,7 +421,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedSphere(
         // Location is now the center of the moving sphere at the collision time.
         // Adjust for the size of the moving sphere.  Two spheres always collide
         // along a line between their centers.
-        location += movingSphere.radius * (location - fixedSphere.center) / fixedSphere.radius;
+        location += (location - fixedSphere.center) * movingSphere.radius / fixedSphere.radius;
     }
 
     return time;
@@ -956,7 +957,7 @@ Vector3 CollisionDetection::bounceDirection(
     Vector3 direction       = velocity.direction();
 
     // Reflect direction about the normal
-    return direction - 2 * normal * normal.dot(direction);
+    return direction - 2.0 * normal * normal.dot(direction);
 }
 
 

@@ -29,13 +29,20 @@ inline Vector2::Vector2 () {
 
 //----------------------------------------------------------------------------
 
-inline Vector2::Vector2 (float fS, float fT) {
+inline Vector2::Vector2(double fS, double fT) {
     x = fS;
     y = fT;
 }
 
 //----------------------------------------------------------------------------
 inline Vector2::Vector2 (float afCoordinate[2]) {
+    x = afCoordinate[0];
+    y = afCoordinate[1];
+}
+
+//----------------------------------------------------------------------------
+
+inline Vector2::Vector2 (double afCoordinate[2]) {
     x = afCoordinate[0];
     y = afCoordinate[1];
 }
@@ -88,7 +95,7 @@ inline Vector2 Vector2::operator- (const Vector2& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector2 Vector2::operator* (float fScalar) const {
+inline Vector2 Vector2::operator* (double fScalar) const {
     return Vector2(fScalar*x, fScalar*y);
 }
 
@@ -96,12 +103,6 @@ inline Vector2 Vector2::operator* (float fScalar) const {
 
 inline Vector2 Vector2::operator- () const {
     return Vector2( -x, -y);
-}
-
-//----------------------------------------------------------------------------
-
-inline Vector2 operator* (float fScalar, const Vector2& rkVector) {
-    return Vector2(fScalar*rkVector.x, fScalar*rkVector.y);
 }
 
 //----------------------------------------------------------------------------
@@ -122,7 +123,7 @@ inline Vector2& Vector2::operator-= (const Vector2& rkVector) {
 
 //----------------------------------------------------------------------------
 
-inline Vector2& Vector2::operator*= (float fScalar) {
+inline Vector2& Vector2::operator*= (double fScalar) {
     x *= fScalar;
     y *= fScalar;
     return *this;
@@ -157,12 +158,12 @@ inline Vector2 Vector2::operator/ (const Vector2& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline float Vector2::squaredLength () const {
+inline double Vector2::squaredLength () const {
     return x*x + y*y;
 }
 
 //----------------------------------------------------------------------------
-inline float Vector2::length () const {
+inline double Vector2::length () const {
     return sqrt(x*x + y*y);
 }
 
@@ -179,7 +180,7 @@ inline Vector2 Vector2::direction () const {
 
 //----------------------------------------------------------------------------
 
-inline float Vector2::dot (const Vector2& rkVector) const {
+inline double Vector2::dot (const Vector2& rkVector) const {
     return x*rkVector.x + y*rkVector.y;
 }
 

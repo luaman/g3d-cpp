@@ -92,7 +92,7 @@ Color3 Color3::random() {
 }
 
 //----------------------------------------------------------------------------
-Color3 Color3::operator/ (float fScalar) const {
+Color3 Color3::operator/ (double fScalar) const {
     Color3 kQuot;
 
     if (fScalar != 0.0) {
