@@ -42,7 +42,7 @@ PhysicsFrame PhysicsFrame::lerp(
     PhysicsFrame result;
 
     result.translation = translation.lerp(other.translation, alpha);
-    result.rotation    = rotation.lerp(other.rotation, alpha);
+    result.rotation    = rotation.slerp(other.rotation, alpha);
 
     return result;
 }

@@ -127,6 +127,10 @@ public:
         return r + g + b;
     }
 
+    inline double average() const {
+        return sum() / 3.0;
+    }
+
 
     std::string toString() const;
 

@@ -263,6 +263,10 @@ public:
         return x + y + z;
     }
 
+    inline double average() const {
+        return sum() / 3.0;
+    }
+
     // special points
     static const Vector3 ZERO;
     static const Vector3 ZERO3;

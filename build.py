@@ -12,7 +12,13 @@
 from buildlib import *
 
 # The library version number
-version = "6_00-b12"
+version = "6_00-b13"
+
+# Turn the platform into a name to put in the
+# "lib" directory name
+platform = {"posix" : "linux", \
+            "nt"    : "win32", \
+            "macos" : "osx"}[os.name]
 
 ###############################################################################
 #                                                                             #
@@ -90,8 +96,10 @@ def linuxCheckVersion():
 def lib(args):
     x = 0
 
-    mkdir(installDir(args) + "/lib")
     copyIfNewer('source/include', installDir(args) + '/include')
+
+    libdir = installDir(args) + "/" + platform + "-lib"
+    mkdir(libdir)
 
     if (os.name == 'nt'):
         # Windows build
@@ -101,7 +109,7 @@ def lib(args):
                  "GLG3D - Win32 Release",\
                  "GLG3D - Win32 Debug"])
 
-        copyIfNewer("temp/lib", installDir(args) + "/lib")
+        copyIfNewer("temp/win32-lib", libdir)
 
     else:
         # Linux build
@@ -122,10 +130,10 @@ def lib(args):
             os.system("strip --strip-unneeded temp/debug/g3d/.libs/libG3D_debug.a")
             os.system("strip --strip-unneeded temp/debug/glg3d/.libs/libGLG3D_debug.a")
 
-            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            installDir(args) + "/lib/libG3D_debug.a")
-            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                installDir(args) + "/lib/libG3D.a")
-            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",        installDir(args) + "/lib/libGLG3D_debug.a")
-            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            installDir(args) + "/lib/libGLG3D.a")
+            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            libdir + "/libG3D_debug.a")
+            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                libdir + "/libG3D.a")
+            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",        libdir + "/libGLG3D_debug.a")
+            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            libdir + "/libGLG3D.a")
 
             # Dynamic libs (not currently used)
             #copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
@@ -142,7 +150,8 @@ def lib(args):
         print "*** Errors encountered during compilation.  Build process halted."
         sys.exit(x);        
 
-    copyIfNewer("source/lib", installDir(args) + "/lib")
+    # Copy any system libraries over
+    copyIfNewer("source/" + platform + "-lib", libdir)
 
 ###############################################################################
 #                                                                             #

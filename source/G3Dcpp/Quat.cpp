@@ -6,23 +6,23 @@
   @author Morgan McGuire, graphics3d.com
   
   @created 2002-01-23
-  @edited  2003-02-15
+  @edited  2004-01-23
  */
 
 #include "G3D/Quat.h"
 
 namespace G3D {
 
-Quat::Quat(
+Quat Quat::fromAxisAngle(
     const Vector3&      axis,
     double              angle) {
 
-    w = cos(angle / 2);
-    Vector3 v = axis.direction() * sin(angle / 2); 
+    Quat q;
 
-    x = v.x;
-    y = v.y;
-    z = v.z;
+    q.w = cos(angle / 2);
+    q.imag() = axis.direction() * sin(angle / 2); 
+
+    return q;
 }
 
 
@@ -151,7 +151,7 @@ void Quat::toRotationMatrix(
 }
 
     
-Quat Quat::lerp(
+Quat Quat::slerp(
     const Quat&         other,
     double              alpha) const {
 
@@ -214,15 +214,12 @@ Quat Quat::lerp(
 Quat Quat::operator*(const Quat& other) const {
 
     // Following Watt & Watt, page 360
-    Vector3 v1(x, y, z);
-    Vector3 v2(other.x, other.y, other.z);
-    double  s1 = w;
-    double  s2 = other.w;
+    const Vector3& v1 = imag();
+    const Vector3& v2 = other.imag();
+    double         s1 = w;
+    double         s2 = other.w;
 
-    Vector3 v3 = s1*v2 + s2*v1 + v1.cross(v2);
-    double  s3 = s1*s2 - v1.dot(v2);
-    
-    return Quat(v3.x, v3.y, v3.z, s3);
+    return Quat(s1*v2 + s2*v1 + v1.cross(v2), s1*s2 - v1.dot(v2));
 }
 
 }

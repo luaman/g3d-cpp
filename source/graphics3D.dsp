@@ -37,7 +37,7 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "..\temp\lib"
+# PROP Output_Dir "..\temp\win32-lib"
 # PROP Intermediate_Dir "../temp/release/g3d"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"../temp/graphics3D.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"..\temp\lib\G3D.lib"
+# ADD LIB32 /nologo /out:"..\temp\win32-lib\G3D.lib"
 
 !ELSEIF  "$(CFG)" == "graphics3D - Win32 Debug"
 
@@ -61,7 +61,7 @@ LIB32=link.exe -lib
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "..\temp\lib"
+# PROP Output_Dir "..\temp\win32-lib"
 # PROP Intermediate_Dir "../temp/debug/g3d"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
@@ -73,7 +73,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"../temp/graphics3D-debug.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"..\temp\lib\G3D-debug.lib"
+# ADD LIB32 /nologo /out:"..\temp\win32-lib\G3D-debug.lib"
 
 !ENDIF 
 

@@ -181,7 +181,7 @@ CoordinateFrame CoordinateFrame::lerp(
     Quat q2 = Quat(other.rotation);
 
     return CoordinateFrame(
-        q1.lerp(q2, alpha).toRotationMatrix(),
+        q1.slerp(q2, alpha).toRotationMatrix(),
         this->translation * (1 - alpha) + other.translation * alpha);
 } 
 

@@ -33,10 +33,6 @@
 #include "Object.h"
 #include "Scene.h"
 
-#if G3D_VER != 60012
-    #error Requires G3D 6.00 b12
-#endif
-
 /**
  The path to the data directory from this program's directory.
  */

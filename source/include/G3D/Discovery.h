@@ -259,7 +259,7 @@ public:
      after it has been passed in.  This allows a server to change the advertised
      number of players or score for a game, for example.
      */
-    void init(
+    virtual void init(
         NetworkDevice*           _netDevice,
         const DiscoverySettings* _settings,
         DiscoveryAdvertisement*  _advertisement);

@@ -295,7 +295,7 @@
 
    <LI>Download and install SDL <B>version 1.2.5</B> from
    <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>
-   (G3D is not compatible with SDL 1.2.6).
+   (G3D is not 100% compatible with SDL 1.2.6).
 
    <LI>Ensure that you are using MSVC++ 6.0 with <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A> and
    the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.
@@ -324,11 +324,12 @@
 
    <LI>
    In Tools:Options:Directories, add the g3d include directory 
-   (e.g. c:\\libraries\\g3d-6_00-b12\\include) to the
+   (e.g. c:\\libraries\\g3d-6_00-b13\\include) to the
    include list.  Make sure it preceeds all other include directories.
    <LI>
    In Tools:Options:Directories, add the g3d lib directory 
-   (e.g. c:\\libraries\\g3d-6_00-b12\\lib) to the library
+   (e.g. c:\\libraries\\g3d-6_00-b13\\win32-lib for Windows.  On Linux
+   the directory is linux-lib and on OS/X it is osx-lib.) to the library
    list.
    <LI>
    <B>For each project you create, copy <CODE>SDL.dll</CODE>, <CODE>glut32.dll</CODE>, 
