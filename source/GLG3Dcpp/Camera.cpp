@@ -43,16 +43,13 @@ void Camera::setCoordinateFrame(const CoordinateFrame& c) {
 
 void Camera::setProjectionAndCameraMatrix() const {
     
-    int screenWidth  = renderDevice->getWidth();
-    int screenHeight = renderDevice->getHeight();
-    (void)screenHeight;
+    double viewport[4];
+    glGetDoublev(GL_VIEWPORT, viewport);
 
-    // OpenGL wants the renderDevice ratio (not the viewport or
-    // screen ratio) here.
-    double pixelAspect = renderDevice->getWidth() / (double)renderDevice->getHeight();
+    double pixelAspect = viewport[2] / viewport[3];
 
     double y = nearPlane * tan(fieldOfView / 2);
-    double x = y * pixelAspect;
+    double x = y / pixelAspect;
 
     double r, l, t, b, n, f;
     n = nearPlane;

@@ -59,18 +59,18 @@ void Draw::axes(
     const double xx = -3;
     const double yy = xx * 1.4;
 
-    Vector3 xc2D = renderDevice->project(c + x * 1.1);
-    Vector3 yc2D = renderDevice->project(c + y * 1.1);
-    Vector3 zc2D = renderDevice->project(c + z * 1.1);
+    Vector4 xc2D = renderDevice->project(c + x * 1.1);
+    Vector4 yc2D = renderDevice->project(c + y * 1.1);
+    Vector4 zc2D = renderDevice->project(c + z * 1.1);
 
     // If coordinates are behind the viewer, transform off screen
     Vector2 x2D = (xc2D.z > 0) ? xc2D.xy() : Vector2(-1000, -1000);
     Vector2 y2D = (yc2D.z > 0) ? yc2D.xy() : Vector2(-1000, -1000);
     Vector2 z2D = (zc2D.z > 0) ? zc2D.xy() : Vector2(-1000, -1000);
 
-    double xS = (xc2D.z > 0) ? clamp(10 * xc2D.z, .1, 5) : 0;
-    double yS = (yc2D.z > 0) ? clamp(10 * yc2D.z, .1, 5) : 0;
-    double zS = (zc2D.z > 0) ? clamp(10 * zc2D.z, .1, 5) : 0;
+    double xS = (xc2D.z > 0) ? clamp(10 * xc2D.w, .1, 5) : 0;
+    double yS = (yc2D.z > 0) ? clamp(10 * yc2D.w, .1, 5) : 0;
+    double zS = (zc2D.z > 0) ? clamp(10 * zc2D.w, .1, 5) : 0;
 
     renderDevice->push2D();
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
@@ -354,16 +354,16 @@ void Draw::lineSegment(
         Vector3 v0 = lineSegment.endPoint(0);
         Vector3 v1 = lineSegment.endPoint(1);
 
-        Vector3 s0 = renderDevice->project(v0);
-        Vector3 s1 = renderDevice->project(v1);
+        Vector4 s0 = renderDevice->project(v0);
+        Vector4 s1 = renderDevice->project(v1);
 
         double L = 2;
-        if ((s0.z > 0) && (s1.z > 0)) {
-            L = 15 * (s0.z + s1.z) / 2;
-        } else if (s0.z > 0) {
-            L = max(15 * s0.z, 10);
-        } else if (s1.z > 0) {
-            L = max(15 * s1.z, 10);
+        if ((s0.w > 0) && (s1.w > 0)) {
+            L = 15 * (s0.w + s1.w) / 2;
+        } else if (s0.w > 0) {
+            L = max(15 * s0.w, 10);
+        } else if (s1.w > 0) {
+            L = max(15 * s1.w, 10);
         }
 
         renderDevice->setLineWidth(L);

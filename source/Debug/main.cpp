@@ -32,6 +32,8 @@ void Demo::doLogic() {
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
+    app->renderDevice->setViewport(Rect2D(0, 0, 400, 600));
+
     // Cyan background
 	glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
 
@@ -47,6 +49,11 @@ void Demo::doGraphics() {
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
     Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
+
+    Vector3 nnear(0,0,0);
+    Vector4 ffar(0,0,-1,0);
+    Vector4 v = app->renderDevice->project(nnear);
+    app->debugPrintf(v.toString().c_str());
 
     glDisable(GL_LIGHT0);
     app->renderDevice->disableLighting();

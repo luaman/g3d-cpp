@@ -1229,8 +1229,8 @@ public:
      can use this to make results rendered with push2D() line up with those
      rendered with a 3D transformation.
      */
-    Vector3 project(const Vector4& v) const;
-    Vector3 project(const Vector3& v) const;
+    Vector4 project(const Vector4& v) const;
+    Vector4 project(const Vector3& v) const;
 
 
     /**

@@ -215,6 +215,7 @@
         G3D::glColor,
         G3D::glNormal, 
         G3D::glTexCoord, 
+        G3D::glToScreen,
         G3D::glMultiTexCoord,
         G3D::sizeOfGLFormat, 
         G3D::glFormatOf, 

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-09-10
+ @edited  2003-11-06
 
  Copyright 2002, Morgan McGuire.
  All rights reserved.
@@ -181,6 +181,17 @@ inline void * glGetProcAddress(const char * name){
 	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
  */
 CoordinateFrame reflectionMatrix();
+
+
+
+
+/**
+ Takes an object space point to screen space using the current MODELVIEW and
+ PROJECTION matrices. The resulting xy values are in <B>pixels</B>, the z 
+ value is on the glDepthRange scale, and the w value contains rhw (-1/z for
+ camera space z), which is useful for scaling line and point size.
+ */
+Vector4 glToScreen(const Vector4& v);
 
 } // namespace
 

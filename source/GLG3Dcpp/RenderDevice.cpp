@@ -998,42 +998,13 @@ void RenderDevice::configurePointLight(
 }
 
 
-Vector3 RenderDevice::project(const Vector3& v) const {
+Vector4 RenderDevice::project(const Vector3& v) const {
     return project(Vector4(v, 1));
 }
 
 
-Vector3 RenderDevice::project(const Vector4& v) const {
-    // Get the matrices
-    double modelView[16];
-    double projection[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
-    glGetDoublev(GL_PROJECTION_MATRIX, projection);
-
-    // Compose the matrices into a net row-major transformation
-    Vector4 transformation[4];
-    int r;
-    for (r = 0; r < 4; ++r) {
-        for (int c = 0; c < 4; ++c) {
-            transformation[r][c] = 0;
-            for (int i = 0; i < 4; ++i) {
-                // OpenGL matrices are column major
-                transformation[r][c] += projection[r + i * 4] * modelView[i + c * 4];
-            }
-        }
-    }
-
-    // Transform the vertex
-    Vector4 result;
-    for (r = 0; r < 4; ++r) {
-        result[r] = transformation[r].dot(v);
-    }
-
-    // Homogeneous division
-    const double rhw = 1 / result.w;
-    return Vector3((result.x * rhw + 1) * getWidth() / 2,
-                   (1 - result.y * rhw) * getHeight() / 2,
-                   rhw);
+Vector4 RenderDevice::project(const Vector4& v) const {
+    return glToScreen(v);
 }
 
 
@@ -1062,6 +1033,7 @@ void RenderDevice::push2D(const Rect2D& viewport) {
     disableLighting();
     setCullFace(CULL_NONE);
     disableDepthWrite();
+    setViewport(viewport);
     setProjectionMatrix2D(viewport.x, viewport.width - 1, viewport.height - 1, viewport.y, -1, 1); 
 }
 
