@@ -21,12 +21,9 @@ const int                   N = 50;
  Change this to change the model being rendered.
  */
 const std::string modelName = "p51-mustang.ifs";
-//const std::string           modelName = "angel.ifs";
 
-/**
- The path to the data directory from this program's directory.
- */
-std::string                 DATA_DIR;
+enum RenderMethod {TRIANGLES = 0, VARSTREAM, VARSTATIC, NUM_RENDER_METHODS} renderMethod;
+
 
 /**
  See also G3D::IFSModel and G3D::MD2Model.  This demo uses neither
@@ -36,7 +33,7 @@ std::string                 DATA_DIR;
  var usage).
  */
 class Model {
-
+private:
     VAR             varVertex;
     VAR             varNormal;
 
@@ -46,249 +43,239 @@ class Model {
 
 public:
 
-    Model(const std::string& filename);
+    Model(const std::string&, VARAreaRef);
+
     virtual ~Model() {}
-    void render(const CoordinateFrame& c, 
-                const LightingParameters& lighting) const;
+
+    void render(RenderDevice*, const CoordinateFrame&,
+        const LightingParameters&, VARAreaRef) const;
+    
     int numPolys() const {
         return index.size() / 3;
     }
 };
 
 
-Log*                    debugLog    = NULL;
-RenderDevice*           renderDevice= NULL;
-CFontRef                font        = NULL;
-UserInput*              userInput   = NULL;
-SkyRef                  sky         = NULL;
-VARAreaRef              varStream   = NULL;
-VARAreaRef              varStatic   = NULL;
-GCamera                 camera;
+class App : public GApp {
+protected:
+    void main();
+public:
 
-bool                    endProgram  = false;
+    GApplet* applet;
 
-enum RenderMethod {TRIANGLES = 0, VARSTREAM, VARSTATIC, NUM_RENDER_METHODS} renderMethod = VARSTATIC;
+    App(const GAppSettings& settings);
 
-Model*                  model       = NULL;
-
-void handleEvents();
+    ~App() {
+        delete applet;
+    }
+};
 
 
-/////////////////////////////////////////////////////////////////////////////
+/**
+ This simple demo applet uses the debug mode as the regular
+ rendering mode so you can fly around the scene.
+ */
+class Demo : public GApplet {
+public:
 
-int main(int argc, char** argv) {
+    // Add state that should be visible to this applet.
+    // If you have multiple applets that need to share
+    // state, put it in the App.
 
-    DATA_DIR = demoFindData();
+    class App*              app;
+    SkyRef                  sky;
 
-    // Initialize
-    debugLog     = new Log();
-    
-    renderDevice = new RenderDevice();
-    RenderDeviceSettings settings;
-    settings.rgbBits = 0;
-    settings.alphaBits = 0;
-    settings.stencilBits = 0;
-    settings.depthBits = 16;
+    VARAreaRef              varStream;
+    VARAreaRef              varStatic;
+    Model*                  model;
+    GameTime                gameTime;
 
-    //settings.fullScreen = true;
-    renderDevice->init(settings, debugLog);
+    Demo(App* app);
 
+    virtual ~Demo() {}
+
+    virtual void init();
+
+    virtual void doLogic();
+
+	virtual void doNetwork();
+
+    virtual void doSimulation(SimTime dt);
+
+    virtual void doGraphics();
+
+    virtual void cleanup();
+
+};
+
+
+Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     // Allocate the two VARAreas used in this demo
     varStatic  = VARArea::create(1024 * 640 * 5, VARArea::WRITE_ONCE);
     varStream = VARArea::create(1024 * 1280 * 5, VARArea::WRITE_EVERY_FRAME);
     debugAssert(varStatic.notNull());
     debugAssert(varStream.notNull());
-
-    font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
-    sky          = Sky::create(renderDevice, DATA_DIR + "sky/");
-    userInput    = new UserInput();
-    model        = new Model(DATA_DIR + "ifs/" + modelName);
-
-    ManualCameraController* controller = new ManualCameraController();
-    controller->init(renderDevice, userInput);
-
-    controller->setPosition(Vector3(-25, 2, 0));
-    controller->lookAt(Vector3(-20, 2.5, 1));
-    controller->setActive(true);
-    renderDevice->resetState();
-    renderDevice->setColorClearValue(Color3(.1, .5, 1));
-    GameTime gameTime   = G3D::toSeconds(8, 00, 00, AM);
-
-    // Main loop
-    do {
-        // User input
-        handleEvents();
-
-        // Simulation
-        gameTime = (int)(gameTime + MINUTE * .5) % (int)DAY;
-        controller->doSimulation(.05);
-        camera.setCoordinateFrame(controller->getCoordinateFrame());
-
-        // Graphics
-        renderDevice->beginFrame();
-        renderDevice->clear(sky == NULL, true, false);
-            renderDevice->pushState();
-                
-                renderDevice->setProjectionAndCameraMatrix(camera);
-                LightingParameters lighting(gameTime, false);
-
-                if (sky.notNull()) {
-                   sky->render(lighting);
-                }
-                                
-                renderDevice->pushState();
-                    // Setup lighting
-                    renderDevice->setSpecularCoefficient(1);
-                    renderDevice->enableLighting();
-                    renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-                    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
-                    renderDevice->setAmbientLightColor(lighting.ambient);
-
-                    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-
-                    static const Color3 color[] = {Color3::black(), Color3::white(), Color3::orange(), Color3::blue()};
-                    double  t[2];
-                    Vector3 c[2];
-
-                    t[0] = System::getTick();
-                    t[1] = t[0] + 0.01;
-
-					// Draw the planes
-                    for (int x = 0; x < N; ++x) {
-
-                        for (int i = 0; i < 2; ++i) {
-                            double a = x + t[i] + 2; 
-                            double a2 = t[i] * (x + 1) * .01 + 1005.1;
-                            c[i] = Vector3(cos(a) * (10 + x / 2.0), sin(a2) * 10, sin(a) * 15);
-                        }
-
-                        CoordinateFrame cframe(c[0]);
-
-                        double a = t[0] * (x + 1) * .1; 
-                        cframe.lookAt(c[1], Vector3(cos(a), 3, sin(a)).direction());
-
-
-                        renderDevice->setColor(color[x % 4]);
-                        model->render(cframe, lighting);
-                    }
-                renderDevice->popState();
-
-
-                if (sky.notNull()) {
-                    sky->renderLensFlare(lighting);
-                }
-                
-                renderDevice->push2D();
-
-                    font->draw2D(
-                      format("%d fps", iRound(renderDevice->getFrameRate())),
-                      Vector2(10, 10), 28, Color3::white(), Color3::black());
-  
-                    font->draw2D(
-                      format("%d tris", iRound(renderDevice->getTrianglesPerFrame())),
-                      Vector2(10, 72), 20, Color3::white(), Color3::black());
-
-                    font->draw2D(
-                      format("%d ktri/s", 
-                      iRound(renderDevice->getTriangleRate() / 1000)),
-                      Vector2(10, 100), 20, Color3::white(), Color3::black());
-
-                    font->draw2D(
-                      format("%dx%d poly planes", 
-                      N, model->numPolys()),
-                      Vector2(10, 150), 20, Color3::white(), Color3::black());
-
-                    char* str = NULL;
-                    switch (renderMethod) {
-                    case TRIANGLES:
-                        str = "Using begin/end (SPACE to change)";
-                        break;
-
-                    case VARSTREAM:
-                        str = "Using streaming vertex array (SPACE to change)";
-                        break;
- 
-                    case VARSTATIC:
-                        str = "Using static vertex array (SPACE to change)";
-                        break;
-
-                    default:;
-                    }
-    
-                   font->draw2D(str, Vector2(10, renderDevice->getHeight() - 40), 20, Color3::yellow(), Color3::black());
-
-                renderDevice->pop2D();
-            renderDevice->popState();
-            debugAssertGLOk();    
-        renderDevice->endFrame();
-        varStream->reset();
-
-    } while (! endProgram);
-
-    varStatic->reset();
-
-
-    debugLog->printf("Static VAR peak size was  %d bytes.\n",
-                     varStatic->peakAllocatedSize());
-    debugLog->printf("Streaming VAR peak size was %d bytes.\n", 
-                     varStream->peakAllocatedSize());
-
-    // Cleanup
-    delete controller;
-    delete userInput;
-    renderDevice->cleanup();
-    delete renderDevice;
-    delete debugLog;
-
-    return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
 
-void handleEvents() {
+void Demo::init()  {
+    // Called before Demo::run() beings
+    app->debugCamera.setPosition(Vector3(0, 2, 10));
+    app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-    userInput->beginEvents();
+    model        = new Model(app->dataDir + "ifs/" + modelName, varStatic);
+    gameTime     = G3D::toSeconds(8, 00, 00, AM);
+    renderMethod = VARSTATIC;
 
-    // Event handling
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch(event.type) {
-        case SDL_QUIT:
-        endProgram = true;
-        break;
+    sky          = Sky::create(app->renderDevice, app->dataDir + "sky/");
 
-        case SDL_KEYDOWN:
-            switch (event.key.keysym.sym) {
-            case SDLK_ESCAPE:
-                endProgram = true;
-                break;
+    app->debugController.setPosition(Vector3(-25, 2, 0));
+    app->debugController.lookAt(Vector3(-20, 2.5, 1));
+}
 
-            case SDLK_SPACE:
-                renderMethod =
-                  (RenderMethod)((renderMethod + 1) % NUM_RENDER_METHODS);
-                break;
 
-            // Add other key handlers here
-            default:;
+void Demo::cleanup() {
+    varStatic->reset();
 
+    app->debugLog->printf("Static VAR peak size was  %d bytes.\n",
+                     varStatic->peakAllocatedSize());
+    app->debugLog->printf("Streaming VAR peak size was %d bytes.\n", 
+                     varStream->peakAllocatedSize());
+
+    delete model;
+    sky = NULL;
+}
+
+
+void Demo::doNetwork() {
+	// Poll net messages here
+}
+
+
+void Demo::doSimulation(SimTime dt) {
+	// Add physical simulation here
+}
+
+
+void Demo::doLogic() {
+    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+        // Even when we aren't in debug mode, quit on escape.
+        endApplet = true;
+        app->endProgram = true;
+    }
+
+    if (app->userInput->keyPressed(' ')) {
+        renderMethod =
+          (RenderMethod)((renderMethod + 1) % NUM_RENDER_METHODS);
+    }
+}
+
+
+void Demo::doGraphics() {
+
+    app->renderDevice->clear(sky == NULL, true, false);
+    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    LightingParameters lighting(gameTime, false);
+
+    if (sky.notNull()) {
+       sky->render(lighting);
+    }
+                    
+    app->renderDevice->pushState();
+        // Setup lighting
+        app->renderDevice->setSpecularCoefficient(1);
+        app->renderDevice->enableLighting();
+        app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+        app->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
+        app->renderDevice->setAmbientLightColor(lighting.ambient);
+
+        app->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+
+        static const Color3 color[] = {Color3::black(), Color3::white(), Color3::orange(), Color3::blue()};
+        double  t[2];
+        Vector3 c[2];
+
+        t[0] = System::getTick();
+        t[1] = t[0] + 0.01;
+
+		// Draw the planes
+        for (int x = 0; x < N; ++x) {
+
+            for (int i = 0; i < 2; ++i) {
+                double a = x + t[i] + 2; 
+                double a2 = t[i] * (x + 1) * .01 + 1005.1;
+                c[i] = Vector3(cos(a) * (10 + x / 2.0), sin(a2) * 10, sin(a) * 15);
             }
+
+            CoordinateFrame cframe(c[0]);
+
+            double a = t[0] * (x + 1) * .1; 
+            cframe.lookAt(c[1], Vector3(cos(a), 3, sin(a)).direction());
+
+
+            app->renderDevice->setColor(color[x % 4]);
+            model->render(app->renderDevice, cframe, lighting, varStream);
+        }
+    app->renderDevice->popState();
+
+
+    if (sky.notNull()) {
+        sky->renderLensFlare(lighting);
+    }
+    
+    app->renderDevice->push2D();
+        char* str = NULL;
+        switch (renderMethod) {
+        case TRIANGLES:
+            str = "Using begin/end (SPACE to change)";
+            break;
+
+        case VARSTREAM:
+            str = "Using streaming vertex array (SPACE to change)";
+            break;
+
+        case VARSTATIC:
+            str = "Using static vertex array (SPACE to change)";
             break;
 
         default:;
-            // Add other event handlers here
         }
 
-        userInput->processEvent(event);
-    }
+       app->debugFont->draw2D(str, Vector2(10, app->renderDevice->getHeight() - 40), 20, Color3::yellow(), Color3::black());
 
-    userInput->endEvents();
+    app->renderDevice->pop2D();
+
+    debugAssertGLOk();    
+    varStream->reset();
 }
 
 
-//////////////////////////////////////////////////////////////////////////////
+void App::main() {
+	setDebugMode(true);
+	debugController.setActive(true);
+
+    applet = new Demo(this);
+
+    applet->run();
+}
 
 
-Model::Model(const std::string& filename) {
+App::App(const GAppSettings& settings) : GApp(settings) {
+}
+
+
+int main(int argc, char** argv) {
+    GAppSettings settings;
+    settings.debugFontName = "dominant.fnt";
+    App(settings).run();
+    return 0;
+}
+
+
+Model::Model(const std::string& filename, VARAreaRef varStatic) {
+    // This loads an IFS file.  Note that we could have used G3D::IFSModel::load to
+    // parse the file for us.
+
     // file := 
     //    fileheader +
     //    vertexheader +
@@ -302,7 +289,7 @@ Model::Model(const std::string& filename) {
     //  triheader    := (string32)"TRIANGLES" + (uint32)numFaces
     //  tri          := (uint32)v0 + (uint32)v1 + (uint32)v2
 
-    debugLog->println(std::string("Loading ") + filename);
+    Log::common()->println(std::string("Loading ") + filename);
 
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -359,8 +346,11 @@ Model::Model(const std::string& filename) {
 }
 
 
-void Model::render(const CoordinateFrame& c,
-                   const LightingParameters& lighting) const {
+void Model::render(    
+    RenderDevice*               renderDevice,
+    const CoordinateFrame&      c,
+    const LightingParameters&   lighting,
+    VARAreaRef                  varStream) const {
 
     renderDevice->setObjectToWorldMatrix(c);
 

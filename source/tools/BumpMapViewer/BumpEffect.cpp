@@ -4,7 +4,7 @@ BumpEffect::BumpEffect() {
     // TODO: put shaders into directory
     std::string base = "D:/games/cpp/source/tools/BumpMapViewer/bump";
 	_vertexAndPixelShader = VertexAndPixelShader::fromFiles(base + ".vert", base + ".frag");
-	bumpScale = 0.04;
+	bumpScale = 0.1;//0.04;
 }
 
 
@@ -26,7 +26,7 @@ void BumpEffect::beforePrimitive(RenderDevice* rd) {
     args.set("objectToWorld",   cframe);
     args.set("texture",         textureMap);
     args.set("normalBumpMap",   normalMap);
-    args.set("reflectivity",    0.4);
+    args.set("reflectivity",    0.0);
 	args.set("specularity",     0.5);
 	args.set("bumpScale",       bumpScale);
     args.set("environmentMap",  environmentMap);

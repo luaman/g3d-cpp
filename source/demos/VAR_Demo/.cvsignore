@@ -3,3 +3,6 @@
 Debug
 log.txt
 Release
+VAR_Demo.plg
+stdout.txt
+stderr.txt
