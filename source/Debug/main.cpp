@@ -208,6 +208,13 @@ public:
 
 ///////////////////////////////////////////////////////////////
 
+class App : public GApp {
+public:
+    App(const GAppSettings& settings) : GApp(settings) {}
+    void main();
+};
+
+
 /**
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
@@ -220,12 +227,14 @@ private:
         the visible frame. */
     void renderScene(const LightingParameters& lighting);
 
+    App*                app;
+
 public:
 
     SkyRef              sky;
     Array<Entity*>      entityArray;
 
-    Demo(GApp* app) : GApplet(app) {
+    Demo(App* _app) : GApplet(_app), app(_app) {
         app->renderDevice->setSpecularCoefficient(0);
     }
     
@@ -313,18 +322,20 @@ void Demo::cleanup() {
 }
 
 
+void App::main() {
+    Demo applet(this);
+    applet.run();
+}
+
+
 int main(int argc, char** argv) {
 
     GAppSettings settings;
 
-    GApp app(settings);
+    App app(settings);
 
     app.setDebugMode(true);
     app.debugController.setActive(true);
-
-    Demo applet(&app);
-
-    applet.run();
 
     return 0;
 }

@@ -53,6 +53,9 @@ private:
     /** Brown University Sketch Model */
     void loadSM(const std::string& filename);
 
+    /** Algorithmically generate a twisted ring model */
+    void createRing();
+
 public:
 
     std::string             name;

@@ -30,13 +30,13 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-12-08
+ @edited  2003-12-16
  */
 
 #include <G3DAll.h>
 
-#if G3D_VER != 60010
-    #error Requires G3D 6.00 b10
+#if G3D_VER != 60011
+    #error Requires G3D 6.00 b11
 #endif
   
 /**

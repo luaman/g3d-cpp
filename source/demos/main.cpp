@@ -1,11 +1,10 @@
 /**
-
   @file demos/main.cpp
 
-
   This is a sample main.cpp to get you started with G3D.  It is
-  designed to make writing an application easy.  You are not
-  restricted to using this infrastructure-- choose the level of
+  designed to make writing an application easy.  Although the
+  GApp/GApplet infrastructure is helpful for most projects,
+  you are not restricted to using it-- choose the level of
   support that is best for your project (see the G3D Map in the
   documentation).
 
@@ -15,6 +14,17 @@
 
 #include <G3DAll.h>
 
+#if G3D_VER != 60011
+    #error Requires G3D 6.00 b11
+#endif
+
+class App : public GApp {
+protected:
+    void main();
+public:
+    App(const GAppSettings& settings);
+};
+
 
 /**
  This simple demo applet uses the debug mode as the regular
@@ -23,9 +33,15 @@
 class Demo : public GApplet {
 public:
 
+    // Add state that should be visible to this applet.
+    // If you have multiple applets that need to share
+    // state, put it in the App.
+
+    class App*          app;
+
     SkyRef              sky;
 
-    Demo(GApp* app);    
+    Demo(App* app);    
 
     virtual void init();
 
@@ -42,11 +58,9 @@ public:
 };
 
 
-Demo::Demo(GApp* app) : GApplet(app) {
-
-	// Load objects hrere
+Demo::Demo(GApp* _app) : GApplet(_app), app(_app) {
+	// Load objects here
     sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
-
 }
 
 
@@ -108,27 +122,19 @@ void Demo::doGraphics() {
 }
 
 
-class App : public GApp {
-protected:
+void App::main() {
+	setDebugMode(true);
+	debugController.setActive(true);
+	Demo(this).run();
+}
 
-	void main() {
-		setDebugMode(true);
-		debugController.setActive(true);
-		Demo(this).run();
-	}
 
-public:
-	App(const GAppSettings& settings) : GApp(settings) {}
-
-};
+App::App(const GAppSettings& settings) : GApp(settings) {}
 
 
 int main(int argc, char** argv) {
-
     GAppSettings settings;
-
     App(settings).run();
-
     return 0;
 }
 

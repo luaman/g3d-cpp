@@ -27,6 +27,8 @@ XIFSModel::XIFSModel(const std::string& filename) {
 
     std::string f = toLower(filename);
 
+    //createRing();  return;
+
     if (endsWith(f, ".ifs")) {
         loadIFS(filename);
     } else if (endsWith(f, ".md2")) {
@@ -40,6 +42,52 @@ XIFSModel::XIFSModel(const std::string& filename) {
     } else {
         debugAssert(false);
     }
+}
+
+
+void XIFSModel::createRing() {
+    IFSModelBuilder builder;
+
+    int quads = 100;
+
+    // Radius is fixed at 1.0
+    // Half width
+    double w = .25;
+
+    double numTwists = 1.5;
+
+    for (int i = 0; i < quads; ++i) {
+        double angle0 = 2 * G3D_PI * i / quads;
+        double angle1 = 2 * G3D_PI * (i + 1) / quads;
+
+        double twist0 = numTwists * 2 * G3D_PI * i / quads;
+        double twist1 = numTwists * 2 * G3D_PI * (i + 1) / quads;
+        
+        // Center of ring
+        Vector3 a, b;
+
+        // Normals
+        Vector3 c, d;
+
+        // Outer (twisted) vertices
+        Vector3 e, f, g, h;
+
+        a = Vector3(cos(angle0), 0, sin(angle0));
+        b = Vector3(cos(angle1), 0, sin(angle1));
+
+        c = a;
+        d = b;
+
+        e = a + w * (cos(twist0) * Vector3::UNIT_Y + sin(twist0) * c);
+        f = a - w * (cos(twist0) * Vector3::UNIT_Y + sin(twist0) * c);
+        g = b + w * (cos(twist1) * Vector3::UNIT_Y + sin(twist1) * c);
+        h = b - w * (cos(twist1) * Vector3::UNIT_Y + sin(twist1) * c);
+
+        builder.addTriangle(e, g, h);
+        builder.addTriangle(e, h, f);
+    }
+
+    builder.commit(this);
 }
 
 

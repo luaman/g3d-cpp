@@ -33,8 +33,8 @@
 #include "Object.h"
 #include "Scene.h"
 
-#if G3D_VER != 60010
-    #error Requires G3D 6.00 b10
+#if G3D_VER != 60011
+    #error Requires G3D 6.00 b11
 #endif
 
 /**

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-12-10
+ @edited  2003-12-16
  */
 
 #ifndef G3D_GAPP_H
@@ -80,7 +80,7 @@ protected:
      exception handlers so that any G3D uncaught exceptions
      can be logged instead of crashing the application.
      */
-    virtual void main() {}
+    virtual void main() = 0;
 
 public:
 
@@ -197,7 +197,12 @@ public:
 
 
 class GApplet {
+private:
+    GApp*               app;
+
+
 public:
+
     /** @param _app This is usually your own subclass of GApp.*/
     GApplet(GApp* _app);
 
@@ -211,8 +216,6 @@ public:
     virtual void run();
 
 protected:
-
-    GApp*               app;
 
     /**
      Set to false to break out of the run() loop.
@@ -303,11 +306,10 @@ protected:
 private:
     /**
      Updates the userInput.  Called from run.
-     Rarely needs to be overriden by a subclass.
-
+     Never overriden by a subclass.
      Instead, override GApp::processEvent to handle your own events.
      */
-    virtual void doUserInput();
+    void doUserInput();
 };
 
 }
