@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-07-15
+ @edited  2004-08-18
  */
 
 
@@ -859,6 +859,20 @@ void RenderDevice::setState(
 void RenderDevice::runObjectShader() {
 	if (! state.objectShader.isNull()) {
 		state.objectShader->run(this);
+	}
+}
+
+
+void RenderDevice::beforePrimitive() {
+	if (! state.shader.isNull()) {
+		state.shader->beforePrimitive(this);
+	}
+}
+
+
+void RenderDevice::afterPrimitive() {
+	if (! state.shader.isNull()) {
+		state.shader->afterPrimitive(this);
 	}
 }
 
@@ -2145,6 +2159,7 @@ void RenderDevice::sendVertex(const Vector4& vertex) {
 void RenderDevice::beginPrimitive(Primitive p) {
     debugAssertM(! inPrimitive, "Already inside a primitive");
 
+    beforePrimitive();
 	runObjectShader();
     
     inPrimitive = true;
@@ -2162,6 +2177,8 @@ void RenderDevice::endPrimitive() {
 
     glEnd();
     inPrimitive = false;
+
+    afterPrimitive();
 }
 
 
@@ -2678,6 +2695,7 @@ void RenderDevice::configureReflectionMap(
 
 void RenderDevice::sendSequentialIndices(RenderDevice::Primitive primitive, int numVertices) {
 
+    beforePrimitive();
 	runObjectShader();
 
     glDrawArrays(primitiveToGLenum(primitive), 0, numVertices);
@@ -2685,6 +2703,7 @@ void RenderDevice::sendSequentialIndices(RenderDevice::Primitive primitive, int 
     setVARAreaMilestone();
 
 	countPrimitive(primitive, numVertices);
+    afterPrimitive();
 }
 
 
@@ -2694,6 +2713,7 @@ void RenderDevice::internalSendIndices(
     int                     numIndices, 
     const void*             index) {
 
+    beforePrimitive();
 	runObjectShader();
 
 	GLenum i;
@@ -2719,6 +2739,8 @@ void RenderDevice::internalSendIndices(
     GLenum p = primitiveToGLenum(primitive);
 
 	glDrawElements(p, numIndices, i, index);
+
+    afterPrimitive();
 }
 
 

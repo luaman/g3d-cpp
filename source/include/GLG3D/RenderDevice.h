@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-07-16
+  @edited  2004-08-18
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -755,7 +755,9 @@ public:
     /**
      Set the current shader.  You may call VertexAndPixelShader::bindArgList either
      before or after this, or use the variation of this call that
-     includes an arg list.  Typically called by your ObjectShader subclass.
+     includes an arg list.
+
+     See also setShader. 
      */
     void setVertexAndPixelShader(const VertexAndPixelShaderRef& s);
 
@@ -764,7 +766,17 @@ public:
     void setVertexAndPixelShader(const VertexAndPixelShaderRef& s,
             const VertexAndPixelShader::ArgList& args);
 
+    /** @deprecated */
 	void setObjectShader(const ObjectShaderRef& s);
+
+    /**
+     Shaders contain routines that execute before and after each primitive 
+     group to set other RenderDevice state.  A Shader is different from a
+     VertexAndPixelShader, which is a set of routines that execute on
+     programmable hardware (although Shaders typically set the 
+     VertexAndPixelShader).
+     */
+	void setShader(const ShaderRef& s);
 
     /**
      Automatically enables vertex programs when they are set. 
@@ -840,8 +852,15 @@ public:
 
 private:
 
-	/** Called immediately before a primitive group */
+	/** Called immediately before a primitive group 
+        @deprecated*/
 	void runObjectShader();
+
+	/** Called immediately before a primitive group */
+    void beforePrimitive();
+
+    /** Called immediately after a primitive group */
+    void afterPrimitive();
 
     /**
      For performance, we don't actually unbind a texture when
@@ -917,7 +936,11 @@ private:
         double                      highDepthRange;
 
         VertexAndPixelShaderRef     vertexAndPixelShader;
+
+        /** @deprecated */
 		ObjectShaderRef				objectShader;
+
+        ShaderRef                   shader;
 
         /** @deprecated */
         VertexProgramRef            vertexProgram;
