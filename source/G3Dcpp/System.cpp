@@ -948,8 +948,6 @@ void* System::alignedMalloc(size_t bytes, size_t alignment) {
 
     debugAssert(isValidHeapPointer((void*)truePtr));
 
-    debugPrintf("Allocated 0x%x - 0x%x\n", truePtr, (uint8*)truePtr + totalBytes);
-
     #ifdef G3D_WIN32
         debugAssert( _CrtIsValidPointer((void*)alignedPtr, bytes, TRUE) );
     #endif
