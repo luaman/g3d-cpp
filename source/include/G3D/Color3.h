@@ -9,7 +9,7 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-06-02
- @edited  2003-12-03
+ @edited  2004-01-09
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -31,7 +31,7 @@ class Color3 {
 
 public:
     /**
-     * Does not initialize fields.
+     Does not initialize fields.
      */
     Color3();
 
@@ -40,17 +40,14 @@ public:
     /**
      * Initialize from G3D::Reals.
      */
-    Color3(float r, float g, float b);
+    Color3(const float r, const float g, const float b);
 
     Color3(const class Vector3& v);
     
-    /**
-     * Initialize from array of G3D::Reals.
-     */
-    Color3 (float value[3]);
+    Color3(const float value[3]);
 
     /**
-     * Initialize from another color.
+     Initialize from another color.
      */
     Color3 (const Color3& other);
 

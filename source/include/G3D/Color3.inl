@@ -8,9 +8,9 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2003-03-24
+ @edited  2004-01-09
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
 */
 
@@ -18,20 +18,18 @@ namespace G3D {
 
 //----------------------------------------------------------------------------
 inline Color3::Color3 () {
-    // For efficiency in construction of large arrays of vectors, the
-    // default constructor does not initialize the vector.
 }
 
 //----------------------------------------------------------------------------
 
-inline Color3::Color3 (float fX, float fY, float fZ) {
+inline Color3::Color3(const float fX, const float fY, const float fZ) {
     r = fX;
     g = fY;
     b = fZ;
 }
 
 //----------------------------------------------------------------------------
-inline Color3::Color3 (float afCoordinate[3]) {
+inline Color3::Color3(const float afCoordinate[3]) {
     r = afCoordinate[0];
     g = afCoordinate[1];
     b = afCoordinate[2];

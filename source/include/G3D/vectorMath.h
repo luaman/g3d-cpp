@@ -186,7 +186,7 @@ inline double length(const Vector4& v) {
  perceptual response.
  */
 inline Color3 log(const Color3& c) {
-    return Color3(log(c.r), log(c.g), log(c.b));
+    return Color3(::log(c.r), ::log(c.g), ::log(c.b));
 }
 
 }
