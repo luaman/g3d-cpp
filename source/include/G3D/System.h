@@ -40,13 +40,28 @@ enum G3DEndian {G3D_BIG_ENDIAN, G3D_LITTLE_ENDIAN};
 class System {
 public:
 
+	/** */
 	static bool hasMMX();
+	
+	/** */
 	static bool hasSSE();
+	
+	/** */
 	static bool hasSSE2();
+	
+	/** */
 	static bool has3DNow();
+
+	
+	/** */
     static bool hasRDTSC();
+
 	static const std::string& cpuVendor();
+	
+	/** */
     static const std::string& operatingSystem();
+
+	/** */
     static const std::string& cpuArchitecture();
 
     static uint64 getCycleCount();
