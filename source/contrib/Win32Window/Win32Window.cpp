@@ -14,6 +14,7 @@
 #include <time.h>
 #include <crtdbg.h>
 
+/** Changes the screen resolution */
 static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
 
 	if (refreshRate == 0) {
@@ -71,12 +72,30 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 	alwaysAssertM(ret, "Registration Failed");
     
     // Add the non-client area
-    int total_width  = settings.width  + GetSystemMetrics(SM_CXFIXEDFRAME) * 2;
-    int total_height = settings.height + GetSystemMetrics(SM_CYFIXEDFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
+	RECT rect;
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = settings.width;
+	rect.bottom = settings.height;
+
+	DWORD style = 0;
+	
+	if (s.framed) {
+		style |= WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
+
+		if (s.resizable) {
+			style |= WS_SIZEBOX;
+		}
+	}
+
+	AdjustWindowRect(&rect, style, false);
+
+	int total_width  = rect.right - rect.left;
+	int total_height = rect.bottom - rect.top;
     
     HWND window = CreateWindow("window", 
         name.c_str(),
-        WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
+        style,
         (GetSystemMetrics(SM_CXSCREEN) - total_width) / 2,
         (GetSystemMetrics(SM_CYSCREEN) - total_height) / 2,
         total_width,
@@ -269,8 +288,19 @@ bool Win32Window::pollEvent(GEvent& e) {
 	GetWindowRect(window, &rect);
 	settings.x = rect.left;
 	settings.y = rect.top;
+
+	GetClientRect(window, &rect);
 	settings.width = rect.right - rect.left;
 	settings.height = rect.bottom - rect.top;
+
+	clientX = settings.x;
+	clientY = settings.y;
+
+	if (settings.framed) {
+		// Add the border offset
+		clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
+		clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
+	}
 
     return false;
 }
@@ -352,7 +382,7 @@ LRESULT WINAPI Win32Window::window_proc(
 
 
 void Win32Window::setRelativeMousePosition(double x, double y) {
-	SetCursorPos(iRound(x + settings.x), iRound(y + settings.y));
+	SetCursorPos(iRound(x + clientX), iRound(y + clientY));
 }
 
 
@@ -372,8 +402,8 @@ void Win32Window::getRelativeMouseState(Vector2& p, uint8& mouseButtons) const {
 void Win32Window::getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const {
 	POINT point;
 	GetCursorPos(&point);
-	x = point.x - settings.x;
-	y = point.y - settings.y;
+	x = point.x - clientX;
+	y = point.y - clientY;
 	// TODO: buttons
 }
 
