@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-04-24
+ @edited  2004-04-27
  */
 
 #include "GLG3D/Shader.h"
@@ -17,7 +17,7 @@ GPUShader::GPUShader(const std::string& name, const std::string& code, bool _fro
 }
 
 
-GPUShader* GPUShader::init(GPUShader* shader) {
+GPUShader* GPUShader::init(GPUShader* shader, bool debug) {
     if (shader->fromFile) {
         if (fileExists(shader->_name)) {
             shader->_code = readFileAsString(shader->_name);
@@ -30,6 +30,10 @@ GPUShader* GPUShader::init(GPUShader* shader) {
 
     if (shader->_ok) {
         shader->compile();
+    }
+
+    if (debug) {
+        alwaysAssertM(shader->ok(), shader->messages());
     }
 
     return shader;
@@ -69,24 +73,24 @@ GPUShader::~GPUShader() {
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-VertexShaderRef VertexShader::fromFile(const std::string& filename) {
-    return static_cast<VertexShader*>(GPUShader::init(new VertexShader(filename, "", true)));
+VertexShaderRef VertexShader::fromFile(const std::string& filename, bool debug) {
+    return static_cast<VertexShader*>(GPUShader::init(new VertexShader(filename, "", true), debug));
 }
 
 
-VertexShaderRef VertexShader::fromCode(const std::string& name, const std::string& code) {
-    return static_cast<VertexShader*>(GPUShader::init(new VertexShader(name, "", false)));
+VertexShaderRef VertexShader::fromCode(const std::string& name, const std::string& code, bool debug) {
+    return static_cast<VertexShader*>(GPUShader::init(new VertexShader(name, "", false), debug));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-PixelShaderRef PixelShader::fromFile(const std::string& filename) {
-    return static_cast<PixelShader*>(GPUShader::init(new PixelShader(filename, "", true)));
+PixelShaderRef PixelShader::fromFile(const std::string& filename, bool debug) {
+    return static_cast<PixelShader*>(GPUShader::init(new PixelShader(filename, "", true), debug));
 }
 
 
-PixelShaderRef PixelShader::fromCode(const std::string& name, const std::string& code) {
-    return static_cast<PixelShader*>(GPUShader::init(new PixelShader(name, "", false)));
+PixelShaderRef PixelShader::fromCode(const std::string& name, const std::string& code, bool debug) {
+    return static_cast<PixelShader*>(GPUShader::init(new PixelShader(name, "", false), debug));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -143,6 +147,42 @@ ShaderGroup::ShaderGroup(
 	    free(pInfoLog);
         _ok = _ok && (linked == GL_TRUE);
     }
+
+    if (_ok) {
+        computeUniformArray();
+    }
+}
+
+
+void ShaderGroup::computeUniformArray() {
+    uniformArray.clear();
+
+    GLint maxLength;
+    GLint uniformCount;
+
+    // Get the number of uniforms, and the length of the longest name.
+    glGetObjectParameterivARB(glProgramObject(), GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, &maxLength);
+    glGetObjectParameterivARB(glProgramObject(), GL_OBJECT_ACTIVE_UNIFORMS_ARB, &uniformCount);
+
+    uniformArray.resize(uniformCount);
+
+    GLcharARB* name = (GLcharARB *) malloc(maxLength * sizeof(GLcharARB));
+    
+    // Loop over glGetActiveUniformARB and store the results away.
+    for (int i = 0; i < uniformCount; ++i) {
+
+        GLint size;
+        GLenum type;
+
+	    glGetActiveUniformARB(glProgramObject(), 
+            i, maxLength, NULL, &size, &type, name);
+
+        uniformArray[i].name = name;
+        uniformArray[i].size = size;
+        uniformArray[i].type = type;
+    }
+
+    free(name);
 }
 
 
@@ -168,6 +208,31 @@ bool ShaderGroup::fullySupported() {
         GLCaps::supports_GL_ARB_vertex_shader();
 }
 
+
+GLenum ShaderGroup::canonicalType(GLenum e) {
+
+    switch (e) {
+    case GL_INT:
+    case GL_BOOL_ARB:
+        return GL_FLOAT;
+
+    case GL_INT_VEC2_ARB:
+    case GL_BOOL_VEC2_ARB:
+        return GL_FLOAT_VEC2_ARB;
+
+    case GL_INT_VEC3_ARB:
+    case GL_BOOL_VEC3_ARB:
+        return GL_FLOAT_VEC3_ARB;
+
+    case GL_INT_VEC4_ARB:
+    case GL_BOOL_VEC4_ARB:
+        return GL_FLOAT_VEC4_ARB;
+        
+    default:
+        // Return the input
+        return e;    
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////
 

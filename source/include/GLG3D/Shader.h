@@ -22,6 +22,12 @@ typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 typedef ReferenceCountedPointer<class VertexShader> VertexShaderRef;
 typedef ReferenceCountedPointer<class PixelShader>  PixelShaderRef;
 
+#ifdef _DEBUG
+    #define DEBUG_SHADER true
+#else
+    #define DEBUG_SHADER false
+#endif
+
 
 class ObjectShader : public ReferenceCountedObject {
 private:
@@ -59,7 +65,7 @@ protected:
 
     /** Initialize a shader object and returns object.  
         Called from subclass create methods. */
-    static GPUShader*           init(GPUShader* shader);
+    static GPUShader*           init(GPUShader* shader, bool debug);
 
 public:
     /** Deletes the underlying glShaderObject.  Between GL's reference
@@ -99,12 +105,14 @@ public:
         return GL_VERTEX_SHADER_ARB;
     }
 
-    /** In the event of a fatal error, the returned VertexShader will not be GPUShader::ok(). */
-    static VertexShaderRef fromFile(const std::string& filename);
+    /** In the event of a fatal error, the returned VertexShader will not be GPUShader::ok(). 
+        Set debug to true to trigger an assertion failure when compilation fails.  The default
+        is true in _DEBUG mode and false in _RELEASE mode. */
+    static VertexShaderRef fromFile(const std::string& filename, bool debug = DEBUG_SHADER);
 
     /** @param name For debugging purposes.  Typically, the name of the file from which
              the shader was loaded. */
-    static VertexShaderRef fromCode(const std::string& name, const std::string& code);
+    static VertexShaderRef fromCode(const std::string& name, const std::string& code, bool debug = DEBUG_SHADER);
 };
 
 
@@ -119,12 +127,14 @@ public:
         return GL_FRAGMENT_SHADER_ARB;
     }
 
-    /** In the event of a fatal error, the returned PixelShader will not be GPUShader::ok(). */
-    static PixelShaderRef fromFile(const std::string& filename);
+    /** In the event of a fatal error, the returned PixelShader will not be GPUShader::ok().
+        Set debug to true to trigger an assertion failure when compilation fails.  The default
+        is true in _DEBUG mode and false in _RELEASE mode. */
+    static PixelShaderRef fromFile(const std::string& filename, bool debug = DEBUG_SHADER);
 
     /** @param name For debugging purposes.  Typically, the name of the file from which
              the shader was loaded. */
-    static PixelShaderRef fromCode(const std::string& name, const std::string& code);
+    static PixelShaderRef fromCode(const std::string& name, const std::string& code, bool debug = DEBUG_SHADER);
 };
 
 
@@ -163,7 +173,6 @@ public:
  */
 class ShaderGroup : public ReferenceCountedObject {
 protected:
-
     static std::string      ignore;
 
     ObjectShaderRef         _objectShader;
@@ -180,10 +189,32 @@ protected:
         const VertexShaderRef& vs,
         const PixelShaderRef&  ps);
 
+    /** Converts from int and bool types to float types (e.g. GL_INT_VEC2_ARB -> GL_FLOAT_VEC2_ARB).
+        Other types are left unmodified.*/
+    static GLenum canonicalType(GLenum e);
+
+    /** Computes the uniformArray from the current
+        program object.  Called from the constructor */
+    void computeUniformArray();
+
+    class UniformDeclaration {
+    public:
+        std::string         name;
+        GLenum              type;
+        int                 size;
+    };
+
+    Array<UniformDeclaration>   uniformArray;
+
 public:
 
     /**
-     Argument list for a ShaderGroup.
+     Argument list for a ShaderGroup.  Binds values to OpenGL "uniform"
+     values declared in the pixel and vertex shaders.  Be aware that 
+     the uniform namespace is global across the pixel and vertex shader.
+
+     GL_BOOL_ARB and GL_INT_ARB-based values are coerced to floats
+     automatically by the arg list.
      */
     class ArgList {
     private:
@@ -211,8 +242,8 @@ public:
         void set(const std::string& var, const Vector3& val);
         void set(const std::string& var, const Vector2& val);
         void set(const std::string& var, float          val);
+        
         void clear();
-
     };
 
 

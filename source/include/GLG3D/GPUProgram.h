@@ -48,7 +48,7 @@ typedef ReferenceCountedPointer<class GPUProgram> GPUProgramRef;
     glProgramParameter4fvNV(GL_VERTEX_PROGRAM_NV, 8, Vector4(myVariable,0,0,0));
   </PRE>
  @deprecated
- Use the Shader class
+ Use the VertexShader and PixelShader classes
  */
 class GPUProgram : public ReferenceCountedObject {
 public:
