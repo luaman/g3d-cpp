@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-11-13
-  @created 2004-02-23
+  @created 2004-06-23
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -161,27 +161,27 @@ public:
         return (v.x >= min.x) && (v.y >= min.y) && (v.x <= max.x) && (v.y <= max.y);
     }
 
-    inline Rect2D operator*(double s) {
+    inline Rect2D operator*(double s) const {
         return xyxy(min.x * s, min.y * s, max.x * s, max.y * s);
     }
 
-    inline Rect2D operator/(double s) {
+    inline Rect2D operator/(double s) const {
         return xyxy(min * s, max * s);
     }
 
-    inline Rect2D operator+(const Vector2& v) {
+    inline Rect2D operator+(const Vector2& v) const {
         return xyxy(min + v, max + v);
     }
 
-    inline Rect2D operator-(const Vector2& v) {
+    inline Rect2D operator-(const Vector2& v) const {
         return xyxy(min - v, max - v);
     }
 
-    inline bool operator==(const Rect2D& other) {
+    inline bool operator==(const Rect2D& other) const {
         return (min == other.min) && (max == other.max);
     }
 
-    inline bool operator!=(const Rect2D& other) {
+    inline bool operator!=(const Rect2D& other) const {
         return (min != other.min) || (max != other.max);
     }
 
