@@ -269,23 +269,11 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
 
     // test if the boxes can be separated by a plane normal to
     // any of the three axes of box1, any of the three axes of box2,
-    // or any of the 9 possible cross products of axes from box1
-    // and box2
+    // (test 9 possible cross products later)
 	double penetration = -G3D::inf;
     int penetrationAxisIndex = -1;
 
-    // the magnitude for the edge-edge cases needs to be adjusted
-    // so save these values
-    double edgePenetration[9];
-
-    for (int i = 0; i < 15; i++) {
-
-        // do not need to check edge-edge cases if any two of
-        // the axes are parallel
-        if (parallelAxes && i == 6) {
-            break;
-        }
-
+    for (int i = 0; i < 6; i++) {
         double projectedDistance =
             projectedDistanceForSolidBoxSolidBox(i, a, b, D, c, ca, ad, bd);
 
@@ -294,16 +282,10 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
             return -projectedDistance;
         }
 
-        if (i < 6) {
-            // keep track of the axis that is least violated
-            if (projectedDistance > penetration) {
-                penetration = projectedDistance;
-                penetrationAxisIndex = i;
-            }
-        } else {
-            // save the edge-edge penetration value for later, the
-            // magnitude gets adjusted after the for loop finishes
-            edgePenetration[i - 6] = projectedDistance;
+        // keep track of the axis that is least violated
+        if (projectedDistance > penetration) {
+            penetration = projectedDistance;
+            penetrationAxisIndex = i;
         }
     }
 
@@ -311,23 +293,44 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
     // for each edge-edge case we have to adjust the magnitude of
     // penetration since we did not include the dot(L, L) denominator
     // that can be smaller than 1.0 for the edge-edge cases.
-    // This may change our decision as to which axis has the minimal
-    // amount of penetration
-    for (int i = 0; i < 9; i++) {
-        // find the negative penetration value with the smallest magnitude,
-        // the adjustment done for the edge-edge cases only increases
-        // magnitude by dividing by a number smaller than 1.0
-        double curPenetration = edgePenetration[i];
-        if (curPenetration > penetration) {
-            Vector3 L = separatingAxisForSolidBoxSolidBox(i + 6, box1, box2);
-            curPenetration /= dot(L, L);
-            if (curPenetration > penetration) {
-                penetration = curPenetration;
-                penetrationAxisIndex = i + 6;
-            }
-        }
-    }
+	if (!parallelAxes) {
+	    double edgeDistances[9];
 
+		// run through edge-edge cases to see if we can find a separating axis
+		for (int i = 6; i < 15; i++) {
+			double projectedDistance =
+				projectedDistanceForSolidBoxSolidBox(i, a, b, D, c, ca, ad, bd);
+
+			// found a separating axis, the boxes do not intersect,
+			// correct magnitude and return projected distance
+			if (projectedDistance > 0.0) {
+				Vector3 L = separatingAxisForSolidBoxSolidBox(i, box1, box2);
+				projectedDistance /= dot(L, L);
+				return -projectedDistance;
+			}
+
+			edgeDistances[i - 6] = projectedDistance;
+		}
+
+		// no separating axis found, the boxes do intersect,
+		// correct the magnitudes of the projectedDistance values
+		for (int i = 6; i < 15; i++) {
+			// find the negative penetration value with the smallest magnitude,
+			// the adjustment done for the edge-edge cases only increases
+			// magnitude by dividing by a number smaller than 1 and greater than 0
+			double projectedDistance = edgeDistances[i - 6];
+			if (projectedDistance > penetration) {
+				Vector3 L = separatingAxisForSolidBoxSolidBox(i, box1, box2);
+				projectedDistance /= dot(L, L);
+				if (projectedDistance > penetration) {
+					penetration = projectedDistance;
+					penetrationAxisIndex = i;
+				}
+			}
+		}
+	}
+
+	// get final separating axis vector
     Vector3 L = separatingAxisForSolidBoxSolidBox(penetrationAxisIndex,
             box1, box2);
 
@@ -335,10 +338,6 @@ double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
     if (dot(L, D) < 0) {
         L = -L;
     }
-
-    /* NOTE to get a more balanced contact point you could average
-       vertices overlapping with the other box, instead of only
-       finding the deepest vertex */
 
     Vector3 contactPoint;
 
