@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
         getFiles(srcDir + "*.ini", tname);
         for (int i = 0; i < tname.size(); ++i) {
             std::string file = tname[i].substr(0, tname[i].length() - 4);
-            CFont::convertRAWINItoPWF(srcDir + file, prefix + file + ".fnt");
+            GFont::convertRAWINItoPWF(srcDir + file, prefix + file + ".fnt");
         }
         tname.clear();
     }
@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     for (int n = 0; n < tname.size(); ++n) {
         // Don't show -small fonts.
         if (! endsWith(tname[n], "-small.fnt")) {
-            font.append(CFont::fromFile(device, prefix + tname[n]));
+            font.append(GFont::fromFile(device, prefix + tname[n]));
             // Strip the extension
             name.append(tname[n].substr(0, tname[n].length() - 4));
         }

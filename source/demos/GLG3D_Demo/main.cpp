@@ -99,7 +99,7 @@ debugAssertGLOk();
     debugAssert(varStatic);
     debugAssert(varDynamic);
 
-    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
     sky		     = Sky::create(renderDevice, DATA_DIR + "sky/");
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");

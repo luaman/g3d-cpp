@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     renderDevice->setCaption("G3D::MD2Model Demo");
     camera 	     = new GCamera(renderDevice);
 
-    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 

@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     varDynamic = renderDevice->createVARArea(1024 * 1);
     debugAssert(varDynamic);
 
-    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 

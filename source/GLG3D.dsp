@@ -86,10 +86,6 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\GLG3Dcpp\CFont.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\GLG3Dcpp\Draw.cpp
 # End Source File
 # Begin Source File
@@ -103,6 +99,10 @@ SOURCE=.\GLG3Dcpp\GApp.cpp
 # Begin Source File
 
 SOURCE=.\GLG3Dcpp\getOpenGLState.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\GFont.cpp
 # End Source File
 # Begin Source File
 
@@ -354,10 +354,6 @@ SOURCE=.\include\glh\GL\wglext.h
 # End Group
 # Begin Source File
 
-SOURCE=.\include\GLG3D\CFont.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\GLG3D\Draw.h
 # End Source File
 # Begin Source File
@@ -371,6 +367,10 @@ SOURCE=.\include\GLG3D\GApp.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\getOpenGLState.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\GFont.h
 # End Source File
 # Begin Source File
 

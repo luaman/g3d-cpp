@@ -43,7 +43,7 @@
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
-#include "GLG3D/CFont.h"
+#include "GLG3D/GFont.h"
 #include "GLG3D/LightingParameters.h"
 #include "GLG3D/Sky.h"
 #include "GLG3D/UserInput.h"

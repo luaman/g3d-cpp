@@ -38,7 +38,7 @@ void GApp::loadFont(const std::string& fontName) {
     }
 
     if (fileExists(filename)) {
-        debugFont = CFont::fromFile(renderDevice, filename);
+        debugFont = GFont::fromFile(renderDevice, filename);
     } else {
         debugFont = NULL;
     }

@@ -10,7 +10,7 @@
 #ifndef G3D_GAPP_H
 #define G3D_GAPP_H
 
-#include "GLG3D/CFont.h"
+#include "GLG3D/GFont.h"
 #include "G3D/GCamera.h"
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/RenderDevice.h"

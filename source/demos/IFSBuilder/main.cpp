@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     renderDevice->init(RenderDeviceSettings(), debugLog);
     camera       = new GCamera(renderDevice);
 
-    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 

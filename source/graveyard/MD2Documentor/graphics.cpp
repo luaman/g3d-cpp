@@ -150,7 +150,7 @@ void doGraphics() {
             double f = 16;
             int fontSize = (batchScreen) ? (22) : (30);
             font->draw2DString(model.name, renderDevice->getWidth()/2, 
-renderDevice->getHeight() - 45, fontSize, Color3::BLACK, Color3::WHITE, CFont::XALIGN_CENTER);
+                renderDevice->getHeight() - 45, fontSize, Color3::BLACK, Color3::WHITE, GFont::XALIGN_CENTER);
 
             if (!screenshot) {
                 font->draw2DString(format("%d fps", 

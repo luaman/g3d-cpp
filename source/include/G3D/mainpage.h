@@ -231,7 +231,7 @@
         G3D::GLenumToString
 
       <LI><B>Game/Demo Infrastructure</B> &nbsp; &nbsp;
-        G3D::CFont,
+        G3D::GFont,
         G3D::GApp, G3D::GApplet, G3D::GAppSettings,
         G3D::GLight,
         G3D::Sky,
@@ -372,7 +372,7 @@
           height      <I>height maps</I>
           ifs         <I>3D models (see IFS_Demo for loading code)</I>
           sky         <I>Images for use with G3D::Sky</I>
-          font        <I>Fonts for use with G3D::CFont</I>
+          font        <I>Fonts for use with G3D::GFont</I>
      </PRE>
 
    <HR>

@@ -102,10 +102,6 @@ SOURCE=.\G3Dcpp\Capsule.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\G3Dcpp\CImage.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\G3Dcpp\CollisionDetection.cpp
 # End Source File
 # Begin Source File
@@ -163,6 +159,10 @@ SOURCE=.\G3Dcpp\g3dmath.cpp
 # Begin Source File
 
 SOURCE=.\G3Dcpp\GCamera.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\G3Dcpp\GImage.cpp
 # End Source File
 # Begin Source File
 
@@ -290,10 +290,6 @@ SOURCE=.\include\G3D\Capsule.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\CImage.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\CollisionDetection.h
 # End Source File
 # Begin Source File
@@ -375,6 +371,10 @@ SOURCE=.\include\G3D\g3dmath.inl
 # Begin Source File
 
 SOURCE=.\include\G3D\GCamera.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\GImage.h
 # End Source File
 # Begin Source File
 

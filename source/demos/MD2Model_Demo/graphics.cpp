@@ -119,7 +119,7 @@ void doGraphics() {
             font->draw2D(format("%1.1f MB", model->mainMemorySize() / 1e6), Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
             font->draw2D(format("%1.0f Mtris/sec", renderDevice->getTriangleRate() / 1e6), Vector2(x, y), f, Color3::CYAN, Color3::BLACK); y += f * 1.5;
 
-            font->draw2D(model->name(), Vector2(renderDevice->getWidth()/2, renderDevice->getHeight() - 45), 30, Color3::BLACK, Color3::WHITE, CFont::XALIGN_CENTER);
+            font->draw2D(model->name(), Vector2(renderDevice->getWidth()/2, renderDevice->getHeight() - 45), 30, Color3::BLACK, Color3::WHITE, GFont::XALIGN_CENTER);
 
             x = renderDevice->getWidth() - 130;
             y = 10;

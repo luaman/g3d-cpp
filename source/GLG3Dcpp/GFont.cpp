@@ -1,27 +1,27 @@
 /**
- @file CFont.cpp
+ @file GFont.cpp
  
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-10-30
+ @edited  2003-11-23
  */
 
-#include "GLG3D/CFont.h"
+#include "GLG3D/GFont.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/TextureFormat.h"
 
 namespace G3D {
 
-CFontRef CFont::fromFile(RenderDevice* _rd, const std::string& filename) {
-    return new CFont(_rd, filename);
+CFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
+    return new GFont(_rd, filename);
 }
 
 
-CFont::CFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
+GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 
     debugAssert(renderDevice);
-    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a CFont");
+    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a GFont");
 
     if (! fileExists(filename)) {
         debugAssertM(false, format("ERROR: Could not load font: %s", filename.c_str()));
@@ -59,12 +59,12 @@ CFont::CFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
 }
 
 
-Vector2 CFont::texelSize() const {
+Vector2 GFont::texelSize() const {
     return Vector2(charWidth, charHeight);
 }
 
 
-void CFont::drawString(
+void GFont::drawString(
     const std::string&  s,
     double              x,
     double              y,
@@ -115,7 +115,7 @@ void CFont::drawString(
 }
 
 
-void CFont::draw2D(
+void GFont::draw2D(
     const std::string&          s,
     const Vector2&              pos2D,
     double                      size,
@@ -199,7 +199,7 @@ void CFont::draw2D(
 }
 
 
-Vector2 CFont::get2DStringBounds(
+Vector2 GFont::get2DStringBounds(
     const std::string&  s,
     double              size,
     Spacing             spacing) const {
@@ -225,7 +225,7 @@ Vector2 CFont::get2DStringBounds(
 }
 
 
-void CFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfile) {
+void GFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfile) {
     debugAssert(fileExists(infileBase + ".raw"));
     debugAssert(fileExists(infileBase + ".ini"));
 

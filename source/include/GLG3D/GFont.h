@@ -1,20 +1,20 @@
 /**
- @file CFont.h
+ @file GFont.h
  
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-10-30
+ @edited  2003-11-23
  */
 
-#ifndef G3D_FONT_H
-#define G3D_FONT_H
+#ifndef G3D_GFONT_H
+#define G3D_GFONT_H
 
 #include "GLG3D/Texture.h"
 
 namespace G3D {
 
-typedef ReferenceCountedPointer<class CFont> CFontRef;
+typedef ReferenceCountedPointer<class GFont> CFontRef;
 
 /**
  Font class for use with RenderDevice.
@@ -25,7 +25,7 @@ typedef ReferenceCountedPointer<class CFont> CFontRef;
  <P>
  <IMG SRC="font.png">
  */
-class CFont : public ReferenceCountedObject {
+class GFont : public ReferenceCountedObject {
 public:
     /** Constant for draw2DString.  Specifies the horizontal alignment of an entire string relative to the supplied x,y position */
     enum XAlign {XALIGN_RIGHT, XALIGN_LEFT, XALIGN_CENTER};
@@ -62,7 +62,7 @@ private:
 
     class RenderDevice*             renderDevice;
 
-    CFont(class RenderDevice* renderDevice, const std::string& filename);
+    GFont(class RenderDevice* renderDevice, const std::string& filename);
 
 public:
 
@@ -140,6 +140,11 @@ public:
         double              size = 12,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 };
+
+/**
+ @deprecated
+ */
+typedef GFont CFont;
 
 }
 #endif
