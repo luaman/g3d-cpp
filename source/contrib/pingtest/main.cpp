@@ -122,13 +122,13 @@ void reliableServer() {
     NetListenerRef listener =
         networkDevice.createListener(PING_PORT);
 
-    if (listener.isNull()) {
-        printf("Could not create listener.  Shutting down server.\n");
-        return;
-    }
-
     while (! System::consoleKeyPressed()) {
         NetAddress clientAddress;
+
+        if (listener.isNull() || ! listener->ok()) {
+            printf("Listener crashed.  Shutting down server.\n");
+            return;
+        }
 
         if (listener->clientWaiting()) {
             ReliableConduitRef conduit =
