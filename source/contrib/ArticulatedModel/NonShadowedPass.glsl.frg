@@ -75,28 +75,28 @@ void main(void) {
         // Convert bumps to a world space distance
         float  bump   = (texture2D(normalBumpMap, texCoord).w - 0.5) * bumpMapScale;
 
-	    const vec3 tsE = normalize(_tsE);
+	    vec3 tsE = normalize(_tsE);
 
         // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
 	    // from TBN space, so we must flip the y-axis.
 
-        const vec2 offsetTexCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
+        vec2 offsetTexCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
 
 	    // note that the columns might be slightly not orthogonal due to interpolation
-	    const mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
+	    mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
 	    
         // Take the normal map values back to (-1, 1) range to compute a tangent space normal
-        const vec3 tsN = ((texture2D(normalBumpMap, offsetTexCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
+        vec3 tsN = ((texture2D(normalBumpMap, offsetTexCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
 
 	    // Take the normal to world space 
-	    const vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
+	    vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
 
 #   else
 
         // World space normal
-        const vec3 wsN = tan_Z.xyz;
+        vec3 wsN = tan_Z.xyz;
 
-        const vec2 offsetTexCoord = texCoord;
+        vec2 offsetTexCoord = texCoord;
 #   endif
 
     // Light vector      
