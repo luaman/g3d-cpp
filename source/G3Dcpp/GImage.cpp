@@ -510,7 +510,14 @@ void GImage::encodeTGA(
     out.writeUInt8(8 * channels);
 
     // Image descriptor
-    out.writeUInt8(0);
+    if (channels == 3) {
+        // 0 alpha bits
+        out.writeUInt8(0);
+    }
+    else {
+        // 8 alpha bits
+        out.writeUInt8(8);
+    }
 
     // Image ID (zero length)
 
