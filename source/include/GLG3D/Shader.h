@@ -23,8 +23,17 @@ typedef ReferenceCountedPointer<class PixelShader>  PixelShaderRef;
 
 
 class ObjectShader : public ReferenceCountedObject {
+private:
+    std::string     _messages;
 public:
 
+    bool ok() const {
+        return true;
+    }
+
+    const std::string& messages() const {
+        return _messages;
+    }
 };
 
 class GPUShader : public ReferenceCountedObject {
@@ -42,7 +51,7 @@ protected:
     GPUShader(const std::string& name, const std::string& code, bool fromFile);
 
     bool                        _ok;
-    std::string                 _message;
+    std::string                 _messages;
 
     /** Returns true on success.  Called from init. */
     void compile();
@@ -51,18 +60,18 @@ protected:
         Called from subclass create methods. */
     static GPUShader*           init(GPUShader* shader);
 
+public:
     /** Deletes the underlying glShaderObject.  Between GL's reference
         counting and G3D's reference counting, an underlying object
         can never be deleted while in use. */
     ~GPUShader();
 
-public:
     /** Shader type, e.g. GL_VERTEX_SHADER_ARB */
     virtual GLenum glShaderType() const = 0;
 
     /** Why compilation failed, or any compiler warnings if it succeeded.*/
-    inline std::string message() const {
-        return _message;
+    inline const std::string& messages() const {
+        return _messages;
     }
 
     /** Returns true if compilation and loading succeeded.  If they failed,
@@ -151,8 +160,17 @@ protected:
     ObjectShaderRef         objectShader;
     VertexShaderRef         vertexShader;
     PixelShaderRef          pixelShader;
+   
+    bool                    _ok;
+    std::string             _messages;
+
+    ShaderGroup(
+        const ObjectShaderRef& os,
+        const VertexShaderRef& vs,
+        const PixelShaderRef&  ps);
 
 public:
+    ~ShaderGroup();
 
     /**
      Passing NULL for any parameter selects the default shader for that stage.
@@ -163,17 +181,15 @@ public:
      The individual shaders are analogous to the object files produced by 
      a compiler.  Creating a ShaderGroup "links" them together.  This linking
      step often produces output from the linker.  It may fail due to an error, or
-     succeed but produce warnings.  Both kinds of output are returned in 
-     the output string (i.e. it contains the value returned by glGetInfoLogARB).  
+     succeed but produce warnings.  Both kinds of output are stored in
+     messages() (i.e. it contains the value returned by glGetInfoLogARB).  
      
-     If an unrecoverable error occurs, NULL is returned. Use the 
-     ReferenceCountedPoitner::isNull method to detect this.
+     If an unrecoverable error occurs, ok() is false.
      */
     static ShaderGroupRef create(
         const ObjectShaderRef& os,
         const VertexShaderRef& vs,
-        const PixelShaderRef&  ps,
-        std::string&           output = ignore);
+        const PixelShaderRef&  ps);
 
     /**
      Returns GLCaps::supports_GL_ARB_shader_objects() && 
@@ -182,6 +198,14 @@ public:
         GLCaps::supports_GL_ARB_vertex_shader()
     */
     static bool fullySupported();
+
+    inline bool ok() const {
+        return _ok;
+    }
+
+    inline const std::string& messages() const {
+        return _messages;
+    }
 };
 
 }

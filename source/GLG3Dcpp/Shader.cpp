@@ -23,7 +23,7 @@ GPUShader* GPUShader::init(GPUShader* shader) {
             shader->_code = readFileAsString(shader->_name);
         } else {
             shader->_ok = false;
-            shader->_message = format("Could not load shader file \"%s\".", 
+            shader->_messages = format("Could not load shader file \"%s\".", 
                 shader->_name.c_str());
         }
     }
@@ -56,7 +56,7 @@ void GPUShader::compile() {
 	glGetInfoLogARB(glShaderObject, maxLength, &length, pInfoLog);
 
     // Copy the result to the output string
-    _message = pInfoLog;
+    _messages = pInfoLog;
 	free(pInfoLog);
 
     _ok = (compiled == GL_TRUE);
@@ -89,8 +89,55 @@ PixelShaderRef PixelShader::fromCode(const std::string& name, const std::string&
     return static_cast<PixelShader*>(GPUShader::init(new PixelShader(name, "", false)));
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////
+
+ShaderGroup::ShaderGroup(
+    const ObjectShaderRef& os,
+    const VertexShaderRef& vs,
+    const PixelShaderRef&  ps) : objectShader(os), vertexShader(vs), pixelShader(ps), _ok(true) {
+
+    if (! os.isNull() && ! os->ok()) {
+        _ok = false;
+        _messages += "\n" + os->messages();
+    }    
+    
+    if (! vs.isNull() && ! vs->ok()) {
+        _ok = false;
+        _messages += "\n" + vs->messages();
+    }    
+
+    if (! ps.isNull() && ! ps->ok()) {
+        _ok = false;
+        _messages += "\n" + ps->messages();
+    }    
+
+    if (_ok) {
+        // Create GL object
+        // TODO
+
+        // Link
+        // TODO
+
+        // Read back messages
+        // TODO
+    }
+}
+
+
+ShaderGroupRef ShaderGroup::create(
+    const ObjectShaderRef& os,
+    const VertexShaderRef& vs,
+    const PixelShaderRef&  ps) {
+
+    return new ShaderGroup(os, vs, ps);
+}
+
+
+ShaderGroup::~ShaderGroup() {
+    // TODO: delete the gl object
+}
+
+
 
 bool ShaderGroup::fullySupported() {
     return
