@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-10-01
+  @edited  2003-10-29
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -896,47 +896,10 @@ public:
         int                 x,
         int                 y) const;
 
-    /**
-     Render a set of x, y, z axes for the current object-to-world
-     matrix.  
-
-     @param scale Thickness and length of the axes.  You
-     might want to use the radius of an object's bounding sphere.
-     */
-    void debugDrawAxes(double scale = 1);
-
-    /**
-     Visualize the per-vertex normals from a mesh.  The vector length is scaled
-     inversely with the number of normals.
-     */
-    void debugDrawVertexNormals(const MeshAlg::Geometry& geometry, const Color3& color = Color3::GREEN * 0.5, double scale = 1);
 
     /** Call after vendor is set */
     std::string getDriverVersion();
 
-    void debugDrawRay(const Ray& ray, const Color3& color = Color3::RED, double scale = 1);
-
-    /**
-     Render a box with wireframe edges and translucent faces.
-     Convenient for debugging bounding boxes.  
-     
-     @param edgeScale A
-     scaling factor on the thickness of the edges.  Use the same value
-     you would with drawAxes
-     */
-    void debugDrawBox(const Box& box, const Color3& color = Color3::RED, 
-                      double edgeScale = 1);
-
-    /**
-     Convenient for debugging bounding spheres.
-     */
-    void debugDrawSphere(const Sphere& sphere,
-                         const Color3& color = Color3::RED, 
-                         double edgeScale = 1);
-
-    void debugDrawCapsule(const Capsule& capsule,
-                         const Color3& color = Color3::RED, 
-                         double edgeScale = 1);
 
 private:
 
@@ -1062,10 +1025,6 @@ private:
 
     bool                            _initialized;
 
-    // Helpers for debug drawing routines
-    void drawWireSphereSection(const Sphere& sphere, double cylRadius, const Color3& color, bool top, bool bottom);
-    void drawFaceSphereSection(const Sphere& sphere, const Color3& color, bool top, bool bottom);
-    
 public:
 
     bool supportsOpenGLExtension(const std::string& extension) const;
