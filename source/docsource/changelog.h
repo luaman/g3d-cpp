@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Created installer for Windows [Corey]
      <LI> Reorganized the documentation topic index based on abstraction level, added hyperlinks to demo/contrib code
      <LI> G3D::ReliableConduit and G3D::LightweightConduit now send and receive
           objects directly; no need to make a G3D::NetMessage.  NetMessage
