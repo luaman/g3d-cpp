@@ -12,7 +12,7 @@
 #ifndef G3D_SET_H
 #define G3D_SET_H
 
-#include "../G3D/Table.h"
+#include "G3D/Table.h"
 #include <assert.h>
 #include <string>
 

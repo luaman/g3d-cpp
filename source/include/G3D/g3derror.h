@@ -14,7 +14,7 @@
 #define G3D_ERROR_H
 
 #include <string>
-#include "../G3D/prompt.h"
+#include "G3D/prompt.h"
 #include <time.h>
 #include <string.h>
 #include <stdio.h>

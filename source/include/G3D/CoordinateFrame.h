@@ -16,13 +16,13 @@
 #ifndef G3D_COORDINATEFRAME_H
 #define G3D_COORDINATEFRAME_H
 
-#include "../G3D/Vector3.h"
-#include "../G3D/Vector4.h"
-#include "../G3D/Ray.h"
-#include "../G3D/Matrix3.h"
+#include "G3D/Vector3.h"
+#include "G3D/Vector4.h"
+#include "G3D/Ray.h"
+#include "G3D/Matrix3.h"
+#include "G3D/Sphere.h"
+#include "G3D/Box.h"
 #include <math.h>
-#include "../G3D/Sphere.h"
-#include "../G3D/Box.h"
 #include <string>
 #include <stdio.h>
 #include <cstdarg>

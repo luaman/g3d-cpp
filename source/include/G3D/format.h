@@ -16,12 +16,11 @@
 #include <string>
 #include <stdio.h>
 #include <cstdarg>
-#if ! _WIN32
+#ifndef _WIN32
     // Don't include varargs.h for some random
     // gcc reason
     //#include <varargs.h>
     #include <stdarg.h>
-    #define __cdecl 
 #endif
 
 namespace G3D {

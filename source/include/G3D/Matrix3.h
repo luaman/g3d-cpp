@@ -14,7 +14,7 @@
 #ifndef G3D_MATRIX3_H
 #define G3D_MATRIX3_H
 
-#include "../G3D/Vector3.h"
+#include "G3D/Vector3.h"
 
 namespace G3D {
 

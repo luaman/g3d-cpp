@@ -18,10 +18,10 @@
 
 #include <stdio.h>
 #include <cstdarg>
-#include "../G3D/format.h"
+#include "G3D/format.h"
 #include <string>
 
-#if ! _WIN32
+#ifndef _WIN32
     #include <stdarg.h>
 #else
 	#include <windows.h>

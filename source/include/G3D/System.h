@@ -14,7 +14,7 @@
 #ifndef G3D_SYSTEM_H
 #define G3D_SYSTEM_H
 
-#include "../G3D/g3dmath.h"
+#include "G3D/g3dmath.h"
 #include <string>
 
 namespace G3D {

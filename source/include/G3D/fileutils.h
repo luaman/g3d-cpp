@@ -15,8 +15,8 @@
 
 #include <string>
 #include <stdio.h>
-#include "./Array.h"
-#include "./g3dmath.h"
+#include "G3D/Array.h"
+#include "G3D/g3dmath.h"
 
 namespace G3D {
     

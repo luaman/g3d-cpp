@@ -17,8 +17,8 @@
     #include <crtdbg.h>
 #endif
 
-#include "debugPrintf.h"
-#include "debugAssert.h"
+#include "G3D/debugPrintf.h"
+#include "G3D/debugAssert.h"
 
 namespace G3D {
 

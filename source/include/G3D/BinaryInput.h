@@ -18,14 +18,14 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>
-#include "./Color4.h"
-#include "./Color3.h"
-#include "./Vector4.h"
-#include "./Vector3.h"
-#include "./Vector2.h"
-#include "./g3dmath.h"
-#include "./Array.h"
-#include "./debug.h"
+#include "G3D/Color4.h"
+#include "G3D/Color3.h"
+#include "G3D/Vector4.h"
+#include "G3D/Vector3.h"
+#include "G3D/Vector2.h"
+#include "G3D/g3dmath.h"
+#include "G3D/Array.h"
+#include "G3D/debug.h"
 
 namespace G3D {
 

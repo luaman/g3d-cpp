@@ -32,7 +32,7 @@
 #define NETWORKDEVICE_H
 
 #include <string>
-#include "../G3D/g3dmath.h"
+#include "G3D/g3dmath.h"
 #ifdef _WIN32
     #include <winsock.h>
 #else
@@ -42,8 +42,8 @@
     #define SOCKADDR_IN struct sockaddr_in
     #define SOCKET int
 #endif
-#include "../G3D/ReferenceCount.h"
-#include "../G3D/Array.h"
+#include "G3D/ReferenceCount.h"
+#include "G3D/Array.h"
 
 namespace G3D {
 

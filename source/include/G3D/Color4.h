@@ -17,8 +17,8 @@
 #ifndef G3D_COLOR4_H
 #define G3D_COLOR4_H
 
-#include "../G3D/g3dmath.h"
-#include "../G3D/Color3.h"
+#include "G3D/g3dmath.h"
+#include "G3D/Color3.h"
 #include <string>
 
 namespace G3D {

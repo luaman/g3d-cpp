@@ -18,7 +18,7 @@
 #ifndef G3D_COLOR3_H
 #define G3D_COLOR3_H
 
-#include "../G3D/g3dmath.h"
+#include "G3D/g3dmath.h"
 #include <string>
 
 namespace G3D {

@@ -21,11 +21,11 @@
 #define G3D_CIMAGE_H
 
 #include <string>
-#include "../G3D/Array.h"
-#include "../G3D/g3dmath.h"
-#include "../G3D/BinaryInput.h"
-#include "../G3D/BinaryOutput.h"
-#include "../G3D/stringutils.h"
+#include "G3D/Array.h"
+#include "G3D/g3dmath.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
+#include "G3D/stringutils.h"
 
 
 namespace G3D {

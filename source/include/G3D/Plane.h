@@ -12,8 +12,8 @@
 #ifndef G3D_PLANE_H
 #define G3D_PLANE_H
 
-#include "../G3D/Vector3.h"
-#include "../G3D/CoordinateFrame.h"
+#include "G3D/Vector3.h"
+#include "G3D/CoordinateFrame.h"
 
 namespace G3D {
 

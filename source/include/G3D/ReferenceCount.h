@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 #ifndef G3D_RGC_H
 #define G3D_RGC_H
 
-#include "../G3D/debug.h"
+#include "G3D/debug.h"
 
 namespace G3D {
 

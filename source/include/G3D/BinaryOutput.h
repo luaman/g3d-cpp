@@ -19,15 +19,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>
-#include "../G3D/Color4.h"
-#include "../G3D/Color3.h"
-#include "../G3D/Vector4.h"
-#include "../G3D/Vector3.h"
-#include "../G3D/Vector2.h"
-#include "../G3D/g3dmath.h"
-#include "../G3D/Array.h"
-#include "../G3D/debug.h"
-#include "../G3D/BinaryInput.h"
+#include "G3D/Color4.h"
+#include "G3D/Color3.h"
+#include "G3D/Vector4.h"
+#include "G3D/Vector3.h"
+#include "G3D/Vector2.h"
+#include "G3D/g3dmath.h"
+#include "G3D/Array.h"
+#include "G3D/debug.h"
+#include "G3D/BinaryInput.h"
 
 namespace G3D {
 
