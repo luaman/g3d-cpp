@@ -769,7 +769,7 @@ void ReliableConduit::receiveIntoBuffer() {
         }
     }
 
-    if ((ret == 0) || (ret == SOCKET_ERROR) || (left != 0)) {
+    if ((ret == 0) || (ret == SOCKET_ERROR)) {
 
         if (nd->debugLog) {
             if (ret == SOCKET_ERROR) {
@@ -777,8 +777,7 @@ void ReliableConduit::receiveIntoBuffer() {
                      " sizeof(messageSize) = %d\n", ret, messageSize);
                 nd->debugLog->println(socketErrorCode());
             } else {
-                nd->debugLog->printf("Expected %d bytes from recv "
-                     "and got %d.", messageSize, messageSize - left);
+                nd->debugLog->printf("recv returned 0\n");
             }
         }
         nd->closesocket(sock);
