@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Draw::sphere speed improved over 25% with single quad strip (improves Draw::capsule) [Corey]
      <LI> Allow 1-channel GImage saving - BMP (expanded to RGB), PNG [Corey]
      <LI> Allow 1-channel GImage loading - PNG [Corey]
      <LI> Added shader and framebuffer extensions to glext.h 
