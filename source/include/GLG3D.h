@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-01-07
+ @edited  2004-02-05
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -29,7 +29,6 @@
     #endif
 
     #pragma comment(lib, "opengl32.lib")
-    #pragma comment(lib, "glut32.lib")
     #pragma comment(lib, "glu32.lib")
     #pragma comment(lib, "sdl.lib")
     #pragma comment(lib, "sdlmain.lib")
