@@ -354,7 +354,9 @@ TextureRef Texture::fromTwoFiles(
     
     CImage color[6];
     CImage alpha[6];
+    TextureRef t;
 
+    try {
     for (int f = 0; f < numFaces; ++f) {
 
         std::string fn = filename;
@@ -391,9 +393,7 @@ TextureRef Texture::fromTwoFiles(
         array[f] = data;
     }
 
-
-    TextureRef t =
-        Texture::fromMemory(filename, array, TextureFormat::RGBA8,
+    t = Texture::fromMemory(filename, array, TextureFormat::RGBA8,
             color[0].width, color[0].height, 1, 
             desiredFormat, wrap, interpolate, dimension);
 
@@ -402,6 +402,12 @@ TextureRef Texture::fromTwoFiles(
         for (int f = 0; f < numFaces; ++f) {
             delete[] const_cast<unsigned char*>(array[f]);
         }
+    }
+
+    } catch (const CImage::Error& e) {
+        Log::common()->printf("\n**************************\n\n"
+            "Loading \"%s\" failed. %s\n", e.filename.c_str(),
+            e.reason.c_str());
     }
 
     return t;
@@ -446,9 +452,13 @@ TextureRef Texture::fromMemory(
             }
 
             if (interpolate == TRILINEAR_MIPMAP) {
-                createMipMapTexture(target, bytes[f], bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat);
+                createMipMapTexture(target, bytes[f],
+                              bytesFormat->OpenGLBaseFormat,
+                              width, height, desiredFormat->OpenGLFormat);
             } else {
-                createTexture(target, bytes[f], bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat, bytesFormat->packedBitsPerTexel / 8);
+                createTexture(target, bytes[f], bytesFormat->OpenGLBaseFormat,
+                              width, height, desiredFormat->OpenGLFormat, 
+                              bytesFormat->packedBitsPerTexel / 8);
             }
         }
 
@@ -459,7 +469,8 @@ TextureRef Texture::fromMemory(
         height = nextPowerOf2(height);
     }
 
-    return fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension, bytesFormat->opaque);
+    return fromGLTexture(name, textureID, desiredFormat, wrap,
+         interpolate, dimension, bytesFormat->opaque);
 }
 
 
@@ -475,7 +486,8 @@ void Texture::splitFilename(
         filenameBase = filename.substr(0, i);
         filenameExt  = filename.substr(i + 1, filename.size() - i - splitter.length()); 
     } else {
-        throw CImage::Error("Cube map filenames must contain \"*\" as a placeholder for up/lf/rt/bk/ft/dn", filename);
+        throw CImage::Error("Cube map filenames must contain \"*\" as a "
+                            "placeholder for up/lf/rt/bk/ft/dn", filename);
     }
 }
 
@@ -490,13 +502,18 @@ unsigned int Texture::newGLTextureID() {
     unsigned int t;
     glGenTextures(1, &t);
 
-    errorCheck(glGetError() != GL_INVALID_OPERATION, "GL_INVALID_OPERATION: Probably caused by invoking glGenTextures between glBegin and glEnd.");
+    alwaysAssertM(glGetError() != GL_INVALID_OPERATION, 
+         "GL_INVALID_OPERATION: Probably caused by invoking "
+         "glGenTextures between glBegin and glEnd.");
 
     return t;
 }
 
 
-void Texture::copyFromScreen(int x, int y, int width, int height, int windowHeight, Dimension dim, bool useBackBuffer) {
+void Texture::copyFromScreen(
+    int x, int y, int width, int height,
+    int windowHeight, Dimension dim, bool useBackBuffer) {
+
     debugAssert(dim != DIM_CUBE_MAP);
 
     glStatePush();
@@ -525,7 +542,7 @@ void Texture::copyFromScreen(int x, int y, int width, int height, int windowHeig
     glEnable(target);
 
     glBindTexture(target, textureID);
-    errorCheck(glGetError() == GL_NONE, "Error encountered during glBindTexture");
+    alwaysAssertM(glGetError() == GL_NONE, "Error encountered during glBindTexture");
         
     glCopyTexImage2D(target, 0, format->OpenGLFormat, x, windowHeight - (y + height), width, height, 0);
 

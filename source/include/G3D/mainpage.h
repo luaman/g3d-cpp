@@ -151,7 +151,7 @@
         <BR><B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
         G3D::isValidPointer,
         <B>G3D::debugAssertM</B>, G3D::debugPrintf, G3D::error, 
-        G3D::Log, G3D::errorCheck</BLOCKQUOTE>
+        G3D::Log, G3D::alwaysAssertM</BLOCKQUOTE>
 
      <LI>I/O
         <BR><BLOCKQUOTE>
@@ -618,7 +618,7 @@
    <UL>
      <LI> Removed const from VAR::pointer
      <LI> ReferenceCountedPointer::isNull
-     <LI> errorCheck
+     <LI> alwaysAssertM
      <LI> Log::common, Log::getCommonLogFilename
      <LI> Switched from static to dynamic linking of zlib
      <LI> Upgraded to zlib 1.1.3

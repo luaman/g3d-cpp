@@ -17,7 +17,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-08-26
-  @edited  2003-08-04
+  @edited  2003-08-05
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -76,7 +76,7 @@
         } \
     }
 
-    #define errorCheck debugAssertM
+    #define alwaysAssertM debugAssertM
 
 #else  // Release
     #ifdef G3D_DEBUG_NOGUI
@@ -90,7 +90,8 @@
     #define debugAssertM(exp, message)
     #define debugBreak()
 
-    #define errorCheck(exp, message) { \
+    // But keep the always assertions
+    #define alwaysAssertM(exp, message) { \
         if (!(exp)) { \
             G3D::_internal::_handleErrorCheck_(#exp, message, __FILE__, __LINE__, __debugPromptShowDialog__); \
             exit(-1); \
