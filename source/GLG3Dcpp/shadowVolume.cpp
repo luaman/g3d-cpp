@@ -26,17 +26,28 @@ void beginMarkShadows(RenderDevice* renderDevice) {
         renderDevice->disableDepthWrite();
         renderDevice->disableColorWrite();
 
-        // Increment for front faces and decrement
-        // for back faces.
-        renderDevice->setCullFace(RenderDevice::CULL_NONE);
-        renderDevice->setStencilOp(
-            RenderDevice::STENCIL_KEEP,
-            RenderDevice::STENCIL_DECR_WRAP,
-            RenderDevice::STENCIL_KEEP,
 
-            RenderDevice::STENCIL_KEEP,
-            RenderDevice::STENCIL_INCR_WRAP,
-            RenderDevice::STENCIL_KEEP);
+        // z-fail; decrement for front faces and increment
+        // for back faces.
+        if (renderDevice->supportsTwoSidedStencil()) {
+            renderDevice->setCullFace(RenderDevice::CULL_NONE);
+            renderDevice->setStencilOp(
+                RenderDevice::STENCIL_KEEP,
+                RenderDevice::STENCIL_DECR_WRAP,
+                RenderDevice::STENCIL_KEEP,
+
+                RenderDevice::STENCIL_KEEP,
+                RenderDevice::STENCIL_INCR_WRAP,
+                RenderDevice::STENCIL_KEEP);
+        } else {
+
+            // Front face pass
+            renderDevice->setCullFace(RenderDevice::CULL_BACK);
+            renderDevice->setStencilOp(
+                RenderDevice::STENCIL_KEEP,
+                RenderDevice::STENCIL_DECR_WRAP,
+                RenderDevice::STENCIL_KEEP);
+        }
 }
 
 
@@ -203,12 +214,30 @@ void markShadows(
         }
     }
 
-    // Render
     renderDevice->setObjectToWorldMatrix(cframe);
     renderDevice->beginIndexedPrimitives();
         renderDevice->setVertexArray(gpuVertex);
         renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+
+        if (! renderDevice->supportsTwoSidedStencil()) {
+            // Render a second pass for the back faces
+            renderDevice->setCullFace(RenderDevice::CULL_FRONT);
+            renderDevice->setStencilOp(
+                RenderDevice::STENCIL_KEEP,
+                RenderDevice::STENCIL_INCR_WRAP,
+                RenderDevice::STENCIL_KEEP);
+
+            renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+
+            renderDevice->setCullFace(RenderDevice::CULL_BACK);
+            renderDevice->setStencilOp(
+                RenderDevice::STENCIL_KEEP,
+                RenderDevice::STENCIL_DECR_WRAP,
+                RenderDevice::STENCIL_KEEP);
+        }
+
     renderDevice->endIndexedPrimitives();
+
 }
 
 

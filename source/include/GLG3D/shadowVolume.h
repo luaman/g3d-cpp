@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-12-16
- @edited  2003-12-16
+ @edited  2004-01-13
  */
 
 #ifndef G3D_SHADOWVOLUME_H
@@ -70,9 +70,14 @@ void endMarkShadows(RenderDevice* renderDevice);
                 model[m]->render(renderDevice);
             }
         }
-    renderDevice->popState();   
-
+    renderDevice->popState();
   </PRE>
+
+  <B>Limitations</B>
+
+  This function currently works only for directional lights (light.w == 0).
+  This function requires the far clipping plane at z = -inf (the
+  default for GCamera).
  */
 void markShadows(
     RenderDevice*           renderDevice, 
