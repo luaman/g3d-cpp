@@ -858,8 +858,8 @@ void LightweightConduit::send(const NetAddress& a, const NetMessage* m, uint32 t
 
     BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
 
+    b.writeUInt32(type);
     if (m != NULL) {
-        b.writeUInt32(type);
         m->serialize(b);
     }
 
