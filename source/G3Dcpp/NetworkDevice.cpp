@@ -1054,7 +1054,7 @@ ReliableConduitRef NetListener::waitForConnection() {
 
 
 bool NetListener::ok() const {
-    return sock != 0;
+    return (sock != 0) && (sock != SOCKET_ERROR);
 }
 
 
