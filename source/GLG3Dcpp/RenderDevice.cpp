@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-02-12
+ @edited  2004-02-22
  */
 
 
@@ -248,7 +248,7 @@ std::string RenderDevice::getDriverVersion() {
 }
 
 
-RenderDevice::RenderDevice() : _window(NULL) {
+RenderDevice::RenderDevice() : _window(NULL), deleteWindow(false) {
 
     _initialized = false;
     inPrimitive = false;
@@ -407,6 +407,7 @@ bool RenderDevice::init(
     const GWindowSettings&      _settings,
     Log*                        log) {
 
+    deleteWindow = true;
     return init(new SDLWindow(_settings), log);
 }
 
@@ -840,8 +841,11 @@ void RenderDevice::cleanup() {
     if (debugLog) {debugLog->println("Restoring gamma.");}
     setGamma(1, 1);
 
-    if (debugLog) {debugLog->println("Shutting down SDL.");}
-    delete _window;
+    if (debugLog) {debugLog->println("Shutting down RenderDevice.");}
+
+    if (deleteWindow) {
+        delete _window;
+    }
 }
 
 

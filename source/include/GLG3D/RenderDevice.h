@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-02-12
+  @edited  2004-02-22
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -133,6 +133,8 @@ private:
         @deprecated */
     static RenderDevice*        lastRenderDeviceCreated;
 
+    /** Should the destructor delete _window?*/
+    bool                        deleteWindow;
     GWindow*                    _window;
 
     enum Vendor {NVIDIA, ATI, ARB};
@@ -983,12 +985,13 @@ public:
  
     /**
      Automatically constructs an SDLWindow then calls the other init
-     routine (provided for backwards compatibility).
+     routine (provided for backwards compatibility).  The constructed
+     window is deleted on shutdown.
      */
     bool init(const GWindowSettings& settings, class Log* log = NULL);
 
     /**
-     The renderDevice will delete the window on cleanup.
+     The renderDevice will <B>not</B> delete the window on cleanup.
      */
     bool init(GWindow* window, class Log* log = NULL);
 

@@ -146,6 +146,7 @@ public:
 
     virtual void setMousePosition(double x, double y) = 0;
 
+    /** Relative to the window origin */
     virtual void setMousePosition(const Vector2& p) = 0;
 
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-02-08
- @edited  2003-02-08
+ @edited  2003-02-22
  */
 
 #ifndef G3D_LINESEGMENT_H
@@ -29,6 +29,8 @@ protected:
     }
 
 public:
+
+    inline LineSegment() : _point(Vector3::ZERO), direction(Vector3::ZERO) {}
 
 	LineSegment(class BinaryInput& b);
 
