@@ -5,7 +5,7 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2003-12-22
+  @edited  2004-01-26
  */
 
 #include "G3D/CollisionDetection.h"
@@ -21,14 +21,16 @@
 namespace G3D {
 
 Vector3	CollisionDetection::ignore;
+Array<Vector3> CollisionDetection::ignoreArray;
 
 float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
     const Sphere&   sphere,
     const Box&      box,
     Array<Vector3>& contactPoints,
-    Vector3&        outNormal) {
+    Array<Vector3>& contactNormals) {
 
     contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+    contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
 
     // In its local coordinate frame, the box measures
     // 2 * halfExtent[a] along dimesion a.
@@ -122,12 +124,11 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
     // the box.
 
     double depth = -1;
-
     switch (numNonZero) {
     case 3: // Vertex collision
         // The collision point is the vertex at constant, the normal
         // is the vector from there to the sphere center.
-        outNormal = boxFrame.normalToWorldSpace(constant - center);
+        contactNormals.append(boxFrame.normalToWorldSpace(constant - center));
         contactPoints.append(boxFrame.pointToWorldSpace(constant));
         depth = sphere.radius - sqrt(d2);
         break;
@@ -145,27 +146,29 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
 
             // The contact point is the closes point to the sphere on the line 
             Vector3 X = line.closestPoint(center);
-            outNormal = boxFrame.normalToWorldSpace(X - center).direction();
+            contactNormals.append(boxFrame.normalToWorldSpace(X - center).direction());
             contactPoints.append(boxFrame.pointToWorldSpace(X));
         }
         break;
 
     case 1: // Plane collision
+        {
+            // The plane normal is the centerRegion vector,
+            // so the sphere normal is the negative.  Take
+            // it to world space from box-space.
 
-        // The plane normal is the centerRegion vector,
-        // so the sphere normal is the negative.  Take
-        // it to world space from box-space.
+            // Center region doesn't need to be normalized because
+            // it is known to contain only one non-zero value
+            // and that value is +/- 1.
+            Vector3 N = boxFrame.normalToWorldSpace(-centerRegion);
+            contactNormals.append(N);
 
-        // Center region doesn't need to be normalized because
-        // it is known to contain only one non-zero value
-        // and that value is +/- 1.
-        outNormal = boxFrame.normalToWorldSpace(-centerRegion);
+            // Penetration depth:
+            depth = sphere.radius - sqrt(d2);
 
-        // Penetration depth:
-        depth = sphere.radius - sqrt(d2);
-
-        // Compute the contact point from the penetration depth
-        contactPoints.append(sphere.center + outNormal * (sphere.radius - depth));
+            // Compute the contact point from the penetration depth
+            contactPoints.append(sphere.center + N * (sphere.radius - depth));
+        }
         break;
 
     case 0: // Volume collision
@@ -190,9 +193,9 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
                 // Keep in mind that this is a normal to the sphere,
                 // so it is the inverse of the box normal.
                 if (center.x > 0) {
-                    outNormal = boxFrame.normalToWorldSpace(-Vector3::UNIT_X);
+                    contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::UNIT_X));
                 } else {
-                    outNormal = boxFrame.normalToWorldSpace(Vector3::UNIT_X);
+                    contactNormals.append(boxFrame.normalToWorldSpace(Vector3::UNIT_X));
                 }
                 depth = -distOutsideBox.x;
             } else {
@@ -205,9 +208,9 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
             // Keep in mind that this is a normal to the sphere,
             // so it is the inverse of the box normal.
             if (center.y > 0) {
-                outNormal = boxFrame.normalToWorldSpace(-Vector3::UNIT_Y);
+                contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::UNIT_Y));
             } else {
-                outNormal = boxFrame.normalToWorldSpace(Vector3::UNIT_Y);
+                contactNormals.append(boxFrame.normalToWorldSpace(Vector3::UNIT_Y));
             }
             depth = -distOutsideBox.y;
         } else {
@@ -217,9 +220,9 @@ ZAXIS:
             // Keep in mind that this is a normal to the sphere,
             // so it is the inverse of the box normal.
             if (center.z > 0) {
-                outNormal = boxFrame.normalToWorldSpace(-Vector3::UNIT_Z);
+                contactNormals.append(boxFrame.normalToWorldSpace(-Vector3::UNIT_Z));
             } else {
-                outNormal = boxFrame.normalToWorldSpace(Vector3::UNIT_Z);
+                contactNormals.append(boxFrame.normalToWorldSpace(Vector3::UNIT_Z));
             }
             depth = -distOutsideBox.z;
         }
@@ -238,7 +241,7 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
     const Sphere&           sphereA,
     const Sphere&           sphereB,
     Array<Vector3>&         contactPoints,
-    Vector3&                outNormalA) {
+    Array<Vector3>&         contactNormals) {
 
     Vector3 axis = sphereB.center - sphereA.center;
     double radius = sphereA.radius + sphereB.radius;
@@ -246,10 +249,12 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
     axis /= len;
     double depth = -(len - radius);
 
+    contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+    contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+
     if (depth >= 0) {
-        contactPoints.resize(1, DONT_SHRINK_UNDERLYING_ARRAY);
-        contactPoints[0] = sphereA.center + axis * (sphereA.radius - depth / 2);
-        outNormalA = axis;
+        contactPoints.append(sphereA.center + axis * (sphereA.radius - depth / 2));
+        contactNormals.append(axis);
     }
 
     return depth;
@@ -260,7 +265,7 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
     const Sphere&           sphereA,
     const Plane&            planeB,
     Array<Vector3>&         contactPoints,
-    Vector3&                outNormalA) {
+    Array<Vector3>&         contactNormals) {
 
     Vector3 N;
     double d;
@@ -269,10 +274,12 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
     
     double depth = -(sphereA.center.dot(N) + d - sphereA.radius);
 
+    contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+    contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+
     if (depth >= 0) {
-        contactPoints.resize(1, DONT_SHRINK_UNDERLYING_ARRAY);
-        contactPoints[0] = N * (-depth - d) + sphereA.center;
-        outNormalA = -N;
+        contactPoints.append(N * (-depth - d) + sphereA.center);
+        contactNormals.append(-N);
     }
 
     return depth;
@@ -283,12 +290,15 @@ float CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
     const Box&          box,
     const Plane&        plane,
     Array<Vector3>&     contactPoints,
-    Vector3&            outNormal) {
+    Array<Vector3>&     contactNormals) {
 
     Vector3 N;
     double d;
     
     plane.getEquation(N, d);
+
+    contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
+    contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
 
     double lowest = inf;
     for (int i = 0; i < 8; ++i) {
@@ -299,19 +309,14 @@ float CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
         if (x <= 0) {
             // All vertices below the plane should be contact points.
             contactPoints.append(vertex);
+            contactNormals.append(-N);
         }
 
         lowest = min(lowest, x);
     }
 
     // Depth should be a positive number
-    lowest = -lowest;
-
-    if (lowest >= 0) {
-        outNormal = -N;
-    }
-
-    return lowest;
+    return -lowest;
 }
 
 

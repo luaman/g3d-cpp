@@ -762,12 +762,12 @@ void testCollision() {
         Sphere s(Vector3(0,1,0), 1);
         Plane  p = Plane::fromEquation(0,1,0,0);
         Array<Vector3> contact;
-        Vector3 outNormal;
+        Array<Vector3> outNormal;
 
         float depth = CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
             s, p, contact, outNormal);
 
-        debugAssert(outNormal == -p.normal());
+        debugAssert(outNormal[0] == -p.normal());
         debugAssert(depth == 0);
 
         s = Sphere(Vector3(0,2,0), 1);
@@ -782,12 +782,12 @@ void testCollision() {
         Sphere s(Vector3(0,1,0), 1);
         Sphere r(Vector3(0,-.5,0), 1);
         Array<Vector3> contact;
-        Vector3 outNormal;
+        Array<Vector3> outNormal;
 
         float depth = CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
             s, r, contact, outNormal);
 
-        debugAssert(outNormal == Vector3(0,-1,0));
+        debugAssert(outNormal[0] == Vector3(0,-1,0));
         debugAssert(depth == .5);
     }
 

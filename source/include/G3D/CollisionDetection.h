@@ -8,9 +8,9 @@
   @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2004-01-04
+  @edited  2004-01-26
 
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
 
@@ -58,6 +58,7 @@ private:
 
 	/** Provides the default argument for the location parameter */
 	static Vector3 ignore;
+    static Array<Vector3> ignoreArray;
 
     // Static class!
     CollisionDetection() {}
@@ -73,32 +74,32 @@ public:
      depending on their relative orientations.
      */
     static float penetrationDepthForFixedSphereFixedSphere(
-        const class Sphere&     sphereA,
-        const Sphere&           sphereB,
-        Array<Vector3>&         contactPoints,
-        Vector3&                outNormalA = ignore);
+        const class Sphere& sphereA,
+        const Sphere&       sphereB,
+        Array<Vector3>&     contactPoints,
+        Array<Vector3>&     contactNormals = ignoreArray);
     
     /**
      @cite Adapted from Jim Arvo's method in Graphics Gems
      TODO: See also http://www.win.tue.nl/~gino/solid/gdc2001depth.pdf
      */
     static float penetrationDepthForFixedSphereFixedBox(
-        const Sphere&   sphere,
-        const Box&      box,
-        Array<Vector3>& contactPoints,
-        Vector3&        outNormal);
+        const Sphere&       sphere,
+        const Box&          box,
+        Array<Vector3>&     contactPoints,
+        Array<Vector3>&     contactNormals = ignoreArray);
                                                                  
     static float penetrationDepthForFixedSphereFixedPlane(
-        const Sphere&           sphereA,
-        const class Plane&      planeB,
-        Array<Vector3>&         contactPoints,
-        Vector3&                outNormalA = ignore);
+        const Sphere&       sphereA,
+        const class Plane&  planeB,
+        Array<Vector3>&     contactPoints,
+        Array<Vector3>&     contactNormals = ignoreArray);
 
     static float penetrationDepthForFixedBoxFixedPlane(
         const Box&          box,
         const Plane&        plane,
         Array<Vector3>&     contactPoints,
-        Vector3&            outNormalA = ignore);
+        Array<Vector3>&     contactNormals = ignoreArray);
     
     /**
      Returns the amount of time until the point intersects the plane 
@@ -123,7 +124,7 @@ public:
     static float collisionTimeForMovingPointFixedTriangle(
         const Vector3&			point,
         const Vector3&			velocity,
-        const Triangle&       triangle,
+        const Triangle&         triangle,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
