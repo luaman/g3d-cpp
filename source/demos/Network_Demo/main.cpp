@@ -52,7 +52,8 @@ App::App(const GAppSettings& settings) : GApp(settings),
     renderDevice->setCaption("G3D Network Demo");
 }
 
-    
+void showError(const std::string& s1, const std::string& s2, RenderDevice* rd, GFontRef font);
+
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
@@ -67,6 +68,8 @@ void App::main() {
     Client client(this);
 
     while (! endProgram) {
+        bool error = false;
+
         // First browse for a server (or start our own).
         browse.run();
 
@@ -78,20 +81,30 @@ void App::main() {
             // Start a server
             hostingServer = new Server(this);
 
-            // Connect to that server
-            client.selectedServer = hostingServer->advertisement;
+            if (hostingServer->ok()) {
+                // Connect to that server
+                client.selectedServer = hostingServer->advertisement;
 
-            Array<NetAddress> myAddresses;
-            networkDevice->localHostAddresses(myAddresses);
-            client.selectedServer.address = NetAddress(myAddresses[0].ip(), GAME_PORT);
+                Array<NetAddress> myAddresses;
+                networkDevice->localHostAddresses(myAddresses);
+                client.selectedServer.address = NetAddress(myAddresses[0].ip(), GAME_PORT);
+            } else {
+                showError(
+                    "Unable to create a server.",
+                    "(Maybe there is already a server running on this machine.)",
+                    renderDevice, font);
+                error = true;
+            }
         } else {
             // Overwrite the port
             client.selectedServer = browse.selectedServer;
             client.selectedServer.address = NetAddress(client.selectedServer.address.ip(), GAME_PORT);
         }
 
-        // Now enter the world as a client (our own server runs in the background)
-        client.run();
+        if (! error) {
+            // Now enter the world as a client (our own server runs in the background)
+            client.run();
+        }
 
         debugController.setActive(false);
 
@@ -100,5 +113,21 @@ void App::main() {
             delete hostingServer;
             hostingServer = NULL;
         }
+    }
+}
+
+
+void showError(const std::string& s1, const std::string& s2, RenderDevice* rd, GFontRef font) {
+    RealTime t0 = System::time();
+
+    double w = rd->getWidth();
+    while (System::time() < t0 + 4) {
+        rd->beginFrame();
+            rd->clear();
+            rd->push2D();
+                font->draw2D(s1, Vector2(w/2, 100), 30, Color3::cyan(), Color3::black(), GFont::XALIGN_CENTER);
+                font->draw2D(s2, Vector2(w/2, 200), 20, Color3::cyan(), Color3::black(), GFont::XALIGN_CENTER);
+            rd->pop2D();
+        rd->endFrame();
     }
 }
