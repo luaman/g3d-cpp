@@ -1049,7 +1049,7 @@ public:
 			    // (the pre child). Therefore it is critical that
 			    // the correct child is gone too.
 			    if (splitTime <= minTime) {
-				    splitTime = inf;
+				    splitTime = inf();
 			    }
 			    
 			    startTime = minTime;
@@ -1259,7 +1259,7 @@ public:
                             // TODO: store t-squared 
                             t2 = (location - ray.origin).squaredLength();
                         } else {
-                            t2 = inf;
+                            t2 = inf();
                         }
 
 				        //t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
@@ -1345,7 +1345,7 @@ public:
             double&     firstTime) {
 
            firstObject   = NULL;
-           firstDistance = inf;
+           firstDistance = inf();
 
            typedef AABSPTree<Object*>::RayIntersectionIterator IT;
            const IT end = tree.endRayIntersection();
