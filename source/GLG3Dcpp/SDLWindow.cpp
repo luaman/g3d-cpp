@@ -37,6 +37,8 @@ namespace G3D {
 
 #ifdef G3D_WIN32
 int screenWidth() {
+    return GetSystemMetrics(SM_CXFULLSCREEN);
+    /*
     int w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 
     if (w == 0) {
@@ -45,10 +47,13 @@ int screenWidth() {
     } else {
         return w;
     }
+    */
 }
 
 
 int screenHeight() {
+    return GetSystemMetrics(SM_CYFULLSCREEN);
+    /*
     int h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
     if (h == 0) {
@@ -57,6 +62,7 @@ int screenHeight() {
     } else {
         return h;
     }
+    */
 }
 #endif
 
@@ -207,7 +213,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
             int y = iClamp(settings.y, 0, H);
 
             if (settings.center) {
-                x = (W  - settings.width) / 2;
+                x = (W - settings.width) / 2;
                 y = (H - settings.height) / 2;
             }
 

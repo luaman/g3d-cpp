@@ -282,11 +282,19 @@ void App::main() {
 }
 
 App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
-
+//App::App(const GAppSettings& settings) : GApp(settings) {
+    /*
+    try {
+        window()->setIcon("D:/media/VB/ICONS/OFFICE/clip07.ico");
+    } catch (GImage::Error e){
+        debugAssertM(false, e.reason);
+    }
+    */
 }
 
 int main(int argc, char** argv) {
     GAppSettings settings;
+    settings.window.fsaaSamples = 4;
     App(settings).run();
 
     return 0;

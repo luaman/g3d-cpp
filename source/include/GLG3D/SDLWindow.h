@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-04-25
+  @edited  2004-09-25
 */
 
 #ifndef G3D_SDLWINDOW_H
@@ -26,6 +26,9 @@ namespace G3D {
 /**
  An implementation of G3D::Window that uses the Open Source SDL library.
  Works on Windows, Linux, and OS/X.
+
+ On Windows, centering is relative to the primary monitor and full-screen
+ means on the primary monitor.
 
  <B>Beta API!  This interface is experimental and is subject to change.</B>
  */

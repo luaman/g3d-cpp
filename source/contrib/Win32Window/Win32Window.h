@@ -42,8 +42,12 @@ private:
 	/** Called from both constructors */
 	void init(HWND hwnd);
 
-    /** Initializes the WGL extensions by creating and then destroying a window.  Also registers
-        our window class.*/
+    /** Initializes the WGL extensions by creating and then destroying a window.  
+        Also registers our window class.  
+    
+        It is necessary to create a dummy window to avoid a catch-22 in the Win32
+        API: fsaa window creation is supported through a WGL extension, but WGL 
+        extensions can't be called until after a window has already been created. */
     static void initWGL();
 
 public:

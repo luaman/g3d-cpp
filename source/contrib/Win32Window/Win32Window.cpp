@@ -23,83 +23,6 @@
 
 static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
-/** Creates an invisible window so we can check pixel formats, then closes that
-    window */
-void Win32Window::initWGL() {
-    std::string name = "G3D";
-    WNDCLASS window_class;
-    
-    window_class.style         = CS_HREDRAW | CS_VREDRAW;
-    window_class.lpfnWndProc   = window_proc;
-    window_class.cbClsExtra    = 0; 
-    window_class.cbWndExtra    = 0;
-    window_class.hInstance     = GetModuleHandle(NULL);
-    window_class.hIcon         = LoadIcon(NULL, IDI_APPLICATION); 
-    window_class.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    window_class.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    window_class.lpszMenuName  = name.c_str();
-    window_class.lpszClassName = "window"; 
-    
-    int ret = RegisterClass(&window_class);
-	alwaysAssertM(ret, "Registration Failed");
-
-    // Create some dummy pixel format.  Doesn't matter much.
-	PIXELFORMATDESCRIPTOR pfd =	
-    {
-		sizeof (PIXELFORMATDESCRIPTOR),									// Size Of This Pixel Format Descriptor
-		1,																// Version Number
-		PFD_DRAW_TO_WINDOW |											// Format Must Support Window
-		PFD_SUPPORT_OPENGL |											// Format Must Support OpenGL
-		PFD_DOUBLEBUFFER,												// Must Support Double Buffering
-		PFD_TYPE_RGBA,													// Request An RGBA Format
-		24,		                        								// Select Our Color Depth
-		0, 0, 0, 0, 0, 0,												// Color Bits Ignored
-		1,																// Alpha Buffer
-		0,																// Shift Bit Ignored
-		0,																// No Accumulation Buffer
-		0, 0, 0, 0,														// Accumulation Bits Ignored
-		16,																// 16Bit Z-Buffer (Depth Buffer)  
-		0,																// No Stencil Buffer
-		0,																// No Auxiliary Buffer
-		PFD_MAIN_PLANE,													// Main Drawing Layer
-		0,																// Reserved
-		0, 0, 0															// Layer Masks Ignored
-	};
-
-    HWND hWnd = CreateWindow("window", "", 0, 0, 0, 100, 100, NULL, NULL, GetModuleHandle(NULL), NULL);
-    debugAssert(hWnd);
-
-    HDC  hDC  = GetDC(hWnd);
-    debugAssert(hDC);
-    
-	int pixelFormat = ChoosePixelFormat(hDC, &pfd);
-    debugAssert(pixelFormat);
-
-    if (SetPixelFormat(hDC, pixelFormat, &pfd) == FALSE) {
-        debugAssertM(false, "Failed to set pixel format");
-	}
-
-	HGLRC hRC = wglCreateContext(hDC);
-    debugAssert(hRC);
-
-	if (wglMakeCurrent(hDC, hRC) == FALSE)	{
-        debugAssertM(false, "Failed to set context");
-	}
-
-    // We've now brought OpenGL online.  Grab the pointers we need and 
-    // destroy everything.
-
-    wglChoosePixelFormatARB =
-        (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-
-    // Now destroy everything
-    wglDeleteContext(hRC);					
-    hRC = 0;	
-	ReleaseDC(hWnd, hDC);	
-	hWnd = 0;				
-	DestroyWindow(hWnd);			
-	hWnd = 0;
-}
 
 
 /** Changes the screen resolution */
@@ -624,4 +547,83 @@ void Win32Window::setInputCapture(bool c) {
 			ClipCursor(NULL);
 		}
 	}
+}
+
+
+/** Creates an invisible window so we can check pixel formats, then closes that
+    window */
+void Win32Window::initWGL() {
+    std::string name = "G3D";
+    WNDCLASS window_class;
+    
+    window_class.style         = CS_HREDRAW | CS_VREDRAW;
+    window_class.lpfnWndProc   = window_proc;
+    window_class.cbClsExtra    = 0; 
+    window_class.cbWndExtra    = 0;
+    window_class.hInstance     = GetModuleHandle(NULL);
+    window_class.hIcon         = LoadIcon(NULL, IDI_APPLICATION); 
+    window_class.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    window_class.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    window_class.lpszMenuName  = name.c_str();
+    window_class.lpszClassName = "window"; 
+    
+    int ret = RegisterClass(&window_class);
+	alwaysAssertM(ret, "Registration Failed");
+
+    // Create some dummy pixel format.  Doesn't matter much.
+	PIXELFORMATDESCRIPTOR pfd =	
+    {
+		sizeof (PIXELFORMATDESCRIPTOR),									// Size Of This Pixel Format Descriptor
+		1,																// Version Number
+		PFD_DRAW_TO_WINDOW |											// Format Must Support Window
+		PFD_SUPPORT_OPENGL |											// Format Must Support OpenGL
+		PFD_DOUBLEBUFFER,												// Must Support Double Buffering
+		PFD_TYPE_RGBA,													// Request An RGBA Format
+		24,		                        								// Select Our Color Depth
+		0, 0, 0, 0, 0, 0,												// Color Bits Ignored
+		1,																// Alpha Buffer
+		0,																// Shift Bit Ignored
+		0,																// No Accumulation Buffer
+		0, 0, 0, 0,														// Accumulation Bits Ignored
+		16,																// 16Bit Z-Buffer (Depth Buffer)  
+		0,																// No Stencil Buffer
+		0,																// No Auxiliary Buffer
+		PFD_MAIN_PLANE,													// Main Drawing Layer
+		0,																// Reserved
+		0, 0, 0															// Layer Masks Ignored
+	};
+
+    HWND hWnd = CreateWindow("window", "", 0, 0, 0, 100, 100, NULL, NULL, GetModuleHandle(NULL), NULL);
+    debugAssert(hWnd);
+
+    HDC  hDC  = GetDC(hWnd);
+    debugAssert(hDC);
+    
+	int pixelFormat = ChoosePixelFormat(hDC, &pfd);
+    debugAssert(pixelFormat);
+
+    if (SetPixelFormat(hDC, pixelFormat, &pfd) == FALSE) {
+        debugAssertM(false, "Failed to set pixel format");
+	}
+
+	HGLRC hRC = wglCreateContext(hDC);
+    debugAssert(hRC);
+
+	if (wglMakeCurrent(hDC, hRC) == FALSE)	{
+        debugAssertM(false, "Failed to set context");
+	}
+
+    // We've now brought OpenGL online.  Grab the pointers we need and 
+    // destroy everything.
+
+    wglChoosePixelFormatARB =
+        (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+
+    // Now destroy everything
+    wglDeleteContext(hRC);					
+    hRC = 0;	
+	ReleaseDC(hWnd, hDC);	
+	hWnd = 0;				
+	DestroyWindow(hWnd);			
+	hWnd = 0;
 }
