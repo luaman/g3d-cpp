@@ -50,6 +50,7 @@
    <P>
    Changes in 6.00:
    <UL>
+     <LI> Array::sortSubArray
      <LI> GCamera::getClipPlanes now takes a G3D::Array
      <LI> G3D::AABox
      <LI> Box::randomInteriorPoint, Box::randomSurfacePoint
@@ -216,6 +217,7 @@
      <LI> Decreased the default camera movement rate by 50% for better resolution.
      <LI> RenderDevice enables GL_NORMALIZE by default
      <LI> Improved the performance of Array::append/Array::push/Array::next
+	 <LI> Fix: [ 875219 ] Array::sort must use std::sort
      <LI> Array::next
      <LI> Array::reverse
      <LI> PCX file loading

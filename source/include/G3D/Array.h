@@ -5,9 +5,9 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2004-01-10
+  @edited  2004-01-13
 
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
 
@@ -17,6 +17,7 @@
 #include "G3D/platform.h"
 #include "G3D/debug.h"
 #include "G3D/System.h"
+#include <algorithm>
 
 #ifdef G3D_WIN32
     #include <new.h>
@@ -102,22 +103,10 @@ private:
 
 
     /** Only compiled if you use the sort procedure. */
-    static int __cdecl compareGT(const void* a, const void* b) {
-        if ((*(T*)a) > (*(T*)b)) {
-            return 1;
-        } else {
-            return -1;
-        }
+    static bool __cdecl compareGT(const T& a, const T& b) {
+        return a > b;
     }
 
-    /** Only compiled if you use the sort procedure. */
-    static int __cdecl compareLT(const void* a, const void* b) {
-        if ((*(T*)a) > (*(T*)b)) {
-            return -1;
-        } else {
-            return 1;
-        }
-    }
 
     /**
      Allocates a new array of size numAllocated and copys at most
@@ -563,17 +552,46 @@ public:
         }
     }
 
-    void sort(int (__cdecl *compare)(const T* elem1, const T* elem2)) {
-        // Sort the array
-        qsort(data, num, sizeof(T), (int(__cdecl*)(const void*, const void*))compare);
+    void sort(bool (__cdecl *lessThan)(const T& elem1, const T& elem2)) {
+        std::sort(data, data + num, lessThan);
     }
 
 
-    void sort(int (__cdecl *compare)(const void* elem1, const void* elem2)) {
-        // Sort the array
-        qsort(data, num, sizeof(T), compare);
+    /**
+     Sorts the array in increasing order using the > or < operator.  To 
+     invoke this method on Array<T>, T must override those operator.
+     You can overide these operators as follows:
+     <code>
+        bool T::operator>(const T& other) const {
+           return ...;
+        }
+        bool T::operator<(const T& other) const {
+           return ...;
+        }
+     </code>
+     */
+    void sort(int direction=SORT_INCREASING) {
+        if (direction == SORT_INCREASING) {
+            std::sort(data, data + num);
+        } else {
+            std::sort(data, data + num, compareGT);
+        }
     }
 
+    /**
+     Sorts elements beginIndex through and including endIndex.
+     */
+    void sortSubArray(int beginIndex, int endIndex, int direction=SORT_INCREASING) {
+        if (direction == SORT_INCREASING) {
+            std::sort(data + beginIndex, data + endIndex + 1);
+        } else {
+            std::sort(data + beginIndex, data + endIndex + 1, compareGT);
+        }
+    }
+
+    void sortSubArray(int beginIndex, int endIndex, bool (__cdecl *lessThan)(const T& elem1, const T& elem2)) {
+        std::sort(data + beginIndex, data + endIndex + 1, lessThan);
+    }
 
     /** Redistributes the elements so that the new order is statistically independent
         of the original order. O(n) time.*/
@@ -586,19 +604,6 @@ public:
         }
     }
 
-    /**
-     Sorts the array in increasing order using the > operator.  To 
-     invoke this method on Array<T>, T must override that operator.
-     You can overide the > operator as follows:
-     <code>
-        bool T::operator>(const T& other) const {
-           return ...;
-        }
-     </code>
-     */
-    void sort(int direction=SORT_INCREASING) {
-        qsort(data, num, sizeof(T), (direction == SORT_INCREASING) ? compareGT : compareLT);
-    }
 };
 
 } // namespace
