@@ -464,8 +464,8 @@ void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
         } else {
 
             // No VAR available; use the default rendering path
+            glFrontFace(GL_CW);
 
-            renderDevice->setCullFace(RenderDevice::CULL_FRONT);
             for (int p = 0; p < primitiveArray.size(); ++p) {
     
                 const Primitive&          primitive = primitiveArray[p];
@@ -485,6 +485,7 @@ void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
                     }
                 renderDevice->endPrimitive();
             }
+            glFrontFace(GL_CCW);
         }
 
     renderDevice->popState();

@@ -201,6 +201,8 @@ public:
 
     Matrix4 operator*(const Matrix4& other) const;
 
+    void setRow(int r, const Vector4& v);
+
     Matrix4 operator*(const double s) const;
 
     Vector4 operator*(const Vector4& vector) const;

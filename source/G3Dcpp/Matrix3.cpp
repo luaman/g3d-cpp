@@ -1591,6 +1591,13 @@ Matrix4::Matrix4() {
 }
 
 
+void Matrix4::setRow(int r, const Vector4& v) {
+    for (int c = 0; c < 4; ++c) {
+        elt[r][c] = v[c];
+    }
+}
+
+
 const float* Matrix4::operator[](int r) const {
     debugAssert(r >= 0);
     debugAssert(r < 4);
