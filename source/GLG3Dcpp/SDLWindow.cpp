@@ -390,7 +390,7 @@ void SDLWindow::getJoystickState(
     Array<float>&   axis,
     Array<bool>&    button) {
 
-    debugAssert(stickNum < joy.size());
+    debugAssert(stickNum < ((unsigned int) joy.size()));
 
     SDL_Joystick* sdlstick = joy[stickNum];
 
@@ -409,7 +409,7 @@ void SDLWindow::getJoystickState(
 
 
 std::string SDLWindow::joystickName(unsigned int sticknum) {
-    debugAssert(sticknum < joy.size());
+    debugAssert(sticknum < ((unsigned int) joy.size()));
     return SDL_JoystickName(sticknum);
 }
 
