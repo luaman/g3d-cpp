@@ -179,7 +179,11 @@ void wxGWindow::setRelativeMousePosition (const Vector2 &p) {
 }
 
 void wxGWindow::getRelativeMouseState (Vector2 &position, uint8 &mouseButtons) const {
-    // TODO
+    
+    int _x, _y;
+    getRelativeMouseState(_x, _y, mouseButtons);
+    position.x = (float)_x;
+    position.y = (float)_y;
 }
 
 void wxGWindow::getRelativeMouseState (int &x, int &y, uint8 &mouseButtons) const {
