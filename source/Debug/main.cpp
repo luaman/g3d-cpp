@@ -77,6 +77,8 @@ void Demo::doGraphics() {
     app->debugPrintf("Use app->debugPrintf to print text");
     app->debugPrintf("to this overlay window.");
 
+    app->debugPrintf("%g s", System::getTick());
+
 }
 
 
@@ -93,9 +95,6 @@ int main(int argc, char** argv) {
     char* choice[] = {"Ok"}; 
     prompt("Test", "Test", (const char**)choice, 1);
 
-
-
-    debugAssert(false);
     app.setDebugMode(true);
     app.debugController->setActive(true);
 
