@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-02-19
+ @edited  2003-04-10
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -56,7 +56,7 @@ extern PFNGLCLIENTACTIVETEXTUREARBPROC     glClientActiveTextureARB;
 extern PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV;
 extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC    glCompressedTexImage2DARB;
 extern PFNGLGETCOMPRESSEDTEXIMAGEARBPROC   glGetCompressedTexImageARB;
-
+extern PFNGLISPROGRAMARBPROC               glIsProgram;
 
 typedef BOOL (APIENTRY * PFNWGLGLSWAPINTERVALEXTPROC) (GLint interval);
 typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int* piFormats, UINT* nNumFormats);

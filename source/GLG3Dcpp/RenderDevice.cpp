@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-04-07
+ @edited  2003-04-10
  */
 
 
@@ -53,6 +53,8 @@ PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB             = NU
 PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB              = NULL;
 PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NULL;
 PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
+PFNGLISPROGRAMARBPROC                       glIsProgramARB                  = NULL;
+
 namespace G3D {
 
 static void frustum(
