@@ -171,6 +171,35 @@ Vector3 Vector3::reflectAbout(const Vector3& normal) const {
 }
 
 //----------------------------------------------------------------------------
+
+Vector3 Vector3::reflectionDirection(const Vector3&  normal) const {
+    return -reflectAbout(normal).direction();
+}
+
+//----------------------------------------------------------------------------
+
+Vector3 Vector3::refractionDirection(
+    const Vector3&  normal,
+    double          h1,
+    double          h2) const {
+
+    // From pg. 24 of Henrik Wann Jensen. Realistic Image Synthesis
+    // Using Photon Mapping.  AK Peters. ISBN: 1568811470. July 2001.
+
+    const Vector3 W = -this->direction();
+    const Vector3 N = normal.direction();
+
+    double det = (1 - square(h1 / h2)) * (1 - square(W.dot(N)));
+
+    if (det < 0) {
+        // Total internal reflection
+        return Vector3::ZERO;
+    } else {
+        return (h1 / h2) * (W - W.dot(N) * N) + N * sqrt(det);
+    }
+}
+
+//----------------------------------------------------------------------------
 void Vector3::orthonormalize (Vector3 akVector[3]) {
     // If the input vectors are v0, v1, and v2, then the Gram-Schmidt
     // orthonormalization produces vectors u0, u1, and u2 as follows,

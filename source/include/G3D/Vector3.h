@@ -25,7 +25,6 @@ class Vector3;
 class Vector4;
 
 /**
-
   <B>Swizzles</B>
  Vector classes have swizzle operators, e.g. <CODE>v.xy()</CODE>, that
  allow selection of arbitrary sub-fields.  These cannot be used as write 
@@ -140,9 +139,46 @@ public:
           \  |  /
             \|/
      </PRE>
+
+     See also Vector3::reflectionDirection
      */
     Vector3 reflectAbout(const Vector3& normal) const;
+
+    /**
+     Returns -reflectAbout(normal).  The length is 1. 
+     <PRE>
+       V'    N       V
+                 
+         r   ^    /
+          \  |  /
+            \|'-
+     </PRE>
+     */
+    Vector3 reflectionDirection(const Vector3& normal) const;
     
+    /**
+     Returns the direction of a refracted ray,
+     where iExit is the index of refraction for the
+     previous material and iEnter is the index of refraction
+     for the new material.  Like Vector3::reflectionDirection,
+     the result has length 1 and is 
+     pointed <I>away</I> from the intersection.
+
+     Returns Vector3::ZERO in the case of total internal refraction.
+
+     <PRE>
+              N      V
+                  
+              ^    /
+              |  /
+              |'-
+          __--
+     V'<--
+     </PRE>
+     */
+    Vector3 refractionDirection(const Vector3& normal,
+        double iExit, double iEnter) const;
+
     inline Vector3 unit() const {
         return direction();
     }
