@@ -109,25 +109,12 @@ static void createTexture(
     case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
     case GL_TEXTURE_2D:
-        if (! isPow2(width) || ! isPow2(height)) {
+        if ((! isPow2(width) || ! isPow2(height)) && 
+            (! GLCaps::supports_GL_ARB_texture_non_power_of_two())) {
 
             alwaysAssertM(! compressed,
                 "Compressed texture data must be power-of-two size.");
 
-            /*
-            // Supported formats as defined by: http://developer.3dlabs.com/openGL/glu_man_pages.pdf
-            alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
-                (bytesFormat == GL_STENCIL_INDEX) ||
-                (bytesFormat == GL_DEPTH_COMPONENT) ||
-                (bytesFormat == GL_RED) ||
-                (bytesFormat == GL_GREEN) ||
-                (bytesFormat == GL_BLUE) ||
-                (bytesFormat == GL_ALPHA) ||
-                (bytesFormat == GL_RGB) ||
-                (bytesFormat == GL_RGBA) ||
-                (bytesFormat == GL_LUMINANCE) ||
-                (bytesFormat == GL_LUMINANCE_ALPHA), "Invalid bytesFormat for gluScaleImage in createTexture.");
-*/
             int oldWidth = width;
             int oldHeight = height;
             width  = ceilPow2(width);
@@ -156,36 +143,14 @@ static void createTexture(
 
         if (compressed) {
             
-            alwaysAssertM((target != GL_TEXTURE_RECTANGLE_EXT),
-                "Compressed texture data must be loaded into a DIM_2D texture.");
+            if (!GLCaps::supports_GL_ARB_texture_non_power_of_two()) {
+                alwaysAssertM((target != GL_TEXTURE_RECTANGLE_EXT),
+                    "Compressed texture data must be loaded into a DIM_2D texture.");
+            }
 
             glCompressedTexImage2DARB(target, mipLevel, bytesActualFormat, width, height, 0, (bytesPerPixel * ((width + 3) / 4) * ((height + 3) / 4)), rawBytes);
             break;
         }
-
-        // Supported formats as defined by: http://developer.3dlabs.com/GLmanpages/glteximage2d.htm
-        // textureFormat should throw a proper GL_INVALID_ENUM error, but might need checking also
-        /*
-        alwaysAssertM(
-            (bytesFormat == GL_COLOR_INDEX) ||
-            (bytesFormat == GL_RED) ||
-            (bytesFormat == GL_GREEN) ||
-            (bytesFormat == GL_BLUE) ||
-            (bytesFormat == GL_ALPHA) ||
-            (bytesFormat == GL_RGB) ||
-            (bytesFormat == GL_RGBA) ||
-            (bytesFormat == GL_LUMINANCE) ||
-            (bytesFormat == GL_LUMINANCE_ALPHA) ||
-            (bytesFormat == GL_BGR_EXT) ||
-            (bytesFormat == GL_BGRA_EXT) ||
-            (bytesFormat == GL_422_EXT) ||
-            (bytesFormat == GL_422_REV_EXT) ||
-            (bytesFormat == GL_422_AVERAGE_EXT) ||
-            (bytesFormat == GL_422_REV_AVERAGE_EXT) ||
-            (bytesFormat == GL_DEPTH_COMPONENT16_ARB) ||
-            (bytesFormat == GL_DEPTH_COMPONENT24_ARB) || 
-            (bytesFormat == GL_DEPTH_COMPONENT32_ARB), 
-            "Invalid bytesFormat for glTexImage2D in createTexture.");*/
 
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
         // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
@@ -220,19 +185,6 @@ static void createMipMapTexture(
     case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
         {
-            // Supported formats as defined by: http://developer.3dlabs.com/openGL/glu_man_pages.pdf
-            alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
-                (bytesFormat == GL_STENCIL_INDEX) ||
-                (bytesFormat == GL_DEPTH_COMPONENT) ||
-                (bytesFormat == GL_RED) ||
-                (bytesFormat == GL_GREEN) ||
-                (bytesFormat == GL_BLUE) ||
-                (bytesFormat == GL_ALPHA) ||
-                (bytesFormat == GL_RGB) ||
-                (bytesFormat == GL_RGBA) ||
-                (bytesFormat == GL_LUMINANCE) ||
-                (bytesFormat == GL_LUMINANCE_ALPHA), "Invalid bytesFormat for gluScaleImage in createTexture.");
-
             int r = gluBuild2DMipmaps(target, textureFormat, width, height, bytesFormat, GL_UNSIGNED_BYTE, bytes);
             debugAssertM(r == 0, (const char*)gluErrorString(r)); (void)r;
             break;
@@ -748,7 +700,8 @@ TextureRef Texture::fromMemory(
         }
     glStatePop();
 
-    if (dimension != DIM_2D_RECT) {
+    if ((dimension != DIM_2D_RECT) &&
+        (!GLCaps::supports_GL_ARB_texture_non_power_of_two())) {
         width  = ceilPow2(width);
         height = ceilPow2(height);
     }

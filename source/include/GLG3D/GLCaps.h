@@ -44,6 +44,8 @@ namespace G3D {
   similarly to GLCaps::supports_GL_EXT_texture_rectangle():
 
   <UL>
+    <LI>GL_ARB_non_power_of_two
+    <LI>GL_EXT_texture_rectangle
     <LI>GL_ARB_vertex_program
     <LI>GL_NV_vertex_program2
     <LI>GL_ARB_vertex_buffer_object
@@ -109,6 +111,7 @@ private:
 
     // New extensions must be added in 3 places: 1. here.
     // 2. at the top of GLCaps.cpp.  3. underneath the LOAD_EXTENSION code.
+    DECLARE_EXT(GL_ARB_texture_non_power_of_two);
     DECLARE_EXT(GL_EXT_texture_rectangle);
     DECLARE_EXT(GL_ARB_vertex_program);
     DECLARE_EXT(GL_NV_vertex_program2);

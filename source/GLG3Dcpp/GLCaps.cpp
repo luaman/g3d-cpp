@@ -151,6 +151,7 @@ std::string GLCaps::getDriverVersion() {
 // We're going to need exactly the same code for each of 
 // several extensions.
 #define DECLARE_EXT(extname)    bool GLCaps::_supports_##extname = false; 
+    DECLARE_EXT(GL_ARB_texture_non_power_of_two);
     DECLARE_EXT(GL_EXT_texture_rectangle);
     DECLARE_EXT(GL_ARB_vertex_program);
     DECLARE_EXT(GL_NV_vertex_program2);
@@ -343,6 +344,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
         // We're going to need exactly the same code for each of 
         // several extensions.
         #define DECLARE_EXT(extname) _supports_##extname = supports(#extname)
+            DECLARE_EXT(GL_ARB_texture_non_power_of_two);
             DECLARE_EXT(GL_EXT_texture_rectangle);
             DECLARE_EXT(GL_ARB_vertex_program);
             DECLARE_EXT(GL_NV_vertex_program2);
