@@ -4,11 +4,12 @@
  @author Morgan McGuire, graphics3d.com
 
  @created 2000-09-09
- @edited  2003-02-15
+ @edited  2004-01-03
 */
 
 #include "G3D/format.h"
-#if _WIN32
+#include "G3D/platform.h"
+#ifdef G3D_WIN32
     #include <windows.h>
     #define vsnprintf _vsnprintf
     #define NEWLINE "\r\n"
@@ -36,7 +37,7 @@ std::string __cdecl format(const char* fmt,...) {
     return result;
 }
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
 
 // Windows uses the pre-C99 vsnprintf, which has different behavior
 std::string vformat(const char *fmt, va_list argPtr) {
@@ -115,7 +116,7 @@ std::string vformat(const char* fmt, va_list argPtr) {
 
 } // namespace
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
   #undef _vsnprintf
 #endif
 

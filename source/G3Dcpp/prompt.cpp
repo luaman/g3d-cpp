@@ -10,10 +10,11 @@
  */
 
 #include "G3D/prompt.h"
+#include "G3D/platform.h"
 
 #include <stdio.h>
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
     #include <windows.h>
     #include <strstream>
     #include <conio.h>
@@ -24,7 +25,7 @@
 
 namespace G3D {
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
 
 namespace _internal {
 /**
@@ -488,7 +489,7 @@ int prompt(
     int              numChoices,
     bool             useGui) {
 
-    #if _WIN32
+    #ifdef G3D_WIN32
         if (useGui) {
             // Build the message box
             return guiPrompt(windowTitle, prompt, choice, numChoices);
@@ -507,7 +508,7 @@ void msgBox(
     prompt(title.c_str(), message.c_str(), choice, 1, true); 
 }
 
-#ifndef _WIN32
+#ifndef G3D_WIN32
     #undef _getch
 #endif
 

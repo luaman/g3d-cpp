@@ -31,12 +31,13 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2003-11-17
+ @edited  2004-01-03
  */
 
 #ifndef NETWORKDEVICE_H
 #define NETWORKDEVICE_H
 
+#include "G3D/platform.h"
 #include <string>
 #include "G3D/g3dmath.h"
 #ifdef _WIN32

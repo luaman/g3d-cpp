@@ -3,10 +3,10 @@
 
  Windows implementation of assertion routines.
 
- @author Morgan McGuire, graphics3d.com
+ @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2003-08-04
+ @edited  2004-01-03
  */
 
 #include "G3D/debugAssert.h"
@@ -21,7 +21,7 @@
 #include "G3D/debugPrintf.h"
 #include "G3D/Log.h"
 
-#ifdef G3_WIN32
+#ifdef G3D_WIN32
     // disable: "C++ exception handler used"
     #pragma warning (disable : 4530)
 #endif
@@ -31,7 +31,7 @@ using namespace std;
 namespace G3D { namespace _internal {
 using namespace std;
 
-#if _WIN32
+#ifdef G3D_WIN32
 static void postToClipboard(const char *text) {
     if (OpenClipboard(NULL)) {
         HGLOBAL hMem = GlobalAlloc(GHND | GMEM_DDESHARE, strlen(text) + 1);
@@ -64,7 +64,7 @@ static void createErrorMessage(
     std::string le = "";
     char* newline = "\n";
 
-    #if _WIN32
+    #ifdef G3D_WIN32
         newline = "\r\n";
 
         // The last error value.  (Which is preserved across the call).
@@ -131,7 +131,7 @@ bool _handleDebugAssert_(
 
     createErrorMessage(expression, message, filename, lineNumber, dialogTitle, dialogText);
 
-    #if _WIN32
+    #ifdef G3D_WIN32
         DWORD lastErr = GetLastError();
         postToClipboard(dialogText.c_str());
     #endif
@@ -148,7 +148,7 @@ bool _handleDebugAssert_(
 
     int result = G3D::prompt(dialogTitle.c_str(), dialogText.c_str(), (const char**)choices, 4, useGuiPrompt);
 
-    #if _WIN32
+    #ifdef G3D_WIN32
         // Put the incoming last error back.
         SetLastError(lastErr);
     #endif

@@ -121,7 +121,7 @@ class VAR;
  Third, OpenGL intialization is complicated.  This interface
  simplifies it significantly.
 
- <P> On Windows (_WIN32) RenderDevice supports a getHDC() method that
+ <P> On Windows (G3D_WIN32) RenderDevice supports a getHDC() method that
  returns the HDC for the window.
 
  <P> NICEST line and point smoothing is enabled by default (however,
@@ -1220,7 +1220,7 @@ public:
         uint                textureUnit,
         TextureRef          reflectionTexture);
 
-    #ifdef _WIN32
+    #ifdef G3D_WIN32
         HDC getWindowHDC() const;
     #endif
 };

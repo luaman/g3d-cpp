@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@brown.edu
 
   @created 2003-08-09
-  @edited  2003-08-09
+  @edited  2004-01-03
  */
 
 #ifndef VECTOR2INT16_H

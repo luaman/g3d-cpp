@@ -7,10 +7,11 @@
  @edited  2003-06-24
  */
 
+#include "G3D/platform.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/fileutils.h"
 #include "G3D/stringutils.h"
-#ifdef _WIN32
+#ifdef G3D_WIN32
   #include "zlib/zlib.h"
 #else
   #include <zlib.h>

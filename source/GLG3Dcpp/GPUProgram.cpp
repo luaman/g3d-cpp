@@ -10,7 +10,7 @@
 #include "GLG3D/GPUProgram.h"
 #include "GLG3D/getOpenGLState.h"
 #include "G3D/debugAssert.h"
-
+#include "G3D/platform.h"
 #include "GLG3D/RenderDevice.h"
 
 namespace G3D {
@@ -337,7 +337,7 @@ LOADSHADER:
 
         text += "^";
 
-        #ifdef _WIN32
+        #ifdef G3D_WIN32
         {
             // Print the error message in MSVC format
             std::string fullFilename = resolveFilename(filename);

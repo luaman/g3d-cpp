@@ -7,6 +7,7 @@
  @edited  2003-11-15
  */
 
+#include "G3D/platform.h"
 #if defined(G3D_WIN32) && defined(SSE)
     #include <xmmintrin.h>
 #endif

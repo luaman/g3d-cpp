@@ -20,8 +20,9 @@
 #include <cstdarg>
 #include "G3D/format.h"
 #include <string>
+#include "G3D/platform.h"
 
-#ifndef _WIN32
+#ifndef G3D_WIN32
     #include <stdarg.h>
 #else
 	#include <windows.h>
@@ -48,7 +49,7 @@ namespace G3D {
         va_list argList;
         va_start(argList, fmt);
 
-        #if _WIN32
+        #ifdef G3D_WIN32
             const int MAX_STRING_LEN = 1024;
             std::string s = G3D::vformat(fmt, argList);
             // Windows can't handle really long strings sent to

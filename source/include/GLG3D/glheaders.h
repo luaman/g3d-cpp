@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-12-06
+ @edited  2004-01-03
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -15,7 +15,8 @@
 #ifndef G3D_GLHEADERS_H
 #define G3D_GLHEADERS_H
 
-#ifdef _WIN32
+#include "G3D/platform.h"
+#ifdef G3D_WIN32
   #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN
   #endif
@@ -72,12 +73,9 @@ extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC glDisableVertexAttribArrayARB;
 extern PFNGLPOINTPARAMETERFARBPROC         glPointParameterfARB;
 extern PFNGLPOINTPARAMETERFVARBPROC        glPointParameterfvARB;
 
-#ifdef _WIN32
-typedef BOOL (APIENTRY * PFNWGLGLSWAPINTERVALEXTPROC) (GLint interval);
-typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int* piFormats, UINT* nNumFormats);
-#endif
-
-#ifdef _WIN32
+#ifdef G3D_WIN32
+    typedef BOOL (APIENTRY * PFNWGLGLSWAPINTERVALEXTPROC) (GLint interval);
+    typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int* piFormats, UINT* nNumFormats);
     extern PFNWGLGLSWAPINTERVALEXTPROC         wglSwapIntervalEXT;
     extern PFNWGLCHOOSEPIXELFORMATARBPROC      wglChoosePixelFormatARB;
     extern PFNWGLALLOCATEMEMORYNVPROC          wglAllocateMemoryNV;

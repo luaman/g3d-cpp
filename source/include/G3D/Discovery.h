@@ -34,14 +34,8 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-06-26
-  @edited  2003-11-17
+  @edited  2004-01-01
  */
-
-/**
- Different versions of G3D discovery protocols can't communicate with each other.
- */
-#define G3D_DISCOVERY_PROTOCOL_NAME "G3D DISC"
-#define G3D_DISCOVERY_PROTOCOL_VERSION 1
 
 #ifndef G3D_DISCOVERY_H
 #define G3D_DISCOVERY_H
@@ -50,6 +44,12 @@
 #include "G3D/G3DGameUnits.h"
 #include "G3D/NetworkDevice.h"
 #include <time.h>
+
+/**
+ Different versions of G3D discovery protocols can't communicate with each other.
+ */
+#define G3D_DISCOVERY_PROTOCOL_NAME "G3D DISC"
+#define G3D_DISCOVERY_PROTOCOL_VERSION 1
 
 namespace G3D {
 

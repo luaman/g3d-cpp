@@ -50,7 +50,7 @@ std::string resolveFilename(const std::string& filename) {
             return filename;
         } else {
 
-            #ifdef _WIN32
+            #ifdef G3D_WIN32
                 if ((filename.size() >= 2) && (filename[1] == ':')) {
                     // There is a drive spec on the front.
                     if ((filename.size() >= 3) && ((filename[2] == '\\') || 
@@ -118,7 +118,7 @@ int64 fileLength(const std::string& filename) {
 
 FILE* createTempFile() {
     // Added to the G3D version of jpeglib
-#ifdef _WIN32
+#ifdef G3D_WIN32
     return _robustTmpfile();
 #else
     return tmpfile();
@@ -183,7 +183,7 @@ void createDirectory(
         if (! fileExists(p)) {
 	    // Windows only requires one argument to mkdir,
 	    // where as unix also requires the permissions.
-	    #ifndef _WIN32
+	    #ifndef G3D_WIN32
 	 	 mkdir(p.c_str(),0777);
  	    #else
                  _mkdir(p.c_str());
@@ -207,7 +207,7 @@ void copyFile(
     const std::string&          source,
     const std::string&          dest) {
 
-    #ifdef _WIN32
+    #ifdef G3D_WIN32
         CopyFile(source.c_str(), dest.c_str(), TRUE);
     #else
         // TODO: don't use BinaryInput and BinaryOutput
@@ -383,7 +383,7 @@ static void getFileOrDirList(
         path = path.substr(0, path.size() - 1);
     }
 
-    #ifdef _WIN32
+    #ifdef G3D_WIN32
 	    struct _finddata_t fileinfo;
 
         long handle = _findfirst(filespec.c_str(), &fileinfo);
@@ -494,6 +494,6 @@ std::string filenameExt(const std::string& filename) {
 
 }
 
-#ifndef _WIN32
+#ifndef G3D_WIN32
   #undef _stat
 #endif

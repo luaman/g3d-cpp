@@ -1,19 +1,20 @@
 /**
  @file stringutils.cpp
 
- @author Morgan McGuire, graphics3d.com
+ @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2000-09-09
- @edited  2003-04-01
+ @edited  2003-04-03
 */
 
+#include "G3D/platform.h"
 #include "G3D/stringutils.h"
 #include "G3D/BinaryInput.h"
 #include <algorithm>
 
 namespace G3D {
 
-#if _WIN32
+#ifdef G3D_WIN32
     // disable: "C++ exception handler used"
     #pragma warning (disable : 4530)
     const char* NEWLINE = "\r\n";

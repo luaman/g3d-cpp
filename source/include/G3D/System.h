@@ -8,12 +8,13 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-01-02
+  @edited  2004-01-03
  */
 
 #ifndef G3D_SYSTEM_H
 #define G3D_SYSTEM_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/G3DGameUnits.h"
 #include <string>
@@ -39,6 +40,7 @@ enum G3DEndian {G3D_BIG_ENDIAN, G3D_LITTLE_ENDIAN};
  */
 class System {
 public:
+
 
 	/** */
 	static bool hasMMX();

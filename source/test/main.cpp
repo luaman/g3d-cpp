@@ -15,7 +15,7 @@
 
 using namespace G3D;
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
 	#include "conio.h"
     #include "Window.h"
 #endif

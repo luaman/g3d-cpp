@@ -19,7 +19,6 @@
 #endif
 
 #include <sstream>
-#include "G3D/platform.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
@@ -442,7 +441,7 @@ bool RenderDevice::init(
 
     // Under Windows, reset the last error so that our debug box
     // gives the correct results
-    #if _WIN32
+    #ifdef G3D_WIN32
         SetLastError(0);
     #endif
 
@@ -628,7 +627,7 @@ bool RenderDevice::initialized() const {
 }
 
 
-#ifdef _WIN32
+#ifdef G3D_WIN32
 
 extern HWND SDL_Window;
 

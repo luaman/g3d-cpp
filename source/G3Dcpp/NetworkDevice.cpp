@@ -249,7 +249,7 @@ NetAddress::NetAddress(const SOCKADDR_IN& a) {
 
 
 NetAddress::NetAddress(const struct in_addr& addr, uint16 port) {
-#ifdef _WIN32
+#ifdef G3D_WIN32
     init(ntohl(addr.S_un.S_addr), port);
 #else
     init(htonl(addr.s_addr), port);
@@ -305,7 +305,7 @@ bool NetworkDevice::init(class Log* _log) {
     debugAssert(!initialized);
     debugLog = _log;
 
-    #ifdef _WIN32
+    #ifdef G3D_WIN32
         if (debugLog) {
             debugLog->section("Network Startup");
             debugLog->println("Starting WinSock networking.\n");
@@ -386,7 +386,7 @@ bool NetworkDevice::init(class Log* _log) {
 void NetworkDevice::cleanup() {
     debugAssert(initialized);
 
-    #ifdef _WIN32
+    #ifdef G3D_WIN32
         if (debugLog) {debugLog->section("Network Cleanup");}
         WSACleanup();
         if (debugLog) {debugLog->println("Network cleaned up.");}
@@ -586,7 +586,7 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
         RealTime t = getTime() + 5;
         // Non-blocking; we must wait in select
         while ((selectOneWriteSocket(sock) == 0) && (getTime() < t)) {
-            #if _WIN32
+            #ifdef G3D_WIN32
                 Sleep(2);
             #endif
         }
@@ -1043,7 +1043,7 @@ ReliableConduitRef NetListener::waitForConnection() {
 
     if (nd->debugLog) {nd->debugLog->printf("%s connected, transferred to socket %d.\n", inet_ntoa(remote_addr.sin_addr), sClient);}
 
-#ifndef _WIN32
+#ifndef G3D_WIN32
     return new ReliableConduit(nd, sClient, NetAddress(htonl(remote_addr.sin_addr.s_addr), ntohs(remote_addr.sin_port)));
 #else
     return new ReliableConduit(nd, sClient, NetAddress(ntohl(remote_addr.sin_addr.S_un.S_addr), ntohs(remote_addr.sin_port)));

@@ -7,18 +7,17 @@
   @edited  2003-08-04
  */
 
+#include "G3D/platform.h"
 #include "G3D/Log.h"
 #include "G3D/format.h"
 #include "G3D/Array.h"
 #include "G3D/fileutils.h"
 #include <time.h>
 
-#ifdef _MSC_VER
+#ifdef G3D_WIN32
     #include <Windows.h>
     #include <imagehlp.h>
-#endif
-
-#ifndef _WIN32
+#else
     #include <stdarg.h>
 #endif
 
@@ -40,7 +39,7 @@ Log::Log(const std::string& filename, int stripFromStackBottom) :
         std::string logName = base + ((ext != "") ? ("." + ext) : ""); 
 
         // Write time is greater than 1ms.  This may be a network drive.... try another file.
-        #ifdef _WIN32
+        #ifdef G3D_WIN32
             if (fileExists("c:/tmp")) {
                 logName = std::string("c:/tmp/") + logName;
             } else if (fileExists("c:/temp")) { 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2000-09-09
- @edited  2002-11-19
+ @edited  2004-01-03
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -13,11 +13,12 @@
 #ifndef G3D_FORMAT_H
 #define G3D_FORMAT_H
 
+#include "platform.h"
 #include <string>
 #include <stdio.h>
 #include <cstdarg>
 #include <assert.h>
-#ifndef _WIN32
+#ifndef G3D_WIN32
     // Don't include varargs.h for some random
     // gcc reason
     //#include <varargs.h>

@@ -4,11 +4,12 @@
   @created 2002-05-27
   @edited  2003-09-02
  */
+#include "G3D/platform.h"
 #include "G3D/GImage.h"
 #include "G3D/debug.h"
 
 extern "C" {
-#ifdef _WIN32
+#ifdef G3D_WIN32
 	#include "../IJG/jconfig.h"
 	#include "../IJG/cdjpeg.h"
 #else
@@ -22,7 +23,7 @@ extern "C" {
 #include <assert.h>
 #include <sys/types.h>
 
-#ifndef _WIN32
+#ifndef G3D_WIN32
 /**
  This is used by the Windows bitmap I/O.
  */
