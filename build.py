@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-07-24
+# @edited  2003-08-04
 #
 # Each build target is a procedure.
 #
@@ -124,7 +124,7 @@ def lib():
         print "*** Errors encountered during compilation.  Build process halted."
         sys.exit(x);        
 
-    copyIfNewer("source/lib", installDir + "lib")
+    copyIfNewer("source/lib", installDir + "/lib")
 
 ###############################################################################
 #                                                                             #
