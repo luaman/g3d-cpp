@@ -70,7 +70,7 @@ void VertexAndPixelShader::GPUShader::init(
 		if (debug) {
             // Check for compilation errors
             if (! ok()) {
-                debugPrintf("%s", messages());
+                debugPrintf("%s", messages().c_str());
     			alwaysAssertM(ok(), messages());
             }
 		}

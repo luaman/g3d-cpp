@@ -44,6 +44,7 @@
      <LI> contrib/AudioDevice
      <LI> G3D::System::time();
 	 <LI> More precise System::sleep
+     <LI> G3D::IFSModel::pose with no arguments
      <LI> G3D::AABSPTree::serializeStructure, deserializeStructure,
      <LI> serialize(Vector3::Axis, BinaryOutput), deserialize(Vector3::Axis, BinaryInput),
      <LI> "glslc" GLSL compiler in the tools directory for getting compile-time errors from shaders 

@@ -10,6 +10,14 @@ linking, and debugging programs that use G3D.  Here are the common fixes.
 You called <CODE>delete</CODE> on a reference counted class.  You do not need to delete G3D::GFontRef, G3D::TextureRef or any other Ref class; just 
 set them to NULL when you don't need them and the underlying memory will be recovered.
 
+<P>
+<B>../include\G3D/ReferenceCount.h(159) : error C2664: 'setPointer' : cannot convert parameter 1 from 'class G3D::Shader *' to 'class SphereMap *'
+        Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+        D:\games\cpp\source\Debug\main.cpp(167) : see reference to function template instantiation '__thiscall G3D::ReferenceCountedPointer<class SphereMap>::G3D::ReferenceCountedPointer<class SphereMap>(const class G3D::ReferenceCountedPointer<clas
+s G3D::Shader> &)' being compiled</B>
+<P>
+You tried to assign a reference counted pointer from the wrong type 
+(e.g. TextureRef a = GFontRef::create().
 
 <P>
 <B>error C2440: 'return' : cannot convert from 'class A *' to 'class B *'

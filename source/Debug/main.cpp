@@ -152,7 +152,19 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     std::string ps = "void main(void) { gl_FragColor = vec4(1,1,1,1); }\n";
     //shader2 = Shader::fromStrings(vs, ps);
 
-    model = IFSModel::create("D:/games/data/ifs/low-poly-saddle.ifs");
+    model = IFSModel::create("D:/games/data/ifs/teapot.ifs");
+
+   // Initialization
+   shader2 = Shader::fromStrings(
+     "uniform vec3 L;                                \n"
+     "uniform vec3 k_L;                              \n"
+     "uniform vec3 k_A;                              \n"
+     "void main(void) {                              \n"
+     "   gl_Position = ftransform();                 \n"
+     "   vec3 N = gl_NormalMatrix * gl_Normal;       \n"
+     "   gl_FrontColor.rgb = max(dot(N, L), 0.0) * k_L + k_A; \n"
+     "}                                              \n",
+     "");
     
 }
 
@@ -190,6 +202,7 @@ void Demo::doGraphics() {
 
 //	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
+    /*
     app->renderDevice->enableLighting();
     app->renderDevice->setLight(0, GLight::directional(Vector3(0,-1,1), Color3::yellow() * 0.5));
     app->renderDevice->setLight(1, GLight::directional(Vector3(0,1,1), Color3::red() * 0.5));
@@ -208,6 +221,16 @@ void Demo::doGraphics() {
     app->renderDevice->setColor(Color3::black());
     app->renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
     posed->render(app->renderDevice);
+    */
+
+    // Rendering loop
+    app->renderDevice->setShader(shader2);
+    shader2->args.set("L", 
+        app->debugCamera.getCoordinateFrame().vectorToObjectSpace(Vector3(1,1,1)).direction());
+    shader2->args.set("k_L", Color3::white() - Color3(.2,.2,.3));
+    shader2->args.set("k_A", Color3(.2,.2,.3));
+    model->pose()->render(app->renderDevice);
+
 
     /*
     // Shader test

@@ -138,7 +138,7 @@
         <B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
         G3D::isValidPointer,
         <B>G3D::debugAssertM</B>, G3D::debugPrintf, G3D::error, 
-        G3D::Log, G3D::alwaysAssertM
+        G3D::Log, G3D::alwaysAssertM, G3D::setAssertionHook
 
      <LI><B>I/O</B> &nbsp; &nbsp;
         G3D::BinaryInput, 

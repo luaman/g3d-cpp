@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-09-09
+ @edited  2004-09-16
  */
 
 #ifndef G3D_SHADER_H
@@ -26,6 +26,10 @@ typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 #endif
 
 /**
+
+  @deprecated Use G3D::Shader instead, which provides a superset of functionality.
+
+
   An ObjectShader is run once per primitive group.
   A primitive group is defined by either the pair of calls 
   RenderDevice::beginPrimitive...RenderDevice::endPrimitive
@@ -107,7 +111,8 @@ public:
 
 
 /**
-  A compatible vertex and pixel shader.  Used internally by G3D::Shader.
+  A compatible vertex and pixel shader.  Used internally by G3D::Shader; see that 
+  class for more information.
 
   Only newer graphics cards with recent drivers (e.g. GeForceFX cards with driver version 57 or greater)
   support this API.  Use the VertexAndPixelShader::fullySupported method to determine at run-time
@@ -443,6 +448,54 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
   <P>
   Uses G3D::VertexAndPixelShader internally.  What we call pixel shaders
   are really "fragment shaders" in OpenGL terminology.
+
+  <P>
+  <B>Example</B>
+
+  The following example computes lambertian + ambient shading in camera space,
+  on the vertex processor.
+  The shader could easily have been loaded from a file as well as from strings.  Vertex
+  shaders are widely supported, so this will run on any graphics card produced since 2001
+  (e.g. GeForce3 and up).  Pixel shaders are only available on newer cards 
+  (e.g. GeForceFX 5200 and up).
+
+  <PRE>
+   // Initialization
+   IFSModelRef model = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
+   ShaderRef   lambertian = Shader::fromStrings(
+     "uniform vec3 L;                                         \n"
+     "uniform vec3 k_L;                                       \n"
+     "uniform vec3 k_A;                                       \n"
+     "void main(void) {                                       \n"
+     "   gl_Position = ftransform();                          \n"
+     "   vec3 N = gl_NormalMatrix * gl_Normal;                \n"
+     "   gl_FrontColor.rgb = max(dot(N, L), 0.0) * k_L + k_A; \n"
+     "}                                                       \n",
+     "");
+
+    ...
+
+    // Rendering loop
+    app->renderDevice->setShader(lambertian);
+
+    lambertian->args.set("L",
+        app->debugCamera.getCoordinateFrame().vectorToObjectSpace(Vector3(1,1,1)).direction());
+    lambertian->args.set("k_L", Color3::white() - Color3(.2,.2,.3));
+    lambertian->args.set("k_A", Color3(.2,.2,.3));
+
+    model->pose()->render(app->renderDevice);
+  </PRE>
+
+  This example explicitly sets the lighting parameters to demonstrate how
+  arguments are used.  It could instead have accessed the lighting parameters
+  set from G3D::RenderDevice::setLight using the shader built-in OpenGL uniform
+  variables gl_Light[n].
+
+  Note that the lighting is computed in camera space.  If we instead wanted
+  to compute lighting in object or world space, we could either pass the 
+  object's coordinate frame to the shader as an explicit argument or override 
+  G3D::Shader::beforePrimitive to set an argument based on the then-current
+  value of G3D::RenderDevice::getObjectToWorldMatrix.
 
   <B>BETA API</B>
   This API is subject to change.
