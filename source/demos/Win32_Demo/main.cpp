@@ -17,12 +17,14 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created    2002-01-01
- @edited     2002-09-09
+ @edited     2003-08-07
  */
 
 #include <windows.h>
 #include <graphics3D.h>
 #include "Window.h"
+
+using namespace G3D;
 
 int WINAPI WinMain(
     HINSTANCE,
@@ -34,8 +36,9 @@ int WINAPI WinMain(
     Window app;
 
     try {
-                
-        G3D::CImage im("Cirrus.jpg");
+
+        G3D::CImage im("Win32_Demo/Cirrus.jpg");
+
         app.create("Win32 Sample Program", im.width, im.height);
         G3D::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
 

@@ -616,6 +616,9 @@
 
    <P>
    <UL>
+     <LI> PCX file loading
+     <LI> Test images
+     <LI> Color3uint8 as uint8[] addressing
      <LI> Removed const from VAR::pointer
      <LI> ReferenceCountedPointer::isNull
      <LI> alwaysAssertM

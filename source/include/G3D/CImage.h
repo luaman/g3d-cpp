@@ -7,10 +7,11 @@
   @cite JPG code by John Chisholm, using the IJG Library
   @cite TGA code by Morgan McGuire
   @cite BMP code by John Chishold, based on code by Edward "CGameProgrammer" Resnick <A HREF="mailto:cgp@gdnmail.net">mailto:cgp@gdnmail.net</A> at <A HREF="ftp://ftp.flipcode.com/cotd/LoadPicture.txt">ftp://ftp.flipcode.com/cotd/LoadPicture.txt</A>
+  @cite PCX format described in the ZSOFT PCX manual http://www.nist.fss.ru/hr/doc/spec/pcx.htm#2
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-05-23
+  @edited  2003-08-07
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -82,7 +83,9 @@ void flipRGBVertical(
 /**
  Interface to image compression & file formats.
 
-  Supported formats (decode and encode): JPEG, TGA 24, TGA 32, BMP 1, BMP 4, BMP 8, BMP 24
+  Supported formats (decode and encode): JPEG, TGA 24, TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
+  8-bit paletted and 24-bit PCX are supported for decoding only.
+
 
   Sample usage:
 
@@ -127,7 +130,7 @@ public:
         std::string filename;
     };
 
-    enum Format {JPEG, BMP, TGA, AUTODETECT, UNKNOWN};
+    enum Format {JPEG, BMP, TGA, PCX, AUTODETECT, UNKNOWN};
 
     /**
      The number of channels; either 3 (RGB) or 4 (RGBA)
@@ -194,6 +197,9 @@ private:
         BinaryInput&        input);
 
     void decodeJPEG(
+        BinaryInput&        input);
+
+    void decodePCX(
         BinaryInput&        input);
 
     /**

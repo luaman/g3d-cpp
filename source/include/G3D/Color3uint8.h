@@ -52,7 +52,17 @@ public:
 
     void deserialize(class BinaryInput& bi);
 
+    // access vector V as V[0] = V.r, V[1] = V.g, V[2] = V.b
+    //
+    // WARNING.  These member functions rely on
+    // (1) Color3 not having virtual functions
+    // (2) the data packed in a 3*sizeof(uint8) memory block
+    G3D::uint8& operator[] (int i) const;
+    operator G3D::uint8* ();
+    operator const G3D::uint8* () const;
+
 }
+
 #if defined(G3D_LINUX) || defined(G3D_OSX)
     __attribute((aligned(1)))
 #endif
@@ -62,6 +72,20 @@ public:
 #ifdef G3D_WIN32
   #pragma pack(pop)
 #endif
+
+
+inline G3D::uint8& Color3uint8::operator[] (int i) const {
+    return ((G3D::uint8*)this)[i];
+}
+
+//----------------------------------------------------------------------------
+inline Color3uint8::operator G3D::uint8* () {
+    return (G3D::uint8*)this;
+}
+
+inline Color3uint8::operator const G3D::uint8* () const {
+    return (G3D::uint8*)this;
+}
 }
 
 #endif

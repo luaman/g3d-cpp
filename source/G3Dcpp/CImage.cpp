@@ -2,7 +2,7 @@
   @file CImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-05-23
+  @edited  2003-08-07
  */
 #include "G3D/CImage.h"
 #include "G3D/debug.h"
@@ -617,6 +617,10 @@ void CImage::decode(
         decodeBMP(input);
         break;
 
+    case PCX:
+        decodePCX(input);
+        break;
+
     default:
         debugAssert(false);
     }
@@ -1115,6 +1119,147 @@ void CImage::decodeJPEG(
 }
 
 
+
+void CImage::decodePCX(
+    BinaryInput&                input) {
+
+    uint8  manufacturer = input.readUInt8();
+    uint8  version      = input.readUInt8();
+    uint8  encoding     = input.readUInt8();
+    uint8  bitsPerPixel = input.readUInt8();
+
+    uint16 xmin         = input.readUInt16();
+    uint16 ymin         = input.readUInt16();
+    uint16 xmax         = input.readUInt16();
+    uint16 ymax         = input.readUInt16();
+
+    uint16 horizDPI     = input.readUInt16();
+    uint16 vertDPI      = input.readUInt16();
+
+    Color3uint8 colorMap[16];
+    input.readBytes(48, colorMap);
+
+    input.skip(1);
+
+    uint8  planes       = input.readUInt8();
+    uint16 bytesPerLine = input.readUInt16();
+    uint16 paletteType  = input.readUInt16();
+    input.skip(4 + 54);
+
+    width  = xmax - xmin + 1;
+    height = ymax - ymin + 1;
+    channels = 3;
+
+    if ((manufacturer != 0x0A) || (encoding != 0x01)) {
+        throw CImage::Error("PCX file is corrupted", input.getFilename());
+    }
+
+    (void)version;
+    (void)vertDPI;
+    (void)horizDPI;
+
+    if ((bitsPerPixel != 8) || ((planes != 1) && (planes != 3))) {
+        throw CImage::Error("Only 8-bit paletted and 24-bit PCX files supported.", input.getFilename());
+    }
+
+	// Prepare the pointer object for the pixel data
+	_byte = (uint8*)malloc(width * height * 3);
+
+    switch (paletteType) {
+    case 1:
+        {
+            if (planes != 3) {
+                throw CImage::Error("Unsupported PCX file type.", input.getFilename());
+            }
+
+            Color3uint8* pixel = pixel3();
+
+            // Iterate over each scan line
+            for (int row = 0; row < height; ++row) {
+                // Read each scan line once per plane
+                for (int plane = 0; plane < planes; ++plane) {
+                    int p = row * width;
+                    int p1 = p + width;
+                    while (p < p1) {
+                        uint8 value = input.readUInt8();
+                        int length = 1;
+                
+                        if (value >= 192) {
+                            // This is the length, not the value.  Mask off
+                            // the two high bits and read the true index.
+                            length = value & 0x3F;
+                            value = input.readUInt8();
+                        }
+
+                        // Set the whole run
+                        for (int i = length - 1; i >= 0; --i, ++p) {
+                            debugAssert(p < width * height);
+                            pixel[p][plane] = value;
+                        }
+                    }
+                }
+            }
+        }
+        break;
+
+    case 2:
+        {
+            if (planes != 1) {
+                throw CImage::Error("Unsupported PCX file type.", input.getFilename());
+            }
+            Color3uint8 palette[256];
+
+            int imageBeginning = input.getPosition();
+            int paletteBeginning = input.getLength() - 769;
+
+            input.setPosition(paletteBeginning);
+
+            uint8 dummy = input.readUInt8();
+
+            if (dummy != 12) {
+                throw CImage::Error("Corrupted PCX file (palette was wrong).", input.getFilename());
+            }
+
+            input.readBytes(sizeof(palette), palette);
+
+            input.setPosition(imageBeginning);
+
+            Color3uint8* pixel = pixel3();
+            
+            // The palette indices are run length encoded.
+            int p = 0;
+            while (p < width * height) {
+                uint8 index  = input.readUInt8();
+                uint8 length = 1;
+
+                if (index >= 192) {
+                    // This is the length, not the index.  Mask off
+                    // the two high bits and read the true index.
+                    length = index & 0x3F;
+                    index  = input.readUInt8();
+                }
+
+                Color3uint8 color = palette[index];
+
+                // Set the whole run
+                for (int i = length - 1; i >= 0; --i, ++p) {
+                    debugAssert(p < width * height);
+                    pixel[p] = color;
+                }
+
+            }
+
+        }
+        break;
+
+    case 16387:
+        break;
+
+    default:
+        throw CImage::Error("Only 8-bit paletted PCX files supported.", input.getFilename());
+    }
+}
+
 CImage::Format CImage::resolveFormat(
     const std::string&  filename,
     const uint8*        data,
@@ -1155,15 +1300,23 @@ CImage::Format CImage::resolveFormat(
         return BMP;
     }
 
-    int j = memcmp(&data[6], "JFIF", 4);
+    if (dataLen > 10) {
+        int j = memcmp(&data[6], "JFIF", 4);
 
-    if ((dataLen > 11) && (data[0] == 0xFF) &&
-        (memcmp(&data[6], "JFIF", 4) == 0)) {
-        return JPEG;
+        if ((dataLen > 11) && (data[0] == 0xFF) &&
+            (memcmp(&data[6], "JFIF", 4) == 0)) {
+            return JPEG;
+        }
     }
 
-    if (memcmp(&data[dataLen - 18], "TRUEVISION-XFILE", 16) == 0) {
-        return TGA;
+    if (dataLen > 40) {
+        if (memcmp(&data[dataLen - 18], "TRUEVISION-XFILE", 16) == 0) {
+            return TGA;
+        }
+    }
+
+    if ((dataLen > 0) && (data[0] == 10)) {
+        return PCX;
     }
 
     return UNKNOWN;
@@ -1281,6 +1434,8 @@ CImage::Format CImage::stringToFormat(
         return TGA;
     } else if (extension == "BMP") {
         return BMP;
+    } else if (extension == "PCX") {
+        return PCX;
     } else {
         return UNKNOWN;
     }
