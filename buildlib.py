@@ -70,6 +70,8 @@ _excludePatterns =\
     '\.plg$', \
     '^#.*#$', \
     '~$', \
+    '\.sbr$', \
+    '-debug\.exe$', \
     '\.old$' \
     '^log.txt$', \
     '^stderr\.txt$', \

@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-11-13
+ @edited  2003-11-24
 */
 
 #include "GLG3D/glcalls.h"
@@ -16,6 +16,30 @@
 namespace G3D {
 
 static const char* cubeMapString[] = {"ft", "bk", "up", "dn", "rt", "lf"};
+
+/**
+ Returns true if the system supports automatic MIP-map generation.
+ */
+static bool hasAutoMipMap() {
+    static bool initialized = false;
+    static bool ham = false;
+
+    if (! initialized) {
+        initialized = true;
+        std::string ext = (char*)glGetString(GL_EXTENSIONS);
+        ham = (ext.find("GL_SGIS_generate_mipmap") >= 0);
+    }
+
+    return ham;
+}
+
+static void disableAllTextures() {
+    glDisable(GL_TEXTURE_1D);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_3D);
+    glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+}
 
 /**
  Pushes all OpenGL texture state.
@@ -49,35 +73,6 @@ static GLenum dimensionToTarget(Texture::Dimension d) {
     default:
         debugAssert(false);
         return GL_TEXTURE_2D;
-    }
-}
-
-
-static void createMipMapTexture(    
-    GLenum          target,
-    const uint8*    bytes,
-    int             bytesFormat,
-    int             width,
-    int             height,
-    GLenum          textureFormat) {
-
-    switch (target) {
-    case GL_TEXTURE_2D:
-    case GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB:
-    case GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB:
-    case GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB:
-    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB:
-    case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
-    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
-
-        {
-            int r = gluBuild2DMipmaps(target, textureFormat, width, height, bytesFormat, GL_UNSIGNED_BYTE, bytes);
-            debugAssertM(r == 0, (const char*)gluErrorString(r)); (void)r;
-            break;
-        }
-
-    default:
-        debugAssertM(false, "Mipmaps not supported for this texture target");
     }
 }
 
@@ -146,6 +141,35 @@ static void createTexture(
 }
 
 
+static void createMipMapTexture(    
+    GLenum          target,
+    const uint8*    bytes,
+    int             bytesFormat,
+    int             width,
+    int             height,
+    GLenum          textureFormat) {
+
+    switch (target) {
+    case GL_TEXTURE_2D:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
+        {
+            int r = gluBuild2DMipmaps(target, textureFormat, width, height, bytesFormat, GL_UNSIGNED_BYTE, bytes);
+            debugAssertM(r == 0, (const char*)gluErrorString(r)); (void)r;
+            break;
+        }
+
+    default:
+        debugAssertM(false, "Mipmaps not supported for this texture target");
+    }
+}
+
+
+
 /**
  Overrides the current wrap and interpolation parameters for the
  current texture.
@@ -193,6 +217,10 @@ static void setTexParameters(
     case Texture::TRILINEAR_MIPMAP:
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+        if (hasAutoMipMap()) {  
+            glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+        }
         break;
 
     case Texture::BILINEAR_NO_MIPMAP:
@@ -446,6 +474,13 @@ TextureRef Texture::fromTwoFiles(
     return t;
 }
 
+static const GLenum cubeFaceTarget[] =
+    {GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
+     GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
+     GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
+     GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
+     GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
+     GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
 
 TextureRef Texture::fromMemory(
     const std::string&      name,
@@ -467,24 +502,21 @@ TextureRef Texture::fromMemory(
 
         glEnable(target);
         glBindTexture(target, textureID);
+        if ((interpolate == TRILINEAR_MIPMAP) && hasAutoMipMap()) {
+            // Enable hardware MIP-map genera
+            glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+        }
+
 
         int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
         
         for (int f = 0; f < numFaces; ++f) {
             if (dimension == DIM_CUBE_MAP) {
                 // Choose the appropriate face target
-                static const GLenum cubeFaceTarget[] =
-                    {GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
-                    GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
-                    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
-                    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
-
                 target = cubeFaceTarget[f];
             }
 
-            if (interpolate == TRILINEAR_MIPMAP) {
+            if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap()) {
                 createMipMapTexture(target, bytes[f],
                               bytesFormat->OpenGLBaseFormat,
                               width, height, desiredFormat->OpenGLFormat);
@@ -524,8 +556,10 @@ TextureRef Texture::createEmpty(
     // We must pretend the input is in the desired format otherwise 
     // OpenGL might refuse to negotiate formats for us.
     Array<uint8> data(w * h * desiredFormat->packedBitsPerTexel / 8);
-    const uint8* bytes[1];
-    bytes[0] = data.getCArray();
+    const uint8* bytes[6];
+    for (int i = 0; i < 6; ++i) {
+        bytes[i] = data.getCArray();
+    }
 
     return Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, wrap, interpolate, dimension);
 }
@@ -586,11 +620,7 @@ void Texture::copyFromScreen(
     debugAssert(this->dimension == DIM_2D || this->dimension == DIM_2D_RECT);
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    glDisable(GL_TEXTURE_1D);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_TEXTURE_3D);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
-    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+    disableAllTextures();
     GLenum target = dimensionToTarget(dimension);
     glEnable(target);
 
@@ -616,6 +646,56 @@ void Texture::copyFromScreen(
 
     // Once copied from the screen, the direction will be reversed.
     invertY = true;
+
+    glStatePop();
+}
+
+
+void Texture::copyFromScreen(
+    const Rect2D&       rect,
+    CubeFace            face,
+    bool                useBackBuffer) {
+
+    glStatePush();
+
+    if (useBackBuffer) {
+        glReadBuffer(GL_BACK);
+    } else {
+        glReadBuffer(GL_FRONT);
+    }    
+
+    // Set up new state
+    debugAssertM(width == rect.width(), "Cube maps require all six faces to have the same dimensions");
+    debugAssertM(height == rect.height(), "Cube maps require all six faces to have the same dimensions");
+    debugAssert(this->dimension == DIM_CUBE_MAP);
+    debugAssert(face >= 0);
+    debugAssert(face < 6);
+
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    disableAllTextures();
+
+    glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, textureID);
+
+    GLenum target = cubeFaceTarget[(int)face];
+
+    int e = glGetError();
+    alwaysAssertM(e == GL_NONE, 
+        std::string("Error encountered during glBindTexture: ") + GLenumToString(e));
+
+    double viewport[4];
+    glGetDoublev(GL_VIEWPORT, viewport);
+    double viewportHeight = viewport[3];
+    debugAssertGLOk();
+    
+    glCopyTexImage2D(target, 0, format->OpenGLFormat,
+        rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
+
+    debugAssertGLOk();
+    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+
+    // Once copied from the screen, the direction will be reversed.
+    //invertY = true;
 
     glStatePop();
 }

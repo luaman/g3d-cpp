@@ -12,7 +12,7 @@
 from buildlib import *
 
 # The library version number
-version = "6_00"
+version = "6_00-b8"
 
 ###############################################################################
 #                                                                             #

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-11-16
+  @edited  2003-11-24
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -220,6 +220,22 @@ public:
      @param rect The rectangle to copy (relative to the viewport)
      */
     void copyFromScreen(const Rect2D& rect, bool useBackBuffer = true);
+
+    /**
+     Argument for copyFromScreen
+     */
+    enum CubeFace {
+        CUBE_POS_X = 0,
+        CUBE_NEG_X = 1,
+        CUBE_POS_Y = 2,
+        CUBE_NEG_Y = 3,
+        CUBE_POS_Z = 4,
+        CUBE_NEG_Z = 5};
+
+    /**
+     Copies into the specified face of a cube map.
+     */
+    void copyFromScreen(const Rect2D& rect, CubeFace face, bool useBackBuffer = true);
 
 
     /**

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-11-23
+ @edited  2003-11-24
  */
 
 
@@ -2747,6 +2747,43 @@ void RenderDevice::configureShadowMap(
 	glEnable(GL_TEXTURE_GEN_Q);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+}
+
+
+void RenderDevice::configureReflectionMap(
+    uint                textureUnit,
+    TextureRef          reflectionTexture) {
+
+    debugAssert(reflectionTexture->getDimension() == Texture::DIM_CUBE_MAP);
+
+    // Texture coordinates will be generated in object space.
+    // Set the texture matrix to transform them into camera space.
+    CoordinateFrame cframe = getCameraToWorldMatrix();
+
+    // The environment map assumes we are always in the center,
+    // so zero the translation.
+    cframe.translation = Vector3::ZERO;
+
+    // Environment maps have the X-axis flipped from the default coordinate
+    // system.
+    cframe.rotation.setRow(0, -cframe.rotation.getRow(0));
+
+    // The environment map is in world space.  The reflection vector
+    // will automatically be multiplied by the object->camera space 
+    // transformation by hardware (just like any other vector) so we 
+    // take it back from camera space to world space for the correct
+    // vector.
+    setTexture(textureUnit, reflectionTexture);
+
+    setTextureMatrix(textureUnit, cframe);
+
+    glActiveTextureARB(GL_TEXTURE0_ARB + textureUnit);
+    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
+    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
+    glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
+    glEnable(GL_TEXTURE_GEN_S);
+    glEnable(GL_TEXTURE_GEN_T);
+    glEnable(GL_TEXTURE_GEN_R);
 }
 
 } // namespace

@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-11-23
+  @edited  2003-11-24
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -1245,14 +1245,27 @@ public:
             was used to render the shadow map originally
             (you can get this from RenderDevice::getModelViewProjectionMatrix() 
             while rendering the shadow map).
-     @param unit The texture unit to use for shadowing. 0...RenderDevice::numTextureUnits()
+     @param textureUnit The texture unit to use for shadowing. 0...RenderDevice::numTextureUnits()
+            That unit cannot be used for texturing at the same time.
+     */
+    void configureShadowMap(
+        uint                textureUnit,
+        const Matrix4&      lightMVP,
+        const TextureRef&   shadowMap);
+
+    /**
+     Call within RenderDevice::pushState()...popState() so that you can
+     restore the texture coordinate generation.  Note that you can 
+     obtain the reflection texture (aka environment map) from G3D::Sky
+     or by loading it with G3D:Texture::fromFile.
+
+     @param textureUnit The texture unit to use for shadowing. 0...RenderDevice::numTextureUnits()
             That unit cannot be used for texturing at the same time.
      */
 
-    void configureShadowMap(
-        uint                unit,
-        const Matrix4&      lightMVP,
-        const TextureRef&   shadowMap);
+    void configureReflectionMap(
+        uint                textureUnit,
+        TextureRef          reflectionTexture);
 
     #ifdef _WIN32
         HDC getWindowHDC() const;

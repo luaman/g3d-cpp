@@ -176,7 +176,7 @@ void Demo::init()  {
                           Texture::DIM_2D, 2.0); 
 
     entityArray.append(new IFSEntity(cube, Vector3(-5, 0, 0), Color3::BLUE));
-    entityArray.append(new IFSEntity(teapot, Vector3( 0, 0, 0), Color3::YELLOW));
+    entityArray.append(new IFSEntity(teapot, Vector3( 0, 0, 0), Color3::WHITE));
     entityArray.append(new MD2Entity(knight, Vector3( 5, 0, 0), knightTexture));
     entityArray[1]->selected = true;
 }
@@ -227,12 +227,18 @@ void Demo::doLogic() {
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
+    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->clear(sky == NULL, true, true);
+
+app->renderDevice->clear(true, true, true);
+app->renderDevice->push2D();
+    app->debugFont->draw2D(format("%g", random(0, 1)), Vector2(10, 10), 20, Color3::BLACK);
+app->renderDevice->pop2D();
+sky->getEnvironmentMap()->copyFromScreen(Rect2D::xywh(0,0,512,512), Texture::CUBE_POS_X);
+
     app->debugPrintf("Mouse (%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
-    // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
-    app->renderDevice->clear(sky == NULL, true, true);
 
     sky->render(lighting);
     
@@ -243,56 +249,22 @@ void Demo::doGraphics() {
  
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
+
+    app->renderDevice->pushState();
+
+        app->renderDevice->configureReflectionMap(2, sky->getEnvironmentMap());
+        CoordinateFrame boxframe(Vector3(3, 2, 0));
+        boxframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
+
+        app->renderDevice->setObjectToWorldMatrix(boxframe);
+
+        Draw::box(Box(Vector3(-1,-1,-1), Vector3(1,1,1)), app->renderDevice, Color3::WHITE);
+        Draw::sphere(Sphere(Vector3(0, 0, 0), 1.3), app->renderDevice, Color3::WHITE);
+
     for (int e = 0; e < entityArray.length(); ++e) { 
         entityArray[e]->render(app->renderDevice);
     }
-
-
-    app->renderDevice->pushState();
-    app->renderDevice->setTexture(0, sky->getEnvironmentMap());
-
-
-//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_REFLECTION);
-//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_NORMAL);
-//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_NONE);
-//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_NONE);
-
-
-    uint unit = 0;
-
-    // Texture coordinates will be generated in object space.
-    // Set the texture matrix to transform them into camera space.
-    CoordinateFrame cframe = app->renderDevice->getCameraToWorldMatrix();
-    // The environment map assumes we are always in the center,
-    // so zero the translation.
-    cframe.translation = Vector3::ZERO;
-    // Environment maps have the X-axis flipped from the default coordinate
-    // system.
-    cframe.rotation.setRow(0, -cframe.rotation.getRow(0));
-    // The environment map is in world space.  The reflection vector
-    // will automatically be multiplied by the object->camera space 
-    // transformation by hardware (just like any other vector) so we 
-    // take it back from camera space to world space for the correct
-    // vector.
-    app->renderDevice->setTextureMatrix(unit, cframe);
-
-    CoordinateFrame boxframe;
-    boxframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
-
-    app->renderDevice->setObjectToWorldMatrix(boxframe);
-        glActiveTextureARB(GL_TEXTURE0_ARB + unit);
-        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
-        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
-        glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
-        glEnable(GL_TEXTURE_GEN_S);
-        glEnable(GL_TEXTURE_GEN_T);
-        glEnable(GL_TEXTURE_GEN_R);
-
-        //Draw::box(Box(Vector3(0,3,2), Vector3(1,4,3)), app->renderDevice, Color3::WHITE);
-        Draw::sphere(Sphere(Vector3(0, 3, 2), 2), app->renderDevice, Color3::WHITE);
-
     app->renderDevice->popState();
-
 
 
     Draw::axes(CoordinateFrame(Vector3(0, 7, 0)), app->renderDevice);
