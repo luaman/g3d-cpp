@@ -13,7 +13,7 @@
 #ifndef GLG3D_IFSMODEL_H
 #define GLG3D_IFSMODEL_H
 
-#include "graphics3d.h"
+#include "graphics3D.h"
 #include "GLG3D/GModel.h"
 
 namespace G3D {
