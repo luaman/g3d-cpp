@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> contrib/Q3Map
      <LI> Increased G3D::Draw::sphere performance using vertex arrays.
      <LI> G3D::Array::fastClear
      <LI> G3D::AABSPTree::insert(Array<T>)

@@ -18,6 +18,7 @@
     G3D::Sky
     <BR>See also contrib & demo code 
     <A HREF="../contrib/ArticulatedModel">ArticulatedModel</A>, 
+    <A HREF="../contrib/Q3Map">Q3Map</A>, 
     <A HREF="../contrib/IFSBuilder">IFSBuilder</A>,
     <A HREF="../contrib/ObjModel">ObjModel</A>,
     <A HREF="../demos/MD2Model_Demo">MD2Model_Demo</A>
