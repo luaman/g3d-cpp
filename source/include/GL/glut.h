@@ -55,6 +55,17 @@ typedef unsigned short wchar_t;
 
 #endif
 
+// The G3D OpenGL headers contain header guards that prevent
+// the system headers from actually being included here; the
+// #include gl.h from glu and gl.h will effectively be ignored.
+#ifndef __gl_h_
+  #ifndef G3D_GRAPHICS3D_H
+     #error G3DAll.h must be included *before* glut.h to prevent OpenGL header conflicts
+  #else
+     #error G3D must be used with its own version of GL/gl.h; your glut.h tried to include the system version of GL/gl.h instead (somehow)
+  #endif
+#endif 
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 
