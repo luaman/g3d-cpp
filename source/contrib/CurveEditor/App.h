@@ -1,6 +1,4 @@
-
 #include <G3DAll.h>
-
 class App : public GApp {
 protected:
     void main();

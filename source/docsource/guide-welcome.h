@@ -1,4 +1,6 @@
-/** @page guidewelcome Welcome to G3D
+/** @mainpage guidewelcome Welcome to G3D
+
+<IMG SRC="3dengine.jpg" ALIGN=RIGHT>
 
 G3D is a commercial-grade 3D Engine available as Open Source (BSD License).  
 It is used in games, tech demos, research papers, military simulators, and 
@@ -8,7 +10,6 @@ libraries like OpenGL and sockets easier to use without limiting functionality
 or performance.  G3D gives you a rock-solid, highly optimized base from which 
 to build your application.
 
-<IMG SRC="3dengine.jpg" ALIGN=RIGHT>
 G3D does not contain scene graph or GUI routines.  Because of this, you have much
 more flexibility in how you structure your programs programs.  The tradeoff is that
 you have to know more about 3D programming.  G3D is intended for users who are already 
@@ -37,7 +38,8 @@ we recommend using one with G3D if your project has extensive UI needs.
   WindowsXP/2000,
   Linux,
   OS X,
-  Building the Library</TD></TR>
+  Building the Library,
+  <CODE>\#define</CODE>s</TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>  
 
@@ -45,7 +47,9 @@ we recommend using one with G3D if your project has extensive UI needs.
   Immediate Mode Graphics,
   Coordinate Systems,
   Reference Counting,
-  STL</TD></TR>
+  STL,
+  Layerd APIs,
+  Data Directory</TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidetutorial Tutorial \endlink</TD><TD>
   </TD></TR>
@@ -118,12 +122,13 @@ G3D provides several demos with source that show different ways of structuring y
 and how to use some of the most popular features.  The source code for the entire 
 library is available (http://cvs.sourceforge.net/viewcvs.py/g3d-cpp/cpp/).
 
-The official support team and the excellent user base respond to most user posts with
+The official support team and community respond to most user posts within
 hours and patches for critical user-discovered bugs are given top priority.  Write 
 to <A HREF="http://mailto:morgan3d@sf.net">Morgan McGuire</A> (morgan3d@sf.net) 
 if your project has special commercial support needs.
 
-
+The latest version library is always available on the homepage,
+<A HREF="http://g3d-cpp.sf.net">http://g3d-cpp.sf.net</A>.
 
 @section platform Platform and Functionality
 
@@ -281,5 +286,9 @@ your own machine so that you can step into the G3D routines and set breakpoints
 and watch variables.  On Windows you should change the Debug Info level
 to Program Database from Line Numbers Only.
 
+<HR>
+Manual and Library source code 
+<DT>Copyright 2000-2004, Morgan McGuire.
+<DT>All rights reserved.
 */
 

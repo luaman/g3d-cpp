@@ -156,7 +156,7 @@ void Editor::doLogic() {
        // ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
        // ofn.lpstrDefExt = "txt";
 
-  /*
+  
     if (app->userInput->keyPressed(' ')) {
         OPENFILENAME ofn;
 
@@ -195,8 +195,8 @@ void Editor::doLogic() {
         BOOL success = GetOpenFileName(&ofn);
         DWORD e =  CommDlgExtendedError();
         debugAssert(success);
-        }
-    */
+    }
+       */
 
     if (app->userInput->keyPressed('s')) {
         save();

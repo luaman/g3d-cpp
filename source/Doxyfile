@@ -72,7 +72,7 @@ EXCLUDE                = graveyard \
 						 glh \
 						 zlib
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = glh *.cpp *.inl zlib IJG graveyard
+EXCLUDE_PATTERNS       = glh* *.cpp *.inl zlib IJG graveyard
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = 
 EXAMPLE_RECURSIVE      = NO
@@ -109,7 +109,7 @@ HHC_LOCATION           =
 GENERATE_CHI           = NO
 BINARY_TOC             = NO
 TOC_EXPAND             = NO
-DISABLE_INDEX          = NO
+DISABLE_INDEX          = YES
 ENUM_VALUES_PER_LINE   = 4
 GENERATE_TREEVIEW      = NO
 TREEVIEW_WIDTH         = 250

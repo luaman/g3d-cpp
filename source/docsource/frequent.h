@@ -1,12 +1,22 @@
-/** @page frequent
+/** @page frequent Frequently Used Documentation
 
 
-  G3D::RenderDevice
-  G3D::Texture
-  G3D::GFont
-  G3D::Vector3
-  G3D::UserInput
-  G3D::Draw
-  G3D::CoordinateFrame
-  G3D::GWindowSettings
+  <DT>G3D::RenderDevice
+  <DT>G3D::Texture::fromFile
+  <DT>G3D::Texture::createEmpty
+  <DT>G3D::GFont::fromFile
+
+  <P>
+
+  <DT>G3D::Vector3
+  <DT>G3D::UserInput
+  <DT>G3D::Draw
+  <DT>G3D::CoordinateFrame
+  <DT>G3D::GWindowSettings
+
+  <P>
+  <DT>G3D::IFSModel::pose
+  <DT>G3D::IFSModel::create
+  <DT>G3D::GCamera
+<P>
  */

@@ -1,6 +1,9 @@
 /**
   @page indexedbytopic Routines Grouped by Topic
-<UL>
+
+  <A HREF="map.png"><IMG SRC="map.png" WIDTH=64 ALIGN=RIGHT></A>
+
+    <UL>
      <LI><B>Geometry</B> &nbsp; &nbsp;
         G3D::AABox,
         G3D::Box,

@@ -62,4 +62,40 @@
   @section osx OS X
 
   @section build Building G3D
+   \section defines \#defines
+    G3D pays attention to the following #defines.
+   <P>
+     <B>SSE</B> - Allows the use of Intel PIII SSE instructions for faster math
+      routines.  On Win32, you will need the Visual Studio processor pack 
+      (Free from http://msdn.microsoft.com/vstudio/downloads/ppack/default.asp)
+      to build with this option.  Your code will only run on PIII or later
+      machines.
+
+    <P>
+	 <B>_MSC_VER</B> - Use Microsoft x86 assembly when assembly code is needed.
+
+    <P>
+     <B>NO_SDL_MAIN</B> - Do not attempt to link against sdlmain.lib.
+
+    <P>
+     <B>_DEBUG</B> - Build in in debug mode.  This enables debugAssert, 
+     debugBreak, debugAssertM, array bounds checks, etc.
+
+    <P>
+     <B>G3D_DEBUG_NOGUI</B> - When building in debug mode, this flag
+      says to use stdout and not popups on Windows for assertion 
+      failures and error messages.  On Linux the console is always used.
+
+    <P>
+     <B>_WIN32</B> - Build using Windows API calls 
+
+   <P>
+     The static libraries themselves are built <I>without</I> SSE.  The 
+     -debug versions have _DEBUG, the regular versions do not.
+   
+     <P>
+
+     <B>G3D \#defines</B> one of the following based on the platform:
+     <B>G3D_WIN32, G3D_LINUX, G3D_OSX</B>
+   <HR>
   */

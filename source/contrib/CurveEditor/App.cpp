@@ -1,6 +1,7 @@
 #include "App.h"
 #include "Editor.h"
 
+
 void App::main() {
 	setDebugMode(false);
 	debugController.setActive(false);

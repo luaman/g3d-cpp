@@ -108,6 +108,10 @@ SOURCE=".\docsource\guide-install.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-meshes.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-physics.h"
 # End Source File
 # Begin Source File
@@ -145,6 +149,10 @@ SOURCE=.\docsource\error.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\html\footer.html
+# End Source File
+# Begin Source File
+
 SOURCE=.\docsource\frequent.h
 # End Source File
 # Begin Source File
@@ -153,11 +161,7 @@ SOURCE=.\html\gettingstarted.html
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-meshes.h"
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\G3D\mainpage.h
+SOURCE=.\html\header.html
 # End Source File
 # Begin Source File
 

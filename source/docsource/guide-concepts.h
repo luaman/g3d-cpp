@@ -80,4 +80,33 @@
   @section layer Layered APIs
   (see namespace map)
 
+
+
+  @section data Data Directory
+   Standard (and mostly public domain) 2D and 3D data are provided with this
+   library.  These may be useful as test data or for comparison with
+   previously published results.
+   
+     <PRE>
+       data           <I>Data root</I>
+          image       <I>Test images</I>
+          height      <I>height maps</I>
+          ifs         <I>Models for use with G3D::IFSModel</I>
+          sky         <I>Images and data for use with G3D::Sky</I>
+          font        <I>Fonts for use with G3D::GFont</I>
+          quake2      <I>Models for use with G3D::MD2Model</I>
+     </PRE>
+
+  If you use G3D::GApp and the G3D::GAppSettings::dataDir is unspecified, G3D::GApp
+  will search for likely locations for the data directory.  This is convenient
+  when you have many projects that share the same skybox and font, for example,
+  and don't want to copy that data into each project's directory.  The feature
+  is used mostly for small prototypes and student work-- when you are building 
+  a distributable application you'll want to specify dataDir because your users
+  won't have G3D installed.
+
+  The search directories include the current directory, up to 5 previous from the current,
+  and locations like <CODE>c:\libraries\<g3d release name>\data</CODE> that 
+  are common install dirs.
+
  */
