@@ -264,8 +264,16 @@ public:
 
     /**
      Returns the data in bytes.
+     @deprecated Use readBytes(void*, size_t).
      */
     void readBytes(size_t n, void* bytes);
+
+    /**
+     Returns the data in bytes.
+     */
+    inline void readBytes(void* bytes, size_t n) {
+        readBytes(n, bytes);
+    }
 
     /**
      Reads an n character string.  The string is not
