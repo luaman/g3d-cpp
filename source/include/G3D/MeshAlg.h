@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-10-18
+ @edited  2003-10-22
 */
 
 #ifndef G3D_MESHALG_H
@@ -37,6 +37,7 @@ public:
 
         /**
          Used by Edge::faceIndex to indicate a missing face.
+         This is a large negative value.
          */
         static const int        NONE;
 
@@ -46,9 +47,14 @@ public:
          */
         int                     vertexIndex[3];
 
-        /** If the edge index is negative, ~index is in this face
-            but is directed oppositely.
+        /**
+         If the edge index is negative, ~index is in this face
+         but is directed oppositely.  The index on the edgeIndex
+         array has no correspondence with the index on the vertexIndex
+         array.  
          */
+        // Temporarily takes on the value Face::NONE during adjacency
+        // computation to indicate an edge that has not yet been assigned.
         int                     edgeIndex[3];
     };
 
@@ -59,10 +65,11 @@ public:
 
         int                     vertexIndex[2];
 
-        /** The edge is directed forward in the first face and
-            backward in the second face.  Face index of MD2Model::Face::NONE
-            indicates a dangling edge.
-          */
+        /**
+         The edge is directed forward in the first face and
+         backward in the second face. Face index of MD2Model::Face::NONE
+         indicates a dangling edge.
+         */
         int                     faceIndex[2];
     };
     
@@ -91,11 +98,17 @@ public:
      appear in the face array and their edges will not appear in
      the edge array.
 
+     Where two faces meet, there are two opposite directed edges.  These
+     are collapsed into a single bidirectional edge in the geometricEdgeArray.
+     If four faces meet exactly at the same edge, that edge will appear
+     twice in the array.  If an edge is broken (has only one adjacent face)
+     it will appear in the array with one face index set to NONE.
+
      @param vertexArray Vertex positions to use when deciding colocation.
      @param indexArray  Order to traverse vertices to make triangles
      @param faceArray   Output
-     @param geometricEdgeArray Output.  These edges weld colocated vertices
-                        and remove degenerate edges.
+     @param geometricEdgeArray Output.  These edges automatically weld 
+            colocated vertices and remove degenerate edges.
      @param adjacentFaceArray Output. adjacentFaceArray[v] is an array of
                         indices for faces touching vertex index v
      */

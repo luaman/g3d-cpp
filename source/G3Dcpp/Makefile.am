@@ -16,7 +16,7 @@ libG3D_la_SOURCES= BinaryInput.cpp \
 				   ConvexPolyhedron.cpp \
 				   CoordinateFrame.cpp \
 				   debugAssert.cpp \
-                   Discovery.cpp \
+                                   Discovery.cpp \
 				   fileutils.cpp \
 				   format.cpp \
 				   g3dmath.cpp \
@@ -26,6 +26,8 @@ libG3D_la_SOURCES= BinaryInput.cpp \
 				   Log.cpp \
 				   Matrix3.cpp \
 				   MeshAlg.cpp \
+                                   MeshAlgAdjacency.cpp \
+                                   MeshAlgWeld.cpp \
 				   NetworkDevice.cpp \
 				   PhysicsFrame.cpp \
 				   Plane.cpp \

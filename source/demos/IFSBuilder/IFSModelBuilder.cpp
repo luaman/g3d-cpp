@@ -18,6 +18,8 @@ void IFSModelBuilder::setName(const std::string& n) {
 }
 
 
+double close;
+
 void IFSModelBuilder::commit(IFSModel* model) {
     model->name = name;
 
@@ -26,8 +28,8 @@ void IFSModelBuilder::commit(IFSModel* model) {
 
     Array<int> toNew, toOld;
 
-    double close = CLOSE;
-    if (close < 0) {
+    close = CLOSE;
+    if (close == IFSModelBuilder::AUTO_WELD) {
         Array<int> index;
         MeshAlg::createIndexArray(triList.size(), index);
         double minEdgeLen, maxEdgeLen, meanEdgeLen, medianEdgeLen;
@@ -71,8 +73,6 @@ void IFSModelBuilder::commit(IFSModel* model) {
     MeshAlg::computeAdjacency(model->geometry.vertexArray, indexArray, faceArray, model->edgeArray, adjacentFaceArray);
     MeshAlg::computeNormals(model->geometry.vertexArray, faceArray, adjacentFaceArray, model->geometry.normalArray, faceNormalArray);
 
-    // TODO: computeNormals doesn't need face array, it should take index array
-
     // Find broken edges
     model->brokenEdgeArray.resize(0);
     for (int e = 0; e < model->edgeArray.size(); ++e) {
@@ -80,12 +80,14 @@ void IFSModelBuilder::commit(IFSModel* model) {
 
         debugAssert(edge.vertexIndex[0] != edge.vertexIndex[1]);
 
-        if ((edge.faceIndex[1] == MeshAlg::Face::NONE) || 
+        if ((edge.faceIndex[1] == MeshAlg::Face::NONE) ||
+            (edge.faceIndex[0] == MeshAlg::Face::NONE) ||
             (edge.faceIndex[0] == edge.faceIndex[1])) {
             // Dangling edge
             model->brokenEdgeArray.append(edge);
         } else {
-            // Each vertex must appear in each adjacent face
+            // Each vertex must appear in each adjacent face.  If it doesn't, something
+            // has gone wrong.
             int numFound = 0;
             // Check each vertex
             for (int i = 0; i < 2; ++i) {
@@ -94,7 +96,8 @@ void IFSModelBuilder::commit(IFSModel* model) {
                     const int f = edge.faceIndex[j];
                     const MeshAlg::Face& face = faceArray[f];
                     for (int j = 0; j < 3; ++j) {
-                        if (face.vertexIndex[j] == edge.vertexIndex[i]) {
+                        if (model->geometry.vertexArray[face.vertexIndex[j]] == 
+                            model->geometry.vertexArray[edge.vertexIndex[i]]) {
                             ++numFound;
                             break;
                         }

@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.OSX,v 1.2 2003/07/03 23:13:38 professor_chaos Exp $
+# $Id: Makefile.OSX,v 1.3 2003/10/22 17:11:02 morgan3d Exp $
 # Makefile for Apple OS X using gnu make 3.79
 #
 # Maintained by Ben Landon
@@ -29,6 +29,9 @@ OBJFILES=\
 	LineSegment.o \
 	Log.o \
 	Matrix3.o \
+        MeshAlg.o \
+        MeshAlgAdjacency.o \
+        MeshAlgWeld.o \
 	NetworkDevice.o \
 	PhysicsFrame.o \
 	Plane.o \

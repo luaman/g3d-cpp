@@ -16,13 +16,15 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-10-06
+  @edited  2003-10-22
  */ 
 
 #include <G3DAll.h>
 #include "IFSModel.h"
 #include "IFSModelBuilder.h"
 
+/** Defined in IFSModelBuilder.cpp. Collapse radius. */
+extern double close;
 std::string             DATA_DIR        = "data/";
 
 Log*                    debugLog        = NULL;
@@ -81,10 +83,9 @@ int main(int argc, char** argv) {
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("d:/graphics3d/book/data/ifs/teapot.ifs");
-//    std::string in("D:/users/morgan/Projects/_Silhouette/models/ROCKHRSE.ifs");
-//    std::string in("c:/tmp/seuss/woman.sm");
-//    std::string in("d:/libraries/g3d-6_00/data/ifs/sphere.ifs");
+//    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
+    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
+//    std::string in("d:/libraries/g3d-6_00/data/ifs/cube.ifs");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");
@@ -109,7 +110,7 @@ int main(int argc, char** argv) {
         */
 
         model = new IFSModel(filename[i]);
-        model->name = "Woman";
+        model->name = "";
         
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");
@@ -173,7 +174,7 @@ void doGraphics() {
                     }
 
                     y = renderDevice->getHeight();
-                    font->draw2D(format("Vertices within radius %g collapsed", IFSModelBuilder::CLOSE), 10, y - 15, 10, Color3::BLACK);
+                    font->draw2D(format("Vertices within radius %g collapsed", close), 10, y - 15, 10, Color3::BLACK);
                 renderDevice->pop2D();
             }
             
