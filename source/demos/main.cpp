@@ -108,22 +108,29 @@ void Demo::doGraphics() {
 }
 
 
+class App : public GApp {
+protected:
+
+	void main() {
+		setDebugMode(true);
+		debugController.setActive(true);
+		Demo(this).run();
+	}
+
+public:
+	App(const GAppSettings& settings) : GApp(settings) {}
+
+};
+
+
 int main(int argc, char** argv) {
 
     GAppSettings settings;
 
-    GApp app(settings);
-
-    app.setDebugMode(true);
-    app.debugController.setActive(true);
-
-    Demo applet(&app);
-
-    applet.run();
+    App(settings).run();
 
     return 0;
 }
-
 
 
 

@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created: 2001-06-02
-  @edited:  2003-10-15
+  @edited:  2003-12-03
  */
 
 #ifndef G3D_VECTORMATH_H
@@ -18,6 +18,7 @@
 #include "G3D/Vector4.h"
 #include "G3D/Matrix3.h"
 #include "G3D/Matrix4.h"
+#include "G3D/Color3.h"
 
 namespace G3D {
 
@@ -119,6 +120,10 @@ inline Vector3 lerp(const Vector3& v1, const Vector3& v2, float f) {
 }
 
 inline Vector4 lerp(const Vector4& v1, const Vector4& v2, float f) {
+    return v1.lerp(v2, f);
+}
+
+inline Color3 lerp(const Color3& v1, const Color3& v2, float f) {
     return v1.lerp(v2, f);
 }
 

@@ -9,7 +9,7 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-06-02
- @edited  2003-04-08
+ @edited  2003-12-03
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -111,6 +111,10 @@ public:
     G3D::Real unitize (G3D::Real fTolerance = 1e-06);
     Color3 cross (const Color3& rkVector) const;
     Color3 unitCross (const Color3& rkVector) const;
+
+	inline Color3 lerp(const Color3& other, double a) const {
+        return (*this) + (other - *this) * a; 
+    }
 
     std::string toString() const;
 
