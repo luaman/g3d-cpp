@@ -22,6 +22,12 @@ namespace G3D {
  for creating unsigned int vertex arrays.  Used by
  CImage as the underlying format.
 
+ <B>WARNING</B>: Integer color formats are different than
+ integer vertex formats.  The color channels are automatically
+ scaled by 255 (because OpenGL automatically scales integer
+ colors back by this factor).  So Color3(1,1,1) == Color3uint8(255,255,255)
+ but Vector3(1,1,1) == Vector3int16(1,1,1).
+
  This is provided because there is no natural 'uint24'
  format.  There is no PackedColor4 because there is no single
  convention for which end to stick the alpha value on

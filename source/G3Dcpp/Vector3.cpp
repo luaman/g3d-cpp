@@ -77,9 +77,9 @@ Vector3::Vector3(BinaryInput& b) {
 
 
 Vector3::Vector3(const class Vector3int16& v) {
-    x = v.x / 32767.0;
-    y = v.y / 32767.0;
-    z = v.z / 32767.0;
+    x = v.x;
+    y = v.y;
+    z = v.z;
 }
 
 
