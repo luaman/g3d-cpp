@@ -49,6 +49,9 @@ private:
     #if defined(G3D_LINUX)
         Display*                _X11Display;
         Window                  _X11Window;
+    #elif defined(G3D_WIN32)
+        HDC                     _Win32HDC;
+        HWND                    _Win32HWND;
     #endif
 
 public:
@@ -115,6 +118,9 @@ public:
     #if defined(G3D_LINUX)
         Window   X11Window() const;
         Display* X11Display() const;
+    #elif defined(G3D_WIN32)
+        HDC      Win32HDC() const;
+        HWND     Win32HWND() const;
     #endif
 };
 

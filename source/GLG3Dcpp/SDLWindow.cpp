@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-03-04
+  @edited  2004-03-06
 */
 
 #include "GLG3D/SDLWindow.h"
@@ -23,21 +23,16 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 		exit(1);
 	}
 
-    #if defined(G3D_WIN32)
-        // Extract SDL HDC/HWND on Win32
 
-    #elif defined(G3D_LINUX)
-        // Extract SDL's internal Display pointer on Linux
-        SDL_SysWMinfo info;
-        SDL_VERSION(&info.version);
-        SDL_GetWMInfo(&info);
-        
-        _X11Display = info.info.x11.display;
-        _X11Window  = info.info.x11.window;
-
-        G3D::_internal::X11Display = info.info.x11.display;
-        G3D::_internal::X11Window  = info.info.x11.window;
-    #endif
+    if (! settings.fullScreen) {
+        // This doesn't really work very well due to SDL bugs so we fix up 
+        // the position after the window is created.
+        if (settings.center) {
+            System::setEnv("SDL_VIDEO_CENTERED", "");
+        } else {
+            System::setEnv("SDL_VIDEO_WINDOW_POS", format("%d,%d", settings.x, settings.y));
+        }
+    }
 
     _mouseVisible = true;
     _inputCapture = false;
@@ -111,6 +106,39 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     SDL_EnableUNICODE(1);
     setCaption("G3D");
 
+    SDL_SysWMinfo info;
+    SDL_VERSION(&info.version);
+    SDL_GetWMInfo(&info);
+
+    #if defined(G3D_WIN32)
+        // Extract SDL HDC/HWND on Win32
+        _Win32HWND  = info.window;
+        _Win32HDC   = wglGetCurrentDC();
+    #elif defined(G3D_LINUX)
+        // Extract SDL's internal Display pointer on Linux        
+        _X11Display = info.info.x11.display;
+        _X11Window  = info.info.x11.window;
+
+        G3D::_internal::X11Display = info.info.x11.display;
+        G3D::_internal::X11Window  = info.info.x11.window;
+    #endif
+
+    // Adjust window position
+    #ifdef G3D_WIN32
+        if (! settings.fullScreen) {
+            int screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+            int screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
+            int x = iClamp(settings.x, 0, screenWidth);
+            int y = iClamp(settings.y, 0, screenHeight);
+
+            if (settings.center) {
+                x = (screenWidth  - settings.width) / 2;
+                y = (screenHeight - settings.height) / 2;
+            }
+
+            SetWindowPos(_Win32HWND, NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+        }
+    #endif
 
 	// Check for joysticks
     int j = SDL_NumJoysticks();
@@ -175,16 +203,35 @@ Rect2D SDLWindow::dimensions() const {
 
 
 void SDLWindow::setDimensions(const Rect2D& dims) {
-    // Do nothing
+    #ifdef G3D_WIN32
+        int screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+        int screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
 
-    // TODO: use platform API
+        int x = iClamp(dims.x0(), 0, screenWidth);
+        int y = iClamp(dims.y0(), 0, screenHeight);
+        int w = iClamp(dims.width(),  1, screenWidth);
+        int h = iClamp(dims.height(),  1, screenHeight);
+
+        SetWindowPos(_Win32HWND, NULL, x, y, w, h, SWP_NOZORDER);
+    #endif
+
+    // TODO: X11
+    // TODO: OS X
 }
 
 
 void SDLWindow::setPosition(int x, int y) const  {
-    // Do nothing
+    #ifdef G3D_WIN32
+        int screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+        int screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
 
-    // TODO: use platform API
+        x = iClamp(x, 0, screenWidth);
+        y = iClamp(y, 0, screenHeight);
+
+        SetWindowPos(_Win32HWND, NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+    #endif
+    // TODO: X11
+    // TODO: OS X
 }
 
 
@@ -432,6 +479,17 @@ Window SDLWindow::X11Window() const {
 
 Display* SDLWindow::X11Display() const {
     return _X11Display;
+}
+
+#elif defined(G3D_WIN32)
+
+HDC SDLWindow::Win32HDC() const {
+    return _Win32HDC;
+}
+
+
+HWND SDLWindow::Win32HWND() const {
+    return _Win32HWND;
 }
 
 #endif

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-02-11
+  @edited  2004-03-06
 */
 
 #ifndef G3D_GWINDOWSETTINGS_H
@@ -20,6 +20,15 @@ public:
     int     width;
 
     int     height;
+
+    /** Initial x position (can be overridden by fullScreen and center) */
+    int     x;
+
+    /** Initial y position (can be overridden by fullScreen and center) */
+    int     y;
+
+    /** If true, overrides the x and y settings */
+    bool    center;
 
     /* The number of bits in <B>each</B> color channel of the frame buffer.
        5, <B>8</B>.*/
@@ -73,6 +82,9 @@ public:
     GWindowSettings() :
         width(800),
         height(600),
+        x(0),
+        y(0),
+        center(true),
         rgbBits(8),
         alphaBits(0),
         depthBits(24),
