@@ -189,20 +189,6 @@
 			settings = {
 			};
 		};
-		0FCA739F06F1BCAE0006B0C9 = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.framework;
-			name = SDL.framework;
-			path = /Library/Frameworks/SDL.framework;
-			refType = 0;
-			sourceTree = "<absolute>";
-		};
-		0FCA73A006F1BCAE0006B0C9 = {
-			fileRef = 0FCA739F06F1BCAE0006B0C9;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		0FCA73A606F1BCD70006B0C9 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -325,7 +311,7 @@
 			children = (
 				0FCA739706F1BC8F0006B0C9,
 				0FCA739806F1BC8F0006B0C9,
-				0FCA739F06F1BCAE0006B0C9,
+				3EB570D6071BE66300E8B645,
 				0FCA73A606F1BCD70006B0C9,
 				1058C7A1FEA54F0111CA2CBB,
 			);
@@ -340,6 +326,30 @@
 //292
 //293
 //294
+//3E0
+//3E1
+//3E2
+//3E3
+//3E4
+		3EB570D6071BE66300E8B645 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = SDL.framework;
+			path = /Library/Frameworks/SDL.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		3EB570D7071BE66300E8B645 = {
+			fileRef = 3EB570D6071BE66300E8B645;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//3E0
+//3E1
+//3E2
+//3E3
+//3E4
 //4A0
 //4A1
 //4A2
@@ -352,6 +362,8 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = ../../include;
+				LIBRARY_SEARCH_PATHS = ../../../G3DOSX/build;
 				PREBINDING = YES;
 				ZERO_LINK = NO;
 			};
@@ -385,7 +397,7 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "$(HOME)/Library/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = "\"$(HOME)/Library/Frameworks\" /Users/dbolli/Library/Frameworks";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
@@ -393,7 +405,7 @@
 				HEADER_SEARCH_PATHS = ../../include;
 				INFOPLIST_FILE = "";
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = /Users/brl/development/g3d/cpp/G3DOSX/build;
+				LIBRARY_SEARCH_PATHS = "/Users/brl/development/g3d/cpp/G3DOSX/build \"/Users/dbolli/dev/Xcode src/g3d-src-6_04f/cpp/G3DOSX/build\"";
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = Collision_Demo;
 				WRAPPER_EXTENSION = app;
@@ -430,8 +442,8 @@
 			files = (
 				0FCA739906F1BC8F0006B0C9,
 				0FCA739A06F1BC8F0006B0C9,
+				3EB570D7071BE66300E8B645,
 				8D11072F0486CEB800E47090,
-				0FCA73A006F1BCAE0006B0C9,
 				0FCA73A706F1BCD70006B0C9,
 			);
 			isa = PBXFrameworksBuildPhase;
