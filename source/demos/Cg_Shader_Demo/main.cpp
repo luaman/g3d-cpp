@@ -49,6 +49,7 @@ public:
     class App*              app;
 
     Demo(App* app);
+    virtual ~Demo(){}
 
     Mesh                    model;
 

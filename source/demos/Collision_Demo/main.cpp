@@ -48,7 +48,7 @@ const double                  maxFrameRate    = 30.5;
 Demo::Demo(App* _app) : GApplet(_app), app(_app), gameTime(0) {
     // Allocate the two VARAreas used in this demo
     ::varStatic    = VARArea::create(1024 * 1024);
-    debugAssert(::varStatic);
+    debugAssert(::varStatic.notNull());
 }
 
 
