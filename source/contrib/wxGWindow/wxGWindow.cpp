@@ -262,7 +262,8 @@ void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
     e.key.state = SDL_RELEASED;
     
     if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
-        e.key.keysym.sym = (SDLKey)(event.KeyCode() + 32);
+        // Convert to lower case
+        e.key.keysym.sym = (SDLKey)(event.KeyCode() - 'A' + 'a');
     } else {
         if (sdlKeyMap.containsKey(event.KeyCode())) {
             e.key.keysym.sym = (SDLKey)sdlKeyMap.get(event.KeyCode());
