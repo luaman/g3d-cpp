@@ -25,60 +25,60 @@ void wxGWindow::makeAttribList(
         const GWindowSettings&  settings,
         Array<int>&             attribList) {
 
-        attribList.clear();
-        attribList.append(WX_GL_RGBA, 1);
-        attribList.append(WX_GL_LEVEL, 0);
-        attribList.append(WX_GL_DOUBLEBUFFER, 1);
-        attribList.append(WX_GL_STEREO, settings.stereo ? 1 : 0);
-        attribList.append(WX_GL_MIN_RED, settings.rgbBits);
-        attribList.append(WX_GL_MIN_GREEN, settings.rgbBits);
-        attribList.append(WX_GL_MIN_BLUE, settings.rgbBits);
-        attribList.append(WX_GL_MIN_ALPHA, settings.alphaBits);
-        attribList.append(WX_GL_DEPTH_SIZE, 
-            (settings.depthBits == 24 || settings.depthBits == -1) ? 
-            32 : settings.depthBits);
-        attribList.append(WX_GL_STENCIL_SIZE, settings.stencilBits); 
-    }
+    attribList.clear();
+    attribList.append(WX_GL_RGBA, 1);
+    attribList.append(WX_GL_LEVEL, 0);
+    attribList.append(WX_GL_DOUBLEBUFFER, 1);
+    attribList.append(WX_GL_STEREO, settings.stereo ? 1 : 0);
+    attribList.append(WX_GL_MIN_RED, settings.rgbBits);
+    attribList.append(WX_GL_MIN_GREEN, settings.rgbBits);
+    attribList.append(WX_GL_MIN_BLUE, settings.rgbBits);
+    attribList.append(WX_GL_MIN_ALPHA, settings.alphaBits);
+    attribList.append(WX_GL_DEPTH_SIZE, 
+        (settings.depthBits == 24 || settings.depthBits == -1) ? 
+        32 : settings.depthBits);
+    attribList.append(WX_GL_STENCIL_SIZE, settings.stencilBits); 
+}
 
 wxGWindow::wxGWindow(
-        const GWindowSettings&  _settings,
-        wxWindow*               parent,
-        wxWindowID              id)  : invisible(wxCURSOR_BLANK), arrow(wxCURSOR_ARROW) {
+    const GWindowSettings&  _settings,
+    wxWindow*               parent,
+    wxWindowID              id)  : invisible(wxCURSOR_BLANK), arrow(wxCURSOR_ARROW) {
 
-        initWXKeys();
+    initWXKeys();
 
-        Array<int> attribList;
-        makeAttribList(_settings, attribList);
-        settings = _settings;
+    Array<int> attribList;
+    makeAttribList(_settings, attribList);
+    settings = _settings;
 
-        wxPoint pos(_settings.x, _settings.y);
-        wxSize size(_settings.width, _settings.height);
+    wxPoint pos(_settings.x, _settings.y);
+    wxSize size(_settings.width, _settings.height);
 
-        window = new wxG3DCanvas( this,
-            parent, id, pos, size, 0, 
-            "WxWindow", attribList.getCArray(), 
-            wxNullPalette);
+    window = new wxG3DCanvas( this,
+        parent, id, pos, size, 0, 
+        "WxWindow", attribList.getCArray(), 
+        wxNullPalette);
 
-        if (settings.center) {
-            window->Center();
-        }
+    if (settings.center) {
+        window->Center();
+    }
 
-        if (! settings.visible) {
-            window->Hide();
-        }
+    if (! settings.visible) {
+        window->Hide();
+    }
 
-        window->GetPosition(&settings.x, &settings.y);
-        window->GetClientSize(&settings.width, &settings.height);
+    window->GetPosition(&settings.x, &settings.y);
+    window->GetClientSize(&settings.width, &settings.height);
 }
 
 wxGWindow::wxGWindow(wxG3DCanvas* canvas) : 
-        invisible(wxCURSOR_BLANK), 
-        arrow(wxCURSOR_ARROW), 
-        window(canvas) {
-    
-        window->GetPosition(&settings.x, &settings.y);
-        window->GetClientSize(&settings.width, &settings.height);
-        settings.visible = window->IsShown();
+    invisible(wxCURSOR_BLANK), 
+    arrow(wxCURSOR_ARROW), 
+    window(canvas) {
+
+    window->GetPosition(&settings.x, &settings.y);
+    window->GetClientSize(&settings.width, &settings.height);
+    settings.visible = window->IsShown();
 }
 
 
@@ -91,7 +91,7 @@ std::string wxGWindow::getAPIName () const {
 }
 
 /** The wxWindow represented by this object */
-wxGLCanvas* wxGWindow::wxHandle() const {
+wxG3DCanvas* wxGWindow::wxHandle() const {
     return window;
 }
 

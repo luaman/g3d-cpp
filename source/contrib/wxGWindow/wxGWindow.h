@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-10-02
-  @edited  2004-10-17
+  @edited  2004-11-14
  */
 #ifndef G3D_wxGWindow_H
 #define G3D_wxGWindow_H
@@ -97,7 +97,7 @@ public:
     std::string getAPIName () const ;
 
     /** The wxWindow represented by this object */
-    wxGLCanvas* wxHandle() const ;
+    wxG3DCanvas* wxHandle() const ;
 
     virtual void swapGLBuffers() ;
 
