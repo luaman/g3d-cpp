@@ -47,7 +47,7 @@ public:
                 p = FIXED_FUNCTION;
             }
         }
-
+//        p=FIXED_FUNCTION;
         return p;
     }
 
@@ -77,7 +77,8 @@ public:
             Sphere                  sphereBounds;
             Box                     boxBounds;
 
-            SuperShaderRef          shader;
+            ShaderRef               nonShadowedShader;
+            ShaderRef               shadowMappedShader;
 
             TriList() : cullFace(RenderDevice::CULL_BACK) {}
 

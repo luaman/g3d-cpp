@@ -6,10 +6,6 @@
 
  */
 
-// Lighting environment
-uniform vec3        ambientTop;
-uniform vec3        ambientBottom;
-
 /** World space, normalized (TODO: non-directional light, multiple lights) */
 uniform vec4        lightPosition;
 uniform vec3        lightColor;
@@ -39,6 +35,9 @@ uniform float       bumpMapScale;
 
 /** xyz = normal, w = bump height */
 uniform sampler2D   normalBumpMap;
+
+uniform vec3        ambientTop;
+uniform vec3        ambientBottom;
 
 // World parameters
 varying vec3        wsEyePos;
@@ -102,8 +101,8 @@ void main(void) {
     vec3 wsE = normalize(wsEyePos - wsPosition);
     const vec3 wsR = (wsN * 2.0 * dot(wsN, wsE)) - wsE;
 
-    vec3 ambient = mix(ambientBottom, ambientTop, wsN.y * 0.5 + 0.5);
-
+    // tan_Z is world space normal
+    vec3 ambient = ambientTop + (ambientTop - ambientBottom) * min(wsN.y, 0);
 
     gl_FragColor.rgb =
         // Emissive
@@ -116,7 +115,7 @@ void main(void) {
         max(dot(wsL, wsN), 0) * lightColor * diffuseConstant +
 
         // Specular
-        pow(max(dot(wsL, wsR), 0), specularConstant) * lightColor * specularConstant +
+        pow(max(dot(wsL, wsR), 0), specularExponentConstant) * lightColor * specularConstant +
         
         // Reflection
         textureCube(environmentMap, wsR).rgb * environmentConstant * reflectConstant;

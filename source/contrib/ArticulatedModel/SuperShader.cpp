@@ -6,14 +6,138 @@
 
 #include "SuperShader.h"
 
+// Material arguments
 // TODO: remove
-TextureRef SuperShader::Material::defaultNormalMap;
+static TextureRef defaultNormalMap;
 // TODO: remove
-TextureRef SuperShader::Material::whiteMap;
+static TextureRef whiteMap;
 
-void SuperShader::Material::configureShaderArgs(
-    VertexAndPixelShader::ArgList& args) const {
+void SuperShader::configureShader(
+    const LightingRef&              lighting,
+    const Material&                 material,
+    VertexAndPixelShader::ArgList&  args) {
     
+    // TODO: don't even set fields that have no corresponding map
+    args.set("diffuseMap",              material.diffuse.map.notNull() ? material.diffuse.map : whiteMap);
+    args.set("diffuseConstant",         material.diffuse.constant);
+    args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
+    args.set("specularConstant",        material.specular.constant);
+    args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
+    args.set("specularExponentConstant", material.specularExponent.constant);
+    args.set("reflectMap",              material.reflect.map.notNull() ? material.reflect.map : whiteMap);
+    args.set("reflectConstant",         material.reflect.constant);
+    args.set("emitMap",                 material.emit.map.notNull() ? material.emit.map : whiteMap);
+    args.set("emitConstant",            material.emit.constant);
+    args.set("normalBumpMap",           material.normalBumpMap.notNull() ? material.normalBumpMap : defaultNormalMap);
+    args.set("bumpMapScale",            material.bumpMapScale);
+
+
+    ///////////////////////////////////////////////////
+    // Lighting Args
+
+    args.set("ambientTop",      lighting->ambientTop);
+    args.set("ambientBottom",   lighting->ambientBottom);
+
+    if (lighting->lightArray.size() > 0) {
+        args.set("lightPosition",   lighting->lightArray[0].position);
+        args.set("lightColor",      lighting->lightArray[0].color);
+    } else {
+        args.set("lightPosition",   Vector4(0,0,0,1));
+        args.set("lightColor",      Color3::black());
+    }
+
+    args.set("environmentConstant", lighting->environmentMapColor);
+    args.set("environmentMap",  lighting->environmentMap);
+}
+
+
+void SuperShader::configureShadowShader(
+    const GLight&                   light, 
+    const Matrix4&                  lightMVP, 
+    const TextureRef&               shadowMap,
+    const Material&                 material,
+    VertexAndPixelShader::ArgList&  args) {
+    
+    // TODO: don't even set fields that have no corresponding map
+    args.set("diffuseMap",              material.diffuse.map.notNull() ? material.diffuse.map : whiteMap);
+    args.set("diffuseConstant",         material.diffuse.constant);
+    args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
+    args.set("specularConstant",        material.specular.constant);
+    args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
+    args.set("specularExponentConstant", material.specularExponent.constant);
+    args.set("normalBumpMap",           material.normalBumpMap.notNull() ? material.normalBumpMap : defaultNormalMap);
+    args.set("bumpMapScale",            material.bumpMapScale);
+
+
+    ///////////////////////////////////////////////////
+    // Lighting Args
+
+    args.set("lightPosition",   Vector4(light.position.xyz().direction(),0));
+    args.set("lightColor",      light.color);
+
+
+    // Shadow map setup
+    args.set("shadowMap",       shadowMap);
+
+    // Bias the shadow map so that we don't get acne
+    static const Matrix4 bias(
+        0.5f, 0.0f, 0.0f, 0.5f,
+        0.0f, 0.5f, 0.0f, 0.5f,
+        0.0f, 0.0f, 0.5f, 0.5f - .000001,
+        0.0f, 0.0f, 0.0f, 1.0f);
+
+    // We may have to invert the texture coordinates on the shadow map
+    double ymax = 1.0;
+    if (shadowMap->getDimension() == Texture::DIM_2D_RECT) {
+        ymax = shadowMap->getTexelHeight();
+    }
+
+    Matrix4 textureMatrix = 
+        shadowMap->invertY 
+        ? Matrix4(1,  0, 0, 0,
+                  0, -1, 0, ymax,
+                  0,  0, 1, 0,
+                  0,  0, 0, 1)
+        : Matrix4::identity();
+
+    args.set("lightMVP",        textureMatrix * bias * lightMVP);
+}
+
+
+SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
+ 
+    Cache::Pair p = cache.getSimilar(material);
+
+    if (p.shadowMappedShader.isNull()) {
+        std::string path = "";//"../contrib/ArticulatedModel/";
+
+        // TODO: only enable terms needed by this material
+        p.shadowMappedShader = Shader::fromFiles(
+            path + "ShadowMappedLightPass.glsl.vrt", 
+            path + "ShadowMappedLightPass.glsl.frg");
+
+        p.nonShadowedShader = Shader::fromFiles(
+            path + "NonShadowedPass.glsl.vrt", 
+            path + "NonShadowedPass.glsl.frg");
+
+        cache.add(material, p);
+    }
+
+    return p;
+}
+
+
+void SuperShader::createShaders(
+    const Material& material, 
+    ShaderRef& nonShadowedShader, 
+    ShaderRef& shadowMappedShader) {
+
+    Cache::Pair p       = getShader(material);
+
+    nonShadowedShader   = p.nonShadowedShader;
+    shadowMappedShader  = p.shadowMappedShader;
+
+
     // TODO: remove
     if (whiteMap.isNull()) {
         GImage im(4,4,3);
@@ -35,113 +159,26 @@ void SuperShader::Material::configureShaderArgs(
         }
         defaultNormalMap = Texture::fromGImage("Normal Map", im, TextureFormat::RGBA8);
     }
-
-    // TODO: don't even set fields that have no corresponding map
-    args.set("diffuseMap",              diffuse.map.notNull() ? diffuse.map : whiteMap);
-    args.set("diffuseConstant",         diffuse.constant);
-    args.set("specularMap",             specular.map.notNull() ? specular.map : whiteMap);
-    args.set("specularConstant",        specular.constant);
-    args.set("specularExponentMap",     specularExponent.map.notNull() ? specularExponent.map : whiteMap);
-    args.set("specularExponentConstant", specularExponent.constant);
-    args.set("reflectMap",              reflect.map.notNull() ? reflect.map : whiteMap);
-    args.set("reflectConstant",         reflect.constant);
-    args.set("emitMap",                 emit.map.notNull() ? emit.map : whiteMap);
-    args.set("emitConstant",            emit.constant);
-    args.set("normalBumpMap",           normalBumpMap.notNull() ? normalBumpMap : defaultNormalMap);
-    args.set("bumpMapScale",            bumpMapScale);
 }
 
-
-void SuperShader::configureLightingShaderArgs(
-    LightingRef&                    lighting, 
-    VertexAndPixelShader::ArgList&  args) {
-
-    args.set("ambientTop",      lighting->ambientTop);
-    args.set("ambientBottom",   lighting->ambientBottom);
-
-    if (lighting->lightArray.size() > 0) {
-        args.set("lightPosition",   lighting->lightArray[0].position);
-        args.set("lightColor",      lighting->lightArray[0].color);
-    } else {
-        args.set("lightPosition",   Vector4(0,0,0,1));
-        args.set("lightColor",      Color3::black());
-    }
-
-    args.set("environmentConstant", lighting->environmentMapColor);
-    args.set("environmentMap",  lighting->environmentMap);
-}
-
-
-ShaderRef SuperShader::getShader(const Material& material) {
- 
-    ShaderRef s = cache.getSimilar(material);
-
-    if (s.isNull()) {
-        std::string path = "";//"../contrib/ArticulatedModel/";
-
-        // TODO: only enable terms needed by this material
-        s = Shader::fromFiles(path + "SuperShader.glsl.vrt", "SuperShader.glsl.frg");
-        cache.add(material, s);
-    }
-
-    return s;
-}
-
-
-SuperShaderRef SuperShader::create(const Material& mat) {
-    return new SuperShader(mat);
-}
-
-
-SuperShader::SuperShader(const Material& mat) : material(mat) {
-    shader = getShader(material);
-}
-
-
-bool SuperShader::ok() const {
-    return shader->ok();
-}
-
-
-void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
-    material.configureShaderArgs(shader->args);
-    configureLightingShaderArgs(lighting, shader->args);
-    shader->beforePrimitive(renderDevice);
-    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-}
-
-
-void SuperShader::afterPrimitive(RenderDevice* renderDevice) {
-    shader->afterPrimitive(renderDevice);
-}
-
-const std::string& SuperShader::messages() const {
-    static const std::string t = "TODO";
-    return t;
-}
-
-
-void SuperShader::setLighting(const LightingRef& _lighting) {
-    lighting = _lighting;
-}
 
 ////////////////////////////////////////////////////////////////////////////
 SuperShader::Cache SuperShader::cache;
 
-void SuperShader::Cache::add(const Material& mat, ShaderRef shader) {
+void SuperShader::Cache::add(const Material& mat, const Cache::Pair& p) {
     materialArray.append(mat);
-    shaderArray.append(shader);
+    shaderArray.append(p);
 }
 
 
-ShaderRef SuperShader::Cache::getSimilar(const Material& mat) const {
+SuperShader::Cache::Pair SuperShader::Cache::getSimilar(const Material& mat) const {
     for (int m = 0; m < materialArray.size(); ++m) {
         if (materialArray[m].similarTo(mat)) {
             return shaderArray[m];
         }
     }
 
-    return NULL;
+    return Pair();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

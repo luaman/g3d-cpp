@@ -179,7 +179,10 @@ void ArticulatedModel::Part::updateVAR() {
 
 void ArticulatedModel::Part::updateShaders() {
     for (int t = 0; t < triListArray.size(); ++t) {
-        triListArray[t].shader = SuperShader::create(triListArray[t].material);
+        SuperShader::createShaders(
+            triListArray[t].material,
+            triListArray[t].nonShadowedShader, 
+            triListArray[t].shadowMappedShader);
     }
 }
 

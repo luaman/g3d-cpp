@@ -26,8 +26,6 @@ private:
 
     std::string             _name;
 
-    SuperShaderRef          superShader;
-
 protected:
 
     /** Called from render to draw geometry after the material properties are set.*/
@@ -167,14 +165,6 @@ void ArticulatedModel::Part::pose(
             posed->listIndex = t;
             posed->model = model;
 
-            if (ArticulatedModel::profile() != ArticulatedModel::FIXED_FUNCTION) {
-                // Construct the shader
-                const ArticulatedModel::Part& part = model->partArray[partIndex];
-                const ArticulatedModel::Part::TriList& triList = part.triListArray[t];
-                const SuperShader::Material& material = triList.material;
-                posed->superShader = SuperShader::create(material);
-            }
-
             posedArray.append(posed);
         }
     }
@@ -257,8 +247,8 @@ bool PosedArticulatedModel::renderPS20NonShadowedOpaqueTerms(
         return false;
     }
 
-    superShader->setLighting(lighting);
-    rd->setShader(superShader);
+    SuperShader::configureShader(lighting, material, triList.nonShadowedShader->args);
+    rd->setShader(triList.nonShadowedShader);
     defaultRender(rd);
 
     return true;
@@ -320,7 +310,7 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
                 rd->setLight(0, GLight::directional(-Vector3::unitY(), 
                     lighting->ambientBottom - lighting->ambientTop, false)); 
             }
-
+            
             // Lights
             for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
                 rd->setLight(L + 1, lighting->lightArray[L]);
@@ -442,8 +432,17 @@ void PosedArticulatedModel::renderPS20ShadowMappedLightPass(
     const ArticulatedModel::Part::TriList& triList,
     const SuperShader::Material& material) const {
 
-    // TODO: implement
-    renderFFShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+    if (material.specular.isBlack() &&
+        material.diffuse.isBlack()) {
+        // Nothing to draw
+        return;
+    }
+
+    rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+
+    SuperShader::configureShadowShader(light, lightMVP, shadowMap, material, triList.shadowMappedShader->args);
+    rd->setShader(triList.shadowMappedShader);
+    defaultRender(rd);
 }
 
 

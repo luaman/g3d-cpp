@@ -22,7 +22,6 @@ typedef ReferenceCountedPointer<class SuperShader> SuperShaderRef;
 class SuperShader : public Shader {
 public:
 
-
     /** Material property coefficients are specified as 
         a constant color times a texture map.  If the color
         is white the texture map entirely controls the result.
@@ -86,12 +85,6 @@ public:
 
         */
 	class Material {
-    private:
-        // TODO: remove
-        static TextureRef defaultNormalMap;
-        // TODO: remove
-        static TextureRef whiteMap;
-
 	public:
         /** Diffuse reflection of lights */
         Component               diffuse;
@@ -124,26 +117,39 @@ public:
             transmit(0), reflect(0) {
         }
 
-        /** Configures the material arguments on a SuperShader for
-            the opaque pass. */
-        void configureShaderArgs(VertexAndPixelShader::ArgList& args) const;
-
         /** Returns true if this material uses similar terms as other
             (used by SuperShader), although the actual textures may differ. */
         bool similarTo(const Material& other) const;
 	};
 
-   
-    /** Configures the lighting arguments on a SuperShader.*/
-    void configureShaderArgs(VertexAndPixelShader::ArgList& args) const;
+    /** Configures the material arguments on a SuperShader for
+        the opaque pass. */
+    static void configureShader(
+        const LightingRef&              lighting,
+        const Material&                 material,
+        VertexAndPixelShader::ArgList&  args);
+
+
+    static void configureShadowShader(
+        const GLight&       light, 
+        const Matrix4&      lightMVP, 
+        const TextureRef&   shadowMap,
+        const Material&                 material,
+        VertexAndPixelShader::ArgList&  args);
 
 private:
 
     class Cache {
+    public:
+        struct Pair {
+        public:
+            ShaderRef       nonShadowedShader;
+            ShaderRef       shadowMappedShader;
+        };
     private:
 
         Array<Material>     materialArray;
-        Array<ShaderRef>    shaderArray;
+        Array<Pair>         shaderArray;
 
     public:
 
@@ -151,17 +157,16 @@ private:
 
         /** Adds a shader to the list of cached ones.  Only call when 
             getSimilar returned NULL.*/
-        void add(const Material& mat, ShaderRef shader);
+        void add(const Material& mat, const Pair& pair);
 
         /** Returns the shader for a similar material or 
-            NULL if one does not exist. */
-        ShaderRef getSimilar(const Material& mat) const;
+            NULL, NULL if one does not exist. */
+        Pair getSimilar(const Material& mat) const;
     };
 
     static Cache cache;
 
-    /** Returns the SuperShader for this material, with arguments set. */
-    static ShaderRef getShader(const Material& material);
+    static Cache::Pair getShader(const Material& material);
 
     /** Configuration for a non-programmable card.
         No reflection map, single ambient color. */
@@ -172,25 +177,18 @@ private:
     Material                material;
 
     /** Underlying shader.  May be shared between multiple SuperShaders. */
-    ShaderRef               shader;
+    ShaderRef               nonShadowedShader;
+    ShaderRef               shadowMappedShader;
 
-    explicit SuperShader(const Material& material);
-
-    static void configureLightingShaderArgs(LightingRef& lighting, VertexAndPixelShader::ArgList& args);
+    // Don't call
+    SuperShader() {}
 
 public:
 
-    static SuperShaderRef create(const Material& material);
-
-    virtual bool ok() const;
-    virtual void beforePrimitive(RenderDevice* renderDevice);
-    virtual void afterPrimitive(RenderDevice* renderDevice);
-    virtual const std::string& messages() const;
-
-    /** Sets all lighting parameters from this lighting environment. The environment
-        will be referenced, so that future changes are automatically reflected without
-        another call. */
-    void setLighting(const LightingRef& lighting);
+    static void createShaders(
+        const Material& material,
+        ShaderRef&      nonShadowedShader,
+        ShaderRef&      shadowMappedShader);
 
 }; // SuperShader
 

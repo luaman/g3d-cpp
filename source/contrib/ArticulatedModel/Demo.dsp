@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -121,20 +121,24 @@ SOURCE=.\Load3DS.h
 SOURCE=.\SuperShader.h
 # End Source File
 # End Group
-# Begin Group "Resource Files"
-
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# End Group
 # Begin Group "Shaders"
 
 # PROP Default_Filter "*.glsl,*.frag,*.vert"
 # Begin Source File
 
-SOURCE=.\SuperShader.glsl.frg
+SOURCE=.\NonShadowedPass.glsl.frg
 # End Source File
 # Begin Source File
 
-SOURCE=.\SuperShader.glsl.vrt
+SOURCE=.\NonShadowedPass.glsl.vrt
+# End Source File
+# Begin Source File
+
+SOURCE=.\ShadowMappedLightPass.glsl.frg
+# End Source File
+# Begin Source File
+
+SOURCE=.\ShadowMappedLightPass.glsl.vrt
 # End Source File
 # End Group
 # End Target

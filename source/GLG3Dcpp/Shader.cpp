@@ -399,7 +399,10 @@ static GLenum toGLType(const std::string& s) {
         return GL_SAMPLER_CUBE_ARB;
     } else if (s == "sampler2DRect") {
         return GL_SAMPLER_2DRECT_ARB;
-
+    } else if (s == "sampler2DShadow") {
+        return GL_SAMPLER_2D_SHADOW_ARB;
+    } else if (s == "sampler2DRectShadow") {
+        return GL_SAMPLER_2D_RECT_SHADOW_ARB;
     } else {
         debugAssertM(false, std::string("Unknown type in shader: ") + s);
         return 0;
@@ -575,12 +578,14 @@ GLenum VertexAndPixelShader::canonicalType(GLenum e) {
     case GL_BOOL_VEC4_ARB:
         return GL_FLOAT_VEC4_ARB;
 
+    case GL_SAMPLER_2D_SHADOW_ARB:
 	case GL_SAMPLER_2D_ARB:
 		return GL_TEXTURE_2D;
 
 	case GL_SAMPLER_CUBE_ARB:
 		return GL_TEXTURE_CUBE_MAP_ARB;
  
+    case GL_SAMPLER_2D_RECT_SHADOW_ARB:
 	case GL_SAMPLER_2DRECT_ARB:
 		return GL_TEXTURE_RECTANGLE_EXT;
 

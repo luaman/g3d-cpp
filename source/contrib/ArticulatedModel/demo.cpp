@@ -189,7 +189,7 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         }
    
     app->renderDevice->popState();
-        shadowMap->copyFromScreen(rect);
+    shadowMap->copyFromScreen(rect);
 }
 
 
