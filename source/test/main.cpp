@@ -21,8 +21,51 @@ using namespace G3D;
 #include <string>
 
 
-// Useful for testing image loading
-//#include "test/Window.h"
+void measureBSPPerformance() {
+
+    Array<AABox>                array;
+    AABSPTree<AABox>            tree;
+    
+    const int NUM_POINTS = 100000;
+    
+    for (int i = 0; i < NUM_POINTS; ++i) {
+        Vector3 pt = Vector3(random(-10, 10), random(-10, 10), random(-10, 10));
+        AABox box(pt, pt + Vector3(.1, .1, .1));
+        array.append(box);
+        tree.insert(box);
+    }
+
+    tree.balance();
+
+    uint64 bspcount, arraycount;
+
+    for (int it = 0; it < 4; ++it) {
+        Array<Plane> plane;
+        plane.append(Plane(Vector3(-1, 0, 0), Vector3(5, 0, 0)));
+        plane.append(Plane(Vector3(1, 0, 0), Vector3(0, 0, 0)));
+        plane.append(Plane(Vector3(0, 0, -1), Vector3(0, 0, 5)));
+        plane.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, 0)));
+
+        Array<AABox> point;
+
+        System::beginCycleCount(bspcount);
+        tree.getIntersectingMembers(plane, point);
+        System::endCycleCount(bspcount);
+
+        point.clear();
+
+        System::beginCycleCount(arraycount);
+        for (int i = 0; i < array.size(); ++i) {
+            if (! array[i].culledBy(plane)) {
+                point.append(array[i]);
+            }
+        }
+        System::endCycleCount(arraycount);
+    }
+
+    printf("AABSPTree<AABox>::getIntersectingMembers       %d cycles\n"
+           "Culled by on Array<AABox>                      %d cycles\n\n", bspcount, arraycount);
+}
 
 int numRCPFoo = 0;
 class RCPFoo : public G3D::ReferenceCountedObject {
@@ -1493,8 +1536,9 @@ int main(int argc, char* argv[]) {
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
-        measureTriangleCollisionPerformance();
+        measureBSPPerformance();
         while (true);
+        measureTriangleCollisionPerformance();
         measureAABoxCollisionPerformance();
         measureAABoxCollisionPerformance();
         measureMatrix3Performance();

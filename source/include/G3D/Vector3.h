@@ -320,9 +320,9 @@ public:
     inline static const Vector3& inf()      { static Vector3 v(G3D::inf(), G3D::inf(), G3D::inf()); return v; }
     inline static const Vector3& nan()      { static Vector3 v(G3D::nan(), G3D::nan(), G3D::nan()); return v; }
     /** Smallest (most negative) representable vector */
-    inline static const Vector3& minVector(){ static Vector3 v(-FLT_MAX, -FLT_MAX, -FLT_MAX); return v; }
+    inline static const Vector3& minFinite(){ static Vector3 v(-FLT_MAX, -FLT_MAX, -FLT_MAX); return v; }
     /** Largest representable vector */
-    inline static const Vector3& maxVector(){ static Vector3 v(FLT_MAX, FLT_MAX, FLT_MAX); return v; }
+    inline static const Vector3& maxFinite(){ static Vector3 v(FLT_MAX, FLT_MAX, FLT_MAX); return v; }
 
     // Deprecated. See Matrix3::identity() for details.
     /** @deprecated Use Vector3::zero() */

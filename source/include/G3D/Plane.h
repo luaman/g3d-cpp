@@ -64,7 +64,7 @@ public:
      */
     inline bool halfSpaceContains(Vector3 point) const {
         // Clamp to a finite range for testing
-        point = point.clamp(Vector3::minVector(), Vector3::maxVector());
+        point = point.clamp(Vector3::minFinite(), Vector3::maxFinite());
 
         // We can get away with putting values *at* the limits of the float32 range into
         // a dot product, since the dot product is carried out on float64.

@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-10
-  @edited  2004-07-05
+  @edited  2004-07-07
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -65,6 +65,24 @@ public:
 
     inline const Vector3& high() const {
         return hi;
+    }
+
+    /**
+     The largest possible finite box.
+     */
+    static inline const AABox& maxFinite() {
+        static const AABox b = AABox(Vector3::minFinite(), Vector3::maxFinite());
+        return b;
+    }
+
+    static inline const AABox& inf() {
+        static const AABox b = AABox(-Vector3::inf(), Vector3::inf());
+        return b;
+    }
+
+    static inline const AABox& zero() {
+        static const AABox b = AABox(Vector3::zero(), Vector3::zero());
+        return b;
     }
 
     /**

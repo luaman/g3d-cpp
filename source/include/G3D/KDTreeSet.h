@@ -731,7 +731,18 @@ public:
 
     /**
      Returns all members inside the set of planes.  Typically used to find all visible
-     objects inside the view frustum (see GCamera::getClipPlanes).
+     objects inside the view frustum (see GCamera::getClipPlanes)... i.e. all objects
+     <B>not<B> culled by the set of planes.
+
+     Example:
+      <PRE>
+        Array<Object*>  visible;
+        Array<Plane>    frustum;
+        camera.getClipPlanes(frustum);
+        tree.getIntersectingMembers(frustum, visible);
+
+        // ... Draw all objects in the visible array.
+      </PRE>
      */
     void getIntersectingMembers(const Array<Plane>& plane, Array<T>& members) const {
         if (root == NULL) {

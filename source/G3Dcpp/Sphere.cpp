@@ -74,6 +74,11 @@ bool Sphere::culledBy(
 	const uint32		_inMask,
     uint32&             childMask) const {
 
+    if (radius == inf()) {
+        // No plane can cull the infinite box
+        return false;
+    }
+
 	uint32 inMask = _inMask;
 	assert(numPlanes < 31);
 
@@ -86,8 +91,8 @@ bool Sphere::culledBy(
 		// Only test planes that are not masked
 		if ((inMask & 1) != 0) {
 		
-            bool culledLow = ! plane[p].halfSpaceContains(center + plane[p].normal() * radius);
-            bool culledHigh = ! plane[p].halfSpaceContains(center - plane[p].normal() * radius);
+            bool culledLow = ! plane[p].halfSpaceContainsFinite(center + plane[p].normal() * radius);
+            bool culledHigh = ! plane[p].halfSpaceContainsFinite(center - plane[p].normal() * radius);
 
 			if (culledLow) {
 				// Plane p culled the sphere
