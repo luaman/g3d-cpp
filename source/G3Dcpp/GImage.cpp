@@ -2323,7 +2323,7 @@ void computeNormalMap(
             delta = delta.direction();
 
             // Copy over the bump value into the alpha channel.
-            float H = B[j] * 255.0;
+            float H = B[j] / 255.0;
 
             if (lowPassBump) {
                 H = (height(-1, -1) + height( 0, -1) + height(1, -1) +

@@ -37,8 +37,7 @@ void main(void) {
 
     // Convert bumps to a world space distance
     vec4 NB = texture2D(normalBumpMap, texCoord);
-    float  bump = 
-        (NB.w - 0.5) * bumpScale;
+    float  bump = (NB.w - 0.5) * bumpScale;
 
     // We should divide by tsE.z, but that creates texture swim at shallow angles,
     // so we use Terry Walsh's solution and just normalize.

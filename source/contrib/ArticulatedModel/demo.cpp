@@ -427,7 +427,7 @@ void App::main() {
         triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg", TextureFormat::AUTO, Texture::TILE);
 
         GImage normalBumpMap;
-        computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap, true, true);
+        computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap, false, false);
         triList.material.normalBumpMap =         
             Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::TILE);
 
@@ -493,7 +493,7 @@ void App::main() {
         triList.material.diffuse.constant = Color3::white() * 0.2;
 
         GImage normalBumpMap;
-        computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap, true, true);
+        computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap, false, false);
         triList.material.normalBumpMap =         
             Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
 
