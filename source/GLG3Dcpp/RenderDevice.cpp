@@ -534,6 +534,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     // This call is here to make GCC realize that isOk is used.
     (void)isOk(false);
+    (void)isOk((void*)NULL);
 
     debugLog->printf(
              "Capability    Minimum   Desired   Received  Ok?\n"
