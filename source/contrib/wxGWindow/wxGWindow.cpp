@@ -57,6 +57,11 @@ wxGWindow::wxGWindow(
     wxPoint pos(_settings.x, _settings.y);
     wxSize size(_settings.width, _settings.height);
 
+    clientX = _settings.x;
+    clientY = _settings.y;
+    relativeX = 0;
+    relativeY = 0;
+
     window = new wxG3DCanvas( this,
         parent, id, pos, size, 0, 
         "WxWindow", attribList.getCArray(), 
@@ -82,6 +87,11 @@ wxGWindow::wxGWindow(wxG3DCanvas* canvas) :
     window->GetPosition(&settings.x, &settings.y);
     window->GetClientSize(&settings.width, &settings.height);
     settings.visible = window->IsShown();
+
+    clientX = settings.x;
+    clientY = settings.y;
+    relativeX = 0;
+    relativeY = 0;    
 }
 
 
@@ -439,6 +449,9 @@ void wxG3DCanvas::handleWindowMove(wxMoveEvent& event) {
     wxPoint& point = event.GetPosition();
     _gWindow->clientX = point.x;
     _gWindow->clientY = point.y;
+
+    _gWindow->settings.x = point.x;
+    _gWindow->settings.y = point.y;
 }
 
 
