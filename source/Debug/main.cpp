@@ -12,6 +12,7 @@
  */
 
 #include <G3DAll.h>
+#include "Mmsystem.h"
 
 #if G3D_VER < 60500
     #error Requires G3D 6.05
@@ -150,10 +151,158 @@ App::~App() {
     delete applet;
 }
 
+
+/** Handle of the timer */
+MMRESULT m_idEvent;
+double repeatTimeMillis = 33.333;  // milliseconds
+int flag = 0;
+Array<RealTime> times(100);
+int currentTime = 1;
+
+void OnStop() {
+    // destroy the timer
+    timeKillEvent(m_idEvent);
+    
+    // reset the timer
+    timeEndPeriod((int)repeatTimeMillis);
+}
+
+void CALLBACK TimerFunction(UINT wTimerID, UINT msg, 
+    DWORD dwUser, DWORD dw1, DWORD dw2)  {
+    // This is used only to call MMTimerHandler
+    // Typically, this function is static member of CTimersDlg
+    //CTimersDlg* obj = (CTimersDlg*) dwUser;
+    if (currentTime < 100) {
+        times[currentTime] = System::time();
+        ++currentTime;
+    } else {
+        OnStop();
+    }
+}
+
+
+void OnBegin() {
+    // Set resolution to the minimum supported by the system
+    TIMECAPS tc;
+    timeGetDevCaps(&tc, sizeof(TIMECAPS));
+    DWORD resolution = min(max(tc.wPeriodMin, 0), tc.wPeriodMax);
+    timeBeginPeriod(resolution);
+	
+    // create the timer
+    m_idEvent = timeSetEvent(
+        (int)repeatTimeMillis,          
+        resolution,   
+        TimerFunction,      
+        0,//(DWORD)this,                  
+        TIME_PERIODIC);                
+}
+
+
+
+
 int main(int argc, char** argv) {
+
+    // Let the system start up.
+    System::sleep(0.5);
+
+    times[0] = System::time();
+
+    // Sleep code
+    
+  
+    for (int i = 1; i < 100; ++i) {
+        System::sleep(repeatTimeMillis / 1000.0);
+        times[i] = System::time();
+    }
+/*
+    // Timer code
+    OnBegin();
+    while (currentTime < 100) {
+        Sleep(1);
+    }
+    OnStop();
+*/
+    TextOutput to("C:/temp/times.txt");
+    for (int i = 1; i < 100; ++i) {
+        to.writeNumber(times[i] - times[i - 1]);
+        to.writeNewline();
+    }
+    to.commit();
+    
+    return 0;
+
     GAppSettings settings;
     settings.window.width = 400;
     settings.window.height = 400;
     App(settings).run();
     return 0;
 }
+
+#if 0
+
+
+ 
+    OnBegin();
+	while(true)	{				
+				if (controller_state == 1)
+				{
+					controller_state = 0;
+					OnStop();
+				}
+				Sleep(200);
+				short pattern = 255;
+				Out32(0x378, pattern);
+				Sleep(200);
+				pattern = 0;
+				Out32(0x378, pattern);
+
+			}
+			else if (c == 101) // recording -- issue 325 signals at the highest rate
+			{
+				if (controller_state == 1)
+				{
+					controller_state = 0;
+					OnStop();
+				}
+
+				m_elTime = 43;
+				frame_count = 0;
+				recording = true;
+				OnBegin();
+				do
+				{
+					Sleep(5);
+				} while (frame_count <325);
+				OnStop();
+				recording = false;
+
+			}
+			else if (c == 102) // extr calibration -- 301 triggers slow
+			{
+				if (controller_state == 1)
+				{
+					controller_state = 0;
+					OnStop();
+					Sleep(250);
+				}
+
+				for (int k = 0; k < 301; k++)
+				{
+					short pattern = 255;	
+					Out32(0x378, pattern);
+					Sleep(250);
+					pattern = 0;
+					Out32(0x378, pattern);
+					Sleep(250);
+				}
+			}
+		}
+		Sleep(5);
+	}
+
+    OnStop();
+
+
+	return 0;
+}
+#endif

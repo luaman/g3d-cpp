@@ -731,29 +731,43 @@ std::string System::currentProgramFilename() {
 
 
 void System::sleep(RealTime t) {
-    RealTime now = time();
-    RealTime wakeupTime = now + t;
+
+    // Overhead of calling this function.
+    static const RealTime OVERHEAD = .000006;
+
+    RealTime now = getTick();
+    RealTime wakeupTime = now + t - OVERHEAD;
 
     RealTime remainingTime = wakeupTime - now;
+    RealTime sleepTime = 0;
 
     while (remainingTime > 0) {
         
-        // Default of 0 sleep time causes the program to yield only
-        // the current time slice, then return.
-        RealTime sleepTime = 0;
 
-        if (remainingTime > 0.002) {
-            // Safe to use sleep
-            sleepTime = max(remainingTime * .5, 0.002);
+        if (remainingTime > 0.001) {
+            // Safe to use Sleep with a time... sleep for half the remaining time
+            sleepTime = max(remainingTime * .5, 0.0005);
+        } else if (remainingTime > 0.0001) {
+            // Safe to use Sleep with a zero time;
+            // causes the program to yield only
+            // the current time slice, and then return.
+            sleepTime = 0;
+        } else {
+            // Not safe to use Sleep; busy wait
+            sleepTime = -1;
         }
 
-        #ifdef G3D_WIN32
-            Sleep((int)(sleepTime * 1e3));
-        #else
-            usleep((int)(sleepTime * 1e6));
-        #endif
+        if (sleepTime >= 0) {
+            #ifdef G3D_WIN32
+                // Translate to milliseconds
+                Sleep((int)(sleepTime * 1e3));
+            #else
+                // Translate to microseconds
+                usleep((int)(sleepTime * 1e6));
+            #endif
+        }
 
-        now = time();
+        now = getTick();
         remainingTime = wakeupTime - now;
     }
 }
