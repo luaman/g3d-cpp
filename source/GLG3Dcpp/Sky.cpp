@@ -58,7 +58,7 @@ SkyRef Sky::fromFile(
     for (int i = 1; i < 6; ++i) {
         f[i] = "";
     }
-    return Sky::create(rd, directory, f, _drawCelestialBodies, quality);
+    return Sky::fromFile(rd, directory, f, _drawCelestialBodies, quality);
 }
 
 
