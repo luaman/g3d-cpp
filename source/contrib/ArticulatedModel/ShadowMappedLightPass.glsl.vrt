@@ -54,7 +54,7 @@ void main(void) {
     // Note that tan_W is objectToWorld * gl_Vertex
     shadowCoord      = lightMVP * tan_W;
 
-	texCoord	= gl_MultiTexCoord0.st;
+	texCoord	     = gl_MultiTexCoord0.st;
     gl_Position      = ftransform();
 }
 

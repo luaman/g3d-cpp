@@ -26,12 +26,15 @@ uniform vec3        specularExponentConstant;
     uniform sampler2D   diffuseMap;
 #endif
 
-/** Multiplier for bump map.  Typically on the range [0, 0.05]
-  This increases with texture scale and bump height. */
-uniform float       bumpMapScale;
 
-/** xyz = normal, w = bump height */
-uniform sampler2D   normalBumpMap;
+#ifdef NORMALBUMPMAP
+    /** Multiplier for bump map.  Typically on the range [0, 0.05]
+      This increases with texture scale and bump height. */
+    uniform float       bumpMapScale;
+
+    /** xyz = normal, w = bump height */
+    uniform sampler2D   normalBumpMap;
+#endif
 
 uniform sampler2DShadow shadowMap;
 
@@ -39,7 +42,11 @@ uniform sampler2DShadow shadowMap;
 varying vec3        wsEyePos;
 varying vec3        wsPosition;
 varying vec2        texCoord;
-varying vec3        _tsE;
+
+#ifdef NORMAPBUMPMAP
+    varying vec3        _tsE;
+#endif
+
 varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 
 /** Coordinate to use in the shadow map */
@@ -69,6 +76,42 @@ void main(void) {
     const vec3 wsL = lightPosition.xyz;
     vec3 wsE = wsEyePos - wsPosition;
     const vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
+
+
+#if 0
+
+#   ifdef NORMALBUMPMAP
+    // Convert bumps to a world space distance
+    float  bump   = (texture2D(normalBumpMap, texCoord).w - 0.5) * bumpMapScale;
+
+	vec3 tsE = normalize(_tsE);
+
+    // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
+	// from TBN space, so we must flip the y-axis.
+
+    // We should technically divide by the z-coordinate
+
+    vec2 offsetCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
+
+    vec4 surfColor = texture2D(diffuseMap, offsetCoord);
+
+	// note that the columns might be slightly not orthogonal due to interpolation
+	mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
+	
+    vec3 wsE = normalize(wsEyePos - wsPosition);
+	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
+
+	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
+
+    // Take the normal map values back to (-1, 1) range to compute a tangent space normal
+    vec3 tsN = ((texture2D(normalBumpMap, offsetCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
+
+	// Take the normal to world space 
+	vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
+#endif
+
+#endif
+
 
     // Compute projected shadow coord.
     shadowCoord = shadowCoord / shadowCoord.w;

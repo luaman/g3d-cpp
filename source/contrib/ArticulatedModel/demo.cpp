@@ -177,10 +177,8 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
             app->renderDevice->disableColorWrite();
         }
 
-        // We can choose to use a large bias or render from
-        // the backfaces in order to avoid front-face self
-        // shadowing.  Here, we use a large offset.
-        app->renderDevice->setPolygonOffset(5);
+        // Avoid acne
+        app->renderDevice->setPolygonOffset(2);
 
         for (int s = 0; s < shadowCaster.size(); ++s) {
             shadowCaster[s]->renderNonShadowed(app->renderDevice, NULL);
@@ -435,6 +433,15 @@ void App::main() {
         triList.twoSided = true;
         triList.material.emit.constant = Color3::black();
         triList.material.diffuse.constant = Color3::white();
+        triList.material.diffuse.map = Texture::fromFile("collage.jpg", TextureFormat::AUTO, Texture::CLAMP);
+
+        GImage normalBumpMap;
+        computeNormalMap(GImage("collage-bump.jpg"), normalBumpMap);
+        triList.material.normalBumpMap =         
+            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
+
+        triList.material.bumpMapScale = 0.1;
+
         triList.material.specular.constant = Color3::black();
         triList.material.specularExponent.constant = Color3::white() * 60;
         triList.material.reflect.constant = Color3::black();

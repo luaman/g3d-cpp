@@ -17,11 +17,12 @@ void SuperShader::configureShader(
     const Material&                 material,
     VertexAndPixelShader::ArgList&  args) {
     
-    // TODO: don't even set fields that have no corresponding map
     if (material.diffuse.map.notNull()) {
         args.set("diffuseMap",              material.diffuse.map);
     }
     args.set("diffuseConstant",         material.diffuse.constant);
+
+    // TODO: don't even set fields that have no corresponding map
     args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
     args.set("specularConstant",        material.specular.constant);
     args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
@@ -29,10 +30,17 @@ void SuperShader::configureShader(
     args.set("specularExponentConstant",Color3::white().max(material.specularExponent.constant));
     args.set("reflectMap",              material.reflect.map.notNull() ? material.reflect.map : whiteMap);
     args.set("reflectConstant",         material.reflect.constant);
-    args.set("emitMap",                 material.emit.map.notNull() ? material.emit.map : whiteMap);
+
+    if (material.emit.map.notNull()) {
+        args.set("emitMap",             material.emit.map);
+    }
+
     args.set("emitConstant",            material.emit.constant);
-    args.set("normalBumpMap",           material.normalBumpMap.notNull() ? material.normalBumpMap : defaultNormalMap);
-    args.set("bumpMapScale",            material.bumpMapScale);
+
+    if (material.normalBumpMap.notNull() && (material.bumpMapScale != 0)) {
+        args.set("normalBumpMap",       material.normalBumpMap);
+        args.set("bumpMapScale",        material.bumpMapScale);
+    }
 
     ///////////////////////////////////////////////////
     // Lighting Args
@@ -70,16 +78,16 @@ void SuperShader::configureShadowShader(
     args.set("specularConstant",        material.specular.constant);
     args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
     args.set("specularExponentConstant",material.specularExponent.constant);
-    args.set("normalBumpMap",           material.normalBumpMap.notNull() ? material.normalBumpMap : defaultNormalMap);
-    args.set("bumpMapScale",            material.bumpMapScale);
-
+    if (material.normalBumpMap.notNull() && (material.bumpMapScale != 0)) {
+        args.set("normalBumpMap",       material.normalBumpMap);
+        args.set("bumpMapScale",        material.bumpMapScale);
+    }
 
     ///////////////////////////////////////////////////
     // Lighting Args
 
     args.set("lightPosition",   Vector4(light.position.xyz().direction(),0));
     args.set("lightColor",      light.color);
-
 
     // Shadow map setup
     args.set("shadowMap",       shadowMap);
@@ -88,7 +96,7 @@ void SuperShader::configureShadowShader(
     static const Matrix4 bias(
         0.5f, 0.0f, 0.0f, 0.5f,
         0.0f, 0.5f, 0.0f, 0.5f,
-        0.0f, 0.0f, 0.5f, 0.5f - .000001,
+        0.0f, 0.0f, 0.5f, 0.5f - 0.003,
         0.0f, 0.0f, 0.0f, 1.0f);
 
     args.set("lightMVP",        bias * lightMVP);
@@ -165,6 +173,10 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
             } else  {
                 defines += "#define EMITCONSTANT\n";
             }
+        }
+
+        if ((material.bumpMapScale != 0) && material.normalBumpMap.notNull()) {
+            defines += "#define NORMALBUMPMAP\n";
         }
 
             // TODO... other terms
