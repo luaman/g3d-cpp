@@ -16,9 +16,13 @@ version = "6_00-b13"
 
 # Turn the platform into a name to put in the
 # "lib" directory name
-platform = {"posix" : "linux", \
-            "nt"    : "win32", \
-            "macos" : "osx"}[os.name]
+
+platform = 'unknown'
+if (os.name == 'nt'):
+    platform = 'win32'
+else:
+    platform = {'Linux' : 'linux', \
+                'Darwin' : 'osx'}[os.uname()[0]]
 
 ###############################################################################
 #                                                                             #
