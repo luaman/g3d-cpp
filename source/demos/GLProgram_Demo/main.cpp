@@ -140,8 +140,7 @@ void doGraphics() {
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
 			    
-		    camera->setProjectionAndCameraMatrix(renderDevice->getWidth(), 
-                                                 renderDevice->getHeight());
+		    camera->setProjectionAndCameraMatrix();
 
             renderDevice->pushState();
                 renderDevice->setVertexProgram(distort);
