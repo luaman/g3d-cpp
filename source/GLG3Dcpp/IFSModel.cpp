@@ -108,40 +108,63 @@ void IFSModel::save(
     const Array<int>&           index,
     const Array<Vector3>&       vertex,
 	const Array<Vector2>&		texCoord) {
-    
-	float32 ifs_version = (texCoord.size() == 0)? 1.0f : 1.1f;
 
-    BinaryOutput b(filename, G3D_LITTLE_ENDIAN);
+	if ("ifs" == filenameExt(filename)) {
+		
+		float32 ifs_version = (texCoord.size() == 0)? 1.0f : 1.1f;
 
-    b.writeString32("IFS");
-    b.writeFloat32(ifs_version);
-    b.writeString32(name);
+		BinaryOutput b(filename, G3D_LITTLE_ENDIAN);
 
-    b.writeString32("VERTICES");
+		b.writeString32("IFS");
+		b.writeFloat32(ifs_version);
+		b.writeString32(name);
 
-    b.writeUInt32(vertex.size());
+		b.writeString32("VERTICES");
 
-    for (int v = 0; v < vertex.size(); ++v) {
-        vertex[v].serialize(b);
-    }
+		b.writeUInt32(vertex.size());
 
-    b.writeString32("TRIANGLES");
-
-    b.writeUInt32(index.size() / 3);
-    for (int i = 0; i < index.size(); ++i) {
-        b.writeUInt32(index[i]);
-    }
-	
-	if (ifs_version == 1.1f) {
-		b.writeString32("TEXTURECOORD");
-		alwaysAssertM(texCoord.size() == vertex.size(), "Number of texCoords must match the number of vertices") ;
-		b.writeUInt32(texCoord.size());
-		for(int t = 0; t < texCoord.size(); ++t) {
-			texCoord[t].serialize(b);
+		for (uint32 v = 0; v < vertex.size(); ++v) {
+			vertex[v].serialize(b);
 		}
-	}
 
-    b.commit();
+		b.writeString32("TRIANGLES");
+
+		b.writeUInt32(index.size() / 3);
+		for (uint32 i = 0; i < index.size(); ++i) {
+			b.writeUInt32(index[i]);
+		}
+		
+		if (ifs_version == 1.1f) {
+			b.writeString32("TEXTURECOORD");
+			alwaysAssertM(texCoord.size() == vertex.size(), "Number of texCoords must match the number of vertices") ;
+			b.writeUInt32(texCoord.size());
+			for(uint32 t = 0; t < texCoord.size(); ++t) {
+				texCoord[t].serialize(b);
+			}
+		}
+
+		b.commit();
+	} else if ("ply2" == filenameExt(filename)) { 
+		alwaysAssertM(texCoord.size() == 0,  format("texCoord.size() != 0, PLY2 files do not support saving texCoords."));
+		TextOutput to(filename);
+
+		const int nF = index.size() / 3;
+		to.printf("%d\n%d\n",vertex.size(), nF);
+
+		for(uint32 i = 0; i < vertex.size(); ++i) {
+			to.printf("%f\n",vertex[i].x);
+			to.printf("%f\n",vertex[i].y);
+			to.printf("%f\n",vertex[i].z);
+		}
+
+		for(uint32 i = 0; i < nF; ++i) {
+			to.printf("3 %d \t %d \t %d \n", index[3*i], index[3*i + 1], index[3*i + 2]);
+		}
+
+		to.commit();
+	} else {
+		alwaysAssertM(false,  format("unsupported filename type %s", filenameExt(filename).c_str()));
+	}
 }
 
 
@@ -152,65 +175,105 @@ void IFSModel::load(
     Array<Vector3>&         vertex,
 	Array<Vector2>&			texCoord) {
 
-    BinaryInput bi(filename, G3D_LITTLE_ENDIAN);
+	debugPrintf("Filename %s\n ext %s\n", filename.c_str(), filenameExt(filename).c_str());
 
-    if (bi.getLength() == 0) {
-        throw std::string("Failed to open " + filename);
-    }
+	if (filenameExt(filename) == "ifs" ) {
+		BinaryInput bi(filename, G3D_LITTLE_ENDIAN);
 
-    std::string header = bi.readString32();
-    if (header != "IFS") {
-       throw std::string("File is not an IFS file");
-    }
-	float32 ifsversion  = bi.readFloat32();
-    if (ifsversion != 1.0f && ifsversion != 1.1f) {
-       throw std::string("Bad IFS version, expecting 1.0 or 1.1");
-    }
-
-    name = bi.readString32();
-
-	texCoord.resize(0);
-
-    while (bi.hasMore()) {
-        std::string str = bi.readString32();
-
-        if (str == "VERTICES") {
-            debugAssertM(vertex.size() == 0, "Multiple vertex fields!");
-            uint32 num = bi.readUInt32();
-
-            if ((num <= 0) || (num > 10000000)) {
-                throw std::string("Bad number of vertices");
-            }
-
-            vertex.resize(num);
-
-            for (int i = 0; i < (int)num; ++i) {
-                vertex[i].deserialize(bi);
-            }
-
-        } else if (str == "TRIANGLES") {
-            debugAssertM(index.size() == 0, "Multiple triangle fields!");
-            uint32 num = bi.readUInt32();
-
-            if ((num <= 0) || (num > 100000000)) {
-                throw std::string("Bad number of triangles");
-            }
-
-            index.resize(num * 3);
-            for (int i = 0; i < index.size(); ++i) {
-                index[i] = bi.readUInt32();
-            }
-        } else if (str == "TEXTURECOORD") {
-            debugAssertM(ifsversion == 1.1f, "IFS Version should be 1.1");
-            debugAssertM(texCoord.size() == 0, "Multiple texcoord fields!");
-			uint32 num = bi.readUInt32();
-			texCoord.resize(num);
-			debugAssertM(texCoord.size() == vertex.size()," Must have same number of texcoords as vertices");
-			for(uint32 t = 0; t < num; ++t) {
-				texCoord[t].deserialize(bi);
-			}
+		if (bi.getLength() == 0) {
+			throw std::string("Failed to open " + filename);
 		}
-    }
+
+		std::string header = bi.readString32();
+		if (header != "IFS") {
+			throw std::string("File is not an IFS file");
+		}
+		float32 ifsversion  = bi.readFloat32();
+		if (ifsversion != 1.0f && ifsversion != 1.1f) {
+			throw std::string("Bad IFS version, expecting 1.0 or 1.1");
+		}
+
+		name = bi.readString32();
+
+		texCoord.resize(0);
+			while (bi.hasMore()) {
+				std::string str = bi.readString32();
+
+				if (str == "VERTICES") {
+					debugAssertM(vertex.size() == 0, "Multiple vertex fields!");
+					uint32 num = bi.readUInt32();
+
+					if ((num <= 0) || (num > 10000000)) {
+						throw std::string("Bad number of vertices");
+					}
+
+					vertex.resize(num);
+
+					for (uint32 i = 0; i < num; ++i) {
+						vertex[i].deserialize(bi);
+					}
+
+				} else if (str == "TRIANGLES") {
+					debugAssertM(index.size() == 0,
+							"Multiple triangle fields!");
+					uint32 num = bi.readUInt32();
+
+					if ((num <= 0) || (num > 100000000)) {
+						throw std::string("Bad number of triangles");
+					}
+
+					index.resize(num * 3);
+					for (uint32 i = 0; i < index.size(); ++i) {
+						index[i] = bi.readUInt32();
+					}
+				} else if (str == "TEXTURECOORD") {
+					debugAssertM(ifsversion == 1.1f,
+							"IFS Version should be 1.1");
+					debugAssertM(texCoord.size() == 0,
+							"Multiple texcoord fields!");
+					uint32 num = bi.readUInt32();
+					texCoord.resize(num);
+					debugAssertM(texCoord.size() == vertex.size(),
+							" Must have same number of texcoords as vertices");
+					for(uint32 t = 0; t < num; ++t) {
+						texCoord[t].deserialize(bi);
+					}
+				}
+			}
+		} else if ("ply2" == filenameExt(filename)) {	
+//TODO: Check after textInput is fixed that this works on other Shin Models.
+			TextInput ti(filename);
+
+			const int nV = iFloor(ti.readNumber());
+			const int nF = iFloor(ti.readNumber());
+
+			vertex.resize(nV);
+			index.resize(3*nF);
+			texCoord.resize(0);
+			name = filenameBaseExt(filename);
+
+			double x,y,z;
+
+
+			for(int i = 0; i < nV; ++i) {
+				x = ti.readNumber();
+				y = ti.readNumber();
+				z = ti.readNumber();
+				vertex[i] = Vector3(x ,y ,z);
+			}
+
+
+			for(int i = 0; i < nF; ++i) {
+				const int three = iFloor(ti.readNumber());
+				alwaysAssertM(three == 3, "ill formed PLY2 file");
+				index[3*i	 ] = iFloor(ti.readNumber());
+				index[3*i + 1] = iFloor(ti.readNumber());
+				index[3*i + 2] = iFloor(ti.readNumber());
+			}
+			
+		} else {
+			alwaysAssertM(false,  format("unsupported filename type %s", filenameExt(filename).c_str()));
+		}
 }
 
 

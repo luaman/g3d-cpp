@@ -125,11 +125,11 @@ public:
 
     virtual size_t mainMemorySize() const;
 
-    /** Writes an IFS file from data in arrays */
+    /** Writes an IFS or PLY2 file from data in arrays. (Note PLY2 Files do not support texCoords.) */
     static void save(const std::string& filename, const std::string& name,
              const Array<int>& index, const Array<Vector3>& vertex, const Array<Vector2>& texCoord);
 
-    /** Parses an IFS file from disk into arrays; does no cleanup or welding */
+    /** Parses an IFS or PLY2 file from disk into arrays; does no cleanup or welding */
     static void load(const std::string& filename, std::string& name,
         Array<int>& index, Array<Vector3>& vertex, Array<Vector2>& texCoord);
 };

@@ -20,6 +20,7 @@
      <LI> Texture now supports DDS(2D/CubeMap) and PNG files [Corey]
      <LI> G3D::PosedModel::texCoords
      <LI> G3d::IFSModel now loads IFS 1.1 [Peter]
+     <LI> G3d::IFSModel now loads and saves PLY2 files (plain text IFS format) [Peter]
      <LI> Automatically switch to glCompressedTexImage2D in G3d::Texture::fromMemory [Corey]
      <LI> Fix: GWindows now center and maximize on the primary monitor for Windows.
      <LI> Fix: [ 1044028 ] Linux TextOutput Warning
