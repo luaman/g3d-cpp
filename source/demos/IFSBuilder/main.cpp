@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("d:/graphics3d/book/data/ifs/teapot.ifs");
+    std::string in("d:/graphics3d/book/data/ifs/bunny.ifs");
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/ROCKHRSE.ifs");
 //    std::string in("g:/libraries/g3d-6_00-b5/data/ifs/teapot.ifs");
 //    std::string in("g:/libraries/g3d-6_00-b5/data/ifs/sphere.ifs");

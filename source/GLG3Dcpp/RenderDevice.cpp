@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-09-10
+ @edited  2003-09-22
  */
 
 
@@ -105,6 +105,8 @@ PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC glGetFinalCombinerInputParameterivNV
 PFNGLCOMBINERSTAGEPARAMETERFVNVPROC         glCombinerStageParameterfvNV           = NULL;
 PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC      glGetCombinerStageParameterfvNV        = NULL;
 
+PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NULL;
+
 namespace G3D {
 
 static void frustum(
@@ -171,17 +173,27 @@ struct VS_VERSIONINFO {
 };
 #endif
 
+void RenderDevice::computeVendor() {
+    std::string s = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+
+    if (s == "ATI Technologies Inc.") {
+        vendor = ATI;
+    } else if (s =="NVIDIA Corporation") {
+        vendor = NVIDIA;
+    } else {
+        vendor = ARB;
+    }
+}
+
 /**
  Returns the version string for the video driver.
 
  @cite Based in part on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
  */
-static std::string getDriverVersion() {
+std::string RenderDevice::getDriverVersion() {
     #ifdef G3D_WIN32
     
         std::string driver;
-
-        std::string vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
 
         // Locate the windows\system directory
         {
@@ -193,16 +205,16 @@ static std::string getDriverVersion() {
             driver = sysDir;
         }
 
-        if (vendor == "ATI Technologies Inc.") {
-
+        switch (vendor) {
+        case ATI:
             driver = driver + "\\ati2dvag.dll";
+            break;
 
-        } else if (vendor =="NVIDIA Corporation") {
-
+        case NVIDIA:
             driver = driver + "\\nv4_disp.dll";
+            break;
 
-        } else {
-
+        default:
             return "Unknown (Unknown vendor)";
 
         }
@@ -260,6 +272,7 @@ RenderDevice::RenderDevice() {
     _initialized = false;
     inPrimitive = false;
     _numTextureUnits = 0;
+    _numTextureCoords = 0;
     emwaFrameRate = 0;
     lastTime = getTime();
 
@@ -365,6 +378,7 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glLoadProgramNV);
     LOAD_EXTENSION(glTrackMatrixNV);
     LOAD_EXTENSION(glProgramParameter4fvNV);
+    LOAD_EXTENSION(glActiveStencilFaceEXT);
     #undef LOAD_EXTENSION
 }
 
@@ -428,7 +442,7 @@ bool RenderDevice::init(
 	const int minimumStencilBits  = dstencilBits;
 	const int desiredStencilBits  = dstencilBits;
 
-    const int desiredTextureUnits = 4;
+    const int desiredTextureUnits = 8;
 
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -450,6 +464,7 @@ bool RenderDevice::init(
 
     bool depthOk   = depthBits >= minimumDepthBits;
     bool stencilOk = stencilBits >= minimumStencilBits;
+    computeVendor();
 
     extensions.str((char*)glGetString(GL_EXTENSIONS));
     {
@@ -497,7 +512,11 @@ bool RenderDevice::init(
     // Don't use more texture units than allowed at compile time.
     int rawTextureUnits = _numTextureUnits;
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
-    
+    if (vendor == NVIDIA) {
+        glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureUnits);
+    } else {
+        _numTextureCoords = _numTextureUnits;
+    }
     if (debugLog) {
     debugLog->section("Video Status");
 
@@ -559,6 +578,7 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"             
+             "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
@@ -635,6 +655,7 @@ bool RenderDevice::init(
              "glLoadProgramNV", isOk(glLoadProgramNV),
              "glTrackMatrixNV", isOk(glTrackMatrixNV),
              "glProgramParameter4fvNV", isOk(glProgramParameter4fvNV),
+             "glActiveStencilFaceEXT", isOk(glActiveStencilFaceEXT),
 
              SDL_NumJoysticks(), "ok"
              );
@@ -743,7 +764,7 @@ bool RenderDevice::init(
         glDepthRange(0, 1);
 
         // Set up the texture units.
-        for (int t = _numTextureUnits - 1; t >= 0; --t) {
+        for (int t = _numTextureCoords - 1; t >= 0; --t) {
             double d[] = {0,0,0,1};
             glMultiTexCoord4dvARB(GL_TEXTURE0_ARB + t, d);
         }
@@ -1209,12 +1230,14 @@ void RenderDevice::setState(
     setColor(newState.color);
     setNormal(newState.normal);
 
-    for (int u = _numTextureUnits - 1; u >= 0; --u) {
+    for (int u = _numTextureCoords - 1; u >= 0; --u) {
         if (memcmp(&(newState.textureUnit[u]), &(state.textureUnit[u]), sizeof(RenderState::TextureUnit))) {
-            setTexture(u, newState.textureUnit[u].texture);
+            if (u < _numTextureUnits) {
+                setTexture(u, newState.textureUnit[u].texture);
+                setTextureCombineMode(u, newState.textureUnit[u].combineMode);
+                setTextureMatrix(u, newState.textureUnit[u].textureMatrix);
+            }
             setTexCoord(u, newState.textureUnit[u].texCoord);
-            setTextureCombineMode(u, newState.textureUnit[u].combineMode);
-            setTextureMatrix(u, newState.textureUnit[u].textureMatrix);
         }
     }
 
@@ -1331,6 +1354,11 @@ void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
 
 uint RenderDevice::numTextureUnits() const {
     return _numTextureUnits;
+}
+
+
+uint RenderDevice::numTextureCoords() const {
+    return _numTextureCoords;
 }
 
 
@@ -2131,9 +2159,9 @@ void RenderDevice::setNormal(const Vector3& normal) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM(unit < _numTextureCoords,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, _numTextureUnits));
+        unit, _numTextureCoords));
 
     state.textureUnit[unit].texCoord = texCoord;
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
@@ -2141,45 +2169,45 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM(unit < _numTextureCoords,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, _numTextureUnits));
+        unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector3int16& texCoord) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM(unit < _numTextureCoords,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, _numTextureUnits));
+        unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, texCoord.z, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM(unit < _numTextureCoords,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, _numTextureUnits));
+        unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector2int16& texCoord) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM(unit < _numTextureCoords,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, _numTextureUnits));
+        unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }
 
 
 void RenderDevice::setTexCoord(uint unit, double texCoord) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM(unit < _numTextureCoords,
         format("Attempted to access texture unit %d on a device with %d units.",
-        unit, _numTextureUnits));
+        unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 0, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
 }

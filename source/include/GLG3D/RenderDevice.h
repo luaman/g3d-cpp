@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-09-09
+  @edited  2003-09-22
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -138,6 +138,8 @@ private:
     friend class VAR;
     friend class VARArea;
     friend class Milestone;
+
+    enum Vendor {NVIDIA, ATI, ARB};
 
 	class VARSystem {
 	private:
@@ -299,6 +301,10 @@ private:
 
     /** Time at which the previous endFrame() was called */
     double                      lastTime;
+
+    /** Sets vendor */
+    void computeVendor();
+    Vendor                      vendor;
 
     /** Exponentially weighted moving average frame rate */
     double                      emwaFrameRate;
@@ -768,6 +774,10 @@ public:
     /** Returns the number of texture units. */
     uint numTextureUnits() const;
 
+    /** Returns the number of texture coordinates allowed.
+        This may be greater than the number of texture units.*/
+    uint numTextureCoords() const;
+
     /**
      Automatically enables vertex programs when they are set. 
      Assumes supportsVertexProgram() is true.
@@ -802,6 +812,9 @@ public:
      might want to use the radius of an object's bounding sphere.
      */
     void debugDrawAxes(double scale = 1);
+
+    /** Call after vendor is set */
+    std::string getDriverVersion();
 
     void debugDrawRay(const Ray& ray, const Color3& color = Color3::RED, double scale = 1);
 
@@ -928,6 +941,8 @@ private:
 	bool						    inIndexedPrimitive;
 
     int                             _numTextureUnits;
+
+    int                             _numTextureCoords;
 
     /**
      Current render state.

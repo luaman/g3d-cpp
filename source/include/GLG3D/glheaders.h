@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-09-09
+ @edited  2003-09-22
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -110,6 +110,8 @@ extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC  glGetFinalCombinerInputParam
 extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC  glGetFinalCombinerInputParameterivNV;
 extern PFNGLCOMBINERSTAGEPARAMETERFVNVPROC          glCombinerStageParameterfvNV;
 extern PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC       glGetCombinerStageParameterfvNV;
+
+extern PFNGLACTIVESTENCILFACEEXTPROC       glActiveStencilFaceEXT;
 
 
 #ifndef  GL_TEXTURE_BINDING_3D
