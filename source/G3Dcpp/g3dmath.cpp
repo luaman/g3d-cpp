@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
   
  @created 2001-06-02
- @edited  2003-04-29
+ @edited  2004-02-24
  */
 
 #include "G3D/g3dmath.h"
@@ -36,7 +36,7 @@ int highestBit(uint32 x) {
 
 
 int iRandom(int low, int high) {
-	int r = low + (high - low + 1) * rand() / RAND_MAX;
+	int r = iFloor(low + (high - low + 1) * (double)rand() / RAND_MAX);
 
 	// There is a *very small* chance of generating
 	// a number larger than high.
