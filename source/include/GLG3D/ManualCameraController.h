@@ -15,6 +15,75 @@
 namespace G3D {
 
 /**
+ Common code from various (e.g. FPCameraController) manual 
+ camera controllers.
+ */
+class ManualCameraControllerHelper {
+public:
+    enum Source {
+        JOY_0_X_AXIS = 300, JOY_0_Y_AXIS, JOY_0_Z_AXIS, JOY_0_W_AXIS,
+        JOY_1_X_AXIS, JOY_1_Y_AXIS, JOY_1_Z_AXIS, JOY_1_W_AXIS,
+        MOUSE_DX, MOUSE_DY};
+
+    enum Effect {
+        NONE = 0, 
+        TRANSLATE_X,
+        TRANSLATE_Y,
+        TRANSLATE_Z,
+        TRANSLATE_NEG_X,
+        TRANSLATE_NEG_Y,
+        TRANSLATE_NEG_Z,
+        ROTATE_X,
+        ROTATE_Y,
+        ROTATE_Z,
+        ROTATE_NEG_X,
+        ROTATE_NEG_Y,
+        ROTATE_NEG_Z};
+
+private:
+
+    class UserInput*        userInput;
+    bool                    _active;
+
+    Table<int, Effect>      mapping;
+
+public:
+
+    ManualCameraControllerHelper(UserInput* ui);
+
+    /**
+     Change in translation.  Time-step independent.
+     */
+    Vector3 deltaTranslation() const;
+
+    /**
+     The rotation interpreted as a change in Euler angles.
+     This is what is usually used for a first-person controller.
+     Values are time-step independent.
+     */
+    Vector3 deltaRotationEuler() const;
+
+    /**
+     The rotation interpreted as if the axis movement was applied
+     directly to a sphere.  Values are time-step independent.
+     */
+    Quat    deltaRotationFree() const;
+
+    void clearMapping();
+
+    /**
+     Source accepts any Source value or SDLK_ keycode, including
+     the extended ones offered by UserInput.
+     */
+    void setMapping(int src, Effect effect) const;
+
+    void setActive(bool s);
+    bool active() const;
+    void poll();
+};
+
+
+/**
  Uses a First Person (Quake-style) mapping to translate keyboard and mouse input
  into a flying camera position.  The result is an Euler-angle 
  camera controller suitable for games and fly-throughs.  

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-02-22
+  @edited  2004-02-28
 */
 
 #ifndef G3D_GWINDOW_H
@@ -163,10 +163,13 @@ public:
     virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const = 0;
     virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const = 0;
 
-    virtual void setMouseCapture(bool c) = 0;
+    /** 
+      Capture the keyboard and mouse focus, locking the mouse to this window.
+     */
+    virtual void setInputCapture(bool c) = 0;
 
-    /** Returns the current state of mouse capture */
-    virtual bool mouseCapture() const = 0;
+    /** Returns the current state of input capture */
+    virtual bool inputCapture() const = 0;
 
     virtual void setMouseVisible(bool b) = 0;
 

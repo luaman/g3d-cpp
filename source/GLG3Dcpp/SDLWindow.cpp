@@ -30,7 +30,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     #endif
 
     _mouseVisible = true;
-    _mouseCapture = false;
+    _inputCapture = false;
 
 	// Request various OpenGL parameters
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      settings.depthBits);
@@ -359,19 +359,21 @@ bool SDLWindow::mouseVisible() const {
 }
 
 
-void SDLWindow::setMouseCapture(bool c) {
-    _mouseCapture = c;
+void SDLWindow::setInputCapture(bool c) {
+    if (_inputCapture != c) {
+        _inputCapture = c;
 
-    if (_mouseCapture) {
-        SDL_WM_GrabInput(SDL_GRAB_ON);
-    } else {
-        SDL_WM_GrabInput(SDL_GRAB_OFF);
+        if (_inputCapture) {
+            SDL_WM_GrabInput(SDL_GRAB_ON);
+        } else {
+            SDL_WM_GrabInput(SDL_GRAB_OFF);
+        }
     }
 }
 
 
-bool SDLWindow::mouseCapture() const {
-    return _mouseCapture;
+bool SDLWindow::inputCapture() const {
+    return _inputCapture;
 }
 
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-28
-  @edited  2004-02-22
+  @edited  2004-02-28
  */
 
 #ifndef G3D_USERINPUT_H
@@ -105,6 +105,50 @@ private:
     /** Called from the constructors */
     void init(GWindow* window, Table<KeyCode, UIFunction>* keyMapping);
 
+    /** Called from setPureDeltaMouse */
+    void grabMouse();
+
+    /** Called from setPureDeltaMouse */
+    void releaseMouse();
+
+    /** Position of the mouse before setPureDeltaMouse = true.
+        This position is returned by mouseXY. */
+    Vector2                 guiMouse;
+
+    /** Center of the window.  Recomputed in endEvents. */
+    Vector2                 windowCenter;
+
+    /** True if appHasFocus was true on the previous call to endEvents.
+        Updated during endEvents. */
+    bool                    appHadFocus;
+
+    bool                    _pureDeltaMouse;
+    Vector2                 deltaMouse;
+
+	/** Whether each direction key is up or down.*/
+	bool                    left;
+	bool                    right;
+	bool                    up;
+	bool                    down;
+
+    uint8                   mouseButtons;
+
+    /**
+     Joystick x, y
+     */
+	double                  jx;
+	double                  jy;
+
+    /**
+     In pixels
+     */
+    Vector2                 mouse;
+
+    /**
+     Expects SDL_MOUSEBUTTONDOWN, etc. to be translated into key codes.
+     */
+	void processKey(KeyCode code, int event);
+
 public:
     /**
      Turns a UserInput key code into a human readable string
@@ -131,6 +175,8 @@ public:
       map.set(SDLK_LEFT,  UserInput::LEFT);
       UserInput ui(&map);
       </PRE>
+
+      @deprecated The keyMapping argument is deprecated
 	 */
     UserInput(GWindow* window, Table<KeyCode, UIFunction>* keyMapping = NULL);
 
@@ -196,6 +242,8 @@ public:
 	/**
 	 Returns a number between -1 and 1 indicating the horizontal
 	 input from the user.  Keyboard overrides joystick.
+     @deprecated
+     Use ManualCameraControllerHelper
 	 */
 	double getX() const;
 
@@ -203,23 +251,36 @@ public:
 	 Returns a number between -1 and 1 indicating the vertical
 	 input from the user.  Up is positive, down is negative. 
 	 Keyboard overrides joystick.
+     @deprecated
+     Use ManualCameraControllerHelper
 	 */
 	double getY() const;
 
+    /**
+     @deprecated
+     Use ManualCameraControllerHelper
+     */
     Vector2 getXY() const {
         return Vector2(getX(), getY());
     }
 
-    inline Vector2 getMouseXY() const {
-        return mouse;
+    inline Vector2 mouseXY() const {
+        return guiMouse;
     }
 
+    /** @deprecated */
+    inline Vector2 getMouseXY() const {
+        return guiMouse;
+    }
+
+    /** @deprecated */
 	inline double getMouseX() const {
-		return mouse.x;
+		return guiMouse.x;
 	}
 
+    /** @deprecated */
 	inline double getMouseY() const {
-		return mouse.y;
+		return guiMouse.y;
 	}
 
     /**
@@ -252,30 +313,27 @@ public:
         @deprecated*/
     bool appHasFocus() const;
 
-private:
-	/** Whether each direction key is up or down.*/
-	bool                    left;
-	bool                    right;
-	bool                    up;
-	bool                    down;
 
-    uint8                   mouseButtons;
+    Vector2 mouseDXY() const;
+    double mouseDX() const;
+    double mouseDY() const;
 
     /**
-     Joystick x, y
-     */
-	double                  jx;
-	double                  jy;
+     When set to true, the mouse cursor is invisible and
+     the mouse is restricted to the current window.  Regardless
+     of how far the user moves the mouse in one direction,
+     continous mouseDXY values are returned.  
+     
+     The mouseXY values are not particularly useful in this mode.
 
-    /**
-     In pixels
-     */
-    Vector2                 mouse;
+     This setting is commonly used by first-person games.
 
-    /**
-     Expects SDL_MOUSEBUTTONDOWN, etc. to be translated into key codes.
+     When the app loses focus the mouse is automatically freed
+     and recaptured when focus returns.  debugBreak also frees
+     the mouse.
      */
-	void processKey(KeyCode code, int event);
+    void setPureDeltaMouse(bool m);
+    bool pureDeltaMouse() const;
 };
 
 }

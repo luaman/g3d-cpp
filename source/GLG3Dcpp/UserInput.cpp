@@ -4,23 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2004-02-22
+  @edited  2004-02-28
  */
 
 #include "GLG3D/UserInput.h"
 #include "GLG3D/RenderDevice.h"
 
 namespace G3D {
-
-bool UserInput::appHasFocus() const {
-    return _window->hasFocus();
-}
-
-
-GWindow* UserInput::window() const {
-    return _window;
-}
-
 
 UserInput::UserInput(
     Table<KeyCode, UIFunction>* keyMapping) {
@@ -58,9 +48,14 @@ void UserInput::init(
     GWindow*                    window,
     Table<KeyCode, UIFunction>* keyMapping) {
 
+    _pureDeltaMouse = false;
+    deltaMouse = Vector2(0, 0);
+
     alwaysAssertM(window != NULL, "Window must not be NULL");
 
     _window = window;
+
+    windowCenter = Vector2(window->width() / 2, window->height() / 2);
 
     keyState.resize(SDL_CUSTOM_LAST);
     keyFunction.resize(keyState.size());
@@ -93,6 +88,19 @@ void UserInput::init(
 
     useJoystick = _window->numJoysticks() > 0;
     _window->getRelativeMouseState(mouse, mouseButtons);
+    guiMouse = mouse;
+
+    appHadFocus = appHasFocus();
+}
+
+
+bool UserInput::appHasFocus() const {
+    return _window->hasFocus();
+}
+
+
+GWindow* UserInput::window() const {
+    return _window;
 }
 
 
@@ -154,7 +162,43 @@ void UserInput::endEvents() {
         Vector2 j = _window->joystickPosition(0);
     }
 
+    windowCenter =
+        Vector2(window()->width() / 2, window()->height() / 2);
+
+    Vector2 oldMouse = mouse;
     _window->getRelativeMouseState(mouse, mouseButtons);
+
+    deltaMouse = mouse - oldMouse;
+
+    bool focus = appHasFocus();
+
+    if (_pureDeltaMouse) {
+
+        // Reset the mouse periodically.  We can't do this every
+        // frame or the mouse will not be able to move substantially
+        // at high frame rates.
+        if ((mouse.x < windowCenter.x * 0.5) || (mouse.x > windowCenter.x * 1.5) ||
+            (mouse.x < windowCenter.y * 0.5) || (mouse.y > windowCenter.y * 1.5)) {
+        
+            mouse = windowCenter;
+            if (focus) {
+                setMouseXY(mouse);
+            }
+        }
+
+        // Handle focus-in and focus-out gracefully
+        if (focus && ! appHadFocus) {
+            // We just gained focus.
+            grabMouse();
+        } else if (! focus && appHadFocus) {
+            // Just lost focus
+            releaseMouse();
+        }
+    } else {
+        guiMouse = mouse;
+    }
+
+    appHadFocus = focus;
 }
 
 
@@ -223,9 +267,25 @@ void UserInput::processKey(KeyCode code, int event) {
 }
 
 
+double UserInput::mouseDX() const {
+    return deltaMouse.x;
+}
+
+
+double UserInput::mouseDY() const {
+    return deltaMouse.y;
+}
+
+
+Vector2 UserInput::mouseDXY() const {
+    return deltaMouse;
+}
+
+
 void UserInput::setMouseXY(double x, double y) {
     mouse.x = x;
     mouse.y = y;
+    guiMouse = mouse;
     _window->setRelativeMousePosition(mouse);
 }
 
@@ -263,6 +323,56 @@ void UserInput::pressedKeys(Array<KeyCode>& code) const {
 
 bool UserInput::anyKeyPressed() const {
     return (justPressed.size() > 0);
+}
+
+
+bool UserInput::pureDeltaMouse() const {
+    return _pureDeltaMouse;
+}
+
+
+void UserInput::grabMouse() {
+    uint8 dummy;
+    // Save the old mouse position for when we deactivate
+    _window->getRelativeMouseState(guiMouse, dummy);
+    window()->setMouseVisible(false);
+
+    #ifndef _DEBUG
+        // In debug mode, don't grab the cursor because
+        // it is annoying when you hit a breakpoint and
+        // can't move the mouse.
+        window()->setInputCapture(true);
+    #endif
+    mouse = windowCenter;
+    _window->setRelativeMousePosition(mouse);
+}
+
+
+void UserInput::releaseMouse() {
+    #ifndef _DEBUG
+        // In debug mode, don't grab the cursor because
+        // it is annoying when you hit a breakpoint and
+        // cannot move the mouse.
+        window()->setInputCapture(false);
+    #endif
+
+    // Restore the old mouse position
+    setMouseXY(guiMouse);
+
+    window()->setMouseVisible(true);
+}
+
+
+void UserInput::setPureDeltaMouse(bool m) {
+    if (_pureDeltaMouse != m) {
+        _pureDeltaMouse = m;
+
+        if (_pureDeltaMouse) {
+            grabMouse();
+        } else {
+            releaseMouse();
+        }
+    }
 }
 
 

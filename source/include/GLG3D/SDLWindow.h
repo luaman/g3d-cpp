@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-22
+  @edited  2004-02-28
 */
 
 #ifndef G3D_SDLWINDOW_H
@@ -41,7 +41,7 @@ private:
 
     GWindowSettings     _settings;
 
-    bool                _mouseCapture;
+    bool                _inputCapture;
 
     ::SDL_Joystick*     _joy;
 
@@ -99,9 +99,9 @@ public:
 
     virtual bool mouseVisible() const;
 
-    virtual void setMouseCapture(bool c);
+    virtual void setInputCapture(bool c);
 
-    virtual bool mouseCapture() const;
+    virtual bool inputCapture() const;
 
     ::SDL_Joystick* joystick(int stickNum) const;
 };

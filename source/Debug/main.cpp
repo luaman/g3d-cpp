@@ -184,7 +184,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cow.ifs");
+    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cube.ifs");
 
     entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }
@@ -204,29 +204,25 @@ void Demo::doLogic() {
         app->endProgram = true;
     }
 
-    if (app->userInput->keyPressed('k')) {
-        Vector2 m;
-        uint8 i;
-        app->renderDevice->window()->getRelativeMouseState(m, i);
-        app->renderDevice->window()->setRelativeMousePosition(m);
-        debugPrintf("%s\n", m.toString().c_str());
+    if (app->userInput->keyPressed('y')) {
+        app->userInput->setPureDeltaMouse( ! app->userInput->pureDeltaMouse());
     }
 
     debugAssert(! app->userInput->keyPressed(' '));
 
-    //if (app->userInput->keyPressed(' ')) {
-    //    _asm { int 3 };
-    //}
+	app->debugPrintf("%s", app->userInput->mouseXY().toString().c_str());
+    app->debugPrintf("%s", app->userInput->mouseDXY().toString().c_str());
 
-	app->debugPrintf("(%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
+    System::sleep(0.1);
 }
 
 
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
-    app->renderDevice->clear(sky == NULL, true, true);
+    app->renderDevice->clear(true, true, true);
      
+    /*
     // Render the scene to the full-screen
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
@@ -239,16 +235,7 @@ void Demo::doGraphics() {
     if (sky != NULL) {
         sky->renderLensFlare(lighting);
     }
-
-/*    app->debugFont->draw3D("Test",
-        CoordinateFrame(Matrix3::fromAxisAngle(Vector3::UNIT_X, toRadians(0)),
-        Vector3(0, 0, 1)), .1, Color3::BLACK, Color4::CLEAR, GFont::XALIGN_CENTER,
-        GFont::YALIGN_CENTER);*/
-
-    app->debugFont->draw3D("Test", CoordinateFrame(), .1, Color3::BLACK, Color4::CLEAR, GFont::XALIGN_CENTER,
-        GFont::YALIGN_CENTER);
-
-    Draw::axes(app->renderDevice);
+    */
 }
 
 
