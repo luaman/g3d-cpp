@@ -107,6 +107,9 @@
 				RelativePath="docsource\guide-ui.h">
 			</File>
 			<File
+				RelativePath="docsource\guide-var.h">
+			</File>
+			<File
 				RelativePath="docsource\guide-welcome.h">
 			</File>
 			<File
