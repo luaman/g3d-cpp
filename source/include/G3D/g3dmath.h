@@ -47,9 +47,6 @@ namespace G3D {
 
 #endif // _MSC_VER
 
-//#define G3D_FLOAT 1
-//#define G3D_DOUBLE 2
-
 
 const double fuzzyEpsilon = 0.000001;
 
