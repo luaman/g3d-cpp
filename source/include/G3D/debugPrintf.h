@@ -57,7 +57,7 @@ namespace G3D {
             if (s.size() < MAX_STRING_LEN) {
                 OutputDebugString(s.c_str());
             } else {
-                for (int i = 0; i < s.size(); i += MAX_STRING_LEN) {
+                for (unsigned int i = 0; i < s.size(); i += MAX_STRING_LEN) {
                     std::string sub = s.substr(i, MAX_STRING_LEN);
                     OutputDebugString(sub.c_str());
                 }

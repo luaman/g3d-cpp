@@ -322,11 +322,11 @@
 
    <LI>
    In Tools:Options:Directories, add the g3d include directory 
-   (e.g. c:\\libraries\\g3d-6_00-b11\\include) to the
+   (e.g. c:\\libraries\\g3d-6_00-b12\\include) to the
    include list.  Make sure it preceeds all other include directories.
    <LI>
    In Tools:Options:Directories, add the g3d lib directory 
-   (e.g. c:\\libraries\\g3d-6_00-b11\\lib) to the library
+   (e.g. c:\\libraries\\g3d-6_00-b12\\lib) to the library
    list.
    <LI>
    <B>For each project you create, copy <CODE>SDL.dll</CODE>, <CODE>glut32.dll</CODE>, 
