@@ -17,7 +17,6 @@ using namespace G3D;
 
 #ifdef G3D_WIN32
 	#include "conio.h"
-    #include "Window.h"
 #endif
 #include <string>
 
@@ -159,6 +158,81 @@ void testPlane() {
         Vector3 n = p.normal();
         debugAssert(n.fuzzyEq(Vector3(0,-1,0)));
     }
+}
+
+
+void testAABoxCulledBy() {
+    const uint32 b00000000 = 0;
+    const uint32 b00000001 = 1;
+    const uint32 b00000010 = 2;
+    const uint32 b00000011 = 3;
+    const uint32 b00000100 = 4;
+    const uint32 b00000101 = 5;
+    const uint32 b00000110 = 6;
+    const uint32 b00000111 = 7;
+    const uint32 b00001000 = 8;
+
+    printf("AABox::culledBy\n");
+
+    Array<Plane> planes;
+
+    // Planes at +/- 1
+    planes.append(Plane(Vector3(-1,0,0), Vector3(1,0,0)));
+    planes.append(Plane(Vector3(1,0,0), Vector3(-1,0,0)));
+
+    AABox box(Vector3(-0.5, 0, 0), Vector3(0.5, 1, 1));
+    
+    uint32 parentMask, childMask;
+    int index = 0;
+    bool culled;
+
+    // Contained case
+    parentMask = -1; childMask = 0; index = 0;
+    culled = box.culledBy(planes, index, parentMask, childMask);
+    debugAssert(index == -1);
+    debugAssert(! culled);
+    debugAssert(childMask == b00000000);
+
+    // Positive straddle
+    box = AABox(Vector3(0.5, 0, 0), Vector3(1.5, 1, 1));
+    parentMask = -1; childMask = 0; index = 0;
+    culled = box.culledBy(planes, index, parentMask, childMask);
+    debugAssert(index == -1);
+    debugAssert(! culled);
+    debugAssert(childMask == b00000001);
+    
+    // Negative straddle
+    box = AABox(Vector3(-1.5, 0, 0), Vector3(0.5, 1, 1));
+    parentMask = -1; childMask = 0; index = 0;
+    culled = box.culledBy(planes, index, parentMask, childMask);
+    debugAssert(index == -1);
+    debugAssert(! culled);
+    debugAssert(childMask == b00000010);
+
+    // Full straddle
+    box = AABox(Vector3(-1.5, 0, 0), Vector3(1.5, 1, 1));
+    parentMask = -1; childMask = 0; index = 0;
+    culled = box.culledBy(planes, index, parentMask, childMask);
+    debugAssert(index == -1);
+    debugAssert(! culled);
+    debugAssert(childMask == b00000011);
+
+    // Negative culled 
+    box = AABox(Vector3(-2.5, 0, 0), Vector3(-1.5, 1, 1));
+    parentMask = -1; childMask = 0; index = 0;
+    culled = box.culledBy(planes, index, parentMask, childMask);
+    debugAssert(index == 1);
+    debugAssert(culled);
+
+    // Positive culled 
+    box = AABox(Vector3(1.5, 0, 0), Vector3(2.5, 1, 1));
+    parentMask = -1; childMask = 0; index = 0;
+    culled = box.culledBy(planes, index, parentMask, childMask);
+    debugAssert(index == 0);
+    debugAssert(culled);
+
+    GCamera camera;
+    camera.getClipPlanes(Rect2D::xywh(0,0,640,480), planes);
 }
 
 
@@ -1433,6 +1507,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testAABoxCulledBy();
+    printf("  passed\n");
     testRandom();
     printf("  passed\n");
     testAABoxCollision();

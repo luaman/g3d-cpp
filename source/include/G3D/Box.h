@@ -7,11 +7,10 @@
  
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   @created 2001-06-02
-  @edited  2004-01-13
+  @edited  2004-07-05
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
-
  */
 
 #ifndef G3D_BOX_H
@@ -19,6 +18,8 @@
 
 #include "G3D/Vector3.h"
 #include "G3D/CoordinateFrame.h"
+#include "G3D/Array.h"
+#include "G3D/Plane.h"
 
 namespace G3D {
 
@@ -28,6 +29,8 @@ namespace G3D {
  */
 class Box {
 private:
+
+    static int32 dummy;
 
     friend class CoordinateFrame;
 
@@ -144,15 +147,41 @@ public:
         Vector3&            v2,
         Vector3&            v3) const;
 
-    /**
-     Returns true if this box is culled by the provided set of 
-     planes.  The box is culled if there exists at least one plane
-     whose halfspace the entire box is not in.  Note that
-     there are positions where the box is reported as "not culled"
-     even though it is actually outside the set of planes.
+/**
+	 @deprecated Use culledBy(Array<Plane>&)
      */
     bool culledBy(
-        const Array<Plane>& planeArray) const;
+        const class Plane*  plane,
+        int                 numPlanes,
+		int32&				cullingPlaneIndex,
+		const uint32  		testMask,
+        uint32&             childMask) const;
+
+    /**
+	 @deprecated Use culledBy(Array<Plane>&)
+     */
+    bool culledBy(
+        const class Plane*  plane,
+        int                 numPlanes,
+		int32&				cullingPlaneIndex = dummy,
+		const uint32  		testMask = -1) const;
+
+	/**
+      See AABox::culledBy
+	 */
+	bool culledBy(
+		const Array<Plane>&		plane,
+		int32&					cullingPlaneIndex,
+		const uint32  			testMask,
+        uint32&                 childMask) const;
+
+    /**
+     Conservative culling test that does not produce a mask for children.
+     */
+	bool culledBy(
+		const Array<Plane>&		plane,
+		int32&					cullingPlaneIndex = dummy,
+		const uint32  			testMask		  = -1) const;
 
     bool contains(
         const Vector3&      point) const;

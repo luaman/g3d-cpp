@@ -6,13 +6,15 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-06-02
- @edited  2004-01-11
+ @edited  2004-07-05
  */
 
 #ifndef G3D_SPHERE_H
 #define G3D_SPHERE_H
 
 #include "G3D/Vector3.h"
+#include "G3D/Array.h"
+#include "G3D/Sphere.h"
 
 namespace G3D {
 
@@ -20,6 +22,10 @@ namespace G3D {
  Sphere.
  */
 class Sphere {
+private:
+
+    static int32     dummy;
+
 public:
     Vector3          center;
     float            radius;
@@ -49,15 +55,41 @@ public:
      */
     bool contains(const Vector3& point) const;
 
-    /**
-     Returns true if this sphere is culled by the provided set of 
-     planes.  The sphere is culled if there exists at least one plane
-     whose halfspace the entire sphere is not in.
+/**
+	 @deprecated Use culledBy(Array<Plane>&)
      */
     bool culledBy(
         const class Plane*  plane,
-        int                 numPlanes) const;
+        int                 numPlanes,
+		int32&				cullingPlaneIndex,
+		const uint32  		testMask,
+        uint32&             childMask) const;
 
+    /**
+	 @deprecated Use culledBy(Array<Plane>&)
+     */
+    bool culledBy(
+        const class Plane*  plane,
+        int                 numPlanes,
+		int32&				cullingPlaneIndex = dummy,
+		const uint32  		testMask = -1) const;
+
+	/**
+      See AABox::culledBy
+	 */
+	bool culledBy(
+		const Array<Plane>&		plane,
+		int32&					cullingPlaneIndex,
+		const uint32  			testMask,
+        uint32&                 childMask) const;
+
+    /**
+     Conservative culling test that does not produce a mask for children.
+     */
+	bool culledBy(
+		const Array<Plane>&		plane,
+		int32&					cullingPlaneIndex = dummy,
+		const uint32  			testMask		  = -1) const;
     virtual std::string toString() const;
 
     double volume() const;

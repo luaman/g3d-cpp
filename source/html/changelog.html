@@ -11,6 +11,8 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> Extended AABox::culledBy, Box::culledBy, and Sphere::culledBy with extra
+	        information for bounding volume hierarchies
      <LI> G3D::computeNormalMap
      <LI> Matrix3::fuzzyEq(Matrix3)
      <LI> Removed System::sleep(0.02) from GLG3D demo to give more accurate performance measure
@@ -31,7 +33,8 @@
 	 <LI> Fix: [ 976746 ] #include GLCaps in g3dall
 	 <LI> Fix: [ 973550 ] sampler2DRect now supported in GLSL shaders (NVIDIA only; ATI drivers are broken)
 	 <LI> Fix: [ 973490 ] Win32Window width/height off by non-client amount
-     <LI> Fix: [ 961827 ] In debug mode, RenderDevice tries to access GL_MAX_TEXTURE_IMAGE_UNITS_ARB and an assertion fails on cards that don't support it.
+     <LI> Fix: [ 961827 ] In debug mode, RenderDevice tries to access 
+	            GL_MAX_TEXTURE_IMAGE_UNITS_ARB and an assertion fails on cards that don't support it.
 	 <LI> Fix: Texture binding for VertexAndPixelShader
    </UL>
 

@@ -92,7 +92,7 @@ public:
             KFHOTSPOT     = 0xB027,
             KFFALLOFF     = 0xB028,
             KFHIDE        = 0xB029,
-            KFHEIRARCHY   = 0xB030,
+            KFHIERARCHY   = 0xB030,
 
 		// float32 color
 		RGBF   = 0x0010,
@@ -553,7 +553,7 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
                     currentRotation = readRotTrack();
                     break;
 
-                case KFHEIRARCHY:
+                case KFHIERARCHY:
                     break;
         default:
             debugPrintf("Skipped unknown chunk 0x%x\n", curChunkHeader.id);

@@ -100,18 +100,10 @@ SOURCE=.\Test\main.cpp
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=.\Test\Window.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Source File
-
-SOURCE=.\Test\Window.h
-# End Source File
 # End Group
 # Begin Group "Resource Files"
 

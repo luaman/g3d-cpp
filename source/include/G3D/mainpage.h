@@ -553,17 +553,12 @@
 
    \section Contributors Contributors
 
-   The 6.00 team:
-   <BLOCKQUOTE>
-     <B>Morgan McGuire, Dan Keefe, Peter Sibley,
-        James O'Sullivan, Kevin Egan, 
-        Nick Musurca, Ben Landon, Rob Hunter, Peter Hunt</B>
-   </BLOCKQUOTE>
+   The 6.05 team:
+     <B>Morgan McGuire, Peter Sibley, Ben Landon, Peter Hunt, Giulio Mainardi, Gabe Taubman</B>
 
    This library contains code and resources contributed by the
    following people, or based open code and articles by them:
 
-   <BLOCKQUOTE>
    <BR>David Baszucki
    <BR>Seth Block
    <BR>Nick Capens
@@ -615,7 +610,6 @@
    <BR>Simon Winkelbach
    <BR>Laura Wollstadt
    <BR>Andrew Woo
-   </BLOCKQUOTE>
    <HR>
 
    <IMG SRC="G3D.gif">

@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-10
-  @edited  2004-03-28
+  @edited  2004-07-05
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -17,6 +17,8 @@
 
 #include "G3D/Vector3.h"
 #include "G3D/debug.h"
+#include "G3D/Array.h"
+#include "G3D/Plane.h"
 
 namespace G3D {
 
@@ -25,6 +27,9 @@ namespace G3D {
  */
 class AABox {
 private:
+
+    /** Optional argument placeholder */
+    static int dummy;
 
     Vector3  lo;
     Vector3  hi;
@@ -82,11 +87,64 @@ public:
     }
 
     /**
-     See Box::culledBy
+	 @deprecated Use culledBy(Array<Plane>&)
      */
     bool culledBy(
         const class Plane*  plane,
-        int                 numPlanes) const;
+        int                 numPlanes,
+		int32&				cullingPlaneIndex,
+		const uint32  		testMask,
+        uint32&             childMask) const;
+
+    /**
+	 @deprecated Use culledBy(Array<Plane>&)
+     */
+    bool culledBy(
+        const class Plane*  plane,
+        int                 numPlanes,
+		int32&				cullingPlaneIndex = dummy,
+		const uint32  		testMask = -1) const;
+
+	/**
+	 Conservative culling test for up to 32 planes.	
+	 Returns true if there exists a <CODE>plane[p]</CODE> for
+     which the entire object is in the negative half space
+     (opposite the plane normal).
+
+	 <CODE>testMask</CODE> and <CODE>childMask</CODE>
+	 are used for optimizing bounding volume hierarchies.
+     The version of this method that produces childMask
+     is slower than the version without; it should only
+     be used for parent nodes.
+
+	 @param cullingPlaneIndex The index of the first plane for which
+	  the entire object is in the negative half-space.  The function
+	  exits early when one plane is found.  -1 when the function
+	  returns false (i.e. when no plane culls the whole object).
+
+	 @param testMask  If bit <I>p</I> is 0, the 
+	   bounding volume automatically passes the culling test for
+	   <CODE>plane[p]</CODE> (i.e. it is known that the volume
+	   is entirely within the positive half space).  The function
+       must return false if testMask is 0 and test all planes
+       when testMask is -1 (0xFFFFFFFF).
+
+     @param childMask Test mask for the children of this volume.
+       
+	 */
+	bool culledBy(
+		const Array<Plane>&		plane,
+		int32&					cullingPlaneIndex,
+		const uint32  			testMask,
+        uint32&                 childMask) const;
+
+    /**
+     Conservative culling test that does not produce a mask for children.
+     */
+	bool culledBy(
+		const Array<Plane>&		plane,
+		int32&					cullingPlaneIndex = dummy,
+		const uint32  			testMask		  = -1) const;
 
     inline bool contains(
         const Vector3&      point) const {

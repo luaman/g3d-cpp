@@ -193,12 +193,13 @@ public:
     void lookAt(const Vector3& position, const Vector3& up = Vector3::unitY());
 
    /**
-    Returns the clipping planes of the frustum, in world space.  The array
-    must have six elements allocated.  The planes have normals facing 
+    Returns the clipping planes of the frustum, in world space.  The planes have normals facing 
     <B>into</B> the view frustum.
 
     If the far plane is at infinity, the resulting array will have 
     5 planes, otherwise there will be 6.
+    The viewport is used only to determine the aspect ratio of the screen; the
+    absolute dimensions and xy values don't matter.
     */
    void getClipPlanes(
        const Rect2D& viewport,
