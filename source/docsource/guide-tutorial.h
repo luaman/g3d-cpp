@@ -43,7 +43,7 @@ To make best use of this tutorial, we recommend that you are already comfortable
 <ul>
 <li>Coordinates in 3D</li>
 <li>C++</li>
-<li>C++ templates (you can fake it if you don't know this will yet)</li>
+<li>C++ templates: you need to be able to use them, but don't need to be able to write your own. </li>
 <li>Compiling and running c++ projects on the architecture of your choice</li>
 <li>OpenGL: you don't need to be an expert, but you should feel okay about setting up lighting and drawing primitives</li>
 </ul>
