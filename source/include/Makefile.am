@@ -14,6 +14,7 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/CoordinateFrame.h \
                        G3D/G3DGameUnits.h \
                        G3D/GLight.h \
+					   G3D/AABSPTree.h \
                        G3D/GCamera.h \
                        G3D/Line.h \
                        G3D/LineSegment.h \
@@ -47,7 +48,6 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/g3derror.h \
                        G3D/g3dmath.h \
                        G3D/g3dmath.inl \
-                       G3D/mainpage.h \
                        G3D/prompt.h \
                        G3D/stringutils.h \
                        G3D/vectorMath.h \

@@ -103,7 +103,7 @@ void Demo::doGraphics() {
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
-    if (! app->sky.isNull()) {
+    if (app->sky.notNull()) {
         app->sky->render(lighting);
     }
 
@@ -116,7 +116,7 @@ void Demo::doGraphics() {
 
     app->renderDevice->disableLighting();
 
-    if (! app->sky.isNull()) {
+    if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
     }
 }

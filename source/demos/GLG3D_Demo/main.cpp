@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
                 renderDevice->setProjectionAndCameraMatrix(camera);
                 LightingParameters lighting(gameTime, false);
 
-                if (sky) {
+                if (sky.notNull()) {
                    sky->render(lighting);
                 }
                                 
@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
                 renderDevice->popState();
 
 
-                if (sky) {
+                if (sky.notNull()) {
                     sky->renderLensFlare(lighting);
                 }
                 
