@@ -3,10 +3,10 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2003-01-03
+ @edited  2003-06-09
  */
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <time.h>
 #include "G3D/NetworkDevice.h"
 #include "G3D/BinaryInput.h"
@@ -25,7 +25,6 @@ namespace G3D {
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/tcp.h>
-#include <stdlib.h>
 #define _alloca alloca
 /** Define an error code for non-windows platforms. */
 int WSAGetLastError() {
