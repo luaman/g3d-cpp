@@ -226,6 +226,7 @@ def findBinary(program):
            'C:/Program Files/Microsoft Visual Studio/Common/MSDev98/Bin',\
            'C:/Program Files/Microsoft Visual Studio .NET 2003/Common7/IDE',\
            'C:/Program Files/Microsoft Visual Studio .NET 2002/Common7/IDE',\
+           'C:/Program Files/Microsoft Visual Studio .NET/Common7/IDE',\
            'C:/python',\
            'C:/doxygen/bin',\
            'C:\Program Files\PKZIP']
