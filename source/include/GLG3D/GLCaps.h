@@ -135,7 +135,7 @@ public:
         Call this once at the beginning of the program,
         after a video device is created.  This is called
         for you if you use G3D::RenderDevice.*/
-    static void loadExtensions();
+    static void loadExtensions(class Log* debugLog = NULL);
 
     static bool supports(const std::string& extName);
 

@@ -169,7 +169,7 @@ std::string GLCaps::getDriverVersion() {
 #undef DECLARE_EXT
 
 
-void GLCaps::loadExtensions() {
+void GLCaps::loadExtensions(Log* debugLog) {
 
     if (loadedExtensions) {
         return;
@@ -182,7 +182,6 @@ void GLCaps::loadExtensions() {
 	_glVersion      = (char*)glGetString(GL_VERSION);
 	_driverVersion  = getDriverVersion();
 
-    Log* debugLog = Log::common();
 
     #define LOAD_EXTENSION(name) \
        if (debugLog) {debugLog->print("Loading " #name " extension");} \

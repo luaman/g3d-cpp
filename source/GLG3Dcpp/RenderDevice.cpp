@@ -135,16 +135,15 @@ GWindow* RenderDevice::window() const {
 
 
 bool RenderDevice::init(GWindow* window, Log* log) {
+    debugAssert(! initialized());
+
     _window = window;
 
     GWindowSettings settings;
     window->getSettings(settings);
     
     // Load the OpenGL extensions if they have not already been loaded.
-    GLCaps::loadExtensions();
-    debugAssertGLOk();
-
-    debugAssert(! initialized());
+    GLCaps::loadExtensions(log);
 
     debugLog = log;
 

@@ -77,6 +77,11 @@ public:
      */
     bool    framed;
 
+    /**
+     When true, the window begins visible.  <B>true</B>, false.
+     */
+    bool    visible;
+
     GWindowSettings() :
         width(800),
         height(600),
@@ -95,7 +100,8 @@ public:
         lightSaturation(1.0),
         refreshRate(85),
         resizable(false),
-        framed(true) {}
+        framed(true),
+        visible(true) {}
 };
 
 // For backwards compatibility to 6.00

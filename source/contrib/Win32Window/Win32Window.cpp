@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com 
   @cite       Special thanks to Max McGuire, mmcguire@ironlore.com
   @created 	  2004-05-21
-  @edited  	  2004-05-21
+  @edited  	  2004-07-19
     
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -81,11 +81,17 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 	DWORD style = 0;
 	
 	if (s.framed) {
+
+        // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/Windowing/Windows/WindowReference/WindowStyles.asp
 		style |= WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
 
 		if (s.resizable) {
 			style |= WS_SIZEBOX;
 		}
+
+        if (s.visible) {
+            style |= WS_VISIBLE;
+        }
 	}
 
 	AdjustWindowRect(&rect, style, false);
@@ -104,11 +110,10 @@ Win32Window::Win32Window(const GWindowSettings& s) {
         NULL,
         GetModuleHandle(NULL),
         NULL);
-    
+
     alwaysAssertM(window != NULL, "");
             
     SetWindowLong(window, GWL_USERDATA, (LONG)this);
-    ShowWindow(window, SW_SHOW);
 
     if (settings.fullScreen) {
 	    // Change the desktop resolution if we are running in fullscreen mode

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-04-30
+ @edited  2004-07-19
  */
 
 #ifndef G3D_SHADER_H
@@ -367,8 +367,6 @@ public:
         expected by the program.
         If one of the arguments does not match, an ArgumentError
         exception is thrown.
-    
-        Called by 
     */
     void validateArgList(const ArgList& args) const;
 
