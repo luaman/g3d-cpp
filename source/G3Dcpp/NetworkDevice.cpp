@@ -520,7 +520,7 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
     // Increase the buffer size; the default (8192) is too easy to overflow when the network
     // latency is high.
     {
-        uint32 val = 131072;
+        uint32 val = 262144;
         if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)&val, sizeof(val)) == SOCKET_ERROR) {
             if (nd->debugLog) {
                 nd->debugLog->printf("WARNING: Increasing socket receive buffer to %d failed.\n", val);
@@ -717,7 +717,7 @@ bool ReliableConduit::receive(NetMessage* m) {
 
     // Deserialize
     if (m != NULL) {
-        BinaryInput b(buffer, ret, G3D_LITTLE_ENDIAN);
+        BinaryInput b(buffer, ret, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         m->deserialize(b);
     }
 
@@ -835,7 +835,7 @@ bool LightweightConduit::receive(NetMessage* m, NetAddress& sender, int maxSize)
     bReceived += ret;
 
     if (m != NULL) {
-        BinaryInput b(buffer, ret, G3D_LITTLE_ENDIAN);
+        BinaryInput b(buffer, ret, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         m->deserialize(b);
     }
 

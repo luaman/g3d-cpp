@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2003-02-15
+ @edited  2003-03-26
 
 
   <PRE>
@@ -40,6 +40,8 @@
 #endif
 
 namespace G3D {
+
+const bool BinaryInput::NO_COPY = false;
     
 static bool needSwapBytes(G3DEndian fileEndian) {
     // Figure out if this machine is little or big endian.
@@ -74,7 +76,12 @@ BinaryInput::BinaryInput(
     const uint8*        data,
     int                 dataLen,
     G3DEndian           dataEndian,
-    bool                compressed) {
+    bool                compressed,
+    bool                copyMemory) {
+
+    debugAssert(!compressed || !copyMemory);
+
+    freeBuffer = copyMemory;
 
     this->fileEndian = dataEndian;
     this->filename = "<memory>";
@@ -95,8 +102,12 @@ BinaryInput::BinaryInput(
 
     } else {
 	    length = dataLen;
-	    buffer = (uint8*)malloc(length);
-        memcpy(buffer, data, dataLen);
+        if (! copyMemory) {
+            buffer = const_cast<uint8*>(data);
+        } else {
+	        buffer = (uint8*)malloc(length);
+            memcpy(buffer, data, dataLen);
+        }
     }
 }
 
@@ -106,6 +117,7 @@ BinaryInput::BinaryInput(
     G3DEndian           fileEndian,
     bool                compressed) {
 
+    freeBuffer = true;
     this->fileEndian = fileEndian;
     this->filename = filename;
 	buffer = NULL;
@@ -159,7 +171,10 @@ BinaryInput::BinaryInput(
 
 
 BinaryInput::~BinaryInput() {
-    free(buffer);
+
+    if (freeBuffer) {
+        free(buffer);
+    }
     buffer = NULL;
 }
 

@@ -489,6 +489,7 @@ to add zlibstat.lib to your linker list.
      <LI> Linux Makefiles [James O'Sullivan, Jordan Parker]
      <LI> RenderDevice::getProjectionMatrixParams
      <LI> RenderDevice::debugDrawCylinder
+     <LI> Added an option to not copy input memory for BinaryInput
      <LI> Added data/ifs/sphere.ifs
      <LI> Added data/ifs/spikeball.ifs
      <LI> Added a new (imperfect) demo/tool that converts 3DS and MD2 to IFS.

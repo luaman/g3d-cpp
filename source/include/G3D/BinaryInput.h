@@ -69,7 +69,15 @@ private:
      */
     int             pos;
 
+    /**
+     When true, the buffer is freed in the deconstructor.
+     */
+    bool            freeBuffer;
+
 public:
+
+    /** false, constant to use with the copyMemory option */
+    static const bool      NO_COPY;
 
 	/**
 	 If the file cannot be opened, a zero length buffer is presented.
@@ -81,14 +89,17 @@ public:
 
     /**
      Creates input stream from an in memory source.
-     Data is copied from the pointer, so you may
-     deallocate it as soon as the object is constructed.
+     Unless you specify copyMemory = false, the data is copied
+     from the pointer, so you may deallocate it as soon as the
+     object is constructed.  It is an error to specify copyMemory = false
+     and compressed = true.
      */
     BinaryInput(
         const uint8*        data,
         int                 dataLen,
         G3DEndian           dataEndian,
-        bool                compressed = false);
+        bool                compressed = false,
+        bool                copyMemory = true);
 
 
     virtual ~BinaryInput();
