@@ -3,5 +3,5 @@
 libtoolize --force
 aclocal $ACLOCAL_FLAGS
 autoheader
-automake --include-deps --add-missing
+automake --foreign --add-missing --include-deps
 autoconf
