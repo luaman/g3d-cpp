@@ -3,7 +3,7 @@
 #
 # See manual.html for documentation.  http://ice.sf.net
 #
-# Copyright 2003-2004 Morgan McGuire and Rob Hunter
+# Copyright 2003-2005 Morgan McGuire and Rob Hunter
 # All rights reserved.
 #
 # morgan@cs.brown.edu, rob@cs.brown.edu
@@ -40,7 +40,7 @@
 
 
 
-version = [0, 3, 2]
+version = [0, 4, 2]
 import sys, string, os, os.path, fileinput, tempfile, shutil, re
 import commands, pickle, time, ConfigParser
 from string import ljust
@@ -346,6 +346,14 @@ def maybePrint(str):
         print str
 
 ##############################################################################
+
+def beginsWith(str1, prefix):
+    return str1[:len(prefix)] == prefix
+
+def endsWith(str1, postfix):
+    return str1[-len(postfix):] == postfix
+
+##############################################################################
 #                               Shell Helpers                                #
 ##############################################################################
 
@@ -591,9 +599,9 @@ def findVersionInString(verInfo):
 
 """ Takes a version list and converts it to a string."""
 def versionToString(v):
-    s = ""
+    s = ''
     for i in v:
-        s += str(i) + "."
+        s += str(i) + '.'
     return s[:-1]
 
 #############################################################################
@@ -605,18 +613,20 @@ want.
 def getVersion(filename):
     cmd = filename
 
-    if _basename(filename)[:3] == "g++":
-        cmd = filename + " --version"
-    elif _basename(filename)[:6] == "python":
+    # We check only the beginning of a filename because it may have
+    # a version number as part of the name.
+    if beginsWith(_basename(filename), 'g++'):
+        cmd = filename + ' --version'
+    elif beginsWith(_basename(filename), 'python'):
         cmd = filename + " -V"
-    elif _basename(filename)[:2] == "cl":
+    elif beginsWith(_basename(filename), 'cl'):
         # MSVC++ compiler
         cmd = filename
-    elif _basename(filename)[:7] == "doxygen":
+    elif beginsWith(_basename(filename), 'doxygen'):
         cmd = filename + " --version"
-    elif _basename(filename)[:2] == "ar":
+    elif beginsWith(_basename(filename), 'ar'):
         cmd = filename + " --version"
-    elif _basename(filename)[:2] == "ld":
+    elif beginsWith(_basename(filename), 'ld'):
         cmd = filename + " --version"
     else:
         # Unsupported
@@ -1047,18 +1057,30 @@ def doxyLineRewriter(lineStr, hash):
         else:
             return lineStr
 
-""" Expands environment variables of the form $(var) in a string.
-    Compare to os.path.expandvars, which only handles $var and
-    therefore requires a separation character after variables."""
+""" Expands environment variables of the form $(var) and $(shell ...)
+    in a string. Compare to os.path.expandvars, which only handles
+    $var and therefore requires a separation character after
+    variables."""
 def expandvars(str):
+    
     while '$' in str:
         i = str.find('$')
         j = str.find(')', i)
         if (i > len(str) - 3) or (str[i + 1] != '(') or (j < 0):
-            raise 'Error', 'Environment variables must have the form $(var)'
+            raise 'Error', 'Environment variables must have the form $(var) or $(shell cmds)'
 
         varexpr = str[i:(j + 1)]
-        value = os.getenv(str[(i + 2):j])
+
+        varname = str[(i + 2):j]
+
+        if beginsWith(varname, 'shell '):
+            # Shell command
+            cmd = varname[6:]
+            value = shell(cmd, verbose)
+            if verbose: print value
+        else:
+            # Environment variable
+            value = os.getenv(varname)
 
         if (value == None):
             value = ''
@@ -1134,6 +1156,7 @@ def maybeWarn(warning):
 #                             Default .icompile                              #
 ##############################################################################
 
+
 configHelp = """
 # If you have special needs, you can edit per-project ice.txt
 # files and your global ~/.icompile file to customize the
@@ -1144,7 +1167,13 @@ configHelp = """
 # ~/.icompile and iCompile will generate new ones when run.
 #
 #
+# In general you can set values without any quotes, e.g.:
 #
+#  compileoptions = -O3 -g --verbose $(CXXFLAGS) %(defaultcompileoptions)s
+#
+# Adds the '-O3' '-g' and '--verbose' options to the defaults as
+# well as the value of environment variable CXXFLAGS.
+# 
 # These files have the following sections and variables.
 # Values in ice.txt override those specified in .icompile.
 #
@@ -1194,6 +1223,8 @@ configHelp = """
 #
 #   $(envvar)        Value of shell variable named envvar.
 #                    Unset variables are the empty string.
+#   $(shell ...)     Runs the '...' and replaces the expression
+#                    as if it were the value of an envvar.
 #   %(localvar)s     Value of a variable set inside ice.txt
 #                    or .icompile (Yes, you need that 's'--
 #                    it is a Python thing.)
@@ -1297,7 +1328,7 @@ linkoptions: %(defaultlinkoptions)s
 
 def printVersion():
     print "iCompile " + versionToString(version)
-    print "Copyright 2003-2004 Morgan McGuire and Rob Hunter"
+    print "Copyright 2003-2005 Morgan McGuire and Rob Hunter"
     print "All rights reserved"
     print
     print "http://ice.sf.net"
@@ -1415,29 +1446,72 @@ def buildClean():
    itself).  Returned filenames must either be fully qualified or
    relative to the "rootDir" dir.
 
-   opt are options to pass to the compiler (e.g. -D_DEBUG).  Do not
-   put verbose options here, since icompile reads back the output
-   of the compiler command.
+   May modify the default compiler and linker options
    """
-def getDependencies(file, opt):
-    raw = shell(compilerName() + " --depend " + opt + " " + file, verbose)
-    
-    result = []
-    for eachLine in string.split(raw, ' \\\n  '):
-        result += string.split(eachLine, ' ')
+def getDependencies(file, iteration = 1):
+    raw = shell(compilerName() + ' --depend ' + getCompilerOptions([]) + ' ' + file, verbose)
 
-    # The first element of result will be "file:", so strip it
-    files = result[1:]
-    result = []
+    if beginsWith(raw, 'In file included from'):
+        # If there was an error, the output will have the form
+        # "In file included from _____:" and a list of files
+        
+        if iteration == 3:
+            # Give up; we can't resolve the problem
+            print raw
+            sys.exit(-1)
+        
+        if verbose:
+            print ('\nThere were some errors computing dependencies.  ' +
+                   'Attempting to recover.('), iteration,')'
+        
+        # Generate a list of files and see if they are something we
+        # know how to fix.
+        noSuchFile = []
+        for line in string.split(raw, '\n'):
+            if endsWith(line, ': No such file or directory'):
+                x = line[:-len(': No such file or directory')]
+                j = x.rfind(': ')
+                if (j >= 0): x = x[(j+2):]
 
-    # Add the './' to raw files
-    for f in files:
-        if '/' in f:
-            result.append(f)
-        else:
-            result.append('./' + f)
+                # x now has the filename
+                noSuchFile.append(_basename(x))
 
-    return result
+        if verbose: print 'Files not found:', noSuchFile
+        
+        # Look for files we know how to handle
+        for f in noSuchFile:
+            if f == 'wx.h':
+                if verbose: print 'wxWindows detected.'
+                defaultCompilerOptions.append(shell('wx-config --cxxflags', verbose))
+                defaultLinkerOptions.append(shell('wx-config --gl-libs --libs', verbose))
+                
+            if includeTable.has_key(f):
+                if verbose: print f,'detected.'
+                includePaths += includeTable[file]
+
+        return getDependencies(file, iteration + 1)
+    else:
+
+        # Normal case, no error
+        
+        result = []
+        for eachLine in string.split(raw, ' \\\n  '):
+            result += string.split(eachLine, ' ')
+
+        # There is always at least one file since everything depends on itself.
+        
+        # The first element of result will be "file:", so strip it
+        files = result[1:]
+        result = []
+
+        # Add the './' to raw files
+        for f in files:
+            if '/' in f:
+                result.append(f)
+            else:
+                result.append('./' + f)
+
+        return result
 
 
 #########################################################################
@@ -1448,6 +1522,10 @@ def getDependencies(file, opt):
  where dependencies[f] is the list of all files on which
  f depends and allDependencyFiles is the list of all files
  on which any file depends.
+
+ While getting dependencies, this may change the include/library
+ list and restart the process if it appears that some include
+ directory is missing.
 """
 def getDependencyInformation():
     
@@ -1465,15 +1543,13 @@ def getDependencyInformation():
 
     if verbose: print 'Source files found:', allCFiles
 
-    # Get the compiler options that will be needed for them.
-    # Do not use warning or verbose options for this; they
-    # would corrupt the output.
-    opt = getCompilerOptions(allCFiles)
-
     # Get their dependencies
     for cfile in allCFiles:
 
-        dlist = getDependencies(cfile, opt)
+        # Get the compiler options that will be needed for them.
+        # Do not use warning or verbose options for this; they
+        # would corrupt the output.
+        dlist = getDependencies(cfile)
 
         # Update the dependency set
         for d in dlist: dependencySet[d] = 1
@@ -1507,13 +1583,28 @@ def getOutOfDateFiles(cfiles, dependencies, files):
     
     # Need to rebuild all if this script was modified more
     # recently than a given file.
-    compileTime = getTimeStamp(sys.argv[0])
+    icompileTime = getTimeStamp(sys.argv[0])
+
+    # Rebuild all if ice.txt or .icompile was modified
+    # more recently.
+    if os.path.exists('ice.txt'):
+        iceTime = getTimeStamp('ice.txt')
+        if iceTime > icompileTime:
+            icompileTime = iceTime
+
+    HOME = os.environ['HOME']
+    preferenceFile = pathConcat(HOME, '.icompile')
+    if os.path.exists(preferenceFile):
+        configTime = getTimeStamp(preferenceFile)
+        if configTime > icompileTime:
+            icompileTime = configTime
+
 
     # Generate a list of all files newer than their targets
     for cfile in cfiles:
         ofile = getObjectFilename(cfile)
         otime = getTimeStamp(ofile)
-        rebuild = (otime < compileTime)
+        rebuild = (otime < icompileTime)
 
         if rebuild and verbose:
             print "The compile script is newer than " + ofile
@@ -1536,8 +1627,10 @@ def getOutOfDateFiles(cfiles, dependencies, files):
 
 #########################################################################
 
+# Table mapping headers to lists of directories that should be -I when
+# that header appears.
 includeTable = {
-    "SDL.h"      : "-I/usr/include/SDL"
+    'SDL.h'      : ['/usr/include/SDL']
     }
 
 """allFiles is a list of all files on which something
@@ -1547,18 +1640,19 @@ includeTable = {
    but not dependency checking:
      compilerWarningOptions + compilerVerboseOptions
    """
+# TODO: merge with compilerOptions
 def getCompilerOptions(allFiles, extraOpts = []):
-    opt = (" " + string.join(compilerOptions(), " ") + " " +
-            string.join(extraOpts, " ") +
-           " -c ")
+    opt = (' ' + string.join(compilerOptions(), ' ') + ' ' +
+            string.join(extraOpts, ' ') +
+           ' -c ')
     
     for i in includePaths():
-        opt += "-I" + i + " "
+        opt += '-I' + i + ' '
 
-    for path in allFiles:
-        file = _basename(path)
-        if includeTable.has_key(file):
-            opt += " " + includeTable[file]
+    #for path in allFiles:
+    #    file = _basename(path)
+    #    if includeTable.has_key(file):
+    #        opt += ' ' + includeTable[file]
 
     return opt
 
@@ -1581,12 +1675,6 @@ def makeObjectFile(cfile, options):
 
 #########################################################################
 
-# TODO: The right thing for the linker options to do is:
-# 1. Generate a list of all static and dynamic libraries needed by the program
-# 2. Recursively (with memoization to prevent loops) generate all libs needed by other libs
-# 3. Topologically sort based on dependencies
-
-
 # Files can trigger additional linker options.  This is used to add
 # libraries to the link list based on what is #included.  Used by
 # getLinkerOptions.
@@ -1606,6 +1694,7 @@ linkTable = {
     'graphics3D.h' : (STATIC,   'G3D',         'G3D_debug'),
     'GLG3D.h'      : (STATIC,   'GLG3D',       'GLG3D_debug'),
     'pthread.h'    : (DYNAMIC,  'pthread',     'pthread'),
+    'qobject.h'    : (DYNAMIC,  'qt-mt',       'qt-mt')
 }
 
 # Static libraries may have their own dynamic dependencies.  Decoding 
@@ -2037,7 +2126,7 @@ def checkForProjectFile(args):
     projectFile = 'ice.txt'
     if os.path.exists(projectFile): return
 
-    # Everything below here executs only when there is no project file
+    # Everything below here executes only when there is no project file
 
     if ('--clean' in args) and not os.path.exists('_build'):
         print
@@ -2191,27 +2280,29 @@ def configureGpp():
     (defaultCompilerName, compilerVersion) = latestGpp()
 
     if (target == RELEASE):
-        defaultCompilerOptions = ["-O3",
-                                  "-D_RELEASE", 
-                                  "-funsafe-math-optimizations", 
-                                  "-fno-trapping-math",
-                                  "-fno-finite-math-only",
-                                  "-s"]
+        defaultCompilerOptions = ['-O3',
+                                  '-D_RELEASE', 
+                                  '-funsafe-math-optimizations', 
+                                  '-fno-trapping-math',
+                                  '-s']
         # Had to remove "-fno-math-errno" because g++ occasionally
         # crashes with that option.
 
+        # Removed '-fno-finite-math-only' because it is not used
+        # by g++3.2
+
         defaultLinkerOptions   = []
     else:
-        defaultCompilerOptions = ["-D_DEBUG", "-g"]
+        defaultCompilerOptions = ['-D_DEBUG', '-g']
         defaultLinkerOptions   = []
 
 
     if (binaryType == DLL):
-        defaultLinkerOptions  += ["-shared"]
+        defaultLinkerOptions  += ['-shared']
 
-    #if verbose: compilerVerboseOptions.append("-v")
+    #if verbose: compilerVerboseOptions.append('-v')
 
-    compilerWarningOptions     = ["-Wall"]
+    compilerWarningOptions     = ['-Wall']
 
 
 #################################################################
