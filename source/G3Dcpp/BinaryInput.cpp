@@ -72,7 +72,7 @@ BinaryInput::BinaryInput(
 
     debugAssert(!compressed || !copyMemory);
 
-    freeBuffer = copyMemory;
+    freeBuffer = copyMemory || compressed;
 
     this->fileEndian = dataEndian;
     this->filename = "<memory>";

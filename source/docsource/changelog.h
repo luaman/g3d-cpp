@@ -54,6 +54,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1062659 ] BinaryInput::BinaryInput() memory leak
      <LI> Fix: Removed RenderDevice::polygonCount, which was never used.
      <LI> Fix: TextInput::readNumber no longer accepts double preceeding +/- on numbers when Options::signedNumbers is true
      <LI> Fix: [ 1038733 ] GWindow cannot set icon properly [Corey]
