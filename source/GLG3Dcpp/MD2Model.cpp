@@ -74,7 +74,7 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
             kf1 = animationTable[-a].last;
         }
 
-        alpha = clamp(0, 1 + (pose.time / PRE_BLEND_TIME), 1);
+        alpha = clamp(1 + (pose.time / PRE_BLEND_TIME), 0, 1);
 
         if ((pose.preFrameNumber >= 0) && (pose.preFrameNumber < 197)) {
             kf0 = pose.preFrameNumber;
@@ -658,8 +658,8 @@ void MD2Model::getGeometry(const Pose& pose, MeshAlg::Geometry& out) const {
         Vector3*        nI = out.normalArray.getCArray();
 
         for (int v = numVertices - 1; v >= 0; --v) {
-            vI[v] = v0[v].lerp(alpha, v1[v]);
-            nI[v] = normalTable[n0[v]].lerp(alpha, normalTable[n1[v]]);
+            vI[v] = v0[v].lerp(v1[v], alpha);
+            nI[v] = normalTable[n0[v]].lerp(normalTable[n1[v]], alpha);
         }
 
         return;

@@ -9,7 +9,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-06-10
+  @edited  2003-09-27
 */
 
 #ifndef G3D_VECTOR2_H
@@ -73,8 +73,20 @@ public:
     /**
      Linear interpolation
      */
-    inline Vector2 lerp(double alpha, const Vector2& v) const {
+    inline Vector2 lerp(const Vector2& v, double alpha) const {
         return (*this) + (v - *this) * alpha; 
+    }
+
+    inline Vector2 clamp(const Vector2& low, const Vector2& high) const {
+        return Vector2(
+            G3D::clamp(x, low.x, high.x),
+            G3D::clamp(y, low.y, high.y));
+    }
+
+    inline Vector2 clamp(double low, double high) const {
+        return Vector2(
+            G3D::clamp(x, low, high),
+            G3D::clamp(y, low, high));
     }
 
     // arithmetic updates

@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2003-01-25
+  @edited  2003-09-28
  */
 
 #ifndef G3D_QUAT_H
@@ -66,8 +66,8 @@ public:
      other at time alpha.
      */
     Quat lerp(
-        double              alpha,
-        const Quat&         other) const;
+        const Quat&         other,
+        double              alpha) const;
 
     /**
      Raise this quaternion to a power.  For a rotation, this is

@@ -95,12 +95,12 @@ void Quat::toAxisAngle(
 		axis = -axis;
     }
 
-	while (angle > 2 * PI) {
-        angle -= 2 * PI;
+	while (angle > 2 * G3D_PI) {
+        angle -= 2 * G3D_PI;
     }
 
-	if (abs(angle) > PI) {
-		angle -= 2 * PI;
+	if (abs(angle) > G3D_PI) {
+		angle -= 2 * G3D_PI;
     }
 
     // Make the angle positive.
@@ -152,8 +152,8 @@ void Quat::toRotationMatrix(
 
     
 Quat Quat::lerp(
-    double              alpha,
-    const Quat&         other) const {
+    const Quat&         other,
+    double              alpha) const {
 
     // We might need to negate one in order to ensure that
     // we're going the short way

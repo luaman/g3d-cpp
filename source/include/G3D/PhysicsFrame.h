@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-08
- @edited  2002-08-07
+ @edited  2002-09-28
 */
 
 #ifndef G3D_PHYSICSFRAME_H
@@ -57,8 +57,8 @@ public:
      Linear interpolation.
      */
     PhysicsFrame lerp(
-        double                  alpha,
-        const PhysicsFrame&     other);
+        const PhysicsFrame&     other,
+        double                  alpha);
 
     /** 
      this + t * dx

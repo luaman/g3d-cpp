@@ -68,7 +68,7 @@ void Camera::setProjectionAndCameraMatrix() const {
 
 
 void Camera::setFieldOfView(double angle) {
-	debugAssert((angle < PI) && (angle > 0));
+	debugAssert((angle < G3D_PI) && (angle > 0));
 
 	fieldOfView = angle;
 

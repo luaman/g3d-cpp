@@ -7,7 +7,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-08-13
+ @edited  2003-09-28
  */
 
 #include <stdlib.h>
@@ -37,7 +37,7 @@ inline int iCeil (double fValue) {
 
 //----------------------------------------------------------------------------
 
-inline int iClamp(int low, int val, int hi) {
+inline int iClamp(int val, int low, int hi) {
 	if (val <= low) {
 		return low;
 	} else if (val >= hi) {
@@ -49,7 +49,7 @@ inline int iClamp(int low, int val, int hi) {
 
 //----------------------------------------------------------------------------
 
-inline double clamp(double low, double val, double hi) {
+inline double clamp(double val, double low, double hi) {
 	if (val <= low) {
 		return low;
 	} else if (val >= hi) {
@@ -105,7 +105,7 @@ inline double aCos (double fValue) {
         else
             return 0.0;
     } else {
-        return PI;
+        return G3D_PI;
     }
 }
 
@@ -115,10 +115,10 @@ inline double aSin (double fValue) {
         if ( fValue < 1.0 ) {
             return double(::asin(fValue));
         } else {
-            return -HALF_PI;
+            return -G3D_HALF_PI;
         }
     } else {
-        return HALF_PI;
+        return G3D_HALF_PI;
     }
 }
 
@@ -226,11 +226,11 @@ inline bool isEven(int num) {
 }
 
 inline double toRadians(double deg) {
-    return deg * PI / 180.0;
+    return deg * G3D_PI / 180.0;
 }
 
 inline double toDegrees(double rad) {
-    return rad * 180.0 / PI;
+    return rad * 180.0 / G3D_PI;
 }
 
 /**

@@ -123,10 +123,24 @@ public:
 
     std::string toString() const;
 
+    inline Vector3 clamp(const Vector3& low, const Vector3& high) const {
+        return Vector3(
+            G3D::clamp(x, low.x, high.x),
+            G3D::clamp(y, low.y, high.y),
+            G3D::clamp(z, low.z, high.z));
+    }
+
+    inline Vector3 clamp(double low, double high) const {
+        return Vector3(
+            G3D::clamp(x, low, high),
+            G3D::clamp(y, low, high),
+            G3D::clamp(z, low, high));
+    }
+
     /**
      Linear interpolation
      */
-    inline Vector3 lerp(double alpha, const Vector3& v) const {
+    inline Vector3 lerp(const Vector3& v, double alpha) const {
         return (*this) + (v - *this) * alpha; 
     }
 

@@ -83,20 +83,20 @@ void LightingParameters::setTime(const GameTime _time) {
     double time = _time - floor(_time / DAY) * DAY;
 
     // sunAngle = 0 at midnight
-    double sourceAngle = 2 * PI * time / DAY;
+    double sourceAngle = 2 * G3D_PI * time / DAY;
 
     sunPosition.x = sin(sourceAngle);
     sunPosition.y = -cos(sourceAngle);
     sunPosition.z = 0;
 
-    moonPosition.x = sin(sourceAngle + PI);
-    moonPosition.y = -cos(sourceAngle + PI);
+    moonPosition.x = sin(sourceAngle + G3D_PI);
+    moonPosition.y = -cos(sourceAngle + G3D_PI);
     moonPosition.z = 0;
 
     // Determine which light source we observe.
-    if ((sourceAngle < PI / 2) || (sourceAngle > 3 * PI / 2)) {
+    if ((sourceAngle < G3D_PI / 2) || (sourceAngle > 3 * G3D_PI / 2)) {
         source = MOON;
-        sourceAngle += PI;
+        sourceAngle += G3D_PI;
     } else {
         source = SUN;
     }

@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-09-14
+ @edited  2003-09-28
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -26,9 +26,10 @@
 #endif
 
 /**
- The version number of G3D
+ The version number of G3D in the form: MMmmBB -> 
+ version MM.mm [beta BB]
  */
-#define G3D_VER 6.00
+#define G3D_VER 060006
 
 #include "G3D/platform.h"
 

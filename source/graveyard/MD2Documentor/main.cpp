@@ -232,7 +232,7 @@ void doSimulation(GameTime timeStep) {
         return;
     }
 
-    controller->doSimulation(clamp(0.0, timeStep, 0.1), *userInput);
+    controller->doSimulation(clamp(timeStep, 0.0, 0.1), *userInput);
     Vector3 v = controller->getPosition();
 
     // Keep the camera above the ground plane

@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 
 void doSimulation(GameTime timeStep) {
     // Simulation
-    controller->doSimulation(clamp(0.0, timeStep, 0.1));
+    controller->doSimulation(clamp(timeStep, 0.0, 0.1));
 	camera->setCoordinateFrame(controller->getCoordinateFrame());
 }
 

@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2003-08-13
+ @edited  2003-09-28
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -76,16 +76,9 @@ const double nan = 0.0/sin(0.0);
 
 #endif
 
-#ifdef PI 
-    #undef PI
-#endif
-
-/** Remember: as with all global constants in C++, the order of initialization
-    for PI, HALF_PI, TWO_PI, and your own globals is undefined.  You can't
-	make a constant relative to PI. */
-const double PI      = 3.1415926535898;
-const double HALF_PI = 1.5707963267949;
-const double TWO_PI  = 6.283185;
+#define G3D_PI      (3.1415926535898)
+#define G3D_HALF_PI (1.5707963267949)
+#define G3D_TWO_PI  (6.283185)
 
 typedef signed char		int8;
 typedef unsigned char	uint8;
@@ -111,9 +104,15 @@ int iCeil(double fValue);
 /**
  Clamps the value to the range [low, hi] (inclusive)
  */
-int iClamp(int low, int val, int hi);
+int iClamp(int val, int low, int hi);
+double clamp(double val, double low, double hi);
 
-double clamp(double low, double val, double hi);
+/**
+ Returns a + (b - a) * f;
+ */
+inline double lerp(double a, double b, double f) {
+    return a + (b - a) * f;
+}
 
 /**
  Wraps the value to the range [0, hi) (exclusive

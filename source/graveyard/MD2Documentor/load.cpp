@@ -47,7 +47,7 @@ TextureRef loadBrightTexture(const std::string& filename, double brighten) {
                 Color3uint8& color = im.pixel3()[i];
 
                 for (int c = 0; c < 3; ++c) {
-                    color[c] = clamp(0, color[c] * brighten, 255);
+                    color[c] = iClamp(color[c] * brighten, 0, 255);
                 }
             }
 
@@ -60,7 +60,7 @@ TextureRef loadBrightTexture(const std::string& filename, double brighten) {
                 Color4uint8& color = im.pixel4()[i];
 
                 for (int c = 0; c < 3; ++c) {
-                    color[c] = clamp(0, color[c] * brighten, 255);
+                    color[c] = iClamp(color[c] * brighten, 0, 255);
                 }
             }
 

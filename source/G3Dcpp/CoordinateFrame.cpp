@@ -113,14 +113,14 @@ void CoordinateFrame::lookAt(
 
 
 CoordinateFrame CoordinateFrame::lerp(
-    double                  alpha,
-    const CoordinateFrame&  other) const {
+    const CoordinateFrame&  other,
+    double                  alpha) const {
 
     Quat q1 = Quat(this->rotation);
     Quat q2 = Quat(other.rotation);
 
     return CoordinateFrame(
-        q1.lerp(alpha, q2).toRotationMatrix(),
+        q1.lerp(q2, alpha).toRotationMatrix(),
         this->translation * (1 - alpha) + other.translation * alpha);
 } 
 

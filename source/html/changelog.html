@@ -20,11 +20,23 @@
 	   <LI>Remove <CODE>delete font;</CODE>
 	   <LI>Replace <CODE>draw2DString</CODE> with <CODE>draw2D</CODE>
 	   <LI>Replace G3D::Sky constructor arguments of the form <CODE>"sky_ft.jpg"</CODE> with arguments of the form <CODE>"sky_*.jpg"</CODE>
+	   <LI>Replace v1.lerp(a, v2) with v1.lerp(v2, a)
+	   <LI>Replace clamp(L, x, H) with clamp(x, L, H)
+	   <LI>Replace iClamp(L, x, H) with iClamp(x, L, H)
+	   <LI>Replace G3D::PI with G3D_PI
+	   <LI>Replace G3D::HALF_PI with G3D_HALF_PI
+	   <LI>Replace G3D::TWO_PI with G3D_TWO_PI
   </BLOCKQUOTE>
 
 
    <P>
    <UL>
+     <LI> Changed G3D_VER from double to integer
+     <LI> G3D::lerp
+     <LI> Changed G3D::PI, G3D::HALF_PI, and G3D::TWO_PI to #defines
+     <LI> Vector2::clamp, Vector3::clamp, Vector4::clamp
+     <LI> Changed order of arguments to all lerp methods to match DirectX/Cg
+	 <LI> Changed order of arguments to G3D::clamp and G3D::iClamp to match DirectX/Cg
      <LI> G3D::ManualCameraController::ManualCameraController now requires a G3D::UserInput
 	 <LI> G3D::UserInput::appHasFocus
      <LI> G3D::ManualCameraController now stops tracking the mouse when the app loses focus

@@ -7,7 +7,7 @@
        at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-03-04
- @edited  2003-04-06
+ @edited  2003-09-28
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -207,8 +207,8 @@ public:
      Uses Quat.lerp to interpolate between two coordinate frames.
      */
     CoordinateFrame lerp(
-        double                  alpha,
-        const CoordinateFrame&  other) const;
+        const CoordinateFrame&  other,
+        double                  alpha) const;
 
 };
 

@@ -2495,7 +2495,7 @@ static void drawCylinder(RenderDevice* device, const Vector3& v0, const Vector3&
 
     device->beginPrimitive(RenderDevice::QUAD_STRIP);
         for (a = 0; a <= sides; ++a) {
-            const double angle = a * PI * 2.0 / sides;
+            const double angle = a * G3D_PI * 2.0 / sides;
             const Vector3 offset(cos(angle) * x + sin(angle) * y);
             device->sendVertex(v0 + offset);
             device->sendVertex(v1 + offset);
@@ -2505,7 +2505,7 @@ static void drawCylinder(RenderDevice* device, const Vector3& v0, const Vector3&
     if (caps) {
         device->beginPrimitive(RenderDevice::TRIANGLE_FAN);
             for (a = 0; a <= sides; ++a) {
-                const double angle = a * PI * 2.0 / sides;
+                const double angle = a * G3D_PI * 2.0 / sides;
                 const Vector3 offset(cos(angle) * x + sin(angle) * y);
                 device->sendVertex(v0 + offset);
             }
@@ -2513,7 +2513,7 @@ static void drawCylinder(RenderDevice* device, const Vector3& v0, const Vector3&
 
         device->beginPrimitive(RenderDevice::TRIANGLE_FAN);
             for (a = 0; a <= sides; ++a) {
-                const double angle = a * PI * 2.0 / sides;
+                const double angle = a * G3D_PI * 2.0 / sides;
                 const Vector3 offset(cos(-angle) * x + sin(-angle) * y);
                 device->sendVertex(v1 + offset);
             }
@@ -2529,7 +2529,7 @@ void RenderDevice::debugDrawVertexNormals(const MeshAlg::Geometry& geometry, con
         const Array<Vector3>& vertexArray = geometry.vertexArray;
         const Array<Vector3>& normalArray = geometry.normalArray;
 
-        const double D = clamp(0.05, 8.0 / vertexArray.size(), 1) * scale;
+        const double D = clamp(8.0 / vertexArray.size(), 0.05, 1) * scale;
         
         setColor(Color3::GREEN * .5);
         setLineWidth(1);
@@ -2611,8 +2611,8 @@ void RenderDevice::debugDrawCapsule(const Capsule& capsule, const Color3& color,
         double pitch = 0;
         int y;
         for (y = 0; y < 26; ++y) {
-            const double yaw0 = y * PI / 13;
-            const double yaw1 = (y + 1) * PI / 13;
+            const double yaw0 = y * G3D_PI / 13;
+            const double yaw1 = (y + 1) * G3D_PI / 13;
 
             Vector3 v0 = Vector3(cos(yaw0), sin(pitch), sin(yaw0)) * radius + center;
             Vector3 v1 = Vector3(cos(yaw1), sin(pitch), sin(yaw1)) * radius + center;
@@ -2623,7 +2623,7 @@ void RenderDevice::debugDrawCapsule(const Capsule& capsule, const Color3& color,
         Vector3 top(0,height,0);
         // Edge lines
         for (y = 0; y < 8; ++y) {
-            const double yaw = y * PI / 4;
+            const double yaw = y * G3D_PI / 4;
             const Vector3 x(cos(yaw) * radius, 0, sin(yaw) * radius);
         
             drawCylinder(this, x, x + top, cylRadius, 6, false);        
@@ -2641,7 +2641,7 @@ void RenderDevice::debugDrawCapsule(const Capsule& capsule, const Color3& color,
         for (int i = 0; i < 2; ++i) {
             beginPrimitive(RenderDevice::QUAD_STRIP);
                 for (y = 0; y <= 26; ++y) {
-                    const double yaw0 = y * PI / 13;
+                    const double yaw0 = y * G3D_PI / 13;
                     Vector3 v0 = Vector3(cos(yaw0), sin(pitch), sin(yaw0)) * radius;
 
                     sendVertex(v0);
@@ -2673,13 +2673,13 @@ void RenderDevice::drawWireSphereSection(const Sphere& sphere, double cylRadius,
 
         // Wire frame
         for (y = 0; y < 8; ++y) {
-            const double yaw = y * PI / 4;
+            const double yaw = y * G3D_PI / 4;
             const Vector3 x(cos(yaw) * radius, 0, sin(yaw) * radius);
             //const Vector3 z(-sin(yaw) * radius, 0, cos(yaw) * radius);
 
             for (p = start; p < stop; ++p) {
-                const double pitch0 = p * PI / (sections * 0.5);
-                const double pitch1 = (p + 1) * PI / (sections * 0.5);
+                const double pitch0 = p * G3D_PI / (sections * 0.5);
+                const double pitch1 = (p + 1) * G3D_PI / (sections * 0.5);
 
                 Vector3 v0 = cos(pitch0) * x + Vector3::UNIT_Y * radius * sin(pitch0) + center;
                 Vector3 v1 = cos(pitch1) * x + Vector3::UNIT_Y * radius * sin(pitch1) + center;
@@ -2690,10 +2690,10 @@ void RenderDevice::drawWireSphereSection(const Sphere& sphere, double cylRadius,
         int a = bottom ? -1 : 0;
         int b = top ? 1 : 0; 
         for (p = a; p <= b; ++p) {
-            const double pitch = p * PI / 6;
+            const double pitch = p * G3D_PI / 6;
             for (y = 0; y < 26; ++y) {
-                const double yaw0 = y * PI / 13;
-                const double yaw1 = (y + 1) * PI / 13;
+                const double yaw0 = y * G3D_PI / 13;
+                const double yaw1 = (y + 1) * G3D_PI / 13;
 
                 Vector3 v0 = Vector3(cos(yaw0) * cos(pitch), sin(pitch), sin(yaw0) * cos(pitch)) * radius + center;
                 Vector3 v1 = Vector3(cos(yaw1) * cos(pitch), sin(pitch), sin(yaw1) * cos(pitch)) * radius + center;
@@ -2723,12 +2723,12 @@ void RenderDevice::drawFaceSphereSection(const Sphere& sphere, const Color3& col
 
         for (i = 0; i < 2; ++i) {
             for (p = start; p < stop; ++p) {
-                const double pitch0 = p * PI / (double)sections;
-                const double pitch1 = (p + 1) * PI / (double)sections;
+                const double pitch0 = p * G3D_PI / (double)sections;
+                const double pitch1 = (p + 1) * G3D_PI / (double)sections;
 
                 beginPrimitive(RenderDevice::QUAD_STRIP);
                 for (y = 0; y <= 26; ++y) {
-                    const double yaw = -y * PI / 13;
+                    const double yaw = -y * G3D_PI / 13;
                     sendVertex(Vector3(cos(yaw) * sin(pitch0), cos(pitch0), sin(yaw) * sin(pitch0)) * sphere.radius + sphere.center);
                     sendVertex(Vector3(cos(yaw) * sin(pitch1), cos(pitch1), sin(yaw) * sin(pitch1)) * sphere.radius + sphere.center);
                 }
@@ -2822,8 +2822,8 @@ void RenderDevice::debugDrawRay(const Ray& ray, const Color3& color, double scal
         setColor(color);
         beginPrimitive(RenderDevice::TRIANGLES);
             for (a = 0; a <= 12; ++a) {
-                double angle0 = a * PI / 6;
-                double angle1 = (a + 1) * PI / 6;
+                double angle0 = a * G3D_PI / 6;
+                double angle1 = (a + 1) * G3D_PI / 6;
 
 
                 setNormal( Vector3(cos((angle0 + angle1) * 0.5), -sin((angle0 + angle1) * 0.5), -r/hh) * k);
@@ -2842,7 +2842,7 @@ void RenderDevice::debugDrawRay(const Ray& ray, const Color3& color, double scal
         beginPrimitive(RenderDevice::TRIANGLE_FAN);
             setNormal(Vector3(0, 1, 0));
             for (a = 0; a <= 12; ++a) {
-                double angle = a * PI / 6;
+                double angle = a * G3D_PI / 6;
                 sendVertex(Vector3(cos(-angle) * r, -sin(-angle) * r, -h));
             }
         endPrimitive();
@@ -2850,7 +2850,7 @@ void RenderDevice::debugDrawRay(const Ray& ray, const Color3& color, double scal
         // Arrow shaft
         beginPrimitive(RenderDevice::QUAD_STRIP);
             for (a = 0; a <= 10; ++a) {
-                double angle = a * PI / 5;
+                double angle = a * G3D_PI / 5;
                 setNormal( Vector3(cos(angle),     -sin(angle),      0));
                 sendVertex(Vector3(cos(angle) * s, -sin(angle) * s, -h));
                 sendVertex(Vector3(cos(angle) * s, -sin(angle) * s,  0));
@@ -2861,7 +2861,7 @@ void RenderDevice::debugDrawRay(const Ray& ray, const Color3& color, double scal
         beginPrimitive(RenderDevice::TRIANGLE_FAN);
             setNormal(Vector3(0, 1, 0));
             for (a = 0; a <= 10; ++a) {
-                double angle = a * PI / 5;
+                double angle = a * G3D_PI / 5;
                 sendVertex(Vector3(cos(-angle) * s, -sin(-angle) * s, 0));
             }
         endPrimitive();
@@ -2929,7 +2929,7 @@ void RenderDevice::debugDrawAxes(double scale) {
         beginPrimitive(RenderDevice::TRIANGLE_FAN);
             sendVertex(permute * Vector3::UNIT_X * scale);
             for (a = 0; a <= 12; ++a) {
-                double angle = a * PI / 6;
+                double angle = a * G3D_PI / 6;
                 sendVertex(permute * Vector3(h, cos(angle) * r, sin(angle) * r));
             }
         endPrimitive();
@@ -2937,7 +2937,7 @@ void RenderDevice::debugDrawAxes(double scale) {
         // Back of arrow head
         beginPrimitive(RenderDevice::TRIANGLE_FAN);
             for (a = 0; a <= 12; ++a) {
-                double angle = a * PI / 6;
+                double angle = a * G3D_PI / 6;
                 sendVertex(permute * Vector3(h, cos(-angle) * r, sin(-angle) * r));
             }
         endPrimitive();
@@ -2945,7 +2945,7 @@ void RenderDevice::debugDrawAxes(double scale) {
         // Arrow shaft
         beginPrimitive(RenderDevice::QUAD_STRIP);
             for (a = 0; a <= 10; ++a) {
-                double angle = a * PI / 5;
+                double angle = a * G3D_PI / 5;
                 sendVertex(permute * Vector3(h, cos(angle) * s, sin(angle) * s));
                 sendVertex(permute * Vector3(0, cos(angle) * s, sin(angle) * s));
             }
@@ -2954,7 +2954,7 @@ void RenderDevice::debugDrawAxes(double scale) {
         // Back of arrow shaft
         beginPrimitive(RenderDevice::TRIANGLE_FAN);
             for (a = 0; a <= 10; ++a) {
-                double angle = a * PI / 5;
+                double angle = a * G3D_PI / 5;
                 sendVertex(permute * Vector3(0, cos(-angle) * s, sin(-angle) * s));
             }
         endPrimitive();

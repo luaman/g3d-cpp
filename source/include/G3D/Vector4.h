@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2002-07-09
-  @edited  2003-08-05
+  @edited  2003-09-27
  */
 #ifndef G3D_VECTOR4_H
 #define G3D_VECTOR4_H
@@ -82,6 +82,21 @@ public:
     Vector4& operator*= (Real fScalar);
     Vector4& operator/= (Real fScalar);
 
+    inline Vector4 clamp(const Vector4& low, const Vector4& high) const {
+        return Vector4(
+            G3D::clamp(x, low.x, high.x),
+            G3D::clamp(y, low.y, high.y),
+            G3D::clamp(z, low.z, high.z),
+            G3D::clamp(w, low.w, high.w));
+    }
+
+    inline Vector4 clamp(double low, double high) const {
+        return Vector4(
+            G3D::clamp(x, low, high),
+            G3D::clamp(y, low, high),
+            G3D::clamp(z, low, high),
+            G3D::clamp(w, low, high));
+    }
 
     Real dot (const Vector4& rkVector) const;
 
@@ -93,7 +108,7 @@ public:
     /**
      Linear interpolation
      */
-    Vector4 lerp(double alpha, const Vector4& v) const;
+    Vector4 lerp(const Vector4& v, double alpha) const;
 };
 
 }

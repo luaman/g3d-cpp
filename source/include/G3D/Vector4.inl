@@ -131,7 +131,7 @@ inline Vector4& Vector4::operator-= (const Vector4& rkVector) {
 
 //----------------------------------------------------------------------------
 
-inline Vector4 Vector4::lerp(double alpha, const Vector4& v) const {
+inline Vector4 Vector4::lerp(const Vector4& v, double alpha) const {
     return (*this) + (v - *this) * alpha; 
 }
 
@@ -147,7 +147,7 @@ inline Vector4& Vector4::operator*= (Real fScalar) {
 
 
 //----------------------------------------------------------------------------
-inline Real Vector4::dot (const Vector4& rkVector) const {
+inline Real Vector4::dot(const Vector4& rkVector) const {
     return x*rkVector.x + y*rkVector.y + z*rkVector.z + w*rkVector.w;
 }
 

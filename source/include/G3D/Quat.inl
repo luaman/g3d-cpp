@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2002-07-09
+  @edited  2003-09-28
  */
 
 namespace G3D {

@@ -36,13 +36,13 @@ CoordinateFrame PhysicsFrame::toCoordinateFrame() const {
 
 
 PhysicsFrame PhysicsFrame::lerp(
-    double                  alpha,
-    const PhysicsFrame&     other) {
+    const PhysicsFrame&     other,
+    double                  alpha) {
 
     PhysicsFrame result;
 
-    result.translation = translation.lerp(alpha, other.translation);
-    result.rotation    = rotation.lerp(alpha, other.rotation);
+    result.translation = translation.lerp(other.translation, alpha);
+    result.rotation    = rotation.lerp(other.rotation, alpha);
 
     return result;
 }

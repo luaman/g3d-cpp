@@ -36,11 +36,11 @@ void ManualCameraController::reset() {
     SDL_ShowCursor(SDL_ENABLE);
     guiMouse    = userInput->getMouseXY();
     active      = false;
-    yaw         = -G3D::PI/2;
+    yaw         = -G3D_PI/2;
     pitch       = 0;
 	translation = Vector3::ZERO;
     setMoveRate(10);
-	setTurnRate(G3D::PI / 4);
+	setTurnRate(G3D_PI / 4);
 }
 
 
@@ -147,11 +147,7 @@ void ManualCameraController::doSimulation(
 	pitch += delta.y;
 
     // Clamp pitch (looking straight up or down)
-	if (pitch < -G3D::PI / 2) {
-		pitch = -G3D::PI / 2;
-    } else if (pitch > G3D::PI / 2) {
-		pitch = G3D::PI / 2;
-	}
+    pitch = clamp(pitch, -G3D_PI / 2, G3D_PI / 2);
 
     appHadFocus = focus;
 }
