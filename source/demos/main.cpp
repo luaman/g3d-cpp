@@ -1,182 +1,160 @@
 /**
   @file demos/main.cpp
 
-  This is a prototype main.cpp to use for your programs.  It is a good
-  infrastructure for building an interactive demo.
+  This is a sample main.cpp to get you started with G3D.  It is
+  designed to make writing an application easy.  You are not
+  restricted to using this infrastructure-- choose the level of
+  support that is best for your project:
+
+  Application level:
+     G3D::GApp, G3D::GApplet
+
+  Scene level:
+     G3D::MD2Model, G3D::IFSModel, G3D::PosedModel, G3D::ManualCameraController
   
-  @maintainer Morgan McGuire, matrix@graphics3d.com
+  Rendering and UI Abstraction:
+     G3D::RenderDevice, G3D::CFont, G3D::Sky, G3D::UserInput
 
-  @created 2002-02-27
-  @edited  2003-09-27
- */ 
+  OpenGL Abstraction (use your own OpenGL calls and your own event model):
+     G3D::Texture, G3D::gl*
 
-#include <G3DAll.h>
+  Math: (use OpenGL/DirectX/other rendering and your own event model) 
+     G3D::Vector3, G3D::Array
+
+  @author Morgan McGuire, matrix@graphics3d.com
+ */
+
+// TODO: move me to platform.h
+
+// On MSVC, we need to link against the multithreaded DLL version of
+// the C++ runtime because that is what SDL and ZLIB are compiled
+// against.  This is not the default for MSVC, so we set the following
+// defines to force correct linking.  
+//
+// For documentation on compiler options, see:
+//  http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vccore/html/_core_.2f.md.2c_2f.ml.2c_2f.mt.2c_2f.ld.asp
+//  http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vccore98/HTML/_core_Compiler_Reference.asp
+//
+
+#ifndef _DLL
+	#define _DLL
+#endif
+
+#ifndef _MT
+	#define _MT
+#endif
+
+#ifdef _STATIC_CPPLIB
+	#undef _STATIC_CPPLIB
+#endif
+
+#ifdef _DEBUG
+    #pragma comment(linker, "/NODEFAULTLIB:LIBCD.LIB")
+    #pragma comment(linker, "/DEFAULTLIB:MSVCRTD.LIB")
+#else
+    #pragma comment(linker, "/NODEFAULTLIB:LIBC.LIB")
+    #pragma comment(linker, "/DEFAULTLIB:MSVCRT.LIB")
+#endif
+
+#include "../include/G3DAll.h"
 
 
-std::string             DATA_DIR;
+/**
+ This simple demo applet uses the debug mode as the regular
+ rendering mode so you can fly around the scene.
+ */
+class Demo : public GApplet {
+public:
 
-Log*                    debugLog		= NULL;
-RenderDevice*           renderDevice	= NULL;
-CFontRef                font			= NULL;
-UserInput*              userInput		= NULL;
-GCamera*					camera			= NULL;
-ManualCameraController* controller      = NULL;
-bool                    endProgram		= false;
+    SkyRef              sky;
+
+    Demo(GApp* app);    
+    virtual void init();
+    virtual void doLogic();
+	virtual void doNetwork();
+    virtual void doSimulation(SimTime dt);
+    virtual void doGraphics();
+    virtual void cleanup();
+};
 
 
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
+Demo::Demo(GApp* app) : GApplet(app) {
+	// Load objects hrere
+    sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
 }
 
-void doSimulation(GameTime timeStep);
-void doGraphics();
-void doUserInput();
+
+void Demo::init()  {
+    app->debugCamera.setPosition(Vector3(0, 2, 10));
+    app->debugCamera.lookAt(Vector3(0, 2, 0));
+
+	// Create scene here (called every time Demo::run() is invoked)
+}
+
+
+void Demo::cleanup() {
+	// Destroy scene here (called every time Demo::run() is invoked)
+}
+
+
+void Demo::doNetwork() {
+	// Poll net messages here
+}
+
+void Demo::doSimulation(SimTime dt) {
+	// Add physical simulation here
+}
+
+
+void Demo::doLogic() {
+    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+        // Even when we aren't in debug mode, quit on escape.
+        endApplet = true;
+        app->endProgram = true;
+    }
+
+	// Add other key handling here
+}
+
+
+void Demo::doGraphics() {
+    LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
+    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+
+    // Cyan background
+    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->clear(sky == NULL, true, true);
+
+    sky->render(lighting);
+    
+    // Setup lighting
+    app->renderDevice->enableLighting();
+		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+		app->renderDevice->setAmbientLightColor(lighting.ambient);
+
+		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+    
+    app->renderDevice->disableLighting();
+
+    sky->renderLensFlare(lighting);
+
+}
 
 
 int main(int argc, char** argv) {
 
-    // Initialize
-    DATA_DIR     = demoFindData();
-    debugLog	 = new Log();
-    renderDevice = new RenderDevice();
-    {
-        RenderDeviceSettings settings;
-        settings.fsaaSamples = 1;
-        settings.resizable = true;
-        renderDevice->init(settings, debugLog);
-    }
-    camera 	     = new GCamera(renderDevice);
+    GAppSettings settings;
 
-    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
+    GApp app(settings);
 
-    userInput    = new UserInput();
+    app.setDebugMode(true);
+    app.debugController.setActive(true);
 
-    controller   = new ManualCameraController(renderDevice, userInput);
-    controller->setMoveRate(10);
+    Demo applet(&app);
 
-    controller->setPosition(Vector3(0, 0, 4));
-    controller->lookAt(Vector3(-2,3,-5));
-
-    renderDevice->resetState();
-	renderDevice->setColorClearValue(Color3(.1, .5, 1));
-
-    controller->setActive(true);
-
-    RealTime now = getTime() - 0.001, lastTime;
-
-    // Main loop
-    do {
-        lastTime = now;
-        now = getTime();
-        RealTime timeStep = now - lastTime;
-
-        doUserInput();
-
-        doSimulation(timeStep);
-
-        doGraphics();
-   
-    } while (! endProgram);
-
-
-    // Cleanup
-    delete controller;
-    delete userInput;
-    renderDevice->cleanup();
-    delete renderDevice;
-    delete debugLog;
+    applet.run();
 
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
 
-
-void doSimulation(GameTime timeStep) {
-    // Simulation
-    controller->doSimulation(clamp(timeStep, 0.0, 0.1));
-	camera->setCoordinateFrame(controller->getCoordinateFrame());
-}
-
-
-
-void doGraphics() {
-
-    LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
-
-    renderDevice->beginFrame();
-        // Cyan background
-	    glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
-
-        renderDevice->clear(true, true, true);
-        renderDevice->pushState();
-
-            camera->setProjectionAndCameraMatrix();
-        
-            // Setup lighting
-            glEnable(GL_LIGHTING);
-            glEnable(GL_LIGHT0);
-
-            renderDevice->configureDirectionalLight
-              (0, lighting.lightDirection, lighting.lightColor);
-
-            renderDevice->setAmbientLightLevel(lighting.ambient);
-
-            Draw::axes(renderDevice);
-
-            glDisable(GL_LIGHTING);
-            glDisable(GL_LIGHT0);
-           
-
-        renderDevice->popState();
-	    
-    renderDevice->endFrame();
-}
-
-
-void doUserInput() {
-
-    userInput->beginEvents();
-
-    // Event handling
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch(event.type) {
-        case SDL_QUIT:
-	        endProgram = true;
-	        break;
-
-        case SDL_VIDEORESIZE:
-            {
-                renderDevice->notifyResize(event.resize.w, event.resize.h);
-                Rect2D full(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
-                renderDevice->setViewport(full);
-            }
-            break;
-
-
-	    case SDL_KEYDOWN:
-            switch (event.key.keysym.sym) {
-            case SDLK_ESCAPE:
-                endProgram = true;
-                break;
-
-            case SDLK_TAB:
-                controller->setActive(! controller->active());
-                break;
-
-            // Add other key handlers here
-            default:;
-            }
-            break;
-
-        // Add other event handlers here
-
-        default:;
-        }
-
-        userInput->processEvent(event);
-    }
-
-    userInput->endEvents();
-}
