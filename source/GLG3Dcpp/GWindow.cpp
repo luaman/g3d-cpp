@@ -23,6 +23,12 @@ void GWindow::executeLoopBody() {
 }
 
 
+void GWindow::pushLoopBody(GApplet* applet) {
+    loopBodyStack.push(LoopBody(applet));
+    applet->beginRun();
+}
+
+
 void GWindow::popLoopBody() {
     if (loopBodyStack.last().isGApplet) {
         loopBodyStack.last().applet->endRun();

@@ -291,9 +291,8 @@ public:
         loopBodyStack.push(LoopBody(body, arg));
     }
 
-    virtual void pushLoopBody(GApplet* applet) {
-        loopBodyStack.push(LoopBody(applet));
-    }
+    /** Invokes GApplet::beginRun after the applet is on the stack. */
+    virtual void pushLoopBody(GApplet* applet);
 
     /** Pops a loop body off the stack.  If the loop body was a GApplet,
         invokes GApplet::endRun on it.*/

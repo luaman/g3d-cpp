@@ -268,11 +268,19 @@ void GApplet::oneFrame() {
         app->renderDebugInfo();
     app->renderDevice->endFrame();
     app->debugText.clear();
+
+    if (endApplet && app->window()->requiresMainLoop()) {
+        app->window()->popLoopBody();
+    }
 }
 
 
 void GApplet::endRun() {
     cleanup();
+
+    if (app->window()->requiresMainLoop() && app->endProgram) {
+        exit(0);
+    }
 }
 /*
 // NOTE: This code is a prototype of how to run

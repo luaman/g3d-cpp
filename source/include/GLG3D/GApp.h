@@ -238,18 +238,26 @@ public:
       Run until app->endProgram or endApplet is set to true. 
       Calls beginRun(), then oneFrame in a loop, then endRun().
       
-      For use with GWindows that do not require a main loop.
+      For use with GWindows for which requiresMainLoop is false.
+      On GWindows where requiresMainLoop is true, this will schedule
+      the applet to run and return immediately.  (This odd behavior 
+      is required for backwards compatibility; in version 7.00 it will
+      change).
     */
     void run();
 
     /**
-     Prepare for running.
+      Usually you'll call GApplet::run instead.  This is used by GApp.
+
+      Prepare for running.
       The default implementation sets endApplet to false,
       calls init(), copies the debug camera position to the debug camera controller,
     */
     void beginRun();
 
     /** 
+      Usually you'll call GApplet::run instead.  This is used by GApp.
+
       A single frame of rendering, simulation, AI, events, networking, etc. 
       Invokes the doXXX methods.  For use with GWindows that require a main loop.
       This if your GWindow does not require control of the main loop, GApp will
@@ -258,8 +266,10 @@ public:
     void oneFrame();
 
     /**
+      Usually you'll call GApplet::run instead.  This is used by GApp.
+
       Invokes cleanup().
-    */
+     */
     void endRun();
 
 protected:
