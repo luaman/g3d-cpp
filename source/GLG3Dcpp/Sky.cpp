@@ -364,19 +364,21 @@ void Sky::drawMoonAndStars(const LightingParameters& lighting) {
 			renderDevice->setObjectToWorldMatrix((lighting.physicallyCorrect ? lighting.trueStarFrame : lighting.starFrame));
 			renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
 
+            // We use raw GL calls here for performance since the changing point size
+            // precludes the use of a vertex array.
+            glPushAttrib(GL_ALL_ATTRIB_BITS);
+
                 for (int i = star.size() - 1; i >= 0; --i) {
                     const double b = starIntensity[i] * k;
-                    // We use raw GL calls here for performance
-					renderDevice->setPointSize(starIntensity[i] * s);
-					renderDevice->beginPrimitive(RenderDevice::POINTS);
+					glPointSize(starIntensity[i] * s);
+					glBegin(GL_POINTS);
 						glColor3f(b, b, b);
 						glVertex3fv(star[i]);
-					renderDevice->endPrimitive();
+                    glEnd();
                 }
 
-            // Get RenderDevice back in sync with real GL state
-            renderDevice->setColor(Color3::white());
-            glColor(Color3::white());
+            glPopAttrib();
+
         renderDevice->popState();
     }
 
