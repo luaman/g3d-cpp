@@ -673,6 +673,10 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> NetAddress::serialize
+     <LI> NetAddress::deserialize
+     <LI> NetAddress == NetAddress
+     <LI> hashCode(NetAddress)
      <LI> RenderDevice::init now prints ATI or NVIDIA driver version to the log under Windows
      <LI> readme.html library build instructions now have downloads for required libraries
      <LI> Library list has changed for Win32 (added version.lib)

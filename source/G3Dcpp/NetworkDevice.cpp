@@ -252,8 +252,25 @@ NetAddress::NetAddress(const struct in_addr& addr, uint16 port) {
 #ifdef _WIN32
     init(ntohl(addr.S_un.S_addr), port);
 #else
-    init(htonl(addr.s_addr),port);
+    init(htonl(addr.s_addr), port);
 #endif
+}
+
+
+void NetAddress::serialize(class BinaryOutput& b) const {
+    b.writeUInt32(ip());
+    b.writeUInt16(port());
+}
+
+
+void NetAddress::deserialize(class BinaryInput& b) {
+    uint32 i;
+    uint16 p;
+
+    i = b.readUInt32();
+    p = b.readUInt16();
+
+    init(i, p);
 }
 
 
@@ -327,14 +344,14 @@ bool NetworkDevice::init(class Log* _log) {
         if (debugLog) {debugLog->println("FAIL");}
         return false;
     }
-    debugLog->println("Ok");
+    if (debugLog) { debugLog->println("Ok"); }
 
     bool TR = true;
     int ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, 1);
 
     if (debugLog) {debugLog->print("Enable UDP Broadcast         ");}
     if (ret != 0) {
-        debugLog->println("FAIL");
+        if (debugLog) { debugLog->println("FAIL"); }
         return false;
     }
     if (debugLog) {debugLog->println("Ok");}

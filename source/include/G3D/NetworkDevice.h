@@ -25,7 +25,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2003-01-03
+ @edited  2003-06-24
  */
 
 #ifndef NETWORKDEVICE_H
@@ -84,23 +84,42 @@ public:
 
     NetAddress();
 
+    void serialize(class BinaryOutput& b) const;
+    void deserialize(class BinaryInput& b);
+
     /** Returns true if this is not an illegal address. */
     bool ok() const;
 
     /** Returns a value in host format */
-    uint32 ip() const {
+    inline uint32 ip() const {
         return ntohl(addr.sin_addr.s_addr);
         //return ntohl(addr.sin_addr.S_un.S_addr);
     }
 
-    uint16 port() const {
+    inline uint16 port() const {
         return ntohs(addr.sin_port);
     }
 
     std::string ipString() const;
     std::string toString() const;
+
 };
 
+inline unsigned int hashCode(const NetAddress& a) {
+	return a.ip() + ((uint32)a.port() << 16);
+}
+
+/**
+ Two addresses may point to the same computer but be != because
+ they have different IP's.
+ */
+inline bool operator==(const NetAddress& a, const NetAddress& b) {
+	return (a.ip() == b.ip()) && (a.port() == b.port());
+}
+
+inline bool operator!=(const NetAddress& a, const NetAddress& b) {
+    return !(a == b);
+}
 
 
 /**

@@ -30,7 +30,7 @@ public:
     }
 
 	Sphere(class BinaryInput& b);
-	void serialize(class BinaryOutput& b);
+	void serialize(class BinaryOutput& b) const;
 	void deserialize(class BinaryInput& b);
 
     Sphere(

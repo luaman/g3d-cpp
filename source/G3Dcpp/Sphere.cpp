@@ -22,7 +22,7 @@ Sphere::Sphere(class BinaryInput& b) {
 }
 
 
-void Sphere::serialize(class BinaryOutput& b) {
+void Sphere::serialize(class BinaryOutput& b) const {
 	center.serialize(b);
 	b.writeFloat64(radius);
 }
