@@ -73,7 +73,7 @@ void doGraphics() {
                     MD2Model::Pose pose(MD2Model::STAND, n + gameTime);
                 
                     CoordinateFrame cframe(Vector3(x * 6 + (z % 2) * 2, -footy, z * 6));
-                    cframe.rotation.fromAxisAngle(Vector3::UNIT_Y, n * .5 + 4);
+                    cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, n * .5 + 4);
 
                     if (modelTexture.size() > 0) {
                         renderDevice->setTexture(0, modelTexture[(n + 1 + z * 2) % modelTexture.size()]);

@@ -587,7 +587,5 @@ Matrix3 Load3DS::readRotTrack() {
     }
 
     debugPrintf("Axis = %s, angle = %g\n\n", axis.toString().c_str(), angle);
-    Matrix3 R = Matrix3::IDENTITY;
-    R.fromAxisAngle(axis, angle);
-    return R;
+    return Matrix3::fromAxisAngle(axis, angle);
 }

@@ -188,7 +188,7 @@ CoordinateFrame ManualCameraController::getCoordinateFrame() const {
 
 void ManualCameraController::getCoordinateFrame(CoordinateFrame& c) const {
 	c.translation = translation;
-	c.rotation.fromEulerAnglesZYX(0, -yaw, -pitch);
+    c.rotation = Matrix3::fromEulerAnglesZYX(0, -yaw, -pitch);
 }
 
 

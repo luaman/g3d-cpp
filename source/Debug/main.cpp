@@ -50,7 +50,7 @@ void Entity::doSimulation(SimTime dt) {
         Vector3::UNIT_Y * getPosedModel()->objectSpaceBoundingBox().getCorner(0).y;
 
     // Face the viewer
-    cframe.rotation.fromAxisAngle(Vector3::UNIT_Y, G3D_PI);
+    cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, G3D_PI);
 }
 
 

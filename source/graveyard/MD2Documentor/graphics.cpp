@@ -74,8 +74,9 @@ void drawCharWithShadow(CoordinateFrame cframe, const MD2Model::Pose& pose) {
 void drawCharByParams(int x, int z, double footy, int n) {
     MD2Model::Pose pose(MD2Model::STAND, n + gameTime);
 
-    CoordinateFrame cframe(Vector3(x * 6 + (z % 2) * 2, -footy, z * 6));
-    cframe.rotation.fromAxisAngle(Vector3::UNIT_Y, n * .5 + 4);
+    CoordinateFrame cframe(
+        Matrix3::fromAxisAngle(Vector3::UNIT_Y, n * .5 + 4),
+        Vector3(x * 6 + (z % 2) * 2, -footy, z * 6));
 
     if (modelTexture.size() > 0) {
         renderDevice->setTexture(0,

@@ -207,7 +207,7 @@ void Sky::renderBox() const {
 
     } else {
         CoordinateFrame cframe;
-        cframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(-90));
+        cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, toRadians(-90));
         renderDevice->setObjectToWorldMatrix(cframe);
 
         renderDevice->setTexture(0, texture[BK]);

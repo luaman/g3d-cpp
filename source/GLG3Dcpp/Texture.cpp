@@ -746,27 +746,27 @@ void Texture::copyFromScreen(
 void Texture::getCameraRotation(CubeFace face, Matrix3& outMatrix) {
     switch (face) {
     case CUBE_POS_X:
-        outMatrix.fromEulerAnglesYXZ(G3D_HALF_PI, G3D_PI, 0);
+        outMatrix = Matrix3::fromEulerAnglesYXZ(G3D_HALF_PI, G3D_PI, 0);
         break;
 
     case CUBE_NEG_X:
-        outMatrix.fromEulerAnglesYXZ(-G3D_HALF_PI, G3D_PI, 0);
+        outMatrix = Matrix3::fromEulerAnglesYXZ(-G3D_HALF_PI, G3D_PI, 0);
         break;
 
     case CUBE_POS_Y:
-        outMatrix.fromEulerAnglesXYZ(G3D_HALF_PI, 0, 0);
+        outMatrix = Matrix3::fromEulerAnglesXYZ(G3D_HALF_PI, 0, 0);
         break;
 
     case CUBE_NEG_Y:
-        outMatrix.fromEulerAnglesXYZ(-G3D_HALF_PI, 0, 0);
+        outMatrix = Matrix3::fromEulerAnglesXYZ(-G3D_HALF_PI, 0, 0);
         break;
 
     case CUBE_POS_Z:
-        outMatrix.fromEulerAnglesYZX(G3D_PI, G3D_PI, 0);
+        outMatrix = Matrix3::fromEulerAnglesYZX(G3D_PI, G3D_PI, 0);
         break;
 
     case CUBE_NEG_Z:
-        outMatrix.fromAxisAngle(Vector3::UNIT_Z, G3D_PI);
+        outMatrix = Matrix3::fromAxisAngle(Vector3::UNIT_Z, G3D_PI);
         break;
     }
 }
