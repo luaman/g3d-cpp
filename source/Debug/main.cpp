@@ -10,6 +10,11 @@ public:
     virtual ~Entity() {}
 
     virtual void render(RenderDevice*) = NULL;
+    /**
+      Returns amount of time to intersection starting on ray.origin and
+      travels at ray.velocity.
+    */
+    virtual RealTime getIntersectionTime(const Ray&) = NULL;
 };
 
 class SphereEntity : public Entity {
@@ -19,6 +24,7 @@ private:
 public:
     SphereEntity(const Vector3& position, double radius, const Color4& _color = Color3::BLUE);
     virtual void render(RenderDevice*);
+    virtual RealTime getIntersectionTime(const Ray&);
 
 };
 
@@ -29,6 +35,12 @@ SphereEntity::SphereEntity(const Vector3& position, double radius, const Color4&
 
 void SphereEntity::render(RenderDevice* device) {
     Draw::sphere(sphere, device, color, selected ? Color3::BLACK : Color4::CLEAR);
+}
+
+RealTime SphereEntity::getIntersectionTime(const Ray& ray) {
+    Vector3 dummy;
+    return G3D::CollisionDetection::collisionTimeForMovingPointFixedSphere(ray.origin,ray.direction,
+        sphere, dummy);
 }
 
 
@@ -71,6 +83,32 @@ void Demo::doLogic() {
         endApplet = true;
         app->endProgram = true;
     }
+
+    if (app->userInput->keyPressed(SDL_LEFT_MOUSE_KEY)) {
+
+        Ray ray = app->debugCamera->worldRay(app->userInput->getMouseX(),app->userInput->getMouseY());
+
+        // Deselect all
+        for (int i = 0; i < entityArray.length(); ++i) {
+            entityArray[i]->selected = false;
+        }
+
+        // Find the *first* selected one
+        int i = -1;
+        RealTime t = infReal;
+        for (int e = 0; e < entityArray.length(); ++e) {
+            Entity* entity = entityArray[e];
+            RealTime test = entity->getIntersectionTime(ray);
+            if (test < t) {
+                i = e;
+                t = test;
+            }
+        }
+
+        if (i >= 0) {
+            entityArray[i]->selected = true;
+        }
+    }
 }
 
 
@@ -101,7 +139,6 @@ void Demo::doGraphics() {
     }
 
     Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
-     
     
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);

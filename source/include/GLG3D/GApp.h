@@ -178,11 +178,9 @@ public:
     /**
       Run until app->endProgram or endApplet is set to true. 
       The default implementation sets endApplet to false,
-      calls init(), then calls the doXXX methods.  
-      Invokes cleanup() before exiting.
+      calls init(), copies the debug camera position to the debug camera controller,
+      and then calls the doXXX methods.  Invokes cleanup() before exiting.
       It is not usually necessary to override this method.
-
-      Copies the debug camera position to the debug camera controller.
     */
     virtual void run();
 
