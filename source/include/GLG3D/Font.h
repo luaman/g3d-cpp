@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-07-15
+ @edited  2003-08-18
  */
 
 #ifndef G3D_FONT_H
@@ -18,6 +18,12 @@ typedef ReferenceCountedPointer<class CFont> CFontRef;
 
 /**
  Font class for use with RenderDevice.
+ <P>
+ The following fonts are provided with G3D in the <CODE>data/font</CODE> directory.  See
+ the <CODE>copyright.txt</CODE> file in that directory for information about the
+ source of these files and rules for distribution.
+ <P>
+ <IMG SRC="font.png">
  */
 class CFont : public ReferenceCountedObject {
 public:
