@@ -28,9 +28,11 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
  If you enable texture compression, textures will be compressed on the fly.
  This can be slow (up to a second).
 
- Unless DIM_2D_RECT is used, the texture is automatically scaled to the 
+ Unless DIM_2D_RECT or DIM_2D_NPOT is used, the texture is automatically scaled to the 
  next power of 2 along each dimension to meet hardware requirements, if not
- already a power of 2.
+ already a power of 2.  However, DIM_2D_NPOT will safely fallback to POT requirements if
+ the ARB_non_power_of_two extension is not supported. Develoeprs can check if this will
+ happen by calling GLCaps::supports_GL_ARB_texture_non_power_of_two().
 
  Textures are loaded so that (0, 0) is the upper-left corner of the image.
  If you set the invertY flag, RenderDevice will automatically turn them upside
@@ -73,6 +75,7 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
 class Texture : public ReferenceCountedObject {
 public:
 
+    /** DIM_2D_NPOT attempts to use ARB_non_power_of_two texture support with POT fallback. */
     enum Dimension       {DIM_2D = 2, DIM_2D_RECT = 4, DIM_CUBE_MAP = 5, DIM_2D_NPOT = 6};
 
     /** TRANSPARENT_BORDER provides a border of Color4(0,0,0,0) and clamps to it. */
