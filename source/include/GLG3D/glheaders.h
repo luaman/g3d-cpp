@@ -143,15 +143,14 @@ extern PFNGLBINDBUFFERARBPROC glBindBufferARB;
 extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB;
 extern PFNGLGENBUFFERSARBPROC glGenBuffersARB;
 extern PFNGLISBUFFERARBPROC glIsBufferARB;
+extern PFNGLBUFFERDATAARBPROC glBufferDataARB;
+extern PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB;
+extern PFNGLGETBUFFERSUBDATAARBPROC glGetBufferSubDataARB;
+extern PFNGLMAPBUFFERARBPROC glMapBufferARB;
+extern PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB;
+extern PFNGLGETBUFFERPARAMETERIVARBPROC glGetBufferParameterivARB;
+extern PFNGLGETBUFFERPOINTERVARBPROC glGetBufferPointervARB;
 
-/*typedef void (APIENTRY * PFNGLBUFFERDATAARBPROC) (GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
-typedef void (APIENTRY * PFNGLBUFFERSUBDATAARBPROC) (GLenum target, GLintptrARB offset, GLsizeiptrARB size, const GLvoid *data);
-typedef void (APIENTRY * PFNGLGETBUFFERSUBDATAARBPROC) (GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid *data);
-typedef GLvoid* (APIENTRY * PFNGLMAPBUFFERARBPROC) (GLenum target, GLenum access);
-typedef GLboolean (APIENTRY * PFNGLUNMAPBUFFERARBPROC) (GLenum target);
-typedef void (APIENTRY * PFNGLGETBUFFERPARAMETERIVARBPROC) (GLenum target, GLenum pname, GLint *params);
-typedef void (APIENTRY * PFNGLGETBUFFERPOINTERVARBPROC) (GLenum target, GLenum pname, GLvoid* *params);
-*/
 
 
 
