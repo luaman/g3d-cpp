@@ -7,7 +7,7 @@
   @cite Converted from Justin Miller's "RGC" class, as appeared in BYTE magazine.
 
   @created 2001-10-23
-  @edited  2003-01-03
+  @edited  2003-06-30
 
 Example:
 
@@ -102,17 +102,20 @@ private:
         }
     }
 
+
     void setPointer(T* x) {
-        if (pointer != NULL) {
-            zeroPointer();
-        }
+        if (x != pointer) {
+            if (pointer != NULL) {
+                zeroPointer();
+            }
 
-        if (x != NULL) {
-            debugAssert(isValidHeapPointer(x));
+            if (x != NULL) {
+                debugAssert(isValidHeapPointer(x));
 
-            ReferenceCountedObject* p = (ReferenceCountedObject*)x;
-		    p->RegisterReference();
-		    pointer = x;
+                ReferenceCountedObject* p = (ReferenceCountedObject*)x;
+		        p->RegisterReference();
+		        pointer = x;
+            }
         }
     }
 
