@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-01-11
+  @edited  2004-01-20
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -253,7 +253,7 @@ public:
             }
 
             // If the right child overlaps the box, recurse into it
-            if (box.hi()[splitAxis] > splitLocation) {
+            if (box.high()[splitAxis] > splitLocation) {
                 child[1]->getIntersectingMembers(box, members);
             }
         }
