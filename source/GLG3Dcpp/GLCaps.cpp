@@ -170,7 +170,11 @@ void GLCaps::loadExtensions() {
     LOAD_EXTENSION(glGetUniformLocationARB);
     LOAD_EXTENSION(glGetObjectParameterivARB);
 
-    LOAD_EXTENSION(wglEnableGenlockI3D);
+    #ifdef G3D_WIN32
+        LOAD_EXTENSION(wglEnableGenlockI3D);
+    #elif defined(G3D_OSX) || defined(G3D_LINUX)
+        LOAD_EXTENSION(glXJoinSwapGroupNV);
+    #endif
     #undef LOAD_EXTENSION
 
 
