@@ -278,6 +278,7 @@ Vector2 GFont::draw3D(
 				   RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
+        renderDevice->disableLighting();
         renderDevice->beginPrimitive(RenderDevice::QUADS);
 
             if (border.a > 0.05) {
