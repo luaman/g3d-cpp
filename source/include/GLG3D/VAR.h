@@ -22,6 +22,8 @@ namespace G3D {
 class VAR {
 private:
 
+    friend class RenderDevice;
+
 	class VARArea*		area;
 
 	/** Pointer to the block of uploaded memory */
@@ -120,9 +122,10 @@ public:
      from.  Generally, you should use the RenderDevice methods like
      RenderDevice::setVertexPointer instead touching this method-- it is 
      provided only for when you need to perform an OpenGL call
-     that is not supported by RenderDevice.
+     that is not supported by RenderDevice or to overwrite an existing
+     vertex array (you should invoke finish on the underlying VARArea before doing that).
      */
-     void* pointer() {
+    void* pointer() {
         return _pointer;
     }
 };

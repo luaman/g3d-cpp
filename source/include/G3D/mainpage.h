@@ -195,18 +195,16 @@
      <UL>
       <LI>OpenGL Abstraction
         <BR><BLOCKQUOTE>
+        G3D::Milestone,
         G3D::PixelProgram,
-        G3D::PixelProgramRef,
         G3D::reflectionMatrix,
         G3D::RenderDevice, 
         G3D::tesselateComplexPolygon,
         G3D::Texture, 
         G3D::TextureFormat,
-        G3D::TextureRef, 
         G3D::VAR,
         G3D::VARArea, 
-        G3D::VertexProgram,
-        G3D::VertexProgramRef
+        G3D::VertexProgram
         </BLOCKQUOTE>
 
       <LI>OpenGL 
@@ -619,6 +617,11 @@
 
    <P>
    <UL>
+     <LI> VARArea::reset() now waits for rendering calls using its vertex
+          arrays to complete before wiping the memory. 
+     <LI> VARArea::finish()
+     <LI> Milestone
+     <LI> RenderDevice now loads glFlushVertexArrayRangeNV
      <LI> Vector2int16
      <LI> RenderDevice::freeVARSize()
      <LI> Array now allocates 16-byte aligned pointers when SSE is defined.

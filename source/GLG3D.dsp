@@ -122,6 +122,10 @@ SOURCE=.\GLG3Dcpp\ManualCameraController.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\Milestone.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\PixelProgram.cpp
 # End Source File
 # Begin Source File
@@ -371,6 +375,10 @@ SOURCE=.\include\GLG3D\LightingParameters.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\ManualCameraController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\Milestone.h
 # End Source File
 # Begin Source File
 

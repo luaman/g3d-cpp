@@ -102,7 +102,7 @@ VARArea* RenderDevice::VARSystem::createArea(size_t areaSize) {
 
 	if (allocated + areaSize <= size) {
 		
-		VARArea* v = new VARArea((uint8*)basePointer + allocated, areaSize);
+		VARArea* v = new VARArea(renderDevice, (uint8*)basePointer + allocated, areaSize);
 		allocated += areaSize;
 		areaList.append(v);
 
@@ -224,10 +224,13 @@ void RenderDevice::VARSystem::endIndexedPrimitives() const {
 
 
 VARArea::VARArea(
+    RenderDevice*      _renderDevice,
     void*              _basePointer,
     size_t             _size) :
+    renderDevice(_renderDevice),
    	basePointer(_basePointer), size(_size) {
 
+    milestone     = NULL;
     allocated     = 0;
 	generation    = 1;
 	peakAllocated = 0;
@@ -259,7 +262,15 @@ size_t VARArea::peakAllocatedSize() const {
 }
 
 
+void VARArea::finish() {
+    if (milestone != (MilestoneRef)NULL) {
+        renderDevice->waitForMilestone(milestone);
+    }
+}
+
+
 void VARArea::reset() {
+    finish();
 	peakAllocated = iMax(peakAllocated, allocated);
 	++generation;
 	allocated = 0;

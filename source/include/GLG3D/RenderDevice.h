@@ -21,6 +21,7 @@
 
 #include "graphics3D.h"
 #include "GLG3D/Texture.h"
+#include "GLG3D/Milestone.h"
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/PixelProgram.h"
 
@@ -136,6 +137,7 @@ private:
 
     friend class VAR;
     friend class VARArea;
+    friend class Milestone;
 
 	class VARSystem {
 	private:
@@ -315,13 +317,29 @@ private:
 	/** Updates the polygon count based on the primitive */
 	void countPrimitive(RenderDevice::Primitive primitive, int numVertices);
 
+    /**
+     List of all VARAreas in use when rendering indexed primitives.
+     This is needed so that on a sendIndices call their corresponding
+     milestones can be set up.
+
+     Set by the setXXXArray methods, cleared by endIndexedPrimitives.
+     */
+    Set<VARArea*>               inUseVARArea;
+
+    /**
+     Adds this VAR to inUseVARArea
+     */
+    void usingVARArea(VARArea* v);
+
+    /**
+     Sets the milestones on all inUseVARAreas.
+     */
+    void setVARAreaMilestones();
 
     ////////////////////////////////////////////////////////////////////
 public:
-	/**
-	 Initializes OpenGL via SDL.
-	 */
     RenderDevice();
+    ~RenderDevice();
 
     /**
      Checkmarks all rendering state.  
@@ -583,7 +601,9 @@ public:
      */
     void setTexCoord(uint textureUnit, const Vector4& texCoord);
     void setTexCoord(uint textureUnit, const Vector3& texCoord);
+    void setTexCoord(uint textureUnit, const Vector3int16& texCoord);
     void setTexCoord(uint textureUnit, const Vector2& texCoord);
+    void setTexCoord(uint textureUnit, const Vector2int16& texCoord);
     void setTexCoord(uint textureUnit, double texCoord);
 
     /**
@@ -706,6 +726,8 @@ public:
 	void sendIndices(RenderDevice::Primitive primitive, int numIndices, 
                      const T* index) {
 		varSystem->sendIndices(primitive, sizeof(T), numIndices, index);
+
+        setVARAreaMilestones();
 		countPrimitive(primitive, numIndices);
 	}
 
@@ -996,8 +1018,6 @@ public:
      */
     void setCaption(const std::string& caption);
 
-    virtual ~RenderDevice() {}
-
     /**
      Takes a JPG screenshot of the front buffer and saves it to a file.
      Example: renderDevice->screenshot("screens/");
@@ -1076,12 +1096,35 @@ public:
     Vector3 project(const Vector4& v) const;
     Vector3 project(const Vector3& v) const;
 
-    void RenderDevice::setAmbientLightLevel(
+    void setAmbientLightLevel(
         const Color3&       color);
 
 
+    /**
+     Returns a new Milestone that can be passed to setMilestone and waitForMilestone.
+     Milestones are garbage collected.
+     */
+    MilestoneRef createMilestone(const std::string& name);
+
+    /**
+     Inserts a milestone into the GPU processing list.  You can later call
+     waitForMilestone to force the CPU to stall until the GPU has reached
+     this milestone.
+     <P>
+     A milestone may be set multiple times, even without waiting for it in between.
+     There is no requirement that a milestone be waited for once set.  Milestone
+     setting transcends and is not affected by pushState()/popState() or beginFrame()/endFrame().
+     */
+    void setMilestone(const MilestoneRef& m);
+
+    /**
+     Stalls the CPU until the GPU has finished the milestone.  It is an error
+     to wait for a milestone that was not set since it was last waited for.
+     */
+    void waitForMilestone(const MilestoneRef& m);
+
     #ifdef _WIN32
-        HDC RenderDevice::getWindowHDC() const;
+        HDC getWindowHDC() const;
     #endif
 };
 

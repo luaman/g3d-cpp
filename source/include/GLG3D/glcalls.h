@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-07-07
+ @edited  2003-08-09
 
  Copyright 2002, Morgan McGuire.
  All rights reserved.
@@ -31,8 +31,18 @@ inline void glMultiTexCoord(GLint unit, const G3D::Vector2& v) {
 }
 
 
+inline void glMultiTexCoord(GLint unit, const G3D::Vector2int16& v) {
+	glMultiTexCoord(unit, Vector2(v.x, v.y));
+}
+
+
 inline void glMultiTexCoord(GLint unit, const G3D::Vector3& v) {
 	glMultiTexCoord3fvARB(unit, (const float*)&v);
+}
+
+
+inline void glMultiTexCoord(GLint unit, const G3D::Vector3int16& v) {
+	glMultiTexCoord(unit, Vector3(v.x, v.y, v.z));
 }
 
 
@@ -46,8 +56,18 @@ inline void glVertex(const G3D::Vector2& v) {
 }
 
 
+inline void glVertex(const G3D::Vector2int16& v) {
+    glVertex2i(v.x, v.y);
+}
+
+
 inline void glVertex(const G3D::Vector3& v) {
 	glVertex3fv((const float*)&v);
+}
+
+
+inline void glVertex(const G3D::Vector3int16& v) {
+	glVertex3i(v.x, v.y, v.z);
 }
 
 
@@ -128,6 +148,7 @@ inline void * glGetProcAddress(const char * name){
 /**
  Returns a texture matrix appropriate for reflection vectors
  based on the current modelview matrix.  This is necessary
+
  to reflect a cube map so it matches the sky box.
 
   Example:

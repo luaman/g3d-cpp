@@ -25,6 +25,7 @@
 #include "GLG3D/Texture.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VARArea.h"
+#include "GLG3D/VAR.h"
 
 #ifdef G3D_WIN32
     #include <winver.h>
@@ -52,6 +53,8 @@ PFNWGLALLOCATEMEMORYNVPROC                  wglAllocateMemoryNV 		    = NULL;
 PFNWGLFREEMEMORYNVPROC                      wglFreeMemoryNV 			    = NULL;
 
 PFNGLVERTEXARRAYRANGENVPROC                 glVertexArrayRangeNV 		    = NULL;
+PFNGLFLUSHVERTEXARRAYRANGENVPROC            glFlushVertexArrayRangeNV       = NULL;
+
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC            glCompressedTexImage2DARB 	    = NULL;
 PFNGLGETCOMPRESSEDTEXIMAGEARBPROC           glGetCompressedTexImageARB 	    = NULL;
@@ -254,7 +257,6 @@ RenderDevice::RenderDevice() {
     emwaFrameRate = 0;
     lastTime = getTime();
 
-
 	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0 ) {
         fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
@@ -264,6 +266,28 @@ RenderDevice::RenderDevice() {
     for (int i = 0; i < MAX_TEXTURE_UNITS; ++i) {
         currentlyBoundTexture[i] = 0;
     }
+}
+
+
+void RenderDevice::usingVARArea(VARArea* v) {
+    inUseVARArea.insert(v);
+}
+
+
+void RenderDevice::setVARAreaMilestones() {
+    Set<VARArea*>::Iterator begin = inUseVARArea.begin();
+    Set<VARArea*>::Iterator end   = inUseVARArea.end();
+        
+    while (begin != end) {
+        (*begin)->milestone = createMilestone("VAR Milestone");
+        setMilestone((*begin)->milestone);
+        ++begin;
+    }
+    
+}
+
+
+RenderDevice::~RenderDevice() {
 }
 
 void RenderDevice::initGLExtensions() {
@@ -295,6 +319,7 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glGenFencesNV);
     LOAD_EXTENSION(glDeleteFencesNV);
     LOAD_EXTENSION(glSetFenceNV);
+    LOAD_EXTENSION(glFlushVertexArrayRangeNV);
     LOAD_EXTENSION(glFinishFenceNV);
     LOAD_EXTENSION(glGenProgramsARB);
     LOAD_EXTENSION(glBindProgramARB);
@@ -311,7 +336,6 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glPointParameterfvARB);
     LOAD_EXTENSION(glMultiDrawArraysEXT);
     LOAD_EXTENSION(glMultiDrawElementsEXT);
-
     LOAD_EXTENSION(glCombinerParameterfvNV);
     LOAD_EXTENSION(glCombinerParameterfNV);
     LOAD_EXTENSION(glCombinerParameterivNV);
@@ -516,6 +540,7 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n"             
              "%31s             %s\n"
              "%31s             %s\n"
@@ -556,6 +581,7 @@ bool RenderDevice::init(
  			 "glDeleteFencesNV", isOk(glDeleteFencesNV),
 			 "glSetFenceNV", isOk(glSetFenceNV),
 			 "glFinishFenceNV", isOk(glFinishFenceNV),
+             "glFlushVertexArrayRangeNV", isOk(glFlushVertexArrayRangeNV),
              "glGenProgramsARB", isOk(glGenProgramsARB),
              "glBindProgramARB", isOk(glBindProgramARB),
              "glDeleteProgramsARB", isOk(glDeleteProgramsARB),
@@ -2043,7 +2069,25 @@ void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
 }
 
 
+void RenderDevice::setTexCoord(uint unit, const Vector3int16& texCoord) {
+    debugAssertM(unit < _numTextureUnits,
+        format("Attempted to access texture unit %d on a device with %d units.",
+        unit, _numTextureUnits));
+    state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, texCoord.z, 1);
+    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+}
+
+
 void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
+    debugAssertM(unit < _numTextureUnits,
+        format("Attempted to access texture unit %d on a device with %d units.",
+        unit, _numTextureUnits));
+    state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
+    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+}
+
+
+void RenderDevice::setTexCoord(uint unit, const Vector2int16& texCoord) {
     debugAssertM(unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
         unit, _numTextureUnits));
@@ -2844,6 +2888,7 @@ void RenderDevice::endIndexedPrimitives() {
 	debugAssert(inIndexedPrimitive);
 
 	varSystem->endIndexedPrimitives();
+    inUseVARArea.clear();
 	inIndexedPrimitive = false;
 }
 
@@ -2852,6 +2897,7 @@ void RenderDevice::setVertexArray(const class VAR& v) {
 	debugAssert(inIndexedPrimitive);
 	debugAssert(! inPrimitive);
 
+    usingVARArea(v.area);
 	varSystem->setVertexArray(v);
 }
 
@@ -2860,6 +2906,7 @@ void RenderDevice::setVertexAttribArray(unsigned int attribNum, const class VAR&
 	debugAssert(inIndexedPrimitive);
 	debugAssert(! inPrimitive);
 
+    usingVARArea(v.area);
 	varSystem->setVertexAttribArray(attribNum, v, normalize);
 }
 
@@ -2868,6 +2915,7 @@ void RenderDevice::setNormalArray(const class VAR& v) {
 	debugAssert(inIndexedPrimitive);
 	debugAssert(! inPrimitive);
 
+    usingVARArea(v.area);
 	varSystem->setNormalArray(v);
 }
 
@@ -2876,6 +2924,7 @@ void RenderDevice::setColorArray(const class VAR& v) {
 	debugAssert(inIndexedPrimitive);
 	debugAssert(! inPrimitive);
 
+    usingVARArea(v.area);
 	varSystem->setColorArray(v);
 }
 
@@ -2884,9 +2933,9 @@ void RenderDevice::setTexCoordArray(unsigned int unit, const class VAR& v) {
 	debugAssert(inIndexedPrimitive);
 	debugAssert(! inPrimitive);
 
+    usingVARArea(v.area);
 	varSystem->setTexCoordArray(unit, v);
 }
-
 
 
 VARArea* RenderDevice::createVARArea(size_t areaSize) {
@@ -2898,6 +2947,20 @@ VARArea* RenderDevice::createVARArea(size_t areaSize) {
 size_t RenderDevice::freeVARSize() const {
     debugAssert(varSystem);
     return varSystem->memoryFree();
+}
+
+
+MilestoneRef RenderDevice::createMilestone(const std::string& name) {
+    return new Milestone(name);
+}
+
+
+void RenderDevice::setMilestone(const MilestoneRef& m) {
+    m->set();
+}
+
+void RenderDevice::waitForMilestone(const MilestoneRef& m) {
+    m->wait();
 }
 
 } // namespace

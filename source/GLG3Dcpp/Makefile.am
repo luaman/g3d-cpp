@@ -16,6 +16,7 @@ libGLG3D_la_SOURCES= Camera.cpp \
 					 VAR.cpp \
 					 VertexProgram.cpp \
 					 PixelProgram.cpp \
+					 Milestone.cpp \
 					 GPUProgram.cpp \
 					 getOpenGLState.cpp \
 					 glcalls.cpp \
@@ -31,14 +32,15 @@ libGLG3D_debug_la_SOURCES= Camera.cpp \
 					 RenderDevice.cpp \
 					 Sky.cpp \
   					 TextureFormat.cpp \
-				     Texture.cpp \
+    				         Texture.cpp \
 					 UserInput.cpp \
 					 VARSystem.cpp \
 					 VAR.cpp \
 					 VertexProgram.cpp \
 					 PixelProgram.cpp \
 					 GPUProgram.cpp \
-				     getOpenGLState.cpp \
+					 Milestone.cpp \
+				         getOpenGLState.cpp \
 					 glcalls.cpp \
 					 glenumtostring.cpp 
 

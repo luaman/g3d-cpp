@@ -32,6 +32,15 @@ public:
     Vector2int16(G3D::int16 _x, G3D::int16 _y) : x(_x), y(_y){}
     Vector2int16(const class Vector2& v);
     Vector2int16(class BinaryInput& bi);
+
+    inline bool operator== (const Vector2int16& rkVector) const {
+        return ((int32*)this)[0] == ((int32*)&rkVector)[0];
+    }
+
+    inline bool operator!= (const Vector2int16& rkVector) const {
+        return ((int32*)this)[0] != ((int32*)&rkVector)[0];
+    }
+
     void serialize(class BinaryOutput& bo) const;
     void deserialize(class BinaryInput& bi);
 }
