@@ -34,7 +34,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2004-04-18
+ @edited  2004-04-02
  */
 
 #ifndef NETWORKDEVICE_H
@@ -278,6 +278,14 @@ public:
      */
     void send(const NetMessage* m);
 
+    inline void send(const NetMessage& m) {
+        send(&m);
+    }
+
+    inline void send() {
+        send(NULL);
+    }
+
     virtual uint32 waitingMessageType();
 
     /** If a message is waiting, deserializes the waiting message into
@@ -290,6 +298,10 @@ public:
         waiting for all packets to arrive.  For short messages (less
         than 5k) this is extremely unlikely to occur.*/
     bool receive(NetMessage* m);
+
+    inline bool receive(NetMessage& m) {
+        return receive(&m);
+    }
 
     NetAddress address() const;
 };
@@ -391,12 +403,28 @@ public:
         an empty message is still sent.*/
     void send(const NetAddress& a, const NetMessage* m);
 
+    inline void send(const NetAddress& a, const NetMessage& m) {
+        send(a, &m);
+    }
+
+    inline void send(const NetAddress& a) {
+        send(a, NULL);
+    }
+
     /** If data is waiting, deserializes the waiting message into m,
         puts the sender's address in addr and returns true, otherwise
         returns false.  If m is NULL, the message is consumed but not
         deserialized.
     */
     bool receive(NetMessage* m, NetAddress& sender);
+
+    inline bool receive(NetMessage& m, NetAddress& sender) {
+        return receive(&m, sender);
+    }
+
+    inline bool receive(NetAddress& sender) {
+        return receive(NULL, sender);
+    }
 
     virtual uint32 waitingMessageType();
 
