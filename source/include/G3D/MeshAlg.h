@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-09-14
+ @edited  2003-09-18
 */
 
 #ifndef G3D_MESHALG_H
@@ -85,7 +85,11 @@ public:
 
     /**
      Given a set of vertices and a set of indices for traversing them
-     to create triangles, computes other mesh properties.
+     to create triangles, computes other mesh properties.  
+     
+     Faces consisting of fewer than 3 discrete vertex indices will not
+     appear in the face array and their edges will not appear in
+     the edge array.
 
      @param vertexArray Vertex positions to use when deciding colocation.
      @param indexArray  Order to traverse vertices to make triangles

@@ -629,6 +629,10 @@
 
    <P>
    <UL>
+     <LI> Added model debugging info to the IFSBuilder display
+     <LI> Welded some broken vertices in the teapot.ifs file
+     <LI> Renamed Font.* to CFont.*
+     <LI> CFont::draw2DString renamed to CFont::draw2D (use a #define to port old code)
      <LI> MeshAlg
      <LI> RenderDevice now enables GL_COLOR_MATERIAL by default
      <LI> RenderDevice::drawFullScreenImage

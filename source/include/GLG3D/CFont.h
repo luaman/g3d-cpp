@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-08-18
+ @edited  2003-09-18
  */
 
 #ifndef G3D_FONT_H
@@ -122,7 +122,7 @@ public:
 
      @param spacing Fixed width fonts are spaced based on the width of the 'M' character.
      */
-    void draw2DString(
+    void draw2D(
         const std::string&  s, 
         double              x,
         double              y,
