@@ -1,7 +1,7 @@
 #!/bin/sh
 
-libtoolize --force
+libtoolize --force --copy
 aclocal $ACLOCAL_FLAGS
 autoheader
-automake --foreign --add-missing --include-deps
+automake --foreign --add-missing --copy --include-deps
 autoconf
