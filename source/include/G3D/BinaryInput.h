@@ -242,16 +242,16 @@ public:
         pos += 2;
         if (swapBytes) {
             uint8 out[2];
-            out[0] = buffer[pos - 2];
-            out[1] = buffer[pos - 1];
+            out[0] = buffer[pos - 1];
+            out[1] = buffer[pos - 2];
             return *(uint16*)out;
         } else {
             #ifdef G3D_ALLOW_UNALIGNED_WRITES
                 return *(uint16*)(&buffer[pos - 2]);
             #else
                 uint8 out[2];
-                out[0] = buffer[pos - 1];
-                out[1] = buffer[pos - 2];
+                out[0] = buffer[pos - 2];
+                out[1] = buffer[pos - 1];
                 return *(uint16*)out;
             #endif
         }
