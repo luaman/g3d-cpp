@@ -2,7 +2,7 @@ This directory contains user-submitted source code that works with G3D.  This co
 
 pingtest      -  A simple command line program demonstrating NetworkDevice, LightweightConduit, and ReliableConduit by Morgan.
 
-CoreyGWindow  -  GWindow implementations for the wxWindows and Qt APIs by Corey Taylor <corey@acz.org>
+CoreyGWindow  -  GWindow implementations for the Qt API by Corey Taylor <laundrypowder@spamcop.net>
 
 ObjModel      -  A class in the style of IFSModel and MD2Model for Maya obj files by Corey Taylor <laundrypowder@spamcop.net>
 
