@@ -173,8 +173,6 @@ private:
     /** Should the destructor delete _window?*/
     bool                        deleteWindow;
 
-    enum Vendor {NVIDIA, ATI, ARB};
-
     /**
      Status and debug statements are written to this log.
      */
@@ -214,10 +212,6 @@ private:
 
     /** Time at which the previous endFrame() was called */
     double                      lastTime;
-
-    /** Sets vendor */
-    void computeVendor();
-    Vendor                      vendor;
 
     /** Exponentially weighted moving average frame rate */
     double                      emwaFrameRate;
@@ -822,8 +816,6 @@ public:
 
 
 private:
-    /** Call after vendor is set */
-    std::string getDriverVersion();
 
     /**
      For performance, we don't actually unbind a texture when

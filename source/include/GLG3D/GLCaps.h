@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2004-04-25
+ @edited  2004-05-07
 
  Copyright 2004, Morgan McGuire.
  All rights reserved.
@@ -42,9 +42,25 @@ namespace G3D {
  */
 class GLCaps {
 private:
+	enum Vendor {ATI, NVIDIA, ARB};
 
     /** True when loadExtensions has already been called */
     static bool     loadedExtensions;
+
+	/** Set by loadExtensions */
+	static std::string _glVersion;
+	static std::string _driverVendor;
+	static std::string _driverVersion;
+	static std::string _glRenderer;
+
+	static Vendor computeVendor();
+
+	/**
+	 Returns the version string for the video driver.
+
+	 @cite Based in part on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
+	 */
+	static std::string getDriverVersion();
   
  // We're going to need exactly the same code for each of 
  // several extensions, so we abstract the boilerplate into
@@ -91,7 +107,14 @@ public:
 
     /** Returns true if the given texture format is supported on this device.*/
     static bool supports(const class TextureFormat* fmt);
-};
+
+	static const std::string& glVersion();
+
+	static const std::string& driverVersion();
+
+	static const std::string& vendor();
+
+	static const std::string& renderer();};
 
 } // namespace
 

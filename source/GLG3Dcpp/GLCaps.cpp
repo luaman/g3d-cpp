@@ -3,13 +3,17 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-05-02
+  @edited  2004-05-07
 */
 
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include <sstream>
+
+#ifdef G3D_WIN32
+    #include <winver.h>
+#endif
 
 namespace G3D {
 
@@ -26,8 +30,118 @@ static void __stdcall glIgnore(GLenum e) {}
  */
 static Table<const TextureFormat*, bool>      _supportedTextureFormat;
 
-
 Set<std::string> GLCaps::extensionSet;
+std::string GLCaps::_glVersion;
+std::string GLCaps::_driverVendor;
+std::string GLCaps::_driverVersion;
+std::string GLCaps::_glRenderer;
+
+
+GLCaps::Vendor GLCaps::computeVendor() {
+    std::string s = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+
+    if (s == "ATI Technologies Inc.") {
+        return ATI;
+    } else if (s == "NVIDIA Corporation") {
+        return NVIDIA;
+    } else {
+        return ARB;
+    }
+}
+
+
+#ifdef G3D_WIN32
+/**
+ Used by the Windows version of getDriverVersion().
+ @cite Based on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
+ */
+struct VS_VERSIONINFO { 
+    WORD                wLength; 
+    WORD                wValueLength; 
+    WORD                wType; 
+    WCHAR               szKey[1]; 
+    WORD                Padding1[1]; 
+    VS_FIXEDFILEINFO    Value; 
+    WORD                Padding2[1]; 
+    WORD                Children[1]; 
+};
+#endif
+
+std::string GLCaps::getDriverVersion() {
+    #ifdef G3D_WIN32
+    
+        std::string driver;
+
+        // Locate the windows\system directory
+        {
+            char sysDir[1024];
+            int sysSize = GetSystemDirectory(sysDir, 1024);
+            if (sysSize == 0) {
+                return "Unknown (can't find Windows directory)";
+            }
+            driver = sysDir;
+        }
+
+        switch (computeVendor()) {
+        case ATI:
+            driver = driver + "\\ati2dvag.dll";
+            break;
+
+        case NVIDIA:
+            driver = driver + "\\nv4_disp.dll";
+            break;
+
+        default:
+            return "Unknown (Unknown vendor)";
+
+        }
+
+        char* lpdriver = const_cast<char*>(driver.c_str());
+        DWORD dummy;
+
+        int size = GetFileVersionInfoSize(lpdriver, &dummy);
+        if (size == 0) {
+            return "Unknown (Can't find driver)";
+        }
+
+        void* buffer = new uint8[size];
+
+        if (GetFileVersionInfo(lpdriver, NULL, size, buffer) == 0) {
+            delete buffer;
+            return "Unknown";
+        }
+
+	    // Interpret the VS_VERSIONINFO header pseudo-struct
+	    VS_VERSIONINFO* pVS = (VS_VERSIONINFO*)buffer;
+        debugAssert(!wcscmp(pVS->szKey, L"VS_VERSION_INFO"));
+
+	    uint8* pVt = (uint8*) &pVS->szKey[wcslen(pVS->szKey) + 1];
+
+        #define roundoffs(a,b,r)	(((uint8*)(b) - (uint8*)(a) + ((r) - 1)) & ~((r) - 1))
+        #define roundpos(b, a, r)	(((uint8*)(a)) + roundoffs(a, b, r))
+
+	    VS_FIXEDFILEINFO* pValue = (VS_FIXEDFILEINFO*) roundpos(pVt, pVS, 4);
+
+        #undef roundoffs
+        #undef roundpos
+
+        std::string result = "Unknown (No information)";
+
+	    if (pVS->wValueLength) {
+	        result = format("%d.%d.%d.%d",
+                pValue->dwProductVersionMS >> 16,
+                pValue->dwProductVersionMS & 0xFFFF,
+	            pValue->dwProductVersionLS >> 16,
+                pValue->dwProductVersionLS & 0xFFFF);
+        }
+
+        delete buffer;
+
+        return result;
+    #else
+        return "Unknown";
+    #endif
+}
 
 // We're going to need exactly the same code for each of 
 // several extensions.
@@ -57,6 +171,11 @@ void GLCaps::loadExtensions() {
     }
 
     loadedExtensions = true;
+
+	_driverVendor   = (char*)glGetString(GL_VENDOR);
+	_glRenderer     = (char*)glGetString(GL_RENDERER);
+	_glVersion      = (char*)glGetString(GL_VERSION);
+	_driverVersion  = getDriverVersion();
 
     Log* debugLog = Log::common();
 
@@ -273,6 +392,30 @@ bool GLCaps::supports(const TextureFormat* fmt) {
     }
 
     return _supportedTextureFormat[fmt];
+}
+
+
+const std::string& GLCaps::glVersion() {
+	loadExtensions();
+	return _glVersion;
+}
+
+
+const std::string& GLCaps::driverVersion() {
+	loadExtensions();
+	return _driverVersion;
+}
+
+
+const std::string& GLCaps::vendor() {
+	loadExtensions();
+	return _driverVendor;
+}
+
+
+const std::string& GLCaps::renderer() {
+	loadExtensions();
+	return _glRenderer;
 }
 
 

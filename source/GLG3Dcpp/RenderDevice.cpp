@@ -19,45 +19,12 @@
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/GLCaps.h"
 
-#ifdef G3D_WIN32
-    #include <winver.h>
-#endif
-
 namespace G3D {
 
 RenderDevice* RenderDevice::lastRenderDeviceCreated = NULL;
 
 static void _glViewport(double a, double b, double c, double d) {
     glViewport(iRound(a), iRound(b), iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
-}
-
-#ifdef G3D_WIN32
-/**
- Used by the Windows version of getDriverVersion().
- @cite Based on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
- */
-struct VS_VERSIONINFO { 
-    WORD                wLength; 
-    WORD                wValueLength; 
-    WORD                wType; 
-    WCHAR               szKey[1]; 
-    WORD                Padding1[1]; 
-    VS_FIXEDFILEINFO    Value; 
-    WORD                Padding2[1]; 
-    WORD                Children[1]; 
-};
-#endif
-
-void RenderDevice::computeVendor() {
-    std::string s = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-
-    if (s == "ATI Technologies Inc.") {
-        vendor = ATI;
-    } else if (s == "NVIDIA Corporation") {
-        vendor = NVIDIA;
-    } else {
-        vendor = ARB;
-    }
 }
 
 
@@ -96,87 +63,6 @@ static GLenum primitiveToGLenum(RenderDevice::Primitive primitive) {
 
 std::string RenderDevice::getCardDescription() const {
     return cardDescription;
-}
-
-/**
- Returns the version string for the video driver.
-
- @cite Based in part on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
- */
-std::string RenderDevice::getDriverVersion() {
-    #ifdef G3D_WIN32
-    
-        std::string driver;
-
-        // Locate the windows\system directory
-        {
-            char sysDir[1024];
-            int sysSize = GetSystemDirectory(sysDir, 1024);
-            if (sysSize == 0) {
-                return "Unknown (can't find Windows directory)";
-            }
-            driver = sysDir;
-        }
-
-        switch (vendor) {
-        case ATI:
-            driver = driver + "\\ati2dvag.dll";
-            break;
-
-        case NVIDIA:
-            driver = driver + "\\nv4_disp.dll";
-            break;
-
-        default:
-            return "Unknown (Unknown vendor)";
-
-        }
-
-        char* lpdriver = const_cast<char*>(driver.c_str());
-        DWORD dummy;
-
-        int size = GetFileVersionInfoSize(lpdriver, &dummy);
-        if (size == 0) {
-            return "Unknown (Can't find driver)";
-        }
-
-        void* buffer = new uint8[size];
-
-        if (GetFileVersionInfo(lpdriver, NULL, size, buffer) == 0) {
-            delete buffer;
-            return "Unknown";
-        }
-
-	    // Interpret the VS_VERSIONINFO header pseudo-struct
-	    VS_VERSIONINFO* pVS = (VS_VERSIONINFO*)buffer;
-        debugAssert(!wcscmp(pVS->szKey, L"VS_VERSION_INFO"));
-
-	    uint8* pVt = (uint8*) &pVS->szKey[wcslen(pVS->szKey) + 1];
-
-        #define roundoffs(a,b,r)	(((uint8*)(b) - (uint8*)(a) + ((r) - 1)) & ~((r) - 1))
-        #define roundpos(b, a, r)	(((uint8*)(a)) + roundoffs(a, b, r))
-
-	    VS_FIXEDFILEINFO* pValue = (VS_FIXEDFILEINFO*) roundpos(pVt, pVS, 4);
-
-        #undef roundoffs
-        #undef roundpos
-
-        std::string result = "Unknown (No information)";
-
-	    if (pVS->wValueLength) {
-	        result = format("%d.%d.%d.%d",
-                pValue->dwProductVersionMS >> 16,
-                pValue->dwProductVersionMS & 0xFFFF,
-	            pValue->dwProductVersionLS >> 16,
-                pValue->dwProductVersionLS & 0xFFFF);
-        }
-
-        delete buffer;
-
-        return result;
-    #else
-        return "Unknown";
-    #endif
 }
 
 
@@ -280,8 +166,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     const int desiredTextureUnits = 8;
 
-    computeVendor();
-    
     // Don't use more texture units than allowed at compile time.
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
 
@@ -354,7 +238,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     bool depthOk   = depthBits >= minimumDepthBits;
     bool stencilOk = stencilBits >= minimumStencilBits;
 
-    std::string ver = getDriverVersion();
     if (debugLog) {
         debugLog->printf("Operating System: %s\n",
                          System::operatingSystem().c_str());
@@ -362,21 +245,13 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         debugLog->printf("Processor Architecture: %s\n\n", 
                          System::cpuArchitecture().c_str());
 
-        debugLog->printf(
-            "GL Vendor:      %s\n",
-            glGetString(GL_VENDOR));
+        debugLog->printf("GL Vendor:      %s\n", GLCaps::vendor().c_str());
 
-        debugLog->printf(
-            "GL Renderer:    %s\n",
-            glGetString(GL_RENDERER));
+        debugLog->printf("GL Renderer:    %s\n", GLCaps::renderer().c_str());
 
-        debugLog->printf(
-            "GL Version:     %s\n",
-            glGetString(GL_VERSION));
+        debugLog->printf("GL Version:     %s\n", GLCaps::glVersion().c_str());
 
-        debugLog->printf(
-            "Driver version: %s\n\n",
-            ver.c_str());
+        debugLog->printf("Driver version: %s\n\n", GLCaps::driverVersion().c_str());
 
         debugLog->printf(
             "GL extensions: \"%s\"\n\n",
@@ -384,7 +259,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     }
  
 
-    cardDescription = format("%s %s", glGetString(GL_RENDERER), ver.c_str());
+    cardDescription = GLCaps::renderer() + " " + GLCaps::driverVersion();
 
     if (debugLog) {
     debugLog->section("Video Status");
