@@ -245,7 +245,8 @@ public:
    }
 
    /**
-    Number of elements in the array.
+    Number of elements in the array.  (Same as size; this is just
+    here for convenience).
     */
    inline int length() const {
       return size();
