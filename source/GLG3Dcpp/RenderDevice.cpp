@@ -305,15 +305,13 @@ bool RenderDevice::init(GWindow* window, Log* log) {
              "Mode                 %10s             %s\n\n",
 
              minimumDepthBits, desiredDepthBits, depthBits, isOk(depthOk),
-             minimumStencilBits, desiredStencilBits, stencilBits, 
-             isOk(stencilOk),
+             minimumStencilBits, desiredStencilBits, stencilBits, isOk(stencilOk),
 
              alphaBits, "ok",
              redBits, "ok", 
              greenBits, "ok", 
              blueBits, "ok", 
 
-             isOk(_numTextureUnits >= desiredTextureUnits),
              settings.fsaaSamples, actualSettings.fsaaSamples,
              isOk(settings.fsaaSamples == actualSettings.fsaaSamples),
 
@@ -1666,18 +1664,22 @@ void RenderDevice::setStencilOp(
 static GLenum toGLBlendEq(RenderDevice::BlendEq e) {
     switch (e) {
     case RenderDevice::BLENDEQ_MIN:
+        debugAssert(GLCaps::supports("GL_EXT_blend_minmax"));
         return GL_MIN;
 
     case RenderDevice::BLENDEQ_MAX:
+        debugAssert(GLCaps::supports("GL_EXT_blend_minmax"));
         return GL_MAX;
 
     case RenderDevice::BLENDEQ_ADD:
         return GL_FUNC_ADD;
 
     case RenderDevice::BLENDEQ_SUBTRACT:
+        debugAssert(GLCaps::supports("GL_EXT_blend_subtract"));
         return GL_FUNC_SUBTRACT;
 
     case RenderDevice::BLENDEQ_REVERSE_SUBTRACT:
+        debugAssert(GLCaps::supports("GL_EXT_blend_subtract"));
         return GL_FUNC_REVERSE_SUBTRACT;
 
     default:
@@ -1744,7 +1746,14 @@ void RenderDevice::setBlendFunc(
         } else {
             glEnable(GL_BLEND);
             glBlendFunc(toGLBlendFunc(src), toGLBlendFunc(dst));
-            glBlendEquationEXT(toGLBlendEq(eq));
+
+            debugAssert(eq == BLENDEQ_ADD ||
+                GLCaps::supports("GL_EXT_blend_minmax") ||
+                GLCaps::supports("GL_EXT_blend_subtract"));
+
+            if (glBlendEquationEXT != 0) {
+                glBlendEquationEXT(toGLBlendEq(eq));
+            }
         }
         state.dstBlendFunc = dst;
         state.srcBlendFunc = src;
