@@ -255,7 +255,7 @@ void MeshAlg::computeAdjacency(
             // normal.  This ensures that we don't introduce a lot
             // of artificial ridges into flat parts of a mesh.
             double ndotn = -2;
-            int f1, i1;
+            int f1 = -1, i1 = -1;
             
             // Try to Find the face with the matching edge
             for (int i = faceIndexArray.size() - 1; i >= 0; --i) {
@@ -450,7 +450,6 @@ void MeshAlg::weldBoundaryEdges(
     Table<int, Array<int> >::Iterator cur = boundaryEdgeIndices.begin();
     Table<int, Array<int> >::Iterator end = boundaryEdgeIndices.end();
     while (cur != end) {
-        int             v_low        = cur->key;
         Array<int>&     boundaryEdge = cur->value;
 
         for (int i = 0; i < boundaryEdge.size(); ++i) {
@@ -613,7 +612,8 @@ void MeshAlg::weldAdjacency(
 
     Array<int> toNew, toOld;
     // Throw away the new vertex array
-    computeWeld(originalGeometry, Array<Vector3>(), toNew, toOld, radius);
+    Array<Vector3> dummy;
+    computeWeld(originalGeometry, dummy, toNew, toOld, radius);
 
     for (int v = 0; v < canonical.size(); ++v) {
         // Round-trip through the toNew/toOld process.  This will give

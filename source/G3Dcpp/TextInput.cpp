@@ -92,7 +92,6 @@ int TextInput::popNextChar() {
         charNumber++;
     }
 
-    debugAssert((c >= 0) && (c <= 255));
     return c;
 }
 
