@@ -1419,7 +1419,7 @@ void png_error(
     png_structp png_ptr,
     png_const_charp error_msg) {
 
-    GImage::Error(error_msg, "libpng"); 
+    throw GImage::Error(error_msg, "libpng"); 
 }
 
 //libpng required function signature
