@@ -148,7 +148,13 @@ void Sky::renderBox() const {
                 cframe.rotation[i][j] = glRot[i * 4 + j];
             }
         }
-        renderDevice->setTextureMatrix(0, cframe);
+
+        // Reflect (we're *inside* the normal map)
+        Matrix3 reflect(-1,  0,  0,
+                         0,  1,  0,
+                         0,  0,  1);
+
+        cframe.rotation = reflect * cframe.rotation;
 
         glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_GEN_S | GL_TEXTURE_GEN_T | GL_TEXTURE_GEN_R | GL_TEXTURE_GEN_Q);
 
@@ -158,7 +164,12 @@ void Sky::renderBox() const {
 	        glEnable(GL_TEXTURE_GEN_S + i);
         }
 
+        renderDevice->setTextureMatrix(0, cframe);
+
     } else {
+        CoordinateFrame matrix;
+        renderDevice->setTextureMatrix(0, matrix);
+
         renderDevice->setTexture(0, texture[BK]);
     }
 
@@ -298,8 +309,8 @@ void Sky::renderBox() const {
 
 	    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
         glPopAttrib();
-        renderDevice->setTextureMatrix(0, CoordinateFrame());
     }
+    renderDevice->setTextureMatrix(0, CoordinateFrame());
 }
 
 
@@ -310,9 +321,7 @@ void Sky::render(
     renderDevice->pushState();
 
 	CoordinateFrame matrix;
-    Matrix3 align(Matrix3::ZERO);
-    align.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
-	matrix.rotation = align * camera.rotation;
+	matrix.rotation = camera.rotation;
     renderDevice->setCameraToWorldMatrix(matrix);
 
     renderDevice->setColor(lighting.skyAmbient * renderDevice->getBrightScale());
