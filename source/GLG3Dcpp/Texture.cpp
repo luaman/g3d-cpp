@@ -348,9 +348,9 @@ void Texture::reload() {
         break;
 
     case TRANSPARENT_BORDER:
-        glTexParameteri(t, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(t, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(t, GL_TEXTURE_WRAP_R, GL_CLAMP);
+        glTexParameteri(t, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER_SGIS);
+        glTexParameteri(t, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER_SGIS);
+        glTexParameteri(t, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER_SGIS);
         {
             Color4 black(0,0,0,0);
             glTexParameterfv(t, GL_TEXTURE_BORDER_COLOR, black);
