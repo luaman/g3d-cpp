@@ -242,6 +242,12 @@ private:
         BinaryOutput&       out) const;
 
     /**
+     Converts this image into a JPEG
+     */
+    void encodePNG(
+        BinaryOutput&       out) const;
+
+    /**
      Decodes the buffer into this image.
      @format Guaranteed correct format.
      */

@@ -612,6 +612,106 @@ void GImage::encodeJPEG(
     compressed_data = NULL;
 }
 
+//libpng required function signature
+void png_write_data(png_structp png_ptr,
+    png_bytep data,
+    png_size_t length) {
+
+    debugAssert( png_ptr->io_ptr != NULL );
+    debugAssert( length >= 0 );
+    debugAssert( data != NULL );
+
+    ((BinaryOutput*)png_ptr->io_ptr)->writeBytes(data, length);
+}
+
+//libpng required function signature
+void png_flush_data(
+    png_structp png_ptr) {
+
+    //Do nothing.
+}
+
+//libpng required function signature
+void png_error(
+    png_structp png_ptr,
+    png_const_charp error_msg) {
+
+    debugAssert( error_msg != NULL );
+    throw GImage::Error(error_msg, "PNG"); 
+}
+
+//libpng required function signature
+void png_warning(
+    png_structp png_ptr,
+    png_const_charp warning_msg) {
+
+    debugAssert( warning_msg != NULL );
+    Log::common()->println(warning_msg);
+}
+
+void GImage::encodePNG(
+    BinaryOutput&           out) const {
+
+    debugAssert( channels == 3 || channels == 4 );
+
+    if (this->height > (PNG_UINT_32_MAX/png_sizeof(png_bytep)))
+        throw GImage::Error("Unsupported PNG height.", out.getFilename());
+
+    out.setEndian(G3D_LITTLE_ENDIAN);
+
+    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, png_error, png_warning);
+    if (!png_ptr)
+        throw GImage::Error("Unable to initialize PNG encoder.", out.getFilename());
+
+    png_infop info_ptr = png_create_info_struct(png_ptr);
+    if (!info_ptr) {
+        png_destroy_write_struct(&png_ptr, &info_ptr);
+        throw GImage::Error("Unable to initialize PNG encoder.", out.getFilename());
+    }
+
+    //setup libpng write handler so can use BinaryOutput
+    png_set_write_fn(png_ptr, (void*)&out, png_write_data, png_flush_data);
+
+    if (channels == 3) {
+        png_set_IHDR(png_ptr, info_ptr, this->width, this->height, 8, PNG_COLOR_TYPE_RGB,
+            PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+    }
+    else if (channels == 4) {
+        png_set_IHDR(png_ptr, info_ptr, this->width, this->height, 8, PNG_COLOR_TYPE_RGBA,
+            PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+    }
+    else {
+        png_destroy_write_struct(&png_ptr, &info_ptr);
+        throw GImage::Error("Unsupported number of channels for PNG.", out.getFilename());
+    }
+
+    png_color_8_struct sig_bit;
+    sig_bit.red = 8;
+    sig_bit.green = 8;
+    sig_bit.blue = 8;
+    if (channels == 4)
+        sig_bit.alpha = 8;
+    else
+        sig_bit.alpha = 0;
+    png_set_sBIT(png_ptr, info_ptr, &sig_bit);
+
+    //write the png header
+    png_write_info(png_ptr, info_ptr);
+
+    png_bytepp row_pointers = new png_bytep[this->height];
+
+    for (int i=0; i < this->height; ++i) {
+        row_pointers[i] = (png_bytep)&this->_byte[(this->width * this->channels * i)];
+    }
+
+    png_write_image(png_ptr, row_pointers);
+
+    png_write_end(png_ptr, info_ptr);
+
+    delete[] row_pointers;
+
+    png_destroy_write_struct(&png_ptr, &info_ptr);
+}
 
 void GImage::decode(
     BinaryInput&        input,
@@ -1560,63 +1660,29 @@ void png_read_data(
     ((BinaryInput*)png_ptr->io_ptr)->readBytes(length, data);
 }
 
-//libpng required function signature
-void png_write_data(png_structp png_ptr,
-    png_bytep data,
-    png_size_t length) {
-
-    //Do nothing.
-}
-
-//libpng required function signature
-void png_flush_data(
-    png_structp png_ptr) {
-
-    //Do nothing.
-}
-
-//libpng required function signature
-void png_error(
-    png_structp png_ptr,
-    png_const_charp error_msg) {
-
-    throw GImage::Error(error_msg, "libpng"); 
-}
-
-//libpng required function signature
-void png_warning(
-    png_structp png_ptr,
-    png_const_charp warning_msg) {
-
-    debugAssert( warning_msg != NULL );
-    Log::common()->println(warning_msg);
-}
-
 void GImage::decodePNG(
     BinaryInput&        input) {
 
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, png_error, png_warning);
     if (!png_ptr)
-        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
+        throw GImage::Error("Unable to initialize PNG decoder.", input.getFilename());
 
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
         png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
+        throw GImage::Error("Unable to initialize PNG decoder.", input.getFilename());
     }
 
     png_infop end_info = png_create_info_struct(png_ptr);
     if (!end_info) {
         png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-        throw GImage::Error("Unable to initialize libpng decoder.", input.getFilename());
+        throw GImage::Error("Unable to initialize PNG decoder.", input.getFilename());
     }
 
     //now that the libpng structures are setup, change the error handlers and read routines
     //to use G3D functions so that BinaryInput can be used.
 
     png_set_read_fn(png_ptr, (png_voidp)&input, png_read_data);
-
-//    png_set_write_fn(png_ptr, NULL, png_write_data, png_output_flush);
     
     //read in sequentially so that three copies of the file are not in memory at once
     png_read_info(png_ptr, info_ptr);
@@ -1629,7 +1695,7 @@ void GImage::decodePNG(
 
     if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        throw GImage::Error("Unsupported png color type - PNG_COLOR_TYPE_GRAY_ALPHA.", input.getFilename());
+        throw GImage::Error("Unsupported PNG color type - PNG_COLOR_TYPE_GRAY_ALPHA.", input.getFilename());
     }
 
     this->width = png_width;
@@ -1974,6 +2040,9 @@ void GImage::encode(
     BinaryOutput&       out) const {
 
     switch (format) {
+    case PNG:
+        encodePNG(out);
+        break;
     case JPEG:
         encodeJPEG(out);
         break;
