@@ -75,10 +75,15 @@ def lib():
         # should really be putting them here)
         if (x != 0):
             mkdir("temp/lib")
-            copyIfNewer("source/G3Dcpp/libG3D.la",           "temp/lib/libG3D.la")
-            copyIfNewer("source/G3Dcpp/libG3D_debug.la",     "temp/lib/libG3D_debug.la")
-            copyIfNewer("source/GLG3Dcpp/libGLG3D.la",       "temp/lib/libGLG3D.la")
-            copyIfNewer("source/GLG3Dcpp/libGLG3D_debug.la", "temp/lib/libGLG3D_debug.la")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D.a",           "temp/lib/libG3D.a")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",     "temp/lib/libG3D_debug.a")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D.so.0.0.0",           "temp/lib/libG3D.so")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.so.0.0.0",     "temp/lib/libG3D_debug.so")
+            
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.a",       "temp/lib/libGLG3D.a")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.a", "temp/lib/libGLG3D_debug.a")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.so.0.0.0",       "temp/lib/libGLG3D.so")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.so.0.0.0", "temp/lib/libGLG3D_debug.so")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."
@@ -100,8 +105,8 @@ def test():
     else:
         print "Don't know how to build tests on non-Windows platforms"
 
-    run('../temp/release/test/test', [])
-    run('../temp/debug/test/test', [])
+    run('temp/release/test/test', [])
+    run('temp/debug/test/test', [])
 
 ###############################################################################
 #                                                                             #
@@ -156,9 +161,9 @@ def release():
         raise 'Error', 'Can only build the release on Windows.'
 
     # TODO: Make sure the linux binaries are already built
-
     install(0)
     mkdir('release')
+    mkdir('temp/datacopy/g3d-' + version + '/demos')
     copyIfNewer('data', 'temp/datacopy/g3d-' + version + '/data')
     copyIfNewer('demos', 'temp/datacopy/g3d-' + version + '/demos')
     zip('temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
