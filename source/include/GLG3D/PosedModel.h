@@ -60,6 +60,11 @@ typedef ReferenceCountedPointer<class PosedModel> PosedModelRef;
 
  Use G3D::PosedModelWrapper to encapsulate an existing posed model
  with your own.
+
+ A common strategy when implementing PosedModel is to not compute "derived"
+ values like the object space face normals until they are needed.  That is,
+ the first call to a method might be very expensive because it goes off
+ and computes some value that will be cached for future calls.
  */
 class PosedModel : public ReferenceCountedObject {
 protected:
@@ -84,9 +89,13 @@ public:
     /** Get the <B>world space</B> geometry. */
     virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
 
+    /** @deprecated Use objectSpaceFaceNormals() */
     virtual void getObjectSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
     virtual void getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
+
+    /** Return a pointer to an array of object space face normals. */
+    virtual const Array<Vector3>& objectSpaceFaceNormals(bool normalize = true) const = 0;
 
     // Returns a reference rather than filling out an array because most
     // PosedModels have this information available.

@@ -177,7 +177,6 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
     }
 
     debugAssertM((count == 2) || (count == 0), "Convex polygons may only intersect planes at two edges.");
-    //debugPrintf("split \n");
 }
 
 ConvexPolygon ConvexPolygon::inverse() const {

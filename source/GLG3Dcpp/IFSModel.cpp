@@ -310,4 +310,9 @@ int IFSModel::PosedIFSModel::numWeldedBoundaryEdges() const {
     return model->numWeldedBoundaryEdges;
 }
 
+
+const Array<Vector3>& IFSModel::PosedIFSModel::objectSpaceFaceNormals(bool normalize) const {
+    return model->faceNormalArray;
+}
+
 }

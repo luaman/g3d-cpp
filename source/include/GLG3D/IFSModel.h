@@ -58,6 +58,7 @@ private:
         virtual void render(RenderDevice* renderDevice) const;
         virtual int numBoundaryEdges() const;
         virtual int numWeldedBoundaryEdges() const;
+        virtual const Array<Vector3>& objectSpaceFaceNormals(bool normalize = true) const;
     };
 
     friend class PosedIFSModel;

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-08-07
- @edited  2004-02-18
+ @edited  2004-04-20
  */
 
 #include "G3D/platform.h"
@@ -869,6 +869,16 @@ void MD2Model::PosedMD2Model::render(RenderDevice* renderDevice) const {
         }
         model->render(renderDevice, pose);
     renderDevice->popState();
+}
+
+
+const Array<Vector3>& MD2Model::PosedMD2Model::objectSpaceFaceNormals(bool normalize) const {
+    if (faceNormals.size() == 0) {
+        MeshAlg::computeFaceNormals(objectSpaceGeometry().vertexArray, faces(), 
+            const_cast<PosedMD2Model*>(this)->faceNormals, normalize);
+    }
+
+    return faceNormals;
 }
 
 

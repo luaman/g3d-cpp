@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2004-02-18
+ @edited  2004-04-20
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -180,6 +180,9 @@ protected:
         /** Filled out the first time objectSpaceGeometry is called */
         MeshAlg::Geometry       geometry;
 
+        /** Computed on the first call to objectSpaceFaceNormals */
+        Array<Vector3>          faceNormals;
+
         PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, const Pose& _pose,
             bool _useMat, const GMaterial& _mat);
         virtual ~PosedMD2Model() {}
@@ -194,6 +197,7 @@ protected:
         virtual const Array<MeshAlg::Vertex>& weldedVertices() const;
         virtual const Array<int>& triangleIndices() const;
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
+        virtual const Array<Vector3>& objectSpaceFaceNormals(bool normalize = true) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
         virtual void render(RenderDevice* renderDevice) const;
         virtual int numBoundaryEdges() const; 
