@@ -218,6 +218,13 @@ App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings
 
 
 int main(int argc, char** argv) {
+
+    AABox b(Vector3(-1,-1,-1), Vector3(1,1,1));
+    Ray r = Ray::fromOriginAndDirection(Vector3(0,0,10), Vector3(0,0,-1));
+
+
+    double t = r.intersectionTime(b);
+
     GAppSettings settings;
     App(settings).run();
     return 0;

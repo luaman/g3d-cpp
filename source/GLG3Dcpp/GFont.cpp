@@ -331,7 +331,7 @@ Vector2 GFont::get2DStringBounds(
             x += propW * subWidth[(int)c];
         }
     } else {
-        x = subWidth[(int)'M'] * n * 0.85;
+        x = subWidth[(int)'M'] * n * 0.85 * propW;
     }
 
     return Vector2(x, y);
