@@ -23,9 +23,10 @@ we recommend using one with %G3D if your project has extensive UI needs.
 This manual begins with a \link guidetutorial Tutorial \endlink and 
 \link guideapp Application Framework \endlink that help
 programmers who know C++ but are either new to 3D or starting without 
-a base of 3D code get up and running quickly.  This builds from the 
-most abstract level of %G3D (and is how the %G3D developers usually
-use the library in their own work).  
+a base of 3D code get up and running quickly.  The demos directory also contains
+a starter <A HREF="../demos/main.cpp">main.cpp</A> for the
+application framework (it is how the %G3D developers usually
+start a new project in their own work).  
 
 The library also provides lower-level interfaces that programmers who are
 already working with OpenGL and existing code may prefer.  See the
@@ -79,6 +80,10 @@ arrive with each point release.
 
   <TR><TD VALIGN=TOP>\link guideapp Application Framework \endlink</TD><TD VALIGN=TOP>
    Applets, Models, Selection, FPS Controls
+  </TD></TR>
+
+  <TR><TD VALIGN=TOP>\link guidevar Vertex Arrays \endlink</TD><TD VALIGN=TOP>
+   Creating, managing, and rendering from vertex arrays (video memory) 
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidemeshes Working with Meshes \endlink</TD><TD VALIGN=TOP>

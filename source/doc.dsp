@@ -132,6 +132,10 @@ SOURCE=".\docsource\guide-ui.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-var.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-welcome.h"
 # End Source File
 # Begin Source File

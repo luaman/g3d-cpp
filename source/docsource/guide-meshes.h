@@ -2,8 +2,8 @@
 
   \htmlonly
 <TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
-<A HREF="guideapp.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
-Application Framework</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidevar.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Vertex Arrays</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 <A HREF="guideui.html">
 User Input <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
