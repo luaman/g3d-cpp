@@ -223,7 +223,10 @@ void Win32Window::init(HWND hwnd) {
 
         iAttributes.append(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
 		iAttributes.append(WGL_SUPPORT_OPENGL_ARB, GL_TRUE);
-		iAttributes.append(WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB);
+        if (settings.hardware) {
+		    iAttributes.append(WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB);
+        }
+        iAttributes.append(WGL_DOUBLE_BUFFER_ARB,  GL_TRUE);
         iAttributes.append(WGL_COLOR_BITS_ARB,     settings.rgbBits * 3);
         iAttributes.append(WGL_RED_BITS_ARB,       settings.rgbBits);
         iAttributes.append(WGL_GREEN_BITS_ARB,     settings.rgbBits);
@@ -231,7 +234,6 @@ void Win32Window::init(HWND hwnd) {
         iAttributes.append(WGL_ALPHA_BITS_ARB,     settings.alphaBits);
         iAttributes.append(WGL_DEPTH_BITS_ARB,     settings.depthBits);
         iAttributes.append(WGL_STENCIL_BITS_ARB,   settings.stencilBits);
-        iAttributes.append(WGL_DOUBLE_BUFFER_ARB,  GL_TRUE);
         iAttributes.append(WGL_STEREO_ARB,         settings.stereo);
         if (hasWGLMultiSampleSupport) {
             iAttributes.append(WGL_SAMPLE_BUFFERS_ARB, settings.fsaaSamples > 1);
@@ -257,6 +259,8 @@ void Win32Window::init(HWND hwnd) {
         // call GetLastError. If no matching formats are found then nNumFormats
         // is set to zero and the function returns TRUE."  -- I think this means
         // that when numFormats == 0 some reasonable format is still selected.
+        
+        // Corey - I don't think it does, but now I check for valid pixelFormat + valid return only.
 
  
         if ( valid && (pixelFormat > 0)) {
@@ -284,6 +288,9 @@ void Win32Window::init(HWND hwnd) {
         pixelFormatDesc.cGreenBits   = settings.rgbBits;
         pixelFormatDesc.cBlueBits    = settings.rgbBits;
         pixelFormatDesc.cAlphaBits   = settings.alphaBits;
+
+        // Reset for completeness
+        pixelFormat = 0;
 
         // Get the initial pixel format.  We'll override this below in a moment.
         pixelFormat = ChoosePixelFormat(_hDC, &pixelFormatDesc);
