@@ -181,6 +181,8 @@ public:
       calls init(), then calls the doXXX methods.  
       Invokes cleanup() before exiting.
       It is not usually necessary to override this method.
+
+      Copies the debug camera position to the debug camera controller.
     */
     virtual void run();
 

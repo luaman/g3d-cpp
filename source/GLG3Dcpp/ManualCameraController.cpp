@@ -170,5 +170,12 @@ void ManualCameraController::getCoordinateFrame(CoordinateFrame& c) const {
 	c.rotation.fromEulerAnglesZYX(0, -yaw, -pitch);
 }
 
+
+void ManualCameraController::setCoordinateFrame(const CoordinateFrame& c) {
+    setPosition(c.translation);
+    lookAt(c.translation + c.getLookVector());
+}
+
+
 }
 

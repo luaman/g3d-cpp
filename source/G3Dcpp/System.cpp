@@ -69,10 +69,10 @@ std::string demoFindData(bool errorIfNotFound) {
 
     #ifdef G3D_WIN32
         potential.append("d:/libraries/g3d-6_00/");
-        potential.append("g:/libraries/g3d-6_00-b7/");
+        potential.append("g:/libraries/g3d-6_00-b8/");
         potential.append("c:/libraries/g3d-6_00/");
     #else
-        potential.append("/map/gfx0/common/games/libraries/g3d-6_00-b7/");
+        potential.append("/map/gfx0/common/games/libraries/g3d-6_00-b8/");
     #endif
 
     for (int p = 0; p < potential.size();  ++p) {

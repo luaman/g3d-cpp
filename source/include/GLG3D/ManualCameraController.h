@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-09-27
+  @edited  2003-11-11
 */
 
 #ifndef G3D_MANUALCAMERACONTROLLER_H
@@ -123,6 +123,11 @@ public:
 	CoordinateFrame getCoordinateFrame() const;
 
 	void getCoordinateFrame(CoordinateFrame& c) const;
+
+    /**
+      Sets to the closest legal controller orientation to the coordinate frame.
+    */
+    void setCoordinateFrame(const CoordinateFrame& c);
 };
 
 }

@@ -2,6 +2,36 @@
 #include <string>
 
 
+class Entity {
+public:
+    bool selected;
+    
+    Entity() : selected(false) {}
+    virtual ~Entity() {}
+
+    virtual void render(RenderDevice*) = NULL;
+};
+
+class SphereEntity : public Entity {
+private:
+    Sphere sphere;
+    Color4 color;
+public:
+    SphereEntity(const Vector3& position, double radius, const Color4& _color = Color3::BLUE);
+    virtual void render(RenderDevice*);
+
+};
+
+SphereEntity::SphereEntity(const Vector3& position, double radius, const Color4& _color) {
+    sphere = Sphere(position,radius);
+    color = _color;
+}
+
+void SphereEntity::render(RenderDevice* device) {
+    Draw::sphere(sphere, device, color, selected ? Color3::BLACK : Color4::CLEAR);
+}
+
+
 /**
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
@@ -11,27 +41,27 @@ public:
 
     TextureRef          tex;
     SkyRef              sky;
-    GameTime            time;
+    Array<Entity*>      entityArray;
 
     Demo(GApp* app) : GApplet(app) {
         tex = Texture::fromFile(app->dataDir + "image/lena.tga");
         sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
-        time = G3D::toSeconds(12, 00, 00, PM);
     }
-
+    
+    virtual void init();
     virtual void doLogic();
     virtual void doGraphics();
-    virtual void doSimulation(RealTime rdt);
+    virtual void cleanup();
 };
 
-void Demo::doSimulation(RealTime rdt) {
-    app->debugPrintf("Time is %gs", time);
-    if (app->userInput->keyDown('r')) {
-        time -= rdt * 10000;
-    }
-    if (app->userInput->keyDown('t')) {
-        time += rdt * 10000;
-    }
+
+void Demo::init()  {
+    app->debugController->setPosition(Vector3(0,4,10));
+    app->debugController->lookAt(Vector3::ZERO);
+    entityArray.append(new SphereEntity(Vector3(0,1,0),1,Color3::WHITE));
+    entityArray.append(new SphereEntity(Vector3(-2.5,1,0),1,Color3::GREEN));
+    entityArray.append(new SphereEntity(Vector3(2.5,1,0),1,Color3::YELLOW));
+    entityArray[1]->selected = true;
 }
 
 
@@ -45,14 +75,15 @@ void Demo::doLogic() {
 
 
 void Demo::doGraphics() {
-    LightingParameters lighting(time);
+    LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
+    app->debugPrintf("Mouse X %g Y %g", app->userInput->getMouseX(), app->userInput->getMouseY());
     //app->renderDevice->setViewport(Rect2D(100, 0, 400, 600));
     app->debugCamera->setProjectionAndCameraMatrix();
 
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
-    app->renderDevice->clear(true, true, true);
+    app->renderDevice->clear(sky == NULL, true, true);
 
     sky->render(lighting);
 
@@ -65,31 +96,39 @@ void Demo::doGraphics() {
 
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
+    for (int e = 0; e < entityArray.length(); ++e) { 
+        entityArray[e]->render(app->renderDevice);
+    }
+
     Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
-    Draw::sphere(Sphere(Vector3::ZERO,2), app->renderDevice, Color3::WHITE);
-        
-    glDisable(GL_LIGHT0);
-    app->renderDevice->disableLighting();
+     
     
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
     app->renderDevice->setColor(Color3::WHITE);
     app->renderDevice->beginPrimitive(RenderDevice::QUADS);
+        app->renderDevice->setNormal(Vector3::UNIT_Y);
+        app->renderDevice->setTexCoord(0, Vector2(2, 0));
+        app->renderDevice->sendVertex(Vector3(5, 0, -2.5));
+
         app->renderDevice->setTexCoord(0, Vector2(0, 0));
-        app->renderDevice->sendVertex(Vector3(0, 1, 0));
+        app->renderDevice->sendVertex(Vector3(-5, 0, -2.5));
 
         app->renderDevice->setTexCoord(0, Vector2(0, 1));
-        app->renderDevice->sendVertex(Vector3(0, 0, 0));
+        app->renderDevice->sendVertex(Vector3(-5, 0, 2.5));
 
-        app->renderDevice->setTexCoord(0, Vector2(1, 1));
-        app->renderDevice->sendVertex(Vector3(1, 0, 0));
-
-        app->renderDevice->setTexCoord(0, Vector2(1, 0));
-        app->renderDevice->sendVertex(Vector3(1, 1, 0));
+        app->renderDevice->setTexCoord(0, Vector2(2, 1));
+        app->renderDevice->sendVertex(Vector3(5, 0, 2.5));
     app->renderDevice->endPrimitive();
 
+    glDisable(GL_LIGHT0);
+    app->renderDevice->disableLighting();
     
     sky->renderLensFlare(lighting);
+}
+
+void Demo::cleanup() {
+    entityArray.deleteAll();
 }
 
 
@@ -104,7 +143,7 @@ int main(int argc, char** argv) {
     GApp app(settings);
 
     app.setDebugMode(true);
-    app.debugController->setActive(true);
+//    app.debugController->setActive(true);
 
     Demo applet(&app);
 

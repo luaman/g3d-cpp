@@ -181,6 +181,9 @@ void GApplet::run() {
 
     init();
 
+    // Move the controller to the camera's location
+    app->debugController->setCoordinateFrame(app->debugCamera->getCoordinateFrame());
+
     RealTime now = getTime() - 0.001, lastTime;
 
     // Main loop
