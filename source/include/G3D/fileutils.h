@@ -122,7 +122,13 @@ void parseFilename(
  Returns the part of the filename that includes the base and ext from
  parseFilename.
  */
-std::string basename(const std::string& filename);
+std::string filenameBaseExt(const std::string& filename);
+
+/**
+ Returns the extension on a filename.
+ */
+std::string filenameExt(const std::string& filename);
+
 
 } // namespace
 

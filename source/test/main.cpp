@@ -659,12 +659,12 @@ void testCollision() {
 
 int main(int argc, char* argv[]) {
 
-    /*
+    
     Window app;
 
     try {
 
-        G3D::CImage im("C:/tmp/md2/data/players/hunter/snowtiger.pcx");
+        G3D::CImage im("C:/tmp/md2/data/players/LINFANG/LINFANG.pcx");
 
         app.create("Win32 Sample Program", im.width, im.height);
         G3D::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
@@ -682,8 +682,7 @@ int main(int argc, char* argv[]) {
     RenderDevice rd;
     Log debugLog("c:/tmp/log.txt");
     rd.init(800, 600, &debugLog);
-    */
-
+    
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureArrayPerformance();

@@ -1196,26 +1196,26 @@ void CImage::decodePCX(
                 }
             }
         }
+
     } else if (planes == 1) {
 
         Color3uint8 palette[256];
 
-        if (paletteType) {
-            int imageBeginning   = input.getPosition();
-            int paletteBeginning = input.getLength() - 769;
+        int imageBeginning   = input.getPosition();
+        int paletteBeginning = input.getLength() - 769;
 
-            input.setPosition(paletteBeginning);
+        input.setPosition(paletteBeginning);
 
-            uint8 dummy = input.readUInt8();
+        uint8 dummy = input.readUInt8();
 
-            if (dummy != 12) {
-                Log::common()->println("\n*********************");
-                Log::common()->printf("Warning: Corrupted PCX file (palette was wrong) \"%s\"\nLoading anyway\n\n", input.getFilename().c_str());
-            }
+        if (dummy != 12) {
+            Log::common()->println("\n*********************");
+            Log::common()->printf("Warning: Corrupted PCX file (palette was wrong) \"%s\"\nLoading anyway\n\n", input.getFilename().c_str());
+        }
 
-            input.readBytes(sizeof(palette), palette);
-            input.setPosition(imageBeginning);
-       }
+        input.readBytes(sizeof(palette), palette);
+        input.setPosition(imageBeginning);
+        
 
         Color3uint8* pixel = pixel3();
         

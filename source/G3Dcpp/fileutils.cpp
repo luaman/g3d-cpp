@@ -468,7 +468,7 @@ void getDirs(
 }
 
 
-std::string basename(const std::string& filename) {
+std::string filenameBaseExt(const std::string& filename) {
     int i = filename.rfind("/");
     int j = filename.rfind("\\");
     if ((j < i) && (j >= 0)) {
@@ -479,6 +479,16 @@ std::string basename(const std::string& filename) {
         return filename;
     } else {
         return filename.substr(i + 1, filename.length() - i);
+    }
+}
+
+
+std::string filenameExt(const std::string& filename) {
+    int i = filename.rfind(".");
+    if (i >= 0) {
+        return filename.substr(i + 1, filename.length() - i);
+    } else {
+        return "";
     }
 }
 

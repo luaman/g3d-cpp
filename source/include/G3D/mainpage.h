@@ -156,7 +156,6 @@
 
      <LI>I/O
         <BR><BLOCKQUOTE>
-        G3D::basename,
         G3D::BinaryInput, 
         G3D::BinaryOutput, 
         G3D::copyFile, 
@@ -164,6 +163,8 @@
         G3D::createTempFile, 
         G3D::fileExists, 
         G3D::fileLength,
+        G3D::filenameBaseExt,
+        G3D::filenameExt,
         G3D::G3DEndian,
         G3D::getFiles, 
         G3D::getDirs,
@@ -620,7 +621,7 @@
    <UL>
      <LI> VARArea::reset() now waits for rendering calls using its vertex
           arrays to complete before wiping the memory.
-     <LI> basename
+     <LI> G3D::filenameBaseExt, G3D::filenameExt
      <LI> VARArea::finish()
      <LI> Milestone
      <LI> RenderDevice now loads glFlushVertexArrayRangeNV
