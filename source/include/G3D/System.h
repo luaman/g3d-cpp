@@ -87,6 +87,10 @@ public:
 	/** e.g. "Windows", "GNU/Linux" */
     static const std::string& operatingSystem();
 
+    /** Returns the operating system version number and other information.
+        The format varies across platforms. */
+    static const std::string& operatingSystemVersion();
+
 	/** */
     static const std::string& cpuArchitecture();
 
