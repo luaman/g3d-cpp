@@ -38,8 +38,6 @@ void main(void) {
     // Convert bumps to a world space distance
     vec4 NB = texture2D(normalBumpMap, texCoord);
     float  bump = 
-        // Use Reedbeta's trick of backing off the offset in steep areas
-        (NB.z - 0.5) *
         (NB.w - 0.5) * bumpScale;
 
     // We should divide by tsE.z, but that creates texture swim at shallow angles,

@@ -17,7 +17,7 @@ void Viewer::init()  {
     app->debugCamera.lookAt(Vector3(0, 0, 0));
 
 	entityArray.append(Entity::create(Mesh::quad(), CoordinateFrame()));
-    bumpScale = 0.1;
+    bumpScale = 0.05;
     
     app->debugLog->println("Done Viewer::init");
 }
@@ -56,7 +56,7 @@ void Viewer::doLogic() {
 		if (bumpScale > 0) {
 			bumpScale = 0.0;
 		} else {
-			bumpScale = 0.1;
+			bumpScale = 0.05;
 		}
 	}
 }

@@ -2268,8 +2268,12 @@ int GImage::sizeInMemory() const {
 }
 
 
+void computeNormalMap(
+    const GImage&       bump,
+    GImage&             normal,
+    bool                lowPassBump,
+    bool                scaleHeightByNz) {
 
-void computeNormalMap(const GImage& bump, GImage& normal, bool lowPassBump) {
     const int w = bump.width;
     const int h = bump.height;
     const int stride = bump.channels;
@@ -2295,17 +2299,6 @@ void computeNormalMap(const GImage& bump, GImage& normal, bool lowPassBump) {
             #define height(DX, DY) ((B[(((DX + x + w) % w) + \
                                         ((DY + y + h) % h) * w) * stride]) / 255.0)
 
-            // Copy over the bump value into the alpha channel.
-
-            if (lowPassBump) {
-                N[i].a = 
-                    iRound(
-                       (height(-1, -1) + height( 0, -1) + height(1, -1) +
-                        height(-1,  0) + height( 0,  0) + height(1,  0) +
-                        height(-1,  1) + height( 0,  1) + height(1,  1)) * 255.0 / 9.0);
-            } else {
-                N[i].a = B[j];
-            }
 
             // Sobel filter to compute the normal.  
             //
@@ -2325,10 +2318,29 @@ void computeNormalMap(const GImage& bump, GImage& normal, bool lowPassBump) {
 
             delta.z = 1.0;
 
+
+            delta = delta.direction();
+
+            // Copy over the bump value into the alpha channel.
+            float H = B[j] * 255.0;
+
+            if (lowPassBump) {
+                H = (height(-1, -1) + height( 0, -1) + height(1, -1) +
+                        height(-1,  0) + height( 0,  0) + height(1,  0) +
+                        height(-1,  1) + height( 0,  1) + height(1,  1)) / 9.0;
+            }
             #undef height
 
+            if (scaleHeightByNz) {
+                // delta.z can't possibly be negative, so we avoid actually
+                // computing the absolute value.
+                H *= delta.z;
+            }
+
+            N[i].a = iRound(H * 255.0);
+
             // Pack into byte range
-            delta = delta.direction() * 127.5 + Vector3(127.5, 127.5, 127.5);
+            delta = delta * 127.5 + Vector3(127.5, 127.5, 127.5);
             N[i].r = iClamp(iRound(delta.x), 0, 255);
             N[i].g = iClamp(iRound(delta.y), 0, 255);
             N[i].b = iClamp(iRound(delta.z), 0, 255);

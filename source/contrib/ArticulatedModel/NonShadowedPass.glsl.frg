@@ -73,11 +73,7 @@ void main(void) {
 
 #   ifdef NORMALBUMPMAP
         // Convert bumps to a world space distance
-        const vec4 NB = (texture2D(normalBumpMap, texCoord) - vec4(0.5, 0.5, 0.5, 0.5));
-
-        // Use Reedbeta's trick of suppressing sharp transitions at steep edges.
-        // TODO: preprocess the map
-        float  bump   = NB.w * NB.z * bumpMapScale;
+        float  bump   = (texture2D(normalBumpMap, texCoord).w - 0.5) * bumpMapScale;
 
 	    const vec3 tsE = normalize(_tsE);
 

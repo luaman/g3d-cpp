@@ -103,9 +103,17 @@ void flipRGBAVertical(
 
   @param lowPassBump If true, a 9x9 filter of 1's is used to low-pass filter the elevations,
        which produces better results for parallax mapping.
+
+  @param scaleHeightByNz After computing normals, scale the height by |N.z|, a trick that
+       reduces texture swim in steep areas for parallax mapping.
+
   @cite ATI demo
  */
-void computeNormalMap(const class GImage& bump, class GImage& normal, bool lowPassBump = false);
+void computeNormalMap(
+    const class GImage& bump, 
+    class GImage& normal,
+    bool lowPassBump = false,
+    bool scaleHeightByNz = false);
 
 
 /**
