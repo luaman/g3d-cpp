@@ -86,6 +86,7 @@ public:
     Color3 operator+ (const Color3& rkVector) const;
     Color3 operator- (const Color3& rkVector) const;
     Color3 operator* (G3D::Real fScalar) const;
+    Color3 operator* (const Color3& rkVector) const;
     Color3 operator/ (G3D::Real fScalar) const;
     Color3 operator- () const;
     friend Color3 operator* (G3D::Real fScalar, const Color3& rkVector);
@@ -93,6 +94,7 @@ public:
     // arithmetic updates
     Color3& operator+= (const Color3& rkVector);
     Color3& operator-= (const Color3& rkVector);
+    Color3& operator*= (const Color3& rkVector);
     Color3& operator*= (G3D::Real fScalar);
     Color3& operator/= (G3D::Real fScalar);
 

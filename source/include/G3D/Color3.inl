@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2002-10-09
+ @edited  2003-03-24
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -105,6 +105,11 @@ inline Color3 Color3::operator* (G3D::Real fScalar) const {
 }
 
 //----------------------------------------------------------------------------
+inline Color3 Color3::operator* (const Color3& rkVector) const {
+    return Color3(r * rkVector.r, g  * rkVector.g, b * rkVector.b);
+}
+
+//----------------------------------------------------------------------------
 inline Color3 Color3::operator- () const {
     return Color3( -r, -g, -b);
 }
@@ -139,6 +144,13 @@ inline Color3& Color3::operator*= (G3D::Real fScalar) {
     return *this;
 }
 
+//----------------------------------------------------------------------------
+inline Color3& Color3::operator*= (const Color3& rkVector) {
+    r *= rkVector.r;
+    g *= rkVector.g;
+    b *= rkVector.b;
+    return *this;
+}
 //----------------------------------------------------------------------------
 inline G3D::Real Color3::squaredLength () const {
     return r*r + g*g + b*b;
