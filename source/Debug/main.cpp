@@ -153,7 +153,6 @@ void Demo::doGraphics() {
         Draw::rect2DBorder(Rect2D::xyxy(10,210,20,220), app->renderDevice, Color3::black());
     app->renderDevice->pop2D();
 
-    debugAssert(false);
 }
 
 

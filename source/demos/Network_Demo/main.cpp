@@ -43,8 +43,8 @@ int main(int argc, char** argv) {
 
 
 App::App(const GAppSettings& settings) : 
-GApp(settings),
-//   GApp(settings, new SDLWindow(settings.window)),
+//GApp(settings),
+   GApp(settings, new SDLWindow(settings.window)),
     hostingServer(NULL),
     discoverySettings("Demo Discovery Protocol", 1) {
 
@@ -57,7 +57,7 @@ GApp(settings),
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-	debugShowRenderingStats = false;
+	debugShowRenderingStats = true;
     debugQuitOnEscape = false;
 
     // Load objects here

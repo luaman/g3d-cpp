@@ -153,7 +153,7 @@ static void manageFrameRate() {
 void Client::doLogic() {
 
 //    if (! app->hostingServer) {
-        manageFrameRate();
+//        manageFrameRate();
 //    }
 
     if (app->userInput->keyPressed(SDLK_ESCAPE)) {
@@ -161,7 +161,8 @@ void Client::doLogic() {
         endApplet = true;
     }
 
-    if (entityTable.containsKey(localID) && ! app->debugController.active()) {
+
+    if (entityTable.containsKey(localID) && ! app->debugController.active() && app->userInput->appHasFocus()) {
         Entity& entity = entityTable[localID];
         Controls newControls = entity.controls;
 
@@ -177,7 +178,7 @@ void Client::doLogic() {
         localX = (localX - localY * localX.dot(localY)).direction();
         Vector3 localZ = localX.cross(localY);
 
-        const double speed = 2; // TODO
+        const double speed = 2;
 
         double dx = app->userInput->getX();
         double dz = app->userInput->getY();
@@ -283,8 +284,8 @@ void Client::doGraphics() {
 
         renderEntities();
 
-        for (int x = -10; x < 10; ++x) {
-            for (int z = -10; z < 10; ++z) {
+        for (int x = -10; x < 10; x+=4) {
+            for (int z = -10; z < 10; z+=4) {
                 Vector3 v(x * 20, -10, z * 20); 
                 Draw::box(AABox(v, v + Vector3(1,.2,1)), app->renderDevice, Color3::RED, Color3::BLACK);
             }
