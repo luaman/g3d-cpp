@@ -352,7 +352,7 @@ SectionEnd
 ;;
 ;; Create link to documentation on desktop
 ;;
-Section "Create Desktop Link for Documentation"
+Section "Create Desktop and Start Menu Links"
 
   SectionIn 1
 
@@ -360,6 +360,16 @@ Section "Create Desktop Link for Documentation"
   SetOutPath "$INSTDIR\html"
   
   CreateShortCut "$DESKTOP\Graphics3D.lnk" "$INSTDIR\html\index.html" "" "$INSTDIR\html\g3d.ico"
+
+  ; Create Start Menu/Program group links
+  CreateDirectory "$SMPROGRAMS\graphics3D"
+
+  SetOutPath "$INSTDIR\html"
+
+  CreateShortCut "$SMPROGRAMS\graphics3D\G3D Documentation.lnk" "$INSTDIR\html\index.html" "" "$INSTDIR\html\g3d.ico"
+  CreateShortCut "$SMPROGRAMS\graphics3D\G3D Website.lnk" "http://www.graphics3d.com/" "" "$INSTDIR\html\g3d.ico"
+  CreateShortCut "$SMPROGRAMS\graphics3D\G3D Demos.lnk" "$INSTDIR\demos"
+    
 
 SectionEnd
 
