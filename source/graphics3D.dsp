@@ -687,11 +687,11 @@ SOURCE=.\IJG\transupp.h
 # End Group
 # Begin Source File
 
-SOURCE=.\build.py
+SOURCE=..\build.py
 # End Source File
 # Begin Source File
 
-SOURCE=.\buildlib.py
+SOURCE=..\buildlib.py
 # End Source File
 # Begin Source File
 

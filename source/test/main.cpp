@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-03-20
+ @edited  2003-04-03
  */
 
 
@@ -424,8 +424,12 @@ void measureTriangleCollisionPerformance() {
 
 void testTextInput() {
     printf("TextInput\n");
+
+    TextInput::Options opt;
+    opt.cppComments = false;
     TextInput ti(TextInput::FROM_STRING, 
-                 "if/*comment*/(x->y==-1e6){cout<<\"hello world\"};");
+                 "if/*comment*/(x->y==-1e6){cout<<\"hello world\"}; // foo\nbar",
+                 opt);
 
     Token a = ti.read();
     Token b = ti.read();
@@ -442,6 +446,10 @@ void testTextInput() {
     Token m = ti.read();
     Token n = ti.read();
     Token p = ti.read();
+    Token q = ti.read();
+    Token r = ti.read();
+    Token s = ti.read();
+    Token t = ti.read();
 
     debugAssert(a.type() == Token::SYMBOL);
     debugAssert(a.string() == "if");
@@ -484,7 +492,19 @@ void testTextInput() {
     debugAssert(n.type() == Token::SYMBOL);
     debugAssert(n.string() == ";");
 
-    debugAssert(p.type() == Token::END);
+    debugAssert(p.type() == Token::SYMBOL);
+    debugAssert(p.string() == "/");
+
+    debugAssert(q.type() == Token::SYMBOL);
+    debugAssert(q.string() == "/");
+
+    debugAssert(r.type() == Token::SYMBOL);
+    debugAssert(r.string() == "foo");
+
+    debugAssert(s.type() == Token::SYMBOL);
+    debugAssert(s.string() == "bar");
+
+    debugAssert(t.type() == Token::END);
 }
 
 

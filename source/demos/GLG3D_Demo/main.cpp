@@ -30,7 +30,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-03-24
+ @edited  2003-04-03
  */
 
 #include <G3DAll.h>
@@ -38,11 +38,8 @@
 /**
  The path to the data directory from this program's directory.
  */
-#ifdef _WIN32
-const std::string DATA_DIR("d:/libraries/Graphics3D-5.00b/data/");
-#else
-const std::string DATA_DIR("../../../data/");
-#endif
+std::string DATA_DIR("data/");
+
 
 class Model {
 
@@ -82,6 +79,11 @@ void handleEvents();
 /////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char** argv) {
+
+    // Search for the data
+    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/p51-mustang.ifs")); ++count) {
+        DATA_DIR = std::string("../") + DATA_DIR;
+    }
 
     // Initialize
     debugLog	 = new Log();

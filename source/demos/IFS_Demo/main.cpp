@@ -18,7 +18,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @cite       Written by Nate Miller, nathanm@uci.edu
  @created    2002-08-10
- @edited     2003-03-30
+ @edited     2003-04-03
  */
 
 #include "IFSReader.h"
