@@ -3923,6 +3923,7 @@
 			};
 			dependencies = (
 				0FCB73BD06DF610C001A7213,
+				3EE3201F07F4E2DB0026E211,
 			);
 			isa = PBXNativeTarget;
 			name = G3DTest;
@@ -4156,6 +4157,18 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		3EE3201E07F4E2DB0026E211 = {
+			containerPortal = 0F55FEC406DCC4E6008DD4F8;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 0F55008C06DD5F07008DD4F8;
+			remoteInfo = GLG3D;
+		};
+		3EE3201F07F4E2DB0026E211 = {
+			isa = PBXTargetDependency;
+			target = 0F55008C06DD5F07008DD4F8;
+			targetProxy = 3EE3201E07F4E2DB0026E211;
 		};
 		3EEEC94007179716007B8A7E = {
 			children = (
