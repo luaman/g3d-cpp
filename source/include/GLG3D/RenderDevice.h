@@ -1017,7 +1017,8 @@ public:
 
     /**
      Notify RenderDevice that the window size has changed.  
-     Called in response to a user resize event:
+     Called in response to a user resize event.  An example
+     using SDL:
      <PRE>
         SDL_Event event;
         while (SDL_PollEvent(&event)) {

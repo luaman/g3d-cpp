@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-15
+  @edited  2004-02-22
 */
 
 #include "GLG3D/SDLWindow.h"
@@ -21,7 +21,10 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
- 
+
+    _mouseVisible = true;
+    _mouseCapture = false;
+
 	// Request various OpenGL parameters
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      settings.depthBits);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    1);
@@ -327,5 +330,38 @@ void SDLWindow::getRelativeMouseState(double& x, double& y, uint8& mouseButtons)
     x = ix;
     y = iy;
 }
+
+
+void SDLWindow::setMouseVisible(bool v) {
+    if (v) {
+        SDL_ShowCursor(SDL_ENABLE);
+    } else {
+        SDL_ShowCursor(SDL_DISABLE);
+    }
+
+    _mouseVisible = v;
+}
+
+
+bool SDLWindow::mouseVisible() const {
+    return _mouseVisible;
+}
+
+
+void SDLWindow::setMouseCapture(bool c) {
+    _mouseCapture = c;
+
+    if (_mouseCapture) {
+        SDL_WM_GrabInput(SDL_GRAB_ON);
+    } else {
+        SDL_WM_GrabInput(SDL_GRAB_OFF);
+    }
+}
+
+
+bool SDLWindow::mouseCapture() const {
+    return _mouseCapture;
+}
+
 
 } // namespace

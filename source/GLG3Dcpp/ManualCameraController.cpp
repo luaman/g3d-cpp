@@ -50,7 +50,7 @@ void FPCameraController::reset() {
                           iRound(renderDevice->getHeight() / 2.0));
 
     cameraMouse = center;
-    SDL_ShowCursor(SDL_ENABLE);
+    userInput->window()->setMouseVisible(true);
     guiMouse    = userInput->getMouseXY();
     _active      = false;
     yaw         = -G3D_PI/2;
@@ -64,13 +64,13 @@ void FPCameraController::reset() {
 void FPCameraController::grabMouse() {
     // Save the old mouse position for when we deactivate
     guiMouse = userInput->getMouseXY();
-    SDL_ShowCursor(SDL_DISABLE);
+    userInput->window()->setMouseVisible(false);
 
     #ifndef _DEBUG
         // In debug mode, don't grab the cursor because
         // it is annoying when you hit a breakpoint and
         // can't move the mouse.
-        SDL_WM_GrabInput(SDL_GRAB_ON);
+        userInput->window()->setMouseCapture(true);
     #endif
     cameraMouse = center;
     userInput->setMouseXY(cameraMouse);
@@ -90,7 +90,7 @@ void FPCameraController::releaseMouse() {
     // Restore the old mouse position
     userInput->setMouseXY(guiMouse);
 
-    SDL_ShowCursor(SDL_ENABLE);
+    userInput->window()->setMouseVisible(true);
 }
 
 

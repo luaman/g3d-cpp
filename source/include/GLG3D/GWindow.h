@@ -163,6 +163,14 @@ public:
     virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const = 0;
     virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const = 0;
 
+    virtual void setMouseCapture(bool c) = 0;
+
+    /** Returns the current state of mouse capture */
+    virtual bool mouseCapture() const = 0;
+
+    virtual void setMouseVisible(bool b) = 0;
+
+    virtual bool mouseVisible() const = 0;
 };
 
 } // namespace
