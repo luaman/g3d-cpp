@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@blueaxion.com
 
   @created 2001-02-28
-  @edited  2002-12-14
+  @edited  2003-03-31
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -23,9 +23,14 @@ namespace G3D {
  garbage collected.
 
  If you enable texture compression, textures will be compressed on the fly.
+ This can be slow (up to a second).
 
  DIM_2D_RECT requires the NV_texture_rectangle extension.
  Texture compression requires the EXT_texture_compression_s3tc extions.
+ You can either query OpenGL for whether these are supported or
+ use the RenderDevice facility for doing so.
+
+ To use Texture with straight OpenGL:
 
  <PRE>
   TextureRef texture = new Texture("Logo", "logo.jpg");
@@ -34,8 +39,18 @@ namespace G3D {
     
   GLint u = texture->getOpenGLTextureTarget();
   glEnable(u);
-  glBindTexture(u, texture->getTextureID());
+  glBindTexture(u, texture->getOpenGLID());
  </PRE>
+
+ To use Texture with RenderDevice:
+
+  <PRE>
+  TextureRef texture = new Texture("Logo", "logo.jpg");
+  ...
+  renderDevice->setTexture(0, texture);
+  // (to disable: renderDevice->setTexture(0, NULL);)
+  </PRE>
+
 
   3D MIP Maps are not supported because gluBuild3DMipMaps is not in all GLU implementations.
  */
