@@ -646,55 +646,63 @@ void Draw::sphereSection(
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
         static bool initialized = false;
-        static int numIndices = 0;
         static VAR vbuffer;
-        static Array< Array<uint16> > stripIndexArray;
+        static Array< uint16 > stripIndexArray;
 
         if (! initialized) {
             // The normals are the same as the vertices for a sphere
             Array<Vector3> vertex;
 
-            int s = 0;
+            stripIndexArray.resize((G3D_PI / (double)SPHERE_PITCH_SECTIONS) + 2 * 
+                                   (G3D_PI * 2.0 / SPHERE_YAW_SECTIONS));
+
             int i = 0;
 
             for (int p = 0; p < SPHERE_PITCH_SECTIONS; ++p) {
-                const double pitch0 = p * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
-                const double pitch1 = (p + 1) * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
+                const double& pitch0 = p * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
+                const double& pitch1 = (p + 1) * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
 
-                stripIndexArray.next();
+                const double& sp0 = sin(pitch0);
+                const double& sp1 = sin(pitch1);
+                const double& cp0 = cos(pitch0);
+                const double& cp1 = cos(pitch1);
 
                 for (int y = 0; y <= SPHERE_YAW_SECTIONS; ++y) {
-                    const double yaw = -y * G3D_PI * 2.0 / SPHERE_YAW_SECTIONS;
+                    const double& yaw = -y * G3D_PI * 2.0 / SPHERE_YAW_SECTIONS;
 
-                    float cy = cos(yaw);
-                    float sy = sin(yaw);
-                    float sp0 = sin(pitch0);
-                    float sp1 = sin(pitch1);
+                    const double& cy = cos(yaw);
+                    const double& sy = sin(yaw);
 
-                    Vector3 v0 = Vector3(cy * sp0, cos(pitch0), sy * sp0);
-                    Vector3 v1 = Vector3(cy * sp1, cos(pitch1), sy * sp1);
+                    const Vector3& v0 = Vector3(cy * sp0, cp0, sy * sp0);
+                    const Vector3& v1 = Vector3(cy * sp1, cp1, sy * sp1);
 
                     vertex.append(v0, v1);
-                    stripIndexArray.last().append(i, i + 1);
+                    stripIndexArray.append(i, i + 1);
                     i += 2;
                 }
+
+                const Vector3& degen = Vector3(1.0 * sp1, cp1, 0.0 * sp1);
+
+                vertex.append(degen, degen);
+                stripIndexArray.append(i, i + 1);
+                i += 2;    
             }
 
             VARAreaRef area = VARArea::create(vertex.size() * sizeof(Vector3), VARArea::WRITE_ONCE);
             vbuffer = VAR(vertex, area);
-            numIndices = vertex.size();
             initialized = true;
         }
-
-
-        int start = top ? 0 : (SPHERE_PITCH_SECTIONS / 2);
-        int stop = bottom ? SPHERE_PITCH_SECTIONS : (SPHERE_PITCH_SECTIONS / 2);
 
         renderDevice->beginIndexedPrimitives();
             renderDevice->setNormalArray(vbuffer);
             renderDevice->setVertexArray(vbuffer);
-            for (int s = start; s < stop; ++s) {
-                renderDevice->sendIndices(RenderDevice::QUAD_STRIP, stripIndexArray[s]);
+            if (top) {
+                renderDevice->sendIndices(RenderDevice::QUAD_STRIP, (stripIndexArray.length() / 2),
+                    stripIndexArray.getCArray());
+            }
+            if (bottom) {
+                renderDevice->sendIndices(RenderDevice::QUAD_STRIP, (stripIndexArray.length() / 2), 
+                    stripIndexArray.getCArray() + (stripIndexArray.length() / 2));
             }
         renderDevice->endIndexedPrimitives();
 
