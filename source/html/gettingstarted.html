@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+ <TITLE>Getting Started with G3D</TITLE>
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+
+<IMG SRC="G3D.gif" ALIGN=RIGHT>
+<H1>Getting Started with G3D</H1>
+<A HREF="index.html">&lt;&lt; Documentation Main Page</A>
+<P>
+
+This document describes how to create a 3D application using G3D on <A
+HREF="#Win32">Windows</A>, <A HREF="#Linux">Linux</A>, and <A
+HREF="#OSX">OS X</A>.  G3D programs are platform independent-- if you
+write strictly to G3D and not a platform API, you should be able to
+recompile and run on a different platform.
+<P>
+
+These instructions assume you want to use both the G3D geometry
+library and the GLG3D OpenGL wrapper classes.  If you prefer to use
+raw OpenGL, DirectX, or a platform graphics API you should write your
+own <CODE>main.cpp</CODE> in the style of <A
+HREF="../demos/Win32Demo/main.cpp">demos/Win32Demo</A>.
+
+<P>
+
+See the <A HREF="index.html#Installation">G3D Installation
+Instructions</A> for information on downloading and installing G3D and
+its dependencies.
+
+<P>
+
+<HR NOSHADE>
+<A NAME="Win32">
+<H2>Windows</H2>
+<I>MSVC++ 6.0</I>
+
+<OL>
+  <LI>Make a new Win32 Application Project.
+
+  <LI>Copy <CODE>SDL.dll</CODE> and <CODE>zlib1.dll</CODE> to your
+  directory (they are needed at runtime).
+
+  <LI>Copy either <CODE><A HREF="../demos/main.cpp">demos/main.cpp</A></CODE>
+    or <CODE><A HREF="../demos/main-no-GApp.cpp">demos/main-no-GApp.cpp</A></CODE> to your directory.
+
+  <LI>Add that copy of <CODE>main.cpp</CODE> to your project.
+ 
+</OL>
+
+The <CODE>#include &lt;G3DAll.h&gt;</CODE> file contains
+<CODE>#pragma</CODE> statements that automatically configure the
+correct linker and compiler settings for your project.  Just press F5
+to compile and run.
+
+<P>
+<HR NOSHADE>
+<A NAME="Linux">
+<H2>Linux</H2>
+
+<OL>
+  <LI>Install <A HREF="http://ice.sf.net">iCompile</A> on your system.
+
+  <LI>Copy either <CODE><A HREF="../demos/main.cpp">demos/main.cpp</A></CODE>
+    or <CODE><A HREF="../demos/main-no-GApp.cpp">demos/main-no-GApp.cpp</A></CODE> to your directory.
+
+  <LI>Set your <CODE>INCLUDE</CODE> and <CODE>LIBRARY</CODE> paths to
+  contain the SDL and G3D directories if you have not done so previously.
+
+</OL>
+
+iCompile automatically detects and links G3D and SDL to your project.
+Unlike a Makefile, it requires no configuration.  Just run "icompile --run".
+
+<P>
+<HR NOSHADE>
+<A NAME="OSX">
+<H2>OS X</H2>
+
+</BODY>
+</HTML>

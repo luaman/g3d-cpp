@@ -11,7 +11,7 @@
     <CENTER><A HREF="http://sourceforge.net/forum/?group_id=76879">Forums</A>
     | <A HREF="map.png">Namespace Map</A> 
 	| <A HREF="error.html">Error FAQ</A> 
-    |   \ref Introduction  |  \ref Installation  |
+    |   \ref Introduction  |  \ref Installation  | <A HREF="gettingstarted.html">Getting Started</A> |
     \ref defines "\#defines"  |  \ref License  |  \ref Contributors   |
     <A HREF="changelog.html">Change Log</A></CENTER>
 
@@ -250,8 +250,8 @@
         G3D::ManualCameraController
      </UL>
 
-    See the Demo project for a simple introduction to using SDL, OpenGL, 
-    Graphics3D and MSVC to create and render 3D geometry.
+    See the demo projects for a simple introduction to using SDL, OpenGL, 
+    Graphics3D and MSVC++ to create and render 3D geometry.
 
    \section Introduction Introduction
    Online documentation and updates available at 
