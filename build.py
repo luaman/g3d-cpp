@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-05-28
+# @edited  2003-06-12
 #
 # Each build target is a procedure.
 #
@@ -30,8 +30,7 @@ Syntax:
 TARGET     DESCRIPTION
 
 install    Create a user installation directory (what you probably want)
-release    Build g3d-cpp-""" + version + """.zip, g3d-data-""" + version + """.zip
-
+release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs
 doc        Run doxygen and copy the html directory
 clean      Delete the build, release, temp, and install directories
@@ -48,6 +47,25 @@ installDir = 'install/g3d-' + version
 #                                                                             #
 ###############################################################################
 
+def shell(cmd):
+    mkdir('temp')
+    print cmd
+    os.system(cmd + ' > temp/system.tmp')
+    result = ''
+    for line in fileinput.input('temp/system.tmp'):
+        result = result + line
+
+    return result
+   
+def linuxCheckVersion():
+    print 'This build script requires g++ 3.2, automake 1.7, aclocal 1.7, doxygen 1.2 and python 2.0.'
+    print 'You may experience problems if you are not using these.  Some information about your system:\n'
+    print shell(os.environ['CXX'] + ' --version')
+    print shell('automake-1.7 --version')
+    print shell('aclocal-1.7 --version')
+    print shell('doxygen --version')
+    print shell('python -V')
+
 def lib():
     x = 0
 
@@ -63,12 +81,9 @@ def lib():
         # Linux build (right now, only builds the debug release, doesn't 
         # copy files)
 
-        # Exectute bootstrap and configure whenever the scripts change
-        #if (newer("bootstrap", "configure") or newer("configure.ac", "configure")):
-        #    run("./bootstrap")
+	# Check version of tools
 
-        #if (newer("configure", "config.h")):
-        #    run("./configure")
+        linuxCheckVersion()
 
         run("./bootstrap")
         run("./configure", ['--enable-shared', '--enable-static'])
