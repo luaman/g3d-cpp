@@ -12,6 +12,13 @@
 #ifndef G3D_PLATFORM_H
 #define G3D_PLATFORM_H
 
+/**
+ The version number of G3D in the form: MmmBB -> 
+ version M.mm [beta BB]
+ */
+#define G3D_VER 60011
+
+
 #ifdef _MSC_VER 
     #define G3D_WIN32 
 #elif __linux__ 

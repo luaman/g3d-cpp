@@ -246,7 +246,7 @@ public:
 
 
 void Demo::init()  {
-    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","majestic512_*.jpg",false);
+    sky = Sky::create(app->renderDevice, app->dataDir + "sky/","majestic512_*.jpg",false);
 
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));

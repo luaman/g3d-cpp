@@ -30,7 +30,6 @@ GApp::GApp(const GAppSettings& settings) {
     debugCamera  = GCamera();
 
     loadFont(settings.debugFontName);
-
     userInput = new UserInput();
 
     debugController.init(renderDevice, userInput);
@@ -40,7 +39,6 @@ GApp::GApp(const GAppSettings& settings) {
     debugController.setActive(true);
 
     autoResize                  = true;
-
     _debugMode                  = false;
     debugShowText               = true;
     debugQuitOnEscape           = true;

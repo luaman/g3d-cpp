@@ -67,11 +67,20 @@ std::string demoFindData(bool errorIfNotFound) {
         potential.append("../");
     }
 
-    std::string lpath = "libraries/g3d-6_00-b11/";
+	int ver = G3D_VER;
+	std::string lname = format("g3d-%d_%02d", ver / 10000, (ver / 100) % 100);
+
+	if (G3D_VER % 10 != 0) {
+		lname = lname + format("-b%02d/", ver % 100);
+	} else {
+		lname = lname + "/";
+	}
+    std::string lpath = "libraries/" + lname;
     #ifdef G3D_WIN32
         potential.append(std::string("c:/") + lpath);
         potential.append(std::string("d:/") + lpath);
         potential.append(std::string("g:/") + lpath);
+        potential.append(std::string("c:/users/morgan/data/"));
     #else
         potential.append(std::string("/map/gfx0/common/games/") + lpath);
     #endif
