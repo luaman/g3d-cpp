@@ -224,9 +224,9 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
     glutWindowHandle = glutCreateWindow("G3D");
 
     if (settings.center) {
-        glutReshapeWindow(
-            (glutGet(GLUT_SCREEN_WIDTH) - settings.width) / 2,
-            (glutGet(GLUT_SCREEN_HEIGHT) - settings.height) / 2);            
+        glutPositionWindow(
+            iMax(0,(glutGet(GLUT_SCREEN_WIDTH) - settings.width) / 2),
+            iMax(0,(glutGet(GLUT_SCREEN_HEIGHT) - settings.height) / 2));            
     }
 
     if (settings.fullScreen) {
