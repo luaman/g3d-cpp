@@ -40,8 +40,6 @@ namespace G3D {
     */
 class BinaryOutput {
 private:
-    // is the file big or little endian
-    G3DEndian       fileEndian;
     std::string     filename;
 
     // True if the file endianess does not match the machine endian

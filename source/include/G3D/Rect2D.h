@@ -127,6 +127,10 @@ public:
         return max.y;
     }
 
+    inline Vector2 center() const {
+        return (max + min) * 0.5;
+    }
+
     inline Rect2D() : min(0, 0), max(0, 0) {}
 
     inline static Rect2D xyxy(double x0, double y0, double x1, double y1) {
