@@ -224,6 +224,7 @@
         G3D::glGetBoolean,
         G3D::glGetDouble, 
         G3D::glGetFloat,
+        G3D::glGetMatrix,
         G3D::GLenumToString
 
       <LI><B>Game/Demo Infrastructure</B> &nbsp; &nbsp;

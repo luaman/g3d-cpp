@@ -38,7 +38,7 @@ inline Vector3 mul(const Matrix3& m, const Vector3& v) {
     return m * v;
 }
 
-inline Vector3 mul(const Matrix3& a, const Matrix3& b) {
+inline Matrix3 mul(const Matrix3& a, const Matrix3& b) {
     return a * b;
 }
 

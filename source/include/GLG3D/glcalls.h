@@ -127,6 +127,10 @@ inline void glTexCoord(const G3D::Real t) {
  */
 void glLoadMatrix(const CoordinateFrame& cf);
 
+void glLoadMatrix(const Matrix4& m);
+
+void glGetMatrix(GLenum name, Matrix4& m);
+
 /**
  Loads the inverse of a coordinate frame into the current OpenGL matrix slot.
  */

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2003-07-07
+  @edited  2003-09-28
 */
 
 #include "GLG3D/glcalls.h"
@@ -37,6 +37,13 @@ static void _getGLMatrix(GLdouble* m, const Matrix3& rot, const Vector3& trans) 
 }
 
 
+void glGetMatrix(GLenum name, Matrix4& m) {
+    float f[16];
+    glGetFloatv(name, f);
+    m = Matrix4(f).transpose();
+}
+
+
 CoordinateFrame reflectionMatrix() {
 	CoordinateFrame cframe;
 
@@ -65,6 +72,19 @@ void glLoadMatrix(const CoordinateFrame &cf) {
     _getGLMatrix(matrix, cf.rotation, cf.translation);
     glLoadMatrixd(matrix);
 }
+
+void glLoadMatrix(const Matrix4& m) {
+    GLfloat matrix[16];
+    for (int r = 0; r < 4; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            // Transpose
+            matrix[c * 4 + r] = m[r][c];
+        }
+    }
+
+    glLoadMatrixf(matrix);
+}
+
 
 void glLoadInvMatrix(const CoordinateFrame &cf) {
     Matrix3 rotInv = cf.rotation.transpose();
