@@ -77,7 +77,7 @@ RenderDevice::RenderDevice() : _window(NULL), deleteWindow(false) {
     emwaFrameRate = 0;
     lastTime = System::getTick();
 
-    for (int i = 0; i < MAX_TEXTURE_UNITS; ++i) {
+    for (int i = 0; i < GLCaps::G3D_MAX_TEXTURE_UNITS; ++i) {
         currentlyBoundTexture[i] = 0;
     }
 
@@ -170,7 +170,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     // Don't use more texture units than allowed at compile time.
     if (GLCaps::supports_GL_ARB_multitexture()) {
-        _numTextureUnits = iMin(MAX_TEXTURE_UNITS, 
+        _numTextureUnits = iMin(GLCaps::G3D_MAX_TEXTURE_UNITS, 
                                 glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
     } else {
         _numTextureUnits = 1;
@@ -182,12 +182,12 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
         _numTextureCoords = iClamp(_numTextureCoords,
                                    _numTextureUnits,
-                                   MAX_TEXTURE_UNITS);
+                                   GLCaps::G3D_MAX_TEXTURE_UNITS);
 
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_NV, &_numTextures);
         _numTextures = iClamp(_numTextures,
                               _numTextureUnits, 
-                              MAX_TEXTURE_UNITS);
+                              GLCaps::G3D_MAX_TEXTURE_UNITS);
     } else {
         _numTextureCoords = _numTextureUnits;
         _numTextures      = _numTextureUnits;
@@ -298,7 +298,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
              "Red                             %4d bits   %s\n"
              "Green                           %4d bits   %s\n"
              "Blue                            %4d bits   %s\n"
-             "TextureUnits              %4d    %3d:%3d   %s\n"
              "FSAA                      %2d    %2d    %s\n"
 
              "Width             %8d pixels           %s\n"
@@ -314,7 +313,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
              greenBits, "ok", 
              blueBits, "ok", 
 
-             desiredTextureUnits, _numTextureUnits, _numTextureCoords,
              isOk(_numTextureUnits >= desiredTextureUnits),
              settings.fsaaSamples, actualSettings.fsaaSamples,
              isOk(settings.fsaaSamples == actualSettings.fsaaSamples),

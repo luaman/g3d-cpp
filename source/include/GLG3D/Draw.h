@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-03-08
+ @edited  2004-07-12
  */
 
 #ifndef G3D_DRAW_H
@@ -14,6 +14,7 @@
 #include "G3D/Color4.h"
 #include "G3D/Vector3.h"
 #include "G3D/MeshAlg.h"
+#include "G3D/Rect2D.h"
 
 namespace G3D {
 
@@ -159,6 +160,29 @@ public:
         const Color4&       yColor = Color3::green(),
         const Color4&       zColor = Color3::blue(),
         double              scale = 1.0);
+    /**
+    Provided texture coordinates are upper bounds; tex
+    coords will vary from (0,0) to those bounds.
+    */
+    static void rect2D(
+        const class Rect2D& rect,
+        RenderDevice* rd,
+        const Color4& color = Color3::WHITE,
+        const Vector2& texCoord0 = Vector2(1,1),
+        const Vector2& texCoord1 = Vector2(1,1),
+        const Vector2& texCoord2 = Vector2(1,1),
+        const Vector2& texCoord3 = Vector2(1,1));
+
+    /** Draws the specified rectangle, setting coordinates for
+      the first four texture units as specified. */
+    static void rect2D(
+        const class Rect2D& rect,
+        RenderDevice* rd,
+        const Color4& color,
+        const Rect2D& texCoord0,
+        const Rect2D& texCoord1 = Rect2D::xywh(0,0,1,1),
+        const Rect2D& texCoord2 = Rect2D::xywh(0,0,1,1),
+        const Rect2D& texCoord3 = Rect2D::xywh(0,0,1,1));
 
     /**
      This method is as hideously slow as it is convenient.  If you care

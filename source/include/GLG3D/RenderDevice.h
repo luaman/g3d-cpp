@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-06-15
+  @edited  2004-07-16
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -23,15 +23,11 @@
 #include "GLG3D/VARArea.h"
 #include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
+#include "GLG3D/GLCaps.h"
 
 typedef unsigned int uint;
 
 namespace G3D {
-
-/**
- Number of hardware texture units to track state for.
- */
-#define MAX_TEXTURE_UNITS 8
 
 class VAR;
 
@@ -839,7 +835,7 @@ private:
      turning off a texture unit, we just disable it.  If it 
      is enabled with the same texture, we've saved a swap.
     */
-    uint32               currentlyBoundTexture[MAX_TEXTURE_UNITS];
+    uint32               currentlyBoundTexture[GLCaps::G3D_MAX_TEXTURE_UNITS];
 
     /**
      Snapshot of the state maintained by the render device.
@@ -923,7 +919,7 @@ private:
         bool                        lighting;
         Color4                      color;
         Vector3                     normal;
-        TextureUnit                 textureUnit[MAX_TEXTURE_UNITS];
+        TextureUnit                 textureUnit[GLCaps::G3D_MAX_TEXTURE_UNITS];
     
         CoordinateFrame             objectToWorldMatrix;
         CoordinateFrame             cameraToWorldMatrix;

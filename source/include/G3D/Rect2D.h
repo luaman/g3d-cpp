@@ -185,6 +185,13 @@ public:
         return (min != other.min) || (max != other.max);
     }
 
+    /** Returns the corners in the order: top left, bottom left, bottom right, top right */
+    inline Vector2 corner(int i) const {
+        debugAssert(i >= 0 && i < 4);
+        return Vector2(
+            (i < 3) ? min.x : max.x,
+            (i & 1) ? min.y : max.y);
+    }
 
     /** 
      Clips so that the rightmost point of the outPoly is at rect.x1 (e.g. a 800x600 window produces

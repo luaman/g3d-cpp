@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2004-05-07
+ @edited  2004-07-16
 
  Copyright 2004, Morgan McGuire.
  All rights reserved.
@@ -69,13 +69,17 @@ private:
 	enum Vendor {ATI, NVIDIA, ARB};
 
     /** True when loadExtensions has already been called */
-    static bool     loadedExtensions;
+    static bool         loadedExtensions;
 
 	/** Set by loadExtensions */
-	static std::string _glVersion;
-	static std::string _driverVendor;
-	static std::string _driverVersion;
-	static std::string _glRenderer;
+	static std::string  _glVersion;
+	static std::string  _driverVendor;
+	static std::string  _driverVersion;
+	static std::string  _glRenderer;
+
+    static int          _numTextureCoords;
+    static int          _numTextures;
+    static int          _numTextureUnits;
 
 	static Vendor computeVendor();
 
@@ -121,6 +125,12 @@ private:
     static Set<std::string>         extensionSet;
 
 public:
+
+    /** Maximum number of texture coordinates supported
+        by G3D and RenderDevice; used to preallocate
+        some static arrays */
+    enum {G3D_MAX_TEXTURE_UNITS = 8};
+
     /** Loads OpenGL extensions (e.g. glBindBufferARB).
         Call this once at the beginning of the program,
         after a video device is created.  This is called
@@ -138,7 +148,20 @@ public:
 
 	static const std::string& vendor();
 
-	static const std::string& renderer();};
+	static const std::string& renderer();
+
+    inline static int numTextureCoords() {
+        return _numTextureCoords;
+    }
+
+    static int numTextures() {
+        return _numTextures;
+    }
+
+    static int numTextureUnits() {
+        return _numTextureUnits;
+    }
+};
 
 } // namespace
 

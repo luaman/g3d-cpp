@@ -4,12 +4,14 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-03-08
+ @edited  2004-07-16
  */
 
 #include "GLG3D/Draw.h"
 #include "graphics3D.h"
 #include "GLG3D/RenderDevice.h"
+#include "GLG3D/GLCaps.h"
+#include "G3D/Rect2D.h"
 
 namespace G3D {
 
@@ -693,6 +695,52 @@ void Draw::fullScreenImage(const GImage& im, RenderDevice* renderDevice) {
         glRasterPos2d(0, 0);
         glDrawPixels(im.width, im.height, (im.channels == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)im.byte());
     renderDevice->pop2D();
+}
+
+
+void Draw::rect2D(
+    const Rect2D& rect,
+    RenderDevice* rd,
+    const Color4& color,
+    const Vector2& texCoord0,
+    const Vector2& texCoord1,
+    const Vector2& texCoord2,
+    const Vector2& texCoord3) {
+
+    Draw::rect2D(rect, rd, color,
+        Rect2D::xywh(0,0,texCoord0.x, texCoord0.y),
+        Rect2D::xywh(0,0,texCoord1.x, texCoord1.y),
+        Rect2D::xywh(0,0,texCoord2.x, texCoord2.y),
+        Rect2D::xywh(0,0,texCoord3.x, texCoord3.y));
+}
+
+
+void Draw::rect2D(
+    const Rect2D& rect,
+    RenderDevice* rd,
+    const Color4& color,
+    const Rect2D& texCoord0,
+    const Rect2D& texCoord1,
+    const Rect2D& texCoord2,
+    const Rect2D& texCoord3) {
+
+    const Rect2D* tx[4];
+    tx[0] = &texCoord0;
+    tx[1] = &texCoord1;
+    tx[2] = &texCoord2;
+    tx[3] = &texCoord3;
+
+    int N = iMin(4, GLCaps::numTextureCoords());
+
+    rd->setColor(color);
+    rd->beginPrimitive(RenderDevice::QUADS);
+        for (int i = 0; i < 4; ++i) {
+            for (int t = 0; t < N; ++t) {
+                rd->setTexCoord(t, tx[t]->corner(i));
+            }
+            rd->sendVertex(rect.corner(i));
+        }
+    rd->endPrimitive();
 }
 
 }

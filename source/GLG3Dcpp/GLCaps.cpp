@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-05-07
+  @edited  2004-07-12
 */
 
 #include "GLG3D/GLCaps.h"
@@ -18,6 +18,10 @@
 namespace G3D {
 
 bool GLCaps::loadedExtensions = false;
+
+int GLCaps::_numTextureCoords = 0;
+int GLCaps::_numTextures = 0;
+int GLCaps::_numTextureUnits = 0;
 
 /**
  Dummy function to which unloaded extensions can be set.
@@ -357,6 +361,46 @@ void GLCaps::loadExtensions() {
             _supports_GL_EXT_texture_rectangle ||
             supports("GL_NV_texture_rectangle");
     }
+
+
+    // Don't use more texture units than allowed at compile time.
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        _numTextureUnits = iMin(G3D_MAX_TEXTURE_UNITS, 
+                                glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
+    } else {
+        _numTextureUnits = 1;
+    }
+
+    // NVIDIA cards with GL_NV_fragment_program have different 
+    // numbers of texture coords, units, and textures
+    if (GLCaps::supports("GL_NV_fragment_program")) {
+        glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
+        _numTextureCoords = iClamp(_numTextureCoords,
+                                   _numTextureUnits,
+                                   G3D_MAX_TEXTURE_UNITS);
+
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_NV, &_numTextures);
+        _numTextures = iClamp(_numTextures,
+                              _numTextureUnits, 
+                              G3D_MAX_TEXTURE_UNITS);
+    } else {
+        _numTextureCoords = _numTextureUnits;
+        _numTextures      = _numTextureUnits;
+    }
+
+    if (! GLCaps::supports_GL_ARB_multitexture()) {
+        // No multitexture
+        if (debugLog) {
+            debugLog->println("No GL_ARB_multitexture support: "
+                              "forcing number of texture units "
+                              "to no more than 1");
+        }
+        _numTextureCoords = iMax(1, _numTextureCoords);
+        _numTextures      = iMax(1, _numTextures);
+        _numTextureUnits  = iMax(1, _numTextureUnits);
+    }
+    debugAssertGLOk();
+
 }
 
 
