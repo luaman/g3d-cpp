@@ -446,18 +446,13 @@ void VertexAndPixelShader::addUniformsFromCode(const std::string& code) {
                 // Add the definition
                 uniformArray.next();
 
-                // see if it is already in the uniform array
                 uniformArray.last().dummy = true;
                 uniformArray.last().name = name;
                 uniformArray.last().size = 1;
                 uniformArray.last().type = type;
 
-                if (isSamplerType(type)) {
-                    ++lastTextureUnit;
-                    uniformArray.last().textureUnit = lastTextureUnit;
-                } else {
-                    uniformArray.last().textureUnit = -1;
-                }
+                // Don't allocate texture units for unused variables
+                uniformArray.last().textureUnit = -1;
             }
 
         } else {
@@ -521,6 +516,18 @@ VertexAndPixelShaderRef VertexAndPixelShader::fromStrings(
     bool debugErrors) {
 
     return new VertexAndPixelShader(vs, "", false, ps, "", false, debugErrors, u);
+}
+
+
+VertexAndPixelShaderRef VertexAndPixelShader::fromStrings(
+    const std::string& vsName,
+	const std::string& vs,
+    const std::string& psName,
+    const std::string& ps,
+    UseG3DUniforms u,
+    bool debugErrors) {
+
+    return new VertexAndPixelShader(vs, vsName, false, ps, psName, false, debugErrors, u);
 }
 
 
@@ -604,19 +611,23 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
         const UniformDeclaration& decl = uniformArray[u];
 
         ++numVariables;
-        if (! args.argTable.containsKey(decl.name)) {
+        bool declared = args.argTable.containsKey(decl.name);
+
+        if (! declared && ! decl.dummy) {
             throw ArgumentError(
                 format("No value provided for VertexAndPixelShader uniform variable %s of type %s.",
                     decl.name.c_str(), GLenumToString(decl.type)));
         }
 
-        const ArgList::Arg& arg = args.argTable[decl.name];
+        if (declared) {
+            const ArgList::Arg& arg = args.argTable[decl.name];
 
-        // check the type
-        if (canonicalType(arg.type) != canonicalType(decl.type)) {
-            throw ArgumentError(
-            format("Variable %s was declared as type %s and the value provided at runtime had type %s.",
-                    decl.name.c_str(), GLenumToString(decl.type), GLenumToString(arg.type)));
+            // check the type
+            if (canonicalType(arg.type) != canonicalType(decl.type)) {
+                throw ArgumentError(
+                format("Variable %s was declared as type %s and the value provided at runtime had type %s.",
+                        decl.name.c_str(), GLenumToString(decl.type), GLenumToString(arg.type)));
+            }
         }
 
     }
@@ -677,6 +688,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
             // Textures are bound as if they were integers.  The
             // value of the texture is the texture unit into which
             // the texture is placed.
+            debugAssert(decl.textureUnit >= 0);
             glUniform1iARB(u, decl.textureUnit);
             rd->setTexture(decl.textureUnit, value.texture);
             break;

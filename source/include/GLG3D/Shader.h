@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-09-17
+ @edited  2005-02-18
  */
 
 #ifndef G3D_SHADER_H
@@ -320,6 +320,14 @@ public:
         UseG3DUniforms u = DO_NOT_DEFINE_G3D_UNIFORMS,
         bool debugErrors = DEBUG_SHADER);
 
+	static VertexAndPixelShaderRef fromStrings(
+        const std::string& vertexShaderName,
+		const std::string& vertexShader,
+        const std::string& pixelShaderName,
+		const std::string& pixelShader,       
+        UseG3DUniforms u = DO_NOT_DEFINE_G3D_UNIFORMS,
+        bool debugErrors = DEBUG_SHADER);
+
 	/**
 	 To use the fixed function pipeline for part of the
 	 shader, pass an empty string.
@@ -556,10 +564,20 @@ public:
     }
 
     static ShaderRef fromStrings(
-        const std::string& vertexCode, 
+        const std::string& vertexCode,
         const std::string& pixelCode,
         UseG3DUniforms u = DEFINE_G3D_UNIFORMS) {
         return new Shader(VertexAndPixelShader::fromStrings(vertexCode, pixelCode, u, DEBUG_SHADER), u);
+    }
+
+    /** Names are purely for debugging purposes */
+    static ShaderRef fromStrings(
+        const std::string& vertexName,
+        const std::string& vertexCode,
+        const std::string& pixelName,
+        const std::string& pixelCode,
+        UseG3DUniforms u = DEFINE_G3D_UNIFORMS) {
+        return new Shader(VertexAndPixelShader::fromStrings(vertexName, vertexCode, pixelName, pixelCode, u, DEBUG_SHADER), u);
     }
 
     virtual bool ok() const;

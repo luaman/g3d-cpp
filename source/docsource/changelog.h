@@ -23,10 +23,12 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::Shader::fromStrings now accepts optional names for the vertex and pixel shader
+     <LI> G3D::Shader no longer requires values for declared but unused uniform variables
      <LI> G3D::RenderDevice now stores texture matrix at 32-bit precision (for faster push/popState)
      <LI> G3D::RenderDevice::setTextureLODBias
      <LI> G3D::Shader now supports shadow map arguments
-     <LI> Shader::ArgList checks to see if Texture arguments are null
+     <LI> G3D::Shader::ArgList checks to see if Texture arguments are null
      <LI> G3D::RenderDevice::setAlphaWrite now defaults to true if the GWindow has an alpha channel.
      <LI> G3D::RenderDevice::screenshotPic now supports alpha
      <LI> contrib/VideoSerializer

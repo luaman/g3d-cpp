@@ -3,8 +3,6 @@
  @author Morgan McGuire, matrix@graphics3d.com
  */
 
-varying vec3 wsEyePos;
-
 /** World space point */
 varying vec3 wsPosition;
 
@@ -24,6 +22,8 @@ uniform mat4 lightMVP;
 /** Coordinate to use in the shadow map */
 varying vec4 shadowCoord;
 
+varying vec2 texCoord;
+
 void main(void) {
 
 	vec3 T = gl_MultiTexCoord1.xyz;
@@ -32,7 +32,7 @@ void main(void) {
     // T and N are guaranteed perpendicular, so B is normalized.
 	vec3 B = cross(N, T);
 
-    wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
+    vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
     vec3 osEyePos = (g3d_WorldToObjectMatrix * vec4(wsEyePos, 1)).xyz;
 
 	// Compute the columns of the tangent space to world space matrix
@@ -54,6 +54,7 @@ void main(void) {
     // Note that tan_W is objectToWorld * gl_Vertex
     shadowCoord      = lightMVP * tan_W;
 
+	texCoord	= gl_MultiTexCoord0.st;
     gl_Position      = ftransform();
 }
 

@@ -293,7 +293,7 @@ void App::main() {
         x+=2;
     }
 
-  if (false)  {
+    if (false)  {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/venus-torso.ifs", 1.5);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
@@ -372,6 +372,12 @@ void App::main() {
         x += 2;
     }
 
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
+
 
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/octagon.ifs", 10);
@@ -384,26 +390,13 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
-    {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/octagon.ifs", 10);
-
-        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
-        material.diffuse = Color3(.5,.3,0);
-        material.specular = Color3::black();
-        model->updateAll();
-
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-5,0))));
-    }
-
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"contrib/ArticulatedModel/3ds/cube.3ds"
 //		"contrib/ArticulatedModel/3ds/jeep/jeep.3ds", 0.1
 //		"contrib/ArticulatedModel/3ds/house/house.3ds", 0.01
 //		"contrib/ArticulatedModel/3ds/delorean/delorean.3ds", 0.1
 //		"contrib/ArticulatedModel/3ds/car35/car35.3ds", 0.1
-//		"contrib/ArticulatedModel/3ds/fs/fs.3ds"
-
+//		"d:/users/morgan/projects/3ds/fs/fs.3ds"
 
     lighting = Lighting::create();
     {

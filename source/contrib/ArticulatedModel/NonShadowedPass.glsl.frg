@@ -26,8 +26,10 @@ uniform vec3        specularExponentConstant;
 uniform sampler2D   emitMap;
 uniform vec3        emitConstant;
 
-uniform sampler2D   diffuseMap;
 uniform vec3        diffuseConstant;
+#ifdef DIFFUSEMAP
+uniform sampler2D   diffuseMap;
+#endif
 
 /** Multiplier for bump map.  Typically on the range [0, 0.05]
   This increases with texture scale and bump height. */
@@ -48,6 +50,11 @@ varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 
 
 void main(void) {
+
+    vec3 diffuseColor = diffuseConstant;
+#   ifdef DIFFUSEMAP
+        diffuseColor = diffuseColor * tex2D(diffuseMap, texCoord).rgb;
+#   endif
 
 #if 0
 
@@ -109,10 +116,10 @@ void main(void) {
         emitConstant +
 
         // Ambient
-        diffuseConstant * ambient +
+        diffuseColor * ambient +
 
         // Diffuse
-        max(dot(wsL, wsN), 0) * lightColor * diffuseConstant +
+        max(dot(wsL, wsN), 0) * lightColor * diffuseColor +
 
         // Specular
         pow(max(dot(wsL, wsR), 0), specularExponentConstant) * lightColor * specularConstant +

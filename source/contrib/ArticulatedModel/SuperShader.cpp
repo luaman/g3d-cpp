@@ -18,19 +18,20 @@ void SuperShader::configureShader(
     VertexAndPixelShader::ArgList&  args) {
     
     // TODO: don't even set fields that have no corresponding map
-    args.set("diffuseMap",              material.diffuse.map.notNull() ? material.diffuse.map : whiteMap);
+    if (material.diffuse.map.notNull()) {
+        args.set("diffuseMap",              material.diffuse.map);
+    }
     args.set("diffuseConstant",         material.diffuse.constant);
     args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
     args.set("specularConstant",        material.specular.constant);
     args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
-    args.set("specularExponentConstant", material.specularExponent.constant);
+    args.set("specularExponentConstant",material.specularExponent.constant);
     args.set("reflectMap",              material.reflect.map.notNull() ? material.reflect.map : whiteMap);
     args.set("reflectConstant",         material.reflect.constant);
     args.set("emitMap",                 material.emit.map.notNull() ? material.emit.map : whiteMap);
     args.set("emitConstant",            material.emit.constant);
     args.set("normalBumpMap",           material.normalBumpMap.notNull() ? material.normalBumpMap : defaultNormalMap);
     args.set("bumpMapScale",            material.bumpMapScale);
-
 
     ///////////////////////////////////////////////////
     // Lighting Args
@@ -59,12 +60,15 @@ void SuperShader::configureShadowShader(
     VertexAndPixelShader::ArgList&  args) {
     
     // TODO: don't even set fields that have no corresponding map
-    args.set("diffuseMap",              material.diffuse.map.notNull() ? material.diffuse.map : whiteMap);
+    if (material.diffuse.map.notNull()) {
+        args.set("diffuseMap",              material.diffuse.map);
+    }
+
     args.set("diffuseConstant",         material.diffuse.constant);
     args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
     args.set("specularConstant",        material.specular.constant);
     args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
-    args.set("specularExponentConstant", material.specularExponent.constant);
+    args.set("specularExponentConstant",material.specularExponent.constant);
     args.set("normalBumpMap",           material.normalBumpMap.notNull() ? material.normalBumpMap : defaultNormalMap);
     args.set("bumpMapScale",            material.bumpMapScale);
 
@@ -89,22 +93,60 @@ void SuperShader::configureShadowShader(
     args.set("lightMVP",        bias * lightMVP);
 }
 
+/** Loads the specified text file, using an internal cache to avoid 
+    extraneous disk access. */
+static const std::string& loadShaderCode(const std::string& filename) {
+    static Table<std::string, std::string> shaderTextCache;
+
+    if (! shaderTextCache.containsKey(filename)) {
+        shaderTextCache.set(filename, readFileAsString(filename));
+    }
+
+    return shaderTextCache[filename];
+}
+
+
+/**
+ Loads a shader, where <I>basename</I> contains the path and filename up to the 
+ ".glsl.vrt" extensions, and <I>defines</I> is a string to prepend to the 
+ beginning of both vertex and pixel shaders.
+ */
+static ShaderRef loadShader(const std::string& baseName, const std::string& defines) {
+    debugAssert(fileExists(baseName + ".glsl.vrt"));
+
+    const std::string& vertexShader = loadShaderCode(baseName + ".glsl.vrt");
+    const std::string& pixelShader  = loadShaderCode(baseName + ".glsl.frg");
+
+    return Shader::fromStrings(
+        baseName + ".glsl.vrt", 
+        defines + vertexShader, 
+        baseName + ".glsl.frg",
+        defines + pixelShader);
+}
+
 
 SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
  
+    // First check the cache
     Cache::Pair p = cache.getSimilar(material);
 
     if (p.shadowMappedShader.isNull()) {
+        // Not found in cache; load from disk
         std::string path = "";//"../contrib/ArticulatedModel/";
 
-        // TODO: only enable terms needed by this material
-        p.shadowMappedShader = Shader::fromFiles(
-            path + "ShadowMappedLightPass.glsl.vrt", 
-            path + "ShadowMappedLightPass.glsl.frg");
+        static const std::string shadowName    = "ShadowMappedLightPass";
+        static const std::string nonShadowName = "NonShadowedPass";
 
-        p.nonShadowedShader = Shader::fromFiles(
-            path + "NonShadowedPass.glsl.vrt", 
-            path + "NonShadowedPass.glsl.frg");
+        std::string defines;
+
+        // Enable only terms needed by this material
+        if (material.diffuse.map.notNull() && ! material.diffuse.isBlack()) {
+            defines += "#define DIFFUSEMAP\n";
+            // TODO... other terms
+        }
+
+        p.nonShadowedShader  = loadShader(path + nonShadowName, defines);
+        p.shadowMappedShader = loadShader(path + shadowName,    defines);
 
         cache.add(material, p);
     }
