@@ -63,11 +63,7 @@ Matrix4 Matrix4::perspectiveProjectionMatrix(
     double nearval, 
     double farval) {
 
-    debugAssert(right == -left);
-    debugAssert(top == -bottom);
-
     double x, y, a, b, c, d;
-    double m[16];
 
     x = (2.0*nearval) / (right-left);
     y = (2.0*nearval) / (top-bottom);
