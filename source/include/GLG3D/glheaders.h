@@ -39,9 +39,12 @@
     #include "../GL/wglext.h"
 #endif
 
-#if defined(G3D_LINUX) 
+#if defined(G3D_LINUX)
+    #ifdef __glxext_h_
+    #error Picked up wrong version of glxext
+    #endif
 	#include "../GL/glxext.h"
-	#include "../GL/glx.h"
+//	#include "../GL/glx.h"
 #endif
 
 #include "../GL/glext.h"
@@ -217,11 +220,6 @@ extern PFNGLXQUERYSWAPGROUPNV glXQuerySwapGroupNV;
 extern PFNGLXQUERYMAXSWAPGROUPSNV glXQueryMaxSwapGroupsNV;
 extern PFNGLXQUERYFRAMECOUNTNV glXQueryFrameCountNV;
 extern PFNGLXRESETFRAMECOUNTNV glXResetFrameCountNV;
-
-
-extern PFNGLXGETCURRENTDISPLAYPROC glXGetCurrentDisplay;
-extern PFNGLXGETCURRENTDRAWABLEPROC glXGetCurrentDrawable;
-
 
 // PBuffer support
 /*

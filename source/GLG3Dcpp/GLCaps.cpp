@@ -190,9 +190,6 @@ void GLCaps::loadExtensions() {
         LOAD_EXTENSION(glXQueryGLXPbufferSGIX);
         LOAD_EXTENSION(glXChooseFBConfigSGIX);
         LOAD_EXTENSION(glXCreateContextWithConfigSGIX);
-
-        LOAD_EXTENSION(glXGetCurrentDisplay);
-        LOAD_EXTENSION(glXGetCurrentDrawable);
     #endif
 
     #undef LOAD_EXTENSION

@@ -185,9 +185,9 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         _X11WMWindow  = info.info.x11.wmwindow;
 
         if (glXGetCurrentDisplay != NULL) {
-            G3D::_internal::X11Display = glXGetCurrentDisplay();
+            G3D::_internal::x11Display = glXGetCurrentDisplay();
         } else {
-            G3D::_internal::X11Display = info.info.x11.display;
+            G3D::_internal::x11Display = info.info.x11.display;
         }
 
         if (glXGetCurrentDrawable != NULL) {

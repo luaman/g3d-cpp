@@ -247,10 +247,10 @@ void _releaseInputGrab_() {
         
     #elif defined(G3D_LINUX)
         if (x11Display != NULL) {
-            XUngrabPointer(X11Display, CurrentTime);
-            XUngrabKeyboard(X11Display, CurrentTime);
+            XUngrabPointer(x11Display, CurrentTime);
+            XUngrabKeyboard(x11Display, CurrentTime);
             if (x11Window != 0) {
-                //XUndefineCursor(X11Display, X11Window);
+                //XUndefineCursor(x11Display, x11Window);
                 // TODO: Note that we leak this cursor; it should be
                 // freed in the restore code.
                 Cursor c = XCreateFontCursor(x11Display, 68);
