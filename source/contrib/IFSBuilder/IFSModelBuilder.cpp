@@ -1,5 +1,5 @@
 /**
-  @file IFSBuilder/IFSModelBuilder.cpp
+  @file IFSBuilder.cpp
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
@@ -10,75 +10,19 @@
 #include "IFSModelBuilder.h"
 #include "IFSModel.h"
 
-const double IFSModelBuilder::CLOSE = IFSModelBuilder::AUTO_WELD;
+const double IFSBuilder::CLOSE = IFSBuilder::AUTO_WELD;
 
 
-void IFSModelBuilder::setName(const std::string& n) {
+void IFSBuilder::setName(const std::string& n) {
     name = n;
 }
 
 
 double close;
 
-void IFSModelBuilder::commit(XIFSModel* model) {
-    std::string temp = "_scratch.ifs";
-    commit(temp);
 
-/*
-    Array<MeshAlg::Face> faceArray;
-    Array<Array<int> >   adjacentFaceArray;
-    MeshAlg::computeAdjacency(model->geometry.vertexArray, indexArray, faceArray, model->edgeArray, adjacentFaceArray);
-    MeshAlg::computeNormals(model->geometry.vertexArray, faceArray, adjacentFaceArray, model->geometry.normalArray, model->faceNormalArray);
-
-    // Find broken edges
-    model->brokenEdgeArray.resize(0);
-    for (int e = 0; e < model->edgeArray.size(); ++e) {
-        const MeshAlg::Edge& edge = model->edgeArray[e];
-
-        debugAssert(edge.vertexIndex[0] != edge.vertexIndex[1]);
-
-        if ((edge.faceIndex[1] == MeshAlg::Face::NONE) ||
-            (edge.faceIndex[0] == MeshAlg::Face::NONE) ||
-            (edge.faceIndex[0] == edge.faceIndex[1])) {
-            // Dangling edge
-            model->brokenEdgeArray.append(edge);
-        } else {
-            // Each vertex must appear in each adjacent face.  If it doesn't, something
-            // has gone wrong.
-            int numFound = 0;
-            // Check each vertex
-            for (int i = 0; i < 2; ++i) {
-                // Check each face
-                for (int j = 0; j < 2; ++j) {
-                    const int f = edge.faceIndex[j];
-                    const MeshAlg::Face& face = faceArray[f];
-                    for (int j = 0; j < 3; ++j) {
-                        if (model->geometry.vertexArray[face.vertexIndex[j]] == 
-                            model->geometry.vertexArray[edge.vertexIndex[i]]) {
-                            ++numFound;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (numFound < 4) {
-                model->brokenEdgeArray.append(edge);
-            }
-        }
-    }
-*/    
-    model->loadIFS(temp);
-}
-
-class IndexTri {
-public:
-    int                 index[3];
-};
-
-
-void IFSModelBuilder::commit(const std::string& filename) {
-//    model->name = name;
+void IFSBuilder::commit(std::string& n, Array<int>& indexArray, Array<Vector3>& outvertexArray) {
+    n = name;
 
     // Make the data fit in a unit cube
     centerTriList();
@@ -86,7 +30,7 @@ void IFSModelBuilder::commit(const std::string& filename) {
     Array<int> toNew, toOld;
 
     close = CLOSE;
-    if (close == IFSModelBuilder::AUTO_WELD) {
+    if (close == IFSBuilder::AUTO_WELD) {
         Array<int> index;
         MeshAlg::createIndexArray(triList.size(), index);
         double minEdgeLen, maxEdgeLen, meanEdgeLen, medianEdgeLen;
@@ -97,40 +41,27 @@ void IFSModelBuilder::commit(const std::string& filename) {
         close = minEdgeLen * 0.1;
     }
 
-    Array<Vector3> outvertexArray;
     MeshAlg::computeWeld(triList, outvertexArray, toNew, toOld, close);
-
-    Array<IndexTri> outtriArray;
 
     // Construct triangles
     for (int t = 0; t < triList.size(); t += 3) {
-        IndexTri tri;
+        int index[3];
 
         for (int i = 0; i < 3; ++i) {
-           tri.index[i] = toNew[t + i];
+           index[i] = toNew[t + i];
         }
 
         // Throw out zero size triangles
-        if ((tri.index[0] != tri.index[1]) &&
-            (tri.index[1] != tri.index[2]) &&
-            (tri.index[2] != tri.index[0])) {
-            outtriArray.append(tri);
+        if ((index[0] != index[1]) &&
+            (index[1] != index[2]) &&
+            (index[2] != index[0])) {
+            indexArray.append(index[0], index[1], index[2]);
         }
     }
-
-    // Trilist reformatted as an index array
-    Array<int> indexArray(outtriArray.size() * 3);
-    for (int t = 0, i = 0; t < outtriArray.size(); ++t, i += 3) {
-        for (int j = 0; j < 3; ++j) {
-            indexArray[i + j] = outtriArray[t].index[j];
-        }
-    }
-
-    IFSModel::save(filename, name, indexArray,  outvertexArray);
 }
 
 
-void IFSModelBuilder::centerTriList() {
+void IFSBuilder::centerTriList() {
     // Compute the range of the vertices
     Vector3 vmin, vmax;
 
@@ -153,7 +84,7 @@ void IFSModelBuilder::centerTriList() {
 }
 
 
-void IFSModelBuilder::computeBounds(Vector3& min, Vector3& max) {
+void IFSBuilder::computeBounds(Vector3& min, Vector3& max) {
     min = Vector3::INF3; 
     max = -min;
 
@@ -165,7 +96,7 @@ void IFSModelBuilder::computeBounds(Vector3& min, Vector3& max) {
 }
 
 
-void IFSModelBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vector3& c) {
+void IFSBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vector3& c) {
     triList.append(a, b, c);
 
 	if (_twoSided) {
@@ -174,12 +105,12 @@ void IFSModelBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vect
 }
 
 
-void IFSModelBuilder::addQuad(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d) {
+void IFSBuilder::addQuad(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d) {
     addTriangle(a, b, c);
     addTriangle(a, c, d);
 }
 
 
-void IFSModelBuilder::addTriangle(const Triangle& t) {
+void IFSBuilder::addTriangle(const Triangle& t) {
 	addTriangle(t.vertex(0), t.vertex(1), t.vertex(2));
 }

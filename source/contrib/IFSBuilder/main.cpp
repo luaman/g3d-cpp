@@ -8,7 +8,7 @@
   A utility for converting some common 3D file formats into IFS format.
   This only handles a subset of all possible 3DS, OBJ, and MD2 files-- 
   models in these formats certainly exist that cannot be converted
-  by this simple utility.  You can use IFSModelBuilder to create
+  by this simple utility.  You can use IFSBuilder to create
   IFS files from triangle soups and write them out.  This also doubles
   as a model viewer, but it is not as nice as the IFSDemo one which
   has smoothed surface normals and lighting.

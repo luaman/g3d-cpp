@@ -1,22 +1,21 @@
 /**
-  @file IFSBuilder/IFSModelBuilder.h
+  @file IFSBuilder.h
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
   @edited  2004-09-09
  */ 
-
-
-#ifndef IFSMODELBUILDER_H
-#define IFSMODELBUILDER_H
+#ifndef IFSBUILDER_H
+#define IFSBUILDER_H
 
 #include <G3DAll.h>
 
 /**
- Used by IFSModel for loading.
+ Allows creation of optimized watertight meshes from unoptimized polygon soups.
+ See also G3D::MeshAlg for algorithms that operate on the output.
  */
-class IFSModelBuilder {
+class IFSBuilder {
 public:
     /** Indices of vertices in <B>or near</B>  a grid cell. */
     typedef Array<int> List;
@@ -45,18 +44,17 @@ private:
 
 public:
 
-	inline IFSModelBuilder(bool twoSided = false) : _twoSided(twoSided) {}
+	inline IFSBuilder(bool twoSided = false) : _twoSided(twoSided) {}
 
-    /** Writes out the model data into the passed in object. */
-    void commit(class XIFSModel* model);
-
-    /** Writes out the model data to an ifs file. */
-    void commit(const std::string& filename);
+    /** Writes the model to the arrays, which can then be used with
+        G3D::IFSModel::save and G3D::MeshAlg */
+    void commit(std::string& name, Array<int>& indexArray, Array<Vector3>& vertexArray);
 
     /**
      Adds a new triangle to the model. (Counter clockwise)
      */
     void addTriangle(const Vector3& a, const Vector3& b, const Vector3& c);
+
     /**
      Adds two new triangles to the model. (Counter clockwise)
      */
