@@ -4,6 +4,7 @@ lib_LTLIBRARIES= libGLG3D.la
 
 libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/Draw.cpp \
+          		     ../../../source/GLG3Dcpp/TextureManager.cpp \
                      ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
                      ../../../source/GLG3Dcpp/GApp.cpp \
                      ../../../source/GLG3Dcpp/GPUProgram.cpp \
