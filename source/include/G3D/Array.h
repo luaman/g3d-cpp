@@ -457,11 +457,11 @@ public:
     }
 
     inline T& randomElement() {
-        return data[iRandom(0, num - 1))];
+        return data[iRandom(0, num - 1)];
     }
 
     inline const T& randomElement() const {
-        return data[iRandom(0, num - 1))];
+        return data[iRandom(0, num - 1)];
     }
 
     /**
