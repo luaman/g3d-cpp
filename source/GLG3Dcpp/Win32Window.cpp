@@ -258,11 +258,11 @@ void Win32Window::init(HWND hwnd) {
             &pixelFormat,
             &numFormats);
 
-        // "If the function succeeds, the return value is TRUE. If the function
-        // fails the return value is FALSE. To get extended error information,
-        // call GetLastError. If no matching formats are found then nNumFormats
-        // is set to zero and the function returns TRUE."  -- I think this means
-        // that when numFormats == 0 some reasonable format is still selected.
+    // "If the function succeeds, the return value is TRUE. If the function
+    // fails the return value is FALSE. To get extended error information,
+    // call GetLastError. If no matching formats are found then nNumFormats
+    // is set to zero and the function returns TRUE."  -- I think this means
+    // that when numFormats == 0 some reasonable format is still selected.
 
  
         if (! valid) {
