@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-03-06
+  @edited  2004-05-16
 */
 
 #ifndef G3D_GWINDOWSETTINGS_H
@@ -11,12 +11,10 @@
 
 namespace G3D {
 
-/**
- Used by RenderDevice::init
- */
 class GWindowSettings {
 public:
 
+	/** Width of the client area in pixels. */
     int     width;
 
     int     height;

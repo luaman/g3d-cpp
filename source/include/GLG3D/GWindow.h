@@ -107,7 +107,7 @@ public:
     virtual void getSettings(GWindowSettings& settings) const = 0;
 
     /**
-     Measured in pixels.
+     Measured in pixels, this is the client area of the window.
      Returns the same width as getSettings and dimensions().
      Convenience method for users.
      */
@@ -116,7 +116,7 @@ public:
     virtual int height() const = 0;
 
     /**
-     Shape of the window.
+     Shape of the client area of the window in screen coordinates.
      */
     virtual Rect2D dimensions() const = 0;
 

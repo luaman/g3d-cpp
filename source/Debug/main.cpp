@@ -13,7 +13,8 @@
  */
 
 #include <G3DAll.h>
-//#include "../contrib/Win32Window/Win32Window.cpp"
+#include "../contrib/Win32Window/Win32Window.h"
+#include "../contrib/Win32Window/Win32Window.cpp"
 
 #if G3D_VER < 60400
     #error Requires G3D 6.04
@@ -159,7 +160,7 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
 }
 
 

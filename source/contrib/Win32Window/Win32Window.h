@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com 
  @created 	  2004-05-21
- @edited  	  2004-05-21
+ @edited  	  2004-06-15
     
  Copyright 2000-2002, Morgan McGuire.
  All rights reserved.
@@ -32,6 +32,10 @@ private:
 	HGLRC				 _glContext;
 	bool				 _mouseVisible;
 	bool				 _inputCapture;
+
+	/** Coordinates of the client area in screen coordinates */
+	int				     clientX;
+	int					 clientY;
 
 	static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 

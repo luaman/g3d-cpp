@@ -178,8 +178,7 @@ int Win32Window::height() const {
 
 
 Rect2D Win32Window::dimensions() const {
-	// TODO
-	return Rect2D::xywh(0, 0, width(), height());
+	return Rect2D::xywh(clientX, clientY, width(), height());
 }
 
 
