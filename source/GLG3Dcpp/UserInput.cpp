@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2003-11-14
+  @edited  2003-12-20
  */
 
 #include "GLG3D/UserInput.h"
@@ -53,7 +53,14 @@ UserInput::UserInput(
     }
 
 	// Check for joysticks
-	useJoystick = (SDL_NumJoysticks() > 0);
+    int j = SDL_NumJoysticks();
+    if ((j < 0) || (j > 10)) {
+        // If there is no joystick adapter on Win32,
+        // SDL returns ridiculous numbers.
+        j = 0;
+    }
+
+	useJoystick = (j > 0);
 
 	if (useJoystick) {
         SDL_JoystickEventState(SDL_ENABLE);

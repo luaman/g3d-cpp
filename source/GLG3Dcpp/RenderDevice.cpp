@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-12-16
+ @edited  2003-12-20
  */
 
 
@@ -566,6 +566,12 @@ bool RenderDevice::init(
     // This call is here to make GCC realize that isOk is used.
     (void)isOk(false);
 
+    int joy = SDL_NumJoysticks();
+
+    if ((joy < 0) || (joy > 10)) {
+        joy = 0;
+    }
+
     debugLog->printf(
              "Capability    Minimum   Desired   Received  Ok?\n"
              "-------------------------------------------------\n"
@@ -601,7 +607,7 @@ bool RenderDevice::init(
              settings.width, "ok",
              settings.height, "ok",
              (settings.fullScreen ? "Fullscreen" : "Windowed"), "ok",             
-             SDL_NumJoysticks(), "ok"
+             joy, "ok"
              );
     }
 

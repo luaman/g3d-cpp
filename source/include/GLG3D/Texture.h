@@ -193,6 +193,14 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D);
 
+    static TextureRef fromGImage(
+        const std::string&              name,
+        const GImage&                   image,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D);
+
     /**
      Copies data from screen into an existing texture (replacing whatever was
      previously there).  The dimensions must be powers of two or a texture 

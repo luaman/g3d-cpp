@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2003-11-24
+ @edited  2003-12-20
 */
 
 #include "GLG3D/glcalls.h"
@@ -544,6 +544,40 @@ TextureRef Texture::fromMemory(
 
     t->width = width;
     t->height = height;
+    return t;
+}
+
+
+TextureRef Texture::fromGImage(
+    const std::string&              name,
+    const GImage&                   image,
+    const class TextureFormat*      desiredFormat,
+    WrapMode                        wrap,
+    InterpolateMode                 interpolate,
+    Dimension                       dimension) {
+
+    const TextureFormat* format = TextureFormat::RGB8;
+    bool opaque = true;
+
+    // The six cube map faces, or the one texture and 5 dummys.
+    const uint8* array[1];
+
+    if (image.channels == 4) {
+        format = TextureFormat::RGBA8;
+        opaque = false;
+    }
+
+    if (desiredFormat == NULL) {
+        desiredFormat = format;
+    }
+
+    array[0] = image.byte();
+
+    TextureRef t =
+        Texture::fromMemory(name, array, format,
+            image.width, image.height, 1,
+            desiredFormat, wrap, interpolate, dimension);
+
     return t;
 }
 
