@@ -171,4 +171,26 @@ will not break. If you highlight all source and header files and
 press Cmd-I, you can set Path Type easily.</li>
 </ol>
 
+Caveats for G3D on OS X:
+
+<UL>
+
+<LI> There is a version of SDL available through Fink, the popular
+    open-source package manager for OS X.  We have no idea if the fink
+    version of SDL for OS X will work with G3D.  This document assumes
+    that you're using the SDL library for OS X that is downloaded from
+    www.libsdl.org or one of its mirrors.  We suspect that the version
+    of SDL for OS X available from fink uses X11, which is wholly
+    different from the windowing and rendering system that G3D for OS
+    X assumes.
+
+<P>
+
+<LI>
+    You can also use the command line tool 'xcodebuild' to build the G3D
+    libraries from the Xcode project files, but without using the Xcode
+    IDE.
+</UL>
+
+
 **/
