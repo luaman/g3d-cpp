@@ -86,10 +86,8 @@ void Demo::init() {
 
     app->renderDevice->setCaption("G3D::MD2Model Demo");
 
-    app->debugCamera.setNearPlaneZ(-.1);
-
-    app->debugController.setPosition(Vector3(0, 1, -13));
-    app->debugController.lookAt(Vector3(0,1.6,-8));
+    app->debugCamera.setPosition(Vector3(0, 1, -13));
+    app->debugCamera.lookAt(Vector3(0,1.6,-8));
 
     app->renderDevice->setColorClearValue(Color3(1, 1, 1));
 
@@ -372,7 +370,6 @@ int main(int argc, char** argv) {
     GAppSettings settings;
     settings.useNetwork = false;
     settings.debugFontName = "dominant.fnt";
-    settings.window.fsaaSamples = 4;
 
     App(settings).run();
 
