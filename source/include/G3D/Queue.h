@@ -105,7 +105,7 @@ private:
             int i;
 
             for (i = firstEnd; i < firstEnd + shift; ++i) {
-                new (data + i)T();
+                new (data + i)T;
             }
 
             for (i = firstEnd - 1; i >= head; --i) {
@@ -178,7 +178,7 @@ public:
         }
 
         int i = index(num);
-        new (data + i)T();
+        new (data + i)T;
         data[index(num)] = e;
         num++;
     }

@@ -490,7 +490,7 @@ bool Win32Window::pollEvent(GEvent& e) {
     // Check for DI_OK or DI_BUFFEROVERFLOW
     if( _DirectInput::getKeyboardEvents(keyboardData, numKeyboardData) ) {
 
-        for (int event = 0; event < numKeyboardData; ++event) {
+        for (uint32 event = 0; event < numKeyboardData; ++event) {
             e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYDOWN : SDL_KEYUP;
             e.key.state = (keyboardData[event].dwData & 0x80) ? SDL_PRESSED : SDL_RELEASED;
 
@@ -731,7 +731,7 @@ void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Ar
     _DirectInput::getJoystickInfo(stickNum, numButtons, numAxes);
 
     button.resize(numButtons, false);
-    for (int b = 0; (b < numButtons) && (b < 32); ++b) {
+    for (uint32 b = 0; (b < numButtons) && (b < 32); ++b) {
         button[b] = (joystickState.rgbButtons[b] & 128) ? true : false;
     }
 

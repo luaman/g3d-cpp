@@ -1402,7 +1402,7 @@ public:
 
     static inline bool aquireJoystick(unsigned int joystick) {
         
-        debugAssert( _joysticks.length() > joystick );
+        debugAssert( (uint32)_joysticks.length() > joystick );
 
         if (_joysticks[joystick].valid) {
 
@@ -1429,7 +1429,7 @@ public:
 
     static inline bool getJoystickState(unsigned int joystick, G3DJOYDATA& data) {
 
-        debugAssert( _joysticks.length() > joystick );
+        debugAssert( (uint32)_joysticks.length() > joystick );
 
         if (!_joysticks[joystick].valid) {
             return false;
@@ -1449,7 +1449,7 @@ public:
 
     static inline void getJoystickInfo(unsigned int joystick, unsigned int& numButtons, unsigned int& numAxes) {
 
-        debugAssert( _joysticks.length() > joystick );
+        debugAssert( (uint32)_joysticks.length() > joystick );
 
         numButtons = _joysticks[joystick].numButtons;
         numAxes = _joysticks[joystick].numAxes;
@@ -1482,14 +1482,14 @@ public:
 
     static inline std::string getJoystickName(unsigned int joystick) {
 
-        debugAssert( _joysticks.length() > joystick );
+        debugAssert( (uint32)_joysticks.length() > joystick );
 
         return _joysticks[joystick].name;
     }
 
     static inline bool joystickExists(unsigned int joystick) {
         
-        if (_joysticks.length() > joystick) {
+        if ((uint32)_joysticks.length() > joystick) {
             if (_joysticks[joystick].valid) {
                 return true;
             }
