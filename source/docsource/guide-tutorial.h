@@ -14,8 +14,11 @@ Debugging <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD>
 <img src="splash.jpg" width=600></img>
 
 The goal of this tutorial is to set up, compile, run and debug a 3D scene
-using the %G3D library. This handout walks you through the process, but it
+using the %G3D library, and to get comfortable with the documentation.
+This handout walks you through the process, but it
 intentionally written to force you to refer to the online documentation: \link indexedbytopic \endlink. 
+We give you a rough idea of what to do, and you have to look up exactly <em>how</em> to do
+it in the documentation. 
 
 Except for maybe the very last part of the tutorial,
 you shouldn't have to do any math, just a lot of reading, thinking, and coding.
@@ -33,7 +36,11 @@ http://www.3dlabs.com/support/developer/GLmanpages/
 
 %G3D also includes some source code demos that may help if you need to brush
 up on your OpenGL-style rendering. See the demos directory of your %G3D installation.
-The GLG3D_Demo will be particularly useful to you at this stage.
+The GLG3D_Demo will be particularly useful to you at this stage. If you find that
+you are having troubles that seem to be compilation-related, try compiling, linking,
+and running some of the demos. That will help you differentiate between problems
+with compiling G3D code in general, and problems with your particular implementation
+of the tutorial.
 
 We encourage you to work through this tutorial as a first step in learning this package. 
 With a solid command of %G3D, you will have a powerful, reliable base of code on which to build).
@@ -179,12 +186,13 @@ int main(int argc, char** argv)
 
 class App: public GApp {
 	public:
-		App(const GAppSettings& settings): GApp(settings) fg; 
+		App(const GAppSettings& settings): GApp(settings) {}; 
 		void main();
 };
 
 #endif
 </pre>
+
 
 @subsection more Filling out the new project
 
@@ -194,14 +202,17 @@ the G3DAll.h file includes the line using namespace G3D so you won't have to
 explicitly type the namespace in your program.
 
 Next, define a class called <tt>Demo</tt> that inherits from G3D::GApplet. The constructor
-should take a <tt>App*</tt> as a parameter and pass it to the parent's contructor.
+should take a <tt>App*</tt> as a parameter and pass it to the parent's constructor.
+(You'll need to create Demo.h and Demo.cpp to declare and define the Demo class, respectively.)
 Your <tt>Demo</tt> class should store the passed-in <tt>App*</tt> in a member variable of its own.
+You will need to call methods on the App*'s render device. For instance,
+if you named your App* "_app", then you might <tt>say _app->renderDevice->clear()</tt>.
 Override the G3D::GApplet::doGraphics method to clear the screen by calling
 the G3D::RenderDevice::clear method on your app's renderDevice. Set
 the projection and camera matrices from your app's <tt>debugCamera</tt> using the
 G3D::RenderDevice::setProjectionAndCameraMatrix method. To get an idea
 of there the origin lies, render a default set of axes using G3D::Draw::axes
-Compile and run the program with <tt>compile --run</tt> on linux, or <tt>F5</tt> on windows. 
+Compile and run the program with <tt>icompile --run</tt> on linux, or <tt>F5</tt> on windows. 
 You should see a gray background with a set of colored axes in the middle. (You may have to move
 the mouse around to see the axes.)
 
@@ -245,7 +256,9 @@ documentation for the details about these functions.
 Enable lighting for the scene using G3D::RenderDevice::enableLighting. Use
 methods in the G3D::RenderDevice and G3D::GLight classes to set the ambient
 light color and set a directional light (use light 0); the G3D::LightingParameters
-object will tell you the ambient light color, light direction, and light color.
+object will tell you the ambient light color, light direction, and light color. 
+Check out the G3D::GLight and G3D::RenderDevice::setLight and 
+G3D::RenderDevice::setAmbientLightColor methods.
 After the G3D::Draw::axes call, disable lighting by calling
 G3D::RenderDevice::disableLighting. Finally, call G3D::Sky::renderLensFlare.
 Run the program again: you should see a cloudy sky as a backdrop to the axes.
