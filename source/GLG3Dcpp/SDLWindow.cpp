@@ -60,6 +60,22 @@ static int screenHeight() {
 }
 #endif
 
+
+#ifdef G3D_LINUX
+
+static int screenWidth(Display* display) {
+	const int screenNumber = DefaultScreen(display);
+	return DisplayWidth(display, screenNumber);
+}
+
+static int screenHeight(Display* display) {
+	const int screenNumber = DefaultScreen(display);
+	return DisplayHeight(display, screenNumber);
+}
+
+#endif
+
+
 SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
 	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | 
@@ -165,6 +181,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         // Extract SDL's internal Display pointer on Linux        
         _X11Display = info.info.x11.display;
         _X11Window  = info.info.x11.window;
+        _X11WMWindow  = info.info.x11.wmwindow;
 
         G3D::_internal::X11Display = info.info.x11.display;
         G3D::_internal::X11Window  = info.info.x11.window;
@@ -186,6 +203,22 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
             SetWindowPos(_Win32HWND, NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
         }
     #endif
+
+	#ifdef G3D_LINUX
+		 if (! settings.fullScreen) {
+            int W = screenWidth(_X11Display);
+            int H = screenHeight(_X11Display);
+            int x = iClamp(settings.x, 0, W);
+            int y = iClamp(settings.y, 0, H);
+
+            if (settings.center) {
+                x = (W  - settings.width) / 2;
+                y = (H - settings.height) / 2;
+            }
+			XMoveWindow(_X11Display, _X11WMWindow, x, y);
+        }
+	#endif
+
 
 	// Check for joysticks
     int j = SDL_NumJoysticks();
@@ -263,7 +296,10 @@ void SDLWindow::setDimensions(const Rect2D& dims) {
         // Do not update settings-- wait for an event to notify us
     #endif
 
-    // TODO: X11
+	#ifdef G3D_LINUX
+		//TODO: Linux
+	#endif 
+
     // TODO: OS X
 }
 
@@ -279,7 +315,16 @@ void SDLWindow::setPosition(int x, int y) {
         SetWindowPos(_Win32HWND, NULL, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
         // Do not update settings-- wait for an event to notify us
     #endif
-    // TODO: X11
+
+	#ifdef G3D_LINUX
+	    const int W = screenWidth(_X11Display);
+        const int H = screenHeight(_X11Display);
+
+        x = iClamp(x, 0, W);
+        y = iClamp(y, 0, H);
+
+		XMoveWindow(_X11Display, _X11WMWindow, x, y);
+	#endif
     // TODO: OS X
 }
 

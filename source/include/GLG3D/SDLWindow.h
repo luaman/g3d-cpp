@@ -50,6 +50,7 @@ private:
     #if defined(G3D_LINUX)
         Display*                _X11Display;
         Window                  _X11Window;
+        Window                  _X11WMWindow;
     #elif defined(G3D_WIN32)
         HDC                     _Win32HDC;
         HWND                    _Win32HWND;
