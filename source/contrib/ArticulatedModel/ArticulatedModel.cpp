@@ -254,6 +254,19 @@ void ArticulatedModel::Part::TriList::computeBounds(const Part& parentPart) {
 }
 
 
+const char* toString(ArticulatedModel::GraphicsProfile p) {
+    switch (p) {
+    case ArticulatedModel::UNKNOWN:
+        return "Unknown";
 
+    case ArticulatedModel::FIXED_FUNCTION:
+        return "Fixed Function";
 
+    case ArticulatedModel::PS20:
+        return "PS 2.0";
+
+    default:
+        return "Error!";
+    }
+}
 

@@ -20,15 +20,25 @@ uniform vec3        reflectConstant;
 uniform sampler2D   specularMap;
 uniform vec3        specularConstant;
 
-uniform sampler2D   specularExponentMap;
 uniform vec3        specularExponentConstant;
+#ifdef SPECULAREXPONENTMAP
+    uniform sampler2D   specularExponentMap;
+#endif
 
-uniform sampler2D   emitMap;
-uniform vec3        emitConstant;
+#ifdef EMITCONSTANT
+    uniform vec3        emitConstant;
+#endif
 
-uniform vec3        diffuseConstant;
+#ifdef EMITMAP
+    uniform sampler2D   emitMap;
+#endif
+
+#ifdef DIFFUSECONSTANT
+    uniform vec3        diffuseConstant;
+#endif
+
 #ifdef DIFFUSEMAP
-uniform sampler2D   diffuseMap;
+    uniform sampler2D   diffuseMap;
 #endif
 
 /** Multiplier for bump map.  Typically on the range [0, 0.05]
@@ -51,10 +61,36 @@ varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 
 void main(void) {
 
-    vec3 diffuseColor = diffuseConstant;
-#   ifdef DIFFUSEMAP
-        diffuseColor = diffuseColor * tex2D(diffuseMap, texCoord).rgb;
+    const vec3 diffuseColor =
+#   ifdef DIFFUSECONSTANT
+        diffuseConstant
+#       ifdef DIFFUSEMAP
+             * tex2D(diffuseMap, texCoord).rgb
+#       endif
+#   else
+#       ifdef DIFFUSEMAP
+             tex2D(diffuseMap, texCoord).rgb
+#       else
+             vec3(0, 0, 0)
+#       endif
 #   endif
+        ;
+
+    const vec3 emitColor =
+#   ifdef EMITCONSTANT
+        emitConstant
+#       ifdef EMITMAP
+             * tex2D(emitMap, texCoord).rgb
+#       endif
+#   else
+#       ifdef EMITMAP
+             tex2D(emitMap, texCoord).rgb
+#       else
+             vec3(0, 0, 0)
+#       endif
+#   endif
+        ;
+
 
 #if 0
 
@@ -65,6 +101,8 @@ void main(void) {
 
     // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
 	// from TBN space, so we must flip the y-axis.
+
+    // We should technically divide by the z-coordinate
 
     vec2 offsetCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
 
@@ -105,15 +143,17 @@ void main(void) {
     // World space normal
     const vec3 wsN = tan_Z.xyz;
     const vec3 wsL = lightPosition.xyz;
-    vec3 wsE = normalize(wsEyePos - wsPosition);
-    const vec3 wsR = (wsN * 2.0 * dot(wsN, wsE)) - wsE;
+    vec3 wsE = wsEyePos - wsPosition;
+    const vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
 
     // tan_Z is world space normal
     vec3 ambient = ambientTop + (ambientTop - ambientBottom) * min(wsN.y, 0);
 
     gl_FragColor.rgb =
-        // Emissive
-        emitConstant +
+        #if defined(EMITCONSTANT) || defined(EMITMAP)
+            // Emissive
+            emitColor +
+        #endif
 
         // Ambient
         diffuseColor * ambient +

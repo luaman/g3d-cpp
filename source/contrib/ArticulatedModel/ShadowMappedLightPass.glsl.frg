@@ -13,13 +13,17 @@ uniform vec3        lightColor;
 uniform sampler2D   specularMap;
 uniform vec3        specularConstant;
 
-uniform sampler2D   specularExponentMap;
 uniform vec3        specularExponentConstant;
+#ifdef SPECULAREXPONENTMAP
+    uniform sampler2D   specularExponentMap;
+#endif
 
-uniform vec3        diffuseConstant;
+#ifdef DIFFUSECONSTANT
+    uniform vec3        diffuseConstant;
+#endif
 
 #ifdef DIFFUSEMAP
-uniform sampler2D   diffuseMap;
+    uniform sampler2D   diffuseMap;
 #endif
 
 /** Multiplier for bump map.  Typically on the range [0, 0.05]
@@ -43,19 +47,28 @@ varying vec4        shadowCoord;
 
 void main(void) {
 
-    vec3 diffuseColor = diffuseConstant;
-
-#   ifdef DIFFUSEMAP
-        diffuseColor = diffuseColor * tex2D(diffuseMap, texCoord).rgb;
+    const vec3 diffuseColor =
+#   ifdef DIFFUSECONSTANT
+        diffuseConstant
+#       ifdef DIFFUSEMAP
+             * tex2D(diffuseMap, texCoord).rgb
+#       endif
+#   else
+#       ifdef DIFFUSEMAP
+             tex2D(diffuseMap, texCoord).rgb
+#       else
+             vec3(0, 0, 0)
+#       endif
 #   endif
+        ;
 
     const vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
 
     // World space normal
     const vec3 wsN = tan_Z.xyz;
     const vec3 wsL = lightPosition.xyz;
-    vec3 wsE = normalize(wsEyePos - wsPosition);
-    const vec3 wsR = (wsN * 2.0 * dot(wsN, wsE)) - wsE;
+    vec3 wsE = wsEyePos - wsPosition;
+    const vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
 
     // Compute projected shadow coord.
     shadowCoord = shadowCoord / shadowCoord.w;

@@ -140,10 +140,33 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
         std::string defines;
 
         // Enable only terms needed by this material
-        if (material.diffuse.map.notNull() && ! material.diffuse.isBlack()) {
-            defines += "#define DIFFUSEMAP\n";
-            // TODO... other terms
+        if (material.diffuse.constant != Color3::black()) {
+            if (material.diffuse.map.notNull()) {
+                defines += "#define DIFFUSEMAP\n";
+
+                // If the color is white, don't multiply by it
+                if (material.diffuse.constant != Color3::white()) {
+                    defines += "#define DIFFUSECONSTANT\n";
+                }
+            } else  {
+                defines += "#define DIFFUSECONSTANT\n";
+            }
         }
+
+        if (material.emit.constant != Color3::black()) {
+            if (material.emit.map.notNull()) {
+                defines += "#define EMITMAP\n";
+
+                // If the color is white, don't multiply by it
+                if (material.emit.constant != Color3::white()) {
+                    defines += "#define EMITCONSTANT\n";
+                }
+            } else  {
+                defines += "#define EMITCONSTANT\n";
+            }
+        }
+
+            // TODO... other terms
 
         p.nonShadowedShader  = loadShader(path + nonShadowName, defines);
         p.shadowMappedShader = loadShader(path + shadowName,    defines);

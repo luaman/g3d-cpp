@@ -195,4 +195,7 @@ public:
     }
 };
 
+
+const char* toString(ArticulatedModel::GraphicsProfile p);
+
 #endif G3D_ARTICULATEDMODEL

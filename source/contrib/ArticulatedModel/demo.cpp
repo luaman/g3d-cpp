@@ -270,6 +270,7 @@ void Demo::doGraphics() {
         app->sky->renderLensFlare(lighting);
     }
 
+    app->debugPrintf("%s Profile\n", toString(ArticulatedModel::profile()));
 }
 
 
@@ -277,7 +278,7 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    const std::string path = "c:/morgan/data/";
+    const std::string path = "d:/games/data/";
 
     double x = -5;
 
@@ -325,7 +326,7 @@ void App::main() {
         x += 2;
     }
 
-    if (true) {
+    if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("3ds/legocar/legocar.3ds", 0.04);
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
@@ -442,7 +443,7 @@ void App::main() {
 
 App::App(const GAppSettings& settings) : GApp(settings) {
     ::app = this;
-    debugShowRenderingStats = false;
+    debugShowRenderingStats = true;
     sky = Sky::create(renderDevice, dataDir + "sky/");//"D:/games/data/sky/", "majestic/majestic512_*.jpg");
 }
 
