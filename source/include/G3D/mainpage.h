@@ -620,6 +620,7 @@
 
    <P>
    <UL>
+     <LI> RenderDevice::screenshot now returns the name of the file that was written
      <LI> nextPowerOf2 renamed to ceilPow2
      <LI> System::alignedMalloc, System::alignedFree
      <LI> Carbon, Crackman, Edenmill, Futurist, Interplanetary,

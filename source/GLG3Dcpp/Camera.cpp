@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-06-13
+  @edited  2003-08-20
 */
 
 #include "GLG3D/Camera.h"
@@ -169,6 +169,21 @@ Vector3 Camera::project(
     out.z = rhw;
 
     return out;
+}
+
+
+double Camera::worldToScreenSpaceArea(double area, double z) const {
+
+    if (z >= 0) {
+        return inf;
+    }
+
+    int screenWidth  = renderDevice->getWidth();
+    int screenHeight = renderDevice->getHeight();
+
+    double zImagePlane = getImagePlaneDepth((double)screenWidth, (double)screenHeight);
+
+    return area * square(zImagePlane / z);
 }
 
 

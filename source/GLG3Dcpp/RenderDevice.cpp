@@ -2302,7 +2302,7 @@ static std::string currentDateString() {
 }
 
 
-void RenderDevice::screenshot(const std::string& filepath) const {
+std::string RenderDevice::screenshot(const std::string& filepath) const {
 
     // Read back the front buffer
     glReadBuffer(GL_FRONT);
@@ -2344,6 +2344,8 @@ void RenderDevice::screenshot(const std::string& filepath) const {
     } while (fileExists(filename));   
 
     im.save(filename);
+
+    return filename;
 }
 
 

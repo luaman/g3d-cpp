@@ -1029,9 +1029,10 @@ public:
 
     /**
      Takes a JPG screenshot of the front buffer and saves it to a file.
-     Example: renderDevice->screenshot("screens/");
+     Returns the name of the file that was written.
+     Example: renderDevice->screenshot("screens/"); 
      */
-    void screenshot(const std::string& filepath) const;
+    std::string screenshot(const std::string& filepath) const;
 
 	/**
 	 Pixel dimensions of the OpenGL window interior

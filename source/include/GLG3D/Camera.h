@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2003-02-06
+  @edited  2003-08-20
 */
 
 #ifndef G3D_CAMERA_H
@@ -98,6 +98,12 @@ public:
      */
     G3D::Vector3 project(
         const G3D::Vector3&                     point) const;
+
+    /**
+     Returns the pixel area covered by a shape of the given
+     world space area at the given z value (z must be negative).
+     */
+    double worldToScreenSpaceArea(double area, double z) const;
 
     /**
      Returns the world space 3D viewport corners.  These
