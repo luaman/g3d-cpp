@@ -5,14 +5,19 @@
 <BODY>
 <IMG SRC="source/html/G3D.gif" ALIGN=LEFT>
 This document describes the structure of the source distribution for
-the graphics3D C++ library (G3D).  This distribution contains all
-of the files you need to <I>build</I> the library on Windows or Linux.
+the graphics3D C++ library (G3D).  This distribution contains all of
+the files you need to <I>build</I> the library on Windows or Linux.
+It is assumed that you obtained this source by checking it out of
+SourceForge.net CVS for the "g3d-cpp" project (<A
+HREF="http://sourceforge.net/projects/g3d-cpp">http://sourceforge.net/projects/g3d-cpp</A>).
+If you obtained it by some other means, you should get the latest
+version directly from CVS.
 
-<P>If you are on Windows and just want to <I>use</I> the library, you
-don't need this document.  In fact, you do not even need most of the
-files.  Download the latest <CODE>g3d-win-?_??.zip</CODE> from
-<A HREF="http://graphics3d.com/cpp">graphics3d.com/cpp</A> and
-follow those installation instructions.
+<P>If you are just want to <I>use</I> the library, you don't need this
+document.  In fact, you do not even need most of the files.  Download
+the latest precompiled binary (<CODE>g3d-?_??.zip</CODE>) from <A
+HREF="http://graphics3d.com/cpp">graphics3d.com/cpp</A> and follow
+those installation instructions.
 
 <P>To build the library, you will need <A
 HREF="http://www.doxygen.org">Doxygen</A>, <A
@@ -25,14 +30,15 @@ python may not execute correctly from a command prompt, so you may
 have to download and install them separately on Windows.  On Windows,
 the default Visual Studio path is <CODE>C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Bin\</CODE>.
 
-<P>To build the library for your own use
+<P>To build the library for your own use from this distribution:
 <OL>
-<LI>Type "build install" or "./build install"in the <CODE>cpp/source</CODE> directory.
+<LI>Type "<CODE>build install</CODE>" or "<CODE>./build install</CODE>" in the <CODE>cpp/source</CODE> directory.
 <LI>Copy the resulting <CODE>cpp/install</CODE> directory to wherever you install libraries.
 </OL>
 
-<P>Targets for making a release distribution (should only be done by the G3D
-team at Brown) are described below.
+<P>Targets for making a release distribution (a.k.a. g3d-?_??.zip),
+which should only be done by the G3D team at Brown, are described
+below.
 
 <H1>Directories</H1>
 You are at the root of the directory tree for G3D (which is
@@ -67,13 +73,14 @@ source directory.  Some subdirectories are not shown.
 <P>
 
 In the distribution, the <CODE>cpp/data</CODE> directory is stored in
-g3d-data-M_mm.zip and the other files are in g3d-source-M_mm.zip.  They are
-separated so that Windows users don't have to download the data twice
-if they want the Windows distribution and the source.
+g3d-data-M_mm.zip and the other (built) files are in g3d-M_mm.zip.
+They are separated because the data is so large.  Users who want
+source code can download it from <A
+HREF="http://sourceforge.net/cvs/?group_id=76879">http://sourceforge.net/cvs/?group_id=76879</A>
 
 <P>
 <H1>Meta-Build targets</H1>
-<H3>install</H3>
+<H3>build install</H3>
 
 <I>Builds a local installation for using the library.  This is how
 Linux users generate the .so's to link against.</I>
@@ -91,17 +98,14 @@ Linux users generate the .so's to link against.</I>
     <CODE>cpp/data</CODE> to <CODE>cpp/install/data</CODE>
 </OL>
 
-<H3>release</H3> 
+<H3>build release (Windows only)</H3> 
 
-<I>Builds all of the zipfiles that are uploaded to Brown/G3D for users
-to download</I>
+<I>Builds install, then zips g3d-cpp-M_mm.zip and g3d-data-M_mm.zip 
+for uploading to Brown/G3D for users.  To make a release, you must
+have already done 'build install' on Linux and copied the binaries
+over.</I>
 
-<OL>
-<LI>Build clean
-<LI>Build windows, data, source (only on Windows)
-</OL>
-
-<H3>clean</H3>
+<H3>build clean</H3>
 <OL>
 <LI>Remove <CODE>cpp/build</CODE>
 <LI>Remove <CODE>cpp/temp</CODE>
@@ -109,24 +113,6 @@ to download</I>
 <LI>Remove <CODE>cpp/release</CODE>
 </OL>
 
-<H3>windows</H3>
-<I>Makes a zipfile of a local install for Windows, part of the release process.</I>
-<OL>
-<LI>Build install
-<LI>Zip <CODE>cpp/install</CODE> into <CODE>cpp/release/g3d-win-M-mm.zip</CODE> (where M and mm are the major and minor version numbers).
-</OL>
-
-<H3>data</H3>
-<OL>
-<LI>Zip <CODE>cpp/data</CODE> to to <CODE>cpp/release/g3d-data-M-mm.zip</CODE>
-</OL>
-
-<H3>source</H3>
-<OL>
-<LI>Recursively copy all files<SUP><A HREF="#ALLFILES">*</A></SUP> except the data directory from 
-    <CODE>cpp/source</CODE> to <CODE>cpp/temp/cpp/source</CODE>
-<LI>Zip <CODE>cpp/temp/source</CODE> into <CODE>cpp/release/g3d-source-M-mm.zip</CODE>
-</OL>
 <P>
 <H1>Build Targets</H1>
 
@@ -144,6 +130,13 @@ this document describes the meta-targets for making a release.
           (or corresponding .a files on Linux)
 <LI>Copy any out of date files from <CODE>cpp/source/lib</CODE> to <CODE>cpp/build/lib</CODE>
 </OL>
+
+<P>
+<H3>build data</H3>
+<OL>
+<LI>Zip <CODE>cpp/data</CODE> to to <CODE>cpp/release/g3d-data-M-mm.zip</CODE>
+</OL>
+
 
 <H3>doc</H3>
 <OL>
@@ -189,6 +182,6 @@ any file <I>except</I> those matching the following regular expressions:
 <P>
 
 <HR>
-<I>2002-03-20 Morgan</I>
+<I>2002-03-29 Morgan</I>
 </BODY>
 

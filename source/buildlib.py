@@ -40,7 +40,7 @@ def dispatchOnTarget(validTargets, help):
     targets = sys.argv[1:]
 
     for target in targets:
-        found = False
+        found = 0
         for v in validTargets:
             if (target == v.func_name):
                 v()
@@ -269,7 +269,6 @@ args must be a list.
 Switches the slashes from unix to dos style in program.
 Blocks until shell returns, then returns the exit code of the program.
 """
-
 def run(program, args = []):
     program = removeQuotes(to_local_path(program))
 

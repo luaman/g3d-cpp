@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-02-20
+# @edited  2003-03-29
 #
 # Each build target is a procedure.
 #
@@ -27,10 +27,8 @@ Syntax:
 TARGET     DESCRIPTION
 
 release    Build g3d-XXX
-
-source     Build g3d-source
 data       Build g3d-data
-windows    Build g3d-win
+
 
 install    Create a user installation directory
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs
@@ -49,13 +47,22 @@ See cpp/readme.html for detailed build information.
 
 def lib():
     if (os.name == 'nt'):
+        # Windows build
         x = msdev('graphics3D.dsw',\
                 ["graphics3D - Win32 Release",\
                  "graphics3D - Win32 Debug",\
                  "GLG3D - Win32 Release",\
                  "GLG3D - Win32 Debug"])
+
     else:
+        # Linux build
         print "Don't know how to build libraries on non-Windows platforms"
+        
+        # (Of course, we don't have to bootstrap *every* time... 
+        #  TODO: what file changes that triggers a need to bootstrap/configure?)
+        run("/bootstrap")
+        run("/configure", ["--enable-debugging"])
+        run("make")
 
     copyIfNewer("lib", "../build/lib")
 
@@ -101,20 +108,6 @@ def install(copyData=1):
     copyIfNewer('demos', '../install/demos')
     if (copyData):
         copyIfNewer('../data', '../install/data')
-    
-
-###############################################################################
-#                                                                             #
-#                             source Target                                   #
-#                                                                             #
-###############################################################################
-
-def source():
-    copyIfNewer('../source', '../temp/cpp/source')
-    copyIfNewer('../readme.html', '../temp/cpp/readme.html')
-    rmdir('../temp/cpp/data')
-    mkdir('../release')
-    zip('../temp/cpp/*', '../release/g3d-source-M_mm.zip')
 
 
 ###############################################################################
@@ -152,11 +145,6 @@ def windows():
     if (os.name != 'nt'):
         raise 'Error', 'Can only build the Windows release on Windows.'
 
-    # Don't zip up the data directory
-    install(False)
-    rmdir('../install/data')
-    mkdir('../release')
-    zip('../install/*', '../release/g3d-win-M_mm.zip')
 
 ###############################################################################
 #                                                                             #
@@ -166,12 +154,16 @@ def windows():
 
 def release():
     if (os.name != 'nt'):
-        raise 'Error', 'Can only build the Windows release on Windows.'
+        raise 'Error', 'Can only build the release on Windows.'
 
-    clean()
-    windows()
+    # Make sure the linux binaries are already built
+
+    # Don't zip up the data directory
+    install(0)
+    rmdir('../install/data')
+    mkdir('../release')
+    zip('../install/*', '../release/g3d-M_mm.zip')
     data()
-    source()
 
 ###############################################################################
 #                                                                             #
@@ -179,4 +171,4 @@ def release():
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, install, doc, test, source, data, clean, windows, release], buildHelp)
+dispatchOnTarget([lib, install, doc, test, data, clean, release], buildHelp)
