@@ -86,10 +86,12 @@ void tesselateComplexPolygon(Array<Vector3>& input, Array<Triangle>& output) {
         tobj = gluNewTess();
 #if defined(G3D_OSX) 
         #define CAST(x) reinterpret_cast<void (*)(void)>(x)
+#elif defined(G3D_LINUX)
+	#define CAST(x) reinterpret_cast<void (*)()>(x)
 #else
         #define CAST(x) reinterpret_cast<void (__stdcall *)(void)>(x) 
 #endif
-        gluTessCallback(tobj, GLU_TESS_BEGIN_DATA,    CAST(_tesselateBegin));
+	gluTessCallback(tobj, GLU_TESS_BEGIN_DATA,    CAST(_tesselateBegin));
         gluTessCallback(tobj, GLU_TESS_VERTEX_DATA,   CAST(_tesselateVertex));
         gluTessCallback(tobj, GLU_TESS_END_DATA,      CAST(_tesselateEnd));
         gluTessCallback(tobj, GLU_TESS_COMBINE_DATA,  CAST(_tesselateCombine));
