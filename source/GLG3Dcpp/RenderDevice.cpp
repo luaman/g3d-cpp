@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-11-03
+ @edited  2003-11-12
  */
 
 
@@ -873,6 +873,9 @@ void RenderDevice::setVideoMode() {
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.ambient);
 
         glDisable(GL_LIGHTING);
+        for (int i = 0; i < MAX_LIGHTS; ++i) {
+            setLight(i, NULL, true);
+        }
         glColor4d(1,1,1,1);
         glNormal3d(0,0,0);
 
@@ -923,72 +926,6 @@ int RenderDevice::getHeight() const {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-
-
-void RenderDevice::configureDirectionalLight(
-    int                 lightNum,
-    const Vector3&      toLightVector,
-    const Color3&       color) {
-
-    GLfloat position[] =
-        {toLightVector.x,
-         toLightVector.y,
-         toLightVector.z,
-         0.0f};
-
-    GLfloat brightness[] =
-        {color.r / lightSaturation,
-         color.g / lightSaturation,
-         color.b / lightSaturation,
-         1.0f};
-
-    lightNum += GL_LIGHT0;
-
-    static GLfloat zero[] = {0.0f, 0.0f, 0.0f, 0.0f};
-
-    int mm = glGetInteger(GL_MATRIX_MODE);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glLoadMatrix(state.cameraToWorldMatrix.inverse());
-    glLightfv(lightNum, GL_POSITION,              position);
-    glLightfv(lightNum, GL_AMBIENT,               zero);
-    glLightfv(lightNum, GL_DIFFUSE,               brightness);
-    glLightfv(lightNum, GL_SPECULAR,              brightness);
-    glLightf (lightNum, GL_CONSTANT_ATTENUATION,  1);
-    glLightf (lightNum, GL_LINEAR_ATTENUATION,    0);
-    glLightf (lightNum, GL_QUADRATIC_ATTENUATION, 0);
-    glPopMatrix();
-    glMatrixMode(mm);
-}
-
-
-void RenderDevice::configurePointLight(
-    int                 lightNum,
-    const Vector3&      position,
-    const Color3&       color,
-    double              constantAttenuationCoef,
-    double              linearAttenuationCoef,
-    double              quadraticAttenuationCoef) {
-
-    GLfloat pos[] = {position.x, position.y, position.z, 1.0f};
-
-    GLfloat brightness[] =
-        {color.r / lightSaturation,
-         color.g / lightSaturation,
-         color.b / lightSaturation,
-         1.0f};
-
-    static GLfloat zero[] = {0.0f, 0.0f, 0.0f, 0.0f};
-
-    glLightfv(lightNum, GL_POSITION,              pos);
-    glLightf (lightNum, GL_CONSTANT_ATTENUATION,  constantAttenuationCoef);
-    glLightf (lightNum, GL_LINEAR_ATTENUATION,    linearAttenuationCoef);
-    glLightf (lightNum, GL_QUADRATIC_ATTENUATION, quadraticAttenuationCoef);
-    glLightfv(lightNum, GL_AMBIENT,               zero);
-    glLightfv(lightNum, GL_DIFFUSE,               brightness);
-    glLightfv(lightNum, GL_SPECULAR,              brightness);
-}
 
 
 Vector4 RenderDevice::project(const Vector3& v) const {
@@ -1082,6 +1019,10 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     vertexProgram               = NULL;
     pixelProgram                = NULL;
+
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
+        lightEnabled[i] = false;
+    }
 
     // Set projection matrix
     double aspect;
@@ -1178,6 +1119,14 @@ void RenderDevice::setState(
         enableLighting();
     } else {
         disableLighting();
+    }
+
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
+        if (newState.lightEnabled[i]) {
+            setLight(i, newState.light[i]);
+        } else {
+            setLight(i, NULL);
+        }
     }
 
     setStencilOp(newState.stencilFail, newState.stencilZFail, newState.stencilZPass);
@@ -1908,6 +1857,13 @@ void RenderDevice::setCameraToWorldMatrix(
     state.cameraToWorldMatrix = cFrame;
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrix(state.cameraToWorldMatrix.inverse() * state.objectToWorldMatrix);
+
+    // Re-load lights since the camera matrix changed.
+    for (int i = 0; i < MAX_LIGHTS; ++i) {
+        if (state.lightEnabled[i]) {
+            setLight(i, &state.light[i], true);
+        }
+    }
 }
 
 
@@ -2560,8 +2516,68 @@ void RenderDevice::setMilestone(const MilestoneRef& m) {
     m->set();
 }
 
+
 void RenderDevice::waitForMilestone(const MilestoneRef& m) {
     m->wait();
+}
+
+
+void RenderDevice::setLight(int i, const GLight& light) {
+    setLight(i, &light, false);
+}
+
+
+void RenderDevice::setLight(int i, void* x) {
+    debugAssert(x == NULL);
+    setLight(i, NULL, false);
+}
+
+
+void RenderDevice::setLight(int i, const GLight* _light, bool force) {
+    debugAssert(i >= 0);
+    debugAssert(i < MAX_LIGHTS);
+    int gi = GL_LIGHT0 + i;
+
+    const GLight& light = *_light;
+
+    if (_light == NULL) {
+
+        if (state.lightEnabled[i] || force) {
+            state.lightEnabled[i] = false;
+            glDisable(gi);
+        }
+
+    } else {
+        if (! state.lightEnabled[i] || force) {
+            glEnable(gi);
+            state.lightEnabled[i] = true;
+        }
+
+        if ((state.light[i] != light) || force) {
+            state.light[i] = light;
+
+            Color4 zero(0, 0, 0, 1);
+            Color4 brightness(light.color / lightSaturation, 1);
+
+            int mm = glGetInteger(GL_MATRIX_MODE);
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+                glLoadIdentity();
+                glLoadMatrix(state.cameraToWorldMatrix.inverse());
+                glLightfv(gi, GL_POSITION,              light.position);
+                glLightfv(gi, GL_SPOT_DIRECTION,        light.spotDirection);
+                glLightf (gi, GL_SPOT_CUTOFF,            light.spotCutoff);
+                glLightfv(gi, GL_AMBIENT,               zero);
+                glLightfv(gi, GL_DIFFUSE,               brightness);
+                glLightfv(gi, GL_SPECULAR,              brightness);
+                glLightf (gi, GL_CONSTANT_ATTENUATION,  light.attenuation[0]);
+                glLightf (gi, GL_LINEAR_ATTENUATION,    light.attenuation[1]);
+                glLightf (gi, GL_QUADRATIC_ATTENUATION, light.attenuation[2]);
+            glPopMatrix();
+            glMatrixMode(mm);
+        }    
+    }
+
 }
 
 } // namespace

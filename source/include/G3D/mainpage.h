@@ -232,6 +232,7 @@
         G3D::CFont,
         G3D::CFontRef,
         G3D::GApp, G3D::GApplet, G3D::GAppSettings,
+        G3D::GLight,
         G3D::Sky,
         G3D::Camera, 
         G3D::LightingParameters,

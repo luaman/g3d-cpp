@@ -33,11 +33,14 @@
 	   <LI>Replace <CODE>Sky*</CODE> with <CODE>SkyRef</CODE>
 	   <LI>Remove <CODE>delete sky;</CODE>
 	   <LI>Change <CODE>renderDevice->setProjectionMatrix3D(...)</CODE> to <CODE>renderDevice->setProjectionMatrix(Matrix4::perspectiveProjection(...))</CODE> 
+	   <LI>Change <CODE>renderDevice->configureDirectionalLight(i, ...)</CODE> to <CODE>renderDevice->setLight(..., GLight::directional())</CODE>
   </BLOCKQUOTE>
 
 
    <P>
    <UL>
+     <LI> G3D::GLight
+	 <LI> Renamed G3D::RenderDevice::configureDirectionalLight, configurePointLight to G3D::RenderDevice::setLight
      <LI> Changed G3D::Rect2D to use doubles
      <LI> G3D::Camera::setPosition()
      <LI> G3D::Camera::lookAt()

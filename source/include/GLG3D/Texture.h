@@ -203,6 +203,9 @@ public:
      and alpha depth will be preserved.  Texture compression is not supported for
      textures copied from the screen.
 
+     If you invoke this method on a texture that is currently set on RenderDevice,
+     the texture will immediately be updated (there is no need to rebind).
+
      @param useBackBuffer If true, the texture is created from the back buffer.
      If false, the texture is created from the front buffer.
 

@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-11-06
+  @edited  2003-11-12
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -19,6 +19,7 @@
 #include "GLG3D/Milestone.h"
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/PixelProgram.h"
+#include "GLG3D/GLight.h"
 
 typedef unsigned int uint;
 
@@ -216,6 +217,9 @@ class RenderDevice {
 public:
     enum Primitive {LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP,
                     TRIANGLE_FAN, QUADS, QUAD_STRIP, POINTS};
+
+    
+    enum {MAX_LIGHTS = 8};
 
 private:
 
@@ -918,8 +922,11 @@ private:
             TextureUnit();
         };
 
+
         Rect2D                      viewport;
 
+        GLight                      light[MAX_LIGHTS];
+        bool                        lightEnabled[MAX_LIGHTS];
         bool                        depthWrite;
         bool                        colorWrite;
         bool                        alphaWrite;
@@ -987,6 +994,13 @@ private:
     int                             _numTextureCoords;
 
     /**
+     Called from the various setXLight functions.
+     @param force When true, OpenGL state is changed
+     regardless of whether RenderDevice thinks it is up to date.
+     */
+    void setLight(int i, const GLight* light, bool force);
+
+    /**
      Current render state.
      */
     RenderState                     state;
@@ -1031,7 +1045,7 @@ public:
     /**
      Returns a value that you should DIVIDE light intensities by
      based on the gamma.  This is automatically handled if you
-     use configureXXXLight() or bindLights()
+     use setLight()
      */
     inline double getLightSaturation() const {
         return lightSaturation;
@@ -1121,32 +1135,21 @@ public:
 	}
 
     /**
-     You must enable lighting and color materials yourself.  This just aids in
-     configuring an OpenGL light.  
+     You must also enableLighting.  Ambient light is handled separately.
 
-     @param toLightVector The vector <B>towards</B> the light, in world space.  <B>You
-     must have already set the cameraToWorld matrix, and cannot change it without
-     reconfiguring the light</B>.  Unlike OpenGL, the current objectToWorld matrix 
-     is ignored.
-     @param lightNum between 0 and 8
+     @param toLightVector The vector <B>towards</B> the light, in world space.  
+     Unlike OpenGL, the current camera and object matrices are ignored.
+
+     @param lightNum between 0 and 7
 	 @param color Light color
-     */
-    void configureDirectionalLight(
-        int                 lightNum,
-        const Vector3&      toLightVector,
-        const Color3&       color);
 
-    void configurePointLight(
-        int                 lightNum,
-        const Vector3&      position,
-        const Color3&       color,
-        double              constantAttenuationCoef,
-        double              linearAttenuationCoef,
-        double              quadraticAttenuationCoef);
+     setLight(i, NULL) disables a light
+     */
+    void setLight(int num, const GLight& light);
+    void setLight(int num, void*);
 
     /**
-     Uses glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c), so 
-     you must also RenderDevice::enableLighting.
+     You must also RenderDevice::enableLighting.
      */
     void setAmbientLightColor(
         const Color3&        color);

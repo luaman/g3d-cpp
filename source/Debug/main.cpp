@@ -125,13 +125,11 @@ void Demo::doGraphics() {
 
     sky->render(lighting);
 
+    
     // Setup lighting
     app->renderDevice->enableLighting();
-    glEnable(GL_LIGHT0);
 
-    app->renderDevice->configureDirectionalLight
-      (0, lighting.lightDirection, lighting.lightColor);
-
+    app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
     for (int e = 0; e < entityArray.length(); ++e) { 
@@ -158,9 +156,8 @@ void Demo::doGraphics() {
         app->renderDevice->sendVertex(Vector3(5, 0, 2.5));
     app->renderDevice->endPrimitive();
 
-    glDisable(GL_LIGHT0);
     app->renderDevice->disableLighting();
-    
+
     sky->renderLensFlare(lighting);
 }
 
