@@ -12,8 +12,10 @@
    <P>
    Changes in 6.05:
    <UL>
-     <LI> isDirectory
-     <LI> filenamePath
+     <LI> G3D::fileIsNewer
+     <LI> G3D::isDirectory
+     <LI> G3D::filenameContainsWildcards
+     <LI> G3D::filenamePath
      <LI> Draw::lineSegment now accepts a scale (allowing arrows and axes to thicken appropriately)
      <LI> Rect2D::largestCenteredSubRect
      <LI> Matrix4::serialize, Matrix4::deserialize

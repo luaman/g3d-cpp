@@ -555,13 +555,13 @@ bool filenameContainsWildcards(const std::string& filename) {
 
 
 bool fileIsNewer(const std::string& src, const std::string& dst) {
-    struct _stat sst;
+    struct _stat sts;
     bool sexists = _stat(src.c_str(), &sts) != -1;
 
-    struct _stat dst;
+    struct _stat dts;
     bool dexists = _stat(dst.c_str(), &dts) != -1;
 
-    return sexists && dexists && (sts.st_mtime > dts.st_mtime));
+    return sexists && ((! dexists) || (sts.st_mtime > dts.st_mtime));
 }
 
 }

@@ -138,13 +138,18 @@ std::string filenameBaseExt(const std::string& filename);
  */
 std::string filenameExt(const std::string& filename);
 
-
 /** 
  Returns the drive (if Win32) and path from a filename, including 
  a slash if there was one.
  <CODE>filenamePath(f) + filenameBaseExt(f) == f</CODE>
  */
 std::string filenamePath(const std::string& filename);
+
+/** Returns true if '*' or '?' appears in the string */
+bool filenameContainsWildcards(const std::string& filename);
+
+/** Returns true if dst does not exist or src is newer than dst.  Works on both files and directories. */
+bool fileIsNewer(const std::string& src, const std::string& dst);
 
 } // namespace
 
