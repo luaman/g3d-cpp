@@ -251,8 +251,10 @@ void _releaseInputGrab_() {
             XUngrabKeyboard(X11Display, CurrentTime);
             if (X11Window != 0) {
                 XUndefineCursor(X11Display, X11Window);
-                // Cursor c = XCreateFontCursor(X11Display, XC_left_ptr);
-                // XDefineCursor(X11Display, X11Window, c);
+                // TODO: Note that we leak this cursor; it should be
+                // freed in the restore code.
+                Cursor c = XCreateFontCursor(X11Display, 68);
+                XDefineCursor(X11Display, X11Window, c);
             }
             XSync(X11Display, false);           
         }

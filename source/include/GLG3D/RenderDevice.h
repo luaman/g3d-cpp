@@ -133,9 +133,10 @@ private:
         @deprecated */
     static RenderDevice*        lastRenderDeviceCreated;
 
+    GWindow*                    _window;
+
     /** Should the destructor delete _window?*/
     bool                        deleteWindow;
-    GWindow*                    _window;
 
     enum Vendor {NVIDIA, ATI, ARB};
 

@@ -43,7 +43,7 @@ private:
 
     bool                        _inputCapture;
 
-    Array<::SDL_Joystick*>      joy;
+    Array< ::SDL_Joystick* >    joy;
 
     bool                        _mouseVisible;
 

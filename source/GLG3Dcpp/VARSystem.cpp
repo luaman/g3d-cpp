@@ -58,6 +58,10 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
                 case WRITE_EVERY_FEW_FRAMES:
                     usage = GL_DYNAMIC_DRAW_ARB;
                     break;
+
+                default:
+                    usage = GL_STREAM_DRAW_ARB;
+                    debugAssertM(false, "Fell through switch");
                 }
 
                 // Load some (undefined) data to initialize the buffer
