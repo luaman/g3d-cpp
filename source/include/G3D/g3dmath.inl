@@ -7,7 +7,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-05-22
+ @edited  2003-08-13
  */
 
 #include <stdlib.h>
@@ -201,7 +201,7 @@ inline int iMax(int x, int y) {
 }
 
 //----------------------------------------------------------------------------
-inline int nextPowerOf2(unsigned int in) {
+inline int ceilPow2(unsigned int in) {
     in -= 1;
 
     in |= in >> 16;

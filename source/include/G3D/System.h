@@ -69,6 +69,17 @@ public:
     static void beginCycleCount(uint64& cycleCount);
     static void endCycleCount(uint64& cycleCount);
 
+    /**
+     Guarantees that the start of the array is aligned to the 
+     specified number of bytes.
+     */
+    static void* alignedMalloc(size_t bytes, size_t alignment);
+
+    /**
+     Frees memory allocated with alignedMalloc.
+     */
+    static void alignedFree(void* ptr);
+
 	/** An implementation of memcpy that may be up to 2x as fast as the C library
 	    one on some processors.  Guaranteed to have the same behavior as memcpy
 		in all cases. */

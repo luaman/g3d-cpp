@@ -469,9 +469,10 @@ void TextInput::readSymbol(const std::string& symbol) {
 
 TextInput::TextInput(const std::string& filename, const Options& opt) : options(opt) {
     init();
-    BinaryInput b(filename, G3D_LITTLE_ENDIAN);
-    buffer.resize(b.getLength());
-    memcpy(buffer.getCArray(), b.getCArray(), buffer.size());
+    BinaryInput input(filename, G3D_LITTLE_ENDIAN);
+    int n = input.size();
+    buffer.resize(n);
+    memcpy(buffer.getCArray(), input.getCArray(), n);
 }
 
 

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-06-09
- @edited  2003-08-08
+ @edited  2003-08-13
  */
 
 #ifndef G3D_PLATFORM_H
@@ -22,8 +22,7 @@
     #error Unknown platform 
 #endif
 
-#ifdef G3D_WIN32
-    // Linux doesn't provide __mm_malloc, which we need for aligned allocation.
+#if defined(G3D_WIN32) || defined(G3D_LINUX)
     #define SSE
 #endif
 

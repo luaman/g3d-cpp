@@ -109,8 +109,8 @@ static void createTexture(
 
             int oldWidth = width;
             int oldHeight = height;
-            width  = nextPowerOf2(width);
-            height = nextPowerOf2(height);
+            width  = ceilPow2(width);
+            height = ceilPow2(height);
 
             bytes = new uint8[width * height * bytesPerPixel];
 
@@ -465,8 +465,8 @@ TextureRef Texture::fromMemory(
     glStatePop();
 
     if (dimension != DIM_2D_RECT) {
-        width  = nextPowerOf2(width);
-        height = nextPowerOf2(height);
+        width  = ceilPow2(width);
+        height = ceilPow2(height);
     }
 
     return fromGLTexture(name, textureID, desiredFormat, wrap,

@@ -47,8 +47,8 @@ CFont::CFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
     charHeight = texWidth / 16;
 
     // The input may not be a power of 2
-    int width  = nextPowerOf2(charWidth * 16);
-    int height = nextPowerOf2(charHeight * 8);
+    int width  = ceilPow2(charWidth * 16);
+    int height = ceilPow2(charHeight * 8);
  
     // Create a texture
     const uint8* ptr = ((uint8*)b.getCArray()) + b.getPosition();

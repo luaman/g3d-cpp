@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2003-08-08
+ @edited  2003-08-13
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -228,7 +228,7 @@ inline float rsq(float x) {
  If the input is already a power of 2, the output will be the same 
  as the input.
  */
-int nextPowerOf2(unsigned int in);
+int ceilPow2(unsigned int in);
 
 /**
  * True if num is a power of two.

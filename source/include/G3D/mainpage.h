@@ -79,6 +79,7 @@
 
      <LI>Integer math
        <BR><BLOCKQUOTE>
+        G3D::ceilPow2, 
         G3D::highestBit,
 	    G3D::iAbs,
 		G3D::iCeil,
@@ -93,7 +94,6 @@
 		G3D::iSign,
 		G3D::iRound,
 		G3D::iRandom,
-        G3D::nextPowerOf2, 
 		G3D::uint8,
 		G3D::uint16,
 		G3D::uint32,
@@ -620,10 +620,12 @@
 
    <P>
    <UL>
-     <LI>Carbon, Crackman, Edenmill, Futurist, Interplanetary,
-         Iomanoid, Starlight, Lesser, and Wild fonts by Ray Larabie.
-         Like all of our fonts, they are free, but please consider a
-         donation to him if you like them.  http://www.larabiefonts.com/
+     <LI> nextPowerOf2 renamed to ceilPow2
+     <LI> System::alignedMalloc, System::alignedFree
+     <LI> Carbon, Crackman, Edenmill, Futurist, Interplanetary,
+          Iomanoid, Starlight, Lesser, and Wild fonts by Ray Larabie.
+          Like all of our fonts, they are free, but please consider a
+          donation to him if you like them.  http://www.larabiefonts.com/
      <LI> MD2Model_Demo
      <LI> G3D::MD2Model
      <LI> FIX: Fixed a bug in Array shrinking that could cause memory corruption
@@ -636,7 +638,7 @@
      <LI> RenderDevice now loads glFlushVertexArrayRangeNV
      <LI> Vector2int16
      <LI> RenderDevice::freeVARSize()
-     <LI> Array now allocates 16-byte aligned pointers when SSE is defined.
+     <LI> Array now allocates 16-byte aligned pointers.
      <LI> Decreased the default camera movement rate by 50% for better resolution.
      <LI> RenderDevice enables GL_NORMALIZE by default
      <LI> Improved the performance of Array::append/Array::push/Array::next

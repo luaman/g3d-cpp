@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-08-12
+  @edited  2003-08-13
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -16,6 +16,7 @@
 
 #include "G3D/platform.h"
 #include "G3D/debug.h"
+#include "G3D/System.h"
 
 #ifdef G3D_WIN32
     #include <new.h>
@@ -23,28 +24,6 @@
     #ifndef __cdecl
         #define __cdecl __attribute__((cdecl))
     #endif
-#endif
-
-#if defined(SSE)
-    #include <xmmintrin.h>
-
-    // Provide 16-byte alignment
-    inline void* _arrayMalloc(size_t bytes) {
-        return _mm_malloc(bytes, 16);
-    }
-
-    inline void _arrayFree(void* ptr) {
-        _mm_free(ptr);
-    }
-#else
-    // No alignment
-    inline void* _arrayMalloc(size_t bytes) {
-        return malloc(bytes);
-    }
-
-    inline void _arrayFree(void* ptr) {
-        free(ptr);
-    }
 #endif
 
 
@@ -137,7 +116,7 @@ private:
     void realloc(int oldNum) {
          T* oldData = data;
          
-         data = (T*)_arrayMalloc(sizeof(T) * numAllocated);
+         data = (T*)System::alignedMalloc(sizeof(T) * numAllocated, 16);
          // Call the copy constructors
          int i;
          for (i = iMin(oldNum, numAllocated) - 1; i >= 0; --i) {
@@ -149,7 +128,7 @@ private:
             (oldData + i)->~T();
          }
 
-         _arrayFree(oldData);
+         System::alignedFree(oldData);
     }
 
 public:
@@ -232,7 +211,7 @@ public:
            (data + i)->~T();
        }
        
-       _arrayFree(data);
+       System::alignedFree(data);
        data = NULL;
    }
 

@@ -753,4 +753,59 @@ int System::consoleReadKey() {
     #endif
 }
 
+
+void* System::alignedMalloc(size_t bytes, size_t alignment) {
+    alwaysAssertM(isPow2(alignment), "alignment must be a power of 2");
+
+    // We must align to at least a word boundary.
+    alignment = iMax(alignment, sizeof(void *));
+
+    // Pad the allocation size with the alignment size.
+    // This also guarantees room to store the redirect pointer
+    size_t truePtr = (size_t)malloc(bytes + alignment + sizeof(void*));
+
+    if (truePtr == 0) {
+        // malloc returned NULL
+        return NULL;
+    }
+
+    debugAssert(isValidHeapPointer((void*)truePtr));
+
+    // The return pointer will be the next aligned location (we must at least
+    // leave space for the redirect pointer, however).
+    size_t  alignedPtr = truePtr + sizeof(void*);
+        
+    while ((alignedPtr & (alignment - 1)) != 0) {
+        alignedPtr += sizeof(void*);
+    }
+
+    // Immediately before the aligned location, write the true array location
+    size_t* redirectPtr = (size_t *)(alignedPtr - sizeof(void *));
+    redirectPtr[0] = truePtr;
+
+    return (void *)alignedPtr;
+}
+
+
+void System::alignedFree(void* _ptr) {
+
+    if (_ptr == NULL) {
+        return;
+    }
+
+    size_t alignedPtr = (size_t)_ptr;
+
+    // Back up one word from the pointer the user passed in.
+    // This is a pointer to the true start of the memory block.
+    size_t* redirectPtr = (size_t*)(alignedPtr - sizeof(void *));
+
+    // Dereference that pointer so that ptr = true start
+    void* truePtr = (void*)redirectPtr[0];
+
+    debugAssert(isValidHeapPointer((void*)truePtr));
+    free(truePtr);
+}
+
+
+
 }  // namespace
