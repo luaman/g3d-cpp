@@ -280,7 +280,19 @@ void Sky::vertex(RenderDevice* renderDevice,
     if (cube) {
         renderDevice->setTexCoord(0, Vector3(x, y, z));
     } else {
-      renderDevice->setTexCoord(0, Vector2(s, t));
+        if (!GLCaps::supports_GL_EXT_texture_edge_clamp()) {
+            if (s == 0) {
+                s += (0.5 / texture[0]->texelWidth());
+            } else if (s == 1) {
+                s -= (0.5 / texture[0]->texelWidth());
+            }
+            if (t == 0) {
+                t += (0.5 / texture[0]->texelWidth());
+            } else if (t == 1) {
+                t -= (0.5 / texture[0]->texelWidth());
+            }
+        }
+        renderDevice->setTexCoord(0, Vector2(s, t));
     }
     
     renderDevice->sendVertex(Vector4(x,y,z,w));
