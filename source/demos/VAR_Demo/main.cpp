@@ -111,8 +111,9 @@ public:
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     // Allocate the two VARAreas used in this demo
-    varStatic  = VARArea::create(1024 * 640 * 5, VARArea::WRITE_ONCE);
+    varStatic = VARArea::create(1024 * 640 * 5, VARArea::WRITE_ONCE);
     varStream = VARArea::create(1024 * 1280 * 5, VARArea::WRITE_EVERY_FRAME);
+    debugAssertGLOk();    
     debugAssert(varStatic.notNull());
     debugAssert(varStream.notNull());
 }
@@ -266,6 +267,7 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 int main(int argc, char** argv) {
     GAppSettings settings;
+    settings.useNetwork = false;
     settings.debugFontName = "dominant.fnt";
     App(settings).run();
     return 0;
@@ -343,6 +345,7 @@ Model::Model(const std::string& filename, VARAreaRef varStatic) {
 
     varVertex = VAR(vertex, varStatic);
     varNormal = VAR(normal, varStatic);
+    debugAssertGLOk();    
 }
 
 

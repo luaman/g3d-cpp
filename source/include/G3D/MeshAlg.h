@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2004-03-03
+ @edited  2004-12-26
 */
 
 #ifndef G3D_MESHALG_H
@@ -338,6 +338,13 @@ public:
         Array<Vector3>&         vertexNormalArray,
         Array<Vector3>&         faceNormalArray);
 
+    /** Computes unit length normals in place using the other computeNormals methods.
+    If you already have a face array use another method; it will be faster. */
+    static void computeNormals(
+        Geometry&               geometry,
+        const Array<int>&       indexArray);
+
+
     /**
      Computes face normals only.  Significantly faster (especially if
      normalize is false) than computeNormals.
@@ -495,6 +502,9 @@ public:
 
     */
     static void computeBounds(const Array<Vector3>& vertex, class Box& box, class Sphere& sphere);
+
+    /** Computes bounds for a subset of the vertices.  It is ok if vertices appear more than once in the index array. */
+    static void computeBounds(const Array<Vector3>& vertex, const Array<int>& index, class Box& box, class Sphere& sphere);
 
     /**
      In debug mode, asserts that the adjacency references between the

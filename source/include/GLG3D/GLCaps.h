@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2004-08-02
+ @edited  2004-12-25
 
  Copyright 2004, Morgan McGuire.
  All rights reserved.
@@ -52,7 +52,7 @@ namespace G3D {
     <LI>GL_EXT_stencil_wrap
     <LI>GL_EXT_stencil_two_side
     <LI>GL_EXT_texture_compression_s3tc
-    <LI>GL_EXT_texture_cube_map
+    <LI>GL_EXT_texture_cube_map, GL_ARB_texture_cube_map
     <LI>GL_ARB_shadow
     <LI>GL_ARB_shader_objects
     <LI>GL_ARB_shading_language_100
@@ -61,7 +61,10 @@ namespace G3D {
 	</UL>
 
   These methods do not appear in the documentation because they
-  are generated using macros.
+  are generated using macros.  They may return false when 
+  the extension string actually contains the extension because G3D
+  recognizes known bugs in drivers and disables extensions if they
+  are known to have a bug in the specific version present.
  */
 class GLCaps {
 private:
@@ -161,6 +164,10 @@ public:
 
     static int numTextureUnits() {
         return _numTextureUnits;
+    }
+
+    static inline bool supports_GL_ARB_texture_cube_map() {
+        return supports_GL_EXT_texture_cube_map();
     }
 };
 

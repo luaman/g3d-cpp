@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2004-02-18
+  @edited  2004-12-26
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -47,6 +47,20 @@ MeshAlg::Geometry& MeshAlg::Geometry::operator=(const MeshAlg::Geometry& src) {
     System::memcpy(normalArray.getCArray(), src.normalArray.getCArray(), sizeof(Vector3)*normalArray.size());
 
     return *this;
+}
+
+
+void MeshAlg::computeNormals(
+    Geometry&               geometry,
+    const Array<int>&       indexArray) {
+
+    Array<Face> faceArray;
+    Array<Vertex> vertexArray;
+
+    computeAdjacency(geometry.vertexArray, indexArray, faceArray, Array<Edge>(), vertexArray);
+
+    computeNormals(geometry.vertexArray, faceArray, vertexArray, 
+                   geometry.normalArray, Array<Vector3>());
 }
 
 
@@ -299,6 +313,19 @@ int MeshAlg::countBoundaryEdges(const Array<MeshAlg::Edge>& edgeArray) {
     }
 
     return b;
+}
+
+void MeshAlg::computeBounds(
+    const Array<Vector3>&   vertexArray,
+    const Array<int>&       indexArray,
+    Box&                    box, 
+    Sphere&                 sphere) {
+
+    Array<Vector3> newArray(indexArray.size());
+    for (int i = 0; i < indexArray.size(); ++i) {
+        newArray[i] = vertexArray[indexArray[i]];
+    }
+    computeBounds(newArray, box, sphere);
 }
 
 

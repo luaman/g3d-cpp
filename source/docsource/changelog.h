@@ -12,6 +12,12 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> MeshAlg::computeBounds(vertex, index, ...)
+     <LI> RenderDevice::enableTwoSidedLighting
+     <LI> PosedModel::hasTransparency
+     <LI> PosedModel::sort
+     <LI> RenderDevice::renderMode
+     <LI> G3D::MeshAlg::computeNormals(geometry, indexArray);
      <LI> contrib/ArticulatedModel (beta 3DS support)
      <LI> G3D::renderDevice::endFrame(false) to suppress page flip.
      <LI> Added coordinate system documentation.
@@ -66,6 +72,8 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: Recognize buggy ATI Radeon Mobility cube maps and work around
+     <LI> Fix: Textures now initialize without setting error bit on cards without GL_ARB_shadow
      <LI> Fix: filenameBaseExt now operates correctly on strings with both \ and / slashes.
      <LI> Fix: [ 1062659 ] BinaryInput::BinaryInput() memory leak
      <LI> Fix: Removed RenderDevice::polygonCount, which was never used.

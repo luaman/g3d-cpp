@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-12-23
+  @edited  2004-12-26
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -367,6 +367,7 @@ public:
     void setStencilTest(StencilTest test);
 
     void setRenderMode(RenderMode mode);
+    RenderMode renderMode() const;
 
     /**
      Sets the constant used in the stencil test and operation (if op == STENCIL_REPLACE)
@@ -878,6 +879,11 @@ public:
     std::string getCardDescription() const;
 
 
+    /** When enabled and lighting is enabled, shades backfaces with reversed normals.
+        See glLightModeli. */
+    void enableTwoSidedLighting();
+    void disableTwoSidedLighting();
+
 private:
 
 	/** Called immediately before a primitive group 
@@ -940,7 +946,9 @@ private:
 
         int                         stencilClear;
         double                      depthClear;
-        Color4                      colorClear;               
+        Color4                      colorClear;
+
+        bool                        twoSidedLighting;
 
         CullFace                    cullFace;
 

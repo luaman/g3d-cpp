@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-12-19
+ @edited  2004-12-26
  */
 
 
@@ -506,6 +506,7 @@ void RenderDevice::setVideoMode() {
         glPointSize(1);
 
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.ambient);
+        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, state.twoSidedLighting);
 
         glDisable(GL_LIGHTING);
 
@@ -646,6 +647,8 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     depthWrite                  = true;
     colorWrite                  = true;
     alphaWrite                  = false;
+
+    twoSidedLighting            = false;
 
     depthTest                   = DEPTH_LEQUAL;
     stencilTest                 = STENCIL_ALWAYS_PASS;
@@ -788,6 +791,12 @@ void RenderDevice::setState(
         disableAlphaWrite();
     }
 
+    if (newState.twoSidedLighting) {
+        enableTwoSidedLighting();
+    } else {
+        disableTwoSidedLighting();
+    }
+
     setDrawBuffer(newState.drawBuffer);
 
     setShadeMode(newState.shadeMode);
@@ -879,6 +888,22 @@ void RenderDevice::setState(
 }
 
 
+void RenderDevice::enableTwoSidedLighting() {
+    if (! state.twoSidedLighting) {
+        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
+        state.twoSidedLighting = true;
+    }
+}
+
+
+void RenderDevice::disableTwoSidedLighting() {
+    if (state.twoSidedLighting) {
+        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
+        state.twoSidedLighting = false;
+    }
+}
+
+
 void RenderDevice::runObjectShader() {
 	if (! state.objectShader.isNull()) {
 		state.objectShader->run(this);
@@ -950,6 +975,12 @@ void RenderDevice::setRenderMode(RenderMode m) {
         }
     }
 }
+
+
+RenderDevice::RenderMode RenderDevice::renderMode() const {
+    return state.renderMode;
+}
+
 
 
 void RenderDevice::setDrawBuffer(Buffer b) {

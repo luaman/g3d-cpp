@@ -53,10 +53,9 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
         renderDevice->init(settings.window, debugLog);
     }
 
+    debugAssertGLOk();
+
     _window = renderDevice->window();
-//    alwaysAssertM(! _window->requiresMainLoop(),
-//        "GApp cannot be used with a GWindow that requires "
-//        "control of the main loop.  Use another GWindow (like SDLWindow).");
 
     if (settings.useNetwork) {
         networkDevice = new NetworkDevice();
@@ -67,8 +66,12 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
 
     debugCamera  = GCamera();
 
+    debugAssertGLOk();
     loadFont(settings.debugFontName);
+    debugAssertGLOk();
+
     userInput = new UserInput();
+
 
     debugController.init(renderDevice, userInput);
     debugController.setMoveRate(10);
@@ -83,6 +86,8 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
     debugTabSwitchCamera        = true;
     debugShowRenderingStats     = true;
     catchCommonExceptions       = true;
+
+    debugAssertGLOk();
 }
 
 

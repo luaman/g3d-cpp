@@ -256,6 +256,8 @@ static void setTexParameters(
         target == GL_TEXTURE_RECTANGLE_EXT ||
         target == GL_TEXTURE_CUBE_MAP_ARB);
 
+    debugAssertGLOk();
+
     // Set the wrap and interpolate state
     switch (wrap) {
     case Texture::TILE:
@@ -283,6 +285,7 @@ static void setTexParameters(
     default:
         debugAssert(false);
     }
+    debugAssertGLOk();
 
 
     switch (interpolate) {
@@ -308,16 +311,20 @@ static void setTexParameters(
     default:
         debugAssert(false);
     }
+    debugAssertGLOk();
 
 
-    if (depthRead == Texture::DEPTH_NORMAL) {
-        glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
-    } else {
-        glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
+    if (GLCaps::supports_GL_ARB_shadow()) {
+        if (depthRead == Texture::DEPTH_NORMAL) {
+            glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
+        } else {
+            glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 
-        glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC_ARB, 
-            (depthRead == Texture::DEPTH_LEQUAL) ? GL_LEQUAL : GL_GEQUAL);
+            glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC_ARB, 
+                (depthRead == Texture::DEPTH_LEQUAL) ? GL_LEQUAL : GL_GEQUAL);
+        }
     }
+    debugAssertGLOk();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -340,6 +347,7 @@ Texture::Texture(
     _depthRead(__dr) {
 
     debugAssert(_format);
+    debugAssertGLOk();
 
     glStatePush();
 
@@ -360,8 +368,11 @@ Texture::Texture(
         
         interpolate         = _interpolate;
         wrap                = _wrap;
+        debugAssertGLOk();
         setTexParameters(target, wrap, interpolate, _depthRead);
+        debugAssertGLOk();
     glStatePop();
+    debugAssertGLOk();
 }
 
 
@@ -728,6 +739,7 @@ TextureRef Texture::fromMemory(
 
     debugAssertGLOk();
     TextureRef t = fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension, depthRead);
+    debugAssertGLOk();
 
     t->width = width;
     t->height = height;
@@ -754,7 +766,6 @@ TextureRef Texture::fromMemory(
         
 
     for (int f = 0; f < numFaces; ++f) {
-
         arrayMipMapFaces[0].append(bytes[f]);
     }
 

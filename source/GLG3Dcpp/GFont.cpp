@@ -25,6 +25,7 @@ GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
         "You must call RenderDevice::init before constructing a GFont");
     debugAssertM(renderDevice->supportsTextureFormat(TextureFormat::A8),
         "This graphics card does not support the GL_ALPHA8 texture format used by GFont.");
+    debugAssertGLOk();
 
     if (! fileExists(filename)) {
         debugAssertM(false, format("ERROR: Could not load font: %s", filename.c_str()));

@@ -115,7 +115,11 @@ public:
 		RGBF   = 0x0010,
 
 		// uint8 color
-        RGB24  = 0x0011
+        RGB24  = 0x0011,
+
+        // Scalar percentage
+        INT_PCT    = 0x0030,
+        FLOAT_PCT    = 0x0031
     };
 
     struct ChunkHeader {
@@ -218,6 +222,8 @@ public:
         */
         int                         hierarchyIndex;
 
+        int nodeID;
+
         /** TRI_LOCAL chunk (transformed to G3D coordinates).  
             In the file, this has <B>already been applied</B> to the
             vertices.
@@ -276,6 +282,9 @@ public:
      Read either of the 3DS color chunk types and return the result.
      */
     Color3 read3DSColor();
+
+    /** Read a percentage chunk */
+    float read3DSPct();
 
     /**
      Reads (and ignores) TCB information from a track part of 
@@ -441,9 +450,19 @@ void Load3DS::processMaterialChunk(
             break;
 
         case MATSHININESS:
+			material.shininess = read3DSPct();
+            break;
+
+        case MATSHIN2PCT:
+			material.shininessStrength = read3DSPct();
+            break;
+
+        case MATTRANSPARENCY:
+            material.transparency = read3DSPct();
             break;
 
 		case MATTWOSIDE:
+            // Carries no data.  The presence of this chunk always means two-sided.
 			material.twoSided = true;
 			break;
 
@@ -665,7 +684,9 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
 
             case MESH_VERSION:
                 meshVersion = b->readUInt16();
-                debugAssertM(meshVersion == 3, "Unsupported 3DS mesh version");
+                if (meshVersion != 3) {
+                    Log::common()->printf("Unsupported 3DS mesh version (%d)\n", meshVersion);
+                }
                 break;
 
 
@@ -776,6 +797,9 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
                     break;
 
                 case KFHIERARCHY:
+                    if (currentObject != -1) {
+                        objectArray[currentObject].nodeID = b->readInt16();
+                    }
                     break;
         default:
             debugPrintf("Skipped unknown chunk 0x%x\n", curChunkHeader.id);
@@ -901,4 +925,26 @@ Color3 Load3DS::read3DSColor() {
     // Jump to the end of the chunk
     b->setPosition(curChunkHeader.end);
 	return color;
+}
+
+
+float Load3DS::read3DSPct() {
+    ChunkHeader curChunkHeader = readChunkHeader();
+    float f = 0.0;
+
+	switch (curChunkHeader.id) {
+	case INT_PCT:
+        f = b->readUInt16() / 65536.0;
+		break;
+
+	case FLOAT_PCT:
+        f = b->readFloat32();
+		break;
+	default:
+		debugAssertM(false, format("Expected a percent chunk, found: %d", curChunkHeader.id));
+	}
+
+    // Jump to the end of the chunk
+    b->setPosition(curChunkHeader.end);
+	return f;
 }

@@ -366,8 +366,19 @@ void GLCaps::loadExtensions(Log* debugLog) {
         _supports_GL_EXT_texture_rectangle = 
             _supports_GL_EXT_texture_rectangle ||
             supports("GL_NV_texture_rectangle");
-    }
 
+
+        // GL_ARB_texture_cube_map doesn't work on Radeon Mobility
+        // GL Renderer:    MOBILITY RADEON 9000 DDR x86/SSE2
+        // GL Version:     1.3.4204 WinXP Release
+        // Driver version: 6.14.10.6430
+        if (beginsWith(_glRenderer, "MOBILITY RADEON 9000 DDR") &&
+            (std::string(_driverVersion) == "6.14.10.6430")) {
+            _supports_GL_EXT_texture_cube_map = false;
+            Log::common()->printf("WARNING: Recognized a bug in ATI Radeon Mobility and"
+                " disabled GL_EXT_texture_cube_map as a workaround.\n");
+        }
+    }
 
     // Don't use more texture units than allowed at compile time.
     if (GLCaps::supports_GL_ARB_multitexture()) {

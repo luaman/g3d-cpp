@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2004-03-28
+  @edited  2004-12-25
  */ 
 
 #ifndef GLG3D_POSEDMODEL_H
@@ -76,6 +76,25 @@ public:
     virtual ~PosedModel() {}
 
     virtual std::string name() const = 0;
+
+    /** If true, this object depends on back-to-front rendering order and should be
+        rendered in sorted order. Default is false.*/
+    virtual bool hasTransparency() const {
+        return false;
+    }
+
+    /** 
+      Divides the inModels into a front-to-back sorted array of opaque models and
+      a back-to-front sorted array of potentially transparent models.  Any data
+      originally in the output arrays is cleared.
+
+      @param wsLookVector Sort axis; usually the -Z axis of the camera.
+     */
+    static void sort(
+        const Array<PosedModelRef>& inModels, 
+        const Vector3&              wsLookVector,
+        Array<PosedModelRef>&       opaque,
+        Array<PosedModelRef>&       transparent);
 
     /** Object to world space coordinate frame.*/
     virtual void getCoordinateFrame(CoordinateFrame& c) const = 0;

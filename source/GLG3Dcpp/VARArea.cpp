@@ -70,11 +70,13 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
 
                 // Load some (undefined) data to initialize the buffer
                 glBufferDataARB(GL_ARRAY_BUFFER_ARB, size, NULL, usage);
+    debugAssertGLOk();    
 
                 // The basePointer is always NULL for a VBO
                 basePointer = NULL;
 
             glPopClientAttrib();
+    debugAssertGLOk();    
         }
         break;
 
