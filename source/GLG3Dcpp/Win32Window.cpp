@@ -50,7 +50,7 @@ static const UINT BLIT_BUFFER = 0xC001;
 #define WGL_SAMPLE_BUFFERS_ARB	0x2041
 #define WGL_SAMPLES_ARB		    0x2042
 
-static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
+static PFNWGLCHOOSEPIXELFORMATEXTPROC wglChoosePixelFormatEXT = NULL;
 
 static unsigned int _sdlKeys[SDLK_LAST];
 static bool keyStates[SDLK_LAST];
@@ -353,25 +353,25 @@ void Win32Window::init(HWND hwnd) {
 
         Array<int> iAttributes;
 
-        iAttributes.append(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
-		iAttributes.append(WGL_SUPPORT_OPENGL_ARB, GL_TRUE);
-		iAttributes.append(WGL_ACCELERATION_ARB,   WGL_FULL_ACCELERATION_ARB);
-        iAttributes.append(WGL_COLOR_BITS_ARB,     settings.rgbBits * 3);
-        iAttributes.append(WGL_RED_BITS_ARB,       settings.rgbBits);
-        iAttributes.append(WGL_GREEN_BITS_ARB,     settings.rgbBits);
-        iAttributes.append(WGL_BLUE_BITS_ARB,      settings.rgbBits);
-        iAttributes.append(WGL_ALPHA_BITS_ARB,     settings.alphaBits);
-        iAttributes.append(WGL_DEPTH_BITS_ARB,     settings.depthBits);
-        iAttributes.append(WGL_STENCIL_BITS_ARB,   settings.stencilBits);
-        iAttributes.append(WGL_DOUBLE_BUFFER_ARB,  GL_TRUE);
-        iAttributes.append(WGL_SAMPLE_BUFFERS_ARB, settings.fsaaSamples > 1);
-		iAttributes.append(WGL_SAMPLES_ARB,        settings.fsaaSamples);
-        iAttributes.append(WGL_STEREO_ARB,         settings.stereo);
+        iAttributes.append(WGL_DRAW_TO_WINDOW_EXT, GL_TRUE);
+		iAttributes.append(WGL_SUPPORT_OPENGL_EXT, GL_TRUE);
+		iAttributes.append(WGL_ACCELERATION_EXT,   WGL_FULL_ACCELERATION_EXT);
+        iAttributes.append(WGL_COLOR_BITS_EXT,     settings.rgbBits * 3);
+        iAttributes.append(WGL_RED_BITS_EXT,       settings.rgbBits);
+        iAttributes.append(WGL_GREEN_BITS_EXT,     settings.rgbBits);
+        iAttributes.append(WGL_BLUE_BITS_EXT,      settings.rgbBits);
+        iAttributes.append(WGL_ALPHA_BITS_EXT,     settings.alphaBits);
+        iAttributes.append(WGL_DEPTH_BITS_EXT,     settings.depthBits);
+        iAttributes.append(WGL_STENCIL_BITS_EXT,   settings.stencilBits);
+        iAttributes.append(WGL_DOUBLE_BUFFER_EXT,  GL_TRUE);
+        iAttributes.append(WGL_SAMPLE_BUFFERS_EXT, settings.fsaaSamples > 1);
+		iAttributes.append(WGL_SAMPLES_EXT,        settings.fsaaSamples);
+        iAttributes.append(WGL_STEREO_EXT,         settings.stereo);
         iAttributes.append(0, 0); // end sentinel
         
         uint32 numFormats;
 
-        int valid = wglChoosePixelFormatARB(
+        int valid = wglChoosePixelFormatEXT(
             _hDC,
             iAttributes.getCArray(), 
             NULL,
@@ -1170,8 +1170,8 @@ void Win32Window::initWGL() {
     // We've now brought OpenGL online.  Grab the pointers we need and 
     // destroy everything.
 
-    wglChoosePixelFormatARB =
-        (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+    wglChoosePixelFormatEXT =
+        (PFNWGLCHOOSEPIXELFORMATEXTPROC)wglGetProcAddress("wglChoosePixelFormatEXT");
 
     // Now destroy everything
     wglDeleteContext(hRC);					
