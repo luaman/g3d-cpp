@@ -58,27 +58,7 @@ public:
 };
 
 /**
-  The GApp classes are provisional: the interface is likely to change (or they might
-  even go away) in the future.  You don't <B>have</B> to use these-- it is fine
-  to instantiate RenderDevice and the other classes yourself.
-
-  <B>GApp/GApplet structure</B>
-
-  You have one GApp subclass that handles any state shared between all pieces of your
-  program.
-  
-  You create one or more GApplet subclasses and instantiate them at the beginning
-  of the program (typically, they will be stored in your GApp subclass).  Each corresponds
-  to a different major UI state.  For example, the main menu of a game is one GApplet,
-  and the actual game screen is another.  If you have a big in-game menu that is modal,
-  that can be another GApplet.
-
-  You write code that calls GApplet::run on the current GApplet.  That applet
-  releases control by setting GApplet::endApplet = true.  Your master loop
-  (implemented inside the GApp::main) then chooses the next GApplet
-  to run and invokes run() on it.  If anything sets GApp::endProgram to true,
-  the entire program should quit.
-
+  See @link guideapp @endlink for the philosophy of GApp and GApplet. 
  */
 class GApp {
 private:
