@@ -282,6 +282,32 @@ public:
     virtual ~CImage();
 
     /**
+     Resizes the internal buffer to (width x height) with the
+     number of channels specified.  All data is set to 0 (black).
+     */
+    void resize(int width, int height, int channels);
+
+
+    /**
+     Copies src sub-image data into dest at a certain offset.  
+     The dest variable must already contain an image that is large
+     enough to contain the src sub-image at the specified offset.
+     Returns true on success and false if the src sub-image cannot
+     completely fit within dest at the specified offset.  Both
+     src and dest must have the same number of channels.
+     */
+    static bool pasteSubImage(CImage & dest, const CImage & src,
+        int destX, int destY, int srcX, int srcY, int srcWidth, int srcHeight);
+
+    /**
+     creates dest from src sub-image data.  
+     Returns true on success and false if the src sub-image
+     is not within src.
+     */
+    static bool copySubImage(CImage & dest, const CImage & src,
+        int srcX, int srcY, int srcWidth, int srcHeight);
+
+    /**
       Returns true if format is supported.  Format
       should be an extension string (e.g. "BMP").
      */

@@ -77,9 +77,9 @@ void drawCharByParams(int x, int z, double footy, int n) {
     CoordinateFrame cframe(Vector3(x * 6 + (z % 2) * 2, -footy, z * 6));
     cframe.rotation.fromAxisAngle(Vector3::UNIT_Y, n * .5 + 4);
 
-
     if (modelTexture.size() > 0) {
-        renderDevice->setTexture(0, modelTexture[(n + 1 + z * 2) % modelTexture.size()]);
+        renderDevice->setTexture(0,
+            modelTexture[(n + 1 + z * 2) % modelTexture.size()]);
     }
 
     drawCharWithShadow(cframe, pose);
@@ -94,8 +94,9 @@ void doGraphics() {
 
     // Some models have part of their geometry stored in the "weapon" file.
     // Darth Maul, for example, has his lower half in the weapon.
-    const double footy = 0.98 * min(model.boundingBox(MD2Model::STAND).getCorner(0).y, 
-            weapon.boundingBox(MD2Model::STAND).getCorner(0).y);
+    const double footy = 0.98 *
+            min(model.boundingBox(MD2Model::STAND).getCorner(0).y, 
+                weapon.boundingBox(MD2Model::STAND).getCorner(0).y);
 
     renderDevice->beginFrame();
         renderDevice->clear(true, true, true);
@@ -147,8 +148,9 @@ void doGraphics() {
             double x = 10;
             double y = 10;
             double f = 16;
+            int fontSize = (batchScreen) ? (22) : (30);
             font->draw2DString(model.name, renderDevice->getWidth()/2, 
-renderDevice->getHeight() - 45, 30, Color3::BLACK, Color3::WHITE, CFont::XALIGN_CENTER);
+renderDevice->getHeight() - 45, fontSize, Color3::BLACK, Color3::WHITE, CFont::XALIGN_CENTER);
 
             if (!screenshot) {
                 font->draw2DString(format("%d fps", 
@@ -181,10 +183,10 @@ Color3::BLACK); y += f * 1.5;
 Color3::BLACK); y += f * 1.5;
                 font->draw2DString("Z           single screen", x, y, f, Color3::CYAN, 
 Color3::BLACK); y += f * 1.5;
-                font->draw2DString("X           batch screen", x, y, f, Color3::CYAN, 
-Color3::BLACK); y += f * 1.5;
             }
         renderDevice->pop2D();
 	   
     renderDevice->endFrame();
 }
+
+

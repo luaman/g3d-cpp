@@ -2302,16 +2302,17 @@ static std::string currentDateString() {
 }
 
 
-std::string RenderDevice::screenshot(const std::string& filepath) const {
-
+void RenderDevice::screenshotPic(CImage& dest) const
+{
     // Read back the front buffer
     glReadBuffer(GL_FRONT);
     
-    CImage im = CImage(screenWidth, screenHeight);
-    glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, im.byte());
+    dest.resize(screenWidth, screenHeight, 3);
+    glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB,
+            GL_UNSIGNED_BYTE, dest.byte());
 
     // Flip right side up
-    flipRGBVertical(im.byte(), im.byte(), screenWidth, screenHeight);
+    flipRGBVertical(dest.byte(), dest.byte(), screenWidth, screenHeight);
 
     // Restore the read buffer to the back
     glReadBuffer(GL_BACK);
@@ -2323,16 +2324,25 @@ std::string RenderDevice::screenshot(const std::string& filepath) const {
         // Adjust the coloring for gamma correction
         // Lookup table for mapping v -> v * lightSaturation;
         uint8 L[255];
-        uint8 *data = im.byte();
+        uint8 *data = dest.byte();
         
         for (i = 255; i >= 0; --i) {
             L[i] = iMin(255, iRound((double)i * s));
         }
 
-        for (i = im.width * im.height * 3 - 1; i >= 0; --i) {
+        for (i = dest.width * dest.height * 3 - 1; i >= 0; --i) {
             data[i] = L[data[i]];
         }
     }
+}
+
+
+
+std::string RenderDevice::screenshot(const std::string& filepath) const {
+    CImage screen;
+    int i;
+
+    screenshotPic(screen);
 
     // Save the file
     std::string basename = currentDateString();
@@ -2343,7 +2353,7 @@ std::string RenderDevice::screenshot(const std::string& filepath) const {
         ++i;
     } while (fileExists(filename));   
 
-    im.save(filename);
+    screen.save(filename);
 
     return filename;
 }

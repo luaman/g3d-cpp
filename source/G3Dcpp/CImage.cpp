@@ -1358,9 +1358,21 @@ CImage::CImage(
     int                 height,
     int                 channels) {
     
+    _byte = NULL;
+    resize(width, height, channels);
+}
+
+
+void CImage::resize(
+    int                 width,
+    int                 height,
+    int                 channels)
+{
     debugAssert(width >= 0);
     debugAssert(height >= 0);
     debugAssert(channels >= 1);
+
+    clear();
 
     this->width = width;
     this->height = height;
@@ -1407,6 +1419,58 @@ void CImage::clear() {
 CImage& CImage::operator=(const CImage& other) {
     _copy(other);
     return *this;
+}
+
+
+bool CImage::copySubImage(
+    CImage & dest, const CImage & src,
+    int srcX, int srcY, int srcWidth, int srcHeight)
+{
+    if ((src.width < srcX + srcWidth) ||
+        (src.height < srcY + srcHeight) ||
+        (srcY < 0) ||
+        (srcX < 0)) {
+
+        return false;
+    }
+
+    dest.resize(srcWidth, srcHeight, src.channels);
+    
+    bool ret;
+    ret = pasteSubImage(dest, src, 0, 0, srcX, srcY, srcWidth, srcHeight);
+    debugAssert(ret);
+
+    return true;
+}
+
+
+bool CImage::pasteSubImage(
+    CImage & dest, const CImage & src,
+    int destX, int destY,
+    int srcX, int srcY, int srcWidth, int srcHeight)
+{
+    if ((src.width < srcX + srcWidth) ||
+        (src.height < srcY + srcHeight) ||
+        (dest.width < destX + srcWidth) ||
+        (dest.height < destY + srcHeight) ||
+        (srcY < 0) ||
+        (srcX < 0) ||
+        (destY < 0) ||
+        (destX < 0) ||
+        (src.channels != dest.channels)) {
+
+        return false;
+    }
+
+    for (int i = 0; i < srcHeight; i++) {
+        const uint8* srcRow = src.byte() +
+            ((i + srcY) * src.width + srcX) * src.channels;
+        uint8* destRow = dest.byte() +
+            ((i + destY) * dest.width + destX) * dest.channels;
+        memcpy(destRow, srcRow, srcWidth * src.channels);
+    }
+
+    return true;
 }
 
 

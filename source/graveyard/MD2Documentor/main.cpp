@@ -5,12 +5,10 @@
   to produce the MD2 screenshot for documentation.  It is not
   officially supported.
 
-  To take screenshots, set batchScreen = true;
-
   @maintainer Kevin Egan, ktegan@cs.rpi.edu
 
   @created 2002-08-21
-  @edited  2003-08-21
+  @edited  2003-09-05
  */ 
 
 #include <G3DAll.h>
@@ -38,8 +36,13 @@ Array<TextureRef>       modelTexture;
 MD2Model                weapon;
 TextureRef              weaponTexture;
 MD2Model::Pose          pose(MD2Model::STAND, 0);
-bool                    singleScreen     = false;
-bool                    batchScreen      = false;
+bool                    singleScreen    = false;
+bool                    batchScreen     = true;
+int                     batchWidth      = 700;
+int                     batchHeight     = 700;
+CImage*                 batchImage      = NULL;
+int                     screenWidth     = 800;
+int                     screenHeight    = 800;
 
 
 /** Names of all of the models available to load */
@@ -54,6 +57,9 @@ void doSimulation(GameTime timeStep);
 void doGraphics();
 void doScreenshot();
 void doUserInput();
+void setCameraStandard();
+void writeBatchImage();
+void pasteToBatchImage();
 
 RealTime getTime() {
     return SDL_GetTicks() / 1000.0;
@@ -65,7 +71,22 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(800, 600, debugLog, 1.0, false, 2*1024*1024, true, 8, 0, 24, 0);
+
+    
+    // we want to fit 5x3 characters on a 700x700 image
+    if (batchScreen) {
+        screenWidth = batchWidth / 5;
+        screenHeight = batchHeight / 3;
+        batchWidth = screenWidth * 5;
+        batchHeight = screenHeight * 3;
+        batchImage = new CImage(batchWidth, batchHeight, 3);
+
+        // clear to white, which is the background color of the screenshots
+        memset(batchImage->byte(), 255, batchWidth * batchHeight * 3);
+    }
+
+    renderDevice->init(screenWidth, screenHeight, debugLog, 1.0, false,
+        2*1024*1024, true, 8, 0, 24, 0);
     renderDevice->setCaption("G3D::MD2Model Demo");
     camera 	     = new Camera(renderDevice);
 
@@ -73,11 +94,8 @@ int main(int argc, char** argv) {
 
     userInput    = new UserInput();
 
-    camera->setNearPlaneZ(-.1);
     controller   = new ManualCameraController(renderDevice);
-
-    controller->setPosition(Vector3(0, 1, -13));
-    controller->lookAt(Vector3(0,1.6,-8));
+    setCameraStandard();
 
     renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(1, 1, 1));
@@ -140,21 +158,69 @@ int main(int argc, char** argv) {
 }
 
 
+void setCameraStandard()
+{
+    camera->setNearPlaneZ(-.1);
+    if (batchScreen) {
+        controller->setPosition(Vector3(0, 2, -15));
+        controller->lookAt(Vector3(0,1.6,-8));
+    } else {
+        controller->setPosition(Vector3(0, 1, -13));
+        controller->lookAt(Vector3(0,1.6,-8));
+    }
+	camera->setCoordinateFrame(controller->getCoordinateFrame());
+}
+
+void writeBatchImage()
+{
+    std::string subdir = OUTPUT_DIR;
+    batchImage->save(subdir + "collage" +
+                    format("%03d", currentModel / 15) + ".jpg");
+
+    // clear to white, which is the background color of the screenshots
+    memset(batchImage->byte(), 255, batchWidth * batchHeight * 3);
+}
+
+void pasteToBatchImage()
+{
+    int collageNum = currentModel % 15;
+    CImage curScreen;
+
+    int offsetX = (collageNum % 5) * screenWidth;
+    int offsetY = (collageNum / 5) * screenHeight;
+
+    renderDevice->screenshotPic(curScreen);
+    bool ret = CImage::pasteSubImage(*batchImage, curScreen,
+        offsetX, offsetY, 0, 0, screenWidth, screenHeight);
+	debugAssert(ret);
+
+}
+
+
 void doScreenshot() {
     if (singleScreen || batchScreen) {
         std::string subdir = OUTPUT_DIR;
         
         createDirectory(subdir);
-        renderDevice->screenshot(subdir + modelNameArray[currentModel]);
 
         if (singleScreen) {
+            renderDevice->screenshot(subdir + modelNameArray[currentModel]);
             singleScreen = false;
         } else {
+            // paste current screenshot to one panel of batch image
+            pasteToBatchImage();
+            if (currentModel % 15 == 14) {
+                // batch image is full, write it out
+                writeBatchImage();
+            }
+            if (currentModel == modelNameArray.size() - 1) {
+                // wrapped around to beginning, write out the final
+                // batch image and exit
+                writeBatchImage();
+                exit(0);
+            }
             currentModel = (currentModel + 1) % modelNameArray.size();
             load(modelNameArray[currentModel]);
-            if (currentModel == 0) {
-                batchScreen = false;
-            }
         }
     }
 }
@@ -228,12 +294,6 @@ void doUserInput() {
 
             case 'z':
                 singleScreen = true;
-                break;
-
-            case 'x':
-                batchScreen = true;
-                currentModel = 0;
-                load(modelNameArray[currentModel]);
                 break;
 
             case 'e':

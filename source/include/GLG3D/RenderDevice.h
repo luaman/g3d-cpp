@@ -1034,6 +1034,12 @@ public:
      */
     std::string screenshot(const std::string& filepath) const;
 
+    /**
+     Takes a screenshot of the front buffer and
+     puts the data into the CImage dest variable.
+     */
+    void screenshotPic(CImage& dest) const;
+
 	/**
 	 Pixel dimensions of the OpenGL window interior
 	 */
