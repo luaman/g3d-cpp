@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-11-12
+  @edited  2003-11-13
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -483,7 +483,7 @@ public:
     double getTrianglesPerFrame() const;
 
     /**
-     Use ALWAYS_PASS to shut off testing
+     Use ALWAYS_PASS to shut off testing.
      */
     void setDepthTest(DepthTest test);
     void setStencilTest(StencilTest test);
@@ -520,7 +520,8 @@ public:
     /**
      If wrapping is not supported on the device, the nearest mode is
      selected.  Unlike OpenGL, stencil writing and testing are
-     completely independent in this API.
+     independent. You do not need to enable the stencil test to use
+     the stencil op.
 
      Use KEEP, KEEP, KEEP to disable stencil writing.  Equivalent to a
       combination of glStencilTest, glStencilFunc, and glStencilOp
@@ -532,20 +533,20 @@ public:
 
     /**
      Use BLEND_ZERO, BLEND_ONE to shut off blending.
-     Equivalent to glBlendFunc
+     Equivalent to glBlendFunc.
      */
     void setBlendFunc(
         BlendFunc                       src,
         BlendFunc                       dst);
 
     /**
-     Equivalent to glLineWidth
+     Equivalent to glLineWidth.
      */
     void setLineWidth(
         double                          width);
 
     /**
-     Equivalent to glPointSize
+     Equivalent to glPointSize.
      */
     void setPointSize(
         double                          diameter);
@@ -553,7 +554,8 @@ public:
     /**
      This is not the OpenGL MODELVIEW matrix: it is a matrix that maps
      object space to world space.  The actual MODELVIEW matrix
-     is cameraToWorld.inverse() * objectToWorld.
+     is cameraToWorld.inverse() * objectToWorld.  You can retrieve it
+     with getModelViewMatrix.
      */
     void setObjectToWorldMatrix(
         const CoordinateFrame&          cFrame);
@@ -1127,7 +1129,11 @@ public:
      You must also enableLighting.  Ambient light is handled separately.
      Lighting is automatically adjusted to the lightSaturation value.
 
-     setLight(i, NULL) disables a light
+     Lights are specified in <B>world space</B>-- they are not affected
+     by the camera or object matrix.  Unlike OpenGL, you do not need to
+     reset lights after you change the camera matrix.
+
+     setLight(i, NULL) disables a light.
      */
     void setLight(int num, const GLight& light);
     void setLight(int num, void*);
