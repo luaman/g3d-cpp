@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-02-05
+ @edited  2004-02-28
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -30,8 +30,11 @@
 
     #pragma comment(lib, "opengl32.lib")
     #pragma comment(lib, "glu32.lib")
+
     #pragma comment(lib, "sdl.lib")
-    #pragma comment(lib, "sdlmain.lib")
+    #ifndef NO_SDL_MAIN
+        #pragma comment(lib, "sdlmain.lib")
+    #endif
 #endif
 
 #include "GLG3D/glheaders.h"

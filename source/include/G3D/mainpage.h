@@ -398,6 +398,9 @@
 	 <B>_MSC_VER</B> - Use Microsoft x86 assembly when assembly code is needed.
 
     <P>
+     <B>NO_SDL_MAIN</B> - Do not attempt to link against sdlmain.lib.
+
+    <P>
      <B>_DEBUG</B> - Build in in debug mode.  This enables debugAssert, 
      debugBreak, debugAssertM, array bounds checks, etc.
 
