@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-10-02
-  @edited  2004-01-04
+  @edited  2004-05-21
  */
 
 #ifndef G3D_MATRIX4_H
@@ -15,7 +15,9 @@
 namespace G3D {
 
 /**
- Not full featured.  Consider G3D::CoordinateFrame instead.
+  A 4x4 matrix.
+
+  See also G3D::CoordinateFrame, G3D::Matrix3, G3D::Quat
  */
 class Matrix4 {
 private:
@@ -45,6 +47,11 @@ public:
     Matrix4(const double* init);
 
     Matrix4();
+
+	/** Produces an RT transformation that nearly matches this Matrix4.
+	    Because a Matrix4 may not be precisely a rotation and translation,
+		this may introduce error. */
+	class CoordinateFrame approxCoordinateFrame() const;
 
     // Special values.
     // Intentionally not inlined: see Matrix3::identity() for details.

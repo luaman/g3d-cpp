@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2004-02-01
+ @edited  2004-05-21
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -36,10 +36,16 @@ CoordinateFrame abstracts a 4x4 matrix that maps object space to world space:
 CoordinateFrame::rotation is the upper 3x3 submatrix, CoordinateFrame::translation
 is the right 3x1 column.  The 4th row is always [0 0 0 1], so it isn't stored.  
 So you don't have to remember which way the multiplication and transformation work,
- it provides explicit toWorldSpace and toObjectSpace methods.  Also, points, vectors 
+it provides explicit toWorldSpace and toObjectSpace methods.  Also, points, vectors 
 (directions), and surface normals transform differently, so they have separate methods.
  
 Some helper functions transform whole primitives like boxes in and out of object space.
+
+Convert to Matrix4 using CoordinateFrame::toMatrix4.  You <I>can</I> construct a CoordinateFrame
+from a Matrix4 using Matrix4::approxCoordinateFrame, however, because a Matrix4 is more 
+general than a CoordinateFrame, some information may be lost.
+
+See also: G3D::Matrix4, G3D::Quat
 */
 class CoordinateFrame {
 

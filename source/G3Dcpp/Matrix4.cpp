@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-10-02
-  @edited  2004-01-04
+  @edited  2004-05-21
  */
 
 #include "G3D/Matrix4.h"
@@ -362,6 +362,23 @@ double Matrix4::subDeterminant(int excludeRow, int excludeCol) const {
       elt[row[0]][col[0]] * cofactor00 +
       elt[row[0]][col[1]] * cofactor10 +
       elt[row[0]][col[2]] * cofactor20;
+}
+
+
+CoordinateFrame Matrix4::approxCoordinateFrame() const {
+	CoordinateFrame cframe;
+
+	for (int r = 0; r < 3; ++r) {
+		for (int c = 0; c < 3; ++c) {
+			cframe.rotation[r][c] = elt[r][c];
+		}
+		cframe.translation[r] = elt[r][3];
+	}
+
+	// Ensure that the rotation matrix is orthonormal
+	cframe.rotation.orthonormalize();
+
+	return cframe;
 }
 
 } // namespace
