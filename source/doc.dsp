@@ -80,6 +80,10 @@ SOURCE=.\Doxyfile
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\docsource\changelog.h
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-concepts.h"
 # End Source File
 # Begin Source File
@@ -99,10 +103,6 @@ SOURCE=".\docsource\guide-welcome.h"
 SOURCE=.\docsource\license.html
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\docsource\changelog.h
-# End Source File
 # Begin Source File
 
 SOURCE=.\docsource\contributors.h
