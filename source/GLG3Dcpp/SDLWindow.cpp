@@ -3,13 +3,13 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-03-01
+  @edited  2004-03-03
 */
 
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/glcalls.h"
 
-#define SDL_FSAA (SDL_MAJOR_VERSION * 100 + SDL_MINOR_VERSION * 10 + SDL_PATCH_LEVEL > 125)
+#define SDL_FSAA (SDL_MAJOR_VERSION * 100 + SDL_MINOR_VERSION * 10 + SDL_PATCHLEVEL > 125)
 
 
 namespace G3D {
