@@ -36,10 +36,13 @@
 	   <LI>Change <CODE>renderDevice->configureDirectionalLight(i, ...)</CODE> to <CODE>renderDevice->setLight(..., GLight::directional())</CODE>
 	   <LI>Change <CODE>camera->setProjectionAndCameraMatrix()</CODE> to <CODE>renderDevice->setProjectionAndCameraMatrix(camera)</cODE>
 	   <LI>Camera -> GCamera
+	   <LI>CImage -> GImage
+	   <LI>CFont  -> GFont
   </BLOCKQUOTE>
 
    <P>
    <UL>
+     <LI> Renamed CImage to GImage.
 	 <LI> G3D::Matrix3::getRow
 	 <LI> Added optional argument drawCelestialBodies to Sky::create.
      <LI> RenderDevice::getTextureMatrix

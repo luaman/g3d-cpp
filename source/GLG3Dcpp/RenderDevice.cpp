@@ -2415,8 +2415,9 @@ static std::string currentDateString() {
 }
 
 
-void RenderDevice::screenshotPic(CImage& dest) const
-{
+void RenderDevice::screenshotPic(GImage& dest) const {
+    // TODO: adjust for gamma
+
     // Read back the front buffer
     glReadBuffer(GL_FRONT);
     
@@ -2452,7 +2453,7 @@ void RenderDevice::screenshotPic(CImage& dest) const
 
 
 std::string RenderDevice::screenshot(const std::string& filepath) const {
-    CImage screen;
+    GImage screen;
     int i;
 
     screenshotPic(screen);

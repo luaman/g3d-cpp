@@ -1,7 +1,7 @@
 /**
-  @file CImage.h
+  @file GImage.h
 
-  See G3D::CImage for details.
+  See G3D::GImage for details.
 
   @cite JPEG compress/decompressor is the <A HREF="http://www.ijg.org/files/">IJG library</A>, used in accordance with their license.
   @cite JPG code by John Chisholm, using the IJG Library
@@ -18,8 +18,8 @@
 
  */
 
-#ifndef G3D_CIMAGE_H
-#define G3D_CIMAGE_H
+#ifndef G3D_GIMAGE_H
+#define G3D_GIMAGE_H
 
 #include <string>
 #include "G3D/Array.h"
@@ -93,27 +93,27 @@ void flipRGBVertical(
     #include "graphics3D.h"
 
     // Loading from disk:
-    G3D::CImage im1 = G3D::Image("test.jpg");
+    G3D::GImage im1 = G3D::Image("test.jpg");
     
     // Loading from memory:
-    G3D::CImage im2 = G3D::CImage(data, length);
+    G3D::GImage im2 = G3D::GImage(data, length);
 
     // im.pixel is a pointer to RGB color data.  If you want
     // an alpha channel, call RGBtoRGBA or RGBtoARGB for
     // conversion.
 
     // Saving to memory:
-    G3D::CImage im3 = G3D::CImage(width, height);
+    G3D::GImage im3 = G3D::GImage(width, height);
     // (Set the pixels of im3...) 
     uint8* data2;
     int    len2;
-    im3.encode(G3D::CImage::JPEG, data2, len2);
+    im3.encode(G3D::GImage::JPEG, data2, len2);
 
     // Saving to disk
     im3.save("out.jpg");
   </PRE>
  */
-class CImage {
+class GImage {
 private:
     uint8*                _byte;
 
@@ -213,27 +213,27 @@ private:
         Format              maybeFormat);
 
     void _copy(
-        const CImage&       other);
+        const GImage&       other);
 
 public:
 
-    CImage() {
+    GImage() {
         width = height = channels = 0;
         _byte = NULL;
     }
 
     /**
      Load an encoded image from disk and decode it.
-     Throws CImage::Error if something goes wrong.
+     Throws GImage::Error if something goes wrong.
      */
-    CImage(
+    GImage(
         const std::string&  filename,
         Format              format = AUTODETECT);
 
     /**
      Decodes an image stored in a buffer.
     */
-    CImage(
+    GImage(
         const unsigned char*data,
         int                 length,
         Format              format = AUTODETECT);
@@ -241,28 +241,28 @@ public:
     /**
      Create an empty image of the given size.
      */
-    CImage(
+    GImage(
         int                 width,
         int                 height,
         int                 channels = 3);
 
-    CImage(
-        const CImage&       other);
+    GImage(
+        const GImage&       other);
 
-    CImage& operator=(const CImage& other);
+    GImage& operator=(const GImage& other);
 
     /**
-     Returns a new CImage that has 4 channels.  RGB is
-     taken from this CImage and the alpha from the red
+     Returns a new GImage that has 4 channels.  RGB is
+     taken from this GImage and the alpha from the red
      channel of the second image.
      */ 
-    CImage insertRedAsAlpha(const CImage& alpha) const;
+    GImage insertRedAsAlpha(const GImage& alpha) const;
 
     /**
-     Returns a new CImage with 3 channels, removing
+     Returns a new GImage with 3 channels, removing
      the alpha channel if there is one.
      */
-    CImage stripAlpha() const;
+    GImage stripAlpha() const;
 
     /**
      Loads an image from disk (clearing the old one first).
@@ -279,7 +279,7 @@ public:
     /**
      Deallocates the pixels.
      */
-    virtual ~CImage();
+    virtual ~GImage();
 
     /**
      Resizes the internal buffer to (width x height) with the
@@ -296,7 +296,7 @@ public:
      completely fit within dest at the specified offset.  Both
      src and dest must have the same number of channels.
      */
-    static bool pasteSubImage(CImage & dest, const CImage & src,
+    static bool pasteSubImage(GImage & dest, const GImage & src,
         int destX, int destY, int srcX, int srcY, int srcWidth, int srcHeight);
 
     /**
@@ -304,7 +304,7 @@ public:
      Returns true on success and false if the src sub-image
      is not within src.
      */
-    static bool copySubImage(CImage & dest, const CImage & src,
+    static bool copySubImage(GImage & dest, const GImage & src,
         int srcX, int srcY, int srcWidth, int srcHeight);
 
     /**
@@ -338,10 +338,15 @@ public:
     /**
      Does not commit the BinaryOutput when done.
      */
-    void CImage::encode(
+    void GImage::encode(
         Format              format,
         BinaryOutput&       out);
 };
+
+/**
+ @deprecated
+ */
+typedef GImage CImage;
 
 }
 

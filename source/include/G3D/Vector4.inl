@@ -45,7 +45,7 @@ inline Vector4::Vector4(const Vector4& rkVector) {
     w = rkVector.w;
 }
 //----------------------------------------------------------------------------
-inline Vector4::Vector4(const Vector3& rkVector, Real fW) {
+inline Vector4::Vector4(const Vector3& rkVector, float fW) {
     x = rkVector.x;
     y = rkVector.y;
     z = rkVector.z;

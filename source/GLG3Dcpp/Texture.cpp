@@ -299,7 +299,7 @@ TextureRef Texture::fromFile(
     bool opaque = true;
 
     // The six cube map faces, or the one texture and 5 dummys.
-    CImage image[6];
+    GImage image[6];
     const uint8* array[6];
     for (int i = 0; i < 6; ++i) {
         array[i] = NULL;
@@ -385,8 +385,8 @@ TextureRef Texture::fromTwoFiles(
         splitFilename(filename, filenameBase, filenameExt);
     }
     
-    CImage color[6];
-    CImage alpha[6];
+    GImage color[6];
+    GImage alpha[6];
     TextureRef t;
 
     try {
@@ -437,7 +437,7 @@ TextureRef Texture::fromTwoFiles(
         }
     }
 
-    } catch (const CImage::Error& e) {
+    } catch (const GImage::Error& e) {
         Log::common()->printf("\n**************************\n\n"
             "Loading \"%s\" failed. %s\n", e.filename.c_str(),
             e.reason.c_str());
@@ -543,7 +543,7 @@ void Texture::splitFilename(
         filenameBase = filename.substr(0, i);
         filenameExt  = filename.substr(i + 1, filename.size() - i - splitter.length()); 
     } else {
-        throw CImage::Error("Cube map filenames must contain \"*\" as a "
+        throw GImage::Error("Cube map filenames must contain \"*\" as a "
                             "placeholder for up/lf/rt/bk/ft/dn", filename);
     }
 }

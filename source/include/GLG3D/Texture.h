@@ -148,7 +148,7 @@ public:
 
     /**
      Creates a texture from a single image.  The image must have a format understood
-     by CImage.  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
+     by G3D::GImage.  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
      _ft, _bk, ... following the G3D::Sky documentation.
      @param brighten A value to multiply all color channels by; useful for loading
             dark Quake textures.

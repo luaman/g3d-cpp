@@ -266,14 +266,20 @@ void Demo::doGraphics() {
     // The environment map assumes we are always in the center,
     // so zero the translation.
     cframe.translation = Vector3::ZERO;
+    // Environment maps have the X-axis flipped from the default coordinate
+    // system.
     cframe.rotation.setRow(0, -cframe.rotation.getRow(0));
+    // The environment map is in world space.  The reflection vector
+    // will automatically be multiplied by the object->camera space 
+    // transformation by hardware (just like any other vector) so we 
+    // take it back from camera space to world space for the correct
+    // vector.
     app->renderDevice->setTextureMatrix(unit, cframe);
 
     CoordinateFrame boxframe;
     boxframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
-    app->renderDevice->setObjectToWorldMatrix(boxframe);
 
-    glPushAttrib(GL_TEXTURE_BIT);
+    app->renderDevice->setObjectToWorldMatrix(boxframe);
         glActiveTextureARB(GL_TEXTURE0_ARB + unit);
         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
         glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
@@ -285,7 +291,6 @@ void Demo::doGraphics() {
         //Draw::box(Box(Vector3(0,3,2), Vector3(1,4,3)), app->renderDevice, Color3::WHITE);
         Draw::sphere(Sphere(Vector3(0, 3, 2), 2), app->renderDevice, Color3::WHITE);
 
-    glPopAttrib();
     app->renderDevice->popState();
 
 

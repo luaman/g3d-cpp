@@ -2,7 +2,7 @@
  @file Win32_Demo/main.cpp
 
  This demo is a Win32 only program that creates a window in which
- you can set pixels.  It also shows how to use the G3D::CImage class
+ you can set pixels.  It also shows how to use the G3D::GImage class
  to load an image.  This should be sufficient setup to write 
  non-realtime programs like ray tracers and image processing demos.
 
@@ -41,12 +41,12 @@ int WINAPI WinMain(
 
     try {
 
-        G3D::CImage im("Win32_Demo/Cirrus.jpg");
+        G3D::GImage im("Win32_Demo/Cirrus.jpg");
 
         app.create("Win32 Sample Program", im.width, im.height);
         G3D::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
 
-    } catch (G3D::CImage::Error e) {
+    } catch (G3D::GImage::Error e) {
 
         error("Critical Error", e.reason, true);
         return -1;

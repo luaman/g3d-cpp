@@ -136,7 +136,7 @@ public:
      It is much faster to make a rectangular texture and draw using that.
      */
     static void fullScreenImage(
-        const class CImage& im,
+        const class GImage& im,
         RenderDevice*       renderDevice);
 };
 

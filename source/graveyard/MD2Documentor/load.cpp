@@ -40,7 +40,7 @@ TextureRef loadBrightTexture(const std::string& filename, double brighten) {
     } else {
 
         // Brighten the image
-        CImage im(filename);
+        GImage im(filename);
 
         if (im.channels == 3) {
             for (int i = im.width * im.height - 1; i >= 0; --i) {
@@ -104,7 +104,7 @@ void loadSkins(const std::string& dir, double brighten) {
     for (int i = 0; i < textureName.size(); ++i) {
         std::string ext      = filenameExt(textureName[i]);
 
-        if (CImage::supportedFormat(ext)) {
+        if (GImage::supportedFormat(ext)) {
             std::string filename = dir + textureName[i];
             modelTexture.append(loadBrightTexture(filename, brighten));
         }

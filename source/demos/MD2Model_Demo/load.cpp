@@ -49,7 +49,7 @@ void loadSkins(const std::string& dir, double brighten) {
     for (int i = 0; i < textureName.size(); ++i) {
         std::string ext      = filenameExt(textureName[i]);
 
-        if (CImage::supportedFormat(ext)) {
+        if (GImage::supportedFormat(ext)) {
             std::string filename = dir + textureName[i];
             modelTexture.append(Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten));
         }

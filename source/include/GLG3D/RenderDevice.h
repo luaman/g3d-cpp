@@ -1128,9 +1128,9 @@ public:
 
     /**
      Takes a screenshot of the front buffer and
-     puts the data into the CImage dest variable.
+     puts the data into the G3D::GImage dest variable.
      */
-    void screenshotPic(CImage& dest) const;
+    void screenshotPic(GImage& dest) const;
 
 	/**
 	 Pixel dimensions of the OpenGL window interior

@@ -40,7 +40,7 @@ bool                    singleScreen    = false;
 bool                    batchScreen     = true;
 int                     batchWidth      = 700;
 int                     batchHeight     = 700;
-CImage*                 batchImage      = NULL;
+GImage*                 batchImage      = NULL;
 int                     screenWidth     = 800;
 int                     screenHeight    = 800;
 
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
         screenHeight = batchHeight / 3;
         batchWidth = screenWidth * 5;
         batchHeight = screenHeight * 3;
-        batchImage = new CImage(batchWidth, batchHeight, 3);
+        batchImage = new GImage(batchWidth, batchHeight, 3);
 
         // clear to white, which is the background color of the screenshots
         memset(batchImage->byte(), 255, batchWidth * batchHeight * 3);
@@ -184,13 +184,13 @@ void writeBatchImage()
 void pasteToBatchImage()
 {
     int collageNum = currentModel % 15;
-    CImage curScreen;
+    GImage curScreen;
 
     int offsetX = (collageNum % 5) * screenWidth;
     int offsetY = (collageNum / 5) * screenHeight;
 
     renderDevice->screenshotPic(curScreen);
-    bool ret = CImage::pasteSubImage(*batchImage, curScreen,
+    bool ret = GImage::pasteSubImage(*batchImage, curScreen,
         offsetX, offsetY, 0, 0, screenWidth, screenHeight);
 	debugAssert(ret);
 

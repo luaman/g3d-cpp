@@ -67,8 +67,8 @@
 		G3D::Table
 
      <LI><B>Image formats</B> &nbsp; &nbsp;
-		G3D::CImage,
-		G3D::CImage::Error,		
+		G3D::GImage,
+		G3D::GImage::Error,		
         G3D::flipRGBVertical,
   	    G3D::RGBtoARGB,
 		G3D::RGBtoBGR,
@@ -426,7 +426,7 @@
 
    You have an obligation to say "this software is based in part on
    the work of the Independent JPEG Group" in your documentation or
-   application help if you use the CImage class because it is based on
+   application help if you use the G3D::GImage class because it is based on
    the IJG library.  The OpenGL headers and ZLib headers included may
    be freely distributed provided their copyright notices remain
    intact.
@@ -501,7 +501,7 @@
       You agree to be bound by the terms of the Independent JPEG
       Group license for the portions of this library that are based
       on the work of the Independent JPEG Group, <B>if you use those
-      portions</B>.  Note: if you do not use the CImage class,
+      portions</B>.  Note: if you do not use the G3D::CImage class,
       this clause does not apply to you because the linker will
       strip that code from your project.  The <A
       HREF="IJG-README.TXT">IJG-README.TXT</A> file contains the

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-11-06
+ @edited  2003-11-23
 
  Copyright 2002, Morgan McGuire.
  All rights reserved.
@@ -24,7 +24,11 @@ namespace G3D {
 /**
  Produces a debugAssert that no OpenGL error has been produced.
  */
-#define debugAssertGLOk() {GLenum e = glGetError(); debugAssertM(e == GL_NO_ERROR, GLenumToString(e));}
+#ifdef _DEBUG
+    #define debugAssertGLOk() {GLenum e = glGetError(); debugAssertM(e == GL_NO_ERROR, GLenumToString(e));}
+#else
+    #define debugAssertGLOk()
+#endif
 
 /**
  A functional version of glGetIntegerv

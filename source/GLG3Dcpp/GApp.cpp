@@ -181,7 +181,7 @@ void GApplet::run() {
     if (app->catchCommonExceptionsOnInit) {
         try {
             init();
-        } catch (const CImage::Error& e) {
+        } catch (const GImage::Error& e) {
             alwaysAssertM(false, e.reason + ": \"" + e.filename + "\"");
         }
     } else {

@@ -21,7 +21,7 @@ namespace G3D {
 /**
  Represents a Color3 as a packed integer.  Convenient
  for creating unsigned int vertex arrays.  Used by
- CImage as the underlying format.
+ G3D::GImage as the underlying format.
 
  <B>WARNING</B>: Integer color formats are different than
  integer vertex formats.  The color channels are automatically

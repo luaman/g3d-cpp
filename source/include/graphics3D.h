@@ -62,7 +62,7 @@
 #include "G3D/g3dmath.h"
 #include "G3D/fileutils.h"
 #include "G3D/ReferenceCount.h"
-#include "G3D/CImage.h"
+#include "G3D/GImage.h"
 #include "G3D/CollisionDetection.h"
 #include "G3D/Log.h"
 #include "G3D/TextInput.h"

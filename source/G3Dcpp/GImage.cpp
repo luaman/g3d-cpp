@@ -1,10 +1,10 @@
 /**
-  @file CImage.cpp
+  @file GImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
   @edited  2003-09-02
  */
-#include "G3D/CImage.h"
+#include "G3D/GImage.h"
 #include "G3D/debug.h"
 
 extern "C" {
@@ -361,7 +361,7 @@ void flipRGBVertical(
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-void CImage::encodeBMP(
+void GImage::encodeBMP(
     BinaryOutput&       out) {
 
     debugAssert(channels == 3);
@@ -477,7 +477,7 @@ void CImage::encodeBMP(
 }
 
 
-void CImage::encodeTGA(
+void GImage::encodeTGA(
     BinaryOutput&       out) {
 
     out.setEndian(G3D_LITTLE_ENDIAN);
@@ -539,7 +539,7 @@ void CImage::encodeTGA(
 }
 
 
-void CImage::encodeJPEG(
+void GImage::encodeJPEG(
     BinaryOutput&           out) {
     debugAssert(channels == 3);
     out.setEndian(G3D_LITTLE_ENDIAN);
@@ -609,7 +609,7 @@ void CImage::encodeJPEG(
 }
 
 
-void CImage::decode(
+void GImage::decode(
     BinaryInput&        input,
     Format              format) {
 
@@ -641,7 +641,7 @@ void CImage::decode(
 }
 
 
-void CImage::decodeTGA(
+void GImage::decodeTGA(
     BinaryInput&        input) {
 
     // This is a simple TGA loader that can handle uncompressed
@@ -736,7 +736,7 @@ void CImage::decodeTGA(
 }
 
 
-void CImage::decodeBMP(
+void GImage::decodeBMP(
     BinaryInput&            input) {
 
     // The BMP decoding uses these flags.
@@ -1011,7 +1011,7 @@ void CImage::decodeBMP(
 }
 
 
-void CImage::decodeJPEG(
+void GImage::decodeJPEG(
     BinaryInput&                input) {
 
 	struct jpeg_decompress_struct   cinfo;
@@ -1129,7 +1129,7 @@ void CImage::decodeJPEG(
 
 
 
-void CImage::decodePCX(
+void GImage::decodePCX(
     BinaryInput&                input) {
 
     uint8  manufacturer = input.readUInt8();
@@ -1160,7 +1160,7 @@ void CImage::decodePCX(
     channels = 3;
 
     if ((manufacturer != 0x0A) || (encoding != 0x01)) {
-        throw CImage::Error("PCX file is corrupted", input.getFilename());
+        throw GImage::Error("PCX file is corrupted", input.getFilename());
     }
 
     (void)version;
@@ -1168,7 +1168,7 @@ void CImage::decodePCX(
     (void)horizDPI;
 
     if ((bitsPerPixel != 8) || ((planes != 1) && (planes != 3))) {
-        throw CImage::Error("Only 8-bit paletted and 24-bit PCX files supported.", input.getFilename());
+        throw GImage::Error("Only 8-bit paletted and 24-bit PCX files supported.", input.getFilename());
     }
 
 	// Prepare the pointer object for the pixel data
@@ -1250,11 +1250,11 @@ void CImage::decodePCX(
         }
 
     } else {
-        throw CImage::Error("Unsupported PCX file type.", input.getFilename());
+        throw GImage::Error("Unsupported PCX file type.", input.getFilename());
     }
 }
 
-CImage::Format CImage::resolveFormat(
+GImage::Format GImage::resolveFormat(
     const std::string&  filename,
     const uint8*        data,
     int                 dataLen,
@@ -1317,7 +1317,7 @@ CImage::Format CImage::resolveFormat(
 }
 
 
-CImage::CImage(
+GImage::GImage(
     const std::string&  filename,
     Format              format) : _byte(NULL), width(0), height(0), channels(0){
     
@@ -1325,7 +1325,7 @@ CImage::CImage(
 }
 
 
-void CImage::load(
+void GImage::load(
     const std::string&  filename,
     Format              format) {
 
@@ -1340,7 +1340,7 @@ void CImage::load(
 }
 
 
-CImage::CImage(
+GImage::GImage(
     const uint8*        data,
     int                 length,
     Format              format) {
@@ -1353,7 +1353,7 @@ CImage::CImage(
 }
 
 
-CImage::CImage(
+GImage::GImage(
     int                 width,
     int                 height,
     int                 channels) {
@@ -1363,7 +1363,7 @@ CImage::CImage(
 }
 
 
-void CImage::resize(
+void GImage::resize(
     int                 width,
     int                 height,
     int                 channels)
@@ -1382,8 +1382,8 @@ void CImage::resize(
 }
 
 
-void CImage::_copy(
-    const CImage&       other) {
+void GImage::_copy(
+    const GImage&       other) {
 
     clear();
 
@@ -1397,33 +1397,33 @@ void CImage::_copy(
 }
 
 
-CImage::CImage(
-    const CImage&        other) : _byte(NULL) {
+GImage::GImage(
+    const GImage&        other) : _byte(NULL) {
 
     _copy(other);
 }
 
 
-CImage::~CImage() {
+GImage::~GImage() {
     clear();
 }
 
 
-void CImage::clear() {
+void GImage::clear() {
     width = 0;
     height = 0;
     free(_byte);
     _byte = NULL;
 }
 
-CImage& CImage::operator=(const CImage& other) {
+GImage& GImage::operator=(const GImage& other) {
     _copy(other);
     return *this;
 }
 
 
-bool CImage::copySubImage(
-    CImage & dest, const CImage & src,
+bool GImage::copySubImage(
+    GImage & dest, const GImage & src,
     int srcX, int srcY, int srcWidth, int srcHeight)
 {
     if ((src.width < srcX + srcWidth) ||
@@ -1444,8 +1444,8 @@ bool CImage::copySubImage(
 }
 
 
-bool CImage::pasteSubImage(
-    CImage & dest, const CImage & src,
+bool GImage::pasteSubImage(
+    GImage & dest, const GImage & src,
     int destX, int destY,
     int srcX, int srcY, int srcWidth, int srcHeight)
 {
@@ -1474,14 +1474,14 @@ bool CImage::pasteSubImage(
 }
 
 
-bool CImage::supportedFormat(
+bool GImage::supportedFormat(
     const std::string& format) {
 
     return (stringToFormat(format) != UNKNOWN);
 }
 
 
-CImage::Format CImage::stringToFormat(
+GImage::Format GImage::stringToFormat(
     const std::string& format) {
 
     std::string extension = toUpper(format);
@@ -1500,7 +1500,7 @@ CImage::Format CImage::stringToFormat(
 }
 
 
-void CImage::save(
+void GImage::save(
     const std::string& filename,
     Format             format) {
 
@@ -1510,7 +1510,7 @@ void CImage::save(
 }
 
 
-void CImage::encode(
+void GImage::encode(
     Format              format,
     uint8*&             outData,
     int&                outLength) {
@@ -1526,7 +1526,7 @@ void CImage::encode(
     out.commit(outData);
 }
 
-void CImage::encode(
+void GImage::encode(
     Format              format,
     BinaryOutput&       out) {
 
@@ -1548,11 +1548,11 @@ void CImage::encode(
     }
 }
 
-CImage CImage::insertRedAsAlpha(const CImage& alpha) const {
+GImage GImage::insertRedAsAlpha(const GImage& alpha) const {
     debugAssert(alpha.width == width);
     debugAssert(alpha.height == height);
 
-    CImage out(width, height, 4);
+    GImage out(width, height, 4);
 
     for (int i = 0; i < width * height; ++i) {
         out.byte()[i * 4 + 0] = byte()[i * channels + 0];
@@ -1565,8 +1565,8 @@ CImage CImage::insertRedAsAlpha(const CImage& alpha) const {
 }
 
 
-CImage CImage::stripAlpha() const {
-    CImage out(width, height, 3);
+GImage GImage::stripAlpha() const {
+    GImage out(width, height, 3);
 
     for (int i = 0; i < width * height; ++i) {
         out.byte()[i * 3 + 0] = byte()[i * channels + 0];
