@@ -154,6 +154,22 @@ inline Vector4 sign(const Vector4& v) {
     return Vector4(sign(v.x), sign(v.y), sign(v.z), sign(v.w));
 }
 
+inline double length(float v) {
+    return abs(v);
+}
+
+inline double length(const Vector2& v) {
+    return v.length();
+}
+
+inline double length(const Vector3& v) {
+    return v.length();
+}
+
+inline double length(const Vector4& v) {
+    return v.length();
+}
+
 }
 
 #endif

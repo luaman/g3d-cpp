@@ -8,7 +8,6 @@
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
-
  */
 
 #ifndef G3D_BINARYOUTPUT_H
