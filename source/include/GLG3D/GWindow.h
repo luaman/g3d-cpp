@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-10-02
+  @edited  2004-10-08
 */
 
 #ifndef G3D_GWINDOW_H
@@ -219,7 +219,8 @@ public:
      Returns the state of the given joystick.  Not all sticks support all buttons and
      axes and frequently the state of one stick overlaps the state of another.
      An asserition fails if stickNum > numJoysticks().
-     Joystick axes are normalized to the range [-1, 1] (but might not be calibrated...)
+     Joystick axes are normalized to the range [-1, 1] (but might not be calibrated...).
+     Joystick axes should be in the starting order: X, Y, Z, Slider1, Slider2, rX, rY, rZ
      */
     virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) = 0;
 
