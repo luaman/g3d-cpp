@@ -57,7 +57,7 @@ YType linearSpline(double x, const XType* controlX, const YType* controlY, int n
 
  
 
-template<class YType> cyclicCatmullRomSpline(
+template<class YType> YType cyclicCatmullRomSpline(
     double       t,
     const YType* controlY,
     int          numPoints) {
@@ -95,7 +95,7 @@ template<class YType> cyclicCatmullRomSpline(
 
  @cite http://www.mvps.org/directx/articles/catmull/
 */
-template<class YType> cyclicCatmullRomSpline(
+template<class YType> YType cyclicCatmullRomSpline(
     double       t,
     const Array<YType>&  controlY) {
 
