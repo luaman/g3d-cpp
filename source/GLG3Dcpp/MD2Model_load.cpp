@@ -95,7 +95,7 @@ void MD2Model::reset() {
     indexArray.clear();
     _texCoordArray.clear();
     faceArray.clear();
-    valentArray.clear();
+    adjacentFaceArray.clear();
     edgeArray.clear();
 }
 
@@ -281,7 +281,7 @@ void MD2Model::load(const std::string& filename) {
         }
     }
 
-    computeAdjacency();
+    computeAdjacency(keyFrame[0].vertexArray);
 
     initialized = true;
 }
@@ -375,28 +375,21 @@ void MD2Model::computeTexCoords(
  */
 class MD2DirectedEdgeKey {
 public:
-    /**
-     vertex0, normal0, vertex1, normal1
-     */
     Vector3 vertex[2];
-    uint8   normal[2];
 
     MD2DirectedEdgeKey() {}
     
     MD2DirectedEdgeKey(
-        const Vector3& v0, uint8 n0,
-        const Vector3& v1, uint8 n1) {
+        const Vector3& v0,
+        const Vector3& v1) {
         vertex[0] = v0;
-        normal[0] = n0;
-
         vertex[1] = v1;
-        normal[1] = n1;
     }
 
 
     bool operator==(const G3D::MD2DirectedEdgeKey& e2) const {
         for (int i = 0; i < 2; ++i) {
-            if ((vertex[i] != e2.vertex[i]) || (normal[i] != e2.normal[i])) {
+            if (vertex[i] != e2.vertex[i]) {
                 return false;
             }
         }
@@ -411,7 +404,7 @@ public:
 unsigned int hashCode(const G3D::MD2DirectedEdgeKey& e) {
     unsigned int h = 0;
     for (int i = 0; i < 2; ++i) {
-        h = (h << 7) + e.vertex[i].hashCode() + e.normal[i];
+        h = (h << 7) + e.vertex[i].hashCode();
     }
     return h;
 }
@@ -497,9 +490,10 @@ public:
 static Array<MD2FaceAreas> faceAreas;
 
 
-void MD2Model::computeAdjacency() {
-
-    valentArray.resize(keyFrame[0].vertexArray.size());
+void MD2Model::computeAdjacency(const Array<Vector3>& vertexArray) {
+    
+    adjacentFaceArray.resize(0);
+    adjacentFaceArray.resize(vertexArray.size());
     faceArray.resize(indexArray.size() / 3);
     edgeArray.resize(0);
     faceAreas.resize(0);
@@ -511,18 +505,16 @@ void MD2Model::computeAdjacency() {
 
         Face& face = faceArray[f];
 
-        // Vertex and normal
+        // Verte
         Vector3 v[3];
-        uint8   n[3];
 
         // Construct the face
         for (int j = 0; j < 3; ++j) {
             int i = indexArray[q + j];
 
             face.vertexIndex[j] = i;
-            valentArray[i].append(f);
-            v[j] = keyFrame[0].vertexArray[i];
-            n[j] = keyFrame[0].normalArray[i];
+            adjacentFaceArray[i].append(f);
+            v[j] = vertexArray[i];
         }
 
         const double area = (v[1] - v[0]).cross(v[2] - v[0]).length() * 0.5;
@@ -533,7 +525,7 @@ void MD2Model::computeAdjacency() {
             int i0 = indexArray[q + j];
             int i1 = indexArray[q + nextIndex[j]];
 
-            face.edgeIndex[j] = findEdgeIndex(i0, i1, f, area);
+            face.edgeIndex[j] = findEdgeIndex(keyFrame[0].vertexArray, i0, i1, f, area);
         }
     }
 
@@ -543,20 +535,17 @@ void MD2Model::computeAdjacency() {
 
 
 int MD2Model::findEdgeIndex(
+    const Array<Vector3>& vertexArray,
     int            i0,
     int            i1,
     int            f,
     double         area) {
 
-    const Vector3& v0 = keyFrame[0].vertexArray[i0];
-    const uint8    n0 = keyFrame[0].normalArray[i0];
-
-    const Vector3& v1 = keyFrame[0].vertexArray[i1];
-    const uint8    n1 = keyFrame[0].normalArray[i1];
-
+    const Vector3& v0 = vertexArray[i0];
+    const Vector3& v1 = vertexArray[i1];
 
     // First see if the forward directed edge already exists
-    const MD2DirectedEdgeKey forward (v0, n0, v1, n1);
+    const MD2DirectedEdgeKey forward(v0, v1);
 
     int e = edgeTable.get(forward);
 
@@ -573,7 +562,7 @@ int MD2Model::findEdgeIndex(
     }
     
     // Second see if the backward directed edge already exists
-    const MD2DirectedEdgeKey backward(v1, n1, v0, n0);
+    const MD2DirectedEdgeKey backward(v1, v0);
     e = edgeTable.get(backward);
 
     if (e != MD2EdgeTable::NO_EDGE) {

@@ -590,12 +590,12 @@ const Array<MD2Model::Face>& MD2Model::faces() const {
 }
 
 
-const Array<MD2Model::Edge>& MD2Model::edges() const {
+const Array<MD2Model::Edge>& MD2Model::geometricEdges() const {
     return edgeArray;
 }
 
-const Array< Array<int> >& MD2Model::valent() const {
-    return valentArray;
+const Array< Array<int> >& MD2Model::adjacentFaces() const {
+    return adjacentFaceArray;
 }
 
 
@@ -605,9 +605,9 @@ size_t MD2Model::mainMemorySize() const {
     size_t indexSize   = indexArray.size() * sizeof(int);
     size_t faceSize    = faceArray.size() * sizeof(Face);
     size_t texSize     = _texCoordArray.size() * sizeof(Vector2int16);
-    size_t valentSize  = valentArray.size() * sizeof(Array<int>);
-    for (int i = 0; i < valentArray.size(); ++i) {
-        valentSize += valentArray[i].size() * sizeof(int);
+    size_t valentSize  = adjacentFaceArray.size() * sizeof(Array<int>);
+    for (int i = 0; i < adjacentFaceArray.size(); ++i) {
+        valentSize += adjacentFaceArray[i].size() * sizeof(int);
     }
 
     size_t primitiveSize  = primitiveArray.size() * sizeof(Primitive);

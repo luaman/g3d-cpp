@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-09-11
+ @edited  2003-09-14
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -124,6 +124,11 @@ public:
 
         /** May be slightly less than unit length due to interpolation.*/
         Array<Vector3>          normalArray;
+
+        void clear() {
+            vertexArray.clear();
+            normalArray.clear();
+        }
     };
 
 
@@ -279,7 +284,7 @@ protected:
     /**
      Set on load by computeAdjacency();
      */
-    Array< Array<int> >         valentArray;
+    Array< Array<int> >         adjacentFaceArray;
 
     /**
      Set on load by computeAdjacency().
@@ -297,8 +302,9 @@ protected:
     
     /**
      Computes faceArray and edgeArray.  Called from load().
+     @param vertexArray Vertex positions to use when deciding colocation
      */
-    void computeAdjacency();
+    void computeAdjacency(const Array<Vector3>& vertexArray);
 
     /**
      Creates a texCoordArray to parallel the vertex and normal arrays,
@@ -314,15 +320,12 @@ protected:
      edgeArray[e] is set to f.  Otherwise, a new edge is created from i0 to i1
      with first face index f and its index is returned.
     
-     (The normals are used during comparison
-      because the integer quantization of vertices can cause
-     two vertices that aren't supposed to be colocated to collapse for one frame.)
-
      @param area Area of face f.  When multiple edges of the same direction 
        are found between the same vertices (usually because of degenerate edges)
        the face with larger area is kept in the edge table.
      */
-    int MD2Model::findEdgeIndex(int i0, int i1, int f, double area);
+    int MD2Model::findEdgeIndex(const Array<Vector3>& vertexArray,
+        int i0, int i1, int f, double area);
 
     /**
       Called from render() to create the vertex arrays.  Assumes VAR is
@@ -353,20 +356,26 @@ public:
     const Array<Face>& faces() const;
 
     /**
-     Assumes that vertices colocated in the 0 frame of the STAND animation with
-     identical per-vertex normals are colocated for all frames.  If they are
-     not, some edges may be missing from this array.
+     Edges built by assuming colocated vertices are identical.
+
+     Assumes that vertices colocated in the 0 frame of the STAND animation 
+     are colocated for all frames.
 
      When a degenerate polygon lies along an edge, that edge is present
      in this array once, not three times.
      */
-    const Array<Edge>& edges() const;
+    const Array<Edge>& geometricEdges() const;
 
     /**
-     valent()[v] is an array of indices of faces that touch vertex v.
+     adjacentFaces()[v] is an array of indices of faces that touch vertex v.
      Note that two vertices may be colocated but have different indices.
      */
-    const Array< Array<int> >& valent() const;
+    const Array< Array<int> >& adjacentFaces() const;
+
+    /**
+     TODO
+     */
+    const Array< Array<int> >& adjacentEdges() const;
 
     /**
      @filename The tris.md2 file
