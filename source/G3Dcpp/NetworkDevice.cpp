@@ -510,7 +510,7 @@ uint64 Conduit::messagesReceived() const {
 
 
 bool Conduit::ok() const {
-    return sock != 0;
+    return (sock != 0) && (sock != SOCKET_ERROR);
 }
 
 
@@ -584,17 +584,17 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
     int ret = connect(sock, (struct sockaddr *) &(addr.addr), sizeof(addr.addr));
 
     if (ret == WSAEWOULDBLOCK) {
-
         RealTime t = System::getTick() + 5;
         // Non-blocking; we must wait in select
         while ((selectOneWriteSocket(sock) == 0) && (System::getTick() < t)) {
-            #ifdef G3D_WIN32
-                Sleep(2);
-            #endif
+            System::sleep(0.02);
         }
+
+        // TODO: check for failure on the select call
 
     } else if (ret != 0) {
         if (nd->debugLog) {
+            sock = SOCKET_ERROR;
             nd->debugLog->println("FAIL");
             nd->debugLog->println(windowsErrorCode());
         }
@@ -1064,4 +1064,3 @@ bool NetListener::clientWaiting() const {
 
 
 } // namespace
-
