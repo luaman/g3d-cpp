@@ -1,10 +1,10 @@
 /**
   @file Texture.h
 
-  @maintainer Morgan McGuire, morgan@blueaxion.com
+  @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-03-31
+  @edited  2003-04-10
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -15,12 +15,17 @@
 
 namespace G3D {
 
+    
+typedef ReferenceCountedPointer<class Texture> TextureRef;
+
 /**
+
  Abstraction of OpenGL textures.  This class can be used with raw OpenGL, 
  without RenderDevice or SDL.
 
  If you use TextureRef instead of Texture*, the texture memory will be
  garbage collected.
+
 
  If you enable texture compression, textures will be compressed on the fly.
  This can be slow (up to a second).
@@ -183,6 +188,7 @@ public:
         int                         internalAlphaChannelBits = -1,
         bool                        internalCompress      = false);    
 
+
     /**
      Copies data from screen into an existing texture (replacing whatever was
      previously there).  The dimensions must be powers of two or a texture 
@@ -276,7 +282,6 @@ public:
 
 };
 
-typedef ReferenceCountedPointer<class Texture> TextureRef;
 
 } // namespace
 

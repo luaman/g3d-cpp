@@ -13,6 +13,7 @@ libGLG3D_la_SOURCES= Camera.cpp \
 					 UserInput.cpp \
 					 VARSystem.cpp \
 					 VAR.cpp \
+					 VertexProgram.cpp \
 					 getOpenGLState.cpp \
 					 glcalls.cpp \
 					 glenumtostring.cpp 
@@ -30,6 +31,7 @@ libGLG3D_debug_la_SOURCES= Camera.cpp \
 						   UserInput.cpp \
 						   VARSystem.cpp \
 						   VAR.cpp \
+	  					   VertexProgram.cpp \
 						   getOpenGLState.cpp \
 						   glcalls.cpp \
 						   glenumtostring.cpp 

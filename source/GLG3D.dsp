@@ -139,6 +139,10 @@ SOURCE=.\GLG3Dcpp\VAR.cpp
 
 SOURCE=.\GLG3Dcpp\VARSystem.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\VertexProgram.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -366,6 +370,10 @@ SOURCE=.\include\GLG3D\UserInput.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\VAR.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\VertexProgram.h
 # End Source File
 # End Group
 # End Target

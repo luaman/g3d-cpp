@@ -87,7 +87,7 @@
      <UL>
       <LI>OpenGL Abstraction
         <BR><BLOCKQUOTE>G3D::RenderDevice, G3D::VAR, G3D::VARArea, 
-        G3D::Texture, G3D::TextureRef</BLOCKQUOTE>
+        G3D::Texture, G3D::TextureRef, G3D::VertexProgram, G3D::VertexProgramRef</BLOCKQUOTE>
 
       <LI>OpenGL 
         <BR><BLOCKQUOTE>G3D::glLoadMatrix, G3D::glLoadInvMatrix, 
