@@ -424,7 +424,7 @@ static void increaseBufferSize(SOCKET sock, Log* debugLog) {
     // Increase the buffer size; the default (8192) is too easy to
     // overflow when the network latency is high.
     {
-        uint32 val = 1024*1024*2;
+        uint32 val = 1024 * 1024 * 2;
         if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, 
                        (char*)&val, sizeof(val)) == SOCKET_ERROR) {
             if (debugLog) {
@@ -449,7 +449,9 @@ static void increaseBufferSize(SOCKET sock, Log* debugLog) {
 
 ReliableConduit::ReliableConduit(
     NetworkDevice*      _nd,
-    const NetAddress&   _addr) : Conduit(_nd), receiveBufferSize(0), receiveBufferLen(0), receiveBuffer(NULL) {
+    const NetAddress&   _addr) : 
+    Conduit(_nd), receiveBufferUsedSize(0), 
+        receiveBufferTotalSize(0), receiveBuffer(NULL) {
 
     messageType         = 0;
     alreadyReadType     = false;
@@ -526,7 +528,7 @@ ReliableConduit::ReliableConduit(
     NetworkDevice*    _nd, 
     const SOCKET&      _sock, 
     const NetAddress&  _addr) : Conduit(_nd), receiveBuffer(NULL), 
-    receiveBufferSize(0), receiveBufferLen(0) {
+    receiveBufferTotalSize(0), receiveBufferUsedSize(0) {
     sock                = _sock;
     addr                = _addr;
 
@@ -538,7 +540,8 @@ ReliableConduit::ReliableConduit(
 ReliableConduit::~ReliableConduit() {
     free(receiveBuffer);
     receiveBuffer = NULL;
-    receiveBufferSize = 0;
+    receiveBufferTotalSize = 0;
+    receiveBufferUsedSize = 0;
 }
 
 
@@ -665,131 +668,22 @@ NetAddress ReliableConduit::address() const {
 
 
 bool ReliableConduit::receive(NetMessage* m) {
-
-    static const RealTime timeToWaitForFragmentedPacket = 5; // seconds
-
-    // This both checks to ensure that a message was waiting and
-    // actively consumes the message type if it has not been read
-    // yet.
-    uint32 t = waitingMessageType();
-    if (t == 0) {
-        return false;
-    }
-
-    if (m != NULL) {
-        debugAssert(t == m->type());
-    }
-
-    // Reset the waiting message tracker.
-    messageType = 0;
-    alreadyReadType = false;
-
-    uint8* buffer        = NULL;
-    bool freeBuffer      = true;
-
-    // Read the size
-    uint32 len;
-    int ret = recv(sock, (char*)&len, sizeof(len), 0);
-
-    if ((ret == SOCKET_ERROR) || (ret != sizeof(len))) {
-        if (nd->debugLog) {
-            nd->debugLog->printf("Call to recv failed.  ret = %d,"
-                                 " sizeof(len) = %d\n", ret, sizeof(len));
-            nd->debugLog->println(socketErrorCode());
-        }
-        nd->closesocket(sock);
-        return false;
-    }
-
-    len = ntohl(len);
-    debugAssert(len >= 0);
-    debugAssert(len < 6000000);
-
-    // Allocate space for the packet
-    if (len < 512) {
-        // Allocate on the stack
-        buffer = (uint8*)_alloca(len);
-        freeBuffer = false;
+    if (m == NULL) {
+        receive();
     } else {
-        buffer = (uint8*)malloc(len);
-    }
-
-    if (buffer == NULL) {
-        if (nd->debugLog) {
-            nd->debugLog->println("Could not allocate a memory buffer "
-                                  "during receivePacket.");
-        }
-        nd->closesocket(sock);
-        return false;
-    }
-
-    // Read the data itself
-    ret = 0;
-    int left = len;
-    int count = 0;
-    while ((ret != SOCKET_ERROR) && (left > 0) && (count < 12)) {
-
-        ret = recv(sock, ((char*)buffer) + (len - left), left, 0);
-
-        // Sometimes we get only part of a packet
-        if (ret > 0) {
-            left -= ret;
-
-            if (left > 0) {
-                if (nd->debugLog) {
-                    nd->debugLog->printf("WARNING: recv() on partial "
-                         "packet of length %d bytes, attempt #%d.  "
-                         "Read %d bytes this time, %d bytes remaining\n",
-                         len, count + 1, ret, left);
-                }
-                ++count;
-
-                // Give the machine a chance to read more data, but
-                // don't wait forever
-                RealTime t = System::time() + timeToWaitForFragmentedPacket;
-                while (! messageWaiting() && (System::time() < t)) {
-                    System::sleep(0.001);
-                }
-            }
-        } else if (ret == 0) {
-            break;
-        }
-    }
-
-    if ((ret == 0) || (ret == SOCKET_ERROR) || (left != 0)) {
-        if (freeBuffer) {
-            free(buffer);
-            buffer = NULL;
+        bool success = receiveIntoBuffer();
+        if (! success) {
+            return false;
         }
 
-        if (nd->debugLog) {
-            if (ret == SOCKET_ERROR) {
-                nd->debugLog->printf("Call to recv failed.  ret = %d,"
-                     " sizeof(len) = %d\n", ret, len);
-                nd->debugLog->println(socketErrorCode());
-            } else {
-                nd->debugLog->printf("Expected %d bytes from recv "
-                     "and got %d.", len, len - left);
-            }
-        }
-        nd->closesocket(sock);
-        return false;
-    }
-
-    ++mReceived;
-    bReceived += len + 4;
-
-    // Deserialize
-    if (m != NULL) {
-        BinaryInput b(buffer, ret, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
+        // Deserialize
+        BinaryInput b((uint8*)receiveBuffer, receiveBufferUsedSize, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         m->deserialize(b);
+        
+        // Don't let anyone read this message again.  We leave the buffer
+        // allocated for the next caller, however.
+        receiveBufferUsedSize = 0;
     }
-
-    if (freeBuffer) {
-        free(buffer);
-        buffer = NULL;
-    }
-    
     return true;
 }
 
@@ -826,12 +720,12 @@ bool ReliableConduit::receiveIntoBuffer() {
     len = ntohl(len);
     debugAssert(len >= 0);
     debugAssert(len < 6000000);
-    receiveBufferLen = len;
+    receiveBufferUsedSize = len;
 
-    if (len > receiveBufferSize) {
+    if (len > receiveBufferTotalSize) {
         // Extend the size of the buffer.
         receiveBuffer = realloc(receiveBuffer, len);
-        receiveBufferSize = len;
+        receiveBufferTotalSize = len;
     }
 
     if (receiveBuffer == NULL) {

@@ -193,14 +193,22 @@ private:
      */
     uint32                          messageType;
 
+    /** 
+     Total size of the incoming message. 
+     */
+    uint32                          messageSize;
+
     // Not yet in use
     void*                           receiveBuffer;
 
     /** Total size of the receiveBuffer */
-    size_t                          receiveBufferSize;
+    size_t                          receiveBufferTotalSize;
 
-    /** Size occupied by the current message. */
-    int                             receiveBufferLen;
+    /** Size occupied by the current message... so far.  This will be
+        equal to messageSize when the whole message has arrived. 
+      */
+    int                             receiveBufferUsedSize;
+
 
     ReliableConduit(class NetworkDevice* _nd, const NetAddress& addr);
 
@@ -365,19 +373,20 @@ public:
         }
 
         // Deserialize
-        BinaryInput b((uint8*)receiveBuffer, receiveBufferLen, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
+        BinaryInput b((uint8*)receiveBuffer, receiveBufferUsedSize, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         message.deserialize(b);
         
         // Don't let anyone read this message again.  We leave the buffer
         // allocated for the next caller, however.
-        receiveBufferLen = 0;
+        receiveBufferUsedSize = 0;
 
         return true;
     }
 
     /** Removes the current message from the queue. */
     inline void receive() {
-        receive((NetMessage*)NULL);
+        receiveIntoBuffer();
+        receiveBufferUsedSize = 0;
     }
 
     NetAddress address() const;
