@@ -137,7 +137,7 @@ namespace G3D {  namespace _internal {
      this display to release the mouse/input grab when an assertion
      fails.
      */
-    extern Display*      X11Display;
+    extern Display*      x11Display;
 
     /**
      A pointer to the X11 window.  Initially NULL.  If set to a
@@ -145,7 +145,7 @@ namespace G3D {  namespace _internal {
      this window to release the mouse/input grab when an assertion
      fails.
      */
-    extern Window        X11Window;
+    extern Window        x11Window;
 #endif
 
 /**

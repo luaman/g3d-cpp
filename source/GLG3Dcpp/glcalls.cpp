@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2004-04-30
+  @edited  2004-05-02
 */
 
 #include "GLG3D/glcalls.h"
@@ -153,6 +153,9 @@ PFNGLXDESTROYGLXPBUFFERSGIX glXDestroyGLXPbufferSGIX = NULL;
 PFNGLXQUERYGLXPBUFFERSGIX glXQueryGLXPbufferSGIX = NULL;
 PFNGLXCHOOSEFBCONFIGSGIX glXChooseFBConfigSGIX = NULL;
 PFNGLXCREATECONTEXTWITHCONFIGSGIX glXCreateContextWithConfigSGIX = NULL;
+
+PFNGLXGETCURRENTDISPLAYPROC glXGetCurrentDisplay = NULL;
+PFNGLXGETCURRENTDRAWABLEPROC glXGetCurrentDrawable = NULL;
 
 #endif
 

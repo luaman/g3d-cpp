@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-04-25
+  @edited  2004-05-02
 */
 
 #include "GLG3D/SDLWindow.h"
@@ -184,8 +184,18 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         _X11Window  = info.info.x11.window;
         _X11WMWindow  = info.info.x11.wmwindow;
 
-        G3D::_internal::X11Display = info.info.x11.display;
-        G3D::_internal::X11Window  = info.info.x11.window;
+        if (glXGetCurrentDisplay != NULL) {
+            G3D::_internal::X11Display = glXGetCurrentDisplay();
+        } else {
+            G3D::_internal::X11Display = info.info.x11.display;
+        }
+
+        if (glXGetCurrentDrawable != NULL) {
+            // A Drawable appears to be either a Window or a Pixmap
+            G3D::_internal::x11Window  = glXGetCurrentDrawable();
+        } else {
+            G3D::_internal::x11Window  = info.info.x11.window;
+        }
     #endif
 
     // Adjust window position
@@ -572,23 +582,23 @@ bool SDLWindow::inputCapture() const {
 
 #if defined(G3D_LINUX)
 
-Window SDLWindow::X11Window() const {
+Window SDLWindow::x11Window() const {
     return _X11Window;
 }
 
 
-Display* SDLWindow::X11Display() const {
+Display* SDLWindow::x11Display() const {
     return _X11Display;
 }
 
 #elif defined(G3D_WIN32)
 
-HDC SDLWindow::Win32HDC() const {
+HDC SDLWindow::win32HDC() const {
     return _Win32HDC;
 }
 
 
-HWND SDLWindow::Win32HWND() const {
+HWND SDLWindow::win32HWND() const {
     return _Win32HWND;
 }
 

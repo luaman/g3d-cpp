@@ -120,11 +120,11 @@ public:
     ::SDL_Joystick* getSDL_Joystick(unsigned int num) const;
 
     #if defined(G3D_LINUX)
-        Window   X11Window() const;
-        Display* X11Display() const;
+        Window   x11Window() const;
+        Display* x11Display() const;
     #elif defined(G3D_WIN32)
-        HDC      Win32HDC() const;
-        HWND     Win32HWND() const;
+        HDC      win32HDC() const;
+        HWND     win32HWND() const;
     #endif
 };
 

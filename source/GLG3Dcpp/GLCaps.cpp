@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-04-30
+  @edited  2004-05-02
 */
 
 #include "GLG3D/GLCaps.h"
@@ -190,6 +190,9 @@ void GLCaps::loadExtensions() {
         LOAD_EXTENSION(glXQueryGLXPbufferSGIX);
         LOAD_EXTENSION(glXChooseFBConfigSGIX);
         LOAD_EXTENSION(glXCreateContextWithConfigSGIX);
+
+        LOAD_EXTENSION(glXGetCurrentDisplay);
+        LOAD_EXTENSION(glXGetCurrentDrawable);
     #endif
 
     #undef LOAD_EXTENSION

@@ -31,8 +31,8 @@ using namespace std;
 namespace G3D { namespace _internal {
 
 #ifdef G3D_LINUX
-    Display*      X11Display = NULL;
-    Window        X11Window  = 0;
+    Display*      x11Display = NULL;
+    Window        x11Window  = 0;
 #endif
 
 
@@ -246,19 +246,19 @@ void _releaseInputGrab_() {
         ClipCursor(NULL);
         
     #elif defined(G3D_LINUX)
-        if (X11Display != NULL) {
+        if (x11Display != NULL) {
             XUngrabPointer(X11Display, CurrentTime);
             XUngrabKeyboard(X11Display, CurrentTime);
-            if (X11Window != 0) {
+            if (x11Window != 0) {
                 //XUndefineCursor(X11Display, X11Window);
                 // TODO: Note that we leak this cursor; it should be
                 // freed in the restore code.
-                Cursor c = XCreateFontCursor(X11Display, 68);
-                XDefineCursor(X11Display, X11Window, c);
+                Cursor c = XCreateFontCursor(x11Display, 68);
+                XDefineCursor(x11Display, x11Window, c);
             }
-            XSync(X11Display, false);           
-            XAllowEvents(X11Display, AsyncPointer, CurrentTime);
-            XFlush(X11Display);
+            XSync(x11Display, false);           
+            XAllowEvents(x11Display, AsyncPointer, CurrentTime);
+            XFlush(x11Display);
         }
     #elif defined(G3D_OSX)
         // TODO: OS X
