@@ -37,6 +37,19 @@ enum G3DEndian {G3D_BIG_ENDIAN, G3D_LITTLE_ENDIAN};
 /**
  OS and processor abstraction.  The first time any method is called the processor
  will be analyzed.  Future calls are then fast.
+
+ Timing function overview:
+    System::getCycleCount
+      - actual cycle count
+
+    System::getTick
+      - High-resolution time in seconds since program started
+
+    System::getLocalTime
+      - High-resolution time in seconds since Jan 1, 1970
+        (because it is stored in a double, this may be less
+         accurate than getTick)
+
  */
 class System {
 public:
