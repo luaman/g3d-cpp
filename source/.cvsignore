@@ -7,6 +7,9 @@ aclocal.m4
 ltmain.sh
 missing
 mkinstalldirs
+Makefile.in
+libtool
+stamp-h1
 *~
 *.pyc
 *.ncb
