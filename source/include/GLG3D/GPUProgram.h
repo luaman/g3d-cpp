@@ -127,8 +127,8 @@ private:
 public:
      /**
      Argument list for a vertex program.
-     See RenderDevice::setVertexProgram.
-     
+     See RenderDevice::setVertexProgram
+     and RenderDevice::setPixelProgram.
      */
     class ArgList {
     private:
