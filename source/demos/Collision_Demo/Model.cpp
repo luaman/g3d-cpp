@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-07-21
+ @edited  2003-11-23
  */
 
 #include "Model.h"

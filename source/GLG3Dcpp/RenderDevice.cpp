@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-11-13
+ @edited  2003-11-23
  */
 
 
@@ -2703,7 +2703,50 @@ debugAssertGLOk();
         }    
     }
 debugAssertGLOk();    
+}
 
+
+void RenderDevice::configureShadowMap(
+    uint                unit,
+    const Matrix4&      lightMVP,
+    const TextureRef&   shadowMap) {
+
+    debugAssertM(shadowMap->getFormat()->OpenGLBaseFormat == GL_DEPTH_COMPONENT,
+        "Can only configure shadow maps from depth textures");
+
+    debugAssertM(supportsOpenGLExtension("GL_ARB_shadow"),
+        "The device does not support shadow maps");
+    
+	// Set up tex coord generation - all 4 coordinates required
+    setTexture(unit, shadowMap);
+    
+    glActiveTextureARB(GL_TEXTURE0_ARB + unit);
+
+    static const Matrix4 bias(
+        0.5f, 0.0f, 0.0f, 0.5f,
+        0.0f, 0.5f, 0.0f, 0.5f,
+        0.0f, 0.0f, 0.5f, 0.5f - .000001,
+        0.0f, 0.0f, 0.0f, 1.0f);
+    
+    Matrix4 textureMatrix = glGetMatrix(GL_TEXTURE_MATRIX);
+
+	Matrix4 textureProjectionMatrix2D =
+        textureMatrix * bias * lightMVP;
+
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+	glTexGenfv(GL_S, GL_EYE_PLANE, textureProjectionMatrix2D[0]);
+	glEnable(GL_TEXTURE_GEN_S);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+	glTexGenfv(GL_T, GL_EYE_PLANE, textureProjectionMatrix2D[1]);
+	glEnable(GL_TEXTURE_GEN_T);
+	glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+	glTexGenfv(GL_R, GL_EYE_PLANE, textureProjectionMatrix2D[2]);
+	glEnable(GL_TEXTURE_GEN_R);
+	glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+	glTexGenfv(GL_Q, GL_EYE_PLANE, textureProjectionMatrix2D[3]);
+	glEnable(GL_TEXTURE_GEN_Q);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 }
 
 } // namespace

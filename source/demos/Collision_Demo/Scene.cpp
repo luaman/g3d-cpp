@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-11-19
+ @edited  2003-11-23
  */
 
 #include "Scene.h"
@@ -117,6 +117,8 @@ void Scene::render(const LightingParameters& lighting) const {
     CoordinateFrame lightCFrameInverse(lightCFrame.inverse());
     Matrix4 lightViewMatrix(lightCFrameInverse);
 
+    Matrix4 lightMVP = lightProjectionMatrix * lightViewMatrix;
+
     generateShadowMap(lightCFrame);
     
     if (debugLightMap) {
@@ -131,17 +133,14 @@ void Scene::render(const LightingParameters& lighting) const {
 
     renderDevice->pushState();
 
-    // Setup lighting
-    renderDevice->enableLighting();
-    renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
-    renderDevice->setAmbientLightColor(lighting.ambient);
-    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+        // Ambient and detail light pass
+        renderDevice->enableLighting();
+        renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
+        renderDevice->setAmbientLightColor(lighting.ambient);
+        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+        renderingPass();
 
-    // Ambient and detail light pass
-    renderingPass();
-
-    // Sun light pass
-    renderDevice->pushState();
+        // Sun light pass
         renderDevice->setAmbientLightColor(Color3::BLACK);
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         renderDevice->disableDepthWrite();
@@ -149,49 +148,13 @@ void Scene::render(const LightingParameters& lighting) const {
 
         renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
-        renderDevice->setTexture(0, shadowMap);
-
-        glPushAttrib(GL_ALL_ATTRIB_BITS);
-        
-	    // Set up tex coord generation - all 4 coordinates required
-        static const Matrix4 bias(
-            0.5f, 0.0f, 0.0f, 0.5f,
-            0.0f, 0.5f, 0.0f, 0.5f,
-            0.0f, 0.0f, 0.5f, 0.5f,
-            0.0f, 0.0f, 0.0f, 1.0f);
-        
-        Matrix4 textureMatrix = glGetMatrix(GL_TEXTURE_MATRIX);
-
-	    Matrix4 textureProjectionMatrix2D =
-            textureMatrix * bias * lightProjectionMatrix * lightViewMatrix;
-
-	    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-	    glTexGenfv(GL_S, GL_EYE_PLANE, textureProjectionMatrix2D[0]);
-	    glEnable(GL_TEXTURE_GEN_S);
-	    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-	    glTexGenfv(GL_T, GL_EYE_PLANE, textureProjectionMatrix2D[1]);
-	    glEnable(GL_TEXTURE_GEN_T);
-	    glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-	    glTexGenfv(GL_R, GL_EYE_PLANE, textureProjectionMatrix2D[2]);
-	    glEnable(GL_TEXTURE_GEN_R);
-	    glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-	    glTexGenfv(GL_Q, GL_EYE_PLANE, textureProjectionMatrix2D[3]);
-	    glEnable(GL_TEXTURE_GEN_Q);
-
-        // TODO: move this to Texture
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
-
+        renderDevice->configureShadowMap(1, lightMVP, shadowMap);
         renderingPass();
-
-        glPopAttrib();
-    renderDevice->popState();
-
     renderDevice->popState();
 
     if (sky != NULL) {
         sky->renderLensFlare(lighting);
     }
-
 }
 
 

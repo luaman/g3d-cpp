@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-11-16
+  @edited  2003-11-23
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -28,7 +28,6 @@ namespace G3D {
  Number of hardware texture units to track state for.
  */
 #define MAX_TEXTURE_UNITS 8
-
 
 
 /**
@@ -1237,6 +1236,23 @@ public:
      to wait for a milestone that was not set since it was last waited for.
      */
     void waitForMilestone(const MilestoneRef& m);
+
+    /**
+     Call within RenderDevice::pushState()...popState() so that you can
+     restore the texture coordinate generation
+
+     @param lightMVP The modelview projection matrix that
+            was used to render the shadow map originally
+            (you can get this from RenderDevice::getModelViewProjectionMatrix() 
+            while rendering the shadow map).
+     @param unit The texture unit to use for shadowing. 0...RenderDevice::numTextureUnits()
+            That unit cannot be used for texturing at the same time.
+     */
+
+    void configureShadowMap(
+        uint                unit,
+        const Matrix4&      lightMVP,
+        const TextureRef&   shadowMap);
 
     #ifdef _WIN32
         HDC getWindowHDC() const;
