@@ -655,6 +655,7 @@ void testCollision() {
 
 
 
+
 int main(int argc, char* argv[]) {
 
     Triangle t(Vector3(-.413, -.49, -.52), Vector3(-.422, -.43, -.55), Vector3(-.402, -.39, -.61));
