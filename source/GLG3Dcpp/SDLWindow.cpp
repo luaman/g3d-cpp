@@ -30,6 +30,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         SDL_VERSION(&info.version);
         SDL_GetWMInfo(&info);
         G3D::_internal::X11Display = info.info.x11.display;
+        G3D::_internal::X11Window  = info.info.x11.window;
     #endif
 
     _mouseVisible = true;

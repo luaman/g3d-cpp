@@ -137,6 +137,14 @@ namespace G3D {  namespace _internal {
      fails.
      */
     extern Display*      X11Display;
+
+    /**
+     A pointer to the X11 window.  Initially NULL.  If set to a
+     non-null value (e.g. by SDLWindow), debugAssert attempts to use
+     this window to release the mouse/input grab when an assertion
+     fails.
+     */
+    extern Window        X11Window;
 #endif
 
 /**

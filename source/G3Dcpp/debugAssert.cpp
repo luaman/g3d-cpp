@@ -32,6 +32,7 @@ namespace G3D { namespace _internal {
 
 #ifdef G3D_LINUX
     Display*      X11Display = NULL;
+    Window        X11Window  = 0;
 #endif
 
 
@@ -245,11 +246,14 @@ void _releaseInputGrab_() {
         ClipCursor(NULL);
         
     #elif defined(G3D_LINUX)
-        printf("X11Display = 0x%x\n", X11Display);
         if (X11Display != NULL) {
-            printf("Releasing input\n");
             XUngrabPointer(X11Display, CurrentTime);
             XUngrabKeyboard(X11Display, CurrentTime);
+            if (X11Window != 0) {
+                XUndefineCursor(X11Display, X11Window);
+                // Cursor c = XCreateFontCursor(X11Display, XC_left_ptr);
+                // XDefineCursor(X11Display, X11Window, c);
+            }
             XSync(X11Display, false);           
         }
     #elif defined(G3D_OSX)
