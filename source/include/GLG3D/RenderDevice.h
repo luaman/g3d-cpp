@@ -427,9 +427,13 @@ public:
     /** Returns true if colorWrite is enabled */
     bool colorWrite() const;
 
-    /** @deprecated Use setAlphaWrite */
+    /** Defaults to true if the screen has an alpha channel, otherwise
+        defaults to false.
+        @deprecated Use setAlphaWrite */
     void enableAlphaWrite();
     void disableAlphaWrite();
+    /** Defaults to true if the screen has an alpha channel, otherwise
+        defaults to false. */
     void setAlphaWrite(bool b);
 
     /** @deprecated Use setDepthWrite */

@@ -167,17 +167,13 @@ void Demo::doLogic() {
         app->endProgram = true;
     }
 
-    if (app->userInput->keyPressed(' ')) {
-        GImage im;
-        app->renderDevice->screenshotPic(im, false, true);
-        im.save("c:/tmp/foo.tga");
-    }
 	// Add other key handling here
 }
 
 
 void Demo::doGraphics() {
 
+    app->renderDevice->enableAlphaWrite();
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2005-01-30
+ @edited  2005-02-14
  */
 
 
@@ -149,6 +149,7 @@ GWindow* RenderDevice::window() const {
 
 bool RenderDevice::init(GWindow* window, Log* log) {
     debugAssert(! initialized());
+    debugAssert(window);
 
     _swapBuffersAutomatically = true;
     swapGLBuffersPending = false;
@@ -348,6 +349,10 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     if (debugLog) debugLog->println("Done initializing RenderDevice.\n");
 
     _initialized = true;
+
+    if (alphaBits != 0) {
+        enableAlphaWrite();
+    }
 
     return true;
 }

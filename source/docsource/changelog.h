@@ -23,6 +23,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::RenderDevice::setAlphaWrite now defaults to true if the GWindow has an alpha channel.
+     <LI> G3D::RenderDevice::screenshotPic now supports alpha
      <LI> contrib/VideoSerializer
      <LI> G3D::BinaryOutput::writeBits, G3d::BinaryInput::readBits
      <LI> G3D::Sky can now be initialized with a NULL renderDevice, provided a non-null one
