@@ -138,7 +138,7 @@ VertexAndPixelShader::VertexAndPixelShader(
 	    GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
 	    glGetInfoLogARB(_glProgramObject, maxLength, &length, pInfoLog);
 
-        _messages += std::string(pInfoLog) + "\n";
+        _messages += std::string("Linking\n") + std::string(pInfoLog) + "\n";
 	    free(pInfoLog);
         _ok = _ok && (linked == GL_TRUE);
     }
