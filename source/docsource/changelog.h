@@ -12,6 +12,9 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added coordinate system documentation.
+     <LI> RenderDevice::enableClip2D, RenderDevice::disableClip2D (scissor region)
+     <LI> contrib/wxGWindow is stable and full featured-- use wxWidgets 2.5.3 with G3D!
      <LI> G3D::fileIsNewer
      <LI> G3D::isDirectory
      <LI> G3D::filenameContainsWildcards
@@ -61,6 +64,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: filenameBaseExt now operates correctly on strings with both \ and / slashes.
      <LI> Fix: [ 1062659 ] BinaryInput::BinaryInput() memory leak
      <LI> Fix: Removed RenderDevice::polygonCount, which was never used.
      <LI> Fix: TextInput::readNumber no longer accepts double preceeding +/- on numbers when Options::signedNumbers is true

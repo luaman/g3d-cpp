@@ -40,8 +40,13 @@ Tutorial <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD><
   transformations (the concatenation of the first two is the equivalent of the OpenGL ModelView
   matrix).
 
-  The default coordinate system is right-handed with Y=up, X=right, and Z=towards viewer.  
-  Objects "look" along their negative z-axis.
+  <IMG SRC="coords.png" ALIGN = RIGHT>
+
+  The default 3D coordinate system is right-handed with Y=up, X=right, and Z=towards viewer.  
+  Objects "look" along their negative z-axis.  G3D assumes a compatible "world space" where 
+  Y=up, X=East, and Z=South.  The default 2D coordinate system (for 2D clipping, textures,
+  and viewport) has the origin in the upper-left, with Y extending downward and X extending
+  to the right.
 
   @section ref Reference Counting
   

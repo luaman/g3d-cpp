@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-08-18
+  @edited  2004-12-18
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -451,6 +451,19 @@ public:
         BlendFunc                       src,
         BlendFunc                       dst,
         BlendEq                         eq = BLENDEQ_ADD);
+
+    /** 
+      Sets a 2D clipping region (OpenGL scissor region) relative to the current window
+      dimensions (not the viewport).
+      Prevents rendering outside the clip region.  Use disableClip2D to turn off.
+
+      Default is off.
+
+      Note that the clip uses G3D 2D coordinates, where the upper-left of the window
+      is (0, 0).
+      */
+    void enableClip2D(const Rect2D& clip);
+    void disableClip2D();
 
     /**
      Equivalent to glLineWidth.
@@ -907,6 +920,8 @@ private:
 
 
         Rect2D                      viewport;
+        Rect2D                      clip2D;
+        bool                        useClip2D;
 
         GLight                      light[MAX_LIGHTS];
         bool                        lightEnabled[MAX_LIGHTS];

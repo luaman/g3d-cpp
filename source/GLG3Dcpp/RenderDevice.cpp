@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-10-30
+ @edited  2004-12-19
  */
 
 
@@ -498,6 +498,7 @@ void RenderDevice::setVideoMode() {
 
         glDepthFunc(GL_LEQUAL);
         glEnable(GL_DEPTH_TEST);
+        glDisable(GL_SCISSOR_TEST);
 
         glDisable(GL_BLEND);
         glDisable(GL_POLYGON_OFFSET_FILL);
@@ -640,6 +641,8 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     // in init();
     viewport                    = Rect2D::xywh(0, 0, width, height);
 
+    useClip2D                   = false;
+
     depthWrite                  = true;
     colorWrite                  = true;
     alphaWrite                  = false;
@@ -760,6 +763,12 @@ void RenderDevice::setState(
     }
 
     setViewport(newState.viewport);
+
+    if (newState.useClip2D) {
+        enableClip2D(newState.clip2D);
+    } else {
+        disableClip2D();
+    }
     
     if (newState.depthWrite) {
         enableDepthWrite();
@@ -1161,6 +1170,25 @@ void RenderDevice::setViewport(const Rect2D& v) {
         _glViewport(v.x0(), getHeight() - v.y1(), v.width(), v.height());
         state.viewport = v;
     }
+}
+
+
+void RenderDevice::enableClip2D(const Rect2D& clip) {
+    state.clip2D = clip;
+    glScissor(clip.x0(), getHeight() - (clip.y0() + clip.height()), clip.width(), clip.height());
+
+    if (! state.useClip2D) {
+        glEnable(GL_SCISSOR_TEST);
+    }
+    state.useClip2D = true;
+}
+
+
+void RenderDevice::disableClip2D() {
+    if (state.useClip2D) {
+        glDisable(GL_SCISSOR_TEST);
+    }
+    state.useClip2D = false;
 }
 
 

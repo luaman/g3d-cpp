@@ -490,7 +490,7 @@ std::string filenameBaseExt(const std::string& filename) {
     int i = filename.rfind("/");
     int j = filename.rfind("\\");
 
-    if ((j < i) && (j >= 0)) {
+    if ((j > i) && (j >= 0)) {
         i = j;
     }
 
@@ -523,7 +523,7 @@ std::string filenamePath(const std::string& filename) {
     int i = filename.rfind("/");
     int j = filename.rfind("\\");
 
-    if ((j < i) && (j >= 0)) {
+    if ((j > i) && (j >= 0)) {
         i = j;
     }
 

@@ -29,11 +29,18 @@ void wxGWindow::makeAttribList(
         const GWindowSettings&  settings,
         Array<int>&             attribList) {
 
+    // The wx attrib list does not contain exclusively pairs; some options
+    // are either present or absent (e.g. WX_GL_STEREO).
+
     attribList.clear();
     attribList.append(WX_GL_RGBA, 1);
     attribList.append(WX_GL_LEVEL, 0);
-    attribList.append(WX_GL_DOUBLEBUFFER, 1);
-    attribList.append(WX_GL_STEREO, settings.stereo ? 1 : 0);
+
+    attribList.append(WX_GL_DOUBLEBUFFER);
+
+    if (settings.stereo) {
+        attribList.append(WX_GL_STEREO);
+    }
     attribList.append(WX_GL_MIN_RED, settings.rgbBits);
     attribList.append(WX_GL_MIN_GREEN, settings.rgbBits);
     attribList.append(WX_GL_MIN_BLUE, settings.rgbBits);
@@ -42,6 +49,7 @@ void wxGWindow::makeAttribList(
         (settings.depthBits == 24 || settings.depthBits == -1) ? 
         32 : settings.depthBits);
     attribList.append(WX_GL_STENCIL_SIZE, settings.stencilBits); 
+    attribList.append(0);
 }
 
 wxGWindow::wxGWindow(
@@ -70,6 +78,17 @@ wxGWindow::wxGWindow(
         parent, id, pos, size, 0, 
         "WxWindow", attribList.getCArray(), 
         wxNullPalette);
+
+    glGetIntegerv(GL_DEPTH_BITS, &settings.depthBits);
+    glGetIntegerv(GL_STENCIL_BITS, &settings.stencilBits);
+
+    int redBits, greenBits, blueBits;
+    glGetIntegerv(GL_RED_BITS,   &redBits);
+    glGetIntegerv(GL_GREEN_BITS, &greenBits);
+    glGetIntegerv(GL_BLUE_BITS,  &blueBits);
+
+    settings.rgbBits = iMin(redBits, iMin(greenBits, blueBits));
+    glGetIntegerv(GL_ALPHA_BITS, &settings.alphaBits);
 
     if (window->IsTopLevel()) {
         window->SetClientSize(_settings.width, _settings.height);
@@ -121,7 +140,7 @@ void wxGWindow::swapGLBuffers() {
     window->SwapBuffers();
 }
 
-void wxGWindow::getSettings (GWindowSettings& _settings) const {
+void wxGWindow::getSettings(GWindowSettings& _settings) const {
     wxGWindow* t = const_cast<wxGWindow*>(this);
     window->GetPosition(&t->settings.x, &t->settings.y);
     _settings = settings;
