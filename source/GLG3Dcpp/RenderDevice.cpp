@@ -2093,7 +2093,7 @@ void RenderDevice::forceSetTextureMatrix(int unit, const double* m) {
 
 
 Matrix4 RenderDevice::getTextureMatrix(uint unit) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM((int)unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
         unit, _numTextureUnits));
 
@@ -2111,7 +2111,7 @@ void RenderDevice::setTextureMatrix(
     const double*        m) {
 
     debugAssert(! inPrimitive);
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM((int)unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
         unit, _numTextureUnits));
 
@@ -2140,7 +2140,7 @@ void RenderDevice::setTextureCombineMode(
     uint                    unit,
     const CombineMode       mode) {
 
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM((int)unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
         unit, _numTextureUnits));
 
@@ -2176,7 +2176,7 @@ void RenderDevice::setTextureCombineMode(
 
 void RenderDevice::resetTextureUnit(
     uint                    unit) {
-    debugAssertM(unit < _numTextureUnits,
+    debugAssertM((int)unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",
         unit, _numTextureUnits));
 
@@ -2225,7 +2225,7 @@ void RenderDevice::setNormal(const Vector3& normal) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
-    debugAssertM(unit < _numTextureCoords,
+    debugAssertM((int)unit < _numTextureCoords,
         format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
 
@@ -2235,7 +2235,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
-    debugAssertM(unit < _numTextureCoords,
+    debugAssertM((int)unit < _numTextureCoords,
         format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 1);
@@ -2244,7 +2244,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector3int16& texCoord) {
-    debugAssertM(unit < _numTextureCoords,
+    debugAssertM((int)unit < _numTextureCoords,
         format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, texCoord.z, 1);
@@ -2253,7 +2253,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector3int16& texCoord) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
-    debugAssertM(unit < _numTextureCoords,
+    debugAssertM((int)unit < _numTextureCoords,
         format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
@@ -2262,7 +2262,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector2int16& texCoord) {
-    debugAssertM(unit < _numTextureCoords,
+    debugAssertM((int)unit < _numTextureCoords,
         format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
@@ -2271,7 +2271,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector2int16& texCoord) {
 
 
 void RenderDevice::setTexCoord(uint unit, double texCoord) {
-    debugAssertM(unit < _numTextureCoords,
+    debugAssertM((int)unit < _numTextureCoords,
         format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 0, 0, 1);
@@ -2403,7 +2403,7 @@ void RenderDevice::setTexture(
     debugAssertM(! inPrimitive, 
                  "Can't change textures while rendering a primitive.");
 
-    debugAssertM(unit < _numTextures,
+    debugAssertM((int)unit < _numTextures,
         format("Attempted to access texture %d"
                " on a device with %d textures.",
                unit, _numTextures));
