@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2003-04-10
+ @edited  2003-04-14
  */
 
 #include "G3D/fileutils.h"
@@ -12,7 +12,13 @@
 #include "G3D/g3dmath.h"
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <direct.h>
+#ifdef _MSCVER
+   // Needed for _getcwd
+   #include <direct.h>
+#else
+   #include <unistd.h>
+   #define _getcwd getcwd
+#endif
 #include <stdio.h>
 #include "G3D/BinaryOutput.h"
 

@@ -291,6 +291,11 @@ Texture::Texture(
             d.pixelSize  = -4;
         }
         break;
+
+    case LUMINANCE:
+        d.format = GL_LUMINANCE;
+        d.pixelSize = 1;
+        break;
     }
 
     d.pixel             = pixels;

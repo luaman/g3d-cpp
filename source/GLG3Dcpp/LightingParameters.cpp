@@ -3,12 +3,17 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-04-13
+ @edited  2003-04-14
  */
 
 #include "GLG3D/LightingParameters.h"
 #include <sys/timeb.h>
 #include <sys/types.h> 
+
+#ifndef _MSCVER
+   #define _timeb timeb
+   #define _ftime ftime
+#endif
 
 namespace G3D {
 
