@@ -482,7 +482,7 @@ void Win32Window::close() {
 Win32Window::~Win32Window() {
     close();
 
-    _diDevices->clearJoysticks();
+    delete _diDevices;
 }
 
 
@@ -507,14 +507,14 @@ std::string Win32Window::caption() {
 bool Win32Window::pollEvent(GEvent& e) {
 	MSG message;
             
-	while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&message);
+    while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&message);
 		DispatchMessage(&message);
 
-		if (message.hwnd == window) {
-			switch (message.message) {
-            case WM_CLOSE:
-                e.quit.type = SDL_QUIT;
+        if (message.hwnd == window) {
+            switch (message.message) {
+            case WM_QUIT:
+                e.type = SDL_QUIT;
                 return true;
                 break;
 
@@ -547,27 +547,27 @@ bool Win32Window::pollEvent(GEvent& e) {
 				mouseButton(false, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
                 _mouseButtons[2] = false;
 				return true;
-			} // switch
-		} // if
+            } // switch
+        } // if
     } // while
 
-	RECT rect;
-	GetWindowRect(window, &rect);
-	settings.x = rect.left;
-	settings.y = rect.top;
+    RECT rect;
+    GetWindowRect(window, &rect);
+    settings.x = rect.left;
+    settings.y = rect.top;
 
-	GetClientRect(window, &rect);
-	settings.width = rect.right - rect.left;
-	settings.height = rect.bottom - rect.top;
+    GetClientRect(window, &rect);
+    settings.width = rect.right - rect.left;
+    settings.height = rect.bottom - rect.top;
 
-	clientX = settings.x;
-	clientY = settings.y;
+    clientX = settings.x;
+    clientY = settings.y;
 
-	if (settings.framed) {
-		// Add the border offset
-		clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
-		clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-	}
+    if (settings.framed) {
+        // Add the border offset
+        clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
+        clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
+    }
 
     if (_windowActive) {
         DIDEVICEOBJECTDATA keyboardData[200];
@@ -612,14 +612,14 @@ bool Win32Window::pollEvent(GEvent& e) {
 
 
 void Win32Window::setMouseVisible(bool b) {
-	if (_mouseVisible == b) {
-		return;
-	}
+    if (_mouseVisible == b) {
+        return;
+    }
 
     if (b) {
-		while (ShowCursor(true) < 0);
-	} else {
-		while (ShowCursor(false) >= 0); 
+        while (ShowCursor(true) < 0);
+    } else {
+        while (ShowCursor(false) >= 0); 
     }
 
     _mouseVisible = b;
@@ -627,18 +627,18 @@ void Win32Window::setMouseVisible(bool b) {
 
 
 bool Win32Window::mouseVisible() const {
-	return _mouseVisible;
+    return _mouseVisible;
 }
 
 
 void Win32Window::notifyResize(int w, int h) {
-	settings.width = w;
-	settings.height = h;
+    settings.width = w;
+    settings.height = h;
 }
 
 
 bool Win32Window::inputCapture() const {
-	return _inputCapture;
+    return _inputCapture;
 }
 
 
@@ -668,13 +668,19 @@ LRESULT WINAPI Win32Window::window_proc(
     
     Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
     
-    if (message == WM_ACTIVATE) {
-        if ((LOWORD(wparam) != WA_INACTIVE) &&
-            (HIWORD(wparam) == 0) &&
-            ((HWND)lparam != this_window->hwnd())) { // non-zero is minimized 
-            this_window->_windowActive = true;
-        } else if ((HWND)lparam != this_window->hwnd()) {
-            this_window->_windowActive = false;
+    if (this_window != NULL) {
+        if (message == WM_ACTIVATE) {
+            if ((LOWORD(wparam) != WA_INACTIVE) &&
+                (HIWORD(wparam) == 0) &&
+                ((HWND)lparam != this_window->hwnd())) { // non-zero is minimized 
+                this_window->_windowActive = true;
+            } else if ((HWND)lparam != this_window->hwnd()) {
+                this_window->_windowActive = false;
+            }
+        }
+        else if(message == WM_CLOSE) {
+            PostMessage(this_window->hwnd(), WM_QUIT, 0, 0);
+            return 0;
         }
     }
     
