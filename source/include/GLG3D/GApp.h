@@ -301,32 +301,9 @@ protected:
      matrices are set by default; you can set other cameras as desired. 
      RenderDevice::beginFrame and endFrame are called for you.
      
-       For example:
-        <PRE>
-        void Demo::doGraphics() {
-            LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
-
-            // Cyan background
-	        glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
-
-            app->renderDevice->clear(true, true, true);
-
-            // Setup lighting
-            app->renderDevice->enableLighting();
-            glEnable(GL_LIGHT0);
-
-            app->renderDevice->configureDirectionalLight
-              (0, lighting.lightDirection, lighting.lightColor);
-
-            app->renderDevice->setAmbientLightColor(lighting.ambient);
-
-            Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
-
-            glDisable(GL_LIGHT0);
-            app->renderDevice->disableLighting();
-
-        }
-        </PRE>     
+	 See <A HREF="../demos/main.cpp">demos/main.cpp</A> for an example of
+	 overriding lights.
+      
      */
     virtual void doGraphics() = 0;
 
