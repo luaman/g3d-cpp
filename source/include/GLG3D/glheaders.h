@@ -148,7 +148,14 @@ extern PFNGLGETBUFFERPOINTERVARBPROC glGetBufferPointervARB;
 extern PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements;
 
 #if defined(G3D_OSX)
-    void* NSGLGetProcAddress(const char *name);
+namespace G3D
+{
+    /* The OpenGL implementation on OS X has 
+	   no built-in way of getting an extension
+	   proc addresses.  The function that does
+	   this is in the GLG3D library.  */
+	void* NSGLGetProcAddress(const char *name);
+}
 #endif
 
 

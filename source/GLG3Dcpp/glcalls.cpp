@@ -193,5 +193,7 @@ void* NSGLGetProcAddress(const char *name)
 		return addr; 
 }
 #endif
+
 } // namespace
+
 

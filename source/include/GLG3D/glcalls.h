@@ -180,7 +180,7 @@ inline void * glGetProcAddress(const char * name){
     #elif defined(G3D_LINUX)
 	    return (void *)glXGetProcAddressARB((const GLubyte*)name);
     #elif defined(G3D_OSX)
-		return (void *)NSGLGetProcAddress(name);
+		return G3D::NSGLGetProcAddress((const char*)name);
     #else
        #error Must be WIN32, Linux or OS X. 
         return NULL;
