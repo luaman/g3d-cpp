@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-12-16
+ @edited  2003-01-01
  */
 
 #ifndef G3D_GAPP_H
@@ -87,6 +87,7 @@ public:
     std::string             dataDir;
     Log*                    debugLog;
     RenderDevice*           renderDevice;
+    NetworkDevice*          networkDevice;
 
     /**
      NULL if not loaded

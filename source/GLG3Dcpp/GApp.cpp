@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2003-12-10
+ @edited  2004-01-01
  */
 
 #include <SDL.h>
@@ -27,6 +27,10 @@ GApp::GApp(const GAppSettings& settings) {
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
     renderDevice->init(settings.window, debugLog);
+
+    networkDevice = new NetworkDevice();
+    networkDevice->init(debugLog);
+
     debugCamera  = GCamera();
 
     loadFont(settings.debugFontName);
