@@ -1018,19 +1018,19 @@ private:
 	bool ok() const;
 
 	template<class T>
-	void init(const T* sourcePtr, int _numElements, VARArea* _area, GLenum format) {
+	void init(const T* sourcePtr, int _numElements, VARArea* _area) {
 
 		numElements = _numElements;
 		area		= _area;
-        underlyingRepresentation = format;
+        underlyingRepresentation = glFormatOf(T);
 
 		debugAssert(area);
 		debugAssert(area->basePointer);
 
 		elementSize = sizeof(T);
 
-        debugAssertM((elementSize % glFormatSize(format)) == 0,
-            "The elements of the provided array are not in the OpenGL format specified.");
+        debugAssertM((elementSize % sizeOfGLFormat(format)) == 0,
+            "Sanity check failed on OpenGL data format; you may be using an unsupported type in a vertex array.");
 
 		pointer = (uint8*)area->basePointer + area->allocated;
 
@@ -1070,20 +1070,16 @@ public:
 	/**
 	 Uploads the memory.  The element type is inferred from the pointer type by the
 	 preprocessor.
-
-     @format Format of the *underlying* data (e.g. if you pass an array of Vector3, you
-        want GL_FLOAT). Must be
-        GL_FLOAT, GL_UNSIGNED_SHORT, GL_SHORT, GL_UNSIGNED_INT, GL_INT, GL_UNSIGNED_BYTE, GL_BYTE. 
     */
 	template<class T>
-	VAR(const T* sourcePtr, int _numElements, VARArea* _area, GLenum format = GL_FLOAT) {
-		init(sourcePtr, _numElements, _area, format);
+	VAR(const T* sourcePtr, int _numElements, VARArea* _area) {
+		init(sourcePtr, _numElements, _area);
 	}		
 
 
 	template<class T>
-	VAR(const Array<T>& source, VARArea* _area, GLenum format = GL_FLOAT) {
-		init(source.getCArray(), source.size(), _area, format);
+	VAR(const Array<T>& source, VARArea* _area) {
+		init(source.getCArray(), source.size(), _area);
 	}		
 };
 
