@@ -10,6 +10,12 @@
    will be supported until (at least) the next major release.
 
    <P>
+   Changes in 6.05:
+   <UL>
+     <LI> [ 1032750 ] Fix: Grayscale JPG errors [Corey]
+   </UL>
+
+   <P>
    Changes in 6.04:
    <UL>
      <LI> G3D Manual! [ Morgan and Sascha ]
