@@ -266,12 +266,32 @@ TextureRef Texture::fromGLTexture(
 }
 
 
+/**
+ Scales the intensity up or down of an entire image.
+ @param skipAlpha 0 if there is no alpha channel, 1 if there is 
+ */
+static void brightenImage(uint8* byte, int n, double brighten, int skipAlpha) {
+
+    // Make a lookup table
+    uint8 bright[256];
+    for (int i = 0; i < 256; ++i) {
+        bright[i] = clamp(0, iRound(i * brighten), 255);
+    }
+
+    for (int i = 0; i < n; i += skipAlpha) {
+        for (int c = 0; c < 3; ++c, ++i) {
+            byte[i] = bright[byte[i]];
+        }
+    }
+}
+
 TextureRef Texture::fromFile(
     const std::string&      filename,
     const TextureFormat*    desiredFormat,
     WrapMode                wrap,
     InterpolateMode         interpolate,
-    Dimension               dimension) {
+    Dimension               dimension,
+    double                  brighten) {
 
     const TextureFormat* format = TextureFormat::RGB8;
     bool opaque = true;
@@ -313,6 +333,17 @@ TextureRef Texture::fromFile(
         }
 
         array[f] = image[f].byte();
+    }
+
+
+    if (brighten != 1.0) {
+        for (int f = 0; f < numFaces; ++f) {
+            brightenImage(
+                image[f].byte(),
+                image[f].width * image[f].height * image[f].channels,
+                brighten,
+                image[f].channels - 3);
+        }
     }
 
     TextureRef t =

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-07-02
+  @edited  2003-09-08
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -145,13 +145,16 @@ public:
      Creates a texture from a single image.  The image must have a format understood
      by CImage.  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
      _ft, _bk, ... following the G3D::Sky documentation.
+     @param brighten A value to multiply all color channels by; useful for loading
+            dark Quake textures.
      */
     static TextureRef fromFile(
         const std::string&              filename,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D);
+        Dimension                       dimension      = DIM_2D,
+        double                          brighten       = 1.0);
 
 
     /**

@@ -20,60 +20,6 @@ extern MD2Model                weapon;
 extern TextureRef              weaponTexture;
 extern std::string             DATA_DIR;
 
-
-/**
- @param brighten Most Quake II textures are dark; this argument is a factor to make
- them brighter by.  Default = 1.0, normal intensity.  It is safe to call
- load multiple times-- the previously loaded model will be freed correctly.
-*/
-TextureRef loadBrightTexture(const std::string& filename, double brighten) {
-
-    alwaysAssertM(fileExists(filename), std::string("Can't find \"") + filename + "\"");
-
-    TextureRef texture;
-
-    if (brighten == 1.0) {
-
-        texture = Texture::fromFile(filename, TextureFormat::RGBA8, Texture::CLAMP);
-
-    } else {
-
-        // Brighten the image
-        CImage im(filename);
-
-        if (im.channels == 3) {
-            for (int i = im.width * im.height - 1; i >= 0; --i) {
-                Color3uint8& color = im.pixel3()[i];
-
-                for (int c = 0; c < 3; ++c) {
-                    color[c] = clamp(0, color[c] * brighten, 255);
-                }
-            }
-
-            const uint8* array[1];
-            array[0] = im.byte();
-
-            texture = Texture::fromMemory(filename, array, TextureFormat::RGB8, im.width, im.height, 1, TextureFormat::RGB8, Texture::CLAMP);
-        } else {
-            for (int i = im.width * im.height - 1; i >= 0; --i) {
-                Color4uint8& color = im.pixel4()[i];
-
-                for (int c = 0; c < 3; ++c) {
-                    color[c] = clamp(0, color[c] * brighten, 255);
-                }
-            }
-
-            const uint8* array[1];
-            array[0] = im.byte();
-
-            texture = Texture::fromMemory(filename, array, TextureFormat::RGBA8, im.width, im.height, 1, TextureFormat::RGBA8, Texture::CLAMP);
-        }
-    }
-
-    return texture;
-}
-
-
 void loadModels(const std::string& dir) {
     model.load(dir + "tris.md2");
 
@@ -105,18 +51,18 @@ void loadSkins(const std::string& dir, double brighten) {
 
         if (CImage::supportedFormat(ext)) {
             std::string filename = dir + textureName[i];
-            modelTexture.append(loadBrightTexture(filename, brighten));
+            modelTexture.append(Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten));
         }
     }
 
     if (weapon.textureFilenames().size() > 0) {
         std::string filename = "data/" + weapon.textureFilenames()[0];
         if (fileExists(filename)) {
-            weaponTexture = loadBrightTexture(filename, brighten);
+            weaponTexture = Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten);
         } else {
             filename = dir + "weapon.pcx";
             if (fileExists(filename)) {
-                weaponTexture = loadBrightTexture(filename, brighten);
+                weaponTexture = Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten);
             }
         }
     } else {
