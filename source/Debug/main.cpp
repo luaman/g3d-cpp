@@ -11,15 +11,28 @@ public:
 
     TextureRef          tex;
     SkyRef              sky;
+    GameTime            time;
 
     Demo(GApp* app) : GApplet(app) {
         tex = Texture::fromFile(app->dataDir + "image/lena.tga");
         sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
+        time = G3D::toSeconds(12, 00, 00, PM);
     }
 
     virtual void doLogic();
     virtual void doGraphics();
+    virtual void doSimulation(RealTime rdt);
 };
+
+void Demo::doSimulation(RealTime rdt) {
+    app->debugPrintf("Time is %gs", time);
+    if (app->userInput->keyDown('r')) {
+        time -= rdt * 10000;
+    }
+    if (app->userInput->keyDown('t')) {
+        time += rdt * 10000;
+    }
+}
 
 
 void Demo::doLogic() {
@@ -32,9 +45,9 @@ void Demo::doLogic() {
 
 
 void Demo::doGraphics() {
-    LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
+    LightingParameters lighting(time);
 
-    app->renderDevice->setViewport(Rect2D(100, 0, 400, 600));
+    //app->renderDevice->setViewport(Rect2D(100, 0, 400, 600));
     app->debugCamera->setProjectionAndCameraMatrix();
 
     // Cyan background
@@ -53,6 +66,7 @@ void Demo::doGraphics() {
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
     Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
+    Draw::sphere(Sphere(Vector3::ZERO,2), app->renderDevice, Color3::WHITE);
         
     glDisable(GL_LIGHT0);
     app->renderDevice->disableLighting();
@@ -74,11 +88,8 @@ void Demo::doGraphics() {
         app->renderDevice->sendVertex(Vector3(1, 1, 0));
     app->renderDevice->endPrimitive();
 
-    app->debugPrintf("Use app->debugPrintf to print text");
-    app->debugPrintf("to this overlay window.");
-
-    app->debugPrintf("%g s", System::getTick());
-
+    
+    sky->renderLensFlare(lighting);
 }
 
 
@@ -91,9 +102,6 @@ int main(int argc, char** argv) {
     settings.window.height = 600;
 
     GApp app(settings);
-
-    char* choice[] = {"Ok"}; 
-    prompt("Test", "Test", (const char**)choice, 1);
 
     app.setDebugMode(true);
     app.debugController->setActive(true);

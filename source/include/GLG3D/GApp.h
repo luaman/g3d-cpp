@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-11-03
+ @edited  2003-11-11
  */
 
 #ifndef G3D_GAPP_H
@@ -173,6 +173,18 @@ public:
 
 class GApplet {
 public:
+    /** @param _app This is usually your own subclass of GApp.*/
+    GApplet(GApp* _app); 
+    /**
+      Run until app->endProgram or endApplet is set to true. 
+      The default implementation sets endApplet to false,
+      calls init(), then calls the doXXX methods.  
+      Invokes cleanup() before exiting.
+      It is not usually necessary to override this method.
+    */
+    virtual void run();
+
+protected:
 
     GApp*               app;
 
@@ -181,19 +193,15 @@ public:
      */
     bool                endApplet;
 
-    /** @param _app This is usually your own subclass of GApp.*/
-    GApplet(GApp* _app); 
-
     /**
      Override this with your simulation code.
      Called from GApp::run.
-     
-     The default implementation simulated the debugCamera and
-     should be called from the subclass's method.
+        
+     Default implementation does nothing.
 
      @param rdt Elapsed real-world time since the last call to doSimulation.
      */
-    virtual void doSimulation(RealTime rdt);
+    virtual void doSimulation(RealTime rdt) {};
 
     /**
      Override and implement.  The debugCamera's projection and object to world
@@ -228,14 +236,6 @@ public:
         </PRE>     
      */
     virtual void doGraphics() = 0;
-
-    /**
-     Updates the userInput.  Called from run.
-     Rarely needs to be overriden by a subclass.
-
-     Instead, override GApp::processEvent to handle your own events.
-     */
-    virtual void doUserInput();
 
     /**
      Called from run.
@@ -274,14 +274,14 @@ public:
      */
     virtual void cleanup() {}
 
+private:
     /**
-      Run until app->endProgram or endApplet is set to true. 
-      The default implementation sets endApplet to false,
-      calls init(), then calls the doXXX methods.  
-      Invokes cleanup() before exiting.
-      It is not usually necessary to override this method.
-    */
-    virtual void run();
+     Updates the userInput.  Called from run.
+     Rarely needs to be overriden by a subclass.
+
+     Instead, override GApp::processEvent to handle your own events.
+     */
+    virtual void doUserInput();
 };
 
 }

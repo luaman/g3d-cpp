@@ -77,6 +77,12 @@ private:
      */
     void renderBox() const;
 
+    /** Draw the sun, called by render() */
+    void drawSun(const class LightingParameters&);
+
+    /** Draw the night sky, called by render() */
+    void drawMoonAndStars(const class LightingParameters&);
+
     Sky(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,

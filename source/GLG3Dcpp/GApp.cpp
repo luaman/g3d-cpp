@@ -189,9 +189,20 @@ void GApplet::run() {
         now = getTime();
         RealTime timeStep = now - lastTime;
 
+        // User input
         doUserInput();
+
+        // Network
         doNetwork();
+
+        // Simulation
+        if (app->debugController->active()) {
+            app->debugController->doSimulation(clamp(timeStep, 0.0, 0.1));
+    	    app->debugCamera->setCoordinateFrame(app->debugController->getCoordinateFrame());
+        }
         doSimulation(timeStep);
+
+        // Logic
         doLogic();
 
         // Graphics
@@ -208,14 +219,6 @@ void GApplet::run() {
     } while (! app->endProgram && ! endApplet);
 
     cleanup();
-}
-
-
-void GApplet::doSimulation(RealTime rdt) {
-    if (app->debugController->active()) {
-        app->debugController->doSimulation(clamp(rdt, 0.0, 0.1));
-    	app->debugCamera->setCoordinateFrame(app->debugController->getCoordinateFrame());
-    }
 }
 
 

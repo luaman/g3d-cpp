@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-11-05
+  @edited  2003-11-11
   */
 
 #include "GLG3D/glcalls.h"
@@ -87,8 +87,7 @@ Sky::Sky(
     int i = 0;
     // Try to read actual star data
     BinaryInput in = BinaryInput(directory + "real.str", G3D_LITTLE_ENDIAN, true);
-    if(in.getLength() > 0)
-    {
+    if (in.getLength() > 0) {
 	    // If file exists, load the real starfield
         int16 numStars;
 		float32 x, y, z;
@@ -101,8 +100,7 @@ Sky::Sky(
 	    starIntensity.resize(numStars);
 
 		// Read X, Y, Z, and intensity
-		for(i = 0; i < numStars; i++)
-	    {
+		for(i = 0; i < numStars; i++) {
 			x = SHORT_TO_FLOAT(in.readInt16());
 			y = SHORT_TO_FLOAT(in.readInt16());
 			z = SHORT_TO_FLOAT(in.readInt16());
@@ -111,8 +109,7 @@ Sky::Sky(
 
 			starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .7;
 	    }
-    } else
-    {
+    } else {
 		// Create a random starfield
    		star.resize(3000);
     	starIntensity.resize(star.size());
@@ -165,12 +162,12 @@ static void hackProjectionMatrix(RenderDevice* renderDevice) {
 
     Matrix4 P = renderDevice->getProjectionMatrix();
 
-    // Set the 3rd row so the depth always is in the middle of the depth range.
+    // Set the 3rd row (2nd index) so the depth always is in the middle of the depth range.
 
-    P[3][0] = 0;
-    P[3][1] = 0;
-    P[3][2] = -0.5;
-    P[3][3] = 0;
+    P[2][0] = 0;
+    P[2][1] = 0;
+    P[2][2] = -0.5;
+    P[2][3] = 0;
 
     renderDevice->setProjectionMatrix(P);
 }
@@ -385,77 +382,80 @@ void Sky::render(
     // Ignore depth, make sure we're not clipped by the far plane
     hackProjectionMatrix(renderDevice);
    
-    // Draw the moon
-    {
-        Vector4 L(lighting.moonPosition,0);
-        Vector4 X(lighting.moonPosition.cross(Vector3::UNIT_Z).direction(), 0);
-        Vector4 Y(Vector3::UNIT_Z, 0);
+    drawMoonAndStars(lighting);
 
-        // Draw stars
-        if (lighting.moonPosition.y > -.3) {
-
-            double k = (1 - square(lighting.skyAmbient.length())) * renderDevice->getBrightScale();
-            renderDevice->pushState();
-                // Rotate stars
-                CoordinateFrame m;
-                float aX, aY, aZ;
-				// Use the east-west revolutions of the moon to rotate
-				//   the starfield correctly
-				Vector3 moon(-L.x, 0, L.y);
-				Vector3 top(Vector3::UNIT_Y);
-				m.lookAt(moon, top);
-
-				// Correct for geographical location; currently Providence, RI
-				m.rotation.toEulerAnglesXYZ(aX, aY, aZ);
-				aX -= lighting.geoLatitude; // Latitude of 41 degrees, 44 minutes N
-				m.rotation.fromEulerAnglesXYZ(aX, aY, aZ);
-				renderDevice->setObjectToWorldMatrix(m);
-                
-			    renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
-
-                renderDevice->beginPrimitive(RenderDevice::POINTS);
-                    for (int i = star.size() - 1; i >= 0; --i) {
-                        const double b = starIntensity[i] * k;
-                        // We use raw GL calls here for performance
-                        glColor3f(b, b, b);
-                        glVertex3fv(star[i]);
-                    }
-                renderDevice->endPrimitive();
-
-                // Get RenderDevice back in sync with real GL state
-                renderDevice->setColor(Color3::WHITE);
-                glColor(Color3::WHITE);
-            renderDevice->popState();
-        }
-
-        renderDevice->setTexture(0, moon);
-        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-        renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
-        drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(1,1,1, min(1, max(0, lighting.moonPosition.y * 4))));
-
-    }
-
-    // Draw the sun
-    {
-        // Sun vector
-        Vector4 L(lighting.sunPosition,0);
-        Vector4 X(lighting.sunPosition.cross(Vector3::UNIT_Z).direction(), 0);
-        Vector4 Y(Vector3::UNIT_Z, 0);
-
-        renderDevice->setTexture(0, sun);
-        renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-        Color3 c(Color3::WHITE * .8);
-
-        if (lighting.sunPosition.y < 0) {
-            // Fade out the sun as it goes below the horizon
-            c *= max(0, (lighting.sunPosition.y + .1) * 10);
-        }
-
-        drawCelestialSphere(renderDevice, L, X, Y, .12, c);
-    }
+    drawSun(lighting);
 
     renderDevice->popState();
 
+}
+
+
+void Sky::drawMoonAndStars(const LightingParameters& lighting) {
+    Vector4 L(lighting.moonPosition,0);
+    Vector4 X(lighting.moonPosition.cross(Vector3::UNIT_Z).direction(), 0);
+    Vector4 Y(Vector3::UNIT_Z, 0);
+
+    // Draw stars
+    if (lighting.moonPosition.y > -.3) {
+
+        double k = (1 - square(lighting.skyAmbient.length())) * renderDevice->getBrightScale();
+        renderDevice->pushState();
+            // Rotate stars
+            CoordinateFrame m;
+            float aX, aY, aZ;
+			// Use the east-west revolutions of the moon to rotate
+			//   the starfield correctly
+			Vector3 moon(-L.x, 0, L.y);
+			Vector3 top(Vector3::UNIT_Y);
+			m.lookAt(moon, top);
+
+			// Correct for geographical location; currently Providence, RI
+			m.rotation.toEulerAnglesXYZ(aX, aY, aZ);
+			aX -= lighting.geoLatitude; // Latitude of 41 degrees, 44 minutes N
+			m.rotation.fromEulerAnglesXYZ(aX, aY, aZ);
+			renderDevice->setObjectToWorldMatrix(m);
+            
+			renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
+
+            renderDevice->beginPrimitive(RenderDevice::POINTS);
+                for (int i = star.size() - 1; i >= 0; --i) {
+                    const double b = starIntensity[i] * k;
+                    // We use raw GL calls here for performance
+                    glColor3f(b, b, b);
+                    glVertex3fv(star[i]);
+                }
+            renderDevice->endPrimitive();
+
+            // Get RenderDevice back in sync with real GL state
+            renderDevice->setColor(Color3::WHITE);
+            glColor(Color3::WHITE);
+        renderDevice->popState();
+    }
+
+    renderDevice->setTexture(0, moon);
+    renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+    renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
+    drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(1,1,1, min(1, max(0, lighting.moonPosition.y * 4))));
+}
+
+
+void Sky::drawSun(const LightingParameters& lighting) {
+    // Sun vector
+    Vector4 L(lighting.sunPosition,0);
+    Vector4 X(lighting.sunPosition.cross(Vector3::UNIT_Z).direction(), 0);
+    Vector4 Y(Vector3::UNIT_Z, 0);
+
+    renderDevice->setTexture(0, sun);
+    renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+    Color3 c(Color3::WHITE * .8);
+
+    if (lighting.sunPosition.y < 0) {
+        // Fade out the sun as it goes below the horizon
+        c *= max(0, (lighting.sunPosition.y + .1) * 10);
+    }
+
+    drawCelestialSphere(renderDevice, L, X, Y, .12, c);
 }
 
 
