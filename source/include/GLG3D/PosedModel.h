@@ -199,6 +199,8 @@ public:
 
     virtual void getWorldSpaceFaceNormals(Array<Vector3>& faceNormals, bool normalize = true) const;
 
+	virtual const Array<Vector3>& objectSpaceFaceNormals(bool normalize = true) const;
+
     virtual const Array<int>& triangleIndices() const;
 
     virtual void getObjectSpaceBoundingSphere(Sphere&) const;
@@ -219,9 +221,9 @@ public:
 
     virtual void render(class RenderDevice* renderDevice) const;
 
-    virtual int numBoundaryEdges() const = 0;
+    virtual int numBoundaryEdges() const;
 
-    virtual int numWeldedBoundaryEdges() const = 0;
+    virtual int numWeldedBoundaryEdges() const;
 };
 
 
