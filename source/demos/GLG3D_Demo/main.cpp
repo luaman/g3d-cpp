@@ -30,12 +30,12 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-11-07
+ @edited  2003-11-14
  */
 
 #include <G3DAll.h>
 
-#if G3D_VER != 060008
+#if G3D_VER != 60008
     #error Requires G3D 6.00 b8
 #endif
   
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     
 	renderDevice = new RenderDevice();
     renderDevice->init(RenderDeviceSettings(), debugLog);
-    camera 	 = new GCamera(renderDevice);
+    camera 	 = new GCamera();
 
     // Allocate the two VARAreas used in this demo
     varStatic  = renderDevice->createVARArea(1024 * 64);
@@ -104,7 +104,8 @@ int main(int argc, char** argv) {
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
 
-    ManualCameraController* controller = new ManualCameraController(renderDevice, userInput);
+    ManualCameraController* controller = new ManualCameraController();
+    controller->init(renderDevice, userInput);
 
     controller->setPosition(Vector3(0, 10, -25));
     controller->lookAt(Vector3::ZERO);
@@ -130,7 +131,7 @@ int main(int argc, char** argv) {
 	    renderDevice->clear(sky == NULL, true, false);
             renderDevice->pushState();
 				
-                camera->setProjectionAndCameraMatrix();
+                renderDevice->setProjectionAndCameraMatrix(*camera);
 
                 LightingParameters lighting(gameTime);
 
@@ -340,18 +341,11 @@ void Model::render(const CoordinateFrame& c,
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     renderDevice->enableLighting();
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-
-    renderDevice->configureDirectionalLight
-      (0, lighting.lightDirection, lighting.lightColor);
-
-    renderDevice->configureDirectionalLight
-      (1, -lighting.lightDirection, Color3::WHITE * .25);
-
+    renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::WHITE * .25));
     renderDevice->setAmbientLightColor(lighting.ambient);
-    
+
+    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     renderDevice->setColor(Color3::WHITE);
 
     // Draw the model
@@ -394,10 +388,6 @@ void Model::render(const CoordinateFrame& c,
 
     default:;
     }
-
-    // Turn off lighting
-    glDisable(GL_LIGHT0);
-    glDisable(GL_LIGHT1);
 
     renderDevice->popState();
 }
