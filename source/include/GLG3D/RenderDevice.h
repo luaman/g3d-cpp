@@ -331,9 +331,6 @@ private:
         double                  brightness,
         double                  gamma);
 
-    // Window parameters
-	int                         screenWidth;
-	int                         screenHeight;
 	int                         stencilBits;
 
     /**
@@ -1161,16 +1158,12 @@ public:
 	/**
 	 Pixel dimensions of the OpenGL window interior
 	 */
-	inline int getWidth() const {
-		return screenWidth;
-	}
+    int getWidth() const;
 
 	/**
 	 Pixel dimensions of the OpenGL window interior
 	 */
-	inline int getHeight() const {
-		return screenHeight;
-	}
+    int getHeight() const;
 
 
 	inline int getStencilBitDepth() const {

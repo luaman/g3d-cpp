@@ -726,7 +726,7 @@ bool RenderDevice::init(
     {
         // WARNING: this must be kept in sync with the 
         // RenderState constructor
-        state = RenderState(screenWidth, screenHeight);
+        state = RenderState(getWidth(), getHeight());
 
         glViewport(state.viewport.x, state.viewport.y, state.viewport.width, state.viewport.height);
         glDepthMask(GL_TRUE);
@@ -920,12 +920,9 @@ void RenderDevice::setVideoMode(
 
     initGLExtensions();
 
-	screenWidth = width;
-	screenHeight = height;
-
     setCaption("Graphics3D");
 
-	glViewport(0, 0, screenWidth, screenHeight);
+	glViewport(0, 0, getWidth(), getHeight());
 }
 
 
@@ -933,6 +930,18 @@ void RenderDevice::setCaption(const std::string& caption) {
 	// Set the title bar
 	SDL_WM_SetCaption(caption.c_str(), NULL);
 }
+
+
+
+int RenderDevice::getWidth() const {
+    return SDL_GetVideoSurface()->w;
+}
+
+
+int RenderDevice::getHeight() const {
+    return SDL_GetVideoSurface()->h;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1185,7 +1194,7 @@ void RenderDevice::pushState() {
 }
 
 void RenderDevice::resetState() {
-    setState(RenderState(screenWidth, screenHeight));
+    setState(RenderState(getWidth(), getHeight()));
 }
 
 
@@ -2439,12 +2448,12 @@ void RenderDevice::screenshotPic(CImage& dest) const
     // Read back the front buffer
     glReadBuffer(GL_FRONT);
     
-    dest.resize(screenWidth, screenHeight, 3);
-    glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB,
+    dest.resize(getWidth(), getHeight(), 3);
+    glReadPixels(0, 0, getWidth(), getHeight(), GL_RGB,
             GL_UNSIGNED_BYTE, dest.byte());
 
     // Flip right side up
-    flipRGBVertical(dest.byte(), dest.byte(), screenWidth, screenHeight);
+    flipRGBVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
 
     // Restore the read buffer to the back
     glReadBuffer(GL_BACK);
