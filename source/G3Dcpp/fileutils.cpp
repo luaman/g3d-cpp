@@ -549,6 +549,21 @@ bool isDirectory(const std::string& filename) {
 }
 
 
+bool filenameContainsWildcards(const std::string& filename) {
+    return (filename.find('*') >= 0) || (filename.find('?') >= 0);
+}
+
+
+bool fileIsNewer(const std::string& src, const std::string& dst) {
+    struct _stat sst;
+    bool sexists = _stat(src.c_str(), &sts) != -1;
+
+    struct _stat dst;
+    bool dexists = _stat(dst.c_str(), &dts) != -1;
+
+    return sexists && dexists && (sts.st_mtime > dts.st_mtime));
+}
+
 }
 
 #ifndef G3D_WIN32
