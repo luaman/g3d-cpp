@@ -12,6 +12,10 @@
  */
 
 #include <G3DAll.h>
+#ifdef G3D_WIN32
+    #include <direct.h>
+    #define _chdir chdir
+#endif
 #include "Mesh.h"
 
 class App : public GApp {
@@ -134,17 +138,22 @@ void computeNormalMap(const GImage& bump, GImage& normal) {
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
-    texture = Texture::fromFile("ParallaxBump_Demo/texture.jpg");
+    if (! fileExists("texture.jpg")) {
+        // Go into the right directory
+        chdir("ParallaxBump_Demo");
+    }
 
-    CImage bump("ParallaxBump_Demo/bump.jpg");
+    texture = Texture::fromFile("texture.jpg");
+
+    CImage bump("bump.jpg");
     CImage normal;
 
     computeNormalMap(bump, normal);
 
     normalMap = Texture::fromGImage("Normal Map", normal);
 
-    parallaxPP = PixelProgram::fromFile("ParallaxBump_Demo/parallaxPP.pp");
-    parallaxVP = VertexProgram::fromFile("ParallaxBump_Demo/parallaxVP.vp");
+    parallaxPP = PixelProgram::fromFile("parallaxPP.pp");
+    parallaxVP = VertexProgram::fromFile("parallaxVP.vp");
 }
 
 

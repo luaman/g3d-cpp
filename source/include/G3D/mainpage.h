@@ -325,11 +325,11 @@
 
    <LI>
    In Tools:Options:Directories, add the g3d include directory 
-   (e.g. c:\\libraries\\g3d-6_00-b13\\include) to the
+   (e.g. c:\\libraries\\g3d-6_00\\include) to the
    include list.  Make sure it preceeds all other include directories.
    <LI>
    In Tools:Options:Directories, add the g3d lib directory 
-   (e.g. c:\\libraries\\g3d-6_00-b13\\win32-lib for Windows.  On Linux
+   (e.g. c:\\libraries\\g3d-6_00\\win32-lib for Windows.  On Linux
    the directory is linux-lib and on OS/X it is osx-lib.) to the library
    list.
    <LI>
