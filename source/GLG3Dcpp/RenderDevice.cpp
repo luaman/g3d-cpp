@@ -207,6 +207,12 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     debugAssertGLOk();
 
     if (debugLog) {
+		int t = glGetInteger(GL_MAX_TEXTURE_UNITS_ARB);
+
+		if (GLCaps::supports_GL_ARB_fragment_program()) {
+			t = glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS_ARB);
+		}
+
         debugLog->printf("numTextureCoords                      = %d\n"
                          "numTextures                           = %d\n"
                          "numTextureUnits                       = %d\n"
@@ -214,7 +220,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
                          "glGet(GL_MAX_TEXTURE_IMAGE_UNITS_ARB) = %d\n",
                          _numTextureCoords, _numTextures, _numTextureUnits,
                          glGetInteger(GL_MAX_TEXTURE_UNITS_ARB),
-                         glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS_ARB));
+						 t);
     }
 
     if (debugLog) {debugLog->println("Setting video mode");}
