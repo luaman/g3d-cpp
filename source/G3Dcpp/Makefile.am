@@ -16,7 +16,7 @@ libG3D_la_SOURCES= BinaryInput.cpp \
 				   ConvexPolyhedron.cpp \
 				   CoordinateFrame.cpp \
 				   debugAssert.cpp \
-                   Discovery.cpp \
+                                   Discovery.cpp \
 				   fileutils.cpp \
 				   format.cpp \
 				   g3dmath.cpp \
@@ -39,6 +39,7 @@ libG3D_la_SOURCES= BinaryInput.cpp \
 				   Vector2.cpp \
 				   Vector3.cpp \
 				   Vector3int16.cpp \
+				   Vector2int16.cpp \
 				   Vector4.cpp
 
 libG3D_debug_la_SOURCES= BinaryInput.cpp \
@@ -54,7 +55,7 @@ libG3D_debug_la_SOURCES= BinaryInput.cpp \
 				   ConvexPolyhedron.cpp \
 				   CoordinateFrame.cpp \
 				   debugAssert.cpp \
-                   Discovery.cpp \
+                                   Discovery.cpp \
 				   fileutils.cpp \
 				   format.cpp \
 				   g3dmath.cpp \
@@ -77,6 +78,7 @@ libG3D_debug_la_SOURCES= BinaryInput.cpp \
 				   Vector2.cpp \
 				   Vector3.cpp \
 				   Vector3int16.cpp \
+				   Vector2int16.cpp \
 				   Vector4.cpp
 
 libG3D_debug_la_CPPFLAGS= -D_DEBUG

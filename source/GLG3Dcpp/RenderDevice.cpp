@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-07-09
+ @edited  2003-08-09
  */
 
 
@@ -24,6 +24,8 @@
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/VARArea.h"
+
 #ifdef G3D_WIN32
     #include <winver.h>
 #endif
@@ -2890,6 +2892,12 @@ void RenderDevice::setTexCoordArray(unsigned int unit, const class VAR& v) {
 VARArea* RenderDevice::createVARArea(size_t areaSize) {
 	debugAssert(varSystem);
 	return varSystem->createArea(areaSize);
+}
+
+
+size_t RenderDevice::freeVARSize() const {
+    debugAssert(varSystem);
+    return varSystem->memoryFree();
 }
 
 } // namespace

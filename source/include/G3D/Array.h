@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-08-07
+  @edited  2003-08-08
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -14,15 +14,39 @@
 #ifndef G3D_ARRAY_H
 #define G3D_ARRAY_H
 
+#include "G3D/platform.h"
 #include "G3D/debug.h"
 
-#ifdef _MSC_VER
+#ifdef G3D_WIN32
     #include <new.h>
 #else
     #ifndef __cdecl
         #define __cdecl __attribute__((cdecl))
     #endif
 #endif
+
+#ifdef SSE
+    #include <xmmintrin.h>
+
+    // Provide 16-byte alignment
+    inline void* _arrayMalloc(size_t bytes) {
+        return _mm_malloc(bytes, 16);
+    }
+
+    inline void _arrayFree(void* ptr) {
+        _mm_free(ptr);
+    }
+#else
+    // Don't need alignment
+    inline void* _arrayMalloc(size_t bytes) {
+        return malloc(bytes);
+    }
+
+    inline void _arrayFree(void* ptr) {
+        free(ptr);
+    }
+#endif
+
 
 namespace G3D {
 
@@ -43,6 +67,9 @@ const int SORT_DECREASING = -1;
  takes no arguments) in order to be used with this template.
  You will get the error "no appropriate default constructor found"
  if they do not.
+
+ If SSE is defined Arrays allocate the first element aligned to
+ 16 bytes.
 
  Do not subclass an Array.
  */
@@ -110,7 +137,7 @@ private:
     void realloc(int oldNum) {
          T* oldData = data;
          
-         data = (T*)malloc(sizeof(T) * numAllocated);
+         data = (T*)_arrayMalloc(sizeof(T) * numAllocated);
          // Call the copy constructors
          int i;
          for (i = iMin(oldNum, numAllocated) - 1; i >= 0; --i) {
@@ -122,7 +149,7 @@ private:
             (oldData + i)->~T();
          }
 
-         free(oldData);
+         _arrayFree(oldData);
     }
 
 public:
@@ -205,7 +232,7 @@ public:
            (data + i)->~T();
        }
        
-       free(data);
+       _arrayFree(data);
        data = NULL;
    }
 

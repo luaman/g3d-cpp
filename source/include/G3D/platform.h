@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-06-09
- @edited  2003-06-09
+ @edited  2003-08-08
  */
 
 #ifndef G3D_PLATFORM_H
@@ -25,6 +25,8 @@
 
 // Verify that the supported compilers are being used and that this is a known
 // processor.
+
+#define SSE
 
 #ifdef G3D_LINUX
     #ifndef __GNUC__

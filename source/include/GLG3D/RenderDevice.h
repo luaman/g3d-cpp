@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-08-04
+  @edited  2003-08-09
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -179,6 +179,9 @@ private:
 
 		~VARSystem();
 
+        size_t memoryFree() const {
+            return size - allocated;
+        }
 
 		/**
 		 Once allocated, VARAreas cannot be deallocated.  They are
@@ -417,6 +420,11 @@ public:
      Equivalent to glShadeModel
      */
     void setShadeMode(ShadeMode s);
+
+    /**
+     Returns the amount of free memory in the VAR heap.
+    */
+    size_t freeVARSize() const;
 
     /**
      If wrapping is not supported on the device, the nearest mode is
@@ -1076,67 +1084,6 @@ public:
         HDC RenderDevice::getWindowHDC() const;
     #endif
 };
-
-
-/**
- A memory chunk of VAR space (call RenderDevice::createVARArea to 
- allocate).
-
- <P> A large buffer is allocated in video memory when the VAR system
- is initialized.  This buffer can be partitioned into multiple
- VARAreas.  Vertex arrays are uploaded to these areas by creating VAR
- objects.  Once used, those vertex arrays are dropped from memory by
- calling reset() on the corresponding VARArea.
-
- <P> Typically, two VARAreas are created.  One is a dynamic area that
- is reset every frame, the other is a static area that is never reset.
- */
-// Deleting a VARArea does not free the memory associated with it.
-class VARArea {
-private:
-	friend class VAR;
-    friend class RenderDevice;
-    friend class RenderDevice::VARSystem;
-
-	/** Pointer to the memory. */
-	void*				basePointer;
-
-	/** Total  number of bytes in this area. */
-	size_t				size;
-	
-	/** Number of bytes allocated. */
-	size_t				allocated;
-
-	/**
-	 These prevent vertex arrays that have been freed from
-	 accidentally being used.
-	 */
-	uint64				generation;
-
-	/** The maximum size of this area that was ever used. */
-	size_t				peakAllocated;
-
-	VARArea(
-        void*               _basePointer,
-        size_t              _size);
-
-public:
-
-    ~VARArea();
-
-	size_t totalSize() const;
-
-	size_t freeSize() const;
-
-	size_t allocatedSize() const;
-
-	size_t peakAllocatedSize() const;
-
-	/** */ 
-	void reset();
-};
-
-
 
 } // namespace
 

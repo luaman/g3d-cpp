@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-07-21
+ @edited  2003-08-09
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -40,9 +40,8 @@
 #include "GLG3D/Texture.h"
 #include "GLG3D/glFormat.h"
 #include "GLG3D/RenderDevice.h"
-
+#include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
-
 #include "GLG3D/Font.h"
 #include "GLG3D/LightingParameters.h"
 #include "GLG3D/Sky.h"

@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "../temp/release/glg3d"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "SSE" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "../temp/debug/glg3d"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /ZI /Od /I "include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "SSE" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /ZI /Od /I "include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -403,6 +403,10 @@ SOURCE=.\include\GLG3D\UserInput.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\VAR.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\VARArea.h
 # End Source File
 # Begin Source File
 

@@ -4,14 +4,14 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-04-08
- @edited  2003-04-08
+ @edited  2003-04-09
  */
 
 #include "GLG3D/VAR.h"
 #include "GLG3D/RenderDevice.h"
+#include "GLG3D/VARArea.h"
 #include "G3D/Log.h"
 #include "GLG3D/getOpenGLState.h"
-
 
 namespace G3D {
 

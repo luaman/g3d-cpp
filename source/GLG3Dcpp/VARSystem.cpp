@@ -6,17 +6,16 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2003-05-22
+ @edited  2003-08-09
  */
 
 #include "GLG3D/RenderDevice.h"
 #include "G3D/Log.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VAR.h"
-
+#include "GLG3D/VARArea.h"
 
 namespace G3D {
-
 
 RenderDevice::VARSystem::VARSystem(
 	RenderDevice*		rd,

@@ -48,6 +48,7 @@
         G3D::Sphere,
 		G3D::Triangle,
 		G3D::Vector2,
+        G3D::Vector2int16,
 		G3D::Vector3,
 		G3D::Vector3int16,
 		G3D::Vector4,
@@ -618,6 +619,9 @@
 
    <P>
    <UL>
+     <LI> Vector2int16
+     <LI> RenderDevice::freeVARSize()
+     <LI> Array now allocates 16-byte aligned pointers when SSE is defined.
      <LI> Decreased the default camera movement rate by 50% for better resolution.
      <LI> RenderDevice enables GL_NORMALIZE by default
      <LI> Improved the performance of Array::append/Array::push/Array::next

@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2003-05-22
+ @edited  2003-08-08
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -22,6 +22,7 @@
 // Prevent MSVC from defining min and max macros
 #define NOMINMAX
 
+#include "G3D/platform.h"
 #include <ctype.h>
 #include <float.h>
 #include <limits>
