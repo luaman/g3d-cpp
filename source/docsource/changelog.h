@@ -152,6 +152,7 @@
      <LI> Added G3D::Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1149972 ] 6.05: Make Sky render correctly on low-end cards (no Cube mapping) [Corey]
      <LI> Fix: [ 1032742 ] OS X _DEBUG not defined [Derek]
      <LI> Fix: 16-bit integer reads in BinaryInput that always reversed endianness. (OSX file reading) [Corey + Derek]
      <LI> Fix: Matrix4 operator[] was returning a matrix value cast to a pointer [Corey]

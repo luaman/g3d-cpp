@@ -282,7 +282,7 @@ void Sky::vertex(RenderDevice* renderDevice,
     } else {
         if (!GLCaps::supports_GL_EXT_texture_edge_clamp()) {
             // Move the edge coordinates towards the center just
-            // enough that the black clamped edge isn't sampled.
+            // enough that the black clamped border isn't sampled.
             if (s == 0) {
                 s += (0.6 / (float)texture[0]->texelWidth());
             } else if (s == 1) {
