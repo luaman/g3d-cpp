@@ -58,11 +58,14 @@ void Entity::clientUpdateFromStateMessage(class EntityStateMessage& msg, ID loca
     oldFrameTime = System::getTick();
     frame        = msg.frame;
     velocity     = msg.velocity;
+    
     if (localID != id) {
+        // Leave the local controls alone
         oldDesiredVelocityTime = oldFrameTime;
         oldDesiredVelocity = currentTiltVelocity;
         controls = msg.controls;
     }
+    
 }
 
 
@@ -74,6 +77,8 @@ CoordinateFrame Entity::coordinateFrame() const {
 
 
 CoordinateFrame Entity::smoothCoordinateFrame(RealTime now) const {
+
+    // Amount of *old* time to blend in.
     RealTime alpha = clamp(1.0 - (now - oldFrameTime) / networkLerpTime, 0.0, 1.0);
 
     if (alpha == 0.0) {
@@ -84,7 +89,7 @@ CoordinateFrame Entity::smoothCoordinateFrame(RealTime now) const {
     } else {
 
         // Compose: position = current + delta*scale;
-        PhysicsFrame scaledDelta = oldDeltaFrame.lerp(PhysicsFrame(), alpha);
+        PhysicsFrame scaledDelta = PhysicsFrame().lerp(oldDeltaFrame, alpha);
         PhysicsFrame current;
         current.translation = frame.translation + scaledDelta.translation;
         current.rotation = frame.rotation * scaledDelta.rotation;

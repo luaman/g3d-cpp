@@ -41,9 +41,9 @@ public:
 class Server {
 private:
 
-    class App*              app;
+    class App*                  app;
 
-    DiscoveryServer         discoveryServer;
+    DiscoveryServer             discoveryServer;
 
     // Servers send all information over reliable network connections
     // so that the LAN and internet structure of the game is identical.
@@ -53,7 +53,7 @@ private:
         addClient/fastRemoveClient*/
     Array<ReliableConduitRef>   clientConduitArray;
 
-    Array<ClientProxy>      clientProxyArray;
+    Array<ClientProxy>          clientProxyArray;
 
     void addClient(ClientProxy& p, ReliableConduitRef& r);
 
@@ -62,9 +62,9 @@ private:
     /**
      Listens for new clients.  Handled in doNetwork.
      */
-    NetListenerRef          listener;
+    NetListenerRef              listener;
     
-    EntityTable             entityTable;
+    EntityTable                 entityTable;
 
     /** Generates a fresh ID */
     ID newID();
@@ -75,7 +75,7 @@ private:
 public:
 
     /** The advertisement for this server */
-    ServerAd                advertisement;
+    ServerAd                    advertisement;
 
     Server(class App* app);
 
@@ -86,8 +86,11 @@ public:
     /** Called from Client::doNetwork */
     void doNetwork();
 
-    /** Called from Client::dosimulation */
+    /** Called from Client::doSimulation */
     void doSimulation(SimTime dt);
+
+    /** Called from Client::doGraphics for debugging purposes only */
+    void doGraphics();
 };
 
 #endif

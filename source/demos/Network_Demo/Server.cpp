@@ -173,3 +173,21 @@ void Server::fastRemoveClient(int i) {
     clientProxyArray.fastRemove(i);
     clientConduitArray.fastRemove(i);
 }
+
+
+void Server::doGraphics() {
+    app->renderDevice->push2D();
+
+        Draw::rect2D(Rect2D::xywh(0,0,200,200), app->renderDevice, Color3::white() * 0.5);
+        EntityTable::Iterator end = entityTable.end();
+        for (EntityTable::Iterator e = entityTable.begin(); e != end; ++e) {
+            Vector3 pos = e->value.frame.translation;
+            Vector3 dir = e->value.frame.toCoordinateFrame().lookVector();
+
+            pos = Vector3(pos.x + 100, pos.z + 100, 0);
+            dir = Vector3(dir.x, dir.z, 0);
+
+            Draw::ray(Ray::fromOriginAndDirection(pos, dir), app->renderDevice, e->value.color, 50);
+        }
+    app->renderDevice->pop2D();
+}

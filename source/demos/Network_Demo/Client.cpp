@@ -133,7 +133,7 @@ void Client::doSimulation(SimTime dt) {
  Allow other applications some time.
  */
 static void manageFrameRate() {
-    const double targetFrameRate = 60;
+    const double targetFrameRate = 30;
 
     // Sleep if we have more performance than needed
     static RealTime last = 0;
@@ -255,6 +255,8 @@ void Client::renderEntities() {
 
 void Client::doGraphics() {
 
+    RealTime now = System::time();
+
     const GCamera& cam = app->debugController.active() ? app->debugCamera : camera;
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
@@ -320,6 +322,10 @@ void Client::doGraphics() {
                 Color3(1.0, 0.4, 0.4), Color3::BLACK);
         }
     app->renderDevice->pop2D();
+
+    if (app->hostingServer) {
+        app->hostingServer->doGraphics();
+    }
 }
 
 
