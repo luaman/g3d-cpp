@@ -4,13 +4,10 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-11-11
-  @edited  2003-01-25
+  @edited  2003-04-29
  
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
-
- Copyright 2000-2003, Morgan McGuire.
- All rights reserved.
  */
 
 #ifndef G3D_CONVEXPOLYHEDRON_H
@@ -31,16 +28,39 @@ public:
 };
 
 class ConvexPolygon {
+private:
+
+	friend class ConvexPolyhedron;
+
+    Array<Vector3>			_vertex;
+
 public:
-    /**
-     Counter clockwise winding order.  Zero vertices indicates an 
-     empty polygon (zero area).
-     */
-    Array<Vector3> vertex;
 
     ConvexPolygon() {}
-    ConvexPolygon(const Array<Vector3>& _vertex);
+    ConvexPolygon(const Array<Vector3>& __vertex);
     virtual ~ConvexPolygon() {}
+
+    /**
+     Counter clockwise winding order.  
+     */
+	inline const Vector3& vertex(int i) const {
+		return _vertex[i];
+	}
+
+	inline void setVertex(int i, const Vector3& v) {
+		_vertex[i] = v;
+	}
+
+	/**
+	 Zero vertices indicates an empty polygon (zero area).
+	 */
+	inline int numVertices() const {
+		return _vertex.size();
+	}
+
+	inline void setNumVertices(int n) {
+		_vertex.resize(n);
+	}
 
     /**
      O(n) in the number of edges
@@ -65,8 +85,8 @@ public:
     Real getArea() const;
 
     Vector3 getNormal() const {
-        debugAssert(vertex.length() >= 3);
-        return (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]).direction();
+        debugAssert(_vertex.length() >= 3);
+        return (_vertex[1] - _vertex[0]).cross(_vertex[2] - _vertex[0]).direction();
     }
 
     /**
@@ -74,6 +94,8 @@ public:
      */
     ConvexPolygon inverse() const;
 };
+
+
 
 class ConvexPolyhedron {
 public:

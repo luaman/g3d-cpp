@@ -4,7 +4,7 @@
   @author Morgan McGuire, morgan@graphics3d.com
 
   @created 2001-11-11
-  @edited  2003-02-15
+  @edited  2003-04-29
  
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -15,32 +15,32 @@
 
 namespace G3D {
 
-ConvexPolygon::ConvexPolygon(const Array<Vector3>& _vertex) : vertex(_vertex) {
+ConvexPolygon::ConvexPolygon(const Array<Vector3>& __vertex) : _vertex(__vertex) {
     // Intentionally empty
 }
 
 
 bool ConvexPolygon::isEmpty() const {
-    return (vertex.length() == 0) || (getArea() <= fuzzyEpsilon);
+    return (_vertex.length() == 0) || (getArea() <= fuzzyEpsilon);
 }
 
 
 Real ConvexPolygon::getArea() const {
 
-    if (vertex.length() < 3) {
+    if (_vertex.length() < 3) {
         return 0;
     }
 
     Real sum = 0;
 
-    int length = vertex.length();
+    int length = _vertex.length();
     // Split into triangle fan, compute individual area
     for (int v = 2; v < length; v++) {
         int i0 = 0;
         int i1 = v - 1;
         int i2 = v;
 
-        sum += (vertex[i1] - vertex[i0]).cross(vertex[i2] - vertex[i0]).length() / 2; 
+        sum += (_vertex[i1] - _vertex[i0]).cross(_vertex[i2] - _vertex[i0]).length() / 2; 
     }
 
     return sum;
@@ -52,8 +52,8 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
 }
 
 void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon &below, DirectedEdge &newEdge) {
-    above.vertex.resize(0);
-    below.vertex.resize(0);
+    above._vertex.resize(0);
+    below._vertex.resize(0);
 
     if (isEmpty()) {
         //debugPrintf("Empty\n");
@@ -61,7 +61,7 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
     }
 
     int v = 0;
-    int length = vertex.length();
+    int length = _vertex.length();
 
 
     Vector3 polyNormal = getNormal();
@@ -73,7 +73,7 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
         // below, or in the plane.
 
         Real a,b,c,d;
-        Vector3 pt = vertex[0];
+        Vector3 pt = _vertex[0];
 
         plane.getEquation(a,b,c,d);
         Real r = (a * pt.x + b * pt.y + c * pt.z + d);
@@ -95,23 +95,23 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
     // debug assertions.
     int count = 0;
 
-    // True when the last vertex we looked at was above the plane
-    bool lastAbove = plane.halfSpaceContains(vertex[v]);
+    // True when the last _vertex we looked at was above the plane
+    bool lastAbove = plane.halfSpaceContains(_vertex[v]);
 
     if (lastAbove) {
-        above.vertex.append(vertex[v]);
+        above._vertex.append(_vertex[v]);
     } else {
-        below.vertex.append(vertex[v]);
+        below._vertex.append(_vertex[v]);
     }
 
     for (v = 1; v < length; v++) {
-        bool isAbove = plane.halfSpaceContains(vertex[v]);
+        bool isAbove = plane.halfSpaceContains(_vertex[v]);
     
         if (lastAbove ^ isAbove) {
             // Switched sides.
             // Create an interpolated point that lies
             // in the plane, between the two points.
-            Line line = Line::fromTwoPoints(vertex[v - 1], vertex[v]);
+            Line line = Line::fromTwoPoints(_vertex[v - 1], _vertex[v]);
             Vector3 interp = line.intersection(plane);
             
             if (! interp.isFinite()) {
@@ -123,13 +123,13 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
                 // forms a degenerate polygon, so just treat the whole polygon
                 // as below the plane.
                 below = *this;
-                above.vertex.resize(0);
+                above._vertex.resize(0);
                 //debugPrintf("Entirely below\n");
                 return;
             }                
 
-            above.vertex.append(interp);
-            below.vertex.append(interp);
+            above._vertex.append(interp);
+            below._vertex.append(interp);
             if (lastAbove) {
                 newEdge.stop = interp;
             } else {
@@ -140,17 +140,17 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
 
         lastAbove = isAbove;
         if (lastAbove) {
-            above.vertex.append(vertex[v]);
+            above._vertex.append(_vertex[v]);
         } else {
-            below.vertex.append(vertex[v]);
+            below._vertex.append(_vertex[v]);
         }
     }
 
     // Loop back to the first point, seeing if an interpolated point is
     // needed.
-    bool isAbove = plane.halfSpaceContains(vertex[0]);
+    bool isAbove = plane.halfSpaceContains(_vertex[0]);
     if (lastAbove ^ isAbove) {
-        Line line = Line::fromTwoPoints(vertex[length - 1], vertex[0]);
+        Line line = Line::fromTwoPoints(_vertex[length - 1], _vertex[0]);
         Vector3 interp = line.intersection(plane);
         if (! interp.isFinite()) {
             // Since the polygon is not in the plane (we checked above), 
@@ -160,13 +160,13 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
             // forms a degenerate polygon, so just treat the whole polygon
             // as below the plane.
             below = *this;
-            above.vertex.resize(0);
+            above._vertex.resize(0);
             //debugPrintf("Entirely below\n");
             return;
         }                
 
-        above.vertex.append(interp);
-        below.vertex.append(interp);
+        above._vertex.append(interp);
+        below._vertex.append(interp);
         debugAssertM(count < 2, "Convex polygons may only intersect planes at two edges.");
         if (lastAbove) {
             newEdge.stop = interp;
@@ -182,11 +182,11 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
 
 ConvexPolygon ConvexPolygon::inverse() const {
     ConvexPolygon result;
-    int length = vertex.length();
-    result.vertex.resize(length);
+    int length = _vertex.length();
+    result._vertex.resize(length);
     
     for (int v = 0; v < length; v++) {
-        result.vertex[v] = vertex[length - v - 1];
+        result._vertex[v] = _vertex[length - v - 1];
     }
 
     return result;
@@ -210,13 +210,13 @@ Real ConvexPolyhedron::getVolume() const {
 
     Real sum = 0;
 
-    // Choose the first vertex of the first face as the origin.
+    // Choose the first _vertex of the first face as the origin.
     // This lets us skip one face, too, and avoids negative heights.
-    Vector3 v0 = face[0].vertex[0];
+    Vector3 v0 = face[0]._vertex[0];
     for (int f = 1; f < face.length(); f++) {        
         const ConvexPolygon& poly = face[f];
         
-        Real height = (poly.vertex[0] - v0).dot(poly.getNormal());
+        Real height = (poly._vertex[0] - v0).dot(poly.getNormal());
         Real base   = poly.getArea();
 
         sum += height * base;
@@ -251,8 +251,8 @@ void ConvexPolyhedron::cut(const Plane& plane, ConvexPolyhedron &above, ConvexPo
         const Real eps = 0.005;
         for (f = face.length() - 1; (f >= 0) && (!ruledOut); f--) {
             const ConvexPolygon& poly = face[f];
-            for (int v = poly.vertex.length() - 1; (v >= 0) && (!ruledOut); v--) { 
-                double r = abc.dot(poly.vertex[v]) + d;
+            for (int v = poly._vertex.length() - 1; (v >= 0) && (!ruledOut); v--) { 
+                double r = abc.dot(poly._vertex[v]) + d;
                 if (r > eps) {
                     numAbove++;
                 } else if (r < -eps) {
@@ -302,15 +302,15 @@ void ConvexPolyhedron::cut(const Plane& plane, ConvexPolyhedron &above, ConvexPo
             // one side of the plane yet there is an edge we need
             // because it touches the plane.
             // 
-            // Extract the non-empty vertex list and examine it.
+            // Extract the non-empty _vertex list and examine it.
             // If we find exactly one edge in the plane, add that edge.
-            const Array<Vector3>& vertex = (aEmpty ? b.vertex : a.vertex);
-            int L = vertex.length();
+            const Array<Vector3>& _vertex = (aEmpty ? b._vertex : a._vertex);
+            int L = _vertex.length();
             int count = 0;
             for (int v = 0; v < L; v++) {
-                if (plane.fuzzyContains(vertex[v]) && plane.fuzzyContains(vertex[(v + 1) % L])) {
-                    e.start = vertex[v];
-                    e.stop = vertex[(v + 1) % L];
+                if (plane.fuzzyContains(_vertex[v]) && plane.fuzzyContains(_vertex[(v + 1) % L])) {
+                    e.start = _vertex[v];
+                    e.stop = _vertex[(v + 1) % L];
                     count++;
                 }
             }
@@ -350,19 +350,19 @@ for (int xx=0; xx < numVertices; xx++) {
         // Need at least three points to make a polygon
         debugAssert(numVertices >= 3);
 
-        Vector3 lastVertex = edge.last().stop;
-        cap.vertex.append(lastVertex);
+        Vector3 last_vertex = edge.last().stop;
+        cap._vertex.append(last_vertex);
 
-        // Search for the next vertex.  Because of accumulating
+        // Search for the next _vertex.  Because of accumulating
         // numerical error, we have to find the closest match, not 
         // just the one we expect.
         for (int v = numVertices - 1; v >= 0; v--) {
             // matching edge index
             int index = 0;
             int num = edge.length();
-            double distance = (edge[index].start - lastVertex).squaredLength();
+            double distance = (edge[index].start - last_vertex).squaredLength();
             for (int e = 1; e < num; e++) {
-                double d = (edge[e].start - lastVertex).squaredLength();
+                double d = (edge[e].start - last_vertex).squaredLength();
 
                 if (d < distance) {
                     // This is the new closest one
@@ -374,8 +374,8 @@ for (int xx=0; xx < numVertices; xx++) {
             // Don't tolerate ridiculous error.
             debugAssertM(distance < 0.02, "Edge missing while closing polygon.");
 
-            lastVertex = edge[index].stop;
-            cap.vertex.append(lastVertex);
+            last_vertex = edge[index].stop;
+            cap._vertex.append(last_vertex);
         }
         
         //debugPrintf("\n");

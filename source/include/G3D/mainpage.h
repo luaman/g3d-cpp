@@ -583,22 +583,34 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
-	 <LI> Added docs for ConvexPolygon and ConvexPolyhedron
+	 <LI> G3D::ConvexPolygon
+	 <LI> G3D::ConvexPolyhedron
      <LI> G3D::iClamp
 	 <LI> G3D::iWrap
 	 <LI> G3D::iRandom, G3D::random
      <LI> G3D::getFiles
      <LI> G3D::getDirs
+     <LI> G3D::VAR::pointer
+     <LI> G3D::realWorldLocalTime
+     <LI> G3D::Texture::TRANSPARENT_BORDER
+     <LI> DECLARE_GLFORMATOF
+     <LI> G3D::System::machineEndian
+     <LI> G3D::VertexProgram, G3D::VertexProgramRef, G3D::RenderDevice::setVertexProgram
+     <LI> G3D::PixelProgram, G3D::PixelProgramRef, G3D::RenderDevice::setPixelProgram
+     <LI> G3D::GPUProgram, G3D::GPUProgramRef
+     <LI> G3D::sizeOfGLFormat
+     <LI> G3D::RenderDevice::setVertexAttrib
+     <LI> glFormatOf
+     <LI> G3D::Color4uint8
+     <LI> G3D::Color3uint8
+     <LI> G3D::Vector3int16
+     <LI> Added TextInput::Options to optionally allow C++ comments to
+          be treated as two slashes instead of a comment
      <LI> Added data/image/meter.jpg, a meter stick texture convenient for testing
-     <LI> System::machineEndian
      <LI> Added sansserif, news, and terminal fonts based on Bitstream's <A HREF="http://www.gnome.org/fonts/">free fonts</A>
      <LI> RenderDevice::numTextureUnits
      <LI> Added stars to night Sky
-     <LI> Support for vertex attributes through RenderDevice::setVertexAttrib
-     <LI> VAR::pointer
-     <LI> G3D::realWorldLocalTime
-     <LI> Texture::TRANSPARENT_BORDER
-     <LI> DECLARE_GLFORMATOF
+     <LI> Documented G3D::glGetProcAddress
      <LI> Fix: Texture now restored GL_ENABLE bits properly after creation
      <LI> Fix: Texture::sizeInMemory now accounts for MIP-map levels
      <LI> Fix: Fonts and skies now adjust their brightness for the screen gamma level
@@ -606,20 +618,9 @@ to add zlibstat.lib to your linker list.
      <LI> resolveFilename
      <LI> GLProgram_Demo to show how to use vertex programs in G3D
      <LI> Support for GL_ARB_vertex_program 
-     <LI> VertexProgram, VertexProgramRef, RenderDevice::setVertexProgram
-     <LI> PixelProgram, PixelProgramRef, RenderDevice::setPixelProgram
-     <LI> GPUProgram, GPUProgramRef
-     <LI> Documented G3D::glGetProcAddress
-     <LI> G3D::sizeOfGLFormat
-     <LI> glFormatOf
-     <LI> G3D::Color4uint8
-     <LI> G3D::Color3uint8
-     <LI> G3D::Vector3int16
      <LI> Modified ManualCameraController so that diagonal movement does not exceed
           maximum rate.
      <LI> Added support for non-GL_FLOAT vertex arrays to RenderDevice
-     <LI> Added TextInput::Options to optionally allow C++ comments to
-          be treated as two slashes instead of a comment
      <LI> Added support for Wavefront OBJ files to IFSBuilder
      <LI> Removed duplicate copies of SDL.dll from the source tree
      <LI> Renamed G3D::CDTriangle to G3D::Triangle
