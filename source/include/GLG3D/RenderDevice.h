@@ -135,12 +135,16 @@ public:
  <P> NICEST line and point smoothing is enabled by default (however,
  you need to set your alpha blending mode to see it).
 
- <P> glEnable(GL_NORMALIZE) is set by default.
+ <P> glEnable(GL_NORMALIZE) is set by default.  glEnable(GL_COLOR_MATERIAL) is enabled by default.
 
  <P> For stereo rendering, set <CODE>RenderDeviceSettings::stereo = true</CODE>
      and use glDrawBuffer to switch which eye is being rendered.  Only
      use RenderDevice::beginFrame/RenderDevice::endFrame once per frame,
      but do clear both buffers separately.
+
+ <P> The only OpenGL calls <B>NOT</B> abstracted by RenderDevice are
+     fog and texture coordinate generation.  For everything else, use
+     RenderDevice.
 
  <P>
  Example
@@ -149,7 +153,7 @@ public:
    renderDevice->init(RenderDeviceSettings());
   </PRE>
 
- RenderDevice requires SDL and OpenGL.  
+  RenderDevice requires SDL and OpenGL.  
 
   <P>
   Example 2 (textured quad)
@@ -668,6 +672,9 @@ public:
         return brightScale;
     }
 
+    /**
+     (0, 0) is the <B>upper</B>-left corner of the screen.
+     */
     void setViewport(const Rect2D& v);
     Rect2D getViewport() const;
 

@@ -1319,6 +1319,11 @@ uint RenderDevice::numTextureUnits() const {
 }
 
 
+uint RenderDevice::numTextures() const {
+    return _numTextures;
+}
+
+
 uint RenderDevice::numTextureCoords() const {
     return _numTextureCoords;
 }
@@ -1403,7 +1408,8 @@ void RenderDevice::setColorClearValue(const Color4& c) {
 
 void RenderDevice::setViewport(const Rect2D& v) {
     if (state.viewport != v) {
-        glViewport(v.x0(), v.y0(), v.width(), v.height());
+        // Flip to OpenGL y-axis
+        glViewport(v.x0(), getHeight() - v.y1(), v.width(), v.height());
         state.viewport = v;
     }
 }
@@ -1889,6 +1895,7 @@ void RenderDevice::setAmbientLightColor(
     const Color3&        color) {
     setAmbientLightColor(Color4(color, 1.0));
 }
+
 
 void RenderDevice::enableLighting() {
     debugAssert(! inPrimitive);
@@ -2666,7 +2673,7 @@ debugAssertGLOk();
                 glLoadMatrix(state.cameraToWorldMatrix.inverse());
                 glLightfv(gi, GL_POSITION,              light.position);
                 glLightfv(gi, GL_SPOT_DIRECTION,        light.spotDirection);
-                glLightf (gi, GL_SPOT_CUTOFF,            light.spotCutoff);
+                glLightf (gi, GL_SPOT_CUTOFF,           light.spotCutoff);
                 glLightfv(gi, GL_AMBIENT,               zero);
                 glLightfv(gi, GL_DIFFUSE,               brightness);
                 glLightfv(gi, GL_SPECULAR,              brightness);

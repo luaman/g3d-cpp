@@ -121,8 +121,7 @@ Model::Model(const std::string& filename) {
     varVertex = VAR(vertex, varStatic);
     varNormal = VAR(normal, varStatic);
 
-    int i;
-    for (i = 0; i < index.size(); i += 3) {
+    for (int i = 0; i < index.size(); i += 3) {
         collisionTriangle.append(Triangle(vertex[index[i]], vertex[index[i + 1]], vertex[index[i + 2]]));
     }
 }

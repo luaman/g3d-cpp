@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-05-23
-  @edited  2003-07-02
+  @edited  2003-11-18
 */
 
 #ifndef GLG3D_TEXTUREFORMAT_H
@@ -22,6 +22,9 @@ namespace G3D {
 class TextureFormat {
 public:
 
+    /**
+     Number of channels (1 for a depth texture).
+     */
     int                 numComponents;
     bool                compressed;
     
@@ -54,6 +57,11 @@ public:
     int                 blueBits;
 
     /**
+     Number of depth bits (for depth textures; e.g. shadow maps)
+     */
+    int                 depthBits;
+
+    /**
      Sum of the per-channel bits, plus any additional bits required
      for byte alignment.
      */
@@ -84,6 +92,7 @@ private:
         int             _redBits,
         int             _greenBits,
         int             _blueBits,
+        int             _depthBits,
         int             _hardwareBitsPerTexel,
         int             _packedBitsPerTexel,
         bool            _opaque) : 
@@ -96,6 +105,7 @@ private:
         redBits(_redBits),
         greenBits(_greenBits),
         blueBits(_blueBits),
+        depthBits(_depthBits),
         packedBitsPerTexel(_packedBitsPerTexel),
         hardwareBitsPerTexel(_hardwareBitsPerTexel),
         opaque(_opaque) {
@@ -124,6 +134,12 @@ public:
     static const TextureFormat* RGBA_DXT3;
 
     static const TextureFormat* RGBA_DXT5;
+
+    static const TextureFormat* DEPTH16;
+
+    static const TextureFormat* DEPTH24;
+
+    static const TextureFormat* DEPTH32;
 
     /**
      NULL pointer; indicates that the texture class should choose

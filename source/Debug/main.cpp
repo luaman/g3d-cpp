@@ -226,7 +226,6 @@ void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
     app->debugPrintf("Mouse (%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
-
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
     // Cyan background

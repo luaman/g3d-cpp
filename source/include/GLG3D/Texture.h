@@ -119,6 +119,18 @@ public:
     static unsigned int newGLTextureID();
 
     /**
+     Creates an empty texture (useful for later reading from the screen).
+     */
+    static TextureRef createEmpty(
+        int                             width,
+        int                             height,
+        const std::string&              name           = "Texture",
+        const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D);
+
+    /**
      Wrap and interpolate will override the existing parameters on the
      GL texture.
 
@@ -131,8 +143,7 @@ public:
         const class TextureFormat*      textureFormat,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D,
-        bool                            opaque         = true);
+        Dimension                       dimension      = DIM_2D);
 
 
     /**
@@ -191,11 +202,14 @@ public:
      The (x, y) coordinates are in real screen pixels.  (0, 0) is the top left
      of the screen.
 
-     The texture dimensions will be updated.  The previous wrap mode will be preserved.
+     The texture dimensions will be updated but all other properties will be preserved:
+     The previous wrap mode will be preserved.
      The interpolation mode will be preserved (unless it required a mipmap,
      in which case it will be set to BILINEAR_NO_MIPMAP).  The previous color depth
      and alpha depth will be preserved.  Texture compression is not supported for
      textures copied from the screen.
+
+     To copy a depth texture, first create an empty depth texture then copy into it.
 
      If you invoke this method on a texture that is currently set on RenderDevice,
      the texture will immediately be updated (there is no need to rebind).

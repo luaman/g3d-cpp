@@ -127,7 +127,7 @@ static void createTexture(
                 bytes);
         }
 
-        // Intentionally fall through
+        // Intentionally fall through for power of 2 case
 
     case GL_TEXTURE_RECTANGLE_NV:
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
@@ -236,17 +236,19 @@ Texture::Texture(
 
         name = _name;
 
-        glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &width);
-        glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &height);
-        depth = 1;
+        if (_dimension != DIM_CUBE_MAP) {
+            glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &width);
+            glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &height);
+        } else {
+            width = height = 1;
+        }
 
+        depth = 1;
         invertY = false;
         
         interpolate         = _interpolate;
         wrap                = _wrap;
-
         setTexParameters(target, wrap, interpolate);
-
     glStatePop();
 }
 
@@ -257,12 +259,11 @@ TextureRef Texture::fromGLTexture(
     const TextureFormat*    textureFormat,
     WrapMode                wrap,
     InterpolateMode         interpolate,
-    Dimension               dimension,
-    bool                    opaque) {
+    Dimension               dimension) {
 
     debugAssert(textureFormat);
 
-    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, opaque);
+    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, textureFormat->opaque);
 }
 
 
@@ -284,6 +285,7 @@ static void brightenImage(uint8* byte, int n, double brighten, int skipAlpha) {
         }
     }
 }
+
 
 TextureRef Texture::fromFile(
     const std::string&      filename,
@@ -465,6 +467,7 @@ TextureRef Texture::fromMemory(
 
         glEnable(target);
         glBindTexture(target, textureID);
+    debugAssertGLOk();
 
         int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
         
@@ -481,6 +484,7 @@ TextureRef Texture::fromMemory(
 
                 target = cubeFaceTarget[f];
             }
+    debugAssertGLOk();
 
             if (interpolate == TRILINEAR_MIPMAP) {
                 createMipMapTexture(target, bytes[f],
@@ -492,7 +496,7 @@ TextureRef Texture::fromMemory(
                               bytesFormat->packedBitsPerTexel / 8);
             }
         }
-
+    debugAssertGLOk();
     glStatePop();
 
     if (dimension != DIM_2D_RECT) {
@@ -500,8 +504,33 @@ TextureRef Texture::fromMemory(
         height = ceilPow2(height);
     }
 
-    return fromGLTexture(name, textureID, desiredFormat, wrap,
-         interpolate, dimension, bytesFormat->opaque);
+    debugAssertGLOk();
+    TextureRef t = fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension);
+
+    t->width = width;
+    t->height = height;
+    return t;
+}
+
+
+TextureRef Texture::createEmpty(
+    int                              w,
+    int                              h,
+    const std::string&               name,
+    const TextureFormat*             desiredFormat,
+    Texture::WrapMode                wrap,
+    Texture::InterpolateMode         interpolate,
+    Texture::Dimension               dimension) {
+
+    debugAssertM(desiredFormat, "desiredFormat may not be TextureFormat::AUTO");
+
+    // We must pretend the input is in the desired format otherwise 
+    // OpenGL might refuse to negotiate formats for us.
+    Array<uint8> data(w * h * desiredFormat->packedBitsPerTexel / 8);
+    const uint8* bytes[1];
+    bytes[0] = data.getCArray();
+
+    return Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, wrap, interpolate, dimension);
 }
 
 
@@ -574,14 +603,17 @@ void Texture::copyFromScreen(
     double viewport[4];
     glGetDoublev(GL_VIEWPORT, viewport);
     double viewportHeight = viewport[3];
-        
-    glCopyTexImage2D(GL_TEXTURE_2D, 0, format->OpenGLFormat, rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
+    
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, format->OpenGLFormat,
+        rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
 
+    // Reset the original properties
     setTexParameters(GL_TEXTURE_2D, wrap, interpolate);
 
     debugAssert(glGetError() == GL_NO_ERROR);
     glDisable(GL_TEXTURE_2D);
 
+    // Once copied from the screen, the direction will be reversed.
     invertY = true;
 
     glStatePop();

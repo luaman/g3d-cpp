@@ -5,14 +5,14 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-10-04
+ @edited  2003-11-19
  */
 
 #include "Scene.h"
 #include "Object.h"
 
 extern std::string          DATA_DIR;
-extern GCamera*              camera;
+extern GCamera*             camera;
 extern RenderDevice*        renderDevice;
 extern int                  depthBits;
 extern Log*                 debugLog;
@@ -47,24 +47,27 @@ static bool debugLightMap = false;
 
 Scene::Scene() {
     sky = Sky::create(renderDevice, DATA_DIR + "sky/");
-	glGenTextures(1, &shadowMap);
 
-    // Prep the shadow map texture
-    glBindTexture(GL_TEXTURE_2D, shadowMap);
-    void* dummy = malloc(depthBits * shadowMapSize * shadowMapSize);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapSize, shadowMapSize,
-					0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, dummy);
-    free(dummy);
-    dummy = NULL;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    const TextureFormat* fmt = NULL;
+    switch (depthBits) {
+    case 16:
+        fmt = TextureFormat::DEPTH16;
+        break;
+
+    case 24:
+        fmt = TextureFormat::DEPTH24;
+        break;
+
+    case 32:
+        fmt = TextureFormat::DEPTH32;
+        break;
+    }
+
+    shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", fmt, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP);
 }
 
 
 Scene::~Scene() {
-    glDeleteTextures(1, &shadowMap);
     object.deleteAll();
     sim.deleteAll();
 }
@@ -93,12 +96,12 @@ void Scene::generateShadowMap(
 
     renderDevice->clear(debugLightMap, true, false);
     
+    Rect2D rect = Rect2D::xywh(0, 0, shadowMapSize, shadowMapSize);
+
     renderDevice->pushState();
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+        renderDevice->setViewport(rect);
 
 	    // Draw from the light's point of view
-	    glViewport(0, 0, shadowMapSize, shadowMapSize);
-
         renderDevice->setProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
         renderDevice->setCameraToWorldMatrix(lightViewMatrix);
 
@@ -109,16 +112,13 @@ void Scene::generateShadowMap(
         // We can choose to use a large bias or render from
         // the backfaces in order to avoid front-face self
         // shadowing.  Here, we use a large offset.
-	    glPolygonOffset(4.0f, 0.2f);
-        glEnable(GL_POLYGON_OFFSET_FILL);
+        renderDevice->setPolygonOffset(4);
 
         renderingPass();
-
-    glPopAttrib();
     renderDevice->popState();
 
-	glBindTexture(GL_TEXTURE_2D, shadowMap);
-	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, shadowMapSize, shadowMapSize);
+    shadowMap->copyFromScreen(rect);
+    shadowMap->invertY = false;
 }
 
 
@@ -167,11 +167,10 @@ void Scene::render(const LightingParameters& lighting) const {
 
         renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
+        renderDevice->setTexture(0, shadowMap);
+
         glPushAttrib(GL_ALL_ATTRIB_BITS);
-        //Set up texture units
-	    glEnable(GL_TEXTURE_2D);
-	    glBindTexture(GL_TEXTURE_2D, shadowMap);
-	    
+        
 	    //Set up tex coord generation - all 4 coordinates required
         static const Matrix4 bias(
             0.5f, 0.0f, 0.0f, 0.5f,
@@ -194,7 +193,9 @@ void Scene::render(const LightingParameters& lighting) const {
 	    glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 	    glTexGenfv(GL_Q, GL_EYE_PLANE, textureProjectionMatrix2D[3]);
 	    glEnable(GL_TEXTURE_GEN_Q);
-	    
+        debugAssertGLOk();
+
+        // TODO: move this to Texture
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 
         renderingPass();

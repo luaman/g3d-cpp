@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-07-21
+ @edited  2003-11-18
  */
 
 #ifndef SCENE_H
@@ -24,7 +24,9 @@ public:
 
     SkyRef                      sky;
 
-    GLuint                      shadowMap;
+    // TODO: Remove
+//    GLuint                      shadowMap;
+    TextureRef                  shadowMap;
 
     /** Draws all objects using current lighting and blending. */
     void renderingPass() const;

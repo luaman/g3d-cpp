@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2000-09-09
- @edited  2002-06-06
+ @edited  2002-11-19
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -16,6 +16,7 @@
 #include <string>
 #include <stdio.h>
 #include <cstdarg>
+#include <assert.h>
 #ifndef _WIN32
     // Don't include varargs.h for some random
     // gcc reason
