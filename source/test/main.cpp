@@ -1210,6 +1210,7 @@ void testSwizzle() {
 
 int main(int argc, char* argv[]) {
 
+
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureMatrix3Performance();

@@ -1047,6 +1047,7 @@ void Mesh::drawSuggestiveContours(App* app) {
 		            const Vector3 midVert = lerp(vertNeg, vertPos, a);
 
                     // Compute the gradient along this edge
+                    // TODO: put funcPos - funcNeg in there!
                     double grad = face_W.dot(vertPos - vertNeg);
 
                     // if the gradient is less than t_d, don't stroke
