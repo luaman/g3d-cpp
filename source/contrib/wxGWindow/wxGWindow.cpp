@@ -18,6 +18,8 @@ BEGIN_EVENT_TABLE(wxG3DCanvas, wxGLCanvas)
   EVT_RIGHT_UP( wxG3DCanvas::handleMouseRightUp )
   EVT_MIDDLE_DOWN( wxG3DCanvas::handleMouseMiddleDown )
   EVT_MIDDLE_UP( wxG3DCanvas::handleMouseMiddleUp )
+  EVT_MOTION( wxG3DCanvas::handleMouseMove )
+  EVT_MOVE( wxG3DCanvas::handleWindowMove )
 END_EVENT_TABLE()
 
 
@@ -170,11 +172,23 @@ void wxGWindow::getRelativeMouseState (Vector2 &position, uint8 &mouseButtons) c
 }
 
 void wxGWindow::getRelativeMouseState (int &x, int &y, uint8 &mouseButtons) const {
-    // TODO
+    
+    x = relativeX;
+    y = relativeY;
+
+    // Clear mouseButtons and set each button bit.
+	mouseButtons = 0;
+    mouseButtons |= (buttons[0] ? 1 : 0) << 0;
+    mouseButtons |= (buttons[1] ? 1 : 0) << 1;
+    mouseButtons |= (buttons[2] ? 1 : 0) << 2;
 }
 
 void wxGWindow::getRelativeMouseState (double &x, double &y, uint8 &mouseButtons) const {
-    // TODO
+
+    int _x, _y;
+    getRelativeMouseState(_x, _y, mouseButtons);
+    x = (double)_x;
+    y = (double)_y;
 }
 
 void wxGWindow::getJoystickState (unsigned int stickNum, Array< float > &axis, Array< bool > &button) {
@@ -312,6 +326,8 @@ void wxG3DCanvas::handleMouseLeftUp(wxMouseEvent& event) {
     e.key.keysym.mod = KMOD_NONE;
 
     _gWindow->keyboardEvents.pushBack(e);
+
+    _gWindow->buttons[0] = 0;
 }
 
 
@@ -329,6 +345,8 @@ void wxG3DCanvas::handleMouseLeftDown(wxMouseEvent& event) {
     e.key.keysym.mod = KMOD_NONE;
 
     _gWindow->keyboardEvents.pushBack(e);
+
+    _gWindow->buttons[0] = 1;
 }
 
 
@@ -346,6 +364,8 @@ void wxG3DCanvas::handleMouseRightUp(wxMouseEvent& event) {
     e.key.keysym.mod = KMOD_NONE;
 
     _gWindow->keyboardEvents.pushBack(e);
+
+    _gWindow->buttons[2] = 0;
 }
 
 
@@ -363,6 +383,8 @@ void wxG3DCanvas::handleMouseRightDown(wxMouseEvent& event) {
     e.key.keysym.mod = KMOD_NONE;
 
     _gWindow->keyboardEvents.pushBack(e);
+
+    _gWindow->buttons[2] = 1;
 }
 
 
@@ -380,6 +402,8 @@ void wxG3DCanvas::handleMouseMiddleUp(wxMouseEvent& event) {
     e.key.keysym.mod = KMOD_NONE;
 
     _gWindow->keyboardEvents.pushBack(e);
+
+    _gWindow->buttons[1] = 0;
 }
 
 
@@ -397,6 +421,23 @@ void wxG3DCanvas::handleMouseMiddleDown(wxMouseEvent& event) {
     e.key.keysym.mod = KMOD_NONE;
 
     _gWindow->keyboardEvents.pushBack(e);
+
+    _gWindow->buttons[1] = 1;
+}
+
+
+void wxG3DCanvas::handleMouseMove(wxMouseEvent& event) {
+
+    _gWindow->relativeX = event.m_x - _gWindow->clientX;
+    _gWindow->relativeY = event.m_y - _gWindow->clientY;
+}
+
+
+void wxG3DCanvas::handleWindowMove(wxMoveEvent& event) {
+
+    wxPoint& point = event.GetPosition();
+    _gWindow->clientX = point.x;
+    _gWindow->clientY = point.y;
 }
 
 

@@ -2,6 +2,7 @@
 // Demo of wxGWindow
 //
 #include "wxGWindow.h"
+#include "wx/chkconf.h"
 
 
 class App : public GApp {
@@ -103,9 +104,15 @@ public:
     
 public:
     wxGWindow*      gWindow;
+
+    void OnClose(wxCloseEvent& event);
+
+    DECLARE_EVENT_TABLE();
 };
 
-
+BEGIN_EVENT_TABLE(MyFrame, wxFrame)
+    EVT_CLOSE( MyFrame::OnClose )
+END_EVENT_TABLE()
 
 /* -----------------------------------------------------------------------
   Main Window
@@ -115,6 +122,11 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos,
                  const wxSize& size, long style) :
          wxFrame(frame, -1, title, pos, size, style),
          gWindow(NULL) {
+}
+
+
+void MyFrame::OnClose(wxCloseEvent& event) {
+    Destroy();
 }
 
 // wxWidgets required app object

@@ -83,6 +83,14 @@ private:
 
     G3D::Queue< GEvent >        keyboardEvents;
 
+    int                         clientX;
+    int                         clientY;
+
+    int                         relativeX;
+    int                         relativeY;
+
+    bool                        buttons[3];
+
 public:
 
     wxGWindow(
@@ -183,6 +191,10 @@ public:
     
     void handleMouseMiddleDown(wxMouseEvent& event);
 
+    void handleMouseMove(wxMouseEvent& event);
+
+    void handleWindowMove(wxMoveEvent& event);
+    
     DECLARE_EVENT_TABLE();
 };
 
