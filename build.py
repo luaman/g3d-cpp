@@ -75,13 +75,13 @@ def lib():
         # should really be putting them here)
         if (x != 0):
             mkdir("temp/lib")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D.a",           "temp/lib/libG3D.a")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",     "temp/lib/libG3D_debug.a")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D.a",                  "temp/lib/libG3D.a")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",            "temp/lib/libG3D_debug.a")
             copyIfNewer("source/G3Dcpp/.libs/libG3D.so.0.0.0",           "temp/lib/libG3D.so")
             copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.so.0.0.0",     "temp/lib/libG3D_debug.so")
             
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.a",       "temp/lib/libGLG3D.a")
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.a", "temp/lib/libGLG3D_debug.a")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.a",              "temp/lib/libGLG3D.a")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.a",        "temp/lib/libGLG3D_debug.a")
             copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.so.0.0.0",       "temp/lib/libGLG3D.so")
             copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.so.0.0.0", "temp/lib/libGLG3D_debug.so")
 

@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2003-02-15
-# @edited  2003-02-20
+# @edited  2003-04-01
 #
 # This script is written in Python.  Be aware that
 # whitespaces (particularly, indentation and newlines) 
@@ -75,6 +75,7 @@ _excludePatterns =\
     '^stderr.txt$', \
     '^stdout.txt$', \
     '\.log$', \
+    '\^.cvsignore$', \
     '^graveyard$', \
     '^CVS$', \
     '^Debug$', \
