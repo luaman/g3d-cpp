@@ -73,9 +73,15 @@ public:
 protected:
 
     MeshAlg::Geometry               geometry;
-    Array< MeshAlg::Face >          faces;
-    Array< MeshAlg::Edge >          edges;
-    Array< Array<int> >             adjacentFaces;
+    Array<MeshAlg::Face>            faces;
+    Array<MeshAlg::Edge>            edges;
+    Array<MeshAlg::Vertex>          vertices;
+
+    /**
+     adjacentVertices[v] is an array of the 1-neighbors of vertex v.
+     Computed by initAdjacentVertices.
+     */
+    Array< Array<int> >             adjacentVertices;
 
     /** angle at [vertex][face] */
     Array< Table<int, float> >      angleInner;
@@ -106,6 +112,8 @@ protected:
         the two angles (a and b) opposite edge ij. */
     void initCotans();
 
+    void initAdjacentVertices();
+
     void initAMixed();
 
     /**
@@ -120,6 +128,7 @@ protected:
     void get1Neighbors(int v, Set<int>& ringSet) const;
 };
 
+
 /** Angle between two vectors */
 inline float vectorAngle(const Vector3& a, const Vector3& b){
     double d = a.dot(b);
@@ -132,7 +141,7 @@ void Curvatures::get1Neighbors(int v, Set<int>& ringSet) const{
 
     ringSet.clear();
 
-    const Array<int>& neighborFaces = adjacentFaces[v];
+    const Array<int>& neighborFaces = vertices[v].faceIndex;
     if (neighborFaces.size() > 0) {
         // For each face
         for (int j = neighborFaces.size() - 1; j >= 0; --j) {
@@ -158,13 +167,14 @@ Curvatures::Curvatures(
     // Compute Mesh Properties
     geometry.vertexArray = _vertexArray;
     MeshAlg::computeAdjacency(geometry.vertexArray, _indexArray,
-             faces, edges, adjacentFaces);
+             faces, edges, vertices);
 
     Array<Vector3> faceNormalArray;
     MeshAlg::computeNormals(geometry.vertexArray, faces,
-            adjacentFaces, geometry.normalArray, faceNormalArray);
+            vertices, geometry.normalArray, faceNormalArray);
 
     // init tables
+    initAdjacentVertices();
     initAngles();
     initCotans();
     initAMixed();
@@ -176,6 +186,17 @@ inline double cot(double angle) {
     return 1.0 / tan(angle);
 }
 
+void Curvatures::initAdjacentVertices() {
+    const int n = geometry.vertexArray.size();
+
+    Set<int> ringSet;
+
+    adjacentVertices.resize(n, DONT_SHRINK_UNDERLYING_ARRAY);
+    for (int v = 0; v < n; ++v) {
+        get1Neighbors(v, ringSet);
+        ringSet.getMembers(adjacentVertices[v]);
+    }
+}
 
 void Curvatures::initAngles() {
     const int n = geometry.vertexArray.size();
@@ -185,8 +206,8 @@ void Curvatures::initAngles() {
     angleRight.resize(n);
 
     for (int v = 0; v < geometry.vertexArray.size(); ++v) {
-         for (int j = 0; j < adjacentFaces[v].size(); ++j) {
-            const int f = adjacentFaces[v][j];
+         for (int j = 0; j < vertices[v].faceIndex.size(); ++j) {
+            const int f = vertices[v].faceIndex[j];
             const MeshAlg::Face& face = faces[f];
 
             // 1 calculate cosine of angle at vertex
@@ -232,13 +253,15 @@ void Curvatures::initCotans() {
         aFacesIdx.clear();
 
         // Find faces that share this edge
-        for (int f = 0; f < adjacentFaces[i].size(); ++f) {
-            if ( (faces[adjacentFaces[i][f]].vertexIndex[0] == j) ||
-                 (faces[adjacentFaces[i][f]].vertexIndex[1] == j) ||
-                 (faces[adjacentFaces[i][f]].vertexIndex[2] == j) ) {
-                
-                aFaces.append(faces[adjacentFaces[i][f]]);
-                aFacesIdx.append(adjacentFaces[i][f]);
+        const MeshAlg::Vertex& vertex = vertices[i];
+
+        for (int x = 0; x < vertex.faceIndex.size(); ++x) {
+            const int f = vertex.faceIndex[x];
+            const MeshAlg::Face& face = faces[f];
+
+            if (face.containsVertex(j)) {
+                aFaces.append(face);
+                aFacesIdx.append(f);
             }
         }
 
@@ -288,9 +311,9 @@ void Curvatures::initAMixed() {
     for (int v = 0; v < geometry.vertexArray.size(); ++v) {  
         
         // For each face
-        for (int j = 0; j < adjacentFaces[v].size(); ++j) { 
+        for (int j = 0; j < vertices[v].faceIndex.size(); ++j) { 
 
-            const int f = adjacentFaces[v][j];
+            const int f = vertices[v].faceIndex[j];
             const MeshAlg::Face& face = faces[f];
 
             int iCenter = 0;
@@ -357,8 +380,8 @@ void Curvatures::gaussianCurvature(Array<double>& curvatures) const {
          double theta = 0.0;
 
          // For each face
-         for (int j = 0; j < adjacentFaces[v].size(); ++j) {
-            const int f = adjacentFaces[v][j];
+         for (int j = 0; j < vertices[v].faceIndex.size(); ++j) {
+            const int f = vertices[v].faceIndex[j];
             theta += abs(angleInner[v][f]);  
          }
 
@@ -379,17 +402,16 @@ void Curvatures::meanCurvature(Array<double>& curvatures) const {
          // Position of the current vertex
          const Vector3& vPos = geometry.vertexArray[v];
 
-         get1Neighbors(v, ringSet);
-         
          // Iterate over each edge exiting v, summing K's
 
          // Mean Curvature Normal
          Vector3 K = Vector3::ZERO;
 
-         Set<int>::Iterator end = ringSet.end();
-         for (Set<int>::Iterator cur = ringSet.begin(); cur != end; ++cur) {
+         const Array<int>& neighbor = adjacentVertices[v];
+
+         for (int n = 0; n < neighbor.size(); ++n) {
              // Index of vertex at the other end of the edge
-             const int v2 = *cur;
+             const int v2 = neighbor[n];
 
              // K(xi) = 1/(2*Amixed)*sum(cota+cotb)*(Xj-Xi)
              K += (geometry.vertexArray[v2] - vPos) * (cota[v][v2] + cotb[v][v2]);
@@ -422,11 +444,6 @@ void Curvatures::principalDirections(Array<Vector3>& T1, Array<Vector3>& T2) con
     T1.resize(n, DONT_SHRINK_UNDERLYING_ARRAY);
     T2.resize(n, DONT_SHRINK_UNDERLYING_ARRAY);
 
-    Set<int> ringSet;
-
-    // Members of the ringSet
-    Array<int> ring;
-
     // vertex, neighbor, and vj - vi
     Vector3 vi, vj, dvji;     
 
@@ -454,12 +471,10 @@ void Curvatures::principalDirections(Array<Vector3>& T1, Array<Vector3>& T2) con
     for (int v = 0; v < n; ++v) {
         vi = geometry.vertexArray[v];
 
-        get1Neighbors(v, ringSet);
-
         // Calculate weights (proportional to inverse of |vi-vj|
         // (Hameiri'03 modification of Taubin)
+        const Array<int>& ring = adjacentVertices[v];
         double wSum = 0.0;
-        ringSet.getMembers(ring);
         weight.resize(ring.size(), DONT_SHRINK_UNDERLYING_ARRAY);
         for (int j = 0; j < ring.size(); ++j) {
             vj = geometry.vertexArray[ring[j]];
@@ -676,12 +691,15 @@ void Mesh::import(const PosedModelRef& pm) {
     curvature.meanCurvature(meanCurvature);
     curvature.principalCurvature(gaussianCurvature, meanCurvature, principleCurvature[0], principleCurvature[1]);
     curvature.principalDirections(principleDirection[0], principleDirection[1]);
+    
 }
 
 
 void Mesh::render(App* app, RenderDevice* renderDevice) {
     renderDevice->pushState();
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+
+        renderDevice->enableLighting();
 
         renderDevice->setColor(Color3::WHITE);
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
@@ -741,8 +759,6 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
         renderDevice->endPrimitive();
     renderDevice->popState();
 }
-
-
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
@@ -810,7 +826,6 @@ void Demo::doGraphics() {
     app->renderDevice->enableLighting();
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
-
 
 //    	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
