@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-04-27
+ @edited  2004-04-30
  */
 
 #include "G3D/platform.h"
@@ -14,6 +14,7 @@
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/UserInput.h"
 #include "GLG3D/GWindow.h"
+#include "GLG3D/Shader.h"
 
 namespace G3D {
 
@@ -167,6 +168,8 @@ void GApp::run() {
             alwaysAssertM(false, t.message);
         } catch (const TextInput::WrongSymbol& t) {
             alwaysAssertM(false, t.message);
+        } catch (const ShaderGroup::ArgumentError& e) {
+            alwaysAssertM(false, e.message);
         }
     } else {
         main();

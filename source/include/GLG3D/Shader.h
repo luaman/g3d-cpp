@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-04-27
+ @edited  2004-04-30
  */
 
 #ifndef G3D_SHADER_H
@@ -42,6 +42,7 @@ public:
         return _messages;
     }
 };
+
 
 class GPUShader : public ReferenceCountedObject {
 protected:
@@ -170,23 +171,33 @@ public:
 
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/shader_objects.txt
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_shader.txt
+
+  <B>BETA API</B>
+  This API is subject to change.
  */
 class ShaderGroup : public ReferenceCountedObject {
 public:
 
     class UniformDeclaration {
     public:
+        /** Name of the variable.  May include [] and . (e.g.
+            "foo[1].normal")*/
         std::string         name;
+
+        /** OpenGL type of the variable (e.g. GL_INT) */
         GLenum              type;
+
+        /** Unknown... appears to always be 1 */
         int                 size;
 
         /**
          Index of the texture unit in which this value
          is stored.  -1 for uniforms that are not textures. */  
-        int                 sampler;
+        int                 textureUnit;
     };
 
 protected:
+
     static std::string      ignore;
 
     ObjectShaderRef         _objectShader;
@@ -218,9 +229,17 @@ protected:
 
 public:
 
+    /** Thrown by validateArgList */
+    class ArgumentError {
+    public:
+        std::string             message;
+
+        ArgumentError(const std::string& m) : message(m) {}
+    };
+
     /**
-     Argument list for a ShaderGroup.  Binds values to OpenGL "uniform"
-     values declared in the pixel and vertex shaders.  Be aware that 
+     Bindings of values to uniform variables for a ShaderGroup.
+     Be aware that 
      the uniform namespace is global across the pixel and vertex shader.
 
      GL_BOOL_ARB and GL_INT_ARB-based values are coerced to floats
@@ -255,7 +274,6 @@ public:
         
         void clear();
     };
-
 
     ~ShaderGroup();
 
@@ -314,6 +332,21 @@ public:
     int numArgs() const {
         return uniformArray.size();
     }
+
+    /** Checks the actual values of uniform variables against those 
+        expected by the program.
+        If one of the arguments does not match, an ArgumentError
+        exception is thrown.
+    
+        Called by 
+    */
+    void validateArgList(const ArgList& args) const;
+
+    /**
+       Makes renderDevice calls to bind this argument list.
+       Calls validateArgList.
+     */
+    void bindArgList(class RenderDevice* rd, const ArgList& args) const;
 
     /** Returns information about one of the arguments expected
         by this ShaderGroup.  There are ShaderGroup::numArgs()

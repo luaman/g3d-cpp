@@ -26,26 +26,39 @@ int main(int argc, char** argv) {
     rd->init(GWindowSettings());
 
     VertexShaderRef vs = VertexShader::fromFile("C:/tmp/nvcode/MEDIA/programs/glsl_simple_lighting/vertex_lighting.glsl");
-    PixelShaderRef ps = PixelShader::fromFile("C:/tmp/nvcode/MEDIA/programs/glsl_bump_mapping/bump_mapping_fragment.glsl");
+    PixelShaderRef ps = NULL;//PixelShader::fromFile("C:/tmp/nvcode/MEDIA/programs/glsl_bump_mapping/bump_mapping_fragment.glsl");
 
     debugAssert(ShaderGroup::fullySupported());
     debugPrintf(vs->messages().c_str());
     debugAssert(vs->ok());
     
-    debugAssert(ShaderGroup::fullySupported());
-    debugPrintf(ps->messages().c_str());
-    debugAssert(ps->ok());
-
+    if (! ps.isNull()) {
+        debugAssert(ShaderGroup::fullySupported());
+        debugPrintf(ps->messages().c_str());
+        debugAssert(ps->ok());
+    }
     
     ShaderGroupRef effect = ShaderGroup::create(NULL, vs, ps);
     debugPrintf(effect->messages().c_str());
     debugAssert(effect->ok());
 
+    // Print the argument names
     for (int a = 0; a < effect->numArgs(); ++a) {
         debugPrintf("%s : %s\n", 
             effect->arg(a).name.c_str(), 
             GLenumToString(effect->arg(a).type));
     }
+
+    ShaderGroup::ArgList args;
+    args.set("lightVec", Vector3(1,1,1).direction());
+
+    try {
+        effect->bindArgList(rd, args);
+    } catch (const ShaderGroup::ArgumentError& e) {
+        alwaysAssertM(false, e.message);
+    }
+
+    // Bind the effect
 
     return 0;
 }

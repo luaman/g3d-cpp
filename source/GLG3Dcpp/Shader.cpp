@@ -4,11 +4,12 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-04-27
+ @edited  2004-04-30
  */
 
 #include "GLG3D/Shader.h"
 #include "GLG3D/GLCaps.h"
+#include "GLG3D/getOpenGLState.h"
 
 namespace G3D {
 
@@ -178,7 +179,7 @@ void ShaderGroup::computeUniformArray() {
 
     GLcharARB* name = (GLcharARB *) malloc(maxLength * sizeof(GLcharARB));
     
-    int lastSampler = -1;
+    int lastTextureUnit = -1;
     // Loop over glGetActiveUniformARB and store the results away.
     for (int i = 0; i < uniformCount; ++i) {
 
@@ -193,10 +194,10 @@ void ShaderGroup::computeUniformArray() {
         uniformArray[i].type = type;
 
         if (isSamplerType(type)) {
-            ++lastSampler;
-            uniformArray[i].sampler = lastSampler;
+            ++lastTextureUnit;
+            uniformArray[i].textureUnit = lastTextureUnit;
         } else {
-            uniformArray[i].sampler = -1;
+            uniformArray[i].textureUnit = -1;
         }
     }
 
@@ -251,6 +252,68 @@ GLenum ShaderGroup::canonicalType(GLenum e) {
         return e;    
     }
 }
+
+
+void ShaderGroup::validateArgList(const ArgList& args) const {
+    int numVariables = 0;
+
+    // Iterate through formal bindings
+    for (int u = 0; u < uniformArray.size(); ++u) {
+        const UniformDeclaration& decl = uniformArray[u];
+        
+        ++numVariables;
+        if (! args.argTable.containsKey(decl.name)) {
+            throw ArgumentError(
+                format("No value provided for ShaderGroup uniform variable %s of type %s.",
+                    decl.name.c_str(), GLenumToString(decl.type)));
+        }
+
+        const ArgList::Arg& arg = args.argTable[decl.name];
+
+        // check the type
+        if (canonicalType(arg.type) != canonicalType(decl.type)) {
+            throw ArgumentError(
+            format("Variable %s was declared as type %s and the value provided at runtime had type %s.",
+                    decl.name.c_str(), GLenumToString(decl.type), GLenumToString(arg.type)));
+        }
+
+    }
+
+    if (numVariables < args.argTable.size()) {
+        // Some variables were unused.  Figure out which they were.
+        Table<std::string, ArgList::Arg>::Iterator arg = args.argTable.begin();
+        Table<std::string, ArgList::Arg>::Iterator end = args.argTable.end();
+
+        while (arg != end) {
+            // See if this arg was in the formal binding list
+
+            bool foundArgument = false;
+            
+            for (int u = 0; u < uniformArray.size(); ++u) {
+                if (uniformArray[u].name == arg->key) {
+                    foundArgument = true;
+                    break;
+                }
+            }
+
+            if (! foundArgument) {
+                throw ArgumentError(
+                std::string("Extra ShaderGroup uniform variable provided at runtime: ") + arg->key + ".");
+            }
+
+            ++arg;
+        }
+    }
+
+}
+
+
+void ShaderGroup::bindArgList(RenderDevice* rd, const ArgList& args) const {
+    validateArgList(args);
+
+    // TODO
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 
