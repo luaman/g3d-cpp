@@ -1290,7 +1290,7 @@ public:
                                 ray.origin, ray.direction,
                                 s->node->valueArray[s->valIndex].bounds,
                                 location)) {
-                            // TODO: store t-squared 
+                            // Optimization: store t-squared 
                             t2 = (location - ray.origin).squaredLength();
                         } else {
                             t2 = inf();
