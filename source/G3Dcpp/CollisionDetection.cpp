@@ -844,7 +844,9 @@ bool CollisionDetection::isPointInsideTriangle(
         j = Y_AXIS;
         break;
 
-    case DETECT_AXIS:
+    default:
+        // This case is here to supress a warning on Linux
+        i = j = 0;
         debugAssertM(false, "Should not get here.");
         break;
     }
