@@ -80,14 +80,14 @@ int main(int argc, char** argv) {
     camera.setNearPlaneZ(-.05);
     RealTime now = System::getTick() - 0.001, lastTime;
 
-    std::string in("d:/libraries/g3d-6_02/data/ifs/hemisphere.ifs");
+    std::string in("c:/tmp/pink-bush.sm");
 
 //    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
 
     //std::string outDir("d:/tmp/");
 //    std::string outDir("d:/graphics3d/book/data/ifs/");
 
-    std::string outDir("D:/games/isosketch/data/");
+    std::string outDir("c:/tmp");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
@@ -111,12 +111,12 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Low-Poly Iso Lumps";
+        model->name = "cloud";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");
+            exit(0);
         }
-        model->save(outDir + "lowisolumps.ifs");
 
         // Main loop (display 3D object)
         do {

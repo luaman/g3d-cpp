@@ -66,7 +66,7 @@ XIFSModel::XIFSModel(const std::string& filename) {
     //createGrid(flat2D, 1024, true); return;
     //createGrid(lumpy2D, 1024, true); return;
     //createGrid(bump2D, 900, true); return;
-    createIsoGrid(lumpy2D, 800); return;
+    //createIsoGrid(lumpy2D, 800); return;
     //createGrid(lumpy2D, 900, true); return;
     //createPolygon(); return;
     //createRing();  return;
