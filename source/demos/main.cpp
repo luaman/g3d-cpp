@@ -60,6 +60,8 @@ public:
     Demo*               applet;
 
     App(const GAppSettings& settings);
+
+    ~App();
 };
 
 

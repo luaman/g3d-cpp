@@ -13,6 +13,7 @@
    Changes in 6.05:
    <UL>
      <LI> MeshAlg::computeBounds(vertex, index, ...)
+     <LI> RenderDevice::colorWriteEnabled()
      <LI> VAR::maxSize
      <LI> RenderDevice::enableTwoSidedLighting
      <LI> PosedModel::hasTransparency

@@ -1170,6 +1170,11 @@ void RenderDevice::endFrame(bool pageFlip) {
 }
 
 
+bool RenderDevice::colorWriteEnabled() const {
+    return state.colorWrite;
+}
+
+
 void RenderDevice::setStencilClearValue(int s) {
     debugAssert(! inPrimitive);
     if (state.stencilClear != s) {

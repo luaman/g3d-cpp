@@ -97,7 +97,6 @@ public:
         /** Sharpness of light reflections.*/
         Component               specularExponent;
 
-
         Component               transmit;
 
         /** Perfect specular (mirror) reflection of the environment */
@@ -126,27 +125,57 @@ public:
         bool similarTo(const Material& other) const;
 	};
 
-    class LightingEnvironment : public ReferenceCountedObject {
+    class Lighting : public ReferenceCountedObject {
     private:
     
-        LightingEnvironment() {}
+        Lighting() {}
 
     public:
 
-        /** Light reflected from the sky (usually slightly blue) */
-        Color3              ambientTop;
+        /** */
+        class Global {
+        public:
+            /** Light reflected from the sky (usually slightly blue) */
+            Color3              ambientTop;
 
-        /** Light reflected from the ground.  A simpler code path is taken
-            if identical to ambientTop. */
-        Color3              ambientBottom;
+            /** Light reflected from the ground.  A simpler code path is taken
+                if identical to ambientTop. */
+            Color3              ambientBottom;
 
-        Component           environment;
+            /** Texture at infinity (skybox). */
+            Component           farEnvironment;
 
-        Array<GLight>       lightArray;
+            /** NEAR_USE_FAR:  Use the far environment; the near environment is undefined. 
+                NEAR_CUBE:     The near environment is this cube map (good for both reflection and refraction) 
+                NEAR_BEHIND:   A screen-size Rect2D picture of the scene behind an 
+                               object (good for fake refraction; use the far environment for reflections). 
+                               Usually read back after opaque objects are rendered, for use by transparent objects.
+              */
+            enum NearMode {
+                NEAR_USE_FAR,
+                NEAR_CUBE,
+                NEAR_BEHIND,
+            };
+
+            NearMode            nearMode;
+
+            /** Texture nearby (reflection map).                
+                Form is determined by nearMode. */
+            Component           nearEnvironment;
+        };
+
+        /** Global illumination terms. */
+        Global              global;
+
+        /** Local illumination sources that do not cast shadows. */
+        Array<GLight>       unshadowedLocalLightArray;
+
+        /** Local illumination sources that cast shadows. */
+        Array<GLight>       shadowedLocalLightArray;
 
         /** Creates a (dark) environment. */
-        static ReferenceCountedPointer<LightingEnvironment> create() {
-            return new LightingEnvironment();
+        static ReferenceCountedPointer<Lighting> create() {
+            return new Lighting();
         }
 
         /** 
@@ -161,7 +190,7 @@ public:
         void configureShaderArgs(VertexAndPixelShader::ArgList& args) const;
     };
 
-    typedef ReferenceCountedPointer<LightingEnvironment> LightingEnvironmentRef;
+    typedef ReferenceCountedPointer<Lighting> LightingRef;
 
 private:
     class Cache {
@@ -219,7 +248,7 @@ p = FIXED_FUNCTION; // TODO: remove
     void configureFixedFunction(RenderDevice* rd);
 
 
-    LightingEnvironmentRef  lighting;
+    LightingRef             lighting;
 
     Material                material;
 
@@ -240,7 +269,7 @@ public:
     /** Sets all lighting parameters from this lighting environment. The environment
         will be pointed at, so future changes are automatically reflected without
         another call. */
-    void setLighting(const LightingEnvironmentRef& lightingEnvironment);
+    void setLighting(const LightingRef& lighting);
 
 }; // SuperShader
 

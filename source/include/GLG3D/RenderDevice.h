@@ -388,6 +388,9 @@ public:
     void enableColorWrite();
     void disableColorWrite();
 
+    /** Returns true if colorWrite is enabled */
+    bool colorWriteEnabled() const;
+
     void enableAlphaWrite();
     void disableAlphaWrite();
 

@@ -31,9 +31,9 @@ class App : public GApp {
 protected:
     void main();
 public:
-    SkyRef              sky;
+    SkyRef                      sky;
 
-    SuperShader::LightingEnvironmentRef lightingEnvironment;
+    SuperShader::LightingRef    lighting;
 
     Array<ArticulatedModelRef>  modelArray;
     TextureRef                  texture;
@@ -121,7 +121,7 @@ void Demo::doGraphics() {
 
         Array<PosedModelRef> posedModels;
         for (int m = 0; m < app->modelArray.size(); ++m) {
-            app->modelArray[m]->pose(posedModels, CoordinateFrame(Vector3(2*m,0,0)), pose, app->lightingEnvironment);
+            app->modelArray[m]->pose(posedModels, CoordinateFrame(Vector3(2*m,0,0)), pose, app->lighting);
         }
 
         Draw::axes(app->renderDevice);
@@ -220,8 +220,8 @@ void App::main() {
 //		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
 
 
-    lightingEnvironment = SuperShader::LightingEnvironment::create();
-    lightingEnvironment->set(G3D::toSeconds(2, 00, 00, PM), sky);
+    lighting = SuperShader::Lighting::create();
+    lighting->set(G3D::toSeconds(2, 00, 00, PM), sky);
 
     Demo(this).run();
 }

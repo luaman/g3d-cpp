@@ -12,10 +12,10 @@ void SuperShader::configureFixedFunction(RenderDevice* rd) {
     rd->enableLighting();
 
     // Ambient
-    rd->setAmbientLightColor(lighting->ambientTop);
-    if (lighting->ambientBottom != lighting->ambientTop) {
+    rd->setAmbientLightColor(lighting->global.ambientTop);
+    if (lighting->global.ambientBottom != lighting->global.ambientTop) {
         rd->setLight(0, GLight::directional(-Vector3::unitY(), 
-            lighting->ambientBottom - lighting->ambientTop, false)); 
+            lighting->global.ambientBottom - lighting->global.ambientTop, false)); 
     }
 
     for (int L = 0; L < iMin(7, lighting->lightArray.size()); ++L) {

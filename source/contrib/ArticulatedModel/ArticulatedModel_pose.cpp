@@ -22,7 +22,7 @@ private:
       If NULL, use whatever OpenGL state is currently enabled.
 
     */
-    SuperShader::LightingEnvironmentRef lightingEnvironment;
+    SuperShader::LightingRef lighting;
 
     /** Called from render to draw geometry after the material properties are set.*/
     void renderGeometry(RenderDevice* rd) const;
@@ -73,11 +73,11 @@ void ArticulatedModel::pose(
     Array<PosedModelRef>&       posedArray, 
     const CoordinateFrame&      cframe, 
     const Pose&                 posex,
-    SuperShader::LightingEnvironmentRef lightingEnvironment) {
+    SuperShader::LightingRef lighting) {
 
     for (int p = 0; p < partArray.size(); ++p) {
         const Part& part = partArray[p];
-        part.pose(this, p, posedArray, cframe, posex, lightingEnvironment);
+        part.pose(this, p, posedArray, cframe, posex, lighting);
     }
 }
 
@@ -88,7 +88,7 @@ void ArticulatedModel::Part::pose(
     Array<PosedModelRef>&       posedArray,
     const CoordinateFrame&      parent, 
     const Pose&                 posex,
-    SuperShader::LightingEnvironmentRef lightingEnvironment) const {
+    SuperShader::LightingRef    lighting) const {
 
     CoordinateFrame frame;
 
@@ -109,7 +109,7 @@ void ArticulatedModel::Part::pose(
             posed->listIndex = t;
             posed->model = model;
             posed->useMaterial = posex.useMaterial;
-            posed->lightingEnvironment = lightingEnvironment;
+            posed->lighting = lighting;
 
             posedArray.append(posed);
         }
@@ -134,7 +134,7 @@ void PosedArticulatedModel::render(
 
     debugAssert(triList.shader.notNull());
 
-    triList.shader->setLighting(lightingEnvironment);
+    triList.shader->setLighting(lighting);
 
     if (useMaterial) {
         bool makeTransparentPass = ! triList.material.transmit.isBlack();

@@ -37,7 +37,7 @@ public:
             Default is true. */
         bool                                    useMaterial;
 
-        SuperShader::LightingEnvironmentRef     lightingEnvironment;
+        SuperShader::LightingRef                lighting;
 
         Pose() : useMaterial(true) {}
     };
@@ -102,7 +102,7 @@ public:
             Array<PosedModelRef>&   posedArray,
             const CoordinateFrame&  parent, 
             const Pose&             posex,
-            SuperShader::LightingEnvironmentRef lighting) const;
+            SuperShader::LightingRef lighting) const;
 
         /** Some parts have no geometry because they are interior nodes in the hierarchy */
         inline bool hasGeometry() const {
@@ -155,7 +155,7 @@ public:
         Array<PosedModelRef>&   posedModelArray, 
         const CoordinateFrame&  cframe = CoordinateFrame(),
         const Pose&             pose = DEFAULT_POSE,
-        SuperShader::LightingEnvironmentRef lighting = NULL);
+        SuperShader::LightingRef lighting = NULL);
 
     /** 
       Supports 3DS, IFS, PLY2 file formats.  The format of a file is detected by the extension. 
