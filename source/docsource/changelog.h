@@ -31,7 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
-     <LI> Fixed 16-bit integer reads in BinaryInput that always reversed endianness. (OSX reading) [Corey + Derek]
+     <LI> ReferenceCountedObject is-in-heap checks were removed to allow better multiple and virtual inheritance for reference counted objects.  ReferenceCountedPointer still appropriately checks does an is-in-heap check on assignment. [Corey]
      <LI> Added Dev C++ support
      <LI> Changed GLight== to not use memcpy (was causing issues due to byte padding on some compilers)
      <LI> Made CoordinateFrame destructor non-virtual (eliminates vtable)
@@ -152,6 +152,7 @@
      <LI> Added G3D::Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: 16-bit integer reads in BinaryInput that always reversed endianness. (OSX file reading) [Corey + Derek]
      <LI> Fix: Matrix4 operator[] was returning a matrix value cast to a pointer [Corey]
      <LI> Fix: Matrix3 and Matrix4 had missing float* / const float* operators [Corey]
      <LI> Fix: Rect2D::clip broken for types other than Vector2
