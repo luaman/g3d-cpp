@@ -222,6 +222,10 @@ SOURCE=.\G3Dcpp\Vector3.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Vector3int16.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Vector4.cpp
 # End Source File
 # End Group
@@ -431,6 +435,10 @@ SOURCE=.\include\G3D\Vector3.h
 # Begin Source File
 
 SOURCE=.\include\G3D\Vector3.inl
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Vector3int16.h
 # End Source File
 # Begin Source File
 
