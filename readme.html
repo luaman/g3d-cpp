@@ -82,19 +82,6 @@ HREF="http://sourceforge.net/cvs/?group_id=76879">http://sourceforge.net/cvs/?gr
 <I>Builds a local installation for using the library.  This is how
 Linux users generate the .so's to link against.</I>
 
-<OL>
-<LI>Build lib
-<LI>Build doc
-<LI>Copy all files<SUP><A HREF="#ALLFILES">*</A></SUP> from
-    <CODE>cpp/build</CODE> to <CODE>cpp/install</CODE>
-<LI>Copy all files<SUP><A HREF="#ALLFILES">*</A></SUP> from
-    <CODE>cpp/source/include</CODE> to <CODE>cpp/install/include</CODE>
-<LI>Copy all files<SUP><A HREF="#ALLFILES">*</A></SUP> from
-    <CODE>cpp/source/demos</CODE> to <CODE>cpp/install/demos</CODE>
-<LI>Copy all files<SUP><A HREF="#ALLFILES">*</A></SUP> from
-    <CODE>cpp/data</CODE> to <CODE>cpp/install/data</CODE>
-</OL>
-
 <H3>build release (Windows only)</H3> 
 
 <I>Builds install, then zips g3d-cpp-M_mm.zip and g3d-data-M_mm.zip 
@@ -106,7 +93,6 @@ and data from the install directory.</I>
 
 <H3>build clean</H3>
 <OL>
-<LI>Remove <CODE>cpp/build</CODE>
 <LI>Remove <CODE>cpp/temp</CODE>
 <LI>Remove <CODE>cpp/install</CODE>
 <LI>Remove <CODE>cpp/release</CODE>
