@@ -143,17 +143,21 @@ IFSModel::PosedIFSModel::PosedIFSModel(
 
 
 void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
-   
-    const size_t varSize = 1024 * 1024;
-    if ((IFSModel::varArea == NULL) && (renderDevice->freeVARSize() <= varSize)) {
-        // Initialize VAR
-        IFSModel::varArea = renderDevice->createVARArea(varSize);
-    }
+    renderDevice->pushState();
+        renderDevice->setObjectToWorldMatrix(coordinateFrame());
 
-    if (perVertexNormals) {
-        renderDevice->pushState();
+        const size_t varSize = 1024 * 1024;
+        if ((IFSModel::varArea == NULL) && (renderDevice->freeVARSize() <= varSize)) {
+            // Initialize VAR
+            IFSModel::varArea = renderDevice->createVARArea(varSize);
+        }
+
+        if (perVertexNormals) {
             renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
             if (IFSModel::varArea && (varArea->totalSize() <= sizeof(Vector3) * 2 * model->geometry.vertexArray.size())) {
+
+                // Can use VAR
+
                 varArea->reset();
 
                 VAR vertex(model->geometry.vertexArray, IFSModel::varArea);
@@ -164,7 +168,10 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
                     renderDevice->setVertexArray(vertex);
                     renderDevice->sendIndices(RenderDevice::TRIANGLES, model->indexArray);
                 renderDevice->endIndexedPrimitives();
+
             } else {
+
+                // No VAR
                 const int* indexArray = model->indexArray.getCArray();
                 const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
                 const Vector3* normalArray = model->geometry.normalArray.getCArray();
@@ -178,26 +185,29 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
                     }
                 renderDevice->endPrimitive();
             }
-        renderDevice->popState();
 
-    } else {
+        } else {
 
-        const int* indexArray = model->indexArray.getCArray();
-        const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
-        const Vector3* faceNormalArray = model->faceNormalArray.getCArray();
-        const Vector3* normalArray = model->geometry.normalArray.getCArray();
-        const MeshAlg::Face* faceArray = model->faceArray.getCArray();
-        int n = model->faceArray.size();
+            // Face Normals (slow)
 
-        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-            for (int f = 0; f < n; ++f) {
-                renderDevice->setNormal(faceNormalArray[f]);
-                for (int j = 0; j < 3; ++j) {                    
-                    renderDevice->sendVertex(vertexArray[faceArray[f].vertexIndex[j]]);
+            const int* indexArray = model->indexArray.getCArray();
+            const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
+            const Vector3* faceNormalArray = model->faceNormalArray.getCArray();
+            const Vector3* normalArray = model->geometry.normalArray.getCArray();
+            const MeshAlg::Face* faceArray = model->faceArray.getCArray();
+            int n = model->faceArray.size();
+
+            renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+                for (int f = 0; f < n; ++f) {
+                    renderDevice->setNormal(faceNormalArray[f]);
+                    for (int j = 0; j < 3; ++j) {                    
+                        renderDevice->sendVertex(vertexArray[faceArray[f].vertexIndex[j]]);
+                    }
                 }
-            }
-        renderDevice->endPrimitive();
-    }
+            renderDevice->endPrimitive();
+        }
+
+    renderDevice->popState();
 }
 
 

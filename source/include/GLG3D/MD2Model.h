@@ -35,6 +35,22 @@ typedef ReferenceCountedPointer<class MD2Model> MD2ModelRef;
  <P>This class is not threadsafe; you cannot
  even call methods on two different instances on different threads.
 
+  <P>
+ The posed model supplies texture coordinates and normals when rendering
+ but the caller must
+ bind a texture, set the object to world matrix, and set up lighting.
+ <P>
+ If VAR has been initialized for the renderDevice, the first time
+ this is called (for any Model) a 512k VAR area is allocated.  This
+ memory is shared between all MD2 models.
+ <P>
+ Really huge MD2 models will not fit into this small VAR area and
+ will revert to non-VAR rendering.
+
+ <P>
+ When getting geometry from the posed model, the normalArray 
+ values are interpolated and may have slightly less than unit length.
+
  <P>
  <IMG SRC="md2000.jpg">
  <DT>
@@ -122,24 +138,22 @@ protected:
     class PosedMD2Model : public PosedModel {
     public:
         MD2ModelRef             model;
+        Pose                    pose;
         CoordinateFrame         cframe;
-        bool                    perVertexNormals;
 
-        PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, bool _pvn);
+        PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, const Pose& _pose);
         virtual ~PosedMD2Model() {}
         virtual std::string name() const;
-        virtual CoordinateFrame coordinateFrame() const;
+        virtual void getCoordinateFrame(CoordinateFrame&) const;
         virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
-        virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
         virtual void getFaces(Array<MeshAlg::Face>& faces) const;
         virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
         virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
-        virtual Sphere objectSpaceBoundingSphere() const;
-        virtual Sphere worldSpaceBoundingSphere() const;
-        virtual Box objectSpaceBoundingBox() const;
-        virtual Box worldSpaceBoundingBox() const;
+        virtual void getTriangleIndices(Array<int>& indices) const;
+        virtual void getObjectSpaceBoundingSphere(Sphere&) const;
+        virtual void getObjectSpaceBoundingBox(Box&) const;
         virtual void render(RenderDevice* renderDevice) const;
-        virtual int numBrokenEdges() const;
+        virtual int numBrokenEdges() const; 
     };
 
     friend PosedMD2Model;
@@ -272,6 +286,19 @@ protected:
      */
     virtual void reset();
 
+
+    /**
+     Called from PosedMD2Model::render
+     */
+    void render(RenderDevice* renderDevice, const Pose& pose);
+
+    /**
+     Fills the geometry out from the pose. 
+
+     Called from PosedMD2Model::getGeometry
+     */
+    void getGeometry(const Pose& pose, MeshAlg::Geometry& geometry) const;
+
     Array<Vector3>              faceNormalArray;
     Array<MeshAlg::Face>        faceArray;
     Array< Array<int> >         adjacentFaceArray;
@@ -282,7 +309,6 @@ protected:
     std::string                 name;
 
 public:
-
     /**
      @filename The tris.md2 file
      */
@@ -290,16 +316,11 @@ public:
 
     virtual ~MD2Model() {}
 
+    PosedModelRef pose(const CoordinateFrame& cframe, const Pose& pose);
+
     inline const Array<Vector2int16>& texCoordArray() const {
         return _texCoordArray;
     }
-
-    /**
-     Fills the geometry out from the pose.  The geometry.normalArray 
-     values are interpolated and may have slightly less than unit
-     length.
-     */
-    void getGeometry(const Pose& pose, MeshAlg::Geometry& geometry) const;
 
     const Array<MeshAlg::Face>& faces() const;
 
@@ -319,19 +340,6 @@ public:
      Note that two vertices may be colocated but have different indices.
      */
     const Array< Array<int> >& adjacentFaces() const;
-
-    /**
-     This supplies texture coordinates and normals but the caller must
-     bind a texture, set the object to world matrix, and set up lighting.
-     <P>
-     If VAR has been initialized for the renderDevice, the first time
-     this is called (for any Model) a 512k VAR area is allocated.  This
-     memory is shared between all MD2 models.
-     <P>
-     Really huge MD2 models will not fit into this small VAR area and
-     will revert to non-VAR rendering.
-     */
-    virtual void render(RenderDevice* renderDevice, const Pose& pose);
 
     /**
      Render the wireframe mesh.
@@ -443,7 +451,7 @@ public:
      Returns the approximate amount of main memory, not counting the texture,
      occupied by this data structure.
      */
-    size_t mainMemorySize() const;
+    virtual size_t mainMemorySize() const;
 };
 
 }

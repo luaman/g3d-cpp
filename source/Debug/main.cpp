@@ -3,47 +3,62 @@
 
 
 class Entity {
+protected:
+
+    Vector3                     basePos;
+    CoordinateFrame             cframe;
+    Color4                      color;
+    TextureRef                  texture;
+
 public:
+
     bool selected;
     
-    Entity() : selected(false) {}
+    Entity(
+        const Vector3&          pos,
+        const Color4&           _color,
+        const TextureRef        _texture);
+
     virtual ~Entity() {}
 
-    virtual void render(RenderDevice*) = NULL;
+    virtual void doSimulation(SimTime dt);
+
+    virtual PosedModelRef getPosedModel() const = 0;
+
+    void render(RenderDevice*);
+
     /**
       Returns amount of time to intersection starting on ray.origin and
       travels at ray.velocity.
-    */
-    virtual RealTime getIntersectionTime(const Ray&) = NULL;
+     */
+    RealTime getIntersectionTime(const Ray&);
 };
 
 
-////////////////////////////////////////////////////////////////
+Entity::Entity(
+    const Vector3&         pos,
+    const Color4&          _color,
+    const TextureRef       _texture) : 
+    color(_color),
+    texture(_texture),
+    basePos(pos),
+    selected(false) {}
 
-class IFSEntity : public Entity {
-private:
-    CoordinateFrame cframe;
-    IFSModelRef     ifs;
-    Color4          color;
 
-public:
-    IFSEntity(IFSModelRef _ifs, const Vector3& pos, const Color4& _color);
+void Entity::doSimulation(SimTime dt) {
+    // Put the base on the ground
+    cframe.translation = basePos - 
+        Vector3::UNIT_Y * getPosedModel()->objectSpaceBoundingBox().getCorner(0).y;
 
-    virtual void render(RenderDevice*);
-    virtual RealTime getIntersectionTime(const Ray&);
-
-};
-
-IFSEntity::IFSEntity(IFSModelRef _ifs, const Vector3& pos, const Color4& _color) : 
-    ifs(_ifs), cframe(pos), color(_color) {
+    // Face the viewer
+    cframe.rotation.fromAxisAngle(Vector3::UNIT_Y, G3D_PI);
 }
 
-void IFSEntity::render(RenderDevice* renderDevice) {
-    PosedModelRef pm = ifs->pose(cframe);
+
+void Entity::render(RenderDevice* renderDevice) {
+    PosedModelRef pm = getPosedModel();
 
     renderDevice->pushState();
-        renderDevice->setObjectToWorldMatrix(cframe);
-
         if (selected) {
             renderDevice->pushState();
                 renderDevice->setColor(Color3::BLACK);
@@ -54,20 +69,65 @@ void IFSEntity::render(RenderDevice* renderDevice) {
             renderDevice->popState();
         }
 
+        // Draw bounding box:
+        // Draw::box(pm->worldSpaceBoundingBox(), renderDevice);
+
+        renderDevice->setTexture(0, texture);
         renderDevice->setColor(color);
         pm->render(renderDevice);
     renderDevice->popState();
 }
 
-RealTime IFSEntity::getIntersectionTime(const Ray& ray) {
 
+RealTime Entity::getIntersectionTime(const Ray& ray) {
+    PosedModelRef pm = getPosedModel();
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedBox(ray.origin, 
-        ray.direction, ifs->pose(cframe)->worldSpaceBoundingBox(), dummy);
+        ray.direction, pm->worldSpaceBoundingBox(), dummy);
 }
 
+////////////////////////////////////////////////////////////////
+
+class IFSEntity : public Entity {
+private:
+
+    IFSModelRef     ifs;
+
+public:
+
+    IFSEntity(IFSModelRef _ifs, const Vector3& pos, const Color4& _color): 
+      Entity(pos, _color, NULL), ifs(_ifs) {}
+
+    virtual PosedModelRef getPosedModel() const {
+        return ifs->pose(cframe);
+    }
+};
+
+////////////////////////////////////////////////////////////////
+
+class MD2Entity : public Entity {
+private:
+
+    MD2ModelRef     md2;
+    MD2Model::Pose  pose;
+
+public:
+
+    MD2Entity(MD2ModelRef _md2, const Vector3& pos, const TextureRef _texture): 
+      Entity(pos, Color3::WHITE, _texture), md2(_md2) {}
+
+    virtual PosedModelRef getPosedModel() const {
+        return md2->pose(cframe, pose);
+    }
+
+    virtual void doSimulation(SimTime dt) {
+        Entity::doSimulation(dt);
+        pose.time += dt;
+    }
+};
 
 ///////////////////////////////////////////////////////////////
+
 /**
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
@@ -86,22 +146,38 @@ public:
     
     virtual void init();
     virtual void doLogic();
+    virtual void doSimulation(SimTime dt);
     virtual void doGraphics();
     virtual void cleanup();
 };
 
 
 void Demo::init()  {
-    app->debugCamera.setPosition(Vector3(0,4,10));
-    app->debugCamera.lookAt(Vector3::ZERO);
+    app->debugCamera.setPosition(Vector3(0, 2, 10));
+    app->debugCamera.lookAt(Vector3(0, 2, 0));
 
     IFSModelRef cube   = IFSModel::create(app->dataDir + "ifs/cube.ifs");
     IFSModelRef teapot = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
 
-    entityArray.append(new IFSEntity(cube, Vector3(-5, 1, 0), Color3::BLUE));
-    entityArray.append(new IFSEntity(teapot, Vector3( 0, 1, 0), Color3::YELLOW));
-    entityArray.append(new IFSEntity(cube, Vector3( 5, 1, 0), Color3::WHITE));
+    MD2ModelRef knight = 
+        MD2Model::create(app->dataDir + "quake2/players/pknight/tris.md2");
+
+    TextureRef  knightTexture = 
+        Texture::fromFile(app->dataDir + "quake2/players/pknight/knight.pcx", 
+                          TextureFormat::AUTO, Texture::CLAMP, Texture::TRILINEAR_MIPMAP,
+                          Texture::DIM_2D, 2.0); 
+
+    entityArray.append(new IFSEntity(cube, Vector3(-5, 0, 0), Color3::BLUE));
+    entityArray.append(new IFSEntity(teapot, Vector3( 0, 0, 0), Color3::YELLOW));
+    entityArray.append(new MD2Entity(knight, Vector3( 5, 0, 0), knightTexture));
     entityArray[1]->selected = true;
+}
+
+
+void Demo::doSimulation(SimTime dt) {
+    for (int e = 0; e < entityArray.length(); ++e) { 
+        entityArray[e]->doSimulation(dt);
+    }
 }
 
 
@@ -184,8 +260,6 @@ void Demo::doGraphics() {
         app->renderDevice->sendVertex(Vector3(7, 0, 3.5));
     app->renderDevice->endPrimitive();
 
-    Vector4 p = app->renderDevice->project(Vector3::ZERO);
-    app->debugPrintf("%g, %g", p.x, p.y);
     app->renderDevice->disableLighting();
 
     sky->renderLensFlare(lighting);
@@ -201,10 +275,6 @@ void Demo::cleanup() {
 int main(int argc, char** argv) {
 
     GAppSettings settings;
-    settings.window.fsaaSamples = 1;
-    settings.window.resizable = false;
-    settings.window.width  = 800;
-    settings.window.height = 600;
 
     GApp app(settings);
 

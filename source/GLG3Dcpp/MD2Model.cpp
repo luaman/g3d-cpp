@@ -421,6 +421,11 @@ void MD2Model::allocateVertexArrays(RenderDevice* renderDevice) {
 }
 
 
+PosedModelRef MD2Model::pose(const CoordinateFrame& cframe, const Pose& pose) {
+    return new PosedMD2Model(this, cframe, pose);
+}
+
+
 void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
 
     bool tooBig = (maxVARVerts < keyFrame[0].vertexArray.size());
@@ -729,5 +734,76 @@ void MD2Model::getGeometry(const Pose& pose, MeshAlg::Geometry& out) const {
 #ifdef G3D_WIN32
     #pragma warning( pop )
 #endif
+
+
+//////////////////////////////////////////////////////////////////////////
+
+MD2Model::PosedMD2Model::PosedMD2Model(
+    MD2ModelRef                 _model,
+    const CoordinateFrame&      _cframe,
+    const Pose&                 _pose) :
+     model(_model), 
+     cframe(_cframe),
+     pose(_pose) {
+}
+
+
+std::string MD2Model::PosedMD2Model::name() const {
+    return model->name;
+}
+
+
+void MD2Model::PosedMD2Model::getCoordinateFrame(CoordinateFrame& c) const {
+    c = cframe;
+}
+
+
+void MD2Model::PosedMD2Model::getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const {
+    model->getGeometry(pose, geometry);
+}
+
+
+void MD2Model::PosedMD2Model::getTriangleIndices(Array<int>& index) const {
+    index = model->indexArray;
+}
+
+
+void MD2Model::PosedMD2Model::getFaces(Array<MeshAlg::Face>& faces) const {
+    faces = model->faceArray;
+}
+
+
+void MD2Model::PosedMD2Model::getEdges(Array<MeshAlg::Edge>& edges) const {
+    edges = model->edgeArray;
+}
+
+
+void MD2Model::PosedMD2Model::getAdjacentFaces(Array< Array<int> >& adjacentFaces) const {
+    adjacentFaces = model->adjacentFaceArray;
+}
+
+
+void MD2Model::PosedMD2Model::getObjectSpaceBoundingSphere(Sphere& s) const {
+    s = model->boundingSphere;
+}
+
+
+void MD2Model::PosedMD2Model::getObjectSpaceBoundingBox(Box& b) const {
+    b = model->boundingBox;
+}
+
+
+int MD2Model::PosedMD2Model::numBrokenEdges() const {
+    return model->numBrokenEdges;
+}
+
+
+void MD2Model::PosedMD2Model::render(RenderDevice* renderDevice) const {
+    renderDevice->pushState();
+        renderDevice->setObjectToWorldMatrix(coordinateFrame());
+        model->render(renderDevice, pose);
+    renderDevice->popState();
+}
+
 
 }
