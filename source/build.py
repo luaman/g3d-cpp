@@ -46,6 +46,8 @@ See cpp/readme.html for detailed build information.
 ###############################################################################
 
 def lib():
+    x = 0
+
     if (os.name == 'nt'):
         # Windows build
         x = msdev('graphics3D.dsw',\
@@ -64,7 +66,11 @@ def lib():
         if (newer("configure", "config.h")):
             run("./configure", ["--enable-debugging"])
 
-        run("make")
+        x = run("make")
+
+    if (x != 0):
+        print "*** Errors encountered during compilation.  Build process halted."
+        sys.exit(x);        
 
     copyIfNewer("lib", "../build/lib")
 
