@@ -366,7 +366,10 @@ private:
      Recursively subdivides the subarray.
      Begin and end indices are inclusive.
      */
-    static Node* makeNode(Array<Handle>& point, int beginIndex, int endIndex, int valuesPerNode, int numMeanSplits)  {
+    Node* makeNode(Array<Handle>& point, int beginIndex, 
+                   int endIndex, int valuesPerNode, 
+                   int numMeanSplits)  {
+
 	    Node* node = NULL;
 	    
 	    if (endIndex - beginIndex + 1 <= valuesPerNode) {
@@ -392,7 +395,8 @@ private:
             if (numMeanSplits > 0) {
                 // Compute the mean along the axis
 
-                splitLocation = (bounds.high()[splitAxis] + bounds.low()[splitAxis]) / 2.0;
+                splitLocation = (bounds.high()[splitAxis] + 
+                                 bounds.low()[splitAxis]) / 2.0;
 
             } else {
 
@@ -410,7 +414,8 @@ private:
 		        // Choose the split location between the two middle elements
 		        const Vector3 median = 
 			        (point[midIndex].bounds.high() +
-			         point[iMin(midIndex + 1, point.size() - 1)].bounds.low()) * 0.5;
+			         point[iMin(midIndex + 1, 
+                                point.size() - 1)].bounds.low()) * 0.5;
 
                 splitLocation = median[splitAxis];
             }
@@ -447,11 +452,12 @@ private:
 		    }
 		    
 		    node->splitAxis     = splitAxis;
-		    node->splitLocation = median[splitAxis];
+		    node->splitLocation = splitLocation;
 		    
 		    if (overlapBeginIndex > beginIndex) {
 			    node->child[0]      = 
-				    makeNode(point, beginIndex, overlapBeginIndex - 1, valuesPerNode, numMeanSplits - 1);
+				    makeNode(point, beginIndex, overlapBeginIndex - 1, 
+                             valuesPerNode, numMeanSplits - 1);
 		    }
 		    
 		    if (overlapEndIndex < endIndex) {
