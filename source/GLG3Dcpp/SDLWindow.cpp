@@ -268,7 +268,7 @@ void SDLWindow::setDimensions(const Rect2D& dims) {
 }
 
 
-void SDLWindow::setPosition(int x, int y) const  {
+void SDLWindow::setPosition(int x, int y) {
     #ifdef G3D_WIN32
         int W = screenWidth();
         int H = screenHeight();

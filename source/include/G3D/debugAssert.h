@@ -76,7 +76,7 @@
             #define rawBreak() __asm__ __volatile__ ( "int $3" ); 
         #endif
     #else
-        #define debugBreak() assert(false); /* No breakpoints on OS X yet */
+        #define rawBreak() assert(false); /* No breakpoints on OS X yet */
     #endif
 
 
@@ -110,6 +110,7 @@
     #endif
 
     // In the release build, just define away assertions.
+    #define rawBreak()
     #define debugAssert(exp)
     #define debugAssertM(exp, message)
     #define debugBreak()

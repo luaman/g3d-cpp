@@ -99,7 +99,7 @@ public:
     /**
      Fails silently if unable to change the position.
      */
-    virtual void setPosition(int x, int y) const = 0;
+    virtual void setPosition(int x, int y) = 0;
 
     /** Returns true if this window currently has [keyboard] focus
         (i.e. is in the foreground, not minimized, recieves keystrokes.) */

@@ -71,7 +71,7 @@ public:
 
     virtual void setDimensions(const Rect2D& dims);
 
-    virtual void setPosition(int x, int y) const;
+    virtual void setPosition(int x, int y);
 
     virtual bool hasFocus() const;
 
