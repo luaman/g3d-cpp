@@ -36,10 +36,11 @@ Plane::Plane(
     Vector4      point1,
     Vector4      point2) {
 
-    debugAssertM(point0.w != 0 || 
-                point1.w != 0 || 
-                point1.w != 0,
-         "At least one point must be finite.");
+    debugAssertM(
+        point0.w != 0 || 
+        point1.w != 0 || 
+        point2.w != 0,
+        "At least one point must be finite.");
 
     // Rotate the points around so that the finite points come first.
 
@@ -48,7 +49,7 @@ Plane::Plane(
         Vector4 temp = point0;
         point0 = point1;
         point1 = point2;
-        point2 = point0;
+        point2 = temp;
     }
 
     Vector3 dir1;

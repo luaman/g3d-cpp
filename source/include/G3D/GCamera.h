@@ -51,6 +51,29 @@ private:
 
 public:
 
+    class Frustum {
+    public:
+        class Face {
+        public:
+            /** Counter clockwise indices into vertexPos */
+            int             vertexIndex[4];
+
+            /** The plane containing the face. */
+            Plane           plane;
+        };
+        
+        /** The vertices, in homogeneous space.  If w == 0,
+            a vertex is at infinity. */
+        Array<Vector4>      vertexPos;
+
+        /** The faces in the frustum.  When the
+            far plane is at infinity, there are 5 faces,
+            otherwise there are 6.  The faces are in the order
+            N,R,L,B,T,[F].
+            */
+        Array<Face>         faceArray;
+    };
+
 	GCamera();
 
     virtual ~GCamera();
@@ -196,14 +219,26 @@ public:
     Returns the clipping planes of the frustum, in world space.  
     The planes have normals facing <B>into</B> the view frustum.
 
+    The plane order is guaranteed to be:
+      Near, Right, Left, Top, Bottom, [Far]
+
     If the far plane is at infinity, the resulting array will have 
     5 planes, otherwise there will be 6.
+
     The viewport is used only to determine the aspect ratio of the screen; the
     absolute dimensions and xy values don't matter.
     */
    void getClipPlanes(
        const Rect2D& viewport,
        Array<Plane>& outClip) const;
+
+   /**
+    Returns the world space view frustum, which is a truncated pyramid describing
+    the volume of space seen by this camera.
+    */
+   void getFrustum(const Rect2D& viewport, GCamera::Frustum& f) const;
+
+   GCamera::Frustum frustum(const Rect2D& viewport) const;
 };
 
 }
