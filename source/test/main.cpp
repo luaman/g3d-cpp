@@ -461,7 +461,20 @@ void measureTriangleCollisionPerformance() {
 
 void testTextInput() {
     printf("TextInput\n");
+ 
+    {
+        TextInput ti(TextInput::FROM_STRING, "0xFEED");
 
+        Token t;
+   
+        t = ti.peek();
+        debugAssert(t.type() == Token::NUMBER);
+        double n = ti.readNumber();
+        debugAssert((int)n == 0xFEED);
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+    }
     
 
     TextInput::Options opt;

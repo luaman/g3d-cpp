@@ -68,7 +68,16 @@ public:
     double number() const {
         if (_type == NUMBER) {
             double n;
-            sscanf(_string.c_str(), "%lg", &n);
+            if ((_string.length() > 2) &&
+                (_string[0] == '0') &&
+                (_string[1] == 'x')) {
+                // Hex
+                uint32 i;
+                sscanf(_string.c_str(), "%x", &i);
+                n = i;
+            } else {
+                sscanf(_string.c_str(), "%lg", &n);
+            }
             return n;
         } else {
             return 0;

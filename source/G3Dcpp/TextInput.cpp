@@ -6,12 +6,11 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2003-04-03
+ @edited  2003-12-20
  */
 
 #include "G3D/TextInput.h"
 #include "G3D/BinaryInput.h"
-
 
 // These standard C functions are renamed for clarity/naming
 // conventions and to return bool, not int.
@@ -308,7 +307,7 @@ numLabel:
         // parsed already, so a . indicates a number
         // less than 1 in floating point form.
     
-        // [0-9]*(\.[0-9]+) or [0-9]+
+        // [0-9]*(\.[0-9]+) or [0-9]+ or 0x[0-9,A-F]+
 
         if (t._string != "-") {
             // If we picked up a leading "-" sign above, keep it,
@@ -317,39 +316,55 @@ numLabel:
         }
         t._type = Token::NUMBER;
 
-        // Read the part before the decimal.
-        do {
-            t._string += c;
-            c = popNextChar();
-        } while (isDigit(c));
+        if ((c == '0') && (peekNextChar() == 'x')) {
+            // Hex number
+            t._string += "0x";
 
-    
-        // Read the decimal, if one exists
-        if (c == '.') {
-            if (isDigit(peekNextChar())) {
-                // The '.' was a decimal point, not the start of a
-                // method or range operator
+            // skip the x
+            popNextChar();
+
+            c = popNextChar();
+            while (isDigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f'))) {
                 t._string += c;
                 c = popNextChar();
+            }
 
-                // Read the part after the decimal
+        } else {
+
+            // Read the part before the decimal.
+            do {
+                t._string += c;
+                c = popNextChar();
+            } while (isDigit(c));
+
+    
+            // Read the decimal, if one exists
+            if (c == '.') {
+                if (isDigit(peekNextChar())) {
+                    // The '.' was a decimal point, not the start of a
+                    // method or range operator
+                    t._string += c;
+                    c = popNextChar();
+
+                    // Read the part after the decimal
+                    while (isDigit(c)) {
+                        t._string += c;
+                        c = popNextChar();
+                    }
+                }
+            }
+
+            if (c == 'e') {
+                t._string += "e";
+                if ((peekNextChar() == '-') || (peekNextChar() == '+')) {
+                    t._string += popNextChar();
+                }
+
+                c = popNextChar();
                 while (isDigit(c)) {
                     t._string += c;
                     c = popNextChar();
                 }
-            }
-        }
-
-        if (c == 'e') {
-            t._string += "e";
-            if ((peekNextChar() == '-') || (peekNextChar() == '+')) {
-                t._string += popNextChar();
-            }
-
-            c = popNextChar();
-            while (isDigit(c)) {
-                t._string += c;
-                c = popNextChar();
             }
         }
 
@@ -518,14 +533,14 @@ TextInput::TextInput(const std::string& filename, const Options& opt) : options(
     BinaryInput input(filename, G3D_LITTLE_ENDIAN);
     int n = input.size();
     buffer.resize(n);
-    memcpy(buffer.getCArray(), input.getCArray(), n);
+    System::memcpy(buffer.getCArray(), input.getCArray(), n);
 }
 
 
 TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : options(opt) {
     init();
     buffer.resize(str.length());
-    memcpy(buffer.getCArray(), str.c_str(), buffer.size());
+    System::memcpy(buffer.getCArray(), str.c_str(), buffer.size());
 }
 
 } // namespace
