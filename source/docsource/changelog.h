@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Increased timeout and attempts for ReliableConduit to handle huge (1 MB) packets
      <LI> BinaryOutput::reset (memory writing only; not supported for disk)
      <LI> Reduced overhead for G3D::ReliableConduit and 
           G3D::LightWeightConduit send routines
@@ -84,6 +85,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: IP address strings were reversed by NetAddress(std::string) 
      <LI> Fix: TextInput now returns end of file token for files without trailing whitespace
      <LI> Fix: [ 1094166 ] 6.05: Release mouse stuck on x-axis [Corey + Morgan]
      <LI> Fix: Recognize buggy ATI Radeon Mobility cube maps and work around

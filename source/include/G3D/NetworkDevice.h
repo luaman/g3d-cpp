@@ -82,7 +82,7 @@ public:
     /**
      Port is in host byte order.
      */
-    NetAddress(const std::string& hostname, uint16 port = 0);
+    NetAddress(const std::string& hostname, uint16 port);
 
     /**
     String must be in the form "hostname:port"
@@ -266,6 +266,11 @@ private:
      Type of the incoming message.
      */
     uint32                          messageType;
+
+    void*                           receiveBuffer;
+
+    /** Total size of the receiveBuffer */
+    size_t                          receiveBufferSize;
 
     ReliableConduit(class NetworkDevice* _nd, const NetAddress& addr);
 

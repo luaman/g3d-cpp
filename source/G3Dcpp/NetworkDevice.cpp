@@ -214,11 +214,12 @@ void NetAddress::init(
             return;
         }
 
-        uint32 a;
-        memcpy(&a, host->h_addr_list[0], host->h_length);
-        addr = htonl(a);
+        memcpy(&addr, host->h_addr_list[0], host->h_length);
     }
 
+    if (addr != INADDR_NONE) {
+        addr = ntohl(addr);
+    }
     init(addr, port);
 }
 
@@ -535,14 +536,14 @@ bool Conduit::messageWaiting() const {
 
 
 /**
- Increases the send and receive sizes of a socket to 200k from 8k
+ Increases the send and receive sizes of a socket to 2 MB from 8k
  */
 static void increaseBufferSize(SOCKET sock, Log* debugLog) {
 
     // Increase the buffer size; the default (8192) is too easy to
     // overflow when the network latency is high.
     {
-        uint32 val = 262144;
+        uint32 val = 1024*1024*2;
         if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, 
                        (char*)&val, sizeof(val)) == SOCKET_ERROR) {
             if (debugLog) {
@@ -654,7 +655,6 @@ ReliableConduit::ReliableConduit(
 
 ReliableConduit::~ReliableConduit() {
 }
-
 
 
 uint32 ReliableConduit::waitingMessageType() {
@@ -770,7 +770,7 @@ NetAddress ReliableConduit::address() const {
 
 bool ReliableConduit::receive(NetMessage* m) {
 
-    static const RealTime timeToWaitForFragmentedPacket = 0.25;
+    static const RealTime timeToWaitForFragmentedPacket = 5; // seconds
 
     // This both checks to ensure that a message was waiting and
     // actively consumes the message type if it has not been read
@@ -807,7 +807,7 @@ bool ReliableConduit::receive(NetMessage* m) {
 
     len = ntohl(len);
     debugAssert(len >= 0);
-    debugAssert(len < 100000);
+    debugAssert(len < 6000000);
 
     // Allocate space for the packet
     if (len < 512) {
@@ -831,7 +831,7 @@ bool ReliableConduit::receive(NetMessage* m) {
     ret = 0;
     int left = len;
     int count = 0;
-    while ((ret != SOCKET_ERROR) && (left > 0) && (count < 4)) {
+    while ((ret != SOCKET_ERROR) && (left > 0) && (count < 12)) {
 
         ret = recv(sock, ((char*)buffer) + (len - left), left, 0);
 
@@ -850,9 +850,9 @@ bool ReliableConduit::receive(NetMessage* m) {
 
                 // Give the machine a chance to read more data, but
                 // don't wait forever
-                RealTime t = System::getTick() + timeToWaitForFragmentedPacket;
-                while (! messageWaiting() && (System::getTick() < t)) {
-                    System::sleep(0.05);
+                RealTime t = System::time() + timeToWaitForFragmentedPacket;
+                while (! messageWaiting() && (System::time() < t)) {
+                    System::sleep(0.001);
                 }
             }
         } else if (ret == 0) {

@@ -84,8 +84,13 @@ public:
 
 void lightweightServer() {
     // Print our network address
-    printf("Running lightweight G3D pingtest server on %s\n", 
-           networkDevice.localHostName().c_str());
+ 
+   	Array<NetAddress> localAddr;
+    networkDevice.localHostAddresses(localAddr);
+
+    printf("Running lightweight G3D pingtest server on %s (%s)\n", 
+           networkDevice.localHostName().c_str(), 
+           localAddr[0].ipString().c_str());
 
     printf(" Press any key to quit.\n\n");
  
