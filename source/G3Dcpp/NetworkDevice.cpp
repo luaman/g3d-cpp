@@ -118,7 +118,11 @@ static int selectOneReadSocket(const SOCKET& sock) {
     FD_ZERO(&socketSet); 
     FD_SET(sock, &socketSet);
 
-    return select(1, &socketSet, NULL, NULL, &timeout);
+    int ret = select(1, &socketSet, NULL, NULL, &timeout);
+
+    //printf("FD_ISSET(0, &socketSet) = %d\n", FD_ISSET(0, &socketSet));
+
+    return ret;
 }
 
 
@@ -814,15 +818,14 @@ bool ReliableConduit::receive(NetMessage* m) {
                          "packet of length %d bytes, attempt #%d.  "
                          "Read %d bytes this time, %d bytes remaining\n",
                          len, count + 1, ret, left);
+                }
                 ++count;
 
                 // Give the machine a chance to read more data, but
                 // don't wait forever
                 RealTime t = System::getTick() + timeToWaitForFragmentedPacket;
                 while (! messageWaiting() && (System::getTick() < t)) {
-                    #ifdef G3D_WIN32
-                        Sleep(5);
-                    #endif
+                    System::sleep(0.05);
                 }
             }
         } else if (ret == 0) {
@@ -1061,8 +1064,15 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
         return;
     }
 
-    if (nd->debugLog) {nd->debugLog->printf("Listening on port %5d        ", port);}
-    if (listen(sock, 100) == SOCKET_ERROR) {
+    if (nd->debugLog) {
+        nd->debugLog->printf("Listening on port %5d        ", port);
+    }
+
+    // listen is supposed to return 0 when there is no error.
+    // The 2nd argument is the number of connections to allow pending
+    // at any time.
+    int L = listen(sock, 100);
+    if (L == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("FAIL");
             nd->debugLog->println(socketErrorCode());
@@ -1089,8 +1099,12 @@ ReliableConduitRef NetListener::waitForConnection() {
     SOCKADDR_IN    remote_addr;
     int iAddrLen = sizeof(remote_addr);
 
-    if (nd->debugLog) {nd->debugLog->println("Blocking in NetListener::waitForConnection().");}
-    SOCKET sClient = accept(sock, (struct sockaddr*) &remote_addr, (socklen_t*)&iAddrLen);
+    if (nd->debugLog) {
+        nd->debugLog->println("Blocking in NetListener::waitForConnection().");
+    }
+
+    SOCKET sClient = accept(sock, (struct sockaddr*) &remote_addr, 
+                            (socklen_t*)&iAddrLen);
 
     if (sClient == SOCKET_ERROR) {
         if (nd->debugLog) {
@@ -1101,12 +1115,19 @@ ReliableConduitRef NetListener::waitForConnection() {
         return NULL;
     }
 
-    if (nd->debugLog) {nd->debugLog->printf("%s connected, transferred to socket %d.\n", inet_ntoa(remote_addr.sin_addr), sClient);}
+    if (nd->debugLog) {
+        nd->debugLog->printf("%s connected, transferred to socket %d.\n", 
+                             inet_ntoa(remote_addr.sin_addr), sClient);
+    }
 
     #ifndef G3D_WIN32
-        return new ReliableConduit(nd, sClient, NetAddress(htonl(remote_addr.sin_addr.s_addr), ntohs(remote_addr.sin_port)));
+        return new ReliableConduit(nd, sClient, 
+                     NetAddress(htonl(remote_addr.sin_addr.s_addr), 
+                                ntohs(remote_addr.sin_port)));
     #else
-        return new ReliableConduit(nd, sClient, NetAddress(ntohl(remote_addr.sin_addr.S_un.S_addr), ntohs(remote_addr.sin_port)));
+        return new ReliableConduit(nd, sClient, 
+                    NetAddress(ntohl(remote_addr.sin_addr.S_un.S_addr), 
+                               ntohs(remote_addr.sin_port)));
     #endif
 }
 
@@ -1119,6 +1140,5 @@ bool NetListener::ok() const {
 bool NetListener::clientWaiting() const {
     return readWaiting(nd->debugLog, sock);
 }
-
 
 } // namespace

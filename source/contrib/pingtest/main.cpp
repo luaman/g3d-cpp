@@ -105,12 +105,6 @@ void server() {
     }
 }
 
- #include <unistd.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <netdb.h>
-    #include <netinet/tcp.h>
 
 void reliableServer() {
     // Print our network address
@@ -131,6 +125,8 @@ void reliableServer() {
         }
 
         if (listener->clientWaiting()) {
+            printf("Here\n");
+
             ReliableConduitRef conduit =
                 listener->waitForConnection();
 
