@@ -2,21 +2,20 @@
  @file Collision_Demo/main.cpp
 
   To run this program:
-    1. Install OpenGL and SDL (www.libsdl.org)
+    1. Install SDL 1.2.5 (www.libsdl.org)
     2. Compile and run
     3. Press ESC to exit
 
  <P>
 
  This demo uses the G3D collision detection routines to implement a simple physics
- system.  Shadow maps are rendered using the OpenGL SGIX_SHADOW extension to
- show how to use non-G3D calls with G3D.  A Matrix4 skeleton is provided as well.
+ system.  
  <P>
 
- This is not the greatest collision simulation ever written-- see OPCODE for something much nicer.
- The intent of the demo is to show how to use non-G3D OpenGL calls, test the collision
- detection routines (which are really intended for character motion and ray tracing,
- not physics), and show a good way of structuring a 3D application.
+ This is not the greatest collision simulation ever written-- see OPCODE for
+ something much more sophisticated.  G3D's collision detection routines are
+ intended for bounding volume tests and ray casting, not high-performance
+ collision detection.
   
  <P>
  Requires:
@@ -27,7 +26,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-11-15
+ @edited  2003-11-23
  */
 #include <G3DAll.h>
 #include "Model.h"
@@ -37,7 +36,6 @@
 #if G3D_VER != 60008
     #error Requires G3D 6.00 b8
 #endif
-
 
 /**
  The path to the data directory from this program's directory.

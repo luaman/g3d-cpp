@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-19
+  @edited  2003-11-23
  */ 
 
 
