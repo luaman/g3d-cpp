@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-05-23
+# @edited  2003-05-28
 #
 # Each build target is a procedure.
 #
@@ -137,6 +137,7 @@ def install(copyData=1):
         return
 
     copyIfNewer('source/include', installDir + '/include')
+
     if (copyData):
         copyIfNewer('source/demos', installDir + '/demos')
         copyIfNewer('data', installDir + '/data')
@@ -164,6 +165,8 @@ def release():
     if (os.name != 'nt'):
         raise 'Error', 'Can only build the release on Windows.'
 
+    mkdir('release')
+
     # Put everything but CVS, temp, and binaries and
     rmdir('../temp')
     copyIfNewer('../cpp', '../temp/copy/cpp')
@@ -173,18 +176,9 @@ def release():
     zip('../temp/copy/*', 'release/g3d-src-' + version + '.zip')
 
     # TODO: Make sure the linux binaries are already built
-    install(0)
-    mkdir('release')
-    mkdir('temp/datacopy/g3d-' + version + '/demos')
-    copyIfNewer('data', 'temp/datacopy/g3d-' + version + '/data')
-    copyIfNewer('source/demos', 'temp/datacopy/g3d-' + version + '/demos')
-    zip('temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
 
-    # Don't zip up the data or demos directories
-    rmdir(installDir + '/data')
-    rmdir(installDir + '/demos')
-    mkdir('release')
-    zip('install/*', 'release/g3d-cpp-' + version + '.zip')
+    install()
+    zip('install/*', 'release/g3d-' + version + '.zip')
 
 
 

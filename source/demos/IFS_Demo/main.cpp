@@ -18,7 +18,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @cite       Written by Nate Miller, nathanm@uci.edu
  @created    2002-08-10
- @edited     2003-04-03
+ @edited     2003-05-28
  */
 
 #include "IFSReader.h"
@@ -129,13 +129,19 @@ void dumpInfo(void) {
 int main(int argc, char** argv) {
     
     try {
+
+        std::string filename;
+
         if (argc < 2) {
-            throw std::string("You must supply a command line argument that is the name of an IFS file.  Usage: viewer <mesh_name>");
+            filename = "IFS_Demo/teapot.ifs";
+            //throw std::string("You must supply a command line argument that is the name of an IFS file.  Usage: viewer <mesh_name>");
+        } else {
+            filename = argv[1];
         }
         
         IFSReader reader;
         
-        reader.load(argv[1], mesh);
+        reader.load(filename, mesh);
         
         dumpInfo();
         
