@@ -4,7 +4,7 @@
 # General configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = G3D
-PROJECT_NUMBER         = "version 6.04 beta 5 2004-07-30"
+PROJECT_NUMBER         = "version 6.04 beta 5 2004-09-06"
 OUTPUT_DIRECTORY       = ../temp
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
@@ -61,7 +61,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = include/
+INPUT                  = include/ docsource/
 FILE_PATTERNS          = 
 RECURSIVE              = YES
 EXCLUDE                = graveyard \

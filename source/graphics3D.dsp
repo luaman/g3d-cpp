@@ -797,37 +797,5 @@ SOURCE=.\IJG\jversion.h
 SOURCE=.\IJG\transupp.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\build.py
-# End Source File
-# Begin Source File
-
-SOURCE=..\buildlib.py
-# End Source File
-# Begin Source File
-
-SOURCE=.\html\changelog.html
-# End Source File
-# Begin Source File
-
-SOURCE=.\Doxyfile
-# End Source File
-# Begin Source File
-
-SOURCE=.\html\error.html
-# End Source File
-# Begin Source File
-
-SOURCE=.\html\gettingstarted.html
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\G3D\mainpage.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\readme.html
-# End Source File
 # End Target
 # End Project
