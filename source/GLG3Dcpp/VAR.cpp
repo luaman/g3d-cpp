@@ -22,7 +22,7 @@ VAR::VAR() : _pointer(NULL), elementSize(0), numElements(0), generation(0), unde
 bool VAR::valid() const {
     return
         (! area.isNull()) && 
-        (area->generation == generation) &&
+        (area->currentGeneration() == generation) &&
         // If we're in VBO_MEMORY mode, the pointer can be null.  Otherwise
         // it shouldn't be
         (VARArea::mode == VARArea::VBO_MEMORY || _pointer);
@@ -51,22 +51,23 @@ void VAR::init(
         "Sanity check failed on OpenGL data format; you may"
         " be using an unsupported type in a vertex array.");
 
-	_pointer = (uint8*)area->basePointer + area->allocated;
+	generation = area->currentGeneration();
+
+    _pointer = (uint8*)area->gl_basePointer() + area->allocatedSize();
 
 	// Ensure that the next memory address is 8-byte aligned
-	_pointer = ((uint8*)_pointer +      
-   			   ((8 - (size_t)_pointer % 8) % 8));
+	size_t pointerOffset = ((8 - (size_t)_pointer % 8) % 8);
 
-	generation = area->generation;
-	
-    size_t newAreaSize = size + ((size_t)_pointer - (size_t)area->basePointer);
+    // Adjust pointer to new 8-byte alignment
+    _pointer = (uint*)_pointer + pointerOffset;
 
-	alwaysAssertM(newAreaSize <= area->size,
+    size_t newAlignedSize = size + pointerOffset;
+
+	alwaysAssertM(newAlignedSize <= area->freeSize(),
         "VARArea too small to hold new VAR");
 
-	area->allocated = newAreaSize;
-
-    area->peakAllocated = iMax(area->peakAllocated, area->allocated);
+    // Update VARArea values
+    area->updateAllocation(newAlignedSize);
 
 	// Upload the data
     uploadToCard(sourcePtr, size);
@@ -85,7 +86,7 @@ void VAR::update(
         "A VAR can only be updated with an array that is smaller "
         "or equal size (in bytes) to the original array.");
 
-    alwaysAssertM(generation == area->generation,
+    alwaysAssertM(generation == area->currentGeneration(),
         "The VARArea has been reset since this VAR was created.");
 
 	numElements              = _numElements;
@@ -103,7 +104,7 @@ void VAR::update(
 
 
 void VAR::uploadToCard(const void* sourcePtr, size_t size) {
-    switch (area->mode) {
+    switch (VARArea::mode) {
     case VARArea::VBO_MEMORY:
         // Don't destroy any existing bindings; this call can
         // be made at any time and the program might also

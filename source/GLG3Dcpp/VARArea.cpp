@@ -119,26 +119,6 @@ VARArea::~VARArea() {
 }
 
 
-size_t VARArea::totalSize() const {
-	return size;
-}
-
-
-size_t VARArea::freeSize() const {
-	return size - allocated;
-}
-
-
-size_t VARArea::allocatedSize() const {
-	return allocated;
-}
-
-
-size_t VARArea::peakAllocatedSize() const {
-	return peakAllocated;
-}
-
-
 void VARArea::finish() {
     if (milestone != (MilestoneRef)NULL) {
         renderDevice->waitForMilestone(milestone);

@@ -103,6 +103,12 @@ private:
     enum Mode {UNINITIALIZED, VBO_MEMORY, MAIN_MEMORY};
     static Mode         mode;
 
+    /** Updates allocation and peakAllocation based off of new allocation. */
+    inline void VARArea::updateAllocation(size_t newAllocation) {
+        allocated += newAllocation;
+        peakAllocated = iMax(peakAllocated, allocated);
+    }
+
 	VARArea(size_t _size, UsageHint h);
 
 public:
@@ -116,13 +122,29 @@ public:
 
     ~VARArea();
 
-	size_t totalSize() const;
+    inline size_t totalSize() const {
+	    return size;
+    }
 
-	size_t freeSize() const;
 
-	size_t allocatedSize() const;
+    inline size_t freeSize() const {
+	    return size - allocated;
+    }
 
-	size_t peakAllocatedSize() const;
+
+    inline size_t allocatedSize() const {
+	    return allocated;
+    }
+
+
+    inline size_t peakAllocatedSize() const {
+	    return peakAllocated;
+    }
+
+    inline uint64 currentGeneration() const {
+        return generation;
+    }
+
 
     /**
      Provided for breaking the VARArea abstraction; use G3D::VAR and 
@@ -133,7 +155,7 @@ public:
      The caller cannot control whether VBO is used or not; G3D selects
      the best method automatically.
      */
-    uint32 gl_vertexBufferObject() const {
+    inline uint32 gl_vertexBufferObject() const {
         return glbuffer;
     }
 
@@ -144,7 +166,7 @@ public:
      When using system memory, this is a pointer to the beginning of 
      the system memory block in which data is stored.  Null when using VBO.
      */
-    void*  gl_basePointer() const {
+    inline void*  gl_basePointer() const {
         return basePointer;
     }
 
