@@ -117,11 +117,14 @@ def removeTrailingSlash(s):
         s = s[:len(s)-2]
     return s
 
+def moveIfNewer(source, dest):
+    copyIfNewer(source, dest, 1)
+
 """ Recursively copies all contents of source to dest 
 (including source itself) that are out of date.  Does 
 not copy files matching the excludeFromCopying patterns.
 """
-def copyIfNewer(source, dest):
+def copyIfNewer(source, dest, move = 0):
     if source == dest:
         # Copying in place
         return
@@ -133,15 +136,19 @@ def copyIfNewer(source, dest):
         return
 
     if (not os.path.isdir(source) and newer(source, dest)):
-        print 'cp ' + source + ' ' + dest
-        shutil.copyfile(source, dest)
+        if (move):
+            print 'mv ' + source + ' ' + dest
+            shutil.movefile(source, dest)
+        else:
+            print 'cp ' + source + ' ' + dest
+            shutil.copyfile(source, dest)
         
     else:
 
         # Walk is a special iterator that visits all of the
         # children and executes the 2nd argument on them.  
 
-        os.path.walk(source, _copyIfNewerVisit, [len(source), dest])
+        os.path.walk(source, _copyIfNewerVisit, [len(source), dest, move])
     
 """os.path.basename strips one extra character from the beginning.  
 This restores it."""
@@ -162,6 +169,7 @@ def _copyIfNewerVisit(args, sourceDirname, names):
 
     prefixLen   = args[0]
     destDirname = args[1] + sourceDirname[prefixLen:]
+    move        = args[2]
     dirName     = _basename(destDirname)
 
     if (excludeFromCopying.search(dirName) != None):
@@ -181,8 +189,12 @@ def _copyIfNewerVisit(args, sourceDirname, names):
             # Copy files if newer
             dest = destDirname + '/' + name
             if (newer(source, dest)):
-                print 'cp ' + source + ' ' + dest
-                shutil.copyfile(source, dest)
+                if move:
+                    print 'mv ' + source + ' ' + dest
+                    shutil.movefile(source, dest)
+                else:
+                    print 'cp ' + source + ' ' + dest
+                    shutil.copyfile(source, dest)
 
 ###############################################################################
 """Determine if a target is out of date.
@@ -211,6 +223,8 @@ def _findBinary(program):
     PATH = os.getenv('PATH', '').split(';') + \
           ['.',\
            'C:/Program Files/Microsoft Visual Studio/Common/MSDev98/Bin',\
+           'C:/Program Files/Microsoft Visual Studio .NET 2003/Common7/IDE',\
+           'C:/Program Files/Microsoft Visual Studio .NET 2002/Common7/IDE',\
            'C:/python',\
            'C:/doxygen/bin',\
            'C:\Program Files\PKZIP']
@@ -231,7 +245,7 @@ def _findBinary(program):
 
 ###############################################################################
 
-"""Runs MSDEV on the given dsw filename and builds the 
+"""Runs MSDEV (VC6) on the given dsw filename and builds the 
 specified configs.  configs is a list of strings
 """
 def msdev(filename, configs):
@@ -255,6 +269,37 @@ def msdev(filename, configs):
  
     return x
 
+###############################################################################
+
+"""Runs DEVENV (VC7) on the given sld filename and builds the 
+specified configs.  configs is a list of strings
+"""
+def devenv(filename, configs):
+    binary = 'devenv'
+
+    for config in configs:
+        for target in ['debug', 'release']:
+            logfile = tempfile.mktemp()
+            args = [filename]
+
+            args.append('/build')
+            args.append(target)
+            args.append('/project "' + config + '"')
+
+            args.append('/out')
+            args.append(logfile)
+
+            x = run(binary, args)
+  
+            # Print the output to standard out
+            for line in fileinput.input(logfile):
+                print line.rstrip('\n')
+
+            if x != 0:
+                # Abort-- a build failed
+                return x;
+ 
+    return 0
 ###############################################################################
 """
  Recursively zips the source into zipfile
@@ -395,7 +440,7 @@ def checkVersion(verCmdString, minVerString, errString, stderr = 0):
     # Check the version from most significant bit to least.
     for i in xrange(0, len(minVer)):
         if actualVer[i] < minVer[i]:
-	    raise Error, "*** Error: unsupported tool version ***\n" +errString
+            raise Error, "*** Error: unsupported tool version ***\n" +errString
         
         if actualVer[i] > minVer[i]:
             # We are over qualified

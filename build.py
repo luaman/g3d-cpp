@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-07-04
+# @edited  2004-09-08
 # Each build target is a procedure.
 #
 
@@ -28,6 +28,7 @@ python     = "python2.2"
 
 platform = 'unknown'
 if (os.name == 'nt'):
+    # VC 6.0; use 'win32-vc7' for .NET
     platform = 'win32'
 else:
     platform = {'Linux' : 'linux', \
@@ -48,10 +49,11 @@ Syntax:
 
 TARGET     DESCRIPTION
 
-install    Create a user installation directory (what you probably want)
+install    Create a user installation directory (what you probably want).
 
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
-fastlib    Build the lib target without reconfiguring (not recommended) 
+lib7       Same as 'lib', but use VC7 on Windows instead of VC6
+fastlib    Build the lib target without reconfiguring on Linux (not recommended) 
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip, g3d-data-""" + version + """.zip
 source     Build g3d-src-""" + version + """.zip only
 doc        Run doxygen and copy the html directory
@@ -71,6 +73,7 @@ def installDir(args):
         if ((s != "") and (s[len(s) - 1] != "/") and (s[len(s) - 1] != "\\")):
             s = s + "/"
         return s + 'g3d-' + version
+
 
 """ On Posix, sets the permissions of the install dir to a+rx"""
 def setPermissions(args):
@@ -101,14 +104,14 @@ def linuxCheckVersion():
     try:
         checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')
 	try:
-	        checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
+	    checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
 	except:
-	        checkVersion('automake-1.7 --version', '1.6', 'Requires automake 1.6 or later.')
+	    checkVersion('automake-1.7 --version', '1.6', 'Requires automake 1.6 or later.')
 
 	try:
-	        checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
+	    checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
 	except:
-	        checkVersion('aclocal-1.7 --version', '1.6', 'Requires aclocal 1.6 or later.')
+	    checkVersion('aclocal-1.7 --version', '1.6', 'Requires aclocal 1.6 or later.')
 
         checkVersion(doxygen + ' --version', '1.2', 'Requires doxygen 1.3 or later.')
         checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
@@ -117,24 +120,40 @@ def linuxCheckVersion():
         print e.value
         sys.exit(-4)
 
+def lib7(args):
+    _lib(args, 'win32-7')
 
 def lib(args, reconfigure = 1):
+    _lib(args, platform, reconfigure)
+
+"""
+  Used internally by lib routines
+"""
+def _lib(args, libplatform, reconfigure = 1):
     x = 0
 
     copyIfNewer('source/include', installDir(args) + '/include')
 
-    libdir = installDir(args) + "/" + platform + "-lib"
+    libdir = installDir(args) + "/" + libplatform + "-lib"
     mkdir(libdir)
 
     if (os.name == 'nt'):
-        # Windows build
-        x = msdev('source/graphics3D.dsw',\
-                ["graphics3D - Win32 Release",\
-                 "graphics3D - Win32 Debug",\
-                 "GLG3D - Win32 Release",\
-                 "GLG3D - Win32 Debug"])
+		# Windows
 
-        copyIfNewer("temp/win32-lib", libdir)
+		if (libplatform == 'win32'):
+			# VC6
+			x = msdev('source/graphics3D.dsw',\
+					["graphics3D - Win32 Release",\
+					 "graphics3D - Win32 Debug",\
+					 "GLG3D - Win32 Release",\
+					 "GLG3D - Win32 Debug"])
+		else:
+			# VC7
+			x = devenv('source/graphics3D.sln',\
+					["graphics3D",\
+					 "GLG3D"])
+
+		moveIfNewer("temp/" + libplatform, libdir)
 
     else:
         # Linux build
@@ -182,7 +201,9 @@ def lib(args, reconfigure = 1):
         print "*** Errors encountered during compilation.  Build process halted."
         sys.exit(x);        
 
-    # Copy any system libraries over
+    # Copy any system libraries over.  Note that this uses
+	# the global platform directory and not the local one, which 
+	# may be different on Win32
     copyIfNewer("source/" + platform + "-lib", libdir)
     setPermissions(args)
 
@@ -333,4 +354,4 @@ def release(args):
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, fastlib, install, source, doc, test, clean, release], buildHelp)
+dispatchOnTarget([lib, lib7, fastlib, install, source, doc, test, clean, release], buildHelp)

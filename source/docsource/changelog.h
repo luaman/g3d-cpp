@@ -12,6 +12,10 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> Precompiled binaries for VisualC++ 7 (.NET 2002/2003)
+     <LI> VisualC++ 7 (.NET 2002/2003) supported by build script
+	 <LI> Build now MOVEs binaries instead of COPYing them on Windows (allows
+	      two compilers to output to the same location)
      <LI> G3D Guide overview documentation
      <LI> Changelog and Error FAQ moved under Doxygen
      <LI> Build scripts and documentation now under the 'doc' .dsp on Windows
