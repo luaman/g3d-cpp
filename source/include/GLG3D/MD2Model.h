@@ -348,7 +348,7 @@ public:
     /**
      Fills the geometry out from the pose.
      */
-    void getGeometry(const Pose& pose, Geometry& geometry);
+    void getGeometry(const Pose& pose, Geometry& geometry) const;
 
     const Array<Face>& faces() const;
 

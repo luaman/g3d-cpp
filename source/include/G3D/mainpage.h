@@ -168,6 +168,7 @@
         G3D::G3DEndian,
         G3D::getFiles, 
         G3D::getDirs,
+        G3D::msgBox,
         G3D::parseFilename, 
         G3D::prompt, 
         G3D::readFileAsString,
@@ -621,6 +622,8 @@
 
    <P>
    <UL>
+     <LI> RenderDevice::drawFullScreenImage
+     <LI> msgBox
      <LI> MD2 model gallery in documentation (Kevin)
      <LI> MD2Documentor (Kevin)
      <LI> debugAssertGLOk macro

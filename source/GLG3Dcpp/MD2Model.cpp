@@ -631,7 +631,7 @@ MD2Model::Geometry MD2Model::interpolatedFrame;
     #pragma warning( disable : 4731 )
 #endif
 
-void MD2Model::getGeometry(const Pose& pose, Geometry& out) {
+void MD2Model::getGeometry(const Pose& pose, Geometry& out) const {
     if (! initialized) {
         return;
     }
@@ -655,7 +655,7 @@ void MD2Model::getGeometry(const Pose& pose, Geometry& out) {
     if (&out == &interpolatedFrame) {
         // Make a note about what the cache contains
         interpolatedPose  = pose;
-        interpolatedModel = this;
+        interpolatedModel = const_cast<MD2Model*>(this);
     }
 
     double alpha;

@@ -991,6 +991,16 @@ Vector3 RenderDevice::project(const Vector4& v) const {
 }
 
 
+void RenderDevice::drawFullScreenImage(const CImage& im) {
+    push2D();
+        glPixelZoom(getWidth() / (float)im.width, 
+                   -getHeight() / (float)im.height);
+        glRasterPos2d(0, 0);
+        glDrawPixels(im.width, im.height, (im.channels == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)im.byte());
+    pop2D();
+}
+
+
 void RenderDevice::setAmbientLightLevel(
     const Color3&       color) {
 

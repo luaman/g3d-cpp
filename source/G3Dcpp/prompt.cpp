@@ -6,7 +6,7 @@
  @cite Font setting code by Kurt Miller, kurt@flipcode.com
 
  @created 2000-08-26
- @edited  2003-02-15
+ @edited  2003-09-13
  */
 
 #include "G3D/prompt.h"
@@ -450,6 +450,15 @@ int prompt(
     #endif
     
     return textPrompt(windowTitle, prompt, choice, numChoices);
+}
+
+
+void msgBox(
+    const std::string& message,
+    const std::string& title) {
+
+    const char *choice[] = {"Ok"};
+    prompt(title.c_str(), message.c_str(), choice, 1, true); 
 }
 
 #ifndef _WIN32

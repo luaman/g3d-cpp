@@ -5,11 +5,13 @@
  @cite   Windows GUI code by Max McGuire
 
  @created 2001-08-26
- @edited  2003-01-25
+ @edited  2003-09-13
  */
 
 #ifndef G3D_PROMPT_H
 #define G3D_PROMPT_H
+
+#include <string>
 
 namespace G3D {
 
@@ -48,6 +50,14 @@ inline int prompt(
 
     return prompt(windowTitle, promptx, choice, numChoices, true);
 }
+
+
+/**
+ Displays a GUI prompt with "Ok" as the only choice.
+ */
+void msgBox(
+    const std::string& message,
+    const std::string& title="Message");
 
 
 }; // namespace
