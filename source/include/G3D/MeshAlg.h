@@ -32,6 +32,9 @@ public:
     /** Adjacency information for a vertex.
         Does not contain the vertex position or normal,
         which are stored in the MeshAlg::Geometry object.
+        <CODE>Vertex</CODE>s must be stored in an array
+        parallel to (indexed in the same way as) 
+        MeshAlg::Geometry::vertexArray.
         */
     class Vertex {
     public:
@@ -49,10 +52,22 @@ public:
         Array<int>              edgeIndex;
 
         /**
+         Returns true if e or ~e is in the edgeIndex list.
+         */
+        inline bool inEdge(int e) const {
+            return edgeIndex.contains(~e) || edgeIndex.contains(e);
+        }
+
+        /**
          Array of faces containing this vertex.  Faces
          may be listed multiple times if they are degenerate.
         */
         Array<int>              faceIndex;
+
+        inline bool inFace(int f) const {
+            debugAssert(f >= 0);
+            return faceIndex.contains(f);
+        }
     };
 
 
@@ -217,7 +232,18 @@ public:
      @param vertexArray Vertex positions to use when deciding colocation.
      @param indexArray  Order to traverse vertices to make triangles
      @param faceArray   <I>Output</I>
-     @param edgeArray   <I>Output</I>  
+     @param edgeArray   <I>Output</I> 
+     @param vertexArray   <I>Output</I> 
+     */
+    static void computeAdjacency(
+        const Array<Vector3>&   vertexGeometry,
+        const Array<int>&       indexArray,
+        Array<Face>&            faceArray,
+        Array<Edge>&            edgeArray,
+        Array<Vertex>&          vertexArray);
+
+    /**
+     @deprecated Use the other version of computeAdjacency, which takes Array<Vertex>.
      @param facesAdjacentToVertex <I>Output</I> adjacentFaceArray[v] is an array of
                         indices for faces touching vertex index v
      */
@@ -227,6 +253,7 @@ public:
         Array<Face>&            faceArray,
         Array<Edge>&            edgeArray,
         Array< Array<int> >&    facesAdjacentToVertex);
+
 
 
     static void computeAreaStatistics(

@@ -149,14 +149,34 @@ static void assignEdgeIndex(MeshAlg::Face& face, int e) {
 
 
 void MeshAlg::computeAdjacency(
-    const Array<Vector3>&   vertexArray,
+    const Array<Vector3>&   vertexGeometry,
     const Array<int>&       indexArray,
     Array<Face>&            faceArray,
     Array<Edge>&            edgeArray,
     Array< Array<int> >&    adjacentFaceArray) {
 
-    edgeArray.clear();
+    Array<Vertex> vertexArray;
+
+    computeAdjacency(vertexGeometry, indexArray, faceArray, edgeArray, vertexArray);
+
+    // Convert the vertexArray into adjacentFaceArray
     adjacentFaceArray.clear();
+    adjacentFaceArray.resize(vertexArray.size());
+    for (int v = 0; v < adjacentFaceArray.size(); ++v) {
+        adjacentFaceArray[v] = vertexArray[v].faceIndex;
+    }
+}
+
+
+void MeshAlg::computeAdjacency(
+    const Array<Vector3>&   vertexGeometry,
+    const Array<int>&       indexArray,
+    Array<Face>&            faceArray,
+    Array<Edge>&            edgeArray,
+    Array<Vertex>&          vertexArray) {
+    
+    edgeArray.clear();
+    vertexArray.clear();
     faceArray.clear();
     edgeTable.clear();
     
@@ -164,7 +184,7 @@ void MeshAlg::computeAdjacency(
     Array<Vector3> faceNormal;
 
     // This array has the same size as the vertex array
-    adjacentFaceArray.resize(vertexArray.size());
+    vertexArray.resize(vertexGeometry.size());
 
     // Iterate through the triangle list
     for (int q = 0; q < indexArray.size(); q += 3) {
@@ -179,11 +199,11 @@ void MeshAlg::computeAdjacency(
             face.vertexIndex[j] = v;
             face.edgeIndex[j]   = Face::NONE;
 
-            // Every vertex is adjacent to 
-            adjacentFaceArray[v].append(f);
+            // Store back pointers in the vertices
+            vertexArray[v].faceIndex.append(f);
 
             // We'll need these vertices to find the face normal
-            vertex[j]           = vertexArray[v];
+            vertex[j]           = vertexGeometry[v];
         }
 
         // Compute the face normal
@@ -319,19 +339,26 @@ void MeshAlg::computeAdjacency(
         // question is whether e1 and e2 should be swapped.
     
         // See if e1 begins at the vertex where e1 ends.
-        const Vector3& e0End = (e0 < 0) ? 
-            vertexArray[edgeArray[~e0].vertexIndex[0]] :
-            vertexArray[edgeArray[e0].vertexIndex[1]];
+        const int e0End = (e0 < 0) ? 
+            edgeArray[~e0].vertexIndex[0] :
+            edgeArray[e0].vertexIndex[1];
 
-        const Vector3& e1Begin = (e1 < 0) ? 
-            vertexArray[edgeArray[~e1].vertexIndex[1]] :
-            vertexArray[edgeArray[e1].vertexIndex[0]];
+        const int e1Begin = (e1 < 0) ? 
+            edgeArray[~e1].vertexIndex[1] :
+            edgeArray[e1].vertexIndex[0];
 
         if (e0End != e1Begin) {
             // We must swap e1 and e2
             face.edgeIndex[1] = e2;
             face.edgeIndex[2] = e1;
         }
+    }
+
+    // Fill out the edge adjacency information
+    for (int e = 0; e < edgeArray.size(); ++e) {
+        const Edge& edge = edgeArray[e];
+        vertexArray[edge.vertexIndex[0]].edgeIndex.append(e);
+        vertexArray[edge.vertexIndex[1]].edgeIndex.append(~e);
     }
 }
 
