@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-11-04
+  @edited  2003-11-16
 */
 
 #ifndef GLG3D_GPUPROGRAM_H
@@ -12,6 +12,7 @@
 
 #include "graphics3D.h"
 #include "GLG3D/glheaders.h"
+
 #include "GLG3D/Texture.h"
 
 namespace G3D {
@@ -60,7 +61,7 @@ public:
     /** Internal use only */
     enum Source {VARIABLE, CONSTANT};
 
-   /** Internal use only
+    /** Internal use only
 	 Converts a string name (e.g. "float4") to a Cg type.
 	 Returns false if it can't match the type.
 	*/
@@ -70,6 +71,7 @@ public:
 	static std::string toString(const Type& t);
 
 private:
+
     friend class RenderDevice;
 
     /**
@@ -87,6 +89,13 @@ private:
          */
         class Binding {
         public:
+
+            /**
+             When the slot is UNASSIGNED, the variable
+             was declared but never used; it has no slot.
+             */
+            enum {UNASSIGNED = -1};
+
             /**
              Variable/constant name
              */
@@ -103,7 +112,6 @@ private:
 
 			/** Used by constants only */
             Vector4             vector;
-
         };
 
         Array<Binding>          bindingArray;
@@ -155,6 +163,7 @@ public:
 
             /** Row-major */ 
             Vector4                    vector[4];
+
 			TextureRef				   texture;
 
             Type                       type;
@@ -163,6 +172,7 @@ public:
         Table<std::string, Arg>        argTable;
 
     public:
+
 
 		void set(const std::string& var, const TextureRef& val);
         void set(const std::string& var, const CoordinateFrame& val);

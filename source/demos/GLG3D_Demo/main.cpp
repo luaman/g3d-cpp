@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
 	renderDevice = new RenderDevice();
     renderDevice->init(RenderDeviceSettings(), debugLog);
     camera 	 = new GCamera();
-
+debugAssertGLOk();    
     // Allocate the two VARAreas used in this demo
     varStatic  = renderDevice->createVARArea(1024 * 64);
     varDynamic = renderDevice->createVARArea(1024 * 128);
@@ -110,10 +110,10 @@ int main(int argc, char** argv) {
     controller->setPosition(Vector3(0, 10, -25));
     controller->lookAt(Vector3::ZERO);
     controller->setActive(true);
-
+debugAssertGLOk();    
 	renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
-
+debugAssertGLOk();    
     GameTime gameTime	= G3D::toSeconds(11, 00, 00, AM);
 
     // Main loop
@@ -132,26 +132,26 @@ int main(int argc, char** argv) {
             renderDevice->pushState();
 				
                 renderDevice->setProjectionAndCameraMatrix(*camera);
-
+debugAssertGLOk();    
                 LightingParameters lighting(gameTime);
-
+debugAssertGLOk();    
                 if (sky) {
                    sky->render(lighting);
                 }
-
+debugAssertGLOk();    
                 Draw::axes(renderDevice, Color3::RED, Color3::GREEN, Color3::BLUE, 1.5);
-				
+				debugAssertGLOk();    
                 renderDevice->pushState();
                     for (int x = 0; x < 3; ++x) {
                         CoordinateFrame c(Vector3((x - 1) * 6, 0, 0));
                         model->render(c, lighting);
                     }
                 renderDevice->popState();
-
+debugAssertGLOk();    
                 if (sky) {
                     sky->renderLensFlare(lighting);
                 }
-
+debugAssertGLOk();    
                 renderDevice->push2D();
                     font->draw2D(
                       format("%d fps", iRound(renderDevice->getFrameRate())),
@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
 
                 renderDevice->pop2D();
             renderDevice->popState();
-			
+			debugAssertGLOk();    
         renderDevice->endFrame();
         varDynamic->reset();
 

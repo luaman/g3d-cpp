@@ -2603,6 +2603,7 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
 
     const GLight& light = *_light;
 
+debugAssertGLOk();    
     if (_light == NULL) {
 
         if (state.lightEnabled[i] || force) {
@@ -2610,17 +2611,20 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
             glDisable(gi);
         }
 
+debugAssertGLOk();    
     } else {
 
         for (int j = 0; j < 3; ++j) {
             debugAssert(light.attenuation[j] >= 0);
         }
 
+debugAssertGLOk();    
         if (! state.lightEnabled[i] || force) {
             glEnable(gi);
             state.lightEnabled[i] = true;
         }
 
+debugAssertGLOk();    
         if ((state.light[i] != light) || force) {
             state.light[i] = light;
 

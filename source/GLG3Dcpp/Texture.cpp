@@ -567,14 +567,13 @@ void Texture::copyFromScreen(
     glEnable(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, textureID);
+    int e = glGetError();
+    alwaysAssertM(e == GL_NONE, 
+        std::string("Error encountered during glBindTexture: ") + GLenumToString(e));
 
     double viewport[4];
     glGetDoublev(GL_VIEWPORT, viewport);
     double viewportHeight = viewport[3];
-
-    int e = glGetError();
-    alwaysAssertM(e == GL_NONE, 
-        std::string("Error encountered during glBindTexture: ") + GLenumToString(e));
         
     glCopyTexImage2D(GL_TEXTURE_2D, 0, format->OpenGLFormat, rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-11-13
+  @edited  2003-11-16
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -28,12 +28,17 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
  If you use TextureRef instead of Texture*, the texture memory will be
  garbage collected.
 
-
  If you enable texture compression, textures will be compressed on the fly.
  This can be slow (up to a second).
 
  Unless DIM_2D_RECT is used, texture automatically scales non-power of 2
  size textures up to the next power of 2 (hardware requirement).
+
+ Textures are loaded so that (0, 0) is the upper-left corner of the image.
+ If you set the invertY flag, RenderDevice will automatically turn them upside
+ down when rendering to allow a (0, 0) <B>lower</B>-left corner.  If you
+ aren't using RenderDevice, you must change the texture matrix to have
+ a -1 in the Y column yourself.
 
  DIM_2D_RECT requires the NV_texture_rectangle extension.
  Texture compression requires the EXT_texture_compression_s3tc extions.
