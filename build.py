@@ -165,7 +165,7 @@ def release():
     mkdir('release')
     mkdir('temp/datacopy/g3d-' + version + '/demos')
     copyIfNewer('data', 'temp/datacopy/g3d-' + version + '/data')
-    copyIfNewer('demos', 'temp/datacopy/g3d-' + version + '/demos')
+    copyIfNewer('source/demos', 'temp/datacopy/g3d-' + version + '/demos')
     zip('temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
 
     # Don't zip up the data or demos directories
