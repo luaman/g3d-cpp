@@ -80,7 +80,7 @@ void Color4::serialize(BinaryOutput& bo) const {
 
 //----------------------------------------------------------------------------
 
-Color4 Color4::operator/ (float fScalar) const {
+Color4 Color4::operator/ (double fScalar) const {
     Color4 kQuot;
 
     if (fScalar != 0.0) {
@@ -99,7 +99,7 @@ Color4 Color4::operator/ (float fScalar) const {
 
 //----------------------------------------------------------------------------
 
-Color4& Color4::operator/= (float fScalar) {
+Color4& Color4::operator/= (double fScalar) {
     if (fScalar != 0.0) {
 		float fInvScalar = 1.0 / fScalar;
         r *= fInvScalar;

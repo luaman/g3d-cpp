@@ -265,7 +265,7 @@ Matrix3 Matrix3::operator* (float fScalar) const {
 }
 
 //----------------------------------------------------------------------------
-Matrix3 operator* (float fScalar, const Matrix3& rkMatrix) {
+Matrix3 operator* (double fScalar, const Matrix3& rkMatrix) {
     Matrix3 kProd;
 
     for (int iRow = 0; iRow < 3; iRow++) {
@@ -277,6 +277,14 @@ Matrix3 operator* (float fScalar, const Matrix3& rkMatrix) {
     return kProd;
 }
 
+Matrix3 operator* (float fScalar, const Matrix3& rkMatrix) {
+    return (double)fScalar * rkMatrix;
+}
+
+
+Matrix3 operator* (int fScalar, const Matrix3& rkMatrix) {
+    return (double)fScalar * rkMatrix;
+}
 //----------------------------------------------------------------------------
 Matrix3 Matrix3::transpose () const {
     Matrix3 kTranspose;

@@ -90,16 +90,16 @@ public:
     // arithmetic operations
     Color4 operator+ (const Color4& rkVector) const;
     Color4 operator- (const Color4& rkVector) const;
-    Color4 operator* (float fScalar) const;
-    Color4 operator/ (float fScalar) const;
+    Color4 operator* (double fScalar) const;
+    Color4 operator/ (double fScalar) const;
     Color4 operator- () const;
-    friend Color4 operator* (float fScalar, const Color4& rkVector);
+    friend Color4 operator* (double fScalar, const Color4& rkVector);
 
     // arithmetic updates
     Color4& operator+= (const Color4& rkVector);
     Color4& operator-= (const Color4& rkVector);
-    Color4& operator*= (float fScalar);
-    Color4& operator/= (float fScalar);
+    Color4& operator*= (double fScalar);
+    Color4& operator/= (double fScalar);
 
     bool fuzzyEq(const Color4& other) const;
     bool fuzzyNe(const Color4& other) const;

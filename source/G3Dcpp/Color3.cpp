@@ -109,9 +109,9 @@ Color3 Color3::operator/ (double fScalar) const {
 }
 
 //----------------------------------------------------------------------------
-Color3& Color3::operator/= (float fScalar) {
+Color3& Color3::operator/= (double fScalar) {
     if (fScalar != 0.0) {
-		float fInvScalar = 1.0 / fScalar;
+		double fInvScalar = 1.0 / fScalar;
         r *= fInvScalar;
         g *= fInvScalar;
         b *= fInvScalar;

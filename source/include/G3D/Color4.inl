@@ -127,7 +127,7 @@ inline Color4 Color4::operator- (const Color4& rkVector) const {
 
 //----------------------------------------------------------------------------
 
-inline Color4 Color4::operator* (float fScalar) const {
+inline Color4 Color4::operator* (double fScalar) const {
     return Color4(fScalar*r, fScalar*g, fScalar*b, fScalar*a);
 }
 
@@ -166,7 +166,7 @@ inline Color4& Color4::operator-= (const Color4& rkVector) {
 
 //----------------------------------------------------------------------------
 
-inline Color4& Color4::operator*= (float fScalar) {
+inline Color4& Color4::operator*= (double fScalar) {
     r *= fScalar;
     g *= fScalar;
     b *= fScalar;

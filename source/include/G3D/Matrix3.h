@@ -89,7 +89,9 @@ public:
     Matrix3 operator* (float fScalar) const;
 
     /** scalar * matrix */
+    friend Matrix3 operator* (double fScalar, const Matrix3& rkMatrix);
     friend Matrix3 operator* (float fScalar, const Matrix3& rkMatrix);
+    friend Matrix3 operator* (int fScalar, const Matrix3& rkMatrix);
 
 private:
     /** Multiplication where out != A and out != B */

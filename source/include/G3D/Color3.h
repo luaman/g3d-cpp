@@ -89,8 +89,8 @@ public:
     Color3& operator+= (const Color3& rkVector);
     Color3& operator-= (const Color3& rkVector);
     Color3& operator*= (const Color3& rkVector);
-    Color3& operator*= (float fScalar);
-    Color3& operator/= (float fScalar);
+    Color3& operator*= (double fScalar);
+    Color3& operator/= (double fScalar);
 
     bool fuzzyEq(const Color3& other) const;
     bool fuzzyNe(const Color3& other) const;

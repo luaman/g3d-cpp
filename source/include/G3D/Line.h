@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-06-02
- @edited  2003-02-06
+ @edited  2004-03-28
  */
 
 #ifndef G3D_LINE_H
@@ -33,6 +33,9 @@ protected:
     }
 
 public:
+
+    /** Undefined (provided for creating Array<Line> only) */
+    inline Line() {}
 
 	Line(class BinaryInput& b);
 

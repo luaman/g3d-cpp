@@ -126,7 +126,7 @@ inline Color3& Color3::operator-= (const Color3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Color3& Color3::operator*= (float fScalar) {
+inline Color3& Color3::operator*= (double fScalar) {
     r *= fScalar;
     g *= fScalar;
     b *= fScalar;

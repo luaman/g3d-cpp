@@ -10,6 +10,7 @@
    <P>
    Changes in 6.02:
    <UL>
+     <LI> Default constructor for Line.
      <LI> Various patches to make G3D work with the CAVE [Dan Keefe]
      <LI> AABox::set
      <LI> Made GWindow::setPosition non-const
@@ -32,6 +33,8 @@
      <LI> Renamed KDTreeSet to AABSPTree, old name is #defined 
      <LI> RenderDevice now works on cards without multitexture
      <LI> void glTexCoord(const G3D::Vector4& t); [Dan Keefe]
+	 <LI> Overloaded float, double, and int * Matrix3
+     <LI> Fix: [ 923944 ] Matrix/Quat ambiguity
      <LI> Fix: fuzzyEq(inf, inf) is true
 	 <LI> Fix: Triangle::randomPoint returns values outside the triangle
      <LI> Fix: [ 913763 ] tokenTypeToString(Token::END)
