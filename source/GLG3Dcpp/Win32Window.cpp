@@ -661,9 +661,7 @@ void Win32Window::setGammaRamp(const Array<uint16>& gammaRamp) {
     BOOL success = SetDeviceGammaRamp(hdc(), wptr);
 
     if (! success) {
-        if (debugLog) {debugLog->println("Error setting gamma ramp!");}
-
-        debugAssertM(false, "Failed to set gamma ramp");
+        if (debugLog) {debugLog->println("Error setting gamma ramp! (Possibly LCD monitor)");}
     }
 }
 
