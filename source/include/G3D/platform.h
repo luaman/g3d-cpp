@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-06-09
- @edited  2003-08-13
+ @edited  2003-08-22
  */
 
 #ifndef G3D_PLATFORM_H
@@ -22,7 +22,7 @@
     #error Unknown platform 
 #endif
 
-#if defined(G3D_WIN32) || defined(G3D_LINUX)
+#if defined(G3D_WIN32)
     #define SSE
 #endif
 
