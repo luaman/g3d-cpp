@@ -656,8 +656,8 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector3& v
 void VertexAndPixelShader::ArgList::set(const std::string& var, const Color4& val) {
     Arg arg;
     arg.type = GL_FLOAT_VEC4_ARB;
-    arg.vector[0] = val;
-    argTable.set(Vector3(var.r, var.g, var.b, var.a), arg);
+    arg.vector[0] = Vector4(val.r, val.g, val.b, val.a);
+    argTable.set(var, arg);
 }
 
 

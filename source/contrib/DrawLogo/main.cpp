@@ -262,7 +262,7 @@ void Demo::doGraphics() {
 
         // Wireframe
         app->renderDevice->pushState();
-            app->renderDevice->setLineWidth(2);
+            app->renderDevice->setLineWidth(2.5);
             app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
             app->renderDevice->setColor(Color3::black());
             app->renderDevice->setSpecularCoefficient(0);
