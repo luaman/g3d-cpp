@@ -11,7 +11,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2003-08-13
+  @edited  2003-09-14
  */ 
 
 #include <G3DAll.h>
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
 
     RealTime now = getTime() - 0.001, lastTime;
 
-    distort = VertexProgram::fromFile("Twist Distortion", "GLProgram_Demo/twist.vp");
+    distort = VertexProgram::fromFile("GLProgram_Demo/twist.vp");
 
     // Main loop
     do {
@@ -111,7 +111,6 @@ int main(int argc, char** argv) {
     } while (! endProgram);
 
     // Cleanup
-    delete font;
     delete userInput;
     delete controller;
     renderDevice->cleanup();
@@ -144,14 +143,14 @@ void doGraphics() {
 
                 // Set depth buffer
                 renderDevice->disableColorWrite();
-                model->render(CoordinateFrame(), LightingParameters(toSeconds(11,00,00,AM)));
+                model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
                 renderDevice->enableColorWrite();
             
                 // Draw translucent
                 renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
                 renderDevice->disableDepthWrite();
                 renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-                model->render(CoordinateFrame(), LightingParameters(toSeconds(11,00,00,AM)));
+                model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
  
                 // Wireframe
                 renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
@@ -159,7 +158,7 @@ void doGraphics() {
                 renderDevice->setPolygonOffset(-.25);
                 renderDevice->setColor(Color3::BLACK);
                 renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
-                model->render(CoordinateFrame(), LightingParameters(toSeconds(11,00,00,AM)));
+                model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             renderDevice->popState();
             
