@@ -357,6 +357,8 @@ Section "Create Desktop Link for Documentation"
   SectionIn 1
 
   ; Create desktop shortcut
+  SetOutPath "$INSTDIR\html"
+  
   CreateShortCut "$DESKTOP\Graphics3D.lnk" "$INSTDIR\html\index.html" "" "$INSTDIR\html\g3d.ico"
 
 SectionEnd
