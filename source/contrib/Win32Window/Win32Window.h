@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com 
  @created 	  2004-05-21
- @edited  	  2004-10-07
+ @edited  	  2004-10-08
     
  Copyright 2000-2002, Morgan McGuire.
  All rights reserved.
@@ -84,11 +84,7 @@ public:
 		// TODO
 	}
 	
-    virtual bool hasFocus() const {
-		// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/Windowing/Windows/WindowReference/WindowFunctions/IsIconic.asp
-        // http://msdn.microsoft.com/library/en-us/winui/WinUI/WindowsUserInterface/Windowing/Windows/WindowReference/WindowFunctions/IsWindowVisible.asp
-		return true;
-	}
+    virtual bool hasFocus() const;
 	
     virtual std::string getAPIVersion() const;
 	
@@ -98,10 +94,7 @@ public:
     
 	virtual void setCaption(const std::string& caption);
 	
-    virtual int numJoysticks() const {
-		// TODO
-		return 0;
-	}
+    virtual int numJoysticks() const;
 	
     virtual std::string joystickName(unsigned int sticknum);
 	

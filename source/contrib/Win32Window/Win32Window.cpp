@@ -58,6 +58,7 @@ typedef struct {
 } di8InterfaceNamePair;
 
 Array< di8InterfaceNamePair >                   joysticks;
+// Used only in EnumDirectInput8Joysticks callback method.
 int                                             joystickCount;
 
 
@@ -324,6 +325,12 @@ int Win32Window::height() const {
 
 Rect2D Win32Window::dimensions() const {
 	return Rect2D::xywh(clientX, clientY, width(), height());
+}
+
+
+bool Win32Window::hasFocus() const {
+    // Double check state with foreground and visibility just to be sure.
+    return ( (window == ::GetForegroundWindow()) && (::IsWindowVisible(window)) );
 }
 
 
@@ -689,6 +696,11 @@ void Win32Window::getRelativeMouseState(double& x, double& y, uint8& mouseButton
     getRelativeMouseState(ix, iy, mouseButtons);
     x = ix;
     y = iy;
+}
+
+
+int Win32Window::numJoysticks() const {
+    return joysticks.length();
 }
 
 
