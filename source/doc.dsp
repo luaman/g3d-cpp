@@ -141,6 +141,10 @@ SOURCE=.\docsource\error.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\docsource\frequent.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\html\gettingstarted.html
 # End Source File
 # Begin Source File
