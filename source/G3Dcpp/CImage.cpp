@@ -2,7 +2,7 @@
   @file CImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-08-10
+  @edited  2003-09-02
  */
 #include "G3D/CImage.h"
 #include "G3D/debug.h"
@@ -29,7 +29,7 @@ extern "C" {
 static const int BI_RGB = 0;
 #endif
 
-const int jpegQuality = 90;
+const int jpegQuality = 96;
 
 /**
  The IJG library needs special setup for compress/decompressing
@@ -557,18 +557,25 @@ void CImage::encodeJPEG(
 	JOCTET* compressed_data = (JOCTET*)malloc(buffer_size);
 	jpeg_memory_dest(&cinfo, compressed_data, buffer_size);
 
-    // Set parameters for compression, including image size & colorspace
+
     cinfo.image_width       = width;
     cinfo.image_height      = height;
 
 	// # of color components per pixel
     cinfo.input_components  = 3;
-    
+
     // colorspace of input image
     cinfo.in_color_space    = JCS_RGB; 
+    cinfo.input_gamma       = 1.0;
     
+    // Set parameters for compression, including image size & colorspace
     jpeg_set_defaults(&cinfo);
     jpeg_set_quality(&cinfo, jpegQuality, false);
+    cinfo.smoothing_factor = 0;
+    cinfo.optimize_coding = TRUE;
+//    cinfo.dct_method = JDCT_FLOAT;
+    cinfo.dct_method = JDCT_ISLOW;
+    cinfo.jpeg_color_space = JCS_YCbCr;
 
     // Initialize the compressor
     jpeg_start_compress(&cinfo, TRUE);

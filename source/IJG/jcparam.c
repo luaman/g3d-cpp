@@ -285,8 +285,8 @@ jpeg_set_defaults (j_compress_ptr cinfo)
   /* Initialize everything not dependent on the color space */
 
   cinfo->data_precision = BITS_IN_JSAMPLE;
-  /* Set up two quantization tables using default quality of 75 */
-  jpeg_set_quality(cinfo, 75, TRUE);
+  /* Set up two quantization tables using default quality of 96 */
+  jpeg_set_quality(cinfo, 96, TRUE);
   /* Set up two Huffman tables */
   std_huff_tables(cinfo);
 
@@ -308,7 +308,8 @@ jpeg_set_defaults (j_compress_ptr cinfo)
   cinfo->arith_code = FALSE;
 
   /* By default, don't do extra passes to optimize entropy coding */
-  cinfo->optimize_coding = FALSE;
+  cinfo->optimize_coding = TRUE;
+
   /* The standard Huffman tables are only valid for 8-bit data precision.
    * If the precision is higher, force optimization on so that usable
    * tables will be computed.  This test can be removed if default tables

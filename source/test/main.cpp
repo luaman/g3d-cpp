@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-06-13
+ @edited  2003-09-03
  */
 
 
@@ -659,6 +659,10 @@ void testCollision() {
 
 int main(int argc, char* argv[]) {
 
+    CImage im("c:/tmp/in.tga");
+    im.save("c:/tmp/out.jpg");
+
+    exit(0);
     /*    
     Window app;
 
