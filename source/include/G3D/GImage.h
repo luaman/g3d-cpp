@@ -11,9 +11,9 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-12-01
+  @edited  2004-02-26
 
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
 
  */
@@ -140,27 +140,63 @@ public:
      */
     int                     channels;
 
-    const uint8* byte() const {
+    inline const uint8* byte() const {
         return _byte;
     }
 
-    const Color3uint8* pixel3() const {
+    /** Returns a pointer to the upper left pixel
+        as Color3uint8.
+     */
+    inline const Color3uint8* pixel3() const {
+        debugAssert(channels == 3);
         return (Color3uint8*)_byte;
     }
 
-    const Color4uint8* pixel4() const {
+    /** Returns a pointer to the upper left pixel
+        as Color4uint8.
+     */
+    inline const Color4uint8* pixel4() const {
+        debugAssert(channels == 4);
         return (Color4uint8*)_byte;
     }
 
-    uint8* byte() {
+    /** Returns the pixel at (x, y), where (0,0) is the upper left. */
+    inline const Color3uint8& pixel3(int x, int y) const {
+        debugAssert(x >= 0 && x < width);
+        debugAssert(y >= 0 && y < height);
+        return pixel3()[x + y * width];
+    }
+
+    inline Color3uint8& pixel3(int x, int y) {
+        debugAssert(x >= 0 && x < width);
+        debugAssert(y >= 0 && y < height);
+        return pixel3()[x + y * width];
+    }
+
+    /** Returns the pixel at (x, y), where (0,0) is the upper left. */
+    inline const Color4uint8& pixel3(int x, int y) const {
+        debugAssert(x >= 0 && x < width);
+        debugAssert(y >= 0 && y < height);
+        return pixel4()[x + y * width];
+    }
+
+    inline Color4uint8& pixel3(int x, int y) {
+        debugAssert(x >= 0 && x < width);
+        debugAssert(y >= 0 && y < height);
+        return pixel4()[x + y * width];
+    }
+
+    inline uint8* byte() {
         return _byte;
     }
 
-    Color3uint8* pixel3() {
+    inline Color3uint8* pixel3() {
+        debugAssert(channels == 3);
         return (Color3uint8*)_byte;
     }
 
-    Color4uint8* pixel4() {
+    inline Color4uint8* pixel4() {
+        debugAssert(channels == 4);
         return (Color4uint8*)_byte;
     }
 
