@@ -1377,9 +1377,11 @@ public:
         if (_directInput->CreateDevice(GUID_SysKeyboard, &_systemKeyboard, NULL) != S_OK) {
             _systemKeyboard = NULL;
         } else {
-            debugAssertM(_systemKeyboard->SetCooperativeLevel(window, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)) == S_OK, "Unable to set keyboard cooperative level.");
+            HRESULT hr = _systemKeyboard->SetCooperativeLevel(window, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
+            debugAssertM(hr == S_OK, "Unable to set keyboard cooperative level.");
 
-            debugAssertM(_systemKeyboard->SetDataFormat(&G3DKEYDF) == S_OK, "Unable to set keyboard data format.");
+            hr = _systemKeyboard->SetDataFormat(&G3DKEYDF);
+            debugAssertM(hr == S_OK, "Unable to set keyboard data format.");
 
             DIPROPDWORD bufferProperty;
             bufferProperty.diph.dwHeaderSize = sizeof(DIPROPHEADER);
@@ -1389,10 +1391,11 @@ public:
             bufferProperty.dwData = 256;
 
             // Set the buffer size for event notification
-            debugAssertM(_systemKeyboard->SetProperty(*(const GUID*)(1), &bufferProperty.diph) == S_OK, "Unable to set keyboard buffer size.");
+            hr = _systemKeyboard->SetProperty(*(const GUID*)(1), &bufferProperty.diph);
+            debugAssertM(hr == S_OK, "Unable to set keyboard buffer size.");
 
             _keyboardEventHandle = ::CreateEvent(NULL, FALSE, FALSE, NULL);//"G3D System Keyboard");
-            HRESULT hr = _systemKeyboard->SetEventNotification(_keyboardEventHandle);
+            hr = _systemKeyboard->SetEventNotification(_keyboardEventHandle);
             if (hr == 2) { // check for DI_POLLEDDEVICE
                 debugAssertM(false, "Unable to set keyboard event notification without polling.");
             } else {
