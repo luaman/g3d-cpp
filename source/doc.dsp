@@ -155,5 +155,9 @@ SOURCE=.\include\G3D\mainpage.h
 
 SOURCE=..\readme.html
 # End Source File
+# Begin Source File
+
+SOURCE=".\docsource\topic-index.h"
+# End Source File
 # End Target
 # End Project

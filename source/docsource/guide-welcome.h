@@ -82,9 +82,8 @@ users who are already familiar with C++ and DirectX or OpenGL.
 
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
-<TR><TD VALIGN=TOP>Indices</TD>
-<TD VALIGN=TOP>
-<A HREF="index.html">By Topic</A> |
+<TR><TD VALIGN=TOP COLSPAN=2>Index: 
+link indexedbytopic By Topic \endlink |
 Alphabetic <A HREF="classes.html">Classes</A> and <A HREF="globals_func.html">Functions</A> |
 \link frequent Frequently Used (bookmark this!)\endlink
 </TD></TR> 
