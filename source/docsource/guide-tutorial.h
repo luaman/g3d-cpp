@@ -43,7 +43,7 @@ with compiling G3D code in general, and problems with your particular implementa
 of the tutorial.
 
 We encourage you to work through this tutorial as a first step in learning this package. 
-With a solid command of %G3D, you will have a powerful, reliable base of code on which to build).
+With a solid command of %G3D, you will have a powerful, reliable base of code on which to build.
 
 \section prereqs Prerequisites
 
@@ -372,8 +372,7 @@ implementation you will detect mouse click events. The
 <tt>G3D::GApp::userInput->keyPressed(SDL LEFT MOUSE KEY)</tt> (G3D::GApp::userInput->keyPressed) method will return
 true when there was a mouse click. In that case, get the mouse pointer
 coordinates from the G3D::UserInput object. (Note that <tt>G3D::UserInput::get*</tt> methods are deprecated. 
-You can still get the mouse position with G3D::UserInput::mouseXY(), 
-G3D::UserInput::getX(), and G3D::UserInput::getY(), but one of these methods will be more useful
+You can still get the mouse position with G3D::UserInput::mouseXY(), G3D::UserInput::getX(), and G3D::UserInput::getY(), but one of these methods will be more useful
 than the others. 
 
 You will map these 2D coordinates to the 3D ray that goes through that pixel from the center of projection.
@@ -381,6 +380,75 @@ You will map these 2D coordinates to the 3D ray that goes through that pixel fro
 G3D::RenderDevice::getViewport.) Use this ray and the
 <tt>Entity::getIntersectionTime</tt> methods to set the selected flag on the first
 object hit by the ray. Make sure to unselect all other objects.
+
+@section shaders Shaders
+
+Programmable shaders are a powerful feature of recent graphics cards. There's an awful 
+lot of information available on the web about programmable
+shaders in general, and the <A HREF="guideshaders.html">Shader section
+of the manual</A> has valuable information and tips. In this section
+of the tutorial, we'll get you started using shaders in %G3D, with G3D::Shader.
+
+If you don't know anything about the graphics pipeline, we recommend 
+<A HREF="http://www.realtimerendering.com/">Real-Time Rendering 
+by Tomas Akenine-Möller and Eric Haines</A>. Some knowledge of the fixed-functionality
+graphics pipeline will help put your experiments with shaders in context. 
+
+We encourage you to write your shaders in <A
+HREF="http://www.opengl.org/documentation/oglsl.html">GLSL</A>. Your
+graphics card <em>might</em> not support GLSL. Before you get started
+with all of this, find out whether the following gl extensions are
+supported on your card: <tt>GL_ARB_SHADER_OBJECTS,
+GL_ARB_vertex_shader</tt> and <tt>GL_ARB_fragment_shader</tt>. 
+<tt>GL_ARB_shading_language_100</tt> is the extension which supports GLSL. 
+As of Mac OS X 10.3.8, GLSL is not supported. (Hint: see G3D::GLCaps::supports for
+an easy way to test if a particular extension is supported.) If your card
+doesn't support GLSL, go find a machine that does... or upgrade. 
+
+Now you know what a programmable shader is, you know what GLSL is, and you
+have found a machine with GLSL support. You need to know two things: first, 
+how do you use a shader in %G3D? Second, what does G3D::Shader give you that
+vanilla GLSL shaders don't? 
+
+@subsection inovoking Invoking a Shader from G3D
+
+Create files for the following very simple shader pair, <tt>basic.vert</tt>
+and <tt>basic.frag</tt>. 
+
+<pre>
+// basic.vert
+void main(void)
+{
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+}
+
+// basic.frag
+void main(void)
+{
+	gl_FragColor = gl_FrontMaterial.diffuse;
+}
+</pre>
+
+Before you can use the shader to render anything, load the shader with G3D::Shader::fromFiles. (You only need to do this once, not every frame.) Next, set arguments on the shader, with G3D::VertexAndPixelShader::ArgList. Finally, activate the shader with G3D::RenderDevice::setShader. Render your primitives, then turn off the shader, with <tt>setShader(NULL)</tt>. For an example of this, see the source code for the GLSL_Demo.  
+
+Create another Entity subclass which uses this shader to draw itself; add one of these entities to your scene.  
+
+@subsection shader_extras Convenience Variables in G3D Shaders
+
+%G3D often makes frequently used OpenGL "stuff" (functions, variables, etc) more convenient 
+to access. The G3D::Shader setup follows this pattern by setting several uniform variables before
+invoking your shader. You will find this one useful to complete the tutorial: 
+<pre>
+    uniform vec4 g3d_ObjectLight0;     // the position of light 0, in object space
+</pre>
+
+@subsection yours Try This: A Simple Shader 
+
+Extend the basic shader listing above to calculate the diffuse
+component of the surface at each point. (Any graphics textbook, including <A HREF="http://www.amazon.com/exec/obidos/ASIN/0201848406/realtimerenderin/104-2370009-4435950">Foley, van Dam</A>, will describe this simple lighting algorithm.) You might want to use these GLSL built-ins: <tt>max, normalize, dot.</tt>
+
+
+
 
 @section crazy Going Crazy
 Now that you have learned to fly around and click on objects to select them, do
