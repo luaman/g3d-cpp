@@ -164,19 +164,24 @@ void VAR::colorPointer() const {
 
 void VAR::texCoordPointer(uint unit) const {
 	debugAssert(valid());
-	glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(elementSize / sizeOfGLFormat(underlyingRepresentation),
-                      underlyingRepresentation, elementSize, _pointer);
-	glClientActiveTextureARB(GL_TEXTURE0_ARB);
+
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+	    glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
+	    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	    glTexCoordPointer(elementSize / sizeOfGLFormat(underlyingRepresentation),
+                          underlyingRepresentation, elementSize, _pointer);
+	    glClientActiveTextureARB(GL_TEXTURE0_ARB);
+    }
 }
 
 
 void VAR::vertexAttribPointer(uint attribNum, bool normalize) const {
 	debugAssert(valid());
-	glEnableVertexAttribArrayARB(attribNum);
-	glVertexAttribPointerARB(attribNum, elementSize / sizeOfGLFormat(underlyingRepresentation),
-                      underlyingRepresentation, normalize, elementSize, _pointer);
+    if (GLCaps::supports_GL_ARB_vertex_program()) {
+	    glEnableVertexAttribArrayARB(attribNum);
+	    glVertexAttribPointerARB(attribNum, elementSize / sizeOfGLFormat(underlyingRepresentation),
+                          underlyingRepresentation, normalize, elementSize, _pointer);
+    }
 }
 
 }
