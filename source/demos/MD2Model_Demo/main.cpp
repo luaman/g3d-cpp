@@ -64,6 +64,9 @@ int main(int argc, char** argv) {
 
     renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(1, 1, 1));
+    float spec[] = {0.1f, 0.1f, 0.1f, 1.0f};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 60);
     
     getDirs(DATA_DIR + "quake2/players/*", modelNameArray);
 
