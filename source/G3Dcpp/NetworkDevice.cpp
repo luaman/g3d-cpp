@@ -142,6 +142,8 @@ static bool readWaiting(Log* debugLog, const SOCKET& sock) {
                               "SOCKET_ERROR in readWaiting().");
             debugLog->println(socketErrorCode());
         }
+        // Return true so that we'll force an error on read and close
+        // the socket.
         return true;
 
     case 0:
@@ -451,8 +453,7 @@ ReliableConduit::ReliableConduit(
     NetworkDevice*      _nd,
     const NetAddress&   _addr) : 
     Conduit(_nd), receiveBufferUsedSize(0), 
-    alreadyReadMessage(false),
-    receiveBufferTotalSize(0), receiveBuffer(NULL) {
+    receiveBufferTotalSize(0), receiveBuffer(NULL), state(NO_MESSAGE) {
 
     messageType         = 0;
 
@@ -528,7 +529,7 @@ ReliableConduit::ReliableConduit(
     const SOCKET&      _sock, 
     const NetAddress&  _addr) : Conduit(_nd), receiveBuffer(NULL), 
     receiveBufferTotalSize(0), receiveBufferUsedSize(0),
-    alreadyReadMessage(false) {
+    state(NO_MESSAGE) {
     sock                = _sock;
     addr                = _addr;
 
@@ -545,28 +546,54 @@ ReliableConduit::~ReliableConduit() {
 
 
 bool ReliableConduit::messageWaiting() const {
-    if (alreadyReadMessage) {
+    ReliableConduit* me = const_cast<ReliableConduit*>(this);
 
-        // We've already read the message and are indeed waiting
-        // for it to be received.
+
+    switch (state) {
+    case HOLDING:
+        // We've already read the message and are waiting
+        // for a receive call.
         return true;
 
-    } else if (Conduit::messageWaiting()) {
-        
-        // There is a message waiting on the network but we haven't 
-        // read it yet.  Read it now and return true.
+    case RECEIVING:
 
-        const_cast<ReliableConduit*>(this)->receiveHeader();
-        const_cast<ReliableConduit*>(this)->receiveIntoBuffer();
-        
-        return true;
+        if (! ok()) {
+            return false;
+        }
+        // We're currently receiving the message.  Read a little more.
+        me->receiveIntoBuffer();
+     
+        if (messageSize == receiveBufferUsedSize) {
+            // We've read the whole mesage.  Switch to holding state 
+            // and return true.
+            me->state = HOLDING;
+            return true;
+        } else {
+            // There are more bytes left to read.  We'll read them on
+            // the next call.  Because the *entire* message is not ready,
+            // return false.
+            return false;
+        }
 
-    } else {
+    case NO_MESSAGE:
+        if (Conduit::messageWaiting()) {
+            // Message incoming.  Read the header.
 
-        // We haven't read a message and there isn't one waiting
-        // on the network.
-        return false;
+            me->state = RECEIVING;
+            me->receiveHeader();
+            
+            // Loop back around now that we're in the receive state; we
+            // may be able to read the whole message before returning 
+            // to the caller.
+            return messageWaiting();
+        } else {
+            // No message incoming.
+            return false;
+        }
     }
+
+    debugAssertM(false, "Should not reach this point");
+    return false;
 }
 
 
@@ -577,34 +604,6 @@ uint32 ReliableConduit::waitingMessageType() {
     } else {
         return 0;
     }
-}
-
-
-void ReliableConduit::serializeMessage(const NetMessage* m, BinaryOutput& b) {
-    if (m == NULL) {
-        b.writeUInt32(1);
-    } else {
-        debugAssert(m->type() != 0);
-        b.writeUInt32(m->type());
-    }
-
-    // Reserve space for the 4 byte size header
-    b.writeUInt32(0);
-
-    if (m != NULL) {
-        m->serialize(b);
-    } else {
-        // We need to send at least one byte because receive assumes that
-        // a zero length packet is an error.
-        b.writeUInt8(-1);
-    }
-    
-    uint32 len = b.getLength() - 8;
-    
-    // We send the length first to tell recv how much data to read.
-    // Here we abuse BinaryOutput a bit and write directly into
-    // its buffer, violating the abstraction.
-    ((uint32*)b.getCArray())[1] = htonl(len);
 }
 
 
@@ -629,9 +628,11 @@ void ReliableConduit::sendBuffer(const BinaryOutput& b) {
 
 
 void ReliableConduit::send(const NetMessage* m) {
-    binaryOutput.reset();
-    serializeMessage(m, binaryOutput);
-    sendBuffer(binaryOutput);
+    if (m == NULL) {
+        send(-1);
+    } else {
+        send(m->type(), *m);
+    }
 }
 
 
@@ -650,14 +651,8 @@ void ReliableConduit::send(uint32 type) {
 
 void ReliableConduit::multisend(const Array<ReliableConduitRef>& array, 
                                 const NetMessage* m) {
-    if (array.size() > 0) {
-        array[0]->binaryOutput.reset();
-        serializeMessage(m, array[0]->binaryOutput);
-
-        for (int i = 0; i < array.size(); ++i) {
-            array[i]->sendBuffer(array[0]->binaryOutput);
-        }
-    }
+    debugAssert(m != NULL);
+    multisend(array, m->type(), *m);
 }
 
 
@@ -669,26 +664,15 @@ NetAddress ReliableConduit::address() const {
 bool ReliableConduit::receive(NetMessage* m) {
     if (m == NULL) {
         receive();
+        return true;
     } else {
-        if (! messageWaiting()) {
-            return false;
-        }
-
-        // Deserialize
-        BinaryInput b((uint8*)receiveBuffer, receiveBufferUsedSize, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
-        m->deserialize(b);
-        
-        // Don't let anyone read this message again.  We leave the buffer
-        // allocated for the next caller, however.
-        receiveBufferUsedSize = 0;
-        alreadyReadMessage = false;
+        return receive(*m);
     }
-    return true;
 }
 
 
 void ReliableConduit::receiveHeader() {
-    debugAssert(! alreadyReadMessage);
+    debugAssert(state == RECEIVING);
 
     // Read the type
     uint32 tmp;
@@ -733,23 +717,11 @@ void ReliableConduit::receiveHeader() {
     messageSize = ntohl(messageSize);
     debugAssert(messageSize >= 0);
     debugAssert(messageSize < 6e6);
-}
 
+    debugAssert(receiveBufferUsedSize == 0);
 
-bool ReliableConduit::receiveIntoBuffer() {
-
-    ////////////////////////////////////////
-    // Read the contents of the message
-    static const RealTime timeToWaitForFragmentedPacket = 5; // seconds
-
-    if (messageType == 0) {
-        return false;
-    }
-
-    receiveBufferUsedSize = messageSize;
-
+    // Extend the size of the buffer.
     if (messageSize > receiveBufferTotalSize) {
-        // Extend the size of the buffer.
         receiveBuffer = realloc(receiveBuffer, messageSize);
         receiveBufferTotalSize = messageSize;
     }
@@ -760,38 +732,40 @@ bool ReliableConduit::receiveIntoBuffer() {
                                   "during receivePacket.");
         }
         nd->closesocket(sock);
-        return false;
     }
+
+    bReceived += 4;
+}
+
+
+void ReliableConduit::receiveIntoBuffer() {
+
+    debugAssert(state == RECEIVING);
+    debugAssert(messageType != 0);
+    debugAssertM(receiveBufferUsedSize < messageSize, "Message already received.");
 
     // Read the data itself
     int ret = 0;
-    int left = messageSize;
+    int left = messageSize - receiveBufferUsedSize;
     int count = 0;
-    while ((ret != SOCKET_ERROR) && (left > 0) && (count < 12)) {
+    while ((ret != SOCKET_ERROR) && (left > 0) && (count < 10)) {
 
-        ret = recv(sock, ((char*)receiveBuffer) + (messageSize - left), left, 0);
+        ret = recv(sock, ((char*)receiveBuffer) + receiveBufferUsedSize, left, 0);
 
-        // Sometimes we get only part of a packet
         if (ret > 0) {
             left -= ret;
+            receiveBufferUsedSize += ret;
+            bReceived += ret;
 
             if (left > 0) {
-                if (nd->debugLog) {
-                    nd->debugLog->printf("WARNING: recv() on partial "
-                         "packet of length %d bytes, attempt #%d.  "
-                         "Read %d bytes this time, %d bytes remaining\n",
-                         messageSize, count + 1, ret, left);
-                }
-                ++count;
+                // There's still more. Give the machine a chance to read
+                // more data, but don't wait forever.
 
-                // Give the machine a chance to read more data, but
-                // don't wait forever
-                RealTime t = System::time() + timeToWaitForFragmentedPacket;
-                while (! messageWaiting() && (System::time() < t)) {
-                    System::sleep(0.001);
-                }
+                ++count;
+                System::sleep(0.001);
             }
-        } else if (ret == 0) {
+        } else {
+            // Something went wrong
             break;
         }
     }
@@ -809,14 +783,10 @@ bool ReliableConduit::receiveIntoBuffer() {
             }
         }
         nd->closesocket(sock);
-        return false;
+        return;
     }
 
     ++mReceived;
-    bReceived += messageSize + 4;
-    alreadyReadMessage = true;
-
-    return true;
 }
 
 

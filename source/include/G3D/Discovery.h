@@ -443,7 +443,7 @@ private:
 
         // Read the advertisement
         debugAssert(server->messageWaiting());
-        if (! server->receive(&advertisement)) {
+        if (! server->receive(advertisement)) {
             if (netDevice->log()) {
                 netDevice->log()->printf("Discovery: Server %s failed to send advertisement\n", hostname.c_str());
             }
@@ -549,7 +549,7 @@ public:
             case SERVER_BROADCAST_MESSAGE:
                 // Check the G3D protocol and the network protocol, then read the ad
                 DiscoveryServerAddressMessage msg(settings);
-                net->receive(&msg, sender);
+                net->receive(msg, sender);
 
                 if (msg.correctProtocol && (msg.address.size() > 0)) {
                     // Add the actual return address as the first one to be tried.

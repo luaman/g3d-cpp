@@ -181,14 +181,10 @@ private:
     friend class NetworkDevice;
     friend class NetListener;
 
+    enum State {RECEIVING, HOLDING, NO_MESSAGE} state;
+
     NetAddress                      addr;
     
-    /** 
-     True when the message has been read into the receive buffer
-     but not yet received.
-    */
-    bool                            alreadyReadMessage;
-
     /**
      Type of the incoming message.
      */
@@ -210,22 +206,12 @@ private:
       */
     int                             receiveBufferUsedSize;
 
-
     ReliableConduit(class NetworkDevice* _nd, const NetAddress& addr);
 
     ReliableConduit(class NetworkDevice* _nd, 
                     const SOCKET& sock, 
                     const NetAddress& addr);
 
-    /**
-     ReliableConduit messages are serialized with the message size
-     (since TCP may divide it across packets) and the message type.
-     @deprecated (used by a deprecated routine)
-     */
-    static void serializeMessage(const NetMessage* m, BinaryOutput& b);
-
-    /** 
-     */
     template<typename T> static void serializeMessage(uint32 t, const T& m, BinaryOutput& b) {
         b.writeUInt32(t);
 
@@ -251,9 +237,11 @@ private:
 
     void sendBuffer(const BinaryOutput& b);
 
-    /** Receives into the buffer receiveBuffer.  Returns false if anything 
-        goes wrong.*/
-    bool receiveIntoBuffer();
+    /** Accumulates whatever part of the message (not the header) is still waiting
+        on the socket into the receiveBuffer during state = RECEIVING mode.  
+        Closes the socket if anything goes wrong.
+        When receiveBufferUsedSize == messageSize, the entire message has arrived. */
+    void receiveIntoBuffer();
 
     /** Receives the messageType and messageSize from the socket. */
     void receiveHeader();
@@ -338,12 +326,12 @@ public:
 
     /** @deprecated */
     inline void send(const NetMessage& m) {
-        send(&m);
+        send(m.type(), m);
     }
 
     /** @deprecated */
     inline void send() {
-        send((NetMessage*)NULL);
+        send(-1);
     }
 
     virtual uint32 waitingMessageType();
@@ -361,11 +349,6 @@ public:
     */
     bool receive(NetMessage* m);
 
-    /** @deprecated Use receive(T) */
-    inline bool receive(NetMessage& m) {
-        return receive(&m);
-    }
-
     /** 
         If a message is waiting, deserializes the waiting message into
         message and returns true, otherwise returns false.  You can
@@ -377,6 +360,7 @@ public:
             return false;
         }
 
+        debugAssert(state == HOLDING);
         // Deserialize
         BinaryInput b((uint8*)receiveBuffer, receiveBufferUsedSize, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         message.deserialize(b);
@@ -384,7 +368,12 @@ public:
         // Don't let anyone read this message again.  We leave the buffer
         // allocated for the next caller, however.
         receiveBufferUsedSize = 0;
-        alreadyReadMessage = false;
+        state = NO_MESSAGE;
+        messageType = 0;
+        messageSize = 0;
+
+        // Potentially read the next message.
+        messageWaiting();
 
         return true;
     }
@@ -395,7 +384,12 @@ public:
             return;
         }
         receiveBufferUsedSize = 0;
-        alreadyReadMessage = false;
+        state = NO_MESSAGE;
+        messageType = 0;
+        messageSize = 0;
+
+        // Potentially read the next message.
+        messageWaiting();
     }
 
     NetAddress address() const;
