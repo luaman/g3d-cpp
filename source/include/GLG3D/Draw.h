@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-02-06
+ @edited  2004-02-21
  */
 
 #ifndef G3D_DRAW_H
@@ -64,6 +64,14 @@ private:
         const class Vector3&      pt);
 
 public:
+
+    /**
+    Renders exact corners of a 2D polygon using lines.
+    Assumes you already called push2D(). 
+     */
+    static void poly2DOutline(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color = Color3::YELLOW);
+    static void poly2D(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color = Color3::YELLOW);
+
 
     /**
      Set the solid color or wire color to Color4::CLEAR to

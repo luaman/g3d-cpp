@@ -17,6 +17,35 @@ const int Draw::WIRE_SPHERE_SECTIONS = 26;
 const int Draw::SPHERE_SECTIONS = 40;
 
 
+void Draw::poly2DOutline(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color) {
+    if (polygon.length() == 0) {
+        return;
+    }
+    
+    renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
+        renderDevice->setColor(color);
+        for (int i = 0; i < polygon.length(); ++i) {
+            renderDevice->sendVertex(polygon[i]);
+        }
+        renderDevice->sendVertex(polygon[0]);
+    renderDevice->endPrimitive();
+}
+
+
+void Draw::poly2D(const Array<Vector2>& polygon, RenderDevice* renderDevice, const Color4& color) {
+    if (polygon.length() == 0) {
+        return;
+    }
+    
+    renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
+        renderDevice->setColor(color);
+        for (int i = 0; i < polygon.length(); ++i) {
+            renderDevice->sendVertex(polygon[i]);
+        }
+    renderDevice->endPrimitive();
+}
+
+
 void Draw::axes(
     RenderDevice*       renderDevice,
     const Color4&       xColor,
