@@ -207,40 +207,43 @@ void MeshAlg::computeBounds(
         }
 	}
 
-    // Set xspan = distance between the 2 points xmin & xmax (squared)
-    double xspan = (xmax - xmin).squaredLength();
-
-    // Same for y & z spans
-    double yspan = (ymax - ymin).squaredLength();
-    double zspan = (zmax - zmin).squaredLength();
-
     // Set points dia1 & dia2 to the maximally separated pair
     Vector3 dia1 = xmin; 
     Vector3 dia2 = xmax;
+    {
+        // Set xspan = distance between the 2 points xmin & xmax (squared)
+        double xspan = (xmax - xmin).squaredLength();
+
+        // Same for y & z spans
+        double yspan = (ymax - ymin).squaredLength();
+        double zspan = (zmax - zmin).squaredLength();
     
-    double maxspan = xspan;
-    if (yspan > maxspan) {
-	    maxspan = yspan;
-	    dia1    = ymin;
-        dia2    = ymax;
-	}
+        double maxspan = xspan;
 
-    if (zspan > maxspan) {
-        maxspan = zspan;
-    	dia1 = zmin;
-        dia2 = zmax;
-	}
+        if (yspan > maxspan) {
+	        maxspan = yspan;
+	        dia1    = ymin;
+            dia2    = ymax;
+	    }
+
+        if (zspan > maxspan) {
+            maxspan = zspan;
+    	    dia1    = zmin;
+            dia2    = zmax;
+	    }
+    }
 
 
-    // dia1,dia2 is a diameter of initial sphere
+    // dia1, dia2 is a diameter of initial sphere
+
     // calc initial center
-    Vector3 center = (dia1 + dia2) / 2;
+    Vector3 center = (dia1 + dia2) / 2.0;
 
     // calculate initial radius^2 and radius 
     Vector3 d = dia2 - sphere.center;
 
     double radSq = d.squaredLength();
-    double rad  = sqrt(rad2);
+    double rad  = sqrt(radSq);
 
     // SECOND PASS: increment current sphere
     double old_to_p, old_to_new;
