@@ -98,8 +98,8 @@ void GlutWindow::g_mousemotion(int x, int y) {
     GEvent e;
     e.motion.type = SDL_MOUSEMOTION;
     e.motion.state = currentGlutWindow->mouseButtons;
-    e.motion.xrel = x - currentGlutWindow->mouse.x;
-    e.motion.yrel = y - currentGlutWindow->mouse.y;
+    e.motion.xrel = (int16)(x - currentGlutWindow->mouse.x);
+    e.motion.yrel = (int16)(y - currentGlutWindow->mouse.y);
     e.motion.x = x;
     e.motion.y = y;
 
@@ -315,8 +315,8 @@ Rect2D GlutWindow::dimensions() const {
 
 
 void GlutWindow::setDimensions(const Rect2D& dims) {
-    setPosition(dims.x0(), dims.x1());
-    glutReshapeWindow(dims.width(), dims.height());
+    setPosition((int)dims.x0(), (int)dims.x1());
+    glutReshapeWindow((int)dims.width(), (int)dims.height());
 }
 
 
@@ -384,7 +384,7 @@ void GlutWindow::notifyResize(int w, int h) {
 
 
 void GlutWindow::setRelativeMousePosition(double x, double y) {
-    glutWarpPointer(x, y);
+    glutWarpPointer(iRound(x), iRound(y));
 }
 
 
@@ -400,8 +400,8 @@ void GlutWindow::getRelativeMouseState(Vector2& position, uint8& b) const {
 
 
 void GlutWindow::getRelativeMouseState(int& x, int& y, uint8& b) const {
-    x = mouse.x;
-    y = mouse.y;
+    x = iRound(mouse.x);
+    y = iRound(mouse.y);
     b = mouseButtons;
 }
 
