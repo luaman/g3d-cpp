@@ -51,10 +51,12 @@ PFNGLMULTITEXCOORD4DVARBPROC                glMultiTexCoord4dvARB		    = NULL;
 PFNGLACTIVETEXTUREARBPROC                   glActiveTextureARB 			    = NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC             glClientActiveTextureARB	    = NULL;
 
+#ifdef G3D_WIN32
 PFNWGLSWAPINTERVALEXTPROC                   wglSwapIntervalEXT 			    = NULL;
 PFNWGLCHOOSEPIXELFORMATARBPROC              wglChoosePixelFormatARB		    = NULL;
 PFNWGLALLOCATEMEMORYNVPROC                  wglAllocateMemoryNV 		    = NULL;
 PFNWGLFREEMEMORYNVPROC                      wglFreeMemoryNV 			    = NULL;
+#endif
 
 PFNGLVERTEXARRAYRANGENVPROC                 glVertexArrayRangeNV 		    = NULL;
 PFNGLFLUSHVERTEXARRAYRANGENVPROC            glFlushVertexArrayRangeNV       = NULL;
@@ -324,15 +326,17 @@ void RenderDevice::initGLExtensions() {
         #ifdef G3D_WIN32
             *((void**)&glActiveTextureARB) = glIgnore;
         #else
-            *((void**)&glActiveTextureARB) = (void(*)(unsigned int))glIgnore;
+            glActiveTextureARB = (void(*)(unsigned int))glIgnore;
         #endif
     }
 
     LOAD_EXTENSION(glClientActiveTextureARB);
-    LOAD_EXTENSION(wglSwapIntervalEXT);
-    LOAD_EXTENSION(wglChoosePixelFormatARB);
-    LOAD_EXTENSION(wglAllocateMemoryNV);
-    LOAD_EXTENSION(wglFreeMemoryNV);
+    #ifdef G3D_WIN32
+        LOAD_EXTENSION(wglSwapIntervalEXT);
+        LOAD_EXTENSION(wglChoosePixelFormatARB);
+        LOAD_EXTENSION(wglAllocateMemoryNV);
+        LOAD_EXTENSION(wglFreeMemoryNV);
+    #endif
     LOAD_EXTENSION(glVertexArrayRangeNV);
     LOAD_EXTENSION(glCompressedTexImage2DARB);
     LOAD_EXTENSION(glGetCompressedTexImageARB);
@@ -558,58 +562,6 @@ bool RenderDevice::init(
              "Height            %8d pixels           %s\n"
              "Mode                 %10s             %s\n\n"
 
-             "* GL EXTENSIONS\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"             
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"             
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n"
-             "%31s             %s\n\n"
              "* JOYSTICK\n"
              "Number                              %4d    %s\n\n",
                          
@@ -627,65 +579,7 @@ bool RenderDevice::init(
 
              settings.width, "ok",
              settings.height, "ok",
-             (settings.fullScreen ? "Fullscreen" : "Windowed"), "ok",
-             
-             "glMultiTexCoord2fvARB", isOk(glMultiTexCoord2fvARB),
-             "glMultiTexCoord2fARB", isOk(glMultiTexCoord2fARB),
-             "glMultiTexCoord4dvARB", isOk(glMultiTexCoord4dvARB),
-             "glActiveTextureARB", isOk(glActiveTextureARB),
-			 "glClientActiveTextureARB", isOk(glClientActiveTextureARB),
-             "wglSwapIntervalEXT", isOk(wglSwapIntervalEXT),
-             "wglAllocateMemoryNV", isOk(wglAllocateMemoryNV),
-             "wglFreeMemoryNV", isOk(wglFreeMemoryNV),
-             "glVertexArrayRangeNV", isOk(glVertexArrayRangeNV),
-             "glCompressedTexImage2DARB", isOk(glCompressedTexImage2DARB),
-             "glGetCompressedTexImageARBOk", isOk(glGetCompressedTexImageARB),
-             "GL_ARB_texture_compression", isOk(supportsOpenGLExtension("GL_ARB_texture_compression")),
-             "GL_EXT_texture_compression_s3tc", isOk(supportsOpenGLExtension("GL_EXT_texture_compression_s3tc")),
-			 "glGenFencesNV", isOk(glGenFencesNV),
- 			 "glDeleteFencesNV", isOk(glDeleteFencesNV),
-			 "glSetFenceNV", isOk(glSetFenceNV),
-			 "glFinishFenceNV", isOk(glFinishFenceNV),
-             "glFlushVertexArrayRangeNV", isOk(glFlushVertexArrayRangeNV),
-             "glGenProgramsARB", isOk(glGenProgramsARB),
-             "glBindProgramARB", isOk(glBindProgramARB),
-             "glDeleteProgramsARB", isOk(glDeleteProgramsARB),
-             "glProgramStringARB", isOk(glProgramStringARB),
-             "glProgramEnvParameter4fARB", isOk(glProgramEnvParameter4fARB),
-             "glProgramLocalParameter4fARB", isOk(glProgramLocalParameter4fARB),
-             "glProgramLocalParameter4fvARB", isOk(glProgramLocalParameter4fvARB),
-             "glPointParameterfARB", isOk(glPointParameterfARB),
-             "glPointParameterfvARB", isOk(glPointParameterfvARB),
-             "glMultiDrawArraysEXT", isOk(glMultiDrawArraysEXT),
-             "glMultiDrawElementsEXT", isOk(glMultiDrawElementsEXT),
-
-             "glCombinerParameterfvNV", isOk(glCombinerParameterfvNV),
-             "glCombinerParameterfNV", isOk(glCombinerParameterfNV),
-             "glCombinerParameterivNV", isOk(glCombinerParameterivNV),
-             "glCombinerParameteriNV", isOk(glCombinerParameteriNV),
-             "glCombinerInputNV", isOk(glCombinerInputNV),
-             "glCombinerOutputNV", isOk(glCombinerOutputNV),
-             "glFinalCombinerInputNV", isOk(glFinalCombinerInputNV),
-             "glGetCombinerInputParameterfvNV", isOk(glGetCombinerInputParameterfvNV),
-             "glGetCombinerInputParameterivNV", isOk(glGetCombinerInputParameterivNV),
-             "glGetCombinerOutputParameterfvNV", isOk(glGetCombinerOutputParameterfvNV),
-             "glGetCombinerOutputParameterivNV", isOk(glGetCombinerOutputParameterivNV),
-             "glGetFinalCombinerInputParameterfvNV", isOk(glGetFinalCombinerInputParameterfvNV),
-             "glGetFinalCombinerInputParameterivNV", isOk(glGetFinalCombinerInputParameterivNV),
-             "glCombinerStageParameterfvNV", isOk(glCombinerStageParameterfvNV),
-             "glGetCombinerStageParameterfvNV", isOk(glGetCombinerStageParameterfvNV),
-
-             "glGenProgramsNV", isOk(glGenProgramsNV),
-             "glDeleteProgramsNV", isOk(glDeleteProgramsNV),
-             "glBindProgramNV", isOk(glBindProgramNV),
-             "glLoadProgramNV", isOk(glLoadProgramNV),
-             "glTrackMatrixNV", isOk(glTrackMatrixNV),
-             "glProgramParameter4fvNV", isOk(glProgramParameter4fvNV),
-             "glGetProgramParameterfvNV", isOk(glGetProgramParameterfvNV),
-             "glGetProgramParameterdvNV", isOk(glGetProgramParameterdvNV),
-
-            "glActiveStencilFaceEXT", isOk(glActiveStencilFaceEXT),
-
+             (settings.fullScreen ? "Fullscreen" : "Windowed"), "ok",             
              SDL_NumJoysticks(), "ok"
              );
     }
@@ -839,16 +733,18 @@ void RenderDevice::setVideoMode() {
     // Reset all state
 
     // Set the refresh rate
-    if (wglSwapIntervalEXT != NULL) {
-        if (debugLog) {
-            if (settings.asychronous) {
-                debugLog->printf("wglSwapIntervalEXT(0);\n");
-            } else {
-                debugLog->printf("wglSwapIntervalEXT(1);\n");
+    #ifdef G3D_WIN32
+        if (wglSwapIntervalEXT != NULL) {
+            if (debugLog) {
+                if (settings.asychronous) {
+                    debugLog->printf("wglSwapIntervalEXT(0);\n");
+                } else {
+                    debugLog->printf("wglSwapIntervalEXT(1);\n");
+                }
             }
+            wglSwapIntervalEXT(settings.asychronous ? 0 : 1);
         }
-        wglSwapIntervalEXT(settings.asychronous ? 0 : 1);
-    }
+    #endif
 
     SDL_EnableUNICODE(1);
 
@@ -1192,12 +1088,15 @@ void RenderDevice::setState(
     setColor(newState.color);
     setNormal(newState.normal);
 
-    for (int u = max(_numTextures, _numTextureCoords) - 1; u >= 0; --u) {
-        if (memcmp(&(newState.textureUnit[u]), &(state.textureUnit[u]), sizeof(RenderState::TextureUnit))) {
-            if (u < numTextures()) {
+    for (int u = iMax(_numTextures, _numTextureCoords) - 1; u >= 0; --u) {
+        if (memcmp(&(newState.textureUnit[u]), 
+                   &(state.textureUnit[u]), 
+                   sizeof(RenderState::TextureUnit))) {
+
+            if (u < (int)numTextures()) {
                 setTexture(u, newState.textureUnit[u].texture);
 
-                if (u < numTextureUnits()) {
+                if (u < (int)numTextureUnits()) {
                     setTextureCombineMode(u, newState.textureUnit[u].combineMode);
                     setTextureMatrix(u, newState.textureUnit[u].textureMatrix);
                 }

@@ -34,21 +34,22 @@ RenderDevice::VARSystem::VARSystem(
 	if (debugLog) {debugLog->section("VAR System");}
 
 	if (size > 0) {
-    		// See if we can switch to the NVIDIA method
-		if ((wglAllocateMemoryNV != NULL) && 
-            (wglFreeMemoryNV != NULL) &&
-            (glVertexArrayRangeNV != NULL) &&
-            rd->supportsOpenGLExtension("GL_NV_vertex_array_range2")) {
-
-			basePointer = wglAllocateMemoryNV(size, 0.0f, 0.0f, 1.0f);
-			if (basePointer) {
-				glVertexArrayRangeNV(size, basePointer);
-				glEnableClientState(GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV);
-				method = VAR_NVIDIA;
-				memLoc = "wglAllocateMemoryNV";
-			}
-		}
-
+        // See if we can switch to the NVIDIA method
+        #ifdef G3D_WIN32
+		    if ((wglAllocateMemoryNV != NULL) && 
+                (wglFreeMemoryNV != NULL) &&
+                (glVertexArrayRangeNV != NULL) &&
+                rd->supportsOpenGLExtension("GL_NV_vertex_array_range2")) {
+                
+                basePointer = wglAllocateMemoryNV(size, 0.0f, 0.0f, 1.0f);
+                if (basePointer) {
+                    glVertexArrayRangeNV(size, basePointer);
+                    glEnableClientState(GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV);
+                    method = VAR_NVIDIA;
+                    memLoc = "wglAllocateMemoryNV";
+                }
+            }
+        #endif
 
 		if (! basePointer) {
 			memLoc      = "malloc";
@@ -78,7 +79,11 @@ RenderDevice::VARSystem::~VARSystem() {
 	switch (method) {
 	case VAR_NVIDIA:
 		glDisableClientState(GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV);
-		wglFreeMemoryNV(basePointer);
+        #ifdef G3D_WIN32
+            if (wglFreeMemoryNV != 0) {
+                wglFreeMemoryNV(basePointer);
+            }
+        #endif
 		break;
 
 	case VAR_MALLOC:
@@ -140,6 +145,7 @@ void RenderDevice::VARSystem::sendIndices(
 
 	default:
 		debugAssertM(false, "Indices must be either 8, 16, or 32-bytes each.");
+        i = 0;
 	}
 
 
@@ -175,6 +181,9 @@ void RenderDevice::VARSystem::sendIndices(
     case POINTS:
         p = GL_POINTS;
         break;
+    default:
+        debugAssertM(false, "Fell through switch");
+        p = 0;
     }
 
 	glDrawElements(p, numIndices, i, index);

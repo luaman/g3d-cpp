@@ -635,7 +635,10 @@ void Texture::copyFromScreen(
     debugAssertGLOk();
     
     glCopyTexImage2D(target, 0, format->OpenGLFormat,
-        rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
+                     iRound(rect.x0()), 
+                     iRound(viewportHeight - rect.y1()), 
+                     iRound(rect.width()), iRound(rect.height()), 
+                     0);
 
     debugAssertGLOk();
     // Reset the original properties
@@ -689,7 +692,10 @@ void Texture::copyFromScreen(
     debugAssertGLOk();
 
     glCopyTexImage2D(target, 0, format->OpenGLFormat,
-        rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
+                     iRound(rect.x0()), 
+                     iRound(viewportHeight - rect.y1()), 
+                     iRound(rect.width()), 
+                     iRound(rect.height()), 0);
 
     debugAssertGLOk();
     glDisable(GL_TEXTURE_CUBE_MAP_ARB);

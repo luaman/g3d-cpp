@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2003-11-05
+  @edited  2003-12-06
 */
 
 #ifndef G3D_SKY_H

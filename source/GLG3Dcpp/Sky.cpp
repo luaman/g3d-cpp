@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-11-24
+  @edited  2003-12-06
   */
 
 #include "GLG3D/glcalls.h"
@@ -35,8 +35,9 @@ Sky::Sky(
     const std::string&                  directory,
     const std::string&                  filename,
     bool                                _drawCelestialBodies,
-    double                              quality) : renderDevice(rd),
-        drawCelestialBodies(_drawCelestialBodies) {
+    double                              quality) :
+        drawCelestialBodies(_drawCelestialBodies),
+        renderDevice(rd) {
 
     debugAssertM((directory == "") || (directory[directory.size() - 1] == '/') 
         || (directory[directory.size() - 1] == '\\'), "Directory must end in a slash");

@@ -72,10 +72,12 @@ extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC glDisableVertexAttribArrayARB;
 extern PFNGLPOINTPARAMETERFARBPROC         glPointParameterfARB;
 extern PFNGLPOINTPARAMETERFVARBPROC        glPointParameterfvARB;
 
+#ifdef _WIN32
 typedef BOOL (APIENTRY * PFNWGLGLSWAPINTERVALEXTPROC) (GLint interval);
 typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int* piFormats, UINT* nNumFormats);
+#endif
 
-#ifndef _WIN32
+#ifdef _WIN32
     extern PFNWGLGLSWAPINTERVALEXTPROC         wglSwapIntervalEXT;
     extern PFNWGLCHOOSEPIXELFORMATARBPROC      wglChoosePixelFormatARB;
     extern PFNWGLALLOCATEMEMORYNVPROC          wglAllocateMemoryNV;
@@ -132,9 +134,10 @@ extern PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC       glGetCombinerStageParameterf
 
 extern PFNGLACTIVESTENCILFACEEXTPROC       glActiveStencilFaceEXT;
 
+#ifdef G3D_WIN32
 extern PFNWGLALLOCATEMEMORYNVPROC           wglAllocateMemoryNV;
 extern PFNWGLFREEMEMORYNVPROC           wglFreeMemoryNV;
-
+#endif
 
 extern PFNGLBINDBUFFERARBPROC glBindBufferARB;
 extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB;
