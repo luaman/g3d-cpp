@@ -62,6 +62,17 @@ typedef SDL_Event GEvent;
  in a future revision.  For now it is limited to rendering
  and window management.  Consider writing your own UserInput
  replacement in the mean time.
+
+ <B>Implementations</B>
+ The following GWindow subclasses already exist: 
+ G3D::SDLWindow, 
+ G3D::Win32Window, 
+ <A HREF="../contrib/wxGWindow">wxGWindow</A> (wxWidgets),
+ <A HREF = "../contrib/GlutWindow">GlutWindow</a>,
+ and <A HREF="../contrib/CoreyGWindow/QGWindow.h">QGWindow</a> (Qt).
+
+ One typically chooses among these based on the GUI API used 
+ to manage the main window.
  */
 class GWindow {
 private:
