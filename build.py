@@ -439,6 +439,18 @@ def release(args):
     # Make a separate zipfile for the data
     copyIfNewer('../data', 'temp/datacopy/data')
     zip('temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
+    
+    import _winreg
+    
+    try:
+        NSISKey = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, "SOFTWARE\NSIS")
+        (NSISLocation, NSISType) = _winreg.QueryValueEx(NSISKey, '')
+                
+        NSISArgs = os.getcwd() + '\g3dinstaller.nsi';
+        os.chdir(NSISLocation)
+        os.spawnl(os.P_WAIT, 'makensis', 'makensis "' + NSISArgs + '"')
+    except EnvironmentError, e:
+        print e.value
 
 
 ###############################################################################

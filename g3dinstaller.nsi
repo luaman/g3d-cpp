@@ -41,7 +41,11 @@ InstallDir "C:\libraries\${VERSION}"
 ;  InstType /NOCUSTOM
 !endif
 
-Section "G3D Core Files"
+
+;;
+;; Main installation section
+;;
+Section "-graphics3D Main Install"
 
   SectionIn 1
 
@@ -59,19 +63,9 @@ Section "G3D Core Files"
   File /r "install\${VERSION}\demos\*"
   SetOutPath "$INSTDIR\html"  
   File /r "install\${VERSION}\html\*"
-  
-SectionEnd
 
-Section "Download Data Module"
+  ;; Visual Studio 6 libraries
 
-  SectionIn 1
-  
-SectionEnd
-
-Section "Install MSVC6 Libraries"
-  
-  SectionIn 1
-  
   ; Create directories
   ;CreateDirectory $INSTDIR\win32-lib
 
@@ -81,11 +75,8 @@ Section "Install MSVC6 Libraries"
   ; Write out MSVC6 libs
   File /r "install\${VERSION}\win32-lib\*"
 
-SectionEnd
 
-Section "Install MSVC7 Libraries"
-  
-  SectionIn 1
+  ;; Visual Studio 7 libraries
   
   ; Create directories
   ;CreateDirectory $INSTDIR\win32-7-lib
@@ -95,74 +86,15 @@ Section "Install MSVC7 Libraries"
 
   ; Write out MSVC7 libs
   File /r "install\${VERSION}\win32-7-lib\*"
-
 SectionEnd
 
-Section "Modify MSVC6 autoexp.dat for G3D datatypes (recommended)"
-
-  SectionIn 1
-
-  ; Search for MSVC6
-  ReadRegStr $R0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\VisualStudio\6.0\Setup" "VsCommonDir"
-  IfErrors No_autoexp
-  
-  FileOpen $0 "$R0\MSDev98\Bin\AUTOEXP.DAT" a
-  IfErrors No_autoexp
-Read_autoexp_loop:    
-  FileRead $0 $R1
-  IfErrors Finished_autoexp_read
-  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)$\n" Autoexp_settings_exists Read_autoexp_loop
-
-Finished_autoexp_read:
-  FileSeek $0 0 END
-  FileWrite $0 "$\n$\n;; graphics3D$\nG3D::Quat=Quat(<x>,<y>,<z>,<w>)$\nG3D::Vector4=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3=Vector3(<x>,<y>,<z>)$\nG3D::Vector2=Vector2(<x>,<y>)$\nG3D::Vector4int16=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3int16=Vector3(<x>,<y>,<z>)$\nG3D::Vector2int16=Vector2(<x>,<y>)$\nG3D::Color4=Color4(<r>,<g>,<b>,<a>)$\nG3D::Color3=Color3(<r>,<g>,<b>)$\nG3D::Color4uint8=Color4uint8(<r>,<g>,<b>,<a>)$\nG3D::Color3uint8=Color3uint8(<r>,<g>,<b>)$\nG3D::NetAddress=NetAddress(<addr.sin_addr.S_un.S_un_b.s_b1,u.<addr.sin_addr.S_un.S_un_b.s_b2,u.<addr.sin_addr.S_un.S_un_b.s_b3,u.<addr.sin_addr.S_un.S_un_b.s_b4,u)$\n"
-  FileClose $0
-
-Autoexp_settings_exists:
-  Fileclose $0
-  Return
-
-No_autoexp:
-  MessageBox MB_OK "There was no MSVC6 autoexp.dat file found!"    
 
 
-SectionEnd
 
-Section "Modify MSVC7 autoexp.dat for G3D datatypes (recommended)"
-
-  SectionIn 1
-
-  ; Search for MSVC7 7.0 or 7.1
-  ReadRegStr $R0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\VisualStudio\7.0\Setup\VS" "VS7CommonDir"
-  IfErrors Find_VS71 Modify_autoexp
-  
-Find_VS71:
-  ReadRegStr $R0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\VisualStudio\7.1\Setup\VS" "VS7CommonDir"
-  IfErrors No_autoexp
-
-Modify_autoexp:
-  FileOpen $0 "$R0\Packages\Debugger\autoexp.dat" a
-  IfErrors No_autoexp
-Read_autoexp_loop:    
-  FileRead $0 $R1
-  IfErrors Finished_autoexp_read
-  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)$\n" Autoexp_settings_exists Read_autoexp_loop
-
-Finished_autoexp_read:
-  FileSeek $0 0 END
-  FileWrite $0 "$\n$\n;; graphics3D$\nG3D::Quat=Quat(<x>,<y>,<z>,<w>)$\nG3D::Vector4=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3=Vector3(<x>,<y>,<z>)$\nG3D::Vector2=Vector2(<x>,<y>)$\nG3D::Vector4int16=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3int16=Vector3(<x>,<y>,<z>)$\nG3D::Vector2int16=Vector2(<x>,<y>)$\nG3D::Color4=Color4(<r>,<g>,<b>,<a>)$\nG3D::Color3=Color3(<r>,<g>,<b>)$\nG3D::Color4uint8=Color4uint8(<r>,<g>,<b>,<a>)$\nG3D::Color3uint8=Color3uint8(<r>,<g>,<b>)$\nG3D::NetAddress=NetAddress(<addr.sin_addr.S_un.S_un_b.s_b1,u.<addr.sin_addr.S_un.S_un_b.s_b2,u.<addr.sin_addr.S_un.S_un_b.s_b3,u.<addr.sin_addr.S_un.S_un_b.s_b4,u)$\n"
-  FileClose $0
-
-Autoexp_settings_exists:
-  Fileclose $0
-  Return
-
-No_autoexp:
-  MessageBox MB_OK "There was no MSVC7 autoexp.dat file found!"
-
-SectionEnd
-
-Section "Add G3D directories to MSVC6 paths (recommended)"
+;;
+;; Add the include/library G3D directories to the MSVC6 paths if they don't already exist
+;;
+Section "Add G3D Directories to MSVC6 (R)"
 
   SectionIn 1
 
@@ -201,7 +133,13 @@ No_include:
 
 SectionEnd
 
-Section "Set MSVC6 script syntax parsing (recommended)"
+
+
+
+;;
+;; Setup Visual Studio 6 syntax highlighter and autoexp.dat
+;;
+Section "Show G3D Classes in MSVC6 Debugger"
 
   SectionIn 1
 
@@ -254,9 +192,153 @@ Finish_check:
   
 No_syntax_settings:  
 
+
+;; Setup autoexp.dat for G3D types for debugging
+
+  ; Search for MSVC6
+  ReadRegStr $R0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\VisualStudio\6.0\Setup" "VsCommonDir"
+  IfErrors No_autoexp
+  
+  FileOpen $0 "$R0\MSDev98\Bin\AUTOEXP.DAT" a
+  IfErrors No_autoexp
+Read_autoexp_loop:    
+  FileRead $0 $R1
+  IfErrors Finished_autoexp_read
+  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)$\n" Autoexp_settings_exists Read_autoexp_loop
+
+Finished_autoexp_read:
+  FileSeek $0 0 END
+  FileWrite $0 "$\n$\n;; graphics3D$\nG3D::Quat=Quat(<x>,<y>,<z>,<w>)$\nG3D::Vector4=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3=Vector3(<x>,<y>,<z>)$\nG3D::Vector2=Vector2(<x>,<y>)$\nG3D::Vector4int16=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3int16=Vector3(<x>,<y>,<z>)$\nG3D::Vector2int16=Vector2(<x>,<y>)$\nG3D::Color4=Color4(<r>,<g>,<b>,<a>)$\nG3D::Color3=Color3(<r>,<g>,<b>)$\nG3D::Color4uint8=Color4uint8(<r>,<g>,<b>,<a>)$\nG3D::Color3uint8=Color3uint8(<r>,<g>,<b>)$\nG3D::NetAddress=NetAddress(<addr.sin_addr.S_un.S_un_b.s_b1,u.<addr.sin_addr.S_un.S_un_b.s_b2,u.<addr.sin_addr.S_un.S_un_b.s_b3,u.<addr.sin_addr.S_un.S_un_b.s_b4,u)$\n"
+  FileClose $0
+
+Autoexp_settings_exists:
+  Fileclose $0
+  Return
+
+No_autoexp:
+  MessageBox MB_OK "There was no MSVC6 autoexp.dat file found!"    
+
 SectionEnd
 
-Section "Create desktop icon for documentation"
+
+
+
+;;
+;; Add the include/library G3D directories to the MSVC7 paths if they don't already exist
+;;
+Section "Add G3D Directories to MSVC7"
+
+  SectionIn 1
+
+  ; put 7.0 location into $R0
+  Push "$PROFILE\Local Settings\Application Data\Microsoft\VisualStudio\7.0\VCComponents.dat"
+  Pop $R0
+  FileOpen $0 $R0 r
+  IfErrors No_70_dat Read_vccomponents_loop
+No_70_dat:
+  ; put 7.1 location into $R0
+  Push "$PROFILE\Local Settings\Application Data\Microsoft\VisualStudio\7.1\VCComponents.dat"
+  Pop $R0
+  FileOpen $0 $R0 r
+  IfErrors No_71_dat
+Read_vccomponents_loop:    
+  FileRead $0 $R1
+  IfErrors Finished_vccomponents_read
+  Push $R1
+  Push "Include Dirs="
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Check_library_dirs Add_dir_to_include
+
+Add_dir_to_include:
+  StrLen $R3 $R1
+  IntOp $R3 $R3 - 2
+  StrCpy $R1 $R1 $R3
+  StrCpy $R1 "$R1;$INSTDIR\include$\r$\n"
+  Goto Add_line_to_temp
+
+Check_library_dirs:
+  Push $R1
+  Push "Library Dirs="
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Add_line_to_temp
+  StrLen $R3 $R1
+  IntOp $R3 $R3 - 2
+  StrCpy $R1 $R1 $R3
+  StrCpy $R1 "$R1;$INSTDIR\win32-7-lib$\r$\n"
+  Goto Add_line_to_temp
+  
+Add_line_to_temp:
+  StrCpy $R9 $R9$R1
+  Goto Read_vccomponents_loop
+
+
+Finished_vccomponents_read:
+  FileClose $0
+  FileOpen $0 $R0 w
+  IfErrors No_71_dat
+  FileWrite $0 $R9
+  Fileclose $0
+
+No_71_dat:
+
+
+SectionEnd
+
+
+
+
+;;
+;; Setup Visual Studio 7 syntax highlighter and autoexp.dat
+;;
+Section "Show G3D Classes in MSVC7 Debugger"
+
+  SectionIn 1
+
+
+
+;; Setup autoexp.dat for G3D types for debugging
+
+  ; Search for MSVC7 7.0 or 7.1
+  ReadRegStr $R0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\VisualStudio\7.0\Setup\VS" "VS7CommonDir"
+  IfErrors Find_VS71 Modify_autoexp
+  
+Find_VS71:
+  ReadRegStr $R0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\VisualStudio\7.1\Setup\VS" "VS7CommonDir"
+  IfErrors No_autoexp
+
+Modify_autoexp:
+  FileOpen $0 "$R0\Packages\Debugger\autoexp.dat" a
+  IfErrors No_autoexp
+Read_autoexp_loop:    
+  FileRead $0 $R1
+  IfErrors Finished_autoexp_read
+  StrCmp $R1 "G3D::Quat=Quat(<x>,<y>,<z>,<w>)$\n" Autoexp_settings_exists Read_autoexp_loop
+
+Finished_autoexp_read:
+  FileSeek $0 0 END
+  FileWrite $0 "$\n$\n;; graphics3D$\nG3D::Quat=Quat(<x>,<y>,<z>,<w>)$\nG3D::Vector4=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3=Vector3(<x>,<y>,<z>)$\nG3D::Vector2=Vector2(<x>,<y>)$\nG3D::Vector4int16=Vector4(<x>,<y>,<z>,<w>)$\nG3D::Vector3int16=Vector3(<x>,<y>,<z>)$\nG3D::Vector2int16=Vector2(<x>,<y>)$\nG3D::Color4=Color4(<r>,<g>,<b>,<a>)$\nG3D::Color3=Color3(<r>,<g>,<b>)$\nG3D::Color4uint8=Color4uint8(<r>,<g>,<b>,<a>)$\nG3D::Color3uint8=Color3uint8(<r>,<g>,<b>)$\nG3D::NetAddress=NetAddress(<addr.sin_addr.S_un.S_un_b.s_b1,u.<addr.sin_addr.S_un.S_un_b.s_b2,u.<addr.sin_addr.S_un.S_un_b.s_b3,u.<addr.sin_addr.S_un.S_un_b.s_b4,u)$\n"
+  FileClose $0
+
+Autoexp_settings_exists:
+  Fileclose $0
+  Return
+
+No_autoexp:
+  MessageBox MB_OK "There was no MSVC7 autoexp.dat file found!"
+
+SectionEnd
+
+
+
+
+;;
+;; Create link to documentation on desktop
+;;
+Section "Create Desktop Link for Documentation"
 
   SectionIn 1
 
@@ -266,13 +348,20 @@ Section "Create desktop icon for documentation"
 SectionEnd
 
 
-Section "View G3D Manual"
+
+
+;;
+;; Open browser to download "data" module
+;;
+Section "Download G3D 6 Data Module"
 
   SectionIn 1
 
-  Exec "$INSTDIR\html\index.html"  
-
+  ExecShell open "http://prdownloads.sourceforge.net/g3d-cpp/g3d-data-6_00.zip?download"
+  
 SectionEnd
+
+
 
 
 ;; Functions
