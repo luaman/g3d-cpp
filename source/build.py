@@ -55,11 +55,15 @@ def lib():
                  "GLG3D - Win32 Debug"])
 
     else:
-        # Linux build
-        # (Of course, we don't have to bootstrap *every* time... 
-        #  TODO: what file changes that triggers a need to bootstrap/configure?)
-        run("./bootstrap")
-        run("./configure", ["--enable-debugging"])
+        # Linux build (right now, only builds the debug release)
+
+        # Exectute bootstrap and configure whenever the scripts change
+        if (newer("bootstrap", "configure") or newer("configure.ac", "configure"):
+            run("./bootstrap")
+
+        if (newer("configure", "config.h")):
+            run("./configure", ["--enable-debugging"])
+
         run("make")
 
     copyIfNewer("lib", "../build/lib")
