@@ -145,7 +145,9 @@ public:
     Vector3& operator*= (const Vector3& v);
     Vector3& operator/= (const Vector3& v);
 
+    /** @deprecated Use magnitude */
     double length() const;
+
     inline double magnitude() const {
         return length();
     }
@@ -223,16 +225,24 @@ public:
         double          iInside,
         double          iOutside) const;
 
+    /** Synonym for direction */
     inline Vector3 unit() const {
         return direction();
     }
 
+    /** Returns a normalized vector.  May be computed with lower precision than unit */
     inline Vector3 fastUnit() const {
         return fastDirection();
     }
 
-    double squaredLength () const;
+    /** @deprecated Use squaredMagnitude */
+    double squaredLength() const;
 
+    inline double squaredMagnitude () const {
+        return squaredLength();
+    }
+
+    /** @deprecated Use squaredMagnitude */
     inline double norm() const {
         return squaredLength();
     }
