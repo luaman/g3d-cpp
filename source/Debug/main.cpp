@@ -231,7 +231,7 @@ int main(int argc, char** argv) {
     array.resize(1);
 
     for (int i = 0; i < 200; ++i) {
-        array.push(0);
+        array.resize(i);
     }
 
     GAppSettings settings;

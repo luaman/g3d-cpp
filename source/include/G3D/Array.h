@@ -321,14 +321,14 @@ public:
               numAllocated = minSize;
           } else {
              // Increase the underlying size of the array
-             numAllocated = (num - numAllocated) + (int)(numAllocated * 1.4) + 14;
+             numAllocated = (num - numAllocated) + (int)(numAllocated * 1.5);
 
              if (numAllocated < minSize) {
                  numAllocated = minSize;
              }
           }
 
-         realloc(oldNum);
+          realloc(oldNum);
 
       } else if ((num <= numAllocated / 2) && shrinkIfNecessary && (numAllocated > minSize)) {
 
