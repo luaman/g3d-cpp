@@ -761,8 +761,30 @@ void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Ar
         }
 
         axis.resize(joysticks[stickNum].numAxes, false);
-        for (int a = 0; a < (joysticks[stickNum].numAxes) && (a < 8); ++a) {
-            axis[a] = (float)( ( (float)((LONG*)&joystickState)[a] - 32768) / 32768);
+        const int numaxes = joysticks[stickNum].numAxes;
+        if (numaxes > 0) {
+            axis[0] = (float)( ((float)joystickState.lX - 32768) / 32768 );
+        }
+        if (numaxes > 1) {
+            axis[1] = (float)( ((float)joystickState.lY - 32768) / 32768 );
+        }
+        if (numaxes > 2) {
+            axis[2] = (float)( ((float)joystickState.lZ - 32768) / 32768 );
+        }
+        if (numaxes > 3) {
+            axis[3] = (float)( ((float)joystickState.rglSlider[0] - 32768) / 32768 );
+        }
+        if (numaxes > 4) {
+            axis[4] = (float)( ((float)joystickState.rglSlider[1] - 32768) / 32768 );
+        }
+        if (numaxes > 5) {
+            axis[5] = (float)( ((float)joystickState.lRx - 32768) / 32768 );
+        }
+        if (numaxes > 6) {
+            axis[6] = (float)( ((float)joystickState.lRy - 32768) / 32768 );
+        }
+        if (numaxes > 7) {
+            axis[7] = (float)( ((float)joystickState.lRz - 32768) / 32768 );
         }
     } else {
         debugAssert( joysticks.length() <= stickNum );
