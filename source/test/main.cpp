@@ -482,7 +482,7 @@ void testAABoxCulledBy() {
     bool culled;
 
     // Contained case
-    parentMask = -1; childMask = 0; index = 0;
+    parentMask = (uint32)-1; childMask = 0; index = 0;
     culled = box.culledBy(planes, index, parentMask, childMask);
     debugAssert(index == -1);
     debugAssert(! culled);
@@ -490,7 +490,7 @@ void testAABoxCulledBy() {
 
     // Positive straddle
     box = AABox(Vector3(0.5, 0, 0), Vector3(1.5, 1, 1));
-    parentMask = -1; childMask = 0; index = 0;
+    parentMask = (uint32)-1; childMask = 0; index = 0;
     culled = box.culledBy(planes, index, parentMask, childMask);
     debugAssert(index == -1);
     debugAssert(! culled);
@@ -498,7 +498,7 @@ void testAABoxCulledBy() {
     
     // Negative straddle
     box = AABox(Vector3(-1.5, 0, 0), Vector3(0.5, 1, 1));
-    parentMask = -1; childMask = 0; index = 0;
+    parentMask = (uint32)-1; childMask = 0; index = 0;
     culled = box.culledBy(planes, index, parentMask, childMask);
     debugAssert(index == -1);
     debugAssert(! culled);
@@ -506,7 +506,7 @@ void testAABoxCulledBy() {
 
     // Full straddle
     box = AABox(Vector3(-1.5, 0, 0), Vector3(1.5, 1, 1));
-    parentMask = -1; childMask = 0; index = 0;
+    parentMask = (uint32)-1; childMask = 0; index = 0;
     culled = box.culledBy(planes, index, parentMask, childMask);
     debugAssert(index == -1);
     debugAssert(! culled);
@@ -514,7 +514,7 @@ void testAABoxCulledBy() {
 
     // Negative culled 
     box = AABox(Vector3(-2.5, 0, 0), Vector3(-1.5, 1, 1));
-    parentMask = -1; childMask = 0; index = 0;
+    parentMask = (uint32)-1; childMask = 0; index = 0;
     culled = box.culledBy(planes, index, parentMask, childMask);
     debugAssert(index == 1);
     debugAssert(culled);
