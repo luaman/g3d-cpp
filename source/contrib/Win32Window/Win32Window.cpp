@@ -232,6 +232,9 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
 void Win32Window::init(HWND hwnd) {
 
 	window = hwnd;
+
+    // Initialize mouse buttons to up
+    _mouseButtons[0] = _mouseButtons[1] = _mouseButtons[2] = false;
  
     // Setup the pixel format properties for the output device
     _hDC = GetDC(window);
@@ -559,26 +562,32 @@ bool Win32Window::pollEvent(GEvent& e) {
 
             case WM_LBUTTONDOWN:
 				mouseButton(true, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[0] = true;
 				return true;
 
             case WM_MBUTTONDOWN:
 				mouseButton(true, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[1] = true;
 				return true;
 
             case WM_RBUTTONDOWN:
 				mouseButton(true, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[2] = true;
 				return true;
 
             case WM_LBUTTONUP:
 				mouseButton(false, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[0] = false;
 				return true;
 
             case WM_MBUTTONUP:
 				mouseButton(false, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[1] = false;
 				return true;
 
             case WM_RBUTTONUP:
 				mouseButton(false, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
+                _mouseButtons[2] = false;
 				return true;
 			} // switch
 		} // if
@@ -702,7 +711,12 @@ void Win32Window::getRelativeMouseState(int& x, int& y, uint8& mouseButtons) con
 	GetCursorPos(&point);
 	x = point.x - clientX;
 	y = point.y - clientY;
-	// TODO: buttons
+
+    // Clear mouseButtons and set each button bit.
+	mouseButtons ^= mouseButtons;
+    mouseButtons |= (_mouseButtons[0] ? 1 : 0) << 0;
+    mouseButtons |= (_mouseButtons[1] ? 1 : 0) << 1;
+    mouseButtons |= (_mouseButtons[2] ? 1 : 0) << 2;
 }
 
 

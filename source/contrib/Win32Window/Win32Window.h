@@ -33,6 +33,10 @@ private:
 	bool				 _mouseVisible;
 	bool				 _inputCapture;
 
+    /** Mouse Button State Array: false - up, true - down
+        [0] - left, [1] - middle, [2] - right */
+    bool                 _mouseButtons[3];
+
 	/** Coordinates of the client area in screen coordinates */
 	int				     clientX;
 	int					 clientY;
