@@ -37,7 +37,7 @@ public:
     /* The number of bits in the alpha channel of the frame buffer. <B>0</B>, 1, 8 */
     int     alphaBits;
 
-    /** 16, <B>24</B>, 32 */
+    /** <B>0 (autodetect the best for this card)</B>, 16, <B>24</B>, 32 */
     int     depthBits;
 
     /** <B>8</B> */
