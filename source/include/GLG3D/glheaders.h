@@ -36,8 +36,7 @@
 #endif
 
 #include "../GL/glext.h"
-//#include "../glh/glut.h"
-#include "../GL/glu.h"
+#include <GL/glu.h>
 
 // OpenGL extensions
 extern PFNGLMULTITEXCOORD2FARBPROC         glMultiTexCoord2fARB;

@@ -64,7 +64,7 @@ void endMarkShadows(RenderDevice* renderDevice);
             renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
             renderDevice->setStencilTest(RenderDevice::STENCIL_EQUAL);
             renderDevice->setAmbientLightColor(Color3::BLACK);
-            renderDevice->setDepthTest(RenderDevice::LEQUAL);
+            renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
 
             renderDevice->setLight(0, light[L]);
             for (int m = 0; m < model.size(); ++m) {
