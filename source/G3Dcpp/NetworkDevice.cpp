@@ -451,10 +451,10 @@ ReliableConduit::ReliableConduit(
     NetworkDevice*      _nd,
     const NetAddress&   _addr) : 
     Conduit(_nd), receiveBufferUsedSize(0), 
-        receiveBufferTotalSize(0), receiveBuffer(NULL) {
+    alreadyReadMessage(false),
+    receiveBufferTotalSize(0), receiveBuffer(NULL) {
 
     messageType         = 0;
-    alreadyReadType     = false;
 
     addr = _addr;
     if (nd->debugLog) {nd->debugLog->print("Creating a TCP socket       ");}
@@ -468,9 +468,8 @@ ReliableConduit::ReliableConduit(
         nd->closesocket(sock);
         return;
     }
-    if (nd->debugLog) {
-        nd->debugLog->println("Ok");
-    }
+
+    if (nd->debugLog) { nd->debugLog->println("Ok"); }
 
     // Disable Nagle's algorithm (we send lots of small packets)
     const int T = true;
@@ -528,12 +527,12 @@ ReliableConduit::ReliableConduit(
     NetworkDevice*    _nd, 
     const SOCKET&      _sock, 
     const NetAddress&  _addr) : Conduit(_nd), receiveBuffer(NULL), 
-    receiveBufferTotalSize(0), receiveBufferUsedSize(0) {
+    receiveBufferTotalSize(0), receiveBufferUsedSize(0),
+    alreadyReadMessage(false) {
     sock                = _sock;
     addr                = _addr;
 
     messageType         = 0;
-    alreadyReadType     = false;
 }
 
 
@@ -545,40 +544,38 @@ ReliableConduit::~ReliableConduit() {
 }
 
 
+bool ReliableConduit::messageWaiting() const {
+    if (alreadyReadMessage) {
+
+        // We've already read the message and are indeed waiting
+        // for it to be received.
+        return true;
+
+    } else if (Conduit::messageWaiting()) {
+        
+        // There is a message waiting on the network but we haven't 
+        // read it yet.  Read it now and return true.
+
+        const_cast<ReliableConduit*>(this)->receiveIntoBuffer();
+        
+        return true;
+
+    } else {
+
+        // We haven't read a message and there isn't one waiting
+        // on the network.
+        return false;
+    }
+}
+
+
 uint32 ReliableConduit::waitingMessageType() {
-    if (! messageWaiting()) {
+    // The messageWaiting call is what actually receives the message.
+    if (messageWaiting()) {
+        return messageType;
+    } else {
         return 0;
     }
-    
-    if (! alreadyReadType) {
-        // Read the type
-        uint32 tmp;
-        int ret = recv(sock, (char*)&tmp, sizeof(tmp), 0);
-        alreadyReadType = true;
-
-        // The type is the first four bytes.  It is little endian.
-        if (System::machineEndian() == G3D_LITTLE_ENDIAN) {
-            messageType = tmp;
-        } else {
-            // Swap the byte order
-            for (int i = 0; i < 4; ++i) {
-                ((char*)&messageType)[i] = ((char*)&tmp)[3 - i];
-            }
-        }
-
-        if ((ret == SOCKET_ERROR) || (ret != sizeof(messageType))) {
-            if (nd->debugLog) {
-                nd->debugLog->printf("Call to recv failed.  ret = %d,"
-                                     " sizeof(messageType) = %d\n", 
-                                     ret, sizeof(messageType));
-                nd->debugLog->println(socketErrorCode());
-            }
-            nd->closesocket(sock);
-            messageType = 0;
-        }
-    }
-
-    return messageType;
 }
 
 
@@ -636,6 +633,7 @@ void ReliableConduit::send(const NetMessage* m) {
     sendBuffer(binaryOutput);
 }
 
+
 /** Null serializer.  Used by reliable conduit::send(type) */
 class Dummy {
 public:
@@ -671,8 +669,7 @@ bool ReliableConduit::receive(NetMessage* m) {
     if (m == NULL) {
         receive();
     } else {
-        bool success = receiveIntoBuffer();
-        if (! success) {
+        if (! messageWaiting()) {
             return false;
         }
 
@@ -683,29 +680,53 @@ bool ReliableConduit::receive(NetMessage* m) {
         // Don't let anyone read this message again.  We leave the buffer
         // allocated for the next caller, however.
         receiveBufferUsedSize = 0;
+        alreadyReadMessage = false;
     }
     return true;
 }
 
 
 bool ReliableConduit::receiveIntoBuffer() {
-    static const RealTime timeToWaitForFragmentedPacket = 5; // seconds
 
-    // This both checks to ensure that a message was waiting and
-    // actively consumes the message type if it has not been read
-    // yet.
-    uint32 t = waitingMessageType();
-    if (t == 0) {
+    debugAssert(! alreadyReadMessage);
+
+    // Read the type
+    uint32 tmp;
+    int ret = recv(sock, (char*)&tmp, sizeof(tmp), 0);
+
+    // The type is the first four bytes.  It is little endian.
+    if (System::machineEndian() == G3D_LITTLE_ENDIAN) {
+        messageType = tmp;
+    } else {
+        // Swap the byte order
+        for (int i = 0; i < 4; ++i) {
+            ((char*)&messageType)[i] = ((char*)&tmp)[3 - i];
+        }
+    }
+
+    if ((ret == SOCKET_ERROR) || (ret != sizeof(messageType))) {
+        if (nd->debugLog) {
+            nd->debugLog->printf("Call to recv failed.  ret = %d,"
+                                 " sizeof(messageType) = %d\n", 
+                                 ret, sizeof(messageType));
+            nd->debugLog->println(socketErrorCode());
+        }
+        nd->closesocket(sock);
+        messageType = 0;
         return false;
     }
 
-    // Reset the waiting message tracker.
-    messageType = 0;
-    alreadyReadType = false;
+    ////////////////////////////////////////
+    // Read the contents of the message
+    static const RealTime timeToWaitForFragmentedPacket = 5; // seconds
+
+    if (messageType == 0) {
+        return false;
+    }
 
     // Read the size
     uint32 len;
-    int ret = recv(sock, (char*)&len, sizeof(len), 0);
+    ret = recv(sock, (char*)&len, sizeof(len), 0);
 
     if ((ret == SOCKET_ERROR) || (ret != sizeof(len))) {
         if (nd->debugLog) {
@@ -788,6 +809,7 @@ bool ReliableConduit::receiveIntoBuffer() {
 
     ++mReceived;
     bReceived += len + 4;
+    alreadyReadMessage = true;
 
     return true;
 }

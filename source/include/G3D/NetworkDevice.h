@@ -182,12 +182,13 @@ private:
     friend class NetListener;
 
     NetAddress                      addr;
-    /**
-     True when the messageType has been read but the
-     packet has not been read.
-     */
-    bool                            alreadyReadType;
     
+    /** 
+     True when the message has been read into the receive buffer
+     but not yet received.
+    */
+    bool                            alreadyReadMessage;
+
     /**
      Type of the incoming message.
      */
@@ -198,10 +199,10 @@ private:
      */
     uint32                          messageSize;
 
-    // Not yet in use
+    /** Shared buffer for receiving messages. */
     void*                           receiveBuffer;
 
-    /** Total size of the receiveBuffer */
+    /** Total size of the receiveBuffer. */
     size_t                          receiveBufferTotalSize;
 
     /** Size occupied by the current message... so far.  This will be
@@ -271,6 +272,8 @@ public:
      @deprecated Use send(type, message)
      */
     void send(const NetMessage* m);
+
+    virtual bool messageWaiting() const;
 
     /**
      Serializes the message and schedules it to be sent as soon as possible,
@@ -354,7 +357,6 @@ public:
     bool receive(NetMessage* m);
 
     /** @deprecated Use receive(T) */
-
     inline bool receive(NetMessage& m) {
         return receive(&m);
     }
@@ -363,12 +365,10 @@ public:
         If a message is waiting, deserializes the waiting message into
         message and returns true, otherwise returns false.  You can
         determine the type of the message (and therefore, the class
-        of message) using G3D::ReliableConduit::waitingMessageType().        
+        of message) using G3D::ReliableConduit::waitingMessageType().
      */
-    // TODO: use receive buffer.
     template<typename T> inline bool receive(T& message) {
-        bool success = receiveIntoBuffer();
-        if (! success) {
+        if (! messageWaiting()) {
             return false;
         }
 
@@ -379,14 +379,18 @@ public:
         // Don't let anyone read this message again.  We leave the buffer
         // allocated for the next caller, however.
         receiveBufferUsedSize = 0;
+        alreadyReadMessage = false;
 
         return true;
     }
 
     /** Removes the current message from the queue. */
     inline void receive() {
-        receiveIntoBuffer();
+        if (! messageWaiting()) {
+            return;
+        }
         receiveBufferUsedSize = 0;
+        alreadyReadMessage = false;
     }
 
     NetAddress address() const;
