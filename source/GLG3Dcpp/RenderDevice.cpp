@@ -1482,8 +1482,8 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 
 
 void RenderDevice::setShader(const ShaderRef& s) {
-    debugAssertM(! inShader, "Cannot set the Shader from within a Shader!");
 	if (s != state.shader) {
+        debugAssertM(! inShader, "Cannot set the Shader from within a Shader!");
 		state.shader = s;
 	}
 }

@@ -31,6 +31,59 @@ public:
 };
 
 
+
+class SphereMap : public Shader {
+private:
+
+    VertexAndPixelShaderRef     vap;
+
+    SphereMap() {}
+public:
+
+    TextureRef                  texture;
+
+    static ShaderRef create() {
+
+        SphereMap* shader = new SphereMap();
+        std::string vs = 
+            "void main(void) { \n"
+            "    gl_Position = ftransform();\n"
+            "    gl_Color = vec4(1,1,1,1);\n"
+            "    vec3 lo = vec3(-1,-1,-1);\n"
+            "    vec3 hi = vec3(1,1,1);\n"
+            "    vec3 v = (gl_Vertex.xyz - lo) / (hi - lo);\n"
+            "    const float PI = 3.1415927;\n"
+            "    gl_TexCoord[0] = vec4(atan2(v.x - 0.5, v.y - 0.5) / (2*PI) + 0.5, v.z, 0, 1);\n"
+             "}\n";
+
+        std::string ps =
+            "uniform sampler2D texture;\n"
+            "void main(void) { \n"
+            "  gl_FragColor = tex2D(texture, gl_TexCoord[0].st);\n"
+            "}\n";
+
+        shader->vap = VertexAndPixelShader::fromStrings(vs, ps);
+
+        return shader;
+    }
+
+
+    void beforePrimitive(RenderDevice* rd) {
+        rd->pushState();
+        VertexAndPixelShader::ArgList args;
+        args.set("texture", texture);
+        rd->setVertexAndPixelShader(vap, args);
+    }
+
+
+    void afterPrimitive(RenderDevice* rd) {
+        rd->popState();
+    }
+
+};
+
+typedef ReferenceCountedPointer<SphereMap> SphereMapRef;
+
 /**
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
@@ -45,7 +98,8 @@ public:
     class App*					app;
 
     TextureRef                  texture;
-    VertexAndPixelShaderRef     shader;
+
+    SphereMapRef                shader;
 
     Demo(App* app);    
 
@@ -59,38 +113,16 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-
     texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
-
-    std::string vs = 
-        "void main(void) { \n"
-        "    gl_Position = ftransform();\n"
-        "    gl_Color = vec4(1,1,1,1);\n"
-        "    vec3 lo = vec3(-1,-1,-1);\n"
-        "    vec3 hi = vec3(1,1,1);\n"
-        "    vec3 v = (gl_Vertex.xyz - lo) / (hi - lo);\n"
-        "    const float PI = 3.1415927;\n"
-        "    gl_TexCoord[0] = vec4(atan2(v.x - 0.5, v.y - 0.5) / (2*PI) + 0.5, v.z, 0, 1);\n"
-         "}\n";
-
-    std::string ps =
-        "uniform sampler2D texture;\n"
-        "uniform float xxy;\n"
-        "void main(void) { \n"
-        "  gl_FragColor = tex2D(texture, gl_TexCoord[0].st);\n"
-        "}\n";
-
-    shader = VertexAndPixelShader::fromStrings(vs, ps);
+    shader = SphereMap::create();
 }
 
 
 void Demo::init()  {
-   
 	// Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 0, 10));
     app->debugCamera.lookAt(Vector3(0, 0, 0));
 }
-
 
 
 void Demo::doLogic() {
@@ -122,20 +154,14 @@ void Demo::doGraphics() {
 	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
 
-    app->renderDevice->pushState();
-        VertexAndPixelShader::ArgList args;
-        args.set("texture", texture);
-        args.set("xxy", 3);
-        app->renderDevice->setVertexAndPixelShader(shader, args);
-//        app->renderDevice->setTexture(0, texture);
+    shader->texture = texture;
+    app->renderDevice->setShader(shader);
 
-
-        Draw::sphere(Sphere(Vector3::zero(), 1), app->renderDevice,
-            Color3::WHITE, Color4::CLEAR);
+    Draw::sphere(Sphere(Vector3::zero(), 1), app->renderDevice,
+        Color3::WHITE, Color4::CLEAR);
 /*        Draw::box(AABox(Vector3(-1,-1,-1),Vector3(1,1,1)), app->renderDevice,
             Color3::WHITE, Color4::CLEAR);
             */
-    app->renderDevice->popState();
 }
 
 
