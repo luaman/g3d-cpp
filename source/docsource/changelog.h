@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added shader and framebuffer extensions to glext.h 
      <LI> All files used during current execution are available via G3D::getFiles() [Corey]
      <LI> Implemented OSX version of glGetCurrentContext with CGL. [Corey + Derek]
      <LI> ReferenceCountedObject is-in-heap checks were removed to allow better multiple and virtual inheritance for reference counted objects.  ReferenceCountedPointer still appropriately checks does an is-in-heap check on assignment. [Corey]

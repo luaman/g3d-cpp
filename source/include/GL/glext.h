@@ -1981,6 +1981,58 @@ typedef unsigned long GLhandleARB;  // shader object handle
 #define GL_FOG_SPECULAR_TEXTURE_WIN       0x80EC
 #endif
 
+
+#ifndef GL_EXT_framebuffer_object
+#define GL_INVALID_FRAMEBUFFER_OPERATION_EXT 0x0506
+#define GL_MAX_RENDERBUFFER_SIZE_EXT      0x84E8
+#define GL_FRAMEBUFFER_BINDING_EXT        0x8CA6
+#define GL_RENDERBUFFER_BINDING_EXT       0x8CA7
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_EXT 0x8CD0
+#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME_EXT 0x8CD1
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL_EXT 0x8CD2
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE_EXT 0x8CD3
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_3D_ZOFFSET_EXT 0x8CD4
+#define GL_FRAMEBUFFER_COMPLETE_EXT       0x8CD5
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENTS_EXT 0x8CD6
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT 0x8CD7
+#define GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT 0x8CD8
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT 0x8CD9
+#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT 0x8CDA
+#define GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT 0x8CDB
+#define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT 0x8CDC
+#define GL_FRAMEBUFFER_UNSUPPORTED_EXT    0x8CDD
+#define GL_FRAMEBUFFER_STATUS_ERROR_EXT   0x8CDE
+#define GL_MAX_COLOR_ATTACHMENTS_EXT      0x8CDF
+#define GL_COLOR_ATTACHMENT0_EXT          0x8CE0
+#define GL_COLOR_ATTACHMENT1_EXT          0x8CE1
+#define GL_COLOR_ATTACHMENT2_EXT          0x8CE2
+#define GL_COLOR_ATTACHMENT3_EXT          0x8CE3
+#define GL_COLOR_ATTACHMENT4_EXT          0x8CE4
+#define GL_COLOR_ATTACHMENT5_EXT          0x8CE5
+#define GL_COLOR_ATTACHMENT6_EXT          0x8CE6
+#define GL_COLOR_ATTACHMENT7_EXT          0x8CE7
+#define GL_COLOR_ATTACHMENT8_EXT          0x8CE8
+#define GL_COLOR_ATTACHMENT9_EXT          0x8CE9
+#define GL_COLOR_ATTACHMENT10_EXT         0x8CEA
+#define GL_COLOR_ATTACHMENT11_EXT         0x8CEB
+#define GL_COLOR_ATTACHMENT12_EXT         0x8CEC
+#define GL_COLOR_ATTACHMENT13_EXT         0x8CED
+#define GL_COLOR_ATTACHMENT14_EXT         0x8CEE
+#define GL_COLOR_ATTACHMENT15_EXT         0x8CEF
+#define GL_DEPTH_ATTACHMENT_EXT           0x8D00
+#define GL_STENCIL_ATTACHMENT_EXT         0x8D20
+#define GL_FRAMEBUFFER_EXT                0x8D40
+#define GL_RENDERBUFFER_EXT               0x8D41
+#define GL_RENDERBUFFER_WIDTH_EXT         0x8D42
+#define GL_RENDERBUFFER_HEIGHT_EXT        0x8D43
+#define GL_RENDERBUFFER_INTERNAL_FORMAT_EXT 0x8D44
+#define GL_STENCIL_INDEX_EXT              0x8D45
+#define GL_STENCIL_INDEX1_EXT             0x8D46
+#define GL_STENCIL_INDEX4_EXT             0x8D47
+#define GL_STENCIL_INDEX8_EXT             0x8D48
+#define GL_STENCIL_INDEX16_EXT            0x8D49
+#endif
+
 /*************************************************************/
 
 //#ifndef GL_VERSION_1_2
@@ -3204,6 +3256,45 @@ typedef void (APIENTRY * PFNGLVERTEXATTRIBS4UBVNVPROC) (GLuint index, GLsizei co
 #define GL_SGIX_shadow 1
 #endif
 
+#ifndef GL_EXT_framebuffer_object
+#define GL_EXT_framebuffer_object 1
+#ifdef GL_GLEXT_PROTOTYPES
+GLAPI GLboolean APIENTRY glIsRenderbufferEXT (GLuint);
+GLAPI void APIENTRY glBindRenderbufferEXT (GLenum, GLuint);
+GLAPI void APIENTRY glDeleteRenderbuffersEXT (GLsizei, const GLuint *);
+GLAPI void APIENTRY glGenRenderbuffersEXT (GLsizei, GLuint *);
+GLAPI void APIENTRY glRenderbufferStorageEXT (GLenum, GLenum, GLsizei, GLsizei);
+GLAPI void APIENTRY glGetRenderbufferParameterivEXT (GLenum, GLenum, GLint *);
+GLAPI GLboolean APIENTRY glIsFramebufferEXT (GLuint);
+GLAPI void APIENTRY glBindFramebufferEXT (GLenum, GLuint);
+GLAPI void APIENTRY glDeleteFramebuffersEXT (GLsizei, const GLuint *);
+GLAPI void APIENTRY glGenFramebuffersEXT (GLsizei, GLuint *);
+GLAPI GLenum APIENTRY glCheckFramebufferStatusEXT (GLenum);
+GLAPI void APIENTRY glFramebufferTexture1DEXT (GLenum, GLenum, GLenum, GLuint, GLint);
+GLAPI void APIENTRY glFramebufferTexture2DEXT (GLenum, GLenum, GLenum, GLuint, GLint);
+GLAPI void APIENTRY glFramebufferTexture3DEXT (GLenum, GLenum, GLenum, GLuint, GLint, GLint);
+GLAPI void APIENTRY glFramebufferRenderbufferEXT (GLenum, GLenum, GLenum, GLuint);
+GLAPI void APIENTRY glGetFramebufferAttachmentParameterivEXT (GLenum, GLenum, GLenum, GLint *);
+GLAPI void APIENTRY glGenerateMipmapEXT (GLenum);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef GLboolean (APIENTRY* PFNGLISRENDERBUFFEREXTPROC) (GLuint renderbuffer);
+typedef void (APIENTRY* PFNGLBINDRENDERBUFFEREXTPROC) (GLenum target, GLuint renderbuffer);
+typedef void (APIENTRY* PFNGLDELETERENDERBUFFERSEXTPROC) (GLsizei n, const GLuint *renderbuffers);
+typedef void (APIENTRY* PFNGLGENRENDERBUFFERSEXTPROC) (GLsizei n, GLuint *renderbuffers);
+typedef void (APIENTRY* PFNGLRENDERBUFFERSTORAGEEXTPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (APIENTRY* PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC) (GLenum target, GLenum pname, GLint *params);
+typedef GLboolean (APIENTRY* PFNGLISFRAMEBUFFEREXTPROC) (GLuint framebuffer);
+typedef void (APIENTRY* PFNGLBINDFRAMEBUFFEREXTPROC) (GLenum target, GLuint framebuffer);
+typedef void (APIENTRY* PFNGLDELETEFRAMEBUFFERSEXTPROC) (GLsizei n, const GLuint *framebuffers);
+typedef void (APIENTRY* PFNGLGENFRAMEBUFFERSEXTPROC) (GLsizei n, GLuint *framebuffers);
+typedef GLenum (APIENTRY* PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) (GLenum target);
+typedef void (APIENTRY* PFNGLFRAMEBUFFERTEXTURE1DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+typedef void (APIENTRY* PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+typedef void (APIENTRY* PFNGLFRAMEBUFFERTEXTURE3DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset);
+typedef void (APIENTRY* PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+typedef void (APIENTRY* PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) (GLenum target, GLenum attachment, GLenum pname, GLint *params);
+typedef void (APIENTRY* PFNGLGENERATEMIPMAPEXTPROC) (GLenum target);
+#endif
 
 
 #ifndef GL_ARB_shader_objects

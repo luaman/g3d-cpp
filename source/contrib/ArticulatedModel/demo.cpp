@@ -279,7 +279,7 @@ void App::main() {
     const std::string path = "";
 
     double x = -5;
-
+/*
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
 
@@ -450,7 +450,7 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
- 
+ */
      if (true) {
         ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
