@@ -27,7 +27,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-04-05
+ @edited  2003-05-24
  */
 
 #include <G3DAll.h>
@@ -43,13 +43,13 @@ std::string DATA_DIR("data/");
 /** The same bit depth is used for the shadow map and the screen */
 int                     depthBits       = 24;
 
-Log*                    debugLog	= NULL;
-RenderDevice*           renderDevice	= NULL;
-G3D::Font*              font		= NULL;
-UserInput*              userInput	= NULL;
-VARArea*		varDynamic	= NULL;
-VARArea*		varStatic	= NULL;
-Camera*			camera		= NULL;
+Log*                    debugLog        = NULL;
+RenderDevice*           renderDevice    = NULL;
+CFont*                  font            = NULL;
+UserInput*              userInput       = NULL;
+VARArea*                varDynamic      = NULL;
+VARArea*                varStatic       = NULL;
+Camera*                 camera          = NULL;
 Scene*                  scene           = NULL;
 ManualCameraController* controller      = NULL;
 
@@ -58,7 +58,7 @@ double                  maxFrameRate    = 30;
 /** World time */
 GameTime                gameTime        = 0;
 
-bool                    endProgram		= false;
+bool                    endProgram      = false;
 
 
 RealTime getTime() {
@@ -78,11 +78,11 @@ int main(int argc, char** argv) {
     }
 
     // Initialize
-    debugLog	 = new Log();
+    debugLog     = new Log();
     renderDevice = new RenderDevice();
     renderDevice->init(800, 600, debugLog, 1.0, false,
                        1024 * 1024 * 2, true, 8, 0, depthBits, 0);
-    camera 	     = new Camera(renderDevice);
+    camera       = new Camera(renderDevice);
 
     // Allocate the two VARAreas used in this demo
     varStatic  = renderDevice->createVARArea(1024 * 1024);
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     varDynamic = renderDevice->createVARArea(1024 * 1);
     debugAssert(varDynamic);
 
-    font         = new G3D::Font(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 
@@ -105,9 +105,9 @@ int main(int argc, char** argv) {
     buildScene();
 
     renderDevice->resetState();
-	renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
-	gameTime	 = toSeconds(10, 00, 00, AM);
+    gameTime     = toSeconds(10, 00, 00, AM);
     
     RealTime now = getTime() - 0.001, lastTime;
 
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
 void doSimulation(GameTime timeStep) {
     // Simulation
     controller->doSimulation(max(0.1, min(0, timeStep)), *userInput);
-	camera->setCoordinateFrame(controller->getCoordinateFrame());
+    camera->setCoordinateFrame(controller->getCoordinateFrame());
 
     scene->simulate(1 / maxFrameRate);
 }
@@ -182,8 +182,8 @@ void doGraphics() {
 
     renderDevice->beginFrame();
         renderDevice->pushState();
-			    
-		    camera->setProjectionAndCameraMatrix(renderDevice->getWidth(), 
+                
+            camera->setProjectionAndCameraMatrix(renderDevice->getWidth(), 
                                                  renderDevice->getHeight());
 
             LightingParameters lighting(gameTime);
@@ -198,7 +198,7 @@ void doGraphics() {
                     format("%d fps", frameRate),
                     10, 10, 28, Color3::WHITE, Color3::BLACK);
 
-		        font->draw2DString(
+                font->draw2DString(
                     format("%d tris", numTris),
                     10, 72, 20, Color3::WHITE, Color3::BLACK);
 
@@ -208,7 +208,7 @@ void doGraphics() {
 
             renderDevice->pop2D();
         renderDevice->popState();
-	    
+        
     renderDevice->endFrame();
     varDynamic->reset();
 }
@@ -225,10 +225,10 @@ void doUserInput() {
     while (SDL_PollEvent(&event)) {
         switch(event.type) {
         case SDL_QUIT:
-	    endProgram = true;
-	    break;
+        endProgram = true;
+        break;
 
-	    case SDL_KEYDOWN:
+        case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 endProgram = true;

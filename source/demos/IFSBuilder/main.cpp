@@ -27,7 +27,7 @@ std::string             DATA_DIR        = "data/";
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
-Font*                   font			= NULL;
+CFont*                  font			= NULL;
 UserInput*              userInput		= NULL;
 Camera*					camera			= NULL;
 ManualCameraController* controller      = NULL;
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     renderDevice->init(400, 400, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
     camera 	     = new Camera(renderDevice);
 
-    font         = new Font(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 
