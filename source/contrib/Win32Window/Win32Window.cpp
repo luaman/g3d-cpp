@@ -195,7 +195,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     
     di8Interface->EnumDevices(Win32Window_DI8::DI8DEVCLASS_GAMECTRL, EnumDirectInput8Joysticks, window, Win32Window_DI8::DIEDFL_ATTACHEDONLY);
 
-//    ::FreeLibrary(di8Module);
+    ::FreeLibrary(di8Module);
 }
 
 
