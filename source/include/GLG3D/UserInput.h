@@ -13,7 +13,7 @@
 #include "G3D/platform.h"
 
 #if defined(G3D_OSX)
-#include <SDL/SDL.h>
+#include <SDL/SDL_events.h>
 #else
 #include <SDL.h>
 #endif
