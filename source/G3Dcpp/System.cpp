@@ -860,6 +860,7 @@ RealTime System::getTick() {
     #endif
 }
 
+
 RealTime System::getLocalTime() {
   
     #ifdef G3D_WIN32
