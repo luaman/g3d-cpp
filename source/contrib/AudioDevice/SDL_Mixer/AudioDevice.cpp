@@ -19,7 +19,7 @@ bool AudioDevice::init(Log* _debugLog) {
 
     int audioRate           = MIX_DEFAULT_FREQUENCY;
     uint16 audioFormat      = MIX_DEFAULT_FORMAT;
-    int audioChannels       = 32;
+    int audioChannels       = 2; // stereo
 
     bool ret = Mix_OpenAudio(audioRate, audioFormat, audioChannels, 4096) >= 0;
 
