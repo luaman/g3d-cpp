@@ -1525,8 +1525,14 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 void RenderDevice::setShader(const ShaderGroupRef& s) {
     if (s != state.shader) {
 
-        // TODO: bind the shader
         state.shader = s;
+        if (s.isNull()) {
+            // Disables the programmable pipeline
+            glUseProgramObjectARB(0);
+        } else {
+            alwaysAssertM(s->ok(), s->messages());
+            glUseProgramObjectARB(s->glProgramObject());
+        }
 
     }
 }

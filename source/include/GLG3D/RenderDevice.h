@@ -742,6 +742,9 @@ public:
     /**
      Automatically enables vertex programs when they are set. 
      Assumes GLCaps::supports_GL_ARB_vertex_program() is true.
+
+     Don't mix VertexPrograms (old API) with VertexShaders (new API).
+
      @param vp Set to NULL to use the fixed function pipeline.
      @deprecated Use RenderDevice::setShader
      */
@@ -760,6 +763,7 @@ public:
      </PRE>
 
 
+     Don't mix VertexPrograms (old API) with VertexShaders (new API).
      @param args must include *all* arguments or an assertion will fail
      @deprecated Use RenderDevice::setShader
      */
@@ -769,6 +773,7 @@ public:
     /**
      (Automatically enables pixel programs when they are set.) 
      Assumes GPUProgram() is true.
+     Don't mix PixelPrograms (old API) with PixelShaders (new API).
      @param pp Set to NULL to use the fixed function pipeline.
      @deprecated Use RenderDevice::setShader
      */
@@ -778,6 +783,7 @@ public:
      It is recommended to call RenderDevice::pushState immediately before
      setting the pixel program, since the arguments can affect texture
      state that will only be restored with RenderDevice::popState.
+     Don't mix PixelPrograms (old API) with PixelShaders (new API).
      @deprecated Use RenderDevice::setShader
      */
     void setPixelProgram(const PixelProgramRef& pp,
@@ -790,6 +796,9 @@ public:
       on screen.
 
       The result is sensitive to the projection and camera to world matrices.
+
+      If you need to read back the entire depth buffer, use OpenGL glReadPixels
+      calls instead of many calls to getDepthBufferValue.
      */
     double getDepthBufferValue(
         int                 x,

@@ -312,7 +312,13 @@ public:
         return _messages;
     }
 
-    /** The underlying OpenGL object for the vertex/pixel shader pair */
+    /** The underlying OpenGL object for the vertex/pixel shader pair.
+
+        To bind a shader with RenderDevice, call renderDevice->setShader(s);
+        To bind a shader <B>without</B> RenderDevice, call
+        glUseProgramObjectARB(s->glProgramObject());
+
+    */
     GLhandleARB glProgramObject() const {
         return _glProgramObject;
     }
