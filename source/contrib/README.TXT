@@ -23,3 +23,5 @@ wxGWindow     - GWindow implementation for wxWindows.  By Morgan
 EulerFrame    - A coordinate frame that works on euler angles, convenient for airplanes.  By Morgan.
 
 Q3Map         - Quake 3 map loader. Morgan.
+
+VideoSerializer - Lossless compression of video for streaming across a network or saving to disk.  By Morgan.
