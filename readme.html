@@ -73,7 +73,7 @@ source directory.  Some subdirectories are not shown.
 <P>
 
 In the distribution, the <CODE>cpp/data</CODE> directory is stored in
-g3d-data-M_mm.zip and the other (built) files are in g3d-M_mm.zip.
+g3d-data-M_mm.zip and the other (built) files are in g3d-cpp-M_mm.zip.
 They are separated because the data is so large.  Users who want
 source code can download it from <A
 HREF="http://sourceforge.net/cvs/?group_id=76879">http://sourceforge.net/cvs/?group_id=76879</A>
@@ -103,7 +103,9 @@ Linux users generate the .so's to link against.</I>
 <I>Builds install, then zips g3d-cpp-M_mm.zip and g3d-data-M_mm.zip 
 for uploading to Brown/G3D for users.  To make a release, you must
 have already done 'build install' on Linux and copied the binaries
-over.</I>
+over.  Note that the demos go in the data zipfile, not the cpp zipfile.
+Also, note that the release process actually deletes the demos
+and data from the install directory.</I>
 
 <H3>build clean</H3>
 <OL>
@@ -129,12 +131,6 @@ this document describes the meta-targets for making a release.
           <CODE>cpp/build/lib/GLG3D-debug.lib</CODE> 
           (or corresponding .a files on Linux)
 <LI>Copy any out of date files from <CODE>cpp/source/lib</CODE> to <CODE>cpp/build/lib</CODE>
-</OL>
-
-<P>
-<H3>build data</H3>
-<OL>
-<LI>Zip <CODE>cpp/data</CODE> to to <CODE>cpp/release/g3d-data-M-mm.zip</CODE>
 </OL>
 
 
