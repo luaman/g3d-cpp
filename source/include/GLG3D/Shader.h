@@ -116,7 +116,7 @@ public:
   For purposes of shading, a "pixel" is technically a "fragment" in OpenGL terminology.
 
   Pixel and vertex shaders are loaded as text strings written in 
-  <A HREF="http://www.3dlabs.com/support/developer/ogl2/downloads/ShaderSpecV1.051.pdf">GLSL</A>, the high-level
+  <A HREF="http://developer.3dlabs.com/openGL2/specs/GLSLangSpec.Full.1.10.59.pdf">GLSL</A>, the high-level
   OpenGL shading language.  Object shaders are written in C++ by subclassing ObjectShader.
 
   Typically, the object shader sets up constants like the object-space position

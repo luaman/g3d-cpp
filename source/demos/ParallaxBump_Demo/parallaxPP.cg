@@ -34,7 +34,10 @@ float4 main(
     const float4 surfColor = tex2D(texture, offsetCoord);
 
     // Take the normal map values back to (-1, 1) range
-    const float3 normal = (tex2D(normalMap, offsetCoord).xyz - float3(0.5, 0.5, 0.5)) * 2;
+    float3 normal = (tex2D(normalMap, offsetCoord).xyz - float3(0.5, 0.5, 0.5)) * 2;
+	// (normal map space doesn't match the tangent space for this demo, so transform
+	//  the normal map into our tangent space).
+	normal = float3(-normal.y, -normal.x, normal.z);
 
     const float3 lightColor = float3(1, 1, .85);
     const float3 ambient = float3(0, 0, .15);

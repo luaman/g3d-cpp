@@ -86,6 +86,8 @@ void flipRGBVertical(
  RGB channels are a tangent space normal map and the alpha channel
  is the original bump map.  Assumes the input image is tileable.
 
+ In the resulting image, x = red = tangent, y = green = binormal, and z = blue = normal. 
+
  Particularly useful as part of the idiom:
  <PRE>
  	GImage normal;

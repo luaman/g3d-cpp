@@ -33,10 +33,13 @@ TEX R0.xyz, R2, texture[1], 2D;
 TEX R1, R2, texture[0], 2D;
 ADD R0.xyz, R0, -c2;
 MUL R0.xyz, R0, c0.w;
-DP3 R0.w, fragment.texcoord[1], fragment.texcoord[1];
-RSQ R0.w, R0.w;
-MUL R2.xyz, R0.w, fragment.texcoord[1];
-DP3 R0.x, R0, R2;
+MOV R2.z, R0.z;
+MOV R2.y, -R0.x;
+MOV R2.x, -R0.y;
+DP3 R0.x, fragment.texcoord[1], fragment.texcoord[1];
+RSQ R0.x, R0.x;
+MUL R0.xyz, R0.x, fragment.texcoord[1];
+DP3 R0.x, R2, R0;
 MAX R0.x, R0.x, c1.x;
 MOV R2.xyz, c1;
 MAD R2.xyz, c0, R0.x, R2;
@@ -44,5 +47,5 @@ MUL R2.xyz, R2, R1;
 MOV R1.xyz, R2;
 MOV result.color, R1;
 END
-# 23 instructions, 3 R-regs, 0 H-regs.
+# 26 instructions, 3 R-regs, 0 H-regs.
 # End of program

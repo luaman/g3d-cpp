@@ -1758,12 +1758,12 @@ void computeNormalMap(const GImage& bump, GImage& normal) {
 
             // Write the Y value directly into the x-component so we don't have
             // to explicitly compute a cross product at the end.
-            delta.x = height(-1, -1) *  1 + height( 0, -1) *  2 + height( 1, -1) *  1 +
-                      height(-1,  1) * -1 + height( 0,  1) * -2 + height( 1,  1) * -1;
+            delta.y = -(height(-1, -1) *  1 + height( 0, -1) *  2 + height( 1, -1) *  1 +
+                        height(-1,  1) * -1 + height( 0,  1) * -2 + height( 1,  1) * -1);
 
-            delta.y = height(-1, -1) * -1 + height( 1, -1) * 1 + 
-                      height(-1,  0) * -2 + height( 1,  0) * 2 + 
-                      height(-1,  1) * -1 + height( 1,  1) * 1;
+            delta.x = -(height(-1, -1) * -1 + height( 1, -1) * 1 + 
+                        height(-1,  0) * -2 + height( 1,  0) * 2 + 
+                        height(-1,  1) * -1 + height( 1,  1) * 1);
 
             delta.z = 1.0;
 
