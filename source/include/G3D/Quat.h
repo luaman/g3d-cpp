@@ -28,6 +28,11 @@ namespace G3D {
   an imaginary vector: ix + jy + kz + w.
 
   Do not subclass.
+
+  <B>TODO: Eberly's norm is the magnitude squared. His
+     projection onto the unit hypersphere and inverse use
+     his norm, which is not the same as other sources.
+    </B>
  */
 class Quat {
 public:
