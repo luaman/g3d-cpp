@@ -30,7 +30,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-07-02
+ @edited  2003-07-15
  */
 
 #include <G3DAll.h>
@@ -61,7 +61,7 @@ public:
 
 Log*                    debugLog	= NULL;
 RenderDevice*           renderDevice= NULL;
-CFont*                  font		= NULL;
+CFontRef                font		= NULL;
 UserInput*              userInput	= NULL;
 Sky*                    sky		    = NULL;
 VARArea*		        varDynamic	= NULL;
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
     debugAssert(varStatic);
     debugAssert(varDynamic);
 
-    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
     sky		     = new Sky(renderDevice, "Sky", DATA_DIR + "sky/");
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");

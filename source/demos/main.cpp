@@ -7,7 +7,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-06-13
+  @edited  2003-07-15
  */ 
 
 #include <G3DAll.h>
@@ -16,7 +16,7 @@ std::string             DATA_DIR        = "d:/libraries/g3d-6_00/data/";
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
-CFont*                  font			= NULL;
+CFontRef                font			= NULL;
 UserInput*              userInput		= NULL;
 Camera*					camera			= NULL;
 ManualCameraController* controller      = NULL;
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     renderDevice->init(800, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
     camera 	     = new Camera(renderDevice);
 
-    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 

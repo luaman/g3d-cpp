@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-05-14
+ @edited  2003-07-15
  */
 
 #ifndef G3D_FONT_H
@@ -14,10 +14,12 @@
 
 namespace G3D {
 
+typedef ReferenceCountedPointer<class CFont> CFontRef;
+
 /**
  Font class for use with RenderDevice.
  */
-class CFont {
+class CFont : public ReferenceCountedObject {
 public:
     /** Constant for draw2DString.  Specifies the horizontal alignment of an entire string relative to the supplied x,y position */
     enum XAlign {XALIGN_RIGHT, XALIGN_LEFT, XALIGN_CENTER};
@@ -54,6 +56,8 @@ private:
 
     class RenderDevice*             renderDevice;
 
+    CFont(class RenderDevice* renderDevice, const std::string& filename);
+
 public:
 
     /** The filename must be a FNT (proportional width font) file.
@@ -76,7 +80,7 @@ public:
           </pre>
         The width of a character's bounding box is always width / 16.  The height is always width / 8.
     */
-    CFont(class RenderDevice* renderDevice, const std::string& filename);
+    static CFontRef fromFile(class RenderDevice* renderDevice, const std::string& filename);
 
     /**
      Converts an 8-bit RAW font texture and INI file as produced by the Bitmap Font Builder program

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-05-24
+ @edited  2003-07-15
  */
 
 #include "GLG3D/Font.h"
@@ -12,6 +12,11 @@
 #include "GLG3D/TextureFormat.h"
 
 namespace G3D {
+
+CFontRef CFont::fromFile(RenderDevice* _rd, const std::string& filename) {
+    return new CFont(_rd, filename);
+}
+
 
 CFont::CFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 

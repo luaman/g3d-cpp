@@ -27,7 +27,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-07-02
+ @edited  2003-07-15
  */
 
 #include <G3DAll.h>
@@ -45,7 +45,7 @@ int                     depthBits       = 24;
 
 Log*                    debugLog        = NULL;
 RenderDevice*           renderDevice    = NULL;
-CFont*                  font            = NULL;
+CFontRef                font            = NULL;
 UserInput*              userInput       = NULL;
 VARArea*                varDynamic      = NULL;
 VARArea*                varStatic       = NULL;
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     varDynamic = renderDevice->createVARArea(1024 * 1);
     debugAssert(varDynamic);
 
-    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     userInput    = new UserInput();
 

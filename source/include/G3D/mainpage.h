@@ -236,6 +236,7 @@
       <LI>Game/Demo Infrastructure</LI>
         <BR><BLOCKQUOTE>
         G3D::CFont,
+        G3D::CFontRef,
         G3D::Sky,
         G3D::Camera, 
         G3D::LightingParameters,
@@ -685,6 +686,7 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> G3D::CFontRef
      <LI> RenderDevice now loads all register combiner extensions (NVIDIA only)
      <LI> G3D::reflectionMatrix
      <LI> Sky::getEnvironmentMap
