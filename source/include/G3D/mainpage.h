@@ -652,6 +652,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::TextureFormat
      <LI> G3D::Texture constructors are completely changed from 5.01 (and hopefully easier to use)
      <LI> G3D::CImage now supports images with alpha
+     <LI> Removed most of the width/height arguments from G3D::Camera methods
      <LI> BinaryInput::readBytes and BinaryOutput::writeBytes now take void* as an argument to avoid casting
      <LI> Removed Plane::getNormal (use Plane::normal instead)
      <LI> Removed CDTriangle (use G3D::Triangle instead)

@@ -183,8 +183,7 @@ void doGraphics() {
     renderDevice->beginFrame();
         renderDevice->pushState();
                 
-            camera->setProjectionAndCameraMatrix(renderDevice->getWidth(), 
-                                                 renderDevice->getHeight());
+            camera->setProjectionAndCameraMatrix();
 
             LightingParameters lighting(gameTime);
             lighting.lightDirection = (lighting.lightDirection + Vector3(0,0,.4)).direction();

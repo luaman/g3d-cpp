@@ -130,8 +130,7 @@ int main(int argc, char** argv) {
 	    renderDevice->clear(sky == NULL, true, false);
             renderDevice->pushState();
 				
-                camera->setProjectionAndCameraMatrix(renderDevice->getWidth(), 
-                                             renderDevice->getHeight());
+                camera->setProjectionAndCameraMatrix();
 
                 LightingParameters lighting(gameTime);
 

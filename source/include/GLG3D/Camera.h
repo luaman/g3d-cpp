@@ -19,7 +19,8 @@ namespace G3D {
 
 /**
   There is a viewport of width x height size in world space that corresponds to
-  a screenWidth x screenHeight pixel grid on a renderDevice->getWidth() x renderDevice->getHeight()
+  a screenWidth x screenHeight pixel grid on a
+  renderDevice->getWidth() x renderDevice->getHeight()
   window.
  */
 class Camera  {
@@ -52,7 +53,7 @@ private:
 	CoordinateFrame				cframe;
 
 public:
-    
+
 	Camera(class RenderDevice* renderDevice);
 
     virtual ~Camera();
@@ -96,9 +97,7 @@ public:
      down.  The resulting z value is <I>rhw</I>
      */
     G3D::Vector3 project(
-        const G3D::Vector3&                     point,
-        int                                     screenWidth,
-        int                                     screenHeight) const;
+        const G3D::Vector3&                     point) const;
 
     /**
      Returns the world space 3D viewport corners.  These
@@ -107,8 +106,6 @@ public:
      "left" and "right" are from the camera's perspective.
      */
     void get3DViewportCorners(
-        double                                  screenWidth,
-        double                                  screenHeight,
         Vector3&                                outUR,
         Vector3&                                outUL,
         Vector3&                                outLL,
@@ -123,9 +120,7 @@ public:
         double                                  width,
         double                                  height) const;
 
-    void setProjectionAndCameraMatrix(
-        int                                     screenWidth,
-        int                                     screenHeight) const;
+    void setProjectionAndCameraMatrix() const;
 
     /**
       Returns the world space ray passing through the center of pixel
@@ -140,9 +135,7 @@ public:
     */
     Ray worldRay(
         double                                  x,
-        double                                  y,
-		int										screenWidth,
-		int										screenHeight) const;
+        double                                  y) const;
 
 
     /**
@@ -172,16 +165,12 @@ public:
     /**
      Returns the camera space width of the viewport.
      */
-    double getViewportWidth(
-        int				screenWidth,
-        int				screenHeight) const;
+    double getViewportWidth() const;
 
     /**
      Returns the camera space height of the viewport.
      */
-    double getViewportHeight(
-        int				screenWidth, 
-        int				screenHeight) const;
+    double getViewportHeight() const;
 
     /**
      Read back a camera space z-value at pixel (x, y) from the depth buffer.
@@ -201,8 +190,6 @@ public:
     The 6th plane is always the far plane, which may be at infinity.
     */
    void getClipPlanes(
-        int				screenWidth,
-        int				screenHeight, 
         G3D::Plane*		clip) const;
 };
 

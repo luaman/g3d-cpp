@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-02-15
+  @edited  2003-05-27
 */
 
 #include "GLG3D/Camera.h"
@@ -12,7 +12,9 @@
 
 namespace G3D {
 
+
 Camera::Camera(RenderDevice* r) {
+    debugAssert(r != NULL);
 	renderDevice = r;
     nearPlane   = 0.5;
     farPlane    = 300;
@@ -39,9 +41,10 @@ void Camera::setCoordinateFrame(const CoordinateFrame& c) {
 }
 
 
-void Camera::setProjectionAndCameraMatrix(
-    int         screenWidth,
-    int         screenHeight) const {
+void Camera::setProjectionAndCameraMatrix() const {
+    
+    int screenWidth  = renderDevice->getWidth();
+    int screenHeight = renderDevice->getHeight();
 
     // OpenGL wants the renderDevice ratio (not the viewport or
     // screen ratio) here.
@@ -96,27 +99,26 @@ double Camera::getImagePlaneDepth(
 }
 
 
-double Camera::getViewportWidth(
-    int     screenWidth,
-    int     screenHeight) const {
+double Camera::getViewportWidth() const {
     return nearPlane / imagePlaneDepth;
 }
 
 
-double Camera::getViewportHeight(
-    int     screenWidth, 
-    int     screenHeight) const {
+double Camera::getViewportHeight() const {
+    int screenWidth  = renderDevice->getWidth();
+    int screenHeight = renderDevice->getHeight();
 
-    return getViewportWidth(screenWidth, screenHeight) * 
+    return getViewportWidth() * 
         ((double)screenHeight / (double)screenWidth);
 }
 
 
 Ray Camera::worldRay(
     double                                  x,
-    double                                  y,
-	int										screenWidth,
-	int										screenHeight) const {
+    double                                  y) const {
+
+    int screenWidth  = renderDevice->getWidth();
+    int screenHeight = renderDevice->getHeight();
 
     Ray out;
     // Set the origin to 0
@@ -142,9 +144,10 @@ Ray Camera::worldRay(
 
 
 Vector3 Camera::project(
-    const Vector3&                      point,
-    int                                 screenWidth,
-    int                                 screenHeight) const {
+    const Vector3&                      point) const {
+
+    int screenWidth  = renderDevice->getWidth();
+    int screenHeight = renderDevice->getHeight();
 
     Vector3 out = cframe.pointToObjectSpace(point);
     double w = out.z * CoordinateFrame::zLookDirection;
@@ -207,9 +210,10 @@ double Camera::getZValue(
 
 
 void Camera::getClipPlanes(
-    int                 screenWidth, 
-    int                 screenHeight,
     Plane*              clip) const {
+
+    int screenWidth  = renderDevice->getWidth();
+    int screenHeight = renderDevice->getHeight();
 
 	// First construct the planes.  Do this in the order of near, left,
     // right, bottom, top, far so that early out clipping tests are likely
@@ -255,16 +259,14 @@ void Camera::getClipPlanes(
 
 
 void Camera::get3DViewportCorners(
-    double width,
-    double height,
     Vector3& outUR,
     Vector3& outUL,
     Vector3& outLL,
     Vector3& outLR) const {
 
     const double sign            = CoordinateFrame::zLookDirection;
-    const double w               = -sign * getViewportWidth((int)width, (int)height) / 2;
-    const double h               = getViewportHeight((int)width, (int)height) / 2;
+    const double w               = -sign * getViewportWidth() / 2;
+    const double h               = getViewportHeight() / 2;
     const double z               = -sign * getNearPlaneZ();
 
     // Compute the points

@@ -150,9 +150,7 @@ void doGraphics() {
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
 			    
-		    camera->setProjectionAndCameraMatrix(renderDevice->getWidth(), 
-                                                 renderDevice->getHeight());
-
+		    camera->setProjectionAndCameraMatrix();
 
             if (model != NULL) {
                 model->render();
