@@ -50,7 +50,7 @@ namespace G3D {
 #define G3D_DOUBLE 2
 
 
-const double fuzzyEpsilon = 0.0000001;
+const double fuzzyEpsilon = 0.000001;
 
 #ifdef _MSC_VER
 

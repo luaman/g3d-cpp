@@ -25,7 +25,7 @@ void beginMarkShadows(RenderDevice* renderDevice) {
         // Render only to the stencil buffer.
         renderDevice->disableDepthWrite();
         renderDevice->disableColorWrite();
-        app->renderDevice->setDepthTest(RenderDevice::DEPTH_LESS);
+        renderDevice->setDepthTest(RenderDevice::DEPTH_LESS);
 
         // z-fail; decrement for front faces and increment
         // for back faces.

@@ -88,7 +88,11 @@ namespace G3D {
   Most of the public state will become private in a future release;
   it is exposed in this release only to aid debugging.  If you look
   at the source code it should be obvious where the division lies.
- */
+
+  You shouldn't use anything except insert, remove, contains,
+  balance, update, getMembers, and getIntersectingMembers
+
+*/
 template<class T> class KDTreeSet {
 //private:
 public:
@@ -268,18 +272,15 @@ public:
         return hi - lo;
     }
 
-    /** Number of points to put in each leaf node when
-        constructing a balanced tree. */
-    enum {VALUES_PER_NODE = 3};
 
     /**
      Recursively subdivides the subarray.
      Begin and end indices are inclusive.
      */
-    Node* makeNode(Array<Handle>& point, int beginIndex, int endIndex) {
+    Node* makeNode(Array<Handle>& point, int beginIndex, int endIndex, int valuesPerNode) {
         Node* node = NULL;
 
-        if (endIndex - beginIndex + 1 <= VALUES_PER_NODE) {
+        if (endIndex - beginIndex + 1 <= valuesPerNode) {
             // Make a new leaf node
             node = new Node(point, beginIndex, endIndex);
 
@@ -312,8 +313,8 @@ public:
 
             node->splitAxis     = splitAxis;
             node->splitLocation = median[splitAxis];
-            node->child[0]      = makeNode(point, beginIndex, midIndex);
-            node->child[1]      = makeNode(point, midIndex + 1, endIndex);
+            node->child[0]      = makeNode(point, beginIndex, midIndex, valuesPerNode);
+            node->child[1]      = makeNode(point, midIndex + 1, endIndex, valuesPerNode);
         }
 
         return node;
@@ -462,15 +463,17 @@ public:
      have moved substantially from their original positions
      (which unbalances the tree and causes the spatial
      queries to be slow).
+     @param valuesPerNode Maximum number of elements to put at
+     a node.
      */
-    void balance() {
+    void balance(int valuesPerNode = 5) {
         Array<Handle> handleArray;
         root->getHandles(handleArray);
 
         // Delete the old tree
         clear();
 
-        root = makeNode(handleArray, 0, handleArray.size() - 1);
+        root = makeNode(handleArray, 0, handleArray.size() - 1, valuesPerNode);
     }
 
 
