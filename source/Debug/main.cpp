@@ -189,6 +189,10 @@ void App::main() {
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
     
+    GImage im(100, 112, 3);
+
+    Texture::fromGImage("", im, TextureFormat::AUTO, Texture::TILE, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT);
+
     applet->run();
 }
 
@@ -204,14 +208,6 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-
-    Array<int> array(1);
-
-    array.resize(1);
-
-    for (int i = 0; i < 200; ++i) {
-        array.resize(i);
-    }
 
     GAppSettings settings;
     settings.window.width = 800;

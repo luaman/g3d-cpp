@@ -22,6 +22,10 @@
 
 #ifdef G3D_WIN32
     #include <new.h>
+    
+    // debug information too long
+    #pragma warning( disable : 4312)
+    #pragma warning( disable : 4786)
 #endif
 
 
