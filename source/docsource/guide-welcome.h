@@ -27,6 +27,8 @@ users who are already familiar with C++ and DirectX or OpenGL.
   Beta and Deprecated APIs,
   Notes for Expert Users</TD></TR>
 
+  <TR><TD>\link license License (BSD/IJG) \endlink</TD><TD></TD></TR>
+
   <TR><TD VALIGN=TOP>\link guideinstall Installing G3D \endlink</TD><TD VALIGN=TOP>
   WindowsXP/2000,
   Linux,
@@ -78,12 +80,14 @@ users who are already familiar with C++ and DirectX or OpenGL.
   Tools,
   Sample Shaders</TD></TR>
 
-<TR><TD>\link license License (BSD/IJG) \endlink</TD><TD></TD></TR>
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
-<TR><TD><A HREF="index.html">Entry Points by Topic</A></TD><TD></TD></TR>
-<TR><TD><A HREF="classes.html">Alphabetic Class Index</A></TD><TD></TD></TR>
-<TR><TD><A HREF="globals_func.html">Alphabetic Function Index</A></TD><TD></TD></TR>
+<TD><TD>Index</TD>
+<TD>
+<A HREF="index.html">By Topic</A>
+<A HREF="classes.html">Alphabetic Classes</A>
+<A HREF="globals_func.html">Alphabetic Functions</A>
+\link frequent Frequently Used (bookmark this)</A></TD></TR> 
 </TABLE>
 
 @section documentation Documentation and Support
