@@ -79,8 +79,26 @@ void VertexAndPixelShader::GPUShader::compile() {
 			_messages += pInfoLog[c];
 			++c;
 		}
-		while (pInfoLog[c] == '\n' || pInfoLog[c] == '\r') {
-			_messages += pInfoLog[c];
+
+		if (pInfoLog[c] == '\r' && pInfoLog[c + 1] == '\n') {
+			// Windows newline
+			#ifdef G3D_WIN32
+				_messages += "\r\n";
+			#else
+				_messages += "\n";
+			#endif
+			c += 2;
+		} else if (pInfoLog[c] == '\r' && pInfoLog[c + 1] != '\n') {
+			// Dangling \r; treat it as a newline
+			_messages += "\r\n";
+			++c;
+		} else if (pInfoLog[c] == '\n') {
+			// Newline
+			#ifdef G3D_WIN32
+				_messages += "\r\n";
+			#else
+				_messages += "\n";
+			#endif
 			++c;
 		}
 	}
@@ -114,15 +132,15 @@ VertexAndPixelShader::VertexAndPixelShader(
     if (! vertexShader.ok()) {
         _ok = false;
         _messages += 
-			std::string("Compiling ") + vertexShader.shaderType() + " " + vsFilename + "\n" +
-			vertexShader.messages() + "\n\n";
+			std::string("Compiling ") + vertexShader.shaderType() + " " + vsFilename + NEWLINE +
+			vertexShader.messages() + NEWLINE + NEWLINE;
     }    
 
     if (! pixelShader.ok()) {
         _ok = false;
         _messages += 
-			std::string("Compiling ") + pixelShader.shaderType() + " " + psFilename + "\n" +
-			pixelShader.messages() + "\n\n";
+			std::string("Compiling ") + pixelShader.shaderType() + " " + psFilename + NEWLINE +
+			pixelShader.messages() + NEWLINE + NEWLINE;
     }    
 
     if (_ok) {
@@ -275,7 +293,10 @@ GLenum VertexAndPixelShader::canonicalType(GLenum e) {
 
 	case GL_SAMPLER_CUBE_ARB:
 		return GL_TEXTURE_CUBE_MAP_ARB;
-        
+ 
+	case GL_SAMPLER_2DRECT_ARB:
+		return GL_TEXTURE_RECTANGLE_EXT;
+
     default:
         // Return the input
         return e;    
@@ -353,6 +374,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
 
         case GL_TEXTURE_2D:
         case GL_TEXTURE_CUBE_MAP_ARB:
+        case GL_TEXTURE_RECTANGLE_EXT:
             // Textures are bound as if they were integers.  The
             // value of the texture is the texture unit into which
             // the texture is placed.

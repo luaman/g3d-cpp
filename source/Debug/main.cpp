@@ -45,6 +45,8 @@ public:
 	
 	TextureRef					brush;
 
+    VertexAndPixelShaderRef shader;
+
     Demo(App* app);    
 
 	void drawNailboard();
@@ -70,7 +72,17 @@ void Demo::init()  {
 
     debugAssert(VertexAndPixelShader::fullySupported());
 
-	brush = Texture::fromFile("D:/games/hardwarecontours/code/distrib/brush/toonfur.tga");
+	brush = Texture::fromFile("D:/games/hardwarecontours/code/distrib/brush/toonfur.tga",
+		TextureFormat::AUTO, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
+
+
+    std::string ps =
+        "uniform sampler2DRect T;  "
+        "void main (void) {           "
+        "   gl_FragColor    = texture2DRect(T, gl_TexCoord[0].st)); "
+        "}";
+
+    shader = VertexAndPixelShader::fromStrings("", ps);
 }
 
 
@@ -90,19 +102,25 @@ void Demo::drawNailboard() {
 		
 		app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
 		app->renderDevice->disableLighting();
-		app->renderDevice->setTexture(0, brush);
+
+//		app->renderDevice->setTexture(0, brush);
+
+		VertexAndPixelShader::ArgList args;
+		args.set("T", brush);
+
+		app->renderDevice->setVertexAndPixelShader(shader, args);
 
 		app->renderDevice->beginPrimitive(RenderDevice::QUADS);
 			app->renderDevice->setTexCoord(0, Vector2(0, 0));
 			app->renderDevice->sendVertex(Vector3(-1, 1, 0));
 
-			app->renderDevice->setTexCoord(0, Vector2(0, 1));
+			app->renderDevice->setTexCoord(0, Vector2(0, 256));
 			app->renderDevice->sendVertex(Vector3(-1, -1, 0));
 
-			app->renderDevice->setTexCoord(0, Vector2(1, 1));
+			app->renderDevice->setTexCoord(0, Vector2(256, 256));
 			app->renderDevice->sendVertex(Vector3( 1, -1, 0));
 
-			app->renderDevice->setTexCoord(0, Vector2(1, 0));
+			app->renderDevice->setTexCoord(0, Vector2(256, 0));
 			app->renderDevice->sendVertex(Vector3( 1, 1, 0));
 		app->renderDevice->endPrimitive();
 	app->renderDevice->pop2D();
@@ -143,15 +161,6 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-
-    std::string ps =
-        "uniform sampler2D T;         "
-        "void main (void) {           "
-        "   gl_FragColor    = texture2D(T, gl_TexCoord[0].st)); "
-        "}";
-
-    VertexAndPixelShaderRef shader =
-        VertexAndPixelShader::fromStrings("", ps);
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");

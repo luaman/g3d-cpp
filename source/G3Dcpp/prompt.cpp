@@ -482,6 +482,7 @@ static int textPrompt(
     return c;
 }
 
+
 int prompt(
     const char*      windowTitle,
     const char*      prompt, 
