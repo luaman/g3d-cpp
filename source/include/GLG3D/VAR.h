@@ -69,7 +69,7 @@ private:
 		area->allocated = (size_t)_pointer + size - (size_t)area->basePointer;
 
 		// Upload the data
-		memcpy(_pointer, sourcePtr, size);
+        memcpy(_pointer, sourcePtr, size);
 	}
 
 	friend class RenderDevice::VARSystem;
