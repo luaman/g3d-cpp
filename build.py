@@ -63,13 +63,12 @@ def installDir(args):
 
 """ On Posix, sets the permissions of the install dir to a+rx"""
 def setPermissions(args):
-    return
     if (os.name == 'posix'):
         # This could be accomplished more elegantly using os.walk
         curdir = os.getcwd()
         os.chdir(installDir(args))
-        print "chmod -R uag+rx"
-        os.system("chmod -R uag+rx")
+        print "chmod -R uag+rx *"
+        os.system("chmod -R uag+rx *")
         os.chdir(curdir)
 
 ###############################################################################
