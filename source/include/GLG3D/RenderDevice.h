@@ -909,7 +909,7 @@ private:
         Works on pointers since there is no way for users
         to construct their own TextureFormats.
      */
-    Table<TextureFormat*, bool>      _supportedTextureFormat;
+    Table<const TextureFormat*, bool>      _supportedTextureFormat;
 
 public:
 
@@ -917,7 +917,7 @@ public:
 
     /** Returns true if the given texture format is supported on this device.
         Cannot be called between beginPrimitive and endPrimitive*/
-    bool supportsTextureFormat(TextureFormat* const fmt);
+    bool supportsTextureFormat(const TextureFormat* fmt);
 
     /**
       When true, the 6-argument version of RenderDevice::setStencilOp

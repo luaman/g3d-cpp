@@ -7,7 +7,7 @@
   @cite Bug fix by Darius Jazayeri, jazayeri@MIT.EDU
 
   @created 2001-04-22
-  @edited  2003-10-06
+  @edited  2004-02-13
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -534,7 +534,7 @@ public:
    /**
     Returns true if key is in the table.
     */
-   bool containsKey(const Key &key) const {
+   bool containsKey(const Key& key) const {
        unsigned int code = ::hashCode(key);
        unsigned int b = code % numBuckets;
 

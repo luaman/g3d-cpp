@@ -2445,7 +2445,7 @@ std::string RenderDevice::screenshot(const std::string& filepath) const {
 }
 
 
-bool RenderDevice::supportsTextureFormat(TextureFormat* const fmt) {
+bool RenderDevice::supportsTextureFormat(const TextureFormat* fmt) {
     debugAssertM(! inPrimitive, 
         "Cannot call supportsTextureFormat between beginPrimitive and endPrimitive.");
 
