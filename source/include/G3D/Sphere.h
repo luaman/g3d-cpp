@@ -60,6 +60,9 @@ public:
 
     virtual std::string toString() const;
 
+    double volume() const;
+    double surfaceArea() const;
+
     /**
      Uniformly distributed on the surface.
      */

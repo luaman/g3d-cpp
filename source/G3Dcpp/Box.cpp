@@ -3,10 +3,9 @@
   Box class
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
-  @cite portions by Laura Wollstadt and Ben Landon
 
   @created 2001-06-02
-  @edited  2003-02-15
+  @edited  2003-12-13
 */
 
 #include "G3D/Box.h"
@@ -60,6 +59,24 @@ Box::Box(
 
     setMany(3, 2, 6, 7, y, max);
     setMany(0, 1, 5, 4, y, min);
+
+    Vector3 extent = max - min;
+
+    _volume = extent.x * extent.y * extent.z;
+    _area = 2 * 
+        (extent.x * extent.y + 
+         extent.y * extent.z + 
+         extent.z * extent.x);
+}
+
+
+double Box::volume() const {
+    return _volume;
+}
+
+
+double Box::surfaceArea() const {
+    return _area;
 }
 
 

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-04-17
- @edited  2003-10-04
+ @edited  2003-12-13
  */
 
 #include "G3D/Sphere.h"
@@ -78,5 +78,16 @@ Vector3 Sphere::randomInteriorPoint() const {
 
     return result * radius + center;
 }
+
+
+double Sphere::volume() const {
+    return G3D_PI * (4.0 / 3.0) * pow(radius, 3);
+}
+
+
+double Sphere::surfaceArea() const {
+    return G3D_PI * 4 * pow(radius, 2);
+}
+
 
 } // namespace

@@ -7,7 +7,7 @@
  
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   @created 2001-06-02
-  @edited  2003-02-06
+  @edited  2003-12-13
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -44,6 +44,9 @@ private:
       </PRE>
      */
     Vector3 corner[8];
+
+    double _area;
+    double _volume;
 
 public:
 
@@ -98,9 +101,11 @@ public:
         const class Plane*  plane,
         int                 numPlanes) const;
 
-
     bool contains(
         const Vector3&      point) const;
+
+    double surfaceArea() const;
+    double volume() const;
 };
 
 #undef setMany
