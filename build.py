@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-03-29
+# @edited  2004-04-15
 # Each build target is a procedure.
 #
 
@@ -52,7 +52,8 @@ install    Create a user installation directory (what you probably want)
 
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
 fastlib    Build the lib target without reconfiguring (not recommended) 
-release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip
+release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip, g3d-data-""" + version + """.zip
+source     Build g3d-src-""" + version + """.zip only
 doc        Run doxygen and copy the html directory
 clean      Delete the build, release, temp, and install directories
 help       Display this message
@@ -259,6 +260,32 @@ def clean(args):
 
 ###############################################################################
 #                                                                             #
+#                             source Target                                   #
+#                                                                             #
+###############################################################################
+
+def source(args):
+    if (os.name != 'nt'):
+        raise 'Error', 'Can only build source on Windows.'
+    rmdir('temp/sourcecopy')
+    copyIfNewer('source', 'temp/sourcecopy')
+
+    # Remove certain huge files
+    rm('temp/sourcecopy/g3ddocs.tag')
+    rm('temp/sourcecopy/html/G3D-Map.ppt')
+
+    # Remove all executables
+    files = os.listdir('temp/sourcecopy/demos')
+    for f in files:
+        if (f[-4:] == '.exe'):
+            rm('temp/sourcecopy/demos/' + f)
+
+    # Source zip
+    zip('temp/sourcecopy/*', 'release/g3d-src-' + version + '.zip')
+
+
+###############################################################################
+#                                                                             #
 #                            release Target                                   #
 #                                                                             #
 ###############################################################################
@@ -269,8 +296,7 @@ def release(args):
 
     rmdir('release')
 
-    rmdir('../temp')
-    copyIfNewer('../cpp/source', '../temp/sourcecopy')
+    rmdir('temp')
     rmdir('install')
 
     mkdir('release')
@@ -289,14 +315,12 @@ def release(args):
 
     zip('install/*', 'release/g3d-' + version + '.zip')
 
+    source(args)
     setPermissions(args)
 
-    # Source zip
-    zip('../temp/sourcecopy/*', 'release/g3d-src-' + version + '.zip')
-
     # Make a separate zipfile for the data
-    copyIfNewer('../data', '../temp/datacopy/data')
-    zip('../temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
+    copyIfNewer('../data', 'temp/datacopy/data')
+    zip('temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
 
 
 ###############################################################################
@@ -305,4 +329,4 @@ def release(args):
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, fastlib, install, doc, test, clean, release], buildHelp)
+dispatchOnTarget([lib, fastlib, install, source, doc, test, clean, release], buildHelp)

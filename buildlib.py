@@ -73,6 +73,8 @@ _excludePatterns =\
     '~$', \
     '\.sbr$', \
     '-debug\.exe$', \
+    '^temp$', \
+    '^tmp$', \
     '\.old$' \
     '^log.txt$', \
     '^stderr\.txt$', \
@@ -100,6 +102,11 @@ def rmdir(path):
     if (os.path.exists(path)):
         print 'rmdir ' + path
         shutil.rmtree(path, 1)
+
+def rm(path):
+    if os.path.exists(path):
+        print 'rm ' + path
+        os.remove(path)
 
 ###############################################################################
 
@@ -153,6 +160,8 @@ def _copyIfNewerVisit(args, sourceDirname, names):
     dirName     = _basename(destDirname)
 
     if (excludeFromCopying.search(dirName) != None):
+        # Don't recurse into subdirectories
+        del names[:]
         return
 
     # Create the corresponding destination dir if necessary
