@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-04-27
+ @edited  2004-04-30
  */
 
 
@@ -775,6 +775,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     shadeMode                   = SHADE_FLAT;
 
+    shader                      = NULL;
     vertexProgram               = NULL;
     pixelProgram                = NULL;
 
@@ -928,6 +929,8 @@ void RenderDevice::setState(
         setObjectToWorldMatrix(newState.objectToWorldMatrix);
         setCameraToWorldMatrix(newState.cameraToWorldMatrix);
     }
+
+    setShader(newState.shader);
 
     if (supportsVertexProgram()) {
         setVertexProgram(newState.vertexProgram);
@@ -1515,6 +1518,26 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
     default:
         debugAssertM(false, "Fell through switch");
         return GL_KEEP;
+    }
+}
+
+
+void RenderDevice::setShader(const ShaderGroupRef& s) {
+    if (s != state.shader) {
+
+        // TODO: bind the shader
+        state.shader = s;
+
+    }
+}
+
+
+void RenderDevice::setShader(const ShaderGroupRef& s,
+                             const ShaderGroup::ArgList& args) {
+    setShader(s);
+
+    if (! s.isNull()) {
+        s->bindArgList(this, args);
     }
 }
 

@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
         alwaysAssertM(false, e.message);
     }
 
-    // Bind the effect
+    rd->setShader(effect);
 
     return 0;
 }

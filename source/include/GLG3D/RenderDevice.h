@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-04-26
+  @edited  2004-04-30
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -19,6 +19,7 @@
 #include "GLG3D/Milestone.h"
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/PixelProgram.h"
+#include "GLG3D/Shader.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
@@ -729,9 +730,20 @@ public:
     uint numTextureCoords() const;
 
     /**
+     Set the current shader (combination of pixel shader, vertex shader,
+     and object shader).  You may call ShaderGroup::bindArgList either
+     before or after this, or use the variation of this call that
+     includes an arg list.
+     */
+    void setShader(const ShaderGroupRef& s);
+    void setShader(const ShaderGroupRef& s,
+            const ShaderGroup::ArgList& args);
+
+    /**
      Automatically enables vertex programs when they are set. 
      Assumes GLCaps::supports_GL_ARB_vertex_program() is true.
      @param vp Set to NULL to use the fixed function pipeline.
+     @deprecated Use RenderDevice::setShader
      */
     void setVertexProgram(const VertexProgramRef& vp);
 
@@ -749,6 +761,7 @@ public:
 
 
      @param args must include *all* arguments or an assertion will fail
+     @deprecated Use RenderDevice::setShader
      */
     void setVertexProgram(const VertexProgramRef& vp,
                           const GPUProgram::ArgList& args);
@@ -757,6 +770,7 @@ public:
      (Automatically enables pixel programs when they are set.) 
      Assumes GPUProgram() is true.
      @param pp Set to NULL to use the fixed function pipeline.
+     @deprecated Use RenderDevice::setShader
      */
     void setPixelProgram(const PixelProgramRef& pp);
 
@@ -764,6 +778,7 @@ public:
      It is recommended to call RenderDevice::pushState immediately before
      setting the pixel program, since the arguments can affect texture
      state that will only be restored with RenderDevice::popState.
+     @deprecated Use RenderDevice::setShader
      */
     void setPixelProgram(const PixelProgramRef& pp,
                          const GPUProgram::ArgList& args);
@@ -863,7 +878,10 @@ private:
         double                      lowDepthRange;
         double                      highDepthRange;
 
+        ShaderGroupRef              shader;
+        /** @deprecated */
         VertexProgramRef            vertexProgram;
+        /** @deprecated */
         PixelProgramRef             pixelProgram;
 
         // Ambient light level
@@ -966,7 +984,7 @@ public:
 
     /**
      @deprecated
-     Use GLCaps::supports_GL_ARB_vertex_program instead.
+     Use ShaderGroup
      */
     bool supportsVertexProgram() const;
 
@@ -974,13 +992,13 @@ public:
      When true, NVIDIA Vertex Program 2.0 vertex programs can
      be loaded by VertexProgram.
      @deprecated
-     Use GLCaps::GL_NV_vertex_program2 instead.
+     Use ShaderGroup
      */
     bool supportsVertexProgramNV2() const;
 
     /**
      @deprecated
-     Use GLCaps::supports_GL_ARB_fragment_program instead.
+     Use ShaderGroup
      */
     bool supportsPixelProgram() const;
 
