@@ -82,12 +82,11 @@ users who are already familiar with C++ and DirectX or OpenGL.
 
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
-<TR><TD>Index</TD>
-<TD>
+<TR><TD VALIGN=TOP>Indices</TD>
+<TD VALIGN=TOP>
 <A HREF="index.html">By Topic</A>
-<A HREF="classes.html">Alphabetic Classes</A>
-<A HREF="globals_func.html">Alphabetic Functions</A>
-\link frequent Frequently Used (bookmark this)\endlink</TD></TR> 
+<DT>Alphabetic <A HREF="classes.html">Classes</A> and <A HREF="globals_func.html">Functions</A>
+<DT>\link frequent Frequently Used (bookmark this!)\endlink</TD></TR> 
 </TABLE>
 
 @section documentation Documentation and Support
