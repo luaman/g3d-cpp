@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2004-07-07
+  @edited  2004-07-23
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -482,6 +482,9 @@ inline G3D::Vector3 operator*(int s, const G3D::Vector3& v) {
 
 std::ostream& operator<<(std::ostream& os, const Vector3&);
 
+
+void serialize(const Vector3::Axis& a, class BinaryOutput& bo);
+void deserialize(Vector3::Axis& a, class BinaryInput& bo);
 
 }
 

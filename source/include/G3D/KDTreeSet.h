@@ -216,7 +216,7 @@ private:
         Vector3::Axis       splitAxis;
 
         /** Location along the specified axis */
-        double              splitLocation;
+        float               splitLocation;
  
         /** child[0] contains all values strictly 
             smaller than splitLocation along splitAxis.
@@ -338,6 +338,40 @@ private:
 		    }
 	    }
 
+
+        /**
+          Stores the locations of the splitting planes (the structure but not the content)
+          so that the tree can be quickly rebuilt from a previous configuration without 
+          calling balance.
+         */
+        static void serializeStructure(const Node* n, BinaryOutput& bo) {
+            if (n == NULL) {
+                bo.writeUInt8(0);
+            } else {
+                bo.writeUInt8(1);
+                n->splitBounds.serialize(bo);
+                serialize(n->splitAxis, bo);
+                bo.writeFloat32(n->splitLocation);
+                for (int c = 0; c < 2; ++c) {
+                    serializeStructure(n->child[c], bo);
+                }
+            }
+        }
+
+        /** Clears the member table */
+        static Node* deserializeStructure(BinaryInput& bi) {
+            if (bo.readUInt8() == 0) {
+                return NULL;
+            } else {
+                Node* n = new Node();
+                n->splitBounds.deserialize(bi);
+                deserialize(n->splitAxis, bi);
+                n->splitLocation = bi.readFloat32();
+                for (int c = 0; c < 2; ++c) {
+                    n->child[c] = deserializeStructure(bi);
+                }
+            }
+        }
 
         /** Returns the deepest node that completely contains bounds. */
         Node* findDeepestContainingNode(const AABox& bounds) {
@@ -1308,6 +1342,21 @@ public:
 	    }
 	    
     };
+
+    /**
+      Stores the locations of the splitting planes (the structure but not the content)
+      so that the tree can be quickly rebuilt from a previous configuration without 
+      calling balance.
+     */
+    void serializeStructure(BinaryOutput& bo) const {
+        Node::serializeStructure(bo);
+    }
+
+    /** Clears the member table */
+    void deserializeStructure(BinaryInput& bi) {
+        clear();
+        root = Node::deserializeStructure(bi);
+    }
 
     /**
       Generates a RayIntersectionIterator that produces successive
