@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-11-22
+  @edited  2003-11-24
   */
 
 #include "GLG3D/glcalls.h"
@@ -192,25 +192,7 @@ void Sky::renderBox() const {
     bool cube = (cubeMap != NULL);
 
     if (cube) {
-        // Set up cube mapping
         renderDevice->setTexture(0, cubeMap);
-
-        // Read back the OpenGL transformation matrix.
-        CoordinateFrame cframe;
-        double glRot[16];
-        glGetDoublev(GL_MODELVIEW_MATRIX, glRot);
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                cframe.rotation[i][j] = glRot[i * 4 + j];
-            }
-        }
-
-        // Reflect (we're *inside* the normal map)
-        Matrix3 reflect(-1,  0,  0,
-                         0,  1,  0,
-                         0,  0,  1);
-
-        cframe.rotation = reflect * cframe.rotation;
 
         glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_GEN_S | GL_TEXTURE_GEN_T | GL_TEXTURE_GEN_R | GL_TEXTURE_GEN_Q);
 
@@ -219,8 +201,9 @@ void Sky::renderBox() const {
     	    glTexGeni(GL_S + i, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
 	        glEnable(GL_TEXTURE_GEN_S + i);
         }
-
-        renderDevice->setTextureMatrix(0, cframe);
+ 
+        // Texture generation will be in object space
+        renderDevice->setTextureMatrix(0, renderDevice->getCameraToWorldMatrix());
 
     } else {
         CoordinateFrame cframe;

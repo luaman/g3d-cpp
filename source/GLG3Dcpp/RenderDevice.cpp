@@ -2764,10 +2764,6 @@ void RenderDevice::configureReflectionMap(
     // so zero the translation.
     cframe.translation = Vector3::ZERO;
 
-    // Environment maps have the X-axis flipped from the default coordinate
-    // system.
-    cframe.rotation.setRow(0, -cframe.rotation.getRow(0));
-
     // The environment map is in world space.  The reflection vector
     // will automatically be multiplied by the object->camera space 
     // transformation by hardware (just like any other vector) so we 

@@ -196,7 +196,6 @@
         G3D::Draw,
         G3D::Milestone,
         G3D::PixelProgram,
-        G3D::reflectionMatrix,
         G3D::RenderDevice,
         G3D::RenderDeviceSettings,
         G3D::tesselateComplexPolygon,

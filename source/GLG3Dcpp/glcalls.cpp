@@ -53,34 +53,12 @@ Matrix4 glGetMatrix(GLenum name) {
 }
 
 
-CoordinateFrame reflectionMatrix() {
-	CoordinateFrame cframe;
-
-	// Reflect (mirror)
-	Matrix3 refl(Matrix3::IDENTITY);
-	refl[0][0] = -1;
-
-    // Read back the OpenGL transformation matrix.
-    Matrix3 rot(Matrix3::ZERO);
-    double glRot[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, glRot);
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            rot[i][j] = glRot[i * 4 + j];
-        }
-    }
-
-	cframe.rotation = refl * rot;
-
-    return cframe;
-}
-
-
 void glLoadMatrix(const CoordinateFrame &cf) {
     GLdouble matrix[16];
     _getGLMatrix(matrix, cf.rotation, cf.translation);
     glLoadMatrixd(matrix);
 }
+
 
 void glLoadMatrix(const Matrix4& m) {
     GLfloat matrix[16];

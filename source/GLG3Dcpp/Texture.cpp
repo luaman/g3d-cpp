@@ -687,7 +687,8 @@ void Texture::copyFromScreen(
     glGetDoublev(GL_VIEWPORT, viewport);
     double viewportHeight = viewport[3];
     debugAssertGLOk();
-    
+
+//    glPixelZoom(1, -1);
     glCopyTexImage2D(target, 0, format->OpenGLFormat,
         rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
 

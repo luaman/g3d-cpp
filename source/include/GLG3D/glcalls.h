@@ -180,33 +180,6 @@ inline void * glGetProcAddress(const char * name){
     #endif
 }
 
-/**
- Returns a texture matrix appropriate for reflection vectors
- based on the current modelview matrix.  This is necessary
-
- to reflect a cube map so it matches the sky box.
-
-  Example:
- <PRE>
-    renderDevice->setTexture(0, cubemap);
-
-	glEnable(GL_TEXTURE_CUBE_MAP_ARB);
-    for (int i = 0; i < 4; ++i) {
-    	glTexGeni(GL_S + i, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
-	    glEnable(GL_TEXTURE_GEN_S + i);
-    }
-
-    renderDevice->setTextureMatrix(0, reflectionMatrix());
-    renderDevice->setColor(Color3::WHITE);
-	glutSolidSphere(3, 200, 100);
-
-    for (int i = 0; i < 4; ++i) {
-	    glDisable(GL_TEXTURE_GEN_S + i);
-    }
-	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
- */
-CoordinateFrame reflectionMatrix();
-
 
 /**
  Takes an object space point to screen space using the current MODELVIEW and

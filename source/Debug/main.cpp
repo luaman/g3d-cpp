@@ -159,7 +159,8 @@ public:
 void Demo::init()  {
     tex = Texture::fromFile(app->dataDir + "image/lena.tga");
     //sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
-    sky = Sky::create(app->renderDevice, "c:/temp/testbox/","testcube_*.jpg",false);
+    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","testcube_*.jpg",false);
+//    sky = Sky::create(app->renderDevice, "d:/graphics3d/book/data/sky/","majestic512_*.jpg",false);
 
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
@@ -234,7 +235,7 @@ app->renderDevice->clear(true, true, true);
 app->renderDevice->push2D();
     app->debugFont->draw2D(format("%g", random(0, 1)), Vector2(10, 10), 20, Color3::BLACK);
 app->renderDevice->pop2D();
-sky->getEnvironmentMap()->copyFromScreen(Rect2D::xywh(0,0,512,512), Texture::CUBE_POS_X);
+sky->getEnvironmentMap()->copyFromScreen(Rect2D::xywh(0,0,512,512), Texture::CUBE_POS_Z);
 
     app->debugPrintf("Mouse (%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
