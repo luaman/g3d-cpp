@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-03-13
+  @edited  2004-03-17
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -329,44 +329,41 @@ private:
             // Choose the split location between the two middle elements
             const Vector3 median = 
                 (point[midIndex].bounds.high() +
-                 point[iMin(midIndex + 1, point.size())].bounds.low()) * 0.5;
+                 point[iMin(midIndex + 1, point.size() - 1)].bounds.low()) * 0.5;
 
 	        // Some number of nodes around midIndex may actually overlap the
 	        // midddle, so they must be found and added to *this* node, not one
 	        // of its children
-	        int beginStraddleIndex, endStraddleIndex;
+	        int loEndIndex, hiStartIndex;
 
-	        for (beginStraddleIndex = midIndex;
-		         (beginStraddleIndex >= beginIndex) &&
-			      (point[beginStraddleIndex].bounds.high()[splitAxis] >= median[splitAxis]);
-		         --beginStraddleIndex) {}
+	        for (loEndIndex = midIndex;
+		     (loEndIndex >= beginIndex) &&
+			     (point[loEndIndex].bounds.high()[splitAxis] >= median[splitAxis]);
+		         --loEndIndex) {}
 
-    	    for (endStraddleIndex = midIndex + 1;
-		         (endStraddleIndex <= endIndex) &&
-			      (point[endStraddleIndex].bounds.low()[splitAxis] <= median[splitAxis]);
-          		 ++endStraddleIndex) {}
+		    for (hiStartIndex = midIndex + 1;
+		         (hiStartIndex <= endIndex) &&
+			         (point[hiStartIndex].bounds.low()[splitAxis] <= median[splitAxis]);
+          		     ++hiStartIndex) {}
 
-
-	        // The straddleIndexs are really the end and beginning of the
-	        // children indices, respectively. Hence the + 1 and < instead of <=
-	        // this is because the loop ends when the test fails, so each of
-	        // them will be equal to the first index that should be in the child
-
-	        for (int i = beginStraddleIndex + 1; i < endStraddleIndex; ++i) {
+	        for (int i = loEndIndex + 1; i < hiStartIndex; ++i) {
 		        node->valueArray.push(point[i]);
 		        memberTable.set(point[i].value, node);
 	        }
 
             node->splitAxis     = splitAxis;
             node->splitLocation = median[splitAxis];
-            node->child[0]      = 
-                makeNode(point, beginIndex, 
-                         iMin(midIndex, beginStraddleIndex),
-					     valuesPerNode);
-            node->child[1]      = 
-                makeNode(point, 
-                         iMax(midIndex + 1, endStraddleIndex), 
-                         endIndex, valuesPerNode);
+
+	        if (loEndIndex >= beginIndex) {
+		        node->child[0]      = 
+			        makeNode(point, beginIndex, loEndIndex, valuesPerNode);
+	        }
+
+	        if (hiStartIndex <= endIndex) {
+		        node->child[1]      = 
+			        makeNode(point, hiStartIndex, endIndex, valuesPerNode);
+	        }
+
         }
 
         return node;
@@ -720,17 +717,13 @@ public:
 		    float minTime;
 		    float maxTime;
 
-            /** what we're checking right now, either from minTime to the
-		       split, or from the split to maxTime (more or less...
-		       there are edge cases) */
+		    /** what we're checking right now, either from minTime to the
+			split, or from the split to maxTime (more or less...
+			there are edge cases) */
 		    float startTime;
 		    float endTime;
-
-
-		    /** true if we're on the "pre" side of the node: ie, checking
-		       in front of the split. */
-
-		    bool preSide;
+		    
+		    int nextChild;
 
 		    /** current index into node's valueArray */
 		    int valIndex;
@@ -739,117 +732,108 @@ public:
 		    /** cache intersection values when they're checked on the preSide,
 		       split so they don't need to be checked again after the split. */
 		    Array<float> intersectionCache;
-
-		    StackFrame(const Node* inNode, float inMinTime, float inMaxTime, const Ray& ray) :
-			    node(inNode), minTime(inMinTime), maxTime(inMaxTime),
-			    startTime(0), endTime(inf), preSide(true), valIndex(-1) {
-
-                if (node == NULL) {
-                    return;
-                }
+		    
+		    void init(const Node* inNode, const Ray& ray, float inMinTime, float inMaxTime) {
+			    node = inNode;
+			    minTime = inMinTime;
+			    maxTime = inMaxTime;
+			    valIndex = -1;
 			    
+			    register Vector3::Axis splitAxis = node->splitAxis;
+			    register float splitLocation = node->splitLocation;
+
 			    // this is the time along the ray until the split.
 			    // could be negative if the split is behind.
 			    double splitTime =
-				    (node->splitLocation - ray.origin[node->splitAxis]) /
-				    ray.direction[node->splitAxis];
-
+				    (splitLocation - ray.origin[splitAxis]) /
+				    ray.direction[splitAxis];
+			    
 			    // if splitTime <= minTime we'll never reach the
 			    // split, so set it to inf so as not to confuse endTime
 			    // it will be noted below that when splitTime is inf
 			    // only one of this node's children will be searched
 			    // (the pre child). Therefore it is critical that
 			    // the correct child is gone to.
-                if (splitTime <= minTime) {
-                    splitTime = inf;
-                }
-
+			    if (splitTime <= minTime) {
+				    splitTime = inf;
+			    }
+			    
 			    startTime = minTime;
 			    endTime = min(maxTime, splitTime);
 
+			    
+			    float rayLocation = ray.origin[splitAxis] +
+				    ray.direction[splitAxis] * minTime;
+
+			    if(rayLocation == splitLocation) {
+				    // we're right on the split. Look ahead.
+				    rayLocation = ray.origin[splitAxis] +
+					    ray.direction[splitAxis] * maxTime;
+			    }
+			    
+			    if(rayLocation == splitLocation) {
+				    // right on the split, looking exactly along
+				    // it, so consider no children.
+				    nextChild = -1;
+			    } else if(rayLocation <= splitLocation) {
+				    nextChild = 0;
+			    } else {
+				    nextChild = 1;
+			    }
+			    
 			    intersectionCache.resize(node->valueArray.size());
 		    }
 	    };
 
-	    Array<StackFrame*>  stack;
-	    Ray                 ray;
-	    bool                isEnd;
-	    StackFrame*         breakFrame;
-
-	    RayIntersectionIterator(const Ray& r, const Node* root) :
-		    ray(r), isEnd(root == NULL), breakFrame(NULL),
-		    maxDistance(inf), minDistance(0), testCounter(0) {
-		    StackFrame* s = new StackFrame(root, 0, inf, ray);
-		    stack.push(s);
-		    ++(*this);
-	    }
-
     public:
-	    /** These hold bounds for where the most recent intersection
-	      occurred. minDistance is the distance from the ray to the
-	     bounding box that was hit. */
-	    double maxDistance;
+	    /** A minimum bound on the distance to the intersection. */
 	    double minDistance;
 
-	    /** Counts how many bounding box intersection tests have been done so
+	    /** A maximum bound on the distance to the intersection. */
+	    double maxDistance;
+
+	    /** Counts how many bounding box intersection tests have been made so
 	        far. */
 	    int testCounter;
 
+
+    private:
+	    Ray                 ray;
+	    bool                isEnd;
+
+	    Array<StackFrame>   stack;
+	    int                 stackLength;
+	    int                 stackIndex;
+	    int                 breakFrameIndex;
+
+	    RayIntersectionIterator(const Ray& r, const Node* root)
+		    : minDistance(0), maxDistance(inf), testCounter(0),
+		    ray(r), isEnd(root == NULL),
+		    stackLength(20), stackIndex(0), breakFrameIndex(-1)
+	    {
+		    stack.resize(stackLength);
+		    stack[stackIndex].init(root, ray, 0, inf);
+
+		    ++(*this);
+	    }
+
+
+    public:
 	    /* public so we can have empty ones */
 	    RayIntersectionIterator() : isEnd(true) {}
-	    
-	    ~RayIntersectionIterator() {
-		    stack.deleteAll();
-	    }
 
 	    inline bool operator!=(const RayIntersectionIterator& other) const {
 		    return ! (*this == other);
 	    }
 	    
-	    RayIntersectionIterator& operator=(const RayIntersectionIterator& rhs) {
-		    for (int i = 0; i < rhs.stack.length(); ++i) {
-			    stack.push(new StackFrame(*rhs.stack[i]));
-		    }
-
-		    isEnd = rhs.isEnd;
-		    ray = rhs.ray;
-		    testCounter = rhs.testCounter;
-		    maxDistance = rhs.maxDistance;
-		    minDistance = rhs.minDistance;
-
-		    if (rhs.breakFrame) {
-			    int breakIndex = rhs.stack.findIndex(rhs.breakFrame);
-			    breakFrame = stack[breakIndex];
-		    } else {
-			    breakFrame = NULL;
-		    }
-		    
-		    return *this;
-	    }
-	    
+	    /** Compares two iterators, but will only return true if both are at
+		the end. */
 	    bool operator==(const RayIntersectionIterator& other) const {
 		    if (isEnd) {
 		    	return other.isEnd;
-		    } else if (other.isEnd) {
-	    		return false;
-		    } else {
-		    	// Two non-end iterators; see if they match.  This is kind of 
-		    	// silly; users shouldn't call == on iterators in general unless
-		    	// one of them is the end iterator.
-		    	if ((stack.length() != other.stack.length())) {
-		    		return false;
-		    	}
-			
-		    	// See if the stacks are the same
-		    	for (int i = 0; i < stack.length(); ++i) {
-		    		if (stack[i] != other.stack[i]) {
-		    			return false;
-		    		}
-		    	}
-			
-		    	// We failed to find a difference; they must be the same
-		    	return true;
 		    }
+		    
+		    return false;
 	    }
 
 	    /**
@@ -865,161 +849,111 @@ public:
 	    // the distance of the actual collision and the iterator would keep
 	    // itself from checking nodes or boxes beyond that distance.
 	    void markBreakNode() {
-		    breakFrame = stack.last();
+		    breakFrameIndex = stackIndex;
 	    }
 
 	    /**
 	       Clears the break node. Can be used before or after the iterator
 	       stops from a break.
-          <B>Beta API-- subject to change</B>
+	       <B>Beta API-- subject to change</B>
 	    */
 	    void clearBreakNode() {
-            if (breakFrame == null) {
-                return;
-            }
-
-            if (isEnd && stack.length() > 0) {
-                isEnd = false;
-            }
-
-		    breakFrame = NULL;
+		    if (breakFrameIndex < 0) {
+			    return;
+		    }
+		    
+		    if (isEnd && stackIndex >= 0) {
+			    isEnd = false;
+		    }
+		    
+		    breakFrameIndex = -1;
 	    }
 	    
+	    
 	    RayIntersectionIterator& operator++() {
-		    StackFrame* s = stack.last();
+		    alwaysAssertM(!isEnd, "Can't increment the end element of an iterator");
+
+		    StackFrame* s = &stack[stackIndex];
 		    
 		    // leave the loop if:
 		    //    end is reached (ie: stack is empty)
 		    //    found an intersection
 
 		    while (true) {
-			    if ((s == NULL) || (s->startTime >= s->endTime)) {
-				    // this frame is invalid, pop it.
-				    
-				    StackFrame* temp = stack.pop();
-				    debugAssert(temp == s);
-				    delete s;
-
-				    if (stack.length() == 0) {
-					    isEnd = true;
-					    break;
-				    }
-				    
-				    s = stack.last();
-
-				    // If we pop the break frame it means that
-				    // we've exhausted that frame's children, so
-				    // we can break
-				    if (s == breakFrame) {
-					    isEnd = true;
-					    break;
-				    }
-				    
-				    continue;
-			    }
-
 			    ++s->valIndex;
 
 			    if (s->valIndex >= s->node->valueArray.length()) {
 				    // This node is exhausted, look at its
 				    // children.
 				    
-				    // Find the index of the child that the ray
-				    // will hit first.  We need to take into account
-				    // minTime for this to work right: it is
-				    // possible for the ray to hit the split
-				    // axis before it hits minTime (ie: this
-				    // node's parent's split axis). If you
-				    // naively use origin (as in the
-				    // pseudocode), you may end up picking for
-				    // the pre child a node that the ray doesn't
-				    // intersect, which is bad for efficiency.
-				    // But worse, since the split came
-				    // before minTime (when calculating for the
-				    // StackFrame), startTime == minTime and
-				    // endTime == maxTime. So, down below when
-				    // this node is suspended startTime =
-				    // endTime = maxTime. This means that when
-				    // this node is resumed it will be cast away
-				    // because startTime == endTime, so the
-				    // correct child will never be looked at.
-				    //
-				    // Thus it is very important that preIndex
-				    // calculates the first child to actually be
-				    // intersected by the ray. :)
+				    Node* child = (s->nextChild >= 0) ?
+					    s->node->child[s->nextChild] : NULL;
+				    float childStartTime = s->startTime;
+				    float childEndTime = s->endTime;
 
-				    int preIndex =
-					    (ray.origin[s->node->splitAxis] +
-					     ray.direction[s->node->splitAxis] * s->minTime
-					     < s->node->splitLocation) ? 0 : 1;
-
-				    // if we're not on the preside we want to
-				    // check the far child
-				    int childIndex = (s->preSide) ? preIndex : (1 - preIndex);
-				    
-				    StackFrame* cs = NULL;
-				    if (s->node->child[childIndex] != NULL) {
-					    cs = new StackFrame(s->node->child[childIndex],
-								s->startTime, s->endTime, ray);
-				    }
-
-				    if (s->preSide) {
-					    // We'll need to come back, keep
-					    // this on the stack, but reset it
-					    // to be ready for the postSide
-					    s->preSide = false;
+				    if(s->endTime < s->maxTime) {
+					    // we can come back to this frame,
+					    // so reset it
 					    s->valIndex = -1;
-					    
-					    // Look from the break to beyond
-					    // could probably put a check in
-					    // here for this assignment making
-					    // startTime == endTime, it might
-					    // give small savings in space. That
-					    // case will be checked anyway when
-					    // this frame is resumed later
 					    s->startTime = s->endTime;
 					    s->endTime = s->maxTime;
+					    s->nextChild = (s->nextChild >= 0) ?
+						    (1 - s->nextChild) : -1;
+
+					    if(stackIndex == stackLength) {
+						    stackLength *= 2;
+						    stack.resize(stackLength);
+					    }
 				    } else {
-					    // This side has already been taken
-					    // care of, clear it off the stack
-					    // tail-recursion style
-					    
-					    StackFrame* top = stack.pop();
-					    debugAssert(top == s);
+					    // tail-recursion: we won't come
+					    // back to this frame, so we can
+					    // remove it.
 
-					    if (s == breakFrame) {
-						    // We won't ever get back to
-						    // this frame, so if there's
-						    // anything left on the
-						    // stack, make *it* the
-						    // breakframe or we'll never
-						    // break. :)
-						    // This will happen when
-						    // markBreakNode is called
-						    // on the post side of a
-						    // node; when markBreakNode
-						    // is called on the pre side
-						    // we should *never* check
-						    // that same node's post side.
-
-						    if (stack.length() > 0) {
-							    breakFrame = stack.last();
-						    }
+					    if(stackIndex == breakFrameIndex) {
+						    // This will be the case if the
+						    // break frame is set on a node, but
+						    // the node is exhausted so it won't
+						    // be put on the stack. Here we
+						    // decrement the break frame so that
+						    // the break occurs when the current
+						    // frame's parent is resumed.
+						    breakFrameIndex--;
 					    }
 
-					    delete s;
+					    stackIndex--;
 				    }
 
-				    stack.push(cs);
-				    s = cs;
+				    // there could have been a resize, so
+				    // DON'T USE s!
+
+				    if(child != NULL) {
+					    stackIndex++;
+					    stack[stackIndex].init(child, ray,
+								   childStartTime, childEndTime);
+				    }
+
+				    if (stackIndex < 0 || stackIndex == breakFrameIndex) {
+					    isEnd = true;
+					    break;
+				    }
+
+				    s = &stack[stackIndex];
 				    continue;
 			    }
 
+			    // TODO: remove these three lines when aabox testing is better
+			    //minDistance = s->startTime;
+			    //maxDistance = s->endTime;
+			    //break;
+			    // -----------------------------------------------------
+
 			    double t;
-			    if (s->preSide) {
+			    // this can be an exact equals because the two
+			    // variables are initialized to the same thing
+			    if (s->startTime == s->minTime) {
 				    t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds);
-				    ++testCounter;
 				    s->intersectionCache[s->valIndex] = t;
+				    ++testCounter;
 			    } else {
 				    t = s->intersectionCache[s->valIndex];
 			    }
@@ -1040,21 +974,21 @@ public:
 		to a member */
 	    const T& operator*() const {
 		    alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
-		    return stack.last()->node->valueArray[stack.last()->valIndex].value;
+		    return stack[stackIndex].node->valueArray[stack[stackIndex].valIndex].value;
 	    }
 	    
 	    /** Overloaded dereference operator so the iterator can masquerade as a pointer
 		to a member */
 	    T const * operator->() const {
 		    alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
-		    return &(stack.last()->node->valueArray[stack.last()->valIndex].value);
+		    return &(stack[stackIndex].node->valueArray[stack[stackIndex].valIndex].value);
 	    }
 	    
 	    /** Overloaded cast operator so the iterator can masquerade as a pointer
 		to a member */
 	    operator T*() const {
 		    alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
-		    return &(stack.last()->node->valueArray[stack.last()->valIndex].value);
+		    return &(stack[stackIndex].node->valueArray[stack[stackIndex].valIndex].value);
 	    }
 	    
     };
@@ -1090,7 +1024,8 @@ public:
      <PRE>
 
        typedef AABSPTree<Object*>::RayIntersectionIterator IT;
-       void findFirstIntersection(const Ray& ray, Object*& firstObject, double& firstTime) {
+       void findFirstIntersection(const Ray& ray, Object*& firstObject, double& 
+firstTime) {
 
            firstObject   = NULL;
            firstDistance = inf;
@@ -1127,6 +1062,7 @@ public:
 
     <IMG SRc="aabsp-intersect.png">
 
+     @cite Pete Hopkins
     */
 	RayIntersectionIterator beginRayIntersection(const Ray& ray) const {
 		return RayIntersectionIterator(ray, root);
@@ -1225,3 +1161,4 @@ public:
 }
 
 #endif
+

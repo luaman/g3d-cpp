@@ -129,6 +129,10 @@ public:
         Vector3&                outNormal = ignore);
 
     /**
+     Unlike other methods, does not support an output normal.
+     If the ray origin is inside the box, returns 0 and outLocation = point.
+     <B>Beta API</B>
+
      @cite Andrew Woo, from "Graphics Gems", Academic Press, 1990
   	 @cite Optimized code by Pierre Terdiman, 2000 (~20-30% faster on my Celeron 500)
      @cite Epsilon value added by Klaus Hartmann
@@ -138,8 +142,7 @@ public:
         const Vector3&			point,
         const Vector3&			velocity,
         const class AABox&      box,
-        Vector3&				outLocation,
-        Vector3&                outNormal = ignore);
+        Vector3&				outLocation);
 
     static double collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,

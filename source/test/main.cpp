@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-02-17
+ @edited  2004-03-17
  */
 
 
@@ -59,6 +59,7 @@ void testRCP() {
     debugAssert(a.isLastReference());
     debugAssert(numRCPFoo == 1);
 }
+
 
 void testBox() {
     printf("Box\n");
@@ -528,6 +529,42 @@ void measureTriangleCollisionPerformance() {
 
     printf("Sphere-Triangle collision detection on 3 vertices: %d cycles\n", (int)(raw / n));
     printf("Sphere-Triangle collision detection on CDTriangle: %d cycles\n", (int)(opt / n));
+}
+
+
+
+void measureAABoxCollisionPerformance() {
+    printf("----------------------------------------------------------\n");
+
+    uint64 raw, opt;
+
+    AABox aabox(Vector3(-1, -1, -1), Vector3(1,2,3));
+    Box   box = aabox.toBox();
+
+    Vector3 pt1(0,10,0);
+    Vector3 vel1(0,-1,0);
+    Vector3 location, normal;
+    int n = 1024;
+    int i;
+
+    System::beginCycleCount(raw);
+    for (i = 0; i < n; ++i) {
+        double t = CollisionDetection::collisionTimeForMovingPointFixedBox(
+            pt1, vel1, box, location, normal);
+        (void)t;
+    }
+    System::endCycleCount(raw);
+
+    System::beginCycleCount(opt);
+    for (i = 0; i < n; ++i) {
+        double t = CollisionDetection::collisionTimeForMovingPointFixedAABox(
+            pt1, vel1, aabox, location);
+        (void)t;
+    }
+    System::endCycleCount(opt);
+
+    printf("Ray-Box:   %d cycles\n", (int)(raw / n));
+    printf("Ray-AABox: %d cycles\n", (int)(opt / n));
 }
 
 
@@ -1218,6 +1255,9 @@ int main(int argc, char* argv[]) {
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
+        measureAABoxCollisionPerformance();
+// TODO: remove
+while(true);
         measureMatrix3Performance();
         measureArrayPerformance();
         measureMemcpyPerformance();

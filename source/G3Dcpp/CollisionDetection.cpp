@@ -487,16 +487,82 @@ double CollisionDetection::collisionTimeForMovingPointFixedBox(
 }
 
 
-
 double CollisionDetection::collisionTimeForMovingPointFixedAABox(
-    const Vector3&          point,
-    const Vector3&          velocity,
+    const Vector3&          origin,
+    const Vector3&          dir,
     const AABox&            box,
-    Vector3&                location,
-    Vector3&                outNormal) {
+    Vector3&                location) {
 
-    // TODO: faster code from http://www.codercorner.com/RayAABB.cpp
-    return collisionTimeForMovingPointFixedBox(point, velocity, box.toBox(), location, outNormal);
+    //return collisionTimeForMovingPointFixedBox(point, velocity, box.toBox(), location, outNormal);
+
+    const double RAYAABB_EPSILON = 0.00001;
+
+    // Integer representation of a floating-point value.
+    #define IR(x)	((uint32&)x)
+
+    bool  Inside = true;
+	Vector3 MinB = box.low();
+	Vector3 MaxB = box.high();
+	Vector3 MaxT(-1.0f, -1.0f, -1.0f);
+
+	// Find candidate planes.
+    for (int i = 0; i < 3; ++i) {
+		if (origin[i] < MinB[i]) {
+			location[i]	= MinB[i];
+			Inside      = false;
+
+			// Calculate T distances to candidate planes
+            if (IR(dir[i])) {
+                MaxT[i] = (MinB[i] - origin[i]) / dir[i];
+            }
+        } else if (origin[i] > MaxB[i]) {
+			location[i]	= MaxB[i];
+			Inside	    = false;
+
+			// Calculate T distances to candidate planes
+            if (IR(dir[i])) {
+                MaxT[i] = (MaxB[i] - origin[i]) / dir[i];
+            }
+		}
+	}
+
+	// Ray origin inside bounding box
+	if (Inside) {
+		location = origin;
+		return 0.0;
+	}
+
+	// Get largest of the maxT's for final choice of intersection
+	int WhichPlane = 0;
+    if (MaxT[1] > MaxT[WhichPlane])	{
+        WhichPlane = 1;
+    }
+
+    if (MaxT[2] > MaxT[WhichPlane])	{
+        WhichPlane = 2;
+    }
+
+	// Check final candidate actually inside box
+    if (IR(MaxT[WhichPlane]) & 0x80000000) {
+        // Miss the box
+        return inf;
+    }
+
+	for (int i = 0; i < 3; ++i) {
+        if (i != WhichPlane) {
+			location[i] = origin[i] + MaxT[WhichPlane] * dir[i];
+            if ((location[i] < MinB[i] - RAYAABB_EPSILON) ||
+                (location[i] > MaxB[i] + RAYAABB_EPSILON)) {
+                // On this plane we're outside the box extents, so
+                // we miss the box
+                return inf;
+            }
+		}
+	}
+
+	return (location - origin).length();
+
+    #undef IR
 }
 
 
