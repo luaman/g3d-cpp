@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-04-26
+  @edited  2004-04-27
 */
 
 #include "GLG3D/GLCaps.h"
@@ -179,6 +179,12 @@ void GLCaps::loadExtensions() {
         LOAD_EXTENSION(glXQueryMaxSwapGroupsNV);
         LOAD_EXTENSION(glXQueryFrameCountNV);
         LOAD_EXTENSION(glXResetFrameCountNV);
+
+        LOAD_EXTENSION(glXCreateGLXPbufferSGIX);
+        LOAD_EXTENSION(glXDestroyGLXPbufferSGIX);
+        LOAD_EXTENSION(glXQueryGLXPbufferSGIX);
+        LOAD_EXTENSION(glXChooseFBConfigSGIX);
+        LOAD_EXTENSION(glXCreateContextWithConfigSGIX);
     #endif
 
     #undef LOAD_EXTENSION

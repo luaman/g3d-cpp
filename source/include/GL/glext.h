@@ -251,6 +251,11 @@ extern "C" {
 #endif
 
 
+/* NV_float_buffer */
+#define GLX_FLOAT_COMPONENTS_NV         0x20B0
+#define GLX_SAMPLE_BUFFERS_ARB  100000  /* number of multisample buffers */
+#define GLX_SAMPLES_ARB         100001  /* number of multisample samples */
+
 #ifndef GL_ARB_shader_objects
 #define GL_PROGRAM_OBJECT_ARB               0x8B40
 #define GL_OBJECT_TYPE_ARB                  0x8B4E
