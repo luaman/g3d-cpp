@@ -642,6 +642,9 @@ TextureRef Texture::fromMemory(
             }
 
             if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap()) {
+
+                alwaysAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
+
                 createMipMapTexture(target, bytes[f],
                               bytesFormat->OpenGLBaseFormat,
                               width, height, desiredFormat->OpenGLFormat);
