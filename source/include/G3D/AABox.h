@@ -105,6 +105,13 @@ public:
 		int32&				cullingPlaneIndex = dummy,
 		const uint32  		testMask = -1) const;
 
+    /**
+     Splits the box into two AABoxes along the specified axis.  low contains
+     the part that was closer to negative infinity along axis, high contains
+     the other part.  Either may have zero volume.
+     */
+    void split(const Vector3::Axis& axis, double location, AABox& low, AABox& high) const;
+
 	/**
 	 Conservative culling test for up to 32 planes.	
 	 Returns true if there exists a <CODE>plane[p]</CODE> for

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-12-16
- @edited  2004-02-19
+ @edited  2004-07-05
  */
 
 #include "GLG3D/shadowVolume.h"
@@ -120,7 +120,8 @@ void markShadows(
         return;
     }
 
-    // TODO: point light
+    //////////////////////////////////////////////////////////////////////////////
+    // Create the geometry
 
     // Move to object space
     CoordinateFrame cframe;
@@ -214,9 +215,14 @@ void markShadows(
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    // Draw the geometry
+
     renderDevice->setObjectToWorldMatrix(cframe);
     renderDevice->beginIndexedPrimitives();
         renderDevice->setVertexArray(gpuVertex);
+
+        //
         renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
 
         if (! renderDevice->supportsTwoSidedStencil()) {
@@ -229,6 +235,7 @@ void markShadows(
 
             renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
 
+            // Restore the stencil settings to what we need for front faces.
             renderDevice->setCullFace(RenderDevice::CULL_BACK);
             renderDevice->setStencilOp(
                 RenderDevice::STENCIL_KEEP,

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2004-01-10
-  @edited  2004-01-10
+  @edited  2004-07-05
 */
 
 #include "G3D/AABox.h"
@@ -30,6 +30,23 @@ void AABox::serialize(class BinaryOutput& b) const {
 void AABox::deserialize(class BinaryInput& b) {
     lo = b.readVector3();
     hi = b.readVector3();
+}
+
+
+void AABox::split(const Vector3::Axis& axis, double location, AABox& low, AABox& high) const {
+    // Low, medium, and high along the chosen axis
+    double L = min(location, lo[axis]);
+    double M = min(max(location, lo[axis]), hi[axis]);
+    double H = max(location, hi[axis]);
+
+    // Copy over this box.
+    high = low = *this;
+
+    // Now move the split points along the special axis
+    low.lo[axis] = L;
+    low.hi[axis] = M;
+    high.lo[axis] = M;
+    high.hi[axis] = H;
 }
 
 

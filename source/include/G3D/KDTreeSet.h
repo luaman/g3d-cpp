@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-03-17
+  @edited  2004-07-05
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -51,17 +51,25 @@ inline void getBounds(const G3D::Triangle& t, G3D::AABox& out) {
 namespace G3D {
 
 /**
- A G3D::Set that supports spatial queries.  Internally, objects
+ A G3D::Set that supports spatial queries using an axis-aligned
+ BSP tree for speed.
+
+ AABSPTree is as powerful as but more general than a Quad Tree, Oct Tree, or KD Tree,
+ but less general than an unconstrained BSP tree (which is much slower
+ to create).
+ 
+ Internally, objects
  are arranged into an axis-aligned BSP-tree according to their 
  axis-aligned bounds.  This increases the cost of insertion to
  O(log n) but allows fast overlap queries.
 
  <B>Moving Set Members</B>
- It is important that objects do not move without updating the
+ <DT>It is important that objects do not move without updating the
  AABSPTree.  If the axis-aligned bounds of an object are about
  to change, AABSPTree::remove it before they change and 
  AABSPTree::insert it again afterward.  For objects
- where the hashCode and == operator are invariant of position,
+ where the hashCode and == operator are invariant with respect 
+ to the 3D position,
  you can use the AABSPTree::update method as a shortcut to
  insert/remove an object in one step after it has moved.
  
@@ -76,12 +84,12 @@ namespace G3D {
   <DT><CODE>T::T();</CODE> <I>(public constructor of no arguments)</I>
   </BLOCKQUOTE>
 
- Note: Do not mutate any value once it has been inserted into KDTreeSet. Values
- are copied interally. All KDTreeSet iterators convert to pointers to constant
+ Note: Do not mutate any value once it has been inserted into AABSPTree. Values
+ are copied interally. All AABSPTree iterators convert to pointers to constant
  values to reinforce this.
 
- If you want to mutate the objects you intend to store in a KDTreeSet simply
- insert pointers to your objects instead of the objects themselves, and ensure
+ If you want to mutate the objects you intend to store in a AABSPTree simply
+ insert <I>pointers</I> to your objects instead of the objects themselves, and ensure
  that the above operations are defined. (And actually, because values are
  copied, if your values are large you may want to insert pointers anyway, to
  save space and make the balance operation faster.)
@@ -178,7 +186,29 @@ private:
     };
 
     class Node {
+    private:
+        /** Returns the bounds of the sub array. Used by makeNode. */
+        static AABox computeBounds(
+            const Array<Handle>&  point, 
+            int                   beginIndex,
+            int                   endIndex) {
+        
+            Vector3 lo = Vector3::inf();
+            Vector3 hi = -lo;
+
+            for (int p = beginIndex; p <= endIndex; ++p) {
+                lo = lo.min(point[p].bounds.low());
+                hi = hi.max(point[p].bounds.high());
+            }
+
+            return AABox(lo, hi);
+        }
+
     public:
+
+        /** Spatial bounds on all values at this node and its children, based purely on
+            the parent's splitting planes.  May be infinite */
+        AABox               splitBounds;
 
         Vector3::Axis       splitAxis;
 
@@ -205,6 +235,7 @@ private:
         Node() {
             splitAxis     = Vector3::X_AXIS;
             splitLocation = 0;
+            splitBounds   = AABox(-Vector3::inf(), Vector3::inf());
             for (int i = 0; i < 2; ++i) {
                 child[i] = NULL;
             }
@@ -216,12 +247,14 @@ private:
         Node(const Node& other) : valueArray(other.valueArray) {
             splitAxis       = other.splitAxis;
             splitLocation   = other.splitLocation;
+            splitBounds     = other.bounds;
             for (int i = 0; i < 2; ++i) {
                 child[i] = NULL;
             }
         }
 
-        /** Copies the specified subarray of pt into point, NULLs the children */
+        /** Copies the specified subarray of pt into point, NULLs the children.
+            Assumes a second pass will set splitBounds. */
         Node(const Array<Handle>& pt, int beginIndex, int endIndex) {
             splitAxis     = Vector3::X_AXIS;
             splitLocation = 0;
@@ -265,9 +298,13 @@ private:
             }
         }
 
+
 	    void verifyNode(const Vector3& lo, const Vector3& hi) {
             //		debugPrintf("Verifying: split %d @ %f [%f, %f, %f], [%f, %f, %f]\n",
             //			    splitAxis, splitLocation, lo.x, lo.y, lo.z, hi.x, hi.y, hi.z);
+
+            debugAssert(lo == splitbounds.low());
+            debugAssert(hi == splitbounds.high());
 
 		    for(int i = 0; i < valueArray.length(); ++i) {
 			    const AABox& b = valueArray[i].bounds;
@@ -342,29 +379,30 @@ private:
                 child[1]->getIntersectingMembers(box, members);
             }
         }
-    };
 
-    /** Returns the bounds of the sub array. */
-    static AABox computeBounds(
-        const Array<Handle>&  point, 
-        int                   beginIndex,
-        int                   endIndex) {
-        
-        Vector3 lo = Vector3::inf();
-        Vector3 hi = -lo;
+        /**
+         Recurse through the tree, assigning splitBounds fields.
+         */
+        void assignSplitBounds(const AABox& myBounds) {
+            splitBounds = myBounds;
 
-        for (int p = beginIndex; p <= endIndex; ++p) {
-            lo = lo.min(point[p].bounds.low());
-            hi = hi.max(point[p].bounds.high());
+            AABox childBounds[2];
+            myBounds.split(splitAxis, splitLocation, childBounds[0], childBounds[1]);
+
+            for (int c = 0; c < 2; ++c) {
+                if (child[c]) {
+                    child[c]->assignSplitBounds(childBounds[c]);
+                }
+            }
         }
-
-        return AABox(lo, hi);
-    }
+    };
 
 
     /**
      Recursively subdivides the subarray.
      Begin and end indices are inclusive.
+
+     Call assignSplitBounds() on the root node after making a tree.
      */
     Node* makeNode(Array<Handle>& point, int beginIndex, 
                    int endIndex, int valuesPerNode, 
@@ -636,7 +674,7 @@ public:
      */
     void balance(int valuesPerNode = 5, int numMeanSplits = 3) {
         if (root == NULL) {
-            // Tree must be empty
+            // Tree is be empty
             return;
         }
 
@@ -649,15 +687,64 @@ public:
         root = makeNode(handleArray, 0, handleArray.size() - 1, 
             valuesPerNode, numMeanSplits);
 
+        // Walk the tree, assigning splitBounds.  We start with unbounded
+        // space.
+        root->assignSplitBounds(AABox(-Vector3::inf(), Vector3::inf()));
+
         #ifdef _DEBUG
-	        root->verifyNode(Vector3(-inf, -inf, -inf), Vector3(inf, inf, inf));
+            root->verifyNode(-Vector3::inf(), Vector3::inf());
         #endif
     }
 
+private:
+
+    /**
+     @param parentMask The mask that this node returned from culledBy.
+     */
+    static void getIntersectingMembers(
+        const Array<Plane>&         plane,
+        Array<T>&                   members,
+        Node*                       node,
+        uint32                      parentMask) {
+
+
+        // Test values at this node against remaining planes
+        for (int v = node->valueArray.size() - 1; v >= 0; --v) {
+            if (! node->valueArray[v].bounds.culledBy(plane, dummy, parentMask)) {
+                members.append(node->valueArray[v].value);
+            }
+        }
+
+        int dummy;
+        uint32 childMask  = -1;
+
+        // Iterate through child nodes
+        for (int c = 0; c < 2; ++c) {
+            if (node->child[c] &&
+                ! node->child[c].splitBounds.culledBy(plane, dummy, parentMask, childMask)) {
+                // This node was node culled
+                getIntersectingMembers(plane, members, node->child[c], childMask);
+            }
+        }
+    }
+
+public:
+
+    /**
+     Returns all members inside the set of planes.  Typically used to find all visible
+     objects inside the view frustum (see GCamera::getClipPlanes).
+     */
+    void getIntersectingMembers(const Array<Plane>& plane, Array<T>& members) const {
+        if (root == NULL) {
+            return;
+        }
+
+        getIntersectingMembers(plane, members, root, -1);
+    }
 
     /**
      C++ STL style iterator variable.  See beginBoxIntersection().
-     Overloads the -> (dereference) operator, so this acts like a pointer
+     The iterator overloads the -> (dereference) operator, so this acts like a pointer
      to the current member.
      */
     // This iterator turns Node::getIntersectingMembers into a
@@ -797,8 +884,9 @@ public:
         }
     };
 
+
     /**
-     Iterates through the members that intersect the
+     Iterates through the members that intersect the box
      */
     BoxIntersectionIterator beginBoxIntersection(const AABox& box) const {
         return BoxIntersectionIterator(box, root);

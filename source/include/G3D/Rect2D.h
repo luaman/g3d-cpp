@@ -166,7 +166,7 @@ public:
     }
 
     inline Rect2D operator/(double s) const {
-        return xyxy(min * s, max * s);
+        return xyxy(min / s, max / s);
     }
 
     inline Rect2D operator+(const Vector2& v) const {
