@@ -60,11 +60,12 @@ inline unsigned int hashCode(const std::string& a) {
 	int s = (int)a.length();
 
 	int i = 0;
-	unsigned int key = 0;
+	unsigned int key = s;
 
+    s = iMin(s, 5);
 	while (i < s) {
 		key = key ^ ((unsigned int)a[i] << ((i & 3) * 8));
-		i++;
+		++i;
 	}
 
 	return key;
