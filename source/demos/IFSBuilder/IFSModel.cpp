@@ -208,7 +208,9 @@ void IFSModel::load3DS(const std::string& filename) {
 void IFSModel::loadOBJ(const std::string& filename) {
     IFSModelBuilder builder;
     
-    TextInput t(filename);
+    TextInput::Options options;
+    options.cppComments = false;
+    TextInput t(filename, options);
 
     Array<Vector3> va;
 
@@ -227,24 +229,28 @@ void IFSModel::loadOBJ(const std::string& filename) {
                     va.append(vertex);
 
                 } else if (tag.string() == "f") {
-                    // Face
-                    int v[3];
-                
-                    for (int i = 0; i < 3; ++i) {
-                        v[i] = t.readNumber();
-
-                        debugAssert(v[i] > 0);
-
-                        v[i] -= 1;
+                    // Face (may have an arbitrary number of vertices)
+                    Array<int> vertexIndex;
+            
+                    while ((t.peek().line() == tag.line()) && t.hasMore()) {  
+                        vertexIndex.append(t.readNumber());
+                        debugAssert(vertexIndex.last() > 0);
+                        --vertexIndex.last();
 
                         // Skip over the slashes
                         Token next = t.peek();
                         while ((next.type() == Token::SYMBOL) && (next.string() == "/")) {
                             next = t.read();
                         }
+
+                        if (vertexIndex.size() >= 3) {
+                            int i = vertexIndex.size() - 1;
+                            builder.addTriangle(va[vertexIndex[0]],
+                                                va[vertexIndex[i - 1]],
+                                                va[vertexIndex[i]]);
+                        }
                     }
 
-                    builder.addTriangle(va[v[0]], va[v[1]], va[v[2]]);
                 }
             }
 
@@ -255,6 +261,7 @@ void IFSModel::loadOBJ(const std::string& filename) {
         }
     } catch (TextInput::WrongTokenType& e) {
         debugAssert(e.expected != e.actual);
+        e;
     }
     
     builder.setName(filename);

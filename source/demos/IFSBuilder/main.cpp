@@ -52,20 +52,22 @@ int main(int argc, char** argv) {
     controller   = new ManualCameraController(renderDevice);
     controller->setMoveRate(.1);
 
-    controller->setPosition(Vector3(5, 10, 5));
-    controller->lookAt(Vector3(-2,3,-5));
+    controller->setPosition(Vector3(0, 2, 3));
+    controller->lookAt(Vector3(0,0,0));
 
     renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
+    camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
     std::string in("D:/tmp/obj/");
     std::string out("D:/users/morgan/Projects/Silhouette/models/");
 
-    model = new IFSModel(in + "747.obj");
-    model->name = "Blade";
-    //model->save(out + "q2mdl-blade.ifs");
+    std::string name = "CAVATAP2";
+    model = new IFSModel(in + name + ".obj");
+    model->name = name;
+    //model->save(out + name + ".ifs");
 
     // Main loop
     do {
