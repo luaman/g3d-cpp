@@ -337,7 +337,7 @@ void init() {
         _cpuArch = format(
                     "%d x %d-bit %s processor",
                     systemInfo.dwNumberOfProcessors,
-                    (int)(::log((double)maxAddr) / ::log(2) + 2),
+                    (int)(::log((double)maxAddr) / ::log(2.0) + 2),
                     arch);
 
         OSVERSIONINFO osVersionInfo;
