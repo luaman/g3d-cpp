@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-04-14
+ @edited  2003-07-09
  */
 
 #include "GLG3D/LightingParameters.h"
@@ -54,17 +54,28 @@ RealTime realWorldLocalTime()  {
 
 #endif
 
-
 LightingParameters::LightingParameters() {
     setTime(0);
+	setLatitude(PROVIDENCE_LATITUDE);
+}
+
+LightingParameters::LightingParameters(
+    const GameTime                  _time) {
+    setTime(_time);
+	setLatitude(PROVIDENCE_LATITUDE);
 }
 
 
 LightingParameters::LightingParameters(
-    const double                    _time) {
+    const GameTime                  _time,
+	float                       _latitude=PROVIDENCE_LATITUDE) {
     setTime(_time);
+	setLatitude(_latitude);
 }
 
+void LightingParameters::setLatitude(float _latitude) {
+	geoLatitude = _latitude;
+}
 
 void LightingParameters::setTime(const GameTime _time) {
 

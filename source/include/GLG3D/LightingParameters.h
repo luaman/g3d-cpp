@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-04-13
+ @edited  2003-07-09
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -15,6 +15,9 @@
 #include "graphics3D.h"
 
 namespace G3D {
+
+#define PROVIDENCE_LATITUDE 41.7333f
+
 
 /** The actual time (measured in seconds since Jan 1 1970 midnight).
     Adjusted for local timezone and daylight savings time. */
@@ -52,15 +55,23 @@ public:
     /** The vector <B>to</B> the moon */
     Vector3                 moonPosition;
 
+	/* Geographic position */
+	float                   geoLatitude;
+
+	LightingParameters();
+	LightingParameters(const GameTime time);
     /**
      Sets light parameters for the sun/moon based on the
-     specified time since midnight.
+     specified time since midnight, as well as geographic
+	 latitude for starfield orientation (positive for north
+	 of the equator and negative for south). The latitude is
+	 set by default to that of Providence, RI, USA.
      */
-    LightingParameters(const GameTime time);
+	LightingParameters(const GameTime _time, 
+		               float          _latitude);
 
     void setTime(const GameTime _time);
-
-    LightingParameters();
+	void setLatitude(float _latitude);
 };
 
 }

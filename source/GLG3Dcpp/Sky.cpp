@@ -4,15 +4,19 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-07-07
+  @edited  2003-07-09
   */
 
 #include "GLG3D/glcalls.h"
 #include "GLG3D/Sky.h"
 #include "GLG3D/LightingParameters.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/g3dmath.h"
 #include "GLG3D/TextureFormat.h"
 
 namespace G3D {
+
+#define SHORT_TO_FLOAT(x) ((2.0f*x+1.0f)*(1.0f/65535.0f))
 
 Sky::Sky(
     RenderDevice*                       rd,
@@ -69,12 +73,42 @@ Sky::Sky(
     sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     
     int i = 0;
-    star.resize(3000);
-    starIntensity.resize(star.size());
-    for (i = star.size() - 1; i >= 0; --i) {
-        star[i] = Vector4(Vector3::random(), 0);
-        starIntensity[i] = square(unitRandom()) + .3;
-    }
+    // Try to read actual star data
+    BinaryInput in = BinaryInput(directory + "real.str", G3D_LITTLE_ENDIAN, true);
+    if(in.getLength() > 0)
+    {
+	    // If file exists, load the real starfield
+        int16 numStars;
+		float32 x, y, z;
+
+	    std::string header = in.readString(5);
+	    debugAssert(header == "STARS"); (void)header;
+
+	    numStars = in.readInt16();
+	    star.resize(numStars);
+	    starIntensity.resize(numStars);
+
+		// Read X, Y, Z, and intensity
+		for(i = 0; i < numStars; i++)
+	    {
+			x = SHORT_TO_FLOAT(in.readInt16());
+			y = SHORT_TO_FLOAT(in.readInt16());
+			z = SHORT_TO_FLOAT(in.readInt16());
+
+			star[i] = Vector4(x, y, z, 0);
+
+			starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .7;
+	    }
+    } else
+    {
+		// Create a random starfield
+   		star.resize(3000);
+    	starIntensity.resize(star.size());
+   		for (i = star.size() - 1; i >= 0; --i) {
+   			star[i] = Vector4(Vector3::random(), 0);
+   			starIntensity[i] = square(unitRandom()) + .3;
+   		}
+ 	}
 
 	this->name = name;
 }
@@ -361,11 +395,19 @@ void Sky::render(
             renderDevice->pushState();
                 // rotate stars
                 CoordinateFrame m;
-                m.rotation.setColumn(0, Vector3(L.x, L.y, L.z));
-                m.rotation.setColumn(1, Vector3(-X.x, -X.y, -X.z));
-                renderDevice->setObjectToWorldMatrix(m);
-
-                renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
+                float aX, aY, aZ;
+				/* Use the east-west revolutions of the moon to rotate
+				   the starfield correctly */
+				Vector3 moon(-L.x, 0, L.y);
+				Vector3 top(Vector3::UNIT_Y);
+				m.lookAt(moon, top);
+				// Correct for geographical location; currently Providence, RI
+				m.rotation.toEulerAnglesXYZ(aX, aY, aZ);
+				aX -= lighting.geoLatitude; // Latitude of 41 degrees, 44 minutes N
+				m.rotation.fromEulerAnglesXYZ(aX, aY, aZ);
+				renderDevice->setObjectToWorldMatrix(m);
+                
+			renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
                 renderDevice->beginPrimitive(RenderDevice::POINTS);
                 for (int i = star.size() - 1; i >= 0; --i) {
                     double b = starIntensity[i] * k;
