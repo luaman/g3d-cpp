@@ -26,6 +26,7 @@ namespace G3D {
 
 #if defined(G3D_LINUX) || defined(G3D_OSX)
     #include <unistd.h>
+    #include <errno.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
     #include <arpa/inet.h>
@@ -39,12 +40,12 @@ namespace G3D {
 
     #define SOCKET_ERROR -1
 
-    static std::string windowsErrorCode(int code) {
-        return "";
+    static std::string socketErrorCode(int code) {
+        return format("CODE %d: %s\n", code, strerror(code));
     }
 
-    static std::string windowsErrorCode() {
-        return "";
+    static std::string socketErrorCode() {
+        return socketErrorCode(errno);
     }
 
     static const int WSAEWOULDBLOCK = -100;
@@ -55,7 +56,7 @@ namespace G3D {
 #else 
 
     // Windows
-    static std::string windowsErrorCode(int code) {
+    static std::string socketErrorCode(int code) {
         LPTSTR formatMsg = NULL;
 
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -71,8 +72,8 @@ namespace G3D {
         return format("CODE %d: %s\n", code, formatMsg);
     }
 
-    static std::string windowsErrorCode() {
-        return windowsErrorCode(GetLastError());
+    static std::string socketErrorCode() {
+        return socketErrorCode(GetLastError());
     }
 
 #endif
@@ -105,7 +106,7 @@ static void logSocketInfo(Log* debugLog, const SOCKET& sock) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Invokes select on one socket */
+/** Invokes select on one socket.  Returns SOCKET_ERROR on error. */
 static int selectOneReadSocket(const SOCKET& sock) {
     // 0 time timeout is specified to poll and return immediately
     struct timeval timeout;
@@ -129,7 +130,7 @@ static bool readWaiting(Log* debugLog, const SOCKET& sock) {
     case SOCKET_ERROR:
         if (debugLog) {
             debugLog->println("ERROR: selectOneReadSocket returned SOCKET_ERROR in readWaiting().");
-            debugLog->println(windowsErrorCode());
+            debugLog->println(socketErrorCode());
         }
         return true;
 
@@ -141,7 +142,7 @@ static bool readWaiting(Log* debugLog, const SOCKET& sock) {
 
     default:
         if (debugLog) {
-            debugLog->printf("WARNING: selectOneReadSocket returned %d in readWaitingg().\n", ret);
+            debugLog->printf("WARNING: selectOneReadSocket returned %d in readWaiting().\n", ret);
         }
         return true;
     }
@@ -347,7 +348,7 @@ bool NetworkDevice::init(class Log* _log) {
     if (sock == SOCKET_ERROR) {
         if (debugLog) {
             debugLog->println("FAIL");
-            debugLog->println(windowsErrorCode());
+            debugLog->println(socketErrorCode());
         }
         return false;
     }
@@ -360,7 +361,7 @@ bool NetworkDevice::init(class Log* _log) {
     if (ret != 0) {
         if (debugLog) {
             debugLog->println("FAIL");
-            debugLog->println(windowsErrorCode());
+            debugLog->println(socketErrorCode());
         }
         return false;
     }
@@ -374,7 +375,7 @@ bool NetworkDevice::init(class Log* _log) {
     if (ret == SOCKET_ERROR) {
         if (debugLog) {
             debugLog->println("FAIL");
-            debugLog->println(windowsErrorCode());
+            debugLog->println(socketErrorCode());
         }
         return false;
     }
@@ -425,7 +426,7 @@ void NetworkDevice::bind(SOCKET sock, const NetAddress& addr) const {
     if (::bind(sock, (struct sockaddr*)&(addr.addr), sizeof(addr.addr)) == SOCKET_ERROR) {
         if (debugLog) {
             debugLog->println("FAIL");
-            debugLog->println(windowsErrorCode());
+            debugLog->println(socketErrorCode());
         }
         closesocket(sock);
         return;
@@ -533,7 +534,7 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
     if (sock == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("FAIL");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
         return;
@@ -547,7 +548,7 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
     if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("WARNING: Disabling Nagel's algorithm failed.");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
     }
 
@@ -564,14 +565,14 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
         if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)&val, sizeof(val)) == SOCKET_ERROR) {
             if (nd->debugLog) {
                 nd->debugLog->printf("WARNING: Increasing socket receive buffer to %d failed.\n", val);
-                nd->debugLog->println(windowsErrorCode());
+                nd->debugLog->println(socketErrorCode());
             }
         }
 
         if (setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)&val, sizeof(val)) == SOCKET_ERROR) {
             if (nd->debugLog) {
                 nd->debugLog->printf("WARNING: Increasing socket send buffer to %d failed.\n", val);
-                nd->debugLog->println(windowsErrorCode());
+                nd->debugLog->println(socketErrorCode());
             }
         }
     }
@@ -596,7 +597,7 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
         if (nd->debugLog) {
             sock = SOCKET_ERROR;
             nd->debugLog->println("FAIL");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         return;
     }
@@ -643,7 +644,7 @@ uint32 ReliableConduit::waitingMessageType() {
         if ((ret == SOCKET_ERROR) || (ret != sizeof(messageType))) {
             if (nd->debugLog) {
                 nd->debugLog->printf("Call to recv failed.  ret = %d, sizeof(messageType) = %d\n", ret, sizeof(messageType));
-                nd->debugLog->println(windowsErrorCode());
+                nd->debugLog->println(socketErrorCode());
             }
             nd->closesocket(sock);
             messageType = 0;
@@ -688,7 +689,7 @@ void ReliableConduit::send(const NetMessage* m) {
     if (ret == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("Error occured while sending message.");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
         return;
@@ -737,7 +738,7 @@ bool ReliableConduit::receive(NetMessage* m) {
     if ((ret == SOCKET_ERROR) || (ret != sizeof(len))) {
         if (nd->debugLog) {
             nd->debugLog->printf("Call to recv failed.  ret = %d, sizeof(len) = %d\n", ret, sizeof(len));
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
         return false;
@@ -802,7 +803,7 @@ bool ReliableConduit::receive(NetMessage* m) {
         if (nd->debugLog) {
             if (ret == SOCKET_ERROR) {
                 nd->debugLog->printf("Call to recv failed.  ret = %d, sizeof(len) = %d\n", ret, len);
-                nd->debugLog->println(windowsErrorCode());
+                nd->debugLog->println(socketErrorCode());
             } else {
                 nd->debugLog->printf("Expected %d bytes from recv and got %d.", len, len - left);
             }
@@ -839,7 +840,7 @@ LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool ena
         sock = 0;
         if (nd->debugLog) {
             nd->debugLog->println("FAIL");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         return;
     }
@@ -855,7 +856,7 @@ LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool ena
         if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, sizeof(TR)) != 0) {
             if (nd->debugLog) {
                 nd->debugLog->println("Call to setsockopt failed");
-                nd->debugLog->println(windowsErrorCode());
+                nd->debugLog->println(socketErrorCode());
             }
             nd->closesocket(sock);
             return;
@@ -887,7 +888,7 @@ void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
     if (sendto(sock, (const char*)b.getCArray(), b.getLength(), 0, (struct sockaddr *) &(a.addr), sizeof(a.addr)) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->printf("Error occured while sending packet to %s\n", inet_ntoa(a.addr.sin_addr));
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
     } else {
@@ -919,7 +920,7 @@ uint32 LightweightConduit::waitingMessageType() {
         if (ret == SOCKET_ERROR) {
             if (nd->debugLog) {
                 nd->debugLog->println("Error: recvfrom failed in LightweightConduit::waitingMessageType().");
-                nd->debugLog->println(windowsErrorCode());
+                nd->debugLog->println(socketErrorCode());
             }
             nd->closesocket(sock);
             messageBuffer.resize(0);
@@ -995,7 +996,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     if (sock == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->printf("FAIL");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
         return;
@@ -1008,7 +1009,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     if (listen(sock, 100) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("FAIL");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
         return;
@@ -1037,7 +1038,7 @@ ReliableConduitRef NetListener::waitForConnection() {
     if (sClient == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("Error in NetListener::acceptConnection.");
-            nd->debugLog->println(windowsErrorCode());
+            nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
         return NULL;
