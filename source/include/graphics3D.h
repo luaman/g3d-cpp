@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2005-02-07
+ @edited  2005-02-14
 
  Copyright 2001-2005, Morgan McGuire.
  All rights reserved.
@@ -35,6 +35,7 @@
 #include "G3D/Color3.h"
 #include "G3D/Color4.h"
 #include "G3D/Matrix3.h"
+#include "G3D/Matrix4.h"
 #include "G3D/CoordinateFrame.h"
 #include "G3D/PhysicsFrame.h"
 #include "G3D/Plane.h"
