@@ -189,7 +189,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F5500B106DD5F29008DD4F8,
-				0F5500B206DD5F29008DD4F8,
 				0F5500B306DD5F29008DD4F8,
 				0F5500B406DD5F29008DD4F8,
 				0F5500B506DD5F29008DD4F8,
@@ -220,6 +219,7 @@
 				0F5500CE06DD5F29008DD4F8,
 				0F5500CF06DD5F29008DD4F8,
 				3EEEC97C07179E27007B8A7E,
+				3EFE6A250735D82A00E12815,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -270,15 +270,6 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = VertexProgram.cpp;
 			path = ../source/GLG3Dcpp/VertexProgram.cpp;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
-		0F55009306DD5F28008DD4F8 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = VARSystem.cpp;
-			path = ../source/GLG3Dcpp/VARSystem.cpp;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -549,12 +540,6 @@
 			settings = {
 			};
 		};
-		0F5500B206DD5F29008DD4F8 = {
-			fileRef = 0F55009306DD5F28008DD4F8;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		0F5500B306DD5F29008DD4F8 = {
 			fileRef = 0F55009406DD5F28008DD4F8;
 			isa = PBXBuildFile;
@@ -742,7 +727,7 @@
 		0F5500FC06DD5F56008DD4F8 = {
 			children = (
 				0F55009206DD5F28008DD4F8,
-				0F55009306DD5F28008DD4F8,
+				3EFE6A240735D82A00E12815,
 				0F55009406DD5F28008DD4F8,
 				0F55009506DD5F28008DD4F8,
 				0F55009606DD5F28008DD4F8,
@@ -1487,6 +1472,7 @@
 				3EEEC96607179716007B8A7E,
 				3EEEC96707179716007B8A7E,
 				3EEEC96807179716007B8A7E,
+				3EFE6A2D0735E0C400E12815,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2295,6 +2281,7 @@
 				0F55FEE906DCC59C008DD4F8,
 				0F55FEEA06DCC59C008DD4F8,
 				0F55FEEB06DCC59C008DD4F8,
+				3EFE6A2C0735E0C400E12815,
 				0F55FEEC06DCC59C008DD4F8,
 				0F55FEED06DCC59C008DD4F8,
 				0F55FEF006DCC59C008DD4F8,
@@ -4400,6 +4387,36 @@
 		};
 		3EEEC97C07179E27007B8A7E = {
 			fileRef = 3EEEC97B07179E27007B8A7E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3EFE6A240735D82A00E12815 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = VARArea.cpp;
+			path = ../source/GLG3Dcpp/VARArea.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3EFE6A250735D82A00E12815 = {
+			fileRef = 3EFE6A240735D82A00E12815;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		3EFE6A2C0735E0C400E12815 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MeshBuilder.cpp;
+			path = ../source/G3Dcpp/MeshBuilder.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		3EFE6A2D0735E0C400E12815 = {
+			fileRef = 3EFE6A2C0735E0C400E12815;
 			isa = PBXBuildFile;
 			settings = {
 			};
