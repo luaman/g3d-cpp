@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 
     userInput    = new UserInput();
 
-    model        = new Model(DATA_DIR + "ifs/beethoven.ifs");
+    model        = new Model(DATA_DIR + "ifs/cow.ifs");
 
     controller   = new ManualCameraController(renderDevice, userInput);
     controller->setMoveRate(1);
