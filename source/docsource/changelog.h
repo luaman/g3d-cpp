@@ -12,6 +12,10 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::TextInput::Options::singleQuotedStrings (defaults to true, changing the behavior
+	      from previous versions).
+	 <LI> G3D::Token::extendedType returns information disambiguating characters and strings
+	      and floats and ints.
      <LI> Added data/ah64-body and ah64-rotor
      <LI> demos/Network_Demo now uses a helicopter model instead of a plane
      <LI> G3D::VARArea::gl_vertexBufferObject and G3D::VARArea::gl_basePointer for breaking

@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-10-19
+ @edited  2004-10-26
  */
 
 #include "../include/G3DAll.h"
@@ -892,7 +892,17 @@ void measureAABoxCollisionPerformance() {
 
 void testTextInput() {
     printf("TextInput\n");
- 
+
+	{
+ 		TextInput ti(TextInput::FROM_STRING, "a \'foo\' bar");
+
+		ti.readSymbol("a");
+		Token t = ti.read();
+		debugAssert(t.extendedType() == Token::SINGLE_QUOTED_TYPE);
+		debugAssert(t.string() == "foo");
+		ti.readSymbol("bar");
+	}
+
     {
         TextInput ti(TextInput::FROM_STRING, "2.x");
 

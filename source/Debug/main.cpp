@@ -112,6 +112,12 @@ App::App(const GAppSettings& settings) : GApp(settings, Win32Window::create(sett
 
 
 int main(int argc, char** argv) {
+	TextInput ti(TextInput::FROM_STRING, "a \'foo\' bar");
+
+	ti.readSymbol("a");
+	ti.readSymbol("\'");
+	ti.readSymbol("foo");
+
     /*
 
 #9 Format Description

@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2004-10-18
+ @edited  2004-10-26
  */
 
 #include "G3D/TextInput.h"
@@ -99,8 +99,10 @@ int TextInput::popNextChar() {
 Token TextInput::nextToken() {
     Token t;
 
-    t._line      = lineNumber;
-    t._character = charNumber;
+    t._line         = lineNumber;
+    t._character    = charNumber;
+	t._type         = Token::END;
+	t._extendedType = Token::END_TYPE;
 
     char c = popNextChar();
     if (c == EOF) {
@@ -189,6 +191,7 @@ Token TextInput::nextToken() {
     case '!':
     case '=':
         t._type = Token::SYMBOL; 
+		t._extendedType = Token::SYMBOL_TYPE;
         t._string = c;
 
         // Complex symbols
@@ -296,6 +299,7 @@ Token TextInput::nextToken() {
     case '.':
         {
             t._type = Token::SYMBOL;
+			t._extendedType = Token::SYMBOL_TYPE;
             t._string = '.';
             if (peekNextChar() == '.') {
                 popNextChar();
@@ -339,6 +343,11 @@ numLabel:
             t._string = "";
         }
         t._type = Token::NUMBER;
+		if (c == '.') {
+			t._extendedType = Token::FLOATING_POINT_TYPE;
+		} else {
+			t._extendedType = Token::INTEGER_TYPE;
+		}
 
         if ((c == '0') && (peekNextChar() == 'x')) {
             // Hex number
@@ -364,6 +373,8 @@ numLabel:
     
             // Read the decimal, if one exists
             if (c == '.') {
+				t._extendedType = Token::FLOATING_POINT_TYPE;
+
                 // The '.' was a decimal point, not the start of a
                 // method or range operator
                 t._string += c;
@@ -377,6 +388,7 @@ numLabel:
             }
 
             if ((c == 'e') || (c == 'E')) {
+				t._extendedType = Token::FLOATING_POINT_TYPE;
                 t._string += c;
                 if ((peekNextChar() == '-') || (peekNextChar() == '+')) {
                     t._string += popNextChar();
@@ -413,67 +425,25 @@ numLabel:
 
     } else if (c == '\"') {
 
-        // Quoted string
-        t._type = Token::STRING;
-
-        while (true) {
-            c = popNextChar();
-
-            if (c == EOF) {
-                // END inside a quoted string.
-                break;
-            }
-                
-            if (c == '\"') {
-                // End of the string
-                break;
-            }
-
-            if (c == '\\') {
-                // Escaped character
-                c = popNextChar();
-                switch (c) {
-                case 'r':
-                    t._string += '\r';
-                    break;
-                case 'n':
-                    t._string += '\n';
-                    break;
-                case 't':
-                    t._string += '\t';
-                    break;
-                case '0':
-                    t._string += '\0';
-                    break;
-
-                case '\\':
-                case '\"':
-                case '\'':
-                    t._string += c;
-                    break;
-
-                default:
-                    if ((c == options.otherCommentCharacter) && 
-                        (options.otherCommentCharacter != '\0')) {
-                        t._string += options.otherCommentCharacter;
-                    } 
-                    // otherwise, some illegal escape sequence; skip it.
-                } // switch
-            } else {
-                t._string += c;
-            }
-        }
-
+        // Double quoted string
+		parseQuotedString('\"', t);
         return t;
 
-    } if (c == '\'') {
-        t._string = c;
-        t._type = Token::SYMBOL;
+    } else if (c == '\'') {
+		if (options.singleQuotedStrings) {
+			// Single quoted string
+			parseQuotedString('\'', t);
+		} else {
+			t._string = c;
+			t._type = Token::SYMBOL;
+		}
         return t;
+
     } // end of special case tokens
 
     if (c == EOF) {
         t._type = Token::END;
+        t._extendedType = Token::END_TYPE;
         t._string = "";
         return t;
     }
@@ -481,6 +451,65 @@ numLabel:
     // Some unknown token
     debugAssert(false);
     return t;
+}
+
+
+void TextInput::parseQuotedString(char delimiter, Token& t) {
+    t._type = Token::STRING;
+
+	if (delimiter == '\'') {
+		t._extendedType = Token::SINGLE_QUOTED_TYPE;
+	} else {
+		t._extendedType = Token::DOUBLE_QUOTED_TYPE;
+	}
+
+    while (true) {
+        char c = popNextChar();
+
+        if (c == EOF) {
+            // END inside a quoted string.
+            break;
+        }
+            
+        if (c == delimiter) {
+            // End of the string
+            break;
+        }
+
+        if (c == '\\') {
+            // Escaped character
+            c = popNextChar();
+            switch (c) {
+            case 'r':
+                t._string += '\r';
+                break;
+            case 'n':
+                t._string += '\n';
+                break;
+            case 't':
+                t._string += '\t';
+                break;
+            case '0':
+                t._string += '\0';
+                break;
+
+            case '\\':
+            case '\"':
+            case '\'':
+                t._string += c;
+                break;
+
+            default:
+                if ((c == options.otherCommentCharacter) && 
+                    (options.otherCommentCharacter != '\0')) {
+                    t._string += options.otherCommentCharacter;
+                } 
+                // otherwise, some illegal escape sequence; skip it.
+            } // switch
+        } else {
+            t._string += c;
+        }
+    }
 }
 
 

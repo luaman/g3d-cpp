@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2004-09-08
+ @edited  2004-10-26
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -35,6 +35,17 @@ public:
      */
     enum Type {STRING, SYMBOL, NUMBER, END};
 
+	/**
+	 More detailed type information than Type.
+	 */
+	enum ExtendedType {
+		SINGLE_QUOTED_TYPE, 
+		DOUBLE_QUOTED_TYPE, 
+		SYMBOL_TYPE,
+		INTEGER_TYPE, 
+		FLOATING_POINT_TYPE, 
+		END_TYPE};
+
 private:
     friend class TextInput;
 
@@ -42,32 +53,37 @@ private:
     int                     _line;
     int                     _character;
     Type                    _type;
+	ExtendedType            _extendedType;
 
 public:
 
+    Token() : _string(""), _line(0), _character(0), _type(END), _extendedType(END_TYPE) {}
 
-    Token() : _string(""), _line(0), _character(0), _type(END) {}
-
-    Token(Type t, const std::string& s, int L, int c) : _string(s), _line(L), _character(c), _type(t) {}
-
+    Token(Type t, ExtendedType e, const std::string& s, int L, int c) : _string(s), _line(L), _character(c), _type(t), _extendedType(e) {}
 
     Type type() const {
         return _type;
     }
 
+    ExtendedType extendedType() const {
+        return _extendedType;
+    }
+
+	/** The value of a single or double quote string, not including the quotes, or the name of a symbol. */
     std::string string() const {
         return _string;
     }
 
+	/** Line from which this token was parsed.  Starts at 1. */
     int line() const {
         return _line;
     }
-
+	/** Character position from which this token was parsed.  Starts at 1. */
     int character() const {
         return _character;
     }
 
-    /** Return the numer value */
+    /** Return the numeric value for a number type. */
     double number() const {
         if (_type == NUMBER) {
             double n;
@@ -83,7 +99,7 @@ public:
             }
             return n;
         } else {
-            return 0;
+            return 0.0;
         }
     }
 
@@ -160,7 +176,12 @@ public:
             by the number 1.  Default is true.*/
         bool                signedNumbers;
 
-        Options () : cppComments(true), otherCommentCharacter('\0'), signedNumbers(true) {}
+		/** If true, strings can be marked with single quotes (e.g., 'aaa'). 
+		    If false, the quote character is parsed as a symbol. Default is true.
+    		Backquote (`) is always parsed as a symbol. */
+		bool				singleQuotedStrings;
+
+        Options () : cppComments(true), otherCommentCharacter('\0'), signedNumbers(true), singleQuotedStrings(true) {}
     };
 
 private:
@@ -187,6 +208,7 @@ private:
      Number of characters from the beginning of the line. 
      */
     int                     charNumber;
+
     std::string             sourceFile;
     
     Options                 options;
@@ -218,6 +240,10 @@ private:
 
     /** Read the next token or EOF */
     Token nextToken();
+
+	/** Helper for nextToken.  Appends characters to t._string until
+	    the end delimiter is reached. */
+	void parseQuotedString(char delimiter, Token& t);
 
 public:
 
