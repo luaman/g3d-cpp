@@ -1290,64 +1290,55 @@ private:
         unsigned int                    numButtons;
     } JoystickInfo;
 
-    static IDirectInput8A*              _directInput;
+    IDirectInput8A*                     _directInput;
 
-    static Array< JoystickInfo >        _joysticks;
+    Array< JoystickInfo >               _joysticks;
 
-    static IDirectInputDevice8A*        _systemKeyboard;
+    IDirectInputDevice8A*               _systemKeyboard;
 
-    static HANDLE                       _keyboardEventHandle;
+    HANDLE                              _keyboardEventHandle;
 
-    // Singleton class
-    _DirectInput(){}
+    HWND                                _window;
 
     // Handle the DirectInput8 joystick enumeration
     static BOOL CALLBACK enumJoysticksCallback(LPCDIDEVICEINSTANCEA lpddi,
                                                LPVOID pvRef) {
     
-        static int joystickCount = 0;
-
         JoystickInfo tmpInfo;
 
-        if (_directInput->CreateDevice(lpddi->guidInstance, &tmpInfo.device, NULL) == S_OK) {
-
-            _joysticks.resize(_joysticks.size() + 1, DONT_SHRINK_UNDERLYING_ARRAY);
-    
-            _joysticks[joystickCount].device = tmpInfo.device;
-            _joysticks[joystickCount].name = lpddi->tszInstanceName;
-            _joysticks[joystickCount].valid = true;
-        
-            // Setup device and retreive axis/button count
-            _joysticks[joystickCount].device->SetCooperativeLevel((HWND)pvRef, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
-
-            DIDEVCAPS joystickCaps;
-            joystickCaps.dwSize = sizeof(DIDEVCAPS);
-        
-            _joysticks[joystickCount].device->GetCapabilities(&joystickCaps);
-            _joysticks[joystickCount].numAxes = joystickCaps.dwAxes;
-            _joysticks[joystickCount].numButtons = joystickCaps.dwButtons;
-
-            _joysticks[joystickCount].device->SetDataFormat(&G3DJOYDF);
-
-            joystickCount++;
+        if (((_DirectInput*)pvRef)->_directInput->CreateDevice(lpddi->guidInstance, &tmpInfo.device, NULL) != S_OK) {
+            return true;
         }
+
+        if (tmpInfo.device->SetCooperativeLevel(((_DirectInput*)pvRef)->_window, 
+                                                (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))
+                                                != S_OK) {
+            tmpInfo.device->Release();
+            return true;
+        }
+
+        if (tmpInfo.device->SetDataFormat(&G3DJOYDF) != S_OK) {
+            tmpInfo.device->Release();
+            return true;
+        }
+
+        DIDEVCAPS joystickCaps;
+        joystickCaps.dwSize = sizeof(DIDEVCAPS);
+
+        tmpInfo.device->GetCapabilities(&joystickCaps);
+        tmpInfo.numAxes = joystickCaps.dwAxes;
+        tmpInfo.numButtons = joystickCaps.dwButtons;
+
+        ((_DirectInput*)pvRef)->_joysticks.append(tmpInfo);
 
         return true;
     }
 
 public:
 
-    static bool libraryExists() {
-        HMODULE handle = ::LoadLibrary("dinput8.dll");
-        if (handle == NULL) {
-            return false;
-        } else {
-            ::FreeLibrary(handle);
-            return true;
-        }
-    }
+    _DirectInput(HWND window) {
 
-    static void createDevices(HWND window) {
+        _window = window;
 
         // Detect DirectInput8 only and create the joystick interfaces
         HMODULE di8Module = ::LoadLibrary("dinput8.dll");
@@ -1358,25 +1349,38 @@ public:
         // DirectInput8Create function pointer
         HRESULT (WINAPI* DirectInput8Create)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN);
         DirectInput8Create = (HRESULT (WINAPI*)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN))::GetProcAddress(di8Module, "DirectInput8Create");
+        
         if (DirectInput8Create == NULL) {
             ::FreeLibrary(di8Module);
             return;
         }
 
-        if (DirectInput8Create( ::GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, reinterpret_cast< void** >(&_directInput), NULL) != S_OK) {
+        if (DirectInput8Create( ::GetModuleHandle(NULL), 
+                                DIRECTINPUT_VERSION, 
+                                IID_IDirectInput8A, 
+                                reinterpret_cast< void** >(&_directInput), 
+                                NULL) != S_OK) {
             ::FreeLibrary(di8Module);
             return;
         }
     
 
         // Setup joystick devices
-        _directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, enumJoysticksCallback, window, DIEDFL_ATTACHEDONLY);
+        _directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, 
+                                  enumJoysticksCallback, 
+                                  this, 
+                                  DIEDFL_ATTACHEDONLY);
 
 
         // Setup system keyboard device
-        if (_directInput->CreateDevice(GUID_SysKeyboard, &_systemKeyboard, NULL) != S_OK) {
+        if (_directInput->CreateDevice(GUID_SysKeyboard, 
+                                       &_systemKeyboard, 
+                                       NULL) != S_OK) {
+            
             _systemKeyboard = NULL;
+
         } else {
+
             HRESULT hr = _systemKeyboard->SetCooperativeLevel(window, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
             debugAssertM(hr == S_OK, "Unable to set keyboard cooperative level.");
 
@@ -1395,6 +1399,7 @@ public:
             debugAssertM(hr == S_OK, "Unable to set keyboard buffer size.");
 
             _keyboardEventHandle = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+            
             hr = _systemKeyboard->SetEventNotification(_keyboardEventHandle);
             if (hr == 2) { // check for DI_POLLEDDEVICE
                 debugAssertM(false, "Unable to set keyboard event notification without polling.");
@@ -1408,42 +1413,20 @@ public:
         ::FreeLibrary(di8Module);
     }
 
-    static inline bool aquireJoystick(unsigned int joystick) {
-        
-        debugAssert( (uint32)_joysticks.length() > joystick );
-
-        if (_joysticks[joystick].valid) {
-
-            HRESULT hr = _joysticks[joystick].device->Acquire();
-            if ( (hr == S_OK) || (hr == S_FALSE) ) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    static inline bool acquireKeyboard() {
-
-        debugAssert( _systemKeyboard != NULL );
-
-        HRESULT hr = _systemKeyboard->Acquire();
-        if ( (hr == S_OK) || (hr == S_FALSE) ) {
-            return true;
+    static bool libraryExists() {
+        HMODULE handle = ::LoadLibrary("dinput8.dll");
+        if (handle == NULL) {
+            return false;
         } else {
-            return false;
+            ::FreeLibrary(handle);
+            return true;
         }
-        return false;
     }
 
-    static inline bool getJoystickState(unsigned int joystick, G3DJOYDATA& data) {
+    bool getJoystickState(unsigned int joystick, G3DJOYDATA& data) {
 
         debugAssert( (uint32)_joysticks.length() > joystick );
-
-        if (!_joysticks[joystick].valid) {
-            return false;
-        }
+        debugAssert( _joysticks[joystick].device != NULL );
 
         memset(&data, 0, sizeof(G3DJOYDATA));
         
@@ -1457,7 +1440,7 @@ public:
         }
     }
 
-    static inline void getJoystickInfo(unsigned int joystick, unsigned int& numButtons, unsigned int& numAxes) {
+    void getJoystickInfo(unsigned int joystick, unsigned int& numButtons, unsigned int& numAxes) {
 
         debugAssert( (uint32)_joysticks.length() > joystick );
 
@@ -1466,7 +1449,7 @@ public:
     }
 
 
-    static inline bool getKeyboardEvents(DIDEVICEOBJECTDATA* events, unsigned long& numEvents) {
+    bool getKeyboardEvents(DIDEVICEOBJECTDATA* events, unsigned long& numEvents) {
         
         alwaysAssertM( _systemKeyboard != NULL, "There is no system keyboard!" );
 
@@ -1486,46 +1469,35 @@ public:
         }
     }
 
-    static inline unsigned int getNumJoysticks() {
+    unsigned int getNumJoysticks() {
         return _joysticks.length();
     }
 
-    static inline std::string getJoystickName(unsigned int joystick) {
+    std::string getJoystickName(unsigned int joystick) {
 
         debugAssert( (uint32)_joysticks.length() > joystick );
 
         return _joysticks[joystick].name;
     }
 
-    static inline bool joystickExists(unsigned int joystick) {
+    bool joystickExists(unsigned int joystick) {
         
         if ((uint32)_joysticks.length() > joystick) {
-            if (_joysticks[joystick].valid) {
-                return true;
-            }
+            return true;
         }
         return false;
     }
 
-    static void clearJoysticks() {
+    void clearJoysticks() {
         //Release any joystick interfaces
         for(size_t i = 0; i < _joysticks.length(); ++i) {
-            if (_joysticks[i].valid) {
                 _joysticks[i].device->Release();
                 _joysticks[i].device = NULL;
-                _joysticks[i].valid = false;
-            }
         }
         _joysticks.clear();
         _joysticks.resize(0, true);
     }
 };
-
-// Initialize static variables
-IDirectInput8A*                             _DirectInput::_directInput = NULL;
-Array< _DirectInput::JoystickInfo >         _DirectInput::_joysticks;
-IDirectInputDevice8A*                       _DirectInput::_systemKeyboard = NULL;
-HANDLE                                      _DirectInput::_keyboardEventHandle = NULL;
 
 } // namespace _internal
 } // namespace G3D

@@ -179,7 +179,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
         }
     }
 
-    _DirectInput::createDevices(window);
+    _diDevices = new _DirectInput(window);
 }
 
 
@@ -477,7 +477,7 @@ void Win32Window::close() {
 Win32Window::~Win32Window() {
     close();
 
-    _DirectInput::clearJoysticks();
+    _diDevices->clearJoysticks();
 }
 
 
@@ -512,7 +512,7 @@ bool Win32Window::pollEvent(GEvent& e) {
     }
 
     // Check for DI_OK or DI_BUFFEROVERFLOW
-    if( _DirectInput::getKeyboardEvents(keyboardData, numKeyboardData) ) {
+    if( _diDevices->getKeyboardEvents(keyboardData, numKeyboardData) ) {
 
         for (uint32 event = 0; event < numKeyboardData; ++event) {
             e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYDOWN : SDL_KEYUP;
@@ -554,7 +554,6 @@ bool Win32Window::pollEvent(GEvent& e) {
                 fMinimized = (BOOL) HIWORD(wParam); // minimized flag 
                 hwndPrevious = (HWND) lParam;       // window handle 
                 */
-                _DirectInput::acquireKeyboard();
                 break;
 
             case WM_LBUTTONDOWN:
@@ -729,28 +728,28 @@ void Win32Window::getRelativeMouseState(double& x, double& y, uint8& mouseButton
 
 
 int Win32Window::numJoysticks() const {
-    return _DirectInput::getNumJoysticks();
+    return _diDevices->getNumJoysticks();
 }
 
 
 std::string Win32Window::joystickName(unsigned int sticknum)
 {
-    return _DirectInput::getJoystickName(sticknum);
+    return _diDevices->getJoystickName(sticknum);
 }
 
 
 void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
 
-    if (!_DirectInput::joystickExists(stickNum)) {
+    if (!_diDevices->joystickExists(stickNum)) {
         return;
     }
 
     G3DJOYDATA joystickState;
 
-    _DirectInput::getJoystickState(stickNum, joystickState);
+    _diDevices->getJoystickState(stickNum, joystickState);
 
     unsigned int numButtons, numAxes;
-    _DirectInput::getJoystickInfo(stickNum, numButtons, numAxes);
+    _diDevices->getJoystickInfo(stickNum, numButtons, numAxes);
 
     button.resize(numButtons, false);
     for (uint32 b = 0; (b < numButtons) && (b < 32); ++b) {
