@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-02-19
+ @edited  2004-03-03
  */
 
 #include "G3D/platform.h"
@@ -142,7 +142,7 @@ void GApp::run() {
         try {
             main();
         } catch (const GImage::Error& e) {
-            alwaysAssertM(false, e.reason + ": \"" + e.filename + "\"");
+            alwaysAssertM(false, e.reason);
         } catch (const std::string& s) {
             alwaysAssertM(false, s);
         } catch (const TextInput::WrongTokenType& t) {

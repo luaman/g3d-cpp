@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2004-02-18
+ @edited  2004-03-03
 */
 
 #ifndef G3D_MESHALG_H
@@ -329,7 +329,7 @@ public:
      general meshes in jgt.
 
      @param vertexNormalArray Output. Unit length
-     @param faceNormalArray Output.   Unit length
+     @param faceNormalArray Output.   Degenerate faces produce zero magnitude normals. Unit length
     */
     static void computeNormals(
         const Array<Vector3>&   vertexGeometry,

@@ -18,17 +18,21 @@
 #endif
 
 
-// Discrete Curvature Operators for triangular meshes
-// Based on Meyer, Desbrun, Schroder, and Barr "Discrete 
-// Differential-Geometry Operators for Triangulated 2-Manifolds. 
-// citeseer.nj.nec.com/meyer02discrete.html
+/**
+   Discrete Curvature Operators for triangular meshes.
+
+   @cite  Based on Meyer, Desbrun, Schroder, and Barr "Discrete 
+   Differential-Geometry Operators for Triangulated 2-Manifolds." 
+   http://citeseer.nj.nec.com/meyer02discrete.html */
 class Curvatures {
 public:
+    Curvatures() {}
+
     /**
       Takes an array of vertices, and an array of triangle indices to traverse them
       You may get both of these from a G3D::PosedModel.
       */
-    Curvatures::Curvatures(const Array< Vector3 >& _vertexArray, 
+    Curvatures(const Array< Vector3 >& _vertexArray, 
                            const Array< int >& _indexArray);
 
     /** Returns the Principal Curvatures for each vertex in _vertexArray */
@@ -158,14 +162,13 @@ void Curvatures::initCotans() {
         for(int f = 0; f < adjacentFaces[i].size(); ++f) {
             if( (faces[adjacentFaces[i][f]].vertexIndex[0] == j) ||
                 (faces[adjacentFaces[i][f]].vertexIndex[1] == j) ||
-                (faces[adjacentFaces[i][f]].vertexIndex[2] == j) ) 
-            {
+                (faces[adjacentFaces[i][f]].vertexIndex[2] == j) ) {
                 aFaces.append(faces[adjacentFaces[i][f]]);
                 aFacesIdx.append(adjacentFaces[i][f]);
             }
         }
 
-        debugAssertM(aFaces.size() >= 2, "initCotans: More than 2 faces share an edge."); 
+        debugAssertM(aFaces.size() >= 2, "initCotans: Fewer than 2 faces share an edge."); 
         // Find the points who's angle we need (ie not i and j)
         for(int v = 0; v < 3; ++v) {
             if( (aFaces[0].vertexIndex[v] !=i) && (aFaces[0].vertexIndex[v] != j) )
@@ -273,7 +276,6 @@ void Curvatures::gaussianCurvature(Array< double >& curvatures) const {
             theta += fabs(angleInner[i][adjacentFaces[i][j]]);  
          }
 
-         // TODO: make 2Pi
          curvatures.append( (G3D_TWO_PI - theta) / AMixed[i] );  
     }
 }
@@ -291,34 +293,39 @@ void Curvatures::meanCurvature(Array< double >& curvatures) const {
     // Mean Curvature Normal
     Vector3 K; 
 
-
     // For each vertex
-    for (int i = 0; i < geometry.vertexArray.size(); ++i) {  
+    for (int v = 0; v < geometry.vertexArray.size(); ++v) {  
 
          // Find N1 ring of vertices
          ringSet.clear();
 
-         // For each face
-         for (int j = 0; j < adjacentFaces[i].size(); ++j) {
-             // add all verts
-             ringSet.insert(faces[adjacentFaces[i][j]].vertexIndex[0]);  
-             ringSet.insert(faces[adjacentFaces[i][j]].vertexIndex[1]);
-             ringSet.insert(faces[adjacentFaces[i][j]].vertexIndex[2]);
-         }
+         
+         const Array<int>& neighborFaces = adjacentFaces[v];
 
-         // ringSet contains N1 ring only
-         ringSet.remove(i); 
+         if (neighborFaces.size() > 0) {
+             // For each face
+             for (int f = neighborFaces.size() - 1; f >= 0; --f) {
+                 const MeshAlg::Face& face = faces[neighborFaces[f]];
+
+                 for (int i = 0; i < 3; ++i) {
+                     ringSet.insert(face.vertexIndex[i]);  
+                 }
+             }
+
+             // ringSet contains N1 ring only.  Remove the vertex itself.
+             ringSet.remove(v);
+         }
 
          ring = ringSet.getMembers();
          K = Vector3(0, 0, 0);
          
-         // for each edge exiting i
+         // for each edge exiting v
          for(int j = 0; j < ring.size(); ++j) {
              // K(xi) = 1/(2*Amixed)*sum(cota+cotb)*(Xj-Xi)
-             K += (cota[i][ring[j]] + cotb[i][ring[j]]) * 
-                  (geometry.vertexArray[ring[j]] - geometry.vertexArray[i]);
+             K += (cota[v][ring[j]] + cotb[v][ring[j]]) * 
+                  (geometry.vertexArray[ring[j]] - geometry.vertexArray[v]);
          }
-         K /= 2.0 * AMixed[i];
+         K /= 2.0 * AMixed[v];
          curvatures.append( 0.5 * K.length() );
 
     }
@@ -557,72 +564,23 @@ public:
 
     std::string                 name;
 
-    Mesh() {}
-    Mesh(const PosedModelRef& pm) {
+    /** Per-vertex arrays.  On the range [0 (flat), inf (crease)] */
+    Array<double>               gaussianCurvature;
+
+    /** On the range [-inf to inf] */
+    Array<double>               meanCurvature;
+
+    enum RenderStyle {WHITE, GAUSSIAN, MEAN} renderStyle;
+
+    Mesh() : renderStyle(WHITE) {}
+    Mesh(const PosedModelRef& pm) : renderStyle(WHITE) {
         import(pm);
     }
 
     void import(const PosedModelRef& pm);
 
-    void render(RenderDevice* renderDevice);
+    void render(class App* app, RenderDevice* renderDevice);
 };
-
-
-void Mesh::import(const PosedModelRef& pm) {
-    geometry            = pm->objectSpaceGeometry();
-    indexArray          = pm->triangleIndices();
-
-    faceArray           = pm->faces();
-    edgeArray           = pm->edges();
-    vertexArray         = pm->vertices();
-
-    weldedFaceArray     = pm->weldedFaces();
-    weldedEdgeArray     = pm->weldedEdges();
-    weldedVertexArray   = pm->weldedVertices();
-
-    pm->getObjectSpaceFaceNormals(faceNormalArray);
-
-    boundingSphere      = pm->objectSpaceBoundingSphere();
-    boundingBox         = pm->objectSpaceBoundingBox();
-
-    numBoundaryEdges    = pm->numBoundaryEdges();
-    numWeldedBoundaryEdges = pm->numWeldedBoundaryEdges();
-
-    name                = pm->name();
-}
-
-
-void Mesh::render(RenderDevice* renderDevice) {
-    renderDevice->pushState();
-        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-
-        renderDevice->setColor(Color3::WHITE);
-        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-            for (int a = 0; a < indexArray.size(); ++a) {
-                int i = indexArray[a];
-
-                renderDevice->setNormal(geometry.normalArray[i]);
-                renderDevice->sendVertex(geometry.vertexArray[i]);
-            }
-        renderDevice->endPrimitive();
-
-        // Draw the edges
-        renderDevice->setColor(Color3::BLACK);
-        renderDevice->setLineWidth(0.5);
-        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-
-        renderDevice->beginPrimitive(RenderDevice::LINES);
-            for (int e = 0; e < edgeArray.size(); ++e) {
-                for (int a = 0; a < 2; ++a) {
-                    int i = edgeArray[e].vertexIndex[a];
-
-                    renderDevice->setNormal(geometry.normalArray[i]);
-                    renderDevice->sendVertex(geometry.vertexArray[i] + geometry.normalArray[i] * 0.001);
-                }
-            }
-        renderDevice->endPrimitive();
-    renderDevice->popState();
-}
 
 
 /**
@@ -657,16 +615,111 @@ public:
 };
 
 
+
+void Mesh::import(const PosedModelRef& pm) {
+    geometry            = pm->objectSpaceGeometry();
+    indexArray          = pm->triangleIndices();
+
+    faceArray           = pm->faces();
+    edgeArray           = pm->edges();
+    vertexArray         = pm->vertices();
+
+    weldedFaceArray     = pm->weldedFaces();
+    weldedEdgeArray     = pm->weldedEdges();
+    weldedVertexArray   = pm->weldedVertices();
+
+    pm->getObjectSpaceFaceNormals(faceNormalArray);
+
+    boundingSphere      = pm->objectSpaceBoundingSphere();
+    boundingBox         = pm->objectSpaceBoundingBox();
+
+    numBoundaryEdges    = pm->numBoundaryEdges();
+    numWeldedBoundaryEdges = pm->numWeldedBoundaryEdges();
+
+    name                = pm->name();
+
+    Curvatures curvature(geometry.vertexArray, indexArray);
+    curvature.gaussianCurvature(gaussianCurvature);
+    curvature.meanCurvature(meanCurvature);
+}
+
+
+void Mesh::render(App* app, RenderDevice* renderDevice) {
+    renderDevice->pushState();
+        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+
+        renderDevice->setColor(Color3::WHITE);
+        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+
+            double L, H;
+            L = inf;
+            H = -inf;
+
+            for (int a = 0; a < indexArray.size(); ++a) {
+                int i = indexArray[a];
+                renderDevice->setNormal(geometry.normalArray[i]);
+
+                switch (renderStyle) {
+                case GAUSSIAN:
+                    {
+                        double c = gaussianCurvature[i] * 0.1;
+                        L = min(c, L);  H = max(c, H);
+
+                        c = clamp(sign(c) * sqrt(abs(c)), -1, 1) * 0.5 + 0.5;
+                        Color3 col = (Color3::WHITE).lerp(Color3::GREEN * 0.7, c);
+                        renderDevice->setColor(col);
+                    }
+                    break;
+
+                case MEAN:
+                    {
+                        double c = meanCurvature[i];
+                        L = min(c, L);  H = max(c, H);
+
+                        c = clamp((c - 20) / 40, 0, 1);
+                        c = clamp(sqrt(c), 0, 1);
+                        Color3 col = Color3::WHITE.lerp(Color3::RED, c);
+                        renderDevice->setColor(col);
+                    }
+                    break;
+                }
+
+                renderDevice->sendVertex(geometry.vertexArray[i]);
+            }
+        renderDevice->endPrimitive();
+
+        app->debugPrintf("[%g, %g]", L, H);
+        // Draw the edges
+        renderDevice->setColor(Color3::BLACK);
+        renderDevice->setLineWidth(0.5);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int e = 0; e < edgeArray.size(); ++e) {
+                for (int a = 0; a < 2; ++a) {
+                    int i = edgeArray[e].vertexIndex[a];
+
+                    renderDevice->setNormal(geometry.normalArray[i]);
+                    renderDevice->sendVertex(geometry.vertexArray[i] + geometry.normalArray[i] * 0.001);
+                }
+            }
+        renderDevice->endPrimitive();
+    renderDevice->popState();
+}
+
+
+
+
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 
 void Demo::init()  {
     // Called before Demo::run() beings
-    app->debugCamera.setPosition(Vector3(0, 2, 10));
-    app->debugCamera.lookAt(Vector3(0, 2, 0));
+    app->debugCamera.setPosition(Vector3(0,0,1));
+    app->debugCamera.lookAt(Vector3::ZERO);
 
-    mesh.import(IFSModel::create(app->dataDir + "ifs/sphere.ifs")->pose(CoordinateFrame()));
+    mesh.import(IFSModel::create(app->dataDir + "ifs/elephant.ifs")->pose(CoordinateFrame()));
 }
 
 
@@ -692,6 +745,15 @@ void Demo::doLogic() {
         app->endProgram = true;
     }
 
+    app->debugPrintf("Shading: (M)ean, (G)aussian, (V)anilla");
+
+    if (app->userInput->keyPressed('g')) {
+        mesh.renderStyle = Mesh::GAUSSIAN;
+    } else if (app->userInput->keyPressed('m')) {
+        mesh.renderStyle = Mesh::MEAN;
+    } else if (app->userInput->keyPressed('v')) {
+        mesh.renderStyle = Mesh::WHITE;
+    }
 	// Add other key handling here
 }
 
@@ -715,11 +777,10 @@ void Demo::doGraphics() {
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
 
-        mesh.render(app->renderDevice);
-
-    	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
+//    	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
     app->renderDevice->disableLighting();
+        mesh.render(app, app->renderDevice);
 
     if (! app->sky.isNull()) {
         app->sky->renderLensFlare(lighting);
@@ -731,7 +792,7 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    dataDir = "d:/libraries/g3d-6_02/data/";
+    dataDir = "z:/libraries/g3d-6_02/data/";
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");

@@ -135,6 +135,11 @@ private:
      */
     int     _size;
 
+    /**
+     Array of Node*. 
+     We don't use Array<Node*> because Table is lower level.
+     Some elements may be NULL.
+     */
     Node**  bucket;
     
     /**
@@ -156,7 +161,7 @@ private:
             while (node != NULL) {
                 Node* nextNode = node->next;
         
-                // insert at the head of the list
+                // insert at the head of the list for bucket[i]
                 int i = node->hashCode % numBuckets;
                 node->next = bucket[i];
                 bucket[i] = node;
@@ -480,7 +485,7 @@ public:
       Node* n = bucket[b];
 
       // Make sure it was found
-      debugAssert(n != NULL);
+      alwaysAssertM(n != NULL, "Tried to remove a key that was not in the table.");
 
       Node* previous = NULL;
 
@@ -504,8 +509,7 @@ public:
        } while (n != NULL);
 
 
-      // Not found! insert at the head.
-      debugAssertM(false, "Element not found!");
+      alwaysAssertM(false, "Tried to remove a key that was not in the table.");
    }
 
    /**

@@ -98,12 +98,12 @@ void MeshAlg::computeNormals(
             const int f = vertexArray[v].faceIndex[k];
             sum += faceNormalArray[f];
         }
-        vertexNormalArray[v] = sum.direction();
+        vertexNormalArray[v] = sum.directionOrZero();
     }
 
 
     for (int f = 0; f < faceArray.size(); ++f) {
-        faceNormalArray[f] = faceNormalArray[f].direction();
+        faceNormalArray[f] = faceNormalArray[f].directionOrZero();
     }
 
 }

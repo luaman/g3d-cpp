@@ -10,12 +10,14 @@
    <P>
    Changes in 6.02:
    <UL>
+     <LI> MeshAlg::computeNormals now returns 0 instead of NaN for degenerate normals
      <LI> Updated main-no-GApp.cpp for 6.02
      <LI> RenderDevice::screenshotPic can copy from the back buffer
      <LI> Improved VAR documentation.
      <LI> If NO_SDL_MAIN is defined, G3D does not attempt to link against sdlmain.lib
      <LI> UserInput::setPureDeltaMouse
      <LI> UserInput::mouseXY, mouseX, mouseY
+	 <LI> UserInput::mouseDXY
 	 <LI> Deprecated UserInput keyMapping constructor argument
      <LI> Upgraded to SDL 1.2.7
 	        Fix: [ 838030 ] SDL 1.2.6 blocks prompt
