@@ -2408,7 +2408,7 @@ void RenderDevice::setTexture(
     debugAssertM(unit < _numTextures,
         format("Attempted to access texture %d"
                " on a device with %d textures.",
-               unit, _numTextureUnits));
+               unit, _numTextures));
 
     TextureRef oldTexture = state.textureUnit[unit].texture;
 
