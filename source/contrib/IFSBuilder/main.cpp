@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "cloud";
+        model->name = "Lumps";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");

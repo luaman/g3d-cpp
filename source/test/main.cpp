@@ -1417,6 +1417,11 @@ void testSwizzle() {
 
 int main(int argc, char* argv[]) {
 
+	for (int C = 7; C < 11; ++C) {
+		printf("%d: %g\n", C, 0.997 * C - 0.932);
+	}
+
+	while (true);
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureTriangleCollisionPerformance();

@@ -55,6 +55,15 @@ static double lumpy2D(double x, double z) {
 }
 
 
+static double cliff2D(double x, double z) {
+	if (x + z > .25) {
+		return 0.5;
+	} else {
+		return 0.0;
+	}
+}
+
+
 XIFSModel::XIFSModel(const std::string& filename) {
     if (! fileExists(filename)) {
         error("Critical Error", std::string("File not found: \"") + filename + "\"", true);
@@ -65,6 +74,8 @@ XIFSModel::XIFSModel(const std::string& filename) {
 
     //createGrid(flat2D, 1024, true); return;
     //createGrid(lumpy2D, 1024, true); return;
+    //createGrid(cliff2D, 1024, true); return;
+    createIsoGrid(cliff2D, 1024); return;
     //createGrid(bump2D, 900, true); return;
     //createIsoGrid(lumpy2D, 800); return;
     //createGrid(lumpy2D, 900, true); return;

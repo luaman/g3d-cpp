@@ -57,7 +57,7 @@ inline unsigned int hashCode(const G3D::Hashable& a) {
  String hashing function for use with Table.
  */
 inline unsigned int hashCode(const std::string& a) {
-	int s = a.length();
+	int s = (int)a.length();
 
 	int i = 0;
 	unsigned int key = 0;

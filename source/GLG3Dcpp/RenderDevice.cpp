@@ -600,7 +600,6 @@ void RenderDevice::push2D() {
 
 void RenderDevice::push2D(const Rect2D& viewport) {
     pushState();
-    resetState();
     setDepthTest(DEPTH_ALWAYS_PASS);
     disableLighting();
     setCullFace(CULL_NONE);

@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2004-02-19
+ @edited  2004-05-08
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -121,6 +121,23 @@ public:
   There is no TextOutput class because printf and character streams fill
   that role nicely in C++.
 
+
+  TextInput does not have helper functions for types with non-obvious formatting, or 
+  helpers that would be redundant.  You can use the following idioms for these:
+  
+	<dt><b>Bool:</b> <code>ti.readSymbol() != "false"</code>
+	<dt><b>Int:</b>  <code>iRound(ti.readNumber())</code>
+	<dt><b>Hex Color:</b>  <code>Color4::fromARGB(iRound(ti.readNumber()))</code>
+	<dt><b>Vector3:</b>  
+	  <pre>Vector3 v;
+	       ti.readSymbol("(");
+		   v.x = ti.readNumber();
+		   ti.readSymbol(",");
+		   v.y = ti.readNumber();
+		   ti.readSymbol(",");
+		   v.z = ti.readNumber();
+		   ti.readSymbol(")");
+	  </pre>
  */
 class TextInput {
 public:
