@@ -177,6 +177,8 @@ int main(int argc, char** argv) {
                     case VARSTATIC:
                         str = "Using static VAR (SPACE to toggle)";
                         break;
+
+                    default:;
                     }
 	
                    font->draw2DString(str, 10,
@@ -234,10 +236,12 @@ void handleEvents() {
                 break;
 
             // Add other key handlers here
+            default:;
 
             }
             break;
 
+        default:;
             // Add other event handlers here
         }
 
@@ -271,6 +275,7 @@ Model::Model(const std::string& filename) {
 
     std::string fmt         = b.readString32();
     float       version     = b.readFloat32();
+    (void) version;
     std::string name        = b.readString32();
 
     debugAssert(fmt     == "IFS");
@@ -387,7 +392,7 @@ void Model::render(const CoordinateFrame& c,
         renderDevice->endIndexedPrimitives();
         break;
 
-
+    default:;
     }
 
     // Turn off lighting

@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-07-07
+# @edited  2003-07-21
 #
 # Each build target is a procedure.
 #
@@ -80,6 +80,9 @@ def linuxCheckVersion():
 def lib():
     x = 0
 
+    mkdir(installDir + "/lib")
+    copyIfNewer('source/include', installDir + '/include')
+
     if (os.name == 'nt'):
         # Windows build
         x = msdev('source/graphics3D.dsw',\
@@ -88,11 +91,11 @@ def lib():
                  "GLG3D - Win32 Release",\
                  "GLG3D - Win32 Debug"])
 
-    else:
-        # Linux build (right now, only builds the debug release, doesn't 
-        # copy files)
+        copyIfNewer("temp/lib/*.lib", installDir + "/lib")
 
-	# Check version of tools
+    else:
+        # Linux build
+    	# Check version of tools
 
         linuxCheckVersion()
 
@@ -103,21 +106,21 @@ def lib():
         # Copy the lib's to the right directory
         if (x != 0):
             mkdir("temp/lib")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D.a",                  "temp/lib/libG3D.a")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",            "temp/lib/libG3D_debug.a")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D.so.0.0.0",           "temp/lib/libG3D.so")
-            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.so.0.0.0",     "temp/lib/libG3D_debug.so")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D.a",                  installDir + "/lib/libG3D.a")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",            installDir + "/lib/libG3D_debug.a")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D.so.0.0.0",           installDir + "/lib/libG3D.so")
+            copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.so.0.0.0",     installDir + "/lib/libG3D_debug.so")
             
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.a",              "temp/lib/libGLG3D.a")
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.a",        "temp/lib/libGLG3D_debug.a")
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.so.0.0.0",       "temp/lib/libGLG3D.so")
-            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.so.0.0.0", "temp/lib/libGLG3D_debug.so")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.a",              installDir + "/lib/libGLG3D.a")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.a",        installDir + "/lib/libGLG3D_debug.a")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D.so.0.0.0",       installDir + "/lib/libGLG3D.so")
+            copyIfNewer("source/GLG3Dcpp/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."
         sys.exit(x);        
 
-    copyIfNewer("source/lib", "temp/lib")
+    copyIfNewer("source/lib", installDir + "lib")
 
 ###############################################################################
 #                                                                             #
@@ -158,13 +161,10 @@ def doc():
     
 def install(copyData=1):
     lib()
-    #doc()
-    copyIfNewer('temp/lib', installDir + '/lib')
-
+    doc()
+    
     if (os.name != 'nt'):
         return
-
-    copyIfNewer('source/include', installDir + '/include')
 
     if (copyData):
         copyIfNewer('source/demos', installDir + '/demos')
