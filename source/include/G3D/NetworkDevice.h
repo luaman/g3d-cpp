@@ -331,7 +331,7 @@ public:
 
     /** @deprecated */
     inline void send() {
-        send(-1);
+        send(0xffffffff);
     }
 
     virtual uint32 waitingMessageType();

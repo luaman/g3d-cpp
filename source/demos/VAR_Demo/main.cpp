@@ -269,6 +269,12 @@ int main(int argc, char** argv) {
     GAppSettings settings;
     settings.useNetwork = false;
     settings.debugFontName = "dominant.fnt";
+    settings.window.depthBits = 16;
+    settings.window.stencilBits = 0;
+    settings.window.alphaBits = 0;
+    settings.window.fsaaSamples = 1;
+    settings.window.rgbBits = 0;
+    
     App(settings).run();
     return 0;
 }

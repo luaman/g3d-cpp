@@ -11,6 +11,17 @@
 #include "G3D/Array.h"
 #include "G3D/stringutils.h"
 
+#if defined(G3D_LINUX) || defined(G3D_OSX)
+    #include <unistd.h>
+    #include <errno.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+    #include <netinet/tcp.h>
+    #define _alloca alloca
+#endif
+
 namespace G3D {
 
 NetAddress::NetAddress() {
