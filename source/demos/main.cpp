@@ -13,8 +13,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER != 60012
-    #error Requires G3D 6.00 b12
+#if G3D_VER != 60100
+    #error Requires G3D 6.01 
 #endif
 
 class App : public GApp {
