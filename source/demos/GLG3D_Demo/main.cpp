@@ -169,6 +169,7 @@ int main(int argc, char** argv) {
                     t[0] = System::getTick();
                     t[1] = t[0] + 0.01;
 
+					// Draw the planes
                     for (int x = 0; x < N; ++x) {
 
                         for (int i = 0; i < 2; ++i) {

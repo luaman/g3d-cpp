@@ -1,11 +1,6 @@
 /**
  @file Collision_Demo/main.cpp
 
-  To run this program:
-    1. Install SDL 1.2.5 (www.libsdl.org)
-    2. Compile and run
-    3. Press ESC to exit
-
  <P>
 
  This demo uses the G3D collision detection routines to implement a simple physics

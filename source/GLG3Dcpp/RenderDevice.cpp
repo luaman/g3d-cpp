@@ -605,6 +605,8 @@ void RenderDevice::push2D(const Rect2D& viewport) {
     setCullFace(CULL_NONE);
     disableDepthWrite();
     setViewport(viewport);
+	setObjectToWorldMatrix(CoordinateFrame());
+	setCameraToWorldMatrix(CoordinateFrame());
     setProjectionMatrix(Matrix4::orthogonalProjection(viewport.x0(), viewport.x0() + viewport.width() - 1, viewport.y0() + viewport.height() - 1, viewport.y0(), -1, 1));
 }
 

@@ -14,8 +14,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER != 60300
-    #error Requires G3D 6.03
+#if G3D_VER != 60301
+    #error Requires G3D 6.03 Beta 1
 #endif
 
 std::string             DATA_DIR;
