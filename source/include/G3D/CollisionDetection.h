@@ -5,10 +5,14 @@
   Moving collision detection for simple primitives.
 
   @author Morgan McGuire, matrix@graphics3d.com
-  @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
+  @cite Spherical collision based on Paul Nettle's
+  ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf
+  and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.
+  Box-Box intersection written by Kevin Egan.
+  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2004-03-19
+  @edited  2004-05-01
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -23,6 +27,7 @@
 #include "G3D/Triangle.h"
 #include "G3D/Array.h"
 #include "G3D/Ray.h"
+#include "G3D/Line.h"
 
 namespace G3D {
 
@@ -67,6 +72,230 @@ private:
     virtual ~CollisionDetection() {}
 
 public:
+
+    /** converts an index [0, 15] to the corresponding separating axis,
+      does not return normalized vector in the edge-edge case
+      (indices 6 through 15)
+     */
+    static Vector3 separatingAxisForSolidBoxSolidBox(
+            const int       separatingAxisIndex,
+            const Box &     box1,
+            const Box &     box2);
+
+    /** tests whether any axes for two boxes are parallel,
+      if they are then axis1 and axis2 are set to be the
+      parallel axes for box1 and box2 respectively
+     */
+    static bool parallelAxisForSolidBoxSolidBox(
+            const double*   ca,
+            const double    epsilon,
+            int &           axis1,
+            int &           axis2);
+
+    /** returns the projected distance between the two boxes along
+      the specified separating axis, negative distances correspond
+      to an overlap along that separating axis.
+      the distance is not divided by denominator dot(L, L),
+      see penetrationDepthForFixedSphereFixedBox() for more details
+     */
+    static inline double projectedDistanceForSolidBoxSolidBox(
+            const int           separatingAxisIndex,
+            const Vector3 &     a,
+            const Vector3 &     b,
+            const Vector3 &     D,
+            const double*       c,
+            const double*       ca,
+            const double*       ad,
+            const double*       bd)
+    {
+        double R0;
+        double R1;
+        double R;
+        switch (separatingAxisIndex) {
+        case 0:
+            // A0
+            R0 = a[0];
+            R1 = b[0] * ca[0] + b[1] * ca[1] + b[2] * ca[2];
+            R = fabs(ad[0]);
+            break;
+        case 1:
+            // A1
+            R0 = a[1];
+            R1 = b[0] * ca[3] + b[1] * ca[4] + b[2] * ca[5];
+            R = fabs(ad[1]);
+            break;
+        case 2:
+            // A2
+            R0 = a[2];
+            R1 = b[0] * ca[6] + b[1] * ca[7] + b[2] * ca[8];
+            R = fabs(ad[2]);
+            break;
+        case 3:
+            // B0
+            R0 = a[0] * ca[0] + a[1] * ca[3] + a[2] * ca[6];
+            R1 = b[0];
+            R = fabs(bd[0]);
+            break;
+        case 4:
+            // B1
+            R0 = a[0] * ca[1] + a[1] * ca[4] + a[2] * ca[7];
+            R1 = b[1];
+            R = fabs(bd[1]);
+            break;
+        case 5:
+            // B2
+            R0 = a[0] * ca[2] + a[1] * ca[5] + a[2] * ca[8];
+            R1 = b[2];
+            R = fabs(bd[2]);
+            break;
+        case 6:
+            // A0 x B0
+            R0 = a[1] * ca[6] + a[2] * ca[3];
+            R1 = b[1] * ca[2] + b[2] * ca[1];
+            R = fabs(c[3] * ad[2] - c[6] * ad[1]);
+            break;
+        case 7:
+            // A0 x B1
+            R0 = a[1] * ca[7] + a[2] * ca[4];
+            R1 = b[0] * ca[2] + b[2] * ca[0];
+            R = fabs(c[4] * ad[2] - c[7] * ad[1]);
+            break;
+        case 8:
+            // A0 x B2
+            R0 = a[1] * ca[8] + a[2] * ca[5];
+            R1 = b[0] * ca[1] + b[1] * ca[0];
+            R = fabs(c[5] * ad[2] - c[8] * ad[1]);
+            break;
+        case 9:
+            // A1 x B0
+            R0 = a[0] * ca[6] + a[2] * ca[0];
+            R1 = b[1] * ca[5] + b[2] * ca[4];
+            R = fabs(c[6] * ad[0] - c[0] * ad[2]);
+            break;
+        case 10:
+            // A1 x B1
+            R0 = a[0] * ca[7] + a[2] * ca[1];
+            R1 = b[0] * ca[5] + b[2] * ca[3];
+            R = fabs(c[7] * ad[0] - c[1] * ad[2]);
+            break;
+        case 11:
+            // A1 x B2
+            R0 = a[0] * ca[8] + a[2] * ca[2];
+            R1 = b[0] * ca[4] + b[1] * ca[3];
+            R = fabs(c[8] * ad[0] - c[2] * ad[2]);
+            break;
+        case 12:
+            // A2 x B0
+            R0 = a[0] * ca[3] + a[1] * ca[0];
+            R1 = b[1] * ca[8] + b[2] * ca[7];
+            R = fabs(c[0] * ad[1] - c[3] * ad[0]);
+            break;
+        case 13:
+            // A2 x B1
+            R0 = a[0] * ca[4] + a[1] * ca[1];
+            R1 = b[0] * ca[8] + b[2] * ca[6];
+            R = fabs(c[1] * ad[1] - c[4] * ad[0]);
+            break;
+        case 14:
+            // A2 x B2
+            R0 = a[0] * ca[5] + a[1] * ca[2];
+            R1 = b[0] * ca[7] + b[1] * ca[6];
+            R = fabs(c[2] * ad[1] - c[5] * ad[0]);
+            break;
+        default:
+            debugAssertM(false, "fell through switch statement");
+        }
+
+        return (R - (R0 + R1));
+    }
+
+
+    /** the following space requirements must be met:
+      c[] 9 elements, ca[] 9 elements, ad[] 3 elements, bd[] 3 elements,
+     
+      adobted from David Eberly's papers, variables used in this function
+      correspond to variables used in pages 6 and 7 in the pdf
+      http://www.magic-software.com/Intersection.html
+      http://www.magic-software.com/Documentation/DynamicCollisionDetection.pdf
+     */
+    static void fillSolidBoxSolidBoxInfo(
+            const Box &     box1,
+            const Box &     box2,
+            Vector3 &       a,
+            Vector3 &       b,
+            Vector3 &       D,
+            double*         c,
+            double*         ca,
+            double*         ad,
+            double*         bd);
+
+    /** return false - two boxes definitely do not intersect
+      return true  - the boxes may intersect, further work must be done
+     */
+    static bool CollisionDetection::conservativeBoxBoxTest(
+            const Vector3 &     a,
+            const Vector3 &     b,
+            const Vector3 &     D);
+
+    /** adobted from David Eberly's papers, variables used in this function
+      correspond to variables used in pages 6 and 7 in the pdf
+      http://www.magic-software.com/Intersection.html
+      http://www.magic-software.com/Documentation/DynamicCollisionDetection.pdf
+     
+      to speed up collision detection, if two objects do not intersect
+      the lastSeparatingAxis from the previous time step can be passed in,
+      and that plane can be checked first.  If the separating axis
+      was not saved, or if the two boxes intersected then
+      lastSeparatingAxis should equal -1
+     */
+    static bool CollisionDetection::fixedSolidBoxIntersectsFixedSolidBox(
+        const Box&      box1,
+        const Box&      box2,
+        const int       lastSeparatingAxis = -1);
+
+    /** variables and algorithm based on derivation at the following website:
+      http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
+     */
+    static void closestPointsBetweenLineAndLine(
+            const Line &    line1,
+            const Line &    line2,
+            Vector3 &       closest1,
+            Vector3 &       closest2);
+
+    /** adobted from David Eberly's papers, variables used in this function
+      correspond to variables used in pages 6 and 7 in the pdf
+      http://www.magic-software.com/Intersection.html
+      http://www.magic-software.com/Documentation/DynamicCollisionDetection.pdf
+     
+      to speed up collision detection, if two objects do not intersect
+      the lastSeparatingAxis from the previous time step can be passed in,
+      and that plane can be checked first.  If the separating axis
+      was not saved, or if the two boxes intersected then
+      lastSeparatingAxis should equal -1
+     
+      normal faces away from box1 and into box2
+      if there is contact only one contact point is returned
+          the minimally violated separating plane is computed
+          if the separating axis corresponds to a face
+              the contact point is half way between the deepest vertex
+              and the face
+          if the separating axis corresponds to two edges
+              the contact point is the midpoint of the smallest line
+              segment between the two edge lines
+     */
+    static double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
+        const Box&          box1,
+        const Box&          box2,
+        Array<Vector3>&     contactPoints,
+        Array<Vector3>&     contactNormals,
+        const int           lastSeparatingAxis = -1);
+
+
+    static double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
+        const Box&      box1,
+        const Box&      box2,
+        Array<Vector3>& contactPoints,
+        Array<Vector3>& contactNormals);
 
     /**
      Returns the penetration depth (negative if there is no penetration)
