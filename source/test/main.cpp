@@ -10,7 +10,7 @@
  */
 
 
-#include "../include/graphics3D.h"
+#include "../include/G3DAll.h"
 #include <iostream>
 
 using namespace G3D;
@@ -602,11 +602,11 @@ void testCollision() {
 
 int main(int argc, char* argv[]) {
 
+    RenderDevice rd;
+
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureArrayPerformance();
-        while(true);
-        exit(1);
         measureMemcpyPerformance();
         measureMemsetPerformance();
         measureTriangleCollisionPerformance();
