@@ -1,7 +1,8 @@
 //
 // Demo of wxGWindow
 //
-#include "wxGWindow.h"
+#include <../contrib/wxGWindow/wxGWindow.h>
+#include <../contrib/wxGWindow/wxGWindow.cpp>
 
 
 class App : public GApp {
@@ -12,8 +13,14 @@ protected:
 
 public:
 
-    App(GAppSettings& settings, GWindow* window) : GApp(settings, window) {}
+    static App* app;
+
+    App(GAppSettings& settings, GWindow* window) : GApp(settings, window) {
+        app = this;
+    }
 };
+
+App* App::app = NULL;
 
 // G3D wrapper objects
 class Demo : public GApplet {
@@ -77,55 +84,83 @@ void Demo::doGraphics() {
     app->renderDevice->setLight(1, GLight::directional(-Vector3::unitY(), Color3::brown() * .5, false));
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-    Draw::axes(app->renderDevice);
-
-//    PosedModelRef posed = model->pose(frame.toCoordinateFrame());
-//    posed->render(app->renderDevice);
-
-//    app->renderDevice->pushState();
-//        app->renderDevice->setColor(Color4(0,.5, 1,0.5));
-//        app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-//        posed = model->pose(current.toCoordinateFrame());
-//        posed->render(app->renderDevice);
-//    app->renderDevice->popState();
-
+    /*
     app->renderDevice->push2D();
-        Draw::rect2D(Rect2D::xyxy(10,210,20,220), app->renderDevice);
-        Draw::rect2D(Rect2D::xyxy(30,210,40,220), app->renderDevice);
-        Draw::rect2D(Rect2D::xyxy(41,210,50,220), app->renderDevice);
-        Draw::rect2D(Rect2D::xyxy(50,210,60,220), app->renderDevice);
-        Draw::rect2DBorder(Rect2D::xyxy(10,210,20,220), app->renderDevice, Color3::black());
+        app->renderDevice->setColor(Color3::red());
+        app->renderDevice->beginPrimitive(RenderDevice::QUADS);
+            app->renderDevice->sendVertex(Vector2(1,1));
+            app->renderDevice->sendVertex(Vector2(1,599));
+            app->renderDevice->sendVertex(Vector2(799,599));
+            app->renderDevice->sendVertex(Vector2(799,0));
+        app->renderDevice->endPrimitive();
     app->renderDevice->pop2D();
+    */
+
+    Draw::axes(app->renderDevice);
 }
 
 
 // Define a new frame type
 class MyFrame: public wxFrame {
-
 public:
     MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos,
             const wxSize& size, long style = wxDEFAULT_FRAME_STYLE);
-    
-public:
-    wxGWindow*      gWindow;
 
+public:
+    wxGWindow*      gwindow;
+
+    /** Close event */
     void OnClose(wxCloseEvent& event);
+
+    void OnFileMenuExit(wxCommandEvent& event);
 
     DECLARE_EVENT_TABLE();
 };
 
+enum {
+    // menu items
+    FILEMENU_SAVE = 100,
+    FILEMENU_EXIT,
+
+    STATUSBAR,
+};
+
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_CLOSE( MyFrame::OnClose )
+    EVT_MENU(FILEMENU_EXIT,  MyFrame::OnFileMenuExit)
 END_EVENT_TABLE()
 
 /* -----------------------------------------------------------------------
   Main Window
 -------------------------------------------------------------------------*/
 
+
 MyFrame::MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos,
                  const wxSize& size, long style) :
          wxFrame(frame, -1, title, pos, size, style),
-         gWindow(NULL) {
+         gwindow(NULL) {
+
+    // Menus            
+    wxMenu* fileMenu = new wxMenu;
+
+    fileMenu->Append(FILEMENU_SAVE, _T("&Save...\tCtrl-S"), _T("Save"));
+    fileMenu->AppendSeparator();
+    fileMenu->Append(FILEMENU_EXIT, _T("E&xit\tAlt-X"), _T("Quit this program"));
+
+    wxMenuBar *menuBar = new wxMenuBar;
+    menuBar->Append(fileMenu, _T("&File"));
+
+
+    SetMenuBar(menuBar);
+
+    wxStatusBar* statusBar = new wxStatusBar(this, STATUSBAR);
+    
+    SetStatusBar(statusBar);
+}
+
+
+void MyFrame::OnFileMenuExit(wxCommandEvent& WXUNUSED(event)) {
+    App::app->endProgram = true;
 }
 
 
@@ -157,21 +192,17 @@ IMPLEMENT_APP(MyApp)
 bool MyApp::OnInit(void) {
 
     // Create the main frame window
-    frame = new MyFrame(NULL, "G3D wxWidgets Demo", wxPoint(50, 50),
-                               wxSize(800, 600));
+    frame = new MyFrame(NULL,
+        "wxWidgets + G3D",
+        wxPoint(50, 50),
+        wxSize(820, 640));
 
-    frame->gWindow = new wxGWindow(GWindowSettings(), frame, -1);
-
-//    demo = new Demo(gApp);
+    frame->gwindow = new wxGWindow(GWindowSettings(), frame, -1);
 
     // Show the frame
     frame->Show(true);
 
-//    demo->app->setDebugMode(true);
-//    demo->app->debugController.setActive(true);
-//    demo->
-
-    App* gApp = new App(GAppSettings(), frame->gWindow);
+    App* gApp = new App(GAppSettings(), frame->gwindow);
     gApp->run();
 
     return true;
