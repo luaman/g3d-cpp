@@ -685,6 +685,7 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> RenderDevice now loads all register combiner extensions (NVIDIA only)
      <LI> G3D::reflectionMatrix
      <LI> Sky::getEnvironmentMap
      <LI> Sky implementation now uses a cube map (when one is available)

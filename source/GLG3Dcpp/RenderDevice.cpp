@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-07-01
+ @edited  2003-07-09
  */
 
 
@@ -77,6 +77,22 @@ PFNGLPOINTPARAMETERFVARBPROC                glPointParameterfvARB           = NU
 
 PFNGLMULTIDRAWARRAYSEXTPROC                 glMultiDrawArraysEXT            = NULL;
 PFNGLMULTIDRAWELEMENTSEXTPROC               glMultiDrawElementsEXT          = NULL;
+
+PFNGLCOMBINERPARAMETERFVNVPROC              glCombinerParameterfvNV         = NULL;
+PFNGLCOMBINERPARAMETERFNVPROC               glCombinerParameterfNV          = NULL;
+PFNGLCOMBINERPARAMETERIVNVPROC              glCombinerParameterivNV         = NULL;
+PFNGLCOMBINERPARAMETERINVPROC               glCombinerParameteriNV          = NULL;
+PFNGLCOMBINERINPUTNVPROC                    glCombinerInputNV               = NULL;
+PFNGLCOMBINEROUTPUTNVPROC                   glCombinerOutputNV              = NULL;
+PFNGLFINALCOMBINERINPUTNVPROC               glFinalCombinerInputNV          = NULL;
+PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC      glGetCombinerInputParameterfvNV        = NULL;
+PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC      glGetCombinerInputParameterivNV        = NULL;
+PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC     glGetCombinerOutputParameterfvNV       = NULL;
+PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC     glGetCombinerOutputParameterivNV       = NULL;
+PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC glGetFinalCombinerInputParameterfvNV   = NULL;
+PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC glGetFinalCombinerInputParameterivNV   = NULL;
+PFNGLCOMBINERSTAGEPARAMETERFVNVPROC         glCombinerStageParameterfvNV           = NULL;
+PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC      glGetCombinerStageParameterfvNV        = NULL;
 
 namespace G3D {
 
@@ -290,6 +306,22 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glMultiDrawArraysEXT);
     LOAD_EXTENSION(glMultiDrawElementsEXT);
 
+    LOAD_EXTENSION(glCombinerParameterfvNV);
+    LOAD_EXTENSION(glCombinerParameterfNV);
+    LOAD_EXTENSION(glCombinerParameterivNV);
+    LOAD_EXTENSION(glCombinerParameteriNV);
+    LOAD_EXTENSION(glCombinerInputNV);
+    LOAD_EXTENSION(glCombinerOutputNV);
+    LOAD_EXTENSION(glFinalCombinerInputNV);
+    LOAD_EXTENSION(glGetCombinerInputParameterfvNV);
+    LOAD_EXTENSION(glGetCombinerInputParameterivNV);
+    LOAD_EXTENSION(glGetCombinerOutputParameterfvNV);
+    LOAD_EXTENSION(glGetCombinerOutputParameterivNV);
+    LOAD_EXTENSION(glGetFinalCombinerInputParameterfvNV);
+    LOAD_EXTENSION(glGetFinalCombinerInputParameterivNV);
+    LOAD_EXTENSION(glCombinerStageParameterfvNV);
+    LOAD_EXTENSION(glGetCombinerStageParameterfvNV);
+
     #undef LOAD_EXTENSION
 }
 
@@ -466,6 +498,21 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"             
+             "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n\n"
 
              "* JOYSTICK\n"
@@ -513,6 +560,22 @@ bool RenderDevice::init(
              "glPointParameterfvARB", isOk(glPointParameterfvARB),
              "glMultiDrawArraysEXT", isOk(glMultiDrawArraysEXT),
              "glMultiDrawElementsEXT", isOk(glMultiDrawElementsEXT),
+
+             "glCombinerParameterfvNV", isOk(glCombinerParameterfvNV),
+             "glCombinerParameterfNV", isOk(glCombinerParameterfNV),
+             "glCombinerParameterivNV", isOk(glCombinerParameterivNV),
+             "glCombinerParameteriNV", isOk(glCombinerParameteriNV),
+             "glCombinerInputNV", isOk(glCombinerInputNV),
+             "glCombinerOutputNV", isOk(glCombinerOutputNV),
+             "glFinalCombinerInputNV", isOk(glFinalCombinerInputNV),
+             "glGetCombinerInputParameterfvNV", isOk(glGetCombinerInputParameterfvNV),
+             "glGetCombinerInputParameterivNV", isOk(glGetCombinerInputParameterivNV),
+             "glGetCombinerOutputParameterfvNV", isOk(glGetCombinerOutputParameterfvNV),
+             "glGetCombinerOutputParameterivNV", isOk(glGetCombinerOutputParameterivNV),
+             "glGetFinalCombinerInputParameterfvNV", isOk(glGetFinalCombinerInputParameterfvNV),
+             "glGetFinalCombinerInputParameterivNV", isOk(glGetFinalCombinerInputParameterivNV),
+             "glCombinerStageParameterfvNV", isOk(glCombinerStageParameterfvNV),
+             "glGetCombinerStageParameterfvNV", isOk(glGetCombinerStageParameterfvNV),
 
              SDL_NumJoysticks(), "ok"
              );

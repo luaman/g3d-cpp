@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-07-30
+ @edited  2003-07-09
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -84,6 +84,23 @@ extern PFNGLDELETEFENCESNVPROC			   glDeleteFencesNV;
 extern PFNGLSETFENCENVPROC				   glSetFenceNV;
 extern PFNGLFINISHFENCENVPROC			   glFinishFenceNV;
 #endif
+
+
+extern PFNGLCOMBINERPARAMETERFVNVPROC               glCombinerParameterfvNV;
+extern PFNGLCOMBINERPARAMETERFNVPROC                glCombinerParameterfNV;
+extern PFNGLCOMBINERPARAMETERIVNVPROC               glCombinerParameterivNV;
+extern PFNGLCOMBINERPARAMETERINVPROC                glCombinerParameteriNV;
+extern PFNGLCOMBINERINPUTNVPROC                     glCombinerInputNV;
+extern PFNGLCOMBINEROUTPUTNVPROC                    glCombinerOutputNV;
+extern PFNGLFINALCOMBINERINPUTNVPROC                glFinalCombinerInputNV;
+extern PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC       glGetCombinerInputParameterfvNV;
+extern PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC       glGetCombinerInputParameterivNV;
+extern PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC      glGetCombinerOutputParameterfvNV;
+extern PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC      glGetCombinerOutputParameterivNV;
+extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC  glGetFinalCombinerInputParameterfvNV;
+extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC  glGetFinalCombinerInputParameterivNV;
+extern PFNGLCOMBINERSTAGEPARAMETERFVNVPROC          glCombinerStageParameterfvNV;
+extern PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC       glGetCombinerStageParameterfvNV;
 
 
 #ifndef  GL_TEXTURE_BINDING_3D
