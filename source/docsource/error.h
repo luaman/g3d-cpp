@@ -1,8 +1,7 @@
-/** @page error Error FAQ
+/** @page errorfaq Error FAQ
 
 
 <IMG SRC="G3D.gif" ALIGN=RIGHT>
-@section error G3D Error FAQ
 <P>
 
 

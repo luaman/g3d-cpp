@@ -75,6 +75,18 @@ SOURCE=..\buildlib.py
 SOURCE=.\Doxyfile
 # End Source File
 # End Group
+# Begin Group "Guide"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=".\docsource\guide-shaders.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-welcome.h"
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\docsource\changelog.h
@@ -85,7 +97,7 @@ SOURCE=.\docsource\contributors.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\html\error.html
+SOURCE=.\docsource\error.h
 # End Source File
 # Begin Source File
 

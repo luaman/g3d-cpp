@@ -2,7 +2,6 @@
  @page changelog Change Log
 
 <IMG SRC="G3D.gif" ALIGN=RIGHT>
-@section changelog Change Log
 <P>
 
    Major version numbers introduce API changes that are not backwards

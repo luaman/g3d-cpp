@@ -1,4 +1,4 @@
-/** @page welcome Welcome to G3D
+/** @page guidewelcome Welcome to G3D
 
 G3D is a commercial-grade 3D Engine available as Open Source (BSD License).  
 It is used in games, tech demos, research papers, military simulators, and 
@@ -11,13 +11,25 @@ Graph system (e.g. Unreal Engine).  Your programs can be much more flexible, but
 tradeoff is that you have to know more about 3D programming.  G3D is intended for 
 users who are already familiar with C++ and DirectX or OpenGL.
 
-@section Contents
+@section contents Contents
 
-\link welcome Welcome \endlink
-<BLOCKQUOTE>
-\link documentation Documentation and Support \endlink
-\link platform Platform and Functionality \endlink
-</BLOCKQUOTE>
+<TABLE BORDER=0>
+<TR><TD COLSPAN=2>\link guidewelcome Welcome \endlink</TD></TR>
+<TR><TD></TD><TD>
+  Documentation and Support,
+  Platform and Functionality,
+  Design Philosophy,
+  Data Formats,
+  Team,
+  Working With Other Libraries,
+  Notes for Expert Users</TD></TR>
+
+<TR><TD COLSPAN=2>\link guideshaders Shaders \endlink</TD></TR>
+
+<TR><TD COLSPAN=2>\link changelog Change Log \endlink</TD></TR>
+<TR><TD COLSPAN=2>\link errorfaq Error FAQ \endlink</TD></TR>
+<TR><TD COLSPAN=2><A HREF="index.html">Index of Entry Points</A></TD></TR>
+</TABLE>
 
 @section documentation Documentation and Support
 This guide gives a brief introduction to help you decide if G3D is right
@@ -135,7 +147,7 @@ libraries to complement G3D:
     <LI>STLport (http://www.stlport.org/download.html)
 </UL>
 
-@section experts A Note for Expert Users
+@section experts Notes for Expert Users
 G3D is designed so that you can use as much or as little as you want.  You are
 welcome to rip out the source code for a single class like G3D::Texture and use 
 it standalone in your project, link against the library and use our main G3D::RenderDevice
@@ -143,4 +155,10 @@ class, or let G3D::GApp provide the entire structure for your program.
 
 The routines are packaged as two static libraries, G3D and GLG3D, so that you can use 
 the low-level vector math without bringing in any of the SDL/OpenGL code.
+
+You may find it easier (particularly on Windows) to debug code if you build G3D on
+your own machine so that you can step into the G3D routines and set breakpoints
+and watch variables.  On Windows you should change the Debug Info level
+to Program Database from Line Numbers Only.
+
 */
