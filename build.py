@@ -71,10 +71,11 @@ def lib():
 
         x = run("make")
 
-        # Copy the lib's to the right directory
+        # Copy the lib's to the right directory (temporary; the makefile
+        # should really be putting them here)
         if (x != 0):
-            copyIfNewer("source/G3Dcpp/libG3D.la", "temp/lib")
-            copyIfNewer("source/GLG3Dcpp/libGLG3D.la", "temp/lib")
+            copyIfNewer("source/G3Dcpp/libG3D.la", "temp/lib/libG3D.la")
+            copyIfNewer("source/GLG3Dcpp/libGLG3D.la", "temp/lib/libGLG3D.la")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."
