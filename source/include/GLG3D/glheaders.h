@@ -196,14 +196,14 @@ extern PFNWGLENABLEGENLOCKI3D wglEnableGenlockI3D;
 
 #elif defined(G3D_OSX) || defined(G3D_LINUX)
 
-typedef BOOL (*PFNGLXJOINSWAPGROUPNV) (Display*, GLXDrawable, GLuint);
-typedef BOOL (*PFNGLXBINDSWAPBARRIERNV) (Display *dpy, GLuint group, GLuint barrier);
-typedef BOOL (*PFNGLXQUERYSWAPGROUPNV)(Display *dpy, GLXDrawable drawable,
+typedef Bool (*PFNGLXJOINSWAPGROUPNV) (Display*, GLXDrawable, GLuint);
+typedef Bool (*PFNGLXBINDSWAPBARRIERNV) (Display *dpy, GLuint group, GLuint barrier);
+typedef Bool (*PFNGLXQUERYSWAPGROUPNV)(Display *dpy, GLXDrawable drawable,
                                 GLuint *group, GLuint *barrier);
-typedef BOOL (*PFNGLXQUERYMAXSWAPGROUPSNV)(Display *dpy, int screen,
+typedef Bool (*PFNGLXQUERYMAXSWAPGROUPSNV)(Display *dpy, int screen,
                                     GLuint *maxGroups, GLuint *maxBarriers);
-typedef BOOL (*PFNGLXQUERYFRAMECOUNTNV) (Display *dpy, int screen, GLuint *count);
-typedef BOOL (*PFNGLXRESETFRAMECOUNTNV)(Display *dpy, int screen);
+typedef Bool (*PFNGLXQUERYFRAMECOUNTNV) (Display *dpy, int screen, GLuint *count);
+typedef Bool (*PFNGLXRESETFRAMECOUNTNV)(Display *dpy, int screen);
 
 extern PFNGLXJOINSWAPGROUPNV glXJoinSwapGroupNV;
 extern PFNGLXBINDSWAPBARRIERNV glXBindSwapBarrierNV;

@@ -15,8 +15,10 @@
 // For SDL_Event
 #if defined(G3D_OSX)
 #include <SDL/SDL_Events.h>
-#else 
+#elif defined(G3D_WIN32) 
 #include <SDL_Events.h>
+#else
+#include <SDL.h>
 #endif
 
 namespace G3D {

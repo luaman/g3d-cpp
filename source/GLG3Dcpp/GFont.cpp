@@ -96,7 +96,7 @@ Vector2 GFont::drawString(
             double sx = 0;
             
             if (spacing == PROPORTIONAL_SPACING) {
-                sx = (charWidth - subWidth[c]) * propW / 2.0;
+                sx = (charWidth - subWidth[(int)c]) * propW / 2.0;
             }
 
             renderDevice->setTexCoord(0, Vector2(col * charWidth, row * charHeight + 1));
@@ -113,9 +113,9 @@ Vector2 GFont::drawString(
         }
 
         if (spacing == PROPORTIONAL_SPACING) {
-            x += propW * subWidth[c];
+            x += propW * subWidth[(int)c];
         } else {
-            x += propW * subWidth['M'] * 0.85;
+            x += propW * subWidth[(int)'M'] * 0.85;
         }
     }
 
@@ -328,10 +328,10 @@ Vector2 GFont::get2DStringBounds(
     if (spacing == PROPORTIONAL_SPACING) {
         for (int i = 0; i < n; ++i) {
             char c   = s[i] & 127;
-            x += propW * subWidth[c];
+            x += propW * subWidth[(int)c];
         }
     } else {
-        x = subWidth['M'] * n * 0.85;
+        x = subWidth[(int)'M'] * n * 0.85;
     }
 
     return Vector2(x, y);
