@@ -56,11 +56,13 @@ void MeshAlg::computeNormals(
 
     Array<Face> faceArray;
     Array<Vertex> vertexArray;
+    Array<Edge> edgeArray;
+    Array<Vector3> faceNormalArray;
 
-    computeAdjacency(geometry.vertexArray, indexArray, faceArray, Array<Edge>(), vertexArray);
+    computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, vertexArray);
 
     computeNormals(geometry.vertexArray, faceArray, vertexArray, 
-                   geometry.normalArray, Array<Vector3>());
+                   geometry.normalArray, faceNormalArray);
 }
 
 
