@@ -50,6 +50,10 @@ GLboolean glGetBoolean(GLenum which);
  */
 GLdouble glGetDouble(GLenum which);
 
+/** Safe to call even if the glGet would return more than 2 values */
+Vector2 glGetVector2(GLenum which);
+Vector3 glGetVector3(GLenum which);
+Vector4 glGetVector4(GLenum which);
 
 #ifdef G3D_WIN32
 

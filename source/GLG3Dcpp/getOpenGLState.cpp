@@ -389,6 +389,8 @@ std::string getOpenGLState(bool showDisabled) {
 
 
 	//depth stuff
+    result += "///////////////////////////////////////////////////////////////////\n";
+    result += "//                      Depth Buffer                             //\n\n";
 	result += enableEntry(GL_DEPTH_TEST);
     if (showDisabled || glGetBoolean(GL_DEPTH_TEST)) {
 	    result += format("glDepthFunc(%s);\n", 
@@ -398,6 +400,10 @@ std::string getOpenGLState(bool showDisabled) {
 	result += format("glClearDepth(%g);\n", glGetDouble(GL_DEPTH_CLEAR_VALUE));
 	result += format("glDepthMask(%d);\n", glGetBoolean(GL_DEPTH_WRITEMASK));
 
+    {
+        Vector2 range = glGetVector2(GL_DEPTH_RANGE);
+    	result += format("glDepthRange(%g, %g);\n", range.x, range.y);
+    }
 
 	result += format("\n");
 

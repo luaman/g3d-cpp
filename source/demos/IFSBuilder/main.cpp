@@ -58,7 +58,9 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog     = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(RenderDeviceSettings(), debugLog);
+    RenderDeviceSettings settings;
+    settings.fsaaSamples = 4;
+    renderDevice->init(settings, debugLog);
 
     font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
@@ -66,14 +68,15 @@ int main(int argc, char** argv) {
 
     controller   = new ManualCameraController(renderDevice, userInput);
 
-    controller->setMoveRate(1);
+    controller->setMoveRate(.1);
 
-    controller->setPosition(Vector3(1.5, 1.5, 1.5));
-    controller->lookAt(Vector3(0,0,0));
+    controller->setPosition(Vector3(2, 5, 3));
+    controller->lookAt(Vector3(0,-.25,0));
 
     renderDevice->resetState();
     renderDevice->setColorClearValue(Color3(.5, .7, .8));
 
+    camera.setFarPlaneZ(-100);
     camera.setNearPlaneZ(-.05);
     RealTime now = System::getTick() - 0.001, lastTime;
 
@@ -82,7 +85,9 @@ int main(int argc, char** argv) {
 //    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
 
     //std::string outDir("d:/tmp/");
-    std::string outDir("d:/graphics3d/book/data/ifs/");
+//    std::string outDir("d:/graphics3d/book/data/ifs/");
+
+    std::string outDir("D:/games/isosketch/data/");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
@@ -106,12 +111,12 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Hemisphere";
+        model->name = "Low-Poly Iso Lumps";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");
         }
-        //model->save(outDir + "lowhemi.ifs");
+        model->save(outDir + "lowisolumps.ifs");
 
         // Main loop (display 3D object)
         do {
@@ -154,13 +159,22 @@ void doSimulation(GameTime timeStep) {
 
 void doGraphics() {
     renderDevice->beginFrame();
+    renderDevice->setColorClearValue(Color3::WHITE);
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
                 
             renderDevice->setProjectionAndCameraMatrix(camera);
 
             if (model != NULL) {
+
+                renderDevice->enableLighting();
+                renderDevice->setLight(0, GLight::directional(Vector3(-1,1,1), Color3::WHITE * .7));
+                renderDevice->setLight(1, GLight::directional(-Vector3(-1,1,1), -Color3::YELLOW * 0.25, false));
+                renderDevice->setAmbientLightColor(Color3::WHITE * 0.5);
+
                 model->render();
+
+                /*
                 renderDevice->push2D();
                     double y = 10;
                     font->draw2D(model->name, Vector2(10, y), 20, Color3::WHITE, Color3::BLACK); y += 30;
@@ -173,6 +187,7 @@ void doGraphics() {
                     y = renderDevice->getHeight();
                     font->draw2D(format("Vertices within radius %g collapsed", close), Vector2(10, y - 15), 10, Color3::BLACK);
                 renderDevice->pop2D();
+                */
             }
             
         renderDevice->popState();

@@ -35,6 +35,25 @@ static double saddle2D(double x, double z) {
     return (square(x*1.5) - square(z*1.5)) * .75;
 }
 
+static double flat2D(double x, double z) {
+    return 0.0;
+}
+
+
+static double sin2D(double x, double z) {
+    static double angle = toRadians(-25);
+    double t = G3D_TWO_PI * (cos(angle) * x + sin(angle) * z);
+    return sin(t * 2) * 0.1;
+}
+
+static double lumpy2D(double x, double z) {
+    x *= G3D_TWO_PI;
+    z *= G3D_TWO_PI;
+    return 
+        (cos(x) * 0.1 + cos(2*x + 1) * 0.15 + cos(3*x - 2) * 0.1 + cos(5*x + 4) * 0.05 - x * .1 +
+         cos(z) * 0.2 + cos(2.5*z - 1) * 0.15 + cos(4*z + 2) * 0.15 + cos(5*z + 4) * 0.05 - z * .1) / 2;
+}
+
 
 XIFSModel::XIFSModel(const std::string& filename) {
     if (! fileExists(filename)) {
@@ -44,7 +63,11 @@ XIFSModel::XIFSModel(const std::string& filename) {
 
     std::string f = toLower(filename);
 
-    //createGrid(saddle2D, false); return;
+    //createGrid(flat2D, 1024, true); return;
+    //createGrid(lumpy2D, 1024, true); return;
+    //createGrid(bump2D, 900, true); return;
+    createIsoGrid(lumpy2D, 800); return;
+    //createGrid(lumpy2D, 900, true); return;
     //createPolygon(); return;
     //createRing();  return;
 
@@ -63,38 +86,179 @@ XIFSModel::XIFSModel(const std::string& filename) {
     }
 }
 
-void XIFSModel::createGrid(double(*func)(double, double), bool consistentDiagonal) {
+
+static Vector3 isoToObjectSpace(int r, int c, int R, int C) {
+    
+    // We don't have the invisible, 1-vertex border so the
+    // scale becaomes S = (1/(2(C-2)), 1, 1/(R-1)) and the edge
+    // is one vertex closer to the body
+
+    double edge = 0.0;
+    
+    if (isEven(r)) {
+        if (c == 0) {
+            edge = 1.0;
+        } else if (c == C) {
+            edge = -1.0;
+        }
+    }
+
+    return 
+        Vector3(2 * c + (r & 1) + edge - 2, 0, r) * 
+        Vector3(0.5 / (C - 2.0), 1, 1.0 / (R - 1.0)) - Vector3(0.5, 0.0, 0.5);
+}
+
+void XIFSModel::createIsoGrid(double(*func)(double, double), int n) {
     IFSModelBuilder builder;
 
-    int n = 10;
+    double sin60 = sin(G3D_PI / 3.0);
+    
+    int C = iFloor(sqrt(n / 4.0));
+
+    int R = iFloor(C / sin60);
+    if (! isOdd(R)) {
+        ++R;
+    }
+
+
+    Vector3 BOTTOM(0,-0.25,0);
+
+    // Top & bottom
+    for (int r = 0; r < R; ++r) {
+        for (int c = 0; c < C; ++c) {
+
+            Vector3 D = isoToObjectSpace(r, c, R, C);
+            D.y = func(D.x, D.z);
+
+            Vector3 E = isoToObjectSpace(r, c + 1, R, C);
+            E.y = func(E.x, E.z);
+
+            Vector3 F = isoToObjectSpace(r + 1, c, R, C);
+            F.y = func(F.x, F.z);
+
+            Vector3 G = isoToObjectSpace(r + 1, c + 1, R, C);
+            G.y = func(G.x, G.z);
+
+            if (isOdd(r)) {
+                //  D-----E
+                //  |\    |
+                //  |  \  |
+                //  |    \|
+                //  F-----G
+
+                if (c < C - 1) {
+                    builder.addTriangle(D, G, E);
+                    builder.addTriangle(E + BOTTOM, G + BOTTOM, D + BOTTOM);
+                }
+
+                builder.addTriangle(D, F, G);
+                builder.addTriangle(G + BOTTOM, F + BOTTOM, D + BOTTOM);
+            } else {
+                //  D-----E
+                //  |    /|
+                //  |  /  |
+                //  |/    |
+                //  F-----G
+                builder.addTriangle(D, F, E);
+                builder.addTriangle(E + BOTTOM, F + BOTTOM, D + BOTTOM);
+                if (c < C - 1) {
+                    builder.addTriangle(E, F, G);
+                    builder.addTriangle(G + BOTTOM, F + BOTTOM, E + BOTTOM);
+                }
+            }
+        }
+    }
+
+    // East and West edges
+    for (int r = 0; r < R; ++r) {
+
+        int c = 0;
+        // West
+        Vector3 D = isoToObjectSpace(r, c, R, C);
+        D.y = func(D.x, D.z);
+
+        Vector3 E = isoToObjectSpace(r + 1, c, R, C);
+        E.y = func(E.x, E.z);
+
+        builder.addTriangle(E, D, D + BOTTOM);
+        builder.addTriangle(E + BOTTOM, E, D + BOTTOM);
+
+        // East
+        int s = r & 1;
+        c = C;
+        D = isoToObjectSpace(r, c - s, R, C);
+        D.y = func(D.x, D.z);
+
+        E = isoToObjectSpace(r + 1, c - 1 + s, R, C);
+        E.y = func(E.x, E.z);
+
+        builder.addTriangle(D + BOTTOM, D, E);
+        builder.addTriangle(D + BOTTOM, E, E + BOTTOM);
+    }
+
+    // North and South edges
+    for (int c = 0; c < C; ++c) {
+        int r = 0;
+
+        // North
+        Vector3 D = isoToObjectSpace(r, c, R, C);
+        D.y = func(D.x, D.z);
+
+        Vector3 E = isoToObjectSpace(r, c + 1, R, C);
+        E.y = func(E.x, E.z);
+
+        builder.addTriangle(D + BOTTOM, D, E);
+        builder.addTriangle(D + BOTTOM, E, E + BOTTOM);
+
+        // South
+        if (c < C - 1) {
+            r = R;
+            D = isoToObjectSpace(r, c, R, C);
+            D.y = func(D.x, D.z);
+
+            E = isoToObjectSpace(r, c + 1, R, C);
+            E.y = func(E.x, E.z);
+            builder.addTriangle(E, D, D + BOTTOM);
+            builder.addTriangle(E + BOTTOM, E, D + BOTTOM);
+        }
+    }
+    builder.commit(this);
+}
+
+
+void XIFSModel::createGrid(double(*func)(double, double), int n, bool consistentDiagonal) {
+    IFSModelBuilder builder;
+
+    int X = iFloor(sqrt(n / 4.0));
+    int Z = X;
     double x, y, z;
 
     Vector3 BOTTOM(0,-0.25,0);
 
     // Top & bottom
-    for (int ix = 0; ix < n; ++ix) {
-        for (int iz = 0; iz < n; ++iz) {
+    for (int ix = 0; ix < X; ++ix) {
+        for (int iz = 0; iz < Z; ++iz) {
 
-            x = ix / (double)n - 0.5;
-            z = iz / (double)n - 0.5;
+            x = ix / (double)X - 0.5;
+            z = iz / (double)Z - 0.5;
             y = func(x, z);
 
             Vector3 A(x, y, z);
 
-            x = (ix + 1) / (double)n - 0.5;
-            z = (iz) / (double)n - 0.5;
+            x = (ix + 1) / (double)X - 0.5;
+            z = (iz) / (double)Z - 0.5;
             y = func(x, z);
 
             Vector3 B(x, y, z);
 
-            x = (ix + 1) / (double)n - 0.5;
-            z = (iz + 1) / (double)n - 0.5;
+            x = (ix + 1) / (double)X - 0.5;
+            z = (iz + 1) / (double)Z - 0.5;
             y = func(x, z);
 
             Vector3 C(x, y, z);
 
-            x = (ix) / (double)n - 0.5;
-            z = (iz + 1) / (double)n - 0.5;
+            x = (ix) / (double)X - 0.5;
+            z = (iz + 1) / (double)Z - 0.5;
             y = func(x, z);
 
             Vector3 D(x, y, z);
@@ -119,16 +283,16 @@ void XIFSModel::createGrid(double(*func)(double, double), bool consistentDiagona
     }
 
     // Stitch up edges
-    for (int ix = 0; ix < n; ++ix) {
+    for (int ix = 0; ix < X; ++ix) {
         int iz = 0;
-        x = ix / (double)n - 0.5;
-        z = iz / (double)n - 0.5;
+        x = ix / (double)X - 0.5;
+        z = iz / (double)Z - 0.5;
         y = func(x, z);
 
         Vector3 A(x, y, z);
         Vector3 B(x, y-0.25, z);
 
-        x = (ix + 1) / (double)n - 0.5;
+        x = (ix + 1) / (double)X - 0.5;
         y = func(x, z);
 
         Vector3 C(x, y-0.25, z);
@@ -137,15 +301,15 @@ void XIFSModel::createGrid(double(*func)(double, double), bool consistentDiagona
         builder.addTriangle(A, D, C);
         builder.addTriangle(A, C, B);
 
-        iz = n;
-        x = ix / (double)n - 0.5;
-        z = iz / (double)n - 0.5;
+        iz = Z;
+        x = ix / (double)X - 0.5;
+        z = iz / (double)Z - 0.5;
         y = func(x, z);
 
         A = Vector3(x, y, z);
         B = Vector3(x, y-0.25, z);
 
-        x = (ix + 1) / (double)n - 0.5;
+        x = (ix + 1) / (double)X - 0.5;
         y = func(x, z);
 
         C = Vector3(x, y-0.25, z);
@@ -156,16 +320,16 @@ void XIFSModel::createGrid(double(*func)(double, double), bool consistentDiagona
     }
 
     // Stitch up edges
-    for (int iz = 0; iz < n; ++iz) {
-        int ix = n;
-        x = ix / (double)n - 0.5;
-        z = iz / (double)n - 0.5;
+    for (int iz = 0; iz < Z; ++iz) {
+        int ix = X;
+        x = ix / (double)X - 0.5;
+        z = iz / (double)Z - 0.5;
         y = func(x, z);
 
         Vector3 A(x, y, z);
         Vector3 B(x, y-0.25, z);
 
-        z = (iz + 1) / (double)n - 0.5;
+        z = (iz + 1) / (double)Z - 0.5;
         y = func(x, z);
 
         Vector3 C(x, y-0.25, z);
@@ -175,14 +339,14 @@ void XIFSModel::createGrid(double(*func)(double, double), bool consistentDiagona
         builder.addTriangle(A, C, B);
 
         ix = 0;
-        x = ix / (double)n - 0.5;
-        z = iz / (double)n - 0.5;
+        x = ix / (double)X - 0.5;
+        z = iz / (double)Z - 0.5;
         y = func(x, z);
 
         A = Vector3(x, y, z);
         B = Vector3(x, y-0.25, z);
 
-        z = (iz + 1) / (double)n - 0.5;
+        z = (iz + 1) / (double)Z - 0.5;
         y = func(x, z);
 
         C = Vector3(x, y-0.25, z);
@@ -570,35 +734,40 @@ void XIFSModel::render() {
 
         int t, i, j;
 
+        glEnable(GL_LINE_SMOOTH);
         renderDevice->setColor(Color3::WHITE);
         renderDevice->setLineWidth(.5);
 
-        renderDevice->setPolygonOffset(1);
+        renderDevice->setPolygonOffset(.5);
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        // First iteration draws surfaces, 2nd draws wireframe
         for (j = 0; j < 2; ++j) {
             renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
                 for (t = 0; t < triangleArray.size(); ++t) {
+                    renderDevice->setNormal(faceNormalArray[t]);
                     for (i = 0; i < 3; ++i) {
-                        renderDevice->sendVertex(geometry.vertexArray[triangleArray[t].index[i]]);
+                        const int idx = triangleArray[t].index[i];
+                        renderDevice->sendVertex(geometry.vertexArray[idx]);
                     }
                 }
             renderDevice->endPrimitive();
             renderDevice->setPolygonOffset(0);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
             renderDevice->setColor(Color3::BLACK);
-            glEnable(GL_LINE_SMOOTH);
             renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         }
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        renderDevice->setRenderMode(RenderDevice::RENDER_SOLID);
 
+        /*
         // Label vertices (when there are too many, don't draw all)
         const double S = 10;
         int step = iMax(1, geometry.vertexArray.size() / 50);
         for (int v = 0; v < geometry.vertexArray.size(); v += step) {
             drawBillboardString(font, format("%d", v), geometry.vertexArray[v], S, Color3::YELLOW, Color3::BLACK);
         }
+        */
 
-//        Draw::vertexNormals(geometry, renderDevice);
+        // Draw::vertexNormals(geometry, renderDevice);
 
         // Label edges
         //for (int e = 0; e < edgeArray.size(); ++e) {
@@ -608,6 +777,7 @@ void XIFSModel::render() {
 
 
         // Show broken edges
+        renderDevice->disableLighting();
         renderDevice->setColor(Color3::RED);
         renderDevice->setLineWidth(3);
         renderDevice->beginPrimitive(RenderDevice::LINES);
@@ -618,7 +788,7 @@ void XIFSModel::render() {
             }
         renderDevice->endPrimitive();
 
-        Draw::axes(renderDevice);
+        //Draw::axes(renderDevice);
         glDisable(GL_LINE_SMOOTH);
 
     renderDevice->popState();

@@ -197,6 +197,25 @@ void glMultMatrix(const CoordinateFrame &cf) {
 }
 
 
+Vector2 glGetVector2(GLenum which) {
+    float v[4];
+    glGetFloatv(which, v);
+    return Vector2(v[0], v[1]);
+}
+
+
+Vector3 glGetVector3(GLenum which) {
+    float v[4];
+    glGetFloatv(which, v);
+    return Vector3(v[0], v[1], v[2]);
+}
+
+
+Vector4 glGetVector4(GLenum which) {
+    float v[4];
+    glGetFloatv(which, v);
+    return Vector4(v[0], v[1], v[2], v[3]);
+}
 
 
 /**

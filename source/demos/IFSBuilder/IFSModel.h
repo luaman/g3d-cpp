@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-10-16
+  @edited  2004-04-03
  */ 
 
 #ifndef XIFSModel_H
@@ -22,6 +22,7 @@ private:
     };
 
     MeshAlg::Geometry       geometry;
+    Array<Vector3>          faceNormalArray;
     Array<Triangle>         triangleArray;
 
     class Edge {
@@ -59,8 +60,9 @@ private:
     /** Algorithmically generate a polygon */
     void createPolygon();
 
-    /** Algorithmically generate a grid */
-    void createGrid(double(*y)(double,double), bool consistentDiagonal);
+    /** Algorithmically generate a grid that is thickened to have a bottom (and therefore be closed) */
+    void createGrid(double(*y)(double,double), int numPolys, bool consistentDiagonal = false);
+    void createIsoGrid(double(*y)(double,double), int numPolys);
 
 public:
 

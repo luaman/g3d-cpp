@@ -68,9 +68,8 @@ void IFSModelBuilder::commit(XIFSModel* model) {
 
     Array<MeshAlg::Face> faceArray;
     Array<Array<int> >   adjacentFaceArray;
-    Array<Vector3>       faceNormalArray;
     MeshAlg::computeAdjacency(model->geometry.vertexArray, indexArray, faceArray, model->edgeArray, adjacentFaceArray);
-    MeshAlg::computeNormals(model->geometry.vertexArray, faceArray, adjacentFaceArray, model->geometry.normalArray, faceNormalArray);
+    MeshAlg::computeNormals(model->geometry.vertexArray, faceArray, adjacentFaceArray, model->geometry.normalArray, model->faceNormalArray);
 
     // Find broken edges
     model->brokenEdgeArray.resize(0);
