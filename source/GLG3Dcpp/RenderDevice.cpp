@@ -798,6 +798,7 @@ void RenderDevice::setVideoMode() {
 
     if (debugLog) debugLog->println("Setting initial rendering state.\n");
     glDisable(GL_LIGHT0);
+    debugAssertGLOk();
     {
         // WARNING: this must be kept in sync with the 
         // RenderState constructor
@@ -859,8 +860,10 @@ void RenderDevice::setVideoMode() {
         }
 
         glActiveTextureARB(GL_TEXTURE0_ARB);
-
     }
+    debugAssertGLOk();
+
+    if (debugLog) debugLog->printf("Done setting initial state.\n");
 }
 
 
