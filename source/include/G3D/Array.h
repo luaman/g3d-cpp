@@ -1,0 +1,520 @@
+/** 
+  @file Array.h
+ 
+  @maintainer Morgan McGuire, graphics3d.com
+  @cite Portions written by Aaron Orenstein, a@orenstein.name
+ 
+  @created 2001-03-11
+  @edited  2003-03-20
+
+  Copyright 2000-2003, Morgan McGuire.
+  All rights reserved.
+ */
+
+#ifndef G3D_ARRAY_H
+#define G3D_ARRAY_H
+
+#include "debug.h"
+#include <new.h>
+
+#ifndef _WIN32
+  #define __cdecl
+#endif
+
+namespace G3D {
+
+/**
+ Constant for passing to Array::resize
+ */
+const bool DONT_SHRINK_UNDERLYING_ARRAY = false;
+
+/** Constant for Array::sort */
+const int SORT_INCREASING = 1;
+/** Constant for Array::sort */
+const int SORT_DECREASING = -1;
+
+/**
+ Dynamic 1D array.  
+
+ Objects must have a default constructor (constructor that
+ takes no arguments) in order to be used with this template.
+ You will get the error "no appropriate default constructor found"
+ if they do not.
+
+ Do not subclass an Array.
+ */
+template <class T>
+class Array {
+private:
+    // 0...num-1 are initialized elements, num...numAllocated-1 are not
+    T*              data;
+
+    int             num;
+    int             numAllocated;
+
+    void init(int n, int a) {
+       debugAssert(n <= a);
+       debugAssert(n >= 0);
+       this->num = 0;
+       this->numAllocated = 0;
+       data = NULL;
+       if (a > 0) {
+           resize(n);
+       } else {
+           data = NULL;
+       }
+    }
+
+    void _copy(const Array &other) {
+       init(other.num, other.num);
+       for (int i = 0; i < num; i++) {
+           data[i] = other.data[i];
+       }
+    }
+
+    /**
+     Returns true iff address points to an element of this array.
+     Used by append.
+     */
+    inline bool inArray(const T* address) {
+        return (address >= data) && (address < data + num);
+    }
+
+
+    /** Only compiled if you use the sort procedure. */
+    static int __cdecl compareGT(const void* a, const void* b) {
+        if ((*(T*)a) > (*(T*)b)) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    /** Only compiled if you use the sort procedure. */
+    static int __cdecl compareLT(const void* a, const void* b) {
+        if ((*(T*)a) > (*(T*)b)) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
+    /**
+     Allocates a new array of size numAllocated and copys at most
+     oldNum elements from the old array to it.  Destructors are
+     called for oldNum elements of the old array.
+     */
+    void realloc(int oldNum) {
+         T* oldData = data;
+         
+         data = (T*)malloc(sizeof(T) * numAllocated);
+         // Call the copy constructors
+         int i;
+         for (i = iMin(oldNum, numAllocated) - 1; i >= 0; --i) {
+             new (data + i) T(oldData[i]);
+         }
+
+         // Call destructors
+         for (i = oldNum - 1; i >= 0; --i) {
+            (oldData + i)->~T();
+         }
+
+         free(oldData);
+    }
+
+public:
+
+    /**
+     C++ STL style iterator variable.  Call begin() to get 
+     the first iterator, pre-increment (++i) the iterator to get to
+     the next value.  Use dereference (*i) to access the element.
+     */
+    typedef T* Iterator;
+    typedef const T* ConstIterator;
+
+    /**
+     C++ STL style iterator method.  Returns the first iterator element.
+     Do not change the size of the array while iterating.
+     */
+    Iterator begin() {
+        return data;
+    }
+
+    ConstIterator begin() const {
+        return data;
+    }
+    /**
+     C++ STL style iterator method.  Returns one after the last iterator
+     element.
+     */
+    ConstIterator end() const {
+        return data + num;
+    }
+
+    Iterator end() {
+        return data + num;
+    }
+
+   /**
+    The array returned is only valid until the next append() or resize call, or 
+	the Array is deallocated.
+    */
+   T* getCArray() {
+       return data;
+   }
+
+   /**
+    The array returned is only valid until the next append() or resize call, or 
+	the Array is deallocated.
+    */
+   const T* getCArray() const {
+       return data;
+   }
+
+   /** Creates a zero length array (no heap allocation occurs until resize). */
+   Array() {
+       init(0, 0);
+   }
+
+   /**
+    Creates an array of size.
+    */
+   Array(int size) {
+       init(size, size);
+   }
+
+   /**
+    Copy constructor
+    */
+   Array(const Array& other) {
+       _copy(other);
+   }
+
+   /**
+    Destructor does not delete() the objects if T is a pointer type
+    (e.g. T = int*) instead, it deletes the pointers themselves and 
+    leaves the objects.  Call deleteAll if you want to dealocate
+    the objects referenced.
+    */
+   ~Array() {
+       // Invoke the destructors on the elements
+       for (int i = 0; i < num; i++) {
+           (data + i)->~T();
+       }
+       
+       free(data);
+       data = NULL;
+   }
+
+
+   /**
+    Removes all elements.  Use resize(0, false) if you want to 
+    remove all elements without deallocating the underlying array
+    so that future append() calls will be faster.
+    */
+   void clear() {
+       resize(0);
+   }
+
+   /**
+    Assignment operator.
+    */
+   Array& operator=(const Array& other) {
+       resize(other.num);
+       for (int i = 0; i < num; i++) {
+           data[i] = other[i];
+       }
+       return *this;
+   }
+
+   /**
+    Number of elements in the array.
+    */
+   inline int size() const {
+      return num;
+   }
+
+   /**
+    Number of elements in the array.
+    */
+   inline int length() const {
+      return size();
+   }
+
+   /**
+    Swaps element index with the last element in the array then
+    shrinks the array by one.
+    */
+   void fastRemove(int index) {
+       debugAssert(index >= 0);
+       debugAssert(index < num);
+       data[index] = data[num - 1];
+       resize(size() - 1);
+   }
+
+   /**
+    Resizes, calling the default constructor for 
+    newly created objects and shrinking the underlying
+    array as needed (and calling destructors as needed).
+    */
+   void resize(int n) {
+      resize(n, true);
+   }
+
+
+   void resize(int n, bool shrinkIfNecessary) {
+      int oldNum = num;
+      num = n;
+
+      if (num < oldNum) {
+          // Call the destructors on newly hidden elements
+          for (int i = num; i < oldNum; i++) {
+             (data + i)->~T();
+          }
+      }
+
+      // Allocate 8 elements or 32 bytes, whichever is lower.
+      const int minSize = iMax(8, 32 / sizeof(T));
+
+      if (num > numAllocated) {
+         
+         // Increase the underlying size of the array
+         numAllocated = (num - numAllocated) + (int)(numAllocated * 1.4) + 16;
+
+         if (numAllocated < minSize) {
+             numAllocated = minSize;
+         }
+
+         realloc(oldNum);
+
+      } else if ((num <= numAllocated / 2) && shrinkIfNecessary) {
+          // Decrease the underlying array
+          if (numAllocated > 8) {
+              // Always keep at least 8 allocated
+              numAllocated = num;
+              
+              if (numAllocated < minSize) {
+                 numAllocated = minSize;
+              }
+
+              realloc(oldNum);
+          }
+      }
+
+      if (num > oldNum) {
+          // Call the constructors on newly revealed elements.
+          for (int i = oldNum; i < num; i++) {
+              new (data + i) T();
+          }
+      }
+   }
+
+    /**
+     Add an element to the end of the array.  Will not shrink the underlying array
+     under any circumstances.
+     */
+    inline void append(const T& value) {
+        if (inArray(&value)) {
+            // The value was in the original array; resizing
+            // is dangerous because it may move the value
+            // we have a reference to.
+            T tmp = value;
+            append(tmp);
+        } else {
+            resize(num + 1, DONT_SHRINK_UNDERLYING_ARRAY);
+            data[num - 1] = value;
+        }
+    }
+
+    inline void append(const T& v1, const T& v2) {
+        if (inArray(&v1) || inArray(&v2)) {
+            T t1 = v1;
+            T t2 = v2;
+            append(t1, t2);
+        } else {
+            resize(num + 2, DONT_SHRINK_UNDERLYING_ARRAY);
+            data[num - 2] = v1;
+            data[num - 1] = v2;
+        }
+    }
+
+    inline void append(const T& v1, const T& v2, const T& v3) {
+        if (inArray(&v1) || inArray(&v2) || inArray(&v3)) {
+            T t1 = v1;
+            T t2 = v2;
+            T t3 = v3;
+            append(t1, t2, t3);
+        } else {
+            resize(num + 3, DONT_SHRINK_UNDERLYING_ARRAY);
+            data[num - 3] = v1;
+            data[num - 2] = v2;
+            data[num - 1] = v3;
+        }
+    }
+
+   inline void append(const T& v1, const T& v2, const T& v3, const T& v4) {
+        if (inArray(&v1) || inArray(&v2) || inArray(&v3) || inArray(&v4)) {
+            T t1 = v1;
+            T t2 = v2;
+            T t3 = v3;
+            T t4 = v4;
+            append(t1, t2, t3, t4);
+        } else {
+            resize(num + 4, DONT_SHRINK_UNDERLYING_ARRAY);
+            data[num - 4] = v1;
+            data[num - 3] = v2;
+            data[num - 2] = v3;
+            data[num - 1] = v4;
+        }
+   }
+
+   /**
+    Append the elements of array.
+    */
+   void append(const Array<T>& array) {
+       debugAssert(this != &array);
+       int oldNum = num;
+       int arrayLength = array.length();
+
+       resize(num + arrayLength, false);
+
+       for (int i = 0; i < arrayLength; i++) {
+           data[oldNum + i] = array.data[i];
+       }
+   }
+
+   /**
+    Pushes an element onto the end (appends)
+    */
+   inline void push(const T& value) {
+       append(value);
+   }
+
+   inline void push(const Array<T>& array) {
+       append(array);
+   }
+
+   /**
+    Removes the last element and returns it.
+    */
+   inline T pop(bool shrinkUnderlyingArrayIfNecessary = false) {
+       debugAssert(num > 0);
+       T temp = data[num - 1];
+       resize(num - 1, shrinkUnderlyingArrayIfNecessary);
+       return temp;
+   }
+
+   /**
+    Performs bounds checks in debug mode
+    */
+   inline T& operator[](int n) {
+      debugAssert((n >= 0) && (n < num));
+      return data[n];
+   }
+
+   /**
+    Performs bounds checks in debug mode
+    */
+    inline const T& operator[](int n) const {
+        debugAssert((n >= 0) && (n < num));
+        return data[n];
+    }
+
+   /**
+    Returns the last element, performing a check in
+    debug mode that there is at least one element.
+    */
+    inline const T& last() const {
+        debugAssert(num > 0);
+        return data[num - 1];
+    }
+
+    inline T& last() {
+        debugAssert(num > 0);
+        return data[num - 1];
+    }
+
+   /**
+    Calls delete on all objects[0...size-1]
+    and sets the size to zero.
+    */
+    void deleteAll() {
+        for (int i = 0; i < num; i++) {
+            delete(data[i]);
+        }
+        resize(0);
+    }
+
+    /**
+     Finds an element and returns the iterator to it.  If the element
+     isn't found then returns end().
+     */
+    Iterator find(const T &value) {
+        for (int i = 0; i < num; i++) {
+            if(data[i] == value)
+                return data + i;
+        }
+        return end();
+    }
+
+    ConstIterator find(const T &value) const {
+        for (int i = 0; i < num; i++) {
+            if(data[i] == value)
+                return data + i;
+        }
+        return end();
+    }
+
+    /**
+     Removes count elements from the array
+     referenced either by index or Iterator.
+     */
+    void remove(Iterator element, int count = 1) {
+        debugAssert((element >= begin()) && (element < end()));
+        debugAssert((count > 0) && (element + count) <= end());
+        Iterator last = end() - count;
+
+        while(element < last) {
+            element[0] = element[count];
+            ++element;
+        }
+        
+        resize(num - count);
+    }
+
+    void remove(int index, int count = 1) {
+        debugAssert((index >= 0) && (index < num));
+        debugAssert((count > 0) && (index + count <= num));
+        
+        remove(begin() + index, count);
+    }
+
+    void sort(int (__cdecl *compare)(const T* elem1, const T* elem2)) {
+        // Sort the array
+        qsort(data, num, sizeof(T), (int(__cdecl*)(const void*, const void*))compare);
+    }
+
+    void sort(int (__cdecl *compare)(const void* elem1, const void* elem2)) {
+        // Sort the array
+        qsort(data, num, sizeof(T), compare);
+    }
+
+    /**
+     Sorts the array in increasing order using the > operator.  To 
+     invoke this method on Array<T>, T must override that operator.
+     You can overide the > operator as follows:
+     <code>
+        bool T::operator>(const T& other) const {
+           return ...;
+        }
+     </code>
+     */
+    void sort(int direction=SORT_INCREASING) {
+        qsort(data, num, sizeof(T), (direction == SORT_INCREASING) ? compareGT : compareLT);
+    }
+};
+
+} // namespace
+
+#endif
+

@@ -1,0 +1,211 @@
+/**
+  @file Camera.h
+
+  @maintainer Morgan McGuire, matrix@graphics3d.com
+
+  @created 2001-06-02
+  @edited  2003-02-06
+*/
+
+#ifndef G3D_CAMERA_H
+#define G3D_CAMERA_H
+
+#include "../G3D/CoordinateFrame.h"
+#include "../G3D/Vector3.h"
+#include "../G3D/Plane.h"
+#include "../G3D/debugAssert.h"
+
+namespace G3D {
+
+/**
+  There is a viewport of width x height size in world space that corresponds to
+  a screenWidth x screenHeight pixel grid on a renderDevice->getWidth() x renderDevice->getHeight()
+  window.
+ */
+class Camera  {
+private:
+
+	/**
+	 Vertical field of view (in radians)
+  	 */
+	double						fieldOfView;
+
+	/**
+	 The image plane depth corresponding to a vertical field of 
+     view, where the film size is 1x1.
+	 */
+	double						imagePlaneDepth;
+
+    /**
+     Clipping plane, *not* imaging plane.  Positive numbers.
+     */
+    double						nearPlane;
+
+    /**
+     Positive 
+     */
+    double						farPlane;
+
+    class RenderDevice*			renderDevice;
+
+
+	CoordinateFrame				cframe;
+
+public:
+    
+	Camera(class RenderDevice* renderDevice);
+
+    virtual ~Camera();
+
+
+	CoordinateFrame getCoordinateFrame() const;
+	void getCoordinateFrame(CoordinateFrame& c) const;
+	void setCoordinateFrame(const CoordinateFrame& c);
+           
+   /**
+	 Sets the horizontal field of view for a square image.  
+	 <UL>
+	  <LI> toRadians(50) - Telephoto
+	  <LI> toRadians(110) - Normal
+	  <LI> toRadians(140) - Wide angle
+	 </UL>
+ 	*/
+	void setFieldOfView(double angle);
+
+	/**
+	Sets the field of view based on a desired image plane depth
+	(<I>s'</I>) and film dimensions in world space.  Depth must be positive.  Width,
+	depth, and height are measured in the same units (meters are
+	recommended).  The field of view will span the diagonal to the
+	image.<P> <I>Note</I>: to simulate a 35mm camera, set width =
+	0.36 mm and height = 0.24 mm.  The width and height used are
+	generally not the pixel dimensions of the image.  
+	*/
+	void setImagePlaneDepth(
+        double                                  depth,
+        double                                  width,
+        double                                  height);
+
+	inline double getFieldOfView() const {
+		return fieldOfView;
+	}
+
+    /**
+     Projects a world space point onto a width x height screen.  The
+     returned coordinate uses pixmap addressing: x = right and y =
+     down.  The resulting z value is <I>rhw</I>
+     */
+    G3D::Vector3 project(
+        const G3D::Vector3&                     point,
+        int                                     screenWidth,
+        int                                     screenHeight) const;
+
+    /**
+     Returns the world space 3D viewport corners.  These
+     are at the near clipping plane.  The corners are constructed
+     from the nearPlaneZ, getViewportWidth, and getViewportHeight.
+     "left" and "right" are from the camera's perspective.
+     */
+    void get3DViewportCorners(
+        double                                  screenWidth,
+        double                                  screenHeight,
+        Vector3&                                outUR,
+        Vector3&                                outUL,
+        Vector3&                                outLL,
+        Vector3&                                outLR) const;
+
+    /**
+     Returns the image plane depth, <I>s'</I>, given the current field
+     of view for film of dimensions width x height.  See
+     setImagePlaneDepth for a discussion of worldspace values width and height. 
+    */
+    double getImagePlaneDepth(
+        double                                  width,
+        double                                  height) const;
+
+    void setProjectionAndCameraMatrix(
+        int                                     screenWidth,
+        int                                     screenHeight) const;
+
+    /**
+      Returns the world space ray passing through the center of pixel
+      (x, y) on the image plane.  The pixel x and y axes are opposite
+      the 3D object space axes: (0,0) is the upper left corner of the screen.
+      They are in viewport coordinates, not screen coordinates.
+
+
+      Integer (x, y) values correspond to
+      the upper left corners of pixels.  If you want to cast rays
+      through pixel centers, add 0.5 to x and y.        
+    */
+    Ray worldRay(
+        double                                  x,
+        double                                  y,
+		int										screenWidth,
+		int										screenHeight) const;
+
+
+    /**
+      Returns a negative z-value.
+     */
+    inline double getNearPlaneZ() const {
+        return -nearPlane;
+    }
+
+    /**
+     Returns a negative z-value.
+     */
+    inline double getFarPlaneZ() const {
+        return -farPlane;
+    }
+
+	inline void setFarPlaneZ(double z) {
+		debugAssert(z < 0);
+		farPlane = -z;
+	}
+
+	inline void setNearPlaneZ(double z) {
+		debugAssert(z < 0);
+		nearPlane = -z;
+	}
+
+    /**
+     Returns the camera space width of the viewport.
+     */
+    double getViewportWidth(
+        int				screenWidth,
+        int				screenHeight) const;
+
+    /**
+     Returns the camera space height of the viewport.
+     */
+    double getViewportHeight(
+        int				screenWidth, 
+        int				screenHeight) const;
+
+    /**
+     Read back a camera space z-value at pixel (x, y) from the depth buffer.
+     */
+    double getZValue(
+        double			x,
+        double			y,
+        int				width,
+        int				height,
+        double			polygonOffset = 0) const;
+
+   /**
+    Returns the six clipping planes of the frustum, in world space.  The array
+    must have enough space allocated.  The planes have normals facing 
+    <B>into</B> the view frustum.
+
+    The 6th plane is always the far plane, which may be at infinity.
+    */
+   void getClipPlanes(
+        int				screenWidth,
+        int				screenHeight, 
+        G3D::Plane*		clip) const;
+};
+
+}
+
+#endif
