@@ -134,8 +134,8 @@ bool RenderDevice::init(
     deleteWindow = true;
     #ifdef G3D_WIN32
     // TODO: enable when Win32Window's keyboard failure is corrected
-//        return init(Win32Window::create(_settings), log);
-        return init(new SDLWindow(_settings), log);
+        return init(Win32Window::create(_settings), log);
+//        return init(new SDLWindow(_settings), log);
     #else
         return init(new SDLWindow(_settings), log);
     #endif
