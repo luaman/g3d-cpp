@@ -2,7 +2,7 @@
   @file GImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2004-05-15
+  @edited  2004-05-29
  */
 #include "G3D/platform.h"
 #include "G3D/GImage.h"
@@ -629,6 +629,10 @@ void GImage::decode(
         decodeBMP(input);
         break;
 
+    case ICO:
+        decodeICO(input);
+        break;
+
     case PCX:
         decodePCX(input);
         break;
@@ -736,6 +740,120 @@ void GImage::decodeTGA(
           }
         }
     }
+}
+
+
+void GImage::decodeICO(
+    BinaryInput&            input) {
+
+	// Header
+	uint16 r = input.readUInt16();
+	debugAssert(r == 0);
+	r = input.readUInt16();
+	debugAssert(r == 1);
+
+	// Read the number of icons, although we'll only load the
+	// first one.
+	int count = input.readUInt16();
+
+	channels = 4;
+
+	debugAssert(count > 0);
+
+	width = input.readUInt8();
+	height = input.readUInt8();
+	int numColors = input.readUInt8();
+	
+    _byte = (uint8*)malloc(width * height * channels);
+    debugAssert(_byte);
+
+	// Bit mask for packed bits
+	int mask = 0;
+
+	int bitsPerPixel = 8;
+
+	switch (numColors) {
+	case 2:
+		mask      = 0x01;
+		bitsPerPixel = 1;
+		break;
+
+	case 16:
+		mask      = 0x0F;
+		bitsPerPixel = 4;
+		break;
+
+	case 0:
+		numColors = 256;
+		mask      = 0xFF;
+		bitsPerPixel = 8;
+		break;
+	}
+
+	input.skip(5);
+	int size = input.readUInt32();
+	int offset = input.readUInt32();
+
+	// Skip over any other icon descriptions
+	input.skip(16 * (count - 1));
+
+	// Skip over bitmap header; it is redundant
+	input.skip(40);
+
+	Color4uint8 colorTable[256];
+	for (int c = 0; c < numColors; ++c) {
+		colorTable[c].b = input.readUInt8();
+		colorTable[c].g = input.readUInt8();
+		colorTable[c].r = input.readUInt8();
+		colorTable[c].a = input.readUInt8();
+	}
+
+	// The actual image and mask follow
+
+	// The XOR Bitmap is stored as 1-bit, 4-bit or 8-bit uncompressed Bitmap 
+	// using the same encoding as BMP files. The AND Bitmap is stored in as 
+	// 1-bit uncompressed Bitmap.
+	// 
+	// Pixels are stored bottom-up, left-to-right. Pixel lines are padded 
+	// with zeros to end on a 32bit (4byte) boundary. Every line will have the 
+	// same number of bytes. Color indices are zero based, meaning a pixel color 
+	// of 0 represents the first color table entry, a pixel color of 255 (if there
+	// are that many) represents the 256th entry.
+
+	int bitsPerRow  = width * bitsPerPixel;
+	int bytesPerRow = iCeil((double)bitsPerRow / 8);
+	// Rows are padded to 32-bit boundaries
+	bytesPerRow += bytesPerRow % 4;
+
+	// Read the XOR values into the color channel
+	for (int y = height - 1; y >= 0; --y) {
+		int x = 0;
+		// Read the row
+		for (int i = 0; i < bytesPerRow; ++i) {
+			uint8 byte = input.readUInt8();
+			for (int j = 0; (j < 8) && (x < width); ++x, j += bitsPerPixel) {
+				int bit = ((byte << j) >> (8 - bitsPerPixel)) & mask;
+				pixel4(x, y) = colorTable[bit];
+			}
+		}
+	}
+
+
+	// Read the mask into the alpha channel
+	bitsPerRow  = width;
+	bytesPerRow = iCeil((double)bitsPerRow / 8);
+	for (int y = height - 1; y >= 0; --y) {
+		int x = 0;
+		// Read the row
+		for (int i = 0; i < bytesPerRow; ++i) {
+			uint8 byte = input.readUInt8();
+			for (int j = 0; (j < 8) && (x < width); ++x, ++j) {
+				int bit = (byte >> (7 - j)) & 0x01;
+				pixel4(x, y).a = (1 - bit) * 0xFF;
+			}
+		}
+	}
+
 }
 
 
@@ -1315,6 +1433,10 @@ GImage::Format GImage::resolveFormat(
         }
     }
 
+    if ((dataLen > 4) && (data[0] == 0) && (data[1] == 0) && (data[2] == 0) && (data[3] == 1)) {
+        return ICO;
+    }
+
     if ((dataLen > 0) && (data[0] == 10)) {
         return PCX;
     }
@@ -1429,6 +1551,7 @@ void GImage::clear() {
     _byte = NULL;
 }
 
+
 GImage& GImage::operator=(const GImage& other) {
     _copy(other);
     return *this;
@@ -1437,8 +1560,7 @@ GImage& GImage::operator=(const GImage& other) {
 
 bool GImage::copySubImage(
     GImage & dest, const GImage & src,
-    int srcX, int srcY, int srcWidth, int srcHeight)
-{
+    int srcX, int srcY, int srcWidth, int srcHeight) {
     if ((src.width < srcX + srcWidth) ||
         (src.height < srcY + srcHeight) ||
         (srcY < 0) ||
@@ -1460,8 +1582,7 @@ bool GImage::copySubImage(
 bool GImage::pasteSubImage(
     GImage & dest, const GImage & src,
     int destX, int destY,
-    int srcX, int srcY, int srcWidth, int srcHeight)
-{
+    int srcX, int srcY, int srcWidth, int srcHeight) {
     if ((src.width < srcX + srcWidth) ||
         (src.height < srcY + srcHeight) ||
         (dest.width < destX + srcWidth) ||
@@ -1507,6 +1628,8 @@ GImage::Format GImage::stringToFormat(
         return BMP;
     } else if (extension == "PCX") {
         return PCX;
+    } else if (extension == "ICO") {
+        return ICO;
     } else {
         return UNKNOWN;
     }
@@ -1538,6 +1661,7 @@ void GImage::encode(
 
     out.commit(outData);
 }
+
 
 void GImage::encode(
     Format              format,

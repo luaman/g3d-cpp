@@ -11,7 +11,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2004-05-14
+  @edited  2004-05-29
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -88,8 +88,8 @@ void flipRGBVertical(
   recommended over GImage (we don't include it directly in G3D because their license
   is more restrictive than the BSD one).
 
-  Supported formats (decode and encode): JPEG, TGA 24, TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
-  8-bit paletted and 24-bit PCX are supported for decoding only.
+  Supported formats (decode and encode): Color JPEG, TGA 24, TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
+  8-bit paletted PCX, 24-bit PCX, and ICO are supported for decoding only.
 
   Sample usage:
 
@@ -134,7 +134,7 @@ public:
         std::string filename;
     };
 
-    enum Format {JPEG, BMP, TGA, PCX, AUTODETECT, UNKNOWN};
+    enum Format {JPEG, BMP, TGA, PCX, ICO, AUTODETECT, UNKNOWN};
 
     int                     width;
     int                     height;
@@ -209,7 +209,6 @@ private:
     void encodeBMP(
         BinaryOutput&       out) const;
 
-
     /**
      The TGA file will be either 24- or 32-bit depending
      on the number of channels.
@@ -241,6 +240,9 @@ private:
         BinaryInput&        input);
 
     void decodePCX(
+        BinaryInput&        input);
+
+    void decodeICO(
         BinaryInput&        input);
 
     /**

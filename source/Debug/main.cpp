@@ -25,10 +25,10 @@
  */
 
 #include <G3DAll.h>
-#include "../contrib/Win32Window/Win32Window.cpp"
+//#include "../contrib/Win32Window/Win32Window.cpp"
 
-#if G3D_VER < 60300
-    #error Requires G3D 6.03
+#if G3D_VER < 60400
+    #error Requires G3D 6.04
 #endif
 
 class App : public GApp {
@@ -56,6 +56,8 @@ public:
 
 	VertexAndPixelShaderRef		effect;
 
+	TextureRef			icon;
+
     Demo(App* app);    
 
     virtual void init();
@@ -72,12 +74,17 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
 
 void Demo::init()  {
-    // Called before Demo::run() beings
+	icon = Texture::fromFile("C:/BrownSW/Matlab 6.5/Install/images/matlab.ico",
+		TextureFormat::AUTO, Texture::CLAMP, Texture::NO_INTERPOLATION);
+
+    
+	// Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
     debugAssert(VertexAndPixelShader::fullySupported());
-    
+
+    /*
     effect = VertexAndPixelShader::fromFiles(
 		"C:/tmp/nvcode/MEDIA/programs/glsl_simple_lighting/vertex_lighting.glsl",
 		"");
@@ -91,6 +98,7 @@ void Demo::init()  {
             effect->arg(a).name.c_str(), 
             GLenumToString(effect->arg(a).type));
     }
+	*/
 }
 
 
@@ -116,6 +124,7 @@ void Demo::doGraphics() {
         app->sky->render(lighting);
     }
 
+	/*
     // Setup lighting
     app->renderDevice->enableLighting();
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
@@ -141,12 +150,31 @@ void Demo::doGraphics() {
     if (! app->sky.isNull()) {
         app->sky->renderLensFlare(lighting);
     }
+	*/
+
+	app->renderDevice->push2D();
+		app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+		app->renderDevice->setTexture(0, icon);
+		app->renderDevice->beginPrimitive(RenderDevice::QUADS);
+			app->renderDevice->setTexCoord(0, Vector2(0, 0));
+			app->renderDevice->sendVertex(Vector2(50,50));
+
+			app->renderDevice->setTexCoord(0, Vector2(0, 1));
+			app->renderDevice->sendVertex(Vector2(50, 370));
+
+			app->renderDevice->setTexCoord(0, Vector2(1, 1));
+			app->renderDevice->sendVertex(Vector2(370, 370));
+
+			app->renderDevice->setTexCoord(0, Vector2(1, 0));
+			app->renderDevice->sendVertex(Vector2(370, 50));
+		app->renderDevice->endPrimitive();
+	app->renderDevice->pop2D();
 }
 
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(true);
+	debugController.setActive(false);
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
@@ -155,8 +183,7 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
-//App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GAppSettings& settings) : GApp(settings) {
 }
 
 
