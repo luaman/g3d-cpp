@@ -176,7 +176,7 @@ public:
         return
             (point.x >= lo.x) &&
             (point.y >= lo.y) &&
-            (point.y >= lo.y) &&
+            (point.z >= lo.z) &&
             (point.x <= hi.x) &&
             (point.y <= hi.y) &&
             (point.z <= hi.z);
