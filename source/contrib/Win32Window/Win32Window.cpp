@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com 
   @cite       Special thanks to Max McGuire of Ironlore
   @created 	  2004-05-21
-  @edited  	  2004-09-25
+  @edited  	  2004-10-07
     
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
