@@ -217,8 +217,12 @@ def doc(args):
     os.chdir("source")
     run(doxygen, [])
     os.chdir("..")
+    # Hand-written docs
     copyIfNewer('source/html', installDir(args) + '/html')
+    # Generated docs
     copyIfNewer('temp/html', installDir(args) + '/html')
+    # Contrib
+    copyIfNewer('source/contrib', installDir(args) + '/contrib')
     setPermissions(args)
 
 ###############################################################################

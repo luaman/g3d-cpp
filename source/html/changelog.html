@@ -11,7 +11,10 @@
    <P>
    Changes in 6.03:
    <UL>
-     <LI> Added Quat::unitRandom() [Giulio]
+     <LI> 'build doc' copies the contrib directory to the install directory
+     <LI> LightweightConduit::send verifies that the packet size is smaller than the UDP limit
+     <LI> LightweightConduit::PacketSizeException
+     <LI> Quat::unitRandom() [Giulio]
      <LI> [BUG#949377] Checks for stencil extensions [Giulio]
      <LI> [BUG#922725] Non-multitexture implementation for getTextureState() [Giulio]
      <LI> [RFE#715996] Improved CoordinateFrame:pointToObjectSpace() [Giulio]

@@ -332,14 +332,14 @@ static std::string getTextureState(bool showDisabled) {
         }
 
         if (! enabled && ! showDisabled) {
-            for ( tt = 0; tt < 3; ++tt) {
+            for (int tt = 0; tt < 3; ++tt) {
                 result += format("glDisable(%s); ",
                     GLenumToString(tname[tt]));
             }
 
             result += "\n";
         } else {
-            for ( tt = 0; tt < 3; ++tt) {
+            for (int tt = 0; tt < 3; ++tt) {
         
                 bool on = glGetBoolean(tname[tt]) ? true : false;
                 result += format("%s(%s);\n",

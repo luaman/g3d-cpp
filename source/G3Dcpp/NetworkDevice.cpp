@@ -737,7 +737,8 @@ void ReliableConduit::send(const NetMessage* m) {
 }
 
 
-void ReliableConduit::multisend(const Array<ReliableConduitRef>& array, const NetMessage* m) {
+void ReliableConduit::multisend(const Array<ReliableConduitRef>& array, 
+                                const NetMessage* m) {
     BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
     serializeMessage(m, b);
 
@@ -908,6 +909,10 @@ LightweightConduit::LightweightConduit(
         nd->bind(sock, NetAddress(0, port));
     }
 
+    // Figuring out the MTU seems very complicated, so we just set it to 1000,
+    // which is likely to be safe.  See IP_MTU for more information.
+    MTU = 1000;    
+
     if (enableBroadcast) {
         int TR = true;
         if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, 
@@ -933,7 +938,8 @@ LightweightConduit::~LightweightConduit() {
 }
 
 
-void LightweightConduit::serializeMessage(const NetMessage* m, BinaryOutput& b) const {
+void LightweightConduit::serializeMessage(const NetMessage* m, 
+                                          BinaryOutput& b) const {
 
     if (m != NULL) {
         debugAssert(m->type() != 0);
@@ -941,6 +947,20 @@ void LightweightConduit::serializeMessage(const NetMessage* m, BinaryOutput& b) 
         m->serialize(b);
     } else {
         b.writeUInt32(1);
+    }
+    
+    debugAssertM(b.size() < MTU, 
+                format("This LightweightConduit is limited to messages of "
+                       "%d bytes (Ethernet hardware limit; this is the "
+                       "'UDP MTU')", maxMessageSize()));
+
+    if (b.size() >= MTU) {
+        throw LightweightConduit::PacketSizeException(
+                format("This LightweightConduit is limited to messages of "
+                       "%d bytes (Ethernet hardware limit; this is the "
+                       "'UDP MTU')", maxMessageSize()),
+                       b.size() - 4, // Don't count the type header
+                       maxMessageSize());
     }
 }
 
@@ -961,7 +981,8 @@ void LightweightConduit::sendBuffer(const NetAddress& a, BinaryOutput& b) {
 }
 
 
-void LightweightConduit::send(const Array<NetAddress>& array, const NetMessage* m) {
+void LightweightConduit::send(const Array<NetAddress>& array, 
+                              const NetMessage* m) {
     BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
 
     serializeMessage(m, b);

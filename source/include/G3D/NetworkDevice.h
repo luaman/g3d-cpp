@@ -290,9 +290,11 @@ public:
 
     /** Send the same message to a number of conduits.  Useful for sending
         data from a server to many clients (only serializes once). */
-    static void multisend(const Array<ReliableConduitRef>& array, const NetMessage* m);
+    static void multisend(const Array<ReliableConduitRef>& array, 
+                          const NetMessage* m);
 
-    inline static void multisend(const Array<ReliableConduitRef>& array, const NetMessage& m) {
+    inline static void multisend(const Array<ReliableConduitRef>& array, 
+                                 const NetMessage& m) {
         multisend(array, &m);
     }
 
@@ -409,7 +411,8 @@ private:
      */
     Array<uint8>            messageBuffer;
 
-    LightweightConduit(class NetworkDevice* _nd, uint16 receivePort, bool enableReceive, bool enableBroadcast);
+    LightweightConduit(class NetworkDevice* _nd, uint16 receivePort, 
+                       bool enableReceive, bool enableBroadcast);
 
     
     /**
@@ -420,15 +423,41 @@ private:
 
     void sendBuffer(const NetAddress& a, BinaryOutput& b);
 
+    /** Maximum transmission unit (packet size in bytes) for this socket.
+        May vary between sockets. */
+    int                    MTU;
+
 public:
+    class PacketSizeException {
+    public:
+        std::string            message;
+        int                    serializedPacketSize;
+        int                    maxMessageSize;
+
+        inline PacketSizeException(const std::string& m, int s, int b) :
+            message(m),
+            serializedPacketSize(s),
+            maxMessageSize(b) {}
+    };
 
     /** Closes the socket. */
     ~LightweightConduit();
 
+    /** The maximum length of a message that can be sent
+        (G3D places a small header at the front of each UDP packet;
+        this is already taken into account by the value returned).
+     */
+    inline int maxMessageSize() const {
+        return MTU - 4;
+    }
+
     /** Serializes and sends the message immediately. Data may not
         arrive and may arrive out of order, but individual messages
         are guaranteed to not be corrupted.  If the message is null,
-        an empty message is still sent.*/
+        an empty message is still sent.
+
+        Throws PacketSizeException if the serialized message exceeds
+        maxMessageSize. */
     void send(const NetAddress& a, const NetMessage* m);
 
     /** Send the same message to multiple addresses (only serializes once).

@@ -103,6 +103,8 @@ int main(int argc, char** argv) {
     settings.alphaBits = 0;
     settings.stencilBits = 0;
     settings.depthBits = 16;
+
+    //settings.fullScreen = true;
     renderDevice->init(settings, debugLog);
 
     // Allocate the two VARAreas used in this demo

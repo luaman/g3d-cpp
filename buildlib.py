@@ -58,7 +58,7 @@ def dispatchOnTarget(validTargets, help):
 
 """Regular explression patterns that will be excluded from copying by 
     copyIfNewer."""
-_excludePatterns =\
+_excludeFromCopyingPatterns =\
     ['\.ncb$', \
     '\.opt$', \
     '\.ilk$', \
@@ -89,7 +89,7 @@ _excludePatterns =\
 """
 A regular expression matching files that should be excluded from copying.
 """
-excludeFromCopying   = re.compile(string.join(_excludePatterns, '|'))
+excludeFromCopying  = re.compile(string.join(_excludeFromCopyingPatterns, '|'))
 
 ###############################################################################
 """Create a directory if it does not exist."""
@@ -122,9 +122,14 @@ def removeTrailingSlash(s):
 not copy files matching the excludeFromCopying patterns.
 """
 def copyIfNewer(source, dest):
+    if source == dest:
+        # Copying in place
+        return
+
     dest = removeTrailingSlash(dest)
 
     if (not os.path.exists(source)):
+        # Source does not exist
         return
 
     if (not os.path.isdir(source) and newer(source, dest)):

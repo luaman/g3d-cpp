@@ -24,7 +24,8 @@ namespace G3D {
 RenderDevice* RenderDevice::lastRenderDeviceCreated = NULL;
 
 static void _glViewport(double a, double b, double c, double d) {
-    glViewport(iRound(a), iRound(b), iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
+    glViewport(iRound(a), iRound(b), 
+	       iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
 }
 
 
@@ -150,7 +151,8 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     beginEndFrame = 0;
     if (debugLog) {debugLog->section("Initialization");}
 
-    debugAssert((settings.lightSaturation >= 0.5) && (settings.lightSaturation <= 2.0));
+    debugAssert((settings.lightSaturation >= 0.5) && 
+                (settings.lightSaturation <= 2.0));
 
     // Under Windows, reset the last error so that our debug box
     // gives the correct results
@@ -167,7 +169,12 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     const int desiredTextureUnits = 8;
 
     // Don't use more texture units than allowed at compile time.
-    _numTextureUnits = iMin(MAX_TEXTURE_UNITS, glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        _numTextureUnits = iMin(MAX_TEXTURE_UNITS, 
+                                glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
+    } else {
+        _numTextureUnits = 1;
+    }
 
     // NVIDIA cards with GL_NV_fragment_program have different 
     // numbers of texture coords, units, and textures
@@ -188,7 +195,11 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     if (! GLCaps::supports_GL_ARB_multitexture()) {
         // No multitexture
-        if (debugLog) {debugLog->println("No GL_ARB_multitexture support: forcing number of texture units to no more than 1");}
+        if (debugLog) {
+            debugLog->println("No GL_ARB_multitexture support: "
+                              "forcing number of texture units "
+                              "to no more than 1");
+        }
         _numTextureCoords = iMax(1, _numTextureCoords);
         _numTextures      = iMax(1, _numTextures);
         _numTextureUnits  = iMax(1, _numTextureUnits);
@@ -358,8 +369,10 @@ void RenderDevice::notifyResize(int w, int h) {
 
 void RenderDevice::setVideoMode() {
 
-    debugAssertM(stateStack.size() == 0, "Cannot call setVideoMode between pushState and popState");
-    debugAssertM(beginEndFrame == 0, "Cannot call setVideoMode between beginFrame and endFrame");
+    debugAssertM(stateStack.size() == 0, 
+                 "Cannot call setVideoMode between pushState and popState");
+    debugAssertM(beginEndFrame == 0, 
+                 "Cannot call setVideoMode between beginFrame and endFrame");
 
     // Reset all state
 
@@ -383,7 +396,10 @@ void RenderDevice::setVideoMode() {
 	glClearDepth(1.0);
 
     {
-        if (debugLog) debugLog->printf("Setting brightness to %g\n", settings.lightSaturation);
+        if (debugLog) {
+            debugLog->printf("Setting brightness to %g\n", 
+                                        settings.lightSaturation);
+        }
         // Adjust the gamma so that changing the 
         // light intensities won't affect the actual screen
         // brightness.  This method due to John Carmack.
@@ -394,9 +410,12 @@ void RenderDevice::setVideoMode() {
     }
 
     // Enable proper specular lighting
-    if (supportsOpenGLExtension("EXT_separate_specular_color")) {
-        if (debugLog) debugLog->println("Enabling separate specular lighting.\n");
-        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SEPARATE_SPECULAR_COLOR_EXT);
+    if (GLCaps::supports("GL_EXT_separate_specular_color")) {
+        if (debugLog) {
+            debugLog->println("Enabling separate specular lighting.\n");
+        }
+        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, 
+                      GL_SEPARATE_SPECULAR_COLOR_EXT);
         debugAssertGLOk();
     } else if (debugLog) {
         debugLog->println("Cannot enable separate specular lighting, extension not supported.\n");
@@ -410,7 +429,7 @@ void RenderDevice::setVideoMode() {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POINT_SMOOTH);
     // glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
-    if (supportsOpenGLExtension("GL_ARB_multisample")) {
+    if (GLCaps::supports("GL_ARB_multisample")) {
         glEnable(GL_MULTISAMPLE_ARB);
     }
 
@@ -2441,7 +2460,7 @@ void RenderDevice::configureShadowMap(
     debugAssertM(shadowMap->getFormat()->OpenGLBaseFormat == GL_DEPTH_COMPONENT,
         "Can only configure shadow maps from depth textures");
 
-    debugAssertM(supportsOpenGLExtension("GL_ARB_shadow"),
+    debugAssertM(GLCaps::supports("GL_ARB_shadow"),
         "The device does not support shadow maps");
     
 	// Set up tex coord generation - all 4 coordinates required
