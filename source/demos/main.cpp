@@ -7,7 +7,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-07-16
+  @edited  2003-07-21
  */ 
 
 #include <G3DAll.h>
@@ -124,11 +124,13 @@ void doUserInput() {
                 break;
 
             // Add other key handlers here
-
+            default:;
             }
             break;
 
-            // Add other event handlers here
+        // Add other event handlers here
+
+        default:;
         }
 
         userInput->processEvent(event);

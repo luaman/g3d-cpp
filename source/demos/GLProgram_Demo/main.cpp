@@ -11,7 +11,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2003-07-15
+  @edited  2003-07-21
  */ 
 
 #include <G3DAll.h>
@@ -193,11 +193,12 @@ void doUserInput() {
                 break;
 
             // Add other key handlers here
-
+            default:;
             }
             break;
 
             // Add other event handlers here
+        default:;
         }
 
         userInput->processEvent(event);
@@ -228,6 +229,7 @@ Model::Model(const std::string& filename) {
 
     std::string fmt         = b.readString32();
     float       version     = b.readFloat32();
+    (void)version;
     std::string name        = b.readString32();
 
     debugAssert(fmt     == "IFS");

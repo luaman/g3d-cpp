@@ -18,7 +18,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @cite       Written by Nate Miller, nathanm@uci.edu
  @created    2002-08-10
- @edited     2003-05-28
+ @edited     2003-07-21
  */
 
 #include "IFSReader.h"
@@ -50,7 +50,7 @@ void draw(const float& dtime) {
 
     const IFSVertex*     v   = mesh.getVerts();
     const IFSTriangle*   f   = mesh.getTriangles();
-    uint32               num = mesh.getNumTriangles();
+    int                  num = mesh.getNumTriangles();
 
     glColor(Color3::WHITE);
 
@@ -182,9 +182,12 @@ int main(int argc, char** argv) {
                         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                     }
                     break;
+                default:;
                 }
                 break;
+            default:;
             }
+
         }
         
         dtime = (SDL_GetTicks() - curr) / 1000.0f;

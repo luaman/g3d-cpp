@@ -29,9 +29,11 @@ void initGL() {
     #endif
 
 	const int minimumDepthBits = 16;
+    (void)minimumDepthBits;
 	const int desiredDepthBits = 24;
 
 	const int minimumStencilBits = 8;
+    (void)minimumStencilBits;
 	const int desiredStencilBits = 8;
 
     const int width = 600;
