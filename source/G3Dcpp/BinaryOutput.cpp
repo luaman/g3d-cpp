@@ -33,7 +33,7 @@ void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
     size_t newBufferLen = (int)(bufferLen * 1.5) + 100;
     uint8* newBuffer = NULL;
 
-    if ((filename != "<memory>") && (newBufferLen < MAX_BINARYOUTPUT_BUFFER_SIZE)) {
+    if ((filename != "<memory>") || (newBufferLen < MAX_BINARYOUTPUT_BUFFER_SIZE)) {
         //debugPrintf("  realloc(%d)\n", newBufferLen); 
         newBuffer = (uint8*)realloc(buffer, newBufferLen);
         if (newBuffer != NULL) {
@@ -56,7 +56,7 @@ void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
 void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
     if (filename == "<memory>") {
         throw "Out of memory while writing to memory in BinaryOutput (no RAM left).";
-    }else if (bytes > maxBufferLen) {
+    } else if (bytes > maxBufferLen) {
         throw "Out of memory while writing to disk in BinaryOutput (could not create a large enough buffer).";
     } else {
 
@@ -158,7 +158,7 @@ void BinaryOutput::reset() {
 
 
 BinaryOutput::~BinaryOutput() {
-    debugAssert(isValidHeapPointer(buffer));
+    debugAssert((buffer == NULL) || isValidHeapPointer(buffer));
     free(buffer);
     buffer = NULL;
     bufferLen = 0;

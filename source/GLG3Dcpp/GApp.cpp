@@ -165,6 +165,8 @@ void GApp::run() {
     if (catchCommonExceptions) {
         try {
             main();
+        } catch (const char* e) {
+            alwaysAssertM(false, e);
         } catch (const GImage::Error& e) {
             alwaysAssertM(false, e.reason);
         } catch (const std::string& s) {
