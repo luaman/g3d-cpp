@@ -32,7 +32,8 @@ public:
        5, <B>8</B>.*/
     int     rgbBits;
 
-    /* The number of bits in the alpha channel of the frame buffer. <B>0</B>, 1, 8 */
+    /* The number of bits in the alpha channel of the frame buffer. <B>0</B>, 1, 8
+     Used in Win32Window to help determine resolution color depth (Added to rgbBits). */
     int     alphaBits;
 
     /** <B>0 (autodetect the best for this card)</B>, 16, <B>24</B>, 32 */
@@ -44,7 +45,8 @@ public:
     /** Number of samples per pixel for anti-aliasing purposes.  <B>1</B> (none), 4, 8 */
     int     fsaaSamples;
 
-    /** Will you accept a software rendering pipeline? */
+    /** Will you accept a software rendering pipeline?  Used to determine if a
+     hardware only pixel format is required. */
     bool    hardware;
 
     bool    fullScreen;
