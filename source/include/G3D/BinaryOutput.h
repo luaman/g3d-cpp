@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-02-13
+ @edited  2005-02-24
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -57,13 +57,13 @@ private:
     uint8*          buffer;
     
     /** Size of the elements used */
-    size_t          bufferLen;
+    int             bufferLen;
 
     /** Underlying size of memory allocaded */
-    size_t          maxBufferLen;
+    int             maxBufferLen;
 
     // Next byte in file
-    size_t          pos;
+    int             pos;
 
     // is this initialized?
     bool            init;
@@ -72,10 +72,10 @@ private:
      Make sure at least bytes can be written, resizing if
      necessary.
      */
-    void reserveBytes(size_t bytes) {
-        bufferLen = iMax(bufferLen, (uint32)(pos + bytes));
+    void reserveBytes(int bytes) {
+        bufferLen = iMax(bufferLen, (pos + bytes));
         if (bufferLen >= maxBufferLen) {
-            maxBufferLen = (size_t)(bufferLen * 1.5) + 100;
+            maxBufferLen = (int)(bufferLen * 1.5) + 100;
             buffer = (uint8*)realloc(buffer, maxBufferLen);
         }
 
@@ -150,15 +150,15 @@ public:
      Returns the length of the file in bytes.
      @deprecated use BinaryOutput.size
      */
-    inline size_t getLength() const {
+    inline int getLength() const {
         return bufferLen;
     }
 
-    inline size_t length() const {
+    inline int length() const {
         return bufferLen;
     }
 
-    inline size_t size() const {
+    inline int size() const {
         return bufferLen;
     }
 
@@ -168,7 +168,7 @@ public:
      change the position of the next byte to be
      written unless n < size().
      */
-    inline void setLength(size_t n) {
+    inline void setLength(int n) {
         if (n < bufferLen) {
             pos = n;
         }
@@ -181,7 +181,7 @@ public:
      Returns the current byte position in the file,
      where 0 is the beginning and getLength() - 1 is the end.
      */
-    inline size_t getPosition() const {
+    inline int getPosition() const {
         return pos;
     }
 
@@ -190,7 +190,7 @@ public:
      the file is padded with zeros up to one byte before the
      next to be written.
      */
-    inline void setPosition(size_t p) {
+    inline void setPosition(int p) {
         if (p > bufferLen) {
             setLength(p);
         }
@@ -296,7 +296,7 @@ public:
     /**
      Skips ahead n bytes.
      */
-    inline void skip(size_t n) {
+    inline void skip(int n) {
         if (pos + n > bufferLen) {
             setLength(pos + n);
         }

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-05-01
- @edited  2003-05-01
+ @edited  2005-02-24
  */
 
 #include "GLG3D/tesselate.h"
@@ -102,7 +102,7 @@ void tesselateComplexPolygon(Array<Vector3>& input, Array<Triangle>& output) {
     }
 
     double v[3];
-    size_t i;
+    int i;
     TessData data;
 
     gluTessBeginPolygon(tobj, &data);
@@ -118,7 +118,7 @@ void tesselateComplexPolygon(Array<Vector3>& input, Array<Triangle>& output) {
     gluTessEndPolygon(tobj);
 
 
-    for (size_t p = 0; p < data.primitive.size(); ++p) {
+    for (int p = 0; p < data.primitive.size(); ++p) {
         const TessData::Primitive& primitive = data.primitive[p];
 
         // Turn the tesselated primitive into triangles

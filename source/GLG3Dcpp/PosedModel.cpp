@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2005-01-05
+  @edited  2005-02-24
  */ 
 
 #include "GLG3D/PosedModel.h"
@@ -44,7 +44,7 @@ void PosedModel::sort(
     Array<ModelSorter> op;
     Array<ModelSorter> tr;
     
-    for (size_t m = 0; m < inModels.size(); ++m) {
+    for (int m = 0; m < inModels.size(); ++m) {
         if (inModels[m]->hasTransparency()) {
             tr.append(ModelSorter(inModels[m], wsLook));
         } else {
@@ -57,12 +57,12 @@ void PosedModel::sort(
     op.sort(SORT_INCREASING);
 
     transparent.resize(tr.size(), DONT_SHRINK_UNDERLYING_ARRAY);
-    for (size_t m = 0; m < tr.size(); ++m) {
+    for (int m = 0; m < tr.size(); ++m) {
         transparent[m] = tr[m].model;
     }
 
     opaque.resize(op.size(), DONT_SHRINK_UNDERLYING_ARRAY);
-    for (size_t m = 0; m < op.size(); ++m) {
+    for (int m = 0; m < op.size(); ++m) {
         opaque[m] = op[m].model;
     }
 }

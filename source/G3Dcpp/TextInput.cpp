@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2005-01-07
+ @edited  2005-02-24
  */
 
 #include "G3D/TextInput.h"
@@ -611,8 +611,8 @@ TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : option
 
 TextInput::TokenException::TokenException(
     const std::string&  src,
-    size_t              ln,
-    size_t              ch) : sourceFile(src), line(ln), character(ch) {
+    int                 ln,
+    int                 ch) : sourceFile(src), line(ln), character(ch) {
 
     message = format("%s(%d) : ", sourceFile.c_str(), line);
 }
@@ -637,8 +637,8 @@ static const char* tokenTypeToString(Token::Type t) {
 
 TextInput::WrongTokenType::WrongTokenType(
     const std::string&  src,
-    size_t              ln,
-    size_t              ch,
+    int                 ln,
+    int                 ch,
     Token::Type         e,
     Token::Type         a) :
     TokenException(src, ln, ch), expected(e), actual(a) {
@@ -651,8 +651,8 @@ TextInput::WrongTokenType::WrongTokenType(
 
 TextInput::WrongSymbol::WrongSymbol(
     const std::string&  src,
-    size_t              ln,
-    size_t              ch,
+    int                 ln,
+    int                 ch,
     const std::string&  e,
     const std::string&  a) : 
     TokenException(src, ln, ch), expected(e), actual(a) {

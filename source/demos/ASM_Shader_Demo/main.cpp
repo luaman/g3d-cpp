@@ -14,7 +14,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2004-09-16
+  @edited  2005-02-24
  */ 
 
 #include <G3DAll.h>
@@ -180,7 +180,7 @@ void doUserInput() {
 
     // Event handling
     SDL_Event event;
-    while (SDL_PollEvent(&event)) {
+    while (renderDevice->window()->pollEvent(event)) {
         switch(event.type) {
         case SDL_QUIT:
         endProgram = true;

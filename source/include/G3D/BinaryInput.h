@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-02-12
+ @edited  2005-02-24
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -74,13 +74,13 @@ private:
     /**
      Length of file, in bytes
      */
-    size_t          length;
+    int             length;
     uint8*          buffer;
 
     /**
      Next byte in file
      */
-    size_t          pos;
+    int             pos;
 
     /**
      When true, the buffer is freed in the deconstructor.
@@ -123,7 +123,7 @@ public:
      */
     BinaryInput(
         const uint8*        data,
-        size_t              dataLen,
+        int                 dataLen,
         G3DEndian           dataEndian,
         bool                compressed = false,
         bool                copyMemory = true);
@@ -147,7 +147,7 @@ public:
      the start of the file, not the current position.
      Seeks to the new position before reading.
      */
-    inline const uint8 operator[](size_t n) {
+    inline const uint8 operator[](int n) {
         setPosition(n);
         return readUInt8();
     }
@@ -155,11 +155,11 @@ public:
     /**
      Returns the length of the file in bytes.
      */
-    inline size_t getLength() const {
+    inline int getLength() const {
         return length;
     }
 
-    inline size_t size() const {
+    inline int size() const {
         return getLength();
     }
 
@@ -167,14 +167,14 @@ public:
      Returns the current byte position in the file,
      where 0 is the beginning and getLength() - 1 is the end.
      */
-    inline size_t getPosition() const {
+    inline int getPosition() const {
         return pos;
     }
 
     /**
      Sets the position.  Cannot set past length.
      */
-    inline void setPosition(size_t p) {
+    inline void setPosition(int p) {
         debugAssertM(p <= length, "Read past end of file");
         pos = p;
     }
@@ -277,14 +277,14 @@ public:
 
     /**
      Returns the data in bytes.
-     @deprecated Use readBytes(void*, size_t).
+     @deprecated Use readBytes(void*, int).
      */
-    void readBytes(size_t n, void* bytes);
+    void readBytes(int n, void* bytes);
 
     /**
      Returns the data in bytes.
      */
-    inline void readBytes(void* bytes, size_t n) {
+    inline void readBytes(void* bytes, int n) {
         readBytes(n, bytes);
     }
 
@@ -293,7 +293,7 @@ public:
      required to end in NULL in the file but will
      always be a proper std::string when returned.
      */
-    std::string readString(size_t n);
+    std::string readString(int n);
 
     /**
      Reads until NULL or the end of the file is encountered.
@@ -320,7 +320,7 @@ public:
     /**
      Skips ahead n bytes.
      */
-    inline void skip(size_t n) {
+    inline void skip(int n) {
         debugAssertM((pos + n) <= length, "Read past end of file");
         pos += n;
     }

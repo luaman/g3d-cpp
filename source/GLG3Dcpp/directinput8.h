@@ -3,7 +3,7 @@
 
   @maintainer Corey Taylor 
   @created 	  2004-10-16
-  @edited  	  2004-10-16
+  @edited  	  2005-02-24
     
 */
 
@@ -1490,7 +1490,7 @@ public:
 
     void clearJoysticks() {
         //Release any joystick interfaces
-        for(size_t i = 0; i < _joysticks.length(); ++i) {
+        for (int i = 0; i < _joysticks.length(); ++i) {
                 _joysticks[i].device->Release();
                 _joysticks[i].device = NULL;
         }

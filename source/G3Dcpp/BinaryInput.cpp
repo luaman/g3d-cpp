@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-01-12
+ @edited  2005-02-24
 
 
   <PRE>
@@ -65,7 +65,7 @@ static uint32 readUInt32(const uint8* data, bool swapBytes) {
 
 BinaryInput::BinaryInput(
     const uint8*        data,
-    size_t              dataLen,
+    int                 dataLen,
     G3DEndian           dataEndian,
     bool                compressed,
     bool                copyMemory) {
@@ -122,18 +122,15 @@ BinaryInput::BinaryInput(
     swapBytes = needSwapBytes(fileEndian);
 
     // Figure out how big the file is and verify that it exists.
-    const int tmplength = fileLength(filename);
+    length = fileLength(filename);
 
     // Read the file into memory
     FILE* file = fopen(filename.c_str(), "rb");
 
-	if (! file || (tmplength == -1)) {
+	if (! file || (length == -1)) {
         throw format("File not found: \"%s\"", filename.c_str());
 		return;
 	}
-
-    // Avoid having to use a signed length
-    length = (size_t)tmplength;
 
     buffer = (uint8*) malloc(length);
     debugAssert(buffer);
@@ -178,7 +175,7 @@ BinaryInput::~BinaryInput() {
 }
 
 
-void BinaryInput::readBytes(size_t n, void* bytes) {
+void BinaryInput::readBytes(int n, void* bytes) {
     debugAssertM((pos + n) <= length, "Read past end of file");
     debugAssert(isValidPointer(bytes));
 
@@ -216,7 +213,7 @@ uint64 BinaryInput::readUInt64() {
 }
 
 
-std::string BinaryInput::readString(size_t n) {
+std::string BinaryInput::readString(int n) {
     debugAssertM((pos + n) <= length, "Read past end of file");
     
     char *s = (char*)malloc(n + 1);

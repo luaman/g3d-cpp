@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-11-04
+  @edited  2005-02-24
 */
 
 #include "GLG3D/GPUProgram.h"
@@ -422,7 +422,7 @@ void GPUProgram::setArgs(RenderDevice* renderDevice, const ArgList& args) {
     int numVariables = 0;
 
     // Iterate through formal bindings
-    for (size_t b = 0; b < bindingTable.bindingArray.size(); ++b) {
+    for (int b = 0; b < bindingTable.bindingArray.size(); ++b) {
         const BindingTable::Binding& binding = bindingTable.bindingArray[b];
         
         if (binding.source == VARIABLE) {
@@ -485,7 +485,7 @@ void GPUProgram::setArgs(RenderDevice* renderDevice, const ArgList& args) {
 
             bool foundArgument = false;
             
-            for (size_t b = 0; b < bindingTable.bindingArray.size(); ++b) {
+            for (int b = 0; b < bindingTable.bindingArray.size(); ++b) {
                 if (bindingTable.bindingArray[b].name == arg->key) {
                     foundArgument = true;
                     break;
@@ -522,7 +522,7 @@ bool GPUProgram::BindingTable::consumeSymbol(TextInput& ti, const std::string& s
 
 
 void GPUProgram::BindingTable::nvBind(GLenum target) const {
-    for (size_t b = 0; b < bindingArray.size(); ++b) {
+    for (int b = 0; b < bindingArray.size(); ++b) {
         const Binding& binding = bindingArray[b];
 
         if ((binding.source == CONSTANT) && (binding.type == FLOAT4)) {
@@ -534,7 +534,7 @@ void GPUProgram::BindingTable::nvBind(GLenum target) const {
 
 
 void GPUProgram::BindingTable::arbBind(GLenum target) const {
-    for (size_t b = 0; b < bindingArray.size(); ++b) {
+    for (int b = 0; b < bindingArray.size(); ++b) {
         const Binding& binding = bindingArray[b];
 
         if ((binding.source == CONSTANT) && (binding.type == FLOAT4)) {

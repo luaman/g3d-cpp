@@ -4,7 +4,7 @@
   @author Morgan McGuire, morgan@graphics3d.com
 
   @created 2001-11-11
-  @edited  2003-04-29
+  @edited  2005-02-24
  
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -212,7 +212,7 @@ float ConvexPolyhedron::getVolume() const {
     // Choose the first _vertex of the first face as the origin.
     // This lets us skip one face, too, and avoids negative heights.
     Vector3 v0 = face[0]._vertex[0];
-    for (size_t f = 1; f < face.length(); f++) {        
+    for (int f = 1; f < face.length(); f++) {        
         const ConvexPolygon& poly = face[f];
         
         float height = (poly._vertex[0] - v0).dot(poly.normal());

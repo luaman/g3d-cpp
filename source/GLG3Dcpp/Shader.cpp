@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-09-17
+ @edited  2005-02-24
  */
 
 #include "GLG3D/Shader.h"
@@ -435,7 +435,7 @@ void VertexAndPixelShader::addUniformsFromCode(const std::string& code) {
             // See if this variable is already declared.
             bool found = false;
 
-            for (size_t i = 0; i < uniformArray.size(); ++i) {
+            for (int i = 0; i < uniformArray.size(); ++i) {
                 if (uniformArray[i].name == name) {
                     found = true;
                     break;
@@ -607,7 +607,7 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
     int numVariables = 0;
 
     // Iterate through formal bindings
-    for (size_t u = 0; u < uniformArray.size(); ++u) {
+    for (int u = 0; u < uniformArray.size(); ++u) {
         const UniformDeclaration& decl = uniformArray[u];
 
         ++numVariables;
@@ -642,7 +642,7 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
 
             bool foundArgument = false;
             
-            for (size_t u = 0; u < uniformArray.size(); ++u) {
+            for (int u = 0; u < uniformArray.size(); ++u) {
                 if (uniformArray[u].name == arg->key) {
                     foundArgument = true;
                     break;
@@ -666,7 +666,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
 
 
     // Iterate through the formal parameter list
-    for (size_t u = 0; u < uniformArray.size(); ++u) {
+    for (int u = 0; u < uniformArray.size(); ++u) {
         const UniformDeclaration& decl  = uniformArray[u];
     
         if (decl.dummy) {

@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2005-02-06
+ @edited  2005-02-24
  */
 
 #include <stdlib.h>
@@ -894,7 +894,7 @@ void LightweightConduit::send(const Array<NetAddress>& array,
     binaryOutput.reset();
     serializeMessage(m, binaryOutput);
 
-    for (size_t i = 0; i < array.size(); ++i) {
+    for (int i = 0; i < array.size(); ++i) {
         sendBuffer(array[i], binaryOutput);
     }
 }

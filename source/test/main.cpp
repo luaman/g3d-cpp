@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2005-01-17
+ @edited  2005-02-24
  */
 
 #include "../include/G3DAll.h"
@@ -191,7 +191,7 @@ void measureBSPPerformance() {
         point.clear();
 
         System::beginCycleCount(arraycount);
-        for (size_t i = 0; i < array.size(); ++i) {
+        for (int i = 0; i < array.size(); ++i) {
             if (! array[i].culledBy(plane)) {
                 point.append(array[i]);
             }

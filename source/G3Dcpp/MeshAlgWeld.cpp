@@ -5,7 +5,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-10-22
-  @edited  2004-10-10
+  @edited  2005-02-24
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -87,7 +87,7 @@ Welder::Welder(
     Vector3 minBound = Vector3::inf();
     Vector3 maxBound = -minBound;
 
-    for (size_t i = 0; i < oldVertexArray.size(); ++i) {
+    for (int i = 0; i < oldVertexArray.size(); ++i) {
         minBound.min(oldVertexArray[i]);
         maxBound.max(oldVertexArray[i]);
     }
@@ -124,7 +124,7 @@ int Welder::getIndex(const Vector3& vertex) {
     // Check against all vertices within radius of this grid cube
     const List& list = grid[ix][iy][iz];
 
-    for (size_t i = 0; i < list.size(); ++i) {
+    for (int i = 0; i < list.size(); ++i) {
         double d = (newVertexArray[list[i]] - vertex).squaredLength();
 
         if (d < distanceSquared) {
@@ -175,7 +175,7 @@ void Welder::weld() {
     newVertexArray.resize(0);
 
     // Prime the vertex positions
-    for (size_t i = 0; i < oldVertexArray.size(); ++i) {
+    for (int i = 0; i < oldVertexArray.size(); ++i) {
         getIndex(oldVertexArray[i]);
     }
 
@@ -184,7 +184,7 @@ void Welder::weld() {
     toNew.resize(oldVertexArray.size());
     toOld.resize(newVertexArray.size());
 
-    for (size_t oi = 0; oi < oldVertexArray.size(); ++oi) {
+    for (int oi = 0; oi < oldVertexArray.size(); ++oi) {
         toNew[oi] = getIndex(oldVertexArray[oi]);
         toOld[toNew[oi]] = oi;
     }

@@ -5,7 +5,7 @@
   @cite by Morgan McGuire & Peter Sibley
 
   @created 2003-11-25
-  @edited  2003-11-26
+  @edited  2005-02-24
 */
 
 #include "GLG3D/TextureManager.h"
@@ -115,7 +115,7 @@ void TextureManager::emptyCache() {
 void TextureManager::trimCache() {
     Array <TextureArgs> staleEntry;
     getStaleEntries(staleEntry);
-    for (size_t i = 0; i < staleEntry.length(); ++i) {
+    for (int i = 0; i < staleEntry.length(); ++i) {
         size -= cache[staleEntry[i]]->sizeInMemory();
             debugPrintf("TrimCache is removing %s   \n" , staleEntry.last().filename.c_str());
         cache.remove(staleEntry[i]);

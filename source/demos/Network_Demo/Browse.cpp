@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-28
+  @edited  2005-02-24
  */
 
 #include "Browse.h"
@@ -25,7 +25,7 @@ void Browse::doLogic() {
         const int EXIT = button.size() - 1;
         const Vector2 mouse = app->userInput->mouseXY();
         // See what button the user pressed
-        for (size_t b = 0; b < button.size(); ++b) {
+        for (int b = 0; b < button.size(); ++b) {
             if (button[b].contains(mouse)) {
                 if (b == HOST) {
                     host            = true;
@@ -84,7 +84,7 @@ void Browse::doGraphics() {
         button.clear();
 
         // Display the servers found
-        for (size_t s = 0; s < discoveryClient.serverList.size(); ++s) {
+        for (int s = 0; s < discoveryClient.serverList.size(); ++s) {
             
             Vector2 bounds = app->font->draw2D(discoveryClient.serverList[s].name,
                 Vector2(width / 2, y),

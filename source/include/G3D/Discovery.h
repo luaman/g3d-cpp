@@ -34,7 +34,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-06-26
-  @edited  2005-02-14
+  @edited  2005-02-24
  */
 
 #ifndef G3D_DISCOVERY_H
@@ -342,7 +342,7 @@ private:
      Returns -1 if there is none.  Only checks IP addresses.
      */
     int findServerListIndex(const NetAddress& addr) const {
-        for (size_t i = 0; i < serverList.size(); ++i) {
+        for (int i = 0; i < serverList.size(); ++i) {
             if (addr.ip() == serverList[i].address.ip()) {
                 return i;
             }
@@ -368,7 +368,7 @@ private:
         bool alreadyHere = false;
 
         // Incorrect protocol; add to the incompatible list
-        for (size_t i = 0; i < incompatibleServerList.size(); ++i) {
+        for (int i = 0; i < incompatibleServerList.size(); ++i) {
             IncompatibleServerDescription& server = incompatibleServerList[i];
 
             if (server.address == addr) {

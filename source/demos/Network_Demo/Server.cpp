@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-10-24
+  @edited  2005-02-24
  */
 
 #include "Server.h"
@@ -36,7 +36,7 @@ void Server::doNetwork() {
     }
 
     // Check for messages from clients
-    for (size_t c = 0; c < clientProxyArray.size(); ++c) {
+    for (int c = 0; c < clientProxyArray.size(); ++c) {
         ClientProxy& clientProxy = clientProxyArray[c];
         ReliableConduitRef& net =  clientConduitArray[c];
 

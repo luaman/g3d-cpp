@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2000-09-09
- @edited  2003-04-03
+ @edited  2005-02-24
 */
 
 #include "G3D/platform.h"
@@ -28,7 +28,7 @@ bool beginsWith(
     const std::string& pattern) {
 
     if (test.size() >= pattern.size()) {
-        for (size_t i = 0; i < pattern.size(); ++i) {
+        for (int i = 0; i < (int)pattern.size(); ++i) {
             if (pattern[i] != test[i]) {
                 return false;
             }

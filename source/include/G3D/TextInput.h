@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2005-01-06
+ @edited  2005-02-24
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -50,8 +50,8 @@ private:
     friend class TextInput;
 
     std::string             _string;
-    size_t                  _line;
-    size_t                  _character;
+    int                     _line;
+    int                     _character;
     Type                    _type;
 	ExtendedType            _extendedType;
 
@@ -75,11 +75,11 @@ public:
     }
 
 	/** Line from which this token was parsed.  Starts at 1. */
-    size_t line() const {
+    int line() const {
         return _line;
     }
 	/** Character position from which this token was parsed.  Starts at 1. */
-    size_t character() const {
+    int character() const {
         return _character;
     }
 
@@ -217,12 +217,12 @@ private:
      Last character index consumed.
      */
     int                     bufferLast;
-    size_t                  lineNumber;
+    int                     lineNumber;
 
     /**
      Number of characters from the beginning of the line. 
      */
-    size_t                  charNumber;
+    int                     charNumber;
 
     std::string             sourceFile;
     
@@ -275,8 +275,8 @@ public:
 
         TokenException(
             const std::string&  src,
-            size_t              ln,
-            size_t              ch);
+            int                 ln,
+            int                 ch);
 
     };
 
@@ -288,8 +288,8 @@ public:
 
         WrongTokenType(
             const std::string&  src,
-            size_t              ln,
-            size_t              ch,
+            int                 ln,
+            int                 ch,
             Token::Type         e,
             Token::Type         a);
     };
@@ -301,8 +301,8 @@ public:
 
         WrongSymbol(
             const std::string&  src,
-            size_t              ln,
-            size_t              ch,
+            int                 ln,
+            int                 ch,
             const std::string&  e,
             const std::string&  a);
     };

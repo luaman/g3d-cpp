@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2004-12-17
+ @edited  2005-02-24
  */
 
 #include "G3D/platform.h"
@@ -196,7 +196,7 @@ void createDirectory(
     std::string p = root + ".";
 
     // Create any intermediate that doesn't exist
-    for (size_t i = 0; i < path.size(); ++i) {
+    for (int i = 0; i < path.size(); ++i) {
         p += "/" + path[i];
         if (! fileExists(p)) {
 	    // Windows only requires one argument to mkdir,

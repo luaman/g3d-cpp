@@ -34,7 +34,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2005-02-07
+ @edited  2005-02-24
  */
 
 #ifndef NETWORKDEVICE_H
@@ -314,7 +314,7 @@ public:
             array[0]->binaryOutput.reset();
             serializeMessage(type, m, array[0]->binaryOutput);
 
-            for (size_t i = 0; i < array.size(); ++i) {
+            for (int i = 0; i < array.size(); ++i) {
                 array[i]->sendBuffer(array[0]->binaryOutput);
             }
         }
@@ -490,7 +490,7 @@ private:
 
     /** Maximum transmission unit (packet size in bytes) for this socket.
         May vary between sockets. */
-    size_t                 MTU;
+    int                    MTU;
 
 
     template<typename T> 

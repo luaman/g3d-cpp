@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2005-01-30
+ @edited  2005-02-24
  */
 
 #include "G3D/platform.h"
@@ -214,7 +214,7 @@ void GApp::renderDebugInfo() {
                 pos.y += size * 3;
             }
 
-            for (size_t i = 0; i < debugText.length(); ++i) {
+            for (int i = 0; i < debugText.length(); ++i) {
                 debugFont->draw2D(debugText[i], pos, size, color, Color3::black());
                 pos.y += size * 1.5;
             }

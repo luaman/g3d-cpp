@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2005-01-13
+  @edited  2005-02-24
 */
 
 #include "G3D/GCamera.h"
@@ -197,7 +197,7 @@ void GCamera::getClipPlanes(
     Frustum fr;
     getFrustum(viewport, fr);
     clip.resize(fr.faceArray.size(), DONT_SHRINK_UNDERLYING_ARRAY);
-    for (size_t f = 0; f < clip.size(); ++f) {
+    for (int f = 0; f < clip.size(); ++f) {
         clip[f] = fr.faceArray[f].plane;
     }
 
@@ -345,12 +345,12 @@ void GCamera::getFrustum(const Rect2D& viewport, Frustum& fr) const {
     }
 
     // Transform vertices to world space
-    for (size_t v = 0; v < fr.vertexPos.size(); ++v) {
+    for (int v = 0; v < fr.vertexPos.size(); ++v) {
         fr.vertexPos[v] = cframe.toWorldSpace(fr.vertexPos[v]);
     }
 
 	// Transform planes to world space
-	for (size_t p = 0; p < fr.faceArray.size(); ++p) {
+	for (int p = 0; p < fr.faceArray.size(); ++p) {
 		// Since there is no scale factor, we don't have to 
 		// worry about the inverse transpose of the normal.
         Vector3 normal;

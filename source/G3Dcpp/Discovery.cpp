@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-06-26
-  @edited  2005-02-14
+  @edited  2005-02-24
  */
 
 #include "G3D/Discovery.h"
@@ -34,7 +34,7 @@ void DiscoveryServerAddressMessage::serialize(BinaryOutput& b) const {
 
     // Send addresses
     b.writeInt32(address.size());
-    for (size_t i = 0; i < address.size(); ++i) {
+    for (int i = 0; i < address.size(); ++i) {
         address[i].serialize(b);
     }
 }
@@ -68,7 +68,7 @@ void DiscoveryServerAddressMessage::deserialize(BinaryInput& b) {
     correctProtocol = true;
 
     address.resize(b.readInt32());
-    for (size_t i = 0; i < address.size(); ++i) {
+    for (int i = 0; i < address.size(); ++i) {
         address[i].deserialize(b);
     }
 }
@@ -108,7 +108,7 @@ void DiscoveryServer::init(
     netDevice->localHostAddresses(addressMessage.address);
 
     // Set the port number
-    for (size_t i = 0; i < addressMessage.address.size(); ++i) {
+    for (int i = 0; i < addressMessage.address.size(); ++i) {
         addressMessage.address[i] =
             NetAddress(addressMessage.address[i].ip(),
                        settings->serverAdvertisementPort);

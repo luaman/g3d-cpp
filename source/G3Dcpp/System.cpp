@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-08-24
+  @edited  2005-02-24
  */
 
 #include "G3D/platform.h"
@@ -97,7 +97,7 @@ std::string demoFindData(bool errorIfNotFound) {
     #endif
 
     // Scan all potentials for the font directory
-    for (size_t p = 0; p < potential.size();  ++p) {
+    for (int p = 0; p < potential.size();  ++p) {
         std::string path = potential[p];
         if (fileExists(path + "data") && fileExists(path + "data/font")) {
             return path + "data/";
