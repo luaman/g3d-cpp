@@ -2611,6 +2611,11 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
         }
 
     } else {
+
+        for (int j = 0; j < 3; ++j) {
+            debugAssert(light.attenuation[j] >= 0);
+        }
+
         if (! state.lightEnabled[i] || force) {
             glEnable(gi);
             state.lightEnabled[i] = true;
@@ -2640,6 +2645,7 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
             glMatrixMode(mm);
         }    
     }
+debugAssertGLOk();    
 
 }
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-09-08
+  @edited  2003-11-13
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -95,18 +95,7 @@ private:
     int                             width;
     int                             height;
     int                             depth;
-    bool                            compressed;
     bool                            _opaque;
-
-    /**
-     Number of bits to allocate for each color channel.
-     */
-    int                             colorChannelBits;
-
-    /**
-     Number of bits for the alpha channel.
-     */
-    int                             alphaChannelBits;
 
     Texture(
         const std::string&          _name,
@@ -209,9 +198,9 @@ public:
      @param useBackBuffer If true, the texture is created from the back buffer.
      If false, the texture is created from the front buffer.
 
-     @param windowHeight renderDevice->getHeight().
+     @param rect The rectangle to copy (relative to the viewport)
      */
-    void copyFromScreen(int x, int y, int width, int height, int windowHeight, Dimension dim, bool useBackBuffer = true);
+    void copyFromScreen(const Rect2D& rect, bool useBackBuffer = true);
 
 
     /**

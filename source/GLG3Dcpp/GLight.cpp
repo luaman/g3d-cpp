@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-12
-  @edited  2003-11-12
+  @edited  2003-11-13
 */
 
 #include "GLG3D/GLight.h"
@@ -17,6 +17,9 @@ GLight::GLight() {
     spotDirection   = Vector3(0, 0, -1);
     spotCutoff      = 180;
     enabled         = false;
+    attenuation[0]  = 1.0;
+    attenuation[1]  = 0.0;
+    attenuation[2]  = 0.0;
 }
 
 

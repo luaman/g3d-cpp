@@ -74,12 +74,13 @@ void IFSEntity::render(RenderDevice* renderDevice) {
         renderDevice->setObjectToWorldMatrix(cframe);
 
         if (selected) {
-            renderDevice->setColor(Color3::BLACK);
-            renderDevice->setLineWidth(2);
-            renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
-            model.render(renderDevice);
-            renderDevice->setRenderMode(RenderDevice::RENDER_SOLID);
-            renderDevice->setPolygonOffset(0.5);
+            renderDevice->pushState();
+                renderDevice->setColor(Color3::BLACK);
+                renderDevice->setLineWidth(3);
+                renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+                renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+                model.render(renderDevice);
+            renderDevice->popState();
         }
 
         renderDevice->setColor(Color3::WHITE);
@@ -123,8 +124,7 @@ void Demo::init()  {
     app->debugCamera.lookAt(Vector3::ZERO);
     entityArray.append(new SphereEntity(Vector3(0, 1, 0), 1, Color3::WHITE));
     entityArray.append(new SphereEntity(Vector3(-4, 1, 0), 1, Color3::GREEN));
-    entityArray.append(new IFSEntity(app->dataDir + "ifs/bunny.ifs", Vector3(4, 1, 0)));
-    entityArray.append(new IFSEntity(app->dataDir + "ifs/bunny.ifs", Vector3(4, 4, 0)));
+    entityArray.append(new IFSEntity(app->dataDir + "ifs/teapot.ifs", Vector3(4, 1, 0)));
     entityArray[1]->selected = true;
 }
 
@@ -176,12 +176,12 @@ void Demo::doGraphics() {
     app->renderDevice->clear(sky == NULL, true, true);
 
     sky->render(lighting);
-
     
     // Setup lighting
     app->renderDevice->enableLighting();
 
     app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+ 
     app->renderDevice->setAmbientLightColor(lighting.ambient);
 
     for (int e = 0; e < entityArray.length(); ++e) { 
@@ -213,6 +213,7 @@ void Demo::doGraphics() {
     app->renderDevice->disableLighting();
 
     sky->renderLensFlare(lighting);
+
 }
 
 

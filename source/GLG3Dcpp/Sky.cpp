@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-11-11
+  @edited  2003-11-13
   */
 
 #include "GLG3D/glcalls.h"
@@ -13,6 +13,7 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/g3dmath.h"
 #include "GLG3D/TextureFormat.h"
+#include "GLG3D/getOpenGLState.h"
 
 namespace G3D {
 
@@ -175,7 +176,6 @@ static void hackProjectionMatrix(RenderDevice* renderDevice) {
 
 void Sky::renderBox() const {
     renderDevice->pushState();
-
     double s = 50;
 
     bool cube = (cubeMap != NULL);
@@ -204,7 +204,7 @@ void Sky::renderBox() const {
         glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_GEN_S | GL_TEXTURE_GEN_T | GL_TEXTURE_GEN_R | GL_TEXTURE_GEN_Q);
 
 	    glEnable(GL_TEXTURE_CUBE_MAP_ARB);
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 3; ++i) {
     	    glTexGeni(GL_S + i, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
 	        glEnable(GL_TEXTURE_GEN_S + i);
         }
@@ -349,7 +349,7 @@ void Sky::renderBox() const {
 	renderDevice->endPrimitive();
 
     if (cube) {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 3; ++i) {
 	        glDisable(GL_TEXTURE_GEN_S + i);
         }
 
@@ -366,28 +366,27 @@ void Sky::render(
 
     renderDevice->pushState();
 
-	CoordinateFrame matrix;
-	matrix.rotation = renderDevice->getCameraToWorldMatrix().rotation;
-    renderDevice->setCameraToWorldMatrix(matrix);
+	    CoordinateFrame matrix;
+	    matrix.rotation = renderDevice->getCameraToWorldMatrix().rotation;
+        renderDevice->setCameraToWorldMatrix(matrix);
 
-    renderDevice->setColor(lighting.skyAmbient * renderDevice->getBrightScale());
-    renderDevice->setCullFace(RenderDevice::CULL_BACK);
-    renderDevice->disableDepthWrite();
-    renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
+        renderDevice->setColor(lighting.skyAmbient * renderDevice->getBrightScale());
+        renderDevice->setCullFace(RenderDevice::CULL_BACK);
+        renderDevice->disableDepthWrite();
+        renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
 
-	// Draw the sky box
-    renderDevice->resetTextureUnit(0);
-    renderBox();
+	    // Draw the sky box
+        renderDevice->resetTextureUnit(0);
+        renderBox();
 
-    // Ignore depth, make sure we're not clipped by the far plane
-    hackProjectionMatrix(renderDevice);
+        // Ignore depth, make sure we're not clipped by the far plane
+        hackProjectionMatrix(renderDevice);
    
-    drawMoonAndStars(lighting);
+        drawMoonAndStars(lighting);
 
-    drawSun(lighting);
+        drawSun(lighting);
 
     renderDevice->popState();
-
 }
 
 

@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-08-04
+ @edited  2003-11-13
 */
 
 #include "GLG3D/glcalls.h"
@@ -542,10 +542,8 @@ unsigned int Texture::newGLTextureID() {
 
 
 void Texture::copyFromScreen(
-    int x, int y, int width, int height,
-    int windowHeight, Dimension dim, bool useBackBuffer) {
-
-    debugAssert(dim != DIM_CUBE_MAP);
+    const Rect2D& rect,
+    bool useBackBuffer) {
 
     glStatePush();
 
@@ -553,39 +551,41 @@ void Texture::copyFromScreen(
         glReadBuffer(GL_BACK);
     } else {
         glReadBuffer(GL_FRONT);
-    }
-
-    
-    dimension = dim;
-    GLenum target = dimensionToTarget(dim);
+    }    
 
     // Set up new state
-    this->width   = width;
-    this->height  = height;
+    this->width   = (int)rect.width();
+    this->height  = (int)rect.height();
     this->depth   = 1;
+    this->dimension = DIM_2D;
     
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glDisable(GL_TEXTURE_1D);
-    glDisable(GL_TEXTURE_2D);
     glDisable(GL_TEXTURE_3D);
     glDisable(GL_TEXTURE_RECTANGLE_NV);
     glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-    glEnable(target);
+    glEnable(GL_TEXTURE_2D);
 
-    glBindTexture(target, textureID);
-    alwaysAssertM(glGetError() == GL_NONE, "Error encountered during glBindTexture");
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    double viewport[4];
+    glGetDoublev(GL_VIEWPORT, viewport);
+    double viewportHeight = viewport[3];
+
+    int e = glGetError();
+    alwaysAssertM(e == GL_NONE, 
+        std::string("Error encountered during glBindTexture: ") + GLenumToString(e));
         
-    glCopyTexImage2D(target, 0, format->OpenGLFormat, x, windowHeight - (y + height), width, height, 0);
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, format->OpenGLFormat, rect.x0(), viewportHeight - rect.y1(), rect.width(), rect.height(), 0);
 
-    setTexParameters(target, wrap, interpolate);
+    setTexParameters(GL_TEXTURE_2D, wrap, interpolate);
 
     debugAssert(glGetError() == GL_NO_ERROR);
-    glDisable(target);
+    glDisable(GL_TEXTURE_2D);
 
     invertY = true;
 
     glStatePop();
- 
 }
 
 
