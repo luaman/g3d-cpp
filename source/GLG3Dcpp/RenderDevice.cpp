@@ -1220,6 +1220,7 @@ void RenderDevice::setCullFace(CullFace f) {
     }
 }
 
+
 void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
     debugAssert(! inPrimitive);
 
@@ -1253,6 +1254,7 @@ void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
 uint RenderDevice::numTextureUnits() const {
     return _numTextureUnits;
 }
+
 
 void RenderDevice::beginFrame() {
     ++beginEndFrame;

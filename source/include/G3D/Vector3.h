@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-04-08
+  @edited  2003-08-04
  */
 
 #ifndef G3D_VECTOR3_H
@@ -23,8 +23,7 @@ namespace G3D {
  Do not subclass-- this implementation makes assumptions about the
  memory layout.
  */
-class Vector3 {
-    
+class Vector3 {    
 public:
     // construction
     Vector3();

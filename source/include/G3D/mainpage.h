@@ -616,6 +616,8 @@
 
    <P>
    <UL>
+     <LI> Removed const from VAR::pointer
+     <LI> ReferenceCountedPointer::isNull
      <LI> errorCheck
      <LI> Log::common, Log::getCommonLogFilename
      <LI> Switched from static to dynamic linking of zlib

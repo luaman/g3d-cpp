@@ -7,7 +7,7 @@
   @cite Converted from Justin Miller's "RGC" class, as appeared in BYTE magazine.
 
   @created 2001-10-23
-  @edited  2003-06-30
+  @edited  2003-08-04
 
 Example:
 
@@ -164,6 +164,10 @@ public:
 
     inline operator T*() const {
         return pointer;
+    }
+
+    inline bool isNull() const {
+        return pointer == NULL;
     }
 
 };

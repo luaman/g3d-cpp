@@ -379,42 +379,41 @@ void Sky::render(
         Vector4 L(lighting.moonPosition,0);
         Vector4 X(lighting.moonPosition.cross(Vector3::UNIT_Z).direction(), 0);
         Vector4 Y(Vector3::UNIT_Z, 0);
+
         // Draw stars
         if (lighting.moonPosition.y > -.3) {
-            /*
-            glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
-            glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-                glEnableClientState(GL_VERTEX_ARRAY);
-                glVertexPointer(4, GL_FLOAT, 0, star.getCArray());
-                glDrawArrays(GL_POINTS, 0, star.size());
-            glPopClientAttrib();
-            glPopAttrib();
-            */
 
             double k = (1 - square(lighting.skyAmbient.length())) * renderDevice->getBrightScale();
             renderDevice->pushState();
-                // rotate stars
+                // Rotate stars
                 CoordinateFrame m;
                 float aX, aY, aZ;
-				/* Use the east-west revolutions of the moon to rotate
-				   the starfield correctly */
+				// Use the east-west revolutions of the moon to rotate
+				//   the starfield correctly
 				Vector3 moon(-L.x, 0, L.y);
 				Vector3 top(Vector3::UNIT_Y);
 				m.lookAt(moon, top);
+
 				// Correct for geographical location; currently Providence, RI
 				m.rotation.toEulerAnglesXYZ(aX, aY, aZ);
 				aX -= lighting.geoLatitude; // Latitude of 41 degrees, 44 minutes N
 				m.rotation.fromEulerAnglesXYZ(aX, aY, aZ);
 				renderDevice->setObjectToWorldMatrix(m);
                 
-			renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
+			    renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
+
                 renderDevice->beginPrimitive(RenderDevice::POINTS);
-                for (int i = star.size() - 1; i >= 0; --i) {
-                    double b = starIntensity[i] * k;
-                    renderDevice->setColor(Color3(b,b,b));
-                    renderDevice->sendVertex(star[i]);
-                }
+                    for (int i = star.size() - 1; i >= 0; --i) {
+                        const double b = starIntensity[i] * k;
+                        // We use raw GL calls here for performance
+                        glColor3f(b, b, b);
+                        glVertex3fv(star[i]);
+                    }
                 renderDevice->endPrimitive();
+
+                // Get RenderDevice back in sync with real GL state
+                renderDevice->setColor(Color3::WHITE);
+                glColor(Color3::WHITE);
             renderDevice->popState();
         }
 
