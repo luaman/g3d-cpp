@@ -45,7 +45,6 @@ private:
             } else {
                 p = FIXED_FUNCTION;
             }
-p = FIXED_FUNCTION; // TODO: remove
         }
 
         return p;

@@ -285,7 +285,7 @@ void App::main() {
         x += 2;
     }
     
-    {
+    if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile(
 		"d:/games/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
             );
@@ -430,6 +430,7 @@ void App::main() {
     //http://oss.sgi.com/projects/ogl-sample/registry/EXT/wgl_pbuffer.txt
     Demo(this).run();
 }
+
 
 App::App(const GAppSettings& settings) : GApp(settings) {
     ::app = this;

@@ -40,6 +40,52 @@ protected:
         RenderDevice*       rd,
         const LightingRef&  lighting) const;
 
+    bool renderFFNonShadowedOpaqueTerms(
+        RenderDevice*                   rd,
+        const LightingRef&              lighting,
+        const ArticulatedModel::Part&   part,
+        const ArticulatedModel::Part::TriList& triList,
+        const SuperShader::Material&    material) const;
+
+    bool renderPS20NonShadowedOpaqueTerms(
+        RenderDevice*                   rd,
+        const LightingRef&              lighting,
+        const ArticulatedModel::Part&   part,
+        const ArticulatedModel::Part::TriList& triList,
+        const SuperShader::Material&    material) const;
+
+    void renderFFNonShadowed(
+        RenderDevice*                   rd,
+        const LightingRef&              lighting,
+        const ArticulatedModel::Part&   part,
+        const ArticulatedModel::Part::TriList& triList,
+        const SuperShader::Material&    material) const;
+
+    void renderPS20NonShadowed(
+        RenderDevice*                   rd,
+        const LightingRef&              lighting,
+        const ArticulatedModel::Part&   part,
+        const ArticulatedModel::Part::TriList& triList,
+        const SuperShader::Material&    material) const;
+
+    void renderFFShadowMappedLightPass(
+        RenderDevice*                   rd,
+        const GLight&                   light,
+        const Matrix4&                  lightMVP, 
+        const TextureRef&               shadowMap,
+        const ArticulatedModel::Part&   part,
+        const ArticulatedModel::Part::TriList& triList,
+        const SuperShader::Material&    material) const;
+
+    void renderPS20ShadowMappedLightPass(
+        RenderDevice*                   rd,
+        const GLight&                   light,
+        const Matrix4&                  lightMVP, 
+        const TextureRef&               shadowMap,
+        const ArticulatedModel::Part&   part,
+        const ArticulatedModel::Part::TriList& triList,
+        const SuperShader::Material&    material) const;
+
 public:
 
     virtual std::string name() const;
@@ -175,6 +221,46 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
 
     bool renderedOnce = false;
 
+    rd->pushState();
+        switch (ArticulatedModel::profile()) {
+        case ArticulatedModel::FIXED_FUNCTION:
+            renderedOnce = renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+            break;
+
+        case ArticulatedModel::PS20:
+            renderedOnce = renderPS20NonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+            break;
+
+        default:
+            debugAssertM(false, "Fell through switch");
+        }
+    rd->popState();
+
+    return renderedOnce;
+}
+
+
+bool PosedArticulatedModel::renderPS20NonShadowedOpaqueTerms(
+    RenderDevice*                   rd,
+    const LightingRef&              lighting,
+    const ArticulatedModel::Part&   part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material&    material) const {
+
+    // TODO: implement
+    return renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+}
+
+
+bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
+    RenderDevice*                   rd,
+    const LightingRef&              lighting,
+    const ArticulatedModel::Part&   part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material&    material) const {
+
+    bool renderedOnce = false;
+
     // Emissive
     if (! material.emit.isBlack()) {
         rd->setColor(material.emit.constant);
@@ -251,46 +337,78 @@ void PosedArticulatedModel::renderNonShadowed(
     const SuperShader::Material& material = triList.material;
 
     rd->pushState();
+        switch (ArticulatedModel::profile()) {
+        case ArticulatedModel::FIXED_FUNCTION:
+            renderFFNonShadowed(rd, lighting, part, triList, material);
+            break;
 
-        if (! material.transmit.isBlack()) {
-            // Transparent
-            bool oldDepthWrite = rd->depthWrite();
+        case ArticulatedModel::PS20:
+            renderPS20NonShadowed(rd, lighting, part, triList, material);
+            break;
 
-            // Render backfaces first, and then front faces
-            rd->setCullFace(RenderDevice::CULL_FRONT);
-            for (int i = 0; i <= 1; ++i) {
-                rd->disableLighting();
-                rd->enableTwoSidedLighting();
-
-                // Modulate background by transparent color
-                rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
-                rd->setTexture(0, material.transmit.map);
-                rd->setColor(material.transmit.constant);
-                defaultRender(rd);
-
-                bool alreadyAdditive = false;
-                setAdditive(rd, alreadyAdditive);
-                renderNonShadowedOpaqueTerms(rd, lighting);
-            
-                // restore depth write
-                rd->setDepthWrite(oldDepthWrite);
-                rd->setCullFace(RenderDevice::CULL_BACK);
-            }
-        } else {
-            // Opaque
-            rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
-
-            bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting);
-
-            if (! wroteDepth) {
-                // Draw black
-                rd->disableLighting();
-                rd->setColor(Color3::black());
-                defaultRender(rd);
-            }
+        default:
+            debugAssertM(false, "Fell through switch");
         }
-
     rd->popState();
+}
+
+
+void PosedArticulatedModel::renderPS20NonShadowed(
+    RenderDevice*                   rd,
+    const LightingRef&              lighting,
+    const ArticulatedModel::Part&   part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material&    material) const {
+
+    // TODO: implement
+    renderFFNonShadowed(rd, lighting, part, triList, material);
+}
+
+
+void PosedArticulatedModel::renderFFNonShadowed(
+    RenderDevice*                   rd,
+    const LightingRef&              lighting,
+    const ArticulatedModel::Part&   part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material&    material) const {
+
+    if (! material.transmit.isBlack()) {
+        // Transparent
+        bool oldDepthWrite = rd->depthWrite();
+
+        // Render backfaces first, and then front faces
+        rd->setCullFace(RenderDevice::CULL_FRONT);
+        for (int i = 0; i <= 1; ++i) {
+            rd->disableLighting();
+            rd->enableTwoSidedLighting();
+
+            // Modulate background by transparent color
+            rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
+            rd->setTexture(0, material.transmit.map);
+            rd->setColor(material.transmit.constant);
+            defaultRender(rd);
+
+            bool alreadyAdditive = false;
+            setAdditive(rd, alreadyAdditive);
+            renderNonShadowedOpaqueTerms(rd, lighting);
+        
+            // restore depth write
+            rd->setDepthWrite(oldDepthWrite);
+            rd->setCullFace(RenderDevice::CULL_BACK);
+        }
+    } else {
+        // Opaque
+        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
+
+        bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting);
+
+        if (! wroteDepth) {
+            // Draw black
+            rd->disableLighting();
+            rd->setColor(Color3::black());
+            defaultRender(rd);
+        }
+    }
 }
 
 
@@ -299,6 +417,7 @@ void PosedArticulatedModel::renderShadowedLightPass(
     const GLight&       light) const {
 
     // TODO
+    debugAssertM(false, "Unimplemented");
 }
 
 
@@ -308,70 +427,107 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
     const Matrix4&      lightMVP, 
     const TextureRef&   shadowMap) const {
 
-    const ArticulatedModel::Part& part = model->partArray[partIndex];
-    const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
-    const SuperShader::Material& material = triList.material;
+    const ArticulatedModel::Part& part              = model->partArray[partIndex];
+    const ArticulatedModel::Part::TriList& triList  = part.triListArray[listIndex];
+    const SuperShader::Material& material           = triList.material;
 
     if (material.diffuse.isBlack() && material.specular.isBlack()) {
         return;
     }
 
     rd->pushState();
-        rd->configureShadowMap(1, lightMVP, shadowMap);
+        switch (ArticulatedModel::profile()) {
+        case ArticulatedModel::FIXED_FUNCTION:
+            renderFFShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+            break;
 
-        rd->setObjectToWorldMatrix(cframe);
+        case ArticulatedModel::PS20:
+            renderPS20ShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+            break;
 
-        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+        default:
+            debugAssertM(false, "Fell through switch");
+        }
+    rd->popState();
+}
 
-        rd->setTexture(0, material.diffuse.map);
-        rd->setColor(material.diffuse.constant);
 
-        // We disable specular highlights because they will not be modulated
-        // by the shadow map.  We then make a separate pass to render specular
-        // highlights.
-        rd->setSpecularCoefficient(Vector3::zero());
+void PosedArticulatedModel::renderPS20ShadowMappedLightPass(
+    RenderDevice*       rd,
+    const GLight&       light, 
+    const Matrix4&      lightMVP, 
+    const TextureRef&   shadowMap,
+    const ArticulatedModel::Part& part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material& material) const {
 
-        rd->enableLighting();
-        rd->setAmbientLightColor(Color3::black());
+    // TODO: implement
+    renderFFShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+}
 
-        rd->setLight(0, light);
+
+void PosedArticulatedModel::renderFFShadowMappedLightPass(
+    RenderDevice*       rd,
+    const GLight&       light, 
+    const Matrix4&      lightMVP, 
+    const TextureRef&   shadowMap,
+    const ArticulatedModel::Part& part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material& material) const {
+
+    rd->configureShadowMap(1, lightMVP, shadowMap);
+
+    rd->setObjectToWorldMatrix(cframe);
+
+    rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+
+    rd->setTexture(0, material.diffuse.map);
+    rd->setColor(material.diffuse.constant);
+
+    // We disable specular highlights because they will not be modulated
+    // by the shadow map.  We then make a separate pass to render specular
+    // highlights.
+    rd->setSpecularCoefficient(Vector3::zero());
+
+    rd->enableLighting();
+    rd->setAmbientLightColor(Color3::black());
+
+    rd->setLight(0, light);
+
+    defaultRender(rd);
+
+    if (! material.specular.isBlack()) {
+        // Make a separate pass for specular. 
+        static bool separateSpecular = GLCaps::supports("GL_EXT_separate_specular_color");
+
+        if (separateSpecular) {
+            // We disable the OpenGL separate
+            // specular behavior so that the texture will modulate the specular
+            // pass, and then put the specularity coefficient in the texture.
+            glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
+        }
+
+        rd->setColor(Color3::white());// TODO: when I put the specular coefficient here, it doesn't modulate.  What's wrong?
+        rd->setTexture(0, material.specular.map);
+        rd->setSpecularCoefficient(material.specular.constant);
+
+        // Turn off the diffuse portion of this light
+        GLight light2 = light;
+        light2.diffuse = false;
+        rd->setLight(0, light2);
+        rd->setShininess(material.specularExponent.constant.average());
 
         defaultRender(rd);
 
-        if (! material.specular.isBlack()) {
-            // Make a separate pass for specular. 
-            static bool separateSpecular = GLCaps::supports("GL_EXT_separate_specular_color");
-
-            if (separateSpecular) {
-                // We disable the OpenGL separate
-                // specular behavior so that the texture will modulate the specular
-                // pass, and then put the specularity coefficient in the texture.
-                glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
-            }
-
-            rd->setColor(Color3::white());// TODO: when I put the specular coefficient here, it doesn't modulate.  What's wrong?
-            rd->setTexture(0, material.specular.map);
-            rd->setSpecularCoefficient(material.specular.constant);
-
-            // Turn off the diffuse portion of this light
-            GLight light2 = light;
-            light2.diffuse = false;
-            rd->setLight(0, light2);
-            rd->setShininess(material.specularExponent.constant.average());
-
-            defaultRender(rd);
-
-            if (separateSpecular) {
-                // Restore normal behavior
-                glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, 
-                              GL_SEPARATE_SPECULAR_COLOR_EXT);
-            }
-
-            // TODO: use this separate specular pass code in all fixed function 
-            // cases where there is a specularity map.
+        if (separateSpecular) {
+            // Restore normal behavior
+            glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, 
+                          GL_SEPARATE_SPECULAR_COLOR_EXT);
         }
 
-    rd->popState();
+        // TODO: use this separate specular pass code in all fixed function 
+        // cases where there is a specularity map.
+    }
 }
 
 
