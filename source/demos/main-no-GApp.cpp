@@ -19,7 +19,7 @@ Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
 CFontRef                font			= NULL;
 UserInput*              userInput		= NULL;
-GCamera*					camera			= NULL;
+GCamera*				camera			= NULL;
 ManualCameraController* controller      = NULL;
 bool                    endProgram		= false;
 
