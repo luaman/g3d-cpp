@@ -4,11 +4,11 @@ lib_LTLIBRARIES= libGLG3D.la
 
 libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/Draw.cpp \
-          		     ../../../source/GLG3Dcpp/TextureManager.cpp \
+                     ../../../source/GLG3Dcpp/TextureManager.cpp \
                      ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
                      ../../../source/GLG3Dcpp/GApp.cpp \
                      ../../../source/GLG3Dcpp/GPUProgram.cpp \
-    	  	         ../../../source/GLG3Dcpp/IFSModel.cpp \
+    	  	     ../../../source/GLG3Dcpp/IFSModel.cpp \
                      ../../../source/GLG3Dcpp/LightingParameters.cpp \
                      ../../../source/GLG3Dcpp/MD2Model.cpp \
                      ../../../source/GLG3Dcpp/MD2Model_load.cpp \
@@ -24,6 +24,7 @@ libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/VAR.cpp \
                      ../../../source/GLG3Dcpp/VARSystem.cpp \
                      ../../../source/GLG3Dcpp/VertexProgram.cpp \
+                     ../../../source/GLG3Dcpp/shadowVolume.cpp \
                      ../../../source/GLG3Dcpp/getOpenGLState.cpp \
                      ../../../source/GLG3Dcpp/glcalls.cpp \
                      ../../../source/GLG3Dcpp/glenumtostring.cpp 

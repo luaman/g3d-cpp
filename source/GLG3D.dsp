@@ -154,6 +154,10 @@ SOURCE=.\GLG3Dcpp\RenderDevice.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\shadowVolume.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\Sky.cpp
 # End Source File
 # Begin Source File
@@ -263,6 +267,10 @@ SOURCE=.\include\GLG3D\PosedModel.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\RenderDevice.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\shadowVolume.h
 # End Source File
 # Begin Source File
 

@@ -7,7 +7,6 @@
   @edited  2003-12-16
  */ 
 
-
 #ifndef GLG3D_POSEDMODEL_H
 #define GLG3D_POSEDMODEL_H
 

@@ -16,7 +16,7 @@ inline unsigned int hashCode(const G3D::Vector4& v) {
 namespace G3D {
 
 //----------------------------------------------------------------------------
-inline Vector4::Vector4 () {
+inline Vector4::Vector4() {
     x = y = z = w = 0;
 }
 

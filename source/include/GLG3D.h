@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-11-26
+ @edited  2003-12-16
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -56,5 +56,6 @@
 #include "GLG3D/IFSModel.h"
 #include "GLG3D/MD2Model.h"
 #include "GLG3D/TextureManager.h"
+#include "GLG3D/shadowVolume.h"
 
 #endif

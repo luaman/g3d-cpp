@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-12-07
+ @edited  2003-12-16
  */
 
 
@@ -835,7 +835,7 @@ void RenderDevice::setVideoMode() {
             }
         }
 
-        glDepthFunc(GL_LESS);
+        glDepthFunc(GL_LEQUAL);
         glEnable(GL_DEPTH_TEST);
 
         glDisable(GL_BLEND);
@@ -962,7 +962,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     colorWrite                  = true;
     alphaWrite                  = false;
 
-    depthTest                   = DEPTH_LESS;
+    depthTest                   = DEPTH_LEQUAL;
     stencilTest                 = STENCIL_ALWAYS_PASS;
     stencilReference            = 0;
     alphaTest                   = ALPHA_ALWAYS_PASS;
