@@ -19,6 +19,26 @@
 #include "SuperShader.h"
 #include "ArticulatedModel.h"
 
+typedef ReferenceCountedPointer<class Entity> EntityRef;
+class Entity : public ReferenceCountedObject {
+private:
+
+    Entity();
+
+public:
+
+    ArticulatedModelRef         model;
+
+    ArticulatedModel::Pose      pose;
+
+    /** Root frame */
+    CoordinateFrame             cframe;
+
+    static EntityRef create() {
+        return new Entity();
+    }
+};
+
 GApp* app = NULL; 
 
 /*
@@ -36,6 +56,7 @@ public:
     LightingRef                 lighting;
 
     Array<ArticulatedModelRef>  modelArray;
+    Array<EntityRef>            entityArray;
     TextureRef                  texture;
 
     App(const GAppSettings& settings);
