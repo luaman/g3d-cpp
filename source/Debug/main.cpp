@@ -119,9 +119,9 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-//	texture = Texture::fromFile("d:/libraries/g3d-6_04/data/image/testImage.jpg");
+	texture = Texture::fromFile("d:/libraries/g3d-6_04/data/image/testImage.jpg");
     
-    //shader = SphereMap::create();
+//    shader = SphereMap::create();
 
 /*
     // Cylindrical projection about the z-axis
@@ -298,12 +298,13 @@ void setIcon(const GImage& image) {
 
     uint8* mask = NULL;
 
-    uint32 rmask = 0xFF000000;
-    uint32 gmask = 0x00FF0000;
-    uint32 bmask = 0x0000FF00;
-    uint32 amask = 0x000000FF;
+    uint32 amask = 0xFF000000;
+    uint32 bmask = 0x00FF0000;
+    uint32 gmask = 0x0000FF00;
+    uint32 rmask = 0x000000FF;
 
     if (image.channels == 4) {
+        /*
         // Has an alpha channel; construct a mask
         int len = iCeil(image.width / 8) * image.height;
         mask = new uint8[len];
@@ -317,15 +318,16 @@ void setIcon(const GImage& image) {
                 bool bit = image.pixel4()[y * image.width + x].a >= 127;
 
                 // Set the correct bit
-                mask[y * image.width + x / 8] |= (bit << (x % 8));
+                mask[y * image.width/8 + x / 8] |= (bit << (x % 8));
             }
         }
+        */
     } else if (image.channels == 3) {
         // Take away the 4th channel.
-        rmask = rmask >> 8;
-        gmask = gmask >> 8;
-        bmask = bmask >> 8;
-        amask = amask >> 8;
+        rmask = (rmask << 8) >> 16;
+        gmask = (gmask << 8) >> 16;
+        bmask = (bmask << 8) >> 16;
+        amask = (amask << 8) >> 16;
     }
 
     int pixelBitLen     = image.channels * 8;
@@ -336,7 +338,7 @@ void setIcon(const GImage& image) {
         pixelBitLen, scanLineByteLen, 
         rmask, gmask, bmask, amask);
 
-    SDL_WM_SetIcon(surface, mask);
+    SDL_WM_SetIcon(surface, NULL);
 
     SDL_FreeSurface(surface);
     delete[] mask;
@@ -350,14 +352,14 @@ int main(int argc, char** argv) {
 
 	SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
     try {
-        setIcon(GImage("d:/games/cpp/source/html/g3d.ico"));
+        setIcon(GImage("data/g3d.ico"));
     } catch (GImage::Error e){
         debugAssertM(false, e.reason);
     }  
 
     
     GAppSettings settings;
-    settings.window.fsaaSamples = 4;
+//    settings.window.fsaaSamples = 4;
     App(settings).run();
 
     return 0;
