@@ -79,7 +79,7 @@ int screenHeight(Display* display) {
 SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
 	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | 
-                 SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0 ) {
+                 SDL_INIT_JOYSTICK) < 0 ) {
 
         fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 		debugPrintf("Unable to initialize SDL: %s\n", SDL_GetError());
