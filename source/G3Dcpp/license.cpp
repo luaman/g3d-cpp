@@ -16,6 +16,8 @@ std::string license() {
     return format(
 
 "This program uses the Graphics3D Library (\"G3D\", http://g3d-cpp.sf.net)\n"
+"This software is based in part on the PNG Reference Library which is\n"
+"Copyright (c) 2004 Glenn Randers-Pehrson\n"
 "This software is based in part on the work of the Independent JPEG Group.\n"
 "This software is based in part on the Magic Software Library\n"
 "(http://www.magic-software.com)\n"
