@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-09-29
+ @edited  2004-01-09
  */
 
 #include <limits>
@@ -156,6 +156,18 @@ float Vector3::unitize (float fTolerance) {
     }
 
     return fLength;
+}
+
+//----------------------------------------------------------------------------
+
+Vector3 reflectAbout(const Vector3& normal) const {
+
+    Vector3 out;
+
+    Vector3 N = normal.direction();
+
+    // 2 * normal.dot(this) * normal - this
+    return N * 2 * this->dot(N) - *this;
 }
 
 //----------------------------------------------------------------------------
