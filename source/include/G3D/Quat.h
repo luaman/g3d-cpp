@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-03-04
+  @edited  2004-04-13
  */
 
 #ifndef G3D_QUAT_H
@@ -608,6 +608,10 @@ inline Quat log(const Quat& q) {
 }
 
 inline G3D::Quat operator*(double s, const G3D::Quat& q) {
+    return q * s;
+}
+
+inline G3D::Quat operator*(float s, const G3D::Quat& q) {
     return q * s;
 }
 

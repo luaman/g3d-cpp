@@ -1430,6 +1430,10 @@ int main(int argc, char* argv[]) {
         return 0;
     #endif
 
+    Quat w(0,0,0,1);    
+    Quat q(0,0,0,1);
+    Quat qdot = 0.5f * w * q;
+
     printf("\n\nTests:\n\n");
 
     testRandom();
