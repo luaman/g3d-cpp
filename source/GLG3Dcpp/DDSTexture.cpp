@@ -59,6 +59,11 @@ namespace G3D {
 #define FOURCC_DXT4  (MAKEFOURCC('D','X','T','4'))
 #define FOURCC_DXT5  (MAKEFOURCC('D','X','T','5'))
 
+// DDPIXELFORMAT flags
+const uint32 DDPF_ALPHAPIXELS   = 0x00000001l;
+const uint32 DDPF_FOURCC        = 0x00000004l;
+const uint32 DDPF_RGB           = 0x00000040l;
+ 
 
 //DDPIXELFORMAT
 
@@ -351,20 +356,34 @@ Texture::DDSTexture::DDSTexture(const std::string& filename) :
             numFaces = 1;
         }
 
-        // *Need to create code-paths to uncompressed formats once load works*
-        switch(ddsSurfaceDesc.ddpfPixelFormat.dwFourCC) {
-            case FOURCC_DXT1:
-                bytesFormat = TextureFormat::RGBA_DXT1;
-                break;
-            case FOURCC_DXT3:
-                bytesFormat = TextureFormat::RGBA_DXT3;
-                break;
-            case FOURCC_DXT5:
-                bytesFormat = TextureFormat::RGBA_DXT5;
-                break;
-            default:
-                throw G3D::format("Loading \"%s\" failed. Unsupported DDS FourCC format.\n", filename.c_str());
-                break;
+        if (ddsSurfaceDesc.ddpfPixelFormat.dwFlags & DDPF_FOURCC) {
+            switch(ddsSurfaceDesc.ddpfPixelFormat.dwFourCC) {
+                case FOURCC_DXT1:
+                    bytesFormat = TextureFormat::RGBA_DXT1;
+                    break;
+                case FOURCC_DXT3:
+                    bytesFormat = TextureFormat::RGBA_DXT3;
+                    break;
+                case FOURCC_DXT5:
+                    bytesFormat = TextureFormat::RGBA_DXT5;
+                    break;
+                default:
+                    throw G3D::format("Loading \"%s\" failed. Unsupported DDS FourCC format.\n", filename.c_str());
+                    break;
+            }
+        } else if (ddsSurfaceDesc.ddpfPixelFormat.dwFlags & DDPF_RGB) {
+            
+            if ((ddsSurfaceDesc.ddpfPixelFormat.dwRBitMask == 8) &&
+                (ddsSurfaceDesc.ddpfPixelFormat.dwGBitMask == 8) &&
+                (ddsSurfaceDesc.ddpfPixelFormat.dwBBitMask == 8) &&
+                (ddsSurfaceDesc.ddpfPixelFormat.dwRGBAlphaBitMask == 0)) {
+
+                    bytesFormat = TextureFormat::RGB8;
+            } else {
+                throw G3D::format("Loading \"%s\" failed. Unsupported RGBA DDS format.\n", filename.c_str());
+            }
+        } else {
+            throw G3D::format("Loading \"%s\" failed. Unknown DDS format.\n", filename.c_str());
         }
 
         uint8* ddsInputPos = const_cast<uint8*>(ddsInput.getCArray());
