@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2003-02-15
-# @edited  2004-02-05
+# @edited  2004-03-17
 #
 # This script is written in Python.  Be aware that
 # whitespaces (particularly, indentation and newlines) 

@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-02-25
+# @edited  2004-03-17
 # Each build target is a procedure.
 #
 
@@ -42,7 +42,7 @@ install    Create a user installation directory (what you probably want)
 
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip
-doc        Run doxygen and copy the html directory
+doc        Run doxygen and copy the html and contrib directories
 clean      Delete the build, release, temp, and install directories
 help       Display this message
 
@@ -198,6 +198,7 @@ def doc(args):
     os.chdir("..")
     copyIfNewer('source/html', installDir(args) + '/html')
     copyIfNewer('temp/html', installDir(args) + '/html')
+    copyIfNewer('source/contrib', installDir(args) + '/contrib')
     setPermissions(args)
 
 ###############################################################################

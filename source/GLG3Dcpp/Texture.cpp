@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2003-12-30
+ @edited  2004-03-19
 */
 
 #include "GLG3D/glcalls.h"
@@ -321,12 +321,14 @@ static void brightenImage(uint8* byte, int n, double brighten, int skipAlpha) {
 
 
 TextureRef Texture::fromFile(
-    const std::string&      filename,
-    const TextureFormat*    desiredFormat,
-    WrapMode                wrap,
-    InterpolateMode         interpolate,
-    Dimension               dimension,
-    double                  brighten) {
+    const std::string               filename[6],
+    const class TextureFormat*      desiredFormat,
+    WrapMode                        wrap,
+    InterpolateMode                 interpolate,
+    Dimension                       dimension,
+    double                          brighten) {
+
+    std::string realFilename[6];
 
     const TextureFormat* format = TextureFormat::RGB8;
     bool opaque = true;
@@ -340,23 +342,32 @@ TextureRef Texture::fromFile(
 
     int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
 
-    // Parse the filename into a base name and extension
-    std::string filenameBase = filename;
-    std::string filenameExt;
-
     if (dimension == DIM_CUBE_MAP) {
-        splitFilenameAtWildCard(filename, filenameBase, filenameExt);
+        if (filename[1] == "") {
+            // Wildcard format
+            // Parse the filename into a base name and extension
+            std::string filenameBase, filenameExt;
+            splitFilenameAtWildCard(filename[0], filenameBase, filenameExt);
+            for (int f = 0; f < 6; ++f) {
+                realFilename[f] = filenameBase + cubeMapString[f] + filenameExt;
+            }
+        } else {
+            // Separate filenames have been provided
+            realFilename[0] = filename[0];
+            for (int f = 1; f < 6; ++f) {
+                debugAssert(filename[f] != "");
+                realFilename[f] = filename[f];
+            }
+        }
+    } else {
+        debugAssertM(filename[1] == "",
+            "Can't specify more than one filename unless loading a cube map");
+        realFilename[0] = filename[0];
     }
 
     for (int f = 0; f < numFaces; ++f) {
 
-        std::string fn = filename;
-
-        if (dimension == DIM_CUBE_MAP) {
-            fn = filenameBase + cubeMapString[f] + filenameExt;
-        }
-
-        image[f].load(fn);
+        image[f].load(realFilename[f]);
 
         if (image[f].channels == 4) {
             format = TextureFormat::RGBA8;
@@ -382,11 +393,31 @@ TextureRef Texture::fromFile(
     }
 
     TextureRef t =
-        Texture::fromMemory(filename, array, format,
+        Texture::fromMemory(filename[0], array, format,
             image[0].width, image[0].height, 1,
             desiredFormat, wrap, interpolate, dimension);
 
     return t;
+}
+
+
+TextureRef Texture::fromFile(
+    const std::string&      filename,
+    const TextureFormat*    desiredFormat,
+    WrapMode                wrap,
+    InterpolateMode         interpolate,
+    Dimension               dimension,
+    double                  brighten) {
+
+    std::string f[6];
+    f[0] = filename;
+    f[1] = "";
+    f[2] = "";
+    f[3] = "";
+    f[4] = "";
+    f[5] = "";
+
+    return fromFile(f, desiredFormat, wrap, interpolate, dimension, brighten);
 }
 
 
