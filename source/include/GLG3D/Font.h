@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-02-24
+ @edited  2003-04-18
  */
 
 #ifndef G3D_FONT_H
@@ -84,8 +84,13 @@ public:
      it.  outfile should end with ".FNT" or be "" for the default.
      <P>
       The Bitmap Font Builder program can be downloaded from http://www.lmnopc.com/bitmapfontbuilder/
-      Write out RAW files with characters CENTER aligned and right side up using this program.
- 
+      Write out RAW files with characters CENTER aligned and right side up using this program.  Use the
+      full ASCII character set; the conversion will strip infrequently used characters automatically.
+      
+      Example:
+      <PRE>
+          Font::convertRAWINItoPWF("c:/tmp/g3dfont/news", "d:/graphics3d/book/cpp/data/font/news.fnt");
+      </PRE>
 	  @param infileBase The name of the tga/ini files
       @param outfile Defaults to infileBase + ".fnt"
      */

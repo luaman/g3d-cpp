@@ -504,6 +504,7 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> Added sansserif, news, and terminal fonts based on Bitstream's <A HREF="http://www.gnome.org/fonts/">free fonts</A>
      <LI> RenderDevice::numTextureUnits
      <LI> Added stars to night Sky
      <LI> Support for vertex attributes through RenderDevice::setVertexAttrib
