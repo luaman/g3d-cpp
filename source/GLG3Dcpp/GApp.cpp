@@ -76,7 +76,7 @@ void GApp::init(const GAppSettings& settings) {
     debugQuitOnEscape           = true;
     debugTabSwitchCamera        = true;
     debugShowRenderingStats     = true;
-    catchCommonExceptionsOnInit = true;
+    catchCommonExceptions       = true;
 }
 
 
@@ -117,6 +117,29 @@ GApp::~GApp() {
     renderDevice = NULL;
     delete debugLog;
     debugLog = NULL;
+}
+
+
+void GApp::run() {
+    if (catchCommonExceptions) {
+        try {
+            main();
+        } catch (const GImage::Error& e) {
+            alwaysAssertM(false, e.reason + ": \"" + e.filename + "\"");
+        } catch (const std::string& s) {
+            alwaysAssertM(false, s);
+        } catch (const TextInput::WrongTokenType& t) {
+            // TODO: improve this message
+            (void)t;
+            alwaysAssertM(false, "Wrong token type");
+        } catch (const TextInput::WrongSymbol& t) {
+            // TODO: improve this message
+            (void)t;
+            alwaysAssertM(false, "Wrong token symbol");
+        }
+    } else {
+        main();
+    }
 }
 
 
@@ -178,15 +201,8 @@ void GApplet::run() {
 
     endApplet = false;
 
-    if (app->catchCommonExceptionsOnInit) {
-        try {
-            init();
-        } catch (const GImage::Error& e) {
-            alwaysAssertM(false, e.reason + ": \"" + e.filename + "\"");
-        }
-    } else {
-        init();
-    }
+    init();
+
     // Move the controller to the camera's location
     app->debugController.setCoordinateFrame(app->debugCamera.getCoordinateFrame());
 

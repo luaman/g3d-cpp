@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-11-26
+ @edited  2003-12-03
  */
 
 #ifndef G3D_GAPP_H
@@ -41,7 +41,7 @@ public:
   even go away) in the future.  You don't <B>have</B> to use these-- it is fine
   to instantiate RenderDevice and the other classes yourself.
 
-  GApp/GApplet structure:
+  <B>GApp/GApplet structure</B>
 
   You have one GApp subclass that handles any state shared between all pieces of your
   program.
@@ -54,7 +54,7 @@ public:
 
   You write code that calls GApplet::run on the current GApplet.  That applet
   releases control by setting GApplet::endApplet = true.  Your master loop
-  (typically implemented inside the GApp subclass) then chooses the next GApplet
+  (implemented inside the GApp::main) then chooses the next GApplet
   to run and invokes run() on it.  If anything sets GApp::endProgram to true,
   the entire program should quit.
  */
@@ -68,14 +68,23 @@ private:
      */
     bool                    _debugControllerWasActive;
 
-    /** Called from init */
+    /** Called from init. */
     void loadFont(const std::string& fontName);
 
 protected:
+
     /**
-     Called from the constructor
+     Called from the constructor.  It is unlikely you will
+     need to override this, but you can.
      */
     virtual void init(const GAppSettings& settings);
+
+    /**
+     Called from run.  This is invoked inside of several
+     exception handlers so that any G3D uncaught exceptions
+     can be logged instead of crashing the application.
+     */
+    virtual void main() {}
 
 public:
 
@@ -159,12 +168,12 @@ public:
     bool                    autoResize;
 
     /**
-      When true, there is an assertion failure if an exception is thrown during
-      GApplet::init().
+      When true, there is an assertion failure if an exception is 
+      thrown during GApp::main().
 
       Default is true.
       */
-    bool                    catchCommonExceptionsOnInit;
+    bool                    catchCommonExceptions;
 
     /**
      If app->debugShowText is true, prints to an on-screen buffer that
@@ -183,13 +192,19 @@ public:
 
     virtual ~GApp();
 
+    /**
+     Call this to run the app.  Subclasses should override main(), not run.
+     */
+    void run();
+
 };
 
 
 class GApplet {
 public:
     /** @param _app This is usually your own subclass of GApp.*/
-    GApplet(GApp* _app); 
+    GApplet(GApp* _app);
+
     /**
       Run until app->endProgram or endApplet is set to true. 
       The default implementation sets endApplet to false,
