@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2003-11-25
+ @edited  2004-0110
  */
 
 #include "GLG3D/Draw.h"
@@ -389,6 +389,15 @@ void Draw::lineSegment(
     renderDevice->popState();
 }
 
+
+void Draw::box(
+    const AABox&        _box,
+    RenderDevice*       renderDevice,
+    const Color4&       solidColor,
+    const Color4&       wireColor) {
+
+    box(_box.toBox(), renderDevice, solidColor, wireColor);
+}
 
 
 void Draw::box(

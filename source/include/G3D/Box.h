@@ -7,9 +7,9 @@
  
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   @created 2001-06-02
-  @edited  2003-12-22
+  @edited  2004-01-10
 
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
 
  */
@@ -76,8 +76,6 @@ public:
 	void serialize(class BinaryOutput& b) const;
 	void deserialize(class BinaryInput& b);
 
-    virtual ~Box() {}
-
     /**
      Returns the object to world transformation for 
      this box.  localFrame().worldToObject(...) takes
@@ -123,11 +121,16 @@ public:
     }
 
     /**
-     Distance from corner(0) to the next corner along axis a.
+     Distance from corner(0) to the next corner
+     along the box's local axis a.
      */
-    inline float extent(int a) const {
+    inline double extent(int a) const {
         debugAssert(a < 3);
         return _extent[a];
+    }
+
+    inline Vector3 extent() const {
+        return _extent;
     }
 
     /**
@@ -144,7 +147,9 @@ public:
     /**
      Returns true if this box is culled by the provided set of 
      planes.  The box is culled if there exists at least one plane
-     whose halfspace the entire box is not in.
+     whose halfspace the entire box is not in.  Note that
+     there are positions where the box is reported as "not culled"
+     even though it is actually outside the set of planes.
      */
     bool culledBy(
         const class Plane*  plane,
@@ -154,7 +159,18 @@ public:
         const Vector3&      point) const;
 
     double surfaceArea() const;
+
     double volume() const;
+
+    /**
+     Uniformly distributed on the surface.
+     */
+    Vector3 randomSurfacePoint() const;
+
+    /**
+     Uniformly distributed on the interior (includes surface)
+     */
+    Vector3 randomInteriorPoint() const;
 };
 
 }

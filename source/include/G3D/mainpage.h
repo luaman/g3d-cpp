@@ -27,6 +27,7 @@
      want the OpenGL "GLG3D" part use <CODE>&lt;graphics3D.h&gt;</CODE> instead).
      <UL>
      <LI><B>Geometry</B> &nbsp; &nbsp;
+        G3D::AABox,
         G3D::Box,
 		G3D::Capsule,
 		G3D::CollisionDetection,

@@ -21,7 +21,7 @@ namespace G3D {
  */
 class Sphere {
 public:
-    Vector3         center;
+    Vector3          center;
     float            radius;
 
     Sphere() {
@@ -61,6 +61,7 @@ public:
     virtual std::string toString() const;
 
     double volume() const;
+
     double surfaceArea() const;
 
     /**
@@ -74,6 +75,6 @@ public:
     Vector3 randomInteriorPoint() const;
 };
 
-}; // namespace
+} // namespace
 
 #endif

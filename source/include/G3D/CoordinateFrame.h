@@ -2,12 +2,9 @@
  @file CoordinateFrame.h
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
- @cite Portions by Laura Wollstadt
- @cite Portions based on Dave Eberly's Magic Software Library
-       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-03-04
- @edited  2003-12-18
+ @edited  2004-01-10
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -26,7 +23,6 @@
 #include <stdio.h>
 #include <cstdarg>
 #include <assert.h>
-
 
 namespace G3D {
 
@@ -161,18 +157,28 @@ public:
     }
 
     void pointToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+
     void normalToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+
     void vectorToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+
     void pointToObjectSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+
     void normalToObjectSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+
     void vectorToObjectSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
 
+    class Box toWorldSpace(const class AABox& b) const;
+
     class Box toWorldSpace(const class Box& b) const;
+
     class Plane toWorldSpace(const class Plane& p) const;
 
     class Sphere toWorldSpace(const class Sphere& b) const;
 
     class Triangle toWorldSpace(const class Triangle& t) const;
+
+    class Box toObjectSpace(const AABox& b) const;
 
     class Box toObjectSpace(const Box& b) const;
 

@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-12-16
+ @edited  2004-01-10
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -42,6 +42,7 @@
 #include "G3D/Ray.h"
 #include "G3D/Sphere.h"
 #include "G3D/Box.h"
+#include "G3D/AABox.h"
 #include "G3D/Cone.h"
 #include "G3D/Quat.h"
 #include "G3D/stringutils.h"

@@ -5,16 +5,15 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
- @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
-
  @created 2001-06-02
- @edited  2003-12-22
+ @edited  2004-01-10
 */
 
 #include "G3D/CoordinateFrame.h"
 #include "G3D/Quat.h"
 #include "G3D/Matrix4.h"
 #include "G3D/Box.h"
+#include "G3D/AABox.h"
 #include "G3D/Sphere.h"
 #include "G3D/Triangle.h"
 
@@ -79,7 +78,12 @@ Triangle CoordinateFrame::toWorldSpace(const Triangle& t) const {
 }
 
 
-Box CoordinateFrame::toWorldSpace(const Box &b) const {
+Box CoordinateFrame::toWorldSpace(const AABox& b) const {
+    return toWorldSpace(b.toBox());
+}
+
+
+Box CoordinateFrame::toWorldSpace(const Box& b) const {
     Box out(b);
 
     for (int i = 0; i < 8; i++) {
@@ -98,6 +102,11 @@ Box CoordinateFrame::toWorldSpace(const Box &b) const {
 
 Box CoordinateFrame::toObjectSpace(const Box &b) const {
     return inverse().toWorldSpace(b);
+}
+
+
+Box CoordinateFrame::toObjectSpace(const AABox& b) const {
+    return toObjectSpace(b.toBox());
 }
 
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2003-10-30
+ @edited  2004-01-10
  */
 
 #ifndef G3D_DRAW_H
@@ -21,6 +21,7 @@ class RenderDevice;
 class Sphere;
 class LineSegment;
 class Box;
+class AABox;
 class Line;
 class Capsule;
 
@@ -36,11 +37,11 @@ private:
 
     /** Called from wireSphere, wireCapsule */
     static void wireSphereSection(
-        const Sphere&       sphere,
-        class RenderDevice*       renderDevice,
-        const class Color4&       color,
-        bool                top,
-        bool                bottom);
+        const Sphere&               sphere,
+        class RenderDevice*         renderDevice,
+        const class Color4&         color,
+        bool                        top,
+        bool                        bottom);
 
 
     static void sphereSection(
@@ -66,6 +67,12 @@ public:
      */
     static void box(
         const Box&          box,
+        RenderDevice*       rd,
+        const Color4&       solidColor = Color4(1,.2,.2,.5),
+        const Color4&       wireColor  = Color3::BLACK);
+
+    static void box(
+        const AABox&        box,
         RenderDevice*       rd,
         const Color4&       solidColor = Color4(1,.2,.2,.5),
         const Color4&       wireColor  = Color3::BLACK);

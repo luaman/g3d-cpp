@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2003-12-22
+  @edited  2004-01-10
 */
 
 #include "G3D/Box.h"
@@ -215,5 +215,46 @@ bool Box::contains(
 }
 
 #undef setMany
+
+Vector3 Box::randomSurfacePoint() const {
+    double aXY = _extent.x * _extent.y;
+    double aYZ = _extent.y * _extent.z;
+    double aZX = _extent.z * _extent.x;
+
+    double r = random(0, aXY + aYZ + aZX);
+
+    // Choose evenly between positive and negative face planes
+    double d = (random(0, 1) < 0.5) ? -1 : 1;
+
+    // The probability of choosing a given face is proportional to
+    // its area.
+    if (r < aXY) {
+        return 
+            _axis[0] * random(-0.5, 0.5) * _extent.x +
+            _axis[1] * random(-0.5, 0.5) * _extent.y +
+            _center + _axis[2] * d * _extent.z * 0.5;
+    } else if (r < aYZ) {
+        return 
+            _axis[1] * random(-0.5, 0.5) * _extent.y +
+            _axis[2] * random(-0.5, 0.5) * _extent.z +
+            _center + _axis[0] * d * _extent.x * 0.5;
+    } else {
+        return 
+            _axis[2] * random(-0.5, 0.5) * _extent.z +
+            _axis[0] * random(-0.5, 0.5) * _extent.x +
+            _center + _axis[1] * d * _extent.y * 0.5;
+    }
+}
+
+
+Vector3 Box::randomInteriorPoint() const {
+    Vector3 sum = _center;
+
+    for (int a = 0; a < 3; ++a) {
+        sum += _axis[a] * random(-0.5, 0.5) * _extent[a];
+    }
+
+    return sum;
+}
 
 } // namespace
