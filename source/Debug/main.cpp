@@ -29,9 +29,7 @@
    @maintainer Morgan McGuire
 
   TODO: reduce redundant data storage
-  TODO: pass values that need to be computed in rather than recomputing them
   TODO: use edge adjacency
-  TODO: convert to use Vertex
 */
 class Curvatures {
 public:
@@ -770,7 +768,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0,0,1));
     app->debugCamera.lookAt(Vector3::ZERO);
 
-    mesh.import(IFSModel::create(app->dataDir + "ifs/cow.ifs")->pose(CoordinateFrame()));
+   // mesh.import(IFSModel::create(app->dataDir + "ifs/cow.ifs")->pose(CoordinateFrame()));
 }
 
 
@@ -806,6 +804,16 @@ void Demo::doLogic() {
         mesh.renderStyle = Mesh::WHITE;
     }
 	// Add other key handling here
+
+
+    if (app->renderDevice->window()->numJoysticks() > 0) {
+        Array<float> axis;
+        Array<bool>  button;
+        app->renderDevice->window()->getJoystickState(0, axis, button);
+        if (axis.size() >= 2) {
+            app->debugPrintf("%g, %g", axis[0], axis[1]);
+        }
+    }
 }
 
 
@@ -827,7 +835,7 @@ void Demo::doGraphics() {
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-//    	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
+    	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
     app->renderDevice->disableLighting();
         mesh.render(app, app->renderDevice);

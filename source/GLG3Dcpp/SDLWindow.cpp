@@ -117,6 +117,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         SDL_JoystickEventState(SDL_ENABLE);
         // Turn on the joysticks
 
+        joy.resize(j);
         for (int i = 0; i < j; ++i) {
             joy[i] = SDL_JoystickOpen(i);
             debugAssert(joy[i]);
