@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-12
- @edited  2003-02-06
+ @edited  2004-01-12
  */
 
 #ifndef G3D_RAY_H
@@ -86,10 +86,16 @@ public:
      has unit length, the distance from the origin to intersection
      is equal to the time.  If the direction does not have unit length,
      the distance = time * direction.length().
+
+     See also G3D::CollisionDetection.
      */
     float intersectionTime(const class Sphere& sphere) const;
+
     float intersectionTime(const class Plane& plane) const;
+
     float intersectionTime(const class Box& box) const;
+
+    float intersectionTime(const class Triangle& triangle) const;
 
     /**
      Ray-triangle intersection

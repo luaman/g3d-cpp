@@ -53,11 +53,17 @@
  */
 
 #ifdef _DEBUG
-    #ifdef _MSC_VER
-        #define debugBreak() _asm { int 3 }
+
+    #ifndef G3D_OSX
+        #ifdef _MSC_VER
+            #define debugBreak() _asm { int 3 }
+        #else
+            #define debugBreak() __asm__ __volatile__ ( "int $3" )
+        #endif
     #else
-        #define debugBreak() __asm__ __volatile__ ( "int $3" )
+        #define debugBreak() #error "No debug break on OS X"
     #endif
+
 
     #define debugAssert(exp) debugAssertM(exp, "Debug assertion failure")
 

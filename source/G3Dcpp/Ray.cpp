@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-12
- @edited  2003-02-15
+ @edited  2004-01-12
  */
 
 #include "G3D/Ray.h"
@@ -73,9 +73,16 @@ float Ray::intersectionTime(
     const Vector3& v1,
     const Vector3& v2) const {
 
+    return intersectionTime(Triangle(v0, v1, v2));
+}
+
+
+float Ray::intersectionTime(
+    const Triangle& triangle) const {
+
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedTriangle(
-            origin, direction, Triangle(v0, v1, v2), dummy);
+            origin, direction, triangle, dummy);
 }
 
 }
