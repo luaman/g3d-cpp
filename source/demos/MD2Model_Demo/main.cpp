@@ -10,8 +10,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER != 060007
-    #error Requires G3D 6.00 b7
+#if G3D_VER != 060008
+    #error Requires G3D 6.00 b8
 #endif
 
 
