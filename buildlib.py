@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2003-02-15
-# @edited  2004-03-17
+# @edited  2005-02-17
 #
 # This script is written in Python.  Be aware that
 # whitespaces (particularly, indentation and newlines) 
@@ -71,6 +71,7 @@ _excludeFromCopyingPatterns =\
     '\.plg$', \
     '^#.*#$', \
     '~$', \
+	'G3D-Map\.ppt', \
     '\.sbr$', \
     '-debug\.exe$', \
     '^temp$', \
