@@ -108,6 +108,10 @@ SOURCE=".\docsource\guide-install.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-intro.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-meshes.h"
 # End Source File
 # Begin Source File

@@ -5,7 +5,7 @@ This guide gives a brief introduction to help you decide if %G3D is right
 for your project and introduce you to the major features.
 However, it covers only a fraction of the functionality in %G3D!  The individual 
 entry points are extensively documented and can be accessed through the 
-<A HREF="index.html">index</A>.
+\link indexedbytopic Topic Index\endlink.
 
 Post questions and feedback on the User Forum 
 (http://sourceforge.net/forum/forum.php?forum_id=262426) and consider subscribing to 
