@@ -13,36 +13,8 @@
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
-		0F34CB2B06F3850E00AD0B70 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			path = graphics.cpp;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
-		0F34CB2C06F3850E00AD0B70 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			path = load.cpp;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
 		0F34CB2D06F3850E00AD0B70 = {
 			fileRef = 0F34CB2A06F3850E00AD0B70;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		0F34CB2E06F3850E00AD0B70 = {
-			fileRef = 0F34CB2B06F3850E00AD0B70;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		0F34CB2F06F3850E00AD0B70 = {
-			fileRef = 0F34CB2C06F3850E00AD0B70;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -215,8 +187,6 @@
 		29B97315FDCFA39411CA2CEA = {
 			children = (
 				0F34CB2A06F3850E00AD0B70,
-				0F34CB2B06F3850E00AD0B70,
-				0F34CB2C06F3850E00AD0B70,
 			);
 			isa = PBXGroup;
 			name = Sources;
@@ -311,8 +281,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F34CB2D06F3850E00AD0B70,
-				0F34CB2E06F3850E00AD0B70,
-				0F34CB2F06F3850E00AD0B70,
 				0F34CB9E06F387BE00AD0B70,
 			);
 			isa = PBXSourcesBuildPhase;
