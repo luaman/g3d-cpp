@@ -194,7 +194,7 @@ static void createTexture(
 
     if (freeBytes) {
         // Texture was resized; free the temporary.
-        delete bytes;
+        delete[] bytes;
     }
 }
 
