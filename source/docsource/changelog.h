@@ -31,6 +31,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Added limited support to G3D::BinaryOutput for writing huge files to disk or 
+          writing to disk when little memory is available.
      <LI> Tweaked allocation strategy for small G3D::Array
      <LI> G3D::Texture::rect2DBounds, G3D::Texture::vector2Bounds
      <LI> G3D::Vector4 * G3D::Vector4, Vector4 / Vector4

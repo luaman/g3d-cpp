@@ -21,7 +21,35 @@
 
 namespace G3D {
 
+
+void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
+    if (filename == "<memory>") {
+        throw "Out of memory while writing to memory in BinaryOutput (no RAM left).";
+    }else if (bytes > maxBufferLen) {
+        throw "Out of memory while writing to disk in BinaryOutput (could not create a large enough buffer).";
+    } else {
+        // Dump the contents to disk.
+        FILE* file = fopen(filename.c_str(), "ab");
+        debugAssert(file);
+
+        size_t count = fwrite(buffer, 1, bufferLen, file);
+        debugAssert(count == bufferLen);
+
+        fclose(file);
+        file = NULL;
+
+        // Record that we saved this data.
+        alreadyWritten += bufferLen;
+
+        // Re-use the existing buffer; no need to allocate
+        pos = 0;
+        bufferLen = bytes + pos;
+    }
+}
+
+
 BinaryOutput::BinaryOutput() {
+    alreadyWritten = 0;
     swapBytes = false;
     pos       = 0;
     filename  = "<memory>";
@@ -31,6 +59,7 @@ BinaryOutput::BinaryOutput() {
     beginEndBits = 0;
     bitString = 0;
     bitPos = 0;
+    committed = false;
 }
 
 
@@ -39,6 +68,7 @@ BinaryOutput::BinaryOutput(
     G3DEndian           fileEndian) {
 
     pos = 0;
+    alreadyWritten = 0;
     setEndian(fileEndian);
     this->filename = filename;
     buffer = NULL;
@@ -47,6 +77,7 @@ BinaryOutput::BinaryOutput(
     beginEndBits = 0;
     bitString = 0;
     bitPos = 0;
+    committed = false;
 }
 
 
@@ -57,10 +88,12 @@ void BinaryOutput::reset() {
 
     // Do not reallocate, just clear the size of the buffer.
     pos = 0;
+    alreadyWritten = 0;
     bufferLen = 0;
     beginEndBits = 0;
     bitString = 0;
     bitPos = 0;
+    committed = false;
 }
 
 
@@ -78,6 +111,10 @@ void BinaryOutput::setEndian(G3DEndian fileEndian) {
 
 
 void BinaryOutput::compress() {
+    if (alreadyWritten > 0) {
+        throw "Cannot compress huge files (part of this file has already been written to disk).";
+    }
+
     // Old buffer size
     uint32 L       = bufferLen;
     uint8* convert = (uint8*)&L;
@@ -116,6 +153,8 @@ void BinaryOutput::compress() {
 
 
 void BinaryOutput::commit(bool flush) {
+    debugAssertM(! committed, "Cannot commit twice");
+    committed = true;
     debugAssertM(beginEndBits == 0, "Missing endBits before commit");
 
     // Make sure the directory exists.
@@ -128,10 +167,12 @@ void BinaryOutput::commit(bool flush) {
         createDirectory(path);
     }
 
-    FILE* file = fopen(filename.c_str(), "wb");
+    char* mode = (alreadyWritten > 0) ? "ab" : "wb";
 
+    FILE* file = fopen(filename.c_str(), mode);
     debugAssert(file);
 
+    alreadyWritten += bufferLen;
 
     fwrite(buffer, bufferLen, 1, file);
     if (flush) {
@@ -144,6 +185,8 @@ void BinaryOutput::commit(bool flush) {
 
 void BinaryOutput::commit(
     uint8*                  out) {
+    debugAssertM(! committed, "Cannot commit twice");
+    committed = true;
 
     System::memcpy(out, buffer, bufferLen);
 }

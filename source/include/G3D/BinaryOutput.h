@@ -34,11 +34,19 @@ namespace G3D {
  Sequential or random access byte-order independent binary file access.
 
  The compress() call can be used to compress with zlib.
+
+ Any method call can trigger an out of memory error (thrown as char*) 
+ when writing to "<memory>" instead of a file.
+
+ Compressed writing and seeking backwards is not supported for huge files
+ (i.e., BinaryOutput may have to dump the contents to disk if they 
+ exceed available RAM).
  */
 class BinaryOutput {
 private:
     std::string     filename;
 
+    bool            committed;
 
     /** 0 outside of beginBits...endBits, 1 inside */
     int             beginEndBits;
@@ -62,21 +70,37 @@ private:
     /** Underlying size of memory allocaded */
     int             maxBufferLen;
 
-    // Next byte in file
+    /** Next byte in file */
     int             pos;
 
-    // is this initialized?
+    /** is this initialized? */
     bool            init;
+
+    /** Number of bytes already written to the file.*/
+    size_t          alreadyWritten;             
+
+    void reserveBytesWhenOutOfMemory(size_t bytes);
 
     /**
      Make sure at least bytes can be written, resizing if
      necessary.
      */
     void reserveBytes(int bytes) {
+        debugAssert(bytes > 0);
+        size_t oldBufferLen = (size_t)bufferLen;
+
         bufferLen = iMax(bufferLen, (pos + bytes));
         if (bufferLen >= maxBufferLen) {
             maxBufferLen = (int)(bufferLen * 1.5) + 100;
-            buffer = (uint8*)realloc(buffer, maxBufferLen);
+            uint8* newBuffer = (uint8*)realloc(buffer, maxBufferLen);
+
+            if ((newBuffer == NULL) && (bytes > 0)) {
+                // Realloc failed; we're probably out of memory.
+                bufferLen = oldBufferLen;
+                reserveBytesWhenOutOfMemory(bytes);
+            } else {
+                buffer = newBuffer;
+            }
         }
 
     }
@@ -102,7 +126,12 @@ public:
     /** Compresses the data in the buffer in place, 
         preceeding it with a little-endian uint32 indicating 
         the uncompressed size.
-        Call immediately before commit().*/
+
+        Call immediately before commit().
+
+        Cannot be used for huge files (ones where the data
+        was already written to disk)-- will throw char*.
+     */
     void compress();
 
     /**
@@ -151,15 +180,15 @@ public:
      @deprecated use BinaryOutput.size
      */
     inline int getLength() const {
-        return bufferLen;
+        return bufferLen + alreadyWritten;
     }
 
     inline int length() const {
-        return bufferLen;
+        return bufferLen + alreadyWritten;
     }
 
     inline int size() const {
-        return bufferLen;
+        return bufferLen + alreadyWritten;
     }
 
     /**
@@ -167,8 +196,17 @@ public:
      with 0's past the current end.  Does not
      change the position of the next byte to be
      written unless n < size().
+
+     Throws char* when resetting a huge file to be shorter
+     than its current length.
      */
     inline void setLength(int n) {
+        n = n - alreadyWritten;
+
+        if (n < 0) {
+            throw "Cannot resize huge files to be shorter.";
+        }
+
         if (n < bufferLen) {
             pos = n;
         }
@@ -182,20 +220,30 @@ public:
      where 0 is the beginning and getLength() - 1 is the end.
      */
     inline int getPosition() const {
-        return pos;
+        return pos + alreadyWritten;
     }
 
     /**
      Sets the position.  Can set past length, in which case
      the file is padded with zeros up to one byte before the
      next to be written.
+
+     May throw a char* exception when seeking backwards on a huge file.
      */
     inline void setPosition(int p) {
+        p = p - alreadyWritten;
+
         if (p > bufferLen) {
-            setLength(p);
+            setLength(p + alreadyWritten);
         }
+
+        if (p < 0) {
+            throw "Cannot seek backwards on huge files.";
+        }
+
         pos = p;
     }
+
 
     void writeBytes(
         const void*         b,
@@ -298,7 +346,7 @@ public:
      */
     inline void skip(int n) {
         if (pos + n > bufferLen) {
-            setLength(pos + n);
+            setLength(pos + alreadyWritten + n);
         }
         pos += n;
     }
