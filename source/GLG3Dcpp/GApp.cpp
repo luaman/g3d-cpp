@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2004-04-26
+ @edited  2004-04-27
  */
 
 #include "G3D/platform.h"
@@ -53,9 +53,9 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
     }
 
     _window = renderDevice->window();
-//    alwaysAssertM(! _window->requiresMainLoop(),
-//        "GApp cannot be used with a GWindow that requires "
-//        "control of the main loop.  Use another GWindow (like SDLWindow).");
+    alwaysAssertM(! _window->requiresMainLoop(),
+        "GApp cannot be used with a GWindow that requires "
+        "control of the main loop.  Use another GWindow (like SDLWindow).");
 
     if (settings.useNetwork) {
         networkDevice = new NetworkDevice();
@@ -273,17 +273,41 @@ void GApplet::endRun() {
     cleanup();
 }
 
+// NOTE: This code is a prototype of how to run
+// a GApplet with a GWindow that controls the main
+// loop.  It is not actually used.
+void GApplet::loopBody(void* _applet) {
+    GApplet* applet = static_cast<GApplet*>(_applet);
+
+    applet->oneFrame();
+
+    if (applet->app->endProgram || applet->endApplet) {
+
+        applet->endRun();
+
+        // Remove this applet from the loop stack
+        applet->app->window()->popLoopBody();
+    }
+}
+
 
 void GApplet::run() {
 
-    beginRun();
+    if (app->window()->requiresMainLoop()) {
 
-    // Main loop
-    do {
-        oneFrame();   
-    } while (! app->endProgram && ! endApplet);
+        beginRun();
+        app->window()->pushLoopBody(loopBody, this);
 
-    endRun();
+    } else {
+        beginRun();
+
+        // Main loop
+        do {
+            oneFrame();   
+        } while (! app->endProgram && ! endApplet);
+
+        endRun();
+    }
 }
 
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2004-04-16
+ @edited  2004-04-27
  */
 
 #ifndef G3D_GAPP_H
@@ -243,6 +243,11 @@ private:
     GApp*               app;
 
     RealTime            now, lastTime;
+
+    /**
+     Used by GApplet::run when the window requiresMainLoop.
+     */
+    static void loopBody(void* _applet);
 
 public:
 

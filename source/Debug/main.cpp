@@ -669,14 +669,6 @@ void Demo::doGraphics() {
     }
 }
 
-
-Demo* demo;
-App* app;
-
-void callback(void*) {
-    demo->oneFrame();
-}
-
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
@@ -684,14 +676,8 @@ void App::main() {
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
 
-    // TODO: remove
-    demo = new Demo(this);    
-    demo->beginRun();
-    window()->pushLoopBody(callback, NULL);
+    Demo(this).run();
     window()->runMainLoop();
-    demo->endRun();
-    
-    //Demo(this).run();
 }
 
 
