@@ -53,6 +53,8 @@
     #include <unistd.h>
     #include <sys/time.h>
 
+    #include <sstream>
+    #include <CoreServices/CoreServices.h>
 #endif
 
 namespace G3D {
@@ -61,21 +63,21 @@ std::string demoFindData(bool errorIfNotFound) {
 
     Array<std::string> potential;
     
-	potential.append("");
-	potential.append("../");
-	potential.append("../../");
-	potential.append("../../../");
-	potential.append("../../../../");
-	potential.append("../../../../../");
-	
-	int ver = G3D_VER;
-	std::string lname = format("g3d-%d_%02d", ver / 10000, (ver / 100) % 100);
+        potential.append("");
+        potential.append("../");
+        potential.append("../../");
+        potential.append("../../../");
+        potential.append("../../../../");
+        potential.append("../../../../../");
+        
+        int ver = G3D_VER;
+        std::string lname = format("g3d-%d_%02d", ver / 10000, (ver / 100) % 100);
 
-	if (G3D_VER % 10 != 0) {
-		lname = lname + format("-b%02d/", ver % 100);
-	} else {
-		lname = lname + "/";
-	}
+        if (G3D_VER % 10 != 0) {
+                lname = lname + format("-b%02d/", ver % 100);
+        } else {
+                lname = lname + "/";
+        }
     std::string lpath = "libraries/" + lname;
     #ifdef G3D_WIN32
         potential.append(std::string("c:/") + lpath);
@@ -110,14 +112,15 @@ std::string demoFindData(bool errorIfNotFound) {
 }
 
 
-static bool					_rdtsc              = false;
-static bool					_mmx                = false;
-static bool					_sse                = false;
-static bool					_sse2		        = false;
-static bool					_3dnow              = false;
-static std::string			_cpuVendor          = "Unknown";
-static bool					initialized         = false;
-static bool					_cpuID              = false;
+static bool                                     _rdtsc              = false;
+static bool                                     _mmx                = false;
+static bool                                     _sse                = false;
+static bool                                     _sse2                   = false;
+static bool                                     _3dnow              = false;
+static std::string                      _cpuVendor          = "Unknown";
+//static bool                                   initialized         = false;
+bool System::initialized = false;
+static bool                                     _cpuID              = false;
 static G3DEndian            _machineEndian      = G3D_LITTLE_ENDIAN;
 static std::string          _cpuArch            = "Unknown";
 static std::string          _operatingSystem    = "Unknown";
@@ -130,11 +133,16 @@ static LARGE_INTEGER        _counterFrequency;
 static struct timeval       _start;
 #endif
 
+#ifdef G3D_OSX
+        long System::m_OSXCPUSpeed;
+        double System:: m_secondsPerNS;
+#endif
+
 /** The Real-World time of System::getTick() time 0.  Set by initTime */
 static RealTime             realWorldGetTickTime0;
 
 
-static int	 	 maxSupportedCPUIDLevel = 0;
+static int               maxSupportedCPUIDLevel = 0;
 static int    maxSupportedExtendedLevel = 0;
 
 #define checkBit(var, bit)   ((var & (1 << bit)) ? true : false)
@@ -154,38 +162,38 @@ static void initTime();
 
 
 bool System::hasRDTSC() {
-	init();
-	return _rdtsc;
+        init();
+        return _rdtsc;
 }
 
 
 bool System::hasSSE() {
-	init();
-	return _sse;
+        init();
+        return _sse;
 }
 
 
 bool System::hasSSE2() {
-	init();
-	return _sse2;
+        init();
+        return _sse2;
 }
 
 
 bool System::hasMMX() {
-	init();
-	return _mmx;
+        init();
+        return _mmx;
 }
 
 
 bool System::has3DNow() {
-	init();
-	return _3dnow;
+        init();
+        return _3dnow;
 }
 
 
 const std::string& System::cpuVendor() {
-	init();
-	return _cpuVendor;
+        init();
+        return _cpuVendor;
 }
 
 
@@ -206,21 +214,22 @@ const std::string& System::cpuArchitecture() {
 }
 
 
-void init() {
+void 
+System::init() {
 
-	if (initialized) {
-		return;
-	}
+        if (System::initialized) {
+                return;
+        }
 
-	initialized = true;
+        System::initialized = true;
 
     unsigned long eaxreg, ebxreg, ecxreg, edxreg;
 
-	char cpuVendorTmp[13];
+        char cpuVendorTmp[13];
     (void)cpuVendorTmp;
  
-	// First of all we check if the CPUID command is available
-	checkForCPUID();
+        // First of all we check if the CPUID command is available
+        checkForCPUID();
 
     // Figure out if this machine is little or big endian.
     {
@@ -232,21 +241,21 @@ void init() {
         }
     }
 
-	if (_cpuID) {
+        if (_cpuID) {
         // Process the CPUID information
 
-	    // We read the standard CPUID level 0x00000000 which should
-	    // be available on every x86 processor.  This fills out
+            // We read the standard CPUID level 0x00000000 which should
+            // be available on every x86 processor.  This fills out
         // a string with the processor vendor tag.
-	    #ifdef _MSC_VER
-		    __asm {
-			    mov eax, 0
-			    cpuid
-			    mov eaxreg, eax
-			    mov ebxreg, ebx
-			    mov edxreg, edx
-			    mov ecxreg, ecx
-		    }
+            #ifdef _MSC_VER
+                    __asm {
+                            mov eax, 0
+                            cpuid
+                            mov eaxreg, eax
+                            mov ebxreg, ebx
+                            mov edxreg, edx
+                            mov ecxreg, ecx
+                    }
         #elif defined(__GNUC__) && defined(i386)
             // TODO: linux
             ebxreg = 0;
@@ -258,23 +267,23 @@ void init() {
             ecxreg = 0;
         #endif
 
-		// Then we connect the single register values to the vendor string
-		*((unsigned long *) cpuVendorTmp)       = ebxreg;
-		*((unsigned long *) (cpuVendorTmp + 4)) = edxreg;
-		*((unsigned long *) (cpuVendorTmp + 8)) = ecxreg;
-		cpuVendorTmp[12] = '\0';
-		_cpuVendor = cpuVendorTmp;
+                // Then we connect the single register values to the vendor string
+                *((unsigned long *) cpuVendorTmp)       = ebxreg;
+                *((unsigned long *) (cpuVendorTmp + 4)) = edxreg;
+                *((unsigned long *) (cpuVendorTmp + 8)) = ecxreg;
+                cpuVendorTmp[12] = '\0';
+                _cpuVendor = cpuVendorTmp;
 
-		// We can also read the max. supported standard CPUID level
-		maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
+                // We can also read the max. supported standard CPUID level
+                maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
 
-		// Then we read the ext. CPUID level 0x80000000
-	    #ifdef _MSC_VER
-		    __asm {
-			    mov eax, 0x80000000
-			    cpuid
-			    mov eaxreg, eax
-		    }
+                // Then we read the ext. CPUID level 0x80000000
+            #ifdef _MSC_VER
+                    __asm {
+                            mov eax, 0x80000000
+                            cpuid
+                            mov eaxreg, eax
+                    }
         #elif defined(__GNUC__) && defined(i386)
             // TODO: Linux
             eaxreg = 0;
@@ -282,30 +291,30 @@ void init() {
             eaxreg = 0;
         #endif
 
-		// ...to check the max. supported extended CPUID level
-		maxSupportedExtendedLevel = eaxreg;
+                // ...to check the max. supported extended CPUID level
+                maxSupportedExtendedLevel = eaxreg;
 
-		// Then we switch to the specific processor vendors.
+                // Then we switch to the specific processor vendors.
         // Fill out _cpuArch based on this information.  It will
         // be overwritten by the next block of code on Windows,
         // but on Linux will stand.
-		switch (ebxreg)	{
-		case 0x756E6547:	// GenuineIntel
+                switch (ebxreg) {
+                case 0x756E6547:        // GenuineIntel
             _cpuArch = "Intel Processor";
-			break;
-		
-		case 0x68747541:	// AuthenticAMD
+                        break;
+                
+                case 0x68747541:        // AuthenticAMD
             _cpuArch = "AMD Processor";
-			break;
+                        break;
 
-		case 0x69727943:	// CyrixInstead
+                case 0x69727943:        // CyrixInstead
             _cpuArch = "Cyrix Processor";
             break;
 
-		default:
+                default:
             _cpuArch = "Unknown Processor Vendor";
-			break;
-		}
+                        break;
+                }
     }
 
     #ifdef G3D_WIN32
@@ -377,40 +386,72 @@ void init() {
 
     #elif defined(G3D_OSX)
 
-        _operatingSystem = "OS X";
-        
-	#endif
+                //Operating System:
+                SInt32 macVersion;
+                Gestalt(gestaltSystemVersion, &macVersion);
+                
+                int major = 10;
+                int minor = (macVersion >> 4) & 0xF;
+                int revision = macVersion & 0xF;
+                
+                std::ostringstream ss;
+                ss << "OS X " << major << "." << minor << "." << revision;
+                _operatingSystem = ss.str();
+                
+                //Clock Cycle Timing Information:
+                Gestalt('pclk', &System::m_OSXCPUSpeed);
+                m_secondsPerNS = 1.0 / 1.0e9;
+                
+                //System Architecture:
+                SInt32 CPUtype;
+                Gestalt('cpuf', &CPUtype);
+                switch (CPUtype){
+                        case 0x0108:
+                                _cpuArch = "PPC G3";
+                                _cpuVendor = "Motorola";
+                        break;
+                        case 0x010C:
+                                _cpuArch = "PPC G4";
+                                _cpuVendor = "Motorola";
+                        break;
+                        case 0x0139:
+                                _cpuArch = "PPC G5";
+                                _cpuVendor = "IBM";
+                        break;
+                }
+            
+        #endif
 
     initTime();
 
-	getStandardProcessorExtensions();
+        getStandardProcessorExtensions();
 }
 
 
 void checkForCPUID() {
-	unsigned long bitChanged;
+        unsigned long bitChanged;
 
-	// We've to check if we can toggle the flag register bit 21.
-	// If we can't the processor does not support the CPUID command.
+        // We've to check if we can toggle the flag register bit 21.
+        // If we can't the processor does not support the CPUID command.
 
-	#ifdef _MSC_VER
-		__asm {
-			pushfd
-			pop   eax
-			mov   ebx, eax
-			xor   eax, 0x00200000 
-			push  eax
-			popfd
-			pushfd
-			pop   eax
-			xor   eax, ebx 
-			mov   bitChanged, eax
-		}
+        #ifdef _MSC_VER
+                __asm {
+                        pushfd
+                        pop   eax
+                        mov   ebx, eax
+                        xor   eax, 0x00200000 
+                        push  eax
+                        popfd
+                        pushfd
+                        pop   eax
+                        xor   eax, ebx 
+                        mov   bitChanged, eax
+                }
 
-	#elif defined(__GNUC__) && defined(i386)
+        #elif defined(__GNUC__) && defined(i386)
         // Linux
         int has_CPUID = 0;
-	__asm__ (
+        __asm__ (
 "push %%ecx\n"
 "        pushfl                      # Get original EFLAGS             \n"
 "        popl    %%eax                                                 \n"
@@ -425,19 +466,19 @@ void checkForCPUID() {
 "        movl    $1,%0               # We have CPUID support           \n"
 "1:                                                                    \n"
 "pop %%ecx\n"
-	: "=r" (has_CPUID)
-	:
-	: "%eax", "%ecx"
-	);
+        : "=r" (has_CPUID)
+        :
+        : "%eax", "%ecx"
+        );
         _cpuID = (has_CPUID != 0);
 
-    #else		
-		// Unknown architecture
-		_cpuID = false;
-	
-	#endif
+    #else               
+                // Unknown architecture
+                _cpuID = false;
+        
+        #endif
 
-	_cpuID = ((bitChanged) ? true : false);
+        _cpuID = ((bitChanged) ? true : false);
 }
 
 
@@ -446,7 +487,7 @@ void getStandardProcessorExtensions() {
         return;
     }
 
-	unsigned long features;
+        unsigned long features;
 
     // Invoking CPUID with '1' in EAX fills out edx with a bit string.
     // The bits of this value indicate the presence or absence of 
@@ -454,23 +495,23 @@ void getStandardProcessorExtensions() {
     #ifdef _MSC_VER
         // Windows
 
-	    __asm {
+            __asm {
             push eax
             push ebx
             push ecx
             push edx
-		    mov eax, 1
-		    cpuid
-		    mov features, edx
+                    mov eax, 1
+                    cpuid
+                    mov features, edx
             pop edx
             pop ecx
             pop ebx
             pop eax
-	    }
+            }
 
     #elif defined(__GNUC__) && defined(i386)
         // Linux
-	__asm__ (
+        __asm__ (
 "push %%eax\n"
 "push %%ebx\n"
 "push %%ecx\n"
@@ -483,52 +524,52 @@ void getStandardProcessorExtensions() {
 "pop %%ecx\n"
 "pop %%ebx\n"
 "pop %%eax\n"
-	: "=r" (features)
-	:
-	: "%eax", "%ebx", "%ecx", "%edx"
-	);
+        : "=r" (features)
+        :
+        : "%eax", "%ebx", "%ecx", "%edx"
+        );
 
     #else
         // Other
         features = 0;
     #endif
     
-	// FPU_FloatingPointUnit							= checkBit(features, 0);
-	// VME_Virtual8086ModeEnhancements					= checkBit(features, 1);
-	// DE_DebuggingExtensions							= checkBit(features, 2);
-	// PSE_PageSizeExtensions							= checkBit(features, 3);
-	// TSC_TimeStampCounter								= checkBit(features, 4);
-	// MSR_ModelSpecificRegisters						= checkBit(features, 5);
-	// PAE_PhysicalAddressExtension						= checkBit(features, 6);
-	// MCE_MachineCheckException						= checkBit(features, 7);
-	// CX8_COMPXCHG8B_Instruction						= checkBit(features, 8);
-	// APIC_AdvancedProgrammableInterruptController		= checkBit(features, 9);
-	// APIC_ID											= (ebxreg >> 24) & 0xFF;
-	// SEP_FastSystemCall								= checkBit(features, 11);
-	// MTRR_MemoryTypeRangeRegisters					= checkBit(features, 12);
-	// PGE_PTE_GlobalFlag								= checkBit(features, 13);
-	// MCA_MachineCheckArchitecture						= checkBit(features, 14);
-	// CMOV_ConditionalMoveAndCompareInstructions		= checkBit(features, 15);
+        // FPU_FloatingPointUnit                                                        = checkBit(features, 0);
+        // VME_Virtual8086ModeEnhancements                                      = checkBit(features, 1);
+        // DE_DebuggingExtensions                                                       = checkBit(features, 2);
+        // PSE_PageSizeExtensions                                                       = checkBit(features, 3);
+        // TSC_TimeStampCounter                                                         = checkBit(features, 4);
+        // MSR_ModelSpecificRegisters                                           = checkBit(features, 5);
+        // PAE_PhysicalAddressExtension                                         = checkBit(features, 6);
+        // MCE_MachineCheckException                                            = checkBit(features, 7);
+        // CX8_COMPXCHG8B_Instruction                                           = checkBit(features, 8);
+        // APIC_AdvancedProgrammableInterruptController         = checkBit(features, 9);
+        // APIC_ID                                                                                      = (ebxreg >> 24) & 0xFF;
+        // SEP_FastSystemCall                                                           = checkBit(features, 11);
+        // MTRR_MemoryTypeRangeRegisters                                        = checkBit(features, 12);
+        // PGE_PTE_GlobalFlag                                                           = checkBit(features, 13);
+        // MCA_MachineCheckArchitecture                                         = checkBit(features, 14);
+        // CMOV_ConditionalMoveAndCompareInstructions           = checkBit(features, 15);
 
     // (According to SDL)
-	_rdtsc						                    	= checkBit(features, 16);
+        _rdtsc                                                                  = checkBit(features, 16);
 
-	// PSE36_36bitPageSizeExtension						= checkBit(features, 17);
-	// PN_ProcessorSerialNumber							= checkBit(features, 18);
-	// CLFSH_CFLUSH_Instruction							= checkBit(features, 19);
-	// CLFLUSH_InstructionCacheLineSize					= (ebxreg >> 8) & 0xFF;
-	// DS_DebugStore									= checkBit(features, 21);
-	// ACPI_ThermalMonitorAndClockControl				= checkBit(features, 22);
-	_mmx												= checkBit(features, 23);
-	// FXSR_FastStreamingSIMD_ExtensionsSaveRestore		= checkBit(features, 24);
-	_sse												= checkBit(features, 25);
-	_sse2												= checkBit(features, 26);
-	// SS_SelfSnoop										= checkBit(features, 27);
-	// HT_HyperThreading								= checkBit(features, 28);
-	// HT_HyterThreadingSiblings = (ebxreg >> 16) & 0xFF;
-	// TM_ThermalMonitor								= checkBit(features, 29);
-	// IA64_Intel64BitArchitecture						= checkBit(features, 30);
-	_3dnow                                              = checkBit(features, 31);
+        // PSE36_36bitPageSizeExtension                                         = checkBit(features, 17);
+        // PN_ProcessorSerialNumber                                                     = checkBit(features, 18);
+        // CLFSH_CFLUSH_Instruction                                                     = checkBit(features, 19);
+        // CLFLUSH_InstructionCacheLineSize                                     = (ebxreg >> 8) & 0xFF;
+        // DS_DebugStore                                                                        = checkBit(features, 21);
+        // ACPI_ThermalMonitorAndClockControl                           = checkBit(features, 22);
+        _mmx                                                                                            = checkBit(features, 23);
+        // FXSR_FastStreamingSIMD_ExtensionsSaveRestore         = checkBit(features, 24);
+        _sse                                                                                            = checkBit(features, 25);
+        _sse2                                                                                           = checkBit(features, 26);
+        // SS_SelfSnoop                                                                         = checkBit(features, 27);
+        // HT_HyperThreading                                                            = checkBit(features, 28);
+        // HT_HyterThreadingSiblings = (ebxreg >> 16) & 0xFF;
+        // TM_ThermalMonitor                                                            = checkBit(features, 29);
+        // IA64_Intel64BitArchitecture                                          = checkBit(features, 30);
+        _3dnow                                              = checkBit(features, 31);
 }
 
 
@@ -541,165 +582,165 @@ void getStandardProcessorExtensions() {
 
 // On x86 processors, use MMX
 void memcpy2(void *dst, const void *src, int nbytes) {
-	int remainingBytes = nbytes;
+        int remainingBytes = nbytes;
 
-	if (nbytes > 64) {
-		_asm { 
-			mov esi, src 
-			mov edi, dst 
-			mov ecx, nbytes 
-			shr ecx, 6 // 64 bytes per iteration 
+        if (nbytes > 64) {
+                _asm { 
+                        mov esi, src 
+                        mov edi, dst 
+                        mov ecx, nbytes 
+                        shr ecx, 6 // 64 bytes per iteration 
 
-	loop1: 
-			movq mm1,  0[ESI] // Read in source data 
-			movq mm2,  8[ESI]
-			movq mm3, 16[ESI]
-			movq mm4, 24[ESI] 
-			movq mm5, 32[ESI]
-			movq mm6, 40[ESI]
-			movq mm7, 48[ESI]
-			movq mm0, 56[ESI]
+        loop1: 
+                        movq mm1,  0[ESI] // Read in source data 
+                        movq mm2,  8[ESI]
+                        movq mm3, 16[ESI]
+                        movq mm4, 24[ESI] 
+                        movq mm5, 32[ESI]
+                        movq mm6, 40[ESI]
+                        movq mm7, 48[ESI]
+                        movq mm0, 56[ESI]
 
-			movntq  0[EDI], mm1 // Non-temporal stores 
-			movntq  8[EDI], mm2 
-			movntq 16[EDI], mm3 
-			movntq 24[EDI], mm4 
-			movntq 32[EDI], mm5 
-			movntq 40[EDI], mm6 
-			movntq 48[EDI], mm7 
-			movntq 56[EDI], mm0 
+                        movntq  0[EDI], mm1 // Non-temporal stores 
+                        movntq  8[EDI], mm2 
+                        movntq 16[EDI], mm3 
+                        movntq 24[EDI], mm4 
+                        movntq 32[EDI], mm5 
+                        movntq 40[EDI], mm6 
+                        movntq 48[EDI], mm7 
+                        movntq 56[EDI], mm0 
 
-			add esi, 64 
-			add edi, 64 
-			dec ecx 
-			jnz loop1 
+                        add esi, 64 
+                        add edi, 64 
+                        dec ecx 
+                        jnz loop1 
 
-			emms
-		}
-		remainingBytes -= ((nbytes >> 6) << 6); 
-	}
+                        emms
+                }
+                remainingBytes -= ((nbytes >> 6) << 6); 
+        }
 
-	if (remainingBytes > 0) {
-		// Memcpy the rest
-		memcpy((uint8*)dst + (nbytes - remainingBytes), (const uint8*)src + (nbytes - remainingBytes), remainingBytes); 
-	}
+        if (remainingBytes > 0) {
+                // Memcpy the rest
+                memcpy((uint8*)dst + (nbytes - remainingBytes), (const uint8*)src + (nbytes - remainingBytes), remainingBytes); 
+        }
 }
 
 
 // On x86 processors, use MMX
 static void memcpy4(void *dst, const void *src, int nbytes) {
-	static char _tbuf[2048];
-	static char *tbuf = _tbuf;
+        static char _tbuf[2048];
+        static char *tbuf = _tbuf;
 
-	int remainingBytes = nbytes;
+        int remainingBytes = nbytes;
 
-	if (nbytes > 2048) {
+        if (nbytes > 2048) {
 
-		__asm {
-			mov esi, src 
-			mov ecx, nbytes 
-			mov ebx, ecx 
-			shr ebx, 11 // 2048 bytes at a time 
-			mov edi, dst 
+                __asm {
+                        mov esi, src 
+                        mov ecx, nbytes 
+                        mov ebx, ecx 
+                        shr ebx, 11 // 2048 bytes at a time 
+                        mov edi, dst 
 
-	loop2k: // Copy 2k into temporary buffer 
-			push edi 
-			mov edi, tbuf 
-			mov ecx, 2048 
-			shr ecx, 6 
+        loop2k: // Copy 2k into temporary buffer 
+                        push edi 
+                        mov edi, tbuf 
+                        mov ecx, 2048 
+                        shr ecx, 6 
 
-	loopMemToL1: 
-			prefetchnta 64[ESI] // Prefetch next loop, non-temporal 
-			prefetchnta 96[ESI] 
+        loopMemToL1: 
+                        prefetchnta 64[ESI] // Prefetch next loop, non-temporal 
+                        prefetchnta 96[ESI] 
 
-			movq mm1,  0[ESI] // Read in source data 
-			movq mm2,  8[ESI] 
-			movq mm3, 16[ESI] 
-			movq mm4, 24[ESI] 
-			movq mm5, 32[ESI] 
-			movq mm6, 40[ESI] 
-			movq mm7, 48[ESI] 
-			movq mm0, 56[ESI] 
+                        movq mm1,  0[ESI] // Read in source data 
+                        movq mm2,  8[ESI] 
+                        movq mm3, 16[ESI] 
+                        movq mm4, 24[ESI] 
+                        movq mm5, 32[ESI] 
+                        movq mm6, 40[ESI] 
+                        movq mm7, 48[ESI] 
+                        movq mm0, 56[ESI] 
 
-			movq  0[EDI], mm1 // Store into L1 
-			movq  8[EDI], mm2 
-			movq 16[EDI], mm3 
-			movq 24[EDI], mm4 
-			movq 32[EDI], mm5 
-			movq 40[EDI], mm6 
-			movq 48[EDI], mm7 
-			movq 56[EDI], mm0 
-			add esi, 64 
-			add edi, 64 
-			dec ecx 
-			jnz loopMemToL1 
+                        movq  0[EDI], mm1 // Store into L1 
+                        movq  8[EDI], mm2 
+                        movq 16[EDI], mm3 
+                        movq 24[EDI], mm4 
+                        movq 32[EDI], mm5 
+                        movq 40[EDI], mm6 
+                        movq 48[EDI], mm7 
+                        movq 56[EDI], mm0 
+                        add esi, 64 
+                        add edi, 64 
+                        dec ecx 
+                        jnz loopMemToL1 
 
-			pop edi // Now copy from L1 to system memory 
-			push esi 
-			mov esi, tbuf 
-			mov ecx, 2048 
-			shr ecx, 6 
+                        pop edi // Now copy from L1 to system memory 
+                        push esi 
+                        mov esi, tbuf 
+                        mov ecx, 2048 
+                        shr ecx, 6 
 
-	loopL1ToMem: 
-			movq mm1, 0[ESI] // Read in source data from L1 
-			movq mm2, 8[ESI] 
-			movq mm3, 16[ESI] 
-			movq mm4, 24[ESI] 
-			movq mm5, 32[ESI] 
-			movq mm6, 40[ESI] 
-			movq mm7, 48[ESI] 
-			movq mm0, 56[ESI] 
+        loopL1ToMem: 
+                        movq mm1, 0[ESI] // Read in source data from L1 
+                        movq mm2, 8[ESI] 
+                        movq mm3, 16[ESI] 
+                        movq mm4, 24[ESI] 
+                        movq mm5, 32[ESI] 
+                        movq mm6, 40[ESI] 
+                        movq mm7, 48[ESI] 
+                        movq mm0, 56[ESI] 
 
-			movntq 0[EDI], mm1 // Non-temporal stores 
-			movntq 8[EDI], mm2 
-			movntq 16[EDI], mm3 
-			movntq 24[EDI], mm4 
-			movntq 32[EDI], mm5 
-			movntq 40[EDI], mm6 
-			movntq 48[EDI], mm7 
-			movntq 56[EDI], mm0 
+                        movntq 0[EDI], mm1 // Non-temporal stores 
+                        movntq 8[EDI], mm2 
+                        movntq 16[EDI], mm3 
+                        movntq 24[EDI], mm4 
+                        movntq 32[EDI], mm5 
+                        movntq 40[EDI], mm6 
+                        movntq 48[EDI], mm7 
+                        movntq 56[EDI], mm0 
 
-			add esi, 64 
-			add edi, 64 
-			dec ecx 
-			jnz loopL1ToMem 
+                        add esi, 64 
+                        add edi, 64 
+                        dec ecx 
+                        jnz loopL1ToMem 
 
-			pop esi // Do next 2k block 
-			dec ebx 
-			jnz loop2k 
+                        pop esi // Do next 2k block 
+                        dec ebx 
+                        jnz loop2k 
 
-			emms
-		}
+                        emms
+                }
 
-		remainingBytes -= (nbytes / 2048) * 2048; 
-	}
+                remainingBytes -= (nbytes / 2048) * 2048; 
+        }
 
-	if (remainingBytes > 0) {
-		// Memcpy the rest
-		memcpy((uint8*)dst + (nbytes - remainingBytes), (const uint8*)src + (nbytes - remainingBytes), remainingBytes); 
-	}
+        if (remainingBytes > 0) {
+                // Memcpy the rest
+                memcpy((uint8*)dst + (nbytes - remainingBytes), (const uint8*)src + (nbytes - remainingBytes), remainingBytes); 
+        }
 }
 
 #else
 
     // Fall back to memcpy
     void memcpy2(void *dst, const void *src, int nbytes) {
-	    memcpy(dst, src, nbytes);
+            memcpy(dst, src, nbytes);
     }
 
     static void memcpy4(void *dst, const void *src, int nbytes) {
-	    memcpy(dst, src, nbytes);
+            memcpy(dst, src, nbytes);
     }
 
 #endif
 
 
 void System::memcpy(void* dst, const void* src, size_t numBytes) {
-	if (System::hasSSE() && System::hasMMX()) {
-		G3D::memcpy2(dst, src, numBytes);
-	} else {
-		::memcpy(dst, src, numBytes);
-	}
+        if (System::hasSSE() && System::hasMMX()) {
+                G3D::memcpy2(dst, src, numBytes);
+        } else {
+                ::memcpy(dst, src, numBytes);
+        }
 }
 
 
@@ -711,53 +752,53 @@ void System::memcpy(void* dst, const void* src, size_t numBytes) {
 void memfill(void *dst, int n32, unsigned long i) {
 
     int originalSize = i;
-	int bytesRemaining = i;
+        int bytesRemaining = i;
 
-	if (i > 16) {
+        if (i > 16) {
         
         bytesRemaining = i % 16;
         i -= bytesRemaining;
-		__asm {
-			movq mm0, n32
-			punpckldq mm0, mm0
-			mov edi, dst
+                __asm {
+                        movq mm0, n32
+                        punpckldq mm0, mm0
+                        mov edi, dst
 
-		loopwrite:
+                loopwrite:
 
-			movntq 0[edi], mm0
-			movntq 8[edi], mm0
+                        movntq 0[edi], mm0
+                        movntq 8[edi], mm0
 
-			add edi, 16
-			sub i, 16
-			jg loopwrite
+                        add edi, 16
+                        sub i, 16
+                        jg loopwrite
 
-			emms
-		}
-	}
+                        emms
+                }
+        }
 
-	if (bytesRemaining > 0) {
-		memset((uint8*)dst + (originalSize - bytesRemaining), n32, bytesRemaining); 
-	}
+        if (bytesRemaining > 0) {
+                memset((uint8*)dst + (originalSize - bytesRemaining), n32, bytesRemaining); 
+        }
 }
 
 #else
 
 // For non x86 processors, we fall back to the standard memset
 void memfill(void *dst, int n32, unsigned long i) {
-	memset(dst, n32, i);
+        memset(dst, n32, i);
 }
 
 #endif
 
 
 void System::memset(void* dst, uint8 value, size_t numBytes) {
-	if (System::hasSSE() && System::hasMMX()) {
-		uint32 v = value;
-		v = v + (v << 8) + (v << 16) + (v << 24); 
-		G3D::memfill(dst, v, numBytes);
-	} else {
-		::memset(dst, value, numBytes);
-	}
+        if (System::hasSSE() && System::hasMMX()) {
+                uint32 v = value;
+                v = v + (v << 8) + (v << 16) + (v << 24); 
+                G3D::memfill(dst, v, numBytes);
+        } else {
+                ::memset(dst, value, numBytes);
+        }
 }
 
 
@@ -770,17 +811,17 @@ std::string System::currentProgramFilename() {
     } 
     #else
     {
-	    int ret = readlink("/proc/self/exe", filename, sizeof(filename));
-	    
-	    // In case of an error, leave the handling up to the caller
+            int ret = readlink("/proc/self/exe", filename, sizeof(filename));
+            
+            // In case of an error, leave the handling up to the caller
         if (ret == -1) {
-		    return "";
+                    return "";
         }
-	    
+            
         debugAssert(sizeof(filename) > ret);
-	    
-	    // Ensure proper NULL termination
-	    filename[ret] = 0;	    
+            
+            // Ensure proper NULL termination
+            filename[ret] = 0;      
     }
     #endif
 

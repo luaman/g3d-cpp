@@ -23,6 +23,10 @@
 //    #include <curses.h>
 #endif
 
+#ifdef G3D_OSX
+    #import <AppKit/AppKit.h>
+#endif
+
 namespace G3D {
 
 #ifdef G3D_WIN32
@@ -482,6 +486,41 @@ static int textPrompt(
     return c;
 }
 
+#ifdef G3D_OSX
+static int guiPrompt(const char*         windowTitle,
+                     const char*         prompt,
+                     const char**        choice,
+                     int                 numChoices) 
+{
+        NSAlert* alert;
+        alert = [[NSAlert alloc] init];
+        
+        if (numChoices > 4){
+                //If the # of choices is > 4, use standard text mode for now b/c of OS X bug:
+                [alert setInformativeText: @"Prompt with more than 4 options, see the console..."];
+                [alert addButtonWithTitle:@"Ok"];
+                [alert runModal];
+                [alert release];
+                return textPrompt(windowTitle, prompt, choice, numChoices);
+        }
+
+        //Set Title:
+        [alert setInformativeText: [NSString stringWithUTF8String:windowTitle]];
+        
+        //Set prompt:
+        [alert setMessageText: [NSString stringWithUTF8String:prompt]];
+        
+        //Set the buttons:
+        for (int i = 0; i < numChoices; i++){
+                NSLog(@"About to add button number %d which is called %@", i, [NSString stringWithUTF8String:choice[i]]); 
+                [[alert addButtonWithTitle:[NSString stringWithUTF8String:choice[i]]] setTag: i];
+        }
+        int toReturn = [alert runModal];
+        NSLog(@"Returning : %d", toReturn);
+        [alert release];
+        return toReturn;
+}
+#endif
 
 int prompt(
     const char*      windowTitle,
@@ -497,6 +536,12 @@ int prompt(
         }
     #endif
     
+        #ifdef G3D_OSX
+                if (useGui){
+                        //Will default to text prompt if numChoices > 4
+                        return guiPrompt(windowTitle, prompt, choice, numChoices);
+                }
+        #endif
     return textPrompt(windowTitle, prompt, choice, numChoices);
 }
 

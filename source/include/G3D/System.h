@@ -19,6 +19,10 @@
 #include "G3D/G3DGameUnits.h"
 #include <string>
 
+#ifdef G3D_OSX
+#include <CoreServices/CoreServices.h>
+#endif
+
 namespace G3D {
 
 /**
@@ -65,6 +69,9 @@ enum G3DEndian {G3D_BIG_ENDIAN, G3D_LITTLE_ENDIAN};
 class System {
 public:
 
+	/** */
+	static void init();
+	static bool initialized;
 
 	/** */
 	static bool hasMMX();
@@ -86,10 +93,6 @@ public:
 	
 	/** e.g. "Windows", "GNU/Linux" */
     static const std::string& operatingSystem();
-
-    /** Returns the operating system version number and other information.
-        The format varies across platforms. */
-    static const std::string& operatingSystemVersion();
 
 	/** */
     static const std::string& cpuArchitecture();
@@ -191,17 +194,15 @@ public:
     static void beginCycleCount(uint64& cycleCount);
     static void endCycleCount(uint64& cycleCount);
 
-    /**
-     Returns the number of cycles since some arbitrary baseline.
-     See also System::getTick.
-
-     Not supported on OS/X:
-       <A HREF="https://sourceforge.net/tracker/index.php?func=detail&aid=869864&group_id=76879&atid=548565">RFE [ 869864 ] OS/X G3D::System::getCycleCount</A>       
-     */
     static uint64 getCycleCount();
 
     /** Set an environment variable for the current process */
     static void setEnv(const std::string& name, const std::string& value);
+	
+	//#ifdef G3D_OSX
+		static long m_OSXCPUSpeed; //In Cycles/Second
+		static double m_secondsPerNS;
+	//#endif
 };
 
 
@@ -237,8 +238,13 @@ public:
 #elif defined(G3D_OSX)
 
     inline uint64 System::getCycleCount() {
-        // Not implemented on Mac
-        return 0;
+		//Note:  To put off extra processing until the end, this does not 
+		//return the actual clock cycle count.  It is a bus cycle count.
+		//When endCycleCount() is called, it converts the two into a difference
+		//of clock cycles
+		
+        return (uint64) UnsignedWideToUInt64(UpTime());
+		//return (uint64) mach_absolute_time();
     }
 
 #endif
@@ -249,7 +255,14 @@ inline void System::beginCycleCount(uint64& cycleCount) {
 
 
 inline void System::endCycleCount(uint64& cycleCount) {
-    cycleCount = getCycleCount() - cycleCount;
+	#ifndef G3D_OSX
+		cycleCount = getCycleCount() - cycleCount;
+	#else
+		AbsoluteTime end = UpTime();
+		init();
+		Nanoseconds diffNS = AbsoluteDeltaToNanoseconds(end, UInt64ToUnsignedWide(cycleCount));
+		cycleCount = (uint64) ((double) (System::m_OSXCPUSpeed) * (double) UnsignedWideToUInt64(diffNS) * m_secondsPerNS);
+	#endif
 }
 
 

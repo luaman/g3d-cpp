@@ -3887,9 +3887,9 @@
 			sourceTree = SOURCE_ROOT;
 		};
 		0F8E5CB205B08C03004B1E58 = {
+			explicitFileType = sourcecode.cpp.cpp;
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
 			name = System.cpp;
 			path = ../source/G3Dcpp/System.cpp;
 			refType = 2;
@@ -5109,6 +5109,7 @@
 			buildRules = (
 			);
 			buildSettings = {
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
