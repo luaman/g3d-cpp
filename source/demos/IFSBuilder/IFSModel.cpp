@@ -360,7 +360,7 @@ void IFSModel::render() {
             drawBillboardString(font, format("%d", v), geometry.vertexArray[v], S, Color3::YELLOW, Color3::BLACK);
         }
 
-        renderDevice->debugDrawVertexNormals(geometry);
+        Draw::vertexNormals(geometry, renderDevice);
 
         // Label edges
         //for (int e = 0; e < edgeArray.size(); ++e) {

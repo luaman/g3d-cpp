@@ -163,7 +163,7 @@ void doGraphics() {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             renderDevice->popState();
             
-            renderDevice->debugDrawAxes(4);
+            Draw::axes(renderDevice);
 
         renderDevice->popState();
 	    

@@ -204,8 +204,6 @@ void Draw::capsule(
                 numPasses = 2;
                 renderDevice->setCullFace(RenderDevice::CULL_FRONT);
                 renderDevice->disableDepthWrite();
-            } else {
-                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
             }
 
             renderDevice->setColor(solidColor);
@@ -409,8 +407,6 @@ void Draw::box(
                 numPasses = 2;
                 renderDevice->setCullFace(RenderDevice::CULL_FRONT);
                 renderDevice->disableDepthWrite();
-            } else {
-                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
             }
 
             renderDevice->setColor(solidColor);
@@ -587,8 +583,6 @@ void Draw::sphere(
                 renderDevice->setCullFace(RenderDevice::CULL_FRONT);
                 renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
                 renderDevice->disableDepthWrite();
-            } else {
-                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
             }
 
             if (wireColor.a > 0) {

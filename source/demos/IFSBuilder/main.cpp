@@ -84,8 +84,8 @@ int main(int argc, char** argv) {
     RealTime now = getTime() - 0.001, lastTime;
 
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
-    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
-//    std::string in("d:/libraries/g3d-6_00/data/ifs/cube.ifs");
+//    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
+    std::string in("d:/libraries/g3d-6_00/data/ifs/cube.ifs");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");
@@ -178,8 +178,6 @@ void doGraphics() {
                 renderDevice->pop2D();
             }
             
-            //renderDevice->debugDrawAxes(2);
-
         renderDevice->popState();
         
     renderDevice->endFrame();

@@ -89,7 +89,7 @@ void Scene::renderingPass() const {
         sim[i]->render();
     }
 
-    renderDevice->debugDrawSphere(Sphere(debugPoint, .1));
+    Draw::sphere(Sphere(debugPoint, .1), renderDevice);
 }
 
 

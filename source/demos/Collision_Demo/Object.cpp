@@ -26,8 +26,8 @@ void glDiffuse() {
     static const float black[] = {0,0,0,1};
     glMaterialfv(GL_FRONT, GL_SPECULAR, black);
     glMaterialf(GL_FRONT, GL_SHININESS, 0.0f);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 }
 
 
@@ -108,15 +108,8 @@ GameTime SphereObject::timeUntilCollisionWithMovingSphere(
 
 
 void SphereObject::render() const {
-    renderDevice->pushState();
-    renderDevice->setColor(color);
-
-    renderDevice->setObjectToWorldMatrix(CoordinateFrame(sphere.center));
-
     glSpecular();
-    glutSolidSphere(sphere.radius, (int)(12 * sphere.radius) + 6, (int)(10 * sphere.radius) + 5);  
-
-    renderDevice->popState();
+    Draw::sphere(sphere, renderDevice, color, Color4::CLEAR);
 }
 
 
@@ -145,42 +138,9 @@ GameTime CapsuleObject::timeUntilCollisionWithMovingSphere(
 }
 
 
-static void glutSolidCylinder(float r,float h,int n,int m) {
-    glPushMatrix();
-    glTranslatef(0.0f, 0.0f, -h/2);
-    GLUquadricObj* qobj = gluNewQuadric();
-    gluQuadricDrawStyle(qobj, GLU_FILL);
-    gluCylinder(qobj, r, r, h, n, m);
-    gluDeleteQuadric(qobj);  
-    glPopMatrix();
-}
-
-
 void CapsuleObject::render() const {
-    renderDevice->pushState();
-    renderDevice->setColor(color);
-
     glSpecular();
-
-    double radius = capsule.getRadius();
-    renderDevice->setObjectToWorldMatrix(CoordinateFrame(capsule.getPoint1()));
-    glutSolidSphere(radius, (int)(10 * radius) + 7, (int)(8 * radius) + 7);
-    
-    renderDevice->setObjectToWorldMatrix(CoordinateFrame(capsule.getPoint2()));
-    glutSolidSphere(radius, (int)(10 * radius) + 7, (int)(8 * radius) + 7);  
-
-    Vector3 axis = capsule.getPoint2() - capsule.getPoint1();
-    CoordinateFrame cframe((capsule.getPoint1() + capsule.getPoint2()) / 2);
-  
-    if (abs(axis.direction().dot(Vector3::UNIT_Y)) > 0.8) {
-        cframe.lookAt(capsule.getPoint2(), Vector3::UNIT_X);
-    } else {
-        cframe.lookAt(capsule.getPoint2());
-    }
-    renderDevice->setObjectToWorldMatrix(cframe);
-    glutSolidCylinder(radius, axis.length(), (int)(12 * radius) + 5, 2);  
-
-    renderDevice->popState();
+    Draw::capsule(capsule, renderDevice, color, Color4::CLEAR);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -240,7 +200,4 @@ void SimSphere::render() const {
 
     SphereObject::render();
 
-    // Render the velocity vector (for debugging purposes)
-    // renderDevice->setColor(Color3::RED);
-    // renderDevice->debugDrawVector(velocity / 2, sphere.center, 1);
 }

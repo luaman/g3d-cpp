@@ -141,8 +141,6 @@ void Model::render() const {
     }
     renderDevice->endIndexedPrimitives();
 
-//        renderDevice->debugDrawSphere(boundingSphere);
-
     renderDevice->popState();
 }
 

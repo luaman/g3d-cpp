@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
                    sky->render(camera->getCoordinateFrame(), lighting);
                 }
 
-                renderDevice->debugDrawAxes(3);
+                Draw::axes(renderDevice, Color3::RED, Color3::GREEN, Color3::BLUE, 1.5);
 				
                 renderDevice->pushState();
                     for (int x = 0; x < 3; ++x) {
