@@ -585,6 +585,19 @@ public:
 
     CoordinateFrame getCameraToWorldMatrix() const;
 
+    Matrix4 getProjectionMatrix() const;
+
+    /**
+     cameraToWorld.inverse() * objectToWorld
+     */
+    CoordinateFrame getModelViewMatrix() const;
+
+    /**
+     projection() * cameraToWorld.inverse() * objectToWorld
+     */
+    Matrix4 getModelViewProjectionMatrix() const;
+
+
     /**
      Equivalent to glFrustum. A reasonable way to compute values is:
 
@@ -621,6 +634,7 @@ public:
         double& n,
         double& f,
         bool&   is3D);
+
 
     void setProjectionMatrix2D(
         double l,
@@ -863,11 +877,19 @@ public:
     void setVertexProgram(const VertexProgramRef& vp);
 
     /**
+     @param args must include *all* arguments or an assertion will fail
+     */
+    void setVertexProgram(const VertexProgramRef& vp,
+                          const Array<GPUProgram::ArgList>& args);
+
+    /**
      (Automatically enables pixel programs when they are set.) 
      Assumes GPUProgram() is true.
      @param pp Set to NULL to use the fixed function pipeline.
      */
     void setPixelProgram(const PixelProgramRef& pp);
+    void setPixelProgram(const PixelProgramRef& pp,
+                          const Array<GPUProgram::ArgList>& args);
     
     /**
       Reads a depth buffer value (1 @ far plane, 0 @ near plane) from

@@ -8,15 +8,36 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2003-04-06
+ @edited  2003-11-01
 */
 
 #include "G3D/CoordinateFrame.h"
 #include "G3D/Quat.h"
+#include "G3D/Matrix4.h"
 
 namespace G3D {
 
 const Real CoordinateFrame::zLookDirection = -1;
+
+
+Matrix4 CoordinateFrame::toMatrix4() const {
+    return Matrix4(*this);
+}
+
+
+std::string CoordinateFrame::toXML() const {
+    char buffer[1024];
+
+    int count = sprintf(buffer, "<COORDINATEFRAME>\n  %lf,%lf,%lf,%lf,\n  %lf,%lf,%lf,%lf,\n  %lf,%lf,%lf,%lf,\n  %lf,%lf,%lf,%lf\n</COORDINATEFRAME>\n",
+                        rotation[0][0], rotation[0][1], rotation[0][2], translation.x,
+                        rotation[1][0], rotation[1][1], rotation[1][2], translation.y,
+                        rotation[2][0], rotation[2][1], rotation[2][2], translation.z,
+                        0.0, 0.0, 0.0, 1.0);
+    assert(count < 1024);
+
+    std::string s = buffer;
+    return s;
+}
 
 
 Triangle CoordinateFrame::toObjectSpace(const Triangle& t) const {

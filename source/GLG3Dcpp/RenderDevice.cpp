@@ -115,47 +115,6 @@ PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NU
 
 namespace G3D {
 
-static void frustum(
-    GLdouble left,    
-    GLdouble right,
-    GLdouble bottom,  
-    GLdouble top,
-    GLdouble nearval, 
-    GLdouble farval) {
-
-   debugAssert(right == -left);
-   debugAssert(top == -bottom);
-
-   double x, y, a, b, c, d;
-   double m[16];
-
-   x = (2.0*nearval) / (right-left);
-   y = (2.0*nearval) / (top-bottom);
-   a = (right+left) / (right-left);
-   b = (top+bottom) / (top-bottom);
-
-   if ((float)farval >= (float)inf) {
-       // Infinite view frustum
-       c = -1.0;
-       d = -2.0 * nearval;
-   } else {
-       c = -(farval+nearval) / (farval-nearval);
-       d = -(2.0*farval*nearval) / (farval-nearval);
-   }
-
-   debugAssert(a == 0);
-   debugAssert(b == 0);
-
-#define M(row,col)  m[col*4+row]
-   M(0,0) = x;    M(0,1) = 0.0;  M(0,2) = a;      M(0,3) = 0.0;
-   M(1,0) = 0.0;  M(1,1) = y;    M(1,2) = b;      M(1,3) = 0.0;
-   M(2,0) = 0.0;  M(2,1) = 0.0;  M(2,2) = c;      M(2,3) = d;
-   M(3,0) = 0.0;  M(3,1) = 0.0;  M(3,2) = -1.0;   M(3,3) = 0.0;
-#undef M
-
-   glLoadMatrixd(m);
-}
-
 
 static double getTime() {
     return SDL_GetTicks() / 1000.0;
@@ -911,13 +870,15 @@ void RenderDevice::setVideoMode() {
         glClearDepth(1);
         glClearColor(0,0,0,1);
         glMatrixMode(GL_PROJECTION);
-        frustum(
+
+        Matrix4 P = Matrix4::perspectiveProjectionMatrix(
             state.projectionMatrixParams[0],
             state.projectionMatrixParams[1],
             state.projectionMatrixParams[2], 
             state.projectionMatrixParams[3],
             state.projectionMatrixParams[4],
             state.projectionMatrixParams[5]);
+        glLoadMatrix(P);
 
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -1959,6 +1920,39 @@ CoordinateFrame RenderDevice::getCameraToWorldMatrix() const {
 }
 
 
+Matrix4 RenderDevice::getProjectionMatrix() const {
+        
+    double l,r,b,t,n,f;
+    l = state.projectionMatrixParams[0];
+    r = state.projectionMatrixParams[1];
+    b = state.projectionMatrixParams[2];
+    t = state.projectionMatrixParams[3];
+    n = state.projectionMatrixParams[4];
+    f = state.projectionMatrixParams[5];
+
+
+    Matrix4 P;
+    
+    if (state.proj3D) {
+        P = Matrix4::perspectiveProjectionMatrix(l,r,b,t,n,f);
+    } else {
+        P = Matrix4::orthogonalProjectionMatrix(l,r,b,t,n,f);
+    }
+
+    return P;
+}
+
+
+CoordinateFrame RenderDevice::getModelViewMatrix() const {
+    return getCameraToWorldMatrix().inverse() * getObjectToWorldMatrix();
+}
+
+
+Matrix4 RenderDevice::getModelViewProjectionMatrix() const {
+    return getProjectionMatrix() * getModelViewMatrix();
+}
+
+
 void RenderDevice::setProjectionMatrix3D(
     double l,
     double r,
@@ -1973,45 +1967,16 @@ void RenderDevice::setProjectionMatrix3D(
     if ((! state.proj3D) ||
         (memcmp(state.projectionMatrixParams, params, sizeof(double) * 6))) {
 
+        Matrix4 P = Matrix4::perspectiveProjectionMatrix(l,r,b,t,n,f);
         glMatrixMode(GL_PROJECTION);
-        frustum(l,r,b,t,n,f);
+        glLoadMatrix(P);
+
         memcpy(state.projectionMatrixParams, params, sizeof(double) * 6);
         state.proj3D = true;
 
     }
 }
 
-
-
-static void ortho(
-    GLdouble            left,
-    GLdouble            right,
-    GLdouble            bottom,
-    GLdouble            top,
-    GLdouble            nearval,
-    GLdouble            farval) {
-
-   // Adapted from Mesa
-   double x, y, z;
-   double tx,  ty, tz;
-   double m[16];
-
-   x = 2.0 / (right-left);
-   y = 2.0 / (top-bottom);
-   z = -2.0 / (farval-nearval);
-   tx = -(right+left) / (right-left);
-   ty = -(top+bottom) / (top-bottom);
-   tz = -(farval+nearval) / (farval-nearval);
-
-#define M(row,col)  m[col*4+row]
-   M(0,0) = x;    M(0,1) = 0.0;  M(0,2) = 0.0;  M(0,3) = tx;
-   M(1,0) = 0.0;  M(1,1) = y;    M(1,2) = 0.0;  M(1,3) = ty;
-   M(2,0) = 0.0;  M(2,1) = 0.0;  M(2,2) = z;    M(2,3) = tz;
-   M(3,0) = 0.0;  M(3,1) = 0.0;  M(3,2) = 0.0;  M(3,3) = 1.0;
-#undef M
-
-   glLoadMatrixd(m);
-}
 
 void RenderDevice::setProjectionMatrix2D(
     double l,
@@ -2028,8 +1993,9 @@ void RenderDevice::setProjectionMatrix2D(
     if ((state.proj3D) ||
         (memcmp(state.projectionMatrixParams, params, sizeof(double) * 6))) {
 
+        Matrix4 P = Matrix4::orthogonalProjectionMatrix(l,r,b,t,n,f);
         glMatrixMode(GL_PROJECTION);
-        ortho(l,r,b,t,n,f);
+        glLoadMatrix(P);
 
         memcpy(state.projectionMatrixParams, params, sizeof(double) * 6);
         state.proj3D = false;

@@ -805,7 +805,7 @@ int main(int argc, char** argv) {
     renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
-//    controller->setActive(true);
+    controller->setActive(true);
 
     tex = Texture::fromFile("D:/graphics3d/book/data/image/lena.tga");
 
@@ -859,7 +859,7 @@ void doGraphics() {
         renderDevice->pushState();
 
             camera->setProjectionAndCameraMatrix();
-        /*
+        
             // Setup lighting
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
@@ -881,8 +881,7 @@ void doGraphics() {
 
             glDisable(GL_LIGHTING);
             glDisable(GL_LIGHT0);
-            */
-
+            
             renderDevice->setTexture(0, tex);
             renderDevice->setCullFace(RenderDevice::CULL_NONE);
             renderDevice->setColor(Color3::WHITE);
