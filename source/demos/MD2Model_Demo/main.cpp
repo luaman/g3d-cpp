@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 
     RenderDeviceSettings settings;
     settings.fsaaSamples = 4;
-    renderDevice->init(Win32Window::create(settings), debugLog);
+    renderDevice->init(settings, debugLog);
     renderDevice->setCaption("G3D::MD2Model Demo");
     camera 	     = new GCamera();
 
