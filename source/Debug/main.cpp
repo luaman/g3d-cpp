@@ -35,9 +35,8 @@ public:
 class SphereMap : public Shader {
 private:
 
-    VertexAndPixelShaderRef     vap;
-
     SphereMap() {}
+
 public:
 
     TextureRef                  texture;
@@ -63,7 +62,7 @@ public:
             "  gl_FragColor = tex2D(texture, gl_TexCoord[0].st);\n"
             "}\n";
 
-        shader->vap = VertexAndPixelShader::fromStrings(vs, ps);
+        shader->_vertexAndPixelShader = VertexAndPixelShader::fromStrings(vs, ps);
 
         return shader;
     }
@@ -75,7 +74,7 @@ public:
         args.set("texture", texture);
         args.set("hi", bounds.high());
         args.set("lo", bounds.low());
-        rd->setVertexAndPixelShader(vap, args);
+        rd->setVertexAndPixelShader(_vertexAndPixelShader, args);
     }
 
 
@@ -102,9 +101,9 @@ public:
 
     TextureRef                  texture;
 
-    SphereMapRef                shader;
+//    SphereMapRef                shader;
 
-    SimpleShaderRef             shader2;
+    ShaderRef                   shader2;
 
     Demo(App* app);    
 
@@ -118,12 +117,12 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-    texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
+    Texture::createEmpty(128,128); 
+//  texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
+    
+    //shader = SphereMap::create();
 
-    /*
-    shader = SphereMap::create();
-
-
+/*
     // Cylindrical projection about the z-axis
     std::string vs = 
 //        "uniform vec3 hi;\n"
@@ -146,9 +145,12 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
         "void main(void) { \n"
         "    gl_FragColor = tex2D(texture, gl_TexCoord[0].st);\n"
         "}\n";
+*/
 
-    shader2 = SimpleShader::fromStrings(vs, ps);
-    */
+    std::string vs = "";
+    std::string ps = "void main(void) { gl_FragColor = vec4(1,1,1,1); }\n";
+    shader2 = Shader::fromStrings(vs, ps);
+    
 }
 
 
@@ -167,7 +169,6 @@ void Demo::doLogic() {
     }
 
     if (app->userInput->keyPressed(' ')) {
-
         CoordinateFrame x = app->debugController.getCoordinateFrame();
         app->debugController.setCoordinateFrame(x);
     }
@@ -186,6 +187,31 @@ void Demo::doGraphics() {
 
 	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
+    /*
+    // Shader test
+    Sphere sphere(Vector3::zero(), 0.5);
+    app->renderDevice->setShader(shader2);
+    Draw::sphere(sphere, app->renderDevice, Color3::WHITE, Color4::CLEAR);
+    app->renderDevice->setShader(NULL);
+
+    app->renderDevice->push2D();
+    RenderDevice* renderDevice = app->renderDevice;
+
+    //glPushAttrib(GL_ALL_ATTRIB_BITS);
+  //  renderDevice->pushState();
+        renderDevice->setTexture(0, texture);
+        renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
+        glAlphaFunc(GL_GEQUAL, 0.5);
+        glBegin(GL_LINES);
+        glVertex2f(0,0);
+        glVertex2f(0,10);
+        glEnd();
+//    renderDevice->popState();
+    //glPopAttrib();
+    
+    app->renderDevice->pop2D();
+
+//    SwapBuffers(
 /*
     Sphere sphere(Vector3::zero(), 0.5);
 
@@ -212,17 +238,20 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-    
+
     Demo(this).run();
+    
 }
 
-
 App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
+
 }
 
 
 int main(int argc, char** argv) {
     GAppSettings settings;
+    settings.dataDir = "";
+    settings.debugFontName = "";
     App(settings).run();
     return 0;
 }

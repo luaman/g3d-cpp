@@ -21,7 +21,7 @@ typedef ReferenceCountedPointer<class Milestone> MilestoneRef;
  GPU to complete for series of commands.  Create using
  RenderDevice::createMilestone.  These are equivalent to
  NVIDIA fences.  On ATI cards the semantics are identical
- but performanc is lower.
+ but performance is lower.
  */
 class Milestone : public ReferenceCountedObject {
 private:
@@ -57,6 +57,7 @@ private:
     void wait();
 
 public:
+
     ~Milestone();
 
     inline const std::string& name() const {

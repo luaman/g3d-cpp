@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-09-08
+ @edited  2004-09-14
  */
 
 
@@ -97,6 +97,32 @@ public:
 
 typedef G3D::ReferenceCountedPointer<RCPFoo> RCPFooRef;
 
+
+
+
+class Reftest : public ReferenceCountedObject {
+public:
+    static Array<std::string> sequence;
+    const char* s;
+    Reftest(const char* s) : s(s){
+        debugPrintf("alloc 0x%x (%s)\n", this, s);
+        sequence.append(format("%s", s));
+    }
+    ~Reftest() {
+        debugPrintf("free 0x%x (~%s)\n", this, s);
+        sequence.append(format("~%s", s));
+    }
+};
+class Reftest2 : public Reftest {
+public:
+    Reftest2() : Reftest("2") {
+    }
+};
+typedef ReferenceCountedPointer<Reftest> ARef;
+typedef ReferenceCountedPointer<Reftest2> ARef2;
+Array<std::string> Reftest::sequence;
+
+
 void testRCP() {
     printf("ReferenceCountedPointer");
 
@@ -116,6 +142,56 @@ void testRCP() {
 
     debugAssert(a.isLastReference());
     debugAssert(numRCPFoo == 1);
+
+
+    // Test allocation and deallocation of 
+    // reference counted values.
+    {
+        ARef a = new Reftest("a");
+        ARef b = new Reftest("b");
+
+        a = b;
+        Reftest::sequence.append("--");
+        debugPrintf("---------\n");
+        b = NULL;
+        Reftest::sequence.append("--");
+        debugPrintf("---------\n");
+    }
+
+    debugAssert(Reftest::sequence[0] == "a");
+    debugAssert(Reftest::sequence[1] == "b");
+    debugAssert(Reftest::sequence[2] == "~a");
+    debugAssert(Reftest::sequence[3] == "--");
+    debugAssert(Reftest::sequence[4] == "--");
+    debugAssert(Reftest::sequence[5] == "~b");
+
+    Reftest::sequence.clear();
+
+    // Test type hierarchies with reference counted values.
+
+    {
+        ARef one = new Reftest("1");
+        ARef2 two = new Reftest2();
+
+        one = (ARef)two;
+    }
+    debugAssert(Reftest::sequence[0] == "1");
+    debugAssert(Reftest::sequence[1] == "2");
+    debugAssert(Reftest::sequence[2] == "~1");
+    debugAssert(Reftest::sequence[3] == "~2");
+    Reftest::sequence.clear();
+
+    {
+        ARef one = new Reftest2();
+    }
+    debugAssert(Reftest::sequence[0] == "2");
+    debugAssert(Reftest::sequence[1] == "~2");
+    Reftest::sequence.clear();
+
+    {
+        // Should not compile
+//        ARef2 one = new Reftest("1");
+    }
 }
 
 

@@ -261,8 +261,15 @@ public:
     ~RenderDevice();
 
     /**
-     Checkmarks all rendering state (<B>including</B> OpenGL fog and texture
-     coordinate generation).
+     Checkmarks all RenderDevice state (anything that can be set 
+     using RenderDevice methods).  Also saves the OpenGL fog and
+     texture coordinate generation state (GL_TEXTURE_BIT | GL_FOG_BIT) 
+     that is not otherwise managed by RenderDevice.
+
+     If you are using some other OpenGL state that is not covered by
+     any of the above (e.g., the glReadBuffer and other buffer options),
+     you can call glPushAttrib(GL_ALL_ATTRIB_BITS) immediately before 
+     pushState to ensure that it is pushed as well.
      */
     void pushState();
 

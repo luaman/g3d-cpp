@@ -4,10 +4,11 @@
   Reference Counting Garbage Collector for C++
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
-  @cite Adapted from Justin Miller's "RGC" class, as appeared in BYTE magazine.
+  @cite Adapted and extended from Justin Miller's "RGC" class that appeared in BYTE magazine.
+  @cite See also http://www.jelovic.com/articles/cpp_without_memory_errors_slides.htm
 
   @created 2001-10-23
-  @edited  2003-11-17
+  @edited  2004-09-14
 
 Example:
 
@@ -100,12 +101,16 @@ private:
 
     void registerReference() { 
         pointer->ReferenceCountedObject_refCount += 1;
+        //debugPrintf("  ++0x%x\n", pointer);
+        //debugPrintf("  [0x%x] = %d\n", pointer, pointer->ReferenceCountedObject_refCount);
     }
 
 
     int deregisterReference() {
         if (pointer->ReferenceCountedObject_refCount > 0) {
             pointer->ReferenceCountedObject_refCount -= 1;
+            //debugPrintf("  --0x%x\n", pointer);
+            //debugPrintf("  [0x%x] = %d\n", pointer, pointer->ReferenceCountedObject_refCount);
         }
 
         return pointer->ReferenceCountedObject_refCount;
@@ -119,6 +124,7 @@ private:
 
             if (deregisterReference() <= 0) {
                 // We held the last reference, so delete the object
+                //debugPrintf("  delete 0x%x\n", pointer);
                 delete pointer;
             }
 
@@ -140,60 +146,47 @@ private:
         }
     }
 
-    template<class S>
-    static inline T* safecast(S* s) {
-        // If your code fails on this line you tried to assign a reference
-        // counted pointer from the wrong type (e.g. TextureRef a = GFontRef::create().)
-        return s;
-    }
 public:      
-
-    /**
-      Allow subtyping rule RCP&lt;<I>T</I>&gt; &lt;: RCP&lt;<I>S</I>&gt; if <I>T</I> &lt;: <I>S</I>
-       (this could fail at runtime if the subtype relation is incorrect)
-     */
-    template <class S>
-    inline ReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(NULL) {
-        setPointer(safecast(p.getPointer()));
-    }
-
 
     inline ReferenceCountedPointer() : pointer(NULL) {}
 
+    /**
+      Allow compile time subtyping rule 
+      RCP&lt;<I>T</I>&gt; &lt;: RCP&lt;<I>S</I>&gt; if <I>T</I> &lt;: <I>S</I>
+     */
+    template <class S>
+    inline ReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(NULL) {
+        setPointer(p.getPointer());
+    }
 
+    // We need an explicit version of the copy constructor as well or 
+    // the default copy constructor will be used.
+    inline ReferenceCountedPointer(const ReferenceCountedPointer<T>& p) : pointer(NULL) {
+        setPointer(p.pointer);
+    }
+
+    /** Allows construction from a raw pointer.  That object will thereafter be
+        reference counted -- do not call delete on it. */
     inline ReferenceCountedPointer(T* p) : pointer(NULL) { 
         setPointer(p); 
     }
     
-
-    inline ReferenceCountedPointer(const ReferenceCountedPointer<T>& r) : pointer(NULL) { 
-        setPointer(r.getPointer());
-    }
-
-
     inline ~ReferenceCountedPointer() {
         zeroPointer();
     }
   
 
-    /*
-    inline ReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<T>& p) { 
-        setPointer(p.getPointer());
-        return *this; 
-     }
-     */
+    inline const ReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<T>& p) {
+        setPointer(p.pointer);
+        return *this;
+    }   
 
-    template <class S>
-    inline ReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<S>& p) {
-        setPointer(safecast(p.getPointer()));
+
+    inline ReferenceCountedPointer<T>& operator=(T* p) {
+        setPointer(p);
         return *this;
     }
 
-    template <class S>
-    inline ReferenceCountedPointer<T>& operator=(S* p) {
-        setPointer(safecast(p));
-        return *this;
-    }
 
     inline bool operator==(const ReferenceCountedPointer<T>& y) const { 
         return (pointer == y.pointer); 
@@ -202,16 +195,6 @@ public:
 
     inline bool operator!=(const ReferenceCountedPointer<T>& y) const { 
         return (pointer != y.pointer); 
-    }
-
-
-    inline bool operator>(const ReferenceCountedPointer<T>& y) const { 
-        return (pointer > y.pointer); 
-    }
-
-
-    inline bool operator<(const ReferenceCountedPointer<T>& y) const { 
-        return (pointer < y.pointer); 
     }
 
 

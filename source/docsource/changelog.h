@@ -13,8 +13,8 @@
    Changes in 6.04:
    <UL>
      <LI> G3D Manual! [ Morgan and Sascha ]
-     <LI> G3D::ReferenceCountedPointer assignment now allows subtyping
-     <LI> G3D::ReferenceCountedPointer !=, >, < operators
+     <LI> G3D::ReferenceCountedPointer assignment now allows compile time subtyping
+     <LI> G3D::ReferenceCountedPointer != operator
      <LI> G3D::ReferenceCountedPointer::notNull
      <LI> static G3D::IFSModel::save/load for writing/reading IFS files
      <LI> G3D::TextInput allows ' inside quoted strings
