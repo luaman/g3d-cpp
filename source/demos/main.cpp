@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     userInput    = new UserInput();
 
     controller   = new ManualCameraController(renderDevice);
-    controller->setMoveRate(.1);
+    controller->setMoveRate(10);
 
     controller->setPosition(Vector3(15, 20, 15));
     controller->lookAt(Vector3(-2,3,-5));
