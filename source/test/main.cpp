@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2004-02-02
+ @edited  2004-02-17
  */
 
 
@@ -895,6 +895,127 @@ void testCollision() {
 }
 
 
+void testAdjacency() {
+    printf("MeshAlg::computeAdjacency\n");
+
+    {
+        //          2
+        //        /|
+        //       / |
+        //      /  |
+        //     /___|
+        //    0     1
+        //
+        //
+
+
+        MeshAlg::Geometry       geometry;
+        Array<int>              index;
+        Array<MeshAlg::Face>    faceArray;
+        Array<MeshAlg::Edge>    edgeArray;
+        Array< Array<int> >     facesAdjacentToVertex;
+
+        geometry.vertexArray.append(Vector3(0,0,0));
+        geometry.vertexArray.append(Vector3(1,0,0));
+        geometry.vertexArray.append(Vector3(1,1,0));
+
+        index.append(0, 1, 2);
+
+        MeshAlg::computeAdjacency(
+            geometry.vertexArray,
+            index,
+            faceArray,
+            edgeArray,
+            facesAdjacentToVertex);
+
+        debugAssert(faceArray.size() == 1);
+        debugAssert(edgeArray.size() == 3);
+
+        debugAssert(faceArray[0].containsVertex(0));
+        debugAssert(faceArray[0].containsVertex(1));
+        debugAssert(faceArray[0].containsVertex(2));
+
+        debugAssert(faceArray[0].containsEdge(0));
+        debugAssert(faceArray[0].containsEdge(1));
+        debugAssert(faceArray[0].containsEdge(2));
+
+        debugAssert(edgeArray[0].inFace(0));
+        debugAssert(edgeArray[1].inFace(0));
+        debugAssert(edgeArray[2].inFace(0));
+    }
+
+    {
+        //          2
+        //        /|\
+        //       / | \
+        //      /  |  \
+        //     /___|___\
+        //    0     1    3
+        //
+        //
+
+
+        MeshAlg::Geometry       geometry;
+        Array<int>              index;
+        Array<MeshAlg::Face>    faceArray;
+        Array<MeshAlg::Edge>    edgeArray;
+        Array< Array<int> >     facesAdjacentToVertex;
+
+        geometry.vertexArray.append(Vector3(0,0,0));
+        geometry.vertexArray.append(Vector3(1,0,0));
+        geometry.vertexArray.append(Vector3(1,1,0));
+        geometry.vertexArray.append(Vector3(2,0,0));
+
+        index.append(0, 1, 2);
+        index.append(1, 3, 2);
+
+        MeshAlg::computeAdjacency(
+            geometry.vertexArray,
+            index,
+            faceArray,
+            edgeArray,
+            facesAdjacentToVertex);
+
+        debugAssert(faceArray.size() == 2);
+        debugAssert(edgeArray.size() == 5);
+
+        debugAssert(faceArray[0].containsVertex(0));
+        debugAssert(faceArray[0].containsVertex(1));
+        debugAssert(faceArray[0].containsVertex(2));
+
+        debugAssert(faceArray[1].containsVertex(3));
+        debugAssert(faceArray[1].containsVertex(1));
+        debugAssert(faceArray[1].containsVertex(2));
+
+        // Every edge's face must contain that edge
+        for (int e = 0; e < edgeArray.size(); ++e) {
+            const MeshAlg::Edge& edge = edgeArray[e];
+            for (int i = 0; i < 2; ++i) {
+                debugAssert((edge.faceIndex[i] == MeshAlg::Face::NONE) ||
+                    faceArray[edge.faceIndex[i]].containsEdge(e));
+            }
+        }
+
+        // Every face's edge must be on that face
+        for (int f = 0; f < faceArray.size(); ++f) {
+            const MeshAlg::Face& face = faceArray[f];
+            for (int i = 0; i < 3; ++i) {
+                int e = face.edgeIndex[i];
+                int ei = (e >= 0) ? e : ~e;
+                debugAssert(edgeArray[ei].inFace(f));
+
+                // Make sure the edge is oriented appropriately 
+                if (e >= 0) {
+                    debugAssert(edgeArray[ei].faceIndex[0] == f);
+                } else {
+                    debugAssert(edgeArray[ei].faceIndex[1] == f);
+                }
+            }
+        }
+    }
+}
+
+
 void testSwizzle() {
     Vector4 v1(1,2,3,4);
     Vector2 v2;
@@ -902,8 +1023,6 @@ void testSwizzle() {
     v2 = v1.xy() + v1.yz();
 }
 
-
-    #include <sys/timeb.h>
 
 int main(int argc, char* argv[]) {
 
@@ -920,6 +1039,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testAdjacency();
+    printf("  passed\n");
     testSort();
     printf("  passed\n");
     testRCP();

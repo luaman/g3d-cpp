@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2004-01-13
+  @edited  2004-02-17
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -201,9 +201,10 @@ public:
 
    /**
     Destructor does not delete() the objects if T is a pointer type
-    (e.g. T = int*) instead, it deletes the pointers themselves and 
+    (e.g. T = int*) instead, it deletes the <B>pointers themselves</B> and 
     leaves the objects.  Call deleteAll if you want to dealocate
-    the objects referenced.
+    the objects referenced.  Do not call deleteAll if <CODE>T</CODE> is not a pointer
+    type (e.g. do call Array<Foo*>::deleteAll, do <B>not</B> call Array<Foo>::deleteAll).
     */
    ~Array() {
        // Invoke the destructors on the elements
@@ -605,6 +606,17 @@ public:
     }
 
 };
+
+
+/** Array::contains for C-arrays */
+template<class T> bool contains(T* array, int len, const T& e) {
+    for (int i = len - 1; i >= 0; --i) {
+        if (array[i] == e) {
+            return true;
+        }
+    }
+    return false;
+}
 
 } // namespace
 

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2004-02-02
+ @edited  2004-02-17
 */
 
 #ifndef G3D_MESHALG_H
@@ -29,6 +29,33 @@ namespace G3D {
 class MeshAlg {
 public:
 
+    /** Adjacency information for a vertex.
+        Does not contain the vertex position or normal,
+        which are stored in the MeshAlg::Geometry object.
+        */
+    class Vertex {
+    public:
+        Vertex() {}
+
+        /**
+         Array of edges adjacent to this vertex.
+         Let e = edgeIndex[i].  
+         edge[(e >= 0) ? e : ~e].vertexIndex[0] == this
+         vertex index.
+         
+         Edges may be listed multiple times if they are
+         degenerate.
+         */
+        Array<int>              edgeIndex;
+
+        /**
+         Array of faces containing this vertex.  Faces
+         may be listed multiple times if they are degenerate.
+        */
+        Array<int>              faceIndex;
+    };
+
+
     /**
      Oriented, indexed triangle.
      */
@@ -44,9 +71,14 @@ public:
 
 
         /**
-         Vertices in the face in counter-clockwise order
+         Vertices in the face in counter-clockwise order.
+         Degenerate faces may include the same vertex multiple times.
          */
         int                     vertexIndex[3];
+
+        inline bool containsVertex(int v) const {
+            return contains(vertexIndex, 3, v);
+        }
 
         /**
          Edge indices in counter-clockwise order.  Edges are
@@ -68,10 +100,25 @@ public:
          <CODE>edgeArray[~face.edgeIndex[i]].vertexIndex[0]</CODE>
          and
          <CODE>edgeArray[~face.edgeIndex[i]].vertexIndex[1]</CODE>.
+
+         Degenerate faces may include the same edge multiple times.
          */
         // Temporarily takes on the value Face::NONE during adjacency
         // computation to indicate an edge that has not yet been assigned.
         int                     edgeIndex[3];
+
+        inline bool containsEdge(int e) const {
+            if (e < 0) {
+                e = ~e;
+            }
+            return contains(edgeIndex, 3, e) || contains(edgeIndex, 3, ~e);
+        }
+
+        /** Contains the forward edge e if e >= 0 and the backward edge 
+            ~e otherwise. */
+        inline bool containsDirectedEdge(int e) const {
+            return contains(edgeIndex, 3, e);
+        }
     };
 
 
@@ -80,21 +127,37 @@ public:
     public:
         Edge();
 
+        /** Degenerate edges may include the same vertex times. */
         int                     vertexIndex[2];
+        
+        inline bool containsVertex(int v) const {
+            return contains(vertexIndex, 3, v);
+        }
 
         /**
          The edge is directed <B>forward</B> in face 0
          <B>backward</B> in face 1. Face index of MeshAlg::Face::NONE
-         indicates a broken (a.k.a. crack, boundary) edge.
+         indicates a boundary (a.k.a. crack, broken) edge.
          */
         int                     faceIndex[2];
+        
+        /** Returns true if f is contained in the faceIndex array in either slot.
+            To see if it is forward in that face, just check edge.faceIndex[0] == f.*/
+        inline bool inFace(int f) const {
+            return contains(faceIndex, 2, f);
+        }
 
         /**
          Returns true if either faceIndex is NONE.
          */
-        inline bool broken() const {
+        inline bool boundary() const {
             return (faceIndex[0] == Face::NONE) ||
                    (faceIndex[1] == Face::NONE);
+        }
+
+        /** @deprecated Use Edge::boundary */
+        inline bool broken() const {
+            return boundary();
         }
 
         /**
@@ -135,31 +198,35 @@ public:
     /**
      Given a set of vertices and a set of indices for traversing them
      to create triangles, computes other mesh properties.  
+
+     <B>Colocated vertices are treated as separate.</B>  To have
+     colocated vertices collapsed (necessary for many algorithms,
+     like shadowing), weld the mesh before computing adjacency.
      
-     Faces consisting of fewer than 3 distinct vertex indices will not
-     appear in the face array and their edges will not appear in
-     the edge array.
+     <I>Recent change: In version 6.00, colocated vertices were automatically
+     welded by this routine and degenerate faces and edges were removed.  That
+     is no longer the case.</I>
 
      Where two faces meet, there are two opposite directed edges.  These
-     are collapsed into a single bidirectional edge in the geometricEdgeArray.
+     are collapsed into a single bidirectional edge in the edgeArray.
      If four faces meet exactly at the same edge, that edge will appear
-     twice in the array.  If an edge is broken (has only one adjacent face)
-     it will appear in the array with one face index set to NONE.
+     twice in the array, and so on.  If an edge is a boundary of the mesh 
+     (i.e. if the edge has only one adjacent face) it will appear in the 
+     array with one  face index set to MeshAlg::Face::NONE.
 
      @param vertexArray Vertex positions to use when deciding colocation.
      @param indexArray  Order to traverse vertices to make triangles
-     @param faceArray   Output
-     @param geometricEdgeArray Output.  These edges automatically weld 
-            colocated vertices and remove degenerate edges.
-     @param adjacentFaceArray Output. adjacentFaceArray[v] is an array of
+     @param faceArray   <I>Output</I>
+     @param edgeArray   <I>Output</I>  
+     @param facesAdjacentToVertex <I>Output</I> adjacentFaceArray[v] is an array of
                         indices for faces touching vertex index v
      */
     static void computeAdjacency(
         const Array<Vector3>&   vertexArray,
         const Array<int>&       indexArray,
         Array<Face>&            faceArray,
-        Array<Edge>&            geometricEdgeArray,
-        Array< Array<int> >&    adjacentFaceArray);
+        Array<Edge>&            edgeArray,
+        Array< Array<int> >&    facesAdjacentToVertex);
 
 
     static void computeAreaStatistics(
@@ -294,7 +361,13 @@ public:
      Counts the number of edges (in an edge array returned from 
      MeshAlg::computeAdjacency) that have only one adjacent face.
      */
-    static int countBrokenEdges(const Array<Edge>& edgeArray);
+    static int countBoundaryEdges(const Array<Edge>& edgeArray);
+
+    /** @deprecated Use countBoundaryEdges */
+    inline static int countBrokenEdges(const Array<Edge>& edgeArray) {
+        return countBoundaryEdges(edgeArray);
+    }
+
 
     /**
      Generates an array of integers from start to start + n - 1 that have run numbers

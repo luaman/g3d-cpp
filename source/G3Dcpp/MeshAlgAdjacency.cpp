@@ -17,63 +17,33 @@
 namespace G3D {
 
 /**
- An edge directed according to the "size" of the vertices 
- for use in edgeTable. 
-
- Let the "smaller" vertex of A and B be the one with 
- the smaller x component, with ties broken by the y 
- and z components as needed.  This gives a canonical
- ordering on any set of vertices.
+ A half [i.e. directed] edge.
  */
 class MeshDirectedEdgeKey {
 public:
 
-    /**
-     vertex[0] < vertex[1]
-     */
-    Vector3 vertex[2];
-
-    /**
-     Corresponding indices in the vertex array.
-     Colocated vertices are indistinguishible
-     to the edge table, so *any* two vertex 
-     indices for vertices are the right position
-     are sufficient.
-     */
+    /** vertexIndex[0] <= vertexIndex[1] */
     int     vertexIndex[2];
 
     MeshDirectedEdgeKey() {}
     
     MeshDirectedEdgeKey(
         const int        i0,
-        const Vector3&   v0,
-        const int        i1,
-        const Vector3&   v1) {
+        const int        i1) {
 
-        vertexIndex[0] = i0;
-        vertexIndex[1] = i1;
-        vertex[0]      = v0;
-        vertex[1]      = v1;
-
-        // Find the smaller vertex.
-        for (int i = 0; i < 3; ++i) {
-            if (v0[i] < v1[i]) {
-                break;
-            } else if (v0[i] > v1[i]) {
-                // Swap
-                vertexIndex[0] = i1;
-                vertexIndex[1] = i0;
-                vertex[0]    = v1;
-                vertex[1]    = v0;
-                break;
-            }
+        if (i0 <= i1) {
+            vertexIndex[0] = i0;
+            vertexIndex[1] = i1;
+        } else {
+            vertexIndex[0] = i1;
+            vertexIndex[1] = i0;
         }
     }
 
 
     bool operator==(const MeshDirectedEdgeKey& e2) const {
         for (int i = 0; i < 2; ++i) {
-            if (vertex[i] != e2.vertex[i]) {
+            if (vertexIndex[i] != e2.vertexIndex[i]) {
                 return false;
             }
         }
@@ -84,13 +54,16 @@ public:
 }
 
 unsigned int hashCode(const G3D::MeshDirectedEdgeKey& e) {
-    return (e.vertex[0].hashCode() + 1) ^ e.vertex[1].hashCode();
+    return e.vertexIndex[0] + (e.vertexIndex[1] << 16);
 }
 
 namespace G3D {
 
 /**
- A 2-key hashtable mapping edges to lists of face indices.  
+ A hashtable mapping edges to lists of indices for
+ faces.  This is used instead of Table because of the
+ special logic in insert.
+
  Used only for MeshAlg::computeAdjacency.
 
  In the face lists, index <I>f</I> >= 0 indicates that
@@ -152,6 +125,8 @@ public:
 
 
 /**
+ edgeTable[edgeKey] is a list of faces containing
+ 
  Used and cleared by MeshModel::computeAdjacency()
  */
 static MeshEdgeTable            edgeTable;
@@ -180,56 +155,56 @@ void MeshAlg::computeAdjacency(
     Array<Edge>&            edgeArray,
     Array< Array<int> >&    adjacentFaceArray) {
 
-    edgeArray.resize(0);
-    adjacentFaceArray.resize(0);
-    adjacentFaceArray.resize(vertexArray.size());
-
-    faceArray.resize(0);
+    edgeArray.clear();
+    adjacentFaceArray.clear();
+    faceArray.clear();
     edgeTable.clear();
     
     // Face normals
     Array<Vector3> faceNormal;
 
+    // This array has the same size as the vertex array
+    adjacentFaceArray.resize(vertexArray.size());
+
     // Iterate through the triangle list
     for (int q = 0; q < indexArray.size(); q += 3) {
 
-        // Don't allow degenerate faces
-        if ((indexArray[q + 0] != indexArray[q + 1]) &&
-            (indexArray[q + 1] != indexArray[q + 2]) &&
-            (indexArray[q + 2] != indexArray[q + 0])) {
-            Vector3 vertex[3];
-            int f = faceArray.size();
-            MeshAlg::Face& face = faceArray.next();
+        Vector3 vertex[3];
+        int f = faceArray.size();
+        MeshAlg::Face& face = faceArray.next();
 
-            // Construct the face
-            for (int j = 0; j < 3; ++j) {
-                int v = indexArray[q + j];
-                face.vertexIndex[j] = v;
-                face.edgeIndex[j]   = Face::NONE;
-                adjacentFaceArray[v].append(f);
-                vertex[j]           = vertexArray[v];
-            }
+        // Construct the face
+        for (int j = 0; j < 3; ++j) {
+            int v = indexArray[q + j];
+            face.vertexIndex[j] = v;
+            face.edgeIndex[j]   = Face::NONE;
 
-            faceNormal.append((vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]).direction());
+            // Every vertex is adjacent to 
+            adjacentFaceArray[v].append(f);
 
-            static const int nextIndex[] = {1, 2, 0};
+            // We'll need these vertices to find the face normal
+            vertex[j]           = vertexArray[v];
+        }
 
-            // Add each edge to the edge table.
-            for (int j = 0; j < 3; ++j) {
-                const int      i0 = indexArray[q + j];
-                const int      i1 = indexArray[q + nextIndex[j]];
-                const Vector3& v0 = vertexArray[i0];
-                const Vector3& v1 = vertexArray[i1];
+        // Compute the face normal
+        Vector3 N = (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]);
+        faceNormal.append(N.directionOrZero());
 
-                const MeshDirectedEdgeKey edge(i0, v0, i1, v1);
+        static const int nextIndex[] = {1, 2, 0};
 
-                if (v0 == edge.vertex[0]) {
-                    // The edge was directed in the same manner as in the face
-                    edgeTable.insert(edge, f);
-                } else {
-                    // The edge was directed in the opposite manner as in the face
-                    edgeTable.insert(edge, ~f);
-                }
+        // Add each edge to the edge table.
+        for (int j = 0; j < 3; ++j) {
+            const int      i0 = indexArray[q + j];
+            const int      i1 = indexArray[q + nextIndex[j]];
+
+            const MeshDirectedEdgeKey edge(i0, i1);
+
+            if (i0 == edge.vertexIndex[0]) {
+                // The edge was directed in the same manner as in the face
+                edgeTable.insert(edge, f);
+            } else {
+                // The edge was directed in the opposite manner as in the face
+                edgeTable.insert(edge, ~f);
             }
         }
     }

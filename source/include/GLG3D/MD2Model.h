@@ -366,6 +366,10 @@ public:
     virtual ~MD2Model() {}
 
     PosedModelRef pose(const CoordinateFrame& cframe, const Pose& pose);
+
+    /** You can also pose a model without a material.  A good example of why this is useful
+        is the MD2Model_Demo, in which shadows are rendered by flattening a pose of the model.
+        The shadow should not be textured!*/
     PosedModelRef pose(const CoordinateFrame& cframe, const Pose& pose, const GMaterial& mat);
 
     inline const Array<Vector2int16>& texCoordArray() const {

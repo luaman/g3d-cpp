@@ -165,6 +165,22 @@ public:
      */
     Vector3 reflectionDirection(const Vector3& normal) const;
     
+
+    /**
+     Returns Vector3::ZERO if the length is nearly zero, otherwise
+     returns a unit vector.
+     */
+    inline Vector3 directionOrZero() const {
+        double len = length();
+        if (G3D::fuzzyEq(len, 0.0)) {
+            return Vector3::ZERO;
+        } else if (G3D::fuzzyEq(len, 1.0)) {
+            return *this;
+        } else {
+            return *this * (1.0 / len);
+        }
+    }
+
     /**
      Returns the direction of a refracted ray,
      where iExit is the index of refraction for the

@@ -262,7 +262,7 @@ void MeshAlg::computeAreaStatistics(
 }
 
 
-int MeshAlg::countBrokenEdges(const Array<MeshAlg::Edge>& edgeArray) {
+int MeshAlg::countBoundaryEdges(const Array<MeshAlg::Edge>& edgeArray) {
     int b = 0;
 
     for (int i = 0; i < edgeArray.size(); ++i) {
