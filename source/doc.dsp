@@ -132,7 +132,7 @@ SOURCE=".\docsource\guide-welcome.h"
 # End Source File
 # Begin Source File
 
-SOURCE=.\docsource\license.html
+SOURCE=.\docsource\license.h
 # End Source File
 # End Group
 # Begin Source File
