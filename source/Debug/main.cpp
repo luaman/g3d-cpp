@@ -43,13 +43,10 @@ public:
 
     class App*					app;
 	
-	TextureRef					brush;
-
-    VertexAndPixelShaderRef shader;
+    Array<Vector3>              array;
+    AABSPTree<Vector3>          tree;
 
     Demo(App* app);    
-
-	void drawNailboard();
 
     virtual void init();
 
@@ -61,28 +58,28 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
+    const int NUM_POINTS = 100000;
+    
+    for (int i = 0; i < NUM_POINTS; ++i) {
+        Vector3 pt = Vector3(random(-10, 10), random(-10, 10), random(-10, 10));
+        array.append(pt);
+        tree.insert(pt);
+    }
+
+    
+    Vector3 pt(1,1,1);
+    array.append(pt);
+    tree.insert(pt);
+
+    tree.balance();
 }
 
 
 void Demo::init()  {
    
 	// Called before Demo::run() beings
-    app->debugCamera.setPosition(Vector3(0, 2, 10));
-    app->debugCamera.lookAt(Vector3(0, 2, 0));
-
-    debugAssert(VertexAndPixelShader::fullySupported());
-
-	brush = Texture::fromFile("D:/games/hardwarecontours/code/distrib/brush/toonfur.tga",
-		TextureFormat::AUTO, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
-
-
-    std::string ps =
-        "uniform sampler2DRect T;"
-        "void main (void) {"
-        "   gl_FragColor = texture2DRect(T, gl_TexCoord[0].st);"
-        "}";
-
-    shader = VertexAndPixelShader::fromStrings("", ps);
+    app->debugCamera.setPosition(Vector3(0, 20, 0));
+    app->debugCamera.lookAt(Vector3(0, 0, 0), -Vector3::UNIT_Z);
 }
 
 
@@ -96,35 +93,6 @@ void Demo::doLogic() {
 }
 
 
-void Demo::drawNailboard() {
-
-	app->renderDevice->pushState();
-		
-		app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
-		app->renderDevice->disableLighting();
-
-		VertexAndPixelShader::ArgList args;
-		args.set("T", brush);
-
-		app->renderDevice->setVertexAndPixelShader(shader, args);
-
-		app->renderDevice->beginPrimitive(RenderDevice::QUADS);
-			app->renderDevice->setTexCoord(0, Vector2(0, 0));
-			app->renderDevice->sendVertex(Vector3(-1, 1, 0));
-
-			app->renderDevice->setTexCoord(0, Vector2(0, 256));
-			app->renderDevice->sendVertex(Vector3(-1, -1, 0));
-
-			app->renderDevice->setTexCoord(0, Vector2(256, 256));
-			app->renderDevice->sendVertex(Vector3( 1, -1, 0));
-
-			app->renderDevice->setTexCoord(0, Vector2(256, 0));
-			app->renderDevice->sendVertex(Vector3( 1, 1, 0));
-		app->renderDevice->endPrimitive();
-	app->renderDevice->pop2D();
-}
-
-
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
@@ -132,36 +100,46 @@ void Demo::doGraphics() {
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
-    app->renderDevice->clear(app->sky.isNull(), true, true);
-    if (! app->sky.isNull()) {
-        app->sky->render(lighting);
-    }
+    app->renderDevice->clear(true, true, true);
 
 	
-    // Setup lighting
-    app->renderDevice->enableLighting();
-		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-		app->renderDevice->setAmbientLightColor(lighting.ambient);
+	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
-		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+    // Draw all points
+    app->renderDevice->setPointSize(1);
+    app->renderDevice->setColor(Color3::WHITE);
+    app->renderDevice->beginPrimitive(RenderDevice::POINTS);
+        for (int i = 0; i < array.size(); ++i) {
+            app->renderDevice->sendVertex(array[i]);
+        }
+    app->renderDevice->endPrimitive();
+    
 
-		drawNailboard();
+    Array<Vector3> point;
+//    tree.getIntersectingMembers(AABox(Vector3(0,-20,0), Vector3(5,20,5)), point);
 
-    app->renderDevice->disableLighting();
+    Array<Plane> plane;
+    plane.append(Plane(Vector3(-1, 0, 0), Vector3(5, 0, 0)));
+    plane.append(Plane(Vector3(1, 0, 0), Vector3(0, 0, 0)));
+    plane.append(Plane(Vector3(0, 0, -1), Vector3(0, 0, 5)));
+    plane.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, 0)));
+    tree.getIntersectingMembers(plane, point);
 
-    if (! app->sky.isNull()) {
-        app->sky->renderLensFlare(lighting);
-    }
-	
+    // Draw points inside planes
+    app->renderDevice->setPointSize(5);
+    app->renderDevice->setColor(Color3::BLACK);
+    app->renderDevice->beginPrimitive(RenderDevice::POINTS);
+        for (int i = 0; i < point.size(); ++i) {
+            app->renderDevice->sendVertex(point[i]);
+        }
+    app->renderDevice->endPrimitive();
+
 }
 
 
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-
-    // Load objects here
-    sky = Sky::create(renderDevice, dataDir + "sky/");
     
     Demo(this).run();
 }

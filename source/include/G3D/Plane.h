@@ -6,13 +6,14 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2003-04-29
+ @edited  2004-07-07
 */
 
 #ifndef G3D_PLANE_H
 #define G3D_PLANE_H
 
 #include "G3D/Vector3.h"
+#include "G3D/debugAssert.h"
 
 namespace G3D {
 
@@ -61,7 +62,21 @@ public:
      Returns true if point is on the side the normal points to or 
      is in the plane.
      */
-    inline bool halfSpaceContains(const Vector3& point) const {
+    inline bool halfSpaceContains(Vector3 point) const {
+        // Clamp to a finite range for testing
+        point = point.clamp(Vector3::minVector(), Vector3::maxVector());
+
+        // We can get away with putting values *at* the limits of the float32 range into
+        // a dot product, since the dot product is carried out on float64.
+        return _normal.dot(point) >= distance;
+    }
+
+    /**
+     Returns true if point is on the side the normal points to or 
+     is in the plane.  Only call on finite points.  Faster than halfSpaceContains.
+     */
+    inline bool halfSpaceContainsFinite(const Vector3& point) const {
+        debugAssert(point.isFinite());
         return _normal.dot(point) >= distance;
     }
 

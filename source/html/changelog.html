@@ -11,6 +11,8 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> Vector3::minVector, Vector3::maxVector
+	 <LI> Plane::halfSpaceContainsFinite
      <LI> AABSPTree::getIntersectingMembers(Array<Plane>) for view-frustum culling.
      <LI> AABox::split
      <LI> Extended AABox::culledBy, Box::culledBy, and Sphere::culledBy with extra
@@ -30,6 +32,7 @@
      <LI> GImage and Texture now load ICO files
 	 <LI> GL_SAMPLER_1D_ARB, 2D, 3D, CUBE
 	 <LI> Win32Window mouse events
+	 <LI> Fix: Plane::halfSpaceContains now works for infinite and semi-infinite points
      <LI> Fix: [ 979032 ] Quat <-> Matrix3 roundtrip inverts
 	 <LI> Fix: [ 976743 ] document GLCaps functions
 	 <LI> Fix: [ 976746 ] #include GLCaps in g3dall
