@@ -521,6 +521,7 @@ to add zlibstat.lib to your linker list.
 	      face is ccw, facing out
      <LI> FIX: ManualCameraController::lookAt now faces along the -z axis.
      <LI> FIX: data/ifs/icosa.ifs model is now an icosahedron
+     <LI> Made Set::begin() and Set::end() const
      <LI> Added ifdef _WIN32 all over for typedefing types from Windows to Linux and vice versa.
      <LI> G3D::isNaN, G3D::isFinite
      <LI> Added a single triangle triangle.ifs file

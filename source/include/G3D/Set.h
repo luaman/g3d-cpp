@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-12-09
-  @edited  2002-11-02
+  @edited  2003-03-21
  */
 
 #ifndef G3D_SET_H
@@ -130,7 +130,7 @@ public:
      Use preincrement (++entry) to get to the next element.  
      Do not modify the set while iterating.
      */
-    Iterator begin() {
+    Iterator begin() const {
         return Iterator(memberTable.begin());
     }
 
@@ -139,12 +139,12 @@ public:
      C++ STL style iterator method.  Returns one after the last iterator
      element.
      */
-    const Iterator end() {
+    const Iterator end() const {
         return Iterator(memberTable.end());
     }
 };
 
-};// namespace
+}
 
 #endif
 
