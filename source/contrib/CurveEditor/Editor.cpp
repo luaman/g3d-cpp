@@ -395,7 +395,7 @@ void Editor::compute3DCurve(Array<Quad>& quadArray) {
     int M = 12;
 
     // Radius of rings
-    double r = .2;
+    double r = .1;
 
     for (int a = 0; a < N; ++a) {
         // 'a' is this ring, 'b' is the next one
@@ -457,7 +457,73 @@ void Editor::compute3DCurve(Array<Quad>& quadArray) {
             quad.vertex[3] = P1b + v[3] * r;
             quad.normal[3] = v[3];
         }
+
+        if (! cyclic) {
+            // Number of strips on cap
+            int I = 5;
+
+            // Put hemisphere caps on
+            if (a == 0) {
+                // Begin cap
+                Vector3 W = -dPa;
+                for (int i = 0; i < I; ++i) {
+
+                    // angle from tip to cap base
+                    double aa = G3D_HALF_PI * (double)i / I;
+                    double ab = G3D_HALF_PI * (i + 1.0) / I;
+
+                    for (int m = 0; m < M; ++m) {
+                        // Angle
+                        double q0 = G3D_TWO_PI * m / M; 
+                        double q1 = G3D_TWO_PI * (m + 1) / M;
+                        Quad& quad = quadArray.next();
+
+                        // Unit vertices relative to curve center
+                        Vector3 v[4];
+                        v[0] = (Ua * cos(q0) + Va * sin(q0)) * cos(aa) + W * sin(aa);
+                        v[1] = (Ua * cos(q1) + Va * sin(q1)) * cos(aa) + W * sin(aa);
+                        v[2] = (Ua * cos(q1) + Va * sin(q1)) * cos(ab) + W * sin(ab);
+                        v[3] = (Ua * cos(q0) + Va * sin(q0)) * cos(ab) + W * sin(ab);
+
+                        for (int j = 0; j < 4; ++j) {
+                            quad.vertex[j] = P1a + v[3 - j] * r;
+                            quad.normal[j] = v[3 - j];
+                        }
+                    }
+                }
+
+            } else if (a == N - 1) {
+                // End cap
+                Vector3 W = dPa;
+                for (int i = 0; i < I; ++i) {
+                    // angle from tip to cap base
+                    double aa = G3D_HALF_PI * (double)i / I;
+                    double ab = G3D_HALF_PI * (i + 1.0) / I;
+
+                    for (int m = 0; m < M; ++m) {
+                        // Angle
+                        double q0 = G3D_TWO_PI * m / M; 
+                        double q1 = G3D_TWO_PI * (m + 1) / M;
+                        Quad& quad = quadArray.next();
+
+                        // Unit vertices relative to curve center
+                        Vector3 v[4];
+                        v[0] = (Ub * cos(q0) + Vb * sin(q0)) * cos(aa) + W * sin(aa);
+                        v[1] = (Ub * cos(q1) + Vb * sin(q1)) * cos(aa) + W * sin(aa);
+                        v[2] = (Ub * cos(q1) + Vb * sin(q1)) * cos(ab) + W * sin(ab);
+                        v[3] = (Ub * cos(q0) + Vb * sin(q0)) * cos(ab) + W * sin(ab);
+
+                        for (int j = 0; j < 4; ++j) {
+                            quad.vertex[j] = P1b + v[j] * r;
+                            quad.normal[j] = v[j];
+                        }
+                    }
+                }
+            }
+
+        }
     }
+
 }
 
 
@@ -496,7 +562,7 @@ void Editor::draw3DCurve() {
         for (int q = 0; q < quadArray.size(); ++q) {
             for (int v = 0; v < 4; ++v) {
                 rd->setNormal(quadArray[q].normal[v]);
-                rd->sendVertex(quadArray[q].vertex[v]);
+                rd->sendVertex(quadArray[q].vertex[v] * 2);
             }
         }
     rd->endPrimitive();
