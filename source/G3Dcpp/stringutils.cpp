@@ -78,7 +78,7 @@ std::string wordWrap(
             output += NEWLINE;
         }
 
-        if (inLen - c - 1 < numCols) {
+        if ((int)inLen - c - 1 < numCols) {
             // The end
             output += input.substr(c, inLen - c);
             break;
@@ -146,7 +146,7 @@ Array<std::string> stringSplit(
     const std::string&          x,
     char                        splitChar) {
 
-    int prev, cur = 0;
+    size_t prev, cur = 0;
     Array<std::string> out;
 
     while (cur < x.size()) {
@@ -186,7 +186,7 @@ std::string stringJoin(
 std::string trimWhitespace(
     const std::string&              s) {
 
-    int left = 0;
+    size_t left = 0;
     
     // Trim from left
     while ((left < s.length()) && iswspace(s[left])) {
