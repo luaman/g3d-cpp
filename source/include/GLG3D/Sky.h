@@ -57,6 +57,9 @@ private:
 
     std::string                                 name;
 
+    Array<Vector4>                              star;
+    Array<float>                                starIntensity;
+
 public:
     /**
      @param directory A directory containing images for:

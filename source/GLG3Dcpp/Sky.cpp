@@ -56,6 +56,15 @@ Sky::Sky(
     disk     = new Texture("Flare",     directory + "lensflare.jpg",    "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 0, true);
     sunRays  = new Texture("Sun rays",  directory + "sun-rays.jpg",     "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 0, false);
 
+    
+    int i = 0;
+    star.resize(4000);
+    starIntensity.resize(star.size());
+    for (i = star.size() - 1; i >= 0; --i) {
+        star[i] = Vector4(Vector3::random(), 0);
+        starIntensity[i] = square(unitRandom()) * .9 + .1;
+    }
+
 	this->name = name;
 }
 
@@ -201,6 +210,30 @@ void Sky::render(
 	renderDevice->endPrimitive();
 
     infiniteProjectionMatrix(renderDevice);
+
+    // Draw stars
+    if (lighting.moonPosition.y > 0) {
+        /*
+        glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
+        glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glVertexPointer(4, GL_FLOAT, 0, star.getCArray());
+            glDrawArrays(GL_POINTS, 0, star.size());
+        glPopClientAttrib();
+        glPopAttrib();
+        */
+
+        // TODO: rotate stars
+        double k = lighting.moonPosition.y * renderDevice->getBrightScale();
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
+        renderDevice->beginPrimitive(RenderDevice::POINTS);
+        for (int i = star.size() - 1; i >= 0; --i) {
+            double b = starIntensity[i] * k;
+            renderDevice->setColor(Color3(b,b,b));
+            renderDevice->sendVertex(star[i]);
+        }
+        renderDevice->endPrimitive();
+    }
 
     // Draw the moon
     {

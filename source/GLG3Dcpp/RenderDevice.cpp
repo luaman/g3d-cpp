@@ -1903,6 +1903,10 @@ void RenderDevice::beginPrimitive(Primitive p) {
         glBegin(GL_QUAD_STRIP);
         break;
 
+    case POINTS:
+        glBegin(GL_POINTS);
+        break;
+
     default:
         debugAssertM(false, "Fell through switch");
     }
