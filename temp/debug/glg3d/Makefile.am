@@ -11,6 +11,7 @@ libGLG3D_debug_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                 		   ../../../source/GLG3Dcpp/TextureManager.cpp \
                            ../../../source/GLG3Dcpp/LightingParameters.cpp \
                            ../../../source/GLG3Dcpp/MD2Model.cpp \
+                           ../../../source/GLG3Dcpp/edgeFeatures.cpp \
                            ../../../source/GLG3Dcpp/MD2Model_load.cpp \
                            ../../../source/GLG3Dcpp/ManualCameraController.cpp \
                            ../../../source/GLG3Dcpp/Milestone.cpp \
@@ -19,7 +20,7 @@ libGLG3D_debug_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                            ../../../source/GLG3Dcpp/RenderDevice.cpp \
                            ../../../source/GLG3Dcpp/Sky.cpp \
                            ../../../source/GLG3Dcpp/Texture.cpp \
-                          ../../../source/GLG3Dcpp/shadowVolume.cpp \
+                           ../../../source/GLG3Dcpp/shadowVolume.cpp \
                            ../../../source/GLG3Dcpp/TextureFormat.cpp \
                            ../../../source/GLG3Dcpp/UserInput.cpp \
                            ../../../source/GLG3Dcpp/VAR.cpp \

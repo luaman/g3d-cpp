@@ -63,5 +63,6 @@
 #include "GLG3D/shadowVolume.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/SDLWindow.h"
+#include "GLG3D/edgeFeatures.h"
 
 #endif
