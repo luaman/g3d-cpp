@@ -388,19 +388,19 @@ bool RenderDevice::init(
     if (debugLog) {
         debugLog->printf("Operating System: %s\n", System::operatingSystem().c_str());
         debugLog->printf("Processor Architecture: %s\n\n", System::cpuArchitecture().c_str());
+        std::string s = getDriverVersion();
 
         debugLog->printf(
             "GL Vendor:     %s\n"
             "GL Renderer:   %s\n"
-            "GL Version:    %s\n\n"
+            "GL Version:    %s\n",
+            "Driver version: %s\n\n",
             "GL extensions: \"%s\"\n",
             glGetString(GL_VENDOR),
             glGetString(GL_RENDERER),
             glGetString(GL_VERSION),
+            s.c_str(),
             extensions.str().c_str());
-
-        std::string s = getDriverVersion();
-        debugLog->printf("Driver version: %s\n\n", s.c_str());
     }
  
     // Don't use more texture units than allowed at compile time.
