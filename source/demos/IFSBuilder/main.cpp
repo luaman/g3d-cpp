@@ -16,7 +16,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-07-21
+  @edited  2003-10-06
  */ 
 
 #include <G3DAll.h>
@@ -81,10 +81,10 @@ int main(int argc, char** argv) {
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("d:/graphics3d/book/data/ifs/bunny.ifs");
+//    std::string in("d:/graphics3d/book/data/ifs/bunny.ifs");
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/ROCKHRSE.ifs");
-//    std::string in("g:/libraries/g3d-6_00-b5/data/ifs/teapot.ifs");
-//    std::string in("g:/libraries/g3d-6_00-b5/data/ifs/sphere.ifs");
+//    std::string in("d:/libraries/g3d-6_00/data/ifs/teapot.ifs");
+    std::string in("d:/libraries/g3d-6_00/data/ifs/dinosaur.ifs");
     std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
 
     Array<std::string> filename;

@@ -10,7 +10,7 @@
 #include "IFSModelBuilder.h"
 #include "IFSModel.h"
 
-const double IFSModelBuilder::CLOSE = 0.01;
+const double IFSModelBuilder::CLOSE = 0.1;
 
 void IFSModelBuilder::setName(const std::string& n) {
     name = n;
@@ -93,10 +93,10 @@ void IFSModelBuilder::commit(IFSModel* model) {
 
 
 /**
- Computes the grid index from an ordinate.
+ Computes the grid index from an ordinate on the range [-1, 1]
  */
 static int gridCoord(double x) {
-    return iMax(0, iMin(GRID_RES - 1, iFloor((x + 1) * 0.5 * (GRID_RES - 1))));
+    return iClamp(iFloor((x + 1) * 0.5 * (GRID_RES - 1)), 0, GRID_RES - 1);
 }
 
 
@@ -141,7 +141,7 @@ int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
 
         Set<List*> neighbors;
 
-        debugAssertM(CLOSE < (1.0 / GRID_RES), "CL must be less than one grid cell's width");
+        debugAssertM(CLOSE < (2.0 / GRID_RES), "CL must be less than one grid cell's width");
 
         int ix = gridCoord(v.x);
         int iy = gridCoord(v.y);

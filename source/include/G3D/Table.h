@@ -7,7 +7,7 @@
   @cite Bug fix by Darius Jazayeri, jazayeri@MIT.EDU
 
   @created 2001-04-22
-  @edited  2003-02-02
+  @edited  2003-10-06
  */
 
 #ifndef G3D_TABLE_H
@@ -453,10 +453,10 @@ public:
         } while (n != NULL);
 
         const int maxBucketLength = 5;
-        if ((bucketLength > maxBucketLength) & ! allSameCode){
+        if ((bucketLength > maxBucketLength) & ! allSameCode && (numBuckets < _size * 20)) {
             // This bucket was really large; rehash if all elements
-            // don't have the same hashcode.
-            resize(numBuckets * 2);
+            // don't have the same hashcode the number of buckets is reasonable.
+            resize(numBuckets * 2 + 1);
         }
 
         // Not found; insert at the head.
@@ -534,18 +534,18 @@ public:
     */
    bool containsKey(const Key &key) const {
        unsigned int code = ::hashCode(key);
-      unsigned int b = code % numBuckets;
+       unsigned int b = code % numBuckets;
 
-      Node* node = bucket[b];
+       Node* node = bucket[b];
 
-      while (node != NULL) {
-         if ((node->hashCode == code) && (node->entry.key == key)) {
-            return true;
-         }
-         node = node->next;
-      } while (node != NULL);
+       while (node != NULL) {
+           if ((node->hashCode == code) && (node->entry.key == key)) {
+              return true;
+           }
+           node = node->next;
+       } while (node != NULL);
 
-      return false;
+       return false;
    }
 
 

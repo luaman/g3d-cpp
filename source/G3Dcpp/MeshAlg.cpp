@@ -99,11 +99,7 @@ public:
 }
 
 unsigned int hashCode(const G3D::MeshDirectedEdgeKey& e) {
-    unsigned int h = 0;
-    for (int i = 0; i < 2; ++i) {
-        h = (h << 7) + e.vertex[i].hashCode();
-    }
-    return h;
+    return (e.vertex[0].hashCode() + 1) ^ e.vertex[1].hashCode();
 }
 
 namespace G3D {
@@ -137,6 +133,7 @@ public:
      Inserts the given edge into the table.
      */
     void insert(const MeshDirectedEdgeKey& edge, int edgeIndex) {
+        debugAssert(table.debugGetLoad() < 0.5 || table.debugGetNumBuckets() < 20);
         if (! table.containsKey(edge)) {
             table.set(edge, edgeIndex);
         }

@@ -14,7 +14,7 @@
 #include <G3DAll.h>
 
 // We construct a grid to find neighboring vertices in O(n/g^3) time
-#define GRID_RES 32
+#define GRID_RES 1
 
 /**
  Used by IFSModel for loading.
