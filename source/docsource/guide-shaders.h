@@ -16,32 +16,25 @@ Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
   disappearing from OpenGL and DirectX altogether!).
 
   The programs that execute on the graphics card are called Vertex and Pixel 
-  Shaders.  Well-written shaders are just as fast as the fixed-function pipeline
+  Shaders.  %G3D also adds "primitive shaders" that execute code on the CPU
+  immediately before and after a group of primitives (e.g. a triangle list).
+  These are useful for setting up rendering state for the vertex shader (e.g.
+  computing the object space light vector once per object instead of once
+  per vertex).  All three are abstracted in the G3D::Shader class.
+  
+  Well-written shaders are just as fast as the fixed-function pipeline
   but offer more flexibility and are easier to write and debug than fixed function
   code.  Most new games are written for programmable cards only, although for
   the widest possible compatibility it is good to have both full-featured 
   programmable and limited-effect fixed-function pathways in rendering code.
 
-  Using shaders often requires configuring a G3D::RenderDevice in a specific
-  way immediately before a group of primitives are rendered, and then restoring
-  the old state.  You can subclass the G3D::Shader class to provide methods
-  to execute immediately before and after a group of primitives are rendered.
-  Most frequently, G3D::Shader::beforePrimitives calls 
-  G3D::RenderDevice::setVertexAndPixelShader with appropriate arguments (e.g.
-  the light source in object space).  G3D::SimpleShader is provided for convenience 
-  when this is the <I>only</I> functionality needed.
-
-  It is possible to write shaders without using the G3D::Shader class.  Even with G3D::Shader, it is 
-  <I>not</I> possible to access the programmable pipeline without using one of the 
-  other support classes listed below.
-
   <TABLE ALIGN=RIGHT WIDTH=50%>
   <TD><TD>
-  <IMG SRC="ParallaxBump_Demo_screen.jpg" WIDTH=300>
+  <IMG SRC="bumpmap-screen.jpg" WIDTH=300>
   </TD></TR>
   <TR><TD>
   <CENTER>
-  The Parallax Bump Mapping Demo (demos/parallax) uses G3D::VertexProgram and G3D::PixelProgram with Cg.
+  The BumpMapViewer tool (tools/BumpMapViewer) uses G3D::Shader with GLSL programs.
   </CENTER>
   </TD>
   </TR>
@@ -49,17 +42,25 @@ Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
 
   @section supported Supported Languages
 
-  G3D supports shaders written in the OpenGL shading language GLSL, in NVIDIA's 
-  nearly identical Cg language, and in OpenGL assembly (DirectX uses a different
-  language  called HLSL that is nearly identical to Cg and GLSL but is not 
-  directly supported).  <B>We recommend GLSL for shader development</B> because
-  it is the most widely supported and easiest to use of the shader languages.
-   
+  We recommend writing shaders in the OpenGL shading language (GLSL).
+  G3D::Shader loads GLSL shaders from strings or from files.  Set the 
+  input arguments (called uniform variables) with the G3D::Shader::args::set methods,
+  which are type safe.  Call G3D::RenderDevice::setShader to enable the shader
+  and <CODE>RenderDevice::setShader(NULL)</CODE> to disable it.  When a shader
+  is set, you can change the arguments and they will take effect immediately; there
+  is no need to set the shader again.
 
-  GLSL programs are loaded from strings or from files with G3D::VertexAndPixelShader.
-
-  Assembly programs are loaded from strings or from files with G3D::VertexProgram
-  and G3D::PixelProgram.
+  G3D::Shader uses G3D::VertexAndPixelShader internally to manage the low-level
+  operations.  It is available to you, however it is unlikely you will ever
+  need to use it directly.
+  
+  You may also write shaders in NVIDIA's Cg language, and in OpenGL assembly 
+  (DirectX uses a different language  called HLSL that is nearly identical to 
+  Cg and GLSL but is not directly supported). These programs are loaded 
+  with a different API.  
+  
+  Assembly programs are loaded from strings or from 
+  files with G3D::VertexProgram and G3D::PixelProgram.
 
   Cg programs must first be compiled to assembly.  The assembly can then be loaded
   with G3D::VertexProgram and G3D::PixelProgram, which know how to parse the special

@@ -194,8 +194,8 @@
         G3D::VARArea, 
         G3D::VertexProgram,
         G3D::VertexAndPixelShader,
+        G3D::ShaderInterface,
         G3D::Shader,
-        G3D::SimpleShader,
         G3D::ObjectShader
 
       <LI><B>OpenGL Extension</B> &nbsp; &nbsp;

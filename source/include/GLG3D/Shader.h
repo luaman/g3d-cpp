@@ -26,8 +26,6 @@ typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 #endif
 
 /**
-TODO: remove
-
   An ObjectShader is run once per primitive group.
   A primitive group is defined by either the pair of calls 
   RenderDevice::beginPrimitive...RenderDevice::endPrimitive
@@ -109,7 +107,7 @@ public:
 
 
 /**
-  A compatible vertex and pixel shader.  Commonly used to implement a Shader.
+  A compatible vertex and pixel shader.  Used internally by G3D::Shader.
 
   Only newer graphics cards with recent drivers (e.g. GeForceFX cards with driver version 57 or greater)
   support this API.  Use the VertexAndPixelShader::fullySupported method to determine at run-time
@@ -121,7 +119,7 @@ public:
   <A HREF="http://developer.3dlabs.com/openGL2/specs/GLSLangSpec.Full.1.10.59.pdf">GLSL</A>, the high-level
   OpenGL shading language.  Object shaders are written in C++ by subclassing ObjectShader.
 
-  Typically, the object shader sets up constants like the object-space position
+  Typically, the G3D::Shader sets up constants like the object-space position
   of the light source and the object-to-world matrix.  The vertex shader transforms
   input vertices to homogeneous clip space and computes values that are interpolated
   across the surface of a triangle (e.g. reflection vector).  The pixel shader
@@ -433,156 +431,68 @@ public:
 
 
 typedef ReferenceCountedPointer<class Shader>  ShaderRef;
-typedef ReferenceCountedPointer<class SimpleShader> SimpleShaderRef;
 
 /**
- A Shader configures a RenderDevice immediately before primitives are rendered, 
- commonly to simulate a given material, e.g., "Glass", "Parallax Bump Mapping",
- "Cook-Torrance Reflection", or rendering pass of a larger algorithm, e.g., 
- "Shadow Map Generation". 
-
- Shaders are a higher level of abstraction than other RenderDevice state.
-
- Create Shaders once at the beginning of your program.  Shaders can be
- selected using RenderDevice::setShader().
-
- You can either write your own subclass of Shader using the guidelines
- below or use SimpleShader, which provides the most common shader 
- functionality through a generic interface.
-
- <B>Subclassing</B>
-
- Never return a Shader&, Shader*, or Shader-- always make static 
- create methods that return ShaderRef or subclass (a Shader* will 
- be automatically converted to a ShaderRef when returned).
-
-  Here's a sample shader.  Note that it uses GLSL to perform most
-  of the work (see the G3D demos for the actual GLSL code):
-
-  <PRE>
-      typedef ReferenceCountedPointer<class BumpShader> BumpShaderRef;
-
-      class BumpShader : public Shader {
-      private:
-
-        VertexAndPixelShader::ArgList   _args;
-        VertexAndPixelShaderRef         _vertexAndPixelShader;
-
-         BumpShader() {
-            _vertexAndPixelShader =
-              VertexAndPixelShader::fromFiles("bump_vertex.glsl", "bump_pixel.glsl");
-         }
-
-      public:
-
-         TextureRef    bumpMap;
-         Vector4       light;
-
-         BumpShaderRef create() {
-            return new BumpShader();
-         }
-
-         void beforePrimitive(class RenderDevice* rd) {
-			_args.set("osLight", 
-				rd->objectToWorldMatrix().toObjectSpace(lightVector));
-
-            rd->pushState();
-			rd->setVertexAndPixelShader(_vertexAndPixelShader, _args);
- 	 	 }        
-         
-         void afterPrimitive(class RenderDevice* renderDevice) {
-            rd->popState();
-         }
-
-         const std::string& messages() const {
-            return _vertexAndPixelShader->messages();
-         }
-
-         bool ok() const {
-            return _vertexAndPixelShader->ok();
-         }
-
-      };
+  Abstraction of the programmable hardware pipeline.  
+  Use with G3D::RenderDevice::setShader.
+  G3D::Shader allows you to specify C++ code (by overriding
+  the methods) that executes for each group of primitives and
+  OpenGL Shading Language (<A HREF="http://developer.3dlabs.com/openGL2/specs/GLSLangSpec.Full.1.10.59.pdf">GLSL</A>) 
+  code that executes for each vertex and each pixel.
     
-   </PRE>
-  <B>BETA API</B>
-  This API is subject to change.
- */
-class Shader : public ReferenceCountedObject {
-public:
-	/**
-	 Invoked by RenderDevice immediately before a primitive group.
-	 Override to set state on the RenderDevice (including the underlying
-     vertex and pixel shader).
-
-     Do not call RenderDevice::setShader from this routine.
-	 */
-    virtual void beforePrimitive(class RenderDevice* renderDevice) {}
-
-    virtual void afterPrimitive(class RenderDevice* renderDevice) {}
-
-    virtual const std::string& messages() const {
-        static std::string s;
-        return s;
-    }
-
-    virtual bool ok() const {
-        return true;
-    }
-};
-
-
-/**
-  A G3D::Shader subclass that can be used to directly load 
-  and set the parameters of OpenGL Shading Language (GLSL)
-  programs that run on the graphics card.  This is a
-  convenient way to quickly add GLSL functionality to your
-  program.
-
   <P>
-  For more flexibility and robustness, consider writing your 
-  own subclass of G3D::Shader that abstracts the program
-  arguments instead of exposing an ArgList directly.
+  Uses G3D::VertexAndPixelShader internally.  What we call pixel shaders
+  are really "fragment shaders" in OpenGL terminology.
 
   <B>BETA API</B>
   This API is subject to change.
  */
-class SimpleShader : public Shader {
+class Shader  : public ReferenceCountedObject {
 protected:
 
     VertexAndPixelShaderRef         _vertexAndPixelShader;
 
-    inline SimpleShader(VertexAndPixelShaderRef v) : _vertexAndPixelShader(v) {}
+    inline Shader(VertexAndPixelShaderRef v) : _vertexAndPixelShader(v) {}
+    inline Shader() {}
 
 public:
 
+    /** Arguments to the vertex and pixel shader.  You may change these either
+        before or after the shader is set on G3D::RenderDevice-- either way
+        they will take effect immediately.*/
     VertexAndPixelShader::ArgList   args;
 
-    static SimpleShaderRef fromFiles(
+    static ShaderRef fromFiles(
         const std::string& vertexFile, 
         const std::string& pixelFile) {
-        return new SimpleShader(VertexAndPixelShader::fromFiles(vertexFile, pixelFile));
+        return new Shader(VertexAndPixelShader::fromFiles(vertexFile, pixelFile));
     }
 
-    static SimpleShaderRef fromStrings(
+    static ShaderRef fromStrings(
         const std::string& vertexCode, 
         const std::string& pixelCode) {
-        return new SimpleShader(VertexAndPixelShader::fromStrings(vertexCode, pixelCode));
+        return new Shader(VertexAndPixelShader::fromStrings(vertexCode, pixelCode));
     }
 
     virtual bool ok() const;
 
 	/**
-     Pushes state and loads the vertex and pixel shader.
+	 Invoked by RenderDevice immediately before a primitive group.
+	 Override to set state on the RenderDevice (including the underlying
+     vertex and pixel shader).
+
+     If overriding, do not call RenderDevice::setShader from this routine.
+
+     Default implementation pushes state and loads the vertex and pixel shader.
 	 */
     virtual void beforePrimitive(class RenderDevice* renderDevice);
 
     /**
-     Pops state.
+     Default implementation pops state.
      */
     virtual void afterPrimitive(class RenderDevice* renderDevice);
 
-    const std::string& messages() const;
+    virtual const std::string& messages() const;
 };
 
 

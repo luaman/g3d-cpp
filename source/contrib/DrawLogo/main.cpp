@@ -49,9 +49,9 @@ private:
     IFSModelRef         MD;
     IFSModelRef         Mgear;
 
-    SimpleShaderRef     outlineShader;
-    SimpleShaderRef     cartoonShader;
-    SimpleShaderRef     generateShader;
+    ShaderRef           outlineShader;
+    ShaderRef           cartoonShader;
+    ShaderRef           generateShader;
 
     /** Texture that is black where the logo is and has the depth in the G channel */
     TextureRef          silhouette;
@@ -121,16 +121,16 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
         "   gl_FragColor.rgb = vec3(c, c, c);\n"
         "}\n";
 
-    outlineShader = SimpleShader::fromStrings("", sp);
+    outlineShader = Shader::fromStrings("", sp);
 
-    generateShader = SimpleShader::fromStrings("",
+    generateShader = Shader::fromStrings("",
         "void main(void) {\n"
         "   gl_FragColor.r = gl_Color;\n"
         "   gl_FragColor.g = gl_FragCoord.z;\n"
         "   gl_FragColor.b = 0.0;\n"
         "}\n");
 
-    cartoonShader = SimpleShader::fromFiles("toon.vrt", "toon.frg");
+    cartoonShader = Shader::fromFiles("toon.vrt", "toon.frg");
 }
 
 

@@ -753,11 +753,13 @@ public:
     uint numTextureCoords() const;
 
     /**
+     Used by G3D::Shader.  Most programs do not need to call this directly.
+
      Set the current shader.  You may call VertexAndPixelShader::bindArgList either
      before or after this, or use the variation of this call that
      includes an arg list.
 
-     See also setShader. 
+     See also G3D::setShader. 
      */
     void setVertexAndPixelShader(const VertexAndPixelShaderRef& s);
 
@@ -770,11 +772,9 @@ public:
 	void setObjectShader(const ObjectShaderRef& s);
 
     /**
-     Shaders contain routines that execute before and after each primitive 
-     group to set other RenderDevice state.  A Shader is different from a
-     VertexAndPixelShader, which is a set of routines that execute on
-     programmable hardware (although Shaders typically set the 
-     VertexAndPixelShader).
+     A G3D::Shader abstracts the programmable graphics pipeline.
+     It contains routines that execute before and after
+     each primitive group to set other RenderDevice state.     
      */
 	void setShader(const ShaderRef& s);
 
@@ -785,7 +785,7 @@ public:
      Don't mix VertexPrograms (old API) with VertexShaders (new API).
 
      @param vp Set to NULL to use the fixed function pipeline.
-     @deprecated Use RenderDevice::setShader
+     @deprecated Use G3D::RenderDevice::setShader
      */
     void setVertexProgram(const VertexProgramRef& vp);
 
@@ -804,7 +804,7 @@ public:
 
      Don't mix VertexPrograms (old API) with VertexShaders (new API).
      @param args must include *all* arguments or an assertion will fail
-     @deprecated Use RenderDevice::setShader
+     @deprecated Use G3D::RenderDevice::setShader
      */
     void setVertexProgram(const VertexProgramRef& vp,
                           const GPUProgram::ArgList& args);
@@ -814,7 +814,7 @@ public:
      Assumes GPUProgram() is true.
      Don't mix PixelPrograms (old API) with PixelShaders (new API).
      @param pp Set to NULL to use the fixed function pipeline.
-     @deprecated Use RenderDevice::setShader
+     @deprecated Use G3D::RenderDevice::setShader
      */
     void setPixelProgram(const PixelProgramRef& pp);
 
