@@ -136,10 +136,21 @@ private:
 
         /** Location along the specified axis */
         double              splitLocation;
+ 
+        /** child[0] contains all values strictly 
+            smaller than splitLocation along splitAxis.
 
+            child[1] contains all values strictly
+            larger.
+
+            Both may be NULL if there are not enough
+            values to bother recursing.
+        */
         Node*               child[2];
 
-        /** Array of values at this node */
+        /** Array of values at this node (i.e. values
+            straddling the split plane + all values if
+            this is a leaf node). */
         Array<Handle>       valueArray;
 
         /** Creates node with NULL children */
@@ -229,6 +240,7 @@ private:
             // deepest containing node.
             return this;
         }
+
 
         /** Appends all members that intersect the box */
         void getIntersectingMembers(const AABox& box, Array<T>& members) const {
@@ -480,19 +492,260 @@ public:
 
 
     /**
-     Appends all members whose bounds intersect the box.
+     C++ STL style iterator variable.  See beginBoxIntersection().
+     Overloads the -> (dereference) operator, so this acts like a pointer
+     to the current member.
      */
-    // TODO: make this an iterator as well
+    // This iterator turns Node::getIntersectingMembers into a
+    // coroutine.  It first translates that method from recursive to
+    // stack based, then captures the system state (analogous to a Scheme
+    // continuation) after each element is appended to the member array,
+    // and allowing the computation to be restarted.
+    class BoxIntersectionIterator {
+    private:
+        friend class KDTreeSet<T>;
+
+        /** True if this is the "end" iterator instance */
+        bool            isEnd;
+        AABox           box;
+
+        Node*           node;
+
+        /** Nodes waiting to be processed */
+        // We could use backpointers within the tree and careful
+        // state management to avoid ever storing the stack-- but
+        // it is much easier this way and only inefficient if the
+        // caller uses post increment (which they shouldn't!).
+        Array<Node*>    stack;
+
+        /** The next index of current->valueArray to return. */
+        int             v;
+
+        BoxIntersectionIterator() : isEnd(true) {}
+        
+        BoxIntersectionIterator(const AABox& b, const Node* root) : 
+           box(b), isEnd(node != NULL), v(-1), node(root) {
+
+           // We intentionally start at the "-1" index of the current node
+           // so we can use the preincrement operator to move ourselves to
+           // element 0 instead of repeating all of the code from the preincrement
+           // method.  Note that this might cause us to become the "end"
+           // instance.
+           ++(*this);
+        }
+
+    public:
+
+        inline bool operator!=(const BoxIntersectionIterator& other) const {
+            return ! (*this == other);
+        }
+
+        bool operator==(const BoxIntersectionIterator& other) const {
+            if (isEnd) {
+                return other.isEnd;
+            } else if (other.isEnd) {
+                return false;
+            } else {
+                // Two non-end iterators; see if they match.  This is kind of 
+                // silly; users shouldn't call == on iterators in general unless
+                // one of them is the end iterator.
+                if ((box != other.box) || (node != other.node) || (v != other.v) ||
+                    (stack.length() != other.stack.length())) {
+                    return false;
+                }
+
+                // See if the stacks are the same
+                for (int i = 0; i < stack.length(); ++i) {
+                    if (stack[i] != other.stack[i]) {
+                        return false;
+                    }
+                }
+
+                // We failed to find a difference; they must be the same
+                return true;
+            }
+        }
+
+        /**
+         Pre increment.
+         */
+        BoxIntersectionIterator& operator++() {
+            ++v;
+            while (! isEnd && (v >= current->valueArray.length())) {
+                // We've exhausted the elements at this node (possibly because
+                // we just switched to a child node with no members).
+
+                // If the right child overlaps the box, push it onto the stack for
+                // processing.
+                if ((current->child[1] != NULL) &&
+                    (box.high()[current->splitAxis] > current->splitLocation)) {
+                    stack.push(current->child[1]);
+                }
+                
+                // If the left child overlaps the box, push it onto the stack for
+                // processing.
+                if ((current->child[0] != NULL) &&
+                    (box.low()[current->splitAxis] < current->splitLocation)) {
+                    stack.push(current->child[0]);
+                }
+
+                if (stack.length() > 0) {
+                    // Go on to the next node (which may be either one of the ones we 
+                    // just pushed, or one from farther back the tree).
+                    current = stack.pop();
+                    v = 0;
+                } else {
+                    // That was the last node; we're done iterating
+                    isEnd = true;
+                }
+            }
+            return *this;
+        }
+
+        /**
+         Post increment (much slower than preincrement).
+         */
+        BoxIntersectionIterator operator++(int) {
+            BoxIntersectionIterator old = *this;
+            ++this;
+            return old;
+        }
+
+        /** Overloaded dereference operator so the iterator can masquerade as a pointer
+            to a member */
+        const T& operator*() const {
+            alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
+            return node->valueArray[v].value;
+        }
+
+        /** Overloaded dereference operator so the iterator can masquerade as a pointer
+            to a member */
+        T* operator->() const {
+            alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
+            return &(stack.last()->valueArray[v].value);
+        }
+
+        /** Overloaded cast operator so the iterator can masquerade as a pointer
+            to a member */
+        operator T*() const {
+            alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
+            return &(stack.last()->valueArray[v].value);
+        }
+    };
+
+    /**
+     Iterates through the members that intersect the
+     */
+    BoxIntersectionIterator beginBoxIntersection(const AABox& box) const {
+        return BoxIntersectionIterator(box, root);
+    }
+
+    BoxIntersectionIterator endBoxIntersection() const {
+        // The "end" iterator instance
+        return BoxIntersectionIterator();
+    }
+
+    /**
+     Appends all members whose bounds intersect the box.
+     See also KDTreeSet::beginBoxIntersection.
+     */
     void getIntersectingMembers(const AABox& box, Array<T>& members) const {
         if (root == NULL) {
             return;
         }
         root->getIntersectingMembers(box, members);
-    }
+    }    
 
+
+    /** See KDTreeSet::beginRayIntersection */
+    class RayIntersectionIterator {
+    private:
+        // TODO!  This state is temporary; it may need to change.
+        Array<Node*>  stack;
+        Node*         current;
+        int           v;
+        bool          isEnd;
+        Ray           ray;
+
+    public:
+
+        double maxDistance;
+
+        double minDistance;
+
+        int    nodeCount;
+    };
 
     /**
-     Returns an array of all members of the set.
+      Generates a RayIntersectionIterator that produces successive
+      elements from the set whose bounding boxes are intersected by the ray.
+      Typically used for ray tracing, hit-scan, and collision detection.
+
+      The elements are generated mostly in the order that they are
+      hit by the ray, so that iteration may end abruptly when the closest
+      intersection to the ray origin has been reached.  Because the 
+      elements within a given kd-tree node are unordered, iteration may
+      need to proceed a little past the first member returned in order
+      to find the closest intersection.  When a member has been returned
+      and the "nodeCount" field is incremented it is safe to stop iterating.
+      The iterator doesn't automatically find the first intersection because
+      it is looking at bounding boxes, not the true intersections.  
+      
+      Complicating the matter further, some members straddle the plane.  The
+      iterator produces these members <I>twice</I>.  The first time it is produced
+      the caller should only consider intersections on the near side of the 
+      split plane.  The second time, the caller should only consider intersections
+      on the far side.  The minDistance and maxDistance fields specify the
+      range on which intersections should be considered.  Be aware that they 
+      be inf or zero.
+      
+      An example of how to use nodeCount, maxDistance, and maxDistance follows.
+      Almost all ray intersection tests will have identical structure.
+
+     <PRE>
+       typedef KDTreeSet<Object*>::RayIntersectionIterator IT;
+       void findFirstIntersection(const Ray& ray, Object*& firstObject, double& firstTime) {
+           int count     = -1;
+
+           firstObject   = NULL;
+           firstDistance = inf;
+
+           const IT end = tree.endRayIntersection();
+
+           for (IT obj = tree.beginRayIntersection(ray);
+               (obj != end) && ((firstObject == NULL) || (count == obj.NodeCount)); 
+               ++obj) {  // (preincrement is much faster than postincrement!) 
+
+               // Call your accurate intersection test here.  It is guaranteed
+               // that the ray hits the bounding box of obj.
+               double t = obj->distanceUntilIntersection(ray);
+
+               // Often methods like "distanceUntilIntersection" can be made more
+               // efficient by providing them with the time at which to start and
+               // to give up looking for an intersection; that is, 
+               // obj.minDistance and iMin(firstDistance, obj.maxDistance).
+
+               if ((t < firstDistance) && 
+                   (t < obj.maxDistance) &&
+                   (t >= obj.minDistance)) {
+                   // This is the new best collision time
+                   firstObject   = obj;
+                   firstDistance = t;
+
+                   // Even if we found an object we must keep iterating until
+                   // we've exhausted all members at this node.
+                   count         = obj.nodeCount;
+               }
+           }
+       }
+     </PRE>
+    */
+    RayIntersectionIterator beginRayIntersection(const Ray& ray) const;
+    
+    RayIntersectionIterator endRayIntersection() const;
+
+    /**
+     Returns an array of all members of the set.  See also KDTreeSet::begin.
      */
     void getMembers(Array<T>& members) const {
         memberTable.getKeys(members);
@@ -501,7 +754,9 @@ public:
 
     /**
      C++ STL style iterator variable.  See begin().
-     */
+     Overloads the -> (dereference) operator, so this acts like a pointer
+     to the current member.
+    */
     class Iterator {
     private:
         friend class KDTreeSet<T>;
