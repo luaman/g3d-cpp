@@ -200,7 +200,7 @@
         G3D::RenderDevice,
         G3D::RenderDeviceSettings,
         G3D::tesselateComplexPolygon,
-        G3D::Texture, 
+        G3D::Texture,
         G3D::TextureFormat,
         G3D::VAR,
         G3D::VARArea, 
@@ -232,12 +232,13 @@
 
       <LI><B>Game/Demo Infrastructure</B> &nbsp; &nbsp;
         G3D::CFont,
-        G3D::CFontRef,
         G3D::GApp, G3D::GApplet, G3D::GAppSettings,
         G3D::GLight,
         G3D::Sky,
         G3D::LightingParameters,
         G3D::MD2Model,
+        G3D::IFSModel,
+        G3D::PosedModel,
         G3D::realWorldLocalTime, 
         G3D::UserInput, 
         G3D::ManualCameraController

@@ -129,7 +129,41 @@ public:
         inline Pose(Animation a, GameTime t = 0) : animation(a), time(t) {}
         
         bool operator==(const Pose& other) const;
+        bool operator!=(const Pose& other) const;
 
+        /**
+         Given a time and state flags indicating a character's desires,
+         computes the new pose.
+         <P>
+         This may not be ideal for all applications; it is provided as a 
+         helper function.
+         <P>
+         If any death is triggered while crouching, the crouch death will be
+         played instead.
+         <P>
+         Game logic should generally not use the JUMP animation, or
+         the jump parameter to choosePose that triggers it.  Instead, play
+         the JUMP_UP animation when the character leaves the ground and
+         the JUMP_DOWN animation when they hit it again.
+         */
+         void doSimulation(
+            GameTime deltaTime,
+            bool crouching,
+            bool movingForward,
+            bool movingBackward,
+            bool attack,
+            bool jump,
+            bool flip,
+            bool salute,
+            bool fallback,
+            bool wave,
+            bool point,
+            bool death1,
+            bool death2,
+            bool death3,
+            bool pain1,
+            bool pain2,
+            bool pain3);
     };
 
 
@@ -403,38 +437,6 @@ public:
      interruptible.
      */
     static bool animationInterruptible(Animation a);
-
-    /**
-     Given a pose and state flags indicating a character's desires.
-     This may not be ideal for all applications; it is provided as a 
-     helper function.
-     <P>
-     If any death is triggered while crouching, the crouch death will be
-     played instead.
-     <P>
-     Game logic should generally not use the JUMP animation, or
-     the jump parameter to choosePose that triggers it.  Instead, play
-     the JUMP_UP animation when the character leaves the ground and
-     the JUMP_DOWN animation when they hit it again.
-     */
-    static Pose choosePose(
-        const MD2Model::Pose& currentPose,
-        bool crouching,
-        bool movingForward,
-        bool movingBackward,
-        bool attack,
-        bool jump,
-        bool flip,
-        bool salute,
-        bool fallback,
-        bool wave,
-        bool point,
-        bool death1,
-        bool death2,
-        bool death3,
-        bool pain1,
-        bool pain2,
-        bool pain3);
 
     /** Filenames of textures this model can use. */
     inline const Array<std::string>& textureFilenames() const {

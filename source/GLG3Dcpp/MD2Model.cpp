@@ -149,8 +149,8 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
 }
 
 
-MD2Model::Pose MD2Model::choosePose(
-    const MD2Model::Pose& currentPose,
+void MD2Model::Pose::doSimulation(
+    GameTime dt,
     bool crouching,
     bool movingForward,
     bool movingBackward,
@@ -168,107 +168,109 @@ MD2Model::Pose MD2Model::choosePose(
     bool pain2,
     bool pain3) {
 
-    Pose pose(currentPose);
+    Pose currentPose = *this;
 
-    if (animationDeath(pose.animation)) {
+    time += dt;
+
+    if (animationDeath(animation)) {
         // Can't recover from a death pose
-        return pose;
+        return;
     }
 
     if (death1 || death2 || death3) {
         // Death interrupts anything
-        pose.preFrameNumber = getFrameNumber(currentPose);
-        pose.time           = -PRE_BLEND_TIME;
+        preFrameNumber = getFrameNumber(currentPose);
+        time           = -PRE_BLEND_TIME;
         if (crouching) {
-            pose.animation  = CROUCH_DEATH;
+            animation  = CROUCH_DEATH;
         } else if (death1) {
-            pose.animation  = DEATH_FALLBACK;
+            animation  = DEATH_FALLBACK;
         } else if (death2) {
-            pose.animation  = DEATH_FALLFORWARD;
+            animation  = DEATH_FALLFORWARD;
         } else if (death3) {
-            pose.animation  = DEATH_FALLBACKSLOW;
+            animation  = DEATH_FALLBACKSLOW;
         }
-        return pose;
+        return;
     }
 
-    if ((pain1 || pain2 || pain3) && ! animationPain(pose.animation)) {
+    if ((pain1 || pain2 || pain3) && ! animationPain(animation)) {
         // Pain interrupts anything but death
-        pose.preFrameNumber = getFrameNumber(currentPose);
-        pose.time           = -PRE_BLEND_TIME;
+        preFrameNumber = getFrameNumber(currentPose);
+        time           = -PRE_BLEND_TIME;
         if (crouching) {
-            pose.animation  = CROUCH_PAIN;
+            animation  = CROUCH_PAIN;
         } else if (pain1) {
-            pose.animation  = PAIN_A;
+            animation  = PAIN_A;
         } else if (pain2) {
-            pose.animation  = PAIN_B;
+            animation  = PAIN_B;
         } else if (pain3) {
-            pose.animation  = PAIN_C;
+            animation  = PAIN_C;
         }
-        return pose;
+        return;
     }
 
     // End of an animation
-    if (! animationLoops(pose.animation) &&
-        (pose.time >= animationLength(pose.animation))) {
-        pose.animation = STAND;
+    if (! animationLoops(animation) &&
+        (time >= animationLength(animation))) {
+        animation = STAND;
     }
 
 
     // Run
     if (movingForward) {
-        if ((! animationRunForward(pose.animation)) && animationInterruptible(pose.animation)) {
+        if ((! animationRunForward(animation)) && animationInterruptible(animation)) {
             // Start running
-            pose.animation = RUN;
+            animation = RUN;
         }
     } else if (movingBackward) {
-        if ((! animationRunBackward(pose.animation)) && animationInterruptible(pose.animation)) {
+        if ((! animationRunBackward(animation)) && animationInterruptible(animation)) {
             // Start running
-            pose.animation = RUN_BACKWARD;
+            animation = RUN_BACKWARD;
         }
     } else {
-        if (animationRun(pose.animation)) {
+        if (animationRun(animation)) {
             // Stop running
-            pose.animation = STAND;
+            animation = STAND;
         }
     }
 
-    if (animationInterruptible(pose.animation)) {
+    if (animationInterruptible(animation)) {
 
         if (attack) {
-            pose.animation = ATTACK;
-        } else if (jump && ! animationJump(pose.animation)) {
-            pose.animation = JUMP;
+            animation = ATTACK;
+        } else if (jump && ! animationJump(animation)) {
+            animation = JUMP;
         } else if (flip) {
-            pose.animation = FLIP;
+            animation = FLIP;
         } else if (salute) {
-            pose.animation = SALUTE;
+            animation = SALUTE;
         } else if (fallback) {
-            pose.animation = FALLBACK;
+            animation = FALLBACK;
         } else if (wave) {
-            pose.animation = WAVE;
+            animation = WAVE;
         } else if (point) {
-            pose.animation = POINT;
+            animation = POINT;
         }
     }
 
     // Crouch
     if (crouching) {
         // Move to a crouch if necessary
-        switch (pose.animation) {
+        switch (animation) {
         case STAND:
-            pose.animation = CROUCH_STAND;
+            animation = CROUCH_STAND;
             break;
 
         case RUN:
-            pose.animation = CROUCH_WALK;
+            animation = CROUCH_WALK;
             break;
 
         case RUN_BACKWARD:
-            pose.animation = CROUCH_WALK_BACKWARD;
+            animation = CROUCH_WALK_BACKWARD;
             break;
 
         case ATTACK:
-            pose.animation = CROUCH_ATTACK;
+            animation = CROUCH_ATTACK;
             break;
 
         default:;
@@ -277,21 +279,21 @@ MD2Model::Pose MD2Model::choosePose(
     } else {
 
         // Move to a crouch if necessary
-        switch (pose.animation) {
+        switch (animation) {
         case CROUCH_STAND:
-            pose.animation = STAND;
+            animation = STAND;
             break;
 
         case CROUCH_WALK:
-            pose.animation = RUN;
+            animation = RUN;
             break;
 
         case CROUCH_WALK_BACKWARD:
-            pose.animation = RUN_BACKWARD;
+            animation = RUN_BACKWARD;
             break;
 
         case CROUCH_ATTACK:
-            pose.animation = ATTACK;
+            animation = ATTACK;
             break;
 
         default:;
@@ -300,11 +302,10 @@ MD2Model::Pose MD2Model::choosePose(
     }
 
     // Blend in old animation
-    if (pose.animation != currentPose.animation) {
-        pose.preFrameNumber = getFrameNumber(currentPose);
-        pose.time           = -PRE_BLEND_TIME;
+    if (animation != currentPose.animation) {
+        preFrameNumber = getFrameNumber(currentPose);
+        time           = -PRE_BLEND_TIME;
     }
-    return pose;
 }
 
 

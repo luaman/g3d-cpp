@@ -1,7 +1,6 @@
 #include "../include/G3DAll.h"
 #include <string>
 
-
 class Entity {
 protected:
 
@@ -121,8 +120,15 @@ public:
     }
 
     virtual void doSimulation(SimTime dt) {
+        // Jump/wave periodically
+        bool jump = random(0, 10.0 / dt) <= 0.5;
+        bool wave = random(0, 10.0 / dt) <= 0.5;
+
         Entity::doSimulation(dt);
-        pose.time += dt;
+
+        pose.doSimulation(dt, false, false, false, false, jump, 
+            false, false, false, wave, false, false, false, false, 
+            false, false, false);
     }
 };
 
