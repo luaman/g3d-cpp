@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-05-23
-  @edited  2003-11-18
+  @edited  2004-07-17
 */
 
 #ifndef GLG3D_TEXTUREFORMAT_H
@@ -163,6 +163,8 @@ public:
 }
 
 inline unsigned int hashCode(const G3D::TextureFormat* f) {
+    // Disable 64-bit pointer truncation warning
+    #pragma warning (disable : 4311)
     return reinterpret_cast<unsigned int>(f);
 }
 

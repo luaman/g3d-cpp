@@ -138,6 +138,8 @@ public:
 } // namespace
 
 inline unsigned int hashCode(const G3D::VARArea* v) {
+    // Disable 64-bit pointer truncation warning
+    #pragma warning (disable : 4311)
     return (unsigned int)v;
 }
 
