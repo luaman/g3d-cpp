@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Rect2D::largestCenteredSubRect
      <LI> Matrix4::serialize, Matrix4::deserialize
      <LI> glTexImage3DEXT
      <LI> Removed glut.lib and glut.dll from the win32-lib directory.

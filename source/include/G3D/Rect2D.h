@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-11-13
-  @created 2004-10-30
+  @created 2004-12-10
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -244,6 +244,30 @@ public:
         }
     }
 
+
+
+    /** Returns the largest, centered Rect2D that can fit inside this
+        while maintaining the aspect ratio of <I>dimensions</I>.
+    */
+    Rect2D largestCenteredSubRect(const Vector2& dimensions) const {
+        double textureAspect = dimensions.y / dimensions.x;
+        double viewAspect = height() / width();
+
+        // The sub-window we'll render video to
+        Rect2D rect;
+
+        if (viewAspect > textureAspect) {
+            // The view is too tall
+            double h = width() * textureAspect;
+            double y = (height() - h) / 2;
+            return Rect2D::xywh(0, y, width(), h) + corner(0);
+        } else {
+            // The view is too wide
+            double w = height() / textureAspect;
+            double x = (width() - w) / 2;
+            return Rect2D::xywh(x, 0, w, height()) + corner(0);
+        }
+    }
 };
 
 }
