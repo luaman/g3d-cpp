@@ -174,6 +174,10 @@ VertexAndPixelShader::VertexAndPixelShader(
         _linkMessages += std::string(pInfoLog);
 	    free(pInfoLog);
         _ok = _ok && (linked == GL_TRUE);
+
+        if (debug) {
+            alwaysAssertM(_ok, _messages);
+        }
     }
 
     if (_ok) {

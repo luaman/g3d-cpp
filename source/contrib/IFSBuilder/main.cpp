@@ -59,6 +59,8 @@ int main(int argc, char** argv) {
     debugLog     = new Log();
     renderDevice = new RenderDevice();
     RenderDeviceSettings settings;
+    settings.width = 1280;
+    settings.height = 1024;
     settings.fsaaSamples = 4;
     renderDevice->init(settings, debugLog);
 

@@ -73,7 +73,7 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
     std::string f = toLower(filename);
 
     //createGrid(flat2D, 1024, true); return;
-    //createGrid(lumpy2D, 1024, true); return;
+    createGrid(lumpy2D, 1024, true); return;
     //createGrid(cliff2D, 1024, true); return;
     //createIsoGrid(cliff2D, 1024); return;
     //createGrid(bump2D, 900, true); return;

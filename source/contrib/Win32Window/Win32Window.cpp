@@ -112,6 +112,10 @@ Win32Window::Win32Window(const GWindowSettings& s) {
         NULL);
 
     alwaysAssertM(window != NULL, "");
+
+    if (s.visible) {
+        ShowWindow(window, SW_SHOW);
+    } 
             
     SetWindowLong(window, GWL_USERDATA, (LONG)this);
 
