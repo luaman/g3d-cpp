@@ -398,9 +398,10 @@ public:
     const Array<MeshAlg::Vertex>& weldedVertices() const;
 
     /**
-     Matrix mapping int16 texture coordinates to floats.
+     Matrix mapping int16 texture coordinates to floats for this model.
+     Useful if you are using custom rendering code instead of pose()->render()
      */    
-    const CoordinateFrame textureMatrix() const {
+    const CoordinateFrame& textureMatrix() const {
         return texFrame;
     }
 

@@ -81,11 +81,12 @@ Our philosophy is simple. The library should have the following properties:
 
 
 @section formats Data Formats
-%G3D provides direct load/save access to images in PNG, TGA, BMP, JPG, PCX, and ICO format.  
+%G3D provides direct load/save access to images in PNG, TGA, BMP, JPG, PCX, PPM, PGM, PBM, DDS, and ICO format.  
 It has sample loaders for the IFS and MD2 3D mesh formats and comes with code 
-(in tools/IFSBuilder) to help you load other formats like 3DS and OBJ.  %G3D uses its own 
+(in contrib/IFSBuilder and contrib/ArticulatedModel) to help you load other formats like 3DS and OBJ.  %G3D uses its own 
 font format to avoid legal issues with TrueType.  There is no official support for audio,
-however contrib/AudioDevice provides mappings for some audio libraries.
+however contrib/AudioDevice provides code to help you use some popular audio libraries 
+(SDLMixer, fMOD).
 
 @section team Team
 The library contains code, documentation, and demos from over 30 

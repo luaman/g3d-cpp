@@ -360,7 +360,7 @@ private:
 
         /** Clears the member table */
         static Node* deserializeStructure(BinaryInput& bi) {
-            if (bo.readUInt8() == 0) {
+            if (bi.readUInt8() == 0) {
                 return NULL;
             } else {
                 Node* n = new Node();
@@ -911,28 +911,28 @@ public:
          */
         BoxIntersectionIterator& operator++() {
             ++v;
-            while (! isEnd && (v >= current->valueArray.length())) {
+            while (! isEnd && (v >= node->valueArray.length())) {
                 // We've exhausted the elements at this node (possibly because
                 // we just switched to a child node with no members).
 
                 // If the right child overlaps the box, push it onto the stack for
                 // processing.
-                if ((current->child[1] != NULL) &&
-                    (box.high()[current->splitAxis] > current->splitLocation)) {
-                    stack.push(current->child[1]);
+                if ((node->child[1] != NULL) &&
+                    (box.high()[node->splitAxis] > node->splitLocation)) {
+                    stack.push(node->child[1]);
                 }
                 
                 // If the left child overlaps the box, push it onto the stack for
                 // processing.
                 if ((current->child[0] != NULL) &&
-                    (box.low()[current->splitAxis] < current->splitLocation)) {
-                    stack.push(current->child[0]);
+                    (box.low()[node->splitAxis] < node->splitLocation)) {
+                    stack.push(node->child[0]);
                 }
 
                 if (stack.length() > 0) {
                     // Go on to the next node (which may be either one of the ones we 
                     // just pushed, or one from farther back the tree).
-                    current = stack.pop();
+                    node = stack.pop();
                     v = 0;
                 } else {
                     // That was the last node; we're done iterating
@@ -943,7 +943,7 @@ public:
         }
 
         /**
-         Post increment (much slower than preincrement).
+         Post increment (much slower than preincrement!).
          */
         BoxIntersectionIterator operator++(int) {
             BoxIntersectionIterator old = *this;
