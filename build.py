@@ -107,13 +107,13 @@ def linuxCheckVersion():
             checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
         except:
             checkVersion('automake --version', '1.6', 'Requires automake 1.6 or later.')
-	    automake = 'automake'
+	        automake = 'automake'
 
         try:
             checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
         except:
             checkVersion('aclocal --version', '1.6', 'Requires aclocal 1.6 or later.')
-	    aclocal = 'aclocal'
+	        aclocal = 'aclocal'
 
         checkVersion(doxygen + ' --version', '1.3', 'Requires doxygen 1.3 or later.')
         checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
