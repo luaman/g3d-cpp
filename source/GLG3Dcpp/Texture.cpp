@@ -90,6 +90,7 @@ static void createTexture(
     GLenum          target,
     const uint8*    rawBytes,
     GLenum          bytesFormat,
+    GLenum          bytesActualFormat,
     int             width,
     int             height,
     GLenum          textureFormat,
@@ -157,10 +158,10 @@ static void createTexture(
 
         if (compressed) {
             
-            alwaysAssertM((target == GL_TEXTURE_RECTANGLE_EXT),
+            alwaysAssertM((target != GL_TEXTURE_RECTANGLE_EXT),
                 "Compressed texture data must be loaded into a DIM_2D texture.");
 
-            glCompressedTexImage2DARB(target, mipLevel, textureFormat, width, height, 0, (bytesPerPixel * width * height), rawBytes);
+            glCompressedTexImage2DARB(target, mipLevel, bytesActualFormat, width, height, 0, (bytesPerPixel * ((width + 3) / 4) * ((height + 3) / 4)), rawBytes);
             break;
         }
 
@@ -445,6 +446,48 @@ TextureRef Texture::fromFile(
         realFilename[0] = filename[0];
     }
 
+    // Check for DDS file and load separately.
+    std::string ddsExt;
+
+    // Find the period
+    size_t i = filename[0].rfind('.');
+
+    // Make sure it is before a slash!
+    size_t j = iMax(filename[0].rfind('/'), filename[0].rfind('\\'));
+    if ((i != std::string::npos) && (i > j)) {
+        ddsExt = filename[0].substr(i + 1, filename[0].size() - i - 1);
+    }
+
+    if (G3D::toUpper(ddsExt) == "DDS") {
+
+        DDSTexture ddsTexture(filename[0]);
+        Array< Array< const void* > > byteMipMapFaces;
+
+        uint8* byteStart = ddsTexture.getBytes();
+        debugAssert( byteStart != NULL );
+
+        const TextureFormat* bytesFormat = ddsTexture.getBytesFormat();
+        debugAssert( bytesFormat );
+
+        int numMipMaps = ddsTexture.getNumMipMaps();
+        int mapWidth = ddsTexture.getWidth();
+        int mapHeight = ddsTexture.getHeight();
+
+        byteMipMapFaces.resize(numMipMaps);
+
+        for (int i=0; i < numMipMaps; ++i) {
+            
+            byteMipMapFaces[i].resize(1);
+            byteMipMapFaces[i][0] = byteStart;
+
+            byteStart += ((bytesFormat->packedBitsPerTexel / 8) * ((mapWidth + 3) / 4) * ((mapHeight + 3) / 4));
+            mapWidth = max(1, mapWidth/2);
+            mapHeight = max(1, mapHeight/2);
+        }
+
+        return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead);
+    }
+
     for (int f = 0; f < numFaces; ++f) {
 
         image[f].load(realFilename[f]);
@@ -658,18 +701,20 @@ TextureRef Texture::fromMemory(
 
                     createMipMapTexture(target, const_cast<const uint8*>(bytes[mipLevel][f]),
                                   bytesFormat->OpenGLBaseFormat,
-                                  width, height, desiredFormat->OpenGLFormat);
+                                  mipWidth, mipHeight, desiredFormat->OpenGLFormat);
                 } else {
                     createTexture(target, const_cast<const uint8*>(bytes[mipLevel][f]), bytesFormat->OpenGLBaseFormat,
-                                  width, height, desiredFormat->OpenGLFormat, 
+                                  bytesFormat->OpenGLFormat, mipWidth, mipHeight, desiredFormat->OpenGLFormat, 
                                   bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed);
                 }
 
                 debugAssertGLOk();
             }
 
-            mipWidth = max(1, mipWidth/2);
-            mipHeight = max(1, mipHeight/2);
+            if( bytesFormat->compressed ) {
+                mipWidth = max(1, mipWidth/2);
+                mipHeight = max(1, mipHeight/2);
+            }
         }
     glStatePop();
 

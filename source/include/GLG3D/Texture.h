@@ -443,6 +443,42 @@ public:
      */
     unsigned int getOpenGLTextureTarget() const;
 
+private:
+
+    class DDSTexture {
+    private:
+                                    
+        uint8*                      bytes;
+        const TextureFormat*        bytesFormat;
+        int                         width;
+        int                         height;
+        int                         numMipMaps;
+    public:
+
+        DDSTexture(const std::string& filename);
+
+        ~DDSTexture();
+
+        int getWidth() {
+            return width;
+        }
+
+        int getHeight() {
+            return height;
+        }
+
+        const TextureFormat* getBytesFormat() {
+            return bytesFormat;
+        }
+
+        int getNumMipMaps() {
+            return numMipMaps;
+        }
+
+        uint8* getBytes() {
+            return bytes;
+        }
+    };
 };
 
 inline bool operator==(const TextureRef& a, const void* b) {
