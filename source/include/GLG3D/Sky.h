@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2003-07-07
+  @edited  2003-11-05
 */
 
 #ifndef G3D_SKY_H
@@ -15,6 +15,8 @@
 #include "graphics3D.h"
 
 namespace G3D {
+
+typedef ReferenceCountedPointer<class Sky> SkyRef;
 
 /**
  A background cube with an appropriately warped texture to make it 
@@ -45,7 +47,7 @@ namespace G3D {
   </PRE>
 
  */
-class Sky {
+class Sky : public ReferenceCountedObject {
 private:
     /** Indices into texture array */
     enum Direction {UP = 0, LT = 1, RT = 2, BK = 3, FT = 4, DN = 5};
@@ -65,8 +67,6 @@ private:
     TextureRef                                  disk;
     TextureRef                                  sunRays;
 
-    std::string                                 name;
-
     Array<Vector4>                              star;
     Array<float>                                starIntensity;
 
@@ -76,6 +76,12 @@ private:
      Renders the sky box.
      */
     void renderBox() const;
+
+    Sky(
+        class RenderDevice*                     renderDevice,
+        const std::string&                      directory,
+        const std::string&                      filename,
+        double                                  quality);
 
 public:
     /**
@@ -93,28 +99,20 @@ public:
        .5 -> 1/8  the texture memory of 1.0, 
         0 -> 1/16 the texture memory of 1.0.
         Color banding will occur at low quality settings.
-
-     @param name Arbitrary name for this sky object (for debugging purposes)
      */
-    Sky(
+    static SkyRef create(
         class RenderDevice*                     renderDevice,
-        const std::string&                      name,
         const std::string&                      directory,
         const std::string&                      filename = "null_plainsky512_*.jpg",
         double                                  quality = 1.0);
 
     virtual ~Sky();
 
-    inline std::string getName() const {
-		return name;
-	}
-
     /**
      Call at the very beginning of your rendering routine.
      Will restore all state it changes.
      */
 	void render(
-        const class CoordinateFrame&            camera,
         const class LightingParameters&         lighting);
 
     /**
@@ -122,7 +120,6 @@ public:
      Will restore all state it changes.
      */
     void renderLensFlare(
-        const class CoordinateFrame&            camera,
         const class LightingParameters&         lighting);
 
     /**
@@ -134,6 +131,22 @@ public:
     }
 
 };
+
+inline bool operator==(const SkyRef& a, const void* b) {
+    return (b == NULL) && (a == (SkyRef)NULL);
+}
+
+inline bool operator==(const void* a, const SkyRef& b) {
+    return b == a;
+}
+
+inline bool operator!=(const SkyRef& a, const void* b) {
+    return !(a == b);
+}
+
+inline bool operator!=(const void* b, const SkyRef& a) {
+    return !(a == b);
+}
 
 }
 

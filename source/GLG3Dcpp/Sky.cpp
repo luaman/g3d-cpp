@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-07-09
+  @edited  2003-11-05
   */
 
 #include "GLG3D/glcalls.h"
@@ -18,12 +18,24 @@ namespace G3D {
 
 #define SHORT_TO_FLOAT(x) ((2.0f*x+1.0f)*(1.0f/65535.0f))
 
+    
+SkyRef Sky::create(
+    RenderDevice*                       rd,
+    const std::string&                  directory,
+    const std::string&                  filename,
+    double                              quality) {
+    return new Sky(rd, directory, filename, quality);
+}
+
+
 Sky::Sky(
     RenderDevice*                       rd,
-    const std::string&                  name,
     const std::string&                  directory,
     const std::string&                  filename,
     double                              quality) : renderDevice(rd) {
+
+    debugAssertM((directory == "") || (directory[directory.size() - 1] == "/") 
+        || (directory[directory.size() - 1] == "\\"), "Directory must end in a slash");
 
     const TextureFormat* format;
     const TextureFormat* alphaFormat;
@@ -110,7 +122,6 @@ Sky::Sky(
    		}
  	}
 
-	this->name = name;
 }
 
 
@@ -353,13 +364,12 @@ void Sky::renderBox() const {
 
 
 void Sky::render(
-    const CoordinateFrame&              camera,
     const LightingParameters&           lighting) {
 
     renderDevice->pushState();
 
 	CoordinateFrame matrix;
-	matrix.rotation = camera.rotation;
+	matrix.rotation = renderDevice->getCameraToWorldMatrix().rotation;
     renderDevice->setCameraToWorldMatrix(matrix);
 
     renderDevice->setColor(lighting.skyAmbient * renderDevice->getBrightScale());
@@ -448,9 +458,7 @@ void Sky::render(
 }
 
 
-
 void Sky::renderLensFlare(
-    const CoordinateFrame&              camera,
     const LightingParameters&           lighting) {
 
     if (lighting.sunPosition.y < -.1) {
@@ -459,8 +467,9 @@ void Sky::renderLensFlare(
 
     renderDevice->pushState();
 
+        CoordinateFrame camera = renderDevice->getCameraToWorldMatrix();
 	    CoordinateFrame matrix;
-	    matrix.rotation = camera.rotation;
+    	matrix.rotation = camera.rotation;
         renderDevice->setCameraToWorldMatrix(matrix);
 	    renderDevice->setObjectToWorldMatrix(CoordinateFrame());
 

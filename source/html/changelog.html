@@ -29,11 +29,17 @@
 	   <LI>Replace RenderDevice::init(w, h, log, ...) with RenderDevice::init(RenderDeviceSettings(w, h, ...), log)
 	   <LI>Supply the option TextInput::Options::signedNumbers = false to retain 5.01 number parsing rules
 	   <LI>Replace RenderDevice::debugDrawXXX with Draw::XXX
+	   <LI>Replace <CODE>new Sky(rd, name, ...)</CODE> with <CODE>Sky::create(rd, ...)</CODE>
+	   <LI>Replace <CODE>Sky*</CODE> with <CODE>SkyRef</CODE>
+	   <LI>Remove <CODE>delete sky;</CODE>
   </BLOCKQUOTE>
 
 
    <P>
    <UL>
+     <LI> Sky::render no longer needs a camera matrix (it gets it from the render device)
+     <LI> SkyRef, Sky::create()
+     <LI> Removed Sky::getName
      <LI> Removed RenderDevice::setAmbientLightLevel (duplicated RenderDevice::setAmbientLightColor)
      <LI> G3D::GApp, G3D::GApplet, G3D::GAppSettings
      <LI> RenderDevice::getCardDescription

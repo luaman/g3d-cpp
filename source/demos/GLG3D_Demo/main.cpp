@@ -30,7 +30,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-08-13
+ @edited  2003-11-05
  */
 
 #include <G3DAll.h>
@@ -63,7 +63,7 @@ Log*                    debugLog	= NULL;
 RenderDevice*           renderDevice= NULL;
 CFontRef                font		= NULL;
 UserInput*              userInput	= NULL;
-Sky*                    sky		    = NULL;
+SkyRef                  sky		    = NULL;
 VARArea*		        varDynamic	= NULL;
 VARArea*		        varStatic	= NULL;
 Camera*			        camera		= NULL;
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
     debugAssert(varDynamic);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
-    sky		     = new Sky(renderDevice, "Sky", DATA_DIR + "sky/");
+    sky		     = Sky::create(renderDevice, DATA_DIR + "sky/");
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
 
@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
                 LightingParameters lighting(gameTime);
 
                 if (sky) {
-                   sky->render(camera->getCoordinateFrame(), lighting);
+                   sky->render(lighting);
                 }
 
                 Draw::axes(renderDevice, Color3::RED, Color3::GREEN, Color3::BLUE, 1.5);
@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
                 renderDevice->popState();
 
                 if (sky) {
-                    sky->renderLensFlare(camera->getCoordinateFrame(), lighting);
+                    sky->renderLensFlare(lighting);
                 }
 
                 renderDevice->push2D();
@@ -197,7 +197,6 @@ int main(int argc, char** argv) {
                      varDynamic->peakAllocatedSize());
 
     // Cleanup
-    delete sky;
     delete controller;
     delete userInput;
     renderDevice->cleanup();
@@ -336,7 +335,7 @@ void Model::render(const CoordinateFrame& c,
     glMaterialfv(GL_FRONT, GL_SPECULAR, black);
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_LIGHTING);
+    renderDevice->enableLighting();
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
@@ -347,7 +346,7 @@ void Model::render(const CoordinateFrame& c,
     renderDevice->configureDirectionalLight
       (1, -lighting.lightDirection, Color3::WHITE * .25);
 
-    renderDevice->setAmbientLightLevel(lighting.ambient);
+    renderDevice->setAmbientLightColor(lighting.ambient);
     
     renderDevice->setColor(Color3::WHITE);
 
@@ -395,7 +394,6 @@ void Model::render(const CoordinateFrame& c,
     // Turn off lighting
     glDisable(GL_LIGHT0);
     glDisable(GL_LIGHT1);
-    glDisable(GL_LIGHTING);
 
     renderDevice->popState();
 }

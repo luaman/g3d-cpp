@@ -46,7 +46,7 @@ static bool debugLightMap = false;
 
 
 Scene::Scene() {
-    sky = new Sky(renderDevice, "Sky", DATA_DIR + "sky/");
+    sky = Sky::create(renderDevice, DATA_DIR + "sky/");
 	glGenTextures(1, &shadowMap);
 
     // Prep the shadow map texture
@@ -64,7 +64,6 @@ Scene::Scene() {
 
 
 Scene::~Scene() {
-    delete sky;
     glDeleteTextures(1, &shadowMap);
     object.deleteAll();
     sim.deleteAll();
@@ -151,8 +150,8 @@ void Scene::render(const LightingParameters& lighting) const {
 
     renderDevice->clear(sky == NULL, true, false);
 
-    if (sky) {
-		sky->render(camera->getCoordinateFrame(), lighting);
+    if (sky != NULL) {
+		sky->render(lighting);
     }
 
     renderDevice->pushState();
@@ -170,14 +169,14 @@ void Scene::render(const LightingParameters& lighting) const {
     renderDevice->configureDirectionalLight
       (0, -lighting.lightDirection, Color3::WHITE * .25);
 
-    renderDevice->setAmbientLightLevel(lighting.ambient);
+    renderDevice->setAmbientLightColor(lighting.ambient);
 
     // Ambient and detail light pass
     renderingPass();
 
     // Sun light pass
     renderDevice->pushState();
-        renderDevice->setAmbientLightLevel(Color3::BLACK);
+        renderDevice->setAmbientLightColor(Color3::BLACK);
         renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         renderDevice->disableDepthWrite();
         renderDevice->configureDirectionalLight
@@ -226,8 +225,8 @@ void Scene::render(const LightingParameters& lighting) const {
 
     renderDevice->popState();
 
-    if (sky) {
-        sky->renderLensFlare(camera->getCoordinateFrame(), lighting);
+    if (sky != NULL) {
+        sky->renderLensFlare(lighting);
     }
 
 }
