@@ -613,6 +613,13 @@ public:
         const CoordinateFrame&  c);
 
     /**
+     The matrix returned may not be the same as the
+     underlying hardware matrix-- the y-axis is flipped
+     in hardware when a texture with invertY = true is specified.
+     */
+    Matrix4 getTextureMatrix(uint textureUnit);
+
+    /**
      The combine mode specifies how to combine the result of a texture
      lookup with the accumulated fragment value (e.g. the output of
      the previous combine or the constant color for the first texture

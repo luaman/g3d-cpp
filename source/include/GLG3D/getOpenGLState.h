@@ -46,25 +46,6 @@ size_t sizeOfGLFormat(GLenum format);
  */
 const char* GLenumToString(GLenum i);
 
-/**
- A functional version of glGetIntegerv
- */
-GLint glGetInteger(GLenum which);
-
-/**
- A functional version of glGetFloatv
- */
-GLfloat glGetFloat(GLenum which);
-
-/**
- A functional version of glGetDoublev
- */
-GLboolean glGetBoolean(GLenum which);
-
-/**
- A functional version of glGetDoublev
- */
-GLdouble glGetDouble(GLenum which);
 }
 
 #endif

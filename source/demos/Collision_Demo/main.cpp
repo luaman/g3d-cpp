@@ -44,9 +44,6 @@
  */
 std::string DATA_DIR("data/");
 
-/** The same bit depth is used for the shadow map and the screen */
-int                     depthBits       = 24;
-
 Log*                    debugLog        = NULL;
 RenderDevice*           renderDevice    = NULL;
 CFontRef                font            = NULL;
@@ -82,7 +79,6 @@ int main(int argc, char** argv) {
     debugLog     = new Log();
     renderDevice = new RenderDevice();
     RenderDeviceSettings settings;
-    settings.depthBits = depthBits;
     renderDevice->init(settings, debugLog);
     camera       = new GCamera();
 
@@ -203,9 +199,10 @@ void doGraphics() {
             lighting.lightDirection = (lighting.lightDirection + Vector3(0,0,.4)).direction();
             lighting.ambient = lighting.ambient + Color3(.3,.3,.4);
 
+            debugAssertGLOk();
             scene->render(lighting);
       
-                renderDevice->push2D();
+            renderDevice->push2D();
 
                 font->draw2D(
                     format("%d fps", frameRate),

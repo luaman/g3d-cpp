@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-10-02
-  @edited  2003-11-05
+  @edited  2003-11-19
  */
 
 #include "G3D/Matrix4.h"
@@ -13,6 +13,18 @@
 #include "G3D/CoordinateFrame.h"
 
 namespace G3D {
+
+const Matrix4 Matrix4::IDENTITY
+  = Matrix4(1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1);
+
+const Matrix4 Matrix4::ZERO
+  = Matrix4(0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0);
 
 Matrix4::Matrix4(const class CoordinateFrame& cframe) {
     for (int r = 0; r < 3; ++r) {

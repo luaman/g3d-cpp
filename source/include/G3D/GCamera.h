@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2003-10-11
+  @edited  2003-11-19
 */
 
 #ifndef G3D_GCAMERA_H
@@ -190,7 +190,7 @@ public:
 
     void setPosition(const Vector3& t);
 
-    void lookAt(const Vector3& position);
+    void lookAt(const Vector3& position, const Vector3& up = Vector3::UNIT_Y);
 
    /**
     Returns the six clipping planes of the frustum, in world space.  The array

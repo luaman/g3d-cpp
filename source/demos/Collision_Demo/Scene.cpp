@@ -14,7 +14,6 @@
 extern std::string          DATA_DIR;
 extern GCamera*             camera;
 extern RenderDevice*        renderDevice;
-extern int                  depthBits;
 extern Log*                 debugLog;
 
 static const Vector3 gravity(0, -60, 0);
@@ -47,23 +46,7 @@ static bool debugLightMap = false;
 
 Scene::Scene() {
     sky = Sky::create(renderDevice, DATA_DIR + "sky/");
-
-    const TextureFormat* fmt = NULL;
-    switch (depthBits) {
-    case 16:
-        fmt = TextureFormat::DEPTH16;
-        break;
-
-    case 24:
-        fmt = TextureFormat::DEPTH24;
-        break;
-
-    case 32:
-        fmt = TextureFormat::DEPTH32;
-        break;
-    }
-
-    shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", fmt, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP);
+    shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(), Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP);
 }
 
 
@@ -118,7 +101,6 @@ void Scene::generateShadowMap(
     renderDevice->popState();
 
     shadowMap->copyFromScreen(rect);
-    shadowMap->invertY = false;
 }
 
 
@@ -171,15 +153,17 @@ void Scene::render(const LightingParameters& lighting) const {
 
         glPushAttrib(GL_ALL_ATTRIB_BITS);
         
-	    //Set up tex coord generation - all 4 coordinates required
+	    // Set up tex coord generation - all 4 coordinates required
         static const Matrix4 bias(
             0.5f, 0.0f, 0.0f, 0.5f,
             0.0f, 0.5f, 0.0f, 0.5f,
             0.0f, 0.0f, 0.5f, 0.5f,
             0.0f, 0.0f, 0.0f, 1.0f);
         
+        Matrix4 textureMatrix = glGetMatrix(GL_TEXTURE_MATRIX);
+
 	    Matrix4 textureProjectionMatrix2D =
-            bias * lightProjectionMatrix * lightViewMatrix;
+            textureMatrix * bias * lightProjectionMatrix * lightViewMatrix;
 
 	    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 	    glTexGenfv(GL_S, GL_EYE_PLANE, textureProjectionMatrix2D[0]);
@@ -193,7 +177,6 @@ void Scene::render(const LightingParameters& lighting) const {
 	    glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
 	    glTexGenfv(GL_Q, GL_EYE_PLANE, textureProjectionMatrix2D[3]);
 	    glEnable(GL_TEXTURE_GEN_Q);
-        debugAssertGLOk();
 
         // TODO: move this to Texture
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);

@@ -24,8 +24,6 @@ public:
 
     SkyRef                      sky;
 
-    // TODO: Remove
-//    GLuint                      shadowMap;
     TextureRef                  shadowMap;
 
     /** Draws all objects using current lighting and blending. */

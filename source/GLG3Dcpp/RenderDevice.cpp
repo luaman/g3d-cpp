@@ -2017,6 +2017,20 @@ void RenderDevice::forceSetTextureMatrix(int unit, const double* m) {
 }
 
 
+Matrix4 RenderDevice::getTextureMatrix(uint unit) {
+    debugAssertM(unit < _numTextureUnits,
+        format("Attempted to access texture unit %d on a device with %d units.",
+        unit, _numTextureUnits));
+
+    const double* M = state.textureUnit[unit].textureMatrix;
+
+    return Matrix4(M[0], M[4], M[8],  M[12],
+                   M[1], M[5], M[9],  M[13],
+                   M[2], M[6], M[10], M[14],
+                   M[3], M[7], M[11], M[15]);
+}
+
+
 void RenderDevice::setTextureMatrix(
     uint                 unit,
     const double*        m) {

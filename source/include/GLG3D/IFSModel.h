@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-15
+  @edited  2003-11-19
  */ 
 
 
@@ -74,7 +74,7 @@ private:
     IFSModel();
     
     /** Only called from create */
-    void load(const std::string& filename);
+    void load(const std::string& filename, double scale);
 
     /** Only called from create */
     void reset();
@@ -87,7 +87,7 @@ public:
      Throws an std::string describing the error if anything
      goes wrong.
      */
-    static IFSModelRef create(const std::string& filename);
+    static IFSModelRef create(const std::string& filename, double scale = 1);
 
     /**
      If perVertexNormals is false, the model is rendered with per-face normals,

@@ -3,10 +3,11 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2003-11-05
+  @edited  2003-11-19
 */
 
 #include "GLG3D/glcalls.h"
+#include "GLG3D/getOpenGLState.h"
 
 namespace G3D {
 
@@ -40,7 +41,15 @@ static void _getGLMatrix(GLdouble* m, const Matrix3& rot, const Vector3& trans) 
 void glGetMatrix(GLenum name, Matrix4& m) {
     float f[16];
     glGetFloatv(name, f);
+    debugAssertGLOk();
     m = Matrix4(f).transpose();
+}
+
+
+Matrix4 glGetMatrix(GLenum name) {
+    Matrix4 m;
+    glGetMatrix(name, m);
+    return m;
 }
 
 

@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-15
+  @edited  2003-11-19
  */ 
 
 
@@ -37,14 +37,14 @@ void IFSModel::reset() {
 }
 
 
-IFSModelRef IFSModel::create(const std::string& filename) {
+IFSModelRef IFSModel::create(const std::string& filename, double scale) {
     IFSModel* ret = new IFSModel();
-    ret->load(filename);
+    ret->load(filename, scale);
     return ret;
 }
 
 
-void IFSModel::load(const std::string& filename) {
+void IFSModel::load(const std::string& filename, double scale) {
     reset();
 
     this->filename = filename;
@@ -80,7 +80,7 @@ void IFSModel::load(const std::string& filename) {
 
 
             for (int i = 0; i < num; ++i) {
-                geometry.vertexArray[i] = bi.readVector3() * 2;
+                geometry.vertexArray[i] = bi.readVector3() * scale;
             }
 
         } else if (str == "TRIANGLES") {
@@ -97,7 +97,6 @@ void IFSModel::load(const std::string& filename) {
             }
         }
     }
-
 
     debugAssert(geometry.vertexArray.size() > 0);
     debugAssert(indexArray.size() > 0);

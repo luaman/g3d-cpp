@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-10-02
-  @edited  2003-11-05
+  @edited  2003-11-19
  */
 
 #ifndef G3D_MATRIX4_H
@@ -39,6 +39,9 @@ public:
     Matrix4(const double* init);
 
     Matrix4();
+
+    static const Matrix4 IDENTITY;
+    static const Matrix4 ZERO;
 
     const float* operator[](int r) const;
     float* operator[](int r);

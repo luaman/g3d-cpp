@@ -26,6 +26,25 @@ namespace G3D {
  */
 #define debugAssertGLOk() {GLenum e = glGetError(); debugAssertM(e == GL_NO_ERROR, GLenumToString(e));}
 
+/**
+ A functional version of glGetIntegerv
+ */
+GLint glGetInteger(GLenum which);
+
+/**
+ A functional version of glGetFloatv
+ */
+GLfloat glGetFloat(GLenum which);
+
+/**
+ A functional version of glGetDoublev
+ */
+GLboolean glGetBoolean(GLenum which);
+
+/**
+ A functional version of glGetDoublev
+ */
+GLdouble glGetDouble(GLenum which);
 
 inline void glMultiTexCoord(GLint unit, G3D::Real v) {
 	glMultiTexCoord1fARB(unit, v);
@@ -131,6 +150,8 @@ void glLoadMatrix(const Matrix4& m);
 
 void glGetMatrix(GLenum name, Matrix4& m);
 
+Matrix4 glGetMatrix(GLenum name);
+
 /**
  Loads the inverse of a coordinate frame into the current OpenGL matrix slot.
  */
@@ -181,8 +202,6 @@ inline void * glGetProcAddress(const char * name){
 	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
  */
 CoordinateFrame reflectionMatrix();
-
-
 
 
 /**

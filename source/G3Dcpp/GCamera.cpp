@@ -245,7 +245,6 @@ void GCamera::getClipPlanes(
 }
 
 
-
 void GCamera::get3DViewportCorners(
     const Rect2D& viewport,
     Vector3& outUR,
@@ -271,12 +270,14 @@ void GCamera::get3DViewportCorners(
     outLL = cframe.pointToWorldSpace(outLL);
 }
 
+
 void GCamera::setPosition(const Vector3& t) { 
     cframe.translation = t;
 }
 
-void GCamera::lookAt(const Vector3& position) { 
-    cframe.lookAt(position);
+
+void GCamera::lookAt(const Vector3& position, const Vector3& up) { 
+    cframe.lookAt(position, up);
 }
 
 }

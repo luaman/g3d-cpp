@@ -113,6 +113,11 @@ private:
 
 public:
 
+    /**
+     Default argument for TextureFormat::depth.
+     */
+    enum {SAME_AS_SCREEN = 0};
+
     static const TextureFormat* L8;
 
     static const TextureFormat* A8;
@@ -148,6 +153,11 @@ public:
      */
     static const TextureFormat* AUTO;
 
+    /**
+     Returns DEPTH16, DEPTH24, or DEPTH32 according to the bits
+     specified.
+     */
+    static const TextureFormat* depth(int depthBits = SAME_AS_SCREEN);
 };
 
 }

@@ -4,10 +4,12 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-05-23
- @edited  2003-11-18
+ @edited  2003-11-19
  */
 
 #include "GLG3D/TextureFormat.h"
+#include "GLG3D/glheaders.h"
+#include "GLG3D/glcalls.h"
 
 namespace G3D {
 
@@ -40,5 +42,29 @@ const TextureFormat* TextureFormat::DEPTH24   = new TextureFormat(1, false, GL_D
 const TextureFormat* TextureFormat::DEPTH32   = new TextureFormat(1, false, GL_DEPTH_COMPONENT32_ARB, GL_DEPTH_COMPONENT, 0, 0, 0, 0, 0, 32, 32, 32, true);
 
 const TextureFormat* TextureFormat::AUTO      = NULL;
+
+const TextureFormat* TextureFormat::depth(int depthBits) {
+
+    if (depthBits == SAME_AS_SCREEN) {
+        // Detect screen depth
+        depthBits = glGetInteger(GL_DEPTH_BITS);
+    }
+
+    switch (depthBits) {
+    case 16:
+        return DEPTH16;
+
+    case 24:
+        return DEPTH24;
+
+    case 32:
+        return DEPTH32;
+
+    default:
+        debugAssertM(false, "Depth must be 16, 24, or 32.");
+        return DEPTH32;
+    }
+}
+
 
 }
