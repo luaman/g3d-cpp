@@ -1,8 +1,13 @@
 
 #include <G3DAll.h>
 
+
+// TODO: Create two polygons when MATTWOSIDE is detected
+// TODO: read material colors
+
 /**
  @cite Keyframe chunks from http://www.republika.pl/design3d/delphi/004.html
+ MLI chunks from  http://www.programmersheaven.com/zone10/cat454/941.htm
  */
 class Load3DS {
 public:
@@ -89,8 +94,10 @@ public:
             KFHIDE        = 0xB029,
             KFHEIRARCHY   = 0xB030,
 
-        // Different color chunk types
-        RGBF   = 0x0010,
+		// float32 color
+		RGBF   = 0x0010,
+
+		// uint8 color
         RGB24  = 0x0011
     };
 
@@ -107,6 +114,30 @@ public:
         int         end;
 
     };
+
+
+	class Material {
+	public:
+		std::string					name;
+		bool						twoSided;
+		Color3						diffuse;
+		Color3						specular;
+
+		// "Self illumination"
+		double						emissive;
+
+		double						shininess;
+		double						shininessStrength;
+		double						transparency;
+		double						transparencyFalloff;
+		double						reflectionBlur;
+
+		/** 1 = flat, 2 = gouraud, 3 = phong, 4 = metal */
+		int							materialType;
+
+		Material() : twoSided(false) {
+		}
+	};
 
 
     class Object {
@@ -154,7 +185,10 @@ public:
         Index into objectArray. */
     int                 currentObject;
 
+	int					currentMaterial;
+
     Array<Object>       objectArray;
+	Array<Material>		materialArray;
 
     /** Animation start and end frames from KFFRAMES chunk */
     uint32              startFrame;
@@ -177,6 +211,11 @@ public:
      the G3D coordinate system.
      */
     Vector3 read3DSVector();
+
+    /**
+     Read either of the 3DS color chunk types and return the result.
+     */
+    Color3 read3DSColor();
 
     /**
      Reads (and ignores) TCB information from a track part of 
@@ -210,6 +249,7 @@ public:
         fileVersion     = 0;
         meshVersion     = 0;
         currentObject   = -1;
+        currentMaterial = -1;
 
         ChunkHeader chunk = readChunkHeader();
 
@@ -278,21 +318,27 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
                 break;
 
             case EDITMATERIAL:
+
+                // Create a new object
+                currentMaterial = materialArray.size();
+                materialArray.next();
                 processChunk(curChunkHeader);
                 break;
 
                 // EDITMATERIAL subchunks
-                case MATNAME:
-                    b.setPosition(curChunkHeader.end);
+                case MATNAME:					
+					materialArray[currentMaterial].name = b.readString();
                     break;
 
                 case MATAMBIENT:
                     break;
 
                 case MATDIFFUSE:
+					materialArray[currentMaterial].diffuse = read3DSColor();
                     break;
 
                 case MATSPECULAR:
+					materialArray[currentMaterial].specular = read3DSColor();
                     break;
 
                 case MATSHININESS:
@@ -303,6 +349,10 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
 
                 case MATMAPFILE:
                     break;
+
+				case MATTWOSIDE:
+					materialArray[currentMaterial].twoSided = true;
+					break;
 
             case EDITOBJECT:
                 // Create a new object
@@ -382,6 +432,7 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
                         break;
 
                     case TRIFACEMAT:
+						// TODO: is this the material index?
                         break;
 
                     case TRIUV:
@@ -577,20 +628,47 @@ Vector3 Load3DS::readLin3Track() {
 
 
 Matrix3 Load3DS::readRotTrack() {
-   int trackflags = b.readUInt16();
-    b.readUInt32();
-    b.readUInt32();
+    int trackflags = b.readUInt16();
+	b.readUInt32();
+	b.readUInt32();
 
-    int keys = b.readInt32();
-    debugAssertM(keys == 1, "Can only read 1 frame of animation");
-    float   angle;
-    Vector3 axis;
-    for (int k = 0; k < keys; ++k) {
-        readTCB();
-        angle = b.readFloat32();
-        axis  = read3DSVector();
-    }
+	int keys = b.readInt32();
+	debugAssertM(keys == 1, "Can only read 1 frame of animation");
+	float   angle;
+	Vector3 axis;
+	for (int k = 0; k < keys; ++k) {
+		readTCB();
+		angle = b.readFloat32();
+		axis  = read3DSVector();
+	}
 
-    debugPrintf("Axis = %s, angle = %g\n\n", axis.toString().c_str(), angle);
-    return Matrix3::fromAxisAngle(axis, angle);
+	debugPrintf("Axis = %s, angle = %g\n\n", axis.toString().c_str(), angle);
+	return Matrix3::fromAxisAngle(axis, angle);
+}
+
+
+Color3 Load3DS::read3DSColor() {
+    ChunkHeader curChunkHeader = readChunkHeader();
+	Color3 color;
+
+	switch (curChunkHeader.id) {
+	case RGBF:
+		color.r = b.readFloat32();
+		color.g = b.readFloat32();
+		color.b = b.readFloat32();
+		break;
+
+	case RGB24:
+		color.r = b.readUInt8() / 255.0;
+		color.g = b.readUInt8() / 255.0;
+		color.b = b.readUInt8() / 255.0;
+		break;
+
+	default:
+		debugAssertM(false, format("Expected a color chunk, found: %d", curChunkHeader.id));
+	}
+
+    // Jump to the end of the chunk
+    b.setPosition(curChunkHeader.end);
+	return color;
 }
