@@ -902,7 +902,9 @@ public:
     bool supportsOpenGLExtension(const std::string& extension) const;
 
     /** Returns true if the given texture format is supported on this device.
-        Cannot be called between beginPrimitive and endPrimitive*/
+        Cannot be called between beginPrimitive and endPrimitive.
+        @deprecated
+        Use GLCaps::supports.*/
     bool supportsTextureFormat(const TextureFormat* fmt);
 
     /**

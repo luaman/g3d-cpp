@@ -8,6 +8,7 @@
 
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/glcalls.h"
+#include "GLG3D/TextureFormat.h"
 #include <sstream>
 
 namespace G3D {
@@ -18,6 +19,13 @@ bool GLCaps::loadedExtensions = false;
  Dummy function to which unloaded extensions can be set.
  */
 static void __stdcall glIgnore(GLenum e) {}
+
+/** Cache of values supplied to supportsTextureFormat.
+    Works on pointers since there is no way for users
+    to construct their own TextureFormats.
+ */
+static Table<const TextureFormat*, bool>      _supportedTextureFormat;
+
 
 Set<std::string> GLCaps::extensionSet;
 
@@ -185,8 +193,37 @@ void GLCaps::loadExtensions() {
 
 
 bool GLCaps::supports(const std::string& extension) {
-
     return extensionSet.contains(extension);
+}
+
+
+bool GLCaps::supports(const TextureFormat* fmt) {
+    // First, check if we've already tested this format
+    if (! _supportedTextureFormat.containsKey(fmt)) {
+        uint8 bytes[8 * 8 * 4];
+
+        glPushAttrib(GL_TEXTURE_BIT);
+
+            // See if we can create a texture in this format
+            unsigned int id;
+            glGenTextures(1, &id);
+            glBindTexture(id, GL_TEXTURE_2D);
+
+            // Clear the old error flag
+            glGetError();
+            // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
+            // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
+            glTexImage2D(GL_TEXTURE_2D, 0, fmt->OpenGLFormat, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+
+            bool success = (glGetError() == GL_NO_ERROR);
+            _supportedTextureFormat.set(fmt, success);
+
+            glDeleteTextures(1, &id);
+        // Restore old texture state
+        glPopAttrib();
+    }
+
+    return _supportedTextureFormat[fmt];
 }
 
 

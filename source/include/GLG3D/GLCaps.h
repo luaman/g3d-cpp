@@ -21,16 +21,24 @@ namespace G3D {
 
 /**
  Low-level wrapper for OpenGL extension management.
- Can be used without G3D::RenderDevice.
+ Can be used without G3D::RenderDevice to load and
+ manage extensions.
 
- The presence of an arbitrary extension can be determined
- using GLExt::supports(extString).  For convenience, frequently used
- extensions have fast tests named on the extension; e.g.
+ OpenGL has a base API and an extension API.  All OpenGL drivers
+ must support the base API.  The latest features may not 
+ be supported by some drivers, so they are in the extension API
+ and are dynamically loaded at runtime using GLCaps::loadExtensions.  
+ Before using a specific extension you must test for its presence
+ using the GLCaps::supports method.
+ 
+ For convenience, frequently used extensions have fast tests, e.g.,
  GLExt::supports_GL_EXT_texture_rectangle.
 
  Note that GL_NV_texture_rectangle and GL_EXT_texture_rectangle
  have exactly the same constants, so supports_GL_EXT_texture_rectangle
  returns true if GL_NV_texture_rectangle is supported.
+
+ GLCaps assumes all OpenGL contexts have the same capabilities.
  */
 class GLCaps {
 private:
@@ -76,6 +84,9 @@ public:
     static void loadExtensions();
 
     static bool supports(const std::string& extName);
+
+    /** Returns true if the given texture format is supported on this device.*/
+    static bool supports(const class TextureFormat* fmt);
 };
 
 } // namespace

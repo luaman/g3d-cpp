@@ -2281,33 +2281,7 @@ std::string RenderDevice::screenshot(const std::string& filepath) const {
 bool RenderDevice::supportsTextureFormat(const TextureFormat* fmt) {
     debugAssertM(! inPrimitive, 
         "Cannot call supportsTextureFormat between beginPrimitive and endPrimitive.");
-
-    // First, check if we've already tested this format
-    if (! _supportedTextureFormat.containsKey(fmt)) {
-        uint8 bytes[8 * 8 * 4];
-
-        glPushAttrib(GL_TEXTURE_BIT);
-
-            // See if we can create a texture in this format
-            unsigned int id;
-            glGenTextures(1, &id);
-            glBindTexture(id, GL_TEXTURE_2D);
-
-            // Clear the old error flag
-            glGetError();
-            // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
-            // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-            glTexImage2D(GL_TEXTURE_2D, 0, fmt->OpenGLFormat, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-
-            bool success = (glGetError() == GL_NO_ERROR);
-            _supportedTextureFormat.set(fmt, success);
-
-            glDeleteTextures(1, &id);
-        // Restore old texture state
-        glPopAttrib();
-    }
-
-    return _supportedTextureFormat[fmt];
+    return GLCaps::supports(fmt);
 }
 
 
