@@ -1806,7 +1806,8 @@ void GImage::decodePNG(
     if (color_type == PNG_COLOR_TYPE_RGBA) {
         this->channels = 4;
         this->_byte = (uint8*)malloc(width * height * 4);
-    } else if (color_type == PNG_COLOR_TYPE_RGB) {
+    } else if ((color_type == PNG_COLOR_TYPE_RGB) || 
+               (color_type == PNG_COLOR_TYPE_PALETTE)) {
         this->channels = 3;
         this->_byte = (uint8*)malloc(width * height * 3);
     } else if (color_type == PNG_COLOR_TYPE_GRAY) {
