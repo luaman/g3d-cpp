@@ -571,6 +571,7 @@
    <BR>Justin Miller
    <BR>Kurt Miller
    <BR>Nate Miller
+   <BR>Tomas Moller
    <BR>Nick Musurca
    <BR>Edward Resnick
    <BR>Jack Ritter
@@ -579,6 +580,7 @@
    <BR>SGI
    <BR>Peter Sibley
    <BR>Pierre Terdiman
+   <BR>Ben Trumbore
    <BR>Matthew Welch
    <BR>Simon Winkelbach
    <BR>Laura Wollstadt

@@ -8,7 +8,7 @@
   @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2004-03-17
+  @edited  2004-03-19
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -22,6 +22,7 @@
 #include "G3D/Box.h"
 #include "G3D/Triangle.h"
 #include "G3D/Array.h"
+#include "G3D/Ray.h"
 
 namespace G3D {
 
@@ -122,12 +123,60 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static double collisionTimeForMovingPointFixedTriangle(
-        const Vector3&			point,
-        const Vector3&			velocity,
-        const Triangle&         triangle,
-        Vector3&				outLocation,
-        Vector3&                outNormal = ignore);
+    /** One-sided triangle */
+    static inline double collisionTimeForMovingPointFixedTriangle(
+        const Vector3& orig,
+        const Vector3& dir,
+        const Vector3& vert0,
+        const Vector3& vert1,
+        const Vector3& vert2) {
+        return Ray::fromOriginAndDirection(orig, dir).intersectionTime(vert0, vert1, vert2);
+    }
+
+    inline static double collisionTimeForMovingPointFixedTriangle(
+        const Vector3& orig,
+        const Vector3& dir,
+        const Vector3& vert0,
+        const Vector3& vert1,
+        const Vector3& vert2,
+        Vector3&       location) {
+        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, vert0, vert1, vert2);
+        if (t < inf) {
+            location = orig + dir * t;
+        }
+        return t;
+    }
+
+    inline static double collisionTimeForMovingPointFixedTriangle(
+        const Vector3&  orig,
+        const Vector3&  dir,
+        const Triangle& tri,
+        Vector3&        location = ignore,
+        Vector3&        normal   = ignore) {
+        double t = collisionTimeForMovingPointFixedTriangle(
+            orig, dir, tri.vertex(0), tri.vertex(1), tri.vertex(2));
+        if ((t < inf) && (&location != &ignore)) {
+            location = orig + dir * t;
+            normal   = tri.normal();
+        }
+        return t;
+    }
+
+    inline static double collisionTimeForMovingPointFixedTriangle(
+        const Vector3& orig,
+        const Vector3& dir,
+        const Vector3& vert0,
+        const Vector3& vert1,
+        const Vector3& vert2,
+        Vector3&       location,
+        Vector3&       normal) {
+        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, vert0, vert1, vert2);
+        if (t < inf) {
+            location = orig + dir * t;
+            normal   = (vert2 - vert0).cross(vert1 - vert0).direction();
+        }
+        return t;
+    }
 
     /**
      Unlike other methods, does not support an output normal.

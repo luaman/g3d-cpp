@@ -5,7 +5,7 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2004-03-17
+  @edited  2004-03-19
  */
 
 #include "G3D/CollisionDetection.h"
@@ -430,6 +430,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedSphere(
 }
 
 
+/*
 double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     const Vector3&			point,
     const Vector3&			velocity,
@@ -452,9 +453,94 @@ double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
         outLocation = Vector3::INF3;
         return inf;
     }
+}*/
 
+/*
+double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
+    const Vector3& orig,
+    const Vector3& dir,
+    const Vector3& vert0,
+    const Vector3& vert1,
+    const Vector3& vert2) {
+
+    // Barycenteric coords
+    double u, v;
+    #define EPSILON 0.000001
+    #define CROSS(dest,v1,v2) \
+              dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
+              dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
+              dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
+
+    #define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
+
+    #define SUB(dest,v1,v2) \
+              dest[0]=v1[0]-v2[0]; \
+              dest[1]=v1[1]-v2[1]; \
+              dest[2]=v1[2]-v2[2]; 
+
+    double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
+    
+    // find vectors for two edges sharing vert0
+    SUB(edge1, vert1, vert0);
+    SUB(edge2, vert2, vert0);
+    
+    // begin calculating determinant - also used to calculate U parameter
+    CROSS(pvec, dir, edge2);
+    
+    // if determinant is near zero, ray lies in plane of triangle
+    const double det = DOT(edge1, pvec);
+    
+    if (det < EPSILON) {
+        return inf;
+    }
+    
+    // calculate distance from vert0 to ray origin
+    SUB(tvec, orig, vert0);
+    
+    // calculate U parameter and test bounds
+    u = DOT(tvec, pvec);
+    if ((u < 0.0) || (u > det)) {
+        // Hit the plane outside the triangle
+        return inf;
+    }
+    
+    // prepare to test V parameter
+    CROSS(qvec, tvec, edge1);
+    
+    // calculate V parameter and test bounds
+    v = DOT(dir, qvec);
+    if ((v < 0.0) || (u + v > det)) {
+        // Hit the plane outside the triangle
+        return inf;
+    }
+    
+    // calculate t, scale parameters, ray intersects triangle
+    // If we want u,v, we can compute this
+    // double t = DOT(edge2, qvec);
+    //const double inv_det = 1.0 / det;
+    //t *= inv_det;
+    //u *= inv_det;
+    //v *= inv_det;
+    // return t;
+
+    // Case where we don't need correct (u, v):
+
+    const double t = DOT(edge2, qvec);
+    
+    if (t >= 0) {
+        // Note that det must be positive
+        return t / det;
+    } else {
+        // We had to travel backwards in time to intersect
+        return inf;
+    }
+
+    #undef EPSILON
+    #undef CROSS
+    #undef DOT
+    #undef SUB
 }
-
+*/
 
 double CollisionDetection::collisionTimeForMovingPointFixedBox(
     const Vector3&          point,

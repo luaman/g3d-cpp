@@ -1020,6 +1020,7 @@ public:
 				    }
 
 				    s = &stack[stackIndex];
+                    continue;
 			    }
 
 			    double t;
