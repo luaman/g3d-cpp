@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-07-12
+ @edited  2004-10-30
  */
 
 #ifndef G3D_DRAW_H
@@ -167,7 +167,7 @@ public:
     static void rect2D(
         const class Rect2D& rect,
         RenderDevice* rd,
-        const Color4& color = Color3::WHITE,
+        const Color4& color = Color3::white(),
         const Vector2& texCoord0 = Vector2(1,1),
         const Vector2& texCoord1 = Vector2(1,1),
         const Vector2& texCoord2 = Vector2(1,1),
@@ -183,6 +183,16 @@ public:
         const Rect2D& texCoord1 = Rect2D::xywh(0,0,1,1),
         const Rect2D& texCoord2 = Rect2D::xywh(0,0,1,1),
         const Rect2D& texCoord3 = Rect2D::xywh(0,0,1,1));
+
+    /** Draws a border of size width about the rectangle
+        using polygons (since RenderDevice::LINE_STRIP doesn't 
+        guarantee pixel widths). */
+    static void rect2DBorder(
+        const class Rect2D& rect,
+        RenderDevice* rd,
+        const Color4& color = Color3::black(),
+        double innerBorder = 0,
+        double outerBorder = 1);
 
     /**
      This method is as hideously slow as it is convenient.  If you care

@@ -1104,6 +1104,12 @@ public:
 
     /**
      Set up for traditional 2D rendering (origin = upper left, y increases downwards).
+     
+     Note: the viewport will range up to the number of pixels (e.g., (0,0)-(640,480)), as
+     recommended in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/opengl/apptips_7wqb.asp .
+     Push2D also translates (sets the cameraToWorldMatrix) by (0.375, 0.375, 0) as recommended
+     in the OpenGL manual.  This helps avoid rasterization holes due to float-to-int roundoff.
+
      */
     void push2D(const Rect2D& viewport);
     void pop2D();

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-11-13
-  @created 2004-07-28
+  @created 2004-10-30
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -202,6 +202,17 @@ public:
             return Vector2(0, 0);
         }
     }
+
+
+    /** Returns a new Rect2D that is bigger/smaller by the specified amount 
+        (negative is shrink.) */
+    inline Rect2D border(int delta) const {
+        return Rect2D::xywh(x0() + delta, 
+                     y0() + delta, 
+                     width() - 2 * delta, 
+                     height() - 2 * delta);
+    }
+
 
     /** 
      Clips so that the rightmost point of the outPoly is at rect.x1 (e.g. a 800x600 window produces

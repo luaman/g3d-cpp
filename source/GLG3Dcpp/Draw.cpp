@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-07-16
+ @edited  2004-10-30
  */
 
 #include "GLG3D/Draw.h"
@@ -732,6 +732,7 @@ void Draw::rect2D(
 
     int N = iMin(4, GLCaps::numTextureCoords());
 
+    rd->pushState();
     rd->setColor(color);
     rd->beginPrimitive(RenderDevice::QUADS);
         for (int i = 0; i < 4; ++i) {
@@ -741,6 +742,42 @@ void Draw::rect2D(
             rd->sendVertex(rect.corner(i));
         }
     rd->endPrimitive();
+    rd->popState();
+}
+
+
+void Draw::rect2DBorder(
+    const class Rect2D& rect,
+    RenderDevice* rd,
+    const Color4& color,
+    double outerBorder,
+    double innerBorder) {
+
+
+    //
+    //
+    //   **************************************
+    //   **                                  **
+    //   * **                              ** *
+    //   *   ******************************   *
+    //   *   *                            *   *
+    //
+    //
+    const Rect2D outer = rect.border(outerBorder);
+    const Rect2D inner = rect.border(-innerBorder); 
+
+    rd->pushState();
+    rd->setColor(color);
+    rd->beginPrimitive(RenderDevice::QUAD_STRIP);
+
+    for (int i = 0; i < 5; ++i) {
+        int j = i % 4;
+        rd->sendVertex(outer.corner(j));
+        rd->sendVertex(inner.corner(j));
+    }
+
+    rd->endPrimitive();
+    rd->popState();
 }
 
 }
