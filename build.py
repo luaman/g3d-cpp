@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-02-0525
+# @edited  2004-02-25
 # Each build target is a procedure.
 #
 
@@ -136,12 +136,13 @@ def lib(args):
 
         # Copy the lib's to the right directory
         if (x == 0):
-            # strip first
+            # strip debug symbols
             os.system("strip -g --strip-unneeded temp/release/g3d/.libs/libG3D.a")
             os.system("strip -g --strip-unneeded temp/release/glg3d/.libs/libGLG3D.a")
 
-            os.system("strip --strip-unneeded temp/debug/g3d/.libs/libG3D_debug.a")
-            os.system("strip --strip-unneeded temp/debug/glg3d/.libs/libGLG3D_debug.a")
+            # The following code will strip line numbers, which is not desirable
+            # os.system("strip --strip-unneeded temp/debug/g3d/.libs/libG3D_debug.a")
+            # os.system("strip --strip-unneeded temp/debug/glg3d/.libs/libGLG3D_debug.a")
 
             copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            libdir + "/libG3D_debug.a")
             copyIfNewer("temp/release/g3d/.libs/libG3D.a",                libdir + "/libG3D.a")
