@@ -4,7 +4,7 @@
 # General configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = Graphics3D
-PROJECT_NUMBER         = "version 5.00 2002-04-01"
+PROJECT_NUMBER         = "version 5.01 beta 2002-04-04"
 OUTPUT_DIRECTORY       = ../temp
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
