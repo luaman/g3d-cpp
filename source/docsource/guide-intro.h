@@ -16,7 +16,9 @@ This guide gives a brief introduction to help you decide if %G3D is right
 for your project and introduce you to the major features.
 However, it covers only a fraction of the functionality in %G3D!  The individual 
 entry points are extensively documented and can be accessed through the 
-\link indexedbytopic Topic Index\endlink.
+\link indexedbytopic Topic Index\endlink.  The source code for the entire 
+library is available (http://cvs.sourceforge.net/viewcvs.py/%G3D-cpp/cpp/) and 
+can often answer detailed questions.
 
 Post questions and feedback on the User Forum 
 (http://sourceforge.net/forum/forum.php?forum_id=262426) and consider subscribing to 
@@ -28,8 +30,10 @@ abreast of changes coming in future releases and download Beta releases
 provide feedback.
 
 %G3D provides several demos with source that show different ways of structuring your 3D program 
-and how to use some of the most popular features.  The source code for the entire 
-library is available (http://cvs.sourceforge.net/viewcvs.py/%G3D-cpp/cpp/).
+and how to use some of the most popular features in <A HREF="../demos">demos/</A>.  It also 
+contains a directory of user submitted source code in <A HREF="../contrib">contrib/</A> that 
+demonstrates aspects of the library and provides some useful routines.
+
 
 The official support team and community respond to most user posts within
 hours and patches for critical user-discovered bugs are given top priority.  
