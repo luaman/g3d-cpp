@@ -320,6 +320,36 @@
 			settings = {
 			};
 		};
+		0F3A65DA066198470001EFA4 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = GLCaps.cpp;
+			path = ../source/GLG3Dcpp/GLCaps.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F3A65DB066198470001EFA4 = {
+			fileRef = 0F3A65DA066198470001EFA4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F3A66040661993C0001EFA4 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Shader.cpp;
+			path = ../source/GLG3Dcpp/Shader.cpp;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F3A66050661993C0001EFA4 = {
+			fileRef = 0F3A66040661993C0001EFA4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		0F77C07E05B0E79F005917B7 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -4230,6 +4260,8 @@
 				0FA15D2305B09073005402D6,
 				0FA15D2405B09073005402D6,
 				0F830EC705EA97E5007CB4C3,
+				0F3A65DB066198470001EFA4,
+				0F3A66050661993C0001EFA4,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4727,6 +4759,7 @@
 				0FA15CED05B09073005402D6,
 				0FA15CEF05B09073005402D6,
 				0FA15CF105B09073005402D6,
+				0F3A65DA066198470001EFA4,
 				0FA15CF505B09073005402D6,
 				0FA15CEE05B09073005402D6,
 				0FA15CF605B09073005402D6,
@@ -4739,6 +4772,7 @@
 				0FA15CFD05B09073005402D6,
 				0FA15CFE05B09073005402D6,
 				0F830EC605EA97E5007CB4C3,
+				0F3A66040661993C0001EFA4,
 				0FA15CFF05B09073005402D6,
 				0FA15D0005B09073005402D6,
 				0FA15D0105B09073005402D6,

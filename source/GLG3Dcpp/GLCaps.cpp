@@ -296,7 +296,7 @@ void GLCaps::loadExtensions() {
 
     #ifdef G3D_WIN32
         LOAD_EXTENSION(wglEnableGenlockI3D);
-    #elif defined(G3D_OSX) || defined(G3D_LINUX)
+    #elif defined(G3D_LINUX) 
         LOAD_EXTENSION(glXJoinSwapGroupNV);
         LOAD_EXTENSION(glXBindSwapBarrierNV);
         LOAD_EXTENSION(glXQuerySwapGroupNV);

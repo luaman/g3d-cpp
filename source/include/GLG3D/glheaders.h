@@ -203,7 +203,7 @@ extern PFNGLGETACTIVEUNIFORMARBPROC glGetActiveUniformARB;
 typedef BOOL (*PFNWGLENABLEGENLOCKI3D) (HDC hDCGL);
 extern PFNWGLENABLEGENLOCKI3D wglEnableGenlockI3D;
 
-#elif defined(G3D_OSX) || defined(G3D_LINUX)
+#elif defined(G3D_LINUX) 
 
 typedef Bool (*PFNGLXJOINSWAPGROUPNV) (Display*, GLXDrawable, GLuint);
 typedef Bool (*PFNGLXBINDSWAPBARRIERNV) (Display *dpy, GLuint group, GLuint barrier);
