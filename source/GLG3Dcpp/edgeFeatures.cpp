@@ -55,8 +55,8 @@ void drawFeatureEdges(RenderDevice* renderDevice, const PosedModelRef& model) {
             (backface[f0] ^ backface[f1]) ||
 
             // Front-face creases:
-            ((faceNormal[f0].dot(faceNormal[f1]) <= 0) && 
-             (!backface[f0] || !backface[f1]))) {
+            ((faceNormal[f0].dot(faceNormal[f1]) <= 0.1) && 
+             ! (backface[f0] && backface[f1]))) {
 
             cpuVertexArray.append(
                 vertexArray[edge.vertexIndex[0]], 

@@ -197,6 +197,9 @@ public:
             return Vector2(max.x, max.y);
         case 3:
             return Vector2(min.x, max.y);
+        default:
+            // Should never get here
+            return Vector2(0, 0);
         }
     }
 
