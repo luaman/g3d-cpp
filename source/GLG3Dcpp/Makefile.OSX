@@ -1,8 +1,7 @@
 CPPFLAGS=-I../include -D__cdecl= -D__stdcall= -I/usr/X11R6/include -F$(HOME)/Library/Frameworks/
 
 OBJFILES=\
-	Camera.o \
-	Font.o \
+	GFont.o \
 	G3DGameUnits.o \
 	GPUProgram.o \
 	LightingParameters.o \

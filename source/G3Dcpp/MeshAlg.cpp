@@ -111,14 +111,14 @@ void MeshAlg::computeFaceNormals(
 void MeshAlg::identifyBackfaces(
     const Array<Vector3>&           vertexArray,
     const Array<MeshAlg::Face>&     faceArray,
-    const Vector4&                  _P,
+    const Vector4&                  HP,
     Array<bool>&                    backface) {
 
-    Vector3 P = _P.xyz();
+    Vector3 P = HP.xyz();
 
     backface.resize(faceArray.size());
 
-    if (fuzzyEq(_P.w, 0.0)) {
+    if (fuzzyEq(HP.w, 0.0)) {
         // Infinite case
         for (int f = faceArray.size() - 1; f >= 0; --f) {
             const MeshAlg::Face& face = faceArray[f];
@@ -151,15 +151,15 @@ void MeshAlg::identifyBackfaces(
 void MeshAlg::identifyBackfaces(
     const Array<Vector3>&           vertexArray,
     const Array<MeshAlg::Face>&     faceArray,
-    const Vector4&                  _P,
+    const Vector4&                  HP,
     Array<bool>&                    backface,
     const Array<Vector3>&           faceNormals) {
 
-    Vector3 P = _P.xyz();
+    Vector3 P = HP.xyz();
 
     backface.resize(faceArray.size());
 
-    if (fuzzyEq(_P.w, 0.0)) {
+    if (fuzzyEq(HP.w, 0.0)) {
         // Infinite case
         for (int f = faceArray.size() - 1; f >= 0; --f) {
             const Vector3& N = faceNormals[f];
