@@ -35,9 +35,16 @@ private:
 
 	static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 
+	/** Called from both constructors */
+	void init(HWND hwnd);
+
 public:
-	
+
+	/** Constructs from a new window */
 	explicit Win32Window(const GWindowSettings& settings);
+
+	/** Constructs from an existing window */
+	Win32Window(const GWindowSettings& settings, HWND hwnd);
 	
 	virtual ~Win32Window();
 	

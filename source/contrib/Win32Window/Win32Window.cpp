@@ -46,8 +46,6 @@ static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
 }
 
 
-
-
 Win32Window::Win32Window(const GWindowSettings& s) {
 	_hDC = NULL;
 	_mouseVisible = true;
@@ -76,7 +74,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     int total_width  = settings.width  + GetSystemMetrics(SM_CXFIXEDFRAME) * 2;
     int total_height = settings.height + GetSystemMetrics(SM_CYFIXEDFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
     
-    window = CreateWindow("window", 
+    HWND window = CreateWindow("window", 
         name.c_str(),
         WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
         (GetSystemMetrics(SM_CXSCREEN) - total_width) / 2,
@@ -93,14 +91,24 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     SetWindowLong(window, GWL_USERDATA, (LONG)this);
     ShowWindow(window, SW_SHOW);
 
-	////////////////////////////////////////////////////////////////////////
-    // Change the desktop resolution if we are running in fullscreen mode
-
     if (settings.fullScreen) {
+	    // Change the desktop resolution if we are running in fullscreen mode
         if (!ChangeResolution(settings.width, settings.height, settings.rgbBits * 3, settings.refreshRate)) {
 			alwaysAssertM(false, "Failed to change resolution");
         }
     }
+	init(window);
+}
+
+
+Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
+	settings = s;
+	init(hwnd);
+}
+
+
+void Win32Window::init(HWND hwnd) {
+	window = hwnd;
  
     // Setup the pixel format properties for the output device
     _hDC = GetDC(window);
