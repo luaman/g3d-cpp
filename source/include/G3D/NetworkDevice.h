@@ -31,7 +31,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2003-06-26
+ @edited  2003-06-29
  */
 
 #ifndef NETWORKDEVICE_H
@@ -137,6 +137,14 @@ inline bool operator!=(const NetAddress& a, const NetAddress& b) {
 class NetMessage {
 public:
     virtual ~NetMessage() {}
+
+    /** This must return a value even for an uninitalized method.
+       Create an enumeration for your message types and return
+       one of those values.  It will be checked on both send and
+       receive as a form of runtime type checking. 
+    
+       Values less than 1000 are reserved for the system.*/
+    virtual uint32 type() const = 0;
     virtual void serialize(class BinaryOutput& b) const = 0;
     virtual void deserialize(class BinaryInput& b) = 0;
 };
@@ -231,15 +239,12 @@ public:
      Serializes the message and schedules it to be sent as soon as possible,
      then returns immediately.
 
-     The type is an application defined value that is useful for determining
-     which subclass of NetMessage to pass to receive.  Zero is an illegal value.
-
      The actual data sent across the network is preceeded by the message type
      and the size of the serialized message as a 32-bit integer.  The size is
      sent because TCP is a stream protocol and doesn't have a concept of discrete
      messages.
      */
-    void send(const NetMessage* m, uint32 type = 1);
+    void send(const NetMessage* m);
 
     virtual uint32 waitingMessageType();
 
@@ -300,7 +305,7 @@ public:
     /** Serializes and sends the message immediately. Data may not arrive and may
         arrive out of order, but individual messages are guaranteed to not be
         corrupted.  If the message is null, an empty message is still sent.*/
-    void send(const NetAddress& a, const NetMessage* m, uint32 type = 1);
+    void send(const NetAddress& a, const NetMessage* m);
 
     /** If data is waiting, deserializes the waiting message into m, puts the
         sender's address in addr and returns true, otherwise returns false.  

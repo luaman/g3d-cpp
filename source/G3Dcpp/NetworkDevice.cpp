@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2003-06-25
+ @edited  2003-06-29
  */
 
 #include <stdlib.h>
@@ -652,13 +652,16 @@ uint32 ReliableConduit::waitingMessageType() {
 }
 
 
-void ReliableConduit::send(const NetMessage* m, uint32 type) {
-
-    debugAssert(type != 0);
+void ReliableConduit::send(const NetMessage* m) {
 
     BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
 
-    b.writeUInt32(type);
+    if (m == NULL) {
+        b.writeUInt32(1);
+    } else {
+        debugAssert(m->type() != 0);
+        b.writeUInt32(m->type());
+    }
 
     // Reserve space for the 4 byte size header
     b.writeUInt32(0);
@@ -709,8 +712,13 @@ bool ReliableConduit::receive(NetMessage* m) {
     // This both checks to ensure that a message was waiting and
     // actively consumes the message type if it has not been read
     // yet.
-    if (waitingMessageType() == 0) {
+    uint32 t = waitingMessageType();
+    if (t == 0) {
         return false;
+    }
+
+    if (m != NULL) {
+        debugAssert(t == m->type());
     }
 
     // Reset the waiting message tracker.
@@ -862,15 +870,16 @@ LightweightConduit::~LightweightConduit() {
 }
 
 
-void LightweightConduit::send(const NetAddress& a, const NetMessage* m, uint32 type) {
-
-    debugAssert(type != 0);
+void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
 
     BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
 
-    b.writeUInt32(type);
     if (m != NULL) {
+        debugAssert(m->type() != 0);
+        b.writeUInt32(m->type());
         m->serialize(b);
+    } else {
+        b.writeUInt32(1);
     }
 
     if (sendto(sock, (const char*)b.getCArray(), b.getLength(), 0, (struct sockaddr *) &(a.addr), sizeof(a.addr)) == SOCKET_ERROR) {
@@ -946,8 +955,13 @@ bool LightweightConduit::receive(NetMessage* m, NetAddress& sender) {
     // This both checks to ensure that a message was waiting and
     // actively consumes the message from the network stream if
     // it has not been read yet.
-    if (waitingMessageType() == 0) {
+    uint32 t = waitingMessageType();
+    if (t == 0) {
         return false;
+    }
+
+    if (m != NULL) {
+        debugAssert(m->type() == t);
     }
 
     sender = messageSender;

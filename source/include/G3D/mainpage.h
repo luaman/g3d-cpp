@@ -688,6 +688,7 @@ to add zlibstat.lib to your linker list.
      <LI> System::consoleKeyPressed
      <LI> System::consoleClearScreen
      <LI> System::consoleReadKey
+     <LI> NetMessage::type()
      <LI> Changed the Conduit message protocol to include a message type.
           The API is backwards compatible to 5.01 even though the protocol is not.
      <LI> Removed optional argument maxSize from LightweightConduit::receive.
@@ -715,6 +716,8 @@ to add zlibstat.lib to your linker list.
      <LI> Removed CDTriangle (use G3D::Triangle instead)
      <LI> Removed Font (use G3D::CFont instead)
      <LI> FIX: Camera::getClipPlanes now transforms infinite planes correctly.
+     <LI> FIX: The last reference of an RGC pointer assigned to itself no
+               longer tries to collect before re-assigning
    </UL>
 
    <P>

@@ -179,6 +179,8 @@ public:
     DiscoveryServerAddressMessage() {}
     DiscoveryServerAddressMessage(const DiscoverySettings* s) : settings(s) {}
 
+    uint32 type() const;
+
     void serialize(BinaryOutput& b) const;
 
     void deserialize(BinaryInput& b);
@@ -189,16 +191,15 @@ public:
  Base class for DiscoveryClient and DiscoveryServer.
  */
 class Discovery {
-protected:
+public:
+
     NetworkDevice*              netDevice;
     const DiscoverySettings*    settings;
 
-    enum MessageConstants {
+    enum {
         SERVER_SHUTDOWN_MESSAGE  = 2,
         SERVER_BROADCAST_MESSAGE = 3,
         CLIENT_BROADCAST_MESSAGE = 4};
-
-public:
 
     virtual void init(
         NetworkDevice*           _netDevice,
@@ -213,6 +214,15 @@ public:
 
 class DiscoveryServer : private Discovery {
 private:
+
+    class ShutdownMessage : public NetMessage {
+    public:
+        uint32 type() const;
+
+        void serialize(BinaryOutput& b) const {}
+
+        void deserialize(BinaryInput& b) {}
+    };
 
     /**
      For broadcast.
@@ -307,8 +317,17 @@ public:
      */
     Array<IncompatibleServerDescription> incompatibleServerList;
 
-
 private:
+    class BroadcastMessage : public NetMessage {
+    public:
+        uint32 type() const {
+            return G3D::Discovery::CLIENT_BROADCAST_MESSAGE;
+        }
+
+        void serialize(BinaryOutput& b) const {}
+
+        void deserialize(BinaryInput& b) {}
+    };
 
     /**
      The client periodically checks servers to make sure they are still up
@@ -500,7 +519,7 @@ public:
 
         // Send announcement
         NetAddress broadcast = NetAddress::broadcastAddress(settings->clientBroadcastPort);
-        net->send(broadcast, NULL, CLIENT_BROADCAST_MESSAGE);
+        net->send(broadcast, &BroadcastMessage());
     }
 
     /**

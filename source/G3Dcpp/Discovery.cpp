@@ -70,18 +70,24 @@ void DiscoveryServerAddressMessage::deserialize(BinaryInput& b) {
     address.resize(b.readInt32());
     for (int i = 0; i < address.size(); ++i) {
         address[i].deserialize(b);
-        //std::string s = address[i].toString();
-        //printf("Received address: %s\n", s.c_str());
     }
+}
+
+
+uint32 DiscoveryServerAddressMessage::type() const {
+    return Discovery::SERVER_BROADCAST_MESSAGE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+uint32 DiscoveryServer::ShutdownMessage::type() const {
+    return G3D::Discovery::SERVER_SHUTDOWN_MESSAGE;
+}
 
 void DiscoveryServer::sendAnnouncement() const {
     NetAddress broadcast = NetAddress::broadcastAddress(settings->serverBroadcastPort);
 
-    net->send(broadcast, &addressMessage, SERVER_BROADCAST_MESSAGE);
+    net->send(broadcast, &addressMessage);
 
     const_cast<DiscoveryServer*>(this)->lastBroadcast = time(NULL);
 }
@@ -89,7 +95,7 @@ void DiscoveryServer::sendAnnouncement() const {
 
 void DiscoveryServer::sendShutDown() const {
     NetAddress broadcast = NetAddress::broadcastAddress(settings->serverBroadcastPort);
-    net->send(broadcast, NULL, SERVER_SHUTDOWN_MESSAGE);
+    net->send(broadcast, &ShutdownMessage());
 }
 
 
