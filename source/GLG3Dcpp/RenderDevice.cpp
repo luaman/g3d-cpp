@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-06-15
+ @edited  2004-07-15
  */
 
 
@@ -638,6 +638,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     srcBlendFunc                = BLEND_ONE;
     dstBlendFunc                = BLEND_ZERO;
+    blendEq                     = BLENDEQ_ADD;
 
     drawBuffer                  = BUFFER_BACK;
 
@@ -773,7 +774,7 @@ void RenderDevice::setState(
     
     setAlphaTest(newState.alphaTest, newState.alphaReference);
 
-    setBlendFunc(newState.srcBlendFunc, newState.dstBlendFunc);
+    setBlendFunc(newState.srcBlendFunc, newState.dstBlendFunc, newState.blendEq);
 
     setRenderMode(newState.renderMode);
     setPolygonOffset(newState.polygonOffset);
@@ -1662,6 +1663,30 @@ void RenderDevice::setStencilOp(
 }
 
 
+static GLenum toGLBlendEq(RenderDevice::BlendEq e) {
+    switch (e) {
+    case RenderDevice::BLENDEQ_MIN:
+        return GL_MIN;
+
+    case RenderDevice::BLENDEQ_MAX:
+        return GL_MAX;
+
+    case RenderDevice::BLENDEQ_ADD:
+        return GL_FUNC_ADD;
+
+    case RenderDevice::BLENDEQ_SUBTRACT:
+        return GL_FUNC_SUBTRACT;
+
+    case RenderDevice::BLENDEQ_REVERSE_SUBTRACT:
+        return GL_FUNC_REVERSE_SUBTRACT;
+
+    default:
+        debugAssertM(false, "Fell through switch");
+        return GL_ZERO;
+    }
+}
+
+
 static GLint toGLBlendFunc(RenderDevice::BlendFunc b) {
     switch (b) {
     case RenderDevice::BLEND_SRC_ALPHA:
@@ -1694,7 +1719,8 @@ static GLint toGLBlendFunc(RenderDevice::BlendFunc b) {
 
 void RenderDevice::setBlendFunc(
     BlendFunc src,
-    BlendFunc dst) {
+    BlendFunc dst,
+    BlendEq   eq) {
     debugAssert(! inPrimitive);
 
 	if (src == BLEND_CURRENT) {
@@ -1705,16 +1731,24 @@ void RenderDevice::setBlendFunc(
 		dst = state.dstBlendFunc;
 	}
 
+    if (eq == BLENDEQ_CURRENT) {
+        eq = state.blendEq;
+    }
+
     if ((state.dstBlendFunc != dst) ||
-        (state.srcBlendFunc != src)) {
-        if ((dst == BLEND_ZERO) && (src == BLEND_ONE)) {
+        (state.srcBlendFunc != src) ||
+        (state.blendEq != eq)) {
+
+        if ((dst == BLEND_ZERO) && (src == BLEND_ONE) && ((eq == BLENDEQ_ADD) || (eq == BLENDEQ_SUBTRACT))) {
             glDisable(GL_BLEND);
         } else {
             glEnable(GL_BLEND);
             glBlendFunc(toGLBlendFunc(src), toGLBlendFunc(dst));
+            glBlendEquation(toGLBlendEq(eq));
         }
         state.dstBlendFunc = dst;
         state.srcBlendFunc = src;
+        state.blendEq = eq;
     }
 }
 

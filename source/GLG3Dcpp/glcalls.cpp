@@ -32,6 +32,10 @@ PFNGLACTIVETEXTUREARBPROC                   glActiveTextureARB 			    = NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC             glClientActiveTextureARB	    = NULL;
 #endif
 
+#ifndef GL_EXT_blend_minmax
+PFNGLBLENDEQUATIONEXTPROC                   glBlendEquationEXT              = NULL;
+#endif
+
 #ifdef G3D_WIN32
 PFNWGLSWAPINTERVALEXTPROC                   wglSwapIntervalEXT 			    = NULL;
 PFNWGLCHOOSEPIXELFORMATARBPROC              wglChoosePixelFormatARB		    = NULL;

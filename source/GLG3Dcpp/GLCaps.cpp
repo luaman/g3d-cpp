@@ -205,6 +205,10 @@ void GLCaps::loadExtensions() {
         LOAD_EXTENSION(glClientActiveTextureARB);
     #endif
 
+    #ifndef GL_EXT_blend_minmax
+        LOAD_EXTENSION(glBlendEquationEXT);
+    #endif
+
     #ifdef G3D_WIN32
         LOAD_EXTENSION(wglSwapIntervalEXT);
         LOAD_EXTENSION(wglChoosePixelFormatARB);

@@ -1590,7 +1590,6 @@ int main(int argc, char* argv[]) {
     #endif
 
     printf("\n\nTests:\n\n");
-
     testPlane();
     printf("  passed\n");
     testAABoxCulledBy();

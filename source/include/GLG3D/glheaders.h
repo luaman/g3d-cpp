@@ -78,6 +78,11 @@ extern PFNGLACTIVETEXTUREARBPROC           glActiveTextureARB;
 extern PFNGLCLIENTACTIVETEXTUREARBPROC     glClientActiveTextureARB;
 #endif
 
+#ifndef GL_EXT_blend_minmax
+extern PFNGLBLENDEQUATIONEXTPROC           glBlendEquationEXT;
+#endif
+
+
 extern PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV;
 extern PFNGLFLUSHVERTEXARRAYRANGENVPROC    glFlushVertexArrayRangeNV;
 

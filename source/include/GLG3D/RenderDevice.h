@@ -302,6 +302,9 @@ public:
                       BLEND_ZERO, BLEND_SRC_COLOR,  BLEND_DST_COLOR,  
                       BLEND_ONE_MINUS_SRC_COLOR, BLEND_CURRENT};
 
+    enum BlendEq     {BLENDEQ_MIN, BLENDEQ_MAX, BLENDEQ_ADD, BLENDEQ_SUBTRACT,
+                      BLENDEQ_REVERSE_SUBTRACT, BLENDEQ_CURRENT};
+
     enum StencilOp   {STENCIL_INCR_WRAP, STENCIL_DECR_WRAP,
                       STENCIL_KEEP,      STENCIL_INCR,     STENCIL_DECR,
                       STENCIL_REPLACE,   STENCIL_ZERO,     STENCIL_INVERT, STENCILOP_CURRENT};
@@ -418,12 +421,22 @@ public:
         StencilOp                       backZPass);
 
     /**
-     Use BLEND_ZERO, BLEND_ONE to shut off blending.
-     Equivalent to glBlendFunc.
+     Equivalent to glBlendFunc and glBlendEquation.
+
+     Use 
+       <CODE>(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO, RenderDevice::BLENDEQ_ADD)</CODE>
+     to shut off blending.
+     
+     Use 
+       <CODE>(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA, RenderDevice::BLENDEQ_ADD)</CODE>
+     for unmultiplied alpha blending and
+       <CODE>(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA, RenderDevice::BLENDEQ_ADD)</CODE>
+     for premultiplied alpha.
      */
     void setBlendFunc(
         BlendFunc                       src,
-        BlendFunc                       dst);
+        BlendFunc                       dst,
+        BlendEq                         eq = BLENDEQ_ADD);
 
     /**
      Equivalent to glLineWidth.
@@ -889,6 +902,7 @@ private:
         
         BlendFunc                   srcBlendFunc;
         BlendFunc                   dstBlendFunc;
+        BlendEq                     blendEq;
         
         ShadeMode                   shadeMode;
     
