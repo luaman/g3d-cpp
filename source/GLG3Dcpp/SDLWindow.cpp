@@ -446,6 +446,11 @@ void SDLWindow::setIcon(const GImage& image) {
                   (image.channels == 4), 
                   "Icon image must have at least 3 channels.");
 
+    #ifdef G3D_WIN32
+        alwaysAssertM((image.width == 32) && (image.height == 32),
+            "Icons must be 32x32 on windows.");
+    #endif
+
     uint8* mask = NULL;
 
     uint32 rmask = 0xFF000000;
