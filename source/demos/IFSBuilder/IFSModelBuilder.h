@@ -1,0 +1,64 @@
+/**
+  @file IFSBuilder/IFSModelBuilder.h
+
+  @maintainer Morgan McGuire, matrix@graphics3d.com
+
+  @created 2002-02-27
+  @edited  2002-02-27
+ */ 
+
+
+#ifndef IFSMODELBUILDER_H
+#define IFSMODELBUILDER_H
+
+#include <G3DAll.h>
+
+// We construct a grid to find neighboring vertices in O(1) time
+#define GRID_RES 32
+
+// Vertices that are within this distance of each other are considered
+// close.
+#define CLOSE 0.0000
+
+/**
+ Used by IFSModel for loading.
+ */
+class IFSModelBuilder {
+public:
+    /** Indices of vertices in <B>or near</B>  a grid cell. */
+    typedef Array<int> List;
+
+private:
+    std::string                 name;
+
+
+    List grid[GRID_RES][GRID_RES][GRID_RES];
+    
+    /**
+     All of the triangles, as a long triangle list.
+     */
+    Array<Vector3>              triList;
+
+    void centerTriList();
+    void computeBounds(Vector3& min, Vector3& max);
+
+    /** Gets the index of a vertex, adding it to the
+        model's list if necessary. */
+    int getIndex(const Vector3& v, class IFSModel* model);
+
+public:
+
+    /** You have to delete the model you create */
+    void commit(class IFSModel* model);
+
+    /**
+     Adds a new triangle to the model.
+     */
+    void addTriangle(const Vector3& a, const Vector3& b, const Vector3& c);
+
+    void setName(const std::string& n);
+
+};
+
+
+#endif

@@ -1,0 +1,78 @@
+/**
+ @file Cone.cpp
+
+ Cone class
+
+ @maintainer Morgan McGuire, matrix@graphics3d.com
+
+ @created 2001-07-09
+ @edited  2002-08-23
+*/
+
+#include "../include/G3D/Cone.h"
+#include "../include/G3D/Line.h"
+#include "../include/G3D/Sphere.h"
+#include "../include/G3D/Box.h"
+
+namespace G3D {
+
+Cone::Cone(const Vector3 &tip, const Vector3 &direction, Real angle) {
+    this->tip = tip;
+    this->direction = direction.direction();
+    this->angle = angle;
+
+    assert(angle >= 0);
+    assert(angle <= G3D::PI);
+}
+
+/**
+ Forms the smallest cone that contains the box.  Undefined if
+ the tip is inside or on the box.
+ */
+Cone::Cone(const Vector3& tip, const Box& box) {
+    this->tip = tip;
+    this->direction = (box.getCenter() - tip).direction();
+
+    // Find the biggest angle
+    double smallestDotProduct = direction.dot((box.corner[0] - tip).direction());
+
+    for (int i = 1; i < 8; ++i) {
+        double dp = direction.dot((box.corner[i] - tip).direction());
+
+        assert(dp > 0);
+
+        if (dp < smallestDotProduct) {
+            smallestDotProduct = dp;
+        }
+    }
+
+    angle = acos(smallestDotProduct);
+}
+
+
+bool Cone::intersects(const Sphere& b) const {
+    // If the bounding sphere contains the tip, then
+    // they definitely touch.
+    if (b.contains(this->tip)) {
+        return true;
+    }
+
+    // Move the tip backwards, effectively making the cone bigger
+    // to account for the radius of the sphere.
+
+    Vector3 tip = this->tip - direction * b.radius / sin(angle);
+
+    return Cone(tip, direction, angle).contains(b.center);
+}
+
+
+bool Cone::contains(const Vector3& v) const {
+
+    Vector3 d = (v - tip).direction();
+
+    double x = d.dot(direction);
+
+    return (x > 0) && (x >= cos(angle));
+}
+
+}; // namespace
