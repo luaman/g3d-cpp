@@ -1,7 +1,115 @@
 /**
-  @page indexedbytopic Routines Grouped by Topic
+  @page indexedbytopic APIs by Topic
 
-  <A HREF="map.png"><IMG SRC="map.png" WIDTH=64 ALIGN=RIGHT></A>
+@section app Application Framework (G3DAll.h, glg3d.lib)
+<I>High-level building blocks for creating applications.</I>
+
+  <UL>
+  <LI><B>3D Models</B> &nbsp; &nbsp;
+    G3D::GFont,
+    G3D::GLight,
+    G3D::GMaterial,
+    G3D::IFSModel,
+    G3D::Lighting,
+    G3D::LightingParameters,
+    G3D::MD2Model,
+    G3D::PosedModel,
+    G3D::PosedModelWrapper
+    G3D::Sky
+<P>
+  See also contrib & demo code 
+    <A HREF="../contrib/ArticulatedModel">ArticulatedModel</A>, 
+    <A HREF="../contrib/IFSBuilder">IFSBuilder</A>,
+    <A HREF="../contrib/ObjModel">ObjModel</A>,
+    <A HREF="../demos/MD2Model_Demo">MD2Model_Demo</A>
+
+  <LI><B>Application Structure</B> &nbsp; &nbsp;
+    G3D::GApp, G3D::GApplet, G3D::GAppSettings,
+    G3D::UserInput, 
+    G3D::ManualCameraController
+<P>
+  See also demo code
+    <A HREF="../demos/main.cpp">main.cpp</A>, 
+
+  <LI><B>Effects</B> &nbsp; &nbsp;
+    G3D::beginMarkShadows, G3D::endMarkShadows, G3D::markShadows,
+    G3D::Draw,
+    G3D::drawFeatureEdges,
+    <P>
+  See also contrib & demo code
+    <A HREF="../contrib/shaders">Shaders</A>, 
+    <A HREF="../demos/GLSL_Demo">GLSL_Demo</A>, 
+    <A HREF="../demos/ASM_Shader_Demo">ASM_Shader_Demo</A> 
+
+   </UL>
+
+  For GUIs see also contrib code
+    <A HREF="../contrib/wxGWindow">wxGWindow</A> (using wxWidgest),
+    <A HREF="../contrib/CurveEditor">CurveEditor</A> (GUI example from scratch)
+    <P>
+  For audio see also contrib code
+    <A HREF="../contrib/AudioDevice">AudioDevice</A>
+
+@section gl Hardware Rendering (G3DAll.h, glg3d.lib)
+<I>An easy-to-use wrapper for OpenGL and a platform-independent windowing system.</I>
+
+ <UL>
+  <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
+    G3D::GLCaps,
+    G3D::Milestone,
+    G3D::ObjectShader,
+    G3D::PixelProgram,
+    G3D::RenderDevice,
+    G3D::RenderDeviceSettings,
+    G3D::Texture,
+    G3D::TextureFormat,
+    G3D::TextureManager,
+    G3D::VAR,
+    G3D::VARArea, 
+    G3D::VertexProgram,
+    G3D::VertexAndPixelShader,
+    G3D::Shader
+
+  <LI> <B>Window managment</B>&nbsp; &nbsp;
+    G3D::GEvent,
+    G3D::GWindow,
+    G3D::SDLWindow,
+    G3D::Win32Window,
+        <P>
+    See also contrib & demo code
+    <A HREF="../contrib/GlutWindow">GlutWindow</A>, 
+    <A HREF="../contrib/wxGWindow">wxGWindow</A>,
+    <A HREF="../contrib/CoreyGWindow">QtWindow</A>
+    <A HREF="../demos/main-no-GApp.cpp">main-no-GApp.cpp</A>, 
+
+  <LI><B>Extensions to base OpenGL</B> &nbsp; &nbsp;
+    debugAssertGLOk,
+    DECLARE_GLFORMATOF,
+    G3D::glLoadMatrix, 
+    G3D::glLoadInvMatrix, 
+    G3D::GLCaps,
+    G3D::glColor,
+    G3D::glMultInvMatrix, 
+    G3D::glMultMatrix, 
+    G3D::glMultiTexCoord,
+    G3D::glNormal, 
+    G3D::glTexCoord, 
+    G3D::glToScreen,
+    G3D::glVertex,
+    G3D::sizeOfGLFormat, 
+    G3D::glFormatOf, 
+    G3D::glGetProcAddress,
+    G3D::getOpenGLState,
+    G3D::glGetInteger, 
+    G3D::glGetBoolean,
+    G3D::glGetDouble, 
+    G3D::glGetFloat,
+    G3D::glGetMatrix,
+    G3D::GLenumToString
+</UL>
+
+@section math 3D Math and Systems (graphics3d.h, g3d.lib)
+<I>Core data structures and system functionality.</I>
 
     <UL>
      <LI><B>Geometry</B> &nbsp; &nbsp;
@@ -41,24 +149,6 @@
         G3D::tesselateComplexPolygon,
         G3D::toSeconds 
      
-     <LI><B>Data structures</B> &nbsp; &nbsp;
-        G3D::AABSPTree,
-		G3D::Array,
-		G3D::Queue,
- 	    G3D::Set,
-		G3D::Table
-
-     <LI><B>Image formats</B> &nbsp; &nbsp;
-		G3D::GImage,
-		G3D::GImage::Error,	
-		G3D::computeNormalMap,
-        G3D::flipRGBVertical,
-  	    G3D::RGBtoARGB,
-		G3D::RGBtoBGR,
-		G3D::RGBtoBGRA,
-        G3D::RGBtoRGBA,
-		G3D::RGBxRGBtoRGBA
-
      <LI><B>Integer math</B> &nbsp; &nbsp;
         G3D::ceilPow2, 
         G3D::highestBit,
@@ -123,9 +213,9 @@
 		 G3D::infReal,
 		 G3D::nanReal,
          G3D::wrap,
-		 G3D::PI, 
-         G3D::HALF_PI,
-		 G3D::TWO_PI,
+		 G3D_PI, 
+         G3D_HALF_PI,
+		 G3D_TWO_PI,
          G3D::rsqrt
          
      <LI><B>String</B> &nbsp; &nbsp;
@@ -133,6 +223,29 @@
         G3D::stringJoin, G3D::format, G3D::vformat, G3D::wordWrap, 
         G3D::stringCompare, G3D::stringPtrCompare, G3D::toUpper, G3D::toLower,
         G3D::NEWLINE, G3D::trimWhitespace, STR
+
+     <LI><B>Data structures</B> &nbsp; &nbsp;
+        G3D::AABSPTree,
+		G3D::Array,
+		G3D::Queue,
+ 	    G3D::Set,
+		G3D::Table
+
+     <LI><B>Image formats</B> &nbsp; &nbsp;
+		G3D::GImage,
+		G3D::GImage::Error,	
+		G3D::computeNormalMap,
+        G3D::flipRGBVertical,
+  	    G3D::RGBtoARGB,
+		G3D::RGBtoBGR,
+		G3D::RGBtoBGRA,
+        G3D::RGBtoRGBA,
+		G3D::RGBxRGBtoRGBA
+        <P>
+    See also contrib code
+    <A HREF="../contrib/Image">Image</A>, 
+    <A HREF="../contrib/Webcam">Webcam</A>, 
+
 
      <LI><B>Debug</B> &nbsp; &nbsp;
         debugAssert, G3D::isValidHeapPointer,  
@@ -180,74 +293,11 @@
         G3D::NetMessage,
         G3D::NetworkDevice, 
         G3D::ReliableConduit
+<P>
+  See also contrib & demo code 
+    <A HREF="../contrib/pingtest">pingtest</A>, 
+    <A HREF="../demos/Network_Demo">Network_Demo</A>, 
      </UL>
 
-     <UL>
-      <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
-        G3D::Draw,
-        G3D::GWindow,
-        G3D::SDLWindow,
-        G3D::Win32Window,
-        G3D::Milestone,
-        G3D::PixelProgram,
-        G3D::RenderDevice,
-        G3D::RenderDeviceSettings,
-        G3D::Texture,
-        G3D::TextureFormat,
-        G3D::TextureManager,
-        G3D::VAR,
-        G3D::VARArea, 
-        G3D::VertexProgram,
-        G3D::VertexAndPixelShader,
-        G3D::Shader,
-        G3D::ObjectShader
-        
-        See also contrib code
-        <A HREF="../contrib/GlutWindow">GlutWindow</A>, 
-        <A HREF="../contrib/wxGWindow">wxGWindow</A>,
-        <A HREF="../contrib/CoreyGWindow">QtWindow</A>
-
-      <LI><B>OpenGL Extension</B> &nbsp; &nbsp;
-        debugAssertGLOk,
-        DECLARE_GLFORMATOF,
-        G3D::glLoadMatrix, 
-        G3D::glLoadInvMatrix, 
-        G3D::GLCaps,
-        G3D::glColor,
-        G3D::glMultInvMatrix, 
-        G3D::glMultMatrix, 
-        G3D::glMultiTexCoord,
-        G3D::glNormal, 
-        G3D::glTexCoord, 
-        G3D::glToScreen,
-        G3D::glVertex,
-        G3D::sizeOfGLFormat, 
-        G3D::glFormatOf, 
-        G3D::glGetProcAddress,
-        G3D::getOpenGLState,
-        G3D::glGetInteger, 
-        G3D::glGetBoolean,
-        G3D::glGetDouble, 
-        G3D::glGetFloat,
-        G3D::glGetMatrix,
-        G3D::GLenumToString
-
-      <LI><B>Game/Demo Infrastructure</B> &nbsp; &nbsp;
-        G3D::beginMarkShadows, G3D::endMarkShadows, G3D::markShadows,
-        G3D::drawFeatureEdges,
-        G3D::GFont,
-        G3D::GApp, G3D::GApplet, G3D::GAppSettings,
-        G3D::GLight,
-        G3D::GMaterial,
-        G3D::Sky,
-        G3D::Lighting,
-        G3D::LightingParameters,
-        G3D::MD2Model,
-        G3D::IFSModel,
-        G3D::PosedModel,
-        G3D::PosedModelWrapper,
-        G3D::realWorldLocalTime, 
-        G3D::UserInput, 
-        G3D::ManualCameraController
-     </UL>
+ <A HREF="map.png"><IMG SRC="map.png" WIDTH=128></A>
      */

@@ -117,7 +117,7 @@ arrive with each point release.
   Supported Languages,
   Tools,
   Sample Shaders</TD></TR>
-
+<TR><TD><A HREF ="deprecated.html">Deprecated</A></TD><TD>APIs to be removed in 7.0</TD></TR>
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
 <TR><TD VALIGN=TOP COLSPAN=2>Index: 

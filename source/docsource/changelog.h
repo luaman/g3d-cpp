@@ -12,28 +12,28 @@
    <P>
    Changes in 6.05:
    <UL>
-     <LI> Win32 GUI G3D::prompt now auto-expands \n to \r\n in prompt string [Corey]
-     <LI> Draw::frustum
-     <LI> Increased timeout and attempts for ReliableConduit to handle huge (1 MB) packets
-     <LI> BinaryOutput::reset (memory writing only; not supported for disk)
+     <LI> Win32 GUI G3D::prompt now auto-expands \\n to \\r\\n in prompt string [Corey]
+     <LI> G3D::Draw::frustum
+     <LI> Increased timeout and attempts for G3D::ReliableConduit to handle huge (1 MB) packets
+     <LI> G3D::BinaryOutput::reset (memory writing only; not supported for disk)
      <LI> Reduced overhead for G3D::ReliableConduit and 
           G3D::LightWeightConduit send routines
-     <LI> Added PPM/PGM/PBM ASCII encode/decode support to GImage [Corey]
+     <LI> Added PPM/PGM/PBM ASCII encode/decode support to G3D::GImage [Corey]
      <LI> New G3D::PosedModel rendering methods appropriate for shadow casting
            (with efficient default implementations).
      <LI> G3D::Lighting
      <LI> G3D::GLight::diffuse
-     <LI> Rect2D::contains is now const
+     <LI> G3D::Rect2D::contains is now const
      <LI> Rewrote G3D::BinaryOutput to not use G3D::Array
-     <LI> MD2Model::textureMatrix
-     <LI> MeshAlg::computeBounds(vertex, index, ...)
-     <LI> RenderDevice::colorWriteEnabled(), depthWriteEnabled, alphaWriteEnabled
-     <LI> RenderDevice::setSpecularCoefficient(Color3)
-     <LI> VAR::maxSize
-     <LI> RenderDevice::enableTwoSidedLighting
-     <LI> PosedModel::hasTransparency
-     <LI> PosedModel::sort
-     <LI> RenderDevice::renderMode
+     <LI> G3D::MD2Model::textureMatrix
+     <LI> G3D::MeshAlg::computeBounds(vertex, index, ...)
+     <LI> G3D::RenderDevice::colorWriteEnabled(), depthWriteEnabled, alphaWriteEnabled
+     <LI> G3D::RenderDevice::setSpecularCoefficient(Color3)
+     <LI> G3D::VAR::maxSize
+     <LI> G3D::RenderDevice::enableTwoSidedLighting
+     <LI> G3D::PosedModel::hasTransparency
+     <LI> G3D::PosedModel::sort
+     <LI> G3D::RenderDevice::renderMode
      <LI> G3D::MeshAlg::computeNormals(geometry, indexArray);
      <LI> contrib/ArticulatedModel (beta 3DS support)
      <LI> G3D::renderDevice::endFrame(false) to suppress page flip.
@@ -44,18 +44,18 @@
      <LI> G3D::isDirectory
      <LI> G3D::filenameContainsWildcards
      <LI> G3D::filenamePath
-     <LI> Draw::lineSegment now accepts a scale (allowing arrows and axes to thicken appropriately)
-     <LI> Rect2D::largestCenteredSubRect
-     <LI> Matrix4::serialize, Matrix4::deserialize
+     <LI> G3D::Draw::lineSegment now accepts a scale (allowing arrows and axes to thicken appropriately)
+     <LI> G3D::Rect2D::largestCenteredSubRect
+     <LI> G3D::Matrix4::serialize, G3D::Matrix4::deserialize
      <LI> glTexImage3DEXT
      <LI> Removed glut.lib and glut.dll from the win32-lib directory.
      <LI> G3D::writeStringToFile, G3D::TextOutput, and G3D::BinaryOutput now flush by default (safe, not fast).
      <LI> Shifted push2D by 0.375 pixels as recommended in the OpenGL guide to bias integer coords towards pixel centers
      <LI> G3D::Draw::rect2DBorder
      <LI> G3D::Rect2D::border
-     <LI> RenderDevice now creates a Win32Window on Windows instead of a SDLWindow.  SDLWindow is now
+     <LI> G3D::RenderDevice now creates a G3D::Win32Window on Windows instead of a G3D::SDLWindow.  SDLWindow is now
           deprecated on Windows.
-     <LI> VARArea now updates allocation sizes instead of VAR internally.  Added
+     <LI> G3D::VARArea now updates allocation sizes instead of G3D::VAR internally.  Added
           more accessor methods to VARArea to futher remove VAR from VARArea internals. [Corey]
      <LI> VARSystem.cpp moved to VARArea.cpp - filename change only! [Corey]
      <LI> Linux build system updated:
@@ -76,7 +76,7 @@
           (since console programs have no WinMain).
      <LI> SDL's redefinition of main is cleared when not linking sdlmain.lib [Corey]
      <LI> Moved contrib/Win32Window to G3D::Win32Window
-     <LI> TextInput::readSymbols
+     <LI> G3D::TextInput::readSymbols
      <LI> contrib/Image [Morgan]
      <LI> contrib/wxGWindow [Morgan]
      <LI> Added support for full-screen antialiasing to contrib/Win32Window
@@ -87,9 +87,9 @@
      <LI> G3D::PosedModel::texCoords
      <LI> G3D::IFSModel now loads IFS 1.1 [Peter]
      <LI> G3D::IFSModel now loads and saves PLY2 files (plain text IFS format) [Peter]
-     <LI> Automatically switch to glCompressedTexImage2D in G3d::Texture::fromMemory [Corey]
-     <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
-     <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
+     <LI> Automatically switch to glCompressedTexImage2D in G3D::Texture::fromMemory [Corey]
+     <LI> Added G3D::Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
+     <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
      <LI> Fix: [ 1103619 ] RenderDevice::countPrimitive is wrong (changed to RenderDevice::countTriangles) [Corey]
      <LI> Fix: AABSPTree::BoxIntersectionIterator doesn't compile
