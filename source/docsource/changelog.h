@@ -31,6 +31,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Allow 1-channel GImage saving - BMP (expanded to RGB), PNG [Corey]
+     <LI> Allow 1-channel GImage loading - PNG [Corey]
      <LI> Added shader and framebuffer extensions to glext.h 
      <LI> All files used during current execution are available via G3D::getFiles() [Corey]
      <LI> Implemented OSX version of glGetCurrentContext with CGL. [Corey + Derek]
