@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Written by Seth Block
   @created 2001-08-05
-  @edited  2004-04-27
+  @edited  2004-05-31
 */
 
 #include "GLG3D/getOpenGLState.h"
@@ -407,6 +407,11 @@ const char* GLenumToString(GLenum i) {
 	S(GL_FLOAT_MAT3_ARB);
 	S(GL_FLOAT_MAT4_ARB);
     S(GL_SHADER_OBJECT_ARB);
+
+	S(GL_SAMPLER_1D_ARB);
+	S(GL_SAMPLER_2D_ARB);
+	S(GL_SAMPLER_3D_ARB);
+	S(GL_SAMPLER_CUBE_ARB);
 
 	//S(GL_LOGIC_OP GL_INDEX_LOGIC_O);
 	//S(GL_TEXTURE_COMPONENTS GL_TEXTURE_INTERNAL_FORMAT);

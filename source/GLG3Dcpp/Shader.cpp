@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-04-30
+ @edited  2004-05-31
  */
 
 #include "GLG3D/Shader.h"
@@ -71,8 +71,19 @@ void VertexAndPixelShader::GPUShader::compile() {
     GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
 	glGetInfoLogARB(_glShaderObject, maxLength, &length, pInfoLog);
 
-    // Copy the result to the output string
-    _messages = pInfoLog;
+	int c = 0;
+    // Copy the result to the output string, prepending the filename
+	while (pInfoLog[c] != '\0') {
+		_messages += _name;
+		while (pInfoLog[c] != '\n' && pInfoLog[c] != '\r' && pInfoLog[c] != '\0') {
+			_messages += pInfoLog[c];
+			++c;
+		}
+		while (pInfoLog[c] == '\n' || pInfoLog[c] == '\r') {
+			_messages += pInfoLog[c];
+			++c;
+		}
+	}
 	free(pInfoLog);
 
     _ok = (compiled == GL_TRUE);
@@ -150,12 +161,12 @@ VertexAndPixelShader::VertexAndPixelShader(
 
 
 bool VertexAndPixelShader::isSamplerType(GLenum e) {
+	// TODO: cube map
     return
-       (e == GL_TEXTURE_1D) ||
-       (e == GL_TEXTURE_2D) ||
-       (e == GL_TEXTURE_3D) ||
-       (e == GL_TEXTURE_RECTANGLE_EXT) ||
-       (e == GL_TEXTURE_CUBE_MAP_ARB);
+       (e == GL_SAMPLER_1D_ARB) ||
+       (e == GL_SAMPLER_2D_ARB) ||
+       (e == GL_SAMPLER_3D_ARB) ||
+       (e == GL_SAMPLER_CUBE_ARB);
 }
 
 
@@ -258,6 +269,12 @@ GLenum VertexAndPixelShader::canonicalType(GLenum e) {
     case GL_INT_VEC4_ARB:
     case GL_BOOL_VEC4_ARB:
         return GL_FLOAT_VEC4_ARB;
+
+	case GL_SAMPLER_2D_ARB:
+		return GL_TEXTURE_2D;
+
+	case GL_SAMPLER_CUBE_ARB:
+		return GL_TEXTURE_CUBE_MAP_ARB;
         
     default:
         // Return the input
@@ -329,7 +346,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
         const ArgList::Arg&       value = args.argTable.get(decl.name); 
 
         // Bind based on the declared type
-        switch (decl.type) {
+        switch (canonicalType(decl.type)) {
         case GL_TEXTURE_1D:
             debugAssertM(false, "1D texture binding not implemented");
             break;

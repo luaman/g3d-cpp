@@ -274,6 +274,12 @@ extern "C" {
 #define GL_FLOAT_MAT2_ARB                   0x8B5A
 #define GL_FLOAT_MAT3_ARB                   0x8B5B
 #define GL_FLOAT_MAT4_ARB                   0x8B5C
+
+#define GL_SAMPLER_1D_ARB                   0x8B5D
+#define GL_SAMPLER_2D_ARB                   0x8B5E
+#define GL_SAMPLER_3D_ARB                   0x8B5F
+#define GL_SAMPLER_CUBE_ARB                 0x8B60
+
 #define GL_OBJECT_DELETE_STATUS_ARB         0x8B80
 #define GL_OBJECT_COMPILE_STATUS_ARB        0x8B81
 #define GL_OBJECT_LINK_STATUS_ARB           0x8B82
