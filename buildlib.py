@@ -116,6 +116,9 @@ not copy files matching the excludeFromCopying patterns.
 def copyIfNewer(source, dest):
     dest = removeTrailingSlash(dest)
 
+    if (not os.path.exists(source)):
+        return
+
     if (not os.path.isdir(source) and newer(source, dest)):
         print 'cp ' + source + ' ' + dest
         shutil.copyfile(source, dest)
