@@ -19,3 +19,5 @@ Webcam        - Capture a live video feed to a G3D texture. By Peter Hunt, p222h
 Image         - A templated image class that provides interpolated sampling.  By Morgan
 
 wxGWindow     - GWindow implementation for wxWindows.  By Morgan
+
+EulerFrame    - A coordinate frame that works on euler angles, convenient for airplanes.  By Morgan.
