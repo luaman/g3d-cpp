@@ -684,8 +684,10 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> G3D::Texture::DIM_CUBE_MAP
+     <LI> G3D::Sky now takes the environment filenames as "sky_*.jpg" instead of "sky_ft.jpg"
      <LI> G3D::Texture resizes non-power of two textures
-
+     <LI> Added caustics textures created with Kjell Andersson's generator http://www.lysator.liu.se/~kand/caustics/
      <LI> #defined for on MSVC so that it obeys C99 scoping rules
      <LI> System::consoleKeyPressed
      <LI> System::consoleClearScreen

@@ -46,8 +46,9 @@ CFont::CFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
     int height = nextPowerOf2(charHeight * 8);
  
     // Create a texture
+    const uint8* ptr = ((uint8*)b.getCArray()) + b.getPosition();
     texture = 
-        Texture::fromMemory(filename, ((uint8*)b.getCArray()) + b.getPosition(),
+        Texture::fromMemory(filename, &ptr,
         TextureFormat::A8, width, height, 1, TextureFormat::A8, Texture::CLAMP,
         Texture::TRILINEAR_MIPMAP, Texture::DIM_2D);
 }

@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-05-23
+  @edited  2003-07-02
   */
 
 #include "GLG3D/glcalls.h"
@@ -21,16 +21,10 @@ Sky::Sky(
     double                              quality) {
 
     // Parse the filename into a base name and extension
-    std::string filenameBase("");
-    std::string filenameExt("");
+    std::string filenameBase;
+    std::string filenameExt;
 
-    {
-        int i = filename.rfind("ft");
-        if (i != -1) {
-            filenameBase = directory + filename.substr(0, i);
-            filenameExt  = filename.substr(i + 2, filename.size() - i - 2); 
-        }
-    }
+    Texture::splitFilename(directory + filename, filenameBase, filenameExt);
     
     static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
     

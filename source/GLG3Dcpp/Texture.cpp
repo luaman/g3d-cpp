@@ -15,6 +15,8 @@
 
 namespace G3D {
 
+static const char* cubeMapString[] = {"ft", "bk", "up", "dn", "rt", "lf"};
+
 /**
  Pushes all OpenGL texture state.
  */
@@ -35,6 +37,9 @@ static void glStatePop() {
 
 static GLenum dimensionToTarget(Texture::Dimension d) {
     switch (d) {
+    case Texture::DIM_CUBE_MAP:
+        return GL_TEXTURE_CUBE_MAP_ARB;
+
     case Texture::DIM_2D:
         return GL_TEXTURE_2D;
 
@@ -58,6 +63,13 @@ static void createMipMapTexture(
 
     switch (target) {
     case GL_TEXTURE_2D:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
+
         {
             int r = gluBuild2DMipmaps(target, textureFormat, width, height, bytesFormat, GL_UNSIGNED_BYTE, bytes);
             debugAssertM(r == 0, (const char*)gluErrorString(r)); (void)r;
@@ -86,6 +98,12 @@ static void createTexture(
     bool   freeBytes = false; 
 
     switch (target) {
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
     case GL_TEXTURE_2D:
         if (! isPow2(width) || ! isPow2(height)) {
 
@@ -134,6 +152,11 @@ static void setTexParameters(
     GLenum                          target,
     Texture::WrapMode               wrap,
     Texture::InterpolateMode        interpolate) {
+
+    debugAssert(
+        target == GL_TEXTURE_2D ||
+        target == GL_TEXTURE_RECTANGLE_NV ||
+        target == GL_TEXTURE_CUBE_MAP_ARB);
 
     // Set the wrap and interpolate state
     switch (wrap) {
@@ -248,22 +271,51 @@ TextureRef Texture::fromFile(
     InterpolateMode         interpolate,
     Dimension               dimension) {
 
-    CImage data(filename);
-
     const TextureFormat* format = TextureFormat::RGB8;
     bool opaque = true;
 
-    if (data.channels == 4) {
-        format = TextureFormat::RGBA8;
-        opaque = false;
+    // The six cube map faces, or the one texture and 5 dummys.
+    CImage image[6];
+    const uint8* array[6];
+    for (int i = 0; i < 6; ++i) {
+        array[i] = NULL;
     }
 
-    if (desiredFormat == NULL) {
-        desiredFormat = format;
+    int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
+
+    // Parse the filename into a base name and extension
+    std::string filenameBase = filename;
+    std::string filenameExt;
+
+    if (dimension == DIM_CUBE_MAP) {
+        splitFilename(filename, filenameBase, filenameExt);
+    }
+
+    for (int f = 0; f < numFaces; ++f) {
+
+        std::string fn = filename;
+
+        if (dimension == DIM_CUBE_MAP) {
+            fn = filenameBase + cubeMapString[f] + filenameExt;
+        }
+
+        image[f].load(fn);
+
+        if (image[f].channels == 4) {
+            format = TextureFormat::RGBA8;
+            opaque = false;
+        }
+
+        if (desiredFormat == NULL) {
+            desiredFormat = format;
+        }
+
+        array[f] = image[f].byte();
     }
 
     TextureRef t =
-        Texture::fromMemory(filename, data.byte(), format, data.width, data.height, 1, 
+        Texture::fromMemory(filename, array, format,
+            image[0].width, image[0].height, 1,
             desiredFormat, wrap, interpolate, dimension);
 
     return t;
@@ -280,39 +332,75 @@ TextureRef Texture::fromTwoFiles(
 
     debugAssert(desiredFormat);
 
-    // Compose the two images to a single RGBA
-
-    CImage color(filename);
-    CImage alpha(alphaFilename);
-    uint8* data = NULL;
-
-    if (color.channels == 4) {
-        data = color.byte();
-        // Write the data inline
-        for (int i = 0; i < color.width * color.height; ++i) {
-            data[i * 4 + 3] = alpha.byte()[i * alpha.channels];
-        }
-    } else {
-        debugAssert(color.channels == 3);
-        data = new uint8[color.width * color.height * 4];
-        // Write the data inline
-        for (int i = 0; i < color.width * color.height; ++i) {
-            data[i * 4 + 0] = color.byte()[i * 3 + 0];
-            data[i * 4 + 1] = color.byte()[i * 3 + 1];
-            data[i * 4 + 2] = color.byte()[i * 3 + 2];
-            data[i * 4 + 3] = alpha.byte()[i * alpha.channels];
-        }
+    // The six cube map faces, or the one texture and 5 dummys.
+    const uint8* array[6];
+    for (int i = 0; i < 6; ++i) {
+        array[i] = NULL;
     }
+
+    int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
+
+    // Parse the filename into a base name and extension
+    std::string filenameBase = filename;
+    std::string filenameExt;
+    std::string alphaFilenameBase = alphaFilename;
+    std::string alphaFilenameExt;
+
+    if (dimension == DIM_CUBE_MAP) {
+        splitFilename(filename, filenameBase, filenameExt);
+    }
+    
+    CImage color[6];
+    CImage alpha[6];
+
+    for (int f = 0; f < numFaces; ++f) {
+
+        std::string fn = filename;
+        std::string an = alphaFilename;
+
+        if (dimension == DIM_CUBE_MAP) {
+            fn = filenameBase + cubeMapString[f] + filenameExt;
+            an = alphaFilenameBase + cubeMapString[f] + alphaFilenameExt;
+        }
+
+        // Compose the two images to a single RGBA
+        color[f].load(fn);
+        alpha[f].load(an);
+        uint8* data = NULL;
+
+        if (color[f].channels == 4) {
+            data = color[f].byte();
+            // Write the data inline
+            for (int i = 0; i < color[f].width * color[f].height; ++i) {
+                data[i * 4 + 3] = alpha[f].byte()[i * alpha[f].channels];
+            }
+        } else {
+            debugAssert(color[f].channels == 3);
+            data = new uint8[color[f].width * color[f].height * 4];
+            // Write the data inline
+            for (int i = 0; i < color[f].width * color[f].height; ++i) {
+                data[i * 4 + 0] = color[f].byte()[i * 3 + 0];
+                data[i * 4 + 1] = color[f].byte()[i * 3 + 1];
+                data[i * 4 + 2] = color[f].byte()[i * 3 + 2];
+                data[i * 4 + 3] = alpha[f].byte()[i * alpha[f].channels];
+            }
+        }
+
+        array[f] = data;
+    }
+
 
     TextureRef t =
-        Texture::fromMemory(filename, data, TextureFormat::RGBA8, color.width, color.height, 1, 
+        Texture::fromMemory(filename, array, TextureFormat::RGBA8,
+            color[0].width, color[0].height, 1, 
             desiredFormat, wrap, interpolate, dimension);
 
-    if (color.channels == 3) {
+    if (color[0].channels == 3) {
         // Delete the data if it was dynamically allocated
-        delete[] data;
+        for (int f = 0; f < numFaces; ++f) {
+            delete[] const_cast<unsigned char*>(array[f]);
+        }
     }
-    data = NULL;
 
     return t;
 }
@@ -320,7 +408,7 @@ TextureRef Texture::fromTwoFiles(
 
 TextureRef Texture::fromMemory(
     const std::string&      name,
-    const uint8*            bytes,
+    const uint8**           bytes,
     const TextureFormat*    bytesFormat,
     int                     width,
     int                     height,
@@ -338,10 +426,28 @@ TextureRef Texture::fromMemory(
 
         glEnable(target);
         glBindTexture(target, textureID);
-        if (interpolate == TRILINEAR_MIPMAP) {
-            createMipMapTexture(target, bytes, bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat);
-        } else {
-            createTexture(target, bytes, bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat, bytesFormat->packedBitsPerTexel / 8);
+
+        int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
+        
+        for (int f = 0; f < numFaces; ++f) {
+            if (dimension == DIM_CUBE_MAP) {
+                // Choose the appropriate face target
+                static const GLenum cubeFaceTarget[] =
+                    {GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
+                    GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
+                    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
+                    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
+
+                target = cubeFaceTarget[f];
+            }
+
+            if (interpolate == TRILINEAR_MIPMAP) {
+                createMipMapTexture(target, bytes[f], bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat);
+            } else {
+                createTexture(target, bytes[f], bytesFormat->OpenGLBaseFormat, width, height, desiredFormat->OpenGLFormat, bytesFormat->packedBitsPerTexel / 8);
+            }
         }
 
     glStatePop();
@@ -352,6 +458,23 @@ TextureRef Texture::fromMemory(
     }
 
     return fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension, bytesFormat->opaque);
+}
+
+
+void Texture::splitFilename(
+    const std::string&  filename,
+    std::string&        filenameBase,
+    std::string&        filenameExt) {
+
+    const std::string splitter = "*";
+
+    int i = filename.rfind(splitter);
+    if (i != -1) {
+        filenameBase = filename.substr(0, i);
+        filenameExt  = filename.substr(i + 1, filename.size() - i - splitter.length()); 
+    } else {
+        throw CImage::Error("Cube map filenames must contain \"*\" as a placeholder for up/lf/rt/bk/ft/dn", filename);
+    }
 }
 
 
@@ -369,6 +492,8 @@ unsigned int Texture::newGLTextureID() {
 
 
 void Texture::copyFromScreen(int x, int y, int width, int height, int windowHeight, Dimension dim, bool useBackBuffer) {
+    debugAssert(dim != DIM_CUBE_MAP);
+
     glStatePush();
 
     if (useBackBuffer) {
@@ -391,6 +516,7 @@ void Texture::copyFromScreen(int x, int y, int width, int height, int windowHeig
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_TEXTURE_3D);
     glDisable(GL_TEXTURE_RECTANGLE_NV);
+    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
     glEnable(target);
 
     glBindTexture(target, textureID);
@@ -429,12 +555,19 @@ int Texture::sizeInMemory() const {
         total = base;
     }
 
+    if (dimension == DIM_CUBE_MAP) {
+        total *= 6;
+    }
+
     return total;
 }
 
 
 unsigned int Texture::getOpenGLTextureTarget() const {
     switch (dimension) {
+    case DIM_CUBE_MAP:
+        return GL_TEXTURE_CUBE_MAP_ARB;
+
     case DIM_2D:
         return GL_TEXTURE_2D;
 

@@ -67,12 +67,20 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
 class Texture : public ReferenceCountedObject {
 public:
 
-    enum Dimension       {DIM_2D = 2, DIM_2D_RECT = 4};
+    enum Dimension       {DIM_2D = 2, DIM_2D_RECT = 4, DIM_CUBE_MAP = 5};
 
     /** TRANSPARENT_BORDER provides a border of Color4(0,0,0,0) and clamps to it. */
     enum WrapMode        {TILE = 1, CLAMP = 0, TRANSPARENT_BORDER = 2};
 
     enum InterpolateMode {TRILINEAR_MIPMAP = 3, BILINEAR_NO_MIPMAP = 2, NO_INTERPOLATION = 1};
+
+    /**
+     Splits a filename around the '*' character-- used by cube maps to generate all filenames.
+     */
+    static void splitFilename(
+        const std::string&  filename,
+        std::string&        filenameBase,
+        std::string&        filenameExt);
 
 private:
 
@@ -135,7 +143,8 @@ public:
 
     /**
      Creates a texture from a single image.  The image must have a format understood
-     by CImage.
+     by CImage.  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
+     _ft, _bk, ... following the G3D::Sky documentation.
      */
     static TextureRef fromFile(
         const std::string&              filename,
@@ -160,10 +169,14 @@ public:
     /**
      The bytes are described by byteFormat, which may differ from the
      format you want the graphics card to use (desiredFormat).
+     If dimenion is DIM_CUBE_MAP bytes is an array of six images (for the faces)
+     in the order: {FT, BK, UP, DN, RT, LF}.  Otherwise bytes is a pointer to
+     an array of data.  Note that all faces must have the same dimensions and
+     format for cube maps.
      */
     static TextureRef fromMemory(
         const std::string&              name,
-        const uint8*                    bytes,
+        const uint8**                   bytes,
         const class TextureFormat*      bytesFormat,
         int                             width,
         int                             height,
