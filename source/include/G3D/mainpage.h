@@ -562,6 +562,7 @@
    <BR>Dave Eberly
    <BR>Kevin Egan
    <BR>Cass Everitt
+   <BR>Andi Fein
    <BR>Jakob Fischer
    <BR>Dan Keefe
    <BR>Harishabd Khalsa

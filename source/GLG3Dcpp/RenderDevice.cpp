@@ -2199,7 +2199,7 @@ double RenderDevice::getDepthBufferValue(
     GLfloat depth;
 
     glReadPixels(x,
-		         getHeight() - y,
+		         (getHeight() - 1) - y,
                  1, 1,
                  GL_DEPTH_COMPONENT,
 		         GL_FLOAT,
