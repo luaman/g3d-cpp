@@ -7,7 +7,7 @@
        at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-03-04
- @edited  2003-10-31
+ @edited  2003-11-15
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -20,9 +20,7 @@
 #include "G3D/Vector4.h"
 #include "G3D/Ray.h"
 #include "G3D/Matrix3.h"
-#include "G3D/Sphere.h"
-#include "G3D/Box.h"
-#include "G3D/Triangle.h"
+#include "G3D/Array.h"
 #include <math.h>
 #include <string>
 #include <stdio.h>
@@ -144,6 +142,10 @@ public:
         return rotation * v;
     }
 
+    inline Vector3 normalToWorldSpace(const Vector3& v) const {
+        return rotation * v;
+    }
+
     Ray toObjectSpace(const Ray& r) const;
     Ray toWorldSpace(const Ray& r) const;
 
@@ -154,15 +156,26 @@ public:
         return rotation.transpose() * v;
     }
 
-    Box toWorldSpace(const Box& b) const;
+    inline Vector3 normalToObjectSpace(const Vector3 &v) const {
+        return rotation.transpose() * v;
+    }
 
-    Sphere toWorldSpace(const Sphere& b) const;
+    void pointToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+    void normalToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+    void vectorToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+    void pointToObjectSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+    void normalToObjectSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
+    void vectorToObjectSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
 
-    Triangle toWorldSpace(const Triangle& t) const;
+    class Box toWorldSpace(const class Box& b) const;
 
-    Box toObjectSpace(const Box& b) const;
+    class Sphere toWorldSpace(const class Sphere& b) const;
 
-    Sphere toObjectSpace(const Sphere& b) const;
+    class Triangle toWorldSpace(const class Triangle& t) const;
+
+    class Box toObjectSpace(const Box& b) const;
+ 
+    class Sphere toObjectSpace(const Sphere& b) const;
 
     Triangle toObjectSpace(const Triangle& t) const;
 

@@ -58,7 +58,9 @@ nobase_include_HEADERS=G3D/Array.h \
                        GLG3D/LightingParameters.h \
                        GLG3D/ManualCameraController.h \
                        GLG3D/RenderDevice.h \
-                       GLG3D/Sky.h \
+                       GLG3D/IFSModel.h \
+                       GLG3D/PosedModel.h \
+                       GLG3D/MD2Model.h \
                        GLG3D/Texture.h \
                        GLG3D/UserInput.h \
                        GLG3D/getOpenGLState.h \

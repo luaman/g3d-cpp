@@ -422,6 +422,10 @@ SOURCE=.\include\GLG3D\PixelProgram.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\PosedModel.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\RenderDevice.h
 # End Source File
 # Begin Source File

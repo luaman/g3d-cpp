@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-11-12
+  @edited  2003-11-15
  */ 
 
 
@@ -14,9 +14,11 @@
 #define GLG3D_IFSMODEL_H
 
 #include "graphics3D.h"
-#include "GLG3D/GModel.h"
+#include "GLG3D/PosedModel.h"
 
 namespace G3D {
+
+typedef ReferenceCountedPointer<class IFSModel> IFSModelRef;
 
 /**
  Loads the IFS file format.  Note that you can convert 
@@ -27,37 +29,72 @@ namespace G3D {
  coordinates, animation, or other data and are primarily
  useful for scientific research.
  */
-class IFSModel : public GModel {
+class IFSModel : public ReferenceCountedObject {
 private:
+    class PosedIFSModel : public PosedModel {
+    public:
+        IFSModelRef             model;
+        CoordinateFrame         cframe;
+        bool                    perVertexNormals;
+
+        PosedIFSModel(IFSModelRef _model, const CoordinateFrame& _cframe, bool _pvn);
+        virtual ~PosedIFSModel() {}
+        virtual std::string name() const;
+        virtual CoordinateFrame coordinateFrame() const;
+        virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
+        virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
+        virtual void getFaces(Array<MeshAlg::Face>& faces) const;
+        virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
+        virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
+        virtual Sphere objectSpaceBoundingSphere() const;
+        virtual Sphere worldSpaceBoundingSphere() const;
+        virtual Box objectSpaceBoundingBox() const;
+        virtual Box worldSpaceBoundingBox() const;
+        virtual void render(RenderDevice* renderDevice) const;
+        virtual int numBrokenEdges() const;
+    };
+
+    friend PosedIFSModel;
 
     std::string                 filename;
     MeshAlg::Geometry           geometry;
     Array<int>                  indexArray;
     Array<Vector3>              faceNormalArray;
+    Array<MeshAlg::Face>        faceArray;
+    Array< Array<int> >         adjacentFaceArray;
+    Array<MeshAlg::Edge>        edgeArray;
+    Sphere                      boundingSphere;
+    Box                         boundingBox;
+    int                         numBrokenEdges;
+    std::string                 name;
 
     /** Shared by all models */
     static VARArea*             varArea;
 
+    /** Only called from create */
+    IFSModel();
+    
+    /** Only called from create */
+    void load(const std::string& filename);
+
+    /** Only called from create */
     void reset();
 
 public:
 
-    IFSModel();
     virtual ~IFSModel();
-
-    void getGeometry(MeshAlg::Geometry& geometry) const;
 
     /**
      Throws an std::string describing the error if anything
      goes wrong.
      */
-    void load(const std::string& filename);
+    static IFSModelRef create(const std::string& filename);
 
     /**
      If perVertexNormals is false, the model is rendered with per-face normals,
      which are slower.
      */
-    void render(RenderDevice* renderDevice, bool perVertexNormals = true);
+    virtual PosedModelRef pose(const CoordinateFrame& cframe, bool perVertexNormals = true);
 
     virtual size_t mainMemorySize() const;
 };

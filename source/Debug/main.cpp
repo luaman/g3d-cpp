@@ -28,7 +28,6 @@ public:
     SphereEntity(const Vector3& position, double radius, const Color4& _color = Color3::BLUE);
     virtual void render(RenderDevice*);
     virtual RealTime getIntersectionTime(const Ray&);
-
 };
 
 SphereEntity::SphereEntity(const Vector3& position, double radius, const Color4& _color) {
@@ -53,7 +52,7 @@ RealTime SphereEntity::getIntersectionTime(const Ray& ray) {
 class IFSEntity : public Entity {
 private:
     CoordinateFrame cframe;
-    IFSModel        model;
+    IFSModelRef     ifs;
 
 public:
     IFSEntity(const std::string& filename, const Vector3& pos);
@@ -65,11 +64,13 @@ public:
 
 
 IFSEntity::IFSEntity(const std::string& filename, const Vector3& pos) {
-    model.load(filename);
+    ifs = IFSModel::create(filename);
     cframe = CoordinateFrame(pos);
 }
 
 void IFSEntity::render(RenderDevice* renderDevice) {
+    PosedModelRef pm = ifs->pose(cframe);
+
     renderDevice->pushState();
         renderDevice->setObjectToWorldMatrix(cframe);
 
@@ -79,19 +80,20 @@ void IFSEntity::render(RenderDevice* renderDevice) {
                 renderDevice->setLineWidth(3);
                 renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
                 renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-                model.render(renderDevice);
+                pm->render(renderDevice);
             renderDevice->popState();
         }
 
         renderDevice->setColor(Color3::WHITE);
-        model.render(renderDevice);
+        pm->render(renderDevice);
     renderDevice->popState();
 }
 
 RealTime IFSEntity::getIntersectionTime(const Ray& ray) {
+
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedBox(ray.origin, 
-        ray.direction, cframe.toWorldSpace(model.boundingBox()), dummy);
+        ray.direction, ifs->pose(cframe)->worldSpaceBoundingBox(), dummy);
 }
 
 

@@ -28,70 +28,19 @@ IFSModel::~IFSModel() {
 }
 
 
-void IFSModel::getGeometry(MeshAlg::Geometry& geometry) const {
-    geometry = this->geometry;
-}
-
-
-void IFSModel::render(RenderDevice* renderDevice, bool perVertexNormals) {
-    
-    const size_t varSize = 1024 * 1024;
-    if ((varArea == NULL) && (renderDevice->freeVARSize() <= varSize)) {
-        // Initialize VAR
-        varArea = renderDevice->createVARArea(varSize);
-    }
-
-    if (perVertexNormals) {
-        renderDevice->pushState();
-            renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-            if (varArea && (varArea->totalSize() <= sizeof(Vector3) * 2 * geometry.vertexArray.size())) {
-                varArea->reset();
-
-                VAR vertex(geometry.vertexArray, varArea);
-                VAR normal(geometry.normalArray, varArea);
-
-                renderDevice->beginIndexedPrimitives();
-                    renderDevice->setNormalArray(normal);
-                    renderDevice->setVertexArray(vertex);
-                    renderDevice->sendIndices(RenderDevice::TRIANGLES, indexArray);
-                renderDevice->endIndexedPrimitives();
-            } else {
-                    renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-                        for (int i = 0; i < indexArray.size(); ++i) {
-                            const int v = indexArray[i];
-                    
-                            const Vector3& P = geometry.vertexArray[v];  
-                            const Vector3& N = geometry.normalArray[v];
-
-                            //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
-                            renderDevice->setNormal(N);
-                            renderDevice->sendVertex(P);
-                        }
-                    renderDevice->endPrimitive();
-            }
-        renderDevice->popState();
-    } else {
-        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-            for (int f = 0; f < faceArray.size(); ++f) {
-                renderDevice->setNormal(faceNormalArray[f]);
-                for (int j = 0; j < 3; ++j) {
-                    
-                    const Vector3& P = geometry.vertexArray[faceArray[f].vertexIndex[j]];  
-                    //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
-                    renderDevice->sendVertex(P);
-                }
-            }
-        renderDevice->endPrimitive();
-    }
-}
-
-
 void IFSModel::reset() {
     geometry.clear();
     indexArray.clear();
     faceArray.clear();
     adjacentFaceArray.clear();
     edgeArray.clear();
+}
+
+
+IFSModelRef IFSModel::create(const std::string& filename) {
+    IFSModel* ret = new IFSModel();
+    ret->load(filename);
+    return ret;
 }
 
 
@@ -114,7 +63,7 @@ void IFSModel::load(const std::string& filename) {
        throw std::string("Bad IFS version, expecting 1.0");
     }
 
-    _name = bi.readString32();
+    name = bi.readString32();
 
     while (bi.hasMore()) {
         std::string str = bi.readString32();
@@ -156,9 +105,9 @@ void IFSModel::load(const std::string& filename) {
     MeshAlg::computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
     MeshAlg::computeNormals(geometry.vertexArray, faceArray, adjacentFaceArray, geometry.normalArray, faceNormalArray);
 
-    MeshAlg::computeBounds(geometry.vertexArray, _boundingBox, _boundingSphere);
+    MeshAlg::computeBounds(geometry.vertexArray, boundingBox, boundingSphere);
 
-    _numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
+    numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
 }
 
 
@@ -177,5 +126,133 @@ size_t IFSModel::mainMemorySize() const {
     return sizeof(IFSModel) + frameSize + indexSize + faceSize + valentSize + edgeSize;
 }
 
+
+PosedModelRef IFSModel::pose(const CoordinateFrame& cframe, bool perVertexNormals) {
+    return new PosedIFSModel(this, cframe, perVertexNormals);
 }
 
+//////////////////////////////////////////////////////////////////////////
+IFSModel::PosedIFSModel::PosedIFSModel(
+    IFSModelRef                 _model,
+    const CoordinateFrame&      _cframe,
+    bool                        _pvn) :
+     model(_model), 
+     cframe(_cframe), 
+     perVertexNormals(_pvn) {
+}
+
+
+void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
+    
+    const size_t varSize = 1024 * 1024;
+    if ((IFSModel::varArea == NULL) && (renderDevice->freeVARSize() <= varSize)) {
+        // Initialize VAR
+        IFSModel::varArea = renderDevice->createVARArea(varSize);
+    }
+
+    if (perVertexNormals) {
+        renderDevice->pushState();
+            renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+            if (IFSModel::varArea && (varArea->totalSize() <= sizeof(Vector3) * 2 * model->geometry.vertexArray.size())) {
+                varArea->reset();
+
+                VAR vertex(model->geometry.vertexArray, IFSModel::varArea);
+                VAR normal(model->geometry.normalArray, IFSModel::varArea);
+
+                renderDevice->beginIndexedPrimitives();
+                    renderDevice->setNormalArray(normal);
+                    renderDevice->setVertexArray(vertex);
+                    renderDevice->sendIndices(RenderDevice::TRIANGLES, model->indexArray);
+                renderDevice->endIndexedPrimitives();
+            } else {
+                    renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+                        for (int i = 0; i < model->indexArray.size(); ++i) {
+                            const int v = model->indexArray[i];
+                    
+                            const Vector3& P = model->geometry.vertexArray[v];  
+                            const Vector3& N = model->geometry.normalArray[v];
+
+                            //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
+                            renderDevice->setNormal(N);
+                            renderDevice->sendVertex(P);
+                        }
+                    renderDevice->endPrimitive();
+            }
+        renderDevice->popState();
+    } else {
+        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+            for (int f = 0; f < model->faceArray.size(); ++f) {
+                renderDevice->setNormal(model->faceNormalArray[f]);
+                for (int j = 0; j < 3; ++j) {
+                    
+                    const Vector3& P = model->geometry.vertexArray[model->faceArray[f].vertexIndex[j]];  
+                    //renderDevice->setTexCoord(0, P * 0.25 + P.direction() * .3);
+                    renderDevice->sendVertex(P);
+                }
+            }
+        renderDevice->endPrimitive();
+    }
+}
+
+
+std::string IFSModel::PosedIFSModel::name() const {
+    return model->name;
+}
+
+
+CoordinateFrame IFSModel::PosedIFSModel::coordinateFrame() const {
+    return cframe;
+}
+
+
+void IFSModel::PosedIFSModel::getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const {
+    geometry = model->geometry;
+}
+
+
+void IFSModel::PosedIFSModel::getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const {
+    cframe.pointToWorldSpace(model->geometry.vertexArray, geometry.vertexArray);
+    cframe.normalToWorldSpace(model->geometry.normalArray, geometry.normalArray);
+}
+
+
+void IFSModel::PosedIFSModel::getFaces(Array<MeshAlg::Face>& faces) const {
+    faces = model->faceArray;
+}
+
+
+void IFSModel::PosedIFSModel::getEdges(Array<MeshAlg::Edge>& edges) const {
+    edges = model->edgeArray;
+}
+
+
+void IFSModel::PosedIFSModel::getAdjacentFaces(Array< Array<int> >& adjacentFaces) const {
+    adjacentFaces = model->adjacentFaceArray;
+}
+
+
+Sphere IFSModel::PosedIFSModel::objectSpaceBoundingSphere() const {
+    return model->boundingSphere;
+}
+
+
+Sphere IFSModel::PosedIFSModel::worldSpaceBoundingSphere() const {
+    return cframe.toWorldSpace(model->boundingSphere);
+}
+
+
+Box IFSModel::PosedIFSModel::objectSpaceBoundingBox() const {
+    return model->boundingBox;
+}
+
+
+Box IFSModel::PosedIFSModel::worldSpaceBoundingBox() const {
+    return cframe.toWorldSpace(model->boundingBox);
+}
+
+
+int IFSModel::PosedIFSModel::numBrokenEdges() const {
+    return model->numBrokenEdges;
+}
+
+}
