@@ -130,7 +130,7 @@ def doc():
     
 def install(copyData=1):
     lib()
-    #doc()
+    doc()
     copyIfNewer('temp/lib', installDir + '/lib')
     copyIfNewer('source/include', installDir + '/include')
     if (copyData):
