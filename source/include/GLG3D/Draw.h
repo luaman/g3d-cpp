@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-10-30
+ @edited  2005-01-14
  */
 
 #ifndef G3D_DRAW_H
@@ -15,6 +15,7 @@
 #include "G3D/Vector3.h"
 #include "G3D/MeshAlg.h"
 #include "G3D/Rect2D.h"
+#include "G3D/GCamera.h"
 
 namespace G3D {
 
@@ -194,6 +195,12 @@ public:
         const Color4& color = Color3::black(),
         double innerBorder = 0,
         double outerBorder = 1);
+
+    static void frustum(
+        const class GCamera::Frustum& frustum,
+        RenderDevice* rd,
+        const Color4& color = Color4(1,.4,.4,0.2),
+        const Color4& wire = Color3::black());
 
     /**
      This method is as hideously slow as it is convenient.  If you care

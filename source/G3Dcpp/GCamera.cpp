@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2004-05-14
+  @edited  2005-01-13
 */
 
 #include "G3D/GCamera.h"
@@ -55,7 +55,7 @@ void GCamera::setImagePlaneDepth(
     const class Rect2D&                     viewport) {
 	
     debugAssert(depth > 0);
-	setFieldOfView(2 * atan(viewport.width() / (2 * depth)));
+	setFieldOfView(2 * atan(viewport.height() / (2 * depth)));
 }
 
 
@@ -71,12 +71,12 @@ double GCamera::getImagePlaneDepth(
 
 
 double GCamera::getViewportWidth(const Rect2D& viewport) const {
-    return nearPlane / imagePlaneDepth;
+    return getViewportHeight(viewport) * viewport.width() / viewport.height();
 }
 
 
 double GCamera::getViewportHeight(const Rect2D& viewport) const {
-    return getViewportWidth(viewport) * viewport.height() / viewport.width();
+    return nearPlane / imagePlaneDepth;
 }
 
 

@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Draw::frustum
      <LI> Increased timeout and attempts for ReliableConduit to handle huge (1 MB) packets
      <LI> BinaryOutput::reset (memory writing only; not supported for disk)
      <LI> Reduced overhead for G3D::ReliableConduit and 
@@ -86,6 +87,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1101646 ] GCamera::frustum incorrect for non-square viewport
      <LI> Fix: Ultra bright lens flare at sunset [Nicholas Bray]
      <LI> Fix: IP address strings were reversed by NetAddress(std::string) 
      <LI> Fix: TextInput now returns end of file token for files without trailing whitespace

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-12-13
+ @edited  2005-01-13
  */
 
 #include "GLG3D/Draw.h"
@@ -779,6 +779,45 @@ void Draw::rect2DBorder(
 
     rd->endPrimitive();
     rd->popState();
+}
+
+
+void Draw::frustum(
+    const class GCamera::Frustum& frustum,
+    RenderDevice* rd,
+    const Color4& color,
+    const Color4& wire) {
+
+    // Draw edges
+    rd->pushState();
+
+    if (wire.a > 0) {
+        rd->setColor(wire);
+        for (int f = 0; f < frustum.faceArray.size(); ++f) {
+            rd->beginPrimitive(RenderDevice::LINE_STRIP);
+            for (int v = 0; v < 5; ++v) {
+                rd->sendVertex(frustum.vertexPos[frustum.faceArray[f].vertexIndex[v % 4]]);
+            }
+            rd->endPrimitive();
+        }
+    }
+
+    rd->setDepthWrite(false);
+        rd->setCullFace(RenderDevice::CULL_NONE);
+        rd->enableTwoSidedLighting();
+        rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        rd->setColor(color);
+        rd->beginPrimitive(RenderDevice::QUADS);
+        for (int f = 0; f < frustum.faceArray.size(); ++f) {
+            rd->setNormal(frustum.faceArray[f].plane.normal());
+            for (int v = 0; v < 4; ++v) {
+                rd->sendVertex(frustum.vertexPos[frustum.faceArray[f].vertexIndex[v]]);
+            }
+        }
+        rd->endPrimitive();
+
+    rd->popState();
+    // TODO:face colors
 }
 
 }

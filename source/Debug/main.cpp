@@ -122,6 +122,10 @@ void Demo::doGraphics() {
 
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
 
+        GCamera cam2;
+        GCamera::Frustum frustum = app->debugCamera.frustum(app->renderDevice->getViewport());
+        Draw::frustum(frustum, app->renderDevice);
+
     app->renderDevice->disableLighting();
 
     if (app->sky.notNull()) {
@@ -154,7 +158,7 @@ App::~App() {
 int main(int argc, char** argv) {            
     GAppSettings settings;
     settings.window.width = 400;
-    settings.window.height = 400;
+    settings.window.height = 500;
     App(settings).run();
     return 0;
 }
