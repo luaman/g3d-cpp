@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-04-27
+  @edited  2004-04-30
 */
 
 #include "GLG3D/GLCaps.h"
@@ -163,6 +163,10 @@ void GLCaps::loadExtensions() {
     LOAD_EXTENSION(glUniform2fvARB);
     LOAD_EXTENSION(glUniform3fvARB);
     LOAD_EXTENSION(glUniform4fvARB);
+    LOAD_EXTENSION(glUniform1iARB);
+    LOAD_EXTENSION(glUniform2iARB);
+    LOAD_EXTENSION(glUniform3iARB);
+    LOAD_EXTENSION(glUniform4iARB);
     LOAD_EXTENSION(glUniformMatrix2fvARB);
     LOAD_EXTENSION(glUniformMatrix3fvARB);
     LOAD_EXTENSION(glUniformMatrix4fvARB);

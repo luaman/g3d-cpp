@@ -282,7 +282,14 @@ public:
      */
     void popState();
 
+    /** To clear the alpha portion of the color buffer, remember to
+        enable alpha write */
     void clear(bool clearColor, bool clearDepth, bool clearStencil);
+
+    /** Clears color, depth, and stencil. */
+    void clear() {
+        clear(true, true, true);
+    }
 
     enum DepthTest   {DEPTH_GREATER,     DEPTH_LESS,       DEPTH_GEQUAL,  
                       DEPTH_LEQUAL,      DEPTH_NOTEQUAL,   DEPTH_EQUAL,   
@@ -736,6 +743,9 @@ public:
      includes an arg list.
      */
     void setShader(const ShaderGroupRef& s);
+
+    /** Throws ShaderGroup::ArgumentError if the arguments provided
+      do not match the arguments declared */
     void setShader(const ShaderGroupRef& s,
             const ShaderGroup::ArgList& args);
 

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-04-27
+ @edited  2004-04-30`
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -182,6 +182,10 @@ extern PFNGLUNIFORM1FVARBPROC glUniform1fvARB;
 extern PFNGLUNIFORM2FVARBPROC glUniform2fvARB;
 extern PFNGLUNIFORM3FVARBPROC glUniform3fvARB;
 extern PFNGLUNIFORM4FVARBPROC glUniform4fvARB;
+extern PFNGLUNIFORM1IARBPROC glUniform1iARB;
+extern PFNGLUNIFORM2IARBPROC glUniform2iARB;
+extern PFNGLUNIFORM3IARBPROC glUniform3iARB;
+extern PFNGLUNIFORM4IARBPROC glUniform4iARB;
 extern PFNGLUNIFORMMATRIX2FVARBPROC glUniformMatrix2fvARB;
 extern PFNGLUNIFORMMATRIX3FVARBPROC glUniformMatrix3fvARB;
 extern PFNGLUNIFORMMATRIX4FVARBPROC glUniformMatrix4fvARB;

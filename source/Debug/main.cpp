@@ -50,15 +50,26 @@ int main(int argc, char** argv) {
     }
 
     ShaderGroup::ArgList args;
-    args.set("lightVec", Vector3(1,1,1).direction());
+    args.set("lightVec", Vector3(1,0,0));
 
     try {
-        effect->bindArgList(rd, args);
+        rd->setShader(effect, args);
     } catch (const ShaderGroup::ArgumentError& e) {
         alwaysAssertM(false, e.message);
     }
 
-    rd->setShader(effect);
+    rd->setColorClearValue(Color3::BLUE);
+    while (true) {
+        rd->beginFrame();
+            rd->clear();
+            GCamera camera;
+            camera.setPosition(Vector3(0,0,10));
+            camera.lookAt(Vector3::ZERO);
+
+            rd->setProjectionAndCameraMatrix(camera);
+            Draw::sphere(Sphere(Vector3::ZERO, 1), rd, Color3::WHITE, Color3::BLACK);
+        rd->endFrame();
+    }
 
     return 0;
 }

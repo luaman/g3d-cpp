@@ -10,6 +10,7 @@
 #include "GLG3D/Shader.h"
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/RenderDevice.h"
 
 namespace G3D {
 
@@ -311,7 +312,86 @@ void ShaderGroup::validateArgList(const ArgList& args) const {
 void ShaderGroup::bindArgList(RenderDevice* rd, const ArgList& args) const {
     validateArgList(args);
 
-    // TODO
+    // Iterate through the formal parameter list
+    for (int u = 0; u < uniformArray.size(); ++u) {
+        const UniformDeclaration& decl  = uniformArray[u];
+        const ArgList::Arg&       value = args.argTable.get(decl.name); 
+
+        // Bind based on the declared type
+        switch (decl.type) {
+        case GL_TEXTURE_1D:
+            debugAssertM(false, "1D texture binding not implemented");
+            break;
+
+        case GL_TEXTURE_2D:
+        case GL_TEXTURE_CUBE_MAP_ARB:
+            // Textures are bound as if they were integers.  The
+            // value of the texture is the texture unit into which
+            // the texture is placed.
+            glUniform1iARB(u, decl.textureUnit);
+            rd->setTexture(decl.textureUnit, value.texture);
+            break;
+
+        case GL_TEXTURE_3D:
+            debugAssertM(false, "3D texture binding not implemented");
+            break;
+
+        case GL_FLOAT:
+            glUniform1fvARB(u, 1, value.vector[0]);
+            break;
+
+        case GL_FLOAT_VEC2_ARB:
+            glUniform2fvARB(u, 1, value.vector[0]);
+            break;
+
+        case GL_FLOAT_VEC3_ARB:
+            glUniform3fvARB(u, 1, value.vector[0]);
+            break;
+
+        case GL_FLOAT_VEC4_ARB:
+            glUniform4fvARB(u, 1, value.vector[0]);
+            break;
+
+        case GL_INT:
+        case GL_BOOL_ARB:
+            // OpenGL allows us to treat bools as ints, but not ints as floats
+            glUniform1iARB(u, (int)value.vector[0][0]);
+            break;
+
+        case GL_INT_VEC2_ARB:
+        case GL_BOOL_VEC2_ARB:
+            glUniform2iARB(u, (int)value.vector[0].x, (int)value.vector[0].y);
+            break;
+
+        case GL_INT_VEC3_ARB:
+        case GL_BOOL_VEC3_ARB:
+            glUniform3iARB(u, (int)value.vector[0].x, (int)value.vector[0].y,
+                (int)value.vector[0].z);
+            break;
+
+        case GL_INT_VEC4_ARB:
+        case GL_BOOL_VEC4_ARB:
+            glUniform4iARB(u, (int)value.vector[0].x, (int)value.vector[1].y,
+                (int)value.vector[2].z, (int)value.vector[3].w);
+            break;
+
+        case GL_FLOAT_MAT2_ARB:
+            debugAssertM(false, "GL_FLOAT_MAT2_ARB binding not implemented");
+            break;
+
+        case GL_FLOAT_MAT3_ARB:
+            alwaysAssertM(false, "TODO");
+            break;
+
+        case GL_FLOAT_MAT4_ARB:
+            alwaysAssertM(false, "TODO");
+            break;
+
+        default:
+            alwaysAssertM(false, format("Unsupported argument type: %s", GLenumToString(decl.type)));
+        }
+
+    }
 }
 
 
