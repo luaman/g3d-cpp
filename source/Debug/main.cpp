@@ -250,18 +250,31 @@ void Demo::doGraphics() {
 
     app->renderDevice->pushState();
     app->renderDevice->setTexture(0, sky->getEnvironmentMap());
+
+
+//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_REFLECTION);
+//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_NORMAL);
+//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_NONE);
+//    app->renderDevice->setTexCoordGen(0, RenderDevice::TEXGEN_NONE);
+
+
+    uint unit = 0;
+
     // Texture coordinates will be generated in object space.
     // Set the texture matrix to transform them into camera space.
-    CoordinateFrame cframe;
-    app->debugCamera.getCoordinateFrame(cframe);
+    CoordinateFrame cframe = app->renderDevice->getCameraToWorldMatrix();
     // The environment map assumes we are always in the center,
     // so zero the translation.
     cframe.translation = Vector3::ZERO;
     cframe.rotation.setRow(0, -cframe.rotation.getRow(0));
+    app->renderDevice->setTextureMatrix(unit, cframe);
 
-    app->renderDevice->setTextureMatrix(0, cframe);
+    CoordinateFrame boxframe;
+    boxframe.rotation.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
+    app->renderDevice->setObjectToWorldMatrix(boxframe);
 
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushAttrib(GL_TEXTURE_BIT);
+        glActiveTextureARB(GL_TEXTURE0_ARB + unit);
         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
         glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
         glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_NV);
@@ -269,7 +282,8 @@ void Demo::doGraphics() {
         glEnable(GL_TEXTURE_GEN_T);
         glEnable(GL_TEXTURE_GEN_R);
 
-        Draw::sphere(Sphere(Vector3(0,3,2), 2), app->renderDevice, Color3::WHITE);
+        //Draw::box(Box(Vector3(0,3,2), Vector3(1,4,3)), app->renderDevice, Color3::WHITE);
+        Draw::sphere(Sphere(Vector3(0, 3, 2), 2), app->renderDevice, Color3::WHITE);
 
     glPopAttrib();
     app->renderDevice->popState();

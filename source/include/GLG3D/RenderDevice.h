@@ -410,18 +410,19 @@ public:
     ~RenderDevice();
 
     /**
-     Checkmarks all rendering state.  
+     Checkmarks all rendering state (<B>including</B> OpenGL fog and texture
+     coordinate generation).
      */
     void pushState();
 
     /**
      Sets all state to a clean rendering environment.
-     (Doesn't affect Geometry objects)
      */
     void resetState();
 
     /**
-     Restores all state to whatever was pushed previously.
+     Restores all state to whatever was pushed previously.  Push and 
+     pop must be used in matching pairs.
      */
     void popState();
 

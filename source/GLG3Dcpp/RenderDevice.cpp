@@ -1069,7 +1069,9 @@ void RenderDevice::pushState() {
     debugAssert(! inPrimitive);
 
     stateStack.push(state);
+    glPushAttrib(GL_TEXTURE_BIT | GL_FOG_BIT);
 }
+
 
 void RenderDevice::resetState() {
     setState(RenderState(getWidth(), getHeight()));
@@ -1078,6 +1080,7 @@ void RenderDevice::resetState() {
 
 void RenderDevice::popState() {
     debugAssert(! inPrimitive);
+    glPopAttrib();
     debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
     setState(stateStack.pop());
 }
