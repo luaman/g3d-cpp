@@ -84,8 +84,9 @@ Our philosophy is simple. The library should have the following properties:
 
 
 @section formats Data Formats
-%G3D provides direct load/save access to images in PNG, TGA, BMP, JPG, PCX, PPM, PGM, PBM, DDS, and ICO format. 
-It has sample loaders for the PLY2, IFS and MD2 3D mesh formats and comes with code 
+%G3D supports images in PNG, TGA, BMP, JPG, PCX, PPM, PGM, PBM, DDS, and ICO format
+through the G3D::Texture and G3D::GImage classes.
+%G3D has sample loaders for the PLY2, IFS and MD2 3D mesh formats and comes with code 
 (in contrib/IFSBuilder and contrib/ArticulatedModel) to help you load other formats like 3DS and OBJ.
 %G3D uses its own font format to avoid legal issues with TrueType.  Over 20 popular fonts
 are provided in this format and the code contains a routine to help you make more from
