@@ -81,21 +81,12 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-
-    VertexShaderRef vs = VertexShader::fromFile("C:/tmp/nvcode/MEDIA/programs/glsl_simple_lighting/vertex_lighting.glsl");
-    PixelShaderRef ps = NULL;//PixelShader::fromFile("C:/tmp/nvcode/MEDIA/programs/glsl_bump_mapping/bump_mapping_fragment.glsl");
-
     debugAssert(VertexAndPixelShader::fullySupported());
-    debugPrintf(vs->messages().c_str());
-    debugAssert(vs->ok());
     
-    if (! ps.isNull()) {
-        debugAssert(VertexAndPixelShader::fullySupported());
-        debugPrintf(ps->messages().c_str());
-        debugAssert(ps->ok());
-    }
-    
-    effect = VertexAndPixelShader::create(vs, ps);
+    effect = VertexAndPixelShader::fromFiles(
+		"C:/tmp/nvcode/MEDIA/programs/glsl_simple_lighting/vertex_lighting.glsl",
+		"");
+
     debugPrintf(effect->messages().c_str());
     debugAssert(effect->ok());
 

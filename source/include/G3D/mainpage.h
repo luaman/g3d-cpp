@@ -212,9 +212,7 @@
         G3D::VARArea, 
         G3D::VertexProgram,
         G3D::VertexAndPixelShader,
-        G3D::ObjectShader,
-        G3D::VertexShader,
-        G3D::PixelShader
+        G3D::ObjectShader
 
       <LI><B>OpenGL</B> &nbsp; &nbsp;
         debugAssertGLOk,

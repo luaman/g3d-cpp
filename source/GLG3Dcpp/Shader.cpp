@@ -14,38 +14,48 @@
 
 namespace G3D {
 
-GPUShader::GPUShader(const std::string& name, const std::string& code, bool _fromFile) :
-    _name(name), _code(code + "\n"), _ok(true), fromFile(_fromFile) {
+void VertexAndPixelShader::GPUShader::init(
+	const std::string&	name,
+	const std::string&	code,
+	bool				_fromFile,
+	bool				debug,	
+	GLenum				glType,
+	const std::string&	type) {
+
+	_name			= name;
+	_shaderType		= type;
+	_glShaderType	= glType;
+	_code			= code + "\n";
+	_ok				= true;
+	fromFile		= _fromFile;
+	_fixedFunction	= (name == "") && (code == "");
+
+	if (! _fixedFunction) {		
+		if (fromFile) {
+			if (fileExists(_name)) {
+				_code = readFileAsString(_name);
+			} else {
+				_ok = false;
+				_messages = format("Could not load shader file \"%s\".", 
+					_name.c_str());
+			}
+		}
+
+		if (_ok) {
+			compile();
+		}
+
+		if (debug) {
+			alwaysAssertM(ok(), messages());
+		}
+	}
 }
 
 
-GPUShader* GPUShader::init(GPUShader* shader, bool debug) {
-    if (shader->fromFile) {
-        if (fileExists(shader->_name)) {
-            shader->_code = readFileAsString(shader->_name);
-        } else {
-            shader->_ok = false;
-            shader->_messages = format("Could not load shader file \"%s\".", 
-                shader->_name.c_str());
-        }
-    }
-
-    if (shader->_ok) {
-        shader->compile();
-    }
-
-    if (debug) {
-        alwaysAssertM(shader->ok(), shader->messages());
-    }
-
-    return shader;
-}
-
-
-void GPUShader::compile() {
+void VertexAndPixelShader::GPUShader::compile() {
 
     GLint compiled = GL_FALSE;
-	_glShaderObject     = glCreateShaderObjectARB(glShaderType());
+	_glShaderObject = glCreateShaderObjectARB(glShaderType());
 
     // Compile the shader
 	GLint length = _code.length();
@@ -69,49 +79,39 @@ void GPUShader::compile() {
 }
 
 
-GPUShader::~GPUShader() {
-	glDeleteObjectARB(_glShaderObject);
+VertexAndPixelShader::GPUShader::~GPUShader() {
+	if (! _fixedFunction) {
+		glDeleteObjectARB(_glShaderObject);
+	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-
-VertexShaderRef VertexShader::fromFile(const std::string& filename, bool debug) {
-    return static_cast<VertexShader*>(GPUShader::init(new VertexShader(filename, "", true), debug));
-}
-
-
-VertexShaderRef VertexShader::fromCode(const std::string& name, const std::string& code, bool debug) {
-    return static_cast<VertexShader*>(GPUShader::init(new VertexShader(name, "", false), debug));
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-
-PixelShaderRef PixelShader::fromFile(const std::string& filename, bool debug) {
-    return static_cast<PixelShader*>(GPUShader::init(new PixelShader(filename, "", true), debug));
-}
-
-
-PixelShaderRef PixelShader::fromCode(const std::string& name, const std::string& code, bool debug) {
-    return static_cast<PixelShader*>(GPUShader::init(new PixelShader(name, "", false), debug));
-}
 
 ////////////////////////////////////////////////////////////////////////////////////
 
 VertexAndPixelShader::VertexAndPixelShader(
-    const VertexShaderRef& vs,
-    const PixelShaderRef&  ps) : 
-        _vertexShader(vs), 
-        _pixelShader(ps), 
+	const std::string& vsCode,
+	const std::string& vsFilename,
+	bool vsFromFile,
+	const std::string& psCode,
+	const std::string& psFilename,
+	bool psFromFile) :
         _ok(true) {
+
+	vertexShader.init(vsFilename, vsCode, vsFromFile, false, GL_VERTEX_SHADER_ARB, "Vertex Shader");
+	pixelShader.init(psFilename, psCode, psFromFile, false, GL_FRAGMENT_SHADER_ARB, "Pixel Shader");
     
-    if (! vs.isNull() && ! vs->ok()) {
+    if (! vertexShader.ok()) {
         _ok = false;
-        _messages += vs->messages() + "\n";
+        _messages += 
+			std::string("Compiling ") + vertexShader.shaderType() + " " + vsFilename + "\n" +
+			vertexShader.messages() + "\n\n";
     }    
 
-    if (! ps.isNull() && ! ps->ok()) {
+    if (! pixelShader.ok()) {
         _ok = false;
-        _messages += ps->messages() + "\n";
+        _messages += 
+			std::string("Compiling ") + pixelShader.shaderType() + " " + psFilename + "\n" +
+			pixelShader.messages() + "\n\n";
     }    
 
     if (_ok) {
@@ -119,12 +119,12 @@ VertexAndPixelShader::VertexAndPixelShader(
         _glProgramObject = glCreateProgramObjectARB();
 
         // Attach vertex and pixel shaders
-        if (! vertexShader().isNull()) {
-            glAttachObjectARB(_glProgramObject, vertexShader()->glShaderObject());
+        if (! vertexShader.fixedFunction()) {
+            glAttachObjectARB(_glProgramObject, vertexShader.glShaderObject());
         }
 
-        if (! pixelShader().isNull()) {
-            glAttachObjectARB(_glProgramObject, pixelShader()->glShaderObject());
+        if (! pixelShader.fixedFunction()) {
+            glAttachObjectARB(_glProgramObject, pixelShader.glShaderObject());
         }
 
         // Link
@@ -199,11 +199,30 @@ void VertexAndPixelShader::computeUniformArray() {
 }
 
 
-VertexAndPixelShaderRef VertexAndPixelShader::create(
-    const VertexShaderRef& vs,
-    const PixelShaderRef&  ps) {
+VertexAndPixelShaderRef VertexAndPixelShader::fromStrings(
+	const std::string& vs,
+    const std::string& ps) {
 
-    return new VertexAndPixelShader(vs, ps);
+    return new VertexAndPixelShader(vs, "", false, ps, "", false);
+}
+
+
+VertexAndPixelShaderRef VertexAndPixelShader::fromFiles(
+	const std::string& vsFilename,
+    const std::string& psFilename) {
+
+	std::string vs;
+	std::string ps;
+
+	if (vsFilename != "") {
+		vs = readFileAsString(vs);
+	}
+
+	if (psFilename != "") {
+		ps = readFileAsString(ps);
+	}
+
+    return new VertexAndPixelShader(vs, vsFilename, true, ps, psFilename, true);
 }
 
 
