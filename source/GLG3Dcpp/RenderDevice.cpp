@@ -446,19 +446,42 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     const int desiredTextureUnits = 8;
 
+
+    computeVendor();
+    // Don't use more texture units than allowed at compile time.
+    _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
+
+    // NVIDIA cards have different numbers of texture coords, units,
+    // and textures
+    if (vendor == NVIDIA) {
+        glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
+        _numTextureCoords = iClamp(_numTextureCoords,
+                                   _numTextureUnits,
+                                   MAX_TEXTURE_UNITS);
+
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_NV, &_numTextures);
+        _numTextures = iClamp(_numTextures,
+                              _numTextureUnits, 
+                              MAX_TEXTURE_UNITS);
+    } else {
+        _numTextureCoords = _numTextureUnits;
+        _numTextures      = _numTextureUnits;
+    }
+
     if (debugLog) {debugLog->println("Setting video mode");}
 
     setVideoMode();
 
     if (!strcmp((char*)glGetString(GL_RENDERER), "GDI Generic") && debugLog) {
-        debugLog->printf("\n*********************************************************\n");
-        debugLog->printf("* WARNING: This computer does not have correctly        *\n");
-        debugLog->printf("*          installed graphics drivers and is using      *\n");
-        debugLog->printf("*          the default Microsoft OpenGL implementation. *\n");
-        debugLog->printf("*          Most graphics capabilities are disabled.  To *\n");
-        debugLog->printf("*          correct this problem, download and install   *\n");
-        debugLog->printf("*          the latest drivers for the graphics card.    *\n");
-        debugLog->printf("*********************************************************\n\n");
+        debugLog->printf(
+         "\n*********************************************************\n"
+           "* WARNING: This computer does not have correctly        *\n"
+           "*          installed graphics drivers and is using      *\n"
+           "*          the default Microsoft OpenGL implementation. *\n"
+           "*          Most graphics capabilities are disabled.  To *\n"
+           "*          correct this problem, download and install   *\n"
+           "*          the latest drivers for the graphics card.    *\n"
+           "*********************************************************\n\n");
     }
 
     setCaption("Graphics3D");
@@ -479,13 +502,15 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     bool depthOk   = depthBits >= minimumDepthBits;
     bool stencilOk = stencilBits >= minimumStencilBits;
-    computeVendor();
 
 
     std::string ver = getDriverVersion();
     if (debugLog) {
-        debugLog->printf("Operating System: %s\n", System::operatingSystem().c_str());
-        debugLog->printf("Processor Architecture: %s\n\n", System::cpuArchitecture().c_str());
+        debugLog->printf("Operating System: %s\n",
+                         System::operatingSystem().c_str());
+
+        debugLog->printf("Processor Architecture: %s\n\n", 
+                         System::cpuArchitecture().c_str());
 
         debugLog->printf(
             "GL Vendor:      %s\n",
@@ -510,21 +535,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
  
 
     cardDescription = format("%s %s", glGetString(GL_RENDERER), ver.c_str());
-
-    // Don't use more texture units than allowed at compile time.
-    _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
-
-    // NVIDIA cards have different numbers of texture coords, units, and textures
-    if (vendor == NVIDIA) {
-        glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
-        _numTextureCoords = iMin(MAX_TEXTURE_UNITS, iMax(_numTextureUnits, _numTextureCoords));
-
-        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_NV, &_numTextures);
-        _numTextures = iMin(MAX_TEXTURE_UNITS, iMax(_numTextureUnits, _numTextures));
-    } else {
-        _numTextureCoords = _numTextureUnits;
-        _numTextures = _numTextureUnits;
-    }
 
     if (debugLog) {
     debugLog->section("Video Status");
@@ -554,15 +564,18 @@ bool RenderDevice::init(GWindow* window, Log* log) {
              "Mode                 %10s             %s\n\n",
 
              minimumDepthBits, desiredDepthBits, depthBits, isOk(depthOk),
-             minimumStencilBits, desiredStencilBits, stencilBits, isOk(stencilOk),
+             minimumStencilBits, desiredStencilBits, stencilBits, 
+             isOk(stencilOk),
 
              alphaBits, "ok",
              redBits, "ok", 
              greenBits, "ok", 
              blueBits, "ok", 
 
-             desiredTextureUnits, _numTextureUnits, _numTextureCoords, isOk(_numTextureUnits >= desiredTextureUnits),
-             settings.fsaaSamples, actualSettings.fsaaSamples, isOk(settings.fsaaSamples == actualSettings.fsaaSamples),
+             desiredTextureUnits, _numTextureUnits, _numTextureCoords,
+             isOk(_numTextureUnits >= desiredTextureUnits),
+             settings.fsaaSamples, actualSettings.fsaaSamples,
+             isOk(settings.fsaaSamples == actualSettings.fsaaSamples),
 
              settings.width, "ok",
              settings.height, "ok",
