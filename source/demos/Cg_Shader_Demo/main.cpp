@@ -1,14 +1,21 @@
 /**
-  @file ParallaxBump_Demo/main.cpp
+  @file Cg_Shader_Demo/main.cpp
 
-  This demo shows how to use the GApp/GApplet framework
-  and how to use pixel and vertex shaders with Cg under 
-  G3D.  It is an implementation of parallax
+  This demo shows how to use NVIDIA's Cg shading language
+  with VertexProgram and PixelProgram.  The Visual Studio
+  workspace has been configured to compile the *.cg files
+  to OpenGL assembly.
+
+  Consider using the newer G3D::Shader interface that allows
+  you to write shaders in GLSL instead of Cg, eliminating
+  the compilation step.
+
+  The effect shown is an implementation of parallax
   bump mapping with per-pixel shading and normal maps.
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-02-04
-  @edited  2004-02-04
+  @edited  2004-09-16
  */
 
 #include <G3DAll.h>

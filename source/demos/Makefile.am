@@ -1,1 +1,1 @@
-SUBDIRS = GLG3D_Demo GLProgram_Demo MD2Model_Demo
+SUBDIRS = GLG3D_Demo Cg_Shader_Demo ASM_Shader_Demo MD2Model_Demo

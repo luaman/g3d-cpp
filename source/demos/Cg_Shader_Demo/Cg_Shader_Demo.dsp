@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="ParallaxBump" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="Cg_Shader_Demo" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=ParallaxBump - Win32 Debug
+CFG=Cg_Shader_Demo - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "ParallaxBump.mak".
+!MESSAGE NMAKE /f "Cg_Shader_Demo.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "ParallaxBump.mak" CFG="ParallaxBump - Win32 Debug"
+!MESSAGE NMAKE /f "Cg_Shader_Demo.mak" CFG="Cg_Shader_Demo - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "ParallaxBump - Win32 Release" (based on "Win32 (x86) Application")
-!MESSAGE "ParallaxBump - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "Cg_Shader_Demo - Win32 Release" (based on "Win32 (x86) Application")
+!MESSAGE "Cg_Shader_Demo - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -29,7 +29,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "ParallaxBump - Win32 Release"
+!IF  "$(CFG)" == "Cg_Shader_Demo - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -53,9 +53,9 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /out:"../ParallaxBump_Demo.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /out:"../Cg_Shader_Demo_Demo.exe"
 
-!ELSEIF  "$(CFG)" == "ParallaxBump - Win32 Debug"
+!ELSEIF  "$(CFG)" == "Cg_Shader_Demo - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -84,8 +84,8 @@ LINK32=link.exe
 
 # Begin Target
 
-# Name "ParallaxBump - Win32 Release"
-# Name "ParallaxBump - Win32 Debug"
+# Name "Cg_Shader_Demo - Win32 Release"
+# Name "Cg_Shader_Demo - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -102,15 +102,14 @@ SOURCE=.\main.cpp
 SOURCE=.\Mesh.h
 # End Source File
 # End Group
-# Begin Group "Resource Files"
+# Begin Group "Cg Shaders"
 
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# End Group
+# PROP Default_Filter ".cg"
 # Begin Source File
 
 SOURCE=.\parallaxPP.cg
 
-!IF  "$(CFG)" == "ParallaxBump - Win32 Release"
+!IF  "$(CFG)" == "Cg_Shader_Demo - Win32 Release"
 
 # Begin Custom Build - Compiling $(InputPath)
 InputPath=.\parallaxPP.cg
@@ -121,7 +120,7 @@ InputName=parallaxPP
 
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "ParallaxBump - Win32 Debug"
+!ELSEIF  "$(CFG)" == "Cg_Shader_Demo - Win32 Debug"
 
 # Begin Custom Build - Compiling $(InputPath)
 InputPath=.\parallaxPP.cg
@@ -139,7 +138,7 @@ InputName=parallaxPP
 
 SOURCE=.\parallaxVP.cg
 
-!IF  "$(CFG)" == "ParallaxBump - Win32 Release"
+!IF  "$(CFG)" == "Cg_Shader_Demo - Win32 Release"
 
 # Begin Custom Build - Compiling $(InputPath)
 InputPath=.\parallaxVP.cg
@@ -150,7 +149,7 @@ InputName=parallaxVP
 
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "ParallaxBump - Win32 Debug"
+!ELSEIF  "$(CFG)" == "Cg_Shader_Demo - Win32 Debug"
 
 # Begin Custom Build - Compiling $(InputPath)
 InputPath=.\parallaxVP.cg
@@ -164,5 +163,6 @@ InputName=parallaxVP
 !ENDIF 
 
 # End Source File
+# End Group
 # End Target
 # End Project
