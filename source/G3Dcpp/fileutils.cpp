@@ -147,8 +147,6 @@ void writeStringToFile(
     const std::string&          filename,
     bool                        flush) {
 
-    _internal::currentFilesUsed.append(filename);
-
     // Make sure the directory exists.
     std::string root, base, ext, path;
     Array<std::string> pathArray;

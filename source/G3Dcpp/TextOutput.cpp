@@ -344,10 +344,6 @@ void TextOutput::vprintf(const char* formatString, va_list argPtr) {
 
 
 void TextOutput::commit(bool flush) {
-
-    // Update global file tracker
-    _internal::currentFilesUsed.append(filename);
-
     FILE* f = fopen(filename.c_str(), "wb");
     fwrite(data.getCArray(), 1, data.size(), f);
     if (flush) {

@@ -218,9 +218,6 @@ void BinaryOutput::commit(bool flush) {
     committed = true;
     debugAssertM(beginEndBits == 0, "Missing endBits before commit");
 
-    // Update global file tracker
-    _internal::currentFilesUsed.append(filename);
-
     // Make sure the directory exists.
     std::string root, base, ext, path;
     Array<std::string> pathArray;
