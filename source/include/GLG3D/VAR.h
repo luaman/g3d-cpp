@@ -45,7 +45,7 @@ private:
     /**
      The initial size this VAR was allocated with.
      */
-    int                 maxSize;
+    size_t              maxSize;
 
 	bool ok() const;
 
@@ -119,21 +119,6 @@ public:
 	void update(const Array<T>& source) {
 		update(source.getCArray(), source.size(), glFormatOf(T), sizeof(T));
 	}
-
-    /**
-     TODO: remove
-     Returns a pointer to the underlying memory.  This is potentially
-     in AGP/video memory and may be slow (uncached) to write/read
-     from.  Generally, you should use the RenderDevice methods like
-     RenderDevice::setVertexPointer instead touching this method-- it is 
-     provided only for when you need to perform an OpenGL call
-     that is not supported by RenderDevice or to overwrite an existing
-     vertex array (you should invoke finish on the internal VARArea
-     before doing that).
-     */
-    void* pointer() {
-        return _pointer;
-    }
 };
 
 }

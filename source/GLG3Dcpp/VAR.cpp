@@ -118,7 +118,7 @@ void VAR::uploadToCard(const void* sourcePtr, size_t size) {
 bool VAR::ok() const {
     return (generation == area->generation) &&
         // If we're in VBO_MEMORY mode, the pointer can be null
-        (VARArea::mode == VARArea::VBO_MEMORY || pointer);
+        (VARArea::mode == VARArea::VBO_MEMORY || _pointer);
 }
 
 
