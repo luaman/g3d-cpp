@@ -70,57 +70,6 @@ public:
 
 
 
-/**
- A memory chunk of VAR space.  
-
-
- <P> A large buffer is allocated in video memory when the VAR system
- is initialized.  This buffer can be partitioned into multiple
- VARAreas.  Vertex arrays are uploaded to these areas by creating VAR
- objects.  Once used, those vertex arrays are dropped from memory by
- calling reset() on the corresponding VARArea.
-
- <P> Typically, two VARAreas are created.  One is a dynamic area that
- is reset every frame, the other is a static area that is never reset.
- */
-class VARArea {
-private:
-	friend class VAR;
-
-	/** Pointer to the memory. */
-	void*				basePointer;
-
-	/** Total  number of bytes in this area. */
-	size_t				size;
-	
-	/** Number of bytes allocated. */
-	size_t				allocated;
-
-	/**
-	 These prevent vertex arrays that have been freed from
-	 accidentally being used.
-	 */
-	uint64				generation;
-
-	/** The maximum size of this area that was ever used. */
-	size_t				peakAllocated;
-
-public:
-
-	VARArea(void* _basePointer, size_t _size);
-
-	size_t totalSize() const;
-
-	size_t freeSize() const;
-
-	size_t allocatedSize() const;
-
-	size_t peakAllocatedSize() const;
-
-	/** */ 
-	void reset();
-};
-
 
 /**
  Rendering interface that abstracts OpenGL.  OpenGL is a basically
@@ -192,10 +141,11 @@ public:
 private:
 
     friend class VAR;
+    friend class VARArea;
 
 	class VARSystem {
 	private:
-
+        RenderDevice*           renderDevice;
 
 		/**
 		 Vertex Array method
@@ -638,6 +588,11 @@ public:
     void beginPrimitive(Primitive p);
     void endPrimitive();
 
+	/**
+	 Allocate a space in which to create vertex arrays. Don't delete
+	 the resulting object-- the system will free it automatically
+	 on shut-down.
+	 */
 	class VARArea* createVARArea(size_t areaSize);
 	void beginIndexedPrimitives();
 	void endIndexedPrimitives();
@@ -991,97 +946,66 @@ public:
 };
 
 
-
 /**
- A pointer to an array of vertices, colors, or normals in video memory.
- It is safe to copy these.  There is no destructor; it doesn't matter
- when you throw these objects away.  
+ A memory chunk of VAR space.  
+
+
+ <P> A large buffer is allocated in video memory when the VAR system
+ is initialized.  This buffer can be partitioned into multiple
+ VARAreas.  Vertex arrays are uploaded to these areas by creating VAR
+ objects.  Once used, those vertex arrays are dropped from memory by
+ calling reset() on the corresponding VARArea.
+
+ <P> Typically, two VARAreas are created.  One is a dynamic area that
+ is reset every frame, the other is a static area that is never reset.
  */
-class VAR {
+class VARArea {
 private:
+	friend class VAR;
+    friend class RenderDevice;
+    friend class RenderDevice::VARSystem;
 
-	class VARArea*		area;
+    class RenderDevice* renderDevice;
 
-	/** Pointer to the block of uploaded memory */
-	void*				pointer;
+	/** Pointer to the memory. */
+	void*				basePointer;
 
-	/** Size of one element */
-	size_t				elementSize;
+	/** Total  number of bytes in this area. */
+	size_t				size;
+	
+	/** Number of bytes allocated. */
+	size_t				allocated;
 
-	/** Pointer to the block of uploaded memory */
-	int					numElements;
-
+	/**
+	 These prevent vertex arrays that have been freed from
+	 accidentally being used.
+	 */
 	uint64				generation;
 
-    GLenum              underlyingRepresentation;
+	/** The maximum size of this area that was ever used. */
+	size_t				peakAllocated;
 
-	bool ok() const;
-
-	template<class T>
-	void init(const T* sourcePtr, int _numElements, VARArea* _area) {
-
-		numElements = _numElements;
-		area		= _area;
-        underlyingRepresentation = glFormatOf(T);
-
-		debugAssert(area);
-		debugAssert(area->basePointer);
-
-		elementSize = sizeof(T);
-
-        debugAssertM((elementSize % sizeOfGLFormat(underlyingRepresentation)) == 0,
-            "Sanity check failed on OpenGL data format; you may be using an unsupported type in a vertex array.");
-
-		pointer = (uint8*)area->basePointer + area->allocated;
-
-		// Ensure that the next memory address is 8-byte aligned
-		pointer = ((uint8*)pointer +      
-   			       ((8 - (size_t)pointer % 8) % 8));
-
-		generation = area->generation;
-		
-		size_t size = elementSize * numElements;
-		debugAssert(size + area->allocated <= area->size);
-		area->allocated = (size_t)pointer + size - (size_t)area->basePointer;
-
-		// Upload the data
-		memcpy(pointer, sourcePtr, size);
-	}
-
-
-	friend class RenderDevice::VARSystem;
-
-	// The following are called by the VARSystem.
-	void vertexPointer() const;
-
-
-	void normalPointer() const;
-
-
-	void colorPointer() const;
-
-
-	void texCoordPointer(uint unit) const;
+	VARArea(
+        class RenderDevice* renderDevice, 
+        void*               _basePointer,
+        size_t              _size);
 
 public:
 
-	VAR();
+    ~VARArea();
 
-	/**
-	 Uploads the memory.  The element type is inferred from the pointer type by the
-	 preprocessor.
-    */
-	template<class T>
-	VAR(const T* sourcePtr, int _numElements, VARArea* _area) {
-		init(sourcePtr, _numElements, _area);
-	}		
+	size_t totalSize() const;
 
+	size_t freeSize() const;
 
-	template<class T>
-	VAR(const Array<T>& source, VARArea* _area) {
-		init(source.getCArray(), source.size(), _area);
-	}		
+	size_t allocatedSize() const;
+
+	size_t peakAllocatedSize() const;
+
+	/** */ 
+	void reset();
 };
+
 
 
 } // namespace

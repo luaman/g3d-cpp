@@ -4,12 +4,13 @@
 #include "glheaders.h"
 #include "G3D/g3dmath.h"
 
-/** A macro that maps G3D types to OpenGL formats (e.g. glFormat(Vector3) == GL_FLOAT).
+/** A macro that maps G3D types to OpenGL formats
+    (e.g. glFormat(Vector3) == GL_FLOAT).
     Used by the vertex array infrastructure. */
 // This implementation is designed to meet the following constraints:
 //   1. Work around the many MSVC++ partial template bugs
 //   2. Work for primitive types (e.g. int)
-#define glFormatOf(T) G3D::_internal::_GLFormat<T>::x()
+#define glFormatOf(T) (G3D::_internal::_GLFormat<T>::x())
 
 namespace G3D {
 namespace _internal {

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2003-04-07
-  @edited  2003-04-07
+  @edited  2003-04-08
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -35,8 +35,7 @@ namespace G3D {
  value.
  */
 // Switch to tight alignment
-#pragma pack(push, Color3uint8_align)
-#pragma pack(1)
+#pragma pack(push, 1)
 class Color3uint8 {
 public:
     uint8       r;
@@ -54,7 +53,7 @@ public:
     void deserialize(class BinaryInput& bi);
 
 };
-#pragma pack(pop, Color3uint8_align)
+#pragma pack(pop)
 
 }
 

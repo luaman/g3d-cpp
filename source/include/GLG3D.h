@@ -23,6 +23,7 @@
 #include "GLG3D/Texture.h"
 #include "GLG3D/glFormat.h"
 #include "GLG3D/RenderDevice.h"
+#include "GLG3D/VAR.h"
 
 #include "GLG3D/Font.h"
 #include "GLG3D/LightingParameters.h"

@@ -6,12 +6,13 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2003-02-15
+ @edited  2003-04-08
  */
 
 #include "GLG3D/RenderDevice.h"
 #include "G3D/Log.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/VAR.h"
 
 namespace G3D {
 
@@ -19,7 +20,7 @@ namespace G3D {
 RenderDevice::VARSystem::VARSystem(
 	RenderDevice*		rd,
 	size_t				_size, 
-	Log*				_debugLog) {
+	Log*				_debugLog) : renderDevice(rd) {
 
 	// Where the memory was allocated
 	char* memLoc = "ERROR";
@@ -33,7 +34,11 @@ RenderDevice::VARSystem::VARSystem(
 
 	if (size > 0) {
     		// See if we can switch to the NVIDIA method
-		if (wglAllocateMemoryNV && wglFreeMemoryNV && glVertexArrayRangeNV && rd->supportsOpenGLExtension("GL_NV_vertex_array_range2")) {
+		if (wglAllocateMemoryNV && 
+            wglFreeMemoryNV &&
+            glVertexArrayRangeNV &&
+            rd->supportsOpenGLExtension("GL_NV_vertex_array_range2")) {
+
 			basePointer = wglAllocateMemoryNV(size, 0.0f, 0.0f, 1.0f);
 			if (basePointer) {
 				glVertexArrayRangeNV(size, basePointer);
@@ -52,7 +57,8 @@ RenderDevice::VARSystem::VARSystem(
 
 		if (debugLog) {
 			if (basePointer) {
-				debugLog->printf("Allocated %d bytes of VAR memory using %s.\n\n", size, memLoc);
+				debugLog->printf("Allocated %d bytes of VAR"
+                                 " memory using %s.\n\n", size, memLoc);
 			} else {
 				debugLog->printf("Unable to allocate VAR memory.\n");
 			}
@@ -78,6 +84,9 @@ RenderDevice::VARSystem::~VARSystem() {
 		free(basePointer);
 		break;
 
+    case VAR_NONE:
+        error("Critical Error", "No vertex array memory available.", true);
+        exit(-1);
 	}
 
 	areaList.deleteAll();
@@ -89,11 +98,14 @@ RenderDevice::VARSystem::~VARSystem() {
 
 
 VARArea* RenderDevice::VARSystem::createArea(size_t areaSize) {
-	debugAssertM(basePointer, "Cannot allocate a VARArea before initializing the VAR system.");
+	debugAssertM(basePointer, "Cannot allocate a VARArea before"
+                 " initializing the VAR system.");
 
 	if (allocated + areaSize <= size) {
 		
-		VARArea* v = new VARArea((uint8*)basePointer + allocated, areaSize);
+		VARArea* v = new VARArea(renderDevice, 
+                                 (uint8*)basePointer + allocated, 
+                                 areaSize);
 		allocated += areaSize;
 		areaList.append(v);
 
@@ -107,7 +119,12 @@ VARArea* RenderDevice::VARSystem::createArea(size_t areaSize) {
 }
 
 
-void RenderDevice::VARSystem::sendIndices(RenderDevice::Primitive primitive, size_t indexSize, int numIndices, const void* index) const {
+void RenderDevice::VARSystem::sendIndices(
+    RenderDevice::Primitive primitive,
+    size_t                  indexSize, 
+    int                     numIndices, 
+    const void*             index) const {
+
 	GLenum i, p;
 
 	switch (indexSize) {
@@ -156,6 +173,10 @@ void RenderDevice::VARSystem::sendIndices(RenderDevice::Primitive primitive, siz
     case QUAD_STRIP:
 		p = GL_QUAD_STRIP;
         break;
+
+    case POINTS:
+        p = GL_POINTS;
+        break;
     }
 
 	glDrawElements(p, numIndices, i, index);
@@ -182,7 +203,9 @@ void RenderDevice::VARSystem::setColorArray(const class VAR& v) const {
 }
 
 
-void RenderDevice::VARSystem::setTexCoordArray(unsigned int unit, const class VAR& v) const {
+void RenderDevice::VARSystem::setTexCoordArray(
+    unsigned int          unit, 
+    const class VAR&      v) const {
 	v.texCoordPointer(unit);
 }
 
@@ -192,63 +215,23 @@ void RenderDevice::VARSystem::endIndexedPrimitives() const {
 }
 
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-VAR::VAR() : pointer(NULL), numElements(0), generation(0), elementSize(0), underlyingRepresentation(GL_FLOAT) {
-}
+//////////////////////////////////////////////////////////////////////////////
 
 
-bool VAR::ok() const {
-	return pointer && (generation == area->generation);
-}
+VARArea::VARArea(
+    RenderDevice*      _renderDevice,
+    void*              _basePointer,
+    size_t             _size) :
+   	renderDevice(_renderDevice), basePointer(_basePointer), size(_size) {
 
-
-// The following are called by the VARSystem.
-void VAR::vertexPointer() const {
-	debugAssert(ok());
-	glEnableClientState(GL_VERTEX_ARRAY);
-    debugAssertM(underlyingRepresentation != GL_UNSIGNED_INT, "OpenGL does not support GL_UNSIGNED_INT as a vertex format.");
-    debugAssertM(underlyingRepresentation != GL_UNSIGNED_SHORT, "OpenGL does not support GL_UNSIGNED_SHORT as a vertex format.");
-    debugAssertM(underlyingRepresentation != GL_UNSIGNED_BYTE, "OpenGL does not support GL_UNSIGNED_BYTE as a vertex format.");
-	glVertexPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
-}
-
-
-void VAR::normalPointer() const {
-	debugAssert(ok());
-	debugAssert((double)elementSize / sizeOfGLFormat(underlyingRepresentation) == 3.0);
-    debugAssertM(underlyingRepresentation != GL_UNSIGNED_INT, "OpenGL does not support GL_UNSIGNED_INT as a normal format.");
-    debugAssertM(underlyingRepresentation != GL_UNSIGNED_SHORT, "OpenGL does not support GL_UNSIGNED_SHORT as a normal format.");
-    debugAssertM(underlyingRepresentation != GL_UNSIGNED_BYTE, "OpenGL does not support GL_UNSIGNED_BYTE as a normal format.");
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(underlyingRepresentation, elementSize, pointer); 
-}
-
-
-void VAR::colorPointer() const {
-	debugAssert(ok());
-	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), underlyingRepresentation, elementSize, pointer); 
-}
-
-
-void VAR::texCoordPointer(uint unit) const {
-	debugAssert(ok());
-	glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
-	glClientActiveTextureARB(GL_TEXTURE0_ARB);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-VARArea::VARArea(void* _basePointer, size_t _size) :
-   	basePointer(_basePointer), size(_size) {
     allocated     = 0;
 	generation    = 1;
 	peakAllocated = 0;
+}
+
+
+VARArea::~VARArea() {
+    // TODO: remove from the RenderDevice's list
 }
 
 

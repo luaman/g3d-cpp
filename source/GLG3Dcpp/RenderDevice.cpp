@@ -1890,6 +1890,10 @@ void RenderDevice::countPrimitive(RenderDevice::Primitive primitive, int numVert
     case QUAD_STRIP:
         triangleCount += (numVertices - 2);
         break;
+
+    case POINTS:
+        triangleCount += (numVertices * 2);
+        break;
     }
 }
 
@@ -1898,11 +1902,13 @@ void RenderDevice::setTexture(
     uint                unit,
     TextureRef          texture) {
 
-    debugAssertM(! inPrimitive, "Can't change textures while rendering a primitive.");
+    debugAssertM(! inPrimitive, 
+                 "Can't change textures while rendering a primitive.");
 
     debugAssertM(unit < numTextureUnits,
-        format("Attempted to access texture unit %d on a device with %d units.",
-        unit, numTextureUnits));
+        format("Attempted to access texture unit %d"
+               " on a device with %d units.",
+               unit, numTextureUnits));
 
     TextureRef oldTexture = state.textureUnit[unit].texture;
 

@@ -10,6 +10,7 @@ libG3D_la_SOURCES= BinaryInput.cpp \
 				   CImage.cpp \
 				   CollisionDetection.cpp \
 				   Color3.cpp \
+				   Color3uint8.cpp \
 				   Color4.cpp \
 				   Cone.cpp \
 				   ConvexPolyhedron.cpp \
@@ -36,6 +37,7 @@ libG3D_la_SOURCES= BinaryInput.cpp \
 				   Triangle.cpp \
 				   Vector2.cpp \
 				   Vector3.cpp \
+				   Vector3int16.cpp \
 				   Vector4.cpp
 
 libG3D_debug_la_SOURCES= BinaryInput.cpp \
@@ -45,6 +47,7 @@ libG3D_debug_la_SOURCES= BinaryInput.cpp \
 				   CImage.cpp \
 				   CollisionDetection.cpp \
 				   Color3.cpp \
+				   Color3uint8.cpp \
 				   Color4.cpp \
 				   Cone.cpp \
 				   ConvexPolyhedron.cpp \
@@ -71,6 +74,7 @@ libG3D_debug_la_SOURCES= BinaryInput.cpp \
 				   Triangle.cpp \
 				   Vector2.cpp \
 				   Vector3.cpp \
+				   Vector3int16.cpp \
 				   Vector4.cpp
 
 libG3D_debug_la_CPPFLAGS= -D_DEBUG
