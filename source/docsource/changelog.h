@@ -13,7 +13,8 @@
    Changes in 6.05:
    <UL>
      <LI> Reorganized the documentation topic index based on abstraction level, added hyperlinks to demo/contrib code
-     <LI> G3D::ReliableConduit now sends and receives objects directly; no need to make a G3D::NetMessage.  NetMessage
+     <LI> G3D::ReliableConduit and G3D::LightweightConduit now send and receive
+          objects directly; no need to make a G3D::NetMessage.  NetMessage
           and associated methods are now deprecated.
      <LI> Win32 GUI G3D::prompt now auto-expands \\n to \\r\\n in prompt string [Corey]
      <LI> G3D::Draw::frustum

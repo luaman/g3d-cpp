@@ -1129,7 +1129,6 @@ void LightweightConduit::send(const Array<NetAddress>& array,
 
 
 void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
-
     binaryOutput.reset();
     serializeMessage(m, binaryOutput);
     sendBuffer(a, binaryOutput);

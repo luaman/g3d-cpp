@@ -392,10 +392,12 @@ public:
         }
     }
 
+    /** Sends a null message to all conduits */
     inline static void multisend(const Array<ReliableConduitRef>& array) {
         multisend(array, NULL);
     }
 
+    /** @deprecated */
     inline void send(const NetMessage& m) {
         send(&m);
     }
@@ -537,7 +539,6 @@ private:
 
     LightweightConduit(class NetworkDevice* _nd, uint16 receivePort, 
                        bool enableReceive, bool enableBroadcast);
-
     
     /**
      LightweightConduit messages are serialized with the message type
@@ -551,7 +552,35 @@ private:
         May vary between sockets. */
     int                    MTU;
 
+
+    template<typename T> 
+    void serializeMessage(
+        uint32 type, 
+        const T& m, 
+        BinaryOutput& b) const {
+
+        debugAssert(type != 0);
+        b.writeUInt32(type);
+        m.serialize(b);
+        b.writeUInt32(1);
+    
+        debugAssertM(b.size() < MTU, 
+                    format("This LightweightConduit is limited to messages of "
+                           "%d bytes (Ethernet hardware limit; this is the "
+                           "'UDP MTU')", maxMessageSize()));
+
+        if (b.size() >= MTU) {
+            throw LightweightConduit::PacketSizeException(
+                    format("This LightweightConduit is limited to messages of "
+                           "%d bytes (Ethernet hardware limit; this is the "
+                           "'UDP MTU')", maxMessageSize()),
+                           b.size() - 4, // Don't count the type header
+                           maxMessageSize());
+        }
+    }
+
 public:
+
     class PacketSizeException {
     public:
         std::string            message;
@@ -584,11 +613,32 @@ public:
         maxMessageSize. */
     void send(const NetAddress& a, const NetMessage* m);
 
+    template<typename T> inline void send(const NetAddress& a, uint32 type, const T& msg) {
+        binaryOutput.reset();
+        serializeMessage(type, m, binaryOutput);
+        sendBuffer(a, binaryOutput);
+    }
+
+    /** Send the same message to multiple addresses (only serializes once).
+        Useful when server needs to send to a known list of addresses
+        (unlike direct UDP broadcast to all addresses on the subnet) 
+        @deprecated*/
+    void send(const Array<NetAddress>& a, const NetMessage* m);
+
     /** Send the same message to multiple addresses (only serializes once).
         Useful when server needs to send to a known list of addresses
         (unlike direct UDP broadcast to all addresses on the subnet) */
-    void send(const Array<NetAddress>& a, const NetMessage* m);
+    template<typename T> inline void send(const Array<NetAddress>& a, uint32 type, const T& m) {
+        binaryOutput.reset();
+        serializeMessage(type, m, binaryOutput);
 
+        for (int i = 0; i < array.size(); ++i) {
+            sendBuffer(array[i], binaryOutput);
+        }
+    }
+
+
+    /** @deprecated*/
     inline void send(const Array<NetAddress>& a, const NetMessage& m) {
         send(a, &m);
     }
@@ -597,6 +647,7 @@ public:
         send(a, NULL);
     }
 
+    /** @deprecated Use send(address, type, message) */
     inline void send(const NetAddress& a, const NetMessage& m) {
         send(a, &m);
     }
@@ -611,6 +662,31 @@ public:
         deserialized.
     */
     bool receive(NetMessage* m, NetAddress& sender);
+
+    template<typename T> inline bool receive(NetAddress& sender, T& message) {
+        // This both checks to ensure that a message was waiting and
+        // actively consumes the message from the network stream if
+        // it has not been read yet.
+        uint32 t = waitingMessageType();
+        if (t == 0) {
+            return false;
+        }
+
+        sender = messageSender;
+        alreadyReadMessage = false;
+
+        if (messageBuffer.size() < 4) {
+            // Something went wrong
+            return false;
+        }
+
+        BinaryInput b((messageBuffer.getCArray() + 4), 
+                      messageBuffer.size() - 4, 
+                      G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
+        m.deserialize(b);
+
+        return true;
+    }
 
     inline bool receive(NetMessage& m, NetAddress& sender) {
         return receive(&m, sender);

@@ -23,7 +23,7 @@
 #include <G3DAll.h>
 
 /** Change this constant to build a test for ReliableConduit */
-static const bool reliable = true;
+static const bool reliable = false;
 
 static const std::string clientGreeting = "hello, server";
 static const std::string serverResponse = "hello, client";
@@ -84,7 +84,6 @@ public:
 
 
 void lightweightServer() {
-    /*
     // Print our network address
  
    	Array<NetAddress> localAddr;
@@ -115,7 +114,7 @@ void lightweightServer() {
         case PingMessage_MSG:
             {
                 PingMessage greeting;
-                conduit->receive(greeting, clientAddress);
+                conduit->receive(clientAddress, greeting);
                 debugAssert(conduit->ok());
                 printf("  Received \"%s\" from %s\n",
                        greeting.text.c_str(),
@@ -126,7 +125,7 @@ void lightweightServer() {
                        serverResponse.c_str(),
                        clientAddress.toString().c_str());
                 debugAssert(conduit->ok());
-                conduit->send(clientAddress, PingMessage(serverResponse));
+                conduit->send(clientAddress, PingMessage_MSG, PingMessage(serverResponse));
                 printf("sent.\n\n");
                 debugAssert(conduit->ok());
             }
@@ -139,7 +138,6 @@ void lightweightServer() {
                    conduit->waitingMessageType());
         }
     }
-    */
 }
 
 
@@ -200,7 +198,6 @@ void reliableServer() {
 
 
 void lightweightClient(const std::string& server) {
-/*
     LightweightConduitRef conduit =
         networkDevice.createLightweightConduit();
 
@@ -209,7 +206,7 @@ void lightweightClient(const std::string& server) {
     printf("  Sending \"%s\" to %s...", 
            clientGreeting.c_str(),
            serverAddress.toString().c_str());
-    conduit->send(serverAddress, PingMessage(clientGreeting));
+    conduit->send(serverAddress, PingMessage_MSG, PingMessage(clientGreeting));
     printf("sent.\n");
     debugAssert(conduit->ok());
     
@@ -223,14 +220,14 @@ void lightweightClient(const std::string& server) {
 
     PingMessage response;
     NetAddress responseAddress;
-    conduit->receive(response, responseAddress);
+    conduit->receive(responseAddress, response);
     debugAssert(serverAddress == responseAddress);
 
     printf("  Server responded with \"%s\".\n\n",
            response.text.c_str());
     debugAssert(response.text == serverResponse);
-*/
 }
+
 
 void reliableClient(const std::string& server) {
 
