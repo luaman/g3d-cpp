@@ -1,4 +1,4 @@
-// Copyright 2000-2003, Morgan McGuire.
+// Copyright 2000-2004, Morgan McGuire.
 // All rights reserved.
 //
 //   This library is recommended for use with the textbook:

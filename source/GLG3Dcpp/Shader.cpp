@@ -382,7 +382,7 @@ void ShaderGroup::bindArgList(RenderDevice* rd, const ArgList& args) const {
         case GL_FLOAT_MAT3_ARB:
             {
                 float m[9];
-                for (int i = 0, int c = 0; c < 3; ++c) {
+                for (int i = 0, c = 0; c < 3; ++c) {
                     for (int r = 0; r < 3; ++r, ++i) {
                         m[i] = value.vector[r][c];
                     }
@@ -394,7 +394,7 @@ void ShaderGroup::bindArgList(RenderDevice* rd, const ArgList& args) const {
         case GL_FLOAT_MAT4_ARB:
             {
                 float m[9];
-                for (int i = 0, int c = 0; c < 4; ++c) {
+                for (int i = 0, c = 0; c < 4; ++c) {
                     for (int r = 0; r < 4; ++r, ++i) {
                         m[i] = value.vector[r][c];
                     }
