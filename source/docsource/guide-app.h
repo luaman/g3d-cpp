@@ -8,16 +8,52 @@ Debugging</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 Vertex Arrays <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
-    This section isn't complete yet.  Follow the links below for more information.
+ @section Introduction
 
- @section applets Applets
- Optional!  Easiest way to get a program up and running.  Expert users may want
- to forgo the framework and create a G3D::RenderDevice and other components manually.
+G3D::GApp is an application-starter class. To easily create a %G3D application, make a subclass of
+G3D::GApp, which handles any state shared between all pieces of your program. 
+
+A G3D::GApplet is a usable <em>but not standalone</em> component of your application. Each GApplet corresponds to a 
+different major UI state. For example, the main menu of a game is one GApplet, and the actual 
+game screen is another. If you have a big, modal in-game menu, that can be another GApplet.
+(A GApplet is <em>not</em> like a Java applet. A Java applet is a little application, but complete, and standalone,
+while a GApplet is neither complete nor standalone.)
+
+You may create one or more GApplet subclasses and instantiate them at the beginning of the program. Typically, 
+they will be stored in your GApp subclass. You do not need to use GApplet's, however; you can just use GApp,
+if your application isn't too complex.
+
+You write code that calls G3D::GApplet::run on the current GApplet. That applet releases control by setting 
+GApplet::endApplet = true. Your master loop (implemented inside the G3D::GApp::main) then chooses the next 
+GApplet to run and invokes run() on it. If anything sets G3D::GApp::endProgram to true, the entire 
+program should quit. 
+
+@section gapps GApp and GAppSettings
+
+GApp contains a lot of functionality that might make your life easier or better! In particular,
+look at G3D::GWindowSettings for lots of rendering controls. G3D::GApp's construct takes an optional 
+G3D::GAppSettings argument, whose window attribute is an instance of G3D::GWindowSettings. To turn on 
+full-screen anti-aliasing, use G3D::GWindowSettings.fsaaSamples. You can even turn on stereo 
+with G3D::GWindowSettings.stereo, set where the window should initially appear with G3D::GWindowSettings.stereo.x, 
+or set the window to start up as full-screen with G3D::GWindowSettings.fullscreen. 
+
+GApp also gives you a camera with keyboard controls (a, s, d, w) and mouse controls 
+(left-mouse-button to look around), which you can use before you've written your own 
+camera/navigation controls. SeeG3D::GApp::debugCamera. You also get an easy way to exit -- just hit escape. 
+
+@section applets Applets
 
  G3D::GApp, G3D::GApplet,
  G3D::GAppSettings, G3D::GWindowSettings
 
-  @section models Models
+@section ornotgapp Or Not!
+
+The G3D::GApp classes are provisional: the interface is likely to change. You don't have to use them; 
+it is fine to instantiate G3D::RenderDevice and the other classes yourself. See 
+<A HREF="../demos/main-no-Gapp.cpp">demos/main-no-GApp.cpp</A> for an example
+of how to <em>not</em> use GApp.
+
+ @section models Models
   
   @section selection Selection
    
