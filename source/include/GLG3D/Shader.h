@@ -170,29 +170,20 @@ public:
 
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/shader_objects.txt
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_shader.txt
-
-  <B>BETA API</B>
-  This API is subject to change.
  */
 class ShaderGroup : public ReferenceCountedObject {
 public:
 
     class UniformDeclaration {
     public:
-        /** Name of the variable.  May include [] and . (e.g.
-            "foo[1].normal")*/
         std::string         name;
-
-        /** OpenGL type of the variable (e.g. GL_INT) */
         GLenum              type;
-
-        /** Unknown... appears to always be 1 */
         int                 size;
 
         /**
          Index of the texture unit in which this value
          is stored.  -1 for uniforms that are not textures. */  
-        int                 textureUnit;
+        int                 sampler;
     };
 
 protected:

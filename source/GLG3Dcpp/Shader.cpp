@@ -178,7 +178,7 @@ void ShaderGroup::computeUniformArray() {
 
     GLcharARB* name = (GLcharARB *) malloc(maxLength * sizeof(GLcharARB));
     
-    int lastTextureUnit = -1;
+    int lastSampler = -1;
     // Loop over glGetActiveUniformARB and store the results away.
     for (int i = 0; i < uniformCount; ++i) {
 
@@ -193,10 +193,10 @@ void ShaderGroup::computeUniformArray() {
         uniformArray[i].type = type;
 
         if (isSamplerType(type)) {
-            ++lastTextureUnit;
-            uniformArray[i].textureUnit = lastTextureUnit;
+            ++lastSampler;
+            uniformArray[i].sampler = lastSampler;
         } else {
-            uniformArray[i].textureUnit = -1;
+            uniformArray[i].sampler = -1;
         }
     }
 
