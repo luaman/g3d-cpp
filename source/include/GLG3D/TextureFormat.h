@@ -52,12 +52,13 @@ public:
      Number of bits per texel storage for blue values; Zero for compressed textures.
      */
     int                 blueBits;
-    
-    /**
-     True if there is no alpha channel for this texture.
-     */
-    bool                opaque;
 
+    /**
+     Sum of the per-channel bits, plus any additional bits required
+     for byte alignment.
+     */
+    int                 packedBitsPerTexel;
+    
     /**
      This may be greater than the sum of the per-channel bits
      because graphics cards need to pad to the nearest 1, 2, or
@@ -65,11 +66,11 @@ public:
      */
     int                 hardwareBitsPerTexel;
 
+
     /**
-     Sum of the per-channel bits, plus any additional bits required
-     for byte alignment.
+     True if there is no alpha channel for this texture.
      */
-    int                 packedBitsPerTexel;
+    bool                opaque;
 
 private:
 
