@@ -742,6 +742,7 @@ void Draw::sphere(
 
 
 void Draw::fullScreenImage(const GImage& im, RenderDevice* renderDevice) {
+    debugAssert( im.channels == 3 || im.channels == 4 );
     renderDevice->push2D();
         glPixelZoom((float)renderDevice->getWidth() / (float)im.width, 
                    -(float)renderDevice->getHeight() / (float)im.height);
