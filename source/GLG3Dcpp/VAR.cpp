@@ -21,11 +21,11 @@ VAR::VAR() : _pointer(NULL), elementSize(0), numElements(0), generation(0), unde
 
 bool VAR::valid() const {
     return
-        (! _area.isNull()) && 
-        (_area->generation == generation) &&
+        (! area.isNull()) && 
+        (area->generation == generation) &&
         // If we're in VBO_MEMORY mode, the pointer can be null.  Otherwise
         // it shouldn't be
-        (VARArea::mode == VARArea::VBO_MEMORY || _pointer)
+        (VARArea::mode == VARArea::VBO_MEMORY || _pointer);
 }
 
 
