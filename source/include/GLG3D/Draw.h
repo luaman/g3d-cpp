@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-01-10
+ @edited  2004-02-06
  */
 
 #ifndef G3D_DRAW_H
@@ -26,6 +26,10 @@ class Line;
 class Capsule;
 
 /**
+ Useful routines for rendering primitives when debugging.  Compared
+ to the optimized RenderDevice::beginIndexedPrimitives calls used
+ by IFSModel, these routines are slow.
+
  When rendering translucent bounding objects, depth write is automatically
  disabled.  Render from back to front for proper transparency.
  */

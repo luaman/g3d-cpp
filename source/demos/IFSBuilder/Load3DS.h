@@ -394,7 +394,7 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
                                 c[i] = b.readFloat32();
                             }
 
-                            // Note that this transformation has already
+                            // Note that this transformation has *already*
                             // been applied to the vertices.
                        
                             objectArray[currentObject].cframe =

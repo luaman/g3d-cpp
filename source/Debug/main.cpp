@@ -246,12 +246,12 @@ public:
 
 
 void Demo::init()  {
-    sky = Sky::create(app->renderDevice, app->dataDir + "sky/","majestic512_*.jpg",false);
+    sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
 
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-    IFSModelRef cube   = IFSModel::create(app->dataDir + "ifs/knot.ifs");
+    IFSModelRef cube   = IFSModel::create("d:/libraries/g3d-6_01/data/ifs/buddha.ifs");
 
     entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }
@@ -331,18 +331,6 @@ void App::main() {
 
 int main(int argc, char** argv) {
 
-    GImage("doesnotexist.jpg");
-
-    /*
-    Ray ray = Ray::fromOriginAndDirection(Vector3(0,0,0), Vector3(0,0,-1));
-    Sphere sphere(Vector3::ZERO, 1);
-
-    double distance = ray.intersectionTime(sphere);
-
-    Vector3 refract =
-        Vector3(-cos(toRadians(45)), -sin(toRadians(45)), 0).
-        refractionDirection(Vector3::UNIT_Y, 1, 1);
-
     GAppSettings settings;
 
 	settings.window.resizable = true;
@@ -352,7 +340,6 @@ int main(int argc, char** argv) {
     app.setDebugMode(true);
     app.debugController.setActive(true);
     app.run();
-    */
 
     return 0;
 }

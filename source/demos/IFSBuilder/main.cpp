@@ -77,14 +77,9 @@ int main(int argc, char** argv) {
     camera.setNearPlaneZ(-.05);
     RealTime now = System::getTick() - 0.001, lastTime;
 
-//    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
-//    std::string in("c:/tmp/models/jackolantern1.3ds");
-//    std::string in("c:/tmp/diablo.3ds");
 
-//    std::string in("C:/tmp/load3ds2/title.3ds");
     std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
-//    std::string in("C:/Documents and Settings/morgan/Desktop/dropbox/teapots.3ds");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");
@@ -111,7 +106,7 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Mobius Strip with 3-Half Twists";
+        model->name = "Delorean";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");

@@ -6,48 +6,11 @@
       Major version numbers introduce API changes that are not backwards
    compatible.  Minor versions are backwards compatible to the
    previous major release.
-
-
-   <BLOCKQUOTE>
-	   <B>Tips for upgrading from 5.xx to 6.00:</B>
-	   <LI>G3D 6.00 requires no custom project settings!  If you have customized your project settings for version 5.xx,
-	       revert to the <B>default</B> Win32 linker list and uncheck
-		    "ignore default libraries"
-	   <LI>Change your library path from '.../lib' to '.../win32-lib' (or the name of your platform)
-	   <LI>Add the line <CODE>controller->setActive(true);</CODE> to your 
-	       G3D::ManualCameraController initialization process
-	   <LI>Add a G3D::UserInput pointer to the G3D::ManualCameraController
-	       constructor calls
-	   <LI>Delete ManualCameraControllers <B>before</B> UserInputs.
-	   <LI>Replace <CODE>new Font</CODE> with <CODE>CFont::fromFile</CODE>
-	   <LI>Replace <CODE>Font*</CODE> with <CODE>CFontRef</CODE> 
-	   <LI>Remove <CODE>delete font;</CODE>
-	   <LI>Replace <CODE>Font:::draw2DString(str, x, y, ...)</CODE> with <CODE>CFont:::draw2D(str, Vector2(x, y), ...)</CODE>
-	   <LI>Replace G3D::Sky constructor arguments of the form <CODE>"sky_ft.jpg"</CODE> with arguments of the form <CODE>"sky_*.jpg"</CODE>
-	   <LI>Replace v1.lerp(a, v2) with v1.lerp(v2, a)
-	   <LI>Replace clamp(L, x, H) with clamp(x, L, H)
-	   <LI>Replace iClamp(L, x, H) with iClamp(x, L, H)
-	   <LI>Replace G3D::PI with G3D_PI
-	   <LI>Replace G3D::HALF_PI with G3D_HALF_PI
-	   <LI>Replace G3D::TWO_PI with G3D_TWO_PI
-	   <LI>Replace RenderDevice::init(w, h, log, ...) with RenderDevice::init(RenderDeviceSettings(w, h, ...), log)
-	   <LI>Supply the option TextInput::Options::signedNumbers = false to retain 5.01 number parsing rules
-	   <LI>Replace RenderDevice::debugDrawXXX with Draw::XXX
-	   <LI>Replace <CODE>new Sky(rd, name, ...)</CODE> with <CODE>Sky::create(rd, ...)</CODE>
-	   <LI>Replace <CODE>Sky*</CODE> with <CODE>SkyRef</CODE>
-	   <LI>Remove <CODE>delete sky;</CODE>
-	   <LI>Change <CODE>renderDevice->setProjectionMatrix3D(...)</CODE> to <CODE>renderDevice->setProjectionMatrix(Matrix4::perspectiveProjection(...))</CODE> 
-	   <LI>Change <CODE>renderDevice->configureDirectionalLight(i, ...)</CODE> to <CODE>renderDevice->setLight(..., GLight::directional())</CODE>
-	   <LI>Change <CODE>camera->setProjectionAndCameraMatrix()</CODE> to <CODE>renderDevice->setProjectionAndCameraMatrix(camera)</cODE>
-	   <LI>Camera -> GCamera
-	   <LI>CImage -> GImage
-	   <LI>CFont  -> GFont
-	   <LI>VARArea* -> VARAreaRef
-	   <LI><CODE>renderDevice->createVARArea(size)</CODE> to <CODE>VARArea::create(size)</CODE>
-	   <LI>Real -> float
-	   <LI>Copy <CODE>zlib1.dll</CODE> (note the "1" in the name) to your distribution directory (replaces zlib.dll)
-	   <LI>Replace all occurances of ".from" with " = Matrix::from"
-  </BLOCKQUOTE>
+   <P>
+   Changes in 6.00:
+   <UL>
+     <LI>  IFSModel now loads models with up to 10 million polygons (like the buddha)
+   </UL>
 
    <P>
    Changes in 6.00:

@@ -77,7 +77,7 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
             debugAssertM(geometry.vertexArray.size() == 0, "Multiple vertex fields!");
             uint32 num = bi.readUInt32();
 
-            if ((num <= 0) || (num > 1000000)) {
+            if ((num <= 0) || (num > 10000000)) {
                 throw std::string("Bad number of vertices");
             }
 
@@ -91,7 +91,7 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
             debugAssertM(faceArray.size() == 0, "Multiple triangle fields!");
             uint32 num = bi.readUInt32();
 
-            if ((num <= 0) || (num > 1000000)) {
+            if ((num <= 0) || (num > 10000000)) {
                 throw std::string("Bad number of triangles");
             }
 

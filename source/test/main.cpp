@@ -418,8 +418,6 @@ void measureMatrix3Performance() {
     printf("     transpose(A, C): %g cycles/mul\n\n", 
         (double)opt / (3*n));
     
-while(true);
-
     System::beginCycleCount(raw);
     for (i = n - 1; i >= 0; --i) {
         C = A * B;
@@ -912,7 +910,6 @@ int main(int argc, char* argv[]) {
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureMatrix3Performance();
-        while (true);
         measureArrayPerformance();
         measureMemcpyPerformance();
         measureMemsetPerformance();
