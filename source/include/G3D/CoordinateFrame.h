@@ -7,7 +7,7 @@
        at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-03-04
- @edited  2003-11-15
+ @edited  2003-12-18
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -168,12 +168,15 @@ public:
     void vectorToObjectSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;
 
     class Box toWorldSpace(const class Box& b) const;
+    class Plane toWorldSpace(const class Plane& p) const;
 
     class Sphere toWorldSpace(const class Sphere& b) const;
 
     class Triangle toWorldSpace(const class Triangle& t) const;
 
     class Box toObjectSpace(const Box& b) const;
+
+    class Plane toObjectSpace(const Plane& p) const;
  
     class Sphere toObjectSpace(const Sphere& b) const;
 

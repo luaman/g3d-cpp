@@ -20,6 +20,7 @@
 #include "G3D/Vector3.h"
 #include "G3D/Plane.h"
 #include "G3D/Triangle.h"
+#include "G3D/Array.h"
 
 namespace G3D {
 
@@ -63,6 +64,21 @@ private:
 
 public:
 
+    /**
+     Returns the penetration depth (negative if there is no penetration)
+     of the two spheres and a series of contact points.
+     */
+    static float penetrationDepthForFixedSphereFixedSphere(
+        const class Sphere&     sphereA,
+        const Sphere&           sphereB,
+        Array<Vector3>&         contactPoints,
+        Vector3&                outNormalA = ignore);
+    
+    static float penetrationDepthForFixedSphereFixedPlane(
+        const Sphere&           sphereA,
+        const class Plane&      planeB,
+        Array<Vector3>&         contactPoints,
+        Vector3&                outNormalA = ignore);
 
     /**
      Returns the amount of time until the point intersects the plane 

@@ -5,7 +5,7 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2003-04-05
+  @edited  2003-12-18
  */
 
 #include "G3D/CollisionDetection.h"
@@ -21,6 +21,49 @@
 namespace G3D {
 
 Vector3	CollisionDetection::ignore;
+
+float CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
+    const Sphere&           sphereA,
+    const Sphere&           sphereB,
+    Array<Vector3>&         contactPoints,
+    Vector3&                outNormalA) {
+
+    Vector3 axis = sphereB.center - sphereA.center;
+    double radius = sphereA.radius + sphereB.radius;
+    double len = axis.length();
+    double depth = -(len - radius);
+
+    if (depth >= 0) {
+        contactPoints.resize(1, DONT_SHRINK_UNDERLYING_ARRAY);
+        contactPoints[0] = sphereA.center + axis * (sphereA.radius - depth / 2);
+        outNormalA = axis / len;
+    }
+
+    return depth;
+}
+
+
+float CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
+    const Sphere&           sphereA,
+    const Plane&            planeB,
+    Array<Vector3>&         contactPoints,
+    Vector3&                outNormalA) {
+
+    Vector3 N;
+    double d;
+
+    planeB.getEquation(N, d);
+    
+    double depth = -(sphereA.center.dot(N) + d - sphereA.radius);
+
+    if (depth >= 0) {
+        contactPoints.resize(1, DONT_SHRINK_UNDERLYING_ARRAY);
+        contactPoints[0] = N * (-depth - d);
+        outNormalA = -N;
+    }
+
+    return depth;
+}
 
 
 float CollisionDetection::collisionTimeForMovingPointFixedPlane(

@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-11-17
+ @edited  2003-12-18
  */
 
 
@@ -708,6 +708,40 @@ void testglFormatOf() {
 void testCollision() {
     printf("CollisionDetection\n");
 
+
+    {
+        Sphere s(Vector3(0,1,0), 1);
+        Plane  p = Plane::fromEquation(0,1,0,0);
+        Array<Vector3> contact;
+        Vector3 outNormal;
+
+        float depth = CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
+            s, p, contact, outNormal);
+
+        debugAssert(outNormal == -p.normal());
+        debugAssert(depth == 0);
+
+        s = Sphere(Vector3(0,2,0), 1);
+
+        depth = CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
+            s, p, contact, outNormal);
+
+        debugAssert(depth < 0);
+    }
+
+    {
+        Sphere s(Vector3(0,1,0), 1);
+        Sphere r(Vector3(0,-.5,0), 1);
+        Array<Vector3> contact;
+        Vector3 outNormal;
+
+        float depth = CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
+            s, r, contact, outNormal);
+
+        debugAssert(outNormal == Vector3(0,-1,0));
+        debugAssert(depth == .5);
+    }
+
     {
         Sphere s(Vector3(5, 0, 0), 1);
         Sphere f(Vector3(4.5, 0, 0), 1);
@@ -763,6 +797,7 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    /*
     testRCP();
     printf("  passed\n");
     testFloat();
@@ -781,14 +816,16 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
     testBox();    
     printf("  passed\n");
+    */
     testCollision();    
     printf("  passed\n");
+    /*
     testColor3uint8Array();
     printf("  passed\n");
     testglFormatOf();
     printf("  passed\n");
     testSwizzle();
-
+*/
     printf("\nAll tests succeeded.\n");
 	
     while(true);

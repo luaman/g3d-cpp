@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2003-11-15
+ @edited  2003-12-18
 */
 
 #include "G3D/CoordinateFrame.h"
@@ -40,6 +40,28 @@ std::string CoordinateFrame::toXML() const {
 
     std::string s = buffer;
     return s;
+}
+
+
+Plane CoordinateFrame::toObjectSpace(const Plane& p) const {
+    Vector3 N, P;
+    double d;
+    p.getEquation(N, d);
+    P = N * d;
+    P = pointToObjectSpace(P);
+    N = normalToObjectSpace(P);
+    return Plane(N, P);
+}
+
+
+Plane CoordinateFrame::toWorldSpace(const Plane& p) const {
+    Vector3 N, P;
+    double d;
+    p.getEquation(N, d);
+    P = N * d;
+    P = pointToWorldSpace(P);
+    N = normalToWorldSpace(P);
+    return Plane(N, P);
 }
 
 
