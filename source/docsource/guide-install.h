@@ -8,7 +8,7 @@ License</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
-  @section windows WindowsXP/2000</B>
+  @section windows WindowsXP/2000
 
    <OL>
    <LI>
@@ -20,27 +20,38 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
    <LI>Download and install SDL <B>version 1.2.7</B> from
    <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>
 
-   <LI>Ensure that you are using MSVC++ 6.0 with <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A> (Service pack 6 does not 
-   support the processor pack) and
-   the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.  If you are using
-   VS .NET you must recompile the library because Microsoft changed the standard library (you'll get memory leaks if you don't!).
+   <LI>Microsft Visual C++ 6.0 and Microsoft Visual C++ 7.0 (which comes as part of Microsoft Visual Studio .NET 2002 and 2003) 
+	require different versions of the library, and a few different installation steps. Precompiled binaries for MSVC 6 are located
+	in win32-lib and precompiled binaries for MSVC 7 are in win32-lib7. Figure out which one you're using, and point to the right
+	G3D binaries, or you will have strange trouble, including linker errors and memory leaks. 
+   </LI>
 
+   <LI>
+   If you're using MSVC 6:
+   <OL>
+   <LI>Install 
+   <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A>. 
+   (Service pack 6 does not support the processor pack) 
+   </LI>
+   <LI>Install the 
+   <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.
+   </LI>
    <LI>(<I>Optional</I>) Add the following lines to your Autoexp.dat file (usually in <CODE>C:\\Program Files\\Microsoft
    Visual Studio\\Common\\MSDev98\\Bin</CODE>): 
 
 <PRE> ;; graphics3D
-   G3D::Quat=Quat(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
-   G3D::Vector4=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
-   G3D::Vector3=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
-   G3D::Vector2=Vector2(&lt;x&gt;,&lt;y&gt;)
-   G3D::Vector4int16=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
-   G3D::Vector3int16=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
-   G3D::Vector2int16=Vector2(&lt;x&gt;,&lt;y&gt;)
-   G3D::Color4=Color4(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
-   G3D::Color3=Color3(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
-   G3D::Color4uint8=Color4uint8(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
-   G3D::Color3uint8=Color3uint8(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
-   G3D::NetAddress=NetAddress(&lt;addr.sin_addr.S_un.S_un_b.s_b1,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b2,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b3,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b4,u&rt;)
+   %G3D::Quat=Quat(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
+   %G3D::Vector4=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
+   %G3D::Vector3=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
+   %G3D::Vector2=Vector2(&lt;x&gt;,&lt;y&gt;)
+   %G3D::Vector4int16=Vector4(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;,&lt;w&gt;)
+   %G3D::Vector3int16=Vector3(&lt;x&gt;,&lt;y&gt;,&lt;z&gt;)
+   %G3D::Vector2int16=Vector2(&lt;x&gt;,&lt;y&gt;)
+   %G3D::Color4=Color4(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
+   %G3D::Color3=Color3(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
+   %G3D::Color4uint8=Color4uint8(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;,&lt;a&gt;)
+   %G3D::Color3uint8=Color3uint8(&lt;r&gt;,&lt;g&gt;,&lt;b&gt;)
+   %G3D::NetAddress=NetAddress(&lt;addr.sin_addr.S_un.S_un_b.s_b1,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b2,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b3,u&rt;.&lt;addr.sin_addr.S_un.S_un_b.s_b4,u&rt;)
 
    ;; Prevent stepping into certain functions
     [ExecutionControl]
@@ -57,6 +68,18 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
    the directory is linux-lib and on OS/X it is osx-lib.) to the library
    list.
    <LI>
+
+   </OL>
+   </LI>
+
+   <LI>If you're using VC7:
+   Go to Tools:Options. Select the Projects heading, and within that heading, Visual C++
+   Directories. In that panel, select "Show Directories For: Include files." Add the %G3D
+   include directory, G3D_ROOT/include, and the SDL include directory, probably C:/SDL-1.2.7/include
+   In the same panel, select "Show Directories For: Library Files."
+   Add the %G3D library directory, G3D_ROOT/win32-7-lib.
+   </LI>
+
    <B>For each project you create</B>, copy <CODE>SDL.dll</CODE>, <CODE>glut32.dll</CODE>, 
       and <CODE>zlib1.dll</CODE>
       to your program directory (or put them in Windows/System)
@@ -114,6 +137,21 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
   @section osx OS X
 
   @section build Building G3D
+
+  You don't have to build %G3D to use %G3D; the instructions above walk you through 
+  setting up your environment to use the precompiled %G3D binaries. You may <EM>want</em>
+  to build %G3D, in which case, we salute you! Reasons for wanting to build %G3D include...
+  <UL>
+  <LI>Stepping into library functions while debugging
+  </LI>
+  <LI>Using an unsupported compiler
+  </LI>
+  <LI>Customize the library code.
+  </LI>
+  </UL>
+
+  To build %G3D, see the <A HREF="build-instructions.html">build instructions</A>.
+  
    \section defines \#defines
     G3D pays attention to the following #defines.
    <P>
