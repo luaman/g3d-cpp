@@ -261,9 +261,7 @@ void wxG3DCanvas::handleKeyUp(wxKeyEvent& event)
     e.key.type = SDL_KEYUP;
     e.key.state = SDL_RELEASED;
     
-    if ((event.KeyCode() >= 'a') && (event.KeyCode() <= 'z')) {
-        e.key.keysym.sym = (SDLKey)event.KeyCode();
-    } else if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
+    if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
         e.key.keysym.sym = (SDLKey)event.KeyCode();
     } else {
         if (sdlKeyMap.containsKey(event.KeyCode())) {
@@ -299,9 +297,7 @@ void wxG3DCanvas::handleKeyDown(wxKeyEvent& event)
     e.key.type = SDL_KEYDOWN;
     e.key.state = SDL_PRESSED;
     
-    if ((event.KeyCode() >= 'a') && (event.KeyCode() <= 'z')) {
-        e.key.keysym.sym = (SDLKey)event.KeyCode();
-    } else if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
+    if ((event.KeyCode() >= 'A') && (event.KeyCode() <= 'Z')) {
         e.key.keysym.sym = (SDLKey)event.KeyCode();
     } else {
         if (sdlKeyMap.containsKey(event.KeyCode())) {
