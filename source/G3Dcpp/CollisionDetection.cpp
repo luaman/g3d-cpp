@@ -1125,17 +1125,20 @@ bool CollisionDetection::isPointInsideTriangle(
     #define AREA2(d, e, f)  (((e)[i] - (d)[i]) * ((f)[j] - (d)[j]) - ((f)[i] - (d)[i]) * ((e)[j] - (d)[j]))
 
     // Area of the polygon
-    float area = AREA2(v0, v1, v2);
+    double  area = AREA2(v0, v1, v2);
+    if (area == 0) {
+        return (v0 == point);
+    }
 
     debugAssert(area != 0);
 
-    float a = AREA2(point, v1, v2) / area;
+    double a = AREA2(point, v1, v2) / area;
 
     if (a < 0) {
         return false;
     }
 
-    float b = AREA2(v0,  point, v2) / area;
+    double b = AREA2(v0,  point, v2) / area;
 
     if ((b < 0) || ((1 - (a + b)) < 0)) {
         return false;
