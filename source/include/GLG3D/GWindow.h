@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-04-26
+  @edited  2004-04-27
 */
 
 #ifndef G3D_GWINDOW_H
@@ -77,7 +77,25 @@ This proposal is backwards compatible to the 6.00 API since everything will
 default to SDLWindow.  
  */
 class GWindow {
+private:
+
+    Array<void(*)(void*)>       loopBodyStack;
+    Array<void*>                loopArgStack;
+
+protected:
+
+    bool notDone() {
+        return loopBodyStack.size() > 0;
+    }
+
+    void executeLoopBody() {
+        if (loopBodyStack.last() != NULL) {
+            loopBodyStack.last()(loopArgStack.last());
+        }
+    }
+
 public:
+
     /** Closes the window and frees any resources associated with it.
         When subclassing, put any shutdown code (e.g. SDL_Quit()) in 
         your destructor.  Put initialization code (e.g. SDL_Init()) in
@@ -205,7 +223,7 @@ public:
     /** Windows for which this is true require a program
         to hand control of the main loop to GWindow::startMainLoop.
         The program's functionality may then be implemented through
-        the idleCallback and graphicsCallback.
+        the "loop body" function.
     
         That is, if requiresMainLoop returns true, you must use
         the following structure:
@@ -224,16 +242,19 @@ public:
               renderDevice->endFrame();
            }
 
-           void callback() {
+           void loopBody(void*) {
               // all per-frame code; event-handling, physics, networking, AI, etc.
               doEvents();
               doLogic();
               doNetwork();
               doAI();
               doGraphics();
+
+              // To end the program, invoke window->popLoopBody
            }
 
-           window->startMainLoop(callback); // doesn't return
+           window->pushLoopBody(callback, NULL);
+           window->runMainLoop(); // doesn't return
         </PRE>
 
         When requiresMainLoop returns false, you may use either the
@@ -257,6 +278,17 @@ public:
         return false;
     }
 
+    /** Pushes a function onto the stack of functions called by runMainLoop */
+    virtual void pushLoopBody(void (*body)(void*), void* arg) {
+        loopBodyStack.push(body);
+        loopArgStack.push(arg);
+    }
+
+    virtual void popLoopBody() {
+        loopBodyStack.pop();
+        loopArgStack.pop();
+    }
+
     /**
      Executes an event loop, invoking callback repeatedly.  Put everything
      that you want to execute once per frame into the callback function.
@@ -264,21 +296,22 @@ public:
      from the callback function.
      
      The default implementation (for requiresMainLoop() == false GWindows)
-     just calls the callback continuously.
+     just calls the callback continuously.  Subclasses should use the
+     notDone() and executeLoopBody() functions.
      */
-    virtual void runMainLoop(void (*callback)(void)) {
+    virtual void runMainLoop() {
         
         alwaysAssertM(requiresMainLoop() == false,
             "This GWindow implementation failed to overwrite runMainLoop "
             "even though it requires a main loop.");
 
-        while (true) {
-            callback();
+        while (notDone()) {
+            executeLoopBody();
         }
     }
 
 };
 
-} // namespace
+}
 
 #endif

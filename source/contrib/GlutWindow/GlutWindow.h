@@ -15,9 +15,9 @@
 #include <GL/glut.h>
 
 
+
 /**
-  GWindow that uses the glut API
-  http://www.opengl.org/resources/libraries/glut/spec3/spec3.html.
+ GWindow that uses the glut API http://www.opengl.org/resources/libraries/glut/spec3/spec3.html.
 
   Not supported by GlutWindow:
   <UL>
@@ -73,7 +73,7 @@ private:
     static void g_keyboardspecialup(int key, int x, int y);
     static void g_mousemotion(int x, int y);
     static void g_mousebtn(int b, int s, int x, int y);
-    static void g_idle();
+    static void g_draw();
 
 public:
 
@@ -102,7 +102,7 @@ public:
         return true;
     }
 
-    virtual void runMainLoop(void (*callback)(void));
+    virtual void runMainLoop();
     virtual void setRelativeMousePosition(double x, double y);
     virtual void setRelativeMousePosition(const Vector2& p);
     virtual void getRelativeMouseState(Vector2& position, uint8& mouseButtons) const;

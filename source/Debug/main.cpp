@@ -13,7 +13,6 @@
 
 #include <G3DAll.h>
 
-
 #if G3D_VER != 60300
     #error Requires G3D 6.03
 #endif
@@ -81,7 +80,7 @@ private:
     static void g_keyboardspecialup(int key, int x, int y);
     static void g_mousemotion(int x, int y);
     static void g_mousebtn(int b, int s, int x, int y);
-    static void g_idle();
+    static void g_draw();
 
 public:
 
@@ -110,7 +109,7 @@ public:
         return true;
     }
 
-    virtual void runMainLoop(void (*callback)(void));
+    virtual void runMainLoop();
     virtual void setRelativeMousePosition(double x, double y);
     virtual void setRelativeMousePosition(const Vector2& p);
     virtual void getRelativeMouseState(Vector2& position, uint8& mouseButtons) const;
@@ -130,9 +129,15 @@ void GlutWindow::postEvent(GEvent& evt) {
     eventQueue.pushBack(evt);
 }
 
-void GlutWindow::g_idle() {
-    // Request another redisplay
-    glutPostRedisplay();
+void GlutWindow::g_draw() {
+    if (currentGlutWindow->notDone()) {
+        currentGlutWindow->executeLoopBody();
+
+        // Request another redisplay
+        glutPostRedisplay();
+    } else {
+        exit(0);
+    }
 }
 
 
@@ -367,19 +372,11 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
     glutMotionFunc(g_mousemotion);
     glutPassiveMotionFunc(g_mousemotion);
     glutMouseFunc(g_mousebtn);
-    glutIdleFunc(g_idle);
-
-    // Make sure SDL is initialized
-    if (SDL_WasInit(SDL_INIT_EVERYTHING) == 0) {
-        // Initialize SDL
-        SDL_Init(0);
-    }
+    glutDisplayFunc(g_draw);
 }
 
 
-void GlutWindow::runMainLoop(void (*callback)(void)) {
-    debugAssert(callback != NULL);
-    glutDisplayFunc(callback);
+void GlutWindow::runMainLoop() {
     glutMainLoop();
 }
 
@@ -533,7 +530,9 @@ void GlutWindow::getRelativeMouseState(double& x, double& y, uint8& b) const {
     b = mouseButtons;
 }
 
-void GlutWindow::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {}
+
+void GlutWindow::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
+}
 
 
 void GlutWindow::setInputCapture(bool c) {
@@ -549,7 +548,7 @@ void GlutWindow::setMouseVisible(bool b) {
     if (b != _mouseVisible) {
         _mouseVisible = b;
         if (_mouseVisible) {
-            glutSetCursor(GLUT_CURSOR_INHERIT );
+            glutSetCursor(GLUT_CURSOR_INHERIT);
         } else {
             glutSetCursor(GLUT_CURSOR_NONE);
         }
@@ -562,6 +561,9 @@ bool GlutWindow::mouseVisible() const {
 }
 
 #endif
+
+
+
 
 class App : public GApp {
 protected:
@@ -671,7 +673,7 @@ void Demo::doGraphics() {
 Demo* demo;
 App* app;
 
-void callback() {
+void callback(void*) {
     demo->oneFrame();
 }
 
@@ -685,7 +687,8 @@ void App::main() {
     // TODO: remove
     demo = new Demo(this);    
     demo->beginRun();
-    window()->runMainLoop(callback);
+    window()->pushLoopBody(callback, NULL);
+    window()->runMainLoop();
     demo->endRun();
     
     //Demo(this).run();

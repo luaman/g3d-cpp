@@ -11,9 +11,15 @@ void GlutWindow::postEvent(GEvent& evt) {
     eventQueue.pushBack(evt);
 }
 
-void GlutWindow::g_idle() {
-    // Request another redisplay
-    glutPostRedisplay();
+void GlutWindow::g_draw() {
+    if (currentGlutWindow->notDone()) {
+        currentGlutWindow->executeLoopBody();
+
+        // Request another redisplay
+        glutPostRedisplay();
+    } else {
+        exit(0);
+    }
 }
 
 
@@ -248,19 +254,11 @@ GlutWindow::GlutWindow(const GWindowSettings& s) {
     glutMotionFunc(g_mousemotion);
     glutPassiveMotionFunc(g_mousemotion);
     glutMouseFunc(g_mousebtn);
-    glutIdleFunc(g_idle);
-
-    // Make sure SDL is initialized
-    if (SDL_WasInit(SDL_INIT_EVERYTHING) == 0) {
-        // Initialize SDL
-        SDL_Init(0);
-    }
+    glutDisplayFunc(g_draw);
 }
 
 
-void GlutWindow::runMainLoop(void (*callback)(void)) {
-    debugAssert(callback != NULL);
-    glutDisplayFunc(callback);
+void GlutWindow::runMainLoop() {
     glutMainLoop();
 }
 
@@ -414,7 +412,9 @@ void GlutWindow::getRelativeMouseState(double& x, double& y, uint8& b) const {
     b = mouseButtons;
 }
 
-void GlutWindow::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {}
+
+void GlutWindow::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
+}
 
 
 void GlutWindow::setInputCapture(bool c) {
@@ -430,7 +430,7 @@ void GlutWindow::setMouseVisible(bool b) {
     if (b != _mouseVisible) {
         _mouseVisible = b;
         if (_mouseVisible) {
-            glutSetCursor(GLUT_CURSOR_INHERIT );
+            glutSetCursor(GLUT_CURSOR_INHERIT);
         } else {
             glutSetCursor(GLUT_CURSOR_NONE);
         }

@@ -53,9 +53,9 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
     }
 
     _window = renderDevice->window();
-    alwaysAssertM(! _window->requiresMainLoop(),
-        "GApp cannot be used with a GWindow that requires "
-        "control of the main loop.  Use another GWindow (like SDLWindow).");
+//    alwaysAssertM(! _window->requiresMainLoop(),
+//        "GApp cannot be used with a GWindow that requires "
+//        "control of the main loop.  Use another GWindow (like SDLWindow).");
 
     if (settings.useNetwork) {
         networkDevice = new NetworkDevice();
