@@ -146,6 +146,14 @@ etc...
 
 Odds are you're linking against the wrong version of the libraries. Current G3D distributions include two versions of windows libraries. For MSVC version 6, the libraries reside in win32-lib, and  for version 7.0 (MSVC dot net) win32-lib7. Note there are TWO MSVC "dot net" versions, 7.0 (2002) and 7.1 (2003). They are incompatible with each other. If you have the latest 7.1 version, or any more recent version (such as the free Visual C++ 2005 Express Beta) you will need to build the libraries on your own.
 
+<P><B>G3D-debug.lib(jutils.obj) : fatal error LNK1202: "vc60.pdb" is missing debugging information for referencing module</B><P>
+That means you are using a build that was created with debugging info, but you don't have the program database (pdb) that was built with it.  The most common cause is using G3D on a different machine than the one on which you compiled G3D.
+<P>
+There are three solutions:<P>
+1. Build G3D on your local machine<P>
+2. Build G3D without debug info (Project:Settings:C++:Debug Info)<P>
+3. Use an official G3D build, since they are created without debug info.
+
 <P><B>Building with Visual C++ 2005 Express Beta</B><P>
 To build G3D with Microsoft's free compiler, you will need to link against Windows platform libraries not included with the software. Specifically, user32.lib and gdi32.lib are included in the Windows Core SDK.
 
