@@ -974,6 +974,9 @@ private:
      */
     bool                            inPrimitive;
 
+    /** True while invoking a Shader's methods */
+    bool                            inShader;
+
 	bool						    inIndexedPrimitive;
 
     int                             _numTextureUnits;

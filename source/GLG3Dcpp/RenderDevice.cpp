@@ -71,6 +71,7 @@ RenderDevice::RenderDevice() : _window(NULL), deleteWindow(false) {
 
     _initialized = false;
     inPrimitive = false;
+    inShader = false;
     _numTextureUnits = 0;
     _numTextures = 0;
     _numTextureCoords = 0;
@@ -679,6 +680,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     vertexAndPixelShader        = NULL;
 	objectShader				= NULL;
+    shader                      = NULL;
     vertexProgram               = NULL;
     pixelProgram                = NULL;
 
@@ -835,6 +837,7 @@ void RenderDevice::setState(
 
     setVertexAndPixelShader(newState.vertexAndPixelShader);
 	setObjectShader(newState.objectShader);
+    setShader(newState.shader);
 
     if (supportsVertexProgram()) {
         setVertexProgram(newState.vertexProgram);
@@ -865,14 +868,20 @@ void RenderDevice::runObjectShader() {
 
 void RenderDevice::beforePrimitive() {
 	if (! state.shader.isNull()) {
+        debugAssert(! inShader);
+        inShader = true;
 		state.shader->beforePrimitive(this);
+        inShader = false;
 	}
 }
 
 
 void RenderDevice::afterPrimitive() {
 	if (! state.shader.isNull()) {
-		state.shader->afterPrimitive(this);
+        debugAssert(! inShader);
+		inShader = true;
+        state.shader->afterPrimitive(this);
+        inShader = false;
 	}
 }
 
@@ -1469,6 +1478,14 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
         debugAssertM(false, "Fell through switch");
         return GL_KEEP;
     }
+}
+
+
+void RenderDevice::setShader(const ShaderRef& s) {
+    debugAssertM(! inShader, "Cannot set the Shader from within a Shader!");
+	if (s != state.shader) {
+		state.shader = s;
+	}
 }
 
 

@@ -431,10 +431,12 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
 typedef ReferenceCountedPointer<class SimpleShader> SimpleShaderRef;
 
 /**
- A Shader is a set of fixed function or programmable state that 
- is set immediately before primitives are rendered, commonly 
- to simulate a given material, e.g., "Glass", 
- "Parallax Bump Mapping", or "Cook-Torrance Reflection".
+ A Shader configures a RenderDevice immediately before primitives are rendered, 
+ commonly to simulate a given material, e.g., "Glass", "Parallax Bump Mapping",
+ "Cook-Torrance Reflection", or rendering pass of a larger algorithm, e.g., 
+ "Shadow Map Generation". 
+
+ Shaders are a higher level of abstraction than other RenderDevice state.
 
  Create Shaders once at the beginning of your program.  Shaders can be
  selected using RenderDevice::setShader().
@@ -505,16 +507,23 @@ class Shader : public ReferenceCountedObject {
 public:
 	/**
 	 Invoked by RenderDevice immediately before a primitive group.
-	 Use this to set state on the RenderDevice (including the underlying
+	 Override to set state on the RenderDevice (including the underlying
      vertex and pixel shader).
+
+     Do not call RenderDevice::setShader from this routine.
 	 */
-    virtual void beforePrimitive(class RenderDevice* renderDevice) = 0;
+    virtual void beforePrimitive(class RenderDevice* renderDevice) {}
 
-    virtual void afterPrimitive(class RenderDevice* renderDevice) = 0;
+    virtual void afterPrimitive(class RenderDevice* renderDevice) {}
 
-    virtual const std::string& messages() const = 0;
+    virtual const std::string& messages() const {
+        static std::string s;
+        return s;
+    }
 
-    virtual bool ok() const = 0;
+    virtual bool ok() const {
+        return true;
+    }
 };
 
 
