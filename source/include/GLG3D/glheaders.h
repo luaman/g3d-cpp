@@ -178,7 +178,6 @@ namespace G3D
 }
 #endif
 
-
 #ifndef GL_CLAMP_TO_BORDER_SGIS
 #define GL_CLAMP_TO_BORDER_SGIS           0x812D
 #endif
@@ -186,5 +185,6 @@ namespace G3D
 #ifndef  GL_TEXTURE_BINDING_3D
 #define  GL_TEXTURE_BINDING_3D   0x806A 
 #endif
+
 
 #endif

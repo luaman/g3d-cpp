@@ -4,11 +4,12 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Created by Morgan McGuire & Seth Block
   @created 2001-08-05
-  @edited  2003-12-09
+  @edited  2004-03-28
 */
 
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/GLCaps.h"
 #include "GLG3D/RenderDevice.h"
 
 namespace G3D {
@@ -229,7 +230,7 @@ static std::string getMatrixState() {
 
 static std::string getTextureState(bool showDisabled) {
 
-    if (! RenderDevice::supportsMultitexture()) {
+    if (! GLCaps::supports_GL_ARB_multitexture()) {
         return "//NO MULTITEXTURE\n";
     }
 

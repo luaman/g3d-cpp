@@ -110,6 +110,10 @@ SOURCE=.\GLG3Dcpp\glcalls.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\GLCaps.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\glenumtostring.cpp
 # End Source File
 # Begin Source File
@@ -223,6 +227,10 @@ SOURCE=.\include\GLG3D\GFont.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\glcalls.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\GLCaps.h
 # End Source File
 # Begin Source File
 

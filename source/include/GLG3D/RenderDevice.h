@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-02-28
+  @edited  2004-03-28
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -150,12 +150,6 @@ private:
      */
     uint32                      generation;
 
-    /**
-     The set of supported OpenGL extensions.
-     */
-    Set<std::string>            extensionSet;
-
-
     void setGamma(
         double                  brightness,
         double                  gamma);
@@ -173,37 +167,6 @@ private:
     double                      lightSaturation;
 
 	void setVideoMode();
-
-    /**
-     Initialize the OpenGL extensions.
-     */
-    void initGLExtensions();
-
-    /**
-     True if EXT_stencil_wrap is in the extension list.
-     */
-    bool                        stencilWrapSupported;
-
-    /**
-     True if GL_EXT_texture_rectangle is in the extension list.
-     */
-    bool                        textureRectangleSupported;
-
-    /**
-     True if GL_ARB_vertex_program is in the extension list.
-     */
-    bool                        _supportsVertexProgram;
-    bool                        _supportsNVVertexProgram2;
-
-    bool                        _supportsVertexBufferObject;
-    bool                        _supportsTwoSidedStencil;
-
-    /**
-     True if GL_ARB_fragment_program is in the extension list.
-     */
-    bool                        _supportsFragmentProgram;
-
-    static bool                 _supportsMultitexture;
 
     /**
      For counting the number of beginFrame/endFrames.
@@ -403,7 +366,7 @@ public:
         StencilOp                       zpass);
 
     /**
-     When RenderDevice::supportsTwoSidedStencil is true, separate
+     When GLCaps::GL_ARB_stencil_two_side is true, separate
      stencil operations can be used for front and back faces.  This
      is useful for rendering shadow volumes.
      */
@@ -727,7 +690,7 @@ public:
 
     /**
      Automatically enables vertex programs when they are set. 
-     Assumes supportsVertexProgram() is true.
+     Assumes GLCaps::supports_GL_ARB_vertex_program() is true.
      @param vp Set to NULL to use the fixed function pipeline.
      */
     void setVertexProgram(const VertexProgramRef& vp);
@@ -933,6 +896,9 @@ private:
 
 public:
 
+    /** @deprecated 
+      Use GLCaps::supports instead.
+     */
     bool supportsOpenGLExtension(const std::string& extension) const;
 
     /** Returns true if the given texture format is supported on this device.
@@ -942,51 +908,47 @@ public:
     /**
       When true, the 6-argument version of RenderDevice::setStencilOp
       can set the front and back operations to different values.
-      */
-    bool supportsTwoSidedStencil() const {
-        return _supportsTwoSidedStencil;
-    }
+
+      @deprecated 
+      Use GLCaps::supports_GL_ARB_stencil_two_side instead.
+     
+    */
+    bool supportsTwoSidedStencil() const;
 
     /**
      When true, Texture::DIM_2D_RECT textures can be created.
+     @deprecated
+     Use GLCaps::supports_GL_EXT_texture_rectangle instead.
      */
-    bool supportsTextureRectangle() const {
-        return textureRectangleSupported;
-    }
+    bool supportsTextureRectangle() const;
 
     /**
-     Returns true if glActiveTextureARB and similar are supported
-     on the last renderdevice initialized on this system.
-
-     <B>BETA API</B> This will eventually be a non-static method.
+     @deprecated
+     Use GLCaps::supports_GL_ARB_vertex_program instead.
      */
-    static bool supportsMultitexture() {
-        return _supportsMultitexture;
-    }
-
-    bool supportsVertexProgram() const {
-        return _supportsVertexProgram;
-    }
+    bool supportsVertexProgram() const;
 
     /**
      When true, NVIDIA Vertex Program 2.0 vertex programs can
      be loaded by VertexProgram.
+     @deprecated
+     Use GLCaps::GL_NV_vertex_program2 instead.
      */
-    bool supportsVertexProgramNV2() const {
-        return _supportsNVVertexProgram2;
-    }
+    bool supportsVertexProgramNV2() const;
 
-    bool supportsPixelProgram() const {
-        return _supportsFragmentProgram;
-    }
+    /**
+     @deprecated
+     Use GLCaps::supports_GL_ARB_fragment_program instead.
+     */
+    bool supportsPixelProgram() const;
 
     /**
      When true, VAR arrays will be in video, not main memory,
      and much faster.
+     @deprecated
+     Use GLCaps::supports_GL_ARB_vertex_buffer_object instead.
      */
-    bool supportsVertexBufferObject() const { 
-        return _supportsVertexBufferObject;
-    }
+    bool supportsVertexBufferObject() const;
 
     /**
      Returns a value that you should DIVIDE light intensities by

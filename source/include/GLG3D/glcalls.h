@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-03-12
+ @edited  2004-03-28
 
  Copyright 2002-2004, Morgan McGuire.
  All rights reserved.
@@ -18,7 +18,6 @@
 #include "graphics3D.h"
 #include "G3D/platform.h"
 #include "GLG3D/glheaders.h"
-
 
 namespace G3D {
 
@@ -233,6 +232,7 @@ inline void * glGetProcAddress(const char * name){
  camera space z), which is useful for scaling line and point size.
  */
 Vector4 glToScreen(const Vector4& v);
+
 
 } // namespace
 

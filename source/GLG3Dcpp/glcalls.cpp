@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2004-03-24
+  @edited  2004-03-28
 */
 
 #include "GLG3D/glcalls.h"
@@ -12,6 +12,103 @@
 #if defined(G3D_OSX)
 #include <mach-o/dyld.h>
 #endif
+
+
+#ifndef G3D_GL_ARB_multitexture_static
+PFNGLMULTITEXCOORD1FARBPROC                 glMultiTexCoord1fARB		    = NULL;
+PFNGLMULTITEXCOORD1DARBPROC                 glMultiTexCoord1dARB		    = NULL;
+
+PFNGLMULTITEXCOORD2FARBPROC                 glMultiTexCoord2fARB		    = NULL;
+PFNGLMULTITEXCOORD2FVARBPROC                glMultiTexCoord2fvARB		    = NULL;
+PFNGLMULTITEXCOORD2DVARBPROC                glMultiTexCoord2dvARB		    = NULL;
+
+PFNGLMULTITEXCOORD3FVARBPROC                glMultiTexCoord3fvARB		    = NULL;
+PFNGLMULTITEXCOORD3DVARBPROC                glMultiTexCoord3dvARB		    = NULL;
+
+PFNGLMULTITEXCOORD4FVARBPROC                glMultiTexCoord4fvARB		    = NULL;
+PFNGLMULTITEXCOORD4DVARBPROC                glMultiTexCoord4dvARB		    = NULL;
+
+PFNGLACTIVETEXTUREARBPROC                   glActiveTextureARB 			    = NULL;
+PFNGLCLIENTACTIVETEXTUREARBPROC             glClientActiveTextureARB	    = NULL;
+#endif
+
+#ifdef G3D_WIN32
+PFNWGLSWAPINTERVALEXTPROC                   wglSwapIntervalEXT 			    = NULL;
+PFNWGLCHOOSEPIXELFORMATARBPROC              wglChoosePixelFormatARB		    = NULL;
+PFNWGLALLOCATEMEMORYNVPROC                  wglAllocateMemoryNV 		    = NULL;
+PFNWGLFREEMEMORYNVPROC                      wglFreeMemoryNV 			    = NULL;
+#endif
+
+PFNGLVERTEXARRAYRANGENVPROC                 glVertexArrayRangeNV 		    = NULL;
+PFNGLFLUSHVERTEXARRAYRANGENVPROC            glFlushVertexArrayRangeNV       = NULL;
+
+PFNGLCOMPRESSEDTEXIMAGE2DARBPROC            glCompressedTexImage2DARB 	    = NULL;
+PFNGLGETCOMPRESSEDTEXIMAGEARBPROC           glGetCompressedTexImageARB 	    = NULL;
+
+PFNGLGENFENCESNVPROC				        glGenFencesNV				    = NULL;
+PFNGLDELETEFENCESNVPROC				        glDeleteFencesNV			    = NULL;
+PFNGLSETFENCENVPROC					        glSetFenceNV				    = NULL;
+PFNGLFINISHFENCENVPROC	  			        glFinishFenceNV				    = NULL;
+
+PFNGLGENPROGRAMSARBPROC                     glGenProgramsARB                = NULL;
+PFNGLBINDPROGRAMARBPROC                     glBindProgramARB                = NULL;
+PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB             = NULL;
+PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB              = NULL;
+PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NULL;
+PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
+PFNGLPROGRAMLOCALPARAMETER4FVARBPROC        glProgramLocalParameter4fvARB   = NULL;
+PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB     = NULL;
+PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB   = NULL;
+
+PFNGLGENPROGRAMSNVPROC                      glGenProgramsNV                 = NULL;
+PFNGLDELETEPROGRAMSNVPROC                   glDeleteProgramsNV              = NULL;
+PFNGLBINDPROGRAMNVPROC                      glBindProgramNV                 = NULL;
+PFNGLLOADPROGRAMNVPROC                      glLoadProgramNV                 = NULL;
+PFNGLTRACKMATRIXNVPROC                      glTrackMatrixNV                 = NULL;
+PFNGLPROGRAMPARAMETER4FVNVPROC              glProgramParameter4fvNV         = NULL;
+PFNGLGETPROGRAMPARAMETERFVNVPROC            glGetProgramParameterfvNV       = NULL;
+PFNGLGETPROGRAMPARAMETERDVNVPROC            glGetProgramParameterdvNV       = NULL;
+
+PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
+PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
+PFNGLDISABLEVERTEXATTRIBARRAYARBPROC        glDisableVertexAttribArrayARB   = NULL;
+
+PFNGLPOINTPARAMETERFARBPROC                 glPointParameterfARB            = NULL;
+PFNGLPOINTPARAMETERFVARBPROC                glPointParameterfvARB           = NULL;
+
+PFNGLMULTIDRAWARRAYSEXTPROC                 glMultiDrawArraysEXT            = NULL;
+PFNGLMULTIDRAWELEMENTSEXTPROC               glMultiDrawElementsEXT          = NULL;
+
+PFNGLCOMBINERPARAMETERFVNVPROC              glCombinerParameterfvNV         = NULL;
+PFNGLCOMBINERPARAMETERFNVPROC               glCombinerParameterfNV          = NULL;
+PFNGLCOMBINERPARAMETERIVNVPROC              glCombinerParameterivNV         = NULL;
+PFNGLCOMBINERPARAMETERINVPROC               glCombinerParameteriNV          = NULL;
+PFNGLCOMBINERINPUTNVPROC                    glCombinerInputNV               = NULL;
+PFNGLCOMBINEROUTPUTNVPROC                   glCombinerOutputNV              = NULL;
+PFNGLFINALCOMBINERINPUTNVPROC               glFinalCombinerInputNV          = NULL;
+PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC      glGetCombinerInputParameterfvNV        = NULL;
+PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC      glGetCombinerInputParameterivNV        = NULL;
+PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC     glGetCombinerOutputParameterfvNV       = NULL;
+PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC     glGetCombinerOutputParameterivNV       = NULL;
+PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC glGetFinalCombinerInputParameterfvNV   = NULL;
+PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC glGetFinalCombinerInputParameterivNV   = NULL;
+PFNGLCOMBINERSTAGEPARAMETERFVNVPROC         glCombinerStageParameterfvNV           = NULL;
+PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC      glGetCombinerStageParameterfvNV        = NULL;
+
+PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NULL;
+
+PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
+PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
+PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
+PFNGLISBUFFERARBPROC glIsBufferARB = NULL;
+PFNGLBUFFERDATAARBPROC glBufferDataARB = NULL;
+PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB = NULL;
+PFNGLGETBUFFERSUBDATAARBPROC glGetBufferSubDataARB = NULL;
+PFNGLMAPBUFFERARBPROC glMapBufferARB = NULL;
+PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB = NULL;
+PFNGLGETBUFFERPARAMETERIVARBPROC glGetBufferParameterivARB = NULL;
+PFNGLGETBUFFERPOINTERVARBPROC glGetBufferPointervARB = NULL;
+PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements = NULL;
 
 namespace G3D {
 

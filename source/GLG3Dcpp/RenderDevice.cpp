@@ -4,13 +4,12 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-03-24
+ @edited  2004-03-28
  */
 
 
 #include "G3D/platform.h"
 
-#include <sstream>
 #include "GLG3D/glcalls.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
@@ -18,109 +17,11 @@
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
 #include "GLG3D/SDLWindow.h"
+#include "GLG3D/GLCaps.h"
 
 #ifdef G3D_WIN32
     #include <winver.h>
 #endif
-
-bool G3D::RenderDevice::_supportsMultitexture = false;
-
-#ifndef G3D_GL_ARB_multitexture_static
-PFNGLMULTITEXCOORD1FARBPROC                 glMultiTexCoord1fARB		    = NULL;
-PFNGLMULTITEXCOORD1DARBPROC                 glMultiTexCoord1dARB		    = NULL;
-
-PFNGLMULTITEXCOORD2FARBPROC                 glMultiTexCoord2fARB		    = NULL;
-PFNGLMULTITEXCOORD2FVARBPROC                glMultiTexCoord2fvARB		    = NULL;
-PFNGLMULTITEXCOORD2DVARBPROC                glMultiTexCoord2dvARB		    = NULL;
-
-PFNGLMULTITEXCOORD3FVARBPROC                glMultiTexCoord3fvARB		    = NULL;
-PFNGLMULTITEXCOORD3DVARBPROC                glMultiTexCoord3dvARB		    = NULL;
-
-PFNGLMULTITEXCOORD4FVARBPROC                glMultiTexCoord4fvARB		    = NULL;
-PFNGLMULTITEXCOORD4DVARBPROC                glMultiTexCoord4dvARB		    = NULL;
-
-PFNGLACTIVETEXTUREARBPROC                   glActiveTextureARB 			    = NULL;
-PFNGLCLIENTACTIVETEXTUREARBPROC             glClientActiveTextureARB	    = NULL;
-#endif
-
-#ifdef G3D_WIN32
-PFNWGLSWAPINTERVALEXTPROC                   wglSwapIntervalEXT 			    = NULL;
-PFNWGLCHOOSEPIXELFORMATARBPROC              wglChoosePixelFormatARB		    = NULL;
-PFNWGLALLOCATEMEMORYNVPROC                  wglAllocateMemoryNV 		    = NULL;
-PFNWGLFREEMEMORYNVPROC                      wglFreeMemoryNV 			    = NULL;
-#endif
-
-PFNGLVERTEXARRAYRANGENVPROC                 glVertexArrayRangeNV 		    = NULL;
-PFNGLFLUSHVERTEXARRAYRANGENVPROC            glFlushVertexArrayRangeNV       = NULL;
-
-PFNGLCOMPRESSEDTEXIMAGE2DARBPROC            glCompressedTexImage2DARB 	    = NULL;
-PFNGLGETCOMPRESSEDTEXIMAGEARBPROC           glGetCompressedTexImageARB 	    = NULL;
-
-PFNGLGENFENCESNVPROC				        glGenFencesNV				    = NULL;
-PFNGLDELETEFENCESNVPROC				        glDeleteFencesNV			    = NULL;
-PFNGLSETFENCENVPROC					        glSetFenceNV				    = NULL;
-PFNGLFINISHFENCENVPROC	  			        glFinishFenceNV				    = NULL;
-
-PFNGLGENPROGRAMSARBPROC                     glGenProgramsARB                = NULL;
-PFNGLBINDPROGRAMARBPROC                     glBindProgramARB                = NULL;
-PFNGLDELETEPROGRAMSARBPROC                  glDeleteProgramsARB             = NULL;
-PFNGLPROGRAMSTRINGARBPROC                   glProgramStringARB              = NULL;
-PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NULL;
-PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
-PFNGLPROGRAMLOCALPARAMETER4FVARBPROC        glProgramLocalParameter4fvARB   = NULL;
-PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB     = NULL;
-PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB   = NULL;
-
-PFNGLGENPROGRAMSNVPROC                      glGenProgramsNV                 = NULL;
-PFNGLDELETEPROGRAMSNVPROC                   glDeleteProgramsNV              = NULL;
-PFNGLBINDPROGRAMNVPROC                      glBindProgramNV                 = NULL;
-PFNGLLOADPROGRAMNVPROC                      glLoadProgramNV                 = NULL;
-PFNGLTRACKMATRIXNVPROC                      glTrackMatrixNV                 = NULL;
-PFNGLPROGRAMPARAMETER4FVNVPROC              glProgramParameter4fvNV         = NULL;
-PFNGLGETPROGRAMPARAMETERFVNVPROC            glGetProgramParameterfvNV       = NULL;
-PFNGLGETPROGRAMPARAMETERDVNVPROC            glGetProgramParameterdvNV       = NULL;
-
-PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
-PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
-PFNGLDISABLEVERTEXATTRIBARRAYARBPROC        glDisableVertexAttribArrayARB   = NULL;
-
-PFNGLPOINTPARAMETERFARBPROC                 glPointParameterfARB            = NULL;
-PFNGLPOINTPARAMETERFVARBPROC                glPointParameterfvARB           = NULL;
-
-PFNGLMULTIDRAWARRAYSEXTPROC                 glMultiDrawArraysEXT            = NULL;
-PFNGLMULTIDRAWELEMENTSEXTPROC               glMultiDrawElementsEXT          = NULL;
-
-PFNGLCOMBINERPARAMETERFVNVPROC              glCombinerParameterfvNV         = NULL;
-PFNGLCOMBINERPARAMETERFNVPROC               glCombinerParameterfNV          = NULL;
-PFNGLCOMBINERPARAMETERIVNVPROC              glCombinerParameterivNV         = NULL;
-PFNGLCOMBINERPARAMETERINVPROC               glCombinerParameteriNV          = NULL;
-PFNGLCOMBINERINPUTNVPROC                    glCombinerInputNV               = NULL;
-PFNGLCOMBINEROUTPUTNVPROC                   glCombinerOutputNV              = NULL;
-PFNGLFINALCOMBINERINPUTNVPROC               glFinalCombinerInputNV          = NULL;
-PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC      glGetCombinerInputParameterfvNV        = NULL;
-PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC      glGetCombinerInputParameterivNV        = NULL;
-PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC     glGetCombinerOutputParameterfvNV       = NULL;
-PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC     glGetCombinerOutputParameterivNV       = NULL;
-PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC glGetFinalCombinerInputParameterfvNV   = NULL;
-PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC glGetFinalCombinerInputParameterivNV   = NULL;
-PFNGLCOMBINERSTAGEPARAMETERFVNVPROC         glCombinerStageParameterfvNV           = NULL;
-PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC      glGetCombinerStageParameterfvNV        = NULL;
-
-PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NULL;
-
-PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
-PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
-PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
-PFNGLISBUFFERARBPROC glIsBufferARB = NULL;
-PFNGLBUFFERDATAARBPROC glBufferDataARB = NULL;
-PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB = NULL;
-PFNGLGETBUFFERSUBDATAARBPROC glGetBufferSubDataARB = NULL;
-PFNGLMAPBUFFERARBPROC glMapBufferARB = NULL;
-PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB = NULL;
-PFNGLGETBUFFERPARAMETERIVARBPROC glGetBufferParameterivARB = NULL;
-PFNGLGETBUFFERPOINTERVARBPROC glGetBufferPointervARB = NULL;
-PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements = NULL;
-
 
 namespace G3D {
 
@@ -129,12 +30,6 @@ RenderDevice* RenderDevice::lastRenderDeviceCreated = NULL;
 static void _glViewport(double a, double b, double c, double d) {
     glViewport(iRound(a), iRound(b), iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
 }
-
-/**
- Dummy function to which unloaded extensions can be set.
- */
-static void __stdcall glIgnore(GLenum e) {}
-
 
 #ifdef G3D_WIN32
 /**
@@ -282,116 +177,6 @@ void RenderDevice::setVARAreaMilestone() {
 RenderDevice::~RenderDevice() {
 }
 
-void RenderDevice::initGLExtensions() {
-
-    #define LOAD_EXTENSION(name) \
-       if (debugLog) {debugLog->print("Loading " #name " extension");} \
-        *((void**)&name) = glGetProcAddress(#name); \
-       if (debugLog) {debugLog->printf("(0x%x)\n", #name);}
-
-    // Don't load the multitexture extensions when they are
-    // statically linked
-    #ifndef G3D_GL_ARB_multitexture_static
-        LOAD_EXTENSION(glMultiTexCoord2fARB);
-        LOAD_EXTENSION(glMultiTexCoord1fARB);
-        LOAD_EXTENSION(glMultiTexCoord2fvARB);
-        LOAD_EXTENSION(glMultiTexCoord3fvARB);
-        LOAD_EXTENSION(glMultiTexCoord4fvARB);
-        LOAD_EXTENSION(glMultiTexCoord1dARB);
-        LOAD_EXTENSION(glMultiTexCoord2dvARB);
-        LOAD_EXTENSION(glMultiTexCoord3dvARB);
-        LOAD_EXTENSION(glMultiTexCoord4dvARB);
-        LOAD_EXTENSION(glActiveTextureARB);
-
-        // Older machines can't handle multitexture, 
-        // so give it a version that will be safe for
-        // single texture GL
-        if (glActiveTextureARB == NULL) {
-            _supportsMultitexture = false;
-            #ifdef G3D_WIN32
-                *((void**)&glActiveTextureARB) = glIgnore;
-            #else
-                glActiveTextureARB = (void(*)(unsigned int))glIgnore;
-            #endif
-        } else {
-            _supportsMultitexture = (glMultiTexCoord4fvARB != NULL);
-        }
-
-        LOAD_EXTENSION(glClientActiveTextureARB);
-
-    #endif
-
-    #ifdef G3D_WIN32
-        LOAD_EXTENSION(wglSwapIntervalEXT);
-        LOAD_EXTENSION(wglChoosePixelFormatARB);
-        LOAD_EXTENSION(wglAllocateMemoryNV);
-        LOAD_EXTENSION(wglFreeMemoryNV);
-    #endif
-    LOAD_EXTENSION(glVertexArrayRangeNV);
-    LOAD_EXTENSION(glCompressedTexImage2DARB);
-    LOAD_EXTENSION(glGetCompressedTexImageARB);
-    LOAD_EXTENSION(glGenFencesNV);
-    LOAD_EXTENSION(glDeleteFencesNV);
-    LOAD_EXTENSION(glSetFenceNV);
-    LOAD_EXTENSION(glFlushVertexArrayRangeNV);
-    LOAD_EXTENSION(glFinishFenceNV);
-    LOAD_EXTENSION(glGenProgramsARB);
-    LOAD_EXTENSION(glBindProgramARB);
-    LOAD_EXTENSION(glDeleteProgramsARB);
-    LOAD_EXTENSION(glProgramStringARB);
-    LOAD_EXTENSION(glProgramEnvParameter4fARB);
-    LOAD_EXTENSION(glProgramLocalParameter4fARB);
-    LOAD_EXTENSION(glProgramLocalParameter4fvARB);
-    LOAD_EXTENSION(glProgramEnvParameter4dvARB);
-    LOAD_EXTENSION(glProgramLocalParameter4dvARB);
-    LOAD_EXTENSION(glVertexAttribPointerARB);
-    LOAD_EXTENSION(glEnableVertexAttribArrayARB);
-    LOAD_EXTENSION(glDisableVertexAttribArrayARB);
-    LOAD_EXTENSION(glPointParameterfARB);
-    LOAD_EXTENSION(glPointParameterfvARB);
-    LOAD_EXTENSION(glMultiDrawArraysEXT);
-    LOAD_EXTENSION(glMultiDrawElementsEXT);
-    LOAD_EXTENSION(glCombinerParameterfvNV);
-    LOAD_EXTENSION(glCombinerParameterfNV);
-    LOAD_EXTENSION(glCombinerParameterivNV);
-    LOAD_EXTENSION(glCombinerParameteriNV);
-    LOAD_EXTENSION(glCombinerInputNV);
-    LOAD_EXTENSION(glCombinerOutputNV);
-    LOAD_EXTENSION(glFinalCombinerInputNV);
-    LOAD_EXTENSION(glGetCombinerInputParameterfvNV);
-    LOAD_EXTENSION(glGetCombinerInputParameterivNV);
-    LOAD_EXTENSION(glGetCombinerOutputParameterfvNV);
-    LOAD_EXTENSION(glGetCombinerOutputParameterivNV);
-    LOAD_EXTENSION(glGetFinalCombinerInputParameterfvNV);
-    LOAD_EXTENSION(glGetFinalCombinerInputParameterivNV);
-    LOAD_EXTENSION(glCombinerStageParameterfvNV);
-    LOAD_EXTENSION(glGetCombinerStageParameterfvNV);
-    LOAD_EXTENSION(glGenProgramsNV);
-    LOAD_EXTENSION(glDeleteProgramsNV);
-    LOAD_EXTENSION(glBindProgramNV);
-    LOAD_EXTENSION(glLoadProgramNV);
-    LOAD_EXTENSION(glTrackMatrixNV);
-    LOAD_EXTENSION(glProgramParameter4fvNV);
-    LOAD_EXTENSION(glActiveStencilFaceEXT);
-    LOAD_EXTENSION(glGetProgramParameterfvNV);
-    LOAD_EXTENSION(glGetProgramParameterdvNV);
-    LOAD_EXTENSION(glBindBufferARB);
-    LOAD_EXTENSION(glDeleteBuffersARB);
-    LOAD_EXTENSION(glGenBuffersARB);
-    LOAD_EXTENSION(glIsBufferARB);
-    LOAD_EXTENSION(glBufferDataARB);
-    LOAD_EXTENSION(glBufferSubDataARB);
-    LOAD_EXTENSION(glGetBufferSubDataARB);
-    LOAD_EXTENSION(glMapBufferARB);
-    LOAD_EXTENSION(glUnmapBufferARB);
-    LOAD_EXTENSION(glGetBufferParameterivARB);
-    LOAD_EXTENSION(glGetBufferPointervARB);
-    LOAD_EXTENSION(glDrawRangeElements);
-
-    #undef LOAD_EXTENSION
-}
-
-
 /**
  Used by RenderDevice::init.
  */
@@ -411,7 +196,7 @@ static const char* isOk(void* x) {
 bool RenderDevice::supportsOpenGLExtension(
     const std::string& extension) const {
 
-    return extensionSet.contains(extension);
+    return GLCaps::supports(extension);
 }
 
 
@@ -480,9 +265,9 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         _numTextures      = _numTextureUnits;
     }
 
-    if (! supportsMultitexture()) {
+    if (! GLCaps::supports_GL_ARB_multitexture()) {
         // No multitexture
-        if (debugLog) {debugLog->println("No multitexture support: forcing number of texture units to no more than 1");}
+        if (debugLog) {debugLog->println("No GL_ARB_multitexture support: forcing number of texture units to no more than 1");}
         _numTextureCoords = iMax(1, _numTextureCoords);
         _numTextures      = iMax(1, _numTextures);
         _numTextureUnits  = iMax(1, _numTextureUnits);
@@ -655,34 +440,7 @@ void RenderDevice::setVideoMode() {
     debugAssertM(stateStack.size() == 0, "Cannot call setVideoMode between pushState and popState");
     debugAssertM(beginEndFrame == 0, "Cannot call setVideoMode between beginFrame and endFrame");
 
-    static bool extensionsInitialized = false;
-    if (! extensionsInitialized) {
-        // First time through, initialize extensions
-        initGLExtensions();
-        extensionsInitialized = true;
-    }
-
-    std::istringstream extensions;
-    extensions.str((char*)glGetString(GL_EXTENSIONS));
-    {
-        // Parse the extensions into the supported set
-        std::string s;
-        while (extensions >> s) {
-            extensionSet.insert(s);
-        }
-
-        stencilWrapSupported        = supportsOpenGLExtension("GL_EXT_stencil_wrap");
-
-        // The constants are identical for NV_texture_rectangle and
-        // EXT_texture_rectangle
-        textureRectangleSupported   = supportsOpenGLExtension("GL_EXT_texture_rectangle") ||
-                                      supportsOpenGLExtension("GL_NV_texture_rectangle");
-        _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
-        _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
-        _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
-        _supportsVertexBufferObject = supportsOpenGLExtension("GL_ARB_vertex_buffer_object");
-        _supportsTwoSidedStencil    = supportsOpenGLExtension("GL_EXT_stencil_two_side");
-    }
+    GLCaps::loadExtensions();
 
     // Reset all state
 
@@ -744,7 +502,7 @@ void RenderDevice::setVideoMode() {
     glEnable(GL_NORMALIZE);
 
     debugAssertGLOk();
-    if (_supportsTwoSidedStencil) {
+    if (GLCaps::supports_GL_ARB_stencil_two_side()) {
         glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
     }
 
@@ -770,7 +528,7 @@ void RenderDevice::setVideoMode() {
         glDepthMask(GL_TRUE);
         glColorMask(1,1,1,0);
 
-        if (_supportsTwoSidedStencil) {
+        if (GLCaps::supports_GL_ARB_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_BACK);
         }
         for (int i = 0; i < 2; ++i) {
@@ -779,7 +537,7 @@ void RenderDevice::setVideoMode() {
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
             glDisable(GL_ALPHA_TEST);
-            if (_supportsTwoSidedStencil) {
+            if (GLCaps::supports_GL_ARB_stencil_two_side()) {
                 glActiveStencilFaceEXT(GL_FRONT);
             }
         }
@@ -1516,13 +1274,13 @@ void RenderDevice::setStencilConstant(int reference) {
     if (state.stencilReference != reference) {
         state.stencilReference = reference;
 
-        if (_supportsTwoSidedStencil) {
+        if (GLCaps::supports_GL_ARB_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_BACK);
         }
 
         _setStencilTest(state.stencilTest, reference);
 
-        if (_supportsTwoSidedStencil) {
+        if (GLCaps::supports_GL_ARB_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_FRONT);
             _setStencilTest(state.stencilTest, reference);
         }
@@ -1542,7 +1300,7 @@ void RenderDevice::setStencilTest(StencilTest test) {
             if ((state.frontStencilFail   == STENCIL_KEEP) &&
                 (state.frontStencilZFail  == STENCIL_KEEP) &&
                 (state.frontStencilZPass  == STENCIL_KEEP) &&
-                (! _supportsTwoSidedStencil ||
+                (! GLCaps::supports_GL_ARB_stencil_two_side() ||
                  ((state.backStencilFail  == STENCIL_KEEP) &&
                   (state.backStencilZFail == STENCIL_KEEP) &&
                   (state.backStencilZPass == STENCIL_KEEP)))) {
@@ -1552,13 +1310,13 @@ void RenderDevice::setStencilTest(StencilTest test) {
 
         } else {
 
-            if (_supportsTwoSidedStencil) {
+            if (GLCaps::supports_GL_ARB_stencil_two_side()) {
                 glActiveStencilFaceEXT(GL_BACK);
             }
 
             _setStencilTest(test, state.stencilReference);
 
-            if (_supportsTwoSidedStencil) {
+            if (GLCaps::supports_GL_ARB_stencil_two_side()) {
                 glActiveStencilFaceEXT(GL_FRONT);
                 _setStencilTest(test, state.stencilReference);
             }
@@ -1692,7 +1450,7 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
         return GL_INVERT;
 
     case RenderDevice::STENCIL_INCR_WRAP:
-        if (stencilWrapSupported) {
+        if (GLCaps::supports_GL_EXT_stencil_wrap()) {
             return GL_INCR_WRAP_EXT;
         }
         // Intentionally fall through
@@ -1702,7 +1460,7 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 
 
     case RenderDevice::STENCIL_DECR_WRAP:
-        if (stencilWrapSupported) {
+        if (GLCaps::supports_GL_EXT_stencil_wrap()) {
             return GL_DECR_WRAP_EXT;
         }
         // Intentionally fall through
@@ -1778,12 +1536,12 @@ void RenderDevice::setStencilOp(
     if ((frontStencilFail  != state.frontStencilFail) ||
         (frontZFail        != state.frontStencilZFail) ||
         (frontZPass        != state.frontStencilZPass) || 
-        (_supportsTwoSidedStencil && 
+        (GLCaps::supports_GL_ARB_stencil_two_side() && 
         ((backStencilFail  != state.backStencilFail) ||
          (backZFail        != state.backStencilZFail) ||
          (backZPass        != state.backStencilZPass)))) { 
 
-        if (_supportsTwoSidedStencil) {
+        if (GLCaps::supports_GL_ARB_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_FRONT);
         }
 
@@ -1794,7 +1552,7 @@ void RenderDevice::setStencilOp(
             toGLStencilOp(frontZPass));
 
         // Set back face operation
-        if (_supportsTwoSidedStencil) {
+        if (GLCaps::supports_GL_ARB_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_BACK);
 
             glStencilOp(
@@ -1811,7 +1569,7 @@ void RenderDevice::setStencilOp(
         if ((frontStencilFail  == STENCIL_KEEP) &&
             (frontZPass        == STENCIL_KEEP) && 
             (frontZFail        == STENCIL_KEEP) &&
-            (! _supportsTwoSidedStencil ||
+            (! GLCaps::supports_GL_ARB_stencil_two_side() ||
             ((backStencilFail  == STENCIL_KEEP) &&
              (backZPass        == STENCIL_KEEP) &&
              (backZFail        == STENCIL_KEEP)))) {
@@ -1834,13 +1592,13 @@ void RenderDevice::setStencilOp(
                 // Test is not already on
                 glEnable(GL_STENCIL_TEST);
 
-                if (_supportsTwoSidedStencil) {
+                if (GLCaps::supports_GL_ARB_stencil_two_side()) {
                     glActiveStencilFaceEXT(GL_BACK);
                 }
 
                 glStencilFunc(GL_ALWAYS, state.stencilReference, 0xFFFFFF);
 
-                if (_supportsTwoSidedStencil) {
+                if (GLCaps::supports_GL_ARB_stencil_two_side()) {
                     glActiveStencilFaceEXT(GL_FRONT);
                     glStencilFunc(GL_ALWAYS, state.stencilReference, 0xFFFFFF);
                 }
@@ -2217,7 +1975,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
         unit, _numTextureCoords));
 
     state.textureUnit[unit].texCoord = texCoord;
-    if (supportsMultitexture()) {
+    if (GLCaps::supports_GL_ARB_multitexture()) {
         glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
     } else {
         debugAssertM(unit == 0, "This machine has only one texture unit");
@@ -2928,5 +2686,34 @@ void RenderDevice::internalSendIndices(
 	glDrawElements(p, numIndices, i, index);
 }
 
+
+bool RenderDevice::supportsTwoSidedStencil() const {
+    return GLCaps::supports_GL_ARB_stencil_two_side();
+}
+
+
+bool RenderDevice::supportsTextureRectangle() const {
+    return GLCaps::supports_GL_EXT_texture_rectangle();
+}
+
+
+bool RenderDevice::supportsVertexProgram() const {
+    return GLCaps::supports_GL_ARB_vertex_program();
+}
+
+
+bool RenderDevice::supportsVertexProgramNV2() const {
+    return GLCaps::supports_GL_NV_vertex_program2();
+}
+
+
+bool RenderDevice::supportsPixelProgram() const {
+    return GLCaps::supports_GL_ARB_fragment_program();
+}
+
+
+bool RenderDevice::supportsVertexBufferObject() const { 
+    return GLCaps::supports_GL_ARB_vertex_buffer_object();
+}
 
 } // namespace
