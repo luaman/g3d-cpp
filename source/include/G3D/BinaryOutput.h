@@ -73,7 +73,7 @@ private:
      necessary.
      */
     void reserveBytes(size_t bytes) {
-        bufferLen = iMax(bufferLen, pos + bytes);
+        bufferLen = iMax(bufferLen, (uint32)(pos + bytes));
         if (bufferLen >= maxBufferLen) {
             maxBufferLen = (size_t)(bufferLen * 1.5) + 100;
             buffer = (uint8*)realloc(buffer, maxBufferLen);

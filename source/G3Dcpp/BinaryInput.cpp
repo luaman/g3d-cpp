@@ -179,7 +179,7 @@ BinaryInput::~BinaryInput() {
 
 
 void BinaryInput::readBytes(size_t n, void* bytes) {
-    debugAssertM((int)(pos + n) <= length, "Read past end of file");
+    debugAssertM((pos + n) <= length, "Read past end of file");
     debugAssert(isValidPointer(bytes));
 
     memcpy(bytes, buffer + pos, n);
@@ -217,7 +217,7 @@ uint64 BinaryInput::readUInt64() {
 
 
 std::string BinaryInput::readString(size_t n) {
-    debugAssertM((int)(pos + n) <= length, "Read past end of file");
+    debugAssertM((pos + n) <= length, "Read past end of file");
     
     char *s = (char*)malloc(n + 1);
     assert(s != NULL);

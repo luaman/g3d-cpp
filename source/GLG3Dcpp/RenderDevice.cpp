@@ -1268,7 +1268,7 @@ void RenderDevice::setViewport(const Rect2D& v) {
 
 void RenderDevice::enableClip2D(const Rect2D& clip) {
     state.clip2D = clip;
-    glScissor(clip.x0(), getHeight() - (clip.y0() + clip.height()), clip.width(), clip.height());
+    glScissor(clip.x0(), getHeight() - (int)(clip.y0() + clip.height()), (int)clip.width(), (int)clip.height());
 
     if (! state.useClip2D) {
         glEnable(GL_SCISSOR_TEST);

@@ -32,8 +32,6 @@ public:
     // If you have multiple applets that need to share
     // state, put it in the App.
     
-    float x, y;
-
     class App*          app;
 
     Demo(App* app);
@@ -170,13 +168,6 @@ void Demo::doLogic() {
     }
 
 	// Add other key handling here
-    Array<float> axes;
-    Array<bool> buttons;
-    app->window()->getJoystickState(0, axes, buttons); 
-    if (axes.length() > 1) {
-        x = axes[0];
-        y = axes[1];
-    }
 }
 
 
@@ -208,7 +199,6 @@ void Demo::doGraphics() {
     app->renderDevice->push2D();
 //        app->renderDevice->setTexture(0, app->im);
 //        Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice);
-        app->debugFont->draw2D(format("X: %f  Y: %f", x, y), Vector2(5, 30));
     app->renderDevice->pop2D();
 }
 
