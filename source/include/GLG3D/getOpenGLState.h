@@ -10,9 +10,9 @@
 #ifndef GETOPENGLSTATE_H
 #define GETOPENGLSTATE_H
 
-#include "../../include/graphics3D.h"
-#include "../../include/GLG3D/glheaders.h"
-#include "../../include/GLG3D/glcalls.h"
+#include "graphics3D.h"
+#include "GLG3D/glheaders.h"
+#include "GLG3D/glcalls.h"
 
 namespace G3D {
 

@@ -10,7 +10,7 @@
 #ifndef G3D_FONT_H
 #define G3D_FONT_H
 
-#include "../../include/GLG3D/Texture.h"
+#include "GLG3D/Texture.h"
 
 namespace G3D {
 

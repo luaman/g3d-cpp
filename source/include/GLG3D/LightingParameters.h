@@ -12,7 +12,7 @@
 #ifndef G3D_LIGHTINGPARAMETERS_H
 #define G3D_LIGHTINGPARAMETERS_H
 
-#include "../../include/graphics3D.h"
+#include "graphics3D.h"
 
 namespace G3D {
 

@@ -22,19 +22,19 @@
   #include "windows.h"
 #endif
 
-#include "../../include/glh/glh_extensions.h"
-#include "../../include/glh/GL/glext.h"
+#include "glh/glh_extensions.h"
+#include "glh/GL/glext.h"
 #ifndef _WIN32
 	// Can't include this on windows; it requires
     // too many X types
-	#include "../../include/glh/GL/glxext.h"
-	#include "../../include/glh/GL/glx.h"
+	#include "glh/GL/glxext.h"
+	#include "glh/GL/glx.h"
 #endif
 
-#include "../../include/glh/glh_genext.h"
-#include "../../include/glh/glut.h"
-#include "../../include/glh/GL/glext.h"
-#include "../../include/glh/GL/wglext.h"
+#include "glh/glh_genext.h"
+#include "glh/glut.h"
+#include "glh/GL/glext.h"
+#include "glh/GL/wglext.h"
 
 // OpenGL extensions
 extern PFNGLMULTITEXCOORD2FARBPROC         glMultiTexCoord2fARB;

@@ -10,7 +10,7 @@
 #ifndef G3D_MANUALCAMERACONTROLLER_H
 #define G3D_MANUALCAMERACONTROLLER_H
 
-#include "../../include/graphics3D.h"
+#include "graphics3D.h"
 
 namespace G3D {
 

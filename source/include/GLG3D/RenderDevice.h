@@ -33,8 +33,8 @@
 #ifndef GLG3D_RENDERDEVICE_H
 #define GLG3D_RENDERDEVICE_H
 
-#include "../../include/graphics3D.h"
-#include "../../include/GLG3D/Texture.h"
+#include "graphics3D.h"
+#include "GLG3D/Texture.h"
 
 typedef unsigned int uint;
 

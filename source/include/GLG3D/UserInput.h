@@ -10,8 +10,8 @@
 #ifndef G3D_USERINPUT_H
 #define G3D_USERINPUT_H
 
-#include "SDL.h"
-#include "../../include/graphics3D.h"
+#include <SDL.h>
+#include "graphics3D.h"
 
 namespace G3D {
 

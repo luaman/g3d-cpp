@@ -15,8 +15,8 @@
 #ifndef G3D_GLCALLS_H
 #define G3D_GLCALLS_H
 
-#include "../graphics3D.h"
-#include "glheaders.h"
+#include "graphics3D.h"
+#include "GLG3D/glheaders.h"
 
 namespace G3D {
 

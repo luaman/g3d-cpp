@@ -10,9 +10,9 @@
 #ifndef G3D_SKY_H
 #define G3D_SKY_H
 
-#include "../../include/GLG3D/Texture.h"
-#include "../../include/GLG3D/RenderDevice.h"
-#include "../../include/graphics3D.h"
+#include "GLG3D/Texture.h"
+#include "GLG3D/RenderDevice.h"
+#include "graphics3D.h"
 
 namespace G3D {
 
