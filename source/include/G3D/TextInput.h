@@ -349,6 +349,32 @@ public:
     /** Reads a specific symbol or throws either WrongTokenType or WrongSymbol*/
     void readSymbol(const std::string& symbol);
 
+    /** Reads a series of specific symbols.  See readSymbol */
+    inline void readSymbols(const std::string& s1, const std::string& s2) {
+        readSymbol(s1);
+        readSymbol(s2);
+    }
+
+    inline void readSymbols(
+        const std::string& s1, 
+        const std::string& s2, 
+        const std::string& s3) {
+        readSymbol(s1);
+        readSymbol(s2);
+        readSymbol(s3);
+    }
+
+    inline void readSymbols(
+        const std::string& s1, 
+        const std::string& s2, 
+        const std::string& s3,     
+        const std::string& s4) {
+        readSymbol(s1);
+        readSymbol(s2);
+        readSymbol(s3);
+        readSymbol(s4);
+    }
+
     /** Look at the next token but don't extract it */
     Token peek();
 

@@ -67,6 +67,7 @@
           (since console programs have no WinMain).
      <LI> SDL's redefinition of main is cleared when not linking sdlmain.lib [Corey]
      <LI> Moved contrib/Win32Window to G3D::Win32Window
+     <LI> TextInput::readSymbols
      <LI> contrib/Image [Morgan]
      <LI> contrib/wxGWindow [Morgan]
      <LI> Added support for full-screen antialiasing to contrib/Win32Window
