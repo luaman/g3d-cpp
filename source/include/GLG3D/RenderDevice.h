@@ -111,6 +111,29 @@ class VAR;
 
     renderDevice->cleanup();
     </PRE>
+
+  <P>
+ <B>Stereo Rendering</B>
+  You can render in stereo (on a stereo capable card) by rendering twice,
+  once for each eye's buffer:
+
+  <pre>
+    void doGraphics() {
+        glDrawBuffer(GL_BACK_LEFT); 
+        for (int count = 0; count < 2; ++count) {
+           ... (put your normal rendering code here)
+           glDrawBuffer(GL_BACK_RIGHT);
+        }
+    }
+  </pre>
+
+  Only flip the buffers once; that is, call renderDevice->swapBuffers
+  once per frame (not once per eye).  If you use G3D::GApp, it takes
+  care of this for you.
+}
+
+
+
  */
 class RenderDevice {
 public:
