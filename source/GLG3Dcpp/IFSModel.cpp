@@ -143,7 +143,7 @@ void IFSModel::save(
 			}
 		}
 
-		b.commit();
+		b.commit(false);
 	} else if ("ply2" == filenameExt(filename)) { 
 		alwaysAssertM(texCoord.size() == 0,  format("texCoord.size() != 0, PLY2 files do not support saving texCoords."));
 		TextOutput to(filename);
@@ -161,7 +161,7 @@ void IFSModel::save(
 			to.printf("3 %d \t %d \t %d \n", index[3*i], index[3*i + 1], index[3*i + 2]);
 		}
 
-		to.commit();
+		to.commit(false);
 	} else {
 		alwaysAssertM(false,  format("unsupported filename type %s", filenameExt(filename).c_str()));
 	}

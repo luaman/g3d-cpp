@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2002-02-20
- @edited  2004-03-30
+ @edited  2004-11-05
  */
 
 #include "G3D/platform.h"
@@ -82,7 +82,7 @@ void BinaryOutput::compress() {
 }
 
 
-void BinaryOutput::commit() {
+void BinaryOutput::commit(bool flush) {
     // Make sure the directory exists.
     std::string root, base, ext, path;
     Array<std::string> pathArray;
@@ -99,6 +99,9 @@ void BinaryOutput::commit() {
 
 
     fwrite(buffer.getCArray(), buffer.size(), 1, file);
+    if (flush) {
+        fflush(file);
+    }
     fclose(file);
     file = NULL;
 }

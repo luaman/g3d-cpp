@@ -92,9 +92,15 @@ namespace _internal {
 #ifdef _DEBUG
 
     #ifndef G3D_OSX
-        #ifdef _MSC_VER
-            #define rawBreak()  _asm { int 3 }
+        #if defined(_MSC_VER) 
+            #if (_MSC_VER >= 1300)
+                #define rawBreak()  DebugBreak();
+            #else
+                // MSVC6
+                #define rawBreak()  _asm { int 3 };
+            #endif
         #else
+            // GCC on Windows
             #define rawBreak() __asm__ __volatile__ ( "int $3" ); 
         #endif
     #else

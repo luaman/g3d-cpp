@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2004-03-16
+ @edited  2004-11-05
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -107,8 +107,11 @@ public:
 
      <B>Not</B> called from the destructor; you must call
      it yourself.
-     */
-    void commit();
+
+     @param flush If true (default) the file is ready for reading when the method returns, otherwise 
+      the method returns immediately and writes the file in the background.
+    */
+    void commit(bool flush);
 
     /**
      Write the bytes to memory (which must be of

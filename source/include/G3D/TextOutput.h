@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-06-21
-  @edited  2004-10-10
+  @edited  2004-11-05
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -165,8 +165,12 @@ public:
     /** Constructs a text output that can later be commited to a string instead of a file.*/
     explicit TextOutput(const Options& options = Options());
 
-    /** Commit to the filename specified on the constructor */
-    void commit();
+    /** Commit to the filename specified on the constructor. 
+         <B>Not</B> called from the destructor; you must call
+     it yourself.
+    @param flush If true (default) the file is ready for reading when the method returns, otherwise 
+     the method returns immediately and writes the file in the background.*/
+    void commit(bool flush = true);
 
     /** Commits to this string */
     void commitString(std::string& string);

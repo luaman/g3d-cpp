@@ -217,7 +217,7 @@ void Editor::save() {
     for (int c = 3; c < control.size() - 3; ++c) {
         control[c].serialize(to);
     }
-    to.commit();
+    to.commit(false);
 
     // Write out IFS data
     Array<Quad> quadArray;

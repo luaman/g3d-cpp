@@ -12,9 +12,10 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> G3D::writeStringToFile, G3D::TextOutput, and G3D::BinaryOutput now flush by default (safe, not fast).
      <LI> Shifted push2D by 0.375 pixels as recommended in the OpenGL guide to bias integer coords towards pixel centers
-     <LI> Draw::rect2DBorder
-     <LI> Draw::Rect2D::border
+     <LI> G3D::Draw::rect2DBorder
+     <LI> G3D::Rect2D::border
      <LI> RenderDevice now creates a Win32Window on Windows instead of a SDLWindow.  SDLWindow is now
           deprecated on Windows.
      <LI> VARArea now updates allocation sizes instead of VAR internally.  Added

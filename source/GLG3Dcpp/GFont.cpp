@@ -400,7 +400,7 @@ void GFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfil
     out.writeBytes(pixel.getCArray(), num);
 
     out.compress();
-    out.commit();
+    out.commit(false);
 }
 
 }

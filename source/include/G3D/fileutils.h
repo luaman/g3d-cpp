@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2002-06-06
- @edited  2003-08-10
+ @edited  2004-11-04
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -23,9 +23,15 @@ namespace G3D {
 std::string readFileAsString(
     const std::string&          filename);
 
+/**
+ @param flush If true (default), the file is ready for reading as soon
+ as the function returns.  If false, the function returns immediately and
+ writes the file in the background.
+ */
 void writeStringToFile(
     const std::string&          str,
-    const std::string&          filename);
+    const std::string&          filename,
+    bool                        flush = true);
 
 /**
  Creates the directory (which may optionally end in a /)

@@ -2023,7 +2023,7 @@ void GImage::save(
 
     BinaryOutput b = BinaryOutput(filename, G3D_LITTLE_ENDIAN);
     encode(resolveFormat(filename, NULL, 0, format), b);
-    b.commit();
+    b.commit(false);
 }
 
 

@@ -130,7 +130,8 @@ FILE* createTempFile() {
 
 void writeStringToFile(
     const std::string&          str,
-    const std::string&          filename) {
+    const std::string&          filename,
+    bool                        flush) {
 
     // Make sure the directory exists.
     std::string root, base, ext, path;
@@ -147,6 +148,10 @@ void writeStringToFile(
     debugAssert(file);
 
     fwrite(str.c_str(), str.size(), 1, file);
+
+    if (flush) {
+        fflush(file);
+    }
     fclose(file);
 }
 
@@ -228,7 +233,7 @@ void copyFile(
         BinaryInput  in  = BinaryInput(source, G3D_LITTLE_ENDIAN);
         BinaryOutput out = BinaryOutput(dest, G3D_LITTLE_ENDIAN);
         out.writeBytes(in.getCArray(), in.size());
-        out.commit();
+        out.commit(false);
     #endif
 }
 
