@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-08-07
- @edited  2004-04-20
+ @edited  2005-01-30
  */
 
 #include "G3D/platform.h"
@@ -433,7 +433,7 @@ static const int maxVARVerts = 1600;
 
 void MD2Model::allocateVertexArrays(RenderDevice* renderDevice) {
 
-    size_t size = maxVARVerts * (sizeof(Vector3) * 2 + sizeof(Vector2));
+    size_t size = maxVARVerts * (24 + sizeof(Vector3) * 2 + sizeof(Vector2int16));
 
     for (int i = 0; i < NUM_VAR_AREAS; ++i) {
         varArea[i] = VARArea::create(size);

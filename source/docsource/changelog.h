@@ -26,6 +26,7 @@
      <LI> New G3D::PosedModel rendering methods appropriate for shadow casting
            (with efficient default implementations).
      <LI> G3D::Lighting
+     <LI> G3D::CoordinateFrame::upVector
      <LI> G3D::GLight::diffuse
      <LI> G3D::Rect2D::contains is now const
      <LI> Rewrote G3D::BinaryOutput to not use G3D::Array

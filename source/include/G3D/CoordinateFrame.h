@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2004-10-24
+ @edited  2005-01-30
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
 */
 
@@ -230,9 +230,15 @@ public:
 		return rotation.getColumn(2) * zLookDirection;
 	}
 
+    /** The direction this camera is looking (its negative z axis)*/
 	inline Vector3 lookVector() const {
 		return rotation.getColumn(2) * zLookDirection;
 	}
+
+    /** Up direction for this camera (its y axis). */
+    inline Vector3 upVector() const {
+        return rotation.getColumn(1);
+    }
 
     /**
      If a viewer looks along the look vector, this is the viewer's "left"
