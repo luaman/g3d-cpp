@@ -1,1 +1,1 @@
-SUBDIRS = GLG3D_Demo
+SUBDIRS = GLG3D_Demo IFS_Demo

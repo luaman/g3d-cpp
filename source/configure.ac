@@ -70,6 +70,7 @@ AC_CONFIG_FILES([Makefile
                  G3Dcpp/Makefile
                  test/Makefile
 				 demos/Makefile
+				 demos/IFS_Demo/Makefile
 				 demos/GLG3D_Demo/Makefile
 				 include/Makefile
                  GLG3Dcpp/Makefile])
