@@ -201,6 +201,10 @@ public:
     int fileVersion;
     int meshVersion;
 
+
+	/**
+	 @param t Should polygons be two sided?
+	 */
     Load3DS(BinaryInput& _b) : b(_b), currentRotation(Matrix3::IDENTITY) {
 
         fileVersion     = 0;
@@ -225,6 +229,7 @@ Vector3 Load3DS::read3DSVector() {
 
     return v;
 }
+
 
 Load3DS::ChunkHeader Load3DS::readChunkHeader() {
     ChunkHeader c;

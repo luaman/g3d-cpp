@@ -80,20 +80,13 @@ int main(int argc, char** argv) {
     camera.setNearPlaneZ(-.05);
     RealTime now = System::getTick() - 0.001, lastTime;
 
-    std::string in("c:/tmp/pink-bush.sm");
-
-//    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
-
-    //std::string outDir("d:/tmp/");
-//    std::string outDir("d:/graphics3d/book/data/ifs/");
-
+    std::string in("c:/tmp/palm1.3ds");
     std::string outDir("c:/tmp/");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
 
     camera.setCoordinateFrame(controller->getCoordinateFrame());
-    controller->setActive(true);
 
     debugAssertM(filename.size() > 0, "No files found");
 
@@ -110,13 +103,15 @@ int main(int argc, char** argv) {
         }
         */
 
-        model = new XIFSModel(filename[i]);
-        model->name = "Lumps";
+	    controller->setActive(false);
+        model = new XIFSModel(filename[i], true);
+        model->name = filename[i];
+	    controller->setActive(true);
 
-        if (! pauseBetweenModels) {
-            model->save(outDir + base + ".ifs");
-            exit(0);
-        }
+        //if (! pauseBetweenModels) {
+        //    model->save(outDir + base + ".ifs");
+        //    exit(0);
+        //}
 
         // Main loop (display 3D object)
         do {

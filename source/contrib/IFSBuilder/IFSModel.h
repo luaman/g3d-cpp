@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2004-04-03
+  @edited  2004-05-14
  */ 
 
 #ifndef XIFSModel_H
@@ -64,11 +64,13 @@ private:
     void createGrid(double(*y)(double,double), int numPolys, bool consistentDiagonal = false);
     void createIsoGrid(double(*y)(double,double), int numPolys);
 
+	bool _twoSided;
 public:
 
     std::string             name;
 
-    XIFSModel(const std::string& filename);
+	/**@param twoSided When true, all polygons are doubled on load */
+    XIFSModel(const std::string& filename, bool twoSided = false);
     XIFSModel() {}
 
     /**

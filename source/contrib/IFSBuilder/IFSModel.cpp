@@ -64,7 +64,7 @@ static double cliff2D(double x, double z) {
 }
 
 
-XIFSModel::XIFSModel(const std::string& filename) {
+XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
     if (! fileExists(filename)) {
         error("Critical Error", std::string("File not found: \"") + filename + "\"", true);
         exit(-1);
@@ -75,7 +75,7 @@ XIFSModel::XIFSModel(const std::string& filename) {
     //createGrid(flat2D, 1024, true); return;
     //createGrid(lumpy2D, 1024, true); return;
     //createGrid(cliff2D, 1024, true); return;
-    createIsoGrid(cliff2D, 1024); return;
+    //createIsoGrid(cliff2D, 1024); return;
     //createGrid(bump2D, 900, true); return;
     //createIsoGrid(lumpy2D, 800); return;
     //createGrid(lumpy2D, 900, true); return;
@@ -120,7 +120,7 @@ static Vector3 isoToObjectSpace(int r, int c, int R, int C) {
 }
 
 void XIFSModel::createIsoGrid(double(*func)(double, double), int n) {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
 
     double sin60 = sin(G3D_PI / 3.0);
     
@@ -238,7 +238,7 @@ void XIFSModel::createIsoGrid(double(*func)(double, double), int n) {
 
 
 void XIFSModel::createGrid(double(*func)(double, double), int n, bool consistentDiagonal) {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
 
     int X = iFloor(sqrt(n / 4.0));
     int Z = X;
@@ -373,7 +373,7 @@ void XIFSModel::createGrid(double(*func)(double, double), int n, bool consistent
 
 
 void XIFSModel::createPolygon() {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
 
     int sides = 8;
 
@@ -425,7 +425,7 @@ static void addSubdividedQuad(
 
 
 void XIFSModel::createRing() {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
 
     int quads = 150;
 
@@ -486,7 +486,7 @@ void XIFSModel::createRing() {
 
 
 void XIFSModel::loadIFS(const std::string& filename) {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -523,7 +523,7 @@ void XIFSModel::loadIFS(const std::string& filename) {
 
 
 void XIFSModel::loadSM(const std::string& filename) {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
 
     TextInput ti(filename);
 
@@ -552,7 +552,7 @@ void XIFSModel::loadSM(const std::string& filename) {
 
 
 void XIFSModel::loadMD2(const std::string& filename) {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -606,7 +606,7 @@ void XIFSModel::loadMD2(const std::string& filename) {
 
 
 void XIFSModel::load3DS(const std::string& filename) {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -653,7 +653,7 @@ void XIFSModel::load3DS(const std::string& filename) {
 
 
 void XIFSModel::loadOBJ(const std::string& filename) {
-    IFSModelBuilder builder;
+    IFSModelBuilder builder(_twoSided);
     
     TextInput::Options options;
     options.cppComments = false;

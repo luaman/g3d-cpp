@@ -41,7 +41,11 @@ private:
     void centerTriList();
     void computeBounds(Vector3& min, Vector3& max);
 
+	bool _twoSided;
+
 public:
+
+	inline IFSModelBuilder(bool twoSided = false) : _twoSided(twoSided) {}
 
     /** Writes out the model data into the passed in object. */
     void commit(class XIFSModel* model);
