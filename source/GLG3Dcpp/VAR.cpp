@@ -15,7 +15,7 @@
 
 namespace G3D {
 
-VAR::VAR() : _pointer(NULL), elementSize(0), numElements(0), generation(0), underlyingRepresentation(GL_FLOAT) {
+VAR::VAR() : _pointer(NULL), elementSize(0), numElements(0), generation(0), underlyingRepresentation(GL_FLOAT), _maxSize(0), area(NULL) {
 }
 
 
@@ -44,7 +44,7 @@ void VAR::init(
 	elementSize              = eltSize;
 
     size_t size              = elementSize * numElements;
-    maxSize                  = size;
+    _maxSize                  = size;
 
     debugAssertM(
         (elementSize % sizeOfGLFormat(underlyingRepresentation)) == 0,
@@ -82,7 +82,7 @@ void VAR::update(
 
 	size_t size = eltSize * _numElements;
 
-    alwaysAssertM(size <= maxSize,
+    alwaysAssertM(size <= _maxSize,
         "A VAR can only be updated with an array that is smaller "
         "or equal size (in bytes) to the original array.");
 

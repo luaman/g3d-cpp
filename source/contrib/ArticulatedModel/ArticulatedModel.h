@@ -12,6 +12,12 @@
 #ifndef G3D_ARTICULATEDMODEL
 #define G3D_ARTICULATEDMODEL
 
+
+#include "SuperShader.h"
+
+
+
+
 typedef ReferenceCountedPointer<class ArticulatedModel> ArticulatedModelRef;
 
 /**
@@ -28,7 +34,9 @@ public:
          */
         Table<std::string, CoordinateFrame>     cframe;
 
-        /** If false, the object's material is ignored during rendering. 
+        /** If false, the object's material is ignored during rendering
+            (useful for shadow map creation and wireframe.  Transparent materials
+            will be rendered as opaque).
             Default is true. */
         bool                                    useMaterial;
 
@@ -38,82 +46,13 @@ public:
     static const Pose DEFAULT_POSE;
 
 
-    /** Beta API; subject to change in future releases.
-        Illumination Equation:
-
-        dst1 = underlying value in frame buffer
-        evt = environment map
-        ambUp, ambDn = ambient map up and down values (ideally, environment map convolved with a hemisphere)
-
-        dst2 = dst1 * transmission + 
-               evt[n] * reflection +
-               lerp(ambDn, ambUp, n.y/2 + 0.5) * diffuse +
-               emissive +
-               SUM OVER LIGHTS {
-                 light * (diffuse * NdotL +
-                          specular * NdotH^specularExponent)}
-
-        When choosing material properties, the transmission, diffuse, and specular terms
-        should sum to less than 1.  The reflection and specular terms are technically the
-        same value and should be equal; the difference is that specular only applies to
-        lights and reflection to the environment (less lights), a concession to artistic
-        control.
-
-        Note that most translucent materials should be two-sided and have comparatively
-        low diffuse terms.
-        */
-	class Material {
-	public:
-
-        /** Material property coefficients are specified as 
-            a constant color times a texture map.  If the color
-            is white the texture map entirely controls the result.
-            If the color is black the term is disabled.  On graphics
-            cards with few texture units the map will be ignored.*/
-        class Component {
-        public:
-            Color3              constant;
-            TextureRef          map;
-
-            inline Component() : constant(Color3::black()), map(NULL) {}
-            inline Component(const Color3& c) : constant(c), map(NULL) {}
-            inline Component(double c) : constant(c,c,c), map(NULL) {}
-
-            /** True if this material is definitely 0,0,0 everywhere */
-            inline bool isBlack() const {
-                return (constant.r == 0) && (constant.g == 0) && (constant.b == 0);
-            }
-
-            /** True if this material is definitely 1,1,1 everywhere */
-            inline bool isWhite() const {
-                return (constant.r == 1) && (constant.g == 1) && (constant.b == 1) && map.isNull();
-            }
-        };
-
-        Component               diffuse;
-        Component               emissive;
-        Component               specular;
-        Component               specularExponent;
-        Component               transmission;
-        Component               reflection;
-
-        /** RGB*2-1 = tangent space normal, A = tangent space bump height.
-          If NULL bump mapping is disabled. */
-        TextureRef              normalMap;
-        
-        Material() : diffuse(1), emissive(0), 
-            specular(0.25), specularExponent(60), 
-            transmission(0), reflection(0) {
-        }
-	};
-
     class Part {
     public:
 
 	    class TriList {
 	    public:
 		    Array<int>				indexArray;
-		    Material				material;
+            SuperShader::Material	material;
     		RenderDevice::CullFace  cullFace;
 
             /** In the same space as the vertices */
@@ -146,6 +85,9 @@ public:
         /** Indices into part array of sub-parts */
         Array<int>                  subPartArray;
 
+        /** All faces.  Used for updateNormals and rendering without materials. */
+        Array<int>                  indexArray;
+
         /**
          Does not restore rendering state when done.
          @param Net frame of parent.
@@ -157,12 +99,21 @@ public:
             int                     partIndex,
             Array<PosedModelRef>&   posedArray,
             const CoordinateFrame&  parent, 
-            const Pose&             posex) const;
+            const Pose&             posex,
+            SuperShader::LightingEnvironmentRef lighting) const;
 
         /** Some parts have no geometry because they are interior nodes in the hierarchy */
         inline bool hasGeometry() const {
             return geometry.vertexArray.size() > 0;
         }
+
+        /** When geometry.vertexArray has been changed, invoke to recompute
+            geometry.normalArray */
+        void updateNormals();
+
+        /** When geometry or texCoordArray is changed, invoke to update
+            (or allocate for the first time) the VAR data.*/
+        void updateVAR();
     };
 
     friend class PosedArticulatedModel;
@@ -184,11 +135,20 @@ public:
 
     std::string                 name;
 
-    /** Appends one posed model per sub-part with geometry. */
+    /** Appends one posed model per sub-part with geometry.
+
+        If the lighting environment is NULL the system will
+        default using to whatever fixed function state is enabled
+        (e.g., with renderDevice->setLight).  If the lighting
+        environment is specified and the graphics card supports 
+        pixel shaders 2.0 or later the SuperShader will be used,
+        providing detailed illuminaton.
+    */
     void pose(
         Array<PosedModelRef>&   posedModelArray, 
         const CoordinateFrame&  cframe = CoordinateFrame(),
-        const Pose&             pose = DEFAULT_POSE);
+        const Pose&             pose = DEFAULT_POSE,
+        SuperShader::LightingEnvironmentRef lighting = NULL);
 
     /** 
       Supports 3DS, IFS, PLY2 file formats.  The format of a file is detected by the extension. 

@@ -18,6 +18,12 @@ private:
 
     bool                    useMaterial;
 
+    /** 
+      If NULL, use whatever OpenGL state is currently enabled.
+
+    */
+    SuperShader::LightingEnvironmentRef lightingEnvironment;
+
     /** Called from render to draw geometry after the material properties are set.*/
     void renderGeometry(RenderDevice* rd) const;
 
@@ -63,20 +69,26 @@ public:
 };
 
 
-void ArticulatedModel::pose(Array<PosedModelRef>& posedArray, const CoordinateFrame& cframe, const Pose& posex) {
+void ArticulatedModel::pose(
+    Array<PosedModelRef>&       posedArray, 
+    const CoordinateFrame&      cframe, 
+    const Pose&                 posex,
+    SuperShader::LightingEnvironmentRef lightingEnvironment) {
+
     for (int p = 0; p < partArray.size(); ++p) {
         const Part& part = partArray[p];
-        part.pose(this, p, posedArray, cframe, posex);
+        part.pose(this, p, posedArray, cframe, posex, lightingEnvironment);
     }
 }
 
 
 void ArticulatedModel::Part::pose(
-    ArticulatedModelRef     model,
-    int                     partIndex,
-    Array<PosedModelRef>&   posedArray,
-    const CoordinateFrame&  parent, 
-    const Pose&             posex) const {
+    ArticulatedModelRef         model,
+    int                         partIndex,
+    Array<PosedModelRef>&       posedArray,
+    const CoordinateFrame&      parent, 
+    const Pose&                 posex,
+    SuperShader::LightingEnvironmentRef lightingEnvironment) const {
 
     CoordinateFrame frame;
 
@@ -97,6 +109,7 @@ void ArticulatedModel::Part::pose(
             posed->listIndex = t;
             posed->model = model;
             posed->useMaterial = posex.useMaterial;
+            posed->lightingEnvironment = lightingEnvironment;
 
             posedArray.append(posed);
         }
@@ -117,7 +130,7 @@ void PosedArticulatedModel::render(
     rd->pushState();
 
     if (useMaterial) {
-        bool makeTransparentPass = ! triList.material.transmission.isBlack();
+        bool makeTransparentPass = ! triList.material.transmit.isBlack();
 
         if (makeTransparentPass) {
             if (triList.cullFace == RenderDevice::CULL_NONE) {
@@ -131,8 +144,8 @@ void PosedArticulatedModel::render(
                     rd->pushState();
                         rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
                         rd->disableLighting();
-                        rd->setColor(triList.material.transmission.constant);
-                        rd->setTexture(0, triList.material.transmission.map);
+                        rd->setColor(triList.material.transmit.constant);
+                        rd->setTexture(0, triList.material.transmit.map);
                         renderGeometry(rd);
                     rd->popState();
 
@@ -157,8 +170,8 @@ void PosedArticulatedModel::render(
                 rd->pushState();
                     rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
                     rd->disableLighting();
-                    rd->setColor(triList.material.transmission.constant);
-                    rd->setTexture(0, triList.material.transmission.map);
+                    rd->setColor(triList.material.transmit.constant);
+                    rd->setTexture(0, triList.material.transmit.map);
                     renderGeometry(rd);
                 rd->popState();
 
@@ -237,7 +250,7 @@ std::string PosedArticulatedModel::name() const {
 bool PosedArticulatedModel::hasTransparency() const {
     const ArticulatedModel::Part& part = model->partArray[partIndex];
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
-    return !(useMaterial && triList.material.transmission.isBlack());
+    return !(useMaterial && triList.material.transmit.isBlack());
 }
 
 

@@ -28,6 +28,7 @@ GApp* app = NULL;
 
 #include "../contrib/ArticulatedModel/ArticulatedModel.cpp"
 #include "../contrib/ArticulatedModel/ArticulatedModel_pose.cpp"
+#include "../contrib/ArticulatedModel/SuperShader.cpp"
 
 
 class App : public GApp {
@@ -35,6 +36,8 @@ protected:
     void main();
 public:
     SkyRef              sky;
+
+    SuperShader::LightingEnvironmentRef lightingEnvironment;
 
     Array<ArticulatedModelRef> modelArray;
     TextureRef          texture;
@@ -95,9 +98,10 @@ void Demo::doLogic() {
 
 void Demo::doGraphics() {
 
-    LightingParameters lighting(G3D::toSeconds(2, 00, 00, PM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
     app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
+
+    LightingParameters lighting(G3D::toSeconds(2, 00, 00, PM));
 
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
@@ -107,40 +111,40 @@ void Demo::doGraphics() {
         app->sky->render(lighting);
     }
 
-    app->renderDevice->enableLighting();
-    app->renderDevice->setLight(0, lighting.directionalLight());
-    app->renderDevice->setAmbientLightColor(lighting.ambient);
+    app->renderDevice->pushState();
+        SuperShader::configureFixedFunction(app->renderDevice, app->lightingEnvironment);
 
-    ArticulatedModel::Pose pose;
-    static RealTime t0 = System::time();
+        ArticulatedModel::Pose pose;
+        static RealTime t0 = System::time();
 
-    RealTime t = (System::time() - t0) * 10;
-    pose.cframe.set("m_rotor", 
-        CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t),
-                        Vector3::zero()));
-    pose.cframe.set("t_rotor",
-        CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
-                        Vector3::zero()));
+        RealTime t = (System::time() - t0) * 10;
+        pose.cframe.set("m_rotor", 
+            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t),
+                            Vector3::zero()));
+        pose.cframe.set("t_rotor",
+            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
+                            Vector3::zero()));
 
-    Array<PosedModelRef> posedModels;
-    for (int m = 0; m < app->modelArray.size(); ++m) {
-        app->modelArray[m]->pose(posedModels, CoordinateFrame(Vector3(2*m,0,0)), pose);
-    }
+        Array<PosedModelRef> posedModels;
+        for (int m = 0; m < app->modelArray.size(); ++m) {
+            app->modelArray[m]->pose(posedModels, CoordinateFrame(Vector3(2*m,0,0)), pose);
+        }
 
-    Draw::axes(app->renderDevice);
+        Draw::axes(app->renderDevice);
 
 
-    app->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-    Array<PosedModelRef> opaque, transparent;
-    PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
-    for (int m = 0; m < opaque.size(); ++m) {
-        opaque[m]->render(app->renderDevice);
-    }
-    for (int m = 0; m < transparent.size(); ++m) {
-        transparent[m]->render(app->renderDevice);
-    }
+        app->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+        Array<PosedModelRef> opaque, transparent;
+        PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
+        for (int m = 0; m < opaque.size(); ++m) {
+            opaque[m]->render(app->renderDevice);
+        }
+        for (int m = 0; m < transparent.size(); ++m) {
+            transparent[m]->render(app->renderDevice);
+        }
 
-    app->renderDevice->disableLighting();
+    app->renderDevice->popState();
+
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
     }
@@ -154,12 +158,12 @@ void App::main() {
 	debugController.setActive(false);
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("C:/morgan/data/ifs/sphere.ifs", 2);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
 
-        ArticulatedModel::Material& material = model->partArray[0].triListArray[0].material;
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
         material.diffuse = Color3::yellow() * .7;
-        material.transmission = Color3(.5,.3,.3);
+        material.transmit = Color3(.5,.3,.3);
         material.specular = Color3::white() * .5;
         material.specularExponent = Color3::white() * 40;
         modelArray.append(model);
@@ -167,20 +171,43 @@ void App::main() {
     
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile(
-		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
+		"d:/games/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
             );
         modelArray.append(model);
     }
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("C:/morgan/data/ifs/venus-torso.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/venus-torso.ifs", 1.5);
 
-        ArticulatedModel::Material& material = model->partArray[0].triListArray[0].material;
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_NONE;
         material.diffuse = Color3::white() * .5;
-        material.transmission = Color3(.2,.3,.9);
+        material.transmit = Color3(.2,.3,.9);
         material.specular = Color3::white() * .5;
         material.specularExponent = Color3::white() * 60;
+        modelArray.append(model);
+    }
+
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
+
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
+        material.diffuse = Color3::white() * .2;
+        material.reflect = Color3::white() * .5;
+        material.specular = Color3::white() * .5;
+        material.specularExponent = Color3::white() * 40;
+        modelArray.append(model);
+    }
+
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
+
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
+        material.diffuse = Color3::white() * .8;
+        material.specular = Color3::white() * .3;
+        material.specularExponent = Color3::white() * 40;
         modelArray.append(model);
     }
 
@@ -192,12 +219,16 @@ void App::main() {
 //		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/car35/car35.3ds", 0.1
 //		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/fs/fs.3ds"
 
+
+    lightingEnvironment = SuperShader::LightingEnvironment::create();
+    lightingEnvironment->set(G3D::toSeconds(2, 00, 00, PM), sky);
+
     Demo(this).run();
 }
 
 App::App(const GAppSettings& settings) : GApp(settings) {
     ::app = this;
-    sky = Sky::create(renderDevice, dataDir + "sky/");
+    sky = Sky::create(renderDevice, "D:/games/data/sky/", "majestic/majestic512_*.jpg");
 }
 
 

@@ -48,7 +48,7 @@ private:
     /**
      The initial size this VAR was allocated with.
      */
-    size_t              maxSize;
+    size_t              _maxSize;
 
 	void init(const void* sourcePtr, int _numElements, VARAreaRef _area,
         GLenum glformat, size_t eltSize);
@@ -135,6 +135,14 @@ public:
      */
     bool valid() const;
 
+    /** Maximum size that can be loaded via update into this VAR. */
+    inline size_t maxSize() const {
+        if (valid()) {
+            return _maxSize;
+        } else {
+            return 0;
+        }
+    }
 };
 
 }

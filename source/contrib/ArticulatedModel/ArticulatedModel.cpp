@@ -22,7 +22,8 @@ ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, cons
 
 
 void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale) {
-    Load3DS                     load;
+
+    Load3DS load;
 
     TextureManager textureManager;
 
@@ -46,6 +47,7 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
         part.keyframe = object.keyframe.approxCoordinateFrame();
         part.keyframe.translation *= scale;
         part.name = name;
+        part.indexArray = object.indexArray;
         partNameToIndex.set(part.name, p);
 
 debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nodeID);
@@ -56,15 +58,9 @@ debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nod
             }
 
             part.texCoordArray = object.texCoordArray;
-            MeshAlg::computeNormals(part.geometry, object.indexArray);
 
-            VARAreaRef varArea = VARArea::create(
-                sizeof(Vector3) * part.geometry.vertexArray.size() * 2 +
-                sizeof(Vector2) * part.texCoordArray.size() + 32, VARArea::WRITE_ONCE);
-
-            part.vertexVAR    = VAR(part.geometry.vertexArray, varArea);
-            part.normalVAR    = VAR(part.geometry.normalArray, varArea);
-            part.texCoord0VAR = VAR(part.texCoordArray, varArea);
+            part.updateNormals();
+            part.updateVAR();
 
             if (object.faceMatArray.size() == 0) {
                 // Lump everything into one part
@@ -121,6 +117,35 @@ debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nod
 }
 
 
+void ArticulatedModel::Part::updateNormals() {
+    MeshAlg::computeNormals(geometry, indexArray);
+}
+
+
+void ArticulatedModel::Part::updateVAR() {
+    size_t vtxSize = sizeof(Vector3) * geometry.vertexArray.size();
+    size_t texSize = sizeof(Vector2) * texCoordArray.size();
+
+    if ((vertexVAR.maxSize() >= vtxSize) &&
+        (normalVAR.maxSize() >= vtxSize) &&
+        (texCoord0VAR.maxSize() >= texSize)) {
+        
+        // Update existing VARs
+        vertexVAR.update(geometry.vertexArray);
+        normalVAR.update(geometry.normalArray);
+        texCoord0VAR.update(texCoordArray);
+
+    } else {
+
+        // Allocate new VARs
+        VARAreaRef varArea = VARArea::create(vtxSize * 2 + texSize + 32, VARArea::WRITE_ONCE);
+        vertexVAR    = VAR(geometry.vertexArray, varArea);
+        normalVAR    = VAR(geometry.normalArray, varArea);
+        texCoord0VAR = VAR(texCoordArray, varArea);
+    }
+}
+
+
 void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale) {
     Array<int>   	index;
     Array<Vector3>  vertex;
@@ -142,15 +167,11 @@ void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale
     part.texCoordArray = texCoord;
     MeshAlg::computeNormals(part.geometry, index);
 
-    VARAreaRef varArea = VARArea::create(
-        sizeof(Vector3) * part.geometry.vertexArray.size() * 2 +
-        sizeof(Vector2) * part.texCoordArray.size() + 32, VARArea::WRITE_ONCE);
-
-    part.vertexVAR    = VAR(part.geometry.vertexArray, varArea);
-    part.normalVAR    = VAR(part.geometry.normalArray, varArea);
-    part.texCoord0VAR = VAR(part.texCoordArray, varArea);
-
     part.keyframe = CoordinateFrame();
+
+    part.indexArray = index;
+    part.updateNormals();
+    part.updateVAR();
 
     Part::TriList& triList = part.triListArray.next();
     triList.indexArray = index;
