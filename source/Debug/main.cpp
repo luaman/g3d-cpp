@@ -283,15 +283,79 @@ void App::main() {
 
 //App::App(const GAppSettings& settings) : GApp(settings, new Win32Window(settings.window)) {
 App::App(const GAppSettings& settings) : GApp(settings) {    
-    try {
-        window()->setIcon("d:/games/cpp/source/html/g3d.ico");
-    } catch (GImage::Error e){
-        debugAssertM(false, e.reason);
+}
+
+
+void setIcon(const GImage& image) {
+    alwaysAssertM((image.channels == 3) ||
+                  (image.channels == 4), 
+                  "Icon image must have at least 3 channels.");
+
+    #ifdef G3D_WIN32
+        alwaysAssertM((image.width == 32) && (image.height == 32),
+            "Icons must be 32x32 on windows.");
+    #endif
+
+    uint8* mask = NULL;
+
+    uint32 rmask = 0xFF000000;
+    uint32 gmask = 0x00FF0000;
+    uint32 bmask = 0x0000FF00;
+    uint32 amask = 0x000000FF;
+
+    if (image.channels == 4) {
+        // Has an alpha channel; construct a mask
+        int len = iCeil(image.width / 8) * image.height;
+        mask = new uint8[len];
+        // Initialize the mask to transparent
+        System::memset(mask, 0, len);
+
+        // Set bits with an alpha value >= 127.
+        for (int y = 0; y < image.height; ++y) {
+            for (int x = 0; x < image.width; ++x) {
+                // Test this pixel
+                bool bit = image.pixel4()[y * image.width + x].a >= 127;
+
+                // Set the correct bit
+                mask[y * image.width + x / 8] |= (bit << (x % 8));
+            }
+        }
+    } else if (image.channels == 3) {
+        // Take away the 4th channel.
+        rmask = rmask >> 8;
+        gmask = gmask >> 8;
+        bmask = bmask >> 8;
+        amask = amask >> 8;
     }
-    
+
+    int pixelBitLen     = image.channels * 8;
+    int scanLineByteLen = image.channels * image.width;
+
+    SDL_Surface* surface =
+        SDL_CreateRGBSurfaceFrom((void*)image.byte(), image.width, image.height,
+        pixelBitLen, scanLineByteLen, 
+        rmask, gmask, bmask, amask);
+
+    SDL_WM_SetIcon(surface, mask);
+
+    SDL_FreeSurface(surface);
+    delete[] mask;
 }
 
 int main(int argc, char** argv) {
+
+    // The SDL docs claim that we have to call the icon routines before
+    // the first setVideo call (I believe this is not true), so I put 
+    // this code here to allow us to test before video setup.
+
+	SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+    try {
+        setIcon(GImage("d:/games/cpp/source/html/g3d.ico"));
+    } catch (GImage::Error e){
+        debugAssertM(false, e.reason);
+    }  
+
+    
     GAppSettings settings;
     settings.window.fsaaSamples = 4;
     App(settings).run();
