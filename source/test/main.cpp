@@ -759,6 +759,7 @@ int main(int argc, char* argv[]) {
 
 std::string             DATA_DIR;
 
+TextureRef              tex;
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
 CFontRef                font			= NULL;
@@ -798,13 +799,15 @@ int main(int argc, char** argv) {
     controller   = new ManualCameraController(renderDevice, userInput);
     controller->setMoveRate(10);
 
-    controller->setPosition(Vector3(15, 20, 15));
+    controller->setPosition(Vector3(0, 0, 4));
     controller->lookAt(Vector3(-2,3,-5));
 
     renderDevice->resetState();
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
 //    controller->setActive(true);
+
+    tex = Texture::fromFile("D:/graphics3d/book/data/image/lena.tga");
 
     RealTime now = getTime() - 0.001, lastTime;
 
@@ -856,7 +859,7 @@ void doGraphics() {
         renderDevice->pushState();
 
             camera->setProjectionAndCameraMatrix();
-        
+        /*
             // Setup lighting
             glEnable(GL_LIGHTING);
             glEnable(GL_LIGHT0);
@@ -878,6 +881,24 @@ void doGraphics() {
 
             glDisable(GL_LIGHTING);
             glDisable(GL_LIGHT0);
+            */
+
+            renderDevice->setTexture(0, tex);
+            renderDevice->setCullFace(RenderDevice::CULL_NONE);
+            renderDevice->setColor(Color3::WHITE);
+            renderDevice->beginPrimitive(RenderDevice::QUADS);
+                renderDevice->setTexCoord(0, Vector2(0, 0));
+                renderDevice->sendVertex(Vector3(0, 1, 0));
+
+                renderDevice->setTexCoord(0, Vector2(0, 1));
+                renderDevice->sendVertex(Vector3(0, 0, 0));
+
+                renderDevice->setTexCoord(0, Vector2(1, 1));
+                renderDevice->sendVertex(Vector3(1, 0, 0));
+
+                renderDevice->setTexCoord(0, Vector2(1, 0));
+                renderDevice->sendVertex(Vector3(1, 1, 0));
+            renderDevice->endPrimitive();
 
         renderDevice->popState();
 	    
@@ -905,10 +926,15 @@ void doUserInput() {
             }
             break;
 
+
 	    case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 endProgram = true;
+                break;
+
+            case SDLK_TAB:
+                controller->setActive(! controller->active());
                 break;
 
             // Add other key handlers here

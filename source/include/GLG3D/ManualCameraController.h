@@ -54,7 +54,7 @@ class ManualCameraController {
     /** Screen center in pixels */
     Vector2                     center;
 
-    bool                        active;
+    bool                        _active;
 
     /** Whether the app had focus on the previous call to simulate */
     bool                        appHadFocus;
@@ -74,6 +74,8 @@ public:
 
         Use this to toggle between your menu system and first person camera control.*/
     void setActive(bool a);
+
+    bool active() const;
 
     /** Initial value is 10 */
     void setMoveRate(double metersPerSecond);

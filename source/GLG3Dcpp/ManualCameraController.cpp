@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-09-27
+  @edited  2003-10-31
 */
 
 #include "G3D/platform.h"
@@ -30,12 +30,17 @@ ManualCameraController::~ManualCameraController() {
 }
 
 
+bool ManualCameraController::active() const {
+    return _active;
+}
+
+
 void ManualCameraController::reset() {
     center      = Vector2(renderDevice->getWidth() / 2.0, renderDevice->getHeight() / 2.0);
     cameraMouse = center;
     SDL_ShowCursor(SDL_ENABLE);
     guiMouse    = userInput->getMouseXY();
-    active      = false;
+    _active      = false;
     yaw         = -G3D_PI/2;
     pitch       = 0;
 	translation = Vector3::ZERO;
@@ -46,11 +51,11 @@ void ManualCameraController::reset() {
 
 void ManualCameraController::setActive(bool a) {
 
-    if (a != active) {
+    if (a != _active) {
 
-        active = a;
+        _active = a;
 
-        if (active) {
+        if (_active) {
             guiMouse = userInput->getMouseXY();
             SDL_ShowCursor(SDL_DISABLE);
             userInput->setMouseXY(cameraMouse);
@@ -86,7 +91,7 @@ void ManualCameraController::lookAt(
 void ManualCameraController::doSimulation(
     double              elapsedTime) {
 
-    if (! active) {
+    if (! _active) {
         return;
     }
             

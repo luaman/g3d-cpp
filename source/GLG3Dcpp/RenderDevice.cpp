@@ -776,8 +776,6 @@ void RenderDevice::resize(int w, int h) {
     debugAssert(h > 0);
     settings.width = w;
     settings.height = h;
-
-	setVideoMode();
 }
 
 
@@ -946,12 +944,12 @@ void RenderDevice::setCaption(const std::string& caption) {
 
 
 int RenderDevice::getWidth() const {
-    return SDL_GetVideoSurface()->w;
+    return settings.width;
 }
 
 
 int RenderDevice::getHeight() const {
-    return SDL_GetVideoSurface()->h;
+    return settings.height;
 }
 
 
