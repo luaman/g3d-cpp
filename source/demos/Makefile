@@ -18,7 +18,16 @@ $(DEMOS):
 	@echo "Building $@"; \
 	cd $@; \
         chmod u+x $(IC); \
-	$(IC); \
+	$(IC) --opt; \
 	cp -f '_build/distrib/$@d' ../; \
 	cd ../;
+
+.PHONY: clean
+clean:
+	for dir in $(DEMOS); do \
+	cd $$dir; \
+	chmod u+x $(IC); \
+	$(IC) --clean; \
+	cd ../; \
+	done;
 
