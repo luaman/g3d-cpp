@@ -53,7 +53,7 @@ private:
         virtual const Array<MeshAlg::Edge>& weldedEdges() const;
         virtual const Array<MeshAlg::Vertex>& weldedVertices() const;
         virtual const Array<Vector2>& texCoords() const;
-		virtual const bool hasTextureCoords() const ;
+		virtual const bool hasTexCoords() const ;
         virtual const Array<int>& triangleIndices() const;
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;

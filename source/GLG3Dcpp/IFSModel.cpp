@@ -385,13 +385,13 @@ const Array<MeshAlg::Vertex>& IFSModel::PosedIFSModel::weldedVertices() const {
     return model->weldedVertexArray;
 }
 
-const bool IFSModel::PosedIFSModel::hasTextureCoords() const {
+const bool IFSModel::PosedIFSModel::hasTexCoords() const {
 	return (model->texArray.size() > 0);
 }
 
 
 const Array<Vector2>&  IFSModel::PosedIFSModel::texCoords() const {
-    alwaysAssertM(hasTextureCoords(), "Model has no texture coordinates.");
+    alwaysAssertM(hasTexCoords(), "Model has no texture coordinates.");
 	return model->texArray;
 }
 
