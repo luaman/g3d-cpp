@@ -83,7 +83,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
     if (! fileExists("texture.jpg")) {
         // Go into the right directory
-        chdir("ParallaxBump_Demo");
+        chdir("Cg_Shader_Demo");
     }
 
     texture = Texture::fromFile("texture.jpg");
@@ -214,7 +214,7 @@ void App::main() {
 
 
 App::App(const GAppSettings& settings) : GApp(settings) {
-    renderDevice->setCaption("G3D Parallax Bump Mapping Demo");
+    renderDevice->setCaption("Cg Demo");
 }
 
 

@@ -1,4 +1,9 @@
 !!ARBvp1.0
+#
+# Twists a model like a cork-screw 
+# Maintainer: Morgan McGuire, matrix@graphics3d.com
+#
+
 ATTRIB iPos         = vertex.position;
 ATTRIB iNormal      = vertex.normal;
 PARAM  mvinv[4]     = { state.matrix.modelview.invtrans };
@@ -38,7 +43,6 @@ DP4   oPos.z, mvp[2], temp;
 DP4   oPos.w, mvp[3], temp;
 
 # Note: we aren't rotating the normals (we could, though)
-
 
 # Transform the normal to eye coordinates.
 DP3   xfNormal.x, mvinv[0], iNormal;

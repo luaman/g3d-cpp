@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     RealTime now = System::getTick() - 0.001, lastTime;
 
     {
-        std::string p = "GLProgram_Demo/";
+        std::string p = "ASM_Shader_Demo/";
         if (! fileExists(p + "twist.vp")) {
             p = "../" + p;
         }
