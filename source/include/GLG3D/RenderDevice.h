@@ -726,6 +726,7 @@ public:
     }
 
     void setViewport(const Rect2D& v);
+    Rect2D getViewport() const;
 
     /**
      Vertices are "sent" rather than "set" because they
@@ -1087,10 +1088,11 @@ public:
         return lightSaturation;
     }
 
-    /**
-     Set up for 2D rendering.
-     */
     void push2D();
+
+    /**
+     Set up for traditional 2D rendering (origin = upper left, y increases downwards).
+     */
     void push2D(const Rect2D& viewport);
     void pop2D();
 

@@ -1051,7 +1051,7 @@ void RenderDevice::cleanup() {
 
 
 void RenderDevice::push2D() {
-    push2D(Rect2D(0, 0, getWidth(), getHeight()));
+    push2D(getViewport());
 }
 
 
@@ -1445,6 +1445,12 @@ void RenderDevice::setViewport(const Rect2D& v) {
         state.viewport = v;
     }
 }
+
+
+Rect2D RenderDevice::getViewport() const {
+    return state.viewport;
+}
+
 
 void RenderDevice::setDepthTest(DepthTest test) {
     debugAssert(! inPrimitive);
