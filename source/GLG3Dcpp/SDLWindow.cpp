@@ -180,13 +180,23 @@ void SDLWindow::setGammaRamp(const Array<uint16>& gammaRamp) {
     Log* debugLog = Log::common();
 
     uint16* ptr = const_cast<uint16*>(gammaRamp.getCArray());
-    bool success = (SDL_SetGammaRamp(ptr, ptr, ptr) != -1);
+    #ifdef WIN32
+        // On windows, use the more reliable SetDeviceGammaRamp function.
+        // It requires separate RGB gamma ramps.
+        uint16 wptr[3 * 256];
+        for (int i = 0; i < 256; ++i) {
+            wptr[i] = wptr[i + 256] = wptr[i + 512] = ptr[i]; 
+        }
+        BOOL success = SetDeviceGammaRamp(getHDC(), wptr);
+    #else
+        bool success = (SDL_SetGammaRamp(ptr, ptr, ptr) != -1);
+    #endif
 
     if (! success) {
-        if (debugLog) {debugLog->println("Error setting brightness!");}
+        if (debugLog) {debugLog->println("Error setting gamma ramp!");}
 
         #ifdef WIN32
-            debugAssertM(false, "Failed to set brightness");
+            debugAssertM(false, "Failed to set gamma ramp");
         #else
             if (debugLog) {debugLog->println(SDL_GetError());}
             debugAssertM(false, SDL_GetError());

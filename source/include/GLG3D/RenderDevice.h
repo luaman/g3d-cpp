@@ -57,7 +57,7 @@ class VAR;
  <P> glEnable(GL_NORMALIZE) is set by default.  glEnable(GL_COLOR_MATERIAL) 
      is enabled by default.
 
- <P> For stereo rendering, set <CODE>RenderDeviceSettings::stereo = true</CODE>
+ <P> For stereo rendering, set <CODE>GWindowSettings::stereo = true</CODE>
      and use glDrawBuffer to switch which eye is being rendered.  Only
      use RenderDevice::beginFrame/RenderDevice::endFrame once per frame,
      but do clear both buffers separately.
@@ -70,7 +70,7 @@ class VAR;
  Example
   <PRE>
    RenderDevice renderDevice = new RenderDevice();
-   renderDevice->init(RenderDeviceSettings());
+   renderDevice->init(GWindowSettings());
   </PRE>
 
   RenderDevice requires SDL and OpenGL.  
@@ -896,7 +896,7 @@ private:
 
     bool                            _initialized;
 
-    RenderDeviceSettings            settings;
+    GWindowSettings                 settings;
 
 public:
 
@@ -964,7 +964,16 @@ public:
      */
     int                 polygonCount;
  
-    bool init(const RenderDeviceSettings& settings, class Log* log = NULL);
+    /**
+     Automatically constructs an SDLWindow then calls the other init
+     routine (provided for backwards compatibility).
+     */
+    bool init(const GWindowSettings& settings, class Log* log = NULL);
+
+    /**
+     The renderDevice will delete the window on cleanup.
+     */
+    bool init(GWindow* window, class Log* log = NULL);
 
     /** Returns true after RenderDevice::init has been called. */
     bool initialized() const;

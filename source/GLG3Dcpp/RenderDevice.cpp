@@ -401,10 +401,16 @@ bool RenderDevice::supportsOpenGLExtension(
 
 
 bool RenderDevice::init(
-    const RenderDeviceSettings& _settings,
+    const GWindowSettings&      _settings,
     Log*                        log) {
 
-    settings = _settings;
+    return init(new SDLWindow(_settings), log);
+}
+
+
+bool RenderDevice::init(GWindow* _window, Log* log) {
+    window = _window;
+    window->getSettings(settings);
 
     debugAssert(! initialized());
 
@@ -412,8 +418,6 @@ bool RenderDevice::init(
 
     beginEndFrame = 0;
     if (debugLog) {debugLog->section("Initialization");}
-
-    window = new SDLWindow(_settings);
 
     debugAssert((settings.lightSaturation >= 0.5) && (settings.lightSaturation <= 2.0));
 
@@ -514,20 +518,11 @@ bool RenderDevice::init(
     if (debugLog) {
     debugLog->section("Video Status");
 
-    int actualFSAABuffers = 0, actualFSAASamples = 17;
-#ifdef SDL_1_26
-    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
-    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
-#endif
+    GWindowSettings actualSettings;
+    window->getSettings(actualSettings);
 
     // This call is here to make GCC realize that isOk is used.
     (void)isOk(false);
-
-    int joy = SDL_NumJoysticks();
-
-    if ((joy < 0) || (joy > 10)) {
-        joy = 0;
-    }
 
     debugLog->printf(
              "Capability    Minimum   Desired   Received  Ok?\n"
@@ -540,15 +535,11 @@ bool RenderDevice::init(
              "Green                           %4d bits   %s\n"
              "Blue                            %4d bits   %s\n"
              "TextureUnits              %4d    %3d:%3d   %s\n"
-             "FSAA                      %2d:%2d    %2d:%2d    %s\n"
+             "FSAA                      %2d    %2d    %s\n"
 
              "Width             %8d pixels           %s\n"
              "Height            %8d pixels           %s\n"
-             "Mode                 %10s             %s\n\n"
-
-             "* JOYSTICK\n"
-             "Number                              %4d    %s\n\n",
-                         
+             "Mode                 %10s             %s\n\n",
 
              minimumDepthBits, desiredDepthBits, depthBits, isOk(depthOk),
              minimumStencilBits, desiredStencilBits, stencilBits, isOk(stencilOk),
@@ -559,12 +550,11 @@ bool RenderDevice::init(
              blueBits, "ok", 
 
              desiredTextureUnits, _numTextureUnits, _numTextureCoords, isOk(_numTextureUnits >= desiredTextureUnits),
-             1, settings.fsaaSamples, actualFSAABuffers, actualFSAASamples, isOk(settings.fsaaSamples == actualFSAASamples),
+             settings.fsaaSamples, actualSettings.fsaaSamples, isOk(settings.fsaaSamples == actualSettings.fsaaSamples),
 
              settings.width, "ok",
              settings.height, "ok",
-             (settings.fullScreen ? "Fullscreen" : "Windowed"), "ok",             
-             joy, "ok"
+             (settings.fullScreen ? "Fullscreen" : "Windowed"), "ok"
              );
     }
 
@@ -597,8 +587,7 @@ void RenderDevice::setGamma(
     double              brightness,
     double              gamma) {
     
-    uint16 gammaRamp[256];
-    uint16 rgbGammaRamp[256 * 3];
+    Array<uint16> gammaRamp(256);
 
     for (int i = 0; i < 256; ++i) {
         gammaRamp[i] =
@@ -606,30 +595,9 @@ void RenderDevice::setGamma(
                       max(0, 
                           pow((brightness * (i + 1)) / 256.0, gamma) * 
                           65535 + 0.5));
-
-        rgbGammaRamp[i] = gammaRamp[i];
-        rgbGammaRamp[i + 256] = gammaRamp[i];
-        rgbGammaRamp[i + 512] = gammaRamp[i];
 	}
-
-    // TODO: change to SDLWindow call
-
-    #ifdef WIN32
-        BOOL success = SetDeviceGammaRamp(getWindowHDC(), rgbGammaRamp);
-    #else
-        bool success = (SDL_SetGammaRamp(gammaRamp, gammaRamp, gammaRamp) != -1);
-    #endif
     
-    if (! success) {
-        if (debugLog) {debugLog->println("Error setting brightness!");}
-
-        #ifdef WIN32
-            debugAssertM(false, "Failed to set brightness");
-        #else
-            if (debugLog) {debugLog->println(SDL_GetError());}
-            debugAssertM(false, SDL_GetError());
-        #endif
-    }
+    window->setGammaRamp(gammaRamp);
 }
 
 
