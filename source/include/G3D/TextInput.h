@@ -8,9 +8,9 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2004-10-26
+ @edited  2005-01-06
 
- Copyright 2000-2004, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
  */
 
@@ -110,14 +110,37 @@ public:
 /**
  A simple tokenizer for reading text files.  TextInput handles C++ like
  text including single line comments, block comments, quoted strings with
- escape sequences, and operators.  
+ escape sequences, and operators.  TextInput recognizes four categories of
+ tokens, which are separated by white space, quotation marks, or the end of 
+ a recognized operator:
 
- The special ".." and "..." tokens are recognized in addition to normal C++ operators.
+  <DT><CODE>Token::SINGLE_QUOTED_TYPE</CODE> string of characters surrounded by single quotes, e.g., 'x', '\0', 'foo'.
+  <DT><CODE>Token::DOUBLE_QUOTED_TYPE</CODE> string of characters surrounded by double quotes, e.g., "x", "abc\txyz", "b o b".
+  <DT><CODE>Token::SYMBOL_TYPE</CODE> legal C++ operators, keywords, and identifiers.  e.g., >=, Foo, _X, class, {
+  <DT><CODE>Token::INTEGER_TYPE</CODE> numbers without decimal places or exponential notation. e.g., 10, 0x17F, 32, 0, -155
+  <DT><CODE>Token::FLOATING_POINT_TYPE</CODE> numbers with decimal places or exponential nottion. e.g., 1e3, -1.2, .4, 0.5
 
- Negative numbers are handled specially-- see the note on read().
+ <P>The special ".." and "..." tokens are recognized in addition to normal C++ operators.
 
-  e.g.
-  <pre>
+ Negative numbers are handled specially because of the ambiguity between unary minus and negative numbers-- 
+ see the note on TextInput::read.
+
+  TextInput does not have helper functions for types with non-obvious formatting, or 
+  helpers that would be redundant.  Use the serialize methods instead for 
+  parsing specific types like int, Vector3, and Color3.
+
+  Inside quoted strings escape sequences are converted.  Thus the string
+  token for ["a\nb"] is 'a', followed by a newline, followed by 'b'.  Outside
+  of quoted strings, escape sequences are not converted, so the token sequence
+  for [a\nb] is symbol 'a', symbol '\', symbol 'nb' (this matches what a C++ parser
+  would do).  The exception is that a specified TextInput::Options::otherCommentCharacter
+  preceeded by a backslash is assumed to be an escaped comment character and is
+  returned as a symbol token instead of being parsed as a comment 
+  (this is what a LaTex or VRML parser would do).
+
+  <B>Examples</B>
+
+  <PRE>
   TextInput ti(TextInput::FROM_STRING, "name = \"Max\", height = 6");
 
   Token t;
@@ -132,24 +155,16 @@ public:
 
   std::string name = ti.read().sval;
   ti.read();
-  </pre>
+  </PRE>
 
-  There is no TextOutput class because printf and character streams fill
-  that role nicely in C++.
+  <PRE>
+  TextInput ti(TextInput::FROM_STRING, "name = \"Max\", height = 6");
+  ti.readSymbols("name", "=");
+  std::string name = ti.readString();
+  ti.readSymbols(",", "height", "=");
+  double height = ti. readNumber();
+  </PRE>
 
-
-  TextInput does not have helper functions for types with non-obvious formatting, or 
-  helpers that would be redundant.  Use the serialize methods instead for 
-  parsing specific types like int, Vector3, and Color3.
-
-  Inside quoted strings escape sequences are converted.  Thus the string
-  token for ["a\nb"] is 'a', followed by a newline, followed by 'b'.  Outside
-  of quoted strings, escape sequences are not converted, so the token sequence
-  for [a\nb] is symbol 'a', symbol '\', symbol nb (this matches what a C++ parser
-  would do).  The exception is that a specified TextInput::Options::otherCommentCharacter
-  preceeded by a backslash is assumed to be an escaped comment character and is
-  returned as a symbol token instead of being parsed as a comment 
-  (this is what a LaTex or VRML parser would do).
  */
 class TextInput {
 public:

@@ -12,6 +12,9 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> New G3D::PosedModel rendering methods appropriate for shadow casting
+           (with efficient default implementations).
+     <LI> G3D::Lighting
      <LI> MeshAlg::computeBounds(vertex, index, ...)
      <LI> RenderDevice::colorWriteEnabled()
      <LI> VAR::maxSize

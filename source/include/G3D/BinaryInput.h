@@ -6,7 +6,7 @@
  @created 2001-08-09
  @edited  2004-03-30
 
- Copyright 2000-2004, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
  */
 
