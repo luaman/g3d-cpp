@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-08-18
+ @edited  2004-09-09
  */
 
 #ifndef G3D_SHADER_H
@@ -350,6 +350,8 @@ public:
 		void set(const std::string& var, const TextureRef& val);
         void set(const std::string& var, const CoordinateFrame& val);
         void set(const std::string& var, const Matrix4& val);
+        void set(const std::string& var, const Color4& val);
+        void set(const std::string& var, const Color3& val);
         void set(const std::string& var, const Vector4& val);
         void set(const std::string& var, const Vector3& val);
         void set(const std::string& var, const Vector2& val);

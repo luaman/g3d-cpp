@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-08-18
+ @edited  2004-09-09
  */
 
 #include "GLG3D/Shader.h"
@@ -650,9 +650,24 @@ void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector3& v
     arg.type = GL_FLOAT_VEC3_ARB;
     arg.vector[0] = Vector4(val, 0);
     argTable.set(var, arg);
-
 }
 
+
+void VertexAndPixelShader::ArgList::set(const std::string& var, const Color4& val) {
+    Arg arg;
+    arg.type = GL_FLOAT_VEC4_ARB;
+    arg.vector[0] = val;
+    argTable.set(Vector3(var.r, var.g, var.b, var.a), arg);
+}
+
+
+void VertexAndPixelShader::ArgList::set(const std::string& var, const Color3& val) {
+    Arg arg;
+    arg.type = GL_FLOAT_VEC3_ARB;
+    arg.vector[0] = Vector4(val.r, val.g, val.b, 0);
+    argTable.set(var, arg);
+
+}
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector2& val) {
     Arg arg;
