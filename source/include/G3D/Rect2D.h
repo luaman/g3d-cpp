@@ -68,7 +68,7 @@ private:
         //     if the point is inside the side and the previous one was also inside, append the points
         //     if the point is inside the side and the previous one was outside, cut the line    
         for (int i = 1; i <= inPoly.length(); ++i) {
-            Vector2 pt2 = inPoly[(i + i0) % inPoly.length()];
+            T pt2 = inPoly[(i + i0) % inPoly.length()];
             bool    c2  = (negate * pt2[axis]) < (negate * p);
 
             if (c1 ^ c2) {

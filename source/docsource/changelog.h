@@ -150,6 +150,7 @@
      <LI> Added G3D::Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: Rect2D::clip broken for types other than Vector2
      <LI> Fix: RenderDevice::configureShadowMap result depends on objectToWorldMatrix
      <LI> Fix: [ 1150650 ] DebugBreak() undefined
      <LI> Fix: [ 1111534 ] Network Demo crashes starting 2nd server on same machine
