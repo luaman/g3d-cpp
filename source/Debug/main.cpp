@@ -84,13 +84,15 @@ void Demo::doGraphics() {
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
 
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
     app->renderDevice->clear(true, true, true);
+    Draw::axes(app->renderDevice);
 
-    debugAssertM(false, "Intentional assertion");
+//    debugAssertM(false, "Intentional assertion");
 
 }
 
