@@ -1,70 +1,45 @@
 /**
-  @file Camera.cpp
+  @file GCamera.cpp
 
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-11-11
+  @edited  2003-11-13
 */
 
-#include "GLG3D/Camera.h"
-#include "GLG3D/RenderDevice.h"
+#include "G3D/GCamera.h"
+#include "G3D/Rect2D.h"
 
 namespace G3D {
 
 
-Camera::Camera(RenderDevice* r) {
-    debugAssert(r != NULL);
-	renderDevice = r;
+GCamera::GCamera() {
     nearPlane   = 0.1;
     farPlane    = 300;
 	setFieldOfView(toRadians(55));
 }
 
 
-Camera::~Camera() {
+GCamera::~GCamera() {
 }
 
 
-CoordinateFrame Camera::getCoordinateFrame() const {
+CoordinateFrame GCamera::getCoordinateFrame() const {
 	return cframe;
 }
 
 
-void Camera::getCoordinateFrame(CoordinateFrame& c) const {
+void GCamera::getCoordinateFrame(CoordinateFrame& c) const {
 	c = cframe;
 }
 
 
-void Camera::setCoordinateFrame(const CoordinateFrame& c) {
+void GCamera::setCoordinateFrame(const CoordinateFrame& c) {
 	cframe = c;
 }
 
 
-void Camera::setProjectionAndCameraMatrix() const {
-    
-    double viewport[4];
-    glGetDoublev(GL_VIEWPORT, viewport);
-
-    double pixelAspect = viewport[2] / viewport[3];
-
-    double y = nearPlane * tan(fieldOfView / 2);
-    double x = y * pixelAspect;
-
-    double r, l, t, b, n, f;
-    n = nearPlane;
-    f = farPlane;
-    r = x;
-    l = -x;
-    t = y;
-    b = -y;
-
-    renderDevice->setProjectionMatrix(Matrix4::perspectiveProjection(l, r, b, t, n, f));
-	renderDevice->setCameraToWorldMatrix(cframe);
-}
-
-
-void Camera::setFieldOfView(double angle) {
+void GCamera::setFieldOfView(double angle) {
 	debugAssert((angle < G3D_PI) && (angle > 0));
 
 	fieldOfView = angle;
@@ -75,48 +50,43 @@ void Camera::setFieldOfView(double angle) {
 }
  
 
-void Camera::setImagePlaneDepth(
+void GCamera::setImagePlaneDepth(
     double                                  depth,
-    double                                  width,
-    double                                  height) {
+    const class Rect2D&                     viewport) {
 	
     debugAssert(depth > 0);
-	setFieldOfView(2 * atan(width / (2 * depth)));
+	setFieldOfView(2 * atan(viewport.width() / (2 * depth)));
 }
 
 
-double Camera::getImagePlaneDepth(
-    double                                  width,
-    double                                  height) const {
+double GCamera::getImagePlaneDepth(
+    const class Rect2D&                     viewport) const {
 
     // The image plane depth has been pre-computed for 
     // a 1x1 image.  Now that the image is width x height, 
     // we need to scale appropriately. 
 
-    return imagePlaneDepth * height;
+    return imagePlaneDepth * viewport.height();
 }
 
 
-double Camera::getViewportWidth() const {
+double GCamera::getViewportWidth(const Rect2D& viewport) const {
     return nearPlane / imagePlaneDepth;
 }
 
 
-double Camera::getViewportHeight() const {
-    int screenWidth  = renderDevice->getWidth();
-    int screenHeight = renderDevice->getHeight();
-
-    return getViewportWidth() * 
-        ((double)screenHeight / (double)screenWidth);
+double GCamera::getViewportHeight(const Rect2D& viewport) const {
+    return getViewportWidth(viewport) * viewport.height() / viewport.width();
 }
 
 
-Ray Camera::worldRay(
+Ray GCamera::worldRay(
     double                                  x,
-    double                                  y) const {
+    double                                  y,
+    const Rect2D&                           viewport) const {
 
-    int screenWidth  = renderDevice->getWidth();
-    int screenHeight = renderDevice->getHeight();
+    int screenWidth  = viewport.width();
+    int screenHeight = viewport.height();
 
     Ray out;
     // Set the origin to 0
@@ -125,12 +95,10 @@ Ray Camera::worldRay(
     double cx = screenWidth  / 2.0;
     double cy = screenHeight / 2.0;
 
-    // TODO: figure out why we have to use the renderDevice height here, instead of the
-    // VIEWPORT height
     out.direction =
         Vector3( (x - cx) * -CoordinateFrame::zLookDirection,
                 -(y - cy),
-                 getImagePlaneDepth(renderDevice->getWidth(), renderDevice->getHeight()) * CoordinateFrame::zLookDirection);
+                 getImagePlaneDepth(viewport) * CoordinateFrame::zLookDirection);
 
     out = cframe.toWorldSpace(out);
 
@@ -141,11 +109,13 @@ Ray Camera::worldRay(
 }
 
 
-Vector3 Camera::project(
-    const Vector3&                      point) const {
+Vector3 GCamera::project(
+    const Vector3&                      point,
+    const Rect2D&                       viewport) const {
 
-    int screenWidth  = renderDevice->getWidth();
-    int screenHeight = renderDevice->getHeight();
+
+    int screenWidth  = viewport.width();
+    int screenHeight = viewport.height();
 
     Vector3 out = cframe.pointToObjectSpace(point);
     double w = out.z * CoordinateFrame::zLookDirection;
@@ -156,7 +126,7 @@ Vector3 Camera::project(
     debugAssert(w > 0);
 
     // Find where it hits an image plane of these dimensions
-    double zImagePlane = getImagePlaneDepth((double)screenWidth, (double)screenHeight);
+    double zImagePlane = getImagePlaneDepth(viewport);
 
     // Recover the distance
     double rhw = zImagePlane / w;
@@ -170,25 +140,23 @@ Vector3 Camera::project(
 }
 
 
-double Camera::worldToScreenSpaceArea(double area, double z) const {
+double GCamera::worldToScreenSpaceArea(double area, double z, const Rect2D& viewport) const {
 
     if (z >= 0) {
         return inf;
     }
 
-    int screenWidth  = renderDevice->getWidth();
-    int screenHeight = renderDevice->getHeight();
-
-    double zImagePlane = getImagePlaneDepth((double)screenWidth, (double)screenHeight);
+    double zImagePlane = getImagePlaneDepth(viewport);
 
     return area * square(zImagePlane / z);
 }
 
 
-double Camera::getZValue(
+/*
+double GCamera::getZValue(
     double              x,
     double              y,
-    int                 width,
+    const class Rect2D&                     viewport    int                 width,
     int                 height,
     double              lineOffset) const {
 
@@ -219,14 +187,15 @@ double Camera::getZValue(
         return  1 / ((((1/f) - (1/n)) * (depth - lineOffset) / (1 - lineOffset)) + 1/n);
     }
 }
+*/
 
 
-
-void Camera::getClipPlanes(
+void GCamera::getClipPlanes(
+    const Rect2D&       viewport,
     Plane*              clip) const {
 
-    int screenWidth  = renderDevice->getWidth();
-    int screenHeight = renderDevice->getHeight();
+    double screenWidth  = viewport.width();
+    double screenHeight = viewport.height();
 
 	// First construct the planes.  Do this in the order of near, left,
     // right, bottom, top, far so that early out clipping tests are likely
@@ -277,15 +246,16 @@ void Camera::getClipPlanes(
 
 
 
-void Camera::get3DViewportCorners(
+void GCamera::get3DViewportCorners(
+    const Rect2D& viewport,
     Vector3& outUR,
     Vector3& outUL,
     Vector3& outLL,
     Vector3& outLR) const {
 
     const double sign            = CoordinateFrame::zLookDirection;
-    const double w               = -sign * getViewportWidth() / 2;
-    const double h               = getViewportHeight() / 2;
+    const double w               = -sign * getViewportWidth(viewport) / 2;
+    const double h               = getViewportHeight(viewport) / 2;
     const double z               = -sign * getNearPlaneZ();
 
     // Compute the points
@@ -301,11 +271,11 @@ void Camera::get3DViewportCorners(
     outLL = cframe.pointToWorldSpace(outLL);
 }
 
-void Camera::setPosition(const Vector3& t) { 
+void GCamera::setPosition(const Vector3& t) { 
     cframe.translation = t;
 }
 
-void Camera::lookAt(const Vector3& position) { 
+void GCamera::lookAt(const Vector3& position) { 
     cframe.lookAt(position);
 }
 

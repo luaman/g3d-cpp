@@ -584,7 +584,7 @@ public:
     /**
     To set a typical 3D perspective matrix, use either
      <CODE>renderDevice->setProjectionMatrix(Matrix4::perspectiveProjection(...)) </CODE>
-     or call Camera::setCameraAndProjectionMatrix.
+     or call setProjectionAndCameraMatrix.
      */
     void setProjectionMatrix(const Matrix4& P);
 
@@ -677,6 +677,8 @@ public:
     void sendVertex(const Vector2& vertex);
     void sendVertex(const Vector3& vertex);
     void sendVertex(const Vector4& vertex);
+
+    void setProjectionAndCameraMatrix(const class GCamera& camera);
 
     void beginPrimitive(Primitive p);
     void endPrimitive();

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-11-12
+ @edited  2003-11-13
  */
 
 
@@ -1392,6 +1392,25 @@ void RenderDevice::setViewport(const Rect2D& v) {
         glViewport(v.x0(), v.y0(), v.width(), v.height());
         state.viewport = v;
     }
+}
+
+
+void RenderDevice::setProjectionAndCameraMatrix(const GCamera& camera) {
+    double pixelAspect = state.viewport.width() / state.viewport.height();
+
+    double y = -camera.getNearPlaneZ() * tan(camera.getFieldOfView() / 2.0);
+    double x = y * pixelAspect;
+
+    double r, l, t, b, n, f;
+    n = -camera.getNearPlaneZ();
+    f = -camera.getFarPlaneZ();
+    r = x;
+    l = -x;
+    t = y;
+    b = -y;
+
+    setProjectionMatrix(Matrix4::perspectiveProjection(l, r, b, t, n, f));
+	setCameraToWorldMatrix(camera.getCoordinateFrame());
 }
 
 

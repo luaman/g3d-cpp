@@ -86,10 +86,6 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\GLG3Dcpp\Camera.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\GLG3Dcpp\CFont.cpp
 # End Source File
 # Begin Source File
@@ -360,10 +356,6 @@ SOURCE=.\include\glh\GL\tube.h
 SOURCE=.\include\glh\GL\wglext.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\include\GLG3D\Camera.h
-# End Source File
 # Begin Source File
 
 SOURCE=.\include\GLG3D\CFont.h

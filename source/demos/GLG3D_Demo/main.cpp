@@ -70,7 +70,7 @@ UserInput*              userInput	= NULL;
 SkyRef                  sky		    = NULL;
 VARArea*		        varDynamic	= NULL;
 VARArea*		        varStatic	= NULL;
-Camera*			        camera		= NULL;
+GCamera*			        camera		= NULL;
 
 bool                    endProgram	= false;
 
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     
 	renderDevice = new RenderDevice();
     renderDevice->init(RenderDeviceSettings(), debugLog);
-    camera 	 = new Camera(renderDevice);
+    camera 	 = new GCamera(renderDevice);
 
     // Allocate the two VARAreas used in this demo
     varStatic  = renderDevice->createVARArea(1024 * 64);

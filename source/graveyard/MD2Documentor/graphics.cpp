@@ -14,7 +14,7 @@
 // Defined in main.cpp
 extern CFontRef                font;
 extern RenderDevice*           renderDevice;
-extern Camera*		           camera;
+extern GCamera*		           camera;
 extern MD2Model                model;
 extern Array<TextureRef>       modelTexture;
 extern MD2Model                weapon;

@@ -4,20 +4,21 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-11-11
+ @edited  2003-11-13
  */
 
 #ifndef G3D_GAPP_H
 #define G3D_GAPP_H
 
-#include "GLG3D/RenderDevice.h"
 #include "GLG3D/CFont.h"
+#include "G3D/GCamera.h"
+#include "GLG3D/ManualCameraController.h"
+#include "GLG3D/RenderDevice.h"
 
 namespace G3D {
 
+class RenderDevice;
 class UserInput;
-class Camera;
-class ManualCameraController;
 
 class GAppSettings {
 public:
@@ -91,12 +92,12 @@ public:
     /**
      A default camera that is driven by the debugController.
      */
-    Camera*					debugCamera;
+    GCamera					debugCamera;
 
     /**
      When in debugMode
      */
-    ManualCameraController* debugController;
+    ManualCameraController  debugController;
 
     /**
      Strings that have been printed with debugPrint.

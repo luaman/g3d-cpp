@@ -15,7 +15,7 @@
 #include "MD2.h"
 
 extern RenderDevice* renderDevice;
-extern Camera*       camera;
+extern GCamera*       camera;
 extern CFontRef      font;
 
 IFSModel::IFSModel(const std::string& filename) {

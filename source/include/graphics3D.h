@@ -107,6 +107,7 @@
 #include "G3D/MeshAlg.h"
 #include "G3D/vectorMath.h"
 #include "G3D/Rect2D.h"
+#include "G3D/GCamera.h"
 
 #endif
 

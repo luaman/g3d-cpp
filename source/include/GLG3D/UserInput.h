@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-28
-  @edited  2003-01-25
+  @edited  2003-11-13
  */
 
 #ifndef G3D_USERINPUT_H
@@ -106,9 +106,9 @@ public:
     static KeyCode stringToKeyCode(const std::string& s);
 
 	bool                    useJoystick;
-
+    
 	/**
-	 Do not instantiate until after G3D::RenderDevice::init has been invoked.
+	 Do not call until after G3D::RenderDevice::init has been invoked.
 
      @param keyMapping Mapping of various key codes to UI functions.
      If no mapping is provided, the arrow keys and WASD are mapped
@@ -122,7 +122,7 @@ public:
       UserInput ui(&map);
       </PRE>
 	 */
-	UserInput(Table<KeyCode, UIFunction>* keyMapping = NULL);
+    UserInput(Table<KeyCode, UIFunction>* keyMapping = NULL);
 
     void setKeyMapping(Table<KeyCode, UIFunction>* keyMapping = NULL);
 

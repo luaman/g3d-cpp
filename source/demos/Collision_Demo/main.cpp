@@ -53,7 +53,7 @@ CFontRef                font            = NULL;
 UserInput*              userInput       = NULL;
 VARArea*                varDynamic      = NULL;
 VARArea*                varStatic       = NULL;
-Camera*                 camera          = NULL;
+GCamera*                 camera          = NULL;
 Scene*                  scene           = NULL;
 ManualCameraController* controller      = NULL;
 
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     RenderDeviceSettings settings;
     settings.depthBits = depthBits;
     renderDevice->init(settings, debugLog);
-    camera       = new Camera(renderDevice);
+    camera       = new GCamera(renderDevice);
 
     // Verify we have the shadow extension
     if (! renderDevice->supportsOpenGLExtension("GL_ARB_shadow")) {

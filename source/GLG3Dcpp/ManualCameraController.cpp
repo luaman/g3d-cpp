@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-10-31
+  @edited  2003-11-13
 */
 
 #include "G3D/platform.h"
@@ -15,18 +15,21 @@
 
 namespace G3D {
 
-ManualCameraController::ManualCameraController(RenderDevice* device, UserInput* input) :
-    renderDevice(device), userInput(input) {
+ManualCameraController::ManualCameraController(){}
+
+
+void ManualCameraController::init(class RenderDevice* device, class UserInput* input) {
+    renderDevice = device;
+    userInput    = input;
 
     debugAssert(renderDevice);
     debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a ManualCameraController");
 
     reset();
+
 }
 
-
 ManualCameraController::~ManualCameraController() {
-    setActive(false);
 }
 
 

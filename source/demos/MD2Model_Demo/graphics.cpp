@@ -12,7 +12,7 @@
 // Defined in main.cpp
 extern RenderDevice*           renderDevice;
 extern CFontRef                font;
-extern Camera*		           camera;
+extern GCamera*		           camera;
 extern MD2Model                model;
 extern Array<TextureRef>       modelTexture;
 extern MD2Model                weapon;

@@ -27,7 +27,7 @@ Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
 CFontRef                font			= NULL;
 UserInput*              userInput		= NULL;
-Camera*					camera			= NULL;
+GCamera*					camera			= NULL;
 ManualCameraController* controller      = NULL;
 bool                    endProgram		= false;
 GameTime                gameTime        = 0;
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     renderDevice->init(screenWidth, screenHeight, debugLog, 1.0, false,
         2*1024*1024, true, 8, 0, 24, 0);
     renderDevice->setCaption("G3D::MD2Model Demo");
-    camera 	     = new Camera(renderDevice);
+    camera 	     = new GCamera(renderDevice);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 

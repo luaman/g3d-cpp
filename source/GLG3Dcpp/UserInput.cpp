@@ -56,10 +56,10 @@ UserInput::UserInput(
 	useJoystick = (SDL_NumJoysticks() > 0);
 
 	if (useJoystick) {
-	  SDL_JoystickEventState(SDL_ENABLE);
-	  // Turn on joystick 0
-	  joy = SDL_JoystickOpen(0);
-	  debugAssert(joy);
+        SDL_JoystickEventState(SDL_ENABLE);
+        // Turn on joystick 0
+        joy = SDL_JoystickOpen(0);
+        debugAssert(joy);
 	}
 }
 

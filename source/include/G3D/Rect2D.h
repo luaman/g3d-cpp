@@ -17,6 +17,10 @@
 
 namespace G3D {
 
+/**
+ If you are using this class for pixel rectangles, keep in mind that the last
+ pixel you can draw to is at x0() + width() - 1.
+ */
 class Rect2D {
 private:
     Vector2 min, max;

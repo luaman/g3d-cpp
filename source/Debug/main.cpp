@@ -36,8 +36,8 @@ SphereEntity::SphereEntity(const Vector3& position, double radius, const Color4&
     color = _color;
 }
 
-void SphereEntity::render(RenderDevice* device) {
-    Draw::sphere(sphere, device, color, selected ? Color3::BLACK : Color4::CLEAR);
+void SphereEntity::render(RenderDevice* renderDevice) {
+    Draw::sphere(sphere, renderDevice, color, selected ? Color3::BLACK : Color4::CLEAR);
 }
 
 RealTime SphereEntity::getIntersectionTime(const Ray& ray) {
@@ -69,22 +69,22 @@ IFSEntity::IFSEntity(const std::string& filename, const Vector3& pos) {
     cframe = CoordinateFrame(pos);
 }
 
-void IFSEntity::render(RenderDevice* device) {
-    device->pushState();
-        device->setObjectToWorldMatrix(cframe);
+void IFSEntity::render(RenderDevice* renderDevice) {
+    renderDevice->pushState();
+        renderDevice->setObjectToWorldMatrix(cframe);
 
         if (selected) {
-            device->setColor(Color3::BLACK);
-            device->setLineWidth(2);
-            device->setRenderMode(RenderDevice::RENDER_WIREFRAME);
-            model.render(device);
-            device->setRenderMode(RenderDevice::RENDER_SOLID);
-            device->setPolygonOffset(0.5);
+            renderDevice->setColor(Color3::BLACK);
+            renderDevice->setLineWidth(2);
+            renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+            model.render(renderDevice);
+            renderDevice->setRenderMode(RenderDevice::RENDER_SOLID);
+            renderDevice->setPolygonOffset(0.5);
         }
 
-        device->setColor(Color3::WHITE);
-        model.render(device);
-    device->popState();
+        renderDevice->setColor(Color3::WHITE);
+        model.render(renderDevice);
+    renderDevice->popState();
 }
 
 RealTime IFSEntity::getIntersectionTime(const Ray& ray) {
@@ -119,8 +119,8 @@ public:
 
 
 void Demo::init()  {
-    app->debugCamera->setPosition(Vector3(0,4,10));
-    app->debugCamera->lookAt(Vector3::ZERO);
+    app->debugCamera.setPosition(Vector3(0,4,10));
+    app->debugCamera.lookAt(Vector3::ZERO);
     entityArray.append(new SphereEntity(Vector3(0, 1, 0), 1, Color3::WHITE));
     entityArray.append(new SphereEntity(Vector3(-4, 1, 0), 1, Color3::GREEN));
     entityArray.append(new IFSEntity(app->dataDir + "ifs/teapot.ifs", Vector3(4, 1, 0)));
@@ -137,7 +137,7 @@ void Demo::doLogic() {
 
     if (app->userInput->keyPressed(SDL_LEFT_MOUSE_KEY)) {
 
-        Ray ray = app->debugCamera->worldRay(app->userInput->getMouseX(),app->userInput->getMouseY());
+        Ray ray = app->debugCamera.worldRay(app->userInput->getMouseX(), app->userInput->getMouseY(), app->renderDevice->getViewport());
 
         // Deselect all
         for (int i = 0; i < entityArray.length(); ++i) {
@@ -166,9 +166,9 @@ void Demo::doLogic() {
 void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
-    app->debugPrintf("Mouse X %g Y %g", app->userInput->getMouseX(), app->userInput->getMouseY());
-    //app->renderDevice->setViewport(Rect2D(100, 0, 400, 600));
-    app->debugCamera->setProjectionAndCameraMatrix();
+    app->debugPrintf("Mouse (%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
+
+    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
@@ -187,7 +187,7 @@ void Demo::doGraphics() {
         entityArray[e]->render(app->renderDevice);
     }
 
-    Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
+    Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
     
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);

@@ -34,11 +34,14 @@
 	   <LI>Remove <CODE>delete sky;</CODE>
 	   <LI>Change <CODE>renderDevice->setProjectionMatrix3D(...)</CODE> to <CODE>renderDevice->setProjectionMatrix(Matrix4::perspectiveProjection(...))</CODE> 
 	   <LI>Change <CODE>renderDevice->configureDirectionalLight(i, ...)</CODE> to <CODE>renderDevice->setLight(..., GLight::directional())</CODE>
+	   <LI>Change <CODE>camera->setProjectionAndCameraMatrix()</CODE> to <CODE>renderDevice->setProjectionAndCameraMatrix(camera)</cODE>
+	   <LI>Camera -> GCamera
   </BLOCKQUOTE>
-
 
    <P>
    <UL>
+     <LI> Moved Camera in GLG3D to GCamera in G3D
+     <LI> Moved setProjectionAndCameraMatrix from Camera to RenderDevice
      <LI> Moved G3D::Rect2D to G3D from GLG3D, changed interface
      <LI> G3D::setRenderMode
      <LI> G3D::RenderDevice::setSpecularCoefficient, G3D::RenderDevice::setShininess

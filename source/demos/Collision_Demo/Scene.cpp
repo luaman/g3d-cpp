@@ -12,7 +12,7 @@
 #include "Object.h"
 
 extern std::string          DATA_DIR;
-extern Camera*              camera;
+extern GCamera*              camera;
 extern RenderDevice*        renderDevice;
 extern int                  depthBits;
 extern Log*                 debugLog;
@@ -70,8 +70,8 @@ Scene::~Scene() {
 }
 
 
-static Camera getLightCamera(const Vector3& lightDirection) {
-    Camera c(renderDevice);
+static GCamera getLightCamera(const Vector3& lightDirection) {
+    GCamera c(renderDevice);
     debugAssert(false);
     return c;
 }

@@ -162,6 +162,10 @@ SOURCE=.\G3Dcpp\g3dmath.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\GCamera.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Line.cpp
 # End Source File
 # Begin Source File
@@ -363,6 +367,10 @@ SOURCE=.\include\G3D\g3dmath.h
 # Begin Source File
 
 SOURCE=.\include\G3D\g3dmath.inl
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\GCamera.h
 # End Source File
 # Begin Source File
 

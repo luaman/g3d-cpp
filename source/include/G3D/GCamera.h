@@ -1,5 +1,5 @@
 /**
-  @file Camera.h
+  @file GCamera.h
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
@@ -7,8 +7,8 @@
   @edited  2003-10-11
 */
 
-#ifndef G3D_CAMERA_H
-#define G3D_CAMERA_H
+#ifndef G3D_GCAMERA_H
+#define G3D_GCAMERA_H
 
 #include "G3D/CoordinateFrame.h"
 #include "G3D/Vector3.h"
@@ -23,7 +23,7 @@ namespace G3D {
   renderDevice->getWidth() x renderDevice->getHeight()
   window.
  */
-class Camera  {
+class GCamera  {
 private:
 
 	/**
@@ -47,16 +47,14 @@ private:
      */
     double						farPlane;
 
-    class RenderDevice*			renderDevice;
-
 
 	CoordinateFrame				cframe;
 
 public:
 
-	Camera(class RenderDevice* renderDevice);
+	GCamera();
 
-    virtual ~Camera();
+    virtual ~GCamera();
 
 
 	CoordinateFrame getCoordinateFrame() const;
@@ -78,14 +76,13 @@ public:
 	(<I>s'</I>) and film dimensions in world space.  Depth must be positive.  Width,
 	depth, and height are measured in the same units (meters are
 	recommended).  The field of view will span the diagonal to the
-	image.<P> <I>Note</I>: to simulate a 35mm camera, set width =
+	image.<P> <I>Note</I>: to simulate a 35mm GCamera, set width =
 	0.36 mm and height = 0.24 mm.  The width and height used are
 	generally not the pixel dimensions of the image.  
 	*/
 	void setImagePlaneDepth(
         double                                  depth,
-        double                                  width,
-        double                                  height);
+        const class Rect2D&                     viewport);
 
 	inline double getFieldOfView() const {
 		return fieldOfView;
@@ -97,21 +94,23 @@ public:
      down.  The resulting z value is <I>rhw</I>
      */
     G3D::Vector3 project(
-        const G3D::Vector3&                     point) const;
+        const G3D::Vector3&                     point,
+        const class Rect2D&                     viewport) const;
 
     /**
      Returns the pixel area covered by a shape of the given
      world space area at the given z value (z must be negative).
      */
-    double worldToScreenSpaceArea(double area, double z) const;
+    double worldToScreenSpaceArea(double area, double z, const class Rect2D& viewport) const;
 
     /**
      Returns the world space 3D viewport corners.  These
      are at the near clipping plane.  The corners are constructed
      from the nearPlaneZ, getViewportWidth, and getViewportHeight.
-     "left" and "right" are from the camera's perspective.
+     "left" and "right" are from the GCamera's perspective.
      */
     void get3DViewportCorners(
+        const class Rect2D&                     viewport,
         Vector3&                                outUR,
         Vector3&                                outUL,
         Vector3&                                outLL,
@@ -123,8 +122,7 @@ public:
      setImagePlaneDepth for a discussion of worldspace values width and height. 
     */
     double getImagePlaneDepth(
-        double                                  width,
-        double                                  height) const;
+        const class Rect2D&                     viewport) const;
 
     void setProjectionAndCameraMatrix() const;
 
@@ -141,7 +139,8 @@ public:
     */
     Ray worldRay(
         double                                  x,
-        double                                  y) const;
+        double                                  y,
+        const class Rect2D&                     viewport) const;
 
 
     /**
@@ -169,24 +168,25 @@ public:
 	}
 
     /**
-     Returns the camera space width of the viewport.
+     Returns the GCamera space width of the viewport.
      */
-    double getViewportWidth() const;
+    double getViewportWidth(
+        const class Rect2D&                     viewport) const;
 
     /**
-     Returns the camera space height of the viewport.
+     Returns the GCamera space height of the viewport.
      */
-    double getViewportHeight() const;
+    double getViewportHeight(       
+        const class Rect2D&                     viewport) const;
 
     /**
-     Read back a camera space z-value at pixel (x, y) from the depth buffer.
-     */
+     Read back a GCamera space z-value at pixel (x, y) from the depth buffer.
     double getZValue(
         double			x,
         double			y,
-        int				width,
-        int				height,
+        const class Rect2D&                     viewport,
         double			polygonOffset = 0) const;
+     */
 
     void setPosition(const Vector3& t);
 
@@ -200,7 +200,8 @@ public:
     The 6th plane is always the far plane, which may be at infinity.
     */
    void getClipPlanes(
-        G3D::Plane*		clip) const;
+       const Rect2D& viewport, 
+       G3D::Plane*		clip) const;
 };
 
 }

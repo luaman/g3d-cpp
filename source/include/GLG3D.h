@@ -48,7 +48,6 @@
 #include "GLG3D/Sky.h"
 #include "GLG3D/UserInput.h"
 #include "GLG3D/ManualCameraController.h"
-#include "GLG3D/Camera.h"
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/Draw.h"
 #include "GLG3D/tesselate.h"

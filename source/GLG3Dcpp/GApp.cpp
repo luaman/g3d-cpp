@@ -9,7 +9,7 @@
 
 #include <SDL.h>
 #include "GLG3D/GApp.h"
-#include "GLG3D/Camera.h"
+#include "G3D/GCamera.h"
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/UserInput.h"
 
@@ -18,11 +18,7 @@ namespace G3D {
 
 GApp::GApp(const GAppSettings& settings) {
     debugLog          = NULL;
-    renderDevice      = NULL;
     debugFont         = NULL;
-    userInput         = NULL;
-    debugCamera       = NULL;
-    debugController   = NULL;
     endProgram        = false;
     _debugControllerWasActive = false;
 
@@ -51,24 +47,27 @@ void GApp::loadFont(const std::string& fontName) {
 
 void GApp::init(const GAppSettings& settings) {
 
-    debugAssertM(renderDevice == NULL, "Can't initialize GApp twice");
+    static initialized = false;
+
+    debugAssertM(! initialized, "Can't initialize GApp twice");
+    initialized = true;
 
     dataDir = demoFindData(false);
 
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
     renderDevice->init(settings.window, debugLog);
-    debugCamera  = new Camera(renderDevice);
+    debugCamera  = GCamera();
 
     loadFont(settings.debugFontName);
 
-    userInput            = new UserInput();
+    userInput = new UserInput();
 
-    debugController      = new ManualCameraController(renderDevice, userInput);
-    debugController->setMoveRate(10);
-    debugController->setPosition(Vector3(0, 0, 4));
-    debugController->lookAt(Vector3(0, 0, 0));
-    debugController->setActive(true);
+    debugController.init(renderDevice, userInput);
+    debugController.setMoveRate(10);
+    debugController.setPosition(Vector3(0, 0, 4));
+    debugController.lookAt(Vector3(0, 0, 0));
+    debugController.setActive(true);
 
     autoResize              = true;
 
@@ -77,7 +76,7 @@ void GApp::init(const GAppSettings& settings) {
     debugQuitOnEscape       = true;
     debugTabSwitchCamera    = true;
     debugShowRenderingStats = true;
-};
+}
 
 
 bool GApp::debugMode() const {
@@ -89,7 +88,7 @@ void GApp::setDebugMode(bool b) {
     if (! b) {
         _debugControllerWasActive = debugMode();
     } else {
-        debugController->setActive(_debugControllerWasActive);
+        debugController.setActive(_debugControllerWasActive);
     }
     _debugMode = b;
 }
@@ -110,13 +109,12 @@ void GApp::debugPrintf(const char* fmt ...) {
 
 GApp::~GApp() {
     debugFont = NULL;
-    delete debugController;
-    delete debugCamera;
     delete userInput;
+    userInput = NULL;
     renderDevice->cleanup();
     delete renderDevice;
-    delete debugLog;
     renderDevice = NULL;
+    delete debugLog;
     debugLog = NULL;
 }
 
@@ -182,7 +180,7 @@ void GApplet::run() {
     init();
 
     // Move the controller to the camera's location
-    app->debugController->setCoordinateFrame(app->debugCamera->getCoordinateFrame());
+    app->debugController.setCoordinateFrame(app->debugCamera.getCoordinateFrame());
 
     RealTime now = getTime() - 0.001, lastTime;
 
@@ -199,9 +197,9 @@ void GApplet::run() {
         doNetwork();
 
         // Simulation
-        if (app->debugController->active()) {
-            app->debugController->doSimulation(clamp(timeStep, 0.0, 0.1));
-    	    app->debugCamera->setCoordinateFrame(app->debugController->getCoordinateFrame());
+        if (app->debugController.active()) {
+            app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
+    	    app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
         }
         doSimulation(timeStep);
 
@@ -255,7 +253,7 @@ void GApplet::doUserInput() {
 
             case SDLK_TAB:
                 if (app->debugMode() && app->debugTabSwitchCamera) {
-                    app->debugController->setActive(! app->debugController->active());
+                    app->debugController.setActive(! app->debugController.active());
                 }
                 break;
 

@@ -11,17 +11,19 @@ libG3D_la_SOURCES= ../../../source/G3Dcpp/BinaryInput.cpp \
 				   ../../../source/G3Dcpp/Color3.cpp \
 				   ../../../source/G3Dcpp/Color3uint8.cpp \
 				   ../../../source/G3Dcpp/Color4.cpp \
-                   ../../../source/G3Dcpp/Color4uint8.cpp \
+                                   ../../../source/G3Dcpp/Color4uint8.cpp \
 				   ../../../source/G3Dcpp/Cone.cpp \
 				   ../../../source/G3Dcpp/ConvexPolyhedron.cpp \
 				   ../../../source/G3Dcpp/CoordinateFrame.cpp \
+				   ../../../source/G3Dcpp/Discovery.cpp \
+                                   ../../../source/G3Dcpp/GCamera.cpp \
 				   ../../../source/G3Dcpp/Line.cpp \
 				   ../../../source/G3Dcpp/LineSegment.cpp \
 				   ../../../source/G3Dcpp/Log.cpp \
 				   ../../../source/G3Dcpp/Matrix3.cpp \
 				   ../../../source/G3Dcpp/Matrix4.cpp \
-	               ../../../source/G3Dcpp/MeshAlg.cpp \
-	               ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
+   	                           ../../../source/G3Dcpp/MeshAlg.cpp \
+	                           ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
 				   ../../../source/G3Dcpp/NetworkDevice.cpp \
 				   ../../../source/G3Dcpp/PhysicsFrame.cpp \
 				   ../../../source/G3Dcpp/Plane.cpp \

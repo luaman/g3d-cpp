@@ -19,7 +19,7 @@ Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
 CFontRef                font			= NULL;
 UserInput*              userInput		= NULL;
-Camera*					camera			= NULL;
+GCamera*					camera			= NULL;
 ManualCameraController* controller      = NULL;
 bool                    endProgram		= false;
 
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
         settings.resizable = true;
         renderDevice->init(settings, debugLog);
     }
-    camera 	     = new Camera(renderDevice);
+    camera 	     = new GCamera(renderDevice);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
