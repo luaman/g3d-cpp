@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-06-02
- @edited  2003-02-06
+ @edited  2003-10-04
  */
 
 #ifndef G3D_SPHERE_H
@@ -59,6 +59,16 @@ public:
         int                 numPlanes) const;
 
     virtual std::string toString() const;
+
+    /**
+     Uniformly distributed on the surface.
+     */
+    Vector3 randomSurfacePoint() const;
+
+    /**
+     Uniformly distributed on the interior (includes surface)
+     */
+    Vector3 randomInteriorPoint() const;
 };
 
 }; // namespace

@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-09-29
+  @edited  2003-10-04
  */
 
 #ifndef G3D_VECTOR3_H
@@ -170,7 +170,7 @@ public:
     /** Gram-Schmidt orthonormalization. */
     static void orthonormalize (Vector3 akVector[3]);
 
-    /** Random unit vector */
+    /** Random unit vector, uniformly distributed */
     static Vector3 random();
 
     // Input W must be initialize to a nonzero vector, output is {U,V,W}

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-04-17
- @edited  2003-02-15
+ @edited  2003-10-04
  */
 
 #include "G3D/Sphere.h"
@@ -62,4 +62,21 @@ bool Sphere::culledBy(
     return false;
 }
 
-}; // namespace
+
+Vector3 Sphere::randomSurfacePoint() const {
+    return Vector3::random() * radius + center;
+}
+
+
+Vector3 Sphere::randomInteriorPoint() const {
+    Vector3 result;
+    do {
+        result = Vector3(symmetricRandom(), 
+                         symmetricRandom(),
+                         symmetricRandom());
+    } while (result.squaredLength() >= 1);
+
+    return result * radius + center;
+}
+
+} // namespace

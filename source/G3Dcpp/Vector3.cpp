@@ -104,7 +104,7 @@ Vector3 Vector3::random() {
         result = Vector3(symmetricRandom(), 
                          symmetricRandom(),
                          symmetricRandom());
-    } while ((result.squaredLength() > 1) || (result.squaredLength() == 1.0));
+    } while (result.squaredLength() >= 1);
 
     result.unitize();
 
