@@ -40,7 +40,7 @@ void Server::doNetwork() {
         ClientProxy& clientProxy = clientProxyArray[c];
         ReliableConduitRef& net =  clientConduitArray[c];
 
-        // TODO: check if ok
+        // TODO: check if client is ok, tell others if not
 
         switch (net->waitingMessageType()) {
         case NO_MSG:
@@ -76,22 +76,10 @@ void Server::doNetwork() {
 }
 
 
-static Color3 randomColor() {
-    static const Color3 colorArray[9] =
-    {Color3::BLUE, Color3::RED, Color3::GREEN,
-     Color3::ORANGE, Color3::YELLOW, Color3::WHITE,
-     Color3::CYAN, Color3::PURPLE, Color3::BROWN};
-
-    return colorArray[iRandom(0, 8)];
-}
-
-
 static std::string randomName() {
     static const std::string nameArray[11] =
-    {"Red Baron", "Ace", "Maverick",
-     "Goose", "Iceman", "Angel",
-     "Skywalker", "Darth Vader", "Han Solo",
-     "Kirk", "Picard"};
+    {"Red Baron", "Ace", "Maverick", "Goose", "Iceman", "Angel",
+     "Skywalker", "Darth Vader", "Han Solo", "Kirk", "Picard"};
 
     return nameArray[iRandom(0, 10)];
 }
@@ -111,7 +99,7 @@ void Server::acceptIncomingClient() {
         // Create a new object for the client
         Entity entity;
         entity.id                   = client.id;
-        entity.color                = randomColor();
+        entity.color                = Color3::wheelRandom();
         entity.modelFilename        = "ifs/p51-mustang.ifs";
         entity.frame.translation    = Vector3::random() * 10;
         entity.frame.yaw            = random(0, G3D_TWO_PI);

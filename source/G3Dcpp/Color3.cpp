@@ -9,7 +9,7 @@
 
 
  @created 2001-06-02
- @edited  2003-12-03
+ @edited  2004-05-03
  */
 
 #include <stdlib.h>
@@ -52,6 +52,16 @@ void Color3::serialize(BinaryOutput& bo) const {
     bo.writeFloat32(r);
     bo.writeFloat32(g);
     bo.writeFloat32(b);
+}
+
+
+const Color3& Color3::wheelRandom() {
+    static const Color3 colorArray[8] =
+    {Color3::BLUE,   Color3::RED,    Color3::GREEN,
+     Color3::ORANGE, Color3::YELLOW, 
+     Color3::CYAN,   Color3::PURPLE, Color3::BROWN};
+
+    return colorArray[iRandom(0, 7)];
 }
 
 

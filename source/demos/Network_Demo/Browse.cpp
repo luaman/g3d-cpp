@@ -28,16 +28,16 @@ void Browse::doLogic() {
         for (int b = 0; b < button.size(); ++b) {
             if (button[b].contains(mouse)) {
                 if (b == HOST) {
-                    host           = true;
-                    endApplet = true;
+                    host            = true;
+                    endApplet       = true;
                     break;
                 } else if (b == EXIT) {
                     app->endProgram = true;
-                    endApplet = true;
+                    endApplet       = true;
                     break;
                 } else if (discoveryClient.serverList.size() > b) {
-                    selectedServer = discoveryClient.serverList[b];
-                    endApplet = true;
+                    selectedServer  = discoveryClient.serverList[b];
+                    endApplet       = true;
                     break;
                 }
             }

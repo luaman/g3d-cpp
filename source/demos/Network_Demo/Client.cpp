@@ -146,10 +146,9 @@ static void manageFrameRate() {
 
 void Client::doLogic() {
 
-    // TODO: when hosting on a separate thread, *always* manageFrameRate
-    if (! app->hostingServer) {
+//    if (! app->hostingServer) {
         manageFrameRate();
-    }
+//    }
 
     if (app->userInput->keyPressed(SDLK_ESCAPE)) {
         // Quit back to main menu

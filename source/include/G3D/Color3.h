@@ -4,14 +4,13 @@
  Color class
  
  @maintainer Morgan McGuire, matrix@graphics3d.com
- @cite Portions by Laura Wollstadt
  @cite Portions based on Dave Eberly's Magic Software Library
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-06-02
- @edited  2004-01-22
+ @edited  2004-05-03
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
  */
 
@@ -54,6 +53,10 @@ public:
      Initialize from an HTML-style color (e.g. 0xFF0000 == RED)
      */
     static Color3 fromARGB(uint32);
+
+    /** Returns one of the color wheel colors (e.g. RED, GREEN, CYAN).
+        Does not include white, black, or gray. */
+    static const Color3& wheelRandom();
 
     /**
      * Channel value.
