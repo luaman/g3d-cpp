@@ -1874,7 +1874,7 @@ void RenderDevice::setObjectToWorldMatrix(
 }
 
 
-CoordinateFrame RenderDevice::getObjectToWorldMatrix() const {
+const CoordinateFrame& RenderDevice::getObjectToWorldMatrix() const {
     return state.objectToWorldMatrix;
 }
 
@@ -1898,7 +1898,7 @@ void RenderDevice::setCameraToWorldMatrix(
 }
 
 
-CoordinateFrame RenderDevice::getCameraToWorldMatrix() const {
+const CoordinateFrame& RenderDevice::getCameraToWorldMatrix() const {
     return state.cameraToWorldMatrix;
 }
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-09-16
+ @edited  2004-09-17
  */
 
 #ifndef G3D_SHADER_H
@@ -24,6 +24,10 @@ typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 #else
     #define DEBUG_SHADER false
 #endif
+
+/** Argument to G3D::VertexAndPixelShader and G3D::Shader create methods */
+enum UseG3DUniforms {DEFINE_G3D_UNIFORMS, DO_NOT_DEFINE_G3D_UNIFORMS};
+
 
 /**
 
@@ -147,6 +151,7 @@ public:
  */
 class VertexAndPixelShader : public ReferenceCountedObject {
 public:
+    friend class Shader;
 
     class UniformDeclaration {
     public:
@@ -207,7 +212,8 @@ protected:
 			bool			   fromFile,
 			bool			   debug,
 			GLenum		       glType,
-			const std::string& type);
+			const std::string& type,
+            UseG3DUniforms     u);
 
 		/** Deletes the underlying glShaderObject.  Between GL's reference
 			counting and G3D's reference counting, an underlying object
@@ -275,7 +281,11 @@ protected:
         are annoying when temporarily commenting out code) */
     void addUniformsFromCode(const std::string& code);
 
+    /** Does not contain g3d_ uniforms if they were compiled away */
     Array<UniformDeclaration>   uniformArray;
+
+    /** Does not contain g3d_ uniforms if they were compiled away */
+    Set<std::string>            uniformNames;
 
     /** Returns true for types that are textures (e.g. GL_TEXTURE_2D) */
     static bool isSamplerType(GLenum e);
@@ -287,7 +297,8 @@ protected:
 		const std::string&  psCode,
 		const std::string&  psFilename,
 		bool                psFromFile,
-        bool                debug);
+        bool                debug,
+        UseG3DUniforms      u);
 
 public:
 
@@ -305,7 +316,8 @@ public:
 	 */
 	static VertexAndPixelShaderRef fromStrings(
 		const std::string& vertexShader,
-		const std::string& pixelShader,
+		const std::string& pixelShader,       
+        UseG3DUniforms u = DO_NOT_DEFINE_G3D_UNIFORMS,
         bool debugErrors = DEBUG_SHADER);
 
 	/**
@@ -321,6 +333,7 @@ public:
 	static VertexAndPixelShaderRef fromFiles(
 		const std::string& vertexShader,
 		const std::string& pixelShader,
+        UseG3DUniforms u = DO_NOT_DEFINE_G3D_UNIFORMS,
         bool debugErrors = DEBUG_SHADER);
 
     /**
@@ -450,11 +463,32 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
   are really "fragment shaders" in OpenGL terminology.
 
   <P>
+  
+  Unless DO_NOT_DEFINE_G3D_UNIFORMS is specified to the static constructor, the
+  following additional variables will be available inside the shaders:
+
+  <PRE>
+    uniform mat4 g3d_WorldToObjectMatrix;
+    uniform mat4 g3d_ObjectToWorldMatrix;
+    uniform mat4 g3d_WorldToCameraMatrix;
+    uniform mat4 g3d_CameraToWorldMatrix;
+    uniform int  g3d_NumLights;        // 1 + highest index of the enabled lights
+    uniform int  g3d_NumTextures;      // 1 + highest index of the enabled textures
+    uniform vec4 g3d_ObjectLight0;     // g3d_WorldToObject * gl_LightState[0].position
+  </PRE>
+
+  If your shader begins with <CODE>#include</CODE> or <CODE>#define</CODE> the
+  line numbers will be off by one in error messages because the G3D uniforms are 
+  inserted on the first line.
+
+  <P>
   <B>Example</B>
 
   The following example computes lambertian + ambient shading in camera space,
-  on the vertex processor.
-  The shader could easily have been loaded from a file as well as from strings.  Vertex
+  on the vertex processor.  Although the shader could easily have been loaded from a file,
+  the example loads it from a string (which is conveniently created with the STR macro)
+
+  Vertex
   shaders are widely supported, so this will run on any graphics card produced since 2001
   (e.g. GeForce3 and up).  Pixel shaders are only available on newer cards 
   (e.g. GeForceFX 5200 and up).
@@ -462,40 +496,30 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
   <PRE>
    // Initialization
    IFSModelRef model = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
-   ShaderRef   lambertian = Shader::fromStrings(
-     "uniform vec3 L;                                         \n"
-     "uniform vec3 k_L;                                       \n"
-     "uniform vec3 k_A;                                       \n"
-     "void main(void) {                                       \n"
-     "   gl_Position = ftransform();                          \n"
-     "   vec3 N = gl_NormalMatrix * gl_Normal;                \n"
-     "   gl_FrontColor.rgb = max(dot(N, L), 0.0) * k_L + k_A; \n"
-     "}                                                       \n",
-     "");
+   ShaderRef   lambertian = Shader::fromStrings(STR(
+
+     uniform vec3 k_A;
+
+     void main(void) {
+        gl_Position = ftransform();
+        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightState[0].diffuse + k_A;
+     }), "");
 
     ...
 
     // Rendering loop
+    app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
+
     app->renderDevice->setShader(lambertian);
-
-    lambertian->args.set("L",
-        app->debugCamera.getCoordinateFrame().vectorToObjectSpace(Vector3(1,1,1)).direction());
-    lambertian->args.set("k_L", Color3::white() - Color3(.2,.2,.3));
-    lambertian->args.set("k_A", Color3(.2,.2,.3));
-
+    shader2->args.set("k_A", Color3(.2,.2,.3));
     model->pose()->render(app->renderDevice);
   </PRE>
 
-  This example explicitly sets the lighting parameters to demonstrate how
-  arguments are used.  It could instead have accessed the lighting parameters
-  set from G3D::RenderDevice::setLight using the shader built-in OpenGL uniform
-  variables gl_Light[n].
-
-  Note that the lighting is computed in camera space.  If we instead wanted
-  to compute lighting in object or world space, we could either pass the 
-  object's coordinate frame to the shader as an explicit argument or override 
-  G3D::Shader::beforePrimitive to set an argument based on the then-current
-  value of G3D::RenderDevice::getObjectToWorldMatrix.
+  This example explicitly sets the ambient light color to demonstrate how
+  arguments are used.  That could instead have been read from gl_LightModel.ambient.
+  Note the use of g3d_ObjectLight0.  Had we not used that variable, Shader would
+  not have computed or set it.
+  
 
   <B>BETA API</B>
   This API is subject to change.
@@ -504,8 +528,12 @@ class Shader  : public ReferenceCountedObject {
 protected:
 
     VertexAndPixelShaderRef         _vertexAndPixelShader;
+    UseG3DUniforms                  _useUniforms;
 
-    inline Shader(VertexAndPixelShaderRef v) : _vertexAndPixelShader(v) {}
+    inline Shader(VertexAndPixelShaderRef v, UseG3DUniforms u) : 
+        _vertexAndPixelShader(v), _useUniforms(u) {}
+
+    /** For subclasses to invoke */
     inline Shader() {}
 
 public:
@@ -517,14 +545,16 @@ public:
 
     static ShaderRef fromFiles(
         const std::string& vertexFile, 
-        const std::string& pixelFile) {
-        return new Shader(VertexAndPixelShader::fromFiles(vertexFile, pixelFile));
+        const std::string& pixelFile,
+        UseG3DUniforms u = DEFINE_G3D_UNIFORMS) {
+        return new Shader(VertexAndPixelShader::fromFiles(vertexFile, pixelFile, u, DEBUG_SHADER), u);
     }
 
     static ShaderRef fromStrings(
         const std::string& vertexCode, 
-        const std::string& pixelCode) {
-        return new Shader(VertexAndPixelShader::fromStrings(vertexCode, pixelCode));
+        const std::string& pixelCode,
+        UseG3DUniforms u = DEFINE_G3D_UNIFORMS) {
+        return new Shader(VertexAndPixelShader::fromStrings(vertexCode, pixelCode, u, DEBUG_SHADER), u);
     }
 
     virtual bool ok() const;
@@ -536,7 +566,8 @@ public:
 
      If overriding, do not call RenderDevice::setShader from this routine.
 
-     Default implementation pushes state and loads the vertex and pixel shader.
+     Default implementation pushes state, sets the g3d_ uniforms,
+     and loads the vertex and pixel shader.
 	 */
     virtual void beforePrimitive(class RenderDevice* renderDevice);
 

@@ -148,5 +148,15 @@
 
 #endif
 
+/** 
+  @def STR(expression)
+
+  Creates a string from the expression.  Frequently used with G3D::Shader
+  to express shading programs inline.  
+
+  <CODE>STR(this becomes a string)<PRE> evaluates the same as <CODE>"this becomes a string"</CODE>
+ */
+#define STR(x) #x
+
 // Header guard
 #endif

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-12
-  @edited  2004-03-09
+  @edited  2004-09-16
 */
 
 #include "G3D/GLight.h"
@@ -26,7 +26,7 @@ GLight::GLight() {
 
 GLight GLight::directional(const Vector3& toLight, const Color3& color, bool s) {
     GLight L;
-    L.position = Vector4(toLight, 0);
+    L.position = Vector4(toLight.direction(), 0);
     L.color    = color;
     L.specular = s;
     return L;

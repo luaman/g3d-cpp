@@ -19,6 +19,9 @@ Concepts <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD><
     sdl, and the jpeg library.
 
     See the \link guidetutorial Tutorial \endlink for more details.
+
+    Consult the \link errorfaq Error FAQ \endlink to help diagnose some common compilation
+    and linking errors.
  
 	@section distribfiles Files you must Distribute
 	%G3D programs require SDL.dll and zlib1.dll at runtime.

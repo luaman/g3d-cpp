@@ -42,6 +42,7 @@ public:
 
     GLight();
 
+    /** @param toLight will be normalized */
     static GLight directional(const Vector3& toLight, const Color3& color, bool specular = true);
     static GLight point(const Vector3& pos, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true);
     static GLight spot(const Vector3& pos, const Vector3& pointDirection, double cutOffAngleDegrees, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true);

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-09-09
+ @edited  2004-09-17
  */
 
 #include "GLG3D/Shader.h"
@@ -21,6 +21,60 @@ bool Shader::ok() const {
 
 void Shader::beforePrimitive(class RenderDevice* renderDevice) {
     renderDevice->pushState();
+
+    if (_useUniforms == DEFINE_G3D_UNIFORMS) {
+        // Optimization note: all of these uniforms could be precomputed
+
+        const CoordinateFrame& o2w = renderDevice->getObjectToWorldMatrix();
+        const CoordinateFrame& c2w = renderDevice->getCameraToWorldMatrix();
+
+        const Set<std::string>& uniformNames = _vertexAndPixelShader->uniformNames;
+
+        // Bind matrices
+        if (uniformNames.contains("g3d_ObjectToWorldMatrix")) {
+            args.set("g3d_ObjectToWorldMatrix", o2w);
+        }
+
+        if (uniformNames.contains("g3d_CameraToWorldMatrix")) {
+            args.set("g3d_CameraToWorldMatrix", c2w);
+        }
+
+        if (uniformNames.contains("g3d_WorldToObjectMatrix")) {
+            args.set("g3d_WorldToObjectMatrix", o2w.inverse());
+        }
+
+        if (uniformNames.contains("g3d_WorldToCameraMatrix")) {
+            args.set("g3d_WorldToCameraMatrix", c2w.inverse());
+        }
+
+        if (uniformNames.contains("g3d_NumLights")) {
+            if (glGetBoolean(GL_LIGHTING)) {
+                // Search for the highest light number
+                int i = 7;
+                while (i >= 0 && ! glGetBoolean(GL_LIGHT0 + i)) {
+                    --i;
+                }
+                args.set("g3d_NumLights", i + 1);
+            } else {
+                args.set("g3d_NumLights", 0);
+            }
+        }
+
+        if (uniformNames.contains("g3d_ObjectLight0")) {
+            Vector4 cL;
+            glGetLightfv(GL_LIGHT0, GL_POSITION, cL);
+            args.set("g3d_ObjectLight0", o2w.toObjectSpace(cL));
+        }
+
+        if (uniformNames.contains("g3d_NumTextures")) {
+            // Search for the highest texture number
+            int i = 7;
+            while (i >= 0 && ! glGetBoolean(GL_TEXTURE0_ARB + i)) {
+                --i;
+            }
+            args.set("g3d_NumTextures", i + 1);
+        }
+    }
     renderDevice->setVertexAndPixelShader(_vertexAndPixelShader, args);
 }
 
@@ -42,12 +96,22 @@ void VertexAndPixelShader::GPUShader::init(
 	bool				_fromFile,
 	bool				debug,	
 	GLenum				glType,
-	const std::string&	type) {
+	const std::string&	type,
+    UseG3DUniforms      uniforms) {
+
+    const std::string uniformString = 
+        STR(
+        uniform mat4 g3d_WorldToObjectMatrix;
+        uniform mat4 g3d_ObjectToWorldMatrix;
+        uniform mat4 g3d_WorldToCameraMatrix;
+        uniform mat4 g3d_CameraToWorldMatrix;
+        uniform int  g3d_NumLights;
+        uniform int  g3d_NumTextures;
+        uniform vec4 g3d_ObjectLight0;);
 
 	_name			= name;
 	_shaderType		= type;
 	_glShaderType	= glType;
-	_code			= code + "\n";
 	_ok				= true;
 	fromFile		= _fromFile;
 	_fixedFunction	= (name == "") && (code == "");
@@ -61,7 +125,30 @@ void VertexAndPixelShader::GPUShader::init(
 				_messages = format("Could not load shader file \"%s\".", 
 					_name.c_str());
 			}
-		}
+        } else {
+            _code = code;
+        }
+
+        bool shifted = false;
+        if (uniforms == DEFINE_G3D_UNIFORMS) {
+            if (_code.size() > 0) {
+                if (_code[0] == '#') {
+                    // 1st line is #include, we must add a newline after
+                    // the uniforms.
+        	        _code		= uniformString + "\n" + _code + "\n";
+                    shifted = true;
+                } else {
+                    // Insert our uniform declarations right in front
+                    // of the first line.
+        	        _code		= uniformString + _code + "\n";
+                }
+            } else {
+                _code = "\n";
+            }
+        } else {
+            // Just add a newline to the end
+            _code += "\n";
+        }
 
 		if (_ok) {
 			compile();
@@ -70,6 +157,9 @@ void VertexAndPixelShader::GPUShader::init(
 		if (debug) {
             // Check for compilation errors
             if (! ok()) {
+                if (shifted) {
+                    debugPrintf("\n[Line numbers in the following shader errors are shifted by one.]\n");
+                }
                 debugPrintf("%s", messages().c_str());
     			alwaysAssertM(ok(), messages());
             }
@@ -151,11 +241,12 @@ VertexAndPixelShader::VertexAndPixelShader(
 	const std::string&  psCode,
 	const std::string&  psFilename,
 	bool                psFromFile,
-    bool                debug) :
+    bool                debug,
+    UseG3DUniforms      uniforms) :
         _ok(true) {
 
-	vertexShader.init(vsFilename, vsCode, vsFromFile, debug, GL_VERTEX_SHADER_ARB, "Vertex Shader");
-	pixelShader.init(psFilename, psCode, psFromFile, debug, GL_FRAGMENT_SHADER_ARB, "Pixel Shader");
+	vertexShader.init(vsFilename, vsCode, vsFromFile, debug, GL_VERTEX_SHADER_ARB, "Vertex Shader", uniforms);
+	pixelShader.init(psFilename, psCode, psFromFile, debug, GL_FRAGMENT_SHADER_ARB, "Pixel Shader", uniforms);
     
     if (! vertexShader.ok()) {
         _ok = false;
@@ -210,9 +301,17 @@ VertexAndPixelShader::VertexAndPixelShader(
     }
 
     if (_ok) {
+        uniformNames.clear();
         computeUniformArray();
+        // note that the extra uniforms are computed from the original code,
+        // not from the code that has the g3d uniforms prepended.
         addUniformsFromCode(vsFromFile ? readFileAsString(vsFilename) : vsCode);
         addUniformsFromCode(psFromFile ? readFileAsString(psFilename) : psCode);
+
+        // Add all uniforms to the name list
+        for (int i = uniformArray.size() - 1; i >= 0; --i) {
+            uniformNames.insert(uniformArray[i].name);
+        }
     }
 }
 
@@ -376,15 +475,17 @@ void VertexAndPixelShader::computeUniformArray() {
 VertexAndPixelShaderRef VertexAndPixelShader::fromStrings(
 	const std::string& vs,
     const std::string& ps,
+    UseG3DUniforms u,
     bool debugErrors) {
 
-    return new VertexAndPixelShader(vs, "", false, ps, "", false, debugErrors);
+    return new VertexAndPixelShader(vs, "", false, ps, "", false, debugErrors, u);
 }
 
 
 VertexAndPixelShaderRef VertexAndPixelShader::fromFiles(
 	const std::string& vsFilename,
     const std::string& psFilename,
+    UseG3DUniforms u,
     bool debugErrors) {
 
 	std::string vs;
@@ -398,7 +499,7 @@ VertexAndPixelShaderRef VertexAndPixelShader::fromFiles(
 		ps = readFileAsString(ps);
 	}
 
-    return new VertexAndPixelShader(vs, vsFilename, true, ps, psFilename, true, debugErrors);
+    return new VertexAndPixelShader(vs, vsFilename, true, ps, psFilename, true, debugErrors, u);
 }
 
 

@@ -19,7 +19,9 @@
      <LI> G3D::ReferenceCountedPointer assignment now allows compile time subtyping
      <LI> G3D::ReferenceCountedPointer != operator
      <LI> G3D::ReferenceCountedPointer::notNull
+     <LI> G3D::GLight::directional now normalizes the light vector
      <LI> G3D::setAssertionHook
+     <LI> G3D::Shader / G3D::VertexAndPixelShader define g3d_ uniforms inside shaders
      <LI> static G3D::IFSModel::save/load for writing/reading IFS files
      <LI> G3D::TextInput allows ' inside quoted strings
      <LI> G3D::TextInput allows \ as a symbol token
@@ -38,6 +40,8 @@
      <LI> G3D::UserInput::keyReleased, G3D::UserInput::ReleasedKeys
      <LI> G3D::Array::randomElement
      <LI> G3D::Array::insert
+     <LI> G3D::RenderDevice::getObjectToWorldMatrix and getCameraToWorldMatrix now return 
+          const CoordinateFrame&
 	 <LI> Optimized G3D::Array::randomize
      <LI> G3D::cyclicCatmullRomSpline
      <LI> G3D::wrap

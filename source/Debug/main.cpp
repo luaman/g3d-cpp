@@ -155,16 +155,14 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     model = IFSModel::create("D:/games/data/ifs/teapot.ifs");
 
    // Initialization
-   shader2 = Shader::fromStrings(
-     "uniform vec3 L;                                \n"
-     "uniform vec3 k_L;                              \n"
-     "uniform vec3 k_A;                              \n"
-     "void main(void) {                              \n"
-     "   gl_Position = ftransform();                 \n"
-     "   vec3 N = gl_NormalMatrix * gl_Normal;       \n"
-     "   gl_FrontColor.rgb = max(dot(N, L), 0.0) * k_L + k_A; \n"
-     "}                                              \n",
-     "");
+   shader2 = Shader::fromStrings(STR(
+       uniform vec3 k_A;
+     void main(void) {
+        gl_Position = ftransform();
+        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightSource[0].diffuse + k_A;
+     }
+     
+     ), "");
     
 }
 
@@ -225,9 +223,7 @@ void Demo::doGraphics() {
 
     // Rendering loop
     app->renderDevice->setShader(shader2);
-    shader2->args.set("L", 
-        app->debugCamera.getCoordinateFrame().vectorToObjectSpace(Vector3(1,1,1)).direction());
-    shader2->args.set("k_L", Color3::white() - Color3(.2,.2,.3));
+    app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
     shader2->args.set("k_A", Color3(.2,.2,.3));
     model->pose()->render(app->renderDevice);
 
@@ -295,5 +291,6 @@ int main(int argc, char** argv) {
     settings.dataDir = "";
     settings.debugFontName = "";
     App(settings).run();
+
     return 0;
 }

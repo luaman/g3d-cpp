@@ -132,12 +132,12 @@
         G3D::beginsWith, G3D::endsWith, G3D::license, G3D::stringSplit,
         G3D::stringJoin, G3D::format, G3D::vformat, G3D::wordWrap, 
         G3D::stringCompare, G3D::stringPtrCompare, G3D::toUpper, G3D::toLower,
-        G3D::NEWLINE, G3D::trimWhitespace
+        G3D::NEWLINE, G3D::trimWhitespace, STR
 
      <LI><B>Debug</B> &nbsp; &nbsp;
-        <B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
+        debugAssert, G3D::isValidHeapPointer,  
         G3D::isValidPointer,
-        <B>G3D::debugAssertM</B>, G3D::debugPrintf, G3D::error, 
+        debugAssertM, G3D::debugPrintf,
         G3D::Log, G3D::alwaysAssertM, G3D::setAssertionHook
 
      <LI><B>I/O</B> &nbsp; &nbsp;

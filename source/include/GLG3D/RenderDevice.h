@@ -466,7 +466,7 @@ public:
     void setObjectToWorldMatrix(
         const CoordinateFrame&          cFrame);
 
-    CoordinateFrame getObjectToWorldMatrix() const;
+    const CoordinateFrame& getObjectToWorldMatrix() const;
 
     /**
      See RenderDevice::setObjectToWorldMatrix.
@@ -474,7 +474,7 @@ public:
     void setCameraToWorldMatrix(
         const CoordinateFrame&          cFrame);
 
-    CoordinateFrame getCameraToWorldMatrix() const;
+    const CoordinateFrame& getCameraToWorldMatrix() const;
 
     Matrix4 getProjectionMatrix() const;
 
@@ -1203,6 +1203,9 @@ public:
      Lights are specified in <B>world space</B>-- they are not affected
      by the camera or object matrix.  Unlike OpenGL, you do not need to
      reset lights after you change the camera matrix.
+
+     Inside a shader, lights set with setLight (which appear as gl_Light)
+     are still in world space.
 
      setLight(i, NULL) disables a light.
      */
