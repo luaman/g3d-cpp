@@ -1,5 +1,16 @@
-
 #include "Model.h"
+
+void PositionOverride::beforePrimitive(RenderDevice* renderDevice) {
+    Shader::beforePrimitive(renderDevice);
+    renderDevice->setObjectToWorldMatrix(cframe);
+    material.configure(renderDevice);
+}
+
+
+void PositionOverride::afterPrimitive(RenderDevice* renderDevice) {
+    Shader::afterPrimitive(renderDevice);
+}
+
 
 Pose::Pose() : rotorAngle(0) {}
 
@@ -23,7 +34,6 @@ void Helicopter::render(
     const CoordinateFrame&  cframe, 
     const Pose&             pose, 
     const GMaterial&        material) const {
-
     rd->setShader(positionShader);
 
     positionShader->material = material;

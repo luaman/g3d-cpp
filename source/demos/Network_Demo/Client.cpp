@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-31
+  @edited  2004-10-25
  */
 
 #include "Client.h"
@@ -33,6 +33,7 @@ void Client::init()  {
 
     camera.setPosition(Vector3::ZERO);
     camera.lookAt(-Vector3::UNIT_Z);
+    Log::common()->printf("Client::init\n");
 }
 
 
@@ -43,6 +44,7 @@ void Client::cleanup() {
 
 
 void Client::doNetwork() {
+
 	// Poll net messages here
     if (app->hostingServer) {
         app->hostingServer->doNetwork();
@@ -106,9 +108,11 @@ void Client::simulateCamera(SimTime dt) {
         const CoordinateFrame cframe = me.smoothCoordinateFrame();
 
         // Move the camera to follow the plane
+        
         camera.setPosition(cframe.translation 
                 + cframe.rotation.getColumn(2) * FOLLOW_DISTANCE
                 + Vector3::UNIT_Y * FOLLOW_HEIGHT);
+
         camera.lookAt(cframe.translation + Vector3::UNIT_Y * FOLLOW_HEIGHT / 2);
     }
 }
@@ -159,87 +163,59 @@ void Client::doLogic() {
         Entity& entity = entityTable[localID];
         Controls newControls = entity.controls;
 
-        const int THROTTLE_FORWARD_KEY1  = 'w';
-        const int THROTTLE_FORWARD_KEY2  = SDLK_UP;
-        const int THROTTLE_BACKWARD_KEY1 = 's';
-        const int THROTTLE_BACKWARD_KEY2 = SDLK_DOWN;
+        const int UP_KEY1          = ' ';
+        const int UP_KEY2          = SDLK_BACKSPACE;
+        const int DOWN_KEY1        = 'z';
+        const int DOWN_KEY2        = SDLK_LCTRL;
 
-        const int YAW_LEFT_KEY1          = 'a';
-        const int YAW_LEFT_KEY2          = SDLK_LEFT;
-        const int YAW_RIGHT_KEY1         = 'd';
-        const int YAW_RIGHT_KEY2         = SDLK_RIGHT;
+        // Construct the local reference frame vectors in the world frame
+        // (ignores roll and pitch of the aircraft).
+        Vector3 localY = Vector3::unitY();
+        Vector3 localX = entity.coordinateFrame().rightVector();
+        localX = (localX - localY * localX.dot(localY)).direction();
+        Vector3 localZ = localX.cross(localY);
 
-        const int PITCH_UP_KEY1          = ' ';
-        const int PITCH_UP_KEY2          = SDLK_BACKSPACE;
-        const int PITCH_DOWN_KEY1        = 'z';
-        const int PITCH_DOWN_KEY2        = SDLK_LCTRL;
+        const double speed = 2; // TODO
 
-        const double FORWARD_THROTTLE    =  1.0;
-        const double DEFAULT_THROTTLE    =  0.0;
-        const double BACKWARD_THROTTLE   = -0.5;
-
-        const double LEFT_YAW            =  1.0;
-        const double DEFAULT_YAW         =  0.0;
-        const double RIGHT_YAW           = -1.0;
-
-        const double UP_PITCH            =  1.0;
-        const double DEFAULT_PITCH       =  0.0;
-        const double DOWN_PITCH          = -1.0;
-
-        // See which way the throttle is tipped
-        if (app->userInput->keyDown(THROTTLE_FORWARD_KEY1) ||
-            app->userInput->keyDown(THROTTLE_FORWARD_KEY2)) {
-
-            newControls.throttle = FORWARD_THROTTLE;
-
-        } else if (app->userInput->keyDown(THROTTLE_BACKWARD_KEY1) ||
-                   app->userInput->keyDown(THROTTLE_BACKWARD_KEY2)) {
-
-            newControls.throttle = BACKWARD_THROTTLE;
-
+        double dx = app->userInput->getX();
+        double dz = app->userInput->getY();
+        double mag = sqrt(square(dx) + square(dz));
+        if (mag > 0) {
+            newControls.desiredVelocity =
+                (localX * app->userInput->getX() +
+                 -localZ * app->userInput->getY()) * speed / mag;
         } else {
-
-            newControls.throttle = DEFAULT_THROTTLE;
-        }
-
-        
-        // See which way the yaw control points
-        if (app->userInput->keyDown(YAW_LEFT_KEY1) ||
-            app->userInput->keyDown(YAW_LEFT_KEY2)) {
-
-            newControls.yaw = LEFT_YAW;
-
-        } else if (app->userInput->keyDown(YAW_RIGHT_KEY1) ||
-                   app->userInput->keyDown(YAW_RIGHT_KEY2)) {
-
-            newControls.yaw = RIGHT_YAW;
-
-        } else {
-
-            newControls.yaw = DEFAULT_YAW;
+            newControls.desiredVelocity = Vector3::zero();
         }
 
 
-        // See which way the pitch control points
-        if (app->userInput->keyDown(PITCH_UP_KEY1) ||
-            app->userInput->keyDown(PITCH_UP_KEY2)) {
-
-            newControls.pitch = UP_PITCH;
-
-        } else if (app->userInput->keyDown(PITCH_DOWN_KEY1) ||
-                   app->userInput->keyDown(PITCH_DOWN_KEY2)) {
-
-            newControls.pitch = DOWN_PITCH;
-
+        // The vertical axis is independent of the others 
+        if (app->userInput->keyDown(UP_KEY1) ||
+            app->userInput->keyDown(UP_KEY2)) {
+            newControls.desiredVelocity.y = speed/2;
+        } else if (app->userInput->keyDown(DOWN_KEY1) ||
+                   app->userInput->keyDown(DOWN_KEY2)) {
+            newControls.desiredVelocity.y = -speed/2;
         } else {
-
-            newControls.pitch = DEFAULT_PITCH;
+            newControls.desiredVelocity.y = 0;
         }
 
+        // Normalized [-1,-1] to [1,1] mouse
+        Vector2 mouse  = -((app->userInput->mouseXY() / 
+            Vector2(app->window()->width(), app->window()->height())) * 2 - 
+            Vector2(1, 1));
+
+        double mx = mouse.x;
+        // Create a dead zone
+        mx = max(0, abs(mx) - 0.25) * sign(mx);
+
+        newControls.desiredYawVelocity = mx * toRadians(180);
 
         if (entity.controls != newControls) {
             // Tell the server our new controls
             app->debugPrintf("CLIENT: send");
+            entity.oldDesiredVelocity = entity.currentTiltVelocity;
+            entity.oldDesiredVelocityTime = System::time();
             entity.controls = newControls;
             EntityStateMessage msg;
             entity.makeStateMessage(msg);
@@ -266,7 +242,6 @@ void Client::renderEntity(const Entity& entity) {
     material.color = entity.color;
     material.specularCoefficient = 1.0;
     model->render(app->renderDevice, cframe, entity.pose, material);
-
 }
 
 
@@ -304,10 +279,10 @@ void Client::doGraphics() {
 
         renderEntities();
 
-        for (int x = 0; x < 10; ++x) {
-            for (int z = 0; z < 10; ++z) {
-                Vector3 v((x - 5) * 10, -10, (z - 5) * 10); 
-                Draw::box(AABox(v, v + Vector3(1,.1,1)), app->renderDevice, Color3::RED, Color3::BLACK);
+        for (int x = -10; x < 10; ++x) {
+            for (int z = -10; z < 10; ++z) {
+                Vector3 v(x * 20, -10, z * 20); 
+                Draw::box(AABox(v, v + Vector3(1,.2,1)), app->renderDevice, Color3::RED, Color3::BLACK);
             }
         }
 

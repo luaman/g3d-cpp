@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-31
+  @edited  2004-10-24
  */
 
 #include "Entity.h"
@@ -14,7 +14,7 @@ extern App* app;
 
 const RealTime Entity::networkLerpTime = 0.2;
 
-Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::ZERO) {
+Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::ZERO), tip(Matrix3::identity()), oldDesiredVelocityTime(-100) {
 }
 
 
@@ -52,18 +52,24 @@ void Entity::makeStateMessage(class EntityStateMessage& msg) const {
 void Entity::clientUpdateFromStateMessage(class EntityStateMessage& msg, ID localID) {
     debugAssert(id == msg.id);
 
-    oldDeltaFrame = msg.frame - frame;
+    // oldDeltaFrame = correct - estimated
+    oldDeltaFrame.translation = msg.frame.translation - frame.translation;
+    oldDeltaFrame.rotation = msg.frame.rotation * frame.rotation.inverse();
     oldFrameTime = System::getTick();
     frame        = msg.frame;
     velocity     = msg.velocity;
     if (localID != id) {
+        oldDesiredVelocityTime = oldFrameTime;
+        oldDesiredVelocity = currentTiltVelocity;
         controls = msg.controls;
     }
 }
 
 
 CoordinateFrame Entity::coordinateFrame() const {
-    return frame.toCoordinateFrame();
+    CoordinateFrame c = frame.toCoordinateFrame();
+    c.rotation = c.rotation * tip;
+    return c;
 }
 
 
@@ -72,10 +78,20 @@ CoordinateFrame Entity::smoothCoordinateFrame(RealTime now) const {
 
     if (alpha == 0.0) {
         // No lerping necessary; the lerp-period has expired
-        return frame.toCoordinateFrame();
+        CoordinateFrame c = frame.toCoordinateFrame();
+        c.rotation = c.rotation * tip;
+        return c;
     } else {
-        EulerFrame lerpFrame = frame - (oldDeltaFrame * alpha);
-        return lerpFrame.toCoordinateFrame();
+
+        // Compose: position = current + delta*scale;
+        PhysicsFrame scaledDelta = oldDeltaFrame.lerp(PhysicsFrame(), alpha);
+        PhysicsFrame current;
+        current.translation = frame.translation + scaledDelta.translation;
+        current.rotation = frame.rotation * scaledDelta.rotation;
+
+        CoordinateFrame c = current.toCoordinateFrame();
+        c.rotation = c.rotation * tip;
+        return c;
     }
 }
 
@@ -86,67 +102,51 @@ void Entity::doSimulation(SimTime dt) {
     // reasonable simulator.
 
     CoordinateFrame cframe = coordinateFrame();
-
-    // MSVC 6.0 miscompiles this code in release mode if clampVel is computed
-    // before clampYaw.
-    const double clampVel = clamp(velocity.length() * 0.1, -2.0, 2.0);
-    const double clampYaw = clamp(controls.yaw, -1.0, 1.0);
-    const double yawVel   = clampYaw * toRadians(45) * clampVel * 
-                            -sign(velocity.dot(cframe.rotation.getColumn(2)));
-    const double dYaw     = yawVel * dt;
-
     pose.rotorAngle = wrap(pose.rotorAngle - dt * 20, -G3D_PI * 100, G3D_PI * 100);
 
-    frame.yaw += dYaw;
-
-    // Slowly roll to an angle based on the change in yaw
-    double desiredRoll = yawVel / 3.0;
-    double rollVel = sign(desiredRoll - frame.roll) *
-        clamp(abs(desiredRoll - frame.roll) * 10, -toRadians(180), toRadians(180)); 
-
-    frame.roll += rollVel * dt;
-
-    // Rotate velocity
-    velocity = Matrix3::fromAxisAngle(Vector3::UNIT_Y, dYaw) * velocity;
-
-    cframe = coordinateFrame();
-
-    // Engine thrust
-    const double  thrustMag = clamp(controls.throttle * 15.0, -15.0, 15.0);
-    const Vector3 thrustDir = -cframe.rotation.getColumn(2);
-
-    // Drag: at low speeds, ~speed.  At high speed, ~speed^2
-    double speed = velocity.length();
-    double  dragMag;
-    if (speed > 7) {
-        dragMag = 0.01 * speed * speed;
-    } else if (speed > 1) {
-        dragMag = speed * 1.3;
-    } else {
-        dragMag = speed;
+    Vector3 acceleration;
+    
+    for (int i = 0; i < 3; ++i) {
+        const double maxAccel = 10;
+        double a = controls.desiredVelocity[i] - velocity[i];
+        // Obey maximum acceleration and don't overshoot the target velocity
+        acceleration[i] = sign(a) * min(abs(a)/dt, maxAccel);
     }
 
-    const Vector3 dragDir = -velocity.directionOrZero();
+    velocity = velocity + acceleration * dt;
+    frame.translation += velocity;
 
-    const Vector3 lift = Vector3(0, clamp(controls.pitch * 10.0, -10.0, 10.0), 0);
+    double dYaw = controls.desiredYawVelocity * dt;
+    frame.rotation = Quat::fromAxisAngleRotation(Vector3::unitY(), dYaw) * frame.rotation;
 
-    // Slowly roll to an angle based on the change in elevation
-    double desiredPitch = lift.y / 10.0;
-    double pitchVel = sign(desiredPitch - frame.pitch) *
-        clamp(abs(desiredPitch - frame.pitch) * 3, -toRadians(45), toRadians(45)); 
+    // Compute the orientation of the craft based on movement.
+    {
+        static const RealTime tiltLerpTime = 0.25;
 
-    frame.pitch += pitchVel * dt;
+        // World space velocity affecting tilt
+        currentTiltVelocity = controls.desiredVelocity;
 
+        double alpha = clamp((System::time() - oldDesiredVelocityTime) / tiltLerpTime, 0.0, 1.0);
 
-    const Vector3 acceleration =
-        (thrustMag * thrustDir) +
-        (dragMag * dragDir) +
-        lift;
+        if (alpha < 1.0) {
+            // Use cosine interpolation rate
+            alpha = (1 - cos(alpha * G3D_PI)) * 0.5;
+            currentTiltVelocity = oldDesiredVelocity.lerp(controls.desiredVelocity, alpha); 
+        }
 
-    velocity += acceleration * dt;
+        // Object space velocity affecting tilt
 
-    frame.translation += velocity * dt;
+        Matrix3 localAxes = frame.rotation.toRotationMatrix();
+        double dx =  localAxes.getColumn(0).dot(currentTiltVelocity) * .1;
+        double dz =  localAxes.getColumn(2).dot(currentTiltVelocity) * .1;
 
+        Vector3 Y = Vector3(dx, 1.0, dz).direction();
+        Vector3 X = (Vector3::unitX() - Y * dx).direction(); 
+        Vector3 Z = X.cross(Y);
+        tip.setColumn(0, X);
+        tip.setColumn(1, Y);
+        tip.setColumn(2, Z);
+    }
 }
 
 
@@ -161,78 +161,17 @@ void simulateEntities(EntityTable& entityTable, SimTime dt) {
 
 ////////////////////////////////////////////////////////////////////////
 
-EulerFrame::EulerFrame() : yaw(0), roll(0), pitch(0), translation(Vector3::ZERO) {
-}
-
-
-EulerFrame::EulerFrame(double r, double y, double p, const Vector3& t) :
-    yaw(y), roll(r), pitch(p), translation(t) {
-}
-
-
-void EulerFrame::serialize(BinaryOutput& b) const {
-    b.writeFloat32(roll);
-    b.writeFloat32(yaw);
-    b.writeFloat32(pitch);
-    translation.serialize(b);
-}
-
-
-void EulerFrame::deserialize(BinaryInput& b) {
-    roll = b.readFloat32();
-    yaw  = b.readFloat32();
-    pitch = b.readFloat32();
-    translation.deserialize(b);
-}
-
-
-EulerFrame EulerFrame::lerp(const EulerFrame& other, double alpha) const {
-    return EulerFrame(
-        G3D::lerp(roll, other.roll, alpha),
-        G3D::lerp(yaw, other.yaw, alpha),
-        G3D::lerp(pitch, other.pitch, alpha),
-        translation.lerp(other.translation, alpha));
-}
-
-
-CoordinateFrame EulerFrame::toCoordinateFrame() const {
-    return CoordinateFrame(
-        Matrix3::fromEulerAnglesYXZ(yaw, pitch, roll), translation);
-}
-
-
-EulerFrame EulerFrame::operator-(const EulerFrame& other) const {
-    return EulerFrame(roll - other.roll, yaw - other.yaw,
-        pitch - other.pitch, translation - other.translation);
-}
-
-
-EulerFrame EulerFrame::operator+(const EulerFrame& other) const {
-    return EulerFrame(roll + other.roll, yaw + other.yaw,
-        pitch + other.pitch, translation + other.translation);
-}
-
-
-EulerFrame EulerFrame::operator*(double s) const {
-    return EulerFrame(roll * s, yaw * s, pitch * s, translation * s);
-}
-
-
-////////////////////////////////////////////////////////////////////////
-
-Controls::Controls() : throttle(0), yaw(0), pitch(0) {
+Controls::Controls() : desiredYawVelocity(0), desiredVelocity(Vector3::zero()) {
 }
 
 
 void Controls::serialize(BinaryOutput& b) const {
-    b.writeFloat32(throttle);
-    b.writeFloat32(yaw);
-    b.writeFloat32(pitch);
+    b.writeFloat32(desiredYawVelocity);
+    desiredVelocity.serialize(b);
 }
 
 
 void Controls::deserialize(BinaryInput& b) {
-    throttle = b.readFloat32();
-    yaw = b.readFloat32();
-    pitch = b.readFloat32();
+    desiredYawVelocity = b.readFloat32();
+    desiredVelocity.deserialize(b);
 }

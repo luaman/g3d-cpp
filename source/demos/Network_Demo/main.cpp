@@ -37,7 +37,6 @@ int main(int argc, char** argv) {
     settings.window.width       = 640;
     settings.window.height      = 480;
 
-    settings.dataDir = "d:/games/cpp/source/data/";
     App(settings).run();
     return 0;
 }

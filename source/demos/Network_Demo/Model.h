@@ -25,15 +25,9 @@ public:
     GMaterial           material;
     CoordinateFrame     cframe;
 
-    virtual void beforePrimitive (class RenderDevice *renderDevice) {
-        Shader::beforePrimitive(renderDevice);
-        renderDevice->setObjectToWorldMatrix(cframe);
-        material.configure(renderDevice);
-    }
+    virtual void beforePrimitive (class RenderDevice *renderDevice);
 
-    virtual void afterPrimitive (class RenderDevice *renderDevice) {
-        Shader::afterPrimitive(renderDevice);
-    }
+    virtual void afterPrimitive (class RenderDevice *renderDevice);
 };
 
 

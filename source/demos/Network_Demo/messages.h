@@ -84,7 +84,7 @@ public:
     /** ID of the object for which these controls apply */
     ID                          id;
     Controls                    controls;
-    EulerFrame                  frame;
+    PhysicsFrame                frame;
     Vector3                     velocity;
 
     virtual uint32 type() const {

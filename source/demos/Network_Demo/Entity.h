@@ -20,55 +20,24 @@ enum {NO_ID = 0};
  */
 class Controls {
 public:
-    double              throttle;
+    /** Desired change in facing velocity in world frame. */
+    double              desiredYawVelocity;
 
-    /** Effective rudder setting relative to heading. */
-    double              yaw;
-
-    /** Effective elevator setting relative to heading. */
-    double              pitch;
+    /** Desired change in position rate in world frame. */
+    Vector3             desiredVelocity;
 
     /** Initializes all values to zero */
     Controls();
 
     inline bool operator==(const Controls& other) const {
         return 
-            (throttle == other.throttle) &&
-            (yaw == other.yaw) &&
-            (pitch == other.pitch);
+            (desiredYawVelocity == other.desiredYawVelocity) &&
+            (desiredVelocity == other.desiredVelocity);
     }
 
     inline bool operator!=(const Controls& other) const {
         return ! (*this == other);
     }
-
-    void serialize(BinaryOutput&) const;
-
-    void deserialize(BinaryInput&);
-};
-
-
-class EulerFrame {
-public:
-
-    double              yaw;
-    double              roll;
-    double              pitch;
-    Vector3             translation;
-
-    EulerFrame();
-
-    EulerFrame(double r, double y, double p, const Vector3& t);
-
-    EulerFrame operator-(const EulerFrame& other) const;
-
-    EulerFrame operator+(const EulerFrame& other) const;
-
-    EulerFrame operator*(double s) const;
-
-    CoordinateFrame toCoordinateFrame() const;
-
-    EulerFrame lerp(const EulerFrame& other, double alpha) const;
 
     void serialize(BinaryOutput&) const;
 
@@ -101,7 +70,7 @@ public:
 
     std::string         name;
 
-    EulerFrame          frame;
+    PhysicsFrame        frame;
 
     /** The difference of the new and old values due to network
         synchronization.  Used in smoothCoordinateFrame.
@@ -115,12 +84,22 @@ public:
 
         Not used on the server side.  Not sent when the Entity
         is serialized. */
-    EulerFrame          oldDeltaFrame;
+    PhysicsFrame        oldDeltaFrame;
 
     /** System::getTick() time at which oldFrame was frozen */
     RealTime            oldFrameTime;
 
     Vector3             velocity;
+
+    /** When the controls change, the orientation matrix can't change
+        immediately.  Tracked only for visualization.*/ 
+    Vector3             oldDesiredVelocity;
+    RealTime            oldDesiredVelocityTime;
+    /** Ephemeral.  Used for the 'tip' matrix */
+    Vector3             currentTiltVelocity;
+
+    /** Rotation due to movement. Ephemeral; tracked only for visualization. */
+    Matrix3             tip;
 
     Controls            controls;
 
