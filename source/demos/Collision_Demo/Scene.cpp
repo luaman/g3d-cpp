@@ -106,7 +106,7 @@ void Scene::generateShadowMap(
 	    // Draw from the light's point of view
 	    glViewport(0, 0, shadowMapSize, shadowMapSize);
 
-        renderDevice->setProjectionMatrix2D(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar);
+        renderDevice->setProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
         renderDevice->setCameraToWorldMatrix(lightViewMatrix);
 
         if (! debugLightMap) {
@@ -133,7 +133,7 @@ void Scene::render(const LightingParameters& lighting) const {
 
     // Construct a projection and view matrix for the camera so we can 
     // render the scene from the light's point of view
-    Matrix4 lightProjectionMatrix(Matrix4::orthogonalProjectionMatrix(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
+    Matrix4 lightProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
     
     CoordinateFrame lightCFrame;
     lightCFrame.lookAt(-lighting.lightDirection, -Vector3::UNIT_Y);

@@ -11,12 +11,16 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2003-09-27
+  @edited  2003-11-07
  */ 
 
 #include <G3DAll.h>
 #ifdef _MSC_VER
   #include <direct.h>
+#endif
+
+#if G3D_VER != 060007
+    #error Requires G3D 6.00 b7
 #endif
 
 class Model {
@@ -93,7 +97,10 @@ int main(int argc, char** argv) {
 
     RealTime now = getTime() - 0.001, lastTime;
 
-    distort = VertexProgram::fromFile("GLProgram_Demo/twist.vp");
+    {
+        std::string p = "";
+        distort = VertexProgram::fromFile(p + "GLProgram_Demo/twist.vp");
+    }
 
     // Main loop
     do {

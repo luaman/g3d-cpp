@@ -33,7 +33,7 @@ void beginLighting(const LightingParameters& lighting) {
     renderDevice->configureDirectionalLight
       (1, -lighting.lightDirection, Color3::WHITE * .25);
 
-    renderDevice->setAmbientLightLevel(lighting.ambient);    
+    renderDevice->setAmbientLightColor(lighting.ambient);    
 }
 
 

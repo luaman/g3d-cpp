@@ -17,12 +17,16 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created    2002-01-01
- @edited     2003-08-07
+ @edited     2003-11-07
  */
 
 #include <windows.h>
 #include <graphics3D.h>
 #include "Window.h"
+
+#if G3D_VER != 060007
+    #error Requires G3D 6.00 b7
+#endif
 
 using namespace G3D;
 

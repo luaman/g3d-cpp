@@ -2,10 +2,15 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @cite       Written by Nate Miller, nathanm@uci.edu
  @created    2002-08-10
- @edited     2002-12-30
+ @edited     2003-11-07
  */
 
 #include "IFSReader.h"
+
+#if G3D_VER != 060007
+    #error Requires G3D 6.00 b7
+#endif
+
 
 IFSReader::IFSReader() {
    verts = 0;

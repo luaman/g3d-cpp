@@ -5,10 +5,15 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-08-13
+  @edited  2003-11-07
  */ 
 
 #include <G3DAll.h>
+
+#if G3D_VER != 060007
+    #error Requires G3D 6.00 b7
+#endif
+
 
 std::string             DATA_DIR        = "data/";
 

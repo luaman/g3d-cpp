@@ -30,10 +30,14 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2003-11-05
+ @edited  2003-11-07
  */
 
 #include <G3DAll.h>
+
+#if G3D_VER != 060007
+    #error Requires G3D 6.00 b7
+#endif
   
 /**
  The path to the data directory from this program's directory.
