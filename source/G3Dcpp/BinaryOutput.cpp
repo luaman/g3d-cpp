@@ -42,18 +42,20 @@ void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
     }else if (bytes > maxBufferLen) {
         throw "Out of memory while writing to disk in BinaryOutput (could not create a large enough buffer).";
     } else {
-        // Dump the contents to disk.  In order to enable seeking, we keep the last
-        // 10 MB in memory.
 
-        size_t writeBytes = bufferLen - 10 * 1024 * 1024;
+        // Dump the contents to disk.  In order to enable seeking backwards, 
+        // we keep the last 10 MB in memory.
+        int writeBytes = (int)bufferLen - 10 * 1024 * 1024;
 
         if (writeBytes < bufferLen / 3) {
             // We're going to write less than 1/3 of the file;
             // give up and just write the whole thing.
             writeBytes = bufferLen;
         }
+        debugAssert(writeBytes > 0);
 
-        FILE* file = fopen(filename.c_str(), "ab");
+        const char* mode = (alreadyWritten > 0) ? "ab" : "wb";
+        FILE* file = fopen(filename.c_str(), mode);
         debugAssert(file);
 
         size_t count = fwrite(buffer, 1, writeBytes, file);
@@ -67,10 +69,22 @@ void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
         bufferLen -= writeBytes;
         pos -= writeBytes;
 
+        debugAssert(bufferLen < maxBufferLen);
+        debugAssert(bufferLen >= 0);
+        debugAssert(pos >= 0);
+        debugAssert(pos <= bufferLen);
+
         // Shift the unwritten data back appropriately in the buffer.
         debugAssert(isValidHeapPointer(buffer));
         System::memcpy(buffer, buffer + writeBytes, bufferLen);
         debugAssert(isValidHeapPointer(buffer));
+
+        // *now* we allocate bytes (there should presumably be enough 
+        // space in the buffer; if not, we'll come back through this 
+        // code and dump the last 10MB to disk as well.  Note that the 
+        // bytes > maxBufferLen case above would already have triggered
+        // if this call couldn't succeed. 
+        reserveBytes(bytes);
     }
 }
 
@@ -195,7 +209,7 @@ void BinaryOutput::commit(bool flush) {
         createDirectory(path);
     }
 
-    char* mode = (alreadyWritten > 0) ? "ab" : "wb";
+    const char* mode = (alreadyWritten > 0) ? "ab" : "wb";
 
     FILE* file = fopen(filename.c_str(), mode);
     debugAssert(file);
