@@ -152,9 +152,9 @@ static void manageFrameRate() {
 
 void Client::doLogic() {
 
-    if (! app->hostingServer) {
+//    if (! app->hostingServer) {
         manageFrameRate();
-    }
+//    }
 
     if (app->userInput->keyPressed(SDLK_ESCAPE)) {
         // Quit back to main menu

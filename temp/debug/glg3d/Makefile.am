@@ -2,6 +2,7 @@ noinst_LIBRARIES= libGLG3D_debug.a
 
 libGLG3D_debug_a_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                            ../../../source/GLG3Dcpp/Draw.cpp \
+                           ../../../source/GLG3Dcpp/GWindow.cpp \
                            ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
                            ../../../source/GLG3Dcpp/GApp.cpp \
                            ../../../source/GLG3Dcpp/GPUProgram.cpp \

@@ -66,8 +66,26 @@ typedef SDL_Event GEvent;
 class GWindow {
 private:
 
-    Array<void(*)(void*)>       loopBodyStack;
-    Array<void*>                loopArgStack;
+    /** */
+    class LoopBody {
+    public:
+        union{
+            void (*func)(void*);
+            class GApplet*      applet;
+        };
+
+        void*                   arg;        
+        
+        /** If true, the applet's oneFrame method is invoked in executeLoopBody.
+            If false, func is invoked on arg in  executeLoopBody. */
+        bool                    isGApplet;
+
+        LoopBody() : func(NULL), arg(NULL), isGApplet(false) {}
+        LoopBody(GApplet* a) : applet(a), arg(NULL), isGApplet(true) {}
+        LoopBody(void (*f)(void*), void* a) : func(f), arg(a), isGApplet(false) {}
+    };
+
+    Array<LoopBody>             loopBodyStack;
 
 protected:
 
@@ -75,11 +93,8 @@ protected:
         return loopBodyStack.size() > 0;
     }
 
-    void executeLoopBody() {
-        if (loopBodyStack.last() != NULL) {
-            loopBodyStack.last()(loopArgStack.last());
-        }
-    }
+    /** Subclasses should call from their idle function. */
+    void executeLoopBody();
 
 public:
 
@@ -273,14 +288,16 @@ public:
 
     /** Pushes a function onto the stack of functions called by runMainLoop */
     virtual void pushLoopBody(void (*body)(void*), void* arg) {
-        loopBodyStack.push(body);
-        loopArgStack.push(arg);
+        loopBodyStack.push(LoopBody(body, arg));
     }
 
-    virtual void popLoopBody() {
-        loopBodyStack.pop();
-        loopArgStack.pop();
+    virtual void pushLoopBody(GApplet* applet) {
+        loopBodyStack.push(LoopBody(applet));
     }
+
+    /** Pops a loop body off the stack.  If the loop body was a GApplet,
+        invokes GApplet::endRun on it.*/
+    virtual void popLoopBody();
 
     /**
      Executes an event loop, invoking callback repeatedly.  Put everything

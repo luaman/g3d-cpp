@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 
 
 App::App(const GAppSettings& settings) : 
-    GApp(settings),
+    GApp(settings, new SDLWindow(settings.window)),
     hostingServer(NULL),
     discoverySettings("Demo Discovery Protocol", 1) {
 

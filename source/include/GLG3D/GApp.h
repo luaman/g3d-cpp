@@ -217,17 +217,17 @@ public:
 
 };
 
+/**
 
+ To invoke a GApplet and let it control the main loop, call
+ run().  To control the main loop explicitly, invoke beginRun on
+ initialization, call oneFrame() from the main loop, and call endRun on cleanup.
+ */ 
 class GApplet {
 private:
     GApp*               app;
 
     RealTime            now, lastTime;
-
-    /**
-     Used by GApplet::run when the window requiresMainLoop.
-     */
-    static void loopBody(void* _applet);
 
 public:
 
@@ -305,17 +305,6 @@ protected:
     virtual void doLogic() {}
 
     /**
-     Override if you need to explicitly handle events.
-     Note that the userInput contains a record of all
-     keys pressed/held, mouse, and joystick state, so 
-     you do not have to override this method to handle
-     basic input events.
-
-     The default implementation does nothing.
-     */
-    virtual void processEvent(const SDL_Event& event) {};
-
-    /**
      Invoked every time run is called.  Default implementation
      does nothing.
      */
@@ -326,6 +315,17 @@ protected:
      does nothing.
      */
     virtual void cleanup() {}
+    
+    /**
+     Override if you need to explicitly handle events.
+     Note that the userInput contains a record of all
+     keys pressed/held, mouse, and joystick state, so 
+     you do not have to override this method to handle
+     basic input events.
+
+     The default implementation does nothing.
+     */
+    virtual void processEvent(const SDL_Event& event) {};
 
     /**
      Updates the userInput.  Called from run.  Rarely needs to be

@@ -274,7 +274,7 @@ void GApplet::oneFrame() {
 void GApplet::endRun() {
     cleanup();
 }
-
+/*
 // NOTE: This code is a prototype of how to run
 // a GApplet with a GWindow that controls the main
 // loop.  It is not actually used.
@@ -290,15 +290,14 @@ void GApplet::loopBody(void* _applet) {
         // Remove this applet from the loop stack
         applet->app->window()->popLoopBody();
     }
-}
+}*/
 
 
 void GApplet::run() {
 
     if (app->window()->requiresMainLoop()) {
 
-        beginRun();
-        app->window()->pushLoopBody(loopBody, this);
+        app->window()->pushLoopBody(this);
 
     } else {
         beginRun();

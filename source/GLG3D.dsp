@@ -130,6 +130,10 @@ SOURCE=.\GLG3Dcpp\GPUProgram.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\GWindow.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\IFSModel.cpp
 # End Source File
 # Begin Source File
