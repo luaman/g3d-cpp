@@ -34,7 +34,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2004-04-02
+ @edited  2005-01-20
  */
 
 #ifndef NETWORKDEVICE_H
@@ -146,6 +146,9 @@ inline bool operator!=(const NetAddress& a, const NetAddress& b) {
  (e.g. SignOnMessage, CreatePlayer, ChatMessage, PlaySoundMessage, 
  SignOffMessage).  Because the specific messages needed depend on the
  application, they are not part of G3D.
+
+ @deprecated Send and receive methods now directly accept serializable
+   objects.
  */
 class NetMessage {
 public:
@@ -267,10 +270,14 @@ private:
      */
     uint32                          messageType;
 
+    // Not yet in use
     void*                           receiveBuffer;
 
     /** Total size of the receiveBuffer */
     size_t                          receiveBufferSize;
+
+    /** Size occupied by the current message. */
+    int                             receiveBufferLen;
 
     ReliableConduit(class NetworkDevice* _nd, const NetAddress& addr);
 
@@ -281,10 +288,40 @@ private:
     /**
      ReliableConduit messages are serialized with the message size
      (since TCP may divide it across packets) and the message type.
+     @deprecated (used by a deprecated routine)
      */
     static void serializeMessage(const NetMessage* m, BinaryOutput& b);
 
+    /** 
+     */
+    template<typename T> static void serializeMessage(uint32 t, const T& m, BinaryOutput& b) {
+        b.writeUInt32(t);
+
+        // Reserve space for the 4 byte size header
+        b.writeUInt32(0);
+
+        size_t L = b.length();
+        m.serialize(b);
+        if (b.length() == L) {
+            // We need to send at least one byte because receive assumes that
+            // a zero length packet is an error.
+            b.writeUInt8(-1);
+        }
+    
+        uint32 len = b.getLength() - 8;
+    
+        // We send the length first to tell recv how much data to read.
+        // Here we abuse BinaryOutput a bit and write directly into
+        // its buffer, violating the abstraction.
+        ((uint32*)b.getCArray())[1] = htonl(len);
+    }
+
+
     void sendBuffer(const BinaryOutput& b);
+
+    /** Receives into the buffer receiveBuffer.  Returns false if anything 
+        goes wrong.*/
+    bool receiveIntoBuffer();
 
 public:
 
@@ -299,17 +336,60 @@ public:
      message type and the size of the serialized message as a 32-bit
      integer.  The size is sent because TCP is a stream protocol and
      doesn't have a concept of discrete messages.
+
+     @deprecated Use send(type, message)
      */
     void send(const NetMessage* m);
 
-    /** Send the same message to a number of conduits.  Useful for sending
-        data from a server to many clients (only serializes once). */
+    /**
+     Serializes the message and schedules it to be sent as soon as possible,
+     and then returns immediately.  The message can be any <B>class</B> with
+     a serialize and deserialize method.  On the receiving side,
+     use G3D::ReliableConduit::waitingMessageType() to detect the incoming
+     message and then invoke G3D::ReliableConduit::receive(msg) where msg
+     is of the same class as the message that was sent.
+
+     The actual data sent across the network is preceeded by the
+     message type and the size of the serialized message as a 32-bit
+     integer.  The size is sent because TCP is a stream protocol and
+     doesn't have a concept of discrete messages.
+     */
+    template<typename T> inline void send(uint32 type, const T& message) {
+        binaryOutput.reset();
+        serializeMessage(type, message, binaryOutput);
+        sendBuffer(binaryOutput);
+    }
+    
+    /** Sends an empty message with the given type.  Useful for sending 
+        commands that have no parameters. */
+    void send(uint32 type);
+
+    /** @deprecated Use multisend(Array<>, uint32, T)*/
     static void multisend(const Array<ReliableConduitRef>& array, 
                           const NetMessage* m);
 
+    /** @deprecated Use multisend(Array<>, uint32, T)*/
     inline static void multisend(const Array<ReliableConduitRef>& array, 
                                  const NetMessage& m) {
         multisend(array, &m);
+    }
+
+    /** Send the same message to a number of conduits.  Useful for sending
+        data from a server to many clients (only serializes once). */
+    template<typename T>
+    inline static void multisend(
+        const Array<ReliableConduitRef>& array, 
+        uint32                          type,
+        const T&                        m) {
+        
+        if (array.size() > 0) {
+            array[0]->binaryOutput.reset();
+            serializeMessage(type, m, array[0]->binaryOutput);
+
+            for (int i = 0; i < array.size(); ++i) {
+                array[i]->sendBuffer(array[0]->binaryOutput);
+            }
+        }
     }
 
     inline static void multisend(const Array<ReliableConduitRef>& array) {
@@ -320,8 +400,9 @@ public:
         send(&m);
     }
 
+    /** @deprecated */
     inline void send() {
-        send(NULL);
+        send((NetMessage*)NULL);
     }
 
     virtual uint32 waitingMessageType();
@@ -334,11 +415,40 @@ public:
         If a message is incoming but was split across multipled TCP
         packets in transit, this will block for up to .25 seconds
         waiting for all packets to arrive.  For short messages (less
-        than 5k) this is extremely unlikely to occur.*/
+        than 5k) this is extremely unlikely to occur.
+        @deprecated Use receive(T)
+    */
     bool receive(NetMessage* m);
+
+    /** @deprecated Use receive(T) */
 
     inline bool receive(NetMessage& m) {
         return receive(&m);
+    }
+
+    /** 
+        If a message is waiting, deserializes the waiting message into
+        message and returns true, otherwise returns false.  You can
+        determine the type of the message (and therefore, the class
+        of message) using G3D::ReliableConduit::waitingMessageType().        
+     */
+    // TODO: add receive() that just ignores the message.
+    // TODO: use receive buffer.
+    template<typename T> inline bool receive(T& message) {
+        bool success = receiveIntoBuffer();
+        if (! success) {
+            return false;
+        }
+
+        // Deserialize
+        BinaryInput b((uint8*)receiveBuffer, receiveBufferLen, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
+        message.deserialize(b);
+        
+        // Don't let anyone read this message again.  We leave the buffer
+        // allocated for the next caller, however.
+        receiveBufferLen = 0;
+
+        return true;
     }
 
     NetAddress address() const;

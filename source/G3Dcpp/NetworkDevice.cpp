@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2004-05-03
+ @edited  2005-01-20
  */
 
 #include <stdlib.h>
@@ -568,7 +568,7 @@ static void increaseBufferSize(SOCKET sock, Log* debugLog) {
 
 ReliableConduit::ReliableConduit(
     NetworkDevice*      _nd,
-    const NetAddress&   _addr) : Conduit(_nd) {
+    const NetAddress&   _addr) : Conduit(_nd), receiveBufferSize(0), receiveBufferLen(0), receiveBuffer(NULL) {
 
     messageType         = 0;
     alreadyReadType     = false;
@@ -644,7 +644,8 @@ ReliableConduit::ReliableConduit(
 ReliableConduit::ReliableConduit(
     NetworkDevice*    _nd, 
     const SOCKET&      _sock, 
-    const NetAddress&  _addr) : Conduit(_nd) {
+    const NetAddress&  _addr) : Conduit(_nd), receiveBuffer(NULL), 
+    receiveBufferSize(0), receiveBufferLen(0) {
     sock                = _sock;
     addr                = _addr;
 
@@ -654,6 +655,9 @@ ReliableConduit::ReliableConduit(
 
 
 ReliableConduit::~ReliableConduit() {
+    free(receiveBuffer);
+    receiveBuffer = NULL;
+    receiveBufferSize = 0;
 }
 
 
@@ -743,10 +747,21 @@ void ReliableConduit::sendBuffer(const BinaryOutput& b) {
 
 
 void ReliableConduit::send(const NetMessage* m) {
-
     binaryOutput.reset();
     serializeMessage(m, binaryOutput);
     sendBuffer(binaryOutput);
+}
+
+/** Null serializer.  Used by reliable conduit::send(type) */
+class Dummy {
+public:
+    void serialize(BinaryOutput& b) const {}
+};
+
+
+void ReliableConduit::send(uint32 type) {
+    static Dummy dummy;
+    send(type, dummy);
 }
 
 
@@ -894,6 +909,111 @@ bool ReliableConduit::receive(NetMessage* m) {
         buffer = NULL;
     }
     
+    return true;
+}
+
+
+bool ReliableConduit::receiveIntoBuffer() {
+    static const RealTime timeToWaitForFragmentedPacket = 5; // seconds
+
+    // This both checks to ensure that a message was waiting and
+    // actively consumes the message type if it has not been read
+    // yet.
+    uint32 t = waitingMessageType();
+    if (t == 0) {
+        return false;
+    }
+
+    // Reset the waiting message tracker.
+    messageType = 0;
+    alreadyReadType = false;
+
+    // Read the size
+    uint32 len;
+    int ret = recv(sock, (char*)&len, sizeof(len), 0);
+
+    if ((ret == SOCKET_ERROR) || (ret != sizeof(len))) {
+        if (nd->debugLog) {
+            nd->debugLog->printf("Call to recv failed.  ret = %d,"
+                                 " sizeof(len) = %d\n", ret, sizeof(len));
+            nd->debugLog->println(socketErrorCode());
+        }
+        nd->closesocket(sock);
+        return false;
+    }
+
+    len = ntohl(len);
+    debugAssert(len >= 0);
+    debugAssert(len < 6000000);
+    receiveBufferLen = len;
+
+    if (len > receiveBufferSize) {
+        // Extend the size of the buffer.
+        receiveBuffer = realloc(receiveBuffer, len);
+        receiveBufferSize = len;
+    }
+
+    if (receiveBuffer == NULL) {
+        if (nd->debugLog) {
+            nd->debugLog->println("Could not allocate a memory buffer "
+                                  "during receivePacket.");
+        }
+        nd->closesocket(sock);
+        return false;
+    }
+
+    // Read the data itself
+    ret = 0;
+    int left = len;
+    int count = 0;
+    while ((ret != SOCKET_ERROR) && (left > 0) && (count < 12)) {
+
+        ret = recv(sock, ((char*)receiveBuffer) + (len - left), left, 0);
+
+        // Sometimes we get only part of a packet
+        if (ret > 0) {
+            left -= ret;
+
+            if (left > 0) {
+                if (nd->debugLog) {
+                    nd->debugLog->printf("WARNING: recv() on partial "
+                         "packet of length %d bytes, attempt #%d.  "
+                         "Read %d bytes this time, %d bytes remaining\n",
+                         len, count + 1, ret, left);
+                }
+                ++count;
+
+                // Give the machine a chance to read more data, but
+                // don't wait forever
+                RealTime t = System::time() + timeToWaitForFragmentedPacket;
+                while (! messageWaiting() && (System::time() < t)) {
+                    System::sleep(0.001);
+                }
+            }
+        } else if (ret == 0) {
+            break;
+        }
+    }
+
+    if ((ret == 0) || (ret == SOCKET_ERROR) || (left != 0)) {
+
+        if (nd->debugLog) {
+            if (ret == SOCKET_ERROR) {
+                nd->debugLog->printf("Call to recv failed.  ret = %d,"
+                     " sizeof(len) = %d\n", ret, len);
+                nd->debugLog->println(socketErrorCode());
+            } else {
+                nd->debugLog->printf("Expected %d bytes from recv "
+                     "and got %d.", len, len - left);
+            }
+        }
+        nd->closesocket(sock);
+        return false;
+    }
+
+    ++mReceived;
+    bReceived += len + 4;
+
     return true;
 }
 

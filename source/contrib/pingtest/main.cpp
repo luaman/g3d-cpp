@@ -23,7 +23,7 @@
 #include <G3DAll.h>
 
 /** Change this constant to build a test for ReliableConduit */
-static const bool reliable = false;
+static const bool reliable = true;
 
 static const std::string clientGreeting = "hello, server";
 static const std::string serverResponse = "hello, client";
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 
 // Arbitrary constant greater than 1000 to identify our messages
 enum {PingMessage_MSG = 1008};
-class PingMessage : public NetMessage {
+class PingMessage {
 public:
 
     std::string      text;
@@ -82,7 +82,9 @@ public:
     }
 };
 
+
 void lightweightServer() {
+    /*
     // Print our network address
  
    	Array<NetAddress> localAddr;
@@ -137,6 +139,7 @@ void lightweightServer() {
                    conduit->waitingMessageType());
         }
     }
+    */
 }
 
 
@@ -182,7 +185,7 @@ void reliableServer() {
             debugAssert(greeting.text == clientGreeting);
 
             printf("Sending \"%s\"...", serverResponse.c_str());
-            conduit->send(PingMessage(serverResponse));
+            conduit->send(PingMessage_MSG, PingMessage(serverResponse));
             printf("sent.\n");
             debugAssert(conduit->ok());
             printf("Dropping connection.\n\n");
@@ -197,6 +200,7 @@ void reliableServer() {
 
 
 void lightweightClient(const std::string& server) {
+/*
     LightweightConduitRef conduit =
         networkDevice.createLightweightConduit();
 
@@ -225,8 +229,8 @@ void lightweightClient(const std::string& server) {
     printf("  Server responded with \"%s\".\n\n",
            response.text.c_str());
     debugAssert(response.text == serverResponse);
+*/
 }
-
 
 void reliableClient(const std::string& server) {
 
@@ -246,7 +250,7 @@ void reliableClient(const std::string& server) {
 
     // Send a hello message
     printf("  Sending \"%s\"... ", clientGreeting.c_str()); 
-    conduit->send(PingMessage(clientGreeting));
+    conduit->send(PingMessage_MSG, PingMessage(clientGreeting));
     debugAssert(conduit->ok());
     printf("sent.\n");
 

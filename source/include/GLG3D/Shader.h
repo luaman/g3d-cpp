@@ -482,6 +482,12 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
   inserted on the first line.
 
   <P>
+
+  <P>
+  ATI's RenderMonkey is an excellent tool for writing GLSL shaders under an IDE.
+  http://www.ati.com/developer/rendermonkey/index.html
+  You can then load those shaders into G3D::Shader and use them with your application.
+
   <B>Example</B>
 
   The following example computes lambertian + ambient shading in camera space,
@@ -520,7 +526,6 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
   Note the use of g3d_ObjectLight0.  Had we not used that variable, Shader would
   not have computed or set it.
   
-
   <B>BETA API</B>
   This API is subject to change.
  */
