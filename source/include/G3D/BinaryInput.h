@@ -232,6 +232,7 @@ public:
     Color4 readColor4();
     Color3 readColor3();
 
+
     /**
      Skips ahead n bytes.
      */
