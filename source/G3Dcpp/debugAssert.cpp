@@ -122,7 +122,7 @@ bool _handleDebugAssert_(const char* expression,
     const int cIgnoreAlways = 2;
     const int cAbort = 3;
 
-    static char* choices[] = {"Debug", "Ignore", "Ignore Always", "Abort"};
+    static char* choices[] = {"Debug", "Ignore", "Ignore Always", "Exit"};
 
     int result = G3D::prompt(title.c_str(), outputMessageText.c_str(), (const char**)choices, 4, useGuiPrompt);
 

@@ -81,6 +81,7 @@
     // In the release build, just define away assertions.
     #define debugAssert(exp)
     #define debugAssertM(exp, message)
+    #define debugBreak()
 
 #endif  // if debug
 

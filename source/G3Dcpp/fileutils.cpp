@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2003-04-01
+ @edited  2003-04-10
  */
 
 #include "G3D/fileutils.h"
@@ -12,6 +12,7 @@
 #include "G3D/g3dmath.h"
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <direct.h>
 #include <stdio.h>
 #include "G3D/BinaryOutput.h"
 
@@ -30,6 +31,38 @@ extern "C" {
 #endif
 
 namespace G3D {
+
+std::string resolveFilename(const std::string& filename) {
+    if (filename.size() >= 1) {
+        if ((filename[0] == '/') || (filename[0] == '\\')) {
+            // Already resolved
+            return filename;
+        } else {
+
+            #ifdef _WIN32
+                if ((filename.size() >= 2) && (filename[1] == ':')) {
+                    // There is a drive spec on the front.
+                    if ((filename.size() >= 3) && ((filename[2] == '\\') || (filename[2] == '/'))) {
+                        // Already fully qualified
+                        return filename;
+                    } else {
+                        // The drive spec is relative to the working directory on that drive.
+                        debugAssertM(false, "Files of the form d:path are not supported (use a fully qualified name).");
+                        return filename;
+                    }
+                }
+            #endif
+        }
+    }
+
+    char buffer[1024];
+
+    // Prepend the working directory.
+    _getcwd(buffer, 1024);
+
+    return format("%s/%s", buffer, filename.c_str());
+}
+
 
 std::string readFileAsString(
     const std::string& filename) {

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2002-06-06
- @edited  2002-12-18
+ @edited  2003-04-10
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -34,6 +34,10 @@ void writeStringToFile(
 void createDirectory(
     const std::string&          dir);
 
+/**
+ Fully qualifies a filename.
+ */
+std::string resolveFilename(const std::string& filename);
 
 /** Returns the length of the file, -1 if it does not exist */
 int64 fileLength(const std::string& filename);

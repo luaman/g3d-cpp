@@ -8,14 +8,6 @@
   The OpenGL ARB Vertex Program specification is located at
   http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_program.txt
 
-
-     void glGenProgramsARB(sizei n, uint *programs);
-     void glProgramStringARB(enum target, enum format, sizei len, const void *string);
-     void glBindProgramARB(enum target, uint program);
-     void glProgramEnvParameter4fARB(enum target, uint index, float x, float y, float z, float w);
-     void glProgramLocalParameter4fARB(enum target, uint index, float x, float y, float z, float w);
-     void glDeleteProgramsARB(sizei n, const uint *programs);
-
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
@@ -23,7 +15,7 @@
  */ 
 
 #include <G3DAll.h>
-
+#include <direct.h>
 
 class Model {
 
@@ -64,13 +56,12 @@ void doGraphics();
 void doUserInput();
 
 
-
 int main(int argc, char** argv) {
     // Search for the data
     for (int count = 0; (count < 4) && (! fileExists(DATA_DIR + "font/dominant.fnt")); ++count) {
         DATA_DIR = std::string("../") + DATA_DIR;
     }
-
+ 
     // Initialize
     debugLog	 = new Log();
     renderDevice = new RenderDevice();

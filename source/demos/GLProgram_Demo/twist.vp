@@ -39,6 +39,7 @@ DP4   oPos.w, mvp[3], temp;
 
 # Note: we aren't rotating the normals (we could, though)
 
+
 # Transform the normal to eye coordinates.
 DP3   xfNormal.x, mvinv[0], iNormal;
 DP3   xfNormal.y, mvinv[1], iNormal;

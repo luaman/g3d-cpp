@@ -80,7 +80,7 @@
         G3D::copyFile, G3D::writeStringToFile, G3D::prompt, G3D::fileLength,
         G3D::createTempFile, G3D::NetworkDevice,
         G3D::NetAddress, G3D::ReliableConduit, G3D::LightweightConduit,
-        G3D::NetListener, G3D::System</BLOCKQUOTE>
+        G3D::NetListener, G3D::System, G3D::resolveFilename</BLOCKQUOTE>
      </UL>
 
      Link against glg3d.lib and \#include "glg3d.h" to gain access to:
@@ -502,6 +502,7 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+     <LI> resolveFilename
      <LI> GLProgram_Demo to show how to use vertex programs in G3D
      <LI> Support for GL_ARB_vertex_program 
      <LI> VertexProgram, VertexProgramRef, RenderDevice::setVertexProgram
