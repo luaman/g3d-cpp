@@ -15,7 +15,7 @@
 
 namespace G3D {
 
-VAR::VAR() : _pointer(NULL), numElements(0), generation(0), elementSize(0), underlyingRepresentation(GL_FLOAT) {
+VAR::VAR() : _pointer(NULL), elementSize(0), numElements(0), generation(0), underlyingRepresentation(GL_FLOAT) {
 }
 
 

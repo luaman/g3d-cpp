@@ -1319,7 +1319,7 @@ CImage::Format CImage::resolveFormat(
 
 CImage::CImage(
     const std::string&  filename,
-    Format              format) : width(0), height(0), channels(0), _byte(NULL) {
+    Format              format) : _byte(NULL), width(0), height(0), channels(0){
     
     load(filename, format);
 }

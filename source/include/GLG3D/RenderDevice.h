@@ -73,11 +73,14 @@ public:
     /* The number of bits in the alpha channel of the frame buffer. 0, 1, <B>8</B> */
     int     alphaBits;
 
+    /** 16, <B>24</B>, 32 */
+    int     depthBits;
+
     /** <B>8</B> */
     int     stencilBits;
 
-    /** 16, <B>24</B>, 32 */
-    int     depthBits;
+    /** Number of samples per pixel for anti-aliasing purposes.  <B>1</B> (none), 4, 8 */
+    int     fsaaSamples;
 
     /** Will you accept a software rendering pipeline? */
     bool    hardware;
@@ -88,12 +91,6 @@ public:
         generally gives higher frame rates.*/
     bool    asychronous;
 
-    /** In cycles/sec */
-    int     refreshRate;
-
-
-    /** Number of samples per pixel for anti-aliasing purposes.  <B>1</B> (none), 4, 8 */
-    int     fsaaSamples;
 
     /** The number of bytes of video memory to allocate
       for vertex arrays.  If 0, the VAR system is not initialized.  <B>If nonzero,
@@ -109,6 +106,9 @@ public:
      color depth.Default is 1.0.  Set
         to 2.0 to make a Color3::WHITE light 50% of the maximum brightness. */
     double  lightSaturation;
+
+    /** In cycles/sec */
+    int     refreshRate;
 
     RenderDeviceSettings(
         int     _width               = 800,

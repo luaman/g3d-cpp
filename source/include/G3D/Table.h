@@ -282,9 +282,9 @@ public:
          Linked list node.
          */
         Node*              node;
+        Table<Key, Value>* table;
         int                numBuckets;
         Node**             bucket;
-        Table<Key, Value>* table;
         bool               isDone;
 
         /**

@@ -41,12 +41,6 @@ private:
      */
     MilestoneRef        milestone;
 
-	/** Pointer to the memory. */
-	void*				basePointer;
-
-	/** Total  number of bytes in this area. */
-	size_t				size;
-	
 	/** Number of bytes allocated. */
 	size_t				allocated;
 
@@ -60,6 +54,13 @@ private:
 	size_t				peakAllocated;
 
     RenderDevice*       renderDevice;
+
+	/** Pointer to the memory. */
+	void*				basePointer;
+
+	/** Total  number of bytes in this area. */
+	size_t				size;
+	
 
 	VARArea(
         RenderDevice*   _renderDevice,

@@ -144,6 +144,8 @@ void CFont::draw2D(
     case XALIGN_CENTER:
         x -= get2DStringBounds(s, size, spacing).x / 2;
         break;
+    default:
+        break;
     }
 
     switch (yalign) {
@@ -157,6 +159,8 @@ void CFont::draw2D(
 
     case YALIGN_BOTTOM:
         y -= h;
+        break;
+    default:
         break;
     }
 
