@@ -643,8 +643,16 @@ public:
     /**
      Set the vertex color (equivalent to glColor).
      */
-    void setColor(const Color4& color);
-    void setColor(const Color3& color);
+    inline void setColor(const Color4& color) {
+        state.color = color;
+        glColor4fv(state.color);
+    }
+
+
+    inline void setColor(const Color3& color) {
+        state.color = Color4(color, 1);
+        glColor3fv(state.color);
+    }
 
     /**
      Equivalent to glNormal
