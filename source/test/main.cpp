@@ -536,96 +536,6 @@ void measureNormalizationPerformance() {
 
 }
 
-/** @cite http://www.acm.org/jgt/papers/MollerTrumbore97/
-    http://www.graphics.cornell.edu/pubs/1997/MT97.html
-    One-sided triangle */
-double
-intersectTriangle(
-    const Vector3& orig,
-    const Vector3& dir,
-    const Vector3& vert0,
-    const Vector3& vert1,
-    const Vector3& vert2) {
-
-    // Barycenteric coords
-    double u, v;
-    #define EPSILON 0.000001
-    #define CROSS(dest,v1,v2) \
-              dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
-              dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
-              dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
-
-    #define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
-
-    #define SUB(dest,v1,v2) \
-              dest[0]=v1[0]-v2[0]; \
-              dest[1]=v1[1]-v2[1]; \
-              dest[2]=v1[2]-v2[2]; 
-
-    double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
-    
-    // find vectors for two edges sharing vert0
-    SUB(edge1, vert1, vert0);
-    SUB(edge2, vert2, vert0);
-    
-    // begin calculating determinant - also used to calculate U parameter
-    CROSS(pvec, dir, edge2);
-    
-    // if determinant is near zero, ray lies in plane of triangle
-    const double det = DOT(edge1, pvec);
-    
-    if (det < EPSILON) {
-        return inf;
-    }
-    
-    // calculate distance from vert0 to ray origin
-    SUB(tvec, orig, vert0);
-    
-    // calculate U parameter and test bounds
-    u = DOT(tvec, pvec);
-    if ((u < 0.0) || (u > det)) {
-        // Hit the plane outside the triangle
-        return inf;
-    }
-    
-    // prepare to test V parameter
-    CROSS(qvec, tvec, edge1);
-    
-    // calculate V parameter and test bounds
-    v = DOT(dir, qvec);
-    if ((v < 0.0) || (u + v > det)) {
-        // Hit the plane outside the triangle
-        return inf;
-    }
-    
-    // calculate t, scale parameters, ray intersects triangle
-    // If we want u,v, we can compute this
-    // double t = DOT(edge2, qvec);
-    //const double inv_det = 1.0 / det;
-    //t *= inv_det;
-    //u *= inv_det;
-    //v *= inv_det;
-    // return t;
-
-    // Case where we don't need correct (u, v):
-
-    const double t = DOT(edge2, qvec);
-    
-    if (t >= 0) {
-        // Note that det must be positive
-        return t / det;
-    } else {
-        // We had to travel backwards in time to intersect
-        return inf;
-    }
-
-    #undef EPSILON
-    #undef CROSS
-    #undef DOT
-    #undef SUB
-}
-
-
 
 
 void measureTriangleCollisionPerformance() {
@@ -661,72 +571,52 @@ void measureTriangleCollisionPerformance() {
     printf("Sphere-Triangle collision detection on Triangle:   %d cycles\n", (int)(opt / n));
     }
     {
-    uint64 raw, opt;
+        uint64 raw;
 
-    Vector3 v0(0, 0, 0);
-    Vector3 v1(0, 0, -1);
-    Vector3 v2(-1, 0, 0);
-    Sphere sphere(Vector3(.5,1,-.5), 1);
-    Vector3 vel(0, -1, 0);
-    Vector3 location, normal;
-    Triangle triangle(v0, v1, v2);
-    int n = 1024;
-    int i;
-    Ray ray = Ray::fromOriginAndDirection(Vector3(3,-1,-.25), vel);
+        Vector3 v0(0, 0, 0);
+        Vector3 v1(0, 0, -1);
+        Vector3 v2(-1, 0, 0);
+        Sphere sphere(Vector3(.5,1,-.5), 1);
+        Vector3 vel(0, -1, 0);
+        Vector3 location, normal;
+        Triangle triangle(v0, v1, v2);
+        int n = 1024;
+        int i;
+        Ray ray = Ray::fromOriginAndDirection(Vector3(3,-1,-.25), vel);
 
-    System::beginCycleCount(raw);
-    for (i = 0; i < n; ++i) {
-        double t = ray.intersectionTime(triangle);
-            //CollisionDetection::collisionTimeForMovingPointFixedTriangle(
-            //sphere, vel, triangle, location, normal);
-        (void)t;
-    }
-    System::endCycleCount(raw);
-
-    printf("\n");
-    System::beginCycleCount(opt);
-    double x = 0;
-    for (i = 0; i < n; ++i) {
-        double t = intersectTriangle(ray.origin, ray.direction, v0, v1, v2);
-        (void)t;
-    }
-    System::endCycleCount(opt);
-
-    printf("Miss:\n");
-    printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
-    printf("Moller: %d cycles\n", (int)(opt / n));
+        System::beginCycleCount(raw);
+        for (i = 0; i < n; ++i) {
+            double t = ray.intersectionTime(triangle);
+                //CollisionDetection::collisionTimeForMovingPointFixedTriangle(
+                //sphere, vel, triangle, location, normal);
+            (void)t;
+        }
+        System::endCycleCount(raw);
+        printf("Miss:\n");
+        printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
     }
     {
-    uint64 raw, opt;
+        uint64 raw;
 
-    Vector3 v0(0, 0, 0);
-    Vector3 v1(0, 0, -1);
-    Vector3 v2(-1, 0, 0);
-    Vector3 vel(0, -1, 0);
-    Vector3 location, normal;
-    Triangle triangle(v0, v1, v2);
-    int n = 1024;
-    int i;
-    Ray ray = Ray::fromOriginAndDirection(Vector3(-.15,1,-.15), vel);
+        Vector3 v0(0, 0, 0);
+        Vector3 v1(0, 0, -1);
+        Vector3 v2(-1, 0, 0);
+        Vector3 vel(0, -1, 0);
+        Vector3 location, normal;
+        Triangle triangle(v0, v1, v2);
+        int n = 1024;
+        int i;
+        Ray ray = Ray::fromOriginAndDirection(Vector3(-.15,1,-.15), vel);
 
-    System::beginCycleCount(raw);
-    for (i = 0; i < n; ++i) {
-        double t = ray.intersectionTime(triangle);
-        (void)t;
-    }
-    System::endCycleCount(raw);
+        System::beginCycleCount(raw);
+        for (i = 0; i < n; ++i) {
+            double t = ray.intersectionTime(triangle);
+            (void)t;
+        }
+        System::endCycleCount(raw);
 
-    printf("\n");
-    System::beginCycleCount(opt);
-    for (i = 0; i < n; ++i) {
-        double t = intersectTriangle(ray.origin, ray.direction, v0, v1, v2);
-        (void)t;
-    }
-    System::endCycleCount(opt);
-
-    printf("Hit:\n");
-    printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
-    printf("Moller: %d cycles\n", (int)(opt / n));
+        printf("Hit:\n");
+        printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
     }
 }
 
@@ -1461,6 +1351,48 @@ void testAdjacency() {
     
 }
 
+void testRandom() {
+    printf("Random number generators\n");
+
+    int num0 = 0;
+    int num1 = 0;
+    for (int i = 0; i < 10000; ++i) {
+        switch (iRandom(0, 1)) {
+        case 0:
+            ++num0;
+            break;
+
+        case 1:
+            ++num1;
+            break;
+
+        default:
+            debugAssertM(false, "Random number outside the range [0, 1] from iRandom(0,1)");
+        }
+    }
+    int difference = iAbs(num0 - num1);
+    debugAssertM(difference < 300, "Integer random number generator appears skewed.");
+
+    for (int i = 0; i < 100; ++i) {
+        double r = random(0, 1);
+        debugAssert(r >= 0.0);
+        debugAssert(r <= 1.0);
+    }
+
+
+    // Triangle.randomPoint
+    Triangle tri(Vector3(0,0,0), Vector3(1,0,0), Vector3(0,1,0));
+    for (int i = 0; i < 1000; ++i) {
+        Vector3 p = tri.randomPoint();
+        debugAssert(p.z == 0);
+        debugAssert(p.x <= 1.0 - p.y);
+        debugAssert(p.x >= 0);
+        debugAssert(p.y >= 0);
+        debugAssert(p.x <= 1.0);
+        debugAssert(p.y <= 1.0);
+    }
+}
+
 
 void testSwizzle() {
     Vector4 v1(1,2,3,4);
@@ -1488,6 +1420,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testRandom();
+    printf("  passed\n");
     testAABoxCollision();
     printf("  passed\n");
     testAdjacency();

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-04-06
- @edited  2004-03-21
+ @edited  2004-03-23
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -99,20 +99,18 @@ Vector3 Triangle::center() const {
 
 Vector3 Triangle::randomPoint() const {
     // Choose a random point in the parallelogram
-    Vector3 U = edgeDirection[0];
-    Vector3 V = edgeDirection[2];
 
     double s = unitRandom();
     double t = unitRandom();
 
-    if (1 - t > s) {
+    if (t > 1.0 - s) {
         // Outside the triangle; reflect about the
         // diagonal of the parallelogram
-        t = 1 - t;
-        s = 1 - s;
+        t = 1.0 - t;
+        s = 1.0 - s;
     }
 
-    return (U * (s * edgeLength[0])) + (V * (t * -edgeLength[2])) + _vertex[0];
+    return edge01 * s + edge02 * t + _vertex[0];
 }
 
 
