@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2003-12-30
+  @edited  2004-01-06
 */
 
 #ifndef G3D_SKY_H
@@ -29,21 +29,19 @@ typedef ReferenceCountedPointer<class Sky> SkyRef;
  Example:
 
   <PRE>
-    Sky sky("Gentle Clouds", "", "null_plainsky512_*.jpg");
+    Sky sky(renderDevice);
     LightingParameters lighting(toSeconds(9, 00, 00, AM));
 
     ...
 
     // Rendering loop
-    while (true) {
-        sky.render(renderDevice, camera, lighting);
+        sky.render(lighting);
         
         // Draw the rest of the scene
         ...
 
-        sky.renderLensFlare(renderDevice, camera, lighting);
+        sky.renderLensFlare(lighting);
         ...
-    }
   </PRE>
 
  */
@@ -114,7 +112,7 @@ public:
     static SkyRef create(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
-        const std::string&                      filename = "null_plainsky512_*.jpg",
+        const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
         bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0);
 
