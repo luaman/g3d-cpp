@@ -369,16 +369,20 @@ to add zlibstat.lib to your linker list.
    
    <P>
 
-   All of the data resources have entered the public domain and have
-   been in several published papers.  The G3D fonts are actually font
+   All of the data resources have either entered the public domain and have
+   been in several published papers or are data that I have explicitly 
+   received permission to distribute with G3D.  The G3D fonts are actually font
    images, not TrueType font descriptions and may be freely
-   distributed.
+   distributed.  As a rule of thumb, you can freely use anything you find
+   in the data directory, even in a commercial product.
 
    <P> 
 
-   I'd appreciate it if you acknowledged Graphics3D in your
-   documentation, credits, or help dialog.  You aren't required to do
-   this, however.
+   You are required by the BSD license to acknowledge G3D in your 
+   documentation.  This can be as minimal as a note buried in the
+   fine print at the end of a manual or a text file accompanying
+   your program.  I appreciate it if you acknowledged the library
+   more publicly but you aren't required to.
 
    <P>
    
@@ -392,38 +396,51 @@ to add zlibstat.lib to your linker list.
    <HR>
    <H2>License</H2>
 
-   You may use this library for any purpose you see fit, commercial or
-   non-commercial, without fee, subject to the following
-   understanding:
+   <I>G3D is licensed under the <A HREF="http://www.opensource.org/licenses/bsd-license.php">BSD license</A>, 
+   with portions controlled by the <A HREF="IJG-README.TXT">IJG license</A></I>
 
-   <OL>
-   <LI> You use this library at your own risk.
-   <LI> No warranty is express or implied.
+  <CODE>
+   <BR>Copyright &copy; 2000-2003, Morgan McGuire
+   <BR>All rights reserved.
+   <P>
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   <P>
+   Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+   <P>
+   Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+   <P>
+   Neither the name of Morgan McGuire, Brown University, nor the names of
+   its contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+   <P>
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+   THE POSSIBILITY OF SUCH DAMAGE.
 
-   <LI> You hold Morgan McGuire, Prentice Hall, Brown University,
-        Graphics3D, Blue Axion Incorporated, and all contributors to
-        the code base and their employers harmless for any harm
-        arising from your use of this library.
+   <P>
+      You agree to be bound by the terms of the Independent JPEG
+      Group license for the portions of this library that are based
+      on the work of the Independent JPEG Group, <B>if you use those
+      portions</B>.  Note: if you do not use the CImage class,
+      this clause does not apply to you because the linker will
+      strip that code from your project.  The <A
+      HREF="IJG-README.TXT">IJG-README.TXT</A> file contains the
+      Independent JPEG Group license.
 
-   <LI> If it is not legal to provide free source code under these
-        conditions in your jurisdiction, you may not use this library.
-
-   <LI> This library is Copyright 2001-2003, Morgan McGuire &lt;<I><A HREF="mailto:matrix@graphics3d.com">matrix@graphics3d.com</A></I>&gt;
-       <BR>All rights reserved.
-
-   <LI> You must retain copyright and cite statements with any part of
-        the library codebase that you copy for use elsewhere or make
-        available to 3rd parties.
-
-   <LI> You are not required to pay any fee to use this library.
-
-   <LI> You agree to be bound by the terms of the Independent JPEG
-        Group license for the portions of this library that are based
-        on the work of the Independent JPEG Group.  The <A
-        HREF="IJG-README.TXT">IJG-README.TXT</A> file contains the
-        Independent JPEG Group license.
-
-   <LI> You agree to be bound by the terms of the Free Software
+   <P> You agree to be bound by the terms of the Free Software
         License Agreement of Magic Software which is available at <A
         HREF="http://www.magic-software.com/License/free.pdf">http://www.magic-software.com/License/free.pdf</A>.
 
