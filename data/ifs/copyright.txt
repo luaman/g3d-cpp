@@ -1,0 +1,5 @@
+These IFS files contain data from 3D models that commonly appear
+in scientific publications.  It is my understanding that they
+have entered the public domain through this unrestricted use
+and may be freely distributed.
+
