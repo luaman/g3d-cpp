@@ -22,6 +22,7 @@
   #include <direct.h>
 #endif
 
+
 class Model {
 
     VAR         varVertex;
@@ -39,174 +40,156 @@ public:
                 const LightingParameters& lighting) const;
 };
 
+class App : public GApp {
+protected:
+    void main();
+public:
 
-std::string             DATA_DIR;
+    GApplet* applet;
 
-Log*                    debugLog        = NULL;
-RenderDevice*           renderDevice    = NULL;
-CFontRef                font            = NULL;
-UserInput*              userInput       = NULL;
-GCamera                 camera;
-ManualCameraController* controller      = NULL;
-bool                    endProgram      = false;
-Model*                  model           = NULL;
-VertexProgramRef        distort         = NULL;
+    App(const GAppSettings& settings);
 
-
-void doSimulation(GameTime timeStep);
-void doGraphics();
-void doUserInput();
+    ~App() {
+        delete applet;
+    }
+};
 
 
-int main(int argc, char** argv) {
-    DATA_DIR = demoFindData();
- 
-    // Initialize
-    debugLog     = new Log();
-    renderDevice = new RenderDevice();
-    renderDevice->init(RenderDeviceSettings(), debugLog);
+/**
+ This simple demo applet uses the debug mode as the regular
+ rendering mode so you can fly around the scene.
+ */
+class Demo : public GApplet {
+public:
 
+    // Add state that should be visible to this applet.
+    // If you have multiple applets that need to share
+    // state, put it in the App.
+
+    class App*              app;
+    SkyRef                  sky;
+
+    Model*                  model;
+    GameTime                gameTime;
+
+    VertexProgramRef        distort;
+
+    Demo(App* app);
+
+    virtual ~Demo() {}
+
+    virtual void init();
+
+    virtual void doLogic();
+
+    virtual void doSimulation(SimTime dt);
+
+    virtual void doGraphics();
+
+};
+
+
+static App* globalApp = NULL;
+
+
+Demo::Demo(App* _app) : GApplet(_app), app(_app) {
+}
+
+
+void Demo::init() {
+    
+    model        = new Model(app->dataDir + "ifs/cow.ifs");
+
+    app->debugController.setMoveRate(1);
+
+    app->debugController.setPosition(Vector3(2, .2, -2));
+    app->debugController.lookAt(Vector3(-2,0,2));
+    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+
+    std::string p = "ASM_Shader_Demo/";
+    if (! fileExists(p + "twist.vp")) {
+        p = "../" + p;
+    }
+    distort = VertexProgram::fromFile(p + "twist.vp");
+
+}
+
+
+void Demo::doSimulation(GameTime timeStep) {
+    // Simulation
+    app->debugController.doSimulation(max(0.1, min(0, timeStep)));
+    app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
+}
+
+
+void Demo::doGraphics() {
+    app->renderDevice->setAmbientLightColor(Color3::white() * .5);
+    app->renderDevice->clear(true, true, true);
+
+    app->renderDevice->pushState();
+        app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+        double angle = cos(System::getTick()) / 2;
+        glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0, cos(angle), 1, sin(angle), 1);
+
+        app->renderDevice->setVertexProgram(distort);
+
+        // Set depth buffer
+        app->renderDevice->disableColorWrite();
+        model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
+        app->renderDevice->enableColorWrite();
+    
+        // Draw translucent
+        app->renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
+        app->renderDevice->disableDepthWrite();
+        app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+        model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
+
+        // Wireframe
+        app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
+        app->renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        app->renderDevice->setPolygonOffset(-.25);
+        app->renderDevice->setColor(Color3::black());
+        app->renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
+        app->renderDevice->setRenderMode(RenderDevice::RENDER_SOLID);
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    app->renderDevice->popState();
+    
+    Draw::axes(app->renderDevice);
+}
+
+
+void Demo::doLogic() {
+
+    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+        app->endProgram = true;
+        endApplet = true;
+    }
+}
+
+
+void App::main() {
+    
     if (!renderDevice->supportsVertexProgram()) {
         error ("Critical Error", "This demo requires a graphics card and driver with OpenGL Vertex programs.", true);
-        exit(-1);
+        endProgram = true;
     }
 
-    font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
-
-    userInput    = new UserInput();
-
-    model        = new Model(DATA_DIR + "ifs/cow.ifs");
-
-    controller   = new ManualCameraController(renderDevice, userInput);
-    controller->setMoveRate(1);
-
-    controller->setPosition(Vector3(2, .2, -2));
-    controller->lookAt(Vector3(-2,0,2));
-    controller->setActive(false);
-
-    renderDevice->resetState();
-    renderDevice->setColorClearValue(Color3(.1, .5, 1));
     renderDevice->setCaption("G3D Vertex Program Demo");
 
-    RealTime now = System::getTick() - 0.001, lastTime;
+	setDebugMode(true);
+	debugController.setActive(true);
 
-    {
-        std::string p = "ASM_Shader_Demo/";
-        if (! fileExists(p + "twist.vp")) {
-            p = "../" + p;
-        }
-        distort = VertexProgram::fromFile(p + "twist.vp");
-    }
+    applet = new Demo(this);
 
-    // Main loop
-    do {
-        lastTime = now;
-        now = System::getTick();
-        RealTime timeStep = now - lastTime;
-
-        double angle = cos(now) / 2;
-        glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0, cos(angle), 1, sin(angle), 1);
-        doUserInput();
-
-        doSimulation(timeStep);
-
-        doGraphics();
-   
-    } while (! endProgram);
-
-    // Cleanup
-    delete controller;
-    delete userInput;
-    renderDevice->cleanup();
-    delete renderDevice;
-    delete debugLog;
-
-    return 0;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
-
-void doSimulation(GameTime timeStep) {
-    // Simulation
-    controller->doSimulation(max(0.1, min(0, timeStep)));
-    camera.setCoordinateFrame(controller->getCoordinateFrame());
+    applet->run();
 }
 
 
-void doGraphics() {
-    renderDevice->setAmbientLightColor(Color3::white() * .5);
-    renderDevice->beginFrame();
-        renderDevice->clear(true, true, true);
-        renderDevice->pushState();
-                
-            renderDevice->setProjectionAndCameraMatrix(camera);
-
-            renderDevice->pushState();
-                renderDevice->setVertexProgram(distort);
-
-                // Set depth buffer
-                renderDevice->disableColorWrite();
-                model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
-                renderDevice->enableColorWrite();
-            
-                // Draw translucent
-                renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
-                renderDevice->disableDepthWrite();
-                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-                model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
- 
-                // Wireframe
-                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                renderDevice->setPolygonOffset(-.25);
-                renderDevice->setColor(Color3::black());
-                renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
-                model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            renderDevice->popState();
-            
-            Draw::axes(renderDevice);
-
-        renderDevice->popState();
-        
-    renderDevice->endFrame();
+App::App(const GAppSettings& settings) : GApp(settings) {
+    globalApp = this;
 }
-
-
-void doUserInput() {
-
-    userInput->beginEvents();
-
-    // Event handling
-    SDL_Event event;
-    while (renderDevice->window()->pollEvent(event)) {
-        switch(event.type) {
-        case SDL_QUIT:
-        endProgram = true;
-        break;
-
-        case SDL_KEYDOWN:
-            switch (event.key.keysym.sym) {
-            case SDLK_ESCAPE:
-                endProgram = true;
-                break;
-
-            // Add other key handlers here
-            default:;
-            }
-            break;
-
-            // Add other event handlers here
-        default:;
-        }
-
-        userInput->processEvent(event);
-    }
-
-    userInput->endEvents();
-}
-
 
 
 Model::Model(const std::string& filename) {
@@ -223,7 +206,7 @@ Model::Model(const std::string& filename) {
     //  triheader    := (string32)"TRIANGLES" + (uint32)numFaces
     //  tri          := (uint32)v0 + (uint32)v1 + (uint32)v2
 
-    debugLog->println(std::string("Loading ") + filename);
+    globalApp->debugLog->println(std::string("Loading ") + filename);
 
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -281,29 +264,41 @@ void Model::render(const CoordinateFrame& c,
                    const LightingParameters& lighting) const {
 
 
-    renderDevice->setObjectToWorldMatrix(c);
+    globalApp->renderDevice->setObjectToWorldMatrix(c);
 
-    renderDevice->pushState();
+    globalApp->renderDevice->pushState();
 
-    // Setup lighting
-    renderDevice->enableLighting();
-    renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-    renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
+        // Setup lighting
+        globalApp->renderDevice->enableLighting();
+        globalApp->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+        globalApp->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
 
-    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-    renderDevice->setAmbientLightColor(lighting.ambient);
-    renderDevice->setColor(Color3::white());
+        globalApp->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+        globalApp->renderDevice->setAmbientLightColor(lighting.ambient);
+        globalApp->renderDevice->setColor(Color3::white());
 
-    // Draw the model
+        // Draw the model
 
-    renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-    {
-        for (int i = 0; i < index.size(); ++i) {
-            renderDevice->setNormal(normal[index[i]]);
-            renderDevice->sendVertex(vertex[index[i]]);
+        globalApp->renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+        {
+            for (int i = 0; i < index.size(); ++i) {
+                globalApp->renderDevice->setNormal(normal[index[i]]);
+                globalApp->renderDevice->sendVertex(vertex[index[i]]);
+            }
         }
-    }
-    renderDevice->endPrimitive();
+        globalApp->renderDevice->endPrimitive();
 
-    renderDevice->popState();
+    globalApp->renderDevice->popState();
 }
+
+
+int main(int argc, char** argv) {
+
+   GAppSettings settings;
+
+   App(settings).run();
+
+    return 0;
+}
+
+
