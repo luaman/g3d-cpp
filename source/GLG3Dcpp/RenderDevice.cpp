@@ -146,7 +146,7 @@ static std::string getDriverVersion() {
 
         } else if (vendor =="NVIDIA Corporation") {
 
-            driver = driver + "\\nv4_disp.dll";
+            driver = driver + "\\OpenGL32.dll";//"\\nv4_disp.dll";
 
         } else {
 
@@ -162,22 +162,46 @@ static std::string getDriverVersion() {
             return "Unknown (Can't find driver)";
         }
 
-        char* buffer = (char*)malloc(size);
+        void* buffer = new uint8[size];
 
-        void* version;
-        uint len;
-
-        int ret = GetFileVersionInfo(lpdriver, NULL, size, buffer);
-        ret = VerQueryValue(buffer, TEXT("\\StringFileInfo\\040904E4\\FileVersion"), &version, &len);
-
-        if (ret == 0) {
-            free(buffer);
-            return "Unknown (no info in driver)";
+        if (GetFileVersionInfo(lpdriver, NULL, size, buffer) == 0) {
+            delete buffer;
+            return "Unknown";
         }
 
-        std::string result = std::string(reinterpret_cast<char*>(version));
+        LPVOID valPtr;
+        UINT valLen;
 
-        free(buffer);
+	    // Get the translation information.
+	    // Translation table consistes of an array of two WORD entries.
+	    // First entry is langauge Id and second one is character set
+	    // This translation is to be used in subsequent queries for info
+
+	    if (VerQueryValue(buffer, "\\VarFileInfo\\Translation", &valPtr, &valLen) == 0) {
+            delete buffer;
+            return "Unknown (no translation)";
+	    }
+	    
+        uint16* translation = reinterpret_cast<uint16*>(valPtr);
+        std::string key =
+            format("\\StringFileInfo\\%04x%04x\\ProductVersion",
+                   translation[0], translation[1]);
+
+        valPtr = NULL;
+        valLen = 0;
+
+delete buffer;
+return "Unknown";
+
+// TODO (Bug 754230): the following line of code crashes
+        if (VerQueryValue(buffer, const_cast<char*>(key.c_str()), (LPVOID*)valPtr, &valLen) == 0) {
+            delete buffer;
+            return "Unknown (no ProductVersion in driver)";
+        }
+
+        std::string result = std::string(reinterpret_cast<char*>(valPtr));
+
+        delete buffer;
 
         return result;
     #else
