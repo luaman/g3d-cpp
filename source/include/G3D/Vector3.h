@@ -202,6 +202,11 @@ public:
     }
 
     float squaredLength () const;
+
+    inline double norm() const {
+        return squaredLength();
+    }
+
     float dot (const Vector3& rkVector) const;
     float unitize (float fTolerance = 1e-06);
     Vector3 cross (const Vector3& rkVector) const;

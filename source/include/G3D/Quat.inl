@@ -34,10 +34,6 @@ inline Quat Quat::operator+(const Quat& other) const {
     return Quat(x + other.x, y + other.y, z + other.z, w + other.w);
 }
 
-inline float Quat::magnitude() const { 
-    return x*x + y*y + z*z + w*w; 
-}
-
 
 inline Quat Quat::pow(double x) const {
 

@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-01-23
+  @edited  2004-01-25
  */
 
 #ifndef G3D_QUAT_H
@@ -108,7 +108,7 @@ public:
     /**
      Negates the imaginary part.
      */
-    inline Quat conjugate() const {
+    inline Quat conj() const {
         return Quat(-x, -y, -z, w);
     }
 
@@ -123,12 +123,38 @@ public:
     }
 
     /**
-     Quaternion magnitude (sum squares; no sqrt).
+     qq* = q dot q
      */
-    inline float magnitude() const;
+    inline double norm() const {
+        return dot(*this);
+    }
+
+    inline double magnitude() const {
+        return sqrt(norm());
+    }
+
+    inline double sum() const {
+        return x + y + z + w;
+    }
+
+    inline double average() const {
+        return sum() / 4.0;
+    }
+
+    inline Quat operator*(double s) const {
+        return Quat(x * s, y * s, z * s, w * s);
+    }
+
+    inline Quat operator/(double s) const {
+        return Quat(x / s, y / s, z / s, w / s);
+    }
 
     Quat operator-(const Quat& other) const;
     Quat operator+(const Quat& other) const;
+
+    Quat unitize(double fTolerance = 1e-06) {
+        return *this / magnitude();
+    }
 
     // access quaternion as q[0] = q.x, q[1] = q.y, q[2] = q.z, q[3] = q.w
     //
@@ -144,6 +170,4 @@ public:
 
 #include "Quat.inl"
 
-
 #endif
-
