@@ -175,7 +175,7 @@ GameTime Scene::timeUntilCollisionWithMovingSphere(
     Vector3&            outLocation,
     Vector3&            outNormal) const {
 
-    GameTime outTime = inf;
+    GameTime outTime = inf();
 
     for (int i = 0; i < object.size(); ++i) {
 
@@ -294,7 +294,7 @@ void Scene::simulate(GameTime duration) {
                             // Redirect all velocity along the collision normal.
                             obj->velocity = obj->velocity.length() * collisionNormal;
                         }
-                        delta = inf;
+                        delta = inf();
                         acceleration = Vector3::zero();
                     }
                 }

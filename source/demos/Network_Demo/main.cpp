@@ -56,6 +56,7 @@ App::App(const GAppSettings& settings) :
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
+	debugShowRenderingStats = false;
     debugQuitOnEscape = false;
 
     // Load objects here

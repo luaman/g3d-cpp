@@ -14,7 +14,7 @@ extern App* app;
 
 const RealTime Entity::networkLerpTime = 0.2;
 
-Entity::Entity() : id(NO_ID), velocity(Vector3::ZERO), oldFrameTime(-inf) {
+Entity::Entity() : id(NO_ID), velocity(Vector3::ZERO), oldFrameTime(-inf()) {
 }
 
 
@@ -37,7 +37,7 @@ void Entity::deserialize(BinaryInput& b) {
     name = b.readString();
     velocity.deserialize(b);
     controls.deserialize(b);
-    oldFrameTime = -inf;
+    oldFrameTime = -inf();
 }
 
 

@@ -70,7 +70,7 @@ GameTime GeneralObject::timeUntilCollisionWithMovingSphere(
 
     GameTime t = model->timeUntilCollisionWithMovingSphere(s, v, timeLimit, outLocation, outNormal);
 
-    if (t < inf) {
+    if (t < inf()) {
         outLocation = cframe.pointToWorldSpace(outLocation);
 
         // There is no scaling in the coordinate frame, so we can
@@ -100,7 +100,7 @@ GameTime SphereObject::timeUntilCollisionWithMovingSphere(
     GameTime t = CollisionDetection::collisionTimeForMovingSphereFixedSphere(movingSphere, velocity, sphere, outLocation, outNormal);
 
     if (t > timeLimit) {
-        return inf;
+        return inf();
     } else {
         return t;
     }
@@ -131,7 +131,7 @@ GameTime CapsuleObject::timeUntilCollisionWithMovingSphere(
     GameTime t = CollisionDetection::collisionTimeForMovingSphereFixedCapsule(movingSphere, velocity, capsule, outLocation, outNormal);
 
     if (t > timeLimit) {
-        return inf;
+        return inf();
     } else {
         return t;
     }
@@ -162,7 +162,7 @@ GameTime BoxObject::timeUntilCollisionWithMovingSphere(
     if (fuzzyLe(t, timeLimit)) {
         return t;
     } else {
-        return inf;
+        return inf();
     }
 }
 

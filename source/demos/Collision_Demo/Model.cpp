@@ -161,12 +161,12 @@ GameTime Model::timeUntilCollisionWithMovingSphere(
                   sphere.center + velocity * timeLimit,
                   sphere.radius + boundingSphere.radius).contains(boundingSphere.center)) {
         // No collision is possible in the given time period.
-        return inf;
+        return inf();
     }
 
 
     // Check intersection with polygons (only return the first intersection)
-    GameTime outTime = inf;
+    GameTime outTime = inf();
 
     int i;
     for (i = 0; i < collisionTriangle.size(); ++i) {
@@ -184,7 +184,7 @@ GameTime Model::timeUntilCollisionWithMovingSphere(
     }
 
     if (outTime > timeLimit) {
-        return inf;
+        return inf();
     } else {
         return outTime;
     }
