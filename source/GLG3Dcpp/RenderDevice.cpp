@@ -1090,14 +1090,16 @@ void RenderDevice::beginFrame() {
 }
 
 
-void RenderDevice::endFrame() {
+void RenderDevice::endFrame(bool pageFlip) {
     --beginEndFrame;
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
 
     popState();
     debugAssertM(stateStack.size() == 0, "Missing RenderDevice::popState or RenderDevice::pop2D.");
 
-    _window->swapGLBuffers();
+    if (pageFlip) {
+        _window->swapGLBuffers();
+    }
 
     double now = System::getTick();
     double dt = now - lastTime;

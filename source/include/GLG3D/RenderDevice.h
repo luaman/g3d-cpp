@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-12-18
+  @edited  2004-12-23
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -334,9 +334,10 @@ public:
     void beginFrame();
 
     /**
-     Call to end the current frame and swap buffers.
+     Call to end the current frame.  If pageFlip is true (Default), swaps the
+     back and front buffers.
      */
-    void endFrame();
+    void endFrame(bool pageFlip = true);
 
     /**
      Returns an estimate of the number of frames rendered per second.

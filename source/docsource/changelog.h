@@ -12,6 +12,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> contrib/ArticulatedModel (beta 3DS support)
+     <LI> G3D::renderDevice::endFrame(false) to suppress page flip.
      <LI> Added coordinate system documentation.
      <LI> RenderDevice::enableClip2D, RenderDevice::disableClip2D (scissor region)
      <LI> contrib/wxGWindow is stable and full featured-- use wxWidgets 2.5.3 with G3D!
