@@ -329,6 +329,10 @@ SOURCE=.\include\GLG3D\glcalls.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\glFormat.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D.h
 # End Source File
 # Begin Source File

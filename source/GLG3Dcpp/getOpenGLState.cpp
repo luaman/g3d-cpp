@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Created by Morgan McGuire & Seth Block
   @created 2001-08-05
-  @edited  2003-04-07
+  @edited  2003-04-08
 */
 
 #include "GLG3D/glcalls.h"
@@ -12,8 +12,20 @@
 
 namespace G3D {
 
-size_t glFormatSize(GLenum format) {
+size_t sizeOfGLFormat(GLenum format) {
     switch (format) {
+    case GL_2_BYTES:
+        return 2;
+
+    case GL_3_BYTES:
+        return 3;
+
+    case GL_4_BYTES:
+        return 4;
+
+    case GL_DOUBLE:
+        return sizeof(double);
+
     case GL_FLOAT:
         return sizeof(float);
 

@@ -4,7 +4,7 @@
 //   This library is recommended for use with the textbook:
 //   <BR>Morgan McGuire, <I>3D Computer Graphics Techniques</I>, Prentice Hall
 //
-// Version 5.00
+// Version 5.01
 /**
  @mainpage
    <P>
@@ -92,12 +92,13 @@
       <LI>OpenGL -> G3D compatibility
         <BR><BLOCKQUOTE>G3D::glLoadMatrix, G3D::glLoadInvMatrix, 
         G3D::glMultInvMatrix, G3D::glMultMatrix, G3D::glVertex, G3D::glColor,
-        G3D::glNormal, G3D::glTexCoord, G3D::glMultiTexCoord</BLOCKQUOTE>
+        G3D::glNormal, G3D::glTexCoord, G3D::glMultiTexCoord,
+        G3D::sizeOfGLFormat, G3D::glFormatOf</BLOCKQUOTE>
 
       <LI>GL Debugging
         <BR><BLOCKQUOTE>G3D::getOpenGLState, G3D::glGetInteger, 
         G3D::glGetBoolean, G3D::glGetDouble, G3D::glGetFloat,
-        G3D::GLenumToString, G3D::glFormatSize</BLOCKQUOTE>
+        G3D::GLenumToString</BLOCKQUOTE>
 
       <LI>Game/Demo Infrastructure</LI>
         <BR><BLOCKQUOTE>G3D::Font, G3D::Sky, G3D::Camera, G3D::GameTime,
@@ -501,7 +502,8 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
-     <LI> G3D::glFormatSize(GLenum format)
+     <LI> G3D::sizeOfGLFormat
+     <LI> G3D::glFormatOf
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3uint16
      <LI> Modified ManualCameraController so that diagonal movement does not exceed

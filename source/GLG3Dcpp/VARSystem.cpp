@@ -208,13 +208,13 @@ bool VAR::ok() const {
 void VAR::vertexPointer() const {
 	debugAssert(ok());
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(elementSize / glFormatSize(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
+	glVertexPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
 }
 
 
 void VAR::normalPointer() const {
 	debugAssert(ok());
-	debugAssert((double)elementSize / glFormatSize(underlyingRepresentation) == 3.0);
+	debugAssert((double)elementSize / sizeOfGLFormat(underlyingRepresentation) == 3.0);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glNormalPointer(underlyingRepresentation, elementSize, pointer); 
 }
@@ -223,7 +223,7 @@ void VAR::normalPointer() const {
 void VAR::colorPointer() const {
 	debugAssert(ok());
 	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(elementSize / glFormatSize(underlyingRepresentation), underlyingRepresentation, elementSize, pointer); 
+	glColorPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), underlyingRepresentation, elementSize, pointer); 
 }
 
 
@@ -231,7 +231,7 @@ void VAR::texCoordPointer(uint unit) const {
 	debugAssert(ok());
 	glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(elementSize / glFormatSize(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
+	glTexCoordPointer(elementSize / sizeOfGLFormat(underlyingRepresentation), underlyingRepresentation, elementSize, pointer);
 	glClientActiveTextureARB(GL_TEXTURE0_ARB);
 }
 

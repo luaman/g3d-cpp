@@ -1029,8 +1029,8 @@ private:
 
 		elementSize = sizeof(T);
 
-        debugAssertM((elementSize % sizeOfGLFormat(format)) == 0,
-            "Sanity check failed on OpenGL data format; you may be using an unsupported type in a vertex array.");
+        debugAssertM((elementSize % glFormatSize(format)) == 0,
+            "The elements of the provided array are not in the OpenGL format specified.");
 
 		pointer = (uint8*)area->basePointer + area->allocated;
 

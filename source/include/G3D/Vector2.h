@@ -9,7 +9,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-02-03
+  @edited  2003-04-08
 */
 
 #ifndef G3D_VECTOR2_H
@@ -93,6 +93,7 @@ public:
     static const Vector2 UNIT_T;
 
     std::string toString() const;
+
 };
 
 }

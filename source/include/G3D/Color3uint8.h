@@ -46,6 +46,7 @@ public:
     void serialize(class BinaryOutput& bo) const;
 
     void deserialize(class BinaryInput& bi);
+
 };
 #pragma pack(pop, Color3uint8_align)
 

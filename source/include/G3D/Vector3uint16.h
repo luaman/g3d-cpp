@@ -32,7 +32,6 @@ public:
     Vector3uint16(class BinaryInput& bi);
     void serialize(class BinaryOutput& bo) const;
     void deserialize(class BinaryInput& bi);
-
 };
 #pragma pack(pop, Vector3uint16_align)
 

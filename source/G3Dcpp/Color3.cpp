@@ -36,8 +36,6 @@ const Color3 Color3::BLACK(0, 0, 0);
 const Color3 Color3::GRAY(.7, .7, .7);
 const Color3 Color3::WHITE(1, 1, 1);
 
-
-
 Color3::Color3(BinaryInput& bi) {
     deserialize(bi);
 }

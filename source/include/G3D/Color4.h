@@ -8,7 +8,7 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2002-06-25
- @edited  2002-12-14
+ @edited  2003-04-08
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -108,7 +108,6 @@ public:
     // special colors
     static const Color4 ZERO;
     static const Color4 CLEAR;
-
 };
 
 /**

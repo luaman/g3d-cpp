@@ -607,6 +607,17 @@ void testFloat() {
 		    
 }
 
+void testglFormatOf() {
+    printf("glFormatOf\n");
+
+    debugAssert(glFormatOf(Color3) == GL_FLOAT);
+    debugAssert(glFormatOf(Color3uint8) == GL_UNSIGNED_BYTE);
+    debugAssert(glFormatOf(Vector3uint16) == GL_UNSIGNED_SHORT);
+    debugAssert(glFormatOf(float) == GL_FLOAT);
+    debugAssert(glFormatOf(int16) == GL_SHORT);
+
+    debugAssert(sizeofGLFormat(GL_FLOAT) == 32);
+}
 
 void testCollision() {
     printf("CollisionDetection\n");
@@ -678,6 +689,8 @@ int main(int argc, char* argv[]) {
     testCollision();    
     printf("  passed\n");
     testColor3uint8Array();
+    printf("  passed\n");
+    testglFormatOf();
     printf("  passed\n");
 
     printf("\nAll tests succeeded.\n");
