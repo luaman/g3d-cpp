@@ -68,7 +68,7 @@
         G3D::NEWLINE, G3D::trimWhitespace</BLOCKQUOTE>
 
      <LI>Debugging
-        <BR><B>G3D::debugAssert</B>,  G3D::isValidHeapPointer,  
+        <BR><B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
         G3D::isValidPointer,
         <B>G3D::debugAssertM</B>, G3D::debugPrintf, G3D::error, 
         G3D::Log</BLOCKQUOTE>
@@ -87,13 +87,15 @@
      <UL>
       <LI>OpenGL Abstraction
         <BR><BLOCKQUOTE>G3D::RenderDevice, G3D::VAR, G3D::VARArea, 
-        G3D::Texture, G3D::TextureRef, G3D::VertexProgram, G3D::VertexProgramRef</BLOCKQUOTE>
+        G3D::Texture, G3D::TextureRef, G3D::VertexProgram,
+        G3D::VertexProgramRef, G3D:PixelProgram, G3D::PixelProgramRef</BLOCKQUOTE>
 
       <LI>OpenGL 
         <BR><BLOCKQUOTE>G3D::glLoadMatrix, G3D::glLoadInvMatrix, 
         G3D::glMultInvMatrix, G3D::glMultMatrix, G3D::glVertex, G3D::glColor,
         G3D::glNormal, G3D::glTexCoord, G3D::glMultiTexCoord,
-        G3D::sizeOfGLFormat, G3D::glFormatOf, DECLARE_GLFORMATOF, G3D::glGetProcAddress</BLOCKQUOTE>
+        G3D::sizeOfGLFormat, G3D::glFormatOf, DECLARE_GLFORMATOF,
+        G3D::glGetProcAddress</BLOCKQUOTE>
 
       <LI>GL Debugging
         <BR><BLOCKQUOTE>G3D::getOpenGLState, G3D::glGetInteger, 
@@ -515,6 +517,8 @@ to add zlibstat.lib to your linker list.
      <LI> GLProgram_Demo to show how to use vertex programs in G3D
      <LI> Support for GL_ARB_vertex_program 
      <LI> VertexProgram, VertexProgramRef, RenderDevice::setVertexProgram
+     <LI> PixelProgram, PixelProgramRef, RenderDevice::setPixelProgram
+     <LI> GPUProgram, GPUProgramRef
      <LI> Documented G3D::glGetProcAddress
      <LI> G3D::sizeOfGLFormat
      <LI> glFormatOf

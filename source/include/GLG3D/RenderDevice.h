@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-04-13
+  @edited  2003-04-14
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -22,6 +22,7 @@
 #include "graphics3D.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/VertexProgram.h"
+#include "GLG3D/PixelProgram.h"
 
 typedef unsigned int uint;
 
@@ -271,6 +272,10 @@ private:
      */
     bool                        _supportsVertexProgram;
 
+    /**
+     True if GL_ARB_fragment_program is in the extension list.
+     */
+    bool                        _supportsFragmentProgram;
     /**
      For counting the number of beginFrame/endFrames.
      */
@@ -711,6 +716,13 @@ public:
     void setVertexProgram(const VertexProgramRef& vp);
 
     /**
+     (Automatically enables pixel programs when they are set.) 
+     Assumes GPUProgram() is true.
+     @param pp Set to NULL to use the fixed function pipeline.
+     */
+    void setPixelProgram(const PixelProgramRef& pp);
+    
+    /**
       Reads a depth buffer value (1 @ far plane, 0 @ near plane) from
       the given screen coordinates (x, y) where (0,0) is the top left
       corner of the width x height screen.  Result is undefined for x, y not
@@ -808,6 +820,7 @@ private:
         double                      highDepthRange;
 
         VertexProgramRef            vertexProgram;
+        PixelProgramRef             pixelProgram;
 
         // Ambient light level
         Color4                      ambient;
@@ -879,6 +892,10 @@ public:
 
     bool supportsVertexProgram() const {
         return _supportsVertexProgram;
+    }
+
+    bool supportsPixelProgram() const {
+        return _supportsFragmentProgram;
     }
 
     /**

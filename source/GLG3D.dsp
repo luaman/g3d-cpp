@@ -109,11 +109,19 @@ SOURCE=.\GLG3Dcpp\glenumtostring.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\GPUProgram.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\LightingParameters.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\GLG3Dcpp\ManualCameraController.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\PixelProgram.cpp
 # End Source File
 # Begin Source File
 
@@ -345,11 +353,19 @@ SOURCE=.\include\GLG3D\glheaders.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\GPUProgram.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\LightingParameters.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\include\GLG3D\ManualCameraController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\PixelProgram.h
 # End Source File
 # Begin Source File
 

@@ -251,9 +251,10 @@ bool RenderDevice::init(
             extensionSet.insert(s);
         }
 
-        stencilWrapSupported = supportsOpenGLExtension("EXT_stencil_wrap");
-        textureRectangleSupported = supportsOpenGLExtension("GL_NV_texture_rectangle");
-        _supportsVertexProgram = supportsOpenGLExtension("GL_ARB_vertex_program");
+        stencilWrapSupported        = supportsOpenGLExtension("EXT_stencil_wrap");
+        textureRectangleSupported   = supportsOpenGLExtension("GL_NV_texture_rectangle");
+        _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
+        _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
     }
 
 
@@ -852,6 +853,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
     shadeMode                   = SHADE_FLAT;
 
     vertexProgram               = NULL;
+    pixelProgram                = NULL;
 
     // Set projection matrix
     double aspect;
@@ -974,6 +976,10 @@ void RenderDevice::setState(
 
     if (supportsVertexProgram()) {
         setVertexProgram(newState.vertexProgram);
+    }
+
+    if (supportsPixelProgram()) {
+        setPixelProgram(newState.pixelProgram);
     }
 
     setStencilClearValue(newState.stencilClear);
@@ -1404,6 +1410,20 @@ void RenderDevice::setVertexProgram(const VertexProgramRef& vp) {
             debugAssert(supportsVertexProgram());
             glEnable(GL_VERTEX_PROGRAM_ARB);
             glBindProgramARB(GL_VERTEX_PROGRAM_ARB, vp->getOpenGLID());
+        }
+    }
+}
+
+
+void RenderDevice::setPixelProgram(const PixelProgramRef& pp) {
+    if (pp != state.pixelProgram) {
+        state.pixelProgram = pp;
+        if (pp == (PixelProgramRef)NULL) {
+            glDisable(GL_FRAGMENT_PROGRAM_ARB);
+        } else  {
+            debugAssert(supportsPixelProgram());
+            glEnable(GL_FRAGMENT_PROGRAM_ARB);
+            glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, pp->getOpenGLID());
         }
     }
 }
@@ -2637,6 +2657,7 @@ void RenderDevice::setVertexAttribArray(unsigned int attribNum, const class VAR&
 
 	varSystem->setVertexAttribArray(attribNum, v, normalize);
 }
+
 
 void RenderDevice::setNormalArray(const class VAR& v) {
 	debugAssert(inIndexedPrimitive);

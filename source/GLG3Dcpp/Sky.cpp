@@ -58,7 +58,7 @@ Sky::Sky(
 
     
     int i = 0;
-    star.resize(4000);
+    star.resize(3000);
     starIntensity.resize(star.size());
     for (i = star.size() - 1; i >= 0; --i) {
         star[i] = Vector4(Vector3::random(), 0);
@@ -211,35 +211,42 @@ void Sky::render(
 
     infiniteProjectionMatrix(renderDevice);
 
-    // Draw stars
-    if (lighting.moonPosition.y > 0) {
-        /*
-        glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
-        glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glVertexPointer(4, GL_FLOAT, 0, star.getCArray());
-            glDrawArrays(GL_POINTS, 0, star.size());
-        glPopClientAttrib();
-        glPopAttrib();
-        */
-
-        // TODO: rotate stars
-        double k = lighting.moonPosition.y * renderDevice->getBrightScale();
-        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
-        renderDevice->beginPrimitive(RenderDevice::POINTS);
-        for (int i = star.size() - 1; i >= 0; --i) {
-            double b = starIntensity[i] * k;
-            renderDevice->setColor(Color3(b,b,b));
-            renderDevice->sendVertex(star[i]);
-        }
-        renderDevice->endPrimitive();
-    }
-
+   
     // Draw the moon
     {
         Vector4 L(lighting.moonPosition,0);
         Vector4 X(lighting.moonPosition.cross(Vector3::UNIT_Z).direction(), 0);
         Vector4 Y(Vector3::UNIT_Z, 0);
+        // Draw stars
+        if (lighting.moonPosition.y > -.3) {
+            /*
+            glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
+            glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+                glEnableClientState(GL_VERTEX_ARRAY);
+                glVertexPointer(4, GL_FLOAT, 0, star.getCArray());
+                glDrawArrays(GL_POINTS, 0, star.size());
+            glPopClientAttrib();
+            glPopAttrib();
+            */
+
+            double k = square((1 - lighting.skyAmbient.length())) * renderDevice->getBrightScale();
+            renderDevice->pushState();
+                // rotate stars
+                CoordinateFrame m;
+                m.rotation.setColumn(0, Vector3(L.x, L.y, L.z));
+                m.rotation.setColumn(1, Vector3(-X.x, -X.y, -X.z));
+                renderDevice->setObjectToWorldMatrix(m);
+
+                renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
+                renderDevice->beginPrimitive(RenderDevice::POINTS);
+                for (int i = star.size() - 1; i >= 0; --i) {
+                    double b = starIntensity[i] * k;
+                    renderDevice->setColor(Color3(b,b,b));
+                    renderDevice->sendVertex(star[i]);
+                }
+                renderDevice->endPrimitive();
+            renderDevice->popState();
+        }
 
         renderDevice->setTexture(0, moon);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);

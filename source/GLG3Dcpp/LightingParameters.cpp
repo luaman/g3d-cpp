@@ -12,7 +12,7 @@
 
 namespace G3D {
 
-static const double sunRiseAndSetTime  = HOUR;
+static const double sunRiseAndSetTime = HOUR / 2;
 
 RealTime realWorldLocalTime() {
     struct _timeb t;
@@ -63,12 +63,12 @@ void LightingParameters::setTime(const GameTime _time) {
     lightDirection.y = -cos(sourceAngle);
     lightDirection.z = 0;
 
-    const Color3 dayAmbient = Color3(1,1,1) * .30;
+    const Color3 dayAmbient = Color3(1,1,1) * .40;
     const Color3 dayDiffuse = Color3(1,1,1) * .75;
 
     {
-        const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4,  SUNRISE + sunRiseAndSetTime,    SUNSET - sunRiseAndSetTime,                               SUNSET - sunRiseAndSetTime / 2, SUNSET,                SUNSET + HOUR/2,       DAY};
-        const Color3 color[] = {Color3(.09, .09, .09),    Color3(.1, .1, .1),     Color3(0,0,0),        Color3(.6, .6, 0),                dayDiffuse,                     dayDiffuse,         Color3(.1, .1, .075),           Color3(.1, .05, .05),  Color3(.1, .1, .1), Color3(.07, .07, .07)};
+        const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4,  SUNRISE + sunRiseAndSetTime,    SUNSET - sunRiseAndSetTime,     SUNSET - sunRiseAndSetTime / 2, SUNSET,                SUNSET + HOUR/2,       DAY};
+        const Color3 color[] = {Color3(.09, .09, .09),    Color3(.1, .1, .1),     Color3(0,0,0),        Color3(.6, .6, 0),                dayDiffuse,                     dayDiffuse,                   Color3(.1, .1, .075),           Color3(.1, .05, .05),  Color3(.1, .1, .1), Color3(.07, .07, .07)};
         lightColor = linearSpline(time, times, color, 10);
     }
 

@@ -3,15 +3,14 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
-  @created 2001-04-10
+  @created 2003-04-10
   @edited  2003-04-10
 */
 
 #ifndef GLG3D_VERTEXPROGRAM_H
 #define GLG3D_VERTEXPROGRAM_H
 
-#include "graphics3D.h"
-#include "GLG3D/glheaders.h"
+#include "GLG3D/GPUProgram.h"
 
 namespace G3D {
 
@@ -32,15 +31,10 @@ typedef ReferenceCountedPointer<class VertexProgram> VertexProgramRef;
   debug window (under MSVC) and the programmer can fix the error and reload the
   shader without reloading the program.
  */
-class VertexProgram : public ReferenceCountedObject {
+class VertexProgram : public GPUProgram {
 private:
 
-    std::string                 name;
-    GLuint                      glProgram;
-
-    std::string                 filename;
-
-    VertexProgram(const std::string& _name, const std::string& filename, const std::string& code);
+    VertexProgram(const std::string& _name, const std::string& filename);
 
 public:
 
@@ -48,13 +42,6 @@ public:
 
     static VertexProgram* fromCode(const std::string& name, const std::string& code);
 
-    ~VertexProgram();
-
-    /** Reload from supplied code or from the original file that
-        was specified (handy when debugging shaders) */
-    void reload(const std::string& code = "");
-
-    GLuint getOpenGLID() const;
 };
 
 }
