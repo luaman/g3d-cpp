@@ -16,7 +16,7 @@
 
 namespace G3D {
 
-typedef ReferenceCountedPointer<class ShaderGroup>  ShaderGroupRef;
+typedef ReferenceCountedPointer<class VertexAndPixelShader>  VertexAndPixelShaderRef;
 typedef ReferenceCountedPointer<class GPUShader>    GPUShaderRef;
 typedef ReferenceCountedPointer<class ObjectShader> ObjectShaderRef;
 typedef ReferenceCountedPointer<class VertexShader> VertexShaderRef;
@@ -143,10 +143,10 @@ public:
   A set of compatible vertex, pixel, and object shaders; the analog of a DirectX "effect pass".
 
   Only newer graphics cards with recent drivers (e.g. GeForceFX cards with driver version 57 or greater)
-  support this API.  Use the ShaderGroup::fullySupported method to determine at run-time
+  support this API.  Use the VertexAndPixelShader::fullySupported method to determine at run-time
   if your graphics card is compatible.
 
-  A ShaderGroup contains three shaders:
+  A VertexAndPixelShader contains three shaders:
   <OL>
      <LI>Object shader: executes once per primitive group
      <LI>Vertex shader: executes once per vertex
@@ -167,7 +167,7 @@ public:
   across the surface of a triangle (e.g. reflection vector).  The pixel shader
   computes the final color of a pixel (it does not perform alpha-blending, however).
 
-  Multiple ShaderGroups may share object, vertex, and pixel shaders.
+  Multiple VertexAndPixelShaders may share object, vertex, and pixel shaders.
 
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/shader_objects.txt
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_shader.txt
@@ -175,7 +175,7 @@ public:
   <B>BETA API</B>
   This API is subject to change.
  */
-class ShaderGroup : public ReferenceCountedObject {
+class VertexAndPixelShader : public ReferenceCountedObject {
 public:
 
     class UniformDeclaration {
@@ -209,7 +209,7 @@ protected:
     bool                    _ok;
     std::string             _messages;
 
-    ShaderGroup(
+    VertexAndPixelShader(
         const ObjectShaderRef& os,
         const VertexShaderRef& vs,
         const PixelShaderRef&  ps);
@@ -238,7 +238,7 @@ public:
     };
 
     /**
-     Bindings of values to uniform variables for a ShaderGroup.
+     Bindings of values to uniform variables for a VertexAndPixelShader.
      Be aware that 
      the uniform namespace is global across the pixel and vertex shader.
 
@@ -247,7 +247,7 @@ public:
      */
     class ArgList {
     private:
-        friend class ShaderGroup;
+        friend class VertexAndPixelShader;
 
         class Arg {
         public:
@@ -275,7 +275,7 @@ public:
         void clear();
     };
 
-    ~ShaderGroup();
+    ~VertexAndPixelShader();
 
     /**
      Passing NULL for any parameter selects the default shader for that stage.
@@ -284,14 +284,14 @@ public:
      OpenGL fixed-function fragment pipeline.
 
      The individual shaders are analogous to the object files produced by 
-     a compiler.  Creating a ShaderGroup "links" them together.  This linking
+     a compiler.  Creating a VertexAndPixelShader "links" them together.  This linking
      step often produces output from the linker.  It may fail due to an error, or
      succeed but produce warnings.  Both kinds of output are stored in
      messages() (i.e. it contains the value returned by glGetInfoLogARB).  
      
      If an unrecoverable error occurs, ok() is false.
      */
-    static ShaderGroupRef create(
+    static VertexAndPixelShaderRef create(
         const ObjectShaderRef& os,
         const VertexShaderRef& vs,
         const PixelShaderRef&  ps);
@@ -355,7 +355,7 @@ public:
     void bindArgList(class RenderDevice* rd, const ArgList& args) const;
 
     /** Returns information about one of the arguments expected
-        by this ShaderGroup.  There are ShaderGroup::numArgs()
+        by this VertexAndPixelShader.  There are VertexAndPixelShader::numArgs()
         total.*/
     const UniformDeclaration& arg(int i) const {
         return uniformArray[i];

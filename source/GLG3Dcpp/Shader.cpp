@@ -97,7 +97,7 @@ PixelShaderRef PixelShader::fromCode(const std::string& name, const std::string&
 
 ////////////////////////////////////////////////////////////////////////////////////
 
-ShaderGroup::ShaderGroup(
+VertexAndPixelShader::VertexAndPixelShader(
     const ObjectShaderRef& os,
     const VertexShaderRef& vs,
     const PixelShaderRef&  ps) : 
@@ -156,7 +156,7 @@ ShaderGroup::ShaderGroup(
 }
 
 
-bool ShaderGroup::isSamplerType(GLenum e) {
+bool VertexAndPixelShader::isSamplerType(GLenum e) {
     return
        (e == GL_TEXTURE_1D) ||
        (e == GL_TEXTURE_2D) ||
@@ -166,7 +166,7 @@ bool ShaderGroup::isSamplerType(GLenum e) {
 }
 
 
-void ShaderGroup::computeUniformArray() {
+void VertexAndPixelShader::computeUniformArray() {
     uniformArray.clear();
 
     GLint maxLength;
@@ -206,21 +206,21 @@ void ShaderGroup::computeUniformArray() {
 }
 
 
-ShaderGroupRef ShaderGroup::create(
+VertexAndPixelShaderRef VertexAndPixelShader::create(
     const ObjectShaderRef& os,
     const VertexShaderRef& vs,
     const PixelShaderRef&  ps) {
 
-    return new ShaderGroup(os, vs, ps);
+    return new VertexAndPixelShader(os, vs, ps);
 }
 
 
-ShaderGroup::~ShaderGroup() {
+VertexAndPixelShader::~VertexAndPixelShader() {
     glDeleteObjectARB(_glProgramObject);
 }
 
 
-bool ShaderGroup::fullySupported() {
+bool VertexAndPixelShader::fullySupported() {
     return
         GLCaps::supports_GL_ARB_shader_objects() && 
         GLCaps::supports_GL_ARB_shading_language_100() &&
@@ -229,7 +229,7 @@ bool ShaderGroup::fullySupported() {
 }
 
 
-GLenum ShaderGroup::canonicalType(GLenum e) {
+GLenum VertexAndPixelShader::canonicalType(GLenum e) {
 
     switch (e) {
     case GL_INT:
@@ -255,7 +255,7 @@ GLenum ShaderGroup::canonicalType(GLenum e) {
 }
 
 
-void ShaderGroup::validateArgList(const ArgList& args) const {
+void VertexAndPixelShader::validateArgList(const ArgList& args) const {
     int numVariables = 0;
 
     // Iterate through formal bindings
@@ -265,7 +265,7 @@ void ShaderGroup::validateArgList(const ArgList& args) const {
         ++numVariables;
         if (! args.argTable.containsKey(decl.name)) {
             throw ArgumentError(
-                format("No value provided for ShaderGroup uniform variable %s of type %s.",
+                format("No value provided for VertexAndPixelShader uniform variable %s of type %s.",
                     decl.name.c_str(), GLenumToString(decl.type)));
         }
 
@@ -299,7 +299,7 @@ void ShaderGroup::validateArgList(const ArgList& args) const {
 
             if (! foundArgument) {
                 throw ArgumentError(
-                std::string("Extra ShaderGroup uniform variable provided at runtime: ") + arg->key + ".");
+                std::string("Extra VertexAndPixelShader uniform variable provided at runtime: ") + arg->key + ".");
             }
 
             ++arg;
@@ -309,7 +309,7 @@ void ShaderGroup::validateArgList(const ArgList& args) const {
 }
 
 
-void ShaderGroup::bindArgList(RenderDevice* rd, const ArgList& args) const {
+void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) const {
     validateArgList(args);
 
     // Iterate through the formal parameter list
@@ -413,7 +413,7 @@ void ShaderGroup::bindArgList(RenderDevice* rd, const ArgList& args) const {
 
 ////////////////////////////////////////////////////////////////////////
 
-void ShaderGroup::ArgList::set(const std::string& var, const TextureRef& val) {
+void VertexAndPixelShader::ArgList::set(const std::string& var, const TextureRef& val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
@@ -424,12 +424,12 @@ void ShaderGroup::ArgList::set(const std::string& var, const TextureRef& val) {
 }
 
 
-void ShaderGroup::ArgList::set(const std::string& var, const CoordinateFrame& val) {
+void VertexAndPixelShader::ArgList::set(const std::string& var, const CoordinateFrame& val) {
     set(var, Matrix4(val));
 }
 
 
-void ShaderGroup::ArgList::set(const std::string& var, const Matrix4& val) {
+void VertexAndPixelShader::ArgList::set(const std::string& var, const Matrix4& val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
@@ -442,7 +442,7 @@ void ShaderGroup::ArgList::set(const std::string& var, const Matrix4& val) {
 }
 
 
-void ShaderGroup::ArgList::set(const std::string& var, const Vector4& val) {
+void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector4& val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
@@ -452,7 +452,7 @@ void ShaderGroup::ArgList::set(const std::string& var, const Vector4& val) {
 }
 
 
-void ShaderGroup::ArgList::set(const std::string& var, const Vector3& val) {
+void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector3& val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
@@ -463,7 +463,7 @@ void ShaderGroup::ArgList::set(const std::string& var, const Vector3& val) {
 }
 
 
-void ShaderGroup::ArgList::set(const std::string& var, const Vector2& val) {
+void VertexAndPixelShader::ArgList::set(const std::string& var, const Vector2& val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
@@ -473,7 +473,7 @@ void ShaderGroup::ArgList::set(const std::string& var, const Vector2& val) {
 }
 
 
-void ShaderGroup::ArgList::set(const std::string& var, float          val) {
+void VertexAndPixelShader::ArgList::set(const std::string& var, float          val) {
     alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
 
     Arg arg;
@@ -483,7 +483,7 @@ void ShaderGroup::ArgList::set(const std::string& var, float          val) {
 }
 
 
-void ShaderGroup::ArgList::clear() {
+void VertexAndPixelShader::ArgList::clear() {
     argTable.clear();
 }
 

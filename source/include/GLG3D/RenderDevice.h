@@ -739,16 +739,16 @@ public:
 
     /**
      Set the current shader (combination of pixel shader, vertex shader,
-     and object shader).  You may call ShaderGroup::bindArgList either
+     and object shader).  You may call VertexAndPixelShader::bindArgList either
      before or after this, or use the variation of this call that
      includes an arg list.
      */
-    void setShader(const ShaderGroupRef& s);
+    void setShader(const VertexAndPixelShaderRef& s);
 
-    /** Throws ShaderGroup::ArgumentError if the arguments provided
+    /** Throws VertexAndPixelShader::ArgumentError if the arguments provided
       do not match the arguments declared */
-    void setShader(const ShaderGroupRef& s,
-            const ShaderGroup::ArgList& args);
+    void setShader(const VertexAndPixelShaderRef& s,
+            const VertexAndPixelShader::ArgList& args);
 
     /**
      Automatically enables vertex programs when they are set. 
@@ -896,7 +896,7 @@ private:
         double                      lowDepthRange;
         double                      highDepthRange;
 
-        ShaderGroupRef              shader;
+        VertexAndPixelShaderRef              shader;
         /** @deprecated */
         VertexProgramRef            vertexProgram;
         /** @deprecated */
@@ -1002,7 +1002,7 @@ public:
 
     /**
      @deprecated
-     Use ShaderGroup
+     Use VertexAndPixelShader
      */
     bool supportsVertexProgram() const;
 
@@ -1010,13 +1010,13 @@ public:
      When true, NVIDIA Vertex Program 2.0 vertex programs can
      be loaded by VertexProgram.
      @deprecated
-     Use ShaderGroup
+     Use VertexAndPixelShader
      */
     bool supportsVertexProgramNV2() const;
 
     /**
      @deprecated
-     Use ShaderGroup
+     Use VertexAndPixelShader
      */
     bool supportsPixelProgram() const;
 

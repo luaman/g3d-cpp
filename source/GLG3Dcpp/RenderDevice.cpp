@@ -1442,7 +1442,7 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 }
 
 
-void RenderDevice::setShader(const ShaderGroupRef& s) {
+void RenderDevice::setShader(const VertexAndPixelShaderRef& s) {
     if (s != state.shader) {
 
         state.shader = s;
@@ -1458,8 +1458,8 @@ void RenderDevice::setShader(const ShaderGroupRef& s) {
 }
 
 
-void RenderDevice::setShader(const ShaderGroupRef& s,
-                             const ShaderGroup::ArgList& args) {
+void RenderDevice::setShader(const VertexAndPixelShaderRef& s,
+                             const VertexAndPixelShader::ArgList& args) {
     setShader(s);
 
     if (! s.isNull()) {

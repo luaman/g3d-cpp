@@ -168,7 +168,7 @@ void GApp::run() {
             alwaysAssertM(false, t.message);
         } catch (const TextInput::WrongSymbol& t) {
             alwaysAssertM(false, t.message);
-        } catch (const ShaderGroup::ArgumentError& e) {
+        } catch (const VertexAndPixelShader::ArgumentError& e) {
             alwaysAssertM(false, e.message);
         } catch (const LightweightConduit::PacketSizeException& e) {
             alwaysAssertM(false, e.message);

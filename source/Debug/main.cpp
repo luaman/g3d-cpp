@@ -53,7 +53,7 @@ public:
 
     class App*          app;
 
-	ShaderGroupRef		effect;
+	VertexAndPixelShaderRef		effect;
 
     Demo(App* app);    
 
@@ -85,17 +85,17 @@ void Demo::init()  {
     VertexShaderRef vs = VertexShader::fromFile("C:/tmp/nvcode/MEDIA/programs/glsl_simple_lighting/vertex_lighting.glsl");
     PixelShaderRef ps = NULL;//PixelShader::fromFile("C:/tmp/nvcode/MEDIA/programs/glsl_bump_mapping/bump_mapping_fragment.glsl");
 
-    debugAssert(ShaderGroup::fullySupported());
+    debugAssert(VertexAndPixelShader::fullySupported());
     debugPrintf(vs->messages().c_str());
     debugAssert(vs->ok());
     
     if (! ps.isNull()) {
-        debugAssert(ShaderGroup::fullySupported());
+        debugAssert(VertexAndPixelShader::fullySupported());
         debugPrintf(ps->messages().c_str());
         debugAssert(ps->ok());
     }
     
-    effect = ShaderGroup::create(NULL, vs, ps);
+    effect = VertexAndPixelShader::create(NULL, vs, ps);
     debugPrintf(effect->messages().c_str());
     debugAssert(effect->ok());
 
@@ -154,12 +154,12 @@ void Demo::doGraphics() {
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
 
 		app->renderDevice->pushState();
-			ShaderGroup::ArgList args;
+			VertexAndPixelShader::ArgList args;
 			args.set("lightVec", Vector3(0,1,0));
 
 			try {
 				app->renderDevice->setShader(effect, args);
-			} catch (const ShaderGroup::ArgumentError& e) {
+			} catch (const VertexAndPixelShader::ArgumentError& e) {
 				alwaysAssertM(false, e.message);
 			}
 

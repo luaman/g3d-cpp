@@ -211,7 +211,7 @@
         G3D::VAR,
         G3D::VARArea, 
         G3D::VertexProgram,
-        G3D::ShaderGroup,
+        G3D::VertexAndPixelShader,
         G3D::ObjectShader,
         G3D::VertexShader,
         G3D::PixelShader
