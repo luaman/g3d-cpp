@@ -16,10 +16,6 @@
 // We construct a grid to find neighboring vertices in O(n/g^3) time
 #define GRID_RES 1
 
-// Vertices that are within this distance of each other are considered
-// close (colocated)
-#define CLOSE .5
-
 /**
  Used by IFSModel for loading.
  */
@@ -28,7 +24,12 @@ public:
     /** Indices of vertices in <B>or near</B>  a grid cell. */
     typedef Array<int> List;
 
+    /** Vertices that are within this distance of each other are considered
+     close (colocated) */
+    static const double CLOSE;
+
 private:
+   
     std::string                 name;
 
 

@@ -90,7 +90,7 @@ SOURCE=.\GLG3Dcpp\Camera.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GLG3Dcpp\Font.cpp
+SOURCE=.\GLG3Dcpp\CFont.cpp
 # End Source File
 # Begin Source File
 
@@ -346,7 +346,7 @@ SOURCE=.\include\GLG3D\Camera.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\GLG3D\Font.h
+SOURCE=.\include\GLG3D\CFont.h
 # End Source File
 # Begin Source File
 

@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     // Initialize
     debugLog     = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(400, 400, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+    renderDevice->init(600, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
     camera       = new Camera(renderDevice);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
@@ -72,18 +72,20 @@ int main(int argc, char** argv) {
     controller   = new ManualCameraController(renderDevice);
     controller->setMoveRate(.1);
 
-    controller->setPosition(Vector3(2, 2, 2));
+    controller->setPosition(Vector3(1.5, 1.5, 1.5));
     controller->lookAt(Vector3(0,0,0));
 
     renderDevice->resetState();
-    renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    renderDevice->setColorClearValue(Color3(.5, .7, .8));
 
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("g:/libraries/g3d-6_00-b5/data/ifs/teapot.ifs");
+    std::string in("d:/graphics3d/book/data/ifs/teapot.ifs");
+//    std::string in("D:/users/morgan/Projects/_Silhouette/models/ROCKHRSE.ifs");
+//    std::string in("g:/libraries/g3d-6_00-b5/data/ifs/teapot.ifs");
 //    std::string in("g:/libraries/g3d-6_00-b5/data/ifs/sphere.ifs");
-      std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
+    std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
@@ -158,12 +160,19 @@ void doGraphics() {
             if (model != NULL) {
                 model->render();
                 renderDevice->push2D();
-                font->draw2DString(model->name, 10, 10, 20, Color3::WHITE, Color3::BLACK);
-                font->draw2DString(format("%d verts", model->numVertices()), 15, 40, 15, Color3::WHITE, Color3::BLACK);
-                font->draw2DString(format("%d faces", model->numFaces()), 15, 60, 15, Color3::WHITE, Color3::BLACK);
+                    double y = 10;
+                    font->draw2D(model->name, 10, y, 20, Color3::WHITE, Color3::BLACK); y += 30;
+                    font->draw2D(format("%d verts", model->numVertices()), 15, y, 15, Color3::YELLOW, Color3::BLACK); y += 20;
+                    font->draw2D(format("%d faces", model->numFaces()), 15, y, 15, Color3::WHITE, Color3::BLACK); y += 20;
+                    if (model->numBrokenEdges() > 0) {
+                        font->draw2D(format("%d broken edges", model->numBrokenEdges()), 15, y, 15, Color3::RED, Color3::BLACK); y += 20;
+                    }
+
+                    y = renderDevice->getHeight();
+                    font->draw2D(format("Vertices within radius %g collapsed", IFSModelBuilder::CLOSE), 10, y - 15, 10, Color3::BLACK);
                 renderDevice->pop2D();
             }
-
+            
             //renderDevice->debugDrawAxes(2);
 
         renderDevice->popState();

@@ -35,6 +35,9 @@ private:
      contain the vertices (happens with colocated vertices)
      */
     Array<MeshAlg::Edge>     brokenEdgeArray;
+
+    Array<MeshAlg::Edge>     edgeArray;
+
     Array<Vector3>           normalArray;
 
     void loadIFS(const std::string& filename);
@@ -60,6 +63,10 @@ public:
 
     int numFaces() const {
         return triangleArray.size();
+    }
+
+    int numBrokenEdges() const {
+        return brokenEdgeArray.size();
     }
 
     /**

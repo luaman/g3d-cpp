@@ -196,36 +196,38 @@ void MeshAlg::computeAdjacency(
     edgeArray.resize(0);
     adjacentFaceArray.resize(0);
     adjacentFaceArray.resize(vertexArray.size());
-    // Every 3 indices is one face
-    faceArray.resize(indexArray.size() / 3);
+
+    faceArray.resize(0);
     
     // Iterate through the triangle list
     for (int q = 0; q < indexArray.size(); q += 3) {
-        const int f = q / 3;
 
-        MeshAlg::Face& face = faceArray[f];
+        // Don't allow degenerate faces
+        if ((indexArray[q + 0] != indexArray[q + 1]) &&
+            (indexArray[q + 1] != indexArray[q + 2]) &&
+            (indexArray[q + 2] != indexArray[q + 0])) {
+            Vector3 vertex[3];
+            int f = faceArray.size();
+            MeshAlg::Face& face = faceArray.next();
 
-        // Vertex
-        Vector3 vertex[3];
+            // Construct the face
+            for (int j = 0; j < 3; ++j) {
+                int v = indexArray[q + j];
+                face.vertexIndex[j] = v;
+                adjacentFaceArray[v].append(f);
+                vertex[j] = vertexArray[v];
+            }
 
-        // Construct the face
-        for (int j = 0; j < 3; ++j) {
-            int v = indexArray[q + j];
+            const double area = (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]).length() * 0.5;
+            static const int nextIndex[] = {1, 2, 0};
 
-            face.vertexIndex[j] = v;
-            adjacentFaceArray[v].append(f);
-            vertex[j] = vertexArray[v];
-        }
+            // Find the indices of edges in the face
+            for (int j = 0; j < 3; ++j) {
+                int v0 = indexArray[q + j];
+                int v1 = indexArray[q + nextIndex[j]];
 
-        const double area = (vertex[1] - vertex[0]).cross(vertex[2] - vertex[0]).length() * 0.5;
-        static const int nextIndex[] = {1, 2, 0};
-
-        // Find the indices of edges in the face
-        for (int j = 0; j < 3; ++j) {
-            int v0 = indexArray[q + j];
-            int v1 = indexArray[q + nextIndex[j]];
-
-            face.edgeIndex[j] = findEdgeIndex(vertexArray, edgeArray, v0, v1, f, area);
+                face.edgeIndex[j] = findEdgeIndex(vertexArray, edgeArray, v0, v1, f, area);
+            }
         }
     }
 
@@ -237,10 +239,10 @@ void MeshAlg::computeAdjacency(
 int MeshAlg::findEdgeIndex(
     const Array<Vector3>&   vertexArray,
     Array<Edge>&            edgeArray,
-    int            i0,
-    int            i1,
-    int            f,
-    double         area) {
+    int                     i0,
+    int                     i1,
+    int                     f,
+    double                  area) {
 
     const Vector3& v0 = vertexArray[i0];
     const Vector3& v1 = vertexArray[i1];

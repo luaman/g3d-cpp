@@ -4,10 +4,10 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-07-15
+ @edited  2003-09-18
  */
 
-#include "GLG3D/Font.h"
+#include "GLG3D/CFont.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/TextureFormat.h"
 
@@ -115,7 +115,7 @@ void CFont::drawString(
 }
 
 
-void CFont::draw2DString(
+void CFont::draw2D(
     const std::string&          s,
     double                      x,
     double                      y,

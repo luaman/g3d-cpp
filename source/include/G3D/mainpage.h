@@ -8,25 +8,23 @@
 /**
  @mainpage
    <P>
-    <CENTER>\ref Overview  |   \ref Introduction  |  \ref Installation  |
+    <CENTER><A HREF="http://sourceforge.net/forum/forum.php?forum_id=262426">User Forum</A> 
+    |   \ref Introduction  |  \ref Installation  |
     \ref defines "\#defines"  |  \ref License  |  \ref Contributors   |
-    \ref Change "Change Log"</CENTER>
+    <A HREF="changelog.html">Change Log</A></CENTER>
 
     \section Overview Overview
-     This library contains the support code I need for every 3D
+     This library contains the support code needed for every 3D
      project in C++.  It is designed to be easy to use, make it hard
      to write bugs, easy to find them, to compile to fast code, and to
      provide a single solution to graphics needs under many different
      compilers, operating systems, and processor architectures.
 
      <P>
-     Use <CODE>\#include "graphics3D.h"</CODE> in your project and link
-     against <CODE>graphics3d.lib</CODE>
-     to gain access to the following members of the <CODE>G3D</CODE> namespace.
-     
+     <CODE>\#include &lt;G3DAll.h&gt;</CODE> in your project (if you don't
+     want the OpenGL "GLG3D" part use <CODE>&lt;graphics3D.h&gt;</CODE> instead).
      <UL>
-     <LI>Geometry
-        <BR><BLOCKQUOTE>
+     <LI><B>Geometry</B> &nbsp; &nbsp;
         G3D::Box,
 		G3D::Capsule,
 		G3D::CollisionDetection,
@@ -56,18 +54,14 @@
         G3D::GameTime,
         G3D::RealTime,
         G3D::toSeconds 
-		</BLOCKQUOTE>
      
-     <LI>Data structures
-        <BR><BLOCKQUOTE>
+     <LI><B>Data structures</B> &nbsp; &nbsp;
 		G3D::Array,
 		G3D::Queue,
  	    G3D::Set,
 		G3D::Table
-		</BLOCKQUOTE>
 
-     <LI>Image formats
-        <BR><BLOCKQUOTE>
+     <LI><B>Image formats</B> &nbsp; &nbsp;
 		G3D::CImage,
 		G3D::CImage::Error,		
         G3D::flipRGBVertical,
@@ -76,10 +70,8 @@
 		G3D::RGBtoBGRA,
         G3D::RGBtoRGBA,
 		G3D::RGBxRGBtoRGBA
-		</BLOCKQUOTE>
 
-     <LI>Integer math
-       <BR><BLOCKQUOTE>
+     <LI><B>Integer math</B> &nbsp; &nbsp;
         G3D::ceilPow2, 
         G3D::highestBit,
 	    G3D::iAbs,
@@ -103,10 +95,8 @@
 		G3D::int16,
 		G3D::int32,
 		G3D::int64
-		</BLOCKQUOTE>
      
-     <LI>Floating point math
-       <BR><BLOCKQUOTE>
+     <LI><B>Floating point</B> &nbsp; &nbsp;
 	     G3D::abs,
 		 G3D::aCos,
 		 G3D::aSin,
@@ -137,26 +127,27 @@
 		 G3D::linearSpline,
 		 G3D::float32,
          G3D::float64
-		 </BLOCKQUOTE>
-
-     <LI>Robust floating point math
-       <BR><BLOCKQUOTE>G3D::fuzzyEq, G3D::fuzzyNe, G3D::fuzzyGt,
-       G3D::fuzzyGe, G3D::fuzzyLt, G3D::fuzzyLe, G3D::fuzzyEpsilon</BLOCKQUOTE>
-     
-     <LI>String utilities
-        <BR><BLOCKQUOTE>G3D::beginsWith, G3D::endsWith, G3D::stringSplit,
+         G3D::fuzzyEq,
+         G3D::fuzzyNe,
+         G3D::fuzzyGt,
+         G3D::fuzzyGe,
+         G3D::fuzzyLt,
+         G3D::fuzzyLe,
+         G3D::fuzzyEpsilon
+         
+     <LI><B>String</B> &nbsp; &nbsp;
+        G3D::beginsWith, G3D::endsWith, G3D::stringSplit,
         G3D::stringJoin, G3D::format, G3D::vformat, G3D::wordWrap, 
         G3D::stringCompare, G3D::stringPtrCompare, G3D::toUpper, G3D::toLower,
-        G3D::NEWLINE, G3D::trimWhitespace</BLOCKQUOTE>
+        G3D::NEWLINE, G3D::trimWhitespace
 
-     <LI>Debugging
-        <BR><B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
+     <LI><B>Debug</B> &nbsp; &nbsp;
+        <B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
         G3D::isValidPointer,
         <B>G3D::debugAssertM</B>, G3D::debugPrintf, G3D::error, 
-        G3D::Log, G3D::alwaysAssertM</BLOCKQUOTE>
+        G3D::Log, G3D::alwaysAssertM
 
-     <LI>I/O
-        <BR><BLOCKQUOTE>
+     <LI><B>I/O</B> &nbsp; &nbsp;
         G3D::BinaryInput, 
         G3D::BinaryOutput, 
         G3D::copyFile, 
@@ -176,13 +167,11 @@
         G3D::System,
         G3D::resolveFilename,
         G3D::TextInput,
-        G3D::TextInput::Token,
+        G3D::Token,
         G3D::TextInput::WrongTokenType,
         G3D::writeStringToFile
-        </BLOCKQUOTE>
 
-    <LI>Networking
-    <BR><BLOCKQUOTE>
+    <LI><B>Network</B> &nbsp; &nbsp;
         G3D::DiscoveryAdvertisement,
         G3D::DiscoveryClient,
         G3D::DiscoveryServer,
@@ -192,13 +181,11 @@
         G3D::NetListener, 
         G3D::NetworkDevice, 
         G3D::ReliableConduit
-        </BLOCKQUOTE>
      </UL>
 
-     Link against glg3d.lib and \#include "glg3d.h" to gain access to:
+     <H2>GLG3D</H2>
      <UL>
-      <LI>OpenGL Abstraction
-        <BR><BLOCKQUOTE>
+      <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
         G3D::Milestone,
         G3D::PixelProgram,
         G3D::reflectionMatrix,
@@ -209,10 +196,10 @@
         G3D::VAR,
         G3D::VARArea, 
         G3D::VertexProgram
-        </BLOCKQUOTE>
 
-      <LI>OpenGL 
-        <BR><BLOCKQUOTE>
+      <LI><B>OpenGL</B> &nbsp; &nbsp;
+        debugAssertGLOk,
+        DECLARE_GLFORMATOF,
         G3D::glLoadMatrix, 
         G3D::glLoadInvMatrix, 
         G3D::glMultInvMatrix, 
@@ -224,23 +211,15 @@
         G3D::glMultiTexCoord,
         G3D::sizeOfGLFormat, 
         G3D::glFormatOf, 
-        DECLARE_GLFORMATOF,
-        G3D::glGetProcAddress
-        </BLOCKQUOTE>
-
-      <LI>GL Debugging
-        <BR><BLOCKQUOTE>
-        debugAssertGLOk,
+        G3D::glGetProcAddress,
         G3D::getOpenGLState, 
         G3D::glGetInteger, 
         G3D::glGetBoolean,
         G3D::glGetDouble, 
         G3D::glGetFloat,
         G3D::GLenumToString
-        </BLOCKQUOTE>
 
-      <LI>Game/Demo Infrastructure</LI>
-        <BR><BLOCKQUOTE>
+      <LI><B>Game/Demo Infrastructure</B> &nbsp; &nbsp;
         G3D::CFont,
         G3D::CFontRef,
         G3D::Sky,
@@ -250,7 +229,6 @@
         G3D::realWorldLocalTime, 
         G3D::UserInput, 
         G3D::ManualCameraController
-        </BLOCKQUOTE>
      </UL>
 
     See the Demo project for a simple introduction to using SDL, OpenGL, 
@@ -618,479 +596,7 @@
    </BLOCKQUOTE>
    <HR>
 
-   \section Change Change Log
-   <P>
 
-   Major version numbers introduce API changes that are not backwards
-   compatible.  Minor versions are backwards compatible to the
-   previous major release.
-
-   Changes in 6.00
-
-   <P>
-   <UL>
-     <LI> Added model debugging info to the IFSBuilder display
-     <LI> Welded some broken vertices in the teapot.ifs file
-     <LI> Renamed Font.* to CFont.*
-     <LI> CFont::draw2DString renamed to CFont::draw2D (use a #define to port old code)
-     <LI> MeshAlg
-     <LI> RenderDevice now enables GL_COLOR_MATERIAL by default
-     <LI> RenderDevice::drawFullScreenImage
-     <LI> msgBox
-     <LI> MD2 model gallery in documentation (Kevin)
-     <LI> MD2Documentor (Kevin)
-     <LI> debugAssertGLOk macro
-     <LI> VertexProgram now supports NVIDIA Vertex Program 2.0
-     <LI> RenderDevice now loads glGenProgramsNV, glDeleteProgramsNV, glBindProgramNV, glLoadProgramNV, glTrackMatrixNV, glProgramParameter4fvNV extensions
-     <LI> VertexProgram and PixelProgram static factory methods now return reference counted values.
-     <LI> Split the reference value from RenderDevice::setStencilTest into setStencilConstant
-     <LI> RenderDevice::STENCIL_INVERT, RenderDevice::STENCIL_REPLACE, RenderDevice::STENCIL_ZERO 
-     <LI> Added brighten argument to Texture::fromFile
-     <LI> Increased CImage JPEG save quality
-     <LI> RenderDevice::screenshot now returns the name of the file that was written
-     <LI> nextPowerOf2 renamed to ceilPow2
-     <LI> System::alignedMalloc, System::alignedFree
-     <LI> Carbon, Crackman, Edenmill, Futurist, Interplanetary,
-          Iomanoid, Starlight, Lesser, and Wild fonts by Ray Larabie.
-          Like all of our fonts, they are free, but please consider a
-          donation to him if you like them.  http://www.larabiefonts.com/
-     <LI> MD2Model_Demo
-     <LI> G3D::MD2Model
-     <LI> FIX: Fixed a bug in Array shrinking that could cause memory corruption
-     <LI> FIX: RenderDevice windows with an aspect ratio of less than 1 now allowed.
-     <LI> FIX: TextInput now parses '#', '~', '~=', '&', '&&', '|', '||' correctly
-     <LI> VARArea::reset() now waits for rendering calls using its vertex
-          arrays to complete before wiping the memory.
-     <LI> G3D::filenameBaseExt, G3D::filenameExt
-     <LI> VARArea::finish()
-     <LI> Milestone
-     <LI> RenderDevice now loads glFlushVertexArrayRangeNV
-     <LI> Vector2int16
-     <LI> RenderDevice::freeVARSize()
-     <LI> Array now allocates 16-byte aligned pointers.
-     <LI> Decreased the default camera movement rate by 50% for better resolution.
-     <LI> RenderDevice enables GL_NORMALIZE by default
-     <LI> Improved the performance of Array::append/Array::push/Array::next
-     <LI> Array::next
-     <LI> Array::reverse
-     <LI> PCX file loading
-     <LI> Test images
-     <LI> Color3uint8 as uint8[] addressing
-     <LI> Color4uint8 as uint8[] addressing
-     <LI> Removed const from VAR::pointer
-     <LI> ReferenceCountedPointer::isNull
-     <LI> alwaysAssertM
-     <LI> Log::common, Log::getCommonLogFilename
-     <LI> Switched from static to dynamic linking of zlib
-     <LI> Upgraded to zlib 1.1.3
-     <LI> On Win32 the lib list is automatically updated through pragmas
-          (5.xx programs should revert to linking against default libraries)
-     <LI> Increased default sky quality to 1.00
-     <LI> G3D::CFontRef
-     <LI> RenderDevice now loads all register combiner extensions (NVIDIA only)
-     <LI> G3D::reflectionMatrix
-     <LI> Sky::getEnvironmentMap
-     <LI> Sky implementation now uses a cube map (when one is available)
-     <LI> G3D::Sky constructor now takes a render device
-     <LI> Rotated Sky box 90 degrees to match environment maps
-     <LI> G3D::Sky now takes the environment filenames as "sky_*.jpg" instead of "sky_ft.jpg"
-     <LI> Added default filename for Sky constructor
-     <LI> Added caustics textures created with Kjell Andersson's generator http://www.lysator.liu.se/~kand/caustics/
-     <LI> #defined "for" under MSVC so that it obeys C99 scoping rules
-     <LI> System::consoleKeyPressed
-     <LI> System::consoleClearScreen
-     <LI> System::consoleReadKey
-     <LI> NetMessage::type()
-     <LI> Changed the Conduit message protocol to include a message type.
-          The API is backwards compatible to 5.01 even though the protocol is not.
-     <LI> Removed optional argument maxSize from LightweightConduit::receive.
-     <LI> NetAddress::serialize
-     <LI> NetAddress::deserialize
-     <LI> NetAddress == NetAddress
-     <LI> hashCode(NetAddress)
-     <LI> RenderDevice::init now prints ATI or NVIDIA driver version to the log under Windows
-     <LI> readme.html library build instructions now have downloads for required libraries
-     <LI> Library list has changed for Win32 (added version.lib)
-     <LI> System::cpuArchitecture
-     <LI> System::operatingSystem
-     <LI> double-precision Plane::getEquation
-     <LI> Vector2::lerp
-     <LI> Platform specific #defines G3D_WIN32, G3D_LINUX, G3D_OSX
-     <LI> G3D::Array::contains
-     <LI> G3D::Queue::contains
-     <LI> G3D::TextureFormat
-     <LI> G3D::Texture::DIM_CUBE_MAP
-     <LI> G3D::Texture resizes non-power of two textures
-     <LI> G3D::Texture constructors are completely changed from 5.01 (and hopefully easier to use)
-     <LI> G3D::CImage now supports images with alpha
-     <LI> Removed most of the width/height arguments from G3D::Camera methods
-     <LI> BinaryInput::readBytes and BinaryOutput::writeBytes now take void* as an argument to avoid casting
-     <LI> Plane::fromEquation
-     <LI> Removed Plane::getNormal (use Plane::normal instead)
-     <LI> Removed CDTriangle (use G3D::Triangle instead)
-     <LI> Removed Font (use G3D::CFont instead)
-     <LI> FIX: Camera::getClipPlanes now transforms infinite planes correctly.
-     <LI> FIX: The last reference of an RGC pointer assigned to itself no
-               longer tries to collect before re-assigning
-   </UL>
-
-   <P>
-   Changes in 5.01
-   <UL>
-     <LI> G3D::tesselateComplexPolygon
-	 <LI> G3D::ConvexPolygon
-	 <LI> G3D::ConvexPolyhedron
-     <LI> G3D::iClamp, G3D::clamp
-	 <LI> G3D::iWrap
-	 <LI> G3D::iRandom, G3D::random
-     <LI> G3D::getFiles
-     <LI> G3D::getDirs
-     <LI> G3D::VAR::pointer
-     <LI> G3D::realWorldLocalTime
-     <LI> G3D::Texture::TRANSPARENT_BORDER
-     <LI> DECLARE_GLFORMATOF
-     <LI> G3D::System::machineEndian
-     <LI> G3D::VertexProgram, G3D::VertexProgramRef, G3D::RenderDevice::setVertexProgram
-     <LI> G3D::PixelProgram, G3D::PixelProgramRef, G3D::RenderDevice::setPixelProgram
-     <LI> G3D::GPUProgram, G3D::GPUProgramRef
-     <LI> G3D::sizeOfGLFormat
-     <LI> G3D::RenderDevice::setVertexAttrib
-     <LI> G3D::Vector2*=Vector2, /= Vector2, * Vector2, / Vector2
-     <LI> glFormatOf
-     <LI> G3D::Color4uint8
-     <LI> G3D::Color3uint8
-     <LI> G3D::Vector3int16
-     <LI> G3D::System::currentProgramFilename
-     <LI> CImage::insertRedAsAlpha
-     <LI> CImage::stripAlpha
-     <LI> Texture::hasAlpha
-     <LI> Added support for TGA with alpha channel
-     <LI> Re-implemented Texture to support a broader range of formats and cleaner implementation.
-     <LI> Fix: Improved Texture::LUMINANCE support
-     <LI> Added == and != overloads for TextureRef so that "a != NULL" is now legal and does not require a cast to TextureRef.
-     <LI> G3D::CFont is a typedef for G3D::Font to avoid name conflicts with X11 Font under Linux.  In future releases, the name Font will be deprecated.
-     <LI> RenderDevice::setPointSize
-	 <LI> Added a new teapot (teapot.ifs) that is closed, with a properly fitting top.  The classic teapot is now called "utah-teapot.ifs" (Sebastian Schuberth and Simon Winkelbach)
-     <LI> RenderDevice::init now loads glPointParameterfvARB, glPointParameterfARB,
-        glMultiDrawArraysEXT, and glMultiDrawElementsEXT functions.
-     <LI> GLenumToString(4) now returns "GL_TRIANGLES" instead of "GL_LINE_BIT" (both are correct)
-     <LI> Added TextInput::Options to optionally allow C++ comments to
-          be treated as two slashes instead of a comment
-     <LI> Added data/image/meter.jpg, a meter stick texture convenient for testing
-     <LI> Added sansserif, news, and terminal fonts based on Bitstream's <A HREF="http://www.gnome.org/fonts/">free fonts</A>
-     <LI> RenderDevice::numTextureUnits
-     <LI> Added stars to night Sky
-     <LI> Added classic GL dinosaur model as data/ifs/dinosaur.ifs
-     <LI> Documented G3D::glGetProcAddress
-     <LI> Fix: Texture now restored GL_ENABLE bits properly after creation
-     <LI> Fix: Texture::sizeInMemory now accounts for MIP-map levels
-     <LI> Fix: Fonts and skies now adjust their brightness for the screen gamma level
-     <LI> Fix: Strange compilation bug was causing Sky to be black for some programs
-     <LI> resolveFilename
-     <LI> GLProgram_Demo to show how to use vertex programs in G3D
-     <LI> Support for GL_ARB_vertex_program 
-     <LI> Modified ManualCameraController so that diagonal movement does not exceed
-          maximum rate.
-     <LI> Added support for non-GL_FLOAT vertex arrays to RenderDevice
-     <LI> Added support for Wavefront OBJ files to IFSBuilder
-     <LI> Removed duplicate copies of SDL.dll from the source tree
-     <LI> Renamed G3D::CDTriangle to G3D::Triangle
-     <LI> Added several G3D::Triangle methods
-     <LI> Moved CollisionDetection::primaryAxis to Vector3::primaryAxis
-     <LI> Fix: Texture::sizeInMemory now returns correct results for RGB8 textures.
-     <LI> Changed texture constructors in ways that slightly break backwards compatibility
-     <LI> Deprecated several arguments to the texture constructors.
-   </UL>
-
-
-   Changes in 5.00
-   <UL>
-     <LI> Color3::operator*=(const Color3&)
-     <LI> Color3::operator*(const Color3&)
-     <LI> Eliminated duplicate GL headers [James O'Sullivan]
-     <LI> Linux Makefiles [James O'Sullivan, Jordan Parker]
-     <LI> RenderDevice::getProjectionMatrixParams
-     <LI> RenderDevice::debugDrawCylinder
-     <LI> Added an option to not copy input memory for BinaryInput
-     <LI> Added data/ifs/sphere.ifs
-     <LI> Added data/ifs/spikeball.ifs
-     <LI> Added a new (imperfect) demo/tool that converts 3DS and MD2 to IFS.
-     <LI> Added RenderDevice to the Font constructor
-     <LI> Removed RenderDevice from Font::drawString
-     <LI> Included glut32.lib, .dll, and .h (Version 3.7.6) in the distribution. 
-          The windows glut port is by Nate Robbins and is from 
-          http://www.xmission.com/~nate/glut.html. 
-          glut was originally written by Mark Kilgard.
-     <LI> Modified OpenGL headers to work cross platform, with the latest NVIDIA extensions
-     <LI> Changed library name from graphics3D.lib to G3D.lib, same for
-          debug version.
-     <LI> Changed directory structure and added readme.html to explain
-          the new setup.
-     <LI> Changed BinaryInput::readBytes to allow reading onto the stack
-     <LI> Added Vector4::isFinite
-     <LI> G3D::CDTriangle (for 35% faster collision detection)
-     <LI> CollisionDetection::closestPointToRectangle
-     <LI> CollisionDetection::movingSpherePassesThroughFixedBox
-     <LI> CollisionDetection::movingSpherePassesThroughFixedSphere
-     <LI> Changed CollisionDetection::movingXFixedTriangle arguments
-     <LI> CollisionDetection::collisionTimeForMovingSphereFixedSphere
-     <LI> Changed CollisionDetection::distanceToX methods to closestPointToX
-     <LI> Vector3::NAN3
-     <LI> Made Vector3::isUnit fuzzy
-     <LI> Made Vector3::isZero fuzzy
-     <LI> Fix: Texture(std::string, std::string) constructor now works for alpha-only textures. 
-     <LI> FIX: Array now calls copy constructor when resizing
-     <LI> FIX: Triangle-sphere and rectangle-sphere collision detection
-              returned an incorrect collision location; now fixed.
-     <LI> FIX: changed VectorX::isFinite to call isFinite (used to give bad result for NaNs)
-     <LI> FIX: Used the normalized edge to compute intersection in
-            CollisionDetection::distanceToTrianglePerimeter
-     <LI> FIX: Changed the order of corners returned from Box::getFaceCorners so the
-	      face is ccw, facing out
-     <LI> FIX: ManualCameraController::lookAt now faces along the -z axis.
-     <LI> FIX: data/ifs/icosa.ifs model is now an icosahedron
-     <LI> Made Set::begin() and Set::end() const
-     <LI> Added ifdef _WIN32 all over for typedefing types from Windows to Linux and vice versa.
-     <LI> G3D::isNaN, G3D::isFinite
-     <LI> Added a single triangle triangle.ifs file
-     <LI> G3D::LineSegment
-     <LI> RenderDevice::debugDrawRay
-     <LI> CoordinateFrame::toObjectSpace(Ray&)
-     <LI> CoordinateFrame::toObjectSpace(Box&)
-     <LI> CoordinateFrame::toObjectSpace(Sphere&)
-     <LI> Changed CollisionDetection routines to return the surface normal of the
-          surface at the collision location.
-	 <LI> CollisionDetection::collisionTimeForMovingPointFixedCapsule
-	 <LI> CollisionDetection::collisionTimeForMovingSphereFixedCapsule
-     <LI> G3D::Capsule class
-     <LI> Removed e-mail addresses from contributor list to protect them from spammers
-     <LI> Linux port [Hari Khalsa & Chris Kern]
-     <LI> Added serialize and deserialize methods, deserializing constructor to
-	      Vector2, Vector3, Vector4, Color3, Color4, Matrix3, CoordinateFrame, Box,
-		  Sphere, Plane, Ray, Line, Capsule, LineSegment
-	 <LI> Moved parts of Plane.h into Plane.cpp
-     <LI> BinaryInput::readBool8 and BinaryOutput::writeBool8
-     <LI> G3D::System [based on Michael Herf, Rob Wyatt, and Benjamin
-           Jurke's work]
-     <LI> Networking infrastructure: G3D::NetworkDevice, G3D::NetAddress,
-          G3D::ReliableConduit, G3D::LightweightConduit, G3D::NetListener
-     <LI> G3D::Camera
-     <LI> Vector2::toString
-     <LI> G3D::createTempFile
-     <LI> G3D::fileLength
-     <LI> UserInput::setKeyMapping
-     <LI> UserInput::keyCodeToString, UserInput::stringToKeyCode
-     <LI> JPEG library uses createTempFile
-     <LI> JPEG library will allocate up to 6MB before resorting to temp 
-          files-- faster and more reliable
-     <LI> Moved SDL initialization to RenderDevice constructor from the init
-          method so extension can be used earlier
-     <LI> Support for up to 8 texture units, no longer crashes on machines 
-          that have more than 4 units
-     <LI> Made Arrays allocate at least 32 bytes when resized to improve
-          performance of small char stacks
-     <LI> Added UserInput key codes for mouse wheel buttons
-     <LI> UserInput::keyPressed, UserInput::pressedKeys()
-     <LI> UserInput::KeyCode
-     <LI> Renamed UserInput::poll() to UserInput::endEvents(), added 
-          UserInput::beginEvents()
-     <LI> Moved custom UserInput key codes into an enum so they are 
-          compile-time constants
-     <LI> Changed all <io.h> to <stdio.h> for cross-platform [Rob & Chris]
-     <LI> Moved LITTLE_ENDIAN and BIG_ENDIAN constants to an enum and renamed 
-          them to G3D_LITTLE_ENDIAN and G3D_BIG_ENDIAN for cross-platform 
-          [Rob & Chris]
-     <LI> Permanently fixed the precision of Real to be 32-bit float.
-     <LI> RenderDevice now loads the NVIDIA VAR fence extensions.
-     <LI> Renamed RenderDevice::begin to RenderDevice::beginPrimitive, same 
-     for end.
-     <LI> Redesigned the vertex array system; see VAR and VARArea.
-     <LI> Changed GLG3D demo to demonstrate the use of the new VAR and 
-        VARArea classes
-     <LI> CoordinateFrame(Vector3) constructor.
-     <LI> Improved the performance of zero-radius sphere [aka point] 
-          collision detection
-   </UL>
-
-   <P>
-    Changes in 4.01
-   <UL>
-     <LI> trimWhitespace()
-     <LI> Pointwise multiplication and division for Vector3
-     <LI> Array::sort now uses > operator by default; two alternative sort methods allow qsort style sorting
-     <LI> Texture::copyFromScreen
-     <LI> Texture::invertY
-     <LI> BinaryInput/BinaryOutput compression (via zlib)
-     <LI> Alpha-only G3D::Texture mode
-     <LI> G3D::Font and fonts in data/font
-     <LI> Array::fastRemove
-     <LI> TextInput [Morgan & Aaron]
-     <LI> Color4::CLEAR
-     <LI> Table [] operator now returns a non-const reference
-     <LI> RenderDevice::getFrameRate, RenderDevice::getTriangleRate, RenderDevice::getTriangleCount
-     <LI> ManualCameraController::setMoveRate, ManualCameraController::setTurnRate
-     <LI> LightingParameters default constructor
-     <LI> Vector2, Vector3, Vector4 isZero(), isUnit(), isFinite()
-     <LI> Vector4::length(), Vector4::squaredLength()
-     <LI> isValidPointer now returns false for 0xFEEEFEEE
-     <LI> RenderDevice checks for texture compression extensions
-     <LI> Restructured the directories for the CPP sources (only affects people who build G3D)
-     <LI> Included NVIDIA and SGI OpenGL headers in the distribution, changed install notes
-     <LI> Fixed a bug that previously prevented textures from being garbage collected
-     <LI> Fixed Line::distance returning values too small
-     <LI> Fixed Plane(normal, point) constructor to compute point from normalized direction [Kevin]
-     <LI> LED font by Matthew Welch daffy-duck@worldnet.att.net
-     <LI> VenusRising font by Ray Larabie <A HREF="mailto:drowsy@cheerful.com">drowsy@cheerful.com</A>
-     <LI> VideoFreak font by Jakob Fischer pizzadude@pizzadude.dk
-   </UL>
-
-   <P>
-   Changes in 4.00
-   <UL>
-     <LI> Moved texture combine modes from Textures onto RenderDevice texture units
-     <LI> Documented RenderDevice::getHDC() (Windows only)
-     <LI> Renamed RenderDevice::swapBuffers() to RenderDevice::endFrame(), added corresponding RenderDevice::beginFrame()
-     <LI> Moved getNumJoySticks from RenderDevice to UserInput
-     <LI> Added TEX_ADD combine mode
-     <LI> Table::getKeys and Set::getMembers now have overloads that take an Array as input.
-     <LI> BinaryOutput::getCArray
-     <LI> RenderDevice::getObjectToWorldMatrix(), RenderDevice::getCameraToWorldMatrix()
-     <LI> RenderDevice::debugDrawAxes(), RenderDevice::debugDrawBox(), RenderDevice::debugDrawSphere()
-     <LI> Color3::Color3(const Vector3&) and Color4::Color4(const Vector4&)
-     <LI> Moved hashCode(const Vector3&) and hashCode(const Vector4&) to the global namespace [Kevin]
-     <LI> isValidPointer now returns false for 0xCCCCCCCC and 0xDEADBEEF
-     <LI> Fix: RenderDevice::setPolygonOffset now affects polygons rendered in line and point mode
-     <LI> Fix: Sun is now invisible after it goes below the horizon
-     <LI> Fix: BinaryInput now supports endian-ness correctly in memory read mode
-     <LI> Fix: Table.copyFrom and copy constructor now work
-   </UL>
-
-   <P>
-   Changes in 3.02
-   <UL>
-     <LI> Built libraries using "Multithreaded DLL" [Kevin & Darius]
-     <LI> Added depth, color, and stencil bit depth preferences to G3D::RenderDevice
-     <LI> G3D::Sky (plus sky directory in the data distribution)
-     <LI> Sky cube data [Jauhn Dabz, jauhn@yahoo.com, http://nullpoint.fragland.net]
-     <LI> G3D::UserInput
-     <LI> G3D::ManualCameraController
-     <LI> G3D::LightingParameters
-     <LI> G3D::toSeconds, G3D::AMPM, G3D::GameTime, G3D::RealTime
-     <LI> G3D::RenderDevice::project
-     <LI> G3D::linearSpline
-     <LI> G3D::Color3::fromARGB and G3D::Color4::fromARGB
-     <LI> Added non-const G3D::Array::last() [Kevin]
-     <LI> Modified G3D::RenderDevice::configureDirectionalLight to operate in world space
-     <LI> Fix: Flipped the y-axis of G3D::RenderDevice::getDepthBufferValue so it matches the documentation.
-     <LI> Removed brief descriptions from documentation
-     <LI> Removed sqrt, sin, cos, etc. that conflict with standard library names
-     <LI> Removed TWO_PI constant
-     <LI> Removed G3D::Matrix3 virtual destructor
-     <LI> Removed G3D::Quat virtual destructor [Kevin]
-   </UL>
-
-  
-   Changes in 3.01
-   <UL>
-     <LI> Changed an assert() to debugAssert() in Queue.h
-     <LI> G3D::Table doesn't grow the number of buckets under bad hash codes [Morgan & Darius]
-     <LI> G3D::Table allocates only 10 initial buckets
-     <LI> G3D::Table::debugGetLoad()
-     <LI> G3D::CollisionDetection::collisionTimeForMovingPointFixedRectangle
-     <LI> G3D::CollisionDetection::collisionTimeForMovingPointFixedBox
-     <LI> G3D::Ray::intersectionTime, G3D::Ray::unit()
-     <LI> G3D::Log [Morgan & Aaron]
-     <LI> G3D::RenderDevice (OpenGL state abstraction.  VertexBuffer support is beta only)
-     <LI> G3D::Texture (includes texture compression, image loading, and texture rectangle)
-     <LI> Added a comment to the vector classes noting that they can't be sublcassed [Kevin Egan]
-   </UL>
-
-   Changes in 3.00
-   <UL>
-     <LI> G3D::NEWLINE
-     <LI> writeStringToFile
-     <LI> Fixed empty stringJoin bug
-     <LI> Fixed parseFilename with no path bug
-     <LI> Vector3::INF3, Vector3::ZERO3
-     <LI> G3D::PhysicsFrame (beta-- this interface is going to change in 4.00)
-     <LI> G3D::Vector4
-     <LI> G3D::Queue
-     <LI> Default constructor for G3D::CImage
-     <LI> G3D::isValidHeapPointer, G3D::isValidPointer
-     <LI> G3D::Ray
-     <LI> CImage copy constructor, CImage::load
-     <LI> Removed \#pragma once for gcc compatibility
-     <LI> Renamed several hashcode methods to hashCode
-     <LI> Fixed fuzzy math to work with infinite numbers
-     <LI> Fixed Table::remove(), Set::remove() bug [Darius Jazayeri]
-     <LI> G3D::CoordinateFrame.toObjectSpace(Vector4), G3D::CoordinateFrame.toWorldSpace(Vector4)
-     <LI> Added the data directory
-     <LI> G3D::CollisionDetection
-     <LI> G3D::Sphere::culledBy()
-     <LI> Added the GLG3D library [Morgan McGuire & Seth Block]
-     <LI> Changed SDL_GL_Demo to use GLG3D, rotate triangle, and use color blending
-     <LI> Fixed debugPrintf to handle long strings on Win32
-     <LI> Wrapped the MMX headers with \#ifdefs [Nate Miller]
-     <LI> Moved OpenGL code out of CoordinateFrame.h/cpp
-     <LI> Fixed BinaryInput readVector*, readColor* to read in correct order [Nate Miller]
-     <LI> BinaryInput::readVector4, BinaryInput::readColor4, BinaryOutput::writeVector4, BinaryOutput::writeColor4
-     <LI> IFS_Demo for loading IFS files, dealing with models in OpenGL [Nate Miller]
-   </UL>
-
-   <P>
-   Changes in 2.00
-   <UL>
-     <LI> Vector2 members renamed to x,y from s,t
-     <LI> Added SDL_GL_Demo and Win32_Demo
-     <LI> Removed Group
-   </UL>
-
-   <P>
-   Changes in 1.10
-   <UL>
-     <LI> CImage, color conversion routines [Morgan McGuire, John Chisholm, and Edward Resnick]
-     <LI> Array dereference for BinaryInput
-     <LI> BinaryInput from memory
-     <LI> BinaryOutput to memory
-     <LI> toUpper(std::string), toLower(std::string)
-     <LI> Group::clear()
-     <LI> inf, nan as global constants (double precision)
-     <LI> Can iterate over const Tables
-     <LI> Table::deleteValues()
-     <LI> Fixed an off-by-one bug in BinaryInput::readString()
-     <LI> beginsWith() and wordWrap() string utilities
-     <LI> prompt dialogs have fixed width font [Kurt Miller]
-     <LI> iMax(), iMin()
-     <LI> Array::sort()
-     <LI> stringCompare(), stringPtrCompare()
-     <LI> readFileAsString()
-     <LI> Fixed textPrompt() to wait for input
-     <LI> BinaryInput.getFilename(), BinaryOutput.getFilename()
-     <LI> ReferenceCount [Justin Miller]
-     <LI> endsWith()
-     <LI> stringSplit(), stringJoin()
-     <LI> Renamed format.* to stringutils.*
-     <LI> fileExists(), parseFilename(), createDirectory(), copyFile()
-     <LI> highestBit() [Jukka Liimatta]
-     <LI> flipRGBVertical()
-     <LI> Changed all header guards to use G3D_ prefix
-     <LI> ConvexPolyhedron
-     <LI> Virtual destructors on almost all objects.
-     <LI> RGBtoBGR()
-     <LI> Color4
-     <LI> Array::pop(bool shrinkArray=true)
-     <LI> Vector2::isFinite, Vector2::fuzzyEq, Vector::fuzzyNe
-   </UL>
-   <P>
-
-   Changes in 1.09
-   <UL>
-     <LI> Removed pointer hash [Aaron Orenstein]
-     <LI> Changed some includes from quotes to pointy brackets [Aaron Orenstein]
-     <LI> Sphere::toString() 
-     <LI> Plane::toString()
-     <LI> Added a change log
-   </UL>
    <IMG SRC="G3D.gif">
   
 */

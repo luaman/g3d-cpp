@@ -7,7 +7,7 @@
   @cite MD2 format by id software
 
   @created 2002-02-27
-  @edited  2002-04-03
+  @edited  2003-09-18
  */
 
 #include "IFSModel.h"
@@ -15,6 +15,8 @@
 #include "MD2.h"
 
 extern RenderDevice* renderDevice;
+extern Camera*       camera;
+extern CFontRef      font;
 
 IFSModel::IFSModel(const std::string& filename) {
     if (! fileExists(filename)) {
@@ -275,6 +277,24 @@ void IFSModel::loadOBJ(const std::string& filename) {
 }
 
 
+static void drawBillboardString(
+    CFontRef            font,
+    const std::string&  s,
+    const Vector3&      pos,
+    double              screenSize,
+    const Color4&       color,
+    const Color4&       outline = Color4::CLEAR) {
+
+    // Find the point
+
+    Vector3 screenPos = camera->project(pos);
+
+    renderDevice->push2D();
+        font->draw2D(s, screenPos.x, screenPos.y, screenSize, color, outline, CFont::XALIGN_CENTER, CFont::YALIGN_CENTER);
+    renderDevice->pop2D();
+}
+
+
 void IFSModel::render() {
     renderDevice->pushState();
 
@@ -301,16 +321,46 @@ void IFSModel::render() {
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+        // Label vertices (when there are too many, don't draw all)
+        const double S = 10;
+        int step = iMax(1, vertexArray.size() / 50);
+        for (int v = 0; v < vertexArray.size(); v += step) {
+            drawBillboardString(font, format("%d", v), vertexArray[v], S, Color3::YELLOW, Color3::BLACK);
+        }
+
+        const double D = clamp(0.05, 4.0 / triangleArray.size(), 1);
+        
+        // Label edges
+        //for (int e = 0; e < edgeArray.size(); ++e) {
+        //    const Vector3 pos = (vertexArray[edgeArray[e].vertexIndex[0]] + vertexArray[edgeArray[e].vertexIndex[1]]) / 2; 
+        //    drawBillboardString(font, format("%d", e), pos, D * 20, Color3::BLUE, Color3::BLACK);
+        //}
+
         // Normals
         renderDevice->setColor(Color3::GREEN * .5);
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
             for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * .05);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D);
                 renderDevice->sendVertex(vertexArray[v]);
             }
         renderDevice->endPrimitive();
+        
+        renderDevice->setLineWidth(2);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .96);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+            }
+        renderDevice->endPrimitive();
 
+        renderDevice->setLineWidth(3);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .92);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+            }
+        renderDevice->endPrimitive();
 
 
         // Show broken edges

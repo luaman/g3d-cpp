@@ -4,11 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-09-16
+  @edited  2003-09-18
  */
 
 #include "IFSModelBuilder.h"
 #include "IFSModel.h"
+
+const double IFSModelBuilder::CLOSE = 0.01;
 
 void IFSModelBuilder::setName(const std::string& n) {
     name = n;
@@ -28,9 +30,10 @@ void IFSModelBuilder::commit(IFSModel* model) {
            tri.index[i] = getIndex(triList[t + i], model);
         }
 
-        // Throw out zero size triangles, but keep sliver
-        // triangles that may be fixing T-junctions.
-        if ((tri.index[0] != tri.index[1]) || (tri.index[1] != tri.index[2]) || (tri.index[2] != tri.index[0])) {
+        // Throw out zero size triangles
+        if ((tri.index[0] != tri.index[1]) &&
+            (tri.index[1] != tri.index[2]) &&
+            (tri.index[2] != tri.index[0])) {
             model->triangleArray.append(tri);
         }
     }
@@ -45,29 +48,33 @@ void IFSModelBuilder::commit(IFSModel* model) {
     }
 
     Array<MeshAlg::Face> faceArray;
-    Array<MeshAlg::Edge> edgeArray;
     Array<Array<int> >   adjacentFaceArray;
     Array<Vector3>       faceNormalArray;
-    MeshAlg::computeAdjacency(model->vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
+    MeshAlg::computeAdjacency(model->vertexArray, indexArray, faceArray, model->edgeArray, adjacentFaceArray);
     MeshAlg::computeNormals(model->vertexArray, faceArray, adjacentFaceArray, model->normalArray, faceNormalArray);
 
     // TODO: computeNormals doesn't need face array, it should take index array
 
     // Find broken edges
     model->brokenEdgeArray.resize(0);
-    for (int e = 0; e < edgeArray.size(); ++e) {
-        const MeshAlg::Edge& edge = edgeArray[e];
+    for (int e = 0; e < model->edgeArray.size(); ++e) {
+        const MeshAlg::Edge& edge = model->edgeArray[e];
+
+        debugAssert(edge.vertexIndex[0] != edge.vertexIndex[1]);
 
         if ((edge.faceIndex[1] == MeshAlg::Face::NONE) || 
-            (edge.faceIndex[1] == edge.faceIndex[2])) {
+            (edge.faceIndex[0] == edge.faceIndex[1])) {
             // Dangling edge
             model->brokenEdgeArray.append(edge);
         } else {
             // Each vertex must appear in each adjacent face
             int numFound = 0;
+            // Check each vertex
             for (int i = 0; i < 2; ++i) {
-                for (int f = 0; f < 2; ++f) {
-                    const MeshAlg::Face& face = faceArray[edge.faceIndex[f]];
+                // Check each face
+                for (int j = 0; j < 2; ++j) {
+                    const int f = edge.faceIndex[j];
+                    const MeshAlg::Face& face = faceArray[f];
                     for (int j = 0; j < 3; ++j) {
                         if (face.vertexIndex[j] == edge.vertexIndex[i]) {
                             ++numFound;
@@ -134,20 +141,19 @@ int IFSModelBuilder::getIndex(const Vector3& v, IFSModel* model) {
 
         Set<List*> neighbors;
 
-        // TODO: what if CLOSE is larger than 1 grid cell?
+        debugAssertM(CLOSE < (1.0 / GRID_RES), "CL must be less than one grid cell's width");
 
-        const double CL = CLOSE * sqrt(2);
         int ix = gridCoord(v.x);
         int iy = gridCoord(v.y);
         int iz = gridCoord(v.z);
         neighbors.insert(&(grid[ix][iy][iz]));
 
         for (int dx = -1; dx <= +1; ++dx) { 
-            int ix = gridCoord(v.x + dx * CL);
+            int ix = gridCoord(v.x + dx * CLOSE);
             for (int dy = -1; dy <= +1; ++dy) {
-                int iy = gridCoord(v.y + dy * CL);
+                int iy = gridCoord(v.y + dy * CLOSE);
                 for (int dz = -1; dz <= +1; ++dz) { 
-                    int iz = gridCoord(v.z + dz * CL);
+                    int iz = gridCoord(v.z + dz * CLOSE);
                     neighbors.insert(&(grid[ix][iy][iz]));
                 }
             }

@@ -751,6 +751,10 @@ SOURCE=..\buildlib.py
 # End Source File
 # Begin Source File
 
+SOURCE=.\html\changelog.html
+# End Source File
+# Begin Source File
+
 SOURCE=.\Doxyfile
 # End Source File
 # Begin Source File
