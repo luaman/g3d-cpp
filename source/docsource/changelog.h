@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Win32 GUI G3D::prompt now auto-expands \n to \r\n in prompt string [Corey]
      <LI> Draw::frustum
      <LI> Increased timeout and attempts for ReliableConduit to handle huge (1 MB) packets
      <LI> BinaryOutput::reset (memory writing only; not supported for disk)
