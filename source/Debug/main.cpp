@@ -331,6 +331,15 @@ void App::main() {
 
 int main(int argc, char** argv) {
 
+    Ray ray = Ray::fromOriginAndDirection(Vector3(0,0,0), Vector3(0,0,-1));
+    Sphere sphere(Vector3::ZERO, 1);
+
+    double distance = ray.intersectionTime(sphere);
+
+    Vector3 refract =
+        Vector3(-cos(toRadians(45)), -sin(toRadians(45)), 0).
+        refractionDirection(Vector3::UNIT_Y, 1, 1);
+
     GAppSettings settings;
 
 	settings.window.resizable = true;

@@ -186,16 +186,21 @@ Vector3 Vector3::refractionDirection(
     // From pg. 24 of Henrik Wann Jensen. Realistic Image Synthesis
     // Using Photon Mapping.  AK Peters. ISBN: 1568811470. July 2001.
 
+    // Invert the directions from Wann Jensen's formulation
+    // and normalize the vectors.
     const Vector3 W = -this->direction();
     const Vector3 N = normal.direction();
 
-    double det = (1 - square(h1 / h2)) * (1 - square(W.dot(N)));
+    const double hRatio = h1 / h2;
+    const double WdotN = W.dot(N);
+
+    double det = 1.0 - square(hRatio) * (1.0 - square(WdotN));
 
     if (det < 0) {
         // Total internal reflection
         return Vector3::ZERO;
     } else {
-        return (h1 / h2) * (W - W.dot(N) * N) + N * sqrt(det);
+        return -hRatio * (W - WdotN * N) - N * sqrt(det);
     }
 }
 
