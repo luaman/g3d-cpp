@@ -111,6 +111,7 @@
 		 G3D::aTan,
 		 G3D::aTan2,
          G3D::clamp,
+         G3D::cyclicCatmullRomSpline,
 		 G3D::float32,
          G3D::float64
          G3D::fuzzyEq,
@@ -141,6 +142,7 @@
 		 G3D::nan,
 		 G3D::infReal,
 		 G3D::nanReal,
+         G3D::wrap,
 		 G3D::PI, 
          G3D::HALF_PI,
 		 G3D::TWO_PI,

@@ -482,6 +482,10 @@ SOURCE=.\include\G3D\Sphere.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\G3D\spline.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3D\stringutils.h
 # End Source File
 # Begin Source File

@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2004-03-28
+ @edited  2004-07-25
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -27,6 +27,7 @@
 #include <float.h>
 #include <limits>
 #include <math.h>
+#include "G3D/debug.h"
 
 #undef min
 #undef max
@@ -241,47 +242,6 @@ bool isEven(int num);
 double toRadians(double deg);
 double toDegrees(double rad);
 
-
-/**
- Interpolates a property according to a piecewise linear spline.  This provides
- C0 continuity but the derivatives are not smooth.  
- <P>
- Example:
- <CODE>
-    const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4, SUNRISE + sunRiseAndSetTime, SUNSET - sunRiseAndSetTime, SUNSET - sunRiseAndSetTime / 2, SUNSET,               SUNSET + HOUR/2,     DAY};
-    const Color3 color[] = {Color3(0, .0, .1),      Color3(0, .0, .1),      Color3::black(),        Color3::black(),                   Color3::white() * .25,         Color3::white() * .25,        Color3(.5, .2, .2),             Color3(.05, .05, .1),   Color3(0, .0, .1), Color3(0, .0, .1)};
-    ambient = linearSpline(time, times, color, 10);
- </CODE>
-
-  @param x         The spline is a function of x; this is the sample to choose.
-  @param controlX  controlX[i], controlY[i] is a control points.  It is assumed
-                   that controlX are strictly increasing.  XType must support
-                   the "<" operator and a subtraction operator that returns
-                   a number.
-  @param controlY  YType must support multiplication and addition.
-  @param numControl The number of control points.
- */
-template<class XType, class YType>
-YType linearSpline(double x, const XType* controlX, const YType* controlY, int numControl) {
-    debugAssert(numControl >= 1);
-
-    // Off the beginning
-    if ((numControl == 1) || (x < controlX[0])) {
-        return controlY[0];
-    }
-
-    for (int i = 1; i < numControl; ++i) {
-        if (x < controlX[i]) {
-            const double alpha = (double)(controlX[i] - x) / (controlX[i] - controlX[i - 1]);
-            return controlY[i] * (1 - alpha) + controlY[i - 1] * alpha;
-        }
-    }
-
-    // Off the end
-    return controlY[numControl - 1];
-}
-
-
 /**
  Returns true if x is not exactly equal to 0.0f.
  */
@@ -342,6 +302,27 @@ inline double sinc(double x) {
         return r;
     }
 }
+
+/**
+ Computes a floating point modulo; the result is t wrapped to the range [lo, hi).
+ */
+inline double wrap(double t, double lo, double hi) {
+    if ((t >= lo) && (t < hi)) {
+        return t;
+    }
+
+    debugAssert(hi > lo);
+
+    double interval = hi - lo;
+
+    return t - interval * iFloor((t - lo) / interval);
+
+}
+
+inline double wrap(double t, double hi) {
+    return wrap(t, 0, hi);
+}
+
 
 } // namespace
 
