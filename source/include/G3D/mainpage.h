@@ -297,9 +297,8 @@
    Unzip all of the files in the distribution to your
    library directory (e.g. <CODE>c:\\libraries</CODE>).
 
-   <LI>Download and install SDL <B>version 1.2.5</B> from
+   <LI>Download and install SDL <B>version 1.2.7</B> from
    <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>
-   (G3D is not 100% compatible with SDL 1.2.6).
 
    <LI>Ensure that you are using MSVC++ 6.0 with <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A> and
    the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.

@@ -3,14 +3,13 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-22
+  @edited  2004-02-28
 */
 
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/glcalls.h"
 
-// Code for testing FSAA:
-//#define SDL_1_26
+#define SDL_FSAA (SDL_MAJOR_VERSION * 100 + SDL_MINOR_VERSION * 10 + SDL_PATCH_LEVEL > 125)
 
 namespace G3D {
 
@@ -35,7 +34,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,      settings.alphaBits);
     SDL_GL_SetAttribute(SDL_GL_STEREO,          settings.stereo);
 
-    #ifdef SDL_1_26
+    #if SDL_FSAA
         if (settings.fsaaSamples > 1) {
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, settings.fsaaSamples);
@@ -69,10 +68,11 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     glGetIntegerv(GL_BLUE_BITS,  &blueBits);
     glGetIntegerv(GL_ALPHA_BITS, &alphaBits);
     int actualFSAABuffers = 0, actualFSAASamples = 0;
-#ifdef SDL_1_26
-    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
-    SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
-#endif
+
+    #if SDL_FSAA
+        SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &actualFSAABuffers);
+        SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &actualFSAASamples);
+    #endif
     _settings.rgbBits     = iMin(iMin(redBits, greenBits), blueBits);
     _settings.alphaBits   = alphaBits;
     _settings.stencilBits = stencilBits;
