@@ -197,6 +197,8 @@
      <UL>
       <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
         G3D::Draw,
+        G3D::GWindow,
+        G3D::SDLWindow,
         G3D::Milestone,
         G3D::PixelProgram,
         G3D::RenderDevice,
