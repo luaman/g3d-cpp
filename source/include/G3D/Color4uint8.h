@@ -58,6 +58,10 @@ public:
         return c;
     }
 
+    inline uint32 asUInt32() const {
+        return ((uint32)a << 24) + ((uint32)r << 16) + ((uint32)g << 8) + b;
+    }
+
     // access vector V as V[0] = V.r, V[1] = V.g, V[2] = V.b
     //
     // WARNING.  These member functions rely on

@@ -56,6 +56,14 @@ public:
         return c;
     }
 
+    /**
+     Returns the color packed into a uint32
+     (the upper byte is 0xFF)
+     */
+    inline uint32 asUInt32() const {
+        return (0xFF << 24) + ((uint32)r << 16) + ((uint32)g << 8) + b;
+    }
+
     void serialize(class BinaryOutput& bo) const;
 
     void deserialize(class BinaryInput& bi);
