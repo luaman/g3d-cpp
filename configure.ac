@@ -7,25 +7,10 @@ AM_CONFIG_HEADER(source/config.h)
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_INSTALL
-
-AC_PROG_LIBTOOL
+AC_PROG_RANLIB
 
 # Check for X paths
 AC_PATH_X
-LIBS="$LIBS -L$x_libraries"
-
-# Checks for libraries.
-AC_CHECK_LIB([GL], [main], [], [
-			  AC_MSG_ERROR([Can't find libGL])])
-AC_CHECK_LIB([GLU], [main], LIBGLU="-lGLU", LIBGLU="", -pthread)
-#AC_CHECK_LIB([GLU], [main], [], [
-#			  AC_MSG_ERROR([Can't find libGLU])])
-AC_CHECK_LIB([jpeg], [main], [], [
-			  AC_MSG_ERROR([Can't find libjpeg])])
-# FIXME: Replace `main' with a function in `-lz':
-AC_CHECK_LIB([z], [main], [], [
-			  AC_MSG_ERROR([Can't find libz])])
 
 # Checks for header files.
 AC_HEADER_STDC

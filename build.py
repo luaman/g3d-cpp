@@ -19,7 +19,6 @@ autoconf   = "autoconf"
 autoheader = "autoheader"
 automake   = "automake-1.7"
 doxygen    = "doxygen"
-libtoolize = "libtoolize"
 python     = "python2.2"
 
 
@@ -201,8 +200,7 @@ def _lib(args, libplatform, reconfigure = 1):
         if reconfigure:
             linuxCheckVersion()
 
-            run("./bootstrap",["-l " + libtoolize,
-                               "-a " + aclocal,
+            run("./bootstrap",["-a " + aclocal,
                                "-h " + autoheader,
                                "-m " + automake,
                                "-c " + autoconf])
