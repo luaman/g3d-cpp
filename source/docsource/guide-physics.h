@@ -1,9 +1,19 @@
 /** 
   @page guidephysics Physics and Ray Tracing
+  \htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="guidefiles.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Files</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guideeffects.html">
+Effects <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
 
   Physics and Ray Tracing have a lot in common.  This is because detecting the collision
   between a small projectile and the scene is mathematically identical to detecting 
-  the intersection of a light ray and the scene.  G3D provides several 
+  the intersection of a light ray and the scene.  G3D provides several routines for 
+  assisting in these intersection calculations and making them fast.
+
+  This section has not complete.  Follow the links for more information.
   
   @section physics Physics
   <TABLE BORDER=0>

@@ -69,7 +69,7 @@ Notes for Expert Users at the end of this chapter for more information.
   <TR><TD VALIGN=TOP>\link guidetutorial Tutorial \endlink</TD><TD>
   </TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guidedebugging Debugging \endlink</TD><TD VALIGN=TOP>
+  <TR><TD VALIGN=TOP>\link guidedebug Debugging \endlink</TD><TD VALIGN=TOP>
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guideapp Application Framework \endlink</TD><TD VALIGN=TOP>

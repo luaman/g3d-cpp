@@ -1,5 +1,14 @@
 /** @page guidetutorial Tutorial
 
+\htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="guideconcepts.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Concepts</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidedebug.html">
+Debugging <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
+
+
 @section Introduction
 
 <img src="splash.jpg" width=600></img>

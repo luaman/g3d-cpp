@@ -1,5 +1,13 @@
 /** @page guideconcepts Concepts
 
+\htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="guidecompiling.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Compiling and Linking</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidetutorial.html">
+Tutorial <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
+
   This section details some high-level concepts that will make the library easier to use.
 
   @section imm Immediate Mode Graphics

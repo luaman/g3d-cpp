@@ -1,4 +1,11 @@
 /** @page guidefiles Working with Files & Networks
+  \htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="guideui.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+User Input</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidephysics.html">
+Physics and Ray Tracing <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
 
   @section filemanagement File Management
 

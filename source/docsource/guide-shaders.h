@@ -1,5 +1,10 @@
 /**
  @page guideshaders Shaders
+  \htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="guideeffects.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
+\endhtmlonly
 
   Older graphics cards provide only a fixed-function pipeline in which lighting,
   texturing, and transformation is hardwired.  The range of effects that can

@@ -1,6 +1,14 @@
 /** @page guideinstall Installing G3D
-   <P>
-   @section windows WindowsXP/2000</B>
+
+  \htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="license.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+License</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidecompiling.html">
+Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
+
+  @section windows WindowsXP/2000</B>
 
    <OL>
    <LI>

@@ -1,5 +1,15 @@
 /** @page guideapp Application Framework
 
+  \htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="guidedebug.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Debugging</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidemeshes.html">
+Working with Meshes <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
+
+    This section isn't complete yet.  Follow the links below for more information.
+
  @section applets Applets
  Optional!  Easiest way to get a program up and running.  Expert users may want
  to forgo the framework and create a G3D::RenderDevice and other components manually.

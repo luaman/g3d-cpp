@@ -1,7 +1,17 @@
 /**
  @page guideeffects Effects
 
-	(insert md2 + shadow picture)
+  \htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="guidephysics.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Physics and Ray Tracing</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guideshaders.html">
+Shaders <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
+
+  This section has not yet been written.  Follow the links below for more information.
+
+  (insert md2 + shadow picture)
 
   @section cartoon Cartoon Rendering
    G3D::drawFeatureEdges

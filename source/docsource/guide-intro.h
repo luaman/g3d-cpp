@@ -1,4 +1,15 @@
-/** @page guideintro Introduction
+/** 
+@page guideintro Introduction
+
+
+\htmlonly
+<TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
+<A HREF="index.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Table of Contents</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="license.html">
+License <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+\endhtmlonly
+
 
 @section documentation Documentation and Support
 This guide gives a brief introduction to help you decide if %G3D is right
@@ -21,8 +32,9 @@ and how to use some of the most popular features.  The source code for the entir
 library is available (http://cvs.sourceforge.net/viewcvs.py/%G3D-cpp/cpp/).
 
 The official support team and community respond to most user posts within
-hours and patches for critical user-discovered bugs are given top priority.  Write 
-to <A HREF="http://mailto:morgan3d@sf.net">Morgan McGuire</A> (morgan3d@sf.net) 
+hours and patches for critical user-discovered bugs are given top priority.  
+
+Write to <A HREF="http://mailto:morgan3d@sf.net">Morgan McGuire</A> (morgan3d@sf.net) 
 if your project has special commercial support needs.
 
 The latest version library is always available on the homepage,
