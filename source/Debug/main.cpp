@@ -689,8 +689,8 @@ void App::main() {
 }
 
 
-//App::App(const GAppSettings& settings) : GApp(settings, new GlutWindow(settings.window)) {
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GAppSettings& settings) : GApp(settings, new GlutWindow(settings.window)) {
+//App::App(const GAppSettings& settings) : GApp(settings) {
 }
 
 

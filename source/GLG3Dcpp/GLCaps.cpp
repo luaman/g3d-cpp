@@ -175,6 +175,7 @@ void GLCaps::loadExtensions() {
     #elif defined(G3D_OSX) || defined(G3D_LINUX)
         LOAD_EXTENSION(glXJoinSwapGroupNV);
     #endif
+
     #undef LOAD_EXTENSION
 
 

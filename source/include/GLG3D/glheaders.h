@@ -189,9 +189,30 @@ extern PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
 extern PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB;
 extern PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
 
+#ifdef G3D_WIN32
 
 typedef BOOL (*PFNWGLENABLEGENLOCKI3D) (HDC hDCGL);
 extern PFNWGLENABLEGENLOCKI3D wglEnableGenlockI3D;
+
+#elif defined(G3D_OSX) || defined(G3D_LINUX)
+
+typedef BOOL (*PFNGLXJOINSWAPGROUPNV) (Display*, GLXDrawable, GLuint);
+extern PFNGLXJOINSWAPGROUPNV glXJoinSwapGroupNV;
+
+/*extern Bool glXBindSwapBarrierNV(Display *dpy, GLuint group, GLuint barrier);
+
+extern Bool glXQuerySwapGroupNV(Display *dpy, GLXDrawable drawable,
+                                GLuint *group, GLuint *barrier);
+
+extern Bool glXQueryMaxSwapGroupsNV(Display *dpy, int screen,
+                                    GLuint *maxGroups, GLuint *maxBarriers);
+
+extern Bool glXQueryFrameCountNV(Display *dpy, int screen, GLuint *count);
+ 
+extern Bool glXResetFrameCountNV(Display *dpy, int screen);
+*/
+#endif
+
 
 #if defined(G3D_OSX)
 namespace G3D
