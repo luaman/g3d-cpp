@@ -7,7 +7,7 @@
  
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   @created 2001-06-02
-  @edited  2003-12-13
+  @edited  2003-12-22
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -27,10 +27,7 @@ namespace G3D {
  @author Morgan McGuire and Laura Wollstadt, graphics3d.com
  */
 class Box {
-
 private:
-
-    friend class Cone;
 
     friend class CoordinateFrame;
 
@@ -43,10 +40,20 @@ private:
        front    back (seen through front)
       </PRE>
      */
-    Vector3 corner[8];
+    Vector3 _corner[8];
 
-    double _area;
-    double _volume;
+    /**
+     Unit axes.
+     */
+    Vector3 _axis[3];
+    
+    /**
+     Extent along each axis.
+     */
+    Vector3 _extent;
+
+    double  _area;
+    double  _volume;
 
 public:
 
@@ -76,9 +83,32 @@ public:
 
     /**
      Returns a corner (0 <= i < 8)
+     @deprecated
      */
     inline Vector3 getCorner(int i) const {
-        return corner[i];
+        debugAssert(i < 8);
+        return _corner[i];
+    }
+
+    inline Vector3 corner(int i) const {
+        debugAssert(i < 8);
+        return _corner[i];
+    }
+
+    /**
+     Unit length.
+     */
+    inline Vector3 axis(int a) const {
+        debugAssert(a < 3);
+        return _axis[a];
+    }
+
+    /**
+     Distance from corner(0) to the next corner along axis a.
+     */
+    inline float extent(int a) const {
+        debugAssert(a < 3);
+        return _extent[a];
     }
 
     /**
@@ -108,8 +138,6 @@ public:
     double volume() const;
 };
 
-#undef setMany
-
-};// namespace
+}
 
 #endif

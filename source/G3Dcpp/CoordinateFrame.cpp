@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
  @created 2001-06-02
- @edited  2003-12-18
+ @edited  2003-12-22
 */
 
 #include "G3D/CoordinateFrame.h"
@@ -80,10 +80,14 @@ Triangle CoordinateFrame::toWorldSpace(const Triangle& t) const {
 
 
 Box CoordinateFrame::toWorldSpace(const Box &b) const {
-    Box out;
+    Box out(b);
 
     for (int i = 0; i < 8; i++) {
-        out.corner[i] = rotation * b.corner[i] + translation;
+        out._corner[i] = rotation * out._corner[i] + translation;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        out._axis[i] = rotation * out._axis[i];
     }
 
     return out;

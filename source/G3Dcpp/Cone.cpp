@@ -34,10 +34,10 @@ Cone::Cone(const Vector3& tip, const Box& box) {
     this->direction = (box.getCenter() - tip).direction();
 
     // Find the biggest angle
-    double smallestDotProduct = direction.dot((box.corner[0] - tip).direction());
+    double smallestDotProduct = direction.dot((box.corner(0) - tip).direction());
 
     for (int i = 1; i < 8; ++i) {
-        double dp = direction.dot((box.corner[i] - tip).direction());
+        double dp = direction.dot((box.corner(i) - tip).direction());
 
         assert(dp > 0);
 

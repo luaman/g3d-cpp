@@ -8,7 +8,7 @@
   @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2003-04-06
+  @edited  2003-12-22
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -19,6 +19,7 @@
 
 #include "G3D/Vector3.h"
 #include "G3D/Plane.h"
+#include "G3D/Box.h"
 #include "G3D/Triangle.h"
 #include "G3D/Array.h"
 
@@ -66,7 +67,10 @@ public:
 
     /**
      Returns the penetration depth (negative if there is no penetration)
-     of the two spheres and a series of contact points.
+     of the two spheres and a series of contact points.  The normal
+     returned points <B>away</B> from the object A, although it may
+     represent a perpendicular to either the faces of object B or object A
+     depending on their relative orientations.
      */
     static float penetrationDepthForFixedSphereFixedSphere(
         const class Sphere&     sphereA,
@@ -80,6 +84,12 @@ public:
         Array<Vector3>&         contactPoints,
         Vector3&                outNormalA = ignore);
 
+    static float penetrationDepthForFixedBoxFixedPlane(
+        const Box&          box,
+        const Plane&        plane,
+        Array<Vector3>&     contactPoints,
+        Vector3&            outNormalA = ignore);
+    
     /**
      Returns the amount of time until the point intersects the plane 
      (the plane is one sided; the point can only hit the side the 

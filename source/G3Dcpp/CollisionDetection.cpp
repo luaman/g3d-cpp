@@ -5,7 +5,7 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2003-12-18
+  @edited  2003-12-22
  */
 
 #include "G3D/CollisionDetection.h"
@@ -64,6 +64,41 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
     }
 
     return depth;
+}
+
+
+float CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
+    const Box&          box,
+    const Plane&        plane,
+    Array<Vector3>&     contactPoints,
+    Vector3&            outNormal) {
+
+    Vector3 N;
+    double d;
+    
+    plane.getEquation(N, d);
+
+    double lowest = inf;
+    for (int i = 0; i < 8; ++i) {
+        const Vector3 vertex = box.corner(i);
+        
+        double x = vertex.dot(N) + d;
+        
+        if (x >= 0) {
+            contactPoints.append(vertex);
+        }
+
+        lowest = min(lowest, x);
+    }
+
+    // Depth should be a positive number
+    lowest = -lowest;
+
+    if (lowest >= 0) {
+        outNormal = -N;
+    }
+
+    return lowest;
 }
 
 

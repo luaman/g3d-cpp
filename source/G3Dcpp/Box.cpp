@@ -18,8 +18,8 @@ namespace G3D {
  Sets a field on four vertices.  Used by the constructor.
  */
 #define setMany(i0, i1, i2, i3, field, extreme) \
-    corner[i0].field = corner[i1].field = \
-    corner[i2].field = corner[i3].field = \
+    _corner[i0].field = _corner[i1].field = \
+    _corner[i2].field = _corner[i3].field = \
     (extreme).field
 
 Box::Box() {
@@ -34,7 +34,7 @@ Box::Box(class BinaryInput& b) {
 void Box::serialize(class BinaryOutput& b) const {
 	int i;
 	for (i = 0; i < 8; ++i) {
-		corner[i].serialize(b);
+		_corner[i].serialize(b);
 	}
 }
 
@@ -42,7 +42,7 @@ void Box::serialize(class BinaryOutput& b) const {
 void Box::deserialize(class BinaryInput& b) {
 	int i;
 	for (i = 0; i < 8; ++i) {
-		corner[i].deserialize(b);
+		_corner[i].deserialize(b);
 	}
 }
 
@@ -60,13 +60,17 @@ Box::Box(
     setMany(3, 2, 6, 7, y, max);
     setMany(0, 1, 5, 4, y, min);
 
-    Vector3 extent = max - min;
+    _extent = max - min;
 
-    _volume = extent.x * extent.y * extent.z;
+    _axis[0] = Vector3::UNIT_X;
+    _axis[1] = Vector3::UNIT_Y;
+    _axis[2] = Vector3::UNIT_Z;
+
+    _volume = _extent.x * _extent.y * _extent.z;
     _area = 2 * 
-        (extent.x * extent.y + 
-         extent.y * extent.z + 
-         extent.z * extent.x);
+        (_extent.x * _extent.y +
+         _extent.y * _extent.z +
+         _extent.z * _extent.x);
 }
 
 
@@ -81,10 +85,10 @@ double Box::surfaceArea() const {
 
 
 Vector3 Box::getCenter() const {
-    Vector3 c = corner[0];
+    Vector3 c = _corner[0];
 
     for (int i = 1; i < 8; i++) {
-        c += corner[i];
+        c += _corner[i];
     }
 
     return c / 8;
@@ -94,27 +98,27 @@ Vector3 Box::getCenter() const {
 void Box::getFaceCorners(int f, Vector3& v0, Vector3& v1, Vector3& v2, Vector3& v3) const {
     switch (f) {
     case 0:
-        v0 = corner[0]; v1 = corner[1]; v2 = corner[2]; v3 = corner[3];
+        v0 = _corner[0]; v1 = _corner[1]; v2 = _corner[2]; v3 = _corner[3];
         break;
 
     case 1:
-        v0 = corner[1]; v1 = corner[5]; v2 = corner[6]; v3 = corner[2];
+        v0 = _corner[1]; v1 = _corner[5]; v2 = _corner[6]; v3 = _corner[2];
         break;
 
     case 2:
-        v0 = corner[7]; v1 = corner[6]; v2 = corner[5]; v3 = corner[4];
+        v0 = _corner[7]; v1 = _corner[6]; v2 = _corner[5]; v3 = _corner[4];
         break;
 
     case 3:
-        v0 = corner[2]; v1 = corner[6]; v2 = corner[7]; v3 = corner[3];
+        v0 = _corner[2]; v1 = _corner[6]; v2 = _corner[7]; v3 = _corner[3];
         break;
 
     case 4:
-        v0 = corner[3]; v1 = corner[7]; v2 = corner[4]; v3 = corner[0];
+        v0 = _corner[3]; v1 = _corner[7]; v2 = _corner[4]; v3 = _corner[0];
         break;
 
     case 5:
-        v0 = corner[1]; v1 = corner[0]; v2 = corner[4]; v3 = corner[5];
+        v0 = _corner[1]; v1 = _corner[0]; v2 = _corner[4]; v3 = _corner[5];
         break;
 
     default:
@@ -134,7 +138,7 @@ bool Box::culledBy(const Plane* plane, int numPlanes) const {
         // Assume this plane culls all points.  See if there is a point
         // not culled by the plane.
         while ((v < 8) && culled) {
-            culled = !plane[p].halfSpaceContains(corner[v]);
+            culled = !plane[p].halfSpaceContains(_corner[v]);
             v++;
         }
 
@@ -156,17 +160,17 @@ bool Box::contains(
     // Form axes from three edges, transform the point into that
     // space, and perform 3 interval tests
 
-    Vector3 u = corner[4] - corner[0];
-    Vector3 v = corner[3] - corner[0];
-    Vector3 w = corner[1] - corner[0];
+    Vector3 u = _corner[4] - _corner[0];
+    Vector3 v = _corner[3] - _corner[0];
+    Vector3 w = _corner[1] - _corner[0];
 
     Matrix3 M = Matrix3(u.x, v.x, w.x,
                         u.y, v.y, w.y,
                         u.z, v.z, w.z);
 
-    // M^-1 * (point - corner[0]) = point in unit cube's object space
+    // M^-1 * (point - _corner[0]) = point in unit cube's object space
     // compute the inverse of M
-    Vector3 osPoint = M.inverse() * (point - corner[0]);
+    Vector3 osPoint = M.inverse() * (point - _corner[0]);
 
     return
         (osPoint.x >= 0) && 
