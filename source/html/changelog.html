@@ -28,11 +28,16 @@
 	   <LI>Replace G3D::TWO_PI with G3D_TWO_PI
 	   <LI>Replace RenderDevice::init(w, h, log, ...) with RenderDevice::init(RenderDeviceSettings(w, h, ...), log)
 	   <LI>Supply the option TextInput::Options::signedNumbers = false to retain 5.01 number parsing rules
+	   <LI>Replace RenderDevice::debugDrawXXX with Draw::XXX
   </BLOCKQUOTE>
 
 
    <P>
    <UL>
+     <LI> Documented some more errors.
+     <LI> Moved RenderDevice::debugDraw methods to the Draw class, changed rendering from
+	      cylinders to lines for wireframe (for performance)
+     <LI> Ray::direction no longer has unit length
      <LI> Line::point, Line::direction
 	 <LI> LineSegment::endPoint
      <LI> IFSBuilder loads Brown University Sketch Model (sm) format

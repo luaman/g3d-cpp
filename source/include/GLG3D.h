@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-09-18
+ @edited  2003-10-29
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -51,7 +51,7 @@
 #include "GLG3D/Camera.h"
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/MD2Model.h"
-
+#include "GLG3D/Draw.h"
 #include "GLG3D/tesselate.h"
 
 #endif

@@ -94,6 +94,10 @@ SOURCE=.\GLG3Dcpp\CFont.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\Draw.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\G3DGameUnits.cpp
 # End Source File
 # Begin Source File
@@ -347,6 +351,10 @@ SOURCE=.\include\GLG3D\Camera.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\CFont.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\Draw.h
 # End Source File
 # Begin Source File
 

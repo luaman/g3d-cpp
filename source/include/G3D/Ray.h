@@ -22,12 +22,16 @@ namespace G3D {
 class Ray {
 private:
     Ray(const Vector3& origin, const Vector3& direction) {
-        this->origin = origin;
-        this->direction = direction.direction();
+        this->origin    = origin;
+        this->direction = direction;
     }
 
 public:
     Vector3         origin;
+
+    /**
+     Not unit length
+     */
     Vector3         direction;
 
     Ray() : origin(Vector3::ZERO3), direction(Vector3::ZERO3) {}
@@ -41,7 +45,7 @@ public:
     /**
      Creates a Ray from a origin and a (nonzero) direction.
      */
-    static Ray fromOriginAndDirection(const Vector3 &point, const Vector3 &direction) {
+    static Ray fromOriginAndDirection(const Vector3& point, const Vector3& direction) {
         return Ray(point, direction);
     }
 

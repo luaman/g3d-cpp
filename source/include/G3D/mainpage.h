@@ -336,7 +336,7 @@
   (as headers and a windows binary).  If you need zlib for your own platform 
   or wish to build it yourself, go to http://www.gzip.org/zlib/.
 
-  <H3>Compiler Error FAQ</H3>
+  <H3>Error FAQ</H3>
    There are a few misleading error messages you can run into.  Here are the 
    common fixes.
 
@@ -388,6 +388,15 @@ Debug/GLG3D_Demo.exe : fatal error LNK1169: one or more multiply defined symbols
    your release build.
    <P>
 
+  <B>Application Error: The application failed to initialize properly (0xc0000022). Click on OK to terminate the application.</B>
+  <BR>
+   At runtime, your program can't load the SDL.dll, zlib.dll, or glut32.dll dynamic libraries.
+   This is probably occurring because the current working directory is invalid or because
+   the files and directory exist but cannot be accessed.  This frequently occurs when a Windows
+   and Linux file system don't get along-- we've seen the problem occur under
+   Cygwin when permissions are not set to 777 and on Samba shares.
+
+   <P>
 
    <B>../include/G3D/g3dmath.h:27: limits: No such file or directory</B>
    <BR>You are using an old version of GCC on Linux. Add these lines to your .cshrc:<br>
@@ -615,6 +624,7 @@ Debug/GLG3D_Demo.exe : fatal error LNK1169: one or more multiply defined symbols
    <BR>Kevin Egan
    <BR>Cass Everitt
    <BR>Jakob Fischer
+   <BR>Dan Keefe
    <BR>Harishabd Khalsa
    <BR>Nicolai Haehnle
    <BR>Michael Herf
