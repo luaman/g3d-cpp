@@ -13,18 +13,9 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60400
-    #error Requires G3D 6.04
+#if G3D_VER < 60500
+    #error Requires G3D 6.05
 #endif
-
-class App : public GApp {
-protected:
-    void main();
-public:
-    SkyRef              sky;
-
-    App(const GAppSettings& settings);
-};
 
 
 /**
@@ -56,6 +47,19 @@ public:
 
     virtual void cleanup();
 
+};
+
+
+
+class App : public GApp {
+protected:
+    void main();
+public:
+    SkyRef              sky;
+
+    Demo*               applet;
+
+    App(const GAppSettings& settings);
 };
 
 
@@ -131,13 +135,18 @@ void App::main() {
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
     
-    Demo(this).run();
+    applet->run();
 }
 
 
 App::App(const GAppSettings& settings) : GApp(settings) {
+    applet = new Demo(this);
 }
 
+
+App::~App() {
+    delete applet;
+}
 
 int main(int argc, char** argv) {
     GAppSettings settings;
