@@ -48,6 +48,7 @@ AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit floor gethostbyname gethostname inet_ntoa memset mkdir pow select socket sqrt strchr strdup strrchr strstr])
 
+# Check for sdl-config program
 AC_PATH_PROG([SDL_CONFIG], [sdl-config], [no])
 if test x$SDL_CONFIG != xno ; then
     SDL_INCDIR=`$SDL_CONFIG --cflags`
@@ -58,11 +59,22 @@ else
   	AC_MSG_ERROR([sdl-config not found!])
 fi
 
+AC_MSG_CHECKING([whether to enable debugging])
+AC_ARG_ENABLE(debugging, [
+  --enable-debugging		(Default: disabled)], [
+	    if test x$enablevar = xno; then
+            AC_MSG_RESULT(no)
+        else
+            AC_MSG_RESULT(yes)
+            AC_DEFINE(_DEBUG, 1, [Debugging on])
+        fi
+    ],[AC_MSG_RESULT(no)])
+
 AC_CONFIG_FILES([Makefile
                  G3Dcpp/Makefile
                  test/Makefile
+				 demos/Makefile
+				 demos/GLG3D_Demo/Makefile
                  GLG3Dcpp/Makefile])
-#                 demos/GLG3D_Demo/Makefile
-#                 include/glh/extgen/Makefile
-#                 test/Makefile])
+#                 include/glh/extgen/Makefile])
 AC_OUTPUT
