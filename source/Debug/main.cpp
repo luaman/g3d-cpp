@@ -138,10 +138,7 @@ public:
 class App : public GApp {
 public:
 
-    GFontRef            font;
-
     App(const GAppSettings& settings) : GApp(settings) {
-        font = GFont::fromFile(renderDevice, "c:/users/morgan/data/font/dominant.fnt");
     }
 
     void main();
@@ -185,7 +182,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-    IFSModelRef cube   = IFSModel::create(app->dataDir +"ifs/cow.ifs");
+    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cube.ifs");
 
     entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }
@@ -205,6 +202,14 @@ void Demo::doLogic() {
         app->endProgram = true;
     }
 
+    if (app->userInput->keyPressed('k')) {
+        Vector2 m;
+        uint8 i;
+        app->renderDevice->window()->getRelativeMouseState(m, i);
+        app->renderDevice->window()->setRelativeMousePosition(m);
+        debugPrintf("%s\n", m.toString().c_str());
+    }
+
 	app->debugPrintf("(%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
 }
 
@@ -219,7 +224,8 @@ void Demo::doGraphics() {
 
     app->renderDevice->clear(sky == NULL, true, true);
     renderScene(lighting);
-        
+
+
     // The lens flare shouldn't be reflected, so it is only rendered
     // for the final composite image
     if (sky != NULL) {
@@ -227,21 +233,11 @@ void Demo::doGraphics() {
     }
 
     app->renderDevice->push2D();
-        std::string str = "PpMqne|/";    
-        double size = 64;
-        Vector2 pos(100, 100);
-        app->font->draw2D(str, pos, size);    
-
-        Vector2 bounds = app->font->get2DStringBounds(str, size);
-
-        app->renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
-            app->renderDevice->setColor(Color3::YELLOW);
-            app->renderDevice->sendVertex(pos);
-            app->renderDevice->sendVertex(pos + Vector2(bounds.x, 0));
-            app->renderDevice->sendVertex(pos + bounds);
-            app->renderDevice->sendVertex(pos + Vector2(0, bounds.y));
-            app->renderDevice->sendVertex(pos);
-        app->renderDevice->endPrimitive();
+        CoordinateFrame cframe(
+            Matrix3::fromAxisAngle(Vector3::UNIT_Z, toRadians(45)),
+            Vector3(100, 100, 0));
+        app->renderDevice->setObjectToWorldMatrix(cframe);
+        app->debugFont->draw2D("Test", Vector2(0, 0), 20);
     app->renderDevice->pop2D();
 }
 
@@ -288,7 +284,7 @@ int main(int argc, char** argv) {
     App app(settings);
 
     app.setDebugMode(true);
-    app.debugController.setActive(false);
+//    app.debugController.setActive(false);
     app.run();
 
     return 0;
