@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-09-24
+ @edited  2003-09-27
  */
 
 
@@ -2521,6 +2521,43 @@ static void drawCylinder(RenderDevice* device, const Vector3& v0, const Vector3&
             }
         device->endPrimitive();
     }
+}
+
+
+void RenderDevice::debugDrawVertexNormals(const MeshAlg::Geometry& geometry, const Color3& color, double scale) {
+    pushState();
+        setColor(color);
+
+        const Array<Vector3>& vertexArray = geometry.vertexArray;
+        const Array<Vector3>& normalArray = geometry.normalArray;
+
+        const double D = clamp(0.05, 8.0 / vertexArray.size(), 1) * scale;
+        
+        setColor(Color3::GREEN * .5);
+        setLineWidth(1);
+        beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                sendVertex(vertexArray[v] + normalArray[v] * D);
+                sendVertex(vertexArray[v]);
+            }
+        endPrimitive();
+        
+        setLineWidth(2);
+        beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                sendVertex(vertexArray[v] + normalArray[v] * D * .96);
+                sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+            }
+        endPrimitive();
+
+        setLineWidth(3);
+        beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                sendVertex(vertexArray[v] + normalArray[v] * D * .92);
+                sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+            }
+        endPrimitive();
+    popState();
 }
 
 

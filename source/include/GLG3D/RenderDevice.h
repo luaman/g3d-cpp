@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-09-22
+  @edited  2003-09-27
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -812,6 +812,12 @@ public:
      might want to use the radius of an object's bounding sphere.
      */
     void debugDrawAxes(double scale = 1);
+
+    /**
+     Visualize the per-vertex normals from a mesh.  The vector length is scaled
+     inversely with the number of normals.
+     */
+    void debugDrawVertexNormals(const MeshAlg::Geometry& geometry, const Color3& color = Color3::GREEN * 0.5, double scale = 1);
 
     /** Call after vendor is set */
     std::string getDriverVersion();
