@@ -2,12 +2,12 @@ INCLUDES=-I../../../source/include -Wall $(SDL_CFLAGS)
 
 lib_LTLIBRARIES= libGLG3D.la
 
-libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/CFont.cpp \
+libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/Draw.cpp \
                      ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
                      ../../../source/GLG3Dcpp/GApp.cpp \
                      ../../../source/GLG3Dcpp/GPUProgram.cpp \
-    	  	     ../../../source/GLG3Dcpp/IFSModel.cpp \
+    	  	         ../../../source/GLG3Dcpp/IFSModel.cpp \
                      ../../../source/GLG3Dcpp/LightingParameters.cpp \
                      ../../../source/GLG3Dcpp/MD2Model.cpp \
                      ../../../source/GLG3Dcpp/MD2Model_load.cpp \

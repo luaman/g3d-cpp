@@ -2,7 +2,7 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/BinaryInput.h \
                        G3D/BinaryOutput.h \
                        G3D/Box.h \
-                       G3D/CImage.h \
+                       G3D/GImage.h \
                        G3D/Capsule.h \
                        G3D/CollisionDetection.h \
                        G3D/Color3.h \
@@ -51,7 +51,7 @@ nobase_include_HEADERS=G3D/Array.h \
                        G3D/prompt.h \
                        G3D/stringutils.h \
                        G3D/vectorMath.h \
-                       GLG3D/CFont.h \
+                       GLG3D/GFont.h \
                        GLG3D/GPUProgram.h \
                        GLG3D/VertexProgram.h \
                        GLG3D/PixelProgram.h \

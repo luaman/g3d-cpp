@@ -5,13 +5,13 @@ lib_LTLIBRARIES=libG3D.la
 libG3D_la_SOURCES= ../../../source/G3Dcpp/BinaryInput.cpp \
 				   ../../../source/G3Dcpp/BinaryOutput.cpp \
 				   ../../../source/G3Dcpp/Box.cpp \
-				   ../../../source/G3Dcpp/CImage.cpp \
+				   ../../../source/G3Dcpp/GImage.cpp \
 				   ../../../source/G3Dcpp/Capsule.cpp \
 				   ../../../source/G3Dcpp/CollisionDetection.cpp \
 				   ../../../source/G3Dcpp/Color3.cpp \
 				   ../../../source/G3Dcpp/Color3uint8.cpp \
 				   ../../../source/G3Dcpp/Color4.cpp \
-                                   ../../../source/G3Dcpp/Color4uint8.cpp \
+                   ../../../source/G3Dcpp/Color4uint8.cpp \
 				   ../../../source/G3Dcpp/Cone.cpp \
 				   ../../../source/G3Dcpp/ConvexPolyhedron.cpp \
 				   ../../../source/G3Dcpp/CoordinateFrame.cpp \

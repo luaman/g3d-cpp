@@ -5,7 +5,7 @@ lib_LTLIBRARIES=libG3D_debug.la
 libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/BinaryOutput.cpp \
                          ../../../source/G3Dcpp/Box.cpp \
-                         ../../../source/G3Dcpp/CImage.cpp \
+                         ../../../source/G3Dcpp/GImage.cpp \
                          ../../../source/G3Dcpp/Capsule.cpp \
                          ../../../source/G3Dcpp/CollisionDetection.cpp \
                          ../../../source/G3Dcpp/Color3.cpp \
