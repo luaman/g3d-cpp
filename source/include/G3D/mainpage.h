@@ -619,6 +619,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::Vector3int16
      <LI> G3D::CFont is a typedef for G3D::Font to avoid name conflicts with X11 Font under Linux.  In future releases, the name Font will be deprecated.
      <LI> RenderDevice::setPointSize
+	 <LI> Added a new teapot (teapot.ifs) that is closed, with a properly fitting top.  The classic teapot is now called "utah-teapot.ifs"
      <LI> RenderDevice::init now loads glPointParameterfvARB and glPointParameterfARB functions.
      <LI> GLenumToString(4) now returns "GL_TRIANGLES" instead of "GL_LINE_BIT" (both are correct)
      <LI> Added TextInput::Options to optionally allow C++ comments to
