@@ -119,10 +119,13 @@ public:
 
 std::ostream& operator<<(std::ostream& os, const NetAddress&);
 
-inline unsigned int hashCode(const NetAddress& a) {
-	return a.ip() + ((uint32)a.port() << 16);
+} // namespace G3D
+
+inline unsigned int hashCode(const G3D::NetAddress& a) {
+    return a.ip() + ((G3D::uint32)a.port() << 16);
 }
 
+namespace G3D {
 
 /**
  Two addresses may point to the same computer but be != because

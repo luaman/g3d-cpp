@@ -16,13 +16,13 @@
 
 #include "Vector2int16.h"
 
-namespace G3D {
-
 //----------------------------------------------------------------------------
 
 inline unsigned int hashCode(const G3D::Vector2& v) {
      return v.hashCode();
 }
+
+namespace G3D {
 
 //----------------------------------------------------------------------------
 inline Vector2::Vector2 () {
