@@ -481,7 +481,7 @@ void Sky::renderLensFlare(
         renderDevice->resetTextureUnit(0);
 
         // Compute the sun's position using the 3D transformation
-        Vector3 pos = renderDevice->project(Vector4(lighting.sunPosition, 0));
+        Vector4 pos = renderDevice->project(Vector4(lighting.sunPosition, 0));
 
         if (lighting.sunPosition.dot(camera.getLookVector()) > 0) {
 
@@ -489,7 +489,10 @@ void Sky::renderLensFlare(
             int visible = 0;
             for (int dx = -1; dx <= 1; ++dx) {
                 for (int dy = -1; dy <= 1; ++dy) {
-                    double distanceToSun = renderDevice->getDepthBufferValue(iRound(pos.x + dx * 15.0), iRound(pos.y + dy * 15.0));
+                    double distanceToSun = 
+                        renderDevice->getDepthBufferValue(
+                         iRound(pos.x + dx * 15.0),
+                         iRound(pos.y + dy * 15.0));
                     visible += (distanceToSun >= .99999) ? 1 : 0;
                 }
             }
@@ -498,15 +501,18 @@ void Sky::renderLensFlare(
 
             if (fractionOfSunVisible > 0.0) {
 
-                // We need to switch to an infinite projection matrix to draw the flares.
-                // Note that we must make this change *after* the depth buffer values have
-                // been read back.
+                // We need to switch to an infinite projection matrix
+                // to draw the flares.  Note that we must make this
+                // change *after* the depth buffer values have been
+                // read back.
                 hackProjectionMatrix(renderDevice);
 
-                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+                renderDevice->setBlendFunc(RenderDevice::BLEND_ONE,
+                                           RenderDevice::BLEND_ONE);
 
                 // Make flares fade out near sunset and sunrise
-                double flareBrightness = max(0, sqrt(lighting.sunPosition.y * 4));
+                double flareBrightness = 
+                    max(0, sqrt(lighting.sunPosition.y * 4));
 
                 // Sun position
                 Vector4 L(lighting.sunPosition,0);
@@ -514,14 +520,20 @@ void Sky::renderLensFlare(
                 Vector4 Y(Vector3::UNIT_Z, 0);
 
                 // Sun rays at dawn
-                if ((lighting.sunPosition.x > 0) && (lighting.sunPosition.y >= -.1)) {
+                if ((lighting.sunPosition.x > 0) && 
+                    (lighting.sunPosition.y >= -.1)) {
+
                     renderDevice->setTexture(0, sunRays);
-                    double occlusionAttenuation = (1 - square(2*fractionOfSunVisible - 1));
-                    drawCelestialSphere(renderDevice, L, X , Y, .6, occlusionAttenuation * Color4(1,1,1,1) * .4 * max(0, min(1, 1 - lighting.sunPosition.y * 2 / sqrt(2.0))));
+                    double occlusionAttenuation = 
+                        (1 - square(2*fractionOfSunVisible - 1));
+
+                    drawCelestialSphere(renderDevice, L, X , Y, .6,
+                                        occlusionAttenuation * Color4(1,1,1,1) * .4 * max(0, min(1, 1 - lighting.sunPosition.y * 2 / sqrt(2.0))));
                 }
 
                 renderDevice->setTexture(0, sun);
-                drawCelestialSphere(renderDevice, L, X, Y, .13, Color3::WHITE * fractionOfSunVisible * .5);
+                drawCelestialSphere(renderDevice, L, X, Y, .13,
+                                    Color3::WHITE * fractionOfSunVisible * .5);
 
                 // Lens flare
                 Vector4 C(camera.getLookVector(), 0);
@@ -532,7 +544,9 @@ void Sky::renderLensFlare(
 
                 renderDevice->setTexture(0, disk);
                 for (int i = 0; i < numFlares; ++i) {
-                    drawCelestialSphere(renderDevice, C + (C - L) * position[i], X, Y, size[i], Color4(color[i] * flareBrightness, 1));
+                    drawCelestialSphere(renderDevice, 
+                         C + (C - L) * position[i], X, Y, size[i], 
+                         Color4(color[i] * flareBrightness, 1));
                 }
             }
         }
@@ -541,6 +555,3 @@ void Sky::renderLensFlare(
 }
 
 } // namespace
-
-
-

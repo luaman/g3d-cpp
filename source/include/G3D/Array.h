@@ -46,6 +46,21 @@ const int SORT_DECREASING = -1;
  If SSE is defined Arrays allocate the first element aligned to
  16 bytes.
 
+ Unlike std::vector, Array is optimized for graphics use.  The default
+ array takes up zero heap space.  The first resize (or append)
+ operation grows it to a reasonable internal size so it is efficient
+ to append to small arrays.  Memory is allocated using
+ System::alignedMalloc, which produces pointers aligned to 16-byte
+ boundaries for use with SSE instructions.  When Array needs to copy
+ data internally on a resize operation it correctly invokes copy
+ constructors of the elements (the Microsoft implementation of
+ std::vector uses realloc, which can create memory leaks for classes
+ containing references and pointers).  Array provides a guaranteed
+ safe way to access the underlying data as a flat C array --
+ Array::getCArray.  Although (T*)std::vector::begin() can be used for
+ this purpose, it is not guaranteed to succeed on all platforms.
+
+
  Do not subclass an Array.
  */
 template <class T>
