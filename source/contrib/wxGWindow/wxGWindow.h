@@ -157,7 +157,7 @@ public:
 
     virtual bool pollEvent(GEvent& e) ;
 
-    virtual bool requiresMainLoop() {
+    virtual bool requiresMainLoop() const {
         return true;
     }
 };
