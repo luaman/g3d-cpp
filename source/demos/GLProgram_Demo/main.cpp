@@ -53,9 +53,6 @@ bool                    endProgram      = false;
 Model*                  model           = NULL;
 VertexProgramRef        distort         = NULL;
 
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
 
 void doSimulation(GameTime timeStep);
 void doGraphics();
@@ -92,7 +89,7 @@ int main(int argc, char** argv) {
     renderDevice->setColorClearValue(Color3(.1, .5, 1));
     renderDevice->setCaption("G3D Vertex Program Demo");
 
-    RealTime now = getTime() - 0.001, lastTime;
+    RealTime now = System::getTick() - 0.001, lastTime;
 
     {
         std::string p = "GLProgram_Demo/";
@@ -105,7 +102,7 @@ int main(int argc, char** argv) {
     // Main loop
     do {
         lastTime = now;
-        now = getTime();
+        now = System::getTick();
         RealTime timeStep = now - lastTime;
 
         double angle = cos(now) / 2;

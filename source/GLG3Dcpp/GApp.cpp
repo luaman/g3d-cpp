@@ -188,11 +188,6 @@ GApplet::GApplet(GApp* _app) : app(_app) {
 }
 
 
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
-
-
 void GApplet::run() {
 
     endApplet = false;
@@ -202,12 +197,12 @@ void GApplet::run() {
     // Move the controller to the camera's location
     app->debugController.setCoordinateFrame(app->debugCamera.getCoordinateFrame());
 
-    RealTime now = getTime() - 0.001, lastTime;
+    RealTime now = System::getTick() - 0.001, lastTime;
 
     // Main loop
     do {
         lastTime = now;
-        now = getTime();
+        now = System::getTick();
         RealTime timeStep = now - lastTime;
 
         // User input

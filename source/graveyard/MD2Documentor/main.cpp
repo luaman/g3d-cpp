@@ -61,9 +61,6 @@ void setCameraStandard();
 void writeBatchImage();
 void pasteToBatchImage();
 
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
 
 int main(int argc, char** argv) {
     DATA_DIR = demoFindData();
@@ -126,16 +123,16 @@ int main(int argc, char** argv) {
 
     load(modelNameArray[currentModel]);
 
-    RealTime now = getTime() - 0.001, lastTime;
+    RealTime now = System::getTick() - 0.001, lastTime;
 
     doSimulation(0);
     // Main loop
     do {
         lastTime = now;
-        now = getTime();
+        now = System::getTick();
         RealTime timeStep = now - lastTime;
 
-        gameTime = getTime();
+        gameTime = System::getTick();
 
         doUserInput();
 

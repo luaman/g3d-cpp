@@ -43,10 +43,6 @@ void doSimulation(GameTime timeStep);
 void doGraphics();
 void doUserInput();
 
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
-
 
 void getModelNameArray();
 
@@ -80,7 +76,7 @@ int main(int argc, char** argv) {
 
     load(modelNameArray[currentModel]);
 
-    RealTime now = getTime() - 0.001, lastTime;
+    RealTime now = System::getTick() - 0.001, lastTime;
 
     controller->setActive(true);
 
@@ -88,10 +84,10 @@ int main(int argc, char** argv) {
     // Main loop
     do {
         lastTime = now;
-        now = getTime();
+        now = System::getTick();
         RealTime timeStep = now - lastTime;
 
-        gameTime = getTime();
+        gameTime = System::getTick();
 
         doUserInput();
 

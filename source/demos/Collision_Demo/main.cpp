@@ -59,10 +59,6 @@ GameTime                gameTime        = 0;
 bool                    endProgram      = false;
 
 
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
-
 void buildScene();
 void doSimulation(GameTime timeStep);
 void doGraphics();
@@ -109,7 +105,7 @@ int main(int argc, char** argv) {
 
     gameTime     = G3D::toSeconds(10, 00, 00, AM);
     
-    RealTime now = getTime() - 0.001;
+    RealTime now = System::getTick() - 0.001;
 
     // Main loop
     RealTime lastTime;
@@ -120,7 +116,7 @@ int main(int argc, char** argv) {
         // Lock the frame rate
         RealTime wait;
         do {
-            now = getTime();
+            now = System::getTick();
             timeStep = now - lastTime;
 
             wait = 1 / (maxFrameRate + 0.5) - timeStep;
@@ -169,11 +165,11 @@ void doSimulation(GameTime timeStep) {
 
 void doGraphics() {
     // Stats that will be updated periodically
-    static RealTime lastFrameRateUpdate = getTime() - 0.9;
+    static RealTime lastFrameRateUpdate = System::getTick() - 0.9;
     static int frameRate = 0;
     static int numTris = 0;
     static int triRate = 0;
-    RealTime now = getTime();
+    RealTime now = System::getTick();
 
     // Compute the frame rate
     if (lastFrameRateUpdate + 1 < now) {

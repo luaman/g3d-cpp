@@ -515,9 +515,7 @@ bool Conduit::messageWaiting() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-static double getTime() {
-    return time(NULL);
-}
+
 
 ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : Conduit(_nd) {
 
@@ -583,9 +581,9 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
 
     if (ret == WSAEWOULDBLOCK) {
 
-        RealTime t = getTime() + 5;
+        RealTime t = System::getTick() + 5;
         // Non-blocking; we must wait in select
-        while ((selectOneWriteSocket(sock) == 0) && (getTime() < t)) {
+        while ((selectOneWriteSocket(sock) == 0) && (System::getTick() < t)) {
             #ifdef G3D_WIN32
                 Sleep(2);
             #endif
@@ -779,8 +777,8 @@ bool ReliableConduit::receive(NetMessage* m) {
                 ++count;
 
                 // Give the machine a chance to read more data, but don't wait forever
-                RealTime t = getTime() + timeToWaitForFragmentedPacket;
-                while (! messageWaiting() && (getTime() < t)) {
+                RealTime t = System::getTick() + timeToWaitForFragmentedPacket;
+                while (! messageWaiting() && (System::getTick() < t)) {
                     #ifdef G3D_WIN32
                         Sleep(5);
                     #endif

@@ -142,11 +142,6 @@ static void _glViewport(double a, double b, double c, double d) {
 static void __stdcall glIgnore(GLenum e) {}
 
 
-static double getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
-
-
 #ifdef G3D_WIN32
 /**
  Used by the Windows version of getDriverVersion().
@@ -271,7 +266,7 @@ RenderDevice::RenderDevice() {
     _numTextures = 0;
     _numTextureCoords = 0;
     emwaFrameRate = 0;
-    lastTime = getTime();
+    lastTime = System::getTick();
 
 	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0 ) {
         fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
@@ -1337,7 +1332,7 @@ void RenderDevice::endFrame() {
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
     SDL_GL_SwapBuffers();
 
-    double now = getTime();
+    double now = System::getTick();
     double dt = now - lastTime;
     if (dt == 0) {
         dt = 0.0001;

@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
                     double  t[2];
                     Vector3 c[2];
 
-                    t[0] = SDL_GetTicks() / 1000.0;
+                    t[0] = System::getTick();
                     t[1] = t[0] + 0.01;
 
                     for (int x = 0; x < 50; ++x) {

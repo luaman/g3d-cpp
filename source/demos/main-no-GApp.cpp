@@ -23,11 +23,6 @@ GCamera*					camera			= NULL;
 ManualCameraController* controller      = NULL;
 bool                    endProgram		= false;
 
-
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
-
 void doSimulation(GameTime timeStep);
 void doGraphics();
 void doUserInput();
@@ -62,12 +57,12 @@ int main(int argc, char** argv) {
 
     controller->setActive(true);
 
-    RealTime now = getTime() - 0.001, lastTime;
+    RealTime now = System::getTick() - 0.001, lastTime;
 
     // Main loop
     do {
         lastTime = now;
-        now = getTime();
+        now = System::getTick();
         RealTime timeStep = now - lastTime;
 
         doUserInput();

@@ -39,10 +39,6 @@ XIFSModel*              model           = NULL;
 
 bool                    pauseBetweenModels = true;
 
-RealTime getTime() {
-    return SDL_GetTicks() / 1000.0;
-}
-
 void doSimulation(GameTime timeStep);
 void doGraphics();
 void doUserInput();
@@ -79,7 +75,7 @@ int main(int argc, char** argv) {
     renderDevice->setColorClearValue(Color3(.5, .7, .8));
 
     camera.setNearPlaneZ(-.05);
-    RealTime now = getTime() - 0.001, lastTime;
+    RealTime now = System::getTick() - 0.001, lastTime;
 
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
@@ -124,7 +120,7 @@ int main(int argc, char** argv) {
         // Main loop (display 3D object)
         do {
             lastTime = now;
-            now = getTime();
+            now = System::getTick();
             RealTime timeStep = now - lastTime;
 
             if (pauseBetweenModels) {
