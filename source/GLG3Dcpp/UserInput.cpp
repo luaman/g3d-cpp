@@ -168,6 +168,12 @@ void UserInput::endEvents() {
     Vector2 oldMouse = mouse;
     _window->getRelativeMouseState(mouse, mouseButtons);
 
+    if ((mouse.x < 0) || (mouse.x > 10000)) {
+        // Sometimes we get bad values on the first frame;
+        // ignore them.
+        mouse = oldMouse;
+    }
+
     deltaMouse = mouse - oldMouse;
 
     bool focus = appHasFocus();

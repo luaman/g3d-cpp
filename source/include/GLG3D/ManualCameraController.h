@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2004-02-22
+  @edited  2004-02-28
 */
 
 #ifndef G3D_MANUALCAMERACONTROLLER_H
@@ -111,31 +111,11 @@ class FPCameraController {
     double                      pitch;
 	Vector3                     translation;
 
-    /** Where the first person camera system thinks the mouse is
-       (generally, where the mouse was <B>last</B> frame)*/
-    Vector2                     cameraMouse;
-
-    /**
-     Position from which we grabbed the mouse (where the
-     window system thinks the mouse is)
-     */
-    Vector2                     guiMouse;
-
     class RenderDevice*         renderDevice;
-
-    /** Screen center in pixels */
-    Vector2                     center;
 
     bool                        _active;
 
-    /** Whether the app had focus on the previous call to simulate */
-    bool                        appHadFocus;
-
     class UserInput*            userInput;
-
-    void grabMouse();
-    
-    void releaseMouse();
 
 public:
 

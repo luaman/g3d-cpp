@@ -213,7 +213,7 @@ void Demo::doLogic() {
 	app->debugPrintf("%s", app->userInput->mouseXY().toString().c_str());
     app->debugPrintf("%s", app->userInput->mouseDXY().toString().c_str());
 
-    System::sleep(0.1);
+//    System::sleep(0.1);
 }
 
 
@@ -222,7 +222,7 @@ void Demo::doGraphics() {
 
     app->renderDevice->clear(true, true, true);
      
-    /*
+    
     // Render the scene to the full-screen
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
@@ -235,7 +235,7 @@ void Demo::doGraphics() {
     if (sky != NULL) {
         sky->renderLensFlare(lighting);
     }
-    */
+    
 }
 
 
