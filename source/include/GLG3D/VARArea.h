@@ -36,7 +36,8 @@ private:
 
     /**
      The milestone is used for finish().  It is created
-     by RenderDevice::setVARAreaMilestones.
+     by RenderDevice::setVARAreaMilestones.  If NULL, there
+     is no milestone pending.
      */
     MilestoneRef        milestone;
 

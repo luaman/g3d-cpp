@@ -265,6 +265,7 @@ size_t VARArea::peakAllocatedSize() const {
 void VARArea::finish() {
     if (milestone != (MilestoneRef)NULL) {
         renderDevice->waitForMilestone(milestone);
+        milestone = NULL;
     }
 }
 

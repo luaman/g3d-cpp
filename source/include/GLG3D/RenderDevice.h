@@ -722,15 +722,24 @@ public:
     */
     void setVertexAttribArray(unsigned int attribNum, const class VAR& v, bool normalize);
 
+    /**
+     Draws the specified kind of primitive from the current vertex array.
+     */
 	template<class T>
 	void sendIndices(RenderDevice::Primitive primitive, int numIndices, 
                      const T* index) {
-		varSystem->sendIndices(primitive, sizeof(T), numIndices, index);
+		
+        varSystem->sendIndices(primitive, sizeof(T), numIndices, index);
 
+        // Mark all active arrays as busy.
         setVARAreaMilestones();
+
 		countPrimitive(primitive, numIndices);
 	}
 
+    /**
+     Draws the specified kind of primitive from the current vertex array.
+     */
 	template<class T>
 	void sendIndices(RenderDevice::Primitive primitive, 
                      const Array<T>& index) {

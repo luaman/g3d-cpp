@@ -277,13 +277,15 @@ void RenderDevice::usingVARArea(VARArea* v) {
 void RenderDevice::setVARAreaMilestones() {
     Set<VARArea*>::Iterator begin = inUseVARArea.begin();
     Set<VARArea*>::Iterator end   = inUseVARArea.end();
-        
+
+    MilestoneRef milestone = createMilestone("VAR Milestone");
+    setMilestone(milestone);
+
     while (begin != end) {
-        (*begin)->milestone = createMilestone("VAR Milestone");
-        setMilestone((*begin)->milestone);
+        // Overwrite whatever milestone was previously there
+        (*begin)->milestone = milestone;
         ++begin;
     }
-    
 }
 
 
