@@ -98,11 +98,11 @@ SOURCE=.\GLG3Dcpp\Draw.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GLG3Dcpp\G3DApp.cpp
+SOURCE=.\GLG3Dcpp\G3DGameUnits.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GLG3Dcpp\G3DGameUnits.cpp
+SOURCE=.\GLG3Dcpp\GApp.cpp
 # End Source File
 # Begin Source File
 

@@ -115,7 +115,7 @@ GApp::~GApp() {
 }
 
 void GApp::renderDebugInfo() {
-    if (debugMode() && (debugFont != NULL)) {
+    if (debugMode() && (debugFont != (CFontRef)NULL)) {
         renderDevice->push2D();
             Color3 color = Color3::WHITE;
             double size = 10;

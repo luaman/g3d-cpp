@@ -262,13 +262,13 @@ public:
      Invoked every time run is called.  Default implementation
      does nothing.
      */
-    virtual init() {}
+    virtual void init() {}
 
     /**
      Invoked at the end of every run call.  Default implementation
      does nothing.
      */
-    virtual cleanup() {}
+    virtual void cleanup() {}
 
     /**
       Run until app->endProgram or endApplet is set to true. 
