@@ -7,7 +7,7 @@
   @cite MD2 format by id software
 
   @created 2002-02-27
-  @edited  2003-09-18
+  @edited  2003-10-16
  */
 
 #include "IFSModel.h"
@@ -34,6 +34,8 @@ IFSModel::IFSModel(const std::string& filename) {
         load3DS(filename);
     } else if (endsWith(f, ".obj")) {
         loadOBJ(filename);
+    } else if (endsWith(f, ".sm")) {
+        loadSM(filename);
     } else {
         debugAssert(false);
     }
@@ -68,6 +70,36 @@ void IFSModel::loadIFS(const std::string& filename) {
         int v0 = b.readUInt32();
         int v1 = b.readUInt32();
         int v2 = b.readUInt32();
+
+        builder.addTriangle(va[v0], va[v1], va[v2]);
+    }
+
+    builder.commit(this);
+}
+
+
+
+void IFSModel::loadSM(const std::string& filename) {
+    IFSModelBuilder builder;
+
+    TextInput ti(filename);
+
+    // Read vertices
+    Array<Vector3> va(ti.readNumber());
+    for (int v = 0; v < va.size(); ++v) {
+        for (int i = 0; i < 3; ++i) {
+            va[v][i] = ti.readNumber();
+        }
+    }
+
+    // Read faces
+    int n = ti.readNumber();
+
+    int t;
+    for (t = 0; t < n; ++t) {
+        int v0 = ti.readNumber();
+        int v1 = ti.readNumber();
+        int v2 = ti.readNumber();
 
         builder.addTriangle(va[v0], va[v1], va[v2]);
     }

@@ -83,15 +83,19 @@ int main(int argc, char** argv) {
 
 //    std::string in("d:/graphics3d/book/data/ifs/bunny.ifs");
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/ROCKHRSE.ifs");
-    std::string in("d:/libraries/g3d-6_00/data/ifs/teapot.ifs");
+    std::string in("c:/tmp/seuss/woman.sm");
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/sphere.ifs");
-    std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
+
+    //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
+    std::string outDir("d:/graphics3d/book/data/ifs/");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
 
     camera->setCoordinateFrame(controller->getCoordinateFrame());
     controller->setActive(true);
+
+    debugAssertM(filename.size() > 0, "No files found");
 
     for (int i = 0; i < filename.size(); ++i) {
         std::string base = getFilename(filename[i]);
@@ -105,7 +109,7 @@ int main(int argc, char** argv) {
         */
 
         model = new IFSModel(filename[i]);
-       // model->name = "Teapot";
+        model->name = "Woman";
         
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");

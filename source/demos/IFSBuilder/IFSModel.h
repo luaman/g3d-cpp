@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2002-04-03
+  @edited  2002-10-16
  */ 
 
 #ifndef IFSMODEL_H
@@ -38,10 +38,20 @@ private:
 
     Array<MeshAlg::Edge>     edgeArray;
 
+    /** G3D Indexed Face Set */
     void loadIFS(const std::string& filename);
+
+    /** Quake II Model */
     void loadMD2(const std::string& filename);
+
+    /** 3D Studio */
     void load3DS(const std::string& filename);
+
+    /** Wavefront Object */
     void loadOBJ(const std::string& filename);
+
+    /** Brown University Sketch Model */
+    void loadSM(const std::string& filename);
 
 public:
 
