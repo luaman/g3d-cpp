@@ -32,7 +32,8 @@
     #pragma comment(lib, "glu32.lib")
 
     #pragma comment(lib, "sdl.lib")
-    #ifndef NO_SDL_MAIN
+
+    #if !defined(NO_SDL_MAIN) && !defined(_CONSOLE)
         #pragma comment(lib, "sdlmain.lib")
     #endif
 #endif

@@ -12,6 +12,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> GLG3D.h no longer links against SDLMain.lib on Windows if _CONSOLE is defined
+          (since console programs have no WinMain).
      <LI> Moved contrib/Win32Window to G3D::Win32Window
      <LI> contrib/Image [Morgan]
      <LI> contrib/wxGWindow [Morgan]

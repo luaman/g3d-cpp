@@ -345,8 +345,22 @@ void setIcon(const GImage& image) {
 
 //////////////////////////////////////////////////////////
 
+inline int x() {
+    static int y = 0;
+    ++y;
+    return y;
+}
+
 int main(int argc, char** argv) {
-    App(GAppSettings()).run();
+    int x0 = x();
+    int x1 = x();
+    int x2 = x();
+/*
+
+    GAppSettings settings;
+    settings.window.depthBits = 32;
+    App(settings).run();
+    */
     return 0;
 }
 
