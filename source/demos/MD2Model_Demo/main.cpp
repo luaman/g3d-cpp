@@ -129,7 +129,7 @@ void doSimulation(GameTime timeStep) {
 
     } else {
 
-        pose = model.choosePose(pose,
+        pose = MD2Model::choosePose(pose,
             userInput->keyDown(SDLK_LCTRL) || userInput->keyDown(SDLK_RCTRL) ||
             userInput->keyDown(SDLK_LSHIFT) || userInput->keyDown(SDLK_RSHIFT),
             userInput->keyDown('r'),

@@ -419,7 +419,7 @@ public:
      the JUMP_UP animation when the character leaves the ground and
      the JUMP_DOWN animation when they hit it again.
      */
-    virtual Pose choosePose(
+    static Pose choosePose(
         const MD2Model::Pose& currentPose,
         bool crouching,
         bool movingForward,
@@ -436,7 +436,7 @@ public:
         bool death3,
         bool pain1,
         bool pain2,
-        bool pain3) const;
+        bool pain3);
 
     /** Filenames of textures this model can use. */
     inline const Array<std::string>& textureFilenames() const {
@@ -447,7 +447,7 @@ public:
      Returns a value for MD2Model::Pose::preFrameNumber that will
      smoothly blend from this animation to the next one.
      */
-    int getFrameNumber(const Pose& pose) const;
+    static int getFrameNumber(const Pose& pose);
 
     /**
      Returns the approximate amount of main memory, not counting the texture,

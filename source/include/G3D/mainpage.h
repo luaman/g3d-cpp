@@ -341,6 +341,53 @@
    common fixes.
 
    <P>
+   <PRE><B>
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::~basic_string<char,struct std::char_traits<char>,class std::allocator<char> >(void)" (??1?$basic_strin
+g@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >(char const *,class basic_
+string<char,struct std::char_traits<char>,class std::allocator<char> >::allocator<char> const &)" (??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@PBDABV?$allocator@D@1@@Z) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: char const * __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::c_str(void)const " (?c_str@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@Q
+BEPBDXZ) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::operator=(cl
+ass std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (??4?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV01@ABV01@@Z) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >(class basic_string<char,s
+truct std::char_traits<char>,class std::allocator<char> >::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@ABV01@@Z) already defined in main.
+obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: static double __cdecl std::numeric_limits<double>::infinity(void)" (?infinity@?$numeric_limits@N@std@@SANXZ) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: static double __cdecl std::numeric_limits<double>::quiet_NaN(void)" (?quiet_NaN@?$numeric_limits@N@std@@SANXZ) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: unsigned int __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::size(void)const " (?size@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBE
+IXZ) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::operator+=(c
+lass std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (??Y?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV01@ABV01@@Z) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "bool __cdecl std::operator==(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,char const *)" (??8std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocat
+or@D@2@@0@PBD@Z) already defined in main.obj
+msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::operator+=(c
+har const *)" (??Y?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV01@PBD@Z) already defined in main.obj
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _fflush already defined in LIBCD.lib(fflush.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _fclose already defined in LIBCD.lib(fclose.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _free already defined in LIBCD.lib(dbgheap.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _realloc already defined in LIBCD.lib(dbgheap.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __vsnprintf already defined in LIBCD.lib(vsnprint.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _exit already defined in LIBCD.lib(crt0dat.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _malloc already defined in LIBCD.lib(dbgheap.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __CrtIsValidHeapPointer already defined in LIBCD.lib(dbgheap.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __CrtIsValidPointer already defined in LIBCD.lib(dbgheap.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _sprintf already defined in LIBCD.lib(sprintf.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _toupper already defined in LIBCD.lib(toupper.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _tolower already defined in LIBCD.lib(tolower.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _calloc already defined in LIBCD.lib(dbgheap.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _strncpy already defined in LIBCD.lib(strncpy.obj)
+MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __isctype already defined in LIBCD.lib(isctype.obj)
+LINK : warning LNK4098: defaultlib "MSVCRTD" conflicts with use of other libs; use /NODEFAULTLIB:library
+Debug/GLG3D_Demo.exe : fatal error LNK1169: one or more multiply defined symbols found
+</PRE></B>
+   <BR>
+   You are linking against the wrong standard library.  Navigate the MSVC menus to
+   Project:Settings:C++:Code Generation and select 
+   "Debug Multithreaded DLL" for your debug build and "Multithreaded DLL" for
+   your release build.
+   <P>
+
 
    <B>../include/G3D/g3dmath.h:27: limits: No such file or directory</B>
    <BR>You are using an old version of GCC on Linux. Add these lines to your .cshrc:<br>

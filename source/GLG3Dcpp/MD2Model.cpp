@@ -165,7 +165,7 @@ MD2Model::Pose MD2Model::choosePose(
     bool death3,
     bool pain1,
     bool pain2,
-    bool pain3) const {
+    bool pain3) {
 
     Pose pose(currentPose);
 
@@ -386,7 +386,7 @@ GameTime MD2Model::animationLength(Animation a) {
 }
 
 
-int MD2Model::getFrameNumber(const Pose& pose) const {
+int MD2Model::getFrameNumber(const Pose& pose) {
     // Return the frame we're about to go to.
     int kf0, kf1;
     double alpha;
