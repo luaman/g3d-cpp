@@ -119,14 +119,14 @@ arrive with each point release.
   Sample Shaders</TD></TR>
 
 
-<TR><TD><A HREF ="deprecated.html">Deprecated</A></TD><TD>APIs to be removed in 7.0</TD></TR>
+<TR><TD>\link deprecated Deprecated \endlink</TD><TD>APIs to be removed in 7.0</TD></TR>
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link faq General FAQ \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
 <TR><TD VALIGN=TOP COLSPAN=2>Index: 
 \link indexedbytopic By Topic \endlink |
 Alphabetic <A HREF="classes.html">Classes</A> and <A HREF="globals_func.html">Functions</A> |
-\link frequent Frequently Used (bookmark this!)\endlink
+\link frequent Frequently Used (bookmark this!) \endlink
 </TD></TR> 
 </TABLE>
 
