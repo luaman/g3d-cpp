@@ -325,5 +325,13 @@ SOURCE=.\include\GLG3D\VARArea.h
 SOURCE=.\include\GLG3D\VertexProgram.h
 # End Source File
 # End Group
+# Begin Group "GL Headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\include\GL\gl.h
+# End Source File
+# End Group
 # End Target
 # End Project

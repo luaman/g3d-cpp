@@ -10,6 +10,9 @@
    <P>
    Changes in 6.02:
    <UL>
+     <LI> Linux build statically links OpenGL 1.2.1 and loads extensions through OpenGL 1.5
+   	      to work around Wildcat Linux driver bug (Windows and Mac statically link OpenGL 1.1 
+		  and load extensions through OpenGL 1.5)
      <LI> Triangle stores precomputed edge lengths
      <LI> Ray-triangle with vertex weights
      <LI> Highly optimized ray-triangle intersection test [Tomas Moller & Ben Trumbore]
