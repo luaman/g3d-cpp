@@ -80,7 +80,6 @@ Sky::Sky(
 
     } else {    
         static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
-    
 
         for (int t = 0; t < 6; ++t) {
             texture[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
@@ -97,10 +96,10 @@ Sky::Sky(
         sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     
         int i = 0;
-        // Try to read actual star data
-        BinaryInput in = BinaryInput(directory + "real.str", G3D_LITTLE_ENDIAN, true);
-        if (in.getLength() > 0) {
-	        // If file exists, load the real starfield
+
+	    // If file exists, load the real starfield
+        if (fileExists(directory + "real.str")) {
+            BinaryInput in(directory + "real.str", G3D_LITTLE_ENDIAN, true);
             int16 numStars;
 		    float32 x, y, z;
 
