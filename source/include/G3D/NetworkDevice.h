@@ -1,37 +1,41 @@
 /**
  @file NetworkDevice.h
 
- These classes abstract networking from the socket level to a serialized messaging
- style that is more appropriate for games.  The performance has been tuned for 
- sending many small messages.  The message protocol contains a header that prevents
- them from being used with raw UDP/TCP (e.g. connecting to an HTTP server).  A 
- future stream API will address this.
+ These classes abstract networking from the socket level to a
+ serialized messaging style that is more appropriate for games.  The
+ performance has been tuned for sending many small messages.  The
+ message protocol contains a header that prevents them from being used
+ with raw UDP/TCP (e.g. connecting to an HTTP server).  A future
+ stream API will address this.
 
- LightweightConduit and ReliableConduits have different interfaces because
- they have different semantics.  You would never want to interchange them without
- rewriting the surrounding code.
+ LightweightConduit and ReliableConduits have different interfaces
+ because they have different semantics.  You would never want to
+ interchange them without rewriting the surrounding code.
 
- NetworkDevice creates conduits because they need access to a global log pointer
- and because I don't want non-reference counted conduits being created.
+ NetworkDevice creates conduits because they need access to a global
+ log pointer and because I don't want non-reference counted conduits
+ being created.
 
- Be careful with threads and reference counting.  The reference counters are not
- threadsafe, and are also not updated correctly if a thread is explicitly killed.
- Since the conduits will be passed by const XConduitRef& most of the time this
- doesn't appear as a major problem.  With non-blocking conduits, you should need
- few threads anyway.
+ Be careful with threads and reference counting.  The reference
+ counters are not threadsafe, and are also not updated correctly if a
+ thread is explicitly killed.  Since the conduits will be passed by
+ const XConduitRef& most of the time this doesn't appear as a major
+ problem.  With non-blocking conduits, you should need few threads
+ anyway.
 
- LightweightConduits preceed each message with a 4-byte host order unsigned integer
- that is the message type.  This does not appear in the message
- serialization/deserialization.
+ LightweightConduits preceed each message with a 4-byte host order
+ unsigned integer that is the message type.  This does not appear in
+ the message serialization/deserialization.
 
- ReliableConduits preceed each message with two 4-byte host order unsigned integers.
- The first is the message type and the second indicates the length of the rest of
- the data.  The size does not include the size of the header itself.  The minimum
- message is 9 bytes, a 4-byte types, a 4-byte header of "1" and one byte of data.
+ ReliableConduits preceed each message with two 4-byte host order
+ unsigned integers.  The first is the message type and the second
+ indicates the length of the rest of the data.  The size does not
+ include the size of the header itself.  The minimum message is 9
+ bytes, a 4-byte types, a 4-byte header of "1" and one byte of data.
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2004-01-03
+ @edited  2004-03-30
  */
 
 #ifndef NETWORKDEVICE_H
@@ -186,8 +190,9 @@ public:
     virtual bool messageWaiting() const;
 
     /**
-     Returns the type of the waiting message (i.e. the type supplied with send).
-     The return value is zero when there is no message waiting.
+     Returns the type of the waiting message (i.e. the type supplied
+     with send).  The return value is zero when there is no message
+     waiting.
 
      One way to use this is to have a Table mapping message types to
      pre-allocated NetMessage subclasses so receiving looks like:
@@ -224,13 +229,14 @@ public:
 
  To construct a ReliableConduit:
  <OL>
-   <LI> Create a G3D::NetworkDevice (if you are using G3D::GApp, it creates one for you)
-        on the client and on the server.
-   <LI> On the server, create a G3D::NetListener using G3D::NetworkDevice::createListener
+   <LI> Create a G3D::NetworkDevice (if you are using G3D::GApp, it creates 
+        one for you) on the client and on the server.
+   <LI> On the server, create a G3D::NetListener using 
+        G3D::NetworkDevice::createListener
    <LI> On the server, invoke G3D::NetListener::waitForConnection.
-   <LI> On the client, call G3D::NetworkDevice::createReliableConduit.  You will need
-        the server's G3D::NetAddress.  Consider using the G3D::DiscoveryClient to 
-        find it via broadcasting.
+   <LI> On the client, call G3D::NetworkDevice::createReliableConduit.  
+        You will need the server's G3D::NetAddress.  Consider using
+        G3D::DiscoveryClient to find it via broadcasting.
  </OL>
 
  */
@@ -253,7 +259,9 @@ private:
 
     ReliableConduit(class NetworkDevice* _nd, const NetAddress& addr);
 
-    ReliableConduit(class NetworkDevice* _nd, const SOCKET& sock, const NetAddress& addr);
+    ReliableConduit(class NetworkDevice* _nd, 
+                    const SOCKET& sock, 
+                    const NetAddress& addr);
 
 public:
 
@@ -264,24 +272,24 @@ public:
      Serializes the message and schedules it to be sent as soon as possible,
      then returns immediately.
 
-     The actual data sent across the network is preceeded by the message type
-     and the size of the serialized message as a 32-bit integer.  The size is
-     sent because TCP is a stream protocol and doesn't have a concept of discrete
-     messages.
+     The actual data sent across the network is preceeded by the
+     message type and the size of the serialized message as a 32-bit
+     integer.  The size is sent because TCP is a stream protocol and
+     doesn't have a concept of discrete messages.
      */
     void send(const NetMessage* m);
 
     virtual uint32 waitingMessageType();
 
-    /** If a message is waiting, deserializes the waiting message into m and
-        returns true, otherwise returns false.  
+    /** If a message is waiting, deserializes the waiting message into
+        m and returns true, otherwise returns false.
         
         If m == NULL, the message is pulled from the conduit and discarded.
         
-        If a message is incoming but was split across multipled TCP packets
-        in transit, this will block for up to .25 seconds waiting for all
-        packets to arrive.  For short messages (less than 5k) this is extremely
-        unlikely to occur.*/
+        If a message is incoming but was split across multipled TCP
+        packets in transit, this will block for up to .25 seconds
+        waiting for all packets to arrive.  For short messages (less
+        than 5k) this is extremely unlikely to occur.*/
     bool receive(NetMessage* m);
 
     NetAddress address() const;
@@ -292,30 +300,58 @@ typedef ReferenceCountedPointer<class ReliableConduit> ReliableConduitRef;
 
 
 /**
- Provides fast but unreliable transfer of messages. 
- On a LAN, LightweightConduit will probably never drop messages but you <I>might</I>
- get your messages out of order.  On an internet connection it might drop messages 
- altogether.  Messages are never corrupted, however.  LightweightConduit requires a
- little less setup and overhead than ReliableConduit.  ReliableConduit guarantees 
+ Provides fast but unreliable transfer of messages.  On a LAN,
+ LightweightConduit will probably never drop messages but you
+ <I>might</I> get your messages out of order.  On an internet
+ connection it might drop messages altogether.  Messages are never
+ corrupted, however.  LightweightConduit requires a little less setup
+ and overhead than ReliableConduit.  ReliableConduit guarantees
  message delivery and order but requires a persistent connection.
  
-To set up a LightweightConduit (assuming you have already made subclasses of G3D::NetMessage based on your application's pcommunication protocol):
+ To set up a LightweightConduit (assuming you have already made
+ subclasses of G3D::NetMessage based on your application's
+ pcommunication protocol):
 
 [Server Side]
 <OL>
-<LI> Create a G3D::NetworkDevice on program startup (if you use G3D::GApp, it will do this for you)
-<LI> Call G3D::NetworkDevice::createLightweightConduit(port, true, false), where port is the port on which you will receive messages.
-<LI> Poll G3D::LightWeightcontuit::messageWaiting from your main loop.  When it is true (or, equivalently, when G3D::LightWeightcontuit::waitingMessageType is non-zero) there is an incoming message.
-<LI> To read the incoming message, call G3D::LightWeightconduit::receive with the appropriate subclass of G3D::NetMessage. G3D::LightWeightcontuit::waitingMessageType tells you what subclass is needed (you make up your own message constants for your program; numbers under 1000 are reserved for G3D's internal use).
-<LI> When done, simply set the G3D::LightweightConduitRef to NULL or let it go out of scope and the conduit cleans itself up automatically.
+<LI> Create a G3D::NetworkDevice on program startup (if you use G3D::GApp, 
+it will do this for you)
+
+<LI> Call G3D::NetworkDevice::createLightweightConduit(port, true, false), 
+where port is the port on which you will receive messages.
+
+<LI> Poll G3D::LightWeightcontuit::messageWaiting from your main loop.  When 
+it is true (or, equivalently, when G3D::LightWeightcontuit::waitingMessageType
+is non-zero) there is an incoming message.
+
+<LI> To read the incoming message, call G3D::LightWeightconduit::receive with 
+the appropriate subclass of G3D::NetMessage. 
+G3D::LightWeightcontuit::waitingMessageType tells you what subclass is 
+needed (you make up your own message constants for your program; numbers 
+under 1000 are reserved for G3D's internal use).
+
+<LI> When done, simply set the G3D::LightweightConduitRef to NULL or let 
+it go out of scope and the conduit cleans itself up automatically.
 </OL>
 
 [Client Side]
 <OL>
-<LI> Create a G3D::NetworkDevice on program startup (if you use G3D::GApp, it will do this for you)
-<LI> Call G3D::NetworkDevice::createLightweightConduit().  If you will broadcast to all servers on a LAN, set the third optional argument to true (the default is false for no broadcast).  You can also set up the receive port as if it was a server to send and receive from a single LightweightConduit.
-<LI> To send, call G3D::LightweightConduit::send with the target address and a pointer to an instance of the message you want to send.
-<LI> When done, simply set the G3D::LightweightConduitRef to NULL or let it go out of scope and the conduit cleans itself up automatically.
+
+<LI> Create a G3D::NetworkDevice on program startup (if you use G3D::GApp, 
+it will do this for you)
+
+<LI> Call G3D::NetworkDevice::createLightweightConduit().  If you will 
+broadcast to all servers on a LAN, set the third optional argument to 
+true (the default is false for no broadcast).  You can also set up the
+receive port as if it was a server to send and receive from a single 
+LightweightConduit.
+
+<LI> To send, call G3D::LightweightConduit::send with the target address 
+and a pointer to an instance of the message you want to send.
+
+<LI> When done, simply set the G3D::LightweightConduitRef to NULL or let 
+it go out of scope and the conduit cleans itself up automatically.
+
 </OL>
  */
 class LightweightConduit : public Conduit {
@@ -350,14 +386,16 @@ public:
     /** Closes the socket. */
     ~LightweightConduit();
 
-    /** Serializes and sends the message immediately. Data may not arrive and may
-        arrive out of order, but individual messages are guaranteed to not be
-        corrupted.  If the message is null, an empty message is still sent.*/
+    /** Serializes and sends the message immediately. Data may not
+        arrive and may arrive out of order, but individual messages
+        are guaranteed to not be corrupted.  If the message is null,
+        an empty message is still sent.*/
     void send(const NetAddress& a, const NetMessage* m);
 
-    /** If data is waiting, deserializes the waiting message into m, puts the
-        sender's address in addr and returns true, otherwise returns false.  
-        If m is NULL, the message is consumed but not deserialized.
+    /** If data is waiting, deserializes the waiting message into m,
+        puts the sender's address in addr and returns true, otherwise
+        returns false.  If m is NULL, the message is consumed but not
+        deserialized.
     */
     bool receive(NetMessage* m, NetAddress& sender);
 
@@ -368,7 +406,7 @@ public:
 
 typedef ReferenceCountedPointer<class LightweightConduit> LightweightConduitRef;
 
-//////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /**
  Runs on the server listening for clients trying to make reliable connections.
@@ -392,7 +430,8 @@ public:
         something went wrong. */
     ReliableConduitRef waitForConnection();
 
-    /** True if a client is waiting (i.e. waitForConnection will return immediately). */
+    /** True if a client is waiting (i.e. waitForConnection will
+        return immediately). */
     bool clientWaiting() const;
 
     bool ok() const;
@@ -400,12 +439,12 @@ public:
 
 typedef ReferenceCountedPointer<class NetListener> NetListenerRef;
 
-//////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /**
- An abstraction over sockets that provides a message based network infrastructure
- optimized for sending many small (>500 byte) messages.  All functions always return
- immediately.
+ An abstraction over sockets that provides a message based network
+ infrastructure optimized for sending many small (>500 byte) messages.
+ All functions always return immediately.
  */
 class NetworkDevice {
 private:
@@ -438,7 +477,8 @@ public:
     /** Returns the name of this computer */
     std::string localHostName() const;
 
-    /** There is often more than one address for the local host. This returns all of them. */
+    /** There is often more than one address for the local host. This
+        returns all of them. */
     void localHostAddresses(Array<NetAddress>& array) const;
 
     /**
@@ -456,7 +496,10 @@ public:
      receive as well as send.
      @param receivePort host byte order
      */
-    LightweightConduitRef createLightweightConduit(uint16 receivePort = 0, bool enableReceive = false, bool enableBroadcast = false);
+    LightweightConduitRef createLightweightConduit(
+        uint16 receivePort = 0, 
+        bool enableReceive = false, 
+        bool enableBroadcast = false);
 
     /**
      Client invokes this to connect to a server.  The call blocks until the 

@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2003-06-29
+ @edited  2004-03-31
  */
 
 #include <stdlib.h>
@@ -104,7 +104,7 @@ static void logSocketInfo(Log* debugLog, const SOCKET& sock) {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 /** Invokes select on one socket.  Returns SOCKET_ERROR on error. */
 static int selectOneReadSocket(const SOCKET& sock) {
@@ -129,7 +129,8 @@ static bool readWaiting(Log* debugLog, const SOCKET& sock) {
     switch (ret) {
     case SOCKET_ERROR:
         if (debugLog) {
-            debugLog->println("ERROR: selectOneReadSocket returned SOCKET_ERROR in readWaiting().");
+            debugLog->println("ERROR: selectOneReadSocket returned "
+                              "SOCKET_ERROR in readWaiting().");
             debugLog->println(socketErrorCode());
         }
         return true;
@@ -142,7 +143,8 @@ static bool readWaiting(Log* debugLog, const SOCKET& sock) {
 
     default:
         if (debugLog) {
-            debugLog->printf("WARNING: selectOneReadSocket returned %d in readWaiting().\n", ret);
+            debugLog->printf("WARNING: selectOneReadSocket returned "
+                             "%d in readWaiting().\n", ret);
         }
         return true;
     }
@@ -164,12 +166,11 @@ static int selectOneWriteSocket(const SOCKET& sock) {
     return select(1, NULL, &socketSet, NULL, &timeout);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 NetAddress::NetAddress() {
     memset(&addr, 0, sizeof(addr));
 }
-
 
 void NetAddress::init(uint32 host, uint16 port) {
     if ((host != 0) || (port != 0)) {
@@ -184,13 +185,11 @@ void NetAddress::init(uint32 host, uint16 port) {
     }
 }
 
-
 NetAddress::NetAddress(
     const std::string&          hostname,
     uint16                      port) {
     init(hostname, port);
 }
-
 
 void NetAddress::init(
     const std::string&          hostname,
@@ -210,8 +209,6 @@ void NetAddress::init(
         struct hostent* host = gethostbyname(hostname.c_str());
 
         if (host == NULL) {
-            //debugLog->printf("Unable to resolve host: %s\n", hostname.c_str());
-            //debugLog->printf("%d\n", WSAGetLastError());
             init(0, 0);
             return;
         }
@@ -250,11 +247,11 @@ NetAddress::NetAddress(const SOCKADDR_IN& a) {
 
 
 NetAddress::NetAddress(const struct in_addr& addr, uint16 port) {
-#ifdef G3D_WIN32
-    init(ntohl(addr.S_un.S_addr), port);
-#else
-    init(htonl(addr.s_addr), port);
-#endif
+    #ifdef G3D_WIN32
+        init(ntohl(addr.S_un.S_addr), port);
+    #else
+        init(htonl(addr.s_addr), port);
+    #endif
 }
 
 
@@ -288,7 +285,7 @@ std::string NetAddress::toString() const {
     return ipString() + format(":%d", ntohs(addr.sin_port));
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 NetworkDevice::NetworkDevice() {
     initialized     = false;
@@ -299,7 +296,9 @@ NetworkDevice::NetworkDevice() {
 std::string NetworkDevice::localHostName() const {   
     char ac[128];
     if (gethostname(ac, sizeof(ac)) == -1) {
-        if (debugLog) {debugLog->printf("Error while getting local host name\n");}
+        if (debugLog) {
+            debugLog->printf("Error while getting local host name\n");
+        }
         return "localhost";
     }
     return gethostbyname(ac)->h_name;
@@ -326,7 +325,8 @@ bool NetworkDevice::init(class Log* _log) {
                 "  localhost = %s (%s)\n"
                 "  %s\n"
                 "  Status: %s\n"
-                "  Loaded winsock specification version %d (%d is the highest available)\n"
+                "  Loaded winsock specification version %d (%d is "
+                "the highest available)\n"
                 "  %d sockets available\n"
                 "  Largest UDP datagram packet size is %d bytes\n\n",
                 machine.c_str(), addr.c_str(),
@@ -355,7 +355,8 @@ bool NetworkDevice::init(class Log* _log) {
     if (debugLog) { debugLog->println("Ok"); }
 
     int TR = true;
-    int ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, sizeof(TR));
+    int ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, 
+                         (const char*)&TR, sizeof(TR));
 
     if (debugLog) {debugLog->print("Enable UDP Broadcast         ");}
     if (ret != 0) {
@@ -371,7 +372,8 @@ bool NetworkDevice::init(class Log* _log) {
     SOCKADDR_IN addr;
     int32 x;
     addr = NetAddress(0xFFFFFFFF, 23).addr;
-    ret = sendto(sock, (const char*)&x, sizeof(x), 0, (struct sockaddr *) &addr, sizeof(addr));
+    ret = sendto(sock, (const char*)&x, sizeof(x), 0, 
+                 (struct sockaddr *) &addr, sizeof(addr));
     if (ret == SOCKET_ERROR) {
         if (debugLog) {
             debugLog->println("FAIL");
@@ -404,7 +406,8 @@ LightweightConduitRef NetworkDevice::createLightweightConduit(
     bool                        enableReceive,
     bool                        enableBroadcast) {
     
-    return new LightweightConduit(this, receivePort, enableReceive, enableBroadcast);
+    return new LightweightConduit(this, receivePort, 
+                                  enableReceive, enableBroadcast);
 }
 
 
@@ -421,9 +424,14 @@ NetListenerRef NetworkDevice::createListener(const uint16 port) {
  
 
 bool NetworkDevice::bind(SOCKET sock, const NetAddress& addr) const {
-    if (debugLog) { debugLog->printf("Binding socket %d on port %d  ", sock, htons(addr.addr.sin_port));}
+    if (debugLog) {
+        debugLog->printf("Binding socket %d on port %d  ", 
+                         sock, htons(addr.addr.sin_port));
+    }
 
-    if (::bind(sock, (struct sockaddr*)&(addr.addr), sizeof(addr.addr)) == SOCKET_ERROR) {
+    if (::bind(sock, (struct sockaddr*)&(addr.addr), sizeof(addr.addr)) == 
+        SOCKET_ERROR) {
+
         if (debugLog) {
             debugLog->println("FAIL");
             debugLog->println(socketErrorCode());
@@ -457,13 +465,17 @@ void NetworkDevice::localHostAddresses(Array<NetAddress>& array) const {
     char ac[128];
 
     if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR) {
-        if (debugLog) {debugLog->printf("Error while getting local host name\n");}
+        if (debugLog) {
+            debugLog->printf("Error while getting local host name\n");
+        }
         return;
     }
 
     struct hostent* phe = gethostbyname(ac);
     if (phe == 0) {
-        if (debugLog) {debugLog->printf("Error while getting local host address\n");}
+        if (debugLog) {
+            debugLog->printf("Error while getting local host address\n");
+        }
         return;
     }
 
@@ -474,7 +486,7 @@ void NetworkDevice::localHostAddresses(Array<NetAddress>& array) const {
     }    
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 Conduit::Conduit(NetworkDevice* _nd) {
     sock                = 0;
@@ -520,10 +532,11 @@ bool Conduit::messageWaiting() const {
     return readWaiting(nd->debugLog, sock);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
-
-ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : Conduit(_nd) {
+ReliableConduit::ReliableConduit(
+    NetworkDevice*      _nd,
+    const NetAddress&   _addr) : Conduit(_nd) {
 
     messageType         = 0;
     alreadyReadType     = false;
@@ -546,9 +559,11 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
 
     // Disable Nagle's algorithm (we send lots of small packets)
     const int T = true;
-    if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
+    if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, 
+                   (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
         if (nd->debugLog) {
-            nd->debugLog->println("WARNING: Disabling Nagel's algorithm failed.");
+            nd->debugLog->println("WARNING: Disabling Nagel's "
+                                  "algorithm failed.");
             nd->debugLog->println(socketErrorCode());
         }
     }
@@ -559,20 +574,24 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
         logSocketInfo(nd->debugLog, sock);
     }
 
-    // Increase the buffer size; the default (8192) is too easy to overflow when the network
-    // latency is high.
+    // Increase the buffer size; the default (8192) is too easy to
+    // overflow when the network latency is high.
     {
         uint32 val = 262144;
-        if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)&val, sizeof(val)) == SOCKET_ERROR) {
+        if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, 
+                       (char*)&val, sizeof(val)) == SOCKET_ERROR) {
             if (nd->debugLog) {
-                nd->debugLog->printf("WARNING: Increasing socket receive buffer to %d failed.\n", val);
+                nd->debugLog->printf("WARNING: Increasing socket "
+                                     "receive buffer to %d failed.\n", val);
                 nd->debugLog->println(socketErrorCode());
             }
         }
 
-        if (setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)&val, sizeof(val)) == SOCKET_ERROR) {
+        if (setsockopt(sock, SOL_SOCKET, SO_SNDBUF, 
+                       (char*)&val, sizeof(val)) == SOCKET_ERROR) {
             if (nd->debugLog) {
-                nd->debugLog->printf("WARNING: Increasing socket send buffer to %d failed.\n", val);
+                nd->debugLog->printf("WARNING: Increasing socket "
+                                     "send buffer to %d failed.\n", val);
                 nd->debugLog->println(socketErrorCode());
             }
         }
@@ -581,9 +600,13 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
     if (nd->debugLog) {nd->debugLog->printf("Created TCP socket %d\n", sock);}
 
     std::string x = addr.toString();
-    if (nd->debugLog) {nd->debugLog->printf("Connecting to %s on TCP socket %d   ", x.c_str(), sock);}
+    if (nd->debugLog) {
+        nd->debugLog->printf("Connecting to %s on TCP socket %d   ", 
+                             x.c_str(), sock);
+    }
 
-    int ret = connect(sock, (struct sockaddr *) &(addr.addr), sizeof(addr.addr));
+    int ret = connect(sock, (struct sockaddr *) &(addr.addr), 
+                      sizeof(addr.addr));
 
     if (ret == WSAEWOULDBLOCK) {
         RealTime t = System::getTick() + 5;
@@ -607,7 +630,10 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
 }
 
 
-ReliableConduit::ReliableConduit(class NetworkDevice* _nd, const SOCKET& _sock, const NetAddress& _addr) : Conduit(_nd) {
+ReliableConduit::ReliableConduit(
+    NetworkDevice*    _nd, 
+    const SOCKET&      _sock, 
+    const NetAddress&  _addr) : Conduit(_nd) {
     sock                = _sock;
     addr                = _addr;
 
@@ -644,7 +670,9 @@ uint32 ReliableConduit::waitingMessageType() {
 
         if ((ret == SOCKET_ERROR) || (ret != sizeof(messageType))) {
             if (nd->debugLog) {
-                nd->debugLog->printf("Call to recv failed.  ret = %d, sizeof(messageType) = %d\n", ret, sizeof(messageType));
+                nd->debugLog->printf("Call to recv failed.  ret = %d,"
+                                     " sizeof(messageType) = %d\n", 
+                                     ret, sizeof(messageType));
                 nd->debugLog->println(socketErrorCode());
             }
             nd->closesocket(sock);
@@ -738,7 +766,8 @@ bool ReliableConduit::receive(NetMessage* m) {
 
     if ((ret == SOCKET_ERROR) || (ret != sizeof(len))) {
         if (nd->debugLog) {
-            nd->debugLog->printf("Call to recv failed.  ret = %d, sizeof(len) = %d\n", ret, sizeof(len));
+            nd->debugLog->printf("Call to recv failed.  ret = %d,"
+                                 " sizeof(len) = %d\n", ret, sizeof(len));
             nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
@@ -760,7 +789,8 @@ bool ReliableConduit::receive(NetMessage* m) {
 
     if (buffer == NULL) {
         if (nd->debugLog) {
-            nd->debugLog->println("Could not allocate a memory buffer during receivePacket.");
+            nd->debugLog->println("Could not allocate a memory buffer "
+                                  "during receivePacket.");
         }
         nd->closesocket(sock);
         return false;
@@ -779,10 +809,15 @@ bool ReliableConduit::receive(NetMessage* m) {
             left -= ret;
 
             if (left > 0) {
-                if (nd->debugLog) nd->debugLog->printf("WARNING: recv() on partial packet of length %d bytes, attempt #%d.  Read %d bytes this time, %d bytes remaining\n", len, count + 1, ret, left);
+                if (nd->debugLog) {
+                    nd->debugLog->printf("WARNING: recv() on partial "
+                         "packet of length %d bytes, attempt #%d.  "
+                         "Read %d bytes this time, %d bytes remaining\n",
+                         len, count + 1, ret, left);
                 ++count;
 
-                // Give the machine a chance to read more data, but don't wait forever
+                // Give the machine a chance to read more data, but
+                // don't wait forever
                 RealTime t = System::getTick() + timeToWaitForFragmentedPacket;
                 while (! messageWaiting() && (System::getTick() < t)) {
                     #ifdef G3D_WIN32
@@ -803,10 +838,12 @@ bool ReliableConduit::receive(NetMessage* m) {
 
         if (nd->debugLog) {
             if (ret == SOCKET_ERROR) {
-                nd->debugLog->printf("Call to recv failed.  ret = %d, sizeof(len) = %d\n", ret, len);
+                nd->debugLog->printf("Call to recv failed.  ret = %d,"
+                     " sizeof(len) = %d\n", ret, len);
                 nd->debugLog->println(socketErrorCode());
             } else {
-                nd->debugLog->printf("Expected %d bytes from recv and got %d.", len, len - left);
+                nd->debugLog->printf("Expected %d bytes from recv "
+                     "and got %d.", len, len - left);
             }
         }
         nd->closesocket(sock);
@@ -830,9 +867,13 @@ bool ReliableConduit::receive(NetMessage* m) {
     return true;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool enableReceive, bool enableBroadcast) : Conduit(_nd) {
+LightweightConduit::LightweightConduit(
+    NetworkDevice* _nd, 
+    uint16 port,
+    bool enableReceive, 
+    bool enableBroadcast) : Conduit(_nd) {
 
     if (nd->debugLog) {nd->debugLog->print("Creating a UDP socket        ");}
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -854,7 +895,8 @@ LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool ena
 
     if (enableBroadcast) {
         int TR = true;
-        if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, sizeof(TR)) != 0) {
+        if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, 
+                       (const char*)&TR, sizeof(TR)) != 0) {
             if (nd->debugLog) {
                 nd->debugLog->println("Call to setsockopt failed");
                 nd->debugLog->println(socketErrorCode());
@@ -864,7 +906,9 @@ LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool ena
         }
     }
 
-    if (nd->debugLog) {nd->debugLog->printf("Done creating UDP socket %d\n", sock);}
+    if (nd->debugLog) {
+        nd->debugLog->printf("Done creating UDP socket %d\n", sock);
+    }
 
     alreadyReadMessage = false;
 }
@@ -886,9 +930,11 @@ void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
         b.writeUInt32(1);
     }
 
-    if (sendto(sock, (const char*)b.getCArray(), b.getLength(), 0, (struct sockaddr *) &(a.addr), sizeof(a.addr)) == SOCKET_ERROR) {
+    if (sendto(sock, (const char*)b.getCArray(), b.getLength(), 0,
+           (struct sockaddr *) &(a.addr), sizeof(a.addr)) == SOCKET_ERROR) {
         if (nd->debugLog) {
-            nd->debugLog->printf("Error occured while sending packet to %s\n", inet_ntoa(a.addr.sin_addr));
+            nd->debugLog->printf("Error occured while sending packet "
+                                 "to %s\n", inet_ntoa(a.addr.sin_addr));
             nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
@@ -916,11 +962,14 @@ uint32 LightweightConduit::waitingMessageType() {
         SOCKADDR_IN remote_addr;
         int iRemoteAddrLen = sizeof(sockaddr);
 
-        int ret = recvfrom(sock, (char*)messageBuffer.getCArray(), messageBuffer.size(), 0, (struct sockaddr *) &remote_addr, (socklen_t*)&iRemoteAddrLen);
+        int ret = recvfrom(sock, (char*)messageBuffer.getCArray(), 
+            messageBuffer.size(), 0, (struct sockaddr *) &remote_addr, 
+            (socklen_t*)&iRemoteAddrLen);
 
         if (ret == SOCKET_ERROR) {
             if (nd->debugLog) {
-                nd->debugLog->println("Error: recvfrom failed in LightweightConduit::waitingMessageType().");
+                nd->debugLog->println("Error: recvfrom failed in "
+                        "LightweightConduit::waitingMessageType().");
                 nd->debugLog->println(socketErrorCode());
             }
             nd->closesocket(sock);
@@ -977,7 +1026,9 @@ bool LightweightConduit::receive(NetMessage* m, NetAddress& sender) {
     }
 
     if (m != NULL) {
-        BinaryInput b((messageBuffer.getCArray() + 4), messageBuffer.size() - 4, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
+        BinaryInput b((messageBuffer.getCArray() + 4), 
+                      messageBuffer.size() - 4, 
+                      G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         m->deserialize(b);
     }
 
@@ -985,7 +1036,7 @@ bool LightweightConduit::receive(NetMessage* m, NetAddress& sender) {
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     nd = _nd;
