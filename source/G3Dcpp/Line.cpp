@@ -15,7 +15,7 @@
 namespace G3D {
 
 Vector3 Line::intersection(const Plane &plane) const {
-    Real d;
+    double d;
     Vector3 normal = plane.normal();
     plane.getEquation(normal, d);
     double rate = direction.dot(normal);

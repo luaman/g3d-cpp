@@ -31,7 +31,7 @@ Real CollisionDetection::collisionTimeForMovingPointFixedPlane(
     Vector3&        outNormal) {
 
     // Solve for the time at which normal.dot(point + velocity) + d == 0.
-    Real d;
+    double d;
     Vector3 normal;
     plane.getEquation(normal, d);
     
@@ -480,7 +480,7 @@ Real CollisionDetection::collisionTimeForMovingSphereFixedPlane(
     // center - (radius * normal).  Collisions only occur when
     // the sphere is travelling into the plane.
 
-    Real d;
+    double d;
     plane.getEquation(outNormal, d);
     
     double vdotN = velocity.dot(outNormal);
@@ -906,7 +906,7 @@ Vector3 CollisionDetection::closestPointToRectangle(
     Plane plane(v0, v1, v2);
 
     // Project the point into the plane
-    float a, b, c, d;
+    double a, b, c, d;
     plane.getEquation(a, b, c, d);
     
     double distance = a*point.x + b*point.y + c*point.z + d;

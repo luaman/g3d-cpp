@@ -122,7 +122,7 @@ bool Box::culledBy(const Plane* plane, int numPlanes) const {
         }
 
         if (culled) {
-            // This plane culled the box
+            // Plane p culled the box
             return true;
         }
     }

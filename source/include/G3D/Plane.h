@@ -26,6 +26,12 @@ private:
     Vector3						_normal;
     Real						distance;
 
+    /**
+     Assumes the normal has unit length.
+     */
+    Plane(const Vector3& n, double d) : _normal(n), distance(d) {
+    }
+
 public:
 
     Plane() : _normal(Vector3::UNIT_Y), distance(0) {
@@ -42,6 +48,8 @@ public:
     Plane(
         const Vector3&      __normal,
         const Vector3&      point);
+
+    static Plane fromEquation(double a, double b, double c, double d);
 
 	Plane(class BinaryInput& b);
 	void serialize(class BinaryOutput& b) const;
@@ -79,12 +87,14 @@ public:
 
       <CODE>normal.Dot(Vector3(<I>x</I>, <I>y</I>, <I>z</I>)) + d = 0</CODE>
      */
-    void getEquation(Vector3 &normal, Real& d) const;
+    void getEquation(Vector3 &normal, double& d) const;
+    void getEquation(Vector3 &normal, float& d) const;
 
     /**
       ax + by + cz + d = 0
      */
-    void getEquation(Real& a, Real& b, Real& c, Real& d) const;
+    void getEquation(double& a, double& b, double& c, double& d) const;
+    void getEquation(float& a, float& b, float& c, float& d) const;
 
     std::string toString() const;
 };

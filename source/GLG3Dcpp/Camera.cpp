@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2003-05-27
+  @edited  2003-06-13
 */
 
 #include "GLG3D/Camera.h"
@@ -238,7 +238,7 @@ void Camera::getClipPlanes(
 	clip[3] = Plane(Vector3(0, -clip[4].normal().y, clip[4].normal().z), Vector3::ZERO);
 
     // Far
-	clip[5] = Plane(Vector3(0,0,1), Vector3(0,0,-farPlane));
+	clip[5] = Plane(Vector3(0, 0, 1), Vector3(0, 0, -farPlane));
 
 	// Now transform the planes to world space
 	for (int p = 0; p < 6; ++p) {
@@ -251,8 +251,14 @@ void Camera::getClipPlanes(
 		
 		Vector3 newNormal = cframe.rotation * normal;
 	    
-		d = (newNormal * -d + cframe.translation).dot(newNormal);
-		clip[p] = Plane(newNormal, newNormal * d);
+        if (isFinite(d)) {
+    		d = (newNormal * -d + cframe.translation).dot(newNormal);
+    		clip[p] = Plane(newNormal, newNormal * d);
+        } else {
+            // When d is infinite, we can't multiply 0's by it without
+            // generating NaNs.
+            clip[p] = Plane::fromEquation(newNormal.x, newNormal.y, newNormal.z, d);
+        }
 	}
 }
 

@@ -661,6 +661,8 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> Plane::fromEquation
+     <LI> double-precision Plane::getEquation
      <LI> Vector2::lerp
      <LI> Platform specific #defines G3D_WIN32, G3D_LINUX, G3D_OSX
      <LI> G3D::Array::contains
@@ -673,6 +675,7 @@ to add zlibstat.lib to your linker list.
      <LI> Removed Plane::getNormal (use Plane::normal instead)
      <LI> Removed CDTriangle (use G3D::Triangle instead)
      <LI> Removed Font (use G3D::CFont instead)
+     <LI> FIX: Camera::getClipPlanes now transforms infinite planes correctly.
    </UL>
 
    <P>

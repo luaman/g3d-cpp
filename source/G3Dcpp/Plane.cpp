@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-02-06
- @edited  2003-04-29
+ @edited  2003-06-13
  */
 
 #include "G3D/Plane.h"
@@ -50,19 +50,43 @@ Plane::Plane(
 }
 
 
+Plane Plane::fromEquation(double a, double b, double c, double d) {
+    Vector3 n(a, b, c);
+    double length = n.length();
+    d /= length;
+    n /= length;
+    return Plane(n, -d);
+}
+
+
 void Plane::flip() {
     _normal   = -_normal;
     distance  = -distance;
 }
 
 
-void Plane::getEquation(Vector3 &_normal, Real& d) const {
-    _normal = this->_normal;
-    d = -this->distance;
+void Plane::getEquation(Vector3& n, float& d) const {
+    double _d;
+    getEquation(n, _d);
+    d = _d;
+}
+
+void Plane::getEquation(Vector3& n, double& d) const {
+    n = _normal;
+    d = -distance;
 }
 
 
-void Plane::getEquation(Real& a, Real& b, Real& c, Real& d) const {
+void Plane::getEquation(float& a, float& b, float& c, float& d) const {
+    double _a, _b, _c, _d;
+    getEquation(_a, _b, _c, _d);
+    a = _a;
+    b = _b;
+    c = _c;
+    d = _d;
+}
+
+void Plane::getEquation(double& a, double& b, double& c, double& d) const {
     a = _normal.x;
     b = _normal.y;
     c = _normal.z;

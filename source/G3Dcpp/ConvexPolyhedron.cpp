@@ -72,7 +72,7 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
         // Polygon is parallel to the plane.  It must be either above,
         // below, or in the plane.
 
-        Real a,b,c,d;
+        double a, b, c, d;
         Vector3 pt = _vertex[0];
 
         plane.getEquation(a,b,c,d);
@@ -242,7 +242,7 @@ void ConvexPolyhedron::cut(const Plane& plane, ConvexPolyhedron &above, ConvexPo
     //{
         int numAbove = 0, numIn = 0, numBelow = 0;
         bool ruledOut = false;
-        Real d;
+        double d;
         Vector3 abc;
         plane.getEquation(abc, d);
 
