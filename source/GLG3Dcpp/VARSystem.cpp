@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2003-04-13
+ @edited  2003-05-22
  */
 
 #include "GLG3D/RenderDevice.h"

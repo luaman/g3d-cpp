@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-05-01
+ @edited  2003-05-22
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -76,6 +76,8 @@ typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAt
 #endif
 extern PFNGLVERTEXARRAYRANGENVPROC         glVertexArrayRangeNV;
 
+extern PFNGLMULTIDRAWARRAYSEXTPROC glMultiDrawArraysEXT;
+extern PFNGLMULTIDRAWELEMENTSEXTPROC glMultiDrawElementsEXT;
 
 #ifdef GL_NV_fence
 extern PFNGLGENFENCESNVPROC				   glGenFencesNV;

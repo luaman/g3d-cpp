@@ -76,6 +76,7 @@
      <LI>Integer math
        <BR><BLOCKQUOTE>
         G3D::highestBit,
+        G3D::clamp,
 	    G3D::iAbs,
 		G3D::iCeil,
 		G3D::iClamp,
@@ -601,7 +602,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::tesselateComplexPolygon
 	 <LI> G3D::ConvexPolygon
 	 <LI> G3D::ConvexPolyhedron
-     <LI> G3D::iClamp
+     <LI> G3D::iClamp, G3D::clamp
 	 <LI> G3D::iWrap
 	 <LI> G3D::iRandom, G3D::random
      <LI> G3D::getFiles
@@ -622,10 +623,13 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3int16
      <LI> G3D::System::currentProgramFilename
+     <LI> Fix: Improved Texture::LUMINANCE support
+     <LI> Added == and != overloads for TextureRef so that "a != NULL" is now legal and does not require a cast to TextureRef.
      <LI> G3D::CFont is a typedef for G3D::Font to avoid name conflicts with X11 Font under Linux.  In future releases, the name Font will be deprecated.
      <LI> RenderDevice::setPointSize
 	 <LI> Added a new teapot (teapot.ifs) that is closed, with a properly fitting top.  The classic teapot is now called "utah-teapot.ifs" (Sebastian Schuberth and Simon Winkelbach)
-     <LI> RenderDevice::init now loads glPointParameterfvARB and glPointParameterfARB functions.
+     <LI> RenderDevice::init now loads glPointParameterfvARB, glPointParameterfARB,
+        glMultiDrawArraysEXT, and glMultiDrawElementsEXT functions.
      <LI> GLenumToString(4) now returns "GL_TRIANGLES" instead of "GL_LINE_BIT" (both are correct)
      <LI> Added TextInput::Options to optionally allow C++ comments to
           be treated as two slashes instead of a comment

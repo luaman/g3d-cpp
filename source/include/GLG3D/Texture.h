@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-04-10
+  @edited  2003-05-22
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -283,6 +283,22 @@ public:
     unsigned int getOpenGLTextureTarget() const;
 
 };
+
+inline bool operator==(const TextureRef& a, const void* b) {
+    return (b == NULL) && (a == (TextureRef)NULL);
+}
+
+inline bool operator==(const void* a, const TextureRef& b) {
+    return b == a;
+}
+
+inline bool operator!=(const TextureRef& a, const void* b) {
+    return !(a == b);
+}
+
+inline bool operator!=(const void* b, const TextureRef& a) {
+    return !(a == b);
+}
 
 
 } // namespace

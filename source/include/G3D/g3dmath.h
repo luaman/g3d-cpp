@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2003-04-29
+ @edited  2003-05-22
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -111,6 +111,8 @@ int iCeil(double fValue);
  Clamps the value to the range [low, hi] (inclusive)
  */
 int iClamp(int low, int val, int hi);
+
+double clamp(double low, double val, double hi);
 
 /**
  Wraps the value to the range [0, hi) (exclusive

@@ -85,6 +85,8 @@ Texture::Texture(
     textureID(_textureID),
     invertY(false) {
 
+    // TODO: support luminance textures
+
     // TODO: don't trash current texture state!
     int active;
     glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &active);
@@ -266,7 +268,7 @@ Texture::Texture(
 
     reload();
 
-    debugAssert((channels == RGB) || (channels == RGBA) || (channels == ALPHA));
+    debugAssert((channels == RGB) || (channels == RGBA) || (channels == ALPHA) || (channels == LUMINANCE));
 
     Data d;
     d.width             = width;
@@ -295,6 +297,8 @@ Texture::Texture(
     case LUMINANCE:
         d.format = GL_LUMINANCE;
         d.pixelSize = 1;
+        debugAssert(alphaChannelBits == 0);
+        debugAssert(colorChannelBits == 8);
         break;
     }
 
@@ -601,7 +605,12 @@ GLenum Texture::getInternalGLFormat() const {
             if (alphaChannelBits == 8) {
                 return GL_RGBA8;
             } else {
-                return GL_RGB8;
+
+                if (channels == LUMINANCE) {
+                    return GL_LUMINANCE;
+                } else {
+                    return GL_RGB8;
+                }
             }
         } else if (colorChannelBits == 0) {
             if (alphaChannelBits == 8) {
@@ -633,6 +642,7 @@ int Texture::sizeInMemory() const {
 
     case GL_ALPHA:
     case GL_ALPHA8:
+    case GL_LUMINANCE:
         bpp = 8;
         break;
 
@@ -693,6 +703,9 @@ unsigned int Texture::externalFormat() const {
     case 3:
         return GL_RGB;
 
+    case GL_LUMINANCE:
+        return GL_LUMINANCE;
+    
     case GL_RGB5_A1:
     case GL_RGBA8:
     case GL_RGBA:
@@ -717,8 +730,10 @@ unsigned int Texture::getOpenGLTextureTarget() const {
     switch (dimension) {
     case DIM_2D:
         return GL_TEXTURE_2D;
+
     case Texture::DIM_2D_RECT:
         return GL_TEXTURE_RECTANGLE_NV;
+
     default:
         debugAssertM(false, "Fell through switch");
     }

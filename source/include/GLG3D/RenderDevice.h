@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-05-02
+  @edited  2003-05-22
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -945,9 +945,9 @@ public:
      color depth.
 
      @param varVideoMemory  The number of bytes of video memory to allocate
-     for vertex arrays.  If 0, the VAR system is not initialized.  If nonzero,
-	 you cannot use glDrawArrays or any other vertex array call.  Use the
-	  corresponding RenderDevice methods instead.  If you prefer to use the raw
+      for vertex arrays.  If 0, the VAR system is not initialized.  <B>If nonzero,
+	  you cannot use glDrawArrays or any other vertex array call from raw OpenGL</B>.  
+      Use the corresponding RenderDevice methods instead.  If you prefer to use the raw
 	  OpenGL calls, do not initialize the VAR system.
 
      @param colorBits The number of desired bits in each color channel of the frame buffer

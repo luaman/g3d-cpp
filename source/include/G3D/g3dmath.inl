@@ -7,7 +7,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-04-29
+ @edited  2003-05-22
  */
 
 #include <stdlib.h>
@@ -38,6 +38,18 @@ inline int iCeil (double fValue) {
 //----------------------------------------------------------------------------
 
 inline int iClamp(int low, int val, int hi) {
+	if (val <= low) {
+		return low;
+	} else if (val >= hi) {
+		return hi;
+	} else {
+		return val;
+	}
+}
+
+//----------------------------------------------------------------------------
+
+inline double clamp(double low, double val, double hi) {
 	if (val <= low) {
 		return low;
 	} else if (val >= hi) {

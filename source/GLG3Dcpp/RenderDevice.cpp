@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-05-02
+ @edited  2003-05-22
  */
 
 
@@ -63,6 +63,9 @@ PFNGLDISABLEVERTEXATTRIBARRAYARBPROC        glDisableVertexAttribArrayARB   = NU
 
 PFNGLPOINTPARAMETERFARBPROC                 glPointParameterfARB            = NULL;
 PFNGLPOINTPARAMETERFVARBPROC                glPointParameterfvARB           = NULL;
+
+PFNGLMULTIDRAWARRAYSEXTPROC                 glMultiDrawArraysEXT            = NULL;
+PFNGLMULTIDRAWELEMENTSEXTPROC               glMultiDrawElementsEXT          = NULL;
 
 namespace G3D {
 
@@ -169,9 +172,10 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glVertexAttribPointerARB);
     LOAD_EXTENSION(glEnableVertexAttribArrayARB);
     LOAD_EXTENSION(glDisableVertexAttribArrayARB);
-
     LOAD_EXTENSION(glPointParameterfARB);
     LOAD_EXTENSION(glPointParameterfvARB);
+    LOAD_EXTENSION(glMultiDrawArraysEXT);
+    LOAD_EXTENSION(glMultiDrawElementsEXT);
 
     #undef LOAD_EXTENSION
 }
@@ -388,6 +392,10 @@ bool RenderDevice::init(
              "%31s             %s\n"
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n\n"
 
              "* JOYSTICK\n"
@@ -432,6 +440,10 @@ bool RenderDevice::init(
              "glProgramEnvParameter4fARB", isOk(glProgramEnvParameter4fARB),
              "glProgramLocalParameter4fARB", isOk(glProgramLocalParameter4fARB),
              "glIsProgramARB", isOk(glIsProgramARB),
+             "glPointParameterfARB", isOk(glPointParameterfARB),
+             "glPointParameterfvARB", isOk(glPointParameterfvARB),
+             "glMultiDrawArraysEXT", isOk(glMultiDrawArraysEXT),
+             "glMultiDrawElementsEXT", isOk(glMultiDrawElementsEXT),
 
              SDL_NumJoysticks(), "ok"
              );
