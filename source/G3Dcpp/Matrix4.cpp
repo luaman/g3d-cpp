@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-10-02
-  @edited  2003-11-19
+  @edited  2004-01-04
  */
 
 #include "G3D/Matrix4.h"
@@ -262,4 +262,89 @@ bool Matrix4::operator==(const Matrix4& other) const {
     return true;
 }
 
+
+double Matrix4::determinant() const {
+    // Determinant is the dot product of the first row and the first row
+    // of cofactors (i.e. the first col of the adjoint matrix)
+	return cofactor().getRow(0).dot(getRow(0));
 }
+
+
+Matrix4 Matrix4::adjoint() const {
+    return cofactor().transpose();
+}
+
+
+Matrix4 Matrix4::inverse() const {
+    // Inverse = adjoint / determinant
+
+    Matrix4 A = adjoint();
+
+    // Determinant is the dot product of the first row and the first row
+    // of cofactors (i.e. the first col of the adjoint matrix)
+	double det = A.getColumn(0).dot(getRow(0));
+
+	return A * (1.0 / det);
+}
+
+
+Matrix4 Matrix4::cofactor() const {
+	Matrix4 out;
+
+    // We'll use i to incrementally compute -1 ^ (r+c)
+    int i = 1;
+
+    for (int r = 0; r < 4; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            // Compute the determinant of the 3x3 submatrix
+            double det = subDeterminant(r, c);
+            out.elt[r][c] = i * det;
+            i = -i;
+        }
+        i = -i;
+    }
+
+    return out;
+}
+
+
+double Matrix4::subDeterminant(int excludeRow, int excludeCol) const {
+    // Compute non-excluded row and column indices
+    int row[3];
+    int col[3];
+
+    for (int i = 0; i < 3; ++i) {
+        row[i] = i;
+        col[i] = i;
+
+        if (i >= excludeRow) {
+            ++row[i];
+        }
+        if (i >= excludeCol) {
+            ++col[i];
+        }
+    }
+
+    // Compute the first row of cofactors 
+    double cofactor00 = 
+      elt[row[1]][col[1]] * elt[row[2]][col[2]] -
+      elt[row[1]][col[2]] * elt[row[2]][col[1]];
+
+    double cofactor10 = 
+      elt[row[1]][col[2]] * elt[row[2]][col[0]] -
+      elt[row[1]][col[0]] * elt[row[2]][col[2]];
+
+    double cofactor20 = 
+      elt[row[1]][col[0]] * elt[row[2]][col[1]] -
+      elt[row[1]][col[1]] * elt[row[2]][col[0]];
+
+    // Product of the first row and the cofactors along the first row
+    return
+      elt[row[0]][col[0]] * cofactor00 +
+      elt[row[0]][col[1]] * cofactor10 +
+      elt[row[0]][col[2]] * cofactor20;
+}
+
+} // namespace
+
+

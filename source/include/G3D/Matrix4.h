@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-10-02
-  @edited  2003-11-19
+  @edited  2004-01-04
  */
 
 #ifndef G3D_MATRIX4_H
@@ -21,6 +21,12 @@ class Matrix4 {
 private:
 
     float elt[4][4];
+
+    /**
+      Computes the determinant of the 3x3 matrix that lacks excludeRow
+      and excludeCol. 
+    */
+    double subDeterminant(int excludeRow, int excludeCol) const;
 
 public:
     Matrix4(
@@ -79,6 +85,11 @@ public:
 
     bool operator!=(const Matrix4& other) const;
     bool operator==(const Matrix4& other) const;
+
+    double determinant() const;
+    Matrix4 inverse() const;
+    Matrix4 adjoint() const;
+    Matrix4 cofactor() const;
 };
 
 } // namespace
