@@ -469,6 +469,9 @@ TextureRef Texture::fromFile(
         const TextureFormat* bytesFormat = ddsTexture.getBytesFormat();
         debugAssert( bytesFormat );
 
+        // Assert that we are loading a cubemap DDS
+        debugAssert( numFaces == ddsTexture.getNumFaces() );
+
         int numMipMaps = ddsTexture.getNumMipMaps();
         int mapWidth = ddsTexture.getWidth();
         int mapHeight = ddsTexture.getHeight();
@@ -477,10 +480,12 @@ TextureRef Texture::fromFile(
 
         for (int i = 0; i < numMipMaps; ++i) {
             
-            byteMipMapFaces[i].resize(1);
-            byteMipMapFaces[i][0] = byteStart;
+            byteMipMapFaces[i].resize(numFaces);
 
-            byteStart += ((bytesFormat->packedBitsPerTexel / 8) * ((mapWidth + 3) / 4) * ((mapHeight + 3) / 4));
+            for (int face = 0; face < numFaces; ++face) {
+                byteMipMapFaces[i][face] = byteStart;
+                byteStart += ((bytesFormat->packedBitsPerTexel / 8) * ((mapWidth + 3) / 4) * ((mapHeight + 3) / 4));
+            }
             mapWidth = max(1, mapWidth/2);
             mapHeight = max(1, mapHeight/2);
         }

@@ -453,6 +453,8 @@ private:
         int                         width;
         int                         height;
         int                         numMipMaps;
+        int                         numFaces;
+
     public:
 
         DDSTexture(const std::string& filename);
@@ -473,6 +475,10 @@ private:
 
         int getNumMipMaps() {
             return numMipMaps;
+        }
+
+        int getNumFaces() {
+            return numFaces;
         }
 
         uint8* getBytes() {

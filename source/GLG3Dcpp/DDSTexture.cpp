@@ -133,6 +133,18 @@ typedef struct _DDSCAPS2
     } DUMMYUNIONNAMEN(1);
 } DDSCAPS2;
 
+
+const uint32 DDSCAPS2_VOLUME                        = 0x00200000L;
+const uint32 DDSCAPS2_CUBEMAP                       = 0x00000200L;
+const uint32 DDSCAPS2_CUBEMAP_POSITIVEX             = 0x00000400L;
+const uint32 DDSCAPS2_CUBEMAP_NEGATIVEX             = 0x00000800L;
+const uint32 DDSCAPS2_CUBEMAP_POSITIVEY             = 0x00001000L;
+const uint32 DDSCAPS2_CUBEMAP_NEGATIVEY             = 0x00002000L;
+const uint32 DDSCAPS2_CUBEMAP_POSITIVEZ             = 0x00004000L;
+const uint32 DDSCAPS2_CUBEMAP_NEGATIVEZ             = 0x00008000L;
+
+
+
 /*
  * DDCOLORKEY
  */
@@ -193,106 +205,106 @@ typedef struct _DDSURFACEDESC2
 /*
  * ddsCaps field is valid.
  */
-#define DDSD_CAPS               0x00000001l     // default
+const uint32  DDSD_CAPS               = 0x00000001l;     // default
 
 /*
  * dwHeight field is valid.
  */
-#define DDSD_HEIGHT             0x00000002l
+const uint32  DDSD_HEIGHT             = 0x00000002l;
 
 /*
  * dwWidth field is valid.
  */
-#define DDSD_WIDTH              0x00000004l
+const uint32  DDSD_WIDTH              = 0x00000004l;
 
 /*
  * lPitch is valid.
  */
-#define DDSD_PITCH              0x00000008l
+const uint32  DDSD_PITCH              = 0x00000008l;
 
 /*
  * dwBackBufferCount is valid.
  */
-#define DDSD_BACKBUFFERCOUNT    0x00000020l
+const uint32  DDSD_BACKBUFFERCOUNT    = 0x00000020l;
 
 /*
  * dwZBufferBitDepth is valid.  (shouldnt be used in DDSURFACEDESC2)
  */
-#define DDSD_ZBUFFERBITDEPTH    0x00000040l
+const uint32  DDSD_ZBUFFERBITDEPTH    = 0x00000040l;
 
 /*
  * dwAlphaBitDepth is valid.
  */
-#define DDSD_ALPHABITDEPTH      0x00000080l
+const uint32  DDSD_ALPHABITDEPTH      = 0x00000080l;
 
 
 /*
  * lpSurface is valid.
  */
-#define DDSD_LPSURFACE          0x00000800l
+const uint32  DDSD_LPSURFACE          = 0x00000800l;
 
 /*
  * ddpfPixelFormat is valid.
  */
-#define DDSD_PIXELFORMAT        0x00001000l
+const uint32  DDSD_PIXELFORMAT        = 0x00001000l;
 
 /*
  * ddckCKDestOverlay is valid.
  */
-#define DDSD_CKDESTOVERLAY      0x00002000l
+const uint32  DDSD_CKDESTOVERLAY      = 0x00002000l;
 
 /*
  * ddckCKDestBlt is valid.
  */
-#define DDSD_CKDESTBLT          0x00004000l
+const uint32  DDSD_CKDESTBLT          = 0x00004000l;
 
 /*
  * ddckCKSrcOverlay is valid.
  */
-#define DDSD_CKSRCOVERLAY       0x00008000l
+const uint32  DDSD_CKSRCOVERLAY       = 0x00008000l;
 
 /*
  * ddckCKSrcBlt is valid.
  */
-#define DDSD_CKSRCBLT           0x00010000l
+const uint32  DDSD_CKSRCBLT           = 0x00010000l;
 
 /*
  * dwMipMapCount is valid.
  */
-#define DDSD_MIPMAPCOUNT        0x00020000l
+const uint32  DDSD_MIPMAPCOUNT        = 0x00020000l;
 
  /*
   * dwRefreshRate is valid
   */
-#define DDSD_REFRESHRATE        0x00040000l
+const uint32  DDSD_REFRESHRATE        = 0x00040000l;
 
 /*
  * dwLinearSize is valid
  */
-#define DDSD_LINEARSIZE         0x00080000l
+const uint32  DDSD_LINEARSIZE         = 0x00080000l;
 
 /*
  * dwTextureStage is valid
  */
-#define DDSD_TEXTURESTAGE       0x00100000l
+const uint32  DDSD_TEXTURESTAGE       = 0x00100000l;
 /*
  * dwFVF is valid
  */
-#define DDSD_FVF                0x00200000l
+const uint32  DDSD_FVF                = 0x00200000l;
 /*
  * dwSrcVBHandle is valid
  */
-#define DDSD_SRCVBHANDLE        0x00400000l
+const uint32  DDSD_SRCVBHANDLE        = 0x00400000l;
 
 /*
  * dwDepth is valid
  */
-#define DDSD_DEPTH              0x00800000l
+const uint32  DDSD_DEPTH              = 0x00800000l;
 
 /*
  * All input fields are valid.
  */
-#define DDSD_ALL                0x00fff9eel
+const uint32  DDSD_ALL                 = 0x00fff9eel;
 
 Texture::DDSTexture::DDSTexture(const std::string& filename) :
     width(0),
@@ -321,6 +333,23 @@ Texture::DDSTexture::DDSTexture(const std::string& filename) :
         debugAssert( ddsSurfaceDesc.dwFlags & DDSD_WIDTH );
         debugAssert( ddsSurfaceDesc.dwFlags & DDSD_HEIGHT );
         debugAssert( ddsSurfaceDesc.dwFlags & DDSD_PIXELFORMAT );
+
+        // Check to make sure it isn't a volume texture
+        debugAssert( !(ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_VOLUME) ); 
+
+        if ( ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP ) {
+            debugAssert( (ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_POSITIVEX) &&
+                (ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_POSITIVEX) &&
+                (ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_NEGATIVEX) &&
+                (ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_POSITIVEY) &&
+                (ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_NEGATIVEY) &&
+                (ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_POSITIVEZ) &&
+                (ddsSurfaceDesc.ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_NEGATIVEZ) );
+
+            numFaces = 6;
+        } else {
+            numFaces = 1;
+        }
 
         // *Need to create code-paths to uncompressed formats once load works*
         switch(ddsSurfaceDesc.ddpfPixelFormat.dwFourCC) {
