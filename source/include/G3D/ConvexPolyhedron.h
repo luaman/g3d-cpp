@@ -84,7 +84,7 @@ public:
      */
     Real getArea() const;
 
-    Vector3 getNormal() const {
+    inline Vector3 normal() const {
         debugAssert(_vertex.length() >= 3);
         return (_vertex[1] - _vertex[0]).cross(_vertex[2] - _vertex[0]).direction();
     }

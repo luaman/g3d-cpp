@@ -64,7 +64,7 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
     int length = _vertex.length();
 
 
-    Vector3 polyNormal = getNormal();
+    Vector3 polyNormal = normal();
     Vector3 planeNormal= plane.getNormal();
 
     // See if the polygon is *in* the plane.
@@ -216,7 +216,7 @@ Real ConvexPolyhedron::getVolume() const {
     for (int f = 1; f < face.length(); f++) {        
         const ConvexPolygon& poly = face[f];
         
-        Real height = (poly._vertex[0] - v0).dot(poly.getNormal());
+        Real height = (poly._vertex[0] - v0).dot(poly.normal());
         Real base   = poly.getArea();
 
         sum += height * base;

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2003-04-06
+ @edited  2003-04-29
 */
 
 #ifndef G3D_PLANE_H
@@ -20,14 +20,15 @@ namespace G3D {
  An infinite 2D plane in 3D space.
  */
 class Plane {
+private:
 
     /** normal.Dot(x,y,z) = distance */
-    Vector3						normal;
+    Vector3						_normal;
     Real						distance;
 
 public:
 
-    Plane() : normal(Vector3::UNIT_Y), distance(0) {
+    Plane() : _normal(Vector3::UNIT_Y), distance(0) {
     }
 
     /**
@@ -39,7 +40,7 @@ public:
         const Vector3&      point2);
 
     Plane(
-        const Vector3&      _normal,
+        const Vector3&      __normal,
         const Vector3&      point);
 
 	Plane(class BinaryInput& b);
@@ -53,19 +54,26 @@ public:
      is in the plane.
      */
     inline bool halfSpaceContains(const Vector3& point) const {
-        return normal.dot(point) >= distance;
+        return _normal.dot(point) >= distance;
     }
 
     /**
      Returns true if the point is nearly in the plane.
      */
     inline bool fuzzyContains(const Vector3 &point) const {
-        return fuzzyEq(point.dot(normal), distance);
+        return fuzzyEq(point.dot(_normal), distance);
     }
 
+	/**
+	 @deprecated
+	 */
     inline const Vector3& getNormal() const {
-        return normal;
+        return _normal;
     }
+
+	inline const Vector3& normal() const {
+		return _normal;
+	}
 
     /**
      Inverts the facing direction of the plane so the new normal
