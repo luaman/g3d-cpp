@@ -36,7 +36,12 @@
 #endif
 
 #include "../GL/glext.h"
+
+#ifdef G3D_OSX
+#include <OpenGL/glu.h>
+#else
 #include <GL/glu.h>
+#endif
 
 // OpenGL extensions
 extern PFNGLMULTITEXCOORD2FARBPROC         glMultiTexCoord2fARB;
