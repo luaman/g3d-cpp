@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Fixed 16-bit integer reads in BinaryInput that always reversed endianness. (OSX reading) [Corey + Derek]
      <LI> Added Dev C++ support
      <LI> Changed GLight== to not use memcpy (was causing issues due to byte padding on some compilers)
      <LI> Made CoordinateFrame destructor non-virtual (eliminates vtable)
