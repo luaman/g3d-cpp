@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2003-04-29
+ @edited  2003-06-24
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -16,12 +16,6 @@
 
 #ifndef G3D_GRAPHICS3D_H
 #define G3D_GRAPHICS3D_H
-
-#if (defined(_MSC_VER) || defined(__GNUC__))
- 
-#else
-    #error MSVC and g++ are currently the only compilers supported
-#endif
 
 #define NOMINMAX
 #ifdef min
