@@ -107,4 +107,8 @@ public:
 
 } // namespace
 
+inline unsigned int hashCode(const G3D::Triangle& t) {
+	return t.hashCode();
+}
+
 #endif

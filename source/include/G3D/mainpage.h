@@ -551,6 +551,7 @@
    <BR>Harishabd Khalsa
    <BR>Nicolai Haehnle
    <BR>Michael Herf
+   <BR>Pete Hopkins
    <BR>Peter Hunt
    <BR>Robert Hunter
    <BR>Ed Johnson

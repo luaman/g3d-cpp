@@ -91,9 +91,15 @@ namespace G3D {
   <DT><CODE>T::T();</CODE> <I>(public constructor of no arguments)</I>
   </BLOCKQUOTE>
 
-  When using large objects, consider making the template parameter
-  a <I>pointer</I> to the object type because the T-values are
-  copied many times during tree balancing.
+ Note: Do not mutate any value once it has been inserted into KDTreeSet. Values
+ are copied interally. All KDTreeSet iterators convert to pointers to constant
+ values to reinforce this.
+
+ If you want to mutate the objects you intend to store in a KDTreeSet simply
+ insert pointers to your objects instead of the objects themselves, and ensure
+ that the above operations are defined. (And actually, because values are
+ copied, if your values are large you may want to insert pointers anyway, to
+ save space and make the balance operation faster.)
 
  <B>Dimensions</B>
  Although designed as a 3D-data structure, you can use the AABSPTree
@@ -279,7 +285,11 @@ private:
     };
 
     /** Returns the X, Y, and Z extents of the point sub array. */
-    static Vector3 computeExtent(const Array<Handle>& point, int beginIndex, int endIndex) {
+    static Vector3 computeExtent(
+        const Array<Handle>&  point, 
+        int                   beginIndex,
+        int                   endIndex) {
+        
         Vector3 lo = Vector3::INF3;
         Vector3 hi = -lo;
 
@@ -330,10 +340,42 @@ private:
                 (point[midIndex].bounds.high() +
                  point[iMin(midIndex + 1, point.size())].bounds.low()) * 0.5;
 
+	        // Some number of nodes around midIndex may actually overlap the
+	        // midddle, so they must be found and added to *this* node, not one
+	        // of its children
+	        int beginStraddleIndex, endStraddleIndex;
+
+	        for (beginStraddleIndex = midIndex;
+		         (beginStraddleIndex >= beginIndex) &&
+			      (point[beginStraddleIndex].bounds.high()[splitAxis] >= median[splitAxis]);
+		         --beginStraddleIndex) {}
+
+    	    for (endStraddleIndex = midIndex + 1;
+		         (endStraddleIndex <= endIndex) &&
+			      (point[endStraddleIndex].bounds.low()[splitAxis] <= median[splitAxis]);
+          		 ++endStraddleIndex) {}
+
+
+	        // The straddleIndexs are really the end and beginning of the
+	        // children indices, respectively. Hence the + 1 and < instead of <=
+	        // this is because the loop ends when the test fails, so each of
+	        // them will be equal to the first index that should be in the child
+
+	        for (int i = beginStraddleIndex + 1; i < endStraddleIndex; ++i) {
+		        node->valueArray.push(point[i]);
+		        memberTable.set(point[i].value, node);
+	        }
+
             node->splitAxis     = splitAxis;
             node->splitLocation = median[splitAxis];
-            node->child[0]      = makeNode(point, beginIndex, midIndex, valuesPerNode);
-            node->child[1]      = makeNode(point, midIndex + 1, endIndex, valuesPerNode);
+            node->child[0]      = 
+                makeNode(point, beginIndex, 
+                         iMin(midIndex, beginStraddleIndex),
+					     valuesPerNode);
+            node->child[1]      = 
+                makeNode(point, 
+                         iMax(midIndex + 1, endStraddleIndex), 
+                         endIndex, valuesPerNode);
         }
 
         return node;
@@ -635,7 +677,7 @@ public:
 
         /** Overloaded dereference operator so the iterator can masquerade as a pointer
             to a member */
-        T* operator->() const {
+        T const * operator->() const {
             alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
             return &(stack.last()->valueArray[v].value);
         }
@@ -675,20 +717,337 @@ public:
     /** See AABSPTree::beginRayIntersection */
     class RayIntersectionIterator {
     private:
-        // TODO!  This state is temporary; it may need to change.
-        Array<Node*>  stack;
-        Node*         current;
-        int           v;
-        bool          isEnd;
-        Ray           ray;
+	    friend class AABSPTree<T>;
+
+	    // The stack frame contains all the info needed to resume
+	    // computation for the RayIntersectionIterator
+
+	    struct StackFrame {
+		    const Node* node;
+		    // the total checking bounds for this frame
+		    float minTime;
+		    float maxTime;
+		    // what we're checking right now, either from minTime to the
+		    // split, or from the split to maxTime (more or less...
+		    // there are edge cases)
+		    float startTime;
+		    float endTime;
+		    // true if we're on the "pre" side of the node: ie, checking
+		    // in front of the split.
+		    bool preSide;
+		    // current index into node's valueArray
+		    int valIndex;
+		    // cache intersection values when they're checked on the preSide,
+		    // split so they don't need to be checked again after the split.
+		    Array<float> intersectionCache;
+
+		    StackFrame(const Node* inNode, float inMinTime, float inMaxTime, const Ray& ray) :
+			    node(inNode), minTime(inMinTime), maxTime(inMaxTime),
+			    startTime(0), endTime(inf), preSide(true), valIndex(-1)
+		    {
+			    if(node == NULL) return;
+			    
+			    // this is the time along the ray until the split.
+			    // could be negative if the split is behind.
+			    float splitTime =
+				    (node->splitLocation - ray.origin[node->splitAxis]) /
+				    ray.direction[node->splitAxis];
+
+			    // if splitTime <= minTime we'll never reach the
+			    // split, so set it to inf so as not to confuse endTime
+			    // it will be noted below that when splitTime is inf
+			    // only one of this node's children will be searched
+			    // (the pre child). Therefore it is critical that
+			    // the correct child is gone to.
+			    if(splitTime <= minTime) splitTime = inf;
+
+			    startTime = minTime;
+			    endTime = min(maxTime, splitTime);
+
+			    intersectionCache.resize(node->valueArray.size());
+		    }
+	    };
+
+	    Array<StackFrame*>  stack;
+	    Ray           ray;
+	    bool          isEnd;
+	    StackFrame*   breakFrame;
+
+	    RayIntersectionIterator(const Ray& r, const Node* root) :
+		    ray(r), isEnd(root == NULL), breakFrame(NULL),
+		    maxDistance(inf), minDistance(0), testCounter(0)
+	    {
+		    StackFrame* s = new StackFrame(root, 0, inf, ray);
+		    stack.push(s);
+		    ++(*this);
+	    }
 
     public:
+	    /** These hold bounds for where the most recent intersection
+	      occurred. minDistance is the distance from the ray to the
+	     bounding box that was hit. */
+	    double maxDistance;
+	    double minDistance;
 
-        double maxDistance;
+	    /** Counts how many bounding box intersection tests have been done so
+	        far. */
+	    int testCounter;
 
-        double minDistance;
+	    /* public so we can have empty ones */
+	    RayIntersectionIterator() : isEnd(true) {}
+	    
+	    ~RayIntersectionIterator() {
+		    stack.deleteAll();
+	    }
 
-        int    nodeCount;
+	    inline bool operator!=(const RayIntersectionIterator& other) const {
+		    return ! (*this == other);
+	    }
+	    
+	    RayIntersectionIterator& operator=(const RayIntersectionIterator& rhs) {
+		    for (int i = 0; i < rhs.stack.length(); ++i) {
+			    stack.push(new StackFrame(*rhs.stack[i]));
+		    }
+
+		    isEnd = rhs.isEnd;
+		    ray = rhs.ray;
+		    testCounter = rhs.testCounter;
+		    maxDistance = rhs.maxDistance;
+		    minDistance = rhs.minDistance;
+
+		    if (rhs.breakFrame) {
+			    int breakIndex = rhs.stack.findIndex(rhs.breakFrame);
+			    breakFrame = stack[breakIndex];
+		    } else {
+			    breakFrame = NULL;
+		    }
+		    
+		    return *this;
+	    }
+	    
+	    bool operator==(const RayIntersectionIterator& other) const {
+		    if (isEnd) {
+		    	return other.isEnd;
+		    } else if (other.isEnd) {
+	    		return false;
+		    } else {
+		    	// Two non-end iterators; see if they match.  This is kind of 
+		    	// silly; users shouldn't call == on iterators in general unless
+		    	// one of them is the end iterator.
+		    	if ((stack.length() != other.stack.length())) {
+		    		return false;
+		    	}
+			
+		    	// See if the stacks are the same
+		    	for (int i = 0; i < stack.length(); ++i) {
+		    		if (stack[i] != other.stack[i]) {
+		    			return false;
+		    		}
+		    	}
+			
+		    	// We failed to find a difference; they must be the same
+		    	return true;
+		    }
+	    }
+
+	    /**
+	       Marks the node where the most recent intersection occurred. If
+	       the iterator exhausts this node it will stop and set itself to
+	       the end iterator.
+
+	       Use this after you find a true intersection to stop the iterator
+	       from searching more than necessary.
+	    */
+	    // In theory this method could be smarter: the caller could pass in
+	    // the distance of the actual collision and the iterator would keep
+	    // itself from checking nodes or boxes beyond that distance.
+	    void markBreakNode() {
+		    breakFrame = stack.last();
+	    }
+
+	    /**
+	       Clears the break node. Can be used before or after the iterator
+	       stops from a break.
+	    */
+	    void clearBreakNode() {
+		    if(breakFrame == null) return;
+		    if(isEnd && stack.length() > 0) isEnd = false;
+
+		    breakFrame = NULL;
+	    }
+	    
+	    RayIntersectionIterator& operator++() {
+		    StackFrame* s = stack.last();
+		    
+		    // leave the loop if:
+		    //    end is reached (ie: stack is empty)
+		    //    found an intersection
+
+		    while (true) {
+			    if ((s == NULL) || (s->startTime >= s->endTime)) {
+				    // this frame is invalid, pop it.
+				    
+				    StackFrame* temp = stack.pop();
+				    debugAssert(temp == s);
+				    delete s;
+
+				    if (stack.length() == 0) {
+					    isEnd = true;
+					    break;
+				    }
+				    
+				    s = stack.last();
+
+				    // If we pop the break frame it means that
+				    // we've exhausted that frame's children, so
+				    // we can break
+				    if (s == breakFrame) {
+					    isEnd = true;
+					    break;
+				    }
+				    
+				    continue;
+			    }
+
+			    ++s->valIndex;
+
+			    if (s->valIndex >= s->node->valueArray.length()) {
+				    // This node is exhausted, look at its
+				    // children.
+				    
+				    // Find the index of the child that the ray
+				    // will hit first.  We need to take into account
+				    // minTime for this to work right: it is
+				    // possible for the ray to hit the split
+				    // axis before it hits minTime (ie: this
+				    // node's parent's split axis). If you
+				    // naively use origin (as in the
+				    // pseudocode), you may end up picking for
+				    // the pre child a node that the ray doesn't
+				    // intersect, which is bad for efficiency.
+				    // But worse, since the split came
+				    // before minTime (when calculating for the
+				    // StackFrame), startTime == minTime and
+				    // endTime == maxTime. So, down below when
+				    // this node is suspended startTime =
+				    // endTime = maxTime. This means that when
+				    // this node is resumed it will be cast away
+				    // because startTime == endTime, so the
+				    // correct child will never be looked at.
+				    //
+				    // Thus it is very important that preIndex
+				    // calculates the first child to actually be
+				    // intersected by the ray. :)
+
+				    int preIndex =
+					    (ray.origin[s->node->splitAxis] +
+					     ray.direction[s->node->splitAxis] * s->minTime
+					     < s->node->splitLocation) ? 0 : 1;
+
+				    // if we're not on the preside we want to
+				    // check the far child
+				    int childIndex = (s->preSide) ? preIndex : (1 - preIndex);
+				    
+				    StackFrame* cs = NULL;
+				    if (s->node->child[childIndex] != NULL) {
+					    cs = new StackFrame(s->node->child[childIndex],
+								s->startTime, s->endTime, ray);
+				    }
+
+				    if (s->preSide) {
+					    // We'll need to come back, keep
+					    // this on the stack, but reset it
+					    // to be ready for the postSide
+					    s->preSide = false;
+					    s->valIndex = -1;
+					    
+					    // Look from the break to beyond
+					    // could probably put a check in
+					    // here for this assignment making
+					    // startTime == endTime, it might
+					    // give small savings in space. That
+					    // case will be checked anyway when
+					    // this frame is resumed later
+					    s->startTime = s->endTime;
+					    s->endTime = s->maxTime;
+				    } else {
+					    // This side has already been taken
+					    // care of, clear it off the stack
+					    // tail-recursion style
+					    
+					    StackFrame* top = stack.pop();
+					    debugAssert(top == s);
+
+					    if (s == breakFrame) {
+						    // We won't ever get back to
+						    // this frame, so if there's
+						    // anything left on the
+						    // stack, make *it* the
+						    // breakframe or we'll never
+						    // break. :)
+						    // This will happen when
+						    // markBreakNode is called
+						    // on the post side of a
+						    // node; when markBreakNode
+						    // is called on the pre side
+						    // we should *never* check
+						    // that same node's post side.
+
+						    if (stack.length() > 0) {
+							    breakFrame = stack.last();
+						    }
+					    }
+
+					    delete s;
+				    }
+
+				    stack.push(cs);
+				    s = cs;
+				    continue;
+			    }
+
+			    float t;
+			    if (s->preSide) {
+				    t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds.toBox());
+				    ++testCounter;
+				    s->intersectionCache[s->valIndex] = t;
+			    } else {
+				    t = s->intersectionCache[s->valIndex];
+			    }
+
+			    if (t >= s->startTime && t < s->endTime) {
+				    minDistance = t;
+				    maxDistance = s->endTime;
+				    break;
+			    }
+			    
+		    }
+
+		    return *this;
+	    }
+
+
+	    /** Overloaded dereference operator so the iterator can masquerade as a pointer
+		to a member */
+	    const T& operator*() const {
+		    alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
+		    return stack.last()->node->valueArray[stack.last()->valIndex].value;
+	    }
+	    
+	    /** Overloaded dereference operator so the iterator can masquerade as a pointer
+		to a member */
+	    T const * operator->() const {
+		    alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
+		    return &(stack.last()->node->valueArray[stack.last()->valIndex].value);
+	    }
+	    
+	    /** Overloaded cast operator so the iterator can masquerade as a pointer
+		to a member */
+	    operator T*() const {
+		    alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
+		    return &(stack.last()->node->valueArray[stack.last()->valIndex].value);
+	    }
+	    
     };
 
     /**
@@ -696,68 +1055,75 @@ public:
       elements from the set whose bounding boxes are intersected by the ray.
       Typically used for ray tracing, hit-scan, and collision detection.
 
-      The elements are generated mostly in the order that they are
-      hit by the ray, so that iteration may end abruptly when the closest
-      intersection to the ray origin has been reached.  Because the 
-      elements within a given kd-tree node are unordered, iteration may
-      need to proceed a little past the first member returned in order
-      to find the closest intersection.  When a member has been returned
-      and the "nodeCount" field is incremented it is safe to stop iterating.
-      The iterator doesn't automatically find the first intersection because
-      it is looking at bounding boxes, not the true intersections.  
+      The elements are generated mostly in the order that they are hit by the
+      ray, so that iteration may end abruptly when the closest intersection to
+      the ray origin has been reached. Because the elements within a given
+      kd-tree node are unordered, iteration may need to proceed a little past
+      the first member returned in order to find the closest intersection. The
+      iterator doesn't automatically find the first intersection because it is
+      looking at bounding boxes, not the true intersections.
+
+      When the caller finds a true intersection it should call markBreakNode()
+      on the iterator. This will stop the iterator (setting it to the end
+      iterator) when the current node and relevant children are exhausted.
       
-      Complicating the matter further, some members straddle the plane.  The
-      iterator produces these members <I>twice</I>.  The first time it is produced
-      the caller should only consider intersections on the near side of the 
-      split plane.  The second time, the caller should only consider intersections
-      on the far side.  The minDistance and maxDistance fields specify the
-      range on which intersections should be considered.  Be aware that they 
-      be inf or zero.
+      Complicating the matter further, some members straddle the plane. The
+      iterator produces these members <I>twice</I>. The first time it is
+      produced the caller should only consider intersections on the near side of
+      the split plane. The second time, the caller should only consider
+      intersections on the far side. The minDistance and maxDistance fields
+      specify the range on which intersections should be considered. Be aware
+      that they may be inf or zero.
       
-      An example of how to use nodeCount, maxDistance, and maxDistance follows.
-      Almost all ray intersection tests will have identical structure.
+      An example of how to use the iterator follows. Almost all ray intersection
+      tests will have identical structure.
 
      <PRE>
+
        typedef AABSPTree<Object*>::RayIntersectionIterator IT;
        void findFirstIntersection(const Ray& ray, Object*& firstObject, double& firstTime) {
-           int count     = -1;
 
            firstObject   = NULL;
            firstDistance = inf;
 
            const IT end = tree.endRayIntersection();
 
-           for (IT obj = tree.beginRayIntersection(ray);
-               (obj != end) && ((firstObject == NULL) || (count == obj.NodeCount)); 
-               ++obj) {  // (preincrement is much faster than postincrement!) 
+           for (IT nomad = tree.beginRayIntersection(ray);
+                nomad != end;
+                ++nomad) {  // (preincrement is *much* faster than postincrement!) 
 
                // Call your accurate intersection test here.  It is guaranteed
                // that the ray hits the bounding box of obj.
-               double t = obj->distanceUntilIntersection(ray);
+               double t = nomad->distanceUntilIntersection(ray);
 
                // Often methods like "distanceUntilIntersection" can be made more
                // efficient by providing them with the time at which to start and
                // to give up looking for an intersection; that is, 
-               // obj.minDistance and iMin(firstDistance, obj.maxDistance).
+               // nomad.minDistance and iMin(firstDistance, nomad.maxDistance).
 
                if ((t < firstDistance) && 
-                   (t < obj.maxDistance) &&
-                   (t >= obj.minDistance)) {
+                   (t < nomad.maxDistance) &&
+                   (t >= nomad.minDistance)) {
                    // This is the new best collision time
-                   firstObject   = obj;
+                   firstObject   = nomad;
                    firstDistance = t;
 
                    // Even if we found an object we must keep iterating until
                    // we've exhausted all members at this node.
-                   count         = obj.nodeCount;
+		           nomad.markBreakNode();
                }
            }
        }
      </PRE>
     */
-    RayIntersectionIterator beginRayIntersection(const Ray& ray) const;
-    
-    RayIntersectionIterator endRayIntersection() const;
+	RayIntersectionIterator beginRayIntersection(const Ray& ray) const {
+		return RayIntersectionIterator(ray, root);
+	}
+	
+	RayIntersectionIterator endRayIntersection() const {
+		return RayIntersectionIterator();
+	}
+		
 
     /**
      Returns an array of all members of the set.  See also AABSPTree::begin.
@@ -837,7 +1203,7 @@ public:
      C++ STL style iterator method.  Returns one after the last iterator
      element.
      */
-    const Iterator end() const {
+    Iterator end() const {
         return Iterator(memberTable.end());
     }
 };
