@@ -890,6 +890,7 @@ public:
         renderDevice->setVertexProgram(toonShadeVP, args);
      </PRE>
 
+
      @param args must include *all* arguments or an assertion will fail
      */
     void setVertexProgram(const VertexProgramRef& vp,
@@ -901,6 +902,12 @@ public:
      @param pp Set to NULL to use the fixed function pipeline.
      */
     void setPixelProgram(const PixelProgramRef& pp);
+
+    /**
+     It is recommended to call RenderDevice::pushState immediately before
+     setting the pixel program, since the arguments can affect texture
+     state that will only be restored with RenderDevice::popState.
+     */
     void setPixelProgram(const PixelProgramRef& pp,
                          const GPUProgram::ArgList& args);
     
@@ -1164,11 +1171,12 @@ public:
 
     /**
      You must enable lighting and color materials yourself.  This just aids in
-     configuring an OpenGL light.
+     configuring an OpenGL light.  
 
-     @param toLightVector The vector <B>towards</B> the light, in world space.  You
+     @param toLightVector The vector <B>towards</B> the light, in world space.  <B>You
      must have already set the cameraToWorld matrix, and cannot change it without
-     reconfiguring the light.  The current objectToWorld matrix is ignored.
+     reconfiguring the light</B>.  Unlike OpenGL, the current objectToWorld matrix 
+     is ignored.
      @param lightNum between 0 and 8
 	 @param color Light color
      */
@@ -1186,15 +1194,27 @@ public:
         double              quadraticAttenuationCoef);
 
     /**
-     You must also turn on lighting.
+     Uses glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c), so 
+     you must also RenderDevice::enableLighting.
      */
     void setAmbientLightColor(
         const Color3&        color);
+
     void setAmbientLightColor(
         const Color4&        color);
 
     /**
-     Equivalent to glEnable(GL_LIGHTING)
+     Equivalent to glEnable(GL_LIGHTING).
+
+     On initialization, RenderDevice configures the color material as follows
+     (it will be this way unless you change it):
+     <PRE>
+      float spec[] = {1.0f, 1.0f, 1.0f, 1.0f};
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+      glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 10);
+      glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+      glEnable(GL_COLOR_MATERIAL);
+     </PRE>
      */
     void enableLighting();
     void disableLighting();
@@ -1209,9 +1229,6 @@ public:
      */
     Vector3 project(const Vector4& v) const;
     Vector3 project(const Vector3& v) const;
-
-    void setAmbientLightLevel(
-        const Color3&       color);
 
 
     /**

@@ -24,6 +24,7 @@ GApp::GApp(const GAppSettings& settings) {
     debugCamera       = NULL;
     debugController   = NULL;
     endProgram        = false;
+    _debugControllerWasActive = false;
 
     init(settings);
 }
@@ -85,6 +86,11 @@ bool GApp::debugMode() const {
 
 
 void GApp::setDebugMode(bool b) {
+    if (! b) {
+        _debugControllerWasActive = debugMode();
+    } else {
+        debugController->setActive(_debugControllerWasActive);
+    }
     _debugMode = b;
 }
 
@@ -113,6 +119,7 @@ GApp::~GApp() {
     renderDevice = NULL;
     debugLog = NULL;
 }
+
 
 void GApp::renderDebugInfo() {
     if (debugMode() && (debugFont != (CFontRef)NULL)) {
@@ -186,8 +193,11 @@ void GApplet::run() {
         doNetwork();
         doSimulation(timeStep);
         doLogic();
+
+        // Graphics
         app->renderDevice->beginFrame();
             app->renderDevice->pushState();
+                app->debugCamera->setProjectionAndCameraMatrix();
                 doGraphics();
                 app->renderDebugInfo();
             app->renderDevice->popState();

@@ -37,24 +37,19 @@ void Demo::doGraphics() {
 
     app->renderDevice->clear(true, true, true);
 
-    app->debugCamera->setProjectionAndCameraMatrix();
-
-    app->debugPrintf("Use app->debugPrintf to print text");
-    app->debugPrintf("to this overlay window.");
-
     // Setup lighting
-    glEnable(GL_LIGHTING);
+    app->renderDevice->enableLighting();
     glEnable(GL_LIGHT0);
 
     app->renderDevice->configureDirectionalLight
       (0, lighting.lightDirection, lighting.lightColor);
 
-    app->renderDevice->setAmbientLightLevel(lighting.ambient);
+    app->renderDevice->setAmbientLightColor(lighting.ambient);
 
     Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
 
-    glDisable(GL_LIGHTING);
     glDisable(GL_LIGHT0);
+    app->renderDevice->disableLighting();
     
     app->renderDevice->setTexture(0, tex);
     app->renderDevice->setCullFace(RenderDevice::CULL_NONE);
@@ -72,16 +67,21 @@ void Demo::doGraphics() {
         app->renderDevice->setTexCoord(0, Vector2(1, 0));
         app->renderDevice->sendVertex(Vector3(1, 1, 0));
     app->renderDevice->endPrimitive();
+
+    app->debugPrintf("Use app->debugPrintf to print text");
+    app->debugPrintf("to this overlay window.");
+
 }
 
 
 int main(int argc, char** argv) {
 
     GAppSettings settings;
-    settings.window.fsaaSamples = 4;
+    settings.window.fsaaSamples = 1;
     settings.window.resizable = true;
     settings.window.width  = 640;
     settings.window.height = 480;
+
  
     GApp app(settings);
 

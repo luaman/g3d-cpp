@@ -60,6 +60,12 @@ class GApp {
 private:
     bool                    _debugMode;
 
+    /**
+     Tracks whether the debug controller (activated with TAB) was
+     active when last we were in debug mode.
+     */
+    bool                    _debugControllerWasActive;
+
     /** Called from init */
     void loadFont(const std::string& fontName);
 
@@ -68,7 +74,6 @@ protected:
      Called from the constructor
      */
     virtual void init(const GAppSettings& settings);
-
 
 public:
 
@@ -100,13 +105,14 @@ public:
 
     /** Returns the state of debugMode.
         All debugX options are only in effect
-       when debugMode is also true.  Default is false*/
+        when debugMode is also true.  Default is false*/
     bool debugMode() const;
 
     /**
       Changes the state of debugMode. 
       You must <B>separately</B> activate the debugController 
-      if you want events to go to it.
+      if you want events to go to it (by default, the TAB key
+      activates it).
      */
     virtual void setDebugMode(bool b);
 
@@ -190,36 +196,34 @@ public:
     virtual void doSimulation(RealTime rdt);
 
     /**
-     Override and implement.  If you want the debugCamera to 
-     work correctly, you need to explicitly set the projection
-     matrix from it.  RenderDevice::beginFrame and endFrame are
-     called for you.
+     Override and implement.  The debugCamera's projection and object to world
+     matrices are set by default; you can set other cameras as desired. 
+     RenderDevice::beginFrame and endFrame are called for you.
      
        For example:
         <PRE>
         void Demo::doGraphics() {
-
             LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
 
             // Cyan background
 	        glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
 
-            renderDevice->clear(true, true, true);
-
-            debugCamera->setProjectionAndCameraMatrix();
+            app->renderDevice->clear(true, true, true);
 
             // Setup lighting
-            glEnable(GL_LIGHTING);
+            app->renderDevice->enableLighting();
             glEnable(GL_LIGHT0);
-            renderDevice->configureDirectionalLight
+
+            app->renderDevice->configureDirectionalLight
               (0, lighting.lightDirection, lighting.lightColor);
-            renderDevice->setAmbientLightLevel(lighting.ambient);
 
-            Draw::axes(CoordinateFrame(Vector3(0,0,0)), renderDevice);
+            app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-            glDisable(GL_LIGHTING);
+            Draw::axes(CoordinateFrame(Vector3(0,0,0)), app->renderDevice);
+
             glDisable(GL_LIGHT0);
-	            
+            app->renderDevice->disableLighting();
+
         }
         </PRE>     
      */

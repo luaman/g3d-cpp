@@ -1037,19 +1037,6 @@ Vector3 RenderDevice::project(const Vector4& v) const {
 }
 
 
-void RenderDevice::setAmbientLightLevel(
-    const Color3&       color) {
-
-    float c[] =
-        {color.r / lightSaturation,
-         color.g / lightSaturation,
-         color.b / lightSaturation,
-         1.0f};
-
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c);
-}
-
-
 void RenderDevice::cleanup() {
     debugAssert(initialized());
 	delete varSystem;
@@ -1901,7 +1888,13 @@ void RenderDevice::setAmbientLightColor(
     debugAssert(! inPrimitive);
 
     if (color != state.ambient) {
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, color);
+        float c[] =
+            {color.r / lightSaturation,
+             color.g / lightSaturation,
+             color.b / lightSaturation,
+             1.0f};
+    
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c);
         state.ambient = color;
     }
 }
