@@ -252,9 +252,9 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     // Don't use more texture units than allowed at compile time.
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
 
-    // NVIDIA cards have different numbers of texture coords, units,
-    // and textures
-    if (vendor == NVIDIA) {
+    // NVIDIA cards with GL_NV_fragment_program have different 
+    // numbers of texture coords, units, and textures
+    if (GLCaps::supports("GL_NV_fragment_program")) {
         glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
         _numTextureCoords = iClamp(_numTextureCoords,
                                    _numTextureUnits,
@@ -505,7 +505,7 @@ void RenderDevice::setVideoMode() {
     }
 
     debugAssertGLOk();
-    if (vendor == NVIDIA) {
+    if (GLCaps::supports("GL_NV_multisample_filter_hint")) {
         glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     }
     glEnable(GL_NORMALIZE);
