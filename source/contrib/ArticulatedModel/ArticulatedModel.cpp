@@ -24,13 +24,13 @@ ArticulatedModel::GraphicsProfile ArticulatedModel::profile() {
 }
 
 
-ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, const Vector3& scale) {
+ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, const CoordinateFrame& xform) {
     ArticulatedModel* model = new ArticulatedModel();
 
     if (endsWith(toLower(filename), ".3ds")) {
-        model->init3DS(filename, scale);
+        model->init3DS(filename, xform);
     } else if (endsWith(toLower(filename), ".ifs") || endsWith(toLower(filename), ".ifs")) {
-        model->initIFS(filename, scale);
+        model->initIFS(filename, xform);
     }
 
     model->updateAll();
@@ -44,7 +44,7 @@ ArticulatedModelRef ArticulatedModel::createEmpty() {
 }
 
 
-void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale) {
+void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFrame& xform) {
     // Note: vertices are actually mutated by scale; it is not carried along as
     // part of the scene graph transformation.
 
@@ -71,7 +71,7 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
         }
 
         part.cframe = object.keyframe.approxCoordinateFrame();
-        part.cframe.translation *= scale;
+        part.cframe.translation = xform.pointToWorldSpace(part.cframe.translation);
 
         part.name = name;
         partNameToIndex.set(part.name, p);
@@ -83,7 +83,8 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
             // Convert to object space (there is no normal data at this point)
             debugAssert(part.geometry.normalArray.size() == 0);
             for (int v = 0; v < part.geometry.vertexArray.size(); ++v) {
-                part.geometry.vertexArray[v] = part.cframe.pointToObjectSpace(part.geometry.vertexArray[v] * scale);
+                part.geometry.vertexArray[v] = part.cframe.pointToObjectSpace(
+                    xform.pointToWorldSpace(part.geometry.vertexArray[v]));
             }
 
             part.texCoordArray = object.texCoordArray;
@@ -240,7 +241,7 @@ void ArticulatedModel::updateAll() {
 }
 
 
-void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale) {
+void ArticulatedModel::initIFS(const std::string& filename, const CoordinateFrame& xform) {
     Array<int>   	index;
     Array<Vector3>  vertex;
     Array<Vector2>  texCoord;
@@ -249,7 +250,7 @@ void ArticulatedModel::initIFS(const std::string& filename, const Vector3& scale
 
     // Transform vertices
     for (int v = 0; v < vertex.size(); ++v) {
-        vertex[v] *= scale;
+        vertex[v] = xform.pointToWorldSpace(vertex[v]);
     }
 
     // Convert to a Part

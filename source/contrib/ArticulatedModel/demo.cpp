@@ -297,7 +297,7 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
     }
-    
+
     if (false)  {
         ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/venus-torso.ifs", 1.5);
 
@@ -327,7 +327,10 @@ void App::main() {
     }
 
     if (true) {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/legocar/legocar.3ds", 0.04);
+        CoordinateFrame xform;
+        xform.rotation[0][0] = xform.rotation[1][1] = xform.rotation[2][2] = 0.04;
+        xform.translation = Vector3(0, -1.45, -2.25);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/legocar/legocar.3ds", xform);
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
     }

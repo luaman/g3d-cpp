@@ -275,23 +275,36 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
     
     // Add reflective
     if (! material.reflect.isBlack() && 
-        GLCaps::supports_GL_EXT_texture_cube_map() &&
         lighting.notNull() &&
         (lighting->environmentMapColor != Color3::black())) {
 
-        // Reflections are specular and not affected by surface texture, only
-        // the reflection coefficient
-        rd->setColor(material.reflect.constant * lighting->environmentMapColor);
-        rd->setTexture(0, material.reflect.map);
+        rd->pushState();
 
-        // Configure reflection map
-        rd->configureReflectionMap(1, lighting->environmentMap);
+            // Reflections are specular and not affected by surface texture, only
+            // the reflection coefficient
+            rd->setColor(material.reflect.constant * lighting->environmentMapColor);
+            rd->setTexture(0, material.reflect.map);
 
-        defaultRender(rd);
-        setAdditive(rd, renderedOnce);
+            // Configure reflection map
+            if (GLCaps::supports_GL_ARB_texture_cube_map()) {
+                rd->configureReflectionMap(1, lighting->environmentMap);
+            } else {
+                // Use the top texture as a sphere map
+                glActiveTextureARB(GL_TEXTURE0_ARB + 1);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
 
-        // Disable reflection map
-        rd->setTexture(1, 0);
+                rd->setTexture(1, lighting->environmentMap);
+            }
+
+            defaultRender(rd);
+            setAdditive(rd, renderedOnce);
+
+            // Disable reflection map
+            rd->setTexture(1, 0);
+        rd->popState();
     }
 
     // Add ambient + lights

@@ -159,10 +159,10 @@ public:
 private:
 
     /** Called from the constructor */
-    void init3DS(const std::string& filename, const Vector3& scale);
+    void init3DS(const std::string& filename, const CoordinateFrame& xform);
 
     /** Called from the constructor */
-    void initIFS(const std::string& filename, const Vector3& scale);
+    void initIFS(const std::string& filename, const CoordinateFrame& xform);
 
 public:
 
@@ -183,9 +183,17 @@ public:
 
     /** 
       Supports 3DS, IFS, PLY2 file formats.  The format of a file is detected by the extension. 
-      @param scale Transform all vertices by this scale factor on load
+      @param xform Transform all vertices by this scale factor on load
       */
-    static ArticulatedModelRef fromFile(const std::string& filename, const Vector3& scale);
+    static ArticulatedModelRef fromFile(const std::string& filename, const CoordinateFrame& xform);
+
+    static ArticulatedModelRef fromFile(const std::string& filename, const Vector3& scale) {
+        CoordinateFrame xform;
+        xform.rotation[0][0] = scale.x;
+        xform.rotation[1][1] = scale.y;
+        xform.rotation[2][2] = scale.z;
+        return fromFile(filename, xform);
+    }
 
     /**
      Creates a new articulated model that you can construct by
