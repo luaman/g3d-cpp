@@ -12,6 +12,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> RenderDevice now creates a Win32Window on Windows instead of a SDLWindow.  SDLWindow is now
+          deprecated on Windows.
      <LI> VARArea now updates allocation sizes instead of VAR internally.  Added
           more accessor methods to VARArea to futher remove VAR from VARArea internals. [Corey]
      <LI> VARSystem.cpp moved to VARArea.cpp - filename change only! [Corey]

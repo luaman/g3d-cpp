@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-08-18
+ @edited  2004-10-30
  */
 
 
@@ -16,7 +16,11 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
-#include "GLG3D/SDLWindow.h"
+#ifdef G3D_WIN32
+    #include "GLG3D/Win32Window.h"
+#else
+    #include "GLG3D/SDLWindow.h"    
+#endif
 #include "GLG3D/GLCaps.h"
 
 namespace G3D {
@@ -126,7 +130,11 @@ bool RenderDevice::init(
     Log*                        log) {
 
     deleteWindow = true;
-    return init(new SDLWindow(_settings), log);
+    #ifdef G3D_WIN32
+        return init(Win32Window::create(_settings), log);
+    #else
+        return init(new SDLWindow(_settings), log);
+    #endif
 }
 
 

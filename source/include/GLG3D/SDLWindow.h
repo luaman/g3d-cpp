@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-09-25
+  @edited  2004-10-29
 */
 
 #ifndef G3D_SDLWINDOW_H
@@ -30,7 +30,10 @@ namespace G3D {
  On Windows, centering is relative to the primary monitor and full-screen
  means on the primary monitor.
 
-  @deprecated on Windows, use Win32Window instead.
+ @deprecated on Windows, use Win32Window instead.  SDL will not be 
+ supported (or required) on Windows in future versions of G3D.  It will
+ be available for Mac and Linux (and will still work on Windows, but
+ it won't be part of the build).
  */
 class SDLWindow : public GWindow {
 private:

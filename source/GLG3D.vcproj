@@ -754,7 +754,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="GLG3Dcpp\VARSystem.cpp">
+				RelativePath="GLG3Dcpp\VARArea.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
