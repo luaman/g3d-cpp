@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-09-16
+  @edited  2003-09-21
  */ 
 
 
@@ -14,7 +14,7 @@
 #include <G3DAll.h>
 
 // We construct a grid to find neighboring vertices in O(n/g^3) time
-#define GRID_RES 1
+#define GRID_RES 32
 
 /**
  Used by IFSModel for loading.
