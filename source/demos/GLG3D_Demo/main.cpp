@@ -148,15 +148,15 @@ int main(int argc, char** argv) {
                 }
 
                 renderDevice->push2D();
-                    font->draw2DString(
+                    font->draw2D(
                       format("%d fps", iRound(renderDevice->getFrameRate())),
                       10, 10, 28, Color3::WHITE, Color3::BLACK);
   
-                    font->draw2DString(
+                    font->draw2D(
                       format("%d tris", iRound(renderDevice->getTrianglesPerFrame())),
                       10, 72, 20, Color3::WHITE, Color3::BLACK);
 
-                    font->draw2DString(
+                    font->draw2D(
                       format("%d ktri/s", 
                       iRound(renderDevice->getTriangleRate() / 1000)),
                       10, 100, 20, Color3::WHITE, Color3::BLACK);
@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
                     default:;
                     }
 	
-                   font->draw2DString(str, 10,
+                   font->draw2D(str, 10,
                       renderDevice->getHeight() - 40, 20, Color3::YELLOW, Color3::BLACK);
 
                 renderDevice->pop2D();

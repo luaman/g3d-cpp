@@ -200,15 +200,15 @@ void doGraphics() {
       
                 renderDevice->push2D();
 
-                font->draw2DString(
+                font->draw2D(
                     format("%d fps", frameRate),
                     10, 10, 28, Color3::WHITE, Color3::BLACK);
 
-                font->draw2DString(
+                font->draw2D(
                     format("%d tris", numTris),
                     10, 72, 20, Color3::WHITE, Color3::BLACK);
 
-                font->draw2DString(
+                font->draw2D(
                     format("%d ktri/s", triRate),
                     10, 100, 20, Color3::WHITE, Color3::BLACK);
 
