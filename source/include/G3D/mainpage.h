@@ -619,6 +619,8 @@
 
    <P>
    <UL>
+     <LI> FIX: Fixed a bug in Array shrinking that could cause memory corruption
+     <LI> FIX: Windows with an aspect ratio of less than 1 now allowed.
      <LI> VARArea::reset() now waits for rendering calls using its vertex
           arrays to complete before wiping the memory.
      <LI> G3D::filenameBaseExt, G3D::filenameExt

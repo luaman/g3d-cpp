@@ -1060,7 +1060,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     // Set projection matrix
     double aspect;
-    aspect = viewport.width / viewport.height;
+    aspect = (double)viewport.width / viewport.height;
 
     proj3D                      = true;
     projectionMatrixParams[0]   = -aspect;

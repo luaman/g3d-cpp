@@ -303,7 +303,7 @@ public:
           }
       }
 
-      // Allocate 8 elements or 32 bytes, whichever is lower.
+      // Allocate 8 elements or 32 bytes, whichever is higher.
       const int minSize = iMax(8, 32 / sizeof(T));
 
       if (num > numAllocated) {
@@ -317,25 +317,17 @@ public:
 
          realloc(oldNum);
 
-      } else if ((num <= numAllocated / 2) && shrinkIfNecessary) {
-          // Decrease the underlying array
-          if (numAllocated > 8) {
-              // Always keep at least 8 allocated
-              numAllocated = num;
-              
-              if (numAllocated < minSize) {
-                 numAllocated = minSize;
-              }
+      } else if ((num <= numAllocated / 2) && shrinkIfNecessary && (numAllocated > minSize)) {
 
-              realloc(oldNum);
-          }
+          // Only copy over old elements that still remain after resizing
+          // (destructors were called for others if we're shrinking)
+          realloc(iMin(num, oldNum));
+
       }
 
-      if (num > oldNum) {
-          // Call the constructors on newly revealed elements.
-          for (int i = oldNum; i < num; i++) {
-              new (data + i) T();
-          }
+      // Call the constructors on newly revealed elements.
+      for (int i = oldNum; i < num; i++) {
+          new (data + i) T();
       }
    }
 
