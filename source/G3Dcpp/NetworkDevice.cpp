@@ -3,11 +3,17 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2003-06-09
+ @edited  2003-06-25
  */
 
 #include <stdlib.h>
 #include <time.h>
+#include "G3D/platform.h"
+
+#ifdef G3D_WIN32
+    #include <malloc.h>
+#endif
+
 #include "G3D/NetworkDevice.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
@@ -15,60 +21,59 @@
 #include "G3D/G3DGameUnits.h"
 #include "G3D/stringutils.h"
 #include "G3D/debug.h"
-#include "G3D/platform.h"
 
 namespace G3D {
 
 #if defined(G3D_LINUX) || defined(G3D_OSX)
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/tcp.h>
-#define _alloca alloca
-/** Define an error code for non-windows platforms. */
-int WSAGetLastError() {
-    return -1;
-}
+    #include <unistd.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+    #include <netinet/tcp.h>
+    #define _alloca alloca
+    /** Define an error code for non-windows platforms. */
+    int WSAGetLastError() {
+        return -1;
+    }
 
-#define SOCKET_ERROR -1
+    #define SOCKET_ERROR -1
 
-static std::string windowsErrorCode(int code) {
-    return "";
-}
+    static std::string windowsErrorCode(int code) {
+        return "";
+    }
 
-static std::string windowsErrorCode() {
-    return "";
-}
+    static std::string windowsErrorCode() {
+        return "";
+    }
 
-static const int WSAEWOULDBLOCK = -100;
+    static const int WSAEWOULDBLOCK = -100;
 
-typedef int SOCKET;
-typedef struct sockaddr_in SOCKADDR_IN;
+    typedef int SOCKET;
+    typedef struct sockaddr_in SOCKADDR_IN;
 
 #else 
 
-// Windows
-static std::string windowsErrorCode(int code) {
-    LPTSTR formatMsg = NULL;
+    // Windows
+    static std::string windowsErrorCode(int code) {
+        LPTSTR formatMsg = NULL;
 
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                  FORMAT_MESSAGE_IGNORE_INSERTS |
-                  FORMAT_MESSAGE_FROM_SYSTEM,
-                    NULL,
-                    code,
-                    0,
-                    (LPTSTR)&formatMsg,
-                    0,
-                    NULL);
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                      FORMAT_MESSAGE_IGNORE_INSERTS |
+                      FORMAT_MESSAGE_FROM_SYSTEM,
+                        NULL,
+                        code,
+                        0,
+                        (LPTSTR)&formatMsg,
+                        0,
+                        NULL);
 
-    return format("CODE %d: %s\n", code, formatMsg);
-}
+        return format("CODE %d: %s\n", code, formatMsg);
+    }
 
-static std::string windowsErrorCode() {
-    return windowsErrorCode(GetLastError());
-}
+    static std::string windowsErrorCode() {
+        return windowsErrorCode(GetLastError());
+    }
 
 #endif
 
@@ -76,6 +81,7 @@ static std::string windowsErrorCode() {
 #if defined(G3D_WIN32) || defined(G3D_OSX)
     typedef int socklen_t;
 #endif
+
 
 static void logSocketInfo(Log* debugLog, const SOCKET& sock) {
     uint32 val;
