@@ -243,6 +243,8 @@ protected:
 };
 
 
+}
+
 } // namespace
 
 #endif
