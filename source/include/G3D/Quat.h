@@ -214,6 +214,10 @@ public:
     }
 
 
+    /**
+     @deprecated
+     Use toUnit()
+     */
     inline Quat unitize() const {
         double mag2 = dot(*this);
         if (fuzzyEq(mag2, 1.0)) {

@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2004-01-15
+  @edited  2004-04-02
 */
 
 #include "G3D/GCamera.h"
@@ -212,13 +212,13 @@ void GCamera::getClipPlanes(
     clip.append(Plane(Vector3(-cos(fovx/2), 0, -sin(fovx/2)), Vector3::ZERO));
 
 	// Left
-	clip.append(Plane(Vector3(-clip[1].normal().x, 0, clip[1].normal().z), Vector3::ZERO));
+	clip.append(Plane(Vector3(-clip.last().normal().x, 0, clip.last().normal().z), Vector3::ZERO));
 
     // Top
     clip.append(Plane(Vector3(0, -cos(fieldOfView/2), -sin(fieldOfView/2)), Vector3::ZERO));
 
 	// Bottom
-	clip.append(Plane(Vector3(0, -clip[4].normal().y, clip[4].normal().z), Vector3::ZERO));
+	clip.append(Plane(Vector3(0, -clip.last().normal().y, clip.last().normal().z), Vector3::ZERO));
 
     // Far
     if (farPlane < inf) {
