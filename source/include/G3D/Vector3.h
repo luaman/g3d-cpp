@@ -28,10 +28,37 @@ class VectorSwizzle3;
 class VectorSwizzle4;
 
 /**
+
+  <B>Swizzles</B>
  Vector classes have swizzle operators, e.g. <CODE>v.xy()</CODE>, that
  allow selection of arbitrary sub-fields.  These can be used as write 
  masks, although the implementation is a hack using proxy objects and
- can lead to confusing error messages.
+ can lead to confusing error messages.  Examples
+
+  <PRE>
+Vector3 v(1, 2, 3);
+Vector3 j;
+Vector2 b;
+
+b = v.xz();
+j = b.xx();
+j.xy() = b;
+</PRE>
+
+Of course, you can also get yourself into a lot of trouble, like:
+
+  <PRE>
+j.xy() = j.xx();
+j.xx() = b;
+
+// void foo(Vector2& v);
+foo(j.xy());
+
+</PRE>
+
+  So don't write code like that.
+
+  <B>Warning</B>
 
  Do not subclass-- this implementation makes assumptions about the
  memory layout.

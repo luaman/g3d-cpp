@@ -60,11 +60,12 @@ Vector4::Vector4(const VectorSwizzle2& v1, const VectorSwizzle2& v2) {
     w = v2.y;
 }
 
-Vector4::Vector4(const VectorSwizzle3& v, float fW) {
+
+Vector4::Vector4(const VectorSwizzle3& v, float f) {
     x = v.x;
     y = v.y;
     z = v.z;
-    w = fw;
+    w = f;
 }
 
 Vector4::Vector4(BinaryInput& b) {
