@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-01-08
+# @edited  2004-01-13
 #
 # Each build target is a procedure.
 #
@@ -244,8 +244,8 @@ def release(args):
     zip('../temp/copy/*', 'release/g3d-src-' + version + '.zip')
 
     # Make a separate zipfile for the data
-    copyIfNewer('../data', '../temp/copy/data')
-    zip('../temp/copy/*', 'release/g3d-data-' + version + '.zip')
+    copyIfNewer('../data', '../temp/copy/data/data')
+    zip('../temp/copy/data/*', 'release/g3d-data-' + version + '.zip')
 
 
 
