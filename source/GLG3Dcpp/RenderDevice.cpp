@@ -885,8 +885,8 @@ void RenderDevice::setVideoMode(
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, colorBits);
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alphaBits);
     if (fsaaSamples > 1) {
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, fsaaSamples);
+      //  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+      //  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, fsaaSamples);
     }
 
 
