@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-12-08
+ @edited  2003-12-16
  */
 
 #include "GLG3D/GFont.h"
@@ -66,7 +66,7 @@ Vector2 GFont::texelSize() const {
 }
 
 
-void GFont::drawString(
+Vector2 GFont::drawString(
     const std::string&  s,
     double              x,
     double              y,
@@ -80,6 +80,8 @@ void GFont::drawString(
     // Shrink the vertical texture coordinates by 1 texel to avoid bilinear interpolation
     // interactions with mipmapping.
     double sy = h / charHeight;
+
+    double x0 = 0;
 
     for (int i = 0; i < n; ++i) {
         char c   = s[i] & 127;
@@ -114,10 +116,12 @@ void GFont::drawString(
             x += propW * subWidth['M'] * 0.85;
         }
     }
+
+    return Vector2(x - x0, sy);
 }
 
 
-void GFont::draw2D(
+Vector2 GFont::draw2D(
     const std::string&          s,
     const Vector2&              pos2D,
     double                      size,
@@ -130,7 +134,6 @@ void GFont::draw2D(
     double x = pos2D.x;
     double y = pos2D.y;
 
- 
     double h = size * 1.5;
     double w = h * charWidth / charHeight;
     double fw = 1.0 / charWidth;
@@ -195,11 +198,13 @@ void GFont::draw2D(
             }
 
             renderDevice->setColor(Color4(color.r * renderDevice->getBrightScale(), color.g * renderDevice->getBrightScale(), color.b * renderDevice->getBrightScale(), color.a));
-            drawString(s, x, y, w, h, spacing);
+            Vector2 bounds = drawString(s, x, y, w, h, spacing);
 
         renderDevice->endPrimitive();
 
     renderDevice->popState();
+
+    return bounds;
 }
 
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-12-01
+ @edited  2003-12-16
  */
 
 #ifndef G3D_GFONT_H
@@ -52,7 +52,7 @@ private:
     TextureRef texture;
 
     /** Assumes you are already inside of beginPrimitive(QUADS) */
-    void drawString(
+    Vector2 drawString(
         const std::string&      s,
         double                  x,
         double                  y,
@@ -121,8 +121,10 @@ public:
      this color is drawn about the text.
 
      @param spacing Fixed width fonts are spaced based on the width of the 'M' character.
+
+     @return Returns the x and y bounds (ala get2DStringBounds) of the printed string.
      */
-    void draw2D(
+    Vector2 draw2D(
         const std::string&  s,
         const Vector2&      pos2D,
         double              size    = 12,
