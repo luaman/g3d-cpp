@@ -2,14 +2,18 @@
 
 G3D is a commercial-grade 3D Engine available as Open Source (BSD License).  
 It is used in games, tech demos, research papers, military simulators, and 
-university courses.  
+university courses.  It provides a set of routines and structures so common 
+that they are needed in almost every graphics program.  It makes low-level
+libraries like OpenGL and sockets easier to use without limiting functionality
+or performance.  G3D gives you a rock-solid, highly optimized base from which 
+to build your application.
 
-G3D provides all of the common support code needed to build any 3D application.  It 
-makes low-level libraries like OpenGL and sockets easier to use without taking away 
-any functionality or performance.  G3D is lower level than a Game Engine or Scene 
-Graph system (e.g. Unreal Engine).  Your programs can be much more flexible, but the 
-tradeoff is that you have to know more about 3D programming.  G3D is intended for 
-users who are already familiar with C++ and DirectX or OpenGL.
+<IMG SRC="3dengine.jpg" ALIGN=RIGHT>
+G3D does not contain scene graph or GUI routines.  Because of this, you have much
+more flexibility in how you structure your programs programs.  The tradeoff is that
+you have to know more about 3D programming.  G3D is intended for users who are already 
+familiar with C++ and DirectX or OpenGL.  Several good GUI libraries exist and 
+we recommend using one with G3D if your project has extensive UI needs.
 
 @section chapters Table of Contents
 
@@ -83,7 +87,7 @@ users who are already familiar with C++ and DirectX or OpenGL.
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
 <TR><TD VALIGN=TOP COLSPAN=2>Index: 
-link indexedbytopic By Topic \endlink |
+\link indexedbytopic By Topic \endlink |
 Alphabetic <A HREF="classes.html">Classes</A> and <A HREF="globals_func.html">Functions</A> |
 \link frequent Frequently Used (bookmark this!)\endlink
 </TD></TR> 

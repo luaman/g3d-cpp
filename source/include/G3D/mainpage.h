@@ -8,6 +8,10 @@
 /**
  @mainpage
    <P>
+
+  Check out the new \link guidewelcome Manual \endlink
+<P>
+
     <CENTER><A HREF="http://sourceforge.net/forum/?group_id=76879">Forums</A>
     | <A HREF="map.png">Namespace Map</A> 
 	| <A HREF="error.html">Error FAQ</A> 
@@ -22,246 +26,7 @@
      provide a single solution to graphics needs under many different
      compilers, operating systems, and processor architectures.
 
-     <P>
-     <CODE>\#include &lt;G3DAll.h&gt;</CODE> in your project (if you don't
-     want the OpenGL "GLG3D" part use <CODE>&lt;graphics3D.h&gt;</CODE> instead).
-     <UL>
-     <LI><B>Geometry</B> &nbsp; &nbsp;
-        G3D::AABox,
-        G3D::Box,
-		G3D::Capsule,
-		G3D::CollisionDetection,
-		G3D::Color3,
-		G3D::Color3uint8,
-        G3D::Color4,
-		G3D::Color4uint8,
-		G3D::Cone,
-		G3D::ConvexPolygon,
-		G3D::ConvexPolyhedron,
-		G3D::CoordinateFrame,
-        G3D::GCamera,
-		G3D::PhysicsFrame,
-		G3D::Line,
-		G3D::LineSegment,
-		G3D::Matrix3,
-        G3D::Matrix4,
-        G3D::MeshAlg,
-        G3D::Quat,
-		G3D::Plane,
-		G3D::Ray,
-        G3D::Rect2D,
-        G3D::Sphere,
-		G3D::Triangle,
-		G3D::Vector2,
-        G3D::Vector2int16,
-		G3D::Vector3,
-		G3D::Vector3int16,
-		G3D::Vector4,
-        G3D::GameTime,
-        G3D::RealTime,
-        G3D::tesselateComplexPolygon,
-        G3D::toSeconds 
      
-     <LI><B>Data structures</B> &nbsp; &nbsp;
-        G3D::AABSPTree,
-		G3D::Array,
-		G3D::Queue,
- 	    G3D::Set,
-		G3D::Table
-
-     <LI><B>Image formats</B> &nbsp; &nbsp;
-		G3D::GImage,
-		G3D::GImage::Error,	
-		G3D::computeNormalMap,
-        G3D::flipRGBVertical,
-  	    G3D::RGBtoARGB,
-		G3D::RGBtoBGR,
-		G3D::RGBtoBGRA,
-        G3D::RGBtoRGBA,
-		G3D::RGBxRGBtoRGBA
-
-     <LI><B>Integer math</B> &nbsp; &nbsp;
-        G3D::ceilPow2, 
-        G3D::highestBit,
-	    G3D::iAbs,
-		G3D::iCeil,
-		G3D::iClamp,
-		G3D::iWrap,
-		G3D::iFloor,
-		G3D::iMax, 
-        G3D::iMin,
-	    G3D::isPow2,
-		G3D::isOdd,
-		G3D::isEven, 
-		G3D::iSign,
-		G3D::iRound,
-		G3D::iRandom,
-		G3D::uint8,
-		G3D::uint16,
-		G3D::uint32,
-		G3D::uint64,
-        G3D::int8,
-		G3D::int16,
-		G3D::int32,
-		G3D::int64
-     
-     <LI><B>Floating point</B> &nbsp; &nbsp;
-	     G3D::abs,
-		 G3D::aCos,
-		 G3D::aSin,
-		 G3D::aTan,
-		 G3D::aTan2,
-         G3D::clamp,
-         G3D::cyclicCatmullRomSpline,
-		 G3D::float32,
-         G3D::float64
-         G3D::fuzzyEq,
-         G3D::fuzzyNe,
-         G3D::fuzzyGt,
-         G3D::fuzzyGe,
-         G3D::fuzzyLt,
-         G3D::fuzzyLe,
-         G3D::fuzzyEpsilon,
-         G3D::lerp,
-		 G3D::linearSpline,
-         G3D::sign,
-		 G3D::rsq,
-		 G3D::unitRandom,
-		 G3D::random,
-         G3D::symmetricRandom,
-         G3D::min,
-		 G3D::max,
-		 G3D::square,
-         G3D::sinc,
-		 G3D::sumSquares,
-		 G3D::distance,
-         G3D::toRadians,
-		 G3D::toDegrees,
-		 G3D::isNaN,
-		 G3D::isFinite,
-         G3D::inf,
-		 G3D::nan,
-		 G3D::infReal,
-		 G3D::nanReal,
-         G3D::wrap,
-		 G3D::PI, 
-         G3D::HALF_PI,
-		 G3D::TWO_PI,
-         G3D::rsqrt
-         
-     <LI><B>String</B> &nbsp; &nbsp;
-        G3D::beginsWith, G3D::endsWith, G3D::license, G3D::stringSplit,
-        G3D::stringJoin, G3D::format, G3D::vformat, G3D::wordWrap, 
-        G3D::stringCompare, G3D::stringPtrCompare, G3D::toUpper, G3D::toLower,
-        G3D::NEWLINE, G3D::trimWhitespace
-
-     <LI><B>Debug</B> &nbsp; &nbsp;
-        <B>G3D::debugAssert</B>, G3D::isValidHeapPointer,  
-        G3D::isValidPointer,
-        <B>G3D::debugAssertM</B>, G3D::debugPrintf, G3D::error, 
-        G3D::Log, G3D::alwaysAssertM
-
-     <LI><B>I/O</B> &nbsp; &nbsp;
-        G3D::BinaryInput, 
-        G3D::BinaryOutput, 
-        G3D::copyFile, 
-        G3D::createDirectory,
-        G3D::createTempFile, 
-        G3D::fileExists, 
-        G3D::fileLength,
-        G3D::filenameBaseExt,
-        G3D::filenameExt,
-        G3D::G3DEndian,
-        G3D::getFiles, 
-        G3D::getDirs,
-        G3D::msgBox,
-        G3D::parseFilename, 
-        G3D::prompt, 
-        G3D::readFileAsString,
-        G3D::System,
-        G3D::resolveFilename,
-        G3D::TextInput,
-		G3D::TextOutput,
-        G3D::Token,
-        G3D::TextInput::WrongTokenType,
-        G3D::writeStringToFile
-
-    <LI><B>Network</B> &nbsp; &nbsp;
-        G3D::DiscoveryAdvertisement,
-        G3D::DiscoveryClient,
-        G3D::DiscoveryServer,
-        G3D::DiscoverySettings,
-        G3D::LightweightConduit,
-        G3D::NetAddress,
-        G3D::NetListener,
-        G3D::NetMessage,
-        G3D::NetworkDevice, 
-        G3D::ReliableConduit
-     </UL>
-
-     <UL>
-      <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
-        G3D::Draw,
-        G3D::GWindow,
-        G3D::SDLWindow,
-        G3D::Milestone,
-        G3D::PixelProgram,
-        G3D::RenderDevice,
-        G3D::RenderDeviceSettings,
-        G3D::Texture,
-        G3D::TextureFormat,
-        G3D::TextureManager,
-        G3D::VAR,
-        G3D::VARArea, 
-        G3D::VertexProgram,
-        G3D::VertexAndPixelShader,
-        G3D::Shader,
-        G3D::SimpleShader,
-        G3D::ObjectShader
-
-      <LI><B>OpenGL Extension</B> &nbsp; &nbsp;
-        debugAssertGLOk,
-        DECLARE_GLFORMATOF,
-        G3D::glLoadMatrix, 
-        G3D::glLoadInvMatrix, 
-        G3D::GLCaps,
-        G3D::glColor,
-        G3D::glMultInvMatrix, 
-        G3D::glMultMatrix, 
-        G3D::glMultiTexCoord,
-        G3D::glNormal, 
-        G3D::glTexCoord, 
-        G3D::glToScreen,
-        G3D::glVertex,
-        G3D::sizeOfGLFormat, 
-        G3D::glFormatOf, 
-        G3D::glGetProcAddress,
-        G3D::getOpenGLState,
-        G3D::glGetInteger, 
-        G3D::glGetBoolean,
-        G3D::glGetDouble, 
-        G3D::glGetFloat,
-        G3D::glGetMatrix,
-        G3D::GLenumToString
-
-      <LI><B>Game/Demo Infrastructure</B> &nbsp; &nbsp;
-        G3D::beginMarkShadows, G3D::endMarkShadows, G3D::markShadows,
-        G3D::drawFeatureEdges,
-        G3D::GFont,
-        G3D::GApp, G3D::GApplet, G3D::GAppSettings,
-        G3D::GLight,
-        G3D::GMaterial,
-        G3D::Sky,
-        G3D::LightingParameters,
-        G3D::MD2Model,
-        G3D::IFSModel,
-        G3D::PosedModel,
-        G3D::PosedModelWrapper,
-        G3D::realWorldLocalTime, 
-        G3D::UserInput, 
-        G3D::ManualCameraController
-     </UL>
-
     See the demo projects for a simple introduction to using SDL, OpenGL, 
     Graphics3D and MSVC++ to create and render 3D geometry.
 
@@ -274,16 +39,19 @@
    <P>
 
    Graphics3D (G3D) is an open source library for game developers,
-   students, and researchers.  The goal of the library is to provide a
+   students, and researchers.  It provides a
    set of low level routines and data structures for getting projects
    rolling.  Its scope is limited to those routines and structures
    that are so common they are needed in almost every graphics
-   program.  and has been optimized for high performance when building
-   in release mode.  The straightforward and clear coding style of the
+   program.  G3D manages OpenGL
+   
+   The straightforward and clear coding style of the
    source will help you see how routines are implemented.  Extensive
    debugging support and debug assertions in the codebase itself will
-   make your C++ programs reliable and easy to debug as well as fast.
- 
+   make your C++ programs reliable and easy to debug while extensive
+   optimizations will make your program fast when building
+   in release mode. 
+   
    Although the library provides most of the low level pieces for
    building a graphics engine, it is not a game/graphics engine by
    itself.  You have to assemble the pieces, provide structures for
