@@ -95,7 +95,8 @@ void DiscoveryServer::sendAnnouncement() const {
 
 void DiscoveryServer::sendShutDown() const {
     NetAddress broadcast = NetAddress::broadcastAddress(settings->serverBroadcastPort);
-    net->send(broadcast, &ShutdownMessage());
+    ShutdownMessage s;
+    net->send(broadcast, &s);
 }
 
 

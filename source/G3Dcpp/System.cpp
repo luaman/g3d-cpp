@@ -5,17 +5,17 @@
 
   Note: every routine must call init() first.
 
-  There are two kinds of detection used in this file.  At compile time,
-  the _MSC_VER #define is used to determine whether x86 assembly can be used at all.
-  At runtime, processor detection is used to determine if we can safely
-  call the routines that use that assembly.
+  There are two kinds of detection used in this file.  At compile
+  time, the _MSC_VER #define is used to determine whether x86 assembly
+  can be used at all.  At runtime, processor detection is used to
+  determine if we can safely call the routines that use that assembly.
 
   @cite Rob Wyatt http://www.gamasutra.com/features/wyatts_world/19990709/processor_detection_01.htm
   @cite Benjamin Jurke http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-ProcessorDetectionClass&forum=cotd&id=-1
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-01-03
+  @edited  2004-01-27
  */
 
 #include "G3D/platform.h"
@@ -885,21 +885,21 @@ RealTime System::getTick() {
                 _counterFrequency.QuadPart;
     #else
         // Linux resolution defaults to 100Hz.
-        // There is no need to do a separate RDTSC call as gettimeofday actually
-        // uses RDTSC when on systems that support it, otherwise it uses the 
-        // system clock.
+        // There is no need to do a separate RDTSC call as gettimeofday
+        // actually uses RDTSC when on systems that support it, otherwise
+        // it uses the system clock.
         struct timeval now;
         gettimeofday(&now, NULL);
 
-        return (now.tv_sec  - _start.tv_sec) * 1000.0 +
-               (now.tv_usec - _start.tv_usec) / 1000.0;
+        return (now.tv_sec  - _start.tv_sec) +
+               (now.tv_usec - _start.tv_usec) / 1e6;
     #endif
 }
 
 
 RealTime System::getLocalTime() {
     return getTick() + realWorldGetTickTime0;
-}        
+}
 
 
 void* System::alignedMalloc(size_t bytes, size_t alignment) {

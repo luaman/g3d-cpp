@@ -114,8 +114,8 @@ Vector3 GCamera::project(
     const Rect2D&                       viewport) const {
 
 
-    int screenWidth  = viewport.width();
-    int screenHeight = viewport.height();
+    int screenWidth  = (int)viewport.width();
+    int screenHeight = (int)viewport.height();
 
     Vector3 out = cframe.pointToObjectSpace(point);
     double w = out.z * CoordinateFrame::zLookDirection;

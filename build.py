@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-01-24
+# @edited  2004-01-27
 #
 # Each build target is a procedure.
 #
@@ -12,7 +12,7 @@
 from buildlib import *
 
 # The library version number
-version = "6_00-b13"
+version = "6_00"
 
 # Turn the platform into a name to put in the
 # "lib" directory name
@@ -48,7 +48,7 @@ clean      Delete the build, release, temp, and install directories
 help       Display this message
 
 See cpp/readme.html for detailed build information.
-    """
+"""
 
 def installDir(args):
     if (args == []):
@@ -60,6 +60,16 @@ def installDir(args):
         if ((s != "") and (s[len(s) - 1] != "/") and (s[len(s) - 1] != "\\")):
             s = s + "/"
         return s + 'g3d-' + version
+
+""" On Posix, sets the permissions of the install dir to a+rx"""
+def setPermissions(args):
+    if (os.name == 'posix'):
+        # This could be accomplished more elegantly using os.walk
+        curdir = os.getcwd()
+        os.chdir(installDir(args))
+        print "find . -name '*' | xargs chmod uag+rx"
+        os.system("find . -name '*' | xargs chmod uag+rx")
+        os.chdir(curdir)
 
 ###############################################################################
 #                                                                             #
@@ -156,6 +166,7 @@ def lib(args):
 
     # Copy any system libraries over
     copyIfNewer("source/" + platform + "-lib", libdir)
+    setPermissions(args)
 
 ###############################################################################
 #                                                                             #
@@ -174,6 +185,7 @@ def test(args):
     run('temp/release/test/test', [])
     run('temp/debug/test/test', [])
 
+
 ###############################################################################
 #                                                                             #
 #                             doc Target                                      #
@@ -186,7 +198,7 @@ def doc(args):
     os.chdir("..")
     copyIfNewer('source/html', installDir(args) + '/html')
     copyIfNewer('temp/html', installDir(args) + '/html')
-
+    setPermissions(args)
 
 ###############################################################################
 #                                                                             #
@@ -210,6 +222,7 @@ def install(args, copyData=1):
 
     if (copyData):
         copyIfNewer('../data', installDir(args) + '/data')
+    setPermissions(args)
 
 ###############################################################################
 #                                                                             #
@@ -250,13 +263,14 @@ def release(args):
     install([], 0)
     zip('install/*', 'release/g3d-' + version + '.zip')
 
+    setPermissions(args)
+
     # Source zip
     zip('../temp/sourcecopy/*', 'release/g3d-src-' + version + '.zip')
 
     # Make a separate zipfile for the data
     copyIfNewer('../data', '../temp/datacopy/data')
     zip('../temp/datacopy/*', 'release/g3d-data-' + version + '.zip')
-
 
 
 ###############################################################################
