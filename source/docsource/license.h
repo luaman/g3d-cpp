@@ -67,7 +67,7 @@ Installation <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></
   @section reallicense License
 
    <I>G3D is licensed under the <A HREF="http://www.opensource.org/licenses/bsd-license.php">BSD license</A>, 
-   with portions controlled by the <A HREF="IJG-README.TXT">IJG license</A></I>
+   with portions controlled by the <A HREF="IJG-README.TXT">IJG license</A> and <A HREF="libpng-LICENSE.txt">PNG Reference Library license</A></I>
 
   <CODE>
    <IMG SRC="http://opensource.org/trademarks/osi-certified/web/osi-certified-120x100.gif">
