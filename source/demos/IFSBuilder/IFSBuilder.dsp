@@ -122,6 +122,10 @@ SOURCE=.\IFSModelBuilder.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Load3DS.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\MD2.h
 # End Source File
 # End Group

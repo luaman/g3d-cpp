@@ -16,7 +16,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-12-01
+  @edited  2003-12-09
  */ 
 
 #include <G3DAll.h>
@@ -57,9 +57,7 @@ IFSModel* makeDinosaur();
 int main(int argc, char** argv) {
 
     // Search for the data
-    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "font/dominant.fnt")); ++count) {
-        DATA_DIR = std::string("../") + DATA_DIR;
-    }
+    DATA_DIR = demoFindData();
 
     // Initialize
     debugLog     = new Log();
@@ -85,7 +83,7 @@ int main(int argc, char** argv) {
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
 //    std::string in("c:/tmp/diablo.3ds");
-    std::string in("d:/tmp/cracked-tetra.sm");
+    std::string in("c:/tmp/models/jackolantern1.3ds");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");
@@ -110,7 +108,7 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Cracked Tetrahedron";
+        model->name = "Jack 'O Lantern";
         
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");

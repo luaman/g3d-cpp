@@ -7,12 +7,13 @@
   @cite MD2 format by id software
 
   @created 2002-02-27
-  @edited  2003-11-26
+  @edited  2003-12-09
  */
 
 #include "IFSModel.h"
 #include "IFSModelBuilder.h"
 #include "MD2.h"
+#include "Load3DS.h"
 
 extern RenderDevice* renderDevice;
 extern GCamera       camera;
@@ -161,10 +162,15 @@ void XIFSModel::loadMD2(const std::string& filename) {
 }
 
 
+
 void XIFSModel::load3DS(const std::string& filename) {
     IFSModelBuilder builder;
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
+
+    Load3DS loader(b);
+
+    /*
 
     const int MAIN3DS   = 0x4D4D;
     const int EDIT3DS   = 0x3D3D;
@@ -232,6 +238,7 @@ void XIFSModel::load3DS(const std::string& filename) {
         }
     }
     
+  */
     builder.setName(filename);
 
     builder.commit(this);
