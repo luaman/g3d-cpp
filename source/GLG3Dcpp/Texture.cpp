@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2003-12-20
+ @edited  2003-12-30
 */
 
 #include "GLG3D/glcalls.h"
@@ -345,7 +345,7 @@ TextureRef Texture::fromFile(
     std::string filenameExt;
 
     if (dimension == DIM_CUBE_MAP) {
-        splitFilename(filename, filenameBase, filenameExt);
+        splitFilenameAtWildCard(filename, filenameBase, filenameExt);
     }
 
     for (int f = 0; f < numFaces; ++f) {
@@ -415,7 +415,7 @@ TextureRef Texture::fromTwoFiles(
     std::string alphaFilenameExt;
 
     if (dimension == DIM_CUBE_MAP) {
-        splitFilename(filename, filenameBase, filenameExt);
+        splitFilenameAtWildCard(filename, filenameBase, filenameExt);
     }
     
     GImage color[6];
@@ -605,7 +605,7 @@ TextureRef Texture::createEmpty(
 }
 
 
-void Texture::splitFilename(
+void Texture::splitFilenameAtWildCard(
     const std::string&  filename,
     std::string&        filenameBase,
     std::string&        filenameExt) {

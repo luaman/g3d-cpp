@@ -39,8 +39,11 @@ Sky::Sky(
         drawCelestialBodies(_drawCelestialBodies),
         renderDevice(rd) {
 
-    debugAssertM((directory == "") || (directory[directory.size() - 1] == '/') 
-        || (directory[directory.size() - 1] == '\\'), "Directory must end in a slash");
+    debugAssertM(
+        (directory == "") || 
+        (directory[directory.size() - 1] == '/') || 
+        (directory[directory.size() - 1] == '\\'), 
+        "Directory must end in a slash");
 
     const TextureFormat* format;
     const TextureFormat* alphaFormat;
@@ -62,17 +65,17 @@ Sky::Sky(
     std::string filenameExt;
     std::string fullFilename = filename;
 
-    Texture::splitFilename(fullFilename, filenameBase, filenameExt);
+    // First look relative to the current directory
+    Texture::splitFilenameAtWildCard(fullFilename, filenameBase, filenameExt);
 
     if (! fileExists(filenameBase + "up" + filenameExt)) {
-        fullFilename = directory + filename;
-        Texture::splitFilename(fullFilename, filenameBase, filenameExt);
+        // Look relative to the specified directory
+        filenameBase = directory + filenameBase;
     }
-
 
     if (renderDevice->supportsOpenGLExtension("GL_ARB_texture_cube_map")) {
    
-        cubeMap = Texture::fromFile(directory + filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+        cubeMap = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
 
         for (int t = 0; t < 6; ++t) {
             texture[t] = NULL;

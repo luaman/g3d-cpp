@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2003-12-06
+  @edited  2003-12-30
 */
 
 #ifndef G3D_SKY_H
@@ -95,10 +95,12 @@ private:
 public:
     /**
      @param directory If directory is not "" it should
-      end in a trailing slash.
+      end in a trailing slash.  This is the location of the real.str file
+      and the sun, moon, etc. files.
 
      @param filename A filename with "*" in place of {up, lt, rt, bk, ft, dn}.
-      The filename can be either fully qualified or relative to directory.
+      The filename can be either fully qualified, relative to the current
+      directory, or relative to <I>directory</I>.
 
      @param drawCelestialBodies If true, draw the sun, moon, and stars. Requires
       moon.jpg, moon-alpha.jpg, sun.jpg, lensflare.jpg, sun-rays.jpg be present

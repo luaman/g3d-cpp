@@ -81,10 +81,10 @@ public:
     /**
      Splits a filename around the '*' character-- used by cube maps to generate all filenames.
      */
-    static void splitFilename(
+    static void splitFilenameAtWildCard(
         const std::string&  filename,
-        std::string&        filenameBase,
-        std::string&        filenameExt);
+        std::string&        filenameBeforeWildCard,
+        std::string&        filenameAfterWildCard);
 
 private:
 
