@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-12-16
+ @edited  2004-02-28
  */
 
 #include "GLG3D/GFont.h"
@@ -138,10 +138,6 @@ Vector2 GFont::draw2D(
 
     double h = size * 1.5;
     double w = h * charWidth / charHeight;
-    double fw = 1.0 / charWidth;
-    double fh = 1.0 / charHeight;
-    (void)fw;
-    (void)fh;
 
     switch (xalign) {
     case XALIGN_RIGHT:
@@ -181,6 +177,95 @@ Vector2 GFont::draw2D(
         0, 0, 0, 1};
 
     renderDevice->pushState();
+        renderDevice->setTextureMatrix(0, m);
+        renderDevice->setTexture(0, texture);
+
+        renderDevice->setTextureCombineMode(0, RenderDevice::TEX_MODULATE);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
+
+        renderDevice->beginPrimitive(RenderDevice::QUADS);
+
+            if (border.a > 0.05) {
+                renderDevice->setColor(border);
+                for (int dy = -1; dy <= 1; dy += 2) {
+                    for (int dx = -1; dx <= 1; dx += 2) {
+                        drawString(s, x + dx, y + dy, w, h, spacing);
+                    }
+                }
+            }
+
+            renderDevice->setColor(Color4(color.r * renderDevice->getBrightScale(), color.g * renderDevice->getBrightScale(), color.b * renderDevice->getBrightScale(), color.a));
+            Vector2 bounds = drawString(s, x, y, w, h, spacing);
+
+        renderDevice->endPrimitive();
+
+    renderDevice->popState();
+
+    return bounds;
+}
+
+
+Vector2 GFont::draw3D(
+    const std::string&          s,
+    const CoordinateFrame&      pos3D,
+    double                      size,
+    const Color4&               color,
+    const Color4&               border,
+    XAlign                      xalign,
+    YAlign                      yalign,
+    Spacing                     spacing) const {
+    
+    double x = 0;
+    double y = 0;
+
+    double h = size * 1.5;
+    double w = h * charWidth / charHeight;
+
+    switch (xalign) {
+    case XALIGN_RIGHT:
+        x -= get2DStringBounds(s, size, spacing).x;
+        break;
+
+    case XALIGN_CENTER:
+        x -= get2DStringBounds(s, size, spacing).x / 2;
+        break;
+    
+    default:
+        break;
+    }
+
+    switch (yalign) {
+    case YALIGN_CENTER:
+        y -= h / 2.0;
+        break;
+
+    case YALIGN_BASELINE:
+        y -= baseline * h / (double)charHeight;
+        break;
+
+    case YALIGN_BOTTOM:
+        y -= h;
+        break;
+
+    default:
+        break;
+    }
+
+
+    double m[] = 
+       {1.0 / texture->getTexelWidth(), 0, 0, 0,
+        0, 1.0 / texture->getTexelHeight(), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1};
+
+    renderDevice->pushState();
+        // We need to get out of Y=up coordinates.
+        CoordinateFrame flipY;
+        flipY.rotation[1][1] = -1;
+        renderDevice->setObjectToWorldMatrix(pos3D * flipY);
+
+        renderDevice->setCullFace(RenderDevice::CULL_NONE);
         renderDevice->setTextureMatrix(0, m);
         renderDevice->setTexture(0, texture);
 

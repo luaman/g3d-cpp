@@ -184,8 +184,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-//    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cow.ifs");
-    IFSModelRef cube   = IFSModel::create("C:/tmp/bump.ifs");
+    IFSModelRef cube   = IFSModel::create("../../../data/ifs/cow.ifs");
 
     entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }
@@ -241,13 +240,15 @@ void Demo::doGraphics() {
         sky->renderLensFlare(lighting);
     }
 
-    app->renderDevice->push2D();
-        CoordinateFrame cframe(
-            Matrix3::fromAxisAngle(Vector3::UNIT_Z, toRadians(45)),
-            Vector3(100, 100, 0));
-        app->renderDevice->setObjectToWorldMatrix(cframe);
-        app->debugFont->draw2D("Test", Vector2(0, 0), 20);
-    app->renderDevice->pop2D();
+/*    app->debugFont->draw3D("Test",
+        CoordinateFrame(Matrix3::fromAxisAngle(Vector3::UNIT_X, toRadians(0)),
+        Vector3(0, 0, 1)), .1, Color3::BLACK, Color4::CLEAR, GFont::XALIGN_CENTER,
+        GFont::YALIGN_CENTER);*/
+
+    app->debugFont->draw3D("Test", CoordinateFrame(), .1, Color3::BLACK, Color4::CLEAR, GFont::XALIGN_CENTER,
+        GFont::YALIGN_CENTER);
+
+    Draw::axes(app->renderDevice);
 }
 
 

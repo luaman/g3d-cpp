@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2004-02-22
+ @edited  2004-02-28
  */
 
 #ifndef G3D_GFONT_H
@@ -144,6 +144,25 @@ public:
         const std::string&  s,
         const Vector2&      pos2D,
         double              size    = 12,
+        const Color4&       color   = Color3::BLACK,
+        const Color4&       outline = Color4::CLEAR,
+        XAlign              xalign  = XALIGN_LEFT,
+        YAlign              yalign  = YALIGN_TOP,
+        Spacing             spacing = PROPORTIONAL_SPACING) const;
+
+    /**
+     Text is visible from behind.  The text is oriented so that it
+     reads "forward" when the pos3D z-axis points towards the viewer.
+
+     Note that text, like all transparent objects, should be rendered
+     in back to front sorted order to achieve proper alpha blending.
+
+     @param size In meters.
+     */
+    Vector2 draw3D(
+        const std::string&          s,
+        const CoordinateFrame&      pos3D,
+        double              size    = .1,
         const Color4&       color   = Color3::BLACK,
         const Color4&       outline = Color4::CLEAR,
         XAlign              xalign  = XALIGN_LEFT,
