@@ -163,7 +163,6 @@ static void createTexture(
             (bytesFormat == GL_LUMINANCE_ALPHA) ||
             (bytesFormat == GL_BGR_EXT) ||
             (bytesFormat == GL_BGRA_EXT) ||
-//            (bytesFormat == GL_ARGB_I3D) ||
             (bytesFormat == GL_422_EXT) ||
             (bytesFormat == GL_422_REV_EXT) ||
             (bytesFormat == GL_422_AVERAGE_EXT) ||
