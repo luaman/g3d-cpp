@@ -18,7 +18,7 @@ uniform vec3        specularExponentConstant;
     uniform sampler2D   specularExponentMap;
 #endif
 
-#ifdef DIFFUSECONSTANT
+#if defined(DIFFUSECONSTANT)
     uniform vec3        diffuseConstant;
 #endif
 
@@ -27,15 +27,6 @@ uniform vec3        specularExponentConstant;
 #endif
 
 
-#ifdef NORMALBUMPMAP
-    /** Multiplier for bump map.  Typically on the range [0, 0.05]
-      This increases with texture scale and bump height. */
-    uniform float       bumpMapScale;
-
-    /** xyz = normal, w = bump height */
-    uniform sampler2D   normalBumpMap;
-#endif
-
 uniform sampler2DShadow shadowMap;
 
 // World parameters
@@ -43,7 +34,15 @@ varying vec3        wsEyePos;
 varying vec3        wsPosition;
 varying vec2        texCoord;
 
-#ifdef NORMAPBUMPMAP
+#ifdef NORMALBUMPMAP
+    /** Multiplier for bump map.  Typically on the range [0, 0.05]
+      This increases with texture scale and bump height. */
+    uniform float       bumpMapScale;
+
+    /** xyz = normal, w = bump height */
+    uniform sampler2D   normalBumpMap;
+
+    /** Un-normalized (interpolated) tangent space eye vector */
     varying vec3        _tsE;
 #endif
 
@@ -54,64 +53,60 @@ varying vec4        shadowCoord;
 
 void main(void) {
 
-    const vec3 diffuseColor =
-#   ifdef DIFFUSECONSTANT
-        diffuseConstant
-#       ifdef DIFFUSEMAP
-             * tex2D(diffuseMap, texCoord).rgb
-#       endif
-#   else
-#       ifdef DIFFUSEMAP
-             tex2D(diffuseMap, texCoord).rgb
-#       else
-             vec3(0, 0, 0)
-#       endif
-#   endif
-        ;
-
     const vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
 
-    // World space normal
-    const vec3 wsN = tan_Z.xyz;
-    const vec3 wsL = lightPosition.xyz;
-    vec3 wsE = wsEyePos - wsPosition;
-    const vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
-
-
-#if 0
-
 #   ifdef NORMALBUMPMAP
-    // Convert bumps to a world space distance
-    float  bump   = (texture2D(normalBumpMap, texCoord).w - 0.5) * bumpMapScale;
+        // Convert bumps to a world space distance
+        const vec4 NB = (texture2D(normalBumpMap, texCoord) - vec4(0.5, 0.5, 0.5, 0.5));
 
-	vec3 tsE = normalize(_tsE);
+        // Use Reedbeta's trick of suppressing sharp transitions at steep edges.
+        // TODO: preprocess the map
+        float  bump   = NB.w * NB.z * bumpMapScale;
 
-    // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
-	// from TBN space, so we must flip the y-axis.
+	    const vec3 tsE = normalize(_tsE);
 
-    // We should technically divide by the z-coordinate
+        // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
+	    // from TBN space, so we must flip the y-axis.
 
-    vec2 offsetCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
+        texCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
 
-    vec4 surfColor = texture2D(diffuseMap, offsetCoord);
+	    // note that the columns might be slightly not orthogonal due to interpolation
+	    const mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
+	    
+        // Take the normal map values back to (-1, 1) range to compute a tangent space normal
+        const vec3 tsN = ((texture2D(normalBumpMap, texCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
 
-	// note that the columns might be slightly not orthogonal due to interpolation
-	mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
-	
-    vec3 wsE = normalize(wsEyePos - wsPosition);
+	    // Take the normal to world space 
+	    const vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
+
+#   else
+
+        // World space normal
+        const vec3 wsN = tan_Z.xyz;
+#   endif
+
+    // Light vector      
+	const vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
+
+    // Eye vector
+    const vec3 wsE = normalize(wsEyePos - wsPosition);
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
 
-	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
+    // Reflection vector
+    const vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
 
-    // Take the normal map values back to (-1, 1) range to compute a tangent space normal
-    vec3 tsN = ((texture2D(normalBumpMap, offsetCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
-
-	// Take the normal to world space 
-	vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
-#endif
-
-#endif
-
+#   if (defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP))
+        const vec3 diffuseColor =
+#       ifdef DIFFUSECONSTANT
+            diffuseConstant
+#           ifdef DIFFUSEMAP
+                * tex2D(diffuseMap, texCoord).rgb
+#           endif
+#       else
+            tex2D(diffuseMap, texCoord).rgb
+#       endif
+        ;
+#   endif
 
     // Compute projected shadow coord.
     shadowCoord = shadowCoord / shadowCoord.w;
@@ -128,11 +123,12 @@ void main(void) {
             lightColor * shadow *
         ( 
 #          if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
-              // Diffuse
-                max(dot(wsL, wsN), 0) * diffuseColor +
+                // Diffuse
+                max(dot(wsL, wsN), 0) 
+                * diffuseColor
 #          endif
 
            // Specular
-           pow(max(dot(wsL, wsR), 0), specularExponentConstant) * specularConstant);
+           + pow(max(dot(wsL, wsR), 0), specularExponentConstant) * specularConstant);
 }
 

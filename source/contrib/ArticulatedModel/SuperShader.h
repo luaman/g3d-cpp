@@ -50,11 +50,24 @@ public:
         }
 
         /** Returns true if both components will produce similar non-zero terms in a
-            lighting equation */
+            lighting equation.  Black and white are only similar to themselves. */
         inline bool similarTo(const Component& other) const{
-            return 
-                (isBlack() && other.isBlack()) ||
-                (map.isNull() == other.map.isNull());
+            // Black and white are only similar to themselves
+            if (isBlack()) {
+                return other.isBlack();
+            } else if (other.isBlack()) {
+                return false;
+            }
+
+            if (isWhite()) {
+                return other.isWhite();
+            } else if (other.isWhite()) {
+                return false;
+            }
+
+            // Two components are similar if they both have/do not have texture
+            // maps.
+            return map.isNull() == other.map.isNull();
         }
     };
 

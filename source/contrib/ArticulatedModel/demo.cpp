@@ -296,21 +296,6 @@ void App::main() {
         x += 2;
     }
 
-    if (false)  {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/venus-torso.ifs", 1.5);
-
-        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].twoSided = true;
-        material.diffuse = Color3(.9, .9, .8);
-        material.transmit = Color3::black();
-        material.reflect = Color3::white() * .04;
-        material.specular = Color3::white() * .3;
-        material.specularExponent = Color3::white() * 5;
-        model->updateAll();
-
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-    }
     
     if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
@@ -366,12 +351,11 @@ void App::main() {
         material.specularExponent = Color3::white() * 25;
         model->updateAll();
 
-        CoordinateFrame cframe(Vector3(x,0,0));
+        CoordinateFrame cframe(Vector3(x,-.25,0));
         cframe.lookAt(Vector3(5,0,5));
         entityArray.append(Entity::create(model, cframe));
         x += 2;
     }
-
 
     {
         CoordinateFrame xform;
@@ -440,14 +424,14 @@ void App::main() {
         triList.twoSided = true;
         triList.material.emit.constant = Color3::black();
         triList.material.diffuse.constant = Color3::white();
-        triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg");
+        triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg", TextureFormat::AUTO, Texture::TILE);
 
         GImage normalBumpMap;
         computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap);
         triList.material.normalBumpMap =         
-            Texture::fromGImage("Bump Map", normalBumpMap);
+            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::TILE);
 
-        triList.material.bumpMapScale = 0.1;
+        triList.material.bumpMapScale = 0.06;
 
         triList.material.specular.constant = Color3::black();
         triList.material.specularExponent.constant = Color3::white() * 60;
@@ -463,7 +447,79 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
+ 
+     if (true) {
+        ArticulatedModelRef model = ArticulatedModel::createEmpty();
+
+        model->name = "Stained Glass";
+        ArticulatedModel::Part& part = model->partArray.next();
+        part.cframe = CoordinateFrame();
+        part.name = "root";
     
+        const double S = 1.0;
+        part.geometry.vertexArray.append(
+            Vector3(-S,  S, 0),
+            Vector3(-S, -S, 0),
+            Vector3( S, -S, 0),
+            Vector3( S,  S, 0));
+
+        part.geometry.normalArray.append(
+            -Vector3::unitZ(),
+            -Vector3::unitZ(),
+            -Vector3::unitZ(),
+            -Vector3::unitZ());
+
+        double texScale = 1;
+        part.texCoordArray.append(
+            Vector2(0,0) * texScale,
+            Vector2(0,1) * texScale,
+            Vector2(1,1) * texScale,
+            Vector2(1,0) * texScale);
+
+        part.tangentArray.append(
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX());
+
+        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
+        triList.indexArray.clear();
+        triList.indexArray.append(0, 1, 2);
+        triList.indexArray.append(0, 2, 3);
+
+        triList.twoSided = true;
+        triList.material.emit.constant = Color3::black();
+
+        triList.material.diffuse.constant = Color3::white() * 0.1;
+
+        GImage normalBumpMap;
+        computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap);
+        triList.material.normalBumpMap =         
+            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
+
+        triList.material.bumpMapScale = 0.02;
+
+        triList.material.specular.constant = Color3::white() * 0.4;
+        triList.material.specular.map = Texture::fromFile("demo/stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
+        triList.material.specularExponent.constant = Color3::white() * 60;
+
+        triList.material.reflect.constant = Color3::white() * 0.2;
+        triList.material.reflect.map = Texture::fromFile("demo/stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
+
+        triList.material.transmit.constant = Color3::white();
+        triList.material.transmit.map = Texture::fromFile("demo/stained-glass-transmit.png", TextureFormat::AUTO, Texture::CLAMP);
+
+        triList.computeBounds(part);
+
+        part.indexArray = triList.indexArray;
+
+        part.computeIndexArray();
+        part.updateVAR();
+        part.updateShaders();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
 
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"contrib/ArticulatedModel/3ds/cube.3ds"

@@ -157,8 +157,12 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
                 if (material.diffuse.constant != Color3::white()) {
                     defines += "#define DIFFUSECONSTANT\n";
                 }
-            } else  {
+            } else {
                 defines += "#define DIFFUSECONSTANT\n";
+
+                if (material.diffuse.constant == Color3::white()) {
+                    defines += "#define DIFFUSEWHITE\n";
+                }
             }
         }
 
@@ -172,6 +176,23 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
                 }
             } else  {
                 defines += "#define EMITCONSTANT\n";
+            }
+        }
+
+        if (material.reflect.constant != Color3::black()) {
+            if (material.reflect.map.notNull()) {
+                defines += "#define REFLECTMAP\n";
+
+                // If the color is white, don't multiply by it
+                if (material.reflect.constant != Color3::white()) {
+                    defines += "#define REFLECTCONSTANT\n";
+                }
+            } else  {
+                defines += "#define REFLECTCONSTANT\n";
+
+                if (material.reflect.constant == Color3::white()) {
+                    defines += "#define REFLECTWHITE\n";
+                }
             }
         }
 
