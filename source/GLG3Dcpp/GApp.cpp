@@ -35,7 +35,7 @@ GApp::GApp(const GAppSettings& settings) {
         dataDir = settings.dataDir;
     }
 
-    debugLog	 = new Log();
+    debugLog	 = new Log(settings.logFilename);
     renderDevice = new RenderDevice();
     renderDevice->init(settings.window, debugLog);
 

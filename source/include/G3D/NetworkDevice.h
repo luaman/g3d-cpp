@@ -210,6 +210,12 @@ public:
 // sometimes an application will switch modes on a single socket.  For
 // example, when transferring 3D level geometry during handshaking with
 // a game server.
+/**
+ A conduit that guarantees messages will arrive, intact and in order.
+ Create on the client using NetworkDevice::createReliableConduit and
+ on the server using NetListener::waitForConnection.  Set the reference
+ counted pointer to NULL to disconnect.
+ */
 class ReliableConduit : public Conduit {
 private:
     friend class NetworkDevice;

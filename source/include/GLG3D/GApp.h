@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2003-02-19
+ @edited  2004-03-29
  */
 
 #ifndef G3D_GAPP_H
@@ -42,10 +42,13 @@ public:
      */
     std::string             debugFontName;
 
+    std::string             logFilename;
+
     /** When true, the networkDevice is initialized.  Defaults to true. */
     bool                    useNetwork;
 
-    GAppSettings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), useNetwork(true) {
+    GAppSettings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), 
+        logFilename("log.txt"), useNetwork(true) {
     }
 };
 
