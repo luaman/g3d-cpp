@@ -114,6 +114,10 @@ SOURCE=.\G3Dcpp\Color3.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Color3uint8.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Color4.cpp
 # End Source File
 # Begin Source File
@@ -170,10 +174,6 @@ SOURCE=.\G3Dcpp\NetworkDevice.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\G3Dcpp\PackedColor3.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\G3Dcpp\PhysicsFrame.cpp
 # End Source File
 # Begin Source File
@@ -222,6 +222,10 @@ SOURCE=.\G3Dcpp\Vector3.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Vector3uint16.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Vector4.cpp
 # End Source File
 # End Group
@@ -263,6 +267,10 @@ SOURCE=.\include\G3D\Color3.h
 # Begin Source File
 
 SOURCE=.\include\G3D\Color3.inl
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Color3uint8.h
 # End Source File
 # Begin Source File
 
@@ -354,10 +362,6 @@ SOURCE=.\include\G3D\NetworkDevice.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\PackedColor3.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\PhysicsFrame.h
 # End Source File
 # Begin Source File
@@ -431,6 +435,10 @@ SOURCE=.\include\G3D\Vector3.h
 # Begin Source File
 
 SOURCE=.\include\G3D\Vector3.inl
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Vector3uint16.h
 # End Source File
 # Begin Source File
 
