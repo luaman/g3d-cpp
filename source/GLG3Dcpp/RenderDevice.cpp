@@ -2092,11 +2092,11 @@ void RenderDevice::setCameraToWorldMatrix(
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrix(state.matrices.cameraToWorldMatrixInverse * state.matrices.objectToWorldMatrix);
 
-    // Reload lights since the camera matrix changed.
+    // Reload lights since the camera matrix changed.  We must do this even for lights
+    // that are not enabled since those lights will not be re-set at the GL level if they
+    // are enabled without being otherwise changed.
     for (int i = 0; i < MAX_LIGHTS; ++i) {
-        if (state.lights.lightEnabled[i]) {
-            setLight(i, &state.lights.light[i], true);
-        }
+        setLight(i, &state.lights.light[i], true);
     }
 }
 

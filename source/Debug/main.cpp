@@ -110,7 +110,6 @@ void Demo::doLogic() {
 
 void Demo::doGraphics() {
 
-    app->renderDevice->enableAlphaWrite();
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
@@ -118,27 +117,29 @@ void Demo::doGraphics() {
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
+    
     if (app->sky.notNull()) {
         app->sky->render(lighting);
     }
 
+    app->renderDevice->setLight(0, GLight::directional(
+            Vector3(1,0,0), Color3::white()));
+    
     // Setup lighting
     app->renderDevice->enableLighting();
-		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-		app->renderDevice->setAmbientLightColor(lighting.ambient);
+        app->renderDevice->setAmbientLightColor(Color3::black());
+        app->renderDevice->setSpecularCoefficient(0);
        
-        Draw::sphere(Sphere(Vector3::zero(), 2), app->renderDevice);
+        Draw::box(AABox(Vector3(-2,-2,-2), Vector3(2,2,2)), app->renderDevice, Color3::white() * 0.5, Color4::clear());
 
     app->renderDevice->disableLighting();
 
+    /*
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
     }
+    */
 
-    app->renderDevice->push2D();
-//        app->renderDevice->setTexture(0, app->im);
-//        Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice);
-    app->renderDevice->pop2D();
 }
 
 
