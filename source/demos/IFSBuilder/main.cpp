@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Octagon";
+        model->name = "Mobius Strip with 3-Half Twists";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");

@@ -66,16 +66,49 @@ void XIFSModel::createPolygon() {
     builder.commit(this);
 }
 
+/** Called from createRing */
+static void addSubdividedQuad(
+    IFSModelBuilder& builder,
+    const Vector3&   A,
+    const Vector3&   B,
+    const Vector3&   C,
+    const Vector3&   D,
+    int              numSubdivisions) {
+
+    if (numSubdivisions == 0) {
+        // Base case
+        builder.addTriangle(A, B, C);
+        builder.addTriangle(A, C, D);
+    } else {
+        
+        //   D----C
+        //   |__--|
+        //   F----E
+        //   |__--|
+        //   A----B
+
+        Vector3 F = (A + D) / 2;
+        Vector3 E = (C + B) / 2;
+        // Cut in half along the long axis
+        addSubdividedQuad(builder, A, B, E, F, numSubdivisions - 1);
+        addSubdividedQuad(builder, F, E, C, D, numSubdivisions - 1);
+    }
+}
+
 
 void XIFSModel::createRing() {
     IFSModelBuilder builder;
 
-    int quads = 100;
+    int quads = 150;
+
+    // Creates 2^n triangles
+    int subdivisions = 3;
 
     // Radius is fixed at 1.0
     // Half width
     double w = .25;
 
+    // 3x half twist torus
     double numTwists = 1.5;
 
     for (int i = 0; i < quads; ++i) {
@@ -85,7 +118,7 @@ void XIFSModel::createRing() {
         double twist0 = numTwists * 2 * G3D_PI * i / quads;
         double twist1 = numTwists * 2 * G3D_PI * (i + 1) / quads;
         
-        // Center of ring
+        // Midline of ring
         Vector3 a, b;
 
         // Normals
@@ -100,13 +133,24 @@ void XIFSModel::createRing() {
         c = a;
         d = b;
 
+        // center of ring
+        //
+        //   -f--h- 
+        //    | /|
+        //    |/ |
+        //  --e--g--
+        //
+        //   outside
+
         e = a + w * (cos(twist0) * Vector3::UNIT_Y + sin(twist0) * c);
         f = a - w * (cos(twist0) * Vector3::UNIT_Y + sin(twist0) * c);
         g = b + w * (cos(twist1) * Vector3::UNIT_Y + sin(twist1) * c);
         h = b - w * (cos(twist1) * Vector3::UNIT_Y + sin(twist1) * c);
 
-        builder.addTriangle(e, g, h);
-        builder.addTriangle(e, h, f);
+        // Want to add quad eghf, but we need to subdivide it along edges
+        // ef and hg.
+
+        addSubdividedQuad(builder, e, g, h, f, subdivisions);
     }
 
     builder.commit(this);

@@ -823,6 +823,10 @@ void RenderDevice::setVideoMode() {
     glEnable(GL_COLOR_MATERIAL);
     debugAssertGLOk();
 
+    // Compute specular term correctly
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    debugAssertGLOk();
+
     if (debugLog) debugLog->println("Setting initial rendering state.\n");
     glDisable(GL_LIGHT0);
     debugAssertGLOk();
