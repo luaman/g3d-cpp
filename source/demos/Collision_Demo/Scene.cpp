@@ -5,14 +5,14 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-02-10
+ @edited  2003-04-05
  */
 
 #include "Scene.h"
 #include "Object.h"
 #include "Matrix4.h"
 
-extern const std::string    DATA_DIR;
+extern std::string          DATA_DIR;
 extern Camera*              camera;
 extern RenderDevice*        renderDevice;
 extern int                  depthBits;

@@ -2,10 +2,9 @@
  @file Collision_Demo/main.cpp
 
   To run this program:
-    1. Install OpenGL and SDL
-    2. Change the DATA_DIR constant (if necessary)
-    3. Compile and run
-    4. Press ESC to exit
+    1. Install OpenGL and SDL (www.libsdl.org)
+    2. Compile and run
+    3. Press ESC to exit
 
  <P>
 
@@ -13,9 +12,6 @@
  system.  Shadow maps are rendered using the OpenGL SGIX_SHADOW extension to
  show how to use non-G3D calls with G3D.  A Matrix4 skeleton is provided as well.
 
- <P>
- To run this demo, you must install SDL and copy SDL.DLL to the same directory
- as main.cpp.
  
  <P>
  Requires:
@@ -26,7 +22,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-03-31
+ @edited  2003-04-05
  */
 
 #include <G3DAll.h>
@@ -37,7 +33,7 @@
 /**
  The path to the data directory from this program's directory.
  */
-const std::string DATA_DIR("d:/libraries/graphics3d-5.00b/data/");
+std::string DATA_DIR("data/");
 
 /** The same bit depth is used for the shadow map and the screen */
 int depthBits     = 24;
@@ -69,6 +65,10 @@ void doUserInput();
 
 
 int main(int argc, char** argv) {
+    // Search for the data
+    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/p51-mustang.ifs")); ++count) {
+        DATA_DIR = std::string("../") + DATA_DIR;
+    }
 
     // Initialize
     debugLog	 = new Log();

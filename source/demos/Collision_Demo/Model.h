@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-02-08
+ @edited  2003-04-05
  */
 
 #ifndef MODEL_H
@@ -11,7 +11,7 @@
 
 #include <G3DAll.h>
 
-extern const std::string DATA_DIR;
+extern std::string DATA_DIR;
 
 /**
  Indexed triangle model.

@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-03-31
+ @edited  2003-04-05
  */
 
 #include <G3DAll.h>
@@ -120,11 +120,11 @@ void buildScene() {
 
     insertTray();
     insertRamps();
-    insertSpiralSlide();
-    insertRollingContactSpheres();
-    insertRestingContactSpheres();
+    //insertSpiralSlide();
+    //insertRollingContactSpheres();
+    //insertRestingContactSpheres();
    
-    scene->insertDynamic(new SimSphere(Sphere(Vector3(-4, 3, 4), .25), Vector3(-1, 0, 0), Color3::BLUE));
+    //scene->insertDynamic(new SimSphere(Sphere(Vector3(-4, 3, 4), .25), Vector3(-1, 0, 0), Color3::BLUE));
     
     // Spheres
     
