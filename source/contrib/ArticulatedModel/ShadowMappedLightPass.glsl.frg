@@ -114,21 +114,21 @@ void main(void) {
     const float s = .5 / 512.0;
     vec3 shadow =
          (shadow2D(shadowMap, shadowCoord.xyz).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3( s, -s, 0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  s, 0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0)).xyz) / 5.0;
+          shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0.0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3( s, -s, 0.0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  s, 0.0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0.0)).xyz) / 5.0;
 
     gl_FragColor.rgb =
             lightColor * shadow *
         ( 
 #          if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
                 // Diffuse
-                max(dot(wsL, wsN), 0) 
+                max(dot(wsL, wsN), 0.0) 
                 * diffuseColor
 #          endif
 
            // Specular
-           + pow(max(dot(wsL, wsR), 0), specularExponentConstant) * specularConstant);
+           + pow(max(dot(wsL, wsR), 0.0), specularExponentConstant) * specularConstant);
 }
 

@@ -151,7 +151,7 @@ void main(void) {
 #   endif
 
     // tan_Z is world space normal
-    vec3 ambient = ambientTop + (ambientTop - ambientBottom) * min(wsN.y, 0);
+    vec3 ambient = ambientTop + (ambientTop - ambientBottom) * min(wsN.y, 0.0);
 
     gl_FragColor.rgb =
 #       if defined(EMITCONSTANT) || defined(EMITMAP)
@@ -161,12 +161,12 @@ void main(void) {
 
 #       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
             diffuseColor * 
-            (ambient + max(dot(wsL, wsN), 0) * lightColor)
+            (ambient + max(dot(wsL, wsN), 0.0) * lightColor)
 
 #       endif
 
         // Specular
-        + pow(max(dot(wsL, wsR), 0), specularExponentConstant) * lightColor * specularConstant
+        + pow(max(dot(wsL, wsR), 0.0), specularExponentConstant) * lightColor * specularConstant
         
 #       if defined(REFLECTCONSTANT) || defined(REFLECTMAP)     
             // Reflection
