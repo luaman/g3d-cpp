@@ -6,20 +6,48 @@
 
 #include "SuperShader.h"
 
+// TODO: remove
+TextureRef SuperShader::Material::defaultNormalMap;
+// TODO: remove
+TextureRef SuperShader::Material::whiteMap;
+
 void SuperShader::Material::configureShaderArgs(
     VertexAndPixelShader::ArgList& args) const {
     
-    args.set("diffuseMap",              diffuse.map);
+    // TODO: remove
+    if (whiteMap.isNull()) {
+        GImage im(4,4,3);
+        for (int y = 0; y < im.height; ++y) {
+            for (int x = 0; x < im.width; ++x) {
+                im.pixel3(x, y) = Color3(1, 1, 1);
+            }
+        }
+        whiteMap = Texture::fromGImage("White", im, TextureFormat::RGB8);
+    }
+
+    // TODO: remove
+    if (defaultNormalMap.isNull()) {
+        GImage im(4,4,4);
+        for (int y = 0; y < im.height; ++y) {
+            for (int x = 0; x < im.width; ++x) {
+                im.pixel4(x, y) = Color4(0.5, 0.5, 1.0, 0.0);
+            }
+        }
+        defaultNormalMap = Texture::fromGImage("Normal Map", im, TextureFormat::RGBA8);
+    }
+
+    // TODO: don't even set fields that have no corresponding map
+    args.set("diffuseMap",              diffuse.map.notNull() ? diffuse.map : whiteMap);
     args.set("diffuseConstant",         diffuse.constant);
-    args.set("specularMap",             specular.map);
+    args.set("specularMap",             specular.map.notNull() ? specular.map : whiteMap);
     args.set("specularConstant",        specular.constant);
-    args.set("specularExponentMap",     specularExponent.map);
+    args.set("specularExponentMap",     specularExponent.map.notNull() ? specularExponent.map : whiteMap);
     args.set("specularExponentConstant", specularExponent.constant);
-    args.set("reflectMap",              reflect.map);
+    args.set("reflectMap",              reflect.map.notNull() ? reflect.map : whiteMap);
     args.set("reflectConstant",         reflect.constant);
-    args.set("emitMap",                 emit.map);
+    args.set("emitMap",                 emit.map.notNull() ? emit.map : whiteMap);
     args.set("emitConstant",            emit.constant);
-    args.set("normalMap",               normalMap);
+    args.set("normalMap",               normalMap.notNull() ? normalMap : defaultNormalMap);
     args.set("bumpMapScale",            bumpMapScale);
 }
 
@@ -30,8 +58,9 @@ ShaderRef SuperShader::getShader(const Material& material) {
 
     if (s.isNull()) {
         std::string path = "";//"../contrib/ArticulatedModel/";
+
         // TODO: only enable terms needed by this material
-        s = Shader::fromFiles(path + "SuperShader.glsl.vert", "SuperShader.glsl.frag");
+        s = Shader::fromFiles(path + "SuperShader.glsl.vrt", "SuperShader.glsl.frg");
         cache.add(material, s);
     }
 
@@ -59,6 +88,7 @@ void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
 
     // TODO
     //lighting->configureShaderArgs(shader->args);
+
     shader->beforePrimitive(renderDevice);
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 }
@@ -73,11 +103,10 @@ const std::string& SuperShader::messages() const {
     return t;
 }
 
-/*
-void SuperShader::setLighting(const LightingEnvironmentRef& lightingEnvironment) {
-    lighting = lightingEnvironment;
+
+void SuperShader::setLighting(const LightingRef& _lighting) {
+    lighting = _lighting;
 }
-*/
 
 ////////////////////////////////////////////////////////////////////////////
 SuperShader::Cache SuperShader::cache;

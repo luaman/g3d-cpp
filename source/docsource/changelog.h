@@ -23,6 +23,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Shader::ArgList checks to see if Texture arguments are null
      <LI> G3D::RenderDevice::setAlphaWrite now defaults to true if the GWindow has an alpha channel.
      <LI> G3D::RenderDevice::screenshotPic now supports alpha
      <LI> contrib/VideoSerializer

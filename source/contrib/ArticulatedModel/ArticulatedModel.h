@@ -24,10 +24,11 @@ class ArticulatedModel : public ReferenceCountedObject {
 private:
 
     friend class PosedArticulatedModel;
+    friend class Part;
 
+public:
     /** Classification of a graphics card. 
         FIXED_FUNCTION  Use OpenGL fixed function lighting only.
-        PS14            
         PS20            Use pixel shader 2.0 (full feature)
      */
     enum GraphicsProfile {
@@ -49,8 +50,6 @@ private:
 
         return p;
     }
-
-public:
 
     class Pose {
     public:

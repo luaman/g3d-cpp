@@ -759,6 +759,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
 
 void VertexAndPixelShader::ArgList::set(const std::string& var, const TextureRef& val) {
     Arg arg;
+    debugAssert(val.notNull());
     arg.type    = val->getOpenGLTextureTarget();
     arg.texture = val;
     argTable.set(var, arg);

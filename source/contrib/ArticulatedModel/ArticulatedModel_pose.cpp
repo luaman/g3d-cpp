@@ -26,6 +26,8 @@ private:
 
     std::string             _name;
 
+    SuperShaderRef          superShader;
+
 protected:
 
     /** Called from render to draw geometry after the material properties are set.*/
@@ -35,11 +37,10 @@ protected:
         The first term rendered uses the current blending/depth mode
         and subsequent terms use additive blending.  Returns true if  
         anything was rendered, false if nothing was rendered (because 
-        all terms were black).  */ 
-    bool renderNonShadowedOpaqueTerms(
-        RenderDevice*       rd,
-        const LightingRef&  lighting) const;
-
+        all terms were black). 
+    
+        Called from renderNonShadowedOpaqueTerms.
+    */ 
     bool renderFFNonShadowedOpaqueTerms(
         RenderDevice*                   rd,
         const LightingRef&              lighting,
@@ -54,14 +55,8 @@ protected:
         const ArticulatedModel::Part::TriList& triList,
         const SuperShader::Material&    material) const;
 
-    void renderFFNonShadowed(
-        RenderDevice*                   rd,
-        const LightingRef&              lighting,
-        const ArticulatedModel::Part&   part,
-        const ArticulatedModel::Part::TriList& triList,
-        const SuperShader::Material&    material) const;
-
-    void renderPS20NonShadowed(
+    /** Switches between rendering paths.  Called from renderNonShadowed.*/
+    bool renderNonShadowedOpaqueTerms(
         RenderDevice*                   rd,
         const LightingRef&              lighting,
         const ArticulatedModel::Part&   part,
@@ -172,6 +167,14 @@ void ArticulatedModel::Part::pose(
             posed->listIndex = t;
             posed->model = model;
 
+            if (ArticulatedModel::profile() != ArticulatedModel::FIXED_FUNCTION) {
+                // Construct the shader
+                const ArticulatedModel::Part& part = model->partArray[partIndex];
+                const ArticulatedModel::Part::TriList& triList = part.triListArray[t];
+                const SuperShader::Material& material = triList.material;
+                posed->superShader = SuperShader::create(material);
+            }
+
             posedArray.append(posed);
         }
     }
@@ -212,31 +215,23 @@ static void setAdditive(RenderDevice* rd, bool& additive) {
 
 
 bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
-    RenderDevice*       rd,
-    const LightingRef&  lighting) const {
+    RenderDevice*                   rd,
+    const LightingRef&              lighting,
+    const ArticulatedModel::Part&   part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material&    material) const {
 
-    const ArticulatedModel::Part& part = model->partArray[partIndex];
-    const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
-    const SuperShader::Material& material = triList.material;
+    switch (ArticulatedModel::profile()) {
+    case ArticulatedModel::FIXED_FUNCTION:
+        return renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
 
-    bool renderedOnce = false;
+    case ArticulatedModel::PS20:
+        return renderPS20NonShadowedOpaqueTerms(rd, lighting, part, triList, material);
 
-    rd->pushState();
-        switch (ArticulatedModel::profile()) {
-        case ArticulatedModel::FIXED_FUNCTION:
-            renderedOnce = renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
-            break;
-
-        case ArticulatedModel::PS20:
-            renderedOnce = renderPS20NonShadowedOpaqueTerms(rd, lighting, part, triList, material);
-            break;
-
-        default:
-            debugAssertM(false, "Fell through switch");
-        }
-    rd->popState();
-
-    return renderedOnce;
+    default:
+        debugAssertM(false, "Fell through switch");
+        return false;
+    }
 }
 
 
@@ -247,8 +242,21 @@ bool PosedArticulatedModel::renderPS20NonShadowedOpaqueTerms(
     const ArticulatedModel::Part::TriList& triList,
     const SuperShader::Material&    material) const {
 
-    // TODO: implement
-    return renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+    if (material.emit.isBlack() && 
+        material.reflect.isBlack() &&
+        material.specular.isBlack() &&
+        material.diffuse.isBlack()) {
+        // Nothing to draw
+        return false;
+    }
+
+    rd->pushState();
+        superShader->setLighting(lighting);
+        rd->setShader(superShader);
+        defaultRender(rd);
+    rd->popState();
+
+    return true;
 }
 
 
@@ -323,8 +331,8 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
 
 
 void PosedArticulatedModel::renderNonShadowed(
-    RenderDevice*       rd,
-    const LightingRef&  lighting) const {
+    RenderDevice*                   rd,
+    const LightingRef&              lighting) const {
 
     if (! rd->colorWrite()) {
         // No need for fancy shading
@@ -335,42 +343,6 @@ void PosedArticulatedModel::renderNonShadowed(
     const ArticulatedModel::Part& part = model->partArray[partIndex];
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
     const SuperShader::Material& material = triList.material;
-
-    rd->pushState();
-        switch (ArticulatedModel::profile()) {
-        case ArticulatedModel::FIXED_FUNCTION:
-            renderFFNonShadowed(rd, lighting, part, triList, material);
-            break;
-
-        case ArticulatedModel::PS20:
-            renderPS20NonShadowed(rd, lighting, part, triList, material);
-            break;
-
-        default:
-            debugAssertM(false, "Fell through switch");
-        }
-    rd->popState();
-}
-
-
-void PosedArticulatedModel::renderPS20NonShadowed(
-    RenderDevice*                   rd,
-    const LightingRef&              lighting,
-    const ArticulatedModel::Part&   part,
-    const ArticulatedModel::Part::TriList& triList,
-    const SuperShader::Material&    material) const {
-
-    // TODO: implement
-    renderFFNonShadowed(rd, lighting, part, triList, material);
-}
-
-
-void PosedArticulatedModel::renderFFNonShadowed(
-    RenderDevice*                   rd,
-    const LightingRef&              lighting,
-    const ArticulatedModel::Part&   part,
-    const ArticulatedModel::Part::TriList& triList,
-    const SuperShader::Material&    material) const {
 
     if (! material.transmit.isBlack()) {
         // Transparent
@@ -390,7 +362,7 @@ void PosedArticulatedModel::renderFFNonShadowed(
 
             bool alreadyAdditive = false;
             setAdditive(rd, alreadyAdditive);
-            renderNonShadowedOpaqueTerms(rd, lighting);
+            renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
         
             // restore depth write
             rd->setDepthWrite(oldDepthWrite);
@@ -400,7 +372,7 @@ void PosedArticulatedModel::renderFFNonShadowed(
         // Opaque
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
 
-        bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting);
+        bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
 
         if (! wroteDepth) {
             // Draw black

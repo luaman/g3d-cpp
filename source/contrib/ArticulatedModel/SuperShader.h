@@ -21,6 +21,8 @@ typedef ReferenceCountedPointer<class SuperShader> SuperShaderRef;
 // TODO: subclass _Shader
 class SuperShader : public Shader {
 public:
+
+
     /** Material property coefficients are specified as 
         a constant color times a texture map.  If the color
         is white the texture map entirely controls the result.
@@ -84,6 +86,12 @@ public:
 
         */
 	class Material {
+    private:
+        // TODO: remove
+        static TextureRef defaultNormalMap;
+        // TODO: remove
+        static TextureRef whiteMap;
+
 	public:
         /** Diffuse reflection of lights */
         Component               diffuse;
