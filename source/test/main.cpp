@@ -11,7 +11,7 @@
 
 
 #include "../include/graphics3D.h"
-#include <iostream.h>
+#include <iostream>
 
 using namespace G3D;
 
