@@ -417,7 +417,6 @@ private:
         // Read the advertisement
         RealTime stopWaiting = time(NULL) + TIMEOUT;
         bool timedOut = false;
-        int count = 0;
 
         while (! server->messageWaiting() && ! timedOut && server->ok()) {
             #ifdef G3D_WIN32
