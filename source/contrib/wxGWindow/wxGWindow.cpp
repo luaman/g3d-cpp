@@ -71,6 +71,10 @@ wxGWindow::wxGWindow(
         "WxWindow", attribList.getCArray(), 
         wxNullPalette);
 
+    if (window->IsTopLevel()) {
+        window->SetClientSize(_settings.width, _settings.height);
+    }
+
     if (settings.center) {
         window->Center();
     }
