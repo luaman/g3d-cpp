@@ -5,14 +5,14 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com 
  @created 	  2004-05-21
- @edited  	  2004-09-25
+ @edited  	  2004-10-06
     
  Copyright 2000-2002, Morgan McGuire.
  All rights reserved.
 */
 
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef WIN32WINDOW_H
+#define WIN32WINDOW_H
 
 #include <G3DAll.h>
 #include <windows.h>
@@ -103,10 +103,7 @@ public:
 		return 0;
 	}
 	
-    virtual std::string joystickName(unsigned int sticknum) {
-		// TODO
-		return "";
-	}
+    virtual std::string joystickName(unsigned int sticknum);
 	
     virtual std::string caption();
 	
@@ -131,9 +128,7 @@ public:
 	
     virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const;
 	
-    virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
-		// TODO
-	}
+    virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button);
 	
     virtual void setInputCapture(bool c);
 	

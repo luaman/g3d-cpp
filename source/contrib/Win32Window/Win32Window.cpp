@@ -17,6 +17,28 @@
 #include <time.h>
 #include <crtdbg.h>
 
+#define WIN32WINDOW_INCLUDE_DI8
+#include "Win32Window_di8.cpp"
+#undef WIN32WINDOW_INCLUDE_DI8
+
+using namespace Win32Window_DI8;
+
+// Handle these interfaces manually instead of using ATL
+Win32Window_DI8::IDirectInput8A*                di8Interface = NULL;
+
+// It is pointless to try and keep these in the class
+// when everything that initializes them is global
+typedef struct {
+    Win32Window_DI8::IDirectInputDevice8A*      device;
+    std::string                                 name;
+    bool                                        valid;
+    unsigned int                                numAxes;
+    unsigned int                                numButtons;
+} di8InterfaceNamePair;
+
+Array< di8InterfaceNamePair >                   joysticks;
+int                                             joystickCount;
+
 
 #define WGL_SAMPLE_BUFFERS_ARB	0x2041
 #define WGL_SAMPLES_ARB		    0x2042
@@ -24,6 +46,35 @@
 static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
 
+// Handle the DirectInput8 joystick enumeration
+BOOL CALLBACK EnumDirectInput8Joysticks(Win32Window_DI8::LPCDIDEVICEINSTANCEA lpddi, LPVOID pvRef) {
+    
+    joysticks.resize(joysticks.size() + 1, DONT_SHRINK_UNDERLYING_ARRAY);
+    joysticks[joystickCount].name = lpddi->tszInstanceName;
+
+    if (di8Interface->CreateDevice(lpddi->guidInstance, &joysticks[joystickCount].device, NULL) == S_OK) {
+        Win32Window_DI8::IDirectInputDevice8A* device = joysticks[joystickCount].device;
+
+        joysticks[joystickCount].valid = true;
+        
+        // Setup device and retreive axis/button count
+        device->SetCooperativeLevel((HWND)pvRef, (Win32Window_DI8::DISCL_FOREGROUND | Win32Window_DI8::DISCL_NONEXCLUSIVE));
+
+        DIDEVCAPS joystickCaps;
+        joystickCaps.dwSize = sizeof(DIDEVCAPS);
+        
+        device->GetCapabilities(&joystickCaps);
+        joysticks[joystickCount].numAxes = joystickCaps.dwAxes;
+        joysticks[joystickCount].numButtons = joystickCaps.dwButtons;
+
+        device->SetDataFormat(&Win32Window_DI8::G3DJOYDF);
+    } else {
+        joysticks[joystickCount].device = NULL;
+    }
+
+    joystickCount++;
+    return true;
+}
 
 /** Changes the screen resolution */
 static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
@@ -122,6 +173,29 @@ Win32Window::Win32Window(const GWindowSettings& s) {
         }
     }
 	init(window);
+
+    // Detect DirectInput8 only and create the joystick interfaces
+    HMODULE di8Module = ::LoadLibrary("dinput8.dll");
+    if (di8Module == NULL) {
+        return;
+    }
+
+    // DI8 function pointers
+    HRESULT (WINAPI* DirectInput8Create_G3D)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN);
+    DirectInput8Create_G3D = (HRESULT (WINAPI*)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN))::GetProcAddress(di8Module, "DirectInput8Create");
+    if (DirectInput8Create_G3D == NULL) {
+        ::FreeLibrary(di8Module);
+        return;
+    }
+
+    if (DirectInput8Create_G3D( ::GetModuleHandle(NULL), DIRECTINPUT_VERSION, Win32Window_DI8::IID_IDirectInput8A, reinterpret_cast< void** >(&di8Interface), NULL) != S_OK) {
+        ::FreeLibrary(di8Module);
+        return;
+    }
+    
+    di8Interface->EnumDevices(Win32Window_DI8::DI8DEVCLASS_GAMECTRL, EnumDirectInput8Joysticks, window, Win32Window_DI8::DIEDFL_ATTACHEDONLY);
+
+//    ::FreeLibrary(di8Module);
 }
 
 
@@ -268,6 +342,17 @@ void Win32Window::close() {
 
 Win32Window::~Win32Window() {
     close();
+
+    //Release any joystick interfaces
+    for(int i = 0; i < joysticks.length(); ++i) {
+        if (joysticks[i].valid) {
+            joysticks[i].device->Release();
+            joysticks[i].device = NULL;
+            joysticks[i].valid = false;
+        }
+    }
+    joysticks.clear();
+    joysticks.resize(0, true);
 }
 
 
@@ -531,6 +616,43 @@ void Win32Window::getRelativeMouseState(double& x, double& y, uint8& mouseButton
     getRelativeMouseState(ix, iy, mouseButtons);
     x = ix;
     y = iy;
+}
+
+
+std::string Win32Window::joystickName(unsigned int sticknum)
+{
+    if (joysticks.length() > sticknum) {
+        return joysticks[sticknum].name;
+    } else {
+        debugAssert( joysticks.length() <= sticknum );
+    }
+    return std::string("No Device.");
+}
+
+
+void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
+    if (joysticks.length() > stickNum) {
+        
+        G3DJOYDATA joystickState;
+        memset(&joystickState, 0, sizeof(joystickState));
+        
+        joysticks[stickNum].device->Acquire();
+        joysticks[stickNum].device->Poll();
+
+        joysticks[stickNum].device->GetDeviceState(sizeof(joystickState), &joystickState);
+
+        button.resize(joysticks[stickNum].numButtons, false);
+        for (int b = 0; (b < joysticks[stickNum].numButtons) && (b < 32); ++b) {
+            button[b] = (joystickState.rgbButtons[b] & 128) ? true : false;
+        }
+
+        axis.resize(joysticks[stickNum].numAxes, false);
+        for (int a = 0; a < (joysticks[stickNum].numAxes) && (a < 8); ++a) {
+            axis[a] = (float)( ( (float)((LONG*)&joystickState)[a] - 32768) / 32768);
+        }
+    } else {
+        debugAssert( joysticks.length() <= stickNum );
+    }
 }
 
 
