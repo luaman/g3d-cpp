@@ -5,7 +5,8 @@ class Entity {
 protected:
 
     Vector3                     basePos;
-    CoordinateFrame             cframe;
+    //CoordinateFrame             cframe;
+    PhysicsFrame                pframe;
     Color4                      color;
     TextureRef                  texture;
 
@@ -46,11 +47,25 @@ Entity::Entity(
 
 void Entity::doSimulation(SimTime dt) {
     // Put the base on the ground
-    cframe.translation = basePos - 
-        Vector3::UNIT_Y * getPosedModel()->objectSpaceBoundingBox().getCorner(0).y;
-
+    //cframe.translation = basePos - 
+    //    Vector3::UNIT_Y * getPosedModel()->objectSpaceBoundingBox().getCorner(0).y;
+    pframe.translation = basePos -
+           Vector3::UNIT_Y * getPosedModel()->objectSpaceBoundingBox().getCorner(0).y;
     // Face the viewer
-    cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, G3D_PI);
+    //cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, G3D_PI);
+    Quat q1 = Quat::fromAxisAngleRotation(Vector3::UNIT_Y, G3D_PI / 2);
+    Quat q2 = Quat::fromAxisAngleRotation(Vector3::UNIT_X, toRadians(45));
+    //pframe.rotation = Quat::fromAxisAngleRotation(Vector3::UNIT_Y, G3D_PI);
+
+    static double t = 0;
+    t += dt * .1;
+    if (t > 1) {
+        t = 0;
+    }
+
+    pframe.rotation = q1.slerp(q2, t);
+
+    //CoordinateFrame cframe = pframe.toCoordinateFrame();
 }
 
 
@@ -171,7 +186,7 @@ public:
       Entity(pos, _color, NULL), ifs(_ifs) {}
 
     virtual PosedModelRef getPosedModel() const {
-        return ifs->pose(cframe);
+        return ifs->pose(pframe.toCoordinateFrame());
     }
 };
 
@@ -191,7 +206,7 @@ public:
     }
 
     virtual PosedModelRef getPosedModel() const {
-        return md2->pose(cframe, pose);
+        return md2->pose(pframe.toCoordinateFrame(), pose);
     }
 
     virtual void doSimulation(SimTime dt) {
@@ -293,11 +308,6 @@ void Demo::doGraphics() {
     if (sky != NULL) {
         sky->renderLensFlare(lighting);
     }
-
-    app->renderDevice->push2D();
-        app->debugFont->draw2D("1st draw, default colors", Vector2(100, 100), 30);
-        app->debugFont->draw2D("2nd draw, default colors", Vector2(100, 140), 30);
-    app->renderDevice->pop2D();
 }
 
 
@@ -336,11 +346,13 @@ int main(int argc, char** argv) {
     GAppSettings settings;
 
 	settings.window.resizable = true;
+    settings.window.width = 640;
+    settings.window.height = 480;
 
     App app(settings);
 
     app.setDebugMode(true);
-    app.debugController.setActive(true);
+    app.debugController.setActive(false);
     app.run();
 
     return 0;

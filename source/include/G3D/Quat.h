@@ -212,8 +212,13 @@ public:
     }
 
 
-    inline Quat unitize(double fTolerance = 1e-06) {
-        return *this / magnitude();
+    inline Quat unitize() const {
+        double mag2 = dot(*this);
+        if (fuzzyEq(mag2, 1.0)) {
+            return *this;
+        } else {
+            return *this / sqrt(mag2);
+        }
     }
 
     /**
@@ -221,7 +226,7 @@ public:
      the magnitude.
      */
     inline Quat toUnit() const {
-        return *this / magnitude();
+        return unitize();
     }
 
     /**

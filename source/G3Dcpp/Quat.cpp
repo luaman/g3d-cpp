@@ -122,7 +122,8 @@ Matrix3 Quat::toRotationMatrix() const {
 void Quat::toRotationMatrix(
     Matrix3&            rot) const {
 
-    rot = Matrix3(*this);}
+    rot = Matrix3(*this);
+}
 
     
 Quat Quat::slerp(

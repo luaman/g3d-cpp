@@ -32,7 +32,9 @@ Matrix3::Matrix3(BinaryInput& b) {
 }
 
 //----------------------------------------------------------------------------
-Matrix3::Matrix3(const Quat& q) {
+Matrix3::Matrix3(const Quat& _q) {
+    // implementation from Watt and Watt, pg 362
+    Quat q = _q.unitize();
     double xx = 2.0 * q.x * q.x;
     double xy = 2.0 * q.x * q.y;
     double xz = 2.0 * q.x * q.z;
@@ -45,8 +47,8 @@ Matrix3::Matrix3(const Quat& q) {
     double zz = 2.0 * q.z * q.z;
     double zw = 2.0 * q.z * q.w;
 
-    set(1.0 - xx - zz,    xy - zw,        xz + yw,
-        xy + zw,          1.0 - yy - zz,  yz - xw,
+    set(1.0 - yy - zz,    xy - zw,        xz + yw,
+        xy + zw,          1.0 - xx - zz,  yz - xw,
         xz - yw,          yz + xw,        1.0 - xx - yy);
 }
 
