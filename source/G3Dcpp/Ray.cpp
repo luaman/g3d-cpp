@@ -7,10 +7,10 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/Ray.h"
-#include "../include/G3D/Plane.h"
-#include "../include/G3D/Sphere.h"
-#include "../include/G3D/CollisionDetection.h"
+#include "G3D/Ray.h"
+#include "G3D/Plane.h"
+#include "G3D/Sphere.h"
+#include "G3D/CollisionDetection.h"
 
 namespace G3D {
 

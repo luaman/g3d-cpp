@@ -7,7 +7,7 @@
  @edited  2002-06-09
  */
 
-#include "../include/G3D/g3dmath.h"
+#include "G3D/g3dmath.h"
 #include <stdlib.h>
 
 namespace G3D {

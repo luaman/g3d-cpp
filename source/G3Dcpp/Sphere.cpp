@@ -9,11 +9,11 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/Sphere.h"
-#include "../include/G3D/stringutils.h"
-#include "../include/G3D/Plane.h"
-#include "../include/G3D/BinaryOutput.h"
-#include "../include/G3D/BinaryInput.h"
+#include "G3D/Sphere.h"
+#include "G3D/stringutils.h"
+#include "G3D/Plane.h"
+#include "G3D/BinaryOutput.h"
+#include "G3D/BinaryInput.h"
 
 namespace G3D {
 

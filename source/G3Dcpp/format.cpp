@@ -7,7 +7,7 @@
  @edited  2003-02-15
 */
 
-#include "../include/G3D/format.h"
+#include "G3D/format.h"
 #if _WIN32
     #include <windows.h>
     #define vsnprintf _vsnprintf

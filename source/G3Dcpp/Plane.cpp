@@ -7,10 +7,10 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/Plane.h"
-#include "../include/G3D/BinaryOutput.h"
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/stringutils.h"
+#include "G3D/Plane.h"
+#include "G3D/BinaryOutput.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/stringutils.h"
 
 namespace G3D {
 

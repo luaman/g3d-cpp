@@ -9,9 +9,9 @@
   @edited  2003-02-15
 */
 
-#include "../include/G3D/Box.h"
-#include "../include/G3D/debug.h"
-#include "../include/G3D/Plane.h"
+#include "G3D/Box.h"
+#include "G3D/debug.h"
+#include "G3D/Plane.h"
 
 namespace G3D {
 

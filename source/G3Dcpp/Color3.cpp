@@ -12,12 +12,12 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/Color3.h"
-#include "../include/G3D/Vector3.h"
 #include <stdlib.h>
-#include "../include/G3D/format.h"
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/BinaryOutput.h"
+#include "G3D/Color3.h"
+#include "G3D/Vector3.h"
+#include "G3D/format.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 
 namespace G3D {
 

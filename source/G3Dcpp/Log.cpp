@@ -7,10 +7,10 @@
   @edited  2003-02-15
  */
 
-#include "../include/G3D/Log.h"
-#include "../include/G3D/format.h"
-#include "../include/G3D/Array.h"
-#include "../include/G3D/fileutils.h"
+#include "G3D/Log.h"
+#include "G3D/format.h"
+#include "G3D/Array.h"
+#include "G3D/fileutils.h"
 #include <time.h>
 
 #ifdef _MSC_VER

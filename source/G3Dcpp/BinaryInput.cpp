@@ -31,10 +31,10 @@
   </PRE>
  */
 
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/fileutils.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/fileutils.h"
 #ifdef _WIN32
-  #include "../include/zlib/zlib.h"
+  #include "zlib/zlib.h"
 #else
   #include <zlib.h>
 #endif

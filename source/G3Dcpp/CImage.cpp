@@ -4,12 +4,12 @@
   @created 2002-05-27
   @edited  2003-02-15
  */
-#include "../include/G3D/CImage.h"
-#include "../include/G3D/debug.h"
+#include "G3D/CImage.h"
+#include "G3D/debug.h"
 
 extern "C" {
-#include "../IJG/jconfig.h"
-#include "../IJG/cdjpeg.h"
+#include "IJG/jconfig.h"
+#include "IJG/cdjpeg.h"
 }
 #include <sys/stat.h>
 #include <assert.h>

@@ -9,10 +9,10 @@
  @edited  2002-08-23
 */
 
-#include "../include/G3D/Cone.h"
-#include "../include/G3D/Line.h"
-#include "../include/G3D/Sphere.h"
-#include "../include/G3D/Box.h"
+#include "G3D/Cone.h"
+#include "G3D/Line.h"
+#include "G3D/Sphere.h"
+#include "G3D/Box.h"
 
 namespace G3D {
 

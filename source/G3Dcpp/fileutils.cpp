@@ -7,13 +7,13 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/fileutils.h"
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/g3dmath.h"
+#include "G3D/fileutils.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/g3dmath.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>
-#include "../include/G3D/BinaryOutput.h"
+#include "G3D/BinaryOutput.h"
 
 extern "C" {
     #include "../IJG/jpeglib.h"

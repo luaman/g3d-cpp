@@ -7,13 +7,13 @@
  @edited  2003-02-03
  */
 
-#include "../include/G3D/Vector4.h"
 #include <stdlib.h>
-#include "../include/G3D/g3dmath.h"
-#include "../include/G3D/stringutils.h"
 #include <limits>
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/BinaryOutput.h"
+#include "G3D/Vector4.h"
+#include "G3D/g3dmath.h"
+#include "G3D/stringutils.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 
 namespace G3D {
 

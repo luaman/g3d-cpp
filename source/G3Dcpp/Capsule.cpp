@@ -10,10 +10,10 @@
  All rights reserved.
  */
 
-#include "../include/G3D/Capsule.h"
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/BinaryOutput.h"
-#include "../include/G3D/LineSegment.h"
+#include "G3D/Capsule.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
+#include "G3D/LineSegment.h"
 
 namespace G3D {
 

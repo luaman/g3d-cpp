@@ -9,15 +9,15 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/debugAssert.h"
+#include "G3D/debugAssert.h"
 #if _WIN32
     #include "windows.h"
     #include <tchar.h>
 #endif
-#include "../include/G3D/format.h"
-#include "../include/G3D/prompt.h"
+#include "G3D/format.h"
+#include "G3D/prompt.h"
 #include <string>
-#include "../include/G3D/debugPrintf.h"
+#include "G3D/debugPrintf.h"
 
 #ifdef _MSC_VER
     // disable: "C++ exception handler used"

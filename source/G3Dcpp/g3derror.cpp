@@ -7,7 +7,7 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/g3derror.h"
+#include "G3D/g3derror.h"
 
 namespace G3D {
 

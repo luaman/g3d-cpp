@@ -18,8 +18,8 @@
   @edited  2003-02-15
  */
 
-#include "../include/G3D/System.h"
-#include "../include/G3D/debug.h"
+#include "G3D/System.h"
+#include "G3D/debug.h"
 
 namespace G3D {
 

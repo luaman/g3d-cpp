@@ -9,7 +9,7 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/prompt.h"
+#include "G3D/prompt.h"
 
 #include <stdio.h>
 

@@ -9,8 +9,8 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/TextInput.h"
-#include "../include/G3D/BinaryInput.h"
+#include "G3D/TextInput.h"
+#include "G3D/BinaryInput.h"
 
 
 // These standard C functions are renamed for clarity/naming

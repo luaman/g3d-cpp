@@ -10,8 +10,8 @@
   All rights reserved.
  */
 
-#include "../include/G3D/ConvexPolyhedron.h"
-#include "../include/G3D/debug.h"
+#include "G3D/ConvexPolyhedron.h"
+#include "G3D/debug.h"
 
 namespace G3D {
 

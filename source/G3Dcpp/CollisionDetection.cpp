@@ -8,14 +8,14 @@
   @edited  2003-03-18
  */
 
-#include "../include/G3D/CollisionDetection.h"
-#include "../include/G3D/debugAssert.h"
-#include "../include/G3D/Capsule.h"
-#include "../include/G3D/Plane.h"
-#include "../include/G3D/Line.h"
-#include "../include/G3D/LineSegment.h"
-#include "../include/G3D/Sphere.h"
-#include "../include/G3D/Box.h"
+#include "G3D/CollisionDetection.h"
+#include "G3D/debugAssert.h"
+#include "G3D/Capsule.h"
+#include "G3D/Plane.h"
+#include "G3D/Line.h"
+#include "G3D/LineSegment.h"
+#include "G3D/Sphere.h"
+#include "G3D/Box.h"
 
 namespace G3D {
 

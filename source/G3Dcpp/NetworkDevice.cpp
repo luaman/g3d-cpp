@@ -6,15 +6,15 @@
  @edited  2003-01-03
  */
 
-#include "../include/G3D/NetworkDevice.h"
 #include <malloc.h>
 #include <time.h>
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/BinaryOutput.h"
-#include "../include/G3D/Log.h"
-#include "../include/G3D/G3DGameUnits.h"
-#include "../include/G3D/stringutils.h"
-#include "../include/G3D/debug.h"
+#include "G3D/NetworkDevice.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
+#include "G3D/Log.h"
+#include "G3D/G3DGameUnits.h"
+#include "G3D/stringutils.h"
+#include "G3D/debug.h"
 
 namespace G3D {
 

@@ -7,8 +7,8 @@
  @edited  2003-02-15
 */
 
-#include "../include/G3D/stringutils.h"
-#include "../include/G3D/BinaryInput.h"
+#include "G3D/stringutils.h"
+#include "G3D/BinaryInput.h"
 #include <algorithm>
 
 // disable: "C++ exception handler used"

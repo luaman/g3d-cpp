@@ -11,12 +11,12 @@
  @edited  2003-02-15
 */
 
-#include "../include/G3D/Matrix3.h"
-#include "../include/G3D/g3dmath.h"
 #include <memory.h>
 #include <assert.h>
-#include "../include/G3D/BinaryInput.h"
-#include "../include/G3D/BinaryOutput.h"
+#include "G3D/Matrix3.h"
+#include "G3D/g3dmath.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 
 namespace G3D {
 

@@ -7,8 +7,8 @@
  @edited  2003-02-15
  */
 
-#include "../include/G3D/LineSegment.h"
-#include "../include/G3D/Sphere.h"
+#include "G3D/LineSegment.h"
+#include "G3D/Sphere.h"
 
 namespace G3D {
 

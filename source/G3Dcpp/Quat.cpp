@@ -9,7 +9,7 @@
   @edited  2003-02-15
  */
 
-#include "../include/G3D/Quat.h"
+#include "G3D/Quat.h"
 
 namespace G3D {
 
