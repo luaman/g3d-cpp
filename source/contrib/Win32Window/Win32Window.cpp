@@ -463,8 +463,6 @@ void Win32Window::setGammaRamp(const Array<uint16>& gammaRamp) {
     Log* debugLog = Log::common();
 
     uint16* ptr = const_cast<uint16*>(gammaRamp.getCArray());
-    // On windows, use the more reliable SetDeviceGammaRamp function.
-    // It requires separate RGB gamma ramps.
     uint16 wptr[3 * 256];
     for (int i = 0; i < 256; ++i) {
         wptr[i] = wptr[i + 256] = wptr[i + 512] = ptr[i]; 
@@ -550,8 +548,6 @@ void Win32Window::setInputCapture(bool c) {
 }
 
 
-/** Creates an invisible window so we can check pixel formats, then closes that
-    window */
 void Win32Window::initWGL() {
     std::string name = "G3D";
     WNDCLASS window_class;
@@ -570,7 +566,7 @@ void Win32Window::initWGL() {
     int ret = RegisterClass(&window_class);
 	alwaysAssertM(ret, "Registration Failed");
 
-    // Create some dummy pixel format.  Doesn't matter much.
+    // Create some dummy pixel format.
 	PIXELFORMATDESCRIPTOR pfd =	
     {
 		sizeof (PIXELFORMATDESCRIPTOR),									// Size Of This Pixel Format Descriptor
