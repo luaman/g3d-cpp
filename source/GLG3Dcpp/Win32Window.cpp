@@ -508,7 +508,6 @@ bool Win32Window::pollEvent(GEvent& e) {
     DWORD numKeyboardData = 200;
 
     if (_keyboardEvents.length() > 200) {
-        Log::common()->println("Purging Win32Window events.");
         _keyboardEvents.clear();
     }
 
