@@ -23,6 +23,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> contrib/VideoSerializer
      <LI> G3D::BinaryOutput::writeBits, G3d::BinaryInput::readBits
      <LI> G3D::Sky can now be initialized with a NULL renderDevice, provided a non-null one
           is used with the G3D::Sky::render method.

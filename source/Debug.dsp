@@ -98,6 +98,10 @@ SOURCE=.\Debug\main.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\contrib\VideoSerializer\VideoSerializer.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

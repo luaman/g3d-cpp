@@ -70,7 +70,7 @@ BinaryInput::BinaryInput(
     bool                compressed,
     bool                copyMemory) {
 
-    debugAssert(!compressed || !copyMemory);
+    debugAssert(! (compressed && !copyMemory));
     beginEndBits = 0;
     bitPos = 0;
 

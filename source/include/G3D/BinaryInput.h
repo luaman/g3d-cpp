@@ -106,6 +106,20 @@ public:
      from the pointer, so you may deallocate it as soon as the
      object is constructed.  It is an error to specify copyMemory = false
      and compressed = true.
+
+     To decompress part of a file, you can follow the following paradigm:
+
+     <PRE>
+        BinaryInput master(...);
+
+        // read from master to point where compressed data exists.
+
+        BinaryInput subset(master.getCArray() + master.getPosition(), 
+                           master.length() - master.getPosition(),
+                           true, true);
+
+        // Now read from subset (it is ok for master to go out of scope)
+     </PRE>
      */
     BinaryInput(
         const uint8*        data,
@@ -113,7 +127,6 @@ public:
         G3DEndian           dataEndian,
         bool                compressed = false,
         bool                copyMemory = true);
-
 
     virtual ~BinaryInput();
 
