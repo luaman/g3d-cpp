@@ -8,9 +8,10 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2003-10-09
-  Copyright 2000-2004, Morgan McGuire.
-  All rights reserved.
+ @edited  2004-02-19
+
+ Copyright 2000-2004, Morgan McGuire.
+ All rights reserved.
  */
 
 #ifndef G3D_TEXTINPUT_H
@@ -285,6 +286,12 @@ public:
 
     /** Look at the next token but don't extract it */
     Token peek();
+
+    /** Returns the line number for the <B>next</B> token */
+    int peekLineNumber();
+
+    /** Returns the character number (relative to the line) for the <B>next</B> token */
+    int peekCharacterNumber();
 
     /** Take a previously read token and push it back (used
         in the rare case where more than one token of read-ahead

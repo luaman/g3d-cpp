@@ -536,6 +536,7 @@
    <BR>David Baszucki
    <BR>Seth Block
    <BR>Nick Capens
+   <BR>Erik Cassel
    <BR>John Chisholm
    <BR>Jauhn Dabz
    <BR>Dave Eberly

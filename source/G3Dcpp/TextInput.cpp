@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2003-12-20
+ @edited  2004-02-19
  */
 
 #include "G3D/TextInput.h"
@@ -41,6 +41,16 @@ Token TextInput::peek() {
     }
 
     return stack.front();
+}
+
+
+int TextInput::peekLineNumber() {
+    return peek().line();
+}
+
+
+int TextInput::peekCharacterNumber() {
+    return peek().character();
 }
 
 

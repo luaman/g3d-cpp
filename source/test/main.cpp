@@ -913,7 +913,7 @@ void testAdjacency() {
         Array<int>              index;
         Array<MeshAlg::Face>    faceArray;
         Array<MeshAlg::Edge>    edgeArray;
-        Array< Array<int> >     facesAdjacentToVertex;
+        Array<MeshAlg::Vertex>  vertexArray;
 
         geometry.vertexArray.append(Vector3(0,0,0));
         geometry.vertexArray.append(Vector3(1,0,0));
@@ -926,7 +926,7 @@ void testAdjacency() {
             index,
             faceArray,
             edgeArray,
-            facesAdjacentToVertex);
+            vertexArray);
 
         debugAssert(faceArray.size() == 1);
         debugAssert(edgeArray.size() == 3);
@@ -942,6 +942,15 @@ void testAdjacency() {
         debugAssert(edgeArray[0].inFace(0));
         debugAssert(edgeArray[1].inFace(0));
         debugAssert(edgeArray[2].inFace(0));
+
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+
+        // Severely weld, creating a degenerate face
+        MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray, 1.1);
+
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+        debugAssert(! faceArray[0].containsVertex(0));
+
     }
 
     {
@@ -950,12 +959,11 @@ void testAdjacency() {
         //  (degenerate face)
         //
 
-
         MeshAlg::Geometry       geometry;
         Array<int>              index;
         Array<MeshAlg::Face>    faceArray;
         Array<MeshAlg::Edge>    edgeArray;
-        Array< Array<int> >     facesAdjacentToVertex;
+        Array<MeshAlg::Vertex>  vertexArray;
 
         geometry.vertexArray.append(Vector3(0,0,0));
         geometry.vertexArray.append(Vector3(1,0,0));
@@ -967,7 +975,7 @@ void testAdjacency() {
             index,
             faceArray,
             edgeArray,
-            facesAdjacentToVertex);
+            vertexArray);
 
         debugAssert(faceArray.size() == 1);
         debugAssert(edgeArray.size() == 2);
@@ -980,6 +988,7 @@ void testAdjacency() {
 
         debugAssert(edgeArray[0].inFace(0));
         debugAssert(edgeArray[1].inFace(0));
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
     }
 
     {
@@ -997,7 +1006,7 @@ void testAdjacency() {
         Array<int>              index;
         Array<MeshAlg::Face>    faceArray;
         Array<MeshAlg::Edge>    edgeArray;
-        Array< Array<int> >     facesAdjacentToVertex;
+        Array<MeshAlg::Vertex>  vertexArray;
 
         geometry.vertexArray.append(Vector3(0,0,0));
         geometry.vertexArray.append(Vector3(1,0,0));
@@ -1012,10 +1021,11 @@ void testAdjacency() {
             index,
             faceArray,
             edgeArray,
-            facesAdjacentToVertex);
+            vertexArray);
 
         debugAssert(faceArray.size() == 2);
         debugAssert(edgeArray.size() == 5);
+        debugAssert(vertexArray.size() == 4);
 
         debugAssert(faceArray[0].containsVertex(0));
         debugAssert(faceArray[0].containsVertex(1));
@@ -1025,32 +1035,170 @@ void testAdjacency() {
         debugAssert(faceArray[1].containsVertex(1));
         debugAssert(faceArray[1].containsVertex(2));
 
-        // Every edge's face must contain that edge
-        for (int e = 0; e < edgeArray.size(); ++e) {
-            const MeshAlg::Edge& edge = edgeArray[e];
-            for (int i = 0; i < 2; ++i) {
-                debugAssert((edge.faceIndex[i] == MeshAlg::Face::NONE) ||
-                    faceArray[edge.faceIndex[i]].containsEdge(e));
-            }
-        }
+        // The non-boundary edge must be first
+        debugAssert(! edgeArray[0].boundary());
+        debugAssert(edgeArray[1].boundary());
+        debugAssert(edgeArray[2].boundary());
+        debugAssert(edgeArray[3].boundary());
+        debugAssert(edgeArray[4].boundary());
 
-        // Every face's edge must be on that face
-        for (int f = 0; f < faceArray.size(); ++f) {
-            const MeshAlg::Face& face = faceArray[f];
-            for (int i = 0; i < 3; ++i) {
-                int e = face.edgeIndex[i];
-                int ei = (e >= 0) ? e : ~e;
-                debugAssert(edgeArray[ei].inFace(f));
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
 
-                // Make sure the edge is oriented appropriately 
-                if (e >= 0) {
-                    debugAssert(edgeArray[ei].faceIndex[0] == f);
-                } else {
-                    debugAssert(edgeArray[ei].faceIndex[1] == f);
-                }
-            }
-        }
+        MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
+
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+
+        debugAssert(faceArray.size() == 2);
+        debugAssert(edgeArray.size() == 5);
+        debugAssert(vertexArray.size() == 4);
     }
+
+
+    {
+        // Test Welding
+
+
+        //         2
+        //        /|\
+        //       / | \
+        //      /  |  \
+        //     /___|___\
+        //    0   1,4   3
+        //
+
+
+        MeshAlg::Geometry       geometry;
+        Array<int>              index;
+        Array<MeshAlg::Face>    faceArray;
+        Array<MeshAlg::Edge>    edgeArray;
+        Array<MeshAlg::Vertex>  vertexArray;
+
+        geometry.vertexArray.append(Vector3(0,0,0));
+        geometry.vertexArray.append(Vector3(1,0,0));
+        geometry.vertexArray.append(Vector3(1,1,0));
+        geometry.vertexArray.append(Vector3(2,0,0));
+        geometry.vertexArray.append(Vector3(1,0,0));
+
+        index.append(0, 1, 2);
+        index.append(2, 4, 3);
+
+        MeshAlg::computeAdjacency(
+            geometry.vertexArray,
+            index,
+            faceArray,
+            edgeArray,
+            vertexArray);
+
+        debugAssert(faceArray.size() == 2);
+        debugAssert(edgeArray.size() == 6);
+        debugAssert(vertexArray.size() == 5);
+
+        debugAssert(edgeArray[0].boundary());
+        debugAssert(edgeArray[1].boundary());
+        debugAssert(edgeArray[2].boundary());
+        debugAssert(edgeArray[3].boundary());
+        debugAssert(edgeArray[4].boundary());
+        debugAssert(edgeArray[5].boundary());
+
+        debugAssert(faceArray[0].containsVertex(0));
+        debugAssert(faceArray[0].containsVertex(1));
+        debugAssert(faceArray[0].containsVertex(2));
+
+        debugAssert(faceArray[1].containsVertex(2));
+        debugAssert(faceArray[1].containsVertex(3));
+        debugAssert(faceArray[1].containsVertex(4));
+
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+
+        MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
+
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+
+        debugAssert(faceArray.size() == 2);
+        debugAssert(edgeArray.size() == 5);
+        debugAssert(vertexArray.size() == 5);
+
+        debugAssert(! edgeArray[0].boundary());
+        debugAssert(edgeArray[1].boundary());
+        debugAssert(edgeArray[2].boundary());
+        debugAssert(edgeArray[3].boundary());
+        debugAssert(edgeArray[4].boundary());
+    }
+{
+        // Test Welding
+
+
+        //        2,5
+        //        /|\
+        //       / | \
+        //      /  |  \
+        //     /___|___\
+        //    0   1,4   3
+        //
+
+
+        MeshAlg::Geometry       geometry;
+        Array<int>              index;
+        Array<MeshAlg::Face>    faceArray;
+        Array<MeshAlg::Edge>    edgeArray;
+        Array<MeshAlg::Vertex>  vertexArray;
+
+        geometry.vertexArray.append(Vector3(0,0,0));
+        geometry.vertexArray.append(Vector3(1,0,0));
+        geometry.vertexArray.append(Vector3(1,1,0));
+        geometry.vertexArray.append(Vector3(2,0,0));
+        geometry.vertexArray.append(Vector3(1,0,0));
+        geometry.vertexArray.append(Vector3(1,1,0));
+
+        index.append(0, 1, 2);
+        index.append(5, 4, 3);
+
+        MeshAlg::computeAdjacency(
+            geometry.vertexArray,
+            index,
+            faceArray,
+            edgeArray,
+            vertexArray);
+
+        debugAssert(faceArray.size() == 2);
+        debugAssert(edgeArray.size() == 6);
+        debugAssert(vertexArray.size() == 6);
+
+        debugAssert(edgeArray[0].boundary());
+        debugAssert(edgeArray[1].boundary());
+        debugAssert(edgeArray[2].boundary());
+        debugAssert(edgeArray[3].boundary());
+        debugAssert(edgeArray[4].boundary());
+        debugAssert(edgeArray[5].boundary());
+
+        debugAssert(faceArray[0].containsVertex(0));
+        debugAssert(faceArray[0].containsVertex(1));
+        debugAssert(faceArray[0].containsVertex(2));
+
+        debugAssert(faceArray[1].containsVertex(5));
+        debugAssert(faceArray[1].containsVertex(3));
+        debugAssert(faceArray[1].containsVertex(4));
+
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+
+        MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
+
+        MeshAlg::debugCheckConsistency(faceArray, edgeArray, vertexArray);
+
+        debugAssert(faceArray.size() == 2);
+        debugAssert(edgeArray.size() == 5);
+        debugAssert(vertexArray.size() == 5);
+
+        debugAssert(! edgeArray[0].boundary());
+        debugAssert(edgeArray[1].boundary());
+        debugAssert(edgeArray[2].boundary());
+        debugAssert(edgeArray[3].boundary());
+        debugAssert(edgeArray[4].boundary());
+
+    }
+        // TODO: TEST 
+        //PKNIGHT comes out with boundaries that shouldn't be there.
+    
 }
 
 
