@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-04-29
+  @edited  2004-07-23
  */
 
 #include "G3D/platform.h"
@@ -830,11 +830,31 @@ std::string System::currentProgramFilename() {
 
 
 void System::sleep(RealTime t) {
-    #ifdef G3D_WIN32
-        Sleep((int)(t * 1e3));
-    #else
-        usleep((int)(t * 1e6));
-    #endif
+    RealTime now = time();
+    RealTime wakeupTime = now + t;
+
+    RealTime remainingTime = wakeupTime - now;
+
+    while (remainingTime > 0) {
+        
+        // Default of 0 sleep time causes the program to yield only
+        // the current time slice, then return.
+        RealTime sleepTime = 0;
+
+        if (remainingTime > 0.002) {
+            // Safe to use sleep
+            sleepTime = max(remainingTime * .5, 0.002);
+        }
+
+        #ifdef G3D_WIN32
+            Sleep((int)(sleepTime * 1e3));
+        #else
+            usleep((int)(sleepTime * 1e6));
+        #endif
+
+        now = time();
+        remainingTime = wakeupTime - now;
+    }
 }
 
 

@@ -134,7 +134,10 @@ public:
     static std::string currentProgramFilename();
 
     /**
-     Causes the current thread to yield for the specified duration.
+     Causes the current thread to yield for the specified duration
+     and consume almost no CPU.
+     The sleep will be extremely precise; it uses System::time() 
+     to calibrate the exact yeild time.
      */
     static void sleep(RealTime t);
 
@@ -168,17 +171,25 @@ public:
 
      This is as accurate as System::getCycleCount, but returns a time
      in seconds instead of cycles.
+     @deprecated Call time();
      */
     static RealTime getTick();
+
+    /**
+     @deprecated Call time();
+     */
+    static RealTime getLocalTime();
 
     /**
      The actual time (measured in seconds since
      Jan 1 1970 midnight).
      
      Adjusted for local timezone and daylight savings
-     time.   This is as accurate as getTick().
+     time.   This is as accurate and fast as getCycleCount().
     */
-    static RealTime getLocalTime();
+    static RealTime time() {
+        return getLocalTime();
+    }
 
     /**
      To count the number of cycles a given operation takes:
