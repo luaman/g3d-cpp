@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created: 2001-06-02
-  @edited:  2003-12-03
+  @edited:  2004-01-09
  */
 
 #ifndef G3D_VECTORMATH_H
@@ -19,6 +19,7 @@
 #include "G3D/Matrix3.h"
 #include "G3D/Matrix4.h"
 #include "G3D/Color3.h"
+
 
 namespace G3D {
 
@@ -123,9 +124,13 @@ inline Vector4 lerp(const Vector4& v1, const Vector4& v2, float f) {
     return v1.lerp(v2, f);
 }
 
+
 inline Color3 lerp(const Color3& v1, const Color3& v2, float f) {
+
     return v1.lerp(v2, f);
+
 }
+
 
 inline Vector3 cross(const Vector3& v1, const Vector3& v2) {
     return v1.cross(v2);
@@ -173,6 +178,15 @@ inline double length(const Vector3& v) {
 
 inline double length(const Vector4& v) {
     return v.length();
+}
+
+/**
+ Computes the log of each component.  Useful for
+ inverting the monitor gamma function or simulating
+ perceptual response.
+ */
+inline Color3 log(const Color3& c) {
+    return Color3(log(c.r), log(c.g), log(c.b));
 }
 
 }
