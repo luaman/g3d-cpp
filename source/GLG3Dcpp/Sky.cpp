@@ -407,7 +407,7 @@ void Sky::drawMoonAndStars(const LightingParameters& lighting) {
 		k *= renderDevice->getBrightScale();
 		renderDevice->pushState();
             // Rotate stars
-            renderDevice->setObjectToWorldMatrix(lighting.starFrame);
+			renderDevice->setObjectToWorldMatrix((lighting.physicallyCorrect ? lighting.trueStarFrame : lighting.starFrame));
 			renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
 
                 for (int i = star.size() - 1; i >= 0; --i) {
