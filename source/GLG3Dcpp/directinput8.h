@@ -1394,7 +1394,7 @@ public:
             hr = _systemKeyboard->SetProperty(*(const GUID*)(1), &bufferProperty.diph);
             debugAssertM(hr == S_OK, "Unable to set keyboard buffer size.");
 
-            _keyboardEventHandle = ::CreateEvent(NULL, FALSE, FALSE, NULL);//"G3D System Keyboard");
+            _keyboardEventHandle = ::CreateEvent(NULL, FALSE, FALSE, NULL);
             hr = _systemKeyboard->SetEventNotification(_keyboardEventHandle);
             if (hr == 2) { // check for DI_POLLEDDEVICE
                 debugAssertM(false, "Unable to set keyboard event notification without polling.");
