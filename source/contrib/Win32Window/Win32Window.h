@@ -107,10 +107,7 @@ public:
 	
     virtual std::string caption();
 	
-    virtual void setIcon(const GImage& image) {
-        // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/Windowing/Windows/WindowReference/WindowMessages/WM_SETICON.asp
-		// TODO
-	}
+    virtual void setIcon(const GImage& image);
 	
     virtual void swapGLBuffers();
 	

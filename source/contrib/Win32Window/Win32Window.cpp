@@ -321,6 +321,58 @@ bool Win32Window::requiresMainLoop() const {
 }
 
 
+void Win32Window::setIcon(const GImage& image) {
+    alwaysAssertM((image.channels == 3) ||
+                  (image.channels == 4), 
+                  "Icon image must have at least 3 channels.");
+
+    alwaysAssertM((image.width == 32) && (image.height == 32),
+        "Icons must be 32x32 on windows.");
+
+    uint8 bwMaskData[128];
+    uint8 colorMaskData[1024*4];
+
+
+    if (image.channels == 3) {
+        memset(bwMaskData, 0xFF, 128);
+        memcpy(colorMaskData, image.byte(), (1024 * 3));
+    } else {
+        int colorMaskIdx = 0;
+        memset(bwMaskData, 0x00, 128);
+        for (int y = 0; y < 32; ++y) {
+            for (int x = 0; x < 32; ++x) {
+                bwMaskData[ (y * 4) + (x / 8) ] |= (image.pixel4(x, y).a > 0) << (x % 8);
+
+                colorMaskData[colorMaskIdx] = image.pixel4()[y * 32 + x].r;
+                colorMaskData[colorMaskIdx + 1] = image.pixel4()[y * 32 + x].g;
+                colorMaskData[colorMaskIdx + 2] = image.pixel4()[y * 32 + x].b;
+                colorMaskData[colorMaskIdx + 3] = image.pixel4()[y * 32 + x].a;
+                colorMaskIdx += 4;
+            }
+        }
+    }
+
+    HBITMAP bwMask = ::CreateBitmap(32, 32, 1, 1, bwMaskData);  
+    HBITMAP colorMask = ::CreateBitmap(32, 32, 1, 32, colorMaskData);
+
+    ICONINFO iconInfo;
+    iconInfo.xHotspot = 0;
+    iconInfo.yHotspot = 0;
+    iconInfo.hbmColor = colorMask;
+    iconInfo.hbmMask = bwMask;
+    iconInfo.fIcon = true;
+
+    HICON icon = ::CreateIconIndirect(&iconInfo);
+
+    ::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)icon);
+    ::SendMessage(this->window, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)icon);
+
+    ::DeleteObject(bwMask);
+    ::DeleteObject(colorMask);
+    ::DestroyIcon(icon);
+}
+
+
 void Win32Window::swapGLBuffers() {
 	SwapBuffers(hdc());
 }
