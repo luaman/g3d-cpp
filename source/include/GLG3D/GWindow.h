@@ -93,6 +93,8 @@ public:
 
     /**
      Fails silently if unable to change the dimensions.
+     The value returned by getSettings will not change immediately-- 
+     it waits for a notifyResize call.
      */
     virtual void setDimensions(const Rect2D& dims) = 0;
 
