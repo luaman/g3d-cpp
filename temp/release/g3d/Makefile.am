@@ -36,6 +36,7 @@ libG3D_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Sphere.cpp \
                          ../../../source/G3Dcpp/System.cpp \
                          ../../../source/G3Dcpp/TextInput.cpp \
+                         ../../../source/G3Dcpp/TextOutput.cpp \
                          ../../../source/G3Dcpp/Triangle.cpp \
                          ../../../source/G3Dcpp/Vector2.cpp \
                          ../../../source/G3Dcpp/Vector2int16.cpp \
