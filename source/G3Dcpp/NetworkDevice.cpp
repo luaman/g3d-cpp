@@ -989,7 +989,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     nd = _nd;
 
     // Start the listener socket
-    if (nd->debugLog) {nd->debugLog->print("Creating a listener        ");}
+    if (nd->debugLog) {nd->debugLog->print("Creating a listener            ");}
     sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     
     if (sock == SOCKET_ERROR) {
@@ -1004,7 +1004,7 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
     
     nd->bind(sock, NetAddress(0, port));
 
-    if (nd->debugLog) {nd->debugLog->printf("Listening on port %5d   ", port);}
+    if (nd->debugLog) {nd->debugLog->printf("Listening on port %5d        ", port);}
     if (listen(sock, 100) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("FAIL");
@@ -1045,11 +1045,11 @@ ReliableConduitRef NetListener::waitForConnection() {
 
     if (nd->debugLog) {nd->debugLog->printf("%s connected, transferred to socket %d.\n", inet_ntoa(remote_addr.sin_addr), sClient);}
 
-#ifndef G3D_WIN32
-    return new ReliableConduit(nd, sClient, NetAddress(htonl(remote_addr.sin_addr.s_addr), ntohs(remote_addr.sin_port)));
-#else
-    return new ReliableConduit(nd, sClient, NetAddress(ntohl(remote_addr.sin_addr.S_un.S_addr), ntohs(remote_addr.sin_port)));
-#endif
+    #ifndef G3D_WIN32
+        return new ReliableConduit(nd, sClient, NetAddress(htonl(remote_addr.sin_addr.s_addr), ntohs(remote_addr.sin_port)));
+    #else
+        return new ReliableConduit(nd, sClient, NetAddress(ntohl(remote_addr.sin_addr.S_un.S_addr), ntohs(remote_addr.sin_port)));
+    #endif
 }
 
 
