@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2004-01-16
+ @edited  2004-01-22
  */
 
 #include <limits>
@@ -171,7 +171,7 @@ Vector3 Vector3::reflectAbout(const Vector3& normal) const {
 }
 
 //----------------------------------------------------------------------------
-Vector3 Vector3::randomDiffuse(const Vector3& normal) {
+Vector3 Vector3::cosRandom(const Vector3& normal) {
     double e1 = G3D::random(0, 1);
     double e2 = G3D::random(0, 1);
 
@@ -195,6 +195,17 @@ Vector3 Vector3::randomDiffuse(const Vector3& normal) {
     // Convert to rectangular form
     return cos(theta) * U + sin(theta) * (cos(phi) * V + sin(phi) * W);
 }
+//----------------------------------------------------------------------------
+
+Vector3 Vector3::hemiRandom(const Vector3& normal) {
+    Vector3 V = Vector3::random();
+
+    if (V.dot(normal) < 0) {
+        return -V;
+    } else {
+        return V;
+    }
+}
 
 //----------------------------------------------------------------------------
 
@@ -206,16 +217,25 @@ Vector3 Vector3::reflectionDirection(const Vector3& normal) const {
 
 Vector3 Vector3::refractionDirection(
     const Vector3&  normal,
-    double          h1,
-    double          h2) const {
+    double          iInside,
+    double          iOutside) const {
 
     // From pg. 24 of Henrik Wann Jensen. Realistic Image Synthesis
     // Using Photon Mapping.  AK Peters. ISBN: 1568811470. July 2001.
 
     // Invert the directions from Wann Jensen's formulation
     // and normalize the vectors.
-    const Vector3 W = -this->direction();
-    const Vector3 N = normal.direction();
+    const Vector3 W = -direction();
+    Vector3 N = normal.direction();
+
+    double h1 = iOutside;
+    double h2 = iInside;
+
+    if (normal.dot(*this) > 0) {
+        h1 = iInside;
+        h2 = iOutside;
+        N  = -N;
+    }
 
     const double hRatio = h1 / h2;
     const double WdotN = W.dot(N);

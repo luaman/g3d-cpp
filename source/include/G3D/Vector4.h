@@ -76,6 +76,10 @@ public:
     double length() const;
     double squaredLength() const;
 
+    inline double sum() const {
+        return x + y + z + w;
+    }
+
     /** Returns true if this vector has finite length */
     bool isFinite() const;
 

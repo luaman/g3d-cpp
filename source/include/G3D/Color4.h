@@ -114,6 +114,11 @@ public:
         return Color4(G3D::min(r, other.r), G3D::min(g, other.g), G3D::min(b, other.b), G3D::min(a, other.a));
     }
 
+    /** r + g + b + a */
+    inline double sum() const {
+        return r + g + b + a;
+    }
+
     // special colors
     static const Color4 ZERO;
     static const Color4 CLEAR;

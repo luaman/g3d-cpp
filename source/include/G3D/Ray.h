@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-12
- @edited  2004-01-12
+ @edited  2004-01-22
  */
 
 #ifndef G3D_RAY_H
@@ -105,6 +105,22 @@ public:
         const Vector3& v1,
         const Vector3& v2) const;
 
+    /** Refracts about the normal
+        using G3D::Vector3::refractionDirection
+        and bumps the ray slightly from the newOrigin. */
+    Ray refract(
+        const Vector3&  newOrigin,
+        const Vector3&  normal,
+        double          iInside,
+        double          iOutside) const;
+
+    /** Reflects about the normal
+        using G3D::Vector3::reflectionDirection
+        and bumps the ray slightly from
+        the newOrigin. */
+    Ray reflect(
+        const Vector3&  newOrigin,
+        const Vector3&  normal) const;
 };
 
 }// namespace

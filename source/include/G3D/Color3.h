@@ -9,7 +9,7 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-06-02
- @edited  2004-01-015
+ @edited  2004-01-22
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -121,6 +121,10 @@ public:
 	inline Color3 lerp(const Color3& other, double a) const {
         return (*this) + (other - *this) * a; 
 
+    }
+
+    inline double sum() const {
+        return r + g + b;
     }
 
 

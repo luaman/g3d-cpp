@@ -31,6 +31,27 @@ void Ray::deserialize(class BinaryInput& b) {
 }
 
 
+Ray Ray::refract(
+    const Vector3&  newOrigin,
+    const Vector3&  normal,
+    double          iInside,
+    double          iOutside) const {
+
+    Vector3 D = direction.refractionDirection(normal, iInside, iOutside);
+    return Ray::fromOriginAndDirection(
+        newOrigin + (direction + normal * sign(direction.dot(normal))) * .001, D);
+}
+
+
+Ray Ray::reflect(
+    const Vector3&  newOrigin,
+    const Vector3&  normal) const {
+
+    Vector3 D = direction.reflectionDirection(normal);
+    return Ray::fromOriginAndDirection(newOrigin + (D + normal) * 0.001, D);
+}
+
+
 Vector3 Ray::intersection(const Plane& plane) const {
     float d;
     Vector3 normal = plane.normal();

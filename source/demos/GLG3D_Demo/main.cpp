@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
         handleEvents();
 
         // Simulation
-        //gameTime = (int)(gameTime + MINUTE * 5) % (int)DAY;
+        gameTime = (int)(gameTime + MINUTE * .5) % (int)DAY;
         controller->doSimulation(.05);
         camera.setCoordinateFrame(controller->getCoordinateFrame());
 
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
             renderDevice->pushState();
                 
                 renderDevice->setProjectionAndCameraMatrix(camera);
-                LightingParameters lighting(gameTime);
+                LightingParameters lighting(gameTime, false);
 
                 if (sky) {
                    sky->render(lighting);

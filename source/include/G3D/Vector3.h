@@ -47,7 +47,26 @@ j = b.xx();
  Do not subclass-- this implementation makes assumptions about the
  memory layout.
  */
-class Vector3 {    
+class Vector3 {
+private:
+    /**
+     Reflect this vector about the (not necessarily unit) normal.
+     Note that if used for a collision or ray reflection you
+     must negate the resulting vector to get a direction pointing
+     <I>away</I> from the collision.
+
+     <PRE>
+       V'    N      V
+                 
+         r   ^   -,
+          \  |  /
+            \|/
+     </PRE>
+
+     See also Vector3::reflectionDirection
+     */
+    Vector3 reflectAbout(const Vector3& normal) const;
+
 public:
     // construction
     Vector3();
@@ -128,26 +147,10 @@ public:
      */
     Vector3 fastDirection() const;
 
-    /**
-     Reflect this vector about the (not necessarily unit) normal.
-     Note that if used for a collision or ray reflection you
-     must negate the resulting vector to get a direction pointing
-     <I>away</I> from the collision.
-
-     <PRE>
-       V'    N      V
-                 
-         r   ^   -,
-          \  |  /
-            \|/
-     </PRE>
-
-     See also Vector3::reflectionDirection
-     */
-    Vector3 reflectAbout(const Vector3& normal) const;
 
     /**
-     Returns -reflectAbout(normal).  The length is 1. 
+      See also G3D::Ray::reflect.
+      The length is 1. 
      <PRE>
        V'    N       V
                  
@@ -168,6 +171,13 @@ public:
 
      Returns Vector3::ZERO in the case of total internal refraction.
 
+     @param iOutside The index of refraction (eta) outside
+     (on the <I>positive</I> normal side) of the surface.
+
+     @param iInside The index of refraction (eta) inside
+     (on the <I>negative</I> normal side) of the surface.
+
+     See also G3D::Ray::refract.
      <PRE>
               N      V
                   
@@ -178,8 +188,10 @@ public:
      V'<--
      </PRE>
      */
-    Vector3 refractionDirection(const Vector3& normal,
-        double iExit, double iEnter) const;
+    Vector3 refractionDirection(
+        const Vector3&  normal,
+        double          iInside,
+        double          iOutside) const;
 
     inline Vector3 unit() const {
         return direction();
@@ -233,13 +245,23 @@ public:
 
         @cite Henrik Wann Jensen, Realistic Image Synthesis using Photon Mapping eqn 2.24
     */
-    static Vector3 randomDiffuse(const Vector3& normal);
+    static Vector3 cosRandom(const Vector3& normal);
+
+
+    /**
+     Random vector distributed over the hemisphere about normal.
+     */
+    static Vector3 hemiRandom(const Vector3& normal);
 
     // Input W must be initialize to a nonzero vector, output is {U,V,W}
     // an orthonormal basis.  A hint is provided about whether or not W
     // is already unit length.
     static void generateOrthonormalBasis (Vector3& rkU, Vector3& rkV,
                                           Vector3& rkW, bool bUnitLengthW = true);
+
+    inline double sum() const {
+        return x + y + z;
+    }
 
     // special points
     static const Vector3 ZERO;

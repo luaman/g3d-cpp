@@ -109,7 +109,7 @@ public:
      Given a set of vertices and a set of indices for traversing them
      to create triangles, computes other mesh properties.  
      
-     Faces consisting of fewer than 3 discrete vertex indices will not
+     Faces consisting of fewer than 3 distinct vertex indices will not
      appear in the face array and their edges will not appear in
      the edge array.
 

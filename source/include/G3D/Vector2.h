@@ -9,7 +9,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2003-09-29
+  @edited  2004-01-22
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
 */
@@ -75,7 +75,11 @@ public:
     Vector2 operator/ (float fScalar) const;
     Vector2 operator- () const;
     friend Vector2 operator* (float fScalar, const Vector2& rkVector);
-    
+
+    inline double sum() const {
+        return x + y;
+    }
+
     /**
      Linear interpolation
      */

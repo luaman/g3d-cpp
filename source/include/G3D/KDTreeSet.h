@@ -309,7 +309,7 @@ public:
             // Choose the split location between the two middle elements
             const Vector3 median = 
                 (point[midIndex].bounds.high() +
-                 point[min(midIndex + 1, point.size())].bounds.low()) * 0.5;
+                 point[iMin(midIndex + 1, point.size())].bounds.low()) * 0.5;
 
             node->splitAxis     = splitAxis;
             node->splitLocation = median[splitAxis];
@@ -355,12 +355,13 @@ public:
     KDTreeSet() : root(NULL) {}
 
 
-    KDTreeSet(const KDTreeSet& src) {
+    KDTreeSet(const KDTreeSet& src) : root(NULL) {
         *this = src;
     }
 
 
     KDTreeSet& operator=(const KDTreeSet& src) {
+        delete root;
         // Clone tree takes care of filling out the memberTable.
         root = cloneTree(src.root);
     }
@@ -471,6 +472,11 @@ public:
      a node.
      */
     void balance(int valuesPerNode = 5) {
+        if (root == NULL) {
+            // Tree must be empty
+            return;
+        }
+
         Array<Handle> handleArray;
         root->getHandles(handleArray);
 
