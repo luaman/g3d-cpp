@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-04-18
+ @edited  2003-05-14
  */
 
 #ifndef G3D_FONT_H
@@ -15,7 +15,9 @@
 namespace G3D {
 
 /**
- Font class for use with RenderDevice
+ Font class for use with RenderDevice.  Use the name "CFont" instead 
+ of "Font".
+ @deprecated
  */
 class Font {
 public:
@@ -131,6 +133,8 @@ public:
         double              size = 12,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 };
+
+    typedef Font CFont;
 
 }
 #endif

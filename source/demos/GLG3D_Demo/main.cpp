@@ -61,7 +61,7 @@ public:
 
 Log*                    debugLog	= NULL;
 RenderDevice*           renderDevice= NULL;
-G3D::Font*              font		= NULL;
+CFont*                  font		= NULL;
 UserInput*              userInput	= NULL;
 Sky*                    sky		    = NULL;
 VARArea*		        varDynamic	= NULL;
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
     debugAssert(varStatic);
     debugAssert(varDynamic);
 
-    font         = new G3D::Font(renderDevice, DATA_DIR + "font/dominant.fnt");
+    font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
     sky		     = new Sky("Sky", DATA_DIR + "sky/", 
                            "null_plainsky512_ft.jpg", 1.0);
     userInput    = new UserInput();
