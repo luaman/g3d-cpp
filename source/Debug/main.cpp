@@ -90,16 +90,21 @@ protected:
     /** angle at [other adjacent vertex][face] */
     Array< Table<int, float> >      angleRight; 
 
-    /** cotan of angles opposite each segment [i][j] */
+    /** cotan of angles opposite each segment [i][j] 
+        cota[v][j] = 
+
+        Used for mean curvature.
+    */
     Array< Table<int, double> >     cota; 
     Array< Table<int, double> >     cotb;
 
     /** 
-     Area of the Voronoi region surrounding a vertex generalized to account
-     for obtuse triangles.
+     AMixed[v] =
+     Area of the Voronoi region surrounding vertex v, generalized to account
+     for obtuse triangles. That is, for an obtuse triangle, the Voronoi region
+     extends outside the triangle and we want to clip it to the triangle.
     */
     Array<double> AMixed;
-
 
     /**
      For each vertex i, calculate the angle at i for each adjacent face
@@ -234,7 +239,6 @@ void Curvatures::initAngles() {
 }
 
 
-
 void Curvatures::initCotans() {
     cota.resize(geometry.vertexArray.size());
     cotb.resize(geometry.vertexArray.size());
@@ -243,10 +247,11 @@ void Curvatures::initCotans() {
     Array< int > aFacesIdx;
 
     // For each edge, calc cota/cotb
-    for(int k = 0; k < edges.size(); ++k) { 
+    for(int e = 0; e < edges.size(); ++e) {
+        const MeshAlg::Edge& edge = edges[e];
 
-        int i = edges[k].vertexIndex[0];
-        int j = edges[k].vertexIndex[1];
+        int i = edge.vertexIndex[0];
+        int j = edge.vertexIndex[1];
         aFaces.clear();
         aFacesIdx.clear();
 
@@ -263,7 +268,14 @@ void Curvatures::initCotans() {
             }
         }
 
+        // TODO: requires closed model
         debugAssertM(aFaces.size() >= 2, "initCotans: Fewer than 2 faces share an edge."); 
+
+// See if the faces array is the same as the edge.faceIndex array
+//debugAssert(aFaces.size() <= 2);
+//for (int x = 0; x < aFacesIdx.size(); ++x) {
+//    debugAssert(edge.inFace(aFacesIdx[x]));
+//}
 
         int a, b;
 
@@ -284,20 +296,22 @@ void Curvatures::initCotans() {
             cota[i].set(j, cot(angleInner[a][aFacesIdx[0]]));
             cotb[j].set(i, cot(angleInner[a][aFacesIdx[0]]));
         } else
-            debugPrintf("\n1nokey kijab %d %d %d %d %d", k, i, j, a, b); 
+            debugPrintf("\n1nokey eijab %d %d %d %d %d", e, i, j, a, b); 
 
         if (angleInner[b].containsKey(aFacesIdx[1])) {
             //TODO Don't edges go both ways?
             cotb[i].set(j, cot(angleInner[b][aFacesIdx[1]]));
             cota[j].set(i, cot(angleInner[b][aFacesIdx[1]]));  
         } else {
-            debugPrintf("\n2nokey kijab %d %d %d %d %d", k, i, j, a, b);
+            debugPrintf("\n2nokey eijab %d %d %d %d %d", e, i, j, a, b);
         }
     }
 }
 
 
 void Curvatures::initAMixed() {
+
+    // Meyer et. al page 10
 
     // Init Amixed
     AMixed.resize(geometry.vertexArray.size());
@@ -342,25 +356,35 @@ void Curvatures::initAMixed() {
 
             if (abs(thetaC) > G3D_HALF_PI) {
 
-                // Angle at v is obtuse
+                // Angle at v is obtuse, therefore the
+                // Voronoi area is bigger than the triangle; add
+                // only half the triangle area so it will not overlap the
+                // mixed are of adjacent triangles.
 
+                // Area of the triangle
                 const double area = (L - C).cross(R - C).length() / 2.0;
                 AMixed[v] += area / 2.0;
 
             } else if ((abs(thetaL) > G3D_HALF_PI) || 
                        (abs(thetaR) > G3D_HALF_PI)) {   
 
-                // The triangle is obtuse
+                // The triangle is obtuse but the angle at v is not 
+                // the obtuse one.  This means that that one of the
+                // angles took half the triangle area; the remainder
+                // is split evenly among the other two (v is one of those)
+                // so divide area by 4.
+
                 const double area = (L - C).cross(R - C).length() / 2.0;
                 AMixed[v] += area / 4.0;
 
             } else { 
                 
-                // The triangle is *not* obtuse
+                // The triangle is *not* obtuse.  Use the regular Voronoi
+                // equation.
                 double lenLeft   = (L - C).squaredLength();
                 double lenRight  = (R - C).squaredLength();
 
-                // Voronoi region
+                // Voronoi region (Meyer et al. page 9)
                 AMixed[v] += 
                     0.125 * (lenLeft  * cot(thetaL) +   
                              lenRight * cot(thetaR));
@@ -697,8 +721,6 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
     renderDevice->pushState();
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
-        renderDevice->enableLighting();
-
         renderDevice->setColor(Color3::WHITE);
         renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
 
@@ -727,7 +749,7 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
                         double c = meanCurvature[i];
                         L = min(c, L);  H = max(c, H);
 
-                        c = clamp((c - 20) / 40, 0, 1);
+                        c = clamp((c - 10) / 40, 0, 1);
                         c = clamp(sqrt(c), 0, 1);
                         Color3 col = Color3::WHITE.lerp(Color3::RED, c);
                         renderDevice->setColor(col);
@@ -765,10 +787,10 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
 void Demo::init()  {
     // Called before Demo::run() beings
-    app->debugCamera.setPosition(Vector3(0,0,1));
+    app->debugCamera.setPosition(Vector3(0,0,2));
     app->debugCamera.lookAt(Vector3::ZERO);
 
-   // mesh.import(IFSModel::create(app->dataDir + "ifs/cow.ifs")->pose(CoordinateFrame()));
+    mesh.import(IFSModel::create(app->dataDir + "ifs/elephant.ifs", Vector3(2, 1, .5))->pose(CoordinateFrame()));
 }
 
 
@@ -850,7 +872,7 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
-    dataDir = "d:/libraries/g3d-6_02/data/";
+    dataDir = "x:/libraries/g3d-6_02/data/";
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
