@@ -73,8 +73,8 @@ def lib():
 
         # Copy the lib's to the right directory
         if (x != 0):
-            copyIfNewer("source/G3Dcpp/*.la", "temp/lib")
-            copyIfNewer("source/GLG3Dcpp/*.la", "temp/lib")
+            copyIfNewer("source/G3Dcpp/libG3D.la", "temp/lib")
+            copyIfNewer("source/GLG3Dcpp/libGLG3D.la", "temp/lib")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."
