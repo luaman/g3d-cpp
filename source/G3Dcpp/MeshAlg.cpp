@@ -161,6 +161,10 @@ int MeshAlg::countBrokenEdges(const Array<MeshAlg::Edge>& edgeArray) {
     return b;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////
+//
+//    Compute Adjacency
+//
 
 /**
  A directed edge for edgeTable.
@@ -384,6 +388,11 @@ int MeshAlg::findEdgeIndex(
 
     return e;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+//
+//    Compute Weld
+//
 
 namespace _internal {
 
