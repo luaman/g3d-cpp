@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com 
   @cite       Special thanks to Max McGuire, mmcguire@ironlore.com
   @created 	  2004-05-21
-  @edited  	  2004-07-19
+  @edited  	  2004-07-23
     
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -289,6 +289,12 @@ bool Win32Window::pollEvent(GEvent& e) {
 
 		if (message.hwnd == window) {
 			switch (message.message) {
+            case WM_CLOSE:
+            case WM_QUIT:
+                e.type = SDL_QUIT;
+
+                break;
+
 			case WM_KEYDOWN:
 				e.key.type = SDL_KEYDOWN;
 				e.key.state = SDL_PRESSED;
