@@ -88,7 +88,8 @@ public:
      is equal to the time.  If the direction does not have unit length,
      the distance = time * direction.length().
 
-     See also G3D::CollisionDetection.
+     See also the G3D::CollisionDetection "movingPoint" methods,
+     which give more information about the intersection.
      */
     double intersectionTime(const class Sphere& sphere) const;
 

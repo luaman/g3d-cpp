@@ -973,9 +973,10 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     const Vector3&          dir,
     const AABox&            box,
     Vector3&                location,
-    bool&                   Inside) {
+    bool&                   Inside,
+    Vector3&                normal) {
 
-    if (collisionLocationForMovingPointFixedAABox(origin, dir, box, location, Inside)) {
+    if (collisionLocationForMovingPointFixedAABox(origin, dir, box, location, Inside, normal)) {
         return (location - origin).length();
     } else {
         return inf();
@@ -988,7 +989,8 @@ bool CollisionDetection::collisionLocationForMovingPointFixedAABox(
     const Vector3&          dir,
     const AABox&            box,
     Vector3&                location,
-    bool&                   Inside) {
+    bool&                   Inside,
+    Vector3&                normal) {
 
     // Integer representation of a floating-point value.
     #define IR(x)	((uint32&)x)
@@ -1051,6 +1053,10 @@ bool CollisionDetection::collisionLocationForMovingPointFixedAABox(
             }
 		}
 	}
+
+    // Choose the normal to be the plane normal facing into the ray
+    normal = Vector3::zero();
+    normal[WhichPlane] = (dir[WhichPlane] > 0) ? -1.0 : 1.0;
 
 	return true;
 

@@ -12,7 +12,7 @@
   Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2004-05-01
+  @edited  2004-08-27
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -423,7 +423,8 @@ public:
         const Vector3&			velocity,
         const class AABox&      box,
         Vector3&				outLocation,
-        bool&                   inside = ignoreBool);
+        bool&                   inside = ignoreBool,
+        Vector3&                outNormal = ignore);
 
     /** Avoids the sqrt from collisionTimeForMovingPointFixedAABox.
         Returns true if there is a collision, false otherwise.*/
@@ -432,7 +433,8 @@ public:
         const Vector3&			velocity,
         const class AABox&      box,
         Vector3&				outLocation,
-        bool&                   inside = ignoreBool);
+        bool&                   inside = ignoreBool,
+        Vector3&                normal = ignore);
 
     /** When the ray is already inside, detects the exiting intersection */
     static double collisionTimeForMovingPointFixedSphere(
