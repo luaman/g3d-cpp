@@ -1386,7 +1386,7 @@ public:
             bufferProperty.diph.dwHow = 0;
             bufferProperty.diph.dwObj = 0;
             bufferProperty.diph.dwSize = sizeof(DIPROPDWORD);
-            bufferProperty.dwData = 16;
+            bufferProperty.dwData = 256;
 
             // Set the buffer size for event notification
             _systemKeyboard->SetProperty(*(const GUID*)(1), &bufferProperty.diph);

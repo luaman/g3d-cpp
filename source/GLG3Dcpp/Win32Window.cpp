@@ -57,6 +57,7 @@ static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
 static unsigned int _sdlKeys[SDLK_LAST];
 static bool keyStates[SDLK_LAST];
+static bool sdlKeysInitialized = false;
 
 // Prototype static helper functions at end of file
 bool ChangeResolution(int, int, int, int);
@@ -75,7 +76,9 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 
     memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
-    initDI8KeyMap();
+    if (!sdlKeysInitialized) {
+        initDI8KeyMap();
+    }
 
 	settings = s;
     
@@ -501,8 +504,12 @@ bool Win32Window::pollEvent(GEvent& e) {
 
 	bool done = false;
             
-    DIDEVICEOBJECTDATA keyboardData[16];
-    DWORD numKeyboardData = 16;
+    DIDEVICEOBJECTDATA keyboardData[200];
+    DWORD numKeyboardData = 200;
+
+    if (_keyboardEvents.length() > 200) {
+        _keyboardEvents.clear();
+    }
 
     // Check for DI_OK or DI_BUFFEROVERFLOW
     if( _DirectInput::getKeyboardEvents(keyboardData, numKeyboardData) ) {
@@ -915,7 +922,9 @@ Win32APIWindow::Win32APIWindow(const GWindowSettings& s) {
     System::memset(keyStates, 0, sizeof(keyStates));
     System::memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
-    initWin32KeyMap();
+    if (!sdlKeysInitialized) {
+        initWin32KeyMap();
+    }
 
 	settings = s;
     
@@ -1523,6 +1532,8 @@ static void initDI8KeyMap() {
 	_sdlKeys[DIK_LWIN] = SDLK_LMETA;
 	_sdlKeys[DIK_RWIN] = SDLK_RMETA;
 	_sdlKeys[DIK_APPS] = SDLK_MENU;
+
+    sdlKeysInitialized = true;
 }
 
 
@@ -1621,6 +1632,8 @@ static void initWin32KeyMap() {
 	_sdlKeys[VK_SNAPSHOT] = SDLK_PRINT;
 	_sdlKeys[VK_CANCEL] = SDLK_BREAK;
 	_sdlKeys[VK_APPS] = SDLK_MENU;
+
+    sdlKeysInitialized = true;
 }
 
 
