@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-09-25
+  @edited  2003-10-31
 */
 
 #ifndef GLG3D_GPUPROGRAM_H
@@ -141,6 +141,49 @@ protected:
     GPUProgram(const std::string& name, const std::string& filename);
 
 public:
+
+    /**
+     Argument list for a vertex program.
+     See RenderDevice::setVertexProgram.
+     <PRE>
+        ArgList args;
+        args.set("MVP", renderDevice->getModelViewProjection());
+        args.set("height", 3);
+        args.set("viewer", Vector3(1, 2, 3));
+        renderDevice->setVertexProgram(toonShadeVP, args);
+     </PRE>
+     */
+    class ArgList {
+    private:
+        friend class RenderDevice;
+
+        class Arg {
+        public:
+
+            std::string name;
+
+            /** Row-major */ 
+            Vector4     vector[4];
+
+            /** 1..4 */
+            int         size;
+        };
+
+        Set<std::string>  argNames;
+        Array<Arg>        argArray;
+
+    public:
+
+        void set(const std::string& var, const CoordinateFrame& val);
+        void set(const std::string& var, const Matrix4& val);
+        void set(const std::string& var, const Vector4& val);
+        void set(const std::string& var, const Vector3& val);
+        void set(const std::string& var, const Vector2& val);
+        void set(const std::string& var, float          val);
+        void clear();
+
+    };
+
 
     ~GPUProgram();
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-09-25
+  @edited  2003-10-31
 */
 
 #include "GLG3D/GPUProgram.h"
@@ -12,6 +12,62 @@
 #include "G3D/debugAssert.h"
 
 namespace G3D {
+
+
+void GPUProgram::ArgList::set(const std::string& var, const CoordinateFrame& val) {
+    set(var, Matrix4(val));
+}
+
+
+void GPUProgram::ArgList::set(const std::string& var, const Matrix4& val) {
+    debugAssert(! argNames.contains(var));
+    argNames.insert(var);
+
+    Arg arg;
+    arg.name = var;
+    arg.size = 4;
+    for (int r = 0; r < 4; ++r) {
+        arg.vector[r] = val.getRow(r);
+    }
+
+    argArray.append(arg);
+}
+
+
+void GPUProgram::ArgList::set(const std::string& var, const Vector4& val) {
+    debugAssert(! argNames.contains(var));
+    argNames.insert(var);
+
+    Arg arg;
+    arg.name = var;
+    arg.size = 1;
+    arg.vector[0] = val;
+    argArray.append(arg);
+}
+
+
+void GPUProgram::ArgList::set(const std::string& var, const Vector3& val) {
+    set(var, Vector4(val, 0));
+}
+
+
+void GPUProgram::ArgList::set(const std::string& var, const Vector2& val) {
+    set(var, Vector4(val, 0, 0));
+}
+
+
+void GPUProgram::ArgList::set(const std::string& var, float          val) {
+    set(var, Vector4(val, 0, 0, 0));
+}
+
+
+void GPUProgram::ArgList::clear() {
+    argNames.clear();
+    argArray.resize(0);
+}
+
+///////////////////////////////////////////////////
+
 
 GPUProgram::GPUProgram(
     const std::string&  _name,
