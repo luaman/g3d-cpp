@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-11-09
+# @edited  2003-12-01
 #
 # Each build target is a procedure.
 #
@@ -105,14 +105,22 @@ def lib():
 
         # Copy the lib's to the right directory
         if (x == 0):
-            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            installDir + "/lib/libG3D_debug.a")
-            #copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.so.0.0.0",     installDir + "/lib/libG3D_debug.so")
-            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                installDir + "/lib/libG3D.a")
-            #copyIfNewer("temp/release/g3d/.libs/libG3D.so.0.0.0",         installDir + "/lib/libG3D.so")
+            # strip first
+            os.system("strip -g --strip-unneeded temp/release/g3d/.libs/libG3D.a")
+            os.system("strip -g --strip-unneeded temp/release/glg3d/.libs/libGLG3D.a")
 
+            os.system("strip --strip-unneeded temp/debug/g3d/.libs/libG3D_debug.a")
+            os.system("strip --strip-unneeded temp/debug/glg3d/.libs/libGLG3D_debug.a")
+
+            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            installDir + "/lib/libG3D_debug.a")
+            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                installDir + "/lib/libG3D.a")
             copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",        installDir + "/lib/libGLG3D_debug.a")
-            #copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
             copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            installDir + "/lib/libGLG3D.a")
+
+            # Dynamic libs (not currently used)
+            #copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
+            #copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.so.0.0.0",     installDir + "/lib/libG3D_debug.so")
+            #copyIfNewer("temp/release/g3d/.libs/libG3D.so.0.0.0",         installDir + "/lib/libG3D.so")
             #copyIfNewer("temp/release/glg3d/.libs/libGLG3D.so.0.0.0",     installDir + "/lib/libGLG3D.so")
 
             #os.system("ln -s " + installDir + "/lib/libG3D_debug.so "   + installDir + "/lib/libG3D_debug.so.0")
