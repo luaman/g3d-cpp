@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2003-08-09
+ @edited  2003-11-11
  */
 
 #include "GLG3D/RenderDevice.h"
@@ -272,7 +272,6 @@ void VARArea::finish() {
 
 void VARArea::reset() {
     finish();
-	peakAllocated = iMax(peakAllocated, allocated);
 	++generation;
 	allocated = 0;
 }

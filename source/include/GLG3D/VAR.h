@@ -71,6 +71,8 @@ private:
 		debugAssert(size + area->allocated <= area->size);
 		area->allocated = (size_t)_pointer + size - (size_t)area->basePointer;
 
+        area->peakAllocated = iMax(area->peakAllocated, area->allocated);
+
 		// Upload the data
         memcpy(_pointer, sourcePtr, size);
 	}
