@@ -294,7 +294,7 @@ def doc(args):
 
 """ If copyData is true, this also copies the data module (the source/data
     directory is always copied) """
-def install(args, copyData=1):
+def install(args, copyData=1, fromRelease=False):
 
     if (os.name == "nt"):
 
@@ -318,6 +318,29 @@ def install(args, copyData=1):
         else:
             if has6:
                 lib(args)
+                # Need to build here before MSVC7 files are build over these.
+                if (fromRelease == True):
+                    # Build demos for Release but before demos is copied
+                    curdir = os.getcwd()
+                    os.chdir('source/demos')
+                    if (os.name == "nt"):
+                        for dir in os.listdir('.'):
+                            if os.path.isdir(dir):
+                                #os.chdir(dir)
+                                dspFile = ''
+                                dswFile = ''
+                                dirFiles = os.listdir(dir)
+                                
+                                for file in dirFiles:
+                                    base, ext = os.path.splitext(file)
+                                    if ext == '.dsw':
+                                        dswFile = file
+                                    elif ext == '.dsp':
+                                        dspFile = base
+
+                                if dswFile != '' and dspFile != '':
+                                    msdev(dir + '/' + dswFile, [dspFile + ' - Win32 Release'])
+                    os.chdir(curdir)    
             if has7:
                 lib7(args)
 
@@ -400,37 +423,13 @@ def release(args):
     # TODO: Make sure the linux binaries are already built
     
     # Install to the 'install' directory
-    install([], 0)
+    install([], 0, True)
 
     # Copy Linux and OS X lib directories.  They should be
     # manually placed in cpp/linux-lib and cpp/osx-lib before
     # building this target.
     copyIfNewer('linux-lib', installDir([]) + '/linux-lib')
     copyIfNewer('osx-lib', installDir([]) + '/osx-lib')
-
-    # Build demos after install
-    curdir = os.getcwd()
-    os.chdir(installDir([]) + '/demos')
-
-    if (os.name == "nt"):
-        for dir in os.listdir('.'):
-            if os.path.isdir(dir):
-                #os.chdir(dir)
-                dspFile = ''
-                dswFile = ''
-                dirFiles = os.listdir(dir)
-                
-                for file in dirFiles:
-                    base, ext = os.path.splitext(file)
-                    if ext == '.dsw':
-                        dswFile = file
-                    elif ext == '.dsp':
-                        dspFile = base
-
-                if dswFile != '' and dspFile != '':
-                    msdev(dir + '/' + dswFile, [dspFile + ' - Win32 Release'])
-     
-    os.chdir(curdir)    
 
     zip('install/*', 'release/g3d-' + version + '.zip')
 
