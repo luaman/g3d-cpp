@@ -19,7 +19,7 @@
   #include <direct.h>
 #endif
 
-#if G3D_VER != 060008
+#if G3D_VER != 60008
     #error Requires G3D 6.00 b8
 #endif
 
