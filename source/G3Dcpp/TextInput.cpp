@@ -6,7 +6,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2004-02-19
+ @edited  2004-06-21
  */
 
 #include "G3D/TextInput.h"
@@ -611,6 +611,31 @@ TextInput::WrongSymbol::WrongSymbol(
     message += 
         format("Expected symbol '%s', found symbol '%s'.",
                 e.c_str(), a.c_str());
+}
+
+
+void deserialize(bool& b, TextInput& ti) {
+    b = ti.readSymbol() == "true";
+}
+
+
+void deserialize(int& b, TextInput& ti) {
+    b = iRound(ti.readNumber());
+}
+
+
+void deserialize(uint8& b, TextInput& ti) {
+    b = iRound(ti.readNumber());
+}
+
+
+void deserialize(double& b, TextInput& ti) {
+    b = ti.readNumber();
+}
+
+
+void deserialize(float& b, TextInput& ti) {
+    b = ti.readNumber();
 }
 
 } // namespace

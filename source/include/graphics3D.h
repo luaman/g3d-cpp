@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2004-01-10
+ @edited  2004-06-21
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -78,6 +78,7 @@
 #include "G3D/GCamera.h"
 #include "G3D/GLight.h"
 #include "G3D/KDTreeSet.h"
+#include "G3D/TextOutput.h"
 
 #endif
 

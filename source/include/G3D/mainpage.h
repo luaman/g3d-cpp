@@ -177,6 +177,7 @@
         G3D::System,
         G3D::resolveFilename,
         G3D::TextInput,
+		G3D::TextOutput,
         G3D::Token,
         G3D::TextInput::WrongTokenType,
         G3D::writeStringToFile

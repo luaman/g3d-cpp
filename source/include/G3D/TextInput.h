@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2004-05-08
+ @edited  2004-06-21
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -315,6 +315,13 @@ public:
         is needed so peek doesn't suffice). */
     void push(const Token& t);
 };
+
+void deserialize(bool& b, TextInput& ti);
+void deserialize(int& b, TextInput& ti);
+void deserialize(uint8& b, TextInput& ti);
+void deserialize(double& b, TextInput& ti);
+void deserialize(float& b, TextInput& ti);
+void deserialize(std::string& b, TextInput& ti);
 
 } // namespace
 

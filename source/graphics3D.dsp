@@ -250,6 +250,10 @@ SOURCE=.\G3Dcpp\TextInput.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\TextOutput.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Triangle.cpp
 # End Source File
 # Begin Source File
@@ -491,6 +495,10 @@ SOURCE=.\include\G3D\Table.h
 # Begin Source File
 
 SOURCE=.\include\G3D\TextInput.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\TextOutput.h
 # End Source File
 # Begin Source File
 
