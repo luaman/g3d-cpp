@@ -292,7 +292,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "__cdecl= __stdcall=";
 				HEADER_SEARCH_PATHS = ../../include;
-				LIBRARY_SEARCH_PATHS = /Users/brl/development/g3d/cpp/G3DOSX/build;
+				LIBRARY_SEARCH_PATHS = ../../../G3DOSX/build;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = MD2Model_Demo;
 				WRAPPER_EXTENSION = app;
