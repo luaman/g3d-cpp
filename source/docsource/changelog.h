@@ -87,6 +87,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1101680 ] copyfile won't overwrite (on Windows now overwrites) [Corey]
      <LI> Fix: [ 1101646 ] GCamera::frustum incorrect for non-square viewport
      <LI> Fix: Ultra bright lens flare at sunset [Nicholas Bray]
      <LI> Fix: IP address strings were reversed by NetAddress(std::string) 
