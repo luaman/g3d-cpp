@@ -64,56 +64,57 @@ void main(void) {
         // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
 	    // from TBN space, so we must flip the y-axis.
 
-        texCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
+        const vec2 offsetTexCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
 
 	    // note that the columns might be slightly not orthogonal due to interpolation
 	    const mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
 	    
         // Take the normal map values back to (-1, 1) range to compute a tangent space normal
-        const vec3 tsN = ((texture2D(normalBumpMap, texCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
+        const vec3 tsN = ((texture2D(normalBumpMap, offsetTexCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
 
 	    // Take the normal to world space 
 	    const vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
 
 #   else
+        const vec2 offsetTexCoord = texCoord;
 
         // World space normal
         const vec3 wsN = tan_Z.xyz;
 #   endif
 
     // Light vector      
-	const vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
+	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
 
     // Eye vector
-    const vec3 wsE = normalize(wsEyePos - wsPosition);
+    vec3 wsE = normalize(wsEyePos - wsPosition);
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
 
     // Reflection vector
-    const vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
+    vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
 
 #   if (defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP))
-        const vec3 diffuseColor =
+        vec3 diffuseColor =
 #       ifdef DIFFUSECONSTANT
             diffuseConstant
 #           ifdef DIFFUSEMAP
-                * tex2D(diffuseMap, texCoord).rgb
+                * texture2D(diffuseMap, offsetTexCoord).rgb
 #           endif
 #       else
-            tex2D(diffuseMap, texCoord).rgb
+            texture2D(diffuseMap, offsetTexCoord).rgb
 #       endif
         ;
 #   endif
 
     // Compute projected shadow coord.
-    shadowCoord = shadowCoord / shadowCoord.w;
+    vec4 projShadowCoord = shadowCoord / shadowCoord.w;
 
     const float s = .5 / 512.0;
     vec3 shadow =
          (shadow2D(shadowMap, shadowCoord.xyz).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0.0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3( s, -s, 0.0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  s, 0.0)).xyz +
-          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0.0)).xyz) / 5.0;
+          shadow2D(shadowMap, shadowCoord.xyz + vec3( s,  s, 0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3( s, -s, 0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s,  s, 0)).xyz +
+          shadow2D(shadowMap, shadowCoord.xyz + vec3(-s, -s, 0)).xyz) / 5.0;
 
     gl_FragColor.rgb =
             lightColor * shadow *
@@ -125,6 +126,6 @@ void main(void) {
 #          endif
 
            // Specular
-           + pow(max(dot(wsL, wsR), 0.0), specularExponentConstant) * specularConstant);
+           + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentConstant) * specularConstant);
 }
 

@@ -403,7 +403,7 @@ void App::main() {
             Vector3::unitY(),
             Vector3::unitY());
 
-        double texScale = 4;
+        double texScale = 5;
         part.texCoordArray.append(
             Vector2(0,0) * texScale,
             Vector2(0,1) * texScale,
@@ -423,15 +423,18 @@ void App::main() {
 
         triList.twoSided = true;
         triList.material.emit.constant = Color3::black();
-        triList.material.diffuse.constant = Color3::white();
+
+        triList.material.specular.constant = Color3::black();
+
+        triList.material.diffuse.constant = Color3::white() * 0.8;
         triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg", TextureFormat::AUTO, Texture::TILE);
 
         GImage normalBumpMap;
-        computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap, false, false);
+        computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap, false, true);
         triList.material.normalBumpMap =         
             Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::TILE);
 
-        triList.material.bumpMapScale = 0.06;
+        triList.material.bumpMapScale = 0.04;
 
         triList.material.specular.constant = Color3::black();
         triList.material.specularExponent.constant = Color3::white() * 60;
@@ -493,7 +496,7 @@ void App::main() {
         triList.material.diffuse.constant = Color3::white() * 0.2;
 
         GImage normalBumpMap;
-        computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap, false, false);
+        computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap, false, true);
         triList.material.normalBumpMap =         
             Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
 

@@ -80,13 +80,13 @@ void main(void) {
         // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
 	    // from TBN space, so we must flip the y-axis.
 
-        texCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
+        const vec2 offsetTexCoord = texCoord.xy + vec2(tsE.x, -tsE.y) * bump;
 
 	    // note that the columns might be slightly not orthogonal due to interpolation
 	    const mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
 	    
         // Take the normal map values back to (-1, 1) range to compute a tangent space normal
-        const vec3 tsN = ((texture2D(normalBumpMap, texCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
+        const vec3 tsN = ((texture2D(normalBumpMap, offsetTexCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
 
 	    // Take the normal to world space 
 	    const vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
@@ -95,53 +95,55 @@ void main(void) {
 
         // World space normal
         const vec3 wsN = tan_Z.xyz;
+
+        const vec2 offsetTexCoord = texCoord;
 #   endif
 
     // Light vector      
-	const vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
+	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
 
     // Eye vector
-    const vec3 wsE = normalize(wsEyePos - wsPosition);
+    vec3 wsE = normalize(wsEyePos - wsPosition);
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
 
     // Reflection vector
-    const vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
+    vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
 
 #   if (defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP))
-        const vec3 diffuseColor =
+        vec3 diffuseColor =
 #       ifdef DIFFUSECONSTANT
             diffuseConstant
 #           ifdef DIFFUSEMAP
-                * tex2D(diffuseMap, texCoord).rgb
+                * texture2D(diffuseMap, offsetTexCoord).rgb
 #           endif
 #       else
-            tex2D(diffuseMap, texCoord).rgb
+            texture2D(diffuseMap, offsetTexCoord).rgb
 #       endif
         ;
 #   endif
 
 #   if defined(EMITCONSTANT) || defined(EMITMAP)     
-        const vec3 emitColor =
+        vec3 emitColor =
 #       ifdef EMITCONSTANT
             emitConstant
 #           ifdef EMITMAP
-                * tex2D(emitMap, texCoord).rgb
+                * texture2D(emitMap, offsetTexCoord).rgb
 #          endif
 #       else
-            tex2D(emitMap, texCoord).rgb
+            texture2D(emitMap, offsetTexCoord).rgb
 #       endif
         ;
 #   endif
 
 #   if defined(REFLECTCONSTANT) || defined(REFLECTMAP)     
-        const vec3 reflectColor =
+        vec3 reflectColor =
 #       ifdef REFLECTCONSTANT
             reflectConstant
 #           ifdef REFLECTMAP
-                 * tex2D(reflectMap, texCoord).rgb
+                 * texture2D(reflectMap, offsetTexCoord).rgb
 #           endif
 #       else
-            tex2D(reflectMap, texCoord).rgb
+            texture2D(reflectMap, offsetTexCoord).rgb
 #       endif
         ;
 #   endif
@@ -162,7 +164,7 @@ void main(void) {
 #       endif
 
         // Specular
-        + pow(max(dot(wsL, wsR), 0.0), specularExponentConstant) * lightColor * specularConstant
+        + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentConstant) * lightColor * specularConstant
         
 #       if defined(REFLECTCONSTANT) || defined(REFLECTMAP)     
             // Reflection
@@ -173,4 +175,3 @@ void main(void) {
         ;
 
 }
-

@@ -23,8 +23,8 @@ varying vec4 tan_X, tan_Y, tan_Z, tan_W;
 
 void main(void) {
 
-	const vec3 T = gl_MultiTexCoord1.xyz;
-	const vec3 N = gl_Normal;
+	vec3 T = gl_MultiTexCoord1.xyz;
+	vec3 N = gl_Normal;
 
     // T and N are guaranteed perpendicular, so B is normalized.
 	vec3 B = cross(N, T);
@@ -51,4 +51,3 @@ void main(void) {
 	texCoord	     = gl_MultiTexCoord0.st;
     gl_Position      = ftransform();
 }
-
