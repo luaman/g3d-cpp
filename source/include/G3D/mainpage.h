@@ -686,6 +686,7 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> Increased default sky quality to 1.00
      <LI> G3D::CFontRef
      <LI> RenderDevice now loads all register combiner extensions (NVIDIA only)
      <LI> G3D::reflectionMatrix

@@ -101,7 +101,7 @@ public:
         const std::string&                      name,
         const std::string&                      directory,
         const std::string&                      filename = "null_plainsky512_*.jpg",
-        double                                  quality = 0.5);
+        double                                  quality = 1.0);
 
     virtual ~Sky();
 
