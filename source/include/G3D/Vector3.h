@@ -278,8 +278,6 @@ public:
         return (*this) + (v - *this) * alpha; 
     }
 
-    std::ostream& operator<<(std::ostream& os) const;
-
     /** Gram-Schmidt orthonormalization. */
     static void orthonormalize (Vector3 akVector[3]);
 
@@ -477,6 +475,9 @@ inline G3D::Vector3 operator*(float s, const G3D::Vector3& v) {
 inline G3D::Vector3 operator*(int s, const G3D::Vector3& v) {
     return v * s;
 }
+
+std::ostream& operator<<(std::ostream& os, const Vector3&);
+
 
 }
 

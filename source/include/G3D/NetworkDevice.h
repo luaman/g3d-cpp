@@ -114,9 +114,9 @@ public:
     std::string ipString() const;
     std::string toString() const;
 
-    std::ostream& operator<<(std::ostream& os) const;
 };
 
+std::ostream& operator<<(std::ostream& os, const NetAddress&);
 
 inline unsigned int hashCode(const NetAddress& a) {
 	return a.ip() + ((uint32)a.port() << 16);

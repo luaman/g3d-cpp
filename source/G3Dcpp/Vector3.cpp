@@ -67,8 +67,8 @@ unsigned int Vector3::hashCode() const {
     return xhash + (yhash * 37) + (zhash * 101);
 }
 
-std::ostream& Vector3::operator<<(std::ostream& os) const {
-    return os << toString();
+std::ostream& operator<<(std::ostream& os, const Vector3& v) {
+    return os << v.toString();
 }
 
 

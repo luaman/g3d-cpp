@@ -84,8 +84,8 @@ namespace G3D {
 #endif
 
 
-std::ostream& NetAddress::operator<<(std::ostream& os) const {
-    return os << toString();
+std::ostream& operator<<(std::ostream& os, const NetAddress& a) {
+    return os << a.toString();
 }
 
 
