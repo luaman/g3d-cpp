@@ -22,10 +22,11 @@ class VideoSerializer {
 private:
 
     void serializeRaw(BinaryOutput& b) const;
-    void deserializeRaw(BinaryInput& b) const;
+    void deserializeRaw(BinaryInput& b);
 
+    /** Called after the width, height, and format have been read. */
     void serializeTimeDiff1(BinaryOutput& b) const;
-    void deserializeTimeDiff1(BinaryInput& b) const;
+    void deserializeTimeDiff1(BinaryInput& b);
 
 public:
 
@@ -108,7 +109,7 @@ public:
     uint8*              currentFrame;
     uint8*              previousFrame;
 
-    /** Number of pixels */
+    /** Number of pixel columns, not necessarily the number of bytes in that row.*/
     int                 width;
     int                 height;
 
@@ -126,7 +127,7 @@ void VideoSerializer::serialize(BinaryOutput& b) const {
 
     if ((encoding == ENCODING_TIME_DIFF1) && (previousFrame == NULL)) {
         // There was no previous frame, so switch to a different encoding.
-        encoding = ENCODING_SPACE_DIFF1;
+        encoding = ENCODING_RAW;
     }
     b.writeUInt32(encoding);
     b.writeUInt32(frameFormat);
@@ -142,7 +143,26 @@ void VideoSerializer::serialize(BinaryOutput& b) const {
         serializeTimeDiff1(b);
         break;
     }
+}
 
+
+
+
+void VideoSerializer::deserialize(BinaryInput& b)  {
+    Encoding encoding = (Encoding)b.readUInt32();
+    frameFormat = (Format)b.readUInt32();
+    width = b.readUInt32();
+    height = b.readUInt32();
+
+    switch (encoding) {
+    case ENCODING_RAW:
+        deserializeRaw(b);
+        break;
+
+    case ENCODING_TIME_DIFF1:
+        deserializeTimeDiff1(b);
+        break;
+    }
 }
 
 
@@ -150,6 +170,14 @@ void VideoSerializer::serializeRaw(BinaryOutput& b) const {
     uint32 n = width * height * bytesPerPixel(frameFormat);
     b.writeUInt32(n);
     b.writeBytes(currentFrame, n);
+}
+
+
+void VideoSerializer::deserializeRaw(BinaryInput& b) {
+    uint32 n = width * height * bytesPerPixel(frameFormat);
+    int x = b.readUInt32();
+    debugAssert(x == n);
+    b.readBytes(currentFrame, n);
 }
 
 
@@ -172,7 +200,7 @@ void VideoSerializer::serializeTimeDiff1(BinaryOutput& b) const {
         if (iAbs(delta) > 3) {
             // Escape
             b.writeBits(7, 3);
-            b.writeBits(delta, 8);
+            b.writeBits(C, 8);
         } else {
             // Send delta
             b.writeBits(3 + delta, 3);
@@ -180,13 +208,47 @@ void VideoSerializer::serializeTimeDiff1(BinaryOutput& b) const {
     }
 
     b.endBits();
+
+    int endPos = b.getPosition();
+    b.setPosition(sizePos);
+    b.writeUInt32(endPos - sizePos - 4);
+    b.setPosition(endPos);
 }
 
 
-void VideoSerializer::deserializeTimeDiff1(BinaryInput& b) const {
+void VideoSerializer::deserializeTimeDiff1(BinaryInput& b) {
     uint32 n = width * height * bytesPerPixel(frameFormat);
-    //TODO
+
+    debugAssert(currentFrame != NULL);
+    debugAssert(previousFrame != NULL);
+
+    // Read the byte size (although we won't use it).
+    int size = b.readUInt32();
+
+    b.beginBits();
+
+    for (int i = 0; i < n; ++i) {
+        int a = b.readBits(3);
+
+        if (a < 7) {
+            int delta = a - 3;
+            currentFrame[i] = previousFrame[i] + delta;
+        } else {
+            // Escape; the following 8 bits are the real value.
+            // We can't read a uint8 because the 8 bits will
+            // rarely be aligned on a byte boundary.
+            currentFrame[i] = b.readBits(8);
+        }
+    }
+
+    b.endBits();
 }
+
+
+
+
+
+
 
 /**
  This simple demo applet uses the debug mode as the regular
@@ -229,6 +291,8 @@ public:
 
     Demo*               applet;
 
+    TextureRef          im;
+
     App(const GAppSettings& settings);
 
     ~App();
@@ -244,6 +308,64 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
+
+    GImage frame0("c:/tmp/brunette-walk-I_P-009.png");
+    GImage frame1("c:/tmp/brunette-walk-I_P-010.png");
+
+    debugAssert(frame0.channels == 3);
+    debugAssert(frame1.channels == 3);
+
+    VideoSerializer s;
+    s.frameFormat = VideoSerializer::FORMAT_R8G8B8;
+    s.width = frame0.width;
+    s.height = frame0.height;
+    s.preferredEncoding = VideoSerializer::ENCODING_TIME_DIFF1;
+    s.previousFrame = frame0.byte();
+    s.currentFrame = frame1.byte();
+
+    int n = frame0.width * frame0.height * 3;
+    int num0 = 0, num1 = 0, num2 = 0, num3 = 0;
+
+    for (int i = 0; i < n; ++i) {
+        switch (iAbs(frame1.byte()[i] - frame0.byte()[i])) {
+        case 0:
+            ++num0;
+            break;
+        case 1:
+            ++num1;
+            break;
+        case 2:
+            ++num2;
+            break;
+        case 3:
+            ++num3;
+            break;
+        }
+    }
+
+    uint8* x = (uint8*)malloc(1024 * 1024 * 10);
+    int compressedSize = 0;
+    {
+        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+        s.serialize(b);
+        compressedSize = b.length();
+        b.commit(x);
+    }
+
+    int rawSize = frame0.width * frame0.height * 3;
+
+    GImage frame1decompressed(frame1.width, frame1.height, 3);
+    s.currentFrame = frame1decompressed.byte();
+    {
+        BinaryInput b(x, compressedSize, G3D_LITTLE_ENDIAN);
+        s.deserialize(b);
+    }
+
+    for (int i = 0; i < 8000; ++i) {
+        debugAssert(frame1decompressed.byte()[i] == frame1.byte()[i]);
+    }
+
+    app->im = Texture::fromFile("c:/tmp/brunette-walk-I_P-009.png");
 }
 
 
@@ -291,17 +413,17 @@ void Demo::doGraphics() {
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-//		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
-
-        for (int x = 0; x < 50; ++x) {
-            Draw::sphere(Sphere(Vector3(x,0,0),.1), app->renderDevice, Color3::white(), Color4::clear());
-        }
-
-      app->renderDevice->disableLighting();
+       
+    app->renderDevice->disableLighting();
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
     }
+
+    app->renderDevice->push2D();
+        app->renderDevice->setTexture(0, app->im);
+        Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice);
+    app->renderDevice->pop2D();
 }
 
 
@@ -326,8 +448,7 @@ App::~App() {
 }
 
 
-int main(int argc, char** argv) {            
-
+int main(int argc, char** argv) {
 
     GAppSettings settings;
     settings.window.width = 800;
