@@ -513,7 +513,8 @@ bool RenderDevice::init(
     int rawTextureUnits = _numTextureUnits;
     _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
     if (vendor == NVIDIA) {
-        glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureUnits);
+        glGetIntegerv(GL_MAX_TEXTURE_COORDS_NV, &_numTextureCoords);
+        _numTextureCoords = iMin(MAX_TEXTURE_UNITS, _numTextureCoords);
     } else {
         _numTextureCoords = _numTextureUnits;
     }
@@ -2160,7 +2161,7 @@ void RenderDevice::setNormal(const Vector3& normal) {
 
 void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
     debugAssertM(unit < _numTextureCoords,
-        format("Attempted to access texture unit %d on a device with %d units.",
+        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
 
     state.textureUnit[unit].texCoord = texCoord;
@@ -2170,7 +2171,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
 
 void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
     debugAssertM(unit < _numTextureCoords,
-        format("Attempted to access texture unit %d on a device with %d units.",
+        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
@@ -2179,7 +2180,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
 
 void RenderDevice::setTexCoord(uint unit, const Vector3int16& texCoord) {
     debugAssertM(unit < _numTextureCoords,
-        format("Attempted to access texture unit %d on a device with %d units.",
+        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, texCoord.z, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
@@ -2188,7 +2189,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector3int16& texCoord) {
 
 void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
     debugAssertM(unit < _numTextureCoords,
-        format("Attempted to access texture unit %d on a device with %d units.",
+        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
@@ -2197,7 +2198,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
 
 void RenderDevice::setTexCoord(uint unit, const Vector2int16& texCoord) {
     debugAssertM(unit < _numTextureCoords,
-        format("Attempted to access texture unit %d on a device with %d units.",
+        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
@@ -2206,7 +2207,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector2int16& texCoord) {
 
 void RenderDevice::setTexCoord(uint unit, double texCoord) {
     debugAssertM(unit < _numTextureCoords,
-        format("Attempted to access texture unit %d on a device with %d units.",
+        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
         unit, _numTextureCoords));
     state.textureUnit[unit].texCoord = Vector4(texCoord, 0, 0, 1);
     glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
