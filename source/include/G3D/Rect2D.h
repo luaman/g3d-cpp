@@ -253,9 +253,6 @@ public:
         double textureAspect = hh / ww;
         double viewAspect = height() / width();
 
-        // The sub-window we'll render video to
-        Rect2D rect;
-
         if (viewAspect > textureAspect) {
             // The view is too tall
             double h = width() * textureAspect;

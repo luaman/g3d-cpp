@@ -210,4 +210,22 @@ public:
 
 }; // SuperShader
 
+/*
+ TODO:
+
+  Make a single large vertex/fragment shader that implements the union of
+  parallax bump mapping, shadow mapping, refraction, ambient illumination,
+  and direct illumination.  Use #if ... #end pragmas *within the shader*
+  to allow areas to be conditionally disabled.  At runtime, prepend
+  a series of #define pragmas to the shader before compilation.  These
+  will enable the specific code pieces needed for the material at hand.
+  Each material must necessarily have its own shader, however very 
+  similar materials may use cached versions.
+
+  For added realism, render at 1/2 normal intensity and then capture the 
+  entire screen.  Process the screen with a log filter and apply bloom
+  to areas with intensity > 0.5. 
+*/
+
+
 #endif

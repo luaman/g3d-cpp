@@ -18,6 +18,8 @@
 #include "GLG3D/VAR.h"
 #ifdef G3D_WIN32
     #include "GLG3D/Win32Window.h"
+// TODO: remove
+    #include "GLG3D/SDLWindow.h"    
 #else
     #include "GLG3D/SDLWindow.h"    
 #endif

@@ -156,6 +156,8 @@ App::~App() {
 
 
 int main(int argc, char** argv) {            
+
+    Triangle tri(Vector3(14775.8,0,19079.8), Vector3(14411.5,0,16194.8),Vector3(14775.8,0,19079.8));
     GAppSettings settings;
     settings.window.width = 400;
     settings.window.height = 500;

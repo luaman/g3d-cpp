@@ -32,7 +32,12 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
     for (int i = 0; i < 3; ++i) {
         const Vector3 e  = _vertex[next[i]] - _vertex[i];
         edgeLength[i]    = e.length();
-        edgeDirection[i] = e / edgeLength[i];
+
+        if (edgeLength[i] == 0) {
+            edgeDirection[i] = Vector3::zero();
+        } else {
+            edgeDirection[i] = e / edgeLength[i];
+        }
     }
 
     edge01 = _vertex[1] - _vertex[0];
