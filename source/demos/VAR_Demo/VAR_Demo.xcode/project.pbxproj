@@ -5,7 +5,21 @@
 	};
 	objectVersion = 39;
 	objects = {
-		0F0B7D3D06DEDF8F002E4048 = {
+		0F0A9DDF06FE4DD300A2C0A1 = {
+			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
+			name = libGLG3D.a;
+			path = ../../../G3DOSX/build/libGLG3D.a;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0F0A9DE006FE4DD300A2C0A1 = {
+			fileRef = 0F0A9DDF06FE4DD300A2C0A1;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0F0A9DE106FE4DD800A2C0A1 = {
 			isa = PBXFileReference;
 			lastKnownFileType = archive.ar;
 			name = libG3D.a;
@@ -13,8 +27,8 @@
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
-		0F0B7D3E06DEDF8F002E4048 = {
-			fileRef = 0F0B7D3D06DEDF8F002E4048;
+		0F0A9DE206FE4DD800A2C0A1 = {
+			fileRef = 0F0A9DE106FE4DD800A2C0A1;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -73,20 +87,6 @@
 		};
 		0F0B7E7006DEEC38002E4048 = {
 			fileRef = 0F0B7E6F06DEEC38002E4048;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		0F0B7EB106DEEC67002E4048 = {
-			isa = PBXFileReference;
-			lastKnownFileType = archive.ar;
-			name = libGLG3D.a;
-			path = ../../../G3DOSX/build/libGLG3D.a;
-			refType = 2;
-			sourceTree = SOURCE_ROOT;
-		};
-		0F0B7EB206DEEC67002E4048 = {
-			fileRef = 0F0B7EB106DEEC67002E4048;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -193,8 +193,8 @@
 		};
 		29B97323FDCFA39411CA2CEA = {
 			children = (
-				0F0B7EB106DEEC67002E4048,
-				0F0B7D3D06DEDF8F002E4048,
+				0F0A9DDF06FE4DD300A2C0A1,
+				0F0A9DE106FE4DD800A2C0A1,
 				0F0B7E6F06DEEC38002E4048,
 				0F0B7D5406DEE062002E4048,
 				1058C7A1FEA54F0111CA2CBB,
@@ -225,6 +225,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = ../../include;
+				LIBRARY_SEARCH_PATHS = ../../../G3DOSX/build;
 				OPTIMIZATION_CFLAGS = "-O0";
 				ZERO_LINK = NO;
 			};
@@ -237,6 +238,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(HOME)/Library/Frameworks";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = ../../include;
+				LIBRARY_SEARCH_PATHS = ../../../G3DOSX/build;
 				ZERO_LINK = NO;
 			};
 			isa = PBXBuildStyle;
@@ -262,7 +264,7 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "/Users/brl/Library/Frameworks /Users/brl/development/g3d/cpp/G3DOSX/build";
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -274,7 +276,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "";
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = "/Users/brl/development/g3d/cpp/G3DOSX/build /Users/brl/development/g3d/cpp/source/demos/VAR_Demo";
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-lz -multiply_defined suppress";
 				PREBINDING = NO;
@@ -319,8 +321,8 @@
 		8D11072E0486CEB800E47090 = {
 			buildActionMask = 2147483647;
 			files = (
-				0F0B7EB206DEEC67002E4048,
-				0F0B7D3E06DEDF8F002E4048,
+				0F0A9DE006FE4DD300A2C0A1,
+				0F0A9DE206FE4DD800A2C0A1,
 				0F0B7D5506DEE062002E4048,
 				8D11072F0486CEB800E47090,
 				0F0B7E7006DEEC38002E4048,
