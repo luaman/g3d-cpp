@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-04-11
+  @edited  2003-04-13
   */
 
 #include "GLG3D/glcalls.h"
@@ -51,10 +51,10 @@ Sky::Sky(
         texture[t] = new Texture(ext[t], filenameBase + ext[t] + filenameExt, "", Texture::BILINEAR_NO_MIPMAP, Texture::CLAMP, Texture::DIM_2D, cBits, 0, compress);
     }
 
-    moon     = new Texture("Moon",      directory + "moon.jpg",         directory + "moon-alpha.jpg", Texture::BILINEAR_NO_MIPMAP, Texture::CLAMP, Texture::DIM_2D, 5, 1, true);
-    sun      = new Texture("Sun",       directory + "sun.jpg",          "",                           Texture::BILINEAR_NO_MIPMAP, Texture::CLAMP, Texture::DIM_2D, 8, 0, true);
-    disk     = new Texture("Flare",     directory + "lensflare.jpg",    "",                           Texture::BILINEAR_NO_MIPMAP, Texture::CLAMP, Texture::DIM_2D, 5, 0, true);
-    sunRays  = new Texture("Sun rays",  directory + "sun-rays.jpg",     "",                           Texture::BILINEAR_NO_MIPMAP, Texture::CLAMP, Texture::DIM_2D, 5, 0, false);
+    moon     = new Texture("Moon",      directory + "moon.jpg",         directory + "moon-alpha.jpg", Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 1, true);
+    sun      = new Texture("Sun",       directory + "sun.jpg",          "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 8, 0, true);
+    disk     = new Texture("Flare",     directory + "lensflare.jpg",    "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 0, true);
+    sunRays  = new Texture("Sun rays",  directory + "sun-rays.jpg",     "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 0, false);
 
 	this->name = name;
 }
@@ -93,6 +93,18 @@ static void drawCelestialSphere(
         renderDevice->setTexCoord(0, Vector2(0, 0));
         renderDevice->sendVertex(C + (-X + Y) * r);
     renderDevice->endPrimitive();
+}
+
+
+static void infiniteProjectionMatrix(RenderDevice* renderDevice) {
+    double l,r,t,b,n,f;
+    bool is3D;
+    renderDevice->getProjectionMatrixParams(l,r,t,b,n,f,is3D);
+    if (is3D) {
+        renderDevice->setProjectionMatrix3D(l,r,t,b,n,inf);
+    } else {
+        renderDevice->setProjectionMatrix2D(l,r,t,b,n,inf);
+    }
 }
 
 
@@ -188,6 +200,8 @@ void Sky::render(
 		renderDevice->sendVertex(Vector3(+s, -s, +s));
 	renderDevice->endPrimitive();
 
+    infiniteProjectionMatrix(renderDevice);
+
     // Draw the moon
     {
         Vector4 L(lighting.moonPosition,0);
@@ -197,7 +211,7 @@ void Sky::render(
         renderDevice->setTexture(0, moon);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
-        drawCelestialSphere(renderDevice, L, X, Y, .05, Color4(1,1,1, min(1, max(0, lighting.moonPosition.y * 4))));
+        drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(1,1,1, min(1, max(0, lighting.moonPosition.y * 4))));
 
     }
 
@@ -217,7 +231,7 @@ void Sky::render(
             c *= max(0, (lighting.sunPosition.y + .1) * 10);
         }
 
-        drawCelestialSphere(renderDevice, L, X, Y, .1, c);
+        drawCelestialSphere(renderDevice, L, X, Y, .12, c);
     }
 
     renderDevice->popState();
@@ -269,14 +283,7 @@ void Sky::renderLensFlare(
                 // We need to switch to an infinite projection matrix to draw the flares.
                 // Note that we must make this change *after* the depth buffer values have
                 // been read back.
-                double l,r,t,b,n,f;
-                bool is3D;
-                renderDevice->getProjectionMatrixParams(l,r,t,b,n,f,is3D);
-                if (is3D) {
-                    renderDevice->setProjectionMatrix3D(l,r,t,b,n,inf);
-                } else {
-                    renderDevice->setProjectionMatrix2D(l,r,t,b,n,inf);
-                }
+                infiniteProjectionMatrix(renderDevice);
 
                 renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
@@ -296,7 +303,7 @@ void Sky::renderLensFlare(
                 }
 
                 renderDevice->setTexture(0, sun);
-                drawCelestialSphere(renderDevice, L, X, Y, .1, Color3::WHITE * fractionOfSunVisible * .5);
+                drawCelestialSphere(renderDevice, L, X, Y, .13, Color3::WHITE * fractionOfSunVisible * .5);
 
                 // Lens flare
                 Vector4 C(camera.getLookVector(), 0);
