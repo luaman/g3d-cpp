@@ -161,6 +161,10 @@ public:
         @param image May have any dimensions. */
     virtual void setIcon(const GImage& image) {}
 
+	virtual void setIcon(const std::string& imageFilename) {
+		setIcon(GImage(imageFilename));
+	}
+
     /** Swap the OpenGL front and back buffers.  Called by RenderDevice::endFrame. */
     virtual void swapGLBuffers() = 0;
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2004-03-17
+  @edited  2004-06-15
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -203,6 +203,23 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D);
+
+	static TextureRef fromMemory(
+        const std::string&              name,
+        const uint8*                    bytes,
+        const class TextureFormat*      bytesFormat,
+        int                             width,
+        int                             height,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D) {
+		const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+		b[0] = bytes;
+
+		return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
+			desiredFormat, wrap, interpolate, dimension);
+	}
 
     static TextureRef fromGImage(
         const std::string&              name,

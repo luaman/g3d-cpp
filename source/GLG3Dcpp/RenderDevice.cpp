@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-05-14
+ @edited  2004-06-15
  */
 
 
@@ -1895,6 +1895,22 @@ Matrix4 RenderDevice::getTextureMatrix(uint unit) {
                    M[1], M[5], M[9],  M[13],
                    M[2], M[6], M[10], M[14],
                    M[3], M[7], M[11], M[15]);
+}
+
+
+
+void RenderDevice::setTextureMatrix(
+    uint                 unit,
+	const Matrix4&	     m) {
+
+	double d[16];
+	for (int r = 0; r < 4; ++r) {
+		for (int c = 0; c < 4; ++c) {
+			d[r * 4 + c] = m[r][c];
+		}
+	}
+
+	setTextureMatrix(unit, d);
 }
 
 

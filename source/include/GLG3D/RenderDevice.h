@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-05-15
+  @edited  2004-06-15
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -486,14 +486,20 @@ public:
 
      v' = M v
 
+     Matrix is column major.
+
      All texture operations check textureUnit against the number of
      available texture units when in debug mode.
 
-     Equivalen to glMatrixMode(GL_TEXTURE); glLoadMatrix(...);
+     Equivalent to glMatrixMode(GL_TEXTURE); glLoadMatrix(...); on a transposed matrix.
      */
     void setTextureMatrix(
         uint                    textureUnit,
         const double*           m);
+
+    void setTextureMatrix(
+        uint                    textureUnit,
+        const Matrix4&          m);
 
     void setTextureMatrix(
         uint                    textureUnit,
