@@ -51,6 +51,11 @@ namespace G3D {
  */
 class BinaryInput {
 private:
+
+    // The initial buffer will be no larger than this, but 
+    // may grow if a large memory read occurs.  50 MB
+    enum {INITIAL_BUFFER_LENGTH = 50000000};
+
     /**
      is the file big or little endian
      */
@@ -71,26 +76,48 @@ private:
     /** 1 when between beginBits and endBits, 0 otherwise. */
     int             beginEndBits;
 
+    /** When operating on huge files, we cannot load the whole file into memory.
+        This is the file position to which buffer[0] corresponds.
+        */
+    size_t          alreadyRead;
+
     /**
-     Length of file, in bytes
+     Length of the entire file, in bytes.  
+     For the length of the buffer, see bufferLength
      */
     int             length;
+
+    /** Length of the array referenced by buffer. May go past the end of the file!*/
+    int             bufferLength;
     uint8*          buffer;
 
     /**
-     Next byte in file
+     Next byte in file, relative to buffer.
      */
     int             pos;
 
     /**
-     When true, the buffer is freed in the deconstructor.
+     When true, the buffer is freed in the destructor.
      */
     bool            freeBuffer;
+
+    /** Ensures that we are able to read at least minLength from startPosition (relative
+        to start of file). */
+    void loadIntoMemory(int startPosition, int minLength = 0);
+
+    /** Verifies that at least this number of bytes can be read.*/
+    inline void prepareToRead(size_t bytes) {
+        debugAssertM(pos + bytes + alreadyRead <= length, "Read past end of file.");
+
+        if (pos + bytes > bufferLength) {
+            loadIntoMemory(pos + alreadyRead, bytes);    
+        }
+    }
 
 public:
 
     /** false, constant to use with the copyMemory option */
-    static const bool      NO_COPY;
+    static const bool       NO_COPY;
 
 	/**
 	 If the file cannot be opened, a zero length buffer is presented.
@@ -136,16 +163,21 @@ public:
     }
 
     /**
-     returns a pointer to the internal memory buffer.
+     Returns a pointer to the internal memory buffer.
+     May throw an exception for huge files.
      */
     const uint8* getCArray() const {
+        if (alreadyRead > 0) {
+            throw "Cannot getCArray for a huge file";
+        }
         return buffer;
     }
 
     /**
      Performs bounds checks in debug mode.  [] are relative to
      the start of the file, not the current position.
-     Seeks to the new position before reading.
+     Seeks to the new position before reading (and leaves 
+     that as the current position)
      */
     inline const uint8 operator[](int n) {
         setPosition(n);
@@ -168,15 +200,19 @@ public:
      where 0 is the beginning and getLength() - 1 is the end.
      */
     inline int getPosition() const {
-        return pos;
+        return pos + alreadyRead;
     }
 
     /**
      Sets the position.  Cannot set past length.
+     May throw a char* when seeking backwards more than 10 MB on a huge file.
      */
     inline void setPosition(int p) {
         debugAssertM(p <= length, "Read past end of file");
-        pos = p;
+        pos = p - alreadyRead;
+        if ((pos < 0) || (pos > bufferLength)) {
+            loadIntoMemory(pos + alreadyRead);
+        }
     }
 
     /**
@@ -187,7 +223,7 @@ public:
     }
 
     inline int8 readInt8() {
-        debugAssertM(pos + 1 <= length, "Read past end of file");
+        prepareToRead(1);
         return buffer[pos++];
     }
 
@@ -196,12 +232,12 @@ public:
     }
 
     inline uint8 readUInt8() {
-        debugAssertM(pos + 1 <= length, "Read past end of file");
+        prepareToRead(1);
         return ((uint8*)buffer)[pos++];
     }
 
     uint16 inline readUInt16() {
-        debugAssertM(pos + 2 <= length, "Read past end of file");
+        prepareToRead(2);
 
         pos += 2;
         if (swapBytes) {
@@ -228,7 +264,7 @@ public:
     }
 
     inline uint32 readUInt32() {
-        debugAssertM((pos + 4) <= length, "Read past end of file");
+        prepareToRead(4);
 
         pos += 4;
         if (swapBytes) {
@@ -321,15 +357,14 @@ public:
      Skips ahead n bytes.
      */
     inline void skip(int n) {
-        debugAssertM((pos + n) <= length, "Read past end of file");
-        pos += n;
+        setPosition(pos + alreadyRead + n);
     }
 
 	/**
 	 Returns true if the position is not at the end of the file
 	 */
 	inline bool hasMore() const {
-		return pos < length;
+		return pos + alreadyRead < length;
 	}
 
     /** Prepares for bit reading via readBits.  Only readBits can be

@@ -42,6 +42,43 @@
 
 namespace G3D {
 
+void BinaryInput::loadIntoMemory(int startPosition, int minLength) {
+    // Load the next section of the file
+    debugAssertM(filename != "<memory>", "Read past end of file.");
+
+    int absPos = alreadyRead + pos;
+
+    if (bufferLength < minLength) {
+        // The current buffer isn't big enough to hold the chunk we want to read.
+        // This happens if there was little memory available during the initial constructor
+        // read but more memory has since been freed.
+        bufferLength = minLength;
+        buffer = (uint8*)realloc(buffer, bufferLength);
+        if (buffer == NULL) {
+            throw "Tried to read a larger memory chunk than could fit in memory. (2)";
+        }
+    }
+
+    alreadyRead = startPosition;
+
+    FILE* file = fopen(filename.c_str(), "rb");
+    debugAssert(file);
+
+    int ret = fseek(file, alreadyRead, SEEK_SET);
+    debugAssert(ret == 0);
+
+    int toRead = iMin(bufferLength, length - alreadyRead);
+    ret = fread(buffer, 1, toRead, file);
+    debugAssert(ret == toRead);
+    fclose(file);
+    file = NULL;
+
+    pos = absPos - alreadyRead;
+    debugAssert(pos >= 0);
+}
+
+
+
 const bool BinaryInput::NO_COPY = false;
     
 static bool needSwapBytes(G3DEndian fileEndian) {
@@ -73,6 +110,8 @@ BinaryInput::BinaryInput(
     debugAssert(! (compressed && !copyMemory));
     beginEndBits = 0;
     bitPos = 0;
+    alreadyRead = 0;
+    bufferLength = 0;
 
     freeBuffer = copyMemory || compressed;
 
@@ -91,10 +130,12 @@ BinaryInput::BinaryInput(
         // Decompress with zlib
         int result = uncompress(buffer, &L, data + 4, dataLen - 4);
         length = L;
+        bufferLength = L;
         debugAssert(result == Z_OK); (void)result;
 
     } else {
 	    length = dataLen;
+        bufferLength = length;
         if (! copyMemory) {
             buffer = const_cast<uint8*>(data);
         } else {
@@ -110,10 +151,12 @@ BinaryInput::BinaryInput(
     G3DEndian           fileEndian,
     bool                compressed) {
 
+    alreadyRead = 0;
     freeBuffer = true;
     this->fileEndian = fileEndian;
     this->filename = filename;
 	buffer = NULL;
+    bufferLength = 0;
 	length = 0;
 	pos = 0;
     beginEndBits = 0;
@@ -132,16 +175,40 @@ BinaryInput::BinaryInput(
 		return;
 	}
 
-    buffer = (uint8*) malloc(length);
+    if (! compressed && (length > INITIAL_BUFFER_LENGTH)) {
+        // Read only a subset of the file so we don't consume
+        // all available memory.
+        bufferLength = INITIAL_BUFFER_LENGTH;
+    } else {
+        bufferLength = length;
+    }
+
+    buffer = (uint8*)malloc(bufferLength);
+    if (buffer == NULL) {
+        if (compressed) {
+            throw "Not enough memory to load compressed file. (1)";
+        }
+
+        // Try to allocate a small array; not much memory is available.
+        // Give up if we can't allocate even 1k.
+        while ((buffer == NULL) && (bufferLength > 1024)) {
+            bufferLength /= 2;
+            buffer = (uint8*)malloc(bufferLength);
+        }
+    }
     debugAssert(buffer);
     
-    fread(buffer, length, sizeof(int8), file);
+    fread(buffer, bufferLength, sizeof(int8), file);
     fclose(file);
     file = NULL;
 
     pos = 0;
 
     if (compressed) {
+        if (bufferLength != length) {
+            throw "Not enough memory to load compressed file. (2)";
+        }
+
         // Decompress
         // Use the existing buffer as the source, allocate
         // a new buffer to use as the destination.
@@ -152,12 +219,14 @@ BinaryInput::BinaryInput(
         uint8* tempBuffer = buffer;
         buffer = (uint8*)malloc(length);
 
+        debugAssert(buffer);
         debugAssert(isValidHeapPointer(tempBuffer));
         debugAssert(isValidHeapPointer(buffer));
 
         unsigned long L = length;
         int result = uncompress(buffer, &L, tempBuffer + 4, tempLength - 4);
         length = L;
+        bufferLength = length;
 
         debugAssert(result == Z_OK); (void)result;
 
@@ -176,7 +245,7 @@ BinaryInput::~BinaryInput() {
 
 
 void BinaryInput::readBytes(int n, void* bytes) {
-    debugAssertM((pos + n) <= length, "Read past end of file");
+    prepareToRead(n);
     debugAssert(isValidPointer(bytes));
 
     memcpy(bytes, buffer + pos, n);
@@ -185,7 +254,7 @@ void BinaryInput::readBytes(int n, void* bytes) {
 
 
 uint64 BinaryInput::readUInt64() {
-    debugAssertM(pos + 8 <= length, "Read past end of file");
+    prepareToRead(8);
     uint8 out[8];
 
     if (swapBytes) {
@@ -214,6 +283,7 @@ uint64 BinaryInput::readUInt64() {
 
 
 std::string BinaryInput::readString(int n) {
+    prepareToRead(n);
     debugAssertM((pos + n) <= length, "Read past end of file");
     
     char *s = (char*)malloc(n + 1);
@@ -238,11 +308,18 @@ std::string BinaryInput::readString(int n) {
 std::string BinaryInput::readString() {
     int n = 0;
 
-    while ((pos + n < length - 1) && (buffer[pos + n] != '\0')) {
-        n++;
+    if (pos + alreadyRead + n < length - 1) {
+        prepareToRead(1);
     }
 
-    n++;
+    while ((pos + alreadyRead + n < length - 1) && (buffer[pos + n] != '\0')) {
+        ++n;
+        if (pos + alreadyRead + n < length - 1) {
+            prepareToRead(1);
+        }
+    }
+
+    ++n;
 
     return readString(n);
 }

@@ -32,8 +32,10 @@
    Changes in 6.05:
    <UL>
      <LI> Added new FAQ documentation
-     <LI> Added limited support to G3D::BinaryOutput for writing huge files to disk or 
-          writing to disk when little memory is available.
+     <LI> Added support to G3D::BinaryInput and G3D::BinaryOutput 
+          reading and writing huge (larger than available memory) files.
+          Files are still restricted to about 2 GB total, and compressed
+          files must fit entirely in memory.
      <LI> Tweaked allocation strategy for small G3D::Array
      <LI> G3D::Texture::rect2DBounds, G3D::Texture::vector2Bounds
      <LI> G3D::Vector4 * G3D::Vector4, Vector4 / Vector4
