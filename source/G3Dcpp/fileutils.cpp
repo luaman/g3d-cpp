@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2004-09-17
+ @edited  2004-12-17
  */
 
 #include "G3D/platform.h"
@@ -489,9 +489,17 @@ void getDirs(
 std::string filenameBaseExt(const std::string& filename) {
     int i = filename.rfind("/");
     int j = filename.rfind("\\");
+
     if ((j < i) && (j >= 0)) {
         i = j;
     }
+
+#   ifdef G3D_WIN32
+        j = filename.rfind(":");
+        if ((i == -1) && (j >= 0)) {
+            i = j;
+        }
+#   endif
 
     if (i == -1) {
         return filename;
@@ -507,6 +515,29 @@ std::string filenameExt(const std::string& filename) {
         return filename.substr(i + 1, filename.length() - i);
     } else {
         return "";
+    }
+}
+
+
+std::string filenamePath(const std::string& filename) {
+    int i = filename.rfind("/");
+    int j = filename.rfind("\\");
+
+    if ((j < i) && (j >= 0)) {
+        i = j;
+    }
+
+#   ifdef G3D_WIN32
+        j = filename.rfind(":");
+        if ((i == -1) && (j >= 0)) {
+            i = j;
+        }
+#   endif
+
+    if (i == -1) {
+        return "";
+    } else {
+        return filename.substr(0, i);
     }
 }
 

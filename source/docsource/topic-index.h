@@ -150,6 +150,7 @@
         G3D::fileLength,
         G3D::filenameBaseExt,
         G3D::filenameExt,
+        G3D::filenamePath,
         G3D::G3DEndian,
         G3D::getFiles, 
         G3D::getDirs,

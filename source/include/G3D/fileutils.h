@@ -126,7 +126,7 @@ void parseFilename(
 
 /**
  Returns the part of the filename that includes the base and ext from
- parseFilename.
+ parseFilename (i.e. everything to the right of the path).
  */
 std::string filenameBaseExt(const std::string& filename);
 
@@ -135,6 +135,13 @@ std::string filenameBaseExt(const std::string& filename);
  */
 std::string filenameExt(const std::string& filename);
 
+
+/** 
+ Returns the drive (if Win32) and path from a filename, including 
+ a slash if there was one.
+ <CODE>filenamePath(f) + filenameBaseExt(f) == f</CODE>
+ */
+std::string filenamePath(const std::string& filename);
 
 } // namespace
 

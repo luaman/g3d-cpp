@@ -12,6 +12,8 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> filenamePath
+     <LI> Draw::lineSegment now accepts a scale (allowing arrows and axes to thicken appropriately)
      <LI> Rect2D::largestCenteredSubRect
      <LI> Matrix4::serialize, Matrix4::deserialize
      <LI> glTexImage3DEXT
