@@ -883,7 +883,10 @@ RealTime System::getTick() {
         return (RealTime)(now.QuadPart - _start.QuadPart) /
                 _counterFrequency.QuadPart;
     #else
-        // TODO: morgan query RDTSC
+        // Linux resolution defaults to 100Hz.
+        // There is no need to do a separate RDTSC call as gettimeofday actually
+        // uses RDTSC when on systems that support it, otherwise it uses the 
+        // system clock.
         struct timeval now;
         gettimeofday(&now, NULL);
 
