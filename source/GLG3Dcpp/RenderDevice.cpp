@@ -468,6 +468,14 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         _numTextures      = _numTextureUnits;
     }
 
+    if ((glActiveTextureARB == NULL) || (glMultiTexCoord4fvARB == NULL)) {
+        // No multitexture
+        if (debugLog) {debugLog->println("No multitexture support: forcing number of texture units to no more than 1");}
+        _numTextureCoords = iMax(1, _numTextureCoords);
+        _numTextures      = iMax(1, _numTextures);
+        _numTextureUnits  = iMax(1, _numTextureUnits);
+    }
+
     if (debugLog) {debugLog->println("Setting video mode");}
 
     setVideoMode();
@@ -502,7 +510,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     bool depthOk   = depthBits >= minimumDepthBits;
     bool stencilOk = stencilBits >= minimumStencilBits;
-
 
     std::string ver = getDriverVersion();
     if (debugLog) {
@@ -808,12 +815,18 @@ void RenderDevice::setVideoMode() {
         glDepthRange(0, 1);
 
         // Set up the texture units.
-        for (int t = _numTextureCoords - 1; t >= 0; --t) {
-            double d[] = {0,0,0,1};
-            glMultiTexCoord4dvARB(GL_TEXTURE0_ARB + t, d);
+        if (glMultiTexCoord4fvARB != NULL) {
+            for (int t = _numTextureCoords - 1; t >= 0; --t) {
+                float f[] = {0,0,0,1};
+                glMultiTexCoord4fvARB(GL_TEXTURE0_ARB + t, f);
+            }
+        } else if (_numTextureCoords > 0) {
+            glTexCoord(Vector4(0,0,0,1));
         }
 
-        glActiveTextureARB(GL_TEXTURE0_ARB);
+        if (glActiveTextureARB != NULL) {
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
     }
     debugAssertGLOk();
 
@@ -2192,52 +2205,37 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
         unit, _numTextureCoords));
 
     state.textureUnit[unit].texCoord = texCoord;
-    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+    if (glMultiTexCoord4fvARB != NULL) {
+        glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+    } else {
+        debugAssertM(unit == 0, "This machine has only one texture unit");
+        glTexCoord(texCoord);
+    }
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector3& texCoord) {
-    debugAssertM((int)unit < _numTextureCoords,
-        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
-        unit, _numTextureCoords));
-    state.textureUnit[unit].texCoord = Vector4(texCoord, 1);
-    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+    setTexCoord(unit, Vector4(texCoord, 1));
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector3int16& texCoord) {
-    debugAssertM((int)unit < _numTextureCoords,
-        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
-        unit, _numTextureCoords));
-    state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, texCoord.z, 1);
-    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+    setTexCoord(unit, Vector4(texCoord.x, texCoord.y, texCoord.z, 1));
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector2& texCoord) {
-    debugAssertM((int)unit < _numTextureCoords,
-        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
-        unit, _numTextureCoords));
-    state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
-    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+    setTexCoord(unit, Vector4(texCoord, 0, 1));
 }
 
 
 void RenderDevice::setTexCoord(uint unit, const Vector2int16& texCoord) {
-    debugAssertM((int)unit < _numTextureCoords,
-        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
-        unit, _numTextureCoords));
-    state.textureUnit[unit].texCoord = Vector4(texCoord.x, texCoord.y, 0, 1);
-    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+    setTexCoord(unit, Vector4(texCoord.x, texCoord.y, 0, 1));
 }
 
 
 void RenderDevice::setTexCoord(uint unit, double texCoord) {
-    debugAssertM((int)unit < _numTextureCoords,
-        format("Attempted to access texture coordinate %d on a device with %d coordinates.",
-        unit, _numTextureCoords));
-    state.textureUnit[unit].texCoord = Vector4(texCoord, 0, 0, 1);
-    glMultiTexCoord(GL_TEXTURE0_ARB + unit, texCoord);
+    setTexCoord(unit, Vector4(texCoord, 0, 0, 1));
 }
 
 
