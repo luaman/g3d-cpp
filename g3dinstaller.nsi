@@ -94,7 +94,7 @@ SectionEnd
 ;;
 ;; Add the include/library G3D directories to the MSVC6 paths if they don't already exist
 ;;
-Section "Add G3D Directories to MSVC6 (R)"
+Section "Add G3D Directories to MSVC6"
 
   SectionIn 1
 
@@ -252,6 +252,13 @@ Read_vccomponents_loop:
   IntCmpU 0 $R3 Check_library_dirs Add_dir_to_include
 
 Add_dir_to_include:
+  Push $R1
+  Push "$INSTDIR\include"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Finish_adding_include Add_line_to_temp
+Finish_adding_include:
   StrLen $R3 $R1
   IntOp $R3 $R3 - 2
   StrCpy $R1 $R1 $R3
@@ -265,6 +272,13 @@ Check_library_dirs:
   Pop $R2
   StrLen $R3 $R2
   IntCmpU 0 $R3 Add_line_to_temp
+  Push $R1
+  Push "$INSTDIR\win32-7-lib"
+  Call StrStr
+  Pop $R2
+  StrLen $R3 $R2
+  IntCmpU 0 $R3 Finish_adding_lib Add_line_to_temp
+Finish_adding_lib:
   StrLen $R3 $R1
   IntOp $R3 $R3 - 2
   StrCpy $R1 $R1 $R3
