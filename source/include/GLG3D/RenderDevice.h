@@ -1113,12 +1113,6 @@ public:
      */
     void push2D(const Rect2D& viewport);
     void pop2D();
-
-    /**
-     It is often useful to keep track of the number of polygons
-     rendered in a scene for profiling purposes.
-     */
-    int                 polygonCount;
  
     /**
      Automatically constructs an SDLWindow then calls the other init
