@@ -49,6 +49,24 @@ libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/g3derror.cpp \
                          ../../../source/G3Dcpp/g3dmath.cpp \
                          ../../../source/G3Dcpp/prompt.cpp \
-                         ../../../source/G3Dcpp/stringutils.cpp 
+                         ../../../source/G3Dcpp/stringutils.cpp \
+                         ../../../source/png/png.c \
+                         ../../../source/png/pngerror.c \
+                         ../../../source/png/pnggccrd.c \
+                         ../../../source/png/pngget.c \
+                         ../../../source/png/pngmem.c \
+                         ../../../source/png/pngpread.c \
+                         ../../../source/png/pngread.c \
+                         ../../../source/png/pngrio.c \
+                         ../../../source/png/pngrtran.c \
+                         ../../../source/png/pngrutil.c \
+                         ../../../source/png/pngset.c \
+                         ../../../source/png/pngtest.c \
+                         ../../../source/png/pngtrans.c \
+                         ../../../source/png/pngvcrd.c \
+                         ../../../source/png/pngwio.c \
+                         ../../../source/png/pngwrite.c \
+                         ../../../source/png/pngwtran.c \
+                         ../../../source/png/pngwutil.c
 
 libG3D_debug_la_CPPFLAGS= -D_DEBUG
