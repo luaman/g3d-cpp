@@ -148,6 +148,16 @@ const Array<MeshAlg::Vertex>& PosedModelWrapper::vertices() const {
 }
 
 
+const Array<Vector2>& PosedModelWrapper::texCoords() const {
+    return model->texCoords();
+}
+
+
+bool PosedModelWrapper::hasTexCoords() const {
+	return model->hasTexCoords();
+}
+
+
 const Array<MeshAlg::Face>& PosedModelWrapper::weldedFaces() const {
     return model->weldedFaces();
 }

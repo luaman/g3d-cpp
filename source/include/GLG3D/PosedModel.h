@@ -174,6 +174,7 @@ public:
  A wrapper that trampolines every method to an internal model.
  Use this as a base class when you have a PosedModelRef and 
  want to override its render() [or some other] method.
+ @deprecated (Will be moved to contrib)
  */
 class PosedModelWrapper : public PosedModel {
 protected:
@@ -199,6 +200,10 @@ public:
     virtual const Array<MeshAlg::Face>& faces() const;
 
     virtual const Array<MeshAlg::Edge>& edges() const;
+
+	virtual bool hasTexCoords() const;
+
+    virtual const Array<Vector2>& texCoords() const;
 
     virtual const Array<MeshAlg::Vertex>& vertices() const;
 

@@ -175,7 +175,7 @@ libraries to complement %G3D:
    to use.  They will likely change in small ways before becoming official APIs-- use at
    your own risk.
 
-   Deprecated APIs have been replaced by some newer functionality but are supported and
+   <A HREF="deprecated.html">Deprecated API</A>s have been replaced by some newer functionality but are supported and
    guaranteed to be present until the next major release, at which point they will be 
    removed. Avoid writing new code to deprecated APIs and consider migrating existing 
    code away from them.
