@@ -78,8 +78,9 @@ int main(int argc, char** argv) {
     RealTime now = System::getTick() - 0.001, lastTime;
 
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
+    std::string in("d:/libraries/g3d-6_01/data/quake2/players/drfreak/tris.md2");
 
-    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
+//    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-01-20
+  @edited  2004-02-10
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -84,18 +84,10 @@ namespace G3D {
  for data distributed along 2 or 1 axes by simply returning bounds
  that are always zero along one or more dimensions.
 
- <B>BETA: Public State</B>
-  Most of the public state will become private in a future release;
-  it is exposed in this release only to aid debugging.  If you look
-  at the source code it should be obvious where the division lies.
-
-  You shouldn't use anything except insert, remove, contains,
-  balance, update, getMembers, and getIntersectingMembers
 
 */
 template<class T> class KDTreeSet {
-//private:
-public:
+private:
 
     /** Wrapper for a value that includes a cache of its bounds. */
     class Handle {

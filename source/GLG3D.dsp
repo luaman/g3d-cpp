@@ -154,6 +154,10 @@ SOURCE=.\GLG3Dcpp\RenderDevice.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\SDLWindow.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\shadowVolume.cpp
 # End Source File
 # Begin Source File

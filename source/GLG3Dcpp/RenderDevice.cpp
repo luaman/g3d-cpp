@@ -602,8 +602,6 @@ bool RenderDevice::initialized() const {
 
 #ifdef G3D_WIN32
 
-extern HWND SDL_Window;
-
 HDC RenderDevice::getWindowHDC() const {
     // Get Windows HDC
     SDL_SysWMinfo info;

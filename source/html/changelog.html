@@ -3,13 +3,17 @@
 <A HREF="index.html">&lt;&lt; Documentation Index</A>
 <P>
 
-      Major version numbers introduce API changes that are not backwards
+   Major version numbers introduce API changes that are not backwards
    compatible.  Minor versions are backwards compatible to the
    previous major release.
    <P>
-   Changes in 6.00:
+   Changes in 6.01:
    <UL>
-     <LI>  IFSModel now loads models with up to 10 million polygons (like the buddha)
+	 <LI> G3D::Window
+	 <LI> G3D::SDLWindow
+     <LI> Renamed G3D::RenderDeviceSettings to G3D::WindowSettings (with a typedef for the old name)
+     <LI> IFSModel now loads models with up to 10 million polygons (like the buddha).
+	 <LI> Internal G3D::KDTreeSet state now private.
    </UL>
 
    <P>

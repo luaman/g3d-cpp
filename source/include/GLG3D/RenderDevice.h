@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-12-07
+  @edited  2004-02-10
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -20,6 +20,8 @@
 #include "GLG3D/VertexProgram.h"
 #include "GLG3D/PixelProgram.h"
 #include "GLG3D/VARArea.h"
+#include "GLG3D/WindowSettings.h"
+#include "GLG3D/Window.h"
 
 typedef unsigned int uint;
 
@@ -30,83 +32,8 @@ namespace G3D {
  */
 #define MAX_TEXTURE_UNITS 8
 
-
-/**
- Used by RenderDevice::init
- */
-class RenderDeviceSettings {
-public:
-    int     width;
-    int     height;
-
-    /* The number of bits in <B>each</B> color channel of the frame buffer.
-       5, <B>8</B>.*/
-    int     rgbBits;
-
-    /* The number of bits in the alpha channel of the frame buffer. <B>0</B>, 1, 8 */
-    int     alphaBits;
-
-    /** 16, <B>24</B>, 32 */
-    int     depthBits;
-
-    /** <B>8</B> */
-    int     stencilBits;
-
-    /** Number of samples per pixel for anti-aliasing purposes.  <B>1</B> (none), 4, 8 */
-    int     fsaaSamples;
-
-    /** Will you accept a software rendering pipeline? */
-    bool    hardware;
-
-    bool    fullScreen;
-
-    /** Should buffer flips be un-hitched from refresh rate?  <B>true</B>, false.  True
-        generally gives higher frame rates.*/
-    bool    asychronous;
-
-    /** Allocate a stereo display context. true, <B>false</B> */
-    bool    stereo;
-
-    /** Specify the value at which lighting saturates
-     before it is applied to surfaces.  1.0 is the default OpenGL value,
-     higher numbers increase the quality of bright lighting at the expense of
-     color depth.Default is 1.0.  Set
-        to 2.0 to make a Color3::WHITE light 50% of the maximum brightness. */
-    double  lightSaturation;
-
-    /** In cycles/sec */
-    int     refreshRate;
-
-    /**
-     If true, you should set up your event loop as described in the 
-     docs for RenderDevice::resize.
-     */
-    bool    resizable;
-
-    /**
-     When true, a window frame and title bar are present.
-     */
-    bool    framed;
-
-    RenderDeviceSettings() :
-        width(800),
-        height(600),
-        rgbBits(8),
-        alphaBits(0),
-        depthBits(24),
-        stencilBits(8),
-        fsaaSamples(1),
-        hardware(true),
-        fullScreen(false),
-        asychronous(true),
-        stereo(false),
-        lightSaturation(1.0),
-        refreshRate(85),
-        resizable(false),
-        framed(true) {}
-};
-
 class VAR;
+
 
 /**
  You must call RenderDevice::init() before using the RenderDevice.
