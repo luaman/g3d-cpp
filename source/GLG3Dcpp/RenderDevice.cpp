@@ -730,7 +730,7 @@ void RenderDevice::setGamma(
 }
 
 
-void RenderDevice::resize(int w, int h) {
+void RenderDevice::notifyResize(int w, int h) {
     debugAssert(w > 0);
     debugAssert(h > 0);
     settings.width = w;

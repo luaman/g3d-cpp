@@ -919,7 +919,7 @@ void doUserInput() {
 
         case SDL_VIDEORESIZE:
             {
-                renderDevice->resize(event.resize.w, event.resize.h);
+                renderDevice->notifyResize(event.resize.w, event.resize.h);
                 Rect2D full(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
                 renderDevice->setViewport(full);
             }

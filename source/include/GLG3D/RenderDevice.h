@@ -1099,14 +1099,15 @@ public:
     std::string screenshot(const std::string& filepath) const;
 
     /**
-     Resize the window.  Typically called in response to a user resize event:
+     Notify RenderDevice that the window size has changed.  
+     Called in response to a user resize event:
      <PRE>
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch(event.type) {
             case SDL_VIDEORESIZE:
                 {
-                    renderDevice->resize(event.resize.w, event.resize.h);
+                    renderDevice->notifyResize(event.resize.w, event.resize.h);
                     Rect2D full(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
                     renderDevice->setViewport(full);
                 }
@@ -1115,10 +1116,8 @@ public:
         }
 
      </PRE>
-
-      Resets all rendering state to the initial values.
      */
-    void resize(int w, int h);
+    void notifyResize(int w, int h);
 
     /**
      Takes a screenshot of the front buffer and

@@ -12,6 +12,7 @@
 
 #include <G3DAll.h>
 
+
 std::string             DATA_DIR;
 
 Log*                    debugLog		= NULL;
@@ -38,7 +39,12 @@ int main(int argc, char** argv) {
     DATA_DIR     = demoFindData();
     debugLog	 = new Log();
     renderDevice = new RenderDevice();
-    renderDevice->init(800, 600, debugLog, 1.0, false, 0, true, 8, 0, 24, 0);
+    {
+        RenderDeviceSettings settings;
+        settings.fsaaSamples = 1;
+        settings.resizable = true;
+        renderDevice->init(settings, debugLog);
+    }
     camera 	     = new Camera(renderDevice);
 
     font         = CFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
@@ -48,7 +54,7 @@ int main(int argc, char** argv) {
     controller   = new ManualCameraController(renderDevice, userInput);
     controller->setMoveRate(10);
 
-    controller->setPosition(Vector3(15, 20, 15));
+    controller->setPosition(Vector3(0, 0, 4));
     controller->lookAt(Vector3(-2,3,-5));
 
     renderDevice->resetState();
@@ -93,14 +99,34 @@ void doSimulation(GameTime timeStep) {
 }
 
 
+
 void doGraphics() {
+
+    LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
+
     renderDevice->beginFrame();
+        // Cyan background
+	    glClearColor(0.1f, 0.5f, 1.0f, 0.0f);
+
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
-			    
-		    camera->setProjectionAndCameraMatrix();
 
-            renderDevice->debugDrawAxes(2);
+            camera->setProjectionAndCameraMatrix();
+        
+            // Setup lighting
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
+
+            renderDevice->configureDirectionalLight
+              (0, lighting.lightDirection, lighting.lightColor);
+
+            renderDevice->setAmbientLightLevel(lighting.ambient);
+
+            Draw::axes(renderDevice);
+
+            glDisable(GL_LIGHTING);
+            glDisable(GL_LIGHT0);
+           
 
         renderDevice->popState();
 	    
@@ -117,13 +143,26 @@ void doUserInput() {
     while (SDL_PollEvent(&event)) {
         switch(event.type) {
         case SDL_QUIT:
-	    endProgram = true;
-	    break;
+	        endProgram = true;
+	        break;
+
+        case SDL_VIDEORESIZE:
+            {
+                renderDevice->notifyResize(event.resize.w, event.resize.h);
+                Rect2D full(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
+                renderDevice->setViewport(full);
+            }
+            break;
+
 
 	    case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 endProgram = true;
+                break;
+
+            case SDLK_TAB:
+                controller->setActive(! controller->active());
                 break;
 
             // Add other key handlers here
