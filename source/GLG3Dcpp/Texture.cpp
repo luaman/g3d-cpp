@@ -67,6 +67,7 @@ static void glStatePop() {
 
 static GLenum dimensionToTarget(Texture::Dimension d) {
     switch (d) {
+    case Texture::DIM_CUBE_MAP_NPOT:
     case Texture::DIM_CUBE_MAP:
         return GL_TEXTURE_CUBE_MAP_ARB;
 
@@ -322,7 +323,7 @@ Texture::Texture(
 
         name = _name;
 
-        if (_dimension != DIM_CUBE_MAP) {
+        if ((_dimension != DIM_CUBE_MAP) && (_dimension != DIM_CUBE_MAP_NPOT)) {
             glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &width);
             glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &height);
         } else {
@@ -400,7 +401,9 @@ TextureRef Texture::fromFile(
         array[i] = NULL;
     }
 
-    int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
+    const int numFaces = (dimension == DIM_CUBE_MAP) ?
+        6 : (dimension == DIM_CUBE_MAP_NPOT) ? 
+        6 : 1;
 
     // Check for DDS file and load separately.
     std::string ddsExt;
@@ -452,7 +455,8 @@ TextureRef Texture::fromFile(
         return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead);
     }
 
-    if (dimension == DIM_CUBE_MAP) {
+    // Test for both DIM_CUBE_MAP and DIM_CUBE_MAP_NPOT
+    if (numFaces == 6) {
         if (filename[1] == "") {
             // Wildcard format
             // Parse the filename into a base name and extension
@@ -550,7 +554,9 @@ TextureRef Texture::fromTwoFiles(
         array[i] = NULL;
     }
 
-    int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
+    const int numFaces = (dimension == DIM_CUBE_MAP) ?
+        6 : (dimension == DIM_CUBE_MAP_NPOT) ? 
+        6 : 1;
 
     // Parse the filename into a base name and extension
     std::string filenameBase = filename;
@@ -558,7 +564,8 @@ TextureRef Texture::fromTwoFiles(
     std::string alphaFilenameBase = alphaFilename;
     std::string alphaFilenameExt;
 
-    if (dimension == DIM_CUBE_MAP) {
+    // Test for both DIM_CUBE_MAP and DIM_CUBE_MAP_NPOT
+    if (numFaces == 6) {
         splitFilenameAtWildCard(filename, filenameBase, filenameExt);
     }
     
@@ -572,7 +579,8 @@ TextureRef Texture::fromTwoFiles(
         std::string fn = filename;
         std::string an = alphaFilename;
 
-        if (dimension == DIM_CUBE_MAP) {
+        // Test for both DIM_CUBE_MAP and DIM_CUBE_MAP_NPOT
+        if (numFaces == 6) {
             fn = filenameBase + cubeMapString[f] + filenameExt;
             an = alphaFilenameBase + cubeMapString[f] + alphaFilenameExt;
         }
@@ -671,13 +679,17 @@ TextureRef Texture::fromMemory(
         int mipHeight = height;
         for (int mipLevel = 0; mipLevel < numMipMaps; ++mipLevel) {
 
-            int numFaces = bytes[mipLevel].length();
+            const int numFaces = bytes[mipLevel].length();
             
-            debugAssert(((dimension == DIM_CUBE_MAP) ? 6 : 1) == numFaces);
+            debugAssert(
+                ((dimension == DIM_CUBE_MAP) ? 
+                6 : (dimension == DIM_CUBE_MAP_NPOT) ? 
+                6 : 1) == numFaces);
         
             for (int f = 0; f < numFaces; ++f) {
         
-                if (dimension == DIM_CUBE_MAP) {
+                // Test for both DIM_CUBE_MAP and DIM_CUBE_MAP_NPOT
+                if (numFaces == 6) {
                     // Choose the appropriate face target
                     target = cubeFaceTarget[f];
                 }
@@ -690,9 +702,13 @@ TextureRef Texture::fromMemory(
                                   bytesFormat->OpenGLBaseFormat,
                                   mipWidth, mipHeight, desiredFormat->OpenGLFormat);
                 } else {
+                    const bool useNPOT = (dimension == DIM_2D_NPOT) ?
+                        true : (dimension == DIM_CUBE_MAP_NPOT) ?
+                        true : false;
+
                     createTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]), bytesFormat->OpenGLBaseFormat,
                                   bytesFormat->OpenGLFormat, mipWidth, mipHeight, desiredFormat->OpenGLFormat, 
-                                  bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed, (dimension == DIM_2D_NPOT));
+                                  bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed, useNPOT);
                 }
 
                 debugAssertGLOk();
@@ -704,7 +720,7 @@ TextureRef Texture::fromMemory(
     glStatePop();
 
     if ((dimension != DIM_2D_RECT) &&
-        ((dimension != DIM_2D_NPOT) || (! GLCaps::supports_GL_ARB_texture_non_power_of_two()))) {
+        ((dimension != DIM_2D_NPOT && dimension != DIM_CUBE_MAP_NPOT) || (! GLCaps::supports_GL_ARB_texture_non_power_of_two()))) {
         width  = ceilPow2(width);
         height = ceilPow2(height);
     }
@@ -734,8 +750,9 @@ TextureRef Texture::fromMemory(
 
     Array< Array<const void* > > arrayMipMapFaces(1);
 
-    int numFaces = (dimension == DIM_CUBE_MAP) ? 6 : 1;
-        
+    const int numFaces = (dimension == DIM_CUBE_MAP) ?
+        6 : (dimension == DIM_CUBE_MAP_NPOT) ? 
+        6 : 1;        
 
     for (int f = 0; f < numFaces; ++f) {
         arrayMipMapFaces[0].append(bytes[f]);
@@ -1012,6 +1029,7 @@ size_t Texture::sizeInMemory() const {
 
 unsigned int Texture::getOpenGLTextureTarget() const {
     switch (dimension) {
+    case DIM_CUBE_MAP_NPOT:
     case DIM_CUBE_MAP:
         return GL_TEXTURE_CUBE_MAP_ARB;
 
