@@ -378,6 +378,10 @@ SOURCE=.\include\G3D\Plane.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\G3D\platform.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3D\prompt.h
 # End Source File
 # Begin Source File
