@@ -277,13 +277,13 @@ void App::main() {
 	debugController.setActive(false);
 
     const std::string path =
-        "c:/morgan/data/";
-        //"d:/games/data/";
+        //"c:/morgan/data/";
+        "d:/games/data/";
 
     double x = -5;
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/sphere.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].twoSided = true;
@@ -326,17 +326,22 @@ void App::main() {
         x += 2;
     }
 
+    const Matrix3 rot180 = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180));
+
     if (true) {
         CoordinateFrame xform;
+
         xform.rotation[0][0] = xform.rotation[1][1] = xform.rotation[2][2] = 0.04;
-        xform.translation = Vector3(0.35, -1.45, -2.25);
-        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/legocar/legocar.3ds", xform);
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+
+        xform.rotation = xform.rotation * rot180;
+        xform.translation = Vector3(-0.35, -1.45, 2.25);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/legocar.3ds", xform);
+        entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
         x += 2;
     }
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/jackolantern.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/jackolantern.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
 //        model->partArray[0].triListArray[0].twoSided = true;
@@ -347,12 +352,12 @@ void App::main() {
         material.specularExponent = Color3::white() * 60;
         model->updateAll();
 
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
         x += 2;
     }
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/trumpet.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/teapot.ifs", 1.5);
 
         Color3 brass = Color3::fromARGB(0xFFFDDC01);
 
@@ -371,6 +376,17 @@ void App::main() {
 
 
     {
+        CoordinateFrame xform;
+
+        xform.rotation[0][0] = xform.rotation[1][1] = xform.rotation[2][2] = 0.004;
+        xform.translation.x = 3.5;
+        xform.translation.y = 1;
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/imperial.3ds", xform);
+
+        entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x - 2, 1, 0))));
+    }
+
+    if (false){
         ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/mech-part.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
@@ -382,19 +398,6 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,3,0))));
 //        x += 2;
-    }
-
-    {
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/sphere.ifs", 1);
-
-        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        material.diffuse = Color3::white() * .8;
-        material.specular = Color3::white() * .3;
-        material.specularExponent = Color3::white() * 40;
-        model->updateAll();
-
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
     }
 
     if (true) {
@@ -418,11 +421,12 @@ void App::main() {
             Vector3::unitY(),
             Vector3::unitY());
 
+        double texScale = 4;
         part.texCoordArray.append(
-            Vector2(0,0),
-            Vector2(0,1),
-            Vector2(1,1),
-            Vector2(1,0));
+            Vector2(0,0) * texScale,
+            Vector2(0,1) * texScale,
+            Vector2(1,1) * texScale,
+            Vector2(1,0) * texScale);
 
         part.tangentArray.append(
             Vector3::unitX(),
@@ -438,13 +442,13 @@ void App::main() {
         triList.twoSided = true;
         triList.material.emit.constant = Color3::black();
         triList.material.diffuse.constant = Color3::white();
-/*        triList.material.diffuse.map = Texture::fromFile("collage.jpg", TextureFormat::AUTO, Texture::CLAMP);
+        triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg");
 
         GImage normalBumpMap;
-        computeNormalMap(GImage("collage-bump.jpg"), normalBumpMap);
+        computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap);
         triList.material.normalBumpMap =         
-            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
-*/
+            Texture::fromGImage("Bump Map", normalBumpMap);
+
         triList.material.bumpMapScale = 0.1;
 
         triList.material.specular.constant = Color3::black();
@@ -496,7 +500,6 @@ void App::main() {
         lighting->shadowedLightArray.last().color *= Color3(1.2, 1.2, 1);
     }
 
-    //http://oss.sgi.com/projects/ogl-sample/registry/EXT/wgl_pbuffer.txt
     Demo(this).run();
 }
 
