@@ -55,14 +55,14 @@ arrive with each point release.
 
   <TR><TD>\link license License (BSD/IJG) \endlink</TD><TD></TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guideinstall Installing %G3D \endlink</TD><TD VALIGN=TOP>
+  <TR><TD VALIGN=TOP>\link guideinstall Installing G3D \endlink</TD><TD VALIGN=TOP>
   WindowsXP/2000,
   Linux,
   OS X,
   Building the Library,
   <CODE>\#define</CODE>s</TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with %G3D \endlink</TD><TD></TD></TR>  
+  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>  
 
   <TR><TD VALIGN=TOP>\link guideconcepts Concepts \endlink</TD><TD>
   Immediate Mode Graphics,
