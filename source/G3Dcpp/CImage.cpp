@@ -8,8 +8,13 @@
 #include "G3D/debug.h"
 
 extern "C" {
-#include "../IJG/jconfig.h"
-#include "../IJG/cdjpeg.h"
+#ifdef _WIN32
+	#include "../IJG/jconfig.h"
+	#include "../IJG/cdjpeg.h"
+#else
+	#include <jconfig.h>
+	#include <jpeglib.h>
+#endif
 }
 #include <sys/stat.h>
 #include <assert.h>

@@ -108,3 +108,4 @@ void IFSReader::processTris(BinaryInput& input) {
       tris[i].setIndices(a, b, c);
    }
 }
+

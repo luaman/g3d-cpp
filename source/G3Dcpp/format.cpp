@@ -15,11 +15,12 @@
 #else
     #include <stdarg.h>
     #define NEWLINE "\n"
-    #define __cdecl
 #endif
 
-// disable: "C++ exception handler used"
-#pragma warning (disable : 4530)
+#ifdef _MSC_VER
+    // disable: "C++ exception handler used"
+    #pragma warning (disable : 4530)
+#endif // _MSC_VER
 
 // If your platform does not have vsnprintf, you can find a
 // implementation at http://www.ijs.si/software/snprintf/
