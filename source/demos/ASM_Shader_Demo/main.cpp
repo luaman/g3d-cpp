@@ -1,9 +1,12 @@
 /**
-  @file GLProgram_Demo/main.cpp
+  @file ASM_Shader_Demo/main.cpp
 
-  This demonstrates how to use the programmable graphics
-  pipeline (aka "Vertex shaders and pixel shaders") under
-  G3D/OpenGL.
+  This program demonstrates how to use assembly-level shaders with 
+  G3D::VertexProgram and G3D::PixelProgram.  This API is provided for 
+  backwards compatibility only; consider using high-level shaders
+  with G3D::Shader.
+
+  This demo also shows how to intialize G3D without the GApp framework.
 
   The OpenGL ARB Vertex Program specification is located at
   http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_program.txt
@@ -11,7 +14,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2003-12-07
+  @edited  2004-09-16
  */ 
 
 #include <G3DAll.h>

@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "GLProgram_Demo"=.\GLProgram_Demo.dsp - Package Owner=<4>
+Project: "ASM_Shader_Demo"=.\ASM_Shader_Demo.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
