@@ -93,7 +93,8 @@ static void createTexture(
     int             width,
     int             height,
     GLenum          textureFormat,
-    int             bytesPerPixel) {
+    int             bytesPerPixel,
+    bool            compressed = false) {
 
     uint8* bytes = const_cast<uint8*>(rawBytes);
 
@@ -149,6 +150,15 @@ static void createTexture(
         // Intentionally fall through for power of 2 case
 
     case GL_TEXTURE_RECTANGLE_EXT:
+
+        if (compressed) {
+            
+            alwaysAssertM((target == GL_TEXTURE_RECTANGLE_EXT),
+                "Compressed texture data must be power-of-two size or loaded into a DIM_2D_RECT texture.");
+
+            glCompressedTexImage2DARB(target, 0, textureFormat, width, height, 0, (bytesPerPixel * width * height), rawBytes);
+            break;
+        }
 
         // Supported formats as defined by: http://developer.3dlabs.com/GLmanpages/glteximage2d.htm
         // textureFormat should throw a proper GL_INVALID_ENUM error, but might need checking also
@@ -606,7 +616,7 @@ TextureRef Texture::fromMemory(
     GLuint textureID = newGLTextureID();
     GLenum target = dimensionToTarget(dimension);
 
-    if (desiredFormat == TextureFormat::AUTO) {
+    if ((desiredFormat == TextureFormat::AUTO) || (bytesFormat->compressed)) {
         desiredFormat = bytesFormat;
     }
 
@@ -635,7 +645,7 @@ TextureRef Texture::fromMemory(
             } else {
                 createTexture(target, bytes[f], bytesFormat->OpenGLBaseFormat,
                               width, height, desiredFormat->OpenGLFormat, 
-                              bytesFormat->packedBitsPerTexel / 8);
+                              bytesFormat->packedBitsPerTexel / 8, bytesFormat->compressed);
             }
         }
         debugAssertGLOk();
