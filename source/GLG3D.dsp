@@ -270,6 +270,10 @@ SOURCE=.\include\GLG3D\RenderDevice.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\SDLWindow.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\shadowVolume.h
 # End Source File
 # Begin Source File
@@ -307,6 +311,14 @@ SOURCE=.\include\GLG3D\VARArea.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\VertexProgram.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\Window.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\WindowSettings.h
 # End Source File
 # End Group
 # End Target
