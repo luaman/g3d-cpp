@@ -489,7 +489,7 @@ void NetworkDevice::localHostAddresses(Array<NetAddress>& array) const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Conduit::Conduit(NetworkDevice* _nd) {
+Conduit::Conduit(NetworkDevice* _nd) : binaryOutput("<memory>", G3D_LITTLE_ENDIAN) {
     sock                = 0;
     nd                  = _nd;
     mSent               = 0;
@@ -744,20 +744,21 @@ void ReliableConduit::sendBuffer(const BinaryOutput& b) {
 
 void ReliableConduit::send(const NetMessage* m) {
 
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-
-    serializeMessage(m, b);
-    sendBuffer(b);
+    binaryOutput.reset();
+    serializeMessage(m, binaryOutput);
+    sendBuffer(binaryOutput);
 }
 
 
 void ReliableConduit::multisend(const Array<ReliableConduitRef>& array, 
                                 const NetMessage* m) {
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-    serializeMessage(m, b);
+    if (array.size() > 0) {
+        array[0]->binaryOutput.reset();
+        serializeMessage(m, array[0]->binaryOutput);
 
-    for (int i = 0; i < array.size(); ++i) {
-        array[i]->sendBuffer(b);
+        for (int i = 0; i < array.size(); ++i) {
+            array[i]->sendBuffer(array[0]->binaryOutput);
+        }
     }
 }
 
@@ -998,23 +999,20 @@ void LightweightConduit::sendBuffer(const NetAddress& a, BinaryOutput& b) {
 
 void LightweightConduit::send(const Array<NetAddress>& array, 
                               const NetMessage* m) {
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-
-    serializeMessage(m, b);
+    binaryOutput.reset();
+    serializeMessage(m, binaryOutput);
 
     for (int i = 0; i < array.size(); ++i) {
-        sendBuffer(array[i], b);
+        sendBuffer(array[i], binaryOutput);
     }
 }
 
 
 void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
 
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-
-    serializeMessage(m, b);
-
-    sendBuffer(a, b);
+    binaryOutput.reset();
+    serializeMessage(m, binaryOutput);
+    sendBuffer(a, binaryOutput);
 }
 
 

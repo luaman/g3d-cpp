@@ -196,7 +196,8 @@ public:
     /** The symbol is written without quotes.  Symbols are required to begin with a
         letter or underscore and contain only letters, underscores, and numbers 
         or be a C++ symbol (e.g. "{", "(", "++", etc.)
-        so that they may be properly parsed by TextInput::readSymbol. */
+        so that they may be properly parsed by TextInput::readSymbol. Symbols are
+        printed with a trailing space.*/
     void writeSymbol(const std::string& string);
 
     /** Convenient idiom for writing multiple symbols in a row, e.g.

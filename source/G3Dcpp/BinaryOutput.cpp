@@ -37,6 +37,15 @@ BinaryOutput::BinaryOutput(
 }
 
 
+void BinaryOutput::reset() {
+    alwaysAssertM(filename == "<memory>", 
+        "Can only reset a BinaryOutput that writes to memory.");
+
+    pos = 0;
+    buffer.resize(0, false);
+}
+
+
 BinaryOutput::~BinaryOutput() {
     // Nothing to do
 }

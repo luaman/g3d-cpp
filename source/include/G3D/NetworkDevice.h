@@ -55,6 +55,7 @@
 #endif
 #include "G3D/ReferenceCount.h"
 #include "G3D/Array.h"
+#include "G3D/BinaryOutput.h"
 
 namespace G3D {
 
@@ -174,6 +175,12 @@ protected:
 
     class NetworkDevice*            nd;
     SOCKET                          sock;
+
+    /**
+     Used for serialization.  One per socket
+     to make this threadsafe.
+     */
+    BinaryOutput                    binaryOutput;
 
     Conduit(class NetworkDevice* _nd);
 
@@ -548,8 +555,10 @@ typedef ReferenceCountedPointer<class NetListener> NetListenerRef;
  Create only one NetworkDevice per-process (WinSock restriction).
  <P>
  NetworkDevice is technically not thread safe.  However, as long as you
- use different conduits on different threads, you will encounter no
- problems sharing the single NetworkDevice across multiple threads.
+ use different conduits on different threads (or lock conduits before sending), you will encounter no
+ problems sharing the single NetworkDevice across multiple threads.  That is,
+ do not invoke a Conduit's send or receive method on two threads at once.
+
  This assumes that the underlying WinSock/BSD sockets implementation
  is thread safe.  That is not guaranteed, but in practice seems
  to always be true (e.g.

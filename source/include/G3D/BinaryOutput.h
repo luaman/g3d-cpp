@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2004-11-05
+ @edited  2005-01-13
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
  */
 
@@ -34,10 +34,8 @@ namespace G3D {
 /**
  Sequential or random access byte-order independent binary file access.
 
- The compress() call can be used to compressed with zlib and preceed it 
- by a little endian unsigned 32-bit int file size prior to
- commiting.
-    */
+ The compress() call can be used to compress with zlib.
+ */
 class BinaryOutput {
 private:
     std::string     filename;
@@ -59,7 +57,7 @@ private:
      */
     void reserveBytes(int bytes) {
         if (pos + bytes >= buffer.length()) {
-            buffer.resize(pos + bytes);
+            buffer.resize(pos + bytes, false);
         }
     }
 
@@ -81,7 +79,9 @@ public:
 
     virtual ~BinaryOutput();
     
-    /** Compresses the data in the buffer in place, preceeding it with a little-endian uint32.
+    /** Compresses the data in the buffer in place, 
+        preceeding it with a little-endian uint32 indicating 
+        the uncompressed size.
         Call immediately before commit().*/
     void compress();
 
@@ -118,6 +118,13 @@ public:
      at least size() bytes).
      */
     void commit(uint8*);
+
+    /**
+      A memory BinaryOutput may be reset so that it can be written to again
+      without allocating new memory.  The underlying array will not be deallocated,
+      but the reset structure will act like a newly intialized one.
+     */
+    void reset();
 
     /**
      Returns the length of the file in bytes.

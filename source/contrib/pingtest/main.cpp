@@ -1,6 +1,8 @@
 /**
  @file pingtest/main.cpp
  
+  pingtest {hostname|ip|--server}
+
  A simple demo of LightweightConduit and ReliableConduit that
  is also a good first-test for network problems.
 

@@ -1706,6 +1706,37 @@ void testSwizzle() {
 
 
 int main(int argc, char* argv[]) {    
+    /*
+    Array<uint8> x(1024);
+    RealTime t0 = System::time();
+    
+    for (int i = 0; i < 100; ++i) {
+        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+        b.writeInt32(1);
+        b.writeInt32(2);
+        b.writeInt32(8);
+        Matrix4::identity().serialize(b);
+        b.commit(x.getCArray());
+    }
+    RealTime reallocTime = System::time() - t0;
+    printf("Reallocation Time: %gs\n", reallocTime);
+
+    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
+    t0 = System::time();    
+    for (int i = 0; i < 100; ++i) {
+        b.writeInt32(1);
+        b.writeInt32(2);
+        b.writeInt32(8);
+        Matrix4::identity().serialize(b);
+        b.commit(x.getCArray());
+        b.reset();
+    }
+    RealTime resetTime = System::time() - t0;
+    printf("Reset Time: %gs\n", resetTime);
+    
+    while(true);
+return 0;
+*/
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");

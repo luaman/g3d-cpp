@@ -151,22 +151,7 @@ App::~App() {
 }
 
 
-int main(int argc, char** argv) {
-    
-    TextInput::Options ppmOptions;
-    ppmOptions.cppComments = false;
-    ppmOptions.otherCommentCharacter = '#';
-    ppmOptions.signedNumbers = false;
-    ppmOptions.singleQuotedStrings = false;
-    
-    TextInput ti("c:/tmp/foo.ppm", ppmOptions);
-
-    ti.readSymbol();
-    while (true) {
-    ti.readNumber();
-    }
-    
-        
+int main(int argc, char** argv) {            
     GAppSettings settings;
     settings.window.width = 400;
     settings.window.height = 400;
