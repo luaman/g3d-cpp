@@ -249,22 +249,74 @@ static std::string getMatrixState() {
     result += getOneMatrixState(GL_PROJECTION_MATRIX, GL_PROJECTION);
 
     // Get the matrix mode
-    result += std::string("glMatrixMode(") + GLenumToString(glGetInteger(GL_MATRIX_MODE)) + ")\n\n";
+    result += std::string("glMatrixMode(") + GLenumToString(glGetInteger(GL_MATRIX_MODE)) + ");\n\n";
 
     return result;
 }
 
-
 static std::string getTextureState(bool showDisabled) {
 
-    if (! GLCaps::supports_GL_ARB_multitexture()) {
-        return "//NO MULTITEXTURE\n";
+    std::string result;
+    GLenum pname[]  = {GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_TEXTURE_WRAP_R};
+    GLenum tname[]  = {GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D};
+    GLenum tname2[] = {GL_TEXTURE_BINDING_1D, GL_TEXTURE_BINDING_2D, GL_TEXTURE_BINDING_3D};
+
+    // Let's check the multitexture availability
+    if (!GLCaps::supports_GL_ARB_multitexture()) {
+
+        result += format("//NO MULTITEXTURE\n");
+
+        // See if the texture unit is enabled
+        bool enabled = false;
+        for (int tt = 0; tt < 3; ++tt) 
+            enabled = enabled || (glGetBoolean(tname[tt]) ? true : false);
+
+        if (!enabled && !showDisabled) {
+            for (int tt = 0; tt < 3; ++tt) 
+                result += format("glDisable(%s); ", GLenumToString(tname[tt]));
+            result += "\n";
+        } else {
+            for (int tt = 0; tt < 3; ++tt) {
+        
+                bool on = glGetBoolean(tname[tt]) ? true : false;
+                result += format("%s(%s);\n",
+                    on ? "glEnable" : "glDisable",
+                    GLenumToString(tname[tt]));
+                        
+                if (showDisabled || on) {
+                    result += format("glBindTexture(%s, %d);\n", 
+                        GLenumToString(tname[tt]),
+                        glGetInteger(tname2[tt]));
+
+                    for (int p = 0; p < 3; ++p) {
+                        result += format("glTexParameteri(%s, %s, %s);\n",
+                            GLenumToString(tname[tt]),
+                            GLenumToString(pname[p]),
+                            GLenumToString(glGetTexParameteri(tname[tt], pname[p])));
+                    }
+
+                    result += "\n";
+                }
+            }
+
+            // TODO: texture environment
+
+            GLdouble v[4];
+            glGetDoublev(GL_CURRENT_TEXTURE_COORDS, v);
+            result += format("glTexCoord4dARB(%g, %g, %g, %g);\n", v[0], v[1], v[2], v[3]);
+
+            result += getOneMatrixState(GL_TEXTURE_MATRIX, GL_TEXTURE);
+            result += "\n";
+        }
+        
+        return result;
     }
 
+    //=============
+    //multitexture
+    //=============
     int numUnits = glGetInteger(GL_MAX_TEXTURE_UNITS_ARB);
     int active = glGetInteger(GL_ACTIVE_TEXTURE_ARB);
-
-    std::string result;
 
     // Iterate over all of the texture units
     for (int t = 0; t < numUnits; ++t) {
@@ -273,14 +325,9 @@ static std::string getTextureState(bool showDisabled) {
         result += format("glActiveTextureARB(GL_TEXTURE0_ARB + %d);\n", t);
         glActiveTextureARB(GL_TEXTURE0_ARB + t);
 
-        GLenum pname[]  = {GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_TEXTURE_WRAP_R};
-        GLenum tname[]  = {GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D};
-        GLenum tname2[] = {GL_TEXTURE_BINDING_1D, GL_TEXTURE_BINDING_2D, GL_TEXTURE_BINDING_3D};
-
-    	int tt;
         // See if this unit is on
         bool enabled = false;
-        for (tt = 0; tt < 3; ++tt) {
+        for (int tt = 0; tt < 3; ++tt) {
             enabled = enabled || (glGetBoolean(tname[tt]) ? true : false);
         }
 
@@ -332,7 +379,6 @@ static std::string getTextureState(bool showDisabled) {
 
     return result;
 }
-
 
 static std::string enableEntry(GLenum which) {
 	return format("%s(%s);\n",
@@ -441,46 +487,47 @@ std::string getOpenGLState(bool showDisabled) {
 
 	result += enableEntry(GL_STENCIL_TEST);
 
-    result += format("glClearStencil(0x%x);\n", 
-        glGetInteger(GL_STENCIL_CLEAR_VALUE));
+    result += format("glClearStencil(0x%x);\n", glGetInteger(GL_STENCIL_CLEAR_VALUE));
 
-    result += "glActiveStencilFaceEXT(GL_BACK);\n";
+    if (GLCaps::supports_GL_ARB_stencil_two_side()) {
+        result += "glActiveStencilFaceEXT(GL_BACK);\n";
+        glActiveStencilFaceEXT(GL_BACK);
+    }
 
-    glActiveStencilFaceEXT(GL_BACK);
-
-    if (showDisabled || glGetBoolean(GL_STENCIL_TEST)) {
-        result += format("glStencilFunc(%s, %d, %d);\n",
+    if (showDisabled || glGetBoolean(GL_STENCIL_TEST)) 
+        result += format(
+            "glStencilFunc(%s, %d, %d);\n",
             GLenumToString(glGetInteger(GL_STENCIL_FUNC)),
             glGetInteger(GL_STENCIL_REF),
 		    glGetInteger(GL_STENCIL_VALUE_MASK));
-    }
 
-	result += format("glStencilOp(%s, %s, %s);\n",
+	result += format(
+        "glStencilOp(%s, %s, %s);\n",
 		GLenumToString(glGetInteger(GL_STENCIL_FAIL)),
 		GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_FAIL)),
 		GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_PASS)));
 
-    result += format("glStencilMask(0x%x);\n",
-        glGetInteger(GL_STENCIL_WRITEMASK));
+    result += format("glStencilMask(0x%x);\n", glGetInteger(GL_STENCIL_WRITEMASK));
 
-    result += "\nglActiveStencilFaceEXT(GL_FRONT);\n";
+    if (GLCaps::supports_GL_ARB_stencil_two_side()) {
+        result += "\nglActiveStencilFaceEXT(GL_FRONT);\n";
+        glActiveStencilFaceEXT(GL_FRONT);
 
-    glActiveStencilFaceEXT(GL_FRONT);
+        if (showDisabled || glGetBoolean(GL_STENCIL_TEST)) 
+            result += format(
+                "glStencilFunc(%s, %d, %d);\n",
+                GLenumToString(glGetInteger(GL_STENCIL_FUNC)),
+                glGetInteger(GL_STENCIL_REF),
+		        glGetInteger(GL_STENCIL_VALUE_MASK));
 
-    if (showDisabled || glGetBoolean(GL_STENCIL_TEST)) {
-        result += format("glStencilFunc(%s, %d, %d);\n",
-            GLenumToString(glGetInteger(GL_STENCIL_FUNC)),
-            glGetInteger(GL_STENCIL_REF),
-		    glGetInteger(GL_STENCIL_VALUE_MASK));
+	    result += format(
+            "glStencilOp(%s, %s, %s);\n",
+		    GLenumToString(glGetInteger(GL_STENCIL_FAIL)),
+		    GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_FAIL)),
+		    GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_PASS)));
+
+        result += format("glStencilMask(0x%x);\n", glGetInteger(GL_STENCIL_WRITEMASK));
     }
-
-	result += format("glStencilOp(%s, %s, %s);\n",
-		GLenumToString(glGetInteger(GL_STENCIL_FAIL)),
-		GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_FAIL)),
-		GLenumToString(glGetInteger(GL_STENCIL_PASS_DEPTH_PASS)));
-
-    result += format("glStencilMask(0x%x);\n",
-        glGetInteger(GL_STENCIL_WRITEMASK));
     
     result += ("\n");
 
