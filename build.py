@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2004-09-22
+# @edited  2004-11-16
 # Each build target is a procedure.
 #
 
@@ -54,7 +54,7 @@ lib7       Same as 'lib', but use VC7 on Windows instead of VC6
 fastlib    Build the lib target without reconfiguring on Linux (not recommended) 
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip, g3d-data-""" + version + """.zip
 source     Build g3d-src-""" + version + """.zip only
-doc        Run doxygen and copy the html directory
+doc        Run doxygen and copy the html directory and contrib directory
 clean      Delete the build, release, temp, and install directories
 help       Display this message
 
