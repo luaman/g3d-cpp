@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-02-22
+  @edited  2004-02-28
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -58,7 +58,7 @@ class VAR;
      is enabled by default.
 
  <P> For stereo rendering, set <CODE>GWindowSettings::stereo = true</CODE>
-     and use glDrawBuffer to switch which eye is being rendered.  Only
+     and use RenderDevice::setDrawBuffer to switch which eye is being rendered.  Only
      use RenderDevice::beginFrame/RenderDevice::endFrame once per frame,
      but do clear both buffers separately.
 
@@ -307,6 +307,10 @@ public:
     enum CombineMode {TEX_REPLACE, TEX_INTERPOLATE, TEX_ADD, TEX_MODULATE, 
                       TEX_BLEND};
 
+    enum Buffer      {BUFFER_BACK,       BUFFER_FRONT,
+                      BUFFER_BACK_LEFT,  BUFFER_FRONT_LEFT,
+                      BUFFER_BACK_RIGHT, BUFFER_FRONT_RIGHT };
+
     /**
      Call to begin the rendering frame.
      */
@@ -351,6 +355,12 @@ public:
      */
     void setStencilConstant(int reference);
     void setAlphaTest(AlphaTest test, double reference);
+
+    /**
+     Sets the frame buffer that is written to.  Used to intentionally
+     draw to the front buffer and for stereo rendering.
+     */
+    void setDrawBuffer(Buffer drawBuffer);
 
     void setDepthRange(double low, double high);
 
@@ -807,6 +817,8 @@ private:
         bool                        depthWrite;
         bool                        colorWrite;
         bool                        alphaWrite;
+
+        Buffer                      drawBuffer;
 
         DepthTest                   depthTest;
         StencilTest                 stencilTest;

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-02-22
+ @edited  2004-02-28
  */
 
 
@@ -764,6 +764,8 @@ void RenderDevice::setVideoMode() {
 
         glDisable(GL_LIGHTING);
 
+        glDrawBuffer(GL_BACK);
+
         for (int i = 0; i < MAX_LIGHTS; ++i) {
             setLight(i, NULL, true);
         }
@@ -809,7 +811,6 @@ void RenderDevice::setVideoMode() {
 void RenderDevice::setCaption(const std::string& caption) {
     _window->setCaption(caption);
 }
-
 
 
 int RenderDevice::getWidth() const {
@@ -898,6 +899,8 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     srcBlendFunc                = BLEND_ONE;
     dstBlendFunc                = BLEND_ZERO;
+
+    drawBuffer                  = BUFFER_BACK;
 
     frontStencilFail            = STENCIL_KEEP;
     frontStencilZFail           = STENCIL_KEEP;
@@ -1020,6 +1023,8 @@ void RenderDevice::setState(
         disableAlphaWrite();
     }
 
+    setDrawBuffer(newState.drawBuffer);
+
     setShadeMode(newState.shadeMode);
     setDepthTest(newState.depthTest);
 
@@ -1140,6 +1145,37 @@ void RenderDevice::setRenderMode(RenderMode m) {
     }
 }
 
+
+void RenderDevice::setDrawBuffer(Buffer b) {
+    if (b != state.drawBuffer) {
+        state.drawBuffer = b;
+        switch (b) {
+        case BUFFER_FRONT:
+            glDrawBuffer(GL_FRONT);
+            break;
+
+        case BUFFER_FRONT_LEFT:
+            glDrawBuffer(GL_FRONT_LEFT);
+            break;
+
+        case BUFFER_FRONT_RIGHT:
+            glDrawBuffer(GL_FRONT_RIGHT);
+            break;
+
+        case BUFFER_BACK:
+            glDrawBuffer(GL_BACK);
+            break;
+
+        case BUFFER_BACK_LEFT:
+            glDrawBuffer(GL_BACK_LEFT);
+            break;
+
+        case BUFFER_BACK_RIGHT:
+            glDrawBuffer(GL_BACK_RIGHT);
+            break;
+        }
+    }
+}
 
 void RenderDevice::setShadeMode(ShadeMode s) {
     if (s != state.shadeMode) {
@@ -1700,7 +1736,6 @@ void RenderDevice::setStencilOp(
     StencilOp                       backStencilFail,
     StencilOp                       backZFail,
     StencilOp                       backZPass) {
-
 
     if ((frontStencilFail  != state.frontStencilFail) ||
         (frontZFail        != state.frontStencilZFail) ||
