@@ -1,8 +1,6 @@
-INCLUDES=-I../../../source/include -Wall -DDEBUG
+noinst_LIBRARIES=libG3D_debug.a
 
-lib_LTLIBRARIES=libG3D_debug.la
-
-libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
+libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/BinaryOutput.cpp \
                          ../../../source/G3Dcpp/Box.cpp \
@@ -27,7 +25,7 @@ libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Matrix4.cpp \
                          ../../../source/G3Dcpp/MeshAlg.cpp \
                          ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
-						 ../../../source/G3Dcpp/MeshAlgWeld.cpp \
+			 ../../../source/G3Dcpp/MeshAlgWeld.cpp \
                          ../../../source/G3Dcpp/NetworkDevice.cpp \
                          ../../../source/G3Dcpp/PhysicsFrame.cpp \
                          ../../../source/G3Dcpp/Plane.cpp \
@@ -69,4 +67,5 @@ libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/png/pngwtran.c \
                          ../../../source/png/pngwutil.c
 
-libG3D_debug_la_CPPFLAGS= -D_DEBUG
+libG3D_debug_a_CPPFLAGS=-I../../../source/include -Wall -D_DEBUG
+

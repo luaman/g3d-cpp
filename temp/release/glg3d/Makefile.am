@@ -1,8 +1,6 @@
-INCLUDES=-I../../../source/include -Wall $(SDL_CFLAGS)
+noinst_LIBRARIES= libGLG3D.a
 
-lib_LTLIBRARIES= libGLG3D.la
-
-libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
+libGLG3D_a_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/Draw.cpp \
                      ../../../source/GLG3Dcpp/TextureManager.cpp \
                      ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
@@ -34,4 +32,4 @@ libGLG3D_la_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/SDLWindow.cpp \
                      ../../../source/GLG3Dcpp/DDSTexture.cpp
 
-libGLG3D_la_LIBADD= $(SDL_LIBS) -lGLU -L../g3d -lG3D
+libGLG3D_a_CPPFLAGS=-I../../../source/include -Wall $(SDL_CFLAGS)

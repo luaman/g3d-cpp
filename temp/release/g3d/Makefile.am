@@ -1,8 +1,6 @@
-INCLUDES=-I../../../source/include -Wall
+noinst_LIBRARIES=libG3D.a
 
-lib_LTLIBRARIES=libG3D.la
-
-libG3D_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
+libG3D_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/BinaryOutput.cpp \
                          ../../../source/G3Dcpp/Box.cpp \
@@ -26,7 +24,7 @@ libG3D_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Matrix3.cpp \
                          ../../../source/G3Dcpp/Matrix4.cpp \
                          ../../../source/G3Dcpp/MeshAlg.cpp \
-						 ../../../source/G3Dcpp/MeshAlgWeld.cpp \
+			 ../../../source/G3Dcpp/MeshAlgWeld.cpp \
                          ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
                          ../../../source/G3Dcpp/NetworkDevice.cpp \
                          ../../../source/G3Dcpp/PhysicsFrame.cpp \
@@ -69,3 +67,4 @@ libG3D_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/png/pngwtran.c \
                          ../../../source/png/pngwutil.c
 
+libG3D_a_CPPFLAGS=-I../../../source/include -Wall
