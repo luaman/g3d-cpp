@@ -363,7 +363,10 @@ bool VertexAndPixelShader::isSamplerType(GLenum e) {
        (e == GL_SAMPLER_2D_ARB) ||
        (e == GL_SAMPLER_2DRECT_ARB) ||
        (e == GL_SAMPLER_3D_ARB) ||
-       (e == GL_SAMPLER_CUBE_ARB);
+       (e == GL_SAMPLER_CUBE_ARB) ||
+       (e == GL_SAMPLER_1D_SHADOW_ARB) ||
+       (e == GL_SAMPLER_2D_SHADOW_ARB) ||
+       (e == GL_SAMPLER_2D_RECT_SHADOW_ARB);
 }
 
 
