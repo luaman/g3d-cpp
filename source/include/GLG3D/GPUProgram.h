@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-04-13
+  @edited  2003-09-09
 */
 
 #ifndef GLG3D_GPUPROGRAM_H
@@ -30,7 +30,7 @@ typedef ReferenceCountedPointer<class GPUProgram> GPUProgramRef;
 class GPUProgram : public ReferenceCountedObject {
 private:
 
-    /** GL_VERTEX_PROGRAM_ARB or GL_FRAGMENT_PROGRAM_ARB */
+    /** e.g. GL_VERTEX_PROGRAM_ARB, GL_FRAGMENT_PROGRAM_ARB */
     GLenum                      unit;
 
     std::string                 name;
@@ -38,9 +38,26 @@ private:
 
     std::string                 filename;
 
+    /**
+     Which extension set to use.
+     */
+    enum Extension {ARB, NVIDIA} extension;
+
+    // Abstraction over NVIDIA/ARB extensions
+    void genPrograms(int num, unsigned int* id) const;
+    void bindProgram(int unit, unsigned int glProgram) const;
+    void loadProgram(const std::string& code) const;
+    void getProgramError(int& pos, const unsigned char*& msg) const;
+    void deletePrograms(int num, unsigned int* id) const;
+    
 protected:
 
-    GPUProgram(const std::string& name, const std::string& filename, GLenum unit);
+    /**
+     Determines which unit it uses from the first line.
+     */
+    static GLenum getUnitFromCode(const std::string& code);
+
+    GPUProgram(const std::string& name, const std::string& filename);
 
 public:
 
@@ -51,6 +68,16 @@ public:
     void reload(const std::string& code = "");
 
     GLuint getOpenGLID() const;
+
+    /**
+     Binds this program.
+     */
+    void bind();
+
+    /**
+     Unbinds and disables.
+     */
+    void disable();
 };
 
 }

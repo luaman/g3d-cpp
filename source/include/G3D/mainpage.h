@@ -228,6 +228,7 @@
 
       <LI>GL Debugging
         <BR><BLOCKQUOTE>
+        debugAssertGLOk,
         G3D::getOpenGLState, 
         G3D::glGetInteger, 
         G3D::glGetBoolean,
@@ -620,6 +621,12 @@
 
    <P>
    <UL>
+     <LI> debugAssertGLOk macro
+     <LI> VertexProgram now supports NVIDIA Vertex Program 2.0
+     <LI> RenderDevice now loads glGenProgramsNV, glDeleteProgramsNV, glBindProgramNV, glLoadProgramNV, glTrackMatrixNV extensions
+     <LI> VertexProgram and PixelProgram static factory methods now return reference counted values.
+     <LI> Split the reference value from RenderDevice::setStencilTest into setStencilConstant
+     <LI> RenderDevice::STENCIL_INVERT, RenderDevice::STENCIL_REPLACE, RenderDevice::STENCIL_ZERO 
      <LI> Added brighten argument to Texture::fromFile
      <LI> Increased CImage JPEG save quality
      <LI> RenderDevice::screenshot now returns the name of the file that was written

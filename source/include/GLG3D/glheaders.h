@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-08-09
+ @edited  2003-09-09
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -87,6 +87,12 @@ extern PFNGLSETFENCENVPROC				   glSetFenceNV;
 extern PFNGLFINISHFENCENVPROC			   glFinishFenceNV;
 #endif
 
+
+extern PFNGLGENPROGRAMSNVPROC              glGenProgramsNV;
+extern PFNGLDELETEPROGRAMSNVPROC           glDeleteProgramsNV;
+extern PFNGLBINDPROGRAMNVPROC              glBindProgramNV;
+extern PFNGLLOADPROGRAMNVPROC              glLoadProgramNV;
+extern PFNGLTRACKMATRIXNVPROC              glTrackMatrixNV;
 
 extern PFNGLCOMBINERPARAMETERFVNVPROC               glCombinerParameterfvNV;
 extern PFNGLCOMBINERPARAMETERFNVPROC                glCombinerParameterfNV;

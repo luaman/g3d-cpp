@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-04-13
+  @edited  2003-09-09
 */
 
 #ifndef GLG3D_PIXELPROGRAM_H
@@ -38,9 +38,9 @@ private:
 
 public:
 
-    static PixelProgram* fromFile(const std::string& name, const std::string& filename);
+    static PixelProgramRef fromFile(const std::string& filename);
 
-    static PixelProgram* fromCode(const std::string& name, const std::string& code);
+    static PixelProgramRef fromCode(const std::string& name, const std::string& code);
 };
 
 }

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-06-24
+  @edited  2003-09-09
 */
 
 #include "GLG3D/GPUProgram.h"
@@ -15,18 +15,99 @@ namespace G3D {
 
 GPUProgram::GPUProgram(
     const std::string&  _name,
-    const std::string&  _filename,
-    GLenum              _unit) : name(_name), filename(_filename), unit(_unit) {
+    const std::string&  _filename) : name(_name), filename(_filename) {
 }
 
 
+GLenum GPUProgram::getUnitFromCode(const std::string& code) {
+
+    if (beginsWith(code, "!!ARBvp1.0")) {
+        return GL_VERTEX_PROGRAM_ARB;
+
+    } if (beginsWith(code, "!!ARBfp1.0")) {
+        return GL_FRAGMENT_PROGRAM_ARB;
+
+    } if (beginsWith(code, "!!VP2.0")) {
+        return GL_VERTEX_PROGRAM_NV;
+
+    } else {
+        return GL_NONE;
+    }
+}
+
+
+void GPUProgram::genPrograms(int num, unsigned int* id) const {
+
+    switch (extension) {
+    case NVIDIA:
+        alwaysAssertM(glGenProgramsNV, "Requires an NVIDIA card with the GL_NV_vertex_program extension");
+        glGenProgramsNV(1, id);
+        break;
+
+    case ARB:
+        glGenProgramsARB(1, id);
+        break;
+    }
+}
+
+
+void GPUProgram::deletePrograms(int num, unsigned int* id) const {
+
+    switch (extension) {
+    case NVIDIA:
+        glDeleteProgramsNV(1, id);
+        break;
+
+    case ARB:
+        glDeleteProgramsARB(1, id);
+        break;
+    }
+}
+
+
+void GPUProgram::bindProgram(int unit, unsigned int glProgram) const {
+    switch (extension) {
+    case NVIDIA:
+        glBindProgramNV(unit, glProgram);
+        break;
+
+    case ARB:
+        glBindProgramARB(unit, glProgram);
+        break;
+    }
+}
+
+
+void GPUProgram::loadProgram(const std::string& code) const {
+    switch (extension) {
+    case NVIDIA:
+        glLoadProgramNV(unit, glProgram, code.size(), (const unsigned char*)code.c_str());
+        break;
+
+    case ARB:
+        glProgramStringARB(unit, GL_PROGRAM_FORMAT_ASCII_ARB, code.size(), code.c_str());
+        break;
+    }
+}
+
+
+void GPUProgram::getProgramError(int& pos, const unsigned char*& msg) const {
+
+    switch (extension) {
+    case NVIDIA:
+        pos = glGetInteger(GL_PROGRAM_ERROR_POSITION_NV);
+        msg = glGetString(GL_PROGRAM_ERROR_STRING_NV);
+        break;
+
+    case ARB:
+        pos = glGetInteger(GL_PROGRAM_ERROR_POSITION_ARB);
+        msg = glGetString(GL_PROGRAM_ERROR_STRING_ARB);
+        break;
+    }
+}
+
 void GPUProgram::reload(const std::string& _code) {
     std::string code = _code;
-
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glEnable(unit);
-    glGenProgramsARB(1, &glProgram);
-    glBindProgramARB(unit, glProgram);
 
     // If a syntax error occurs while loading the shader we want to break.  
     // However, it makes no sense to break in this loading code when the
@@ -52,14 +133,36 @@ LOADSHADER:
         }
     }
 
+    unit = getUnitFromCode(code);
+
+    switch (unit) {
+    case GL_VERTEX_PROGRAM_NV:
+        extension = NVIDIA;
+        break;
+       
+    default:
+        extension = ARB;
+        break;
+    }
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glEnable(unit);
+
+    genPrograms(1, &glProgram);
+    bindProgram(unit, glProgram);
     // Clear the error flag.
     glGetError();
-    glProgramStringARB(unit, GL_PROGRAM_FORMAT_ASCII_ARB, code.size(), code.c_str());
+
+    loadProgram(code);
 
     // Check for load errors
     if ((glGetError() == GL_INVALID_OPERATION) && (! ignore)) {
-        int                  pos = glGetInteger(GL_PROGRAM_ERROR_POSITION_ARB);
-        const unsigned char* msg = glGetString(GL_PROGRAM_ERROR_STRING_ARB);
+
+        int                  pos;
+        const unsigned char* msg;
+        getProgramError(pos, msg);
+
+        deletePrograms(1, &glProgram);
 
         int line = 1;
         int col  = 1;
@@ -155,7 +258,7 @@ LOADSHADER:
 
 
 GPUProgram::~GPUProgram() {
-    glDeleteProgramsARB(1, &glProgram);
+    deletePrograms(1, &glProgram);
     glProgram = 0;
 }
 
@@ -163,6 +266,18 @@ GPUProgram::~GPUProgram() {
 GLuint GPUProgram::getOpenGLID() const {
     return glProgram;
 }
+
+
+void GPUProgram::bind() {
+    glEnable(unit);
+    bindProgram(unit, glProgram);
+}
+
+
+void GPUProgram::disable() {
+    glDisable(unit);
+}
+
 
 }
 

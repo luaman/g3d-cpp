@@ -13,7 +13,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2003-08-09
+  @edited  2003-09-09
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -282,6 +282,7 @@ private:
      True if GL_ARB_vertex_program is in the extension list.
      */
     bool                        _supportsVertexProgram;
+    bool                        _supportsNVVertexProgram2;
 
     /**
      True if GL_ARB_fragment_program is in the extension list.
@@ -375,8 +376,9 @@ public:
                       BLEND_ZERO, BLEND_SRC_COLOR,  BLEND_DST_COLOR,  
                       BLEND_ONE_MINUS_SRC_COLOR};
 
-    enum StencilOp   {STENCIL_INCR_WRAP, STENCIL_DECR_WRAP,         
-                      STENCIL_KEEP,          STENCIL_INCR,     STENCIL_DECR};
+    enum StencilOp   {STENCIL_INCR_WRAP, STENCIL_DECR_WRAP,
+                      STENCIL_KEEP,      STENCIL_INCR,     STENCIL_DECR,
+                      STENCIL_REPLACE,   STENCIL_ZERO,     STENCIL_INVERT};
 
     enum CullFace    {CULL_FRONT,        CULL_BACK,           CULL_NONE};
 
@@ -420,7 +422,12 @@ public:
      Use ALWAYS_PASS to shut off testing
      */
     void setDepthTest(DepthTest test);
-    void setStencilTest(StencilTest test, int reference);
+    void setStencilTest(StencilTest test);
+
+    /**
+     Sets the constant used in the stencil test and operation (if op == STENCIL_REPLACE)
+     */
+    void setStencilConstant(int reference);
     void setAlphaTest(AlphaTest test, double reference);
 
     void setDepthRange(double low, double high);
@@ -956,6 +963,10 @@ public:
 
     bool supportsVertexProgram() const {
         return _supportsVertexProgram;
+    }
+
+    bool supportsVertexProgramNV2() const {
+        return _supportsNVVertexProgram2;
     }
 
     bool supportsPixelProgram() const {

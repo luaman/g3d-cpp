@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-08-09
+ @edited  2003-09-10
 
  Copyright 2002, Morgan McGuire.
  All rights reserved.
@@ -20,6 +20,12 @@
 #include "GLG3D/glheaders.h"
 
 namespace G3D {
+
+/**
+ Produces a debugAssert that no OpenGL error has been produced.
+ */
+#define debugAssertGLOk() {GLenum e = glGetError(); debugAssertM(e == GL_NO_ERROR, GLenumToString(e));}
+
 
 inline void glMultiTexCoord(GLint unit, G3D::Real v) {
 	glMultiTexCoord1fARB(unit, v);

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-08-09
+ @edited  2003-09-10
  */
 
 
@@ -55,7 +55,6 @@ PFNWGLFREEMEMORYNVPROC                      wglFreeMemoryNV 			    = NULL;
 PFNGLVERTEXARRAYRANGENVPROC                 glVertexArrayRangeNV 		    = NULL;
 PFNGLFLUSHVERTEXARRAYRANGENVPROC            glFlushVertexArrayRangeNV       = NULL;
 
-
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC            glCompressedTexImage2DARB 	    = NULL;
 PFNGLGETCOMPRESSEDTEXIMAGEARBPROC           glGetCompressedTexImageARB 	    = NULL;
 
@@ -72,6 +71,12 @@ PFNGLPROGRAMENVPARAMETER4FARBPROC           glProgramEnvParameter4fARB      = NU
 PFNGLPROGRAMLOCALPARAMETER4FARBPROC         glProgramLocalParameter4fARB    = NULL;
 PFNGLPROGRAMENVPARAMETER4DVARBPROC          glProgramEnvParameter4dvARB     = NULL;
 PFNGLPROGRAMLOCALPARAMETER4DVARBPROC        glProgramLocalParameter4dvARB   = NULL;
+
+PFNGLGENPROGRAMSNVPROC                      glGenProgramsNV                 = NULL;
+PFNGLDELETEPROGRAMSNVPROC                   glDeleteProgramsNV              = NULL;
+PFNGLBINDPROGRAMNVPROC                      glBindProgramNV                 = NULL;
+PFNGLLOADPROGRAMNVPROC                      glLoadProgramNV                 = NULL;
+PFNGLTRACKMATRIXNVPROC                      glTrackMatrixNV                 = NULL;
 
 PFNGLVERTEXATTRIBPOINTERARBPROC             glVertexAttribPointerARB        = NULL;
 PFNGLENABLEVERTEXATTRIBARRAYARBPROC         glEnableVertexAttribArrayARB    = NULL;
@@ -353,6 +358,11 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glGetFinalCombinerInputParameterivNV);
     LOAD_EXTENSION(glCombinerStageParameterfvNV);
     LOAD_EXTENSION(glGetCombinerStageParameterfvNV);
+    LOAD_EXTENSION(glGenProgramsNV);
+    LOAD_EXTENSION(glDeleteProgramsNV);
+    LOAD_EXTENSION(glBindProgramNV);
+    LOAD_EXTENSION(glLoadProgramNV);
+    LOAD_EXTENSION(glTrackMatrixNV);
 
     #undef LOAD_EXTENSION
 }
@@ -451,6 +461,7 @@ bool RenderDevice::init(
         stencilWrapSupported        = supportsOpenGLExtension("EXT_stencil_wrap");
         textureRectangleSupported   = supportsOpenGLExtension("GL_NV_texture_rectangle");
         _supportsVertexProgram      = supportsOpenGLExtension("GL_ARB_vertex_program");
+        _supportsNVVertexProgram2   = supportsOpenGLExtension("GL_NV_vertex_program2");
         _supportsFragmentProgram    = supportsOpenGLExtension("GL_ARB_fragment_program");
     }
 
@@ -546,6 +557,11 @@ bool RenderDevice::init(
              "%31s             %s\n"             
              "%31s             %s\n"
              "%31s             %s\n"
+             "%31s             %s\n"             
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
+             "%31s             %s\n"
              "%31s             %s\n\n"
 
              "* JOYSTICK\n"
@@ -610,6 +626,12 @@ bool RenderDevice::init(
              "glGetFinalCombinerInputParameterivNV", isOk(glGetFinalCombinerInputParameterivNV),
              "glCombinerStageParameterfvNV", isOk(glCombinerStageParameterfvNV),
              "glGetCombinerStageParameterfvNV", isOk(glGetCombinerStageParameterfvNV),
+
+             "glGenProgramsNV", isOk(glGenProgramsNV),
+             "glDeleteProgramsNV", isOk(glDeleteProgramsNV),
+             "glBindProgramNV", isOk(glBindProgramNV),
+             "glLoadProgramNV", isOk(glLoadProgramNV),
+             "glTrackMatrixNV", isOk(glTrackMatrixNV),
 
              SDL_NumJoysticks(), "ok"
              );
@@ -1146,7 +1168,9 @@ void RenderDevice::setState(
     setShadeMode(newState.shadeMode);
     setDepthTest(newState.depthTest);
 
-    setStencilTest(newState.stencilTest, newState.stencilReference);
+    setStencilConstant(newState.stencilReference);
+    setStencilTest(newState.stencilTest);
+    
     setAlphaTest(newState.alphaTest, newState.alphaReference);
 
     setBlendFunc(newState.srcBlendFunc, newState.dstBlendFunc);
@@ -1420,10 +1444,59 @@ void RenderDevice::setDepthTest(DepthTest test) {
 }
 
 
-void RenderDevice::setStencilTest(StencilTest test, int reference) {
+static void _setStencilTest(RenderDevice::StencilTest test, int reference) {
+    switch (test) {
+    case RenderDevice::STENCIL_ALWAYS_PASS:
+        glStencilFunc(GL_ALWAYS, reference, 0xFFFFFF);
+        break;
+
+    case RenderDevice::STENCIL_LESS:
+        glStencilFunc(GL_LESS, reference, 0xFFFFFF);
+        break;
+
+    case RenderDevice::STENCIL_LEQUAL:
+        glStencilFunc(GL_LEQUAL, reference, 0xFFFFFF);
+        break;
+
+    case RenderDevice::STENCIL_GREATER:
+        glStencilFunc(GL_GREATER, reference, 0xFFFFFF);
+        break;
+
+    case RenderDevice::STENCIL_GEQUAL:
+        glStencilFunc(GL_GEQUAL, reference, 0xFFFFFF);
+        break;
+
+    case RenderDevice::STENCIL_EQUAL:
+        glStencilFunc(GL_EQUAL, reference, 0xFFFFFF);
+        break;
+
+    case RenderDevice::STENCIL_NOTEQUAL:
+        glStencilFunc(GL_NOTEQUAL, reference, 0xFFFFFF);
+        break;
+
+    case RenderDevice::STENCIL_NEVER_PASS:
+        glStencilFunc(GL_NEVER, reference, 0xFFFFFF);
+        break;
+
+    default:
+        debugAssertM(false, "Fell through switch");
+    }
+}
+
+
+void RenderDevice::setStencilConstant(int reference) {
+    debugAssert(! inPrimitive);
+    if (state.stencilReference != reference) {
+        state.stencilReference = reference;
+        _setStencilTest(state.stencilTest, reference);
+    }
+}
+
+
+void RenderDevice::setStencilTest(StencilTest test) {
     debugAssert(! inPrimitive);
 
-    if ((state.stencilTest != test) || (state.stencilReference != reference)) {
+    if (state.stencilTest != test) {
         if (test == STENCIL_ALWAYS_PASS) {
 
             // Can't actually disable if the stencil op is using the test as well
@@ -1436,42 +1509,10 @@ void RenderDevice::setStencilTest(StencilTest test, int reference) {
         } else {
 
             glEnable(GL_STENCIL_TEST);
-            switch (test) {
-            case STENCIL_LESS:
-                glStencilFunc(GL_LESS, reference, 0xFFFFFF);
-                break;
-
-            case STENCIL_LEQUAL:
-                glStencilFunc(GL_LEQUAL, reference, 0xFFFFFF);
-                break;
-
-            case STENCIL_GREATER:
-                glStencilFunc(GL_GREATER, reference, 0xFFFFFF);
-                break;
-
-            case STENCIL_GEQUAL:
-                glStencilFunc(GL_GEQUAL, reference, 0xFFFFFF);
-                break;
-
-            case STENCIL_EQUAL:
-                glStencilFunc(GL_EQUAL, reference, 0xFFFFFF);
-                break;
-
-            case STENCIL_NOTEQUAL:
-                glStencilFunc(GL_NOTEQUAL, reference, 0xFFFFFF);
-                break;
-
-            case STENCIL_NEVER_PASS:
-                glStencilFunc(GL_NEVER, reference, 0xFFFFFF);
-                break;
-
-            default:
-                debugAssertM(false, "Fell through switch");
-            }
+            _setStencilTest(test, state.stencilReference);
         }
 
         state.stencilTest = test;
-        state.stencilReference = reference;
 
     }
 }
@@ -1588,7 +1629,16 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
     switch (op) {
     case RenderDevice::STENCIL_KEEP:
         return GL_KEEP;
-       
+
+    case RenderDevice::STENCIL_ZERO:
+        return GL_ZERO;
+
+    case RenderDevice::STENCIL_REPLACE:
+        return GL_REPLACE;
+
+    case RenderDevice::STENCIL_INVERT:
+        return GL_INVERT;
+
     case RenderDevice::STENCIL_INCR_WRAP:
         if (stencilWrapSupported) {
             return GL_INCR_WRAP_EXT;
@@ -1597,6 +1647,7 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 
     case RenderDevice::STENCIL_INCR:
         return GL_INCR;
+
 
     case RenderDevice::STENCIL_DECR_WRAP:
         if (stencilWrapSupported) {
@@ -1616,28 +1667,32 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 
 void RenderDevice::setVertexProgram(const VertexProgramRef& vp) {
     if (vp != state.vertexProgram) {
-        state.vertexProgram = vp;
-        if (vp == (VertexProgramRef)NULL) {
-            glDisable(GL_VERTEX_PROGRAM_ARB);
-        } else  {
-            debugAssert(supportsVertexProgram());
-            glEnable(GL_VERTEX_PROGRAM_ARB);
-            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, vp->getOpenGLID());
+        if (state.vertexProgram != (VertexProgramRef)NULL) {
+            state.vertexProgram->disable();
         }
+
+        if (vp != (VertexProgramRef)NULL) {
+            debugAssert(supportsVertexProgram());
+            vp->bind();
+        }
+
+        state.vertexProgram = vp;
     }
 }
 
 
 void RenderDevice::setPixelProgram(const PixelProgramRef& pp) {
     if (pp != state.pixelProgram) {
-        state.pixelProgram = pp;
-        if (pp == (PixelProgramRef)NULL) {
-            glDisable(GL_FRAGMENT_PROGRAM_ARB);
-        } else  {
-            debugAssert(supportsPixelProgram());
-            glEnable(GL_FRAGMENT_PROGRAM_ARB);
-            glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, pp->getOpenGLID());
+        if (state.pixelProgram != (PixelProgramRef)NULL) {
+            state.pixelProgram->disable();
         }
+
+        if (pp != (PixelProgramRef)NULL) {
+            debugAssert(supportsPixelProgram());
+            pp->bind();
+        }
+
+        state.pixelProgram = pp;
     }
 }
 
@@ -1665,6 +1720,10 @@ void RenderDevice::setStencilOp(
             }
 
         } else {
+
+            debugAssertM(glGetInteger(GL_STENCIL_BITS) > 0,
+                "Allocate stencil bits from RenderDevice::init before using the stencil buffer.");
+
             // Turn on writing.  We also need to turn on the
             // stencil test in this case.
             glStencilMask(0xFFFFFFFF);
