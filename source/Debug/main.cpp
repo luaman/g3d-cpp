@@ -56,47 +56,6 @@ public:
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
-    Array<AABox>                array;
-    AABSPTree<AABox>            tree;
-    
-    const int NUM_POINTS = 100000;
-    
-    for (int i = 0; i < NUM_POINTS; ++i) {
-        Vector3 pt = Vector3(random(-10, 10), random(-10, 10), random(-10, 10));
-        AABox box(pt, pt + Vector3(.1, .1, .1));
-        array.append(box);
-        tree.insert(box);
-    }
-
-    tree.balance();
-
-    uint64 bspcount, arraycount;
-
-    for (int it = 0; it < 4; ++it) {
-        Array<Plane> plane;
-        plane.append(Plane(Vector3(-1, 0, 0), Vector3(5, 0, 0)));
-        plane.append(Plane(Vector3(1, 0, 0), Vector3(0, 0, 0)));
-        plane.append(Plane(Vector3(0, 0, -1), Vector3(0, 0, 5)));
-        plane.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, 0)));
-
-        Array<AABox> point;
-
-        System::beginCycleCount(bspcount);
-        tree.getIntersectingMembers(plane, point);
-        System::endCycleCount(bspcount);
-
-        point.clear();
-
-        System::beginCycleCount(arraycount);
-        for (int i = 0; i < array.size(); ++i) {
-            if (! array[i].culledBy(plane)) {
-                point.append(array[i]);
-            }
-        }
-        System::endCycleCount(arraycount);
-    }
-
-    debugPrintf("BSP %d cycles\nArray %d cycles\n", bspcount, arraycount);
 }
 
 
@@ -130,39 +89,207 @@ void Demo::doGraphics() {
 	
 	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
-    /*
-    // Draw all points
-    app->renderDevice->setPointSize(1);
-    app->renderDevice->setColor(Color3::WHITE);
-    app->renderDevice->beginPrimitive(RenderDevice::POINTS);
-        for (int i = 0; i < array.size(); ++i) {
-            app->renderDevice->sendVertex(array[i]);
-        }
-    app->renderDevice->endPrimitive();
-    
-
-    Array<Vector3> point;
-//    tree.getIntersectingMembers(AABox(Vector3(0,-20,0), Vector3(5,20,5)), point);
-
-    Array<Plane> plane;
-    plane.append(Plane(Vector3(-1, 0, 0), Vector3(5, 0, 0)));
-    plane.append(Plane(Vector3(1, 0, 0), Vector3(0, 0, 0)));
-    plane.append(Plane(Vector3(0, 0, -1), Vector3(0, 0, 5)));
-    plane.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, 0)));
-    tree.getIntersectingMembers(plane, point);
-
-    // Draw points inside planes
-    app->renderDevice->setPointSize(5);
-    app->renderDevice->setColor(Color3::BLACK);
-    app->renderDevice->beginPrimitive(RenderDevice::POINTS);
-        for (int i = 0; i < point.size(); ++i) {
-            app->renderDevice->sendVertex(point[i]);
-        }
-    app->renderDevice->endPrimitive();
-    */
-
 }
 
+
+
+/** Computes an array of */
+void getViewFrustumFaces(Array< Array<Vector4> > face);
+
+
+/**
+ Returns the set of planes bounding the region that can cast
+ shadows visible to the camera, i.e. the set of all points
+ that can shadow points in the view frustum.
+
+ @param light  World space firection to the light source (which must be a directional light)
+ @param camera The camera (defines the view frustum)
+ @param plane  The output array of planes
+ @param viewport The window-space viewport.  Used only to compute the aspect ratio of the frustum.
+ */
+void computeVisibleShadowCasterVolume(
+    const GCamera&      camera,
+    const Rect2D&       viewport,
+    const Vector3&      light,
+    Array<Plane>&       plane) {
+    
+    plane.clear();
+
+    // The volume is the convex hull of the vertices definining the view
+    // frustum and the light source point at infinity.  This volume
+    // consists of allthe planes in the view frustum that have the light
+    // source in their positive half space (i.e. N dot L > 0) and
+    // planes containing view frustum edges (with two finite vertices)
+    // in only one such plane and the light source point.
+
+    Array<Plane> frustum;
+    camera.getClipPlanes(viewport, frustum);
+
+    // Remove planes that would cull the light
+    for (int p = 0; p < frustum.size(); ++p) {
+        if (frustum[p].normal().dot(light) <= 0) {
+            frustum.fastRemove(p);
+        }
+    }
+
+
+    const double x               = camera.getViewportWidth(viewport) / 2;
+    const double y               = camera.getViewportHeight(viewport) / 2;
+    const double z               = camera.getNearPlaneZ();
+    const double w               = z / camera.getFarPlaneZ();
+
+    (All in camera space):
+
+    class Edge {
+    public:
+        /** Edge is directed from v[0] to v[1] */
+        int         vertexIndex[2];
+        Edge(){}
+        Edge(int v0, int v1) {
+            vertexIndex[0] = v0;
+            vertexIndex[1] = v1;
+        }
+        bool equals(int v0, int v1) const {
+            return (vertexIndex[0] == v0) &&
+                   (vertexIndex[1] == v1);
+        }
+    };
+
+    class Face {
+    public:
+        /** Counter clockwise */
+        int         vertexIndex[4];
+    };
+
+
+    Array<Vector4>  vertexPos;
+    
+    // Near face (ccw from UR)
+    vertexPos.append(
+        Vector4( x,  y, z, 1),
+        Vector4(-x,  y, z, 1),
+        Vector4(-x, -y, z, 1),
+        Vector4( x, -y, z, 1));
+
+    // Far face (ccw from UR, from origin)
+    vertexPos.append(
+        Vector4( x,  y, z, w),
+        Vector4(-x,  y, z, w),
+        Vector4(-x, -y, z, w),
+        Vector4( x, -y, z, w));
+
+    // Transform to world space
+    CoordinateFrame cframe;
+    camera.getCoordinateFrame(cframe);
+    for (int v = 0; v < vertexPos.size(); ++v) {
+        vertexPos[v] = cframe.toWorldSpace(vertexPos[v]);
+    }
+
+
+    Array<Face> frustum;
+    Face face;
+    
+    // Near plane (wind backwards so normal faces into frustum)
+    face.vertexIndex[0] = 3;
+    face.vertexIndex[1] = 2;
+    face.vertexIndex[2] = 1;
+    face.vertexIndex[3] = 0;
+    frustum.append(face);
+
+    // Far plane
+    face.vertexIndex[0] = 4;
+    face.vertexIndex[1] = 5;
+    face.vertexIndex[2] = 6;
+    face.vertexIndex[3] = 7;
+    frustum.append(face);
+
+    // Right plane
+    face.vertexIndex[0] = 0;
+    face.vertexIndex[1] = 4;
+    face.vertexIndex[2] = 7;
+    face.vertexIndex[3] = 3;
+    frustum.append(face);
+
+    // Left plane
+    face.vertexIndex[0] = 5;
+    face.vertexIndex[1] = 1;
+    face.vertexIndex[2] = 2;
+    face.vertexIndex[3] = 6;
+    frustum.append(face);
+
+    // Top plane
+    face.vertexIndex[0] = 1;
+    face.vertexIndex[1] = 5;
+    face.vertexIndex[2] = 4;
+    face.vertexIndex[3] = 0;
+    frustum.append(face);
+
+    // Bottom plane
+    face.vertexIndex[0] = 2;
+    face.vertexIndex[1] = 3;
+    face.vertexIndex[2] = 7;
+    face.vertexIndex[3] = 6;
+    frustum.append(face);
+
+    // Boundary of the portion of the frustum that is on the convex hull
+    // of (frustum + light).  The edges are directed ccw to close the frustum.
+    // We do not include edges entirely at infinity since they only give
+    // rise to planes at infinity.
+    Array<Edge> boundary;
+
+    // Collect planes that do not cull the light source and find the
+    // boundary.
+    for (int f = 0; f < frustum.size(); ++f) {
+        const Face& face = frustum[f];
+        int v0 = face.vertexIndex[0];
+        int v1 = face.vertexIndex[1];
+        int v2 = face.vertexIndex[2];
+        Vector3 N = (vertexPos[v1] - vertexPos[v0]).cross(vertexPos[v2] - vertexPos[v0]);
+        if (N.dot(L) > 0) {
+            // This plane is on the convex hull
+            plane.append(Plane(N, vertexPos[v0]));
+
+            // Collect finite and semi-finite edges
+            for (int v = 0; v < 4; ++v) {
+                int a = face.vertexIndex[v];
+                int b = face.vertexIndex[(v + 1) % 4];
+                
+                if ((vertexPos[a].w != 0) || (vertexPos[b].w != 0)) {
+                    // This edge is at least semi-finite.  Search
+                    // the boundary array for this edge.  If we
+                    // find it, this edge is not on the boundary since
+                    // its complement already added this edge to the boundary,
+                    // so we remove both.  If not found, this edge is on the
+                    // boundary so we add it to the array (to be potentially
+                    // removed by a later complement).
+                    
+                    bool found = false;
+                    for (int e = 0; e < boundary.size(); ++e) {
+                        if ((boundary[e].equals(a, b)) {
+                            boundary.fastRemove(e);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (! found) {
+                        // Add the reverse of this edge to the boundary
+                        boundary.append(Edge(b, a));
+                    }
+                }
+            }
+        }
+    }
+
+    // Construct planes that contain the boundary edges and the light source
+    for (int e = 0; e < boundary.size(); ++e) {
+        const Vector4& A = vertexPos[boundary[e].vertexIndex[0]];
+        const Vector4& B = vertexPos[boundary[e].vertexIndex[1]];
+        // Create plane containing ABL
+        plane.append(Plane(A, B, L));
+    }
+
+}
 
 void App::main() {
 	setDebugMode(true);

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2004-07-07
+ @edited  2004-07-09
 */
 
 #ifndef G3D_PLANE_H
@@ -46,6 +46,18 @@ public:
         const Vector3&      point1,
         const Vector3&      point2);
 
+    /**
+     Constructs a plane from three points, where at most two are
+     at infinity (w = 0, not xyz = inf).
+     */
+    Plane(
+        Vector4             point0,
+        Vector4             point1,
+        Vector4             point2);
+
+    /**
+     The normal will be unitized.
+     */
     Plane(
         const Vector3&      __normal,
         const Vector3&      point);

@@ -699,7 +699,7 @@ public:
         root->assignSplitBounds(AABox::maxFinite());
 
         #ifdef _DEBUG
-            root->verifyNode(AABox::maxFinite());
+        root->verifyNode(Vector3::minFinite(), Vector3::maxFinite());
         #endif
     }
 

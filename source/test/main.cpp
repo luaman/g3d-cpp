@@ -42,14 +42,14 @@ void measureBSPPerformance() {
     // Run twice to get cache issues out of the way
     for (int it = 0; it < 2; ++it) {
         Array<Plane> plane;
-        plane.append(Plane(Vector3(-1, 0, 0), Vector3(5, 0, 0)));
-        plane.append(Plane(Vector3(1, 0, 0), Vector3(0, 0, 0)));
-        plane.append(Plane(Vector3(0, 0, -1), Vector3(0, 0, 5)));
-        plane.append(Plane(Vector3(0, 0, 1), Vector3(0, 0, 0)));
-        plane.append(Plane(Vector3(0,-1, 0), Vector3(0, 5, 0)));
-        plane.append(Plane(Vector3(0, 1, 0), Vector3(0, -5, 0)));
+        plane.append(Plane(Vector3(-1, 0, 0), Vector3(3, 1, 1)));
+        plane.append(Plane(Vector3(1, 0, 0), Vector3(1, 1, 1)));
+        plane.append(Plane(Vector3(0, 0, -1), Vector3(1, 1, 3)));
+        plane.append(Plane(Vector3(0, 0, 1), Vector3(1, 1, 1)));
+        plane.append(Plane(Vector3(0,-1, 0), Vector3(1, 3, 1)));
+        plane.append(Plane(Vector3(0, 1, 0), Vector3(1, -3, 1)));
 
-        AABox box(Vector3(-5, -5, -5), Vector3(5,5,5));
+        AABox box(Vector3(1, 1, 1), Vector3(3,3,3));
 
         Array<AABox> point;
 
@@ -81,6 +81,7 @@ void measureBSPPerformance() {
            boxcount / 1e6,
            arraycount / 1e6);
 }
+
 
 int numRCPFoo = 0;
 class RCPFoo : public G3D::ReferenceCountedObject {
@@ -215,6 +216,31 @@ void testPlane() {
 
         Vector3 n = p.normal();
         debugAssert(n.fuzzyEq(Vector3(0,-1,0)));
+    }
+
+    {
+        Plane p(Vector4(1,0,0,0),
+                Vector4(0,1,0,0),
+                Vector4(0,0,0,1));
+        Vector3 n = p.normal();
+        debugAssert(n.fuzzyEq(Vector3(0,0,1)));
+    }
+
+    {
+        Plane p(
+                Vector4(0,0,0,1),
+                Vector4(1,0,0,0),
+                Vector4(0,1,0,0));
+        Vector3 n = p.normal();
+        debugAssert(n.fuzzyEq(Vector3(0,0,1)));
+    }
+
+    {
+        Plane p(Vector4(0,1,0,0),
+                Vector4(0,0,0,1),
+                Vector4(1,0,0,0));
+        Vector3 n = p.normal();
+        debugAssert(n.fuzzyEq(Vector3(0,0,1)));
     }
 }
 
@@ -1565,6 +1591,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testPlane();
+    printf("  passed\n");
     testAABoxCulledBy();
     printf("  passed\n");
     testRandom();
@@ -1586,8 +1614,6 @@ int main(int argc, char* argv[]) {
     testCompression();
     printf("  passed\n");
     testTextInput();
-    printf("  passed\n");
-    testPlane();
     printf("  passed\n");
     testTable();
     printf("  passed\n");

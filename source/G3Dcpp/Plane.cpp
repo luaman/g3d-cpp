@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-02-06
- @edited  2003-06-13
+ @edited  2004-07-09
  */
 
 #include "G3D/Plane.h"
@@ -28,6 +28,52 @@ void Plane::serialize(class BinaryOutput& b) const {
 void Plane::deserialize(class BinaryInput& b) {
 	_normal.deserialize(b);
 	distance = b.readFloat64();
+}
+
+
+Plane::Plane(
+    Vector4      point0,
+    Vector4      point1,
+    Vector4      point2) {
+
+    debugAssertM(point0.w != 0 || 
+                point1.w != 0 || 
+                point1.w != 0,
+         "At least one point must be finite.");
+
+    // Rotate the points around so that the finite points come first.
+
+    while ((point0.w == 0) && 
+           ((point1.w == 0) || (point2.w != 0))) {
+        Vector4 temp = point0;
+        point0 = point1;
+        point1 = point2;
+        point2 = point0;
+    }
+
+    Vector3 dir1;
+    Vector3 dir2;
+
+    if (point1.w == 0) {
+        // 1 finite, 2 infinite points; the plane must contain
+        // the direction of the two direcitons
+        dir1 = point1.xyz();
+        dir2 = point2.xyz();
+    } else if (point2.w != 0) {
+        // 3 finite points, the plane must contain the directions
+        // betwseen the points.
+        dir1 = point1.xyz() - point0.xyz();
+        dir2 = point2.xyz() - point0.xyz();
+    } else {
+        // 2 finite, 1 infinite point; the plane must contain
+        // the direction between the first two points and the
+        // direction of the third point.
+        dir1 = point1.xyz() - point0.xyz();
+        dir2 = point2.xyz();
+    }
+
+    _normal   = dir1.cross(dir2).direction();
+    distance = _normal.dot(point0.xyz());
 }
 
 

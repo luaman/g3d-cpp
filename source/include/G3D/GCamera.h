@@ -193,8 +193,8 @@ public:
     void lookAt(const Vector3& position, const Vector3& up = Vector3::unitY());
 
    /**
-    Returns the clipping planes of the frustum, in world space.  The planes have normals facing 
-    <B>into</B> the view frustum.
+    Returns the clipping planes of the frustum, in world space.  
+    The planes have normals facing <B>into</B> the view frustum.
 
     If the far plane is at infinity, the resulting array will have 
     5 planes, otherwise there will be 6.
