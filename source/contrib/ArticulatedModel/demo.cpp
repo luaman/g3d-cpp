@@ -109,8 +109,12 @@ const int shadowMapSize = 512;
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
     if (GLCaps::supports_GL_ARB_shadow()) {
+        
         shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
+            
+        //shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::RGB8,
+        //    Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     }
 
 }
@@ -140,7 +144,7 @@ bool debugShadows = false;
 void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& shadowCaster) {
     app->renderDevice->pushState();
 
-        const double lightProjX = 15, lightProjY = 15, lightProjNear = 1, lightProjFar = 40;
+        const double lightProjX = 12, lightProjY = 12, lightProjNear = 1, lightProjFar = 40;
 
         // Construct a projection and view matrix for the camera so we can 
         // render the scene from the light's point of view
@@ -152,8 +156,6 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         // The light will never be along the z-axis
         lightCFrame.lookAt(Vector3::zero(), Vector3::unitZ());
 
-        lightMVP = lightProjectionMatrix * lightCFrame.inverse();
-
         debugAssert(shadowMapSize < app->renderDevice->getHeight());
         debugAssert(shadowMapSize < app->renderDevice->getWidth());
 
@@ -162,11 +164,16 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
 
         Rect2D rect = Rect2D::xywh(0, 0, shadowMapSize, shadowMapSize);
 
+        app->renderDevice->enableDepthWrite();
         app->renderDevice->setViewport(rect);
 
 	    // Draw from the light's point of view
         app->renderDevice->setCameraToWorldMatrix(lightCFrame);
         app->renderDevice->setProjectionMatrix(lightProjectionMatrix);
+
+        // Flip the Y-axis to account for the upside down Y-axis on read back textures
+        // DEBUG: lightProjectionMatrix = Matrix4::orthogonalProjection(-lightProjX, lightProjX, lightProjY, -lightProjY, lightProjNear, lightProjFar);
+        lightMVP = lightProjectionMatrix * lightCFrame.inverse();
 
         if (! debugShadows) {
             app->renderDevice->disableColorWrite();
@@ -175,15 +182,14 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         // We can choose to use a large bias or render from
         // the backfaces in order to avoid front-face self
         // shadowing.  Here, we use a large offset.
-        //app->renderDevice->setPolygonOffset(4);
+        app->renderDevice->setPolygonOffset(4);
 
         for (int s = 0; s < shadowCaster.size(); ++s) {
-            shadowCaster[s]->renderNonShadowed(app->renderDevice, app->lighting); // TODO: pass NULL for lighting
+            shadowCaster[s]->renderNonShadowed(app->renderDevice, NULL);
         }
-
-        shadowMap->copyFromScreen(rect);
-    
+   
     app->renderDevice->popState();
+        shadowMap->copyFromScreen(rect);
 }
 
 
@@ -377,6 +383,17 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/octagon.ifs", 10);
+
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
+        material.diffuse = Color3(.5,.3,0);
+        material.specular = Color3::black();
+        model->updateAll();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-5,0))));
+    }
 
 //		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/cube.3ds"
@@ -389,7 +406,7 @@ void App::main() {
 
     lighting = Lighting::create();
     {
-        LightingParameters params(G3D::toSeconds(12, 01, 00, PM));
+        LightingParameters params(G3D::toSeconds(2, 00, 00, PM));
     
         if (sky.notNull()) {
             //lighting->environmentMap.constant = lighting.skyAmbient;
@@ -411,6 +428,7 @@ void App::main() {
         lighting->shadowedLightArray.last().color *= Color3(1.2, 1.2, 1);
     }
 
+    //http://oss.sgi.com/projects/ogl-sample/registry/EXT/wgl_pbuffer.txt
     Demo(this).run();
 }
 
@@ -427,7 +445,7 @@ int main(int argc, char** argv) {
     settings.window.alphaBits = 0;
     settings.window.rgbBits = 8;
     settings.window.fsaaSamples = 4;
-    settings.window.width = 600;
+    settings.window.width = 800;
     settings.window.height = 600;
 	settings.useNetwork = false;
     App(settings).run();

@@ -6,9 +6,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-11-20
+ @edited  2005-01-10
 
- Copyright 2002-2004, Morgan McGuire.
+ Copyright 2002-2005, Morgan McGuire.
  All rights reserved.
 */
 
@@ -281,6 +281,15 @@ namespace G3D
 
 #ifndef  GL_TEXTURE_BINDING_3D
 #define  GL_TEXTURE_BINDING_3D   0x806A 
+#endif
+
+
+
+#ifdef G3D_WIN32
+
+extern PFNWGLCREATEPBUFFEREXTPROC wglCreatePbufferEXT;
+extern PFNWGLDESTROYPBUFFEREXTPROC wglDestroyPbufferEXT;
+
 #endif
 
 

@@ -9,6 +9,7 @@ The 6.04 release team:
 
    <BR>David Baszucki
    <BR>Seth Block
+   <BR>Nicholas Bray
    <BR>Nick Capens
    <BR>Erik Cassel
    <BR>John Chisholm

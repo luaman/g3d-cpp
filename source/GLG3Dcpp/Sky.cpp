@@ -526,8 +526,7 @@ void Sky::renderLensFlare(
                                            RenderDevice::BLEND_ONE);
 
                 // Make flares fade out near sunset and sunrise
-                double flareBrightness = 
-                    max(0, sqrt(sunPosition.y * 4));
+                double flareBrightness = sqrt(max(sunPosition.y * 4, 0));
 
                 // Sun position
                 Vector4 L(sunPosition,0);

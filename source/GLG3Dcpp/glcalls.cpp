@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2004-11-20
+  @edited  2005-01-10
 */
 
 #include "GLG3D/glcalls.h"
@@ -159,6 +159,11 @@ PFNGLXQUERYGLXPBUFFERSGIX glXQueryGLXPbufferSGIX = NULL;
 PFNGLXCHOOSEFBCONFIGSGIX glXChooseFBConfigSGIX = NULL;
 PFNGLXCREATECONTEXTWITHCONFIGSGIX glXCreateContextWithConfigSGIX = NULL;
 
+#endif
+
+#ifdef G3D_WIN32
+PFNWGLCREATEPBUFFEREXTPROC wglCreatePbufferEXT = NULL;
+PFNWGLDESTROYPBUFFEREXTPROC wglDestroyPbufferEXT = NULL;
 #endif
 
 namespace G3D {

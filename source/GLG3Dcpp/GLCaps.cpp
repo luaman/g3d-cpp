@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-07-12
+  @edited  2005-01-10
 */
 
 #include "GLG3D/GLCaps.h"
@@ -303,9 +303,13 @@ void GLCaps::loadExtensions(Log* debugLog) {
     LOAD_EXTENSION(glTexImage3DEXT);
 
     #ifdef G3D_WIN32
-        LOAD_EXTENSION(wglEnableGenlockI3D);
         
-    #elif defined(G3D_LINUX) 
+        LOAD_EXTENSION(wglEnableGenlockI3D);
+        LOAD_EXTENSION(wglCreatePbufferEXT);
+        LOAD_EXTENSION(wglDestroyPbufferEXT);
+        
+    #elif defined(G3D_LINUX)
+
         LOAD_EXTENSION(glXJoinSwapGroupNV);
         LOAD_EXTENSION(glXBindSwapBarrierNV);
         LOAD_EXTENSION(glXQuerySwapGroupNV);

@@ -78,13 +78,15 @@
      <LI> Added joystick support to contrib/Win32Window [Corey]
      <LI> Win32Window fully-implements GWindow [Corey]
      <LI> Texture now supports DDS(2D/CubeMap) and PNG files [Corey]
+     <LI> Added Win32 pbuffer routines (no G3D wrapper, though-- we're waiting for the new ARB API).
      <LI> G3D::PosedModel::texCoords
-     <LI> G3d::IFSModel now loads IFS 1.1 [Peter]
-     <LI> G3d::IFSModel now loads and saves PLY2 files (plain text IFS format) [Peter]
+     <LI> G3D::IFSModel now loads IFS 1.1 [Peter]
+     <LI> G3D::IFSModel now loads and saves PLY2 files (plain text IFS format) [Peter]
      <LI> Automatically switch to glCompressedTexImage2D in G3d::Texture::fromMemory [Corey]
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: Ultra bright lens flare at sunset [Nicholas Bray]
      <LI> Fix: IP address strings were reversed by NetAddress(std::string) 
      <LI> Fix: TextInput now returns end of file token for files without trailing whitespace
      <LI> Fix: [ 1094166 ] 6.05: Release mouse stuck on x-axis [Corey + Morgan]

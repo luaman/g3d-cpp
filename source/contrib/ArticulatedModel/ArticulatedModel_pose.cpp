@@ -305,9 +305,9 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
     }
 
     rd->pushState();
-        rd->setObjectToWorldMatrix(cframe);
-
         rd->configureShadowMap(1, lightMVP, shadowMap);
+
+        rd->setObjectToWorldMatrix(cframe);
 
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
