@@ -374,6 +374,10 @@ SOURCE=.\include\G3D\GCamera.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\G3D\GLight.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\graphics3D.h
 # End Source File
 # Begin Source File
