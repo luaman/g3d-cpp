@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2003-11-24
+ @edited  2003-11-26
  */
 
 
@@ -115,6 +115,11 @@ PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC      glGetCombinerStageParameterfvNV     
 PFNGLACTIVESTENCILFACEEXTPROC               glActiveStencilFaceEXT          = NULL;
 
 namespace G3D {
+
+/**
+ Dummy function to which unloaded extensions can be set.
+ */
+static void __stdcall glIgnore(GLenum e) {}
 
 
 static double getTime() {
@@ -301,6 +306,11 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glMultiTexCoord3dvARB);
     LOAD_EXTENSION(glMultiTexCoord4dvARB);
     LOAD_EXTENSION(glActiveTextureARB);
+
+    if (glActiveTextureARB == NULL) {
+        glActiveTextureARB = glIgnore;
+    }
+
     LOAD_EXTENSION(glClientActiveTextureARB);
     LOAD_EXTENSION(wglSwapIntervalEXT);
     LOAD_EXTENSION(wglChoosePixelFormatARB);
