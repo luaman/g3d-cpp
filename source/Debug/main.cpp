@@ -70,7 +70,9 @@ void Entity::render(RenderDevice* renderDevice) {
 
         
         // Using beginIndexedPrimitives
-        VARAreaRef area = VARArea::create(geometry.vertexArray.size() * sizeof(Vector3) * 2, VARArea::WRITE_EVERY_FRAME);
+        VARAreaRef area =
+            VARArea::create(geometry.vertexArray.size() * sizeof(Vector3) * 2 + 16,
+                            VARArea::WRITE_EVERY_FRAME);
         VAR vertex(geometry.vertexArray, area);
         VAR normal(geometry.normalArray, area);
         renderDevice->beginIndexedPrimitives();
@@ -251,7 +253,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 0.5, 2));
     app->debugCamera.lookAt(Vector3(0, 0.5, 0));
 
-    IFSModelRef cube   = IFSModel::create(app->dataDir +"/ifs/sphere.ifs");
+    IFSModelRef cube   = IFSModel::create(app->dataDir +"ifs/cow.ifs");
 
     entityArray.append(new IFSEntity(cube, Vector3(0, 0, 0), Color3::BLUE));
 }

@@ -92,6 +92,11 @@ private:
 
 public:
 
+    /**
+     You should always create your VARAreas at least 8 bytes larger
+     than needed for each individual VAR because VARArea tries to 
+     align VAR starts in memory with dword boundaries.
+     */
     static VARAreaRef create(size_t s , UsageHint h = WRITE_EVERY_FRAME);
 
     ~VARArea();
