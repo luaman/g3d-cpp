@@ -17,11 +17,10 @@
    #include <direct.h>
    #include <io.h>
 #else
+   #include <dirent.h>
+   #include <fnmatch.h>
    #include <unistd.h>
-   #include <dir.h>
    #define _getcwd getcwd
-   #define _findfile findfile
-   #define _nextfile nextfile
 #endif
 #include <stdio.h>
 #include "G3D/BinaryOutput.h"
@@ -52,12 +51,16 @@ std::string resolveFilename(const std::string& filename) {
             #ifdef _WIN32
                 if ((filename.size() >= 2) && (filename[1] == ':')) {
                     // There is a drive spec on the front.
-                    if ((filename.size() >= 3) && ((filename[2] == '\\') || (filename[2] == '/'))) {
+                    if ((filename.size() >= 3) && ((filename[2] == '\\') || 
+                                                   (filename[2] == '/'))) {
                         // Already fully qualified
                         return filename;
                     } else {
-                        // The drive spec is relative to the working directory on that drive.
-                        debugAssertM(false, "Files of the form d:path are not supported (use a fully qualified name).");
+                        // The drive spec is relative to the
+                        // working directory on that drive.
+                        debugAssertM(false, "Files of the form d:path are"
+                                     " not supported (use a fully qualified"
+                                     " name).");
                         return filename;
                     }
                 }
@@ -88,7 +91,7 @@ std::string readFileAsString(
     FILE* f = fopen(filename.c_str(), "rb");
     debugAssert(f);
     int ret = fread(buffer, 1, length, f);
-	debugAssert(ret == length);
+	debugAssert(ret == length);(void)ret;
     fclose(f);
 
     buffer[length] = '\0';
@@ -120,7 +123,7 @@ FILE* createTempFile() {
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void writeStringToFile(
     const std::string&          str,
@@ -132,7 +135,7 @@ void writeStringToFile(
     b.commit();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /**
  Creates the directory (which may optionally end in a /)
@@ -187,7 +190,7 @@ void createDirectory(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 bool fileExists(
     const std::string& filename) {
@@ -196,7 +199,7 @@ bool fileExists(
     return _stat(filename.c_str(), &st) != -1;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void copyFile(
     const std::string&          source,
@@ -214,7 +217,7 @@ void copyFile(
     #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 static bool isSlash(char c) {
     return (c == '\\') || (c == '/');
@@ -336,7 +339,8 @@ void parseFilename(
 /**
  Helper for getFileList and getDirectoryList.
 
- @param wantFiles       If false, returns the directories, otherwise returns the files.
+ @param wantFiles       If false, returns the directories, otherwise
+                        returns the files.
  @param includePath     If true, the names include paths
  */
 static void getFileOrDirList(
@@ -345,49 +349,103 @@ static void getFileOrDirList(
 	bool					wantFiles,
 	bool					includePath) {
 
-	int test = wantFiles ? true : false;
+	bool test = wantFiles ? true : false;
 
-	std::string prefix = "";
+	std::string path = "";
 
-	if (includePath) {
-		// Find the place where the path ends and the file-spec begins
-		int i = filespec.rfind('/');
-		int j = filespec.rfind('\\');
+    // Find the place where the path ends and the file-spec begins
+    size_t i = filespec.rfind('/');
+    size_t j = filespec.rfind('\\');
+    
+    // Drive letters on Windows can separate a path
+    size_t k = filespec.rfind(':');
+    
+    if ((j != std::string::npos) && (j > i) ||
+        (i == std::string::npos)) {
+        i = j;
+    }
+    
+    if ((k != std::string::npos) && (k > i) ||
+        (i == std::string::npos)) {
+        i = k;
+    }
+    
+    // If there is a path, pull it off
+    if (i != std::string::npos) {
+        path = filespec.substr(0, i + 1);
+    }
+   
+    std::string prefix = path;
 
-		// Drive letters on Windows can separate a path
-		int k = filespec.rfind(':');
+    if (path.size() > 0) {
+        // Strip the trailing character
+        path = path.substr(0, path.size() - 1);
+    }
 
-		if ((j != std::string::npos) && (j > i) ||
-			(i == std::string::npos)) {
-			i = j;
-		}
+    #ifdef _WIN32
+	    struct _finddata_t fileinfo;
 
-		if ((k != std::string::npos) && (k > i) ||
-			(i == std::string::npos)) {
-			i = k;
-		}
+        long handle = _findfirst(filespec.c_str(), &fileinfo);
+        int result = handle;
 
-		// If there is a path, pull it off
-		if (i != std::string::npos) {
-			prefix = filespec.substr(0, i + 1);
-		}
-	}
+        while (result != -1) {
+            if ((((fileinfo.attrib & _A_SUBDIR) == 0) == test) && 
+                strcmp(fileinfo.name, ".") &&
+                strcmp(fileinfo.name, "..")) {
+                
+                if (includePath) {
+                    files.append(prefix + fileinfo.name);
+                } else {
+                    files.append(fileinfo.name);
+                }
+            }
+            
+            result = _findnext(handle, &fileinfo);
+        }
+    #else
+        // Linux implementation
+        DIR* dir = opendir(path.c_str());
 
-	struct _finddata_t fileinfo;
+        if (dir != NULL) {
+            struct dirent* entry = readdir(dir);
 
-	long handle = _findfirst(filespec.c_str(), &fileinfo);
-	int result = handle;
+            while (entry != NULL) {
 
-	while (result != -1) {
-		if ((((fileinfo.attrib & _A_SUBDIR) == 0) == test) && 
-		     strcmp(fileinfo.name, ".") &&
-			 strcmp(fileinfo.name, "..")) {
+                // Exclude '.' and '..'
+                if (strcmp(entry->d_name, ".") &&
+                    strcmp(entry->d_name, "..")) {
+                    
+                    // Form a name with a path
+                    std::string filename = prefix + entry->d_name;
+                    
+                    // See if this is a file or a directory
+                    struct _stat st;
+                    bool exists = _stat(filename.c_str(), &st) != -1;
 
-			files.append(prefix + fileinfo.name);
-		}
-	
-		result = _findnext(handle, &fileinfo);
-	}
+                    if (exists &&
+
+                        // Make sure it has the correct type
+                        (((st.st_mode & S_IFDIR) == 0) == test) &&
+
+                        // Make sure it matches the wildcard
+                        (fnmatch(filespec.c_str(),
+                                 filename.c_str(),
+                                 FNM_PATHNAME) == 0)) {
+                        
+                        if (includePath) {
+                            files.append(filename);
+                        } else {
+                            files.append(entry->d_name);
+                        }
+                    }
+                }
+
+                entry = readdir(dir);
+            }
+        }
+        closedir(dir);
+
+    #endif
 }
 
 
