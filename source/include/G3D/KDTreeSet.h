@@ -719,37 +719,47 @@ public:
     private:
 	    friend class AABSPTree<T>;
 
-	    // The stack frame contains all the info needed to resume
-	    // computation for the RayIntersectionIterator
+	    /** The stack frame contains all the info needed to resume
+	        computation for the RayIntersectionIterator */
 
 	    struct StackFrame {
 		    const Node* node;
-		    // the total checking bounds for this frame
+
+		    /** the total checking bounds for this frame */
 		    float minTime;
 		    float maxTime;
-		    // what we're checking right now, either from minTime to the
-		    // split, or from the split to maxTime (more or less...
-		    // there are edge cases)
+
+            /** what we're checking right now, either from minTime to the
+		       split, or from the split to maxTime (more or less...
+		       there are edge cases) */
 		    float startTime;
 		    float endTime;
-		    // true if we're on the "pre" side of the node: ie, checking
-		    // in front of the split.
+
+
+		    /** true if we're on the "pre" side of the node: ie, checking
+		       in front of the split. */
+
 		    bool preSide;
-		    // current index into node's valueArray
+
+		    /** current index into node's valueArray */
 		    int valIndex;
-		    // cache intersection values when they're checked on the preSide,
-		    // split so they don't need to be checked again after the split.
+
+
+		    /** cache intersection values when they're checked on the preSide,
+		       split so they don't need to be checked again after the split. */
 		    Array<float> intersectionCache;
 
 		    StackFrame(const Node* inNode, float inMinTime, float inMaxTime, const Ray& ray) :
 			    node(inNode), minTime(inMinTime), maxTime(inMaxTime),
-			    startTime(0), endTime(inf), preSide(true), valIndex(-1)
-		    {
-			    if(node == NULL) return;
+			    startTime(0), endTime(inf), preSide(true), valIndex(-1) {
+
+                if (node == NULL) {
+                    return;
+                }
 			    
 			    // this is the time along the ray until the split.
 			    // could be negative if the split is behind.
-			    float splitTime =
+			    double splitTime =
 				    (node->splitLocation - ray.origin[node->splitAxis]) /
 				    ray.direction[node->splitAxis];
 
@@ -769,14 +779,13 @@ public:
 	    };
 
 	    Array<StackFrame*>  stack;
-	    Ray           ray;
-	    bool          isEnd;
-	    StackFrame*   breakFrame;
+	    Ray                 ray;
+	    bool                isEnd;
+	    StackFrame*         breakFrame;
 
 	    RayIntersectionIterator(const Ray& r, const Node* root) :
 		    ray(r), isEnd(root == NULL), breakFrame(NULL),
-		    maxDistance(inf), minDistance(0), testCounter(0)
-	    {
+		    maxDistance(inf), minDistance(0), testCounter(0) {
 		    StackFrame* s = new StackFrame(root, 0, inf, ray);
 		    stack.push(s);
 		    ++(*this);
@@ -857,6 +866,7 @@ public:
 
 	       Use this after you find a true intersection to stop the iterator
 	       from searching more than necessary.
+           <B>Beta API-- subject to change</B>
 	    */
 	    // In theory this method could be smarter: the caller could pass in
 	    // the distance of the actual collision and the iterator would keep
@@ -868,10 +878,16 @@ public:
 	    /**
 	       Clears the break node. Can be used before or after the iterator
 	       stops from a break.
+          <B>Beta API-- subject to change</B>
 	    */
 	    void clearBreakNode() {
-		    if(breakFrame == null) return;
-		    if(isEnd && stack.length() > 0) isEnd = false;
+            if (breakFrame == null) {
+                return;
+            }
+
+            if (isEnd && stack.length() > 0) {
+                isEnd = false;
+            }
 
 		    breakFrame = NULL;
 	    }
@@ -1006,7 +1022,7 @@ public:
 				    continue;
 			    }
 
-			    float t;
+			    double t;
 			    if (s->preSide) {
 				    t = ray.intersectionTime(s->node->valueArray[s->valIndex].bounds.toBox());
 				    ++testCounter;
@@ -1088,29 +1104,29 @@ public:
 
            const IT end = tree.endRayIntersection();
 
-           for (IT nomad = tree.beginRayIntersection(ray);
-                nomad != end;
-                ++nomad) {  // (preincrement is *much* faster than postincrement!) 
+           for (IT obj = tree.beginRayIntersection(ray);
+                obj != end;
+                ++obj) {  // (preincrement is *much* faster than postincrement!) 
 
                // Call your accurate intersection test here.  It is guaranteed
                // that the ray hits the bounding box of obj.
-               double t = nomad->distanceUntilIntersection(ray);
+               double t = obj->distanceUntilIntersection(ray);
 
                // Often methods like "distanceUntilIntersection" can be made more
                // efficient by providing them with the time at which to start and
                // to give up looking for an intersection; that is, 
-               // nomad.minDistance and iMin(firstDistance, nomad.maxDistance).
+               // obj.minDistance and iMin(firstDistance, nomad.maxDistance).
 
                if ((t < firstDistance) && 
-                   (t < nomad.maxDistance) &&
-                   (t >= nomad.minDistance)) {
+                   (t < obj.maxDistance) &&
+                   (t >= obj.minDistance)) {
                    // This is the new best collision time
-                   firstObject   = nomad;
+                   firstObject   = obj;
                    firstDistance = t;
 
                    // Even if we found an object we must keep iterating until
                    // we've exhausted all members at this node.
-		           nomad.markBreakNode();
+		           obj.markBreakNode();
                }
            }
        }
