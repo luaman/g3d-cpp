@@ -632,8 +632,12 @@ void Draw::sphereSection(
     cframe.translation += sphere.center;
 
     glPushAttrib(GL_ENABLE_BIT);
-    glDisable(GL_NORMALIZE);
-    glEnable(GL_RESCALE_NORMAL);
+
+    if (GLCaps::supports("GL_EXT_rescale_normal")) {
+        // Switch to using GL_RESCALE_NORMAL, which should be slightly faster.
+        glDisable(GL_NORMALIZE);
+        glEnable(GL_RESCALE_NORMAL);
+    }
 
     renderDevice->pushState();
         renderDevice->setObjectToWorldMatrix(cframe);

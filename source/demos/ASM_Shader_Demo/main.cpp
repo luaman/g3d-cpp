@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 
     controller->setPosition(Vector3(2, .2, -2));
     controller->lookAt(Vector3(-2,0,2));
-    controller->setActive(true);
+    controller->setActive(false);
 
     renderDevice->resetState();
     renderDevice->setColorClearValue(Color3(.1, .5, 1));
