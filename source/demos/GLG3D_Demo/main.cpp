@@ -38,7 +38,11 @@
 /**
  The path to the data directory from this program's directory.
  */
+#ifdef _WIN32
 const std::string DATA_DIR("d:/libraries/Graphics3D-5.00b/data/");
+#else
+const std::string DATA_DIR("../../../data/");
+#endif
 
 class Model {
 
