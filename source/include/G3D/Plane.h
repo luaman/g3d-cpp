@@ -6,13 +6,14 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2004-07-09
+ @edited  2004-07-18
 */
 
 #ifndef G3D_PLANE_H
 #define G3D_PLANE_H
 
 #include "G3D/Vector3.h"
+#include "G3D/Vector4.h"
 #include "G3D/debugAssert.h"
 
 namespace G3D {
@@ -81,6 +82,18 @@ public:
         // We can get away with putting values *at* the limits of the float32 range into
         // a dot product, since the dot product is carried out on float64.
         return _normal.dot(point) >= distance;
+    }
+
+    /**
+     Returns true if point is on the side the normal points to or 
+     is in the plane.
+     */
+    inline bool halfSpaceContains(const Vector4& point) const {
+        if (point.w == 0) {
+            return _normal.dot(point.xyz()) > 0;
+        } else {
+            return halfSpaceContains(point.xyz() / point.w);
+        }
     }
 
     /**

@@ -22,6 +22,7 @@
      <LI> AABox::intersects(Sphere)
      <LI> Vector3::minFinite, Vector3::maxFinite
 	 <LI> Plane::halfSpaceContainsFinite
+	 <LI> Plane::halfSpaceContains(Vector4)
      <LI> AABSPTree::getIntersectingMembers(Array<Plane>) 
 	 <LI> AABSPTree::getIntersectingMembers(GCamera::Frustum) for view-frustum culling
 	 <LI> AABSPTree::getIntersectingMembers(Sphere)
@@ -43,6 +44,7 @@
      <LI> GImage and Texture now load ICO files
 	 <LI> GL_SAMPLER_1D_ARB, 2D, 3D, CUBE
 	 <LI> Win32Window mouse events
+	 <LI> Fix: [ 993449 ] vsnprintf crashes MSVC 7
 	 <LI> Fix: [ 991320 ] Pointer truncation Warnings
 	 <LI> Fix: [ 981440 ] AUTO with Texture::fromMemory
 	 <LI> Fix: Plane::halfSpaceContains now works for infinite and semi-infinite points

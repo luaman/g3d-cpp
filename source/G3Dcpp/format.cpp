@@ -37,9 +37,8 @@ std::string __cdecl format(const char* fmt,...) {
     return result;
 }
 
-#ifdef G3D_WIN32
-
-// Windows uses the pre-C99 vsnprintf, which has different behavior
+#if defined(G3D_WIN32) &&  (_MSC_VER < 1300)
+// MSVC 6 uses the pre-C99 vsnprintf, which has different behavior
 std::string vformat(const char *fmt, va_list argPtr) {
     // We draw the line at a 1MB string.
     const int maxSize = 1000000;
@@ -79,7 +78,7 @@ std::string vformat(const char *fmt, va_list argPtr) {
 
 #else
 
-// glibc 2.1 has been updated to the C99 standard
+// glibc 2.1 and MSVC 7 have been updated to the C99 standard
 std::string vformat(const char* fmt, va_list argPtr) {
     // If the string is less than 161 characters,
     // allocate it on the stack because this saves
