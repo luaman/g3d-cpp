@@ -214,6 +214,10 @@ SOURCE=.\G3Dcpp\MeshBuilder.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\NetMessage.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\NetworkDevice.cpp
 # End Source File
 # Begin Source File
@@ -435,6 +439,10 @@ SOURCE=.\include\G3D\MeshAlg.h
 # Begin Source File
 
 SOURCE=.\include\G3D\MeshBuilder.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\NetAddress.h
 # End Source File
 # Begin Source File
 

@@ -7,9 +7,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2004-09-09
+ @edited  2005-02-07
 
- Copyright 2001-2003, Morgan McGuire.
+ Copyright 2001-2005, Morgan McGuire.
  All rights reserved.
 */
 
@@ -61,6 +61,7 @@
 #include "G3D/CollisionDetection.h"
 #include "G3D/Log.h"
 #include "G3D/TextInput.h"
+#include "G3D/NetAddress.h"
 #include "G3D/NetworkDevice.h"
 #include "G3D/System.h"
 #include "G3D/spline.h"

@@ -25,8 +25,9 @@ libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Matrix4.cpp \
                          ../../../source/G3Dcpp/MeshAlg.cpp \
                          ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
-			 ../../../source/G3Dcpp/MeshAlgWeld.cpp \
+					     ../../../source/G3Dcpp/MeshAlgWeld.cpp \
                          ../../../source/G3Dcpp/NetworkDevice.cpp \
+                         ../../../source/G3Dcpp/NetAddress.cpp \
                          ../../../source/G3Dcpp/PhysicsFrame.cpp \
                          ../../../source/G3Dcpp/Plane.cpp \
                          ../../../source/G3Dcpp/Quat.cpp \
