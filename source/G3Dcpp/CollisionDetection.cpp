@@ -84,7 +84,7 @@ float CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
         
         double x = vertex.dot(N) + d;
         
-        if (x >= 0) {
+        if (x <= 0) {
             // All vertices below the plane should be contact points.
             contactPoints.append(vertex);
         }
