@@ -495,6 +495,7 @@ void measureNormalizationPerformance() {
 
     for (j = 0; j < 2; ++j) {
         x = Vector3(10,-20,3);
+		y = 0;
         System::beginCycleCount(overhead);
         for (i = n - 1; i >= 0; --i) {
             x.z = i;
