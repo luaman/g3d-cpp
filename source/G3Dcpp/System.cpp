@@ -60,13 +60,14 @@ namespace G3D {
 std::string demoFindData(bool errorIfNotFound) {
 
     Array<std::string> potential;
-    potential.append("");
-
-    // Search for the data
-    for (int count = 0; count < 5; ++count) {
-        potential.append("../");
-    }
-
+    
+	potential.append("");
+	potential.append("../");
+	potential.append("../../");
+	potential.append("../../../");
+	potential.append("../../../../");
+	potential.append("../../../../../");
+	
 	int ver = G3D_VER;
 	std::string lname = format("g3d-%d_%02d", ver / 10000, (ver / 100) % 100);
 
