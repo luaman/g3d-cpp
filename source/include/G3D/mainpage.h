@@ -76,7 +76,6 @@
      <LI>Integer math
        <BR><BLOCKQUOTE>
         G3D::highestBit,
-        G3D::clamp,
 	    G3D::iAbs,
 		G3D::iCeil,
 		G3D::iClamp,
@@ -108,6 +107,7 @@
 		 G3D::aSin,
 		 G3D::aTan,
 		 G3D::aTan2,
+         G3D::clamp,
          G3D::sign,
 		 G3D::rsq,
 		 G3D::unitRandom,
@@ -151,39 +151,88 @@
         G3D::Log</BLOCKQUOTE>
 
      <LI>I/O
-        <BR><BLOCKQUOTE>G3D::prompt, G3D::TextInput,
-        G3D::BinaryInput, G3D::BinaryOutput, G3D::readFileAsString,
-        G3D::fileExists, G3D::parseFilename, G3D::createDirectory,
-        G3D::copyFile, G3D::writeStringToFile, G3D::prompt, G3D::fileLength,
-        G3D::createTempFile, G3D::NetworkDevice, G3D::G3DEndian,
-        G3D::NetAddress, G3D::ReliableConduit, G3D::LightweightConduit,
-        G3D::NetListener, G3D::System, G3D::resolveFilename, G3D::getFiles, G3D::getDirs</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+        G3D::BinaryInput, 
+        G3D::BinaryOutput, 
+        G3D::copyFile, 
+        G3D::createDirectory,
+        G3D::createTempFile, 
+        G3D::fileExists, 
+        G3D::fileLength,
+        G3D::G3DEndian,
+        G3D::getFiles, 
+        G3D::getDirs,
+        G3D::LightweightConduit,
+        G3D::NetAddress, 
+        G3D::NetListener, 
+        G3D::NetworkDevice, 
+        G3D::parseFilename, 
+        G3D::prompt, 
+        G3D::readFileAsString,
+        G3D::System,
+        G3D::ReliableConduit, 
+        G3D::resolveFilename,
+        G3D::TextInput,
+        G3D::writeStringToFile
+        </BLOCKQUOTE>
      </UL>
 
      Link against glg3d.lib and \#include "glg3d.h" to gain access to:
      <UL>
       <LI>OpenGL Abstraction
-        <BR><BLOCKQUOTE>G3D::RenderDevice, G3D::VAR, G3D::VARArea, 
-        G3D::Texture, G3D::TextureRef, G3D::VertexProgram,
-        G3D::VertexProgramRef, G3D:PixelProgram, G3D::PixelProgramRef,
-        G3D::tesselateComplexPolygon</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+        G3D::PixelProgram,
+        G3D::PixelProgramRef,
+        G3D::RenderDevice, 
+        G3D::tesselateComplexPolygon,
+        G3D::Texture, 
+        G3D::TextureFormat,
+        G3D::TextureRef, 
+        G3D::VAR, 
+        G3D::VARArea, 
+        G3D::VertexProgram,
+        G3D::VertexProgramRef
+        </BLOCKQUOTE>
 
       <LI>OpenGL 
-        <BR><BLOCKQUOTE>G3D::glLoadMatrix, G3D::glLoadInvMatrix, 
-        G3D::glMultInvMatrix, G3D::glMultMatrix, G3D::glVertex, G3D::glColor,
-        G3D::glNormal, G3D::glTexCoord, G3D::glMultiTexCoord,
-        G3D::sizeOfGLFormat, G3D::glFormatOf, DECLARE_GLFORMATOF,
-        G3D::glGetProcAddress</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+        G3D::glLoadMatrix, 
+        G3D::glLoadInvMatrix, 
+        G3D::glMultInvMatrix, 
+        G3D::glMultMatrix, 
+        G3D::glVertex, 
+        G3D::glColor,
+        G3D::glNormal, 
+        G3D::glTexCoord, 
+        G3D::glMultiTexCoord,
+        G3D::sizeOfGLFormat, 
+        G3D::glFormatOf, 
+        DECLARE_GLFORMATOF,
+        G3D::glGetProcAddress
+        </BLOCKQUOTE>
 
       <LI>GL Debugging
-        <BR><BLOCKQUOTE>G3D::getOpenGLState, G3D::glGetInteger, 
-        G3D::glGetBoolean, G3D::glGetDouble, G3D::glGetFloat,
-        G3D::GLenumToString</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+        G3D::getOpenGLState, 
+        G3D::glGetInteger, 
+        G3D::glGetBoolean,
+        G3D::glGetDouble, 
+        G3D::glGetFloat,
+        G3D::GLenumToString
+        </BLOCKQUOTE>
 
       <LI>Game/Demo Infrastructure</LI>
-        <BR><BLOCKQUOTE>G3D::Font, G3D::Sky, G3D::Camera, G3D::GameTime,
-        G3D::LightingParameters, G3D::realWorldLocalTime, G3D::toSeconds, G3D::UserInput, 
-        G3D::ManualCameraController</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+        G3D::Font,
+        G3D::Sky,
+        G3D::Camera, 
+        G3D::GameTime,
+        G3D::LightingParameters,
+        G3D::realWorldLocalTime, 
+        G3D::toSeconds, 
+        G3D::UserInput, 
+        G3D::ManualCameraController
+        </BLOCKQUOTE>
      </UL>
 
     See the Demo project for a simple introduction to using SDL, OpenGL, 
@@ -596,6 +645,15 @@ to add zlibstat.lib to your linker list.
    compatible.  Minor versions are backwards compatible to the
    previous major release.
 
+   Changes in 6.00
+
+   <P>
+   <UL>
+     <LI> G3D::TextureFormat
+     <LI> G3D::Texture constructors are completely changed from 5.01 (and hopefully easier to use)
+     <LI> G3D::CImage now supports images with alpha
+   </UL>
+
    <P>
    Changes in 5.01
    <UL>
@@ -623,6 +681,11 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::Color3uint8
      <LI> G3D::Vector3int16
      <LI> G3D::System::currentProgramFilename
+     <LI> CImage::insertRedAsAlpha
+     <LI> CImage::stripAlpha
+     <LI> Texture::hasAlpha
+     <LI> Added support for TGA with alpha channel
+     <LI> Re-implemented Texture to support a broader range of formats and cleaner implementation.
      <LI> Fix: Improved Texture::LUMINANCE support
      <LI> Added == and != overloads for TextureRef so that "a != NULL" is now legal and does not require a cast to TextureRef.
      <LI> G3D::CFont is a typedef for G3D::Font to avoid name conflicts with X11 Font under Linux.  In future releases, the name Font will be deprecated.
@@ -655,6 +718,8 @@ to add zlibstat.lib to your linker list.
      <LI> Added several G3D::Triangle methods
      <LI> Moved CollisionDetection::primaryAxis to Vector3::primaryAxis
      <LI> Fix: Texture::sizeInMemory now returns correct results for RGB8 textures.
+     <LI> Changed texture constructors in ways that slightly break backwards compatibility
+     <LI> Deprecated several arguments to the texture constructors.
    </UL>
 
 

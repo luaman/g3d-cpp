@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-05-01
+ @edited  2003-05-23
 
  Copyright 2001-2003, Morgan McGuire.
  All rights reserved.
@@ -20,6 +20,7 @@
 #include "GLG3D/glheaders.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/TextureFormat.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/glFormat.h"
 #include "GLG3D/RenderDevice.h"

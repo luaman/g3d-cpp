@@ -335,7 +335,6 @@ void parseFilename(
 
 
 
-
 /**
  Helper for getFileList and getDirectoryList.
 

@@ -141,6 +141,10 @@ SOURCE=.\GLG3Dcpp\Texture.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\TextureFormat.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\UserInput.cpp
 # End Source File
 # Begin Source File
@@ -386,6 +390,10 @@ SOURCE=.\include\GLG3D\tesselate.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\Texture.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\TextureFormat.h
 # End Source File
 # Begin Source File
 

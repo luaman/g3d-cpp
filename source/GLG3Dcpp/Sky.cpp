@@ -4,12 +4,13 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-04-14
+  @edited  2003-05-23
   */
 
 #include "GLG3D/glcalls.h"
 #include "GLG3D/Sky.h"
 #include "GLG3D/LightingParameters.h"
+#include "GLG3D/TextureFormat.h"
 
 namespace G3D {
 
@@ -33,28 +34,32 @@ Sky::Sky(
     
     static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
     
-    bool compress   = false;
-    int cBits       = 8;
+    const TextureFormat* format;
+    const TextureFormat* alphaFormat;
 
     if (quality > .66) {
-        compress = false;
-        cBits    = 8;
+        format      = TextureFormat::RGB8;
+        alphaFormat = TextureFormat::RGBA8;
     } else if (quality > .33) {
-        compress = true;
-        cBits    = 8;
+        format      = TextureFormat::RGB_DXT1;
+        alphaFormat = TextureFormat::RGBA_DXT1;
     } else {
-        compress = true;
-        cBits    = 5;
+        format      = TextureFormat::RGBA_DXT5;
+        alphaFormat = TextureFormat::RGBA_DXT5;
     }
+
 
     for (int t = 0; t < 6; ++t) {
-        texture[t] = new Texture(ext[t], filenameBase + ext[t] + filenameExt, "", Texture::BILINEAR_NO_MIPMAP, Texture::CLAMP, Texture::DIM_2D, cBits, 0, compress);
+        texture[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
+            format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     }
 
-    moon     = new Texture("Moon",      directory + "moon.jpg",         directory + "moon-alpha.jpg", Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 1, true);
-    sun      = new Texture("Sun",       directory + "sun.jpg",          "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 8, 0, true);
-    disk     = new Texture("Flare",     directory + "lensflare.jpg",    "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 0, true);
-    sunRays  = new Texture("Sun rays",  directory + "sun-rays.jpg",     "",                           Texture::BILINEAR_NO_MIPMAP, Texture::TRANSPARENT_BORDER, Texture::DIM_2D, 5, 0, false);
+    moon     = Texture::fromTwoFiles(directory + "moon.jpg", directory + "moon-alpha.jpg",
+        alphaFormat, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+
+    sun      = Texture::fromFile(directory + "sun.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+    disk     = Texture::fromFile(directory + "lensflare.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+    sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
 
     
     int i = 0;

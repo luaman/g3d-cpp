@@ -2,7 +2,7 @@
   @file CImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-04-07
+  @edited  2003-05-23
  */
 #include "G3D/CImage.h"
 #include "G3D/debug.h"
@@ -24,7 +24,7 @@ extern "C" {
 /**
  This is used by the Windows bitmap I/O.
  */
-static const int BI_RGB=0;
+static const int BI_RGB = 0;
 #endif
 
 const int jpegQuality = 90;
@@ -362,6 +362,7 @@ void flipRGBVertical(
 void CImage::encodeBMP(
     BinaryOutput&       out) {
 
+    debugAssert(channels == 3);
     out.setEndian(G3D_LITTLE_ENDIAN);
 
     uint8 red;
@@ -453,12 +454,12 @@ void CImage::encodeBMP(
 
     // Write the pixel data
     for (int h = hStart; h != hEnd; h += hDir) {
-        dest = 3 * h * width;
+        dest = channels * h * width;
         for (int w = 0; w < width; ++w) {
 
-            red   = pixel[dest];
-            green = pixel[dest + 1];
-            blue  = pixel[dest + 2];
+            red   = _byte[dest];
+            green = _byte[dest + 1];
+            blue  = _byte[dest + 2];
 
             out.writeUInt8(blue);
             out.writeUInt8(green);
@@ -500,20 +501,33 @@ void CImage::encodeTGA(
     out.writeUInt16(height);
 
     // Color depth
-    out.writeUInt8(24);
+    out.writeUInt8(8 * channels);
 
     // Image descriptor
     out.writeUInt8(0);
 
     // Image ID (zero length)
 
-    // Pixels are upside down in BGR format.
-    for (int y = height - 1; y >= 0; y--) {
-        for (int x = 0; x < width; x++) {
-            uint8* p = &(pixel[3 * (y * width + x)]);
-            out.writeUInt8(p[2]);
-            out.writeUInt8(p[1]);
-            out.writeUInt8(p[0]);
+    if (channels == 3) {
+        // Pixels are upside down in BGR format.
+        for (int y = height - 1; y >= 0; y--) {
+            for (int x = 0; x < width; x++) {
+                uint8* p = &(_byte[3 * (y * width + x)]);
+                out.writeUInt8(p[2]);
+                out.writeUInt8(p[1]);
+                out.writeUInt8(p[0]);
+            }
+        }
+    } else {
+        // Pixels are upside down in BGRA format.
+        for (int y = height - 1; y >= 0; y--) {
+            for (int x = 0; x < width; x++) {
+                uint8* p = &(_byte[4 * (y * width + x)]);
+                out.writeUInt8(p[2]);
+                out.writeUInt8(p[1]);
+                out.writeUInt8(p[0]);
+                out.writeUInt8(p[3]);
+            }
         }
     }
 
@@ -525,7 +539,7 @@ void CImage::encodeTGA(
 
 void CImage::encodeJPEG(
     BinaryOutput&           out) {
-    
+    debugAssert(channels == 3);
     out.setEndian(G3D_LITTLE_ENDIAN);
 
     // Allocate and initialize a compression object
@@ -564,7 +578,7 @@ void CImage::encodeJPEG(
     // JSAMPLEs per row in image_buffer
     int row_stride = cinfo.image_width * 3;
     while (cinfo.next_scanline < cinfo.image_height) {
-	    row_pointer[0] = &(pixel[cinfo.next_scanline * row_stride]);
+	    row_pointer[0] = &(_byte[cinfo.next_scanline * row_stride]);
 	    jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
 
@@ -609,7 +623,8 @@ void CImage::decode(
 
     debugAssert(width >= 0);
     debugAssert(height >= 0);
-    debugAssert(pixel != NULL);
+    debugAssert(channels == 3 || channels == 4);
+    debugAssert(_byte != NULL);
 }
 
 
@@ -653,6 +668,12 @@ void CImage::decodeTGA(
         throw Error("TGA files must be 24 or 32 bit.", input.getFilename());
     }
 
+    if (colorDepth == 32) {
+        channels = 4;
+    } else {
+        channels = 3;
+    }
+
     // Image descriptor contains overlay data as well
     // as data indicating where the origin is
     int imageDescriptor = input.readUInt8();
@@ -660,27 +681,41 @@ void CImage::decodeTGA(
     // Image ID
     input.skip(IDLength);
 
-    pixel = (uint8*)malloc(width * height * 3);
-    debugAssert(pixel);
+    _byte = (uint8*)malloc(width * height * channels);
+    debugAssert(_byte);
 	
     // Pixel data
     int x;
     int y;
-    for (y = height - 1; y >= 0; y--) {
-      for(x = 0; x < width; x++) {
-        int b = input.readUInt8();
-        int g = input.readUInt8();
-        int r = input.readUInt8();
 
-        if (colorDepth == 32) {
-          input.skip(1);
+    if (channels == 3) {
+        for (y = height - 1; y >= 0; y--) {
+          for (x = 0; x < width; x++) {
+            int b = input.readUInt8();
+            int g = input.readUInt8();
+            int r = input.readUInt8();
+		    
+            int i = (x + y * width) * 3;
+            _byte[i + 0] = r;
+            _byte[i + 1] = g;
+            _byte[i + 2] = b;
+          }
         }
-		
-        int i = (x + y * width) * 3;
-        pixel[i + 0] = r;
-        pixel[i + 1] = g;
-        pixel[i + 2] = b;
-      }
+    } else {
+        for (y = height - 1; y >= 0; y--) {
+          for (x = 0; x < width; x++) {
+            int b = input.readUInt8();
+            int g = input.readUInt8();
+            int r = input.readUInt8();
+            int a = input.readUInt8();
+		    
+            int i = (x + y * width) * 4;
+            _byte[i + 0] = r;
+            _byte[i + 1] = g;
+            _byte[i + 2] = b;
+            _byte[i + 3] = a;
+          }
+        }
     }
 }
 
@@ -709,6 +744,7 @@ void CImage::decodeBMP(
         throw Error("Not a BMP file", input.getFilename());
     }
 
+    channels = 3;
 	// Skip to the BITMAPINFOHEADER's width and height
 	input.skip(16);
 
@@ -775,8 +811,8 @@ void CImage::decodeBMP(
         hDir   = -1;
     }
 
-    pixel = (uint8*)malloc(width * height * 3);
-    debugAssert(pixel);
+    _byte = (uint8*)malloc(width * height * 3);
+    debugAssert(_byte);
 
     int BMScanWidth;
     int BMPadding;
@@ -820,9 +856,9 @@ void CImage::decodeBMP(
                     if (currPixel < width) {
                         int src  = 3 * ((BMGroup & pow2[i]) >> i);
                     
-                        pixel[dest]     = palette[src];
-                        pixel[dest + 1] = palette[src + 1];
-                        pixel[dest + 2] = palette[src + 2];
+                        _byte[dest]     = palette[src];
+                        _byte[dest + 1] = palette[src + 1];
+                        _byte[dest + 2] = palette[src + 2];
                     
                         ++currPixel;
                         dest += 3;
@@ -864,9 +900,9 @@ void CImage::decodeBMP(
                     if (currPixel < width) {
                         int tsrc  = src[i];
                     
-                        pixel[dest]     = palette[tsrc];
-                        pixel[dest + 1] = palette[tsrc + 1];
-                        pixel[dest + 2] = palette[tsrc + 2];
+                        _byte[dest]     = palette[tsrc];
+                        _byte[dest + 1] = palette[tsrc + 1];
+                        _byte[dest + 2] = palette[tsrc + 2];
 
                         ++currPixel;
                         dest += 3;
@@ -897,9 +933,9 @@ void CImage::decodeBMP(
                     dest = 3 * ((h * width) + currPixel);
                     int src  = 3 * BMPixel8;
                     
-                    pixel[dest]     = palette[src];
-                    pixel[dest + 1] = palette[src + 1];
-                    pixel[dest + 2] = palette[src + 2];
+                    _byte[dest]     = palette[src];
+                    _byte[dest + 1] = palette[src + 1];
+                    _byte[dest + 2] = palette[src + 2];
                     
                     ++currPixel;
                 }
@@ -908,7 +944,7 @@ void CImage::decodeBMP(
 
     } else if (bitCount == 16) {
 
-    	throw Error("32 bit bitmaps not supported", input.getFilename());
+    	throw Error("16-bit bitmaps not supported", input.getFilename());
 
 	} else if (bitCount == 24) {
         input.skip(20);
@@ -932,9 +968,9 @@ void CImage::decodeBMP(
                 green = input.readUInt8();
                 red   = input.readUInt8();
 
-                pixel[dest]     = red;
-                pixel[dest + 1] = green;
-                pixel[dest + 2] = blue;
+                _byte[dest]     = red;
+                _byte[dest + 1] = green;
+                _byte[dest + 2] = blue;
 
                 dest += 3;
             }
@@ -951,8 +987,8 @@ void CImage::decodeBMP(
     } else {
         // We support all possible bit depths, so if the
         //     code gets here, it's not even a real bitmap.
-        free(pixel);
-        pixel = NULL;
+        free(_byte);
+        _byte = NULL;
         throw Error("Not a bitmap!", input.getFilename());
 	}
 
@@ -966,6 +1002,7 @@ void CImage::decodeJPEG(
 	struct jpeg_error_mgr           jerr;
     int                             loc = 0;
 
+    channels = 3;
     // We have to set up the error handler, in case initialization fails.
 	cinfo.err = jpeg_std_error(&jerr);
 
@@ -989,7 +1026,7 @@ void CImage::decodeJPEG(
 	this->height    = cinfo.output_height;
 
 	// Prepare the pointer object for the pixel data
-	pixel = (uint8*)malloc(width * height * 3);
+	_byte = (uint8*)malloc(width * height * 3);
 
  	// JSAMPLEs per row in output buffer
     int bpp         = cinfo.output_components;
@@ -1011,7 +1048,7 @@ void CImage::decodeJPEG(
 
             // Expand to three channels
             {
-                uint8* scan     = &(pixel[width * cinfo.output_scanline * 3]);
+                uint8* scan     = &(_byte[width * cinfo.output_scanline * 3]);
                 uint8* endScan  = scan + (width * 3);
                 uint8* t        = *temp;
 
@@ -1033,7 +1070,7 @@ void CImage::decodeJPEG(
             // Read directly into the array
             {
                 // Need one extra level of indirection.
-                uint8*     scan = pixel + loc;
+                uint8*     scan = _byte + loc;
                 JSAMPARRAY ptr  = &scan;
     		    jpeg_read_scanlines(&cinfo, ptr, 1);
             }
@@ -1045,7 +1082,7 @@ void CImage::decodeJPEG(
 
             // Drop the 3rd channel
             {
-                uint8* scan     = &(pixel[width * cinfo.output_scanline * 3]);
+                uint8* scan     = &(_byte[width * cinfo.output_scanline * 3]);
                 uint8* endScan  = scan + width * 3;
                 uint8* t        = *temp;
 
@@ -1132,7 +1169,7 @@ CImage::Format CImage::resolveFormat(
 
 CImage::CImage(
     const std::string&  filename,
-    Format              format) : width(0), height(0), pixel(NULL) {
+    Format              format) : width(0), height(0), channels(0), _byte(NULL) {
     
     load(filename, format);
 }
@@ -1168,14 +1205,18 @@ CImage::CImage(
 
 CImage::CImage(
     int                 width,
-    int                 height) {
+    int                 height,
+    int                 channels) {
     
     debugAssert(width >= 0);
     debugAssert(height >= 0);
+    debugAssert(channels >= 1);
+
     this->width = width;
     this->height = height;
-    pixel = (uint8*)calloc(width * height * 3, sizeof(uint8));
-    debugAssert(isValidHeapPointer(pixel));
+    this->channels = channels;
+    _byte = (uint8*)calloc(width * height * channels, sizeof(uint8));
+    debugAssert(isValidHeapPointer(_byte));
 }
 
 
@@ -1186,15 +1227,16 @@ void CImage::_copy(
 
     width  = other.width;
     height = other.height;
-    int s  = width * height * 3 * sizeof(uint8);
-    pixel  = (uint8*)malloc(s);
-    debugAssert(isValidHeapPointer(pixel));
-    memcpy(pixel, other.pixel, s);
+    channels = other.channels;
+    int s  = width * height * channels * sizeof(uint8);
+    _byte  = (uint8*)malloc(s);
+    debugAssert(isValidHeapPointer(_byte));
+    memcpy(_byte, other._byte, s);
 }
 
 
 CImage::CImage(
-    const CImage&        other) : pixel(NULL) {
+    const CImage&        other) : _byte(NULL) {
 
     _copy(other);
 }
@@ -1208,8 +1250,8 @@ CImage::~CImage() {
 void CImage::clear() {
     width = 0;
     height = 0;
-    free(pixel);
-    pixel = NULL;
+    free(_byte);
+    _byte = NULL;
 }
 
 CImage& CImage::operator=(const CImage& other) {
@@ -1288,6 +1330,35 @@ void CImage::encode(
     default:
         debugAssert(false);
     }
+}
+
+CImage CImage::insertRedAsAlpha(const CImage& alpha) const {
+    debugAssert(alpha.width == width);
+    debugAssert(alpha.height == height);
+
+    CImage out(width, height, 4);
+
+    for (int i = 0; i < width * height; ++i) {
+        out.byte()[i * 4 + 0] = byte()[i * channels + 0];
+        out.byte()[i * 4 + 1] = byte()[i * channels + 1];
+        out.byte()[i * 4 + 2] = byte()[i * channels + 2];
+        out.byte()[i * 4 + 3] = alpha.byte()[i * alpha.channels];
+    }
+
+    return out;
+}
+
+
+CImage CImage::stripAlpha() const {
+    CImage out(width, height, 3);
+
+    for (int i = 0; i < width * height; ++i) {
+        out.byte()[i * 3 + 0] = byte()[i * channels + 0];
+        out.byte()[i * 3 + 1] = byte()[i * channels + 1];
+        out.byte()[i * 3 + 2] = byte()[i * channels + 2];
+    }
+
+    return out;
 }
 
 };

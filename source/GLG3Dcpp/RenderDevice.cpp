@@ -2110,10 +2110,10 @@ void RenderDevice::screenshot(const std::string& filepath) const {
     glReadBuffer(GL_FRONT);
     
     CImage im = CImage(screenWidth, screenHeight);
-    glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, im.pixel);
+    glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, im.byte());
 
     // Flip right side up
-    flipRGBVertical(im.pixel, im.pixel, screenWidth, screenHeight);
+    flipRGBVertical(im.byte(), im.byte(), screenWidth, screenHeight);
 
     // Restore the read buffer to the back
     glReadBuffer(GL_BACK);
@@ -2125,7 +2125,7 @@ void RenderDevice::screenshot(const std::string& filepath) const {
         // Adjust the coloring for gamma correction
         // Lookup table for mapping v -> v * lightSaturation;
         uint8 L[255];
-        uint8 *data = im.pixel;
+        uint8 *data = im.byte();
         
         for (i = 255; i >= 0; --i) {
             L[i] = iMin(255, iRound((double)i * s));

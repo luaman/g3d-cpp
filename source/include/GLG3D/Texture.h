@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2003-05-22
+  @edited  2003-05-23
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -15,8 +15,9 @@
 
 namespace G3D {
 
-    
+
 typedef ReferenceCountedPointer<class Texture> TextureRef;
+
 
 /**
 
@@ -62,26 +63,28 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
 class Texture : public ReferenceCountedObject {
 public:
 
-    enum Channels        {LUMINANCE = 1, RGB = 3, RGBA = 4, ALPHA = 5};
     enum Dimension       {DIM_2D = 2, DIM_2D_RECT = 4};
 
     /** TRANSPARENT_BORDER provides a border of Color4(0,0,0,0) and clamps to it. */
     enum WrapMode        {TILE = 1, CLAMP = 0, TRANSPARENT_BORDER = 2};
+
     enum InterpolateMode {TRILINEAR_MIPMAP = 3, BILINEAR_NO_MIPMAP = 2, NO_INTERPOLATION = 1};
 
 private:
 
+    /** OpenGL texture ID */
+	GLuint                          textureID;
+
     std::string                     name;
-    std::string                     filename;
-    std::string                     alphaFilename;
     InterpolateMode                 interpolate;
     WrapMode                        wrap;
-    Channels                        channels;
+    const class TextureFormat*      format;
     Dimension                       dimension;
     int                             width;
     int                             height;
     int                             depth;
     bool                            compressed;
+    bool                            _opaque;
 
     /**
      Number of bits to allocate for each color channel.
@@ -93,24 +96,14 @@ private:
      */
     int                             alphaChannelBits;
 
-    /**
-     Loads filename (and maybe alphaFilename) and inserts
-     the contents into d.
-     */
-    void getData(class Data& d);
-	void createMipMapTexture(const class Data& d);
-    void createTexture(const class Data& d);
-
-    /**
-     Converts the colorChannelBits and alphaChannelBits values
-     into a GL internal texture format.  Used to set internalGLFormat.
-     */
-    GLenum getInternalGLFormat() const;
-
-    /** OpenGL texture ID */
-	unsigned int textureID;
-
-    unsigned int externalFormat() const;
+    Texture(
+        const std::string&          _name,
+        GLuint                      _textureID,
+        Dimension                   _dimension,
+        const class TextureFormat*  _format,
+        InterpolateMode             _interpolate,
+        WrapMode                    _wrap,
+        bool                        __opaque);
 
 public:
 
@@ -120,76 +113,61 @@ public:
     static unsigned int newGLTextureID();
 
     /**
-     Construct a texture from an image file.  The internal* parameters specify how the
-     texture should be stored in video memory.
+     Wrap and interpolate will override the existing parameters on the
+     GL texture.
 
-     @param filename      Complete path to load file from.  Supports TGA, BMP, JPG formats.
-     @param alphaFilename If a non-empty string, an alpha channel is created from the red channel
-                          of this image.
-     @param dimension     If DIM_3D, you must also specify the depth value
-
-     @param internalAlphaChannelBits If -1, this will be set equal to the color channel bits when the 
-     alphaFilename != ""
-     @param combineMode   In the 4.00 release, this functionality will move to RenderDevice.
-     @param internalCompress If the graphics card driver does not support compression, this will revert
-     to the corresponding uncompressed format.
-     @param depth 3D textures are stored in images such that there are depth images, each of size
-            width x height, stacked on top of each other vertically.  Because the image stores the
-            width and height, but not the depth, you must explicitly provide it.
+     @param name Arbitrary name for this texture to identify it
+     @param textureID Set to newGLTextureID() to create an empty texture.
      */
-    Texture(
-        const std::string&          name,
-        const std::string&          filename,
-        const std::string&          alphaFilename            = "",
-        InterpolateMode             interpolate              = TRILINEAR_MIPMAP,
-        WrapMode                    wrap                     = TILE,
-        Dimension                   dimension                = DIM_2D,
-        int                         internalColorChannelBits = 8,
-        int                         internalAlphaChannelBits = -1,
-        bool                        internalCompress         = false,
-        int                         depth                    = 1);
+    static TextureRef fromGLTexture(
+        const std::string&              name,
+        GLuint                          textureID,
+        const class TextureFormat*      textureFormat,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D,
+        bool                            opaque         = true);
+
 
     /**
-     Construct from a series of bits already in memory.
-     The internal* parameters specify how the
-     texture should be stored in video memory.  It is safe to free pixels after the constructur
-     returns-- the data is copied into video memory.
-
-     @param alphaChannelBits If -1, this will be set equal to the color channel bits when the 
-     channels value is RGBA.
+     Creates a texture from a single image.  The image must have a format understood
+     by CImage.
      */
-    Texture(
-        const std::string&          name,
-        int                         width,
-        int                         height,
-        int                         depth,
-        uint8*                      pixels,
-        InterpolateMode             interpolate   = TRILINEAR_MIPMAP,
-        WrapMode                    wrap          = TILE,
-        Channels                    channels      = RGB,
-        Dimension                   dimension     = DIM_2D,
-        int                         internalColorChannelBits = 8,
-        int                         internalAlphaChannelBits = -1,
-        bool                        internalCompress      = false);
+    static TextureRef fromFile(
+        const std::string&              filename,
+        const class TextureFormat*      desiredFormat,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D);
+
 
     /**
-     Construct an empty texture for future use with copyFromScreen() or
-     construct a texture from an existing OpenGL texture ID (which will
-     be released when this texture is garbage collected). 
+     Creates a texture from the colors of filename and takes the alpha values
+     from the red channel of alpha filename.
      */
-    Texture(
-        const std::string&          name          = "",
-        int                         width         = 1,
-        int                         height        = 1,
-        int                         depth         = 1,
-        uint32                      textureID     = newGLTextureID(),
-        InterpolateMode             interpolate   = TRILINEAR_MIPMAP,
-        WrapMode                    wrap          = TILE,
-        Dimension                   dimension     = DIM_2D,
-        int                         internalColorChannelBits = 8,
-        int                         internalAlphaChannelBits = -1,
-        bool                        internalCompress      = false);    
+    static TextureRef fromTwoFiles(
+        const std::string&              filename,
+        const std::string&              alphaFilename,
+        const class TextureFormat*      desiredFormat,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D);
 
+    /**
+     The bytes are described by byteFormat, which may differ from the
+     format you want the graphics card to use (desiredFormat).
+     */
+    static TextureRef fromMemory(
+        const std::string&              name,
+        uint8*                          bytes,
+        const class TextureFormat*      bytesFormat,
+        int                             width,
+        int                             height,
+        int                             depth,
+        const class TextureFormat*      desiredFormat,
+        WrapMode                        wrap           = TILE,
+        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        Dimension                       dimension      = DIM_2D);
 
     /**
      Copies data from screen into an existing texture (replacing whatever was
@@ -210,11 +188,16 @@ public:
 
      @param windowHeight renderDevice->getHeight().
      */
-    void copyFromScreen(int x, int y, int width, int height, int windowHeight, bool useBackBuffer = true);
+    void copyFromScreen(int x, int y, int width, int height, int windowHeight, Dimension dim, bool useBackBuffer = true);
+
 
     /**
-     When true, the y texture coordinate should be inverted.  If used with RenderDevice,
-     this is performed automatically.
+     When true, rendering code that uses this texture is respondible for
+     flipping texture coordinates applied to this texture vertically (initially,
+     this is false).
+     
+     RenderDevice watches this flag and performs the appropriate transformation.
+     If you are not using RenderDevice, you must do it yourself.
      */
     bool invertY;
 
@@ -222,6 +205,18 @@ public:
      How much (texture) memory this texture occupies.
      */
     int sizeInMemory() const;
+
+    /**
+     True if this texture was created with an alpha channel.  Note that
+     a texture may have a format that is not opaque (e.g. RGBA8) yet still
+     have a completely opaque alpha channel, causing texture->opaque to
+     be true.  This is just a flag set for the user's convenience-- it does
+     not affect rendering in any way.
+     */
+    inline bool opaque() const {
+        return _opaque;
+    }
+
 
     inline unsigned int getOpenGLID() const {
         return textureID;
@@ -235,20 +230,15 @@ public:
         return height;
     }
 
+    /**
+     For 3D textures.
+     */
     inline const int getTexelDepth() const {
         return depth;
     }
 
     inline const std::string& getName() const {
         return name;
-    }
-
-    inline const std::string& getFilename() const {
-        return filename;
-    }
-
-    inline const std::string& getAlphaFilename() const {
-        return alphaFilename;
     }
 
     inline InterpolateMode getInterpolateMode() const {
@@ -259,18 +249,13 @@ public:
         return wrap;
     }
 
-    inline Channels getChannels() const {
-        return channels;
+    inline const TextureFormat* getFormat() const {
+        return format;
     }
     
     inline Dimension getDimension() const {
         return dimension;
     }
-
-    /**
-     Reload this texture (if it came from a file).
-     */
-    void reload();
 
     /**
      Deallocates the OpenGL texture.

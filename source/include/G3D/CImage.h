@@ -10,7 +10,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2003-04-07
+  @edited  2003-05-23
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -82,7 +82,7 @@ void flipRGBVertical(
 /**
  Interface to image compression & file formats.
 
-  Supported formats (decode and encode): JPEG, TGA, BMP
+  Supported formats (decode and encode): JPEG, TGA 24, TGA 32, BMP 1, BMP 4, BMP 8, BMP 24
 
   Sample usage:
 
@@ -111,7 +111,11 @@ void flipRGBVertical(
   </PRE>
  */
 class CImage {
+private:
+    uint8*                _byte;
+
 public:
+
     class Error {
     public:
         Error(
@@ -125,24 +129,35 @@ public:
 
     enum Format {JPEG, BMP, TGA, AUTODETECT, UNKNOWN};
 
+    /**
+     The number of channels; either 3 (RGB) or 4 (RGBA)
+     */
+    int                     channels;
     int                     width;
     int                     height;
 
-    /**
-     RGB format.  
-     
-     WARNING: In the next major release, this will become a pointer to
-     PackedColor3 instead of uint8.
-     @deprecated
-     */
-    uint8*                  pixel;
-
-    uint8* bytes() const {
-        return pixel;
+    const uint8* byte() const {
+        return _byte;
     }
 
-    Color3uint8* pixels() const {
-        return (Color3uint8*)pixel;
+    const Color3uint8* pixel3() const {
+        return (Color3uint8*)_byte;
+    }
+
+    const Color4uint8* pixel4() const {
+        return (Color4uint8*)_byte;
+    }
+
+    uint8* byte() {
+        return _byte;
+    }
+
+    Color3uint8* pixel3() {
+        return (Color3uint8*)_byte;
+    }
+
+    Color4uint8* pixel4() {
+        return (Color4uint8*)_byte;
     }
 
 private:
@@ -151,6 +166,10 @@ private:
         BinaryOutput&       out);
 
 
+    /**
+     The TGA file will be either 24- or 32-bit depending
+     on the number of channels.
+     */
     void encodeTGA(
         BinaryOutput&       out);
 
@@ -193,8 +212,8 @@ private:
 public:
 
     CImage() {
-        width = height = 0;
-        pixel = NULL;
+        width = height = channels = 0;
+        _byte = NULL;
     }
 
     /**
@@ -218,12 +237,26 @@ public:
      */
     CImage(
         int                 width,
-        int                 height);
+        int                 height,
+        int                 channels = 3);
 
     CImage(
         const CImage&       other);
 
     CImage& operator=(const CImage& other);
+
+    /**
+     Returns a new CImage that has 4 channels.  RGB is
+     taken from this CImage and the alpha from the red
+     channel of the second image.
+     */ 
+    CImage insertRedAsAlpha(const CImage& alpha) const;
+
+    /**
+     Returns a new CImage with 3 channels, removing
+     the alpha channel if there is one.
+     */
+    CImage stripAlpha() const;
 
     /**
      Loads an image from disk (clearing the old one first).
@@ -244,7 +277,7 @@ public:
 
     /**
       Returns true if format is supported.  Format
-      should be an extension string (e.g. "BMP")
+      should be an extension string (e.g. "BMP").
      */
     static bool supportedFormat(
         const std::string& format);
@@ -271,14 +304,14 @@ public:
         int&                outLength);
 
     /**
-     Does not commit.
+     Does not commit the BinaryOutput when done.
      */
     void CImage::encode(
         Format              format,
         BinaryOutput&       out);
 };
 
-};
+}
 
 #endif
 

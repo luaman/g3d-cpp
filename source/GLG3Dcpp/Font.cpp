@@ -4,11 +4,12 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2003-02-24
+ @edited  2003-05-23
  */
 
 #include "GLG3D/Font.h"
 #include "GLG3D/RenderDevice.h"
+#include "GLG3D/TextureFormat.h"
 
 namespace G3D {
 
@@ -45,7 +46,10 @@ Font::Font(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
     int height = nextPowerOf2(charHeight * 8);
  
     // Create a texture
-    texture = new Texture(filename, width, height, 1, ((uint8*)b.getCArray()) + b.getPosition(), Texture::TRILINEAR_MIPMAP, Texture::CLAMP, Texture::ALPHA, Texture::DIM_2D, 0, 8, false);
+    texture = 
+        Texture::fromMemory(filename, ((uint8*)b.getCArray()) + b.getPosition(),
+        TextureFormat::A8, width, height, 1, TextureFormat::A8, Texture::CLAMP,
+        Texture::TRILINEAR_MIPMAP, Texture::DIM_2D);
 }
 
 
