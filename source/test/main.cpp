@@ -18,6 +18,27 @@ using namespace G3D;
 #endif
 #include <string>
 
+void testHugeBinaryOutput() {
+    printf("BinaryOutput Huge Files\n");
+    if (fileExists("huge.bin")) {
+        system("del huge.bin");
+    }
+
+    size_t s = 1024 * 1024 * 2;
+    uint8* giantBuffer = (uint8*) malloc(s);
+    debugAssert(giantBuffer);
+
+    BinaryOutput* b = new BinaryOutput("huge.bin", G3D_LITTLE_ENDIAN);
+    for (int i = 0; i = 1024 * 1024 * 1024 / s; ++i) {
+        b->writeBytes(giantBuffer, s);
+    }
+
+    delete b;
+
+    b = NULL;
+
+}
+
 void testBitSerialization() {
     printf("Bit Serialization\n");
     uint8 x[100];
@@ -1872,6 +1893,10 @@ int main(int argc, char* argv[]) {
     #endif
 
     printf("\n\nTests:\n\n");
+
+    // Test is really slow
+    //testHugeBinaryOutput();
+    //printf("  passed\n");
 
     testBitSerialization();
     printf("  passed\n");

@@ -587,7 +587,7 @@ void memcpy2(void *dst, const void *src, int nbytes) {
         int remainingBytes = nbytes;
 
         if (nbytes > 64) {
-                _asm { 
+                _asm {
                         mov esi, src 
                         mov edi, dst 
                         mov ecx, nbytes 
@@ -637,7 +637,7 @@ void memcpy2(void *dst, const void *src, int nbytes) {
 
 
 void System::memcpy(void* dst, const void* src, size_t numBytes) {
-        if (System::hasSSE() && System::hasMMX()) {
+    if (System::hasSSE() && System::hasMMX()) {
                 G3D::memcpy2(dst, src, numBytes);
         } else {
                 ::memcpy(dst, src, numBytes);

@@ -18,15 +18,32 @@
   #include <zlib.h>
 #endif
 
+// Largest memory buffer that the system will use for writing to
+// disk.  After this (or if the system runs out of memory)
+// chunks of the file will be dumped to disk.
+//
+// Currently 400 MB
+#define MAX_BINARYOUTPUT_BUFFER_SIZE 400000000
 
 namespace G3D {
 
 void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
-    maxBufferLen = (int)(bufferLen * 1.5) + 100;
-    uint8* newBuffer = (uint8*)realloc(buffer, maxBufferLen);
+    //debugPrintf("reallocBuffer(%d, %d)\n", bytes, oldBufferLen);
+
+    size_t newBufferLen = (int)(bufferLen * 1.5) + 100;
+    uint8* newBuffer = NULL;
+
+    if ((filename != "<memory>") && (newBufferLen < MAX_BINARYOUTPUT_BUFFER_SIZE)) {
+        //debugPrintf("  realloc(%d)\n", newBufferLen); 
+        newBuffer = (uint8*)realloc(buffer, newBufferLen);
+        if (newBuffer != NULL) {
+            maxBufferLen = newBufferLen;
+        }
+    }
 
     if ((newBuffer == NULL) && (bytes > 0)) {
-        // Realloc failed; we're probably out of memory.
+        // Realloc failed; we're probably out of memory.  Back out
+        // the entire call and try to dump some data to disk.
         bufferLen = oldBufferLen;
         reserveBytesWhenOutOfMemory(bytes);
     } else {
@@ -53,6 +70,8 @@ void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
             writeBytes = bufferLen;
         }
         debugAssert(writeBytes > 0);
+
+        //debugPrintf("Writing %d bytes to disk\n", writeBytes);
 
         const char* mode = (alreadyWritten > 0) ? "ab" : "wb";
         FILE* file = fopen(filename.c_str(), mode);

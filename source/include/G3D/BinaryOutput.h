@@ -92,7 +92,7 @@ private:
         size_t oldBufferLen = (size_t)bufferLen;
 
         bufferLen = iMax(bufferLen, (pos + bytes));
-        if (bufferLen >= maxBufferLen) {
+        if (bufferLen > maxBufferLen) {
             reallocBuffer(bytes, oldBufferLen);
         }
     }
@@ -243,6 +243,8 @@ public:
         int                 count) {
 
         reserveBytes(count);
+        debugAssert(pos >= 0);
+        debugAssert(bufferLen >= count);
         System::memcpy(buffer + pos, b, count);
         pos += count;
     }
