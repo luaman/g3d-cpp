@@ -673,6 +673,9 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
+     <LI> Changed the Conduit message protocol to include a message type.
+          The API is backwards compatible to 5.01 even though the protocol is not.
+     <LI> Removed optional argument maxSize from LightweightConduit::receive.
      <LI> NetAddress::serialize
      <LI> NetAddress::deserialize
      <LI> NetAddress == NetAddress

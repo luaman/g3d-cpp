@@ -423,11 +423,12 @@ void NetworkDevice::bind(SOCKET sock, const NetAddress& addr) const {
 
 void NetworkDevice::closesocket(SOCKET& sock) const {
     if (sock != 0) {
-#ifdef _WIN32
-        ::closesocket(sock);
-#else
-	close(sock);
-#endif
+        #ifdef G3D_WIN32
+                ::closesocket(sock);
+        #else
+	        close(sock);
+        #endif
+
         if (debugLog) {debugLog->printf("Closed socket %d\n", sock);}
         sock = 0;
     }
@@ -460,12 +461,12 @@ void NetworkDevice::localHostAddresses(Array<NetAddress>& array) const {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Conduit::Conduit(NetworkDevice* _nd) {
-    sock        = 0;
-    nd          = _nd;
-    mSent       = 0;
-    mReceived   = 0;
-    bSent       = 0;
-    bReceived   = 0;
+    sock                = 0;
+    nd                  = _nd;
+    mSent               = 0;
+    mReceived           = 0;
+    bSent               = 0;
+    bReceived           = 0;
 }
 
 
@@ -502,12 +503,16 @@ bool Conduit::ok() const {
     return sock != 0;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static double getTime() {
     return time(NULL);
 }
 
 ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : Conduit(_nd) {
+
+    messageType         = 0;
+    alreadyReadType     = false;
 
     addr = _addr;
     if (nd->debugLog) {nd->debugLog->print("Creating a TCP socket       ");}
@@ -589,8 +594,11 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
 
 
 ReliableConduit::ReliableConduit(class NetworkDevice* _nd, const SOCKET& _sock, const NetAddress& _addr) : Conduit(_nd) {
-    sock = _sock;
-    addr = _addr;
+    sock                = _sock;
+    addr                = _addr;
+
+    messageType         = 0;
+    alreadyReadType     = false;
 }
 
 
@@ -598,12 +606,43 @@ ReliableConduit::~ReliableConduit() {
 }
 
 
-void ReliableConduit::send(const NetMessage* m) {
+
+uint32 ReliableConduit::waitingMessageType() {
+    if (! messageWaiting()) {
+        return 0;
+    }
+    
+    if (! alreadyReadType) {
+        // Read the type
+        int ret = recv(sock, (char*)&messageType, sizeof(messageType), 0);
+        alreadyReadType = true;
+
+        // Comes across the wire in little endian format.
+        messageType = ntohl(messageType);
+
+        if ((ret == SOCKET_ERROR) || (ret != sizeof(messageType))) {
+            if (nd->debugLog) {
+                nd->debugLog->printf("Call to recv failed.  ret = %d, sizeof(messageType) = %d\n", ret, sizeof(messageType));
+                nd->debugLog->println(windowsErrorCode());
+            }
+            nd->closesocket(sock);
+            messageType = 0;
+        }
+    }
+
+    return messageType;
+}
+
+void ReliableConduit::send(const NetMessage* m, uint32 type) {
+
+    debugAssert(type != 0);
 
     BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
 
+    b.writeUInt32(type);
+
     // Reserve space for the 4 byte size header
-    b.writeInt32(0);
+    b.writeUInt32(0);
 
     if (m != NULL) {
         m->serialize(b);
@@ -618,7 +657,7 @@ void ReliableConduit::send(const NetMessage* m) {
     // We send the length first to tell recv how much data to read.
     // Here we abuse BinaryOutput a bit and write directly into
     // its buffer, violating the abstraction.
-    ((uint32*)b.getCArray())[0] = len;
+    ((uint32*)b.getCArray())[1] = len;
 
     int ret = ::send(sock, (const char*)b.getCArray(), b.getLength(), 0);
     
@@ -646,9 +685,18 @@ NetAddress ReliableConduit::address() const {
 
 bool ReliableConduit::receive(NetMessage* m) {
 
-    if (! messageWaiting()) {
+    static const RealTime timeToWaitForFragmentedPacket = 0.25;
+
+    // This both checks to ensure that a message was waiting and
+    // actively consumes the message type if it has not been read
+    // yet.
+    if (waitingMessageType() == 0) {
         return false;
     }
+
+    // Reset the waiting message tracker.
+    messageType = 0;
+    alreadyReadType = false;
 
     uint8* buffer        = NULL;
     bool freeBuffer      = true;
@@ -705,9 +753,9 @@ bool ReliableConduit::receive(NetMessage* m) {
                 ++count;
 
                 // Give the machine a chance to read more data, but don't wait forever
-                RealTime t = getTime() + 0.25;
+                RealTime t = getTime() + timeToWaitForFragmentedPacket;
                 while (! messageWaiting() && (getTime() < t)) {
-                    #ifdef _WIN32
+                    #ifdef G3D_WIN32
                         Sleep(5);
                     #endif
                 }
@@ -787,6 +835,8 @@ LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool ena
     }
 
     if (nd->debugLog) {nd->debugLog->printf("Done creating UDP socket %d\n", sock);}
+
+    alreadyReadMessage = false;
 }
 
 
@@ -794,11 +844,14 @@ LightweightConduit::~LightweightConduit() {
 }
 
 
-void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
+void LightweightConduit::send(const NetAddress& a, const NetMessage* m, uint32 type) {
+
+    debugAssert(type != 0);
 
     BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
 
     if (m != NULL) {
+        b.writeUInt32(type);
         m->serialize(b);
     }
 
@@ -815,59 +868,64 @@ void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
 }
 
 
-bool LightweightConduit::receive(NetMessage* m, NetAddress& sender, int maxSize) {
-
+uint32 LightweightConduit::waitingMessageType() {
     if (! messageWaiting()) {
-        return false;
-    }
+        return 0;
+    } 
 
-    SOCKADDR_IN remote_addr;
-    int iRemoteAddrLen = sizeof(sockaddr);
+    if (! alreadyReadMessage) {
+        messageBuffer.resize(8192);
 
-    uint8* buffer        = NULL;
-    // When true, the buffer must be freed before returning
-    bool freeBuffer      = true;
+        SOCKADDR_IN remote_addr;
+        int iRemoteAddrLen = sizeof(sockaddr);
 
-    if (maxSize < 512) {
-        // Allocate on the stack
-        buffer = (uint8*)_alloca(maxSize);
-        freeBuffer = false;
-    } else {
-        buffer = (uint8*)malloc(maxSize);
-    }
+        int ret = recvfrom(sock, (char*)messageBuffer.getCArray(), messageBuffer.size(), 0, (struct sockaddr *) &remote_addr, (socklen_t*)&iRemoteAddrLen);
 
-    if (buffer == NULL) {
-        if (nd->debugLog) {nd->debugLog->println("Could not allocate a memory buffer during receivePacket.");}
-        sender = NetAddress();
-        return false;
-    }
-
-    int ret = recvfrom(sock, (char*)buffer, maxSize, 0, (struct sockaddr *) &remote_addr, (socklen_t*)&iRemoteAddrLen);
-
-    if (ret == SOCKET_ERROR) {
-        if (nd->debugLog) {
-            nd->debugLog->println("Error: recvfrom failed in LightweightConduit::receive().");
-            nd->debugLog->println(windowsErrorCode());
+        if (ret == SOCKET_ERROR) {
+            if (nd->debugLog) {
+                nd->debugLog->println("Error: recvfrom failed in LightweightConduit::waitingMessageType().");
+                nd->debugLog->println(windowsErrorCode());
+            }
+            nd->closesocket(sock);
+            messageBuffer.resize(0);
+            messageSender = NetAddress();
+            messageType = 0;
+            return 0;
         }
-        nd->closesocket(sock);
-        sender = NetAddress();
+
+        messageSender = NetAddress(remote_addr);
+
+        ++mReceived;
+        bReceived += ret;
+
+        messageBuffer.resize(ret, DONT_SHRINK_UNDERLYING_ARRAY);
+
+        // The type is the first four bytes.
+        messageType = ntohl(*((uint32*)messageBuffer.getCArray()));
+
+        alreadyReadMessage = true;
+    }
+
+    return messageType;
+}
+
+
+bool LightweightConduit::receive(NetMessage* m, NetAddress& sender) {
+
+    // This both checks to ensure that a message was waiting and
+    // actively consumes the message from the network stream if
+    // it has not been read yet.
+    if (waitingMessageType() == 0) {
         return false;
     }
 
-    ++mReceived;
-    bReceived += ret;
+    sender = messageSender;
 
     if (m != NULL) {
-        BinaryInput b(buffer, ret, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
+        BinaryInput b((messageBuffer.getCArray() + 4), messageBuffer.size() - 4, G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
         m->deserialize(b);
     }
 
-    if (freeBuffer) {
-        free(buffer);
-        buffer = NULL;
-    }
-
-    sender = NetAddress(remote_addr);
     return true;
 }
 

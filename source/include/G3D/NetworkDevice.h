@@ -3,7 +3,9 @@
 
  These classes abstract networking from the socket level to a serialized messaging
  style that is more appropriate for games.  The performance has been tuned for 
- sending many small messages.
+ sending many small messages.  The message protocol contains a header that prevents
+ them from being used with raw UDP/TCP (e.g. connecting to an HTTP server).  A 
+ future stream API will address this.
 
  LightweightConduit and ReliableConduits have different interfaces because
  they have different semantics.  You would never want to interchange them without
@@ -18,14 +20,18 @@
  doesn't appear as a major problem.  With non-blocking conduits, you should need
  few threads anyway.
 
- ReliableConduits preceed each message with a 4-byte host order unsigned integer
- indicating the length of the rest of the data.  That is, this header does not
- include the size of the header itself.  The minimum message is 5 bytes, a 4-byte
- header of "1" and one byte of data.
+ LightweightConduits preceed each message with a 4-byte host order unsigned integer
+ that is the message type.  This does not appear in the message
+ serialization/deserialization.
+
+ ReliableConduits preceed each message with two 4-byte host order unsigned integers.
+ The first is the message type and the second indicates the length of the rest of
+ the data.  The size does not include the size of the header itself.  The minimum
+ message is 9 bytes, a 4-byte types, a 4-byte header of "1" and one byte of data.
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2003-06-24
+ @edited  2003-06-26
  */
 
 #ifndef NETWORKDEVICE_H
@@ -105,9 +111,11 @@ public:
 
 };
 
+
 inline unsigned int hashCode(const NetAddress& a) {
 	return a.ip() + ((uint32)a.port() << 16);
 }
+
 
 /**
  Two addresses may point to the same computer but be != because
@@ -116,6 +124,7 @@ inline unsigned int hashCode(const NetAddress& a) {
 inline bool operator==(const NetAddress& a, const NetAddress& b) {
 	return (a.ip() == b.ip()) && (a.port() == b.port());
 }
+
 
 inline bool operator!=(const NetAddress& a, const NetAddress& b) {
     return !(a == b);
@@ -161,17 +170,53 @@ public:
      */
     bool messageWaiting() const;
 
+    /**
+     Returns the type of the waiting message (i.e. the type supplied with send).
+     The return value is zero when there is no message waiting.
+
+     One way to use this is to have a Table mapping message types to
+     pre-allocated NetMessage subclasses so receiving looks like:
+
+     <PRE>
+         // My base class for messages.
+         class Message : public NetMessage {
+             virtual void process() = 0;
+         };
+
+         Message* m = table[conduit->waitingMessageType()];
+         conduit->receive(m);
+         m->process();
+     </PRE>
+
+      Another is to simply SWITCH on the message type.
+     */
+    virtual uint32 waitingMessageType() = 0;
+
     /** Returns true if the connection is ok. */
     bool ok() const;
 };
 
 
+// Messaging and stream APIs must be supported on a single class because
+// sometimes an application will switch modes on a single socket.  For
+// example, when transferring 3D level geometry during handshaking with
+// a game server.
 class ReliableConduit : public Conduit {
 private:
     friend class NetworkDevice;
     friend class NetListener;
 
     NetAddress                      addr;
+    /**
+     True when the messageType has been read but the
+     packet has not been read.
+     */
+    bool                            alreadyReadType;
+    
+    /**
+     Type of the incoming message.
+     */
+    uint32                          messageType;
 
     ReliableConduit(class NetworkDevice* _nd, const NetAddress& addr);
 
@@ -183,13 +228,28 @@ private:
 public:
 
     /**
-     Serializes the message and schedules it to be
-     sent as soon as possible, then returns immediately.
+     Serializes the message and schedules it to be sent as soon as possible,
+     then returns immediately.
+
+     The type is an application defined value that is useful for determining
+     which subclass of NetMessage to pass to receive.  Zero is an illegal value.
+
+     The actual data sent across the network is preceeded by the message type
+     and the size of the serialized message as a 32-bit integer.  The size is
+     sent because TCP is a stream protocol and doesn't have a concept of discrete
+     messages.
      */
-    void send(const NetMessage* m);
-    
-    /** If data is waiting, deserializes the waiting message into m and
-        returns true, otherwise returns false.*/
+    void send(const NetMessage* m, uint32 type = 1);
+
+    virtual uint32 waitingMessageType();
+
+    /** If a message is waiting, deserializes the waiting message into m and
+        returns true, otherwise returns false.  
+        
+        If a message is incoming but was split across multipled TCP packets
+        in transit, this will block for up to .25 seconds waiting for all
+        packets to arrive.  For short messages (less than 5k) this is extremely
+        unlikely to occur.*/
     bool receive(NetMessage* m);
 
     NetAddress address() const;
@@ -201,12 +261,35 @@ typedef ReferenceCountedPointer<class ReliableConduit> ReliableConduitRef;
 
 /**
  Provides fast but unreliable transfer of messages.  LightweightConduits
- are implemented using UDP.
+ are implemented using UDP.  On a LAN messages are extremely likely to arrive.
+ On the internet, some messages may be dropped.  The receive order of successively sent
+ messages is not guaranteed.
  */
 class LightweightConduit : public Conduit {
 private:
     friend class NetworkDevice;
-    
+
+    /**
+     True when waitingForMessageType has read the message
+     from the network into messageType/messageStream.
+     */
+    bool                    alreadyReadMessage;
+
+    /**
+     Origin of the received message.
+     */
+    NetAddress              messageSender;
+
+    /**
+     The type of the last message received.
+     */
+    uint32                  messageType;
+
+    /**
+     The message received (the type has already been read off).
+     */
+    Array<uint8>            messageBuffer;
+
     LightweightConduit(class NetworkDevice* _nd, uint16 receivePort, bool enableReceive, bool enableBroadcast);
 
     /** Closes the socket. */
@@ -216,14 +299,16 @@ public:
 
     /** Serializes and sends the message immediately. Data may not arrive and may
         arrive out of order, but individual messages are guaranteed to not be
-        corrupted. */
-    void send(const NetAddress& a, const NetMessage* m);
+        corrupted.  If the message is null, an empty message is still sent.*/
+    void send(const NetAddress& a, const NetMessage* m, uint32 type = 1);
 
     /** If data is waiting, deserializes the waiting message into m, puts the
-        sender's address in addr and
-        returns true, otherwise returns false.
-        @param maxSize Maximum size of the message, in bytes.  Must be less than 8k. */
-    bool receive(NetMessage* m, NetAddress& sender, int maxSize = 512);
+        sender's address in addr and returns true, otherwise returns false.  
+        If m is NULL, the message is consumed but not deserialized.
+    */
+    bool receive(NetMessage* m, NetAddress& sender);
+
+    virtual uint32 waitingMessageType();
 };
 
 typedef ReferenceCountedPointer<class LightweightConduit> LightweightConduitRef;
