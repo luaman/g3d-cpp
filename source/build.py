@@ -58,7 +58,7 @@ def lib():
         # Linux build (right now, only builds the debug release)
 
         # Exectute bootstrap and configure whenever the scripts change
-        if (newer("bootstrap", "configure") or newer("configure.ac", "configure"):
+        if (newer("bootstrap", "configure") or newer("configure.ac", "configure")):
             run("./bootstrap")
 
         if (newer("configure", "config.h")):
