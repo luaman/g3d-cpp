@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 
     controller   = new ManualCameraController(renderDevice, userInput);
 
-    controller->setMoveRate(10);
+    controller->setMoveRate(1);
 
     controller->setPosition(Vector3(1.5, 1.5, 1.5));
     controller->lookAt(Vector3(0,0,0));
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     RealTime now = System::getTick() - 0.001, lastTime;
 
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
-    std::string in("d:/libraries/g3d-6_01/data/quake2/players/drfreak/tris.md2");
+    std::string in("c:/tmp/models/elephant.sm");
 
 //    std::string in("C:/Documents and Settings/morgan/Desktop/cars/dmc/delorean.3ds");
 
@@ -107,12 +107,13 @@ int main(int argc, char** argv) {
         */
 
         model = new XIFSModel(filename[i]);
-        model->name = "Delorean";
+        model->name = "Saddle";
 
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");
         }
-        
+        //model->save(outDir + "saddle.ifs");
+
         // Main loop (display 3D object)
         do {
             lastTime = now;

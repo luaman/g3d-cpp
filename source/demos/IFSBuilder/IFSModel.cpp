@@ -19,6 +19,23 @@ extern RenderDevice* renderDevice;
 extern GCamera       camera;
 extern CFontRef      font;
 
+
+
+static double gaussian2D(double x, double z) {
+    return exp(-4 * (square(x) + square(z)));
+}
+
+
+static double bump2D(double x, double z) {
+    double t = min(G3D_PI, 7 * sqrt(square(x) + square(z)) / sqrt(0.5));
+    return cos(t) * .15;
+}
+
+static double saddle2D(double x, double z) {
+    return (square(x*1.5) - square(z*1.5)) * .75;
+}
+
+
 XIFSModel::XIFSModel(const std::string& filename) {
     if (! fileExists(filename)) {
         error("Critical Error", std::string("File not found: \"") + filename + "\"", true);
@@ -27,6 +44,7 @@ XIFSModel::XIFSModel(const std::string& filename) {
 
     std::string f = toLower(filename);
 
+    createGrid(saddle2D, false); return;
     //createPolygon(); return;
     //createRing();  return;
 
@@ -43,6 +61,139 @@ XIFSModel::XIFSModel(const std::string& filename) {
     } else {
         debugAssert(false);
     }
+}
+
+void XIFSModel::createGrid(double(*func)(double, double), bool consistentDiagonal) {
+    IFSModelBuilder builder;
+
+    int n = 64;
+    double x, y, z;
+
+    Vector3 BOTTOM(0,-0.25,0);
+
+    // Top & bottom
+    for (int ix = 0; ix < n; ++ix) {
+        for (int iz = 0; iz < n; ++iz) {
+
+            x = ix / (double)n - 0.5;
+            z = iz / (double)n - 0.5;
+            y = func(x, z);
+
+            Vector3 A(x, y, z);
+
+            x = (ix + 1) / (double)n - 0.5;
+            z = (iz) / (double)n - 0.5;
+            y = func(x, z);
+
+            Vector3 B(x, y, z);
+
+            x = (ix + 1) / (double)n - 0.5;
+            z = (iz + 1) / (double)n - 0.5;
+            y = func(x, z);
+
+            Vector3 C(x, y, z);
+
+            x = (ix) / (double)n - 0.5;
+            z = (iz + 1) / (double)n - 0.5;
+            y = func(x, z);
+
+            Vector3 D(x, y, z);
+
+            if (! consistentDiagonal && ((A - C).length() > (D - B).length())) {
+                // Cut the longer diagonal
+                Vector3 a = A, b = B, c = C, d = D;
+                A = d; B = a; C = b; D = c;
+            }
+
+            builder.addTriangle(A, D, C);
+            builder.addTriangle(A, C, B);
+
+            A += BOTTOM;
+            B += BOTTOM;
+            C += BOTTOM;
+            D += BOTTOM;
+
+            builder.addTriangle(C, D, A);
+            builder.addTriangle(B, C, A);
+        }
+    }
+
+    // Stitch up edges
+    for (int ix = 0; ix < n; ++ix) {
+        int iz = 0;
+        x = ix / (double)n - 0.5;
+        z = iz / (double)n - 0.5;
+        y = func(x, z);
+
+        Vector3 A(x, y, z);
+        Vector3 B(x, y-0.25, z);
+
+        x = (ix + 1) / (double)n - 0.5;
+        y = func(x, z);
+
+        Vector3 C(x, y-0.25, z);
+        Vector3 D(x, y, z);
+
+        builder.addTriangle(A, D, C);
+        builder.addTriangle(A, C, B);
+
+        iz = n;
+        x = ix / (double)n - 0.5;
+        z = iz / (double)n - 0.5;
+        y = func(x, z);
+
+        A = Vector3(x, y, z);
+        B = Vector3(x, y-0.25, z);
+
+        x = (ix + 1) / (double)n - 0.5;
+        y = func(x, z);
+
+        C = Vector3(x, y-0.25, z);
+        D = Vector3(x, y, z);
+
+        builder.addTriangle(C, D, A);
+        builder.addTriangle(B, C, A);
+    }
+
+    // Stitch up edges
+    for (int iz = 0; iz < n; ++iz) {
+        int ix = n;
+        x = ix / (double)n - 0.5;
+        z = iz / (double)n - 0.5;
+        y = func(x, z);
+
+        Vector3 A(x, y, z);
+        Vector3 B(x, y-0.25, z);
+
+        z = (iz + 1) / (double)n - 0.5;
+        y = func(x, z);
+
+        Vector3 C(x, y-0.25, z);
+        Vector3 D(x, y, z);
+
+        builder.addTriangle(A, D, C);
+        builder.addTriangle(A, C, B);
+
+        ix = 0;
+        x = ix / (double)n - 0.5;
+        z = iz / (double)n - 0.5;
+        y = func(x, z);
+
+        A = Vector3(x, y, z);
+        B = Vector3(x, y-0.25, z);
+
+        z = (iz + 1) / (double)n - 0.5;
+        y = func(x, z);
+
+        C = Vector3(x, y-0.25, z);
+        D = Vector3(x, y, z);
+
+        builder.addTriangle(C, D, A);
+        builder.addTriangle(B, C, A);
+    }
+
+
+    builder.commit(this);
 }
 
 
@@ -64,7 +215,9 @@ void XIFSModel::createPolygon() {
     }
 
     builder.commit(this);
+
 }
+
 
 /** Called from createRing */
 static void addSubdividedQuad(

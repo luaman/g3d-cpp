@@ -444,11 +444,16 @@ void Curvatures::principalCurvature(
     Array<double>&          k1,
     Array<double>&          k2) const {
 
-    // For each vertex
-    for(int v = geometry.vertexArray.size() - 1; v >= 0; --v) {  
-       const double sdxi = sqrt(max(kh[v] * kh[v] - kg[v], 0.0));       
-       k1.append(kh[v] + sdxi);
-       k2.append(kh[v] - sdxi);
+    for (int v = geometry.vertexArray.size() - 1; v >= 0; --v) {  
+        // kg = k1 * k2
+        // kh = (k1 + k2) / 2
+        // 
+        // Therefore:
+        //   k1 = kh + sqrt(kh^2 - kg)        
+        //   k2 = kh - sqrt(kh^2 - kg)
+        const double sdxi = sqrt(max(kh[v] * kh[v] - kg[v], 0.0));       
+        k1.append(kh[v] + sdxi);
+        k2.append(kh[v] - sdxi);
     }
 }
 
@@ -587,10 +592,6 @@ void Curvatures::givens(double& cost, double& sint, double a, double b) const {
 
 
 
-
-
-
-
 class App : public GApp {
 protected:
     void main();
@@ -633,10 +634,17 @@ public:
     Array<double>               principleCurvature[2];
     Array<Vector3>              principleDirection[2];
 
-    enum RenderStyle {WHITE, GAUSSIAN, MEAN} renderStyle;
+    /**  t_d threshold from DeCarlo et al. */
+    double                      t_d;
 
-    Mesh() : renderStyle(WHITE) {}
-    Mesh(const PosedModelRef& pm) : renderStyle(WHITE) {
+    /**  cos(Theta_c) threshold from DeCarlo et al. */
+    double                      t_c;
+
+    enum RenderStyle {WHITE, GAUSSIAN, MEAN, RADIAL} renderStyle;
+    bool renderTangentSpace;
+
+    Mesh() : renderStyle(WHITE), renderTangentSpace(false), t_d(-0.2), t_c(0.36) {}
+    Mesh(const PosedModelRef& pm) : renderStyle(WHITE), renderTangentSpace(false), t_d(-0.2), t_c(0.36) {
         import(pm);
     }
 
@@ -645,6 +653,7 @@ public:
     void render(class App* app, RenderDevice* renderDevice);
 
     void drawSmoothContours(App* app);
+    void drawSuggestiveContours(App* app);
 
 };
 
@@ -765,6 +774,7 @@ static void computeVOrder(
     debugAssert(funcNeg <= 0);
     debugAssert(funcPos >= 0);
 }
+
 
 void Mesh::drawSmoothContours(App* app) {
     // Draw smooth contours
@@ -891,8 +901,189 @@ void Mesh::drawSmoothContours(App* app) {
 }
 
 
+
+
+void Mesh::drawSuggestiveContours(App* app) {
+    Vector3 eye = app->debugCamera.getCoordinateFrame().translation;
+
+    app->renderDevice->setLineWidth(3);
+
+    /*
+    // Code for debugging zero-crossings
+    for (int v = 0; v < geometry.vertexArray.size(); ++v) {
+        const Vector3& V = geometry.vertexArray[v];
+        // Normal
+        const Vector3& N = geometry.normalArray[v];
+        // to-Eye vector
+        const Vector3  E = (eye - V).direction();
+
+        Color3 color = (N.dot(E) > 0) ? Color3::BLACK : Color3::RED;
+        Draw::sphere(Sphere(geometry.vertexArray[v], .1), app->renderDevice, color, Color4::CLEAR);
+    }
+    */
+
+    app->renderDevice->setColor(Color3::BLACK);
+
+    // Just always show contours
+//    app->renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
+
+    app->renderDevice->beginPrimitive(RenderDevice::LINES);
+        for (int f = 0; f < faceArray.size(); ++f) {
+            const MeshAlg::Face& face = faceArray[f];
+
+            // Point in the face
+            const Vector3  face_V = geometry.vertexArray[face.vertexIndex[0]];
+
+            // Eye vector for face
+            const Vector3  face_E = (eye - face_V).direction();
+
+            // Surface normal for face
+            const Vector3& face_N = faceNormalArray[f];
+
+            if (face_N.dot(face_E) > t_c) {
+                // We are looking nearly down on this contour; don't stroke it
+                continue;
+            }
+
+            const Vector3 face_W = (face_E - face_N * (face_N.dot(face_E))).direction();
+
+            Vector3 vert[3];
+            double func[3];
+
+            // Compute the function for which we want zeros
+            for (int i = 0; i < 3; ++i) {
+                int v = face.vertexIndex[i];
+                // Vertex
+                const Vector3& V = geometry.vertexArray[v];
+                // Normal
+                const Vector3& N = geometry.normalArray[v];
+                // to-Eye vector
+                const Vector3  E = (eye - V).direction();
+
+                // Compute radial curvature
+
+                // Eye vector projected into the tangent plane.
+                const Vector3  w  = (E - N * E.dot(N)).direction();
+                const Vector3& T1 = principleDirection[0][v];
+                const Vector3& T2 = principleDirection[1][v];
+                const double   K1 = principleCurvature[0][v]; 
+                const double   K2 = principleCurvature[1][v]; 
+
+                func[i] = square(w.dot(T1)) * K1 + square(w.dot(T2)) * K2;
+                vert[i] = V;
+            }
+
+	        // Find the (at most two) edges between vertices which have
+	        // func-coefficients with opposite signs. The zero-line
+	        // will go between these edges, if it exists.
+
+	        // For each edge, we mark it 1 if this edge contains an endpoint
+            // of a zero-line (i.e. a zero-crossing) and 0 otherwise
+	        int e01 = (sign(func[0]) != sign(func[1])) ? 1 : 0;
+	        int e12 = (sign(func[1]) != sign(func[2])) ? 1 : 0;
+	        int e20 = (sign(func[2]) != sign(func[0])) ? 1 : 0;
+    
+            double grad01 = func[1] - func[0];
+            double grad12 = func[2] - func[1];
+            double grad20 = func[0] - func[2];
+
+            if (e01 + e12 + e20 == 2) {
+
+		        //     *  vertPos : func > 0 
+		        //    / \
+		        //   /   \
+		        //  /     *    point where func == 0
+		        // /       \
+		        // .        \
+		        // .         \
+		        // ._________ *  vertNeg : func < 0
+
+
+                Vector3 endPoint[2];
+                bool stroke = true;
+
+                // Loop over both ends
+                for (int index = 0; index <= 1; ++index) {
+		            Vector3 vertPos, vertNeg;
+		            float funcPos, funcNeg;
+
+		            if (e01 == 0) {
+			            // e12 and e20 are the edges
+			            computeVOrder(vert[1], func[1], 
+                                      vert[2], func[2],
+						              vert[0], func[0],
+                                      index,
+						              vertPos, funcPos,
+                                      vertNeg, funcNeg);
+		            } else if (e12 == 0) {
+			            // e20 and e01 are the edges
+			            computeVOrder(vert[2], func[2],
+                                      vert[0], func[0],
+						              vert[1], func[1],
+                                      index,
+						              vertPos, funcPos,
+                                      vertNeg, funcNeg);
+		            } else {
+			            // e01 and e12 are the edges
+			            computeVOrder(vert[0], func[0], 
+                                      vert[1], func[1],
+                                      vert[2], func[2],
+                                      index,
+						              vertPos, funcPos,
+                                      vertNeg, funcNeg);
+		            }
+
+                    debugAssert(funcNeg <= 0);
+                    debugAssert(funcPos >= 0);
+
+		            // Compute a linear interpolation parameter that
+		            // takes us between vertPos and vertNeg
+                    //
+                    //  funcNeg           ~0            funcPos
+                    //    *----------------X-------------*
+                    //  vertNeg         midVert         vertPos
+                    //
+		            const double  a       = -funcNeg / (funcPos - funcNeg);
+		            const Vector3 midVert = lerp(vertNeg, vertPos, a);
+
+                    // Compute the gradient along this edge
+                    double grad = face_W.dot(vertPos - vertNeg);
+
+                    // if the gradient is less than t_d, don't stroke
+                    if (grad < t_d) {
+                        stroke = false;
+                        break;
+                    } else {
+                        endPoint[index] = midVert;
+                    }
+
+                }
+
+                if (stroke) {
+                    app->renderDevice->sendVertex(endPoint[0]);
+                    app->renderDevice->sendVertex(endPoint[1]);
+                }
+
+            } else {
+                // The zero-line does not run through this face
+
+                debugAssertM(e01 + e12 + e20 == 0,
+                    "Cannot have an odd number of zero-crossings");
+            }
+        }
+    app->renderDevice->endPrimitive();
+}
+
+
 void Mesh::render(App* app, RenderDevice* renderDevice) {
+
+    const Vector3 eye = app->debugCamera.getCoordinateFrame().translation;
+
     renderDevice->pushState();
+        if (renderStyle != WHITE) {
+            renderDevice->disableLighting();
+        }
+
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
         renderDevice->setColor(Color3::WHITE);
@@ -932,13 +1123,37 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
                         renderDevice->setColor(col);
                     }
                     break;
+
+                case RADIAL:
+                    {
+                        // Compute radial curvature
+                        const Vector3& V  = geometry.vertexArray[i];
+                        const Vector3  E  = (eye - V).direction();
+                        const Vector3& N  = geometry.normalArray[i];
+                        const Vector3  w  = (E - N * (E.dot(N))).direction();
+                        const Vector3& T1 = principleDirection[0][i];
+                        const Vector3& T2 = principleDirection[1][i];
+                        double         k1 = principleCurvature[0][i];
+                        double         k2 = principleCurvature[1][i];
+
+                        double         cosq = w.dot(T1);
+                        double         sinq = w.dot(T2);
+
+                        double         kr = square(cosq) * k1 + square(sinq) * k2;
+
+                        kr /= 3; // squish range
+                        if (kr > 0) {
+                            renderDevice->setColor(Color3(1, 1-kr, 1-kr));
+                        } else {
+                            renderDevice->setColor(Color3(1+kr, 1+kr,1));
+                        }
+                    }
                 }
 
                 renderDevice->sendVertex(geometry.vertexArray[i]);
             }
         renderDevice->endPrimitive();
         
-
         renderDevice->disableDepthWrite();
         
         //Draw::vertexNormals(geometry, app->renderDevice);
@@ -956,7 +1171,6 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
             for (int e = 0; e < edgeArray.size(); ++e) {
                 for (int a = 0; a < 2; ++a) {
                     int i = edgeArray[e].vertexIndex[a];
-
                     renderDevice->setNormal(geometry.normalArray[i]);
                     renderDevice->sendVertex(geometry.vertexArray[i] + geometry.normalArray[i] * 0.001);
                 }
@@ -965,7 +1179,16 @@ void Mesh::render(App* app, RenderDevice* renderDevice) {
         
 
         // Draw contours
+        app->renderDevice->disableLighting();
+
+        if (renderTangentSpace) {
+            Draw::vertexVectors(geometry.vertexArray, principleDirection[0], renderDevice, Color3::RED * 0.5, 0.05);
+            //Draw::vertexVectors(geometry.vertexArray, principleDirection[1], renderDevice, Color3::GREEN * 0.5, 0.05);
+        }
+
+        app->debugPrintf("# faces: %d", faceArray.size());
         drawSmoothContours(app);
+        //drawSuggestiveContours(app);
 
     renderDevice->popState();
 }
@@ -1021,7 +1244,15 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0,0,2));
     app->debugCamera.lookAt(Vector3::ZERO);
 
-    mesh.import(IFSModel::create(app->dataDir + "ifs/cow.ifs")->pose(CoordinateFrame()));
+    std::string name = 
+        //"venus-torso";
+        "hippo";
+        // "duck";
+        //"cow";
+        //"bump";
+        //"saddle";
+
+    mesh.import(IFSModel::create(app->dataDir + "ifs/" + name + ".ifs")->pose(CoordinateFrame()));
 }
 
 
@@ -1048,6 +1279,8 @@ void Demo::doLogic() {
     }
 
     app->debugPrintf("Shading: (M)ean, (G)aussian, (V)anilla");
+    app->debugPrintf("Show:    (T)angent space");
+    app->debugPrintf("Adjust:  (6)- t_d = %g +(7)  (8)- t_c = %g +(9)", mesh.t_d, mesh.t_c);
 
     if (app->userInput->keyPressed('g')) {
         mesh.renderStyle = Mesh::GAUSSIAN;
@@ -1055,9 +1288,27 @@ void Demo::doLogic() {
         mesh.renderStyle = Mesh::MEAN;
     } else if (app->userInput->keyPressed('v')) {
         mesh.renderStyle = Mesh::WHITE;
+    } else if (app->userInput->keyPressed('r')) {
+        mesh.renderStyle = Mesh::RADIAL;
     }
-	// Add other key handling here
 
+    if (app->userInput->keyPressed('6')) {
+        mesh.t_d -= 0.01;
+    } else if (app->userInput->keyPressed('7')) {
+        mesh.t_d += 0.01;
+    }
+
+    if (app->userInput->keyPressed('8')) {
+        mesh.t_c -= 0.05;
+    } else if (app->userInput->keyPressed('9')) {
+        mesh.t_c += 0.05;
+    }
+
+    if (app->userInput->keyPressed('t')) {
+        mesh.renderTangentSpace = !mesh.renderTangentSpace;
+    }
+
+	// Add other key handling here
 
     if (app->renderDevice->window()->numJoysticks() > 0) {
         Array<float> axis;
@@ -1085,7 +1336,10 @@ void Demo::doGraphics() {
 
     // Setup lighting
     app->renderDevice->enableLighting();
-		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+        app->renderDevice->setSpecularCoefficient(0.25);
+        Color3 amb = -Color3::YELLOW / 3;
+		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection,  lighting.lightColor));
+        app->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, amb, false));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
     	//Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
@@ -1102,6 +1356,7 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
+    debugController.setMoveRate(1);
 
     dataDir = "d:/libraries/g3d-6_02/data/";
 

@@ -201,6 +201,9 @@ public:
         SERVER_BROADCAST_MESSAGE = 3,
         CLIENT_BROADCAST_MESSAGE = 4};
 
+    /**
+     Only called from subclasses.
+     */
     virtual void init(
         NetworkDevice*           _netDevice,
         const DiscoverySettings* _settings) {

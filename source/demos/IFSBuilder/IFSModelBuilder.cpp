@@ -24,8 +24,7 @@ void IFSModelBuilder::commit(XIFSModel* model) {
     model->name = name;
 
     // Make the data fit in a unit cube
-    // TODO: uncomment
-//    centerTriList();
+    centerTriList();
 
     Array<int> toNew, toOld;
 
@@ -38,7 +37,7 @@ void IFSModelBuilder::commit(XIFSModel* model) {
         MeshAlg::computeAreaStatistics(triList, index,
             minEdgeLen, meanEdgeLen, medianEdgeLen, maxEdgeLen,
             minFaceArea, meanFaceArea, medianFaceArea, maxFaceArea);
-        close = minEdgeLen * 0.5;
+        close = minEdgeLen * 0.1;
     }
 
     MeshAlg::computeWeld(triList, model->geometry.vertexArray, toNew, toOld, close);
@@ -58,7 +57,6 @@ void IFSModelBuilder::commit(XIFSModel* model) {
             model->triangleArray.append(tri);
         }
     }
-
 
     // Trilist reformatted as an index array
     Array<int> indexArray(model->triangleArray.size() * 3);
@@ -128,8 +126,11 @@ void IFSModelBuilder::centerTriList() {
 
     // Center and scale all vertices in the input list
     int v;
+
+    //Matrix3 rot90 = Matrix3::fromAxisAngle(Vector3::UNIT_Y, toRadians(180)) * Matrix3::fromAxisAngle(Vector3::UNIT_X, toRadians(90));
     for (v = 0; v < triList.size(); ++v) {
         triList[v] = (triList[v] - translation) / scale;
+        //triList[v] = rot90 * triList[v];
     }
 }
 

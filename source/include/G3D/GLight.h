@@ -37,11 +37,14 @@ public:
     /** If false, this light is ignored */
     bool                enabled;
 
+    /** If false, this light does not create specular highlights. */
+    bool                specular;
+
     GLight();
 
-    static GLight directional(const Vector3& toLight, const Color3& color);
-    static GLight point(const Vector3& pos, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0);
-    static GLight spot(const Vector3& pos, const Vector3& pointDirection, double cutOffAngleDegrees, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0);
+    static GLight directional(const Vector3& toLight, const Color3& color, bool specular = true);
+    static GLight point(const Vector3& pos, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true);
+    static GLight spot(const Vector3& pos, const Vector3& pointDirection, double cutOffAngleDegrees, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true);
 
     bool operator==(const GLight& other);
     bool operator!=(const GLight& other);

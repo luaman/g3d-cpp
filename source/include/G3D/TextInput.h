@@ -102,20 +102,20 @@ public:
 
   e.g.
   <pre>
-  TextInput i(TextInput::FROM_STRING, "name = \"Max\", height = 6");
+  TextInput ti(TextInput::FROM_STRING, "name = \"Max\", height = 6");
 
-  Token d;
+  Token t;
 
-  t = t.read(); 
+  t = ti.read(); 
   debugAssert(t.type == Token::SYMBOL);
   debugAssert(t.sval == "name");
 
-  t.read();
+  ti.read();
   debugAssert(t.type == Token::SYMBOL);
   debugAssert(t.sval == "=");
 
-  std::string name = t.read().sval;
-  t.read();
+  std::string name = ti.read().sval;
+  ti.read();
   </pre>
 
   There is no TextOutput class because printf and character streams fill

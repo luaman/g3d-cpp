@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-01-28
+ @edited  2004-03-08
  */
 
 #include "GLG3D/Draw.h"
@@ -336,6 +336,46 @@ void Draw::vertexNormals(
             for (int v = 0; v < vertexArray.size(); ++v) {
                 renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .92);
                 renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+            }
+        renderDevice->endPrimitive();
+    renderDevice->popState();
+}
+
+
+void Draw::vertexVectors(
+    const Array<Vector3>&       vertexArray,
+    const Array<Vector3>&       directionArray,
+    RenderDevice*               renderDevice,
+    const Color4&               color,
+    double                      scale) {
+
+    renderDevice->pushState();
+        renderDevice->setColor(color);
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        const double D = clamp(5.0 / ::pow((double)vertexArray.size(), .25), 0.1, .8) * scale;
+        
+        renderDevice->setLineWidth(1);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D);
+                renderDevice->sendVertex(vertexArray[v]);
+            }
+        renderDevice->endPrimitive();
+        
+        renderDevice->setLineWidth(2);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .96);
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84);
+            }
+        renderDevice->endPrimitive();
+
+        renderDevice->setLineWidth(3);
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            for (int v = 0; v < vertexArray.size(); ++v) {
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .92);
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84);
             }
         renderDevice->endPrimitive();
     renderDevice->popState();

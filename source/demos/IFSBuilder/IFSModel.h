@@ -59,6 +59,9 @@ private:
     /** Algorithmically generate a polygon */
     void createPolygon();
 
+    /** Algorithmically generate a grid */
+    void createGrid(double(*y)(double,double), bool consistentDiagonal);
+
 public:
 
     std::string             name;

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-02-28
+ @edited  2004-03-09
  */
 
 
@@ -683,7 +683,6 @@ void RenderDevice::setVideoMode() {
         if (debugLog) debugLog->println("Brightness set.");
     }
 
-    // Enable proper specular lighting
     // Enable proper specular lighting
     if (supportsOpenGLExtension("EXT_separate_specular_color")) {
         if (debugLog) debugLog->println("Enabling separate specular lighting.\n");
@@ -2744,7 +2743,11 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
                 glLightf (gi, GL_SPOT_CUTOFF,           light.spotCutoff);
                 glLightfv(gi, GL_AMBIENT,               zero);
                 glLightfv(gi, GL_DIFFUSE,               brightness);
-                glLightfv(gi, GL_SPECULAR,              brightness);
+                if (light.specular) {
+                    glLightfv(gi, GL_SPECULAR,              brightness);
+                } else {
+                    glLightfv(gi, GL_SPECULAR,              zero);
+                }
                 glLightf (gi, GL_CONSTANT_ATTENUATION,  light.attenuation[0]);
                 glLightf (gi, GL_LINEAR_ATTENUATION,    light.attenuation[1]);
                 glLightf (gi, GL_QUADRATIC_ATTENUATION, light.attenuation[2]);

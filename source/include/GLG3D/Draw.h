@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-02-21
+ @edited  2004-03-08
  */
 
 #ifndef G3D_DRAW_H
@@ -114,6 +114,16 @@ public:
         const G3D::MeshAlg::Geometry&    geometry,
         RenderDevice*               renderDevice,
         const Color4&               color = Color3::GREEN * .5,
+        double                      scale = 1);
+
+    /**
+     Convenient for rendering tangent space basis vectors.
+     */
+    static void vertexVectors(
+        const Array<Vector3>&       vertexArray,
+        const Array<Vector3>&       directionArray,
+        RenderDevice*               renderDevice,
+        const Color4&               color = Color3::RED * 0.5,
         double                      scale = 1);
 
     static void capsule(
