@@ -10,5 +10,5 @@ GlutWindow    -  GWindow implementation using the GLUT API.  Not compatible with
 
 Win32Window   - Native Win32 GWindow implementation.  By Morgan McGuire <matrix@graphics3d.com> and Max McGuire
 
-AudioDevice   - Sound interface that uses FMOD.  By Morgan.
+AudioDevice   - Sound interface that uses FMOD or SDL_Mixer.  By Morgan.
 

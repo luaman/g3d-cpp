@@ -456,7 +456,15 @@ public:
         return data[n];
     }
 
-   /**
+    inline T& randomElement() {
+        return data[iRandom(0, num - 1))];
+    }
+
+    inline const T& randomElement() const {
+        return data[iRandom(0, num - 1))];
+    }
+
+    /**
     Returns the last element, performing a check in
     debug mode that there is at least one element.
     */
@@ -598,11 +606,14 @@ public:
     /** Redistributes the elements so that the new order is statistically independent
         of the original order. O(n) time.*/
     void randomize() {
-        Array<T> original = *this;
+        T temp;
+
         for (int i = size() - 1; i >= 0; --i) {
             int x = iRandom(0, i);
-            data[i] = original[x];
-            original.fastRemove(x);
+
+            temp = data[i];
+            data[i] = data[x];
+            data[x] = temp;
         }
     }
 

@@ -11,6 +11,8 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> Array::randomElement
+	 <LI> Optimized Array::randomize
      <LI> G3D::cyclicCatmullRomSpline
      <LI> G3D::wrap
      <LI> contrib/AudioDevice
@@ -55,6 +57,7 @@
      <LI> GImage and Texture now load ICO files
 	 <LI> GL_SAMPLER_1D_ARB, 2D, 3D, CUBE
 	 <LI> Win32Window mouse events
+	 <LI> Fix: GLCaps:: ARB stencil two side -> EXT stencil two side (stencilled shadows were broken)
 	 <LI> Fix: [ 993449 ] vsnprintf crashes MSVC 7
 	 <LI> Fix: [ 991320 ] Pointer truncation Warnings
 	 <LI> Fix: [ 981440 ] AUTO with Texture::fromMemory

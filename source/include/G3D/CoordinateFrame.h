@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2004-05-21
+ @edited  2004-07-29
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -223,20 +223,39 @@ public:
         const Vector3&  target,
         Vector3         up);
 
+    /** @deprecated See lookVector */
 	inline Vector3 getLookVector() const {
+		return rotation.getColumn(2) * zLookDirection;
+	}
+
+	inline Vector3 lookVector() const {
 		return rotation.getColumn(2) * zLookDirection;
 	}
 
     /**
      If a viewer looks along the look vector, this is the viewer's "left"
+     @deprecated leftVector
      */
     inline Vector3 getLeftVector() const {
 		return -rotation.getColumn(0);
 	}
 
+    /** @deprecated See rightVector */
     inline Vector3 getRightVector() const {
 		return rotation.getColumn(0);
 	}
+
+    /**
+     If a viewer looks along the look vector, this is the viewer's "left".
+     Useful for strafing motions and building alternative coordinate frames.
+     */
+    inline Vector3 leftVector() const {
+		return -rotation.getColumn(0);
+    }
+
+    inline Vector3 rightVector() const {
+		return rotation.getColumn(0);
+    }
 
     /**
      Uses Quat.lerp to interpolate between two coordinate frames.

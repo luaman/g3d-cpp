@@ -80,6 +80,9 @@ public:
 
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
+
+    void serialize(class TextOutput& t) const;
+    void deserialize(class TextInput& t);
     
     // coordinates
     float x, y, z;

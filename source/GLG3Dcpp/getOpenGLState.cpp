@@ -489,7 +489,7 @@ std::string getOpenGLState(bool showDisabled) {
 
     result += format("glClearStencil(0x%x);\n", glGetInteger(GL_STENCIL_CLEAR_VALUE));
 
-    if (GLCaps::supports_GL_ARB_stencil_two_side()) {
+    if (GLCaps::supports_GL_EXT_stencil_two_side()) {
         result += "glActiveStencilFaceEXT(GL_BACK);\n";
         glActiveStencilFaceEXT(GL_BACK);
     }
@@ -509,7 +509,7 @@ std::string getOpenGLState(bool showDisabled) {
 
     result += format("glStencilMask(0x%x);\n", glGetInteger(GL_STENCIL_WRITEMASK));
 
-    if (GLCaps::supports_GL_ARB_stencil_two_side()) {
+    if (GLCaps::supports_GL_EXT_stencil_two_side()) {
         result += "\nglActiveStencilFaceEXT(GL_FRONT);\n";
         glActiveStencilFaceEXT(GL_FRONT);
 

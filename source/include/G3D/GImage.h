@@ -171,15 +171,15 @@ public:
         as Color3uint8.
      */
     inline const Color3uint8* pixel3() const {
-        debugAssert(channels == 3);
-        return (Color3uint8*)_byte;
+         debugAssertM(channels == 3, format("Tried to call GImage::pixel3 on an image with %d channels", channels));            
+         return (Color3uint8*)_byte;
     }
 
     /** Returns a pointer to the upper left pixel
         as Color4uint8.
      */
     inline const Color4uint8* pixel4() const {
-        debugAssert(channels == 4);
+        debugAssertM(channels == 4, format("Tried to call GImage::pixel4 on an image with %d channels", channels));            
         return (Color4uint8*)_byte;
     }
 

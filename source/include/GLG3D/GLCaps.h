@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2004-07-16
+ @edited  2004-08-02
 
  Copyright 2004, Morgan McGuire.
  All rights reserved.
@@ -51,7 +51,7 @@ namespace G3D {
     <LI>GL_ARB_fragment_program
     <LI>GL_ARB_multitexture
     <LI>GL_EXT_stencil_wrap
-    <LI>GL_ARB_stencil_two_side
+    <LI>GL_EXT_stencil_two_side
     <LI>GL_EXT_texture_compression_s3tc
     <LI>GL_EXT_texture_cube_map
     <LI>GL_ARB_shadow
@@ -111,7 +111,7 @@ private:
     DECLARE_EXT(GL_ARB_fragment_program);
     DECLARE_EXT(GL_ARB_multitexture);
     DECLARE_EXT(GL_EXT_stencil_wrap);
-    DECLARE_EXT(GL_ARB_stencil_two_side);
+    DECLARE_EXT(GL_EXT_stencil_two_side);
     DECLARE_EXT(GL_EXT_texture_compression_s3tc);
     DECLARE_EXT(GL_EXT_texture_cube_map);
     DECLARE_EXT(GL_ARB_shadow);

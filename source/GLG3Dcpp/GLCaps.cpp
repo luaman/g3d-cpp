@@ -158,7 +158,7 @@ std::string GLCaps::getDriverVersion() {
     DECLARE_EXT(GL_ARB_fragment_program);
     DECLARE_EXT(GL_ARB_multitexture);
     DECLARE_EXT(GL_EXT_stencil_wrap);
-    DECLARE_EXT(GL_ARB_stencil_two_side);
+    DECLARE_EXT(GL_EXT_stencil_two_side);
     DECLARE_EXT(GL_EXT_texture_compression_s3tc);
     DECLARE_EXT(GL_EXT_texture_cube_map);
     DECLARE_EXT(GL_ARB_shadow);
@@ -339,7 +339,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
             DECLARE_EXT(GL_ARB_fragment_program);
             DECLARE_EXT(GL_ARB_multitexture);
             DECLARE_EXT(GL_EXT_stencil_wrap);
-            DECLARE_EXT(GL_ARB_stencil_two_side);
+            DECLARE_EXT(GL_EXT_stencil_two_side);
             DECLARE_EXT(GL_EXT_texture_compression_s3tc);
             DECLARE_EXT(GL_EXT_texture_cube_map);
             DECLARE_EXT(GL_ARB_shadow);

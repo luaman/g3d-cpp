@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2004-07-23
+ @edited  2004-08-02
  */
 
 #include <limits>
@@ -18,6 +18,8 @@
 #include "G3D/stringutils.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
+#include "G3D/TextInput.h"
+#include "G3D/TextOutput.h"
 #include "G3D/Vector3int16.h"
 #include "G3D/Matrix3.h"
  
@@ -95,6 +97,28 @@ void Vector3::deserialize(BinaryInput& b) {
     x = b.readFloat32();
     y = b.readFloat32();
     z = b.readFloat32();
+}
+
+
+void Vector3::deserialize(TextInput& t) {
+    t.readSymbol("(");
+    x = t.readNumber();
+    t.readSymbol(",");
+    y = t.readNumber();
+    t.readSymbol(",");
+    z = t.readNumber();
+    t.readSymbol(")");
+}
+
+
+void Vector3::serialize(TextOutput& t) const {
+   t.writeSymbol("(");
+   t.writeNumber(x);
+   t.writeSymbol(",");
+   t.writeNumber(y);
+   t.writeSymbol(",");
+   t.writeNumber(z);
+   t.writeSymbol(")");
 }
 
 
