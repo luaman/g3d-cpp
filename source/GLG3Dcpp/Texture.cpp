@@ -110,6 +110,19 @@ static void createTexture(
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
     case GL_TEXTURE_2D:
         if (! isPow2(width) || ! isPow2(height)) {
+            
+            // Supported formats as defined by: http://developer.3dlabs.com/openGL/glu_man_pages.pdf
+            alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
+                (bytesFormat == GL_STENCIL_INDEX) ||
+                (bytesFormat == GL_DEPTH_COMPONENT) ||
+                (bytesFormat == GL_RED) ||
+                (bytesFormat == GL_GREEN) ||
+                (bytesFormat == GL_BLUE) ||
+                (bytesFormat == GL_ALPHA) ||
+                (bytesFormat == GL_RGB) ||
+                (bytesFormat == GL_RGBA) ||
+                (bytesFormat == GL_LUMINANCE) ||
+                (bytesFormat == GL_LUMINANCE_ALPHA), "Invalid bytesFormat for gluScaleImage in createTexture.");
 
             int oldWidth = width;
             int oldHeight = height;
@@ -129,11 +142,33 @@ static void createTexture(
                 height,
                 GL_UNSIGNED_BYTE,
                 bytes);
+
+            freeBytes = true;
         }
 
         // Intentionally fall through for power of 2 case
 
     case GL_TEXTURE_RECTANGLE_EXT:
+
+        // Supported formats as defined by: http://developer.3dlabs.com/GLmanpages/glteximage2d.htm
+        // textureFormat should throw a proper GL_INVALID_ENUM error, but might need checking also
+        alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
+            (bytesFormat == GL_RED) ||
+            (bytesFormat == GL_GREEN) ||
+            (bytesFormat == GL_BLUE) ||
+            (bytesFormat == GL_ALPHA) ||
+            (bytesFormat == GL_RGB) ||
+            (bytesFormat == GL_RGBA) ||
+            (bytesFormat == GL_LUMINANCE) ||
+            (bytesFormat == GL_LUMINANCE_ALPHA) ||
+            (bytesFormat == GL_BGR_EXT) ||
+            (bytesFormat == GL_BGRA_EXT) ||
+//            (bytesFormat == GL_ARGB_I3D) ||
+            (bytesFormat == GL_422_EXT) ||
+            (bytesFormat == GL_422_REV_EXT) ||
+            (bytesFormat == GL_422_AVERAGE_EXT) ||
+            (bytesFormat == GL_422_REV_AVERAGE_EXT), "Invalid bytesFormat for glTexImage2D in createTexture.");
+
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
         // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
         glTexImage2D(target, 0, textureFormat, width, height, 0, bytesFormat, GL_UNSIGNED_BYTE, bytes);
@@ -167,6 +202,19 @@ static void createMipMapTexture(
     case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
         {
+            // Supported formats as defined by: http://developer.3dlabs.com/openGL/glu_man_pages.pdf
+            alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
+                (bytesFormat == GL_STENCIL_INDEX) ||
+                (bytesFormat == GL_DEPTH_COMPONENT) ||
+                (bytesFormat == GL_RED) ||
+                (bytesFormat == GL_GREEN) ||
+                (bytesFormat == GL_BLUE) ||
+                (bytesFormat == GL_ALPHA) ||
+                (bytesFormat == GL_RGB) ||
+                (bytesFormat == GL_RGBA) ||
+                (bytesFormat == GL_LUMINANCE) ||
+                (bytesFormat == GL_LUMINANCE_ALPHA), "Invalid bytesFormat for gluScaleImage in createTexture.");
+
             int r = gluBuild2DMipmaps(target, textureFormat, width, height, bytesFormat, GL_UNSIGNED_BYTE, bytes);
             debugAssertM(r == 0, (const char*)gluErrorString(r)); (void)r;
             break;
@@ -552,6 +600,8 @@ TextureRef Texture::fromMemory(
     InterpolateMode         interpolate,
     Dimension               dimension,
     DepthReadMode           depthRead) {
+
+    debugAssert(bytesFormat);
 
     // Create the texture
     GLuint textureID = newGLTextureID();
