@@ -172,8 +172,8 @@ protected:
     class PosedMD2Model : public PosedModel {
     public:
         MD2ModelRef             model;
-        Pose                    pose;
         CoordinateFrame         cframe;
+        Pose                    pose;
 
         PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, const Pose& _pose);
         virtual ~PosedMD2Model() {}
@@ -190,7 +190,7 @@ protected:
         virtual int numBrokenEdges() const; 
     };
 
-    friend PosedMD2Model;
+    friend class PosedMD2Model;
 
     class PackedGeometry {
     public:        

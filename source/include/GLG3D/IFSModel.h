@@ -53,7 +53,7 @@ private:
         virtual int numBrokenEdges() const;
     };
 
-    friend PosedIFSModel;
+    friend class PosedIFSModel;
 
     std::string                 filename;
     MeshAlg::Geometry           geometry;
