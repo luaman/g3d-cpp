@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-02-28
+  @edited  2004-03-04
 */
 
 #ifndef G3D_GWINDOW_H
@@ -119,9 +119,8 @@ public:
     /** Returns 0 if there are no joysticks available */
     virtual int numJoysticks() const = 0;
 
-    /** Returns the position of a joystick on the range [-1, 1] for each axis,
-        with y = up. */
-    virtual Vector2 joystickPosition(int stickNum) const = 0;
+    /** The name by which the OS refers to this joystick (e.g. "Gravis Gamepad") */
+    virtual std::string joystickName(unsigned int sticknum) = 0;
 
     /** The window title */
     virtual std::string caption() = 0;
@@ -162,6 +161,14 @@ public:
     virtual void getRelativeMouseState(Vector2& position, uint8& mouseButtons) const = 0;
     virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const = 0;
     virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const = 0;
+
+    /**
+     Returns the state of the given joystick.  Not all sticks support all buttons and
+     axes and frequently the state of one stick overlaps the state of another.
+     An asserition fails if stickNum > numJoysticks().
+     Joystick axes are normalized to the range [-1, 1] (but might not be calibrated...)
+     */
+    virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) = 0;
 
     /** 
       Capture the keyboard and mouse focus, locking the mouse to this window.

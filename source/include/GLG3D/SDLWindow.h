@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-02-28
+  @edited  2004-03-04
 */
 
 #ifndef G3D_SDLWINDOW_H
@@ -21,7 +21,6 @@
 #include <SDL_syswm.h>
 #endif
 
-
 namespace G3D {
 
 /**
@@ -34,18 +33,18 @@ class SDLWindow : public GWindow {
 private:
 
     /** Window title */
-    std::string         _caption;
+    std::string                 _caption;
 
     /** API version */
-    std::string         _version;
+    std::string                 _version;
 
-    GWindowSettings     _settings;
+    GWindowSettings             _settings;
 
-    bool                _inputCapture;
+    bool                        _inputCapture;
 
-    ::SDL_Joystick*     _joy;
+    Array<::SDL_Joystick*>      joy;
 
-    bool                _mouseVisible;
+    bool                        _mouseVisible;
 
 public:
 
@@ -85,7 +84,9 @@ public:
 
     virtual int numJoysticks() const;
 
-    virtual Vector2 joystickPosition(int stickNum) const;
+    virtual std::string joystickName(unsigned int sticknum);
+
+    virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button);
 
     virtual void setRelativeMousePosition(double x, double y);
 
@@ -103,7 +104,8 @@ public:
 
     virtual bool inputCapture() const;
 
-    ::SDL_Joystick* joystick(int stickNum) const;
+    /** Returns the underlying SDL joystick pointer */
+    ::SDL_Joystick* getSDL_Joystick(unsigned int num) const;
 };
 
 } // namespace

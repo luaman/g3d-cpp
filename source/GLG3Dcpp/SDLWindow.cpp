@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-03-03
+  @edited  2004-03-04
 */
 
 #include "GLG3D/SDLWindow.h"
@@ -104,39 +104,45 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     SDL_EnableUNICODE(1);
     setCaption("G3D");
 
-	if (numJoysticks() > 0) {
+
+	// Check for joysticks
+    int j = SDL_NumJoysticks();
+    if ((j < 0) || (j > 10)) {
+        // If there is no joystick adapter on Win32,
+        // SDL returns ridiculous numbers.
+        j = 0;
+    }
+
+	if (j > 0) {
         SDL_JoystickEventState(SDL_ENABLE);
-        // Turn on joystick 0
-        _joy = SDL_JoystickOpen(0);
-        debugAssert(_joy);
+        // Turn on the joysticks
+
+        for (int i = 0; i < j; ++i) {
+            joy[i] = SDL_JoystickOpen(i);
+            debugAssert(joy[i]);
+        }
 	}
 }
 
 
 SDLWindow::~SDLWindow() {
-	// Close joystick, if opened
-	if (SDL_JoystickOpened(0)) {
-  		SDL_JoystickClose(_joy);
-		_joy = NULL;
+	// Close joysticks, if opened
+    for (int j = 0; j < joy.size(); ++j) {
+  		SDL_JoystickClose(joy[j]);
 	}
+
+    joy.clear();
 
     SDL_Quit();
 }
 
 
-Vector2 SDLWindow::joystickPosition(int stickNum) const {
-    if (_joy) {
-        return Vector2(SDL_JoystickGetAxis(_joy, 0) / 32768.0,
-                       -SDL_JoystickGetAxis(_joy, 1) / 32768.0);
+::SDL_Joystick* SDLWindow::getSDL_Joystick(unsigned int num) const {
+    if (joy.size() >= num) {
+        return joy[num];
     } else {
-        return Vector2(0, 0);
+        return NULL;
     }
-}
-
-
-::SDL_Joystick* SDLWindow::joystick(int num) const {
-    debugAssert(num < 1);
-    return _joy;
 }
 
 
@@ -221,15 +227,36 @@ void SDLWindow::setGammaRamp(const Array<uint16>& gammaRamp) {
 
 
 int SDLWindow::numJoysticks() const {
-	// Check for joysticks
-    int j = SDL_NumJoysticks();
-    if ((j < 0) || (j > 10)) {
-        // If there is no joystick adapter on Win32,
-        // SDL returns ridiculous numbers.
-        j = 0;
+    return joy.size();
+}
+
+
+void SDLWindow::getJoystickState(
+    unsigned int    stickNum,
+    Array<float>&   axis,
+    Array<bool>&    button) {
+
+    debugAssert(stickNum < joy.size());
+
+    SDL_Joystick* sdlstick = joy[stickNum];
+
+    axis.resize(SDL_JoystickNumAxes(sdlstick), DONT_SHRINK_UNDERLYING_ARRAY);
+
+    for (int a = 0; a < axis.size(); ++a) {
+        axis[a] = SDL_JoystickGetAxis(sdlstick, a) / 32768.0;
     }
 
-    return j;
+    button.resize(SDL_JoystickNumButtons(sdlstick), DONT_SHRINK_UNDERLYING_ARRAY);
+
+    for (int b = 0; b < button.size(); ++b) {
+        button[b] = (SDL_JoystickGetButton(sdlstick, b) != 0);
+    }
+}
+
+
+std::string SDLWindow::joystickName(unsigned int sticknum) {
+    debugAssert(sticknum < joy.size());
+    return SDL_JoystickName(sticknum);
 }
 
 

@@ -158,7 +158,14 @@ void UserInput::endEvents() {
 
     inEventProcessing = false;
     if (useJoystick) {
-        Vector2 j = _window->joystickPosition(0);
+        static Array<float> axis;
+        static Array<bool> button;
+        _window->getJoystickState(0, axis, button);
+
+        if (axis.size() >= 2) {
+            jx = axis[0];
+            jy = -axis[1];
+        }
     }
 
     windowCenter =
