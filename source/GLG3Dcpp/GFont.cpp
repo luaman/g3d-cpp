@@ -119,7 +119,7 @@ Vector2 GFont::drawString(
         }
     }
 
-    return Vector2(x - x0, sy);
+    return Vector2(x - x0, h);
 }
 
 
@@ -197,9 +197,9 @@ Vector2 GFont::draw2D(
             }
 
             renderDevice->setColor(
-		 Color4(color.r * renderDevice->getBrightScale(),
-			color.g * renderDevice->getBrightScale(),
-			color.b * renderDevice->getBrightScale(), color.a));
+		        Color4(color.r * renderDevice->getBrightScale(),
+			    color.g * renderDevice->getBrightScale(),
+			    color.b * renderDevice->getBrightScale(), color.a));
             Vector2 bounds = drawString(s, x, y, w, h, spacing);
 
         renderDevice->endPrimitive();
