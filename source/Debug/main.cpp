@@ -73,15 +73,26 @@ IFSEntity::IFSEntity(const std::string& filename, const Vector3& pos) {
 void IFSEntity::render(RenderDevice* device) {
     device->pushState();
         device->setObjectToWorldMatrix(cframe);
+
+        if (selected) {
+            device->setColor(Color3::BLACK);
+            device->setLineWidth(2);
+            device->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+            model.render(device);
+            device->setRenderMode(RenderDevice::RENDER_SOLID);
+            device->setPolygonOffset(0.5);
+        }
+
+        device->setColor(Color3::WHITE);
         model.render(device);
-        Draw::sphere(model.boundingSphere(), device);
-        Draw::box(model.boundingBox(), device);
     device->popState();
 }
 
 
 RealTime IFSEntity::getIntersectionTime(const Ray& ray) {
-    return inf;
+    Vector3 dummy;
+    return CollisionDetection::collisionTimeForMovingPointFixedBox(ray.origin, 
+        ray.direction, cframe.toWorldSpace(model.boundingBox()), dummy);
 }
 
 
