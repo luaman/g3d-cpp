@@ -22,6 +22,7 @@ void GPUProgram::ArgList::set(const std::string& var, const TextureRef& val) {
     Arg arg;
 
 	switch (val->getDimension()) {
+    case Texture::DIM_2D_NPOT:
 	case Texture::DIM_2D:
 	    arg.type = SAMPLER2D;
 		break;
@@ -30,6 +31,7 @@ void GPUProgram::ArgList::set(const std::string& var, const TextureRef& val) {
 	    arg.type = SAMPLERRECT;
 		break;
 
+    case Texture::DIM_CUBE_MAP_NPOT:
 	case Texture::DIM_CUBE_MAP:
 	    arg.type = SAMPLERCUBE;
 		break;
