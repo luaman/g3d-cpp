@@ -22,7 +22,7 @@ Cone::Cone(const Vector3 &tip, const Vector3 &direction, Real angle) {
     this->angle = angle;
 
     assert(angle >= 0);
-    assert(angle <= G3D::PI);
+    assert(angle <= PI);
 }
 
 /**

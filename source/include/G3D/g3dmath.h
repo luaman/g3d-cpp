@@ -10,7 +10,7 @@
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2003-02-20
+ @edited  2003-04-29
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -75,8 +75,16 @@ const double nan = 0.0/sin(0.0);
 
 #endif
 
-const double PI = (3.1415926535898);
-const double HALF_PI = (1.5707963267949);
+#ifdef PI 
+    #undef PI
+#endif
+
+/** Remember: as with all global constants in C++, the order of initialization
+    for PI, HALF_PI, TWO_PI, and your own globals is undefined.  You can't
+	make a constant relative to PI. */
+const double PI      = 3.1415926535898;
+const double HALF_PI = 1.5707963267949;
+const double TWO_PI  = 6.283185;
 
 typedef signed char		int8;
 typedef unsigned char	uint8;
@@ -98,10 +106,30 @@ typedef double			float64;
 
 int iAbs(int iValue);
 int iCeil(double fValue);
+
+/**
+ Clamps the value to the range [low, hi] (inclusive)
+ */
+int iClamp(int low, int val, int hi);
+
+/**
+ Wraps the value to the range [0, hi) (exclusive
+ on the high end).  This is like the clock arithmetic
+ produced by % (modulo) except the result is guaranteed
+ to be positive.
+ */
+int iWrap(int val, int hi);
+
 int iFloor(double fValue);
 int iSign(int iValue);
 int iSign(double fValue);
 int iRound(double fValue);
+
+/**
+ Returns a random number uniformly at random between low and hi
+ (inclusive).
+ */
+int iRandom(int low, int hi);
 
 double abs (double fValue);
 double aCos (double fValue);
@@ -130,6 +158,11 @@ int iMod3(int x);
 
 /** [0, 1] */
 double unitRandom ();
+
+/**
+ Uniform random number between low and hi, inclusive.
+ */
+double random(double low, double hi);
 
 /** [-1, 1] */
 double symmetricRandom ();

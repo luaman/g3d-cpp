@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
   
  @created 2001-06-02
- @edited  2003-04-07
+ @edited  2003-04-29
  */
 
 #include "G3D/g3dmath.h"
@@ -32,6 +32,24 @@ int highestBit(uint32 x) {
 
 	static const int lut[] = {-1,0,1,1,2,2,2,2,3,3,3,3,3,3,3,3};
 	return base + lut[x];
+}
+
+
+int iRandom(int low, int high) {
+	int r = low + (high - low + 1) * rand() / RAND_MAX;
+
+	// There is a *very small* chance of generating
+	// a number larger than high.
+	if (r > high) {
+		return high;
+	} else {
+		return r;
+	}
+}
+
+
+double random(double low, double high) {
+	return low + (high - low) * rand() / (double)RAND_MAX;
 }
 
 }

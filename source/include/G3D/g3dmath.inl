@@ -7,7 +7,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2003-02-08
+ @edited  2003-04-29
  */
 
 #include <stdlib.h>
@@ -33,6 +33,28 @@ inline int iAbs (int iValue) {
 //----------------------------------------------------------------------------
 inline int iCeil (double fValue) {
     return int(::ceil(fValue));
+}
+
+//----------------------------------------------------------------------------
+
+inline int iClamp(int low, int val, int hi) {
+	if (val <= low) {
+		return low;
+	} else if (val >= hi) {
+		return hi;
+	} else {
+		return val;
+	}
+}
+
+//----------------------------------------------------------------------------
+
+inline int iWrap(int val, int hi) {
+	if (val < 0) {
+		return ((val % hi) + hi) % hi;
+	} else {
+		return val % hi;
+	}
 }
 
 //----------------------------------------------------------------------------

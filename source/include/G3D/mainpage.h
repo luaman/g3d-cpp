@@ -26,36 +26,112 @@
      
      <UL>
      <LI>3D math
-        <BR><BLOCKQUOTE>G3D::Vector2, G3D::Vector3, G3D::Vector3int16, G3D::Vector4, 
-        G3D::Quat, G3D::Color3, G3D::Color3uint8,
-        G3D::Color4, G3D::Color4uint8, G3D::Matrix3, G3D::CoordinateFrame, G3D::PhysicsFrame,
-        G3D::Box, G3D::Cone, G3D::Line, G3D::LineSegment, G3D::Plane, G3D::Ray,
-        G3D::Sphere, G3D::Capsule, G3D::CollisionDetection, G3D::Triangle</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+        G3D::Box,
+		G3D::Capsule,
+		G3D::CollisionDetection,
+		G3D::Color3,
+		G3D::Color3uint8,
+        G3D::Color4,
+		G3D::Color4uint8,
+		G3D::Cone,
+		G3D::ConvexPolygon,
+		G3D::ConvexPolyhedron,
+		G3D::CoordinateFrame,
+		G3D::PhysicsFrame,
+		G3D::Line,
+		G3D::LineSegment,
+		G3D::Matrix3,
+        G3D::Quat,
+		G3D::Plane,
+		G3D::Ray,
+        G3D::Sphere,
+		G3D::Triangle,
+		G3D::Vector2,
+		G3D::Vector3,
+		G3D::Vector3int16,
+		G3D::Vector4
+		</BLOCKQUOTE>
      
      <LI>Data structures
-        <BR><BLOCKQUOTE>G3D::Array, G3D::Set, G3D::Table, 
-        G3D::Queue</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+		G3D::Array,
+		G3D::Queue,
+ 	    G3D::Set,
+		G3D::Table
+		</BLOCKQUOTE>
 
      <LI>Image formats
-        <BR><BLOCKQUOTE>G3D::CImage, G3D::CImage::Error, G3D::RGBtoARGB,
-        G3D::RGBtoRGBA, G3D::RGBtoBGRA, G3D::RGBtoBGR, G3D::RGBxRGBtoRGBA, 
-        G3D::flipRGBVertical</BLOCKQUOTE>
+        <BR><BLOCKQUOTE>
+		G3D::CImage,
+		G3D::CImage::Error,		
+        G3D::flipRGBVertical,
+  	    G3D::RGBtoARGB,
+		G3D::RGBtoBGR,
+		G3D::RGBtoBGRA,
+        G3D::RGBtoRGBA,
+		G3D::RGBxRGBtoRGBA
+		</BLOCKQUOTE>
 
      <LI>Integer math
-       <BR><BLOCKQUOTE>G3D::iAbs, G3D::iCeil, G3D::iFloor, G3D::iMax, 
-       G3D::iMin, G3D::iSign, G3D::iRound,
-        G3D::nextPowerOf2, G3D::isPow2, G3D::isOdd, G3D::isEven, 
-        G3D::highestBit, G3D::uint8, G3D::uint16, G3D::uint32, G3D::uint64,
-        G3D::int8, G3D::int16, G3D::int32, G3D::int64</BLOCKQUOTE>
+       <BR><BLOCKQUOTE>
+        G3D::highestBit,
+	    G3D::iAbs,
+		G3D::iCeil,
+		G3D::iClamp,
+		G3D::iWrap,
+		G3D::iFloor,
+		G3D::iMax, 
+        G3D::iMin,
+	    G3D::isPow2,
+		G3D::isOdd,
+		G3D::isEven, 
+		G3D::iSign,
+		G3D::iRound,
+		G3D::iRandom,
+        G3D::nextPowerOf2, 
+		G3D::uint8,
+		G3D::uint16,
+		G3D::uint32,
+		G3D::uint64,
+        G3D::int8,
+		G3D::int16,
+		G3D::int32,
+		G3D::int64
+		</BLOCKQUOTE>
      
      <LI>Floating point math
-       <BR><BLOCKQUOTE>G3D::abs, G3D::aCos, G3D::aSin, G3D::aTan, G3D::aTan2,
-         G3D::sign, G3D::rsq, G3D::unitRandom, G3D::symmetricRandom,
-         G3D::min, G3D::max, G3D::square, G3D::sumSquares, G3D::distance,
-         G3D::toRadians, G3D::toDegrees, G3D::isNaN, G3D::isFinite,
-         G3D::inf, G3D::nan, G3D::infReal, G3D::nanReal, G3D::PI, 
-         G3D::HALF_PI, G3D::linearSpline, G3D::float32,
-         G3D::float64</BLOCKQUOTE>
+       <BR><BLOCKQUOTE>
+	     G3D::abs,
+		 G3D::aCos,
+		 G3D::aSin,
+		 G3D::aTan,
+		 G3D::aTan2,
+         G3D::sign,
+		 G3D::rsq,
+		 G3D::unitRandom,
+		 G3D::random,
+         G3D::symmetricRandom,
+         G3D::min,
+		 G3D::max,
+		 G3D::square,
+		 G3D::sumSquares,
+		 G3D::distance,
+         G3D::toRadians,
+		 G3D::toDegrees,
+		 G3D::isNaN,
+		 G3D::isFinite,
+         G3D::inf,
+		 G3D::nan,
+		 G3D::infReal,
+		 G3D::nanReal,
+		 G3D::PI, 
+         G3D::HALF_PI,
+		 G3D::TWO_PI,
+		 G3D::linearSpline,
+		 G3D::float32,
+         G3D::float64
+		 </BLOCKQUOTE>
 
      <LI>Robust floating point math
        <BR><BLOCKQUOTE>G3D::fuzzyEq, G3D::fuzzyNe, G3D::fuzzyGt,
@@ -507,6 +583,10 @@ to add zlibstat.lib to your linker list.
    <P>
    Changes in 5.01
    <UL>
+	 <LI> Added docs for ConvexPolygon and ConvexPolyhedron
+     <LI> G3D::iClamp
+	 <LI> G3D::iWrap
+	 <LI> G3D::iRandom, G3D::random
      <LI> G3D::getFiles
      <LI> G3D::getDirs
      <LI> Added data/image/meter.jpg, a meter stick texture convenient for testing
