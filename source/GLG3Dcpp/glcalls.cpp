@@ -9,6 +9,10 @@
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"
 
+#if defined(G3D_OSX)
+#include <mach-o/dyld.h>
+#endif
+
 namespace G3D {
 
 /**
@@ -146,5 +150,48 @@ Vector4 glToScreen(const Vector4& v) {
         (result.z * rhw) * (depthRange[1] - depthRange[0]) + depthRange[0],
         rhw);
 }
+
+#if defined(G3D_OSX)
+void* NSGLGetProcAddress(const char *name)
+{
+	/* This code is from Apple's tech note QA1188.
+	    Apple states that this can be called from Cocoa
+	    or Carbon applications, as long as they use Mach-O
+	    executable rather than CFM.  G3D certainly used
+	    Mach-O.
+	 */
+
+	    NSSymbol symbol;
+	    char *symbolName;
+
+	    // Prepend a '_' for the Unix C symbol mangling convention
+	    symbolName = (char*)malloc(strlen (name) + 2);
+	    strcpy(symbolName + 1, name);
+	    symbolName[0] = '_';
+	    symbol = NULL;
+
+		const mach_header* mh = 
+			NSAddImage("/System/Library/Frameworks/OpenGL.Framework/Libraries/libGL.dylib",
+					   NSADDIMAGE_OPTION_RETURN_ON_ERROR);
+		  
+		bool rc = NSIsSymbolNameDefinedInImage(mh, symbolName);
+		
+		if (rc)
+		{
+			symbol = NSLookupSymbolInImage(mh, symbolName,
+										NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR);
+		
+		}
+	    
+		free (symbolName);
+	    
+		if (!symbol)
+			return NULL;
+		
+		void* addr = NSAddressOfSymbol(symbol);
+		 
+		return addr; 
+}
+#endif
 } // namespace
 
