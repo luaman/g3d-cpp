@@ -247,6 +247,28 @@ static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
 }
 
 
+/** 
+ Configures a mouse up/down event
+ */
+static void mouseButton(bool down, int keyEvent, DWORD flags, GEvent& e) {
+	if (down) {
+		e.key.type  = SDL_KEYDOWN;
+		e.key.state = SDL_PRESSED;
+	} else {
+		e.key.type  = SDL_KEYUP;
+		e.key.state = SDL_RELEASED;
+	}
+
+    e.key.keysym.unicode = ' ';
+	e.key.keysym.sym = (SDLKey)keyEvent;
+
+
+    e.key.keysym.scancode = 0;
+    // TODO: fwKeys = wParam;        // key flags 
+    e.key.keysym.mod = KMOD_NONE;
+}
+
+
 bool Win32Window::pollEvent(GEvent& e) {
 	MSG message;
 
@@ -279,9 +301,42 @@ bool Win32Window::pollEvent(GEvent& e) {
 					return true;
 				}
 				break;
-			}
-		}
-    }
+
+			case WM_ACTIVATE:
+                // TODO
+                /*
+                fActive = LOWORD(wParam);           // activation flag 
+                fMinimized = (BOOL) HIWORD(wParam); // minimized flag 
+                hwndPrevious = (HWND) lParam;       // window handle 
+                */
+                break;
+
+            case WM_LBUTTONDOWN:
+				mouseButton(true, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
+				return true;
+
+            case WM_MBUTTONDOWN:
+				mouseButton(true, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
+				return true;
+
+            case WM_RBUTTONDOWN:
+				mouseButton(true, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
+				return true;
+
+            case WM_LBUTTONUP:
+				mouseButton(false, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
+				return true;
+
+            case WM_MBUTTONUP:
+				mouseButton(false, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
+				return true;
+
+            case WM_RBUTTONUP:
+				mouseButton(false, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
+				return true;
+			} // switch
+		} // if
+    } // while
 
 	RECT rect;
 	GetWindowRect(window, &rect);
