@@ -27,6 +27,10 @@ typedef ReferenceCountedPointer<class VARArea> VARAreaRef;
  You cannot mix pointers from different VARAreas when rendering.  For
  example, if the vertex VAR is in one VARArea, the normal VAR and color
  VAR must come from the same area.
+
+
+ You can't find out how much space is left for VARAreas in video memory,
+ except by checking the VARArea::create value and seeing if it is NULL.
  */
 class VARArea : public ReferenceCountedObject {
 public:
