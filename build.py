@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-07-21
+# @edited  2003-07-24
 #
 # Each build target is a procedure.
 #
@@ -91,7 +91,7 @@ def lib():
                  "GLG3D - Win32 Release",\
                  "GLG3D - Win32 Debug"])
 
-        copyIfNewer("temp/lib/*.lib", installDir + "/lib")
+        copyIfNewer("temp/lib", installDir + "/lib")
 
     else:
         # Linux build
@@ -114,6 +114,11 @@ def lib():
             copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
             copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            installDir + "/lib/libGLG3D.a")
             copyIfNewer("temp/release/glg3d/.libs/libGLG3D.so.0.0.0",     installDir + "/lib/libGLG3D.so")
+
+            os.system("ln -s " + installDir + "/lib/libG3D_debug.so "   + installDir + "/lib/libG3D_debug.so.0")
+            os.system("ln -s " + installDir + "/lib/libG3D.so "         + installDir + "/lib/libG3D.so.0")
+            os.system("ln -s " + installDir + "/lib/libGLG3D_debug.so " + installDir + "/lib/libGLG3D_debug.so.0")
+            os.system("ln -s " + installDir + "/lib/libGLG3D.so "       + installDir + "/lib/libGLG3D.so.0")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."

@@ -43,7 +43,6 @@ CoordinateFrame reflectionMatrix() {
 	// Reflect (mirror)
 	Matrix3 refl(Matrix3::IDENTITY);
 	refl[0][0] = -1;
-	refl[2][2] = 1;
 
     // Read back the OpenGL transformation matrix.
     Matrix3 rot(Matrix3::ZERO);

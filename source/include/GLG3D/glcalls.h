@@ -127,7 +127,8 @@ inline void * glGetProcAddress(const char * name){
 
 /**
  Returns a texture matrix appropriate for reflection vectors
- based on the current modelview matrix.
+ based on the current modelview matrix.  This is necessary
+ to reflect a cube map so it matches the sky box.
 
   Example:
  <PRE>
