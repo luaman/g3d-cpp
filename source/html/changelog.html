@@ -11,19 +11,15 @@
    <P>
    Changes in 6.03:
    <UL>
+     <LI> G3D::RenderDevice supports "_CURRENT" as an option for most settings
      <LI> inf -> inf(), nan -> nan(), NAN -> NAN()
 	        <B>This is an incompatible change-- it was needed to fix a bug with the order
 			   of initialization of globals</B>
      <LI> GImage::sizeInMemory
      <LI> Defined std::ostream << NetAddress, std::ostream << Vector3 
      <LI> 'build doc' copies the contrib directory to the install directory
-     <LI> LightweightConduit::send verifies that the packet size is smaller than the UDP limit
      <LI> LightweightConduit::PacketSizeException
      <LI> Quat::unitRandom() [Giulio]
-     <LI> [BUG#949377] Checks for stencil extensions [Giulio]
-     <LI> [BUG#922725] Non-multitexture implementation for getTextureState() [Giulio]
-     <LI> [RFE#715996] Improved CoordinateFrame:pointToObjectSpace() [Giulio]
-     <LI> [RFE#945935] Make static constants into functions [Giulio]
      <LI> Color3::wheelRandom
      <LI> GImage::save and encode now const [Thanks Arni Mar Jonsson]
      <LI> LightweightConduit::send that accepts multiple destinations
@@ -66,9 +62,16 @@
      <LI> 'fastlib' build target for G3D library developers
 	 <LI> glGetVector2, glGetVector3, glGetVector4
 	 <LI> float * Quat (double * Quat already existed)
-	 <LI> GApp automatically generates g3d-license.txt at runtime ([ 856338 ] CREDIT.TXT)
+	 <LI> GApp automatically generates g3d-license.txt at runtime ([RFE#856338] CREDIT.TXT)
 	 <LI> G3D::license
 	 <LI> Removed several large files (tag, ppt, exe) from the source zipfile, bringing it down to 3 MB
+     <LI> Improved CoordinateFrame:pointToObjectSpace() (RFE#715996) [Giulio]
+     <LI> [RFE#945935] Make static constants into functions [Giulio]
+     <LI> Fix: LightweightConduit::send verifies that the packet size is smaller than the UDP limit
+	 <LI> Fix: Multitexture on ATI and Wildcat cards
+	 <LI> Fix: Incorrect occlusion in GLG3D_Demo (was caused by global constant problem)
+     <LI> Fix: [BUG#949377] Checks for stencil extensions [Giulio]
+     <LI> Fix: [BUG#922725] Non-multitexture implementation for getTextureState() [Giulio]
 	 <LI> Fix: Restore ambient light color after RenderDevice::popState
 	 <LI> Fix: RenderDevice now initializes OpenGL extensions before testing for multitexture [Erik Cassel, Dan Keefe]
 	 <LI> Fix: Bottom clipping plane of GCamera frustum now correct (was slanted incorrectly, making frustum too big)

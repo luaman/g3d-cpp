@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-04-30
+ @edited  2004-05-14
  */
 
 
@@ -865,6 +865,11 @@ void RenderDevice::setShininess(double s) {
 
 
 void RenderDevice::setRenderMode(RenderMode m) {
+
+	if (m == RENDER_CURRENT) {
+		return;
+	}
+
     if (state.renderMode != m) {
         state.renderMode = m;
         switch (m) {
@@ -1126,6 +1131,10 @@ Rect2D RenderDevice::getViewport() const {
 void RenderDevice::setDepthTest(DepthTest test) {
     debugAssert(! inPrimitive);
 
+	if (test == DEPTH_CURRENT) {
+		return;
+	}
+
     if (state.depthTest != test) {
         if (test == DEPTH_ALWAYS_PASS) {
             glDisable(GL_DEPTH_TEST);
@@ -1172,6 +1181,11 @@ void RenderDevice::setDepthTest(DepthTest test) {
 
 
 static void _setStencilTest(RenderDevice::StencilTest test, int reference) {
+
+	if (test == RenderDevice::STENCIL_CURRENT) {
+		return;
+	}
+
     switch (test) {
     case RenderDevice::STENCIL_ALWAYS_PASS:
         glStencilFunc(GL_ALWAYS, reference, 0xFFFFFF);
@@ -1231,6 +1245,11 @@ void RenderDevice::setStencilConstant(int reference) {
 
 
 void RenderDevice::setStencilTest(StencilTest test) {
+
+	if (test == STENCIL_CURRENT) {
+		return;
+	}
+
     debugAssert(! inPrimitive);
 
     if (state.stencilTest != test) {
@@ -1272,6 +1291,11 @@ void RenderDevice::setStencilTest(StencilTest test) {
 
 void RenderDevice::setAlphaTest(AlphaTest test, double reference) {
     debugAssert(! inPrimitive);
+
+
+	if (test == ALPHA_CURRENT) {
+		return;
+	}
 
     if ((state.alphaTest != test) || (state.alphaReference != reference)) {
         if (test == ALPHA_ALWAYS_PASS) {
@@ -1378,6 +1402,7 @@ void RenderDevice::disableDepthWrite() {
 
 
 GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
+
     switch (op) {
     case RenderDevice::STENCIL_KEEP:
         return GL_KEEP;
@@ -1501,7 +1526,31 @@ void RenderDevice::setStencilOp(
     StencilOp                       backZFail,
     StencilOp                       backZPass) {
 
-    if ((frontStencilFail  != state.frontStencilFail) ||
+	if (frontStencilFail == STENCIL_CURRENT) {
+		frontStencilFail = state.frontStencilFail;
+	}
+	
+	if (frontZFail == STENCIL_CURRENT) {
+		frontZFail = state.frontStencilZFail;
+	}
+	
+	if (frontZPass == STENCIL_CURRENT) {
+		frontZPass = state.frontStencilZPass;
+	}
+
+	if (backStencilFail == STENCIL_CURRENT) {
+		backStencilFail = state.backStencilFail;
+	}
+	
+	if (backZFail == STENCIL_CURRENT) {
+		backZFail = state.backStencilZFail;
+	}
+	
+	if (backZPass == STENCIL_CURRENT) {
+		backZPass = state.backStencilZPass;
+	}
+    
+	if ((frontStencilFail  != state.frontStencilFail) ||
         (frontZFail        != state.frontStencilZFail) ||
         (frontZPass        != state.frontStencilZPass) || 
         (GLCaps::supports_GL_ARB_stencil_two_side() && 
@@ -1627,6 +1676,14 @@ void RenderDevice::setBlendFunc(
     BlendFunc src,
     BlendFunc dst) {
     debugAssert(! inPrimitive);
+
+	if (src == BLEND_CURRENT) {
+		src = state.srcBlendFunc;
+	}
+
+	if (dst == BLEND_CURRENT) {
+		dst = state.dstBlendFunc;
+	}
 
     if ((state.dstBlendFunc != dst) ||
         (state.srcBlendFunc != src)) {
@@ -1852,6 +1909,10 @@ void RenderDevice::setTextureMatrix(
 void RenderDevice::setTextureCombineMode(
     uint                    unit,
     const CombineMode       mode) {
+
+	if (mode == TEX_CURRENT) {
+		return;
+	}
 
     debugAssertM((int)unit < _numTextureUnits,
         format("Attempted to access texture unit %d on a device with %d units.",

@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-04-30
+  @edited  2004-05-14
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -114,6 +114,10 @@ class VAR;
     </PRE>
 
   <P>
+
+  G3D::RenderDevice supports "X_CURRENT" as an option for most settings.
+
+  <P>
  <B>Stereo Rendering</B>
   You can render in stereo (on a stereo capable card) by rendering twice,
   once for each eye's buffer:
@@ -152,7 +156,8 @@ public:
     enum Primitive {LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP,
                     TRIANGLE_FAN, QUADS, QUAD_STRIP, POINTS};
 
-    enum RenderMode {RENDER_SOLID, RENDER_WIREFRAME, RENDER_POINTS};
+	/** RENDER_CURRENT = preserve whatever the render mode is currently set to.  */
+    enum RenderMode {RENDER_SOLID, RENDER_WIREFRAME, RENDER_POINTS, RENDER_CURRENT};
 
     
     enum {MAX_LIGHTS = 8};
@@ -287,34 +292,34 @@ public:
 
     enum DepthTest   {DEPTH_GREATER,     DEPTH_LESS,       DEPTH_GEQUAL,  
                       DEPTH_LEQUAL,      DEPTH_NOTEQUAL,   DEPTH_EQUAL,   
-                      DEPTH_ALWAYS_PASS, DEPTH_NEVER_PASS};
+                      DEPTH_ALWAYS_PASS, DEPTH_NEVER_PASS, DEPTH_CURRENT};
 
     enum AlphaTest   {ALPHA_GREATER,     ALPHA_LESS,       ALPHA_GEQUAL,  
                       ALPHA_LEQUAL,      ALPHA_NOTEQUAL,   ALPHA_EQUAL,  
-                      ALPHA_ALWAYS_PASS, ALPHA_NEVER_PASS};
+                      ALPHA_ALWAYS_PASS, ALPHA_NEVER_PASS, ALPHA_CURRENT};
 
     enum StencilTest {STENCIL_GREATER,   STENCIL_LESS,     STENCIL_GEQUAL,
                       STENCIL_LEQUAL,    STENCIL_NOTEQUAL, STENCIL_EQUAL, 
-                      STENCIL_ALWAYS_PASS, STENCIL_NEVER_PASS};
+                      STENCIL_ALWAYS_PASS, STENCIL_NEVER_PASS, STENCIL_CURRENT};
 
     enum BlendFunc   {BLEND_SRC_ALPHA,   BLEND_ONE_MINUS_SRC_ALPHA, BLEND_ONE,
                       BLEND_ZERO, BLEND_SRC_COLOR,  BLEND_DST_COLOR,  
-                      BLEND_ONE_MINUS_SRC_COLOR};
+                      BLEND_ONE_MINUS_SRC_COLOR, BLEND_CURRENT};
 
     enum StencilOp   {STENCIL_INCR_WRAP, STENCIL_DECR_WRAP,
                       STENCIL_KEEP,      STENCIL_INCR,     STENCIL_DECR,
-                      STENCIL_REPLACE,   STENCIL_ZERO,     STENCIL_INVERT};
+                      STENCIL_REPLACE,   STENCIL_ZERO,     STENCIL_INVERT, STENCILOP_CURRENT};
 
-    enum CullFace    {CULL_FRONT,        CULL_BACK,           CULL_NONE};
+    enum CullFace    {CULL_FRONT,        CULL_BACK,           CULL_NONE, CULL_CURRENT};
 
-    enum ShadeMode   {SHADE_FLAT,        SHADE_SMOOTH};
+    enum ShadeMode   {SHADE_FLAT,        SHADE_SMOOTH, SHADE_CURRENT};
 
     enum CombineMode {TEX_REPLACE, TEX_INTERPOLATE, TEX_ADD, TEX_MODULATE, 
-                      TEX_BLEND};
+                      TEX_BLEND, TEX_CURRENT};
 
     enum Buffer      {BUFFER_BACK,       BUFFER_FRONT,
                       BUFFER_BACK_LEFT,  BUFFER_FRONT_LEFT,
-                      BUFFER_BACK_RIGHT, BUFFER_FRONT_RIGHT };
+                      BUFFER_BACK_RIGHT, BUFFER_FRONT_RIGHT, BUFFER_CURRENT};
 
     /**
      Call to begin the rendering frame.
@@ -359,6 +364,8 @@ public:
      Sets the constant used in the stencil test and operation (if op == STENCIL_REPLACE)
      */
     void setStencilConstant(int reference);
+
+	/** If the alpha test is ALPHA_CURRENT, the reference is ignored */
     void setAlphaTest(AlphaTest test, double reference);
 
     /**
