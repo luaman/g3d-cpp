@@ -31,6 +31,24 @@ size_t sizeOfGLFormat(GLenum format) {
     case GL_FLOAT:
         return sizeof(float);
 
+    case GL_FLOAT_VEC2_ARB:
+        return sizeof(float) * 2;
+
+    case GL_FLOAT_VEC3_ARB:
+        return sizeof(float) * 3;
+
+    case GL_FLOAT_VEC4_ARB:
+        return sizeof(float) * 4;
+
+    case GL_FLOAT_MAT2_ARB:
+        return sizeof(float) * 4;
+
+    case GL_FLOAT_MAT3_ARB:
+        return sizeof(float) * 9;
+
+    case GL_FLOAT_MAT4_ARB:
+        return sizeof(float) * 16;
+
     case GL_UNSIGNED_SHORT:
         return sizeof(unsigned short);
         
@@ -42,6 +60,15 @@ size_t sizeOfGLFormat(GLenum format) {
         
     case GL_INT:
         return sizeof(int);
+
+    case GL_INT_VEC2_ARB:
+        return sizeof(int) * 2;
+
+    case GL_INT_VEC3_ARB:
+        return sizeof(int) * 3;
+
+    case GL_INT_VEC4_ARB:
+        return sizeof(int) * 4;
         
     case GL_UNSIGNED_BYTE:
         return 1;

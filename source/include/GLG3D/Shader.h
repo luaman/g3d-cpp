@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-04-25
+ @edited  2004-04-27
  */
 
 #ifndef G3D_SHADER_H
@@ -12,6 +12,7 @@
 
 #include "graphics3D.h"
 #include "glheaders.h"
+#include "GLG3D/Texture.h"
 
 namespace G3D {
 
@@ -163,11 +164,11 @@ public:
 class ShaderGroup : public ReferenceCountedObject {
 protected:
 
-    static std::string ignore;
+    static std::string      ignore;
 
-    ObjectShaderRef         objectShader;
-    VertexShaderRef         vertexShader;
-    PixelShaderRef          pixelShader;
+    ObjectShaderRef         _objectShader;
+    VertexShaderRef         _vertexShader;
+    PixelShaderRef          _pixelShader;
 
     GLhandleARB             _glProgramObject;
 
@@ -180,6 +181,40 @@ protected:
         const PixelShaderRef&  ps);
 
 public:
+
+    /**
+     Argument list for a ShaderGroup.
+     */
+    class ArgList {
+    private:
+        friend class ShaderGroup;
+
+        class Arg {
+        public:
+
+            /** Row-major */ 
+            Vector4                    vector[4];
+
+			TextureRef				   texture;
+
+            GLenum                     type;
+        };
+
+        Table<std::string, Arg>        argTable;
+
+    public:
+
+		void set(const std::string& var, const TextureRef& val);
+        void set(const std::string& var, const CoordinateFrame& val);
+        void set(const std::string& var, const Matrix4& val);
+        void set(const std::string& var, const Vector4& val);
+        void set(const std::string& var, const Vector3& val);
+        void set(const std::string& var, const Vector2& val);
+        void set(const std::string& var, float          val);
+        void clear();
+
+    };
+
 
     ~ShaderGroup();
 
@@ -216,6 +251,23 @@ public:
 
     inline const std::string& messages() const {
         return _messages;
+    }
+
+    /** The underlying OpenGL object for the vertex/pixel shader pair */
+    GLhandleARB glProgramObject() const {
+        return _glProgramObject;
+    }
+
+    inline ObjectShaderRef objectShader() const {
+        return _objectShader;
+    }
+
+    inline VertexShaderRef vertexShader() const {
+        return _vertexShader;
+    }
+
+    inline PixelShaderRef pixelShader() const {
+        return _pixelShader;
     }
 };
 

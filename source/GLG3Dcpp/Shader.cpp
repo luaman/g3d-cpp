@@ -94,7 +94,11 @@ PixelShaderRef PixelShader::fromCode(const std::string& name, const std::string&
 ShaderGroup::ShaderGroup(
     const ObjectShaderRef& os,
     const VertexShaderRef& vs,
-    const PixelShaderRef&  ps) : objectShader(os), vertexShader(vs), pixelShader(ps), _ok(true) {
+    const PixelShaderRef&  ps) : 
+        _objectShader(os), 
+        _vertexShader(vs), 
+        _pixelShader(ps), 
+        _ok(true) {
 
     if (! os.isNull() && ! os->ok()) {
         _ok = false;
@@ -116,12 +120,12 @@ ShaderGroup::ShaderGroup(
         _glProgramObject = glCreateProgramObjectARB();
 
         // Attach vertex and pixel shaders
-        if (! vertexShader.isNull()) {
-            glAttachObjectARB(_glProgramObject, vertexShader->glShaderObject());
+        if (! vertexShader().isNull()) {
+            glAttachObjectARB(_glProgramObject, vertexShader()->glShaderObject());
         }
 
-        if (! pixelShader.isNull()) {
-            glAttachObjectARB(_glProgramObject, pixelShader->glShaderObject());
+        if (! pixelShader().isNull()) {
+            glAttachObjectARB(_glProgramObject, pixelShader()->glShaderObject());
         }
 
         // Link
@@ -156,13 +160,108 @@ ShaderGroup::~ShaderGroup() {
 }
 
 
-
 bool ShaderGroup::fullySupported() {
     return
         GLCaps::supports_GL_ARB_shader_objects() && 
         GLCaps::supports_GL_ARB_shading_language_100() &&
         GLCaps::supports_GL_ARB_fragment_shader() &&
         GLCaps::supports_GL_ARB_vertex_shader();
+}
+
+
+////////////////////////////////////////////////////////////////////////
+
+
+void ShaderGroup::ArgList::set(const std::string& var, const TextureRef& val) {
+
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
+
+    Arg arg;
+
+	switch (val->getDimension()) {
+	case Texture::DIM_2D:
+        // TODO
+//	    arg.type = SAMPLER2D;
+		break;
+
+	case Texture::DIM_2D_RECT:
+        // TODO
+//	    arg.type = SAMPLERRECT;
+		break;
+
+	case Texture::DIM_CUBE_MAP:
+        // TODO
+//	    arg.type = SAMPLERCUBE;
+		break;
+	}
+
+    arg.texture = val;
+    argTable.set(var, arg);
+
+}
+
+
+void ShaderGroup::ArgList::set(const std::string& var, const CoordinateFrame& val) {
+    set(var, Matrix4(val));
+}
+
+
+void ShaderGroup::ArgList::set(const std::string& var, const Matrix4& val) {
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
+
+    Arg arg;
+    arg.type = GL_FLOAT_MAT4_ARB;
+    for (int r = 0; r < 4; ++r) {
+        arg.vector[r] = val.getRow(r);
+    }
+
+    argTable.set(var, arg);
+}
+
+
+void ShaderGroup::ArgList::set(const std::string& var, const Vector4& val) {
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
+
+    Arg arg;
+    arg.type = GL_FLOAT_VEC4_ARB;
+    arg.vector[0] = val;
+    argTable.set(var, arg);
+}
+
+
+void ShaderGroup::ArgList::set(const std::string& var, const Vector3& val) {
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
+
+    Arg arg;
+    arg.type = GL_FLOAT_VEC3_ARB;
+    arg.vector[0] = Vector4(val, 0);
+    argTable.set(var, arg);
+
+}
+
+
+void ShaderGroup::ArgList::set(const std::string& var, const Vector2& val) {
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
+
+    Arg arg;
+    arg.type = GL_FLOAT_VEC2_ARB;
+    arg.vector[0] = Vector4(val, 0, 0);
+    argTable.set(var, arg);
+}
+
+
+void ShaderGroup::ArgList::set(const std::string& var, float          val) {
+    alwaysAssertM(! argTable.containsKey(var), std::string("Cannot set variable \"") + var + "\" more than once");
+
+    Arg arg;
+    arg.type = GL_FLOAT;
+    arg.vector[0] = Vector4(val, 0, 0, 0);
+    argTable.set(var, arg);
+}
+
+
+void ShaderGroup::ArgList::clear() {
+    argTable.clear();
 }
 
 
