@@ -6,11 +6,13 @@ CoreyGWindow  -  GWindow implementations for the wxWindows and Qt APIs by Corey 
 
 ObjModel      -  A class in the style of IFSModel and MD2Model for Maya obj files by Corey Taylor <laundrypowder@spamcop.net>
 
-GlutWindow    -  GWindow implementation using the GLUT API.  Not compatible with GApp.  By Morgan McGuire and Dan Keefe
+GlutWindow    -  GWindow implementation using the GLUT API.  Not compatible with GApp.  By Morgan and Dan Keefe
 
-Win32Window   - Native Win32 GWindow implementation.  By Morgan McGuire <matrix@graphics3d.com> and Max McGuire
+Win32Window   - Native Win32 GWindow implementation.  By Morgan and Max McGuire
 
 AudioDevice   - Sound interface that uses FMOD or SDL_Mixer.  By Morgan.
 
 CurveEditor   - GUI spline editor.  By Morgan
+
+DrawLogo      - The code used to render the G3D logo.  By Morgan.
 
