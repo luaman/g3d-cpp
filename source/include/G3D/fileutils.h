@@ -25,7 +25,7 @@ namespace G3D {
     }
 
 /** Returns all the files used by G3D and GLG3D during the current execution. */
-static Array<std::string> filesUsed();
+Array<std::string> filesUsed();
     
 std::string readFileAsString(
     const std::string&          filename);
