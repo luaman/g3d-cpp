@@ -129,6 +129,9 @@ public:
 
   Multiple VertexAndPixelShaders may share object, vertex, and pixel shaders.
 
+  Uniform variables that begin with 'gl_' are ignored because they are assumed to 
+  be GL built-ins.
+
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/shader_objects.txt
   @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_shader.txt
 

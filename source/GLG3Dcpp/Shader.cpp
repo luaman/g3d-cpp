@@ -333,7 +333,7 @@ void VertexAndPixelShader::computeUniformArray() {
     glGetObjectParameterivARB(glProgramObject(), GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, &maxLength);
     glGetObjectParameterivARB(glProgramObject(), GL_OBJECT_ACTIVE_UNIFORMS_ARB, &uniformCount);
 
-    uniformArray.resize(uniformCount);
+    uniformArray.resize(0);
 
     GLcharARB* name = (GLcharARB *) malloc(maxLength * sizeof(GLcharARB));
     
@@ -346,17 +346,23 @@ void VertexAndPixelShader::computeUniformArray() {
 	    glGetActiveUniformARB(glProgramObject(), 
             i, maxLength, NULL, &size, &type, name);
 
-        uniformArray.last().dummy = false;
-        uniformArray[i].name = name;
-        uniformArray[i].size = size;
-        uniformArray[i].type = type;
-        uniformArray[i].dummy = false;
+        // TODO: remove; this is a workaround for odd behavior in the NVIDIA driver
+        bool isGLBuiltIn = (strlen(name) > 3) && beginsWith(std::string(name), "gl_");
 
-        if (isSamplerType(type)) {
-            ++lastTextureUnit;
-            uniformArray[i].textureUnit = lastTextureUnit;
-        } else {
-            uniformArray[i].textureUnit = -1;
+        if (! isGLBuiltIn) {
+
+            uniformArray.next().dummy = false;
+            uniformArray.last().name = name;
+            uniformArray.last().size = size;
+            uniformArray.last().type = type;
+            uniformArray.last().dummy = false;
+
+            if (isSamplerType(type)) {
+                ++lastTextureUnit;
+                uniformArray.last().textureUnit = lastTextureUnit;
+            } else {
+                uniformArray.last().textureUnit = -1;
+            }
         }
     }
 

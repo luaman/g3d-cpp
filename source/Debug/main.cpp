@@ -21,6 +21,102 @@
     #error Requires G3D 6.04
 #endif
 
+/**
+ For all methods that The input may be 
+ */
+class Image : public ReferenceCountedObject {
+public:
+
+    enum Type {FLOAT, UINT8};
+    enum DataFormat {FLOAT, UINT8, COLOR3, COLOR4, COLOR3UINT8, COLOR4UINT8};
+
+private:
+
+    /** 1, 3, or 4 */
+    int                 channels;
+
+    Type                format;
+    DataFormat          dataFormat;
+
+public:
+
+    /** 
+      Bilinear interpolation with range checking.  Only use the version appropriate for
+      this image.
+     */
+    void blinterp(double x, double y, uint8& out) const;
+    void blinterp(double x, double y, float& out) const;
+    void blinterp(double x, double y, Color3& out) const;
+    void blinterp(double x, double y, Color4& out) const;
+    void blinterp(double x, double y, Color3uint8& out) const;
+    void blinterp(double x, double y, Color4uint8& out) const;
+
+    /** 
+     Computes the median along each channel.  The median
+     along the border will be computed with fewer pixels
+     if wrap is false.  If wrap is true, 
+
+     @param size (1 + 2*size)^2 pixels will be consider
+     */
+    void median(int radius, bool wrap, ImageRef output) const;
+    
+    void blur(int radius, bool wrap, ImageRef output) const;
+
+    void gausssianBlur(int radius, bool wrap, ImageRef output) const;
+
+    /** Only available for 1-channel float data. */
+    float* asFloat() const;
+
+    /** Only available for 1-channel float data. */
+    uint8* asUint8() const;
+
+    /** Only available for 3-channel float data. */
+    Color3* asColor3() const;
+
+    /** Only available for 4-channel float data. */
+    Color4* asColor4() const;
+
+    /** Only available for 3-channel int data. */
+    Color3uint8* asColor3uint8() const;
+
+    /** Only available for 4-channel int data. */
+    Color4uint8* asColor4uint8() const;
+
+    /** Number of channels, 1, 3, or 4. */
+    int channels() const;
+
+    /** The underlying data type. */
+    Type type() const;
+
+    /** Combination of the information from channels() and type()
+        so that programs can easily SWITCH on the formats. */
+    DataFormat dataFormat() const;
+
+    /** Number of horizontal pixels */
+    int width() const;
+
+    /** Number of vertical pixels */
+    int height() const;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class App : public GApp {
 protected:
     void main();

@@ -175,6 +175,7 @@ Token TextInput::nextToken() {
     case '$':
     case '@':
     case '~':
+    case '?':
     case '-':
     case '+':
     case '>':
