@@ -570,53 +570,83 @@ std::string GPUProgram::toString(const Type& t) {
 }
 
 void GPUProgram::BindingTable::parseVariable(TextInput& ti) {
+	std::string name;
 
     // #var float4 osLight :  : c[4] : 1 : 1
     // #var float3 vin.v0 : $vin.POSITION : ATTR0 : 2 : 1
 
     Token t = ti.peek();
-    if (t.type() == Token::SYMBOL) {
-        // get the binding's type
-        ti.readSymbol();
-        Type type;
+    if (t.type() != Token::SYMBOL) {
+		goto abort;
+	}
+    // get the binding's type
+    ti.readSymbol();
+    Type type;
 
-		bool success = CgType(t.string(), type);
-
-        if (! success) {
-            alwaysAssertM(false, std::string("Unsupported type: \"") + t.string() + "\"");
-        }
-        
-        t = ti.peek();
-        if (t.type() == Token::SYMBOL) {
-            // read the binding name
-            std::string name = ti.readSymbol();
-            if (consumeSymbol(ti, ":")) {
-                // see if it is the vertex or a constant register
-                t = ti.peek();
-                if (t.type() == Token::SYMBOL) {
-                    ti.readSymbol();
-                    if (t.string() == ":") {
-                        // constant register, read the slot
-                        if (consumeSymbol(ti, "c") && consumeSymbol(ti, "[")) {
-                            t = ti.peek();
-                            if (t.type() == Token::NUMBER) {
-                                int slot = ti.readNumber();
-                                Binding binding;
-                                binding.source = VARIABLE;
-                                binding.type = type;
-                                binding.name = name;
-                                binding.slot = slot;
-                                bindingArray.append(binding);
-                            }
-                        }
-
-                    } else {
-                        // Vertex register; we don't care about the value
-                    }
-                }
-            }
-        }
+    if (! CgType(t.string(), type)) {
+        alwaysAssertM(false, std::string("Unsupported type: \"") + t.string() + "\"");
     }
+    
+    t = ti.peek();
+    if (t.type() != Token::SYMBOL) {
+		goto abort;
+	}
+    // read the binding name
+    name = ti.readSymbol();
+
+    if (! consumeSymbol(ti, ":")) {
+		goto abort;
+	}
+
+    // see if it is the vertex or a constant register
+    t = ti.peek();
+
+    if (t.type() != Token::SYMBOL) {
+		goto abort;
+	}
+
+	// Sometimes there is an extra token between the colons
+	if (t.string() != ":") {
+		ti.readSymbol();
+		t = ti.peek();
+	}
+
+    if (! consumeSymbol(ti, ":")) {
+		goto abort;
+	}
+
+    // read the register number
+	t = ti.peek();
+	if (t.type() != Token::SYMBOL) {
+		goto abort;
+	}
+	ti.readSymbol();
+
+	if (t.string() == "texunit") {
+		// We're reading a texture unit
+	} else if (t.string() == "c") {
+		// We're reading a regular variable; parse the open bracket
+		if (! consumeSymbol(ti, "[")) {
+			goto abort;
+		}
+	} else {
+		// Something unexpected happened.
+		goto abort;
+	}
+    t = ti.peek();
+
+    if (t.type() == Token::NUMBER) {
+        int slot = ti.readNumber();
+        Binding binding;
+        binding.source = VARIABLE;
+        binding.type = type;
+        binding.name = name;
+        binding.slot = slot;
+        bindingArray.append(binding);
+    }
+abort:
+	// Jump here if anything unexpected is encountered during parsing
+	;
 }
 
 
