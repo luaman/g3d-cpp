@@ -803,6 +803,8 @@ public:
     void setColorClearValue(const Color4& c);
 
     /**
+     Devices with more textures than texture units (e.g. GeForceFX)
+     
      @param textureUnit >= 0
      @param texture Set to NULL to disable the unit
      */

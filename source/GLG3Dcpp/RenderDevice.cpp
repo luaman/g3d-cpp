@@ -1085,6 +1085,7 @@ void RenderDevice::popState() {
 void RenderDevice::setState(
     const RenderState&          newState) {
 
+debugAssertGLOk();
     // The state change checks inside the individual
     // methods will (for the most part) minimize
     // the state changes so we can set all of the
@@ -1139,6 +1140,8 @@ void RenderDevice::setState(
         disableLighting();
     }
 
+
+debugAssertGLOk();    
     for (int i = 0; i < MAX_LIGHTS; ++i) {
         if (newState.lightEnabled[i]) {
             setLight(i, newState.light[i]);
@@ -1730,12 +1733,10 @@ void RenderDevice::setPixelProgram(const PixelProgramRef& pp) {
         if (state.pixelProgram != (PixelProgramRef)NULL) {
             state.pixelProgram->disable();
         }
-
         if (pp != (PixelProgramRef)NULL) {
             debugAssert(supportsPixelProgram());
             pp->bind();
         }
-
         state.pixelProgram = pp;
     }
 }
@@ -2294,6 +2295,8 @@ void RenderDevice::setTexture(
     uint                unit,
     TextureRef          texture) {
 
+    bool fixedFunction = (unit < _numTextureUnits);
+
     debugAssertM(! inPrimitive, 
                  "Can't change textures while rendering a primitive.");
 
@@ -2310,16 +2313,19 @@ void RenderDevice::setTexture(
 
     state.textureUnit[unit].texture = texture;
 
-    // Turn off whatever was on previously
     glActiveTextureARB(GL_TEXTURE0_ARB + unit);
-    glDisable(GL_TEXTURE_1D);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_TEXTURE_3D);
-    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-    glDisable(GL_TEXTURE_RECTANGLE_NV);
-        
-    if (supportsTextureRectangle()) {
+
+    // Turn off whatever was on previously if this is a fixed function unit
+    if (fixedFunction) {
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_3D);
+        glDisable(GL_TEXTURE_CUBE_MAP_ARB);
         glDisable(GL_TEXTURE_RECTANGLE_NV);
+        glDisable(GL_TEXTURE_1D);
+        
+        if (supportsTextureRectangle()) {
+            glDisable(GL_TEXTURE_RECTANGLE_NV);
+        }
     }
 
     if ((Texture*)texture != NULL) {
@@ -2331,18 +2337,26 @@ void RenderDevice::setTexture(
             currentlyBoundTexture[unit] = id;
         }
 
-        glEnable(u);
+        if (fixedFunction) {
+            glEnable(u);
+        }
     } else {
         // Disabled texture unit
         currentlyBoundTexture[unit] = 0;
     }
 
-    // Force a reload of the texture matrix if invertY != old invertY
+    // Force a reload of the texture matrix if invertY != old invertY.
+    // This will take care of flipping the texture when necessary.
     if (((Texture*)oldTexture == NULL) ||
         ((Texture*)texture == NULL) ||
         (oldTexture->invertY != texture->invertY)) {
-        forceSetTextureMatrix(unit, state.textureUnit[unit].textureMatrix);
+
+        if (fixedFunction) {
+            // We can only set the matrix for some units
+            forceSetTextureMatrix(unit, state.textureUnit[unit].textureMatrix);
+        }
     }
+
 }
 
 

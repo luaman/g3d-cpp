@@ -526,6 +526,7 @@ void GPUProgram::setArgs(RenderDevice* renderDevice, const ArgList& args) {
             ++arg;
         }
     }
+
 }
 
 
