@@ -62,8 +62,8 @@
         G3D::toSeconds 
      
      <LI><B>Data structures</B> &nbsp; &nbsp;
+        G3D::AABSPTree,
 		G3D::Array,
-        G3D::KDTreeSet,
 		G3D::Queue,
  	    G3D::Set,
 		G3D::Table

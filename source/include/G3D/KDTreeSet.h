@@ -1,17 +1,17 @@
 /**
-  @file KDTreeSet.h
+  @file AABSPTree.h
   
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-02-10
+  @edited  2004-03-13
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
   */
 
-#ifndef G3D_KDTREESET_H
-#define G3D_KDTREESET_H
+#ifndef G3D_AABSPTREE_H
+#define G3D_AABSPTREE_H
 
 #include "G3D/Array.h"
 #include "G3D/Table.h"
@@ -51,17 +51,17 @@ namespace G3D {
 
 /**
  A G3D::Set that supports spatial queries.  Internally, objects
- are arranged into a k-d tree according to their axis-aligned
- bounds.  This increases the cost of insertion to O(log n) but
- allows fast overlap queries.
+ are arranged into an axis-aligned BSP-tree according to their 
+ axis-aligned bounds.  This increases the cost of insertion to
+ O(log n) but allows fast overlap queries.
 
  <B>Moving Set Members</B>
  It is important that objects do not move without updating the
- KDTreeSet.  If the axis-aligned bounds of an object are about
- to change, KDTreeSet::remove it before they change and 
- KDTreeSet::insert it again afterward.  For objects
+ AABSPTree.  If the axis-aligned bounds of an object are about
+ to change, AABSPTree::remove it before they change and 
+ AABSPTree::insert it again afterward.  For objects
  where the hashCode and == operator are invariant of position,
- you can use the KDTreeSet::update method as a shortcut to
+ you can use the AABSPTree::update method as a shortcut to
  insert/remove an object in one step after it has moved.
  
  <B>Template Parameters</B>
@@ -80,13 +80,12 @@ namespace G3D {
   copied many times during tree balancing.
 
  <B>Dimensions</B>
- Although designed as a 3D-data structure, you can use the KDTreeSet
+ Although designed as a 3D-data structure, you can use the AABSPTree
  for data distributed along 2 or 1 axes by simply returning bounds
  that are always zero along one or more dimensions.
 
-
 */
-template<class T> class KDTreeSet {
+template<class T> class AABSPTree {
 private:
 
     /** Wrapper for a value that includes a cache of its bounds. */
@@ -355,23 +354,23 @@ private:
 public:
 
     /** To construct a balanced tree, insert the elements and then call
-      KDTreeSet::balance(). */
-    KDTreeSet() : root(NULL) {}
+      AABSPTree::balance(). */
+    AABSPTree() : root(NULL) {}
 
 
-    KDTreeSet(const KDTreeSet& src) : root(NULL) {
+    AABSPTree(const AABSPTree& src) : root(NULL) {
         *this = src;
     }
 
 
-    KDTreeSet& operator=(const KDTreeSet& src) {
+    AABSPTree& operator=(const AABSPTree& src) {
         delete root;
         // Clone tree takes care of filling out the memberTable.
         root = cloneTree(src.root);
     }
 
 
-    ~KDTreeSet() {
+    ~AABSPTree() {
         clear();
     }
 
@@ -433,7 +432,7 @@ public:
     void remove(const T& value) {
         debugAssertM(contains(value),
             "Tried to remove an element from a "
-            "KDTreeSet that was not present");
+            "AABSPTree that was not present");
 
         Array<Handle>& list = memberTable[value]->valueArray;
 
@@ -503,7 +502,7 @@ public:
     // and allowing the computation to be restarted.
     class BoxIntersectionIterator {
     private:
-        friend class KDTreeSet<T>;
+        friend class AABSPTree<T>;
 
         /** True if this is the "end" iterator instance */
         bool            isEnd;
@@ -647,7 +646,7 @@ public:
 
     /**
      Appends all members whose bounds intersect the box.
-     See also KDTreeSet::beginBoxIntersection.
+     See also AABSPTree::beginBoxIntersection.
      */
     void getIntersectingMembers(const AABox& box, Array<T>& members) const {
         if (root == NULL) {
@@ -657,7 +656,7 @@ public:
     }    
 
 
-    /** See KDTreeSet::beginRayIntersection */
+    /** See AABSPTree::beginRayIntersection */
     class RayIntersectionIterator {
     private:
         // TODO!  This state is temporary; it may need to change.
@@ -703,7 +702,7 @@ public:
       Almost all ray intersection tests will have identical structure.
 
      <PRE>
-       typedef KDTreeSet<Object*>::RayIntersectionIterator IT;
+       typedef AABSPTree<Object*>::RayIntersectionIterator IT;
        void findFirstIntersection(const Ray& ray, Object*& firstObject, double& firstTime) {
            int count     = -1;
 
@@ -745,7 +744,7 @@ public:
     RayIntersectionIterator endRayIntersection() const;
 
     /**
-     Returns an array of all members of the set.  See also KDTreeSet::begin.
+     Returns an array of all members of the set.  See also AABSPTree::begin.
      */
     void getMembers(Array<T>& members) const {
         memberTable.getKeys(members);
@@ -759,7 +758,7 @@ public:
     */
     class Iterator {
     private:
-        friend class KDTreeSet<T>;
+        friend class AABSPTree<T>;
 
         // Note: this is a Table iterator, we are currently defining
         // Set iterator
@@ -826,6 +825,8 @@ public:
         return Iterator(memberTable.end());
     }
 };
+
+#define KDTreeSet AABSPTree
 
 }
 
