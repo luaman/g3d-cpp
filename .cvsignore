@@ -2,3 +2,4 @@ install
 temp
 release
 *.pyc
+autom4te.cache

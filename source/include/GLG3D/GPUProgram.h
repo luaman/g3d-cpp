@@ -53,9 +53,9 @@ private:
 protected:
 
     /**
-     Determines which unit it uses from the first line.
+     Determines which unit and extension API a shader uses from the first line.
      */
-    static GLenum getUnitFromCode(const std::string& code);
+    static GLenum getUnitFromCode(const std::string& code, Extension& extension);
 
     GPUProgram(const std::string& name, const std::string& filename);
 

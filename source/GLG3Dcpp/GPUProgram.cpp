@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-09-09
+  @edited  2003-09-17
 */
 
 #include "GLG3D/GPUProgram.h"
@@ -19,16 +19,35 @@ GPUProgram::GPUProgram(
 }
 
 
-GLenum GPUProgram::getUnitFromCode(const std::string& code) {
+GLenum GPUProgram::getUnitFromCode(const std::string& code, Extension& extension) {
 
     if (beginsWith(code, "!!ARBvp1.0")) {
+		extension = ARB;
         return GL_VERTEX_PROGRAM_ARB;
 
     } if (beginsWith(code, "!!ARBfp1.0")) {
+		extension = ARB;
         return GL_FRAGMENT_PROGRAM_ARB;
 
     } if (beginsWith(code, "!!VP2.0")) {
+		extension = NVIDIA;
         return GL_VERTEX_PROGRAM_NV;
+
+    } if (beginsWith(code, "!!VP1.0")) {
+		extension = NVIDIA;
+        return GL_VERTEX_PROGRAM_NV;
+
+    } if (beginsWith(code, "!!FP1.0")) {
+		extension = NVIDIA;
+        return GL_FRAGMENT_PROGRAM_NV;
+
+    } if (beginsWith(code, "!!FP1.1")) {
+		extension = NVIDIA;
+        return GL_FRAGMENT_PROGRAM_NV;
+
+    } if (beginsWith(code, "!!FP2.0")) {
+		extension = NVIDIA;
+        return GL_FRAGMENT_PROGRAM_NV;
 
     } else {
         return GL_NONE;
@@ -133,17 +152,7 @@ LOADSHADER:
         }
     }
 
-    unit = getUnitFromCode(code);
-
-    switch (unit) {
-    case GL_VERTEX_PROGRAM_NV:
-        extension = NVIDIA;
-        break;
-       
-    default:
-        extension = ARB;
-        break;
-    }
+    unit = getUnitFromCode(code, extension);
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glEnable(unit);
