@@ -17,11 +17,13 @@ instead of building the library themselves because building the library
 requires you to install several tools.
 <P>
 
-This distribution contains all of
-the files you need to <I>build</I> the library on Windows or Linux.
+This distribution contains two CVS modules: <B>cpp</B> and <B>data</B>.
+Together these have all of
+the files you need to <I>build</I> and install the library on Windows or Linux.
 It is assumed that you obtained this source by checking it out of
 SourceForge.net CVS for the "g3d-cpp" project (<A
-HREF="http://sourceforge.net/projects/g3d-cpp">http://sourceforge.net/projects/g3d-cpp</A>) or downloading a release zipfile.
+HREF="http://sourceforge.net/projects/g3d-cpp">http://sourceforge.net/projects/g3d-cpp</A>)
+or downloading a release zipfile.
 
 
 <HR>
@@ -104,29 +106,34 @@ you install libraries.  You no longer need the source tree.
 <HR>
 <H1>Directories</H1>
 You are at the root of the directory tree for G3D (which is
-referred to as "cpp" in this document).  The subdirectories have
+referred to as "cpp" in this document).  This is a CVS checkout
+of the <B>cpp</B> module.  The <CODE>../data</CODE> directory contains
+a checkout of the <B>data</B> directory.   The subdirectories have
 the following structure:
 
 <PRE>
-<CODE>cpp</CODE>
- |-<CODE>source</CODE>
- |  |-<CODE>demos</CODE>
- |  |-<CODE>G3Dcpp</CODE>
- |  |-<CODE>GLG3Dcpp</CODE>
- |  |-<CODE>IJG</CODE>
- |  |-<CODE>html</CODE>
- |  |-<CODE>include</CODE>
- |  |  |-<CODE>G3D</CODE>
- |  |  |-<CODE>GLG3D</CODE>
- |  |  '-<CODE>glh</CODE>                     <FONT COLOR="00700">The latest GL extensions.  G3D doesn't use the system GL headers.</FONT>
- |  |     |-<CODE>extgen</CODE>
- |  |     '-<CODE>GL</CODE>
- |  |-<CODE>lib</CODE>
- |  '-<CODE>test</CODE>
- |-<CODE>data</CODE>
- |-<FONT COLOR="#C00000"><CODE>install</CODE></FONT>                       <FONT COLOR="#007000">The library ready for use</FONT>
- |-<FONT COLOR="#C00000"><CODE>release</CODE></FONT>                       <FONT COLOR="#007000">Official G3D release zipfiles (only Morgan needs these)</FONT>
- '-<FONT COLOR="#C00000"><CODE>temp</CODE></FONT>
+|-<CODE>cpp</CODE>
+|  |-<CODE>source</CODE>
+|  |  |-<CODE>demos</CODE>
+|  |  |-<CODE>G3Dcpp</CODE>
+|  |  |-<CODE>GLG3Dcpp</CODE>
+|  |  |-<CODE>IJG</CODE>
+|  |  |-<CODE>html</CODE>
+|  |  |-<CODE>include</CODE>
+|  |  |  |-<CODE>G3D</CODE>
+|  |  |  |-<CODE>GLG3D</CODE>
+|  |  |  '-<CODE>glh</CODE>                     <FONT COLOR="00700">The latest GL extensions.  G3D doesn't use the system GL headers.</FONT>
+|  |  |     |-<CODE>extgen</CODE>
+|  |  |     '-<CODE>GL</CODE>
+|  |  |-<CODE>lib</CODE>
+|  |  '-<CODE>test</CODE>
+|  |-<FONT COLOR="#C00000"><CODE>install</CODE></FONT>                       <FONT COLOR="#007000">The library ready for use (copy to the location of your choice)</FONT>
+|  |-<FONT COLOR="#C00000"><CODE>release</CODE></FONT>                       <FONT COLOR="#007000">Official G3D release zipfiles (only Morgan needs these)</FONT>
+|  '-<FONT COLOR="#C00000"><CODE>temp</CODE></FONT>
+'-<CODE>data</CODE>
+   |-<CODE>font</CODE>
+   |-<CODE>quake</CODE>
+   ...
 </PRE>
 
 The red directories can be deleted; they are built from the
