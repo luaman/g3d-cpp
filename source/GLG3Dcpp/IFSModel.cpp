@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2004-02-18
+  @edited  2004-10-07
  */ 
 
 
@@ -14,7 +14,6 @@
 #include "GLG3D/IFSModel.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
-
 namespace G3D {
 
 VARAreaRef IFSModel::varArea = NULL;
@@ -34,6 +33,7 @@ void IFSModel::reset() {
     faceArray.clear();
     vertexArray.clear();
     edgeArray.clear();
+	texArray.clear();
 }
 
 
@@ -53,7 +53,7 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
     reset();
 
     this->filename = filename;
-    load(filename, name, indexArray, geometry.vertexArray);
+    load(filename, name, indexArray, geometry.vertexArray, texArray);
 
     debugAssert(geometry.vertexArray.size() > 0);
     debugAssert(indexArray.size() > 0);
@@ -78,6 +78,7 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
 size_t IFSModel::mainMemorySize() const {
 
     size_t frameSize   = sizeof(MeshAlg::Geometry)  + (sizeof(Vector3) + sizeof(Vector3)) * geometry.vertexArray.size();
+	size_t texCoordSize = sizeof(Vector2) * texArray.size();
     size_t indexSize   = indexArray.size() * sizeof(int);
     size_t faceSize    = faceArray.size() * sizeof(MeshAlg::Face);
     size_t valentSize  = vertexArray.size() * sizeof(Array<MeshAlg::Vertex>);
@@ -88,7 +89,7 @@ size_t IFSModel::mainMemorySize() const {
 
     size_t edgeSize    = edgeArray.size() * sizeof(MeshAlg::Edge);
 
-    return sizeof(IFSModel) + frameSize + indexSize + faceSize + valentSize + edgeSize;
+    return sizeof(IFSModel) + frameSize + indexSize + faceSize + valentSize + edgeSize + texCoordSize;
 }
 
 
@@ -105,12 +106,15 @@ void IFSModel::save(
     const std::string&          filename,
     const std::string&          name,
     const Array<int>&           index,
-    const Array<Vector3>&       vertex) {
+    const Array<Vector3>&       vertex,
+	const Array<Vector2>&		texCoord) {
+    
+	float32 ifs_version = (texCoord.size() == 0)? 1.0f : 1.1f;
 
     BinaryOutput b(filename, G3D_LITTLE_ENDIAN);
 
     b.writeString32("IFS");
-    b.writeFloat32(1.0);
+    b.writeFloat32(ifs_version);
     b.writeString32(name);
 
     b.writeString32("VERTICES");
@@ -127,6 +131,16 @@ void IFSModel::save(
     for (int i = 0; i < index.size(); ++i) {
         b.writeUInt32(index[i]);
     }
+	
+	if (ifs_version == 1.1f) {
+		b.writeString32("TEXTURECOORD");
+		alwaysAssertM(texCoord.size() == vertex.size(), "Number of texCoords must match the number of vertices") ;
+		b.writeUInt32(texCoord.size());
+		for(int t = 0; t < texCoord.size(); ++t) {
+			texCoord[t].serialize(b);
+		}
+	}
+
     b.commit();
 }
 
@@ -135,7 +149,8 @@ void IFSModel::load(
     const std::string&      filename,
     std::string&            name,
     Array<int>&             index, 
-    Array<Vector3>&         vertex) {
+    Array<Vector3>&         vertex,
+	Array<Vector2>&			texCoord) {
 
     BinaryInput bi(filename, G3D_LITTLE_ENDIAN);
 
@@ -147,12 +162,14 @@ void IFSModel::load(
     if (header != "IFS") {
        throw std::string("File is not an IFS file");
     }
-
-    if (bi.readFloat32() != 1.0f) {
-       throw std::string("Bad IFS version, expecting 1.0");
+	float32 ifsversion  = bi.readFloat32();
+    if (ifsversion != 1.0f && ifsversion != 1.1f) {
+       throw std::string("Bad IFS version, expecting 1.0 or 1.1");
     }
 
     name = bi.readString32();
+
+	texCoord.resize(0);
 
     while (bi.hasMore()) {
         std::string str = bi.readString32();
@@ -183,9 +200,17 @@ void IFSModel::load(
             for (int i = 0; i < index.size(); ++i) {
                 index[i] = bi.readUInt32();
             }
-        }
+        } else if (str == "TEXTURECOORD") {
+            debugAssertM(ifsversion == 1.1f, "IFS Version should be 1.1");
+            debugAssertM(texCoord.size() == 0, "Multiple texcoord fields!");
+			uint32 num = bi.readUInt32();
+			texCoord.resize(num);
+			debugAssertM(texCoord.size() == vertex.size()," Must have same number of texcoords as vertices");
+			for(uint32 t = 0; t < num; ++t) {
+				texCoord[t].deserialize(bi);
+			}
+		}
     }
-
 }
 
 
@@ -214,6 +239,7 @@ IFSModel::PosedIFSModel::PosedIFSModel(
 
 
 void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
+
     renderDevice->pushState();
 
         if (useMaterial) {
@@ -231,36 +257,49 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
         if (perVertexNormals) {
             renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
             if (! IFSModel::varArea.isNull() && 
-                (varArea->totalSize() <= 
-                  sizeof(Vector3) * 2 * model->geometry.vertexArray.size())) {
-
+				 (varArea->totalSize() >= sizeof(Vector3) * 2 * model->geometry.vertexArray.size() + 
+										  sizeof(Vector2) * model->texArray.size())) {
                 // Can use VAR
 
                 varArea->reset();
 
                 VAR vertex(model->geometry.vertexArray, IFSModel::varArea);
                 VAR normal(model->geometry.normalArray, IFSModel::varArea);
+				VAR tex(model->texArray, IFSModel::varArea);
 
                 renderDevice->beginIndexedPrimitives();
+					if (model->texArray.size() > 0) {
+						renderDevice->setTexCoordArray(0, tex);
+					}
                     renderDevice->setNormalArray(normal);
                     renderDevice->setVertexArray(vertex);
                     renderDevice->sendIndices(RenderDevice::TRIANGLES, model->indexArray);
                 renderDevice->endIndexedPrimitives();
 
             } else {
-
                 // No VAR
                 const int* indexArray = model->indexArray.getCArray();
                 const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
                 const Vector3* normalArray = model->geometry.normalArray.getCArray();
-                int n = model->indexArray.size();
+				const Vector2* texCoordArray = model->texArray.getCArray();
+                const int n = model->indexArray.size();
 
                 renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-                    for (int i = 0; i < n; ++i) {
-                        const int v = indexArray[i];            
-                        renderDevice->setNormal(normalArray[v]);
-                        renderDevice->sendVertex(vertexArray[v]);
-                    }
+					if (model->texArray.size() > 0) {
+						for (int i = 0; i < n; ++i) {
+							const int v = indexArray[i];            
+							renderDevice->setTexCoord(0, texCoordArray[v]);
+							renderDevice->setNormal(normalArray[v]);
+							renderDevice->sendVertex(vertexArray[v]);
+						}
+
+					} else {
+						for (int i = 0; i < n; ++i) {
+							const int v = indexArray[i];            
+							renderDevice->setNormal(normalArray[v]);
+							renderDevice->sendVertex(vertexArray[v]);
+						}
+					}
                 renderDevice->endPrimitive();
             }
 
@@ -271,18 +310,28 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
             const Vector3* vertexArray = model->geometry.vertexArray.getCArray();
             const Vector3* faceNormalArray = model->faceNormalArray.getCArray();           
             const MeshAlg::Face* faceArray = model->faceArray.getCArray();
-            int n = model->faceArray.size();
+			const Vector2* texCoordArray = model->texArray.getCArray();
+            const int n = model->faceArray.size();
 
             renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-                for (int f = 0; f < n; ++f) {
-                    renderDevice->setNormal(faceNormalArray[f]);
-                    for (int j = 0; j < 3; ++j) {                    
-                        renderDevice->sendVertex(vertexArray[faceArray[f].vertexIndex[j]]);
-                    }
-                }
+				if (model->texArray.size() > 0) {
+					for (int f = 0; f < n; ++f) {
+						renderDevice->setNormal(faceNormalArray[f]);
+						for (int j = 0; j < 3; ++j) {                    
+							renderDevice->setTexCoord(0, texCoordArray[faceArray[f].vertexIndex[j]]);
+							renderDevice->sendVertex(vertexArray[faceArray[f].vertexIndex[j]]);
+						}
+					}
+				} else {
+					for (int f = 0; f < n; ++f) {
+						renderDevice->setNormal(faceNormalArray[f]);
+						for (int j = 0; j < 3; ++j) {                    
+							renderDevice->sendVertex(vertexArray[faceArray[f].vertexIndex[j]]);
+						}
+					}
+				}
             renderDevice->endPrimitive();
         }
-
     renderDevice->popState();
 }
 
@@ -336,6 +385,16 @@ const Array<MeshAlg::Vertex>& IFSModel::PosedIFSModel::weldedVertices() const {
     return model->weldedVertexArray;
 }
 
+const bool IFSModel::PosedIFSModel::hasTextureCoords() const {
+	return (model->texArray.size() > 0);
+}
+
+
+const Array<Vector2>&  IFSModel::PosedIFSModel::texCoords() const {
+    alwaysAssertM(hasTextureCoords(), "Model has no texture coordinates.");
+	return model->texArray;
+}
+
 
 void IFSModel::PosedIFSModel::getObjectSpaceBoundingSphere(Sphere& s) const {
     s = model->boundingSphere;
@@ -361,4 +420,5 @@ const Array<Vector3>& IFSModel::PosedIFSModel::objectSpaceFaceNormals(bool norma
     return model->faceNormalArray;
 }
 
-}
+} // namespace
+

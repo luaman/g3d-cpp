@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2004-09-09
+  @edited  2004-10-07
  */ 
 
 
@@ -52,6 +52,8 @@ private:
         virtual const Array<MeshAlg::Face>& weldedFaces() const;
         virtual const Array<MeshAlg::Edge>& weldedEdges() const;
         virtual const Array<MeshAlg::Vertex>& weldedVertices() const;
+        virtual const Array<Vector2>& texCoords() const;
+		virtual const bool hasTextureCoords() const ;
         virtual const Array<int>& triangleIndices() const;
         virtual void getObjectSpaceBoundingSphere(Sphere&) const;
         virtual void getObjectSpaceBoundingBox(Box&) const;
@@ -73,6 +75,7 @@ private:
     Array<MeshAlg::Face>        faceArray;
     Array<MeshAlg::Edge>        edgeArray;
     Array<MeshAlg::Vertex>      vertexArray;
+	Array<Vector2>				texArray;
     Sphere                      boundingSphere;
     Box                         boundingBox;
     int                         numBoundaryEdges;
@@ -124,13 +127,14 @@ public:
 
     /** Writes an IFS file from data in arrays */
     static void save(const std::string& filename, const std::string& name,
-             const Array<int>& index, const Array<Vector3>& vertex);
+             const Array<int>& index, const Array<Vector3>& vertex, const Array<Vector2>& texCoord);
 
     /** Parses an IFS file from disk into arrays; does no cleanup or welding */
     static void load(const std::string& filename, std::string& name,
-        Array<int>& index, Array<Vector3>& vertex);
+        Array<int>& index, Array<Vector3>& vertex, Array<Vector2>& texCoord);
 };
 
-}
+} //namespace
+
 
 #endif
