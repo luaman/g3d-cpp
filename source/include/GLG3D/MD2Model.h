@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-09-27
+ @edited  2003-10-18
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -227,7 +227,7 @@ protected:
     /**
      Set on load by computeAdjacency().
      */
-    Array<MeshAlg::Face>                 faceArray;
+    Array<MeshAlg::Face>        faceArray;
 
     /**
      Set on load by computeAdjacency();
@@ -237,11 +237,13 @@ protected:
     /**
      Set on load by computeAdjacency().
      */
-    Array<MeshAlg::Edge>                 edgeArray;
+    Array<MeshAlg::Edge>        edgeArray;
 
     Sphere                      _boundingSphere;
 
     Box                         _boundingBox;
+
+    int                         _numBrokenEdges;
 
     Sphere                      animationBoundingSphere[MAX_ANIMATIONS]; 
     Box                         animationBoundingBox[MAX_ANIMATIONS]; 
@@ -340,6 +342,11 @@ public:
      A bounding sphere for this animation.
      */
     const Sphere& boundingSphere(Animation a) const;
+
+    /**
+     The number of edges for which there is only one adjacent face.
+     */
+    int numBrokenEdges() const;
 
     /**
      An oriented bounding box on the model.  Covers all vertices in all animations.

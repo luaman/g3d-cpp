@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-08-07
- @edited  2003-09-14
+ @edited  2003-10-18
 
  */
 
@@ -267,6 +267,13 @@ void MD2Model::load(const std::string& filename) {
 
 
     MeshAlg::computeAdjacency(keyFrame[0].vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
+
+    _numBrokenEdges = 0;
+    for (int i = 0; i < edgeArray.size(); ++i) {
+        if (edgeArray[i].faceIndex[1] == MeshAlg::Face::NONE) {
+            ++_numBrokenEdges;
+        }
+    }
 
     initialized = true;
 }

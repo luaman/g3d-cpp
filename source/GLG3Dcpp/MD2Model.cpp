@@ -2,9 +2,9 @@
  @file MD2Model.cpp
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
- @created 2003-08-07
- @edited  2003-09-27
 
+ @created 2003-08-07
+ @edited  2003-10-18
  */
 
 #if defined(G3D_WIN32) && defined(SSE)
@@ -53,6 +53,11 @@ const MD2Model::MD2AnimInfo MD2Model::animationTable[MD2Model::MAX_ANIMATIONS] =
 
 bool MD2Model::Pose::operator==(const MD2Model::Pose& other) const {
     return (animation == other.animation) && fuzzyEq(time, other.time);
+}
+
+
+int MD2Model::numBrokenEdges() const {
+    return _numBrokenEdges;
 }
 
 
