@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2003-06-24
+ @edited  2005-01-12
 
 
   <PRE>
