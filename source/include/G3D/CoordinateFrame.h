@@ -119,7 +119,7 @@ public:
      */
     std::string toXML() const;
 
-    /*
+    /**
      Returns the heading as an angle in radians, where
     north is 0 and west is PI/2
      */
@@ -129,7 +129,7 @@ public:
         return angle;
     }
 
-    /*
+    /**
      Takes the coordinate frame into object space.
      this->inverse() * c
      */
