@@ -22,7 +22,6 @@
 #include "GLG3D/GWindow.h"
 #include <windows.h>
 #include <string>
-#include <time.h>
 
 namespace G3D {
 
@@ -48,6 +47,7 @@ private:
 	HGLRC				 _glContext;
 	bool				 _mouseVisible;
 	bool				 _inputCapture;
+    bool                 _windowActive;
 
     /** Mouse Button State Array: false - up, true - down
         [0] - left, [1] - middle, [2] - right */
@@ -55,7 +55,7 @@ private:
 
     G3D::Queue< GEvent > _keyboardEvents;
 
-    _DirectInput*    _diDevices;
+    _DirectInput*        _diDevices;
 
     G3D::Set< int >      _usedIcons;
 

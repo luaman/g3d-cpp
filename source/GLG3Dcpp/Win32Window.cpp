@@ -5,7 +5,7 @@
   @cite       Written by Corey Taylor & Morgan McGuire
   @cite       Special thanks to Max McGuire of Ironlore
   @created 	  2004-05-21
-  @edited  	  2004-10-17
+  @edited  	  2005-03-16
     
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -16,20 +16,19 @@
 // This file is ignored on other platforms
 #ifdef G3D_WIN32
 
-#include "G3D/../graphics3d.h"
+#include "graphics3d.h"
 #include "GLG3D/Win32Window.h"
 #include "GLG3D/glcalls.h"
+#include "GLG3D/UserInput.h"
 #include "directinput8.h"
 
-#include "GLG3D/UserInput.h"
-
-using G3D::_internal::_DirectInput;
-
 #include <time.h>
+#include <sstream>
 #if !defined(G3D_MINGW32)
 #include <crtdbg.h>
 #endif
-#include <sstream>
+
+using G3D::_internal::_DirectInput;
 
 /*
     DirectInput8 support is added by loading dinupt8.dll if found.
@@ -75,6 +74,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 	_hDC = NULL;
 	_mouseVisible = true;
 	_inputCapture = false;
+    _windowActive = false;
 
     memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
@@ -104,9 +104,6 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 			style |= WS_SIZEBOX;
 		}
 
-        if (s.visible) {
-            style |= WS_VISIBLE;
-        }
     } else {
 
         // Show nothing but the client area (cannot move window with mouse)
@@ -150,11 +147,11 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 
     alwaysAssertM(window != NULL, "");
 
+    SetWindowLong(window, GWL_USERDATA, (LONG)this);
+
     if (s.visible) {
         ShowWindow(window, SW_SHOW);
-    } 
-            
-    SetWindowLong(window, GWL_USERDATA, (LONG)this);
+    }         
 
     if (settings.fullScreen) {
 	    // Change the desktop resolution if we are running in fullscreen mode
@@ -190,6 +187,8 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
 
 	settings = s;
 	init(hwnd);
+
+    _windowActive = hasFocus();
 }
 
 
@@ -503,40 +502,7 @@ std::string Win32Window::caption() {
 
 bool Win32Window::pollEvent(GEvent& e) {
 	MSG message;
-
-	bool done = false;
             
-    DIDEVICEOBJECTDATA keyboardData[200];
-    DWORD numKeyboardData = 200;
-
-    if (_keyboardEvents.length() > 200) {
-        _keyboardEvents.clear();
-    }
-
-    // Check for DI_OK or DI_BUFFEROVERFLOW
-    if( _diDevices->getKeyboardEvents(keyboardData, numKeyboardData) ) {
-
-        for (uint32 event = 0; event < numKeyboardData; ++event) {
-            e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYDOWN : SDL_KEYUP;
-            e.key.state = (keyboardData[event].dwData & 0x80) ? SDL_PRESSED : SDL_RELEASED;
-
-            e.key.keysym.sym = (SDLKey)_sdlKeys[keyboardData[event].dwOfs];
-
-            e.key.keysym.scancode = keyboardData[event].dwOfs;
-            
-            int tmpVirualKey = ::MapVirtualKey(_sdlKeys[keyboardData[event].dwOfs], 1);
-
-            char tmpAscii[2];
-            BYTE tmpKeyboard[256];
-
-            ::GetKeyboardState(tmpKeyboard);
-
-            e.key.keysym.unicode = ToAscii(tmpVirualKey, e.key.keysym.scancode, tmpKeyboard, (WORD*)tmpAscii, 0);
-
-            _keyboardEvents.pushBack(e);
-        }
-    }
-
 	while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&message);
 		DispatchMessage(&message);
@@ -546,13 +512,6 @@ bool Win32Window::pollEvent(GEvent& e) {
             case WM_CLOSE:
                 e.quit.type = SDL_QUIT;
                 return true;
-			case WM_ACTIVATE:
-                // TODO
-                /*
-                fActive = LOWORD(wParam);           // activation flag 
-                fMinimized = (BOOL) HIWORD(wParam); // minimized flag 
-                hwndPrevious = (HWND) lParam;       // window handle 
-                */
                 break;
 
             case WM_LBUTTONDOWN:
@@ -605,6 +564,39 @@ bool Win32Window::pollEvent(GEvent& e) {
 		clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
 		clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
 	}
+
+    if (_windowActive) {
+        DIDEVICEOBJECTDATA keyboardData[200];
+        DWORD numKeyboardData = 200;
+
+        if (_keyboardEvents.length() > 200) {
+            _keyboardEvents.clear();
+        }
+
+        // Check for DI_OK or DI_BUFFEROVERFLOW
+        if( _diDevices->getKeyboardEvents(keyboardData, numKeyboardData) ) {
+
+            for (uint32 event = 0; event < numKeyboardData; ++event) {
+                e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYDOWN : SDL_KEYUP;
+                e.key.state = (keyboardData[event].dwData & 0x80) ? SDL_PRESSED : SDL_RELEASED;
+
+                e.key.keysym.sym = (SDLKey)_sdlKeys[keyboardData[event].dwOfs];
+
+                e.key.keysym.scancode = keyboardData[event].dwOfs;
+            
+                int tmpVirualKey = ::MapVirtualKey(_sdlKeys[keyboardData[event].dwOfs], 1);
+
+                char tmpAscii[2];
+                BYTE tmpKeyboard[256];
+
+                ::GetKeyboardState(tmpKeyboard);
+
+                e.key.keysym.unicode = ToAscii(tmpVirualKey, e.key.keysym.scancode, tmpKeyboard, (WORD*)tmpAscii, 0);
+
+                _keyboardEvents.pushBack(e);
+            }
+        }
+    }
 
     if (_keyboardEvents.length() > 0) {
         memcpy(&e, &_keyboardEvents.popFront(), sizeof(GEvent));
@@ -670,7 +662,16 @@ LRESULT WINAPI Win32Window::window_proc(
     WPARAM              wparam,
     LPARAM              lparam) {
     
-//    Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
+    Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
+    
+    if (message == WM_ACTIVATE) {
+        if ((LOWORD(wparam) != WA_INACTIVE) &&
+            (HIWORD(wparam) == 0)) { // non-zero is minimized 
+            this_window->_windowActive = true;
+        } else {
+            this_window->_windowActive = false;
+        }
+    }
     
     return DefWindowProc(window, message, wparam, lparam);
 }
@@ -1030,8 +1031,8 @@ bool Win32APIWindow::pollEvent(GEvent& e) {
 			switch (message.message) {
             case WM_CLOSE:
             case WM_QUIT:
-                e.type = SDL_QUIT;
-
+                e.quit.type = SDL_QUIT;
+                return true;
                 break;
 
 			case WM_KEYDOWN:
