@@ -346,7 +346,6 @@ void VertexAndPixelShader::computeUniformArray() {
 	    glGetActiveUniformARB(glProgramObject(), 
             i, maxLength, NULL, &size, &type, name);
 
-        // TODO: remove; this is a workaround for odd behavior in the NVIDIA driver
         bool isGLBuiltIn = (strlen(name) > 3) && beginsWith(std::string(name), "gl_");
 
         if (! isGLBuiltIn) {
