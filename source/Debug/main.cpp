@@ -186,7 +186,9 @@ public:
       Entity(pos, _color, NULL), ifs(_ifs) {}
 
     virtual PosedModelRef getPosedModel() const {
-        return ifs->pose(pframe.toCoordinateFrame());
+        GMaterial mat;
+        mat.color = Color3::RED;
+        return ifs->pose(pframe.toCoordinateFrame(), mat);
     }
 };
 

@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-12-20
+  @edited  2004-02-15
  */ 
 
 
@@ -19,6 +19,7 @@
 namespace G3D {
 
 typedef ReferenceCountedPointer<class IFSModel> IFSModelRef;
+
 
 /**
  Loads the IFS file format.  Note that you can convert 
@@ -36,8 +37,11 @@ private:
         IFSModelRef             model;
         CoordinateFrame         cframe;
         bool                    perVertexNormals;
+        bool                    useMaterial;
+        GMaterial               material;
 
-        PosedIFSModel(IFSModelRef _model, const CoordinateFrame& _cframe, bool _pvn);
+        PosedIFSModel(IFSModelRef _model, const CoordinateFrame& _cframe, bool _pvn,
+            const GMaterial& _mat, bool _useMat);
         virtual ~PosedIFSModel() {}
         virtual std::string name() const;
         virtual void getCoordinateFrame(CoordinateFrame&) const;
@@ -93,9 +97,16 @@ public:
 
     /**
      If perVertexNormals is false, the model is rendered with per-face normals,
-     which are slower.
+     which are slower.  No color or texture is set when rendered (that is,
+     the existing RenderDevice values are used.)
      */
     virtual PosedModelRef pose(const CoordinateFrame& cframe, bool perVertexNormals = true);
+
+    /**
+     If perVertexNormals is false, the model is rendered with per-face normals,
+     which are slower.
+     */
+    virtual PosedModelRef pose(const CoordinateFrame& cframe, const GMaterial& material, bool perVertexNormals = true);
 
     virtual size_t mainMemorySize() const;
 };

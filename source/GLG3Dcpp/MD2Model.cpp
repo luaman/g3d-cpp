@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-08-07
- @edited  2003-11-15
+ @edited  2004-02-16
  */
 
 #include "G3D/platform.h"
@@ -433,7 +433,12 @@ void MD2Model::allocateVertexArrays(RenderDevice* renderDevice) {
 
 
 PosedModelRef MD2Model::pose(const CoordinateFrame& cframe, const Pose& pose) {
-    return new PosedMD2Model(this, cframe, pose);
+    return new PosedMD2Model(this, cframe, pose, false, GMaterial());
+}
+
+
+PosedModelRef MD2Model::pose(const CoordinateFrame& cframe, const Pose& pose, const GMaterial& mat) {
+    return new PosedMD2Model(this, cframe, pose, true, mat);
 }
 
 
@@ -451,7 +456,6 @@ void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
     getGeometry(pose, interpolatedFrame);
 
     renderDevice->pushState();
-
         renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
         // Quake's triangles are backwards of OpenGL in our coordinate
@@ -754,10 +758,14 @@ void MD2Model::getGeometry(const Pose& pose, MeshAlg::Geometry& out) const {
 MD2Model::PosedMD2Model::PosedMD2Model(
     MD2ModelRef                 _model,
     const CoordinateFrame&      _cframe,
-    const Pose&                 _pose) :
+    const Pose&                 _pose,
+    bool                        _useMat,
+    const GMaterial&            _mat) :
      model(_model), 
      cframe(_cframe),
-     pose(_pose) {
+     pose(_pose),
+     useMaterial(_useMat),
+     material(_mat) {
 }
 
 
@@ -818,6 +826,9 @@ int MD2Model::PosedMD2Model::numBrokenEdges() const {
 void MD2Model::PosedMD2Model::render(RenderDevice* renderDevice) const {
     renderDevice->pushState();
         renderDevice->setObjectToWorldMatrix(coordinateFrame());
+        if (useMaterial) {
+            material.configure(renderDevice);
+        }
         model->render(renderDevice, pose);
     renderDevice->popState();
 }

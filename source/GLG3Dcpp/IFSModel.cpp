@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2003-12-20
+  @edited  2004-02-16
  */ 
 
 
@@ -131,22 +131,46 @@ size_t IFSModel::mainMemorySize() const {
 
 
 PosedModelRef IFSModel::pose(const CoordinateFrame& cframe, bool perVertexNormals) {
-    return new PosedIFSModel(this, cframe, perVertexNormals);
+    return new PosedIFSModel(this, cframe, perVertexNormals, GMaterial(), false);
+}
+
+PosedModelRef IFSModel::pose(const CoordinateFrame& cframe, const GMaterial& mat, bool perVertexNormals) {
+    return new PosedIFSModel(this, cframe, perVertexNormals, mat, true);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void GMaterial::configure(class RenderDevice* rd) const {
+    rd->setColor(color);
+    for (int t = 0; t < texture.size(); ++t) {
+        rd->setTexture(t, texture[t]);
+    }
+    rd->setShininess(shininess);
+    rd->setSpecularCoefficient(specularCoefficient);
 }
 
 //////////////////////////////////////////////////////////////////////////
 IFSModel::PosedIFSModel::PosedIFSModel(
     IFSModelRef                 _model,
     const CoordinateFrame&      _cframe,
-    bool                        _pvn) :
+    bool                        _pvn,
+    const GMaterial&            _mat,
+    bool                        _useMat) :
      model(_model), 
      cframe(_cframe),
-     perVertexNormals(_pvn) {
+     perVertexNormals(_pvn),
+     useMaterial(_useMat),
+     material(_mat) {
 }
 
 
 void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
     renderDevice->pushState();
+
+        if (useMaterial) {
+            material.configure(renderDevice);
+        }
+
         renderDevice->setObjectToWorldMatrix(coordinateFrame());
 
         const size_t varSize = 1024 * 1024;

@@ -4,25 +4,48 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2003-12-16
+  @edited  2004-02-16
  */ 
 
 #ifndef GLG3D_POSEDMODEL_H
 #define GLG3D_POSEDMODEL_H
 
 #include "graphics3D.h"
+#include "GLG3D/Texture.h"
 
 namespace G3D {
+
+/** 
+  Simple material used by IFSModel and MD2Model pose methods.
+  This class is provided as a convenience; it is not necessary
+  to use it.  If you do not provide a material, whatever
+  state is currently on the G3D::RenderDevice is used.  You
+  probably don't want to use GMaterial at all if you
+  are writing vertex and pixel programs.
+ */
+class GMaterial {
+public:
+    double                  specularCoefficient;
+    double                  shininess;
+    Color4                  color;
+    Array<TextureRef>       texture;
+
+    inline GMaterial() : specularCoefficient(0.2), shininess(10), color(Color3::WHITE) {}
+    /** Applies this material to the render device */
+    void configure(class RenderDevice* rd) const;
+};
 
 typedef ReferenceCountedPointer<class PosedModel> PosedModelRef;
 
 /**
- Base class for posed models.
+ Base class for posed models.  Provided for convenience; most
+ advanced applications use their own scene graph structure written
+ directly to RenderDevice.
 
- G3D does not provide a scene graph structure because the visible
+ <B>G3D does not provide a scene graph structure</B> because the visible
  surface determination, rendering, and caching behavior of a scene
  graph are different for each application.  There is currently no 
- one-size-fits-all scene graph design pattern for us to implement.
+ one-size-fits-all scene graph design pattern.
  
  G3D <B>does</B> provide some basic infrastructure for making your
  own scene graph, however.  Model classes (e.g. G3D::IFSModel, G3D::MD2Model),

@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-12-16
+ @edited  2004-02-16
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -174,11 +174,14 @@ protected:
         MD2ModelRef             model;
         CoordinateFrame         cframe;
         Pose                    pose;
+        bool                    useMaterial;
+        GMaterial               material;
 
         /** Filled out the first time objectSpaceGeometry is called */
         MeshAlg::Geometry       geometry;
 
-        PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, const Pose& _pose);
+        PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, const Pose& _pose,
+            bool _useMat, const GMaterial& _mat);
         virtual ~PosedMD2Model() {}
         virtual std::string name() const;
         virtual void getCoordinateFrame(CoordinateFrame&) const;
@@ -363,6 +366,7 @@ public:
     virtual ~MD2Model() {}
 
     PosedModelRef pose(const CoordinateFrame& cframe, const Pose& pose);
+    PosedModelRef pose(const CoordinateFrame& cframe, const Pose& pose, const GMaterial& mat);
 
     inline const Array<Vector2int16>& texCoordArray() const {
         return _texCoordArray;

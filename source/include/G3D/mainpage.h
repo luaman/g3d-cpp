@@ -238,6 +238,7 @@
         G3D::GFont,
         G3D::GApp, G3D::GApplet, G3D::GAppSettings,
         G3D::GLight,
+        G3D::GMaterial,
         G3D::Sky,
         G3D::LightingParameters,
         G3D::MD2Model,
@@ -249,8 +250,8 @@
         G3D::ManualCameraController
      </UL>
 
-    See the Demo project for a simple introduction to using SDL, OpenGL, 
-    Graphics3D and MSVC to create and render 3D geometry.
+    See the demo projects for a simple introduction to using SDL, OpenGL, 
+    Graphics3D and MSVC++ to create and render 3D geometry.
 
    \section Introduction Introduction
    Online documentation and updates available at 

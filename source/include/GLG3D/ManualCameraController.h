@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-11-11
+  @edited  2004-02-15
 */
 
 #ifndef G3D_MANUALCAMERACONTROLLER_H
@@ -15,10 +15,11 @@
 namespace G3D {
 
 /**
- Uses a Quake-style mapping to translate keyboard and mouse input
- into a flying camera position.  The result is an Euler-angle ManualCameraController
- suitable for games.  To use:
+ Uses a First Person (Quake-style) mapping to translate keyboard and mouse input
+ into a flying camera position.  The result is an Euler-angle 
+ camera controller suitable for games and fly-throughs.  
 
+  To use without G3D::GApp:
   <OL>
     <LI> Create a G3D::RenderDevice
     <LI> Create a UserInput object (set the keyboard controls when creating it)
@@ -27,8 +28,9 @@ namespace G3D {
     <LI> Invoke ManualCameraController::doSimulation every time simulation is invoked (e.g. once per rendering iteration)
     <LI> Use ManualCameraController::getCoordinateFrame() to set the camera's position
   </OL>
+
  */
-class ManualCameraController {
+class FPCameraController {
 	
 	/** m/s */
 	double                      maxMoveRate;
@@ -64,16 +66,16 @@ class ManualCameraController {
 public:
 
 
-	ManualCameraController();
+	FPCameraController();
 
     /** Creates and initializes */
-	ManualCameraController(class RenderDevice*, class UserInput*);
+	FPCameraController(class RenderDevice*, class UserInput*);
     
     /** You need to call setActive(true) before the controller will work. */
     void init(class RenderDevice* device, class UserInput* input);
 
     /** Deactivates the controller */
-    virtual ~ManualCameraController();
+    virtual ~FPCameraController();
 
     /** When active, the ManualCameraController takes over the mouse.  It turns
         off the mouse cursor and switches to first person controller style.
@@ -138,6 +140,10 @@ public:
     */
     void setCoordinateFrame(const CoordinateFrame& c);
 };
+
+/** Use FPCameraController instead 
+    @deprecated */
+typedef FPCameraController ManualCameraController;
 
 }
 #endif

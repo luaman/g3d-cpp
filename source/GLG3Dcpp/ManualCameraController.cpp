@@ -1,10 +1,10 @@
 /**
-  @file ManualCameraController.cpp
+  @file FPCameraController.cpp
 
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2003-12-16
+  @edited  2004-02-15
 */
 
 #include "G3D/platform.h"
@@ -15,34 +15,34 @@
 
 namespace G3D {
 
-ManualCameraController::ManualCameraController(){}
+FPCameraController::FPCameraController(){}
 
-ManualCameraController::ManualCameraController(
+FPCameraController::FPCameraController(
     RenderDevice* rd, UserInput* ui) {
     init(rd, ui);
 }
 
-void ManualCameraController::init(class RenderDevice* device, class UserInput* input) {
+void FPCameraController::init(class RenderDevice* device, class UserInput* input) {
     renderDevice = device;
     userInput    = input;
 
     debugAssert(renderDevice);
-    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a ManualCameraController");
+    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a FPCameraController");
 
     reset();
 
 }
 
-ManualCameraController::~ManualCameraController() {
+FPCameraController::~FPCameraController() {
 }
 
 
-bool ManualCameraController::active() const {
+bool FPCameraController::active() const {
     return _active;
 }
 
 
-void ManualCameraController::reset() {
+void FPCameraController::reset() {
     center      = Vector2(renderDevice->getWidth() / 2.0, renderDevice->getHeight() / 2.0);
     cameraMouse = center;
     SDL_ShowCursor(SDL_ENABLE);
@@ -56,7 +56,7 @@ void ManualCameraController::reset() {
 }
 
 
-void ManualCameraController::setActive(bool a) {
+void FPCameraController::setActive(bool a) {
 
     if (a != _active) {
 
@@ -89,17 +89,17 @@ void ManualCameraController::setActive(bool a) {
 }
 
 
-void ManualCameraController::setMoveRate(double metersPerSecond) {
+void FPCameraController::setMoveRate(double metersPerSecond) {
     maxMoveRate = metersPerSecond;
 }
 
 
-void ManualCameraController::setTurnRate(double radiansPerSecond) {
+void FPCameraController::setTurnRate(double radiansPerSecond) {
     maxTurnRate = radiansPerSecond;
 }
 
 
-void ManualCameraController::lookAt(
+void FPCameraController::lookAt(
     const Vector3&      position) {
 
     const Vector3 look = (position - translation);
@@ -109,7 +109,7 @@ void ManualCameraController::lookAt(
 }
 
 
-void ManualCameraController::doSimulation(
+void FPCameraController::doSimulation(
     double              elapsedTime) {
 
     if (! _active) {
@@ -179,20 +179,20 @@ void ManualCameraController::doSimulation(
 }
 
 
-CoordinateFrame ManualCameraController::getCoordinateFrame() const {
+CoordinateFrame FPCameraController::getCoordinateFrame() const {
 	CoordinateFrame c;
 	getCoordinateFrame(c);
 	return c;
 }
 
 
-void ManualCameraController::getCoordinateFrame(CoordinateFrame& c) const {
+void FPCameraController::getCoordinateFrame(CoordinateFrame& c) const {
 	c.translation = translation;
     c.rotation = Matrix3::fromEulerAnglesZYX(0, -yaw, -pitch);
 }
 
 
-void ManualCameraController::setCoordinateFrame(const CoordinateFrame& c) {
+void FPCameraController::setCoordinateFrame(const CoordinateFrame& c) {
     setPosition(c.translation);
     lookAt(c.translation + c.getLookVector());
 }
