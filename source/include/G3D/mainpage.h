@@ -451,6 +451,7 @@ to add zlibstat.lib to your linker list.
    <BR>Ed Johnson
    <BR>Benjamin Jurke
    <BR>Chris Kern
+   <BR>James O'Sullivan
    <BR>Aaron Orenstein
    <BR>Jordan Parker
    <BR>Independent JPEG Group
@@ -485,7 +486,7 @@ to add zlibstat.lib to your linker list.
    <UL>
      <LI> Color3::operator*=(const Color3&)
      <LI> Color3::operator*(const Color3&)
-     <LI> Linux Makefiles [Jordan]
+     <LI> Linux Makefiles [James O'Sullivan, Jordan Parker]
      <LI> RenderDevice::getProjectionMatrixParams
      <LI> RenderDevice::debugDrawCylinder
      <LI> Added data/ifs/sphere.ifs
