@@ -576,6 +576,102 @@ static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
     if ((c >= 'A') && (c <= 'Z')) {
         // Make key codes lower case canonically
         e.key.keysym.sym = (SDLKey)(c - 'A' + 'a');
+    } else if ((wparam >= 0x10) && (wparam <= 0x12)) {
+        // Fix VK_SHIFT, VK_CONTROL, VK_MENU to Left/Right equivalents
+        switch (wparam) {
+            case VK_SHIFT:
+                if (!(currentMods & KMOD_LSHIFT) && !(currentMods & KMOD_RSHIFT)) {
+                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 1) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
+                    }
+                } else if ((currentMods & KMOD_LSHIFT) && (currentMods & KMOD_RSHIFT)) {
+                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 0) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
+                    }
+                } else {
+                    if (e.key.state == SDL_PRESSED) {
+                        if (currentMods & KMOD_LSHIFT) {
+                            e.key.keysym.sym = SDLK_RSHIFT;
+                        } else {
+                            e.key.keysym.sym = SDLK_LSHIFT;
+                        }
+                    } else {
+                        if (currentMods & KMOD_LSHIFT) {
+                            e.key.keysym.sym = SDLK_LSHIFT;
+                        } else {
+                            e.key.keysym.sym = SDLK_RSHIFT;
+                        }
+                    }
+                }
+                break;
+            case VK_CONTROL:
+                if (!(currentMods & KMOD_LCTRL) && !(currentMods & KMOD_RCTRL)) {
+                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 1) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
+                    }
+                } else if ((currentMods & KMOD_LCTRL) && (currentMods & KMOD_RCTRL)) {
+                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 0) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
+                    }
+                } else {
+                    if (e.key.state == SDL_PRESSED) {
+                        if (currentMods & KMOD_LCTRL) {
+                            e.key.keysym.sym = SDLK_RCTRL;
+                        } else {
+                            e.key.keysym.sym = SDLK_LCTRL;
+                        }
+                    } else {
+                        if (currentMods & KMOD_LCTRL) {
+                            e.key.keysym.sym = SDLK_LCTRL;
+                        } else {
+                            e.key.keysym.sym = SDLK_RCTRL;
+                        }
+                    }
+                }
+                break;
+            case VK_MENU:
+                if (!(currentMods & KMOD_LALT) && !(currentMods & KMOD_RALT)) {
+                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 1) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
+                    }
+                } else if ((currentMods & KMOD_LALT) && (currentMods & KMOD_RALT)) {
+                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 0) {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
+                    } else {
+                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
+                    }
+                } else {
+                    if (e.key.state == SDL_PRESSED) {
+                        if (currentMods & KMOD_LALT) {
+                            e.key.keysym.sym = SDLK_RALT;
+                        } else {
+                            e.key.keysym.sym = SDLK_LALT;
+                        }
+                    } else {
+                        if (currentMods & KMOD_LALT) {
+                            e.key.keysym.sym = SDLK_LALT;
+                        } else {
+                            e.key.keysym.sym = SDLK_RALT;
+                        }
+                    }
+                }
+                break;
+            default:
+                e.key.keysym.sym = (SDLKey)0;
+                e.key.keysym.scancode = (SDLKey)0;
+                return;
+                break;
+        }
     } else {
         e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(wparam, 0, SDLK_LAST)];
     }
@@ -630,6 +726,10 @@ static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
 		switch (e.key.keysym.sym) {
 			case SDLK_NUMLOCK:
 			case SDLK_CAPSLOCK:
+                e.key.keysym.unicode = 0;
+                e.key.keysym.sym = (SDLKey)0;
+                e.key.keysym.scancode = 0;
+                return;
                 break;
             case SDLK_LCTRL:
 				currentMods &= ~KMOD_LCTRL;
@@ -715,7 +815,9 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.type = SDL_KEYDOWN;
 				e.key.state = SDL_PRESSED;
 
-				if ((message.lParam & 0x0f) == 1) {
+                // Need the repeat messages to find LSHIFT and RSHIFT
+				//if (((message.lParam >> 30) & 0x01) == 0) {
+                if ((message.lParam & 0x0f) == 1) {
 					// This is not an autorepeat message
 					makeKeyEvent(message.wParam, message.lParam, e);
 					return true;
@@ -726,7 +828,9 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.type = SDL_KEYUP;
 				e.key.state = SDL_RELEASED;
 
-				if ((message.lParam & 0x0f) == 1) {
+                // Need the repeat messages to find LSHIFT and RSHIFT
+				//if (((message.lParam  >> 30 )& 0x01) == 0) {
+                if ((message.lParam & 0x0f) == 1) {
 					// This is not an autorepeat message
 					makeKeyEvent(message.wParam, message.lParam, e);
 					return true;
