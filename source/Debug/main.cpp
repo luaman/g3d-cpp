@@ -270,6 +270,8 @@ void Demo::doLogic() {
         endApplet = true;
         app->endProgram = true;
     }
+
+	app->debugPrintf("(%g, %g)", app->userInput->getMouseX(), app->userInput->getMouseY());
 }
 
 
@@ -330,6 +332,8 @@ void App::main() {
 int main(int argc, char** argv) {
 
     GAppSettings settings;
+
+	settings.window.resizable = true;
 
     App app(settings);
 
