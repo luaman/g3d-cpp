@@ -133,8 +133,6 @@ int main(int argc, char** argv) {
         // User input
         handleEvents();
 
-		System::sleep(0.02);
-
         // Simulation
         gameTime = (int)(gameTime + MINUTE * .5) % (int)DAY;
         controller->doSimulation(.05);
