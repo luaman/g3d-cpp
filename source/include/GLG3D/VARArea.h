@@ -110,7 +110,7 @@ private:
     /** Updates allocation and peakAllocation based off of new allocation. */
     inline void VARArea::updateAllocation(size_t newAllocation) {
         allocated += newAllocation;
-        peakAllocated = iMax(peakAllocated, allocated);
+        peakAllocated = (size_t)iMax((int)peakAllocated, (int)allocated);
     }
 
     static size_t       _sizeOfAllVARAreasInMemory;
