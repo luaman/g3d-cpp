@@ -68,13 +68,20 @@ inline GLContext glGetCurrentContext() {
     return wglGetCurrentContext();
 }
 
-#else 
+#elif defined(G3D_LINUX)
 
 typedef GLXContext GLContext;
 inline GLContext glGetCurrentContext() {
     return glXGetCurrentContext();
 }
 
+#elif defined(G3D_OSX)
+
+typedef void* GLContext;
+inline GLContext glGetCurrentContxt() {
+	/* This needs an implementation.  See 902986 */
+	return NULL;
+}
 #endif
 
 
