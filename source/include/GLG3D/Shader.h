@@ -508,15 +508,20 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
   (e.g. GeForceFX 5200 and up).
 
   <PRE>
+   IFSModelRef model;
+   ShaderRef   lambertian;
+
+   ...
+
    // Initialization
-   IFSModelRef model = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
-   ShaderRef   lambertian = Shader::fromStrings(STR(
+   model = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
+   lambertian = Shader::fromStrings(STR(
 
      uniform vec3 k_A;
 
      void main(void) {
         gl_Position = ftransform();
-        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightState[0].diffuse + k_A;
+        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightSource[0].diffuse + k_A;
      }), "");
 
     ...
@@ -525,7 +530,7 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
     app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
     app->renderDevice->setShader(lambertian);
-    shader2->args.set("k_A", Color3(.2,.2,.3));
+    lambertian->args.set("k_A", Color3(.2,.2,.3));
     model->pose()->render(app->renderDevice);
   </PRE>
 

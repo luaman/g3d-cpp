@@ -17,9 +17,6 @@
     #error Requires G3D 6.05
 #endif
 
-//#include "../contrib/VideoSerializer/VideoSerializer.h"
-#include "../contrib/VideoSerializer/VideoSerializer.cpp"
-
 
 /**
  This simple demo applet uses the debug mode as the regular
@@ -33,6 +30,10 @@ public:
     // state, put it in the App.
     
     class App*          app;
+
+    IFSModelRef model;
+
+    ShaderRef   lambertian;  
 
     Demo(App* app);
 
@@ -78,6 +79,18 @@ void Demo::init()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
+
+  
+    model = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
+
+    lambertian = Shader::fromStrings(STR(
+
+     uniform vec3 k_A;
+
+     void main(void) {
+        gl_Position = ftransform();
+        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightSource[0].diffuse + k_A;
+     }), "");
 
 }
 
@@ -130,7 +143,14 @@ void Demo::doGraphics() {
         app->renderDevice->setAmbientLightColor(Color3::black());
         app->renderDevice->setSpecularCoefficient(0);
        
-        Draw::box(AABox(Vector3(-2,-2,-2), Vector3(2,2,2)), app->renderDevice, Color3::white() * 0.5, Color4::clear());
+  
+    // Rendering loop
+    app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
+
+    app->renderDevice->setShader(lambertian);
+    lambertian->args.set("k_A", Color3(.2,.2,.3));
+    model->pose()->render(app->renderDevice);
+//        Draw::box(AABox(Vector3(-2,-2,-2), Vector3(2,2,2)), app->renderDevice, Color3::white() * 0.5, Color4::clear());
 
     app->renderDevice->disableLighting();
 

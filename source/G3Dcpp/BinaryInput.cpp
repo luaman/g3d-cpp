@@ -308,17 +308,19 @@ std::string BinaryInput::readString(int n) {
 std::string BinaryInput::readString() {
     int n = 0;
 
-    if (pos + alreadyRead + n < length - 1) {
+    if ((int)pos + (int)alreadyRead + n < (int)length - 1) {
         prepareToRead(1);
     }
 
-    while ((pos + alreadyRead + n < length - 1) && (buffer[pos + n] != '\0')) {
+    if (((int)pos + (int)alreadyRead + (int)n < length - 1) && (buffer[pos + n] != '\0')) {
         ++n;
-        if (pos + alreadyRead + n < length - 1) {
+        while (((int)pos + (int)alreadyRead + n < (int)length - 1) && (buffer[pos + n] != '\0')) {
             prepareToRead(1);
+            ++n;
         }
     }
 
+    // Consume NULL
     ++n;
 
     return readString(n);

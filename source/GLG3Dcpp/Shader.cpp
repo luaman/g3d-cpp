@@ -78,8 +78,10 @@ void Shader::beforePrimitive(class RenderDevice* renderDevice) {
 
         if (uniformNames.contains("g3d_ObjectLight0")) {
             Vector4 cL;
+            // OpenGL lights are already in camera space, so take them
+            // from camera to world to object space.
             glGetLightfv(GL_LIGHT0, GL_POSITION, cL);
-            args.set("g3d_ObjectLight0", o2w.toObjectSpace(cL));
+            args.set("g3d_ObjectLight0", o2w.toObjectSpace(c2w.toWorldSpace(cL)));
         }
 
         if (uniformNames.contains("g3d_NumTextures")) {
