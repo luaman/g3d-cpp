@@ -281,15 +281,17 @@ void Sky::vertex(RenderDevice* renderDevice,
         renderDevice->setTexCoord(0, Vector3(x, y, z));
     } else {
         if (!GLCaps::supports_GL_EXT_texture_edge_clamp()) {
+            // Move the edge coordinates towards the center just
+            // enough that the black clamped edge isn't sampled.
             if (s == 0) {
-                s += (0.5 / texture[0]->texelWidth());
+                s += (0.6 / (float)texture[0]->texelWidth());
             } else if (s == 1) {
-                s -= (0.5 / texture[0]->texelWidth());
+                s -= (0.6 / (float)texture[0]->texelWidth());
             }
             if (t == 0) {
-                t += (0.5 / texture[0]->texelWidth());
+                t += (0.6 / (float)texture[0]->texelHeight());
             } else if (t == 1) {
-                t -= (0.5 / texture[0]->texelWidth());
+                t -= (0.6 / (float)texture[0]->texelHeight());
             }
         }
         renderDevice->setTexCoord(0, Vector2(s, t));
