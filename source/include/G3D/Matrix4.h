@@ -108,7 +108,8 @@ public:
      Transpose of the cofactor matrix (used in computing the inverse).
      Note: This is in fact only one type of adjoint. More generally,
      an adjoint of a matrix is any mapping of a matrix which possesses 
-     certain properties.
+     certain properties.  This returns the so-called adjugate
+     or classical adjoint.
     */
     Matrix4 adjoint() const;
     Matrix4 cofactor() const;

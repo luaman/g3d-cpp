@@ -4,9 +4,9 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-11
-  @edited  2004-07-11
+  @edited  2005-01-28
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
   
   */
@@ -52,7 +52,7 @@ inline void getBounds(const G3D::Triangle& t, G3D::AABox& out) {
 namespace G3D {
 
 /**
- A G3D::Set that supports spatial queries using an axis-aligned
+ A set that supports spatial queries using an axis-aligned
  BSP tree for speed.
 
  AABSPTree is as powerful as but more general than a Quad Tree, Oct Tree, or KD Tree,
@@ -64,7 +64,16 @@ namespace G3D {
  axis-aligned bounds.  This increases the cost of insertion to
  O(log n) but allows fast overlap queries.
 
- <B>Moving Set Members</B>
+ <B>Template Parameters</B>
+ <DT>The template parameter <I>T</I> must be one for which
+ the following functions are overloaded:
+
+  <P><CODE>void ::getBounds(const T&, G3D::AABox&);</CODE>
+  <DT><CODE>bool operator==(const T&, const T&);</CODE>
+  <DT><CODE>unsigned int ::hashCode(const T&);</CODE>
+  <DT><CODE>T::T();</CODE> <I>(public constructor of no arguments)</I>
+
+ <B>Moving %Set Members</B>
  <DT>It is important that objects do not move without updating the
  AABSPTree.  If the axis-aligned bounds of an object are about
  to change, AABSPTree::remove it before they change and 
@@ -74,16 +83,6 @@ namespace G3D {
  you can use the AABSPTree::update method as a shortcut to
  insert/remove an object in one step after it has moved.
  
- <B>Template Parameters</B>
- <DT>The template parameter <I>T</I> must be one for which
- the following functions are overloaded:
-
-  <BLOCKQUOTE>
-  <P><CODE>void ::getBounds(const T&, G3D::AABox&);</CODE>
-  <DT><CODE>bool operator==(const T&, const T&);</CODE>
-  <DT><CODE>unsigned int ::hashCode(const T&);</CODE>
-  <DT><CODE>T::T();</CODE> <I>(public constructor of no arguments)</I>
-  </BLOCKQUOTE>
 
  Note: Do not mutate any value once it has been inserted into AABSPTree. Values
  are copied interally. All AABSPTree iterators convert to pointers to constant
@@ -112,11 +111,18 @@ private:
         /** The bounds of each object are constrained to AABox::maxFinite */
         AABox               bounds;
 
+        /** Center of bounds.  We cache this value to avoid recomputing it
+            during the median sort, and because MSVC 6 std::sort goes into
+            an infinite loop if we compute the midpoint on the fly (possibly
+            a floating point roundoff issue, where B<A and A<B both are true).*/
+        Vector3             center;
+
         Handle() {}
 
         inline Handle(const T& v) : value(v) {
             getBounds(v, bounds);
             bounds = bounds.intersect(AABox::maxFinite());
+            center = bounds.center();
         }
     };
 
@@ -152,19 +158,7 @@ private:
         CenterLT(Vector3::Axis a) : sortAxis(a) {}
 
         inline bool operator()(const Handle& a, const Handle& b) const {
-            const AABox& A = a.bounds;
-            const AABox& B = b.bounds;
-
-            double d =
-                (B.low()[sortAxis] + B.high()[sortAxis]) -
-                (A.low()[sortAxis] + A.high()[sortAxis]);
-
-            // We need to compare against an epsilon or MSVC's
-            // std::sort can go into an infinite loop because
-            // A < B and B < A might *both* return true due to 
-            // roundoff.  This sort is for finding the median;
-            // it doesn't have to be precise anyway.
-            return (d > 1e-5);
+            return a.center[sortAxis] < b.center[sortAxis];
         }
     };
 
@@ -725,7 +719,7 @@ public:
      */
     void balance(int valuesPerNode = 5, int numMeanSplits = 3) {
         if (root == NULL) {
-            // Tree is be empty
+            // Tree is empty
             return;
         }
 
@@ -1404,15 +1398,14 @@ public:
                 ++obj) {  // (preincrement is *much* faster than postincrement!) 
 
                // Call your accurate intersection test here.  It is guaranteed
-               // that the ray hits the bounding box of obj.
-               Ray newRay = Ray::fromOriginAndDirection(
-                    ray.origin + ray.direction * obj.minDistance, ray.direction);
-               double t = obj->distanceUntilIntersection(newRay) - obj.minDistance;
+               // that the ray hits the bounding box of obj.  (*obj) has type T,
+               // so you can call methods directly using the "->" operator.
+               double t = obj->distanceUntilIntersection(ray);
 
                // Often methods like "distanceUntilIntersection" can be made more
                // efficient by providing them with the time at which to start and
                // to give up looking for an intersection; that is, 
-               // obj.minDistance and iMin(firstDistance, nomad.maxDistance).
+               // obj.minDistance and iMin(firstDistance, obj.maxDistance).
 
                static const double epsilon = 0.00001;
                if ((t < firstDistance) && 
@@ -1423,8 +1416,9 @@ public:
                    firstObject   = obj;
                    firstDistance = t;
 
-                   // Even if we found an object we must keep iterating until
-                   // we've exhausted all members at this node.
+                   // Tell the iterator that we've found at least one 
+                   // intersection.  It will finish looking at all
+                   // objects in this node and then terminate.
 		           obj.markBreakNode();
                }
            }

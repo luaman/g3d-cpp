@@ -37,14 +37,13 @@ int main(int argc, char** argv) {
     settings.window.width       = 640;
     settings.window.height      = 480;
 
+    System::sleep(5);
     App(settings).run();
     return 0;
 }
 
 
-App::App(const GAppSettings& settings) : 
-//GApp(settings),
-   GApp(settings, new SDLWindow(settings.window)),
+App::App(const GAppSettings& settings) : GApp(settings),
     hostingServer(NULL),
     discoverySettings("Demo Discovery Protocol", 1) {
 
