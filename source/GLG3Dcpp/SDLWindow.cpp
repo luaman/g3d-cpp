@@ -36,7 +36,7 @@
 namespace G3D {
 
 #ifdef G3D_WIN32
-static int screenWidth() {
+int screenWidth() {
     int w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 
     if (w == 0) {
@@ -48,7 +48,7 @@ static int screenWidth() {
 }
 
 
-static int screenHeight() {
+int screenHeight() {
     int h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
     if (h == 0) {
@@ -63,12 +63,12 @@ static int screenHeight() {
 
 #ifdef G3D_LINUX
 
-static int screenWidth(Display* display) {
+int screenWidth(Display* display) {
 	const int screenNumber = DefaultScreen(display);
 	return DisplayWidth(display, screenNumber);
 }
 
-static int screenHeight(Display* display) {
+int screenHeight(Display* display) {
 	const int screenNumber = DefaultScreen(display);
 	return DisplayHeight(display, screenNumber);
 }

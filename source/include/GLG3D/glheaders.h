@@ -190,6 +190,9 @@ extern PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB;
 extern PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
 
 
+typedef BOOL (*PFNWGLENABLEGENLOCKI3D) (HDC hDCGL);
+extern PFNWGLENABLEGENLOCKI3D wglEnableGenlockI3D;
+
 #if defined(G3D_OSX)
 namespace G3D
 {

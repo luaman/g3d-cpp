@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2004-04-19
+  @edited  2004-04-26
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
@@ -130,6 +130,17 @@ class VAR;
   Only flip the buffers once; that is, call renderDevice->swapBuffers
   once per frame (not once per eye).  If you use G3D::GApp, it takes
   care of this for you.
+
+  <B>Multiple displays</B>
+  If you are using multiple synchronized displays (e.g. the CAVE),
+  see:
+  http://www.nvidia.com/object/IO_10753.html
+  and
+  http://www.cs.unc.edu/Research/stc/FAQs/nVidia/FrameLock-V1.0C.pdf
+
+  GLCaps loads the relevant extensions for you, but you must make
+  the synchronizing calls yourself (typically, immediately before
+  you call swap buffers).
 }
 
 

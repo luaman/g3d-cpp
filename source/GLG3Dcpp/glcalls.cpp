@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2004-04-25
+  @edited  2004-04-26
 */
 
 #include "GLG3D/glcalls.h"
@@ -132,6 +132,7 @@ PFNGLGETINFOLOGARBPROC glGetInfoLogARB = NULL;
 PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB = NULL;
 PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB = NULL;
 
+PFNWGLENABLEGENLOCKI3D wglEnableGenlockI3D = NULL;
 
 namespace G3D {
 

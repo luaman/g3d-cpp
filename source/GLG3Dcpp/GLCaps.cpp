@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-04-25
+  @edited  2004-04-26
 */
 
 #include "GLG3D/GLCaps.h"
@@ -170,6 +170,7 @@ void GLCaps::loadExtensions() {
     LOAD_EXTENSION(glGetUniformLocationARB);
     LOAD_EXTENSION(glGetObjectParameterivARB);
 
+    LOAD_EXTENSION(wglEnableGenlockI3D);
     #undef LOAD_EXTENSION
 
 
