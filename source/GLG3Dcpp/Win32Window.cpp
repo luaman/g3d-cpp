@@ -542,11 +542,8 @@ bool Win32Window::pollEvent(GEvent& e) {
 		if (message.hwnd == window) {
 			switch (message.message) {
             case WM_CLOSE:
-            case WM_QUIT:
-                e.type = SDL_QUIT;
-
-                break;
-
+                e.quit.type = SDL_QUIT;
+                return true;
 			case WM_ACTIVATE:
                 // TODO
                 /*
@@ -671,17 +668,7 @@ LRESULT WINAPI Win32Window::window_proc(
     WPARAM              wparam,
     LPARAM              lparam) {
     
-    Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
-    
-    switch (message) {
-    case WM_CLOSE:
-        PostQuitMessage(0);
-        return 0;
-        
-    case WM_DESTROY:
-        this_window->window = NULL;
-        break;
-    }
+//    Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
     
     return DefWindowProc(window, message, wparam, lparam);
 }
