@@ -112,7 +112,7 @@ public:
 
         /** RGB*2-1 = tangent space normal, A = tangent space bump height.
           If NULL bump mapping is disabled. */
-        TextureRef              normalMap;
+        TextureRef              normalBumpMap;
        
         /** Multiply normal map alpha values (originally on the range 0-1)
             by this constant to obtain the real-world bump height. Should
@@ -160,33 +160,6 @@ private:
 
     static Cache cache;
 
-#if 0
-    /** Classification of a graphics card. 
-        FIXED_FUNCTION  Use OpenGL fixed function lighting only.
-        PS20            Use pixel shader 2.0 (full feature)
-     */
-    enum GraphicsProfile {
-        UNKNOWN = 0,
-        FIXED_FUNCTION,
-        PS20};
-
-    /** Measures the capabilities of this machine */
-    inline static GraphicsProfile profile() {
-        static GraphicsProfile p = UNKNOWN;
-
-        if (p == UNKNOWN) {
-            if (GLCaps::supports_GL_ARB_shader_objects()) {
-                p = PS20;
-            } else {
-                p = FIXED_FUNCTION;
-            }
-p = FIXED_FUNCTION; // TODO: remove
-        }
-
-        return p;
-    }
-
-#endif
     /** Returns the SuperShader for this material, with arguments set. */
     static ShaderRef getShader(const Material& material);
 
@@ -202,6 +175,8 @@ p = FIXED_FUNCTION; // TODO: remove
     ShaderRef               shader;
 
     explicit SuperShader(const Material& material);
+
+    static void configureLightingShaderArgs(LightingRef& lighting, VertexAndPixelShader::ArgList& args);
 
 public:
 

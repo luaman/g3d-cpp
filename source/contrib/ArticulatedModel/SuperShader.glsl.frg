@@ -1,5 +1,5 @@
 /**
-  @file SuperShader.glsl.frag
+  @file SuperShader.glsl.frg
   @author Morgan McGuire matrix@graphics3d.com
 
   For use with G3D::SuperShader.
@@ -8,7 +8,7 @@
 
 // Lighting environment
 uniform vec3        ambientTop;
-uniform vec3        ambientDown;
+uniform vec3        ambientBottom;
 
 /** World space, normalized (TODO: non-directional light, multiple lights) */
 uniform vec4        lightPosition;
@@ -35,22 +35,25 @@ uniform vec3        diffuseConstant;
 
 /** Multiplier for bump map.  Typically on the range [0, 0.05]
   This increases with texture scale and bump height. */
-uniform float       bumpScale;
+uniform float       bumpMapScale;
 
 /** xyz = normal, w = bump height */
 uniform sampler2D   normalBumpMap;
 
 // World parameters
-uniform vec3        wsEyePos;
+varying vec3        wsEyePos;
 varying vec3        wsPosition;
 varying vec3        _tsE;
 varying vec2        texCoord;
 varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 
+
 void main(void) {
 
+#if 0
+
     // Convert bumps to a world space distance
-    float  bump   = (texture2D(normalBumpMap, texCoord).w - 0.5) * bumpScale;
+    float  bump   = (texture2D(normalBumpMap, texCoord).w - 0.5) * bumpMapScale;
 
 	vec3 tsE = normalize(_tsE);
 
@@ -91,5 +94,8 @@ void main(void) {
 			reflected * reflectConstant;
 
 	gl_FragColor.a   = surfColor.a;
+#endif
+    gl_FragColor.rgb = diffuseConstant;
+
 }
 

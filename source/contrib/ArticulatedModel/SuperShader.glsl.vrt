@@ -3,10 +3,10 @@
  @author Morgan McGuire, matrix@graphics3d.com
  */
 
-uniform vec3 wsEyePos;
-
 /** Texture coordinate */
 varying vec2 texCoord;
+
+varying vec3 wsEyePos;
 
 /** World space point */
 varying vec3 wsPosition;
@@ -22,6 +22,7 @@ varying vec3 _tsE;
 varying vec4 tan_X, tan_Y, tan_Z, tan_W;
 
 void main(void) {
+
 	texCoord	= gl_MultiTexCoord0.st;
 
 	vec3 T = gl_MultiTexCoord1.xyz;
@@ -30,6 +31,7 @@ void main(void) {
     // T and N are guaranteed perpendicular, so B is normalized.
 	vec3 B = cross(N, T);
 
+    wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
     vec3 osEyePos = (g3d_WorldToObjectMatrix * vec4(wsEyePos, 1)).xyz;
 
 	// Compute the columns of the tangent space to world space matrix
@@ -45,7 +47,7 @@ void main(void) {
                                 T.y, B.y, N.y,
                                 T.z, B.z, N.z);
     
-	vec3 osPosition = gl_Vertex.xyz;
+	vec3 osPosition  = gl_Vertex.xyz;
 	_tsE             = objectToTangent * (osEyePos - osPosition);
 
     gl_Position     = ftransform();

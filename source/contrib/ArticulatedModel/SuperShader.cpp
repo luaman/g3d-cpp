@@ -47,8 +47,28 @@ void SuperShader::Material::configureShaderArgs(
     args.set("reflectConstant",         reflect.constant);
     args.set("emitMap",                 emit.map.notNull() ? emit.map : whiteMap);
     args.set("emitConstant",            emit.constant);
-    args.set("normalMap",               normalMap.notNull() ? normalMap : defaultNormalMap);
+    args.set("normalBumpMap",           normalBumpMap.notNull() ? normalBumpMap : defaultNormalMap);
     args.set("bumpMapScale",            bumpMapScale);
+}
+
+
+void SuperShader::configureLightingShaderArgs(
+    LightingRef&                    lighting, 
+    VertexAndPixelShader::ArgList&  args) {
+
+    args.set("ambientTop",      lighting->ambientTop);
+    args.set("ambientBottom",   lighting->ambientBottom);
+
+    if (lighting->lightArray.size() > 0) {
+        args.set("lightPosition",   lighting->lightArray[0].position);
+        args.set("lightColor",      lighting->lightArray[0].color);
+    } else {
+        args.set("lightPosition",   Vector4(0,0,0,1));
+        args.set("lightColor",      Color3::black());
+    }
+
+    args.set("environmentConstant", lighting->environmentMapColor);
+    args.set("environmentMap",  lighting->environmentMap);
 }
 
 
@@ -85,10 +105,7 @@ bool SuperShader::ok() const {
 
 void SuperShader::beforePrimitive(RenderDevice* renderDevice) {
     material.configureShaderArgs(shader->args);
-
-    // TODO
-    //lighting->configureShaderArgs(shader->args);
-
+    configureLightingShaderArgs(lighting, shader->args);
     shader->beforePrimitive(renderDevice);
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
 }
@@ -137,5 +154,5 @@ bool SuperShader::Material::similarTo(const Material& other) const {
         specularExponent.similarTo(other.specularExponent) &&
         transmit.similarTo(other.transmit) &&
         reflect.similarTo(other.reflect) &&
-        (normalMap.isNull() == other.normalMap.isNull());
+        (normalBumpMap.isNull() == other.normalBumpMap.isNull());
 }

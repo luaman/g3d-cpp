@@ -48,8 +48,6 @@ public:
             }
         }
 
-        // TODO: remove
-p = FIXED_FUNCTION;
         return p;
     }
 
