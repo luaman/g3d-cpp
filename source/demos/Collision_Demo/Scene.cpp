@@ -144,8 +144,6 @@ void Scene::render(const LightingParameters& lighting) const {
     CoordinateFrame lightCFrameInverse(lightCFrame.inverse());
     Matrix4 lightViewMatrix(lightCFrameInverse);
 
-    Matrix4 lightViewMatrixInverse(lightCFrame);
-
     generateShadowMap(lightCFrame);
     
     if (debugLightMap) {

@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-02-14
+ @edited  2003-07-21
  */
 
 #include "Model.h"
@@ -60,6 +60,7 @@ Model::Model(const std::string& filename) {
 
     std::string fmt         = b.readString32();
     float       version     = b.readFloat32();
+    (void)version;
     std::string name        = b.readString32();
 
     debugAssert(fmt     == "IFS");

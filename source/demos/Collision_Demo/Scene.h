@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-02-08
+ @edited  2003-07-21
  */
 
 #ifndef SCENE_H
@@ -37,7 +37,7 @@ public:
 
     Scene();
 
-    ~Scene();
+    virtual ~Scene();
 
     void insertStatic(class Object*);
 

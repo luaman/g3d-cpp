@@ -115,9 +115,10 @@ int main(int argc, char** argv) {
 
     gameTime     = G3D::toSeconds(10, 00, 00, AM);
     
-    RealTime now = getTime() - 0.001, lastTime;
+    RealTime now = getTime() - 0.001;
 
     // Main loop
+    RealTime lastTime;
     do {
         RealTime timeStep;
         lastTime = now;
@@ -177,7 +178,6 @@ void doSimulation(GameTime timeStep) {
 void doGraphics() {
     // Stats that will be updated periodically
     static RealTime lastFrameRateUpdate = getTime() - 0.9;
-    static RealTime lastTime;
     static int frameRate = 0;
     static int numTris = 0;
     static int triRate = 0;
@@ -245,11 +245,12 @@ void doUserInput() {
                 break;
 
             // Add other key handlers here
-
+            default:;
             }
             break;
 
             // Add other event handlers here
+        default:;
         }
 
         userInput->processEvent(event);
