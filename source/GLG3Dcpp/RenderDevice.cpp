@@ -222,6 +222,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     
     // Load the OpenGL extensions if they have not already been loaded.
     GLCaps::loadExtensions();
+    debugAssertGLOk();
 
     debugAssert(! initialized());
 
@@ -246,10 +247,10 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
     const int desiredTextureUnits = 8;
 
-
     computeVendor();
+    
     // Don't use more texture units than allowed at compile time.
-    _numTextureUnits = iMin(MAX_TEXTURE_UNITS, _numTextureUnits);
+    _numTextureUnits = iMin(MAX_TEXTURE_UNITS, glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
 
     // NVIDIA cards have different numbers of texture coords, units,
     // and textures
@@ -275,6 +276,16 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         _numTextures      = iMax(1, _numTextures);
         _numTextureUnits  = iMax(1, _numTextureUnits);
     }
+    debugAssertGLOk();
+
+    if (debugLog) {
+        debugLog->printf("numTextureCoords          = %d\n"
+                         "numTextures               = %d\n"
+                         "numTextureUnits           = %d\n"
+                         "GL_MAX_TEXTURE_UNITS_ARB  = %d\n",
+                         _numTextureCoords, _numTextures, _numTextureUnits,
+                         glGetInteger(GL_MAX_TEXTURE_UNITS_ARB));
+    }
 
     if (debugLog) {debugLog->println("Setting video mode");}
 
@@ -296,17 +307,14 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 
 	glViewport(0, 0, getWidth(), getHeight());
 
-    // Get the number of texture units
-    glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &_numTextureUnits);
-
     int depthBits, stencilBits, redBits, greenBits, blueBits, alphaBits;
-    glGetIntegerv(GL_DEPTH_BITS, &depthBits);
-    glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
-
-    glGetIntegerv(GL_RED_BITS,   &redBits);
-    glGetIntegerv(GL_GREEN_BITS, &greenBits);
-    glGetIntegerv(GL_BLUE_BITS,  &blueBits);
-    glGetIntegerv(GL_ALPHA_BITS, &alphaBits);
+    depthBits       = glGetInteger(GL_DEPTH_BITS);
+    stencilBits     = glGetInteger(GL_STENCIL_BITS);
+    redBits         = glGetInteger(GL_RED_BITS);
+    greenBits       = glGetInteger(GL_GREEN_BITS);
+    blueBits        = glGetInteger(GL_BLUE_BITS);
+    alphaBits       = glGetInteger(GL_ALPHA_BITS);
+    debugAssertGLOk();
 
     bool depthOk   = depthBits >= minimumDepthBits;
     bool stencilOk = stencilBits >= minimumStencilBits;
