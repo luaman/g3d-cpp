@@ -294,6 +294,13 @@ void _restoreInputGrab_() {
 }
 
 
-}; }; // namespace
+}; // internal namespace
+ 
+void setAssertionHook(AssertionHook hook) {
+	G3D::_internal::_debugHook = hook;
+}
+
+
+}; // namespace
 
 

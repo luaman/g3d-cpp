@@ -119,7 +119,7 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-  texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
+	texture = Texture::fromFile("g:/libraries/g3d-6_04/data/image/testImage.jpg");
     
     //shader = SphereMap::create();
 
@@ -152,7 +152,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     std::string ps = "void main(void) { gl_FragColor = vec4(1,1,1,1); }\n";
     //shader2 = Shader::fromStrings(vs, ps);
 
-    model = IFSModel::create("D:/games/data/ifs/teapot.ifs");
+	model = IFSModel::create("G:/libraries/g3d-6_04/data/ifs/teapot.ifs");
 
 //        "uniform vec3 hi;\n"
 //        "uniform vec3 lo;\n"
