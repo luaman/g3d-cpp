@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-10-02
-  @edited  2004-05-21
+  @edited  2004-12-05
  */
 
 #ifndef G3D_MATRIX4_H
@@ -112,6 +112,10 @@ public:
     */
     Matrix4 adjoint() const;
     Matrix4 cofactor() const;
+
+    /** Serializes row-major */
+    void serialize(class BinaryOutput& b) const;
+    void deserialize(class BinaryInput& b);
 };
 
 } // namespace

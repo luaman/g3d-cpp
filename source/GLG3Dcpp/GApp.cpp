@@ -269,7 +269,7 @@ void GApplet::oneFrame() {
     app->renderDevice->endFrame();
     app->debugText.clear();
 
-    if (endApplet && app->window()->requiresMainLoop()) {
+    if ((endApplet || app->endProgram) && app->window()->requiresMainLoop()) {
         app->window()->popLoopBody();
     }
 }

@@ -178,7 +178,8 @@ public:
         
         <B>Must not</B> destroy the underlying
         OpenGL context (i.e. textures, vertex buffers, and GPU programs
-        must be preserved across calls).*/
+        must be preserved across calls).
+     */
     virtual void notifyResize(int w, int h) = 0;
 
     virtual void setRelativeMousePosition(double x, double y) = 0;

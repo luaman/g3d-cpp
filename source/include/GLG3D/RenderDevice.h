@@ -165,10 +165,6 @@ private:
     friend class Milestone;
     friend class UserInput;
 
-    /** Allows the UserInput to find the RenderDevice 
-        @deprecated */
-    static RenderDevice*        lastRenderDeviceCreated;
-
     GWindow*                    _window;
 
     /** Should the destructor delete _window?*/
@@ -255,6 +251,10 @@ private:
 
     ////////////////////////////////////////////////////////////////////
 public:
+
+    /** Allows the UserInput to find the RenderDevice 
+        @deprecated */
+    static RenderDevice*        lastRenderDeviceCreated;
 
     RenderDevice();
 

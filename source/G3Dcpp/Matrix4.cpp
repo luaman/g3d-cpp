@@ -5,11 +5,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-10-02
-  @edited  2004-05-21
+  @edited  2004-12-05
  */
 
 #include "G3D/Matrix4.h"
 #include "G3D/Vector4.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 #include "G3D/CoordinateFrame.h"
 
 namespace G3D {
@@ -379,6 +381,24 @@ CoordinateFrame Matrix4::approxCoordinateFrame() const {
 	cframe.rotation.orthonormalize();
 
 	return cframe;
+}
+
+
+void Matrix4::serialize(class BinaryOutput& b) const {
+    for (int r = 0; r < 4; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            b.writeFloat32(elt[r][c]);
+        }
+    }
+}
+
+
+void Matrix4::deserialize(class BinaryInput& b) {
+    for (int r = 0; r < 4; ++r) {
+        for (int c = 0; c < 4; ++c) {
+            elt[r][c] = b.readFloat32();
+        }
+    }
 }
 
 } // namespace
