@@ -226,6 +226,14 @@ App::~App() {
 
 int main(int argc, char** argv) {
 
+    Array<int> array(1);
+
+    array.resize(1);
+
+    for (int i = 0; i < 200; ++i) {
+        array.push(0);
+    }
+
     GAppSettings settings;
     settings.window.width = 800;
     settings.window.height = 700;

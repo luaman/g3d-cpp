@@ -313,16 +313,20 @@ public:
       }
 
       // Allocate 8 elements or 32 bytes, whichever is higher.
-      const int minSize = iMax(8, 32 / sizeof(T));
+      static const int minSize = iMax(8, 32 / sizeof(T));
 
       if (num > numAllocated) {
          
-         // Increase the underlying size of the array
-         numAllocated = (num - numAllocated) + (int)(numAllocated * 1.4) + 16;
+          if (num < minSize) {
+              numAllocated = minSize;
+          } else {
+             // Increase the underlying size of the array
+             numAllocated = (num - numAllocated) + (int)(numAllocated * 1.4) + 14;
 
-         if (numAllocated < minSize) {
-             numAllocated = minSize;
-         }
+             if (numAllocated < minSize) {
+                 numAllocated = minSize;
+             }
+          }
 
          realloc(oldNum);
 
