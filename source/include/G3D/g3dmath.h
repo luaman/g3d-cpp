@@ -83,31 +83,31 @@ inline const double& nan() {
 }
 
 /** Returns a reference to a static double. Use instead of G3D_PI. */
-inline const double& g3d_pi() {
+inline const double& pi() {
     static const double p = 3.1415926535898;
     return p;
 }
 
 /** Returns a reference to a static double. Use instead of G3D_HALF_PI. */
-inline const double& g3d_half_pi() {
+inline const double& halfPi() {
     static const double p = 1.5707963267949;
     return p;
 }
 
 /** Returns a reference to a static double. Use instead of G3D_TWO_PI. */
-inline const double& g3d_two_pi() {
+inline const double& twoPi() {
     static const double p = 6.283185;
     return p;
 }
 
 /** @def G3D_PI
-    @deprecated */
+    @deprecated Use G3D::pi() instead. */
 #define G3D_PI      (3.1415926535898)
 /** @def G3D_HALF_PI
-    @deprecated */
+    @deprecated Use G3D::halfPi() instead. */
 #define G3D_HALF_PI (1.5707963267949)
 /** @def G3D_TWO_PI
-    @deprecated */
+    @deprecated Use G3D::twoPi() instead. */
 #define G3D_TWO_PI  (6.283185)
 
 typedef signed char		int8;
