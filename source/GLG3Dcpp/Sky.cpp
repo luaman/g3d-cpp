@@ -34,8 +34,8 @@ Sky::Sky(
     const std::string&                  filename,
     double                              quality) : renderDevice(rd) {
 
-    debugAssertM((directory == "") || (directory[directory.size() - 1] == "/") 
-        || (directory[directory.size() - 1] == "\\"), "Directory must end in a slash");
+    debugAssertM((directory == "") || (directory[directory.size() - 1] == '/') 
+        || (directory[directory.size() - 1] == '\\'), "Directory must end in a slash");
 
     const TextureFormat* format;
     const TextureFormat* alphaFormat;
