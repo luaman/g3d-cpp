@@ -38,11 +38,13 @@ public:
 typedef ReferenceCountedPointer<class PosedModel> PosedModelRef;
 
 /**
- Base class for posed models.  Provided for convenience; most
- advanced applications use their own scene graph structure written
- directly to RenderDevice.
-
- <B>G3D does not provide a scene graph structure</B> because the visible
+ Base class for posed models.  A posed model is a snapshot of geometry
+ and other rendering information, frozen in time, of a potentially 
+ animated or deformable "Model".  G3D has no API (but some conventions) for
+ how you get a PosedModel from a model class.
+ 
+ <B>G3D does not provide a scene graph structure</B> (e.g. there is no Model base class)
+ because the visible
  surface determination, rendering, and caching behavior of a scene
  graph are different for each application.  There is currently no 
  one-size-fits-all scene graph design pattern.
