@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2004-01-22
+ @edited  2004-02-13
  */
 
 #include <limits>
@@ -19,6 +19,7 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/Vector3int16.h"
+#include "G3D/Matrix3.h"
 
 namespace G3D {
 
@@ -303,6 +304,16 @@ void Vector3::generateOrthonormalBasis (Vector3& rkU, Vector3& rkV,
 std::string Vector3::toString() const {
     return G3D::format("(%g, %g, %g)", x, y, z);
 }
+
+
+//----------------------------------------------------------------------------
+
+Matrix3 Vector3::cross() const {
+    return Matrix3( 0, -z,  y,
+                    z,  0, -x,
+                   -y,  x,  0);
+}
+
 //----------------------------------------------------------------------------
 // 2-char swizzles
 

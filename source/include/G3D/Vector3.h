@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2004-01-09
+  @edited  2004-02-13
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -210,8 +210,21 @@ public:
 
     double dot(const Vector3& rkVector) const;
     double unitize(double fTolerance = 1e-06);
+    /** Cross product.  Note that two cross products in a row
+        can be computed more cheaply: v1 x (v2 x v3) = (v1 dot v3) v2  - (v1 dot v2) v3.
+      */
     Vector3 cross(const Vector3& rkVector) const;
     Vector3 unitCross (const Vector3& rkVector) const;
+
+    /**
+     Returns a matrix such that v.cross() * w = v.cross(w).
+     <PRE>
+     [ 0  -v.z  v.y ]
+     [ v.z  0  -v.x ]
+     [ -v.y v.x  0  ]
+     </PRE>
+     */
+    class Matrix3 cross() const;
 
     Vector3 min(const Vector3 &v) const;
     Vector3 max(const Vector3 &v) const;
@@ -407,9 +420,6 @@ public:
     Vector4 xzzz() const;
     Vector4 yzzz() const;
     Vector4 zzzz() const;
-
-
-
 };
 
 }
