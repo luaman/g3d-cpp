@@ -31,6 +31,8 @@
 				AssemblerListingLocation=".\..\temp\Debug\Debug/"
 				ObjectFile=".\..\temp\Debug\Debug/"
 				ProgramDataBaseFileName=".\..\temp\Debug\Debug/"
+				BrowseInformation="1"
+				BrowseInformationFile=".\..\temp\Debug\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
@@ -158,7 +160,8 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">

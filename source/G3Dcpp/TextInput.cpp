@@ -364,17 +364,15 @@ numLabel:
     
             // Read the decimal, if one exists
             if (c == '.') {
-                if (isDigit(peekNextChar())) {
-                    // The '.' was a decimal point, not the start of a
-                    // method or range operator
+                // The '.' was a decimal point, not the start of a
+                // method or range operator
+                t._string += c;
+                c = popNextChar();
+
+                // Read the part after the decimal
+                while (isDigit(c)) {
                     t._string += c;
                     c = popNextChar();
-
-                    // Read the part after the decimal
-                    while (isDigit(c)) {
-                        t._string += c;
-                        c = popNextChar();
-                    }
                 }
             }
 

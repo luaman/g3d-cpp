@@ -268,7 +268,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
 
                     // Copy over the characters that should be saved
                     Array<char> temp;
-                    for (uint32 j = lastSpace + 1; j < data.size(); ++j) {
+                    for (uint32 j = lastSpace + 1; j < (uint32)data.size(); ++j) {
                         char c = data[j];
 
                         if (c == '\"') {
@@ -284,7 +284,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
                     writeNewline();
 
                     // Write them back
-                    for (uint32 j = 0; j < temp.size(); ++j) {
+                    for (uint32 j = 0; j < (uint32)temp.size(); ++j) {
                         indentAppend(temp[j]);
                     }
 

@@ -895,6 +895,13 @@ void testTextInput() {
     printf("TextInput\n");
  
     {
+        TextInput ti(TextInput::FROM_STRING, "2.x");
+
+        debugAssert(ti.readNumber() == 2);
+        ti.readSymbol("x");
+    }
+
+    {
         TextInput ti(TextInput::FROM_STRING, "\\123");
         Token t;
         t = ti.read();
@@ -1685,7 +1692,7 @@ void testSwizzle() {
 }
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {    
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
