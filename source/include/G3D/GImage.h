@@ -101,9 +101,11 @@ void flipRGBAVertical(
 	return Texture::fromGImage(filename, normal);
  </PRE>
 
- @cite ATI demo
+  @param lowPassBump If true, a 9x9 filter of 1's is used to low-pass filter the elevations,
+       which produces better results for parallax mapping.
+  @cite ATI demo
  */
-void computeNormalMap(const class GImage& bump, class GImage& normal);
+void computeNormalMap(const class GImage& bump, class GImage& normal, bool lowPassBump = false);
 
 
 /**

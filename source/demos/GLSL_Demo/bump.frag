@@ -36,8 +36,14 @@ varying vec4 tan_X, tan_Y, tan_Z, tan_W;
 void main(void) {
 
     // Convert bumps to a world space distance
-    float  bump   = (texture2D(normalBumpMap, texCoord).w - 0.5) * bumpScale;
+    vec4 NB = texture2D(normalBumpMap, texCoord);
+    float  bump = 
+        // Use Reedbeta's trick of backing off the offset in steep areas
+        (NB.z - 0.5) *
+        (NB.w - 0.5) * bumpScale;
 
+    // We should divide by tsE.z, but that creates texture swim at shallow angles,
+    // so we use Terry Walsh's solution and just normalize.
 	vec3 tsE = normalize(_tsE);
 
     // Offset the texture coord.  Note that texture coordinates are inverted (in the y direction)
@@ -51,7 +57,6 @@ void main(void) {
 	mat4 tangentToWorld = mat4(tan_X, tan_Y, tan_Z, tan_W);
 	
     vec3 wsE = normalize(wsEyePos - wsPosition);
-	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
 
 	vec3 wsL = normalize(wsLightPos.xyz - wsPosition.xyz * wsLightPos.w);
 

@@ -17,7 +17,7 @@ void Viewer::init()  {
     app->debugCamera.lookAt(Vector3(0, 0, 0));
 
 	entityArray.append(Entity::create(Mesh::quad(), CoordinateFrame()));
-    bumpScale = 0.04;
+    bumpScale = 0.1;
     
     app->debugLog->println("Done Viewer::init");
 }
@@ -56,7 +56,7 @@ void Viewer::doLogic() {
 		if (bumpScale > 0) {
 			bumpScale = 0.0;
 		} else {
-			bumpScale = 0.04;
+			bumpScale = 0.1;
 		}
 	}
 }
@@ -84,8 +84,8 @@ void Viewer::doGraphics() {
         app->bumpShader->args.set("wsEyePos",        camera.translation);
         app->bumpShader->args.set("texture",         app->textureMap);
         app->bumpShader->args.set("normalBumpMap",   app->normalBumpMap);
-        app->bumpShader->args.set("reflectivity",    0.35);
-	    app->bumpShader->args.set("specularity",     0.4);
+        app->bumpShader->args.set("reflectivity",    0);//0.35);
+	    app->bumpShader->args.set("specularity",     0);//0.4);
 	    app->bumpShader->args.set("bumpScale",       bumpScale);
         app->bumpShader->args.set("environmentMap",  app->sky->getEnvironmentMap());
 

@@ -24,13 +24,13 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 static TextureRef loadBumpAsNormalMap(const std::string& filename) {
 	GImage normal;
-	computeNormalMap(GImage(filename), normal);
+	computeNormalMap(GImage(filename), normal, true);
 	return Texture::fromGImage(filename, normal);
 }
 
 void App::main() {
-	setDebugMode(false);
-	debugController.setActive(false);
+//	setDebugMode(false);
+//	debugController.setActive(false);
 
     debugLog->println("Loading textures\n");
 
@@ -43,9 +43,12 @@ void App::main() {
     }
 
     bumpShader = Shader::fromFiles(path + "bump.vert", path + "bump.frag");
-    textureMap = Texture::fromFile(path + "collage.jpg");
-    normalBumpMap = loadBumpAsNormalMap(path + "collage-bump.jpg");
 
+/*    textureMap = Texture::fromFile(path + "collage.jpg");
+    normalBumpMap = loadBumpAsNormalMap(path + "collage-bump.jpg");
+*/
+    textureMap = Texture::fromFile(path + "rockwall.tga");
+    normalBumpMap = loadBumpAsNormalMap(path + "rockwall-bump.tga");
     debugLog->println("Launching Viewer\n");
 
 	Viewer(this).run();

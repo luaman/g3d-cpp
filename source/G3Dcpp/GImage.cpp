@@ -2247,7 +2247,7 @@ int GImage::sizeInMemory() const {
 
 
 
-void computeNormalMap(const GImage& bump, GImage& normal) {
+void computeNormalMap(const GImage& bump, GImage& normal, bool lowPassBump) {
     const int w = bump.width;
     const int h = bump.height;
     const int stride = bump.channels;
@@ -2265,8 +2265,6 @@ void computeNormalMap(const GImage& bump, GImage& normal) {
             // Index into bump map *byte*
             int j = stride * i;
 
-            // Copy over the bump value into the alpha channel
-            N[i].a = B[j];
 
             Vector3 delta;
 
@@ -2274,6 +2272,18 @@ void computeNormalMap(const GImage& bump, GImage& normal) {
             // and divide by 255
             #define height(DX, DY) ((B[(((DX + x + w) % w) + \
                                         ((DY + y + h) % h) * w) * stride]) / 255.0)
+
+            // Copy over the bump value into the alpha channel.
+
+            if (lowPassBump) {
+                N[i].a = 
+                    iRound(
+                       (height(-1, -1) + height( 0, -1) + height(1, -1) +
+                        height(-1,  0) + height( 0,  0) + height(1,  0) +
+                        height(-1,  1) + height( 0,  1) + height(1,  1)) * 255.0 / 9.0);
+            } else {
+                N[i].a = B[j];
+            }
 
             // Sobel filter to compute the normal.  
             //
