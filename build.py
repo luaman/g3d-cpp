@@ -335,6 +335,9 @@ def install(args, copyData=1):
     # to be sure to have all files since source/data might
     # have a few that aren't in the data module.
     copyIfNewer('source/data', installDir(args) + '/data')
+    
+    # Copy the source/bin directory with iCompile in it
+    copyIfNewer('source/bin', installDir(args) + '/bin')
 
     if (copyData):
         copyIfNewer('../data', installDir(args) + '/data')
