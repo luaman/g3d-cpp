@@ -70,6 +70,7 @@ static GLenum dimensionToTarget(Texture::Dimension d) {
     case Texture::DIM_CUBE_MAP:
         return GL_TEXTURE_CUBE_MAP_ARB;
 
+    case Texture::DIM_2D_NPOT:
     case Texture::DIM_2D:
         return GL_TEXTURE_2D;
 
@@ -93,7 +94,8 @@ static void createTexture(
     GLenum          textureFormat,
     int             bytesPerPixel,
     int             mipLevel = 0,
-    bool            compressed = false) {
+    bool            compressed = false,
+    bool            useNPOT = false) {
 
     uint8* bytes = const_cast<uint8*>(rawBytes);
 
@@ -109,8 +111,8 @@ static void createTexture(
     case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
     case GL_TEXTURE_2D:
-        if ((! isPow2(width) || ! isPow2(height)) && 
-            (! GLCaps::supports_GL_ARB_texture_non_power_of_two())) {
+        if ((! isPow2(width) || ! isPow2(height)) &&
+            (! useNPOT || ! GLCaps::supports_GL_ARB_texture_non_power_of_two())) {
 
             debugAssertM(! compressed,
                 "This device does not support NPOT compressed textures.");
@@ -143,10 +145,8 @@ static void createTexture(
 
         if (compressed) {
             
-            if (!GLCaps::supports_GL_ARB_texture_non_power_of_two()) {
-                alwaysAssertM((target != GL_TEXTURE_RECTANGLE_EXT),
-                    "This device does not support NPOT compressed textures. (use DIM_2D)");
-            }
+            debugAssertM((target != GL_TEXTURE_RECTANGLE_EXT),
+                "Compressed textures must be DIM_2D.");
 
             glCompressedTexImage2DARB(target, mipLevel, bytesActualFormat, width, height, 0, (bytesPerPixel * ((width + 3) / 4) * ((height + 3) / 4)), rawBytes);
             break;
@@ -684,7 +684,7 @@ TextureRef Texture::fromMemory(
 
                 if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap() && (numMipMaps == 1)) {
 
-                    alwaysAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
+                    debugAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
 
                     createMipMapTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]),
                                   bytesFormat->OpenGLBaseFormat,
@@ -692,7 +692,7 @@ TextureRef Texture::fromMemory(
                 } else {
                     createTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]), bytesFormat->OpenGLBaseFormat,
                                   bytesFormat->OpenGLFormat, mipWidth, mipHeight, desiredFormat->OpenGLFormat, 
-                                  bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed);
+                                  bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed, (dimension == DIM_2D_NPOT));
                 }
 
                 debugAssertGLOk();
@@ -704,7 +704,7 @@ TextureRef Texture::fromMemory(
     glStatePop();
 
     if ((dimension != DIM_2D_RECT) &&
-        (!GLCaps::supports_GL_ARB_texture_non_power_of_two())) {
+        ((dimension != DIM_2D_NPOT) || (! GLCaps::supports_GL_ARB_texture_non_power_of_two()))) {
         width  = ceilPow2(width);
         height = ceilPow2(height);
     }
@@ -1015,6 +1015,7 @@ unsigned int Texture::getOpenGLTextureTarget() const {
     case DIM_CUBE_MAP:
         return GL_TEXTURE_CUBE_MAP_ARB;
 
+    case DIM_2D_NPOT:
     case DIM_2D:
         return GL_TEXTURE_2D;
 
