@@ -123,7 +123,7 @@ BinaryInput::BinaryInput(
     // Read the file into memory
     FILE* file = fopen(filename.c_str(), "rb");
 
-	if (! file) {
+	if (! file || (length == -1)) {
         throw format("File not found: \"%s\"", filename.c_str());
 		return;
 	}
