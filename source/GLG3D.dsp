@@ -206,7 +206,7 @@ SOURCE=.\GLG3Dcpp\VAR.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GLG3Dcpp\VARSystem.cpp
+SOURCE=.\GLG3Dcpp\VARArea.cpp
 # End Source File
 # Begin Source File
 

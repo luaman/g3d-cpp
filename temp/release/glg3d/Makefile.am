@@ -21,7 +21,7 @@ libGLG3D_a_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/TextureFormat.cpp \
                      ../../../source/GLG3Dcpp/UserInput.cpp \
                      ../../../source/GLG3Dcpp/VAR.cpp \
-                     ../../../source/GLG3Dcpp/VARSystem.cpp \
+                     ../../../source/GLG3Dcpp/VARArea.cpp \
                      ../../../source/GLG3Dcpp/VertexProgram.cpp \
                      ../../../source/GLG3Dcpp/shadowVolume.cpp \
                      ../../../source/GLG3Dcpp/getOpenGLState.cpp \

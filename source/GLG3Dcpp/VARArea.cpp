@@ -1,12 +1,12 @@
 /**
- @file VARSystem.cpp
+ @file VARArea.cpp
  
  Implementation of the vertex array system used by RenderDevice.
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2004-03-31
+ @edited  2004-10-28
  */
 
 #include "GLG3D/RenderDevice.h"
