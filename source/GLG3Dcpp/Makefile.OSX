@@ -1,16 +1,24 @@
 CPPFLAGS=-I../include -D__cdecl= -D__stdcall= -I/usr/X11R6/include -F$(HOME)/Library/Frameworks/
 
 OBJFILES=\
-	GFont.o \
+	Draw.o \
 	G3DGameUnits.o \
+	GApp.o \
+	GFont.o \
 	GPUProgram.o \
+	IFSModel.o \
 	LightingParameters.o \
+	MD2Model.o \
+	MD2Model_load.o \
 	ManualCameraController.o \
+	Milestone.o \
 	PixelProgram.o \
+	PosedModel.o \
 	RenderDevice.o \
 	Sky.o \
 	Texture.o \
 	TextureFormat.o \
+	TextureManager.o \
 	UserInput.o \
 	VAR.o \
 	VARSystem.o \
@@ -18,9 +26,13 @@ OBJFILES=\
 	getOpenGLState.o \
 	glcalls.o \
 	glenumtostring.o \
+	shadowVolume.o \
 	tesselate.o 
 
-all: $(OBJFILES)
+all: libglg3d.a
+
+libglg3d.a: $(OBJFILES)
+	libtool $(OBJFILES) -s -static -o $@ 
 
 .PHONY: clean 
 

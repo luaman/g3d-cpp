@@ -1,15 +1,15 @@
 #
-# $Id: Makefile.OSX,v 1.4 2004/01/02 06:45:32 professor_chaos Exp $
+# $Id: Makefile.OSX,v 1.5 2004/01/02 19:18:55 professor_chaos Exp $
 # Makefile for Apple OS X using gnu make 3.79
 #
-# Maintained by Ben Landon
+# Maintained by Ben Landon (professor_chaos @ users.sourceforge.net)
 #
 # This Makefile currently builds the .o files
 # in the same directory.  This should probably 
 # be fixed at some point.
 #
 #
-CXX=gcc
+
 CXXFLAGS=-I../include -D__cdecl= -Wall -O2 -g 
 
 OBJFILES=\
@@ -17,8 +17,6 @@ OBJFILES=\
 	BinaryOutput.o \
 	Box.o \
 	Capsule.o \
-	GCamera.o \
-	GImage.o \
 	CollisionDetection.o \
 	Color3.o \
 	Color3uint8.o \
@@ -27,10 +25,15 @@ OBJFILES=\
 	Cone.o \
 	ConvexPolyhedron.o \
 	CoordinateFrame.o \
+	Discovery.o \
+	GCamera.o \
+	GImage.o \
+	GLight.o \
 	Line.o \
 	LineSegment.o \
 	Log.o \
 	Matrix3.o \
+	Matrix4.o \
         MeshAlg.o \
         MeshAlgAdjacency.o \
         MeshAlgWeld.o \
@@ -44,6 +47,7 @@ OBJFILES=\
 	TextInput.o \
 	Triangle.o \
 	Vector2.o \
+	Vector2int16.o \
 	Vector3.o \
 	Vector3int16.o \
 	Vector4.o \
