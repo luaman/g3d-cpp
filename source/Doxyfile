@@ -64,7 +64,7 @@ INPUT                  = include/
 FILE_PATTERNS          = 
 RECURSIVE              = YES
 EXCLUDE                = graveyard \
-                         G3D/IJG \
+                         IJG \
                          demos \
                          *.cpp \
                          *.inl
@@ -96,9 +96,9 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = 
-HTML_FOOTER            = 
-HTML_STYLESHEET        = 
+HTML_HEADER            = html/header.html
+HTML_FOOTER            = html/footer.html
+HTML_STYLESHEET        = html/stylesheet.css
 HTML_ALIGN_MEMBERS     = YES
 GENERATE_HTMLHELP      = NO
 CHM_FILE               = 
