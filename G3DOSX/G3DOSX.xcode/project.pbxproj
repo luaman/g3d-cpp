@@ -2109,7 +2109,7 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = jpeg;
 				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost -Wno-main";
+				WARNING_CFLAGS = "-Wmost -Wno-main -Wno-unused-variable";
 			};
 			dependencies = (
 			);
