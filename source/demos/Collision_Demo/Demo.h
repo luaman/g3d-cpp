@@ -36,7 +36,8 @@ public:
     RealTime                simStartTime;
 
     Demo(App* app);
-    ~Demo();
+
+    virtual ~Demo();
 
     virtual void init();
 

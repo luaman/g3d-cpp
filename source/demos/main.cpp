@@ -40,7 +40,9 @@ public:
 
     class App*          app;
 
-    Demo(App* app);    
+    Demo(App* app);
+
+    virtual ~Demo() {}
 
     virtual void init();
 
