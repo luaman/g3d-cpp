@@ -104,7 +104,8 @@ public:
     static void lineSegment(
         const LineSegment&  lineSegment,
         RenderDevice*       rd,
-        const Color4&       color = Color3::black());
+        const Color4&       color = Color3::black(),
+        double              scale = 1);
 
     /**
      Renders per-vertex normals as thin arrows.  The length

@@ -537,7 +537,7 @@ std::string filenamePath(const std::string& filename) {
     if (i == -1) {
         return "";
     } else {
-        return filename.substr(0, i);
+        return filename.substr(0, i+1);
     }
 }
 

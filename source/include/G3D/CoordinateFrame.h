@@ -101,6 +101,7 @@ public:
 
     virtual ~CoordinateFrame() {}
 
+    /** See also Matrix4::approxCoordinateFrame */
     class Matrix4 toMatrix4() const;
 
     /**

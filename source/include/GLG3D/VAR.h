@@ -66,9 +66,9 @@ private:
 
 	void colorPointer() const;
 
-	void texCoordPointer(uint unit) const;
+	void texCoordPointer(unsigned int unit) const;
 
-    void vertexAttribPointer(uint attribNum, bool normalize) const;
+    void vertexAttribPointer(unsigned int attribNum, bool normalize) const;
 
 public:
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2004-10-30
+ @edited  2004-12-13
  */
 
 #include "GLG3D/Draw.h"
@@ -194,7 +194,7 @@ void Draw::ray(
 
     renderDevice->popState();
 
-    lineSegment(LineSegment::fromTwoPoints(ray.origin, back), renderDevice, color);
+    lineSegment(LineSegment::fromTwoPoints(ray.origin, back), renderDevice, color, scale);
 
 }
 
@@ -416,7 +416,8 @@ void Draw::line(
 void Draw::lineSegment(
     const LineSegment&  lineSegment,
     RenderDevice*       renderDevice,
-    const Color4&       color) {
+    const Color4&       color,
+    double              scale) {
 
     renderDevice->pushState();
 
@@ -430,7 +431,7 @@ void Draw::lineSegment(
         Vector4 s0 = renderDevice->project(v0);
         Vector4 s1 = renderDevice->project(v1);
 
-        double L = 2;
+        double L = 2 * scale;
         if ((s0.w > 0) && (s1.w > 0)) {
             L = 15 * (s0.w + s1.w) / 2;
         } else if (s0.w > 0) {

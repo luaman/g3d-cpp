@@ -1513,7 +1513,7 @@ void GImage::decodeJPEG(
 		    break;
 
 	    default:
-		    throw Error("Unexpected number of channels.", input.getFilename());
+		    throw Error("Unexpected number6 of channels.", input.getFilename());
 	    }
 
 		loc += row_stride;

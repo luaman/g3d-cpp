@@ -24,6 +24,7 @@
 #include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/GLCaps.h"
+#include "GLG3D/VAR.h"
 
 typedef unsigned int uint;
 
@@ -664,10 +665,10 @@ public:
     
     */
 	void setVertexArray(const class VAR& v);
+
 	void setNormalArray(const class VAR& v);
 	void setColorArray(const class VAR& v);
 	void setTexCoordArray(unsigned int unit, const class VAR& v);
-
 
     /** Returns the GWindow used by this RenderDevice */
     GWindow* window() const;

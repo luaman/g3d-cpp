@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
     camera.setNearPlaneZ(-.05);
     RealTime now = System::getTick() - 0.001, lastTime;
 
-    std::string in("d:/tmp/ah64rotr.3ds");
+    std::string in("D:/users/morgan/Consulting/BAESystems/PhaseII/data/models/firescout/fs.3ds");
     std::string outDir("d:/tmp/");
 
     Array<std::string> filename;
@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
 
 	    controller->setActive(false);
         model = new XIFSModel(filename[i], false);
-        model->name = "AH-64 Apache Attack Helicopter Rotor";//filename[i];
+        model->name = "FireScout VTOL UAV";//filename[i];
 	    controller->setActive(true);
 
         //if (! pauseBetweenModels) {
