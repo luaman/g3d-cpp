@@ -42,7 +42,7 @@
 				OutputFile=".\..\temp\Debug\Debug/Debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\temp\win32-lib"
+				AdditionalLibraryDirectories="..\temp\win32-lib,win32-lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\..\temp\Debug\Debug/Debug.pdb"
 				SubSystem="2"

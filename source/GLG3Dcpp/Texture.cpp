@@ -450,12 +450,12 @@ TextureRef Texture::fromFile(
     std::string ddsExt;
 
     // Find the period
-    size_t i = filename[0].rfind('.');
+    size_t period = filename[0].rfind('.');
 
     // Make sure it is before a slash!
     size_t j = iMax(filename[0].rfind('/'), filename[0].rfind('\\'));
-    if ((i != std::string::npos) && (i > j)) {
-        ddsExt = filename[0].substr(i + 1, filename[0].size() - i - 1);
+    if ((period != std::string::npos) && (period > j)) {
+        ddsExt = filename[0].substr(period + 1, filename[0].size() - period - 1);
     }
 
     if (G3D::toUpper(ddsExt) == "DDS") {
@@ -475,7 +475,7 @@ TextureRef Texture::fromFile(
 
         byteMipMapFaces.resize(numMipMaps);
 
-        for (int i=0; i < numMipMaps; ++i) {
+        for (int i = 0; i < numMipMaps; ++i) {
             
             byteMipMapFaces[i].resize(1);
             byteMipMapFaces[i][0] = byteStart;
@@ -699,11 +699,11 @@ TextureRef Texture::fromMemory(
 
                     alwaysAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
 
-                    createMipMapTexture(target, const_cast<const uint8*>(bytes[mipLevel][f]),
+                    createMipMapTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]),
                                   bytesFormat->OpenGLBaseFormat,
                                   mipWidth, mipHeight, desiredFormat->OpenGLFormat);
                 } else {
-                    createTexture(target, const_cast<const uint8*>(bytes[mipLevel][f]), bytesFormat->OpenGLBaseFormat,
+                    createTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]), bytesFormat->OpenGLBaseFormat,
                                   bytesFormat->OpenGLFormat, mipWidth, mipHeight, desiredFormat->OpenGLFormat, 
                                   bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed);
                 }

@@ -1741,7 +1741,7 @@ void GImage::decodePNG(
     png_read_update_info(png_ptr, info_ptr);
 
     for (uint32 pass = 0; pass < number_passes; ++pass) {
-        for (uint32 y = 0; y < height; ++y) {
+        for (uint32 y = 0; y < (uint32)height; ++y) {
             png_bytep rowPointer = &this->_byte[width * channels * y]; 
             png_read_rows(png_ptr, &rowPointer, png_bytepp_NULL, 1);
         }

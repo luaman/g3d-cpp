@@ -128,7 +128,7 @@ void TextOutput::convertNewlines(const std::string& in, std::string& out) {
 
     if (option.convertNewlines) {
         out = "";
-        for (int i = 0; i < in.size(); ++i) {
+        for (uint32 i = 0; i < in.size(); ++i) {
             if (in[i] == '\n') {
                 // Unix newline
                 out += newline;
@@ -147,7 +147,7 @@ void TextOutput::convertNewlines(const std::string& in, std::string& out) {
 
 
 void TextOutput::writeNewline() {
-    for (int i = 0; i < newline.size(); ++i) {
+    for (uint32 i = 0; i < newline.size(); ++i) {
         indentAppend(newline[i]);
     }
 }
@@ -166,7 +166,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
 
     if (option.wordWrap == Options::WRAP_NONE) {
         // TODO: optimize for strings without newlines
-        for (int i = 0; i < str.size(); ++i) {
+        for (uint32 i = 0; i < str.size(); ++i) {
             indentAppend(str[i]);
         }
         return;
@@ -177,7 +177,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
     
     // Copy forward until we exceed the column size, 
     // and then back up and try to insert newlines as needed.
-    for (int i = 0; i < str.size(); ++i) {
+    for (uint32 i = 0; i < str.size(); ++i) {
         indentAppend(str[i]);
 
         if (currentColumn >= cols) {
@@ -259,7 +259,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
                     writeNewline();
 
                     // Delete the spaces from the new string
-                    while ((i < str.size() - 1) && (str[i + 1] == ' ')) {
+                    while (((uint32)i < str.size() - 1) && (str[i + 1] == ' ')) {
                         ++i;
                     }
                 } else {
