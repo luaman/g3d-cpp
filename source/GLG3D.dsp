@@ -325,9 +325,5 @@ SOURCE=.\include\GLG3D\VARArea.h
 SOURCE=.\include\GLG3D\VertexProgram.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\html\gettingstarted.html
-# End Source File
 # End Target
 # End Project
