@@ -82,11 +82,14 @@ void flipRGBVertical(
 
 
 /**
- Interface to image compression & file formats.
+  Interface to image compression & file formats. The free Image Magick Magick Wand API 
+  (http://www.imagemagick.org/www/api/magick_wand.html) provides a more powerful
+  API for image manipulation and wider set of image load/save formats.  It is 
+  recommended over GImage (we don't include it directly in G3D because their license
+  is more restrictive than the BSD one).
 
   Supported formats (decode and encode): JPEG, TGA 24, TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
   8-bit paletted and 24-bit PCX are supported for decoding only.
-
 
   Sample usage:
 

@@ -304,7 +304,8 @@
 
    <LI>Ensure that you are using MSVC++ 6.0 with <A HREF="http://download.microsoft.com/download/vstudio60ent/SP5/Wideband-Full/WIN98Me/EN-US/vs6sp5.exe">Service Pack 5</A> (Service pack 6 does not 
    support the processor pack) and
-   the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.
+   the <A HREF="http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe">Processor Pack</A>.  If you are using
+   VS .NET you must recompile the library because Microsoft changed the standard library (you'll get memory leaks if you don't!).
 
    <LI>(<I>Optional</I>) Add the following lines to your Autoexp.dat file (usually in <CODE>C:\\Program Files\\Microsoft
    Visual Studio\\Common\\MSDev98\\Bin</CODE>): 
@@ -346,9 +347,20 @@
 
   <P>
 
-  Note that G3D uses zlib, which is distributed as part of the library
-  (as headers and a windows binary).  If you need zlib for your own platform 
-  or wish to build it yourself, go to http://www.gzip.org/zlib/.
+  <B>Other Libraries</B>
+  G3D uses zlib (http://www.gzip.org/zlib/), which is distributed as part of G3D (as headers and a windows .lib and .dll).
+  GFont, BinaryInput, and BinaryOutput use zlib; you can also call zlib functions directly 
+  from your G3D program without additional headers or linking steps.
+
+  <P>
+  We <I>recommend</I> the following free libraries but they are not supported
+  by any G3D API:
+  <OL>
+    <LI>Image Magick's Magick Wand (http://www.imagemagick.org/)
+    <LI>Free Type2 (http://freetype.sourceforge.net/index2.html)
+    <LI>STLport (http://www.stlport.org/download.html)
+  </OL>
+
 
   <H3>Directories</H3>
    The distribution contains the following subdirectories:
