@@ -10,6 +10,7 @@
  */
 class Demo : public GApplet {
 private:
+
     void buildScene();
 
     void insertRamps();

@@ -88,7 +88,15 @@ SOURCE=".\docsource\guide-concepts.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-files.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-install.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-physics.h"
 # End Source File
 # Begin Source File
 

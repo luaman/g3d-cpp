@@ -11,11 +11,12 @@ Graph system (e.g. Unreal Engine).  Your programs can be much more flexible, but
 tradeoff is that you have to know more about 3D programming.  G3D is intended for 
 users who are already familiar with C++ and DirectX or OpenGL.
 
-@section contents Contents
+@section chapters Table of Contents
 
-<TABLE BORDER=0 WIDTH=50%>
-<TR><TD COLSPAN=2>\link guidewelcome Welcome \endlink</TD></TR>
-<TR><TD> </TD><TD>
+<TABLE BORDER=0 WIDTH=75%>
+ <TR><TD VALIGN=TOP WIDTH=33%><B>Chapter</B></TD><TD VALIGN=TOP><B>Topics</B></TD></TR>
+
+ <TR><TD VALIGN=TOP>\link guidewelcome Welcome \endlink</TD><TD VALIGN=TOP>
   Documentation and Support,
   Platform and Functionality,
   Design Philosophy,
@@ -26,30 +27,45 @@ users who are already familiar with C++ and DirectX or OpenGL.
   Beta and Deprecated APIs,
   Notes for Expert Users</TD></TR>
 
-  <TR><TD COLSPAN=2>\link guideinstall Installing G3D \endlink</TD></TR>
-<TR><TD></TD><TD>
+
+  <TR><TD VALIGN=TOP>\link guideinstall Installing G3D \endlink</TD><TD VALIGN=TOP>
   WindowsXP/2000,
   Linux,
   OS X,
   Building the Library</TD></TR>
 
-  <TR><TD COLSPAN=2>\link guideconcepts Concepts \endlink</TD></TR>
-<TR><TD></TD><TD>
+  <TR><TD VALIGN=TOP>\link guideconcepts Concepts \endlink</TD><TD>
   Immediate Mode Graphics,
   Coordinate Systems,
   Reference Counting,
-  STL vs. G3D</TD></TR>
+  STL</TD></TR>
 
-<TR><TD COLSPAN=2>\link guideshaders Shaders \endlink</TD></TR>
-<TR><TD></TD><TD>
+  <TR><TD VALIGN=TOP>\link guidefiles Files \endlink</TD><TD VALIGN=TOP>
+  File Management,
+  Text Files,
+  Binary Files,
+  Network,
+    Images, Models
+      </TD></TR>
+
+
+  <TR><TD VALIGN=TOP>\link guidephysics Physics and Ray Tracing \endlink</TD><TD VALIGN=TOP>
+   Physics,
+   Ray Tracing,
+   Bounding Volumes,
+   BSP Tree
+  </TD></TR>
+  
+
+<TR><TD VALIGN=TOP>\link guideshaders Shaders \endlink</TD><TD VALIGN=TOP>
   Supported Languages,
   Tools,
   Sample Shaders</TD></TR>
 
-<TR><TD COLSPAN=2>\link license License (BSD/IJG) \endlink</TD></TR>
-<TR><TD COLSPAN=2>\link changelog Change Log \endlink</TD></TR>
-<TR><TD COLSPAN=2>\link errorfaq Error FAQ \endlink</TD></TR>
-<TR><TD COLSPAN=2><A HREF="index.html">Index of Entry Points</A></TD></TR>
+<TR><TD>\link license License (BSD/IJG) \endlink</TD><TD></TD></TR>
+<TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
+<TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
+<TR><TD><A HREF="index.html">Index of Entry Points</A></TD><TD></TD></TR>
 </TABLE>
 
 @section documentation Documentation and Support
