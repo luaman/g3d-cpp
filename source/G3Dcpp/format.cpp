@@ -159,7 +159,7 @@ std::string vformat(const char* fmt, va_list argPtr) {
 } // namespace
 
 #ifdef G3D_WIN32
-  #undef _vsnprintf
+  #undef vsnprintf
 #endif
 
 #undef NEWLINE
