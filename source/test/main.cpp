@@ -275,12 +275,12 @@ void measureArrayPerformance() {
         System::endCycleCount(stdAppend);
     }
 
-    printf("Array alloc:                        %d cycles/elt\n", g3dNew / size);
-    printf("int* alloc:                         %d cycles/elt\n", nativeNew / size);
-    printf("Array free:                         %d cycles/elt\n", g3dDel / size);
-    printf("int* free:                          %d cycles/elt\n", nativeDel / size);
-    printf("Array<int>[]:                       %g cycles\n", g3d / (size * 2.0));
-    printf("int*[]:                             %g cycles\n", native / (size * 2.0));
+    printf("Array alloc:                        %d cycles/elt\n", (int)(g3dNew / size));
+    printf("int* alloc:                         %d cycles/elt\n", (int)(nativeNew / size));
+    printf("Array free:                         %d cycles/elt\n", (int)(g3dDel / size));
+    printf("int* free:                          %d cycles/elt\n", (int)(nativeDel / size));
+    printf("Array<int>[]:                       %g cycles\n", (g3d / (size * 2.0)));
+    printf("int*[]:                             %g cycles\n", (native / (size * 2.0)));
     printf("\n");
     printf("Array<int>.append:                  %g cycles\n", g3dAppend / (size * 2.0));
     printf("std::vector<int>.push_back:         %g cycles\n", stdAppend / (size * 2.0));
@@ -417,8 +417,8 @@ void measureTriangleCollisionPerformance() {
     }
     System::endCycleCount(opt);
 
-    printf("Sphere-Triangle collision detection on 3 vertices: %d cycles\n", raw / n);
-    printf("Sphere-Triangle collision detection on CDTriangle: %d cycles\n", opt / n);
+    printf("Sphere-Triangle collision detection on 3 vertices: %d cycles\n", (int)(raw / n));
+    printf("Sphere-Triangle collision detection on CDTriangle: %d cycles\n", (int)(opt / n));
 }
 
 
@@ -499,9 +499,9 @@ void testCompression() {
 
     BinaryInput g("/tmp/out.t", G3D_LITTLE_ENDIAN, true);
     uint32 i = g.readUInt32();
-    debugAssert(i == 1234);
+    debugAssert(i == 1234); i;
     double j = g.readFloat64();
-    debugAssert(j == 1.234);
+    debugAssert(j == 1.234); j;
 }
 
 void testMemcpy() {
