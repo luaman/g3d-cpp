@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-11-03
+  @edited  2004-01-02
  */
 
 #ifndef G3D_SYSTEM_H
@@ -44,6 +44,7 @@ public:
 	static bool hasSSE();
 	static bool hasSSE2();
 	static bool has3DNow();
+    static bool hasRDTSC();
 	static const std::string& cpuVendor();
     static const std::string& operatingSystem();
     static const std::string& cpuArchitecture();

@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2003-12-16
+  @edited  2004-01-02
  */
 
 #include "G3D/platform.h"
@@ -107,6 +107,7 @@ std::string demoFindData(bool errorIfNotFound) {
 }
 
 
+static bool					_rdtsc              = false;
 static bool					_mmx                = false;
 static bool					_sse                = false;
 static bool					_sse2		        = false;
@@ -128,12 +129,12 @@ static struct timeval       _start;
 static int	 	 maxSupportedCPUIDLevel = 0;
 static int    maxSupportedExtendedLevel = 0;
 
-#define CheckBit(var, bit)   ((var & (1 << bit)) ? true : false)
+#define checkBit(var, bit)   ((var & (1 << bit)) ? true : false)
 
 /** Checks if the CPUID command is available on the processor (called from init) */
 static void checkForCPUID();
 
-/** ReadRead the standard processor extensions */
+/** ReadRead the standard processor extensions.  Called from init(). */
 static void getStandardProcessorExtensions();
 
 /** Perform processor identification and initialize the library (if not
@@ -146,6 +147,11 @@ static void initAMD();
 static void initUnknown();
 static void initTime();
 
+
+bool System::hasRDTSC() {
+	init();
+	return _rdtsc;
+}
 
 
 bool System::hasSSE() {
@@ -229,7 +235,10 @@ void init() {
 
 	#if defined(G3D_WIN32)
 		// We read the standard CPUID level 0x00000000 which should
-		// be available on every x86 processor
+		// be available on every x86 processor.  This instruction
+        // creates a bit string that indicates the presence of several
+        // useful features.
+
 		__asm {
 			mov eax, 0
 			cpuid
@@ -358,7 +367,7 @@ void initAMD() {
 		}
 #else
         /*
-          TODO: james
+          TODO: morgan
 		asm(
 		"mov 0x8000001, %%eax                             "
 		"cpuid                                            "
@@ -369,10 +378,10 @@ void initAMD() {
 #endif
 		
 		// Now we can mask some AMD specific cpu extensions
-		// EMMX_MultimediaExtensions                 = CheckBit(edxreg, 22);
-		// AA64_AMD64BitArchitecture                 = CheckBit(edxreg, 29);
-		//CPUInfo._Ext._E3DNOW_InstructionExtensions = CheckBit(edxreg, 30);
-		_3dnow                                       = CheckBit(edxreg, 31);
+		// EMMX_MultimediaExtensions                 = checkBit(edxreg, 22);
+		// AA64_AMD64BitArchitecture                 = checkBit(edxreg, 29);
+		//CPUInfo._Ext._E3DNOW_InstructionExtensions = checkBit(edxreg, 30);
+		_3dnow                                       = checkBit(edxreg, 31);
 	}
 
 }
@@ -385,9 +394,10 @@ void initUnknown() {
 void checkForCPUID() {
 	unsigned long bitChanged;
 
+	// We've to check if we can toggle the flag register bit 21.
+	// If we can't the processor does not support the CPUID command.
+
 	#ifdef _MSC_VER
-		// We've to check if we can toggle the flag register bit 21
-		// If we can't the processor does not support the CPUID command
 		__asm {
 			pushfd
 			pop   eax
@@ -400,8 +410,32 @@ void checkForCPUID() {
 			xor   eax, ebx 
 			mov   bitChanged, eax
 		}
-	#else
-		
+
+	#elif defined(__GNUC__) && defined(i386)
+        // Linux
+        int has_CPUID = 0;
+	__asm__ (
+"push %%ecx\n"
+"        pushfl                      # Get original EFLAGS             \n"
+"        popl    %%eax                                                 \n"
+"        movl    %%eax,%%ecx                                           \n"
+"        xorl    $0x200000,%%eax     # Flip ID bit in EFLAGS           \n"
+"        pushl   %%eax               # Save new EFLAGS value on stack  \n"
+"        popfl                       # Replace current EFLAGS value    \n"
+"        pushfl                      # Get new EFLAGS                  \n"
+"        popl    %%eax               # Store new EFLAGS in EAX         \n"
+"        xorl    %%ecx,%%eax         # Can not toggle ID bit,          \n"
+"        jz      1f                  # Processor=80486                 \n"
+"        movl    $1,%0               # We have CPUID support           \n"
+"1:                                                                    \n"
+"pop %%ecx\n"
+	: "=r" (has_CPUID)
+	:
+	: "%eax", "%ecx"
+	);
+        _cpuID = (has_CPUID != 0);
+
+    #else		
 		// Unknown architecture
 		_cpuID = false;
 	
@@ -410,63 +444,98 @@ void checkForCPUID() {
 	_cpuID = ((bitChanged) ? true : false);
 }
 
-#ifdef _MSC_VER 
-void getStandardProcessorExtensions() {
-	unsigned long ebxreg, edxreg;
 
-	// We just get the standard CPUID level 0x00000001 which should be
-	// available on every x86 processor
-	__asm {
-		mov eax, 1
-		cpuid
-		mov ebxreg, ebx
-		mov edxreg, edx
-	}
+void getStandardProcessorExtensions() {
+    if (! _cpuID) {
+        return;
+    }
+
+	unsigned long features;
+
+    // Invoking CPUID with '1' in EAX fills out edx with a bit string.
+    // The bits of this value indicate the presence or absence of 
+    // useful processor features.
+    #ifdef _MSC_VER
+        // Windows
+
+	    __asm {
+            push eax
+            push ebx
+            push ecx
+            push edx
+		    mov eax, 1
+		    cpuid
+		    mov features, edx
+            pop edx
+            pop ecx
+            pop ebx
+            pop eax
+	    }
+
+    #elif defined(__GNUC__) && defined(i386)
+        // Linux
+	__asm__ (
+"push %%eax\n"
+"push %%ebx\n"
+"push %%ecx\n"
+"push %%edx\n"
+"        xorl    %%eax,%%eax                                           \n"
+"        incl    %%eax                                                 \n"
+"        cpuid                       # Get family/model/stepping/features\n"
+"        movl    %%edx,%0                                              \n"
+"pop %%edx\n"
+"pop %%ecx\n"
+"pop %%ebx\n"
+"pop %%eax\n"
+	: "=r" (features)
+	:
+	: "%eax", "%ebx", "%ecx", "%edx"
+	);
+
+    #else
+        // Other
+        features = 0;
+    #endif
     
-	// Then we mask some bits
-	// FPU_FloatingPointUnit							= CheckBit(edxreg, 0);
-	// VME_Virtual8086ModeEnhancements					= CheckBit(edxreg, 1);
-	// DE_DebuggingExtensions							= CheckBit(edxreg, 2);
-	// PSE_PageSizeExtensions							= CheckBit(edxreg, 3);
-	// TSC_TimeStampCounter								= CheckBit(edxreg, 4);
-	// MSR_ModelSpecificRegisters						= CheckBit(edxreg, 5);
-	// PAE_PhysicalAddressExtension						= CheckBit(edxreg, 6);
-	// MCE_MachineCheckException						= CheckBit(edxreg, 7);
-	// CX8_COMPXCHG8B_Instruction						= CheckBit(edxreg, 8);
-	// APIC_AdvancedProgrammableInterruptController		= CheckBit(edxreg, 9);
+	// FPU_FloatingPointUnit							= checkBit(features, 0);
+	// VME_Virtual8086ModeEnhancements					= checkBit(features, 1);
+	// DE_DebuggingExtensions							= checkBit(features, 2);
+	// PSE_PageSizeExtensions							= checkBit(features, 3);
+	// TSC_TimeStampCounter								= checkBit(features, 4);
+	// MSR_ModelSpecificRegisters						= checkBit(features, 5);
+	// PAE_PhysicalAddressExtension						= checkBit(features, 6);
+	// MCE_MachineCheckException						= checkBit(features, 7);
+	// CX8_COMPXCHG8B_Instruction						= checkBit(features, 8);
+	// APIC_AdvancedProgrammableInterruptController		= checkBit(features, 9);
 	// APIC_ID											= (ebxreg >> 24) & 0xFF;
-	// SEP_FastSystemCall								= CheckBit(edxreg, 11);
-	// MTRR_MemoryTypeRangeRegisters					= CheckBit(edxreg, 12);
-	// PGE_PTE_GlobalFlag								= CheckBit(edxreg, 13);
-	// MCA_MachineCheckArchitecture						= CheckBit(edxreg, 14);
-	// CMOV_ConditionalMoveAndCompareInstructions		= CheckBit(edxreg, 15);
-	// FGPAT_PageAttributeTable							= CheckBit(edxreg, 16);
-	// PSE36_36bitPageSizeExtension						= CheckBit(edxreg, 17);
-	// PN_ProcessorSerialNumber							= CheckBit(edxreg, 18);
-	// CLFSH_CFLUSH_Instruction							= CheckBit(edxreg, 19);
+	// SEP_FastSystemCall								= checkBit(features, 11);
+	// MTRR_MemoryTypeRangeRegisters					= checkBit(features, 12);
+	// PGE_PTE_GlobalFlag								= checkBit(features, 13);
+	// MCA_MachineCheckArchitecture						= checkBit(features, 14);
+	// CMOV_ConditionalMoveAndCompareInstructions		= checkBit(features, 15);
+
+    // (According to SDL)
+	_rdtsc						                    	= checkBit(features, 16);
+
+	// PSE36_36bitPageSizeExtension						= checkBit(features, 17);
+	// PN_ProcessorSerialNumber							= checkBit(features, 18);
+	// CLFSH_CFLUSH_Instruction							= checkBit(features, 19);
 	// CLFLUSH_InstructionCacheLineSize					= (ebxreg >> 8) & 0xFF;
-	// DS_DebugStore									= CheckBit(edxreg, 21);
-	// ACPI_ThermalMonitorAndClockControl				= CheckBit(edxreg, 22);
-	_mmx												= CheckBit(edxreg, 23);
-	// FXSR_FastStreamingSIMD_ExtensionsSaveRestore		= CheckBit(edxreg, 24);
-	_sse												= CheckBit(edxreg, 25);
-	_sse2												= CheckBit(edxreg, 26);
-	// SS_SelfSnoop										= CheckBit(edxreg, 27);
-	// HT_HyperThreading								= CheckBit(edxreg, 28);
+	// DS_DebugStore									= checkBit(features, 21);
+	// ACPI_ThermalMonitorAndClockControl				= checkBit(features, 22);
+	_mmx												= checkBit(features, 23);
+	// FXSR_FastStreamingSIMD_ExtensionsSaveRestore		= checkBit(features, 24);
+	_sse												= checkBit(features, 25);
+	_sse2												= checkBit(features, 26);
+	// SS_SelfSnoop										= checkBit(features, 27);
+	// HT_HyperThreading								= checkBit(features, 28);
 	// HT_HyterThreadingSiblings = (ebxreg >> 16) & 0xFF;
-	// TM_ThermalMonitor								= CheckBit(edxreg, 29);
-	// IA64_Intel64BitArchitecture						= CheckBit(edxreg, 30);
+	// TM_ThermalMonitor								= checkBit(features, 29);
+	// IA64_Intel64BitArchitecture						= checkBit(features, 30);
 }
 
-#else
 
-void getStandardProcessorExtensions() {
-}
-
-#endif
-
-
-#undef CheckBit
+#undef checkBit
 
 
 
