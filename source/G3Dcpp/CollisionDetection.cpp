@@ -31,12 +31,13 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
     Vector3 axis = sphereB.center - sphereA.center;
     double radius = sphereA.radius + sphereB.radius;
     double len = axis.length();
+    axis /= len;
     double depth = -(len - radius);
 
     if (depth >= 0) {
         contactPoints.resize(1, DONT_SHRINK_UNDERLYING_ARRAY);
         contactPoints[0] = sphereA.center + axis * (sphereA.radius - depth / 2);
-        outNormalA = axis / len;
+        outNormalA = axis;
     }
 
     return depth;
