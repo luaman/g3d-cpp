@@ -239,6 +239,7 @@
         G3D::MD2Model,
         G3D::IFSModel,
         G3D::PosedModel,
+        G3D::PosedModelWrapper,
         G3D::realWorldLocalTime, 
         G3D::UserInput, 
         G3D::ManualCameraController

@@ -90,6 +90,64 @@ public:
     virtual int numBrokenEdges() const = 0;
 };
 
+
+
+/**
+ A wrapper that trampolines every method to an internal model.
+ Use this as a base class when you have a PosedModelRef and 
+ want to override its render() [or some other] method.
+ */
+class PosedModelWrapper : public PosedModel {
+protected:
+
+    PosedModelRef model;
+
+    PosedModelWrapper(PosedModelRef _model) : model(_model) {}
+
+public:
+
+    virtual ~PosedModelWrapper() {}
+
+    virtual std::string name() const;
+
+    virtual void getCoordinateFrame(CoordinateFrame& c) const;
+
+    virtual CoordinateFrame coordinateFrame() const;
+
+    virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
+
+    virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
+
+    virtual void getFaces(Array<MeshAlg::Face>& faces) const;
+
+    virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
+
+    virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
+
+    virtual void getTriangleIndices(Array<int>& indices) const;
+
+    virtual void getObjectSpaceBoundingSphere(Sphere&) const;
+
+    virtual Sphere objectSpaceBoundingSphere() const;
+
+    virtual void getWorldSpaceBoundingSphere(Sphere& s) const;
+
+    virtual Sphere worldSpaceBoundingSphere() const;
+
+    virtual void getObjectSpaceBoundingBox(Box&) const;
+
+    virtual Box objectSpaceBoundingBox() const;
+
+    virtual void getWorldSpaceBoundingBox(Box& box) const;
+
+    virtual Box worldSpaceBoundingBox() const;
+
+    virtual void render(class RenderDevice* renderDevice) const;
+
+    virtual int numBrokenEdges() const;
+};
+
+
 }
 
 #endif
