@@ -1,5 +1,5 @@
 /**
-  @file IFSBuilder.cpp
+  @file MeshBuilder.cpp
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
@@ -7,21 +7,17 @@
   @edited  2004-09-09
  */
 
-#include "IFSModelBuilder.h"
-#include "IFSModel.h"
+#include "G3D/MeshBuilder.h"
+#include "G3D/MeshAlg.h"
 
-const double IFSBuilder::CLOSE = IFSBuilder::AUTO_WELD;
+namespace G3D {
 
-
-void IFSBuilder::setName(const std::string& n) {
+void MeshBuilder::setName(const std::string& n) {
     name = n;
 }
 
 
-double close;
-
-
-void IFSBuilder::commit(std::string& n, Array<int>& indexArray, Array<Vector3>& outvertexArray) {
+void MeshBuilder::commit(std::string& n, Array<int>& indexArray, Array<Vector3>& outvertexArray) {
     n = name;
 
     // Make the data fit in a unit cube
@@ -29,8 +25,7 @@ void IFSBuilder::commit(std::string& n, Array<int>& indexArray, Array<Vector3>& 
 
     Array<int> toNew, toOld;
 
-    close = CLOSE;
-    if (close == IFSBuilder::AUTO_WELD) {
+    if (close == MeshBuilder::AUTO_WELD) {
         Array<int> index;
         MeshAlg::createIndexArray(triList.size(), index);
         double minEdgeLen, maxEdgeLen, meanEdgeLen, medianEdgeLen;
@@ -61,7 +56,7 @@ void IFSBuilder::commit(std::string& n, Array<int>& indexArray, Array<Vector3>& 
 }
 
 
-void IFSBuilder::centerTriList() {
+void MeshBuilder::centerTriList() {
     // Compute the range of the vertices
     Vector3 vmin, vmax;
 
@@ -84,7 +79,7 @@ void IFSBuilder::centerTriList() {
 }
 
 
-void IFSBuilder::computeBounds(Vector3& min, Vector3& max) {
+void MeshBuilder::computeBounds(Vector3& min, Vector3& max) {
     min = Vector3::INF3; 
     max = -min;
 
@@ -96,7 +91,7 @@ void IFSBuilder::computeBounds(Vector3& min, Vector3& max) {
 }
 
 
-void IFSBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vector3& c) {
+void MeshBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vector3& c) {
     triList.append(a, b, c);
 
 	if (_twoSided) {
@@ -105,12 +100,14 @@ void IFSBuilder::addTriangle(const Vector3& a, const Vector3& b, const Vector3& 
 }
 
 
-void IFSBuilder::addQuad(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d) {
+void MeshBuilder::addQuad(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d) {
     addTriangle(a, b, c);
     addTriangle(a, c, d);
 }
 
 
-void IFSBuilder::addTriangle(const Triangle& t) {
+void MeshBuilder::addTriangle(const Triangle& t) {
 	addTriangle(t.vertex(0), t.vertex(1), t.vertex(2));
 }
+
+} // namespace

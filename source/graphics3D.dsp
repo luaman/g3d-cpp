@@ -210,6 +210,10 @@ SOURCE=.\G3Dcpp\MeshAlgWeld.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\MeshBuilder.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\NetworkDevice.cpp
 # End Source File
 # Begin Source File
@@ -427,6 +431,10 @@ SOURCE=.\include\G3D\Matrix4.h
 # Begin Source File
 
 SOURCE=.\include\G3D\MeshAlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\MeshBuilder.h
 # End Source File
 # Begin Source File
 

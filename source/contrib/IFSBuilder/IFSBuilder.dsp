@@ -98,10 +98,6 @@ SOURCE=.\IFSModel.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\IFSModelBuilder.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
@@ -115,10 +111,6 @@ SOURCE=.\wildcard.cpp
 # Begin Source File
 
 SOURCE=.\IFSModel.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\IFSModelBuilder.h
 # End Source File
 # Begin Source File
 

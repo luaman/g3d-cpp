@@ -16,15 +16,12 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2003-12-18
+  @edited  2004-09-09
  */ 
 
 #include <G3DAll.h>
 #include "IFSModel.h"
-#include "IFSModelBuilder.h"
 
-/** Defined in IFSModelBuilder.cpp. Collapse radius. */
-extern double close;
 std::string             DATA_DIR        = "data/";
 
 Log*                    debugLog        = NULL;
@@ -37,6 +34,7 @@ bool                    endProgram      = false;
 
 XIFSModel*              model           = NULL;
 
+double                  close  = 0;
 bool                    pauseBetweenModels = true;
 
 void doSimulation(GameTime timeStep);

@@ -1,26 +1,26 @@
 /**
-  @file IFSBuilder.h
+  @file MeshBuilder.h
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
   @edited  2004-09-09
  */ 
-#ifndef IFSBUILDER_H
-#define IFSBUILDER_H
+#ifndef G3D_MESHBUILDER_H
+#define G3D_MESHBUILDER_H
 
-#include <G3DAll.h>
+#include "G3D/Array.h"
+#include "G3D/Vector3.h"
+#include "G3D/Triangle.h"
+
+namespace G3D {
 
 /**
  Allows creation of optimized watertight meshes from unoptimized polygon soups.
  See also G3D::MeshAlg for algorithms that operate on the output.
  */
-class IFSBuilder {
+class MeshBuilder {
 public:
-    /** Indices of vertices in <B>or near</B>  a grid cell. */
-    typedef Array<int> List;
-
-    static const double CLOSE;
 
     /**
      Set close to AUTO_WELD to weld vertices closer than 1/2
@@ -29,6 +29,8 @@ public:
     enum {AUTO_WELD = -100};
 
 private:
+    /** Indices of vertices in <B>or near</B>  a grid cell. */
+    typedef Array<int> List;
    
     std::string                 name;
     
@@ -40,11 +42,13 @@ private:
     void centerTriList();
     void computeBounds(Vector3& min, Vector3& max);
 
+    /** Collapse radius */
+    double close;
 	bool _twoSided;
 
 public:
 
-	inline IFSBuilder(bool twoSided = false) : _twoSided(twoSided) {}
+	inline MeshBuilder(bool twoSided = false) : _twoSided(twoSided), close(AUTO_WELD) {}
 
     /** Writes the model to the arrays, which can then be used with
         G3D::IFSModel::save and G3D::MeshAlg */
@@ -64,7 +68,13 @@ public:
 
     void setName(const std::string& n);
 
+    /** Vertices within this distance are considered identical.  
+        Use AUTO_WELD to have the distance be a function of the model size (default).*/
+    void setWeldRadius(double r) {
+        close = r;
+    }
 };
 
+} // namespace
 
 #endif

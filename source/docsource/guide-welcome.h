@@ -50,15 +50,18 @@ we recommend using one with G3D if your project has extensive UI needs.
   <TR><TD VALIGN=TOP>\link guidetutorial Tutorial \endlink</TD><TD>
   </TD></TR>
 
+  <TR><TD VALIGN=TOP>\link guidedebugging Debugging \endlink</TD><TD VALIGN=TOP>
+  </TD></TR>
+
   <TR><TD VALIGN=TOP>\link guideapp Application Framework \endlink</TD><TD VALIGN=TOP>
    Applets, Models, Selection, FPS Controls
   </TD></TR>
 
-
-  <TR><TD VALIGN=TOP>\link guideui User Input\endlink</TD><TD VALIGN=TOP>
+  <TR><TD VALIGN=TOP>\link guidemeshes Working with Meshes \endlink</TD><TD VALIGN=TOP>
+  Building meshes, Loading from disk, Mesh algorithms,
   </TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guidedebugging Debugging \endlink</TD><TD VALIGN=TOP>
+  <TR><TD VALIGN=TOP>\link guideui User Input\endlink</TD><TD VALIGN=TOP>
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidefiles Files \endlink</TD><TD VALIGN=TOP>

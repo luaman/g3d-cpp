@@ -1,5 +1,5 @@
 /**
-  @file IFSBuilder/XIFSModel.h
+  @file MeshBuilder/XIFSModel.h
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
@@ -14,7 +14,6 @@
 
 class XIFSModel {
 private:
-    friend class IFSModelBuilder;
 
     class Triangle {
     public:
@@ -67,6 +66,10 @@ private:
     void createHalfGear();
 
 	bool _twoSided;
+
+    /** Configure from a builder */
+    void set(MeshBuilder& builder);
+
 public:
 
     std::string             name;

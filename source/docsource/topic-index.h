@@ -21,6 +21,7 @@
 		G3D::Matrix3,
         G3D::Matrix4,
         G3D::MeshAlg,
+        G3D::MeshBuilder,
         G3D::Quat,
 		G3D::Plane,
 		G3D::Ray,

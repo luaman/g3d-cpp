@@ -153,6 +153,10 @@ SOURCE=.\html\gettingstarted.html
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-meshes.h"
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3D\mainpage.h
 # End Source File
 # Begin Source File

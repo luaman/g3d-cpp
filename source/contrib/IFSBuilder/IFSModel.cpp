@@ -1,5 +1,5 @@
 /**
-  @file IFSBuilder/XIFSModel.cpp
+  @file MeshBuilder/XIFSModel.cpp
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
@@ -7,11 +7,10 @@
   @cite MD2 format by id software
 
   @created 2002-02-27
-  @edited  2003-12-09
+  @edited  2004-09-09
  */
 
 #include "IFSModel.h"
-#include "IFSModelBuilder.h"
 #include "MD2.h"
 #include "Load3DS.h"
 
@@ -64,6 +63,64 @@ static double cliff2D(double x, double z) {
 }
 
 
+void XIFSModel::set(MeshBuilder& builder) {
+    Array<int> indexArray;
+    builder.commit(name, indexArray, geometry.vertexArray);
+
+    triangleArray.resize(indexArray.size() / 3);
+    for (int t = 0; t < triangleArray.size(); ++t) {
+        int i = t * 3;
+        for (int j = 0; j < 3; ++j) {
+            triangleArray[t].index[j] = indexArray[i + j];
+        }
+    }
+
+
+    Array<MeshAlg::Face> faceArray;
+    Array<Array<int> >   adjacentFaceArray;
+    MeshAlg::computeAdjacency(geometry.vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
+    MeshAlg::computeNormals(geometry.vertexArray, faceArray, adjacentFaceArray, geometry.normalArray, faceNormalArray);
+
+    // Find broken edges
+    brokenEdgeArray.resize(0);
+    for (int e = 0; e < edgeArray.size(); ++e) {
+        const MeshAlg::Edge& edge = edgeArray[e];
+
+        debugAssert(edge.vertexIndex[0] != edge.vertexIndex[1]);
+
+        if ((edge.faceIndex[1] == MeshAlg::Face::NONE) ||
+            (edge.faceIndex[0] == MeshAlg::Face::NONE) ||
+            (edge.faceIndex[0] == edge.faceIndex[1])) {
+            // Dangling edge
+            brokenEdgeArray.append(edge);
+        } else {
+            // Each vertex must appear in each adjacent face.  If it doesn't, something
+            // has gone wrong.
+            int numFound = 0;
+            // Check each vertex
+            for (int i = 0; i < 2; ++i) {
+                // Check each face
+                for (int j = 0; j < 2; ++j) {
+                    const int f = edge.faceIndex[j];
+                    const MeshAlg::Face& face = faceArray[f];
+                    for (int j = 0; j < 3; ++j) {
+                        if (geometry.vertexArray[face.vertexIndex[j]] == 
+                            geometry.vertexArray[edge.vertexIndex[i]]) {
+                            ++numFound;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (numFound < 4) {
+                brokenEdgeArray.append(edge);
+            }
+        }
+    }
+}
+
+
 XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
     if (! fileExists(filename)) {
         error("Critical Error", std::string("File not found: \"") + filename + "\"", true);
@@ -101,7 +158,7 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
 
 
 void XIFSModel::createHalfGear() {
-    IFSModelBuilder builder(false);
+    MeshBuilder builder(false);
     
     // Outer tooth radius
     double ro = 1;
@@ -215,7 +272,7 @@ void XIFSModel::createHalfGear() {
         }
     }
 
-    builder.commit(this);
+    set(builder);
 }
 
 static Vector3 isoToObjectSpace(int r, int c, int R, int C) {
@@ -240,7 +297,7 @@ static Vector3 isoToObjectSpace(int r, int c, int R, int C) {
 }
 
 void XIFSModel::createIsoGrid(double(*func)(double, double), int n) {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
 
     double sin60 = sin(G3D_PI / 3.0);
     
@@ -353,12 +410,12 @@ void XIFSModel::createIsoGrid(double(*func)(double, double), int n) {
             builder.addTriangle(E + BOTTOM, E, D + BOTTOM);
         }
     }
-    builder.commit(this);
+    set(builder);
 }
 
 
 void XIFSModel::createGrid(double(*func)(double, double), int n, bool consistentDiagonal) {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
 
     int X = iFloor(sqrt(n / 4.0));
     int Z = X;
@@ -488,12 +545,12 @@ void XIFSModel::createGrid(double(*func)(double, double), int n, bool consistent
     }
 
 
-    builder.commit(this);
+    set(builder);
 }
 
 
 void XIFSModel::createPolygon() {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
 
     int sides = 8;
 
@@ -509,14 +566,14 @@ void XIFSModel::createPolygon() {
         builder.addTriangle(a, b, c);
     }
 
-    builder.commit(this);
+    set(builder);
 
 }
 
 
 /** Called from createRing */
 static void addSubdividedQuad(
-    IFSModelBuilder& builder,
+    MeshBuilder& builder,
     const Vector3&   A,
     const Vector3&   B,
     const Vector3&   C,
@@ -545,7 +602,7 @@ static void addSubdividedQuad(
 
 
 void XIFSModel::createRing() {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
 
     int quads = 150;
 
@@ -601,12 +658,12 @@ void XIFSModel::createRing() {
         addSubdividedQuad(builder, e, g, h, f, subdivisions);
     }
 
-    builder.commit(this);
+    set(builder);
 }
 
 
 void XIFSModel::loadIFS(const std::string& filename) {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -637,13 +694,13 @@ void XIFSModel::loadIFS(const std::string& filename) {
         builder.addTriangle(va[v0], va[v1], va[v2]);
     }
 
-    builder.commit(this);
+    set(builder);
 }
 
 
 
 void XIFSModel::loadSM(const std::string& filename) {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
 
     TextInput ti(filename);
 
@@ -667,12 +724,12 @@ void XIFSModel::loadSM(const std::string& filename) {
         builder.addTriangle(va[v0], va[v1], va[v2]);
     }
 
-    builder.commit(this);
+    set(builder);
 }
 
 
 void XIFSModel::loadMD2(const std::string& filename) {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -720,13 +777,13 @@ void XIFSModel::loadMD2(const std::string& filename) {
     }
 
 
-    builder.commit(this);
+    set(builder);
 }
 
 
 
 void XIFSModel::load3DS(const std::string& filename) {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
 
@@ -767,13 +824,13 @@ void XIFSModel::load3DS(const std::string& filename) {
       
     builder.setName(loader.objectArray[0].name);
 
-    builder.commit(this);
+    set(builder);
 }
 
 
 
 void XIFSModel::loadOBJ(const std::string& filename) {
-    IFSModelBuilder builder(_twoSided);
+    MeshBuilder builder(_twoSided);
     
     TextInput::Options options;
     options.cppComments = false;
@@ -838,7 +895,7 @@ void XIFSModel::loadOBJ(const std::string& filename) {
     
     builder.setName(filename);
 
-    builder.commit(this);
+    set(builder);
 }
 
 
