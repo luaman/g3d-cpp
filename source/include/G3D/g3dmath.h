@@ -199,8 +199,7 @@ bool fuzzyLt(double a, double b);
 bool fuzzyLe(double a, double b);
 
 /**
- Computes 1 / sqrt(x) using SSE instructions for efficiency.
- @cite Nick nicolas@capens.net
+ Computes 1 / sqrt(x).
  */
 inline float rsq(float x) {
     return 1.0f / sqrt(x);
@@ -208,6 +207,7 @@ inline float rsq(float x) {
 
 /**
  Uses SSE to implement rsq.
+ @cite Nick nicolas@capens.net
  */
 inline float SSErsq(float x) {
 

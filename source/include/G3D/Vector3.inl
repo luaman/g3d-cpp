@@ -24,36 +24,23 @@ inline unsigned int hashCode(const G3D::Vector3& v) {
 namespace G3D {
 
 //----------------------------------------------------------------------------
-inline Vector3::Vector3 () {
-    x = y = z = 0;
+inline Vector3::Vector3() : x(0.0), y(0.0), z(0.0) {
 }
 
 //----------------------------------------------------------------------------
 
-inline Vector3::Vector3 (double fX, double fY, double fZ) {
-    x = fX;
-    y = fY;
-    z = fZ;
+inline Vector3::Vector3 (double fX, double fY, double fZ) : x(fX), y(fY), z(fZ) {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3::Vector3 (float afCoordinate[3]) {
-    x = afCoordinate[0];
-    y = afCoordinate[1];
-    z = afCoordinate[2];
+inline Vector3::Vector3 (float V[3]) : x(V[0]), y(V[1]), z(V[2]){
 }
 //----------------------------------------------------------------------------
-inline Vector3::Vector3 (double afCoordinate[3]) {
-    x = afCoordinate[0];
-    y = afCoordinate[1];
-    z = afCoordinate[2];
+inline Vector3::Vector3 (double V[3]) : x(V[0]), y(V[1]), z(V[2]){
 }
 
 //----------------------------------------------------------------------------
-inline Vector3::Vector3 (const Vector3& rkVector) {
-    x = rkVector.x;
-    y = rkVector.y;
-    z = rkVector.z;
+inline Vector3::Vector3 (const Vector3& V) : x(V.x), y(V.y), z(V.z) {
 }
 
 //----------------------------------------------------------------------------
@@ -140,7 +127,7 @@ inline Vector3 Vector3::operator/ (const Vector3& rkVector) const {
 
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::operator- () const {
-    return Vector3( -x, -y, -z);
+    return Vector3(-x, -y, -z);
 }
 
 //----------------------------------------------------------------------------
@@ -209,13 +196,9 @@ inline Vector3 Vector3::direction () const {
 //----------------------------------------------------------------------------
 
 inline Vector3 Vector3::fastDirection () const {
-//    #ifdef SSE
-        float lenSquared = x * x + y * y + z * z;
-        float invSqrt = rsq(lenSquared);
-        return Vector3(x * invSqrt, y * invSqrt, z * invSqrt);
-//    #else
-//        return direction();  
-//    #endif
+    float lenSquared = x * x + y * y + z * z;
+    float invSqrt = rsq(lenSquared);
+    return Vector3(x * invSqrt, y * invSqrt, z * invSqrt);
 }
 
 //----------------------------------------------------------------------------
