@@ -8,9 +8,8 @@
 
 #include "Model.h"
 
-extern Log*                 debugLog;
 extern VARAreaRef           varStatic;
-extern RenderDevice*        renderDevice;
+extern GApp*                app;
 
 Table<std::string, Model*>  Model::table;
 
@@ -49,11 +48,11 @@ Model::Model(const std::string& filename) {
     //  triheader    := (string32)"TRIANGLES" + (uint32)numFaces
     //  tri          := (uint32)v0 + (uint32)v1 + (uint32)v2
 
-    debugLog->println(std::string("Loading ") + DATA_DIR + "ifs/" + filename);
+    app->debugLog->println(std::string("Loading ") + app->dataDir + "ifs/" + filename);
 
-    BinaryInput b(DATA_DIR + "ifs/" + filename, G3D_LITTLE_ENDIAN);
+    BinaryInput b(app->dataDir + "ifs/" + filename, G3D_LITTLE_ENDIAN);
 
-    debugAssertM(b.getLength() > 0, std::string("File not found: \"") + DATA_DIR + "ifs/" + filename + "\"");
+    debugAssertM(b.getLength() > 0, std::string("File not found: \"") + app->dataDir + "ifs/" + filename + "\"");
 
     Vector3     min(Vector3::inf());
     Vector3     max(-Vector3::inf());
@@ -129,18 +128,18 @@ Model::Model(const std::string& filename) {
 
 void Model::render() const {
 
-    renderDevice->pushState();
+    app->renderDevice->pushState();
 
     // Draw the model
-    renderDevice->beginIndexedPrimitives();
+    app->renderDevice->beginIndexedPrimitives();
     {
-        renderDevice->setNormalArray(varNormal);
-        renderDevice->setVertexArray(varVertex);
-        renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
+        app->renderDevice->setNormalArray(varNormal);
+        app->renderDevice->setVertexArray(varVertex);
+        app->renderDevice->sendIndices(RenderDevice::TRIANGLES, index);
     }
-    renderDevice->endIndexedPrimitives();
+    app->renderDevice->endIndexedPrimitives();
 
-    renderDevice->popState();
+    app->renderDevice->popState();
 }
 
 
@@ -163,7 +162,6 @@ GameTime Model::timeUntilCollisionWithMovingSphere(
         // No collision is possible in the given time period.
         return inf();
     }
-
 
     // Check intersection with polygons (only return the first intersection)
     GameTime outTime = inf();

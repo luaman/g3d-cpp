@@ -65,5 +65,6 @@
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/edgeFeatures.h"
 #include "GLG3D/Shader.h"
+#include "GLG3D/GLCaps.h"
 
 #endif

@@ -39,6 +39,30 @@ namespace G3D {
  returns true if GL_NV_texture_rectangle is supported.
 
  GLCaps assumes all OpenGL contexts have the same capabilities.
+
+  <PRE>
+  The following extensions are shortcutted with a method named
+  similarly to GLCaps::supports_GL_EXT_texture_rectangle():
+
+  <UL>
+    <LI>GL_ARB_vertex_program
+    <LI>GL_NV_vertex_program2
+    <LI>GL_ARB_vertex_buffer_object
+    <LI>GL_ARB_fragment_program
+    <LI>GL_ARB_multitexture
+    <LI>GL_EXT_stencil_wrap
+    <LI>GL_ARB_stencil_two_side
+    <LI>GL_EXT_texture_compression_s3tc
+    <LI>GL_EXT_texture_cube_map
+    <LI>GL_ARB_shadow
+    <LI>GL_ARB_shader_objects
+    <LI>GL_ARB_shading_language_100
+    <LI>GL_ARB_fragment_shader
+    <LI>GL_ARB_vertex_shader
+	</UL>
+
+  These methods do not appear in the documentation because they
+  are generated using macros.
  */
 class GLCaps {
 private:

@@ -5,16 +5,13 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-11-23
+ @edited  2004-06-20
  */
 
 #include "Scene.h"
 #include "Object.h"
 
-extern std::string          DATA_DIR;
-extern GCamera*             camera;
-extern RenderDevice*        renderDevice;
-extern Log*                 debugLog;
+extern GApp* app;
 
 static const Vector3 gravity(0, -60, 0);
 
@@ -45,7 +42,7 @@ static bool debugLightMap = false;
 
 
 Scene::Scene() {
-    sky = Sky::create(renderDevice, DATA_DIR + "sky/");
+    sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
     shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(), Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP);
 }
 
@@ -67,38 +64,38 @@ void Scene::renderingPass() const {
         sim[i]->render();
     }
 
-    Draw::sphere(Sphere(debugPoint, .1), renderDevice);
+    Draw::sphere(Sphere(debugPoint, .1), app->renderDevice);
 }
 
 
 void Scene::generateShadowMap(
     const CoordinateFrame& lightViewMatrix) const {
 
-    debugAssert(shadowMapSize < renderDevice->getHeight());
-    debugAssert(shadowMapSize < renderDevice->getWidth());
+    debugAssert(shadowMapSize < app->renderDevice->getHeight());
+    debugAssert(shadowMapSize < app->renderDevice->getWidth());
 
-    renderDevice->clear(debugLightMap, true, false);
+    app->renderDevice->clear(debugLightMap, true, false);
     
     Rect2D rect = Rect2D::xywh(0, 0, shadowMapSize, shadowMapSize);
 
-    renderDevice->pushState();
-        renderDevice->setViewport(rect);
+    app->renderDevice->pushState();
+        app->renderDevice->setViewport(rect);
 
 	    // Draw from the light's point of view
-        renderDevice->setProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
-        renderDevice->setCameraToWorldMatrix(lightViewMatrix);
+        app->renderDevice->setProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
+        app->renderDevice->setCameraToWorldMatrix(lightViewMatrix);
 
         if (! debugLightMap) {
-            renderDevice->disableColorWrite();
+            app->renderDevice->disableColorWrite();
         }
 
         // We can choose to use a large bias or render from
         // the backfaces in order to avoid front-face self
         // shadowing.  Here, we use a large offset.
-        renderDevice->setPolygonOffset(4);
+        app->renderDevice->setPolygonOffset(4);
 
         renderingPass();
-    renderDevice->popState();
+    app->renderDevice->popState();
 
     shadowMap->copyFromScreen(rect);
 }
@@ -125,32 +122,32 @@ void Scene::render(const LightingParameters& lighting) const {
         return;
     }
 
-    renderDevice->clear(sky == NULL, true, false);
+    app->renderDevice->clear(sky == NULL, true, false);
 
     if (sky != NULL) {
 		sky->render(lighting);
     }
 
-    renderDevice->pushState();
+    app->renderDevice->pushState();
 
         // Ambient and detail light pass
-        renderDevice->enableLighting();
-        renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
-        renderDevice->setAmbientLightColor(lighting.ambient);
-        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+        app->renderDevice->enableLighting();
+        app->renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
+        app->renderDevice->setAmbientLightColor(lighting.ambient);
+        app->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
         renderingPass();
 
         // Sun light pass
-        renderDevice->setAmbientLightColor(Color3::black());
-        renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
-        renderDevice->disableDepthWrite();
-        renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+        app->renderDevice->setAmbientLightColor(Color3::black());
+        app->renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        app->renderDevice->disableDepthWrite();
+        app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 
-        renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+        app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
-        renderDevice->configureShadowMap(1, lightMVP, shadowMap);
+        app->renderDevice->configureShadowMap(1, lightMVP, shadowMap);
         renderingPass();
-    renderDevice->popState();
+    app->renderDevice->popState();
 
     if (sky != NULL) {
         sky->renderLensFlare(lighting);

@@ -3,13 +3,12 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-03-18
+ @edited  2004-06-20
  */
 
 #include "Object.h"
 #include "Model.h"
-
-extern RenderDevice* renderDevice;
+extern GApp* app;
 
 void glSpecular() {
     // Material properties
@@ -50,8 +49,8 @@ GeneralObject::GeneralObject(
 
 
 void GeneralObject::render() const {
-    renderDevice->setColor(color);
-    renderDevice->setObjectToWorldMatrix(cframe);
+    app->renderDevice->setColor(color);
+    app->renderDevice->setObjectToWorldMatrix(cframe);
     glSpecular();
     model->render();
 }
@@ -109,7 +108,7 @@ GameTime SphereObject::timeUntilCollisionWithMovingSphere(
 
 void SphereObject::render() const {
     glSpecular();
-    Draw::sphere(sphere, renderDevice, color, Color4::clear());
+    Draw::sphere(sphere, app->renderDevice, color, Color4::clear());
 }
 
 
@@ -140,7 +139,7 @@ GameTime CapsuleObject::timeUntilCollisionWithMovingSphere(
 
 void CapsuleObject::render() const {
     glSpecular();
-    Draw::capsule(capsule, renderDevice, color, Color4::clear());
+    Draw::capsule(capsule, app->renderDevice, color, Color4::clear());
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -173,23 +172,23 @@ void BoxObject::render() const {
     Vector3 v0, v1, v2, v3;
 
     glDiffuse();
-    renderDevice->setColor(color);
-    renderDevice->setObjectToWorldMatrix(CoordinateFrame());
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
+    app->renderDevice->setColor(color);
+    app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
+    app->renderDevice->beginPrimitive(RenderDevice::QUADS);
     for (int f = 0; f < 6; ++f) {
         box.getFaceCorners(f, v0, v1, v2, v3);
-        renderDevice->setNormal((v1 - v0).cross(v3 - v0).direction());
-        renderDevice->sendVertex(v0);
-        renderDevice->sendVertex(v1);
-        renderDevice->sendVertex(v2);
-        renderDevice->sendVertex(v3);
+        app->renderDevice->setNormal((v1 - v0).cross(v3 - v0).direction());
+        app->renderDevice->sendVertex(v0);
+        app->renderDevice->sendVertex(v1);
+        app->renderDevice->sendVertex(v2);
+        app->renderDevice->sendVertex(v3);
     }
-    renderDevice->endPrimitive();
+    app->renderDevice->endPrimitive();
 
     /* Messes up the shadow map for some reason.
-    renderDevice->pushState();
-        Draw::box(box, renderDevice, color, Color4::clear());
-    renderDevice->popState();
+    app->renderDevice->pushState();
+        Draw::box(box, app->renderDevice, color, Color4::clear());
+    app->renderDevice->popState();
     */
 }
 

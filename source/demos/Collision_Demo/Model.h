@@ -11,10 +11,9 @@
 
 #include <G3DAll.h>
 
-extern std::string DATA_DIR;
-
 /**
- Indexed triangle model.
+ Indexed triangle model (could have been implemented as a subclass or wrapper for IFSModel;
+ this demo predates the IFSModel class).
  */
 class Model {
 protected:

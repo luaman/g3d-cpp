@@ -11,6 +11,7 @@
    <P>
    Changes in 6.04:
    <UL>
+     <LI> [ 976924 ] Texture::texelWidth
      <LI> [ 973413 ] VertexAndPixelShader::ArgList::set can be called more than once per variable
      <LI> GWindow::setIcon(std::string filename)
      <LI> Texture::fromMemory that takes a single image (instead of an array of images)
@@ -19,6 +20,8 @@
      <LI> GImage and Texture now load ICO files
 	 <LI> GL_SAMPLER_1D_ARB, 2D, 3D, CUBE
 	 <LI> Win32Window mouse events
+	 <LI> Fix: [ 976743 ] document GLCaps functions
+	 <LI> Fix: [ 976746 ] #include GLCaps in g3dall
 	 <LI> Fix: [ 973550 ] sampler2DRect now supported in GLSL shaders (NVIDIA only; ATI drivers are broken)
 	 <LI> Fix: [ 973490 ] Win32Window width/height off by non-client amount
      <LI> Fix: [ 961827 ] In debug mode, RenderDevice tries to access GL_MAX_TEXTURE_IMAGE_UNITS_ARB and an assertion fails on cards that don't support it.

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2004-06-15
+  @edited  2004-06-21
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -316,18 +316,36 @@ public:
         return textureID;
     }
 
+	/** @deprecated Use texelWidth */
     inline const int getTexelWidth() const {
         return width;
     }
 
+	/** @deprecated Use texelHeight */
     inline const int getTexelHeight() const {
         return height;
     }
 
     /**
      For 3D textures.
+	 @deprecated Use texelDepth
      */
     inline const int getTexelDepth() const {
+        return depth;
+    }
+
+    inline const int texelWidth() const {
+        return width;
+    }
+
+    inline const int texelHeight() const {
+        return height;
+    }
+
+    /**
+     For 3D textures.
+     */
+    inline const int texelDepth() const {
         return depth;
     }
 
@@ -339,7 +357,11 @@ public:
         return interpolate;
     }
 
+	/** @deprecated use wrapMode */
     inline WrapMode getWrapMode() const {
+        return wrap;
+    }
+    inline WrapMode wrapMode() const {
         return wrap;
     }
 
