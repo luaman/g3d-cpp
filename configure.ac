@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([g3d-cpp], [5.01], [matrix@graphics3d.com])
+AC_INIT([g3d-cpp], [6.04], [matrix@graphics3d.com])
 AM_INIT_AUTOMAKE([1.6.1 foreign no-installinfo no-installman])
 AC_CONFIG_SRCDIR([source/G3Dcpp/Box.cpp])
 AM_CONFIG_HEADER(source/config.h)
@@ -32,28 +32,7 @@ AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit floor gethostbyname gethostname inet_ntoa memset mkdir pow select socket sqrt strchr strdup strrchr strstr])
 
-AM_PATH_SDL(1.2.0, [], [AC_MSG_ERROR([Can't find SDL on your system])])
-## Check for sdl-config program
-#AC_PATH_PROG([SDL_CONFIG], [sdl-config], [no])
-#if test x$SDL_CONFIG != xno ; then
-#    SDL_INCDIR=`$SDL_CONFIG --cflags`
-#	SDL_LDFLAGS=`$SDL_CONFIG --libs`
-#	AC_SUBST(SDL_INCDIR)
-#	AC_SUBST(SDL_LDFLAGS)
-#else
-#  	AC_MSG_ERROR([sdl-config not found!])
-#fi
-
-#AC_MSG_CHECKING([whether to enable debugging])
-#AC_ARG_ENABLE(debugging, [
-#  --enable-debugging		(Default: disabled)], [
-#	    if test x$enablevar = xno; then
-#            AC_MSG_RESULT(no)
-#        else
-#            AC_MSG_RESULT(yes)
-#            AC_DEFINE(_DEBUG, 1, [Debugging on])
-#        fi
-#    ],[AC_MSG_RESULT(no)])
+#AM_PATH_SDL(1.2.0, [], [AC_MSG_ERROR([Can't find SDL on your system])])
 
 AC_CONFIG_FILES([Makefile
                  temp/Makefile

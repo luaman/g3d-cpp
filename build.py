@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2005-02-03
+# @edited  2005-03-24
 # Each build target is a procedure.
 #
 
@@ -19,7 +19,8 @@ autoconf   = "autoconf"
 autoheader = "autoheader"
 automake   = "automake-1.7"
 doxygen    = "doxygen"
-python     = "python2.2"
+python     = "python"
+sdlconfig  = "sdl-config"
 
 # Turn the platform into a name to put in the
 # "lib" directory name
@@ -105,15 +106,19 @@ def linuxCheckVersion():
         try:
             checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
         except:
-            checkVersion('automake-1.7 --version', '1.6', 'Requires automake 1.6 or later.')
+            checkVersion('automake --version', '1.6', 'Requires automake 1.6 or later.')
+	    automake = 'automake'
 
         try:
             checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
         except:
-            checkVersion('aclocal-1.7 --version', '1.6', 'Requires aclocal 1.6 or later.')
+            checkVersion('aclocal --version', '1.6', 'Requires aclocal 1.6 or later.')
+	    aclocal = 'aclocal'
 
-            checkVersion(doxygen + ' --version', '1.2', 'Requires doxygen 1.3 or later.')
-            checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
+        checkVersion(doxygen + ' --version', '1.3', 'Requires doxygen 1.3 or later.')
+        checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
+
+        checkVersion(sdlconfig + ' --version', '1.2', 'Requires SDL 1.2 or later.')
 
     except Error, e:
         print e.value
