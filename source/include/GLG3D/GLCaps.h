@@ -154,6 +154,8 @@ public:
         return _numTextureCoords;
     }
 
+    /** Some devices (e.g. NVIDIA cards) support more textures than
+        texture matrices */
     static int numTextures() {
         return _numTextures;
     }

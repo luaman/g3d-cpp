@@ -16,6 +16,7 @@
 #include "../contrib/Win32Window/Win32Window.h"
 #include "../contrib/Win32Window/Win32Window.cpp"
 
+
 #if G3D_VER < 60400
     #error Requires G3D 6.04
 #endif
@@ -43,6 +44,9 @@ public:
 
     class App*					app;
 
+    TextureRef                  texture;
+    VertexAndPixelShaderRef     shader;
+
     Demo(App* app);    
 
     virtual void init();
@@ -56,14 +60,35 @@ public:
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
+    texture = Texture::fromFile("D:/games/data/image/testImage.jpg");
+
+    std::string vs = 
+        "void main(void) { \n"
+        "    gl_Position = ftransform();\n"
+        "    gl_Color = vec4(1,1,1,1);\n"
+        "    vec3 lo = vec3(-1,-1,-1);\n"
+        "    vec3 hi = vec3(1,1,1);\n"
+        "    vec3 v = (gl_Vertex.xyz - lo) / (hi - lo);\n"
+        "    const float PI = 3.1415927;\n"
+        "    gl_TexCoord[0] = vec4(atan2(v.x - 0.5, v.y - 0.5) / (2*PI) + 0.5, v.z, 0, 1);\n"
+         "}\n";
+
+    std::string ps =
+        "uniform sampler2D texture;\n"
+        "uniform float xxy;\n"
+        "void main(void) { \n"
+        "  gl_FragColor = tex2D(texture, gl_TexCoord[0].st);\n"
+        "}\n";
+
+    shader = VertexAndPixelShader::fromStrings(vs, ps);
 }
 
 
 void Demo::init()  {
    
 	// Called before Demo::run() beings
-    app->debugCamera.setPosition(Vector3(0, 20, 0));
-    app->debugCamera.lookAt(Vector3(0, 0, 0), -Vector3::UNIT_Z);
+    app->debugCamera.setPosition(Vector3(0, 0, 10));
+    app->debugCamera.lookAt(Vector3(0, 0, 0));
 }
 
 
@@ -86,210 +111,34 @@ void Demo::doGraphics() {
 
     app->renderDevice->clear(true, true, true);
 
-	
+
+    Vector3 control[5] = 
+    {Vector3(0,0,0), 
+     Vector3(0,1,0),
+     Vector3(1,1,0),
+     Vector3(1,2,0),
+     Vector3(4,0,0)};
+
 	Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), app->renderDevice);
 
+
+    app->renderDevice->pushState();
+        VertexAndPixelShader::ArgList args;
+        args.set("texture", texture);
+        args.set("xxy", 3);
+        app->renderDevice->setVertexAndPixelShader(shader, args);
+//        app->renderDevice->setTexture(0, texture);
+
+
+        Draw::sphere(Sphere(Vector3::zero(), 1), app->renderDevice,
+            Color3::WHITE, Color4::CLEAR);
+/*        Draw::box(AABox(Vector3(-1,-1,-1),Vector3(1,1,1)), app->renderDevice,
+            Color3::WHITE, Color4::CLEAR);
+            */
+    app->renderDevice->popState();
 }
 
 
-
-/** Computes an array of */
-void getViewFrustumFaces(Array< Array<Vector4> > face);
-
-
-/**
- Returns the set of planes bounding the region that can cast
- shadows visible to the camera, i.e. the set of all points
- that can shadow points in the view frustum.
-
- @param light  World space firection to the light source (which must be a directional light)
- @param camera The camera (defines the view frustum)
- @param plane  The output array of planes
- @param viewport The window-space viewport.  Used only to compute the aspect ratio of the frustum.
- */
-void computeVisibleShadowCasterVolume(
-    const GCamera&      camera,
-    const Rect2D&       viewport,
-    const Vector3&      light,
-    Array<Plane>&       plane) {
-    
-    plane.clear();
-
-    // The volume is the convex hull of the vertices definining the view
-    // frustum and the light source point at infinity.  This volume
-    // consists of allthe planes in the view frustum that have the light
-    // source in their positive half space (i.e. N dot L > 0) and
-    // planes containing view frustum edges (with two finite vertices)
-    // in only one such plane and the light source point.
-
-    Array<Plane> frustum;
-    camera.getClipPlanes(viewport, frustum);
-
-    // Remove planes that would cull the light
-    for (int p = 0; p < frustum.size(); ++p) {
-        if (frustum[p].normal().dot(light) <= 0) {
-            frustum.fastRemove(p);
-        }
-    }
-
-
-    const double x               = camera.getViewportWidth(viewport) / 2;
-    const double y               = camera.getViewportHeight(viewport) / 2;
-    const double z               = camera.getNearPlaneZ();
-    const double w               = z / camera.getFarPlaneZ();
-
-    (All in camera space):
-
-    class Edge {
-    public:
-        /** Edge is directed from v[0] to v[1] */
-        int         vertexIndex[2];
-        Edge(){}
-        Edge(int v0, int v1) {
-            vertexIndex[0] = v0;
-            vertexIndex[1] = v1;
-        }
-        bool equals(int v0, int v1) const {
-            return (vertexIndex[0] == v0) &&
-                   (vertexIndex[1] == v1);
-        }
-    };
-
-    class Face {
-    public:
-        /** Counter clockwise */
-        int         vertexIndex[4];
-    };
-
-
-    Array<Vector4>  vertexPos;
-    
-    // Near face (ccw from UR)
-    vertexPos.append(
-        Vector4( x,  y, z, 1),
-        Vector4(-x,  y, z, 1),
-        Vector4(-x, -y, z, 1),
-        Vector4( x, -y, z, 1));
-
-    // Far face (ccw from UR, from origin)
-    vertexPos.append(
-        Vector4( x,  y, z, w),
-        Vector4(-x,  y, z, w),
-        Vector4(-x, -y, z, w),
-        Vector4( x, -y, z, w));
-
-    // Transform to world space
-    CoordinateFrame cframe;
-    camera.getCoordinateFrame(cframe);
-    for (int v = 0; v < vertexPos.size(); ++v) {
-        vertexPos[v] = cframe.toWorldSpace(vertexPos[v]);
-    }
-
-
-    Array<Face> frustum;
-    Face face;
-    
-    // Near plane (wind backwards so normal faces into frustum)
-    face.vertexIndex[0] = 3;
-    face.vertexIndex[1] = 2;
-    face.vertexIndex[2] = 1;
-    face.vertexIndex[3] = 0;
-    frustum.append(face);
-
-    // Far plane
-    face.vertexIndex[0] = 4;
-    face.vertexIndex[1] = 5;
-    face.vertexIndex[2] = 6;
-    face.vertexIndex[3] = 7;
-    frustum.append(face);
-
-    // Right plane
-    face.vertexIndex[0] = 0;
-    face.vertexIndex[1] = 4;
-    face.vertexIndex[2] = 7;
-    face.vertexIndex[3] = 3;
-    frustum.append(face);
-
-    // Left plane
-    face.vertexIndex[0] = 5;
-    face.vertexIndex[1] = 1;
-    face.vertexIndex[2] = 2;
-    face.vertexIndex[3] = 6;
-    frustum.append(face);
-
-    // Top plane
-    face.vertexIndex[0] = 1;
-    face.vertexIndex[1] = 5;
-    face.vertexIndex[2] = 4;
-    face.vertexIndex[3] = 0;
-    frustum.append(face);
-
-    // Bottom plane
-    face.vertexIndex[0] = 2;
-    face.vertexIndex[1] = 3;
-    face.vertexIndex[2] = 7;
-    face.vertexIndex[3] = 6;
-    frustum.append(face);
-
-    // Boundary of the portion of the frustum that is on the convex hull
-    // of (frustum + light).  The edges are directed ccw to close the frustum.
-    // We do not include edges entirely at infinity since they only give
-    // rise to planes at infinity.
-    Array<Edge> boundary;
-
-    // Collect planes that do not cull the light source and find the
-    // boundary.
-    for (int f = 0; f < frustum.size(); ++f) {
-        const Face& face = frustum[f];
-        int v0 = face.vertexIndex[0];
-        int v1 = face.vertexIndex[1];
-        int v2 = face.vertexIndex[2];
-        Vector3 N = (vertexPos[v1] - vertexPos[v0]).cross(vertexPos[v2] - vertexPos[v0]);
-        if (N.dot(L) > 0) {
-            // This plane is on the convex hull
-            plane.append(Plane(N, vertexPos[v0]));
-
-            // Collect finite and semi-finite edges
-            for (int v = 0; v < 4; ++v) {
-                int a = face.vertexIndex[v];
-                int b = face.vertexIndex[(v + 1) % 4];
-                
-                if ((vertexPos[a].w != 0) || (vertexPos[b].w != 0)) {
-                    // This edge is at least semi-finite.  Search
-                    // the boundary array for this edge.  If we
-                    // find it, this edge is not on the boundary since
-                    // its complement already added this edge to the boundary,
-                    // so we remove both.  If not found, this edge is on the
-                    // boundary so we add it to the array (to be potentially
-                    // removed by a later complement).
-                    
-                    bool found = false;
-                    for (int e = 0; e < boundary.size(); ++e) {
-                        if ((boundary[e].equals(a, b)) {
-                            boundary.fastRemove(e);
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (! found) {
-                        // Add the reverse of this edge to the boundary
-                        boundary.append(Edge(b, a));
-                    }
-                }
-            }
-        }
-    }
-
-    // Construct planes that contain the boundary edges and the light source
-    for (int e = 0; e < boundary.size(); ++e) {
-        const Vector4& A = vertexPos[boundary[e].vertexIndex[0]];
-        const Vector4& B = vertexPos[boundary[e].vertexIndex[1]];
-        // Create plane containing ABL
-        plane.append(Plane(A, B, L));
-    }
-
-}
 
 void App::main() {
 	setDebugMode(true);

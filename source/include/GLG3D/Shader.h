@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2004-07-19
+ @edited  2004-08-18
  */
 
 #ifndef G3D_SHADER_H
@@ -142,6 +142,9 @@ public:
 
     class UniformDeclaration {
     public:
+        /** If true, this variable is declared but unused */
+        bool                dummy;
+
         /** Name of the variable.  May include [] and . (e.g.
             "foo[1].normal")*/
         std::string         name;
@@ -248,6 +251,7 @@ protected:
     std::string             _vertCompileMessages;
     std::string             _linkMessages;
 
+    int                     lastTextureUnit;
 
     /** Converts from int and bool types to float types (e.g. GL_INT_VEC2_ARB -> GL_FLOAT_VEC2_ARB).
         Other types are left unmodified.*/
@@ -256,6 +260,12 @@ protected:
     /** Computes the uniformArray from the current
         program object.  Called from the constructor */
     void computeUniformArray();
+
+    /** Finds any uniform variables in the code that are not already in 
+        the uniform array and adds them (helps surpress warnings about 
+        setting variables that have been compiled away-- those warnings
+        are annoying when temporarily commenting out code) */
+    void addUniformsFromCode(const std::string& code);
 
     Array<UniformDeclaration>   uniformArray;
 

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2004-07-18
+ @edited  2004-08-18
  */
 
 #include "GLG3D/Shader.h"
@@ -49,6 +49,7 @@ void VertexAndPixelShader::GPUShader::init(
 			alwaysAssertM(ok(), messages());
 		}
 	}
+
 }
 
 
@@ -146,6 +147,8 @@ VertexAndPixelShader::VertexAndPixelShader(
 			pixelShader.messages() + NEWLINE + NEWLINE;
     }    
 
+    lastTextureUnit = -1;
+
     if (_ok) {
         // Create GL object
         _glProgramObject = glCreateProgramObjectARB();
@@ -182,6 +185,8 @@ VertexAndPixelShader::VertexAndPixelShader(
 
     if (_ok) {
         computeUniformArray();
+        addUniformsFromCode(vsCode);
+        addUniformsFromCode(psCode);
     }
 }
 
@@ -193,6 +198,106 @@ bool VertexAndPixelShader::isSamplerType(GLenum e) {
        (e == GL_SAMPLER_2DRECT_ARB) ||
        (e == GL_SAMPLER_3D_ARB) ||
        (e == GL_SAMPLER_CUBE_ARB);
+}
+
+
+/** Converts a type name to a GL enum */
+static GLenum toGLType(const std::string& s) {
+    if (s == "float") {
+        return GL_FLOAT;
+    } else if (s == "vec2") {
+        return GL_FLOAT_VEC2_ARB;
+    } else if (s == "vec3") {
+        return GL_FLOAT_VEC3_ARB;
+    } else if (s == "vec4") {
+        return GL_FLOAT_VEC4_ARB;
+
+    } else if (s == "int") {
+        return GL_INT;
+
+    } else if (s == "bool") {
+        return GL_BOOL_ARB;
+
+    } else if (s == "mat2") {
+        return GL_FLOAT_MAT2_ARB;
+    } else if (s == "mat3") {
+        return GL_FLOAT_MAT3_ARB;
+    } else if (s == "mat4") {
+        return GL_FLOAT_MAT4_ARB;
+
+    } else if (s == "sampler1D") {
+        return GL_SAMPLER_1D_ARB;
+    } else if (s == "sampler2D") {
+        return GL_SAMPLER_2D_ARB;
+    } else if (s == "sampler3D") {
+        return GL_SAMPLER_3D_ARB;
+    } else if (s == "samplerCube") {
+        return GL_SAMPLER_CUBE_ARB;
+    } else if (s == "sampler2DRect") {
+        return GL_SAMPLER_2DRECT_ARB;
+
+    } else {
+        debugAssertM(false, std::string("Unknown type in shader: ") + s);
+        return 0;
+    }
+}
+
+
+void VertexAndPixelShader::addUniformsFromCode(const std::string& code) {
+    TextInput ti(TextInput::FROM_STRING, code);
+
+    while (ti.hasMore()) {
+        if ((ti.peek().type() == Token::SYMBOL) && (ti.peek().string() == "uniform")) {
+            // Read the definition
+            ti.readSymbol("uniform");
+
+            // Maybe read "const"
+            if ((ti.peek().type() == Token::SYMBOL) && (ti.peek().string() == "const")) {
+                ti.readSymbol("const");
+            }
+
+            // Read the type
+            GLenum type = toGLType(ti.readSymbol());
+
+            // Read the name
+            std::string name = ti.readSymbol();
+
+            // Read the semi-colon
+            ti.readSymbol(";");
+
+            // See if this variable is already declared.
+            bool found = false;
+
+            for (int i = 0; i < uniformArray.size(); ++i) {
+                if (uniformArray[i].name == name) {
+                    found = true;
+                    break;
+                }
+            } 
+
+            if (! found) {
+                // Add the definition
+                uniformArray.next();
+
+                // see if it is already in the uniform array
+                uniformArray.last().dummy = true;
+                uniformArray.last().name = name;
+                uniformArray.last().size = 1;
+                uniformArray.last().type = type;
+
+                if (isSamplerType(type)) {
+                    ++lastTextureUnit;
+                    uniformArray.last().textureUnit = lastTextureUnit;
+                } else {
+                    uniformArray.last().textureUnit = -1;
+                }
+            }
+
+        } else {
+            // Consume the token
+            ti.read();
+        }
+    }
 }
 
 
@@ -210,7 +315,6 @@ void VertexAndPixelShader::computeUniformArray() {
 
     GLcharARB* name = (GLcharARB *) malloc(maxLength * sizeof(GLcharARB));
     
-    int lastTextureUnit = -1;
     // Loop over glGetActiveUniformARB and store the results away.
     for (int i = 0; i < uniformCount; ++i) {
 
@@ -220,6 +324,7 @@ void VertexAndPixelShader::computeUniformArray() {
 	    glGetActiveUniformARB(glProgramObject(), 
             i, maxLength, NULL, &size, &type, name);
 
+        uniformArray.last().dummy = false;
         uniformArray[i].name = name;
         uniformArray[i].size = size;
         uniformArray[i].type = type;
@@ -320,7 +425,7 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
     // Iterate through formal bindings
     for (int u = 0; u < uniformArray.size(); ++u) {
         const UniformDeclaration& decl = uniformArray[u];
-        
+
         ++numVariables;
         if (! args.argTable.containsKey(decl.name)) {
             throw ArgumentError(
@@ -374,6 +479,12 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
     // Iterate through the formal parameter list
     for (int u = 0; u < uniformArray.size(); ++u) {
         const UniformDeclaration& decl  = uniformArray[u];
+    
+        if (decl.dummy) {
+            // Don't set this variable; it is unused.
+            continue;
+        }
+
         const ArgList::Arg&       value = args.argTable.get(decl.name); 
 
         // Bind based on the declared type
