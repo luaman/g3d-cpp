@@ -81,7 +81,7 @@ public:
     private:
         friend class Set<T>;
 
-        Table<T, bool>::Iterator it;
+        typename Table<T, bool>::Iterator it;
 
         Iterator(const Table<T, bool>::Iterator& it) : it(it) {}
 
