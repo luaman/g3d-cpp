@@ -216,8 +216,12 @@ public:
         return lo.hashCode() + hi.hashCode();
     }
 
-    inline bool operator==(const G3D::AABox& b) {
+    inline bool operator==(const AABox& b) const {
         return (lo == b.lo) && (hi == b.hi);
+    }
+
+    inline bool operator!=(const AABox& b) const {
+        return !((lo == b.lo) && (hi == b.hi));
     }
 
     void getBounds(AABox& out) const {

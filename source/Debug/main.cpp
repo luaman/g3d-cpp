@@ -83,14 +83,33 @@ void Demo::init()  {
   
     model = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
 
-    lambertian = Shader::fromStrings(STR(
+//    lambertian = Shader::fromStrings(STR(
 
-     uniform vec3 k_A;
+//     uniform vec3 k_A;
 
-     void main(void) {
-        gl_Position = ftransform();
-        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightSource[0].diffuse + k_A;
-     }), "");
+//     void main(void) {
+//        gl_Position = ftransform();
+//        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightSource[0].diffuse + k_A;
+//     }), "");
+
+    AABSPTree<Sphere> boxTree;
+
+    boxTree.insert(Sphere(Vector3(0,0,0), 20));
+    boxTree.insert(Sphere(Vector3(10,10,10), 50));
+
+    for (AABSPTree<Sphere>::BoxIntersectionIterator it = boxTree.beginBoxIntersection(AABox(Vector3(0,0,0), Vector3(10,10,10)));
+        it != boxTree.endBoxIntersection();
+        ++it) {
+        
+        Log::common()->println("Intersection");
+    }
+
+    Array<Sphere> members;
+    boxTree.getIntersectingMembers(AABox(Vector3(0,0,0), Vector3(10,10,10)), members);
+    for(Array<Sphere>::Iterator it = members.begin(); it != members.end(); ++it) {
+
+        Log::common()->println("Intersection 2");
+    }
 
 }
 
@@ -147,8 +166,8 @@ void Demo::doGraphics() {
     // Rendering loop
     app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
-    app->renderDevice->setShader(lambertian);
-    lambertian->args.set("k_A", Color3(.2,.2,.3));
+//    app->renderDevice->setShader(lambertian);
+//    lambertian->args.set("k_A", Color3(.2,.2,.3));
     model->pose()->render(app->renderDevice);
 //        Draw::box(AABox(Vector3(-2,-2,-2), Vector3(2,2,2)), app->renderDevice, Color3::white() * 0.5, Color4::clear());
 

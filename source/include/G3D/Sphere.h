@@ -49,6 +49,14 @@ public:
 
     virtual ~Sphere() {}
 
+    bool operator==(const Sphere& other) const {
+        return (center == other.center) && (radius == other.radius);
+    }
+
+    bool operator!=(const Sphere& other) const {
+        return !((center == other.center) && (radius == other.radius));
+    }
+
     /**
      Returns true if point is less than or equal to radius away from
      the center.
@@ -110,5 +118,9 @@ public:
 };
 
 } // namespace
+
+inline unsigned int hashCode(const G3D::Sphere& sphere) {
+    return (hashCode(sphere.center) + (sphere.radius * 13));
+}
 
 #endif

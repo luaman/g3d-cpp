@@ -869,7 +869,7 @@ public:
         bool            isEnd;
         AABox           box;
 
-        Node*           node;
+        const Node*     node;
 
         /** Nodes waiting to be processed */
         // We could use backpointers within the tree and careful
