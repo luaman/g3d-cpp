@@ -205,9 +205,7 @@ void GLCaps::loadExtensions() {
         LOAD_EXTENSION(glClientActiveTextureARB);
     #endif
 
-    #ifndef GL_EXT_blend_minmax
-        LOAD_EXTENSION(glBlendEquationEXT);
-    #endif
+    LOAD_EXTENSION(glBlendEquationEXT);
 
     #ifdef G3D_WIN32
         LOAD_EXTENSION(wglSwapIntervalEXT);
