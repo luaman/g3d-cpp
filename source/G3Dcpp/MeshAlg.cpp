@@ -114,8 +114,6 @@ void MeshAlg::computeAreaStatistics(
     Array<double> length(indexArray.size());
 
     for (int i = 0; i < indexArray.size(); i += 3) {
-        double A, L;
-
         const Vector3& v0 = vertexArray[indexArray[i]];
         const Vector3& v1 = vertexArray[indexArray[i + 1]];
         const Vector3& v2 = vertexArray[indexArray[i + 2]];
