@@ -121,7 +121,7 @@ Sky::Sky(
 
 			    star[i] = Vector4(x, y, z, 0);
 
-			    starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .7;
+			    starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .3;
 	        }
         } else {
 		    // Create a random starfield
@@ -133,7 +133,6 @@ Sky::Sky(
    		    }
  	    }
     }
-
 }
 
 
@@ -159,22 +158,20 @@ static void drawCelestialSphere(
 
     renderDevice->setColor(color);
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-        renderDevice->setTexCoord(0, Vector2(0, 0));
-        renderDevice->sendVertex(C + (-X + Y) * r);
-        renderDevice->setTexCoord(0, Vector2(0, 1));
-        renderDevice->sendVertex(C + (-X - Y) * r);
-        renderDevice->setTexCoord(0, Vector2(1, 1));
-        renderDevice->sendVertex(C + ( X - Y) * r);
-        renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->setTexCoord(0, Vector2(0, 0));
         renderDevice->sendVertex(C + ( X + Y) * r);
-        renderDevice->setTexCoord(0, Vector2(0, 0));
-        renderDevice->sendVertex(C + (-X + Y) * r);
-    renderDevice->endPrimitive();
+        renderDevice->setTexCoord(0, Vector2(0, 1));
+        renderDevice->sendVertex(C + ( X - Y) * r);
+        renderDevice->setTexCoord(0, Vector2(1, 1));
+		renderDevice->sendVertex(C + (-X - Y) * r);
+        renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->sendVertex(C + (-X + Y) * r);
+	renderDevice->endPrimitive();
 }
 
 
 static void hackProjectionMatrix(RenderDevice* renderDevice) {
-
+	
     Matrix4 P = renderDevice->getProjectionMatrix();
 
     // Set the 3rd row (2nd index) so the depth always is in the middle of the depth range.
@@ -394,42 +391,34 @@ void Sky::render(
     renderDevice->popState();
 }
 
-
 void Sky::drawMoonAndStars(const LightingParameters& lighting) {
-    Vector4 L(lighting.moonPosition,0);
-    Vector4 X(lighting.moonPosition.cross(Vector3::UNIT_Z).direction(), 0);
-    Vector4 Y(Vector3::UNIT_Z, 0);
+    Vector3 moonPosition = lighting.physicallyCorrect ? lighting.trueMoonPosition : lighting.moonPosition;
+
+    Vector4 L(moonPosition,0);
+    Vector3 LcrossZ = moonPosition.cross(Vector3::UNIT_Z).direction();
+	Vector4 X(LcrossZ, 0);
+    Vector4 Y(moonPosition.cross(LcrossZ), 0);
 
     // Draw stars
-    if (lighting.moonPosition.y > -.3) {
+    if (lighting.moonPosition.y > -0.3) {
 
-        double k = (1 - square(lighting.skyAmbient.length())) * renderDevice->getBrightScale();
-        renderDevice->pushState();
+        double k = (3 - square(lighting.skyAmbient.length()));// * renderDevice->getBrightScale();
+		double s = k;
+		k *= renderDevice->getBrightScale();
+		renderDevice->pushState();
             // Rotate stars
-            CoordinateFrame m;
-            float aX, aY, aZ;
-			// Use the east-west revolutions of the moon to rotate
-			//   the starfield correctly
-			Vector3 moon(-L.x, 0, L.y);
-			Vector3 top(Vector3::UNIT_Y);
-			m.lookAt(moon, top);
-
-			// Correct for geographical location; currently Providence, RI
-			m.rotation.toEulerAnglesXYZ(aX, aY, aZ);
-			aX -= lighting.geoLatitude; // Latitude of 41 degrees, 44 minutes N
-			m.rotation.fromEulerAnglesXYZ(aX, aY, aZ);
-			renderDevice->setObjectToWorldMatrix(m);
-            
+            renderDevice->setObjectToWorldMatrix(lighting.starFrame);
 			renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE);
 
-            renderDevice->beginPrimitive(RenderDevice::POINTS);
                 for (int i = star.size() - 1; i >= 0; --i) {
                     const double b = starIntensity[i] * k;
                     // We use raw GL calls here for performance
-                    glColor3f(b, b, b);
-                    glVertex3fv(star[i]);
+					renderDevice->setPointSize(starIntensity[i] * s);
+					renderDevice->beginPrimitive(RenderDevice::POINTS);
+						glColor3f(b, b, b);
+						glVertex3fv(star[i]);
+					renderDevice->endPrimitive();
                 }
-            renderDevice->endPrimitive();
 
             // Get RenderDevice back in sync with real GL state
             renderDevice->setColor(Color3::WHITE);
@@ -440,23 +429,26 @@ void Sky::drawMoonAndStars(const LightingParameters& lighting) {
     renderDevice->setTexture(0, moon);
     renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
     renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
-    drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(1,1,1, min(1, max(0, lighting.moonPosition.y * 4))));
+    drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(1,1,1, min(1, max(0, moonPosition.y * 4))));
 }
 
 
 void Sky::drawSun(const LightingParameters& lighting) {
+    Vector3 sunPosition = lighting.physicallyCorrect ? lighting.trueSunPosition : lighting.sunPosition;
+	
     // Sun vector
-    Vector4 L(lighting.sunPosition,0);
-    Vector4 X(lighting.sunPosition.cross(Vector3::UNIT_Z).direction(), 0);
-    Vector4 Y(Vector3::UNIT_Z, 0);
-
+    Vector4 L(sunPosition,0);
+    Vector3 LcrossZ = sunPosition.cross(Vector3::UNIT_Z).direction();
+    Vector4 X(LcrossZ, 0);
+    Vector4 Y(sunPosition.cross(LcrossZ), 0);
+    
     renderDevice->setTexture(0, sun);
     renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
     Color3 c(Color3::WHITE * .8);
 
-    if (lighting.sunPosition.y < 0) {
+    if (sunPosition.y < 0) {
         // Fade out the sun as it goes below the horizon
-        c *= max(0, (lighting.sunPosition.y + .1) * 10);
+        c *= max(0, (sunPosition.y + .1) * 10);
     }
 
     drawCelestialSphere(renderDevice, L, X, Y, .12, c);
@@ -465,12 +457,14 @@ void Sky::drawSun(const LightingParameters& lighting) {
 
 void Sky::renderLensFlare(
     const LightingParameters&           lighting) {
-
+	
     if (! drawCelestialBodies) {
         return;
     }
 
-    if (lighting.sunPosition.y < -.1) {
+    Vector3 sunPosition = lighting.physicallyCorrect ? lighting.trueSunPosition : lighting.sunPosition;
+
+    if (sunPosition.y < -.1) {
         return;
     }
 
@@ -489,9 +483,9 @@ void Sky::renderLensFlare(
         renderDevice->resetTextureUnit(0);
 
         // Compute the sun's position using the 3D transformation
-        Vector4 pos = renderDevice->project(Vector4(lighting.sunPosition, 0));
+        Vector4 pos = renderDevice->project(Vector4(sunPosition, 0));
 
-        if (lighting.sunPosition.dot(camera.getLookVector()) > 0) {
+        if (sunPosition.dot(camera.getLookVector()) > 0) {
 
             // Number of visible points on the sun
             int visible = 0;
@@ -520,23 +514,24 @@ void Sky::renderLensFlare(
 
                 // Make flares fade out near sunset and sunrise
                 double flareBrightness = 
-                    max(0, sqrt(lighting.sunPosition.y * 4));
+                    max(0, sqrt(sunPosition.y * 4));
 
                 // Sun position
-                Vector4 L(lighting.sunPosition,0);
-                Vector4 X(lighting.sunPosition.cross(Vector3::UNIT_Z).direction(), 0);
-                Vector4 Y(Vector3::UNIT_Z, 0);
+                Vector4 L(sunPosition,0);
+                Vector3 LcrossZ = sunPosition.cross(Vector3::UNIT_Z).direction();
+                Vector4 X(LcrossZ, 0);
+				Vector4 Y(sunPosition.cross(LcrossZ), 0);
 
                 // Sun rays at dawn
-                if ((lighting.sunPosition.x > 0) && 
-                    (lighting.sunPosition.y >= -.1)) {
+                if ((sunPosition.x > 0) && 
+                    (sunPosition.y >= -.1)) {
 
                     renderDevice->setTexture(0, sunRays);
                     double occlusionAttenuation = 
                         (1 - square(2*fractionOfSunVisible - 1));
 
                     drawCelestialSphere(renderDevice, L, X , Y, .6,
-                                        occlusionAttenuation * Color4(1,1,1,1) * .4 * max(0, min(1, 1 - lighting.sunPosition.y * 2 / sqrt(2.0))));
+                                        occlusionAttenuation * Color4(1,1,1,1) * .4 * max(0, min(1, 1 - sunPosition.y * 2 / sqrt(2.0))));
                 }
 
                 renderDevice->setTexture(0, sun);
@@ -563,3 +558,4 @@ void Sky::renderLensFlare(
 }
 
 } // namespace
+
