@@ -19,6 +19,9 @@ typedef ReferenceCountedPointer<class ArticulatedModel> ArticulatedModelRef;
 
 /**
  A model composed of a heirarchy of rigid, textured sub-models.
+
+ Since G3D can't load GIF, any material with a GIF filename is converted to
+ a PNG filename.
  */
 class ArticulatedModel : public ReferenceCountedObject {
 private:

@@ -104,6 +104,11 @@ void ArticulatedModel::init3DS(const std::string& filename, const Vector3& scale
                             textureFile = path + textureFile;
                         }
 
+                        if (endsWith(toUpper(textureFile), "GIF")) {
+                            // Load PNG instead of GIF, since we can't load GIF
+                            textureFile = textureFile.substr(0, textureFile.length() - 3) + ".png";
+                        }
+
                         if (fileExists(textureFile)) {
                             triList.material.diffuse.map = textureManager.loadTexture(textureFile);
                         } else {
@@ -152,6 +157,11 @@ void ArticulatedModel::Part::updateNormals() {
 
 
 void ArticulatedModel::Part::updateVAR() {
+    if (geometry.vertexArray.size() == 0) {
+        // Has no geometry
+        return;
+    }
+
     size_t vtxSize = sizeof(Vector3) * geometry.vertexArray.size();
     size_t texSize = sizeof(Vector2) * texCoordArray.size();
     size_t tanSize = sizeof(Vector3) * tangentArray.size();
@@ -186,6 +196,10 @@ void ArticulatedModel::Part::updateVAR() {
 
 
 void ArticulatedModel::Part::updateShaders() {
+    if (ArticulatedModel::profile() == FIXED_FUNCTION) {
+        return;
+    }
+
     for (int t = 0; t < triListArray.size(); ++t) {
         SuperShader::createShaders(
             triListArray[t].material,

@@ -108,8 +108,7 @@ const int shadowMapSize = 512;
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
-    if (GLCaps::supports_GL_ARB_shadow()) {
-        
+    if (GLCaps::supports_GL_ARB_shadow()) {        
         shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
             
@@ -140,6 +139,8 @@ void Demo::doLogic() {
 bool debugShadows = false;
 
 void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& shadowCaster) {
+    debugAssert(GLCaps::supports_GL_ARB_shadow()); 
+
     app->renderDevice->pushState();
 
         const double lightProjX = 12, lightProjY = 12, lightProjNear = 1, lightProjFar = 40;
@@ -170,7 +171,6 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         app->renderDevice->setProjectionMatrix(lightProjectionMatrix);
 
         // Flip the Y-axis to account for the upside down Y-axis on read back textures
-        // DEBUG: lightProjectionMatrix = Matrix4::orthogonalProjection(-lightProjX, lightProjX, lightProjY, -lightProjY, lightProjNear, lightProjFar);
         lightMVP = lightProjectionMatrix * lightCFrame.inverse();
 
         if (! debugShadows) {
@@ -187,6 +187,7 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         }
    
     app->renderDevice->popState();
+    debugAssert(shadowMap.notNull());
     shadowMap->copyFromScreen(rect);
 }
 
@@ -210,13 +211,22 @@ void Demo::doGraphics() {
     Array<PosedModelRef> opaque, transparent;
     PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
 
-    // Generate shadow map
-    generateShadowMap(app->lighting->shadowedLightArray[0], opaque);
+    if (GLCaps::supports_GL_ARB_shadow()) {        
+        // Generate shadow map
+        generateShadowMap(app->lighting->shadowedLightArray[0], opaque);
+    }
 
     /////////////////////////////////////////////////////////////////////
 
     if (debugShadows) {
         return;
+    }
+
+    if (! GLCaps::supports_GL_ARB_shadow() && (app->lighting->shadowedLightArray.size() > 0)) {
+        // We're not going to be able to draw shadows, so move the shadowed lights into
+        // the unshadowed category.
+        app->lighting->lightArray.append(app->lighting->shadowedLightArray);
+        app->lighting->shadowedLightArray.clear();
     }
 
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
@@ -239,14 +249,18 @@ void Demo::doGraphics() {
         }
 
         // Opaque shadowed
-        for (int m = 0; m < opaque.size(); ++m) {
-            opaque[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
+        if (app->lighting->shadowedLightArray.size() > 0) {
+            for (int m = 0; m < opaque.size(); ++m) {
+                opaque[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
+            }
         }
 
         // Transparent + shadowed
         for (int m = 0; m < transparent.size(); ++m) {
             transparent[m]->renderNonShadowed(app->renderDevice, app->lighting);
-            transparent[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
+            if (app->lighting->shadowedLightArray.size() > 0) {
+                transparent[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
+            }
         }
 
     app->renderDevice->popState();
@@ -263,10 +277,12 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
+    const std::string path = "c:/morgan/data/";
+
     double x = -5;
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].twoSided = true;
@@ -282,7 +298,7 @@ void App::main() {
     }
     
     if (false)  {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/venus-torso.ifs", 1.5);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/venus-torso.ifs", 1.5);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].twoSided = true;
@@ -297,14 +313,26 @@ void App::main() {
         x += 2;
     }
     
-    {
+    if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
     }
 
+    if (false) {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("3ds/55-porsche/55porsmx.3ds", .25);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
+
+    if (true) {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("3ds/legocar/legocar.3ds", 0.04);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
+
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/jackolantern.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/jackolantern.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
 //        model->partArray[0].triListArray[0].twoSided = true;
@@ -320,7 +348,7 @@ void App::main() {
     }
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/trumpet.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/trumpet.ifs", 1);
 
         Color3 brass = Color3::fromARGB(0xFFFDDC01);
 
@@ -339,7 +367,7 @@ void App::main() {
 
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/mech-part.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/mech-part.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         material.diffuse = Color3::red();
@@ -352,7 +380,7 @@ void App::main() {
         x += 2;
     }
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         material.diffuse = Color3::white() * .8;
@@ -366,7 +394,7 @@ void App::main() {
 
 
     {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/octagon.ifs", 10);
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/octagon.ifs", 10);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         material.diffuse = Color3(.5,.3,0);
@@ -415,7 +443,7 @@ void App::main() {
 App::App(const GAppSettings& settings) : GApp(settings) {
     ::app = this;
     debugShowRenderingStats = false;
-    sky = Sky::create(renderDevice, "D:/games/data/sky/", "majestic/majestic512_*.jpg");
+    sky = Sky::create(renderDevice, dataDir + "sky/");//"D:/games/data/sky/", "majestic/majestic512_*.jpg");
 }
 
 
