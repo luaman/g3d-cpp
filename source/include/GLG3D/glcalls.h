@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-02-19
+ @edited  2003-07-07
 
  Copyright 2002, Morgan McGuire.
  All rights reserved.
@@ -16,6 +16,7 @@
 #define G3D_GLCALLS_H
 
 #include "graphics3D.h"
+#include "G3D/platform.h"
 #include "GLG3D/glheaders.h"
 
 namespace G3D {
@@ -117,12 +118,37 @@ void glMultMatrix(const CoordinateFrame& cf);
 
 /** platform independent version of wglGetProcAddress */
 inline void * glGetProcAddress(const char * name){
-#ifdef _WIN32
-	return (void *) wglGetProcAddress(name);
-#else
-	return (void *) glXGetProcAddressARB((const GLubyte*)name);
-#endif
+    #ifdef G3D_WIN32
+	    return (void *) wglGetProcAddress(name);
+    #else
+	    return (void *) glXGetProcAddressARB((const GLubyte*)name);
+    #endif
 }
+
+/**
+ Returns a texture matrix appropriate for reflection vectors
+ based on the current modelview matrix.
+
+  Example:
+ <PRE>
+    renderDevice->setTexture(0, cubemap);
+
+	glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+    for (int i = 0; i < 4; ++i) {
+    	glTexGeni(GL_S + i, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+	    glEnable(GL_TEXTURE_GEN_S + i);
+    }
+
+    renderDevice->setTextureMatrix(0, reflectionMatrix());
+    renderDevice->setColor(Color3::WHITE);
+	glutSolidSphere(3, 200, 100);
+
+    for (int i = 0; i < 4; ++i) {
+	    glDisable(GL_TEXTURE_GEN_S + i);
+    }
+	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+ */
+CoordinateFrame reflectionMatrix();
 
 } // namespace
 

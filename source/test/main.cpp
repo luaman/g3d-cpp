@@ -664,6 +664,34 @@ int main(int argc, char* argv[]) {
     Log debugLog("c:/tmp/log.txt");
     rd.init(800, 600, &debugLog);
 
+    {
+        TextureRef tex = Texture::fromFile("d:/knight/distrib/data/texture/server.jpg");
+
+        TextureRef cubemap = Texture::fromFile("d:/users/morgan/projects/bump_cube_waves/hexagon512_*.jpg", TextureFormat::RGB8, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+
+        rd.beginFrame();
+            rd.push2D();
+                rd.setTexture(0, cubemap);
+                rd.setTexture(0, tex);
+                rd.beginPrimitive(RenderDevice::QUADS);
+                    rd.setTexCoord(0, Vector2(0,0));
+                    rd.sendVertex(Vector2(0,0));
+
+                    rd.setTexCoord(0, Vector2(1,0));
+                    rd.sendVertex(Vector2(800,0));
+
+                    rd.setTexCoord(0, Vector2(1,1));
+                    rd.sendVertex(Vector2(800,600));
+
+                    rd.setTexCoord(0, Vector2(0,1));
+                    rd.sendVertex(Vector2(0,600));
+                rd.endPrimitive();
+            rd.pop2D();
+        rd.endFrame();
+    }
+
+    while (true);
+
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         measureArrayPerformance();

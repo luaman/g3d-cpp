@@ -5,7 +5,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-07-02
+ @edited  2003-07-07
  */
 
 #include "Scene.h"
@@ -19,7 +19,6 @@ extern int                  depthBits;
 extern Log*                 debugLog;
 
 static const Vector3 gravity(0, -60, 0);
-//static const Vector3 gravity(0, 0, 0);
 
 static Vector3 debugPoint = Vector3::ZERO;
 
@@ -48,7 +47,7 @@ static bool debugLightMap = false;
 
 
 Scene::Scene() {
-    sky = new Sky("Sky", DATA_DIR + "sky/", "null_plainsky512_*.jpg", 1.0);
+    sky = new Sky(renderDevice, "Sky", DATA_DIR + "sky/");
 	glGenTextures(1, &shadowMap);
 
     // Prep the shadow map texture
@@ -156,7 +155,7 @@ void Scene::render(const LightingParameters& lighting) const {
     renderDevice->clear(sky == NULL, true, false);
 
     if (sky) {
-		sky->render(renderDevice, camera->getCoordinateFrame(), lighting);
+		sky->render(camera->getCoordinateFrame(), lighting);
     }
 
     renderDevice->pushState();
@@ -231,7 +230,7 @@ void Scene::render(const LightingParameters& lighting) const {
     renderDevice->popState();
 
     if (sky) {
-        sky->renderLensFlare(renderDevice, camera->getCoordinateFrame(), lighting);
+        sky->renderLensFlare(camera->getCoordinateFrame(), lighting);
     }
 
 }

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2003-02-15
+  @edited  2003-07-07
 */
 
 #include "GLG3D/glcalls.h"
@@ -35,6 +35,31 @@ static void _getGLMatrix(GLdouble* m, const Matrix3& rot, const Vector3& trans) 
     m[14] = trans[2];
     m[15] = 1.0;
 }
+
+
+CoordinateFrame reflectionMatrix() {
+	CoordinateFrame cframe;
+
+	// Reflect (mirror)
+	Matrix3 refl(Matrix3::IDENTITY);
+	refl[0][0] = -1;
+	refl[2][2] = 1;
+
+    // Read back the OpenGL transformation matrix.
+    Matrix3 rot(Matrix3::ZERO);
+    double glRot[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX, glRot);
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            rot[i][j] = glRot[i * 4 + j];
+        }
+    }
+
+	cframe.rotation = refl * rot;
+
+    return cframe;
+}
+
 
 void glLoadMatrix(const CoordinateFrame &cf) {
     GLdouble matrix[16];

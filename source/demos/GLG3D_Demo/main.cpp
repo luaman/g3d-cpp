@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
     debugAssert(varDynamic);
 
     font         = new CFont(renderDevice, DATA_DIR + "font/dominant.fnt");
-    sky		     = new Sky("Sky", DATA_DIR + "sky/", "null_plainsky512_*.jpg", 1.0);
+    sky		     = new Sky(renderDevice, "Sky", DATA_DIR + "sky/");
     userInput    = new UserInput();
     model        = new Model(DATA_DIR + "ifs/p51-mustang.ifs");
 
@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
                 LightingParameters lighting(gameTime);
 
                 if (sky) {
-                   sky->render(renderDevice, camera->getCoordinateFrame(), lighting);
+                   sky->render(camera->getCoordinateFrame(), lighting);
                 }
 
                 renderDevice->debugDrawAxes(3);
@@ -147,8 +147,7 @@ int main(int argc, char** argv) {
                 renderDevice->popState();
 
                 if (sky) {
-                    sky->renderLensFlare(renderDevice, 
-                               camera->getCoordinateFrame(), lighting);
+                    sky->renderLensFlare(camera->getCoordinateFrame(), lighting);
                 }
 
                 renderDevice->push2D();

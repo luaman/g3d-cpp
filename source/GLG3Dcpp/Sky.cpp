@@ -4,7 +4,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2003-07-02
+  @edited  2003-07-07
   */
 
 #include "GLG3D/glcalls.h"
@@ -15,19 +15,12 @@
 namespace G3D {
 
 Sky::Sky(
+    RenderDevice*                       rd,
     const std::string&                  name,
     const std::string&                  directory,
     const std::string&                  filename,
-    double                              quality) {
+    double                              quality) : renderDevice(rd) {
 
-    // Parse the filename into a base name and extension
-    std::string filenameBase;
-    std::string filenameExt;
-
-    Texture::splitFilename(directory + filename, filenameBase, filenameExt);
-    
-    static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
-    
     const TextureFormat* format;
     const TextureFormat* alphaFormat;
 
@@ -43,9 +36,29 @@ Sky::Sky(
     }
 
 
-    for (int t = 0; t < 6; ++t) {
-        texture[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
-            format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+    if (renderDevice->supportsOpenGLExtension("GL_ARB_texture_cube_map")) {
+   
+        cubeMap = Texture::fromFile(directory + filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
+
+        for (int t = 0; t < 6; ++t) {
+            texture[t] = NULL;
+        }
+
+    } else {
+
+        // Parse the filename into a base name and extension
+        std::string filenameBase;
+        std::string filenameExt;
+
+        Texture::splitFilename(directory + filename, filenameBase, filenameExt);
+    
+        static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
+    
+
+        for (int t = 0; t < 6; ++t) {
+            texture[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
+                format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
+        }
     }
 
     moon     = Texture::fromTwoFiles(directory + "moon.jpg", directory + "moon-alpha.jpg",
@@ -54,7 +67,6 @@ Sky::Sky(
     sun      = Texture::fromFile(directory + "sun.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     disk     = Texture::fromFile(directory + "lensflare.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
     sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D);
-
     
     int i = 0;
     star.resize(3000);
@@ -107,7 +119,9 @@ static void drawCelestialSphere(
 static void infiniteProjectionMatrix(RenderDevice* renderDevice) {
     double l,r,t,b,n,f;
     bool is3D;
+
     renderDevice->getProjectionMatrixParams(l,r,t,b,n,f,is3D);
+    
     if (is3D) {
         renderDevice->setProjectionMatrix3D(l,r,t,b,n,inf);
     } else {
@@ -116,15 +130,189 @@ static void infiniteProjectionMatrix(RenderDevice* renderDevice) {
 }
 
 
+void Sky::renderBox() const {
+    double s = 50;
+
+    bool cube = (cubeMap != NULL);
+
+    if (cube) {
+        // Set up cube mapping
+        renderDevice->setTexture(0, cubeMap);
+
+        // Read back the OpenGL transformation matrix.
+        CoordinateFrame cframe;
+        double glRot[16];
+        glGetDoublev(GL_MODELVIEW_MATRIX, glRot);
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                cframe.rotation[i][j] = glRot[i * 4 + j];
+            }
+        }
+        renderDevice->setTextureMatrix(0, cframe);
+
+        glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_GEN_S | GL_TEXTURE_GEN_T | GL_TEXTURE_GEN_R | GL_TEXTURE_GEN_Q);
+
+	    glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+        for (int i = 0; i < 4; ++i) {
+    	    glTexGeni(GL_S + i, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
+	        glEnable(GL_TEXTURE_GEN_S + i);
+        }
+
+    } else {
+        renderDevice->setTexture(0, texture[BK]);
+    }
+
+    renderDevice->beginPrimitive(RenderDevice::QUADS);
+		renderDevice->setTexCoord(0, Vector2(0, 0));
+		renderDevice->setNormal(Vector3(-s, +s, -s));
+		renderDevice->sendVertex(Vector3(-s, +s, -s));
+
+		renderDevice->setTexCoord(0, Vector2(0, 1));
+		renderDevice->setNormal(Vector3(-s, -s, -s));
+		renderDevice->sendVertex(Vector3(-s, -s, -s));
+
+		renderDevice->setTexCoord(0, Vector2(1, 1));
+		renderDevice->setNormal(Vector3(+s, -s, -s));
+		renderDevice->sendVertex(Vector3(+s, -s, -s));
+
+		renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->setNormal(Vector3(+s, +s, -s));
+		renderDevice->sendVertex(Vector3(+s, +s, -s));
+	renderDevice->endPrimitive();
+
+    if (! cube) {
+        renderDevice->setTexture(0, texture[LT]);
+    }
+
+    renderDevice->beginPrimitive(RenderDevice::QUADS);
+		renderDevice->setTexCoord(0, Vector2(0, 0));
+		renderDevice->setNormal(Vector3(-s, +s, +s));
+		renderDevice->sendVertex(Vector3(-s, +s, +s));
+
+		renderDevice->setTexCoord(0, Vector2(0, 1));
+		renderDevice->setNormal(Vector3(-s, -s, +s));
+		renderDevice->sendVertex(Vector3(-s, -s, +s));
+
+        renderDevice->setTexCoord(0, Vector2(1, 1));
+		renderDevice->setNormal(Vector3(-s, -s, -s));
+		renderDevice->sendVertex(Vector3(-s, -s, -s));
+		
+        renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->setNormal(Vector3(-s, +s, -s));
+		renderDevice->sendVertex(Vector3(-s, +s, -s));
+	renderDevice->endPrimitive();
+
+    
+    if (! cube) {
+        renderDevice->setTexture(0, texture[FT]);
+    }
+
+    renderDevice->beginPrimitive(RenderDevice::QUADS);
+		renderDevice->setTexCoord(0, Vector2(0, 0));
+		renderDevice->setNormal(Vector3(+s, +s, +s));
+		renderDevice->sendVertex(Vector3(+s, +s, +s));
+
+        renderDevice->setTexCoord(0, Vector2(0, 1));
+		renderDevice->setNormal(Vector3(+s, -s, +s));
+		renderDevice->sendVertex(Vector3(+s, -s, +s));
+		
+        renderDevice->setTexCoord(0, Vector2(1, 1));
+		renderDevice->setNormal(Vector3(-s, -s, +s));
+		renderDevice->sendVertex(Vector3(-s, -s, +s));
+		
+        renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->setNormal(Vector3(-s, +s, +s));
+		renderDevice->sendVertex(Vector3(-s, +s, +s));
+	renderDevice->endPrimitive();
+
+    if (! cube) {
+        renderDevice->setTexture(0, texture[RT]);
+    }
+
+    renderDevice->beginPrimitive(RenderDevice::QUADS);
+		renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->setNormal(Vector3(+s, +s, +s));
+		renderDevice->sendVertex(Vector3(+s, +s, +s));
+
+		renderDevice->setTexCoord(0, Vector2(0, 0));
+		renderDevice->setNormal(Vector3(+s, +s, -s));
+		renderDevice->sendVertex(Vector3(+s, +s, -s));
+
+        renderDevice->setTexCoord(0, Vector2(0, 1));
+		renderDevice->setNormal(Vector3(+s, -s, -s));
+		renderDevice->sendVertex(Vector3(+s, -s, -s));
+		
+        renderDevice->setTexCoord(0, Vector2(1, 1));
+		renderDevice->setNormal(Vector3(+s, -s, +s));
+		renderDevice->sendVertex(Vector3(+s, -s, +s));
+	renderDevice->endPrimitive();
+
+    if (! cube) {
+        renderDevice->setTexture(0, texture[UP]);
+    }
+
+    renderDevice->beginPrimitive(RenderDevice::QUADS);
+		renderDevice->setTexCoord(0, Vector2(1, 1));
+		renderDevice->setNormal(Vector3(+s, +s, +s));
+		renderDevice->sendVertex(Vector3(+s, +s, +s));
+
+        renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->setNormal(Vector3(-s, +s, +s));
+		renderDevice->sendVertex(Vector3(-s, +s, +s));
+		
+        renderDevice->setTexCoord(0, Vector2(0, 0));
+		renderDevice->setNormal(Vector3(-s, +s, -s));
+		renderDevice->sendVertex(Vector3(-s, +s, -s));
+		
+        renderDevice->setTexCoord(0, Vector2(0, 1));
+		renderDevice->setNormal(Vector3(+s, +s, -s));
+		renderDevice->sendVertex(Vector3(+s, +s, -s));
+	renderDevice->endPrimitive();
+
+    if (! cube) {
+        renderDevice->setTexture(0, texture[DN]);
+    }
+
+    renderDevice->beginPrimitive(RenderDevice::QUADS);
+		renderDevice->setTexCoord(0, Vector2(0, 0));
+		renderDevice->setNormal(Vector3(+s, -s, -s));
+		renderDevice->sendVertex(Vector3(+s, -s, -s));
+
+		renderDevice->setTexCoord(0, Vector2(0, 1));
+		renderDevice->setNormal(Vector3(-s, -s, -s));
+		renderDevice->sendVertex(Vector3(-s, -s, -s));
+
+		renderDevice->setTexCoord(0, Vector2(1, 1));
+		renderDevice->setNormal(Vector3(-s, -s, +s));
+		renderDevice->sendVertex(Vector3(-s, -s, +s));
+
+		renderDevice->setTexCoord(0, Vector2(1, 0));
+		renderDevice->setNormal(Vector3(+s, -s, +s));
+		renderDevice->sendVertex(Vector3(+s, -s, +s));
+	renderDevice->endPrimitive();
+
+    if (cube) {
+        for (int i = 0; i < 4; ++i) {
+	        glDisable(GL_TEXTURE_GEN_S + i);
+        }
+
+	    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+        glPopAttrib();
+        renderDevice->setTextureMatrix(0, CoordinateFrame());
+    }
+}
+
+
 void Sky::render(
-    RenderDevice*                       renderDevice,
     const CoordinateFrame&              camera,
     const LightingParameters&           lighting) {
 
     renderDevice->pushState();
 
 	CoordinateFrame matrix;
-	matrix.rotation = camera.rotation;
+    Matrix3 align(Matrix3::ZERO);
+    align.fromAxisAngle(Vector3::UNIT_Y, toRadians(90));
+	matrix.rotation = align * camera.rotation;
     renderDevice->setCameraToWorldMatrix(matrix);
 
     renderDevice->setColor(lighting.skyAmbient * renderDevice->getBrightScale());
@@ -133,80 +321,8 @@ void Sky::render(
     renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
 
 	// Draw the sky box
-	double s = 50;
-
     renderDevice->resetTextureUnit(0);
-    renderDevice->setTexture(0, texture[BK]);
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->sendVertex(Vector3(-s, +s, -s));
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->sendVertex(Vector3(-s, -s, -s));
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->sendVertex(Vector3(+s, -s, -s));
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->sendVertex(Vector3(+s, +s, -s));
-	renderDevice->endPrimitive();
-
-    renderDevice->setTexture(0, texture[LT]);
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->sendVertex(Vector3(-s, +s, +s));
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->sendVertex(Vector3(-s, -s, +s));
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->sendVertex(Vector3(-s, -s, -s));
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->sendVertex(Vector3(-s, +s, -s));
-	renderDevice->endPrimitive();
-
-    renderDevice->setTexture(0, texture[FT]);
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->sendVertex(Vector3(+s, +s, +s));
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->sendVertex(Vector3(+s, -s, +s));
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->sendVertex(Vector3(-s, -s, +s));
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->sendVertex(Vector3(-s, +s, +s));
-	renderDevice->endPrimitive();
-
-    renderDevice->setTexture(0, texture[RT]);
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->sendVertex(Vector3(+s, +s, +s));
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->sendVertex(Vector3(+s, +s, -s));
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->sendVertex(Vector3(+s, -s, -s));
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->sendVertex(Vector3(+s, -s, +s));
-	renderDevice->endPrimitive();
-
-    renderDevice->setTexture(0, texture[UP]);
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->sendVertex(Vector3(+s, +s, +s));
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->sendVertex(Vector3(-s, +s, +s));
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->sendVertex(Vector3(-s, +s, -s));
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->sendVertex(Vector3(+s, +s, -s));
-	renderDevice->endPrimitive();
-
-    renderDevice->setTexture(0, texture[DN]);
-    renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->sendVertex(Vector3(+s, -s, -s));
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->sendVertex(Vector3(-s, -s, -s));
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->sendVertex(Vector3(-s, -s, +s));
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->sendVertex(Vector3(+s, -s, +s));
-	renderDevice->endPrimitive();
+    renderBox();
 
     infiniteProjectionMatrix(renderDevice);
 
@@ -280,7 +396,6 @@ void Sky::render(
 
 
 void Sky::renderLensFlare(
-    RenderDevice*                       renderDevice,
     const CoordinateFrame&              camera,
     const LightingParameters&           lighting) {
 

@@ -4,7 +4,7 @@
 # General configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = G3D
-PROJECT_NUMBER         = "version 6.00 2003-06-27"
+PROJECT_NUMBER         = "version 6.00 2003-07-07"
 OUTPUT_DIRECTORY       = ../temp
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
@@ -42,7 +42,8 @@ GENERATE_DEPRECATEDLIST= YES
 ALIASES                = "cite=\par Referenced Code:\n" \
                          "created=\par Created:\n" \
                          "edited=\par Last modified:\n" \
-                         "maintainer=\par Maintainer:\n"
+                         "maintainer=\par Maintainer:\n" \
+                         "units=\par Units: "
 ENABLED_SECTIONS       = 
 MAX_INITIALIZER_LINES  = 30
 OPTIMIZE_OUTPUT_FOR_C  = NO

@@ -194,12 +194,13 @@
         <BR><BLOCKQUOTE>
         G3D::PixelProgram,
         G3D::PixelProgramRef,
+        G3D::reflectionMatrix,
         G3D::RenderDevice, 
         G3D::tesselateComplexPolygon,
         G3D::Texture, 
         G3D::TextureFormat,
         G3D::TextureRef, 
-        G3D::VAR, 
+        G3D::VAR,
         G3D::VARArea, 
         G3D::VertexProgram,
         G3D::VertexProgramRef
@@ -684,11 +685,15 @@ to add zlibstat.lib to your linker list.
 
    <P>
    <UL>
-     <LI> G3D::Texture::DIM_CUBE_MAP
+     <LI> G3D::reflectionMatrix
+     <LI> Sky::getEnvironmentMap
+     <LI> Sky implementation now uses a cube map (when one is available)
+     <LI> G3D::Sky constructor now takes a render device
+     <LI> Rotated Sky box 90 degrees to match environment maps
      <LI> G3D::Sky now takes the environment filenames as "sky_*.jpg" instead of "sky_ft.jpg"
-     <LI> G3D::Texture resizes non-power of two textures
+     <LI> Added default filename for Sky constructor
      <LI> Added caustics textures created with Kjell Andersson's generator http://www.lysator.liu.se/~kand/caustics/
-     <LI> #defined for on MSVC so that it obeys C99 scoping rules
+     <LI> #defined "for" under MSVC so that it obeys C99 scoping rules
      <LI> System::consoleKeyPressed
      <LI> System::consoleClearScreen
      <LI> System::consoleReadKey
@@ -705,17 +710,19 @@ to add zlibstat.lib to your linker list.
      <LI> Library list has changed for Win32 (added version.lib)
      <LI> System::cpuArchitecture
      <LI> System::operatingSystem
-     <LI> Plane::fromEquation
      <LI> double-precision Plane::getEquation
      <LI> Vector2::lerp
      <LI> Platform specific #defines G3D_WIN32, G3D_LINUX, G3D_OSX
      <LI> G3D::Array::contains
      <LI> G3D::Queue::contains
      <LI> G3D::TextureFormat
+     <LI> G3D::Texture::DIM_CUBE_MAP
+     <LI> G3D::Texture resizes non-power of two textures
      <LI> G3D::Texture constructors are completely changed from 5.01 (and hopefully easier to use)
      <LI> G3D::CImage now supports images with alpha
      <LI> Removed most of the width/height arguments from G3D::Camera methods
      <LI> BinaryInput::readBytes and BinaryOutput::writeBytes now take void* as an argument to avoid casting
+     <LI> Plane::fromEquation
      <LI> Removed Plane::getNormal (use Plane::normal instead)
      <LI> Removed CDTriangle (use G3D::Triangle instead)
      <LI> Removed Font (use G3D::CFont instead)

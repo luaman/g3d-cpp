@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2003-02-30
+  @edited  2003-07-07
 */
 
 #ifndef G3D_SKY_H
@@ -27,7 +27,7 @@ namespace G3D {
  Example:
 
   <PRE>
-    Sky sky("Gentle Clouds", "", "null_plainsky512_ft.jpg");
+    Sky sky("Gentle Clouds", "", "null_plainsky512_*.jpg");
     LightingParameters lighting(toSeconds(9, 00, 00, AM));
 
     ...
@@ -49,7 +49,17 @@ class Sky {
 private:
     /** Indices into texture array */
     enum Direction {UP = 0, LT = 1, RT = 2, BK = 3, FT = 4, DN = 5};
-	TextureRef                                  texture[6];
+	
+    /**
+     Only used if the render device does not support cube maps.
+     */
+    TextureRef                                  texture[6];
+
+    /**
+     Used unless the render device does not support cube maps.
+     */
+    TextureRef                                  cubeMap;
+
     TextureRef                                  sun;
     TextureRef                                  moon;
     TextureRef                                  disk;
@@ -59,6 +69,13 @@ private:
 
     Array<Vector4>                              star;
     Array<float>                                starIntensity;
+
+    class RenderDevice*                         renderDevice;
+
+    /**
+     Renders the sky box.
+     */
+    void renderBox() const;
 
 public:
     /**
@@ -80,9 +97,10 @@ public:
      @param name Arbitrary name for this sky object (for debugging purposes)
      */
     Sky(
+        class RenderDevice*                     renderDevice,
         const std::string&                      name,
         const std::string&                      directory,
-        const std::string&                      filename,
+        const std::string&                      filename = "null_plainsky512_*.jpg",
         double                                  quality = 0.5);
 
     virtual ~Sky();
@@ -96,7 +114,6 @@ public:
      Will restore all state it changes.
      */
 	void render(
-        class RenderDevice*                     renderDevice,
         const class CoordinateFrame&            camera,
         const class LightingParameters&         lighting);
 
@@ -105,9 +122,16 @@ public:
      Will restore all state it changes.
      */
     void renderLensFlare(
-        class RenderDevice*                     renderDevice,
         const class CoordinateFrame&            camera,
         const class LightingParameters&         lighting);
+
+    /**
+     Returns an environment map (NULL if cube maps are not supported
+     on this machine).
+     */
+    inline TextureRef getEnvironmentMap() const {
+        return cubeMap;
+    }
 
 };
 
