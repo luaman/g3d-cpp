@@ -166,6 +166,10 @@ SOURCE=.\GLG3Dcpp\SDLWindow.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\Shader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\shadowVolume.cpp
 # End Source File
 # Begin Source File
@@ -302,6 +306,10 @@ SOURCE=.\include\GLG3D\SDLWindow.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\Shader.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\shadowVolume.h
 # End Source File
 # Begin Source File
@@ -347,6 +355,10 @@ SOURCE=.\include\GLG3D\VertexProgram.h
 # Begin Source File
 
 SOURCE=.\include\GL\gl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GL\glext.h
 # End Source File
 # End Group
 # End Target

@@ -46,7 +46,7 @@ protected:
     std::string                 _code;
     bool                        fromFile;
 
-    GLhandleARB                 glShaderObject;
+    GLhandleARB                 _glShaderObject;
 
     GPUShader(const std::string& name, const std::string& code, bool fromFile);
 
@@ -78,6 +78,11 @@ public:
         check the message string.*/
     inline bool ok() const {
         return _ok;
+    }
+
+    /** Returns the underlying OpenGL shader object for this shader */
+    inline GLhandleARB glShaderObject() const {
+        return _glShaderObject;
     }
 };
 
@@ -123,7 +128,7 @@ public:
 
 
 /**
-  A set of compatible vertex, pixel, and object shaders; the analog of a DirectX "effect".
+  A set of compatible vertex, pixel, and object shaders; the analog of a DirectX "effect pass".
 
   Only newer graphics cards with recent drivers (e.g. GeForceFX cards with driver version 57 or greater)
   support this API.  Use the ShaderGroup::fullySupported method to determine at run-time
@@ -151,6 +156,9 @@ public:
   computes the final color of a pixel (it does not perform alpha-blending, however).
 
   Multiple ShaderGroups may share object, vertex, and pixel shaders.
+
+  @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/shader_objects.txt
+  @cite http://oss.sgi.com/projects/ogl-sample/registry/ARB/vertex_shader.txt
  */
 class ShaderGroup : public ReferenceCountedObject {
 protected:
@@ -160,7 +168,9 @@ protected:
     ObjectShaderRef         objectShader;
     VertexShaderRef         vertexShader;
     PixelShaderRef          pixelShader;
-   
+
+    GLhandleARB             _glProgramObject;
+
     bool                    _ok;
     std::string             _messages;
 
@@ -170,6 +180,7 @@ protected:
         const PixelShaderRef&  ps);
 
 public:
+
     ~ShaderGroup();
 
     /**

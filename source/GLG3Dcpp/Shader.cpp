@@ -39,21 +39,21 @@ GPUShader* GPUShader::init(GPUShader* shader) {
 void GPUShader::compile() {
 
     GLint compiled = GL_FALSE;
-	glShaderObject     = glCreateShaderObjectARB(glShaderType());
+	_glShaderObject     = glCreateShaderObjectARB(glShaderType());
 
     // Compile the shader
 	GLint length = _code.length();
     const GLcharARB* codePtr = static_cast<const GLcharARB*>(_code.c_str());
 
-	glShaderSourceARB(glShaderObject, 1, &codePtr, &length);
-	glCompileShaderARB(glShaderObject);
-	glGetObjectParameterivARB(glShaderObject, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
+	glShaderSourceARB(_glShaderObject, 1, &codePtr, &length);
+	glCompileShaderARB(_glShaderObject);
+	glGetObjectParameterivARB(_glShaderObject, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
 
     // Read the result of compilation
 	GLint	  maxLength;
-	glGetObjectParameterivARB(glShaderObject, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	glGetObjectParameterivARB(_glShaderObject, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
     GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
-	glGetInfoLogARB(glShaderObject, maxLength, &length, pInfoLog);
+	glGetInfoLogARB(_glShaderObject, maxLength, &length, pInfoLog);
 
     // Copy the result to the output string
     _messages = pInfoLog;
@@ -64,7 +64,7 @@ void GPUShader::compile() {
 
 
 GPUShader::~GPUShader() {
-	glDeleteObjectARB(glShaderObject);
+	glDeleteObjectARB(_glShaderObject);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -98,28 +98,46 @@ ShaderGroup::ShaderGroup(
 
     if (! os.isNull() && ! os->ok()) {
         _ok = false;
-        _messages += "\n" + os->messages();
-    }    
+        _messages += os->messages() + "\n";
+    }
     
     if (! vs.isNull() && ! vs->ok()) {
         _ok = false;
-        _messages += "\n" + vs->messages();
+        _messages += vs->messages() + "\n";
     }    
 
     if (! ps.isNull() && ! ps->ok()) {
         _ok = false;
-        _messages += "\n" + ps->messages();
+        _messages += ps->messages() + "\n";
     }    
 
     if (_ok) {
         // Create GL object
-        // TODO
+        _glProgramObject = glCreateProgramObjectARB();
+
+        // Attach vertex and pixel shaders
+        if (! vertexShader.isNull()) {
+            glAttachObjectARB(_glProgramObject, vertexShader->glShaderObject());
+        }
+
+        if (! pixelShader.isNull()) {
+            glAttachObjectARB(_glProgramObject, pixelShader->glShaderObject());
+        }
 
         // Link
-        // TODO
+        GLint linked = GL_FALSE;
+        glLinkProgramARB(_glProgramObject);
 
         // Read back messages
-        // TODO
+	    glGetObjectParameterivARB(_glProgramObject, GL_OBJECT_LINK_STATUS_ARB, &linked);
+        GLint maxLength = 0, length = 0;
+	    glGetObjectParameterivARB(_glProgramObject, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	    GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
+	    glGetInfoLogARB(_glProgramObject, maxLength, &length, pInfoLog);
+
+        _messages += std::string(pInfoLog) + "\n";
+	    free(pInfoLog);
+        _ok = _ok && (linked == GL_TRUE);
     }
 }
 
@@ -134,7 +152,7 @@ ShaderGroupRef ShaderGroup::create(
 
 
 ShaderGroup::~ShaderGroup() {
-    // TODO: delete the gl object
+    glDeleteObjectARB(_glProgramObject);
 }
 
 
