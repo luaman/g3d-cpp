@@ -17,11 +17,32 @@
 #include <time.h>
 #include <crtdbg.h>
 
+/*
+    DirectInput8 support is added by loading dinupt8.dll if found.
+
+    COM calls are not used to limit the style of code and includes needed.
+    DirectInput8 has a special creation function that lets us do this properly.
+
+    The dinput.h definitions are emulated with Win32Window_di8.cpp.
+    The IDirectInputDevice8 interface is modified to allow only defining the structures of
+        the methods actually used to limited pre-processing and confusion for bug-fixing.
+    This method works because DI8's COM system uses the GUID to specify which interface signature
+        to pass back, not the actual interface definition.  This should not be done in anything
+        more extensive and COM based.
+
+    The joystick state structure used is a custom definition to replace extern's found in dinput8.lib
+    The joystick axis order returned to users is: X, Y, Z, Slider1, Slider2, rX, rY, rZ
+
+    Important:  The cooperation level of Win32Window joysticks is Foreground:Non-Exclusive.
+        This means that other programs can get access to the joystick(preferably non-exclusive) and the joystick
+        is only aquired when Win32Window is in the foreground.
+*/
+
+// This is to try and limit the compiling of Win32Window_di8.cpp to here only.
 #define WIN32WINDOW_INCLUDE_DI8
 #include "Win32Window_di8.cpp"
 #undef WIN32WINDOW_INCLUDE_DI8
 
-using namespace Win32Window_DI8;
 
 // Handle these interfaces manually instead of using ATL
 Win32Window_DI8::IDirectInput8A*                di8Interface = NULL;
@@ -60,8 +81,8 @@ BOOL CALLBACK EnumDirectInput8Joysticks(Win32Window_DI8::LPCDIDEVICEINSTANCEA lp
         // Setup device and retreive axis/button count
         device->SetCooperativeLevel((HWND)pvRef, (Win32Window_DI8::DISCL_FOREGROUND | Win32Window_DI8::DISCL_NONEXCLUSIVE));
 
-        DIDEVCAPS joystickCaps;
-        joystickCaps.dwSize = sizeof(DIDEVCAPS);
+        Win32Window_DI8::DIDEVCAPS joystickCaps;
+        joystickCaps.dwSize = sizeof(Win32Window_DI8::DIDEVCAPS);
         
         device->GetCapabilities(&joystickCaps);
         joysticks[joystickCount].numAxes = joystickCaps.dwAxes;
@@ -685,7 +706,7 @@ std::string Win32Window::joystickName(unsigned int sticknum)
 void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
     if (joysticks.length() > stickNum) {
         
-        G3DJOYDATA joystickState;
+        Win32Window_DI8::G3DJOYDATA joystickState;
         memset(&joystickState, 0, sizeof(joystickState));
         
         joysticks[stickNum].device->Acquire();
