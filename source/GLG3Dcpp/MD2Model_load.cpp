@@ -268,12 +268,7 @@ void MD2Model::load(const std::string& filename) {
 
     MeshAlg::computeAdjacency(keyFrame[0].vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
 
-    _numBrokenEdges = 0;
-    for (int i = 0; i < edgeArray.size(); ++i) {
-        if (edgeArray[i].faceIndex[1] == MeshAlg::Face::NONE) {
-            ++_numBrokenEdges;
-        }
-    }
+    _numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
 
     initialized = true;
 }

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-09-14
- @edited  2003-10-06
+ @edited  2003-10-18
 */
 
 #ifndef G3D_MESHALG_H
@@ -150,6 +150,13 @@ public:
         Array<int>&           toNew,
         Array<int>&           toOld,
         double                radius);
+
+
+    /**
+     Counts the number of edges (in an edge array returned from 
+     MeshAlg::computeAdjacency) that have only one adjacent face.
+     */
+    static int countBrokenEdges(const Array<Edge>& edgeArray);
 
 protected:
 

@@ -70,6 +70,20 @@ void MeshAlg::computeNormals(
 }
 
 
+int MeshAlg::countBrokenEdges(const Array<MeshAlg::Edge>& edgeArray) {
+    int b = 0;
+
+    for (int i = 0; i < edgeArray.size(); ++i) {
+        if ((edgeArray[i].faceIndex[0] == MeshAlg::Face::NONE) !=
+            (edgeArray[i].faceIndex[1] == MeshAlg::Face::NONE)) {
+            ++b;
+        }
+    }
+
+    return b;
+}
+
+
 /**
  A directed edge for edgeTable.
  */
