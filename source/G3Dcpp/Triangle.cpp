@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-04-06
- @edited  2004-01-11
+ @edited  2004-03-14
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -87,6 +87,10 @@ const Plane& Triangle::plane() const {
     return _plane;
 }
 
+
+Vector3 Triangle::center() const {
+    return (_vertex[0] + _vertex[1] + _vertex[2]) / 3.0;
+}
 
 Vector3 Triangle::randomPoint() const {
     // Choose a random point in the parallelogram

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-04-05
- @edited  2004-01-11
+ @edited  2004-03-14
 
  @cite Random point method by  Greg Turk, Generating random points in triangles.  In A. S. Glassner, ed., Graphics Gems, pp. 24-28. Academic Press, 1990
 
@@ -70,6 +70,9 @@ public:
     }
 
     const Vector3& normal() const;
+
+    /** Barycenter */
+    Vector3 center() const;
 
     const Plane& plane() const;
 

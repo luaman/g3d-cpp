@@ -8,6 +8,22 @@
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
+
+Attached is one nasty case.  The red line is split plane.  The green box is hit before the yellow box (which is a Box, the AABox around it shown in dashed lines), but the yellow box is be returned first by the iterator.  The correct result in this case is:
+
+Iterator returns Yellow.
+
+Caller tests for intersection but rejects it because the true intersection is past maxDist.
+
+Iterator returns Green.
+
+Caller tests for intersection and remembers that as the best intersection.
+
+Iterator returns Yellow.
+
+Caller tests for intersection-- it passes the minDist and maxDist tests but fails to be closer than the previous intersection.
+
+  <IMG SRc="aabsp-intersect.png">
   */
 
 #ifndef G3D_AABSPTREE_H

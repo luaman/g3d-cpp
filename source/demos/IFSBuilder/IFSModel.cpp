@@ -66,7 +66,7 @@ XIFSModel::XIFSModel(const std::string& filename) {
 void XIFSModel::createGrid(double(*func)(double, double), bool consistentDiagonal) {
     IFSModelBuilder builder;
 
-    int n = 64;
+    int n = 10;
     double x, y, z;
 
     Vector3 BOTTOM(0,-0.25,0);

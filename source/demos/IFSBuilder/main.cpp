@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
         if (! pauseBetweenModels) {
             model->save(outDir + base + ".ifs");
         }
-        //model->save(outDir + "saddle.ifs");
+        model->save(outDir + "low-poly-saddle.ifs");
 
         // Main loop (display 3D object)
         do {
