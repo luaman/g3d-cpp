@@ -346,7 +346,7 @@ void Win32Window::init(HWND hwnd) {
     // Get the initial pixel format.  We'll override this below in a moment.
     pixelFormat = ChoosePixelFormat(_hDC, &pixelFormatDesc);
 
-    if (wglChoosePixelFormatARB != NULL) {
+    if (wglChoosePixelFormatEXT != NULL) {
         // Use wglChoosePixelFormatARB to override the pixel format choice for antialiasing.
         // Based on http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=46
         // and http://oss.sgi.com/projects/ogl-sample/registry/ARB/wgl_pixel_format.txt
@@ -1172,6 +1172,8 @@ void Win32Window::initWGL() {
 
     wglChoosePixelFormatEXT =
         (PFNWGLCHOOSEPIXELFORMATEXTPROC)wglGetProcAddress("wglChoosePixelFormatEXT");
+
+    Log::common()->printf("wglChoosePixelFormat = 0x%x\n", wglChoosePixelFormatEXT); 
 
     // Now destroy everything
     wglDeleteContext(hRC);					

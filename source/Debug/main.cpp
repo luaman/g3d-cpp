@@ -90,18 +90,7 @@ void Demo::doGraphics() {
 
     app->renderDevice->clear(true, true, true);
 
-    debugAssert(glGetInteger(GL_ARRAY_BUFFER_BINDING_ARB) == 0);
-
-    VARAreaRef area = VARArea::create(1024);
-
-    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, area->gl_vertexBufferObject());
-        debugAssert(glGetInteger(GL_ARRAY_BUFFER_BINDING_ARB) == area->gl_vertexBufferObject());
-    glPopClientAttrib();
-
-    debugAssert(glGetInteger(GL_ARRAY_BUFFER_BINDING_ARB) == 0);
-
-//    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    debugAssertM(false, "Intentional assertion");
 
 }
 
@@ -110,56 +99,18 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-    Demo(this).run();    
+    Demo(this).run();
 }
 
-//App::App(const GAppSettings& settings) : GApp(settings, Win32Window::create(settings.window)) {
-App::App(const GAppSettings& settings) : GApp(settings) {    
+App::App(const GAppSettings& settings) : GApp(settings, Win32Window::create(settings.window)) {
+//App::App(const GAppSettings& settings) : GApp(settings) {    
 }
 
 
 int main(int argc, char** argv) {
     GAppSettings settings;
+    settings.window.depthBits = 24;
+    settings.window.alphaBits = 8;
     App(settings).run();
     return 0;
 }
-
-/*
-int main(int argc, char** argv) {
-
-    Image<double> im(8, 4);
-
-    for (int y = 0; y < 4; ++y) {
-        im(0, y) = 0.0;
-        im(1, y) = 1.0;
-        im(2, y) = 0.0;
-        im(3, y) = 0.0;
-        im(4, y) = 0.0;
-        im(5, y) = 0.0;
-        im(6, y) = 0.0;
-        im(7, y) = 0.0;
-    }
-   
-    RenderDevice rd;
-    rd.init();
-
-    while (true) {
-        rd.beginFrame();
-        rd.clear();
-        rd.push2D();
-
-        rd.beginPrimitive(RenderDevice::LINES);
-        for (int i = 100; i < 600; ++i) {
-            double t = i / 100.0;
-            double f = im.bicubic(t, 1);
-
-            rd.sendVertex(Vector2(t * 100, 300 - f * 100));
-        }
-        rd.endPrimitive();
-        rd.pop2D();
-        rd.endFrame();
-    }
-    return 0;
-
-}
-*/
