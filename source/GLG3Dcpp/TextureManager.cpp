@@ -12,7 +12,7 @@
 
 namespace G3D {
 
-TextureManager::TextureManager(size_t _sizeHint) : sizeHint(_sizeHint), size(0) {}
+TextureManager::TextureManager(size_t _sizeHint) : size(0), sizeHint(_sizeHint) {}
 
 unsigned int TextureManager::TextureArgs::hashCode() const {
     return 

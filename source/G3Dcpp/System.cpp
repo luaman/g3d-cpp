@@ -159,10 +159,6 @@ static void checkForCPUID();
 /** ReadRead the standard processor extensions.  Called from init(). */
 static void getStandardProcessorExtensions();
 
-/** Perform processor identification and initialize the library (if not
-    already initialized). */
-static void init();
-
 /** Called from init */
 static void initTime();
 
@@ -229,6 +225,7 @@ void System::init() {
     System::initialized = true;
 
     unsigned long eaxreg, ebxreg, ecxreg, edxreg;
+    eaxreg = ebxreg = ecxreg = edxreg = 0;
 
     char cpuVendorTmp[13];
     (void)cpuVendorTmp;
@@ -434,7 +431,7 @@ void System::init() {
 
 
 void checkForCPUID() {
-        unsigned long bitChanged;
+        unsigned long bitChanged = 0;
 
         // We've to check if we can toggle the flag register bit 21.
         // If we can't the processor does not support the CPUID command.

@@ -108,9 +108,9 @@ public:
             const double*       ad,
             const double*       bd)
     {
-        double R0;
-        double R1;
-        double R;
+        double R0 = 0.0;
+        double R1 = 0.0;
+        double R = 0.0;
         switch (separatingAxisIndex) {
         case 0:
             // A0

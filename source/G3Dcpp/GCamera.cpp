@@ -85,8 +85,8 @@ Ray GCamera::worldRay(
     double                                  y,
     const Rect2D&                           viewport) const {
 
-    int screenWidth  = viewport.width();
-    int screenHeight = viewport.height();
+    int screenWidth  = iFloor(viewport.width());
+    int screenHeight = iFloor(viewport.height());
 
     Ray out;
     // Set the origin to 0

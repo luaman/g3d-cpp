@@ -21,7 +21,6 @@ void drawFeatureEdges(RenderDevice* renderDevice, const PosedModelRef& model) {
     const Array<Vector3>&           faceNormal  = model->objectSpaceFaceNormals(false);
     const Array<MeshAlg::Face>&     faceArray   = model->faces();
     const Array<Vector3>&           vertexArray = model->objectSpaceGeometry().vertexArray;
-    const Array<Vector3>&           normalArray = model->objectSpaceGeometry().normalArray;
 
     // Work in the object space of the model so we don't
     // have to transform the geometry. 

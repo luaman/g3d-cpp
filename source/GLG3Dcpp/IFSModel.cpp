@@ -123,14 +123,14 @@ void IFSModel::save(
 
 		b.writeUInt32(vertex.size());
 
-		for (uint32 v = 0; v < vertex.size(); ++v) {
+		for (uint32 v = 0; v < (uint32)vertex.size(); ++v) {
 			vertex[v].serialize(b);
 		}
 
 		b.writeString32("TRIANGLES");
 
 		b.writeUInt32(index.size() / 3);
-		for (uint32 i = 0; i < index.size(); ++i) {
+		for (uint32 i = 0; i < (uint32)index.size(); ++i) {
 			b.writeUInt32(index[i]);
 		}
 		
@@ -138,7 +138,7 @@ void IFSModel::save(
 			b.writeString32("TEXTURECOORD");
 			alwaysAssertM(texCoord.size() == vertex.size(), "Number of texCoords must match the number of vertices") ;
 			b.writeUInt32(texCoord.size());
-			for(uint32 t = 0; t < texCoord.size(); ++t) {
+			for(uint32 t = 0; t < (uint32)texCoord.size(); ++t) {
 				texCoord[t].serialize(b);
 			}
 		}
@@ -151,13 +151,13 @@ void IFSModel::save(
 		const int nF = index.size() / 3;
 		to.printf("%d\n%d\n",vertex.size(), nF);
 
-		for(uint32 i = 0; i < vertex.size(); ++i) {
+		for(uint32 i = 0; i < (uint32)vertex.size(); ++i) {
 			to.printf("%f\n",vertex[i].x);
 			to.printf("%f\n",vertex[i].y);
 			to.printf("%f\n",vertex[i].z);
 		}
 
-		for(uint32 i = 0; i < nF; ++i) {
+		for(uint32 i = 0; i < (uint32)nF; ++i) {
 			to.printf("3 %d \t %d \t %d \n", index[3*i], index[3*i + 1], index[3*i + 2]);
 		}
 
@@ -223,7 +223,7 @@ void IFSModel::load(
 					}
 
 					index.resize(num * 3);
-					for (uint32 i = 0; i < index.size(); ++i) {
+					for (uint32 i = 0; i < (uint32)index.size(); ++i) {
 						index[i] = bi.readUInt32();
 					}
 				} else if (str == "TEXTURECOORD") {

@@ -210,8 +210,8 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
             uint32 lastSpace = data.size() - 1;
 
             // How far back we had to look for a space
-            int k = 0;
-            int maxLookBackward = currentColumn - indentSpaces;
+            uint32 k = 0;
+            uint32 maxLookBackward = currentColumn - indentSpaces;
 
             // Search backwards (from current character), looking for a space.
             while ((k < maxLookBackward) &&

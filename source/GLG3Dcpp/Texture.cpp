@@ -463,8 +463,8 @@ TextureRef Texture::fromFile(
                 byteMipMapFaces[i][face] = byteStart;
                 byteStart += ((bytesFormat->packedBitsPerTexel / 8) * ((mapWidth + 3) / 4) * ((mapHeight + 3) / 4));
             }
-            mapWidth = max(1, mapWidth/2);
-            mapHeight = max(1, mapHeight/2);
+            mapWidth = iMax(1, iFloor(mapWidth/2));
+            mapHeight = iMax(1,iFloor(mapHeight/2));
         }
 
         return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead);

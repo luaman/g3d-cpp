@@ -661,7 +661,7 @@ void GImage::encodePNG(
 
     debugAssert( channels == 3 || channels == 4 );
 
-    if (this->height > (PNG_UINT_32_MAX/png_sizeof(png_bytep)))
+    if (this->height > (uint32)(PNG_UINT_32_MAX/png_sizeof(png_bytep)))
         throw GImage::Error("Unsupported PNG height.", out.getFilename());
 
     out.setEndian(G3D_LITTLE_ENDIAN);
@@ -923,7 +923,9 @@ void GImage::decodeICO(
 	}
 
 	input.skip(5);
-	int size = input.readUInt32();
+	// Skip 'size' unused
+        input.skip(4);
+
 	int offset = input.readUInt32();
 
 	// Skip over any other icon descriptions

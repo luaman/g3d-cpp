@@ -307,11 +307,11 @@ const uint32  DDSD_DEPTH              = 0x00800000l;
 const uint32  DDSD_ALL                 = 0x00fff9eel;
 
 Texture::DDSTexture::DDSTexture(const std::string& filename) :
+    bytes(NULL),
+    bytesFormat(TextureFormat::AUTO),
     width(0),
     height(0),
-    bytesFormat(TextureFormat::AUTO),
-    numMipMaps(0),
-    bytes(NULL) {
+    numMipMaps(0) {
 
     try {
 

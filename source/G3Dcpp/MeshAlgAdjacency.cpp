@@ -671,6 +671,7 @@ void MeshAlg::debugCheckConsistency(
     const Array<Edge>&      edgeArray,
     const Array<Vertex>&    vertexArray) {
 
+#ifdef _DEBUG
     for (int v = 0; v < vertexArray.size(); ++v) {
         const MeshAlg::Vertex& vertex = vertexArray[v];
 
@@ -715,6 +716,7 @@ void MeshAlg::debugCheckConsistency(
             debugAssert(vertexArray[face.vertexIndex[i]].inFace(f));
         }
     }
+#endif // _DEBUG
 }
 
 } // G3D namespace

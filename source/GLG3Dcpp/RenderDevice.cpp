@@ -166,8 +166,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
 	const int minimumStencilBits  = settings.stencilBits;
 	const int desiredStencilBits  = settings.stencilBits;
 
-    const int desiredTextureUnits = 8;
-
     // Don't use more texture units than allowed at compile time.
     if (GLCaps::supports_GL_ARB_multitexture()) {
         _numTextureUnits = iMin(GLCaps::G3D_MAX_TEXTURE_UNITS, 
@@ -908,9 +906,9 @@ void RenderDevice::setShininess(double s) {
 
 void RenderDevice::setRenderMode(RenderMode m) {
 
-	if (m == RENDER_CURRENT) {
-		return;
-	}
+    if (m == RENDER_CURRENT) {
+        return;
+    }
 
     if (state.renderMode != m) {
         state.renderMode = m;
@@ -925,6 +923,10 @@ void RenderDevice::setRenderMode(RenderMode m) {
 
         case RENDER_POINTS:
             glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+            break;
+
+        case RENDER_CURRENT:
+            return;
             break;
         }
     }
@@ -957,6 +959,9 @@ void RenderDevice::setDrawBuffer(Buffer b) {
 
         case BUFFER_BACK_RIGHT:
             glDrawBuffer(GL_BACK_RIGHT);
+            break;
+        case BUFFER_CURRENT:
+            return;
             break;
         }
     }
@@ -1587,27 +1592,27 @@ void RenderDevice::setStencilOp(
     StencilOp                       backZFail,
     StencilOp                       backZPass) {
 
-	if (frontStencilFail == STENCIL_CURRENT) {
+	if (frontStencilFail == STENCILOP_CURRENT) {
 		frontStencilFail = state.frontStencilFail;
 	}
 	
-	if (frontZFail == STENCIL_CURRENT) {
+	if (frontZFail == STENCILOP_CURRENT) {
 		frontZFail = state.frontStencilZFail;
 	}
 	
-	if (frontZPass == STENCIL_CURRENT) {
+	if (frontZPass == STENCILOP_CURRENT) {
 		frontZPass = state.frontStencilZPass;
 	}
 
-	if (backStencilFail == STENCIL_CURRENT) {
+	if (backStencilFail == STENCILOP_CURRENT) {
 		backStencilFail = state.backStencilFail;
 	}
 	
-	if (backZFail == STENCIL_CURRENT) {
+	if (backZFail == STENCILOP_CURRENT) {
 		backZFail = state.backStencilZFail;
 	}
 	
-	if (backZPass == STENCIL_CURRENT) {
+	if (backZPass == STENCILOP_CURRENT) {
 		backZPass = state.backStencilZPass;
 	}
     
