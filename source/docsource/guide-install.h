@@ -66,6 +66,50 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
   <P>
 
   @section linux Linux
+  <OL>
+   <LI>
+   Download the latest g3d-xxx.zip from
+   http://g3d-cpp.sf.net. 
+   Unzip all of the files in the distribution to your
+   library directory (e.g. <CODE>~/lib/</CODE>).
+   </LI>
+
+   <LI>Make sure that SDL <B>version 1.2.7</B> is installed on your machine. 
+   Try running <CODE>sdl-config --version</CODE>. If it returns "1.2.7" then you're all set. 
+   (<CODE>sdl-config</CODE> is a handy tool that tells you what flags to pass to your compiler
+   and linker to use SDL. If you run into SDL trouble, <CODE>sdl-config</CODE> is your friend.)
+   If <CODE>sdl-config</CODE> can't be found, or returns something other than "1.2.7", you'll 
+   need to install or update SDL. Download and install SDL from
+   <A HREF="http://www.libsdl.org">http://www.libsdl.org</A>. 
+   </LI>
+
+   <LI>We recommend using <A HREF="http://ice.sf.net">iCompile</A>, 
+	which automatically compiles and links every C++ file in the directory it's run from, 
+	so you won't need to edit it to refer to each source file (as you would with a Makefile). 
+	It needs the following environment variables, which you can set in your .cshrc file using 
+	setenv. If you're using iCompile,
+	you will need to set up some environment variables to point to SDL and %G3D. 
+	Modify the paths as appropriate for your installation:
+
+	<CODE>
+	INCLUDE ~me/libraries/g3d/include:/usr/include/SDL <BR>
+	LIBRARY ~me/libraries/g3d/linux-lib<BR>
+	LD_LIBRARY_PATH $LIBRARY <BR>
+	CC gcc-3.2 <BR>
+	CXX g++-3.2 <BR>
+	</CODE>
+
+	You are also welcome to use a makefile; set compiler and linker flags to point to SDL and %G3D.   
+	</LI>
+
+	<LI>
+	Confirm that you've installed %G3D correctly by installing and running one of the demos:<BR>
+	<CODE>cd g3d/demos/GLG3D_Demo</CODE><BR>
+	<CODE>cp your_iCompile_script iCompile</CODE><BR>
+	<CODE>iCompile</CODE><BR>
+	<CODE>distrib/GLG3D_Demo-debug</CODE><BR>
+	This should run the GLG3D demo; you should see many airplanes of various colors flying around in a beautiful blue sky. 
+	</LI>
 
   @section osx OS X
 
