@@ -90,6 +90,10 @@ private:
         bool                                    drawCelestialBodies,
         double                                  quality);
 
+    /** Draws a single sky-box vertex.  Called from renderBox. (s,t) are
+        texture coordinates for the case where the cube map is not used.*/
+    void vertex(float x, float y, float z, float s, float t) const;
+
 public:
     /**
      @param directory If directory is not "" it should

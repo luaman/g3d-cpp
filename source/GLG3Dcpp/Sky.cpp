@@ -185,6 +185,20 @@ static void hackProjectionMatrix(RenderDevice* renderDevice) {
 }
 
 
+void Sky::vertex(float x, float y, float z, float s, float t) const {
+    const double w = 0;
+    const bool cube = (cubeMap != NULL);
+
+    if (cube) {
+        renderDevice->setTexCoord(0, Vector3(x, y, z));
+    } else {
+        renderDevice->setTexCoord(0, Vector2(s, t));
+    }
+    
+    renderDevice->sendVertex(Vector4(x,y,z,w));
+}
+
+
 void Sky::renderBox() const {
     renderDevice->pushState();
 
@@ -192,48 +206,22 @@ void Sky::renderBox() const {
 
     if (cube) {
         renderDevice->setTexture(0, cubeMap);
-
-        glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_GEN_S | GL_TEXTURE_GEN_T | GL_TEXTURE_GEN_R | GL_TEXTURE_GEN_Q);
-
-	    glEnable(GL_TEXTURE_CUBE_MAP_ARB);
-        for (int i = 0; i < 3; ++i) {
-    	    glTexGeni(GL_S + i, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
-	        glEnable(GL_TEXTURE_GEN_S + i);
-        }
- 
-        // Texture generation will be in object space
-        renderDevice->setTextureMatrix(0, 
-            CoordinateFrame(renderDevice->getCameraToWorldMatrix().rotation, Vector3::ZERO));
-
     } else {
+        // In the 6-texture case, the sky box is rotated 90 degrees
+        // (this is because the textures are loaded incorrectly)
         CoordinateFrame cframe;
         cframe.rotation = Matrix3::fromAxisAngle(Vector3::UNIT_Y, toRadians(-90));
         renderDevice->setObjectToWorldMatrix(cframe);
-
         renderDevice->setTexture(0, texture[BK]);
     }
 
-    // Need normals for texcoord generation.
-
     double s = 1;
-    double w = 0;
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->setNormal(Vector3(-s, +s, -s));
-		renderDevice->sendVertex(Vector4(-s, +s, -s, w));
-
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->setNormal(Vector3(-s, -s, -s));
-		renderDevice->sendVertex(Vector4(-s, -s, -s, w));
-
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->setNormal(Vector3(+s, -s, -s));
-		renderDevice->sendVertex(Vector4(+s, -s, -s, w));
-
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->setNormal(Vector3(+s, +s, -s));
-		renderDevice->sendVertex(Vector4(+s, +s, -s, w));
+        vertex(-s, +s, -s, 0, 0);
+        vertex(-s, -s, -s, 0, 1);
+        vertex(+s, -s, -s, 1, 1);
+        vertex(+s, +s, -s, 1, 0);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -241,21 +229,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->setNormal(Vector3(-s, +s, +s));
-		renderDevice->sendVertex(Vector4(-s, +s, +s, w));
-
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->setNormal(Vector3(-s, -s, +s));
-		renderDevice->sendVertex(Vector4(-s, -s, +s, w));
-
-        renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->setNormal(Vector3(-s, -s, -s));
-		renderDevice->sendVertex(Vector4(-s, -s, -s, w));
-		
-        renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->setNormal(Vector3(-s, +s, -s));
-		renderDevice->sendVertex(Vector4(-s, +s, -s, w));
+        vertex(-s, +s, +s, 0, 0);
+        vertex(-s, -s, +s, 0, 1);
+        vertex(-s, -s, -s, 1, 1);
+        vertex(-s, +s, -s, 1, 0);
 	renderDevice->endPrimitive();
 
     
@@ -264,21 +241,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->setNormal(Vector3(+s, +s, +s));
-		renderDevice->sendVertex(Vector4(+s, +s, +s, w));
-
-        renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->setNormal(Vector3(+s, -s, +s));
-		renderDevice->sendVertex(Vector4(+s, -s, +s, w));
-		
-        renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->setNormal(Vector3(-s, -s, +s));
-		renderDevice->sendVertex(Vector4(-s, -s, +s, w));
-		
-        renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->setNormal(Vector3(-s, +s, +s));
-		renderDevice->sendVertex(Vector4(-s, +s, +s, w));
+        vertex(+s, +s, +s, 0, 0);
+        vertex(+s, -s, +s, 0, 1);
+        vertex(-s, -s, +s, 1, 1);
+        vertex(-s, +s, +s, 1, 0);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -286,21 +252,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->setNormal(Vector3(+s, +s, +s));
-		renderDevice->sendVertex(Vector4(+s, +s, +s, w));
-
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->setNormal(Vector3(+s, +s, -s));
-		renderDevice->sendVertex(Vector4(+s, +s, -s, w));
-
-        renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->setNormal(Vector3(+s, -s, -s));
-		renderDevice->sendVertex(Vector4(+s, -s, -s, w));
-		
-        renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->setNormal(Vector3(+s, -s, +s));
-		renderDevice->sendVertex(Vector4(+s, -s, +s, w));
+        vertex(+s, +s, +s, 1, 0);
+        vertex(+s, +s, -s, 0, 0);
+        vertex(+s, -s, -s, 0, 1);
+        vertex(+s, -s, +s, 1, 1);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -308,21 +263,10 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->setNormal(Vector3(+s, +s, +s));
-		renderDevice->sendVertex(Vector4(+s, +s, +s, w));
-
-        renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->setNormal(Vector3(-s, +s, +s));
-		renderDevice->sendVertex(Vector4(-s, +s, +s, w));
-		
-        renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->setNormal(Vector3(-s, +s, -s));
-		renderDevice->sendVertex(Vector4(-s, +s, -s, w));
-		
-        renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->setNormal(Vector3(+s, +s, -s));
-		renderDevice->sendVertex(Vector4(+s, +s, -s, w));
+        vertex(+s, +s, +s, 1, 1);
+        vertex(-s, +s, +s, 1, 0);
+        vertex(-s, +s, -s, 0, 0);
+        vertex(+s, +s, -s, 0, 1);
 	renderDevice->endPrimitive();
 
     if (! cube) {
@@ -330,31 +274,11 @@ void Sky::renderBox() const {
     }
 
     renderDevice->beginPrimitive(RenderDevice::QUADS);
-		renderDevice->setTexCoord(0, Vector2(0, 0));
-		renderDevice->setNormal(Vector3(+s, -s, -s));
-		renderDevice->sendVertex(Vector4(+s, -s, -s, w));
-
-		renderDevice->setTexCoord(0, Vector2(0, 1));
-		renderDevice->setNormal(Vector3(-s, -s, -s));
-		renderDevice->sendVertex(Vector4(-s, -s, -s, w));
-
-		renderDevice->setTexCoord(0, Vector2(1, 1));
-		renderDevice->setNormal(Vector3(-s, -s, +s));
-		renderDevice->sendVertex(Vector4(-s, -s, +s, w));
-
-		renderDevice->setTexCoord(0, Vector2(1, 0));
-		renderDevice->setNormal(Vector3(+s, -s, +s));
-		renderDevice->sendVertex(Vector4(+s, -s, +s, w));
+        vertex(+s, -s, -s, 0, 0);
+        vertex(-s, -s, -s, 0, 1);
+        vertex(-s, -s, +s, 1, 1);
+        vertex(+s, -s, +s, 1, 0);
 	renderDevice->endPrimitive();
-
-    if (cube) {
-        for (int i = 0; i < 3; ++i) {
-	        glDisable(GL_TEXTURE_GEN_S + i);
-        }
-
-	    glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-        glPopAttrib();
-    }
 
     renderDevice->popState();
 }
