@@ -624,9 +624,8 @@ void testColor3uint8Array() {
     debugAssert(y[3] == 63);
     debugAssert(y[4] == 64);
     debugAssert(y[5] == 65);
-
-    exit(-1);
 }
+
 
 void testCompression() {
     printf("BinaryInput & BinaryOutput\n");
@@ -714,8 +713,9 @@ void testglFormatOf() {
     debugAssert(glFormatOf(Vector3int16) == GL_SHORT);
     debugAssert(glFormatOf(float) == GL_FLOAT);
     debugAssert(glFormatOf(int16) == GL_SHORT);
+    debugAssert(glFormatOf(int32) == GL_INT);
 
-    debugAssert(sizeOfGLFormat(GL_FLOAT) == 32);
+    debugAssert(sizeOfGLFormat(GL_FLOAT) == 4);
 }
 
 void testCollision() {
@@ -798,11 +798,6 @@ void testSwizzle() {
     #include <sys/timeb.h>
 
 int main(int argc, char* argv[]) {
-    RealTime t0 = System::getLocalTime();
-    RealTime t1 = System::getTick();
-    while (true) {
-        printf("\r%f %f\n", System::getLocalTime() - t0, System::getTick());
-    }
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
