@@ -31,11 +31,11 @@ void beginMarkShadows(RenderDevice* renderDevice) {
         renderDevice->setCullFace(RenderDevice::CULL_NONE);
         renderDevice->setStencilOp(
             RenderDevice::STENCIL_KEEP,
-            RenderDevice::STENCIL_INCR_WRAP,
+            RenderDevice::STENCIL_DECR_WRAP,
             RenderDevice::STENCIL_KEEP,
 
             RenderDevice::STENCIL_KEEP,
-            RenderDevice::STENCIL_DECR_WRAP,
+            RenderDevice::STENCIL_INCR_WRAP,
             RenderDevice::STENCIL_KEEP);
 }
 
