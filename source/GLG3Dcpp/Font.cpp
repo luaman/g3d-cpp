@@ -7,8 +7,8 @@
  @edited  2003-02-24
  */
 
-#include "../include/GLG3D/Font.h"
-#include "../include/GLG3D/RenderDevice.h"
+#include "GLG3D/Font.h"
+#include "GLG3D/RenderDevice.h"
 
 namespace G3D {
 

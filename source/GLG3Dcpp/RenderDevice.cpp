@@ -10,10 +10,10 @@
 
 #include <SDL.h>
 #include <SDL_syswm.h>
-#include "../include/GLG3D/glcalls.h"
-#include "../include/GLG3D/RenderDevice.h"
-#include "../include/GLG3D/Texture.h"
-#include "../include/GLG3D/getOpenGLState.h"
+#include "GLG3D/glcalls.h"
+#include "GLG3D/RenderDevice.h"
+#include "GLG3D/Texture.h"
+#include "GLG3D/getOpenGLState.h"
 
 PFNGLMULTITEXCOORD1FARBPROC         glMultiTexCoord1fARB		= NULL;
 PFNGLMULTITEXCOORD1DARBPROC         glMultiTexCoord1dARB		= NULL;

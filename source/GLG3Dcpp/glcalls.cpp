@@ -6,7 +6,7 @@
   @edited  2003-02-15
 */
 
-#include "../include/GLG3D/glcalls.h"
+#include "GLG3D/glcalls.h"
 
 namespace G3D {
 

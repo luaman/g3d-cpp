@@ -9,8 +9,8 @@
  @edited  2003-02-15
  */
 
-#include "../include/GLG3D/RenderDevice.h"
-#include "../include/G3D/Log.h"
+#include "GLG3D/RenderDevice.h"
+#include "G3D/Log.h"
 
 namespace G3D {
 

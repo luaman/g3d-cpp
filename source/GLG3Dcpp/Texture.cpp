@@ -7,10 +7,10 @@
  @edited  2003-03-24
 */
 
-#include "../include/GLG3D/glcalls.h"
-#include "../include/graphics3D.h"
-#include "../include/GLG3D/Texture.h"
-#include "../include/GLG3D/getOpenGLState.h"
+#include "GLG3D/glcalls.h"
+#include "graphics3D.h"
+#include "GLG3D/Texture.h"
+#include "GLG3D/getOpenGLState.h"
 namespace G3D {
 
 /**

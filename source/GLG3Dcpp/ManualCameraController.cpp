@@ -8,9 +8,9 @@
 */
 
 #include <SDL.h>
-#include "../include/GLG3D/ManualCameraController.h"
-#include "../include/GLG3D/RenderDevice.h"
-#include "../include/GLG3D/UserInput.h"
+#include "GLG3D/ManualCameraController.h"
+#include "GLG3D/RenderDevice.h"
+#include "GLG3D/UserInput.h"
 
 namespace G3D {
 

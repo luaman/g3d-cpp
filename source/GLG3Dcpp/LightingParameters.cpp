@@ -6,7 +6,7 @@
  @edited  2003-02-15
  */
 
-#include "../include/GLG3D/LightingParameters.h"
+#include "GLG3D/LightingParameters.h"
 
 namespace G3D {
 

@@ -7,8 +7,8 @@
   @edited  2003-02-15
 */
 
-#include "../include/GLG3D/Camera.h"
-#include "../include/GLG3D/RenderDevice.h"
+#include "GLG3D/Camera.h"
+#include "GLG3D/RenderDevice.h"
 
 namespace G3D {
 

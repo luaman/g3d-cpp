@@ -7,9 +7,9 @@
   @edited  2003-03-24
   */
 
-#include "../include/GLG3D/glcalls.h"
-#include "../include/GLG3D/Sky.h"
-#include "../include/GLG3D/LightingParameters.h"
+#include "GLG3D/glcalls.h"
+#include "GLG3D/Sky.h"
+#include "GLG3D/LightingParameters.h"
 
 namespace G3D {
 
