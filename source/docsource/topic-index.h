@@ -270,7 +270,8 @@
         G3D::debugPrintf,
         G3D::Log, 
         G3D::alwaysAssertM, 
-        G3D::setAssertionHook
+        G3D::setAssertionHook,
+        G3D::setFailureHook
 
      <LI><B>I/O</B> &nbsp; &nbsp;
         G3D::BinaryInput, 

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2004-09-16
+ @edited  2005-02-28
  */
 
 #include "G3D/debugAssert.h"
@@ -31,6 +31,7 @@ using namespace std;
 namespace G3D { namespace _internal {
 
 AssertionHook _debugHook = _handleDebugAssert_;
+AssertionHook _failureHook = _handleErrorCheck_;
 
 #ifdef G3D_LINUX
     Display*      x11Display = NULL;
@@ -190,11 +191,12 @@ bool _handleDebugAssert_(
 }
 
 
-void _handleErrorCheck_(    
+bool _handleErrorCheck_(
     const char*         expression,
     const std::string&  message,
     const char*         filename,
     int                 lineNumber,
+    bool&               ignoreAlways,
     bool                useGuiPrompt) {
 
     std::string dialogTitle = "Critical Error";
@@ -211,9 +213,10 @@ void _handleErrorCheck_(
         std::string("An internal error has occured in your program and it will now close.  Details about the error have been reported in \"") +
             Log::getCommonLogFilename() + "\".";
 
-
     int result = G3D::prompt("Error", m.c_str(), (const char**)choices, 1, useGuiPrompt);
     (void)result;
+
+    return true;
 }
 
 
@@ -298,6 +301,10 @@ void _restoreInputGrab_() {
  
 void setAssertionHook(AssertionHook hook) {
 	G3D::_internal::_debugHook = hook;
+}
+
+void setFailureHook(AssertionHook hook) {
+	G3D::_internal::_failureHook = hook;
 }
 
 

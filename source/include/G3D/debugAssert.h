@@ -29,6 +29,10 @@
 #include <string>
 #include "G3D/platform.h"
 
+#ifdef G3D_WIN32
+    #include <windows.h>
+#endif
+
 #ifdef G3D_LINUX
     // Needed so we can define a global display
     // pointer for debugAssert.
@@ -79,8 +83,16 @@ typedef bool (*AssertionHook)(
 */
 void setAssertionHook(AssertionHook hook);
 
+/**
+ Called by alwaysAssertM in case of failure in release mode.  If returns
+ true then the program exits with -1 (you can replace this with your own
+ version that throws an exception or has other failure modes.
+ */
+void setFailureHook(AssertionHook hook);
+
 namespace _internal {
     extern AssertionHook _debugHook;
+    extern AssertionHook _failureHook;
 } // internal
 } // G3D
 
@@ -144,13 +156,17 @@ namespace _internal {
     #define debugAssertM(exp, message)
     #define debugBreak()
 
-    // But keep the always assertions
+    // But keep the 'always' assertions
     #define alwaysAssertM(exp, message) { \
-        if (!(exp)) { \
+        static bool __alwaysAssertIgnoreAlways__ = false; \
+        if (!__alwaysAssertIgnoreAlways__ && !(exp)) { \
             G3D::_internal::_releaseInputGrab_(); \
-            G3D::_internal::_handleErrorCheck_(#exp, message, __FILE__, __LINE__, __debugPromptShowDialog__); \
-            exit(-1); \
-        } \
+            if ((G3D::_internal::_failureHook != NULL) && \
+                G3D::_internal::_failureHook(#exp, message, __FILE__, __LINE__, __alwaysAssertIgnoreAlways__, __debugPromptShowDialog__)) { \
+               exit(-1); \
+            } \
+            G3D::_internal::_restoreInputGrab_(); \
+         } \
     }
 
 #endif  // if debug
@@ -191,11 +207,12 @@ bool _handleDebugAssert_(
     bool&       ignoreAlways,
     bool        useGuiPrompt);
 
-void _handleErrorCheck_(
+bool _handleErrorCheck_(
     const char* expression,
     const std::string& message,
     const char* filename,
     int         lineNumber,
+    bool&       ignoreAlways,
     bool        useGuiPrompt);
 
 /** Attempts to give the user back their mouse and keyboard if they 

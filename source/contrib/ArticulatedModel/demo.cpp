@@ -296,6 +296,13 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
     }
+    
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
+
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/jackolantern.ifs", 1);
 
@@ -330,11 +337,6 @@ void App::main() {
         x += 2;
     }
 
-    {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-    }
 
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/mech-part.ifs", 1);
@@ -412,6 +414,7 @@ void App::main() {
 
 App::App(const GAppSettings& settings) : GApp(settings) {
     ::app = this;
+    debugShowRenderingStats = false;
     sky = Sky::create(renderDevice, "D:/games/data/sky/", "majestic/majestic512_*.jpg");
 }
 

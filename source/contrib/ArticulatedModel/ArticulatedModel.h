@@ -48,7 +48,7 @@ public:
             }
         }
 // TODO: Remove (here for testing)
-p = FIXED_FUNCTION;
+//p = FIXED_FUNCTION;
         return p;
     }
 

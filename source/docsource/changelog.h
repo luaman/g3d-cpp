@@ -31,7 +31,8 @@
    <P>
    Changes in 6.05:
    <UL>
-     <LI> Added glDisableAllTextures()
+     <LI> glDisableAllTextures()
+     <LI> G3D::setFailureHook
      <LI> G3D::Shader::fromStrings now accepts optional names for the vertex and pixel shader
      <LI> G3D::Shader no longer requires values for declared but unused uniform variables
      <LI> G3D::RenderDevice now stores texture matrix at 32-bit precision (for faster push/popState)
@@ -139,6 +140,7 @@
      <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
      <LI> Fix: RenderDevice::configureShadowMap result depends on objectToWorldMatrix
+     <LI> Fix: [ 1150650 ] DebugBreak() undefined
      <LI> Fix: [ 1111534 ] Network Demo crashes starting 2nd server on same machine
      <LI> Fix: [ 1102091 ] ReliableConduit::receive times out
      <LI> Fix: Implemented MD2Model::objectSpaceBoundingX methods.
