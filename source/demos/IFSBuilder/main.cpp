@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
     //std::string outDir("d:/tmp/");
 //    std::string outDir("d:/graphics3d/book/data/ifs/");
 
-    std::string outDir("c:/tmp");
+    std::string outDir("c:/tmp/");
 
     Array<std::string> filename;
     getFiles(in, filename, true);
