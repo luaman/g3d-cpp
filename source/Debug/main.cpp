@@ -1251,7 +1251,7 @@ void Demo::init()  {
     std::string name = 
         //"angel";
         //"venus-torso";
-        "hippo";
+        "cube";
         //"duck";
         //"cow";
         //"bump";

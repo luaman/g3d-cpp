@@ -6,9 +6,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2003-11-23
+ @edited  2004-03-12
 
- Copyright 2002, Morgan McGuire.
+ Copyright 2002-2004, Morgan McGuire.
  All rights reserved.
 */
 
@@ -168,6 +168,7 @@ inline void glNormal(const G3D::Vector3& n) {
 inline void glTexCoord(const G3D::Vector4& t) {
 	glTexCoord4fv((const float*)&t);
 }
+
 
 inline void glTexCoord(const G3D::Vector3& t) {
 	glTexCoord3fv((const float*)&t);

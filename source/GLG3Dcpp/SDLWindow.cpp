@@ -221,7 +221,7 @@ SDLWindow::~SDLWindow() {
 
 
 ::SDL_Joystick* SDLWindow::getSDL_Joystick(unsigned int num) const {
-    if ((uint)joy.size() >= num) {
+    if ((unsigned int)joy.size() >= num) {
         return joy[num];
     } else {
         return NULL;
