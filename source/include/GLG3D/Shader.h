@@ -10,6 +10,8 @@
 #ifndef G3D_SHADER_H
 #define G3D_SHADER_H
 
+#include "graphics3D.h"
+
 namespace G3D {
 
 typedef ReferenceCountedPointer<class ShaderGroup>  ShaderGroupRef;
@@ -30,18 +32,25 @@ public:
 
 class VertexShader : public GPUShader {
 public:
-
+    static VertexShaderRef fromFile(const std::string& filename);
+    static VertexShaderRef fromCode(const std::string& name, const std::string& code);
 };
+
 
 class PixelShader : public GPUShader {
 public:
-
+    static PixelShaderRef fromFile(const std::string& filename);
+    static PixelShaderRef fromCode(const std::string& name, const std::string& code);
 };
 
 
 
 /**
   A set of compatible vertex, pixel, and object shaders; the analog of a DirectX "effect".
+
+  Only newer graphics cards with recent drivers (e.g. GeForceFX cards with driver version 57 or greater)
+  support this API.  Use the ShaderGroup::fullySupported method to determine at run-time
+  if your graphics card is compatible.
 
   A ShaderGroup contains three shaders:
   <OL>
@@ -84,11 +93,19 @@ public:
      If an unrecoverable error occurs, NULL is returned. Use the 
      ReferenceCountedPoitner::isNull method to detect this.
      */
-    ShaderGroupRef create(
+    static ShaderGroupRef create(
         const ObjectShaderRef& os,
         const VertexShaderRef& vs,
         const PixelShaderRef&  ps,
         std::string&           output = std::string(""));
+
+    /**
+     Returns GLCaps::supports_GL_ARB_shader_objects() && 
+        GLCaps::supports_GL_ARB_shading_language_100() &&
+        GLCaps::supports_GL_ARB_fragment_shader() &&
+        GLCaps::supports_GL_ARB_vertex_shader()
+    */
+    static bool fullySupported();
 };
 
 }
