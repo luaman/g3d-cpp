@@ -334,6 +334,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     if (debugLog) debugLog->println("Done initializing RenderDevice.\n");
 
     _initialized = true;
+
     return true;
 }
 
@@ -1059,12 +1060,15 @@ void RenderDevice::beginFrame() {
     ++beginEndFrame;
     triangleCount = 0;
     debugAssertM(beginEndFrame == 1, "Mismatched calls to beginFrame/endFrame");
+    pushState();
 }
 
 
 void RenderDevice::endFrame() {
     --beginEndFrame;
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
+
+    popState();
     debugAssertM(stateStack.size() == 0, "Missing RenderDevice::popState or RenderDevice::pop2D.");
 
     _window->swapGLBuffers();

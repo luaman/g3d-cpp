@@ -265,9 +265,7 @@ void GApplet::oneFrame() {
         app->renderDevice->pushState();
             doGraphics();
         app->renderDevice->popState();
-        app->renderDevice->pushState();
-            app->renderDebugInfo();
-        app->renderDevice->popState();
+        app->renderDebugInfo();
     app->renderDevice->endFrame();
     app->debugText.clear();
 }
