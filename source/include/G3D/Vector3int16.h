@@ -4,21 +4,25 @@
   @maintainer Morgan McGuire, matrix@brown.edu
 
   @created 2003-04-07
-  @edited  2003-04-08
+  @edited  2003-06-24
  */
 
 #ifndef VECTOR3INT16_H
 #define VECTOR3INT16_H
 
 #include "G3D/g3dmath.h"
+#include "G3D/platform.h"
 
 namespace G3D {
 
 /**
  A Vector3 that packs its fields into uint16s.
  */
-// Switch to tight alignment
-#pragma pack(push, 2)
+#ifdef G3D_WIN32
+    // Switch to tight alignment
+    #pragma pack(push, 2)
+#endif
+
 class Vector3int16 {
 public:
     G3D::int16              x;
@@ -31,8 +35,15 @@ public:
     Vector3int16(class BinaryInput& bi);
     void serialize(class BinaryOutput& bo) const;
     void deserialize(class BinaryInput& bi);
-};
-#pragma pack(pop)
+}
+#if defined(G3D_LINUX) || defined(G3D_OSX)
+    __attribute((aligned(1)))
+#endif
+;
+
+#ifdef G3D_WIN32
+    #pragma pack(pop)
+#endif
 
 }
 #endif

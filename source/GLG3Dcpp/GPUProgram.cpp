@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2003-04-13
+  @edited  2003-06-24
 */
 
 #include "GLG3D/GPUProgram.h"
@@ -83,7 +83,7 @@ LOADSHADER:
 
         // Count forward to the end of the line
         int endCol = col;
-        while ((x < code.size()) && (code[x] != '\n') && (code[x] != '\r')) {
+        while ((x < (int)code.size()) && (code[x] != '\n') && (code[x] != '\r')) {
             ++x;
             ++endCol;
         }

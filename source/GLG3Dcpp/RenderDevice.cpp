@@ -283,10 +283,6 @@ static const char* isOk(bool x) {
     return x ? "ok" : "UNSUPPORTED";
 }
 
-static const char* isOk(void* x) {
-    return isOk(x != NULL);
-}
-
 
 bool RenderDevice::supportsOpenGLExtension(
     const std::string& extension) const {
@@ -2090,8 +2086,6 @@ void RenderDevice::setTexture(
         return;
     }
 
-    bool reloadTextureMatrix = false;
-
     state.textureUnit[unit].texture = texture;
 
     // Turn off whatever was on previously
@@ -2363,7 +2357,7 @@ void RenderDevice::drawWireSphereSection(const Sphere& sphere, double cylRadius,
         for (y = 0; y < 8; ++y) {
             const double yaw = y * PI / 4;
             const Vector3 x(cos(yaw) * radius, 0, sin(yaw) * radius);
-            const Vector3 z(-sin(yaw) * radius, 0, cos(yaw) * radius);
+            //const Vector3 z(-sin(yaw) * radius, 0, cos(yaw) * radius);
 
             for (p = start; p < stop; ++p) {
                 const double pitch0 = p * PI / (sections * 0.5);

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2003-04-07
-  @edited  2003-04-08
+  @edited  2003-06-24
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -13,6 +13,7 @@
 #ifndef COLOR3UINT8_H
 #define COLOR3UINT8_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 
 namespace G3D {
@@ -29,8 +30,12 @@ namespace G3D {
  but Vector3(1,1,1) == Vector3int16(1,1,1).
 
  */
-// Switch to tight alignment
-#pragma pack(push, 1)
+
+#if defined(G3D_WIN32)
+    // Switch to tight alignment
+    #pragma pack(push, 1)
+#endif
+
 class Color3uint8 {
 public:
     uint8       r;
@@ -47,9 +52,16 @@ public:
 
     void deserialize(class BinaryInput& bi);
 
-};
-#pragma pack(pop)
+}
+#if defined(G3D_LINUX) || defined(G3D_OSX)
+    __attribute((aligned(1)))
+#endif
 
+;
+
+#ifdef G3D_WIN32
+  #pragma pack(pop)
+#endif
 }
 
 #endif

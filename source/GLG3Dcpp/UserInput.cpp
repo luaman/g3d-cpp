@@ -172,6 +172,9 @@ void UserInput::processKey(KeyCode code, int event) {
         case DOWN:
             down = state;
             break;
+
+        case NONE:
+            break;
 	    }
 
         keyState[code] = state;

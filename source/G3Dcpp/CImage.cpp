@@ -184,7 +184,7 @@ static void skip_input_data(
 		while (num_bytes > (long) src->pub.bytes_in_buffer) {
 			num_bytes -= (long) src->pub.bytes_in_buffer;
 			boolean s = fill_input_buffer(cinfo);
-            debugAssert(s);
+            debugAssert(s); (void)s;
 		}
 
 		src->pub.next_input_byte += (size_t) num_bytes;
@@ -645,6 +645,8 @@ void CImage::decodeTGA(
     int IDLength     = input.readUInt8();
     int colorMapType = input.readUInt8();
     int imageType    = input.readUInt8();
+
+    (void)colorMapType;
 	
     // 2 is the type supported by this routine.
     if (imageType != 2) {
@@ -677,6 +679,7 @@ void CImage::decodeTGA(
     // Image descriptor contains overlay data as well
     // as data indicating where the origin is
     int imageDescriptor = input.readUInt8();
+    (void)imageDescriptor;
 	
     // Image ID
     input.skip(IDLength);
@@ -724,17 +727,17 @@ void CImage::decodeBMP(
     BinaryInput&            input) {
 
     // The BMP decoding uses these flags.
-    uint16 PICTURE_NONE               = 0x0000;
-    uint16 PICTURE_BITMAP             = 0x1000;
+    static const uint16 PICTURE_NONE               = 0x0000;
+    static const uint16 PICTURE_BITMAP             = 0x1000;
 
     // Compression Flags
-    uint16 PICTURE_UNCOMPRESSED       = 0x0100;
-    uint16 PICTURE_MONOCHROME         = 0x0001;
-    uint16 PICTURE_4BIT               = 0x0002;
-    uint16 PICTURE_8BIT               = 0x0004;
-    uint16 PICTURE_16BIT              = 0x0008;
-    uint16 PICTURE_24BIT              = 0x0010;
-    uint16 PICTURE_32BIT              = 0x0020;
+    static const uint16 PICTURE_UNCOMPRESSED       = 0x0100;
+    static const uint16 PICTURE_MONOCHROME         = 0x0001;
+    static const uint16 PICTURE_4BIT               = 0x0002;
+    static const uint16 PICTURE_8BIT               = 0x0004;
+    static const uint16 PICTURE_16BIT              = 0x0008;
+    static const uint16 PICTURE_24BIT              = 0x0010;
+    static const uint16 PICTURE_32BIT              = 0x0020;
 
     // This is a simple BMP loader that can handle uncompressed BMP files.
     // Verify this is a BMP file by looking for the BM tag.

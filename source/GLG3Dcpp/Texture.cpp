@@ -60,7 +60,7 @@ static void createMipMapTexture(
     case GL_TEXTURE_2D:
         {
             int r = gluBuild2DMipmaps(target, textureFormat, width, height, bytesFormat, GL_UNSIGNED_BYTE, bytes);
-            debugAssertM(r == 0, (const char*)gluErrorString(r));
+            debugAssertM(r == 0, (const char*)gluErrorString(r)); (void)r;
             break;
         }
 

@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2003-03-26
+ @edited  2003-06-24
 
 
   <PRE>
@@ -88,7 +88,7 @@ BinaryInput::BinaryInput(
         // Decompress with zlib
         int result = uncompress(buffer, &L, data + 4, dataLen - 4);
         length = L;
-        debugAssert(result == Z_OK);
+        debugAssert(result == Z_OK); (void)result;
 
     } else {
 	    length = dataLen;
@@ -153,7 +153,7 @@ BinaryInput::BinaryInput(
         int result = uncompress(buffer, &L, tempBuffer + 4, tempLength - 4);
         length = L;
 
-        debugAssert(result == Z_OK);
+        debugAssert(result == Z_OK); (void)result;
 
         free(tempBuffer);
     }

@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2002-02-20
- @edited  2003-02-06
+ @edited  2003-06-24
  */
 
 #include "G3D/BinaryOutput.h"
@@ -56,7 +56,7 @@ void BinaryOutput::compress() {
     uLongf newSize;
     int result = compress2 (temp, &newSize, buffer.getCArray(), buffer.size(), 9); 
 
-    debugAssert(result == Z_OK);
+    debugAssert(result == Z_OK); (void)result;
 
 
     // Write the header
