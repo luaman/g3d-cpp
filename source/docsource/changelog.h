@@ -46,6 +46,8 @@
      <LI> G3D::Texture::rect2DBounds, G3D::Texture::vector2Bounds
      <LI> G3D::Vector4 * G3D::Vector4, Vector4 / Vector4
      <LI> G3D::Array::operator=(std::vector)
+     <LI> G3D::Sky::getEnvironmentMap now returns the top texture on machines
+          that don't support cube maps.
      <LI> glDisableAllTextures()
      <LI> G3D::setFailureHook
      <LI> G3D::Shader::fromStrings now accepts optional names for the vertex and pixel shader

@@ -198,11 +198,15 @@ public:
     }
 
     /**
-     Returns an environment map (NULL if cube maps are not supported
+     Returns an environment cube map (or the top 2D texture if cube maps are not supported
      on this machine).
      */
     inline TextureRef getEnvironmentMap() const {
-        return cubeMap;
+        if (cubeMap.isNull()) {
+            return texture[UP];
+        } else {
+            return cubeMap;
+        }
     }
 
 };
