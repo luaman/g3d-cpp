@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-12-07
+# @edited  2004-01-06
 #
 # Each build target is a procedure.
 #
@@ -180,16 +180,22 @@ def doc(args):
 #                             install Target                                  #
 #                                                                             #
 ###############################################################################
-    
+
+""" If copyData is true, this also copies the data module (the source/data
+    directory is always copied) """
 def install(args, copyData=1):
     lib(args)
     doc(args)
     
-    if (os.name != 'nt'):
-        return
+    # Copy the demos
+    copyIfNewer('source/demos', installDir(args) + '/demos')
+
+    # Most of this will be overwritten if copyData == 1, but we want
+    # to be sure to have all files since source/data might
+    # have a few that aren't in the data module.
+    copyIfNewer('source/data', installDir(args) + '/data')
 
     if (copyData):
-        copyIfNewer('source/demos', installDir(args) + '/demos')
         copyIfNewer('../data', installDir(args) + '/data')
 
 ###############################################################################
@@ -215,19 +221,31 @@ def release(args):
     if (os.name != 'nt'):
         raise 'Error', 'Can only build the release on Windows.'
 
-    mkdir('release')
+    rmdir('release')
 
     rmdir('../temp')
     copyIfNewer('../cpp', '../temp/copy/cpp')
     rmdir('../temp/copy/cpp/temp')
     rmdir('../temp/copy/cpp/install')
     rmdir('../temp/copy/cpp/release')
-    zip('../temp/copy/*', 'release/g3d-src-' + version + '.zip')
+    rmdir('install')
+
+    mkdir('release')
 
     # TODO: Make sure the linux binaries are already built
 
-    install([])
+    # TODO: Build the Windows demos
+
+    # Install to the 'install' directory
+    install([], 0)
     zip('install/*', 'release/g3d-' + version + '.zip')
+
+    # Source zip
+    zip('../temp/copy/*', 'release/g3d-src-' + version + '.zip')
+
+    # Make a separate zipfile for the data
+    copyIfNewer('../data', '../temp/copy/data')
+    zip('../temp/copy/*', 'release/g3d-data-' + version + '.zip')
 
 
 
