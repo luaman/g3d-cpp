@@ -247,11 +247,11 @@ public:
 
 
     /** Returns the largest, centered Rect2D that can fit inside this
-        while maintaining the aspect ratio of <I>dimensions</I>.
+        while maintaining the aspect ratio of x:y
     */
-    Rect2D largestCenteredSubRect(const Vector2& dimensions) const {
+    Rect2D largestCenteredSubRect(double ww, double hh) const {
         double textureAspect = dimensions.y / dimensions.x;
-        double viewAspect = height() / width();
+        double viewAspect = hh / ww;
 
         // The sub-window we'll render video to
         Rect2D rect;
