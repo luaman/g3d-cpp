@@ -215,6 +215,18 @@ public:
  Create on the client using NetworkDevice::createReliableConduit and
  on the server using NetListener::waitForConnection.  Set the reference
  counted pointer to NULL to disconnect.
+
+ To construct a ReliableConduit:
+ <OL>
+   <LI> Create a G3D::NetworkDevice (if you are using G3D::GApp, it creates one for you)
+        on the client and on the server.
+   <LI> On the server, create a G3D::NetListener using G3D::NetworkDevice::createListener
+   <LI> On the server, invoke G3D::NetListener::waitForConnection.
+   <LI> On the client, call G3D::NetworkDevice::createReliableConduit.  You will need
+        the server's G3D::NetAddress.  Consider using the G3D::DiscoveryClient to 
+        find it via broadcasting.
+ </OL>
+
  */
 class ReliableConduit : public Conduit {
 private:
@@ -257,6 +269,8 @@ public:
 
     /** If a message is waiting, deserializes the waiting message into m and
         returns true, otherwise returns false.  
+        
+        If m == NULL, the message is pulled from the conduit and discarded.
         
         If a message is incoming but was split across multipled TCP packets
         in transit, this will block for up to .25 seconds waiting for all
