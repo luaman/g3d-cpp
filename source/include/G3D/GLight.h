@@ -32,20 +32,24 @@ public:
     /** Constant, linear, quadratic */
     double              attenuation[3];
 
+    /** May be outside the range [0, 1] */
     Color3              color;
 
     /** If false, this light is ignored */
     bool                enabled;
 
-    /** If false, this light does not create specular highlights. */
+    /** If false, this light does not create specular highlights (useful when using negative lights). */
     bool                specular;
+
+    /** If false, this light does not create diffuse illumination (useful when rendering a specular-only pass). */
+    bool                diffuse;
 
     GLight();
 
     /** @param toLight will be normalized */
-    static GLight directional(const Vector3& toLight, const Color3& color, bool specular = true);
-    static GLight point(const Vector3& pos, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true);
-    static GLight spot(const Vector3& pos, const Vector3& pointDirection, double cutOffAngleDegrees, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true);
+    static GLight directional(const Vector3& toLight, const Color3& color, bool specular = true, bool diffuse = true);
+    static GLight point(const Vector3& pos, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true, bool diffuse = true);
+    static GLight spot(const Vector3& pos, const Vector3& pointDirection, double cutOffAngleDegrees, const Color3& color, double constAtt = 1, double linAtt = 0, double quadAtt = 0, bool specular = true, bool diffuse = true);
 
     bool operator==(const GLight& other);
     bool operator!=(const GLight& other);

@@ -2698,7 +2698,11 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
                 glLightfv(gi, GL_SPOT_DIRECTION,        light.spotDirection);
                 glLightf (gi, GL_SPOT_CUTOFF,           light.spotCutoff);
                 glLightfv(gi, GL_AMBIENT,               zero);
-                glLightfv(gi, GL_DIFFUSE,               brightness);
+                if (light.diffuse) {
+                    glLightfv(gi, GL_DIFFUSE,               brightness);
+                } else {
+                    glLightfv(gi, GL_DIFFUSE,               zero);
+                }
                 if (light.specular) {
                     glLightfv(gi, GL_SPECULAR,              brightness);
                 } else {
@@ -2729,7 +2733,7 @@ void RenderDevice::configureShadowMap(
         "Shadow maps must be configured for either Texture::DEPTH_LEQUAL"
         " or Texture::DEPTH_GEQUAL comparisions.");
 
-    debugAssertM(GLCaps::supports("GL_ARB_shadow"),
+    debugAssertM(GLCaps::supports_GL_ARB_shadow(),
         "The device does not support shadow maps");
     
 	// Set up tex coord generation - all 4 coordinates required

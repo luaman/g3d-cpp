@@ -16,6 +16,7 @@
      <LI> New G3D::PosedModel rendering methods appropriate for shadow casting
            (with efficient default implementations).
      <LI> G3D::Lighting
+     <LI> G3D::GLight::diffuse
      <LI> MeshAlg::computeBounds(vertex, index, ...)
      <LI> RenderDevice::colorWriteEnabled(), depthWriteEnabled, alphaWriteEnabled
      <LI> RenderDevice::setSpecularCoefficient(Color3)

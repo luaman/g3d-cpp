@@ -44,7 +44,7 @@ static bool debugLightMap = false;
 Scene::Scene() {
     sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
 
-    if (GLCaps::supports("GL_ARB_shadow")) {
+    if (GLCaps::supports_GL_ARB_shadow()) {
         shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
     }
@@ -117,15 +117,12 @@ void Scene::render(const LightingParameters& lighting) const {
     Matrix4 lightProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
 
     CoordinateFrame lightCFrame;
-    lightCFrame.lookAt(-lighting.lightDirection, -Vector3::unitY());
+    lightCFrame.lookAt(-lighting.lightDirection, Vector3::unitY());
     lightCFrame.translation = lighting.lightDirection * 20;
 
-    CoordinateFrame lightCFrameInverse(lightCFrame.inverse());
-    Matrix4 lightViewMatrix(lightCFrameInverse);
+    Matrix4 lightMVP = lightProjectionMatrix * lightCFrame.inverse();
 
-    Matrix4 lightMVP = lightProjectionMatrix * lightViewMatrix;
-
-    if (GLCaps::supports("GL_ARB_shadow")) {
+    if (GLCaps::supports_GL_ARB_shadow()) {
         generateShadowMap(lightCFrame);
         if (debugLightMap) {
             return;
@@ -140,7 +137,7 @@ void Scene::render(const LightingParameters& lighting) const {
 
     app->renderDevice->pushState();
 
-        // Ambient and detail light pass
+        // Ambient and detail light pass. 
         app->renderDevice->enableLighting();
         app->renderDevice->setLight(0, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
         app->renderDevice->setAmbientLightColor(lighting.ambient);
@@ -155,7 +152,7 @@ void Scene::render(const LightingParameters& lighting) const {
 
         app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
-        if (GLCaps::supports("GL_ARB_shadow")) {
+        if (GLCaps::supports_GL_ARB_shadow()) {
             app->renderDevice->configureShadowMap(1, lightMVP, shadowMap);
         }
         renderingPass();

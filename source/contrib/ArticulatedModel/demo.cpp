@@ -23,7 +23,7 @@ typedef ReferenceCountedPointer<class Entity> EntityRef;
 class Entity : public ReferenceCountedObject {
 private:
 
-    Entity();
+    Entity() {}
 
 public:
 
@@ -34,8 +34,15 @@ public:
     /** Root frame */
     CoordinateFrame             cframe;
 
-    static EntityRef create() {
-        return new Entity();
+    static EntityRef create(
+        ArticulatedModelRef model = NULL,
+        const CoordinateFrame& c = CoordinateFrame()) {
+
+        Entity* e = new Entity();
+
+        e->model = model;
+        e->cframe = c;
+        return e;
     }
 };
 
@@ -55,7 +62,6 @@ public:
 
     LightingRef                 lighting;
 
-    Array<ArticulatedModelRef>  modelArray;
     Array<EntityRef>            entityArray;
     TextureRef                  texture;
 
@@ -67,6 +73,13 @@ public:
  rendering mode so you can fly around the scene.
  */
 class Demo : public GApplet {
+private:
+
+    void generateShadowMap(const GLight& light, const Array<PosedModelRef>& shadowCaster);
+
+    TextureRef                  shadowMap;
+    Matrix4                     lightMVP;
+
 public:
 
     // Add state that should be visible to this applet.
@@ -88,7 +101,17 @@ public:
 };
 
 
+/**
+ Width and height of shadow map.
+ */
+const int shadowMapSize = 512;
+
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
+
+    if (GLCaps::supports_GL_ARB_shadow()) {
+        shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
+    }
 
 }
 
@@ -112,8 +135,87 @@ void Demo::doLogic() {
     }
 }
 
+bool debugShadows = false;
+
+void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& shadowCaster) {
+    app->renderDevice->pushState();
+
+        const double lightProjX = 15, lightProjY = 15, lightProjNear = 1, lightProjFar = 40;
+
+        // Construct a projection and view matrix for the camera so we can 
+        // render the scene from the light's point of view
+        Matrix4 lightProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
+
+        CoordinateFrame lightCFrame;
+        lightCFrame.translation = light.position.xyz() * 20;
+
+        // The light will never be along the z-axis
+        lightCFrame.lookAt(Vector3::zero(), Vector3::unitZ());
+
+        lightMVP = lightProjectionMatrix * lightCFrame.inverse();
+
+        debugAssert(shadowMapSize < app->renderDevice->getHeight());
+        debugAssert(shadowMapSize < app->renderDevice->getWidth());
+
+        app->renderDevice->setColorClearValue(Color3::white());
+        app->renderDevice->clear(debugShadows, true, false);
+
+        Rect2D rect = Rect2D::xywh(0, 0, shadowMapSize, shadowMapSize);
+
+        app->renderDevice->setViewport(rect);
+
+	    // Draw from the light's point of view
+        app->renderDevice->setCameraToWorldMatrix(lightCFrame);
+        app->renderDevice->setProjectionMatrix(lightProjectionMatrix);
+
+        if (! debugShadows) {
+            app->renderDevice->disableColorWrite();
+        }
+
+        // We can choose to use a large bias or render from
+        // the backfaces in order to avoid front-face self
+        // shadowing.  Here, we use a large offset.
+        //app->renderDevice->setPolygonOffset(4);
+
+        for (int s = 0; s < shadowCaster.size(); ++s) {
+            shadowCaster[s]->renderNonShadowed(app->renderDevice, app->lighting); // TODO: pass NULL for lighting
+        }
+
+        shadowMap->copyFromScreen(rect);
+    
+    app->renderDevice->popState();
+}
+
 
 void Demo::doGraphics() {
+
+    // Pose all
+    Array<PosedModelRef> posedModels;
+    for (int e = 0; e < app->entityArray.size(); ++e) {
+        /*
+        static RealTime t0 = System::time();
+        RealTime t = (System::time() - t0) * 10;
+        pose.cframe.set("m_rotor", 
+            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t),
+                            Vector3::zero()));
+        pose.cframe.set("t_rotor",
+            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
+                            Vector3::zero()));
+                            */
+
+        app->entityArray[e]->model->pose(posedModels, app->entityArray[e]->cframe, app->entityArray[e]->pose);
+    }
+    Array<PosedModelRef> opaque, transparent;
+    PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
+
+    // Generate shadow map
+    generateShadowMap(app->lighting->shadowedLightArray[0], opaque);
+
+    /////////////////////////////////////////////////////////////////////
+
+    if (debugShadows) {
+        return;
+    }
 
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
     app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
@@ -129,34 +231,24 @@ void Demo::doGraphics() {
     }
 
     app->renderDevice->pushState();
-        ArticulatedModel::Pose pose;
-        static RealTime t0 = System::time();
-
-        RealTime t = (System::time() - t0) * 10;
-        pose.cframe.set("m_rotor", 
-            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t),
-                            Vector3::zero()));
-        pose.cframe.set("t_rotor",
-            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
-                            Vector3::zero()));
-
-        Array<PosedModelRef> posedModels;
-        for (int m = 0; m < app->modelArray.size(); ++m) {
-            app->modelArray[m]->pose(posedModels, CoordinateFrame(Vector3(2*m,0,0)), pose);
-        }
-
-        Draw::axes(app->renderDevice);
-
-        Array<PosedModelRef> opaque, transparent;
-        PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
-
+        // Opaque unshadowed
         for (int m = 0; m < opaque.size(); ++m) {
             opaque[m]->renderNonShadowed(app->renderDevice, app->lighting);
         }
+
+        // Opaque shadowed
+        for (int m = 0; m < opaque.size(); ++m) {
+            opaque[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
+        }
+
+        // Transparent + shadowed
         for (int m = 0; m < transparent.size(); ++m) {
             transparent[m]->renderNonShadowed(app->renderDevice, app->lighting);
+            transparent[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
         }
+
     app->renderDevice->popState();
+
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
@@ -168,6 +260,8 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
+
+    double x = -5;
 
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
@@ -181,7 +275,8 @@ void App::main() {
         material.specularExponent = Color3::white() * 40;
         model->updateAll();
 
-        modelArray.append(model);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
     }
     
     /*
@@ -193,7 +288,7 @@ void App::main() {
     }
     */
 
-    {
+  if (false)  {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/venus-torso.ifs", 1.5);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
@@ -205,7 +300,8 @@ void App::main() {
         material.specularExponent = Color3::white() * 5;
         model->updateAll();
 
-        modelArray.append(model);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
     }
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/jackolantern.ifs", 1);
@@ -219,7 +315,8 @@ void App::main() {
         material.specularExponent = Color3::white() * 60;
         model->updateAll();
 
-        modelArray.append(model);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
     }
 
     {
@@ -235,7 +332,8 @@ void App::main() {
         material.specularExponent = Color3::white() * 25;
         model->updateAll();
 
-        modelArray.append(model);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
     }
 
 
@@ -250,7 +348,8 @@ void App::main() {
         material.specularExponent = Color3::white() * 30;
         model->updateAll();
 
-        modelArray.append(model);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
     }
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/sphere.ifs", 1);
@@ -262,7 +361,21 @@ void App::main() {
         material.specularExponent = Color3::white() * 40;
         model->updateAll();
 
-        modelArray.append(model);
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
+
+
+    {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/games/data/ifs/octagon.ifs", 10);
+
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+        model->partArray[0].triListArray[0].cullFace = RenderDevice::CULL_BACK;
+        material.diffuse = Color3(.5,.3,0);
+        material.specular = Color3::black();
+        model->updateAll();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
 
 //		"C:/morgan/cpp/source/contrib/ArticulatedModel/3ds/f16/f16b.3ds"
@@ -276,7 +389,7 @@ void App::main() {
 
     lighting = Lighting::create();
     {
-        LightingParameters params(G3D::toSeconds(2, 00, 00, PM));
+        LightingParameters params(G3D::toSeconds(12, 01, 00, PM));
     
         if (sky.notNull()) {
             //lighting->environmentMap.constant = lighting.skyAmbient;
@@ -290,10 +403,12 @@ void App::main() {
         lighting->ambientBottom = Color3::brown() * params.diffuseAmbient;
 
         lighting->lightArray.clear();
-        lighting->lightArray.append(params.directionalLight());
+
+        lighting->shadowedLightArray.clear();
+        lighting->shadowedLightArray.append(params.directionalLight());
 
         // Decrease the blue since we're adding blue ambient
-        lighting->lightArray.last().color *= Color3(1.2, 1.2, 1);
+        lighting->shadowedLightArray.last().color *= Color3(1.2, 1.2, 1);
     }
 
     Demo(this).run();

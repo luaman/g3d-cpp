@@ -1336,7 +1336,8 @@ public:
 
     /**
      Call within RenderDevice::pushState()...popState() so that you can
-     restore the texture coordinate generation
+     restore the texture coordinate generation that will be configured
+     on the unit as a result of this call.
 
      @param lightMVP The modelview projection matrix that
             was used to render the shadow map originally

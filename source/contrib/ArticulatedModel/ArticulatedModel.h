@@ -21,6 +21,36 @@ typedef ReferenceCountedPointer<class ArticulatedModel> ArticulatedModelRef;
  A model composed of a heirarchy of rigid, textured sub-models.
  */
 class ArticulatedModel : public ReferenceCountedObject {
+private:
+
+    friend class PosedArticulatedModel;
+
+    /** Classification of a graphics card. 
+        FIXED_FUNCTION  Use OpenGL fixed function lighting only.
+        PS14            
+        PS20            Use pixel shader 2.0 (full feature)
+     */
+    enum GraphicsProfile {
+        UNKNOWN = 0,
+        FIXED_FUNCTION,
+        PS20};
+
+    /** Measures the capabilities of this machine */
+    inline static GraphicsProfile profile() {
+        static GraphicsProfile p = UNKNOWN;
+
+        if (p == UNKNOWN) {
+            if (GLCaps::supports_GL_ARB_shader_objects()) {
+                p = PS20;
+            } else {
+                p = FIXED_FUNCTION;
+            }
+p = FIXED_FUNCTION; // TODO: remove
+        }
+
+        return p;
+    }
+
 public:
 
     class Pose {

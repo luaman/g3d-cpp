@@ -173,6 +173,8 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
     
     // Add reflective
     if (! material.reflect.isBlack() && 
+        GLCaps::supports_GL_EXT_texture_cube_map() &&
+        lighting.notNull() &&
         (lighting->environmentMapColor != Color3::black())) {
 
         // Reflections are specular and not affected by surface texture, only
@@ -201,15 +203,17 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
         rd->setShininess(material.specularExponent.constant.average());
 
         // Ambient
-        rd->setAmbientLightColor(lighting->ambientTop);
-        if (lighting->ambientBottom != lighting->ambientTop) {
-            rd->setLight(0, GLight::directional(-Vector3::unitY(), 
-                lighting->ambientBottom - lighting->ambientTop, false)); 
-        }
+        if (lighting.notNull()) {
+            rd->setAmbientLightColor(lighting->ambientTop);
+            if (lighting->ambientBottom != lighting->ambientTop) {
+                rd->setLight(0, GLight::directional(-Vector3::unitY(), 
+                    lighting->ambientBottom - lighting->ambientTop, false)); 
+            }
 
-        // Lights
-        for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
-            rd->setLight(L + 1, lighting->lightArray[L]);
+            // Lights
+            for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
+                rd->setLight(L + 1, lighting->lightArray[L]);
+            }
         }
 
         defaultRender(rd);
@@ -235,8 +239,6 @@ void PosedArticulatedModel::renderNonShadowed(
     const SuperShader::Material& material = triList.material;
 
     rd->pushState();
-
-        rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
         if (! material.transmit.isBlack()) {
             // Transparent
@@ -284,7 +286,6 @@ void PosedArticulatedModel::renderShadowedLightPass(
     RenderDevice*       rd, 
     const GLight&       light) const {
 
-    rd->setObjectToWorldMatrix(cframe);
     // TODO
 }
 
@@ -294,8 +295,71 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
     const GLight&       light, 
     const Matrix4&      lightMVP, 
     const TextureRef&   shadowMap) const {
-    rd->setObjectToWorldMatrix(cframe);
-    // TODO
+
+    const ArticulatedModel::Part& part = model->partArray[partIndex];
+    const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
+    const SuperShader::Material& material = triList.material;
+
+    if (material.diffuse.isBlack() && material.specular.isBlack()) {
+        return;
+    }
+
+    rd->pushState();
+        rd->setObjectToWorldMatrix(cframe);
+
+        rd->configureShadowMap(1, lightMVP, shadowMap);
+
+        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+
+        rd->setTexture(0, material.diffuse.map);
+        rd->setColor(material.diffuse.constant);
+
+        // We disable specular highlights because they will not be modulated
+        // by the shadow map.  We then make a separate pass to render specular
+        // highlights.
+        rd->setSpecularCoefficient(Vector3::zero());
+
+        rd->enableLighting();
+        rd->setAmbientLightColor(Color3::black());
+
+        rd->setLight(0, light);
+
+        defaultRender(rd);
+
+        if (! material.specular.isBlack()) {
+            // Make a separate pass for specular. 
+            static bool separateSpecular = GLCaps::supports("GL_EXT_separate_specular_color");
+
+            if (separateSpecular) {
+                // We disable the OpenGL separate
+                // specular behavior so that the texture will modulate the specular
+                // pass, and then put the specularity coefficient in the texture.
+                glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
+            }
+
+            rd->setColor(Color3::white());// TODO: when I put the specular coefficient here, it doesn't modulate.  What's wrong?
+            rd->setTexture(0, material.specular.map);
+            rd->setSpecularCoefficient(material.specular.constant);
+
+            // Turn off the diffuse portion of this light
+            GLight light2 = light;
+            light2.diffuse = false;
+            rd->setLight(0, light2);
+            rd->setShininess(material.specularExponent.constant.average());
+
+            defaultRender(rd);
+
+            if (separateSpecular) {
+                // Restore normal behavior
+                glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, 
+                              GL_SEPARATE_SPECULAR_COLOR_EXT);
+            }
+
+            // TODO: use this separate specular pass code in all fixed function 
+            // cases where there is a specularity map.
+        }
+
+    rd->popState();
 }
 
 
@@ -309,7 +373,7 @@ void PosedArticulatedModel::defaultRender(
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
 
     if (rd->renderMode() == RenderDevice::RENDER_SOLID) {
-
+        rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
         rd->beginIndexedPrimitives();
             rd->setVertexArray(part.vertexVAR);
             rd->setNormalArray(part.normalVAR);
@@ -317,7 +381,9 @@ void PosedArticulatedModel::defaultRender(
                 rd->setTexCoordArray(0, part.texCoord0VAR);
             }
 
-            if (part.tangentArray.size() > 0) {
+            // In programmable pipeline mode, load the tangents into tex coord 1
+            if ((part.tangentArray.size()) > 0 && 
+                (ArticulatedModel::profile() != ArticulatedModel::FIXED_FUNCTION)) {
                 rd->setTexCoordArray(1, part.tangentVAR);
             }
 

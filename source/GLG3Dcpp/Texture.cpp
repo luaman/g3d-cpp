@@ -117,6 +117,7 @@ static void createTexture(
             alwaysAssertM(! compressed,
                 "Compressed texture data must be power-of-two size.");
 
+            /*
             // Supported formats as defined by: http://developer.3dlabs.com/openGL/glu_man_pages.pdf
             alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
                 (bytesFormat == GL_STENCIL_INDEX) ||
@@ -129,7 +130,7 @@ static void createTexture(
                 (bytesFormat == GL_RGBA) ||
                 (bytesFormat == GL_LUMINANCE) ||
                 (bytesFormat == GL_LUMINANCE_ALPHA), "Invalid bytesFormat for gluScaleImage in createTexture.");
-
+*/
             int oldWidth = width;
             int oldHeight = height;
             width  = ceilPow2(width);
@@ -167,7 +168,9 @@ static void createTexture(
 
         // Supported formats as defined by: http://developer.3dlabs.com/GLmanpages/glteximage2d.htm
         // textureFormat should throw a proper GL_INVALID_ENUM error, but might need checking also
-        alwaysAssertM((bytesFormat == GL_COLOR_INDEX) ||
+        /*
+        alwaysAssertM(
+            (bytesFormat == GL_COLOR_INDEX) ||
             (bytesFormat == GL_RED) ||
             (bytesFormat == GL_GREEN) ||
             (bytesFormat == GL_BLUE) ||
@@ -181,7 +184,11 @@ static void createTexture(
             (bytesFormat == GL_422_EXT) ||
             (bytesFormat == GL_422_REV_EXT) ||
             (bytesFormat == GL_422_AVERAGE_EXT) ||
-            (bytesFormat == GL_422_REV_AVERAGE_EXT), "Invalid bytesFormat for glTexImage2D in createTexture.");
+            (bytesFormat == GL_422_REV_AVERAGE_EXT) ||
+            (bytesFormat == GL_DEPTH_COMPONENT16_ARB) ||
+            (bytesFormat == GL_DEPTH_COMPONENT24_ARB) || 
+            (bytesFormat == GL_DEPTH_COMPONENT32_ARB), 
+            "Invalid bytesFormat for glTexImage2D in createTexture.");*/
 
         // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
         // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
