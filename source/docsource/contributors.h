@@ -48,8 +48,9 @@ The 6.04 release team:
    <BR>Edward Resnick
    <BR>Jack Ritter
    <BR>Nate Robbins
-   <BR>Sebastian Schuberth
+   <BR>Sebastian Schubert
    <BR>SGI
+   <BR>Sascha Becker Shine
    <BR>Peter Sibley
    <BR>Corey Taylor
    <BR>Pierre Terdiman
