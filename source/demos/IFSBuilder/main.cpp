@@ -1,6 +1,10 @@
 /**
   @file IFSBuilder/main.cpp
 
+  This is not a demo.  It is a piece of code I wrote to create
+  IFS files which may be useful to others trying to use the
+  format.
+
   A utility for converting some common 3D file formats into IFS format.
   This only handles some "nice" cases of 3DS, OBJ, and MD2 files-- 
   models in these formats certainly exist that cannot be converted
@@ -80,18 +84,29 @@ int main(int argc, char** argv) {
     camera->setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
-    std::string in("D:/tmp/obj/");
-    std::string out("D:/users/morgan/Projects/Silhouette/models/");
+    std::string in("c:/inputDir/");
+    std::string out("c:/outputDir/");
 
     Array<std::string> filename;
 
-    expandWildcard(in + "*.obj", filename);
+    expandWildcard(in + "*", filename);
+
+    camera->setCoordinateFrame(controller->getCoordinateFrame());
 
     for (int i = 0; i < filename.size(); ++i) {
         std::string base = getFilename(filename[i]);
+        
+        if (fileExists(out + base + ".ifs")) {
+            // Skip this model
+            continue;
+        }
+
         model = new IFSModel(filename[i]);
         model->name = base;
-        model->save(out + base + ".ifs");
+        
+        if (! pauseBetweenModels) {
+            model->save(out + base + ".ifs");
+        }
         
         // Main loop (display 3D object)
         do {
@@ -99,9 +114,10 @@ int main(int argc, char** argv) {
             now = getTime();
             RealTime timeStep = now - lastTime;
 
-            doUserInput();
-
-            doSimulation(timeStep);
+            if (pauseBetweenModels) {
+                doUserInput();
+                doSimulation(timeStep);
+            }
 
             doGraphics();
    

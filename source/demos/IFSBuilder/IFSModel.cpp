@@ -237,6 +237,11 @@ void IFSModel::loadOBJ(const std::string& filename) {
                         debugAssert(vertexIndex.last() > 0);
                         --vertexIndex.last();
 
+                        // Fix illegal vertex numbers
+                        if ((vertexIndex.last() <= 0) || vertexIndex.last() >= va.size()) {
+                            vertexIndex[vertexIndex.size() - 1] = 0;
+                        }
+
                         // Skip over the slashes
                         Token next = t.peek();
                         while ((next.type() == Token::SYMBOL) && (next.string() == "/")) {
