@@ -168,7 +168,7 @@ void GApp::run() {
         } catch (const char* e) {
             alwaysAssertM(false, e);
         } catch (const GImage::Error& e) {
-            alwaysAssertM(false, e.reason);
+            alwaysAssertM(false, e.reason + "\n" + e.filename);
         } catch (const std::string& s) {
             alwaysAssertM(false, s);
         } catch (const TextInput::WrongTokenType& t) {
