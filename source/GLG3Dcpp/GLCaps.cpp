@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-01-10
+  @edited  2005-01-30
 */
 
 #include "GLG3D/GLCaps.h"
@@ -112,7 +112,7 @@ std::string GLCaps::getDriverVersion() {
         void* buffer = new uint8[size];
 
         if (GetFileVersionInfo(lpdriver, NULL, size, buffer) == 0) {
-            delete buffer;
+            delete[] buffer;
             return "Unknown";
         }
 
@@ -140,7 +140,7 @@ std::string GLCaps::getDriverVersion() {
                 pValue->dwProductVersionLS & 0xFFFF);
         }
 
-        delete buffer;
+        delete[] buffer;
 
         return result;
     #else

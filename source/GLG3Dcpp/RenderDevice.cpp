@@ -147,6 +147,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     debugAssert(! initialized());
 
     _swapBuffersAutomatically = true;
+    swapGLBuffersPending = false;
     _window = window;
 
     GWindowSettings settings;
