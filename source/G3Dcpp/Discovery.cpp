@@ -93,6 +93,11 @@ void DiscoveryServer::sendShutDown() const {
 }
 
 
+bool DiscoveryServer::ok() const {
+    return listener->ok() && net->ok();
+}
+
+
 void DiscoveryServer::init(
     NetworkDevice*           _netDevice,
     const DiscoverySettings* _settings,

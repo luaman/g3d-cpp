@@ -349,8 +349,8 @@ bool NetworkDevice::init(class Log* _log) {
     }
     if (debugLog) { debugLog->println("Ok"); }
 
-    bool TR = true;
-    int ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, 1);
+    int TR = true;
+    int ret = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, sizeof(TR));
 
     if (debugLog) {debugLog->print("Enable UDP Broadcast         ");}
     if (ret != 0) {
@@ -541,7 +541,7 @@ ReliableConduit::ReliableConduit(NetworkDevice* _nd, const NetAddress& _addr) : 
     }
 
     // Disable Nagle's algorithm (we send lots of small packets)
-    const bool T = true;
+    const int T = true;
     if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->println("WARNING: Disabling Nagel's algorithm failed.");
@@ -841,8 +841,8 @@ LightweightConduit::LightweightConduit(NetworkDevice* _nd, uint16 port, bool ena
     }
 
     if (enableBroadcast) {
-        bool TR = true;
-        if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, 1) != 0) {
+        int TR = true;
+        if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&TR, sizeof(TR)) != 0) {
             if (nd->debugLog) {
                 nd->debugLog->println("Call to setsockopt failed");
                 nd->debugLog->println(windowsErrorCode());

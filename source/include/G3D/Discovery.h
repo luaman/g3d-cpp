@@ -254,6 +254,11 @@ public:
         const DiscoverySettings* _settings,
         DiscoveryAdvertisement*  _advertisement);
 
+    /**
+     Returns true if this discovery server has been initialized
+     and is functioning properly.
+     */
+    bool ok() const;
 
     /**
      Call periodically to let the server do its job.
@@ -325,6 +330,14 @@ private:
         }
 
         return -1;
+    }
+    
+    /**
+     Returns true if this discovery client has been initialized
+     and is functioning properly.
+     */
+    bool ok() const {
+        return net->ok();
     }
 
     /**
