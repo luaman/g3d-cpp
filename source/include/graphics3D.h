@@ -31,6 +31,11 @@
   #undef max
 #endif
 
+/**
+ The version number of G3D
+ */
+#define G3D_VER 6.00
+
 #include "G3D/Array.h"
 #include "G3D/Queue.h"
 #include "G3D/format.h"

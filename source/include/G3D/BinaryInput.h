@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2003-02-03
+ @edited  2003-05-25
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -201,7 +201,7 @@ public:
     /**
      Returns the data in bytes.
      */
-    void readBytes(int n, uint8* bytes);
+    void readBytes(int n, void* bytes);
 
     /**
      Reads an n character string.  The string is not

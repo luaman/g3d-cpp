@@ -169,7 +169,7 @@ BinaryInput::~BinaryInput() {
 }
 
 
-void BinaryInput::readBytes(int n, uint8* bytes) {
+void BinaryInput::readBytes(int n, void* bytes) {
     debugAssertM(pos + n <= length, "Read past end of file");
     debugAssert(isValidPointer(bytes));
 

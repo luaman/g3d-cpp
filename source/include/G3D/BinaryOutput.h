@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2003-02-03
+ @edited  2003-05-25
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -164,7 +164,7 @@ public:
     }
 
     void writeBytes(
-        const uint8*        b,
+        const void*        b,
         int                 count) {
 
         reserveBytes(count);

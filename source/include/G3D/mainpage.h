@@ -4,7 +4,7 @@
 //   This library is recommended for use with the textbook:
 //   <BR>Morgan McGuire, <I>3D Computer Graphics Techniques</I>, Prentice Hall
 //
-// Version 5.01
+
 /**
  @mainpage
    <P>
@@ -652,6 +652,7 @@ to add zlibstat.lib to your linker list.
      <LI> G3D::TextureFormat
      <LI> G3D::Texture constructors are completely changed from 5.01 (and hopefully easier to use)
      <LI> G3D::CImage now supports images with alpha
+     <LI> BinaryInput::readBytes and BinaryOutput::writeBytes now take void* as an argument to avoid casting
      <LI> Removed Plane::getNormal (use Plane::normal instead)
      <LI> Removed CDTriangle (use G3D::Triangle instead)
      <LI> Removed Font (use G3D::CFont instead)
