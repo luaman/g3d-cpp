@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2003-10-18
+ @edited  2003-11-15
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -16,9 +16,11 @@
 #include "graphics3D.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
-#include "GLG3D/GModel.h"
+#include "GLG3D/PosedModel.h"
 
 namespace G3D {
+
+typedef ReferenceCountedPointer<class MD2Model> MD2ModelRef;
 
 /**
  Quake II model class.
@@ -44,9 +46,8 @@ namespace G3D {
  <DT>
 
  */
-class MD2Model : public GModel {
+class MD2Model : public ReferenceCountedObject {
 public:
-
     /**
      Amount of time to blend between two animations.
      */
@@ -117,14 +118,31 @@ public:
 
 
 protected:
-    
-    bool                        initialized;
 
+    class PosedMD2Model : public PosedModel {
+    public:
+        MD2ModelRef             model;
+        CoordinateFrame         cframe;
+        bool                    perVertexNormals;
 
-    /**
-     Wipe all data structures.  Called from load.
-     */
-    virtual void reset();
+        PosedMD2Model(MD2ModelRef _model, const CoordinateFrame& _cframe, bool _pvn);
+        virtual ~PosedMD2Model() {}
+        virtual std::string name() const;
+        virtual CoordinateFrame coordinateFrame() const;
+        virtual void getObjectSpaceGeometry(MeshAlg::Geometry& geometry) const;
+        virtual void getWorldSpaceGeometry(MeshAlg::Geometry& geometry) const;
+        virtual void getFaces(Array<MeshAlg::Face>& faces) const;
+        virtual void getEdges(Array<MeshAlg::Edge>& edges) const;
+        virtual void getAdjacentFaces(Array< Array<int> >& adjacentFaces) const;
+        virtual Sphere objectSpaceBoundingSphere() const;
+        virtual Sphere worldSpaceBoundingSphere() const;
+        virtual Box objectSpaceBoundingBox() const;
+        virtual Box worldSpaceBoundingBox() const;
+        virtual void render(RenderDevice* renderDevice) const;
+        virtual int numBrokenEdges() const;
+    };
+
+    friend PosedMD2Model;
 
     class PackedGeometry {
     public:        
@@ -224,7 +242,6 @@ protected:
 
     void loadTextureFilenames(BinaryInput& b, int num, int offset);
     
-
     /**
      Creates a texCoordArray to parallel the vertex and normal arrays,
      duplicating vertices in the keyframes as needed. Called from load().
@@ -244,9 +261,32 @@ protected:
      */
     Array<int>                  indexArray;
 
+    /** Called from create */
+    MD2Model() {}
+
+    /** Called from create */
+    void load(const std::string& filename);
+
+    /**
+     Wipe all data structures.  Called from load.
+     */
+    virtual void reset();
+
+    Array<Vector3>              faceNormalArray;
+    Array<MeshAlg::Face>        faceArray;
+    Array< Array<int> >         adjacentFaceArray;
+    Array<MeshAlg::Edge>        edgeArray;
+    Sphere                      boundingSphere;
+    Box                         boundingBox;
+    int                         numBrokenEdges;
+    std::string                 name;
+
 public:
 
-    MD2Model() : initialized(false) {}
+    /**
+     @filename The tris.md2 file
+     */
+    static MD2ModelRef create(const std::string& filename);
 
     virtual ~MD2Model() {}
 
@@ -281,11 +321,6 @@ public:
     const Array< Array<int> >& adjacentFaces() const;
 
     /**
-     @filename The tris.md2 file
-     */
-    virtual void load(const std::string& filename);
-
-    /**
      This supplies texture coordinates and normals but the caller must
      bind a texture, set the object to world matrix, and set up lighting.
      <P>
@@ -306,27 +341,12 @@ public:
     /**
      A bounding sphere on the model.  Covers all vertices in all animations.
      */
-    const Sphere& boundingSphere() const;
-
-    /**
-     A bounding sphere for this animation.
-     */
-    const Sphere& boundingSphere(Animation a) const;
-
-    /**
-     The number of edges for which there is only one adjacent face.
-     */
-    int numBrokenEdges() const;
+    const Sphere& objectSpaceBoundingSphere() const;
 
     /**
      An oriented bounding box on the model.  Covers all vertices in all animations.
      */
-    const Box& boundingBox() const;
-
-    /**
-     A bounding box for this animation.
-     */
-    const Box& boundingBox(Animation a) const;
+    const Box& objectSpaceBoundingBox() const;
 
     /**
      Returns the total time of the animation.  If the animation loops (e.g. walking)

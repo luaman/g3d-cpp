@@ -6,7 +6,6 @@ libGLG3D_debug_la_SOURCES= ../../../source/GLG3Dcpp/CFont.cpp \
                            ../../../source/GLG3Dcpp/Draw.cpp \
                            ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
                            ../../../source/GLG3Dcpp/GApp.cpp \
-  	                   ../../../source/GLG3Dcpp/GModel.cpp \
                            ../../../source/GLG3Dcpp/GPUProgram.cpp \
  			   ../../../source/GLG3Dcpp/IFSModel.cpp \
                            ../../../source/GLG3Dcpp/LightingParameters.cpp \

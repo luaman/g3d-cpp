@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-08-07
- @edited  2003-11-12
+ @edited  2003-11-15
  */
 
 #if defined(G3D_WIN32) && defined(SSE)
@@ -51,13 +51,14 @@ const MD2Model::MD2AnimInfo MD2Model::animationTable[MD2Model::MAX_ANIMATIONS] =
 };
 
 
-bool MD2Model::Pose::operator==(const MD2Model::Pose& other) const {
-    return (animation == other.animation) && fuzzyEq(time, other.time);
+MD2ModelRef MD2Model::create(const std::string& filename) {
+    MD2Model* model = new MD2Model();
+    model->load(filename);
+    return model;
 }
 
-
-int MD2Model::numBrokenEdges() const {
-    return _numBrokenEdges;
+bool MD2Model::Pose::operator==(const MD2Model::Pose& other) const {
+    return (animation == other.animation) && fuzzyEq(time, other.time);
 }
 
 
@@ -421,9 +422,6 @@ void MD2Model::allocateVertexArrays(RenderDevice* renderDevice) {
 
 
 void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
-    if (! initialized) {
-        return;
-    }
 
     bool tooBig = (maxVARVerts < keyFrame[0].vertexArray.size());
     bool useVAR = (nextVarArea != NONE_ALLOCATED) && ! tooBig;
@@ -499,9 +497,6 @@ void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
 
 
 void MD2Model::debugRenderWireframe(RenderDevice* renderDevice, const Pose& pose) {
-    if (! initialized) {
-        return;
-    }
     getGeometry(pose, interpolatedFrame);
 
     renderDevice->pushState();
@@ -519,24 +514,6 @@ void MD2Model::debugRenderWireframe(RenderDevice* renderDevice, const Pose& pose
         renderDevice->setPolygonOffset(0.0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     renderDevice->popState();
-}
-
-
-const Sphere& MD2Model::boundingSphere(Animation a) const {
-    if (! initialized) {
-        static Sphere s(Vector3::ZERO, 0);
-        return s;
-    }
-    return animationBoundingSphere[(Animation)iAbs(a)];
-}
-
-
-const Box& MD2Model::boundingBox(Animation a) const {
-    if (! initialized) {
-        static Box b(Vector3::ZERO, Vector3::ZERO);
-        return b;
-    }
-    return animationBoundingBox[(Animation)iAbs(a)];
 }
 
  
@@ -573,9 +550,6 @@ MeshAlg::Geometry MD2Model::interpolatedFrame;
 #endif
 
 void MD2Model::getGeometry(const Pose& pose, MeshAlg::Geometry& out) const {
-    if (! initialized) {
-        return;
-    }
     
     const int numVertices = keyFrame[0].vertexArray.size();
 

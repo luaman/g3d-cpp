@@ -115,7 +115,6 @@ void MD2Model::load(const std::string& filename) {
 
     if (header.numVertices < 3) {
         Log::common()->printf("\n*****************\nWarning: \"%s\" is corrupted and is not being loaded.\n", filename.c_str());
-        initialized = false;
         return;
     }
 
@@ -200,8 +199,8 @@ void MD2Model::load(const std::string& filename) {
     animationBoundingBox[JUMP] = animationBoundingBox[JUMP_DOWN];
     animationBoundingSphere[JUMP] = animationBoundingSphere[JUMP_DOWN];
 
-    _boundingBox    = Box(min, max);
-    _boundingSphere = Sphere(Vector3::ZERO, sqrt(rad));
+    boundingBox    = Box(min, max);
+    boundingSphere = Sphere(Vector3::ZERO, sqrt(rad));
 
     // Load the texture coords
     texFrame.rotation[0][0] = 1.0 / header.skinWidth; 
@@ -268,9 +267,7 @@ void MD2Model::load(const std::string& filename) {
 
     MeshAlg::computeAdjacency(keyFrame[0].vertexArray, indexArray, faceArray, edgeArray, adjacentFaceArray);
 
-    _numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
-
-    initialized = true;
+    numBrokenEdges = MeshAlg::countBrokenEdges(edgeArray);
 }
 
 
