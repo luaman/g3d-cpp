@@ -127,6 +127,7 @@ PFNGLMAPBUFFERARBPROC glMapBufferARB = NULL;
 PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB = NULL;
 PFNGLGETBUFFERPARAMETERIVARBPROC glGetBufferParameterivARB = NULL;
 PFNGLGETBUFFERPOINTERVARBPROC glGetBufferPointervARB = NULL;
+PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements = NULL;
 
 
 namespace G3D {
@@ -404,6 +405,7 @@ void RenderDevice::initGLExtensions() {
     LOAD_EXTENSION(glUnmapBufferARB);
     LOAD_EXTENSION(glGetBufferParameterivARB);
     LOAD_EXTENSION(glGetBufferPointervARB);
+    LOAD_EXTENSION(glDrawRangeElements);
 
     #undef LOAD_EXTENSION
 }

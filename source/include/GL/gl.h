@@ -1586,8 +1586,8 @@ GLAPI void GLAPIENTRY glPopName( void );
 
 
 /* 1.2 functions */
-GLAPI void GLAPIENTRY glDrawRangeElements( GLenum mode, GLuint start,
-	GLuint end, GLsizei count, GLenum type, const GLvoid *indices );
+//GLAPI void GLAPIENTRY glDrawRangeElements( GLenum mode, GLuint start,
+//	GLuint end, GLsizei count, GLenum type, const GLvoid *indices );
 
 GLAPI void GLAPIENTRY glTexImage3D( GLenum target, GLint level,
                                       GLint internalFormat,
