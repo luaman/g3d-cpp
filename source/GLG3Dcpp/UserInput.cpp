@@ -191,7 +191,7 @@ void UserInput::endEvents() {
         // frame or the mouse will not be able to move substantially
         // at high frame rates.
         if ((mouse.x < windowCenter.x * 0.5) || (mouse.x > windowCenter.x * 1.5) ||
-            (mouse.x < windowCenter.y * 0.5) || (mouse.y > windowCenter.y * 1.5)) {
+            (mouse.y < windowCenter.y * 0.5) || (mouse.y > windowCenter.y * 1.5)) {
         
             mouse = windowCenter;
             if (focus) {

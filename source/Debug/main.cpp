@@ -152,8 +152,8 @@ App::~App() {
 
 int main(int argc, char** argv) {
     GAppSettings settings;
-    settings.window.width = 600;
-    settings.window.height = 600;
+    settings.window.width = 400;
+    settings.window.height = 400;
     App(settings).run();
     return 0;
 }

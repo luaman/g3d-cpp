@@ -74,6 +74,7 @@
      <LI> Added Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: [ 1094166 ] 6.05: Release mouse stuck on x-axis [Corey + Morgan]
      <LI> Fix: Recognize buggy ATI Radeon Mobility cube maps and work around
      <LI> Fix: Textures now initialize without setting error bit on cards without GL_ARB_shadow
      <LI> Fix: filenameBaseExt now operates correctly on strings with both \ and / slashes.
