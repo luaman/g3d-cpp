@@ -2,7 +2,8 @@ INCLUDES=-I../../../source/include -Wall -DDEBUG
 
 lib_LTLIBRARIES=libG3D_debug.la
 
-libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/BinaryInput.cpp \
+libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
+                         ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/BinaryOutput.cpp \
                          ../../../source/G3Dcpp/Box.cpp \
                          ../../../source/G3Dcpp/GImage.cpp \
@@ -23,8 +24,8 @@ libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/Log.cpp \
                          ../../../source/G3Dcpp/Matrix3.cpp \
                          ../../../source/G3Dcpp/Matrix4.cpp \
-			 ../../../source/G3Dcpp/MeshAlg.cpp \
-			 ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
+                         ../../../source/G3Dcpp/MeshAlg.cpp \
+                         ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
                          ../../../source/G3Dcpp/NetworkDevice.cpp \
                          ../../../source/G3Dcpp/PhysicsFrame.cpp \
                          ../../../source/G3Dcpp/Plane.cpp \
@@ -47,4 +48,4 @@ libG3D_debug_la_SOURCES= ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/prompt.cpp \
                          ../../../source/G3Dcpp/stringutils.cpp 
 
-#libG3D_debug_la_CPPFLAGS= -D_DEBUG
+libG3D_debug_la_CPPFLAGS= -D_DEBUG

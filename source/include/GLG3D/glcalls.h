@@ -21,9 +21,7 @@
 
 
 namespace G3D {
-#if defined(G3D_OSX)
-void* NSGLGetProcAddress(const char *name);
-#endif
+
 /**
  Produces a debugAssert that no OpenGL error has been produced.
  */
@@ -174,16 +172,18 @@ void glMultInvMatrix(const CoordinateFrame& cf);
  */
 void glMultMatrix(const CoordinateFrame& cf);
 
-/** platform independent version of wglGetProcAddress */
+/** Platform independent version of 
+    wglGetProcAddress/glXGetProcAddress/NSGLGetProcAddress */
 inline void * glGetProcAddress(const char * name){
     #ifdef G3D_WIN32
 	    return (void *)wglGetProcAddress(name);
-    #elif G3D_LINUX
+    #elif defined(G3D_LINUX)
 	    return (void *)glXGetProcAddressARB((const GLubyte*)name);
     #elif defined(G3D_OSX)
 		return (void *)NSGLGetProcAddress(name);
     #else
-    #error Must be WIN32, Linux or OS X. 
+       #error Must be WIN32, Linux or OS X. 
+        return NULL;
     #endif
 }
 

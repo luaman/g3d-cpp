@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-01-03
+ @edited  2004-01-12
 
  Copyright 2002-2003, Morgan McGuire.
  All rights reserved.
@@ -24,16 +24,13 @@
 #endif
 
 #include "../GL/gl.h"
-//#define GL_GLEXT_PROTOTYPES
 #include "../GL/glext.h"
 
 #ifdef G3D_WIN32
-//    #define WGL_WGLEXT_PROTOTYPES
     #include "../GL/wglext.h"
 #endif
 
 #if defined(G3D_LINUX) 
-//    #define GLX_GLXEXT_PROTOTYPES
 	#include "../GL/glxext.h"
 	#include "../GL/glx.h"
 #endif
@@ -42,8 +39,6 @@
 #include "../glh/glut.h"
 
 // OpenGL extensions
-
-
 extern PFNGLMULTITEXCOORD2FARBPROC         glMultiTexCoord2fARB;
 
 extern PFNGLMULTITEXCOORD1FARBPROC         glMultiTexCoord1fARB;
@@ -130,11 +125,11 @@ extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC  glGetFinalCombinerInputParam
 extern PFNGLCOMBINERSTAGEPARAMETERFVNVPROC          glCombinerStageParameterfvNV;
 extern PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC       glGetCombinerStageParameterfvNV;
 
-extern PFNGLACTIVESTENCILFACEEXTPROC       glActiveStencilFaceEXT;
+extern PFNGLACTIVESTENCILFACEEXTPROC                glActiveStencilFaceEXT;
 
 #ifdef G3D_WIN32
-extern PFNWGLALLOCATEMEMORYNVPROC           wglAllocateMemoryNV;
-extern PFNWGLFREEMEMORYNVPROC           wglFreeMemoryNV;
+    extern PFNWGLALLOCATEMEMORYNVPROC               wglAllocateMemoryNV;
+    extern PFNWGLFREEMEMORYNVPROC                   wglFreeMemoryNV;
 #endif
 
 extern PFNGLBINDBUFFERARBPROC glBindBufferARB;
@@ -151,6 +146,10 @@ extern PFNGLGETBUFFERPOINTERVARBPROC glGetBufferPointervARB;
 
 
 extern PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements;
+
+#if defined(G3D_OSX)
+    void* NSGLGetProcAddress(const char *name);
+#endif
 
 
 #ifndef GL_CLAMP_TO_BORDER_SGIS
