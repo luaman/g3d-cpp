@@ -379,6 +379,10 @@ public:
         root = NULL;
     }
 
+    int size() const {
+        return memberTable.size();
+    }
+
     /**
      Inserts an object into the set if it is not
      already present.  O(log n) time.  Does not

@@ -185,7 +185,7 @@ Vector3 Vector3::randomDiffuse(const Vector3& normal) {
     Vector3 U = normal.direction();
     Vector3 V = Vector3::UNIT_X;
 
-    if (abs(U.dot(V) > .9)) {
+    if (abs(U.dot(V)) > .9) {
         V = Vector3::UNIT_Y;
     }
 
