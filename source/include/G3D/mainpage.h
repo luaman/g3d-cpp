@@ -577,9 +577,11 @@
    <BR>Sebastian Schuberth
    <BR>SGI
    <BR>Peter Sibley
+   <BR>Pierre Terdiman
    <BR>Matthew Welch
    <BR>Simon Winkelbach
    <BR>Laura Wollstadt
+   <BR>Andrew Woo
    </BLOCKQUOTE>
    <HR>
 

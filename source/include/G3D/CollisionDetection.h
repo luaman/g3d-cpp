@@ -8,7 +8,7 @@
   @cite Spherical collision based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere intersection by Eric Haines.  Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2004-01-26
+  @edited  2004-03-14
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -73,7 +73,7 @@ public:
      represent a perpendicular to either the faces of object B or object A
      depending on their relative orientations.
      */
-    static float penetrationDepthForFixedSphereFixedSphere(
+    static double penetrationDepthForFixedSphereFixedSphere(
         const class Sphere& sphereA,
         const Sphere&       sphereB,
         Array<Vector3>&     contactPoints,
@@ -83,19 +83,19 @@ public:
      @cite Adapted from Jim Arvo's method in Graphics Gems
      TODO: See also http://www.win.tue.nl/~gino/solid/gdc2001depth.pdf
      */
-    static float penetrationDepthForFixedSphereFixedBox(
+    static double penetrationDepthForFixedSphereFixedBox(
         const Sphere&       sphere,
         const Box&          box,
         Array<Vector3>&     contactPoints,
         Array<Vector3>&     contactNormals = ignoreArray);
                                                                  
-    static float penetrationDepthForFixedSphereFixedPlane(
+    static double penetrationDepthForFixedSphereFixedPlane(
         const Sphere&       sphereA,
         const class Plane&  planeB,
         Array<Vector3>&     contactPoints,
         Array<Vector3>&     contactNormals = ignoreArray);
 
-    static float penetrationDepthForFixedBoxFixedPlane(
+    static double penetrationDepthForFixedBoxFixedPlane(
         const Box&          box,
         const Plane&        plane,
         Array<Vector3>&     contactPoints,
@@ -114,29 +114,41 @@ public:
       This is returned in location, if a collision occurs.  Otherwise location
       is the infinite vector.
      */
-    static float collisionTimeForMovingPointFixedPlane(
+    static double collisionTimeForMovingPointFixedPlane(
         const Vector3&			point,
         const Vector3&			velocity,
         const class Plane&		plane,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static float collisionTimeForMovingPointFixedTriangle(
+    static double collisionTimeForMovingPointFixedTriangle(
         const Vector3&			point,
         const Vector3&			velocity,
         const Triangle&         triangle,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
+    /**
+     @cite Andrew Woo, from "Graphics Gems", Academic Press, 1990
+  	 @cite Optimized code by Pierre Terdiman, 2000 (~20-30% faster on my Celeron 500)
+     @cite Epsilon value added by Klaus Hartmann
+     @cite http://www.codercorner.com/RayAABB.cpp
+     */
+    static double collisionTimeForMovingPointFixedAABox(
+        const Vector3&			point,
+        const Vector3&			velocity,
+        const class AABox&      box,
+        Vector3&				outLocation,
+        Vector3&                outNormal = ignore);
 
-    static float collisionTimeForMovingPointFixedSphere(
+    static double collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,
         const Vector3&			velocity,
         const class Sphere&		sphere,                                                       
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static float collisionTimeForMovingPointFixedBox(
+    static double collisionTimeForMovingPointFixedBox(
         const Vector3&			point,
         const Vector3&			velocity,
         const class  Box&		box,
@@ -146,7 +158,7 @@ public:
 	/**
 	  The 4 vertices are assumed to form a rectangle.
 	 */
-    static float collisionTimeForMovingPointFixedRectangle(
+    static double collisionTimeForMovingPointFixedRectangle(
         const Vector3&			point,
         const Vector3&			velocity,
         const Vector3&			v0,
@@ -156,7 +168,7 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-	static float collisionTimeForMovingPointFixedCapsule(
+	static double collisionTimeForMovingPointFixedCapsule(
 		const Vector3&		    point,
 		const Vector3&		    velocity,
 		const class Capsule&	capsule,
@@ -165,21 +177,21 @@ public:
 
     /////////////////////////
 
-    static float collisionTimeForMovingSphereFixedPlane(
+    static double collisionTimeForMovingSphereFixedPlane(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
         const class Plane&		plane,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static float collisionTimeForMovingSphereFixedTriangle(
+    static double collisionTimeForMovingSphereFixedTriangle(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
         const Triangle&       triangle,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static float collisionTimeForMovingSphereFixedRectangle(
+    static double collisionTimeForMovingSphereFixedRectangle(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
         const Vector3&	    	v0,
@@ -189,7 +201,7 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    static float collisionTimeForMovingSphereFixedBox(
+    static double collisionTimeForMovingSphereFixedBox(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
         const class Box&		box,
@@ -199,7 +211,7 @@ public:
     /**
       This won't detect a collision if the sphere is already interpenetrating the fixed sphere.
     */
-	static float collisionTimeForMovingSphereFixedSphere(
+	static double collisionTimeForMovingSphereFixedSphere(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
 		const class Sphere&	    fixedSphere,
@@ -209,7 +221,7 @@ public:
     /**
       This won't detect a collision if the sphere is already interpenetrating the capsule
     */
-	static float collisionTimeForMovingSphereFixedCapsule(
+	static double collisionTimeForMovingSphereFixedCapsule(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
 		const class Capsule&	capsule,

@@ -89,21 +89,24 @@ public:
 
      See also G3D::CollisionDetection.
      */
-    float intersectionTime(const class Sphere& sphere) const;
+    double intersectionTime(const class Sphere& sphere) const;
 
-    float intersectionTime(const class Plane& plane) const;
+    double intersectionTime(const class Plane& plane) const;
 
-    float intersectionTime(const class Box& box) const;
+    double intersectionTime(const class Box& box) const;
 
-    float intersectionTime(const class Triangle& triangle) const;
+    double intersectionTime(const class Triangle& triangle) const;
 
     /**
      Ray-triangle intersection
      */
-    float intersectionTime(
+    double intersectionTime(
         const Vector3& v0,
         const Vector3& v1,
         const Vector3& v2) const;
+
+    double intersectionTime(
+        const class AABox& box) const;
 
     /** Refracts about the normal
         using G3D::Vector3::refractionDirection

@@ -5,7 +5,7 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2004-01-26
+  @edited  2004-03-14
  */
 
 #include "G3D/CollisionDetection.h"
@@ -18,13 +18,14 @@
 #include "G3D/Box.h"
 #include "G3D/Triangle.h"
 #include "G3D/Vector3.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 
 Vector3	CollisionDetection::ignore;
 Array<Vector3> CollisionDetection::ignoreArray;
 
-float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
+double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
     const Sphere&   sphere,
     const Box&      box,
     Array<Vector3>& contactPoints,
@@ -238,7 +239,7 @@ ZAXIS:
 }
 
 
-float CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
+double CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
     const Sphere&           sphereA,
     const Sphere&           sphereB,
     Array<Vector3>&         contactPoints,
@@ -262,7 +263,7 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
 }
 
 
-float CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
+double CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
     const Sphere&           sphereA,
     const Plane&            planeB,
     Array<Vector3>&         contactPoints,
@@ -287,7 +288,7 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
 }
 
 
-float CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
+double CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
     const Box&          box,
     const Plane&        plane,
     Array<Vector3>&     contactPoints,
@@ -321,7 +322,7 @@ float CollisionDetection::penetrationDepthForFixedBoxFixedPlane(
 }
 
 
-float CollisionDetection::collisionTimeForMovingPointFixedPlane(
+double CollisionDetection::collisionTimeForMovingPointFixedPlane(
     const Vector3&  point,
     const Vector3&  velocity,
     const Plane&    plane,
@@ -361,7 +362,7 @@ float CollisionDetection::collisionTimeForMovingPointFixedPlane(
 }
 
 
-float CollisionDetection::collisionTimeForMovingPointFixedSphere(
+double CollisionDetection::collisionTimeForMovingPointFixedSphere(
     const Vector3&  point,
     const Vector3&  velocity,
     const Sphere&   sphere,
@@ -408,7 +409,7 @@ float CollisionDetection::collisionTimeForMovingPointFixedSphere(
 }
 
 
-float CollisionDetection::collisionTimeForMovingSphereFixedSphere(
+double CollisionDetection::collisionTimeForMovingSphereFixedSphere(
     const Sphere&   movingSphere,
     const Vector3&  velocity,
     const Sphere&   fixedSphere,
@@ -428,7 +429,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedSphere(
 }
 
 
-float CollisionDetection::collisionTimeForMovingPointFixedTriangle(
+double CollisionDetection::collisionTimeForMovingPointFixedTriangle(
     const Vector3&			point,
     const Vector3&			velocity,
     const Triangle&       triangle,
@@ -454,7 +455,7 @@ float CollisionDetection::collisionTimeForMovingPointFixedTriangle(
 }
 
 
-float CollisionDetection::collisionTimeForMovingPointFixedBox(
+double CollisionDetection::collisionTimeForMovingPointFixedBox(
     const Vector3&          point,
     const Vector3&          velocity,
     const Box&              box,
@@ -486,7 +487,21 @@ float CollisionDetection::collisionTimeForMovingPointFixedBox(
 }
 
 
-float CollisionDetection::collisionTimeForMovingPointFixedRectangle(
+
+double CollisionDetection::collisionTimeForMovingPointFixedAABox(
+    const Vector3&          point,
+    const Vector3&          velocity,
+    const AABox&            box,
+    Vector3&                location,
+    Vector3&                outNormal) {
+
+    // TODO: faster code from http://www.codercorner.com/RayAABB.cpp
+    return collisionTimeForMovingPointFixedBox(point, velocity, box.toBox(), location, outNormal);
+}
+
+
+
+double CollisionDetection::collisionTimeForMovingPointFixedRectangle(
     const Vector3&      point,
     const Vector3&      velocity,
     const Vector3&      v0,
@@ -715,7 +730,7 @@ static bool findRayCapsuleIntersection(
     return (riQuantity > 0);
 }
 
-float CollisionDetection::collisionTimeForMovingPointFixedCapsule(
+double CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 	const Vector3&		point,
 	const Vector3&		velocity,
 	const Capsule&		capsule,
@@ -762,7 +777,7 @@ float CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 }
 
 
-float CollisionDetection::collisionTimeForMovingSphereFixedPlane(
+double CollisionDetection::collisionTimeForMovingSphereFixedPlane(
     const Sphere&		sphere,
     const Vector3&		velocity,
     const Plane&		plane,
@@ -808,7 +823,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedPlane(
 }
 
 
-float CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
+double CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
     const class Sphere&		sphere,
     const Vector3&		    velocity,
     const Triangle&       triangle,
@@ -846,7 +861,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
 }
 
 
-float CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
+double CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
     const Sphere&       sphere,
     const Vector3&      velocity,
     const Vector3&      v0,
@@ -886,7 +901,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedRectangle(
 }
 
 
-float CollisionDetection::collisionTimeForMovingSphereFixedBox(
+double CollisionDetection::collisionTimeForMovingSphereFixedBox(
     const Sphere&       sphere,
     const Vector3&      velocity,
     const Box&          box,
@@ -915,7 +930,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedBox(
 }
 
 
-float CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
+double CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
 	const Sphere&		sphere,
 	const Vector3&		velocity,
 	const Capsule&		capsule,

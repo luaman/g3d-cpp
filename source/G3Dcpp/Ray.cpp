@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-12
- @edited  2004-01-12
+ @edited  2004-03-14
  */
 
 #include "G3D/Ray.h"
@@ -68,28 +68,28 @@ Vector3 Ray::intersection(const Plane& plane) const {
 }
 
 
-float Ray::intersectionTime(const class Sphere& sphere) const {
+double Ray::intersectionTime(const class Sphere& sphere) const {
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedSphere(
             origin, direction, sphere, dummy);
 }
 
 
-float Ray::intersectionTime(const class Plane& plane) const {
+double Ray::intersectionTime(const class Plane& plane) const {
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedPlane(
             origin, direction, plane, dummy);
 }
 
 
-float Ray::intersectionTime(const class Box& box) const {
+double Ray::intersectionTime(const class Box& box) const {
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedBox(
             origin, direction, box, dummy);
 }
 
 
-float Ray::intersectionTime(
+double Ray::intersectionTime(
     const Vector3& v0,
     const Vector3& v1,
     const Vector3& v2) const {
@@ -98,12 +98,21 @@ float Ray::intersectionTime(
 }
 
 
-float Ray::intersectionTime(
+double Ray::intersectionTime(
     const Triangle& triangle) const {
 
     Vector3 dummy;
     return CollisionDetection::collisionTimeForMovingPointFixedTriangle(
             origin, direction, triangle, dummy);
+}
+
+
+double Ray::intersectionTime(
+    const AABox& box) const {
+    Vector3 dummy;
+
+    return CollisionDetection::collisionTimeForMovingPointFixedAABox(
+            origin, direction, box, dummy);
 }
 
 }
