@@ -4,7 +4,7 @@
  @author Morgan McGuire, morgan@blueaxion.com
 
  @created 2001-02-28
- @edited  2003-03-24
+ @edited  2003-04-07
 */
 
 #include "GLG3D/glcalls.h"
@@ -631,12 +631,18 @@ int Texture::sizeInMemory() const {
         break;
 
     case 3:
+    case GL_RGB8:
         bpp = 24;
         break;
 
     case 4:
+    case GL_RGBA8:
         bpp = 32;
         break;
+
+    default:
+        debugAssertM(false, "G3D internal error: Fell through switch");
+        bpp = 4;
     }
 
     return (width * height * depth * bpp) / 8;

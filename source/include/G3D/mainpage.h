@@ -507,6 +507,7 @@ to add zlibstat.lib to your linker list.
      <LI> Renamed G3D::CDTriangle to G3D::Triangle
      <LI> Added several G3D::Triangle methods
      <LI> Moved CollisionDetection::primaryAxis to Vector3::primaryAxis
+     <LI> Fix: Texture::sizeInMemory now returns correct results for RGB8 textures.
    </UL>
 
 
