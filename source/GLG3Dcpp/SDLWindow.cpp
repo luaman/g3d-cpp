@@ -83,6 +83,13 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     SDL_EnableUNICODE(1);
     setCaption("G3D");
     _win32HDC();
+
+	if (numJoysticks() > 0) {
+        SDL_JoystickEventState(SDL_ENABLE);
+        // Turn on joystick 0
+        _joy = SDL_JoystickOpen(0);
+        debugAssert(_joy);
+	}
 }
 
 
@@ -121,7 +128,29 @@ void SDLWindow::_win32HDC() {
 
 
 SDLWindow::~SDLWindow() {
+	// Close joystick, if opened
+	if (SDL_JoystickOpened(0)) {
+  		SDL_JoystickClose(_joy);
+		_joy = NULL;
+	}
+
     SDL_Quit();
+}
+
+
+Vector2 SDLWindow::joystickPosition(int stickNum) const {
+    if (_joy) {
+        return Vector2(SDL_JoystickGetAxis(_joy, 0) / 32768.0,
+                       -SDL_JoystickGetAxis(_joy, 1) / 32768.0);
+    } else {
+        return Vector2(0, 0);
+    }
+}
+
+
+::SDL_Joystick* SDLWindow::joystick(int num) const {
+    debugAssert(num < 1);
+    return _joy;
 }
 
 
@@ -202,6 +231,19 @@ void SDLWindow::setGammaRamp(const Array<uint16>& gammaRamp) {
             debugAssertM(false, SDL_GetError());
         #endif
     }
+}
+
+
+int SDLWindow::numJoysticks() const {
+	// Check for joysticks
+    int j = SDL_NumJoysticks();
+    if ((j < 0) || (j > 10)) {
+        // If there is no joystick adapter on Win32,
+        // SDL returns ridiculous numbers.
+        j = 0;
+    }
+
+    return j;
 }
 
 
@@ -295,6 +337,38 @@ void SDLWindow::notifyResize(int w, int h) {
 	surface->clip_rect.y = 0;
 	surface->clip_rect.w = w;
 	surface->clip_rect.h = h;
+}
+
+
+void SDLWindow::setMousePosition(double x, double y) {
+    SDL_WarpMouse(iRound(x), iRound(y));
+}
+
+
+void SDLWindow::setMousePosition(const Vector2& p) {
+    setMousePosition(p.x, p.y);
+}
+
+
+void SDLWindow::getRelativeMouseState(Vector2& p, uint8& mouseButtons) const {
+
+    int x, y;
+    getRelativeMouseState(x, y, mouseButtons);
+    p.x = x;
+    p.y = y;
+}
+
+
+void SDLWindow::getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const {
+    mouseButtons = SDL_GetMouseState(&x, &y);
+}
+
+
+void SDLWindow::getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const {
+    int ix, iy;
+    getRelativeMouseState(ix, iy, mouseButtons);
+    x = ix;
+    y = iy;
 }
 
 } // namespace

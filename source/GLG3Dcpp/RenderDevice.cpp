@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2004-02-11
+ @edited  2004-02-12
  */
 
 
@@ -120,6 +120,7 @@ PFNGLDRAWRANGEELEMENTSPROC glDrawRangeElements = NULL;
 
 namespace G3D {
 
+RenderDevice* RenderDevice::lastRenderDeviceCreated = NULL;
 
 static void _glViewport(double a, double b, double c, double d) {
     glViewport(iRound(a), iRound(b), iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
@@ -247,7 +248,7 @@ std::string RenderDevice::getDriverVersion() {
 }
 
 
-RenderDevice::RenderDevice() {
+RenderDevice::RenderDevice() : _window(NULL) {
 
     _initialized = false;
     inPrimitive = false;
@@ -260,6 +261,8 @@ RenderDevice::RenderDevice() {
     for (int i = 0; i < MAX_TEXTURE_UNITS; ++i) {
         currentlyBoundTexture[i] = 0;
     }
+
+    lastRenderDeviceCreated = this;
 }
 
 
@@ -408,8 +411,15 @@ bool RenderDevice::init(
 }
 
 
-bool RenderDevice::init(GWindow* _window, Log* log) {
-    window = _window;
+GWindow* RenderDevice::window() const {
+    return _window;
+}
+
+
+bool RenderDevice::init(GWindow* window, Log* log) {
+    _window = window;
+
+    GWindowSettings settings;
     window->getSettings(settings);
 
     debugAssert(! initialized());
@@ -578,7 +588,7 @@ bool RenderDevice::initialized() const {
 #ifdef G3D_WIN32
 
 HDC RenderDevice::getWindowHDC() const {
-    return window->getHDC();
+    return _window->getHDC();
 }
 
 #endif
@@ -597,12 +607,12 @@ void RenderDevice::setGamma(
                           65535 + 0.5));
 	}
     
-    window->setGammaRamp(gammaRamp);
+    _window->setGammaRamp(gammaRamp);
 }
 
 
 void RenderDevice::notifyResize(int w, int h) {
-    window->notifyResize(w, h);
+    _window->notifyResize(w, h);
 }
 
 
@@ -641,6 +651,9 @@ void RenderDevice::setVideoMode() {
     }
 
     // Reset all state
+
+    GWindowSettings settings;
+    _window->getSettings(settings);
 
     // Set the refresh rate
     #ifdef G3D_WIN32
@@ -784,20 +797,29 @@ void RenderDevice::setVideoMode() {
 
 
 void RenderDevice::setCaption(const std::string& caption) {
-    window->setCaption(caption);
+    _window->setCaption(caption);
 }
 
 
 
 int RenderDevice::getWidth() const {
-    return settings.width;
+    return _window->width();
 }
 
 
 int RenderDevice::getHeight() const {
-    return settings.height;
+    return _window->height();
 }
 
+
+int RenderDevice::width() const {
+    return _window->width();
+}
+
+
+int RenderDevice::height() const {
+    return _window->height();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -819,7 +841,7 @@ void RenderDevice::cleanup() {
     setGamma(1, 1);
 
     if (debugLog) {debugLog->println("Shutting down SDL.");}
-    delete window;
+    delete _window;
 }
 
 
@@ -1212,7 +1234,7 @@ void RenderDevice::beginFrame() {
 void RenderDevice::endFrame() {
     --beginEndFrame;
     debugAssertM(beginEndFrame == 0, "Mismatched calls to beginFrame/endFrame");
-    window->swapGLBuffers();
+    _window->swapGLBuffers();
 
     double now = System::getTick();
     double dt = now - lastTime;

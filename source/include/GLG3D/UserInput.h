@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-28
-  @edited  2004-01-01
+  @edited  2004-02-12
  */
 
 #ifndef G3D_USERINPUT_H
@@ -19,6 +19,7 @@
 #endif
 
 #include "graphics3D.h"
+#include "GLG3D/GWindow.h"
 
 namespace G3D {
 
@@ -65,7 +66,12 @@ enum CustomKeyCode {
     }
     userInput->endEvents();
    </PRE>
- */
+
+    
+    Note that UserInput uses the SDLEvent structures (defined in SDL.h), but not
+    the SDL <B>library</B>.  This means you can write your own G3D::GWindow subclass 
+    that translates platform events into SDL_Events and not use SDL.dll at all.  
+*/
 class UserInput {
 public:
     typedef uint16 KeyCode;
@@ -73,6 +79,9 @@ public:
     enum UIFunction {UP, DOWN, LEFT, RIGHT, NONE};
 
 private:
+
+    GWindow*                _window;
+
     /**
      keyState[x] is true if key[x] is depressed.
      */
@@ -93,6 +102,9 @@ private:
 
     bool                    inEventProcessing;
 
+    /** Called from the constructors */
+    void init(GWindow* window, Table<KeyCode, UIFunction>* keyMapping);
+
 public:
     /**
      Turns a UserInput key code into a human readable string
@@ -108,8 +120,6 @@ public:
 	bool                    useJoystick;
     
 	/**
-	 Do not call until after G3D::RenderDevice::init has been invoked.
-
      @param keyMapping Mapping of various key codes to UI functions.
      If no mapping is provided, the arrow keys and WASD are mapped
      as the keys controlling getX() and getY().
@@ -122,7 +132,30 @@ public:
       UserInput ui(&map);
       </PRE>
 	 */
-    UserInput(Table<KeyCode, UIFunction>* keyMapping = NULL);
+    UserInput(GWindow* window, Table<KeyCode, UIFunction>* keyMapping = NULL);
+
+    /**
+     Provided for 6.00 compatibility.  Finds the last RenderDevice created
+     and uses the window from it.
+
+	 Do not call until after G3D::RenderDevice::init has been invoked.
+     @deprecated
+     */
+    UserInput(Table<KeyCode, UIFunction>* keyMapping);
+
+    /**
+     Provided for 6.00 compatibility.  Finds the last RenderDevice created
+     and uses the window from it.
+
+	 Do not call until after G3D::RenderDevice::init has been invoked.
+     @deprecated
+     */
+    UserInput();
+
+    /**
+     Return the window used internally by the UserInput
+     */
+    GWindow* window() const;
 
     void setKeyMapping(Table<KeyCode, UIFunction>* keyMapping = NULL);
 
@@ -212,7 +245,9 @@ public:
     /** An array of all keys pressed since the last poll() call. */
     void pressedKeys(Array<KeyCode>& code) const;
 
-    /** Returns true when this app is in the "foreground" */
+    /** Returns true when this app is in the "foreground" 
+        (shortcut for window()->hasFocus()).
+        @deprecated*/
     bool appHasFocus() const;
 
 private:
@@ -235,8 +270,6 @@ private:
      */
 	int                     mouseX;
 	int                     mouseY;
-
-    ::SDL_Joystick*         joy;
 
     /**
      Expects SDL_MOUSEBUTTONDOWN, etc. to be translated into key codes.

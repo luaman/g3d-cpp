@@ -4,24 +4,63 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-29
-  @edited  2004-01-01
+  @edited  2004-02-12
  */
 
 #include "GLG3D/UserInput.h"
+#include "GLG3D/RenderDevice.h"
 
 namespace G3D {
 
 bool UserInput::appHasFocus() const {
-    uint8 s = SDL_GetAppState();
-    
-    return ((s & SDL_APPMOUSEFOCUS) != 0) &&
-           ((s & SDL_APPINPUTFOCUS) != 0) &&
-           ((s & SDL_APPACTIVE) != 0);
+    return _window->hasFocus();
+}
+
+
+GWindow* UserInput::window() const {
+    return _window;
 }
 
 
 UserInput::UserInput(
     Table<KeyCode, UIFunction>* keyMapping) {
+
+    alwaysAssertM(RenderDevice::lastRenderDeviceCreated != NULL, 
+        "Must create a RenderDevice before a UserInput");
+
+    alwaysAssertM(RenderDevice::lastRenderDeviceCreated->window() != NULL, 
+        "Must initialize a RenderDevice before creating a UserInput");
+
+    init(RenderDevice::lastRenderDeviceCreated->window(), keyMapping);
+}
+
+
+UserInput::UserInput() {
+
+    alwaysAssertM(RenderDevice::lastRenderDeviceCreated != NULL, 
+        "Must create a RenderDevice before a UserInput");
+
+    alwaysAssertM(RenderDevice::lastRenderDeviceCreated->window() != NULL, 
+        "Must initialize a RenderDevice before creating a UserInput");
+
+    init(RenderDevice::lastRenderDeviceCreated->window(), NULL);
+}
+
+
+UserInput::UserInput(
+    GWindow*                          window,
+    Table<KeyCode, UIFunction>* keyMapping) {
+    init(window, keyMapping);
+}
+
+
+void UserInput::init(
+    GWindow*                    window,
+    Table<KeyCode, UIFunction>* keyMapping) {
+
+    alwaysAssertM(window != NULL, "Window must not be NULL");
+
+    _window = window;
 
     keyState.resize(SDL_CUSTOM_LAST);
     keyFunction.resize(keyState.size());
@@ -52,22 +91,7 @@ UserInput::UserInput(
         keyMapping = NULL;
     }
 
-	// Check for joysticks
-    int j = SDL_NumJoysticks();
-    if ((j < 0) || (j > 10)) {
-        // If there is no joystick adapter on Win32,
-        // SDL returns ridiculous numbers.
-        j = 0;
-    }
-
-	useJoystick = (j > 0);
-
-	if (useJoystick) {
-        SDL_JoystickEventState(SDL_ENABLE);
-        // Turn on joystick 0
-        joy = SDL_JoystickOpen(0);
-        debugAssert(joy);
-	}
+    useJoystick = _window->numJoysticks() > 0;
 }
 
 
@@ -86,11 +110,6 @@ void UserInput::setKeyMapping(
 
 
 UserInput::~UserInput() {
-	// Close joystick, if opened
-	if (SDL_JoystickOpened(0)) {
-  		SDL_JoystickClose(joy);
-		joy = NULL;
-	}
 }
 
 
@@ -131,11 +150,10 @@ void UserInput::endEvents() {
 
     inEventProcessing = false;
     if (useJoystick) {
-        jx =  SDL_JoystickGetAxis(joy, 0) / 32768.0;
-        jy = -SDL_JoystickGetAxis(joy, 1) / 32768.0;
+        Vector2 j = _window->joystickPosition(0);
     }
 
-    mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
+    _window->getRelativeMouseState(mouseX, mouseY, mouseButtons);
 }
 
 
@@ -207,12 +225,12 @@ void UserInput::processKey(KeyCode code, int event) {
 void UserInput::setMouseXY(double x, double y) {
     mouseX = iRound(x);
     mouseY = iRound(y);
-    SDL_WarpMouse(mouseX, mouseY);
+    _window->setMousePosition(x, y);
 }
 
 
 int UserInput::getNumJoysticks() const {
-	return SDL_NumJoysticks();
+    return _window->numJoysticks();
 }
 
 

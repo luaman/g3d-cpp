@@ -50,6 +50,8 @@ private:
 
     GWindowSettings     _settings;
 
+    ::SDL_Joystick*     _joy;
+
 public:
 
     SDLWindow(const GWindowSettings& settings);
@@ -89,6 +91,20 @@ public:
     virtual void swapGLBuffers();
 
     virtual void notifyResize(int w, int h);
+
+    virtual int numJoysticks() const;
+
+    virtual Vector2 joystickPosition(int stickNum) const;
+
+    virtual void setMousePosition(double x, double y);
+
+    virtual void setMousePosition(const Vector2& p);
+
+    virtual void getRelativeMouseState(Vector2& p, uint8& mouseButtons) const;
+    virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const;
+    virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const;
+
+    ::SDL_Joystick* joystick(int stickNum) const;
 };
 
 } // namespace

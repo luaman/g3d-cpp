@@ -115,7 +115,14 @@ public:
     virtual void setGammaRamp(const Array<uint16>& gammaRamp) = 0;
 
     virtual void setCaption(const std::string& caption) = 0;
-    
+
+    /** Returns 0 if there are no joysticks available */
+    virtual int numJoysticks() const = 0;
+
+    /** Returns the position of a joystick on the range [-1, 1] for each axis,
+        with y = up. */
+    virtual Vector2 joystickPosition(int stickNum) const = 0;
+
     #ifdef G3D_WIN32
         /** On Windows, returns the HDC.  Not present on other platforms. */
         //  This is part of the base class API because different
@@ -148,6 +155,25 @@ public:
         OpenGL context (i.e. textures, vertex buffers, and GPU programs
         must be preserved across calls).*/
     virtual void notifyResize(int w, int h) = 0;
+
+    virtual void setMousePosition(double x, double y) = 0;
+
+    virtual void setMousePosition(const Vector2& p) = 0;
+
+
+    /** Returns the current mouse position and the state of the mouse buttons.
+        It is essential to sample both simultaneously so that the mouse has
+        not moved from the location where a click occurred.
+
+        @param position In pixels, with y=up.  Relative to the
+        upper left corner of the window.
+
+        @param mouseButtons If button <I>i</I> is currently pressed then bit <I>i</I> is set.
+    */
+    virtual void getRelativeMouseState(Vector2& position, uint8& mouseButtons) const = 0;
+    virtual void getRelativeMouseState(int& x, int& y, uint8& mouseButtons) const = 0;
+    virtual void getRelativeMouseState(double& x, double& y, uint8& mouseButtons) const = 0;
+
 };
 
 } // namespace

@@ -127,8 +127,13 @@ private:
     friend class VAR;
     friend class VARArea;
     friend class Milestone;
+    friend class UserInput;
 
-    GWindow*                    window;
+    /** Allows the UserInput to find the RenderDevice 
+        @deprecated */
+    static RenderDevice*        lastRenderDeviceCreated;
+
+    GWindow*                    _window;
 
     enum Vendor {NVIDIA, ATI, ARB};
 
@@ -611,6 +616,10 @@ public:
 	void setColorArray(const class VAR& v);
 	void setTexCoordArray(unsigned int unit, const class VAR& v);
 
+
+    /** Returns the GWindow used by this RenderDevice */
+    GWindow* window() const;
+
     /**
      Vertex attributes are a generalization of the various per-vertex
      attributes that relaxes the format restrictions.  There are at least
@@ -896,8 +905,6 @@ private:
 
     bool                            _initialized;
 
-    GWindowSettings                 settings;
-
 public:
 
     bool supportsOpenGLExtension(const std::string& extension) const;
@@ -1023,15 +1030,24 @@ public:
     void screenshotPic(GImage& dest) const;
 
 	/**
-	 Pixel dimensions of the OpenGL window interior
+     @deprecated
 	 */
     int getWidth() const;
 
 	/**
 	 Pixel dimensions of the OpenGL window interior
 	 */
+    int width() const;
+
+    /**
+     @deprecated
+     */
     int getHeight() const;
 
+	/**
+	 Pixel dimensions of the OpenGL window interior
+	 */
+    int height() const;
 
 	inline int getStencilBitDepth() const {
 		return stencilBits;
@@ -1161,6 +1177,7 @@ public:
     #ifdef G3D_WIN32
         HDC getWindowHDC() const;
     #endif
+
 };
 
 } // namespace
