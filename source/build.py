@@ -4,12 +4,15 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-03-30
+# @edited  2003-03-31
 #
 # Each build target is a procedure.
 #
 
 from buildlib import *
+
+# The library version number
+version = "5_00"
 
 ###############################################################################
 #                                                                             #
@@ -26,9 +29,9 @@ Syntax:
 
 TARGET     DESCRIPTION
 
-release    Build g3d-cpp-XXX, g3d-data
+install    Create a user installation directory (what you probably want)
+release    Build g3d-cpp-""" + version + """.zip, g3d-data-""" + version + """.zip
 
-install    Create a user installation directory
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs
 doc        Run doxygen and copy the html directory
 clean      Delete the build, release, temp, and install directories
@@ -36,6 +39,8 @@ help       Display this message
 
 See cpp/readme.html for detailed build information.
     """
+
+installDir = '../install/g3d-' + version
 
 ###############################################################################
 #                                                                             #
@@ -109,11 +114,11 @@ def doc():
 def install(copyData=1):
     lib()
     doc()
-    copyIfNewer('../build', '../install')
-    copyIfNewer('include', '../install/include')
+    copyIfNewer('../build', installDir)
+    copyIfNewer('include', installDir + '/include')
     if (copyData):
-        copyIfNewer('demos', '../install/demos')
-        copyIfNewer('../data', '../install/data')
+        copyIfNewer('demos', installDir + '/demos')
+        copyIfNewer('../data', installDir + '/data')
 
 ###############################################################################
 #                                                                             #
@@ -142,16 +147,16 @@ def release():
 
     install(0)
     mkdir('../release')
-    copyIfNewer('../data', '../temp/datacopy/data')
-    copyIfNewer('demos', '../temp/datacopy/demos')
-    zip('../temp/datacopy/*', '../release/g3d-data-M_mm.zip')
+    copyIfNewer('../data', '../temp/datacopy/g3d-' + version + '/data')
+    copyIfNewer('demos', '../temp/datacopy/g3d-' + version + '/demos')
+    zip('../temp/datacopy/*', '../release/g3d-data-' + version + '.zip')
 
     # Don't zip up the data or demos directories
-    rmdir('../install/data')
-    rmdir('../install/demos')
+    rmdir(installDir + '/data')
+    rmdir(installDir + '/demos')
     mkdir('../release')
-    zip('../install/*', '../release/g3d-M_mm.zip')
-    data()
+    zip('../install/*', '../release/g3d-cpp-' + version + '.zip')
+
 
 ###############################################################################
 #                                                                             #
