@@ -91,6 +91,7 @@ public:
 
 
 inline G3D::uint8& Color3uint8::operator[] (int i) const {
+    debugAssert((unsigned int)i < 3);
     return ((G3D::uint8*)this)[i];
 }
 

@@ -1106,7 +1106,7 @@ public:
      routine (provided for backwards compatibility).  The constructed
      window is deleted on shutdown.
      */
-    bool init(const GWindowSettings& settings, class Log* log = NULL);
+    bool init(const GWindowSettings& settings = GWindowSettings(), class Log* log = NULL);
 
     /**
      The renderDevice will <B>not</B> delete the window on cleanup.

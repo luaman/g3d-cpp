@@ -2274,7 +2274,7 @@ void RenderDevice::setTexture(
         }
     }
 
-    if (texture.isNull()) {
+    if (texture.notNull()) {
         GLint id = texture->getOpenGLID();
         GLint u = texture->getOpenGLTextureTarget();
 

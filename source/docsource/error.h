@@ -12,21 +12,12 @@ set them to NULL when you don't need them and the underlying memory will be reco
 
 
 <P>
-<B>Program crashes inside ReferenceCountedPointer methods</B>
-<P>You have probably made one of three mistakes in your program.  If you use raw pointers 
-(e.g. <CODE>Texture*, VARArea*</CODE>) to reference counted types, the reference count 
-will not know about your pointers and may garbage collect at the wrong time.  <I>Do not 
-use C pointers to Ref types</I>.  Use only TextureRef, VARAreaRef, VertexAndPixelShaderRef, etc.
+<B>error C2440: 'return' : cannot convert from 'class A *' to 'class B *'
+Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+d:\games\cpp\source\include\g3d\referencecount.h(194) : see reference to function template instantiation 'class B *__cdecl G3D::ReferenceCountedPointer<class B>::safecast(class A *)' being compiled</B>
 <P>
-The second mistake is deleting a Ref type.  Never use delete with a Ref class; they automatically
-delete themselves when the last pointer is dropped.  To force the last pointer to be dropped,
-assign <CODE>NULL</CODE> to the Ref variable.
-<P>
-The third mistake is a normal dynamic cast with the wrong types.  Any Ref type will
-automatically try to cast to any other Ref type, so 
-<CODE>VARAreaRef v = Texture::fromFile(...)</CODE> <I>will</I> compile correctly, but
-fail at runtime inside dynamic_cast.
-
+You tried to assign a reference counted pointer from the wrong type 
+(e.g. TextureRef a = GFontRef::create().
 <P>
 
 

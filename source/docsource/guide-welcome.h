@@ -15,7 +15,7 @@ or performance.  %G3D gives you a rock-solid, highly optimized base from which
 to build your application.
 
 %G3D does not contain scene graph or GUI routines.  Because of this, you have much
-more flexibility in how you structure your programs programs.  The tradeoff is that
+more flexibility in how you structure your programs.  The tradeoff is that
 you have to know more about 3D programming.  %G3D is intended for users who are already 
 familiar with C++ and DirectX or OpenGL.  Several good GUI libraries exist and 
 we recommend using one with %G3D if your project has extensive UI needs.

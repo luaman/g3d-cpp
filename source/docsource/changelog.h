@@ -12,7 +12,8 @@
    <P>
    Changes in 6.04:
    <UL>
-     <LI> G3D Manual!
+     <LI> G3D Manual! [ Morgan and Sascha ]
+     <LI> G3D::ReferenceCountedPointer assignment now allows subtyping
      <LI> G3D::ReferenceCountedPointer !=, >, < operators
      <LI> G3D::ReferenceCountedPointer::notNull
      <LI> static G3D::IFSModel::save/load for writing/reading IFS files
@@ -79,7 +80,7 @@
 	 <LI> GL_SAMPLER_1D_ARB, 2D, 3D, CUBE
 	 <LI> Win32Window mouse events
 	 <LI> Added normals to AABox collision results
-     <LI> Fix: various cast bugs using Ref types.  
+     <LI> Fix: [ 1026534 ]various cast bugs using Ref types.  
           Removed G3D::ReferenceCountedPointer implicit cast to underlying pointer type
           This is technically an <B>incompatible change</B>, however we found no occurance
           in the library or demos using this that was not a bug! 

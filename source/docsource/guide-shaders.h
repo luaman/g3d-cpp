@@ -82,7 +82,7 @@ Effects</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
     is the official GLSL spec and contains many examples.  NVIDIA, ATI, and 3DLabs 
     each provide SDKs with tons more.
     
-    Communit forums on programmable cards and sample shaders are also available at
+    Community forums on programmable cards and sample shaders are also available at
     http://www.shadertech.com/
 
 */

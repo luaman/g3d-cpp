@@ -80,7 +80,6 @@ public:
 };
 
 
-
 /**
  Use ReferenceCountedPointer<T> in place of T* in your program.
  T must subclass ReferenceCountedObject.
@@ -130,9 +129,7 @@ private:
 
     void setPointer(T* x) {
         if (x != pointer) {
-            if (pointer != NULL) {
-                zeroPointer();
-            }
+            zeroPointer();
 
             if (x != NULL) {
                 debugAssert(isValidHeapPointer(x));
@@ -143,6 +140,12 @@ private:
         }
     }
 
+    template<class S>
+    static inline T* safecast(S* s) {
+        // If your code fails on this line you tried to assign a reference
+        // counted pointer from the wrong type (e.g. TextureRef a = GFontRef::create().)
+        return s;
+    }
 public:      
 
     /**
@@ -151,7 +154,7 @@ public:
      */
     template <class S>
     inline ReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(NULL) {
-        setPointer(dynamic_cast<T*>(p.getPointer()));
+        setPointer(safecast(p.getPointer()));
     }
 
 
@@ -173,14 +176,22 @@ public:
     }
   
 
-    inline ReferenceCountedPointer<T>& operator= (const ReferenceCountedPointer<T>& p) { 
+    /*
+    inline ReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<T>& p) { 
         setPointer(p.getPointer());
         return *this; 
+     }
+     */
+
+    template <class S>
+    inline ReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<S>& p) {
+        setPointer(safecast(p.getPointer()));
+        return *this;
     }
 
-
-    inline ReferenceCountedPointer<T>& operator= (T* x) {
-        setPointer(x);
+    template <class S>
+    inline ReferenceCountedPointer<T>& operator=(S* p) {
+        setPointer(safecast(p));
         return *this;
     }
 
@@ -212,12 +223,6 @@ public:
     inline T* operator->() const {
         return pointer;
     }
-
-
-/*    inline operator T*() const {
-        return pointer;
-    }
-    */
 
 
     inline bool isNull() const {
