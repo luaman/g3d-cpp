@@ -6,13 +6,14 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2002-07-09
-  @edited  2003-09-27
+  @edited  2003-09-29
  */
 #ifndef G3D_VECTOR4_H
 #define G3D_VECTOR4_H
 
 #include "G3D/g3dmath.h"
 #include "G3D/Vector3.h"
+#include "G3D/Vector2.h"
 #include <string>
 
 namespace G3D {
@@ -109,6 +110,21 @@ public:
      Linear interpolation
      */
     Vector4 lerp(const Vector4& v, double alpha) const;
+
+    /** Swizzle for Cg programs */
+    inline Vector3 xyz() const {
+        return Vector3(x, y, z);
+    }
+
+    /** Swizzle for Cg programs */
+    inline Vector2 xy() const {
+        return Vector2(x, y);
+    }
+
+    /** Swizzle for Cg programs */
+    inline Vector2 zw() const {
+        return Vector2(z, w);
+    }
 };
 
 }
