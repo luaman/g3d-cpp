@@ -869,7 +869,7 @@ public:
         bool            isEnd;
         AABox           box;
 
-        const Node*     node;
+        Node*     node;
 
         /** Nodes waiting to be processed */
         // We could use backpointers within the tree and careful
@@ -884,7 +884,7 @@ public:
         BoxIntersectionIterator() : isEnd(true) {}
         
         BoxIntersectionIterator(const AABox& b, const Node* root) : 
-           box(b), isEnd(node != NULL), v(-1), node(root) {
+           box(b), isEnd(node != NULL), v(-1), node(const_cast<Node*>(root)) {
 
            // We intentionally start at the "-1" index of the current node
            // so we can use the preincrement operator to move ourselves to
