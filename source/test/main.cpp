@@ -6,7 +6,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2003-09-03
+ @edited  2003-10-06
  */
 
 
@@ -666,8 +666,19 @@ void testSwizzle() {
 
 int main(int argc, char* argv[]) {
 
-    CImage im("c:/tmp/in.tga");
-    im.save("c:/tmp/out.jpg");
+//    CImage im("c:/tmp/in.tga");
+//    im.save("c:/tmp/out.jpg");
+
+
+    Array<int> x;
+    x.append(0,1,2,3);
+    x.append(4,5,6,7);
+
+    x.randomize();
+
+    for (int i = 0; i < x.size(); ++i) {
+        debugPrintf("%d ", x[i]);
+    }
 
     exit(0);
     /*    

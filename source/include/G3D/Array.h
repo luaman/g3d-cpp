@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2003-08-13
+  @edited  2003-10-06
 
   Copyright 2000-2003, Morgan McGuire.
   All rights reserved.
@@ -20,10 +20,6 @@
 
 #ifdef G3D_WIN32
     #include <new.h>
-#else
-    #ifndef __cdecl
-        #define __cdecl __attribute__((cdecl))
-    #endif
 #endif
 
 
@@ -55,30 +51,30 @@ const int SORT_DECREASING = -1;
 template <class T>
 class Array {
 private:
-    // 0...num-1 are initialized elements, num...numAllocated-1 are not
+    /** 0...num-1 are initialized elements, num...numAllocated-1 are not */
     T*              data;
 
     int             num;
     int             numAllocated;
 
     void init(int n, int a) {
-       debugAssert(n <= a);
-       debugAssert(n >= 0);
-       this->num = 0;
-       this->numAllocated = 0;
-       data = NULL;
-       if (a > 0) {
-           resize(n);
-       } else {
-           data = NULL;
-       }
+        debugAssert(n <= a);
+        debugAssert(n >= 0);
+        this->num = 0;
+        this->numAllocated = 0;
+        data = NULL;
+        if (a > 0) {
+            resize(n);
+        } else {
+            data = NULL;
+        }
     }
 
     void _copy(const Array &other) {
-       init(other.num, other.num);
-       for (int i = 0; i < num; i++) {
-           data[i] = other.data[i];
-       }
+        init(other.num, other.num);
+        for (int i = 0; i < num; i++) {
+            data[i] = other.data[i];
+        }
     }
 
     /**
@@ -542,9 +538,22 @@ public:
         qsort(data, num, sizeof(T), (int(__cdecl*)(const void*, const void*))compare);
     }
 
+
     void sort(int (__cdecl *compare)(const void* elem1, const void* elem2)) {
         // Sort the array
         qsort(data, num, sizeof(T), compare);
+    }
+
+
+    /** Redistributes the elements so that the new order is statistically independent
+        of the original order. O(n) time.*/
+    void randomize() {
+        Array<T> original = *this;
+        for (int i = size() - 1; i >= 0; --i) {
+            int x = iRandom(0, i);
+            data[i] = original[x];
+            original.fastRemove(x);
+        }
     }
 
     /**
