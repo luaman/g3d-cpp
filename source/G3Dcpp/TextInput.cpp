@@ -335,7 +335,7 @@ numLabel:
         // parsed already, so a . indicates a number
         // less than 1 in floating point form.
     
-        // [0-9]*(\.[0-9]+) or [0-9]+ or 0x[0-9,A-F]+
+        // [0-9]*(\.[0-9]) or [0-9]+ or 0x[0-9,A-F]+
 
         if (t._string != "-") {
             // If we picked up a leading "-" sign above, keep it,

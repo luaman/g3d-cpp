@@ -13,7 +13,7 @@
    Changes in 6.05:
    <UL>
      <LI> VARArea now updates allocation sizes instead of VAR internally.  Added
-          more getter methods to VARArea to futher remove VAR from VARArea internals. [Corey]
+          more accessor methods to VARArea to futher remove VAR from VARArea internals. [Corey]
      <LI> VARSystem.cpp moved to VARArea.cpp - filename change only! [Corey]
      <LI> Linux build system updated:
           Builds only static libraries, Does not require libtool/libtoolize anymore,
