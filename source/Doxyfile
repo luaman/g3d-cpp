@@ -4,7 +4,7 @@
 # General configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = G3D
-PROJECT_NUMBER         = "version 6.05-b01 2004-10-22"
+PROJECT_NUMBER         = "version 6.05-b01 2004-11-12"
 OUTPUT_DIRECTORY       = ../temp
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
@@ -70,9 +70,14 @@ EXCLUDE                = graveyard \
                          *.cpp \
                          *.inl \
 						 glh \
-						 zlib
+                         gl \
+						 zlib \
+                         png \
+                         gl.h \
+                         glext.h \
+                         glut.h
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = glh* *.cpp *.inl zlib IJG graveyard
+EXCLUDE_PATTERNS       = glh* *.cpp *.inl gl zlib.h glut.h gl.h glext.h wglext.h glxext.h glh glut zlib IJG graveyard
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = 
 EXAMPLE_RECURSIVE      = NO

@@ -12,6 +12,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Removed glut.lib and glut.dll from the win32-lib directory.
      <LI> G3D::writeStringToFile, G3D::TextOutput, and G3D::BinaryOutput now flush by default (safe, not fast).
      <LI> Shifted push2D by 0.375 pixels as recommended in the OpenGL guide to bias integer coords towards pixel centers
      <LI> G3D::Draw::rect2DBorder
