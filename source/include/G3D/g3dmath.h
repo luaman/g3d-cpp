@@ -51,12 +51,28 @@ namespace G3D {
 const double fuzzyEpsilon = 0.000001;
 
 inline const double& inf() {
-	static const double i = 1.0/sin(0.0);
+
+// We already have <limits> included but
+// not using it in older gcc for safe compilations
+#if (__GNUC__ == 2)    
+    static const double i = 1.0/sin(0.0);
+#else
+    // double is a standard type and should have infinity
+    static const double i = std::numeric_limits<double>::infinity();
+#endif
 	return i;
 }
 
 inline const double& nan() {
-	static const double n = 0.0/sin(0.0);
+
+// We already have <limits> included but
+// not using it in older gcc for safe compilations
+#if (__GNUC__ == 2)
+    static const double n = 0.0/sin(0.0);
+#else
+    // double is a standard type and should have quiet NaN
+    static const double n = std::numeric_limits<double>::quiet_NaN();
+#endif
 	return n;
 }
 
