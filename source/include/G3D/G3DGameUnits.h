@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2002-11-05
+ @edited  2002-11-26
  */
 
 #ifndef G3D_GAMEUNITS_H
@@ -39,8 +39,11 @@ enum AMPM {AM, PM};
 /**
  Converts a 12 hour clock time into the number of seconds since 
  midnight.  Note that 12:00 PM is noon and 12:00 AM is midnight.
+
+ Example: <CODE>toSeconds(10, 00, AM)</CODE>
  */
-double toSeconds(int hour, int minute, double seconds, AMPM ap);
+SimTime toSeconds(int hour, int minute, double seconds, AMPM ap);
+SimTime toSeconds(int hour, int minute, AMPM ap);
 
 }
 

@@ -386,10 +386,6 @@ SOURCE=.\include\graphics3D.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\LightingParameters.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\Line.h
 # End Source File
 # Begin Source File

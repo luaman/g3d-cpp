@@ -13,7 +13,6 @@
 
 #include <G3DAll.h>
 
-
 /**
  Used by IFSModel for loading.
  */
@@ -45,7 +44,7 @@ private:
 public:
 
     /** Writes out the model data into the passed in object. */
-    void commit(class IFSModel* model);
+    void commit(class XIFSModel* model);
 
     /**
      Adds a new triangle to the model.

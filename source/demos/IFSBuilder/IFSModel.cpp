@@ -1,5 +1,5 @@
 /**
-  @file IFSBuilder/IFSModel.cpp
+  @file IFSBuilder/XIFSModel.cpp
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
@@ -7,7 +7,7 @@
   @cite MD2 format by id software
 
   @created 2002-02-27
-  @edited  2003-10-16
+  @edited  2003-11-26
  */
 
 #include "IFSModel.h"
@@ -15,10 +15,10 @@
 #include "MD2.h"
 
 extern RenderDevice* renderDevice;
-extern GCamera*       camera;
+extern GCamera       camera;
 extern CFontRef      font;
 
-IFSModel::IFSModel(const std::string& filename) {
+XIFSModel::XIFSModel(const std::string& filename) {
     if (! fileExists(filename)) {
         error("Critical Error", std::string("File not found: \"") + filename + "\"", true);
         exit(-1);
@@ -42,7 +42,7 @@ IFSModel::IFSModel(const std::string& filename) {
 }
 
 
-void IFSModel::loadIFS(const std::string& filename) {
+void XIFSModel::loadIFS(const std::string& filename) {
     IFSModelBuilder builder;
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
@@ -79,7 +79,7 @@ void IFSModel::loadIFS(const std::string& filename) {
 
 
 
-void IFSModel::loadSM(const std::string& filename) {
+void XIFSModel::loadSM(const std::string& filename) {
     IFSModelBuilder builder;
 
     TextInput ti(filename);
@@ -108,7 +108,7 @@ void IFSModel::loadSM(const std::string& filename) {
 }
 
 
-void IFSModel::loadMD2(const std::string& filename) {
+void XIFSModel::loadMD2(const std::string& filename) {
     IFSModelBuilder builder;
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
@@ -161,7 +161,7 @@ void IFSModel::loadMD2(const std::string& filename) {
 }
 
 
-void IFSModel::load3DS(const std::string& filename) {
+void XIFSModel::load3DS(const std::string& filename) {
     IFSModelBuilder builder;
     
     BinaryInput b(filename, G3D_LITTLE_ENDIAN);
@@ -239,7 +239,7 @@ void IFSModel::load3DS(const std::string& filename) {
 
 
 
-void IFSModel::loadOBJ(const std::string& filename) {
+void XIFSModel::loadOBJ(const std::string& filename) {
     IFSModelBuilder builder;
     
     TextInput::Options options;
@@ -319,7 +319,7 @@ static void drawBillboardString(
 
     // Find the point
 
-    Vector3 screenPos = camera->project(pos);
+    Vector3 screenPos = camera.project(pos, renderDevice->getViewport());
 
     renderDevice->push2D();
         font->draw2D(s, screenPos.xy(), screenSize, color, outline, GFont::XALIGN_CENTER, GFont::YALIGN_CENTER);
@@ -327,7 +327,7 @@ static void drawBillboardString(
 }
 
 
-void IFSModel::render() {
+void XIFSModel::render() {
     renderDevice->pushState();
 
         int t, i, j;
@@ -386,7 +386,7 @@ void IFSModel::render() {
 }
 
 
-void IFSModel::save(const std::string& filename) {
+void XIFSModel::save(const std::string& filename) {
     BinaryOutput out(filename, G3D_LITTLE_ENDIAN);
 
     out.writeString32("IFS");

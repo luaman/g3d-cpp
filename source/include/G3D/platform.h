@@ -63,6 +63,8 @@
     // Old versions of MSVC (6.0 and previous) don't
     // support C99 for loop scoping rules.  This fixes them.
     #if (_MSC_VER <= 1200)
+        // This trick will generate a warning; disable the warning
+        #pragma warning (disable : 4127)
         #define for if (false) {} else for
     #endif
 

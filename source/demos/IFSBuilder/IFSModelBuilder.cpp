@@ -20,7 +20,7 @@ void IFSModelBuilder::setName(const std::string& n) {
 
 double close;
 
-void IFSModelBuilder::commit(IFSModel* model) {
+void IFSModelBuilder::commit(XIFSModel* model) {
     model->name = name;
 
     // Make the data fit in a unit cube
@@ -44,7 +44,7 @@ void IFSModelBuilder::commit(IFSModel* model) {
 
     // Construct triangles
     for (int t = 0; t < triList.size(); t += 3) {
-        IFSModel::Triangle tri;
+        XIFSModel::Triangle tri;
 
         for (int i = 0; i < 3; ++i) {
            tri.index[i] = toNew[t + i];

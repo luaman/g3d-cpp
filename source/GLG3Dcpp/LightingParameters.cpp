@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-07-09
+ @edited  2003-11-26
  */
 
 #include "GLG3D/LightingParameters.h"
@@ -99,7 +99,11 @@ void LightingParameters::setTime(const GameTime _time) {
         const Color3 color[] = {Color3(0,0,0),          Color3(0,0,0),          Color3(.2, .15, .01),   Color3(.2, .15, .01),           Color3(1,1,1),                Color3(1,1,1),              Color3(.4, .2, .05),     Color3(0,0,0),       Color3(0,0,0)};
         skyAmbient = linearSpline(time, times, color, 8);
     }
+}
 
+
+GLight LightingParameters::directionalLight() const {
+    return GLight::directional(lightDirection, lightColor);
 }
 
 }

@@ -31,11 +31,11 @@ Log*                    debugLog        = NULL;
 RenderDevice*           renderDevice    = NULL;
 CFontRef                font            = NULL;
 UserInput*              userInput       = NULL;
-GCamera*                 camera          = NULL;
+GCamera                 camera;
 ManualCameraController* controller      = NULL;
 bool                    endProgram      = false;
 
-IFSModel*               model           = NULL;
+XIFSModel*              model           = NULL;
 
 bool                    pauseBetweenModels = true;
 
@@ -65,7 +65,6 @@ int main(int argc, char** argv) {
     debugLog     = new Log();
     renderDevice = new RenderDevice();
     renderDevice->init(RenderDeviceSettings(), debugLog);
-    camera       = new GCamera(renderDevice);
 
     font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
@@ -80,12 +79,12 @@ int main(int argc, char** argv) {
     renderDevice->resetState();
     renderDevice->setColorClearValue(Color3(.5, .7, .8));
 
-    camera->setNearPlaneZ(-.05);
+    camera.setNearPlaneZ(-.05);
     RealTime now = getTime() - 0.001, lastTime;
 
 //    std::string in("D:/users/morgan/Projects/_Silhouette/models/shelby.ifs");
 //    std::string in("d:/libraries/g3d-6_00/data/ifs/elephant.ifs");
-    std::string in("d:/libraries/g3d-6_00/data/ifs/cube.ifs");
+    std::string in("c:/tmp/diablo.3ds");
 
     //std::string outDir("d:/libraries/g3d-6_00/data/ifs/");
     std::string outDir("d:/graphics3d/book/data/ifs/");
@@ -93,7 +92,7 @@ int main(int argc, char** argv) {
     Array<std::string> filename;
     getFiles(in, filename, true);
 
-    camera->setCoordinateFrame(controller->getCoordinateFrame());
+    camera.setCoordinateFrame(controller->getCoordinateFrame());
     controller->setActive(true);
 
     debugAssertM(filename.size() > 0, "No files found");
@@ -109,7 +108,7 @@ int main(int argc, char** argv) {
         }
         */
 
-        model = new IFSModel(filename[i]);
+        model = new XIFSModel(filename[i]);
         model->name = "";
         
         if (! pauseBetweenModels) {
@@ -151,7 +150,7 @@ int main(int argc, char** argv) {
 void doSimulation(GameTime timeStep) {
     // Simulation
     controller->doSimulation(max(0.1, min(0, timeStep)));
-    camera->setCoordinateFrame(controller->getCoordinateFrame());
+    camera.setCoordinateFrame(controller->getCoordinateFrame());
 }
 
 
@@ -160,7 +159,7 @@ void doGraphics() {
         renderDevice->clear(true, true, true);
         renderDevice->pushState();
                 
-            camera->setProjectionAndCameraMatrix();
+            renderDevice->setProjectionAndCameraMatrix(camera);
 
             if (model != NULL) {
                 model->render();

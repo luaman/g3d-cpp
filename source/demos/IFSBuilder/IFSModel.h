@@ -1,5 +1,5 @@
 /**
-  @file IFSBuilder/IFSModel.h
+  @file IFSBuilder/XIFSModel.h
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
@@ -7,12 +7,12 @@
   @edited  2002-10-16
  */ 
 
-#ifndef IFSMODEL_H
-#define IFSMODEL_H
+#ifndef XIFSModel_H
+#define XIFSModel_H
 
 #include <G3DAll.h>
 
-class IFSModel {
+class XIFSModel {
 private:
     friend class IFSModelBuilder;
 
@@ -57,8 +57,8 @@ public:
 
     std::string             name;
 
-    IFSModel(const std::string& filename);
-    IFSModel() {}
+    XIFSModel(const std::string& filename);
+    XIFSModel() {}
 
     /**
      Render the model.

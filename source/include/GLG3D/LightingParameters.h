@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-07-09
+ @edited  2003-11-26
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -68,6 +68,12 @@ public:
 
     void setTime(const GameTime _time);
 	void setLatitude(float _latitude);
+
+    /**
+     Returns a directional light composed from the light direction
+     and color.
+     */
+    GLight directionalLight() const;
 };
 
 }
