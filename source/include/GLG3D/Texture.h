@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2005-02-05
+  @edited  2005-03-02
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -20,18 +20,17 @@ namespace G3D {
 typedef ReferenceCountedPointer<class Texture> TextureRef;
 
 /**
-
  Abstraction of OpenGL textures.  This class can be used with raw OpenGL, 
- without RenderDevice or SDL.
-
- If you use TextureRef instead of Texture*, the texture memory will be
- garbage collected.
+ without RenderDevice.  G3D::Texture supports all of the image formats
+ that G3D::GImage can load, and DDS (DirectX textures), and Quake-style cube 
+ maps.
 
  If you enable texture compression, textures will be compressed on the fly.
  This can be slow (up to a second).
 
- Unless DIM_2D_RECT is used, texture automatically scales non-power of 2
- size textures up to the next power of 2 (hardware requirement).
+ Unless DIM_2D_RECT is used, the texture is automatically scaled to the 
+ next power of 2 along each dimension to meet hardware requirements, if not
+ already a power of 2.
 
  Textures are loaded so that (0, 0) is the upper-left corner of the image.
  If you set the invertY flag, RenderDevice will automatically turn them upside
@@ -42,9 +41,10 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
  DIM_2D_RECT requires the GL_EXT_texture_rectangle extension.
  Texture compression requires the EXT_texture_compression_s3tc extions.
  You can either query OpenGL for whether these are supported or
- use the RenderDevice facility for doing so.
+ use the G3D::GLCaps facility for doing so.
 
- To use Texture with straight OpenGL:
+ G3D::Texture can be used with straight OpenGL, without G3D::RenderDevice, as
+ follows:
 
  <PRE>
   TextureRef texture = new Texture("logo.jpg");
@@ -88,10 +88,10 @@ public:
         This combines GL_TEXTURE_COMPARE_MODE_ARB and GL_TEXTURE_COMPARE_FUNC_ARB from
         http://www.nvidia.com/dev_content/nvopenglspecs/GL_ARB_shadow.txt
 
-        For best results on pct closer hardware, create shadow maps as depth textures with 
-        BILINEAR_NO_MIPMAP sampling.
+        For best results on percentage closer hardware (GeForceFX and Radeon9xxx or better), 
+        create shadow maps as depth textures with BILINEAR_NO_MIPMAP sampling.
 
-        See also G3D::RenderDevice::configureShadowMap.
+        See also G3D::RenderDevice::configureShadowMap and the Collision_Demo.
      */
     enum DepthReadMode {DEPTH_NORMAL = 0, DEPTH_LEQUAL = 1, DEPTH_GEQUAL = 2};
 
@@ -413,6 +413,14 @@ public:
 
     inline const int texelHeight() const {
         return height;
+    }
+
+    inline Vector2 vector2Bounds() const {
+        return Vector2(width, height);
+    }
+
+    inline Rect2D rect2DBounds() const {
+        return Rect2D::xywh(0, 0, width, height);
     }
 
     /**
