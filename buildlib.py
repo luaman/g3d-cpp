@@ -37,19 +37,19 @@ def dispatchOnTarget(validTargets, help):
         help()
         sys.exit(-1)
 
-    targets = sys.argv[1:]
+    target = sys.argv[1]
+    targetArgs = sys.argv[2:]
 
-    for target in targets:
-        found = 0
-        for v in validTargets:
-            if (target == v.func_name):
-                v()
-                found = 1
-                break
+    found = 0
+    for v in validTargets:
+        if (target == v.func_name):
+            v(targetArgs)
+            found = 1
+            break
 
-        if (not found):
-            print '"' + target + '" is not a valid build target (type "build help" to see all targets).'
-            sys.exit(-1)
+    if (not found):
+        print '"' + target + '" is not a valid build target (type "build help" to see all targets).'
+        sys.exit(-1)
 
     sys.exit(0)
 

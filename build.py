@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-12-01
+# @edited  2003-12-02
 #
 # Each build target is a procedure.
 #
@@ -25,12 +25,13 @@ def buildHelp():
 build - Automated build system for graphics3D.
 
 Syntax: 
-    build [target]*  
+    build target [install-dir]
 
 TARGET     DESCRIPTION
 
-lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
 install    Create a user installation directory (what you probably want)
+
+lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip
 doc        Run doxygen and copy the html directory
 clean      Delete the build, release, temp, and install directories
@@ -39,7 +40,16 @@ help       Display this message
 See cpp/readme.html for detailed build information.
     """
 
-installDir = 'install/g3d-' + version
+def installDir(args):
+    if (args == []):
+        # Default
+        return 'install/g3d-' + version
+    else:
+        # Build the name from the install dir
+        s = args[0]
+        if ((s != "") and (s[len(s) - 1] != "/") and (s[len(s) - 1] != "\\")):
+            s = s + "/"
+        return s + 'g3d-' + version
 
 ###############################################################################
 #                                                                             #
@@ -77,11 +87,11 @@ def linuxCheckVersion():
         sys.exit(-4)
 
 
-def lib():
+def lib(args):
     x = 0
 
-    mkdir(installDir + "/lib")
-    copyIfNewer('source/include', installDir + '/include')
+    mkdir(installDir(args) + "/lib")
+    copyIfNewer('source/include', installDir(args) + '/include')
 
     if (os.name == 'nt'):
         # Windows build
@@ -91,7 +101,7 @@ def lib():
                  "GLG3D - Win32 Release",\
                  "GLG3D - Win32 Debug"])
 
-        copyIfNewer("temp/lib", installDir + "/lib")
+        copyIfNewer("temp/lib", installDir(args) + "/lib")
 
     else:
         # Linux build
@@ -112,10 +122,10 @@ def lib():
             os.system("strip --strip-unneeded temp/debug/g3d/.libs/libG3D_debug.a")
             os.system("strip --strip-unneeded temp/debug/glg3d/.libs/libGLG3D_debug.a")
 
-            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            installDir + "/lib/libG3D_debug.a")
-            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                installDir + "/lib/libG3D.a")
-            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",        installDir + "/lib/libGLG3D_debug.a")
-            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            installDir + "/lib/libGLG3D.a")
+            copyIfNewer("temp/debug/g3d/.libs/libG3D_debug.a",            installDir(args) + "/lib/libG3D_debug.a")
+            copyIfNewer("temp/release/g3d/.libs/libG3D.a",                installDir(args) + "/lib/libG3D.a")
+            copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.a",        installDir(args) + "/lib/libGLG3D_debug.a")
+            copyIfNewer("temp/release/glg3d/.libs/libGLG3D.a",            installDir(args) + "/lib/libGLG3D.a")
 
             # Dynamic libs (not currently used)
             #copyIfNewer("temp/debug/glg3d/.libs/libGLG3D_debug.so.0.0.0", installDir + "/lib/libGLG3D_debug.so")
@@ -123,16 +133,16 @@ def lib():
             #copyIfNewer("temp/release/g3d/.libs/libG3D.so.0.0.0",         installDir + "/lib/libG3D.so")
             #copyIfNewer("temp/release/glg3d/.libs/libGLG3D.so.0.0.0",     installDir + "/lib/libGLG3D.so")
 
-            #os.system("ln -s " + installDir + "/lib/libG3D_debug.so "   + installDir + "/lib/libG3D_debug.so.0")
-            #os.system("ln -s " + installDir + "/lib/libG3D.so "         + installDir + "/lib/libG3D.so.0")
-            #os.system("ln -s " + installDir + "/lib/libGLG3D_debug.so " + installDir + "/lib/libGLG3D_debug.so.0")
-            #os.system("ln -s " + installDir + "/lib/libGLG3D.so "       + installDir + "/lib/libGLG3D.so.0")
+            #os.system("ln -s " + installDir(args) + "/lib/libG3D_debug.so "   + installDir(args) + "/lib/libG3D_debug.so.0")
+            #os.system("ln -s " + installDir + "/lib/libG3D.so "         + installDir(args) + "/lib/libG3D.so.0")
+            #os.system("ln -s " + installDir + "/lib/libGLG3D_debug.so " + installDir(args) + "/lib/libGLG3D_debug.so.0")
+            #os.system("ln -s " + installDir + "/lib/libGLG3D.so "       + installDir(args) + "/lib/libGLG3D.so.0")
 
     if (x != 0):
         print "*** Errors encountered during compilation.  Build process halted."
         sys.exit(x);        
 
-    copyIfNewer("source/lib", installDir + "/lib")
+    copyIfNewer("source/lib", installDir(args) + "/lib")
 
 ###############################################################################
 #                                                                             #
@@ -140,7 +150,7 @@ def lib():
 #                                                                             #
 ###############################################################################
 
-def test():
+def test(args):
     if (os.name == 'nt'):
         x = msdev('source/graphics3D.dsw',\
                 ["Test - Win32 Release",\
@@ -157,12 +167,12 @@ def test():
 #                                                                             #
 ###############################################################################
     
-def doc():
+def doc(args):
     os.chdir("source")
     run('doxygen', [])
     os.chdir("..")
-    copyIfNewer('source/html', installDir + '/html')
-    copyIfNewer('temp/html', installDir + '/html')
+    copyIfNewer('source/html', installDir(args) + '/html')
+    copyIfNewer('temp/html', installDir(args) + '/html')
 
 
 ###############################################################################
@@ -171,16 +181,16 @@ def doc():
 #                                                                             #
 ###############################################################################
     
-def install(copyData=1):
-    lib()
-    doc()
+def install(args, copyData=1):
+    lib(args)
+    doc(args)
     
     if (os.name != 'nt'):
         return
 
     if (copyData):
-        copyIfNewer('source/demos', installDir + '/demos')
-        copyIfNewer('../data', installDir + '/data')
+        copyIfNewer('source/demos', installDir(args) + '/demos')
+        copyIfNewer('../data', installDir(args) + '/data')
 
 ###############################################################################
 #                                                                             #
@@ -188,10 +198,10 @@ def install(copyData=1):
 #                                                                             #
 ###############################################################################
 
-def clean():
+def clean(args):
     rmdir('build')
     rmdir('temp')
-    rmdir('install')
+    rmdir(installDir(args))
     rmdir('release')
 
 
@@ -201,13 +211,12 @@ def clean():
 #                                                                             #
 ###############################################################################
 
-def release():
+def release(args):
     if (os.name != 'nt'):
         raise 'Error', 'Can only build the release on Windows.'
 
     mkdir('release')
 
-    # Put everything but CVS, temp, and binaries and
     rmdir('../temp')
     copyIfNewer('../cpp', '../temp/copy/cpp')
     rmdir('../temp/copy/cpp/temp')
@@ -217,7 +226,7 @@ def release():
 
     # TODO: Make sure the linux binaries are already built
 
-    install()
+    install([])
     zip('install/*', 'release/g3d-' + version + '.zip')
 
 
