@@ -81,7 +81,6 @@ AC_CONFIG_FILES([Makefile
 				 source/Makefile
                  source/test/Makefile
 				 source/demos/Makefile
-				 source/demos/IFS_Demo/Makefile
 				 source/demos/GLG3D_Demo/Makefile
                  source/demos/MD2Model_Demo/Makefile
 				 source/demos/Collision_Demo/Makefile
