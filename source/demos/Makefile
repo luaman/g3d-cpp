@@ -9,7 +9,7 @@
 
 IC = ../../bin/icompile
 
-DEMOS = ASM_Shader_Demo Cg_Shader_Demo Collision_Demo GLProgram_Demo GLSL_Demo MD2Model_Demo Network_Demo VAR_Demo
+DEMOS = ASM_Shader_Demo Cg_Shader_Demo Collision_Demo GLSL_Demo MD2Model_Demo Network_Demo VAR_Demo
 
 all: $(DEMOS)
 
