@@ -553,25 +553,9 @@ std::string System::currentProgramFilename() {
     } 
     #else
     {
-	    char linkname[64]; // /proc/<pid>/exe
-	    pid_t pid;
-	    int ret;
-	    
-	    // Get our PID and build the name of the link in /proc
-
-	    pid = getpid();
-	    
-	    if (snprintf(linkname, sizeof(linkname), "/proc/%i/exe", pid) < 0) {
-		    // This should only happen on large word systems.
-            error("Critical Error", "Unsupported filesystem", true);
-            exit(-1);
-        }
-
-	    // Now read the symbolic link
-	    ret = readlink(linkname, filename, sizeof(filename));
+	    int ret = readlink("/proc/self/exe", filename, sizeof(filename));
 	    
 	    // In case of an error, leave the handling up to the caller
-
         if (ret == -1) {
 		    return "";
         }
