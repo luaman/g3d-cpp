@@ -67,6 +67,8 @@ typedef ReferenceCountedPointer<class Texture> TextureRef;
 
 
   3D MIP Maps are not supported because gluBuild3DMipMaps is not in all GLU implementations.
+
+  See G3D::RenderDevice::setBlendFunc for important information about turning on alpha blending. 
  */
 class Texture : public ReferenceCountedObject {
 public:
@@ -194,7 +196,8 @@ public:
 
     /**
      Creates a texture from the colors of filename and takes the alpha values
-     from the red channel of alpha filename.
+     from the red channel of alpha filename. See G3D::RenderDevice::setBlendFunc
+	 for important information about turning on alpha blending. 
      */
     static TextureRef fromTwoFiles(
         const std::string&              filename,
@@ -330,6 +333,8 @@ public:
      have a completely opaque alpha channel, causing texture->opaque to
      be true.  This is just a flag set for the user's convenience-- it does
      not affect rendering in any way.
+	 See G3D::RenderDevice::setBlendFunc
+	 for important information about turning on alpha blending. 
      */
     inline bool opaque() const {
         return _opaque;

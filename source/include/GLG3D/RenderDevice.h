@@ -428,17 +428,23 @@ public:
         StencilOp                       backZPass);
 
     /**
-     Equivalent to glBlendFunc and glBlendEquation.
+     Equivalent to <A HREF="http://developer.3dlabs.com/GLmanpages/glblendfunc.htm">glBlendFunc</A>
+	 and <A HREF="http://developer.apple.com/documentation/Darwin/Reference/ManPages/man3/glBlendEquation.3.html">glBlendEquation</A>.
 
      Use 
-       <CODE>(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO, RenderDevice::BLENDEQ_ADD)</CODE>
+       <CODE>setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO, RenderDevice::BLENDEQ_ADD)</CODE>
      to shut off blending.
      
      Use 
-       <CODE>(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA, RenderDevice::BLENDEQ_ADD)</CODE>
+       <CODE>setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA, RenderDevice::BLENDEQ_ADD)</CODE>
      for unmultiplied alpha blending and
-       <CODE>(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA, RenderDevice::BLENDEQ_ADD)</CODE>
+       <CODE>setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA, RenderDevice::BLENDEQ_ADD)</CODE>
      for premultiplied alpha.
+
+	 %Draw your objects from back to front, objects with alpha last. Objects with alpha only get drawn properly if the things
+	 they're occluding have been drawn before the alpha'd objects. 
+
+	 Generally, turn alpha on, draw your alpha-blended things, then turn alpha off. 
      */
     void setBlendFunc(
         BlendFunc                       src,
