@@ -13,30 +13,39 @@ HREF="http://sourceforge.net/projects/g3d-cpp">http://sourceforge.net/projects/g
 If you obtained it by some other means, you should get the latest
 version directly from CVS.
 
-<P><B>If you are just want to <I>use</I> the library, you don't need this
-document.</B>  In fact, you do not even need most of the files.  Download
+<P><B>If you are just want to <I>use</I> the library on Windows, you don't need
+the files refered to in this document.</B>  Download
 the latest precompiled binary (<CODE>g3d-?_??.zip</CODE>) from <A HREF="http://sourceforge.net/project/showfiles.php?group_id=76879">http://sourceforge.net/project/showfiles.php?group_id=76879</A> and follow the installation instructions on <A HREF="http://www.graphics3d.com/cpp">graphics3d.com</A>.
 
 <P>To build the library, you need <A
 HREF="http://www.doxygen.org">Doxygen</A> 1.2, <A
 HREF="http://www.python.org">Python</A> 2.0, automake 1.6, autoconf
-2.13, and either MSVC++ 6.0 (Windows) or g++ 3.2 (Linux).
+2.13, and either MSVC++ 6.0 (Windows) or g++ 3.2 (Linux).  G3D is
+endian and architecture independent but is not supported for non-x86 platforms.
 
-<P>You must set up your environment so that the binaries are all in
-your PATH environment variable.  Note that the Cygwin doxygen and
-python may not execute correctly from a command prompt, so you may
-have to download and install them separately on Windows.  On Windows,
-the default Visual Studio path is <CODE>C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Bin\</CODE>.
+<P>You must set up your environment so that these programs are all in
+your PATH environment variable.  On Windows, the default Visual Studio
+path is <CODE>C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Bin\</CODE>.  The Cygwin <A
+HREF="http://www.doxygen.org>doxygen</A> and <A
+HREF="http://www.python.org">python</A> may not execute correctly from
+a command prompt, so you may have to download and install them
+separately if you have Cygwin.
 
-<P>To build the library for your own use from this distribution:
+<P>To build the library for your own use from this distribution on Windows:
 <OL>
-<LI>Type "<CODE>build install</CODE>" or "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory.
-<LI>Copy the resulting <CODE>cpp/install</CODE> directory to wherever you install libraries.
+<LI>Run "<CODE>build install</CODE>" in the <CODE>cpp</CODE> directory 
+<LI>Copy the resulting <CODE>cpp/install</CODE> directory to wherever you install libraries.  You no longer need the source tree.
 </OL>
 
-<P>Targets for making a release distribution (a.k.a. g3d-cpp-?_??.zip),
-which should only be done by the G3D team at Brown, are described
-below.
+<P>To build the library for your own use from this distribution on Linux:
+<OL>
+<LI>Run <CODE>"chmod u+x build"</CODE> and "<CODE>./build install</CODE>" or "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory
+<LI>The library and demos will compile in the source tree
+</OL>
+
+<P>Targets for making a release distribution
+(a.k.a. g3d-cpp-?_??.zip), which should only be done by the G3D team
+at Brown, are described below.
 
 <H1>Directories</H1>
 You are at the root of the directory tree for G3D (which is
@@ -72,8 +81,8 @@ source directory.  Some subdirectories are not shown.
 In the distribution, the <CODE>cpp/data</CODE> directory is stored in
 g3d-data-M_mm.zip and the other (built) files are in g3d-cpp-M_mm.zip.
 They are separated because the data is so large.  Users who want
-source code can download it from <A
-HREF="http://sourceforge.net/cvs/?group_id=76879">http://sourceforge.net/cvs/?group_id=76879</A>
+source code can download it from CVS following the instructions 
+at <AHREF="http://sourceforge.net/cvs/?group_id=76879">http://sourceforge.net/cvs/?group_id=76879</A>
 
 <P>
 <H1>Meta-Build targets</H1>

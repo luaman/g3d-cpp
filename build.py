@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2003-04-03
+# @edited  2003-05-23
 #
 # Each build target is a procedure.
 #
@@ -60,7 +60,7 @@ def lib():
                  "GLG3D - Win32 Debug"])
 
     else:
-        # Linux build (right now, only builds the debug release)
+        # Linux build (right now, only builds the debug release, dowsn't copy files)
 
         # Exectute bootstrap and configure whenever the scripts change
         if (newer("bootstrap", "configure") or newer("configure.ac", "configure")):
@@ -73,7 +73,7 @@ def lib():
 
         # Copy the lib's to the right directory (temporary; the makefile
         # should really be putting them here)
-        if (x != 0):
+	if (x != 0):
             mkdir("temp/lib")
             copyIfNewer("source/G3Dcpp/.libs/libG3D.a",                  "temp/lib/libG3D.a")
             copyIfNewer("source/G3Dcpp/.libs/libG3D_debug.a",            "temp/lib/libG3D_debug.a")
@@ -132,6 +132,10 @@ def install(copyData=1):
     lib()
     doc()
     copyIfNewer('temp/lib', installDir + '/lib')
+
+    if (os.name != 'nt'):
+        return
+
     copyIfNewer('source/include', installDir + '/include')
     if (copyData):
         copyIfNewer('source/demos', installDir + '/demos')
@@ -160,6 +164,14 @@ def release():
     if (os.name != 'nt'):
         raise 'Error', 'Can only build the release on Windows.'
 
+    # Put everything but CVS, temp, and binaries and
+    rmdir('../temp')
+    copyIfNewer('../cpp', '../temp/copy/cpp')
+    rmdir('../temp/copy/cpp/temp')
+    rmdir('../temp/copy/cpp/install')
+    rmdir('../temp/copy/cpp/release')
+    zip('../temp/copy/*', 'release/g3d-src-' + version + '.zip')
+
     # TODO: Make sure the linux binaries are already built
     install(0)
     mkdir('release')
@@ -173,6 +185,7 @@ def release():
     rmdir(installDir + '/demos')
     mkdir('release')
     zip('install/*', 'release/g3d-cpp-' + version + '.zip')
+
 
 
 ###############################################################################
