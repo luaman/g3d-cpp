@@ -27,7 +27,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2003-07-21
+ @edited  2003-08-13
  */
 #include <G3DAll.h>
 #include "Model.h"
@@ -71,10 +71,7 @@ void doUserInput();
 
 
 int main(int argc, char** argv) {
-    // Search for the data
-    for (int count = 0; (count < 3) && (! fileExists(DATA_DIR + "ifs/cow.ifs")); ++count) {
-        DATA_DIR = std::string("../") + DATA_DIR;
-    }
+    DATA_DIR = demoFindData();
 
     // Initialize
     debugLog     = new Log();
@@ -88,7 +85,6 @@ int main(int argc, char** argv) {
         error("Critical Error", "This demo requires a graphics card with the ARB_shadow extension.", true);
         exit(-1);
     }
-
 
     // Allocate the two VARAreas used in this demo
     varStatic  = renderDevice->createVARArea(1024 * 1024);

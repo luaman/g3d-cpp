@@ -22,6 +22,7 @@
 #include "G3D/System.h"
 #include "G3D/debug.h"
 #include "G3D/g3derror.h"
+#include "G3D/fileutils.h"
 
 #ifdef G3D_WIN32
 
@@ -52,6 +53,31 @@
 #endif
 
 namespace G3D {
+
+std::string demoFindData() {
+    std::string path = "";
+
+    // Search for the data
+    for (int count = 0; (count < 5) && (! fileExists(path + "data")); ++count) {
+        path = std::string("../") + path;
+    }
+
+    if (fileExists(path + "data")) {
+        return path + "data/";
+    } else {
+
+        const char* choice[] = {"Exit"};
+
+        prompt("Demo Error", "The demo could not locate the data directory.  "
+            "The data is required to run this demo.  If you have not downloaded "
+            "the data zipfile, get it from http://g3d-cpp.sf.net.  If you have "
+            "downloaded it, it needs to be no more than 4 directories above the "
+            "demo directory.", choice, 1, true);
+
+        return "";
+    }
+}
+
 
 static bool					_mmx                = false;
 static bool					_sse                = false;

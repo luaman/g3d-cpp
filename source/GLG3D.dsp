@@ -122,6 +122,14 @@ SOURCE=.\GLG3Dcpp\ManualCameraController.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\MD2Model.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\MD2Model_load.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\Milestone.cpp
 # End Source File
 # Begin Source File
@@ -375,6 +383,10 @@ SOURCE=.\include\GLG3D\LightingParameters.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\ManualCameraController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\MD2Model.h
 # End Source File
 # Begin Source File
 

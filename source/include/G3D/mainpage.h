@@ -620,6 +620,7 @@
 
    <P>
    <UL>
+     <LI> MD2Model_Demo
      <LI> G3D::MD2Model
      <LI> FIX: Fixed a bug in Array shrinking that could cause memory corruption
      <LI> FIX: Windows with an aspect ratio of less than 1 now allowed.

@@ -5,11 +5,11 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-08-07
- @edited  2003-08-12
+ @edited  2003-08-13
 
  */
 
-#include "MD2Model.h"
+#include "GLG3D/MD2Model.h"
 
 namespace G3D {
 Vector3 MD2Model::normalTable[162];

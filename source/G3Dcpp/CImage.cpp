@@ -1210,7 +1210,7 @@ void CImage::decodePCX(
 
         if (dummy != 12) {
             Log::common()->println("\n*********************");
-            Log::common()->printf("Warning: Corrupted PCX file (palette was wrong) \"%s\"\nLoading anyway\n\n", input.getFilename().c_str());
+            Log::common()->printf("Warning: Corrupted PCX file (palette marker byte was missing) \"%s\"\nLoading anyway\n\n", input.getFilename().c_str());
         }
 
         input.readBytes(sizeof(palette), palette);

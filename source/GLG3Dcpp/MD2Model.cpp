@@ -24,6 +24,7 @@ MD2Model::Pose  MD2Model::interpolatedPose;
 VARArea*        MD2Model::varArea[MD2Model::NUM_VAR_AREAS];
 int             MD2Model::nextVarArea            = MD2Model::NONE_ALLOCATED;
 const GameTime  MD2Model::PRE_BLEND_TIME         = 1.0 / 8.0;
+const double    MD2Model::hangTimePct           = 0.1;
 
 const MD2Model::MD2AnimInfo MD2Model::animationTable[MD2Model::MAX_ANIMATIONS] = 
 {
@@ -43,7 +44,7 @@ const MD2Model::MD2AnimInfo MD2Model::animationTable[MD2Model::MAX_ANIMATIONS] =
     { 135, 153, 10, true },    // CROUCH_STAND
     { 154, 159,  7, true },    // CROUCH_WALK
     { 160, 168, 10, false },   // CROUCH_ATTACK
-    { 196, 172,  7, false },   // CROUCH_PAIN
+    { 169, 172,  7, false },   // CROUCH_PAIN
     { 173, 177,  5, false },   // CROUCH_DEATH
     { 178, 183,  7, false },   // DEATH_FALLBACK
     { 184, 189,  7, false },   // DEATH_FALLFORWARD
@@ -64,6 +65,7 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
         
         if (pose.animation == JUMP) {
             a = JUMP_UP;
+        } else {
         }
 
         debugAssert(iAbs(a) < MAX_ANIMATIONS);
@@ -90,17 +92,22 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
     // Assume time is positive
     if (pose.animation == JUMP) {
         // Jump is special because it is two animations pasted together
+
+        // Time to jump up (== time to jump down)
         GameTime upTime = animationLength(JUMP_UP);
 
         // Make the time on the right interval
-        GameTime time = iWrap(pose.time * 1000, 2200 * upTime) / 1000.0;
+        GameTime time = iWrap(pose.time * 1000, 1000 * upTime * (2 + hangTimePct)) / 1000.0;
 
         if (time < upTime) {
+            // Jump up
             computeFrameNumbers(Pose(JUMP_UP, time), kf0, kf1, alpha);
-        } else if (time < upTime * 1.1) {
+        } else if (time < upTime * (1 + hangTimePct)) {
+            // Hold at the peak
             computeFrameNumbers(Pose(JUMP_UP, upTime), kf0, kf1, alpha);
         } else {
-            computeFrameNumbers(Pose(JUMP_DOWN, time - upTime * 1.1), kf0, kf1, alpha);
+            // Jump down
+            computeFrameNumbers(Pose(JUMP_DOWN, time - upTime * (1 + hangTimePct)), kf0, kf1, alpha);
         }
 
         return;
@@ -115,6 +122,7 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
     GameTime len = animationLength(a);
 
     if (pose.animation < 0) {
+        // Run the animation backwards
         time = len - time;
     }
 
@@ -151,7 +159,10 @@ MD2Model::Pose MD2Model::choosePose(
     bool point,
     bool death1,
     bool death2,
-    bool death3) const {
+    bool death3,
+    bool pain1,
+    bool pain2,
+    bool pain3) const {
 
     Pose pose(currentPose);
 
@@ -161,6 +172,7 @@ MD2Model::Pose MD2Model::choosePose(
     }
 
     if (death1 || death2 || death3) {
+        // Death interrupts anything
         pose.preFrameNumber = getFrameNumber(currentPose);
         pose.time           = -PRE_BLEND_TIME;
         if (crouching) {
@@ -175,9 +187,21 @@ MD2Model::Pose MD2Model::choosePose(
         return pose;
     }
 
-    if (death1) {
+    if ((pain1 || pain2 || pain3) && ! animationPain(pose.animation)) {
+        // Pain interrupts anything but death
+        pose.preFrameNumber = getFrameNumber(currentPose);
+        pose.time           = -PRE_BLEND_TIME;
+        if (crouching) {
+            pose.animation  = CROUCH_PAIN;
+        } else if (pain1) {
+            pose.animation  = PAIN_A;
+        } else if (pain2) {
+            pose.animation  = PAIN_B;
+        } else if (pain3) {
+            pose.animation  = PAIN_C;
+        }
+        return pose;
     }
-
 
     // End of an animation
     if (! animationLoops(pose.animation) &&
@@ -316,7 +340,7 @@ bool MD2Model::animationInterruptible(Animation a) {
 
 
 bool MD2Model::animationPain(Animation a) {
-    return (a != CROUCH_PAIN) && (a >= PAIN_A) && (a <= PAIN_C);
+    return (a == CROUCH_PAIN) || ((a >= PAIN_A) && (a <= PAIN_C));
 }
 
 
@@ -326,7 +350,7 @@ bool MD2Model::animationCrouch(Animation a) {
 
 
 bool MD2Model::animationDeath(Animation a) {
-    return (a >= CROUCH_DEATH);
+    return (a >= CROUCH_DEATH) && (a <= DEATH_FALLBACKSLOW);
 }
 
 
@@ -343,7 +367,7 @@ bool MD2Model::animationLoops(Animation a) {
 
 GameTime MD2Model::animationLength(Animation a) {
     if (a == JUMP) {
-        return animationLength(JUMP_UP) * 2.1;
+        return animationLength(JUMP_DOWN) * (2 + hangTimePct);
     }
 
     a = (Animation)iAbs(a);
