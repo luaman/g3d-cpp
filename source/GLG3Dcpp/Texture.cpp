@@ -73,16 +73,16 @@ Texture::Texture(
     name(_name),
     filename(""),
     alphaFilename(""),
-    colorChannelBits(internalColorChannelBits),
-    alphaChannelBits(internalAlphaChannelBits),
-    compressed(internalCompress),
-    textureID(_textureID),
     interpolate(_interpolate),
+    wrap(_wrap),
+    dimension(_dimension),
     width(_width),
     height(_height),
     depth(_depth),
-    wrap(_wrap),
-    dimension(_dimension),
+    compressed(internalCompress),
+    colorChannelBits(internalColorChannelBits),
+    alphaChannelBits(internalAlphaChannelBits),
+    textureID(_textureID),
     invertY(false) {
 
     // TODO: don't trash current texture state!
@@ -146,10 +146,10 @@ Texture::Texture(
     name(name),
     filename(filename),
     alphaFilename(alphaFilename),
+    depth(depth),
+    compressed(_compress),
     colorChannelBits(colorChannelBits),
     alphaChannelBits(alphaChannelBits),
-    compressed(_compress),
-    depth(depth),
     invertY(false) {
 
     // TODO: don't trash current texture state!
