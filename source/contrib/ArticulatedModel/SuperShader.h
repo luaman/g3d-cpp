@@ -124,10 +124,13 @@ public:
             by this constant to obtain the real-world bump height. Should
             already be factored in to the normal map normals.*/
         float                   bumpMapScale;
+
+        /** When true, this material enables two-sided lighting and texturing */
+        bool                    twoSided;
         
         Material() : diffuse(1), emit(0), 
             specular(0.25), specularExponent(60), 
-            transmit(0), reflect(0) {
+            transmit(0), reflect(0), twoSided(false) {
         }
 
         /** Returns true if this material uses similar terms as other

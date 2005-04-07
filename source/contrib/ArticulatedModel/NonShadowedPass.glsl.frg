@@ -63,13 +63,13 @@ uniform vec3        ambientTop;
 uniform vec3        ambientBottom;
 
 // World parameters
-varying vec3        wsEyePos;
 varying vec3        wsPosition;
 varying vec2        texCoord;
 varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 
-
 void main(void) {
+
+    vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
 
 #   ifdef NORMALBUMPMAP
         // Convert bumps to a world space distance

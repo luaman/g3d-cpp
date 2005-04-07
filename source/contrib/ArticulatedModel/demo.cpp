@@ -268,7 +268,13 @@ void Demo::doGraphics() {
         app->sky->renderLensFlare(lighting);
     }
 
-    app->debugPrintf("%s Profile\n", toString(ArticulatedModel::profile()));
+    app->debugPrintf("%s Profile %s\n", toString(ArticulatedModel::profile()),
+        #ifdef _DEBUG
+                "(DEBUG mode)"
+        #else
+                ""
+        #endif
+        );
 }
 
 
@@ -284,7 +290,7 @@ void App::main() {
         ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        model->partArray[0].triListArray[0].twoSided = true;
+        material.twoSided = true;
         material.diffuse = Color3::yellow() * .7;
         material.transmit = Color3(.5,.3,.3);
         material.reflect = Color3::white() * .1;
@@ -421,7 +427,7 @@ void App::main() {
         triList.indexArray.append(0, 1, 2);
         triList.indexArray.append(0, 2, 3);
 
-        triList.twoSided = true;
+        triList.material.twoSided = true;
         triList.material.emit.constant = Color3::black();
 
         triList.material.specular.constant = Color3::black();
@@ -490,10 +496,10 @@ void App::main() {
         triList.indexArray.append(0, 1, 2);
         triList.indexArray.append(0, 2, 3);
 
-        triList.twoSided = true;
+        triList.material.twoSided = true;
         triList.material.emit.constant = Color3::black();
 
-        triList.material.diffuse.constant = Color3::white() * 0.2;
+        triList.material.diffuse.constant = Color3::white() * 0.05;
 
         GImage normalBumpMap;
         computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap, false, true);
@@ -524,6 +530,63 @@ void App::main() {
         x += 2;
     }
 
+
+
+     if (true) {
+         // 2-sided test
+        ArticulatedModelRef model = ArticulatedModel::createEmpty();
+
+        model->name = "Stained Glass";
+        ArticulatedModel::Part& part = model->partArray.next();
+        part.cframe = CoordinateFrame();
+        part.name = "root";
+    
+        const double S = 1.0;
+        part.geometry.vertexArray.append(
+            Vector3(-S,  S, 0),
+            Vector3(-S, -S, 0),
+            Vector3( S, -S, 0),
+            Vector3( S,  S, 0));
+
+        part.geometry.normalArray.append(
+            -Vector3::unitZ(),
+            -Vector3::unitZ(),
+            -Vector3::unitZ(),
+            -Vector3::unitZ());
+
+        double texScale = 1;
+        part.texCoordArray.append(
+            Vector2(0,0) * texScale,
+            Vector2(0,1) * texScale,
+            Vector2(1,1) * texScale,
+            Vector2(1,0) * texScale);
+
+        part.tangentArray.append(
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX());
+
+        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
+        triList.indexArray.clear();
+        triList.indexArray.append(0, 1, 2);
+        triList.indexArray.append(0, 2, 3);
+
+        triList.material.twoSided = true;
+        triList.material.emit.constant = Color3::black();
+
+        triList.material.diffuse.constant = Color3::white();
+        triList.computeBounds(part);
+
+        part.indexArray = triList.indexArray;
+
+        part.computeIndexArray();
+        part.updateVAR();
+        part.updateShaders();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"contrib/ArticulatedModel/3ds/cube.3ds"
 //		"contrib/ArticulatedModel/3ds/jeep/jeep.3ds", 0.1

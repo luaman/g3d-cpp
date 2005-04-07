@@ -139,7 +139,7 @@ void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFram
                         }
 
 			            triList.material.diffuse.constant = material.diffuse;
-                        triList.twoSided = material.twoSided;
+                        triList.material.twoSided = material.twoSided;
                         triList.computeBounds(part);
 
                     } else {
@@ -265,7 +265,6 @@ void ArticulatedModel::initIFS(const std::string& filename, const CoordinateFram
 
     Part::TriList& triList = part.triListArray.next();
     triList.indexArray = index;
-    triList.twoSided = false;
     triList.computeBounds(part);
 }
 

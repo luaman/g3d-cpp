@@ -31,8 +31,8 @@ uniform sampler2DShadow shadowMap;
 
 // World parameters
 varying vec3        wsEyePos;
-varying vec3        wsPosition;
 varying vec2        texCoord;
+varying vec3        wsPosition;
 
 #ifdef NORMALBUMPMAP
     /** Multiplier for bump map.  Typically on the range [0, 0.05]

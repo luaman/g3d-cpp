@@ -360,9 +360,9 @@ void PosedArticulatedModel::renderNonShadowed(
         bool oldDepthWrite = rd->depthWrite();
 
         // Render backfaces first, and then front faces
-        int passes = triList.twoSided ? 2 : 1;
+        int passes = triList.material.twoSided ? 2 : 1;
 
-        if (triList.twoSided) {
+        if (triList.material.twoSided) {
             // We're going to render the front and backfaces separately.
             rd->setCullFace(RenderDevice::CULL_FRONT);
             rd->enableTwoSidedLighting();
@@ -389,7 +389,7 @@ void PosedArticulatedModel::renderNonShadowed(
         // Opaque
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
 
-        if (triList.twoSided) {
+        if (triList.material.twoSided) {
             rd->setCullFace(RenderDevice::CULL_NONE);
             rd->enableTwoSidedLighting();
         }
@@ -434,7 +434,7 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
 
     rd->pushState();
 
-        if (triList.twoSided) {
+        if (material.twoSided) {
             rd->enableTwoSidedLighting();
             rd->setCullFace(RenderDevice::CULL_NONE);
         }

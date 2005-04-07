@@ -61,22 +61,22 @@ public:
 	    class TriList {
 	    public:
 		    Array<int>				indexArray;
-            SuperShader::Material	material;
 
-            /** If true, object is rendered without backface culling.*/
-            bool                    twoSided;
+            SuperShader::Material	material;
 
             /** In the same space as the vertices. Computed by computeBounds() */
             Sphere                  sphereBounds;
+            
             /** In the same space as the vertices. Computed by computeBounds() */
             Box                     boxBounds;
 
             /** Set by Part::updateShader */
             ShaderRef               nonShadowedShader;
+
             /** Set by Part::updateShader */
             ShaderRef               shadowMappedShader;
 
-            TriList() : twoSided(false) {}
+            TriList() {}
 
             /** Recomputes the bounds.  Called automatically by initIFS and init3DS.
                 Must be invoked manually if the geometry is later changed. */

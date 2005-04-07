@@ -149,6 +149,10 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
         std::string defines;
 
         // Enable only terms needed by this material
+        if (material.twoSided) {
+            defines += "#define TWOSIDED\n";
+        }
+
         if (material.diffuse.constant != Color3::black()) {
             if (material.diffuse.map.notNull()) {
                 defines += "#define DIFFUSEMAP\n";
@@ -276,5 +280,6 @@ bool SuperShader::Material::similarTo(const Material& other) const {
         specularExponent.similarTo(other.specularExponent) &&
         transmit.similarTo(other.transmit) &&
         reflect.similarTo(other.reflect) &&
+        (twoSided == other.twoSided) &&
         (normalBumpMap.isNull() == other.normalBumpMap.isNull());
 }
