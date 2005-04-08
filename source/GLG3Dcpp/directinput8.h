@@ -1294,10 +1294,6 @@ private:
 
     Array< JoystickInfo >               _joysticks;
 
-    IDirectInputDevice8A*               _systemKeyboard;
-
-    HANDLE                              _keyboardEventHandle;
-
     HWND                                _window;
 
     // Handle the DirectInput8 joystick enumeration
@@ -1373,45 +1369,6 @@ public:
                                   this, 
                                   DIEDFL_ATTACHEDONLY);
 
-
-        // Setup system keyboard device
-        if (_directInput->CreateDevice(GUID_SysKeyboard, 
-                                       &_systemKeyboard, 
-                                       NULL) != S_OK) {
-            
-            _systemKeyboard = NULL;
-
-        } else {
-
-            HRESULT hr = _systemKeyboard->SetCooperativeLevel(window, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
-            debugAssertM(hr == S_OK, "Unable to set keyboard cooperative level.");
-
-            hr = _systemKeyboard->SetDataFormat(&G3DKEYDF);
-            debugAssertM(hr == S_OK, "Unable to set keyboard data format.");
-
-            DIPROPDWORD bufferProperty;
-            bufferProperty.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-            bufferProperty.diph.dwHow = 0;
-            bufferProperty.diph.dwObj = 0;
-            bufferProperty.diph.dwSize = sizeof(DIPROPDWORD);
-            bufferProperty.dwData = 256;
-
-            // Set the buffer size for event notification
-            hr = _systemKeyboard->SetProperty(*(const GUID*)(1), &bufferProperty.diph);
-            debugAssertM(hr == S_OK, "Unable to set keyboard buffer size.");
-
-            _keyboardEventHandle = ::CreateEvent(NULL, FALSE, FALSE, NULL);
-            
-            hr = _systemKeyboard->SetEventNotification(_keyboardEventHandle);
-            if (hr == 2) { // check for DI_POLLEDDEVICE
-                debugAssertM(false, "Unable to set keyboard event notification without polling.");
-            } else {
-                debugAssertM((hr == S_OK), "Unable to set keyboard event notification.");
-            }
-
-            _systemKeyboard->Acquire();
-        }
-
         ::FreeLibrary(di8Module);
     }
 
@@ -1450,26 +1407,6 @@ public:
         numAxes = _joysticks[joystick].numAxes;
     }
 
-
-    bool getKeyboardEvents(DIDEVICEOBJECTDATA* events, unsigned long& numEvents) {
-        
-        alwaysAssertM( _systemKeyboard != NULL, "There is no system keyboard!" );
-
-        _systemKeyboard->Acquire();
-        
-        if (::WaitForSingleObject(_keyboardEventHandle, 0) == WAIT_OBJECT_0) {
-
-            HRESULT hr = _systemKeyboard->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), events, &numEvents, 0); 
-
-            if( (hr == S_OK) || (hr == S_FALSE) ) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 
     unsigned int getNumJoysticks() {
         return _joysticks.length();

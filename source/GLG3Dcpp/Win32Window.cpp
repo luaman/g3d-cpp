@@ -64,7 +64,6 @@ static bool sdlKeysInitialized = false;
 static bool ChangeResolution(int, int, int, int);
 static void makeKeyEvent(int, int, GEvent&);
 static void mouseButton(bool, int, DWORD, GEvent&);
-static void initDI8KeyMap();
 static void initWin32KeyMap();
 static void printPixelFormatDescription(int, HDC, TextOutput&);
 
@@ -79,7 +78,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
     if (!sdlKeysInitialized) {
-        initDI8KeyMap();
+        initWin32KeyMap();
     }
 
 	settings = s;
@@ -198,16 +197,9 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
 
 Win32Window* Win32Window::create(const GWindowSettings& settings) {
 
-    if (_DirectInput::libraryExists()) {
-
-        // Create Win32Window which defaults to DI8 Keyboard
-        return new Win32Window(settings);
-        
-    } else {
-
-        // Create Win32APIWindow
-        return new Win32APIWindow(settings);
-    }
+    // Create Win32Window which uses DI8 joysticks but WM_ keyboard messages
+    return new Win32Window(settings);    
+    
 }
 
 
@@ -518,6 +510,32 @@ bool Win32Window::pollEvent(GEvent& e) {
                 return true;
                 break;
 
+			case WM_KEYDOWN:
+				e.key.type = SDL_KEYDOWN;
+				e.key.state = SDL_PRESSED;
+
+                // Need the repeat messages to find LSHIFT and RSHIFT
+				//if (((message.lParam >> 30) & 0x01) == 0) {
+                if ((message.lParam & 0x0f) == 1) {
+					// This is not an autorepeat message
+					makeKeyEvent(message.wParam, message.lParam, e);
+					return true;
+				}
+				break;
+
+			case WM_KEYUP:
+				e.key.type = SDL_KEYUP;
+				e.key.state = SDL_RELEASED;
+
+                // Need the repeat messages to find LSHIFT and RSHIFT
+				//if (((message.lParam  >> 30 )& 0x01) == 0) {
+                if ((message.lParam & 0x0f) == 1) {
+					// This is not an autorepeat message
+					makeKeyEvent(message.wParam, message.lParam, e);
+					return true;
+				}
+				break;
+
             case WM_LBUTTONDOWN:
 				mouseButton(true, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
                 _mouseButtons[0] = true;
@@ -567,44 +585,6 @@ bool Win32Window::pollEvent(GEvent& e) {
         // Add the border offset
         clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
         clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-    }
-
-    if (_windowActive) {
-        DIDEVICEOBJECTDATA keyboardData[200];
-        DWORD numKeyboardData = 200;
-
-        if (_keyboardEvents.length() > 200) {
-            _keyboardEvents.clear();
-        }
-
-        // Check for DI_OK or DI_BUFFEROVERFLOW
-        if( _diDevices->getKeyboardEvents(keyboardData, numKeyboardData) ) {
-
-            for (uint32 event = 0; event < numKeyboardData; ++event) {
-                e.key.type = (keyboardData[event].dwData & 0x80) ? SDL_KEYDOWN : SDL_KEYUP;
-                e.key.state = (keyboardData[event].dwData & 0x80) ? SDL_PRESSED : SDL_RELEASED;
-
-                e.key.keysym.sym = (SDLKey)_sdlKeys[keyboardData[event].dwOfs];
-
-                e.key.keysym.scancode = keyboardData[event].dwOfs;
-            
-                int tmpVirualKey = ::MapVirtualKey(_sdlKeys[keyboardData[event].dwOfs], 1);
-
-                char tmpAscii[2];
-                BYTE tmpKeyboard[256];
-
-                ::GetKeyboardState(tmpKeyboard);
-
-                e.key.keysym.unicode = ToAscii(tmpVirualKey, e.key.keysym.scancode, tmpKeyboard, (WORD*)tmpAscii, 0);
-
-                _keyboardEvents.pushBack(e);
-            }
-        }
-    }
-
-    if (_keyboardEvents.length() > 0) {
-        memcpy(&e, &_keyboardEvents.popFront(), sizeof(GEvent));
-        return true;
     }
 
     return false;
@@ -907,237 +887,6 @@ void Win32Window::initWGL() {
 
 
 /*
-    Win32APIWindow methods for non-DirectInput8 keyboard
-*/
-
-Win32APIWindow::Win32APIWindow(const GWindowSettings& s) {
-    initWGL();
-
-	_hDC = NULL;
-	_mouseVisible = true;
-	_inputCapture = false;
-
-    System::memset(keyStates, 0, sizeof(keyStates));
-    System::memset(_sdlKeys, 0, sizeof(_sdlKeys));
-
-    if (!sdlKeysInitialized) {
-        initWin32KeyMap();
-    }
-
-	settings = s;
-    
-	std::string name = "G3D";
-    
-    // Add the non-client area
-	RECT rect;
-	rect.left = 0;
-	rect.top = 0;
-	rect.right = settings.width;
-	rect.bottom = settings.height;
-
-	DWORD style = 0;
-	
-	if (s.framed) {
-
-        // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/Windowing/Windows/WindowReference/WindowStyles.asp
-		style |= WS_BORDER | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU;
-
-		if (s.resizable) {
-			style |= WS_SIZEBOX;
-		}
-
-        if (s.visible) {
-            style |= WS_VISIBLE;
-        }
-    } else {
-
-        // Show nothing but the client area (cannot move window with mouse)
-        style |= WS_POPUP;
-    }
-
-	AdjustWindowRect(&rect, style, false);
-
-	int total_width  = rect.right - rect.left;
-	int total_height = rect.bottom - rect.top;
-
-    int startX = 0;
-    int startY = 0;
-
-    if (!s.fullScreen) {
-        if (s.center) {
-            
-            startX = (GetSystemMetrics(SM_CXSCREEN) - total_width) / 2;
-            startY = (GetSystemMetrics(SM_CYSCREEN) - total_height) / 2;
-        } else {
-
-            startX = s.x;
-            startY = s.y;
-        }
-    }
-
-    clientX = settings.x = startX;
-    clientY = settings.y = startY;
-    
-    HWND window = CreateWindow("window", 
-        name.c_str(),
-        style,
-        startX,
-        startY,
-        total_width,
-        total_height,
-        NULL,
-        NULL,
-        GetModuleHandle(NULL),
-        NULL);
-
-    alwaysAssertM(window != NULL, "");
-
-    if (s.visible) {
-        ShowWindow(window, SW_SHOW);
-    } 
-            
-    SetWindowLong(window, GWL_USERDATA, (LONG)this);
-
-    if (settings.fullScreen) {
-	    // Change the desktop resolution if we are running in fullscreen mode
-        if (!ChangeResolution(settings.width, settings.height, (settings.rgbBits * 3) + settings.alphaBits, settings.refreshRate)) {
-			alwaysAssertM(false, "Failed to change resolution");
-        }
-    }
-	init(window);
-
-    // Set default icon if available
-    if (settings.defaultIconFilename != "nodefault") {
-
-        try {
-
-            GImage defaultIcon;
-            defaultIcon.load(settings.defaultIconFilename);
-
-            setIcon(defaultIcon);
-        } catch (const GImage::Error& e) {
-            // Throw away default icon
-            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
-		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
-            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
-        }
-    }
-}
-
-
-Win32APIWindow::~Win32APIWindow() {
-}
-
-
-bool Win32APIWindow::pollEvent(GEvent& e) {
-	MSG message;
-
-	bool done = false;
-
-	while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&message);
-		DispatchMessage(&message);
-
-		if (message.hwnd == window) {
-			switch (message.message) {
-            case WM_CLOSE:
-            case WM_QUIT:
-                e.quit.type = SDL_QUIT;
-                return true;
-                break;
-
-			case WM_KEYDOWN:
-				e.key.type = SDL_KEYDOWN;
-				e.key.state = SDL_PRESSED;
-
-                // Need the repeat messages to find LSHIFT and RSHIFT
-				//if (((message.lParam >> 30) & 0x01) == 0) {
-                if ((message.lParam & 0x0f) == 1) {
-					// This is not an autorepeat message
-					makeKeyEvent(message.wParam, message.lParam, e);
-					return true;
-				}
-				break;
-
-			case WM_KEYUP:
-				e.key.type = SDL_KEYUP;
-				e.key.state = SDL_RELEASED;
-
-                // Need the repeat messages to find LSHIFT and RSHIFT
-				//if (((message.lParam  >> 30 )& 0x01) == 0) {
-                if ((message.lParam & 0x0f) == 1) {
-					// This is not an autorepeat message
-					makeKeyEvent(message.wParam, message.lParam, e);
-					return true;
-				}
-				break;
-
-			case WM_ACTIVATE:
-                // TODO
-                /*
-                fActive = LOWORD(wParam);           // activation flag 
-                fMinimized = (BOOL) HIWORD(wParam); // minimized flag 
-                hwndPrevious = (HWND) lParam;       // window handle 
-                */
-                break;
-
-            case WM_LBUTTONDOWN:
-				mouseButton(true, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
-                _mouseButtons[0] = true;
-				return true;
-
-            case WM_MBUTTONDOWN:
-				mouseButton(true, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
-                _mouseButtons[1] = true;
-				return true;
-
-            case WM_RBUTTONDOWN:
-				mouseButton(true, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
-                _mouseButtons[2] = true;
-				return true;
-
-            case WM_LBUTTONUP:
-				mouseButton(false, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
-                _mouseButtons[0] = false;
-				return true;
-
-            case WM_MBUTTONUP:
-				mouseButton(false, SDL_MIDDLE_MOUSE_KEY, message.wParam, e); 
-                _mouseButtons[1] = false;
-				return true;
-
-            case WM_RBUTTONUP:
-				mouseButton(false, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
-                _mouseButtons[2] = false;
-				return true;
-			} // switch
-		} // if
-    } // while
-
-	RECT rect;
-	GetWindowRect(window, &rect);
-	settings.x = rect.left;
-	settings.y = rect.top;
-
-	GetClientRect(window, &rect);
-	settings.width = rect.right - rect.left;
-	settings.height = rect.bottom - rect.top;
-
-	clientX = settings.x;
-	clientY = settings.y;
-
-	if (settings.framed) {
-		// Add the border offset
-		clientX	+= GetSystemMetrics(settings.resizable ? SM_CXSIZEFRAME : SM_CXFIXEDFRAME);
-		clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-	}
-
-    return false;
-}
-
-
-
-/*
     Static helper functions for Win32Window
 */
 
@@ -1411,127 +1160,6 @@ static void mouseButton(bool down, int keyEvent, DWORD flags, GEvent& e) {
     e.key.keysym.scancode = 0;
     // TODO: fwKeys = wParam;        // key flags 
     e.key.keysym.mod = KMOD_NONE;
-}
-
-
-/** 
- Initializes SDL to DI8 key map
- */
-static void initDI8KeyMap() {
-
-    _sdlKeys[DIK_ESCAPE] = SDLK_ESCAPE;
-	_sdlKeys[DIK_1] = SDLK_1;
-	_sdlKeys[DIK_2] = SDLK_2;
-	_sdlKeys[DIK_3] = SDLK_3;
-	_sdlKeys[DIK_4] = SDLK_4;
-	_sdlKeys[DIK_5] = SDLK_5;
-	_sdlKeys[DIK_6] = SDLK_6;
-	_sdlKeys[DIK_7] = SDLK_7;
-	_sdlKeys[DIK_8] = SDLK_8;
-	_sdlKeys[DIK_9] = SDLK_9;
-	_sdlKeys[DIK_0] = SDLK_0;
-	_sdlKeys[DIK_MINUS] = SDLK_MINUS;
-	_sdlKeys[DIK_EQUALS] = SDLK_EQUALS;
-	_sdlKeys[DIK_BACK] = SDLK_BACKSPACE;
-	_sdlKeys[DIK_TAB] = SDLK_TAB;
-	_sdlKeys[DIK_Q] = SDLK_q;
-	_sdlKeys[DIK_W] = SDLK_w;
-	_sdlKeys[DIK_E] = SDLK_e;
-	_sdlKeys[DIK_R] = SDLK_r;
-	_sdlKeys[DIK_T] = SDLK_t;
-	_sdlKeys[DIK_Y] = SDLK_y;
-	_sdlKeys[DIK_U] = SDLK_u;
-	_sdlKeys[DIK_I] = SDLK_i;
-	_sdlKeys[DIK_O] = SDLK_o;
-	_sdlKeys[DIK_P] = SDLK_p;
-	_sdlKeys[DIK_LBRACKET] = SDLK_LEFTBRACKET;
-	_sdlKeys[DIK_RBRACKET] = SDLK_RIGHTBRACKET;
-	_sdlKeys[DIK_RETURN] = SDLK_RETURN;
-	_sdlKeys[DIK_LCONTROL] = SDLK_LCTRL;
-	_sdlKeys[DIK_A] = SDLK_a;
-	_sdlKeys[DIK_S] = SDLK_s;
-	_sdlKeys[DIK_D] = SDLK_d;
-	_sdlKeys[DIK_F] = SDLK_f;
-	_sdlKeys[DIK_G] = SDLK_g;
-	_sdlKeys[DIK_H] = SDLK_h;
-	_sdlKeys[DIK_J] = SDLK_j;
-	_sdlKeys[DIK_K] = SDLK_k;
-	_sdlKeys[DIK_L] = SDLK_l;
-	_sdlKeys[DIK_SEMICOLON] = SDLK_SEMICOLON;
-	_sdlKeys[DIK_APOSTROPHE] = SDLK_QUOTE;
-	_sdlKeys[DIK_GRAVE] = SDLK_BACKQUOTE;
-	_sdlKeys[DIK_LSHIFT] = SDLK_LSHIFT;
-	_sdlKeys[DIK_BACKSLASH] = SDLK_BACKSLASH;
-	_sdlKeys[DIK_OEM_102] = SDLK_BACKSLASH;
-	_sdlKeys[DIK_Z] = SDLK_z;
-	_sdlKeys[DIK_X] = SDLK_x;
-	_sdlKeys[DIK_C] = SDLK_c;
-	_sdlKeys[DIK_V] = SDLK_v;
-	_sdlKeys[DIK_B] = SDLK_b;
-	_sdlKeys[DIK_N] = SDLK_n;
-	_sdlKeys[DIK_M] = SDLK_m;
-	_sdlKeys[DIK_COMMA] = SDLK_COMMA;
-	_sdlKeys[DIK_PERIOD] = SDLK_PERIOD;
-	_sdlKeys[DIK_SLASH] = SDLK_SLASH;
-	_sdlKeys[DIK_RSHIFT] = SDLK_RSHIFT;
-	_sdlKeys[DIK_MULTIPLY] = SDLK_KP_MULTIPLY;
-	_sdlKeys[DIK_LMENU] = SDLK_LALT;
-	_sdlKeys[DIK_SPACE] = SDLK_SPACE;
-	_sdlKeys[DIK_CAPITAL] = SDLK_CAPSLOCK;
-	_sdlKeys[DIK_F1] = SDLK_F1;
-	_sdlKeys[DIK_F2] = SDLK_F2;
-	_sdlKeys[DIK_F3] = SDLK_F3;
-	_sdlKeys[DIK_F4] = SDLK_F4;
-	_sdlKeys[DIK_F5] = SDLK_F5;
-	_sdlKeys[DIK_F6] = SDLK_F6;
-	_sdlKeys[DIK_F7] = SDLK_F7;
-	_sdlKeys[DIK_F8] = SDLK_F8;
-	_sdlKeys[DIK_F9] = SDLK_F9;
-	_sdlKeys[DIK_F10] = SDLK_F10;
-	_sdlKeys[DIK_NUMLOCK] = SDLK_NUMLOCK;
-	_sdlKeys[DIK_SCROLL] = SDLK_SCROLLOCK;
-	_sdlKeys[DIK_NUMPAD7] = SDLK_KP7;
-	_sdlKeys[DIK_NUMPAD8] = SDLK_KP8;
-	_sdlKeys[DIK_NUMPAD9] = SDLK_KP9;
-	_sdlKeys[DIK_SUBTRACT] = SDLK_KP_MINUS;
-	_sdlKeys[DIK_NUMPAD4] = SDLK_KP4;
-	_sdlKeys[DIK_NUMPAD5] = SDLK_KP5;
-	_sdlKeys[DIK_NUMPAD6] = SDLK_KP6;
-	_sdlKeys[DIK_ADD] = SDLK_KP_PLUS;
-	_sdlKeys[DIK_NUMPAD1] = SDLK_KP1;
-	_sdlKeys[DIK_NUMPAD2] = SDLK_KP2;
-	_sdlKeys[DIK_NUMPAD3] = SDLK_KP3;
-	_sdlKeys[DIK_NUMPAD0] = SDLK_KP0;
-	_sdlKeys[DIK_DECIMAL] = SDLK_KP_PERIOD;
-	_sdlKeys[DIK_F11] = SDLK_F11;
-	_sdlKeys[DIK_F12] = SDLK_F12;
-
-	_sdlKeys[DIK_F13] = SDLK_F13;
-	_sdlKeys[DIK_F14] = SDLK_F14;
-	_sdlKeys[DIK_F15] = SDLK_F15;
-
-	_sdlKeys[DIK_NUMPADEQUALS] = SDLK_KP_EQUALS;
-	_sdlKeys[DIK_NUMPADENTER] = SDLK_KP_ENTER;
-	_sdlKeys[DIK_RCONTROL] = SDLK_RCTRL;
-	_sdlKeys[DIK_DIVIDE] = SDLK_KP_DIVIDE;
-	_sdlKeys[DIK_SYSRQ] = SDLK_SYSREQ;
-	_sdlKeys[DIK_RMENU] = SDLK_RALT;
-	_sdlKeys[DIK_PAUSE] = SDLK_PAUSE;
-	_sdlKeys[DIK_HOME] = SDLK_HOME;
-	_sdlKeys[DIK_UP] = SDLK_UP;
-	_sdlKeys[DIK_PRIOR] = SDLK_PAGEUP;
-	_sdlKeys[DIK_LEFT] = SDLK_LEFT;
-	_sdlKeys[DIK_RIGHT] = SDLK_RIGHT;
-	_sdlKeys[DIK_END] = SDLK_END;
-	_sdlKeys[DIK_DOWN] = SDLK_DOWN;
-	_sdlKeys[DIK_NEXT] = SDLK_PAGEDOWN;
-	_sdlKeys[DIK_INSERT] = SDLK_INSERT;
-	_sdlKeys[DIK_DELETE] = SDLK_DELETE;
-	_sdlKeys[DIK_LWIN] = SDLK_LMETA;
-	_sdlKeys[DIK_RWIN] = SDLK_RMETA;
-	_sdlKeys[DIK_APPS] = SDLK_MENU;
-
-    sdlKeysInitialized = true;
 }
 
 

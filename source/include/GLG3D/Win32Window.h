@@ -25,9 +25,6 @@
 
 namespace G3D {
 
-// Forward declaration so friend works
-class Win32APIWindow;
-
 // Forward declaration so directinput8.h is included in cpp
 namespace _internal {
 class _DirectInput;
@@ -37,8 +34,6 @@ using _internal::_DirectInput;
 class Win32Window : public GWindow {
 private:
 	
-    friend class Win32APIWindow;
-
 	GWindowSettings		 settings;
 	int                  _width;
     int                  _height;
@@ -52,8 +47,6 @@ private:
     /** Mouse Button State Array: false - up, true - down
         [0] - left, [1] - middle, [2] - right */
     bool                 _mouseButtons[3];
-
-    G3D::Queue< GEvent > _keyboardEvents;
 
     _DirectInput*        _diDevices;
 
@@ -166,33 +159,6 @@ public:
     virtual bool mouseVisible() const;
 	
     virtual bool requiresMainLoop() const;
-};
-
-
-class Win32APIWindow : public Win32Window {
-public:
-
-    Win32APIWindow(const GWindowSettings& settings);
-
-    ~Win32APIWindow();
-
-    virtual bool pollEvent(GEvent& e);
-
-    virtual int numJoysticks() const {
-        return 0;
-    }
-	
-    virtual std::string joystickName(unsigned int sticknum) {
-        return std::string("");
-    }
-
-    virtual void getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
-        axis.clear();
-        button.clear();
-        axis.resize(0);
-        button.resize(0);
-    }
-    
 };
 
 
