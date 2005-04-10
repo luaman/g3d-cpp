@@ -17,7 +17,6 @@
     #error Requires G3D 6.05
 #endif
 
-
 /**
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
@@ -28,7 +27,7 @@ public:
     // Add state that should be visible to this applet.
     // If you have multiple applets that need to share
     // state, put it in the App.
-    
+
     class App*          app;
 
     IFSModelRef model;
@@ -80,18 +79,7 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-  
-    model = IFSModel::create(app->dataDir + "ifs/teapot.ifs");
-
-//    lambertian = Shader::fromStrings(STR(
-
-//     uniform vec3 k_A;
-
-//     void main(void) {
-//        gl_Position = ftransform();
-//        gl_FrontColor.rgb = max(dot(gl_Normal, g3d_ObjectLight0.xyz), 0.0) * gl_LightSource[0].diffuse + k_A;
-//     }), "");
-
+    /*
     AABSPTree<Sphere> boxTree;
 
     boxTree.insert(Sphere(Vector3(0,0,0), 20));
@@ -110,6 +98,7 @@ void Demo::init()  {
 
         Log::common()->println("Intersection 2");
     }
+    */
 
 }
 
@@ -145,14 +134,14 @@ void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
-    // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->setColorClearValue(Color3::white());
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
     
     if (app->sky.notNull()) {
         app->sky->render(lighting);
     }
+
 
     app->renderDevice->setLight(0, GLight::directional(
             Vector3(1,0,0), Color3::white()));
@@ -165,23 +154,24 @@ void Demo::doGraphics() {
     // Rendering loop
     app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
-    model->pose()->render(app->renderDevice);
+//    model->pose()->render(app->renderDevice);
 
     app->renderDevice->disableLighting();
 
+    app->debugPrintf("%s\n", app->window()->joystickName(0).c_str());
+    Array<float> axis;
+    Array<bool> button;
+    app->window()->getJoystickState(0, axis, button);
+    app->debugPrintf("%s\n", app->window()->joystickName(0).c_str());
+    for (int a = 0; a < axis.size(); ++a) {
+        app->debugPrintf("%f ", axis[a]);
+    }
 }
 
 
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-
-    // Load objects here
-    sky = Sky::create(renderDevice, dataDir + "sky/");
-    
-    GImage im("c:/tmp/stone-bump.png");
-
-    Texture::fromGImage("", im, TextureFormat::AUTO, Texture::TILE, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT);
 
     applet->run();
 }
@@ -200,8 +190,8 @@ App::~App() {
 int main(int argc, char** argv) {
 
     GAppSettings settings;
-    settings.window.width = 800;
-    settings.window.height = 700;
+    settings.window.width = 600;
+    settings.window.height = 400;
     settings.window.alphaBits = 8;
     App(settings).run();
     return 0;

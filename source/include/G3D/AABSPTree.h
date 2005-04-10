@@ -1369,7 +1369,7 @@ public:
       calling balance.
      */
     void serializeStructure(BinaryOutput& bo) const {
-        Node::serializeStructure(bo);
+        Node::serializeStructure(root, bo);
     }
 
     /** Clears the member table */

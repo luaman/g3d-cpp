@@ -1891,6 +1891,27 @@ void measureRDPushPopPerformance(RenderDevice* rd) {
     printf("RenderDevice::push+pop:             %g cycles\n", identityCycles / (double)N);
 }
 
+
+
+void testAABSPTreeSerialize() {
+    printf("AABSPTree::serializeStructure\n");
+
+    AABSPTree<Vector3> tree;
+    int N = 1000;
+
+    for (int i = 0; i < N; ++i) {
+        tree.insert(Vector3::random());
+    }
+    tree.balance();
+
+    // Save the struture
+    BinaryOutput b("test-bsp.dat", G3D_LITTLE_ENDIAN);
+    tree.serializeStructure(b);
+    b.commit();
+
+}
+
+
 int main(int argc, char* argv[]) {    
 
     GLight array[4];
@@ -1917,9 +1938,13 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
-    // Test is really slow
-    //testHugeBinaryOutput();
-    //printf("  passed\n");
+    testAABSPTreeSerialize();
+    printf("  passed\n");
+
+#   ifdef RUN_SLOW_TESTS
+        testHugeBinaryOutput();
+        printf("  passed\n");
+#   endif
 
     testBitSerialization();
     printf("  passed\n");
