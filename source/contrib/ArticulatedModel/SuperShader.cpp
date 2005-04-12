@@ -12,6 +12,8 @@ static TextureRef defaultNormalMap;
 // TODO: remove
 static TextureRef whiteMap;
 
+static TextureRef whiteCubeMap;
+
 void SuperShader::configureShader(
     const LightingRef&              lighting,
     const Material&                 material,
@@ -57,7 +59,11 @@ void SuperShader::configureShader(
     }
 
     args.set("environmentConstant", lighting->environmentMapColor);
-    args.set("environmentMap",  lighting->environmentMap);
+    if (lighting->environmentMap.notNull()) {
+        args.set("environmentMap",  lighting->environmentMap);
+    } else {
+        args.set("environmentMap",  whiteCubeMap);
+    }
 }
 
 
@@ -236,6 +242,25 @@ void SuperShader::createShaders(
             }
         }
         whiteMap = Texture::fromGImage("White", im, TextureFormat::RGB8);
+    }
+
+    if (whiteCubeMap.isNull()) {
+        GImage im(4,4,3);
+        for (int y = 0; y < im.height; ++y) {
+            for (int x = 0; x < im.width; ++x) {
+                im.pixel3(x, y) = Color3(1, 1, 1);
+            }
+        }
+
+        uint8* bytes[6];
+        for (int i=0;i<6;++i) {
+            bytes[i] = im.byte();
+        }
+
+        whiteCubeMap = Texture::fromMemory(
+            "White",
+            (const uint8**)bytes, TextureFormat::RGB8, 4, 4, 1, 
+            TextureFormat::RGB8, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
     }
 
     // TODO: remove
