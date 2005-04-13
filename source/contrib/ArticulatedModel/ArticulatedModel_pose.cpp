@@ -286,7 +286,10 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
             rd->setTexture(0, material.reflect.map);
 
             // Configure reflection map
-            if (GLCaps::supports_GL_ARB_texture_cube_map()) {
+            if (lighting->environmentMap.isNull()) {
+                rd->setTexture(1, NULL);
+            } else if (GLCaps::supports_GL_ARB_texture_cube_map() &&
+                (lighting->environmentMap->getDimension() == Texture::DIM_CUBE_MAP)) {
                 rd->configureReflectionMap(1, lighting->environmentMap);
             } else {
                 // Use the top texture as a sphere map
