@@ -725,44 +725,7 @@ void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Ar
         return;
     }
 
-    G3DJOYDATA joystickState;
-
-    _diDevices->getJoystickState(stickNum, joystickState);
-
-    unsigned int numButtons, numAxes;
-    _diDevices->getJoystickInfo(stickNum, numButtons, numAxes);
-
-    button.resize(numButtons, false);
-    for (uint32 b = 0; (b < numButtons) && (b < 32); ++b) {
-        button[b] = (joystickState.rgbButtons[b] & 128) ? true : false;
-    }
-
-    axis.resize(numAxes, false);
-
-    if (numAxes > 0) {
-        axis[0] = (float)( ((float)joystickState.lX - 32768) / 32768 );
-    }
-    if (numAxes > 1) {
-        axis[1] = (float)( ((float)joystickState.lY - 32768) / 32768 );
-    }
-    if (numAxes > 2) {
-        axis[2] = (float)( ((float)joystickState.lZ - 32768) / 32768 );
-    }
-    if (numAxes > 3) {
-        axis[3] = (float)( ((float)joystickState.rglSlider[0] - 32768) / 32768 );
-    }
-    if (numAxes > 4) {
-        axis[4] = (float)( ((float)joystickState.rglSlider[1] - 32768) / 32768 );
-    }
-    if (numAxes > 5) {
-        axis[5] = (float)( ((float)joystickState.lRx - 32768) / 32768 );
-    }
-    if (numAxes > 6) {
-        axis[6] = (float)( ((float)joystickState.lRy - 32768) / 32768 );
-    }
-    if (numAxes > 7) {
-        axis[7] = (float)( ((float)joystickState.lRz - 32768) / 32768 );
-    }
+    _diDevices->getJoystickState(stickNum, axis, button);
 }
 
 

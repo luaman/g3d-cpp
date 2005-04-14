@@ -45,26 +45,26 @@ typedef const DIDEVICEINSTANCEA *LPCDIDEVICEINSTANCEA;
 typedef BOOL (FAR PASCAL * LPDIENUMDEVICESCALLBACKA)(LPCDIDEVICEINSTANCEA, LPVOID);
 
 // DIDEVICEOBJECTINSTANCEA
-//    typedef struct DIDEVICEOBJECTINSTANCEA {
-//        DWORD   dwSize;
-//        GUID    guidType;
-//        DWORD   dwOfs;
-//        DWORD   dwType;
-//        DWORD   dwFlags;
-//        CHAR    tszName[MAX_PATH];
-//        DWORD   dwFFMaxForce;
-//        DWORD   dwFFForceResolution;
-//        WORD    wCollectionNumber;
-//        WORD    wDesignatorIndex;
-//        WORD    wUsagePage;
-//        WORD    wUsage;
-//        DWORD   dwDimension;
-//        WORD    wExponent;
-//        WORD    wReportId;
-//    } DIDEVICEOBJECTINSTANCEA, *LPDIDEVICEOBJECTINSTANCEA;
-//    typedef DIDEVICEOBJECTINSTANCEA DIDEVICEOBJECTINSTANCE;
-//    typedef LPDIDEVICEOBJECTINSTANCEA LPDIDEVICEOBJECTINSTANCE;
-//    typedef const DIDEVICEOBJECTINSTANCEA *LPCDIDEVICEOBJECTINSTANCEA;
+typedef struct DIDEVICEOBJECTINSTANCEA {
+    DWORD   dwSize;
+    GUID    guidType;
+    DWORD   dwOfs;
+    DWORD   dwType;
+    DWORD   dwFlags;
+    CHAR    tszName[MAX_PATH];
+    DWORD   dwFFMaxForce;
+    DWORD   dwFFForceResolution;
+    WORD    wCollectionNumber;
+    WORD    wDesignatorIndex;
+    WORD    wUsagePage;
+    WORD    wUsage;
+    DWORD   dwDimension;
+    WORD    wExponent;
+    WORD    wReportId;
+} DIDEVICEOBJECTINSTANCEA, *LPDIDEVICEOBJECTINSTANCEA;
+typedef DIDEVICEOBJECTINSTANCEA DIDEVICEOBJECTINSTANCE;
+typedef LPDIDEVICEOBJECTINSTANCEA LPDIDEVICEOBJECTINSTANCE;
+typedef const DIDEVICEOBJECTINSTANCEA *LPCDIDEVICEOBJECTINSTANCEA;
 
 // LPDIENUMDEVICEOBJECTSCALLBACKA
 //    typedef BOOL (FAR PASCAL * LPDIENUMDEVICEOBJECTSCALLBACKA)(LPCDIDEVICEOBJECTINSTANCEA, LPVOID);
@@ -419,6 +419,12 @@ DECLARE_INTERFACE_(IDirectInput8A, IUnknown)
     in the IDirectInput8A and IDirectInputDevice8A interface
     methods are defined.
 */
+
+
+const uint32 DIPH_DEVICE           = 0;
+const uint32 DIPH_BYOFFSET         = 1;
+const uint32 DIPH_BYID             = 2;
+const uint32 DIPH_BYUSAGE          = 3;
 
 const uint32 DIEDFL_ATTACHEDONLY   = 0x00000001;
 const uint32 DI8DEVCLASS_GAMECTRL  = 4;
@@ -1288,6 +1294,8 @@ private:
         bool                            valid;
         unsigned int                    numAxes;
         unsigned int                    numButtons;
+        Array<uint32>                   axisOffsets;
+
     } JoystickInfo;
 
     IDirectInput8A*                     _directInput;
@@ -1322,10 +1330,19 @@ private:
         joystickCaps.dwSize = sizeof(DIDEVCAPS);
 
         tmpInfo.device->GetCapabilities(&joystickCaps);
-        tmpInfo.numAxes = joystickCaps.dwAxes;
         tmpInfo.numButtons = joystickCaps.dwButtons;
 
         tmpInfo.name = lpddi->tszProductName;
+
+        for (int i = 0; i < 8; ++i) {
+            DIDEVICEOBJECTINSTANCE object;
+            object.dwSize = sizeof(DIDEVICEOBJECTINSTANCE);
+            if (tmpInfo.device->GetObjectInfo(&object, (i * sizeof(LONG)), DIPH_BYOFFSET) == S_OK) {
+                tmpInfo.axisOffsets.append(i);
+            }
+        }
+
+        tmpInfo.numAxes = tmpInfo.axisOffsets.length();
 
         ((_DirectInput*)pvRef)->_joysticks.append(tmpInfo);
 
@@ -1382,17 +1399,29 @@ public:
         }
     }
 
-    bool getJoystickState(unsigned int joystick, G3DJOYDATA& data) {
+    bool getJoystickState(unsigned int joystick, Array<float>& axis, Array<bool>& button) {
 
         debugAssert( (uint32)_joysticks.length() > joystick );
         debugAssert( _joysticks[joystick].device != NULL );
 
+        G3DJOYDATA data;
         memset(&data, 0, sizeof(G3DJOYDATA));
         
         _joysticks[joystick].device->Acquire();
         _joysticks[joystick].device->Poll();
 
         if (_joysticks[joystick].device->GetDeviceState(sizeof(G3DJOYDATA), &data) == S_OK) {
+
+            button.resize(_joysticks[joystick].numButtons, false);
+            for (uint32 b = 0; (b < _joysticks[joystick].numButtons) && (b < 32); ++b) {
+                button[b] = (data.rgbButtons[b] & 128) ? true : false;
+            }            
+
+            axis.resize(_joysticks[joystick].numAxes,false);
+            for (uint32 a = 0; a < _joysticks[joystick].numAxes; ++a) {
+                axis[a] = ((float)(((LONG*)&data)[_joysticks[joystick].axisOffsets[a]] - 32768) / 32768.0); 
+            }
+
             return true;
         } else {
             return false;
@@ -1435,6 +1464,10 @@ public:
         }
         _joysticks.clear();
         _joysticks.resize(0, true);
+    }
+
+    const Array< JoystickInfo >& getJoystickArray() {
+        return _joysticks;
     }
 };
 
