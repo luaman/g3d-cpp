@@ -154,10 +154,12 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
 
         std::string defines;
 
-        // Enable only terms needed by this material
-        if (material.twoSided) {
-            defines += "#define TWOSIDED\n";
-        }
+        // OPT: As an optimization, we could compile two versions
+        // of each shader (with/without two sided) and select
+        // the correct one at runtime based on the RenderDevice::twoSidedLighting
+        // flag.  For now we pay the small performance penalty of handling
+        // two-sided lighting for all surfaces.
+        //defines += "#define TWOSIDED\n";
 
         if (material.diffuse.constant != Color3::black()) {
             if (material.diffuse.map.notNull()) {
@@ -305,6 +307,5 @@ bool SuperShader::Material::similarTo(const Material& other) const {
         specularExponent.similarTo(other.specularExponent) &&
         transmit.similarTo(other.transmit) &&
         reflect.similarTo(other.reflect) &&
-        (twoSided == other.twoSided) &&
         (normalBumpMap.isNull() == other.normalBumpMap.isNull());
 }
