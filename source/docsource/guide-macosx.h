@@ -65,15 +65,10 @@ checkbox is unchecked.
 
 <li>
 <b>Add <tt>SDL.framework</tt> to the Xcode project.</b>
-The location of <tt>SDL.framework</tt> is a little more complicated,
-unfortunately. The <tt>SDL.framework</tt> runtime is generally located in
-<tt>/Library/Frameworks/</tt> -- note that this is different from
-<tt>/System/Library/Frameworks</tt>.
-However, the files needed for SDL development are usually located in
-<tt>$(HOME)/Library/Frameworks</tt>. Add the runtime version,
-<tt>/Library/Frameworks/SDL.framework</tt> to the Xcode project and then add
-<tt>$(HOME)/Library/Frameworks</tt> to the "Frameworks Search Paths" setting
-for the Xcode project.
+This puts the framework into ~/Library/Framework, but that's not
+where you want it. Move <tt>SDL.framework</tt> into 
+<tt>/Library/Frameworks</tt>. 
+Add <tt>/Library/Frameworks</tt> to the Framework Search paths. 
 
 To modify the Framework Search Paths settings:
 <ol>
