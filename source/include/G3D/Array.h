@@ -448,10 +448,10 @@ public:
 
    /**
     Pushes a new element onto the end and returns its address.
-    This is the same as A.resize(A.size() + 1); A.last()
+    This is the same as A.resize(A.size() + 1, false); A.last()
     */
    inline T& next() {
-       resize(num + 1);
+       resize(num + 1, false);
        return last();
    }
 

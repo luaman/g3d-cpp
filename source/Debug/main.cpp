@@ -162,7 +162,6 @@ void Demo::doGraphics() {
     Array<float> axis;
     Array<bool> button;
     app->window()->getJoystickState(0, axis, button);
-    app->debugPrintf("%s\n", app->window()->joystickName(0).c_str());
     for (int a = 0; a < axis.size(); ++a) {
         app->debugPrintf("%f ", axis[a]);
     }

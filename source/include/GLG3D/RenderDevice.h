@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2005-02-17
+  @edited  2005-04-17
 
   Copyright 2001-2005, Morgan McGuire
 */
@@ -330,7 +330,8 @@ public:
 
     enum ShadeMode   {SHADE_FLAT,        SHADE_SMOOTH, SHADE_CURRENT};
 
-    enum CombineMode {TEX_REPLACE, TEX_INTERPOLATE, TEX_ADD, TEX_MODULATE, 
+    /** TEX_BLEND = GL_BLEND, TEX_INTERPOLATE = GL_DECAL */
+    enum CombineMode {TEX_REPLACE, TEX_BLEND, TEX_INTERPOLATE, TEX_ADD, TEX_MODULATE, 
                       TEX_BLEND, TEX_CURRENT};
 
     enum Buffer      {BUFFER_BACK,       BUFFER_FRONT,

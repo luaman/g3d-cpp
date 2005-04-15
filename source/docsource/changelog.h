@@ -90,6 +90,7 @@
      <LI> New G3D::PosedModel rendering methods appropriate for shadow casting
            (with efficient default implementations).
      <LI> G3D::Lighting
+     <LI> Changed RenderDevice::TEX_INTERPOLATE to mean GL_DECAL and added TEX_BLEND for GL_BLEND
      <LI> G3D::CoordinateFrame::upVector
      <LI> G3D::GLight::diffuse
      <LI> G3D::Rect2D::contains is now const
@@ -161,6 +162,7 @@
      <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
      <LI> Fix: AABSPTree::serializeStructure
+     <LI> Fix: Properly handle gl_ uniforms on Radeon for Shader
      <LI> Fix: [ 875467 ] OS X debugBreak (requires default XCode debug menu item 'Break on DebugStr()') [Corey + Derek]
      <LI> Fix: Can make a G3D::Texture::fromGImage with one channel (defaults to L8 format)
      <LI> Fix: [ 1149972 ] 6.05: Make Sky render correctly on low-end cards (no Cube mapping) [Corey]
