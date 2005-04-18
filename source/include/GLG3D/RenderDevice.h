@@ -319,20 +319,23 @@ public:
                       BLEND_ZERO, BLEND_SRC_COLOR,  BLEND_DST_COLOR,  
                       BLEND_ONE_MINUS_SRC_COLOR, BLEND_CURRENT};
 
-    enum BlendEq     {BLENDEQ_MIN, BLENDEQ_MAX, BLENDEQ_ADD, BLENDEQ_SUBTRACT,
-                      BLENDEQ_REVERSE_SUBTRACT, BLENDEQ_CURRENT};
+    enum BlendEq     {BLENDEQ_MIN,       BLENDEQ_MAX,      BLENDEQ_ADD,
+                      BLENDEQ_SUBTRACT,  BLENDEQ_REVERSE_SUBTRACT,
+                      BLENDEQ_CURRENT};
 
     enum StencilOp   {STENCIL_INCR_WRAP, STENCIL_DECR_WRAP,
                       STENCIL_KEEP,      STENCIL_INCR,     STENCIL_DECR,
-                      STENCIL_REPLACE,   STENCIL_ZERO,     STENCIL_INVERT, STENCILOP_CURRENT};
+                      STENCIL_REPLACE,   STENCIL_ZERO,     STENCIL_INVERT, 
+                      STENCILOP_CURRENT};
 
-    enum CullFace    {CULL_FRONT,        CULL_BACK,           CULL_NONE, CULL_CURRENT};
+    enum CullFace    {CULL_FRONT,        CULL_BACK,        CULL_NONE,
+                      CULL_CURRENT};
 
-    enum ShadeMode   {SHADE_FLAT,        SHADE_SMOOTH, SHADE_CURRENT};
+    enum ShadeMode   {SHADE_FLAT,        SHADE_SMOOTH,     SHADE_CURRENT};
 
     /** TEX_BLEND = GL_BLEND, TEX_INTERPOLATE = GL_DECAL */
     enum CombineMode {TEX_REPLACE, TEX_BLEND, TEX_INTERPOLATE, TEX_ADD, TEX_MODULATE, 
-                      TEX_BLEND, TEX_CURRENT};
+                      TEX_CURRENT};
 
     enum Buffer      {BUFFER_BACK,       BUFFER_FRONT,
                       BUFFER_BACK_LEFT,  BUFFER_FRONT_LEFT,
