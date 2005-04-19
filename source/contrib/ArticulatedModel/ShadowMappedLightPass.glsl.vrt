@@ -33,7 +33,7 @@ void main(void) {
     vec3 osE = osEyePos - osPosition;
 
 	vec3 T = gl_MultiTexCoord1.xyz;
-	vec3 N = gl_Normal;
+	vec3 N = normalize(gl_Normal);
 
 #   ifdef TWOSIDED
         float flip = sign(dot(gl_Normal, osE));
