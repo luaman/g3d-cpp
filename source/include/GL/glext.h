@@ -3335,6 +3335,7 @@ extern void APIENTRY glGetObjectParameterfvARB (GLhandleARB, GLenum, GLfloat *);
 extern void APIENTRY glGetObjectParameterivARB (GLhandleARB, GLenum, GLint *);
 extern void APIENTRY glGetInfoLogARB (GLhandleARB, GLsizei, GLsizei *, GLcharARB *);
 extern void APIENTRY glGetAttachedObjectsARB (GLhandleARB, GLsizei, GLsizei *, GLhandleARB *);
+extern GLint APIENTRY glGetAttribLocationARB(GLhandleARB program,char *name);
 extern GLint APIENTRY glGetUniformLocationARB (GLhandleARB, const GLcharARB *);
 extern void APIENTRY glGetActiveUniformARB (GLhandleARB, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLcharARB *);
 extern void APIENTRY glGetUniformfvARB (GLhandleARB, GLint, GLfloat *);
