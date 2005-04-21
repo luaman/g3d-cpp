@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2005-03-02
+  @edited  2005-04-02
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -289,6 +289,16 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL);
+
+    /** Creates another texture that is the same as this one but contains only
+        an alpha channel.  Alpha-only textures are useful as mattes.  
+        
+        If the current texture is opaque(), returns NULL (since it is not useful
+        to construct an alpha-only version of a texture without an alpha channel).
+        
+        Like all texture construction methods, this is fairly
+        slow and should not be called every frame during interactive rendering.*/
+    TextureRef alphaOnlyVersion() const;
 
     /**
      Copies data from screen into an existing texture (replacing whatever was

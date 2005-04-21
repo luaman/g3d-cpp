@@ -32,6 +32,8 @@ public:
 
     IFSModelRef model;
 
+    TextureRef          base, alpha;
+
     ShaderRef   lambertian;  
 
     Demo(App* app);
@@ -134,7 +136,7 @@ void Demo::doGraphics() {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
-    app->renderDevice->setColorClearValue(Color3::white());
+    app->renderDevice->setColorClearValue(Color3::red());
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
     
@@ -156,8 +158,17 @@ void Demo::doGraphics() {
 
 //    model->pose()->render(app->renderDevice);
 
+    app->renderDevice->push2D();
+
+        app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        app->renderDevice->setColor(Color3::white());
+        app->renderDevice->setTexture(0, alpha);
+        Draw::rect2D(Rect2D::xywh(10, 10, 300, 300), app->renderDevice);
+    app->renderDevice->pop2D();
+
     app->renderDevice->disableLighting();
 
+    /*
     app->debugPrintf("%s\n", app->window()->joystickName(0).c_str());
     Array<float> axis;
     Array<bool> button;
@@ -165,6 +176,7 @@ void Demo::doGraphics() {
     for (int a = 0; a < axis.size(); ++a) {
         app->debugPrintf("%f ", axis[a]);
     }
+    */
 }
 
 
@@ -184,7 +196,6 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 App::~App() {
     delete applet;
 }
-
 
 int main(int argc, char** argv) {
 

@@ -598,6 +598,24 @@ public:
         }
     }
 
+    /**
+     Sort using a specific less-than function, e.g.:
+
+  <PRE>
+    bool __cdecl myLT(const MyClass& elem1, const MyClass& elem2) {
+        return elem1.x < elem2.x;
+    }
+    </PRE>
+
+  Note that for pointer arrays, the <CODE>const</CODE> must come 
+  <I>after</I> the class name, e.g., <CODE>Array<MyClass*></CODE> uses:
+
+  <PRE>
+    bool __cdecl myLT(MyClass*const& elem1, MyClass*const& elem2) {
+        return elem1->x < elem2->x;
+    }
+    </PRE>
+     */
     void sort(bool (__cdecl *lessThan)(const T& elem1, const T& elem2)) {
         std::sort(data, data + num, lessThan);
     }

@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2005-02-05
+ @edited  2005-04-05
 */
 
 #include "GLG3D/glcalls.h"
@@ -1061,6 +1061,48 @@ unsigned int Texture::getOpenGLTextureTarget() const {
         debugAssertM(false, "Fell through switch");
     }
     return 0;
+}
+
+
+TextureRef Texture::alphaOnlyVersion() const {
+    if (opaque()) {
+        return NULL;
+    }
+
+    debugAssert(_depthRead == DEPTH_NORMAL);
+    debugAssertM(
+        dimension == DIM_2D ||
+        dimension == DIM_2D_RECT ||
+        dimension == DIM_2D_NPOT,
+        "alphaOnlyVersion only supported for 2D textures");
+
+    int numFaces = 1;
+
+    uint8** bytes = (uint8**)malloc(numFaces * sizeof(uint8*));
+    const TextureFormat* bytesFormat = TextureFormat::A8;
+
+    glStatePush();
+    // Setup to later implement cube faces
+    for (int f = 0; f < numFaces; ++f) {
+        GLenum target = dimensionToTarget(dimension);
+        glBindTexture(target, textureID);
+        bytes[f] = (uint8*)malloc(width * height);
+        glGetTexImage(target, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bytes[f]);
+    }
+
+    glStatePop();
+
+    TextureRef ret = 
+        fromMemory(name + " Alpha", (const uint8**)bytes, bytesFormat,
+            width, height, 1, TextureFormat::A8, wrap, interpolate,
+            dimension); 
+
+    for (int f = 0; f < numFaces; ++f) {
+        free(bytes[f]);
+    }
+    free(bytes);
+
+    return ret;
 }
 
 } // G3D

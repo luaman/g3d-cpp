@@ -31,6 +31,7 @@
    <P>
    Changes in 6.05:
    <UL>
+     <LI> Texture::alphaOnlyVersion
      <LI> Draw::sphere speed improved over 25% with single quad strip (improves Draw::capsule) [Corey]
      <LI> Allow 1-channel GImage saving - BMP (expanded to RGB), PNG [Corey]
      <LI> Allow 1-channel GImage loading - PNG [Corey]
@@ -38,7 +39,8 @@
      <LI> All files used during current execution are available via G3D::getFiles() [Corey]
      <LI> Implemented OSX version of glGetCurrentContext with CGL. [Corey + Derek]
      <LI> ReferenceCountedObject is-in-heap checks were removed to allow better multiple and virtual inheritance for reference counted objects.  ReferenceCountedPointer still appropriately checks does an is-in-heap check on assignment. [Corey]
-     <LI> Added Dev C++ support
+     <LI> Added Dev C++ compatability
+     <LI> glGetAttribLocationARB
      <LI> Changed GLight == operator to not use memcpy (was causing issues due to byte padding on some compilers)
      <LI> Made CoordinateFrame destructor non-virtual (eliminates vtable)
      <LI> Added new FAQ documentation

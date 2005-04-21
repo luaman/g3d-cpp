@@ -301,6 +301,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
     LOAD_EXTENSION(glUniformMatrix4fvARB);
     LOAD_EXTENSION(glGetInfoLogARB);
     LOAD_EXTENSION(glGetUniformLocationARB);
+    LOAD_EXTENSION(glGetAttribLocationARB);
     LOAD_EXTENSION(glGetObjectParameterivARB);
     LOAD_EXTENSION(glGetActiveUniformARB);
 

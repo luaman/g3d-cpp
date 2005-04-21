@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2005-01-10
+ @edited  2005-04-10
 
  Copyright 2002-2005, Morgan McGuire.
  All rights reserved.
@@ -201,7 +201,7 @@ extern PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
 extern PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB;
 extern PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
 extern PFNGLGETACTIVEUNIFORMARBPROC glGetActiveUniformARB;
-
+extern PFNGLGETATTRIBLOCATIONARB glGetAttribLocationARB;
 
 extern PFNGLTEXIMAGE3DEXTPROC glTexImage3DEXT;
 
