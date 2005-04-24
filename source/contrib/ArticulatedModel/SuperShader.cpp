@@ -22,15 +22,26 @@ void SuperShader::configureShader(
     if (material.diffuse.map.notNull()) {
         args.set("diffuseMap",              material.diffuse.map);
     }
+
     args.set("diffuseConstant",         material.diffuse.constant);
 
-    // TODO: don't even set fields that have no corresponding map
-    args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
+    if (material.specular.map.notNull()) {
+        args.set("specularMap",             material.specular.map);
+    }
+
     args.set("specularConstant",        material.specular.constant);
-    args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
+
+    if (material.specularExponent.map.notNull()) {
+        args.set("specularExponentMap",     material.specularExponent.map);
+    }
+
     // If specular exponent is black we get into trouble-- pow(x, 0) doesn't work right in shaders for some reason
     args.set("specularExponentConstant",Color3::white().max(material.specularExponent.constant));
-    args.set("reflectMap",              material.reflect.map.notNull() ? material.reflect.map : whiteMap);
+
+    if (material.reflect.map.notNull()) {
+        args.set("reflectMap",              material.reflect.map);
+    }
+
     args.set("reflectConstant",         material.reflect.constant);
 
     if (material.emit.map.notNull()) {
@@ -165,10 +176,19 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
                 }
             } else {
                 defines += "#define DIFFUSECONSTANT\n";
+            }
+        }
 
-                if (material.diffuse.constant == Color3::white()) {
-                    defines += "#define DIFFUSEWHITE\n";
+        if (material.specular.constant != Color3::black()) {
+            if (material.specular.map.notNull()) {
+                defines += "#define SPECULARMAP\n";
+
+                // If the color is white, don't multiply by it
+                if (material.specular.constant != Color3::white()) {
+                    defines += "#define SPECULARCONSTANT\n";
                 }
+            } else  {
+                defines += "#define SPECULARCONSTANT\n";
             }
         }
 

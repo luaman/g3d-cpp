@@ -288,6 +288,46 @@ void App::main() {
 
     double x = -5;
 
+    if (true) {
+        CoordinateFrame xform;
+
+        xform.rotation[0][0] = xform.rotation[1][1] = xform.rotation[2][2] = 0.008;
+
+        xform.rotation = xform.rotation * rot180;
+        xform.translation = Vector3(0, 0, 0.5);
+        std::string path = "demo/ghost/";
+        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "SpaceFighter01.3ds", xform);
+
+        // Override the textures in the file with more interesting ones
+
+        TextureRef diffuse = Texture::fromFile(path + "diffuse.jpg");
+        {
+            SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+            material.emit = Texture::fromFile(path + "emit.jpg");
+            material.diffuse.map = diffuse;
+            material.diffuse.constant = Color3::white() * 0.8;
+            material.transmit = Color3::black();
+            material.specular = Texture::fromFile(path + "specular.jpg");
+            material.reflect = Color3::black();
+            material.specularExponent = Color3::white() * 60;
+        }
+
+        {
+            SuperShader::Material& material = model->partArray[0].triListArray[1].material;
+            material.emit = Color3::black();
+            material.diffuse.map = diffuse;
+            material.diffuse.constant = Color3::white() * 0.5;
+            material.transmit = Color3::black();
+            material.specular = Color3::green() * .5;
+            material.reflect = Color3::white() * 0.4;
+            material.specularExponent = Color3::white() * 40;
+        }
+
+        model->updateAll();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,2,0))));
+    }
+
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
 
@@ -579,7 +619,6 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
-
 
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"contrib/ArticulatedModel/3ds/cube.3ds"

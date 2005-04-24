@@ -10,8 +10,13 @@
 uniform vec4        lightPosition;
 uniform vec3        lightColor;
 
-uniform sampler2D   specularMap;
-uniform vec3        specularConstant;
+#ifdef SPECULARCONSTANT
+    uniform vec3        specularConstant;
+#endif
+
+#ifdef SPECULARMAP
+    uniform sampler2D   specularMap;
+#endif
 
 uniform vec3        specularExponentConstant;
 #ifdef SPECULAREXPONENTMAP
@@ -107,6 +112,20 @@ void main(void) {
         ;
 #   endif
 
+
+#   if defined(SPECULARCONSTANT) || defined(SPECULARMAP)     
+        vec3 specularColor =
+#       ifdef SPECULARCONSTANT
+            specularConstant
+#           ifdef SPECULARMAP
+                * texture2D(specularMap, offsetTexCoord).rgb
+#          endif
+#       else
+            texture2D(specularMap, offsetTexCoord).rgb
+#       endif
+        ;
+#   endif
+
     // Compute projected shadow coord.
     vec4 projShadowCoord = shadowCoord / shadowCoord.w;
 
@@ -128,7 +147,10 @@ void main(void) {
                 * diffuseColor
 #          endif
 
-           // Specular
-           + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentConstant) * specularConstant);
+#       if defined(SPECULARCONSTANT) || defined(SPECULARMAP)
+            + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentConstant) * specularColor
+#       endif
+            );
+
 }
 

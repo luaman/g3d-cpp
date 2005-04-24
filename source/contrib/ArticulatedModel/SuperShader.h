@@ -38,6 +38,7 @@ public:
         inline Component() : constant(0, 0, 0), map(NULL) {}
         inline Component(const Color3& c) : constant(c), map(NULL) {}
         inline Component(double c) : constant(c, c, c), map(NULL) {}
+        inline Component(TextureRef t) : constant(1, 1, 1), map(t) {}
 
         /** True if this material is definitely (0,0,0) everywhere */
         inline bool isBlack() const {
