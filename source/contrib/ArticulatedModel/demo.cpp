@@ -60,6 +60,7 @@ protected:
 public:
     SkyRef                      sky;
 
+    LightingParameters          skyParameters;
     LightingRef                 lighting;
 
     Array<EntityRef>            entityArray;
@@ -76,6 +77,9 @@ class Demo : public GApplet {
 private:
 
     void generateShadowMap(const GLight& light, const Array<PosedModelRef>& shadowCaster);
+
+    ShaderRef                   bloomShader, bloomFilterShader;
+    TextureRef                  screenImage, bloomMap;
 
     TextureRef                  shadowMap;
     Matrix4                     lightMVP;
@@ -114,6 +118,78 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
             
     }
 
+    if (GLCaps::supports_GL_EXT_texture_rectangle() && Shader::supportsPixelShaders()) {
+        screenImage = Texture::createEmpty(app->renderDevice->width(), app->renderDevice->height(), 
+            "Copied Screen Image", TextureFormat::RGB8,
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
+        bloomMap = Texture::createEmpty(app->renderDevice->width()/10, app->renderDevice->height()/10, 
+            "Bloom map", TextureFormat::RGB8,
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
+
+        // Create a filtered, thresholded low-resolution version of an image.
+        bloomFilterShader = Shader::fromStrings("",         
+            STR(
+            uniform sampler2DRect screenImage;
+
+            // Only allows bright pixels to pass
+            vec4 threshold(vec4 v) {
+                const float T = 0.95;
+                return 
+                    ((v.r >= T) ||
+                     (v.g >= T) ||
+                     (v.b >= T)) ? v : vec4(0,0,0,0);
+            }
+
+            void main(void) {
+                // The center pixel
+                vec2 p = gl_TexCoord[0].xy - vec2(1, 1);
+
+                vec4 color = vec4(0,0,0,0);
+
+                // Blur while downsampling
+                for (int dx = -10; dx <= 10; dx += 4) {
+                    for (int dy = -10; dy <= 10; dy += 4) {
+                        color += threshold(texture2DRect(screenImage, p + vec2(dx, dy)));
+                    }
+                }
+
+                gl_FragColor = color / 36.0;
+            }
+            ));
+        bloomFilterShader->args.set("screenImage", screenImage);
+
+        // Combine the bloom map with the screen image
+        bloomShader = Shader::fromStrings("",
+            STR(
+            uniform sampler2DRect screenImage;
+            uniform sampler2DRect bloomMap;
+
+            void main(void) {
+                // The center pixel
+                vec2 p = gl_TexCoord[0].xy;
+        
+                gl_FragColor = 
+                    // Brighten the screen image by 1/0.75, since we darkened the 
+                    // scene when rendering to avoid saturation.
+                    texture2DRect(screenImage, gl_TexCoord[0].xy * 10.0) * 1.34 + 
+
+                    // Add the bloom
+                    (texture2DRect(bloomMap, p) +
+                     (texture2DRect(bloomMap, p + vec2(-2,0)) + 
+                      texture2DRect(bloomMap, p + vec2(2,0))) * 0.5 + 
+                     (texture2DRect(bloomMap, p + vec2(0,-2)) + 
+                      texture2DRect(bloomMap, p + vec2(0,2))) * 0.5 + 
+                     texture2DRect(bloomMap, p + vec2(0,-1)) + 
+                     texture2DRect(bloomMap, p + vec2(-1,0)) + 
+                     texture2DRect(bloomMap, p + vec2(1,0)) + 
+                     texture2DRect(bloomMap, p + vec2(0,1))) / 4.0;
+            }
+            ));
+
+        bloomShader->args.set("screenImage", screenImage);
+        bloomShader->args.set("bloomMap", bloomMap);
+
+    }
 }
 
 
@@ -194,7 +270,9 @@ void Demo::doGraphics() {
 
     // Pose all
     Array<PosedModelRef> posedModels;
+
     for (int e = 0; e < app->entityArray.size(); ++e) {
+        /*
         static RealTime t0 = System::time();
         RealTime t = (System::time() - t0) * 10;
         app->entityArray[e]->pose.cframe.set("m_rotor", 
@@ -203,6 +281,7 @@ void Demo::doGraphics() {
         app->entityArray[e]->pose.cframe.set("t_rotor",
             CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
                             Vector3::zero()));
+                            */
 
         app->entityArray[e]->model->pose(posedModels, app->entityArray[e]->cframe, app->entityArray[e]->pose);
     }
@@ -230,14 +309,13 @@ void Demo::doGraphics() {
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
     app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
 
-    LightingParameters lighting(G3D::toSeconds(2, 00, 00, PM));
 
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
     app->renderDevice->clear(app->sky.notNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(lighting);
+        app->sky->render(app->skyParameters);
     }
 
     app->renderDevice->pushState();
@@ -263,9 +341,29 @@ void Demo::doGraphics() {
 
     app->renderDevice->popState();
 
+    // Add bloom
+    if (bloomMap.notNull()) {
+        app->renderDevice->push2D();
+            // Undo renderdevice's 0.35 translation
+            app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
+            Rect2D rect = Rect2D::xywh(0, 0, app->renderDevice->width(), app->renderDevice->height());
+            Rect2D smallRect = Rect2D::xywh(0, 0, bloomMap->texelWidth(), bloomMap->texelHeight());
+            screenImage->copyFromScreen(rect);
+
+            // Shrink and filter
+            app->renderDevice->setShader(bloomFilterShader);
+            Draw::rect2D(smallRect, app->renderDevice, Color3::white(), rect);
+            bloomMap->copyFromScreen(smallRect);
+
+            app->renderDevice->setShader(bloomShader);
+//            app->renderDevice->setShader(NULL);
+//            app->renderDevice->setTexture(0, bloomMap);
+            Draw::rect2D(rect, app->renderDevice, Color3::white(), smallRect);
+        app->renderDevice->pop2D();
+    }
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(lighting);
+        app->sky->renderLensFlare(app->skyParameters);
     }
 
     app->debugPrintf("%s Profile %s\n", toString(ArticulatedModel::profile()),
@@ -309,7 +407,7 @@ void App::main() {
             material.transmit = Color3::black();
             material.specular = Texture::fromFile(path + "specular.jpg");
             material.reflect = Color3::black();
-            material.specularExponent = Color3::white() * 60;
+            material.specularExponent = Color3::white() * 40;
         }
 
         {
@@ -333,10 +431,10 @@ void App::main() {
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].twoSided = true;
-        material.diffuse = Color3::yellow() * .7;
+        material.diffuse = Color3::yellow() * .5;
         material.transmit = Color3(.5,.3,.3);
         material.reflect = Color3::white() * .1;
-        material.specular = Color3::white() * .8;
+        material.specular = Color3::white() * .7;
         material.specularExponent = Color3::white() * 40;
         model->updateAll();
 
@@ -371,8 +469,8 @@ void App::main() {
         material.diffuse = Color3::fromARGB(0xF28900);
         material.transmit = Color3::black();
         material.reflect = Color3::black();
-        material.specular = Color3::white() * .3;
-        material.specularExponent = Color3::white() * 60;
+        material.specular = Color3::white() * .05;
+        material.specularExponent = Color3::white() * 10;
         model->updateAll();
 
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
@@ -630,26 +728,35 @@ void App::main() {
 
     lighting = Lighting::create();
     {
-        LightingParameters params(G3D::toSeconds(12, 00, 00, PM));
+        // TODO: move the lightScale processing into doGraphics
+
+        bool useBloom = GLCaps::supports_GL_EXT_texture_rectangle() && Shader::supportsPixelShaders();
+
+        double lightScale = useBloom ? 0.75 : 0;
+
+        skyParameters = LightingParameters(G3D::toSeconds(12, 00, 00, PM));
     
+        skyParameters.skyAmbient = Color3::white() * lightScale;
+        skyParameters.diffuseAmbient *= lightScale;
+
         if (sky.notNull()) {
             //lighting->environmentMap.constant = lighting.skyAmbient;
             lighting->environmentMap = sky->getEnvironmentMap();
-            lighting->environmentMapColor = params.skyAmbient;
+            lighting->environmentMapColor = skyParameters.skyAmbient;
         } else {
             lighting->environmentMapColor = Color3::black();
         }
 
-        lighting->ambientTop = Color3(.7, .7, 1) * params.diffuseAmbient;
-        lighting->ambientBottom = Color3::brown() * params.diffuseAmbient;
+        lighting->ambientTop = Color3(.7, .7, 1) * skyParameters.diffuseAmbient;
+        lighting->ambientBottom = Color3::brown() * skyParameters.diffuseAmbient;
 
         lighting->lightArray.clear();
 
         lighting->shadowedLightArray.clear();
 
-        GLight L = params.directionalLight();
+        GLight L = skyParameters.directionalLight();
         // Decrease the blue since we're adding blue ambient
-        L.color *= Color3(1.2, 1.2, 1);
+        L.color *= Color3(1.2, 1.2, 1) * lightScale;
         L.position = Vector4(Vector3(0,1,1).direction(), 0);
 
         lighting->shadowedLightArray.append(L);
