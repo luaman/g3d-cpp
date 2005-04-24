@@ -67,6 +67,9 @@ varying vec3        wsPosition;
 varying vec2        texCoord;
 varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 
+/** Set to -1 to flip the normal. */
+uniform float       backside;
+
 void main(void) {
 
     vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
@@ -89,22 +92,23 @@ void main(void) {
         vec3 tsN = ((texture2D(normalBumpMap, offsetTexCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
 
 	    // Take the normal to world space 
-	    vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
+	    vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz * backside;
 
 #   else
 
         // World space normal
-        vec3 wsN = tan_Z.xyz;
+        vec3 wsN = tan_Z.xyz * backside;
 
         vec2 offsetTexCoord = texCoord;
 #   endif
 
-    // Light vector      
-	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
-
     // Eye vector
     vec3 wsE = normalize(wsEyePos - wsPosition);
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
+
+
+    // Light vector      
+	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
 
     // Reflection vector
     vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
@@ -148,7 +152,6 @@ void main(void) {
         ;
 #   endif
 
-    // tan_Z is world space normal
     vec3 ambient = ambientTop + (ambientTop - ambientBottom) * min(wsN.y, 0.0);
 
     gl_FragColor.rgb =
@@ -160,7 +163,6 @@ void main(void) {
 #       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
             diffuseColor * 
             (ambient + max(dot(wsL, wsN), 0.0) * lightColor)
-
 #       endif
 
         // Specular

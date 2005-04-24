@@ -139,7 +139,7 @@ void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFram
                         }
 
 			            triList.material.diffuse.constant = material.diffuse;
-                        triList.material.twoSided = material.twoSided;
+                        triList.twoSided = material.twoSided;
                         triList.computeBounds(part);
 
                     } else {

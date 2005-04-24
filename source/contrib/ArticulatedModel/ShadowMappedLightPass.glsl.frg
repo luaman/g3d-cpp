@@ -26,6 +26,8 @@ uniform vec3        specularExponentConstant;
     uniform sampler2D   diffuseMap;
 #endif
 
+/** Set to -1 to flip the normal. */
+uniform float       backside;
 
 uniform sampler2DShadow shadowMap;
 
@@ -73,21 +75,21 @@ void main(void) {
         vec3 tsN = ((texture2D(normalBumpMap, offsetTexCoord).xyz - vec3(0.5, 0.5, 0.5)) * 2.0);
 
 	    // Take the normal to world space 
-	    vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz;
+	    vec3 wsN = (tangentToWorld * vec4(tsN, 0.0)).xyz * backside;
 
 #   else
         vec2 offsetTexCoord = texCoord;
 
         // World space normal
-        vec3 wsN = tan_Z.xyz;
+        vec3 wsN = tan_Z.xyz * backside;
 #   endif
-
-    // Light vector      
-	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
 
     // Eye vector
     vec3 wsE = normalize(wsEyePos - wsPosition);
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
+
+    // Light vector      
+	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
 
     // Reflection vector
     vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
@@ -117,6 +119,7 @@ void main(void) {
           shadow2D(shadowMap, projShadowCoord.xyz + vec3(-s, -s, 0.0)).xyz) / 5.0;
 
     gl_FragColor.rgb =
+
             lightColor * shadow *
         ( 
 #          if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)

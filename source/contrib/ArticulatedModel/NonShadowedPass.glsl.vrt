@@ -28,31 +28,21 @@ void main(void) {
     // Object space eye vector
     vec3 osE = osEyePos - osPosition;
 
-	vec3 T = gl_MultiTexCoord1.xyz;
-	vec3 N = normalize(gl_Normal);
-
-#   ifdef TWOSIDED
-        float flip = sign(dot(gl_Normal, osE));
-        T = T * flip;
-        N = N * flip;
-#   endif
+	// Compute the columns of the tangent space to world space matrix
+	tan_X = g3d_ObjectToWorldMatrix * vec4(gl_MultiTexCoord1.xyz, 0);
+	tan_Z = g3d_ObjectToWorldMatrix * vec4(normalize(gl_Normal), 0);
 
     // T and N are guaranteed perpendicular, so B is normalized.
-	vec3 B = cross(N, T);
+	tan_Y = vec4(cross(tan_Z.xyz, tan_X.xyz), 0);
 
-
-	// Compute the columns of the tangent space to world space matrix
-	tan_X = g3d_ObjectToWorldMatrix * vec4(T, 0);
-	tan_Y = g3d_ObjectToWorldMatrix * vec4(B, 0);
-	tan_Z = g3d_ObjectToWorldMatrix * vec4(N, 0);
 	tan_W = g3d_ObjectToWorldMatrix * gl_Vertex;
 
 	wsPosition      = tan_W.xyz;
 
 	// Compute the tangent space eye vector (ATI does not support the transpose operator)
-    mat3 objectToTangent = mat3(T.x, B.x, N.x,
-                                T.y, B.y, N.y,
-                                T.z, B.z, N.z);
+    mat3 objectToTangent = mat3(tan_X.x, tan_Y.x, tan_Z.x,
+                                tan_X.y, tan_Y.y, tan_Z.y,
+                                tan_X.z, tan_Y.z, tan_Z.z);
     
 	_tsE             = objectToTangent * (osEyePos - osPosition);
 

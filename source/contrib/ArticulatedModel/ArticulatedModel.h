@@ -62,6 +62,10 @@ public:
 	    public:
 		    Array<int>				indexArray;
 
+            /** When true, this trilist enables two-sided lighting and texturing and
+                does not cull back faces.*/
+            bool                    twoSided;
+        
             SuperShader::Material	material;
 
             /** In the same space as the vertices. Computed by computeBounds() */
@@ -76,7 +80,7 @@ public:
             /** Set by Part::updateShader */
             ShaderRef               shadowMappedShader;
 
-            TriList() {}
+            TriList() : twoSided(false) {}
 
             /** Recomputes the bounds.  Called automatically by initIFS and init3DS.
                 Must be invoked manually if the geometry is later changed. */

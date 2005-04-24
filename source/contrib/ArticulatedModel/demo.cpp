@@ -181,7 +181,7 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         app->renderDevice->setPolygonOffset(2);
 
         for (int s = 0; s < shadowCaster.size(); ++s) {
-            shadowCaster[s]->renderNonShadowed(app->renderDevice, NULL);
+            shadowCaster[s]->render(app->renderDevice);
         }
    
     app->renderDevice->popState();
@@ -284,13 +284,15 @@ void App::main() {
 
     const std::string path = "";
 
+    const Matrix3 rot180 = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180));
+
     double x = -5;
 
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        material.twoSided = true;
+        model->partArray[0].triListArray[0].twoSided = true;
         material.diffuse = Color3::yellow() * .7;
         material.transmit = Color3(.5,.3,.3);
         material.reflect = Color3::white() * .1;
@@ -302,20 +304,12 @@ void App::main() {
         x += 2;
     }
 
-    
-    if (false) {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("d:/users/morgan/projects/3ds/fs/fs.3ds", 1);
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-    }
 
     if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("3ds/55-porsche/55porsmx.3ds", .25);
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
     }
-
-    const Matrix3 rot180 = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180));
 
     if (true) {
         CoordinateFrame xform;
@@ -388,6 +382,135 @@ void App::main() {
 //        x += 2;
     }
 
+     if (true) {
+        ArticulatedModelRef model = ArticulatedModel::createEmpty();
+
+        model->name = "Stained Glass";
+        ArticulatedModel::Part& part = model->partArray.next();
+        part.cframe = CoordinateFrame();
+        part.name = "root";
+    
+        const double S = 1.0;
+        part.geometry.vertexArray.append(
+            Vector3(-S,  S, 0),
+            Vector3(-S, -S, 0),
+            Vector3( S, -S, 0),
+            Vector3( S,  S, 0));
+
+        part.geometry.normalArray.append(
+            Vector3::unitZ(),
+            Vector3::unitZ(),
+            Vector3::unitZ(),
+            Vector3::unitZ());
+
+        double texScale = 1;
+        part.texCoordArray.append(
+            Vector2(0,0) * texScale,
+            Vector2(0,1) * texScale,
+            Vector2(1,1) * texScale,
+            Vector2(1,0) * texScale);
+
+        part.tangentArray.append(
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX());
+
+        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
+        triList.indexArray.clear();
+        triList.indexArray.append(0, 1, 2);
+        triList.indexArray.append(0, 2, 3);
+
+        triList.twoSided = true;
+        triList.material.emit.constant = Color3::black();
+
+        triList.material.diffuse.constant = Color3::white() * 0.05;
+
+        GImage normalBumpMap;
+        computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap, false, true);
+        triList.material.normalBumpMap =         
+            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
+
+        triList.material.bumpMapScale = 0.02;
+
+        triList.material.specular.constant = Color3::white() * 0.4;
+        triList.material.specular.map = Texture::fromFile("demo/stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
+        triList.material.specularExponent.constant = Color3::white() * 60;
+
+        triList.material.reflect.constant = Color3::white() * 0.2;
+        triList.material.reflect.map = Texture::fromFile("demo/stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
+
+        triList.material.transmit.constant = Color3::white();
+        triList.material.transmit.map = Texture::fromFile("demo/stained-glass-transmit.png", TextureFormat::AUTO, Texture::CLAMP);
+
+        triList.computeBounds(part);
+
+        part.indexArray = triList.indexArray;
+
+        part.computeIndexArray();
+        part.updateVAR();
+        part.updateShaders();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
+
+     if (true) {
+         // 2-sided test
+        ArticulatedModelRef model = ArticulatedModel::createEmpty();
+
+        model->name = "White Square";
+        ArticulatedModel::Part& part = model->partArray.next();
+        part.cframe = CoordinateFrame();
+        part.name = "root";
+    
+        const double S = 1.0;
+        part.geometry.vertexArray.append(
+            Vector3(-S,  S, 0),
+            Vector3(-S, -S, 0),
+            Vector3( S, -S, 0),
+            Vector3( S,  S, 0));
+
+        part.geometry.normalArray.append(
+            Vector3::unitZ(),
+            Vector3::unitZ(),
+            Vector3::unitZ(),
+            Vector3::unitZ());
+
+        double texScale = 1;
+        part.texCoordArray.append(
+            Vector2(0,0) * texScale,
+            Vector2(0,1) * texScale,
+            Vector2(1,1) * texScale,
+            Vector2(1,0) * texScale);
+
+        part.tangentArray.append(
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX());
+
+        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
+        triList.indexArray.clear();
+        triList.indexArray.append(0, 1, 2);
+        triList.indexArray.append(0, 2, 3);
+
+        triList.twoSided = true;
+        triList.material.emit.constant = Color3::black();
+
+        triList.material.diffuse.constant = Color3::white();
+        triList.computeBounds(part);
+
+        part.indexArray = triList.indexArray;
+
+        part.computeIndexArray();
+        part.updateVAR();
+        part.updateShaders();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
+        x += 2;
+    }
+
     if (true) {
         ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
@@ -427,7 +550,7 @@ void App::main() {
         triList.indexArray.append(0, 1, 2);
         triList.indexArray.append(0, 2, 3);
 
-        triList.material.twoSided = true;
+        triList.twoSided = true;
         triList.material.emit.constant = Color3::black();
 
         triList.material.specular.constant = Color3::black();
@@ -457,136 +580,7 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
 
-     if (true) {
-        ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
-        model->name = "Stained Glass";
-        ArticulatedModel::Part& part = model->partArray.next();
-        part.cframe = CoordinateFrame();
-        part.name = "root";
-    
-        const double S = 1.0;
-        part.geometry.vertexArray.append(
-            Vector3(-S,  S, 0),
-            Vector3(-S, -S, 0),
-            Vector3( S, -S, 0),
-            Vector3( S,  S, 0));
-
-        part.geometry.normalArray.append(
-            -Vector3::unitZ(),
-            -Vector3::unitZ(),
-            -Vector3::unitZ(),
-            -Vector3::unitZ());
-
-        double texScale = 1;
-        part.texCoordArray.append(
-            Vector2(0,0) * texScale,
-            Vector2(0,1) * texScale,
-            Vector2(1,1) * texScale,
-            Vector2(1,0) * texScale);
-
-        part.tangentArray.append(
-            Vector3::unitX(),
-            Vector3::unitX(),
-            Vector3::unitX(),
-            Vector3::unitX());
-
-        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
-        triList.indexArray.clear();
-        triList.indexArray.append(0, 1, 2);
-        triList.indexArray.append(0, 2, 3);
-
-        triList.material.twoSided = true;
-        triList.material.emit.constant = Color3::black();
-
-        triList.material.diffuse.constant = Color3::white() * 0.05;
-
-        GImage normalBumpMap;
-        computeNormalMap(GImage("demo/stained-glass-bump.png"), normalBumpMap, false, true);
-        triList.material.normalBumpMap =         
-            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
-
-        triList.material.bumpMapScale = 0.02;
-
-        triList.material.specular.constant = Color3::white() * 0.4;
-        triList.material.specular.map = Texture::fromFile("demo/stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
-        triList.material.specularExponent.constant = Color3::white() * 60;
-
-        triList.material.reflect.constant = Color3::white() * 0.2;
-        triList.material.reflect.map = Texture::fromFile("demo/stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
-
-        triList.material.transmit.constant = Color3::white();
-        triList.material.transmit.map = Texture::fromFile("demo/stained-glass-transmit.png", TextureFormat::AUTO, Texture::CLAMP);
-
-        triList.computeBounds(part);
-
-        part.indexArray = triList.indexArray;
-
-        part.computeIndexArray();
-        part.updateVAR();
-        part.updateShaders();
-
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-    }
-
-
-
-     if (true) {
-         // 2-sided test
-        ArticulatedModelRef model = ArticulatedModel::createEmpty();
-
-        model->name = "Stained Glass";
-        ArticulatedModel::Part& part = model->partArray.next();
-        part.cframe = CoordinateFrame();
-        part.name = "root";
-    
-        const double S = 1.0;
-        part.geometry.vertexArray.append(
-            Vector3(-S,  S, 0),
-            Vector3(-S, -S, 0),
-            Vector3( S, -S, 0),
-            Vector3( S,  S, 0));
-
-        part.geometry.normalArray.append(
-            -Vector3::unitZ(),
-            -Vector3::unitZ(),
-            -Vector3::unitZ(),
-            -Vector3::unitZ());
-
-        double texScale = 1;
-        part.texCoordArray.append(
-            Vector2(0,0) * texScale,
-            Vector2(0,1) * texScale,
-            Vector2(1,1) * texScale,
-            Vector2(1,0) * texScale);
-
-        part.tangentArray.append(
-            Vector3::unitX(),
-            Vector3::unitX(),
-            Vector3::unitX(),
-            Vector3::unitX());
-
-        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
-        triList.indexArray.clear();
-        triList.indexArray.append(0, 1, 2);
-        triList.indexArray.append(0, 2, 3);
-
-        triList.material.twoSided = true;
-        triList.material.emit.constant = Color3::black();
-
-        triList.material.diffuse.constant = Color3::white();
-        triList.computeBounds(part);
-
-        part.indexArray = triList.indexArray;
-
-        part.computeIndexArray();
-        part.updateVAR();
-        part.updateShaders();
-
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-    }
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"contrib/ArticulatedModel/3ds/cube.3ds"
 //		"contrib/ArticulatedModel/3ds/jeep/jeep.3ds", 0.1
@@ -614,10 +608,12 @@ void App::main() {
 
         lighting->shadowedLightArray.clear();
 
-        lighting->shadowedLightArray.append(params.directionalLight());
-
+        GLight L = params.directionalLight();
         // Decrease the blue since we're adding blue ambient
-        lighting->shadowedLightArray.last().color *= Color3(1.2, 1.2, 1);
+        L.color *= Color3(1.2, 1.2, 1);
+        L.position = Vector4(Vector3(0,1,1).direction(), 0);
+
+        lighting->shadowedLightArray.append(L);
     }
 
     Demo(this).run();

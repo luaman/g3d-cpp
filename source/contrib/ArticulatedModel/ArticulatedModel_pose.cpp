@@ -30,7 +30,7 @@ private:
 protected:
 
     /** Called from render to draw geometry after the material properties are set.*/
-    void defaultRender(RenderDevice* rd) const;
+    void sendGeometry(RenderDevice* rd) const;
 
     /** Renders emission, reflection, and lighting for non-shadowed lights.
         The first term rendered uses the current blending/depth mode
@@ -188,7 +188,19 @@ void PosedArticulatedModel::render(RenderDevice* renderDevice) const {
         renderDevice->setSpecularCoefficient(material.specular.constant);
         renderDevice->setShininess(material.specularExponent.constant.average());
 
-        defaultRender(renderDevice);
+
+        if (triList.twoSided) {
+            renderDevice->pushState();
+            renderDevice->enableTwoSidedLighting();
+            renderDevice->setCullFace(RenderDevice::CULL_NONE);
+        }
+
+        sendGeometry(renderDevice);
+
+        if (triList.twoSided) {
+            renderDevice->popState();
+        }
+
     renderDevice->popState();
 }
 
@@ -250,7 +262,7 @@ bool PosedArticulatedModel::renderPS20NonShadowedOpaqueTerms(
 
     SuperShader::configureShader(lighting, material, triList.nonShadowedShader->args);
     rd->setShader(triList.nonShadowedShader);
-    defaultRender(rd);
+    sendGeometry(rd);
 
     return true;
 }
@@ -269,7 +281,7 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
     if (! material.emit.isBlack()) {
         rd->setColor(material.emit.constant);
         rd->setTexture(0, material.emit.map);
-        defaultRender(rd);
+        sendGeometry(rd);
         setAdditive(rd, renderedOnce);
     }
     
@@ -302,7 +314,7 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
                 rd->setTexture(1, lighting->environmentMap);
             }
 
-            defaultRender(rd);
+            sendGeometry(rd);
             setAdditive(rd, renderedOnce);
 
             // Disable reflection map
@@ -334,7 +346,7 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
             }
         }
 
-        defaultRender(rd);
+        sendGeometry(rd);
         setAdditive(rd, renderedOnce);
     }
 
@@ -348,7 +360,7 @@ void PosedArticulatedModel::renderNonShadowed(
 
     if (! rd->colorWrite()) {
         // No need for fancy shading
-        defaultRender(rd);
+        render(rd);
         return;
     }
 
@@ -363,10 +375,10 @@ void PosedArticulatedModel::renderNonShadowed(
         bool oldDepthWrite = rd->depthWrite();
 
         // Render backfaces first, and then front faces
-        int passes = triList.material.twoSided ? 2 : 1;
+        int passes = triList.twoSided ? 2 : 1;
 
-        if (triList.material.twoSided) {
-            // We're going to render the front and backfaces separately.
+        if (triList.twoSided) {
+            // We're going to render the front and back faces separately.
             rd->setCullFace(RenderDevice::CULL_FRONT);
             rd->enableTwoSidedLighting();
         }
@@ -378,7 +390,7 @@ void PosedArticulatedModel::renderNonShadowed(
             rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
             rd->setTexture(0, material.transmit.map);
             rd->setColor(material.transmit.constant);
-            defaultRender(rd);
+            sendGeometry(rd);
 
             bool alreadyAdditive = false;
             setAdditive(rd, alreadyAdditive);
@@ -392,19 +404,36 @@ void PosedArticulatedModel::renderNonShadowed(
         // Opaque
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
 
-        if (triList.material.twoSided) {
-            rd->setCullFace(RenderDevice::CULL_NONE);
-            rd->enableTwoSidedLighting();
+        bool fixedFunction = ArticulatedModel::profile() == ArticulatedModel::FIXED_FUNCTION;
+
+        if (triList.twoSided) {
+            if (fixedFunction) {
+                rd->enableTwoSidedLighting();
+                rd->setCullFace(RenderDevice::CULL_NONE);
+            } else {
+                // Even if back face culling is reversed, for two-sided objects 
+                // we always draw the front.
+                rd->setCullFace(RenderDevice::CULL_BACK);
+            }
         }
 
         bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+
+        if (triList.twoSided && ! fixedFunction) {
+            // gl_FrontFacing doesn't work on most cards, so we have to draw two-sided objects twice
+            rd->setCullFace(RenderDevice::CULL_FRONT);
+            triList.nonShadowedShader->args.set("backside", -1.0f);
+            renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+            triList.nonShadowedShader->args.set("backside", 1.0f);
+        }
+        
 
         if (! wroteDepth) {
             // We failed to write to the depth buffer, so
             // do so now.
             rd->disableLighting();
             rd->setColor(Color3::black());
-            defaultRender(rd);
+            sendGeometry(rd);
         }
     }
 
@@ -437,18 +466,31 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
 
     rd->pushState();
 
-        if (material.twoSided) {
-            rd->enableTwoSidedLighting();
-            rd->setCullFace(RenderDevice::CULL_NONE);
-        }
-
         switch (ArticulatedModel::profile()) {
         case ArticulatedModel::FIXED_FUNCTION:
+            if (triList.twoSided) {
+                rd->enableTwoSidedLighting();
+                rd->setCullFace(RenderDevice::CULL_NONE);
+            }
             renderFFShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
             break;
 
         case ArticulatedModel::PS20:
+            if (triList.twoSided) {
+                // Even if back face culling is reversed, for two-sided objects 
+                // we always draw the front.
+                rd->setCullFace(RenderDevice::CULL_BACK);
+            }
+
             renderPS20ShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+
+            if (triList.twoSided) {
+                // gl_FrontFacing doesn't work on most cards, so we have to draw two-sided objects twice
+                rd->setCullFace(RenderDevice::CULL_FRONT);
+                triList.shadowMappedShader->args.set("backside", -1.0f);
+                renderPS20ShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+                triList.shadowMappedShader->args.set("backside", 1.0f);
+            }
             break;
 
         default:
@@ -474,10 +516,9 @@ void PosedArticulatedModel::renderPS20ShadowMappedLightPass(
     }
 
     rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-
     SuperShader::configureShadowShader(light, lightMVP, shadowMap, material, triList.shadowMappedShader->args);
     rd->setShader(triList.shadowMappedShader);
-    defaultRender(rd);
+    sendGeometry(rd);
 }
 
 
@@ -509,7 +550,7 @@ void PosedArticulatedModel::renderFFShadowMappedLightPass(
 
     rd->setLight(0, light);
 
-    defaultRender(rd);
+    sendGeometry(rd);
 
     if (! material.specular.isBlack()) {
         // Make a separate pass for specular. 
@@ -522,7 +563,7 @@ void PosedArticulatedModel::renderFFShadowMappedLightPass(
             glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL_EXT, GL_SINGLE_COLOR_EXT);
         }
 
-        rd->setColor(Color3::white());// TODO: when I put the specular coefficient here, it doesn't modulate.  What's wrong?
+        rd->setColor(Color3::white()); // TODO: when I put the specular coefficient here, it doesn't modulate.  What's wrong?
         rd->setTexture(0, material.specular.map);
         rd->setSpecularCoefficient(material.specular.constant);
 
@@ -532,7 +573,7 @@ void PosedArticulatedModel::renderFFShadowMappedLightPass(
         rd->setLight(0, light2);
         rd->setShininess(material.specularExponent.constant.average());
 
-        defaultRender(rd);
+        sendGeometry(rd);
 
         if (separateSpecular) {
             // Restore normal behavior
@@ -546,14 +587,14 @@ void PosedArticulatedModel::renderFFShadowMappedLightPass(
 }
 
 
-void PosedArticulatedModel::defaultRender(
+void PosedArticulatedModel::sendGeometry(
     RenderDevice*           rd) const {
-
-    CoordinateFrame o2w = rd->getObjectToWorldMatrix();
-    rd->setObjectToWorldMatrix(cframe);
 
     const ArticulatedModel::Part& part = model->partArray[partIndex];
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
+
+    CoordinateFrame o2w = rd->getObjectToWorldMatrix();
+    rd->setObjectToWorldMatrix(cframe);
 
     if (rd->renderMode() == RenderDevice::RENDER_SOLID) {
         rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
@@ -575,7 +616,7 @@ void PosedArticulatedModel::defaultRender(
 
     } else {
 
-        // Radeon mobility cards crash rendering wireframe in wireframe mode.
+        // Radeon mobility cards crash rendering VAR in wireframe mode.
         // switch to begin/end
         rd->beginPrimitive(RenderDevice::TRIANGLES);
         for (int i = 0; i < triList.indexArray.size(); ++i) {
@@ -593,6 +634,7 @@ void PosedArticulatedModel::defaultRender(
     }
 
     rd->setObjectToWorldMatrix(o2w);
+
 }
 
 

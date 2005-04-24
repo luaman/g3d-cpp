@@ -84,6 +84,7 @@ void SuperShader::configureShadowShader(
     args.set("specularConstant",        material.specular.constant);
     args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : whiteMap);
     args.set("specularExponentConstant",material.specularExponent.constant);
+
     if (material.normalBumpMap.notNull() && (material.bumpMapScale != 0)) {
         args.set("normalBumpMap",       material.normalBumpMap);
         args.set("bumpMapScale",        material.bumpMapScale);
@@ -154,13 +155,6 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
 
         std::string defines;
 
-        // OPT: As an optimization, we could compile two versions
-        // of each shader (with/without two sided) and select
-        // the correct one at runtime based on the RenderDevice::twoSidedLighting
-        // flag.  For now we pay the small performance penalty of handling
-        // two-sided lighting for all surfaces.
-        //defines += "#define TWOSIDED\n";
-
         if (material.diffuse.constant != Color3::black()) {
             if (material.diffuse.map.notNull()) {
                 defines += "#define DIFFUSEMAP\n";
@@ -216,6 +210,9 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
 
         p.nonShadowedShader  = loadShader(path + nonShadowName, defines);
         p.shadowMappedShader = loadShader(path + shadowName,    defines);
+
+        p.nonShadowedShader->args.set("backside", 1.0);
+        p.shadowMappedShader->args.set("backside", 1.0);
 
         cache.add(material, p);
     }
