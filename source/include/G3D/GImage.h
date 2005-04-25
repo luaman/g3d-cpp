@@ -115,6 +115,28 @@ void computeNormalMap(
     bool lowPassBump = false,
     bool scaleHeightByNz = false);
 
+/**
+  Bayer demosaicing using the filter proposed in 
+
+HIGH-QUALITY LINEAR INTERPOLATION FOR DEMOSAICING OF BAYER-PATTERNED COLOR IMAGES
+Henrique S. Malvar, Li-wei He, and Ross Cutler
+
+  The filter wraps at the image boundaries.
+*/
+void BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
+
+
+
+/** Fast conversion; the output has 1/2 the size of the input in each direction. Assumes in != out.
+ See G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC for a much better result. */
+void BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int inHeight, const uint8* in, uint8* out);
+
+/** Attempt to undo fast conversion of G3D::BAYER_G8B8_R8G8_to_Quarter_R8G8B8; 
+    the green channel will lose data. Assumes in != out 
+    The input should have size 3 * inWidth * inHeight.  The output should have size
+    2 * inWidth * 2 * inHeight.
+*/
+void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out);
 
 /**
   Interface to image compression & file formats. The free Image Magick Magick Wand API 

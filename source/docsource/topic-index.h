@@ -246,11 +246,14 @@
 		G3D::Table
 
      <LI><B>Image formats</B> &nbsp; &nbsp;
+        G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC,
+        G3D::BAYER_G8B8_R8G8_to_Quarter_R8G8B8,
 		G3D::GImage,
 		G3D::GImage::Error,	
 		G3D::computeNormalMap,
         G3D::flipRGBVertical,
         G3D::flipRGBAVertical,
+        G3D::Quarter_R8G8B8_to_BAYER_G8B8_R8G8,
   	    G3D::RGBtoARGB,
 		G3D::RGBtoBGR,
 		G3D::RGBtoBGRA,
