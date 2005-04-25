@@ -1,5 +1,9 @@
 This directory contains user-submitted source code that works with G3D.  This code is neither supported nor maintained by the G3D team, nor is it covered under the G3D license.
 
+ArcticulatedModel - Rigid body heirarchy and high-quality scene graph rendering demo.  Loads 3DS, IFS, PLY2.  By Morgan.
+
+Matrix        - Efficient N x M matrix class.  By Morgan.
+
 pingtest      -  A simple command line program demonstrating NetworkDevice, LightweightConduit, and ReliableConduit by Morgan.
 
 CoreyGWindow  -  GWindow implementations for the Qt API by Corey Taylor <laundrypowder@spamcop.net>
