@@ -476,8 +476,8 @@ void wxG3DCanvas::handleMouseMiddleDown(wxMouseEvent& event) {
 
 void wxG3DCanvas::handleMouseMove(wxMouseEvent& event) {
 
-    _gWindow->relativeX = event.m_x - _gWindow->clientX;
-    _gWindow->relativeY = event.m_y - _gWindow->clientY;
+    _gWindow->relativeX = event.m_x;
+    _gWindow->relativeY = event.m_y;
     event.Skip();
 }
 
