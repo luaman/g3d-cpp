@@ -3,11 +3,10 @@ package com.graphics3d.g3d;
 /**
  * @author Morgan McGuire
  */
-public class Constants
-{
+public class Constants {
     // Intel
-    public static final int littleEndian = 1;
+    public static final int G3D_LITTLE_ENDIAN = 1;
 
     // Sun/Motorola
-    public static final int bigEndian = 2;
+    public static final int G3D_BIG_ENDIAN = 2;
 }

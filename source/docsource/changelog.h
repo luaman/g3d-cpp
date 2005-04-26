@@ -35,6 +35,7 @@
      <LI> G3D::Quarter_R8G8B8_to_BAYER_G8B8_R8G8
      <LI> G3D::BAYER_G8B8_R8G8_to_Quarter_R8G8B8
      <LI> contrib/Matrix
+     <LI> contrib/Java
      <LI> Texture::alphaOnlyVersion
      <LI> Draw::sphere speed improved over 25% with single quad strip (improves Draw::capsule) [Corey]
      <LI> Allow 1-channel GImage saving - BMP (expanded to RGB), PNG [Corey]
