@@ -2018,9 +2018,6 @@ void testAABSPTreeSerialize() {
 
 int main(int argc, char* argv[]) {    
 
-    testMatrix();
-    return 0;
-
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
         RenderDevice* renderDevice = new RenderDevice();
@@ -2042,6 +2039,9 @@ int main(int argc, char* argv[]) {
     #endif
 
     printf("\n\nTests:\n\n");
+
+    testMatrix();
+    printf("  passed\n");
 
     testAABSPTreeSerialize();
     printf("  passed\n");
