@@ -17,7 +17,7 @@ version = "6_05-b05"
 aclocal    = "aclocal"
 autoconf   = "autoconf"
 autoheader = "autoheader"
-automake   = "automake"
+automake   = "automake-1.9"
 doxygen    = "doxygen"
 python     = "python"
 sdlconfig  = "sdl-config"
@@ -91,6 +91,14 @@ def setPermissions(args):
 ###############################################################################
    
 def linuxCheckVersion():
+    global aclocal
+    global autoconf
+    global autoheader
+    global automake
+    global doxygen
+    global python
+    global sdlconfig
+
     print 'Checking tool versions...'
     print
 
@@ -106,7 +114,6 @@ def linuxCheckVersion():
         try:
             checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
         except:
-            # Brown university has a bizarre setup
             automake = 'automake-1.7'
             checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
 
