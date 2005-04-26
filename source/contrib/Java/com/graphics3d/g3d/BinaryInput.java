@@ -7,24 +7,32 @@ import java.net.*;
 import java.io.*;
 
 /**
- * Random Access Input object
- * @author Morgan McGuire & Max McGuire
+ Sequential or random access byte-order independent binary file
+ access. 
+
+ Differences from the C++ version:
+ <UL>
+  <LI> Can read from streams
+  <LI> Can read from URLs
+  <LI> No huge files
+  <LI> No compressed files
+  <LI> No bit-reading
+  <LI> No Vector, Color read methods
+ </UL> 
+
+ @author Morgan McGuire & Max McGuire
  */
 public class BinaryInput {
 
     /**
-     * Index of the next byte to be used.
+     ndex of the next byte in data to be used.
      */
-    private int position;
-    private byte data[];
+    private int               position;
+    private byte              data[];
+    private String            filename;
 
-    public int byteOrder = Constants.littleEndian;
-
-    /** Copies the data by default */
-    public BinaryInput(byte data[], int byteOrder) {
-        BinaryInput(data, byteOrder, true);
-    }
-
+    public int                byteOrder = 0;
+    
     public BinaryInput(byte data[], int byteOrder, boolean copyMemory) {
         this.byteOrder = byteOrder;
         if (copyMemory) {
@@ -33,6 +41,11 @@ public class BinaryInput {
         } else {
             this.data = data;
         }
+    }
+
+    /** Copies the data by default */
+    public BinaryInput(byte data[], int byteOrder) {
+        this(data, byteOrder, true);
     }
 
     public BinaryInput(URL url, int byteOrder) throws IOException {
@@ -122,7 +135,11 @@ public class BinaryInput {
      * Returns the length of the file in bytes.
      */
     public int getLength() {
-        return Array.getLength(data);
+        return data.length;
+    }
+
+    public int size() {
+        return getLength();
     }
 
     public int getPosition() {
@@ -130,12 +147,21 @@ public class BinaryInput {
     }
 
     public void setPosition(int position) {
-        if (position > Array.getLength(data)) {
-            throw new IllegalArgumentException(
-                                               "Can't set position past 1 + end of file (file length = " + 
-                                               Array.getLength(data) + ")");
+        if (position > data.length) {
+            throw new IllegalArgumentException
+                ("Can't set position past 1 + end of file (file length = " + 
+                 data.length + ")");
+        } else if (position < 0) {
+            throw new IllegalArgumentException
+                ("Can't set position below 0");
         }
+
         this.position = position;
+    }
+
+    /** Goes back to the beginning of the file.  */
+    public void reset() {
+        setPosition(0);
     }
 
     public int readUInt8() {
@@ -144,6 +170,10 @@ public class BinaryInput {
             i += 256;
         }
         return i;
+    }
+
+    public boolean readBool8() {
+        return readInt8() != 0;
     }
 
     public int readUInt16() {
@@ -191,8 +221,36 @@ public class BinaryInput {
         return (int)i;
     }
 
+    public long readUInt64() {
+        long i0 = readUInt32();
+        long i1 = readUInt32();
+        return (i1 << 32) + i0; 
+    }
+
+    public long readInt64() {
+        return readUInt64() - 2147483648L;
+    }
+
     public float readFloat32() {
         return Float.intBitsToFloat(readInt32());
+    }
+
+    public double readFloat64() {
+        return Double.longBitsToDouble(readInt64());
+    }
+
+    /** Reads until NULL or the end of the file is encountered. */
+    public String readString() {
+        int length = 0;
+        while (data[position + length] != '\0') {
+            ++length;
+        }
+
+        return readString(length + 1);
+    }
+    
+    public String readString32() {
+        return readString((int)readUInt32());
     }
 
     public String readString(int length) {
@@ -201,10 +259,31 @@ public class BinaryInput {
         return s;
     }
 
+    /** Reads until NULL or the end of the file is encountered. If the string has odd length 
+        (including NULL), reads another byte. */
+	public String readStringEven() {
+        int length = 0;
+        while (data[position + length] != '\0') {
+            ++length;
+        }
 
+        return readString(length + 2 - (length % 2));
+    } 
+
+    /** Skips ahead n bytes. */
     public void skip(int numBytes) {
         position += numBytes;
     }
+
+    public void readBytes(byte bytes[], int n) {
+        System.arraycopy(data, position, bytes, 0, n);
+        skip(n);
+    }
+
+    public boolean hasMore() {
+        return position < data.length;
+    }
+
 }
 
 
