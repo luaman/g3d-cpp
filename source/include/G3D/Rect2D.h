@@ -127,11 +127,29 @@ public:
         return max.y;
     }
 
+    /** Min, min corner */
+    inline Vector2 x0y0() const {
+        return min;
+    }
+
+    /** Max,max corner */
+    inline Vector2 x1y1() const {
+        return max;
+    }
+
+    /** Width and height */
+    inline Vector2 wh() const {
+        return max - min;
+    }
+
     inline Vector2 center() const {
         return (max + min) * 0.5;
     }
 
     inline Rect2D() : min(0, 0), max(0, 0) {}
+
+    /** Creates a rectangle at 0,0 with the given width and height*/
+    inline Rect2D(const Vector2& wh) : min(0, 0), max(wh.x, wh.y) {}
 
     inline static Rect2D xyxy(double x0, double y0, double x1, double y1) {
         Rect2D r;
@@ -245,9 +263,9 @@ public:
     }
 
 
-
     /** Returns the largest, centered Rect2D that can fit inside this
-        while maintaining the aspect ratio of x:y
+        while maintaining the aspect ratio of x:y.  Convenient for
+        displaying images in odd-shaped windows.
     */
     Rect2D largestCenteredSubRect(double ww, double hh) const {
         double textureAspect = hh / ww;

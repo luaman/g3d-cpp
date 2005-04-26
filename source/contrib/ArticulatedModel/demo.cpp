@@ -16,6 +16,8 @@
     #error Requires G3D 6.05
 #endif
 
+const double BLOOMSCALE = 9.0;
+
 #include "SuperShader.h"
 #include "ArticulatedModel.h"
 
@@ -122,7 +124,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
         screenImage = Texture::createEmpty(app->renderDevice->width(), app->renderDevice->height(), 
             "Copied Screen Image", TextureFormat::RGB8,
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
-        bloomMap = Texture::createEmpty(app->renderDevice->width()/10, app->renderDevice->height()/10, 
+        bloomMap = Texture::createEmpty(app->renderDevice->width() / BLOOMSCALE, app->renderDevice->height() / BLOOMSCALE, 
             "Bloom map", TextureFormat::RGB8,
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
 
@@ -133,27 +135,34 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
             // Only allows bright pixels to pass
             vec4 threshold(vec4 v) {
-                const float T = 0.95;
+                // Threshold cutoff
+                const float T = 0.875;
+
+                const float S = 1.0 / (1.0 - T);
+
                 return 
-                    ((v.r >= T) ||
-                     (v.g >= T) ||
-                     (v.b >= T)) ? v : vec4(0,0,0,0);
+                    clamp((v - vec4(T,T,T,0)) * S, vec4(0,0,0,0), vec4(1,1,1,1));
             }
 
             void main(void) {
-                // The center pixel
-                vec2 p = gl_TexCoord[0].xy - vec2(1, 1);
+                // The center pixel on the full screen.  Shift by 1/2 texel to
+                // sample two texels at once via bilinear interpolation.
+                vec2 p = gl_TexCoord[0].xy + vec2(0.5, 0.5);
 
                 vec4 color = vec4(0,0,0,0);
 
-                // Blur while downsampling
-                for (int dx = -10; dx <= 10; dx += 4) {
-                    for (int dy = -10; dy <= 10; dy += 4) {
+                for (int dx = -5; dx <= 5; dx += 2) {
+                    for (int dy = -5; dy <= 5; dy += 2) {
                         color += threshold(texture2DRect(screenImage, p + vec2(dx, dy)));
                     }
                 }
 
-                gl_FragColor = color / 36.0;
+                // Divide by the number of samples and 
+                // rescale the entire range from the cutoff at 0 to max = 4.0
+                // We'll apply another factor of 2.5 when the bloom is applied,
+                // but we don't want to over saturate here.
+
+                gl_FragColor = color * 4.0 / 36.0;
             }
             ));
         bloomFilterShader->args.set("screenImage", screenImage);
@@ -171,24 +180,23 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
                 gl_FragColor = 
                     // Brighten the screen image by 1/0.75, since we darkened the 
                     // scene when rendering to avoid saturation.
-                    texture2DRect(screenImage, gl_TexCoord[0].xy * 10.0) * 1.34 + 
+                    texture2DRect(screenImage, gl_TexCoord[0].xy * 9.0) * 1.34 + 
 
-                    // Add the bloom
+                    // Add the bloom (brightened by a factor of 2.5)
                     (texture2DRect(bloomMap, p) +
                      (texture2DRect(bloomMap, p + vec2(-2,0)) + 
-                      texture2DRect(bloomMap, p + vec2(2,0))) * 0.5 + 
-                     (texture2DRect(bloomMap, p + vec2(0,-2)) + 
+                      texture2DRect(bloomMap, p + vec2(2,0)) + 
+                      texture2DRect(bloomMap, p + vec2(0,-2)) + 
                       texture2DRect(bloomMap, p + vec2(0,2))) * 0.5 + 
                      texture2DRect(bloomMap, p + vec2(0,-1)) + 
                      texture2DRect(bloomMap, p + vec2(-1,0)) + 
                      texture2DRect(bloomMap, p + vec2(1,0)) + 
-                     texture2DRect(bloomMap, p + vec2(0,1))) / 4.0;
+                     texture2DRect(bloomMap, p + vec2(0,1))) * 2.5 / 7.0;
             }
             ));
 
         bloomShader->args.set("screenImage", screenImage);
         bloomShader->args.set("bloomMap", bloomMap);
-
     }
 }
 
@@ -347,17 +355,27 @@ void Demo::doGraphics() {
             // Undo renderdevice's 0.35 translation
             app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
             Rect2D rect = Rect2D::xywh(0, 0, app->renderDevice->width(), app->renderDevice->height());
-            Rect2D smallRect = Rect2D::xywh(0, 0, bloomMap->texelWidth(), bloomMap->texelHeight());
+            Rect2D smallRect = bloomMap->rect2DBounds();
             screenImage->copyFromScreen(rect);
 
             // Shrink and filter
             app->renderDevice->setShader(bloomFilterShader);
             Draw::rect2D(smallRect, app->renderDevice, Color3::white(), rect);
+
+            // Blend in the previous bloom map for temporal coherence and a nice motion blur.  
+            // Due to a bug on NVIDIA cards, we have to do this with a separate pass; 
+            // sampler2Drects with different
+            // sizes don't work correctly in the same shader.
+            app->renderDevice->setShader(NULL);
+            app->renderDevice->setTexture(0, bloomMap);
+            app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+            Draw::rect2D(smallRect, app->renderDevice, Color4(1, 1, 1, 0.25), smallRect);
+            app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
+
             bloomMap->copyFromScreen(smallRect);
 
             app->renderDevice->setShader(bloomShader);
-//            app->renderDevice->setShader(NULL);
-//            app->renderDevice->setTexture(0, bloomMap);
+//    app->renderDevice->setShader(NULL);  app->renderDevice->setTexture(0, bloomMap);
             Draw::rect2D(rect, app->renderDevice, Color3::white(), smallRect);
         app->renderDevice->pop2D();
     }
@@ -779,7 +797,7 @@ int main(int argc, char** argv) {
     settings.window.stencilBits = 8;
     settings.window.alphaBits = 0;
     settings.window.rgbBits = 8;
-    settings.window.fsaaSamples = 4;
+    settings.window.fsaaSamples = 1;
     settings.window.width = 800;
     settings.window.height = 600;
 	settings.useNetwork = false;

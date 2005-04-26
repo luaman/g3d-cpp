@@ -295,23 +295,6 @@ void GApplet::endRun() {
         exit(0);
     }
 }
-/*
-// NOTE: This code is a prototype of how to run
-// a GApplet with a GWindow that controls the main
-// loop.  It is not actually used.
-void GApplet::loopBody(void* _applet) {
-    GApplet* applet = static_cast<GApplet*>(_applet);
-
-    applet->oneFrame();
-
-    if (applet->app->endProgram || applet->endApplet) {
-
-        applet->endRun();
-
-        // Remove this applet from the loop stack
-        applet->app->window()->popLoopBody();
-    }
-}*/
 
 
 void GApplet::run() {

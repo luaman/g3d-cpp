@@ -30,9 +30,11 @@ void GWindow::pushLoopBody(GApplet* applet) {
 
 
 void GWindow::popLoopBody() {
-    if (loopBodyStack.last().isGApplet) {
-        loopBodyStack.last().applet->endRun();
-        loopBodyStack.pop();
+    if (loopBodyStack.size() > 0) {
+        if (loopBodyStack.last().isGApplet) {
+            loopBodyStack.last().applet->endRun();
+            loopBodyStack.pop();
+        }
     }
 }
 

@@ -238,6 +238,9 @@ public:
       Run until app->endProgram or endApplet is set to true. 
       Calls beginRun(), then oneFrame in a loop, then endRun().
       
+      Consider instead calling app->window()->pushLoopBody(applet), which
+      allows you to push and pop additional applets.
+        
       For use with GWindows for which requiresMainLoop is false.
       On GWindows where requiresMainLoop is true, this will schedule
       the applet to run and return immediately.  (This odd behavior 
