@@ -4,6 +4,8 @@ ArcticulatedModel - Rigid body heirarchy and high-quality scene graph rendering 
 
 Matrix        - Efficient N x M matrix class.  By Morgan.
 
+Java          - Java implementations of G3D classes.  (The C++ G3D is a port of the Java version, which we are slowly cleaning and releasing). By Morgan.
+
 pingtest      -  A simple command line program demonstrating NetworkDevice, LightweightConduit, and ReliableConduit by Morgan.
 
 CoreyGWindow  -  GWindow implementations for the Qt API by Corey Taylor <laundrypowder@spamcop.net>
