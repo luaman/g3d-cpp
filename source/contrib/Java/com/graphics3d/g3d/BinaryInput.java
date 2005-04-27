@@ -1,10 +1,10 @@
 package com.graphics3d.g3d;
 
 import java.lang.IndexOutOfBoundsException;
-import java.lang.reflect.Array;
 import java.lang.Long;
 import java.net.*;
 import java.io.*;
+import java.math.BigInteger;
 
 /**
  Sequential or random access byte-order independent binary file
@@ -31,6 +31,7 @@ public class BinaryInput {
     private byte              data[];
     private String            filename;
 
+    private final static BigInteger maxUInt64 = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).pow(2).subtract(BigInteger.ONE);
     public int                byteOrder = 0;
     
     public BinaryInput(byte data[], int byteOrder, boolean copyMemory) {
@@ -126,11 +127,6 @@ public class BinaryInput {
         position = 0;
     }
 
-    public void close() {
-        // Don't really need to do anything here, but it is good form
-        // to maintain stream semantics and provide a close method.
-    }
-
     /**
      * Returns the length of the file in bytes.
      */
@@ -204,12 +200,12 @@ public class BinaryInput {
         return (int)data[position++];
     }
 
-    public int readInt16() {
+    public short readInt16() {
         int i = readUInt16();
         if (i > 32767) {
             i -= 65536;
         }
-        return i;
+        return (short)i;
     }
 
     public int readInt32() {
@@ -221,14 +217,38 @@ public class BinaryInput {
         return (int)i;
     }
 
-    public long readUInt64() {
-        long i0 = readUInt32();
-        long i1 = readUInt32();
-        return (i1 << 32) + i0; 
+    private BigInteger readInt64BigInteger() {
+        byte val[] = new byte[8];        
+        if (byteOrder == Constants.G3D_LITTLE_ENDIAN) {
+            // Reverse the order
+            for (int i = 0; i < 8; ++i) {
+                val[i] = data[position + 7 - i];
+            }
+        } else {
+            System.arraycopy(data, position, val, 0, 8);
+        }
+
+        setPosition(position + 8);
+
+        return new BigInteger(val);
+    }
+
+    /** Java does not support unsigned types, so we must return a BigInteger here. 
+        Use .longValue to extract a useful value when it is known to be within the
+        signed long range. */
+    public BigInteger readUInt64() {
+        BigInteger big = readInt64BigInteger();
+        
+        if (big.compareTo(BigInteger.ZERO) == -1) {            
+            // The value was negative, so shift up by long value
+            return big.add(maxUInt64);
+        } else {
+            return big;
+        }
     }
 
     public long readInt64() {
-        return readUInt64() - 2147483648L;
+        return readInt64BigInteger().longValue();
     }
 
     public float readFloat32() {
