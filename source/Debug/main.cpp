@@ -199,6 +199,7 @@ App::~App() {
 
 int main(int argc, char** argv) {
 
+    /*
     BinaryOutput b("c:/tmp/bin.dat", G3D_LITTLE_ENDIAN);
     b.writeUInt8(200);
     b.writeInt8(-5);
@@ -212,6 +213,18 @@ int main(int argc, char** argv) {
     b.writeFloat32(50000);
     b.writeFloat64(50000);
     b.commit();
+    */
+
+    {
+        TextOutput text("c:/tmp/text.txt");
+        text.writeString("c:\\foo\\bar");
+        text.commit();
+    }
+    {
+        TextInput text("c:/tmp/text.txt");
+        std::string s = text.readString();
+        debugPrintf("%s", s.c_str());
+    }
 
     GAppSettings settings;
     settings.window.width = 600;

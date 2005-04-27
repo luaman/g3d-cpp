@@ -68,8 +68,43 @@ void TextOutput::popIndent() {
 }
 
 
+static std::string escape(const std::string& string) {
+    std::string result = "";
+
+    for (int i = 0; i < string.length(); ++i) {
+        char c = string.at(i);
+        switch (c) {
+        case '\0':
+            result += "\\0";
+            break;
+
+        case '\r':
+            result += "\\r";
+            break;
+
+        case '\n':
+            result += "\\n";
+            break;
+
+        case '\t':
+            result += "\\t";
+            break;
+
+        case '\\':
+            result += "\\\\";
+            break;
+
+        default:
+            result += c;
+        }
+    }
+
+    return result;
+}
+
 void TextOutput::writeString(const std::string& string) {
-    this->printf("\"%s\"", string.c_str());
+    // Convert special characters to escape sequences
+    this->printf("\"%s\"", escape(string).c_str());
 }
 
 

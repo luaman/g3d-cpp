@@ -168,6 +168,7 @@
      <LI> Added G3D::Sky::fromCubeMap for preloaded CubeMap TextureRef's [Corey]
      <LI> Added G3D::Sky::fromFile and deprecated Sky::create [Corey]
      <LI> Demo and Test projects now build with iCompile, which is included [Corey]
+     <LI> Fix: TextOutput::writeString now escapes special characters
      <LI> Fix: AABSPTree::serializeStructure
      <LI> Fix: Properly handle gl_ uniforms on Radeon for Shader
      <LI> Fix: [ 875467 ] OS X debugBreak (requires default XCode debug menu item 'Break on DebugStr()') [Corey + Derek]
