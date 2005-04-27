@@ -25,7 +25,7 @@ class Test {
 	
         BinaryInput b = null;
         try {
-            b = new BinaryInput("c:/tmp/bin.dat", Constants.G3D_LITTLE_ENDIAN);
+            b = new BinaryInput("c:/tmp/bin.dat", java.nio.ByteOrder.LITTLE_ENDIAN);
         } catch (Exception e) {
             System.out.println("Test file not found.");
             System.exit(-1);

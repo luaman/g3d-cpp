@@ -199,6 +199,20 @@ App::~App() {
 
 int main(int argc, char** argv) {
 
+    BinaryOutput b("c:/tmp/bin.dat", G3D_LITTLE_ENDIAN);
+    b.writeUInt8(200);
+    b.writeInt8(-5);
+    b.writeInt8(101);
+    b.writeBool8(true);
+    b.writeInt32(12345);
+    b.writeInt32(-12345);
+    b.writeUInt32(50000);
+    b.writeUInt64(1234567);
+    b.writeInt64(-1234567);
+    b.writeFloat32(50000);
+    b.writeFloat64(50000);
+    b.commit();
+
     GAppSettings settings;
     settings.window.width = 600;
     settings.window.height = 400;

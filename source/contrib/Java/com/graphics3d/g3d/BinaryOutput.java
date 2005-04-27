@@ -5,7 +5,6 @@ import java.lang.Long;
 import java.net.*;
 import java.io.*;
 import java.math.BigInteger;
-import java.nio.ByteOrder;
 
 /**
  Sequential or random access byte-order independent binary file
@@ -13,119 +12,60 @@ import java.nio.ByteOrder;
 
  Differences from the C++ version:
  <UL>
-  <LI> Can read from streams
-  <LI> Can read from URLs
-  <LI> No array reads
   <LI> No huge files
   <LI> No compressed files
   <LI> No bit-reading
   <LI> No Vector, Color read methods
  </UL> 
 
- The primary difference between BinaryInput and java.nio.ByteBuffer is that BinaryInput can handle
- unsigned values, which is important for interacting with C++ code and file formats. It is also 
- convient that BinaryInput matches the G3D::BinaryInput API when porting G3D C++ programs to Java.
-
- @author Morgan McGuire & Max McGuire
+ @author Morgan McGuire
  */
-public class BinaryInput {
-    private final static BigInteger maxUInt64 = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).pow(2).subtract(BigInteger.ONE);
+public class BinaryOutput {
 
     /**
      Index of the next byte in data to be used.
      */
     private int               position;
+
+    /** Size of the bytes of data that are actually used, as opposed to preallocated */
+    private int               dataSize;
     private byte              data[];
     private String            filename;
-    private ByteOrder         byteOrder;
-    
-    /** Unlike the C++ API, we must include a byte offset into data
-         since there is no way to create a pointer to a subarray. */
-    public BinaryInput(byte data[], int offset, ByteOrder byteOrder, boolean copyMemory) {
+
+    private final static BigInteger maxUInt64 = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).pow(2).subtract(BigInteger.ONE);
+    public ByteOrder          byteOrder;
+
+    /** Resize dataSize/data as necessary so that there are numBytes of space after the current position */
+    private void reserveBytes(int numBytes) {
+        if (position + numBytes < data.length) {
+            byte temp[] = data;
+
+            // Overestimate the amount of space needed
+            data = new byte[(position + numBytes) * 2];
+            System.arraycopy(temp, 0, temp.length, data, 0);
+        }
+
+        dataSize = Math.max(position + numBytes, dataSize);
+    }
+
+    private BinaryInput(ByteOrder byteOrder) {
         this.byteOrder = byteOrder;
-        if (copyMemory) {
-            this.data = new byte[data.length];
-            System.arraycopy(data, offset, this.data, 0, data.length); 
-        } else {
-            this.data = data;
-        }
-    }
-
-    /** Copies the data by default */
-    public BinaryInput(byte data[], int offset, ByteOrder byteOrder) {
-        this(data, offset, byteOrder, true);
-    }
-
-    public BinaryInput(URL url, ByteOrder byteOrder) throws IOException {
-        this(url.openStream(), byteOrder);
-        //        filename = TODO
-    }
-
-    public BinaryInput(String filename, ByteOrder byteOrder) 
-        throws FileNotFoundException, IOException {
-        this(new FileInputStream(filename), byteOrder);
-        this.filename = filename;
-    }
-
-    /**
-     * Closes the stream when initialization is done.
-     */
-    public BinaryInput(InputStream stream) throws IOException {
-        this(stream, ByteOrder.LITTLE_ENDIAN);
-    }
-
-    /**
-     * Closes the stream when initialization is done.
-     */
-    public BinaryInput(InputStream stream, ByteOrder byteOrder) throws IOException {
-        this.byteOrder = byteOrder;
-
-        // Read whatever is immediately available
-        int dataSize = stream.available();
-        byte data[] = new byte[dataSize];
-        int numBytes = 0;
-
-        numBytes = stream.read(data, numBytes, dataSize);
-
-        int buffer;
-        buffer = stream.read();
-
-        // read returns -1 when stream is empty
-        while (buffer > -1) {
-            if (numBytes == dataSize) {
-                // resize the array
-                int newDataSize = dataSize * 2;
-                byte newData[] = new byte[newDataSize];
-                for (int d = 0; d < dataSize; d++) {
-                    newData[d] = data[d];
-                }
-                data = newData;
-                dataSize = newDataSize;
-            }
-            data[numBytes++] = (byte)buffer;
-            buffer = stream.read();
-        }
-
-        stream.close();
-
-        if (numBytes == dataSize) {
-            this.data = data;
-        } else {
-            // resize the array
-            this.data = new byte[numBytes];
-            for (int d = 0; d < numBytes; d++) {
-                this.data[d] = data[d];
-            }
-        }
-
+        dataSize = 0;
+        filename = "";
         position = 0;
+        data = new byte[128];
+    }
+    
+    public BinaryInput(String filename, int byteOrder) {
+        this(byteOrder);
+        this.filename = filename;
     }
 
     /**
      * Returns the length of the file in bytes.
      */
     public int getLength() {
-        return data.length;
+        return dataSize;
     }
 
     public int size() {
@@ -137,13 +77,15 @@ public class BinaryInput {
     }
 
     public void setPosition(int position) {
-        if (position > data.length) {
-            throw new IllegalArgumentException
-                ("Can't set position past 1 + end of file (file length = " + 
-                 data.length + ")");
-        } else if (position < 0) {
+        if (position < 0) {
             throw new IllegalArgumentException
                 ("Can't set position below 0");
+        }
+        
+        if (position > dataSize) {
+            int p = position;
+            position = dataSize;
+            reserveBytes(dataSize - p);
         }
 
         this.position = position;
@@ -154,28 +96,32 @@ public class BinaryInput {
         setPosition(0);
     }
 
-    public int readUInt8() {
-        int i = readInt8();
-        if (i < 0) {
-            i += 256;
-        }
-        return i;
+    public void writeUInt8(int v) {
+        reserveBytes(1);
+        data[position++] = v;
     }
 
-    public boolean readBool8() {
-        return readInt8() != 0;
+    public void writeInt8(int v) {
+        reserveBytes(1);
+        data[position++] = v;
     }
 
-    public int readUInt16() {
-        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-            return readUInt8() + (readUInt8() << 8);
+    public void writeBool8(boolean v) {
+        writeInt8(v ? 1 : 0);
+    }
+
+    public void writeUInt16(int v) {
+        if (byteOrder == Constants.G3D_LITTLE_ENDIAN) {
+            writeUInt8(v & 0xFF);
+            writeUInt8(v >> 8);
         } else {
-            return (readUInt8() << 8) + readUInt8();
+            writeUInt8(v >> 8);
+            writeUInt8(v & 0xFF);
         }
     }
 
     public long readUInt32() {
-        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+        if (byteOrder == Constants.G3D_LITTLE_ENDIAN) {
             return 
                 readUInt8() + 
                 (readUInt8() << 8) + 
@@ -213,7 +159,7 @@ public class BinaryInput {
 
     private BigInteger readInt64BigInteger() {
         byte val[] = new byte[8];        
-        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+        if (byteOrder == Constants.G3D_LITTLE_ENDIAN) {
             // Reverse the order
             for (int i = 0; i < 8; ++i) {
                 val[i] = data[position + 7 - i];
@@ -299,6 +245,3 @@ public class BinaryInput {
     }
 
 }
-
-
-

@@ -15,45 +15,40 @@ import java.nio.ByteOrder;
  <UL>
   <LI> Can read from streams
   <LI> Can read from URLs
-  <LI> No array reads
   <LI> No huge files
   <LI> No compressed files
   <LI> No bit-reading
   <LI> No Vector, Color read methods
  </UL> 
 
- The primary difference between BinaryInput and java.nio.ByteBuffer is that BinaryInput can handle
- unsigned values, which is important for interacting with C++ code and file formats. It is also 
- convient that BinaryInput matches the G3D::BinaryInput API when porting G3D C++ programs to Java.
-
  @author Morgan McGuire & Max McGuire
  */
 public class BinaryInput {
     private final static BigInteger maxUInt64 = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).pow(2).subtract(BigInteger.ONE);
 
-    /**
-     Index of the next byte in data to be used.
-     */
-    private int               position;
-    private byte              data[];
-    private String            filename;
-    private ByteOrder         byteOrder;
+    ByteBuffer                buffer;
+
+    private init(byte data[], int offset, ByteOrder byteOrder, boolean copyMemory) {
+        this.byteOrder = byteOrder;
+        if (copyMemory) {
+            byte copy[] = new byte[data.length];
+            System.arraycopy(data, offset, copy, 0, data.length); 
+            buffer = ByteBuffer.wrap(copy);
+        } else {
+            buffer = ByteBuffer.wrap(data, offset, data.length - offset);
+        }
+    }
     
     /** Unlike the C++ API, we must include a byte offset into data
          since there is no way to create a pointer to a subarray. */
     public BinaryInput(byte data[], int offset, ByteOrder byteOrder, boolean copyMemory) {
-        this.byteOrder = byteOrder;
-        if (copyMemory) {
-            this.data = new byte[data.length];
-            System.arraycopy(data, offset, this.data, 0, data.length); 
-        } else {
-            this.data = data;
-        }
+        init(data, offset, byteOrder, copyMemory);
+        filename = "<Memory>";
     }
 
     /** Copies the data by default */
     public BinaryInput(byte data[], int offset, ByteOrder byteOrder) {
-        this(data, offset, byteOrder, true);
+        this(data, offset,o byteOrder, true);
     }
 
     public BinaryInput(URL url, ByteOrder byteOrder) throws IOException {
@@ -70,13 +65,6 @@ public class BinaryInput {
     /**
      * Closes the stream when initialization is done.
      */
-    public BinaryInput(InputStream stream) throws IOException {
-        this(stream, ByteOrder.LITTLE_ENDIAN);
-    }
-
-    /**
-     * Closes the stream when initialization is done.
-     */
     public BinaryInput(InputStream stream, ByteOrder byteOrder) throws IOException {
         this.byteOrder = byteOrder;
 
@@ -87,11 +75,11 @@ public class BinaryInput {
 
         numBytes = stream.read(data, numBytes, dataSize);
 
-        int buffer;
+        int b;
         buffer = stream.read();
 
         // read returns -1 when stream is empty
-        while (buffer > -1) {
+        while (b > -1) {
             if (numBytes == dataSize) {
                 // resize the array
                 int newDataSize = dataSize * 2;
@@ -102,30 +90,20 @@ public class BinaryInput {
                 data = newData;
                 dataSize = newDataSize;
             }
-            data[numBytes++] = (byte)buffer;
-            buffer = stream.read();
+            data[numBytes++] = (byte)b;
+            b = stream.read();
         }
 
         stream.close();
 
-        if (numBytes == dataSize) {
-            this.data = data;
-        } else {
-            // resize the array
-            this.data = new byte[numBytes];
-            for (int d = 0; d < numBytes; d++) {
-                this.data[d] = data[d];
-            }
-        }
-
-        position = 0;
+        init(data, 0, numBytes, byteOrder, false);
     }
 
     /**
      * Returns the length of the file in bytes.
      */
     public int getLength() {
-        return data.length;
+        return buffer.limit();
     }
 
     public int size() {
@@ -133,28 +111,20 @@ public class BinaryInput {
     }
 
     public int getPosition() {
-        return position;
+        return buffer.position();
     }
 
     public void setPosition(int position) {
-        if (position > data.length) {
-            throw new IllegalArgumentException
-                ("Can't set position past 1 + end of file (file length = " + 
-                 data.length + ")");
-        } else if (position < 0) {
-            throw new IllegalArgumentException
-                ("Can't set position below 0");
-        }
-
-        this.position = position;
+        buffer.position(position);
     }
 
     /** Goes back to the beginning of the file.  */
     public void reset() {
-        setPosition(0);
+        rewind();
     }
 
     public int readUInt8() {
+        
         int i = readInt8();
         if (i < 0) {
             i += 256;
