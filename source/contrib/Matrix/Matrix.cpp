@@ -249,7 +249,7 @@ void Matrix::Impl::lsub(Matrix::T B, Impl& out) const {
     }
 }
 
-void Matrix::Impl::inverse(Impl& out) const {
+void Matrix::Impl::inverseViaAdjoint(Impl& out) const {
     debugAssert(&out != this);
 
     // Inverse = adjoint / determinant
@@ -385,3 +385,112 @@ void Matrix::Impl::withoutRowAndCol(int excludeRow, int excludeCol, Impl& out) c
         }
     }
 }
+
+
+void Matrix::Impl::inverseInPlaceGaussJordan() {
+    debugAssert(R == C);
+
+    // Exchange to float elements
+#   define SWAP(x, y) {float temp = x; x = y; y = temp;}
+
+    // The integer arrays pivot, rowIndex, and colIndex are
+    // used for bookkeeping on the pivoting
+    static Array<int> colIndex, rowIndex, pivot;
+
+    int col, row;
+
+    colIndex.resize(R);
+    rowIndex.resize(R);
+    pivot.resize(R);
+
+    static const int NO_PIVOT = -1;
+
+    // Initialize the pivot array to default values.
+    for (int i = 0; i < R; ++i) {
+        pivot[i] = NO_PIVOT;
+    }
+
+    // This is the main loop over the columns to be reduced
+    // Loop over the columns.
+    for (int c = 0; c < R; ++c) {
+
+        // Find the largest element and use that as a pivot
+        float largestMagnitude = 0.0;
+
+        // This is the outer loop of the search for a pivot element
+        for (int r = 0; r < R; ++r) {
+
+            // Unless we've already found the pivot, keep going
+            if (pivot[r] != 0) {
+
+                // Find the largest pivot
+                for (int k = 0; k < R; ++k) {
+                    if (pivot[k] == NO_PIVOT) {
+                        const float mag = fabs(elt[r][k]);
+
+                        if (mag >= largestMagnitude) {
+                            largestMagnitude = mag;
+                            row = r; col = k;
+                        }
+                    }
+                }
+            }
+        }
+
+        pivot[col] += 1;
+
+        // Interchange columns so that the pivot element is on the diagonal (we'll have to undo this
+        // at the end)
+        if (row != col) {
+            for (int k = 0; k < R; ++k) {
+                SWAP(elt[row][k], elt[col][k])
+            }
+        }
+
+        // The pivot is now at [row, col]
+        rowIndex[c] = row; 
+        colIndex[c] = col;
+    
+        double piv = elt[col][col];
+
+        debugAssertM(piv != 0.0, "Matrix is singular");
+
+        // Divide everything by the pivot (avoid computing the division
+        // multiple times).
+        const double pivotInverse = 1.0 / piv;
+        elt[col][col] = 1.0;
+
+        for (int k = 0; k < R; ++k) {
+            elt[col][k] *= pivotInverse;
+        }
+
+        // Reduce all rows
+        for (int r = 0; r < R; ++r) {
+            // Skip over the pivot row
+            if (r != col) {
+
+                double oldValue = elt[r][col];
+                elt[r][col] = 0.0;
+
+                for (int k = 0; k < R; ++k) {
+                    elt[r][k] -= elt[col][k] * oldValue;
+                }
+            }
+        }
+    }
+
+
+    // Put the columns back in the correct locations
+    for (int i = R - 1; i >= 0; --i) {
+        if (rowIndex[i] != colIndex[i]) {
+            for (int k = 0; k < R; ++k) {
+                SWAP(elt[k][rowIndex[i]], elt[k][colIndex[i]]);
+            }
+        }
+    } 
+    
+#   undef SWAP
+}
+
+
+

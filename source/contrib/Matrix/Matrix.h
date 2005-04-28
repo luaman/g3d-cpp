@@ -116,7 +116,11 @@ private:
         /** Ok if out == this or out == B */
         void div(T B, Impl& out) const;
 
-        void inverse(Impl& out) const;
+        /** Slow way of computing an inverse; for reference */
+        void inverseViaAdjoint(Impl& out) const;
+
+        /** Use Gaussian elimination with pivots to solve for the inverse destructively in place. */
+        void inverseInPlaceGaussJordan();
 
         void adjoint(Impl& out) const;
 
@@ -251,8 +255,8 @@ public:
      A<SUP>-1</SUP>
      */
     Matrix inverse() const {
-        Impl* A = new Impl(rows(), cols());
-        impl->inverse(*A);
+        Impl* A = new Impl(*impl);
+        A->inverseInPlaceGaussJordan();
         return Matrix(A);
     }
 

@@ -10,7 +10,6 @@
 
 #include "../include/G3DAll.h"
 #include <iostream>
-#include "../contrib/Matrix/Matrix.h"
 #include "../contrib/Matrix/Matrix.cpp"
 
 using namespace G3D;
@@ -119,6 +118,34 @@ void testMatrix() {
         debugAssert(fuzzyEq(C.get(1, 0), 0.4));
         debugAssert(fuzzyEq(C.get(1, 1), -0.1));
     }
+
+    {
+        Matrix A = Matrix::random(5, 5);
+        /*
+        for (int r = 0; r < A.rows(); ++r) {
+            for (int c = 0; c < A.cols(); ++c) {
+                A.set(r, c, pow((r+1) + (c+1),2));
+            }
+        }*/
+        Matrix B = A.inverse();
+
+        B = B * A;
+
+        for (int r = 0; r < B.rows(); ++r) {
+            for (int c = 0; c < B.cols(); ++c) {
+                debugPrintf("%f ", B.get(r, c));
+
+                if (r == c) {
+                    debugAssert(fuzzyEq(B.get(r, c), 1));
+                } else {
+                    debugAssert(fuzzyEq(B.get(r, c), 0));
+                }
+            }
+            debugPrintf("\n");
+        }
+        debugPrintf("done\n");
+    }
+
 }
 
 
