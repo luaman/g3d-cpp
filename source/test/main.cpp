@@ -120,30 +120,25 @@ void testMatrix() {
     }
 
     {
-        Matrix A = Matrix::random(5, 5);
-        /*
-        for (int r = 0; r < A.rows(); ++r) {
-            for (int c = 0; c < A.cols(); ++c) {
-                A.set(r, c, pow((r+1) + (c+1),2));
-            }
-        }*/
+        Matrix A = Matrix::random(10, 10);
         Matrix B = A.inverse();
 
         B = B * A;
 
         for (int r = 0; r < B.rows(); ++r) {
             for (int c = 0; c < B.cols(); ++c) {
-                debugPrintf("%f ", B.get(r, c));
+//                debugPrintf("%f ", B.get(r, c));
 
+                float v = B.get(r, c);
+                // The precision isn't great on our inverse, so be tolerant
                 if (r == c) {
-                    debugAssert(fuzzyEq(B.get(r, c), 1));
+                    debugAssert(abs(v - 1) < 1e-4);
                 } else {
-                    debugAssert(fuzzyEq(B.get(r, c), 0));
+                    debugAssert(abs(v) < 1e-4);
                 }
             }
-            debugPrintf("\n");
+//            debugPrintf("\n");
         }
-        debugPrintf("done\n");
     }
 
 }
