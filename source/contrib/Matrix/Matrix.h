@@ -1,7 +1,11 @@
-//#include <G3DAll.h>
+/**
+  @file Matrix.h
+  @author Morgan McGuire, matrix@graphics3d.com
+ */
 
 #ifndef MATRIX_H
 #define MATRIX_H
+#include <G3DAll.h>
 
 /** 
  N x M matrix.  
@@ -26,6 +30,15 @@
 
   </PRE>
 
+  The Matrix::debugNumCopyOps and Matrix::debugNumAllocOps counters
+  increment every time an operation forces the copy and allocation of matrices.  You
+  can use these to detect slow operations when efficiency is a major concern.
+
+  Some methods accept an output argument instead of returning a value.  For example,
+  <CODE>A = B.transpose()</CODE> can also be invoked as <CODE>B.transpose(A)</CODE>.
+  The latter may be more efficient, since Matrix may be able to re-use the storage of
+  A (if it has approximatly the right size and isn't currently shared with another matrix).
+  
 
  */
 class Matrix {
@@ -35,40 +48,53 @@ public:
       to allow operations like Matrix<double> and Matrix<ComplexFloat>.
 
       Not necessarily a plain-old-data type (e.g., could ComplexFloat), but must be something 
-      with no constructor that can be safely memcpyd and that has a bit pattern of all zeros
+      with no constructor, that can be safely memcpyd, and that has a bit pattern of all zeros
       when zero.*/
     typedef float T;
 
+    static int                     debugNumCopyOps;
+    static int                     debugNumAllocOps;
+
 private:
 
+    /** Does not throw exceptions-- assumes the caller has taken care of 
+        argument checking.*/
     class Impl : public ReferenceCountedObject {
     public:
 
+        /** The number of rows */
         int                 R;
+
+        /** The number of columns */
         int                 C;
 
         /** elt[r][c] = the element.  Pointers into data.*/
-        T**         elt;
+        T**                 elt;
 
         /** Row major data */
-        T*          data;
+        T*                  data;
 
-        /** Deletes all previous data and resets to random data, even if the size matches the current one.*/
+        size_t              dataSize;
+
+        /** If R*C is much larger or smaller than the current, deletes all previous data
+            and resets to random data.  Otherwise re-uses existing memory and just resets
+            R, C, and the row pointers. */
         void setSize(int newRows, int newCols);
 
     public:
 
-        Impl() : elt(NULL), data(NULL), R(0), C(0) {}
+        Impl() : elt(NULL), data(NULL), R(0), C(0), dataSize(0) {}
 
-        Impl(int r, int c) : elt(NULL), data(NULL), R(0), C(0) {
+        Impl(int r, int c) : elt(NULL), data(NULL), R(0), C(0), dataSize(0) {
             setSize(r, c);
         }
 
-        Impl(const Impl& B) : data(NULL), elt(NULL), R(0), C(0) {
+        Impl& operator=(const Impl& m);
+
+        Impl(const Impl& B) : data(NULL), elt(NULL), R(0), C(0), dataSize(0) {
+            // Defer to the assignment operator.
             *this = B;
         }
-
-        Impl& operator=(const Impl& m);
 
         ~Impl();
 
@@ -157,68 +183,104 @@ public:
 
     Matrix() : impl(new Impl(0, 0)) {}
 
+    Matrix(const Matrix3& M);
+
+    Matrix(const Matrix4& M);
+
+    /** Returns a new matrix that is all zero. */
     Matrix(int R, int C) : impl(new Impl(R, C)) {
         impl->setZero();
     }
 
+    /** Returns a new matrix that is all zero. */
     static Matrix zero(int R, int C);
 
+    /** Returns a new matrix that is all one. */
     static Matrix one(int R, int C);
 
+    /** Returns a new identity matrix */
     static Matrix identity(int N);
 
-    /** Uniformly distributed values between zero and one) */
+    /** Uniformly distributed values between zero and one. */
     static Matrix random(int R, int C);
 
+    /** The number of rows */
     inline int rows() const {
         return impl->R;
     }
 
+    /** Number of columns */
     inline int cols() const {
         return impl->C;
     }
 
+    /** Generally more efficient than A * B */
     Matrix& operator*=(const T& B);
+
+    /** Generally more efficient than A / B */
     Matrix& operator/=(const T& B);
+
+    /** Generally more efficient than A + B */
     Matrix& operator+=(const T& B);
+
+    /** Generally more efficient than A - B */
     Matrix& operator-=(const T& B);
 
+    /** No performance advantage over A * B because
+        matrix multiplication requires intermediate
+        storage. */
     Matrix& operator*=(const Matrix& B);
+
+    /** Generally more efficient than A + B */
     Matrix& operator+=(const Matrix& B);
+
+    /** Generally more efficient than A - B */
     Matrix& operator-=(const Matrix& B);
 
+    /** Generally more efficient than A = -A; */
+    void negate(Matrix& out);
 
-    /** Matrix multiplication.  See also arrayMul */
+    /** Returns a new matrix that is a subset of this one,
+        from r1:r2 to c1:c2, inclusive.*/
+    Matrix subMatrix(int r1, int r2, int c1, int c2) const;
+
+    /** Matrix multiplication.  To perform element-by-element multiplication, 
+        see arrayMul. */
     Matrix operator*(const Matrix& B) const {
         Matrix C(impl->R, B.impl->C);
         impl->mul(*B.impl, *C.impl);
         return C;
     }
 
+    /** See also A *= B, which is more efficient in many cases */
     Matrix operator*(const T& B) const {
         Matrix C(impl->R, impl->C);
         impl->mul(B, *C.impl);
         return C;
     }
 
+    /** See also A += B, which is more efficient in many cases */
     Matrix operator+(const Matrix& B) const {
         Matrix C(impl->R, impl->C);
         impl->add(*B.impl, *C.impl);
         return C;
     }
 
+    /** See also A += B, which is more efficient in many cases */
     Matrix operator+(const T& v) const {
         Matrix C(impl->R, impl->C);
         impl->add(v, *C.impl);
         return C;
     }
 
+    /** See also A -= B, which is more efficient in many cases */
     Matrix operator-(const T& v) const {
         Matrix C(impl->R, impl->C);
         impl->sub(v, *C.impl);
         return C;
     }
 
+    /** Unary minus; negation. See also A.negateInPlace(), which is more efficient in many cases */
     Matrix operator-() const {
         Matrix C(impl->R, impl->C);
         impl->lsub(0, *C.impl);
@@ -244,6 +306,16 @@ public:
         impl->arrayMul(*B.impl, *C.impl);
         return C;
     }
+
+    Matrix3 toMatrix3() const;
+
+    Matrix4 toMatrix4() const;
+    
+    Vector2 toVector2() const;
+
+    Vector3 toVector3() const;
+
+    Vector4 toVector4() const;
 
     /** Mutates this */
     void arrayMulInPlace(const Matrix& B);
@@ -272,6 +344,8 @@ public:
         impl->transpose(*A);
         return Matrix(A);
     }
+
+    void transpose(Matrix& out) const;
 
     Matrix adjoint() const {
         Impl* A = new Impl(cols(), rows());

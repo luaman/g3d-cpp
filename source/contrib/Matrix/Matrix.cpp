@@ -1,4 +1,21 @@
+/**
+ @file Matrix.cpp
+ @author Morgan McGuire, matrix@graphics3d.com
+ */
 #include "Matrix.h"
+
+int Matrix::debugNumCopyOps = 0;
+int Matrix::debugNumAllocOps = 0;
+
+
+Matrix::Matrix(const Matrix3& M) {
+    // TODO
+}
+
+Matrix(const Matrix4& M) {
+    // TODO
+}
+
 
 #define INPLACE(OP)\
     ImplRef A = impl;\
@@ -65,6 +82,7 @@ void Matrix::arrayDivInPlace(const Matrix& _B) {
     INPLACE(arrayDiv)
 }
 
+#undef INPLACE
 
 void Matrix::set(int r, int c, T v) {
     if (! impl.isLastReference()) {
@@ -114,16 +132,70 @@ Matrix Matrix::identity(int N) {
     return Matrix(m);
 }
 
+
+void Matrix::negate(Matrix& out) {
+    // TODO
+}
+
+
+void Matrix::transpose(Matrix& out) const {
+    // TODO
+}
+
+
+Matrix3 Matrix::toMatrix3() const {
+    // TODO
+    return Matrix3::zero();
+}
+
+
+Matrix4 toMatrix4() const {
+    // TODO
+    return Matrix4::zero();
+}
+
+
+Vector2 Matrix::toVector2() const {
+    // TODO
+    return Vector2();
+}
+
+
+Vector3 toVector3() const {
+    // TODO
+    return Vector3();
+}
+
+
+Vector4 toVector4() const {
+    // TODO
+    return Vector4();
+}
+
+
 ///////////////////////////////////////////////////////////
 
 void Matrix::Impl::setSize(int newRows, int newCols) {
-    System::alignedFree(data);
-    delete elt;
+    if ((R == newRows) && (C == newCols)) {
+        // Nothing to do
+        return;
+    }
+
+    int newSize = newRows * newCols;
 
     R = newRows; C = newCols;
-    data = (float*)System::alignedMalloc(R * C * sizeof(T), 16);
+
+    // Only allocate if we need more space
+    // or the size difference is ridiculous
+    if ((newSize > dataSize) || (newSize < dataSize / 4)) {
+        System::alignedFree(data);
+        data = (float*)System::alignedMalloc(R * C * sizeof(T), 16);
+        ++Matrix::debugNumAllocOps;
+        dataSize = newSize;
+    }
 
     // Construct the row pointers
+    delete elt;
     elt = new T*[R];
 
     for (int r = 0; r < R; ++ r) {
@@ -141,6 +213,7 @@ Matrix::Impl::~Impl() {
 Matrix::Impl& Matrix::Impl::operator=(const Impl& m) {
     setSize(m.R, m.C);
     System::memcpy(data, m.data, R * C * sizeof(T));
+    ++Matrix::debugNumCopyOps;
     return *this;
 }
 
@@ -152,6 +225,10 @@ void Matrix::Impl::setZero() {
 
 void Matrix::Impl::mul(const Impl& B, Impl& out) const {
     const Impl& A = *this;
+
+    debugAssertM(
+        (this != &out) && (&B != &out),
+        "Output argument to mul cannot be the same as an input argument.");
 
     debugAssert(A.C == B.R);
     debugAssert(A.R == out.R);
@@ -169,7 +246,10 @@ void Matrix::Impl::mul(const Impl& B, Impl& out) const {
 }
 
 
-// We're about to define several similar methods
+// We're about to define several similar methods,
+// so use a macro to share implementations.  This
+// must be a macro because the difference between
+// the macros is the operation in the inner loop.
 #define POINTWISE(OP)\
     const Impl& A = *this;\
                             \
