@@ -432,8 +432,8 @@ def release(args):
     # Check for Line Number debug information settings only
     for line in fileinput.input(('source/GLG3D.dsp', 'source/graphics3D.dsp')):
         if (re.search("/Zi", line) != None):
-            print filename
-            print line
+            #print filename
+            #print line
             raise 'Error', 'There is a Program Database setting in one of the projects.'
 
     rmdir('release')
