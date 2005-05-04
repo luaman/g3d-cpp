@@ -167,14 +167,15 @@ void ArticulatedModel::Part::computeNormalsAndTangentSpace() {
     if (texCoordArray.size() > 0) {
         // We throw away the binormals and recompute
         // them in the vertex shader.
+        Array<Vector3> empty;
         MeshAlg::computeTangentSpaceBasis(
             geometry.vertexArray,
             texCoordArray,
             geometry.normalArray,
             faceArray,
             tangentArray,
-            Array<Vector3>());
-
+            empty);
+        
     }
 }
 

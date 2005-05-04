@@ -150,7 +150,6 @@ public:
         void updateShaders();
     };
 
-    friend class PosedArticulatedModel;
 
     /** Returns the index in partArray of the part with this name */
     Table<std::string, int>     partNameToIndex;
@@ -213,4 +212,5 @@ public:
 
 const char* toString(ArticulatedModel::GraphicsProfile p);
 
-#endif G3D_ARTICULATEDMODEL
+#endif //G3D_ARTICULATEDMODEL
+
