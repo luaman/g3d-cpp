@@ -27,6 +27,13 @@
      </UL>
    </TD></TR></TABLE>
 
+  <P>
+   Changes in 6.06:
+   <UL>
+    <LI> FIX: 6.05 enabled all fixed function lights by default.
+    <LI> FIX: Extended cube map workaround to all Radeon Mobility cards
+    <LI> FIX: Added check for glBlendEq before calling in RenderDevice
+   </UL>
 
    <P>
    Changes in 6.05:

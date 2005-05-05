@@ -1991,7 +1991,9 @@ void RenderDevice::setBlendFunc(
                 GLCaps::supports("GL_EXT_blend_minmax") ||
                 GLCaps::supports("GL_EXT_blend_subtract"));
 
-            if (glBlendEquationEXT != 0) {
+            static bool supportsBlendEq = GLCaps::supports("GL_EXT_blend_minmax");
+
+            if (supportsBlendEq && (glBlendEquationEXT != 0)) {
                 glBlendEquationEXT(toGLBlendEq(eq));
             }
         }
@@ -2094,9 +2096,14 @@ void RenderDevice::setCameraToWorldMatrix(
 
     // Reload lights since the camera matrix changed.  We must do this even for lights
     // that are not enabled since those lights will not be re-set at the GL level if they
-    // are enabled without being otherwise changed.
+    // are enabled without being otherwise changed.  Of course, we must follow up by disabling
+    // those lights again.
     for (int i = 0; i < MAX_LIGHTS; ++i) {
+        bool wasEnabled = state.lights.lightEnabled[i];
         setLight(i, &state.lights.light[i], true);
+        if (! wasEnabled) {
+            setLight(i, NULL);
+        }
     }
 }
 

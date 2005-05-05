@@ -153,6 +153,10 @@ void Demo::doGraphics() {
         app->renderDevice->setAmbientLightColor(Color3::black());
         app->renderDevice->setSpecularCoefficient(0);
 
+debugAssert(glIsEnabled(GL_LIGHT0));
+debugAssert(! glIsEnabled(GL_LIGHT0 + 1));
+
+
     // Rendering loop
     app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
@@ -166,17 +170,9 @@ void Demo::doGraphics() {
         Draw::rect2D(Rect2D::xywh(10, 10, 300, 300), app->renderDevice);
     app->renderDevice->pop2D();
 
+
     app->renderDevice->disableLighting();
 
-    /*
-    app->debugPrintf("%s\n", app->window()->joystickName(0).c_str());
-    Array<float> axis;
-    Array<bool> button;
-    app->window()->getJoystickState(0, axis, button);
-    for (int a = 0; a < axis.size(); ++a) {
-        app->debugPrintf("%f ", axis[a]);
-    }
-    */
 }
 
 
@@ -184,11 +180,14 @@ void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
 
+    // Load objects here
+    sky = Sky::create(renderDevice, dataDir + "sky/");
+    
     applet->run();
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GAppSettings& settings) : GApp(settings) {//, new SDLWindow(settings.window)) {
     applet = new Demo(this);
 }
 
@@ -215,21 +214,11 @@ int main(int argc, char** argv) {
     b.commit();
     */
 
-    {
-        TextOutput text("c:/tmp/text.txt");
-        text.writeString("c:\\foo\\bar");
-        text.commit();
-    }
-    {
-        TextInput text("c:/tmp/text.txt");
-        std::string s = text.readString();
-        debugPrintf("%s", s.c_str());
-    }
-
     GAppSettings settings;
     settings.window.width = 600;
     settings.window.height = 400;
     settings.window.alphaBits = 8;
+    settings.useNetwork = false;
     App(settings).run();
     return 0;
 }

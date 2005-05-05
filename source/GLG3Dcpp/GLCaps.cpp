@@ -385,8 +385,14 @@ void GLCaps::loadExtensions(Log* debugLog) {
         // GL Renderer:    MOBILITY RADEON 9000 DDR x86/SSE2
         // GL Version:     1.3.4204 WinXP Release
         // Driver version: 6.14.10.6430
-        if (beginsWith(_glRenderer, "MOBILITY RADEON 9000 DDR") &&
-            (std::string(_driverVersion) == "6.14.10.6430")) {
+
+		// GL Vendor:      ATI Technologies Inc.
+		// GL Renderer:    MOBILITY RADEON 7500 DDR x86/SSE2
+		// GL Version:     1.3.3842 WinXP Release
+		// Driver version: 6.14.10.6371
+
+		if (beginsWith(_glRenderer, "MOBILITY RADEON") &&
+			beginsWith(std::string(_driverVersion), "6.14.10.6")) {
             _supports_GL_EXT_texture_cube_map = false;
             Log::common()->printf("WARNING: Recognized a bug in ATI Radeon Mobility and"
                 " disabled GL_EXT_texture_cube_map as a workaround.\n");
