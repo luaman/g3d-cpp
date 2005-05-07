@@ -750,7 +750,7 @@ void App::main() {
 
         bool useBloom = GLCaps::supports_GL_EXT_texture_rectangle() && Shader::supportsPixelShaders();
 
-        double lightScale = useBloom ? 0.75 : 0;
+        double lightScale = useBloom ? 0.75 : 1.0;
 
         skyParameters = LightingParameters(G3D::toSeconds(12, 00, 00, PM));
     
