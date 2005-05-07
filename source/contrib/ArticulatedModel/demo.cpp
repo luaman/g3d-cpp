@@ -712,7 +712,8 @@ void App::main() {
         triList.material.specular.constant = Color3::black();
 
         triList.material.diffuse.constant = Color3::white() * 0.8;
-        triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg", TextureFormat::AUTO, Texture::TILE);
+        triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg", TextureFormat::AUTO, Texture::TILE,
+            Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 4.0);
 
         GImage normalBumpMap;
         computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap, false, true);

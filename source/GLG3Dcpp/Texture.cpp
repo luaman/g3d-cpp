@@ -206,7 +206,8 @@ static void setTexParameters(
     GLenum                          target,
     Texture::WrapMode               wrap,
     Texture::InterpolateMode        interpolate,
-    Texture::DepthReadMode          depthRead) {
+    Texture::DepthReadMode          depthRead,
+    float                           maxAnisotropy) {
 
     debugAssert(
         target == GL_TEXTURE_2D ||
@@ -281,6 +282,13 @@ static void setTexParameters(
     debugAssertGLOk();
 
 
+    static const bool anisotropic = GLCaps::supports("GL_EXT_texture_filter_anisotropic");
+
+    if (anisotropic) {
+        glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+    }
+
+
     if (GLCaps::supports_GL_ARB_shadow()) {
         if (depthRead == Texture::DEPTH_NORMAL) {
             glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
@@ -305,13 +313,15 @@ Texture::Texture(
     InterpolateMode         _interpolate,
     WrapMode                _wrap,
     bool                    __opaque,
-    DepthReadMode           __dr) :
+    DepthReadMode           __dr,
+    float                   _aniso) :
     
     textureID(_textureID),
     dimension(_dimension),
     format(_format),
     _opaque(__opaque),
-    _depthRead(__dr) {
+    _depthRead(__dr),
+    _maxAnisotropy(_aniso) {
 
     debugAssert(_format);
     debugAssertGLOk();
@@ -336,7 +346,7 @@ Texture::Texture(
         interpolate         = _interpolate;
         wrap                = _wrap;
         debugAssertGLOk();
-        setTexParameters(target, wrap, interpolate, _depthRead);
+        setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy);
         debugAssertGLOk();
     glStatePop();
     debugAssertGLOk();
@@ -352,11 +362,12 @@ TextureRef Texture::fromGLTexture(
     WrapMode                wrap,
     InterpolateMode         interpolate,
     Dimension               dimension,
-    DepthReadMode           depthRead) {
+    DepthReadMode           depthRead,
+    float                   aniso) {
 
     debugAssert(textureFormat);
 
-    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, textureFormat->opaque, depthRead);
+    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, textureFormat->opaque, depthRead, aniso);
 }
 
 
@@ -387,7 +398,8 @@ TextureRef Texture::fromFile(
     InterpolateMode                 interpolate,
     Dimension                       dimension,
     double                          brighten,
-    DepthReadMode                   depthRead) {
+    DepthReadMode                   depthRead,
+    float                           maxAnisotropy) {
 
     std::string realFilename[6];
 
@@ -452,7 +464,7 @@ TextureRef Texture::fromFile(
             mapHeight = iMax(1,iFloor(mapHeight/2));
         }
 
-        return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead);
+        return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
     }
 
     // Test for both DIM_CUBE_MAP and DIM_CUBE_MAP_NPOT
@@ -510,7 +522,7 @@ TextureRef Texture::fromFile(
         Texture::fromMemory(filename[0], array, format,
             image[0].width, image[0].height, 1,
             desiredFormat, wrap, interpolate, dimension,
-            depthRead);
+            depthRead, maxAnisotropy);
 
     return t;
 }
@@ -523,7 +535,8 @@ TextureRef Texture::fromFile(
     InterpolateMode         interpolate,
     Dimension               dimension,
     double                  brighten,
-    DepthReadMode           depthRead) {
+    DepthReadMode           depthRead,
+    float                   maxAnisotropy) {
 
     std::string f[6];
     f[0] = filename;
@@ -533,7 +546,7 @@ TextureRef Texture::fromFile(
     f[4] = "";
     f[5] = "";
 
-    return fromFile(f, desiredFormat, wrap, interpolate, dimension, brighten, depthRead);
+    return fromFile(f, desiredFormat, wrap, interpolate, dimension, brighten, depthRead, maxAnisotropy);
 }
 
 
@@ -544,7 +557,8 @@ TextureRef Texture::fromTwoFiles(
     WrapMode                wrap,
     InterpolateMode         interpolate,
     Dimension               dimension,
-    DepthReadMode           depthRead) {
+    DepthReadMode           depthRead,
+    float                   maxAnisotropy) {
 
     debugAssert(desiredFormat);
 
@@ -613,7 +627,7 @@ TextureRef Texture::fromTwoFiles(
 
     t = Texture::fromMemory(filename, array, TextureFormat::RGBA8,
             color[0].width, color[0].height, 1, 
-            desiredFormat, wrap, interpolate, dimension, depthRead);
+            desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
 
     if (color[0].channels == 3) {
         // Delete the data if it was dynamically allocated
@@ -650,7 +664,8 @@ TextureRef Texture::fromMemory(
     WrapMode                            wrap,
     InterpolateMode                     interpolate,
     Dimension                           dimension,
-    DepthReadMode                       depthRead) {
+    DepthReadMode                       depthRead,
+    float                               maxAnisotropy) {
 
     debugAssert(bytesFormat);
     
@@ -726,7 +741,7 @@ TextureRef Texture::fromMemory(
     }
 
     debugAssertGLOk();
-    TextureRef t = fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension, depthRead);
+    TextureRef t = fromGLTexture(name, textureID, desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
     debugAssertGLOk();
 
     t->width = width;
@@ -746,7 +761,8 @@ TextureRef Texture::fromMemory(
     WrapMode                wrap,
     InterpolateMode         interpolate,
     Dimension               dimension,
-    DepthReadMode           depthRead) {
+    DepthReadMode           depthRead,
+    float                   maxAnisotropy) {
 
     Array< Array<const void* > > arrayMipMapFaces(1);
 
@@ -758,7 +774,8 @@ TextureRef Texture::fromMemory(
         arrayMipMapFaces[0].append(bytes[f]);
     }
 
-    return Texture::fromMemory(name, arrayMipMapFaces, bytesFormat, width, height, depth, desiredFormat, wrap, interpolate, dimension, depthRead);
+    return Texture::fromMemory(name, arrayMipMapFaces, bytesFormat, width, height, 
+        depth, desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
 }
 
 
@@ -769,7 +786,8 @@ TextureRef Texture::fromGImage(
     WrapMode                        wrap,
     InterpolateMode                 interpolate,
     Dimension                       dimension,
-    DepthReadMode                   depthRead) {
+    DepthReadMode                   depthRead,
+    float                   maxAnisotropy) {
 
     const TextureFormat* format = TextureFormat::RGB8;
     bool opaque = true;
@@ -809,7 +827,7 @@ TextureRef Texture::fromGImage(
         Texture::fromMemory(name, array, format,
             image.width, image.height, 1,
             desiredFormat, wrap, interpolate, 
-            dimension, depthRead);
+            dimension, depthRead, maxAnisotropy);
 
     return t;
 }
@@ -823,7 +841,8 @@ TextureRef Texture::createEmpty(
     Texture::WrapMode                wrap,
     Texture::InterpolateMode         interpolate,
     Texture::Dimension               dimension,
-    Texture::DepthReadMode           depthRead) {
+    Texture::DepthReadMode           depthRead,
+    float                            maxAnisotropy) {
 
     debugAssertM(desiredFormat, "desiredFormat may not be TextureFormat::AUTO");
 
@@ -835,7 +854,8 @@ TextureRef Texture::createEmpty(
         bytes[i] = data.getCArray();
     }
 
-    return Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, wrap, interpolate, dimension, depthRead);
+    return Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, 
+        wrap, interpolate, dimension, depthRead, maxAnisotropy);
 }
 
 
@@ -921,7 +941,7 @@ void Texture::copyFromScreen(
 
     debugAssertGLOk();
     // Reset the original properties
-    setTexParameters(target, wrap, interpolate, _depthRead);
+    setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy);
 
     debugAssertGLOk();
     glDisable(target);

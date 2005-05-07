@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2005-04-02
+  @edited  2005-05-06
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -121,6 +121,7 @@ private:
     int                             depth;
     bool                            _opaque;
     DepthReadMode                   _depthRead;
+    float                           _maxAnisotropy;
 
     static size_t                   _sizeOfAllTexturesInMemory;
 
@@ -133,7 +134,8 @@ private:
         InterpolateMode             _interpolate,
         WrapMode                    _wrap,
         bool                        _opaque,
-        DepthReadMode               _depthRead);
+        DepthReadMode               _depthRead,
+        float                       _anisotropy);
 
 public:
 
@@ -153,7 +155,8 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL);
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
     /**
      Wrap and interpolate will override the existing parameters on the
@@ -161,6 +164,7 @@ public:
 
      @param name Arbitrary name for this texture to identify it
      @param textureID Set to newGLTextureID() to create an empty texture.
+     @param maxAnisotropy Values over 1.0 will give better rendering of textures on shallow angles
      */
     static TextureRef fromGLTexture(
         const std::string&              name,
@@ -169,7 +173,8 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL);
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
     /**
      Creates a texture from a single image.  The image must have a format understood
@@ -185,7 +190,8 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL);
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
     /**
      Creates a cube map from six independently named files.  The first
@@ -198,7 +204,8 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL);
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
     /**
      Creates a texture from the colors of filename and takes the alpha values
@@ -212,7 +219,8 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL);
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
     /**
     bytes[miplevel][cubeface] is a pointer to the bytes
@@ -240,7 +248,8 @@ public:
         WrapMode                            wrap           = TILE,
         InterpolateMode                     interpolate    = TRILINEAR_MIPMAP,
         Dimension                           dimension      = DIM_2D,
-        DepthReadMode                       depthRead      = DEPTH_NORMAL);
+        DepthReadMode                       depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
     /**
      The bytes are described by byteFormat, which may differ from the
@@ -261,7 +270,8 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL);
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
 	static TextureRef fromMemory(
         const std::string&              name,
@@ -273,12 +283,14 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL) {
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0) {
+
 		const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 		b[0] = bytes;
 
 		return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
-			desiredFormat, wrap, interpolate, dimension, depthRead);
+			desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
 	}
 
     static TextureRef fromGImage(
@@ -288,7 +300,8 @@ public:
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL);
+        DepthReadMode                   depthRead      = DEPTH_NORMAL,
+        float                           maxAnisotropy  = 1.0);
 
     /** Creates another texture that is the same as this one but contains only
         an alpha channel.  Alpha-only textures are useful as mattes.  
@@ -396,6 +409,10 @@ public:
 
     inline DepthReadMode depthReadMode() const {
         return _depthRead;
+    }
+
+    inline float maxAnisotropy() const {
+        return _maxAnisotropy;
     }
 
     inline unsigned int getOpenGLID() const {

@@ -153,25 +153,16 @@ void Demo::doGraphics() {
         app->renderDevice->setAmbientLightColor(Color3::black());
         app->renderDevice->setSpecularCoefficient(0);
 
-debugAssert(glIsEnabled(GL_LIGHT0));
-debugAssert(! glIsEnabled(GL_LIGHT0 + 1));
-
-
-    // Rendering loop
-    app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
-
-//    model->pose()->render(app->renderDevice);
-
-    app->renderDevice->push2D();
-
-        app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-        app->renderDevice->setColor(Color3::white());
-        app->renderDevice->setTexture(0, alpha);
-        Draw::rect2D(Rect2D::xywh(10, 10, 300, 300), app->renderDevice);
-    app->renderDevice->pop2D();
-
+        // Rendering loop
+        app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
     app->renderDevice->disableLighting();
+
+    app->renderDevice->setColor(Color3::white());
+    app->renderDevice->setTexture(0, app->im);
+    Draw::rect2D(Rect2D::xywh(0, 0, 2, 2), app->renderDevice);
+
+
 
 }
 
@@ -182,7 +173,10 @@ void App::main() {
 
     // Load objects here
     sky = Sky::create(renderDevice, dataDir + "sky/");
-    
+
+    im = Texture::fromFile("../contrib/ArticulatedModel/demo/stone.jpg", TextureFormat::AUTO, Texture::TILE,
+            Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 8.0);
+        
     applet->run();
 }
 
