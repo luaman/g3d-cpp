@@ -59,7 +59,8 @@ GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
     texture = 
         Texture::fromMemory(filename, &ptr,
             TextureFormat::A8, width, height, 1, TextureFormat::A8, 
-            Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D);
+            Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D,
+            Texture::DEPTH_NORMAL, 1.0);
 }
 
 

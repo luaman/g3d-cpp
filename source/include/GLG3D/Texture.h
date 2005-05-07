@@ -156,7 +156,7 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
     /**
      Wrap and interpolate will override the existing parameters on the
@@ -174,7 +174,7 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
     /**
      Creates a texture from a single image.  The image must have a format understood
@@ -191,7 +191,7 @@ public:
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
     /**
      Creates a cube map from six independently named files.  The first
@@ -205,7 +205,7 @@ public:
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
     /**
      Creates a texture from the colors of filename and takes the alpha values
@@ -220,7 +220,7 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
     /**
     bytes[miplevel][cubeface] is a pointer to the bytes
@@ -249,7 +249,7 @@ public:
         InterpolateMode                     interpolate    = TRILINEAR_MIPMAP,
         Dimension                           dimension      = DIM_2D,
         DepthReadMode                       depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
     /**
      The bytes are described by byteFormat, which may differ from the
@@ -271,7 +271,7 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
 	static TextureRef fromMemory(
         const std::string&              name,
@@ -284,7 +284,7 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0) {
+        float                           maxAnisotropy  = 2.0) {
 
 		const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 		b[0] = bytes;
@@ -301,7 +301,7 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 1.0);
+        float                           maxAnisotropy  = 2.0);
 
     /** Creates another texture that is the same as this one but contains only
         an alpha channel.  Alpha-only textures are useful as mattes.  
