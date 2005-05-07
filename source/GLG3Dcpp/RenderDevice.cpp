@@ -2296,6 +2296,10 @@ void RenderDevice::setTextureCombineMode(
             glActiveTextureARB(GL_TEXTURE0_ARB + unit);
         }
 
+        static const bool hasAdd = GLCaps::supports("GL_EXT_texture_env_add");
+        static const bool hasCombine = GLCaps::supports("GL_ARB_texture_env_combine");
+        static const bool hasDot3 = GLCaps::supports("GL_ARB_texture_env_dot3");
+
         switch (mode) {
         case TEX_REPLACE:
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -2314,7 +2318,23 @@ void RenderDevice::setTextureCombineMode(
             break;
 
         case TEX_ADD:
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_ADD : GL_BLEND);
+            break;
+
+        case TEX_SUBTRACT:
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_SUBTRACT_ARB : GL_BLEND);
+            break;
+
+        case TEX_ADD_SIGNED:
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_ADD_SIGNED_ARB : GL_BLEND);
+            break;
+            
+        case TEX_DOT3_RGB:
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_DOT3_RGB_ARB : GL_BLEND);
+            break;
+             
+        case TEX_DOT3_RGBA:
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_DOT3_RGBA_ARB : GL_BLEND);
             break;
 
         default:

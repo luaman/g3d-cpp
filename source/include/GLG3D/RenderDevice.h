@@ -333,8 +333,27 @@ public:
 
     enum ShadeMode   {SHADE_FLAT,        SHADE_SMOOTH,     SHADE_CURRENT};
 
-    /** TEX_BLEND = GL_BLEND, TEX_INTERPOLATE = GL_DECAL */
+    /**
+      Arguments to setTextureCombineMode
+
+      TEX_INTERPOLATE = GL_DECAL (blend between previous and current texture based on current alpha)
+
+      Note: GL_INTERPOLATE_ARB is not supported because it takes two arguments.  You can access it
+      yourself using glTexEnvi.
+
+      TEX_BLEND = GL_BLEND (for luminance textures, blend against a constant)
+      
+      TEX_ADD is only present if GLCaps::supports("GL_EXT_texture_env_add")
+      See http://oss.sgi.com/projects/ogl-sample/registry/ARB/texture_env_add.txt
+    
+      TEX_ADD_SIGNED and TEX_SUBTRACT are only present if GLCaps::supports("GL_ARB_texture_env_combine")
+      See http://oss.sgi.com/projects/ogl-sample/registry/ARB/texture_env_combine.txt
+
+      TEX_DOT3_RGB and TEX_DOT3_RGBA are only present if GLCaps::supports("GL_ARB_texture_env_dot3")
+      http://oss.sgi.com/projects/ogl-sample/registry/ARB/texture_env_dot3.txt
+    */
     enum CombineMode {TEX_REPLACE, TEX_BLEND, TEX_INTERPOLATE, TEX_ADD, TEX_MODULATE, 
+                      TEX_ADD_SIGNED, TEX_SUBTRACT, TEX_DOT3_RGB, TEX_DOT3_RGBA,
                       TEX_CURRENT};
 
     enum Buffer      {BUFFER_BACK,       BUFFER_FRONT,
@@ -624,8 +643,13 @@ public:
      the previous combine or the constant color for the first texture
      unit).
 
+     Consider using shaders on newer cards instead of texture combiners; 
+     they are much easier to use.  See also
+     http://oss.sgi.com/projects/ogl-sample/registry/ARB/texture_env_crossbar.txt
+     http://oss.sgi.com/projects/ogl-sample/registry/ARB/texture_env_dot3.txt
+
      The initial combine op is TEX_MODULATE 
-     Equivalent to glTexEnvn.
+     Equivalent to glTexEnv.
      */
     void setTextureCombineMode(
         uint                      textureUnit,

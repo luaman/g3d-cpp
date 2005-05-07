@@ -6,9 +6,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2005-04-25
+ @edited  2005-05-05
 
- Copyright 2002-2004, Morgan McGuire.
+ Copyright 2002-2005, Morgan McGuire.
  All rights reserved.
 */
 
@@ -18,6 +18,10 @@
 #include "graphics3D.h"
 #include "G3D/platform.h"
 #include "GLG3D/glheaders.h"
+#ifdef _DEBUG
+// Needed for debugAssertGLOk
+#   include "GLG3D/getOpenGLState.h"
+#endif
 
 namespace G3D {
 
@@ -25,9 +29,9 @@ namespace G3D {
  Produces a debugAssert that no OpenGL error has been produced.
  */
 #ifdef _DEBUG
-    #define debugAssertGLOk() {GLenum e = glGetError(); debugAssertM(e == GL_NO_ERROR, GLenumToString(e));}
+#   define debugAssertGLOk() {GLenum e = glGetError(); debugAssertM(e == GL_NO_ERROR, G3D::GLenumToString(e));}
 #else
-    #define debugAssertGLOk()
+#   define debugAssertGLOk()
 #endif
 
 /**
