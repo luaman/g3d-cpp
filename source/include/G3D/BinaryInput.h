@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-02-24
+ @edited  2005-05-07
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.

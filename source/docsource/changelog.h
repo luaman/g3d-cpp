@@ -14,7 +14,7 @@
      <UL>
        <LI>G3D::Sky create methods will no longer accept a G3D::RenderDevice.
        <LI>G3D::GFont::fromFile method will no longer accept a G3D::RenderDevice.
-       <LI>All accessor "get" methods will have their prefix removed (e.g. G3D::RenderDevice::getObjectToWorldMatrix -> G3D::RenderDevice::objectToWorldMatrix).
+       <LI>All accessor "get" methods that return a value will have their prefix removed (e.g. G3D::RenderDevice::getObjectToWorldMatrix -> G3D::RenderDevice::objectToWorldMatrix).
        <LI>All <A HREF="deprecated.html">deprecated</A> functionality will be removed.
        <LI>GApplet methods will change to:
           <UL>
@@ -30,6 +30,8 @@
   <P>
    Changes in 6.06:
    <UL>
+    <LI> 50% performance improvement for G3D::BinaryInput, G3D::BinaryOutput when machine endian matches file endian
+    <LI> Textures load with default of maxAnisotroy = 2.0
     <LI> maxAnisotropy argument to G3D::Texture constructors.
     <LI> Added TEX_SUBTRACT, TEX_ADD_SIGNED, TEX_DOT3, TEX_DOT3_RGBA modes for G3D::RenderDevice::setTextureCombineMode
     <LI> FIX: 6.05 enabled all fixed function lights by default.

@@ -10,7 +10,7 @@
 
 #include "../include/G3DAll.h"
 #include <iostream>
-#include "../contrib/Matrix/Matrix.cpp"
+//#include "../contrib/Matrix/Matrix.cpp"
 
 using namespace G3D;
 
@@ -20,6 +20,7 @@ using namespace G3D;
 #include <string>
 
 
+#if 0
 void testMatrix() {
     // Zeros
     {
@@ -142,7 +143,7 @@ void testMatrix() {
     }
 
 }
-
+#endif
 
 void testHugeBinaryOutput() {
     printf("BinaryOutput Huge Files\n");
@@ -2039,6 +2040,20 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {    
+/*
+    BinaryInput b("C:/morgan/DefocusMatting/figures/aparatus.eps", G3D_LITTLE_ENDIAN);
+
+    RealTime t0 = System::time();
+
+    for (int i = 0; i < 1000000; ++i) {
+        long L = b.readInt64();
+    }
+
+    printf("%g s\n", System::time() - t0);
+
+    while(true);
+    exit(-1);
+*/
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
@@ -2062,8 +2077,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
-    testMatrix();
-    printf("  passed\n");
+//    testMatrix();
+//    printf("  passed\n");
 
     testAABSPTreeSerialize();
     printf("  passed\n");

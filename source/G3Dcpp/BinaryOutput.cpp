@@ -262,8 +262,7 @@ void BinaryOutput::writeUInt16(uint16 u) {
         buffer[pos]     = convert[1];
         buffer[pos + 1] = convert[0];
     } else {
-        buffer[pos]     = convert[0];
-        buffer[pos + 1] = convert[1];
+        *(uint16*)(buffer + pos) = u;
     }
 
     pos += 2;
@@ -283,10 +282,7 @@ void BinaryOutput::writeUInt32(uint32 u) {
         buffer[pos + 2] = convert[1];
         buffer[pos + 3] = convert[0];
     } else {
-        buffer[pos]     = convert[0];
-        buffer[pos + 1] = convert[1];
-        buffer[pos + 2] = convert[2];
-        buffer[pos + 3] = convert[3];
+        *(uint32*)(buffer + pos) = u;
     }
 
     pos += 4;
@@ -308,14 +304,7 @@ void BinaryOutput::writeUInt64(uint64 u) {
         buffer[pos + 6] = convert[1];
         buffer[pos + 7] = convert[0];
     } else {
-        buffer[pos]     = convert[0];
-        buffer[pos + 1] = convert[1];
-        buffer[pos + 2] = convert[2];
-        buffer[pos + 3] = convert[3];
-        buffer[pos + 4] = convert[4];
-        buffer[pos + 5] = convert[5];
-        buffer[pos + 6] = convert[6];
-        buffer[pos + 7] = convert[7];
+        *(uint64*)(buffer + pos) = u;
     }
 
     pos += 8;

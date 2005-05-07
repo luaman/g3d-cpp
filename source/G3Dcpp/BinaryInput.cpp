@@ -270,14 +270,7 @@ uint64 BinaryInput::readUInt64() {
         out[6] = buffer[pos + 1];
         out[7] = buffer[pos + 0];
     } else {
-        out[0] = buffer[pos + 0];
-        out[1] = buffer[pos + 1];
-        out[2] = buffer[pos + 2];
-        out[3] = buffer[pos + 3];
-        out[4] = buffer[pos + 4];
-        out[5] = buffer[pos + 5];
-        out[6] = buffer[pos + 6];
-        out[7] = buffer[pos + 7];
+        *(uint64*)out = *(uint64*)(buffer + pos);
     }
 
     pos += 8;
