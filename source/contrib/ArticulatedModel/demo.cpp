@@ -710,6 +710,8 @@ void App::main() {
         triList.material.emit.constant = Color3::black();
 
         triList.material.specular.constant = Color3::black();
+        triList.material.specularExponent.constant = Color3::white() * 60;
+        triList.material.reflect.constant = Color3::black();
 
         triList.material.diffuse.constant = Color3::white() * 0.8;
         triList.material.diffuse.map = Texture::fromFile("demo/stone.jpg", TextureFormat::AUTO, Texture::TILE,
@@ -722,9 +724,6 @@ void App::main() {
 
         triList.material.bumpMapScale = 0.04;
 
-        triList.material.specular.constant = Color3::black();
-        triList.material.specularExponent.constant = Color3::white() * 60;
-        triList.material.reflect.constant = Color3::black();
 
         triList.computeBounds(part);
 
@@ -753,7 +752,7 @@ void App::main() {
 
         double lightScale = useBloom ? 0.75 : 1.0;
 
-        skyParameters = LightingParameters(G3D::toSeconds(12, 00, 00, PM));
+        skyParameters = LightingParameters(G3D::toSeconds(1, 00, 00, PM));
     
         skyParameters.skyAmbient = Color3::white() * lightScale;
         skyParameters.diffuseAmbient *= lightScale;

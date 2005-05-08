@@ -47,6 +47,13 @@ protected:
         const ArticulatedModel::Part::TriList& triList,
         const SuperShader::Material&    material) const;
 
+    bool renderPS14NonShadowedOpaqueTerms(
+        RenderDevice*                   rd,
+        const LightingRef&              lighting,
+        const ArticulatedModel::Part&   part,
+        const ArticulatedModel::Part::TriList& triList,
+        const SuperShader::Material&    material) const;
+
     bool renderPS20NonShadowedOpaqueTerms(
         RenderDevice*                   rd,
         const LightingRef&              lighting,
@@ -232,6 +239,10 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
             renderedOnce = renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
             break;
 
+        case ArticulatedModel::PS14:
+            renderedOnce = renderPS14NonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+            break;
+
         case ArticulatedModel::PS20:
             renderedOnce = renderPS20NonShadowedOpaqueTerms(rd, lighting, part, triList, material);
             break;
@@ -318,7 +329,100 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
             setAdditive(rd, renderedOnce);
 
             // Disable reflection map
-            rd->setTexture(1, 0);
+            rd->setTexture(1, NULL);
+        rd->popState();
+    }
+
+    bool ps14 = ArticulatedModel::profile() == ArticulatedModel::PS14;
+
+    // Add ambient + lights
+    rd->enableLighting();
+    if (! material.diffuse.isBlack() || ! material.specular.isBlack()) {
+        rd->setTexture(0, material.diffuse.map);
+        rd->setColor(material.diffuse.constant);
+
+        // Fixed function does not receive specular texture maps, only constants.
+        rd->setSpecularCoefficient(material.specular.constant);
+        rd->setShininess(material.specularExponent.constant.average());
+
+        // Ambient
+        if (lighting.notNull()) {
+            rd->setAmbientLightColor(lighting->ambientTop);
+            if (lighting->ambientBottom != lighting->ambientTop) {
+                rd->setLight(0, GLight::directional(-Vector3::unitY(), 
+                    lighting->ambientBottom - lighting->ambientTop, false)); 
+            }
+            
+            // Lights
+            for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
+                rd->setLight(L + 1, lighting->lightArray[L]);
+            }
+        }
+
+        if (renderedOnce) {
+            // Make sure we add this pass to the previous terms
+            rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+        }
+
+        sendGeometry(rd);
+        setAdditive(rd, renderedOnce);
+    }
+
+    return renderedOnce;
+}
+
+
+bool PosedArticulatedModel::renderPS14NonShadowedOpaqueTerms(
+    RenderDevice*                   rd,
+    const LightingRef&              lighting,
+    const ArticulatedModel::Part&   part,
+    const ArticulatedModel::Part::TriList& triList,
+    const SuperShader::Material&    material) const {
+
+    bool renderedOnce = false;
+
+    // Emissive
+    if (! material.emit.isBlack()) {
+        rd->setColor(material.emit.constant);
+        rd->setTexture(0, material.emit.map);
+        sendGeometry(rd);
+        setAdditive(rd, renderedOnce);
+    }
+    
+    // Add reflective
+    if (! material.reflect.isBlack() && 
+        lighting.notNull() &&
+        (lighting->environmentMapColor != Color3::black())) {
+
+        rd->pushState();
+
+            // Reflections are specular and not affected by surface texture, only
+            // the reflection coefficient
+            rd->setColor(material.reflect.constant * lighting->environmentMapColor);
+            rd->setTexture(0, material.reflect.map);
+
+            // Configure reflection map
+            if (lighting->environmentMap.isNull()) {
+                rd->setTexture(1, NULL);
+            } else if (GLCaps::supports_GL_ARB_texture_cube_map() &&
+                (lighting->environmentMap->getDimension() == Texture::DIM_CUBE_MAP)) {
+                rd->configureReflectionMap(1, lighting->environmentMap);
+            } else {
+                // Use the top texture as a sphere map
+                glActiveTextureARB(GL_TEXTURE0_ARB + 1);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+
+                rd->setTexture(1, lighting->environmentMap);
+            }
+
+            sendGeometry(rd);
+            setAdditive(rd, renderedOnce);
+
+            // Disable reflection map
+            rd->setTexture(1, NULL);
         rd->popState();
     }
 
@@ -344,6 +448,11 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
             for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
                 rd->setLight(L + 1, lighting->lightArray[L]);
             }
+        }
+
+        if (renderedOnce) {
+            // Make sure we add this pass to the previous terms
+            rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
         }
 
         sendGeometry(rd);
@@ -404,10 +513,10 @@ void PosedArticulatedModel::renderNonShadowed(
         // Opaque
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
 
-        bool fixedFunction = ArticulatedModel::profile() == ArticulatedModel::FIXED_FUNCTION;
+        bool ps20 = ArticulatedModel::profile() == ArticulatedModel::PS20;
 
         if (triList.twoSided) {
-            if (fixedFunction) {
+            if (! ps20) {
                 rd->enableTwoSidedLighting();
                 rd->setCullFace(RenderDevice::CULL_NONE);
             } else {
@@ -419,7 +528,7 @@ void PosedArticulatedModel::renderNonShadowed(
 
         bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
 
-        if (triList.twoSided && ! fixedFunction) {
+        if (triList.twoSided && ps20) {
             // gl_FrontFacing doesn't work on most cards, so we have to draw two-sided objects twice
             rd->setCullFace(RenderDevice::CULL_FRONT);
             triList.nonShadowedShader->args.set("backside", -1.0f);
@@ -468,6 +577,7 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
 
         switch (ArticulatedModel::profile()) {
         case ArticulatedModel::FIXED_FUNCTION:
+        case ArticulatedModel::PS14:
             if (triList.twoSided) {
                 rd->enableTwoSidedLighting();
                 rd->setCullFace(RenderDevice::CULL_NONE);
@@ -607,7 +717,7 @@ void PosedArticulatedModel::sendGeometry(
 
             // In programmable pipeline mode, load the tangents into tex coord 1
             if ((part.tangentArray.size()) > 0 && 
-                (ArticulatedModel::profile() != ArticulatedModel::FIXED_FUNCTION)) {
+                (ArticulatedModel::profile() == ArticulatedModel::PS20)) {
                 rd->setTexCoordArray(1, part.tangentVAR);
             }
 

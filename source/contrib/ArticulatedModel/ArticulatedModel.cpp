@@ -14,6 +14,12 @@ ArticulatedModel::GraphicsProfile ArticulatedModel::profile() {
     if (p == UNKNOWN) {
         if (GLCaps::supports_GL_ARB_shader_objects()) {
             p = PS20;
+        } else if (
+            GLCaps::supports("GL_ARB_texture_env_crossbar") &&
+            GLCaps::supports("GL_ARB_texture_env_combine") &&
+            GLCaps::supports("GL_EXT_texture_env_add") &&
+            (GLCaps::numTextureUnits() >= 3)) {
+            p = PS14;
         } else {
             p = FIXED_FUNCTION;
         }
@@ -220,7 +226,7 @@ void ArticulatedModel::Part::updateVAR() {
 
 
 void ArticulatedModel::Part::updateShaders() {
-    if (ArticulatedModel::profile() == FIXED_FUNCTION) {
+    if (ArticulatedModel::profile() != PS20) {
         return;
     }
 
@@ -290,6 +296,9 @@ const char* toString(ArticulatedModel::GraphicsProfile p) {
 
     case ArticulatedModel::FIXED_FUNCTION:
         return "Fixed Function";
+
+    case ArticulatedModel::PS14:
+        return "PS 1.4";
 
     case ArticulatedModel::PS20:
         return "PS 2.0";
