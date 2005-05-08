@@ -135,6 +135,22 @@ public:
 };
 
 
+/** PS14 often needs a dummy texture map in order to enable a combiner */
+static TextureRef whiteMap() {
+    static TextureRef map;
+
+    if (map.isNull()) {
+        GImage im(4,4,3);
+        for (int y = 0; y < im.height; ++y) {
+            for (int x = 0; x < im.width; ++x) {
+                im.pixel3(x, y) = Color3(1, 1, 1);
+            }
+        }
+        map = Texture::fromGImage("White", im, TextureFormat::RGB8);
+    }
+    return map;
+}
+
 void ArticulatedModel::pose(
     Array<PosedModelRef>&       posedArray, 
     const CoordinateFrame&      cframe, 
@@ -389,75 +405,156 @@ bool PosedArticulatedModel::renderPS14NonShadowedOpaqueTerms(
         setAdditive(rd, renderedOnce);
     }
     
-    // Add reflective
-    if (! material.reflect.isBlack() && 
-        lighting.notNull() &&
-        (lighting->environmentMapColor != Color3::black())) {
 
-        rd->pushState();
+    // Full combiner setup (in practice, we only use combiners that are
+    // needed):
+    //
+    // Unit 0:
+    // Mode = modulate
+    // arg0 = primary
+    // arg1 = texture (diffuse)
+    //
+    // Unit 1:
+    // Mode = modulate
+    // arg0 = constant (envmap constant * envmap color)
+    // arg1 = texture (envmap)
+    //
+    // Unit 2:
+    // Mode = modulate
+    // arg0 = previous
+    // arg1 = texture (reflectmap)
+    //
+    // Unit 3:
+    // Mode = add
+    // arg0 = previous
+    // arg1 = texture0
 
-            // Reflections are specular and not affected by surface texture, only
-            // the reflection coefficient
-            rd->setColor(material.reflect.constant * lighting->environmentMapColor);
-            rd->setTexture(0, material.reflect.map);
 
-            // Configure reflection map
-            if (lighting->environmentMap.isNull()) {
-                rd->setTexture(1, NULL);
-            } else if (GLCaps::supports_GL_ARB_texture_cube_map() &&
+    bool hasDiffuse = ! material.diffuse.isBlack();
+    bool hasReflection = ! material.reflect.isBlack() && 
+            lighting.notNull() &&
+            (lighting->environmentMapColor != Color3::black());
+
+    // Add reflective and diffuse
+
+    rd->pushState();
+    // We're going to use combiners, which G3D does not preserve
+    glPushAttrib(GL_TEXTURE_BIT);
+
+        GLint nextUnit = 0;
+        GLint diffuseUnit = GL_PRIMARY_COLOR_ARB;
+
+        if (hasDiffuse) {
+
+            // Add ambient + lights
+            rd->enableLighting();
+            if (! material.diffuse.isBlack() || ! material.specular.isBlack()) {
+                rd->setTexture(nextUnit, material.diffuse.map);
+                rd->setColor(material.diffuse.constant);
+
+                // Fixed function does not receive specular texture maps, only constants.
+                rd->setSpecularCoefficient(material.specular.constant);
+                rd->setShininess(material.specularExponent.constant.average());
+
+                // Ambient
+                if (lighting.notNull()) {
+                    rd->setAmbientLightColor(lighting->ambientTop);
+                    if (lighting->ambientBottom != lighting->ambientTop) {
+                        rd->setLight(0, GLight::directional(-Vector3::unitY(), 
+                            lighting->ambientBottom - lighting->ambientTop, false)); 
+                    }
+            
+                    // Lights
+                    for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
+                        rd->setLight(L + 1, lighting->lightArray[L]);
+                    }
+                }
+            }
+
+            if (material.diffuse.map.notNull()) {
+                glActiveTextureARB(GL_TEXTURE0_ARB + nextUnit);
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_COMBINE_ARB);
+                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB,   GL_MODULATE);
+                glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB,   GL_PRIMARY_COLOR_ARB);
+                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB,  GL_SRC_COLOR);
+                glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB,   GL_TEXTURE);
+                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB,  GL_SRC_COLOR);
+                diffuseUnit = GL_TEXTURE0_ARB + nextUnit;
+                ++nextUnit;
+            }
+        }
+
+        if (hasReflection) {
+
+            // First configure the reflection map.  There must be one or we wouldn't
+            // have taken this branch.
+
+            if (GLCaps::supports_GL_ARB_texture_cube_map() &&
                 (lighting->environmentMap->getDimension() == Texture::DIM_CUBE_MAP)) {
-                rd->configureReflectionMap(1, lighting->environmentMap);
+                rd->configureReflectionMap(nextUnit, lighting->environmentMap);
             } else {
                 // Use the top texture as a sphere map
-                glActiveTextureARB(GL_TEXTURE0_ARB + 1);
+                glActiveTextureARB(GL_TEXTURE0_ARB + nextUnit);
                 glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
                 glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
                 glEnable(GL_TEXTURE_GEN_S);
                 glEnable(GL_TEXTURE_GEN_T);
 
-                rd->setTexture(1, lighting->environmentMap);
+                rd->setTexture(nextUnit, lighting->environmentMap);
+            }
+            debugAssertGLOk();
+
+            glActiveTextureARB(GL_TEXTURE0_ARB + nextUnit);
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_COMBINE_ARB);
+            glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB,   GL_MODULATE);
+            glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB,   GL_CONSTANT_ARB);
+            glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB,  GL_SRC_COLOR);
+            glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB,   GL_TEXTURE);
+            glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB,  GL_SRC_COLOR);
+            glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color4(material.reflect.constant * lighting->environmentMapColor, 1));
+            debugAssertGLOk();
+
+            ++nextUnit;
+
+            rd->setTexture(nextUnit, material.reflect.map);
+            if (material.reflect.map.notNull()) {
+                // If there is a reflection map for the surface, modulate
+                // the reflected color by it.
+                glActiveTextureARB(GL_TEXTURE0_ARB + nextUnit);
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_COMBINE_ARB);
+                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB,   GL_MODULATE);
+                glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB,   GL_PREVIOUS_ARB);
+                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB,  GL_SRC_COLOR);
+                glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB,   GL_TEXTURE);
+                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB,  GL_SRC_COLOR);
+                ++nextUnit;
+                debugAssertGLOk();
             }
 
-            sendGeometry(rd);
-            setAdditive(rd, renderedOnce);
+            if (hasDiffuse) {
+                // Need a dummy texture
+                rd->setTexture(nextUnit, whiteMap());
 
-            // Disable reflection map
-            rd->setTexture(1, NULL);
-        rd->popState();
-    }
-
-    // Add ambient + lights
-    rd->enableLighting();
-    if (! material.diffuse.isBlack() || ! material.specular.isBlack()) {
-        rd->setTexture(0, material.diffuse.map);
-        rd->setColor(material.diffuse.constant);
-
-        // Fixed function does not receive specular texture maps, only constants.
-        rd->setSpecularCoefficient(material.specular.constant);
-        rd->setShininess(material.specularExponent.constant.average());
-
-        // Ambient
-        if (lighting.notNull()) {
-            rd->setAmbientLightColor(lighting->ambientTop);
-            if (lighting->ambientBottom != lighting->ambientTop) {
-                rd->setLight(0, GLight::directional(-Vector3::unitY(), 
-                    lighting->ambientBottom - lighting->ambientTop, false)); 
-            }
-            
-            // Lights
-            for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
-                rd->setLight(L + 1, lighting->lightArray[L]);
+                // Add diffuse to the previous (reflective) unit
+                glActiveTextureARB(GL_TEXTURE0_ARB + nextUnit);
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_COMBINE_ARB);
+                glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB,   GL_ADD);
+                glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB,   GL_PREVIOUS_ARB);
+                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB,  GL_SRC_COLOR);
+                glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB,   diffuseUnit);
+                glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB,  GL_SRC_COLOR);
+                debugAssertGLOk();
+                ++nextUnit;
             }
         }
 
-        if (renderedOnce) {
-            // Make sure we add this pass to the previous terms
-            rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-        }
 
         sendGeometry(rd);
         setAdditive(rd, renderedOnce);
-    }
+
+    glPopAttrib();
+    rd->popState();
+
 
     return renderedOnce;
 }
