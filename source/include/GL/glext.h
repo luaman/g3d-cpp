@@ -3020,24 +3020,24 @@ extern void APIENTRY glEndFragmentShaderATI(void);
 extern void APIENTRY glPassTexCoordATI (GLuint dst, GLuint coord, GLuint swizzle);
 extern void APIENTRY glSampleMapATI (GLuint dst, uint interp, GLuint swizzle);
 extern void APIENTRY glSetFragmentShaderConstantATI (GLuint dst, const float *value);
-extern void APIENTRY glColorFragmentOp1ATI (enum op, GLuint dst, GLuint dstMask, 
+extern void APIENTRY glColorFragmentOp1ATI (GLuint op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
                               GLuint arg1Mod);
-extern void APIENTRY glColorFragmentOp2ATI (enum op, GLuint dst, GLuint dstMask, 
+extern void APIENTRY glColorFragmentOp2ATI (GLuint op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
                               GLuint arg1Mod, GLuint arg2, GLuint arg2Rep, 
                               GLuint arg2Mod);
-extern void APIENTRY glColorFragmentOp3ATI (enum op, GLuint dst, GLuint dstMask, 
+extern void APIENTRY glColorFragmentOp3ATI (GLuint op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
                               GLuint arg1Mod, GLuint arg2, GLuint arg2Rep, 
                               GLuint arg2Mod, GLuint arg3, GLuint arg3Rep, 
                               GLuint arg3Mod);
-extern void APIENTRY glAlphaFragmentOp1ATI (enum op, GLuint dst, GLuint dstMod, 
+extern void APIENTRY glAlphaFragmentOp1ATI (GLuint op, GLuint dst, GLuint dstMod, 
                               GLuint arg1, GLuint arg1Rep, GLuint arg1Mod);
-extern void APIENTRY glAlphaFragmentOp2ATI (enum op, GLuint dst, GLuint dstMod, 
+extern void APIENTRY glAlphaFragmentOp2ATI (GLuint op, GLuint dst, GLuint dstMod, 
                               GLuint arg1, GLuint arg1Rep, GLuint arg1Mod, 
                               GLuint arg2, GLuint arg2Rep, GLuint arg2Mod);
-extern void APIENTRY glAlphaFragmentOp3ATI (enum op, GLuint dst, GLuint dstMod, 
+extern void APIENTRY glAlphaFragmentOp3ATI (GLuint op, GLuint dst, GLuint dstMod, 
                               GLuint arg1, GLuint arg1Rep, GLuint arg1Mod,
                               GLuint arg2, GLuint arg2Rep, GLuint arg2Mod,
                               GLuint arg3, GLuint arg3Rep, GLuint arg3Mod);
