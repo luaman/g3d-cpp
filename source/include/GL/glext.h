@@ -3007,6 +3007,10 @@ typedef void (APIENTRY * PFNGLGETOCCLUSIONQUERYUIVNVPROC) (GLuint id, GLenum pna
 #define GL_SWIZZLE_STR_DR_ATI                    0x8978
 #define GL_SWIZZLE_STQ_DQ_ATI                    0x8979
 
+#define GL_RED_BIT_ATI                           0x00000001
+#define GL_GREEN_BIT_ATI                         0x00000002
+#define GL_BLUE_BIT_ATI                          0x00000004 
+
 #ifdef GL_GLEXT_PROTOTYPES
 extern GLuint APIENTRY glGenFragmentShadersATI(GLuint range);
 extern void APIENTRY glBindFragmentShaderATI(GLuint id);
