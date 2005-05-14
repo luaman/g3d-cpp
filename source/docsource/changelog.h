@@ -30,6 +30,7 @@
   <P>
    Changes in 6.06:
    <UL>
+    <LI> Load GL_ATI_fragment_shader extensions
     <LI> 50% performance improvement for G3D::BinaryInput, G3D::BinaryOutput when machine endian matches file endian
     <LI> Textures load with default of maxAnisotroy = 2.0
     <LI> maxAnisotropy argument to G3D::Texture constructors.

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-01-30
+  @edited  2005-06-01
 */
 
 #include "GLG3D/GLCaps.h"
@@ -304,6 +304,22 @@ void GLCaps::loadExtensions(Log* debugLog) {
     LOAD_EXTENSION(glGetAttribLocationARB);
     LOAD_EXTENSION(glGetObjectParameterivARB);
     LOAD_EXTENSION(glGetActiveUniformARB);
+
+    LOAD_EXTENSION(glGenFragmentShadersATI);
+    LOAD_EXTENSION(glDeleteFragmentShaderATI);
+    LOAD_EXTENSION(glBindFragmentShaderATI);
+    LOAD_EXTENSION(glBeginFragmentShaderATI);
+    LOAD_EXTENSION(glEndFragmentShaderATI);
+    LOAD_EXTENSION(glPassTexCoordATI);
+    LOAD_EXTENSION(glSampleMapATI);
+    LOAD_EXTENSION(glSetFragmentShaderConstantATI);
+    LOAD_EXTENSION(glColorFragmentOp1ATI);
+    LOAD_EXTENSION(glColorFragmentOp2ATI);
+    LOAD_EXTENSION(glColorFragmentOp3ATI);
+    LOAD_EXTENSION(glAlphaFragmentOp1ATI);
+    LOAD_EXTENSION(glAlphaFragmentOp2ATI);
+    LOAD_EXTENSION(glAlphaFragmentOp3ATI);
+
 
     LOAD_EXTENSION(glTexImage3DEXT);
 
