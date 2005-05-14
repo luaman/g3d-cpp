@@ -3013,8 +3013,8 @@ extern void APIENTRY glBindFragmentShaderATI(GLuint id);
 extern void APIENTRY glDeleteFragmentShaderATI(GLuint id);
 extern void APIENTRY glBeginFragmentShaderATI(void);
 extern void APIENTRY glEndFragmentShaderATI(void);
-extern void APIENTRY glPassTexCoordATI (GLuint dst, GLuint coord, enum swizzle);
-extern void APIENTRY glSampleMapATI (GLuint dst, uint interp, enum swizzle);
+extern void APIENTRY glPassTexCoordATI (GLuint dst, GLuint coord, GLuint swizzle);
+extern void APIENTRY glSampleMapATI (GLuint dst, uint interp, GLuint swizzle);
 extern void APIENTRY glSetFragmentShaderConstantATI (GLuint dst, const float *value);
 extern void APIENTRY glColorFragmentOp1ATI (enum op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
@@ -3042,10 +3042,10 @@ extern void APIENTRY glAlphaFragmentOp3ATI (enum op, GLuint dst, GLuint dstMod,
 typedef GLuint (APIENTRY * PFNGLGENFRAGMENTSHADERSATIPROC)(GLuint range);
 typedef void (APIENTRY  * PFNGLDELETEFRAGMENTSHADERATIPROC)(GLuint id);
 typedef void (APIENTRY * PFNGLBINDFRAGMENTSHADERATIPROC)(GLuint id);
-typedef void (APIENTRY * PFNGLBEGINFRAGMENTSHADERATIPROC)(GLuint id);
-typedef void (APIENTRY * PFNGLENDFRAGMENTSHADERATIPROC)(GLuint id);
-typedef void (APIENTRY * PFNGLPASSTEXCOORDATIPROC) (GLuint dst, GLuint coord, enum swizzle);
-typedef void (APIENTRY * PFNGLSAMPLEMAPATIPROC) (GLuint dst, GLuint interp, enum swizzle);
+typedef void (APIENTRY * PFNGLBEGINFRAGMENTSHADERATIPROC)();
+typedef void (APIENTRY * PFNGLENDFRAGMENTSHADERATIPROC)();
+typedef void (APIENTRY * PFNGLPASSTEXCOORDATIPROC) (GLuint dst, GLuint coord, GLuint swizzle);
+typedef void (APIENTRY * PFNGLSAMPLEMAPATIPROC) (GLuint dst, GLuint interp, GLuint swizzle);
 typedef void (APIENTRY * PFNGLSETFRAGMENTSHADERCONSTANTATIPROC)(GLuint dst, const float *value);
 typedef void (APIENTRY *  PFNGLCOLORFRAGMENTOP1ATIPROC) (enum op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
