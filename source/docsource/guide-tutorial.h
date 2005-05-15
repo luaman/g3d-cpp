@@ -383,40 +383,67 @@ object hit by the ray. Make sure to unselect all other objects.
 
 @section shaders Shaders
 
-Programmable shaders are a powerful feature of recent graphics cards. There's an awful 
-lot of information available on the web about programmable
-shaders in general, and the <A HREF="guideshaders.html">Shader section
-of the manual</A> has valuable information and tips. In this section
-of the tutorial, we'll get you started using shaders in %G3D, with G3D::Shader.
+@subsection aboutshaders About Shaders
 
-If you don't know anything about the graphics pipeline, we recommend 
-<A HREF="http://www.realtimerendering.com/">Real-Time Rendering 
-by Tomas Akenine-Möller and Eric Haines</A>. Some knowledge of the fixed-functionality
-graphics pipeline will help put your experiments with shaders in context. 
+
+Programmable shaders are a powerful feature of modern high-end graphics
+cards. Their power lies in their flexibility. In contrast to the "fixed
+function" rendering path, programmable shaders can specify exactly which
+calculations are used to determine a pixel's attributes. Think of the
+Phong and Gouraud lighting models; they have various parameters, like
+light color and shininess, but the fundamental equation is fixed.
+
+With a programmable shader, you can create your very own lighting and
+shading model, which can do almost anything -- and it can probably do it
+in real-time. Do you want to simulate a particle system? Great, write a
+shader! If you want to make a distorted reflection to convey a feeling
+of confusion, or an effect to render an antimatter explosion based on
+your theory of nuclear physics, and you want to do it in real-time -- a
+programmable shader is the way to go.
+
+@subsection gettingreadyforshaders Getting Ready for Custom Shaders
+
+There's an awful lot of information available on the web about
+programmable shaders in general, and the <A
+HREF="guideshaders.html">Shader section of the manual</A> has valuable
+information and tips. In this section of the tutorial, we'll get you
+started using shaders in %G3D, with G3D::Shader.
+
+If you don't know anything about the graphics pipeline, we recommend <A
+HREF="http://www.realtimerendering.com/">Real-Time Rendering by Tomas
+Akenine-Muller and Eric Haines</A>. Some knowledge of the
+fixed-functionality graphics pipeline will help put your experiments
+with shaders in context.
 
 We encourage you to write your shaders in <A
 HREF="http://www.opengl.org/documentation/oglsl.html">GLSL</A>. Your
 graphics card <em>might</em> not support GLSL. Before you get started
 with all of this, find out whether the following gl extensions are
 supported on your card: <tt>GL_ARB_SHADER_OBJECTS,
-GL_ARB_vertex_shader</tt> and <tt>GL_ARB_fragment_shader</tt>. 
-<tt>GL_ARB_shading_language_100</tt> is the extension which supports GLSL. 
-As of Mac OS X 10.3.8, GLSL is not supported. (Hint: see G3D::GLCaps::supports for
-an easy way to test if a particular extension is supported.) If your card
-doesn't support GLSL, go find a machine that does... or upgrade. 
+GL_ARB_vertex_shader</tt> and <tt>GL_ARB_fragment_shader</tt>.
+<tt>GL_ARB_shading_language_100</tt> is the extension which supports
+GLSL. As of Mac OS X 10.3.8, GLSL is not supported. (Hint: see
+G3D::GLCaps::supports for an easy way to test if a particular extension
+is supported.) If your card doesn't support GLSL, go find a machine that
+does... or upgrade. (Other shading languages are available, including <a href="http://developer.nvidia.com/page/cg_main.html">Cg by
+NVIDIA</a> and <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/directx9_c/directx/graphics/TutorialsAndSamples/Tutorials/HLSLWorkshop/HLSLWorkshop.asp">HLSL</a>, which is part of <a href="http://msdn.microsoft.com/directx/">Direct X</a>, Microsoft's graphics api.) 
 
-Now you know what a programmable shader is, you know what GLSL is, and you
-have found a machine with GLSL support. You need to know two things: first, 
-how do you use a shader in %G3D? Second, what does G3D::Shader give you that
-vanilla GLSL shaders don't? 
+@subsection shadervocabulary Shader Vocabulary
 
-@subsection inovoking Invoking a Shader from G3D
+There are two kinds of shaders: <em>vertex shaders</em> and <em>fragment shaders</em>. Vertex shaders compute and set properties of each vertex, including the position of that vertex in world space, the surface normal at that vertex, and the texture coordinates at that vertex. A fragment shader computes
+and sets properties of a pixel or subpixel, including the pixel's color, the pixel's depth, fog, texture value lookup, and more. A fragment shader can't change the fragment's x, y position in the window, but it can change most of the other fragment attributes. 
 
-Create files for the following very simple shader pair, <tt>basic.vert</tt>
-and <tt>basic.frag</tt>. 
+Vertex shaders are more widely supported than fragment shaders. We recommend that you experiment with your own vertex shaders before trying a fragment shader. (See the previous section for instructions on checking for your card's capabilities.) 
+
+Another important vocabulary distinction is between <em>initializing</em> a shader and <em>invoking</em> a shader. You initialize the shader once, when your program launches; you invoke your shader each time you want to render something with it.
+
+@subsection creatingshader Initializing a Shader Pair
+
+Create files for the following very simple shader pair, <tt>basic.vrt</tt>
+and <tt>basic.frg</tt>. 
 
 <pre>
-// basic.vert
+// basic.vrt
 void main(void)
 {
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
@@ -429,9 +456,11 @@ void main(void)
 }
 </pre>
 
-Before you can use the shader to render anything, load the shader with G3D::Shader::fromFiles. (You only need to do this once, not every frame.) Next, set arguments on the shader, with G3D::VertexAndPixelShader::ArgList. Finally, activate the shader with G3D::RenderDevice::setShader. Render your primitives, then turn off the shader, with <tt>setShader(NULL)</tt>. For an example of this, see the source code for the GLSL_Demo.  
+At program startup, initialize the shader by loading it with G3D::Shader::fromFiles. Remember, you only need to do this once, not every frame. Note that the shader files are read in and "compiled" at run-time, so you don't have to recompile your C++ program every time you change a shader's internals. 
 
-Create another Entity subclass which uses this shader to draw itself; add one of these entities to your scene.  
+@subsection invokingshader Invoking a Shader
+To invoke a shader, activate the shader with G3D::RenderDevice::setShader. Render your primitives, then turn off the shader, with <tt>setShader(NULL)</tt>. For an example of this, see the source code for the GLSL_Demo.  
+
 
 @subsection shader_extras Convenience Variables in G3D Shaders
 
@@ -442,12 +471,17 @@ invoking your shader. You will find this one useful to complete the tutorial:
     uniform vec4 g3d_ObjectLight0;     // the position of light 0, in object space
 </pre>
 
+@subsection additional_arguments Passing in Custom Arguments
+
+There will probably be some information you want to pass in to your shader which is not provided by G3D. Each G3D::Shader object has an argument list, G3D::VertexAndPixelShader::ArgList, associated with it. To pass information to the shader, set arguments on that arg list, with Shader::args and G3D::VertexAndPixelShader::ArgList::set. 
+
+
 @subsection yours Try This: A Simple Shader 
 
-Extend the basic shader listing above to calculate the diffuse
+Create another Entity subclass which uses the <tt>basic.frg, basic.vrt</tt> listing above to draw itself; add one of these entities to your scene. Invoke this shader to shade your entity.
+
+Next, try extending the basic shader listing above to calculate the diffuse
 component of the surface at each point. (Any graphics textbook, including <A HREF="http://www.amazon.com/exec/obidos/ASIN/0201848406/realtimerenderin/104-2370009-4435950">Foley, van Dam</A>, will describe this simple lighting algorithm.) You might want to use these GLSL built-ins: <tt>max, normalize, dot.</tt>
-
-
 
 
 @section crazy Going Crazy
