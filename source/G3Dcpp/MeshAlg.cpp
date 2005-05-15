@@ -3,9 +3,9 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2005-02-24
+  @edited  2005-06-01
 
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
 
  */
@@ -449,7 +449,9 @@ void MeshAlg::computeTangentVectors(
 
     Vector3 v[3];
     Vector2 t[3];
-    
+
+    // TODO: don't need the copy
+    // Make a copy so that we can sort
     for (int i = 0; i < 3; ++i) {
         v[i] = position[i];
         t[i] = texCoord[i];
@@ -458,30 +460,42 @@ void MeshAlg::computeTangentVectors(
     /////////////////////////////////////////////////
     // Begin by computing the tangent
 
-    // Sort the vertices by texture coordinate y.
+    // Bubble sort the vertices by decreasing texture coordinate y.
     if (t[0].y < t[1].y) {
         std::swap(v[0], v[1]);
         std::swap(t[0], t[1]);
     }
+
+    // t0 >= t1
 
     if (t[0].y < t[2].y) {
         std::swap(v[0], v[2]);
         std::swap(t[0], t[2]);
     }
 
+    // t0 >= t2, t0 >= t1
+
     if (t[1].y < t[2].y) {
         std::swap(v[1], v[2]);
         std::swap(t[1], t[2]);
     }
 
+    // t0 >= t1 >= t2
+
     double amount;
 
     // Compute the direction of constant y.
     if (fuzzyEq(t[2].y, t[0].y)) {
+        // Degenerate case-- the texture coordinates do not vary across this 
+        // triangle.
         amount = 1.0;
     } else {
-        // Solve lerp(t[0].y, t[2].y, amount) = t[1].y for amount
-        amount = (t[1].y - t[0].y) / (t[2].y - 2.0 * t[0].y);
+        // Solve lerp(t[0].y, t[2].y, amount) = t[1].y for amount:
+        //
+        // t0 + (t2 - t0) * a = t1
+        // a = (t1 - t0) / (t2 - t0)
+
+        amount = (t[1].y - t[0].y) / (t[2].y - t[0].y);
     }
 
     tangent = lerp(v[0], v[2], amount) - v[1];
@@ -505,7 +519,7 @@ void MeshAlg::computeTangentVectors(
     }
 
     //////////////////////////////////////////////////
-    // Now compute the binormal
+    // Now compute the binormal (same code, but in x)
 
     // Sort the vertices by texture coordinate x.
     if (t[0].x < t[1].x) {
@@ -527,7 +541,7 @@ void MeshAlg::computeTangentVectors(
     if (fuzzyEq(t[2].x, t[0].x)) {
         amount = 1.0;
     } else {
-        amount = (t[1].x - t[0].x) / (t[2].x - 2.0 * t[0].x);
+        amount = (t[1].x - t[0].x) / (t[2].x - t[0].x);
     }
 
     binormal = lerp(v[0], v[2], amount) - v[1];
@@ -560,16 +574,21 @@ void MeshAlg::computeTangentSpaceBasis(
     Array<Vector3>&             tangent,
     Array<Vector3>&             binormal) {
 
+    // The three vertices and texCoords of each face
     Vector3 position[3];
     Vector2 texCoord[3];
-    Vector3 normal;
     Vector3 t, b;
 
     tangent.resize(vertexArray.size());
     binormal.resize(vertexArray.size());
-    // Zero the arrays.
+
+    // Zero the output arrays.
     System::memset(tangent.getCArray(), 0, sizeof(Vector3) * tangent.size());
     System::memset(binormal.getCArray(), 0, sizeof(Vector3) * binormal.size());
+
+    // Iterate over faces, computing the tangent vectors for each 
+    // vertex.  Accumulate those into the tangent and binormal arrays
+    // and then orthonormalize at the end.
 
     for (int f = 0; f < faceArray.size(); ++f) {
         const Face& face = faceArray[f];
@@ -580,15 +599,12 @@ void MeshAlg::computeTangentSpaceBasis(
             texCoord[v] = texCoordArray[i];
         }
 
-        normal = (position[1] - position[0]).cross(position[2] - position[0]).direction();
-        computeTangentVectors(normal, position, texCoord, t, b);
-
-        // We average the tangent and binormal vectors as if they were
-        // normals.
+        const Vector3 faceNormal((position[1] - position[0]).cross(position[2] - position[0]).direction());
+        computeTangentVectors(faceNormal, position, texCoord, t, b);
 
         for (int v = 0; v < 3; ++v) {
             int i = face.vertexIndex[v];
-            tangent[i] += t;
+            tangent[i]  += t;
             binormal[i] += b;
         }
     }
@@ -597,12 +613,16 @@ void MeshAlg::computeTangentSpaceBasis(
     for (int v = 0; v < vertexArray.size(); ++v) {
         // Remove the component parallel to the normal
         const Vector3& N = vertexNormalArray[v];
+        debugAssertM(N.isUnit(), "Input normals must have unit length");
+
         tangent[v]  -= tangent[v].dot(N) * N;
         binormal[v] -= binormal[v].dot(N) * N;
 
+        // Normalize
+        tangent[v]  = tangent[v].directionOrZero();
+        binormal[v] = binormal[v].directionOrZero();
+
         // Note that the tangent and binormal might not be perpendicular anymore
-        tangent[v]  = tangent[v].direction();
-        binormal[v] = binormal[v].direction();
     }
 }
 

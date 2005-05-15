@@ -104,6 +104,10 @@ SOURCE=.\demo.cpp
 
 SOURCE=.\SuperShader.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\ToneMap.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -119,6 +123,10 @@ SOURCE=.\Load3DS.h
 # Begin Source File
 
 SOURCE=.\SuperShader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ToneMap.h
 # End Source File
 # End Group
 # Begin Group "Shaders"

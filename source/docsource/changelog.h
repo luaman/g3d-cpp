@@ -10,12 +10,17 @@
    will be supported until (at least) the next major release.
 
    <TABLE><TR><TD>
-   Changes proposed for 7.00:  
+   <I>The next major, incompatible release will be G3D 7.00, planned for release in January 2006 (there will be betas
+      and point releases before then). We plan to streamline the API by making the following changes:</I>
      <UL>
        <LI>G3D::Sky create methods will no longer accept a G3D::RenderDevice.
        <LI>G3D::GFont::fromFile method will no longer accept a G3D::RenderDevice.
        <LI>All accessor "get" methods that return a value will have their prefix removed (e.g. G3D::RenderDevice::getObjectToWorldMatrix -> G3D::RenderDevice::objectToWorldMatrix).
        <LI>All <A HREF="deprecated.html">deprecated</A> functionality will be removed.
+       <LI>G3D::MeshAlg arguments will change-- e.g., many routines will no longer compute face/vertex normals for you
+       <LI>SDL will no longer be automatically linked into the Win32 build
+       <LI>Application infrastructure (GApp, GApplet, Sky, etc.) will move to a separate library from GLG3D
+       <LI>Some contrib classes will move into the main API (e.g., SuperShader, ArticulatedModel, ToneMap)
        <LI>GApplet methods will change to:
           <UL>
             <LI> doUserInput(UserInput*) (current doUserInput will be renamed and private)
@@ -30,12 +35,14 @@
   <P>
    Changes in 6.06:
    <UL>
-    <LI> Load GL_ATI_fragment_shader extensions
     <LI> 50% performance improvement for G3D::BinaryInput, G3D::BinaryOutput when machine endian matches file endian
     <LI> Textures load with default of maxAnisotroy = 2.0
     <LI> maxAnisotropy argument to G3D::Texture constructors.
+    <LI> GLCaps now loads GL_ATI_fragment_shader extension
+    <LI> contrib/ArticulatedModel hierarchy
     <LI> Added TEX_SUBTRACT, TEX_ADD_SIGNED, TEX_DOT3, TEX_DOT3_RGBA modes for G3D::RenderDevice::setTextureCombineMode
-    <LI> FIX: 6.05 enabled all fixed function lights by default.
+    <LI> FIX: MeshAlg::computeTangentSpaceBasis now works correctly
+    <LI> FIX: 6.05 enabled all fixed function lights by default.  This caused major performance problems on some cards.
     <LI> FIX: Extended cube map workaround to all Radeon Mobility cards
     <LI> FIX: Added check for glBlendEq before calling in RenderDevice
     <LI> FIX: Added a test for GL_EXT_texture_env_add in RenderDevice

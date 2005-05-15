@@ -7,7 +7,6 @@
 
   TODO: hierarchy
   TODO: smoothing groups
-  TODO: proper shader
 */
 #ifndef G3D_ARTICULATEDMODEL
 #define G3D_ARTICULATEDMODEL
@@ -62,7 +61,7 @@ public:
 
 	    class TriList {
 	    public:
-		    Array<int>				indexArray;
+		    Array<int>		  	    indexArray;
 
             /** When true, this trilist enables two-sided lighting and texturing and
                 does not cull back faces.*/
@@ -106,14 +105,19 @@ public:
         Array<Vector3>              tangentArray;
         Array<TriList>              triListArray;
 
-        /** Indices into part array of sub-parts */
+        /** Indices into part array of sub-parts (scene graph children) in the containing model.*/
         Array<int>                  subPartArray;
+
+        /** Index into the part array of the parent.  If -1, this is a root node. */
+        int                         parent;
 
         /** All faces.  Used for updateNormals and rendering without materials. 
             Call computeIndexArray to update this automatically (which
             might be less efficient than computing it manually if there are split 
             vertices) */
         Array<int>                  indexArray;
+
+        inline Part() : parent(-1) {}
 
         /**
          Does not restore rendering state when done.
@@ -201,8 +205,7 @@ public:
     }
 
     /**
-     Creates a new articulated model that you can construct by
-     editing the partArray. 
+     Creates a new articulated model that you can construct by editing the partArray directly. 
      */
     static ArticulatedModelRef createEmpty();
 

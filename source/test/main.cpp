@@ -10,7 +10,7 @@
 
 #include "../include/G3DAll.h"
 #include <iostream>
-//#include "../contrib/Matrix/Matrix.cpp"
+#include "../contrib/Matrix/Matrix.cpp"
 
 using namespace G3D;
 
@@ -20,8 +20,54 @@ using namespace G3D;
 #include <string>
 
 
-#if 0
+void testTangentSpace() {
+    printf("MeshAlg::computeTangentSpaceBasis ");
+
+    MeshAlg::Geometry geometry;
+    Array<MeshAlg::Face> face;
+    Array<MeshAlg::Edge> edge;
+    Array<MeshAlg::Vertex> vertex;
+
+	Array<Vector2> texCoord;
+    Array<Vector3> tangent;
+    Array<Vector3> binormal;
+	Array<int>	   index;
+
+    // Create a quad
+	double s = 2;
+	geometry.vertexArray.append(Vector3(-s, -s, 0));
+	geometry.vertexArray.append(Vector3( s, -s, 0));
+	geometry.vertexArray.append(Vector3( s,  s, 0));
+	geometry.vertexArray.append(Vector3(-s,  s, 0));
+
+    texCoord.append(Vector2(0, 1));
+	texCoord.append(Vector2(1, 1));
+	texCoord.append(Vector2(1, 0));
+	texCoord.append(Vector2(0, 0));
+
+	index.append(0, 1, 2);
+	index.append(0, 2, 3);
+
+    MeshAlg::computeAdjacency(geometry.vertexArray, index, face, edge, vertex);
+    MeshAlg::computeNormals(geometry, index);
+
+    for (int i = 0; i < 4; ++i) {
+        debugAssert(geometry.normalArray[i].fuzzyEq(Vector3::unitZ()));
+    }
+
+    MeshAlg::computeTangentSpaceBasis(geometry.vertexArray, texCoord, geometry.normalArray, face, tangent, binormal);
+
+    for (int i = 0; i < 4; ++i) {
+        debugAssert(tangent[i].fuzzyEq(Vector3::unitX()));
+        debugAssert(binormal[i].fuzzyEq(-Vector3::unitY()));
+    }
+
+    printf("done!\n");
+}
+
+
 void testMatrix() {
+    printf("Matrix ");
     // Zeros
     {
         Matrix M(3, 4);
@@ -97,11 +143,23 @@ void testMatrix() {
 
     // Copy-on-mutate
     {
+
+        Matrix::debugNumCopyOps = Matrix::debugNumAllocOps = 0;
+
         Matrix A = Matrix::identity(2);
+
+        debugAssert(Matrix::debugNumAllocOps == 1);
+        debugAssert(Matrix::debugNumCopyOps == 0);
+
         Matrix B = A;
+        debugAssert(Matrix::debugNumAllocOps == 1);
+        debugAssert(Matrix::debugNumCopyOps == 0);
+
         B.set(0,0,4);
         debugAssert(B.get(0,0) == 4);
         debugAssert(A.get(0,0) == 1);
+        debugAssert(Matrix::debugNumAllocOps == 2);
+        debugAssert(Matrix::debugNumCopyOps == 1);
     }
 
     // Inverse
@@ -142,8 +200,33 @@ void testMatrix() {
         }
     }
 
+    // Negate
+    {
+        Matrix A = Matrix::random(2, 2);
+        Matrix B = -A;
+
+        for (int r = 0; r < A.rows(); ++r) {
+            for (int c = 0; c < A.cols(); ++c) {
+                debugAssert(B.get(r, c) == -A.get(r, c));
+            }
+        }
+    }
+
+    // Transpose
+    {
+        Matrix A = Matrix::random(3,2);
+        Matrix B = A.transpose();
+        debugAssert(B.rows() == A.cols());
+        debugAssert(B.cols() == A.rows());
+
+        for (int r = 0; r < A.rows(); ++r) {
+            for (int c = 0; c < A.cols(); ++c) {
+                debugAssert(B.get(c, r) == A.get(r, c));
+            }
+        }
+    }
 }
-#endif
+
 
 void testHugeBinaryOutput() {
     printf("BinaryOutput Huge Files\n");
@@ -2077,8 +2160,11 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
-//    testMatrix();
-//    printf("  passed\n");
+    testTangentSpace();
+    printf("  passed\n");
+
+    testMatrix();
+    printf("  passed\n");
 
     testAABSPTreeSerialize();
     printf("  passed\n");

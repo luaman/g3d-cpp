@@ -18,7 +18,7 @@ ArticulatedModel::GraphicsProfile ArticulatedModel::profile() {
             GLCaps::supports("GL_ARB_texture_env_crossbar") &&
             GLCaps::supports("GL_ARB_texture_env_combine") &&
             GLCaps::supports("GL_EXT_texture_env_add") &&
-            (GLCaps::numTextureUnits() >= 3)) {
+            (GLCaps::numTextureUnits() >= 4)) {
             p = PS14;
         } else {
             p = FIXED_FUNCTION;
@@ -35,7 +35,7 @@ ArticulatedModelRef ArticulatedModel::fromFile(const std::string& filename, cons
 
     if (endsWith(toLower(filename), ".3ds")) {
         model->init3DS(filename, xform);
-    } else if (endsWith(toLower(filename), ".ifs") || endsWith(toLower(filename), ".ifs")) {
+    } else if (endsWith(toLower(filename), ".ifs") || endsWith(toLower(filename), ".ply2")) {
         model->initIFS(filename, xform);
     }
 
@@ -81,6 +81,9 @@ void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFram
 
         part.name = name;
         partNameToIndex.set(part.name, p);
+
+        // All 3DS parts are promoted to the root in the current implementation.
+        part.parent = -1;
 
 //debugPrintf("%s %d %d\n", object.name.c_str(), object.hierarchyIndex, object.nodeID);
 
@@ -267,6 +270,7 @@ void ArticulatedModel::initIFS(const std::string& filename, const CoordinateFram
 
     part.cframe = CoordinateFrame();
     part.name = "root";
+    part.parent = -1;
     part.geometry.vertexArray = vertex;
     part.texCoordArray = texCoord;
 

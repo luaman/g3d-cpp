@@ -158,7 +158,10 @@ void ArticulatedModel::pose(
 
     for (int p = 0; p < partArray.size(); ++p) {
         const Part& part = partArray[p];
-        part.pose(this, p, posedArray, cframe, posex);
+        if (part.parent == -1) {
+            // This is a root part, pose it
+            part.pose(this, p, posedArray, cframe, posex);
+        }
     }
 }
 
@@ -193,7 +196,14 @@ void ArticulatedModel::Part::pose(
         }
     }
 
-    // TODO: recursively render sub-parts an pass along our frame.
+    // Recursively pose subparts and pass along our coordinate frame.
+    for (int i = 0; i < subPartArray.size(); ++i) {
+        int p = subPartArray[i];
+        debugAssertM(model->partArray[p].parent == partIndex,
+            "Parent and child pointers do not match.");
+
+        model->partArray[p].pose(model, p, posedArray, frame, posex);
+    }
 }
 
 
@@ -349,8 +359,6 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
         rd->popState();
     }
 
-    bool ps14 = ArticulatedModel::profile() == ArticulatedModel::PS14;
-
     // Add ambient + lights
     rd->enableLighting();
     if (! material.diffuse.isBlack() || ! material.specular.isBlack()) {
@@ -437,9 +445,9 @@ bool PosedArticulatedModel::renderPS14NonShadowedOpaqueTerms(
 
     // Add reflective and diffuse
 
-    rd->pushState();
     // We're going to use combiners, which G3D does not preserve
     glPushAttrib(GL_TEXTURE_BIT);
+    rd->pushState();
 
         GLint nextUnit = 0;
         GLint diffuseUnit = GL_PRIMARY_COLOR_ARB;
@@ -511,7 +519,8 @@ bool PosedArticulatedModel::renderPS14NonShadowedOpaqueTerms(
             glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB,  GL_SRC_COLOR);
             glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB,   GL_TEXTURE);
             glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB,  GL_SRC_COLOR);
-            glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color4(material.reflect.constant * lighting->environmentMapColor, 1));
+            glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, 
+                Color4(material.reflect.constant * lighting->environmentMapColor, 1));
             debugAssertGLOk();
 
             ++nextUnit;
@@ -552,9 +561,8 @@ bool PosedArticulatedModel::renderPS14NonShadowedOpaqueTerms(
         sendGeometry(rd);
         setAdditive(rd, renderedOnce);
 
-    glPopAttrib();
     rd->popState();
-
+    glPopAttrib();
 
     return renderedOnce;
 }

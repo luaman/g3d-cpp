@@ -52,7 +52,12 @@ public:
       when zero.*/
     typedef float T;
 
+    /** Incremented every time the elements of a matrix are copied.  Useful for profiling your
+        own code that uses Matrix to determine when it is slow due to copying.*/
     static int                     debugNumCopyOps;
+
+    /** Incremented every time a new matrix object is allocated.  Useful for profiling your
+        own code that uses Matrix to determine when it is slow due to allocation.*/
     static int                     debugNumAllocOps;
 
 private:
@@ -83,16 +88,20 @@ private:
 
     public:
 
-        Impl() : elt(NULL), data(NULL), R(0), C(0), dataSize(0) {}
+        inline Impl() : elt(NULL), data(NULL), R(0), C(0), dataSize(0) {}
 
-        Impl(int r, int c) : elt(NULL), data(NULL), R(0), C(0), dataSize(0) {
+        Impl(const Matrix3& M);
+
+        Impl(const Matrix4& M);
+
+        inline Impl(int r, int c) : elt(NULL), data(NULL), R(0), C(0), dataSize(0) {
             setSize(r, c);
         }
 
         Impl& operator=(const Impl& m);
 
-        Impl(const Impl& B) : data(NULL), elt(NULL), R(0), C(0), dataSize(0) {
-            // Defer to the assignment operator.
+        inline Impl(const Impl& B) : data(NULL), elt(NULL), R(0), C(0), dataSize(0) {
+            // Use the assignment operator
             *this = B;
         }
 
@@ -106,7 +115,7 @@ private:
             elt[r][c] = v;
         }
 
-        inline T get(int r, int c) const {
+        inline const T& get(int r, int c) const {
             debugAssert((uint)r < R);
             debugAssert((uint)c < C);
             return elt[r][c];
@@ -142,6 +151,8 @@ private:
         /** Ok if out == this or out == B */
         void div(T B, Impl& out) const;
 
+        void negate(Impl& out) const;
+
         /** Slow way of computing an inverse; for reference */
         void inverseViaAdjoint(Impl& out) const;
 
@@ -168,6 +179,12 @@ private:
         /** Determinant computed without the given row and column */
         T determinant(int r, int c) const;
 
+        void arrayLog(Impl& out) const;
+
+        void arrayExp(Impl& out) const;
+
+        void arraySqrt(Impl& out) const;
+
         /** Makes a (R-1)x(C-1) copy of this matrix */
         void withoutRowAndCol(int excludeRow, int excludeCol, Impl& out) const;
     };
@@ -183,9 +200,11 @@ public:
 
     Matrix() : impl(new Impl(0, 0)) {}
 
-    Matrix(const Matrix3& M);
+    Matrix(const Matrix3& M) : impl(new Impl(M)) {}
 
-    Matrix(const Matrix4& M);
+    Matrix(const Matrix4& M) : impl(new Impl(M)) {}
+
+    static Matrix fromDiagonal(const Array<T>& d);
 
     /** Returns a new matrix that is all zero. */
     Matrix(int R, int C) : impl(new Impl(R, C)) {
@@ -283,11 +302,11 @@ public:
     /** Unary minus; negation. See also A.negateInPlace(), which is more efficient in many cases */
     Matrix operator-() const {
         Matrix C(impl->R, impl->C);
-        impl->lsub(0, *C.impl);
+        impl->negate(*C.impl);
         return C;
     }
 
-    /** B - this */
+    /** scalar B - this */
     Matrix lsub(const T& B) const {
         Matrix C(impl->R, impl->C);
         impl->lsub(B, *C.impl);
@@ -299,7 +318,6 @@ public:
         impl->sub(*B.impl, *C.impl);
         return C;
     }
-
 
     Matrix arrayMul(const Matrix& B) const {
         Matrix C(impl->R, impl->C);
@@ -323,6 +341,24 @@ public:
     /** Mutates this */
     void arrayDivInPlace(const Matrix& B);
 
+    inline Matrix arrayLog() const {
+        Matrix C(impl->R, impl->C);
+        impl->arrayLog(*C.impl);
+        return C;
+    }
+
+    inline Matrix arrayExp() const {
+        Matrix C(impl->R, impl->C);
+        impl->arrayExp(*C.impl);
+        return C;
+    }
+
+    inline Matrix arraySqrt() const {
+        Matrix C(impl->R, impl->C);
+        impl->arraySqrt(*C.impl);
+        return C;
+    }
+
     /**
      A<SUP>-1</SUP>
      */
@@ -345,6 +381,7 @@ public:
         return Matrix(A);
     }
 
+    /** Transpose in place; more efficient than transpose */
     void transpose(Matrix& out) const;
 
     Matrix adjoint() const {
@@ -360,6 +397,10 @@ public:
         Matrix trans = transpose();
         return (trans * (*this)).inverse() * trans;
     }
+
+    /** Singular value decomposition.  Factors into three matrices 
+        such that this = U * D * V.transpose() */
+    void SVD(Matrix& U, Matrix& D, Matrix& V) const;
 
     void set(int r, int c, T v);
 

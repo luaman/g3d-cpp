@@ -3051,24 +3051,24 @@ typedef void (APIENTRY * PFNGLENDFRAGMENTSHADERATIPROC)();
 typedef void (APIENTRY * PFNGLPASSTEXCOORDATIPROC) (GLuint dst, GLuint coord, GLuint swizzle);
 typedef void (APIENTRY * PFNGLSAMPLEMAPATIPROC) (GLuint dst, GLuint interp, GLuint swizzle);
 typedef void (APIENTRY * PFNGLSETFRAGMENTSHADERCONSTANTATIPROC)(GLuint dst, const float *value);
-typedef void (APIENTRY *  PFNGLCOLORFRAGMENTOP1ATIPROC) (enum op, GLuint dst, GLuint dstMask, 
+typedef void (APIENTRY *  PFNGLCOLORFRAGMENTOP1ATIPROC) (GLuint op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
                               GLuint arg1Mod);
-typedef void (APIENTRY *  PPFNGLCOLORFRAGMENTOP2ATIPROC) (enum op, GLuint dst, GLuint dstMask, 
+typedef void (APIENTRY *  PPFNGLCOLORFRAGMENTOP2ATIPROC) (GLuint op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
                               GLuint arg1Mod, GLuint arg2, GLuint arg2Rep, 
                               GLuint arg2Mod);
-typedef void (APIENTRY *  PFNGLCOLORFRAGMENTOP3ATIPROC) (enum op, GLuint dst, GLuint dstMask, 
+typedef void (APIENTRY *  PFNGLCOLORFRAGMENTOP3ATIPROC) (GLuint op, GLuint dst, GLuint dstMask, 
                               GLuint dstMod, GLuint arg1, GLuint arg1Rep, 
                               GLuint arg1Mod, GLuint arg2, GLuint arg2Rep, 
                               GLuint arg2Mod, GLuint arg3, GLuint arg3Rep, 
                               GLuint arg3Mod);
-typedef void (APIENTRY *  PFNGLALPHAFRAGMENTOP1ATIPROC) (enum op, GLuint dst, GLuint dstMod, 
+typedef void (APIENTRY *  PFNGLALPHAFRAGMENTOP1ATIPROC) (GLuint op, GLuint dst, GLuint dstMod, 
                               GLuint arg1, GLuint arg1Rep, GLuint arg1Mod);
-typedef void (APIENTRY *  PFNGLALPHAFRAGMENTOP2ATIPROC) (enum op, GLuint dst, GLuint dstMod, 
+typedef void (APIENTRY *  PFNGLALPHAFRAGMENTOP2ATIPROC) (GLuint op, GLuint dst, GLuint dstMod, 
                               GLuint arg1, GLuint arg1Rep, GLuint arg1Mod, 
                               GLuint arg2, GLuint arg2Rep, GLuint arg2Mod);
-typedef void (APIENTRY *  PFNGLALPHAFRAGMENTOP3ATIPROC) (enum op, GLuint dst, GLuint dstMod, 
+typedef void (APIENTRY *  PFNGLALPHAFRAGMENTOP3ATIPROC) (GLuint op, GLuint dst, GLuint dstMod, 
                               GLuint arg1, GLuint arg1Rep, GLuint arg1Mod,
                               GLuint arg2, GLuint arg2Rep, GLuint arg2Mod,
                               GLuint arg3, GLuint arg3Rep, GLuint arg3Mod);

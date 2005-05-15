@@ -11,12 +11,11 @@
  */
 
 #include <G3DAll.h>
+#include "ToneMap.h"
 
 #if G3D_VER < 60500
     #error Requires G3D 6.05
 #endif
-
-const double BLOOMSCALE = 9.0;
 
 #include "SuperShader.h"
 #include "ArticulatedModel.h"
@@ -80,8 +79,7 @@ private:
 
     void generateShadowMap(const GLight& light, const Array<PosedModelRef>& shadowCaster);
 
-    ShaderRef                   bloomShader, bloomFilterShader;
-    TextureRef                  screenImage, bloomMap;
+    ToneMap                     toneMap;
 
     TextureRef                  shadowMap;
     Matrix4                     lightMVP;
@@ -120,84 +118,6 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
             
     }
 
-    if (GLCaps::supports_GL_EXT_texture_rectangle() && Shader::supportsPixelShaders()) {
-        screenImage = Texture::createEmpty(app->renderDevice->width(), app->renderDevice->height(), 
-            "Copied Screen Image", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
-        bloomMap = Texture::createEmpty(app->renderDevice->width() / BLOOMSCALE, app->renderDevice->height() / BLOOMSCALE, 
-            "Bloom map", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
-
-        // Create a filtered, thresholded low-resolution version of an image.
-        bloomFilterShader = Shader::fromStrings("",         
-            STR(
-            uniform sampler2DRect screenImage;
-
-            // Only allows bright pixels to pass
-            vec4 threshold(vec4 v) {
-                // Threshold cutoff
-                const float T = 0.875;
-
-                const float S = 1.0 / (1.0 - T);
-
-                return 
-                    clamp((v - vec4(T,T,T,0)) * S, vec4(0,0,0,0), vec4(1,1,1,1));
-            }
-
-            void main(void) {
-                // The center pixel on the full screen.  Shift by 1/2 texel to
-                // sample two texels at once via bilinear interpolation.
-                vec2 p = gl_TexCoord[0].xy + vec2(0.5, 0.5);
-
-                vec4 color = vec4(0,0,0,0);
-
-                for (int dx = -5; dx <= 5; dx += 2) {
-                    for (int dy = -5; dy <= 5; dy += 2) {
-                        color += threshold(texture2DRect(screenImage, p + vec2(dx, dy)));
-                    }
-                }
-
-                // Divide by the number of samples and 
-                // rescale the entire range from the cutoff at 0 to max = 4.0
-                // We'll apply another factor of 2.5 when the bloom is applied,
-                // but we don't want to over saturate here.
-
-                gl_FragColor = color * 4.0 / 36.0;
-            }
-            ));
-        bloomFilterShader->args.set("screenImage", screenImage);
-
-        // Combine the bloom map with the screen image
-        bloomShader = Shader::fromStrings("",
-            STR(
-            uniform sampler2DRect screenImage;
-            uniform sampler2DRect bloomMap;
-
-            void main(void) {
-                // The center pixel
-                vec2 p = gl_TexCoord[0].xy;
-        
-                gl_FragColor = 
-                    // Brighten the screen image by 1/0.75, since we darkened the 
-                    // scene when rendering to avoid saturation.
-                    texture2DRect(screenImage, gl_TexCoord[0].xy * 9.0) * 1.34 + 
-
-                    // Add the bloom (brightened by a factor of 2.5)
-                    (texture2DRect(bloomMap, p) +
-                     (texture2DRect(bloomMap, p + vec2(-2,0)) + 
-                      texture2DRect(bloomMap, p + vec2(2,0)) + 
-                      texture2DRect(bloomMap, p + vec2(0,-2)) + 
-                      texture2DRect(bloomMap, p + vec2(0,2))) * 0.5 + 
-                     texture2DRect(bloomMap, p + vec2(0,-1)) + 
-                     texture2DRect(bloomMap, p + vec2(-1,0)) + 
-                     texture2DRect(bloomMap, p + vec2(1,0)) + 
-                     texture2DRect(bloomMap, p + vec2(0,1))) * 2.5 / 7.0;
-            }
-            ));
-
-        bloomShader->args.set("screenImage", screenImage);
-        bloomShader->args.set("bloomMap", bloomMap);
-    }
 }
 
 
@@ -274,29 +194,25 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
 }
 
 
+
 void Demo::doGraphics() {
 
     // Pose all
     Array<PosedModelRef> posedModels;
 
     for (int e = 0; e < app->entityArray.size(); ++e) {
-        /*
         static RealTime t0 = System::time();
         RealTime t = (System::time() - t0) * 10;
-        app->entityArray[e]->pose.cframe.set("m_rotor", 
+        app->entityArray[e]->pose.cframe.set("Top", 
             CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t),
                             Vector3::zero()));
-        app->entityArray[e]->pose.cframe.set("t_rotor",
-            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), t*2),
-                            Vector3::zero()));
-                            */
 
         app->entityArray[e]->model->pose(posedModels, app->entityArray[e]->cframe, app->entityArray[e]->pose);
     }
     Array<PosedModelRef> opaque, transparent;
     PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
 
-    if (GLCaps::supports_GL_ARB_shadow() && (app->lighting->shadowedLightArray.size() > 0)) {        
+    if (GLCaps::supports_GL_ARB_shadow() && (app->lighting->shadowedLightArray.size() > 0)) {     
         // Generate shadow map
         generateShadowMap(app->lighting->shadowedLightArray[0], opaque);
     }
@@ -349,36 +265,7 @@ void Demo::doGraphics() {
 
     app->renderDevice->popState();
 
-    // Add bloom
-    if (bloomMap.notNull()) {
-        app->renderDevice->push2D();
-            // Undo renderdevice's 0.35 translation
-            app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
-            Rect2D rect = Rect2D::xywh(0, 0, app->renderDevice->width(), app->renderDevice->height());
-            Rect2D smallRect = bloomMap->rect2DBounds();
-            screenImage->copyFromScreen(rect);
-
-            // Shrink and filter
-            app->renderDevice->setShader(bloomFilterShader);
-            Draw::rect2D(smallRect, app->renderDevice, Color3::white(), rect);
-
-            // Blend in the previous bloom map for temporal coherence and a nice motion blur.  
-            // Due to a bug on NVIDIA cards, we have to do this with a separate pass; 
-            // sampler2Drects with different
-            // sizes don't work correctly in the same shader.
-            app->renderDevice->setShader(NULL);
-            app->renderDevice->setTexture(0, bloomMap);
-            app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-            Draw::rect2D(smallRect, app->renderDevice, Color4(1, 1, 1, 0.25), smallRect);
-            app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
-
-            bloomMap->copyFromScreen(smallRect);
-
-            app->renderDevice->setShader(bloomShader);
-//    app->renderDevice->setShader(NULL);  app->renderDevice->setTexture(0, bloomMap);
-            Draw::rect2D(rect, app->renderDevice, Color3::white(), smallRect);
-        app->renderDevice->pop2D();
-    }
+    toneMap.apply(app->renderDevice);
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(app->skyParameters);
@@ -404,7 +291,7 @@ void App::main() {
 
     double x = -5;
 
-    if (true) {
+    if (false) {
         CoordinateFrame xform;
 
         xform.rotation[0][0] = xform.rotation[1][1] = xform.rotation[2][2] = 0.008;
@@ -461,6 +348,19 @@ void App::main() {
     }
 
 
+    if (true) {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
+
+        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+        model->partArray[0].triListArray[0].twoSided = false;
+        material.diffuse = Color3::white();
+        material.specular = Color3::white() * .5;
+        material.specularExponent = Color3::white() * 40;
+        model->updateAll();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
+    }
+
     if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("3ds/55-porsche/55porsmx.3ds", .25);
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
@@ -492,6 +392,41 @@ void App::main() {
         model->updateAll();
 
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
+        x += 2;
+    }
+
+    {
+        // Animated, hierarchical part
+        ArticulatedModelRef ball = ArticulatedModel::fromFile("c:/morgan/data/ifs/dodeca.ifs");
+        ArticulatedModelRef child = ArticulatedModel::fromFile("c:/morgan/data/ifs/tetra.ifs", .2);
+
+        ArticulatedModelRef model = ArticulatedModel::createEmpty();
+        model->name = "Spinner";
+
+        {
+            ArticulatedModel::Part& part = model->partArray.next();
+            part = ball->partArray.last();
+            part.name = "Top";
+            part.subPartArray.append(2);
+            part.cframe = CoordinateFrame(Vector3(0,0.5,0));
+        }
+        {
+            ArticulatedModel::Part& part = model->partArray.next();
+            part = ball->partArray.last();
+            part.name = "Bottom";
+            part.cframe = CoordinateFrame(Vector3(0,-0.5,0));
+        }
+        {
+            ArticulatedModel::Part& part = model->partArray.next();
+            part = child->partArray.last();
+            part.name = "Nose";
+            part.cframe = CoordinateFrame(Vector3(0,0,.5));
+            part.parent = 0;
+            SuperShader::Material& material = part.triListArray[0].material;
+            material.diffuse = Color3::red();
+        }
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
     }
 
