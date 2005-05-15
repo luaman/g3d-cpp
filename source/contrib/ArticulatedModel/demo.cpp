@@ -397,8 +397,8 @@ void App::main() {
 
     {
         // Animated, hierarchical part
-        ArticulatedModelRef ball = ArticulatedModel::fromFile("c:/morgan/data/ifs/dodeca.ifs");
-        ArticulatedModelRef child = ArticulatedModel::fromFile("c:/morgan/data/ifs/tetra.ifs", .2);
+        ArticulatedModelRef ball = ArticulatedModel::fromFile("demo/dodeca.ifs");
+        ArticulatedModelRef child = ArticulatedModel::fromFile("demo/tetra.ifs", .2);
 
         ArticulatedModelRef model = ArticulatedModel::createEmpty();
         model->name = "Spinner";
