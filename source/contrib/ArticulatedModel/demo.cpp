@@ -291,7 +291,7 @@ void App::main() {
 
     double x = -5;
 
-    if (false) {
+    if (true) {
         CoordinateFrame xform;
 
         xform.rotation[0][0] = xform.rotation[1][1] = xform.rotation[2][2] = 0.008;
@@ -617,24 +617,12 @@ void App::main() {
             Vector3(S, 0, S),
             Vector3(S, 0, -S));
 
-        part.geometry.normalArray.append(
-            Vector3::unitY(),
-            Vector3::unitY(),
-            Vector3::unitY(),
-            Vector3::unitY());
-
         double texScale = 5;
         part.texCoordArray.append(
             Vector2(0,0) * texScale,
             Vector2(0,1) * texScale,
             Vector2(1,1) * texScale,
             Vector2(1,0) * texScale);
-
-        part.tangentArray.append(
-            Vector3::unitX(),
-            Vector3::unitX(),
-            Vector3::unitX(),
-            Vector3::unitX());
 
         ArticulatedModel::Part::TriList& triList = part.triListArray.next();
         triList.indexArray.clear();
@@ -659,12 +647,12 @@ void App::main() {
 
         triList.material.bumpMapScale = 0.04;
 
-
         triList.computeBounds(part);
 
         part.indexArray = triList.indexArray;
 
         part.computeIndexArray();
+        part.computeNormalsAndTangentSpace();
         part.updateVAR();
         part.updateShaders();
 
