@@ -437,7 +437,17 @@ Vertex shaders are more widely supported than fragment shaders. We recommend tha
 
 Another important vocabulary distinction is between <em>initializing</em> a shader and <em>invoking</em> a shader. You initialize the shader once, when your program launches; you invoke your shader each time you want to render something with it.
 
-@subsection creatingshader Initializing a Shader Pair
+@subsection creatingshader Initializing a Shader
+
+%G3D can read in shaders from text files, using G3D::Shader::fromFiles,
+or from strings provided at runtime, using G3D::Shader::fromStrings. You
+can only use G3D::Shader::fromFiles if your card supports both fragment
+and vertex shaders; otherwise use G3D::Shader::fromStrings, with an
+empty string for the fragment shader. G3D::Shader::fromFiles is just a
+convenience method which opens and reads in the shaders for you; you can
+also read in or create the shader strings at runtime yourself. We advise
+reading in the shaders at run-time, so you don't have to recompile your
+C++ program every time you change a shader's internals. 
 
 Create files for the following very simple shader pair, <tt>basic.vrt</tt>
 and <tt>basic.frg</tt>. 
@@ -448,7 +458,9 @@ void main(void)
 {
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }
+</pre>
 
+<pre>
 // basic.frag
 void main(void)
 {
@@ -456,17 +468,20 @@ void main(void)
 }
 </pre>
 
-At program startup, initialize the shader by loading it with G3D::Shader::fromFiles. Remember, you only need to do this once, not every frame. Note that the shader files are read in and "compiled" at run-time, so you don't have to recompile your C++ program every time you change a shader's internals. 
+At program startup, initialize the shader by loading it with G3D::Shader::fromFiles, or G3D::Shader::fromStrings. Remember, you only need to do this once per shader, not every frame. 
+
 
 @subsection invokingshader Invoking a Shader
-To invoke a shader, activate the shader with G3D::RenderDevice::setShader. Render your primitives, then turn off the shader, with <tt>setShader(NULL)</tt>. For an example of this, see the source code for the GLSL_Demo.  
+To invoke a shader, activate the shader with G3D::RenderDevice::setShader. Render your primitives, then turn off the shader, with <tt>G3D::RenderDevice::setShader(NULL)</tt>. For an example of this, see the source code for the GLSL_Demo.  
 
 
 @subsection shader_extras Convenience Variables in G3D Shaders
 
-%G3D often makes frequently used OpenGL "stuff" (functions, variables, etc) more convenient 
-to access. The G3D::Shader setup follows this pattern by setting several uniform variables before
-invoking your shader. You will find this one useful to complete the tutorial: 
+%G3D often makes frequently used OpenGL "stuff" (functions, variables,
+etc) more convenient to access. The G3D::Shader setup follows this
+pattern by setting several uniform variables before invoking your
+shader. You will find this one useful to complete the tutorial:
+
 <pre>
     uniform vec4 g3d_ObjectLight0;     // the position of light 0, in object space
 </pre>
