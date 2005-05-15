@@ -138,6 +138,10 @@ void Demo::doLogic() {
         endApplet = true;
         app->endProgram = true;
     }
+
+    if (app->userInput->keyPressed(' ')) {
+        toneMap.setEnabled(! toneMap.enabled());
+    }
 }
 
 bool debugShadows = false;
@@ -197,6 +201,9 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
 
 void Demo::doGraphics() {
 
+    LightingRef        lighting      = toneMap.prepareLighting(app->lighting);
+    LightingParameters skyParameters = toneMap.prepareLightingParameters(app->skyParameters);
+
     // Pose all
     Array<PosedModelRef> posedModels;
 
@@ -227,11 +234,11 @@ void Demo::doGraphics() {
         return;
     }
 
-    if (! GLCaps::supports_GL_ARB_shadow() && (app->lighting->shadowedLightArray.size() > 0)) {
+    if (! GLCaps::supports_GL_ARB_shadow() && (lighting->shadowedLightArray.size() > 0)) {
         // We're not going to be able to draw shadows, so move the shadowed lights into
         // the unshadowed category.
-        app->lighting->lightArray.append(app->lighting->shadowedLightArray);
-        app->lighting->shadowedLightArray.clear();
+        app->lighting->lightArray.append(lighting->shadowedLightArray);
+        lighting->shadowedLightArray.clear();
     }
 
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
@@ -243,27 +250,27 @@ void Demo::doGraphics() {
 
     app->renderDevice->clear(app->sky.notNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(app->skyParameters);
+        app->sky->render(skyParameters);
     }
 
     app->renderDevice->pushState();
         // Opaque unshadowed
         for (int m = 0; m < opaque.size(); ++m) {
-            opaque[m]->renderNonShadowed(app->renderDevice, app->lighting);
+            opaque[m]->renderNonShadowed(app->renderDevice, lighting);
         }
 
         // Opaque shadowed
-        if (app->lighting->shadowedLightArray.size() > 0) {
+        if (lighting->shadowedLightArray.size() > 0) {
             for (int m = 0; m < opaque.size(); ++m) {
-                opaque[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
+                opaque[m]->renderShadowMappedLightPass(app->renderDevice, lighting->shadowedLightArray[0], lightMVP, shadowMap);
             }
         }
 
         // Transparent + shadowed
         for (int m = 0; m < transparent.size(); ++m) {
-            transparent[m]->renderNonShadowed(app->renderDevice, app->lighting);
-            if (app->lighting->shadowedLightArray.size() > 0) {
-                transparent[m]->renderShadowMappedLightPass(app->renderDevice, app->lighting->shadowedLightArray[0], lightMVP, shadowMap);
+            transparent[m]->renderNonShadowed(app->renderDevice, lighting);
+            if (lighting->shadowedLightArray.size() > 0) {
+                transparent[m]->renderShadowMappedLightPass(app->renderDevice, lighting->shadowedLightArray[0], lightMVP, shadowMap);
             }
         }
 
@@ -272,7 +279,7 @@ void Demo::doGraphics() {
     toneMap.apply(app->renderDevice);
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(app->skyParameters);
+        app->sky->renderLensFlare(skyParameters);
     }
 
     app->debugPrintf("%s Profile %s\n", toString(ArticulatedModel::profile()),
@@ -296,7 +303,10 @@ void App::main() {
     double x = -5;
 
 
+    RealTime t0 = System::time();
 
+#define LOAD_ALL 1
+#if LOAD_ALL
     if (true) {
         CoordinateFrame xform;
 
@@ -335,6 +345,7 @@ void App::main() {
         model->updateAll();
 
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,2,0))));
+        Log::common()->printf("Ghost: %gs\n", System::time() - t0); t0 = System::time();
     }
 
 
@@ -386,8 +397,10 @@ void App::main() {
         model->updateAll();
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
+        Log::common()->printf("Earth: %gs\n", System::time() - t0); t0 = System::time();
     }
 
+#endif
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
 
@@ -402,6 +415,7 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
+        Log::common()->printf("Sphere: %gs\n", System::time() - t0); t0 = System::time();
     }
 
 
@@ -410,15 +424,15 @@ void App::main() {
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].twoSided = false;
-        material.diffuse = Color3::white();
+        material.diffuse = Color3::white() * 0.7;
         material.specular = Color3::white() * .5;
-        material.specularExponent = Color3::white() * 40;
+        material.specularExponent = Color3::white() * 60;
         model->updateAll();
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
     }
 
-
+#if LOAD_ALL
     if (true) {
         CoordinateFrame xform;
 
@@ -640,7 +654,7 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
         x += 2;
     }
-
+#endif
     if (true) {
         ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
@@ -709,19 +723,11 @@ void App::main() {
 
     lighting = Lighting::create();
     {
-        // TODO: move the lightScale processing into doGraphics
-
-        bool useBloom = GLCaps::supports_GL_EXT_texture_rectangle() && Shader::supportsPixelShaders();
-
-        double lightScale = useBloom ? 0.75 : 1.0;
-
         skyParameters = LightingParameters(G3D::toSeconds(1, 00, 00, PM));
     
-        skyParameters.skyAmbient = Color3::white() * lightScale;
-        skyParameters.diffuseAmbient *= lightScale;
+        skyParameters.skyAmbient = Color3::white();
 
         if (sky.notNull()) {
-            //lighting->environmentMap.constant = lighting.skyAmbient;
             lighting->environmentMap = sky->getEnvironmentMap();
             lighting->environmentMapColor = skyParameters.skyAmbient;
         } else {
@@ -737,7 +743,7 @@ void App::main() {
 
         GLight L = skyParameters.directionalLight();
         // Decrease the blue since we're adding blue ambient
-        L.color *= Color3(1.2, 1.2, 1) * lightScale;
+        L.color *= Color3(1.2, 1.2, 1);
         L.position = Vector4(Vector3(0,1,1).direction(), 0);
 
         lighting->shadowedLightArray.append(L);

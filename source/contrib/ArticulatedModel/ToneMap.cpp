@@ -12,6 +12,10 @@ TextureRef ToneMap::B;
 
 
 void ToneMap::apply(RenderDevice* rd) {
+    if (! mEnabled) {
+        return;
+    }
+
     switch (profile) {
     case PS20:
         applyPS20(rd);
@@ -131,6 +135,7 @@ void ToneMap::applyPS20(RenderDevice* rd) {
 
     bloomShader->args.set("screenImage", screenImage);
     bloomShader->args.set("bloomMap",    bloomMap);
+    bloomShader->args.set("gamma",       RG);
 
     rd->push2D();
         // Undo renderdevice's 0.35 translation
@@ -151,10 +156,10 @@ void ToneMap::applyPS20(RenderDevice* rd) {
         rd->setTexture(0, bloomMap);
         rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         Draw::rect2D(smallRect, rd, Color4(1, 1, 1, 0.25), smallRect);
-        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
-    
+        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);    
         bloomMap->copyFromScreen(smallRect);
     
+
         rd->setShader(bloomShader);
         //    rd->setShader(NULL);  rd->setTexture(0, bloomMap);
         Draw::rect2D(rect, rd, Color3::white(), smallRect);
@@ -171,7 +176,17 @@ void ToneMap::makeGammaCorrectionTextures() {
     uint8 ramp[256];
     
     for (int i = 0; i < 256; ++i) {
-        ramp[i] = iRound((1.0 - square(1.0 - i/255.0))*255.0);
+        // Linear
+        //ramp[i] = i;
+
+        // Inverse power
+        const double A = 1.9;
+        ramp[i] = iRound((1.0 - pow(1.0 - i/255.0, A)) * 255.0);
+
+        // Log
+        // const double A = 10, B = 1; 
+        // ramp[i] = iRound(((log(A*i/255.0 + B) - log(B)) /
+        //                  (log(A+B) - log(B))) * 255.0);
     }
     
     GImage data(256, 256, 3);
@@ -185,8 +200,9 @@ void ToneMap::makeGammaCorrectionTextures() {
         }
     }
     
-    RG = Texture::fromGImage("RG Gamma", data, TextureFormat::RGB_DXT1, 
-        Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 
+    // MIP-mapping causes bad interpolation for some reason
+    RG = Texture::fromGImage("RG Gamma", data, TextureFormat::RGB8, 
+        Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 
         Texture::DEPTH_NORMAL, 1.0);
     
     if (profile != PS20) {
@@ -199,8 +215,8 @@ void ToneMap::makeGammaCorrectionTextures() {
             p.b = ramp[b];
         }
     
-        B = Texture::fromGImage("B Gamma", data, TextureFormat::RGB_DXT1, 
-            Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 
+        B = Texture::fromGImage("B Gamma", data, TextureFormat::RGB8, 
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 
             Texture::DEPTH_NORMAL, 1.0);
     }
 }
@@ -292,33 +308,44 @@ void ToneMap::makeShadersPS20() {
         STR(
         uniform sampler2DRect screenImage;
         uniform sampler2DRect bloomMap;
+        uniform sampler2D     gamma; 
     
         void main(void) {
             // The center pixel
             vec2 p = gl_TexCoord[0].xy;
         
-            gl_FragColor = 
-                // Brighten the screen image by 1/0.75, since we darkened the 
-                // scene when rendering to avoid saturation.
-                texture2DRect(screenImage, gl_TexCoord[0].xy * 9.0) * 1.34 + 
+            // Brighten the screen image by 1/0.75, since we darkened the 
+            // scene when rendering to avoid saturation.
+            vec3 screenColor = texture2DRect(screenImage, gl_TexCoord[0].xy * 9.0) * 1.34;
+
+            // Apply gamma correction
+            screenColor.rg = texture2D(gamma, screenColor.rg).rg;
+            screenColor.b  = texture2D(gamma, screenColor.rb).g; 
+
+            vec4 bloomColor = 
             
                 // Add the bloom (brightened by a factor of 2.5)
                 (texture2DRect(bloomMap, p) +
-                (texture2DRect(bloomMap, p + vec2(-2,0)) + 
-                texture2DRect(bloomMap, p + vec2(2,0)) + 
-                texture2DRect(bloomMap, p + vec2(0,-2)) + 
-                texture2DRect(bloomMap, p + vec2(0,2))) * 0.5 + 
-                texture2DRect(bloomMap, p + vec2(0,-1)) + 
-                texture2DRect(bloomMap, p + vec2(-1,0)) + 
-                texture2DRect(bloomMap, p + vec2(1,0)) + 
-                texture2DRect(bloomMap, p + vec2(0,1))) * 2.5 / 7.0;
-        }
+            
+                (texture2DRect(bloomMap, p + vec2(-0.8,  0.8)) + 
+                 texture2DRect(bloomMap, p + vec2( 0.8,  0.8)) + 
+                 texture2DRect(bloomMap, p + vec2(-0.8, -0.8)) + 
+                 texture2DRect(bloomMap, p + vec2( 0.8, -0.8))) * 0.5 + 
+
+                 texture2DRect(bloomMap, p + vec2( 0.0, -1.0)) + 
+                 texture2DRect(bloomMap, p + vec2(-1.0,  0.0)) + 
+                 texture2DRect(bloomMap, p + vec2( 1.0,  0.0)) + 
+                 texture2DRect(bloomMap, p + vec2( 0.0,  1.0))) * 2.5 / 7.0;
+
+            // Apply gamma
+            gl_FragColor.rgb = screenColor + bloomColor.rgb; 
+        }        
         ));
     
 }
 
 
-ToneMap::ToneMap() {
+ToneMap::ToneMap() : mEnabled(true) {
     if (profile == UNINITIALIZED) {
         profile = NO_TONE;
         
@@ -372,5 +399,45 @@ void ToneMap::resizeImages(RenderDevice* rd) {
             "Bloom map", TextureFormat::RGB8,
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
     }
+}
+
+
+LightingParameters ToneMap::prepareLightingParameters(const LightingParameters& L) const {
+
+    bool on = mEnabled && (profile != NO_TONE);
+
+    double lightScale = on ? 0.75 : 1.0;
+    LightingParameters params = L;
+
+    params.skyAmbient   *= on ? 0.5 : 1.0;
+    params.diffuseAmbient *= lightScale;
+    params.lightColor   *= lightScale;
+    params.ambient      *= lightScale;
+    
+    return params;
+}
+
+
+LightingRef ToneMap::prepareLighting(const LightingRef& L) const {
+
+    double lightScale = (mEnabled && (profile != NO_TONE)) ? 0.75 : 1.0;
+
+    LightingRef lighting = Lighting::create();
+    *lighting = *L;
+
+    lighting->environmentMapColor *= lightScale;
+
+    lighting->ambientTop *= lightScale;
+    lighting->ambientBottom *= lightScale;
+
+    for (int i = 0; i < lighting->lightArray.size(); ++i) {
+        lighting->lightArray[i].color *= lightScale;
+    }
+
+    for (int i = 0; i < lighting->shadowedLightArray.size(); ++i) {
+        lighting->shadowedLightArray[i].color *= lightScale;
+    }
+ 
+    return lighting;
 }
 

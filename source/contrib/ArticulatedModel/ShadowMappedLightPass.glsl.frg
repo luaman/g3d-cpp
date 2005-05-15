@@ -89,15 +89,18 @@ void main(void) {
         vec3 wsN = tan_Z.xyz * backside;
 #   endif
 
-    // Eye vector
-    vec3 wsE = normalize(wsEyePos - wsPosition);
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
 
     // Light vector      
 	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
 
-    // Reflection vector
-    vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
+#   if defined(SPECULARCONSTANT) || defined(SPECULARMAP)
+        // Eye vector
+        vec3 wsE = wsEyePos - wsPosition;
+
+        // Reflection vector
+        vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);
+#   endif
 
 #   if (defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP))
         vec3 diffuseColor =

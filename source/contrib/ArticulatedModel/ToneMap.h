@@ -3,7 +3,21 @@
 
 #include <G3DAll.h>
 
-/** Applies inverse gamma and bloom */
+/** Applies inverse gamma and bloom. 
+
+  Example:
+
+  <PRE>
+  void doGraphics() {
+    LightingRef        lighting      = toneMap.prepareLighting(app->lighting);
+    LightingParameters skyParameters = toneMap.prepareLightingParameters(app->skyParameters);
+
+       // rendering code ...
+    toneMap.apply(app->renderDevice);
+  }
+  </PRE>
+
+*/
 class ToneMap {
 private:
 
@@ -14,6 +28,8 @@ private:
     static ShaderRef            bloomShader, bloomFilterShader;
 
     TextureRef                  screenImage, bloomMap;
+
+    bool                        mEnabled;
 
     /** Inverse gamma ramps. */
     // For programmable we don't use B
@@ -39,6 +55,25 @@ private:
 public:
 
     ToneMap();
+
+    inline void setEnabled(bool e) {
+        mEnabled = e;
+    }
+
+    inline bool enabled() const {
+        return mEnabled;
+    }
+
+    /** Call before rendering the scene to create a tone-mapping compatible lighting environment.
+        Guaranteed to return a new lighting environment that is safe to further mutate. 
+    
+        If you created the lighting from LightingParameters that was itself prepared, do not call
+        this method or the lights will be too dark.
+    */
+    LightingRef prepareLighting(const LightingRef& L) const;
+
+    /** Call before rendering the scene to create a tone-mapping compatible lighting environment. */
+    LightingParameters prepareLightingParameters(const LightingParameters& L) const;
 
     /** Call after rendering the rest of the scene to apply tone mapping.*/
     void apply(RenderDevice* rd);
