@@ -207,6 +207,10 @@ void Demo::doGraphics() {
             CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t),
                             Vector3::zero()));
 
+        app->entityArray[e]->pose.cframe.set("Clouds", 
+            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), t/1000),
+                            Vector3::zero()));
+
         app->entityArray[e]->model->pose(posedModels, app->entityArray[e]->cframe, app->entityArray[e]->pose);
     }
     Array<PosedModelRef> opaque, transparent;
@@ -291,6 +295,8 @@ void App::main() {
 
     double x = -5;
 
+
+
     if (true) {
         CoordinateFrame xform;
 
@@ -331,6 +337,57 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,2,0))));
     }
 
+
+    if (true) {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
+
+        {
+            SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+            model->partArray[0].triListArray[0].twoSided = false;
+
+            ArticulatedModel::Part& part = model->partArray.last();
+
+            // Spherical texture map (there will be a seam on the back)
+            part.texCoordArray.resize(part.geometry.normalArray.size());
+            for (int i = 0; i < part.geometry.normalArray.size(); ++i) {
+                const Vector3& N = part.geometry.normalArray[i];
+                part.texCoordArray[i].x = 0.5 + atan2(N.x, N.z) / G3D_TWO_PI;
+                part.texCoordArray[i].y = 0.5 - N.y / 2.0;
+            }
+
+            material.diffuse  = Texture::fromFile("demo/earth/diffuse.jpg");
+            material.specular = Texture::fromFile("demo/earth/specular.png");
+            material.emit     = Texture::fromFile("demo/earth/emit.png");
+
+            material.specularExponent = Color3::white() * 30;
+        }
+
+        // Cloud layer
+        {
+            ArticulatedModel::Part& part = model->partArray.next();
+            ArticulatedModelRef temp = ArticulatedModel::fromFile("demo/sphere.ifs", 1.02);
+            part = temp->partArray.last();
+            part.name = "Clouds";
+            SuperShader::Material& material = part.triListArray[0].material;
+
+            // Spherical texture map (there will be a seam on the back)
+            part.texCoordArray.resize(part.geometry.normalArray.size());
+            for (int i = 0; i < part.geometry.normalArray.size(); ++i) {
+                const Vector3& N = part.geometry.normalArray[i];
+                part.texCoordArray[i].x = 0.5 + atan2(N.x, N.z) / G3D_TWO_PI;
+                part.texCoordArray[i].y = 0.5 - N.y / 2.0;
+            }
+
+            material.diffuse   = Texture::fromFile("demo/earth/cloud-diffuse.jpg");
+            material.transmit  = Texture::fromFile("demo/earth/cloud-transmit.jpg");
+            material.specularExponent = Color3::white() * 10;
+        }
+
+        model->updateAll();
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+    }
+
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("demo/sphere.ifs", 1);
 
@@ -361,11 +418,6 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
     }
 
-    if (false) {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("3ds/55-porsche/55porsmx.3ds", .25);
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-    }
 
     if (true) {
         CoordinateFrame xform;
@@ -459,19 +511,6 @@ void App::main() {
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x - 2, 1, 0))));
     }
 
-    if (false){
-        ArticulatedModelRef model = ArticulatedModel::fromFile(path + "ifs/mech-part.ifs", 1);
-
-        SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-        material.diffuse = Color3::red();
-        material.reflect = Color3::black();
-        material.specular = Color3::white();
-        material.specularExponent = Color3::white() * 30;
-        model->updateAll();
-
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,3,0))));
-//        x += 2;
-    }
 
      if (true) {
         ArticulatedModelRef model = ArticulatedModel::createEmpty();
@@ -544,7 +583,7 @@ void App::main() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
         x += 2;
-    }
+     }
 
      if (true) {
          // 2-sided test
@@ -643,7 +682,8 @@ void App::main() {
         GImage normalBumpMap;
         computeNormalMap(GImage("demo/stone-bump.png"), normalBumpMap, false, true);
         triList.material.normalBumpMap =         
-            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::TILE);
+            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::TILE,
+            Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, Texture::DEPTH_NORMAL, 1.0);
 
         triList.material.bumpMapScale = 0.04;
 
