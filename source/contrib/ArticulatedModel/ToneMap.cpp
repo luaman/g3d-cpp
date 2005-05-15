@@ -1,6 +1,7 @@
 #include "ToneMap.h"
 
-static const double BLOOMSCALE = 9.0;
+// Has to divide exactly into screen width and height
+static const double BLOOMSCALE = 8.0;
 
 ToneMap::Profile ToneMap::profile = ToneMap::UNINITIALIZED;
 
@@ -159,9 +160,9 @@ void ToneMap::applyPS20(RenderDevice* rd) {
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);    
         bloomMap->copyFromScreen(smallRect);
     
-
         rd->setShader(bloomShader);
-        //    rd->setShader(NULL);  rd->setTexture(0, bloomMap);
+
+        rect = Rect2D::xywh(0, 0, rd->width() - 1, rd->height() - 1);
         Draw::rect2D(rect, rd, Color3::white(), smallRect);
     rd->pop2D();
 }
@@ -316,7 +317,7 @@ void ToneMap::makeShadersPS20() {
         
             // Brighten the screen image by 1/0.75, since we darkened the 
             // scene when rendering to avoid saturation.
-            vec3 screenColor = texture2DRect(screenImage, gl_TexCoord[0].xy * 9.0) * 1.34;
+            vec3 screenColor = texture2DRect(screenImage, gl_TexCoord[0].xy * 8.0) * 1.34;
 
             // Apply gamma correction
             screenColor.rg = texture2D(gamma, screenColor.rg).rg;
