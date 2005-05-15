@@ -282,6 +282,7 @@ void Demo::doGraphics() {
         app->sky->renderLensFlare(skyParameters);
     }
 
+    app->debugPrintf("Tone Map %s\n", toneMap.enabled() ? "On" : "Off");
     app->debugPrintf("%s Profile %s\n", toString(ArticulatedModel::profile()),
         #ifdef _DEBUG
                 "(DEBUG mode)"
