@@ -149,7 +149,7 @@ private:
         void arrayDiv(const Impl& B, Impl& out) const;
 
         /** Ok if out == this or out == B */
-        void div(T B, Impl& out) const;
+        void div(const T& B, Impl& out) const;
 
         void negate(Impl& out) const;
 
@@ -185,8 +185,18 @@ private:
 
         void arraySqrt(Impl& out) const;
 
+        void swapRows(int r0, int r1);
+
+        void mulRow(int r, const T& v);
+
+        void abs(Impl& out) const;
+
         /** Makes a (R-1)x(C-1) copy of this matrix */
         void withoutRowAndCol(int excludeRow, int excludeCol, Impl& out) const;
+
+        bool anyNonZero() const;
+
+        bool allNonZero() const;
     };
 
     typedef ReferenceCountedPointer<Impl> ImplRef;
@@ -195,6 +205,37 @@ private:
 
     inline Matrix(ImplRef i) : impl(i) {}
     inline Matrix(Impl* i) : impl(ImplRef(i)) {}
+
+    /** Used by SVD */
+    class SortRank {
+    public:
+        T           value;
+        int         row;
+
+        inline bool operator>(const SortRank& x) const {
+            return x.value > value;
+        }
+        
+        inline bool operator<(const SortRank& x) const {
+            return x.value < value;
+        }
+        
+        inline bool operator>=(const SortRank& x) const {
+            return x.value >= value;
+        }
+        
+        inline bool operator<=(const SortRank& x) const {
+            return x.value <= value;
+        }
+        
+        inline bool operator==(const SortRank& x) const {
+            return x.value == value;
+        }
+
+        inline bool operator!=(const SortRank& x) const {
+            return x.value != value;
+        }
+    };
 
 public:
 
@@ -306,6 +347,18 @@ public:
         return C;
     }
 
+    Matrix operator>(const T& scalar) const;
+
+    Matrix operator<(const T& scalar) const;
+
+    Matrix operator>=(const T& scalar) const;
+
+    Matrix operator<=(const T& scalar) const;
+
+    Matrix operator==(const T& scalar) const;
+
+    Matrix operator!=(const T& scalar) const;
+
     /** scalar B - this */
     inline Matrix lsub(const T& B) const {
         Matrix C(impl->R, impl->C);
@@ -340,6 +393,14 @@ public:
 
     /** Mutates this */
     void arrayDivInPlace(const Matrix& B);
+
+    inline Matrix abs() const {
+        Matrix C(impl->R, impl->C);
+        impl->abs(*C.impl);
+        return C;
+    }
+
+    void abs(Matrix& out) const;
 
     inline Matrix arrayLog() const {
         Matrix C(impl->R, impl->C);
@@ -399,8 +460,12 @@ public:
     }
 
     /** Singular value decomposition.  Factors into three matrices 
-        such that this = U * D * V.transpose() */
-    void svd(Matrix& U, Matrix& D, Matrix& V) const;
+        such that this = U * D * V.transpose().  
+        
+        @param sort If true (default), the singular values
+        are arranged so that D is sorted from largest to smallest
+        along the diagonal. */
+    void svd(Matrix& U, Matrix& D, Matrix& V, bool sort = true) const;
 
     void set(int r, int c, T v);
 
@@ -414,6 +479,24 @@ public:
         return rows() * cols();
     }
 
+    void swapRows(int r0, int r1);
+
+    void mulRow(int r, const T& v);
+
+    /** Returns true if any element is non-zero */
+    bool anyNonZero() const;
+
+    /** Returns true if all elements are non-zero */
+    bool allNonZero() const;
+
+    inline bool allZero() const {
+        return !anyNonZero();
+    }
+
+    inline bool anyZero() const {
+        return !allNonZero();
+    }
+
     /** Serializes in Matlab source format */
     void serialize(TextOutput& t) const;
 
@@ -423,6 +506,9 @@ public:
         static const std::string name = "";
         debugPrint(name);
     }
+
+    /** 2-norm (sqrt(sum(squares)) */
+    double norm() const;
 };
 
 inline Matrix operator-(const Matrix::T& v, const Matrix& M) {
@@ -437,6 +523,9 @@ inline Matrix operator+(const Matrix::T& v, const Matrix& M) {
     return M + v;
 }
 
+inline Matrix abs(const Matrix& M) {
+    return M.abs();
+}
 
 #endif
 

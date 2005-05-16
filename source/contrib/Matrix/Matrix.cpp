@@ -4,7 +4,7 @@
  */
 #include "Matrix.h"
 
-int Matrix::debugNumCopyOps = 0;
+int Matrix::debugNumCopyOps  = 0;
 int Matrix::debugNumAllocOps = 0;
 
 /* 
@@ -58,7 +58,15 @@ void Matrix::debugPrint(const std::string& name) const {
 
     for (int r = 0; r < rows(); ++r) {
         for (int c = 0; c < cols(); ++c) {
-            debugPrintf("%10.04f", impl->get(r, c));
+            double v = impl->get(r, c);
+
+            if (v == iRound(v)) {
+                // Print integers nicely
+                debugPrintf("%10.04g", v);
+            } else {
+                debugPrintf("%10.04f", v);
+            }
+
             if (c < cols() - 1) {
                 debugPrintf(" ");
             } else {
@@ -205,8 +213,28 @@ void Matrix::negate(Matrix& out) {
 }
 
 
+void Matrix::abs(Matrix& out) const {
+    if ((out.impl == impl) && impl.isLastReference()) {
+        // In place
+        impl->abs(*out.impl);
+    } else {
+        out = this->abs();
+    }
+}
+
+
+void Matrix::mulRow(int r, const T& v) {
+    debugAssert(r >= 0 && r < rows());
+
+    if (! impl.isLastReference()) {
+        impl = new Impl(*impl);
+    }
+
+    impl->mulRow(r, v);
+}
+
+
 void Matrix::transpose(Matrix& out) const {
-    // TODO: can do this even for non-square
     if ((out.impl == impl) && impl.isLastReference() && (impl->R == impl->C)) {
         // In place
         impl->transpose(*out.impl);
@@ -268,7 +296,133 @@ Vector4 Matrix::toVector4() const {
         return Vector4(impl->get(0,0), impl->get(0,1), impl->get(0, 2), impl->get(0,3));
     }
 }
+void Matrix::swapRows(int r0, int r1) {
+    debugAssert(r0 >= 0 && r0 < rows());
+    debugAssert(r1 >= 0 && r1 < rows());
 
+    if (r0 == r1) {
+        return;
+    }
+
+    if (! impl.isLastReference()) {
+        impl = new Impl(*impl);
+    }
+
+    impl->swapRows(r0, r1);
+}
+
+
+bool Matrix::anyNonZero() const {
+    return impl->anyNonZero();
+}
+
+
+bool Matrix::allNonZero() const {
+    return impl->allNonZero();
+}
+
+
+void Matrix::svd(Matrix& U, Matrix& D, Matrix& V, bool sort) const {
+    debugAssert(rows() == cols());
+    debugAssert(&D != &V);
+    debugAssert(&D != &U);
+    debugAssert(&D != this);
+    debugAssert(&V != this);
+
+    int N = rows();
+
+    if (D.impl.isLastReference()) {
+        D.impl->setSize(N, N);
+        D.impl->setZero();
+    } else {
+        D = Matrix::zero(N, N);
+    }
+
+    if (! V.impl.isLastReference()) {
+        V = Matrix::zero(N, N);
+    } else {
+        V.impl->setSize(N, N);
+    }
+
+    if (&U != this || ! impl.isLastReference()) {
+        // Make a copy of this for in-place SVD
+        U.impl = new Impl(*impl);
+    }
+
+    Array<float> d(N);
+    const char* ret = SVDcore(U.impl->elt, N, N, d.getCArray(), V.impl->elt);
+
+    debugAssertM(ret == NULL, ret);
+
+    if (sort) {
+        // Sort the values from greatest to least
+
+        Array<SortRank> rank(N);
+        for (int r = 0; r < N; ++r) {
+            rank[r].row   = r;
+            rank[r].value = d[r];
+        }
+
+        rank.sort(SORT_INCREASING);
+
+        int numSwaps = 0;
+
+        // Now permute U, d, and V appropriately
+        for (int r0 = 0; r0 < N; ++r0) {
+            int r1 = rank[r0].row;
+            U.swapRows(r0, r1);
+            d[r0] = rank[r0].value;
+            V.swapRows(r0, r1);
+            ++numSwaps;
+        }
+
+    }
+
+    for (int i = 0; i < N; ++i) {
+        D.impl->set(i, i, d[i]);
+    }
+}
+
+
+#define COMPARE_SCALAR(OP)\
+Matrix Matrix::operator OP (const T& scalar) const {\
+    int R = rows();\
+    int C = cols();\
+    int N = R * C;\
+    Matrix out = Matrix::zero(R, C);\
+\
+    const T* raw = impl->data;\
+    T* outRaw = out.impl->data;\
+    for (int i = 0; i < N; ++i) {\
+        outRaw[i] = raw[i] OP scalar;\
+    }\
+\
+    return out;\
+}
+
+COMPARE_SCALAR(<)
+COMPARE_SCALAR(<=)
+COMPARE_SCALAR(>)
+COMPARE_SCALAR(>=)
+COMPARE_SCALAR(==)
+COMPARE_SCALAR(!=)
+
+#undef COMPARE_SCALAR
+
+double Matrix::norm() const {
+    int R = rows();
+    int C = cols();
+    int N = R * C;
+
+    double sum = 0.0;
+
+    const T* raw = impl->data;
+    for (int i = 0; i < N; ++i) {
+        sum += square(raw[i]);
+    }
+
+    return sqrt(sum);
+}
 
 ///////////////////////////////////////////////////////////
 
@@ -338,6 +492,27 @@ Matrix::Impl& Matrix::Impl::operator=(const Impl& m) {
 
 void Matrix::Impl::setZero() {
     System::memset(data, 0, R * C * sizeof(T));
+}
+
+
+void Matrix::Impl::swapRows(int r0, int r1) {
+    T* R0 = elt[r0];
+    T* R1 = elt[r1];
+
+    for (int c = 0; c < C; ++c) {
+        T temp = R0[c];
+        R0[c] = R1[c];
+        R1[c] = temp;
+    }
+}
+
+
+void Matrix::Impl::mulRow(int r, const T& v) {
+    T* row = elt[r];
+
+    for (int c = 0; c < C; ++c) {
+        row[c] *= v;
+    }
 }
 
 
@@ -426,6 +601,11 @@ void Matrix::Impl::arrayLog(Impl& out) const {
 }
 
 
+void Matrix::Impl::abs(Impl& out) const {
+    POINTWISEUNARY(::abs);
+}
+
+
 void Matrix::Impl::arraySqrt(Impl& out) const {
     POINTWISEUNARY(sqrt);
 }
@@ -451,7 +631,7 @@ void Matrix::Impl::arrayDiv(const Impl& B, Impl& out) const {
 }
 
 
-void Matrix::Impl::div(Matrix::T B, Impl& out) const {
+void Matrix::Impl::div(const Matrix::T& B, Impl& out) const {
     POINTWISESCALAR(/);
 }
 
@@ -726,40 +906,26 @@ void Matrix::Impl::inverseInPlaceGaussJordan() {
 }
 
 
-void Matrix::svd(Matrix& U, Matrix& D, Matrix& V) const {
-    debugAssert(rows() == cols());
-    debugAssert(&D != &V);
-    debugAssert(&D != &U);
-    debugAssert(&D != this);
-    debugAssert(&V != this);
-
-    int N = rows();
-
-    if (D.impl.isLastReference()) {
-        D.impl->setSize(N, N);
-        D.impl->setZero();
-    } else {
-        D = Matrix::zero(N, N);
-    }
-
-    if (! V.impl.isLastReference()) {
-        V = Matrix::zero(N, N);
-    } else {
-        V.impl->setSize(N, N);
-    }
-
-    if (&U != this || ! impl.isLastReference()) {
-        // Make a copy of this for in-place SVD
-        U.impl = new Impl(*impl);
-    }
-
-    Array<float> d(N);
-    const char* ret = SVDcore(U.impl->elt, N, N, d.getCArray(), V.impl->elt);
+bool Matrix::Impl::anyNonZero() const {
+    int N = R * C;
     for (int i = 0; i < N; ++i) {
-        D.impl->set(i, i, d[i]);
+        if (data[i] != 0.0) {
+            return true;
+        }
     }
+    return false;
 }
 
+
+bool Matrix::Impl::allNonZero() const {
+    int N = R * C;
+    for (int i = 0; i < N; ++i) {
+        if (data[i] == 0.0) {
+            return false;
+        }
+    }
+    return true;
+}
 
 
 /** Helper for SVDcore */ 

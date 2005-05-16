@@ -228,23 +228,24 @@ void testMatrix() {
 
     // SVD
     {
-        Matrix A = Matrix(2, 2);
-        A.set(0, 0,  1.0);  A.set(0, 1, 2.0);
-        A.set(1, 0, -3.0);  A.set(1, 1, 7.0);
+        Matrix A = Matrix::random(7, 7);//Matrix(3, 3);
+        A.set(0, 0,  1.0);  A.set(0, 1,  2.0);  A.set(0, 2,  1.0);
+        A.set(1, 0, -3.0);  A.set(1, 1,  7.0);  A.set(1, 2, -6.0);
+        A.set(2, 0,  4.0);  A.set(2, 1, -4.0);  A.set(2, 2, 10.0);
 
         Matrix U, D, V;
 
         A.svd(U, D, V);
 
-        A.debugPrint("A");
-        U.debugPrint("U");
-        D.debugPrint("D");
-        V.debugPrint("V");
+        // Verify that we can reconstruct
+        Matrix B = U * D * V.transpose();
 
-        debugAssert(fuzzyEq(U.get(0, 0),  0.2298));
-        debugAssert(fuzzyEq(U.get(0, 1),  0.9732));
-        debugAssert(fuzzyEq(U.get(1, 0),  0.9732));
-        debugAssert(fuzzyEq(U.get(1, 1), -0.2298));
+        Matrix test = abs(A - B) < 0.0001;
+
+        debugAssert(test.allNonZero());
+
+        double m = (A - B).norm() / A.norm();
+        debugAssert(m < 0.01);
     }
 }
 
