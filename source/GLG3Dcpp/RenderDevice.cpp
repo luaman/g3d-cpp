@@ -606,12 +606,17 @@ Vector4 RenderDevice::project(const Vector4& v) const {
 void RenderDevice::cleanup() {
     debugAssert(initialized());
 
+    if (debugLog) {debugLog->println("Shutting down RenderDevice.");}
+
     if (debugLog) {debugLog->println("Restoring gamma.");}
     setGamma(1, 1);
 
-    if (debugLog) {debugLog->println("Shutting down RenderDevice.");}
+    if (debugLog) {debugLog->println("Freeing all VAR memory");}
+
+    VARArea::cleanupAllVARAreas();
 
     if (deleteWindow) {
+        if (debugLog) {debugLog->println("Deleting window.");}
         delete _window;
     }
 }

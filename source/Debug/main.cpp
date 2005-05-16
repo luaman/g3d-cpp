@@ -156,6 +156,8 @@ void Demo::doGraphics() {
         // Rendering loop
         app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
+        Draw::sphere(Sphere(Vector3::zero(), 2), app->renderDevice);
+
     app->renderDevice->disableLighting();
 
     app->renderDevice->setColor(Color3::white());
@@ -191,40 +193,6 @@ App::~App() {
 }
 
 int main(int argc, char** argv) {
-    uint32 x = 12345678;
-
-    long y;
-    int z;
-
-    uint8 buf[1024];
-    
-uint8 out[8];
-
-
-
-    if (swapBytes) {
-        out[0] = buffer[pos + 7];
-        out[1] = buffer[pos + 6];
-        out[2] = buffer[pos + 5];
-        out[3] = buffer[pos + 4];
-        out[4] = buffer[pos + 3];
-        out[5] = buffer[pos + 2];
-        out[6] = buffer[pos + 1];
-        out[7] = buffer[pos + 0];
-    } else {
-        out[0] = buffer[pos + 0];
-        out[1] = buffer[pos + 1];
-        out[2] = buffer[pos + 2];
-        out[3] = buffer[pos + 3];
-        out[4] = buffer[pos + 4];
-        out[5] = buffer[pos + 5];
-        out[6] = buffer[pos + 6];
-        out[7] = buffer[pos + 7];
-    }
-    
-    for (int i=0;i<4;++i){ 
-        
-    }
 
     /*
     BinaryOutput b("c:/tmp/bin.dat", G3D_LITTLE_ENDIAN);

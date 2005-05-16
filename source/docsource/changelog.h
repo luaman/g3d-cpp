@@ -41,6 +41,7 @@
     <LI> GLCaps now loads GL_ATI_fragment_shader extension
     <LI> contrib/ArticulatedModel hierarchy
     <LI> Added TEX_SUBTRACT, TEX_ADD_SIGNED, TEX_DOT3, TEX_DOT3_RGBA modes for G3D::RenderDevice::setTextureCombineMode
+    <LI> G3D::RenderDevice now cleans up all static G3D::VARArea s when it shuts down
     <LI> FIX: MeshAlg::computeTangentSpaceBasis now works correctly
     <LI> FIX: 6.05 enabled all fixed function lights by default.  This caused major performance problems on some cards.
     <LI> FIX: Extended cube map workaround to all Radeon Mobility cards

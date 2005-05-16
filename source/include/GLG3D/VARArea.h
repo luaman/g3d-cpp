@@ -91,7 +91,7 @@ private:
     RenderDevice*       renderDevice;
 
 
-	/** Total  number of bytes in this area. */
+	/** Total  number of bytes in this area.  May be zero if resources have been freed.*/
 	size_t				size;
 
     /**
@@ -116,6 +116,12 @@ private:
     static size_t       _sizeOfAllVARAreasInMemory;
 
 	VARArea(size_t _size, UsageHint h);
+
+    static Array<VARAreaRef>    allVARAreas;
+
+    /** Removes elements of allVARAreas that are not externally referenced.
+        Called whenever a new VARArea is created.*/
+    static void cleanCache();
 
 public:
 
@@ -189,6 +195,9 @@ public:
         even if nominally stored in video memory, so the total size may
         exceed the video memory size.*/
     static size_t sizeOfAllVARAreasInMemory();
+
+    /** Releases all VARAreas. Called before shutdown by RenderDevice. */
+    static void cleanupAllVARAreas();
 
 };
 

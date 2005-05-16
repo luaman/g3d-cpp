@@ -19,12 +19,17 @@
 
 namespace G3D {
 
+Array<VARAreaRef>    VARArea::allVARAreas;
+
 VARArea::Mode VARArea::mode = VARArea::UNINITIALIZED;
 
 size_t VARArea::_sizeOfAllVARAreasInMemory = 0;
 
 VARAreaRef VARArea::create(size_t s, UsageHint h) {
-    return new VARArea(s, h);
+    cleanCache();
+    VARAreaRef x = new VARArea(s, h);
+    allVARAreas.push(x);
+    return x;
 }
 
 
@@ -73,13 +78,13 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
 
                 // Load some (undefined) data to initialize the buffer
                 glBufferDataARB(GL_ARRAY_BUFFER_ARB, size, NULL, usage);
-    debugAssertGLOk();    
+                debugAssertGLOk();    
 
                 // The basePointer is always NULL for a VBO
                 basePointer = NULL;
 
             glPopClientAttrib();
-    debugAssertGLOk();    
+            debugAssertGLOk();    
         }
         break;
 
@@ -106,6 +111,11 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
 VARArea::~VARArea() {
     _sizeOfAllVARAreasInMemory -= size;
 
+    if (size == 0) {
+        // Already freed
+        return;
+    }
+
     switch (mode) {
     case VBO_MEMORY:
         // Delete the vertex buffer
@@ -122,6 +132,8 @@ VARArea::~VARArea() {
     default:
         alwaysAssertM(false, "Fell through switch.");
     }
+
+    size = 0;
 }
 
 
@@ -139,5 +151,29 @@ void VARArea::reset() {
 	allocated = 0;
 }
 
+
+void VARArea::cleanCache() {
+    int i = 0;
+    while (i < allVARAreas.size()) {
+        if (allVARAreas[i].isLastReference()) {
+            allVARAreas.fastRemove(i);
+        } else {
+            ++i;
+        }
+    }
+}
+
+
+void VARArea::cleanupAllVARAreas() {
+    // Intentionally empty
+    for (int i = 0; i < allVARAreas.size(); ++i) {
+        allVARAreas[i]->reset();
+
+        // Invoke the destructor, freeing the resources even if there are
+        // more pointers (but not actually deleting the object)
+        allVARAreas[i]->~VARArea();
+    }
+    allVARAreas.clear();
+}
 
 } // namespace
