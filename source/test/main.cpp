@@ -225,6 +225,27 @@ void testMatrix() {
             }
         }
     }
+
+    // SVD
+    {
+        Matrix A = Matrix(2, 2);
+        A.set(0, 0,  1.0);  A.set(0, 1, 2.0);
+        A.set(1, 0, -3.0);  A.set(1, 1, 7.0);
+
+        Matrix U, D, V;
+
+        A.svd(U, D, V);
+
+        A.debugPrint("A");
+        U.debugPrint("U");
+        D.debugPrint("D");
+        V.debugPrint("V");
+
+        debugAssert(fuzzyEq(U.get(0, 0),  0.2298));
+        debugAssert(fuzzyEq(U.get(0, 1),  0.9732));
+        debugAssert(fuzzyEq(U.get(1, 0),  0.9732));
+        debugAssert(fuzzyEq(U.get(1, 1), -0.2298));
+    }
 }
 
 

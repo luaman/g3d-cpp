@@ -7,6 +7,67 @@
 int Matrix::debugNumCopyOps = 0;
 int Matrix::debugNumAllocOps = 0;
 
+/* 
+  @cite Based on Dianne Cook's implementation, which is adapted from 
+  svdecomp.c in XLISP-STAT 2.1, which is code from Numerical Recipes 
+  adapted by Luke Tierney and David Betz.  The Numerical Recipes code 
+  is adapted from Forsythe et al, who based their code on Golub and
+  Reinsch's original implementation.
+
+  @return NULL on success, a string describing the error on failure.
+  @param U rows x cols matrix to be decomposed, gets overwritten with U
+  @param D vector of singular values of a (diagonal of the D matrix)
+  @param C returns the right orthogonal transformation matrix
+*/
+static const char* SVDcore(float** U, int rows, int cols, float* D, float** V);
+
+void Matrix::serialize(TextOutput& t) const {
+    t.writeSymbol("%");
+    t.writeNumber(rows());
+    t.writeSymbol("x");
+    t.writeNumber(cols());
+    t.pushIndent();
+    t.writeNewline();
+
+    t.writeSymbol("[");
+    for (int r = 0; r < rows(); ++r) {
+        for (int c = 0; c < cols(); ++c) {
+            t.writeNumber(impl->get(r, c));
+            if (c < cols() - 1) {
+                t.writeSymbol(",");
+            } else {
+                if (r < rows() - 1) {
+                    t.writeSymbol(";");
+                    t.writeNewline();
+                }
+            }
+        }
+    }
+    t.writeSymbol("]");
+    t.popIndent();
+    t.writeNewline();
+}
+
+
+void Matrix::debugPrint(const std::string& name) const {
+    debugPrintf("\n\n");
+
+    if (name != "") {
+        debugPrintf("%s = \n", name.c_str());
+    }
+
+    for (int r = 0; r < rows(); ++r) {
+        for (int c = 0; c < cols(); ++c) {
+            debugPrintf("%10.04f", impl->get(r, c));
+            if (c < cols() - 1) {
+                debugPrintf(" ");
+            } else {
+                debugPrintf("\n");
+            }
+        }
+    }
+    debugPrintf("\n");
+}
 
 #define INPLACE(OP)\
     ImplRef A = impl;\
@@ -665,6 +726,42 @@ void Matrix::Impl::inverseInPlaceGaussJordan() {
 }
 
 
+void Matrix::svd(Matrix& U, Matrix& D, Matrix& V) const {
+    debugAssert(rows() == cols());
+    debugAssert(&D != &V);
+    debugAssert(&D != &U);
+    debugAssert(&D != this);
+    debugAssert(&V != this);
+
+    int N = rows();
+
+    if (D.impl.isLastReference()) {
+        D.impl->setSize(N, N);
+        D.impl->setZero();
+    } else {
+        D = Matrix::zero(N, N);
+    }
+
+    if (! V.impl.isLastReference()) {
+        V = Matrix::zero(N, N);
+    } else {
+        V.impl->setSize(N, N);
+    }
+
+    if (&U != this || ! impl.isLastReference()) {
+        // Make a copy of this for in-place SVD
+        U.impl = new Impl(*impl);
+    }
+
+    Array<float> d(N);
+    const char* ret = SVDcore(U.impl->elt, N, N, d.getCArray(), V.impl->elt);
+    for (int i = 0; i < N; ++i) {
+        D.impl->set(i, i, d[i]);
+    }
+}
+
+
+
 /** Helper for SVDcore */ 
 static double pythag(double a, double b) {
     
@@ -682,20 +779,9 @@ static double pythag(double a, double b) {
 
     return result;
 }
-#if 0
 
-/* 
-  @cite Based on Dianne Cook's implementation, which is adapted from 
-  svdecomp.c in XLISP-STAT 2.1, which is code from Numerical Recipes 
-  adapted by Luke Tierney and David Betz.  The Numerical Recipes code 
-  is adapted from Forsythe et al, who based their code on Golub and
-  Reinsch's original implementation.
+#define SIGN(a, b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-  @return NULL on success, a string describing the error on failure.
-  @param U rows x cols matrix to be decomposed, gets overwritten with U
-  @param D vector of singular values of a (diagonal of the D matrix)
-  @param C returns the right orthogonal transformation matrix
-*/
 const char* SVDcore(float** U, int rows, int cols, float* D, float** V) {
     const int MAX_ITERATIONS = 30;
 
@@ -732,7 +818,7 @@ const char* SVDcore(float** U, int rows, int cols, float* D, float** V) {
                 f = (double)U[i][i];
 
                 // TODO: what is this 2-arg sign function?
-                g = -sign(sqrt(s), f);
+                g = -SIGN(sqrt(s), f);
                 h = f * g - s;
                 U[i][i] = (float)(f - g);
                 
@@ -770,7 +856,7 @@ const char* SVDcore(float** U, int rows, int cols, float* D, float** V) {
                 }
 
                 f = (double)U[i][l];
-                g = -sign(sqrt(s), f);
+                g = -SIGN(sqrt(s), f);
                 h = f * g - s;
                 U[i][l] = (float)(f - g);
 
@@ -991,5 +1077,5 @@ const char* SVDcore(float** U, int rows, int cols, float* D, float** V) {
     return NULL;
 }
 
+#undef SIGN
 
-#endif

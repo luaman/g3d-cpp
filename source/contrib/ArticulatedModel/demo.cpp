@@ -223,9 +223,9 @@ void Demo::doGraphics() {
     Array<PosedModelRef> opaque, transparent;
     PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
 
-    if (GLCaps::supports_GL_ARB_shadow() && (app->lighting->shadowedLightArray.size() > 0)) {     
+    if (GLCaps::supports_GL_ARB_shadow() && (lighting->shadowedLightArray.size() > 0)) {     
         // Generate shadow map
-        generateShadowMap(app->lighting->shadowedLightArray[0], opaque);
+        generateShadowMap(lighting->shadowedLightArray[0], opaque);
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -237,7 +237,7 @@ void Demo::doGraphics() {
     if (! GLCaps::supports_GL_ARB_shadow() && (lighting->shadowedLightArray.size() > 0)) {
         // We're not going to be able to draw shadows, so move the shadowed lights into
         // the unshadowed category.
-        app->lighting->lightArray.append(lighting->shadowedLightArray);
+        lighting->lightArray.append(lighting->shadowedLightArray);
         lighting->shadowedLightArray.clear();
     }
 

@@ -265,61 +265,61 @@ public:
 
     /** Matrix multiplication.  To perform element-by-element multiplication, 
         see arrayMul. */
-    Matrix operator*(const Matrix& B) const {
+    inline Matrix operator*(const Matrix& B) const {
         Matrix C(impl->R, B.impl->C);
         impl->mul(*B.impl, *C.impl);
         return C;
     }
 
     /** See also A *= B, which is more efficient in many cases */
-    Matrix operator*(const T& B) const {
+    inline Matrix operator*(const T& B) const {
         Matrix C(impl->R, impl->C);
         impl->mul(B, *C.impl);
         return C;
     }
 
     /** See also A += B, which is more efficient in many cases */
-    Matrix operator+(const Matrix& B) const {
+    inline Matrix operator+(const Matrix& B) const {
         Matrix C(impl->R, impl->C);
         impl->add(*B.impl, *C.impl);
         return C;
     }
 
     /** See also A += B, which is more efficient in many cases */
-    Matrix operator+(const T& v) const {
+    inline Matrix operator+(const T& v) const {
         Matrix C(impl->R, impl->C);
         impl->add(v, *C.impl);
         return C;
     }
 
     /** See also A -= B, which is more efficient in many cases */
-    Matrix operator-(const T& v) const {
+    inline Matrix operator-(const T& v) const {
         Matrix C(impl->R, impl->C);
         impl->sub(v, *C.impl);
         return C;
     }
 
     /** Unary minus; negation. See also A.negateInPlace(), which is more efficient in many cases */
-    Matrix operator-() const {
+    inline Matrix operator-() const {
         Matrix C(impl->R, impl->C);
         impl->negate(*C.impl);
         return C;
     }
 
     /** scalar B - this */
-    Matrix lsub(const T& B) const {
+    inline Matrix lsub(const T& B) const {
         Matrix C(impl->R, impl->C);
         impl->lsub(B, *C.impl);
         return C;
     }
 
-    Matrix operator-(const Matrix& B) const {
+    inline Matrix operator-(const Matrix& B) const {
         Matrix C(impl->R, impl->C);
         impl->sub(*B.impl, *C.impl);
         return C;
     }
 
-    Matrix arrayMul(const Matrix& B) const {
+    inline Matrix arrayMul(const Matrix& B) const {
         Matrix C(impl->R, impl->C);
         impl->arrayMul(*B.impl, *C.impl);
         return C;
@@ -362,20 +362,20 @@ public:
     /**
      A<SUP>-1</SUP>
      */
-    Matrix inverse() const {
+    inline Matrix inverse() const {
         Impl* A = new Impl(*impl);
         A->inverseInPlaceGaussJordan();
         return Matrix(A);
     }
 
-    T determinant() const {
+    inline T determinant() const {
         return impl->determinant();
     }
 
     /**
      A<SUP>T</SUP>
      */
-    Matrix transpose() const {
+    inline Matrix transpose() const {
         Impl* A = new Impl(cols(), rows());
         impl->transpose(*A);
         return Matrix(A);
@@ -384,7 +384,7 @@ public:
     /** Transpose in place; more efficient than transpose */
     void transpose(Matrix& out) const;
 
-    Matrix adjoint() const {
+    inline Matrix adjoint() const {
         Impl* A = new Impl(cols(), rows());
         impl->adjoint(*A);
         return Matrix(A);
@@ -393,14 +393,14 @@ public:
     /**
      (A<SUP>T</SUP>A)<SUP>-1</SUP>A<SUP>T</SUP>
      */
-    Matrix pseudoInverse() const {
+    inline Matrix pseudoInverse() const {
         Matrix trans = transpose();
         return (trans * (*this)).inverse() * trans;
     }
 
     /** Singular value decomposition.  Factors into three matrices 
         such that this = U * D * V.transpose() */
-    void SVD(Matrix& U, Matrix& D, Matrix& V) const;
+    void svd(Matrix& U, Matrix& D, Matrix& V) const;
 
     void set(int r, int c, T v);
 
@@ -412,6 +412,16 @@ public:
 
     int numElements() const {
         return rows() * cols();
+    }
+
+    /** Serializes in Matlab source format */
+    void serialize(TextOutput& t) const;
+
+    void debugPrint(const std::string& name) const;
+
+    inline void debugPrint() const {
+        static const std::string name = "";
+        debugPrint(name);
     }
 };
 
