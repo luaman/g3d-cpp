@@ -896,17 +896,47 @@ unsigned int Texture::newGLTextureID() {
 }
 
 
+/** Returns the buffer constant that matches the current draw buffer (left vs. right) */
+static GLenum getCurrentBuffer(bool useBack) {
+    GLenum draw = glGetInteger(GL_DRAW_BUFFER);
+
+    if (useBack) {
+        switch (draw) {
+        case GL_FRONT_LEFT:
+        case GL_BACK_LEFT:
+            return GL_BACK_LEFT;
+
+        case GL_FRONT_RIGHT:
+        case GL_BACK_RIGHT:
+            return GL_BACK_RIGHT;
+
+        default:
+            return GL_BACK;
+        }
+    } else {
+        switch (draw) {
+        case GL_FRONT_LEFT:
+        case GL_BACK_LEFT:
+            return GL_FRONT_LEFT;
+
+        case GL_FRONT_RIGHT:
+        case GL_BACK_RIGHT:
+            return GL_FRONT_RIGHT;
+
+        default:
+            return GL_FRONT;
+        }
+    }
+}
+
+
 void Texture::copyFromScreen(
     const Rect2D& rect,
     bool useBackBuffer) {
 
     glStatePush();
 
-    if (useBackBuffer) {
-        glReadBuffer(GL_BACK);
-    } else {
-        glReadBuffer(GL_FRONT);
-    }    
+    glReadBuffer(getCurrentBuffer(useBackBuffer));
 
     _sizeOfAllTexturesInMemory -= sizeInMemory();
 
@@ -962,11 +992,7 @@ void Texture::copyFromScreen(
 
     glStatePush();
 
-    if (useBackBuffer) {
-        glReadBuffer(GL_BACK);
-    } else {
-        glReadBuffer(GL_FRONT);
-    }    
+    glReadBuffer(getCurrentBuffer(useBackBuffer));
 
     // Set up new state
     debugAssertM(width == rect.width(), "Cube maps require all six faces to have the same dimensions");

@@ -40,6 +40,7 @@
     G3D::drawFeatureEdges,
     <BR>
   See also contrib & demo code
+    <A HREF="../contrib/ArticulatedModel/ToneMap.h">ToneMap</A>, 
     <A HREF="../contrib/shaders">Shaders</A>, 
     <A HREF="../demos/GLSL_Demo">GLSL_Demo</A>, 
     <A HREF="../demos/ASM_Shader_Demo">ASM_Shader_Demo</A> 

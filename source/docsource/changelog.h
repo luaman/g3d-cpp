@@ -35,6 +35,8 @@
   <P>
    Changes in 6.06:
    <UL>
+    <LI> In stereo mode, Texture::copyFromScreen automatically chooses the left/right buffer to read based on the current glDrawBuffer
+    <LI> contrib/ArticulatedModel/ToneMap
     <LI> 50% performance improvement for G3D::BinaryInput, G3D::BinaryOutput when machine endian matches file endian
     <LI> Textures load with default of maxAnisotroy = 2.0
     <LI> maxAnisotropy argument to G3D::Texture constructors.
@@ -47,6 +49,7 @@
     <LI> FIX: Extended cube map workaround to all Radeon Mobility cards
     <LI> FIX: Added check for glBlendEq before calling in RenderDevice
     <LI> FIX: Added a test for GL_EXT_texture_env_add in RenderDevice
+    <LI> FIX: [ 1191817 ] unsigned warnings in BinaryInput
    </UL>
 
    <P>

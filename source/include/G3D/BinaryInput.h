@@ -27,6 +27,11 @@
 #include "G3D/debug.h"
 #include "G3D/System.h"
 
+#ifdef G3D_WIN32
+    // Disable unsigned/signed warnings
+    #pragma warning (disable:4267)
+#endif
+
 namespace G3D {
 
 #if defined(G3D_WIN32) || defined(G3D_LINUX)

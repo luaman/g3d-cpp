@@ -14,18 +14,30 @@ ArticulatedModel::GraphicsProfile ArticulatedModel::profile() {
     if (p == UNKNOWN) {
         if (GLCaps::supports_GL_ARB_shader_objects()) {
             p = PS20;
-        } else if (
-            GLCaps::supports("GL_ARB_texture_env_crossbar") &&
-            GLCaps::supports("GL_ARB_texture_env_combine") &&
-            GLCaps::supports("GL_EXT_texture_env_add") &&
-            (GLCaps::numTextureUnits() >= 4)) {
-            p = PS14;
-        } else {
-            p = FIXED_FUNCTION;
+
+            if (! fileExists("NonShadowedPass.glsl.vrt")) {
+                p = UNKNOWN;
+                Log::common()->printf("\n\nWARNING: ArticulatedModel could not enter PS20 mode because"
+                    "NonShadowedPass.glsl.vrt was not found.\n\n");
+            }
+        }
+
+        
+        if (p == UNKNOWN) {
+            if (GLCaps::supports("GL_ARB_texture_env_crossbar") &&
+                GLCaps::supports("GL_ARB_texture_env_combine") &&
+                GLCaps::supports("GL_EXT_texture_env_add") &&
+                (GLCaps::numTextureUnits() >= 4)) {
+                p = PS14;
+            } else {
+                p = FIXED_FUNCTION;
+            }
         }
     }
-// TODO: Remove (here for testing)
-//p = FIXED_FUNCTION;
+
+    // TODO: Remove (here for testing)
+    //p = FIXED_FUNCTION;
+
     return p;
 }
 
