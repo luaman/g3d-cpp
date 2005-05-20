@@ -156,28 +156,39 @@ void Demo::doGraphics() {
         // Rendering loop
         app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
 
-        Draw::sphere(Sphere(Vector3::zero(), 2), app->renderDevice);
+        //Draw::sphere(Sphere(Vector3::zero(), 2), app->renderDevice);
 
     app->renderDevice->disableLighting();
 
-    app->renderDevice->setColor(Color3::white());
-    app->renderDevice->setTexture(0, app->im);
-    Draw::rect2D(Rect2D::xywh(0, 0, 2, 2), app->renderDevice);
+    app->renderDevice->push2D();
+//        app->renderDevice->setViewport(Rect2D::xywh(0,0,800,600));
+//        app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
+        Rect2D rect = Rect2D::xywh(0, 0, app->im->getTexelWidth(), app->im->getTexelHeight());
+//        Rect2D rect = Rect2D::xywh(0, 0, 400, 600);
+//        Rect2D rect2 = Rect2D::xywh(798, 0, 400, 600);
 
+        app->renderDevice->setTexture(0, app->im);
+        Draw::rect2D(rect, app->renderDevice);
+///        Draw::rect2D(rect2, app->renderDevice, Color3::blue());
+
+    app->renderDevice->pop2D();
 
 
 }
 
 
 void App::main() {
-	setDebugMode(true);
+//	setDebugMode(true);
 	debugController.setActive(false);
 
     // Load objects here
-    sky = Sky::create(renderDevice, dataDir + "sky/");
+    sky = NULL;//Sky::create(renderDevice, dataDir + "sky/");
 
-    im = Texture::fromFile("../contrib/ArticulatedModel/demo/stone.jpg", TextureFormat::AUTO, Texture::TILE,
-            Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 8.0);
+    im = Texture::fromFile("c:/tmp/pattern.bmp", 
+        TextureFormat::AUTO, Texture::CLAMP,
+        //Texture::BILINEAR_NO_MIPMAP,
+        Texture::TRILINEAR_MIPMAP, 
+        Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
         
     applet->run();
 }
@@ -211,9 +222,10 @@ int main(int argc, char** argv) {
     */
 
     GAppSettings settings;
-    settings.window.width = 600;
-    settings.window.height = 400;
+    settings.window.width = 800;
+    settings.window.height = 600;
     settings.window.alphaBits = 8;
+    settings.window.fsaaSamples = 1;
     settings.useNetwork = false;
     App(settings).run();
     return 0;

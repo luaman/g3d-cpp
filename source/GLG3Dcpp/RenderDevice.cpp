@@ -637,8 +637,11 @@ void RenderDevice::push2D(const Rect2D& viewport) {
 	setObjectToWorldMatrix(CoordinateFrame());
 
     // 0.375 is a float-to-int adjustment.  See: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/opengl/apptips_7wqb.asp
-    setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(-0.375, -0.375, 0.0)));
-    setProjectionMatrix(Matrix4::orthogonalProjection(viewport.x0(), viewport.x0() + viewport.width() - 1, viewport.y0() + viewport.height() - 1, viewport.y0(), -1, 1));
+    //setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(-0.375, -0.375, 0.0)));
+
+    setCameraToWorldMatrix(CoordinateFrame());
+
+    setProjectionMatrix(Matrix4::orthogonalProjection(viewport.x0(), viewport.x0() + viewport.width(), viewport.y0() + viewport.height(), viewport.y0(), -1, 1));
 }
 
 
