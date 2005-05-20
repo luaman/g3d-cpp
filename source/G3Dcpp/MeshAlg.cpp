@@ -613,7 +613,7 @@ void MeshAlg::computeTangentSpaceBasis(
     for (int v = 0; v < vertexArray.size(); ++v) {
         // Remove the component parallel to the normal
         const Vector3& N = vertexNormalArray[v];
-        debugAssertM(N.isUnit(), "Input normals must have unit length");
+        debugAssertM(N.isUnit() || N.isZero(), "Input normals must have unit length");
 
         tangent[v]  -= tangent[v].dot(N) * N;
         binormal[v] -= binormal[v].dot(N) * N;
