@@ -259,12 +259,37 @@ private:
         int                     numIndices, 
         const void*             index);
 
+    uint64 mDebugNumMajorOpenGLStateChanges;
+    uint64 mDebugNumMinorOpenGLStateChanges;
+    uint64 mDebugNumMajorStateChanges;
+    uint64 mDebugNumMinorStateChanges;
     ////////////////////////////////////////////////////////////////////
 public:
 
     /** Allows the UserInput to find the RenderDevice 
         @deprecated */
     static RenderDevice*        lastRenderDeviceCreated;
+
+    /** Number of RenderDevice state changes.
+    
+        "OpenGL state changes" are those that forced underlying OpenGL
+        state changes; RenderDevice optimizes away redundant state
+        changes so many changes will not affect OpenGL. 
+        
+        Many programs are limited by the number of GL state
+        changes; sorting objects in the render pipeline to minimize this 
+        can dramatically increase performance.
+
+        Major state changes are texture, shader, camera, and projection changes.
+        These are particularly expensive.  Graphics cards can handle about
+        50 of these in real-time. Minor state changes are color, vertex,
+        and test changes.  About 1000 of these can be made per frame in real-time.
+
+        Zeroed by beginFrame.*/
+    uint64 debugNumMajorOpenGLStateChanges() const;
+    uint64 debugNumMinorOpenGLStateChanges() const;
+    uint64 debugNumMajorStateChanges() const;
+    uint64 debugNumMinorStateChanges() const;
 
     RenderDevice();
 

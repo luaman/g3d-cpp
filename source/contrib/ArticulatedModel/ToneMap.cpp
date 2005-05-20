@@ -162,7 +162,6 @@ void ToneMap::applyPS20(RenderDevice* rd) {
     
         rd->setShader(bloomShader);
 
-        rect = Rect2D::xywh(0, 0, rd->width() - 1, rd->height() - 1);
         Draw::rect2D(rect, rd, Color3::white(), smallRect);
     rd->pop2D();
 }
@@ -394,11 +393,13 @@ void ToneMap::resizeImages(RenderDevice* rd) {
         
         screenImage = Texture::createEmpty(viewport.width(), viewport.height(), 
             "Copied Screen Image", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT,
+            Texture::DEPTH_NORMAL, 1.0);
 
         bloomMap = Texture::createEmpty(viewport.width() / BLOOMSCALE, viewport.height() / BLOOMSCALE, 
             "Bloom map", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT);
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT, 
+            Texture::DEPTH_NORMAL, 1.0);
     }
 }
 

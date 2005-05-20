@@ -131,9 +131,7 @@ bool RenderDevice::init(
 
     deleteWindow = true;
     #ifdef G3D_WIN32
-    // TODO: enable when Win32Window's keyboard failure is corrected
         return init(Win32Window::create(_settings), log);
-//        return init(new SDLWindow(_settings), log);
     #else
         return init(new SDLWindow(_settings), log);
     #endif
@@ -945,17 +943,22 @@ void RenderDevice::setState(
 
 
 void RenderDevice::enableTwoSidedLighting() {
+    ++mDebugNumMinorStateChanges;
     if (! state.lights.twoSidedLighting) {
         glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
         state.lights.twoSidedLighting = true;
+
+        ++mDebugNumMinorOpenGLStateChanges;
     }
 }
 
 
 void RenderDevice::disableTwoSidedLighting() {
+    ++mDebugNumMinorStateChanges;
     if (state.lights.twoSidedLighting) {
         glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
         state.lights.twoSidedLighting = false;
+        ++mDebugNumMinorOpenGLStateChanges;
     }
 }
 
@@ -988,6 +991,7 @@ void RenderDevice::afterPrimitive() {
 
 
 void RenderDevice::setSpecularCoefficient(const Color3& c) {
+    ++mDebugNumMinorStateChanges;
     if (state.specular != c) {
         state.specular = c;
 
@@ -998,6 +1002,7 @@ void RenderDevice::setSpecularCoefficient(const Color3& c) {
         spec[3] = 1.0f;
 
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+        ++mDebugNumMinorOpenGLStateChanges;
     }
 }
 
@@ -1008,20 +1013,24 @@ void RenderDevice::setSpecularCoefficient(double s) {
 
 
 void RenderDevice::setShininess(double s) {
+    ++mDebugNumMinorStateChanges;
     if (state.shininess != s) {
         state.shininess = s;
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, s);
+        ++mDebugNumMinorOpenGLStateChanges;
     }
 }
 
 
 void RenderDevice::setRenderMode(RenderMode m) {
+    ++mDebugNumMinorStateChanges;
 
     if (m == RENDER_CURRENT) {
         return;
     }
 
     if (state.renderMode != m) {
+        ++mDebugNumMinorOpenGLStateChanges;
         state.renderMode = m;
         switch (m) {
         case RENDER_SOLID:
@@ -1049,9 +1058,12 @@ RenderDevice::RenderMode RenderDevice::renderMode() const {
 }
 
 
-
 void RenderDevice::setDrawBuffer(Buffer b) {
+    ++mDebugNumMinorStateChanges;
+
     if (b != state.drawBuffer) {
+        ++mDebugNumMinorOpenGLStateChanges;
+
         state.drawBuffer = b;
         switch (b) {
         case BUFFER_FRONT:
@@ -1085,6 +1097,7 @@ void RenderDevice::setDrawBuffer(Buffer b) {
 }
 
 void RenderDevice::setShadeMode(ShadeMode s) {
+    ++mDebugNumMinorStateChanges;
     if (s != state.shadeMode) {
         state.shadeMode = s;
         if (s == SHADE_FLAT) {
@@ -1092,6 +1105,7 @@ void RenderDevice::setShadeMode(ShadeMode s) {
         } else {
             glShadeModel(GL_SMOOTH);
         }
+        ++mDebugNumMinorOpenGLStateChanges;
     }
 }
 
@@ -1100,17 +1114,23 @@ void RenderDevice::setDepthRange(
     double              low,
     double              high) {
 
+    ++mDebugNumMajorStateChanges;
+
     if ((state.lowDepthRange != low) ||
         (state.highDepthRange != high)) {
         glDepthRange(low, high);
         state.lowDepthRange = low;
         state.highDepthRange = high;
+
+        ++mDebugNumMajorOpenGLStateChanges;
     }
 }
 
 
 void RenderDevice::setCullFace(CullFace f) {
+    ++mDebugNumMinorStateChanges;
     if (f != state.cullFace) {
+        ++mDebugNumMinorOpenGLStateChanges;
         switch (f) {
         case CULL_FRONT:
             glEnable(GL_CULL_FACE);
@@ -1137,6 +1157,8 @@ void RenderDevice::setCullFace(CullFace f) {
 
 void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
     debugAssert(! inPrimitive);
+    ++mDebugNumMajorStateChanges;
+    ++mDebugNumMajorOpenGLStateChanges;
 
     GLint mask = 0;
 
@@ -1157,10 +1179,14 @@ void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
     if (clearStencil) {
         mask |= GL_STENCIL_BUFFER_BIT;
         glStencilMask(~0);
+        ++mDebugNumMinorOpenGLStateChanges;
+        ++mDebugNumMinorStateChanges;
     }
 
     glClear(mask);
     glStencilMask(oldMask);
+    ++mDebugNumMinorOpenGLStateChanges;
+    ++mDebugNumMinorStateChanges;
     popState();
 }
 
@@ -1185,6 +1211,11 @@ void RenderDevice::beginFrame() {
         _window->swapGLBuffers();
         swapGLBuffersPending = false;
     }
+
+    mDebugNumMajorOpenGLStateChanges = 0;
+    mDebugNumMinorOpenGLStateChanges = 0;
+    mDebugNumMajorStateChanges = 0;
+    mDebugNumMinorStateChanges = 0;
 
     ++beginEndFrame;
     triangleCount = 0;
@@ -1275,7 +1306,9 @@ bool RenderDevice::colorWrite() const {
 
 void RenderDevice::setStencilClearValue(int s) {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (state.stencil.stencilClear != s) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glClearStencil(s);
         state.stencil.stencilClear = s;
     }
@@ -1283,8 +1316,10 @@ void RenderDevice::setStencilClearValue(int s) {
 
 
 void RenderDevice::setDepthClearValue(double d) {
+    ++mDebugNumMinorStateChanges;
     debugAssert(! inPrimitive);
     if (state.depthClear != d) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glClearDepth(d);
         state.depthClear = d;
     }
@@ -1301,27 +1336,35 @@ void RenderDevice::setColorClearValue(const Color4& c) {
 
 
 void RenderDevice::setViewport(const Rect2D& v) {
+    ++mDebugNumMinorStateChanges;
     if (state.viewport != v) {
         // Flip to OpenGL y-axis
         _glViewport(v.x0(), getHeight() - v.y1(), v.width(), v.height());
         state.viewport = v;
+        ++mDebugNumMinorOpenGLStateChanges;
     }
 }
 
 
 void RenderDevice::enableClip2D(const Rect2D& clip) {
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
     state.clip2D = clip;
     glScissor(clip.x0(), getHeight() - (int)(clip.y0() + clip.height()), (int)clip.width(), (int)clip.height());
 
     if (! state.useClip2D) {
         glEnable(GL_SCISSOR_TEST);
+        ++mDebugNumMinorStateChanges;
+        ++mDebugNumMinorOpenGLStateChanges;
     }
     state.useClip2D = true;
 }
 
 
 void RenderDevice::disableClip2D() {
+    ++mDebugNumMinorStateChanges;
     if (state.useClip2D) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glDisable(GL_SCISSOR_TEST);
     }
     state.useClip2D = false;
@@ -1356,14 +1399,19 @@ Rect2D RenderDevice::getViewport() const {
 void RenderDevice::setDepthTest(DepthTest test) {
     debugAssert(! inPrimitive);
 
+    ++mDebugNumMinorStateChanges;
+
 	if (test == DEPTH_CURRENT) {
 		return;
 	}
 
     if (state.depthTest != test) {
+        ++mDebugNumMinorOpenGLStateChanges;
         if (test == DEPTH_ALWAYS_PASS) {
             glDisable(GL_DEPTH_TEST);
         } else {
+            ++mDebugNumMinorStateChanges;
+            ++mDebugNumMinorOpenGLStateChanges;
             glEnable(GL_DEPTH_TEST);
             switch (test) {
             case DEPTH_LESS:
@@ -1451,6 +1499,8 @@ static void _setStencilTest(RenderDevice::StencilTest test, int reference) {
 
 
 void RenderDevice::setStencilConstant(int reference) {
+    ++mDebugNumMinorStateChanges;
+
     debugAssert(! inPrimitive);
     if (state.stencil.stencilReference != reference) {
         state.stencil.stencilReference = reference;
@@ -1459,10 +1509,13 @@ void RenderDevice::setStencilConstant(int reference) {
             glActiveStencilFaceEXT(GL_BACK);
         }
 
+        ++mDebugNumMinorOpenGLStateChanges;
         _setStencilTest(state.stencil.stencilTest, reference);
 
         if (GLCaps::supports_GL_EXT_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_FRONT);
+            ++mDebugNumMinorStateChanges;
+            ++mDebugNumMinorOpenGLStateChanges;
             _setStencilTest(state.stencil.stencilTest, reference);
         }
     }
@@ -1470,6 +1523,7 @@ void RenderDevice::setStencilConstant(int reference) {
 
 
 void RenderDevice::setStencilTest(StencilTest test) {
+    ++mDebugNumMinorStateChanges;
 
 	if (test == STENCIL_CURRENT) {
 		return;
@@ -1490,6 +1544,7 @@ void RenderDevice::setStencilTest(StencilTest test) {
                  ((state.stencil.backStencilFail  == STENCIL_KEEP) &&
                   (state.stencil.backStencilZFail == STENCIL_KEEP) &&
                   (state.stencil.backStencilZPass == STENCIL_KEEP)))) {
+                ++mDebugNumMinorOpenGLStateChanges;
                 glDisable(GL_STENCIL_TEST);
             }
 
@@ -1500,6 +1555,7 @@ void RenderDevice::setStencilTest(StencilTest test) {
                 glActiveStencilFaceEXT(GL_BACK);
             }
 
+            ++mDebugNumMinorOpenGLStateChanges;
             _setStencilTest(test, state.stencil.stencilReference);
 
             if (GLCaps::supports_GL_EXT_stencil_two_side()) {
@@ -1517,12 +1573,14 @@ void RenderDevice::setStencilTest(StencilTest test) {
 void RenderDevice::setAlphaTest(AlphaTest test, double reference) {
     debugAssert(! inPrimitive);
 
+    ++mDebugNumMinorStateChanges;
 
 	if (test == ALPHA_CURRENT) {
 		return;
 	}
 
     if ((state.alphaTest != test) || (state.alphaReference != reference)) {
+        ++mDebugNumMinorOpenGLStateChanges;
         if (test == ALPHA_ALWAYS_PASS) {
             
             glDisable(GL_ALPHA_TEST);
@@ -1599,7 +1657,9 @@ void RenderDevice::setDepthWrite(bool a) {
 
 void RenderDevice::enableAlphaWrite() {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (! state.alphaWrite) {
+        ++mDebugNumMinorOpenGLStateChanges;
         GLint c = state.colorWrite ? GL_TRUE : GL_FALSE;
         glColorMask(c, c, c, GL_TRUE);
         state.alphaWrite = true;
@@ -1609,7 +1669,9 @@ void RenderDevice::enableAlphaWrite() {
 
 void RenderDevice::disableAlphaWrite() {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (state.alphaWrite) {
+        ++mDebugNumMinorOpenGLStateChanges;
         GLint c = state.colorWrite ? GL_TRUE : GL_FALSE;
         glColorMask(c, c, c, GL_FALSE);
         state.alphaWrite = false;
@@ -1618,7 +1680,9 @@ void RenderDevice::disableAlphaWrite() {
 
 void RenderDevice::enableColorWrite() {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (! state.colorWrite) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, state.alphaWrite ? GL_TRUE : GL_FALSE);
         state.colorWrite = true;
     }
@@ -1628,7 +1692,9 @@ void RenderDevice::enableColorWrite() {
 void RenderDevice::disableColorWrite() {
     debugAssert(! inPrimitive);
 
+    ++mDebugNumMinorStateChanges;
     if (state.colorWrite) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, state.alphaWrite ? GL_TRUE : GL_FALSE);
         state.colorWrite = false;
     }
@@ -1637,7 +1703,9 @@ void RenderDevice::disableColorWrite() {
 
 void RenderDevice::enableDepthWrite() {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (! state.depthWrite) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glDepthMask(GL_TRUE);
         state.depthWrite = true;
     }
@@ -1646,7 +1714,9 @@ void RenderDevice::enableDepthWrite() {
 
 void RenderDevice::disableDepthWrite() {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (state.depthWrite) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glDepthMask(GL_FALSE);
         state.depthWrite = false;
     }
@@ -1695,7 +1765,9 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 
 
 void RenderDevice::setShader(const ShaderRef& s) {
+    ++mDebugNumMajorStateChanges;
 	if (s != state.shader) {
+        ++mDebugNumMajorOpenGLStateChanges;
         debugAssertM(! inShader, "Cannot set the Shader from within a Shader!");
 		state.shader = s;
 	}
@@ -1710,8 +1782,10 @@ void RenderDevice::setObjectShader(const ObjectShaderRef& s) {
 
 
 void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s) {
+    ++mDebugNumMajorStateChanges;
     if (s != state.vertexAndPixelShader) {
 
+        ++mDebugNumMajorOpenGLStateChanges;
         state.vertexAndPixelShader = s;
         if (s.isNull()) {
             // Disables the programmable pipeline
@@ -1736,11 +1810,13 @@ void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s,
 
 
 void RenderDevice::setVertexProgram(const VertexProgramRef& vp) {
+    ++mDebugNumMajorStateChanges;
     if (vp != state.vertexProgram) {
         if (state.vertexProgram != (VertexProgramRef)NULL) {
             state.vertexProgram->disable();
         }
 
+        ++mDebugNumMajorOpenGLStateChanges;
         if (vp != (VertexProgramRef)NULL) {
             debugAssert(supportsVertexProgram());
             vp->bind();
@@ -1762,6 +1838,7 @@ void RenderDevice::setVertexProgram(
 
 
 void RenderDevice::setPixelProgram(const PixelProgramRef& pp) {
+    ++mDebugNumMajorStateChanges;
     if (pp != state.pixelProgram) {
         if (state.pixelProgram != (PixelProgramRef)NULL) {
             state.pixelProgram->disable();
@@ -1770,6 +1847,7 @@ void RenderDevice::setPixelProgram(const PixelProgramRef& pp) {
             debugAssert(supportsPixelProgram());
             pp->bind();
         }
+        ++mDebugNumMajorOpenGLStateChanges;
         state.pixelProgram = pp;
     }
 }
@@ -1792,6 +1870,8 @@ void RenderDevice::setStencilOp(
     StencilOp                       backStencilFail,
     StencilOp                       backZFail,
     StencilOp                       backZPass) {
+
+    ++mDebugNumMinorStateChanges;
 
 	if (frontStencilFail == STENCILOP_CURRENT) {
 		frontStencilFail = state.stencil.frontStencilFail;
@@ -1825,6 +1905,7 @@ void RenderDevice::setStencilOp(
          (backZFail        != state.stencil.backStencilZFail) ||
          (backZPass        != state.stencil.backStencilZPass)))) { 
 
+        ++mDebugNumMinorOpenGLStateChanges;
         if (GLCaps::supports_GL_EXT_stencil_two_side()) {
             glActiveStencilFaceEXT(GL_FRONT);
         }
@@ -1973,6 +2054,7 @@ void RenderDevice::setBlendFunc(
     BlendEq   eq) {
     debugAssert(! inPrimitive);
 
+    ++mDebugNumMinorStateChanges;
 	if (src == BLEND_CURRENT) {
 		src = state.srcBlendFunc;
 	}
@@ -1988,6 +2070,8 @@ void RenderDevice::setBlendFunc(
     if ((state.dstBlendFunc != dst) ||
         (state.srcBlendFunc != src) ||
         (state.blendEq != eq)) {
+
+        ++mDebugNumMinorOpenGLStateChanges;
 
         if ((dst == BLEND_ZERO) && (src == BLEND_ONE) && ((eq == BLENDEQ_ADD) || (eq == BLENDEQ_SUBTRACT))) {
             glDisable(GL_BLEND);
@@ -2015,8 +2099,10 @@ void RenderDevice::setBlendFunc(
 void RenderDevice::setLineWidth(
     double               width) {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (state.lineWidth != width) {
         glLineWidth(width);
+        ++mDebugNumMinorOpenGLStateChanges;
         state.lineWidth = width;
     }
 }
@@ -2025,8 +2111,10 @@ void RenderDevice::setLineWidth(
 void RenderDevice::setPointSize(
     double               width) {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (state.pointSize != width) {
         glPointSize(width);
+        ++mDebugNumMinorOpenGLStateChanges;
         state.pointSize = width;
     }
 }
@@ -2036,6 +2124,7 @@ void RenderDevice::setAmbientLightColor(
     const Color4&        color) {
     debugAssert(! inPrimitive);
 
+    ++mDebugNumMinorStateChanges;
     if (color != state.lights.ambient) {
         float c[] =
             {color.r / lightSaturation,
@@ -2043,6 +2132,7 @@ void RenderDevice::setAmbientLightColor(
              color.b / lightSaturation,
              1.0f};
     
+        ++mDebugNumMinorOpenGLStateChanges;
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c);
         state.lights.ambient = color;
     }
@@ -2057,8 +2147,10 @@ void RenderDevice::setAmbientLightColor(
 
 void RenderDevice::enableLighting() {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (! state.lights.lighting) {
         glEnable(GL_LIGHTING);
+        ++mDebugNumMinorOpenGLStateChanges;
         state.lights.lighting = true;
     }
 }
@@ -2066,8 +2158,10 @@ void RenderDevice::enableLighting() {
 
 void RenderDevice::disableLighting() {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (state.lights.lighting) {
         glDisable(GL_LIGHTING);
+        ++mDebugNumMinorOpenGLStateChanges;
         state.lights.lighting = false;
     }
 }
@@ -2076,6 +2170,7 @@ void RenderDevice::disableLighting() {
 void RenderDevice::setObjectToWorldMatrix(
     const CoordinateFrame& cFrame) {
     
+    ++mDebugNumMinorStateChanges;
     debugAssert(! inPrimitive);
 
     // No test to see if it is already equal; this is called frequently and is
@@ -2083,6 +2178,7 @@ void RenderDevice::setObjectToWorldMatrix(
     state.matrices.objectToWorldMatrix = cFrame;
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrix(state.matrices.cameraToWorldMatrixInverse * state.matrices.objectToWorldMatrix);
+    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2095,6 +2191,8 @@ void RenderDevice::setCameraToWorldMatrix(
     const CoordinateFrame& cFrame) {
 
     debugAssert(! inPrimitive);
+    ++mDebugNumMajorStateChanges;
+    ++mDebugNumMajorOpenGLStateChanges;
     
     state.matrices.cameraToWorldMatrix = cFrame;
     state.matrices.cameraToWorldMatrixInverse = cFrame.inverse();
@@ -2137,11 +2235,13 @@ Matrix4 RenderDevice::getModelViewProjectionMatrix() const {
 
 
 void RenderDevice::setProjectionMatrix(const Matrix4& P) {
+    ++mDebugNumMinorStateChanges;
     if (state.matrices.projectionMatrix != P) {
         state.matrices.projectionMatrix = P;
         glMatrixMode(GL_PROJECTION);
         glLoadMatrix(P);
         glMatrixMode(GL_MODELVIEW);
+        ++mDebugNumMinorOpenGLStateChanges;
     }
 }
 
@@ -2157,6 +2257,9 @@ void RenderDevice::forceSetTextureMatrix(int unit, const double* m) {
 
 
 void RenderDevice::forceSetTextureMatrix(int unit, const float* m) {
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
+
     memcpy(state.textureUnit[unit].textureMatrix, m, sizeof(float)*16);
     if (GLCaps::supports_GL_ARB_multitexture()) {
         glActiveTextureARB(GL_TEXTURE0_ARB + unit);
@@ -2271,6 +2374,7 @@ void RenderDevice::setTextureLODBias(
     uint                    unit,
     float                   bias) {
 
+    ++mDebugNumMinorStateChanges;
     if (state.textureUnit[unit].LODBias != bias) {
 
         if (GLCaps::supports_GL_ARB_multitexture()) {
@@ -2279,6 +2383,7 @@ void RenderDevice::setTextureLODBias(
 
         state.textureUnit[unit].LODBias = bias;
 
+        ++mDebugNumMinorOpenGLStateChanges;
         glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
     }
 }
@@ -2288,6 +2393,7 @@ void RenderDevice::setTextureCombineMode(
     uint                    unit,
     const CombineMode       mode) {
 
+    ++mDebugNumMinorStateChanges;
 	if (mode == TEX_CURRENT) {
 		return;
 	}
@@ -2297,6 +2403,7 @@ void RenderDevice::setTextureCombineMode(
         unit, _numTextureUnits));
 
     if ((state.textureUnit[unit].combineMode != mode)) {
+        ++mDebugNumMinorOpenGLStateChanges;
 
         state.textureUnit[unit].combineMode = mode;
 
@@ -2368,7 +2475,10 @@ void RenderDevice::setPolygonOffset(
     double              offset) {
     debugAssert(! inPrimitive);
 
+    ++mDebugNumMinorStateChanges;
+
     if (state.polygonOffset != offset) {
+        ++mDebugNumMinorOpenGLStateChanges;
         if (offset != 0) {
             glEnable(GL_POLYGON_OFFSET_FILL);
             glEnable(GL_POLYGON_OFFSET_LINE);
@@ -2387,6 +2497,8 @@ void RenderDevice::setPolygonOffset(
 void RenderDevice::setNormal(const Vector3& normal) {
     state.normal = normal;
     glNormal3fv(normal);
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2402,6 +2514,8 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
         debugAssertM(unit == 0, "This machine has only one texture unit");
         glTexCoord(texCoord);
     }
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2434,6 +2548,8 @@ void RenderDevice::sendVertex(const Vector2& vertex) {
     debugAssertM(inPrimitive, "Can only be called inside beginPrimitive()...endPrimitive()");
     glVertex2fv(vertex);
     ++currentPrimitiveVertexCount;
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2441,6 +2557,8 @@ void RenderDevice::sendVertex(const Vector3& vertex) {
     debugAssertM(inPrimitive, "Can only be called inside beginPrimitive()...endPrimitive()");
     glVertex3fv(vertex);
     ++currentPrimitiveVertexCount;
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2448,6 +2566,8 @@ void RenderDevice::sendVertex(const Vector4& vertex) {
     debugAssertM(inPrimitive, "Can only be called inside beginPrimitive()...endPrimitive()");
     glVertex4fv(vertex);
     ++currentPrimitiveVertexCount;
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2532,10 +2652,13 @@ void RenderDevice::setTexture(
                unit, _numTextures));
 
     TextureRef oldTexture = state.textureUnit[unit].texture;
+    ++mDebugNumMajorStateChanges;
 
     if (oldTexture == texture) {
         return;
     }
+
+    ++mDebugNumMajorOpenGLStateChanges;
 
     state.textureUnit[unit].texture = texture;
 
@@ -2731,6 +2854,7 @@ void RenderDevice::setVARAreaFromVAR(const class VAR& v) {
         "All vertex arrays used within a single begin/endIndexedPrimitive"
         " block must share the same VARArea.");
 
+    ++mDebugNumMajorStateChanges;
 
     if (v.area != currentVARArea) {
         currentVARArea = const_cast<VAR&>(v).area;
@@ -2738,6 +2862,7 @@ void RenderDevice::setVARAreaFromVAR(const class VAR& v) {
         if (VARArea::mode == VARArea::VBO_MEMORY) {
             // Bind the buffer (for MAIN_MEMORY, we need do nothing)
             glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentVARArea->glbuffer);
+            ++mDebugNumMajorOpenGLStateChanges;
         }
     }
 
@@ -2780,11 +2905,15 @@ MilestoneRef RenderDevice::createMilestone(const std::string& name) {
 
 
 void RenderDevice::setMilestone(const MilestoneRef& m) {
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
     m->set();
 }
 
 
 void RenderDevice::waitForMilestone(const MilestoneRef& m) {
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
     m->wait();
 }
 
@@ -2809,6 +2938,9 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
 
     const GLight& light = *_light;
 
+
+    ++mDebugNumMinorStateChanges;
+
     if (_light == NULL) {
 
         if (state.lights.lightEnabled[i] || force) {
@@ -2817,6 +2949,7 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
             glDisable(gi);
         }
 
+        ++mDebugNumMinorOpenGLStateChanges;
     
     } else {
 
@@ -2833,6 +2966,8 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
     
         if ((state.lights.light[i] != light) || force) {
             state.lights.light[i] = light;
+
+            ++mDebugNumMinorOpenGLStateChanges;
 
             Color4 zero(0, 0, 0, 1);
             Color4 brightness(light.color / lightSaturation, 1);
@@ -2871,6 +3006,9 @@ void RenderDevice::configureShadowMap(
     uint                unit,
     const Matrix4&      lightMVP,
     const TextureRef&   shadowMap) {
+
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
 
     // http://www.nvidia.com/dev_content/nvopenglspecs/GL_ARB_shadow.txt
 
@@ -2952,6 +3090,8 @@ void RenderDevice::configureReflectionMap(
 
     setTextureMatrix(textureUnit, cframe);
 
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
     glActiveTextureARB(GL_TEXTURE0_ARB + textureUnit);
     glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
     glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
@@ -2973,6 +3113,9 @@ void RenderDevice::sendSequentialIndices(RenderDevice::Primitive primitive, int 
 
 	countTriangles(primitive, numVertices);
     afterPrimitive();
+
+    ++mDebugNumMinorStateChanges;
+    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -3040,6 +3183,26 @@ bool RenderDevice::supportsPixelProgram() const {
 
 bool RenderDevice::supportsVertexBufferObject() const { 
     return GLCaps::supports_GL_ARB_vertex_buffer_object();
+}
+
+
+uint64 RenderDevice::debugNumMajorOpenGLStateChanges() const {
+    return mDebugNumMajorOpenGLStateChanges;
+}
+
+
+uint64 RenderDevice::debugNumMinorOpenGLStateChanges() const {
+    return mDebugNumMinorOpenGLStateChanges;
+}
+
+
+uint64 RenderDevice::debugNumMajorStateChanges() const {
+    return mDebugNumMajorStateChanges;
+}
+
+
+uint64 RenderDevice::debugNumMinorStateChanges() const {
+    return mDebugNumMinorStateChanges;
 }
 
 } // namespace

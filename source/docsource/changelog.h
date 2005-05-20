@@ -35,6 +35,7 @@
   <P>
    Changes in 6.06:
    <UL>
+    <LI> G3D::RenderDevice::debugNumMinorStateChanges, debugNumMinorOpenGLStateChanges, debugNumMajorStateChanges, debugNumMajorOpenGLStateChanges.
     <LI> In stereo mode, Texture::copyFromScreen automatically chooses the left/right buffer to read based on the current glDrawBuffer
     <LI> contrib/ArticulatedModel/ToneMap
     <LI> 50% performance improvement for G3D::BinaryInput, G3D::BinaryOutput when machine endian matches file endian
