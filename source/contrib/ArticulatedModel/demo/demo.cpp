@@ -11,14 +11,14 @@
  */
 
 #include <G3DAll.h>
-#include "ToneMap.h"
 
 #if G3D_VER < 60500
     #error Requires G3D 6.05
 #endif
 
-#include "SuperShader.h"
-#include "ArticulatedModel.h"
+#include "../ToneMap.h"
+#include "../SuperShader.h"
+#include "../ArticulatedModel.h"
 
 typedef ReferenceCountedPointer<class Entity> EntityRef;
 class Entity : public ReferenceCountedObject {
