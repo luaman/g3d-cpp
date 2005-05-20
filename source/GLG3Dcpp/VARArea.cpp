@@ -34,6 +34,7 @@ VARAreaRef VARArea::create(size_t s, UsageHint h) {
 
 
 VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
+    renderDevice = NULL;
 
     // See if we've determined the mode yet.
     if (mode == UNINITIALIZED) {
@@ -138,7 +139,7 @@ VARArea::~VARArea() {
 
 
 void VARArea::finish() {
-    if (milestone != (MilestoneRef)NULL) {
+    if (milestone.notNull()) {
         renderDevice->waitForMilestone(milestone);
         milestone = NULL;
     }
@@ -167,6 +168,8 @@ void VARArea::cleanCache() {
 void VARArea::cleanupAllVARAreas() {
     // Intentionally empty
     for (int i = 0; i < allVARAreas.size(); ++i) {
+        debugAssert((void*)allVARAreas[i]->renderDevice != (void*)0xcdcdcdcd);
+
         allVARAreas[i]->reset();
 
         // Invoke the destructor, freeing the resources even if there are

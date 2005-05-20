@@ -88,6 +88,7 @@ private:
 	/** The maximum size of this area that was ever used. */
 	size_t				peakAllocated;
 
+    /** Set by RenderDevice */
     RenderDevice*       renderDevice;
 
 

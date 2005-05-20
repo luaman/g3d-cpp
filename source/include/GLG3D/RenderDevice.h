@@ -259,10 +259,10 @@ private:
         int                     numIndices, 
         const void*             index);
 
-    uint64 mDebugNumMajorOpenGLStateChanges;
-    uint64 mDebugNumMinorOpenGLStateChanges;
-    uint64 mDebugNumMajorStateChanges;
-    uint64 mDebugNumMinorStateChanges;
+    uint32 mDebugNumMajorOpenGLStateChanges;
+    uint32 mDebugNumMinorOpenGLStateChanges;
+    uint32 mDebugNumMajorStateChanges;
+    uint32 mDebugNumMinorStateChanges;
     ////////////////////////////////////////////////////////////////////
 public:
 
@@ -286,10 +286,10 @@ public:
         and test changes.  About 1000 of these can be made per frame in real-time.
 
         Zeroed by beginFrame.*/
-    uint64 debugNumMajorOpenGLStateChanges() const;
-    uint64 debugNumMinorOpenGLStateChanges() const;
-    uint64 debugNumMajorStateChanges() const;
-    uint64 debugNumMinorStateChanges() const;
+    uint32 debugNumMajorOpenGLStateChanges() const;
+    uint32 debugNumMinorOpenGLStateChanges() const;
+    uint32 debugNumMajorStateChanges() const;
+    uint32 debugNumMinorStateChanges() const;
 
     RenderDevice();
 

@@ -96,6 +96,7 @@ void RenderDevice::setVARAreaMilestone() {
 
     // Overwrite any preexisting milestone
     currentVARArea->milestone = milestone;
+    currentVARArea->renderDevice = this;
 }
 
 
@@ -1328,7 +1329,9 @@ void RenderDevice::setDepthClearValue(double d) {
 
 void RenderDevice::setColorClearValue(const Color4& c) {
     debugAssert(! inPrimitive);
+    ++mDebugNumMinorStateChanges;
     if (state.colorClear != c) {
+        ++mDebugNumMinorOpenGLStateChanges;
         glClearColor(c.r, c.g, c.b, c.a);
         state.colorClear = c;
     }
@@ -3186,22 +3189,22 @@ bool RenderDevice::supportsVertexBufferObject() const {
 }
 
 
-uint64 RenderDevice::debugNumMajorOpenGLStateChanges() const {
+uint32 RenderDevice::debugNumMajorOpenGLStateChanges() const {
     return mDebugNumMajorOpenGLStateChanges;
 }
 
 
-uint64 RenderDevice::debugNumMinorOpenGLStateChanges() const {
+uint32 RenderDevice::debugNumMinorOpenGLStateChanges() const {
     return mDebugNumMinorOpenGLStateChanges;
 }
 
 
-uint64 RenderDevice::debugNumMajorStateChanges() const {
+uint32 RenderDevice::debugNumMajorStateChanges() const {
     return mDebugNumMajorStateChanges;
 }
 
 
-uint64 RenderDevice::debugNumMinorStateChanges() const {
+uint32 RenderDevice::debugNumMinorStateChanges() const {
     return mDebugNumMinorStateChanges;
 }
 
