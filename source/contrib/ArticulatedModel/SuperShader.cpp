@@ -158,11 +158,16 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
     Cache::Pair p = cache.getSimilar(material);
 
     if (p.shadowMappedShader.isNull()) {
+
         // Not found in cache; load from disk
-        std::string path = "";//"../contrib/ArticulatedModel/";
+        std::string path = "";
 
         static const std::string shadowName    = "ShadowMappedLightPass";
         static const std::string nonShadowName = "NonShadowedPass";
+
+        if (! fileExists(path + shadowName)) {
+            path = "../";
+        }
 
         std::string defines;
 
