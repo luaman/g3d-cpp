@@ -1,5 +1,7 @@
 #include "App.h"
 
+#define LOAD_ALL 1
+
 void App::loadScene() {
     const std::string path = "";
 
@@ -10,7 +12,6 @@ void App::loadScene() {
 
     RealTime t0 = System::time();
 
-#define LOAD_ALL 1
 #if LOAD_ALL
     if (true) {
         CoordinateFrame xform;
@@ -105,7 +106,6 @@ void App::loadScene() {
         Log::common()->printf("Earth: %gs\n", System::time() - t0); t0 = System::time();
     }
 
-#endif
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("sphere.ifs", 1);
 
@@ -137,7 +137,6 @@ void App::loadScene() {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
     }
 
-#if LOAD_ALL
     if (true) {
         CoordinateFrame xform;
 
@@ -359,7 +358,7 @@ void App::loadScene() {
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
         x += 2;
     }
-#endif
+
     if (true) {
         ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
@@ -417,6 +416,7 @@ void App::loadScene() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
+#endif
 
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"
 //		"contrib/ArticulatedModel/3ds/cube.3ds"

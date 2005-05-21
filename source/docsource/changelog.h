@@ -35,6 +35,7 @@
   <P>
    Changes in 6.06:
    <UL>
+    <LI> G3d::RenderDevice::drawBuffer
     <LI> G3D::RenderDevice::debugNumMinorStateChanges, debugNumMinorOpenGLStateChanges, debugNumMajorStateChanges, debugNumMajorOpenGLStateChanges.
     <LI> In stereo mode, Texture::copyFromScreen automatically chooses the left/right buffer to read based on the current glDrawBuffer
     <LI> contrib/ArticulatedModel/ToneMap
@@ -42,7 +43,7 @@
     <LI> Textures load with default of maxAnisotroy = 2.0
     <LI> maxAnisotropy argument to G3D::Texture constructors.
     <LI> GLCaps now loads GL_ATI_fragment_shader extension
-    <LI> contrib/ArticulatedModel hierarchy
+    <LI> contrib/ArticulatedModel now supports rigid body hierarchies
     <LI> Added TEX_SUBTRACT, TEX_ADD_SIGNED, TEX_DOT3, TEX_DOT3_RGBA modes for G3D::RenderDevice::setTextureCombineMode
     <LI> G3D::RenderDevice now cleans up all static G3D::VARArea s when it shuts down
     <LI> FIX: Off-by-one on viewport scale for 2D rendering

@@ -27,7 +27,12 @@ private:
     /** PS20 shaders */
     static ShaderRef            bloomShader, bloomFilterShader;
 
-    TextureRef                  screenImage, bloomMap;
+    TextureRef                  screenImage;
+
+    bool                        stereo;
+
+    /** When in stereo mode, BloomMap 0 is the left eye, bloom map 1 is the right eye. */
+    TextureRef                  stereoBloomMap[2];
 
     bool                        mEnabled;
 
@@ -51,6 +56,9 @@ private:
     void applyPS20(RenderDevice* rd);
     void applyPS14ATI(RenderDevice* rd);
     void applyPS14NVIDIA(RenderDevice* rd);
+
+    /** Returns the appropriate bloom map for the current draw buffer */
+    TextureRef getBloomMap(RenderDevice* rd) const;
 
 public:
 

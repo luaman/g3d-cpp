@@ -33,12 +33,26 @@ void ToneMap::apply(RenderDevice* rd) {
 }
 
 
+TextureRef ToneMap::getBloomMap(RenderDevice* rd) const {
+    if (stereo && 
+        (rd->drawBuffer() == RenderDevice::BUFFER_FRONT_RIGHT) ||
+        (rd->drawBuffer() == RenderDevice::BUFFER_BACK_RIGHT)) {
+        return stereoBloomMap[1];
+    } else {
+        return stereoBloomMap[0];
+    }
+}
+
+
 void ToneMap::applyPS14ATI(RenderDevice* rd) {
+
+
     // TODO: obey viewport
 
     // TODO: gamma correct
     // TODO: bloom
     resizeImages(rd);
+    TextureRef bloomMap = getBloomMap(rd);
 
     // We're going to use combiners, which G3D does not preserve
     glPushAttrib(GL_TEXTURE_BIT);
@@ -131,6 +145,7 @@ void ToneMap::applyPS20(RenderDevice* rd) {
     // TODO: obey viewport
 
     resizeImages(rd);
+    TextureRef bloomMap = getBloomMap(rd);
 
     bloomFilterShader->args.set("screenImage", screenImage);
 
@@ -390,16 +405,20 @@ void ToneMap::resizeImages(RenderDevice* rd) {
     
     if (screenImage.isNull() ||
         (viewport.wh() != screenImage->vector2Bounds())) {
+
+        stereo = glGetBoolean(GL_STEREO) != 0;
         
         screenImage = Texture::createEmpty(viewport.width(), viewport.height(), 
             "Copied Screen Image", TextureFormat::RGB8,
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT,
             Texture::DEPTH_NORMAL, 1.0);
 
-        bloomMap = Texture::createEmpty(viewport.width() / BLOOMSCALE, viewport.height() / BLOOMSCALE, 
-            "Bloom map", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT, 
-            Texture::DEPTH_NORMAL, 1.0);
+        for (int i = 0; i < (stereo ? 2 : 1); ++i) {
+            stereoBloomMap[i] = Texture::createEmpty(viewport.width() / BLOOMSCALE, viewport.height() / BLOOMSCALE, 
+                "Bloom map", TextureFormat::RGB8,
+                Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT, 
+                Texture::DEPTH_NORMAL, 1.0);
+        }
     }
 }
 

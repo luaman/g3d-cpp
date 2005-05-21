@@ -461,6 +461,10 @@ public:
      */
     void setDrawBuffer(Buffer drawBuffer);
 
+    inline Buffer drawBuffer() const {
+        return state.drawBuffer;
+    }
+
     void setDepthRange(double low, double high);
 
     /** @deprecated Use setColorWrite */
