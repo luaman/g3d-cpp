@@ -2572,8 +2572,6 @@ void RenderDevice::sendVertex(const Vector2& vertex) {
     debugAssertM(inPrimitive, "Can only be called inside beginPrimitive()...endPrimitive()");
     glVertex2fv(vertex);
     ++currentPrimitiveVertexCount;
-    ++mDebugNumMinorStateChanges;
-    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2581,8 +2579,6 @@ void RenderDevice::sendVertex(const Vector3& vertex) {
     debugAssertM(inPrimitive, "Can only be called inside beginPrimitive()...endPrimitive()");
     glVertex3fv(vertex);
     ++currentPrimitiveVertexCount;
-    ++mDebugNumMinorStateChanges;
-    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2590,8 +2586,6 @@ void RenderDevice::sendVertex(const Vector4& vertex) {
     debugAssertM(inPrimitive, "Can only be called inside beginPrimitive()...endPrimitive()");
     glVertex4fv(vertex);
     ++currentPrimitiveVertexCount;
-    ++mDebugNumMinorStateChanges;
-    ++mDebugNumMinorOpenGLStateChanges;
 }
 
 
@@ -2614,6 +2608,8 @@ void RenderDevice::beginPrimitive(Primitive p) {
 void RenderDevice::endPrimitive() {
     debugAssertM(inPrimitive, "Call to endPrimitive() without matching beginPrimitive()");
 
+    mDebugNumMinorStateChanges += currentPrimitiveVertexCount;
+    mDebugNumMinorOpenGLStateChanges += currentPrimitiveVertexCount;
 	countTriangles(currentPrimitive, currentPrimitiveVertexCount);
 
     glEnd();
