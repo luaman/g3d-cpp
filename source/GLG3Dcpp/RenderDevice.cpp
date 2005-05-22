@@ -978,6 +978,9 @@ void RenderDevice::beforePrimitive() {
 		state.shader->beforePrimitive(this);
         inShader = false;
 	}
+
+    // If a Shader was bound, it will force this.  Otherwise we need to do so.
+    forceVertexAndPixelShaderBind();
 }
 
 
@@ -1769,8 +1772,8 @@ GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
 
 void RenderDevice::setShader(const ShaderRef& s) {
     ++mDebugNumMajorStateChanges;
+
 	if (s != state.shader) {
-        ++mDebugNumMajorOpenGLStateChanges;
         debugAssertM(! inShader, "Cannot set the Shader from within a Shader!");
 		state.shader = s;
 	}
@@ -1784,26 +1787,44 @@ void RenderDevice::setObjectShader(const ObjectShaderRef& s) {
 }
 
 
-void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s) {
-    ++mDebugNumMajorStateChanges;
-    if (s != state.vertexAndPixelShader) {
+void RenderDevice::forceVertexAndPixelShaderBind() {
+    // Only change the vertex shader if it does not match the one used last time.
+    if (lastVertexAndPixelShader != state.vertexAndPixelShader) {
 
         ++mDebugNumMajorOpenGLStateChanges;
-        state.vertexAndPixelShader = s;
-        if (s.isNull()) {
+        if (state.vertexAndPixelShader.isNull()) {
             // Disables the programmable pipeline
             glUseProgramObjectARB(0);
         } else {
-            alwaysAssertM(s->ok(), s->messages());
-            glUseProgramObjectARB(s->glProgramObject());
+            glUseProgramObjectARB(state.vertexAndPixelShader->glProgramObject());
         }
+        debugAssertGLOk();
 
+        lastVertexAndPixelShader = state.vertexAndPixelShader;
     }
 }
 
 
-void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s,
-                             const VertexAndPixelShader::ArgList& args) {
+void RenderDevice::setVertexAndPixelShader(const VertexAndPixelShaderRef& s) {
+    ++mDebugNumMajorStateChanges;
+
+    if (s != state.vertexAndPixelShader) {
+
+        state.vertexAndPixelShader = s;
+
+        if (s.notNull()) {
+            alwaysAssertM(s->ok(), s->messages());
+        }
+
+        // The actual shader will change in beforePrimitive or when the arg list is bound.
+    }
+}
+
+
+void RenderDevice::setVertexAndPixelShader(
+    const VertexAndPixelShaderRef&          s,
+    const VertexAndPixelShader::ArgList&    args) {
+
     setVertexAndPixelShader(s);
 
     if (s.notNull()) {

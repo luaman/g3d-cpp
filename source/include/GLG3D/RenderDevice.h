@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2005-04-17
+  @edited  2005-06-01
 
   Copyright 2001-2005, Morgan McGuire
 */
@@ -144,6 +144,14 @@ class VAR;
   the synchronizing calls yourself (typically, immediately before
   you call swap buffers).
 
+  <P>
+  <B>Raw OpenGL Calls</B>
+  RenderDevice allows you to mix your own OpenGL calls with RenderDevice calls.
+  It assumes that you restored the OpenGL state after your OpenGL calls, however.
+  It is not safe to mix arbitrary OpenGL calls with Shaders, however.  The 
+  G3D::Shader API supports more features than OpenGL shaders and does not work
+  well with low-level OpenGL.  You may find that the "wrong" shader is bound
+  when you execute OpenGL calls.
  */
 class RenderDevice {
 public:
@@ -162,6 +170,7 @@ private:
     friend class VARArea;
     friend class Milestone;
     friend class UserInput;
+    friend class VertexAndPixelShader;
 
     GWindow*                    _window;
 
@@ -258,6 +267,12 @@ private:
         size_t                  indexSize, 
         int                     numIndices, 
         const void*             index);
+
+    /**
+     VertexAndPixelShader is set lazily.  This ensures that the current value is actually bound
+     so that the argument list can be bound.  Called from VertexAndPixelShader::bindArgList and
+     from beforePrimitive.*/
+    void forceVertexAndPixelShaderBind();
 
     uint32 mDebugNumMajorOpenGLStateChanges;
     uint32 mDebugNumMinorOpenGLStateChanges;
@@ -1183,6 +1198,8 @@ public:
 
         bool operator==(const RenderState& other) const;
     };
+
+    VertexAndPixelShaderRef         lastVertexAndPixelShader;
 
     GLint toGLStencilOp(RenderDevice::StencilOp op) const;
 

@@ -205,6 +205,8 @@ void Demo::doGraphics() {
     app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
 
 
+    app->debugPrintf("%d opaque, %d transparent\n", opaque.size(), transparent.size());
+
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 

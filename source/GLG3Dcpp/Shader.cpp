@@ -93,6 +93,7 @@ void Shader::beforePrimitive(class RenderDevice* renderDevice) {
             args.set("g3d_NumTextures", i + 1);
         }
     }
+
     renderDevice->setVertexAndPixelShader(_vertexAndPixelShader, args);
 }
 
@@ -667,8 +668,9 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
 
 
 void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) const {
-    validateArgList(args);
+    rd->forceVertexAndPixelShaderBind();
 
+    validateArgList(args);
 
     // Iterate through the formal parameter list
     for (int u = 0; u < uniformArray.size(); ++u) {

@@ -136,6 +136,7 @@ void App::loadScene() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
     }
+#endif
 
     if (true) {
         CoordinateFrame xform;
@@ -149,6 +150,7 @@ void App::loadScene() {
         x += 2;
     }
 
+#if LOAD_ALL
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("jackolantern.ifs", 1);
 

@@ -40,6 +40,7 @@
     <LI> G3D::RenderDevice::debugNumMinorStateChanges, debugNumMinorOpenGLStateChanges, debugNumMajorStateChanges, debugNumMajorOpenGLStateChanges.
     <LI> In stereo mode, Texture::copyFromScreen automatically chooses the left/right buffer to read based on the current glDrawBuffer
     <LI> contrib/ArticulatedModel/ToneMap
+    <LI> Lazy state changes for shaders
     <LI> 50% performance improvement for G3D::BinaryInput, G3D::BinaryOutput when machine endian matches file endian
     <LI> Textures load with default of maxAnisotroy = 2.0
     <LI> maxAnisotropy argument to G3D::Texture constructors.
