@@ -64,9 +64,7 @@ public:
 
     ToneMap();
 
-    inline void setEnabled(bool e) {
-        mEnabled = e;
-    }
+    void setEnabled(bool e);
 
     inline bool enabled() const {
         return mEnabled;

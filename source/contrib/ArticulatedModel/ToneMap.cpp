@@ -430,6 +430,7 @@ LightingParameters ToneMap::prepareLightingParameters(const LightingParameters& 
     double lightScale = on ? 0.75 : 1.0;
     LightingParameters params = L;
 
+    params.emissiveScale *= lightScale;
     params.skyAmbient   *= on ? 0.5 : 1.0;
     params.diffuseAmbient *= lightScale;
     params.lightColor   *= lightScale;
@@ -447,6 +448,7 @@ LightingRef ToneMap::prepareLighting(const LightingRef& L) const {
     *lighting = *L;
 
     lighting->environmentMapColor *= lightScale;
+    lighting->emissiveScale *= lightScale;
 
     lighting->ambientTop *= lightScale;
     lighting->ambientBottom *= lightScale;
@@ -462,3 +464,10 @@ LightingRef ToneMap::prepareLighting(const LightingRef& L) const {
     return lighting;
 }
 
+
+void ToneMap::setEnabled(bool e) {
+    mEnabled = e;
+    if (! mEnabled) {
+        // TODO: wipe old bloomMap to black
+    }
+}

@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2003-11-26
+ @edited  2005-06-01
  */
 
 #include "GLG3D/LightingParameters.h"
@@ -159,6 +159,8 @@ void LightingParameters::setTime(const GameTime _time) {
         static const Color3 color[] = {Color3(0,0,0),          Color3(0,0,0),          Color3(.2, .15, .01),   Color3(.2, .15, .01),           Color3(1,1,1),                Color3(1,1,1),              Color3(.4, .2, .05),     Color3(0,0,0),       Color3(0,0,0)};
         skyAmbient = linearSpline(time, times, color, 8);
     }
+
+    emissiveScale = Color3::white();
 }
 
 

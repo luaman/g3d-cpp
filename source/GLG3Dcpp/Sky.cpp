@@ -426,7 +426,10 @@ void Sky::render(
 }
 
 
-void Sky::drawMoonAndStars(RenderDevice* renderDevice, const LightingParameters& lighting) {
+void Sky::drawMoonAndStars(
+    RenderDevice*               renderDevice, 
+    const LightingParameters&   lighting) {
+
     Vector3 moonPosition = lighting.physicallyCorrect ? lighting.trueMoonPosition : lighting.moonPosition;
 
     Vector4 L(moonPosition,0);
@@ -453,7 +456,7 @@ void Sky::drawMoonAndStars(RenderDevice* renderDevice, const LightingParameters&
                     const double b = starIntensity[i] * k;
 					glPointSize(starIntensity[i] * s);
 					glBegin(GL_POINTS);
-						glColor3f(b, b, b);
+						glColor3f(b * lighting.emissiveScale.r, b * lighting.emissiveScale.g, b * lighting.emissiveScale.b);
 						glVertex3fv(star[i]);
                     glEnd();
                 }
@@ -466,11 +469,14 @@ void Sky::drawMoonAndStars(RenderDevice* renderDevice, const LightingParameters&
     renderDevice->setTexture(0, moon);
     renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
     renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
-    drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(1,1,1, min(1, max(0, moonPosition.y * 4))));
+    drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(lighting.emissiveScale, min(1, max(0, moonPosition.y * 4))));
 }
 
 
-void Sky::drawSun(RenderDevice* renderDevice, const LightingParameters& lighting) {
+void Sky::drawSun(
+    RenderDevice*               renderDevice, 
+    const LightingParameters&   lighting) {
+
     Vector3 sunPosition = lighting.physicallyCorrect ? lighting.trueSunPosition : lighting.sunPosition;
 	
     // Sun vector
@@ -481,7 +487,7 @@ void Sky::drawSun(RenderDevice* renderDevice, const LightingParameters& lighting
     
     renderDevice->setTexture(0, sun);
     renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-    Color3 c(Color3::white() * .8);
+    Color3 c(lighting.emissiveScale * .8);
 
     if (sunPosition.y < 0) {
         // Fade out the sun as it goes below the horizon
@@ -577,7 +583,7 @@ void Sky::renderLensFlare(
 
                 renderDevice->setTexture(0, sun);
                 drawCelestialSphere(renderDevice, L, X, Y, .13,
-                                    Color3::white() * fractionOfSunVisible * .5);
+                                    lighting.emissiveScale * fractionOfSunVisible * .5);
 
                 // Lens flare
                 Vector4 C(camera.getLookVector(), 0);
@@ -590,7 +596,7 @@ void Sky::renderLensFlare(
                 for (int i = 0; i < numFlares; ++i) {
                     drawCelestialSphere(renderDevice, 
                          C + (C - L) * position[i], X, Y, size[i], 
-                         Color4(color[i] * flareBrightness, 1));
+                         Color4(color[i] * lighting.emissiveScale * flareBrightness, 1));
                 }
             }
         }

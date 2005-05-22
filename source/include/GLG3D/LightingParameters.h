@@ -3,7 +3,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2005-01-05
+ @edited  2005-06-01
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -31,6 +31,11 @@ namespace G3D {
  */
 class LightingParameters {
 public:
+    /** Multiply this by all emissive values when rendering.  
+        Some algorithms (e.g. contrib/ArticulatedModel/ToneMap) scale
+        down light intensity to preserve dynamic range.*/
+    Color3                  emissiveScale;
+
     /** Modulate sky box color */
     Color3                  skyAmbient;
 
@@ -85,9 +90,9 @@ public:
      USA.
      */
      LightingParameters(
-	 const GameTime     _time,
-	 bool 	            _physicallyCorrect = true,
-	 float              _latitude = BROWN_UNIVERSITY_LATITUDE);
+	     const GameTime     _time,
+	     bool 	            _physicallyCorrect = true,
+	     float              _latitude = BROWN_UNIVERSITY_LATITUDE);
 
     void setTime(const GameTime _time);
 	void setLatitude(float _latitude);
@@ -106,9 +111,14 @@ public:
 class Lighting : public ReferenceCountedObject {
 private:
 
-    Lighting() {}
+    Lighting() : emissiveScale(Color3::white()) {}
 
 public:
+
+    /** Multiply this by all emissive values when rendering.  
+        Some algorithms (e.g. contrib/ArticulatedModel/ToneMap) scale
+        down light intensity to preserve dynamic range.*/
+    Color3              emissiveScale;
 
     /** Light reflected from the sky (usually slightly blue) */
     Color3              ambientTop;

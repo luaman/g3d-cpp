@@ -439,8 +439,10 @@ void App::loadScene() {
             lighting->environmentMapColor = Color3::black();
         }
 
-        lighting->ambientTop = Color3(.7, .7, 1) * skyParameters.diffuseAmbient;
+        lighting->ambientTop = Color3(0.7, 0.7, 1.0) * skyParameters.diffuseAmbient;
         lighting->ambientBottom = Color3::brown() * skyParameters.diffuseAmbient;
+
+        lighting->emissiveScale = skyParameters.emissiveScale;
 
         lighting->lightArray.clear();
 
