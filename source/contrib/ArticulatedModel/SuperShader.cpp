@@ -19,36 +19,45 @@ void SuperShader::configureShader(
     const Material&                 material,
     VertexAndPixelShader::ArgList&  args) {
     
-    if (material.diffuse.map.notNull()) {
-        args.set("diffuseMap",              material.diffuse.map);
+    if (material.diffuse.constant != Color3::black()) {
+        args.set("diffuseConstant",         material.diffuse.constant);
+        if (material.diffuse.map.notNull()) {
+            args.set("diffuseMap",              material.diffuse.map);
+        }
     }
 
-    args.set("diffuseConstant",         material.diffuse.constant);
 
-    if (material.specular.map.notNull()) {
-        args.set("specularMap",             material.specular.map);
-    }
 
-    args.set("specularConstant",        material.specular.constant);
+    if (material.specular.constant != Color3::black()) {
+        args.set("specularConstant",        material.specular.constant);
 
-    if (material.specularExponent.map.notNull()) {
-        args.set("specularExponentMap",     material.specularExponent.map);
+        if (material.specular.map.notNull()) {
+            args.set("specularMap",             material.specular.map);
+        }
     }
 
     // If specular exponent is black we get into trouble-- pow(x, 0) doesn't work right in shaders for some reason
     args.set("specularExponentConstant",Color3::white().max(material.specularExponent.constant));
 
-    if (material.reflect.map.notNull()) {
-        args.set("reflectMap",              material.reflect.map);
+    if (material.specularExponent.map.notNull()) {
+        args.set("specularExponentMap",     material.specularExponent.map);
     }
 
-    args.set("reflectConstant",         material.reflect.constant);
+    if (material.reflect.constant != Color3::black()) {
+        args.set("reflectConstant",         material.reflect.constant);
 
-    if (material.emit.map.notNull()) {
-        args.set("emitMap",             material.emit.map);
+        if (material.reflect.map.notNull()) {
+            args.set("reflectMap",              material.reflect.map);
+        }
     }
 
-    args.set("emitConstant",            material.emit.constant);
+    if (material.emit.constant != Color3::black()) {
+        args.set("emitConstant",            material.emit.constant);
+
+        if (material.emit.map.notNull()) {
+            args.set("emitMap",             material.emit.map);
+        }
+    }
 
     if (material.normalBumpMap.notNull() && (material.bumpMapScale != 0)) {
         args.set("normalBumpMap",       material.normalBumpMap);
@@ -69,11 +78,14 @@ void SuperShader::configureShader(
         args.set("lightColor",      Color3::black());
     }
 
-    args.set("environmentConstant", lighting->environmentMapColor);
-    if (lighting->environmentMap.notNull()) {
-        args.set("environmentMap",  lighting->environmentMap);
-    } else {
-        args.set("environmentMap",  whiteCubeMap);
+    // Only set the evt map if we need it
+    if (! material.reflect.isBlack()) {
+        args.set("environmentConstant", lighting->environmentMapColor);
+        if (lighting->environmentMap.notNull()) {
+            args.set("environmentMap",  lighting->environmentMap);
+        } else {
+            args.set("environmentMap",  whiteCubeMap);
+        }
     }
 }
 

@@ -59,7 +59,6 @@ varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 varying vec4        shadowCoord;
 
 void main(void) {
-
     vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
 
 #   ifdef NORMALBUMPMAP
