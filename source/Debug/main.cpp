@@ -66,6 +66,8 @@ public:
 
     TextureRef          im;
 
+    ShaderRef           shader;
+
     App(const GAppSettings& settings);
 
     ~App();
@@ -132,14 +134,14 @@ void Demo::doLogic() {
 
 
 void Demo::doGraphics() {
-
+/*
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
     app->renderDevice->setColorClearValue(Color3::red());
-
+*/
     app->renderDevice->clear(app->sky.isNull(), true, true);
-    
+  /*  
     if (app->sky.notNull()) {
         app->sky->render(lighting);
     }
@@ -159,16 +161,15 @@ void Demo::doGraphics() {
         //Draw::sphere(Sphere(Vector3::zero(), 2), app->renderDevice);
 
     app->renderDevice->disableLighting();
-
+*/
     app->renderDevice->push2D();
-//        app->renderDevice->setViewport(Rect2D::xywh(0,0,800,600));
-//        app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
-        Rect2D rect = Rect2D::xywh(0, 0, app->im->getTexelWidth(), app->im->getTexelHeight());
-//        Rect2D rect = Rect2D::xywh(0, 0, 400, 600);
-//        Rect2D rect2 = Rect2D::xywh(798, 0, 400, 600);
 
-        app->renderDevice->setTexture(0, app->im);
-        Draw::rect2D(rect, app->renderDevice);
+    app->renderDevice->setShader(app->shader);
+
+    Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice, Color3::blue());
+
+    //        app->renderDevice->setViewport(Rect2D::xywh(0,0,800,600));
+//        app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
 ///        Draw::rect2D(rect2, app->renderDevice, Color3::blue());
 
     app->renderDevice->pop2D();
@@ -178,18 +179,35 @@ void Demo::doGraphics() {
 
 
 void App::main() {
-//	setDebugMode(true);
+	setDebugMode(true);
 	debugController.setActive(false);
 
     // Load objects here
     sky = NULL;//Sky::create(renderDevice, dataDir + "sky/");
 
+    shader = Shader::fromStrings(
+        STR(
+        void main() {
+            gl_Position = ftransform();
+            gl_FrontColor = vec4(1.0, 0.0, 1.0, 1.0);
+        }),
+        
+        STR(
+        void main() {
+          gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+        }),
+
+        DO_NOT_DEFINE_G3D_UNIFORMS
+        );
+
+        G3D::debugPrintf("%s", shader->messages().c_str());
+    /*
     im = Texture::fromFile("c:/tmp/pattern.bmp", 
         TextureFormat::AUTO, Texture::CLAMP,
         //Texture::BILINEAR_NO_MIPMAP,
         Texture::TRILINEAR_MIPMAP, 
         Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
-        
+      */  
     applet->run();
 }
 

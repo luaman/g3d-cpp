@@ -290,21 +290,21 @@ VertexAndPixelShader::VertexAndPixelShader(
 	vertexShader.init(vsFilename, vsCode, vsFromFile, debug, GL_VERTEX_SHADER_ARB, "Vertex Shader", uniforms);
 	pixelShader.init(psFilename, psCode, psFromFile, debug, GL_FRAGMENT_SHADER_ARB, "Pixel Shader", uniforms);
     
+    _vertCompileMessages += vertexShader.messages();
+    _messages += 
+		std::string("Compiling ") + vertexShader.shaderType() + " " + vsFilename + NEWLINE +
+		vertexShader.messages() + NEWLINE + NEWLINE;
     if (! vertexShader.ok()) {
         _ok = false;
-        _vertCompileMessages += vertexShader.messages();
-        _messages += 
-			std::string("Compiling ") + vertexShader.shaderType() + " " + vsFilename + NEWLINE +
-			vertexShader.messages() + NEWLINE + NEWLINE;
     }
 
     if (! pixelShader.ok()) {
         _ok = false;
-        _fragCompileMessages += pixelShader.messages();
-        _messages += 
-			std::string("Compiling ") + pixelShader.shaderType() + " " + psFilename + NEWLINE +
-			pixelShader.messages() + NEWLINE + NEWLINE;
     }    
+    _fragCompileMessages += pixelShader.messages();
+    _messages += 
+		std::string("Compiling ") + pixelShader.shaderType() + " " + psFilename + NEWLINE +
+		pixelShader.messages() + NEWLINE + NEWLINE;
 
     lastTextureUnit = -1;
 
