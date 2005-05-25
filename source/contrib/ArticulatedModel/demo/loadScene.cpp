@@ -1,6 +1,6 @@
 #include "App.h"
 
-#define LOAD_ALL 0
+#define LOAD_ALL 1
 
 void App::loadScene() {
     const std::string path = "";

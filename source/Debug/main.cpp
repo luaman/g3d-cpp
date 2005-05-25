@@ -68,6 +68,8 @@ public:
 
     ShaderRef           shader;
 
+    GLint               _glProgramObject;
+
     App(const GAppSettings& settings);
 
     ~App();
@@ -164,9 +166,12 @@ void Demo::doGraphics() {
 */
     app->renderDevice->push2D();
 
-    app->renderDevice->setShader(app->shader);
+    glUseProgramObjectARB(app->_glProgramObject);
+
+//    app->renderDevice->setShader(app->shader);
 
     Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice, Color3::blue());
+    glUseProgramObjectARB(0);
 
     //        app->renderDevice->setViewport(Rect2D::xywh(0,0,800,600));
 //        app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
@@ -185,6 +190,7 @@ void App::main() {
     // Load objects here
     sky = NULL;//Sky::create(renderDevice, dataDir + "sky/");
 
+    /*
     shader = Shader::fromStrings(
         STR(
         void main() {
@@ -201,6 +207,46 @@ void App::main() {
         );
 
         G3D::debugPrintf("%s", shader->messages().c_str());
+        */
+
+    std::string _code = "void main() { gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); }\n";
+	GLint _glFragShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+    int compiled = GL_FALSE;
+
+    // Compile the shader
+	GLint length = _code.length();
+    const GLcharARB* codePtr = static_cast<const GLcharARB*>(_code.c_str());
+
+	glShaderSourceARB(_glFragShaderObject, 1, &codePtr, &length);
+	glCompileShaderARB(_glFragShaderObject);
+	glGetObjectParameterivARB(_glFragShaderObject, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
+
+    // Read the result of compilation
+	GLint	  maxLength;
+	glGetObjectParameterivARB(_glFragShaderObject, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+    GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
+	glGetInfoLogARB(_glFragShaderObject, maxLength, &length, pInfoLog);
+
+
+    // Create GL object
+    _glProgramObject = glCreateProgramObjectARB();
+
+    glAttachObjectARB(_glProgramObject, _glFragShaderObject);
+
+    // Link
+    GLint linked = GL_FALSE;
+    glLinkProgramARB(_glProgramObject);
+
+    // Read back messages
+	glGetObjectParameterivARB(_glProgramObject, GL_OBJECT_LINK_STATUS_ARB, &linked);
+    {GLint maxLength = 0, length = 0;
+	glGetObjectParameterivARB(_glProgramObject, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
+	glGetInfoLogARB(_glProgramObject, maxLength, &length, pInfoLog);
+
+	free(pInfoLog);
+    }
+
     /*
     im = Texture::fromFile("c:/tmp/pattern.bmp", 
         TextureFormat::AUTO, Texture::CLAMP,
