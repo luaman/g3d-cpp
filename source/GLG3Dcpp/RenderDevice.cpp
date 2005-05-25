@@ -446,12 +446,20 @@ void RenderDevice::setVideoMode() {
     }
 
 
-    // Make sure we use good interpolation
+    // Make sure we use good interpolation.
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_POINT_SMOOTH);
+
+    // Smoothing by default on NVIDIA cards.  On ATI cards
+    // there is a bug that causes shaders to generate incorrect
+    // results and run at 0 fps, so we can't enable this.
+    if (! beginsWith(GLCaps::vendor(), "ATI")) {
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_POINT_SMOOTH);
+    }
+    
+
     // glHint(GL_GENERATE_MIPMAP_HINT_EXT, GL_NICEST);
     if (GLCaps::supports("GL_ARB_multisample")) {
         glEnable(GL_MULTISAMPLE_ARB);
