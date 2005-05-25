@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-02-24
+  @edited  2005-06-01
  */
 
 #include "G3D/platform.h"
@@ -139,6 +139,8 @@ static LARGE_INTEGER        _counterFrequency;
 static struct timeval       _start;
 #endif
 
+static std::string                     _version = "Unknown";
+
 #ifdef G3D_OSX
     long System::m_OSXCPUSpeed;
     double System:: m_secondsPerNS;
@@ -215,6 +217,10 @@ const std::string& System::cpuArchitecture() {
     return _cpuArch;
 }
 
+const std::string& System::version() {
+    init();
+    return _version;
+}
 
 void System::init() {
 
@@ -223,6 +229,14 @@ void System::init() {
     }
 
     System::initialized = true;
+
+    _version = format("G3D %d.%02d",
+        G3D_VER / 10000,
+        (G3D_VER / 100) % 100);
+
+    if ((G3D_VER % 100) != 0) {
+        _version += format(" beta %d", G3D_VER % 100);
+    }
 
     unsigned long eaxreg, ebxreg, ecxreg, edxreg;
     eaxreg = ebxreg = ecxreg = edxreg = 0;

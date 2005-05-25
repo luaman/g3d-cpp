@@ -278,6 +278,24 @@ private:
     uint32 mDebugNumMinorOpenGLStateChanges;
     uint32 mDebugNumMajorStateChanges;
     uint32 mDebugNumMinorStateChanges;
+
+    // These are abstracted to make it easy to put breakpoints in them
+    inline void majStateChange() {
+        ++mDebugNumMajorStateChanges;
+    }
+
+    inline void minStateChange() {
+        ++mDebugNumMinorStateChanges;
+    }
+
+    inline void majGLStateChange() {
+        ++mDebugNumMajorOpenGLStateChanges;
+    }
+
+    inline void minGLStateChange() {
+        ++mDebugNumMinorOpenGLStateChanges;
+    }
+
     ////////////////////////////////////////////////////////////////////
 public:
 
@@ -296,9 +314,14 @@ public:
         can dramatically increase performance.
 
         Major state changes are texture, shader, camera, and projection changes.
-        These are particularly expensive.  Graphics cards can handle about
-        50 of these in real-time. Minor state changes are color, vertex,
-        and test changes.  About 1000 of these can be made per frame in real-time.
+        These are particularly expensive because they can cause cache misses and
+        pipeline stalls.  Graphics cards can handle about
+        100 of these in real-time. Minor state changes are color, vertex,
+        and test changes.  About 2000 of these can be made per frame in real-time.
+
+        One way to locate the code that causes state changes is to put breakpoints
+        in RenderDevice::minGLStateChange and RenderDevice::majGLStateChange
+        and look at the call stack.
 
         Zeroed by beginFrame.*/
     uint32 debugNumMajorOpenGLStateChanges() const;

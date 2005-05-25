@@ -133,6 +133,9 @@ public:
      */
     static std::string currentProgramFilename();
 
+    /** G3D Version string */
+    static const std::string& version();
+
     /**
      Causes the current thread to yield for the specified duration
      and consume almost no CPU.

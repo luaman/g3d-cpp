@@ -188,6 +188,12 @@ void GApp::run() {
 
 void GApp::renderDebugInfo() {
     if (debugMode() && ! debugFont.isNull()) {
+        // Capture these values before we render debug output
+        int majGL  = renderDevice->debugNumMajorOpenGLStateChanges();
+        int majAll = renderDevice->debugNumMajorStateChanges();
+        int minGL  = renderDevice->debugNumMinorOpenGLStateChanges();
+        int minAll = renderDevice->debugNumMinorStateChanges();
+
         renderDevice->push2D();
             Color3 color = Color3::white();
             double size = 10;
@@ -196,9 +202,11 @@ void GApp::renderDebugInfo() {
             Vector2 pos(x, 5);
 
             if (debugShowRenderingStats) {
+
                 Color3 statColor = Color3::yellow();
 
-                debugFont->draw2D(renderDevice->getCardDescription(), pos, size, color, Color3::black());
+                debugFont->draw2D(renderDevice->getCardDescription() + "   " + System::version(), 
+                    pos, size, color, Color3::black());
                 pos.y += size * 1.5;
 
                 std::string s = format("%d fps", iRound(renderDevice->getFrameRate()));
@@ -210,6 +218,11 @@ void GApp::renderDebugInfo() {
 
                 pos.x += size * 8;
                 s = format("%3.1gM tris/s", iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1);
+                debugFont->draw2D(s, pos, size, statColor, Color3::black());
+
+                pos.x += size * 14;
+                s = format("GL Calls: %d/%d Maj; %d/%d Min",
+                    majGL, majAll, minGL, minAll);
                 debugFont->draw2D(s, pos, size, statColor, Color3::black());
 
                 pos.x = x;
