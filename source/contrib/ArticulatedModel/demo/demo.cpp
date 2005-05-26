@@ -244,12 +244,6 @@ void Demo::doGraphics() {
         app->sky->renderLensFlare(skyParameters);
     }
 
-    app->debugPrintf("State Changes for OpenGL/RenderDevice: Major: %d/%d  Minor: %d/%d\n\n", 
-        (int)app->renderDevice->debugNumMajorOpenGLStateChanges(),
-        (int)app->renderDevice->debugNumMajorStateChanges(),
-        (int)app->renderDevice->debugNumMinorOpenGLStateChanges(),
-        (int)app->renderDevice->debugNumMinorStateChanges());
-
     app->debugPrintf("Tone Map %s\n", toneMap.enabled() ? "On" : "Off");
     app->debugPrintf("%s Profile %s\n", toString(ArticulatedModel::profile()),
         #ifdef _DEBUG
