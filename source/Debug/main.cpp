@@ -70,6 +70,8 @@ public:
 
     GLint               _glProgramObject;
 
+    IFSModelRef         model;
+
     App(const GAppSettings& settings);
 
     ~App();
@@ -136,21 +138,13 @@ void Demo::doLogic() {
 
 
 void Demo::doGraphics() {
-/*
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
-    app->renderDevice->setColorClearValue(Color3::red());
-*/
-    app->renderDevice->clear(app->sky.isNull(), true, true);
-  /*  
-    if (app->sky.notNull()) {
-        app->sky->render(lighting);
-    }
+    app->renderDevice->setColorClearValue(Color3::white());
 
+    app->renderDevice->clear(true, true, true);
 
-    app->renderDevice->setLight(0, GLight::directional(
-            Vector3(1,0,0), Color3::white()));
     
     // Setup lighting
     app->renderDevice->enableLighting();
@@ -158,27 +152,16 @@ void Demo::doGraphics() {
         app->renderDevice->setSpecularCoefficient(0);
 
         // Rendering loop
-        app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2,.2,.3)));
+        app->renderDevice->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() - Color3(.2, .2,.3)));
+        app->renderDevice->setLight(1, GLight::directional(Vector3(-1,1,1), Color3::red() * 0.5));
+        app->renderDevice->setAmbientLightColor(Color3::blue() * 0.2);
 
-        //Draw::sphere(Sphere(Vector3::zero(), 2), app->renderDevice);
-
+        GMaterial mat;
+        mat.color = Color3::yellow();
+        app->renderDevice->configureReflectionMap(1, app->sky->getEnvironmentMap());
+        app->model->pose(CoordinateFrame(), mat)->render(app->renderDevice);
+    
     app->renderDevice->disableLighting();
-*/
-    app->renderDevice->push2D();
-
-    //glUseProgramObjectARB(app->_glProgramObject);
-
-    app->renderDevice->setShader(app->shader);
-
-    Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice, Color3::blue());
-//    glUseProgramObjectARB(0);
-
-    //        app->renderDevice->setViewport(Rect2D::xywh(0,0,800,600));
-//        app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
-///        Draw::rect2D(rect2, app->renderDevice, Color3::blue());
-
-    app->renderDevice->pop2D();
-
 
 }
 
@@ -186,81 +169,13 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
+    debugShowRenderingStats = false;
 
     // Load objects here
-    sky = NULL;//Sky::create(renderDevice, dataDir + "sky/");
+    sky = Sky::create(renderDevice, dataDir + "sky/");
 
-    
-    shader = Shader::fromStrings(
-        STR(
-        varying vec2 p;
-        void main() {
-            gl_Position = ftransform();
-            p = gl_Vertex.xy;
-            gl_FrontColor = vec4(1.0, 0.0, 1.0, 1.0);
-        }),
-        
-        STR(
-        varying vec2 p;
-        uniform float s;
-        void main() {
-          gl_FragColor = vec4(p.x/800.0, p.y/s, 0.0, 1.0);
-        }),
+    model = IFSModel::create("D:/games/data/ifs/teapot.ifs");
 
-        DO_NOT_DEFINE_G3D_UNIFORMS
-        );
-
-
-    G3D::debugPrintf("%s", shader->messages().c_str());
-    shader->args.set("s", 600.0);
-        
-/*
-    std::string _code = "void main() { gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); }\n";
-	GLint _glFragShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-    int compiled = GL_FALSE;
-
-    // Compile the shader
-	GLint length = _code.length();
-    const GLcharARB* codePtr = static_cast<const GLcharARB*>(_code.c_str());
-
-	glShaderSourceARB(_glFragShaderObject, 1, &codePtr, &length);
-	glCompileShaderARB(_glFragShaderObject);
-	glGetObjectParameterivARB(_glFragShaderObject, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
-
-    // Read the result of compilation
-	GLint	  maxLength;
-	glGetObjectParameterivARB(_glFragShaderObject, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
-    GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
-	glGetInfoLogARB(_glFragShaderObject, maxLength, &length, pInfoLog);
-
-
-    // Create GL object
-    _glProgramObject = glCreateProgramObjectARB();
-
-    glAttachObjectARB(_glProgramObject, _glFragShaderObject);
-
-    // Link
-    GLint linked = GL_FALSE;
-    glLinkProgramARB(_glProgramObject);
-
-    // Read back messages
-	glGetObjectParameterivARB(_glProgramObject, GL_OBJECT_LINK_STATUS_ARB, &linked);
-    {GLint maxLength = 0, length = 0;
-	glGetObjectParameterivARB(_glProgramObject, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
-	GLcharARB* pInfoLog = (GLcharARB *)malloc(maxLength * sizeof(GLcharARB));
-	glGetInfoLogARB(_glProgramObject, maxLength, &length, pInfoLog);
-
-	free(pInfoLog);
-    }
-    */
-
-    /*
-    im = Texture::fromFile("c:/tmp/pattern.bmp", 
-        TextureFormat::AUTO, Texture::CLAMP,
-        //Texture::BILINEAR_NO_MIPMAP,
-        Texture::TRILINEAR_MIPMAP, 
-        Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
-      */  
     applet->run();
 }
 
@@ -293,8 +208,8 @@ int main(int argc, char** argv) {
     */
 
     GAppSettings settings;
-    settings.window.width = 800;
-    settings.window.height = 600;
+    settings.window.width = 1280;
+    settings.window.height = 1024;
     settings.window.alphaBits = 8;
     settings.window.fsaaSamples = 1;
     settings.useNetwork = false;
