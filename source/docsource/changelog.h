@@ -48,6 +48,7 @@
     <LI> contrib/ArticulatedModel now supports rigid body hierarchies
     <LI> Added TEX_SUBTRACT, TEX_ADD_SIGNED, TEX_DOT3, TEX_DOT3_RGBA modes for G3D::RenderDevice::setTextureCombineMode
     <LI> G3D::RenderDevice now cleans up all static G3D::VARArea s when it shuts down
+    <LI> FIX: [ 1208157 ] GLSL slow on ATI
     <LI> FIX: Off-by-one on viewport scale for 2D rendering
     <LI> FIX: MeshAlg::computeTangentSpaceBasis now works correctly
     <LI> FIX: 6.05 enabled all fixed function lights by default.  This caused major performance problems on some cards.

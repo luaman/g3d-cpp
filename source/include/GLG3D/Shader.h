@@ -158,6 +158,9 @@ public:
         /** If true, this variable is declared but unused */
         bool                dummy;
 
+        /** Register location */
+        int                 location;
+
         /** Name of the variable.  May include [] and . (e.g.
             "foo[1].normal")*/
         std::string         name;

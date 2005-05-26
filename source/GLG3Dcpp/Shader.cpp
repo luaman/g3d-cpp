@@ -453,6 +453,7 @@ void VertexAndPixelShader::addUniformsFromCode(const std::string& code) {
                 uniformArray.next();
 
                 uniformArray.last().dummy = true;
+                uniformArray.last().location = -1;
                 uniformArray.last().name = name;
                 uniformArray.last().size = 1;
                 uniformArray.last().type = type;
@@ -492,15 +493,18 @@ void VertexAndPixelShader::computeUniformArray() {
 	    glGetActiveUniformARB(glProgramObject(), 
             i, maxLength, NULL, &size, &type, name);
 
-        bool isGLBuiltIn = (strlen(name) > 3) && beginsWith(std::string(name), "gl_");
+        uniformArray.next().name = name;
+
+        uniformArray.last().location = glGetUniformLocationARB(glProgramObject(), name);
+        
+        bool isGLBuiltIn = (uniformArray.last().location == -1) || 
+            ((strlen(name) > 3) && beginsWith(std::string(name), "gl_"));
+
+        uniformArray.last().dummy = isGLBuiltIn;
 
         if (! isGLBuiltIn) {
-
-            uniformArray.next().dummy = false;
-            uniformArray.last().name = name;
             uniformArray.last().size = size;
             uniformArray.last().type = type;
-            uniformArray.last().dummy = false;
 
             if (isSamplerType(type)) {
                 ++lastTextureUnit;
@@ -508,9 +512,6 @@ void VertexAndPixelShader::computeUniformArray() {
             } else {
                 uniformArray.last().textureUnit = -1;
             }
-        } else {
-            uniformArray.next().dummy = true;
-            uniformArray.last().name = name;
         }
     }
 
@@ -684,6 +685,8 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
             continue;
         }
 
+        int location = uniformArray[u].location;
+
         const ArgList::Arg&       value = args.argTable.get(decl.name); 
 
         // Bind based on the declared type
@@ -699,7 +702,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
             // value of the texture is the texture unit into which
             // the texture is placed.
             debugAssert(decl.textureUnit >= 0);
-            glUniform1iARB(u, decl.textureUnit);
+            glUniform1iARB(location, decl.textureUnit);
             rd->setTexture(decl.textureUnit, value.texture);
             break;
 
@@ -708,41 +711,41 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
             break;
 
         case GL_FLOAT:
-            glUniform1fvARB(u, 1, value.vector[0]);
+            glUniform1fvARB(location, 1, value.vector[0]);
             break;
 
         case GL_FLOAT_VEC2_ARB:
-            glUniform2fvARB(u, 1, value.vector[0]);
+            glUniform2fvARB(location, 1, value.vector[0]);
             break;
 
         case GL_FLOAT_VEC3_ARB:
-            glUniform3fvARB(u, 1, value.vector[0]);
+            glUniform3fvARB(location, 1, value.vector[0]);
             break;
 
         case GL_FLOAT_VEC4_ARB:
-            glUniform4fvARB(u, 1, value.vector[0]);
+            glUniform4fvARB(location, 1, value.vector[0]);
             break;
 
         case GL_INT:
         case GL_BOOL_ARB:
             // OpenGL allows us to treat bools as ints, but not ints as floats
-            glUniform1iARB(u, (int)value.vector[0][0]);
+            glUniform1iARB(location, (int)value.vector[0][0]);
             break;
 
         case GL_INT_VEC2_ARB:
         case GL_BOOL_VEC2_ARB:
-            glUniform2iARB(u, (int)value.vector[0].x, (int)value.vector[0].y);
+            glUniform2iARB(location, (int)value.vector[0].x, (int)value.vector[0].y);
             break;
 
         case GL_INT_VEC3_ARB:
         case GL_BOOL_VEC3_ARB:
-            glUniform3iARB(u, (int)value.vector[0].x, (int)value.vector[0].y,
+            glUniform3iARB(location, (int)value.vector[0].x, (int)value.vector[0].y,
                 (int)value.vector[0].z);
             break;
 
         case GL_INT_VEC4_ARB:
         case GL_BOOL_VEC4_ARB:
-            glUniform4iARB(u, (int)value.vector[0].x, (int)value.vector[1].y,
+            glUniform4iARB(location, (int)value.vector[0].x, (int)value.vector[1].y,
                 (int)value.vector[2].z, (int)value.vector[3].w);
             break;
 
@@ -758,7 +761,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
                         m[i] = value.vector[r][c];
                     }
                 }
-                glUniformMatrix3fvARB(u, 1, GL_FALSE, m);
+                glUniformMatrix3fvARB(location, 1, GL_FALSE, m);
             }            
             break;
 
@@ -770,7 +773,7 @@ void VertexAndPixelShader::bindArgList(RenderDevice* rd, const ArgList& args) co
                         m[i] = value.vector[r][c];
                     }
                 }
-                glUniformMatrix4fvARB(u, 1, GL_FALSE, m);
+                glUniformMatrix4fvARB(location, 1, GL_FALSE, m);
             }
             break;
 
