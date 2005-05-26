@@ -7,7 +7,7 @@
 
 !include "MUI.nsh"
 
-!define VERSION "g3d-6_05"
+!define VERSION "g3d-6_06"
 
 !define MUI_COMPONENTSPAGE_NODESC
 
