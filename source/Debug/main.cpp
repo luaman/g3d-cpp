@@ -166,12 +166,12 @@ void Demo::doGraphics() {
 */
     app->renderDevice->push2D();
 
-    glUseProgramObjectARB(app->_glProgramObject);
+    //glUseProgramObjectARB(app->_glProgramObject);
 
-//    app->renderDevice->setShader(app->shader);
+    app->renderDevice->setShader(app->shader);
 
     Draw::rect2D(Rect2D::xywh(0,0,800,600), app->renderDevice, Color3::blue());
-    glUseProgramObjectARB(0);
+//    glUseProgramObjectARB(0);
 
     //        app->renderDevice->setViewport(Rect2D::xywh(0,0,800,600));
 //        app->renderDevice->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
@@ -190,25 +190,31 @@ void App::main() {
     // Load objects here
     sky = NULL;//Sky::create(renderDevice, dataDir + "sky/");
 
-    /*
+    
     shader = Shader::fromStrings(
         STR(
+        varying vec2 p;
         void main() {
             gl_Position = ftransform();
+            p = gl_Vertex.xy;
             gl_FrontColor = vec4(1.0, 0.0, 1.0, 1.0);
         }),
         
         STR(
+        varying vec2 p;
+        uniform float s;
         void main() {
-          gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+          gl_FragColor = vec4(p.x/800.0, p.y/s, 0.0, 1.0);
         }),
 
         DO_NOT_DEFINE_G3D_UNIFORMS
         );
 
-        G3D::debugPrintf("%s", shader->messages().c_str());
-        */
 
+    G3D::debugPrintf("%s", shader->messages().c_str());
+    shader->args.set("s", 600.0);
+        
+/*
     std::string _code = "void main() { gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); }\n";
 	GLint _glFragShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
     int compiled = GL_FALSE;
@@ -246,6 +252,7 @@ void App::main() {
 
 	free(pInfoLog);
     }
+    */
 
     /*
     im = Texture::fromFile("c:/tmp/pattern.bmp", 

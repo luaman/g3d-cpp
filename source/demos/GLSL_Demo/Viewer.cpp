@@ -90,8 +90,10 @@ void Viewer::doGraphics() {
         app->bumpShader->args.set("environmentMap",  app->sky->getEnvironmentMap());
 
         app->renderDevice->setShader(app->bumpShader);
+        debugAssertGLOk();
 		for (int e = 0; e < entityArray.size(); ++e) {
 			entityArray[e]->render(app->renderDevice);
+            debugAssertGLOk();
 		}
         app->renderDevice->setShader(NULL);
 

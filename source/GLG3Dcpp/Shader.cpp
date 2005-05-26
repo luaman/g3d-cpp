@@ -508,6 +508,9 @@ void VertexAndPixelShader::computeUniformArray() {
             } else {
                 uniformArray.last().textureUnit = -1;
             }
+        } else {
+            uniformArray.next().dummy = true;
+            uniformArray.last().name = name;
         }
     }
 

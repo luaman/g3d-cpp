@@ -392,7 +392,7 @@ void Sky::renderBox(RenderDevice* renderDevice) const {
 void Sky::render(
     RenderDevice* renderDevice,
     const LightingParameters&           lighting) {
-
+    debugAssertGLOk();
     debugAssert(renderDevice != NULL);
 
     renderDevice->pushState();
