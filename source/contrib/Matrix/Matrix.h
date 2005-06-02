@@ -149,7 +149,7 @@ private:
         void arrayDiv(const Impl& B, Impl& out) const;
 
         /** Ok if out == this or out == B */
-        void div(const T& B, Impl& out) const;
+        void div(T B, Impl& out) const;
 
         void negate(Impl& out) const;
 
@@ -184,6 +184,10 @@ private:
         void arrayExp(Impl& out) const;
 
         void arraySqrt(Impl& out) const;
+
+        void arrayCos(Impl& out) const;
+
+        void arraySin(Impl& out) const;
 
         void swapRows(int r0, int r1);
 
@@ -297,9 +301,6 @@ public:
     /** Generally more efficient than A - B */
     Matrix& operator-=(const Matrix& B);
 
-    /** Generally more efficient than A = -A; */
-    void negate(Matrix& out);
-
     /** Returns a new matrix that is a subset of this one,
         from r1:r2 to c1:c2, inclusive.*/
     Matrix subMatrix(int r1, int r2, int c1, int c2) const;
@@ -326,6 +327,13 @@ public:
         return C;
     }
 
+    /** See also A -= B, which is more efficient in many cases */
+    inline Matrix operator-(const Matrix& B) const {
+        Matrix C(impl->R, impl->C);
+        impl->sub(*B.impl, *C.impl);
+        return C;
+    }
+
     /** See also A += B, which is more efficient in many cases */
     inline Matrix operator+(const T& v) const {
         Matrix C(impl->R, impl->C);
@@ -340,12 +348,6 @@ public:
         return C;
     }
 
-    /** Unary minus; negation. See also A.negateInPlace(), which is more efficient in many cases */
-    inline Matrix operator-() const {
-        Matrix C(impl->R, impl->C);
-        impl->negate(*C.impl);
-        return C;
-    }
 
     Matrix operator>(const T& scalar) const;
 
@@ -363,12 +365,6 @@ public:
     inline Matrix lsub(const T& B) const {
         Matrix C(impl->R, impl->C);
         impl->lsub(B, *C.impl);
-        return C;
-    }
-
-    inline Matrix operator-(const Matrix& B) const {
-        Matrix C(impl->R, impl->C);
-        impl->sub(*B.impl, *C.impl);
         return C;
     }
 
@@ -394,30 +390,28 @@ public:
     /** Mutates this */
     void arrayDivInPlace(const Matrix& B);
 
-    inline Matrix abs() const {
-        Matrix C(impl->R, impl->C);
-        impl->abs(*C.impl);
-        return C;
-    }
+    // Declares an array unary method and its explicit-argument counterpart
+#   define DECLARE_METHODS_1(method)\
+    inline Matrix method() const {\
+        Matrix C(impl->R, impl->C);\
+        impl->method(*C.impl);\
+        return C;\
+    }\
+    void method(Matrix& out) const;
 
-    void abs(Matrix& out) const;
 
-    inline Matrix arrayLog() const {
-        Matrix C(impl->R, impl->C);
-        impl->arrayLog(*C.impl);
-        return C;
-    }
+    DECLARE_METHODS_1(abs)
+    DECLARE_METHODS_1(arrayLog)
+    DECLARE_METHODS_1(arrayExp)
+    DECLARE_METHODS_1(arraySqrt)
+    DECLARE_METHODS_1(arrayCos)
+    DECLARE_METHODS_1(arraySin)
+    DECLARE_METHODS_1(negate)
 
-    inline Matrix arrayExp() const {
-        Matrix C(impl->R, impl->C);
-        impl->arrayExp(*C.impl);
-        return C;
-    }
+#   undef DECLARE_METHODS_1
 
-    inline Matrix arraySqrt() const {
-        Matrix C(impl->R, impl->C);
-        impl->arraySqrt(*C.impl);
-        return C;
+    inline Matrix operator-() const {
+        return negate();
     }
 
     /**

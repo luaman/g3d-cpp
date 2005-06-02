@@ -77,6 +77,10 @@ void Matrix::debugPrint(const std::string& name) const {
     debugPrintf("\n");
 }
 
+static inline Matrix::T negate(Matrix::T x) {
+    return -x;
+}
+
 #define INPLACE(OP)\
     ImplRef A = impl;\
 \
@@ -203,25 +207,22 @@ Matrix Matrix::identity(int N) {
 }
 
 
-void Matrix::negate(Matrix& out) {
-    if ((out.impl == impl) && impl.isLastReference()) {
-        // In place
-        impl->negate(*out.impl);
-    } else {
-        out = -*this;
-    }
+// Implement an explicit-output unary method by trampolining to the impl
+#define TRAMPOLINE_EXPLICIT_1(method)\
+void Matrix::method(Matrix& out) const {\
+    if ((out.impl == impl) && impl.isLastReference()) {\
+        impl->method(*out.impl);\
+    } else {\
+        out = this->method();\
+    }\
 }
 
-
-void Matrix::abs(Matrix& out) const {
-    if ((out.impl == impl) && impl.isLastReference()) {
-        // In place
-        impl->abs(*out.impl);
-    } else {
-        out = this->abs();
-    }
-}
-
+TRAMPOLINE_EXPLICIT_1(abs)
+TRAMPOLINE_EXPLICIT_1(negate)
+TRAMPOLINE_EXPLICIT_1(arrayLog)
+TRAMPOLINE_EXPLICIT_1(arrayExp)
+TRAMPOLINE_EXPLICIT_1(arrayCos)
+TRAMPOLINE_EXPLICIT_1(arraySin)
 
 void Matrix::mulRow(int r, const T& v) {
     debugAssert(r >= 0 && r < rows());
@@ -296,6 +297,8 @@ Vector4 Matrix::toVector4() const {
         return Vector4(impl->get(0,0), impl->get(0,1), impl->get(0, 2), impl->get(0,3));
     }
 }
+
+
 void Matrix::swapRows(int r0, int r1) {
     debugAssert(r0 >= 0 && r0 < rows());
     debugAssert(r1 >= 0 && r1 < rows());
@@ -543,7 +546,8 @@ void Matrix::Impl::mul(const Impl& B, Impl& out) const {
 // so use a macro to share implementations.  This
 // must be a macro because the difference between
 // the macros is the operation in the inner loop.
-#define POINTWISE(OP)\
+#define IMPLEMENT_ARRAY_2(method, OP)\
+void Matrix::Impl::method(const Impl& B, Impl& out) const {\
     const Impl& A = *this;\
                             \
     debugAssert(A.C == B.C);\
@@ -553,9 +557,12 @@ void Matrix::Impl::mul(const Impl& B, Impl& out) const {
                             \
     for (int i = R * C - 1; i >= 0; --i) {\
         out.data[i] = A.data[i] OP B.data[i];\
-    }
+    }\
+}
 
-#define POINTWISEUNARY(f)\
+
+#define IMPLEMENT_ARRAY_1(method, f)\
+void Matrix::Impl::method(Impl& out) const {\
     const Impl& A = *this;\
                             \
     debugAssert(A.C == out.C);\
@@ -563,9 +570,12 @@ void Matrix::Impl::mul(const Impl& B, Impl& out) const {
                             \
     for (int i = R * C - 1; i >= 0; --i) {\
         out.data[i] = f(A.data[i]);\
-    }
+    }\
+}
 
-#define POINTWISESCALAR(OP)\
+
+#define IMPLEMENT_ARRAY_SCALAR(method, OP)\
+void Matrix::Impl::method(Matrix::T B, Impl& out) const {\
     const Impl& A = *this;\
                             \
     debugAssert(A.C == out.C);\
@@ -573,74 +583,32 @@ void Matrix::Impl::mul(const Impl& B, Impl& out) const {
                             \
     for (int i = R * C - 1; i >= 0; --i) {\
         out.data[i] = A.data[i] OP B;\
-    }
-
-
-void Matrix::Impl::add(const Impl& B, Impl& out) const {
-    POINTWISE(+);
+    }\
 }
 
+IMPLEMENT_ARRAY_2(add, +)
+IMPLEMENT_ARRAY_2(sub, -)
+IMPLEMENT_ARRAY_2(arrayMul, *)
+IMPLEMENT_ARRAY_2(arrayDiv, /)
 
-void Matrix::Impl::add(Matrix::T B, Impl& out) const {
-    POINTWISESCALAR(+);
-}
+IMPLEMENT_ARRAY_SCALAR(add, +)
+IMPLEMENT_ARRAY_SCALAR(sub, -)
+IMPLEMENT_ARRAY_SCALAR(mul, *)
+IMPLEMENT_ARRAY_SCALAR(div, /)
 
+IMPLEMENT_ARRAY_1(abs, ::abs)
+IMPLEMENT_ARRAY_1(negate, ::negate)
+IMPLEMENT_ARRAY_1(arrayLog, log)
+IMPLEMENT_ARRAY_1(arraySqrt, sqrt)
+IMPLEMENT_ARRAY_1(arrayExp, exp)
+IMPLEMENT_ARRAY_1(arrayCos, cos)
+IMPLEMENT_ARRAY_1(arraySin, sin)
 
-void Matrix::Impl::sub(const Impl& B, Impl& out) const {
-    POINTWISE(-);
-}
+#undef IMPLEMENT_ARRAY_SCALAR
+#undef IMPLEMENT_ARRAY_1
+#undef IMPLEMENT_ARRAY_2
 
-
-void Matrix::Impl::sub(Matrix::T B, Impl& out) const {
-    POINTWISESCALAR(-);
-}
-
-
-void Matrix::Impl::arrayLog(Impl& out) const {
-    POINTWISEUNARY(log);
-}
-
-
-void Matrix::Impl::abs(Impl& out) const {
-    POINTWISEUNARY(::abs);
-}
-
-
-void Matrix::Impl::arraySqrt(Impl& out) const {
-    POINTWISEUNARY(sqrt);
-}
-
-
-void Matrix::Impl::arrayExp(Impl& out) const {
-    POINTWISEUNARY(exp);
-}
-
-
-void Matrix::Impl::arrayMul(const Impl& B, Impl& out) const {
-    POINTWISE(*);
-}
-
-
-void Matrix::Impl::mul(Matrix::T B, Impl& out) const {
-    POINTWISESCALAR(*);
-}
-
-
-void Matrix::Impl::arrayDiv(const Impl& B, Impl& out) const {
-    POINTWISE(/);
-}
-
-
-void Matrix::Impl::div(const Matrix::T& B, Impl& out) const {
-    POINTWISESCALAR(/);
-}
-
-
-#undef POINTWISESCALAR
-#undef POINTWISEUNARY
-#undef POINTWISE
-
-
+// lsub is special because the argument order is reversed
 void Matrix::Impl::lsub(Matrix::T B, Impl& out) const {
     const Impl& A = *this;
 
@@ -649,15 +617,6 @@ void Matrix::Impl::lsub(Matrix::T B, Impl& out) const {
 
     for (int i = R * C - 1; i >= 0; --i) {
         out.data[i] = B - A.data[i];
-    }
-}
-
-
-void Matrix::Impl::negate(Impl& out) const {
-    debugAssert(out.R == R && out.C == C);
-
-    for (int i = R * C - 1; i >= 0; --i) {
-        out.data[i] = -data[i];
     }
 }
 
