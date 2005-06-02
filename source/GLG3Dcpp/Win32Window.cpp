@@ -194,6 +194,19 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
     _windowActive = hasFocus();
 }
 
+Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) {
+    initWGL();
+
+	settings = s;
+
+    HWND hwnd = ::WindowFromDC(hdc);
+
+    debugAssert(hwnd != NULL);
+
+	init(hwnd);
+
+    _windowActive = hasFocus();
+}
 
 Win32Window* Win32Window::create(const GWindowSettings& settings) {
 
@@ -202,6 +215,19 @@ Win32Window* Win32Window::create(const GWindowSettings& settings) {
     
 }
 
+Win32Window* Win32Window::create(const GWindowSettings& settings, HWND hwnd) {
+
+    // Create Win32Window which uses DI8 joysticks but WM_ keyboard messages
+    return new Win32Window(settings, hwnd);    
+    
+}
+
+Win32Window* Win32Window::create(const GWindowSettings& settings, HDC hdc) {
+
+    // Create Win32Window which uses DI8 joysticks but WM_ keyboard messages
+    return new Win32Window(settings, hdc);    
+    
+}
 
 void Win32Window::init(HWND hwnd) {
 

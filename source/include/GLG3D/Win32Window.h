@@ -68,15 +68,15 @@ private:
         API: fsaa window creation is supported through a WGL extension, but WGL 
         extensions can't be called until after a window has already been created. */
     static void initWGL();
-
-    // Special private constuctor for Win32APIWindow
-    explicit Win32Window() {}
     
 	/** Constructs from a new window */
 	explicit Win32Window(const GWindowSettings& settings);
 
 	/** Constructs from an existing window */
-	Win32Window(const GWindowSettings& settings, HWND hwnd);
+	explicit Win32Window(const GWindowSettings& settings, HWND hwnd);
+
+	/** Constructs from an existing window */
+	explicit Win32Window(const GWindowSettings& settings, HDC hdc);
 
     HWND                 window;
 
@@ -88,7 +88,11 @@ public:
         the window returned when you are done with it. */
     static Win32Window* create(const GWindowSettings& settings=GWindowSettings());
 
-	virtual ~Win32Window();
+    static Win32Window* create(const GWindowSettings& settings, HWND hwnd);
+
+    static Win32Window* create(const GWindowSettings& settings, HDC hdc);
+	
+    virtual ~Win32Window();
 	
 	void close();
 	
