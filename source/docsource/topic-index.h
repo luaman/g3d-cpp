@@ -81,6 +81,7 @@
     G3D::GWindow,
     G3D::SDLWindow,
     G3D::Win32Window,
+    G3D::X11Window,
         <BR>
     See also contrib & demo code
     <A HREF="../contrib/GlutWindow">GlutWindow</A>, 

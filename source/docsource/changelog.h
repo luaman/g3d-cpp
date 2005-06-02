@@ -33,6 +33,12 @@
    </TD></TR></TABLE>
 
   <P>
+   Changes in 6.07:
+   <UL>
+     <LI> G3D::X11Window (same as SDLWindow in this release)
+   </UL>
+
+  <P>
    Changes in 6.06:
    <UL>
     <LI> G3D::Lighting::emissiveScale

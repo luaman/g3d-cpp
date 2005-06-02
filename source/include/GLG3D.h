@@ -7,9 +7,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2004-10-21
+ @edited  2005-06-10
 
- Copyright 2001-2004, Morgan McGuire.
+ Copyright 2001-2005, Morgan McGuire.
  All rights reserved.
 */
 
@@ -70,6 +70,10 @@
 
 #ifdef G3D_WIN32
 #include "GLG3D/Win32Window.h"
+#endif
+
+#ifdef G3D_LINUX
+#include "GLG3D/X11Window.h"
 #endif
 
 

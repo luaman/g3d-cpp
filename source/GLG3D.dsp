@@ -369,6 +369,10 @@ SOURCE=.\include\GLG3D\VertexProgram.h
 
 SOURCE=.\include\GLG3D\Win32Window.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\X11Window.h
+# End Source File
 # End Group
 # Begin Group "GL Headers"
 
