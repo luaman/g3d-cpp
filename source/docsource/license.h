@@ -8,7 +8,7 @@ Introduction</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 Installation <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
-@section Intent of License
+@section intent Intent of License
    (This section is informal and not legally binding.)
 
    <BR> This library is free code-- you can use it without charge and
@@ -105,15 +105,11 @@ Installation <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></
       You agree to be bound by the terms of the Independent JPEG
       Group license for the portions of this library that are based
       on the work of the Independent JPEG Group, <B>if you use those
-      portions</B>.  Note: if you do not use the G3D::CImage class,
+      portions</B>.  Note: if you do not use the G3D::GImage class,
       this clause does not apply to you because the linker will
       strip that code from your project.  The <A
       HREF="IJG-README.TXT">IJG-README.TXT</A> file contains the
       Independent JPEG Group license.
-
-   <P> You agree to be bound by the terms of the Free Software
-        License Agreement of Magic Software which is available at <A
-        HREF="http://www.magic-software.com/License/free.pdf">http://www.magic-software.com/License/free.pdf</A>.
 
    </OL>
 
