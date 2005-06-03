@@ -1,11 +1,48 @@
 /**
   @file Matrix.h
   @author Morgan McGuire, matrix@graphics3d.com
+
+
+   <I>G3D::Matrix is licensed under the <A HREF="http://www.opensource.org/licenses/bsd-license.php">BSD license</A>
+
+  <CODE>
+   <IMG SRC="http://opensource.org/trademarks/osi-certified/web/osi-certified-120x100.gif">
+   <DT>Copyright &copy; 2000-2005, Morgan McGuire
+   <DT>All rights reserved.
+   <P>
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   <P>
+   Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+   <P>
+   Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+   <P>
+   Neither the name of Morgan McGuire, Brown University, nor the names of
+   its contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+   <P>
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+   THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef G3D_MATRIX_H
+#define G3D_MATRIX_H
 #include <G3DAll.h>
+
+namespace G3D {
 
 /** 
  N x M matrix.  
@@ -503,21 +540,41 @@ public:
 
     /** 2-norm (sqrt(sum(squares)) */
     double norm() const;
+
+    /**
+      Low-level SVD functionality.  Useful for applications that do not want
+      to construct a Matrix but need to perform the SVD operation.
+
+      @return NULL on success, a string describing the error on failure.
+      @param U rows x cols matrix to be decomposed, gets overwritten with U
+      @param D vector of singular values of a (diagonal of the D matrix)
+      @param C returns the right orthogonal transformation matrix
+
+      @cite Based on Dianne Cook's implementation, which is adapted from 
+      svdecomp.c in XLISP-STAT 2.1, which is code from Numerical Recipes 
+      adapted by Luke Tierney and David Betz.  The Numerical Recipes code 
+      is adapted from Forsythe et al, who based their code on Golub and
+      Reinsch's original implementation.
+    */
+    static const char* svdCore(float** U, int rows, int cols, float* D, float** V);
+
 };
 
-inline Matrix operator-(const Matrix::T& v, const Matrix& M) {
+}
+
+inline G3D::Matrix operator-(const G3D::Matrix::T& v, const G3D::Matrix& M) {
     return M.lsub(v);
 }
 
-inline Matrix operator*(const Matrix::T& v, const Matrix& M) {
+inline G3D::Matrix operator*(const G3D::Matrix::T& v, const G3D::Matrix& M) {
     return M * v;
 }
 
-inline Matrix operator+(const Matrix::T& v, const Matrix& M) {
+inline G3D::Matrix operator+(const G3D::Matrix::T& v, const G3D::Matrix& M) {
     return M + v;
 }
 
-inline Matrix abs(const Matrix& M) {
+inline G3D::Matrix abs(const G3D::Matrix& M) {
     return M.abs();
 }
 
