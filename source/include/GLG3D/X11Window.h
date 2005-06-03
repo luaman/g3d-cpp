@@ -1,7 +1,7 @@
 /**
- @file Win32Window.h
+ @file X11Window.h
   
- A GWindow that uses the Win32 API.
+ A GWindow that uses the X11 API.
 
  @created 	  2005-06-04
  @edited  	  2005-06-04
@@ -15,13 +15,13 @@
 
 #include <G3D/platform.h>
 
-#if defined(G3D_LINUX)
+#ifndef G3D_LINUX
+#error X11Window only supported on Linux
+#endif
 
 // Current implementation: X11Window *is* SDLWindow
-#include "G3D/SDLWindow.h"
+#include "GLG3D/SDLWindow.h"
 
 #define X11Window SDLWindow
-
-#endif // if Linux
 
 #endif
