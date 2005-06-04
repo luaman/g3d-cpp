@@ -31,6 +31,10 @@ namespace G3D {
 class MeshAlg {
 public:
 
+    enum Primitive {LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP,
+                    TRIANGLE_FAN, QUADS, QUAD_STRIP, POINTS};
+
+
     /** Adjacency information for a vertex.
         Does not contain the vertex position or normal,
         which are stored in the MeshAlg::Geometry object.
@@ -514,6 +518,78 @@ public:
         const Array<Face>&      faceArray,
         const Array<Edge>&      edgeArray,
         const Array<Vertex>&    vertexArray);
+
+    template<class IndexType>
+    static void toIndexedTriList(
+        const Array<IndexType>& inIndices, 
+        MeshAlg::Primitive inType, 
+        Array<IndexType>& outIndices) {
+
+        debugAssert(inType == MeshAlg::TRIANGLE_STRIP ||
+            inType == MeshAlg::QUADS ||
+            inType == MeshAlg::QUAD_STRIP);
+
+        const int inSize = inIndices.size();
+
+        switch(inType) {
+        case MeshAlg::TRIANGLE_STRIP:
+            {
+            debugAssert(inSize >= 3);
+
+            outIndices.resize((inSize - 2) * 3);
+
+            bool atEven = false;
+            for (IndexType i = 0, outIndex = 0; i <= (inSize - 2); ++i, outIndex += 3) {
+                if (atEven) {
+                    outIndices[outIndex] = inIndices[i + 1];
+                    outIndices[outIndex + 1] = inIndices[i];
+                    outIndices[outIndex + 2] = inIndices[i + 2];
+                    atEven = false;
+                } else {
+                    outIndices[outIndex] = inIndices[i];
+                    outIndices[outIndex + 1] = inIndices[i + 1];
+                    outIndices[outIndex + 2] = inIndices[i + 2];
+                    atEven = true;
+                }
+            }
+
+            break;
+            }
+        case MeshAlg::QUADS:
+            {
+            debugAssert(inIndices.size() >= 4);
+
+            outIndices.resize(inSize * 1.5);
+
+            for (IndexType i = 0, outIndex = 0; i <= (inSize - 4); i += 4, outIndex += 6) {
+                outIndices[outIndex] = inIndices[i];
+                outIndices[outIndex + 1] = inIndices[i + 1];
+                outIndices[outIndex + 2] = inIndices[i + 3];
+                outIndices[outIndex + 3] = inIndices[i + 1];
+                outIndices[outIndex + 4] = inIndices[i + 2];
+                outIndices[outIndex + 5] = inIndices[i + 3];
+            }
+
+            break;
+            }
+        case MeshAlg::QUAD_STRIP:
+            {
+            debugAssert(inIndices.size() >= 4);
+
+            outIndices.resize((inSize - 2) * 3);
+
+            for (IndexType i = 0, outIndex = 0; i <= (inSize - 2); i += 2, outIndex += 6) {
+                outIndices[outIndex] = inIndices[i];
+                outIndices[outIndex + 1] = inIndices[i + 1];
+                outIndices[outIndex + 2] = inIndices[i + 2];
+                outIndices[outIndex + 3] = inIndices[i + 2];
+                outIndices[outIndex + 4] = inIndices[i + 1];
+                outIndices[outIndex + 5] = inIndices[i + 3];
+            }
+            break;
+            }
+        }
+    }
 
 protected:
 

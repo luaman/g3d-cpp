@@ -155,8 +155,14 @@ class VAR;
  */
 class RenderDevice {
 public:
-    enum Primitive {LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP,
-                    TRIANGLE_FAN, QUADS, QUAD_STRIP, POINTS};
+    enum Primitive {LINES = MeshAlg::LINES, 
+                    LINE_STRIP = MeshAlg::LINE_STRIP, 
+                    TRIANGLES = MeshAlg::TRIANGLES, 
+                    TRIANGLE_STRIP = MeshAlg::TRIANGLE_STRIP,
+                    TRIANGLE_FAN = MeshAlg::TRIANGLE_FAN, 
+                    QUADS = MeshAlg::QUADS, 
+                    QUAD_STRIP = MeshAlg::QUAD_STRIP, 
+                    POINTS = MeshAlg::POINTS};
 
 	/** RENDER_CURRENT = preserve whatever the render mode is currently set to.  */
     enum RenderMode {RENDER_SOLID, RENDER_WIREFRAME, RENDER_POINTS, RENDER_CURRENT};
