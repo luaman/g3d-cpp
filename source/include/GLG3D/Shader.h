@@ -383,6 +383,24 @@ public:
         void set(const std::string& var, const Vector3& val);
         void set(const std::string& var, const Vector2& val);
         void set(const std::string& var, float          val);
+
+        /**
+         GLSL does not natively support arrays and structs in the uniform binding API.  Instead, each
+         element of an array is treated as a separate element.  This method expands out to setting
+         each element of an array.  You can instead set them using <CODE>args.set("arry[3]", myVal)</CODE>.
+         Likewise for structs, <CODE>args.set("str.foo.bar", myVal)</CODE>.
+         */
+        template<class T> void set(const std::string& arrayName, const G3D::Array<T>& arrayVal) {
+            for (int i = 0; i < arrayVal.size(); ++i) {
+                set(format("%s[%d]", arrayName.c_str(), i), arrayVal[i]);
+            }
+        }
+
+        template<class T> void set(const std::string& arrayName, const std::vector<T>& arrayVal) {
+            for (int i = 0; i < arrayVal.size(); ++i) {
+                set(format("%s[%d]", arrayName.c_str(), i), arrayVal[i]);
+            }
+        }
         
         void clear();
     };

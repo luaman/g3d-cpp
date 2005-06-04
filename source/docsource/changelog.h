@@ -35,6 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
+     <LI> G3D::VertexAndPixelShader::ArgList::set(std::string, Array<T>)-- [ 1192401 ] Shader support arrays
      <LI> G3D::X11Window (same as SDLWindow in this release)
    </UL>
 
