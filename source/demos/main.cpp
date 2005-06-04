@@ -13,8 +13,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60500
-    #error Requires G3D 6.05
+#if G3D_VER < 60700
+    #error Requires G3D 6.0
 #endif
 
 

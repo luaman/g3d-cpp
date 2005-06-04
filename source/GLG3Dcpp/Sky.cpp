@@ -129,13 +129,13 @@ SkyRef Sky::fromFile(
         if (_filename[1] == "") {
             for (int t = 0; t < 6; ++t) {
                 faceTextures[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
-                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D,
+                    format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D,
                     1.0, Texture::DEPTH_NORMAL, 1.0);
             }
         } else {
             for (int t = 0; t < 6; ++t) {
                 faceTextures[t] = Texture::fromFile(_filename[t], 
-                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D,
+                    format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D,
                     1.0, Texture::DEPTH_NORMAL, 1.0);
             }
         }
@@ -181,7 +181,8 @@ Sky::Sky(
 
     if (drawCelestialBodies) {
         moon     = Texture::fromTwoFiles(directory + "moon.jpg", directory + "moon-alpha.jpg",
-            alphaFormat, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_NORMAL, 1.0);
+            alphaFormat, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 
+            Texture::DEPTH_NORMAL, 1.0);
 
         sun      = Texture::fromFile(directory + "sun.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
         disk     = Texture::fromFile(directory + "lensflare.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
@@ -280,7 +281,8 @@ void Sky::vertex(RenderDevice* renderDevice,
     const bool cube = (cubeMap.notNull());
 
     if (cube) {
-        renderDevice->setTexCoord(0, Vector3(x, y, z));
+        // Texcoord generation will move this normal to tex coord 0
+        renderDevice->setNormal(Vector3(x,y,z));
     } else {
         if (!GLCaps::supports_GL_EXT_texture_edge_clamp()) {
             // Move the edge coordinates towards the center just
@@ -310,6 +312,21 @@ void Sky::renderBox(RenderDevice* renderDevice) const {
 
     if (cube) {
         renderDevice->setTexture(0, cubeMap);
+
+        // On Radeon Mobility, explicit cube map coordinates don't work right.
+        // We instead put cube map coords in the normals and use texgen to copy
+        // them over
+        glActiveTextureARB(GL_TEXTURE0_ARB + 0);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
+        glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
+        glEnable(GL_TEXTURE_GEN_R);
+
+        CoordinateFrame cframe = renderDevice->getCameraToWorldMatrix();
+        cframe.translation = Vector3::zero();
+        renderDevice->setTextureMatrix(0, cframe);
 
     } else {
         // In the 6-texture case, the sky box is rotated 90 degrees

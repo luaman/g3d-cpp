@@ -412,9 +412,8 @@ void GLCaps::loadExtensions(Log* debugLog) {
 
 		if (beginsWith(_glRenderer, "MOBILITY RADEON") &&
 			beginsWith(std::string(_driverVersion), "6.14.10.6")) {
-            _supports_GL_EXT_texture_cube_map = false;
-            Log::common()->printf("WARNING: Recognized a bug in ATI Radeon Mobility and"
-                " disabled GL_EXT_texture_cube_map as a workaround.\n");
+            Log::common()->printf("WARNING: This ATI Radeon Mobility card has a known bug with cube maps.\n"
+                "   Put cube map texture coordinates in the normals and use ARB_NORMAL_MAP to work around.\n\n");
         }
     }
 

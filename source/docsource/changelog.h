@@ -35,6 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
+     <LI> Enabled cube mapping on Radeon mobility cards and added a workaround to the known problems with texcoords on those cards.
      <LI> Can now create G3D::Win32Window with existing HWND and HDC
      <LI> G3D::VertexAndPixelShader::ArgList::set(std::string, Array<T>)-- [ 1192401 ] Shader support arrays
      <LI> G3D::X11Window (same as SDLWindow in this release)
