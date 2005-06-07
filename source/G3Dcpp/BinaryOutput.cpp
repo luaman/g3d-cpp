@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @created 2002-02-20
- @edited  2005-01-15
+ @edited  2005-06-07
  */
 
 #include "G3D/platform.h"
@@ -27,18 +27,28 @@
 
 namespace G3D {
 
+void BinaryOutput::writeBool8(std::vector<bool>& out, int n) {
+    for (int i = 0; i < n; ++i) {
+        writeBool8(out[i]);
+    }
+}
+
+
+void BinaryOutput::writeBool8(Array<bool>& out, int n) {
+    writeBool8(out.getCArray(), n);
+}
+
 #define IMPLEMENT_WRITER(ucase, lcase)\
 void BinaryOutput::write##ucase(std::vector<lcase>& out, int n) {\
-    write##ucase(out.begin(), n);\
+    write##ucase(&out[0], n);\
 }\
 \
 \
 void BinaryOutput::write##ucase(Array<lcase>& out, int n) {\
-    write##ucase(out.begin(), n);\
+    write##ucase(out.getCArray(), n);\
 }
 
 
-IMPLEMENT_WRITER(Bool8,   bool)
 IMPLEMENT_WRITER(UInt8,   uint8)
 IMPLEMENT_WRITER(Int8,    int8)
 IMPLEMENT_WRITER(UInt16,  uint16)

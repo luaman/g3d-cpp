@@ -43,10 +43,25 @@
 
 namespace G3D {
 
+void BinaryInput::readBool8(std::vector<bool>& out, int n) {
+    out.resize(n);
+    // std::vector optimizes bool in a way that prevents fast reading
+    for (int i = 0; i < n ; ++i) {
+        out[i] = readBool8();
+    }
+}
+
+
+void BinaryInput::readBool8(Array<bool>& out, int n) {
+    out.resize(n);
+    readBool8(out.begin(), n);
+}
+
+
 #define IMPLEMENT_READER(ucase, lcase)\
 void BinaryInput::read##ucase(std::vector<lcase>& out, int n) {\
     out.resize(n);\
-    read##ucase(out.begin(), n);\
+    read##ucase(&out[0], n);\
 }\
 \
 \
@@ -56,7 +71,6 @@ void BinaryInput::read##ucase(Array<lcase>& out, int n) {\
 }
 
 
-IMPLEMENT_READER(Bool8,   bool)
 IMPLEMENT_READER(UInt8,   uint8)
 IMPLEMENT_READER(Int8,    int8)
 IMPLEMENT_READER(UInt16,  uint16)
