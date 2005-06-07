@@ -279,6 +279,7 @@
         G3D::setFailureHook
 
      <LI><B>I/O</B> &nbsp; &nbsp;
+        G3D::BinaryFormat, G3D::byteSize, G3D::binaryFormatOf,
         G3D::BinaryInput, 
         G3D::BinaryOutput, 
         G3D::copyFile, 

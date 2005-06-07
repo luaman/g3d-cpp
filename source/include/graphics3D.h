@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2005-02-14
+ @edited  2005-06-14
 
  Copyright 2001-2005, Morgan McGuire.
  All rights reserved.
@@ -51,6 +51,7 @@
 #include "G3D/g3derror.h"
 #include "G3D/Table.h"
 #include "G3D/Set.h"
+#include "G3D/BinaryFormat.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/debug.h"
