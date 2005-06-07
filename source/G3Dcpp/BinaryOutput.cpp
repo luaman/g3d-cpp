@@ -27,6 +27,75 @@
 
 namespace G3D {
 
+#define IMPLEMENT_WRITER(ucase, lcase)\
+void BinaryOutput::write##ucase(std::vector<lcase>& out, int n) {\
+    write##ucase(out.begin(), n);\
+}\
+\
+\
+void BinaryOutput::write##ucase(Array<lcase>& out, int n) {\
+    write##ucase(out.begin(), n);\
+}
+
+
+IMPLEMENT_WRITER(Bool8,   bool)
+IMPLEMENT_WRITER(UInt8,   uint8)
+IMPLEMENT_WRITER(Int8,    int8)
+IMPLEMENT_WRITER(UInt16,  uint16)
+IMPLEMENT_WRITER(Int16,   int16)
+IMPLEMENT_WRITER(UInt32,  uint32)
+IMPLEMENT_WRITER(Int32,   int32)
+IMPLEMENT_WRITER(UInt64,  uint64)
+IMPLEMENT_WRITER(Int64,   int64)
+IMPLEMENT_WRITER(Float32, float32)
+IMPLEMENT_WRITER(Float64, float64)    
+
+#undef IMPLEMENT_WRITER
+
+// Data structures that are one byte per element can be 
+// directly copied, regardles of endian-ness.
+#define IMPLEMENT_WRITER(ucase, lcase)\
+void BinaryOutput::write##ucase(lcase* out, int n) {\
+    if (sizeof(lcase) == 1) {\
+        writeBytes((void*)out, n);\
+    } else {\
+        for (int i = 0; i < n ; ++i) {\
+            write##ucase(out[i]);\
+        }\
+    }\
+}
+
+IMPLEMENT_WRITER(Bool8,   bool)
+IMPLEMENT_WRITER(UInt8,   uint8)
+IMPLEMENT_WRITER(Int8,    int8)
+
+#undef IMPLEMENT_WRITER
+
+
+#define IMPLEMENT_WRITER(ucase, lcase)\
+void BinaryOutput::write##ucase(lcase* out, int n) {\
+    if (swapBytes) {\
+        for (int i = 0; i < n; ++i) {\
+            write##ucase(out[i]);\
+        }\
+    } else {\
+        writeBytes((void*)out, sizeof(lcase) * n);\
+    }\
+}
+
+
+IMPLEMENT_WRITER(UInt16,  uint16)
+IMPLEMENT_WRITER(Int16,   int16)
+IMPLEMENT_WRITER(UInt32,  uint32)
+IMPLEMENT_WRITER(Int32,   int32)
+IMPLEMENT_WRITER(UInt64,  uint64)
+IMPLEMENT_WRITER(Int64,   int64)
+IMPLEMENT_WRITER(Float32, float32)
+IMPLEMENT_WRITER(Float64, float64)    
+
+#undef IMPLEMENT_WRITER
+
+
 void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
     //debugPrintf("reallocBuffer(%d, %d)\n", bytes, oldBufferLen);
 

@@ -372,6 +372,26 @@ public:
     /** Call after a series of BinaryOutput::writeBits calls. This will
         finish out with zeros the last byte into which bits were written.*/
     void endBits();
+
+
+#   define DECLARE_WRITER(ucase, lcase)\
+    void write##ucase(lcase* out, int n);\
+    void write##ucase(std::vector<lcase>& out, int n);\
+    void write##ucase(Array<lcase>& out, int n);
+
+    DECLARE_WRITER(Bool8,   bool)
+    DECLARE_WRITER(UInt8,   uint8)
+    DECLARE_WRITER(Int8,    int8)
+    DECLARE_WRITER(UInt16,  uint16)
+    DECLARE_WRITER(Int16,   int16)
+    DECLARE_WRITER(UInt32,  uint32)
+    DECLARE_WRITER(Int32,   int32)
+    DECLARE_WRITER(UInt64,  uint64)
+    DECLARE_WRITER(Int64,   int64)
+    DECLARE_WRITER(Float32, float32)
+    DECLARE_WRITER(Float64, float64)    
+#   undef DECLARE_WRITER
+
 };
 
 }

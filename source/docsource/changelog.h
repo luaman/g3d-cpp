@@ -35,7 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
-     <LI> G3D::BinaryInput::read methods for arrays 
+     <LI> Fast G3D::BinaryInput::read / G3D::BinaryOutput::write methods for arrays 
      <LI> Enabled cube mapping on Radeon mobility cards and added a workaround to the known problems with texcoords on those cards.
      <LI> Can now create G3D::Win32Window with existing HWND and HDC
      <LI> G3D::VertexAndPixelShader::ArgList::set(std::string, Array<T>)-- [ 1192401 ] Shader support arrays
