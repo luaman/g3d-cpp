@@ -49,6 +49,12 @@ namespace G3D {
  size are transparently decompressed when the compressed = true flag is
  specified to the constructor.
 
+ For every readX method there are also versions that operate on a whole
+ Array, std::vector, or C-array.  e.g. readFloat32(Array<float32>& array, n)
+ These methods resize the array or std::vector to the appropriate size
+ before reading.  For a C-array, they require the pointer to reference
+ a memory block at least large enough to hold <I>n</I> elements.
+
  Most classes define serialize/deserialize methods that use BinaryInput,
  BinaryOutput, TextInput, and TextOutput.  There are text serializer 
  functions for primitive types (e.g. int, std::string, float, double) but not 
@@ -319,24 +325,6 @@ public:
         return *(float64*)&a;
     }
 
-#   define DECLARE_READER(ucase, lcase)\
-    void read##ucase(lcase* out, int n);\
-    void read##ucase(std::vector<lcase>& out, int n);\
-    void read##ucase(Array<lcase>& out, int n);
-
-    DECLARE_READER(Bool8,   bool)
-    DECLARE_READER(UInt8,   uint8)
-    DECLARE_READER(Int8,    int8)
-    DECLARE_READER(UInt16,  uint16)
-    DECLARE_READER(Int16,   int16)
-    DECLARE_READER(UInt32,  uint32)
-    DECLARE_READER(Int32,   int32)
-    DECLARE_READER(UInt64,  uint64)
-    DECLARE_READER(Int64,   int64)
-    DECLARE_READER(Float32, float32)
-    DECLARE_READER(Float64, float64)    
-#   undef DECLARE_READER
-
     /**
      Returns the data in bytes.
      @deprecated Use readBytes(void*, int).
@@ -403,6 +391,24 @@ public:
 
     /** Ends bit-reading. */
     void endBits();
+
+#   define DECLARE_READER(ucase, lcase)\
+    void read##ucase(lcase* out, int n);\
+    void read##ucase(std::vector<lcase>& out, int n);\
+    void read##ucase(Array<lcase>& out, int n);
+
+    DECLARE_READER(Bool8,   bool)
+    DECLARE_READER(UInt8,   uint8)
+    DECLARE_READER(Int8,    int8)
+    DECLARE_READER(UInt16,  uint16)
+    DECLARE_READER(Int16,   int16)
+    DECLARE_READER(UInt32,  uint32)
+    DECLARE_READER(Int32,   int32)
+    DECLARE_READER(UInt64,  uint64)
+    DECLARE_READER(Int64,   int64)
+    DECLARE_READER(Float32, float32)
+    DECLARE_READER(Float64, float64)    
+#   undef DECLARE_READER
 };
 
 
