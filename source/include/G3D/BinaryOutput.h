@@ -213,9 +213,15 @@ public:
      Returns the current byte position in the file,
      where 0 is the beginning and getLength() - 1 is the end.
      */
-    inline int getPosition() const {
+    inline int position() const {
         return (int)pos + (int)alreadyWritten;
     }
+
+    /** @deprecated */
+    inline int getPosition() const {
+        return position();
+    }
+
 
     /**
      Sets the position.  Can set past length, in which case

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-05-07
+ @edited  2005-06-07
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -15,9 +15,12 @@
 
 #include <assert.h>
 #include <string>
+#include <vector>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include "G3D/platform.h"
+#include "G3D/Array.h"
 #include "G3D/Color4.h"
 #include "G3D/Color3.h"
 #include "G3D/Vector4.h"
@@ -309,12 +312,30 @@ public:
     inline float32 readFloat32() {
         uint32 a = readUInt32();
         return *(float32*)&a;
-    }
+    }    
 
     inline float64 readFloat64() {
         uint64 a = readUInt64();
         return *(float64*)&a;
     }
+
+#   define DECLARE_READER(ucase, lcase)\
+    void read##ucase(lcase* out, int n);\
+    void read##ucase(std::vector<lcase>& out, int n);\
+    void read##ucase(Array<lcase>& out, int n);
+
+    DECLARE_READER(Bool8,   bool)
+    DECLARE_READER(UInt8,   uint8)
+    DECLARE_READER(Int8,    int8)
+    DECLARE_READER(UInt16,  uint16)
+    DECLARE_READER(Int16,   int16)
+    DECLARE_READER(UInt32,  uint32)
+    DECLARE_READER(Int32,   int32)
+    DECLARE_READER(UInt64,  uint64)
+    DECLARE_READER(Int64,   int64)
+    DECLARE_READER(Float32, float32)
+    DECLARE_READER(Float64, float64)    
+#   undef DECLARE_READER
 
     /**
      Returns the data in bytes.
