@@ -256,11 +256,11 @@ void BinaryOutput::compress() {
     }
 
     // Old buffer size
-    uint32 L       = bufferLen;
+    int L = bufferLen;
     uint8* convert = (uint8*)&L;
 
     // Zlib requires the output buffer to be this big
-    uint32 newSize = iCeil(bufferLen * 1.01) + 12;
+    int newSize = iCeil(bufferLen * 1.01) + 12;
     uint8* temp = (uint8*)malloc(newSize);
     int result = compress2(temp, (unsigned long*)&newSize, buffer, bufferLen, 9); 
 

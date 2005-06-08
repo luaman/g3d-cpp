@@ -344,7 +344,7 @@ public:
 
       // Call the constructors on newly revealed elements.
       for (int i = oldNum; i < num; i++) {
-          new (data + i) T();
+          new (data + i) T;
       }
    }
 
