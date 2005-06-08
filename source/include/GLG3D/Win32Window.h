@@ -56,6 +56,16 @@ private:
 	int				     clientX;
 	int					 clientY;
 
+    Array<GEvent>        sizeEventInjects;
+
+    void injectSizeEvent(int width, int height) {
+        GEvent e;
+        e.type = SDL_VIDEORESIZE;
+        e.resize.w = width;
+        e.resize.h = height;
+        sizeEventInjects.append(e);
+    }
+
 	static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 
 	/** Called from both constructors */

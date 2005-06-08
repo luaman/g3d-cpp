@@ -536,7 +536,7 @@ bool Win32Window::pollEvent(GEvent& e) {
                 return true;
                 break;
 
-			case WM_KEYDOWN:
+            case WM_KEYDOWN:
 				e.key.type = SDL_KEYDOWN;
 				e.key.state = SDL_PRESSED;
 
@@ -613,6 +613,11 @@ bool Win32Window::pollEvent(GEvent& e) {
         clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
     }
 
+    if (sizeEventInjects.size() > 0) {
+        e = sizeEventInjects.pop();
+        return true;
+    }
+
     return false;
 }
 
@@ -675,7 +680,8 @@ LRESULT WINAPI Win32Window::window_proc(
     Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
     
     if (this_window != NULL) {
-        if (message == WM_ACTIVATE) {
+        switch (message) {
+        case WM_ACTIVATE:
             if ((LOWORD(wparam) != WA_INACTIVE) &&
                 (HIWORD(wparam) == 0) &&
                 ((HWND)lparam != this_window->hwnd())) { // non-zero is minimized 
@@ -683,10 +689,19 @@ LRESULT WINAPI Win32Window::window_proc(
             } else if ((HWND)lparam != this_window->hwnd()) {
                 this_window->_windowActive = false;
             }
-        }
-        else if(message == WM_CLOSE) {
+            break;
+
+        case WM_CLOSE:
             PostMessage(this_window->hwnd(), WM_QUIT, 0, 0);
             return 0;
+            break;
+
+        case WM_SIZE:
+            if ((wparam == SIZE_MAXIMIZED) ||
+                (wparam == SIZE_RESTORED)) {
+                this_window->injectSizeEvent(LOWORD(lparam), HIWORD(lparam));
+            }
+            break;
         }
     }
     

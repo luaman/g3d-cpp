@@ -132,7 +132,7 @@ void Demo::doGraphics() {
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(true);
+	debugController.setActive(false);
 
     // Load objects here
     sky = Sky::create(NULL, dataDir + "sky/");
@@ -374,6 +374,7 @@ public:
 int main(int argc, char** argv) {
     GAppSettings settings;
     settings.useNetwork = false;
+    settings.window.resizable = true;
     App(settings).run();
     return 0;
 }
