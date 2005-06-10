@@ -49,6 +49,7 @@ public:
      hardware only pixel format is required. */
     bool    hardware;
 
+    /** Applications that fill the screen may also want to set framed = false. */
     bool    fullScreen;
 
     /** Should buffer flips be un-hitched from refresh rate?  <B>true</B>, false.  True

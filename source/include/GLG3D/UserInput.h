@@ -252,7 +252,6 @@ public:
 	 Returns a number between -1 and 1 indicating the horizontal
 	 input from the user.  Keyboard overrides joystick.
      @deprecated
-     Use ManualCameraControllerHelper
 	 */
 	double getX() const;
 
@@ -261,13 +260,11 @@ public:
 	 input from the user.  Up is positive, down is negative. 
 	 Keyboard overrides joystick.
      @deprecated
-     Use ManualCameraControllerHelper
 	 */
 	double getY() const;
 
     /**
      @deprecated
-     Use ManualCameraControllerHelper
      */
     Vector2 getXY() const {
         return Vector2(getX(), getY());
