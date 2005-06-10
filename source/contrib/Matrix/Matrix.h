@@ -103,18 +103,17 @@ private:
         argument checking.*/
     class Impl : public ReferenceCountedObject {
     public:
+        /** elt[r][c] = the element.  Pointers into data.*/
+        T**                 elt;
+
+        /** Row major data */
+        T*                  data;
 
         /** The number of rows */
         int                 R;
 
         /** The number of columns */
         int                 C;
-
-        /** elt[r][c] = the element.  Pointers into data.*/
-        T**                 elt;
-
-        /** Row major data */
-        T*                  data;
 
         size_t              dataSize;
 
@@ -137,7 +136,7 @@ private:
 
         Impl& operator=(const Impl& m);
 
-        inline Impl(const Impl& B) : data(NULL), elt(NULL), R(0), C(0), dataSize(0) {
+        inline Impl(const Impl& B) : elt(NULL), data(NULL), R(0), C(0), dataSize(0) {
             // Use the assignment operator
             *this = B;
         }
@@ -147,14 +146,14 @@ private:
         void setZero();
 
         inline void set(int r, int c, T v) {
-            debugAssert((uint)r < R);
-            debugAssert((uint)c < C);
+            debugAssert((uint)r < (uint)R);
+            debugAssert((uint)c < (uint)C);
             elt[r][c] = v;
         }
 
         inline const T& get(int r, int c) const {
-            debugAssert((uint)r < R);
-            debugAssert((uint)c < C);
+            debugAssert((uint)r < (uint)R);
+            debugAssert((uint)c < (uint)C);
             return elt[r][c];
         }
 

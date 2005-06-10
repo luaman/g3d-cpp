@@ -486,7 +486,7 @@ void Matrix::Impl::setSize(int newRows, int newCols) {
 
     // Only allocate if we need more space
     // or the size difference is ridiculous
-    if ((newSize > dataSize) || (newSize < dataSize / 4)) {
+    if (((uint)newSize > (uint)dataSize) || ((uint)newSize < (uint)dataSize / 4)) {
         System::alignedFree(data);
         data = (float*)System::alignedMalloc(R * C * sizeof(T), 16);
         ++Matrix::debugNumAllocOps;
@@ -620,13 +620,13 @@ IMPLEMENT_ARRAY_SCALAR(sub, -)
 IMPLEMENT_ARRAY_SCALAR(mul, *)
 IMPLEMENT_ARRAY_SCALAR(div, /)
 
-IMPLEMENT_ARRAY_1(abs,      ::abs)
+IMPLEMENT_ARRAY_1(abs,      ::fabs)
 IMPLEMENT_ARRAY_1(negate,   ::negate)
 IMPLEMENT_ARRAY_1(arrayLog, ::log)
-IMPLEMENT_ARRAY_1(arraySqrt, sqrt)
+IMPLEMENT_ARRAY_1(arraySqrt, ::sqrt)
 IMPLEMENT_ARRAY_1(arrayExp, ::exp)
-IMPLEMENT_ARRAY_1(arrayCos, cos)
-IMPLEMENT_ARRAY_1(arraySin, sin)
+IMPLEMENT_ARRAY_1(arrayCos, ::cos)
+IMPLEMENT_ARRAY_1(arraySin, ::sin)
 
 #undef IMPLEMENT_ARRAY_SCALAR
 #undef IMPLEMENT_ARRAY_1
