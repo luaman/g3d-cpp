@@ -35,6 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
+     <LI> contrib/GChunk
      <LI> G3D::Win32Window properly resizes viewport on window resize [Corey]
      <LI> G3D::BinaryFormat, G3D::byteSize, G3D::binaryFormatOf
      <LI> Removed dead ManualCameraControllerHelper code

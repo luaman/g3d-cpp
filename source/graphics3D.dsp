@@ -91,6 +91,10 @@ SOURCE=.\G3Dcpp\AABox.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\BinaryFormat.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\BinaryInput.cpp
 # End Source File
 # Begin Source File
@@ -300,6 +304,10 @@ SOURCE=.\include\G3D\AABSPTree.h
 # Begin Source File
 
 SOURCE=.\include\G3D\Array.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\BinaryFormat.h
 # End Source File
 # Begin Source File
 

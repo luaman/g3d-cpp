@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2004-04-29
+  @edited  2005-06-08
  */
 
 #ifndef G3D_SYSTEM_H

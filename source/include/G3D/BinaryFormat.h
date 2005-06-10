@@ -29,15 +29,15 @@ class Color4;
 class Color4uint8;
 
 /**
-
  Some values like float16 and int128 have no current CPU data structure that implements them but are useful
  for file formats and for GPUs.
+
+ CHUNK_BINFMT data follows the GChunk protocol.
  */
+// Must be packed int 16 bits for the chunk reader
 // We can't name these just "INT8" etc. because some libraries #define names like that
 enum BinaryFormat {
     FIRST_BINFMT = 1000,
-
-    CUSTOM_BINFMT,
 
     BOOL8_BINFMT,
     UINT8_BINFMT, INT8_BINFMT, UINT16_BINFMT, INT16_BINFMT, UINT32_BINFMT, INT32_BINFMT, UINT64_BINFMT, INT64_BINFMT, UINT128_BINFMT, INT128_BINFMT,
@@ -48,6 +48,10 @@ enum BinaryFormat {
     COLOR3_BINFMT, COLOR3UINT8_BINFMT, COLOR3INT16_BINFMT,
     COLOR4_BINFMT, COLOR4UINT8_BINFMT, COLOR4INT16_BINFMT,
     STRING_BINFMT, STRINGEVEN_BINFMT, STRING8_BINFMT, STRING16_BINFMT, STRING32_BINFMT,
+
+    CHUNK_BINFMT,
+
+    CUSTOM_BINFMT,
 
     LAST_BINFMT
 };
