@@ -380,6 +380,7 @@ void Matrix::svd(Matrix& U, Matrix& D, Matrix& V, bool sort) const {
     const char* ret = svdCore(U.impl->elt, N, N, d.getCArray(), V.impl->elt);
 
     debugAssertM(ret == NULL, ret);
+    (void)ret;
 
     if (sort) {
         // Sort the values from greatest to least
@@ -934,7 +935,7 @@ static double pythag(double a, double b) {
 const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) {
     const int MAX_ITERATIONS = 30;
 
-    int flag, i, its, j, jj, k, l, nm;
+    int flag, i, its, j, jj, k, l = 0, nm = 0;
     double c, f, h, s, x, y, z;
     double anorm = 0.0, g = 0.0, scale = 0.0;
     double* rv1;
