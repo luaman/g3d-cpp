@@ -11,7 +11,7 @@
 #include "../include/G3DAll.h"
 #include <iostream>
 #include "../contrib/Matrix/Matrix.cpp"
-#include "../contrib/GChunk/GChunk.h"
+//#include "../contrib/GChunk/GChunk.h"
 
 using namespace G3D;
 
@@ -21,6 +21,7 @@ using namespace G3D;
 #include <string>
 
 void testGChunk() {
+    /*
     enum {HEADER, NAME, BODY, NUM, DATA};
     {
         BinaryOutput b("file.dat", G3D_LITTLE_ENDIAN);
@@ -92,6 +93,7 @@ void testGChunk() {
             c.finish(b);
         }
     }
+    */
 }
 
 void testTangentSpace() {
