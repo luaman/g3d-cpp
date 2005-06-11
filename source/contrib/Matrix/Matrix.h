@@ -544,10 +544,12 @@ public:
       Low-level SVD functionality.  Useful for applications that do not want
       to construct a Matrix but need to perform the SVD operation.
 
+      this = U * D * V'
+
       @return NULL on success, a string describing the error on failure.
       @param U rows x cols matrix to be decomposed, gets overwritten with U
       @param D vector of singular values of a (diagonal of the D matrix)
-      @param C returns the right orthogonal transformation matrix
+      @param V returns the right orthogonal transformation matrix
 
       @cite Based on Dianne Cook's implementation, which is adapted from 
       svdecomp.c in XLISP-STAT 2.1, which is code from Numerical Recipes 
