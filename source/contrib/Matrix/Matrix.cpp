@@ -794,7 +794,7 @@ void Matrix::Impl::inverseInPlaceGaussJordan() {
     // used for bookkeeping on the pivoting
     static Array<int> colIndex, rowIndex, pivot;
 
-    int col, row;
+    int col = 0, row = 0;
 
     colIndex.resize(R);
     rowIndex.resize(R);
