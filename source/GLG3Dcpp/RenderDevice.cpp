@@ -2482,7 +2482,7 @@ void RenderDevice::setTextureCombineMode(
             break;
              
         case TEX_DOT3_RGBA:
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_DOT3_RGBA_ARB : GL_BLEND);
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasDot3 ? GL_DOT3_RGBA_ARB : GL_BLEND);
             break;
 
         default:
