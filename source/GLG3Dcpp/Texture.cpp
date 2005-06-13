@@ -729,8 +729,8 @@ TextureRef Texture::fromMemory(
                 debugAssertGLOk();
             }
 
-            mipWidth = max(1, mipWidth/2);
-            mipHeight = max(1, mipHeight/2);
+            mipWidth = iMax(1, mipWidth / 2);
+            mipHeight = iMax(1, mipHeight / 2);
         }
     glStatePop();
 
