@@ -2469,15 +2469,16 @@ void RenderDevice::setTextureCombineMode(
             break;
 
         case TEX_SUBTRACT:
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_SUBTRACT_ARB : GL_BLEND);
+            // (add and subtract are in the same extension)
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasAdd ? GL_SUBTRACT_ARB : GL_BLEND);
             break;
 
         case TEX_ADD_SIGNED:
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_ADD_SIGNED_ARB : GL_BLEND);
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasAdd ? GL_ADD_SIGNED_ARB : GL_BLEND);
             break;
             
         case TEX_DOT3_RGB:
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasCombine ? GL_DOT3_RGB_ARB : GL_BLEND);
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, hasDot3 ? GL_DOT3_RGB_ARB : GL_BLEND);
             break;
              
         case TEX_DOT3_RGBA:
