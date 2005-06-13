@@ -295,13 +295,13 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
                     ++firstSpace;
                 }
 
-                if (lastSpace == data.size() - 1) {
+                if (lastSpace == (uint32)data.size() - 1) {
                     // Spaces continued up to the new string
                     data.resize(firstSpace + 1);
                     writeNewline();
 
                     // Delete the spaces from the new string
-                    while (((uint32)i < str.size() - 1) && (str[i + 1] == ' ')) {
+                    while ((i < str.size() - 1) && (str[i + 1] == ' ')) {
                         ++i;
                     }
                 } else {

@@ -452,8 +452,8 @@ static void increaseBufferSize(SOCKET sock, Log* debugLog) {
 ReliableConduit::ReliableConduit(
     NetworkDevice*      _nd,
     const NetAddress&   _addr) : 
-    Conduit(_nd), receiveBufferUsedSize(0), 
-    receiveBufferTotalSize(0), receiveBuffer(NULL), state(NO_MESSAGE) {
+    Conduit(_nd), state(NO_MESSAGE), receiveBuffer(NULL),
+    receiveBufferTotalSize(0), receiveBufferUsedSize(0) {
 
     messageType         = 0;
 
@@ -527,9 +527,9 @@ ReliableConduit::ReliableConduit(
 ReliableConduit::ReliableConduit(
     NetworkDevice*    _nd, 
     const SOCKET&      _sock, 
-    const NetAddress&  _addr) : Conduit(_nd), receiveBuffer(NULL), 
-    receiveBufferTotalSize(0), receiveBufferUsedSize(0),
-    state(NO_MESSAGE) {
+    const NetAddress&  _addr) : Conduit(_nd), state(NO_MESSAGE), 
+    receiveBuffer(NULL), receiveBufferTotalSize(0), 
+    receiveBufferUsedSize(0) {
     sock                = _sock;
     addr                = _addr;
 
@@ -624,7 +624,7 @@ void ReliableConduit::sendBuffer(const BinaryOutput& b) {
 
     // Verify the packet was actually sent
     // Conversion to unsigned is safe because -1 is caught earlier
-    debugAssert((size_t)ret == b.getLength());
+    debugAssert(ret == b.getLength());
 }
 
 

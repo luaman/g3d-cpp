@@ -132,7 +132,7 @@ void Demo::doGraphics() {
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(false);
+	debugController.setActive(true);
 
     // Load objects here
     sky = Sky::create(NULL, dataDir + "sky/");
@@ -154,7 +154,10 @@ App::~App() {
 int main(int argc, char** argv) {
     GAppSettings settings;
     settings.useNetwork = false;
-    settings.window.resizable = true;
+    settings.window.fullScreen = true;
+    settings.window.framed = false;
+    settings.window.width = 800;
+    settings.window.height = 600;
     App(settings).run();
     return 0;
 }

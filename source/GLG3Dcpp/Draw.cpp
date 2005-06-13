@@ -653,8 +653,8 @@ void Draw::sphereSection(
             // The normals are the same as the vertices for a sphere
             Array<Vector3> vertex;
 
-            stripIndexArray.resize((G3D_PI / (double)SPHERE_PITCH_SECTIONS) + 2 * 
-                                   (G3D_PI * 2.0 / SPHERE_YAW_SECTIONS));
+            stripIndexArray.resize(iFloor((G3D_PI / (double)SPHERE_PITCH_SECTIONS) + 2 * 
+                                   (G3D_PI * 2.0 / SPHERE_YAW_SECTIONS)));
 
             int i = 0;
 
@@ -825,8 +825,8 @@ void Draw::rect2DBorder(
     //   *   *                            *   *
     //
     //
-    const Rect2D outer = rect.border(outerBorder);
-    const Rect2D inner = rect.border(-innerBorder); 
+    const Rect2D outer = rect.border(iFloor(outerBorder));
+    const Rect2D inner = rect.border(iFloor(-innerBorder)); 
 
     rd->pushState();
     rd->setColor(color);

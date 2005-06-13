@@ -13,6 +13,10 @@
 
 namespace G3D {
 
+// Forward-declaration because including RenderDevice.h would include VARArea.h also
+// This kills the VARAreaRef typedef
+class RenderDevice;
+
 typedef ReferenceCountedPointer<class VARArea> VARAreaRef;
 
 /**

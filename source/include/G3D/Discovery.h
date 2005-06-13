@@ -146,6 +146,11 @@ public:
      Overrides must call DiscoveryAdvertisement::deserialize(b) first.
      */
     virtual void deserialize(BinaryInput& b);
+
+    /**
+     An empty virtual destructor for virtual methods.
+    */
+    virtual ~DiscoveryAdvertisement() {}
 };
 
 
@@ -210,6 +215,9 @@ public:
         settings  = _settings;
     }
 
+    /**
+     An empty virtual destructor for virtual methods.
+    */
     virtual ~Discovery() {}
 };
 

@@ -52,7 +52,7 @@ extern "C" {
 namespace G3D {
     
     namespace _internal {
-        extern Array<std::string> currentFilesUsed(0);
+        Array<std::string> currentFilesUsed(0);
     }
 
 

@@ -235,6 +235,11 @@ public:
     GApplet(GApp* _app);
 
     /**
+     An empty virtual destructor for virtual methods.
+    */
+    virtual ~GApplet() {}
+
+    /**
       Run until app->endProgram or endApplet is set to true. 
       Calls beginRun(), then oneFrame in a loop, then endRun().
       

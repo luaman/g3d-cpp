@@ -25,6 +25,11 @@ namespace G3D {
 class Hashable {
 public:
     virtual unsigned int hashCode() const = 0;
+    
+    /**
+     An empty virtual destructor for virtual methods.
+    */
+    virtual ~Hashable() {}
 };
 }
 

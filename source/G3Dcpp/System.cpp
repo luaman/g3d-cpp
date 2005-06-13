@@ -733,7 +733,7 @@ std::string System::currentProgramFilename() {
                     return "";
         }
             
-        debugAssert(sizeof(filename) > ret);
+        debugAssert((int)sizeof(filename) > ret);
             
             // Ensure proper NULL termination
             filename[ret] = 0;      

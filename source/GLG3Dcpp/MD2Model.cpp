@@ -461,7 +461,7 @@ PosedModelRef MD2Model::pose(const CoordinateFrame& cframe, const Pose& pose, co
 
 void MD2Model::render(RenderDevice* renderDevice, const Pose& pose) {
 
-    bool tooBig = (maxVARVerts < keyFrame[0].vertexArray.size());
+    bool tooBig = ((int)maxVARVerts < keyFrame[0].vertexArray.size());
     bool useVAR = (nextVarArea != NONE_ALLOCATED) && ! tooBig;
    
     if (! useVAR && ! tooBig) {
