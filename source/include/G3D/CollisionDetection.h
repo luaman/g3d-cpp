@@ -234,7 +234,7 @@ public:
     /** return false - two boxes definitely do not intersect
       return true  - the boxes may intersect, further work must be done
      */
-    static bool CollisionDetection::conservativeBoxBoxTest(
+    static bool conservativeBoxBoxTest(
             const Vector3 &     a,
             const Vector3 &     b,
             const Vector3 &     D);
@@ -250,7 +250,7 @@ public:
       was not saved, or if the two boxes intersected then
       lastSeparatingAxis should equal -1
      */
-    static bool CollisionDetection::fixedSolidBoxIntersectsFixedSolidBox(
+    static bool fixedSolidBoxIntersectsFixedSolidBox(
         const Box&      box1,
         const Box&      box2,
         const int       lastSeparatingAxis = -1);
@@ -285,19 +285,12 @@ public:
               the contact point is the midpoint of the smallest line
               segment between the two edge lines
      */
-    static double CollisionDetection::penetrationDepthForFixedBoxFixedBox(
+    static double penetrationDepthForFixedBoxFixedBox(
         const Box&          box1,
         const Box&          box2,
         Array<Vector3>&     contactPoints,
         Array<Vector3>&     contactNormals,
         const int           lastSeparatingAxis = -1);
-
-
-    static double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
-        const Box&      box1,
-        const Box&      box2,
-        Array<Vector3>& contactPoints,
-        Array<Vector3>& contactNormals);
 
     /**
      Returns the penetration depth (negative if there is no penetration)
