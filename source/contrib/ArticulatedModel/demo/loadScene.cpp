@@ -124,7 +124,62 @@ void App::loadScene() {
     }
 
 
-    if (true) {
+     if (true) {
+        ArticulatedModelRef model = ArticulatedModel::createEmpty();
+
+        model->name = "Maple Leaf";
+        ArticulatedModel::Part& part = model->partArray.next();
+        part.cframe = CoordinateFrame();
+        part.name = "root";
+    
+        const double S = 1.0;
+        part.geometry.vertexArray.append(
+            Vector3(-S,  S, 0),
+            Vector3(-S, -S, 0),
+            Vector3( S, -S, 0),
+            Vector3( S,  S, 0));
+
+        part.geometry.normalArray.append(
+            Vector3::unitZ(),
+            Vector3::unitZ(),
+            Vector3::unitZ(),
+            Vector3::unitZ());
+
+        double texScale = 1;
+        part.texCoordArray.append(
+            Vector2(0,0) * texScale,
+            Vector2(0,1) * texScale,
+            Vector2(1,1) * texScale,
+            Vector2(1,0) * texScale);
+
+        part.tangentArray.append(
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX(),
+            Vector3::unitX());
+
+        ArticulatedModel::Part::TriList& triList = part.triListArray.next();
+        triList.indexArray.clear();
+        triList.indexArray.append(0, 1, 2);
+        triList.indexArray.append(0, 2, 3);
+
+        triList.twoSided = true;
+
+        triList.material.diffuse = Texture::fromFile("maple.tga");
+
+        triList.computeBounds(part);
+
+        part.indexArray = triList.indexArray;
+
+        part.computeIndexArray();
+        part.updateVAR();
+        part.updateShaders();
+
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
+        x += 2;
+     }
+
+    if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
@@ -136,7 +191,6 @@ void App::loadScene() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
     }
-#endif
 
     if (true) {
         CoordinateFrame xform;
@@ -150,12 +204,10 @@ void App::loadScene() {
         x += 2;
     }
 
-#if LOAD_ALL
     {
         ArticulatedModelRef model = ArticulatedModel::fromFile("jackolantern.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
-//        model->partArray[0].triListArray[0].twoSided = true;
         material.diffuse = Color3::fromARGB(0xF28900);
         material.transmit = Color3::black();
         material.reflect = Color3::black();
@@ -361,6 +413,7 @@ void App::loadScene() {
         x += 2;
     }
 
+#endif
     if (true) {
         ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
@@ -418,7 +471,6 @@ void App::loadScene() {
 
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(0,-1,0))));
     }
-#endif
 
 
 //		"contrib/ArticulatedModel/3ds/f16/f16b.3ds"

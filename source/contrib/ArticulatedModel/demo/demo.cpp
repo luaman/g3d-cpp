@@ -148,6 +148,7 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         // Avoid acne
         app->renderDevice->setPolygonOffset(2);
 
+        app->renderDevice->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
         for (int s = 0; s < shadowCaster.size(); ++s) {
             shadowCaster[s]->render(app->renderDevice);
         }
@@ -216,6 +217,7 @@ void Demo::doGraphics() {
     }
 
     app->renderDevice->pushState();
+        app->renderDevice->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
         // Opaque unshadowed
         for (int m = 0; m < opaque.size(); ++m) {
             opaque[m]->renderNonShadowed(app->renderDevice, lighting);
