@@ -1584,7 +1584,7 @@ void RenderDevice::setStencilTest(StencilTest test) {
 }
 
 
-AlphaTest RenderDevice::alphaTest() const {
+RenderDevice::AlphaTest RenderDevice::alphaTest() const {
     return state.alphaTest;
 }
 
