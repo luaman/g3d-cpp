@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2005-02-18
+ @edited  2005-06-18
  */
 
 
@@ -1581,6 +1581,16 @@ void RenderDevice::setStencilTest(StencilTest test) {
         state.stencil.stencilTest = test;
 
     }
+}
+
+
+AlphaTest RenderDevice::alphaTest() const {
+    return state.alphaTest;
+}
+
+
+double RenderDevice::alphaTestReference() const {
+    return state.alphaReference;
 }
 
 

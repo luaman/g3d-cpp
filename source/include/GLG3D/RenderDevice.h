@@ -499,6 +499,10 @@ public:
 	/** If the alpha test is ALPHA_CURRENT, the reference is ignored */
     void setAlphaTest(AlphaTest test, double reference);
 
+    AlphaTest alphaTest() const;
+
+    double alphaTestReference() const;
+
     /**
      Sets the frame buffer that is written to.  Used to intentionally
      draw to the front buffer and for stereo rendering.
