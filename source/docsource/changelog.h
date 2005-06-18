@@ -36,8 +36,10 @@
    Changes in 6.07:
    <UL>
      <LI> RenderDevice::alphaTestReference, RenderDevice::alphaTest
+     <LI> G3D::WeakReferenceCountedPointer
      <LI> GCC 4.0 build support added [Corey]
      <LI> contrib/GChunk
+     <LI> Added MSVC 6 support for C99 restrict keyword
      <LI> G3D::Win32Window properly resizes viewport on window resize [Corey]
      <LI> G3D::BinaryFormat, G3D::byteSize, G3D::binaryFormatOf
      <LI> Removed dead ManualCameraControllerHelper code

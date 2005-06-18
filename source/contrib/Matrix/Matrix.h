@@ -546,10 +546,12 @@ public:
 
       this = U * D * V'
 
+      Assumes that rows >= cols
+
       @return NULL on success, a string describing the error on failure.
-      @param U rows x cols matrix to be decomposed, gets overwritten with U
-      @param D vector of singular values of a (diagonal of the D matrix)
-      @param V returns the right orthogonal transformation matrix
+      @param U rows x cols matrix to be decomposed, gets overwritten with U, a rows x cols matrix with orthogonal columns.
+      @param D vector of singular values of a (diagonal of the D matrix).  Length cols.
+      @param V returns the right orthonormal transformation matrix, size cols x cols
 
       @cite Based on Dianne Cook's implementation, which is adapted from 
       svdecomp.c in XLISP-STAT 2.1, which is code from Numerical Recipes 

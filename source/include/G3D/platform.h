@@ -86,6 +86,9 @@
         // This trick will generate a warning; disable the warning
         #pragma warning (disable : 4127)
         #define for if (false) {} else for
+
+        // The restrict keyword doesn't exist pre C99
+        #define restrict
     #endif
 
 

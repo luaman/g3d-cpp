@@ -8,7 +8,7 @@
   @cite See also http://www.jelovic.com/articles/cpp_without_memory_errors_slides.htm
 
   @created 2001-10-23
-  @edited  2004-09-14
+  @edited  2005-06-14
 
 Example:
 
@@ -23,15 +23,31 @@ public:
 };
 
 typedef G3D::ReferenceCountedPointer<Foo> FooRef;
+typedef G3D::WeakReferenceCountedPointer<Foo> WeakFooRef;
 
 int main(int argc, char *argv[]) {
 
-    FooRef a = new Foo();
+    WeakFooRef x;
 
     {
-        FooRef b = a;
+        FooRef a = new Foo();
+
+        // Reference count == 1
+
+        x = a;
+        // Weak references do not increase count
+
+        {
+            FooRef b = a;
+            // Reference count == 2
+        }
+
+        // Reference count == 1
     }
-    return 0
+    // No more strong references; object automatically deleted.
+    // x is set to NULL automatically.
+
+    return 0;
 }
 </PRE>
 */
@@ -43,11 +59,37 @@ int main(int argc, char *argv[]) {
 
 namespace G3D {
 
+/** Base class for WeakReferenceCountedPointer */
+class _WeakPtr {
+public:
+    inline virtual ~_WeakPtr() {}
+
+protected:
+    friend class ReferenceCountedObject;
+
+    /** Called by ReferenceCountedObject to tell a weak pointer that its underlying object was collected. */
+    virtual void objectCollected() = 0;
+};
+
+/** Used internally by ReferenceCountedObject */
+class _WeakPtrLinkedList {
+public:
+    _WeakPtr*                   weakPtr;
+    _WeakPtrLinkedList*         next;
+
+    inline _WeakPtrLinkedList() : weakPtr(NULL), next(NULL) {}
+
+    /** Inserts this node into the head of the list that previously had n as its head. */
+    inline _WeakPtrLinkedList(_WeakPtr* p, _WeakPtrLinkedList* n) : weakPtr(p), next(n) {}
+};
 
 /**
  Objects that are reference counted inherit from this.  Subclasses 
  <B>must</B> have a public destructor (the default destructor is fine)
- and publicly inherit ReferenceCountedObject.
+ and <B>publicly</B> inherit ReferenceCountedObject.
+
+ Multiple inheritance from a reference counted object is dangerous-- use 
+ at your own risk.
  */
 class ReferenceCountedObject {
 public:
@@ -56,30 +98,58 @@ public:
      The long name is to keep this from accidentally conflicting with
      a subclass's variable name.  Do not explicitly manipulate this value.
      */
-    int ReferenceCountedObject_refCount;
+    int                         ReferenceCountedObject_refCount;
+ 
+    /**
+     Linked list of all weak pointers that reference this (some may be on the stack!). 
+     Do not explicitly manipulate this value.
+     */
+    _WeakPtrLinkedList*         ReferenceCountedObject_weakPointer;
 
 protected:
 
-    ReferenceCountedObject() : ReferenceCountedObject_refCount(0) {
+    ReferenceCountedObject() : ReferenceCountedObject_refCount(0), ReferenceCountedObject_weakPointer(0) {
 //        debugAssertM(isValidHeapPointer(this), 
 //            "Reference counted objects must be allocated on the heap.");
     }
 
 public:
 
-    virtual ~ReferenceCountedObject() {}
+    virtual ~ReferenceCountedObject() {
+        // Tell all of my weak pointers that I'm gone
+        
+        _WeakPtrLinkedList* node = ReferenceCountedObject_weakPointer;
+
+        while (node != 0) {
+
+            // Notify
+            node->weakPtr->objectCollected();
+
+            // Free the node and advance
+            _WeakPtrLinkedList* tmp = node;
+            node = node->next;
+            delete tmp;
+        }
+    }
 
     /**
       Note: copies will initially start out with 0 
-      references like any other object.
+      references and 0 weak references like any other object.
      */
     ReferenceCountedObject(const ReferenceCountedObject& notUsed) : 
-        ReferenceCountedObject_refCount(0) {
+        ReferenceCountedObject_refCount(0),
+        ReferenceCountedObject_weakPointer(0) {
         (void)notUsed;
-        debugAssertM(isValidHeapPointer(this), 
+        debugAssertM(G3D::isValidHeapPointer(this), 
             "Reference counted objects must be allocated on the heap.");
     }
+
+    ReferenceCountedObject& operator=(const ReferenceCountedObject& other) {
+        // Nothing changes when I am assigned
+        return *this;
+    }
 };
+
 
 
 /**
@@ -121,7 +191,7 @@ private:
     void zeroPointer() {
         if (pointer != NULL) {
 
-            debugAssert(isValidHeapPointer(pointer));
+            debugAssert(G3D::isValidHeapPointer(pointer));
 
             if (deregisterReference() <= 0) {
                 // We held the last reference, so delete the object
@@ -139,7 +209,7 @@ private:
             zeroPointer();
 
             if (x != NULL) {
-                debugAssert(isValidHeapPointer(x));
+                debugAssert(G3D::isValidHeapPointer(x));
 
 		        pointer = x;
 		        registerReference();
@@ -227,11 +297,128 @@ public:
     }
 };
 
+
+/**
+ A weak pointer allows the object it references to be garbage collected.
+ Weak pointers are commonly used in caches, where it is important to hold
+ a pointer to an object without keeping that object alive solely for the
+ cache's benefit (i.e., the object can be collected as soon as all
+ pointers to it <B>outside</B> the cache are gone).
+
+ Weak pointers may become NULL at any point (when their target is collected).
+ Therefore the only way to reference the target is to convert to a strong
+ pointer and then check that it is not NULL.
+ */
+template <class T>
+class WeakReferenceCountedPointer : public _WeakPtr {
+private:
+
+    T*          pointer;
+
+    void init(T* p) {
+        pointer = p;
+
+        if (pointer != 0) {
+            // Add myself to the head of my target's list of weak pointers
+            _WeakPtrLinkedList* head = 
+                new _WeakPtrLinkedList(this, pointer->ReferenceCountedObject_weakPointer);
+            pointer->ReferenceCountedObject_weakPointer = head;
+        }
+    }
+
+    /** Removes this from its target's list of weak pointers */
+    void remove() {
+        if (pointer != 0) {
+            debugAssertM(pointer->ReferenceCountedObject_weakPointer != NULL,
+                "Weak pointer exists without a backpointer from the object.");
+            
+            // Remove myself from my target's list of weak pointers
+            _WeakPtrLinkedList** node = &pointer->ReferenceCountedObject_weakPointer;
+            while ((*node)->weakPtr != this) {
+                node = &((*node)->next);
+                debugAssertM(*node != NULL, 
+                    "Weak pointer exists without a backpointer from the object (2).");
+            }
+
+            // Node must now point at the node for me.  Remove node and
+            // close the linked list behind it.
+            _WeakPtrLinkedList* temp = *node;
+            *node = temp->next;
+            
+            // Now delete the node corresponding to me
+            delete temp;
+        }
+    }
+
+public:
+
+    WeakReferenceCountedPointer() : pointer(0) {}
+
+    // Gets called a *lot* when weak pointers are on the stack
+    WeakReferenceCountedPointer(
+        const WeakReferenceCountedPointer<T>& weakPtr) {
+        init(pointer);
+    }
+
+    WeakReferenceCountedPointer(
+        const ReferenceCountedPointer<T>& strongPtr) {
+        init(strongPtr.getPointer());
+    }
+
+    ~WeakReferenceCountedPointer() {
+        remove();
+    }
+
+    WeakReferenceCountedPointer<T>& operator=(const WeakReferenceCountedPointer<T>& other) {
+        // I no longer point to my old target.  
+        remove();
+
+        // I now point at other's target
+        init(other.pointer);
+
+        return *this;
+    }
+
+    WeakReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<T>& other) {
+        // I no longer point to my old target.  
+        remove();
+
+        // I now point at other's target
+        init(other.getPointer());
+
+        return *this;
+    }
+
+    bool operator==(const WeakReferenceCountedPointer<T>& other) const {
+        return pointer == other.pointer;
+    }
+
+    bool operator!=(const WeakReferenceCountedPointer<T>& other) const {
+        return pointer != other.pointer;
+    }
+
+protected:
+
+    virtual void objectCollected() {
+        debugAssert(pointer != NULL);
+        pointer = NULL;
+    }
+
+public:
+    /**
+      Creates a strong pointer, which prevents the object from being garbage collected.
+      The strong pointer may be NULL, which means that the underlying.
+      */
+    //  There is intentionally no way to check if the WeakReferenceCountedPointer has a 
+    //  null reference without creating a strong pointer since there is no safe way to
+    //  use that information-- the pointer could be collected by a subsequent statement.
+    ReferenceCountedPointer<T> createStrongPtr() const {
+        return ReferenceCountedPointer<T>(pointer);
+    };
+
+};
+
 } // namespace
 
 #endif
-
-
-
-
 

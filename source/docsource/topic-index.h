@@ -245,7 +245,10 @@
 		G3D::Array,
 		G3D::Queue,
  	    G3D::Set,
-		G3D::Table
+		G3D::Table,
+        G3D::ReferenceCountedObject,
+        G3D::ReferenceCountedPointer,
+        G3D::WeakReferenceCountedPointer
 
      <LI><B>Image formats</B> &nbsp; &nbsp;
         G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC,
