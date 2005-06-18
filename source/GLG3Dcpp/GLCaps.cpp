@@ -170,6 +170,7 @@ std::string GLCaps::getDriverVersion() {
     DECLARE_EXT(GL_ARB_shading_language_100);
     DECLARE_EXT(GL_ARB_fragment_shader);
     DECLARE_EXT(GL_ARB_vertex_shader);
+    DECLARE_EXT(GL_EXT_framebuffer_object);
 #undef DECLARE_EXT
 
 
@@ -350,6 +351,8 @@ void GLCaps::loadExtensions(Log* debugLog) {
 
     #undef LOAD_EXTENSION
 
+    // TODO FBO
+
 
     std::istringstream extensions;
 	std::string extStringCopy = (char*)glGetString(GL_EXTENSIONS);
@@ -383,6 +386,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
             DECLARE_EXT(GL_ARB_shading_language_100);
             DECLARE_EXT(GL_ARB_fragment_shader);
             DECLARE_EXT(GL_ARB_vertex_shader);
+            DECLARE_EXT(GL_EXT_framebuffer_object);
         #undef DECLARE_EXT
 
         // Verify that multitexture loaded correctly
