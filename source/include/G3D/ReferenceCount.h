@@ -291,6 +291,7 @@ public:
      Returns true if this is the last reference to an object.
      Useful for flushing memoization caches-- a cache that holds the last
      reference is unnecessarily keeping an object alive.
+     @deprecated Use WeakReferenceCountedPointer for caches
      */
     inline int isLastReference() const {
         return (pointer->ReferenceCountedObject_refCount == 1);
@@ -315,7 +316,8 @@ private:
 
     T*          pointer;
 
-    void init(T* p) {
+    void setPointer(T* p) {
+        zeroPointer();
         pointer = p;
 
         if (pointer != 0) {
@@ -327,7 +329,7 @@ private:
     }
 
     /** Removes this from its target's list of weak pointers */
-    void remove() {
+    void zeroPointer() {
         if (pointer != 0) {
             debugAssertM(pointer->ReferenceCountedObject_weakPointer != NULL,
                 "Weak pointer exists without a backpointer from the object.");
@@ -354,37 +356,45 @@ public:
 
     WeakReferenceCountedPointer() : pointer(0) {}
 
+    /**
+      Allow compile time subtyping rule 
+      RCP&lt;<I>T</I>&gt; &lt;: RCP&lt;<I>S</I>&gt; if <I>T</I> &lt;: <I>S</I>
+     */
+    template <class S>
+    inline WeakReferenceCountedPointer(const WeakReferenceCountedPointer<S>& p) : pointer(0) {
+        setPointer(p.pointer);
+    }
+
+    template <class S>
+    inline WeakReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(0) {
+        setPointer(p.getPointer());
+    }
+
     // Gets called a *lot* when weak pointers are on the stack
     WeakReferenceCountedPointer(
-        const WeakReferenceCountedPointer<T>& weakPtr) {
-        init(pointer);
+        const WeakReferenceCountedPointer<T>& weakPtr) : pointer(0) {
+        setPointer(weakPtr.pointer);
     }
 
     WeakReferenceCountedPointer(
-        const ReferenceCountedPointer<T>& strongPtr) {
-        init(strongPtr.getPointer());
+        const ReferenceCountedPointer<T>& strongPtr) : pointer(0) {
+        setPointer(strongPtr.getPointer());
     }
 
     ~WeakReferenceCountedPointer() {
-        remove();
+        zeroPointer();
     }
 
     WeakReferenceCountedPointer<T>& operator=(const WeakReferenceCountedPointer<T>& other) {
-        // I no longer point to my old target.  
-        remove();
-
         // I now point at other's target
-        init(other.pointer);
+        setPointer(other.pointer);
 
         return *this;
     }
 
     WeakReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<T>& other) {
-        // I no longer point to my old target.  
-        remove();
-
         // I now point at other's target
-        init(other.getPointer());
+        setPointer(other.getPointer());
 
         return *this;
     }
