@@ -349,10 +349,26 @@ void GLCaps::loadExtensions(Log* debugLog) {
         LOAD_EXTENSION(glXCreateContextWithConfigSGIX);
     #endif
 
+    // Frame buffer object
+    LOAD_EXTENSION(glIsRenderBufferEXT);
+    LOAD_EXTENSION(glBindRenderbufferEXT);
+    LOAD_EXTENSION(glDeleteRenderbuffersEXT);
+    LOAD_EXTENSION(glGenRenderbuffersEXT);
+    LOAD_EXTENSION(glRenderbufferStorageEXT);
+    LOAD_EXTENSION(glGetRenderbufferParameterivEXT);
+    LOAD_EXTENSION(glIsFramebufferEXT);
+    LOAD_EXTENSION(glBindFramebufferEXT);
+    LOAD_EXTENSION(glDeleteFramebuffersEXT);
+    LOAD_EXTENSION(glGenFramebuffersEXT);
+    LOAD_EXTENSION(glCheckFramebufferStatusEXT);
+    LOAD_EXTENSION(glFramebufferTexture1DEXT);
+    LOAD_EXTENSION(glFramebufferTexture2DEXT);
+    LOAD_EXTENSION(glFramebufferTexture3DEXT);
+    LOAD_EXTENSION(glFramebufferRenderbufferEXT);
+    LOAD_EXTENSION(glGetFramebufferAttachmentParameterivEXT);
+    LOAD_EXTENSION(glGenerateMipmapEXT);
+
     #undef LOAD_EXTENSION
-
-    // TODO FBO
-
 
     std::istringstream extensions;
 	std::string extStringCopy = (char*)glGetString(GL_EXTENSIONS);
