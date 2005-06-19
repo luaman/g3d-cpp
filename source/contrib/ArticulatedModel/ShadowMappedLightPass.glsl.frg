@@ -18,7 +18,10 @@ uniform vec3        lightColor;
     uniform sampler2D   specularMap;
 #endif
 
-uniform vec3        specularExponentConstant;
+#ifdef SPECULAREXPONENTCONSTANT
+    uniform vec3        specularExponentConstant;
+#endif
+
 #ifdef SPECULAREXPONENTMAP
     uniform sampler2D   specularExponentMap;
 #endif
@@ -102,30 +105,46 @@ void main(void) {
 #   endif
 
 #   if (defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP))
-        vec3 diffuseColor =
+        vec4 diffuseColor =
 #       ifdef DIFFUSECONSTANT
-            diffuseConstant
+            vec4(diffuseConstant, 1.0)
 #           ifdef DIFFUSEMAP
-                * texture2D(diffuseMap, offsetTexCoord).rgb
+                * texture2D(diffuseMap, offsetTexCoord)
 #           endif
 #       else
-            texture2D(diffuseMap, offsetTexCoord).rgb
+            texture2D(diffuseMap, offsetTexCoord)
 #       endif
         ;
 #   endif
 
 
 #   if defined(SPECULARCONSTANT) || defined(SPECULARMAP)     
-        vec3 specularColor =
+        vec4 specularColor =
 #       ifdef SPECULARCONSTANT
-            specularConstant
+            vec4(specularConstant, 1.0)
 #           ifdef SPECULARMAP
-                * texture2D(specularMap, offsetTexCoord).rgb
+                * texture2D(specularMap, offsetTexCoord)
 #          endif
 #       else
-            texture2D(specularMap, offsetTexCoord).rgb
+            texture2D(specularMap, offsetTexCoord)
 #       endif
         ;
+#   endif
+
+
+#   if defined(SPECULAREXPONENTCONSTANT) || defined(SPECULAREXPONENTMAP)     
+        vec4 specularExponentColor =
+#       ifdef SPECULAREXPONENTCONSTANT
+            vec4(specularExponentConstant, 1.0)
+#           ifdef SPECULAREXPONENTMAP
+                * texture2D(specularExponentMap, offsetTexCoord)
+#           endif
+#       else
+            texture2D(specularExponentMap, offsetTexCoord)
+#       endif
+        ;
+#   else
+        vec4 specularExponentColor = vec4(1.0, 1.0, 1.0, 1.0);
 #   endif
 
     // Compute projected shadow coord.
@@ -146,13 +165,26 @@ void main(void) {
 #          if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
                 // Diffuse
                 max(dot(wsL, wsN), 0.0) 
-                * diffuseColor
+                * diffuseColor.rgb
 #          endif
 
 #       if defined(SPECULARCONSTANT) || defined(SPECULARMAP)
-            + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentConstant) * specularColor
+            + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentColor.rgb) * specularColor.rgb
 #       endif
             );
 
+    gl_FragColor.a = 1.0
+#       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
+           * diffuseColor.a
+#       endif
+
+#       if defined(SPECULARCONSTANT) || defined(SPECULARMAP)
+            * specularColor.a
+#       endif
+
+#       if defined(SPECULAEXPONENTRCONSTANT) || defined(SPECULAREXPONENTMAP)
+            * specularExponentColor.a
+#       endif
+        ;
 }
 

@@ -30,7 +30,9 @@ uniform samplerCube environmentMap;
     uniform sampler2D   specularMap;
 #endif
 
-uniform vec3        specularExponentConstant;
+#ifdef SPECULAREXPONENTCONSTANT
+    uniform vec3        specularExponentConstant;
+#endif
 
 #ifdef SPECULAREXPONENTMAP
     uniform sampler2D   specularExponentMap;
@@ -122,56 +124,72 @@ void main(void) {
 #   endif
 
 #   if (defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP))
-        vec3 diffuseColor =
+        vec4 diffuseColor =
 #       ifdef DIFFUSECONSTANT
-            diffuseConstant
+            vec4(diffuseConstant, 1)
 #           ifdef DIFFUSEMAP
-                * texture2D(diffuseMap, offsetTexCoord).rgb
+                * texture2D(diffuseMap, offsetTexCoord)
 #           endif
 #       else
-            texture2D(diffuseMap, offsetTexCoord).rgb
+            texture2D(diffuseMap, offsetTexCoord)
 #       endif
         ;
 #   endif
 
 
 #   if defined(EMITCONSTANT) || defined(EMITMAP)     
-        vec3 emitColor =
+        vec4 emitColor =
 #       ifdef EMITCONSTANT
-            emitConstant
+            vec4(emitConstant, 1)
 #           ifdef EMITMAP
-                * texture2D(emitMap, offsetTexCoord).rgb
+                * texture2D(emitMap, offsetTexCoord)
 #          endif
 #       else
-            texture2D(emitMap, offsetTexCoord).rgb
+            texture2D(emitMap, offsetTexCoord)
 #       endif
         ;
 #   endif
 
 
 #   if defined(SPECULARCONSTANT) || defined(SPECULARMAP)     
-        vec3 specularColor =
+        vec4 specularColor =
 #       ifdef SPECULARCONSTANT
-            specularConstant
+            vec4(specularConstant, 1)
 #           ifdef SPECULARMAP
-                * texture2D(specularMap, offsetTexCoord).rgb
+                * texture2D(specularMap, offsetTexCoord)
 #          endif
 #       else
-            texture2D(specularMap, offsetTexCoord).rgb
+            texture2D(specularMap, offsetTexCoord)
 #       endif
         ;
 #   endif
 
 
-#   if defined(REFLECTCONSTANT) || defined(REFLECTMAP)     
-        vec3 reflectColor =
-#       ifdef REFLECTCONSTANT
-            reflectConstant
-#           ifdef REFLECTMAP
-                 * texture2D(reflectMap, offsetTexCoord).rgb
+#   if defined(SPECULAREXPONENTCONSTANT) || defined(SPECULAREXPONENTMAP)     
+        vec4 specularExponentColor =
+#       ifdef SPECULAREXPONENTCONSTANT
+            vec4(specularExponentConstant, 1.0)
+#           ifdef SPECULAREXPONENTMAP
+                * texture2D(specularExponentMap, offsetTexCoord)
 #           endif
 #       else
-            texture2D(reflectMap, offsetTexCoord).rgb
+            texture2D(specularExponentMap, offsetTexCoord)
+#       endif
+        ;
+#   else
+        vec4 specularExponentColor = vec4(1.0, 1.0, 1.0, 1.0);
+#   endif
+
+
+#   if defined(REFLECTCONSTANT) || defined(REFLECTMAP)     
+        vec4 reflectColor =
+#       ifdef REFLECTCONSTANT
+            vec4(reflectConstant, 1)
+#           ifdef REFLECTMAP
+                 * texture2D(reflectMap, offsetTexCoord)
+#           endif
+#       else
+            texture2D(reflectMap, offsetTexCoord)
 #       endif
         ;
 #   endif
@@ -180,24 +198,43 @@ void main(void) {
 
     gl_FragColor.rgb =
 #       if defined(EMITCONSTANT) || defined(EMITMAP)
-            emitColor
+            emitColor.rgb
 #       endif
 
 #       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
-           + diffuseColor * 
-            (ambient + max(dot(wsL, wsN), 0.0) * lightColor)
+           + diffuseColor.rgb * 
+            (ambient.rgb + max(dot(wsL, wsN), 0.0) * lightColor.rgb)
 #       endif
 
 #       if defined(SPECULARCONSTANT) || defined(SPECULARMAP)
-            + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentConstant) * lightColor * specularColor
+            + pow(vec3(max(dot(wsL, wsR), 0.0)), specularExponentColor.rgb) * lightColor.rgb * specularColor.rgb
 #       endif
 
 #       if defined(REFLECTCONSTANT) || defined(REFLECTMAP)     
-            // Reflection
-            + textureCube(environmentMap, wsR).rgb * environmentConstant 
-            * reflectColor
+            + textureCube(environmentMap, wsR).rgb * environmentConstant.rgb
+            * reflectColor.rgb
 #       endif
-
         ;
 
+    gl_FragColor.a = 1.0
+#       if defined(EMITCONSTANT) || defined(EMITMAP)
+            * emitColor.a
+#       endif
+
+#       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
+           * diffuseColor.a
+#       endif
+
+#       if defined(SPECULARCONSTANT) || defined(SPECULARMAP)
+            * specularColor.a
+#       endif
+
+#       if defined(SPECULAEXPONENTRCONSTANT) || defined(SPECULAREXPONENTMAP)
+            * specularExponentColor.a
+#       endif
+
+#       if defined(REFLECTCONSTANT) || defined(REFLECTMAP)     
+            * reflectColor.a
+#       endif
+        ;
 }

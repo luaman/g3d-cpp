@@ -102,6 +102,7 @@ void SuperShader::configureShadowShader(
         args.set("diffuseMap",              material.diffuse.map);
     }
 
+    // TODO: bind only the constants that are used
     args.set("diffuseConstant",         material.diffuse.constant);
     args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : whiteMap);
     args.set("specularConstant",        material.specular.constant);
@@ -206,6 +207,19 @@ SuperShader::Cache::Pair SuperShader::getShader(const Material& material) {
                 }
             } else  {
                 defines += "#define SPECULARCONSTANT\n";
+            }
+        }
+
+        if (material.specularExponent.constant != Color3::black()) {
+            if (material.specularExponent.map.notNull()) {
+                defines += "#define SPECULAREXPONENTMAP\n";
+
+                // If the color is white, don't multiply by it
+                if (material.specularExponent.constant != Color3::white()) {
+                    defines += "#define SPECULAREXPONENTCONSTANT\n";
+                }
+            } else  {
+                defines += "#define SPECULAREXPONENTCONSTANT\n";
             }
         }
 
@@ -334,7 +348,7 @@ SuperShader::Cache::Pair SuperShader::Cache::getSimilar(const Material& mat) con
 ///////////////////////////////////////////////////////////////////////////////////
 
 bool SuperShader::Material::similarTo(const Material& other) const {
-    return 
+    return
         diffuse.similarTo(other.diffuse) &&
         emit.similarTo(other.emit) &&
         specular.similarTo(other.specular) &&
