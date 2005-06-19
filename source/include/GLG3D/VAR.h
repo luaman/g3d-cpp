@@ -60,7 +60,7 @@ private:
         <B>bytes</B> to add to _pointer when performing the transfer. */
     void uploadToCard(const void* sourcePtr, int dstPtrOffset, size_t size);
 
-    void set(int index, void* value, GLenum glformat, size_t eltSize);
+    void set(int index, const void* value, GLenum glformat, size_t eltSize);
 
 	// The following are called by RenderDevice
 	void vertexPointer() const;

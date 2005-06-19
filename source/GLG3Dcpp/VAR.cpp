@@ -104,7 +104,7 @@ void VAR::update(
 }
 
 
-void VAR::set(int index, void* value, GLenum glformat, size_t eltSize) {
+void VAR::set(int index, const void* value, GLenum glformat, size_t eltSize) {
     debugAssertM(index < numElements && index >= 0, 
         "Cannot call VAR::set with out of bounds index");
     
