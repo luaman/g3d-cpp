@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-04-08
- @edited  2004-01-06
+ @edited  2005-06-20
  */
 
 #include "GLG3D/VAR.h"
@@ -15,7 +15,8 @@
 
 namespace G3D {
 
-VAR::VAR() : area(NULL), _pointer(NULL), elementSize(0), numElements(0), generation(0), underlyingRepresentation(GL_FLOAT), _maxSize(0) {
+VAR::VAR() : area(NULL), _pointer(NULL), elementSize(0), 
+    numElements(0), generation(0), underlyingRepresentation(GL_FLOAT), _maxSize(0) {
 }
 
 
@@ -70,7 +71,7 @@ void VAR::init(
     area->updateAllocation(newAlignedSize);
 
 	// Upload the data
-    uploadToCard(sourcePtr, size);
+    uploadToCard(sourcePtr, 0, size);
 }
 
 
@@ -99,11 +100,28 @@ void VAR::update(
         " be using an unsupported type in a vertex array.");
 	
 	// Upload the data
-    uploadToCard(sourcePtr, size);
+    uploadToCard(sourcePtr, 0, size);
 }
 
 
-void VAR::uploadToCard(const void* sourcePtr, size_t size) {
+void VAR::set(int index, void* value, GLenum glformat, size_t eltSize) {
+    debugAssertM(index < numElements && index >= 0, 
+        "Cannot call VAR::set with out of bounds index");
+    
+    debugAssertM(glformat == underlyingRepresentation, 
+        "Value argument to VAR::set must match the intialization type.");
+
+    debugAssertM(eltSize == elementSize, 
+        "Value argument to VAR::set must match the intialization type's memory footprint.");
+
+    uploadToCard(value, index * eltSize, eltSize);
+}
+
+
+void VAR::uploadToCard(const void* sourcePtr, int dstPtrOffset, size_t size) {
+
+    void* ptr = (void*)((uint)_pointer + dstPtrOffset);
+
     switch (VARArea::mode) {
     case VARArea::VBO_MEMORY:
         // Don't destroy any existing bindings; this call can
@@ -112,12 +130,12 @@ void VAR::uploadToCard(const void* sourcePtr, size_t size) {
         glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
             glBindBufferARB(GL_ARRAY_BUFFER_ARB, area->glbuffer);
 
-            glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (GLintptrARB)_pointer, size, sourcePtr);
+            glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (GLintptrARB)ptr, size, sourcePtr);
         glPopClientAttrib();
         break;
 
     case VARArea::MAIN_MEMORY:
-        System::memcpy(_pointer, sourcePtr, size);
+        System::memcpy(ptr, sourcePtr, size);
         break;
 
     default:

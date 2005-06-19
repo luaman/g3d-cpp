@@ -56,8 +56,11 @@ private:
 	void update(const void* sourcePtr, int _numElements,
         GLenum glformat, size_t eltSize);
 
-    /** Performs the actual memory transfer (like memcpy) */
-    void uploadToCard(const void* sourcePtr, size_t size);
+    /** Performs the actual memory transfer (like memcpy).  The dstPtrOffset is the number of 
+        <B>bytes</B> to add to _pointer when performing the transfer. */
+    void uploadToCard(const void* sourcePtr, int dstPtrOffset, size_t size);
+
+    void set(int index, void* value, GLenum glformat, size_t eltSize);
 
 	// The following are called by RenderDevice
 	void vertexPointer() const;
@@ -127,6 +130,18 @@ public:
 	void update(const Array<T>& source) {
 		update(source.getCArray(), source.size(), glFormatOf(T), sizeof(T));
 	}
+
+    /**
+     Overwrites a single element of an existing array without changing
+     the number of elements.  This is faster than calling update for
+     large arrays, but slow if many set calls are made.  Typically used
+     to change a few key vertices, e.g., the single dark cap point of a
+     directional light's shadow volume.
+     */
+    template<class T>
+    void set(int index, const T& value) {
+        set(index, &value, glFormatOf(T), sizeof(T));
+    }
 
     /**
      Returns true if this VAR can be used for rendering
