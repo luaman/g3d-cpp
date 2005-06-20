@@ -37,19 +37,19 @@ void IFSModel::reset() {
 }
 
 
-IFSModelRef IFSModel::create(const std::string& filename, double scale, const CoordinateFrame& cframe) {
+IFSModelRef IFSModel::create(const std::string& filename, double scale, const CoordinateFrame& cframe, const bool weld) {
     return create(filename, Vector3(scale, scale, scale), cframe);
 }
 
 
-IFSModelRef IFSModel::create(const std::string& filename, const Vector3& scale, const CoordinateFrame& cframe) {
+IFSModelRef IFSModel::create(const std::string& filename, const Vector3& scale, const CoordinateFrame& cframe, const bool weld) {
     IFSModel* ret = new IFSModel();
-    ret->load(filename, scale, cframe);
+    ret->load(filename, scale, cframe, weld);
     return ret;
 }
 
 
-void IFSModel::load(const std::string& filename, const Vector3& scale, const CoordinateFrame& cframe) {
+void IFSModel::load(const std::string& filename, const Vector3& scale, const CoordinateFrame& cframe, const bool weld) {
     reset();
 
     this->filename = filename;
@@ -66,7 +66,11 @@ void IFSModel::load(const std::string& filename, const Vector3& scale, const Coo
     weldedFaceArray = faceArray;
     weldedEdgeArray = edgeArray;
     weldedVertexArray = vertexArray;
-    MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
+	
+	if (weld) {
+		MeshAlg::weldAdjacency(geometry.vertexArray, faceArray, edgeArray, vertexArray);
+	}
+	
     MeshAlg::computeNormals(geometry.vertexArray, faceArray, vertexArray, geometry.normalArray, faceNormalArray);
     MeshAlg::computeBounds(geometry.vertexArray, boundingBox, boundingSphere);
 

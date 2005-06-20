@@ -35,6 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
+     <LI> IFSModel::create  added weld option, defaults to true (to keep compatibility). [Peter]
      <LI> G3D::RenderDevice::alphaTestReference, RenderDevice::alphaTest
      <LI> G3D::VAR::set
      <LI> G3D::WeakReferenceCountedPointer
