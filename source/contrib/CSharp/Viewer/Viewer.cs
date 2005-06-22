@@ -31,6 +31,8 @@ namespace Viewer
 //						this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 //						this.SetStyle(ControlStyles.UserPaint, true);
 
+			this.MouseDown +=new MouseEventHandler(Viewer_MouseDown);
+			this.MouseUp +=new MouseEventHandler(Viewer_MouseUp);
 			initialize3D();
 		}
 
@@ -91,11 +93,28 @@ namespace Viewer
 			// Calling this *twice* forces a buffer swap. 
 			wrapper.renderScene();
 			wrapper.renderScene();
-
+		
 			DateTime endTime = System.DateTime.Now;
 			System.TimeSpan diff = endTime - startTime;
 			Console.WriteLine("render time: " + diff.Milliseconds);
-
 		}
+		
+
+		private void Viewer_MouseDown(object sender, MouseEventArgs e) 
+		{
+			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Viewer_MouseMove);
+		}
+
+		private void Viewer_MouseUp(object sender, MouseEventArgs e) 
+		{
+			this.MouseMove -= new System.Windows.Forms.MouseEventHandler(this.Viewer_MouseMove);
+		}
+		private void Viewer_MouseMove(object sender, MouseEventArgs e) 
+		{
+			// testing: just spin the view a little
+			wrapper.spinY(0.01F);
+			Invalidate();
+		}
+
 	}
 }

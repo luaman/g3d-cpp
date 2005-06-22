@@ -39,6 +39,9 @@ A few problems:
 * We're using p/invoke, which isn't the ideal way to do this. Find a better way then post it! 
 * Two pointer reference errors on shutdown
 
+Setup Instructions:
+Get the G3D data package, and put it in C:/libraries/g3d/data. In particular, this application
+uses data/font/arial.fnt and data/sky/plainsky.
 
 
 

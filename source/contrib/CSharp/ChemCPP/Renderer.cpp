@@ -24,7 +24,7 @@ Renderer::Renderer(bool createDebugMolecule)
 {
 	_yRotation = 0; 
 	_camera = new G3D::GCamera();
-
+ 
 }
 
 Renderer::~Renderer(void)
@@ -86,7 +86,7 @@ Renderer::renderScene()
 void Renderer::resetScene() 
 {
 	clearModel();
-	sky = G3D::Sky::fromFile(_rd, "C:/libraries/g3d-6_07/data/sky/");
+	sky = G3D::Sky::fromFile(_rd, "C:/libraries/g3d/data/sky/");
 	_camera->setPosition(Vector3(0, 0, 2));
     _camera->lookAt(Vector3(0, 0, 0));
 	_yRotation = 0; 
@@ -227,6 +227,7 @@ Renderer::findAtomPosition(int atomID)
 	G3D::Log::common()->printf("No atom found for id %d", atomID);
 	return Vector3(0, 0, 0);
 }
+
 extern "C" CHEMCPP_API Renderer* CreateCppInternals() 
 {
 	return new Renderer(false);
