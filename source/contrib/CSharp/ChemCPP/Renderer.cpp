@@ -53,7 +53,6 @@ Renderer::renderScene()
 	_rd->beginFrame();
 	_rd->clear();
 
-
 	_rd->setProjectionAndCameraMatrix(*_camera);
 
 	// Set up camera and lighting
@@ -62,15 +61,18 @@ Renderer::renderScene()
 	_rd->setLight(0, GLight::directional(lightParams.lightDirection, lightParams.lightColor));
 	_rd->setLight(1, GLight::directional(-lightParams.lightDirection, Color3::white() * .4));
 
+	// The sky does its own lighting; leave lighting disabled when drawing the sky
+	sky->render(_rd, lightParams);
+
 	// Enable lighting before drawing elements in the scene
 	_rd->enableLighting();
 
-	sky->render(_rd, lightParams);
-	
 	if (!atoms.empty()) {
-		drawAtoms();
 		drawBonds();
+		drawArrows();
+		drawAtoms();
 		drawLabels();
+		drawOverlay();
 	} else {
 		G3D::Sphere carbon(Vector3(-3, 0, 0), 1.0);
 		G3D::Draw::sphere(carbon, _rd, Color3::random(), Color4::clear());
@@ -105,7 +107,7 @@ void Renderer::spinY(float radians)
 	_yRotation += radians;
 
 	// Calculate x-z position of camera, and make it look at origin
-	double distanceToOrigin = 3.0; // hardcoded to be reasonable
+	double distanceToOrigin = 2.0; // hardcoded to be reasonable
 	double x = distanceToOrigin * sin(_yRotation);
 	double z = distanceToOrigin * cos(_yRotation);
 
@@ -144,7 +146,7 @@ void Renderer::drawAtoms() {
 		// it represents.
 		// Note: we're not looking up correct atomic radii and standard colors yet.
 
-		atomSphere.radius = 0.2 + (0.1 * atom.elementNumber);
+		atomSphere.radius = 0.2;
 		
 		if (atom.elementNumber == 1)  {
 			atomColor = Color3::white();
@@ -163,6 +165,12 @@ void Renderer::drawAtoms() {
 		//Log::common()->printf("drawAtoms: atom: %d, x=%f, y=%f, z=%f, elem=%d, id=%d\n", 
 		//	i, atom.x, atom.y, atom.z, atom.elementNumber, atom.ID);
 		G3D::Draw::sphere(atomSphere, _rd, atomColor, Color4::clear());
+	
+		// Just for fun -- draw transparent spheres representing the outer electron clouds
+		atomSphere.radius = atomSphere.radius * 2;
+		atomColor.a = 0.2;
+		G3D::Draw::sphere(atomSphere, _rd, atomColor, Color4::clear());
+
 	}
 
 }
@@ -206,7 +214,7 @@ void Renderer::drawLabels()
 		// Note that the label position specifies the top, right-hand corner of the text
 		labelPosition = findAtomPosition(i) + offsetFromAtom; 
 		cframe.translation = labelPosition;
-		labelText = "sweet!";
+		labelText = G3D::format("%d", i);
 		cframe.lookAt(
 			_camera->getCoordinateFrame().translation,
 			G3D::Vector3::UNIT_Y);
@@ -215,6 +223,24 @@ void Renderer::drawLabels()
 		font->draw3D(labelText, cframe);
 	}
 			
+}
+
+void 
+Renderer::drawArrows() 
+{
+	Vector3 start = findAtomPosition(3);
+	Vector3 end = findAtomPosition(4);
+	Vector3 direction = start - end;
+	G3D::Draw::arrow(end, direction, _rd);
+}
+
+void
+Renderer::drawOverlay() 
+{
+	std::string overlayText = "Cats like chemistry.";
+	_rd->push2D();
+	font->draw2D(overlayText, Vector2(10, 40), 20);
+	_rd->pop2D();
 }
 
 G3D::Vector3 

@@ -40,7 +40,10 @@ public:
 	/// Draw stuff
 	void drawAtoms();
 	void drawBonds();
+	void drawArrows();
 	void drawLabels();
+	void drawOverlay();
+	
 
 	/// Control the view
 	void spinY(float radians); 
