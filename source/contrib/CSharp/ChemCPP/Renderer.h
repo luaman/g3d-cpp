@@ -13,8 +13,6 @@
 
 
 
-extern "C" CHEMCPP_API void TestStructExtreme(TestDataStruct foo);
-
 
 // forward declare classes
 namespace G3D {
@@ -42,6 +40,7 @@ public:
 	/// Draw stuff
 	void drawAtoms();
 	void drawBonds();
+	void drawLabels();
 
 	/// Control the view
 	void spinY(float radians); 
@@ -63,7 +62,10 @@ private:
 
 	G3D::Vector3 findAtomPosition(int atomID);
 	void resetScene();
+	
 };
+
+extern "C" CHEMCPP_API void TestStructExtreme(TestDataStruct foo);
 
 extern "C" CHEMCPP_API Renderer* CreateCppInternals();
 extern "C" CHEMCPP_API void DeleteCppInternals(Renderer * instance);

@@ -108,10 +108,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "log.txt"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "MolecularModelTests.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

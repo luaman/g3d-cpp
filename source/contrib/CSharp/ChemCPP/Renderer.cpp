@@ -13,7 +13,12 @@
 
 static std::vector<AtomStruct> atoms;
 static std::vector<BondStruct> bonds;
+
+// Some G3D variables which we need for all the rendering;
+// We define these here becaues we get link errors if we try to make them
+// member data of the renderer. -sab
 G3D::SkyRef sky;
+G3D::GFontRef font;
 
 Renderer::Renderer(bool createDebugMolecule)
 {
@@ -37,7 +42,7 @@ Renderer::initHWND(HWND hwnd, int width, int height)
 	_gWindow = G3D::Win32Window::create(settings, hwnd); 
 	_rd = new RenderDevice();
 	_rd->init(_gWindow);
-
+	font = G3D::GFont::fromFile(_rd, "C:/libraries/g3d/data/font/arial.fnt");
 	resetScene();
 }
 
@@ -61,18 +66,11 @@ Renderer::renderScene()
 	_rd->enableLighting();
 
 	sky->render(_rd, lightParams);
-
-
-	//// Rotate everything in the scene by the amount specified in _yRotation
-	//G3D::Matrix3 worldRotation = Matrix3::fromAxisAngle(G3D::Vector3::UNIT_Y, _yRotation);
-	//Log::common()->printf("in render with yRotation = %f", _yRotation);
-	//Vector3 worldTranslation(0, 0, 0);
-	//_rd->setObjectToWorldMatrix(CoordinateFrame(worldRotation, worldTranslation));
-	
 	
 	if (!atoms.empty()) {
 		drawAtoms();
 		drawBonds();
+		drawLabels();
 	} else {
 		G3D::Sphere carbon(Vector3(-3, 0, 0), 1.0);
 		G3D::Draw::sphere(carbon, _rd, Color3::random(), Color4::clear());
@@ -92,6 +90,7 @@ void Renderer::resetScene()
 	_camera->setPosition(Vector3(0, 0, 2));
     _camera->lookAt(Vector3(0, 0, 0));
 	_yRotation = 0; 
+	spinY(0);
 }
 
 
@@ -191,6 +190,32 @@ void Renderer::drawBonds() {
 }
 
 
+/// <summary>Draw some test strings, to demonstrate how to draw text.
+void Renderer::drawLabels() 
+{
+	std::string labelText;
+	G3D::Vector3 labelPosition;
+	G3D::CoordinateFrame cframe;
+	G3D::Vector3 offsetFromAtom(0.05, -0.05, 0);
+
+	double flipAngle = G3D::pi();
+	Matrix3 yFlipRot = Matrix3::fromAxisAngle(Vector3::UNIT_Y, flipAngle);
+
+	for (int i=0; i < atoms.size(); i++) {
+		// Move the label a bit away from the atom's center
+		// Note that the label position specifies the top, right-hand corner of the text
+		labelPosition = findAtomPosition(i) + offsetFromAtom; 
+		cframe.translation = labelPosition;
+		labelText = "sweet!";
+		cframe.lookAt(
+			_camera->getCoordinateFrame().translation,
+			G3D::Vector3::UNIT_Y);
+		// Rotate the text so the camera sees its frontside, not its backside.
+		cframe.rotation = cframe.rotation * yFlipRot;
+		font->draw3D(labelText, cframe);
+	}
+			
+}
 
 G3D::Vector3 
 Renderer::findAtomPosition(int atomID) 
