@@ -217,7 +217,6 @@ void Demo::doGraphics() {
     }
 
     app->renderDevice->pushState();
-        app->renderDevice->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
         // Opaque unshadowed
         for (int m = 0; m < opaque.size(); ++m) {
             opaque[m]->renderNonShadowed(app->renderDevice, lighting);

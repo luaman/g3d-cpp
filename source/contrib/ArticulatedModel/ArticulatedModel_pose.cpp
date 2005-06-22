@@ -260,6 +260,9 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
     bool renderedOnce = false;
 
     rd->pushState();
+
+        rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
+
         switch (ArticulatedModel::profile()) {
         case ArticulatedModel::FIXED_FUNCTION:
             renderedOnce = renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
@@ -583,6 +586,7 @@ void PosedArticulatedModel::renderNonShadowed(
     const SuperShader::Material& material = triList.material;
 
     rd->pushState();
+    rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
 
     if (! material.transmit.isBlack()) {
         // Transparent
@@ -679,6 +683,7 @@ void PosedArticulatedModel::renderShadowMappedLightPass(
     }
 
     rd->pushState();
+        rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
 
         switch (ArticulatedModel::profile()) {
         case ArticulatedModel::FIXED_FUNCTION:
