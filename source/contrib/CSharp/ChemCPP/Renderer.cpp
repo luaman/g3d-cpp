@@ -42,7 +42,7 @@ Renderer::initHWND(HWND hwnd, int width, int height)
 	_gWindow = G3D::Win32Window::create(settings, hwnd); 
 	_rd = new RenderDevice();
 	_rd->init(_gWindow);
-	font = G3D::GFont::fromFile(_rd, "C:/libraries/g3d/data/font/arial.fnt");
+	font = G3D::GFont::fromFile(_rd, "C:/libraries/g3d-6_06/data/font/arial.fnt");
 	resetScene();
 }
 
@@ -88,7 +88,7 @@ Renderer::renderScene()
 void Renderer::resetScene() 
 {
 	clearModel();
-	sky = G3D::Sky::fromFile(_rd, "C:/libraries/g3d/data/sky/");
+	sky = G3D::Sky::fromFile(_rd, "C:/libraries/g3d-6_06/data/sky/");
 	_camera->setPosition(Vector3(0, 0, getCameraZPos()));
     _camera->lookAt(Vector3(0, 0, 0));
 	_yRotation = 0; 

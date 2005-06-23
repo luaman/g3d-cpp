@@ -23,14 +23,8 @@ namespace Viewer
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
 			this.Width = width;
-			this.Height = height;
-
-			// The next few calls *should* set the window up to be double-buffered and painted by the user.
-			// Actually, though, it seems to make the first frame not draw properly.
-//						this.SetStyle(ControlStyles.DoubleBuffer, true);
-//						this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-//						this.SetStyle(ControlStyles.UserPaint, true);
-
+			this.Height = height;            // This removes the flickering issue caused by background re-paint of the control
+            this.SetStyle(ControlStyles.UserPaint, true);
 			this.MouseDown +=new MouseEventHandler(Viewer_MouseDown);
 			this.MouseUp +=new MouseEventHandler(Viewer_MouseUp);
 			initialize3D();
@@ -42,18 +36,22 @@ namespace Viewer
 			wrapper.initHWND(this.Handle, this.Width, this.Height);
 		
 			this.Paint +=new PaintEventHandler(Viewer_Paint);
-		}
-
+            renderScene();        }
+        public void renderScene()        {            DateTime startTime = System.DateTime.Now;
+            wrapper.renderScene();
+            DateTime endTime = System.DateTime.Now;
+            System.TimeSpan diff = endTime - startTime;
+            Console.WriteLine("render time: " + diff.Milliseconds);        }
 		public void setModel(MolecularModel mm) 
 		{
 			wrapper.setModel(mm);
-			Invalidate();
+            renderScene();
 		}
 
 		public void spinY(float spinRadians) 
 		{
 			wrapper.spinY(spinRadians);
-			Invalidate();
+            renderScene();
 		}
 
 		/// <summary>
@@ -75,28 +73,19 @@ namespace Viewer
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent()
-		{
-			// 
-			// Viewer
-			// 
-			this.BackColor = System.Drawing.Color.Teal;
-			this.Name = "Viewer";
-			this.Size = new System.Drawing.Size(296, 288);
+		{            // 
+            // Viewer
+            // 
+            this.BackColor = System.Drawing.Color.Teal;
+            this.Name = "Viewer";
+            this.Size = new System.Drawing.Size(296, 288);
 
-		}
+        }
 		#endregion
 
 		private void Viewer_Paint(object sender, PaintEventArgs e)
 		{
-			DateTime startTime = System.DateTime.Now;
-
-			// Calling this *twice* forces a buffer swap. 
-			wrapper.renderScene();
-			wrapper.renderScene();
-		
-			DateTime endTime = System.DateTime.Now;
-			System.TimeSpan diff = endTime - startTime;
-			Console.WriteLine("render time: " + diff.Milliseconds);
+            renderScene();
 		}
 		
 
@@ -113,8 +102,7 @@ namespace Viewer
 		{
 			// testing: just spin the view a little
 			wrapper.spinY(0.01F);
-			Invalidate();
+			renderScene();
 		}
-
 	}
 }
