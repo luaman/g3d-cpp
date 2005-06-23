@@ -89,12 +89,18 @@ void Renderer::resetScene()
 {
 	clearModel();
 	sky = G3D::Sky::fromFile(_rd, "C:/libraries/g3d/data/sky/");
-	_camera->setPosition(Vector3(0, 0, 2));
+	_camera->setPosition(Vector3(0, 0, getCameraZPos()));
     _camera->lookAt(Vector3(0, 0, 0));
 	_yRotation = 0; 
 	spinY(0);
 }
 
+float
+Renderer::getCameraZPos() {
+	// TODO: get bounds of molecule
+
+	return 5.0f;
+}
 
 void Renderer::clearModel()
 {
@@ -107,7 +113,7 @@ void Renderer::spinY(float radians)
 	_yRotation += radians;
 
 	// Calculate x-z position of camera, and make it look at origin
-	double distanceToOrigin = 2.0; // hardcoded to be reasonable
+	double distanceToOrigin = getCameraZPos(); // hardcoded to be reasonable
 	double x = distanceToOrigin * sin(_yRotation);
 	double z = distanceToOrigin * cos(_yRotation);
 
@@ -148,17 +154,19 @@ void Renderer::drawAtoms() {
 
 		atomSphere.radius = 0.2;
 		
+		float scaleFactor = 3.0; 
+
 		if (atom.elementNumber == 1)  {
 			atomColor = Color3::white();
-			atomSphere.radius = 0.1000;
+			atomSphere.radius = scaleFactor * 0.1000;
 		} else if (atom.elementNumber == 8) {
 			atomColor = Color3::red();
-			atomSphere.radius = 0.1520;
+			atomSphere.radius = scaleFactor * 0.1520;
 		} else if (atom.elementNumber == 6) {
 			atomColor = Color3::gray();
-			atomSphere.radius = 0.1700;
+			atomSphere.radius = scaleFactor * 0.1700;
 		} else {
-			atomSphere.radius = 0.1700;
+			atomSphere.radius = scaleFactor * 0.1700;
 			atomColor = Color3::purple(); 
 		}
 

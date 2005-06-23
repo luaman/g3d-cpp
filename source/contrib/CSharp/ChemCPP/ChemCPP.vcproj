@@ -47,7 +47,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="copy dll into test app working dir"
-				CommandLine="copy $(TargetPath) $(SolutionDir)\Test\bin\$(ConfigurationName)"/>
+				CommandLine="copy $(TargetPath) $(SolutionDir)\Test\bin\$(ConfigurationName)
+copy $(TargetPath) $(SolutionDir)\..\..\..\..\..\ChemPad\ChemPad\bin\$(ConfigurationName)"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

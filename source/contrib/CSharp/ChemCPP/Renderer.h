@@ -65,6 +65,7 @@ private:
 
 	G3D::Vector3 findAtomPosition(int atomID);
 	void resetScene();
+	float getCameraZPos();
 	
 };
 
