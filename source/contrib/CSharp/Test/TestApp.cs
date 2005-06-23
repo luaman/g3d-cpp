@@ -39,6 +39,7 @@ namespace Test
 
 			addViewer();
 
+
 			// Create a rotation timer to run in the background
 			rotateTimer = new Timer();
 			rotateTimer.Interval = 50;
@@ -167,7 +168,7 @@ namespace Test
 			// TestApp
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(648, 601);
+			this.ClientSize = new System.Drawing.Size(640, 613);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "TestApp";
@@ -263,6 +264,15 @@ namespace Test
 				// If the screen is gone, kill the rotating thread.
 				rotateTimer.Stop();
 				rotateTimer.Enabled = false;
+			}
+		}
+
+		private void pictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+		{
+			for (int i=0; i < 3; i++) 
+			{
+				e.Graphics.DrawString("I'm adorable!", new Font("Arial", 30), Brushes.Pink, 30+i, 30+i);
+
 			}
 		}
 	

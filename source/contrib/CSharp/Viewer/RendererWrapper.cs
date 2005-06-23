@@ -11,31 +11,38 @@ namespace Viewer
 	{
 		IntPtr _renderer; 
 
-		[DllImport("../../../ChemCPP/Debug/ChemCPP.dll")]
+// In the CSharp development project, it's set up to work with 
+// a relative path:
+//		[DllImport("../../../ChemCPP/Debug/ChemCPP.dll")]
+// But for deployment it's going to be easier to just put the dll 
+// right into the runtime path
+// 		[ DllImport("ChemCPP.dll") ]
+
+		[ DllImport("ChemCPP.dll") ]
 		public static extern IntPtr CreateCppInternals();	
 
-		[ DllImport("../../../ChemCPP/Debug/ChemCPP.dll") ]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void DeleteCppInternals( IntPtr instance );	
 
-		[ DllImport("../../../ChemCPP/Debug/ChemCPP.dll") ]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void InitHWND( IntPtr instance, IntPtr hwnd, int width, int height );	
 
-		[ DllImport("../../../ChemCPP/Debug/ChemCPP.dll") ]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void RenderScene( IntPtr instance );	
 
-		[ DllImport("../../../ChemCPP/Debug/ChemCPP.dll") ]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void ClearModel( IntPtr instance );	
 
-		[ DllImport("../../../ChemCPP/Debug/ChemCPP.dll") ]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void AddAnAtom( IntPtr instance, AtomStruct atom);	
 
-		[ DllImport("../../../ChemCPP/Debug/ChemCPP.dll") ]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void AddBond( IntPtr instance, BondStruct bond);	
 
-		[ DllImport("../../../ChemCPP/Debug/ChemCPP.dll") ]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void SpinY( IntPtr instance, float radians);	
 
-		[DllImport("../../../ChemCPP/Debug/ChemCPP.dll")]
+		[ DllImport("ChemCPP.dll") ]
 		public static extern void TestStructExtreme(TestDataStruct
 			foo);
 
@@ -80,8 +87,6 @@ namespace Viewer
 				anAtom.z = (float) atom.Z;
 				anAtom.ID = atom.ID;
 				anAtom.elementNumber = atom.ElementNumber;
-//				System.Console.WriteLine("AtomStruct: id=" + anAtom.ID + ", element=" + anAtom.elementNumber + ", at x=" + anAtom.x + ", y=" + anAtom.y + ", z=" + anAtom.z );
-//				System.Console.WriteLine("Atom: id=" + atom.ID + ", element=" + atom.ElementNumber + ", at x=" + atom.X + ", y=" + atom.Y + ", z=" + atom.Z );
 				
 				AddAnAtom(_renderer, anAtom);
 			}

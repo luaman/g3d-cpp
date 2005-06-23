@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="ChemCPP"
 	ProjectGUID="{D11FD407-CEFD-4191-A0B9-2151C79B4A3E}"
+	RootNamespace="ChemCPP"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -44,7 +45,9 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				Description="copy dll into test app working dir"
+				CommandLine="copy $(TargetPath) $(SolutionDir)\Test\bin\$(ConfigurationName)"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

@@ -95,6 +95,7 @@ namespace Viewer
 		public int Order
 		{
 			get { return order; }
+			set { order = value; }
 		}
 
 		
@@ -175,5 +176,22 @@ namespace Viewer
 
 			return new MolecularModel(atoms, bonds);
 		}
+
+		static public MolecularModel createSimple() 
+		{
+			ArrayList atoms = new ArrayList();
+			ArrayList bonds = new ArrayList();
+			atoms.Add( new Atom(6, -1, 0, 0, 0));
+			atoms.Add( new Atom(6, 1, 1, 0, 1));
+			
+			// Connect carbon skeleton
+			bonds.Add(new Bond(0, 1, 1));
+			
+
+
+			return new MolecularModel(atoms, bonds);
+		}
+
+	
 	}
 }
