@@ -375,9 +375,9 @@ public:
 
 
 #   define DECLARE_WRITER(ucase, lcase)\
-    void write##ucase(lcase* out, int n);\
-    void write##ucase(std::vector<lcase>& out, int n);\
-    void write##ucase(Array<lcase>& out, int n);
+    void write##ucase(const lcase* out, int n);\
+    void write##ucase(const std::vector<lcase>& out, int n);\
+    void write##ucase(const Array<lcase>& out, int n);
 
     DECLARE_WRITER(Bool8,   bool)
     DECLARE_WRITER(UInt8,   uint8)

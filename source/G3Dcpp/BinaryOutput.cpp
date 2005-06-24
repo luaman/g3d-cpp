@@ -27,24 +27,24 @@
 
 namespace G3D {
 
-void BinaryOutput::writeBool8(std::vector<bool>& out, int n) {
+void BinaryOutput::writeBool8(const std::vector<bool>& out, int n) {
     for (int i = 0; i < n; ++i) {
         writeBool8(out[i]);
     }
 }
 
 
-void BinaryOutput::writeBool8(Array<bool>& out, int n) {
+void BinaryOutput::writeBool8(const Array<bool>& out, int n) {
     writeBool8(out.getCArray(), n);
 }
 
 #define IMPLEMENT_WRITER(ucase, lcase)\
-void BinaryOutput::write##ucase(std::vector<lcase>& out, int n) {\
+void BinaryOutput::write##ucase(const std::vector<lcase>& out, int n) {\
     write##ucase(&out[0], n);\
 }\
 \
 \
-void BinaryOutput::write##ucase(Array<lcase>& out, int n) {\
+void BinaryOutput::write##ucase(const Array<lcase>& out, int n) {\
     write##ucase(out.getCArray(), n);\
 }
 
@@ -65,7 +65,7 @@ IMPLEMENT_WRITER(Float64, float64)
 // Data structures that are one byte per element can be 
 // directly copied, regardles of endian-ness.
 #define IMPLEMENT_WRITER(ucase, lcase)\
-void BinaryOutput::write##ucase(lcase* out, int n) {\
+void BinaryOutput::write##ucase(const lcase* out, int n) {\
     if (sizeof(lcase) == 1) {\
         writeBytes((void*)out, n);\
     } else {\
@@ -83,13 +83,13 @@ IMPLEMENT_WRITER(Int8,    int8)
 
 
 #define IMPLEMENT_WRITER(ucase, lcase)\
-void BinaryOutput::write##ucase(lcase* out, int n) {\
+void BinaryOutput::write##ucase(const lcase* out, int n) {\
     if (swapBytes) {\
         for (int i = 0; i < n; ++i) {\
             write##ucase(out[i]);\
         }\
     } else {\
-        writeBytes((void*)out, sizeof(lcase) * n);\
+        writeBytes((const void*)out, sizeof(lcase) * n);\
     }\
 }
 

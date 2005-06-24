@@ -1,6 +1,6 @@
 #include "App.h"
 
-#define LOAD_ALL 1
+#define LOAD_ALL 0
 
 void App::loadScene() {
     const std::string path = "";
@@ -12,7 +12,6 @@ void App::loadScene() {
 
     RealTime t0 = System::time();
 
-#if LOAD_ALL
     if (true) {
         CoordinateFrame xform;
 
@@ -54,7 +53,7 @@ void App::loadScene() {
         Log::common()->printf("Ghost: %gs\n", System::time() - t0); t0 = System::time();
     }
 
-
+#if LOAD_ALL
     if (true) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("sphere.ifs", 1);
 

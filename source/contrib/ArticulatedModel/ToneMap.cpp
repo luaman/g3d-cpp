@@ -249,7 +249,6 @@ void ToneMap::makeShadersPS14ATI() {
         // R0 = texture0[texcoord0]
         glSampleMapATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);  
 
-        /*
         // Move the blue component of R0 into the red component of R3
         glColorFragmentOp1ATI(GL_MOV_ATI, GL_REG_3_ATI, GL_RED_BIT_ATI, GL_NONE, 
                               GL_REG_0_ATI, GL_BLUE, GL_NONE);
@@ -272,13 +271,11 @@ void ToneMap::makeShadersPS14ATI() {
         // 
         //glPassTexCoordATI(GL_REG_1_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
 
-*/
     glEndFragmentShaderATI();
 }
 
 
 void ToneMap::makeShadersPS20() {
-    // TODO: gamma correct
 
     // Create a filtered, thresholded low-resolution version of an image.
     bloomFilterShader = Shader::fromStrings("",         
@@ -380,9 +377,7 @@ ToneMap::ToneMap() : mEnabled(true) {
                 (GLCaps::numTextureUnits() >= 4)) {
 
                 profile = PS14ATI;
-                // TODO: PS14ATI ends up running emulated and is slow.
-                // try using EMBM instead.
-                profile = NO_TONE;
+//                profile = NO_TONE;
             }
         }
     }

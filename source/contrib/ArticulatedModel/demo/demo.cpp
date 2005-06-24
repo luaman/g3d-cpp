@@ -259,7 +259,6 @@ void Demo::doGraphics() {
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-    debugShowRenderingStats = false;
 
     loadScene();
 
