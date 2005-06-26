@@ -362,13 +362,16 @@ ToneMap::ToneMap() : mEnabled(true) {
         profile = NO_TONE;
         
         if (GLCaps::supports_GL_EXT_texture_rectangle()) {
-            if (Shader::supportsPixelShaders()) {
+            if (Shader::supportsPixelShaders() && 
+                ! beginsWith(GLCaps::vendor(), "ATI")) {
+                // TODO: enable ATI when they support sampler2DRect
                 profile = PS20;
             } else if (GLCaps::supports("GL_ARB_texture_env_crossbar") &&
                 GLCaps::supports("GL_ARB_texture_env_combine") &&
                 GLCaps::supports("GL_EXT_texture_env_add") &&
                 GLCaps::supports("GL_NV_texture_shader") &&
                 (GLCaps::numTextureUnits() >= 4)) {
+
                 profile = PS14NVIDIA;
 
                 // TODO: remove (not currently supporting PS14NIVIDA)
@@ -376,8 +379,8 @@ ToneMap::ToneMap() : mEnabled(true) {
             } else if (GLCaps::supports("GL_ATI_fragment_shader") &&
                 (GLCaps::numTextureUnits() >= 4)) {
 
-                profile = PS14ATI;
-//                profile = NO_TONE;
+//              profile = PS14ATI;
+                profile = NO_TONE;
             }
         }
     }
