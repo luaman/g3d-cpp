@@ -324,7 +324,8 @@ void GLCaps::loadExtensions(Log* debugLog) {
     LOAD_EXTENSION(glAlphaFragmentOp2ATI);
     LOAD_EXTENSION(glAlphaFragmentOp3ATI);
 
-
+    LOAD_EXTENSION(glDrawBuffersARB);
+    
     LOAD_EXTENSION(glTexImage3DEXT);
 
     #ifdef G3D_WIN32

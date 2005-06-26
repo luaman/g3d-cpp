@@ -34,9 +34,25 @@
 
   <P>
    Changes in 6.07:
-   <UL>
+   <UL> 
+    <LI> New texture formats:
+      <UL>
+        <LI> G3D::TextureFormat::L16F;
+        <LI> G3D::TextureFormat::L32F;
+        <LI> G3D::TextureFormat::A16F;
+        <LI> G3D::TextureFormat::A32F;
+        <LI> G3D::TextureFormat::LA4;
+        <LI> G3D::TextureFormat::LA16F;
+        <LI> G3D::TextureFormat::LA32F;
+        <LI> G3D::TextureFormat::RGB16F;
+        <LI> G3D::TextureFormat::RGB32F;
+        <LI> G3D::TextureFormat::RGBA16F;
+        <LI> G3D::TextureFormat::RGBA32F;
+      </UL>
+
      <LI> Added glext.h entries for GL_ARB_draw_buffers, GL_ARB_texture_rectangle, 
-          GL_ARB_color_buffer_float, GL_ARB_half_float_pixel, GL_ARB_texture_float, and GL_ARB_pixel_buffer_object extensions
+          GL_ARB_color_buffer_float, GL_ARB_half_float_pixel, GL_ARB_texture_float, 
+          and GL_ARB_pixel_buffer_object extensions
      <LI> IFSModel::create  added weld option, defaults to true (to keep compatibility). [Peter]
      <LI> G3D::RenderDevice::alphaTestReference, RenderDevice::alphaTest
      <LI> G3D::VAR::set
@@ -53,6 +69,8 @@
      <LI> Can now create G3D::Win32Window with existing HWND and HDC [Corey]
      <LI> G3D::VertexAndPixelShader::ArgList::set(std::string, Array<T>)-- [ 1192401 ] Shader support arrays
      <LI> G3D::X11Window (same as SDLWindow in this release)
+     <LI> Fix: G3D::TextureFormat::LA8 now has 8-bits per channel
+
    </UL>
 
   <P>

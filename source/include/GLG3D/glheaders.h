@@ -318,6 +318,7 @@ namespace G3D
 #endif
 
 
+extern PFNGLDRAWBUFFERSARBPROC glDrawBuffersARB;
 
 #ifdef G3D_WIN32
 

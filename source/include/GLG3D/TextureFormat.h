@@ -80,6 +80,9 @@ public:
      */
     bool                opaque;
 
+    /** True if the bit depths specified are for float formats. */
+    bool                floatingPoint;
+
 private:
 
     TextureFormat(
@@ -95,7 +98,8 @@ private:
         int             _depthBits,
         int             _hardwareBitsPerTexel,
         int             _packedBitsPerTexel,
-        bool            _opaque) : 
+        bool            _opaque,
+        bool            _floatingPoint) : 
         numComponents(_numComponents),
         compressed(_compressed),
         OpenGLFormat(_glFormat),
@@ -108,7 +112,8 @@ private:
         depthBits(_depthBits),
         packedBitsPerTexel(_packedBitsPerTexel),
         hardwareBitsPerTexel(_hardwareBitsPerTexel),
-        opaque(_opaque) {
+        opaque(_opaque),
+        floatingPoint(_floatingPoint) {
     }
 
 public:
@@ -120,9 +125,23 @@ public:
 
     static const TextureFormat* L8;
 
+    static const TextureFormat* L16F;
+    
+    static const TextureFormat* L32F;
+
     static const TextureFormat* A8;
 
+    static const TextureFormat* A16F;
+    
+    static const TextureFormat* A32F;
+
+    static const TextureFormat* LA4;
+
     static const TextureFormat* LA8;
+
+    static const TextureFormat* LA16F;
+    
+    static const TextureFormat* LA32F;
 
     static const TextureFormat* RGB5;
 
@@ -130,7 +149,15 @@ public:
 
     static const TextureFormat* RGB8;
 
+    static const TextureFormat* RGB16F;
+
+    static const TextureFormat* RGB32F;
+
     static const TextureFormat* RGBA8;
+
+    static const TextureFormat* RGBA16F;
+    
+    static const TextureFormat* RGBA32F;
     
     static const TextureFormat* RGB_DXT1;
 
