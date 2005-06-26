@@ -1597,6 +1597,75 @@ typedef unsigned long GLhandleARB;  // shader object handle
 #ifndef GL_NV_vertex_program2
 #endif
 
+#ifndef GL_ARB_draw_buffers
+#define GL_MAX_DRAW_BUFFERS_ARB           0x8824
+#define GL_DRAW_BUFFER0_ARB               0x8825
+#define GL_DRAW_BUFFER1_ARB               0x8826
+#define GL_DRAW_BUFFER2_ARB               0x8827
+#define GL_DRAW_BUFFER3_ARB               0x8828
+#define GL_DRAW_BUFFER4_ARB               0x8829
+#define GL_DRAW_BUFFER5_ARB               0x882A
+#define GL_DRAW_BUFFER6_ARB               0x882B
+#define GL_DRAW_BUFFER7_ARB               0x882C
+#define GL_DRAW_BUFFER8_ARB               0x882D
+#define GL_DRAW_BUFFER9_ARB               0x882E
+#define GL_DRAW_BUFFER10_ARB              0x882F
+#define GL_DRAW_BUFFER11_ARB              0x8830
+#define GL_DRAW_BUFFER12_ARB              0x8831
+#define GL_DRAW_BUFFER13_ARB              0x8832
+#define GL_DRAW_BUFFER14_ARB              0x8833
+#define GL_DRAW_BUFFER15_ARB              0x8834
+#endif
+
+#ifndef GL_ARB_texture_rectangle
+#define GL_TEXTURE_RECTANGLE_ARB          0x84F5
+#define GL_TEXTURE_BINDING_RECTANGLE_ARB  0x84F6
+#define GL_PROXY_TEXTURE_RECTANGLE_ARB    0x84F7
+#define GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB 0x84F8
+#endif
+
+#ifndef GL_ARB_color_buffer_float
+#define GL_RGBA_FLOAT_MODE_ARB            0x8820
+#define GL_CLAMP_VERTEX_COLOR_ARB         0x891A
+#define GL_CLAMP_FRAGMENT_COLOR_ARB       0x891B
+#define GL_CLAMP_READ_COLOR_ARB           0x891C
+#define GL_FIXED_ONLY_ARB                 0x891D
+#endif
+
+#ifndef GL_ARB_half_float_pixel
+#define GL_HALF_FLOAT_ARB                 0x140B
+#endif
+
+#ifndef GL_ARB_texture_float
+#define GL_TEXTURE_RED_TYPE_ARB           0x8C10
+#define GL_TEXTURE_GREEN_TYPE_ARB         0x8C11
+#define GL_TEXTURE_BLUE_TYPE_ARB          0x8C12
+#define GL_TEXTURE_ALPHA_TYPE_ARB         0x8C13
+#define GL_TEXTURE_LUMINANCE_TYPE_ARB     0x8C14
+#define GL_TEXTURE_INTENSITY_TYPE_ARB     0x8C15
+#define GL_TEXTURE_DEPTH_TYPE_ARB         0x8C16
+#define GL_UNSIGNED_NORMALIZED_ARB        0x8C17
+#define GL_RGBA32F_ARB                    0x8814
+#define GL_RGB32F_ARB                     0x8815
+#define GL_ALPHA32F_ARB                   0x8816
+#define GL_INTENSITY32F_ARB               0x8817
+#define GL_LUMINANCE32F_ARB               0x8818
+#define GL_LUMINANCE_ALPHA32F_ARB         0x8819
+#define GL_RGBA16F_ARB                    0x881A
+#define GL_RGB16F_ARB                     0x881B
+#define GL_ALPHA16F_ARB                   0x881C
+#define GL_INTENSITY16F_ARB               0x881D
+#define GL_LUMINANCE16F_ARB               0x881E
+#define GL_LUMINANCE_ALPHA16F_ARB         0x881F
+#endif
+
+#ifndef GL_ARB_pixel_buffer_object
+#define GL_PIXEL_PACK_BUFFER_ARB          0x88EB
+#define GL_PIXEL_UNPACK_BUFFER_ARB        0x88EC
+#define GL_PIXEL_PACK_BUFFER_BINDING_ARB  0x88ED
+#define GL_PIXEL_UNPACK_BUFFER_BINDING_ARB 0x88EF
+#endif
+
 #ifndef GL_PGI_misc_hints
 #define GL_PREFER_DOUBLEBUFFER_HINT_PGI   0x1A1F8
 #define GL_CONSERVE_MEMORY_HINT_PGI       0x1A1FD
@@ -3512,6 +3581,40 @@ typedef void (APIENTRY * PFNGLGETSHADERSOURCEARBPROC) (GLhandleARB obj, GLsizei 
 #ifndef GL_ARB_fragment_shader
 #define GL_FRAGMENT_SHADER_ARB              0x8B30
 #define GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB  0x8B49
+#endif
+
+
+
+#ifndef GL_ARB_draw_buffers
+#define GL_ARB_draw_buffers 1
+#ifdef GL_GLEXT_PROTOTYPES
+GLAPI void APIENTRY glDrawBuffersARB (GLsizei, const GLenum *);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef void (APIENTRY * PFNGLDRAWBUFFERSARBPROC) (GLsizei n, const GLenum *bufs);
+#endif
+
+#ifndef GL_ARB_texture_rectangle
+#define GL_ARB_texture_rectangle 1
+#endif
+
+#ifndef GL_ARB_color_buffer_float
+#define GL_ARB_color_buffer_float 1
+#ifdef GL_GLEXT_PROTOTYPES
+GLAPI void APIENTRY glClampColorARB (GLenum, GLenum);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef void (APIENTRY * PFNGLCLAMPCOLORARBPROC) (GLenum target, GLenum clamp);
+#endif
+
+#ifndef GL_ARB_half_float_pixel
+#define GL_ARB_half_float_pixel 1
+#endif
+
+#ifndef GL_ARB_texture_float
+#define GL_ARB_texture_float 1
+#endif
+
+#ifndef GL_ARB_pixel_buffer_object
+#define GL_ARB_pixel_buffer_object 1
 #endif
 
 #ifdef __cplusplus

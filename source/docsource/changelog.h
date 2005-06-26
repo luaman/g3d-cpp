@@ -35,6 +35,8 @@
   <P>
    Changes in 6.07:
    <UL>
+     <LI> Added glext.h entries for GL_ARB_draw_buffers, GL_ARB_texture_rectangle, 
+          GL_ARB_color_buffer_float, GL_ARB_half_float_pixel, GL_ARB_texture_float, and GL_ARB_pixel_buffer_object extensions
      <LI> IFSModel::create  added weld option, defaults to true (to keep compatibility). [Peter]
      <LI> G3D::RenderDevice::alphaTestReference, RenderDevice::alphaTest
      <LI> G3D::VAR::set
