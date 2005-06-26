@@ -37,15 +37,20 @@
    <UL> 
     <LI> New texture formats:
       <UL>
+        <LI> G3D::TextureFormat::L16;
         <LI> G3D::TextureFormat::L16F;
         <LI> G3D::TextureFormat::L32F;
+        <LI> G3D::TextureFormat::A16;
         <LI> G3D::TextureFormat::A16F;
         <LI> G3D::TextureFormat::A32F;
         <LI> G3D::TextureFormat::LA4;
+        <LI> G3D::TextureFormat::LA16;
         <LI> G3D::TextureFormat::LA16F;
         <LI> G3D::TextureFormat::LA32F;
+        <LI> G3D::TextureFormat::RGB16;
         <LI> G3D::TextureFormat::RGB16F;
         <LI> G3D::TextureFormat::RGB32F;
+        <LI> G3D::TextureFormat::RGBA16;
         <LI> G3D::TextureFormat::RGBA16F;
         <LI> G3D::TextureFormat::RGBA32F;
       </UL>

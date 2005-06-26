@@ -125,11 +125,15 @@ public:
 
     static const TextureFormat* L8;
 
+    static const TextureFormat* L16;
+
     static const TextureFormat* L16F;
     
     static const TextureFormat* L32F;
 
     static const TextureFormat* A8;
+
+    static const TextureFormat* A16;
 
     static const TextureFormat* A16F;
     
@@ -138,6 +142,8 @@ public:
     static const TextureFormat* LA4;
 
     static const TextureFormat* LA8;
+
+    static const TextureFormat* LA16;
 
     static const TextureFormat* LA16F;
     
@@ -149,11 +155,15 @@ public:
 
     static const TextureFormat* RGB8;
 
+    static const TextureFormat* RGB16;
+
     static const TextureFormat* RGB16F;
 
     static const TextureFormat* RGB32F;
 
     static const TextureFormat* RGBA8;
+
+    static const TextureFormat* RGBA16;
 
     static const TextureFormat* RGBA16F;
     
