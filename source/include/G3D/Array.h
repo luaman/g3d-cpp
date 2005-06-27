@@ -114,23 +114,31 @@ private:
 
 
     /**
-     Allocates a new array of size numAllocated and copys at most
+     Allocates a new array of size numAllocated and copies at most
      oldNum elements from the old array to it.  Destructors are
      called for oldNum elements of the old array.
      */
     void realloc(int oldNum) {
          T* oldData = data;
          
+         // The malloc is separate from the new because we don't want 
+         // to pay for the cost of constructors until the newly allocated
+         // elements are actually revealed to the application.  They 
+         // will be constructed in the resize() method.
+
          data = (T*)System::alignedMalloc(sizeof(T) * numAllocated, 16);
+
          // Call the copy constructors
          int i;
          for (i = iMin(oldNum, numAllocated) - 1; i >= 0; --i) {
-             new (data + i) T(oldData[i]);
+             const T* constructed = new (data + i) T(oldData[i]);
+             debugAssertM(constructed == data + i, 
+                 "new returned a different address than the one provided by Array.");
          }
 
          // Call destructors
          for (i = oldNum - 1; i >= 0; --i) {
-            (oldData + i)->~T();
+             (oldData + i)->~T();
          }
 
          System::alignedFree(oldData);
