@@ -4,10 +4,9 @@
  Color functions
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
- @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
-
+ 
  @created 2001-06-25
- @edited  2003-01-25
+ @edited  2005-06-28
 
  Copyright 2000-2003, Morgan McGuire.
  All rights reserved.
@@ -95,11 +94,11 @@ inline bool Color4::fuzzyNe(const Color4& other) const {
 
 
 //----------------------------------------------------------------------------
-inline Color4& Color4::operator= (const Color4& rkVector) {
-    r = rkVector.r;
-    g = rkVector.g;
-    b = rkVector.b;
-    a = rkVector.a;
+inline Color4& Color4::operator= (const Color4& other) {
+    r = other.r;
+    g = other.g;
+    b = other.b;
+    a = other.a;
     return *this;
 }
 
@@ -121,14 +120,14 @@ inline Color4 Color4::operator+ (const Color4& other) const {
 }
 
 //----------------------------------------------------------------------------
-inline Color4 Color4::operator- (const Color4& rkVector) const {
-    return Color4(r -rkVector.r, g - rkVector.g, b - rkVector.b);
+inline Color4 Color4::operator- (const Color4& other) const {
+    return Color4(r - other.r, g - other.g, b - other.b, a - other.a);
 }
 
 //----------------------------------------------------------------------------
 
 inline Color4 Color4::operator* (double fScalar) const {
-    return Color4(fScalar*r, fScalar*g, fScalar*b, fScalar*a);
+    return Color4(fScalar * r, fScalar * g, fScalar * b, fScalar * a);
 }
 
 //----------------------------------------------------------------------------
@@ -139,28 +138,28 @@ inline Color4 Color4::operator- () const {
 
 //----------------------------------------------------------------------------
 
-inline Color4 operator* (float fScalar, const Color4& rkVector) {
-    return Color4(fScalar*rkVector.r, fScalar*rkVector.g,
-                  fScalar*rkVector.b, fScalar*rkVector.a);
+inline Color4 operator* (float fScalar, const Color4& other) {
+    return Color4(fScalar * other.r, fScalar * other.g,
+                  fScalar * other.b, fScalar * other.a);
 }
 
 //----------------------------------------------------------------------------
 
-inline Color4& Color4::operator+= (const Color4& rkVector) {
-    r += rkVector.r;
-    g += rkVector.g;
-    b += rkVector.b;
-    a += rkVector.a;
+inline Color4& Color4::operator+= (const Color4& other) {
+    r += other.r;
+    g += other.g;
+    b += other.b;
+    a += other.a;
     return *this;
 }
 
 //----------------------------------------------------------------------------
 
-inline Color4& Color4::operator-= (const Color4& rkVector) {
-    r -= rkVector.r;
-    g -= rkVector.g;
-    b -= rkVector.b;
-    a -= rkVector.a;
+inline Color4& Color4::operator-= (const Color4& other) {
+    r -= other.r;
+    g -= other.g;
+    b -= other.b;
+    a -= other.a;
     return *this;
 }
 
