@@ -132,6 +132,7 @@ private:
          int i;
          for (i = iMin(oldNum, numAllocated) - 1; i >= 0; --i) {
              const T* constructed = new (data + i) T(oldData[i]);
+             (void)constructed;
              debugAssertM(constructed == data + i, 
                  "new returned a different address than the one provided by Array.");
          }
