@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2005-03-24
+# @edited  2005-06-24
 # Each build target is a procedure.
 #
 
@@ -50,13 +50,15 @@ TARGET     DESCRIPTION
 
 install    Create a user installation directory (what you probably want).
 
-lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other libs and headers
+lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other
+           libs and headers
 lib7       Same as 'lib', but use VC7 on Windows instead of VC6
-fastlib    Build the lib target without reconfiguring on Linux (not recommended) 
+fastlib    Build the lib target without reconfig on Linux (not recommended) 
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip, g3d-data-""" + version + """.zip
 source     Build g3d-src-""" + version + """.zip only
 doc        Run doxygen and copy the html directory and contrib directory
 clean      Delete the build, release, temp, and install directories
+test       Build the tests (assumes you already build lib)
 help       Display this message
 
 See cpp/readme.html for detailed build information.
@@ -276,8 +278,12 @@ def test(args):
         x = msdev('source/graphics3D.dsw',\
                 ["Test - Win32 Release",\
                  "Test - Win32 Debug"])
+    elif (os.name == 'posix'):
+        os.chdir("source/test")
+        run('../bin/icompile', [])
+        os.chdir("../../")
     else:
-        print "Don't know how to build tests on non-Windows platforms"
+        print "Don't know how to build tests on the " + os.name + " platform."
 
     run('temp/release/test/test', [])
     run('temp/debug/test/test', [])

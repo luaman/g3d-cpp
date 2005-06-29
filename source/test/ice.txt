@@ -100,7 +100,7 @@ compiler: %(defaultcompiler)s
 
 include: %(defaultinclude)s;../include;/usr/include/SDL
 
-library: %(defaultlibrary)s;../../temp/debug/g3d;../../temp/debug/glg3d
+library: %(defaultlibrary)s;../../temp/debug/g3d;../../temp/debug/glg3d;../../temp/release/g3d;../../temp/release/glg3d
 
 exclude: %(defaultexclude)s
 

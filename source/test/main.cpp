@@ -2235,10 +2235,7 @@ int main(int argc, char* argv[]) {
         printf("Performance analysis:\n\n");
 
         perfArray();
-        RenderDevice* renderDevice = new RenderDevice();
-        renderDevice->init();
-        measureRDPushPopPerformance(renderDevice);
-       
+
         measureBSPPerformance();
         measureTriangleCollisionPerformance();
         measureAABoxCollisionPerformance();
@@ -2249,6 +2246,20 @@ int main(int argc, char* argv[]) {
         measureMemsetPerformance();
         measureNormalizationPerformance();
         measureSerializerPerformance();
+
+        GWindowSettings settings;
+        settings.width = 800;
+        settings.height = 600;
+        settings.alphaBits = 0;
+        settings.rgbBits = 8;
+        settings.stencilBits = 0;
+        settings.fsaaSamples = 1;
+
+        RenderDevice* renderDevice = new RenderDevice();
+        renderDevice->init(settings);
+        measureRDPushPopPerformance(renderDevice);
+        renderDevice->cleanup();
+        delete renderDevice;
 
         return 0;
     #endif

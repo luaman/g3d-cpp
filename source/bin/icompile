@@ -1710,6 +1710,8 @@ extraLink = {
     'gluBuild2DMipmaps'   :   ('GLU',          'GLU'),
     'glBegin'             :   ('GL',           'GL'),
     'glVertex3'           :   ('GL',           'GL'),
+    'XSync'               :   ('X11',          'X11'),
+    'XFlush'              :   ('X11',          'X11'),
 }
 
 # Static libraries can depend on each other... this specifies
