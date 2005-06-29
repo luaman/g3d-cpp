@@ -519,13 +519,15 @@ public:
         const Array<Edge>&      edgeArray,
         const Array<Vertex>&    vertexArray);
 
+    /** Converts quadlist (QUADS), tristrip(TRIANGLE_STRIP), and quadstrip (QUAD_STRIP)indices into triangle list (TRIANGLES)  indices. */
     template<class IndexType>
     static void toIndexedTriList(
         const Array<IndexType>& inIndices, 
-        MeshAlg::Primitive inType, 
-        Array<IndexType>& outIndices) {
+        MeshAlg::Primitive      inType, 
+        Array<IndexType>&       outIndices) {
 
-        debugAssert(inType == MeshAlg::TRIANGLE_STRIP ||
+        debugAssert(
+            inType == MeshAlg::TRIANGLE_STRIP ||
             inType == MeshAlg::QUADS ||
             inType == MeshAlg::QUAD_STRIP);
 

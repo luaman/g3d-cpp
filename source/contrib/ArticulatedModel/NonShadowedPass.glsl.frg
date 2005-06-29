@@ -77,6 +77,9 @@ varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 /** Set to -1 to flip the normal. */
 uniform float       backside;
 
+/** Used for "ambient occlusion" */
+varying float       accessibility;
+
 void main(void) {
 
     vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
@@ -197,9 +200,12 @@ void main(void) {
     vec3 ambient = ambientTop + (ambientTop - ambientBottom) * min(wsN.y, 0.0);
 
     gl_FragColor.rgb =
+        vec3(0.0, 0.0, 0.0)
 #       if defined(EMITCONSTANT) || defined(EMITMAP)
-            emitColor.rgb
+            + emitColor.rgb
 #       endif
+
+        + accessibility * (
 
 #       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
            + diffuseColor.rgb * 
@@ -214,7 +220,7 @@ void main(void) {
             + textureCube(environmentMap, wsR).rgb * environmentConstant.rgb
             * reflectColor.rgb
 #       endif
-        ;
+        );
 
     gl_FragColor.a = 1.0
 #       if defined(EMITCONSTANT) || defined(EMITMAP)

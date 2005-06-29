@@ -87,7 +87,7 @@ bool MainClass::init(void)
 	m_camera.lookAt(Vector3(0.0f, 0.0f, 0.0f));
 
 
-	m_stoneTexture = Texture::fromFile("C:/tmp/GLSL_bug/GLSL_bug/stones.jpg");
+	m_stoneTexture = Texture::fromFile("D:/tmp/stones.jpg");
 
 
 	m_constantShader = Shader::fromStrings("", STR(

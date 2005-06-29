@@ -74,6 +74,7 @@ std::string RenderDevice::getCardDescription() const {
 RenderDevice::RenderDevice() : _window(NULL), deleteWindow(false) {
 
     _initialized = false;
+    cleanedup = false;
     inPrimitive = false;
     inShader = false;
     _numTextureUnits = 0;
@@ -101,6 +102,7 @@ void RenderDevice::setVARAreaMilestone() {
 
 
 RenderDevice::~RenderDevice() {
+    debugAssertM(cleanedup, "You deleted a RenderDevice without calling RenderDevice::cleanup()");
 }
 
 /**
@@ -626,6 +628,8 @@ void RenderDevice::cleanup() {
         if (debugLog) {debugLog->println("Deleting window.");}
         delete _window;
     }
+
+    cleanedup = true;
 }
 
 

@@ -1278,6 +1278,7 @@ public:
     double                          brightScale;
 
     bool                            _initialized;
+    bool                            cleanedup;
 
     /** Cache of values supplied to supportsTextureFormat.
         Works on pointers since there is no way for users
