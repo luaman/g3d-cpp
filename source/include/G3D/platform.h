@@ -40,26 +40,31 @@
    #define SSE
 #endif
 
+#if defined(__GNUC__)
+#    if __STDC_VERSION__ < 199901
+#        define restrict __restrict__
+#    endif
+#endif
 
 // Verify that the supported compilers are being used and that this is a known
 // processor.
 
 #ifdef G3D_LINUX
-    #ifndef __GNUC__
-        #error G3d only supports the gcc compiler on Linux.
-    #endif
+#   ifndef __GNUC__
+#       error G3d only supports the gcc compiler on Linux.
+#   endif
 
-    #ifndef __i386__
-        #error G3D only supports x86 machines on Linux.
-    #endif
+#   ifndef __i386__
+#       error G3D only supports x86 machines on Linux.
+#   endif
 
-    #ifndef __cdecl
-        #define __cdecl __attribute__((cdecl))
-    #endif
+#   ifndef __cdecl
+#       define __cdecl __attribute__((cdecl))
+#   endif
 
-    #ifndef __stdcall
-        #define __stdcall __attribute__((stdcall))
-    #endif
+#   ifndef __stdcall
+#       define __stdcall __attribute__((stdcall))
+#   endif
 #endif
 
 #ifdef G3D_OSX
@@ -80,14 +85,14 @@
 #ifdef G3D_WIN32
     // Old versions of MSVC (6.0 and previous) don't
     // support C99 for loop scoping rules.  This fixes them.
-    #if (_MSC_VER <= 1200)
+#   if (_MSC_VER <= 1200)
         // This trick will generate a warning; disable the warning
-        #pragma warning (disable : 4127)
-        #define for if (false) {} else for
+#       pragma warning (disable : 4127)
+#       define for if (false) {} else for
 
-        // The restrict keyword doesn't exist pre C99
-        #define restrict
-    #endif
+#    endif
+
+     #define restrict
 
 
     // On MSVC, we need to link against the multithreaded DLL version of

@@ -40,7 +40,7 @@
 
 
 
-version = [0, 4, 2]
+version = [0, 4, 3]
 import sys, string, os, os.path, fileinput, tempfile, shutil, re
 import commands, pickle, time, ConfigParser
 from string import ljust
@@ -415,18 +415,17 @@ def shell(cmd, printCmd = True):
 def latestGppVisitor(best, dirname, files):
     for file in files:
         if ("g++" == file[:3]):
-            if ("g++-" == file[:4]):         
-                # Form of file is g++-VERSION
-                try:
-                    ff = dirname + "/" + file        
-                    v = getVersion(ff)
+            # Form of file is g++-VERSION or g++VERSION
+            try:
+                ff = dirname + "/" + file        
+                v = getVersion(ff)
+                
+                if v > best[1]:
+                    best[0] = ff
+                    best[1] = v
 
-                    if v > best[1]:
-                        best[0] = ff
-                        best[1] = v
-
-                except ValueError:
-                    pass
+            except ValueError:
+                pass
 
 
 """AI for locating the users latest version of g++
@@ -1449,7 +1448,9 @@ def buildClean():
    May modify the default compiler and linker options
    """
 def getDependencies(file, iteration = 1):
-    raw = shell(compilerName() + ' --depend ' + getCompilerOptions([]) + ' ' + file, verbose)
+    # We need to use the -msse2 flad during dependency checking because of the way
+    # xmmintrin.h is set up
+    raw = shell(compilerName() + ' --depend -msse2 ' + getCompilerOptions([]) + ' ' + file, verbose)
 
     if beginsWith(raw, 'In file included from'):
         # If there was an error, the output will have the form
@@ -1649,11 +1650,12 @@ def getCompilerOptions(allFiles, extraOpts = []):
     for i in includePaths():
         opt += '-I' + i + ' '
 
-    #for path in allFiles:
-    #    file = _basename(path)
-    #    if includeTable.has_key(file):
-    #        opt += ' ' + includeTable[file]
-
+    # See if the xmm intrinsics are being used
+    for f in allFiles:
+        if f[-11:] == 'xmmintrin.h':
+            opt += '-msse2'
+            break
+        
     return opt
 
 """ Compiles the source file. """
@@ -2297,7 +2299,6 @@ def configureGpp():
     else:
         defaultCompilerOptions = ['-D_DEBUG', '-g']
         defaultLinkerOptions   = []
-
 
     if (binaryType == DLL):
         defaultLinkerOptions  += ['-shared']

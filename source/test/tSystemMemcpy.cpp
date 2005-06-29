@@ -11,7 +11,7 @@ void perfSystemMemcpy() {
 
     size_t size[M];
     for (int i = 0; i < M; ++i) {
-        size[i] = 1024 * pow((i + 1), 4);
+        size[i] = 1024 * (size_t)pow((i + 1), 4);
     }
 
     printf("System::memcpy Performance:\n");

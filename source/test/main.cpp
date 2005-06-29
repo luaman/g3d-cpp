@@ -223,7 +223,6 @@ void testMatrix() {
         Matrix M(3, 4);
         debugAssert(M.rows() == 3);
         debugAssert(M.cols() == 4);
-        float x = M.get(0, 0);
         debugAssert(M.get(0, 0) == 0);
         debugAssert(M.get(1, 1) == 0);
     }
@@ -234,7 +233,6 @@ void testMatrix() {
         debugAssert(M.rows() == 4);
         debugAssert(M.cols() == 4);
         debugAssert(M.get(0, 0) == 1);
-        float x = M.get(0, 1);
         debugAssert(M.get(0, 1) == 0);
     }
 
@@ -321,7 +319,6 @@ void testMatrix() {
 
         Matrix C = A.inverse();
 
-        float x = C.get(0, 0);
         debugAssert(fuzzyEq(C.get(0, 0), -0.2));
         debugAssert(fuzzyEq(C.get(0, 1), 0.3));
         debugAssert(fuzzyEq(C.get(1, 0), 0.4));
@@ -336,7 +333,6 @@ void testMatrix() {
 
         for (int r = 0; r < B.rows(); ++r) {
             for (int c = 0; c < B.cols(); ++c) {
-//                debugPrintf("%f ", B.get(r, c));
 
                 float v = B.get(r, c);
                 // The precision isn't great on our inverse, so be tolerant
@@ -345,8 +341,8 @@ void testMatrix() {
                 } else {
                     debugAssert(abs(v) < 1e-4);
                 }
+                (void)v;
             }
-//            debugPrintf("\n");
         }
     }
 
@@ -396,6 +392,7 @@ void testMatrix() {
 
         double m = (A - B).norm() / A.norm();
         debugAssert(m < 0.01);
+        (void)m;
     }
 }
 
@@ -762,6 +759,7 @@ void testBox() {
     debugAssert(v3 == Vector3(0,1,1));
 
     Vector3 n[2] = {Vector3(0,0,1), Vector3(1,0,0)};
+    (void)n;
 
     int i;
     for (i = 0; i < 2; ++i) {
@@ -794,14 +792,18 @@ void testAABoxCollision() {
 
         double boxTime = CollisionDetection::collisionTimeForMovingPointFixedBox(
             pt1, vel1, box, boxlocation, normal);
+        (void)boxTime;
 
         double aaTime = CollisionDetection::collisionTimeForMovingPointFixedAABox(
             pt1, vel1, aabox, aaboxlocation);
+        (void)aaTime;
 
         Ray ray = Ray::fromOriginAndDirection(pt1, vel1);
         double rayboxTime = ray.intersectionTime(box);
+        (void)rayboxTime;
 
         double rayaaTime = ray.intersectionTime(aabox);
+        (void)rayaaTime;
 
         debugAssert(fuzzyEq(boxTime, aaTime));
         if (boxTime < inf()) {
@@ -1553,6 +1555,7 @@ void testColor3uint8Array() {
     x[1].b = 65;
 
     uint8* y = (uint8*)x.getCArray();
+    (void)y;
     debugAssert(y[0] == 60);
     debugAssert(y[1] == 61);
     debugAssert(y[2] == 62);
@@ -1701,6 +1704,7 @@ void testCollision() {
 
         float depth = CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
             s, r, contact, outNormal);
+        (void)depth;
 
         debugAssert(outNormal[0] == Vector3(0,-1,0));
         debugAssert(depth == .5);
@@ -1998,11 +2002,11 @@ void testAdjacency() {
         // Test Welding
 
 
-        //        2,5
-        //        /|\
-        //       / | \
-        //      /  |  \
-        //     /___|___\
+        //        2,5 
+        //        /|\         . 
+        //       / | \        .
+        //      /  |  \       .
+        //     /___|___\      .
         //    0   1,4   3
         //
 
@@ -2090,11 +2094,13 @@ void testRandom() {
     }
     int difference = iAbs(num0 - num1);
     debugAssertM(difference < 300, "Integer random number generator appears skewed.");
+    (void)difference;
 
     for (int i = 0; i < 100; ++i) {
         double r = random(0, 1);
         debugAssert(r >= 0.0);
         debugAssert(r <= 1.0);
+        (void)r;
     }
 
 

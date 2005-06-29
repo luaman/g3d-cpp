@@ -255,7 +255,7 @@ inline float rsq(float x) {
  */
 inline float SSErsq(float x) {
 
-    #ifdef SSE
+    #if defined(SSE) && defined(G3D_WIN32)
         __asm {
            movss xmm0, x
            rsqrtss xmm0, xmm0
