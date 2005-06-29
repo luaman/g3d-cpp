@@ -100,6 +100,19 @@ SOURCE=.\Test\main.cpp
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=.\test\tArray.cpp
+
+!IF  "$(CFG)" == "Test - Win32 Release"
+
+# ADD CPP /FAcs
+
+!ELSEIF  "$(CFG)" == "Test - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
