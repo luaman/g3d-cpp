@@ -24,7 +24,7 @@
 				AdditionalIncludeDirectories="include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\..\temp\Debug\Debug/Debug.pch"
@@ -47,7 +47,7 @@
 				AdditionalLibraryDirectories="..\temp\win32-lib,win32-lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\..\temp\Debug\Debug/Debug.pdb"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"

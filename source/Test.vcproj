@@ -164,6 +164,9 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\test\tArray.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
