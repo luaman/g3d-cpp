@@ -33,13 +33,11 @@
 #endif
 
 
-// On Windows, default to compiling with SSE, but if you want to compile 
-// without installing SP5.0 and the Processor Pack, compile with NO_SSE
+// Default to compiling with SSE, but if you want to compile 
+// without installing SP5.0 and the Processor Pack on Windows, compile with NO_SSE
 // defined (can be passed to the compiler command line with /D "NO_SSE")
-#ifdef _MSC_VER
 #ifndef NO_SSE
    #define SSE
-#endif
 #endif
 
 
