@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-06-01
+  @edited  2005-06-28
  */
 
 #include "G3D/platform.h"
@@ -266,7 +266,7 @@ void System::init() {
 
         // We read the standard CPUID level 0x00000000 which should
         // be available on every x86 processor.  This fills out
-    // a string with the processor vendor tag.
+        // a string with the processor vendor tag.
         #ifdef _MSC_VER
             __asm {
                 mov eax, 0
@@ -277,10 +277,21 @@ void System::init() {
                 mov ecxreg, ecx
             }
         #elif defined(__GNUC__) && defined(i386)
-            // TODO: linux
-            ebxreg = 0;
-            edxreg = 0;
-            ecxreg = 0;
+            asm ("
+                mov eax, 0
+                cpuid
+                mov %[eaxreg], eax
+                mov %[ebxreg], ebx
+                mov %[edxreg], edx
+                mov %[ecxreg], ecx" : 
+                [eaxreg] "=m" (eaxreg), 
+                [ebxreg] "=m" (ebxreg), 
+                [edxreg] "=m" (edxreg), 
+                [ecxreg] "=m" (ecxreg) 
+                :
+                // No inputs
+                : 
+                "eax","ebx","ecx","edx" );
         #else
             ebxreg = 0;
             edxreg = 0;
