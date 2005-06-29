@@ -30,6 +30,9 @@ using namespace G3D;
 void perfArray();
 void testArray();
 
+void perfSystemMemcpy();
+void testSystemMemcpy();
+
 
 class WKFoo : public ReferenceCountedObject {
 public:
@@ -1065,34 +1068,6 @@ public:
 
 
 
-
-void measureMemcpyPerformance() {
-    printf("----------------------------------------------------------\n");
-
-    uint64 native, g3d;
-
-    int n = 1024 * 1024;
-    void* m1 = malloc(n);
-    void* m2 = malloc(n);
-
-    // First iteration just primes the system
-    for (int i=0; i < 2; ++i) {
-        System::beginCycleCount(native);
-            memcpy(m1, m2, n);
-        System::endCycleCount(native);
-
-        System::beginCycleCount(g3d);
-            System::memcpy(m1, m2, n);
-        System::endCycleCount(g3d);
-    }
-    free(m1);
-    free(m2);
-
-    printf("System::memcpy:                     %d cycles/kb\n", (int)(g3d / (n / 1024)));
-    printf("::memcpy      :                     %d cycles/kb\n", (int)(native / (n / 1024)));
-}
-
-
 void measureMemsetPerformance() {
     printf("----------------------------------------------------------\n");
 
@@ -1603,27 +1578,6 @@ void testCompression() {
     debugAssert(j == 1.234); (void)j;
 }
 
-
-void testMemcpy() {
-    printf("System::memcpy\n");
-	static const int k = 50000;
-	static uint8 a[k];
-	static uint8 b[k];
-
-	int i;
-	
-	for (i = 0; i < k; ++i) {
-		a[i] = i & 255;
-	}
-
-	System::memcpy(b, a, k);
-
-	for (i = 0; i < k; ++i) {
-		debugAssert(b[i] == (i & 255));
-		debugAssert(a[i] == (i & 255));
-	}
-
-}
 
 void testMemset() {
     printf("System::memset\n");
@@ -2234,6 +2188,9 @@ int main(int argc, char* argv[]) {
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
 
+        perfSystemMemcpy();
+
+        while(true);
         perfArray();
 
         measureBSPPerformance();
@@ -2242,7 +2199,6 @@ int main(int argc, char* argv[]) {
         measureAABoxCollisionPerformance();
         measureMatrix3Performance();
 
-        measureMemcpyPerformance();
         measureMemsetPerformance();
         measureNormalizationPerformance();
         measureSerializerPerformance();
@@ -2311,8 +2267,9 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
 	testMemset();
     printf("  passed\n");
-  	testMemcpy();
-    printf("  passed\n");
+
+    testSystemMemcpy();
+
     testCompression();
     printf("  passed\n");
     testTextInput();

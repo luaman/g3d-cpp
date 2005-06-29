@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <vector>
-#include <graphics3D.h>
-
-using namespace G3D;
+#include "../include/G3DAll.h"
 
 void perfArray();
 void testArray();

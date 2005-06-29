@@ -57,6 +57,10 @@
     #include <CoreServices/CoreServices.h>
 #endif
 
+#if defined(SSE)
+    #include <xmmintrin.h>
+#endif
+
 namespace G3D {
 
 std::string demoFindData(bool errorIfNotFound) {
@@ -123,27 +127,27 @@ static bool                                     _mmx                = false;
 static bool                                     _sse                = false;
 static bool                                     _sse2                   = false;
 static bool                                     _3dnow              = false;
-static std::string                      _cpuVendor          = "Unknown";
+static std::string                              _cpuVendor          = "Unknown";
 //static bool                                   initialized         = false;
 bool System::initialized = false;
 static bool                                     _cpuID              = false;
-static G3DEndian            _machineEndian      = G3D_LITTLE_ENDIAN;
-static std::string          _cpuArch            = "Unknown";
-static std::string          _operatingSystem    = "Unknown";
+static G3DEndian                                _machineEndian      = G3D_LITTLE_ENDIAN;
+static std::string                              _cpuArch            = "Unknown";
+static std::string                              _operatingSystem    = "Unknown";
 
 #ifdef G3D_WIN32
 /** Used by getTick() for timing */
-static LARGE_INTEGER        _start;
-static LARGE_INTEGER        _counterFrequency;
+static LARGE_INTEGER                            _start;
+static LARGE_INTEGER                            _counterFrequency;
 #else
-static struct timeval       _start;
+static struct timeval                           _start;
 #endif
 
-static std::string                     _version = "Unknown";
+static std::string                              _version = "Unknown";
 
 #ifdef G3D_OSX
     long System::m_OSXCPUSpeed;
-    double System:: m_secondsPerNS;
+    double System::m_secondsPerNS;
 #endif
 
 /** The Real-World time of System::getTick() time 0.  Set by initTime */
@@ -593,69 +597,132 @@ void getStandardProcessorExtensions() {
 
 
 
-/** Michael Herf's fast memcpy */
+#if defined(SSE)
+
+// Copy in 128 bytes chunks, where each chunk contains 8*float32x4 = 8 * 4 * 4 bytes = 128 bytes
+//
+//
+void memcpySSE2(void* dst, const void* src, int nbytes) {
+    int remainingBytes = nbytes;
+
+    if (nbytes > 128) {
+
+        // Number of chunks
+        int N = nbytes / 128;
+
+        float* restrict d = (float*)dst;
+        const float* restrict s = (const float*)src;
+    
+        // Finish when the destination pointer has moved 8N elements 
+        float* stop = d + (N * 8 * 4);
+
+        while (d < stop) {
+            // Inner loop unrolled 8 times
+            const __m128 r0 = _mm_loadu_ps(s);
+            const __m128 r1 = _mm_loadu_ps(s + 4);
+            const __m128 r2 = _mm_loadu_ps(s + 8);
+            const __m128 r3 = _mm_loadu_ps(s + 12);
+            const __m128 r4 = _mm_loadu_ps(s + 16);
+            const __m128 r5 = _mm_loadu_ps(s + 20);
+            const __m128 r6 = _mm_loadu_ps(s + 24);
+            const __m128 r7 = _mm_loadu_ps(s + 28);
+
+            _mm_storeu_ps(d, r0);
+            _mm_storeu_ps(d + 4, r1);
+            _mm_storeu_ps(d + 8, r2);
+            _mm_storeu_ps(d + 12, r3);
+            _mm_storeu_ps(d + 16, r4);
+            _mm_storeu_ps(d + 20, r5);
+            _mm_storeu_ps(d + 24, r6);
+            _mm_storeu_ps(d + 28, r7);
+
+            s += 32;
+            d += 32;
+        }
+
+        remainingBytes -= N * 8 * 4 * 4; 
+    }
+
+    if (remainingBytes > 0) {
+        // Memcpy the rest
+        memcpy((uint8*)dst + (nbytes - remainingBytes), (const uint8*)src + (nbytes - remainingBytes), remainingBytes); 
+    }
+}
+#else
+
+    // Fall back to memcpy
+    void memcpySSE2(void *dst, const void *src, int nbytes) {
+        memcpy(dst, src, nbytes);
+    }
+
+#endif
+
 #if defined(G3D_WIN32) && defined(SSE)
+/** Michael Herf's fast memcpy */
+void memcpyMMX(void* dst, const void* src, int nbytes) {
+    int remainingBytes = nbytes;
 
-// On x86 processors, use MMX
-void memcpy2(void *dst, const void *src, int nbytes) {
-        int remainingBytes = nbytes;
+    if (nbytes > 64) {
+            _asm {
+                    mov esi, src 
+                    mov edi, dst 
+                    mov ecx, nbytes 
+                    shr ecx, 6 // 64 bytes per iteration 
 
-        if (nbytes > 64) {
-                _asm {
-                        mov esi, src 
-                        mov edi, dst 
-                        mov ecx, nbytes 
-                        shr ecx, 6 // 64 bytes per iteration 
+    loop1: 
+                    movq mm1,  0[ESI] // Read in source data 
+                    movq mm2,  8[ESI]
+                    movq mm3, 16[ESI]
+                    movq mm4, 24[ESI] 
+                    movq mm5, 32[ESI]
+                    movq mm6, 40[ESI]
+                    movq mm7, 48[ESI]
+                    movq mm0, 56[ESI]
 
-        loop1: 
-                        movq mm1,  0[ESI] // Read in source data 
-                        movq mm2,  8[ESI]
-                        movq mm3, 16[ESI]
-                        movq mm4, 24[ESI] 
-                        movq mm5, 32[ESI]
-                        movq mm6, 40[ESI]
-                        movq mm7, 48[ESI]
-                        movq mm0, 56[ESI]
+                    movntq  0[EDI], mm1 // Non-temporal stores 
+                    movntq  8[EDI], mm2 
+                    movntq 16[EDI], mm3 
+                    movntq 24[EDI], mm4 
+                    movntq 32[EDI], mm5 
+                    movntq 40[EDI], mm6 
+                    movntq 48[EDI], mm7 
+                    movntq 56[EDI], mm0 
 
-                        movntq  0[EDI], mm1 // Non-temporal stores 
-                        movntq  8[EDI], mm2 
-                        movntq 16[EDI], mm3 
-                        movntq 24[EDI], mm4 
-                        movntq 32[EDI], mm5 
-                        movntq 40[EDI], mm6 
-                        movntq 48[EDI], mm7 
-                        movntq 56[EDI], mm0 
+                    add esi, 64 
+                    add edi, 64 
+                    dec ecx 
+                    jnz loop1 
 
-                        add esi, 64 
-                        add edi, 64 
-                        dec ecx 
-                        jnz loop1 
+                    emms
+            }
+            remainingBytes -= ((nbytes >> 6) << 6); 
+    }
 
-                        emms
-                }
-                remainingBytes -= ((nbytes >> 6) << 6); 
-        }
-
-        if (remainingBytes > 0) {
-                // Memcpy the rest
-                memcpy((uint8*)dst + (nbytes - remainingBytes), (const uint8*)src + (nbytes - remainingBytes), remainingBytes); 
-        }
+    if (remainingBytes > 0) {
+        // Memcpy the rest
+        memcpy((uint8*)dst + (nbytes - remainingBytes), (const uint8*)src + (nbytes - remainingBytes), remainingBytes); 
+    }
 }
 
 #else
     // Fall back to memcpy
-    void memcpy2(void *dst, const void *src, int nbytes) {
-            memcpy(dst, src, nbytes);
+    void memcpyMMX(void *dst, const void *src, int nbytes) {
+        memcpy(dst, src, nbytes);
     }
+
 #endif
 
 
 void System::memcpy(void* dst, const void* src, size_t numBytes) {
-    if (System::hasSSE() && System::hasMMX()) {
-                G3D::memcpy2(dst, src, numBytes);
-        } else {
-                ::memcpy(dst, src, numBytes);
-        }
+
+
+    if (System::hasSSE2() && System::hasMMX()) {
+        G3D::memcpySSE2(dst, src, numBytes);
+    } else if (System::hasSSE() && System::hasMMX()) {
+        G3D::memcpyMMX(dst, src, numBytes);
+    } else {
+        ::memcpy(dst, src, numBytes);
+    }
 }
 
 
@@ -669,7 +736,7 @@ void memfill(void *dst, int n32, unsigned long i) {
     int originalSize = i;
     int bytesRemaining = i;
 
-        if (i > 16) {
+    if (i > 16) {
         
         bytesRemaining = i % 16;
         i -= bytesRemaining;
@@ -689,31 +756,31 @@ void memfill(void *dst, int n32, unsigned long i) {
 
                         emms
                 }
-        }
+    }
 
-        if (bytesRemaining > 0) {
-                memset((uint8*)dst + (originalSize - bytesRemaining), n32, bytesRemaining); 
-        }
+    if (bytesRemaining > 0) {
+        ::memset((uint8*)dst + (originalSize - bytesRemaining), n32, bytesRemaining); 
+    }
 }
 
 #else
 
 // For non x86 processors, we fall back to the standard memset
 void memfill(void *dst, int n32, unsigned long i) {
-        memset(dst, n32, i);
+    ::memset(dst, n32, i);
 }
 
 #endif
 
 
 void System::memset(void* dst, uint8 value, size_t numBytes) {
-        if (System::hasSSE() && System::hasMMX()) {
-                uint32 v = value;
-                v = v + (v << 8) + (v << 16) + (v << 24); 
-                G3D::memfill(dst, v, numBytes);
-        } else {
-                ::memset(dst, value, numBytes);
-        }
+    if (System::hasSSE() && System::hasMMX()) {
+        uint32 v = value;
+        v = v + (v << 8) + (v << 16) + (v << 24); 
+        G3D::memfill(dst, v, numBytes);
+    } else {
+        ::memset(dst, value, numBytes);
+    }
 }
 
 
