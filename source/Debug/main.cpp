@@ -1,4 +1,7 @@
-/** Crappy demo (:P) showing GLSL bug on ATI using G3D 6.06 **/
+
+#if 0        
+        
+        /** Crappy demo (:P) showing GLSL bug on ATI using G3D 6.06 **/
 
 #include <G3DAll.h>
 #pragma once
@@ -389,4 +392,5 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+#endif
 #endif

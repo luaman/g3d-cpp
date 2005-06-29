@@ -328,6 +328,7 @@ public:
       static const int minSize = iMax(8, 32 / sizeof(T));
 
       if (num > numAllocated) {
+          // Grow the underlying array
          
           if (num < minSize) {
               numAllocated = minSize;
@@ -342,7 +343,8 @@ public:
 
           realloc(oldNum);
 
-      } else if ((num <= numAllocated / 2) && shrinkIfNecessary && (numAllocated > minSize)) {
+      } else if ((num <= numAllocated / 2) && shrinkIfNecessary && (num > minSize)) {
+          // Shrink the underlying array
 
           // Only copy over old elements that still remain after resizing
           // (destructors were called for others if we're shrinking)

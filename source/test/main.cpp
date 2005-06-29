@@ -1,11 +1,16 @@
 /**
  @file Test/main.cpp
 
- This file contains some unit tests for G3D.
+ This file runs unit conformance and performance tests for G3D.  
+ To write a new test, add a file named t<class>.cpp to the project
+ and provide two entry points: test<class> and perf<class> (even if they are
+ empty).
+
+ Call those two methods from main() in main.cpp.
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2005-02-24
+ @edited  2005-06-28
  */
 
 #include "../include/G3DAll.h"
@@ -19,6 +24,12 @@ using namespace G3D;
 	#include "conio.h"
 #endif
 #include <string>
+
+
+// Forward declarations
+void perfArray();
+void testArray();
+
 
 class WKFoo : public ReferenceCountedObject {
 public:
@@ -1053,82 +1064,6 @@ public:
 };
 
 
-void measureArrayPerformance() {
-
-    uint64 native, g3d, nativeNew, nativeDel, g3dNew, g3dDel, g3dAppend, stdAppend;
-
-    const int size = 5000;
-    for (int j = 0; j < 10; ++j) {
-        {
-            System::beginCycleCount(nativeNew);
-            int* array = new int[size];
-            System::endCycleCount(nativeNew);
-            System::beginCycleCount(native);
-            {
-                int i;
-                for (i = 0; i < size; ++i) {
-                    array[i] = i;
-                }
-                for (i = 0; i < size; ++i) {
-                    ++array[i];
-                }
-            }
-            System::endCycleCount(native);
-            System::beginCycleCount(nativeDel);
-            delete[] array;
-            System::endCycleCount(nativeDel);
-        }
-        System::beginCycleCount(g3dNew);
-        {
-            Array<int> array;
-            array.resize(size);
-            System::endCycleCount(g3dNew);
-            System::beginCycleCount(g3d);
-            {
-                int i;
-		        for (i = 0; i < size; ++i) {
-                    array[i] = i;
-                }
-                for (i = 0; i < size; ++i) {
-                    ++array[i];
-                }
-            }
-            System::endCycleCount(g3d);
-            System::beginCycleCount(g3dDel);
-            array.resize(0);
-        }
-        System::endCycleCount(g3dDel);
-    }
-
-    {
-        Array<int> array;
-        System::beginCycleCount(g3dAppend);
-        int i;
-        for (i = 0; i < size; ++i) {
-            array.append(i);
-        }
-        System::endCycleCount(g3dAppend);
-    }
-    {
-        std::vector<int> array;
-        System::beginCycleCount(stdAppend);
-        int i;
-        for (i = 0; i < size; ++i) {
-            array.push_back(i);
-        }
-        System::endCycleCount(stdAppend);
-    }
-
-    printf("Array alloc:                        %d cycles/elt\n", (int)(g3dNew / size));
-    printf("int* alloc:                         %d cycles/elt\n", (int)(nativeNew / size));
-    printf("Array free:                         %d cycles/elt\n", (int)(g3dDel / size));
-    printf("int* free:                          %d cycles/elt\n", (int)(nativeDel / size));
-    printf("Array<int>[]:                       %g cycles\n", (g3d / (size * 2.0)));
-    printf("int*[]:                             %g cycles\n", (native / (size * 2.0)));
-    printf("\n");
-    printf("Array<int>.append:                  %g cycles\n", g3dAppend / (size * 2.0));
-    printf("std::vector<int>.push_back:         %g cycles\n", stdAppend / (size * 2.0));
-}
 
 
 void measureMemcpyPerformance() {
@@ -2298,6 +2233,8 @@ int main(int argc, char* argv[]) {
 
     #ifndef _DEBUG
         printf("Performance analysis:\n\n");
+
+        perfArray();
         RenderDevice* renderDevice = new RenderDevice();
         renderDevice->init();
         measureRDPushPopPerformance(renderDevice);
@@ -2307,7 +2244,7 @@ int main(int argc, char* argv[]) {
         measureAABoxCollisionPerformance();
         measureAABoxCollisionPerformance();
         measureMatrix3Performance();
-        measureArrayPerformance();
+
         measureMemcpyPerformance();
         measureMemsetPerformance();
         measureNormalizationPerformance();
@@ -2317,6 +2254,8 @@ int main(int argc, char* argv[]) {
     #endif
 
     printf("\n\nTests:\n\n");
+
+    testArray();
 
     testTangentSpace();
     printf("  passed\n");
@@ -2383,3 +2322,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
