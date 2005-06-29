@@ -180,8 +180,8 @@ void perfArray() {
                     ++array[i].x;\
                 }\
             }
-    // 100 thousand
-    size = 100000;
+    // 1 million
+    size = 1000000;
 
     // Measure times for various operations on large arrays of small elements
     uint64 newAllocBig,     newFreeBig,     newAccessBig;
