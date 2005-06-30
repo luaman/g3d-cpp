@@ -801,7 +801,7 @@ private:
                 }
             }
 
-            uint32 childMask  = -1;
+            uint32 childMask  = 0xFFFFFF;
 
             // Iterate through child nodes
             for (int c = 0; c < 2; ++c) {
@@ -825,7 +825,7 @@ public:
             return;
         }
 
-        getIntersectingMembers(plane, members, root, -1);
+        getIntersectingMembers(plane, members, root, 0xFFFFFF);
     }
 
     /**

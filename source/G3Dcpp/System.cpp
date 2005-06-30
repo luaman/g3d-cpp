@@ -169,6 +169,11 @@ static void getStandardProcessorExtensions();
 static void initTime();
 
 
+bool System::hasCPUID() {
+    init();
+    return _cpuID;
+}
+
 bool System::hasRDTSC() {
     init();
     return _rdtsc;
@@ -248,8 +253,8 @@ void System::init() {
     char cpuVendorTmp[13];
     (void)cpuVendorTmp;
  
-        // First of all we check if the CPUID command is available
-        checkForCPUID();
+    // First of all we check if the CPUID command is available
+    checkForCPUID();
 
     // Figure out if this machine is little or big endian.
     {
@@ -262,7 +267,7 @@ void System::init() {
     }
 
     if (_cpuID) {
-    // Process the CPUID information
+        // Process the CPUID information
 
         // We read the standard CPUID level 0x00000000 which should
         // be available on every x86 processor.  This fills out
@@ -277,13 +282,13 @@ void System::init() {
                 mov ecxreg, ecx
             }
         #elif defined(__GNUC__) && defined(i386)
-            asm ("
-                mov eax, 0
-                cpuid
-                mov %[eaxreg], eax
-                mov %[ebxreg], ebx
-                mov %[edxreg], edx
-                mov %[ecxreg], ecx" : 
+            asm (
+                "mov eax, 0\n"
+                "cpuid\n"
+                "mov %[eaxreg], eax\n"
+                "mov %[ebxreg], ebx\n"
+                "mov %[edxreg], edx\n"
+                "mov %[ecxreg], ecx\n" : 
                 [eaxreg] "=m" (eaxreg), 
                 [ebxreg] "=m" (ebxreg), 
                 [edxreg] "=m" (edxreg), 
@@ -460,26 +465,26 @@ void System::init() {
 
 
 void checkForCPUID() {
-        unsigned long bitChanged = 0;
+    unsigned long bitChanged = 0;
 
-        // We've to check if we can toggle the flag register bit 21.
-        // If we can't the processor does not support the CPUID command.
+    // We've to check if we can toggle the flag register bit 21.
+    // If we can't the processor does not support the CPUID command.
+    
+#   ifdef _MSC_VER
+        __asm {
+            pushfd
+                pop   eax
+                mov   ebx, eax
+                xor   eax, 0x00200000 
+                push  eax
+                popfd
+                pushfd
+                pop   eax
+                xor   eax, ebx 
+                mov   bitChanged, eax
+        }
 
-        #ifdef _MSC_VER
-                __asm {
-                        pushfd
-                        pop   eax
-                        mov   ebx, eax
-                        xor   eax, 0x00200000 
-                        push  eax
-                        popfd
-                        pushfd
-                        pop   eax
-                        xor   eax, ebx 
-                        mov   bitChanged, eax
-                }
-
-        #elif defined(__GNUC__) && defined(i386)
+#    elif defined(__GNUC__) && defined(i386)
         // Linux
         int has_CPUID = 0;
         __asm__ (
@@ -497,19 +502,18 @@ void checkForCPUID() {
 "        movl    $1,%0               # We have CPUID support           \n"
 "1:                                                                    \n"
 "pop %%ecx\n"
-        : "=r" (has_CPUID)
+        : "=m" (has_CPUID)
         :
         : "%eax", "%ecx"
         );
         _cpuID = (has_CPUID != 0);
 
-    #else               
-                // Unknown architecture
-                _cpuID = false;
-        
-        #endif
+#    else               
+       // Unknown architecture
+        _cpuID = false;
+#    endif
 
-        _cpuID = ((bitChanged) ? true : false);
+    _cpuID = ((bitChanged) ? true : false);
 }
 
 
@@ -725,8 +729,6 @@ void memcpyMMX(void* dst, const void* src, int nbytes) {
 
 
 void System::memcpy(void* dst, const void* src, size_t numBytes) {
-
-
     if (System::hasSSE2() && System::hasMMX()) {
         G3D::memcpySSE2(dst, src, numBytes);
     } else if (System::hasSSE() && System::hasMMX()) {
