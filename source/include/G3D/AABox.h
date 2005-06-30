@@ -121,7 +121,7 @@ public:
         const class Plane*  plane,
         int                 numPlanes,
 		int32&				cullingPlaneIndex = dummy,
-		const uint32  		testMask = -1) const;
+		const uint32  		testMask = 0xFFFFFF) const;
 
     /**
      Splits the box into two AABoxes along the specified axis.  low contains

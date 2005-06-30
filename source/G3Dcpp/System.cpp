@@ -488,7 +488,6 @@ void checkForCPUID() {
         // Linux
         int has_CPUID = 0;
         __asm__ (
-"push %%ecx\n"
 "        pushfl                      # Get original EFLAGS             \n"
 "        popl    %%eax                                                 \n"
 "        movl    %%eax,%%ecx                                           \n"
@@ -501,7 +500,6 @@ void checkForCPUID() {
 "        jz      1f                  # Processor=80486                 \n"
 "        movl    $1,%0               # We have CPUID support           \n"
 "1:                                                                    \n"
-"pop %%ecx\n"
         : "=m" (has_CPUID)
         :
         : "%eax", "%ecx"

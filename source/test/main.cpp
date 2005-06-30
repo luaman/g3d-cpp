@@ -1407,6 +1407,7 @@ void testTextInput() {
         t = ti.peek();
         debugAssert(t.type() == Token::NUMBER);
         double n = ti.readNumber();
+        (void)n;
         debugAssert((int)n == 0xFEED);
 
         t = ti.read();
@@ -1427,6 +1428,7 @@ void testTextInput() {
     Token e = ti.read();
     Token f = ti.read();
     double g = ti.readNumber();
+    (void)g;
     Token h = ti.read();
     Token i = ti.read();
     Token j = ti.read();
@@ -2191,8 +2193,21 @@ int main(int argc, char* argv[]) {
     exit(-1);
 */
 
-    #ifndef _DEBUG
+#    ifndef _DEBUG
         printf("Performance analysis:\n\n");
+        printf("Machine Profile\n");
+        printf(" OS      %s\n", System::operatingSystem().c_str());
+        printf(" CPU     %s\n", System::cpuVendor().c_str());
+        printf(" Arch    %s\n", System::cpuArchitecture().c_str());
+        printf(" CPUID   %s\n", System::hasCPUID() ? "Yes" : "No");
+        printf(" MMX     %s\n", System::hasMMX() ? "Yes" : "No");
+        printf(" SSE     %s\n", System::hasSSE() ? "Yes" : "No");
+        printf(" SSE2    %s\n", System::hasSSE2() ? "Yes" : "No");
+        printf(" 3DNow   %s\n", System::has3DNow() ? "Yes" : "No");
+        printf(" RDTSC   %s\n", System::hasRDTSC() ? "Yes" : "No");
+        printf(" G3D link version    %d\n", G3D_VER);
+        printf(" G3D compile version %s\n", System::version().c_str());
+        printf("\n");
 
         perfSystemMemcpy();
 
@@ -2224,7 +2239,7 @@ int main(int argc, char* argv[]) {
         delete renderDevice;
 
         return 0;
-    #endif
+#   endif
 
     printf("\n\nTests:\n\n");
 

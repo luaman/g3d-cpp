@@ -69,6 +69,9 @@ public:
 
 	/** */
 	static bool hasMMX();
+
+	/** */
+	static bool hasCPUID();
 	
 	/** */
 	static bool hasSSE();
