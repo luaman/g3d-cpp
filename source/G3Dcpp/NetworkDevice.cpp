@@ -23,8 +23,6 @@
 #include "G3D/stringutils.h"
 #include "G3D/debug.h"
 
-namespace G3D {
-
 #if defined(G3D_LINUX) || defined(G3D_OSX)
     #include <unistd.h>
     #include <errno.h>
@@ -42,7 +40,7 @@ namespace G3D {
     #define SOCKET_ERROR -1
 
     static std::string socketErrorCode(int code) {
-        return format("CODE %d: %s\n", code, strerror(code));
+        return G3D::format("CODE %d: %s\n", code, strerror(code));
     }
 
     static std::string socketErrorCode() {
@@ -70,7 +68,7 @@ namespace G3D {
                         0,
                         NULL);
 
-        return format("CODE %d: %s\n", code, formatMsg);
+        return G3D::format("CODE %d: %s\n", code, formatMsg);
     }
 
     static std::string socketErrorCode() {
@@ -84,6 +82,7 @@ namespace G3D {
     typedef int socklen_t;
 #endif
 
+namespace G3D {
 
 std::ostream& operator<<(std::ostream& os, const NetAddress& a) {
     return os << a.toString();
