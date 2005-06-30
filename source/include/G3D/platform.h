@@ -36,8 +36,13 @@
 // Default to compiling with SSE, but if you want to compile 
 // without installing SP5.0 and the Processor Pack on Windows, compile with NO_SSE
 // defined (can be passed to the compiler command line with /D "NO_SSE")
-#ifndef NO_SSE
+#if !defined(NO_SSE)
    #define SSE
+#endif
+
+// On g++, recognize cases where the -msse2 flag was not specified
+#if defined(SSE) && defined(__GNUC__) && ! defined (__SSE__)
+#   undef SSE
 #endif
 
 #if defined(__GNUC__)
