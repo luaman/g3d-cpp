@@ -11,7 +11,7 @@ class Test {
         boolean assertionsOn = false;
         assert assertionsOn = true;
         if (! assertionsOn) {
-            System.out.println("Must run Test with the -ea Test flag.");
+            System.out.println("Must run Test with 'java -ea Test'.");
             System.exit(-1);
         }
 

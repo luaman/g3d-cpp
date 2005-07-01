@@ -60,13 +60,13 @@ private:
         mode    = READ;
         finished = false;
 
-        name   = b.readUInt32();
-        format = (BinaryFormat)b.readUInt32();
+        name   = b.readUInt16();
+        format = (BinaryFormat)b.readUInt16();
 
         debugAssertM(format > FIRST_BINFMT && format < LAST_BINFMT, 
             "GChunk file is corrupted-- format tag is invalid.");
 
-        size   = b.readUInt16();
+        size   = b.readUInt32();
         debugAssertM(size < b.getLength(), 
             "GChunk file is corrupted-- chunk is larger than file!");
 
@@ -127,7 +127,7 @@ public:
 
     /** Begin a write chunk.  Use GChunk::finish() when done.*/
     GChunk(G3D::BinaryOutput& b, uint16 name, BinaryFormat format = CUSTOM_BINFMT, uint32 count = 1) :
-        startPos(b.getPosition()), name(name), format(format), count(count), finished(false) {
+        startPos(b.getPosition()), name(name), format(format), count(count), finished(false), mode(WRITE) {
 
         b.writeUInt16(name);
         b.writeUInt16(format);

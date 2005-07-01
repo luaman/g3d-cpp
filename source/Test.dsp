@@ -115,6 +115,14 @@ SOURCE=.\test\tArray.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tGChunk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\test\tMatrix.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tSystemMemcpy.cpp
 # End Source File
 # End Group

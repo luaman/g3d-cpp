@@ -22,14 +22,19 @@ import java.nio.ByteOrder;
   <LI> No Vector, Color read methods
  </UL> 
 
- The primary difference between BinaryInput and java.nio.ByteBuffer is that BinaryInput can handle
- unsigned values, which is important for interacting with C++ code and file formats. It is also 
- convient that BinaryInput matches the G3D::BinaryInput API when porting G3D C++ programs to Java.
+ The primary difference between BinaryInput and java.nio.ByteBuffer is
+ that BinaryInput can handle unsigned values, which is important for
+ interacting with C++ code and file formats.  It is also convient that
+ BinaryInput matches the G3D::BinaryInput API when porting G3D C++
+ programs to Java.
 
- @author Morgan McGuire & Max McGuire
+ @author Morgan McGuire
  */
 public class BinaryInput {
-    private final static BigInteger maxUInt64 = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).pow(2).subtract(BigInteger.ONE);
+
+    private final static BigInteger maxUInt64 = 
+        BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).pow(2).
+        subtract(BigInteger.ONE);
 
     /**
      Index of the next byte in data to be used.
@@ -41,7 +46,12 @@ public class BinaryInput {
     
     /** Unlike the C++ API, we must include a byte offset into data
          since there is no way to create a pointer to a subarray. */
-    public BinaryInput(byte data[], int offset, ByteOrder byteOrder, boolean copyMemory) {
+    public BinaryInput(
+                       byte data[], 
+                       int offset, 
+                       ByteOrder byteOrder, 
+                       boolean copyMemory) {
+
         this.byteOrder = byteOrder;
         if (copyMemory) {
             this.data = new byte[data.length];
@@ -63,6 +73,7 @@ public class BinaryInput {
 
     public BinaryInput(String filename, ByteOrder byteOrder) 
         throws FileNotFoundException, IOException {
+
         this(new FileInputStream(filename), byteOrder);
         this.filename = filename;
     }
@@ -77,7 +88,8 @@ public class BinaryInput {
     /**
      * Closes the stream when initialization is done.
      */
-    public BinaryInput(InputStream stream, ByteOrder byteOrder) throws IOException {
+    public BinaryInput(InputStream stream, 
+                       ByteOrder byteOrder) throws IOException {
         this.byteOrder = byteOrder;
 
         // Read whatever is immediately available

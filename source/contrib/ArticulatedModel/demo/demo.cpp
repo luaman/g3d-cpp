@@ -229,7 +229,7 @@ void Demo::doGraphics() {
             }
         }
 
-        // Transparent + shadowed
+        // Transparent
         for (int m = 0; m < transparent.size(); ++m) {
             transparent[m]->renderNonShadowed(app->renderDevice, lighting);
             if (lighting->shadowedLightArray.size() > 0) {

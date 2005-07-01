@@ -728,7 +728,7 @@ void memcpyMMX(void* dst, const void* src, int nbytes) {
 
 void System::memcpy(void* dst, const void* src, size_t numBytes) {
     if (System::hasSSE2() && System::hasMMX()) {
-        G3D::memcpySSE2(dst, src, numBytes);
+        G3D::memcpyMMX(dst, src, numBytes);
     } else if (System::hasSSE() && System::hasMMX()) {
         G3D::memcpyMMX(dst, src, numBytes);
     } else {
