@@ -283,12 +283,12 @@ void System::init() {
             }
         #elif defined(__GNUC__) && defined(i386)
             asm (
-                "mov eax, 0\n"
+                "mov %%eax, 0\n"
                 "cpuid\n"
-                "mov %[eaxreg], eax\n"
-                "mov %[ebxreg], ebx\n"
-                "mov %[edxreg], edx\n"
-                "mov %[ecxreg], ecx\n" : 
+                "mov %[eaxreg], %%eax\n"
+                "mov %[ebxreg], %%ebx\n"
+                "mov %[edxreg], %%edx\n"
+                "mov %[ecxreg], %%ecx\n" : 
                 [eaxreg] "=m" (eaxreg), 
                 [ebxreg] "=m" (ebxreg), 
                 [edxreg] "=m" (edxreg), 
@@ -520,7 +520,7 @@ void getStandardProcessorExtensions() {
         return;
     }
 
-        unsigned long features;
+    unsigned long features;
 
     // Invoking CPUID with '1' in EAX fills out edx with a bit string.
     // The bits of this value indicate the presence or absence of 
@@ -557,9 +557,7 @@ void getStandardProcessorExtensions() {
 "pop %%ecx\n"
 "pop %%ebx\n"
 "pop %%eax\n"
-        : "=r" (features)
-        :
-        : "%eax", "%ebx", "%ecx", "%edx"
+        : "=m" (features)
         );
 
     #else
