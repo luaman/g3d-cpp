@@ -62,7 +62,7 @@ void testGChunk() {
 
             {
                 GChunk c(b, NUM, INT32_BINFMT, 1);
-                alwaysAssertM(b.readInt32 == 10, "");
+                alwaysAssertM(b.readInt32() == 10, "");
                 c.finish(b);
             }
 
