@@ -1997,7 +1997,7 @@ int main(int argc, char* argv[]) {
 
 //    testMatrix();
 
-//    testGChunk();
+    testGChunk();
 
     testAABSPTreeSerialize();
     printf("  passed\n");

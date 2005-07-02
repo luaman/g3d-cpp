@@ -52,7 +52,7 @@ private:
     bool                        finished;
 
     /** Start of the header relative to the beginning of the file. Data 
-        payload is HEADER_SIZE later. */
+        payload is HEADER_SIZE bytes later. */
     int                         startPos;
 
 
@@ -60,10 +60,12 @@ private:
         mode    = READ;
         finished = false;
 
+        startPos = b.getPosition();
+
         name   = b.readUInt16();
         format = (BinaryFormat)b.readUInt16();
 
-        debugAssertM(format > FIRST_BINFMT && format < LAST_BINFMT, 
+        debugAssertM((format > FIRST_BINFMT) && (format < LAST_BINFMT), 
             "GChunk file is corrupted-- format tag is invalid.");
 
         size   = b.readUInt32();
@@ -71,9 +73,14 @@ private:
             "GChunk file is corrupted-- chunk is larger than file!");
 
         if (format != CUSTOM_BINFMT) {
-            count  = size / byteSize(format);
+            size_t s = byteSize(format);
+            if (s != (size_t)-1) {
+                count  = size / s;
+            } else {
+                count = -1;
+            }
         } else {
-            count  = 1;
+            count  = -1;
         }
     }
 
@@ -88,8 +95,8 @@ public:
     /** Size of the data payload in bytes, excluding the 8 header bytes. */
     size_t                      size;
 
-    /** Number of elements in the data payload. 1 if the format is CUSTOM.*/
-    uint32                      count;
+    /** Number of elements in the data payload. -1 if unknown because the format is CUSTOM or string.*/
+    int32                       count;
 
     GChunk() : mode(UNINITIALIZED), finished(true) {}
 
@@ -126,12 +133,11 @@ public:
     }
 
     /** Begin a write chunk.  Use GChunk::finish() when done.*/
-    GChunk(G3D::BinaryOutput& b, uint16 name, BinaryFormat format = CUSTOM_BINFMT, uint32 count = 1) :
+    GChunk(G3D::BinaryOutput& b, uint16 name, BinaryFormat format = CUSTOM_BINFMT) :
         startPos(b.getPosition()), name(name), format(format), count(count), finished(false), mode(WRITE) {
 
         b.writeUInt16(name);
         b.writeUInt16(format);
-        b.writeUInt32(count);
 
         // Leave space for the payload size
         b.skip(sizeof(uint32));
@@ -165,7 +171,7 @@ public:
         debugAssertM(mode == WRITE, "Called finish with a binary output on a read chunk.");
         debugAssertM(! finished, "Called finish on the same chunk twice.");
 
-        // Write the header
+        // Write the size into the header
         uint32 currentPos = b.position();
         b.setPosition(startPos + HEADER_SIZE - 4);
         b.writeUInt32(currentPos - startPos - HEADER_SIZE);
