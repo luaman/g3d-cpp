@@ -28,16 +28,7 @@
 #include <stdio.h>
 #include "G3D/BinaryOutput.h"
 
-#ifdef _MSC_VER
-extern "C" {
-    #include "../IJG/jpeglib.h"
-}
-#else
-extern "C" {
-    #include <jpeglib.h>
-}
-#endif
-
+#include "../IJG/jpeglib.h"
 
 #ifdef G3D_WIN32
     // For CopyFile
