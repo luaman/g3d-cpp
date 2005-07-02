@@ -163,6 +163,7 @@ void testMatrix() {
         A.set(0, 0,  1.0);  A.set(0, 1,  2.0);  A.set(0, 2,  1.0);
         A.set(1, 0, -3.0);  A.set(1, 1,  7.0);  A.set(1, 2, -6.0);
         A.set(2, 0,  4.0);  A.set(2, 1, -4.0);  A.set(2, 2, 10.0);
+        A = Matrix::random(27, 15);
 
         Matrix U, D, V;
 
@@ -173,12 +174,11 @@ void testMatrix() {
 
         Matrix test = abs(A - B) < 0.1;
 
-        A.debugPrint("A");
-
-        U.debugPrint("U");
-        D.debugPrint("D");
-        V.debugPrint("V");
-        (U * D * V.transpose()).debugPrint();
+//        A.debugPrint("A");
+//        U.debugPrint("U");
+//        D.debugPrint("D");
+//        V.debugPrint("V");
+//        (U * D * V.transpose()).debugPrint("UDV'");
 
         debugAssert(test.allNonZero());
 

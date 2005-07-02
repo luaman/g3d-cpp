@@ -1877,12 +1877,13 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testMatrix();
+
     testArray();
 
     testTangentSpace();
     printf("  passed\n");
 
-//    testMatrix();
 
     testGChunk();
 

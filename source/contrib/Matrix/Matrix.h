@@ -106,7 +106,7 @@ private:
         /** elt[r][c] = the element.  Pointers into data.*/
         T**                 elt;
 
-        /** Row major data */
+        /** Row major data for the entire matrix. */
         T*                  data;
 
         /** The number of rows */
@@ -227,6 +227,8 @@ private:
 
         void swapRows(int r0, int r1);
 
+        void swapAndNegateCols(int c0, int c1);
+
         void mulRow(int r, const T& v);
 
         void abs(Impl& out) const;
@@ -237,6 +239,10 @@ private:
         bool anyNonZero() const;
 
         bool allNonZero() const;
+
+        void setRow(int r, const T* vals);
+
+        void setCol(int c, const T* vals);
     };
 
     typedef ReferenceCountedPointer<Impl> ImplRef;
@@ -250,7 +256,7 @@ private:
     class SortRank {
     public:
         T           value;
-        int         row;
+        int         col;
 
         inline bool operator>(const SortRank& x) const {
             return x.value > value;
@@ -490,14 +496,25 @@ public:
     }
 
     /** Singular value decomposition.  Factors into three matrices 
-        such that this = U * D * V.transpose().  
-        
+        such that this = U * D * V.transpose().
+
+        The matrix must have at least as many rows as columns.
+         
         @param sort If true (default), the singular values
         are arranged so that D is sorted from largest to smallest
-        along the diagonal. */
+        along the diagonal. 
+        */
     void svd(Matrix& U, Matrix& D, Matrix& V, bool sort = true) const;
 
     void set(int r, int c, T v);
+
+    void setCol(int c, const Matrix& vec);
+
+    void setRow(int r, const Matrix& vec);
+
+    Matrix col(int c) const;
+
+    Matrix row(int r) const;
 
     T get(int r, int c) const;
 
@@ -510,6 +527,9 @@ public:
     }
 
     void swapRows(int r0, int r1);
+
+    /** Swaps columns c0 and c1 and negates both */
+    void swapAndNegateCols(int c0, int c1);
 
     void mulRow(int r, const T& v);
 

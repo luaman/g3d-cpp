@@ -191,8 +191,72 @@ void Matrix::set(int r, int c, T v) {
 }
 
 
+void Matrix::setRow(int r, const Matrix& vec) {
+    debugAssertM(vec.cols() == cols(),
+        "A row must be set to a vector of the same size.");
+    debugAssertM(vec.rows() == 1,
+        "A row must be set to a row vector.");
+
+    debugAssert(r >= 0);
+    debugAssert(r < rows());
+
+    if (! impl.isLastReference()) {
+        // Copy the data before mutating; this object is shared
+        impl = new Impl(*impl);
+    }
+    impl->setRow(r, vec.impl->data);
+}
+
+
+void Matrix::setCol(int c, const Matrix& vec) {
+    debugAssertM(vec.rows() == rows(),
+        "A column must be set to a vector of the same size.");
+    debugAssertM(vec.cols() == 1,
+        "A column must be set to a column vector.");
+
+    debugAssert(c >= 0);
+
+    debugAssert(c < cols());
+
+    if (! impl.isLastReference()) {
+        // Copy the data before mutating; this object is shared
+        impl = new Impl(*impl);
+    }
+    impl->setCol(c, vec.impl->data);
+}
+
+
 Matrix::T Matrix::get(int r, int c) const {
     return impl->get(r, c);
+}
+
+
+Matrix Matrix::row(int r) const {
+    debugAssert(r >= 0);
+    debugAssert(r < rows());
+    Matrix out(1, cols());
+    out.impl->setRow(1, impl->elt[r]);
+    return out;
+}
+
+
+Matrix Matrix::col(int c) const {
+    debugAssert(c >= 0);
+    debugAssert(c < cols());
+    Matrix out(rows(), 1);
+
+    T* outData = out.impl->data;
+    // Get a pointer to the first element in the column
+    const T* inElt = &(impl->elt[0][c]);
+    int R = rows();
+    int C = cols();
+    for (int r = 0; r < R; ++r) {
+        outData[r] = *inElt;
+        // Skip around to the next row
+        inElt += C;
+    }
+
+    return out;
 }
 
 
@@ -339,6 +403,22 @@ void Matrix::swapRows(int r0, int r1) {
 }
 
 
+void Matrix::swapAndNegateCols(int c0, int c1) {
+    debugAssert(c0 >= 0 && c0 < cols());
+    debugAssert(c1 >= 0 && c1 < cols());
+
+    if (c0 == c1) {
+        return;
+    }
+
+    if (! impl.isLastReference()) {
+        impl = new Impl(*impl);
+    }
+
+    impl->swapAndNegateCols(c0, c1);
+}
+
+
 bool Matrix::anyNonZero() const {
     return impl->anyNonZero();
 }
@@ -350,25 +430,28 @@ bool Matrix::allNonZero() const {
 
 
 void Matrix::svd(Matrix& U, Matrix& D, Matrix& V, bool sort) const {
-    debugAssert(rows() == cols());
-    debugAssert(&D != &V);
-    debugAssert(&D != &U);
-    debugAssert(&D != this);
-    debugAssert(&V != this);
+    debugAssert(rows() >= cols());
+    debugAssertM(&D != &V, "Arguments to SVD must be different matrices");
+    debugAssertM(&D != &U, "Arguments to SVD must be different matrices");
+    debugAssertM(&D != this, "Arguments to SVD must be different matrices");
+    debugAssertM(&V != this, "Arguments to SVD must be different matrices");
 
-    int N = rows();
+    int R = rows();
+    int C = cols();
 
+    // Make sure we don't overwrite a shared matrix
     if (D.impl.isLastReference()) {
-        D.impl->setSize(N, N);
+        D.impl->setSize(C, C);
         D.impl->setZero();
     } else {
-        D = Matrix::zero(N, N);
+        D = Matrix::zero(C, C);
     }
 
+    // Make sure we don't overwrite a shared matrix
     if (! V.impl.isLastReference()) {
-        V = Matrix::zero(N, N);
+        V = Matrix::zero(C, C);
     } else {
-        V.impl->setSize(N, N);
+        V.impl->setSize(C, C);
     }
 
     if (&U != this || ! impl.isLastReference()) {
@@ -376,37 +459,41 @@ void Matrix::svd(Matrix& U, Matrix& D, Matrix& V, bool sort) const {
         U.impl = new Impl(*impl);
     }
 
-    Array<float> d(N);
-    const char* ret = svdCore(U.impl->elt, N, N, d.getCArray(), V.impl->elt);
+    Array<float> d(C);
+    const char* ret = svdCore(U.impl->elt, R, C, d.getCArray(), V.impl->elt);
 
     debugAssertM(ret == NULL, ret);
     (void)ret;
 
     if (sort) {
-        // Sort the values from greatest to least
+        // Sort the singular values from greatest to least
 
-        Array<SortRank> rank(N);
-        for (int r = 0; r < N; ++r) {
-            rank[r].row   = r;
-            rank[r].value = d[r];
+        Array<SortRank> rank(C);
+        for (int c = 0; c < C; ++c) {
+            rank[c].col   = c;
+            rank[c].value = d[c];
         }
 
         rank.sort(SORT_INCREASING);
 
-        int numSwaps = 0;
+        Matrix Uold = U;
+        Matrix Vold = V;
+
+        U = Matrix(U.rows(), U.cols());
+        V = Matrix(V.rows(), V.cols());
 
         // Now permute U, d, and V appropriately
-        for (int r0 = 0; r0 < N; ++r0) {
-            int r1 = rank[r0].row;
-            U.swapRows(r0, r1);
-            d[r0] = rank[r0].value;
-            V.swapRows(r0, r1);
-            ++numSwaps;
+        for (int c0 = 0; c0 < C; ++c0) {
+            const int c1 = rank[c0].col;
+
+            d[c0] = rank[c0].value;
+            U.setCol(c0, Uold.col(c1));
+            V.setCol(c0, Vold.col(c1));
         }
 
     }
 
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < C; ++i) {
         D.impl->set(i, i, d[i]);
     }
 }
@@ -531,6 +618,17 @@ void Matrix::Impl::swapRows(int r0, int r1) {
         T temp = R0[c];
         R0[c] = R1[c];
         R1[c] = temp;
+    }
+}
+
+
+void Matrix::Impl::swapAndNegateCols(int c0, int c1) {
+    for (int r = 0; r < R; ++r) {
+        T* row = elt[r];
+
+        const T temp = -row[c0];
+        row[c0] = -row[c1];
+        row[c1] = temp;
     }
 }
 
@@ -719,6 +817,19 @@ Matrix::T Matrix::Impl::determinant(int nr, int nc) const {
     Impl A(R - 1, C - 1);
     withoutRowAndCol(nr, nc, A);
     return A.determinant();
+}
+
+
+void Matrix::Impl::setRow(int r, const T* vals) {
+    debugAssert(r >= 0);
+    System::memcpy(elt[r], vals, sizeof(T) * C);
+}
+
+
+void Matrix::Impl::setCol(int c, const T* vals) {
+    for (int r = 0; r < R; ++r) {
+        elt[r][c] = vals[r];
+    }
 }
 
 
@@ -938,17 +1049,19 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
     int flag, i, its, j, jj, k, l = 0, nm = 0;
     double c, f, h, s, x, y, z;
     double anorm = 0.0, g = 0.0, scale = 0.0;
+
+    // Temp row vector
     double* rv1;
   
     debugAssertM(rows >= cols, "Must have more rows than columns");
   
-    rv1 = (double*)malloc(cols * sizeof(double));
+    rv1 = (double*)System::alignedMalloc(cols * sizeof(double), 16);
     debugAssert(rv1);
 
     // Householder reduction to bidiagonal form
     for (i = 0; i < cols; i++)  {
         
-        // left-hand reduction
+        // Left-hand reduction
         l = i + 1;
         rv1[i] = scale * g;
         g = s = scale = 0.0;
@@ -1221,7 +1334,7 @@ const char* Matrix::svdCore(float** U, int rows, int cols, float* D, float** V) 
         }
     }
 
-    free(rv1);
+    System::alignedFree(rv1);
     rv1 = NULL;
 
     return NULL;
