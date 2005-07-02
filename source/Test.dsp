@@ -123,6 +123,14 @@ SOURCE=.\test\tMatrix.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tRandom.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\test\tReferenceCount.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tSystemMemcpy.cpp
 # End Source File
 # End Group

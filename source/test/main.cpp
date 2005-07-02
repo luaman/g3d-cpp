@@ -35,66 +35,9 @@ void testGChunk();
 void perfSystemMemcpy();
 void testSystemMemcpy();
 
+void testReferenceCount();
 
-class WKFoo : public ReferenceCountedObject {
-public:
-
-    std::string name;
-
-    WKFoo(const std::string& x) : name(x) {
-        //printf("Foo(\"%s\") = 0x%x\n", name.c_str(), this);
-    }
-
-    ~WKFoo() {
-        //printf("~Foo(\"%s\") = 0x%x\n", name.c_str(), this);
-    }
-};
-typedef ReferenceCountedPointer<WKFoo>     WKFooRef;
-typedef WeakReferenceCountedPointer<WKFoo> WKFooWeakRef;
-
-
-void testWeakPointer() {
-    printf("WeakReferenceCountedPointer...");
-
-    WKFooWeakRef wB;
-    {
-        WKFooRef A = new WKFoo("A");
-
-        WKFooWeakRef wA(A);
-
-        debugAssert(wA.createStrongPtr().isNull() == false);
-
-        A = NULL;
-
-        debugAssert(wA.createStrongPtr().isNull() == true);
-
-        
-        WKFooRef B = new WKFoo("B");
-        
-        A = B;
-        debugAssert(wA.createStrongPtr().isNull() == true);
-        debugAssert(wB.createStrongPtr().isNull() == true);
-        
-        wA = A;
-
-        debugAssert(wA.createStrongPtr().isNull() == false);
-
-        wB = B;
-
-        debugAssert(A == B);
-        debugAssert(wA == wB);
-
-        wA = NULL;
-        debugAssert(wA.createStrongPtr().isNull() == true);
-
-        {
-            WKFooRef C = new WKFoo("C");
-        }
-
-        debugAssert(wB.createStrongPtr().isNull() == false);
-    }
-    debugAssert(wB.createStrongPtr().isNull() == true);
-}
+void testRandom();
 
 
 void testTangentSpace() {
@@ -1822,62 +1765,6 @@ void testAdjacency() {
     
 }
 
-void testRandom() {
-    printf("Random number generators\n");
-
-    int num0 = 0;
-    int num1 = 0;
-    for (int i = 0; i < 10000; ++i) {
-        switch (iRandom(0, 1)) {
-        case 0:
-            ++num0;
-            break;
-
-        case 1:
-            ++num1;
-            break;
-
-        default:
-            debugAssertM(false, "Random number outside the range [0, 1] from iRandom(0,1)");
-        }
-    }
-    int difference = iAbs(num0 - num1);
-    debugAssertM(difference < 300, "Integer random number generator appears skewed.");
-    (void)difference;
-
-    for (int i = 0; i < 100; ++i) {
-        double r = random(0, 1);
-        debugAssert(r >= 0.0);
-        debugAssert(r <= 1.0);
-        (void)r;
-    }
-
-
-    // Triangle.randomPoint
-    Triangle tri(Vector3(0,0,0), Vector3(1,0,0), Vector3(0,1,0));
-    for (int i = 0; i < 1000; ++i) {
-        Vector3 p = tri.randomPoint();
-        debugAssert(p.z == 0);
-        debugAssert(p.x <= 1.0 - p.y);
-        debugAssert(p.x >= 0);
-        debugAssert(p.y >= 0);
-        debugAssert(p.x <= 1.0);
-        debugAssert(p.y <= 1.0);
-    }
-
-
-    for (int i = 0; i < 100; i++) {
-         Vector3 point = tri.randomPoint();
-         debugAssert(CollisionDetection::isPointInsideTriangle(
-                 tri.vertex(0),
-                 tri.vertex(1),
-                 tri.vertex(2),
-                 tri.normal(),
-                 point));
-    }
-
-}
-
 
 void testSwizzle() {
     Vector4 v1(1,2,3,4);
@@ -2010,8 +1897,7 @@ int main(int argc, char* argv[]) {
     testBitSerialization();
     printf("  passed\n");
 
-    testWeakPointer();
-    printf("  passed\n");
+    testReferenceCount();
 
     testPlane();
     printf("  passed\n");
@@ -2036,6 +1922,8 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
 	testMemset();
     printf("  passed\n");
+
+    testRandom();
 
     testSystemMemcpy();
 

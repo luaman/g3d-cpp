@@ -54,7 +54,7 @@
         <LI> G3D::TextureFormat::RGBA16F;
         <LI> G3D::TextureFormat::RGBA32F;
       </UL>
-
+     <LI> Restructured unit tests
      <LI> Added glext.h entries for GL_ARB_draw_buffers, GL_ARB_texture_rectangle, 
           GL_ARB_color_buffer_float, GL_ARB_half_float_pixel, GL_ARB_texture_float, 
           and GL_ARB_pixel_buffer_object extensions
