@@ -2,9 +2,8 @@
   @file Log.cpp
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
-  @cite       Backtrace by Aaron Orenstein
   @created 2001-08-04
-  @edited  2003-08-04
+  @edited  2005-07-01
  */
 
 #include "G3D/platform.h"
@@ -112,6 +111,11 @@ void __cdecl Log::printf(const char* fmt, ...) {
 	va_start(arg_list, fmt);
     print(vformat(fmt, arg_list));
     va_end(arg_list);
+}
+
+
+void __cdecl Log::vprintf(const char* fmt, va_list argPtr) {
+    vfprintf(logFile, fmt, argPtr);
 }
 
 

@@ -61,6 +61,7 @@
      <LI> IFSModel::create  added weld option, defaults to true (to keep compatibility). [Peter]
      <LI> G3D::RenderDevice::alphaTestReference, RenderDevice::alphaTest
      <LI> G3D::VAR::set
+     <LI> G3D::Log::vprintf
      <LI> G3D::WeakReferenceCountedPointer
      <LI> GCC 4.0 build support added [Corey]
      <LI> contrib/GChunk

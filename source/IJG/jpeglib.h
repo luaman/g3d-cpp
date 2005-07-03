@@ -1093,18 +1093,14 @@ struct jpeg_color_quantizer { long dummy; };
 #include "jerror.h"		/* fetch error codes too */
 #endif
 
-
-
 /**
  The ANSI tmpfile routine can fail to give a temporary file when a machine or
-user account
- is poorly configured.  This routine detects that case and tries harder to
-create a temp
- file.  The created file may not be deleted when the program exits, however,
-leaving garbage
- files in c:/tmp, /tmp, c:/temp, or the current directory.
+ user account is poorly configured.  This routine detects that case and tries 
+ harder to create a temp file.  The created file may not be deleted when the 
+ program exits, however, leaving garbage files in c:/tmp, /tmp, c:/temp, or the 
+ current directory.
   
-  @author Morgan McGuire, morgan@graphics3d.com
+ @author Morgan McGuire, morgan@graphics3d.com
  */
 FILE* _robustTmpfile();
 

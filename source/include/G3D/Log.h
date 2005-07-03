@@ -72,13 +72,16 @@ public:
     /**
      Given arguments like printf, writes characters to the debug text overlay.
      */
-    void __cdecl printf(const char* fmt ...);
+    void __cdecl printf(const char* fmt, ...);
+
+    void __cdecl vprintf(const char*, va_list argPtr);
 
     static Log* common();
 
     static std::string getCommonLogFilename();
 
     void print(const std::string& s);
+
 
     void println(const std::string& s);
 };
