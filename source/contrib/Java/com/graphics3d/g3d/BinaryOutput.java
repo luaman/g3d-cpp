@@ -38,7 +38,7 @@ public class BinaryOutput {
 
     /** Resize dataSize/data as necessary so that there are numBytes of space after the current position */
     private void reserveBytes(int numBytes) {
-        if (position + numBytes < data.length) {
+        if (position + numBytes > data.length) {
             byte temp[] = data;
 
             // Overestimate the amount of space needed
@@ -60,6 +60,9 @@ public class BinaryOutput {
     public BinaryOutput(String filename, ByteOrder byteOrder) {
         this.byteOrder = byteOrder;
         this.filename = filename;
+        dataSize = 0;
+        position = 0;
+        data = new byte[128];
     }
 
     byte[] getCArray() {
@@ -160,6 +163,21 @@ public class BinaryOutput {
 
     public boolean hasMore() {
         return position < data.length;
+    }
+    
+    public void commit() {
+        try {
+            FileOutputStream output = new FileOutputStream(filename);
+
+            try {
+                output.write(data, 0, dataSize);        
+                output.flush();
+            } catch (IOException e) {
+                // couldn't write data or flush
+            }
+        } catch (FileNotFoundException e) {
+            // Invalid or missing filename.
+        }
     }
 
 }
