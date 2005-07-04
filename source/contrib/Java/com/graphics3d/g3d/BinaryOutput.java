@@ -156,8 +156,13 @@ public class BinaryOutput {
         }
     }
 
+    public void writeFloat32(float v) {
+        writeInt32(Float.floatToRawIntBits(v));
+    }
+
     /** Skips ahead n bytes. */
     public void skip(int numBytes) {
+        reserveBytes(numBytes);
         position += numBytes;
     }
 
