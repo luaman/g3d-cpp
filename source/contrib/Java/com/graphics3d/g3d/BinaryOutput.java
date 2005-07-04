@@ -156,8 +156,40 @@ public class BinaryOutput {
         }
     }
 
+    public void writeUInt64(BigInteger big) {
+        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+            // Reverse the order
+            for (int i = 0; i < 8; ++i) {
+                writeUInt8(big.shiftRight(8 * i).intValue());
+            }
+        } else {
+            for (int i = 7; i >= 0; i--) {
+                writeUInt8(big.shiftRight(8 * i).intValue());
+            }            
+        }
+    }
+
+/** Does not pass test.
+    public void writeInt64(long v) {
+        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+            // Reverse the order
+            for (int i = 0; i < 8; ++i) {
+                writeUInt8((int)(v >> (8 * i)));
+            }
+        } else {
+            for (int i = 7; i >= 0; i--) {
+                writeUInt8((int)(v >> (8 * i)));
+            }            
+        }
+    }
+*/
+
     public void writeFloat32(float v) {
         writeInt32(Float.floatToRawIntBits(v));
+    }
+
+    public void writeFloat64(double v) {
+        writeInt64(Double.doubleToRawLongBits(v));
     }
 
     /** Skips ahead n bytes. */

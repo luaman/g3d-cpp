@@ -1,4 +1,5 @@
 import com.graphics3d.g3d.*;
+import java.math.*;
 
 /**
  <PRE>
@@ -38,8 +39,10 @@ class Test {
         b.writeInt32(12345);
         b.writeInt32(-12345);
         b.writeUInt32(50000);
-//        b.writeFloat32(50000);
-//        b.writeFloat64(50000);
+        b.writeUInt64(BigInteger.valueOf(1234567));
+//        b.writeInt64(-1235467);
+        b.writeFloat32(50000);
+        b.writeFloat64(50000);
 
         b.commit();
     }
@@ -66,11 +69,11 @@ class Test {
         assert b.readInt32() == -12345;
         assert b.readUInt32() == 50000;
 
-//        assert b.readUInt64().longValue() == 1234567;
+        assert b.readUInt64().longValue() == 1234567;
 //        assert b.readInt64() == -1234567;
 
-//        assert b.readFloat32() == 50000;
-//        assert b.readFloat64() == 50000;
+        assert b.readFloat32() == 50000;
+        assert b.readFloat64() == 50000;
 
         /*
     b.writeUInt8(200);
