@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-06-28
+  @edited  2005-07-05
  */
 
 #include "G3D/platform.h"
@@ -23,6 +23,7 @@
 #include "G3D/debug.h"
 #include "G3D/g3derror.h"
 #include "G3D/fileutils.h"
+#include "G3D/TextOutput.h"
 
 #ifdef G3D_WIN32
 
@@ -1064,6 +1065,74 @@ void System::setEnv(const std::string& name, const std::string& value) {
     #else
         setenv(name.c_str(), value.c_str(), 1);
     #endif
+}
+
+
+
+static void var(TextOutput& t, const std::string& name, const std::string& val) {
+    t.writeSymbols(name,"=");
+    t.writeString(val);
+    t.writeNewline();
+}
+
+
+static void var(TextOutput& t, const std::string& name, const bool val) {
+    t.writeSymbols(name, "=", val ? "Yes" : "No");
+    t.writeNewline();
+}
+
+
+static void var(TextOutput& t, const std::string& name, const int val) {
+    t.writeSymbols(name,"=");
+    t.writeNumber(val);
+    t.writeNewline();
+}
+
+void System::describeSystem(
+    std::string&        s) {
+
+    TextOutput t;
+    describeSystem(t);
+    t.commitString(s);
+}
+
+void System::describeSystem(
+    TextOutput& t) {
+
+    t.writeSymbols("OS", "{");
+    t.writeNewline();
+    t.pushIndent();
+        var(t, "Name", System::operatingSystem());
+    t.popIndent();
+    t.writeSymbols("}");
+    t.writeNewline();
+    t.writeNewline();
+
+    t.writeSymbols("CPU", "{");
+    t.writeNewline();
+    t.pushIndent();
+        var(t, "Vendor", System::cpuVendor());
+        var(t, "Architecture", System::cpuArchitecture());
+        var(t, "hasCPUID", System::hasCPUID());
+        var(t, "hasMMX", System::hasMMX());
+        var(t, "hasSSE", System::hasSSE());
+        var(t, "hasSSE2", System::hasSSE2());
+        var(t, "has3DNow", System::has3DNow());
+        var(t, "hasRDTSC", System::hasRDTSC());
+    t.popIndent();
+    t.writeSymbols("}");
+    t.writeNewline();
+    t.writeNewline();
+       
+    t.writeSymbols("G3D", "{");
+    t.writeNewline();
+    t.pushIndent();
+        var(t, "Link version", G3D_VER);
+        var(t, "Compile version", System::version());
+    t.popIndent();
+    t.writeSymbols("}");
+    t.writeNewline();
+    t.writeNewline();
 }
 
 

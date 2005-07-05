@@ -34,7 +34,7 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2005-02-24
+ @edited  2005-07-05
  */
 
 #ifndef NETWORKDEVICE_H
@@ -721,6 +721,17 @@ private:
 public:
 
     NetworkDevice();
+
+
+    /**
+     Prints a human-readable description of this machine
+     to the text output stream.  Either argument may be NULL.
+     */
+    void describeSystem(
+        class TextOutput& t);
+
+    void describeSystem(
+        std::string&        s);
 
     /**
      Returns the log this was initialized with.

@@ -64,6 +64,30 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
         networkDevice = NULL;
     }
 
+
+    {
+        TextOutput t;
+
+        t.writeSymbols("System","{");
+        t.pushIndent();
+        t.writeNewline();
+        System::describeSystem(t);
+        if (renderDevice) {
+            renderDevice->describeSystem(t);
+        }
+
+        if (networkDevice) {
+            networkDevice->describeSystem(t);
+        }
+        t.writeNewline();
+        t.writeSymbol("}");
+        t.writeNewline();
+
+        std::string s;
+        t.commitString(s);
+        debugLog->printf("%s\n", s.c_str());
+    }
+
     debugCamera  = GCamera();
 
     debugAssertGLOk();
@@ -71,7 +95,6 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
     debugAssertGLOk();
 
     userInput = new UserInput();
-
 
     debugController.init(renderDevice, userInput);
     debugController.setMoveRate(10);

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2005-06-18
+ @edited  2005-07-05
  */
 
 
@@ -3246,6 +3246,88 @@ uint32 RenderDevice::debugNumMajorStateChanges() const {
 
 uint32 RenderDevice::debugNumMinorStateChanges() const {
     return mDebugNumMinorStateChanges;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+static void var(TextOutput& t, const std::string& name, const std::string& val) {
+    t.writeSymbols(name,"=");
+    t.writeString(val);
+    t.writeNewline();
+}
+
+
+static void var(TextOutput& t, const std::string& name, const bool val) {
+    t.writeSymbols(name, "=", val ? "Yes" : "No");
+    t.writeNewline();
+}
+
+
+static void var(TextOutput& t, const std::string& name, const int val) {
+    t.writeSymbols(name,"=");
+    t.writeNumber(val);
+    t.writeNewline();
+}
+
+
+void RenderDevice::describeSystem(
+    TextOutput& t) {
+
+    t.writeSymbols("GPU", "{");
+    t.writeNewline();
+    t.pushIndent();
+        var(t, "Chipset", GLCaps::renderer());
+        var(t, "Vendor", GLCaps::vendor());
+        var(t, "Driver", GLCaps::driverVersion());
+        var(t, "OpenGL version", GLCaps::glVersion());
+        var(t, "Textures", GLCaps::numTextures());
+        var(t, "Texture coordinates", GLCaps::numTextureCoords());
+        var(t, "Texture units", GLCaps::numTextureUnits());
+    t.popIndent();
+    t.writeSymbols("}");
+    t.writeNewline();
+    t.writeNewline();
+
+    GWindow* w = window();
+    GWindowSettings settings;
+    w->getSettings(settings);
+
+    t.writeSymbols("Window", "{");
+    t.writeNewline();
+    t.pushIndent();
+        var(t, "API", w->getAPIName());
+        var(t, "Version", w->getAPIVersion());
+        t.writeNewline();
+
+        var(t, "In focus", w->hasFocus());
+        var(t, "Centered", settings.center);
+        var(t, "Framed", settings.framed);
+        var(t, "Visible", settings.visible);
+        var(t, "Resizable", settings.resizable);
+        var(t, "Full screen", settings.fullScreen);
+        var(t, "Top", settings.y);
+        var(t, "Left", settings.x);
+        var(t, "Width", settings.width);
+        var(t, "Height", settings.height);
+        var(t, "Refresh rate", settings.refreshRate);
+        t.writeNewline();
+
+        var(t, "Alpha bits", settings.alphaBits);
+        var(t, "Red bits", settings.rgbBits);
+        var(t, "Green bits", settings.rgbBits);
+        var(t, "Blue bits", settings.rgbBits);
+        var(t, "Depth bits", settings.depthBits);
+        var(t, "Stencil bits", settings.stencilBits);
+        var(t, "Asynchronous", settings.asychronous);
+        var(t, "Stereo", settings.stereo);
+        var(t, "FSAA samples", settings.fsaaSamples);
+
+    t.popIndent();
+    t.writeSymbols("}");
+    t.writeNewline();
+    t.writeNewline();
 }
 
 } // namespace

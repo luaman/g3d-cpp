@@ -34,7 +34,8 @@
 
   <P>
    Changes in 6.07:
-   <UL> 
+   <UL>
+    <LI> G3D::GApp now writes a description of the whole system to the log to aid debugging.
     <LI> New texture formats:
       <UL>
         <LI> G3D::TextureFormat::L16;
@@ -55,7 +56,7 @@
         <LI> G3D::TextureFormat::RGBA32F;
       </UL>
      <LI> Restructured unit tests
-     <LI> G3D::describeSystem
+     <LI> G3D::System::describeSystem, G3D::NetworkDevice::describeSystem, G3D::RenderDevice::describeSystem
      <LI> Added glext.h entries for GL_ARB_draw_buffers, GL_ARB_texture_rectangle, 
           GL_ARB_color_buffer_float, GL_ARB_half_float_pixel, GL_ARB_texture_float, 
           and GL_ARB_pixel_buffer_object extensions

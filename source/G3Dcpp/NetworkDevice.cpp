@@ -14,6 +14,7 @@
     #include <malloc.h>
 #endif
 
+#include "G3D/TextOutput.h"
 #include "G3D/NetworkDevice.h"
 #include "G3D/NetAddress.h"
 #include "G3D/BinaryInput.h"
@@ -32,6 +33,7 @@
     #include <netdb.h>
     #include <netinet/tcp.h>
     #define _alloca alloca
+
     /** Define an error code for non-windows platforms. */
     int WSAGetLastError() {
         return -1;
@@ -1097,6 +1099,50 @@ bool NetListener::ok() const {
 
 bool NetListener::clientWaiting() const {
     return readWaiting(nd->debugLog, sock);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+static void var(TextOutput& t, const std::string& name, const std::string& val) {
+    t.writeSymbols(name,"=");
+    t.writeString(val);
+    t.writeNewline();
+}
+
+
+static void var(TextOutput& t, const std::string& name, const bool val) {
+    t.writeSymbols(name, "=", val ? "Yes" : "No");
+    t.writeNewline();
+}
+
+
+static void var(TextOutput& t, const std::string& name, const int val) {
+    t.writeSymbols(name,"=");
+    t.writeNumber(val);
+    t.writeNewline();
+}
+
+
+void NetworkDevice::describeSystem(
+    TextOutput& t) {
+
+    t.writeSymbols("Network", "{");
+    t.writeNewline();
+    t.pushIndent();
+
+    t.popIndent();
+    t.writeSymbols("}");
+    t.writeNewline();
+    t.writeNewline();
+}
+
+
+void NetworkDevice::describeSystem(
+    std::string&        s) {
+
+    TextOutput t;
+    describeSystem(t);
+    t.commitString(s);
 }
 
 } // namespace

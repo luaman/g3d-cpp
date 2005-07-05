@@ -1827,32 +1827,41 @@ int main(int argc, char* argv[]) {
     exit(-1);
 */
 
-        {
-            // TODO: move the describe calls out into nd/rd
-            RenderDevice* renderDevice = NULL;
-            
-            #ifdef G3D_WIN32
-                renderDevice = new RenderDevice();
-                renderDevice->init();
-            #endif
+    {
+        RenderDevice* renderDevice = NULL;
+        
+        #ifdef G3D_WIN32
+            renderDevice = new RenderDevice();
+            renderDevice->init();
+        #endif
 
-            NetworkDevice* networkDevice = new NetworkDevice();
-            networkDevice->init();
+        NetworkDevice* networkDevice = new NetworkDevice();
+        networkDevice->init();
 
-            std::string s;
-            describeSystem(renderDevice, networkDevice, s);
+        std::string s;
+        System::describeSystem(s);
+        printf("%s\n", s.c_str());
+
+        if (renderDevice) {
+            renderDevice->describeSystem(s);
             printf("%s\n", s.c_str());
-
-            if (networkDevice) {networkDevice->cleanup();}
-            delete networkDevice;
-
-            if (renderDevice) {
-                GWindow* w = renderDevice->window();
-                renderDevice->cleanup();
-                // TODO: close window
-            }
-            delete renderDevice;
         }
+
+        if (networkDevice) {
+            networkDevice->describeSystem(s);
+            printf("%s\n", s.c_str());
+        }
+
+        if (networkDevice) {networkDevice->cleanup();}
+        delete networkDevice;
+
+        if (renderDevice) {
+            GWindow* w = renderDevice->window();
+            renderDevice->cleanup();
+            // TODO: close window
+        }
+        delete renderDevice;
+    }
 
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
@@ -1879,7 +1888,9 @@ int main(int argc, char* argv[]) {
         settings.stencilBits = 0;
         settings.fsaaSamples = 1;
 
-        RenderDevice* renderDevice = new RenderDevice();
+        if (!renderDevice) {
+            renderDevice = new RenderDevice();
+        }
         renderDevice->init(settings);
         measureRDPushPopPerformance(renderDevice);
         renderDevice->cleanup();

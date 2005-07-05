@@ -339,6 +339,22 @@ public:
 
     ~RenderDevice();
 
+
+    /**
+     Prints a human-readable description of this machine
+     to the text output stream.  Either argument may be NULL.
+     */
+    void describeSystem(
+        TextOutput& t);
+
+    inline void describeSystem(
+        std::string&        s) {
+    
+        TextOutput t;
+        describeSystem(t);
+        t.commitString(s);
+    }
+
     /**
      Checkmarks all RenderDevice state (anything that can be set 
      using RenderDevice methods).  Also saves the OpenGL fog and
