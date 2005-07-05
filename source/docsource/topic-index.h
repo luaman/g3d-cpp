@@ -272,7 +272,8 @@
 
      <LI><B>Debug</B> &nbsp; &nbsp;
         debugAssert, 
-        debugAssertM, 
+        debugAssertM,
+        G3D::describeSystem,
         G3D::isValidHeapPointer,  
         G3D::isValidPointer,
         G3D::debugPrintf,

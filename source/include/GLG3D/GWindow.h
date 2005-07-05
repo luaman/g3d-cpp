@@ -202,7 +202,7 @@ public:
         returns true and fills out the GEvent structure.  Otherwise
         returns false.  The caller is responsible for invoking GWindow::notifyResize
         with any resize events; the GWindow does not notify itself. */
-    virtual bool GWindow::pollEvent(GEvent& e) {
+    virtual bool pollEvent(GEvent& e) {
         return false;
     }
 

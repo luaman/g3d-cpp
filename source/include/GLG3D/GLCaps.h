@@ -180,7 +180,28 @@ public:
     static inline bool supports_GL_ARB_texture_cube_map() {
         return supports_GL_EXT_texture_cube_map();
     }
+
 };
+
+
+/**
+ Prints a human-readable description of this machine
+ to the text output stream.  Either argument may be NULL.
+ */
+void describeSystem(
+    class RenderDevice*  rd, 
+    class NetworkDevice* nd, 
+    TextOutput& t);
+
+inline void describeSystem(
+    class RenderDevice*  rd, 
+    class NetworkDevice* nd, 
+    std::string&        s) {
+    
+    TextOutput t;
+    describeSystem(rd, nd, t);
+    t.commitString(s);
+}
 
 } // namespace
 

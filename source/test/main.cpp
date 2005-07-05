@@ -1827,25 +1827,38 @@ int main(int argc, char* argv[]) {
     exit(-1);
 */
 
+        {
+            // TODO: move the describe calls out into nd/rd
+            RenderDevice* renderDevice = NULL;
+            
+            #ifdef G3D_WIN32
+                renderDevice = new RenderDevice();
+                renderDevice->init();
+            #endif
+
+            NetworkDevice* networkDevice = new NetworkDevice();
+            networkDevice->init();
+
+            std::string s;
+            describeSystem(renderDevice, networkDevice, s);
+            printf("%s\n", s.c_str());
+
+            if (networkDevice) {networkDevice->cleanup();}
+            delete networkDevice;
+
+            if (renderDevice) {
+                GWindow* w = renderDevice->window();
+                renderDevice->cleanup();
+                // TODO: close window
+            }
+            delete renderDevice;
+        }
+
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
-        printf("Machine Profile\n");
-        printf(" OS      %s\n", System::operatingSystem().c_str());
-        printf(" CPU     %s\n", System::cpuVendor().c_str());
-        printf(" Arch    %s\n", System::cpuArchitecture().c_str());
-        printf(" CPUID   %s\n", System::hasCPUID() ? "Yes" : "No");
-        printf(" MMX     %s\n", System::hasMMX() ? "Yes" : "No");
-        printf(" SSE     %s\n", System::hasSSE() ? "Yes" : "No");
-        printf(" SSE2    %s\n", System::hasSSE2() ? "Yes" : "No");
-        printf(" 3DNow   %s\n", System::has3DNow() ? "Yes" : "No");
-        printf(" RDTSC   %s\n", System::hasRDTSC() ? "Yes" : "No");
-        printf(" G3D link version    %d\n", G3D_VER);
-        printf(" G3D compile version %s\n", System::version().c_str());
-        printf("\n");
 
         perfSystemMemcpy();
 
-        while(true);
         perfArray();
 
         measureBSPPerformance();
