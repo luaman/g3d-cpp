@@ -9,33 +9,41 @@ class pingtest {
     static final String serverResponse = "hello, client";
 
     public static void main(String[] args) {
-        reliableClient("localhost");
+    
+        if (args.length > 0) {
+            reliableClient(args[0]);
+        } else {
+            reliableClient("localhost");
+        }
     }
  
     public static void reliableClient(String server) {
 
         InetSocketAddress serverAddress = new InetSocketAddress(server, 1201);
 
-        //printf("  Trying to connect to %s\n", serverAddress.toString().c_str());
+        System.out.printf("  Trying to connect to %s\n", serverAddress.toString());
 
         ReliableConduit conduit = null;
         
         try {
             conduit = new ReliableConduit(serverAddress);
         } catch (Exception e) {
-            System.out.printf("Couldn't create ReliableConduit -- %s\n", e.toString());
+            System.out.printf("\n\nCouldn't create ReliableConduit -- %s\n", e.toString());
             System.exit(-1);
         }
 
         // Send a hello message
         System.out.printf("  Sending \"%s\"... ", clientGreeting); 
+        
         try {
             conduit.send(1008, new PingMessage(clientGreeting));
         } catch (Exception e) {
-            System.out.printf("Couldn't send PingMessage -- %s\n", e.toString());
+            System.out.printf("\n\nCouldn't send PingMessage -- %s\n", e.toString());
             System.exit(-1);
         }
+        
         System.out.printf("sent.\n");
+
 
         // Wait for server response
         System.out.printf("  Waiting for server response");
@@ -50,20 +58,22 @@ class pingtest {
                 }
             }
         } catch (Exception e) {
-            System.out.printf("Error waiting for response -- %s\n", e.toString());
+            System.out.printf("\n\nError waiting for response -- %s\n", e.toString());
             System.exit(-1);
         }
         
-        System.out.printf("\ngot it.\n");
+        System.out.printf("got it.\n");
+
 
         PingMessage response = new PingMessage();
         try {
             assert conduit.waitingMessageType() == 1008;
             conduit.receive(response);
         } catch (Exception e) {
-            System.out.printf("Couldn't receive PingMessage -- %s\n", e.toString());
+            System.out.printf("\n\nCouldn't receive PingMessage -- %s\n", e.toString());
             System.exit(-1);
         }
+        
         System.out.printf("  Server responded: \"%s\".\n", response.text);
         
         System.out.printf("  Dropping connection.\n");
