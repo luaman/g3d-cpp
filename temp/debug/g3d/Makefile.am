@@ -3,6 +3,7 @@ noinst_LIBRARIES=libG3D_debug.a
 libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/BinaryInput.cpp \
                          ../../../source/G3Dcpp/BinaryOutput.cpp \
+                         ../../../source/G3Dcpp/BinaryFormat.cpp \
                          ../../../source/G3Dcpp/Box.cpp \
                          ../../../source/G3Dcpp/GImage.cpp \
                          ../../../source/G3Dcpp/Capsule.cpp \
