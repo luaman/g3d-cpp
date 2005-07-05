@@ -169,7 +169,6 @@ public class BinaryOutput {
         }
     }
 
-/** Does not pass test.
     public void writeInt64(long v) {
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
             // Reverse the order
@@ -182,7 +181,6 @@ public class BinaryOutput {
             }            
         }
     }
-*/
 
     public void writeFloat32(float v) {
         writeInt32(Float.floatToRawIntBits(v));
@@ -190,6 +188,16 @@ public class BinaryOutput {
 
     public void writeFloat64(double v) {
         writeInt64(Double.doubleToRawLongBits(v));
+    }
+    
+    public void writeString(String str) {
+        byte characters[] = str.getBytes();
+        
+        for (int i = 0; i < characters.length; ++i) {
+            writeInt8(characters[i]);
+        }
+        
+        writeInt8(0);
     }
 
     /** Skips ahead n bytes. */

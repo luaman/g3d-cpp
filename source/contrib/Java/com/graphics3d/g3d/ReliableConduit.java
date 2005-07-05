@@ -55,8 +55,10 @@ public class ReliableConduit {
             ByteBuffer tmpBuffer = ByteBuffer.allocate(b.size());
             tmpBuffer.put(b.getCArray(), 0, b.size());
             try {
-                sock.write(tmpBuffer);
+                int written = sock.write(tmpBuffer);
+                System.out.printf("%d bytes written.\n", written);
             } catch (IOException e) {
+                System.out.printf("Error sending through conduit - %s\n", e.getMessage());
             }
         }
     }
@@ -108,6 +110,7 @@ public class ReliableConduit {
         try {
             sock = SocketChannel.open(addr);
         } catch (IOException e) {
+            System.out.printf("Couldn't open address\n");
         }
     }
 
@@ -152,12 +155,11 @@ public class ReliableConduit {
      */
     public void send(int type, BinarySerializable message) {
         BinaryOutput binaryOutput = new BinaryOutput(ByteOrder.BIG_ENDIAN);
-        binaryOutput.reset();
-        binaryOutput.writeUInt32(type);
-        binaryOutput.writeUInt32(0);
+        binaryOutput.writeInt32(type);
+        binaryOutput.writeInt32(0);
         message.serialize(binaryOutput);
         binaryOutput.setPosition(4);
-        binaryOutput.writeUInt32(binaryOutput.size() - 8);
+        binaryOutput.writeInt32(binaryOutput.size() - 8);
         sendBuffer(binaryOutput);
     }
     
@@ -183,7 +185,7 @@ public class ReliableConduit {
         }
     }
 
-    int waitingMessageType() {
+    public int waitingMessageType() {
         if (messageWaiting()) {
             return messageType;
         } else {
@@ -197,7 +199,7 @@ public class ReliableConduit {
         determine the type of the message (and therefore, the class
         of message) using G3D::ReliableConduit::waitingMessageType().
      */
-    boolean receive(BinaryDeserializable message) {
+    public boolean receive(BinaryDeserializable message) {
 
         if (! messageWaiting()) {
             return false;
@@ -234,7 +236,7 @@ public class ReliableConduit {
         messageWaiting();
     }
 
-    InetSocketAddress address() {
+    public InetSocketAddress address() {
         return addr;
     }
 }
