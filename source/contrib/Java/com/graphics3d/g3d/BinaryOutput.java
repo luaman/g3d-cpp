@@ -210,19 +210,11 @@ public class BinaryOutput {
         return position < data.length;
     }
     
-    public void commit() {
-        try {
-            FileOutputStream output = new FileOutputStream(filename);
+    public void commit() throws FileNotFoundException, IOException {
+        FileOutputStream output = new FileOutputStream(filename);
 
-            try {
-                output.write(data, 0, dataSize);        
-                output.flush();
-            } catch (IOException e) {
-                // couldn't write data or flush
-            }
-        } catch (FileNotFoundException e) {
-            // Invalid or missing filename.
-        }
+        output.write(data, 0, dataSize);        
+        output.flush();
     }
 
 }

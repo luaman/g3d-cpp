@@ -1,5 +1,6 @@
 import com.graphics3d.g3d.*;
 import java.math.*;
+import java.io.*;
 
 /**
  <PRE>
@@ -44,7 +45,15 @@ class Test {
         b.writeFloat32(50000);
         b.writeFloat64(50000);
 
-        b.commit();
+        try {
+            try {
+                b.commit();
+            } catch (FileNotFoundException e) {
+                System.out.printf("Couldn't write to file -- %s\n", e.getMessage());
+            }
+        } catch (IOException e) {
+            System.out.printf("Couldn't write to file -- %s\n", e.getMessage());
+        }
     }
 
     public static void testBinaryInput() {
