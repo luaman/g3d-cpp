@@ -27,7 +27,7 @@ class Test {
 	
         BinaryOutput b = null;
         try {
-            b = new BinaryOutput("bin.dat", java.nio.ByteOrder.LITTLE_ENDIAN);
+            b = new BinaryOutput("testbin.dat", java.nio.ByteOrder.LITTLE_ENDIAN);
         } catch (Exception e) {
             System.out.println("Test file not found.");
             System.exit(-1);
@@ -41,7 +41,7 @@ class Test {
         b.writeInt32(-12345);
         b.writeUInt32(50000);
         b.writeUInt64(BigInteger.valueOf(1234567));
-//        b.writeInt64(-1235467);
+        b.writeInt64(-1234567);
         b.writeFloat32(50000);
         b.writeFloat64(50000);
 
@@ -61,7 +61,7 @@ class Test {
 	
         BinaryInput b = null;
         try {
-            b = new BinaryInput("bin.dat", java.nio.ByteOrder.LITTLE_ENDIAN);
+            b = new BinaryInput("testbin.dat", java.nio.ByteOrder.LITTLE_ENDIAN);
         } catch (Exception e) {
             System.out.println("Test file not found.");
             System.exit(-1);
@@ -79,23 +79,11 @@ class Test {
         assert b.readUInt32() == 50000;
 
         assert b.readUInt64().longValue() == 1234567;
-//        assert b.readInt64() == -1234567;
+        assert b.readInt64() == -1234567;
 
         assert b.readFloat32() == 50000;
         assert b.readFloat64() == 50000;
 
-        /*
-    b.writeUInt8(200);
-    b.writeInt8(-5);
-    b.writeInt8(101);
-    b.writeBool8(true);
-    b.writeInt32(12345);
-    b.writeInt32(-12345);
-    b.writeUInt32(50000);
-    b.writeFloat32(50000);
-    b.writeFloat64(50000);
-        */
- 
         System.out.println("   OK");
     }
 }
