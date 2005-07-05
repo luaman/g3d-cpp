@@ -269,7 +269,7 @@ public:
         writeInt8(b ? 1 : 0);
     }
 
-    inline void writeUInt8(int8 i) {
+    inline void writeUInt8(uint8 i) {
         reserveBytes(1);
         buffer[pos] = i;
         pos++;
