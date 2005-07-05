@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2005-06-30
+ @edited  2005-07-05
  */
 
 #include "../include/G3DAll.h"
@@ -38,6 +38,8 @@ void testSystemMemcpy();
 void testReferenceCount();
 
 void testRandom();
+
+void perfTextOutput();
 
 
 void testTangentSpace() {
@@ -1827,44 +1829,45 @@ int main(int argc, char* argv[]) {
     exit(-1);
 */
 
-    {
-        RenderDevice* renderDevice = NULL;
-        
-        #ifdef G3D_WIN32
-            renderDevice = new RenderDevice();
-            renderDevice->init();
-        #endif
+    RenderDevice* renderDevice = NULL;
+    
+    /*
+    #ifdef G3D_WIN32
+        renderDevice = new RenderDevice();
+        renderDevice->init();
+    #endif
+    */
 
-        NetworkDevice* networkDevice = new NetworkDevice();
-        networkDevice->init();
+    NetworkDevice* networkDevice = new NetworkDevice();
+    networkDevice->init();
 
-        std::string s;
-        System::describeSystem(s);
+    std::string s;
+    System::describeSystem(s);
+    printf("%s\n", s.c_str());
+
+    if (renderDevice) {
+        renderDevice->describeSystem(s);
         printf("%s\n", s.c_str());
+    }
 
-        if (renderDevice) {
-            renderDevice->describeSystem(s);
-            printf("%s\n", s.c_str());
-        }
+    if (networkDevice) {
+        networkDevice->describeSystem(s);
+        printf("%s\n", s.c_str());
+    }
 
-        if (networkDevice) {
-            networkDevice->describeSystem(s);
-            printf("%s\n", s.c_str());
-        }
+    if (networkDevice) {networkDevice->cleanup();}
+    delete networkDevice;
 
-        if (networkDevice) {networkDevice->cleanup();}
-        delete networkDevice;
-
-        if (renderDevice) {
-            GWindow* w = renderDevice->window();
-            renderDevice->cleanup();
-            // TODO: close window
-        }
-        delete renderDevice;
+    if (renderDevice) {
+        GWindow* w = renderDevice->window();
+        renderDevice->cleanup();
+        // TODO: close window
     }
 
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
+
+        perfTextOutput();
 
         perfSystemMemcpy();
 
@@ -1893,11 +1896,8 @@ int main(int argc, char* argv[]) {
         }
         renderDevice->init(settings);
         measureRDPushPopPerformance(renderDevice);
-        renderDevice->cleanup();
-        delete renderDevice;
 
-        return 0;
-#   endif
+#   else
 
     printf("\n\nTests:\n\n");
 
@@ -1969,7 +1969,12 @@ int main(int argc, char* argv[]) {
     testSwizzle();
 
     printf("\nAll tests succeeded.\n");
+#endif
 
+    if (renderDevice) {
+        renderDevice->cleanup();
+        delete renderDevice;
+    }
     return 0;
 }
 

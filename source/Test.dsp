@@ -133,6 +133,10 @@ SOURCE=.\test\tReferenceCount.cpp
 
 SOURCE=.\test\tSystemMemcpy.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\test\tTextOutput.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
