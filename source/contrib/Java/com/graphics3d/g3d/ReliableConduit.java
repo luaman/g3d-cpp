@@ -54,9 +54,10 @@ public class ReliableConduit {
         if (sock.isConnected()) {
             ByteBuffer tmpBuffer = ByteBuffer.allocate(b.size());
             tmpBuffer.put(b.getCArray(), 0, b.size());
+            tmpBuffer.rewind();
+            tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
             try {
-                int written = sock.write(tmpBuffer);
-                System.out.printf("%d bytes written.\n", written);
+                sock.write(tmpBuffer);
             } catch (IOException e) {
                 System.out.printf("Error sending through conduit - %s\n", e.getMessage());
             }
@@ -154,7 +155,7 @@ public class ReliableConduit {
      doesn't have a concept of discrete messages.
      */
     public void send(int type, BinarySerializable message) {
-        BinaryOutput binaryOutput = new BinaryOutput(ByteOrder.BIG_ENDIAN);
+        BinaryOutput binaryOutput = new BinaryOutput(ByteOrder.LITTLE_ENDIAN);
         binaryOutput.writeInt32(type);
         binaryOutput.writeInt32(0);
         message.serialize(binaryOutput);
@@ -171,13 +172,13 @@ public class ReliableConduit {
         BinarySerializable          m) {
         
         if (array.length > 0) {
-            BinaryOutput binaryOutput = new BinaryOutput(ByteOrder.BIG_ENDIAN);
+            BinaryOutput binaryOutput = new BinaryOutput(ByteOrder.LITTLE_ENDIAN);
             binaryOutput.reset();
-            binaryOutput.writeUInt32(type);
-            binaryOutput.writeUInt32(0);
+            binaryOutput.writeInt32(type);
+            binaryOutput.writeInt32(0);
             m.serialize(binaryOutput);
             binaryOutput.setPosition(4);
-            binaryOutput.writeUInt32(binaryOutput.size() - 8);
+            binaryOutput.writeInt32(binaryOutput.size() - 8);
         
             for (int i = 0; i < array.length; ++i) {
                 array[i].sendBuffer(binaryOutput);
@@ -206,7 +207,7 @@ public class ReliableConduit {
         }
 
         // Deserialize
-        BinaryInput b = new BinaryInput(receiveBuffer.array(), 0, ByteOrder.BIG_ENDIAN, false);
+        BinaryInput b = new BinaryInput(receiveBuffer.array(), 0, ByteOrder.LITTLE_ENDIAN, false);
         message.deserialize(b);
         
         // Don't let anyone read this message again.  We leave the buffer
