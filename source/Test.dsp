@@ -123,6 +123,10 @@ SOURCE=.\test\tMatrix.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tMatrix3.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tRandom.cpp
 # End Source File
 # Begin Source File
@@ -141,10 +145,6 @@ SOURCE=.\test\tTextOutput.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
-# End Group
-# Begin Group "Resource Files"
-
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # End Group
 # End Target
 # End Project

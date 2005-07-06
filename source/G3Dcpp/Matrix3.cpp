@@ -3,12 +3,10 @@
 
  3x3 matrix class
 
- @author Morgan McGuire and Laura Wollstadt, graphics3d.com
-
- @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
+ @author Morgan McGuire, graphics3d.com
 
  @created 2001-06-02
- @edited  2004-02-22
+ @edited  2005-06-08
 */
 
 #include <memory.h>
@@ -1622,9 +1620,13 @@ void Matrix3::tensorProduct (const Vector3& rkU, const Vector3& rkV,
 
 //----------------------------------------------------------------------------
 
-// Runs in 52 cycles on AMD
-// I was unable to improve performance by flattening the matrices
-// into float*'s.  -morgan
+// Runs in 52 cycles on AMD, 76 cycles on Intel Centrino
+//
+// The loop unrolling is necessary for performance. 
+// I was unable to improve performance further by flattening the matrices
+// into float*'s instead of 2D arrays.  
+//
+// -morgan
 void Matrix3::_mul(const Matrix3& A, const Matrix3& B, Matrix3& out) {
     const float* ARowPtr = A.m_aafEntry[0];
     float* outRowPtr     = out.m_aafEntry[0];
