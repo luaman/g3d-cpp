@@ -53,9 +53,10 @@ GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd)
     // The input may not be a power of 2
     int width  = ceilPow2(charWidth * 16);
     int height = ceilPow2(charHeight * 8);
- 
+  
     // Create a texture
     const uint8* ptr = ((uint8*)b.getCArray()) + b.getPosition();
+
     texture = 
         Texture::fromMemory(filename, &ptr,
             TextureFormat::A8, width, height, 1, TextureFormat::A8, 
@@ -402,10 +403,32 @@ void GFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfil
     // Texture width
     out.writeUInt16(width);
 
-    // Texture
-    int num = width * (width / 2);
-    out.writeBytes(pixel.getCArray(), num);
+    // The input may not be a power of 2, so size it up
+    int width2  = ceilPow2(width);
+    int height2 = ceilPow2(width / 2);
 
+    if ((width2 == width) && (height2 == (width/2)) {
+        // Texture
+        int num = width * (width / 2);
+        out.writeBytes(pixel.getCArray(), num);
+    } else {
+        // Pad
+        const uint8* ptr = pixel.getCArray();
+    
+        int num = width * (width / 2);
+        for (int y = 0; y < height2; ++y) {
+            // Write the row
+            out.writeBytes(ptr, width);
+            ptr += width;
+
+            // Write the horizontal padding
+            out.skip(width2 - width);
+        }
+
+        // Write the vertical padding
+        out.skip((height2 - (width / 2)) * width2);
+    }
+ 
     out.compress();
     out.commit(false);
 }
