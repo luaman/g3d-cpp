@@ -77,6 +77,7 @@
      <LI> Can now create G3D::Win32Window with existing HWND and HDC [Corey]
      <LI> G3D::VertexAndPixelShader::ArgList::set(std::string, Array<T>)-- [ 1192401 ] Shader support arrays
      <LI> G3D::X11Window (same as SDLWindow in this release)
+     <LI> Fix: [ 1226272 ] end caps of capsules in wrong position
      <LI> Fix: G3D::TextureFormat::LA8 now has 8-bits per channel
 
    </UL>

@@ -14,7 +14,7 @@
 #include <G3DAll.h>
 
 #if G3D_VER < 60700
-    #error Requires G3D 6.0
+    #error Requires G3D 6.07
 #endif
 
 
@@ -71,6 +71,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
 
 void Demo::init()  {
+/*
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
@@ -101,6 +102,7 @@ void Demo::init()  {
 
     maskOutput.printf("};\n");
     maskOutput.commit();
+    */
 }
 
 
@@ -150,6 +152,8 @@ void Demo::doGraphics() {
 
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
 
+        Draw::capsule(Capsule(Vector3::Vector3(-2,1,1), Vector3(3,4,0), 2), app->renderDevice);
+
     app->renderDevice->disableLighting();
 
     if (app->sky.notNull()) {
@@ -189,7 +193,7 @@ int main(int argc, char** argv) {
     settings.window.framed = true;
     settings.window.width = 800;
     settings.window.height = 600;
-    settings.debugFontName = "smallfont.fnt";
+    settings.debugFontName = "console-small.fnt";
     App(settings).run();
     return 0;
 }

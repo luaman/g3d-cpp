@@ -220,6 +220,7 @@ void Draw::capsule(
     double radius = capsule.getRadius();
     double height = (capsule.getPoint2() - capsule.getPoint1()).length();
 
+    // Always render upright in object space
     Sphere sphere1(Vector3::zero(), radius);
     Sphere sphere2(Vector3(0, height, 0), radius);
 
@@ -628,8 +629,8 @@ void Draw::sphereSection(
     CoordinateFrame cframe = renderDevice->getObjectToWorldMatrix();
 
     // Auto-normalization will take care of normal length
+    cframe.translation += cframe.rotation * sphere.center;
     cframe.rotation = cframe.rotation * sphere.radius;
-    cframe.translation += sphere.center;
 
     glPushAttrib(GL_ENABLE_BIT);
 
