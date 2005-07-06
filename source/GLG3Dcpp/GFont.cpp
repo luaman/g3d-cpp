@@ -407,7 +407,7 @@ void GFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfil
     int width2  = ceilPow2(width);
     int height2 = ceilPow2(width / 2);
 
-    if ((width2 == width) && (height2 == (width/2)) {
+    if ((width2 == width) && (height2 == (width/2))) {
         // Texture
         int num = width * (width / 2);
         out.writeBytes(pixel.getCArray(), num);
