@@ -1831,12 +1831,6 @@ int main(int argc, char* argv[]) {
 
     RenderDevice* renderDevice = NULL;
     
-    /*
-    #ifdef G3D_WIN32
-        renderDevice = new RenderDevice();
-        renderDevice->init();
-    #endif
-    */
 
     NetworkDevice* networkDevice = new NetworkDevice();
     networkDevice->init();
@@ -1844,11 +1838,6 @@ int main(int argc, char* argv[]) {
     std::string s;
     System::describeSystem(s);
     printf("%s\n", s.c_str());
-
-    if (renderDevice) {
-        renderDevice->describeSystem(s);
-        printf("%s\n", s.c_str());
-    }
 
     if (networkDevice) {
         networkDevice->describeSystem(s);
@@ -1858,11 +1847,6 @@ int main(int argc, char* argv[]) {
     if (networkDevice) {networkDevice->cleanup();}
     delete networkDevice;
 
-    if (renderDevice) {
-        GWindow* w = renderDevice->window();
-        renderDevice->cleanup();
-        // TODO: close window
-    }
 
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
@@ -1894,6 +1878,12 @@ int main(int argc, char* argv[]) {
         if (!renderDevice) {
             renderDevice = new RenderDevice();
         }
+    
+        if (renderDevice) {
+            renderDevice->describeSystem(s);
+            printf("%s\n", s.c_str());
+        }
+
         renderDevice->init(settings);
         measureRDPushPopPerformance(renderDevice);
 

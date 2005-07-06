@@ -39,7 +39,7 @@ void perfTextOutput() {
         printf("\n");
     }
     printf("\n\n");
-    while(true);
+//    while(true);
 }
 
 
