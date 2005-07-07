@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2005-02-17
+ @edited  2005-07-07
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -15,7 +15,6 @@
 
 #include "G3D/Vector3.h"
 #include "G3D/Vector4.h"
-#include "G3D/Ray.h"
 #include "G3D/Matrix3.h"
 #include "G3D/Array.h"
 #include <math.h>
@@ -177,7 +176,7 @@ public:
         return rotation * v;
     }
 
-    Ray toObjectSpace(const Ray& r) const;
+    class Ray toObjectSpace(const Ray& r) const;
 
     Ray toWorldSpace(const Ray& r) const;
 
@@ -245,6 +244,9 @@ public:
 	inline Vector3 lookVector() const {
 		return rotation.getColumn(2) * zLookDirection;
 	}
+
+    /** Returns the ray starting at the camera origin travelling in direction CoordinateFrame::lookVector. */
+    class Ray lookRay() const;
 
     /** Up direction for this camera (its y axis). */
     inline Vector3 upVector() const {

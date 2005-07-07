@@ -4,11 +4,12 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2005-02-24
+  @edited  2005-07-07
 */
 
 #include "G3D/GCamera.h"
 #include "G3D/Rect2D.h"
+#include "G3D/Ray.h"
 
 namespace G3D {
 

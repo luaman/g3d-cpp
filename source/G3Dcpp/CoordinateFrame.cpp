@@ -16,10 +16,15 @@
 #include "G3D/AABox.h"
 #include "G3D/Sphere.h"
 #include "G3D/Triangle.h"
+#include "G3D/Ray.h"
 
 namespace G3D {
 
 const float CoordinateFrame::zLookDirection = -1;
+
+Ray CoordinateFrame::lookRay() const {
+    return Ray::fromOriginAndDirection(translation, lookVector());
+}
 
 
 Matrix4 CoordinateFrame::toMatrix4() const {

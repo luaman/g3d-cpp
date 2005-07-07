@@ -115,6 +115,10 @@ SOURCE=.\test\tArray.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tCollisionDetection.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tGChunk.cpp
 # End Source File
 # Begin Source File
@@ -124,6 +128,10 @@ SOURCE=.\test\tMatrix.cpp
 # Begin Source File
 
 SOURCE=.\test\tMatrix3.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\test\tMeshAlgTangentSpace.cpp
 # End Source File
 # Begin Source File
 
