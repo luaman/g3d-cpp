@@ -914,6 +914,9 @@
 			<File
 				RelativePath="include\GLG3D\Win32Window.h">
 			</File>
+			<File
+				RelativePath="include\GLG3D\X11Window.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="GL Headers"
