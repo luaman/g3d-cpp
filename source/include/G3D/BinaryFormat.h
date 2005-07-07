@@ -142,7 +142,7 @@ namespace G3D {
 
 /** Returns -1 if the format is custom, otherwise the byte size
     of a single element in this format.*/ 
-size_t byteSize(BinaryFormat f);
+int32 byteSize(BinaryFormat f);
 
 
 } //G3D

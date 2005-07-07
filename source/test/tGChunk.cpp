@@ -32,7 +32,7 @@ void testGChunk() {
             {
                 GChunk c(b, DATA, FLOAT32_BINFMT);
                 for (int i = 0; i < 10; ++i) {
-                    b.writeFloat32(sqrt(i));
+                    b.writeFloat32(sqrt((double)i));
                 }
                 c.finish(b);
             }
@@ -72,7 +72,7 @@ void testGChunk() {
                 GChunk c(b, DATA, FLOAT32_BINFMT);
                 debugAssert(c.count == 10);
                 for (int i = 0; i < 10; ++i) {
-                    alwaysAssertM(fuzzyEq(b.readFloat32(), sqrt(i)),
+                    alwaysAssertM(fuzzyEq(b.readFloat32(), sqrt((double)i)),
                         "Data in chunk corrupted");
                 }
                 c.finish(b);

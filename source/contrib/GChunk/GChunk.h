@@ -34,7 +34,7 @@ namespace G3D {
   <PRE>
   uint16            name (application defined code)
   uint16            format (Chunk::BinaryFormat)
-  uint32            size (not including these 8 header bytes)
+  int32             size (not including these 8 header bytes)
   format[num]       ...data...
   </PRE>
 
@@ -53,7 +53,7 @@ private:
 
     /** Start of the header relative to the beginning of the file. Data 
         payload is HEADER_SIZE bytes later. */
-    int                         startPos;
+    int32                       startPos;
 
 
     void readInit(G3D::BinaryInput& b) {
@@ -68,13 +68,13 @@ private:
         debugAssertM((format > FIRST_BINFMT) && (format < LAST_BINFMT), 
             "GChunk file is corrupted-- format tag is invalid.");
 
-        size   = b.readUInt32();
+        size   = b.readInt32();
         debugAssertM(size < b.getLength(), 
             "GChunk file is corrupted-- chunk is larger than file!");
 
         if (format != CUSTOM_BINFMT) {
-            size_t s = byteSize(format);
-            if (s != (size_t)-1) {
+            int32 s = byteSize(format);
+            if (s != -1) {
                 count  = size / s;
             } else {
                 count = -1;
@@ -93,7 +93,7 @@ public:
     BinaryFormat                format;
 
     /** Size of the data payload in bytes, excluding the 8 header bytes. */
-    size_t                      size;
+    int32                       size;
 
     /** Number of elements in the data payload. -1 if unknown because the format is CUSTOM or string.*/
     int32                       count;
@@ -125,7 +125,7 @@ public:
         alwaysAssertM(format == _format, "File does not match format.");
     }
 
-    GChunk(G3D::BinaryInput& b, uint16 _name, BinaryFormat _format, uint32 _count) {
+    GChunk(G3D::BinaryInput& b, uint16 _name, BinaryFormat _format, int32 _count) {
         readInit(b);
         alwaysAssertM(name == _name, "File does not match format.");
         alwaysAssertM(format == _format, "File does not match format.");        
@@ -140,7 +140,7 @@ public:
         b.writeUInt16(format);
 
         // Leave space for the payload size
-        b.skip(sizeof(uint32));
+        b.skip(sizeof(int32));
     }
 
     ~GChunk() {
@@ -172,9 +172,9 @@ public:
         debugAssertM(! finished, "Called finish on the same chunk twice.");
 
         // Write the size into the header
-        uint32 currentPos = b.position();
+        int32 currentPos = b.position();
         b.setPosition(startPos + HEADER_SIZE - 4);
-        b.writeUInt32(currentPos - startPos - HEADER_SIZE);
+        b.writeInt32(currentPos - startPos - HEADER_SIZE);
         b.setPosition(currentPos);
 
         finished = true;
