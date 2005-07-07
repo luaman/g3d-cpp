@@ -69,6 +69,7 @@ public:
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
+char tmpStr[2000000];
 
 void Demo::init()  {
 /*
@@ -81,17 +82,20 @@ void Demo::init()  {
     // write font mask
     TextOutput maskOutput(app->dataDir + "/font_mask.cpp");
 
-    maskOutput.printf("static const char font_mask[][] = {\n");
+    maskOutput.printf("unsigned char font_mask[256][2000] = {\n");
 
     for (int i = 0; i < 256; ++i) {
-        Vector2 letterBounds = app->debugFont->get2DStringBounds(G3D::format("%c", (char)i), 14);
+        Vector2 letterBounds = app->debugFont->get2DStringBounds(G3D::format("%c", (char)i), 12);
 
         maskOutput.printf("{");
 
-        int startX = app->debugFont->texelSize().x * (i % 16);
-        int startY = app->debugFont->texelSize().y * (i / 16);
-        for (int j = 0; j < letterBounds.y; ++j) {
-            for (int k = 0; k < letterBounds.x; ++k) {
+        maskOutput.printf("%d,%d,", (int)letterBounds.x, (int)letterBounds.y);
+
+        int startX = (i % 16) * app->debugFont->texelSize().x;
+        int startY = (i / 16) * app->debugFont->texelSize().y;
+
+        for (int j = 0; j < (int)app->debugFont->texelSize().y; ++j) {
+            for (int k = 0; k < (int)app->debugFont->texelSize().x; ++k) {
                 int pixelX = startX + k;
                 int pixelY = startY + j;
                 maskOutput.printf("%d,", maskInput.pixel3(pixelX, pixelY).r);
@@ -102,7 +106,7 @@ void Demo::init()  {
 
     maskOutput.printf("};\n");
     maskOutput.commit();
-    */
+*/
 }
 
 
@@ -185,7 +189,7 @@ App::~App() {
 
 int main(int argc, char** argv) {
 
-    //GFont::convertRAWINItoPWF("data/smallfont", "data/font/smallfont.fnt"); 
+    GFont::convertRAWINItoPWF("data/smallfont", "data/font/smallfont.fnt"); 
 
     GAppSettings settings;
     settings.useNetwork = false;
