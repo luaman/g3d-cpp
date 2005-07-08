@@ -36,6 +36,7 @@
    Changes in 6.07:
    <UL>
     <LI> G3D::GApp now writes a description of the whole system to the log to aid debugging.
+    <LI> New texture interpolation modes: BILINEAR_MIPMAP, NEAREST_MIPMAP, NEAREST_NO_MIPMAP
     <LI> New texture formats:
       <UL>
         <LI> G3D::TextureFormat::L16;

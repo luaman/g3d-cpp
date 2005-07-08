@@ -81,7 +81,21 @@ public:
     /** TRANSPARENT_BORDER provides a border of Color4(0,0,0,0) and clamps to it. */
     enum WrapMode        {TILE = 1, CLAMP = 0, TRANSPARENT_BORDER = 2};
 
-    enum InterpolateMode {TRILINEAR_MIPMAP = 3, BILINEAR_NO_MIPMAP = 2, NO_INTERPOLATION = 1};
+    /**
+     Trilinear mipmap is the best quality (and frequently fastest) mode.  The no-mipmap modes conserve memory.
+     Non-interpolating ("Nearest") modes are generally useful only when packing lookup tables into textures
+     for shaders.
+
+     @deprecated NO_INTERPOLATION will be replaced by NEAREST_NO_MIPMAP in a future release.
+     */
+    enum InterpolateMode {
+        TRILINEAR_MIPMAP = 3, 
+        BILINEAR_MIPMAP = 4,
+        NEAREST_MIPMAP = 5,
+
+        BILINEAR_NO_MIPMAP = 2,
+        NEAREST_NO_MIPMAP = 6,
+        NO_INTERPOLATION = 1};
 
     /** A depth texture can automatically perform the depth comparison used for shadow mapping
         on a texture lookup.  The result of a texture lookup is thus the shadowed amount

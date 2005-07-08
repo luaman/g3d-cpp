@@ -266,12 +266,31 @@ static void setTexParameters(
         }
         break;
 
+    case Texture::BILINEAR_MIPMAP:
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        if (hasAutoMipMap()) {  
+            glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+        }
+        break;
+
+    case Texture::NEAREST_MIPMAP:
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        if (hasAutoMipMap()) {  
+            glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+        }
+        break;
+
     case Texture::BILINEAR_NO_MIPMAP:
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
         break;
 
     case Texture::NO_INTERPOLATION:
+    case Texture::NEAREST_NO_MIPMAP:
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         break;
@@ -287,7 +306,6 @@ static void setTexParameters(
     if (anisotropic) {
         glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
     }
-
 
     if (GLCaps::supports_GL_ARB_shadow()) {
         if (depthRead == Texture::DEPTH_NORMAL) {
@@ -367,7 +385,8 @@ TextureRef Texture::fromGLTexture(
 
     debugAssert(textureFormat);
 
-    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, textureFormat->opaque, depthRead, aniso);
+    return new Texture(name, textureID, dimension, textureFormat, interpolate, wrap, 
+        textureFormat->opaque, depthRead, aniso);
 }
 
 
@@ -653,6 +672,25 @@ static const GLenum cubeFaceTarget[] =
      GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
 
+
+static bool isMipMapformat(Texture::InterpolateMode i) {
+    switch (i) {
+    case Texture::TRILINEAR_MIPMAP:
+    case Texture::BILINEAR_MIPMAP:
+    case Texture::NEAREST_MIPMAP:
+        return true;
+
+    case Texture::BILINEAR_NO_MIPMAP:
+    case Texture::NEAREST_NO_MIPMAP:
+    case Texture::NO_INTERPOLATION:
+        return false;
+    }
+
+    alwaysAssertM(false, "Illegal interpolate mode");
+    return false;
+}
+
+
 TextureRef Texture::fromMemory(
     const std::string&                  name,
     const Array< Array<const void*> >&  bytes,
@@ -685,7 +723,7 @@ TextureRef Texture::fromMemory(
 
         glEnable(target);
         glBindTexture(target, textureID);
-        if ((interpolate == TRILINEAR_MIPMAP) && hasAutoMipMap() && (numMipMaps == 1)) {
+        if (isMipMapformat(interpolate) && hasAutoMipMap() && (numMipMaps == 1)) {
             // Enable hardware MIP-map generation
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
         }
@@ -709,7 +747,7 @@ TextureRef Texture::fromMemory(
                     target = cubeFaceTarget[f];
                 }
 
-                if ((interpolate == TRILINEAR_MIPMAP) && ! hasAutoMipMap() && (numMipMaps == 1)) {
+                if (isMipMapformat(interpolate) && ! hasAutoMipMap() && (numMipMaps == 1)) {
 
                     debugAssertM((bytesFormat->compressed == false), "Cannot manually generate Mip-Maps for compressed textures.");
 
@@ -787,7 +825,7 @@ TextureRef Texture::fromGImage(
     InterpolateMode                 interpolate,
     Dimension                       dimension,
     DepthReadMode                   depthRead,
-    float                   maxAnisotropy) {
+    float                           maxAnisotropy) {
 
     const TextureFormat* format = TextureFormat::RGB8;
     bool opaque = true;
