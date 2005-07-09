@@ -268,7 +268,7 @@ static void setTexParameters(
 
     case Texture::BILINEAR_MIPMAP:
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
         if (hasAutoMipMap()) {  
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
@@ -277,7 +277,7 @@ static void setTexParameters(
 
     case Texture::NEAREST_MIPMAP:
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
         if (hasAutoMipMap()) {  
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
