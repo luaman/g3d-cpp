@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2004-09-09
+  @edited  2005-07-11
 */
 
 #ifndef G3D_GCAMERA_H
@@ -243,8 +243,13 @@ public:
    void getFrustum(const Rect2D& viewport, GCamera::Frustum& f) const;
 
    GCamera::Frustum frustum(const Rect2D& viewport) const;
+
+   /** Read and Write camera parameters */
+	void serialize(class BinaryOutput& bo) const;
+	void deserialize(class BinaryInput& bi);
+   
 };
 
-}
+} // namespace G3D
 
 #endif

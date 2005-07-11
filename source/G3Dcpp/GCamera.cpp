@@ -4,11 +4,13 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2005-07-07
+  @edited  2005-07-11
 */
 
 #include "G3D/GCamera.h"
 #include "G3D/Rect2D.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 #include "G3D/Ray.h"
 
 namespace G3D {
@@ -410,4 +412,27 @@ void GCamera::lookAt(const Vector3& position, const Vector3& up) {
     cframe.lookAt(position, up);
 }
 
+
+void GCamera::serialize(BinaryOutput& bo) const {
+	bo.writeFloat64(fieldOfView);
+	bo.writeFloat64(imagePlaneDepth);
+	debugAssert(nearPlane > 0.0);
+	bo.writeFloat64(nearPlane);
+	debugAssert(farPlane > 0.0);
+	bo.writeFloat64(farPlane);
+	cframe.serialize(bo);
 }
+
+
+void GCamera::deserialize(BinaryInput& bi) {
+	fieldOfView = bi.readFloat64();
+	imagePlaneDepth = bi.readFloat64();
+	nearPlane = bi.readFloat64();
+	debugAssert(nearPlane > 0.0);
+	farPlane = bi.readFloat64();
+	debugAssert(farPlane > 0.0);
+	cframe.deserialize(bi);
+}
+
+
+} // namespace
