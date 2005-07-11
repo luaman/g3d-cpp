@@ -64,15 +64,16 @@ uniform samplerCube environmentMap;
 
     /** Un-normalized (interpolated) tangent space eye vector */
     varying vec3        _tsE;
+	varying vec4        tan_X, tan_Y, tan_W;
 #endif
 
+varying vec4        tan_Z;
 uniform vec3        ambientTop;
 uniform vec3        ambientBottom;
 
 // World parameters
 varying vec3        wsPosition;
 varying vec2        texCoord;
-varying vec4        tan_X, tan_Y, tan_Z, tan_W;
 
 /** Set to -1 to flip the normal. */
 uniform float       backside;

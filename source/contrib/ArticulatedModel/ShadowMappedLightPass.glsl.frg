@@ -54,15 +54,17 @@ varying vec3        wsPosition;
 
     /** Un-normalized (interpolated) tangent space eye vector */
     varying vec3        _tsE;
+
+	varying vec4        tan_X, tan_Y, tan_W;
 #endif
 
-varying vec4        tan_X, tan_Y, tan_Z, tan_W;
+varying vec4        tan_Z;
 
 /** Coordinate to use in the shadow map */
 varying vec4        shadowCoord;
 
 /** Used for "ambient occlusion" */
-varying float       visibility;
+varying float       accessibility;
 
 void main(void) {
     vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
@@ -162,8 +164,7 @@ void main(void) {
           shadow2D(shadowMap, projShadowCoord.xyz + vec3(-s, -s, 0.0)).xyz) / 5.0;
 
     gl_FragColor.rgb =
-            visibility *
-            lightColor * shadow *
+            accessibility * lightColor * shadow *
         ( 
 #          if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
                 // Diffuse
@@ -177,6 +178,7 @@ void main(void) {
             );
 
     gl_FragColor.a = 1.0
+
 #       if defined(DIFFUSECONSTANT) || defined(DIFFUSEMAP)
            * diffuseColor.a
 #       endif
