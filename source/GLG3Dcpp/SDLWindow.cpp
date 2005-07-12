@@ -104,9 +104,9 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
             setIcon(defaultIcon);
         } catch (const GImage::Error& e) {
             // Throw away default icon
-            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
-		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
-            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
+            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename.c_str(), e.reason.c_str());
+		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename.c_str(), e.reason.c_str());
+            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename.c_str(), e.reason.c_str());            
         }
     }
 
