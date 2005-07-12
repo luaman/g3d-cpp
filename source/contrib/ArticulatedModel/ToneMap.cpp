@@ -384,7 +384,7 @@ ToneMap::ToneMap() : mEnabled(true) {
             }
         }
     }
-    
+
     if (profile != NO_TONE) {
         makeGammaCorrectionTextures();
         

@@ -634,9 +634,11 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
 
             // check the type
             if (canonicalType(arg.type) != canonicalType(decl.type)) {
+                std::string v1 = GLenumToString(decl.type);
+                std::string v2 = GLenumToString(arg.type);
                 throw ArgumentError(
                 format("Variable %s was declared as type %s and the value provided at runtime had type %s.",
-                        decl.name.c_str(), GLenumToString(decl.type), GLenumToString(arg.type)));
+                        decl.name.c_str(), v1.c_str(), v2.c_str()));
             }
         }
 

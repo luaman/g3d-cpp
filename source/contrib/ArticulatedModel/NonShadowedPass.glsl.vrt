@@ -19,7 +19,7 @@ varying vec3 wsPosition;
 
 	NVIDIA drivers do not properly interpolate mat4, so we must pass
 	the columns along a separate vectors. */
-	varying vec4 tan_X, tan_Y,tan_W;
+	varying vec4 tan_X, tan_Y, tan_W;
 #endif
 
 varying vec4 tan_Z; 

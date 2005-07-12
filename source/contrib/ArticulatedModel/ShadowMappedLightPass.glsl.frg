@@ -3,7 +3,6 @@
   @author Morgan McGuire matrix@graphics3d.com
 
   For use with G3D::SuperShader.
-
  */
 
 /** World space, normalized (TODO: non-directional light) */
@@ -42,7 +41,6 @@ uniform sampler2DShadow shadowMap;
 // World parameters
 varying vec3        wsEyePos;
 varying vec2        texCoord;
-varying vec3        wsPosition;
 
 #ifdef NORMALBUMPMAP
     /** Multiplier for bump map.  Typically on the range [0, 0.05]
@@ -55,10 +53,10 @@ varying vec3        wsPosition;
     /** Un-normalized (interpolated) tangent space eye vector */
     varying vec3        _tsE;
 
-	varying vec4        tan_X, tan_Y, tan_W;
+	varying vec4        tan_X, tan_Y;
 #endif
 
-varying vec4        tan_Z;
+varying vec4        tan_Z, tan_W;
 
 /** Coordinate to use in the shadow map */
 varying vec4        shadowCoord;
@@ -99,11 +97,11 @@ void main(void) {
 	// or... (tangentToWorld * vec4(tsE, 0.0)).xyz;
 
     // Light vector      
-	vec3 wsL = normalize(lightPosition.xyz - wsPosition.xyz * lightPosition.w);
+	vec3 wsL = normalize(lightPosition.xyz - tan_W.xyz * lightPosition.w);
 
 #   if defined(SPECULARCONSTANT) || defined(SPECULARMAP)
         // Eye vector
-        vec3 wsE = wsEyePos - wsPosition;
+        vec3 wsE = wsEyePos - tan_W.xyz;
 
         // Reflection vector
         vec3 wsR = normalize((wsN * 2.0 * dot(wsN, wsE)) - wsE);

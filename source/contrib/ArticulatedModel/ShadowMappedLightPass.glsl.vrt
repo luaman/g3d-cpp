@@ -3,9 +3,6 @@
  @author Morgan McGuire, matrix@graphics3d.com
  */
 
-/** World space point */
-varying vec3 wsPosition;
-
 #ifdef NORMALBUMPMAP
 	/** Vector to the eye in tangent space (needed for parallax) */
 	varying vec3 _tsE;
@@ -15,10 +12,11 @@ varying vec3 wsPosition;
 
 	NVIDIA drivers do not properly interpolate mat4, so we must pass
 	the columns along a separate vectors. */
-	varying vec4 tan_X, tan_Y,tan_W;
+	varying vec4 tan_X, tan_Y;
 #endif
 
-varying vec4 tan_Z; 
+/** tan_Z.xyz is the world space position */
+varying vec4 tan_Z, tan_W; 
 
 /** Modelview projection matrix used for the light's shadow map */
 uniform mat4 lightMVP;
@@ -35,7 +33,7 @@ varying float accessibility;
 void main(void) {
     vec3 wsEyePos = g3d_CameraToWorldMatrix[3].xyz;
     vec3 osEyePos = (g3d_WorldToObjectMatrix * vec4(wsEyePos, 1)).xyz;
-	vec3 osPosition  = gl_Vertex.xyz;
+	vec3 osPosition = gl_Vertex.xyz;
 
     // Object space eye vector
     vec3 osE = osEyePos - osPosition;
@@ -44,14 +42,8 @@ void main(void) {
 
     accessibility = length(gl_Normal);
 
-#	ifndef NORMALBUMPMAP
-		// When not normal-bump mapping, we still need tan_W for lighting.
-		vec4 tan_W;
-#	endif
-
 	tan_W = g3d_ObjectToWorldMatrix * gl_Vertex;
 
-	wsPosition      = tan_W.xyz;
 
 	tan_Z = g3d_ObjectToWorldMatrix * vec4(gl_Normal / accessibility, 0);
 
