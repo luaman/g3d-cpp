@@ -13,6 +13,11 @@
 #ifndef G3D_RECT2D_H
 #define G3D_RECT2D_H
 
+// Linux defines this as a macro
+#ifdef border
+#undef border
+#endif
+
 #include "G3D/Vector2.h"
 
 namespace G3D {
