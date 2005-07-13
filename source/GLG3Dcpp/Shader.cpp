@@ -362,7 +362,7 @@ bool VertexAndPixelShader::isSamplerType(GLenum e) {
     return
        (e == GL_SAMPLER_1D_ARB) ||
        (e == GL_SAMPLER_2D_ARB) ||
-       (e == GL_SAMPLER_2DRECT_ARB) ||
+       (e == GL_SAMPLER_2D_RECT_ARB) ||
        (e == GL_SAMPLER_3D_ARB) ||
        (e == GL_SAMPLER_CUBE_ARB) ||
        (e == GL_SAMPLER_1D_SHADOW_ARB) ||
@@ -404,7 +404,7 @@ static GLenum toGLType(const std::string& s) {
     } else if (s == "samplerCube") {
         return GL_SAMPLER_CUBE_ARB;
     } else if (s == "sampler2DRect") {
-        return GL_SAMPLER_2DRECT_ARB;
+        return GL_SAMPLER_2D_RECT_ARB;
     } else if (s == "sampler2DShadow") {
         return GL_SAMPLER_2D_SHADOW_ARB;
     } else if (s == "sampler2DRectShadow") {
@@ -603,7 +603,7 @@ GLenum VertexAndPixelShader::canonicalType(GLenum e) {
 		return GL_TEXTURE_CUBE_MAP_ARB;
  
     case GL_SAMPLER_2D_RECT_SHADOW_ARB:
-	case GL_SAMPLER_2DRECT_ARB:
+	case GL_SAMPLER_2D_RECT_ARB:
 		return GL_TEXTURE_RECTANGLE_EXT;
 
     default:
@@ -636,9 +636,11 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
             if (canonicalType(arg.type) != canonicalType(decl.type)) {
                 std::string v1 = GLenumToString(decl.type);
                 std::string v2 = GLenumToString(arg.type);
+                std::string v1c = GLenumToString(canonicalType(decl.type));
+                std::string v2c = GLenumToString(canonicalType(arg.type));
                 throw ArgumentError(
-                format("Variable %s was declared as type %s and the value provided at runtime had type %s.",
-                        decl.name.c_str(), v1.c_str(), v2.c_str()));
+                format("Variable %s was declared as type %s (%s) and the value provided at runtime had type %s (%s).",
+                        decl.name.c_str(), v1.c_str(), v1c.c_str(), v2.c_str(), v2.c_str()));
             }
         }
 

@@ -1611,6 +1611,8 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {    
+
+
 /*
     BinaryInput b("C:/morgan/DefocusMatting/figures/aparatus.eps", G3D_LITTLE_ENDIAN);
 

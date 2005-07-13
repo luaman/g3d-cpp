@@ -83,7 +83,7 @@
      <LI> G3D::X11Window (same as SDLWindow in this release)
      <LI> Fix: [ 1226272 ] end caps of capsules in wrong position
      <LI> Fix: G3D::TextureFormat::LA8 now has 8-bits per channel
-
+     <LI> Fix: [ 1124491 ] Remove GL_SAMPLER_2DRECT_ARB
    </UL>
 
   <P>

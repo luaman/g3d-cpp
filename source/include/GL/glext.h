@@ -286,7 +286,7 @@ extern "C" {
 #define GL_SAMPLER_2D_RECT_SHADOW_ARB       0x8B64
 
 // Same constant as GL_TEXTURE_RECTANGLE_EXT/NV
-#define GL_SAMPLER_2DRECT_ARB               0x84F5
+//#define GL_SAMPLER_2DRECT_ARB               0x84F5
 
 
 #define GL_OBJECT_DELETE_STATUS_ARB         0x8B80
