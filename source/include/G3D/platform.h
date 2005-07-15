@@ -40,6 +40,11 @@
    #define SSE
 #endif
 
+#ifdef G3D_WIN32
+// Turn off warnings about deprecated C routines
+#	pragma warning (disable : 4996)
+#endif
+
 // On g++, recognize cases where the -msse2 flag was not specified
 #if defined(SSE) && defined(__GNUC__) && ! defined (__SSE__)
 #   undef SSE
@@ -148,6 +153,9 @@
     #pragma comment(lib, "ws2_32.lib")
     #pragma comment(lib, "winmm.lib")
     #pragma comment(lib, "imagehlp.lib")
+    #pragma comment(lib, "gdi32.lib")
+    #pragma comment(lib, "user32.lib")
+    #pragma comment(lib, "kernel32.lib")
     #pragma comment(lib, "version.lib")
 
     #ifdef _DEBUG

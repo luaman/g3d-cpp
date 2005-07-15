@@ -171,6 +171,10 @@ void writeStringToFile(
 void createDirectory(
     const std::string&  dir) {
     
+	if (dir == "") {
+		return;
+	}
+
     std::string d;
 
     // Add a trailing / if there isn't one.
@@ -221,6 +225,10 @@ void createDirectory(
 
 bool fileExists(
     const std::string& filename) {
+
+	if (filename == "") {
+		return true;
+	}
 
     struct _stat st;
     return _stat(filename.c_str(), &st) != -1;

@@ -11,6 +11,11 @@
 #define PNG_INTERNAL
 #include "png.h"
 
+#ifdef _MSC_VER
+/* Tell the MS VC 2005 compiler not to worry about strcpy, which was deprecated */
+#	pragma warning (disable : 4996)
+#endif
+
 #ifdef PNG_PROGRESSIVE_READ_SUPPORTED
 
 /* push model modes */

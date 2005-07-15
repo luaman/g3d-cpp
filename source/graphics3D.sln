@@ -1,58 +1,55 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Debug", "Debug.vcproj", "{5B087C68-60DC-4FEE-8F15-F1C6EB1A5BAF}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Debug", "Debug.vcproj", "{792BC5D5-F099-4251-8C02-E07738ACF497}"
 	ProjectSection(ProjectDependencies) = postProject
-		{3094A6B4-5531-409B-A577-8F322B08FA35} = {3094A6B4-5531-409B-A577-8F322B08FA35}
-		{85334EC8-00DE-4303-91C2-A90BCF934999} = {85334EC8-00DE-4303-91C2-A90BCF934999}
+		{EBE81F70-370E-4047-850B-358686B708AF} = {EBE81F70-370E-4047-850B-358686B708AF}
+		{C27C4748-A732-420C-8082-F5DB619EF253} = {C27C4748-A732-420C-8082-F5DB619EF253}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLG3D", "GLG3D.vcproj", "{85334EC8-00DE-4303-91C2-A90BCF934999}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLG3D", "GLG3D.vcproj", "{C27C4748-A732-420C-8082-F5DB619EF253}"
 	ProjectSection(ProjectDependencies) = postProject
-		{3094A6B4-5531-409B-A577-8F322B08FA35} = {3094A6B4-5531-409B-A577-8F322B08FA35}
+		{EBE81F70-370E-4047-850B-358686B708AF} = {EBE81F70-370E-4047-850B-358686B708AF}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcproj", "{47C3AA19-595E-4D2E-84F8-14E679A05012}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcproj", "{FB2B5431-FA98-4A95-841D-7B7D2ED2C877}"
 	ProjectSection(ProjectDependencies) = postProject
-		{85334EC8-00DE-4303-91C2-A90BCF934999} = {85334EC8-00DE-4303-91C2-A90BCF934999}
-		{3094A6B4-5531-409B-A577-8F322B08FA35} = {3094A6B4-5531-409B-A577-8F322B08FA35}
+		{C27C4748-A732-420C-8082-F5DB619EF253} = {C27C4748-A732-420C-8082-F5DB619EF253}
+		{EBE81F70-370E-4047-850B-358686B708AF} = {EBE81F70-370E-4047-850B-358686B708AF}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "doc", "doc.vcproj", "{21C7D96E-7D2E-4F5D-9078-2E639D0BA6A1}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "doc", "doc.vcproj", "{A8EB1B8A-ED19-4E14-A662-4F2858AFBB73}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphics3D", "graphics3D.vcproj", "{3094A6B4-5531-409B-A577-8F322B08FA35}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphics3D", "graphics3D.vcproj", "{EBE81F70-370E-4047-850B-358686B708AF}"
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
-		Release = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{5B087C68-60DC-4FEE-8F15-F1C6EB1A5BAF}.Debug.ActiveCfg = Debug|Win32
-		{5B087C68-60DC-4FEE-8F15-F1C6EB1A5BAF}.Debug.Build.0 = Debug|Win32
-		{5B087C68-60DC-4FEE-8F15-F1C6EB1A5BAF}.Release.ActiveCfg = Release|Win32
-		{5B087C68-60DC-4FEE-8F15-F1C6EB1A5BAF}.Release.Build.0 = Release|Win32
-		{85334EC8-00DE-4303-91C2-A90BCF934999}.Debug.ActiveCfg = Debug|Win32
-		{85334EC8-00DE-4303-91C2-A90BCF934999}.Debug.Build.0 = Debug|Win32
-		{85334EC8-00DE-4303-91C2-A90BCF934999}.Release.ActiveCfg = Release|Win32
-		{85334EC8-00DE-4303-91C2-A90BCF934999}.Release.Build.0 = Release|Win32
-		{47C3AA19-595E-4D2E-84F8-14E679A05012}.Debug.ActiveCfg = Debug|Win32
-		{47C3AA19-595E-4D2E-84F8-14E679A05012}.Debug.Build.0 = Debug|Win32
-		{47C3AA19-595E-4D2E-84F8-14E679A05012}.Release.ActiveCfg = Release|Win32
-		{47C3AA19-595E-4D2E-84F8-14E679A05012}.Release.Build.0 = Release|Win32
-		{21C7D96E-7D2E-4F5D-9078-2E639D0BA6A1}.Debug.ActiveCfg = Debug|Win32
-		{21C7D96E-7D2E-4F5D-9078-2E639D0BA6A1}.Debug.Build.0 = Debug|Win32
-		{21C7D96E-7D2E-4F5D-9078-2E639D0BA6A1}.Release.ActiveCfg = Release|Win32
-		{21C7D96E-7D2E-4F5D-9078-2E639D0BA6A1}.Release.Build.0 = Release|Win32
-		{3094A6B4-5531-409B-A577-8F322B08FA35}.Debug.ActiveCfg = Debug|Win32
-		{3094A6B4-5531-409B-A577-8F322B08FA35}.Debug.Build.0 = Debug|Win32
-		{3094A6B4-5531-409B-A577-8F322B08FA35}.Release.ActiveCfg = Release|Win32
-		{3094A6B4-5531-409B-A577-8F322B08FA35}.Release.Build.0 = Release|Win32
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{792BC5D5-F099-4251-8C02-E07738ACF497}.Debug|Win32.ActiveCfg = Debug|Win32
+		{792BC5D5-F099-4251-8C02-E07738ACF497}.Debug|Win32.Build.0 = Debug|Win32
+		{792BC5D5-F099-4251-8C02-E07738ACF497}.Release|Win32.ActiveCfg = Release|Win32
+		{792BC5D5-F099-4251-8C02-E07738ACF497}.Release|Win32.Build.0 = Release|Win32
+		{C27C4748-A732-420C-8082-F5DB619EF253}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C27C4748-A732-420C-8082-F5DB619EF253}.Debug|Win32.Build.0 = Debug|Win32
+		{C27C4748-A732-420C-8082-F5DB619EF253}.Release|Win32.ActiveCfg = Release|Win32
+		{C27C4748-A732-420C-8082-F5DB619EF253}.Release|Win32.Build.0 = Release|Win32
+		{FB2B5431-FA98-4A95-841D-7B7D2ED2C877}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB2B5431-FA98-4A95-841D-7B7D2ED2C877}.Debug|Win32.Build.0 = Debug|Win32
+		{FB2B5431-FA98-4A95-841D-7B7D2ED2C877}.Release|Win32.ActiveCfg = Release|Win32
+		{FB2B5431-FA98-4A95-841D-7B7D2ED2C877}.Release|Win32.Build.0 = Release|Win32
+		{A8EB1B8A-ED19-4E14-A662-4F2858AFBB73}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A8EB1B8A-ED19-4E14-A662-4F2858AFBB73}.Debug|Win32.Build.0 = Debug|Win32
+		{A8EB1B8A-ED19-4E14-A662-4F2858AFBB73}.Release|Win32.ActiveCfg = Release|Win32
+		{A8EB1B8A-ED19-4E14-A662-4F2858AFBB73}.Release|Win32.Build.0 = Release|Win32
+		{EBE81F70-370E-4047-850B-358686B708AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EBE81F70-370E-4047-850B-358686B708AF}.Debug|Win32.Build.0 = Debug|Win32
+		{EBE81F70-370E-4047-850B-358686B708AF}.Release|Win32.ActiveCfg = Release|Win32
+		{EBE81F70-370E-4047-850B-358686B708AF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
