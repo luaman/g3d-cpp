@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2003-02-15
-# @edited  2005-02-17
+# @edited  2005-07-17
 #
 # This script is written in Python.  Be aware that
 # whitespaces (particularly, indentation and newlines) 
@@ -224,6 +224,7 @@ def findBinary(program):
 
     PATH = os.getenv('PATH', '').split(';') + \
           ['.',\
+           'C:/Program Files/Microsoft Visual Studio 8/Common7/IDE',\
            'C:/Program Files/Microsoft Visual Studio/Common/MSDev98/Bin',\
            'C:/Program Files/Microsoft Visual Studio .NET 2003/Common7/IDE',\
            'C:/Program Files/Microsoft Visual Studio .NET 2002/Common7/IDE',\
@@ -304,6 +305,38 @@ def devenv(filename, configs):
                 return x;
  
     return 0
+
+##############################################
+"""Runs VCExpress (VC8) on the given sln filename and builds the 
+specified configs.  configs is a list of strings
+"""
+def VCExpress(filename, configs):
+    binary = 'VCExpress'
+
+    for config in configs:
+        for target in ['debug', 'release']:
+            logfile = tempfile.mktemp()
+            args = [filename]
+
+            args.append('/build')
+            args.append(target)
+            args.append('/project "' + config + '"')
+
+            args.append('/out')
+            args.append(logfile)
+
+            x = run(binary, args)
+  
+            # Print the output to standard out
+            for line in fileinput.input(logfile):
+                print line.rstrip('\n')
+
+            if x != 0:
+                # Abort-- a build failed
+                return x;
+ 
+    return 0
+
 ###############################################################################
 """
  Recursively zips the source into zipfile

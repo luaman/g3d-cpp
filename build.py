@@ -53,6 +53,7 @@ install    Create a user installation directory (what you probably want).
 lib        Build G3D, G3D-debug, GLG3D, GLG3D-debug lib, copy over other
            libs and headers
 lib7       Same as 'lib', but use VC7 on Windows instead of VC6
+lib8       Same as 'lib', but use VC8 on Windows instead of VC6
 fastlib    Build the lib target without reconfig on Linux (not recommended) 
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip, g3d-data-""" + version + """.zip
 source     Build g3d-src-""" + version + """.zip only
@@ -139,6 +140,9 @@ def linuxCheckVersion():
 def lib7(args):
     _lib(args, 'win32-7')
 
+def lib8(args):
+    _lib(args, 'win32-vc8')
+
 def lib(args, reconfigure = 1):
     _lib(args, platform, reconfigure)
 
@@ -194,18 +198,25 @@ def _lib(args, libplatform, reconfigure = 1):
 
         checkObjectFiles(libplatform, platform)
 
-        if (libplatform == 'win32'):
+        if (libplatform == 'win32') or (libplatform == 'win32-vc6'):
             # VC6
             x = msdev('source/graphics3D.dsw',\
                     ["graphics3D - Win32 Release",\
                      "graphics3D - Win32 Debug",\
                      "GLG3D - Win32 Release",\
                      "GLG3D - Win32 Debug"])
-        else:
+        elif (libplatform == 'win32-7') or (libplatform == 'win32-vc7'):
             # VC7
             x = devenv('source/graphics3D.sln',\
                     ["graphics3D",\
                      "GLG3D"])
+        elif (libplatform == 'win32-8') or (libplatform == 'win32-vc8'):
+            # VC8
+            x = VCExpress('source/graphics3D.sln',\
+                    ["graphics3D",\
+                     "GLG3D"])
+        else:
+            raise 'Error', 'Unknown win32 platform'
 
         copyIfNewer("temp/" + platform + "-lib", libdir)
 
@@ -322,6 +333,8 @@ def install(args, copyData=1, fromRelease=False):
         # see what compilers are installed on windows
         has6 = 0
         has7 = 0
+        has8 = 0
+
         try:
             findBinary("msdev")
             has6 = 1
@@ -334,7 +347,13 @@ def install(args, copyData=1, fromRelease=False):
         except 'Error':
             0
         
-        if (not has6 and not has7):
+        try:
+            findBinary("VCExpress")
+            has8 = 1
+        except 'Error':
+            0
+        
+        if (not has6 and not has7 and not has8):
             raise 'Error', 'No version of MSVC++ found on this machine.  Cannot build.'
         else:
             if has6:
@@ -362,9 +381,13 @@ def install(args, copyData=1, fromRelease=False):
                                 if dswFile != '' and dspFile != '':
                                     msdev(dir + '/' + dswFile, [dspFile + ' - Win32 Release'])
                                                                 
-                    os.chdir(curdir)    
+                    os.chdir(curdir)
+					  
             if has7:
                 lib7(args)
+
+            if has8:
+                lib8(args)
 
     else:
         lib(args)
@@ -488,4 +511,4 @@ def release(args):
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, lib7, fastlib, install, source, doc, test, clean, release], buildHelp)
+dispatchOnTarget([lib, lib7, lib8, fastlib, install, source, doc, test, clean, release], buildHelp)
