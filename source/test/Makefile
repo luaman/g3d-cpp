@@ -10,5 +10,5 @@ all:
 	@echo "Building Test Project"; \
 	chmod u+x $(IC); \
 	$(IC); \
-	cp -f '_build/distrib/testd' ./
+	cp -f 'build/install/testd' ./
 
