@@ -23,7 +23,7 @@
 #include <G3DAll.h>
 
 /** Change this constant to build a test for ReliableConduit */
-static const bool reliable = false;
+static const bool reliable = true;
 
 static const std::string clientGreeting = "hello, server";
 static const std::string serverResponse = "hello, client";
@@ -130,7 +130,7 @@ void lightweightServer() {
 
         default:
             // Ignore the message
-            conduit->receive(NULL, clientAddress);
+            conduit->receive(clientAddress);
             printf("  Unknown message type received: %d\n",
                    conduit->waitingMessageType());
         }

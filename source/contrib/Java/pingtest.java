@@ -1,3 +1,26 @@
+/**
+ @file pingtest/main.cpp
+ 
+  pingtest {hostname|ip|--server}
+
+ A simple demo of LightweightConduit and ReliableConduit that
+ is also a good first-test for network problems.
+
+ This does not use the protocol of the 'ping' program, but the
+ idea is the same (there is no return message from the server,
+ however).
+
+ Two protocols are supported, reliable and lightweight.  The reliable
+ global variable selects between them.  In each case:  
+
+ 1. client opens a Reliable|LightweightConduit
+ 2. client sends a PingMessage, "hello, server"
+ 3. server responds with a PingMessage, "hello, client"
+ 4. client disconnects (reliable only)
+
+ @author Corey Taylor
+ @cite ported from Morgan McGuire's C++ pingtest
+ */
 import com.graphics3d.g3d.*;
 import java.net.*;
 import java.nio.*;
@@ -10,10 +33,15 @@ class pingtest {
 
     public static void main(String[] args) {
     
-        if (args.length > 0) {
-            reliableClient(args[0]);
+        if (args.length == 0) {
+            System.out.println("pingtest machine");
+            System.out.println();
+            System.out.println("  machine  Host name of the pingtest server");
+            //System.out.println("  --server Run a server on this machine");
+        } else if (args[0] == "--server") {
+            System.out.println("--server not supported");
         } else {
-            reliableClient("localhost");
+            reliableClient(args[0]);
         }
     }
  
