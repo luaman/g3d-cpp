@@ -1,7 +1,7 @@
 [Project]
 FileName=Graphics3D.dev
 Name=Graphics3D
-UnitCount=50
+UnitCount=51
 Type=2
 Ver=1
 ObjFiles=
@@ -546,4 +546,14 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+
+[Unit51]
+FileName=G3Dcpp\BinaryFormat.cpp
+CompileCpp=1
+Folder=Graphics3D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
