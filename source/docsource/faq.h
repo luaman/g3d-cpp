@@ -60,5 +60,29 @@ constructor is kind of slow.  If your model is large and you're inside it (e.g.
 a quake map) then you should create an AABSPTree, which will perform only
 log(n) ray intersection tests on average for n triangles.
 
+<P><B>How can I Join the G3D Core Dev Team?</B><P>
+We also always need help with documentation.  If you would
+like to submit new documentation for a class or for part of
+the manual, that is another good way to demonstrate your
+skills.  
+
+After someone has contributed for a few months and
+demonstrated both their abilities and commitment to the
+project, I will invite them to join the core team.
+
+In core team members, I value most:
+
+* Reliability
+  - Complete tasks you've committed to
+  - Maintain a presence by posting in in bug tickets and forums 
+* Professionalism
+  - Treat users and other developers with respect
+  - Test changes carefully
+  - Embrace the whole role: documentation, testing, advocacy
+* Enthusiasm!
+
+Note that we don't need the most *skilled* C++ developers in
+the world--we need the most reliabile, professional, and
+enthusiastic developers.
 
 */
