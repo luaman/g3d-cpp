@@ -50,154 +50,11 @@ void testMeshAlgTangentSpace();
 void perfQueue();
 void testQueue();
 
-void testHugeBinaryOutput() {
-    printf("BinaryOutput Huge Files\n");
-    if (fileExists("huge.bin")) {
-        system("del huge.bin");
-    }
+void testBinaryIO();
+void testHugeBinaryOutput();
+void perfBinaryIO();
 
-    size_t s = 1024 * 1024 * 2;
-    uint8* giantBuffer = (uint8*) malloc(s);
-    debugAssert(giantBuffer);
-
-    BinaryOutput* b = new BinaryOutput("huge.bin", G3D_LITTLE_ENDIAN);
-    for (int i = 0; i = 1024 * 1024 * 1024 / s; ++i) {
-        b->writeBytes(giantBuffer, s);
-    }
-
-    delete b;
-
-    b = NULL;
-
-}
-
-void testBitSerialization() {
-    printf("Bit Serialization\n");
-    uint8 x[100];
-
-    {
-        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-
-        b.beginBits();
-            b.writeBits(0, 1);
-            b.writeBits(1, 1);
-        b.endBits();
-
-        b.commit(x);
-
-        debugAssert(x[0] == 2);
-    }
-
-    {
-        BinaryInput b(x, 1, G3D_LITTLE_ENDIAN);
-        b.beginBits();
-            
-            uint8 a = b.readBits(1);
-            debugAssert(a == 0);
-            
-            a = b.readBits(1);
-            debugAssert(a == 1);
-        b.endBits();
-    }
-
-    {
-        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-        b.beginBits();
-            b.writeBits(0xF1234567, 32);
-        b.endBits();
-
-        b.commit(x);
-
-        debugAssert(x[0] == 0x67);
-        debugAssert(x[1] == 0x45);
-        debugAssert(x[2] == 0x23);
-        debugAssert(x[3] == 0xF1);
-    }
-
-    {
-        BinaryInput b(x, 4, G3D_LITTLE_ENDIAN);
-        b.beginBits();
-            
-            uint8 a = b.readBits(8);
-            debugAssert(a == 0x67);
-            
-            a = b.readBits(8);
-            debugAssert(a == 0x45);
-            
-            a = b.readBits(8);
-            debugAssert(a == 0x23);
-
-            a = b.readBits(8);
-            debugAssert(a == 0xF1);
-
-        b.endBits();
-    }
-
-    {
-        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-
-        b.beginBits();
-            b.writeBits(0, 3);
-            b.writeBits(3, 3);
-            b.writeBits(4, 3);
-            b.writeBits(7, 3);
-        b.endBits();
-
-        b.commit(x);
-    }
-
-    {
-        BinaryInput b(x, 2, G3D_LITTLE_ENDIAN);
-        b.beginBits();
-            
-            uint8 a = b.readBits(3);
-            debugAssert(a == 0);
-            
-            a = b.readBits(3);
-            debugAssert(a == 3);
-
-            a = b.readBits(3);
-            debugAssert(a == 4);
-
-            a = b.readBits(3);
-            debugAssert(a == 7);
-        b.endBits();
-    }
-
-}
-
-
-void measureSerializerPerformance() {
-    Array<uint8> x(1024);
-    RealTime t0 = System::time();
-    Matrix4 M(Matrix4::identity());
-    
-    for (int i = 0; i < 100; ++i) {
-        BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-        b.writeInt32(1);
-        b.writeInt32(2);
-        b.writeInt32(8);
-        M.serialize(b);
-        b.commit(x.getCArray());
-    }
-    RealTime reallocTime = (System::time() - t0) / 100.0;
-    printf("BinaryOutput time with re-allocation: %gs\n", reallocTime);
-
-    BinaryOutput b("<memory>", G3D_LITTLE_ENDIAN);
-    t0 = System::time();    
-    for (int i = 0; i < 100; ++i) {
-        b.writeInt32(1);
-        b.writeInt32(2);
-        b.writeInt32(8);
-        M.serialize(b);
-        b.commit(x.getCArray());
-        b.reset();
-    }
-    RealTime resetTime = (System::time() - t0) / 100.0;
-    printf("BinaryOutput time with BinaryOutpu::reset: %gs\n\n", resetTime);
-    
-}
-
+void testTextInput();
 
 void measureBSPPerformance() {
 
@@ -924,209 +781,7 @@ void measureAABoxCollisionPerformance() {
 }
 
 
-void testTextInput() {
-    printf("TextInput\n");
 
-	{
- 		TextInput ti(TextInput::FROM_STRING, "a \'foo\' bar");
-
-		ti.readSymbol("a");
-		Token t = ti.read();
-		debugAssert(t.extendedType() == Token::SINGLE_QUOTED_TYPE);
-		debugAssert(t.string() == "foo");
-		ti.readSymbol("bar");
-	}
-
-    {
-        TextInput ti(TextInput::FROM_STRING, "2.x");
-
-        debugAssert(ti.readNumber() == 2);
-        ti.readSymbol("x");
-    }
-    {
-        TextInput ti(TextInput::FROM_STRING, "1.E7");
-        debugAssert(ti.readNumber() == 1.E7);
-    }
-
-    {
-        TextInput ti(TextInput::FROM_STRING, "\\123");
-        Token t;
-        t = ti.read();
-        debugAssert(t.type() == Token::SYMBOL);
-        debugAssert(t.string() == "\\");
-        t = ti.read();
-        debugAssert(t.type() == Token::NUMBER);
-        debugAssert(t.number() == 123);
-    }
-
-    {
-        TextInput::Options options;
-        options.otherCommentCharacter = '#';
-
-        TextInput ti(TextInput::FROM_STRING, "1#23\nA\\#2", options);
-        Token t;
-        t = ti.read();
-        debugAssert(t.type() == Token::NUMBER);
-        debugAssert(t.number() == 1);
-
-        // skip the comment
-        t = ti.read();
-        debugAssert(t.type() == Token::SYMBOL);
-        debugAssert(t.string() == "A");
-
-        // Read escaped comment character
-        t = ti.read();
-        debugAssert(t.type() == Token::SYMBOL);
-        debugAssert(t.string() == "#");
-
-        t = ti.read();
-        debugAssert(t.type() == Token::NUMBER);
-        debugAssert(t.number() == 2);
-    }
-
-    {
-        TextInput ti(TextInput::FROM_STRING, "0xFEED");
-
-        Token t;
-   
-        t = ti.peek();
-        debugAssert(t.type() == Token::NUMBER);
-        double n = ti.readNumber();
-        (void)n;
-        debugAssert((int)n == 0xFEED);
-
-        t = ti.read();
-        debugAssert(t.type() == Token::END);
-    }
-    
-
-    TextInput::Options opt;
-    opt.cppComments = false;
-    TextInput ti(TextInput::FROM_STRING, 
-                 "if/*comment*/(x->y==-1e6){cout<<\"hello world\"}; // foo\nbar",
-                 opt);
-
-    Token a = ti.read();
-    Token b = ti.read();
-    Token c = ti.read();
-    Token d = ti.read();
-    Token e = ti.read();
-    Token f = ti.read();
-    double g = ti.readNumber();
-    (void)g;
-    Token h = ti.read();
-    Token i = ti.read();
-    Token j = ti.read();
-    Token k = ti.read();
-    Token L = ti.read();
-    Token m = ti.read();
-    Token n = ti.read();
-    Token p = ti.read();
-    Token q = ti.read();
-    Token r = ti.read();
-    Token s = ti.read();
-    Token t = ti.read();
-
-    debugAssert(a.type() == Token::SYMBOL);
-    debugAssert(a.string() == "if");
-
-    debugAssert(b.type() == Token::SYMBOL);
-    debugAssert(b.string() == "(");
-
-    debugAssert(c.type() == Token::SYMBOL);
-    debugAssert(c.string() == "x");
-
-    debugAssert(d.type() == Token::SYMBOL);
-    debugAssert(d.string() == "->");
-
-    debugAssert(e.type() == Token::SYMBOL);
-    debugAssert(e.string() == "y");
-
-    debugAssert(f.type() == Token::SYMBOL);
-    debugAssert(f.string() == "==");
-
-    debugAssert(g == -1e6);
-
-    debugAssert(h.type() == Token::SYMBOL);
-    debugAssert(h.string() == ")");
-
-    debugAssert(i.type() == Token::SYMBOL);
-    debugAssert(i.string() == "{");
-
-    debugAssert(j.type() == Token::SYMBOL);
-    debugAssert(j.string() == "cout");
-
-    debugAssert(k.type() == Token::SYMBOL);
-    debugAssert(k.string() == "<<");
-
-    debugAssert(L.type() == Token::STRING);
-    debugAssert(L.string() == "hello world");
-
-    debugAssert(m.type() == Token::SYMBOL);
-    debugAssert(m.string() == "}");
-
-    debugAssert(n.type() == Token::SYMBOL);
-    debugAssert(n.string() == ";");
-
-    debugAssert(p.type() == Token::SYMBOL);
-    debugAssert(p.string() == "/");
-
-    debugAssert(q.type() == Token::SYMBOL);
-    debugAssert(q.string() == "/");
-
-    debugAssert(r.type() == Token::SYMBOL);
-    debugAssert(r.string() == "foo");
-
-    debugAssert(s.type() == Token::SYMBOL);
-    debugAssert(s.string() == "bar");
-
-    debugAssert(t.type() == Token::END);
-    
-    {
-        TextInput ti(TextInput::FROM_STRING, "-1 +1 2.6");
-
-        Token t;
-   
-        t = ti.peek();
-        debugAssert(t.type() == Token::NUMBER);
-        double n = ti.readNumber();
-        debugAssert(n == -1);
-
-        t = ti.peek();
-        debugAssert(t.type() == Token::NUMBER);
-        n = ti.readNumber();
-        debugAssert(n == 1);
-
-        t = ti.peek();
-        debugAssert(t.type() == Token::NUMBER);
-        n = ti.readNumber();
-        debugAssert(n == 2.6);
-    }
-
-    {
-        TextInput ti(TextInput::FROM_STRING, "- 1 ---.51");
-
-        Token t;
-   
-        t = ti.peek();
-        debugAssert(t.type() == Token::SYMBOL);
-        ti.readSymbol("-");
-
-        t = ti.peek();
-        debugAssert(t.type() == Token::NUMBER);
-        double n = ti.readNumber();
-        debugAssert(n == 1);
-
-        t = ti.peek();
-        debugAssert(t.type() == Token::SYMBOL);
-        ti.readSymbol("--");
-
-        t = ti.peek();
-        debugAssert(t.type() == Token::NUMBER);
-        n = ti.readNumber();
-        debugAssert(n == -.51);
-    }
-}
 
 
 void testColor3uint8Array() {
@@ -1149,23 +804,6 @@ void testColor3uint8Array() {
     debugAssert(y[3] == 63);
     debugAssert(y[4] == 64);
     debugAssert(y[5] == 65);
-}
-
-
-void testCompression() {
-    printf("BinaryInput & BinaryOutput\n");
-    BinaryOutput f("/tmp/out.t", G3D_LITTLE_ENDIAN);
-
-    f.writeUInt32(1234);
-    f.writeFloat64(1.234);
-    f.compress();
-    f.commit();
-
-    BinaryInput g("/tmp/out.t", G3D_LITTLE_ENDIAN, true);
-    uint32 i = g.readUInt32();
-    debugAssert(i == 1234); (void)i;
-    double j = g.readFloat64();
-    debugAssert(j == 1.234); (void)j;
 }
 
 
@@ -1223,40 +861,6 @@ void testglFormatOf() {
     debugAssert(sizeOfGLFormat(GL_FLOAT) == 4);
 }
 
-
-void testSort() {
-    printf("Array::Sort\n");
-
-    {
-        Array<int> array;
-        array.append(12, 7, 1);
-        array.append(2, 3, 10);
-    
-        array.sort();
-
-        debugAssert(array[0] == 1);
-        debugAssert(array[1] == 2);
-        debugAssert(array[2] == 3);
-        debugAssert(array[3] == 7);
-        debugAssert(array[4] == 10);
-        debugAssert(array[5] == 12);
-    }
-
-    {
-        Array<int> array;
-        array.append(12, 7, 1);
-        array.append(2, 3, 10);
-    
-        array.sortSubArray(0, 2);
-
-        debugAssert(array[0] == 1);
-        debugAssert(array[1] == 7);
-        debugAssert(array[2] == 12);
-        debugAssert(array[3] == 2);
-        debugAssert(array[4] == 3);
-        debugAssert(array[5] == 10);
-    }
-}
 
 
 
@@ -1661,6 +1265,8 @@ int main(int argc, char* argv[]) {
 
         perfArray();
 
+        perfBinaryIO();
+
         measureBSPPerformance();
         measureTriangleCollisionPerformance();
         measureAABoxCollisionPerformance();
@@ -1668,7 +1274,6 @@ int main(int argc, char* argv[]) {
 
         measureMemsetPerformance();
         measureNormalizationPerformance();
-        measureSerializerPerformance();
 
         GWindowSettings settings;
         settings.width = 800;
@@ -1712,8 +1317,7 @@ int main(int argc, char* argv[]) {
         printf("  passed\n");
 #   endif
 
-    testBitSerialization();
-    printf("  passed\n");
+    testBinaryIO();
 
     testReferenceCount();
 
@@ -1730,8 +1334,6 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
     testAdjacency();
     printf("  passed\n");
-    testSort();
-    printf("  passed\n");
     testWildcards();
     printf("  passed\n");
     testRCP();
@@ -1745,8 +1347,6 @@ int main(int argc, char* argv[]) {
 
     testSystemMemcpy();
 
-    testCompression();
-    printf("  passed\n");
     testTextInput();
     printf("  passed\n");
     testTable();
