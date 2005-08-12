@@ -12,6 +12,8 @@
 #ifndef G3D_MATRIX4_H
 #define G3D_MATRIX4_H
 
+#include "G3D/debugAssert.h"
+
 namespace G3D {
 
 /**
@@ -64,10 +66,25 @@ public:
     /** @deprecated Use Matrix4::zero() */
     static const Matrix4 ZERO;
 
-    float* operator[] (int r);
-    const float* operator[] (int r) const;
-    operator float* ();
-    operator const float* () const;
+    inline float* operator[](int r) {
+        debugAssert(r >= 0);
+        debugAssert(r < 4);
+        return (float*)&elt[r];
+    }
+
+    inline const float* operator[](int r) const {
+        debugAssert(r >= 0);
+        debugAssert(r < 4);
+        return (const float*)&elt[r];
+    } 
+
+    inline operator float* () {
+        return (float*)&elt[0][0];
+    }
+
+    inline operator const float* () const {
+        return (const float*)&elt[0][0];
+    }
 
     Matrix4 operator*(const Matrix4& other) const;
 

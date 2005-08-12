@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2005-02-17
+  @edited  2005-08-20
  */
 
 #ifndef G3D_MATRIX3_H
@@ -56,10 +56,26 @@ public:
     /**
      * member access, allows use of construct mat[r][c]
      */
-    float* operator[] (int iRow);
-    const float* operator[] (int iRow) const;
-    operator float* ();
-    operator const float* () const;
+    inline float* operator[] (int iRow) {
+        debugAssert(iRow >= 0);
+        debugAssert(iRow < 3);
+        return (float*)&m_aafEntry[iRow][0];
+    }
+
+    inline const float* operator[] (int iRow) const {
+        debugAssert(iRow >= 0);
+        debugAssert(iRow < 3);
+        return (const float*)&m_aafEntry[iRow][0];
+    }
+
+    inline operator float* () {
+        return (float*)&m_aafEntry[0][0];
+    }
+
+    inline operator const float* () const{
+        return (const float*)&m_aafEntry[0][0];
+    }
+
     Vector3 getColumn (int iCol) const;
     Vector3 getRow (int iRow) const;
     void setColumn(int iCol, const Vector3 &vector);
@@ -242,8 +258,6 @@ protected:
     float m_aafEntry[3][3];
 };
 
-
-}
 
 } // namespace
 
