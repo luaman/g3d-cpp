@@ -196,6 +196,11 @@ double unitRandom ();
  */
 double random(double low, double hi);
 
+/**
+ Normally distributed random number. 
+ */
+double gaussRandom(double mean = 0.0, double stdev = 1.0);
+
 /** [-1, 1] */
 double symmetricRandom ();
 double min(double x, double y);

@@ -35,6 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
+    <LI> gaussRandom
     <LI> Fix: SDLWindow used std::string's instead of C strings in printf and format inside some exception handleing code. [Peter]
     <LI> GCamera deserialize(BinaryInput) & serialize(BinaryOutput) functions [Peter]
     <LI> G3D::GApp now writes a description of the whole system to the log to aid debugging.
@@ -84,6 +85,7 @@
      <LI> Fix: [ 1226272 ] end caps of capsules in wrong position
      <LI> Fix: G3D::TextureFormat::LA8 now has 8-bits per channel
      <LI> Fix: [ 1124491 ] Remove GL_SAMPLER_2DRECT_ARB
+     <LI> Fix: [ 1257113 ] G3D::Queue problems comining pushFront and pushBack
    </UL>
 
   <P>

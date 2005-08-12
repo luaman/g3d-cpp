@@ -534,6 +534,11 @@ public:
     /** @deprecated Use setColorWrite */
     void enableColorWrite();
     void disableColorWrite();
+
+    /** Color writing is on by default.  Disabling color write allows a program to 
+        render to the depth and stencil buffers without creating a visible image in the frame buffer.  
+        This is useful for occlusion culling, shadow rendering, and some computational solid geometry algorithms.  
+        Rendering may be significantly accelerated when color write is disabled. */
     void setColorWrite(bool b);
 
     /** Returns true if colorWrite is enabled */
@@ -544,8 +549,14 @@ public:
         @deprecated Use setAlphaWrite */
     void enableAlphaWrite();
     void disableAlphaWrite();
-    /** Defaults to true if the screen has an alpha channel, otherwise
-        defaults to false. */
+
+    /** The frame buffer may optionally have an alpha channel for each pixel, depending on how
+        the G3D::GWindow was initialized (see G3D::RenderDevice::init, and G3D::GWindowSettings).
+        When the alpha channel is present, rendering to the screen also renders to the alpha 
+        channel by default.  Alpha writing is used for render-to-texture and deferred lighting effects.
+    
+        Rendering to the alpha channel does not produce transparency effects--this is an alpha
+        output, not an alpha input.  See RenderDevice::setBlendFunc for a discussion of blending.*/
     void setAlphaWrite(bool b);
 
     /** @deprecated Use setDepthWrite */

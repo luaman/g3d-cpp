@@ -47,6 +47,7 @@ void perfTextOutput();
 
 void testMeshAlgTangentSpace();
 
+void testQueue();
 
 void testHugeBinaryOutput() {
     printf("BinaryOutput Huge Files\n");
@@ -1631,8 +1632,8 @@ int main(int argc, char* argv[]) {
     RenderDevice* renderDevice = NULL;
     
 
-    NetworkDevice* networkDevice = new NetworkDevice();
-    networkDevice->init();
+    NetworkDevice* networkDevice = NULL;//new NetworkDevice();
+    if (networkDevice) {networkDevice->init();}
 
     std::string s;
     System::describeSystem(s);
@@ -1690,6 +1691,8 @@ int main(int argc, char* argv[]) {
 #   else
 
     printf("\n\nTests:\n\n");
+
+    testQueue();
 
     testMatrix();
 

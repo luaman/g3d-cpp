@@ -135,6 +135,10 @@ SOURCE=.\test\tMeshAlgTangentSpace.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tQueue.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tRandom.cpp
 # End Source File
 # Begin Source File

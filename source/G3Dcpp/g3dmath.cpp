@@ -12,6 +12,36 @@
 
 namespace G3D {
 
+double gaussRandom(double mean, double stdev) {
+
+    // Gaussian random numbers are generated two at a time.
+    // On alternating calls we just return the previously
+    // computed pair value.
+    static bool holding = false;
+    static double v2 = 0;
+
+    if (holding) {
+        holding = false;
+        return v2;
+    }
+
+    double w, x1, x2;
+
+    do {
+     x1 = symmetricRandom();
+     x2 = symmetricRandom();
+
+     w = square(x1) + square(x2);
+    } while (w >= 1.0);
+
+    w = sqrt((-2.0 * log(w) ) / w);
+
+    double v1 = x1 * w;
+    v2 = x2 * w;
+
+    return v1; 
+}
+
 
 int highestBit(uint32 x) {
     // Binary search.

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2002-07-09
-  @edited  2004-03-10
+  @edited  2005-08-11
  */
 
 #ifndef G3D_QUEUE_H
@@ -15,18 +15,24 @@
 namespace G3D {
 
 /**
- Locate the ends of the two sections of the circular queue.
+ Locate the indices of the break between of the two 
+ sections of the circular queue.  These are used to
+ construct two for loops that iterate over the whole
+ sequence without using the modulo operator.
+
+   [0 ... secondEnd)   [head .... firstEnd)
  */
 #define FIND_ENDS \
     int firstEnd  = head + num;\
     int secondEnd = 0;\
     if (firstEnd > numAllocated) {\
-       secondEnd = numAllocated - firstEnd;\
+       secondEnd = firstEnd - numAllocated;\
        firstEnd  = numAllocated;\
     }
 
+
 /**
- Dynamic queue.
+ Dynamic queue that uses a circular buffer for performance.
  */
 template <class T>
 class Queue {
@@ -43,34 +49,35 @@ private:
     /**
      Only num elements are initialized.
      */
-    T*  data;
+    T*                  data;
 
     /**
-     Index of the next element to be deque-d.
+     Index of the next element to be dequeue-d in data.
      */
-    int head;
+    int                 head;
 
     /**
      Number of elements (including head) that are visible and initialized.
      */
-    int num;
+    int                 num;
     
     /**
-     Size of data.
+     Size of data array in elements.
      */
-    int numAllocated;
+    int                 numAllocated;
 
     void _copy(const Queue& other) {
-        data = (T*)malloc(sizeof(T) * other.numAllocated);
+        data = (T*)System::alignedMalloc(sizeof(T) * other.numAllocated, 16);
         debugAssert(data);
 
         FIND_ENDS;
-	int i;
-        for (i = head; i < firstEnd; ++i) {
+    	
+        for (int i = head; i < firstEnd; ++i) {
             new (data + i)T();
             data[i] = other.data[i];
         }
-        for (i = 0; i < secondEnd; ++i) {
+
+        for (int i = 0; i < secondEnd; ++i) {
             new (data + i)T();
             data[i] = other.data[i];
         }
@@ -78,50 +85,53 @@ private:
 
 
     /**
-     Computes an array index from a queue position.
+     Computes a data array index from a queue position.  The queue position
+     may be negative.
      */
     inline int index(int i) const {
         return (head + i + numAllocated) % numAllocated;
     }
 
-
     /**
      Allocates newSize elements and repacks the array.
      */
     void repackAndRealloc(int newSize) {
-        data = (T*)realloc(data, newSize * sizeof(T));
+        // TODO: shrink queue
+        // TODO: aligned malloc
+        // TODO: must call copy constructors!
+        T* old = data;
+        data = (T*)System::alignedMalloc(newSize * sizeof(T), 16);
         debugAssert(data != NULL);
 
         FIND_ENDS;
 
-        if (secondEnd > 0) {
-            int shift = newSize - numAllocated;
-            // Move over the elements at the end.  Work
-            // backwards so we don't overwrite the values
-            // we're reading.  Must allow copy constructor
-            // so explicitly iterate instead of memcpy-ing.
-
-            // Call constructors on the exposed elements.
-            int i;
-
-            for (i = firstEnd; i < firstEnd + shift; ++i) {
-                new (data + i)T;
-            }
-
-            for (i = firstEnd - 1; i >= head; --i) {
-                data[i + shift] = data[i];
-            }
-
-            // Call the destructors of the now-unused elements.
-            for (i = head; i < head + shift; ++i) {
-                 (data + i)->~T();
-            }
-
-            // Shift the head (note num is unchanged)
-            head += shift;
+        int j = 0;
+        for (int i = head; i < firstEnd; ++i, ++j) {
+            new (data + j)T();
+            data[j] = old[i];
+            (old + i)->~T();
         }
 
+        for (int i = 0; i < secondEnd; ++i, ++j) {
+            new (data + j)T();
+            data[j] = old[i];
+            (old + i)->~T();
+        }
+
+        head = 0;
+        System::alignedFree(old);
         numAllocated = newSize;
+    }
+
+    /**
+      Ensure that there is at least one element between
+      the tail and head, wrapping around in the circular
+      buffer.
+      */
+    inline void reserveSpace() {
+        if (num == numAllocated) {
+            repackAndRealloc(iRound(numAllocated * 1.5 + 2));
+        }
     }
 
 public:
@@ -154,33 +164,36 @@ public:
 
     /**
      Insert a new element into the front of the queue
-     (a typical queue only uses pushBack).
+     (a traditional queue only uses pushBack).
      */
     inline void pushFront(const T& e) {
-        if (num == numAllocated) {
-            repackAndRealloc(iRound(numAllocated * 1.5 + 2));
-        }
+        reserveSpace();
 
+        // Get the index of head-1
         int i = index(-1);
-        head = i;
+
         // Call the constructor on the newly exposed element.
         new (data + i)T();
-        data[head] = e;
-        num++;
+        data[i] = e;
+
+        // Reassign the head to point to this index
+        head = i;
+        ++num;
     }
 
     /**
-    Insert a new element at the end of the queue.
+     Insert a new element at the end of the queue.
     */
     inline void pushBack(const T& e) {
-        if (num == numAllocated) {
-            repackAndRealloc(iRound(numAllocated * 1.5 + 2));
-        }
+        reserveSpace();
 
+        // Get the index of 1+tail
         int i = index(num);
-        new (data + i)T;
-        data[index(num)] = e;
-        num++;
+
+        // Initialize that element
+        new (data + i)T();
+        data[i] = e;
+        ++num;
     }
 
     /**
@@ -200,7 +213,7 @@ public:
         T result = data[tail];
 
         // Call the destructor
-        data[tail].~T();
+        (data + tail)->~T();
         --num;
 
         return result;
@@ -212,7 +225,7 @@ public:
     inline T popFront() {
         T result = data[head];
         // Call the destructor
-        data[head].~T();
+        (data + head)->~T();
         head = (head + 1) % numAllocated;
         --num;
         return result;
@@ -238,6 +251,7 @@ public:
        for (i = head; i < firstEnd; ++i) {
            (data + i)->~T();
        }
+
        for (i = 0; i < secondEnd; ++i) {
            (data + i)->~T();
        }
@@ -245,7 +259,7 @@ public:
        num = 0;
        numAllocated = 0;
        head = 0;
-       free(data);
+       System::alignedFree(data);
        data = NULL;
    }
 
@@ -304,7 +318,7 @@ public:
 
    /**
     Calls delete on all objects[0...size-1]
-    and sets the size to zero.
+    and sets the queue size to zero.
     */
     void deleteAll() {
         FIND_ENDS;

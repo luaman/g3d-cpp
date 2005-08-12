@@ -198,6 +198,7 @@
          G3D::fuzzyLt,
          G3D::fuzzyLe,
          G3D::fuzzyEpsilon,
+         G3D::gaussRandom,
          G3D::lerp,
 		 G3D::linearSpline,
          G3D::sign,
