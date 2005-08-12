@@ -103,8 +103,10 @@ public:
      */
     inline CoordinateFrame inverse() const {
         CoordinateFrame out;
+        // Use left multiply to avoid data dependence with the
+        // transpose operation.
+        out.translation = -translation * out.rotation;
         out.rotation = rotation.transpose();
-        out.translation = out.rotation * -translation;
         return out;
     }
 

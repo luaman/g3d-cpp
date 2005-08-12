@@ -34,6 +34,40 @@ public:
     }
 };
 
+static void testSort() {
+    printf("Array::Sort\n");
+
+    {
+        Array<int> array;
+        array.append(12, 7, 1);
+        array.append(2, 3, 10);
+    
+        array.sort();
+
+        debugAssert(array[0] == 1);
+        debugAssert(array[1] == 2);
+        debugAssert(array[2] == 3);
+        debugAssert(array[3] == 7);
+        debugAssert(array[4] == 10);
+        debugAssert(array[5] == 12);
+    }
+
+    {
+        Array<int> array;
+        array.append(12, 7, 1);
+        array.append(2, 3, 10);
+    
+        array.sortSubArray(0, 2);
+
+        debugAssert(array[0] == 1);
+        debugAssert(array[1] == 7);
+        debugAssert(array[2] == 12);
+        debugAssert(array[3] == 2);
+        debugAssert(array[4] == 3);
+        debugAssert(array[5] == 10);
+    }
+}
+
 
 void perfArray() {
     printf("Array Performance:\n");
@@ -322,5 +356,7 @@ nativeDel, g3dNew, g3dDel;/ */
 
 
 void testArray() {
-    printf("Test G3D::Array...passed\n");
+    printf("G3D::Array  ");
+    testSort();
+    printf("passed\n");
 }

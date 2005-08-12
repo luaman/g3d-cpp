@@ -115,6 +115,10 @@ SOURCE=.\test\tArray.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tBinaryIO.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tCollisionDetection.cpp
 # End Source File
 # Begin Source File
@@ -148,6 +152,10 @@ SOURCE=.\test\tReferenceCount.cpp
 # Begin Source File
 
 SOURCE=.\test\tSystemMemcpy.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\test\tTextInput.cpp
 # End Source File
 # Begin Source File
 

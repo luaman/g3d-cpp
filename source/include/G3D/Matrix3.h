@@ -93,6 +93,7 @@ public:
     // arithmetic operations
     Matrix3 operator+ (const Matrix3& rkMatrix) const;
     Matrix3 operator- (const Matrix3& rkMatrix) const;
+    /** Matrix-matrix multiply */
     Matrix3 operator* (const Matrix3& rkMatrix) const;
     Matrix3 operator- () const;
 
@@ -141,9 +142,11 @@ private:
 public:
 
     /** Optimized implementation of out = A.transpose().  It is safe (but slow) to call 
-        with A and out possibly pointer equal to one another.*/
-    // This is a static method so that it is not ambiguous whether "this"
-    // is an input or output argument.
+        with A and out possibly pointer equal to one another.
+    
+        Note that <CODE>A.transpose() * v</CODE> can be computed 
+        more efficiently as <CODE>v * A</CODE>.
+    */
     inline static void transpose(const Matrix3& A, Matrix3& out) {
         if (&A == &out) {
             out = A.transpose();
