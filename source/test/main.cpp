@@ -47,6 +47,7 @@ void perfTextOutput();
 
 void testMeshAlgTangentSpace();
 
+void perfQueue();
 void testQueue();
 
 void testHugeBinaryOutput() {
@@ -1613,7 +1614,6 @@ void testAABSPTreeSerialize() {
 
 int main(int argc, char* argv[]) {    
 
-
 /*
     BinaryInput b("C:/morgan/DefocusMatting/figures/aparatus.eps", G3D_LITTLE_ENDIAN);
 
@@ -1650,6 +1650,8 @@ int main(int argc, char* argv[]) {
 
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
+
+        perfQueue();
 
         perfMatrix3();
         

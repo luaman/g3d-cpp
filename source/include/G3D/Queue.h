@@ -73,13 +73,11 @@ private:
         FIND_ENDS;
     	
         for (int i = head; i < firstEnd; ++i) {
-            new (data + i)T();
-            data[i] = other.data[i];
+            new (data + i)T(other.data[i]);
         }
 
         for (int i = 0; i < secondEnd; ++i) {
-            new (data + i)T();
-            data[i] = other.data[i];
+            new (data + i)T(other.data[i]);
         }
     }
 
@@ -97,8 +95,6 @@ private:
      */
     void repackAndRealloc(int newSize) {
         // TODO: shrink queue
-        // TODO: aligned malloc
-        // TODO: must call copy constructors!
         T* old = data;
         data = (T*)System::alignedMalloc(newSize * sizeof(T), 16);
         debugAssert(data != NULL);
@@ -107,14 +103,12 @@ private:
 
         int j = 0;
         for (int i = head; i < firstEnd; ++i, ++j) {
-            new (data + j)T();
-            data[j] = old[i];
+            new (data + j)T(old[i]);
             (old + i)->~T();
         }
 
         for (int i = 0; i < secondEnd; ++i, ++j) {
-            new (data + j)T();
-            data[j] = old[i];
+            new (data + j)T(old[i]);
             (old + i)->~T();
         }
 
@@ -130,7 +124,7 @@ private:
       */
     inline void reserveSpace() {
         if (num == numAllocated) {
-            repackAndRealloc(iRound(numAllocated * 1.5 + 2));
+            repackAndRealloc(iRound(numAllocated * 3 + 20));
         }
     }
 
@@ -173,8 +167,7 @@ public:
         int i = index(-1);
 
         // Call the constructor on the newly exposed element.
-        new (data + i)T();
-        data[i] = e;
+        new (data + i)T(e);
 
         // Reassign the head to point to this index
         head = i;
@@ -191,8 +184,7 @@ public:
         int i = index(num);
 
         // Initialize that element
-        new (data + i)T();
-        data[i] = e;
+        new (data + i)T(e);
         ++num;
     }
 
@@ -210,7 +202,7 @@ public:
      */
     inline T popBack() {
         int tail = index(num - 1);
-        T result = data[tail];
+        T result(data[tail]);
 
         // Call the destructor
         (data + tail)->~T();
@@ -223,7 +215,7 @@ public:
     Remove the next element from the head of the queue.  The queue will never
     shrink in size. */
     inline T popFront() {
-        T result = data[head];
+        T result(data[head]);
         // Call the destructor
         (data + head)->~T();
         head = (head + 1) % numAllocated;
@@ -322,10 +314,12 @@ public:
     */
     void deleteAll() {
         FIND_ENDS;
+        
         int i;
     	for (i = 0; i < secondEnd; ++i) {
             delete data[i];
         }
+
         for (i = head; i < firstEnd; ++i) {
             delete data[i];
         }
