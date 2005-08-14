@@ -1,5 +1,9 @@
 /**
   @file ArticulatedModel/demo.cpp
+
+  Uses G3D: http://g3d-cpp.sf.net
+  Compiles for Win32 and Linux
+
   @author Morgan McGuire, matrix@graphics3d.com
  */
 
@@ -34,6 +38,8 @@ private:
 
     TextureRef                  shadowMap;
     Matrix4                     lightMVP;
+
+    TextureRef                  logo;
 
 public:
 
@@ -74,6 +80,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
             Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL, 1);  
     }
 
+    logo = Texture::fromFile("G3D-logo-tiny-alpha.tga", TextureFormat::AUTO, Texture::CLAMP);
 }
 
 
@@ -255,7 +262,15 @@ void Demo::doGraphics() {
 
     if (beginsWith(GLCaps::vendor(), "ATI")) {
         app->debugPrintf("\nWARNING: Demo is flakey on ATI cards.");
+    } else {
     }
+        app->renderDevice->push2D();
+        app->renderDevice->setTexture(0, logo);
+        app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        Draw::rect2D(
+            Rect2D::xywh(app->renderDevice->getWidth() - 96,app->renderDevice->getHeight() - 96, 64, 64), 
+            app->renderDevice, Color4(1,1,1,0.7));
+        app->renderDevice->pop2D();
 }
 
 
@@ -272,6 +287,9 @@ void App::main() {
 App::App(const GAppSettings& settings) : GApp(settings) {
     ::app = this;
     debugShowRenderingStats = true;
+
+    window()->setCaption("ArticulatedModel & SuperShader Demo");
+
     sky = Sky::create(renderDevice, dataDir + "sky/");//"D:/games/data/sky/", "majestic/majestic512_*.jpg");
 }
 
