@@ -1,24 +1,15 @@
 /**
   @file ArticulatedModel/demo.cpp
-
-
-  // Known driver bugs: 
-  //  Radeon Mobility 9000.  Cube maps render incorrectly
-  //                         Vertex arrays don't work with wireframe mode
-
-
   @author Morgan McGuire, matrix@graphics3d.com
  */
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60500
-    #error Requires G3D 6.05
+#if G3D_VER < 60700
+    #error Requires G3D 6.07
 #endif
 
 #include "App.h"
-
-
 
 // When not in the same directory, you can #include these files 
 // from the G3D distribution as:
@@ -68,14 +59,19 @@ public:
 /**
  Width and height of shadow map.
  */
-const int shadowMapSize = 512;
+int shadowMapSize = 512;
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
+    if (beginsWith(GLCaps::vendor(), "ATI")) {
+        // On ATI cards, large shadow maps cause terrible performance during the
+        // copy from the back buffer on recent drivers.
+        shadowMapSize = 64;
+    }
+
     if (GLCaps::supports_GL_ARB_shadow()) {        
         shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
-            
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL, 1);  
     }
 
 }
@@ -109,6 +105,8 @@ bool debugShadows = false;
 void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& shadowCaster) {
     debugAssert(GLCaps::supports_GL_ARB_shadow()); 
 
+    Rect2D rect = Rect2D::xywh(0, 0, shadowMapSize, shadowMapSize);
+    
     app->renderDevice->pushState();
 
         const double lightProjX = 12, lightProjY = 12, lightProjNear = 1, lightProjFar = 40;
@@ -129,7 +127,6 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         app->renderDevice->setColorClearValue(Color3::white());
         app->renderDevice->clear(debugShadows, true, false);
 
-        Rect2D rect = Rect2D::xywh(0, 0, shadowMapSize, shadowMapSize);
 
         app->renderDevice->enableDepthWrite();
         app->renderDevice->setViewport(rect);
@@ -154,14 +151,15 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         }
    
     app->renderDevice->popState();
+    
     debugAssert(shadowMap.notNull());
     shadowMap->copyFromScreen(rect);
+    
 }
 
 
 
 void Demo::doGraphics() {
-
     LightingRef        lighting      = toneMap.prepareLighting(app->lighting);
     LightingParameters skyParameters = toneMap.prepareLightingParameters(app->skyParameters);
 
@@ -240,6 +238,7 @@ void Demo::doGraphics() {
     app->renderDevice->popState();
 
     toneMap.apply(app->renderDevice);
+        
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(skyParameters);
@@ -253,6 +252,10 @@ void Demo::doGraphics() {
                 ""
         #endif
         );
+
+    if (beginsWith(GLCaps::vendor(), "ATI")) {
+        app->debugPrintf("\nWARNING: Demo is flakey on ATI cards.");
+    }
 }
 
 
@@ -275,7 +278,7 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 int main(int argc, char** argv) {
     GAppSettings settings;
-    settings.window.depthBits = 24;
+    settings.window.depthBits = 16;
     settings.window.stencilBits = 8;
     settings.window.alphaBits = 0;
     settings.window.rgbBits = 8;

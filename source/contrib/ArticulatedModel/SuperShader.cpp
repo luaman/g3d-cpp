@@ -157,11 +157,13 @@ static ShaderRef loadShader(const std::string& baseName, const std::string& defi
     const std::string& vertexShader = loadShaderCode(baseName + ".glsl.vrt");
     const std::string& pixelShader  = loadShaderCode(baseName + ".glsl.frg");
 
-    return Shader::fromStrings(
+    ShaderRef s = Shader::fromStrings(
         baseName + ".glsl.vrt", 
         defines + vertexShader, 
         baseName + ".glsl.frg",
         defines + pixelShader);
+
+    return s;
 }
 
 
