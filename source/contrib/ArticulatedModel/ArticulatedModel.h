@@ -157,8 +157,11 @@ public:
     };
 
 
+    // TODO: who fills this out?  when?
     /** Returns the index in partArray of the part with this name */
     Table<std::string, int>     partNameToIndex;
+
+    /** All parts. */
     Array<Part>                 partArray;
 
     /** Update normals, var, and shaders on all Parts.  If you modify Parts explicitly,

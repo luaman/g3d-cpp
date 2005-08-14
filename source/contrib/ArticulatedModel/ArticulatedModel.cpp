@@ -231,12 +231,15 @@ void ArticulatedModel::Part::updateVAR() {
 
     } else {
 
+        // Maximum round-up size of varArea; 8 bytes per array.
+        size_t roundOff = 8 * 3;
+
         // Allocate new VARs
-        VARAreaRef varArea = VARArea::create(vtxSize * 2 + texSize + tanSize + 32, VARArea::WRITE_ONCE);
+        VARAreaRef varArea = VARArea::create(vtxSize * 2 + texSize + tanSize + roundOff, VARArea::WRITE_ONCE);
         vertexVAR    = VAR(geometry.vertexArray, varArea);
         normalVAR    = VAR(geometry.normalArray, varArea);
-        texCoord0VAR = VAR(texCoordArray, varArea);
         tangentVAR   = VAR(tangentArray, varArea);
+        texCoord0VAR = VAR(texCoordArray, varArea);
     }
 }
 

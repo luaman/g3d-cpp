@@ -817,6 +817,7 @@ void PosedArticulatedModel::sendGeometry(
     rd->setObjectToWorldMatrix(cframe);
 
     if (rd->renderMode() == RenderDevice::RENDER_SOLID) {
+
         rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
         rd->beginIndexedPrimitives();
             rd->setVertexArray(part.vertexVAR);
