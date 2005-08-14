@@ -263,7 +263,6 @@ void Demo::doGraphics() {
     if (beginsWith(GLCaps::vendor(), "ATI")) {
         app->debugPrintf("\nWARNING: Demo is flakey on ATI cards.");
     } else {
-    }
         app->renderDevice->push2D();
         app->renderDevice->setTexture(0, logo);
         app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
@@ -271,6 +270,12 @@ void Demo::doGraphics() {
             Rect2D::xywh(app->renderDevice->getWidth() - 96,app->renderDevice->getHeight() - 96, 64, 64), 
             app->renderDevice, Color4(1,1,1,0.7));
         app->renderDevice->pop2D();
+    }
+
+    app->debugPrintf("\n");
+    app->debugPrintf("TAB to control camera\n");
+    app->debugPrintf("SPACE to toggle ToneMap\n");
+    app->debugPrintf("ESC to quit\n");
 }
 
 
