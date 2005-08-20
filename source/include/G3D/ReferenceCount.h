@@ -287,6 +287,7 @@ public:
         return (pointer != NULL);
     }
 
+    // TODO: distinguish between last strong and last any pointer
     /**
      Returns true if this is the last reference to an object.
      Useful for flushing memoization caches-- a cache that holds the last

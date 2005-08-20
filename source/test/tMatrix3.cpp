@@ -1,6 +1,6 @@
 #include "../include/G3DAll.h"
 
-void mul(float (&A)[3][3], float (&B)[3][3], float (&C)[3][3]) {
+static void mul(float (&A)[3][3], float (&B)[3][3], float (&C)[3][3]) {
     for (int r = 0; r < 3; ++r) {
         for (int c = 0; c < 3; ++c) {
             float sum = 0;
@@ -10,6 +10,31 @@ void mul(float (&A)[3][3], float (&B)[3][3], float (&C)[3][3]) {
             C[r][c] = sum;
         }
     }
+}
+
+
+void testMatrix3() {
+    printf("G3D::Matrix3  ");
+
+    {
+        Matrix3 M = Matrix3::identity();
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                M[i][j] = random(0, 1);
+            }
+        }
+
+        Vector3 v = Vector3::random();
+
+        Vector3 x1 = v * M;
+        Vector3 x2 = M.transpose() * v;
+
+        debugAssert(x1 == x2);
+
+    }
+
+
+    printf("passed\n");
 }
 
 

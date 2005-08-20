@@ -20,9 +20,9 @@ CFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
 
 GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 
-    debugAssertM(renderDevice->initialized(), 
-        "You must call RenderDevice::init before constructing a GFont");
-    debugAssertM(renderDevice->supportsTextureFormat(TextureFormat::A8),
+//    debugAssertM(renderDevice->initialized(), 
+//        "You must call RenderDevice::init before constructing a GFont");
+    debugAssertM(GLCaps::supports(TextureFormat::A8),
         "This graphics card does not support the GL_ALPHA8 texture format used by GFont.");
     debugAssertGLOk();
 

@@ -280,7 +280,6 @@
         G3D::isValidPointer,
         G3D::debugPrintf,
         G3D::Log,
-        G3D::Noisy,
         G3D::setAssertionHook,
         G3D::setFailureHook
 

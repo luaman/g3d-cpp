@@ -73,6 +73,7 @@ public:
     Vector3();
     Vector3(class BinaryInput& b);
     Vector3(double _x, double _y, double _z);
+    Vector3(const class Vector2& v, double _z);
     Vector3(float coordinate[3]);
     Vector3(double coordinate[3]);
     Vector3(const Vector3& rkVector);

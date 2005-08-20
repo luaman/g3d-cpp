@@ -22,6 +22,7 @@
 #include "G3D/TextOutput.h"
 #include "G3D/Vector3int16.h"
 #include "G3D/Matrix3.h"
+#include "G3D/Vector2.h"
  
 namespace G3D {
 
@@ -75,6 +76,9 @@ std::ostream& operator<<(std::ostream& os, const Vector3& v) {
 
 
 //----------------------------------------------------------------------------
+
+Vector3::Vector3(const class Vector2& v, double _z) : x(v.x), y(v.y), z(_z) {
+}
 
 double frand() {
     return rand() / (double) RAND_MAX;

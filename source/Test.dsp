@@ -135,6 +135,10 @@ SOURCE=.\test\tMatrix3.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tMeshAlgAdjacency.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tMeshAlgTangentSpace.cpp
 # End Source File
 # Begin Source File
