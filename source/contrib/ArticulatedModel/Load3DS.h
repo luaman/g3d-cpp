@@ -1,3 +1,5 @@
+#ifndef LOAD3DS_H
+#define LOAD3DS_H
 
 #include <G3DAll.h>
 
@@ -112,7 +114,7 @@ public:
 		// float32 color
 		RGBF   = 0x0010,
 
-		// uint8 color
+		// G3D::uint8 color
         RGB24  = 0x0011,
 
         // Scalar percentage
@@ -152,7 +154,7 @@ public:
         bit 8: ignore alpha (take RGBluma even if an alpha exists (?))
         bit 9: there is a three channel tint (RGB tint)
         */
-        uint16                      flags;
+        G3D::uint16                      flags;
 
         Map() : scale(Vector2(1,1)) {}
     };
@@ -255,8 +257,8 @@ public:
     Table<std::string, int>     materialNameToIndex;
 
     /** Animation start and end frames from KFFRAMES chunk */
-    uint32                      startFrame;
-    uint32                      endFrame;
+    G3D::uint32                      startFrame;
+    G3D::uint32                      endFrame;
 
     /** Used in Keyframe chunk */
     Matrix3                     currentRotation;
@@ -551,7 +553,7 @@ void Load3DS::processTriMeshChunk(
                         object.indexArray[i * 3 + v] = b->readUInt16();
                     }
 
-                    uint16 flags = b->readUInt16();
+                    G3D::uint16 flags = b->readUInt16();
                     (void)flags;
 
                     /*
@@ -949,3 +951,5 @@ float Load3DS::read3DSPct() {
     b->setPosition(curChunkHeader.end);
 	return f;
 }
+
+#endif

@@ -4,6 +4,9 @@
 
 
 void World::init() {
+
+    renderMode = RENDER_NORMAL;
+
     sky = Sky::create(NULL, app->dataDir + "sky/");
 
     lighting = Lighting::create();
@@ -37,21 +40,66 @@ void World::init() {
     }
 
     // Ground plane
-    entityArray.append(Entity::create(createPlaneModel("grid.png", 20, 1), CoordinateFrame(Vector3(-5, -1, 5))));
+    {
+        EntityRef e = Entity::create(createPlaneModel("grid.png", 20, 1), CoordinateFrame(Vector3(-5, -1, 5)));
+        e->physicsModel = new PlaneShape(Plane(Vector3::unitY(), Vector3::zero()));
+        insert(e);
+    }
 
-    entityArray.append(Entity::create(ASFModel::create("26.asf"), 
-        CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180)), Vector3::zero())));
+    if (false) {
+        // Character
+        insert(Entity::create(ASFModel::create("26.asf"), 
+            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180)), Vector3::zero())));
+    }
 
-    entityArray.append(Entity::create(createIFSModel("cube.ifs"), CoordinateFrame(Vector3(-3,0,0)))); 
-    entityArray.append(Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-6,0,0)))); 
+    {
+        EntityRef e = Entity::create(createIFSModel("cube.ifs"), CoordinateFrame(Vector3(0,0,0)));
+        float s = 0.5;
+        e->physicsModel = new BoxShape(AABox(Vector3(-s,-s,-s), Vector3(s,s,s)));
+        insert(e);
+    }
 
+    {
+        EntityRef e = Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-3,0,0)));
+        e->physicsModel = new SphereShape(Sphere(Vector3::zero(), 1));
+        insert(e);
+    }
+}
+
+
+void World::insert(EntityRef& e) {
+    // TODO: create physics
+
+    if (e->physicsModel != NULL) {
+        physics.simArray.append(e);
+    }
+
+    
+    entityArray.append(e);
+}
+
+
+void World::doSimulation() {
+
+    // Do physics on the models
+    
 }
 
 
 
-void World::render(RenderDevice* rd) {
-//    LightingRef        lighting      = toneMap.prepareLighting(lighting);
-//    LightingParameters skyParameters = toneMap.prepareLightingParameters(skyParameters);
+void World::renderPhysicsModels(RenderDevice* rd) const {
+    rd->pushState();
+        rd->setPolygonOffset(-1);
+        for (int s = 0; s < physics.simArray.size(); ++s) {
+            physics.simArray[s]->renderPhysicsModel(rd);
+        }
+    rd->popState();
+}
+
+
+void World::doGraphics(RenderDevice* rd) {
+    LightingRef        lighting      = toneMap.prepareLighting(this->lighting);
+    LightingParameters skyParameters = toneMap.prepareLightingParameters(this->skyParameters);
 
     // Pose all
     Array<PosedModelRef> posedModels;
@@ -84,34 +132,41 @@ void World::render(RenderDevice* rd) {
     }
 
     rd->pushState();
-//		Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), rd);
 
-        
-        //rd->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+        switch (renderMode) {
+        case RENDER_NORMAL:
+            //rd->setRenderMode(RenderDevice::RENDER_WIREFRAME);
 
-        // Opaque unshadowed
-        for (int m = 0; m < opaque.size(); ++m) {
-            opaque[m]->renderNonShadowed(rd, lighting);
-        }
-
-        // Opaque shadowed
-        if (lighting->shadowedLightArray.size() > 0) {
+            // Opaque unshadowed
             for (int m = 0; m < opaque.size(); ++m) {
-            //    opaque[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+                opaque[m]->renderNonShadowed(rd, lighting);
             }
-        }
 
-        // Transparent
-        for (int m = 0; m < transparent.size(); ++m) {
-            transparent[m]->renderNonShadowed(rd, lighting);
+            // Opaque shadowed
             if (lighting->shadowedLightArray.size() > 0) {
-            //    transparent[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+                for (int m = 0; m < opaque.size(); ++m) {
+                //    opaque[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+                }
             }
+
+            // Transparent
+            for (int m = 0; m < transparent.size(); ++m) {
+                transparent[m]->renderNonShadowed(rd, lighting);
+                if (lighting->shadowedLightArray.size() > 0) {
+                //    transparent[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+                }
+            }
+            break;
+
+        case RENDER_PHYSICS:
+            Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), rd);
+            renderPhysicsModels(rd);
+            break;
         }
 
     rd->popState();
 
-    //toneMap.apply(app->renderDevice);
+    toneMap.apply(app->renderDevice);
 
 //    for (int e = 0; e < entityArray.size(); ++e) {
 //        entityArray[e]->drawLabels(rd);
@@ -121,7 +176,7 @@ void World::render(RenderDevice* rd) {
         sky->renderLensFlare(rd, skyParameters);
     }
 
-    //app->debugPrintf("Tone Map %s\n", toneMap.enabled() ? "On" : "Off");
+    app->debugPrintf("Tone Map %s\n", toneMap.enabled() ? "On" : "Off");
     app->debugPrintf("%s Profile %s\n", toString(ArticulatedModel::profile()),
         #ifdef _DEBUG
                 "(DEBUG mode)"
@@ -129,5 +184,16 @@ void World::render(RenderDevice* rd) {
                 ""
         #endif
         );
-
 }
+
+///////////////////////////////////////////////////////
+
+World::Physics::Physics() {
+    ID = dWorldCreate();
+    spaceID = dHashSpaceCreate(0);
+
+    contactGroup = dJointGroupCreate(0);
+
+    dWorldSetGravity(ID, 0, 0, -0.5);
+}
+
