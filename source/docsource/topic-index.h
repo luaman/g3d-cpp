@@ -132,6 +132,7 @@
 		G3D::ConvexPolygon,
 		G3D::ConvexPolyhedron,
 		G3D::CoordinateFrame,
+        G3D::Cylinder,
         G3D::GCamera,
 		G3D::PhysicsFrame,
 		G3D::Line,

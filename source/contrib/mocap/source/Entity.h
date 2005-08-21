@@ -4,7 +4,7 @@
 #include <G3DAll.h>
 #include "ModelData.h"
 
-// TODO: box, font, and sphere entities
+#include "CollisionProxy.h"
 
 typedef ReferenceCountedPointer<class Entity> EntityRef;
 /** An object in the world that is simulated and poseable. Its geometry is 

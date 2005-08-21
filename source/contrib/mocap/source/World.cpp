@@ -19,8 +19,8 @@ void World::init() {
             lighting->environmentMapColor = Color3::black();
         }
 
-        lighting->ambientTop = Color3(0.7, 0.7, 1.0) * skyParameters.diffuseAmbient;
-        lighting->ambientBottom = Color3::brown() * skyParameters.diffuseAmbient;
+        lighting->ambientTop = Color3(0.6, 0.6, 1.0) * skyParameters.diffuseAmbient;
+        lighting->ambientBottom = Color3::white() * .6 * skyParameters.diffuseAmbient;
 
         lighting->emissiveScale = skyParameters.emissiveScale;
 
@@ -41,6 +41,10 @@ void World::init() {
 
     entityArray.append(Entity::create(ASFModel::create("26.asf"), 
         CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180)), Vector3::zero())));
+
+    entityArray.append(Entity::create(createIFSModel("cube.ifs"), CoordinateFrame(Vector3(-3,0,0)))); 
+    entityArray.append(Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-6,0,0)))); 
+
 }
 
 

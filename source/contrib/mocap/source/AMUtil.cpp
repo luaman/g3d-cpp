@@ -4,6 +4,22 @@
 
 #include "AMUtil.h"
 
+
+ArticulatedModelRef createIFSModel(const std::string& filename, Color3 color) {
+    ArticulatedModelRef model = ArticulatedModel::fromFile(filename);
+
+    SuperShader::Material& material = model->partArray[0].triListArray[0].material;
+    material.diffuse = color;
+    material.transmit = Color3::black();
+    material.reflect = Color3::black();
+    material.specular = Color3::white() * .05;
+    material.specularExponent = Color3::white() * 10;
+    model->updateAll();
+
+    return model;
+}
+
+
 ArticulatedModelRef createPlaneModel(const std::string& textureFile, float side, float tilePeriod) {
     ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
