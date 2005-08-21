@@ -102,7 +102,11 @@
 
 #    endif
 
-     #define restrict
+
+// Disable 'name too long for browse information' warning
+#   pragma warning (disable : 4786)
+
+#   define restrict
 
 
     // On MSVC, we need to link against the multithreaded DLL version of

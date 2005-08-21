@@ -12,9 +12,15 @@
 #include "World.h"
 #include "App.h"
 
-#include "../ArticulatedModel/ArticulatedModel.cpp"
-#include "../ArticulatedModel/ArticulatedModel_pose.cpp"
-#include "../ArticulatedModel/SuperShader.cpp"
+#include "../../ArticulatedModel/all.cpp"
+
+#ifdef G3D_WIN32
+#   ifdef _NDEBUG
+#       pragma comment(lib, "oded.lib")
+#   else
+#       pragma comment(lib, "ode.lib")
+#   endif
+#endif
 
 
 /**
@@ -48,6 +54,7 @@ public:
 
 };
 
+
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
@@ -71,6 +78,7 @@ void Demo::doNetwork() {
 
 void Demo::doSimulation(SimTime dt) {
 	// Add physical simulation here
+    app->world.doSimulation();
 }
 
 
@@ -81,7 +89,9 @@ void Demo::doLogic() {
         app->endProgram = true;
     }
 
-	// Add other key handling here
+    if (app->userInput->keyPressed('r')) {
+        app->world.renderMode = (World::RenderMode)((app->world.renderMode + 1) % World::RENDER_MAX);
+    }
 }
 
 
@@ -89,7 +99,7 @@ void Demo::doGraphics() {
 
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
-    app->world.render(app->renderDevice);
+    app->world.doGraphics(app->renderDevice);
 }
 
 

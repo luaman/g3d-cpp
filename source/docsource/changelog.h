@@ -72,6 +72,7 @@
      <LI> G3D::Log::vprintf
      <LI> G3D::WeakReferenceCountedPointer
      <LI> GCC 4.0 build support added [Corey]
+     <LI> G3D::CoordinateFrame::lookAt now gives a valid output even when look == up
      <LI> contrib/GChunk
      <LI> GLCaps now loads GL_EXT_framebuffer_object functions
      <LI> Added MSVC 6 support for C99 restrict keyword

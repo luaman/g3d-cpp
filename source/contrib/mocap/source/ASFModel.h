@@ -8,7 +8,7 @@
 #define ASFModel_H
 
 #include <G3DAll.h>
-#include "../../ArticulatedModel/ArticulatedModel.h"
+#include "../../ArticulatedModel/all.h"
 
 typedef ReferenceCountedPointer<class ASFModel> ASFModelRef;
 

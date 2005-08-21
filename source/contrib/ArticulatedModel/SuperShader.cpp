@@ -309,14 +309,14 @@ void SuperShader::createShaders(
             }
         }
 
-        uint8* bytes[6];
+        G3D::uint8* bytes[6];
         for (int i=0;i<6;++i) {
             bytes[i] = im.byte();
         }
 
         _whiteCubeMap = Texture::fromMemory(
             "White",
-            (const uint8**)bytes, TextureFormat::RGB8, 4, 4, 1, 
+            (const G3D::uint8**)bytes, TextureFormat::RGB8, 4, 4, 1, 
             TextureFormat::RGB8, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP);
     }
 

@@ -7,7 +7,7 @@
   @cite Bug fix by Darius Jazayeri, jazayeri@MIT.EDU
 
   @created 2001-04-22
-  @edited  2004-03-10
+  @edited  2005-08-10
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
  */
@@ -20,6 +20,10 @@
 #include "G3D/g3dmath.h"
 #include <assert.h>
 #include <string>
+
+#ifdef G3D_WIN32
+#   pragma warning (disable : 4786)
+#endif
 
 namespace G3D {
 class Hashable {

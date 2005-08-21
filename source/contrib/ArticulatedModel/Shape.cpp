@@ -47,7 +47,6 @@ void PlaneShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 
 
     CoordinateFrame cframe1(P);
     cframe1.lookAt(P + N);
-    cframe1 = CoordinateFrame();
 
     rd->setObjectToWorldMatrix(cframe0 * cframe * cframe1);
 

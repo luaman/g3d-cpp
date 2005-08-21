@@ -7,20 +7,46 @@
 
 
 class World {
+    ToneMap                         toneMap;
+
+    class Physics {
+    public:
+        /** Subset of entities that receive physics */
+        Array<EntityRef>            simArray;
+
+        dWorldID                    ID;
+        dSpaceID                    spaceID;
+        dJointGroupID               contactGroup;
+
+        Physics();
+    };
+
+    Physics                         physics;
+
+    Array<EntityRef>                entityArray;
+
+    /** Called from doGraphics for debugging purposes */
+    void renderPhysicsModels(RenderDevice* rd) const;
+
 public:
 
-    SkyRef                      sky;
-    LightingParameters          skyParameters;
+    enum RenderMode {RENDER_NORMAL = 0, RENDER_PHYSICS, RENDER_MAX};
+    RenderMode                      renderMode;
 
-    LightingRef                 lighting;
+    SkyRef                          sky;
+    LightingParameters              skyParameters;
 
-    Array<EntityRef>            entityArray;
+    LightingRef                     lighting;
+
+    /** Insert this new entity into the world.*/
+    void insert(EntityRef& e);
 
     /** Set up the empty world */
     void init();
 
-    void render(RenderDevice* rd);
-};
+    void doSimulation();
 
+    void doGraphics(RenderDevice* rd);
+};
 
 #endif

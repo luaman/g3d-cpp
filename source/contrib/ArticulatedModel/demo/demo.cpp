@@ -17,10 +17,7 @@
 
 // When not in the same directory, you can #include these files 
 // from the G3D distribution as:
-// #include <../contrib/ArticulatedModel/ArticulatedModel.h>
-#include "../ToneMap.h"
-#include "../SuperShader.h"
-#include "../ArticulatedModel.h"
+#include "../all.h"
 
 
 GApp* app = NULL; 

@@ -86,7 +86,6 @@ void World::doSimulation() {
 }
 
 
-
 void World::renderPhysicsModels(RenderDevice* rd) const {
     rd->pushState();
         rd->setPolygonOffset(-1);

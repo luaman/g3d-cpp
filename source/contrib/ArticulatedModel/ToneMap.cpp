@@ -188,7 +188,7 @@ void ToneMap::makeGammaCorrectionTextures() {
     }
     
     // The inverse gamma ramp function
-    uint8 ramp[256];
+    G3D::uint8 ramp[256];
     
     for (int i = 0; i < 256; ++i) {
         // Linear

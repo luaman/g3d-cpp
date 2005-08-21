@@ -124,6 +124,10 @@ SOURCE=..\ToneMap.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\all.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\App.h
 # End Source File
 # Begin Source File

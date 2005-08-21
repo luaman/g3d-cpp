@@ -63,6 +63,8 @@ public:
     
     G3D::AABox          geometry;
 
+    inline BoxShape(const G3D::AABox& b) : geometry(b) {}
+
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
     virtual Type type() {
@@ -79,6 +81,8 @@ class RayShape : public Shape {
 public:
     
     G3D::Ray          geometry;
+
+    inline RayShape(const G3D::Ray& r) : geometry(r) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -97,6 +101,8 @@ public:
 
     G3D::Cylinder       geometry;
 
+    inline CylinderShape(const G3D::Cylinder& c) : geometry(c) {}
+
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
     virtual Type type() {
@@ -113,6 +119,8 @@ class SphereShape : public Shape {
 public:
 
     G3D::Sphere         geometry;
+
+    inline SphereShape(const G3D::Sphere& s) : geometry(s) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -131,6 +139,8 @@ public:
 
     G3D::Capsule         geometry;
 
+    inline CapsuleShape(const G3D::Capsule& c) : geometry(c) {}
+
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
     virtual Type type() {
@@ -147,6 +157,8 @@ class PlaneShape : public Shape {
 public:
 
     G3D::Plane         geometry;
+
+    inline PlaneShape(const G3D::Plane& p) : geometry(p) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
