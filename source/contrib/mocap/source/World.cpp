@@ -42,7 +42,7 @@ void World::init() {
     // Ground plane
     {
         EntityRef e = Entity::create(createPlaneModel("grid.png", 20, 1), CoordinateFrame(Vector3(-5, -1, 5)));
-        e->physicsModel = new PlaneShape(Plane(Vector3::unitY(), Vector3::zero()));
+        e->physics.g3dGeometry = new PlaneShape(Plane(Vector3::unitY(), Vector3::zero()));
         insert(e);
     }
 
@@ -55,13 +55,15 @@ void World::init() {
     {
         EntityRef e = Entity::create(createIFSModel("cube.ifs"), CoordinateFrame(Vector3(0,0,0)));
         float s = 0.5;
-        e->physicsModel = new BoxShape(AABox(Vector3(-s,-s,-s), Vector3(s,s,s)));
+        e->physics.g3dGeometry = new BoxShape(AABox(Vector3(-s,-s,-s), Vector3(s,s,s)));
+        e->physics.velocity = Vector3::unitX();
         insert(e);
     }
 
     {
         EntityRef e = Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-3,0,0)));
-        e->physicsModel = new SphereShape(Sphere(Vector3::zero(), 1));
+        e->physics.g3dGeometry = new SphereShape(Sphere(Vector3::zero(), 1));
+        e->physics.velocity = Vector3(1,-2,-1);
         insert(e);
     }
 }
@@ -70,8 +72,11 @@ void World::init() {
 void World::insert(EntityRef& e) {
     // TODO: create physics
 
-    if (e->physicsModel != NULL) {
+    if (e->physics.g3dGeometry != NULL) {
         physics.simArray.append(e);
+
+        e->createODEGeometry(physics.ID, physics.spaceID);
+
     }
 
     

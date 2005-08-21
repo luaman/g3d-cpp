@@ -98,8 +98,9 @@ void Demo::doLogic() {
 void Demo::doGraphics() {
 
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
-
     app->world.doGraphics(app->renderDevice);
+
+    app->debugPrintf("r  - Cycle rendering modes\n");
 }
 
 

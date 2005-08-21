@@ -50,7 +50,8 @@ void PlaneShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 
 
     rd->setObjectToWorldMatrix(cframe0 * cframe * cframe1);
 
-    Draw::box(AABox(Vector3(-5,-5,0), Vector3(5,5,0)), rd, solidColor, wireColor);
+    Draw::box(AABox(Vector3(-10,-10,0), Vector3(10,10,0)), rd, solidColor, wireColor);
+    Draw::box(AABox(Vector3(-5,-4,0), Vector3(4,4,0)), rd, Color4::clear(), wireColor);
     
     rd->setObjectToWorldMatrix(cframe0);
 }

@@ -15,6 +15,42 @@ private:
     Entity();
 
 public:
+    class Physics {
+    public:
+        /** ID of the ODE object corresponding to this entity */
+        dBodyID                 body;
+        
+        /** ODE geometry that matches the G3D physics model */
+        dGeomID                 odeGeometry;
+
+        /** Physics uses simplified models for objects.
+            TODO: extend for articulated bodies to a pose 
+            heirarchy in parallel to the graphics model.
+        
+            Deleted on destruction.*/
+        Shape*                  g3dGeometry;
+
+        dMass                   odeMass;
+
+        float                   mass;
+
+        /** In world space */
+        Vector3                 velocity;
+
+        /** In world space */
+        Vector3                 angularMomentum;
+
+        Physics();
+
+        ~Physics();
+    };
+
+    Physics                     physics;
+
+public:
+
+    /** Called by World::insert to fill out the ODE fields */
+    void createODEGeometry(dWorldID world, dSpaceID space);
 
     /** The Entity creates this modelData on creation and deletes it on destruction. 
         Note that pose information is contained in the modelData. */
@@ -23,12 +59,6 @@ public:
     /** Root frame */
     PhysicsFrame                frame;
 
-    /** Physics uses simplified models for objects.
-        TODO: extend for articulated bodies to a pose 
-        heirarchy in parallel to the graphics model */
-    Shape*                      physicsModel;
-
-    float                       mass;
 
     ~Entity();
 
