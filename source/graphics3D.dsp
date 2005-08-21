@@ -143,6 +143,10 @@ SOURCE=.\G3Dcpp\CoordinateFrame.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Cylinder.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\debugAssert.cpp
 # End Source File
 # Begin Source File
