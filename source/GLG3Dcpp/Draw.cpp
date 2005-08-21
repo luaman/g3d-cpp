@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2005-02-24
+ @edited  2005-08-24
  */
 
 #include "GLG3D/Draw.h"
@@ -305,6 +305,109 @@ void Draw::capsule(
 }
 
 
+void Draw::cylinder(
+    const Cylinder&      cylinder, 
+    RenderDevice*        renderDevice,
+    const Color4&        solidColor,
+    const Color4&        wireColor) {
+
+    CoordinateFrame cframe(cylinder.getPoint1());
+
+    Vector3 Y = (cylinder.getPoint2() - cylinder.getPoint1()).direction();
+    Vector3 X = (abs(Y.dot(Vector3::unitX())) > 0.9) ? Vector3::unitY() : Vector3::unitX();
+    Vector3 Z = X.cross(Y).direction();
+    X = Y.cross(Z);        
+    cframe.rotation.setColumn(0, X);
+    cframe.rotation.setColumn(1, Y);
+    cframe.rotation.setColumn(2, Z);
+
+    double radius = cylinder.getRadius();
+    double height = (cylinder.getPoint2() - cylinder.getPoint1()).length();
+
+    // Always render upright in object space
+    Sphere sphere1(Vector3::zero(), radius);
+    Sphere sphere2(Vector3(0, height, 0), radius);
+
+    Vector3 top(0, height, 0);
+
+    renderDevice->pushState();
+
+        renderDevice->setObjectToWorldMatrix(renderDevice->getObjectToWorldMatrix() * cframe);
+        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+
+        if (solidColor.a > 0) {
+            int numPasses = 1;
+
+            if (solidColor.a < 1) {
+                // Multiple rendering passes to get front/back blending correct
+                renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+                numPasses = 2;
+                renderDevice->setCullFace(RenderDevice::CULL_FRONT);
+                renderDevice->disableDepthWrite();
+            }
+
+            renderDevice->setColor(solidColor);
+            for (int k = 0; k < numPasses; ++k) {
+
+                // TODO: TOP and BOTTOM
+
+                // Cylinder faces
+                renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
+                    for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
+                        const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
+
+                        renderDevice->setNormal(v0);
+                        renderDevice->sendVertex(v0 * radius);
+                        renderDevice->sendVertex(v0 * radius + top);
+                    }
+                renderDevice->endPrimitive();
+
+                renderDevice->setCullFace(RenderDevice::CULL_BACK);
+            }
+
+        }
+
+        if (wireColor.a > 0) {
+            renderDevice->enableDepthWrite();
+            renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+            // TODO: TOP and Bottom
+
+            // Line around center
+            renderDevice->setColor(wireColor);
+            Vector3 center(0, height / 2, 0);
+            renderDevice->setLineWidth(2);
+            renderDevice->beginPrimitive(RenderDevice::LINES);
+                for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
+                    const double yaw0 = y * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
+                    const double yaw1 = (y + 1) * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
+
+                    Vector3 v0(cos(yaw0), 0, sin(yaw0));
+                    Vector3 v1(cos(yaw1), 0, sin(yaw1));
+
+                    renderDevice->setNormal(v0);
+                    renderDevice->sendVertex(v0 * radius + center);
+                    renderDevice->setNormal(v1);
+                    renderDevice->sendVertex(v1 * radius + center);
+                }
+
+                // Edge lines
+                for (int y = 0; y < 8; ++y) {
+                    const double yaw = y * G3D_PI / 4;
+                    const Vector3 x(cos(yaw), 0, sin(yaw));
+        
+                    renderDevice->setNormal(x);
+                    renderDevice->sendVertex(x * radius);
+                    renderDevice->sendVertex(x * radius + top);
+                }
+            renderDevice->endPrimitive();
+        }
+
+    renderDevice->popState();
+}
+
+    
 void Draw::vertexNormals(
     const MeshAlg::Geometry&    geometry,
     RenderDevice*               renderDevice,

@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2005-02-06
+ @edited  2005-08-06
  */
 
 #ifndef G3D_DRAW_H
@@ -26,6 +26,7 @@ class Box;
 class AABox;
 class Line;
 class Capsule;
+class Cylinder;
 
 /**
  Useful routines for rendering primitives when debugging.  Compared
@@ -135,6 +136,12 @@ public:
        const Capsule&       capsule, 
        RenderDevice*        renderDevice,
        const Color4&        solidColor = Color4(1,0,1,.5),
+       const Color4&        wireColor = Color3::black());
+
+    static void cylinder(
+       const Cylinder&      cylinder, 
+       RenderDevice*        renderDevice,
+       const Color4&        solidColor = Color4(1,1,0,.5),
        const Color4&        wireColor = Color3::black());
 
     static void ray(

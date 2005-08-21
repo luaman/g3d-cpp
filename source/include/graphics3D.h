@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2005-06-14
+ @edited  2005-08-14
 
  Copyright 2001-2005, Morgan McGuire.
  All rights reserved.
@@ -69,6 +69,7 @@
 #include "G3D/spline.h"
 #include "G3D/LineSegment.h"
 #include "G3D/Capsule.h"
+#include "G3D/Cylinder.h"
 #include "G3D/Triangle.h"
 #include "G3D/Color3uint8.h"
 #include "G3D/Color4uint8.h"
