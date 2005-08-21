@@ -367,6 +367,10 @@ SOURCE=.\include\G3D\CoordinateFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\G3D\Cylinder.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3D\debug.h
 # End Source File
 # Begin Source File
