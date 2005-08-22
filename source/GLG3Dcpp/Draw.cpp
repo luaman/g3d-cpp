@@ -325,9 +325,6 @@ void Draw::cylinder(
     double height = (cylinder.getPoint2() - cylinder.getPoint1()).length();
 
     // Always render upright in object space
-    Sphere sphere1(Vector3::zero(), radius);
-    Sphere sphere2(Vector3(0, height, 0), radius);
-
     Vector3 top(0, height, 0);
 
     renderDevice->pushState();
@@ -349,7 +346,28 @@ void Draw::cylinder(
             renderDevice->setColor(solidColor);
             for (int k = 0; k < numPasses; ++k) {
 
-                // TODO: TOP and BOTTOM
+                // TOP
+                renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
+                    renderDevice->setNormal(Vector3::unitY());
+                    renderDevice->sendVertex(top);
+                    for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
+                        const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
+
+                        renderDevice->sendVertex(v0 * radius + top);
+                    }
+                renderDevice->endPrimitive();
+
+                renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
+                    renderDevice->setNormal(-Vector3::unitY());
+                    renderDevice->sendVertex(Vector3::zero());
+                    for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
+                        const double yaw0 = -y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
+
+                        renderDevice->sendVertex(v0 * radius);
+                    }
+                renderDevice->endPrimitive();
 
                 // Cylinder faces
                 renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
@@ -372,34 +390,46 @@ void Draw::cylinder(
             renderDevice->enableDepthWrite();
             renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
 
-            // TODO: TOP and Bottom
-
             // Line around center
             renderDevice->setColor(wireColor);
-            Vector3 center(0, height / 2, 0);
             renderDevice->setLineWidth(2);
             renderDevice->beginPrimitive(RenderDevice::LINES);
-                for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
-                    const double yaw0 = y * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
-                    const double yaw1 = (y + 1) * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
+                for (int z = 0; z < 3; ++z) {
+                    Vector3 center(0, height * z / 2.0, 0);
+                    for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
+                        const double yaw0 = y * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
+                        const double yaw1 = (y + 1) * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
 
-                    Vector3 v0(cos(yaw0), 0, sin(yaw0));
-                    Vector3 v1(cos(yaw1), 0, sin(yaw1));
+                        Vector3 v0(cos(yaw0), 0, sin(yaw0));
+                        Vector3 v1(cos(yaw1), 0, sin(yaw1));
 
-                    renderDevice->setNormal(v0);
-                    renderDevice->sendVertex(v0 * radius + center);
-                    renderDevice->setNormal(v1);
-                    renderDevice->sendVertex(v1 * radius + center);
+                        renderDevice->setNormal(v0);
+                        renderDevice->sendVertex(v0 * radius + center);
+                        renderDevice->setNormal(v1);
+                        renderDevice->sendVertex(v1 * radius + center);
+                    }
                 }
 
                 // Edge lines
                 for (int y = 0; y < 8; ++y) {
                     const double yaw = y * G3D_PI / 4;
                     const Vector3 x(cos(yaw), 0, sin(yaw));
-        
+                    const Vector3 xr = x * radius;
+    
+                    // Side
                     renderDevice->setNormal(x);
-                    renderDevice->sendVertex(x * radius);
-                    renderDevice->sendVertex(x * radius + top);
+                    renderDevice->sendVertex(xr);
+                    renderDevice->sendVertex(xr + top);
+
+                    // Top
+                    renderDevice->setNormal(Vector3::unitY());
+                    renderDevice->sendVertex(top);
+                    renderDevice->sendVertex(xr+ top);
+
+                    // Bottom
+                    renderDevice->setNormal(Vector3::unitY());
+                    renderDevice->sendVertex(Vector3::zero());
+                    renderDevice->sendVertex(xr);
                 }
             renderDevice->endPrimitive();
         }
@@ -628,10 +658,11 @@ void Draw::box(
             Vector3 c = box.getCenter();
             Vector3 v;
 
+            // Wire frame
             renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
             renderDevice->beginPrimitive(RenderDevice::LINES);
 
-                // Wire frame
+                // Front and back
                 for (int i = 0; i < 8; i += 4) {
                     for (int j = 0; j < 4; ++j) {
                         v = box.getCorner(i + j);
@@ -644,6 +675,7 @@ void Draw::box(
                     }
                 }
 
+                // Sides
                 for (int i = 0; i < 4; ++i) {
                     v = box.getCorner(i);
                     renderDevice->setNormal((v - c).direction());
@@ -653,6 +685,7 @@ void Draw::box(
                     renderDevice->setNormal((v - c).direction());
                     renderDevice->sendVertex(v);
                 }
+
 
             renderDevice->endPrimitive();
         }

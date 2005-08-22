@@ -72,12 +72,11 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 char tmpStr[2000000];
 
 void Demo::init()  {
-/*
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
-    app->debugCamera.lookAt(Vector3(0, 2, 0));
+    app->debugCamera.lookAt(Vector3(0, 0, 0));
 
-    GImage maskInput(app->dataDir + "/smallfont.bmp");
+/*    GImage maskInput(app->dataDir + "/smallfont.bmp");
 
     // write font mask
     TextOutput maskOutput(app->dataDir + "/font_mask.cpp");
@@ -156,7 +155,8 @@ void Demo::doGraphics() {
 
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
 
-        Draw::capsule(Capsule(Vector3::Vector3(-2,1,1), Vector3(3,4,0), 2), app->renderDevice);
+//        Draw::box(AABox(Vector3(-1,-2,1), Vector3(2,2,3)), app->renderDevice);
+        Draw::cylinder(Cylinder(Vector3::Vector3(-2,1,1), Vector3(3,4,0), 2), app->renderDevice);
 
     app->renderDevice->disableLighting();
 
@@ -189,7 +189,7 @@ App::~App() {
 
 int main(int argc, char** argv) {
 
-    GFont::convertRAWINItoPWF("data/smallfont", "data/font/smallfont.fnt"); 
+//    GFont::convertRAWINItoPWF("data/smallfont", "data/font/smallfont.fnt"); 
 
     GAppSettings settings;
     settings.useNetwork = false;

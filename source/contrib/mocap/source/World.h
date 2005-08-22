@@ -18,6 +18,8 @@ class World {
         dSpaceID                    spaceID;
         dJointGroupID               contactGroup;
 
+        Vector3                     gravity;
+
         Physics();
     };
 
@@ -25,8 +27,11 @@ class World {
 
     Array<EntityRef>                entityArray;
 
-    /** Called from doGraphics for debugging purposes */
-    void renderPhysicsModels(RenderDevice* rd) const;
+    /** Called from doGraphics for debugging purposes.  Modifies sort keys */
+    void renderPhysicsModels(RenderDevice* rd);
+
+    /** Invoked by ODE when objects o1 and o2 are in contact or colliding. */
+    static void ODENearCallback(void *data, dGeomID o1, dGeomID o2);
 
 public:
 
@@ -38,11 +43,22 @@ public:
 
     LightingRef                     lighting;
 
+    ~World();
+
+
+    void setGravity(const Vector3& g);
+
+    inline Vector3 gravity() const {
+        return physics.gravity;
+    }
+
     /** Insert this new entity into the world.*/
     void insert(EntityRef& e);
 
     /** Set up the empty world */
     void init();
+
+    void cleanup();
 
     void doSimulation();
 

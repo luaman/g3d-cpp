@@ -1,82 +1,30 @@
 #include "App.h"
 #include "World.h"
-#include "AMUtil.h"
-
 
 void World::init() {
-
     renderMode = RENDER_NORMAL;
+}
 
-    sky = Sky::create(NULL, app->dataDir + "sky/");
 
-    lighting = Lighting::create();
-    {
-        skyParameters = LightingParameters(G3D::toSeconds(10, 00, 00, AM));
-    
-        skyParameters.skyAmbient = Color3::white();
+World::~World() {
+    cleanup();
+}
 
-        if (sky.notNull()) {
-            lighting->environmentMap = sky->getEnvironmentMap();
-            lighting->environmentMapColor = skyParameters.skyAmbient;
-        } else {
-            lighting->environmentMapColor = Color3::black();
-        }
 
-        lighting->ambientTop = Color3(0.6, 0.6, 1.0) * skyParameters.diffuseAmbient;
-        lighting->ambientBottom = Color3::white() * .6 * skyParameters.diffuseAmbient;
+void World::cleanup() {
+    entityArray.clear();
+    physics.simArray.clear();
 
-        lighting->emissiveScale = skyParameters.emissiveScale;
-
-        lighting->lightArray.clear();
-
-        lighting->shadowedLightArray.clear();
-
-        GLight L = skyParameters.directionalLight();
-        // Decrease the blue since we're adding blue ambient
-        L.color *= Color3(1.2, 1.2, 1);
-        L.position = Vector4(Vector3(0,1,1).direction(), 0);
-
-        lighting->shadowedLightArray.append(L);
-    }
-
-    // Ground plane
-    {
-        EntityRef e = Entity::create(createPlaneModel("grid.png", 20, 1), CoordinateFrame(Vector3(-5, -1, 5)));
-        e->physics.g3dGeometry = new PlaneShape(Plane(Vector3::unitY(), Vector3::zero()));
-        insert(e);
-    }
-
-    if (false) {
-        // Character
-        insert(Entity::create(ASFModel::create("26.asf"), 
-            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180)), Vector3::zero())));
-    }
-
-    {
-        EntityRef e = Entity::create(createIFSModel("cube.ifs"), CoordinateFrame(Vector3(0,0,0)));
-        float s = 0.5;
-        e->physics.g3dGeometry = new BoxShape(AABox(Vector3(-s,-s,-s), Vector3(s,s,s)));
-        e->physics.velocity = Vector3::unitX();
-        insert(e);
-    }
-
-    {
-        EntityRef e = Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-3,0,0)));
-        e->physics.g3dGeometry = new SphereShape(Sphere(Vector3::zero(), 1));
-        e->physics.velocity = Vector3(1,-2,-1);
-        insert(e);
-    }
+    dJointGroupDestroy(physics.contactGroup);
+    dSpaceDestroy(physics.spaceID);
+    dWorldDestroy(physics.ID);
 }
 
 
 void World::insert(EntityRef& e) {
-    // TODO: create physics
-
     if (e->physics.g3dGeometry != NULL) {
         physics.simArray.append(e);
-
         e->createODEGeometry(physics.ID, physics.spaceID);
-
     }
 
     
@@ -84,14 +32,88 @@ void World::insert(EntityRef& e) {
 }
 
 
+void World::ODENearCallback(void* data, dGeomID o1, dGeomID o2) {
+    int i, n;
+    
+    World* world = (World*)data;
+    
+    // Return without doing anything if we want to ignore this contact.
+    
+    const int maxContacts = 10;
+    dContact contact[maxContacts];
+    n = dCollide (o1, o2, maxContacts, &contact[0].geom, sizeof(dContact));
+    if (n > 0) {
+        for (i = 0; i < n; ++i) {
+            contact[i].surface.mode = dContactSlip1 | dContactSlip2 |
+                dContactSoftERP | dContactSoftCFM | dContactApprox1;
+            
+            contact[i].surface.mu = dInfinity;
+            contact[i].surface.slip1 = 0.1;
+            contact[i].surface.slip2 = 0.1;
+            contact[i].surface.soft_erp = 0.5;
+            contact[i].surface.soft_cfm = 0.3;
+            
+            dJointID c = dJointCreateContact(world->physics.ID, world->physics.contactGroup, &contact[i]);
+
+            dJointAttach(c,
+                dGeomGetBody(contact[i].geom.g1),
+                dGeomGetBody(contact[i].geom.g2));
+        }
+    }
+}
+
+
 void World::doSimulation() {
 
     // Do physics on the models
+    dSpaceCollide(physics.spaceID, this, &ODENearCallback);
+
+    // TODO: is 0.05 the timestep?
+    dWorldStep(physics.ID, 0.05);
+
+    // Remove all contact joints
+    dJointGroupEmpty(physics.contactGroup);
+
+    // Update from simulated data
+    CoordinateFrame c;
+    for (int s = 0; s < physics.simArray.size(); ++s) {
+        EntityRef entity = physics.simArray[s];
+        if (entity->physics.canMove) {
+            entity->physics.updateVelocity();
+
+            entity->physics.getFrame(c);
+            entity->frame = c;
+        }
+    }
     
 }
 
 
-void World::renderPhysicsModels(RenderDevice* rd) const {
+static bool entitySortBackToFront(const EntityRef& a, const EntityRef& b) {
+    return a->sortKey > b->sortKey;
+}
+
+
+static void sortBackToFront(const CoordinateFrame& camera, Array<EntityRef>& array) {
+    Vector3 z = camera.getLookVector();
+
+    // Create keys
+    for (int e = 0; e < array.size(); ++e) {
+        if (array[e]->physics.g3dGeometry->type() == Shape::PLANE) {
+            array[e]->sortKey = inf();
+            // Draw planes first
+        } else {
+            array[e]->sortKey = array[e]->frame.translation.dot(z);
+        }
+    }
+
+    array.sort(entitySortBackToFront);
+}
+
+
+void World::renderPhysicsModels(RenderDevice* rd) {
+    sortBackToFront(rd->getCameraToWorldMatrix(), physics.simArray);
+
     rd->pushState();
         rd->setPolygonOffset(-1);
         for (int s = 0; s < physics.simArray.size(); ++s) {
@@ -190,6 +212,12 @@ void World::doGraphics(RenderDevice* rd) {
         );
 }
 
+
+void World::setGravity(const Vector3& g) {
+    physics.gravity = g;
+    dWorldSetGravity(physics.ID, physics.gravity.x, physics.gravity.y, physics.gravity.z);
+}
+
 ///////////////////////////////////////////////////////
 
 World::Physics::Physics() {
@@ -198,6 +226,8 @@ World::Physics::Physics() {
 
     contactGroup = dJointGroupCreate(0);
 
-    dWorldSetGravity(ID, 0, 0, -0.5);
+    gravity = Vector3(0, -0.5, 0);
+    dWorldSetGravity(ID, gravity.x, gravity.y, gravity.z);
 }
+
 

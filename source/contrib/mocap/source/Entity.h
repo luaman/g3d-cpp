@@ -15,8 +15,11 @@ private:
     Entity();
 
 public:
+
     class Physics {
     public:
+        bool                    canMove;
+
         /** ID of the ODE object corresponding to this entity */
         dBodyID                 body;
         
@@ -38,9 +41,19 @@ public:
         Vector3                 velocity;
 
         /** In world space */
-        Vector3                 angularMomentum;
+        Vector3                 angularVelocity;
 
         Physics();
+
+        /** Update the ODE position from the G3D one */
+        void setFrame(const PhysicsFrame& p);
+        void setFrame(const CoordinateFrame& c);
+
+        /** Reads the coordinate frame from ODE */
+        void getFrame(CoordinateFrame& c);
+
+        /** Copies velocity from ODE to G3D */
+        void updateVelocity();
 
         ~Physics();
     };
@@ -59,6 +72,8 @@ public:
     /** Root frame */
     PhysicsFrame                frame;
 
+    /** Used temporarily while sorting */    
+    float                       sortKey;
 
     ~Entity();
 
