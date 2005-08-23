@@ -138,6 +138,8 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
 
     std::string f = toLower(filename);
 
+    createCylinder(); return;
+
     //createHalfGear(); return;
     //createGrid(flat2D, 1024, true); return;
     //createGrid(lumpy2D, 1024, true); return;
@@ -162,6 +164,32 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
     } else {
         debugAssert(false);
     }
+}
+
+
+void XIFSModel::createCylinder() {
+    MeshBuilder builder(false);
+
+    int N = 36;
+
+    Vector3 top(0,.5,0);
+    Vector3 bottom(0,-.5,0);
+
+    for (int i = 0; i < N; ++i) {
+        float a = i * G3D_TWO_PI / N;
+        float b = (i + 1) * G3D_TWO_PI / N;
+
+        Vector3 A = Vector3(cos(a), 0, sin(a)) * sqrt(2)/2;
+        Vector3 B = Vector3(cos(b), 0, sin(b)) * sqrt(2)/2;
+
+        builder.addTriangle(A + bottom, A + top, B + bottom);
+        builder.addTriangle(B + bottom, A + top, B + top);
+
+        builder.addTriangle(A + top, top, B + top);
+        builder.addTriangle(A + bottom, B + bottom, bottom);
+    }
+
+    set(builder);
 }
 
 

@@ -63,6 +63,7 @@ private:
     /** Algorithmically generate a grid that is thickened to have a bottom (and therefore be closed) */
     void createGrid(double(*y)(double,double), int numPolys, bool consistentDiagonal = false);
     void createIsoGrid(double(*y)(double,double), int numPolys);
+    void createCylinder();
 
     void createHalfGear();
 

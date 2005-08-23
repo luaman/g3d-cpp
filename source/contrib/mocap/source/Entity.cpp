@@ -40,7 +40,7 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             // Plane won't have real physics attached to it, so we just need
             // to make it part of the space.
             float a,b,c,d;
-            Plane plane = physics.g3dGeometry->asPlane()->geometry;
+            Plane plane = physics.g3dGeometry->plane();
             // Take the plane to world space
             plane = cframe().toWorldSpace(plane);
 
@@ -57,7 +57,7 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
 
             // Attach a moment of inertia to the body
-            const AABox& box = physics.g3dGeometry->asBox()->geometry;
+            const AABox& box = physics.g3dGeometry->box();
             dMassSetBox(&physics.odeMass, 1, box.extent().x, box.extent().y, box.extent().z);
             dMassAdjust(&physics.odeMass, physics.mass);
             dBodySetMass(physics.body, &physics.odeMass);
@@ -66,7 +66,7 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             physics.odeGeometry = dCreateBox(space, box.extent().x, box.extent().y, box.extent().z);
             dGeomSetBody(physics.odeGeometry, physics.body);
         } else {
-            const AABox& box = physics.g3dGeometry->asBox()->geometry;
+            const AABox& box = physics.g3dGeometry->box();
             physics.odeGeometry = dCreateBox(space, box.extent().x, box.extent().y, box.extent().z);
             Matrix3 g3dR = cframe().translation;
             dMatrix3 odeR;
@@ -92,19 +92,47 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
 
             // Attach a moment of inertia to the body
-            const Sphere& sphere = physics.g3dGeometry->asSphere()->geometry;
+            const Sphere& sphere = physics.g3dGeometry->sphere();
             debugAssert(sphere.center == Vector3::zero());
-            dMassSetSphere(&physics.odeMass, 1, sphereradius);
+            dMassSetSphere(&physics.odeMass, 1, sphere.radius);
             dMassAdjust(&physics.odeMass, physics.mass);
             dBodySetMass(physics.body, &physics.odeMass);
 
             // Attach geometry to the body
             physics.odeGeometry = dCreateSphere(space, sphere.radius);
             dGeomSetBody(physics.odeGeometry, physics.body);
+        } else {
+            debugAssertM(false, "TODO");
         }
         break;
 
     case Shape::CYLINDER:
+        if (physics.canMove) {
+            // Create the body
+            physics.body = dBodyCreate(world);
+            dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
+
+            // Attach a moment of inertia to the body
+            const Cylinder& cylinder = physics.g3dGeometry->cylinder();
+            debugAssert(cylinder.getPoint1().x == 0);
+            debugAssert(cylinder.getPoint1().z == 0);
+            debugAssert(cylinder.getPoint2().x == 0);
+            debugAssert(cylinder.getPoint2().z == 0);
+            debugAssert(fuzzyEq(cylinder.getPoint1().y, -cylinder.getPoint2().y));
+
+            float r = cylinder.getRadius();
+            float h = abs(cylinder.getPoint2().y - cylinder.getPoint1().y);
+
+            dMassSetCylinder(&physics.odeMass, 1, 0, r, h);
+            dMassAdjust(&physics.odeMass, physics.mass);
+            dBodySetMass(physics.body, &physics.odeMass);
+
+            // Attach geometry to the body
+            physics.odeGeometry = dCreateCCylinder(space, r, h);
+            dGeomSetBody(physics.odeGeometry, physics.body);
+        } else {
+            debugAssertM(false, "TODO");
+        }
         break;
 
     default:

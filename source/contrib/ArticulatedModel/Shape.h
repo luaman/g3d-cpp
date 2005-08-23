@@ -24,6 +24,18 @@ public:
    
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black()) = 0;
 
+    virtual AABox& box() { 
+        debugAssertM(false, "Not a box");
+        static AABox b;
+        return b;
+    }
+
+    virtual const AABox& box() const { 
+        debugAssertM(false, "Not a box");
+        static AABox b;
+        return b;
+    }
+
     virtual class BoxShape* asBox() { 
         debugAssertM(false, "Not a box");
         return NULL; 
@@ -33,10 +45,34 @@ public:
         debugAssertM(false, "Not a ray");
         return NULL; 
     }
+
+    virtual Ray& ray() {
+        debugAssertM(false, "Not a ray");
+        static Ray r;
+        return r; 
+    }
     
+    virtual const Ray& ray() const {
+        debugAssertM(false, "Not a ray");
+        static Ray r;
+        return r; 
+    }
+
     virtual class CylinderShape* asCylinder() { 
         debugAssertM(false, "Not a cylinder");
         return NULL; 
+    }
+
+    virtual Cylinder& cylinder() { 
+        debugAssertM(false, "Not a cylinder");
+        static Cylinder c;
+        return c; 
+    }
+
+    virtual const Cylinder& cylinder() const { 
+        debugAssertM(false, "Not a cylinder");
+        static Cylinder c;
+        return c; 
     }
 
     virtual class SphereShape* asSphere() { 
@@ -44,9 +80,33 @@ public:
         return NULL; 
     }
 
+    virtual Sphere& sphere() { 
+        debugAssertM(false, "Not a sphere");
+        static Sphere s;
+        return s; 
+    }
+
+    virtual const Sphere& sphere() const { 
+        debugAssertM(false, "Not a sphere");
+        static Sphere s;
+        return s; 
+    }
+
     virtual class CapsuleShape* asCapsule() { 
         debugAssertM(false, "Not a capsule");
         return NULL; 
+    }
+
+    virtual Capsule& capsule() { 
+        debugAssertM(false, "Not a capsule");
+        static Capsule c;
+        return c; 
+    }
+
+    virtual const Capsule& capsule() const { 
+        debugAssertM(false, "Not a capsule");
+        static Capsule c;
+        return c; 
     }
 
     virtual class PlaneShape* asPlane() { 
@@ -54,14 +114,27 @@ public:
         return NULL; 
     }
 
+    virtual Plane& plane() { 
+        debugAssertM(false, "Not a plane");
+        static Plane p;
+        return p;
+    }
+
+    virtual const Plane& plane() const { 
+        debugAssertM(false, "Not a plane");
+        static Plane p;
+        return p;
+    }
+
     virtual ~Shape() {}
 };
 
 
 class BoxShape : public Shape {
-public:
     
     G3D::AABox          geometry;
+
+public:
 
     inline BoxShape(const G3D::AABox& b) : geometry(b) {}
 
@@ -74,13 +147,22 @@ public:
     virtual class BoxShape* asBox() { 
         return this;
     }
+
+    virtual AABox& box() { 
+        return geometry;
+    }
+
+    virtual const AABox& box() const { 
+        return geometry;
+    }
 };
 
 
 class RayShape : public Shape {
-public:
     
     G3D::Ray          geometry;
+
+public:
 
     inline RayShape(const G3D::Ray& r) : geometry(r) {}
 
@@ -93,13 +175,22 @@ public:
     virtual class RayShape* asRay() { 
         return this;
     }
+    
+    virtual Ray& ray() { 
+        return geometry;
+    }
+
+    virtual const Ray& ray() const { 
+        return geometry;
+    }
 };
 
 
 class CylinderShape : public Shape {
-public:
 
     G3D::Cylinder       geometry;
+
+public:
 
     inline CylinderShape(const G3D::Cylinder& c) : geometry(c) {}
 
@@ -112,13 +203,22 @@ public:
     virtual class CylinderShape* asCylinder() { 
         return this;
     }
+
+    virtual Cylinder& cylinder() { 
+        return geometry;
+    }
+
+    virtual const Cylinder& cylinder() const {
+        return geometry;
+    }
 };
 
 
 class SphereShape : public Shape {
-public:
 
     G3D::Sphere         geometry;
+
+public:
 
     inline SphereShape(const G3D::Sphere& s) : geometry(s) {}
 
@@ -130,6 +230,14 @@ public:
 
     virtual class SphereShape* asSphere() { 
         return this;
+    }
+
+    virtual Sphere& sphere() { 
+        return geometry;
+    }
+
+    virtual const Sphere& sphere() const { 
+        return geometry;
     }
 };
 
@@ -150,13 +258,22 @@ public:
     virtual class CapsuleShape* asCapsule() { 
         return this;
     }
+
+    virtual Capsule& capsule() { 
+        return geometry;
+    }
+
+    virtual const Capsule& capsule() const { 
+        return geometry;
+    }
 };
 
 
 class PlaneShape : public Shape {
-public:
 
     G3D::Plane         geometry;
+
+public:
 
     inline PlaneShape(const G3D::Plane& p) : geometry(p) {}
 
@@ -168,6 +285,14 @@ public:
 
     virtual class PlaneShape* asPlane() { 
         return this;
+    }
+
+    virtual Plane& plane() { 
+        return geometry;
+    }
+
+    virtual const Plane& plane() const { 
+        return geometry;
     }
 };
 

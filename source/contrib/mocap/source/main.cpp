@@ -169,7 +169,6 @@ void App::loadScene() {
         EntityRef e = Entity::create(createIFSModel("cube.ifs"), CoordinateFrame(Vector3(.7,3,0)));
         float s = 0.5;
         e->physics.g3dGeometry = new BoxShape(AABox(Vector3(-s,-s,-s), Vector3(s,s,s)));
-        e->physics.velocity = Vector3::unitX();
         world.insert(e);
     }
 
@@ -181,13 +180,18 @@ void App::loadScene() {
         world.insert(e);
     }
 
-    if (false) {
-        EntityRef e = Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-3,0,0)));
+    {
+        EntityRef e = Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-1, 4, 0)));
         e->physics.g3dGeometry = new SphereShape(Sphere(Vector3::zero(), 1));
-        e->physics.velocity = Vector3(1,-2,-1);
         world.insert(e);
     }
 
+    {
+        EntityRef e = Entity::create(createIFSModel("cylinder.ifs", Color3::green()), CoordinateFrame(Vector3(-1, 3, -1)));
+        float s = 2 / sqrt(2);
+        e->physics.g3dGeometry = new CylinderShape(Cylinder(Vector3(0,-s * 0.5,0), Vector3(0,0.5 * s,0), 1));
+        world.insert(e);
+    }
 }
 
 
