@@ -112,6 +112,10 @@ SOURCE=.\source\ModelData.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\source\odeHelper.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\source\World.cpp
 # End Source File
 # End Group
@@ -137,6 +141,10 @@ SOURCE=.\source\Entity.h
 # Begin Source File
 
 SOURCE=.\source\ModelData.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\source\odeHelper.h
 # End Source File
 # Begin Source File
 

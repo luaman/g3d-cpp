@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "ASFModel.h"
+#include "odeHelper.h"
 
 Entity::Entity() {}
 
@@ -51,68 +52,56 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
         break;
 
     case Shape::BOX:
-        if (physics.canMove) {
-            // Create the body
-            physics.body = dBodyCreate(world);
-            dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
-
-            // Attach a moment of inertia to the body
-            const AABox& box = physics.g3dGeometry->box();
-            dMassSetBox(&physics.odeMass, 1, box.extent().x, box.extent().y, box.extent().z);
-            dMassAdjust(&physics.odeMass, physics.mass);
-            dBodySetMass(physics.body, &physics.odeMass);
-
-            // Attach geometry to the body
-            physics.odeGeometry = dCreateBox(space, box.extent().x, box.extent().y, box.extent().z);
-            dGeomSetBody(physics.odeGeometry, physics.body);
-        } else {
+        {
             const AABox& box = physics.g3dGeometry->box();
             physics.odeGeometry = dCreateBox(space, box.extent().x, box.extent().y, box.extent().z);
-            Matrix3 g3dR = cframe().translation;
-            dMatrix3 odeR;
-         
-            for (int i = 0; i < 3; ++i) {
-                for (int j = 0; j < 3; ++j) {
-                    odeR[i * 4 + j] = g3dR[i][j];
-                }
-                odeR[i * 4 + 3] = 0.0;
+            debugAssert(box.center().fuzzyEq(Vector3::zero()));
+
+            if (physics.canMove) {
+                // Create the body
+                physics.body = dBodyCreate(world);
+                dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
+
+                // Attach a moment of inertia to the body
+                dMassSetBox(&physics.odeMass, 1, box.extent().x, box.extent().y, box.extent().z);
+                dMassAdjust(&physics.odeMass, physics.mass);
+                dBodySetMass(physics.body, &physics.odeMass);
+
+                // Attach geometry to the body
+                dGeomSetBody(physics.odeGeometry, physics.body);
+            } else {
+                dGeomSetPositionAndRotation(physics.odeGeometry, cframe());
             }
-            
-            Vector3 c = frame.translation + box.center();
-
-            dGeomSetPosition(physics.odeGeometry, c.x, c.y, c.z);
-            dGeomSetRotation(physics.odeGeometry, odeR);
         }
         break;
 
     case Shape::SPHERE:
-        if (physics.canMove) {
-            // Create the body
-            physics.body = dBodyCreate(world);
-            dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
-
+        {
             // Attach a moment of inertia to the body
             const Sphere& sphere = physics.g3dGeometry->sphere();
             debugAssert(sphere.center == Vector3::zero());
-            dMassSetSphere(&physics.odeMass, 1, sphere.radius);
-            dMassAdjust(&physics.odeMass, physics.mass);
-            dBodySetMass(physics.body, &physics.odeMass);
 
-            // Attach geometry to the body
             physics.odeGeometry = dCreateSphere(space, sphere.radius);
-            dGeomSetBody(physics.odeGeometry, physics.body);
-        } else {
-            debugAssertM(false, "TODO");
+
+            if (physics.canMove) {
+                // Create the body
+                physics.body = dBodyCreate(world);
+                dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
+
+                dMassSetSphere(&physics.odeMass, 1, sphere.radius);
+                dMassAdjust(&physics.odeMass, physics.mass);
+                dBodySetMass(physics.body, &physics.odeMass);
+
+                // Attach geometry to the body
+                dGeomSetBody(physics.odeGeometry, physics.body);
+            } else {
+                dGeomSetPositionAndRotation(physics.odeGeometry, cframe());
+            }
         }
         break;
 
     case Shape::CYLINDER:
-        if (physics.canMove) {
-            // Create the body
-            physics.body = dBodyCreate(world);
-            dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
-
-            // Attach a moment of inertia to the body
+        {
             const Cylinder& cylinder = physics.g3dGeometry->cylinder();
             debugAssert(cylinder.getPoint1().x == 0);
             debugAssert(cylinder.getPoint1().z == 0);
@@ -123,20 +112,28 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             float r = cylinder.getRadius();
             float h = abs(cylinder.getPoint2().y - cylinder.getPoint1().y);
 
-            dMassSetCylinder(&physics.odeMass, 1, 0, r, h);
-            dMassAdjust(&physics.odeMass, physics.mass);
-            dBodySetMass(physics.body, &physics.odeMass);
-
-            // Attach geometry to the body
             physics.odeGeometry = dCreateCCylinder(space, r, h);
-            dGeomSetBody(physics.odeGeometry, physics.body);
-        } else {
-            debugAssertM(false, "TODO");
+
+            if (physics.canMove) {
+                // Create the body
+                physics.body = dBodyCreate(world);
+                dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
+
+                // Attach a moment of inertia to the body
+                dMassSetCylinder(&physics.odeMass, 1, 0, r, h);
+                dMassAdjust(&physics.odeMass, physics.mass);
+                dBodySetMass(physics.body, &physics.odeMass);
+
+                // Attach geometry to the body
+                dGeomSetBody(physics.odeGeometry, physics.body);
+            } else {
+                dGeomSetPositionAndRotation(physics.odeGeometry, cframe());
+            }
         }
         break;
 
     default:
-        debugAssertM(false, "unimplemented");
+        debugAssertM(false, "This shape is not supported by Entity.");
 
     }
 
@@ -166,17 +163,7 @@ void Entity::Physics::setFrame(const CoordinateFrame& c) {
 */
 
 void Entity::Physics::getFrame(CoordinateFrame& c) {
-
-    // dReal may be either single or double
-    const dReal* t = dBodyGetPosition(body);
-    const dReal* r = dBodyGetRotation(body);    
-
-    for (int i = 0; i < 3; ++i) {
-        c.translation[i] = t[i];
-        for (int j = 0; j < 3; ++j) {
-            c.rotation[i][j] = r[i * 4 + j];
-        }
-    }
+    dBodyGetPositionAndRotation(body, c);
 }
 
 void Entity::Physics::updateVelocity() {

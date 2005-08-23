@@ -4,8 +4,6 @@
 #include <G3DAll.h>
 #include "Entity.h"
 
-
-
 class World {
     ToneMap                         toneMap;
 
