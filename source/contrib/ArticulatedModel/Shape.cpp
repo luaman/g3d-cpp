@@ -2,6 +2,27 @@
 
 namespace G3D {
 
+std::string Shape::typeToString(Type t) {
+    switch (t) {
+    case MESH:
+        return "MESH";
+    case BOX:
+        return "BOX";
+    case CYLINDER:
+        return "CYLINDER";
+    case SPHERE:
+        return "SPHERE";
+    case RAY:
+        return "RAY";
+    case CAPSULE:
+        return "CAPSULE";
+    case PLANE:
+        return "PLANE";
+    }
+
+    return "";
+}
+
 void BoxShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor, Color4 wireColor) {
     CoordinateFrame cframe0 = rd->getObjectToWorldMatrix();
     rd->setObjectToWorldMatrix(cframe0 * cframe);

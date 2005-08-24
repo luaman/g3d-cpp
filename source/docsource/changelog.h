@@ -35,6 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
+    <LI> Vector3(Vector2, float) constructor
     <LI> G3D::Cylinder
     <LI> G3D::gaussRandom
     <LI> Fix: SDLWindow used std::string's instead of C strings in printf and format inside some exception handleing code. [Peter]

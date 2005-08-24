@@ -158,6 +158,9 @@ void Demo::doGraphics() {
 //        Draw::box(AABox(Vector3(-1,-2,1), Vector3(2,2,3)), app->renderDevice);
         Draw::cylinder(Cylinder(Vector3::Vector3(-2,1,1), Vector3(3,4,0), 2), app->renderDevice);
 
+        Plane p(Vector3::unitY(), Vector3::zero());
+        Draw::plane(p, app->renderDevice);
+
     app->renderDevice->disableLighting();
 
     if (app->sky.notNull()) {

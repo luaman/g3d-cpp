@@ -65,7 +65,7 @@ void VAR::init(
     size_t newAlignedSize = size + pointerOffset;
 
 	alwaysAssertM(newAlignedSize <= area->freeSize(),
-        "VARArea too small to hold new VAR");
+        "VARArea too small to hold new VAR (possibly due to rounding to 8-byte boundaries).");
 
     // Update VARArea values
     area->updateAllocation(newAlignedSize);

@@ -201,6 +201,35 @@ void Draw::ray(
 }
 
 
+void Draw::plane(
+    const Plane&         plane, 
+    RenderDevice*        renderDevice,
+    const Color4&        solidColor,
+    const Color4&        wireColor) {
+
+   CoordinateFrame cframe0 = renderDevice->getObjectToWorldMatrix();
+
+    // TODO: improve!
+    Vector3 N, P;
+    
+    {
+        double d;
+        plane.getEquation(N, d);
+        P = N * d;
+    }
+
+    CoordinateFrame cframe1(P);
+    cframe1.lookAt(P + N);
+
+    renderDevice->setObjectToWorldMatrix(cframe0 * cframe1);
+
+    Draw::box(AABox(Vector3(-10,-10,0), Vector3(10,10,0)), renderDevice, solidColor, wireColor);
+    Draw::box(AABox(Vector3(-5,-4,0), Vector3(4,4,0)), renderDevice, Color4::clear(), wireColor);
+    
+    renderDevice->setObjectToWorldMatrix(cframe0);
+}
+
+
 void Draw::capsule(
     const Capsule&       capsule, 
     RenderDevice*        renderDevice,

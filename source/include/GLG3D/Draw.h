@@ -27,6 +27,7 @@ class AABox;
 class Line;
 class Capsule;
 class Cylinder;
+class Plane;
 
 /**
  Useful routines for rendering primitives when debugging.  Compared
@@ -98,6 +99,12 @@ public:
         const Sphere&       sphere,
         RenderDevice*       rd,
         const Color4&       solidColor = Color4(1, 1, 0, .5),
+        const Color4&       wireColor  = Color3::black());
+
+    static void plane(
+        const Plane&        plane,
+        RenderDevice*       rd,
+        const Color4&       solidColor = Color4(.2, .2, 1, .5),
         const Color4&       wireColor  = Color3::black());
 
     static void line(

@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2004-08-02
+ @edited  2005-08-02
  */
 
 #include <limits>
@@ -35,6 +35,8 @@ const Vector3 Vector3::UNIT_Z(0, 0, 1);
 const Vector3 Vector3::INF3(G3D::inf(), G3D::inf(), G3D::inf());
 const Vector3 Vector3::NAN3(G3D::nan(), G3D::nan(), G3D::nan());
 
+Vector3::Vector3(const class Vector2& v, double _z) : x(v.x), y(v.y), z(_z) {
+}
 
 Vector3::Axis Vector3::primaryAxis() const {
     
@@ -76,9 +78,6 @@ std::ostream& operator<<(std::ostream& os, const Vector3& v) {
 
 
 //----------------------------------------------------------------------------
-
-Vector3::Vector3(const class Vector2& v, double _z) : x(v.x), y(v.y), z(_z) {
-}
 
 double frand() {
     return rand() / (double) RAND_MAX;

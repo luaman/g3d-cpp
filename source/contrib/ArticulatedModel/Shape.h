@@ -20,6 +20,8 @@ public:
     /** Mesh is reserved */
     enum Type {MESH=1, BOX, CYLINDER, SPHERE, RAY, CAPSULE, PLANE};
 
+    static std::string typeToString(Type t);
+
     virtual Type type() = 0;
    
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black()) = 0;
@@ -36,16 +38,6 @@ public:
         return b;
     }
 
-    virtual class BoxShape* asBox() { 
-        debugAssertM(false, "Not a box");
-        return NULL; 
-    }
-
-    virtual class RayShape* asRay() { 
-        debugAssertM(false, "Not a ray");
-        return NULL; 
-    }
-
     virtual Ray& ray() {
         debugAssertM(false, "Not a ray");
         static Ray r;
@@ -56,11 +48,6 @@ public:
         debugAssertM(false, "Not a ray");
         static Ray r;
         return r; 
-    }
-
-    virtual class CylinderShape* asCylinder() { 
-        debugAssertM(false, "Not a cylinder");
-        return NULL; 
     }
 
     virtual Cylinder& cylinder() { 
@@ -75,11 +62,6 @@ public:
         return c; 
     }
 
-    virtual class SphereShape* asSphere() { 
-        debugAssertM(false, "Not a sphere");
-        return NULL; 
-    }
-
     virtual Sphere& sphere() { 
         debugAssertM(false, "Not a sphere");
         static Sphere s;
@@ -92,11 +74,6 @@ public:
         return s; 
     }
 
-    virtual class CapsuleShape* asCapsule() { 
-        debugAssertM(false, "Not a capsule");
-        return NULL; 
-    }
-
     virtual Capsule& capsule() { 
         debugAssertM(false, "Not a capsule");
         static Capsule c;
@@ -107,11 +84,6 @@ public:
         debugAssertM(false, "Not a capsule");
         static Capsule c;
         return c; 
-    }
-
-    virtual class PlaneShape* asPlane() { 
-        debugAssertM(false, "Not a plane");
-        return NULL; 
     }
 
     virtual Plane& plane() { 
