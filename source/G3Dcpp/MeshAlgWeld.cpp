@@ -88,8 +88,8 @@ Welder::Welder(
     Vector3 maxBound = -minBound;
 
     for (int i = 0; i < oldVertexArray.size(); ++i) {
-        minBound.min(oldVertexArray[i]);
-        maxBound.max(oldVertexArray[i]);
+        minBound = minBound.min(oldVertexArray[i]);
+        maxBound = maxBound.max(oldVertexArray[i]);
     }
 
     offset = minBound;
