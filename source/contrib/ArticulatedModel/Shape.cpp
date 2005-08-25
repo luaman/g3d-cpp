@@ -58,22 +58,9 @@ void RayShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 so
 void PlaneShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor, Color4 wireColor) {
     CoordinateFrame cframe0 = rd->getObjectToWorldMatrix();
 
-    // TODO
-    Vector3 N, P;
-    
-    {
-        double d;
-        geometry.getEquation(N, d);
-        P = N * d;
-    }
+    rd->setObjectToWorldMatrix(cframe0 * cframe);
 
-    CoordinateFrame cframe1(P);
-    cframe1.lookAt(P + N);
-
-    rd->setObjectToWorldMatrix(cframe0 * cframe * cframe1);
-
-    Draw::box(AABox(Vector3(-10,-10,0), Vector3(10,10,0)), rd, solidColor, wireColor);
-    Draw::box(AABox(Vector3(-5,-4,0), Vector3(4,4,0)), rd, Color4::clear(), wireColor);
+    Draw::plane(geometry, rd, solidColor, wireColor);
     
     rd->setObjectToWorldMatrix(cframe0);
 }

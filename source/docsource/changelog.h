@@ -37,6 +37,8 @@
    <UL>
     <LI> Vector3(Vector2, float) constructor
     <LI> G3D::Cylinder
+    <LI> G3D::Draw::plane
+    <LI> G3D::Draw::cylinder
     <LI> G3D::gaussRandom
     <LI> Fix: SDLWindow used std::string's instead of C strings in printf and format inside some exception handleing code. [Peter]
     <LI> GCamera deserialize(BinaryInput) & serialize(BinaryOutput) functions [Peter]

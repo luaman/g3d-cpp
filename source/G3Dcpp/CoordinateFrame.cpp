@@ -161,13 +161,13 @@ void CoordinateFrame::lookAt(
     Vector3 look = (target - translation).direction();
     if (look.dot(up) > .99) {
         up = Vector3::unitX();
-        if (look.dot(up) < .99) {
+        if (look.dot(up) > .99) {
             up = Vector3::unitY();
         }
     }
 
-    look = look - up * look.dot(up);
-    look.unitize();
+    up -= look * look.dot(up);
+    up.unitize();
 
     Vector3 z = -look;
     Vector3 x = -z.cross(up);
