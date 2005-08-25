@@ -92,6 +92,7 @@
      <LI> Fix: G3D::TextureFormat::LA8 now has 8-bits per channel
      <LI> Fix: [ 1124491 ] Remove GL_SAMPLER_2DRECT_ARB
      <LI> Fix: [ 1257113 ] G3D::Queue problems comining pushFront and pushBack
+     <LI> Fix: MeshAlg::Weld now linear time (was O(n^2) due to a bug)
    </UL>
 
   <P>
