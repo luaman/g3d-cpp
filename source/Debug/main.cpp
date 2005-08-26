@@ -200,6 +200,9 @@ public:
     List grid[GRID_RES][GRID_RES][GRID_RES];
 
     const Array<Vector3>&   oldVertexArray;
+    Array<Vector3>          oldNormalArray;
+    Array< Array<Vector2> > oldTexCoordArray;
+
     Array<Vector3>&         newVertexArray;
     Array<int>&             toNew;
     Array<int>&             toOld;
@@ -218,6 +221,8 @@ public:
         Array<int>&           _toOld,
         double                _radius);
         
+    int                     mostCollisions;
+
     /**
      Computes the grid index from an ordinate.
      */
@@ -247,7 +252,7 @@ Welder::Welder(
     newVertexArray(_newVertexArray),
     toNew(_toNew),
     toOld(_toOld),
-    radius(_radius) {
+    radius(_radius), mostCollisions(0) {
 
     // Compute a scale factor that moves the range
     // of all ordinates to [0, 1]
@@ -255,8 +260,8 @@ Welder::Welder(
     Vector3 maxBound = -minBound;
 
     for (int i = 0; i < oldVertexArray.size(); ++i) {
-        minBound.min(oldVertexArray[i]);
-        maxBound.max(oldVertexArray[i]);
+        minBound = minBound.min(oldVertexArray[i]);
+        maxBound = maxBound.max(oldVertexArray[i]);
     }
 
     offset = minBound;
@@ -290,6 +295,8 @@ int Welder::getIndex(const Vector3& vertex) {
 
     // Check against all vertices within radius of this grid cube
     const List& list = grid[ix][iy][iz];
+
+    mostCollisions = iMax(mostCollisions, list.length());
 
     for (int i = 0; i < list.size(); ++i) {
         double d = (newVertexArray[list[i]] - vertex).squaredLength();
@@ -360,6 +367,20 @@ void Welder::weld() {
 
 
 int main(int argc, char** argv) {
+
+    Array<Vector3> oldArray, newArray;
+    Array<int> toNew, toOld;
+    double weldRadius = 0.001;
+
+    oldArray.resize(100);
+    for (int i = 0; i < oldArray.size(); ++i) {
+        oldArray[i] = Vector3::random() * 10;
+    }
+
+    Welder welder(oldArray, newArray, toNew, toOld, weldRadius);
+    welder.weld();
+
+    
 
 //    GFont::convertRAWINItoPWF("data/smallfont", "data/font/smallfont.fnt"); 
 

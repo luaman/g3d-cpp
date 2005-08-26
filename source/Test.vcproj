@@ -1,205 +1,138 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="7.10"
 	Name="Test"
-	ProjectGUID="{FB2B5431-FA98-4A95-841D-7B7D2ED2C877}"
-	SignManifests="true"
-	>
+	SccProjectName=""
+	SccLocalPath="">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\temp\Release\test"
 			IntermediateDirectory=".\..\temp\Release\test"
 			ConfigurationType="1"
-			InheritedPropertySheets="UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName=".\..\temp\Release\test/Test.tlb"
-				HeaderFileName=""
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				StringPooling="true"
+				StringPooling="TRUE"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\..\temp\Release\test/Test.pch"
 				AssemblerListingLocation=".\..\temp\Release\test/"
 				ObjectFile=".\..\temp\Release\test/"
 				ProgramDataBaseFileName=".\..\temp\Release\test/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-			/>
+				SuppressStartupBanner="TRUE"
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\..\temp\Release\test/Test.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\temp\win32-lib,win32-lib"
 				ProgramDatabaseFile=".\..\temp\Release\test/Test.pdb"
 				SubSystem="1"
-				TargetMachine="1"
-			/>
+				TargetMachine="1"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"
+				TypeLibraryName=".\..\temp\Release\test/Test.tlb"
+				HeaderFileName=""/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\..\temp\Release\test/Test.bsc"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
+				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\temp\Debug\test"
 			IntermediateDirectory=".\..\temp\Debug\test"
 			ConfigurationType="1"
-			InheritedPropertySheets="UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName=".\..\temp\Debug\test/Test.tlb"
-				HeaderFileName=""
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="D:\graphics3d\book\cpp\distrib\include,include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\..\temp\Debug\test/Test.pch"
 				AssemblerListingLocation=".\..\temp\Debug\test/"
 				ObjectFile=".\..\temp\Debug\test/"
 				ProgramDataBaseFileName=".\..\temp\Debug\test/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-			/>
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\..\temp\Debug\test/Test.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\temp\win32-lib,win32-lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\..\temp\Debug\test/Test.pdb"
 				SubSystem="1"
-				TargetMachine="1"
-			/>
+				TargetMachine="1"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"
+				TypeLibraryName=".\..\temp\Debug\test/Test.tlb"
+				HeaderFileName=""/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\..\temp\Debug\test/Test.bsc"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
+				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -207,301 +140,343 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-			>
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="Test\main.cpp"
-				>
+				RelativePath="Test\main.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
+						PreprocessorDefinitions=""
 						AssemblerOutput="4"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tArray.cpp"
-				>
+				RelativePath="test\tArray.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
+						PreprocessorDefinitions=""
 						AssemblerOutput="2"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tCollisionDetection.cpp"
-				>
+				RelativePath="test\tBinaryIO.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tGChunk.cpp"
-				>
+				RelativePath="test\tCollisionDetection.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tMatrix.cpp"
-				>
+				RelativePath="test\tGChunk.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tMatrix3.cpp"
-				>
+				RelativePath="test\tMatrix.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tMeshAlgTangentSpace.cpp"
-				>
+				RelativePath="test\tMatrix3.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tRandom.cpp"
-				>
+				RelativePath="test\tMeshAlgAdjacency.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tReferenceCount.cpp"
-				>
+				RelativePath="test\tMeshAlgTangentSpace.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tSystemMemcpy.cpp"
-				>
+				RelativePath="test\tQueue.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="test\tTextOutput.cpp"
-				>
+				RelativePath="test\tRandom.cpp">
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						Optimization="0"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_MBCS;$(NoInherit)"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"
-					/>
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="test\tReferenceCount.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="test\tSystemMemcpy.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="test\tTextInput.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="test\tTextOutput.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
-			>
+			Filter="h;hpp;hxx;hm;inl">
 		</Filter>
 	</Files>
 	<Globals>

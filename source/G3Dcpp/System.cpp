@@ -1020,7 +1020,7 @@ public:
 
         if (bytes <= maxBufferSize) {
             // See if there's something we can use in the buffer pool.
-            for (int i = 0; i < buffer.size(); ++i) {
+            for (int i = 0; i < (int)buffer.size(); ++i) {
                 if (BufferPool::buffer[i].bytes >= bytes) {
                     // We found a suitable entry in the pool.
 
@@ -1048,6 +1048,12 @@ public:
 
 
     static void free(void* ptr) {
+        if (ptr == NULL) {
+            return;
+        }
+
+        debugAssert(isValidPointer(ptr));
+
         uint32 bytes = ((uint32*)ptr)[-1];
 
         if ((bytes <= BufferPool::maxBufferSize) && (BufferPool::buffer.size() < maxNumBuffers)) {

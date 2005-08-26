@@ -202,7 +202,6 @@ void perfArray() {
         printf("    * does not call constructor or destructor!\n\n");
     }
 
-while(true);
 
     // Measure times for various operations on large arrays of small elements
     uint64 newAllocInt,     newFreeInt,     newAccessInt;

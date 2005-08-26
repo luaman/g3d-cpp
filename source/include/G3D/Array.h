@@ -344,38 +344,38 @@ public:
               numAllocated = n;
               debugAssert(oldNum == 0);
               realloc(oldNum);
-              return;
-          }
-         
-          if (num < minSize) {
-              // Grow to at least the minimum size
-              numAllocated = minSize;
-
           } else {
+         
+              if (num < minSize) {
+                  // Grow to at least the minimum size
+                  numAllocated = minSize;
 
-             // Increase the underlying size of the array.  Grow aggressively
-             // up to 1k, less aggressively up to 6k, and then grow relatively
-             // slowly (1.5x per resize) to avoid excessive space consumption.
-             //
-             // These numbers are tweaked according to performance tests.
+              } else {
 
-             float growFactor = 3.0;
+                  // Increase the underlying size of the array.  Grow aggressively
+                  // up to 1k, less aggressively up to 6k, and then grow relatively
+                  // slowly (1.5x per resize) to avoid excessive space consumption.
+                  //
+                  // These numbers are tweaked according to performance tests.
 
-             size_t oldSizeBytes = numAllocated * sizeof(T);
-             if (oldSizeBytes > 6000) {
-                 growFactor = 1.5;
-             } else if (oldSizeBytes > 1024) {
-                 growFactor = 1.8;
-             }
+                  float growFactor = 3.0;
 
-             numAllocated = (num - numAllocated) + (int)(numAllocated * growFactor);
+                  size_t oldSizeBytes = numAllocated * sizeof(T);
+                  if (oldSizeBytes > 6000) {
+                      growFactor = 1.5;
+                  } else if (oldSizeBytes > 1024) {
+                      growFactor = 1.8;
+                  }
 
-             if (numAllocated < minSize) {
-                 numAllocated = minSize;
-             }
+                  numAllocated = (num - numAllocated) + (int)(numAllocated * growFactor);
+
+                  if (numAllocated < minSize) {
+                      numAllocated = minSize;
+                  }
+              }
+
+              realloc(oldNum);
           }
-
-          realloc(oldNum);
 
       } else if ((num <= numAllocated / 2) && shrinkIfNecessary && (num > minSize)) {
           // Shrink the underlying array

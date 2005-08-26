@@ -803,8 +803,6 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {    
-        perfArray();
-
     RenderDevice* renderDevice = NULL;
     
 
