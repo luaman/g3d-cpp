@@ -32,12 +32,12 @@ namespace G3D {
 
 
 /**
- Useful for debugging purposes.  Note: On windows, 
- this will helpfully return "false" for a stack pointer.
+ Useful for debugging purposes.
  */
 inline bool isValidHeapPointer(const void* x) {
     #ifdef _MSC_VER
-        return (_CrtIsValidHeapPointer(x) != 0) && (x != (void*)0xcccccccc) && (x != (void*)0xdeadbeef) && (x != (void*)0xfeeefeee);
+        return 
+            (x != (void*)0xcccccccc) && (x != (void*)0xdeadbeef) && (x != (void*)0xfeeefeee);
     #else
         return x != NULL;
     #endif
@@ -50,7 +50,7 @@ inline bool isValidHeapPointer(const void* x) {
  */
 inline bool isValidPointer(const void* x) {
     #ifdef _MSC_VER
-        return (_CrtIsValidPointer(x, 0, true) != 0) && (x != (void*)0xcccccccc) && (x != (void*)0xdeadbeef) && (x != (void*)0xfeeefeee);
+        return x != ((void*)0xcccccccc) && (x != (void*)0xdeadbeef) && (x != (void*)0xfeeefeee);
     #else
         return x != NULL;
     #endif

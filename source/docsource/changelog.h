@@ -37,12 +37,13 @@
    <UL>
     <LI> Vector3(Vector2, float) constructor
     <LI> G3D::Cylinder
+    <LI> G3D::System::malloc for fast allocation of small objects
     <LI> G3D::Draw::plane
     <LI> G3D::Draw::cylinder
     <LI> G3D::gaussRandom
-    <LI> Fix: SDLWindow used std::string's instead of C strings in printf and format inside some exception handleing code. [Peter]
     <LI> GCamera deserialize(BinaryInput) & serialize(BinaryOutput) functions [Peter]
     <LI> G3D::GApp now writes a description of the whole system to the log to aid debugging.
+    <LI> [ 1217928 ] OpenGL occlusion query entry points are loaded on initialization
     <LI> New texture interpolation modes: BILINEAR_MIPMAP, NEAREST_MIPMAP, NEAREST_NO_MIPMAP
     <LI> New texture formats:
       <UL>
@@ -63,9 +64,11 @@
         <LI> G3D::TextureFormat::RGBA16F;
         <LI> G3D::TextureFormat::RGBA32F;
       </UL>
+     <LI> isValidPointer and isValidHeapPointer no longer check the Win32 debug heap in order to support offset and padded memory blocks.
      <LI> Restructured unit tests
      <LI> G3D::CoordinateFrame::lookRay [David Baszucki]
      <LI> G3D::System::describeSystem, G3D::NetworkDevice::describeSystem, G3D::RenderDevice::describeSystem
+     <LI> G3D::Array performance tuning for short arrays and arrays of small objects
      <LI> Added glext.h entries for GL_ARB_draw_buffers, GL_ARB_texture_rectangle, 
           GL_ARB_color_buffer_float, GL_ARB_half_float_pixel, GL_ARB_texture_float, 
           and GL_ARB_pixel_buffer_object extensions
@@ -86,6 +89,7 @@
      <LI> Enabled cube mapping on Radeon mobility cards and added a workaround to the known problems with texcoords on those cards.
      <LI> Can now create G3D::Win32Window with existing HWND and HDC [Corey]
      <LI> G3D::VertexAndPixelShader::ArgList::set(std::string, Array<T>)-- [ 1192401 ] Shader support arrays
+     <LI> Fix: SDLWindow used std::string's instead of C strings in printf and format inside some exception handling code. [Peter]
      <LI> G3D::X11Window (same as SDLWindow in this release)
      <LI> RFE: [ 1242466 ] 6.07: Inline Matrix3 methods
      <LI> Fix: [ 1226272 ] end caps of capsules in wrong position

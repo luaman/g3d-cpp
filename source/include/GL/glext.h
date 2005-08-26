@@ -2814,6 +2814,29 @@ typedef void (APIENTRY * PFNGLTEXCOORDPOINTEREXTPROC) (GLint size, GLenum type, 
 typedef void (APIENTRY * PFNGLVERTEXPOINTEREXTPROC) (GLint size, GLenum type, GLsizei stride, GLsizei count, const GLvoid *pointer);
 #endif
 
+
+#ifndef GL_ARB_occlusion_query
+#define GL_ARB_occlusion_query 1
+#ifdef GL_GLEXT_PROTOTYPES
+extern void APIENTRY glBeginQueryARB(GLenum,  GLuint);
+extern void APIENTRY glDeleteQueriesARB(GLsizei, GLuint const *);
+extern void APIENTRY glEndQueryARB(GLenum);
+extern void APIENTRY glGenQueriesARB(GLsizei, GLuint *);
+extern void APIENTRY glGetQueryivARB(GLenum, GLenum, GLint *);
+extern void APIENTRY glGetQueryObjectivARB(GLuint, GLenum, GLint *);
+extern void APIENTRY glGetQueryObjectuivARB(GLuint, GLenum, GLuint *);
+extern GLboolean APIENTRY glIsQueryARB(GLuint);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef void (APIENTRY * PFNGLBEGINQUERYARBPROC) (GLenum,  GLuint);
+typedef void (APIENTRY * PFNGLDELETEQUERIESARBPROC) (GLsizei, GLuint const *);
+typedef void (APIENTRY * PFNGLENDQUERYARB) (GLenum);
+typedef void (APIENTRY * PFNGLGENQUERIESARBPROC) (GLsizei, GLuint *);
+typedef void (APIENTRY * PFNGLGETQUERYIVARBPROC) (GLenum, GLenum, GLint *);
+typedef void (APIENTRY * PFNGLGETQUERYOBJECTIVARBPROC) (GLuint, GLenum, GLint *);
+typedef void (APIENTRY * PFNGLGETQUERYOBJECTUIVARBPROC) (GLuint, GLenum, GLuint *);
+typedef GLboolean (APIENTRY * PFNGLISQUERYARBPROC) (GLuint);
+#endif
+
 #ifndef GL_EXT_vertex_weighting
 #define GL_EXT_vertex_weighting 1
 #ifdef GL_GLEXT_PROTOTYPES

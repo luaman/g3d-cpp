@@ -409,7 +409,7 @@ void System::init() {
             FILE* f = popen("uname -a", "r");
 
             int len = 100;
-            char* r = (char*)malloc(len * sizeof(char));
+            char* r = (char*)::malloc(len * sizeof(char));
             fgets(r, len, f);
             // Remove trailing newline
             if (r[strlen(r) - 1] == '\n') {
@@ -418,7 +418,7 @@ void System::init() {
             fclose(f);
 
             _operatingSystem = r;
-            free(r);
+            ::free(r);
         }
 
     #elif defined(G3D_OSX)
@@ -988,6 +988,95 @@ RealTime System::getLocalTime() {
 }
 
 
+class BufferPool {
+private:
+    // Takes up 40k of memory, peak
+
+    /** Only store buffers up to this size (in bytes) in the pool. */
+    enum {maxBufferSize    = 5000};
+
+    /** Most buffers we're allowed to store. */
+    enum {maxNumBuffers    = 80};
+
+    class MemBlock {
+    public:
+        void*           ptr;
+        size_t          bytes;
+
+        inline MemBlock() : ptr(NULL), bytes(0) {}
+        inline MemBlock(void* p, size_t b) : ptr(p), bytes(b) {}
+    };
+
+    // Use a std::vector because System::malloc is used by G3D::Array.
+    static std::vector<MemBlock> buffer;
+
+public:
+
+    static int totalMallocs;
+    static int mallocsFromPool;
+
+    static void* malloc(size_t bytes) {
+        ++totalMallocs;
+
+        if (bytes <= maxBufferSize) {
+            // See if there's something we can use in the buffer pool.
+            for (int i = 0; i < buffer.size(); ++i) {
+                if (BufferPool::buffer[i].bytes >= bytes) {
+                    // We found a suitable entry in the pool.
+
+                    // No need to offset the pointer; it is already offset
+                    void* ptr = buffer[i].ptr;
+
+                    // Remove this element from the pool
+                    buffer[i] = buffer[buffer.size() - 1];
+                    buffer.pop_back();
+
+                    ++mallocsFromPool;
+
+                    return ptr;
+                }
+            }
+        }
+
+        // Allocate 4 extra bytes for our size header (unfortunate, since malloc already 
+        // added its own header).
+        void* ptr = ::malloc(bytes + 4);
+        *(uint32*)ptr = bytes;
+
+        return (uint8*)ptr + 4;
+    }
+
+
+    static void free(void* ptr) {
+        uint32 bytes = ((uint32*)ptr)[-1];
+
+        if ((bytes <= BufferPool::maxBufferSize) && (BufferPool::buffer.size() < maxNumBuffers)) {
+            // Put into the buffer pool
+            buffer.push_back(BufferPool::MemBlock(ptr, bytes));
+        } else {
+            // Free; the buffer pool is full
+            ::free((uint8*)ptr - 4);
+        }
+    }
+};
+
+int BufferPool::totalMallocs = 0;
+int BufferPool::mallocsFromPool = 0;
+std::vector<BufferPool::MemBlock> BufferPool::buffer;
+
+
+void* System::malloc(size_t bytes) {
+    // For debugging
+    // printf("%d/%d\n", BufferPool::mallocsFromPool, BufferPool::totalMallocs);
+    return BufferPool::malloc(bytes);
+}
+
+
+void System::free(void* p) {
+    BufferPool::free(p);
+}
+
+
 void* System::alignedMalloc(size_t bytes, size_t alignment) {
     alwaysAssertM(isPow2(alignment), "alignment must be a power of 2");
 
@@ -998,7 +1087,7 @@ void* System::alignedMalloc(size_t bytes, size_t alignment) {
     // size of the redirect pointer.
     size_t totalBytes = bytes + alignment + sizeof(void*);
 
-    size_t truePtr = (size_t)malloc(totalBytes);
+    size_t truePtr = (size_t)System::malloc(totalBytes);
 
     if (truePtr == 0) {
         // malloc returned NULL
@@ -1007,7 +1096,8 @@ void* System::alignedMalloc(size_t bytes, size_t alignment) {
 
     debugAssert(isValidHeapPointer((void*)truePtr));
     #ifdef G3D_WIN32
-        debugAssert( _CrtIsValidPointer((void*)truePtr, totalBytes, TRUE) );
+    // The blocks we return will not be valid Win32 debug heap pointers because they are offset
+    //        debugAssert( _CrtIsValidPointer((void*)truePtr, totalBytes, TRUE) );
     #endif
 
     // The return pointer will be the next aligned location (we must at least
@@ -1054,7 +1144,7 @@ void System::alignedFree(void* _ptr) {
     void* truePtr = (void*)redirectPtr[0];
 
     debugAssert(isValidHeapPointer((void*)truePtr));
-    free(truePtr);
+    System::free(truePtr);
 }
 
 

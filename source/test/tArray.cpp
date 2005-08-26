@@ -34,6 +34,7 @@ public:
     }
 };
 
+
 static void testSort() {
     printf("Array::Sort\n");
 
@@ -79,6 +80,129 @@ void perfArray() {
     // time much worse than other methods, but gives it a slight boost on the first
     // memory access because everything is in cache.  These tests work on huge arrays
     // to amortize that effect down.
+
+
+    {
+        // Measure time for short array allocation
+        uint64 vectorAllocBig,  vectorAllocSmall;
+        uint64 arrayAllocBig,   arrayAllocSmall;
+//        uint64 mallocAllocBig,  mallocAllocSmall;
+
+        const int M = 4000;
+
+        // Run many times to filter out startup behavior
+        for (int j = 0; j < 3; ++j) {
+            System::beginCycleCount(vectorAllocBig);
+            for (int i = 0; i < M; ++i) {
+                std::vector<Big> v(4);                
+            }
+            System::endCycleCount(vectorAllocBig);
+
+            System::beginCycleCount(vectorAllocSmall);
+            for (int i = 0; i < M; ++i) {
+                std::vector<int> v(4);
+            }
+            System::endCycleCount(vectorAllocSmall);
+
+            System::beginCycleCount(arrayAllocBig);
+            for (int i = 0; i < M; ++i) {
+                Array<Big> v(4);                
+            }
+            System::endCycleCount(arrayAllocBig);
+
+            System::beginCycleCount(arrayAllocSmall);
+            for (int i = 0; i < M; ++i) {
+                Array<int> v(4);
+            }
+            System::endCycleCount(arrayAllocSmall);
+        }
+
+        printf(" Array cycles/alloc for short arrays\n\n");
+        printf("                           Big class           int \n");
+        printf("  G3D::Array               %9.02f     %9.02f\n", (double)arrayAllocBig/M, (double)arrayAllocSmall/M);
+        printf("  std::vector              %9.02f     %9.02f\n", (double)vectorAllocBig/M, (double)vectorAllocSmall/M);
+//        printf("  realloc(*)               %9.02f     %9.02f\n", (double)mallocResizeBig/M, (double)mallocResizeSmall/M);
+//        printf("    * does not call constructor or destructor!\n\n");
+        printf("\n\n");
+    }
+
+    // Measure time for array resize
+    uint64 vectorResizeBig,  vectorResizeSmall;
+    uint64 arrayResizeBig,   arrayResizeSmall;
+    uint64 mallocResizeBig,  mallocResizeSmall;
+
+    const int M = 4000;
+
+    // Run many times to filter out startup behavior
+    for (int j = 0; j < 3; ++j) {
+        System::beginCycleCount(vectorResizeBig);
+        {
+            std::vector<Big> array;
+            for (int i = 0; i < M; ++i) {
+                array.resize(i);
+            }
+        }
+        System::endCycleCount(vectorResizeBig);   
+
+        System::beginCycleCount(vectorResizeSmall);
+        {
+            std::vector<int> array;
+            for (int i = 0; i < M; ++i) {
+                array.resize(i);
+            }
+        }
+        System::endCycleCount(vectorResizeSmall);   
+
+        System::beginCycleCount(arrayResizeSmall);
+        {
+            Array<int> array;
+            for (int i = 0; i < M; ++i) {
+                array.resize(i, false);
+            }
+        }
+        System::endCycleCount(arrayResizeSmall);   
+
+        System::beginCycleCount(arrayResizeBig);
+        {
+            Array<Big> array;
+            for (int i = 0; i < M; ++i) {
+                array.resize(i, false);
+            }
+        }
+        System::endCycleCount(arrayResizeBig);   
+    
+        System::beginCycleCount(mallocResizeBig);
+        {
+            Big* array = NULL;
+            for (int i = 0; i < M; ++i) {
+                array = (Big*)realloc(array, sizeof(Big) * i);
+            }
+            free(array);
+        }
+        System::endCycleCount(mallocResizeBig);   
+
+        System::beginCycleCount(mallocResizeSmall);
+        {
+            int* array = NULL;
+            for (int i = 0; i < M; ++i) {
+                array = (int*)realloc(array, sizeof(int) * i);
+            }
+            free(array);
+        }
+        System::endCycleCount(mallocResizeSmall);   
+    }
+
+
+    {
+        printf(" Array cycles/resize (%d resizes)\n\n", M);
+        printf("                           Big class           int \n");
+        printf("  G3D::Array               %9.02f     %9.02f\n", (double)arrayResizeBig/M, (double)arrayResizeSmall/M);
+        printf("  std::vector              %9.02f     %9.02f\n", (double)vectorResizeBig/M, (double)vectorResizeSmall/M);
+        printf("  realloc(*)               %9.02f     %9.02f\n", (double)mallocResizeBig/M, (double)mallocResizeSmall/M);
+        printf("    * does not call constructor or destructor!\n\n");
+    }
+
+while(true);
 
     // Measure times for various operations on large arrays of small elements
     uint64 newAllocInt,     newFreeInt,     newAccessInt;
@@ -191,7 +315,7 @@ void perfArray() {
 
     ///////////////////////////////////////////////////////
     // The code that generates memory accesses
-#define LOOPS\
+#   define LOOPS\
             for (int k = 0; k < 3; ++k) {\
                 int i;\
 		        for (i = 0; i < size; ++i) {\
@@ -280,10 +404,12 @@ void perfArray() {
         }
         System::endCycleCount(vectorFreeBig);
     }
-#undef LOOPS
+
+#   undef LOOPS
+
 
     {
-        // Number of memory ops per element that LOOPS performed
+        // Number of memory ops per element that LOOPS performed (3 loops * (5 writes + 4 reads))
         float N = 9*3;
 
         printf(" Big class array cycles/elt\n");
@@ -296,60 +422,6 @@ void perfArray() {
         printf("    * does not call constructor or destructor!\n\n");
     }
 
-/**
-nativeDel, g3dNew, g3dDel;/ */
-/*
-, g3dAppend, stdAppend;
-
-    {
-        Array<int> array;
-        System::beginCycleCount(g3dAppend);
-        int i;
-        for (i = 0; i < size; ++i) {
-            array.append(i);
-        }
-        System::endCycleCount(g3dAppend);
-    }
-    {
-        std::vector<int> array;
-        System::beginCycleCount(stdAppend);
-        int i;
-        for (i = 0; i < size; ++i) {
-            array.push_back(i);
-        }
-        System::endCycleCount(stdAppend);
-    }
-
-    G3D::RealTime t0 = G3D::System::time();
-    
-    {
-        std::vector<Foo> v;
-        v.resize(4000);
-        v.resize(2000);
-        v.resize(30000);
-        v.resize(0);
-        v.resize(4000);
-        v.resize(10000);
-    }
-    printf("std::vector: %gs\n", G3D::System::time() - t0);
-
-    t0 = G3D::System::time();
-    {
-        G3D::Array<Foo> v;
-        v.resize(4000);
-        v.resize(2000);
-        v.resize(30000);
-        v.resize(0);
-        v.resize(4000);
-        v.resize(10000);
-    }
-    printf("G3D::Array:  %gs\n", G3D::System::time() - t0);
-
-*/
-    /*
-    printf("Array<int>.append:                  %g cycles\n", g3dAppend / (size * 2.0));
-    printf("std::vector<int>.push_back:         %g cycles\n", stdAppend / (size * 2.0));
-    */
 
     printf("\n");
 }

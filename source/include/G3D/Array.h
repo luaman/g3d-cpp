@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2005-02-28
+  @edited  2005-08-28
 
   Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
@@ -57,15 +57,15 @@ const int SORT_DECREASING = -1;
  operation grows it to a reasonable internal size so it is efficient
  to append to small arrays.  Memory is allocated using
  System::alignedMalloc, which produces pointers aligned to 16-byte
- boundaries for use with SSE instructions.  When Array needs to copy
+ boundaries for use with SSE instructions and uses pooled storage for
+ fast allocation.  When Array needs to copy
  data internally on a resize operation it correctly invokes copy
- constructors of the elements (the Microsoft implementation of
+ constructors of the elements (the MSVC6 implementation of
  std::vector uses realloc, which can create memory leaks for classes
  containing references and pointers).  Array provides a guaranteed
  safe way to access the underlying data as a flat C array --
  Array::getCArray.  Although (T*)std::vector::begin() can be used for
  this purpose, it is not guaranteed to succeed on all platforms.
-
 
  Do not subclass an Array.
  */
@@ -114,14 +114,14 @@ private:
 
 
     /**
-     Allocates a new array of size numAllocated and copies at most
-     oldNum elements from the old array to it.  Destructors are
+     Allocates a new array of size numAllocated (not a parameter to the method) 
+     and then copies at most oldNum elements from the old array to it.  Destructors are
      called for oldNum elements of the old array.
      */
     void realloc(int oldNum) {
          T* oldData = data;
          
-         // The malloc is separate from the new because we don't want 
+         // The allocation is separate from the constructor invocation because we don't want 
          // to pay for the cost of constructors until the newly allocated
          // elements are actually revealed to the application.  They 
          // will be constructed in the resize() method.
@@ -129,18 +129,26 @@ private:
          data = (T*)System::alignedMalloc(sizeof(T) * numAllocated, 16);
 
          // Call the copy constructors
-         int i;
-         for (i = iMin(oldNum, numAllocated) - 1; i >= 0; --i) {
-             const T* constructed = new (data + i) T(oldData[i]);
-             (void)constructed;
-             debugAssertM(constructed == data + i, 
-                 "new returned a different address than the one provided by Array.");
-         }
+         {const int N = iMin(oldNum, numAllocated);
+          const T* end = data + N;
+          T* oldPtr = oldData;
+          for (T* ptr = data; ptr < end; ++ptr, ++oldPtr) {
 
-         // Call destructors
-         for (i = oldNum - 1; i >= 0; --i) {
-             (oldData + i)->~T();
-         }
+             // Use placement new to invoke the constructor at the location
+             // that we determined.  Use the copy constructor to make the assignment.
+             const T* constructed = new (ptr) T(*oldPtr);
+
+             (void)constructed;
+             debugAssertM(constructed == ptr, 
+                 "new returned a different address than the one provided by Array.");
+         }}
+
+         // Call destructors on the old array (if there is no destructor, this will compile away)
+         {const T* end = oldData + oldNum;
+          for (T* ptr = oldData; ptr < end; ++ptr) {
+              ptr->~T();
+         }}
+
 
          System::alignedFree(oldData);
     }
@@ -320,22 +328,47 @@ public:
 
       if (num < oldNum) {
           // Call the destructors on newly hidden elements
-          for (int i = num; i < oldNum; i++) {
+          for (int i = num; i < oldNum; ++i) {
              (data + i)->~T();
           }
       }
 
-      // Allocate 8 elements or 32 bytes, whichever is higher.
-      static const int minSize = iMax(8, 32 / sizeof(T));
+      // Once allocated, always maintain 10 elements or 32 bytes, whichever is higher.
+      static const int minSize = iMax(10, 32 / sizeof(T));
 
       if (num > numAllocated) {
           // Grow the underlying array
+
+          if (numAllocated == 0) {
+              // First allocation; grow to exactly the size requested to avoid wasting space.
+              numAllocated = n;
+              debugAssert(oldNum == 0);
+              realloc(oldNum);
+              return;
+          }
          
           if (num < minSize) {
+              // Grow to at least the minimum size
               numAllocated = minSize;
+
           } else {
-             // Increase the underlying size of the array
-             numAllocated = (num - numAllocated) + (int)(numAllocated * 1.5);
+
+             // Increase the underlying size of the array.  Grow aggressively
+             // up to 1k, less aggressively up to 6k, and then grow relatively
+             // slowly (1.5x per resize) to avoid excessive space consumption.
+             //
+             // These numbers are tweaked according to performance tests.
+
+             float growFactor = 3.0;
+
+             size_t oldSizeBytes = numAllocated * sizeof(T);
+             if (oldSizeBytes > 6000) {
+                 growFactor = 1.5;
+             } else if (oldSizeBytes > 1024) {
+                 growFactor = 1.8;
+             }
+
+             numAllocated = (num - numAllocated) + (int)(numAllocated * growFactor);
 
              if (numAllocated < minSize) {
                  numAllocated = minSize;

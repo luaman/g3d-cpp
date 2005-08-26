@@ -98,8 +98,20 @@ namespace G3D {
    bool operator==(const Key&, const Key&);
   </PRE>
 
-  Periodically check that debugGetLoad() is low (> .1).  When it gets near
-  1.0 your hash function is bad.
+ G3D pre-defines hash functions for common types (like <CODE>int</CODE> and <CODE>std::string</CODE>).
+ If you use a Table with a different type you must write those functions yourself.  For example,
+ an enum would use:
+
+  <PRE>
+  unsigned int hashCode(const MyEnum& x) { return (unsigned int)x; };
+  </PRE>
+
+  And rely on the default enum operator==.
+
+
+  Periodically check that debugGetLoad() is low (> 0.1).  When it gets near
+  1.0 your hash function is badly designed and maps too many inputs to
+  the same output.
  */
 template<class Key, class Value> 
 class Table {

@@ -207,9 +207,9 @@ void Draw::plane(
     const Color4&        solidColor,
     const Color4&        wireColor) {
 
-   CoordinateFrame cframe0 = renderDevice->getObjectToWorldMatrix();
+    renderDevice->pushState();
+    CoordinateFrame cframe0 = renderDevice->getObjectToWorldMatrix();
 
-    // TODO: improve!
     Vector3 N, P;
     
     {
@@ -223,11 +223,109 @@ void Draw::plane(
 
     renderDevice->setObjectToWorldMatrix(cframe0 * cframe1);
 
-    Draw::box(AABox(Vector3(-10,-10,0), Vector3(10,10,0)), renderDevice, solidColor, wireColor);
-    Draw::box(AABox(Vector3(-5,-4,0), Vector3(4,4,0)), renderDevice, Color4::clear(), wireColor);
-    
-    renderDevice->setObjectToWorldMatrix(cframe0);
+    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+    renderDevice->enableTwoSidedLighting();
+
+    if (solidColor.a > 0.0f) {
+        // Draw concentric circles around the origin.  We break them up to get good depth
+        // interpolation and reasonable shading.
+
+        renderDevice->setPolygonOffset(0.7);
+
+        if (solidColor.a < 1.0f) {
+            renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        }
+
+        renderDevice->setNormal(Vector3::unitZ());
+        renderDevice->setColor(solidColor);
+
+        renderDevice->setCullFace(RenderDevice::CULL_NONE);
+        // Infinite strip
+        const int N = 12;
+        float r1 = 100;
+        renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
+            for (int i = 0; i <= N; ++i) {
+                float a = i * G3D_TWO_PI / N;
+                float c = cos(a);
+                float s = sin(a);
+
+                renderDevice->sendVertex(Vector3(c * r1, s * r1, 0));
+                renderDevice->sendVertex(Vector4(c, s, 0, 0));
+            }
+        renderDevice->endPrimitive();
+
+        // Finite strips.  
+        float r2 = 0;
+        const int M = 4;
+        for (int j = 0; j < M; ++j) {
+            r2 = r1;
+            r1 = r1 / 3;
+            if (j == M - 1) {
+                // last pass
+                r1 = 0;
+            }
+
+            renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
+                for (int i = 0; i <= N; ++i) {
+                    float a = i * G3D_TWO_PI / N;
+                    float c = cos(a);
+                    float s = sin(a);
+
+                    renderDevice->sendVertex(Vector3(c * r1, s * r1, 0));
+                    renderDevice->sendVertex(Vector3(c * r2, s * r2, 0));
+                }
+            renderDevice->endPrimitive();
+        }
+
+
+    }
+
+    if (wireColor.a > 0) {
+        renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+
+        renderDevice->setLineWidth(1.5);
+
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+            renderDevice->setColor(wireColor);
+            renderDevice->setNormal(Vector3::unitZ());
+
+            // Lines to infinity
+            renderDevice->sendVertex(Vector4( 1, 0, 0, 0));
+            renderDevice->sendVertex(Vector4( 0, 0, 0, 1));
+
+            renderDevice->sendVertex(Vector4(-1, 0, 0, 0));
+            renderDevice->sendVertex(Vector4( 0, 0, 0, 1));
+
+            renderDevice->sendVertex(Vector4(0, -1, 0, 0));
+            renderDevice->sendVertex(Vector4(0,  0, 0, 1));
+
+            renderDevice->sendVertex(Vector4(0,  1, 0, 0));
+            renderDevice->sendVertex(Vector4(0,  0, 0, 1));
+        renderDevice->endPrimitive();
+
+        renderDevice->setLineWidth(0.5);
+
+        renderDevice->beginPrimitive(RenderDevice::LINES);
+
+            // Horizontal and vertical lines
+            const int N = 10;
+            const float space = 1;
+            const float Ns = N * space;
+            for (int x = -N; x <= N; ++x) {
+                float sx = x * space;
+                renderDevice->sendVertex(Vector3( Ns, sx, 0));
+                renderDevice->sendVertex(Vector3(-Ns, sx, 0));
+
+                renderDevice->sendVertex(Vector3(sx,  Ns, 0));
+                renderDevice->sendVertex(Vector3(sx, -Ns, 0));
+            }
+
+        renderDevice->endPrimitive();
+    }
+
+    renderDevice->popState();
 }
+ 
 
 
 void Draw::capsule(

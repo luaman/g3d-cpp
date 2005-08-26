@@ -803,21 +803,7 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {    
-
-/*
-    BinaryInput b("C:/morgan/DefocusMatting/figures/aparatus.eps", G3D_LITTLE_ENDIAN);
-
-    RealTime t0 = System::time();
-
-    for (int i = 0; i < 1000000; ++i) {
-        long L = b.readInt64();
-    }
-
-    printf("%g s\n", System::time() - t0);
-
-    while(true);
-    exit(-1);
-*/
+        perfArray();
 
     RenderDevice* renderDevice = NULL;
     
@@ -841,6 +827,8 @@ int main(int argc, char* argv[]) {
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
 
+        perfArray();
+
         perfQueue();
 
         perfMatrix3();
@@ -848,8 +836,6 @@ int main(int argc, char* argv[]) {
         perfTextOutput();
 
         perfSystemMemcpy();
-
-        perfArray();
 
         perfBinaryIO();
 

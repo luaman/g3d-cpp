@@ -373,3 +373,122 @@ int main(int argc, char** argv) {
     App(settings).run();
     return 0;
 }
+
+#if 0
+    
+/**
+ Indexed surface mesh of triangles or quads, stored in a format 
+ optimized for rendering tasks.  To render efficiently, back with
+ a series of G3D::VAR arrays.  Those arrays are not built into
+ this class because GMesh is independent of the rendering API.
+
+ See also G3D::MeshAlg.
+ */    
+class GMesh {
+public:
+
+    enum PrimitiveType {
+        TRIANGLES       = MeshAlg::TRIANGLES,	
+        TRIANGLE_STRIP  = MeshAlg::TRIANGLE_STRIP,
+        TRIANGLE_FAN    = MeshAlg::TRIANGLE_FAN,
+        QUADS           = MeshAlg::QUADS, 	
+        QUAD_STRIP      = MeshAlg::QUAD_STRIP
+    };
+
+    class Primitive {
+    public:
+        PrimitiveType                   type;
+        Array<int32>                    indexArray;
+    };
+
+    /** Topology remains the same even as the geometry changes. */ 
+    class Topology {
+    public:
+
+        /** All edges.  Some will be boundary edges */
+        Array<MeshAlg::Edge>            edgeArray;
+        Array<MeshAlg::Face>            faceArray;
+        Array<MeshAlg::Vertex>          vertexArray;
+
+        /** Indices into edgeArray of edges with exactly one adjacent face. */
+        Array<int>                      boundaryEdges;
+
+        /** Can be used to efficiently render un-textured, un-shaded geometry,
+            e.g. for shadow map creation.  Indices are into the Geometry.vertexArray.*/
+        Primitive                       primitive;
+    };
+    
+    /** Parallel arrays describing per-vertex properties.  faceNormalArray
+        has the same length as topology.faceArray.*/
+    class Geometry {
+    public:
+        Array<Vector3>                  vertexArray;
+        Array<Vector3>                  normalArray;
+        Array<Vector3>                  tangentArray;
+        Array< Array<Vector2> >         texCoordArray;
+
+        Array<Vector3>                  faceNormalArray;
+    };
+
+    /**
+     Conservative bounds on the Geometry.
+     */
+    class Bounds {
+    public:
+        Sphere                          sphere;
+        AABox                           box;
+        Capsule                         capsule;
+        Cylinder                        cylinder;
+    };
+
+    Geometry                            geometry;
+
+    /**
+      Topology for the fully-welded mesh.  Vertices are <B>not</B>
+      duplicated for shading or texturing purposes.
+    */
+    Topology                            topology;
+
+    /** Index array used for rendering.  Contains duplicated vertices in order
+        to have correct*/
+    Primitive                           renderPrimitive;
+
+    GMesh();
+
+    virtual ~GMesh();
+
+    /** Resizes isBackface to the length of topology.faceArray.  Determines for
+        each face in faceArray whether it is a backface with respect to the observer,
+        which is at infinity when <CODE>observer.w == 0.0</CODE>.
+     */
+    virtual void findBackfaces(const Vector4& observer, Array<bool>& isBackface);
+
+    /** Re-sets to an empty mesh. */
+    virtual void clear();
+
+    /**
+     Replace this GMesh with new values computed from the input data.
+     Co-located vertices will be merged if they have the same texture
+     coordinates and if their face's normals are suitably close.
+
+     @param smoothAngle     Angles smaller than this receive separate normals.
+     @param collapseRadius  Vertices closer than this are considered colocated.
+     */
+    virtual void buildMesh(
+        const Array<Vector3>&           vertexArray,
+        const Array< Array<Vector2> >&  texCoordArray,
+        const Array<int32>&             indexArray,
+        PrimitiveType                   primitiveType,
+        float                           smoothAngle = toRadians(100),
+        float                           collapseRadius = 0.001);
+
+    /** Recomputes Bounds from the data in geometry. */
+    virtual void updateBounds();
+
+    /** Approximate size this data structure occupies on the CPU. */
+    virtual size_t sizeInMemory() const;
+
+    /** Number of triangles in the mesh. */
+    int triangleCount() const;
+};
+#endif

@@ -369,6 +369,15 @@ void GLCaps::loadExtensions(Log* debugLog) {
     LOAD_EXTENSION(glGetFramebufferAttachmentParameterivEXT);
     LOAD_EXTENSION(glGenerateMipmapEXT);
 
+    // Occlusion query
+    LOAD_EXTENSION(glBeginQueryARB);
+    LOAD_EXTENSION(glDeleteQueriesARB);
+    LOAD_EXTENSION(glEndQueryARB);
+    LOAD_EXTENSION(glGenQueriesARB);
+    LOAD_EXTENSION(glGetQueryivARB);
+    LOAD_EXTENSION(glGetQueryObjectivARB);
+    LOAD_EXTENSION(glGetQueryObjectuivARB);
+    LOAD_EXTENSION(glIsQueryARB);
     #undef LOAD_EXTENSION
 
     std::istringstream extensions;

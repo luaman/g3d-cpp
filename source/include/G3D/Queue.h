@@ -33,6 +33,8 @@ namespace G3D {
 
 /**
  Dynamic queue that uses a circular buffer for performance.
+
+ Faster than std::deque for objects with constructors.
  */
 template <class T>
 class Queue {

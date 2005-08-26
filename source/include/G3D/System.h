@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-06-08
+  @edited  2005-08-08
  */
 
 #ifndef G3D_SYSTEM_H
@@ -104,6 +104,17 @@ public:
      specified number of bytes.
      */
     static void* alignedMalloc(size_t bytes, size_t alignment);
+
+    /**
+     Uses pooled storage to optimize small allocations.
+     The result must be freed with free.
+     */
+    static void* malloc(size_t bytes);
+
+    /**
+     Free data allocated with System::malloc.
+     */
+    static void free(void* p);
 
     /**
      Frees memory allocated with alignedMalloc.
