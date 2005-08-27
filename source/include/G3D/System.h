@@ -106,12 +106,15 @@ public:
     static void* alignedMalloc(size_t bytes, size_t alignment);
 
     /**
-     Uses pooled storage to optimize small allocations.
+     Uses pooled storage to optimize small allocations (1 byte to 5 kilobytes).  
+     Can be 10x to 100x faster than calling ::malloc or new.
+
      The result must be freed with free.
      */
     static void* malloc(size_t bytes);
 
-    /** Returns a string describing how well System::malloc is using its internal pooled storage.*/
+    /** Returns a string describing how well System::malloc is using its internal pooled storage.
+        "heap" memory was slow to allocate; the other data sizes are comparatively fast.*/
     static std::string mallocPerformance();
     static void resetMallocPerformanceCounters();
 

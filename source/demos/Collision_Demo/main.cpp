@@ -94,22 +94,18 @@ void Demo::doLogic() {
 
 
 void Demo::doGraphics() {
-  debugAssertGLOk();
     app->renderDevice->pushState();
     
-    debugAssertGLOk();
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
-    debugAssertGLOk();
         
         LightingParameters lighting(gameTime);
         lighting.lightDirection = (lighting.lightDirection + Vector3(0,0,.4)).direction();
         lighting.ambient = lighting.ambient + Color3(.3,.3,.4);
 
-        debugAssertGLOk();
         scene.render(lighting);
-  debugAssertGLOk();
     app->renderDevice->popState();
-    debugAssertGLOk();        
+
+    //app->debugPrintf("%s\n", System::mallocPerformance().c_str());
 }
 
 

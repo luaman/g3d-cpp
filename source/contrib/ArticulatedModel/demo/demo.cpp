@@ -273,6 +273,9 @@ void Demo::doGraphics() {
     app->debugPrintf("TAB to control camera\n");
     app->debugPrintf("SPACE to toggle ToneMap\n");
     app->debugPrintf("ESC to quit\n");
+
+    app->debugPrintf("%s\n", System::mallocPerformance().c_str());
+
 }
 
 

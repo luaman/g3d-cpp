@@ -103,6 +103,8 @@ void Demo::doGraphics() {
     app->world.doGraphics(app->renderDevice);
 
     app->debugPrintf("r  - Cycle rendering modes\n");
+
+    app->debugPrintf("%s\n", System::mallocPerformance().c_str());
 }
 
 

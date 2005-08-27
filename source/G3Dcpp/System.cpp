@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-07-05
+  @edited  2005-08-25
  */
 
 #include "G3D/platform.h"
@@ -994,11 +994,14 @@ private:
 
     /** Only store buffers up to these sizes (in bytes) in each pool. 
         Different pools have different management strategies.
+
+        256k preallocated for tiny buffers; they are used with tremendous frequency.
+        Other buffers are allocated as demanded
       */
-    enum {tinyBufferSize = 160, smallBufferSize = 1000, medBufferSize = 5000};
+    enum {tinyBufferSize = 64, smallBufferSize = 1000, medBufferSize = 5000};
 
     /** Most buffers we're allowed to store. */
-    enum {maxTinyBuffers = 1000, maxSmallBuffers = 80, maxMedBuffers = 40};
+    enum {maxTinyBuffers = 4000, maxSmallBuffers = 100, maxMedBuffers = 30};
 
     class MemBlock {
     public:
@@ -1107,7 +1110,10 @@ public:
                 return ptr;
             }
 
-        } else if (bytes <= smallBufferSize) {
+        } 
+        
+        // Failure to allocate a tiny buffer is allowed to flow through to a small buffer
+        if (bytes <= smallBufferSize) {
             
             void* ptr = malloc(smallPool, smallPoolSize, bytes);
 

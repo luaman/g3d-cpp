@@ -266,7 +266,11 @@ void Demo::doGraphics() {
         app->debugFont->draw2D("9 . . -    pain", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
         app->debugFont->draw2D("R/T       run/back", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
         app->debugFont->draw2D("e           new character", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+
+        //app->debugFont->draw2D(System::mallocPerformance(), Vector2(0, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+
     app->renderDevice->pop2D();	   
+
 }
 
 
