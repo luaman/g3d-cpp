@@ -713,8 +713,6 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {
-    
-//        perfArray();
     RenderDevice* renderDevice = NULL;
     
 
@@ -736,12 +734,9 @@ int main(int argc, char* argv[]) {
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
 
-        //perfArray();
+        perfArray();
 
-        System::resetMallocPerformanceCounters();
         perfQueue();
-        printf("%s\n", System::mallocPerformance().c_str());
-        System::resetMallocPerformanceCounters();
 
         perfMatrix3();
         
@@ -758,6 +753,8 @@ int main(int argc, char* argv[]) {
 
         measureMemsetPerformance();
         measureNormalizationPerformance();
+
+        printf("%s\n", System::mallocPerformance().c_str());
 
         GWindowSettings settings;
         settings.width = 800;
@@ -832,8 +829,9 @@ int main(int argc, char* argv[]) {
 
     testTextInput();
     printf("  passed\n");
+
     testTable();
-    printf("  passed\n");
+
     testBox();    
     printf("  passed\n");
 
@@ -844,6 +842,9 @@ int main(int argc, char* argv[]) {
     testglFormatOf();
     printf("  passed\n");
     testSwizzle();
+
+    printf("%s\n", System::mallocPerformance().c_str());
+    System::resetMallocPerformanceCounters();
 
     printf("\nAll tests succeeded.\n");
 #endif

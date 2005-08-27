@@ -137,10 +137,10 @@ private:
         Node*             next;
 
         Node(Key key, Value value, unsigned int hashCode, Node* next) {
-          this->entry.key   = key;
-          this->entry.value = value;
-          this->hashCode    = hashCode;
-          this->next        = next;
+            this->entry.key   = key;
+            this->entry.value = value;
+            this->hashCode    = hashCode;
+            this->next        = next;
         }
 
         /**
@@ -175,7 +175,8 @@ private:
     void resize(int numBuckets) {
 
         Node** oldBucket = bucket;
-        bucket = (Node**)calloc(sizeof(Node*), numBuckets);
+        bucket = (Node**)System::alignedMalloc(sizeof(Node*) * numBuckets, 16);
+        System::memset(bucket, 0, sizeof(Node*) * numBuckets);
 
         for (int b = 0; b < this->numBuckets; b++) {
             Node* node = oldBucket[b];
@@ -192,14 +193,15 @@ private:
             }
         }
 
-        free(oldBucket);
+        System::alignedFree(oldBucket);
         this->numBuckets = numBuckets;
     }
 
     void copyFrom(const Table<Key, Value>& h) {
         this->_size = h._size;
         this->numBuckets = h.numBuckets;
-        this->bucket = (Node**)calloc(sizeof(Node*), numBuckets);
+        this->bucket = (Node**)System::alignedMalloc(sizeof(Node*) * numBuckets, 16);
+        System::memset(this->bucket, 0, sizeof(Node*) * numBuckets);
         for (int b = 0; b < this->numBuckets; b++) {
             if (h.bucket[b] != NULL) {
                 bucket[b] = h.bucket[b]->clone();
@@ -219,7 +221,7 @@ private:
                 node = next;
            }
         }
-        free(bucket);
+        System::alignedFree(bucket);
         bucket     = NULL;
         numBuckets = 0;
         _size     = 0;
@@ -233,7 +235,8 @@ public:
     Table() {
         numBuckets = 10;
         _size      = 0;
-        bucket     = (Node**)calloc(sizeof(Node*), numBuckets);
+        bucket     = (Node**)System::alignedMalloc(sizeof(Node*) * numBuckets, 16);
+        System::memset(bucket, 0, sizeof(Node*) * numBuckets);
     }
 
     /**
@@ -434,7 +437,8 @@ public:
          freeMemory();
          numBuckets = 20;
          _size = 0;
-         bucket = (Node**)calloc(sizeof(Node*), numBuckets);
+         bucket = (Node**)System::alignedMalloc(sizeof(Node*) * numBuckets, 16);
+         System::memset(bucket, 0, sizeof(Node*) * numBuckets);
     }
 
    

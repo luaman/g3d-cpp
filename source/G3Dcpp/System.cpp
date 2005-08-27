@@ -995,7 +995,7 @@ private:
     /** Only store buffers up to these sizes (in bytes) in each pool. 
         Different pools have different management strategies.
       */
-    enum {tinyBufferSize = 200, smallBufferSize = 1000, medBufferSize = 5000};
+    enum {tinyBufferSize = 160, smallBufferSize = 1000, medBufferSize = 5000};
 
     /** Most buffers we're allowed to store. */
     enum {maxTinyBuffers = 1000, maxSmallBuffers = 80, maxMedBuffers = 40};
@@ -1015,9 +1015,53 @@ private:
     static MemBlock medPool[maxMedBuffers];
     static int medPoolSize;
 
+    /** The tiny pool is a single block of storage into which all tiny objects are allocated.
+        This provides better locality for small objects and avoids the search time, since
+        all tiny blocks are exactly the same size. */
+    static void* tinyPool[maxTinyBuffers];
+    static int tinyPoolSize;
+
+    /** Pointer to the data in the tiny pool */
+    static void* tinyHeap;
+
+    /** Malloc out of the tiny heap */
+    static void* tinyMalloc(size_t bytes) {
+        
+        if (tinyHeap == NULL) {
+            // Initialize the tiny heap as a bunch of pointers into one pre-allocated buffer.
+            tinyHeap = ::malloc(maxTinyBuffers * tinyBufferSize);
+            for (int i = 0; i < maxTinyBuffers; ++i) {
+                tinyPool[i] = (uint8*)tinyHeap + (tinyBufferSize * i);
+            }
+            tinyPoolSize = maxTinyBuffers;
+        }
+
+        if (tinyPoolSize > 0) {
+            --tinyPoolSize;
+            // Return the last one
+            return tinyPool[tinyPoolSize];
+        } else {
+            return NULL;
+        }
+    }
+
+    /** Returns true if this is a pointer into the tiny heap. */
+    static bool inTinyHeap(void* ptr) {
+        return (ptr >= tinyHeap) && (ptr < (uint8*)tinyHeap + maxTinyBuffers * tinyBufferSize);
+    }
+
+    static void tinyFree(void* ptr) {
+        debugAssert(tinyPoolSize < maxTinyBuffers);
+
+        // Put the pointer back into the free list
+        tinyPool[tinyPoolSize] = ptr;
+        ++tinyPoolSize;
+    }
+
     /**  Allocate out of a specific pool.  Return NULL if no suitable 
          memory was found. */
     static void* malloc(MemBlock* pool, int& poolSize, size_t bytes) {
+        // TODO: find the smallest block that satisfies the request.
 
         // See if there's something we can use in the buffer pool.
         // Search backwards since usually we'll re-use the last one.
@@ -1043,6 +1087,7 @@ private:
 public:
 
     static int totalMallocs;
+    static int mallocsFromTinyPool;
     static int mallocsFromSmallPool;
     static int mallocsFromMedPool;
 
@@ -1053,7 +1098,16 @@ public:
             return NULL;
         }
 
-        if (bytes <= smallBufferSize) {
+        if (bytes <= tinyBufferSize) {
+
+            void* ptr = tinyMalloc(bytes);
+
+            if (ptr) {
+                ++mallocsFromTinyPool;
+                return ptr;
+            }
+
+        } else if (bytes <= smallBufferSize) {
             
             void* ptr = malloc(smallPool, smallPoolSize, bytes);
 
@@ -1092,6 +1146,11 @@ public:
 
         debugAssert(isValidPointer(ptr));
 
+        if (inTinyHeap(ptr)) {
+            tinyFree(ptr);
+            return;
+        }
+
         uint32 bytes = ((uint32*)ptr)[-1];
 
         if (bytes <= smallBufferSize) {
@@ -1108,26 +1167,42 @@ public:
             }
         }
 
-        // Free; the buffer pools are full
+        // Free; the buffer pools are full or this is too big to store.
         ::free((uint8*)ptr - 4);
     }
 };
 
-int BufferPool::totalMallocs = 0;
-int BufferPool::mallocsFromMedPool = 0;
+int BufferPool::totalMallocs         = 0;
+
+int BufferPool::mallocsFromTinyPool  = 0;
 int BufferPool::mallocsFromSmallPool = 0;
+int BufferPool::mallocsFromMedPool   = 0;
+
+void* BufferPool::tinyPool[BufferPool::maxTinyBuffers];
+int BufferPool::tinyPoolSize = 0;
+void* BufferPool::tinyHeap = NULL;
+
 BufferPool::MemBlock BufferPool::smallPool[BufferPool::maxSmallBuffers];
 int BufferPool::smallPoolSize = 0;
+
 BufferPool::MemBlock BufferPool::medPool[BufferPool::maxMedBuffers];
 int BufferPool::medPoolSize = 0;
 
 
 std::string System::mallocPerformance() {    
     if (BufferPool::totalMallocs > 0) {
-         return format("System::malloc perf:  small: %5.1f%%  med: %5.1f%%  heap: %5.1f%%", 
-            100.0 * BufferPool::mallocsFromSmallPool / BufferPool::totalMallocs,
-            100.0 * BufferPool::mallocsFromMedPool / BufferPool::totalMallocs,
-            100.0 * (1.0 - (float)(BufferPool::mallocsFromSmallPool + BufferPool::mallocsFromMedPool) / BufferPool::totalMallocs));
+
+        int pooled = BufferPool::mallocsFromTinyPool +
+                     BufferPool::mallocsFromSmallPool + 
+                     BufferPool::mallocsFromMedPool;
+
+        int total = BufferPool::totalMallocs;
+
+        return format("malloc perf:  %5.1f%% tiny   %5.1f%% small   %5.1f%% med   %5.1f%% heap", 
+            100.0 * BufferPool::mallocsFromTinyPool  / total,
+            100.0 * BufferPool::mallocsFromSmallPool / total,
+            100.0 * BufferPool::mallocsFromMedPool   / total,
+            100.0 * (1.0 - (double)pooled / total));
     } else {
         return "No System::malloc calls made yet.";
     }
@@ -1138,6 +1213,7 @@ void System::resetMallocPerformanceCounters() {
     BufferPool::totalMallocs = 0;
     BufferPool::mallocsFromMedPool = 0;
     BufferPool::mallocsFromSmallPool = 0;
+    BufferPool::mallocsFromTinyPool = 0;
 }
 
 

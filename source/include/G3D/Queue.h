@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2002-07-09
-  @edited  2005-08-11
+  @edited  2005-08-20
  */
 
 #ifndef G3D_QUEUE_H
@@ -69,7 +69,7 @@ private:
     int                 numAllocated;
 
     void _copy(const Queue& other) {
-        data = (T*)System::alignedMalloc(sizeof(T) * other.numAllocated, 16);
+        data = (T*)System::malloc(sizeof(T) * other.numAllocated, 16);
         debugAssert(data);
 
         FIND_ENDS;
@@ -98,7 +98,7 @@ private:
     void repackAndRealloc(int newSize) {
         // TODO: shrink queue
         T* old = data;
-        data = (T*)System::alignedMalloc(newSize * sizeof(T), 16);
+        data = (T*)System::malloc(newSize * sizeof(T));
         debugAssert(data != NULL);
 
         FIND_ENDS;
@@ -115,7 +115,7 @@ private:
         }
 
         head = 0;
-        System::alignedFree(old);
+        System::free(old);
         numAllocated = newSize;
     }
 
@@ -253,7 +253,7 @@ public:
        num = 0;
        numAllocated = 0;
        head = 0;
-       System::alignedFree(data);
+       System::free(data);
        data = NULL;
    }
 

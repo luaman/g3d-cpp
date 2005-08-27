@@ -35,7 +35,8 @@ public:
 };
 
 void testTable() {
-    printf("Table\n");
+
+    printf("G3D::Table  ");
     // Basic get/set
     {
         Table<int, int> table;
@@ -88,4 +89,6 @@ void testTable() {
         debugAssert(table.debugGetDeepestBucketSize() == 6);
         debugAssert(table.debugGetNumBuckets() == 10);
     }
+
+    printf("passed\n");
 }
