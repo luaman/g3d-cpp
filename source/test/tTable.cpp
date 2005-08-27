@@ -1,6 +1,16 @@
 #include "../include/G3DAll.h"
 #include <map>
 
+#define HAS_HASH_MAP
+
+#if defined(G3D_WIN32) && (_MSC_VER < 1300)
+#   undef HAS_HASH_MAP
+#endif
+
+#ifdef HAS_HASH_MAP
+#   include <hash_map>
+#endif
+
 class TableKey : public Hashable {
 public:
     int value;
@@ -99,6 +109,9 @@ template<class K, class V>
 void perfTest(const char* description, const K* keys, const V* vals, int M) {
     uint64 tableSet, tableGet, tableRemove;
     uint64 mapSet, mapGet, mapRemove;
+#   ifdef HAS_HASH_MAP
+    uint64 hashMapSet, hashMapGet, hashMapRemove;
+#   endif
 
     uint64 overhead;
 
@@ -158,6 +171,30 @@ void perfTest(const char* description, const K* keys, const V* vals, int M) {
         }
         System::endCycleCount(mapRemove);
         }
+
+        /////////////////////////////////
+
+#       ifdef HAS_HASH_MAP
+        {std::hash_map<K, V> t;
+        System::beginCycleCount(hashMapSet);
+        for (int i = 0; i < M; ++i) {
+            t[keys[i]] = vals[i];
+        }
+        System::endCycleCount(hashMapSet);
+        
+        System::beginCycleCount(hashMapGet);
+        for (int i = 0; i < M; ++i) {
+            t[keys[i]];
+        }
+        System::endCycleCount(hashMapGet);
+
+        System::beginCycleCount(hashMapRemove);
+        for (int i = 0; i < M; ++i) {
+            t.erase(keys[i]);
+        }
+        System::endCycleCount(hashMapRemove);
+        }
+#       endif
     }
 
     tableSet -= overhead;
@@ -176,6 +213,9 @@ void perfTest(const char* description, const K* keys, const V* vals, int M) {
     printf("%s\n", description);
     printf("Table       %9.1f  %9.1f  %9.1f\n", (float)tableSet / N, (float)tableGet / N, (float)tableRemove / N); 
     printf("map         %9.1f  %9.1f  %9.1f\n", (float)mapSet / N, (float)mapGet / N, (float)mapRemove / N); 
+#   ifdef HAS_HASH_MAP
+    printf("hash_map    %9.1f  %9.1f  %9.1f\n", (float)hashMapSet / N, (float)hashMapGet / N, (float)hashMapRemove / N); 
+#   endif
     printf("\n");
 }
 

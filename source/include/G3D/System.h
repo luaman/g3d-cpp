@@ -110,6 +110,8 @@ public:
      Can be 10x to 100x faster than calling ::malloc or new.
 
      The result must be freed with free.
+
+     Threadsafe on Win32.
      */
     static void* malloc(size_t bytes);
 
@@ -120,6 +122,8 @@ public:
 
     /**
      Free data allocated with System::malloc.
+
+     Threadsafe on Win32.
      */
     static void free(void* p);
 

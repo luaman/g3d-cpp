@@ -736,7 +736,7 @@ int main(int argc, char* argv[]) {
 
         perfTable();
 
-        while(true);
+        printf("%s\n", System::mallocPerformance().c_str());
 
         perfArray();
 
@@ -758,7 +758,6 @@ int main(int argc, char* argv[]) {
         measureMemsetPerformance();
         measureNormalizationPerformance();
 
-        printf("%s\n", System::mallocPerformance().c_str());
 
         GWindowSettings settings;
         settings.width = 800;
@@ -836,7 +835,7 @@ int main(int argc, char* argv[]) {
 
     testTable();
 
-    testBox();    
+    testBox();
     printf("  passed\n");
 
     testCollisionDetection();    

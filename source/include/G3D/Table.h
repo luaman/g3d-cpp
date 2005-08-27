@@ -136,6 +136,17 @@ private:
         Entry             entry;
         Node*             next;
 
+        
+        /** Provide pooled allocation for speed. */
+        inline void* operator new (size_t size) {
+            return System::malloc(size);
+        }
+        
+        inline void operator delete (void* p) {
+            System::free(p);
+        }
+
+
         Node(Key key, Value value, unsigned int hashCode, Node* next) {
             this->entry.key   = key;
             this->entry.value = value;
