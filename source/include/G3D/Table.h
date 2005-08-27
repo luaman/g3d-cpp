@@ -271,7 +271,7 @@ public:
             Node*   node = bucket[b];
             while (node != NULL) {
                 node = node->next;
-                count ++;
+                ++count;
             }
 
             if (count > deepest) {

@@ -988,15 +988,17 @@ RealTime System::getLocalTime() {
 }
 
 
+////////////////////////////////////////////////////////////////
 class BufferPool {
 private:
-    // Takes up 40k of memory, peak
 
-    /** Only store buffers up to this size (in bytes) in the pool. */
-    enum {maxBufferSize    = 5000};
+    /** Only store buffers up to these sizes (in bytes) in each pool. 
+        Different pools have different management strategies.
+      */
+    enum {tinyBufferSize = 200, smallBufferSize = 1000, medBufferSize = 5000};
 
     /** Most buffers we're allowed to store. */
-    enum {maxNumBuffers    = 80};
+    enum {maxTinyBuffers = 1000, maxSmallBuffers = 80, maxMedBuffers = 40};
 
     class MemBlock {
     public:
@@ -1007,34 +1009,69 @@ private:
         inline MemBlock(void* p, size_t b) : ptr(p), bytes(b) {}
     };
 
-    // Use a std::vector because System::malloc is used by G3D::Array.
-    static std::vector<MemBlock> buffer;
+    static MemBlock smallPool[maxSmallBuffers];
+    static int smallPoolSize;
+
+    static MemBlock medPool[maxMedBuffers];
+    static int medPoolSize;
+
+    /**  Allocate out of a specific pool.  Return NULL if no suitable 
+         memory was found. */
+    static void* malloc(MemBlock* pool, int& poolSize, size_t bytes) {
+
+        // See if there's something we can use in the buffer pool.
+        // Search backwards since usually we'll re-use the last one.
+        for (int i = (int)poolSize - 1; i >= 0; --i) {
+            if (pool[i].bytes >= bytes) {
+                // We found a suitable entry in the pool.
+
+                // No need to offset the pointer; it is already offset
+                void* ptr = pool[i].ptr;
+
+                // Remove this element from the pool
+                --poolSize;
+                pool[i] = pool[poolSize];
+
+                return ptr;
+            }
+        }
+
+        return NULL;
+    }
+
 
 public:
 
     static int totalMallocs;
-    static int mallocsFromPool;
+    static int mallocsFromSmallPool;
+    static int mallocsFromMedPool;
 
     static void* malloc(size_t bytes) {
         ++totalMallocs;
 
-        if (bytes <= maxBufferSize) {
-            // See if there's something we can use in the buffer pool.
-            for (int i = 0; i < (int)buffer.size(); ++i) {
-                if (BufferPool::buffer[i].bytes >= bytes) {
-                    // We found a suitable entry in the pool.
+        if (bytes == 0) {
+            return NULL;
+        }
 
-                    // No need to offset the pointer; it is already offset
-                    void* ptr = buffer[i].ptr;
+        if (bytes <= smallBufferSize) {
+            
+            void* ptr = malloc(smallPool, smallPoolSize, bytes);
 
-                    // Remove this element from the pool
-                    buffer[i] = buffer[buffer.size() - 1];
-                    buffer.pop_back();
+            if (ptr) {
+                ++mallocsFromSmallPool;
+                return ptr;
+            }
 
-                    ++mallocsFromPool;
+        } else  if (bytes <= medBufferSize) {
+            // Note that a small allocation failure does *not* fall through into
+            // a medium allocation because that would waste the medium buffer's 
+            // resources.
 
-                    return ptr;
-                }
+            void* ptr = malloc(medPool, medPoolSize, bytes);
+
+            if (ptr) {
+                ++mallocsFromMedPool;
+                return ptr;
             }
         }
 
@@ -1049,6 +1086,7 @@ public:
 
     static void free(void* ptr) {
         if (ptr == NULL) {
+            // Free does nothing on null pointers
             return;
         }
 
@@ -1056,24 +1094,54 @@ public:
 
         uint32 bytes = ((uint32*)ptr)[-1];
 
-        if ((bytes <= BufferPool::maxBufferSize) && (BufferPool::buffer.size() < maxNumBuffers)) {
-            // Put into the buffer pool
-            buffer.push_back(BufferPool::MemBlock(ptr, bytes));
-        } else {
-            // Free; the buffer pool is full
-            ::free((uint8*)ptr - 4);
+        if (bytes <= smallBufferSize) {
+            if (smallPoolSize < maxSmallBuffers) {
+                smallPool[smallPoolSize] = MemBlock(ptr, bytes);
+                ++smallPoolSize;
+                return;
+            }
+        } else if (bytes <= medBufferSize) {
+            if (medPoolSize < maxMedBuffers) {
+                medPool[medPoolSize] = MemBlock(ptr, bytes);
+                ++medPoolSize;
+                return;
+            }
         }
+
+        // Free; the buffer pools are full
+        ::free((uint8*)ptr - 4);
     }
 };
 
 int BufferPool::totalMallocs = 0;
-int BufferPool::mallocsFromPool = 0;
-std::vector<BufferPool::MemBlock> BufferPool::buffer;
+int BufferPool::mallocsFromMedPool = 0;
+int BufferPool::mallocsFromSmallPool = 0;
+BufferPool::MemBlock BufferPool::smallPool[BufferPool::maxSmallBuffers];
+int BufferPool::smallPoolSize = 0;
+BufferPool::MemBlock BufferPool::medPool[BufferPool::maxMedBuffers];
+int BufferPool::medPoolSize = 0;
+
+
+std::string System::mallocPerformance() {    
+    if (BufferPool::totalMallocs > 0) {
+         return format("System::malloc perf:  small: %5.1f%%  med: %5.1f%%  heap: %5.1f%%", 
+            100.0 * BufferPool::mallocsFromSmallPool / BufferPool::totalMallocs,
+            100.0 * BufferPool::mallocsFromMedPool / BufferPool::totalMallocs,
+            100.0 * (1.0 - (float)(BufferPool::mallocsFromSmallPool + BufferPool::mallocsFromMedPool) / BufferPool::totalMallocs));
+    } else {
+        return "No System::malloc calls made yet.";
+    }
+}
+
+
+void System::resetMallocPerformanceCounters() {
+    BufferPool::totalMallocs = 0;
+    BufferPool::mallocsFromMedPool = 0;
+    BufferPool::mallocsFromSmallPool = 0;
+}
 
 
 void* System::malloc(size_t bytes) {
-    // For debugging
-    // printf("%d/%d\n", BufferPool::mallocsFromPool, BufferPool::totalMallocs);
     return BufferPool::malloc(bytes);
 }
 

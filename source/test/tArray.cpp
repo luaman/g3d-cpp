@@ -10,26 +10,30 @@ public:
     int dummy[100];
 
     Big() {
+        /*
         x = 7;
         for (int i = 0; i < 100; ++i) {
             dummy[i] = i;
-        }
+        }*/
     }
 
     ~Big() {
     }
 
     Big(const Big& a) : x(a.x) {
+        /*
         for (int i = 0; i < 100; ++i) {
             dummy[i] = a.dummy[i];
-        }
+        }*/
     }
 
     Big& operator=(const Big& a) {
+        /*
         x = a.x;
         for (int i = 0; i < 100; ++i) {
             dummy[i] = a.dummy[i];
         }
+        */
         return *this;
     }
 };
@@ -126,6 +130,7 @@ void perfArray() {
         printf("\n\n");
     }
 
+    ////////////////////////////////////////////////////
     // Measure time for array resize
     uint64 vectorResizeBig,  vectorResizeSmall;
     uint64 arrayResizeBig,   arrayResizeSmall;
@@ -133,12 +138,16 @@ void perfArray() {
 
     const int M = 4000;
 
+    //  Low and high bounds for resize tests
+    const int L = 1;
+    const int H = M + L;
+
     // Run many times to filter out startup behavior
     for (int j = 0; j < 3; ++j) {
         System::beginCycleCount(vectorResizeBig);
         {
             std::vector<Big> array;
-            for (int i = 0; i < M; ++i) {
+            for (int i = L; i < H; ++i) {
                 array.resize(i);
             }
         }
@@ -147,7 +156,7 @@ void perfArray() {
         System::beginCycleCount(vectorResizeSmall);
         {
             std::vector<int> array;
-            for (int i = 0; i < M; ++i) {
+            for (int i = L; i < H; ++i) {
                 array.resize(i);
             }
         }
@@ -156,7 +165,7 @@ void perfArray() {
         System::beginCycleCount(arrayResizeSmall);
         {
             Array<int> array;
-            for (int i = 0; i < M; ++i) {
+            for (int i = L; i < H; ++i) {
                 array.resize(i, false);
             }
         }
@@ -165,7 +174,7 @@ void perfArray() {
         System::beginCycleCount(arrayResizeBig);
         {
             Array<Big> array;
-            for (int i = 0; i < M; ++i) {
+            for (int i = L; i < H; ++i) {
                 array.resize(i, false);
             }
         }
@@ -174,7 +183,7 @@ void perfArray() {
         System::beginCycleCount(mallocResizeBig);
         {
             Big* array = NULL;
-            for (int i = 0; i < M; ++i) {
+            for (int i = L; i < H; ++i) {
                 array = (Big*)realloc(array, sizeof(Big) * i);
             }
             free(array);
@@ -184,7 +193,7 @@ void perfArray() {
         System::beginCycleCount(mallocResizeSmall);
         {
             int* array = NULL;
-            for (int i = 0; i < M; ++i) {
+            for (int i = L; i < H; ++i) {
                 array = (int*)realloc(array, sizeof(int) * i);
             }
             free(array);

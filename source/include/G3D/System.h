@@ -111,6 +111,10 @@ public:
      */
     static void* malloc(size_t bytes);
 
+    /** Returns a string describing how well System::malloc is using its internal pooled storage.*/
+    static std::string mallocPerformance();
+    static void resetMallocPerformanceCounters();
+
     /**
      Free data allocated with System::malloc.
      */

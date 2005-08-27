@@ -159,6 +159,10 @@ SOURCE=.\test\tSystemMemcpy.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\test\tTable.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\test\tTextInput.cpp
 # End Source File
 # Begin Source File
