@@ -1,4 +1,5 @@
 #include "../include/G3DAll.h"
+#include <map>
 
 class TableKey : public Hashable {
 public:
@@ -91,4 +92,135 @@ void testTable() {
     }
 
     printf("passed\n");
+}
+
+
+template<class K, class V>
+void perfTest(const char* description, const K* keys, const V* vals, int M) {
+    uint64 tableSet, tableGet, tableRemove;
+    uint64 mapSet, mapGet, mapRemove;
+
+    uint64 overhead;
+
+    // Run many times to filter out startup behavior
+    for (int j = 0; j < 3; ++j) {
+
+        // There's a little overhead just for the loop and reading 
+        // the values from the arrays.  Take this into account when
+        // counting cycles.
+        System::beginCycleCount(overhead);
+        {K k; V v;
+        for (int i = 0; i < M; ++i) {
+            k = keys[i];
+            v = vals[i];
+        }
+        System::endCycleCount(overhead);
+        }
+
+        {Table<K, V> t;
+        System::beginCycleCount(tableSet);
+        for (int i = 0; i < M; ++i) {
+            t.set(keys[i], vals[i]);
+        }
+        System::endCycleCount(tableSet);
+        
+        System::beginCycleCount(tableGet);
+        for (int i = 0; i < M; ++i) {
+            t[keys[i]];
+        }
+        System::endCycleCount(tableGet);
+
+        System::beginCycleCount(tableRemove);
+        for (int i = 0; i < M; ++i) {
+            t.remove(keys[i]);
+        }
+        System::endCycleCount(tableRemove);
+        }
+
+        /////////////////////////////////
+
+        {std::map<K, V> t;
+        System::beginCycleCount(mapSet);
+        for (int i = 0; i < M; ++i) {
+            t[keys[i]] = vals[i];
+        }
+        System::endCycleCount(mapSet);
+        
+        System::beginCycleCount(mapGet);
+        for (int i = 0; i < M; ++i) {
+            t[keys[i]];
+        }
+        System::endCycleCount(mapGet);
+
+        System::beginCycleCount(mapRemove);
+        for (int i = 0; i < M; ++i) {
+            t.erase(keys[i]);
+        }
+        System::endCycleCount(mapRemove);
+        }
+    }
+
+    tableSet -= overhead;
+    if (tableGet < overhead) {
+        tableGet = 0;
+    } else {
+        tableGet -= overhead;
+    }
+    tableRemove -= overhead;
+
+    mapSet -= overhead;
+    mapGet -= overhead;
+    mapRemove -= overhead;
+
+    float N = M;
+    printf("%s\n", description);
+    printf("Table       %9.1f  %9.1f  %9.1f\n", (float)tableSet / N, (float)tableGet / N, (float)tableRemove / N); 
+    printf("map         %9.1f  %9.1f  %9.1f\n", (float)mapSet / N, (float)mapGet / N, (float)mapRemove / N); 
+    printf("\n");
+}
+
+
+void perfTable() {
+    printf("              insert       fetch     remove\n");
+
+    const int M = 300;
+    {
+        int keys[M];
+        int vals[M];
+        for (int i = 0; i < M; ++i) {
+            keys[i] = i * 2;
+            vals[i] = i;
+        }
+        perfTest<int, int>("int,int", keys, vals, M);
+    }
+
+    {
+        std::string keys[M];
+        int vals[M];
+        for (int i = 0; i < M; ++i) {
+            keys[i] = format("%d", i * 2);
+            vals[i] = i;
+        }
+        perfTest<std::string, int>("string, int", keys, vals, M);
+    }
+
+    {
+        int keys[M];
+        std::string vals[M];
+        for (int i = 0; i < M; ++i) {
+            keys[i] = i * 2;
+            vals[i] = format("%d", i);
+        }
+        perfTest<int, std::string>("int, string", keys, vals, M);
+    }
+
+    {
+        std::string keys[M];
+        std::string vals[M];
+        for (int i = 0; i < M; ++i) {
+            keys[i] = format("%d", i * 2);
+            vals[i] = format("%d", i);
+        }
+        perfTest<std::string, std::string>("string, string", keys, vals, M);
+    }
 }

@@ -734,6 +734,10 @@ int main(int argc, char* argv[]) {
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
 
+        perfTable();
+
+        while(true);
+
         perfArray();
 
         perfQueue();
