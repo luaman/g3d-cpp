@@ -992,7 +992,7 @@ RealTime System::getLocalTime() {
 class BufferPool {
 private:
 
-    /** Only store buffers up to these sizes (in bytes) in each pool. 
+    /** Only store buffers up to these sizes (in bytes) in each pool-> 
         Different pools have different management strategies.
 
         256k preallocated for tiny buffers; they are used with tremendous frequency.
@@ -1046,7 +1046,6 @@ private:
 #       endif
     }
 
-
     /** Malloc out of the tiny heap.
     
          */
@@ -1076,7 +1075,7 @@ private:
 
     }
 
-    /**  Allocate out of a specific pool.  Return NULL if no suitable 
+    /**  Allocate out of a specific pool->  Return NULL if no suitable 
          memory was found. 
     
          */
@@ -1084,11 +1083,11 @@ private:
 
         // TODO: find the smallest block that satisfies the request.
 
-        // See if there's something we can use in the buffer pool.
+        // See if there's something we can use in the buffer pool->
         // Search backwards since usually we'll re-use the last one.
         for (int i = (int)poolSize - 1; i >= 0; --i) {
             if (pool[i].bytes >= bytes) {
-                // We found a suitable entry in the pool.
+                // We found a suitable entry in the pool->
 
                 // No need to offset the pointer; it is already offset
                 void* ptr = pool[i].ptr;
@@ -1237,22 +1236,24 @@ public:
     }
 };
 
-
-static BufferPool bufferPool;
+// Dynamically allocated because we need to ensure that
+// the buffer pool is still around when the last global variable 
+// is deallocated.
+static BufferPool* bufferpool = new BufferPool();
 
 std::string System::mallocPerformance() {    
-    if (bufferPool.totalMallocs > 0) {
+    if (bufferpool->totalMallocs > 0) {
 
-        int pooled = bufferPool.mallocsFromTinyPool +
-                     bufferPool.mallocsFromSmallPool + 
-                     bufferPool.mallocsFromMedPool;
+        int pooled = bufferpool->mallocsFromTinyPool +
+                     bufferpool->mallocsFromSmallPool + 
+                     bufferpool->mallocsFromMedPool;
 
-        int total = bufferPool.totalMallocs;
+        int total = bufferpool->totalMallocs;
 
         return format("malloc perf:  %5.1f%% tiny   %5.1f%% small   %5.1f%% med   %5.1f%% heap", 
-            100.0 * bufferPool.mallocsFromTinyPool  / total,
-            100.0 * bufferPool.mallocsFromSmallPool / total,
-            100.0 * bufferPool.mallocsFromMedPool   / total,
+            100.0 * bufferpool->mallocsFromTinyPool  / total,
+            100.0 * bufferpool->mallocsFromSmallPool / total,
+            100.0 * bufferpool->mallocsFromMedPool   / total,
             100.0 * (1.0 - (double)pooled / total));
     } else {
         return "No System::malloc calls made yet.";
@@ -1261,20 +1262,20 @@ std::string System::mallocPerformance() {
 
 
 void System::resetMallocPerformanceCounters() {
-    bufferPool.totalMallocs = 0;
-    bufferPool.mallocsFromMedPool = 0;
-    bufferPool.mallocsFromSmallPool = 0;
-    bufferPool.mallocsFromTinyPool = 0;
+    bufferpool->totalMallocs = 0;
+    bufferpool->mallocsFromMedPool = 0;
+    bufferpool->mallocsFromSmallPool = 0;
+    bufferpool->mallocsFromTinyPool = 0;
 }
 
 
 void* System::malloc(size_t bytes) {
-    return bufferPool.malloc(bytes);
+    return bufferpool->malloc(bytes);
 }
 
 
 void System::free(void* p) {
-    bufferPool.free(p);
+    bufferpool->free(p);
 }
 
 
