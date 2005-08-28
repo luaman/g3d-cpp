@@ -1239,7 +1239,7 @@ public:
 // Dynamically allocated because we need to ensure that
 // the buffer pool is still around when the last global variable 
 // is deallocated.
-static BufferPool* bufferpool = new BufferPool();
+static BufferPool* bufferpool = NULL;
 
 std::string System::mallocPerformance() {    
     if (bufferpool->totalMallocs > 0) {
@@ -1270,6 +1270,14 @@ void System::resetMallocPerformanceCounters() {
 
 
 void* System::malloc(size_t bytes) {
+    // Putting the test here ensures that the system is always initialized,
+    // even when globals are being allocated.
+    static bool initialized = false;
+    if (! initialized) {
+        bufferpool = new BufferPool();
+        initialized = true;
+    }
+
     return bufferpool->malloc(bytes);
 }
 

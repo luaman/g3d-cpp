@@ -140,6 +140,10 @@ SOURCE=.\source\Entity.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\mainpage.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\source\ModelData.h
 # End Source File
 # Begin Source File

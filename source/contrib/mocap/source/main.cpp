@@ -194,6 +194,16 @@ void App::loadScene() {
         e->physics.g3dGeometry = new CylinderShape(Cylinder(Vector3(0,-s * 0.5,0), Vector3(0,0.5 * s,0), 1));
         world.insert(e);
     }
+
+
+    if (false) {
+        EntityRef e = Entity::create(createIFSModel("D:/games/cpp/source/data/ifs/ah64-body.ifs", Color3::black()), 
+            CoordinateFrame(Vector3(0, 10, 0)));
+        float s = 2 / sqrt(2);
+//        e->physics.g3dGeometry = new CylinderShape(Cylinder(Vector3(0,-s * 0.5,0), Vector3(0,0.5 * s,0), 1));
+        world.insert(e);
+    }
+    
 }
 
 
