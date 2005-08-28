@@ -63,8 +63,11 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
 void Demo::init()  {
     // Called before Demo::run() beings
-    app->debugCamera.setPosition(Vector3(2, 0, -2));
-    app->debugCamera.lookAt(Vector3(0, -0.75, 0));
+//    app->debugCamera.setPosition(Vector3(2, 0, -2));
+//    app->debugCamera.lookAt(Vector3(0, -0.75, 0));
+
+     app->debugCamera.setPosition(Vector3(0, 0, 15));
+    app->debugCamera.lookAt(Vector3(0, 0, 0));
 }
 
 
@@ -121,6 +124,7 @@ void App::main() {
 void App::loadScene() {
     world.init();
 
+    Log::common()->printf("begin loadScene\n");
 
     world.sky = Sky::create(NULL, app->dataDir + "sky/");
 
@@ -154,28 +158,31 @@ void App::loadScene() {
         world.lighting->shadowedLightArray.append(L);
     }
 
+    Log::common()->printf("  objects\n");
     // Ground plane
     {
-        EntityRef e = Entity::create(createPlaneModel("grid.png", 20, 1), CoordinateFrame(Vector3(-5, -1, 5)));
+        EntityRef e = Entity::create("Ground", createPlaneModel("grid.png", 20, 1), CoordinateFrame(Vector3(-5, -1, 5)));
+    Log::common()->printf("  10\n");
         e->physics.g3dGeometry = new PlaneShape(Plane(Vector3::unitY(), Vector3::zero()));
         world.insert(e);
     }
-
     if (false) {
         // Character
-        world.insert(Entity::create(ASFModel::create("26.asf"), 
+        world.insert(Entity::create("Stick man", ASFModel::create("26.asf"), 
             CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180)), Vector3::zero())));
     }
 
+    Log::common()->printf("  2\n");
     {
-        EntityRef e = Entity::create(createIFSModel("cube.ifs"), CoordinateFrame(Vector3(.7,3,0)));
+        EntityRef e = Entity::create("Cube", createIFSModel("cube.ifs"), CoordinateFrame(Vector3(.7,3,0)));
         float s = 0.5;
         e->physics.g3dGeometry = new BoxShape(AABox(Vector3(-s,-s,-s), Vector3(s,s,s)));
         world.insert(e);
     }
+    Log::common()->printf("  3");
 
     {
-        EntityRef e = Entity::create(createIFSModel("cube.ifs", Color3::blue()), CoordinateFrame(Vector3(0,-0.5,0)));
+        EntityRef e = Entity::create("Blue Cube", createIFSModel("cube.ifs", Color3::blue()), CoordinateFrame(Vector3(0,-0.5,0)));
         float s = 0.5;
         e->physics.g3dGeometry = new BoxShape(AABox(Vector3(-s,-s,-s), Vector3(s,s,s)));
         e->physics.canMove = false;
@@ -183,27 +190,30 @@ void App::loadScene() {
     }
 
     {
-        EntityRef e = Entity::create(createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-1, 4, 0)));
+        EntityRef e = Entity::create("Sphere", createIFSModel("sphere.ifs", Color3::cyan()), CoordinateFrame(Vector3(-1, 4, 0)));
         e->physics.g3dGeometry = new SphereShape(Sphere(Vector3::zero(), 1));
         world.insert(e);
     }
 
     {
-        EntityRef e = Entity::create(createIFSModel("cylinder.ifs", Color3::green()), CoordinateFrame(Vector3(-1, 3, -1)));
+        EntityRef e = Entity::create("Cylinder", createIFSModel("cylinder.ifs", Color3::green()),
+              Vector3(-1, 1, -1));
+
         float s = 2 / sqrt(2);
-        e->physics.g3dGeometry = new CylinderShape(Cylinder(Vector3(0,-s * 0.5,0), Vector3(0,0.5 * s,0), 1));
+        e->physics.g3dGeometry = new CapsuleShape(Capsule(Vector3(0, -s * 0.25,0), Vector3(0, 0.25 * s, 0), 1));
+        e->physics.linearVelocity.z = 1;
+        e->physics.linearVelocity.x = .5;
         world.insert(e);
     }
 
 
-    if (false) {
-        EntityRef e = Entity::create(createIFSModel("D:/games/cpp/source/data/ifs/ah64-body.ifs", Color3::black()), 
-            CoordinateFrame(Vector3(0, 10, 0)));
-        float s = 2 / sqrt(2);
-//        e->physics.g3dGeometry = new CylinderShape(Cylinder(Vector3(0,-s * 0.5,0), Vector3(0,0.5 * s,0), 1));
+    {
+        EntityRef e = Entity::create("Helicopter", createHelicopter(Color3::white() * 0.2), CoordinateFrame(Vector3(0, 1, 3)));
+        e->physics.g3dGeometry = new CapsuleShape(Capsule(Vector3(0,-.5,0), Vector3(0,0.5,0), 3));
         world.insert(e);
     }
     
+    Log::common()->printf("end loadScene\n");
 }
 
 

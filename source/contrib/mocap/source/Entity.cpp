@@ -27,8 +27,8 @@ void Entity::renderPhysicsModel(RenderDevice* rd) {
 
         physics.g3dGeometry->render(rd, cframe(), physics.canMove ? dynamicColor : staticColor);
 
-        if (physics.velocity.squaredLength() > 0.001) {
-            Draw::ray(Ray::fromOriginAndDirection(frame.translation, physics.velocity), rd, Color3::red());
+        if (physics.linearVelocity.squaredLength() > 0.001) {
+            Draw::ray(Ray::fromOriginAndDirection(frame.translation, physics.linearVelocity), rd, Color3::red());
         }
     }
 }
@@ -60,7 +60,9 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             if (physics.canMove) {
                 // Create the body
                 physics.body = dBodyCreate(world);
-                dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
+                dBodySetPositionAndRotation(physics.body, cframe());
+                dBodySetLinearVel(physics.body, physics.linearVelocity);
+                dBodySetAngularVel(physics.body, physics.angularVelocity);
 
                 // Attach a moment of inertia to the body
                 dMassSetBox(&physics.odeMass, 1, box.extent().x, box.extent().y, box.extent().z);
@@ -86,7 +88,9 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             if (physics.canMove) {
                 // Create the body
                 physics.body = dBodyCreate(world);
-                dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
+                dBodySetPositionAndRotation(physics.body, cframe());
+                dBodySetLinearVel(physics.body, physics.linearVelocity);
+                dBodySetAngularVel(physics.body, physics.angularVelocity);
 
                 dMassSetSphere(&physics.odeMass, 1, sphere.radius);
                 dMassAdjust(&physics.odeMass, physics.mass);
@@ -100,8 +104,60 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
         }
         break;
 
+    case Shape::CAPSULE:
+        {
+            const Capsule& capsule = physics.g3dGeometry->capsule();
+            debugAssert(capsule.getPoint1().x == 0);
+            debugAssert(capsule.getPoint1().z == 0);
+            debugAssert(capsule.getPoint2().x == 0);
+            debugAssert(capsule.getPoint2().z == 0);
+            debugAssert(fuzzyEq(capsule.getPoint1().y, -capsule.getPoint2().y));
+
+            float r = capsule.getRadius();
+            float h = abs(capsule.getPoint2().y - capsule.getPoint1().y);
+
+            dGeomID geom = dCreateCCylinder(ODE_NO_SPACE, r, h);
+
+            // Standard ODE -> G3D coordinate system switch
+            static CoordinateFrame orient(Matrix3::fromAxisAngle(Vector3::unitX(), toRadians(90)), Vector3::zero());
+
+            // TODO: we could allow arbitrary transformation here to match any capsule
+            // Orient to match the G3D coordinate system
+            dGeomSetPositionAndRotation(geom, orient);
+
+            // We always create a transform geom to wrap the underlying
+            // geom.  This allows arbitrary orientation relative to body 
+            // space.
+            physics.odeGeometry = dCreateGeomTransform(space);
+            dGeomTransformSetInfo(physics.odeGeometry, 1);
+            dGeomTransformSetGeom(physics.odeGeometry, geom);
+
+
+            if (physics.canMove) {
+                // Create the body
+                physics.body = dBodyCreate(world);
+                dBodySetPositionAndRotation(physics.body, cframe());
+                dBodySetLinearVel(physics.body, physics.linearVelocity);
+                dBodySetAngularVel(physics.body, physics.angularVelocity);
+
+                // Attach a moment of inertia to the body
+                dMassSetCylinder(&physics.odeMass, 1, 0, r, h);
+
+                dMassAdjust(&physics.odeMass, physics.mass);
+                dBodySetMass(physics.body, &physics.odeMass);
+
+                // Attach geometry to the body
+                dGeomSetBody(physics.odeGeometry, physics.body);
+            } else {
+                dGeomSetPositionAndRotation(physics.odeGeometry, cframe());
+            }
+        }
+        break;
+
     case Shape::CYLINDER:
         {
+            alwaysAssertM(false, "Cylinders not supported in this release.  Use Capsule instead")
+#if 0
             const Cylinder& cylinder = physics.g3dGeometry->cylinder();
             debugAssert(cylinder.getPoint1().x == 0);
             debugAssert(cylinder.getPoint1().z == 0);
@@ -112,15 +168,18 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             float r = cylinder.getRadius();
             float h = abs(cylinder.getPoint2().y - cylinder.getPoint1().y);
 
-            physics.odeGeometry = dCreateCCylinder(space, r, h);
+            physics.odeGeometry = dCreateCylinder(space, r, h);
 
             if (physics.canMove) {
                 // Create the body
                 physics.body = dBodyCreate(world);
-                dBodySetPosition(physics.body, frame.translation.x, frame.translation.y, frame.translation.z);
+                dBodySetPositionAndRotation(physics.body, cframe());
+                dBodySetLinearVel(physics.body, physics.linearVelocity);
+                dBodySetAngularVel(physics.body, physics.angularVelocity);
 
                 // Attach a moment of inertia to the body
                 dMassSetCylinder(&physics.odeMass, 1, 0, r, h);
+
                 dMassAdjust(&physics.odeMass, physics.mass);
                 dBodySetMass(physics.body, &physics.odeMass);
 
@@ -129,6 +188,7 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
             } else {
                 dGeomSetPositionAndRotation(physics.odeGeometry, cframe());
             }
+#endif
         }
         break;
 
@@ -146,7 +206,14 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
 
 //////////////////////////////////////////
 
-Entity::Physics::Physics() : g3dGeometry(NULL), odeGeometry(0), mass(1), velocity(Vector3::zero()), canMove(true) {}
+Entity::Physics::Physics() : 
+    g3dGeometry(NULL), 
+    odeGeometry(0), 
+    mass(1), 
+    linearVelocity(Vector3::zero()), 
+    angularVelocity(Vector3::zero()), 
+    canMove(true) {}
+
 
 Entity::Physics::~Physics() {
     dGeomDestroy(odeGeometry);
@@ -167,13 +234,5 @@ void Entity::Physics::getFrame(CoordinateFrame& c) {
 }
 
 void Entity::Physics::updateVelocity() {
-
-    // dReal may be either single or double
-    const dReal* t = dBodyGetLinearVel(body);
-    const dReal* r = dBodyGetAngularVel(body);    
-
-    for (int i = 0; i < 3; ++i) {
-        velocity[i] = t[i];
-        angularVelocity[i] = r[i];
-    }
+    dBodyGetLinearAndAngularVel(body, linearVelocity, angularVelocity);
 }

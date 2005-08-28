@@ -38,7 +38,7 @@ public:
         float                   mass;
 
         /** In world space */
-        Vector3                 velocity;
+        Vector3                 linearVelocity;
 
         /** In world space */
         Vector3                 angularVelocity;
@@ -60,6 +60,8 @@ public:
 
     Physics                     physics;
 
+    std::string                 mName;
+
 public:
 
     /** Called by World::insert to fill out the ODE fields */
@@ -75,6 +77,10 @@ public:
     /** Used temporarily while sorting */    
     float                       sortKey;
 
+    inline const std::string& name() const {
+        return mName;
+    }
+
     ~Entity();
 
     /** Renders labels on the sub-parts */
@@ -85,11 +91,13 @@ public:
 
     /** Allows construction from any kind of model supported by ModelData. */
     template<class ModelTypeRef> EntityRef static create(
+        const std::string&         name,
         const ModelTypeRef&        model,
         const PhysicsFrame&        f) {
 
         Entity* e = new Entity();
 
+        e->mName = name;
         e->modelData = ModelData::create(model);
         e->frame = f;
 

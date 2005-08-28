@@ -5,8 +5,8 @@
 #include "AMUtil.h"
 
 
-ArticulatedModelRef createIFSModel(const std::string& filename, Color3 color) {
-    ArticulatedModelRef model = ArticulatedModel::fromFile(filename);
+ArticulatedModelRef createIFSModel(const std::string& filename, Color3 color, const CoordinateFrame& cframe) {
+    ArticulatedModelRef model = ArticulatedModel::fromFile(filename, cframe);
 
     SuperShader::Material& material = model->partArray[0].triListArray[0].material;
     material.diffuse = color;
@@ -20,7 +20,52 @@ ArticulatedModelRef createIFSModel(const std::string& filename, Color3 color) {
 }
 
 
+
+ArticulatedModelRef createHelicopter(Color3 color) {
+    // Animated, hierarchical part
+    ArticulatedModelRef body  = ArticulatedModel::fromFile("D:/games/cpp/source/data/ifs/ah64-body.ifs", 2);
+
+    // Rotate the rotor to the correct orientation on load
+    ArticulatedModelRef rotor = ArticulatedModel::fromFile("D:/games/cpp/source/data/ifs/ah64-rotor.ifs", 
+        CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitX(), toRadians(-90)) * 2, Vector3::zero()));
+
+    ArticulatedModelRef model = ArticulatedModel::createEmpty();
+    model->name = "Apache";
+
+    SuperShader::Material material;
+    material.diffuse = color;
+    material.transmit = Color3::black();
+    material.reflect = Color3::black();
+    material.specular = Color3::white() * .3;
+    material.specularExponent = Color3::white() * 30;
+
+    {
+        ArticulatedModel::Part& part = model->partArray.next();
+        part = body->partArray.last();
+        part.name = "Root";
+        // Make a reference to the child we're going to add
+        part.subPartArray.append(1);
+        part.triListArray[0].material = material;
+    }
+
+    {
+        ArticulatedModel::Part& part = model->partArray.next();
+        part = rotor->partArray.last();
+        part.parent = 0;
+        part.name = "Rotor";
+        part.cframe = CoordinateFrame(Vector3(0.0, 0.3,- 0.5));
+        part.triListArray[0].material = material;
+    }
+
+
+    model->updateAll();
+
+    return model;
+}
+
+
 ArticulatedModelRef createPlaneModel(const std::string& textureFile, float side, float tilePeriod) {
+    Log::common()->printf("Creating plane...");
     ArticulatedModelRef model = ArticulatedModel::createEmpty();
 
     model->name = "Ground Plane";
@@ -28,6 +73,7 @@ ArticulatedModelRef createPlaneModel(const std::string& textureFile, float side,
     part.cframe = CoordinateFrame();
     part.name = "root";
 
+    Log::common()->printf("1,\n");
     // There are N^2 blocks in this ground plane
     const int N = ceil(side);
     {
@@ -43,6 +89,7 @@ ArticulatedModelRef createPlaneModel(const std::string& textureFile, float side,
         }
     }
 
+    Log::common()->printf("2,\n");
     // Build triangle list
     ArticulatedModel::Part::TriList& triList = part.triListArray.next();
     triList.indexArray.clear();
@@ -67,6 +114,7 @@ ArticulatedModelRef createPlaneModel(const std::string& textureFile, float side,
         Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 8.0);
 
     triList.computeBounds(part);
+    Log::common()->printf("3,\n");
 
     part.indexArray = triList.indexArray;
 
@@ -74,6 +122,8 @@ ArticulatedModelRef createPlaneModel(const std::string& textureFile, float side,
     part.computeNormalsAndTangentSpace();
     part.updateVAR();
     part.updateShaders();
+
+    Log::common()->printf("done\n");
 
     return model;
 }

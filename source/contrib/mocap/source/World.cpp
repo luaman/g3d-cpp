@@ -123,6 +123,20 @@ void World::renderPhysicsModels(RenderDevice* rd) {
 }
 
 
+static void configureFixedFunctionLighting(RenderDevice* rd, const LightingRef& lighting) {
+    rd->setAmbientLightColor(lighting->ambientTop);
+    if (lighting->ambientBottom != lighting->ambientTop) {
+        rd->setLight(0, GLight::directional(-Vector3::unitY(), 
+            lighting->ambientBottom - lighting->ambientTop, false)); 
+    }
+    
+    // Lights
+    for (int L = 0; L < iMin(8, lighting->lightArray.size()); ++L) {
+        rd->setLight(L + 1, lighting->lightArray[L]);
+    }
+}
+
+
 void World::doGraphics(RenderDevice* rd) {
     LightingRef        lighting      = toneMap.prepareLighting(this->lighting);
     LightingParameters skyParameters = toneMap.prepareLightingParameters(this->skyParameters);
@@ -131,7 +145,15 @@ void World::doGraphics(RenderDevice* rd) {
     Array<PosedModelRef> posedModels;
 
     for (int e = 0; e < entityArray.size(); ++e) {
-        entityArray[e]->pose(posedModels);
+        EntityRef& entity = entityArray[e];
+        if (entity->name() == "Helicopter") {
+            static float t = 0;
+            t += 0.1;
+            CoordinateFrame cframe(Matrix3::fromAxisAngle(Vector3::unitY(), t), Vector3::zero());
+            entity->modelData->artpose.cframe.set("Rotor", cframe);
+        }
+
+        entity->pose(posedModels);
     }
     Array<PosedModelRef> opaque, transparent;
     PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
@@ -185,8 +207,13 @@ void World::doGraphics(RenderDevice* rd) {
             break;
 
         case RENDER_PHYSICS:
-            Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), rd);
-            renderPhysicsModels(rd);
+            rd->enableLighting();
+                configureFixedFunctionLighting(rd, lighting);
+                rd->setSpecularCoefficient(Color3::white() * 0.5);
+                rd->setShininess(30);
+                Draw::axes(CoordinateFrame(Vector3(0, 0, 0)), rd, Color3::red() * 0.6, Color3::green() * 0.8, Color3::blue() * 0.8);
+                renderPhysicsModels(rd);
+            rd->disableLighting();
             break;
         }
 

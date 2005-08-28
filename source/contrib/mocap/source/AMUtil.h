@@ -20,7 +20,10 @@ ArticulatedModelRef createPlaneModel(const std::string& textureFile, float side 
  */
 ArticulatedModelRef createASFModel(const std::string& filename);
 
-ArticulatedModelRef createIFSModel(const std::string& filename, Color3 color = Color3::red());
+ArticulatedModelRef createIFSModel(const std::string& filename, Color3 color = Color3::red(), const CoordinateFrame& cframe = CoordinateFrame());
+
+ArticulatedModelRef createHelicopter(Color3 color = Color3::black());
+
 
 SuperShader::Material brass();
 
