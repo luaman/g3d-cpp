@@ -1141,7 +1141,9 @@ public:
 
     ~BufferPool() {
         ::free(tinyHeap);
-        DeleteCriticalSection(&mutex);
+#       ifdef G3D_WIN32
+            DeleteCriticalSection(&mutex);
+#       endif
     }
 
     void* malloc(size_t bytes) {
