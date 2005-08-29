@@ -66,7 +66,7 @@ void Demo::init()  {
 //    app->debugCamera.setPosition(Vector3(2, 0, -2));
 //    app->debugCamera.lookAt(Vector3(0, -0.75, 0));
 
-     app->debugCamera.setPosition(Vector3(0, 0, 15));
+     app->debugCamera.setPosition(Vector3(10, 0, 0));
     app->debugCamera.lookAt(Vector3(0, 0, 0));
 }
 
@@ -171,7 +171,7 @@ void App::loadScene() {
         world.insert(Entity::create("Stick man", ASFModel::create("26.asf"), 
             CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180)), Vector3::zero())));
     }
-
+/*
     Log::common()->printf("  2\n");
     {
         EntityRef e = Entity::create("Cube", createIFSModel("cube.ifs"), CoordinateFrame(Vector3(.7,3,0)));
@@ -205,11 +205,21 @@ void App::loadScene() {
         e->physics.linearVelocity.x = .5;
         world.insert(e);
     }
-
+*/
 
     {
-        EntityRef e = Entity::create("Helicopter", createHelicopter(Color3::white() * 0.2), CoordinateFrame(Vector3(0, 1, 3)));
-        e->physics.g3dGeometry = new CapsuleShape(Capsule(Vector3(0,-.5,0), Vector3(0,0.5,0), 3));
+        EntityRef e = Entity::create("Helicopter", createHelicopter(Color3::white() * 0.2), CoordinateFrame(Vector3(0, 0, 0)));
+
+        e->physics.g3dGeometry = 
+            /*
+            new BoxShape(
+            CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(45)), 
+                            Vector3(0, 0.31, -0.5)).toWorldSpace(
+                Box(Vector3(-1.5, -0.025, -1.5), Vector3(1.5, 0.025, 1.5))));*/
+
+            new CapsuleShape(Capsule(Vector3(0.0, -0.1, 1.7), Vector3(0.0, -0.35, -1.8), 0.3));
+
+//        e->physics.canMove = false;
         world.insert(e);
     }
     
@@ -219,6 +229,7 @@ void App::loadScene() {
 
 App::App(const GAppSettings& settings) : GApp(settings) {
     applet = new Demo(this);
+    world.renderMode = World::RENDER_PHYSICS;
 }
 
 

@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2004-07-05
+  @edited  2005-08-05
 */
 
 #include "G3D/Box.h"
@@ -26,6 +26,10 @@ namespace G3D {
 Box::Box() {
 }
 
+
+Box::Box(const AABox& b) {
+    init(b.low(), b.high());
+}
 
 Box::Box(class BinaryInput& b) {
 	deserialize(b);	
@@ -73,6 +77,14 @@ void Box::deserialize(class BinaryInput& b) {
 
 
 Box::Box(
+    const Vector3& min,
+    const Vector3& max) {
+
+    init(min, max);
+
+}
+
+void Box::init(
     const Vector3& min,
     const Vector3& max) {
 

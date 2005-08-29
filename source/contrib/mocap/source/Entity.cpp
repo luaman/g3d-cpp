@@ -53,9 +53,16 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
 
     case Shape::BOX:
         {
-            const AABox& box = physics.g3dGeometry->box();
-            physics.odeGeometry = dCreateBox(space, box.extent().x, box.extent().y, box.extent().z);
-            debugAssert(box.center().fuzzyEq(Vector3::zero()));
+            const Box& box = physics.g3dGeometry->box();
+
+            CoordinateFrame customOrient;
+            box.getLocalFrame(customOrient);
+
+            dGeomID geom = dCreateBox(ODE_NO_SPACE, box.extent(0), box.extent(1), box.extent(2));
+            dGeomSetPositionAndRotation(geom, customOrient);
+            physics.odeGeometry = dCreateGeomTransform(space);
+            dGeomTransformSetInfo(physics.odeGeometry, 1);
+            dGeomTransformSetGeom(physics.odeGeometry, geom);
 
             if (physics.canMove) {
                 // Create the body
@@ -107,23 +114,36 @@ void Entity::createODEGeometry(dWorldID world, dSpaceID space) {
     case Shape::CAPSULE:
         {
             const Capsule& capsule = physics.g3dGeometry->capsule();
-            debugAssert(capsule.getPoint1().x == 0);
-            debugAssert(capsule.getPoint1().z == 0);
-            debugAssert(capsule.getPoint2().x == 0);
-            debugAssert(capsule.getPoint2().z == 0);
-            debugAssert(fuzzyEq(capsule.getPoint1().y, -capsule.getPoint2().y));
 
             float r = capsule.getRadius();
-            float h = abs(capsule.getPoint2().y - capsule.getPoint1().y);
+            float h = (capsule.getPoint2() - capsule.getPoint1()).length();
 
             dGeomID geom = dCreateCCylinder(ODE_NO_SPACE, r, h);
 
             // Standard ODE -> G3D coordinate system switch
-            static CoordinateFrame orient(Matrix3::fromAxisAngle(Vector3::unitX(), toRadians(90)), Vector3::zero());
+            const static CoordinateFrame standardOrient(Matrix3::fromAxisAngle(Vector3::unitX(), toRadians(-90)), Vector3::zero());
 
-            // TODO: we could allow arbitrary transformation here to match any capsule
-            // Orient to match the G3D coordinate system
-            dGeomSetPositionAndRotation(geom, orient);
+            CoordinateFrame customOrient;
+            
+            {
+                Vector3 Y = (capsule.getPoint2() - capsule.getPoint1()).direction();
+                Vector3 X = Vector3::unitX();
+
+                if (abs(Y.dot(X)) > 0.98) {
+                    X = -Vector3::unitZ();
+                }
+
+                X = X - Y.dot(X) * Y;
+                Vector3 Z = X.cross(Y);
+                customOrient.rotation.setColumn(0, X);
+                customOrient.rotation.setColumn(1, Y);
+                customOrient.rotation.setColumn(2, Z);
+            }
+
+            // Translate center of mass
+            customOrient.translation = (capsule.getPoint1() + capsule.getPoint2()) / 2;
+
+            dGeomSetPositionAndRotation(geom, customOrient * standardOrient);
 
             // We always create a transform geom to wrap the underlying
             // geom.  This allows arbitrary orientation relative to body 

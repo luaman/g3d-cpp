@@ -113,14 +113,14 @@ void Draw::axes(
 
         renderDevice->beginPrimitive(RenderDevice::LINES);
             // X
-            renderDevice->setColor(xColor);
+            renderDevice->setColor(xColor * 0.8);
             renderDevice->sendVertex(Vector2(-xx,  yy) * xS + x2D);
             renderDevice->sendVertex(Vector2( xx, -yy) * xS + x2D);
             renderDevice->sendVertex(Vector2( xx,  yy) * xS + x2D);
             renderDevice->sendVertex(Vector2(-xx, -yy) * xS + x2D);
 
             // Y
-            renderDevice->setColor(yColor);
+            renderDevice->setColor(yColor * 0.8);
             renderDevice->sendVertex(Vector2(-xx,  yy) * yS + y2D);
             renderDevice->sendVertex(Vector2(  0,  0)  * yS + y2D);
             renderDevice->sendVertex(Vector2(  0,  0)  * yS + y2D);
@@ -131,7 +131,7 @@ void Draw::axes(
 
         renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
             // Z
-            renderDevice->setColor(zColor);    
+            renderDevice->setColor(zColor * 0.8);    
             renderDevice->sendVertex(Vector2( xx,  yy) * zS + z2D);
             renderDevice->sendVertex(Vector2(-xx,  yy) * zS + z2D);
             renderDevice->sendVertex(Vector2( xx, -yy) * zS + z2D);

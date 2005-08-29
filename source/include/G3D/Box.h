@@ -64,6 +64,10 @@ private:
     double  _area;
     double  _volume;
 
+    void init(
+        const Vector3& min,
+        const Vector3& max);
+
 public:
 
     /**
@@ -79,6 +83,8 @@ public:
         const Vector3&      max);
 
 	Box(class BinaryInput& b);
+
+    Box(const class AABox& b);
 
 	void serialize(class BinaryOutput& b) const;
 	void deserialize(class BinaryInput& b);

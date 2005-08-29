@@ -26,15 +26,15 @@ public:
    
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black()) = 0;
 
-    virtual AABox& box() { 
+    virtual Box& box() { 
         debugAssertM(false, "Not a box");
-        static AABox b;
+        static Box b;
         return b;
     }
 
-    virtual const AABox& box() const { 
+    virtual const Box& box() const { 
         debugAssertM(false, "Not a box");
-        static AABox b;
+        static Box b;
         return b;
     }
 
@@ -104,11 +104,11 @@ public:
 
 class BoxShape : public Shape {
     
-    G3D::AABox          geometry;
+    G3D::Box          geometry;
 
 public:
 
-    inline BoxShape(const G3D::AABox& b) : geometry(b) {}
+    inline BoxShape(const G3D::Box& b) : geometry(b) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -116,15 +116,11 @@ public:
         return BOX;
     }
 
-    virtual class BoxShape* asBox() { 
-        return this;
-    }
-
-    virtual AABox& box() { 
+    virtual Box& box() { 
         return geometry;
     }
 
-    virtual const AABox& box() const { 
+    virtual const Box& box() const { 
         return geometry;
     }
 };
@@ -144,10 +140,6 @@ public:
         return RAY;
     }
 
-    virtual class RayShape* asRay() { 
-        return this;
-    }
-    
     virtual Ray& ray() { 
         return geometry;
     }
@@ -170,10 +162,6 @@ public:
 
     virtual Type type() {
         return CYLINDER;
-    }
-
-    virtual class CylinderShape* asCylinder() { 
-        return this;
     }
 
     virtual Cylinder& cylinder() { 
@@ -200,10 +188,6 @@ public:
         return SPHERE;
     }
 
-    virtual class SphereShape* asSphere() { 
-        return this;
-    }
-
     virtual Sphere& sphere() { 
         return geometry;
     }
@@ -225,10 +209,6 @@ public:
 
     virtual Type type() {
         return CAPSULE;
-    }
-
-    virtual class CapsuleShape* asCapsule() { 
-        return this;
     }
 
     virtual Capsule& capsule() { 
@@ -253,10 +233,6 @@ public:
 
     virtual Type type() {
         return PLANE;
-    }
-
-    virtual class PlaneShape* asPlane() { 
-        return this;
     }
 
     virtual Plane& plane() { 
