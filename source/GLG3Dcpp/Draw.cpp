@@ -438,21 +438,17 @@ void Draw::cylinder(
     const Color4&        solidColor,
     const Color4&        wireColor) {
 
-    CoordinateFrame cframe(cylinder.getPoint1());
+    // TODO: use getReferenceFrame
+    CoordinateFrame cframe;
+    
+    cylinder.getReferenceFrame(cframe);
 
-    Vector3 Y = (cylinder.getPoint2() - cylinder.getPoint1()).direction();
-    Vector3 X = (abs(Y.dot(Vector3::unitX())) > 0.9) ? Vector3::unitY() : Vector3::unitX();
-    Vector3 Z = X.cross(Y).direction();
-    X = Y.cross(Z);        
-    cframe.rotation.setColumn(0, X);
-    cframe.rotation.setColumn(1, Y);
-    cframe.rotation.setColumn(2, Z);
-
-    double radius = cylinder.getRadius();
-    double height = (cylinder.getPoint2() - cylinder.getPoint1()).length();
+    double radius = cylinder.radius();
+    double height = cylinder.height();
 
     // Always render upright in object space
-    Vector3 top(0, height, 0);
+    Vector3 bot(0, -height / 2, 0);
+    Vector3 top(0, height / 2, 0);
 
     renderDevice->pushState();
 
@@ -492,7 +488,7 @@ void Draw::cylinder(
                         const double yaw0 = -y * G3D_PI * 2.0 / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
-                        renderDevice->sendVertex(v0 * radius);
+                        renderDevice->sendVertex(v0 * radius + bot);
                     }
                 renderDevice->endPrimitive();
 
@@ -503,7 +499,7 @@ void Draw::cylinder(
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
                         renderDevice->setNormal(v0);
-                        renderDevice->sendVertex(v0 * radius);
+                        renderDevice->sendVertex(v0 * radius + bot);
                         renderDevice->sendVertex(v0 * radius + top);
                     }
                 renderDevice->endPrimitive();
@@ -522,7 +518,7 @@ void Draw::cylinder(
             renderDevice->setLineWidth(2);
             renderDevice->beginPrimitive(RenderDevice::LINES);
                 for (int z = 0; z < 3; ++z) {
-                    Vector3 center(0, height * z / 2.0, 0);
+                    Vector3 center(0, 0.0, 0);
                     for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
                         const double yaw0 = y * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
                         const double yaw1 = (y + 1) * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
@@ -545,18 +541,18 @@ void Draw::cylinder(
     
                     // Side
                     renderDevice->setNormal(x);
-                    renderDevice->sendVertex(xr);
+                    renderDevice->sendVertex(xr + bot);
                     renderDevice->sendVertex(xr + top);
 
                     // Top
                     renderDevice->setNormal(Vector3::unitY());
                     renderDevice->sendVertex(top);
-                    renderDevice->sendVertex(xr+ top);
+                    renderDevice->sendVertex(xr + top);
 
                     // Bottom
                     renderDevice->setNormal(Vector3::unitY());
-                    renderDevice->sendVertex(Vector3::zero());
-                    renderDevice->sendVertex(xr);
+                    renderDevice->sendVertex(bot);
+                    renderDevice->sendVertex(xr + bot);
                 }
             renderDevice->endPrimitive();
         }

@@ -182,12 +182,17 @@ public:
             (point.z <= hi.z);
     }
 
+    /** @deprecated */
     inline double surfaceArea() const {
         Vector3 diag = hi - lo;
         return 2 * (diag.x * diag.y + diag.y * diag.z + diag.x * diag.z);
     }
 
-    inline double volume() const {
+    inline float area() const {
+        return surfaceArea();
+    }
+
+    inline float volume() const {
         Vector3 diag = hi - lo;
         return diag.x * diag.y * diag.z;
     }
@@ -196,6 +201,7 @@ public:
 
     Vector3 randomSurfacePoint() const;
 
+    /** @deprecated use Box constructor */
     class Box toBox() const;
 
     /** Returns true if there is any overlap */

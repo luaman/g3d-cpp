@@ -7,9 +7,9 @@
  
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   @created 2001-06-02
-  @edited  2004-07-05
+  @edited  2005-09-05
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
  */
 
@@ -196,14 +196,26 @@ public:
     bool contains(
         const Vector3&      point) const;
 
+    /** @deprecated */
     double surfaceArea() const;
 
-    double volume() const;
+    inline float area() const {
+        return surfaceArea();
+    }
+
+    float volume() const;
+
+    void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const;
 
     /**
+      @deprecated
      Uniformly distributed on the surface.
      */
-    Vector3 randomSurfacePoint() const;
+    inline Vector3 randomSurfacePoint() const {
+        Vector3 V;
+        getRandomSurfacePoint(V);
+        return V;
+    }
 
     /**
      Uniformly distributed on the interior (includes surface)

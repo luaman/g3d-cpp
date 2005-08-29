@@ -85,6 +85,7 @@
      <LI> G3D::Win32Window properly resizes viewport on window resize [Corey]
      <LI> G3D::BinaryFormat, G3D::byteSize, G3D::binaryFormatOf
      <LI> Removed dead ManualCameraControllerHelper code
+     <li> Added consistent area and volume methods to geometric primitives, deprecated old methods.
      <LI> Fast G3D::BinaryInput::read / G3D::BinaryOutput::write methods for arrays 
      <LI> Enabled cube mapping on Radeon mobility cards and added a workaround to the known problems with texcoords on those cards.
      <LI> Can now create G3D::Win32Window with existing HWND and HDC [Corey]

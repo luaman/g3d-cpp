@@ -113,7 +113,7 @@ void Box::init(
 }
 
 
-double Box::volume() const {
+float Box::volume() const {
     return _volume;
 }
 
@@ -329,7 +329,8 @@ bool Box::contains(
 
 #undef setMany
 
-Vector3 Box::randomSurfacePoint() const {
+
+void Box::getRandomSurfacePoint(Vector3& P, Vector3& N) const {
     double aXY = _extent.x * _extent.y;
     double aYZ = _extent.y * _extent.z;
     double aZX = _extent.z * _extent.x;
@@ -342,20 +343,20 @@ Vector3 Box::randomSurfacePoint() const {
     // The probability of choosing a given face is proportional to
     // its area.
     if (r < aXY) {
-        return 
-            _axis[0] * random(-0.5, 0.5) * _extent.x +
+        P = _axis[0] * random(-0.5, 0.5) * _extent.x +
             _axis[1] * random(-0.5, 0.5) * _extent.y +
             _center + _axis[2] * d * _extent.z * 0.5;
+        N = _axis[2] * d;
     } else if (r < aYZ) {
-        return 
-            _axis[1] * random(-0.5, 0.5) * _extent.y +
+        P = _axis[1] * random(-0.5, 0.5) * _extent.y +
             _axis[2] * random(-0.5, 0.5) * _extent.z +
             _center + _axis[0] * d * _extent.x * 0.5;
+        N = _axis[0] * d;
     } else {
-        return 
-            _axis[2] * random(-0.5, 0.5) * _extent.z +
+        P = _axis[2] * random(-0.5, 0.5) * _extent.z +
             _axis[0] * random(-0.5, 0.5) * _extent.x +
             _center + _axis[1] * d * _extent.y * 0.5;
+        N = _axis[1] * d;
     }
 }
 

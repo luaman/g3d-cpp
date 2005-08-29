@@ -98,6 +98,22 @@ public:
         return p;
     }
 
+
+    /** Surface area of the outside of this object. */
+    virtual float area() const = 0;
+
+    /** Volume of the interior of this object. */
+    virtual float volume() const = 0;
+
+    /** A point selected uniformly at random with respect to the surface area of this object.
+        Not available on the Plane or Ray, which have infinite extent.
+        The normal has unit length and points out of the surface. */
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const = 0;
+
+    /** A point selected uniformly at random with respect to the volume of this object.
+        Not available on objects with infinite extent.*/
+    virtual Vector3 randomInteriorPoint() const = 0;
+
     virtual ~Shape() {}
 };
 
@@ -123,6 +139,22 @@ public:
     virtual const Box& box() const { 
         return geometry;
     }
+
+    virtual float area() const {
+        return geometry.area();
+    }
+
+    virtual float volume() const {
+        return geometry.volume();
+    }
+
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const {
+        geometry.getRandomSurfacePoint(P, N);
+    }
+
+    virtual Vector3 randomInteriorPoint() const {
+        return geometry.randomInteriorPoint();
+    }
 };
 
 
@@ -146,6 +178,23 @@ public:
 
     virtual const Ray& ray() const { 
         return geometry;
+    }
+
+    virtual float area() const {
+        return 0.0f;
+    }
+
+    virtual float volume() const {
+        return 0.0f;
+    }
+
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const {
+        P = Vector3::nan();
+        N = Vector3::nan();
+    }
+
+    virtual Vector3 randomInteriorPoint() const {
+        return Vector3::nan();
     }
 };
 
@@ -171,6 +220,22 @@ public:
     virtual const Cylinder& cylinder() const {
         return geometry;
     }
+
+    virtual float area() const {
+        return geometry.area();
+    }
+
+    virtual float volume() const {
+        return geometry.volume();
+    }
+
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const {
+        geometry.getRandomSurfacePoint(P, N);
+    }
+
+    virtual Vector3 randomInteriorPoint() const {
+        return geometry.randomInteriorPoint();
+    }
 };
 
 
@@ -195,6 +260,15 @@ public:
     virtual const Sphere& sphere() const { 
         return geometry;
     }
+
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const {
+        P = geometry.randomSurfacePoint();
+        N = (P - geometry.center).direction();
+    }
+
+    virtual Vector3 randomInteriorPoint() const {
+        return geometry.randomInteriorPoint();
+    }
 };
 
 
@@ -217,6 +291,22 @@ public:
 
     virtual const Capsule& capsule() const { 
         return geometry;
+    }
+
+    virtual float area() const {
+        return geometry.area();
+    }
+
+    virtual float volume() const {
+        return geometry.volume();
+    }
+
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const {
+        geometry.getRandomSurfacePoint(P, N);
+    }
+
+    virtual Vector3 randomInteriorPoint() const {
+        return geometry.randomInteriorPoint();
     }
 };
 
@@ -241,6 +331,23 @@ public:
 
     virtual const Plane& plane() const { 
         return geometry;
+    }
+
+    virtual float area() const {
+        return inf();
+    }
+
+    virtual float volume() const {
+        return 0.0;
+    }
+
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const {
+        P = Vector3::nan();
+        N = geometry.normal();
+    }
+
+    virtual Vector3 randomInteriorPoint() const {
+        return Vector3::nan();
     }
 };
 

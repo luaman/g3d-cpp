@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
   
  @created 2003-02-07
- @edited  2003-02-07
+ @edited  2005-08-20
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
  */
 
@@ -29,6 +29,7 @@ private:
 
 public:
 
+    /** @deprecated To be replaced with a radius accessor.*/
 	double			radius;
 
     /** Uninitialized */
@@ -45,17 +46,46 @@ public:
 
 	Vector3 getPoint2() const;
 
+    /** Distance between the sphere centers.  The total extent of the cylinder is 
+        2r + h. */
+    inline float height() const {
+        return (p1 - p2).length();
+    }
+
+    inline Vector3 center() const {
+        return (p1 + p2) / 2.0;
+    }
+
+    /** Get a reference frame in which the center of mass is the origin and Y is the axis of the capsule.*/
+    void getReferenceFrame(class CoordinateFrame& cframe) const;
+
     /**
      Returns true if the point is inside the capsule or on its surface.
      */
     bool contains(const Vector3& p) const;
 
+    /** @deprecated */
 	double getRadius() const;
 
+    /** @deprecated Use volume() */
 	double getVolume() const;
 
+    inline float volume() const {
+        return getVolume();
+    }
+
+    /** @deprecated */
 	double getSurfaceArea() const;
 
+    inline float area() const {
+        return getSurfaceArea();
+    }
+
+    /** Random world space point with outward facing normal. */
+    void getRandomSurfacePoint(Vector3& P, Vector3& N) const;
+
+    /** Point selected uniformly at random over the volume. */
+    Vector3 randomInteriorPoint() const;
 };
 
 } // namespace
