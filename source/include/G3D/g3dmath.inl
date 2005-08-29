@@ -3,11 +3,8 @@
  
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
- @cite Portions based on Dave Eberly's Magic Software Library
-  at http://www.magic-software.com
- 
  @created 2001-06-02
- @edited  2004-05-14
+ @edited  2005-08-14
  */
 
 #include <stdlib.h>
@@ -38,6 +35,7 @@ inline int iCeil (double fValue) {
 //----------------------------------------------------------------------------
 
 inline int iClamp(int val, int low, int hi) {
+    debugAssert(low <= hi);
 	if (val <= low) {
 		return low;
 	} else if (val >= hi) {
@@ -50,6 +48,7 @@ inline int iClamp(int val, int low, int hi) {
 //----------------------------------------------------------------------------
 
 inline double clamp(double val, double low, double hi) {
+    debugAssert(low <= hi);
 	if (val <= low) {
 		return low;
 	} else if (val >= hi) {
@@ -59,6 +58,16 @@ inline double clamp(double val, double low, double hi) {
 	}
 }
 
+inline float clamp(float val, float low, float hi) {
+    debugAssert(low <= hi);
+	if (val <= low) {
+		return low;
+	} else if (val >= hi) {
+		return hi;
+	} else {
+		return val;
+	}
+}
 //----------------------------------------------------------------------------
 
 inline int iWrap(int val, int hi) {

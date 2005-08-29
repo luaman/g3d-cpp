@@ -278,7 +278,7 @@ public:
             G3D::clamp(z, low.z, high.z));
     }
 
-    inline Vector3 clamp(double low, double high) const {
+    inline Vector3 clamp(float low, float high) const {
         return Vector3(
             G3D::clamp(x, low, high),
             G3D::clamp(y, low, high),

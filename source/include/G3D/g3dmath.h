@@ -136,11 +136,16 @@ int iCeil(double fValue);
  */
 int iClamp(int val, int low, int hi);
 double clamp(double val, double low, double hi);
+float clamp(float val, float low, float hi);
 
 /**
  Returns a + (b - a) * f;
  */
 inline double lerp(double a, double b, double f) {
+    return a + (b - a) * f;
+}
+
+inline float lerp(float a, float b, float f) {
     return a + (b - a) * f;
 }
 

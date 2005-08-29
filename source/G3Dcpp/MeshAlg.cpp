@@ -482,7 +482,7 @@ void MeshAlg::computeTangentVectors(
 
     // t0 >= t1 >= t2
 
-    double amount;
+    float amount;
 
     // Compute the direction of constant y.
     if (fuzzyEq(t[2].y, t[0].y)) {

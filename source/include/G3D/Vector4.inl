@@ -125,7 +125,7 @@ inline Vector4& Vector4::operator-= (const Vector4& rkVector) {
 
 //----------------------------------------------------------------------------
 
-inline Vector4 Vector4::lerp(const Vector4& v, double alpha) const {
+inline Vector4 Vector4::lerp(const Vector4& v, float alpha) const {
     return (*this) + (v - *this) * alpha; 
 }
 

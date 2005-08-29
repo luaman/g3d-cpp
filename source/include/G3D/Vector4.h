@@ -140,7 +140,7 @@ public:
             G3D::clamp(w, low.w, high.w));
     }
 
-    inline Vector4 clamp(double low, double high) const {
+    inline Vector4 clamp(float low, float high) const {
         return Vector4(
             G3D::clamp(x, low, high),
             G3D::clamp(y, low, high),
@@ -158,7 +158,7 @@ public:
     /**
      Linear interpolation
      */
-    Vector4 lerp(const Vector4& v, double alpha) const;
+    Vector4 lerp(const Vector4& v, float alpha) const;
 
     // 2-char swizzles
 
