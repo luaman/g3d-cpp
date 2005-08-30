@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-08-25
+  @edited  2005-08-30
  */
 
 #include "G3D/platform.h"
@@ -42,6 +42,7 @@
     #include <unistd.h>
     #include <sys/ioctl.h>
     #include <sys/time.h>
+    #include <pthread.h>
 
 #elif defined(G3D_OSX)
 
@@ -53,6 +54,7 @@
     #include <termios.h>
     #include <unistd.h>
     #include <sys/time.h>
+    #include <pthread.h>
 
     #include <sstream>
     #include <CoreServices/CoreServices.h>
@@ -126,10 +128,9 @@ std::string demoFindData(bool errorIfNotFound) {
 static bool                                     _rdtsc              = false;
 static bool                                     _mmx                = false;
 static bool                                     _sse                = false;
-static bool                                     _sse2                   = false;
+static bool                                     _sse2               = false;
 static bool                                     _3dnow              = false;
 static std::string                              _cpuVendor          = "Unknown";
-//static bool                                   initialized         = false;
 bool System::initialized = false;
 static bool                                     _cpuID              = false;
 static G3DEndian                                _machineEndian      = G3D_LITTLE_ENDIAN;
@@ -144,7 +145,7 @@ static LARGE_INTEGER                            _counterFrequency;
 static struct timeval                           _start;
 #endif
 
-static std::string                              _version = "Unknown";
+static std::string                              _version            = "Unknown";
 
 #ifdef G3D_OSX
     long System::m_OSXCPUSpeed;
@@ -992,16 +993,16 @@ RealTime System::getLocalTime() {
 class BufferPool {
 private:
 
-    /** Only store buffers up to these sizes (in bytes) in each pool-> 
+    /** Only store buffers up to these sizes (in bytes) in each pool->
         Different pools have different management strategies.
 
-        256k preallocated for tiny buffers; they are used with tremendous frequency.
-        Other buffers are allocated as demanded
+        A large block is preallocated for tiny buffers; they are used with
+        tremendous frequency.  Other buffers are allocated as demanded.
       */
     enum {tinyBufferSize = 64, smallBufferSize = 1000, medBufferSize = 5000};
 
     /** Most buffers we're allowed to store. */
-    enum {maxTinyBuffers = 4000, maxSmallBuffers = 100, maxMedBuffers = 30};
+    enum {maxTinyBuffers = 5000, maxSmallBuffers = 100, maxMedBuffers = 30};
 
     class MemBlock {
     public:
@@ -1018,31 +1019,36 @@ private:
     MemBlock medPool[maxMedBuffers];
     int medPoolSize;
 
-    /** The tiny pool is a single block of storage into which all tiny objects are allocated.
-        This provides better locality for small objects and avoids the search time, since
-        all tiny blocks are exactly the same size. */
+    /** The tiny pool is a single block of storage into which all tiny
+        objects are allocated.  This provides better locality for
+        small objects and avoids the search time, since all tiny
+        blocks are exactly the same size. */
     void* tinyPool[maxTinyBuffers];
     int tinyPoolSize;
 
     /** Pointer to the data in the tiny pool */
     void* tinyHeap;
 
-
-
 #   ifdef G3D_WIN32
     CRITICAL_SECTION    mutex;
+#   else
+    pthread_mutex_t     mutex;
 #   endif
 
     /** Provide synchronization between threads */
     void lock() {
 #       ifdef G3D_WIN32
-        EnterCriticalSection(&mutex);
+            EnterCriticalSection(&mutex);
+#       else
+            pthread_mutex_lock(&mutex);
 #       endif
     }
 
     void unlock() {
 #       ifdef G3D_WIN32
             LeaveCriticalSection(&mutex);
+#       else
+            pthread_mutex_unlock(&mutex);
 #       endif
     }
 
@@ -1063,7 +1069,8 @@ private:
 
     /** Returns true if this is a pointer into the tiny heap. */
     bool inTinyHeap(void* ptr) {
-        return (ptr >= tinyHeap) && (ptr < (uint8*)tinyHeap + maxTinyBuffers * tinyBufferSize);
+        return (ptr >= tinyHeap) && 
+               (ptr < (uint8*)tinyHeap + maxTinyBuffers * tinyBufferSize);
     }
 
     void tinyFree(void* ptr) {
@@ -1127,7 +1134,8 @@ public:
         medPoolSize = 0;
 
 
-        // Initialize the tiny heap as a bunch of pointers into one pre-allocated buffer.
+        // Initialize the tiny heap as a bunch of pointers into one
+        // pre-allocated buffer.
         tinyHeap = ::malloc(maxTinyBuffers * tinyBufferSize);
         for (int i = 0; i < maxTinyBuffers; ++i) {
             tinyPool[i] = (uint8*)tinyHeap + (tinyBufferSize * i);
@@ -1135,7 +1143,9 @@ public:
         tinyPoolSize = maxTinyBuffers;
 
         #   ifdef G3D_WIN32
-        InitializeCriticalSection(&mutex);
+            InitializeCriticalSection(&mutex);
+        #   else
+            pthread_mutex_init(&mutex, NULL);
         #   endif
     }
 
@@ -1162,7 +1172,8 @@ public:
 
         } 
         
-        // Failure to allocate a tiny buffer is allowed to flow through to a small buffer
+        // Failure to allocate a tiny buffer is allowed to flow
+        // through to a small buffer
         if (bytes <= smallBufferSize) {
             
             void* ptr = malloc(smallPool, smallPoolSize, bytes);
@@ -1174,9 +1185,9 @@ public:
             }
 
         } else  if (bytes <= medBufferSize) {
-            // Note that a small allocation failure does *not* fall through into
-            // a medium allocation because that would waste the medium buffer's 
-            // resources.
+            // Note that a small allocation failure does *not* fall
+            // through into a medium allocation because that would
+            // waste the medium buffer's resources.
 
             void* ptr = malloc(medPool, medPoolSize, bytes);
 
@@ -1188,8 +1199,8 @@ public:
         }
         unlock();
 
-        // Allocate 4 extra bytes for our size header (unfortunate, since malloc already 
-        // added its own header).
+        // Allocate 4 extra bytes for our size header (unfortunate,
+        // since malloc already added its own header).
         void* ptr = ::malloc(bytes + 4);
 
         *(uint32*)ptr = bytes;
@@ -1252,11 +1263,12 @@ std::string System::mallocPerformance() {
 
         int total = bufferpool->totalMallocs;
 
-        return format("malloc perf:  %5.1f%% tiny   %5.1f%% small   %5.1f%% med   %5.1f%% heap", 
-            100.0 * bufferpool->mallocsFromTinyPool  / total,
-            100.0 * bufferpool->mallocsFromSmallPool / total,
-            100.0 * bufferpool->mallocsFromMedPool   / total,
-            100.0 * (1.0 - (double)pooled / total));
+        return format("malloc perf:  %5.1f%% tiny   %5.1f%% small   "
+                      "%5.1f%% med   %5.1f%% heap", 
+                      100.0 * bufferpool->mallocsFromTinyPool  / total,
+                      100.0 * bufferpool->mallocsFromSmallPool / total,
+                      100.0 * bufferpool->mallocsFromMedPool   / total,
+                      100.0 * (1.0 - (double)pooled / total));
     } else {
         return "No System::malloc calls made yet.";
     }
@@ -1272,8 +1284,8 @@ void System::resetMallocPerformanceCounters() {
 
 
 void* System::malloc(size_t bytes) {
-    // Putting the test here ensures that the system is always initialized,
-    // even when globals are being allocated.
+    // Putting the test here ensures that the system is always
+    // initialized, even when globals are being allocated.
     static bool initialized = false;
     if (! initialized) {
         bufferpool = new BufferPool();
@@ -1308,8 +1320,9 @@ void* System::alignedMalloc(size_t bytes, size_t alignment) {
 
     debugAssert(isValidHeapPointer((void*)truePtr));
     #ifdef G3D_WIN32
-    // The blocks we return will not be valid Win32 debug heap pointers because they are offset
-    //        debugAssert( _CrtIsValidPointer((void*)truePtr, totalBytes, TRUE) );
+    // The blocks we return will not be valid Win32 debug heap
+    // pointers because they are offset 
+    //  debugAssert(_CrtIsValidPointer((void*)truePtr, totalBytes, TRUE) );
     #endif
 
     // The return pointer will be the next aligned location (we must at least
