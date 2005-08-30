@@ -1,7 +1,15 @@
-#ifndef AX2_SHAPE_H
-#define AX2_SHAPE_H
+/**
+  @file GLG3D/Shape.h
 
-#include <G3DAll.h>
+  @maintainer Morgan McGuire, matrix@graphics3d.com
+
+  @created 2005-08-10
+  @edited  2005-08-28
+*/
+#ifndef G3D_SHAPE_H
+#define G3D_SHAPE_H
+
+#include <graphics3D.h>
 
 namespace G3D {
 
@@ -14,7 +22,7 @@ namespace G3D {
    The Shape classes provide a parallel set of classes to the G3D primitives
    that support more functionality.
   */
-class Shape {
+class Shape : public ReferenceCountedObject {
 public:
 
     /** Mesh is reserved */
@@ -24,7 +32,11 @@ public:
 
     virtual Type type() = 0;
    
-    virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black()) = 0;
+    virtual void render(
+        class RenderDevice* rd, 
+        const CoordinateFrame& cframe, 
+        Color4 solidColor = Color4(.5,.5,0,.5), 
+        Color4 wireColor = Color3::black()) = 0;
 
     virtual Box& box() { 
         debugAssertM(false, "Not a box");

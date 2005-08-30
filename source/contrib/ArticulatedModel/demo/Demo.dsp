@@ -108,10 +108,6 @@ SOURCE=.\loadScene.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\Shape.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\SuperShader.cpp
 # End Source File
 # Begin Source File
@@ -137,10 +133,6 @@ SOURCE=..\ArticulatedModel.h
 # Begin Source File
 
 SOURCE=..\Load3DS.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Shape.h
 # End Source File
 # Begin Source File
 

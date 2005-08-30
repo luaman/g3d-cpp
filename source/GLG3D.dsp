@@ -183,6 +183,10 @@ SOURCE=.\GLG3Dcpp\shadowVolume.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\Shape.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\Sky.cpp
 # End Source File
 # Begin Source File

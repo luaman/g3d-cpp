@@ -12,6 +12,7 @@
     G3D::IFSModel,
     G3D::Lighting,
     G3D::LightingParameters,
+    G3D::Shape,
     G3D::MD2Model,
     G3D::PosedModel,
     G3D::PosedModelWrapper

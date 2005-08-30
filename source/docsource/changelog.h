@@ -36,6 +36,7 @@
    Changes in 6.07:
    <UL>
     <LI> Vector3(Vector2, float) constructor
+    <LI> G3D::Shape
     <LI> G3D::Cylinder
     <LI> G3D::System::malloc for fast allocation of small objects
     <LI> G3D::Draw::plane
