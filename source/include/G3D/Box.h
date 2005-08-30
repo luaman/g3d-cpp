@@ -205,7 +205,7 @@ public:
 
     float volume() const;
 
-    void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3()) const;
+    void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const;
 
     /**
       @deprecated

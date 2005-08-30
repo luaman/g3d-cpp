@@ -291,7 +291,7 @@ def test(args):
                  "Test - Win32 Debug"])
     elif (os.name == 'posix'):
         os.chdir("source/test")
-        run('../bin/icompile', [])
+        run('../bin/icompile', ['--run'])
         os.chdir("../../")
     else:
         print "Don't know how to build tests on the " + os.name + " platform."

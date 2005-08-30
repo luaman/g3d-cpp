@@ -8,8 +8,8 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2004-07-23
-  Copyright 2000-2004, Morgan McGuire.
+  @edited  2005-08-23
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
  */
 
@@ -479,6 +479,9 @@ public:
     Vector4 xzzz() const;
     Vector4 yzzz() const;
     Vector4 zzzz() const;
+
+    /** A value that can be passed to ignore a parameter.  Never look at the result of dummy. */
+    static Vector3 dummy;
 };
 
 

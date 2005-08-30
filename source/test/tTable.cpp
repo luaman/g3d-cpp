@@ -1,10 +1,9 @@
 #include "../include/G3DAll.h"
 #include <map>
 
-#define HAS_HASH_MAP
 
-#if defined(G3D_WIN32) && (_MSC_VER < 1300)
-#   undef HAS_HASH_MAP
+#if defined(G3D_WIN32) && (_MSC_VER >= 1300)
+#   define HAS_HASH_MAP
 #endif
 
 #ifdef HAS_HASH_MAP

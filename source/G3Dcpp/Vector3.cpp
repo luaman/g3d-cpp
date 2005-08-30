@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2005-08-02
+ @edited  2005-08-30
  */
 
 #include <limits>
@@ -25,6 +25,8 @@
 #include "G3D/Vector2.h"
  
 namespace G3D {
+
+Vector3 Vector3::dummy;
 
 // Deprecated.
 const Vector3 Vector3::ZERO(0, 0, 0);
