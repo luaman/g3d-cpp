@@ -194,6 +194,7 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
     _windowActive = hasFocus();
 }
 
+
 Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) {
     initWGL();
 
@@ -208,12 +209,14 @@ Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) {
     _windowActive = hasFocus();
 }
 
+
 Win32Window* Win32Window::create(const GWindowSettings& settings) {
 
     // Create Win32Window which uses DI8 joysticks but WM_ keyboard messages
     return new Win32Window(settings);    
     
 }
+
 
 Win32Window* Win32Window::create(const GWindowSettings& settings, HWND hwnd) {
 
@@ -228,6 +231,7 @@ Win32Window* Win32Window::create(const GWindowSettings& settings, HDC hdc) {
     return new Win32Window(settings, hdc);    
     
 }
+
 
 void Win32Window::init(HWND hwnd) {
 
@@ -906,34 +910,33 @@ static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
 
     ZeroMemory(&deviceMode, sizeof(DEVMODE));
 
+    int bppTries[3];
+    bppTries[0] = bpp;
+    bppTries[1] = 32;
+    bppTries[2] = 16;
+
     deviceMode.dmSize       = sizeof(DEVMODE);
 	deviceMode.dmPelsWidth  = width;
 	deviceMode.dmPelsHeight = height;
-	deviceMode.dmBitsPerPel = bpp;
 	deviceMode.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
     deviceMode.dmDisplayFrequency = refreshRate;
 
-    LONG result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
+    LONG result = -1;
+
+    for (int i = 0; (i < 3) && (result != DISP_CHANGE_SUCCESSFUL); ++i) {
+    	deviceMode.dmBitsPerPel = bppTries[i];
+        result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
+    }
 
     if (result != DISP_CHANGE_SUCCESSFUL) {
         // If it didn't work, try just changing the resolution and not the
         // refresh rate.
         deviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-        result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
-    }
-
-    if (result != DISP_CHANGE_SUCCESSFUL) {
-        // Often we fail because of bpp; try switching to 32-bit mode.
-        deviceMode.dmBitsPerPel = 32;
-        result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
-        if (result != DISP_CHANGE_SUCCESSFUL) {
-            // If it didn't work, try just changing the resolution and not the
-            // refresh rate.
-            deviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+        for (int i = 0; (i < 3) && (result != DISP_CHANGE_SUCCESSFUL); ++i) {
+    	    deviceMode.dmBitsPerPel = bppTries[i];
             result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
         }
     }
-
 
     return result == DISP_CHANGE_SUCCESSFUL;
 }

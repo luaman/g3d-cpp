@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-06-09
- @edited  2005-07-06
+ @edited  2005-09-01
  */
 
 #ifndef G3D_PLATFORM_H

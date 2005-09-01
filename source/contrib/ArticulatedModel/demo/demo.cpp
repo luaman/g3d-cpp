@@ -308,6 +308,7 @@ int main(int argc, char** argv) {
     settings.window.fsaaSamples = 1;
     settings.window.width = 800;
     settings.window.height = 600;
+    settings.window.fullScreen = true;
 	settings.useNetwork = false;
     App(settings).run();
     return 0;
