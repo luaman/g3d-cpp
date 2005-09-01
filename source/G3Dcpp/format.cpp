@@ -4,11 +4,13 @@
  @author Morgan McGuire, graphics3d.com
 
  @created 2000-09-09
- @edited  2004-01-03
+ @edited  2005-08-30
 */
 
 #include "G3D/format.h"
 #include "G3D/platform.h"
+#include "G3D/System.h"
+
 #ifdef G3D_WIN32
     #include <windows.h>
     #include <math.h>
@@ -61,16 +63,16 @@ std::string vformat(const char *fmt, va_list argPtr) {
 
         if (actualSize < maxSize) {
 
-            heapBuffer = (char*)malloc(maxSize + 1);
+            heapBuffer = (char*)System::malloc(maxSize + 1);
             vsnprintf(heapBuffer, maxSize, fmt, argPtr);
             heapBuffer[maxSize] = '\0';
         } else {
-            heapBuffer = (char*)malloc(actualSize);
+            heapBuffer = (char*)System::malloc(actualSize);
             vsprintf(heapBuffer, fmt, argPtr);            
         }
 
         std::string formattedString(heapBuffer);
-        free(heapBuffer);
+        System::free(heapBuffer);
         return formattedString;
     } else {
 
@@ -98,19 +100,19 @@ std::string vformat(const char *fmt, va_list argPtr) {
 
         int heapSize = 512;
         double powSize = 1.0;
-        char* heapBuffer = (char*)malloc(heapSize);
+        char* heapBuffer = (char*)System::malloc(heapSize);
         
         while ((vsnprintf(heapBuffer, heapSize, fmt, argPtr) == -1) &&
             (heapSize  < maxSize)) {
 
             heapSize *= ::pow((double)2.0, powSize++);
-            heapBuffer = (char*)realloc(heapBuffer, heapSize);
+            heapBuffer = (char*)System::realloc(heapBuffer, heapSize);
         }
 
         heapBuffer[heapSize-1] = '\0';
 
         std::string heapString(heapBuffer);
-        free(heapBuffer);
+        System::free(heapBuffer);
 
         return heapString;
     } else {
@@ -135,7 +137,7 @@ std::string vformat(const char* fmt, va_list argPtr) {
 
     if (numChars > bufSize) {
       // We didn't allocate a big enough string.
-      char* heapBuffer = (char*) malloc(numChars * sizeof(char));
+      char* heapBuffer = (char*)System::malloc(numChars * sizeof(char));
 
       assert(heapBuffer);
       int numChars2 = vsnprintf(heapBuffer, numChars, fmt, argPtr);
@@ -143,7 +145,7 @@ std::string vformat(const char* fmt, va_list argPtr) {
 
       std::string result(heapBuffer);
       
-      free(heapBuffer);
+      System::free(heapBuffer);
 
       return result;
 

@@ -138,7 +138,7 @@ void BinaryInput::loadIntoMemory(int startPosition, int minLength) {
         // This happens if there was little memory available during the initial constructor
         // read but more memory has since been freed.
         bufferLength = minLength;
-        buffer = (uint8*)realloc(buffer, bufferLength);
+        buffer = (uint8*)System::realloc(buffer, bufferLength);
         if (buffer == NULL) {
             throw "Tried to read a larger memory chunk than could fit in memory. (2)";
         }
@@ -209,7 +209,7 @@ BinaryInput::BinaryInput(
         // Read the decompressed size from the first 4 bytes
         length = G3D::readUInt32(data, swapBytes);
 
-      	buffer = (uint8*)malloc(length);
+        buffer = (uint8*)System::malloc(length);
 
         uint32 L = length;
         // Decompress with zlib
@@ -224,7 +224,7 @@ BinaryInput::BinaryInput(
         if (! copyMemory) {
             buffer = const_cast<uint8*>(data);
         } else {
-	        buffer = (uint8*)malloc(length);
+            buffer = (uint8*)System::malloc(length);
             memcpy(buffer, data, dataLen);
         }
     }
@@ -271,7 +271,7 @@ BinaryInput::BinaryInput(
         bufferLength = length;
     }
 
-    buffer = (uint8*)malloc(bufferLength);
+    buffer = (uint8*)System::malloc(bufferLength);
     if (buffer == NULL) {
         if (compressed) {
             throw "Not enough memory to load compressed file. (1)";
@@ -281,7 +281,7 @@ BinaryInput::BinaryInput(
         // Give up if we can't allocate even 1k.
         while ((buffer == NULL) && (bufferLength > 1024)) {
             bufferLength /= 2;
-            buffer = (uint8*)malloc(bufferLength);
+            buffer = (uint8*)System::malloc(bufferLength);
         }
     }
     debugAssert(buffer);
@@ -305,7 +305,7 @@ BinaryInput::BinaryInput(
         length = G3D::readUInt32(buffer, swapBytes);
 
         uint8* tempBuffer = buffer;
-        buffer = (uint8*)malloc(length);
+        buffer = (uint8*)System::malloc(length);
 
         debugAssert(buffer);
         debugAssert(isValidHeapPointer(tempBuffer));
@@ -318,7 +318,7 @@ BinaryInput::BinaryInput(
 
         debugAssert(result == Z_OK); (void)result;
 
-        free(tempBuffer);
+        System::free(tempBuffer);
     }
 }
 
@@ -326,7 +326,7 @@ BinaryInput::BinaryInput(
 BinaryInput::~BinaryInput() {
 
     if (freeBuffer) {
-        free(buffer);
+        System::free(buffer);
     }
     buffer = NULL;
 }
@@ -367,7 +367,7 @@ std::string BinaryInput::readString(int n) {
     prepareToRead(n);
     debugAssertM((pos + n) <= length, "Read past end of file");
     
-    char *s = (char*)malloc(n + 1);
+    char *s = (char*)System::malloc(n + 1);
     assert(s != NULL);
 
     memcpy(s, buffer + pos, n);
@@ -376,7 +376,7 @@ std::string BinaryInput::readString(int n) {
     s[n] = '\0';
 
     std::string out = s;
-    free(s);
+    System::free(s);
     s = NULL;
 
     pos += n;

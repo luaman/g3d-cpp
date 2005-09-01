@@ -38,7 +38,7 @@
     <LI> Vector3(Vector2, float) constructor
     <LI> G3D::Shape
     <LI> G3D::Cylinder
-    <LI> G3D::System::malloc for fast allocation of small objects
+    <LI> G3D::System::malloc, G3D::System::realloc, G3D::System::free for fast allocation of small objects
     <LI> G3D::Draw::plane
     <LI> G3D::Draw::cylinder
     <LI> G3D::gaussRandom

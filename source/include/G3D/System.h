@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-08-08
+  @edited  2005-08-31
  */
 
 #ifndef G3D_SYSTEM_H
@@ -114,6 +114,11 @@ public:
      Threadsafe on Win32.
      */
     static void* malloc(size_t bytes);
+
+    /**
+     Version of realloc that works with System::malloc.
+     */
+    static void* realloc(void* block, size_t bytes);
 
     /** Returns a string describing how well System::malloc is using its internal pooled storage.
         "heap" memory was slow to allocate; the other data sizes are comparatively fast.*/

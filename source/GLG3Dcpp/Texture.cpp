@@ -1162,7 +1162,7 @@ TextureRef Texture::alphaOnlyVersion() const {
 
     int numFaces = 1;
 
-    uint8** bytes = (uint8**)malloc(numFaces * sizeof(uint8*));
+    uint8** bytes = (uint8**)System::malloc(numFaces * sizeof(uint8*));
     const TextureFormat* bytesFormat = TextureFormat::A8;
 
     glStatePush();
@@ -1170,7 +1170,7 @@ TextureRef Texture::alphaOnlyVersion() const {
     for (int f = 0; f < numFaces; ++f) {
         GLenum target = dimensionToTarget(dimension);
         glBindTexture(target, textureID);
-        bytes[f] = (uint8*)malloc(width * height);
+        bytes[f] = (uint8*)System::malloc(width * height);
         glGetTexImage(target, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bytes[f]);
     }
 
@@ -1182,9 +1182,9 @@ TextureRef Texture::alphaOnlyVersion() const {
             dimension); 
 
     for (int f = 0; f < numFaces; ++f) {
-        free(bytes[f]);
+        System::free(bytes[f]);
     }
-    free(bytes);
+    System::free(bytes);
 
     return ret;
 }

@@ -114,7 +114,7 @@ void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
 
     if ((filename != "<memory>") || (newBufferLen < MAX_BINARYOUTPUT_BUFFER_SIZE)) {
         //debugPrintf("  realloc(%d)\n", newBufferLen); 
-        newBuffer = (uint8*)realloc(buffer, newBufferLen);
+        newBuffer = (uint8*)System::realloc(buffer, newBufferLen);
         if (newBuffer != NULL) {
             maxBufferLen = newBufferLen;
         }
@@ -238,7 +238,7 @@ void BinaryOutput::reset() {
 
 BinaryOutput::~BinaryOutput() {
     debugAssert((buffer == NULL) || isValidHeapPointer(buffer));
-    free(buffer);
+    System::free(buffer);
     buffer = NULL;
     bufferLen = 0;
     maxBufferLen = 0;
@@ -261,7 +261,7 @@ void BinaryOutput::compress() {
 
     // Zlib requires the output buffer to be this big
     int newSize = iCeil(bufferLen * 1.01) + 12;
-    uint8* temp = (uint8*)malloc(newSize);
+    uint8* temp = (uint8*)System::malloc(newSize);
     int result = compress2(temp, (unsigned long*)&newSize, buffer, bufferLen, 9); 
 
     debugAssert(result == Z_OK); (void)result;
@@ -282,13 +282,13 @@ void BinaryOutput::compress() {
     // Write the data
     if (newSize + 4 > maxBufferLen) {
         maxBufferLen = newSize + 4;
-        buffer = (uint8*)realloc(buffer, maxBufferLen);
+        buffer = (uint8*)System::realloc(buffer, maxBufferLen);
     }
     bufferLen = newSize + 4;
     System::memcpy(buffer + 4, temp, newSize);
     pos = bufferLen;
 
-    free(temp);
+    System::free(temp);
 }
 
 

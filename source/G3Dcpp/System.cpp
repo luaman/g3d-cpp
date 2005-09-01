@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-08-30
+  @edited  2005-08-31
  */
 
 #include "G3D/platform.h"
@@ -1156,6 +1156,44 @@ public:
 #       endif
     }
 
+    
+    void* realloc(void* ptr, size_t bytes) {
+        if (ptr == NULL) {
+            return malloc(bytes);
+        }
+
+        if (inTinyHeap(ptr)) {
+            if (bytes <= tinyBufferSize) {
+                // The old pointer actually had enough space
+                return ptr;
+            } else {
+                // Free the old pointer and malloc
+                
+                void* newPtr = malloc(bytes);
+                System::memcpy(newPtr, ptr, tinyBufferSize);
+                tinyFree(ptr);
+                return newPtr;
+
+            }
+        } else {
+            // In one of our heaps.
+
+            // See how big the block really was
+            size_t realSize = ((uint32*)ptr)[-1];
+            if (bytes <= realSize) {
+                // The old block was big enough.
+                return ptr;
+            }
+
+            // Need to reallocate
+            void* newPtr = malloc(bytes);
+            System::memcpy(newPtr, ptr, realSize);
+            free(ptr);
+            return newPtr;
+        }
+    }
+
+
     void* malloc(size_t bytes) {
         lock();
         ++totalMallocs;
@@ -1276,14 +1314,14 @@ std::string System::mallocPerformance() {
 
 
 void System::resetMallocPerformanceCounters() {
-    bufferpool->totalMallocs = 0;
-    bufferpool->mallocsFromMedPool = 0;
+    bufferpool->totalMallocs         = 0;
+    bufferpool->mallocsFromMedPool   = 0;
     bufferpool->mallocsFromSmallPool = 0;
-    bufferpool->mallocsFromTinyPool = 0;
+    bufferpool->mallocsFromTinyPool  = 0;
 }
 
 
-void* System::malloc(size_t bytes) {
+void initMem() {
     // Putting the test here ensures that the system is always
     // initialized, even when globals are being allocated.
     static bool initialized = false;
@@ -1291,8 +1329,18 @@ void* System::malloc(size_t bytes) {
         bufferpool = new BufferPool();
         initialized = true;
     }
+}
 
+
+void* System::malloc(size_t bytes) {
+    initMem();
     return bufferpool->malloc(bytes);
+}
+
+
+void* System::realloc(void* block, size_t bytes) {
+    initMem();
+    return bufferpool->realloc(block, bytes);
 }
 
 
