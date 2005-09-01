@@ -922,6 +922,19 @@ static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
         result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
     }
 
+    if (result != DISP_CHANGE_SUCCESSFUL) {
+        // Often we fail because of bpp; try switching to 32-bit mode.
+        deviceMode.dmBitsPerPel = 32;
+        result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
+        if (result != DISP_CHANGE_SUCCESSFUL) {
+            // If it didn't work, try just changing the resolution and not the
+            // refresh rate.
+            deviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+            result = ChangeDisplaySettings(&deviceMode, CDS_FULLSCREEN);
+        }
+    }
+
+
     return result == DISP_CHANGE_SUCCESSFUL;
 }
 

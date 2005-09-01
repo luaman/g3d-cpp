@@ -367,7 +367,7 @@ void Welder::weld() {
 
 
 int main(int argc, char** argv) {
-
+/*
     Array<Vector3> oldArray, newArray;
     Array<int> toNew, toOld;
     double weldRadius = 0.001;
@@ -379,18 +379,18 @@ int main(int argc, char** argv) {
 
     Welder welder(oldArray, newArray, toNew, toOld, weldRadius);
     welder.weld();
-
+*/
     
 
 //    GFont::convertRAWINItoPWF("data/smallfont", "data/font/smallfont.fnt"); 
 
     GAppSettings settings;
     settings.useNetwork = false;
-    settings.window.fullScreen = false;
-    settings.window.framed = true;
+    settings.window.fullScreen = true;
+    settings.window.framed = false;
     settings.window.width = 800;
     settings.window.height = 600;
-    settings.debugFontName = "console-small.fnt";
+  //  settings.debugFontName = "console-small.fnt";
     App(settings).run();
     return 0;
 }

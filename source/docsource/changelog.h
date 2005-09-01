@@ -93,7 +93,8 @@
      <LI> G3D::VertexAndPixelShader::ArgList::set(std::string, Array<T>)-- [ 1192401 ] Shader support arrays
      <LI> Fix: SDLWindow used std::string's instead of C strings in printf and format inside some exception handling code. [Peter]
      <LI> G3D::X11Window (same as SDLWindow in this release)
-     <LI> RFE: [ 1242466 ] 6.07: Inline Matrix3 methods
+     <LI> Fix: [ 1277854 ] Win32Window fails on 24-bit modes
+     <LI> RFE: [ 1242466 ] Inline Matrix3 methods
      <LI> Fix: [ 1226272 ] end caps of capsules in wrong position
      <LI> Fix: G3D::TextureFormat::LA8 now has 8-bits per channel
      <LI> Fix: [ 1124491 ] Remove GL_SAMPLER_2DRECT_ARB
