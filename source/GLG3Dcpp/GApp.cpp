@@ -176,9 +176,13 @@ GApp::~GApp() {
     debugFont = NULL;
     delete userInput;
     userInput = NULL;
+
     renderDevice->cleanup();
     delete renderDevice;
     renderDevice = NULL;
+
+    VARArea::cleanupAllVARAreas();
+
     delete debugLog;
     debugLog = NULL;
 }

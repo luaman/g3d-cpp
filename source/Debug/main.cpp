@@ -174,7 +174,7 @@ void App::main() {
 	debugController.setActive(true);
 
     // Load objects here
-    sky = Sky::create(NULL, dataDir + "sky/");
+    sky = NULL;//Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
 }
@@ -390,7 +390,8 @@ int main(int argc, char** argv) {
     settings.window.framed = false;
     settings.window.width = 800;
     settings.window.height = 600;
-  //  settings.debugFontName = "console-small.fnt";
+    settings.window.fsaaSamples = 4;
+
     App(settings).run();
     return 0;
 }

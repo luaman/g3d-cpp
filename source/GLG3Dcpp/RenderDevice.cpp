@@ -622,10 +622,9 @@ void RenderDevice::cleanup() {
 
     if (debugLog) {debugLog->println("Freeing all VAR memory");}
 
-    VARArea::cleanupAllVARAreas();
-
     if (deleteWindow) {
         if (debugLog) {debugLog->println("Deleting window.");}
+        VARArea::cleanupAllVARAreas();
         delete _window;
     }
 
