@@ -8,48 +8,8 @@
   @cite See also http://www.jelovic.com/articles/cpp_without_memory_errors_slides.htm
 
   @created 2001-10-23
-  @edited  2005-06-14
+  @edited  2005-09-01
 
-Example:
-
-  <PRE>
-
-class Foo : public G3D::ReferenceCountedObject {
-public:
-    int x;
-    ~Foo() {
-        printf("Deallocating 0x%x\n", this);
-    }
-};
-
-typedef G3D::ReferenceCountedPointer<Foo> FooRef;
-typedef G3D::WeakReferenceCountedPointer<Foo> WeakFooRef;
-
-int main(int argc, char *argv[]) {
-
-    WeakFooRef x;
-
-    {
-        FooRef a = new Foo();
-
-        // Reference count == 1
-
-        x = a;
-        // Weak references do not increase count
-
-        {
-            FooRef b = a;
-            // Reference count == 2
-        }
-
-        // Reference count == 1
-    }
-    // No more strong references; object automatically deleted.
-    // x is set to NULL automatically.
-
-    return 0;
-}
-</PRE>
 */
 
 #ifndef G3D_RGC_H
@@ -90,6 +50,59 @@ public:
 
  Multiple inheritance from a reference counted object is dangerous-- use 
  at your own risk.
+
+
+<B>Usage Example</B>
+
+  <PRE>
+
+class Foo : public G3D::ReferenceCountedObject {
+public:
+    int x;
+};
+
+class Bar : public Foo {};
+
+typedef G3D::ReferenceCountedPointer<Foo> FooRef;
+typedef G3D::WeakReferenceCountedPointer<Foo> WeakFooRef;
+typedef G3D::ReferenceCountedPointer<Bar> BarRef;
+
+
+int main(int argc, char *argv[]) {
+
+    WeakFooRef x;
+
+    {
+        FooRef a = new Foo();
+
+        // Reference count == 1
+
+        x = a;
+        // Weak references do not increase count
+
+        {
+            FooRef b = a;
+            // Reference count == 2
+        }
+
+        // Reference count == 1
+    }
+    // No more strong references; object automatically deleted.
+    // x is set to NULL automatically.
+
+    // Example of using dynamic cast on reference counted objects
+    BarRef b = new Bar();
+
+    // No cast needed to go down the heirarchy.
+    FooRef f = b;
+
+    // We can't cast the reference object because it is a class.
+    // Instead we must extract the pointer and cast that:
+    b = dynamic_cast<Bar*>(&*f);
+
+    return 0;
+}
+</PRE>
  */
 class ReferenceCountedObject {
 public:
@@ -109,8 +122,8 @@ public:
 protected:
 
     ReferenceCountedObject() : ReferenceCountedObject_refCount(0), ReferenceCountedObject_weakPointer(0) {
-//        debugAssertM(isValidHeapPointer(this), 
-//            "Reference counted objects must be allocated on the heap.");
+        debugAssertM(isValidHeapPointer(this), 
+            "Reference counted objects must be allocated on the heap.");
     }
 
 public:
@@ -145,7 +158,8 @@ public:
     }
 
     ReferenceCountedObject& operator=(const ReferenceCountedObject& other) {
-        // Nothing changes when I am assigned
+        // Nothing changes when I am assigned; the reference count is the same
+        // (although my super-class probably changes).
         return *this;
     }
 };
