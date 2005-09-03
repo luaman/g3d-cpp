@@ -1,11 +1,18 @@
 #include "../include/G3DAll.h"
 
-typedef	void (*DELAY_FUNC)(uint32 uiMS);
+// @cite based on code by Ian Cheswick
+
+#ifdef G3D_WIN32
+
+/**
+ Time is in milliseconds
+ */
+typedef	void (*DELAY_FUNC)(uint32 time);
 
 int64 GetCyclesDifference(DELAY_FUNC DelayFunction, uint32 uiParameter) {
-	unsigned int edx1, eax1;
-	unsigned int edx2, eax2;
-		
+    // Two successive readings of the RDTSC
+	unsigned int t0Hi, t0Lo;
+	unsigned int t1Hi, t1Lo;
 
 #   define rdtsc _asm _emit 0x0f _asm _emit 0x31
 	__try {
@@ -18,17 +25,16 @@ int64 GetCyclesDifference(DELAY_FUNC DelayFunction, uint32 uiParameter) {
 
             // call the delay function
             push        uiParameter
-			mov         ebx, DelayFunction
-			call        ebx
+            call        DelayFunction
 			pop         ebx
 
             // Get the count after the delay function
 			rdtsc
-			mov         edx2, edx
-			mov         eax2, eax
+			mov         t1Hi, edx
+			mov         t1Lo, eax
 
-			mov         edx1, edi
-			mov         eax1, esi
+			mov         t0Hi, edi
+			mov         t0Lo, esi
 		}
     } __except (1) {
 
@@ -38,21 +44,23 @@ int64 GetCyclesDifference(DELAY_FUNC DelayFunction, uint32 uiParameter) {
 #   undef rdtsc
 
     // Compute the total cycle difference
-	return ((((int64)edx2) << 32) + eax2) - 
-           ((((int64)edx1) << 32) + eax1);
+	return ((((int64)t1Hi) << 32) + t1Lo) - 
+           ((((int64)t0Hi) << 32) + t0Lo);
 }
 
 
-void Delay (unsigned int uiMS) {
+void Delay(uint32 time) {
 	LARGE_INTEGER Frequency, StartCounter, EndCounter;
 	__int64 x;
 
 	// Get the frequency of the high performance counter.
-	if (!QueryPerformanceFrequency (&Frequency)) return;
-	x = Frequency.QuadPart / 1000 * uiMS;
+    if (!QueryPerformanceFrequency(&Frequency)) {
+        return;
+    }
+	x = Frequency.QuadPart / 1000 * time;
 
 	// Get the starting position of the counter.
-	QueryPerformanceCounter (&StartCounter);
+	QueryPerformanceCounter(&StartCounter);
 
 	do {
 		// Get the ending position of the counter.	
@@ -60,42 +68,55 @@ void Delay (unsigned int uiMS) {
 	} while (EndCounter.QuadPart - StartCounter.QuadPart < x);
 }
 
-void DelayOverhead (unsigned int uiMS)
-{
+
+void DelayOverhead(uint32 time) {
 	LARGE_INTEGER Frequency, StartCounter, EndCounter;
 	__int64 x;
 
 	// Get the frequency of the high performance counter.
-	if (!QueryPerformanceFrequency (&Frequency)) return;
-	x = Frequency.QuadPart / 1000 * uiMS;
+    if (!QueryPerformanceFrequency(&Frequency)) {
+        return;
+    }
+
+	x = Frequency.QuadPart / 1000 * time;
 
 	// Get the starting position of the counter.
-	QueryPerformanceCounter (&StartCounter);
+	QueryPerformanceCounter(&StartCounter);
 	
 	do {
 		// Get the ending position of the counter.	
-		QueryPerformanceCounter (&EndCounter);
+		QueryPerformanceCounter(&EndCounter);
 	} while (EndCounter.QuadPart - StartCounter.QuadPart == x);
 }
 
 
 
 int CPU_speed_in_MHz() {
-	unsigned int uiRepetitions = 1;
-	unsigned int uiMSecPerRepetition = 50;
-	__int64	i64Total = 0, i64Overhead = 0;
+	const int N = 2;
 
-	for (unsigned int nCounter = 0; nCounter < uiRepetitions; nCounter ++) {
-		i64Total += GetCyclesDifference (Delay, uiMSecPerRepetition);
-		i64Overhead += GetCyclesDifference (DelayOverhead, uiMSecPerRepetition);
+    // Execution time, in milliseconds
+	unsigned int time = 50;
+	int64 total = 0;
+    int64 overhead = 0;
+
+	for (int i = 0; i < N; ++i) {
+		total += GetCyclesDifference(Delay, time);
+		overhead += GetCyclesDifference(DelayOverhead, time);
 	}
 
 	// Calculate the MHz speed.
-	i64Total -= i64Overhead;
-	i64Total /= uiRepetitions;
-	i64Total /= uiMSecPerRepetition;
-	i64Total /= 1000;
+	total -= overhead;
+	total /= N;
+	total /= time;
+	total /= 1000;
 
-	// Save the CPU speed.
-	return (int) i64Total;
+	return (int)total;
 }
+
+#else
+
+int CPU_speed_in_MHz() {
+    return 0;
+}
+
+#endif
