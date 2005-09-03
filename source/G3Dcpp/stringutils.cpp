@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2000-09-09
- @edited  2005-02-24
+ @edited  2005-09-10
 */
 
 #include "G3D/platform.h"
@@ -174,6 +174,24 @@ std::string stringJoin(
 
     for (int i = 0; i < (int)a.size() - 1; ++i) {
         out += a[i] + joinChar;
+    }
+
+    if (a.size() > 0) {
+        return out + a.last();
+    } else {
+        return out;
+    }
+}
+
+
+std::string stringJoin(
+    const Array<std::string>&   a,
+    const std::string&          joinStr) {
+
+    std::string out;
+
+    for (int i = 0; i < (int)a.size() - 1; ++i) {
+        out += a[i] + joinStr;
     }
 
     if (a.size() > 0) {

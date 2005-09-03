@@ -77,6 +77,10 @@ std::string stringJoin(
     const G3D::Array<std::string>&   a,
     char                        joinChar);
 
+std::string stringJoin(
+    const G3D::Array<std::string>&   a,
+    const std::string&               joinStr);
+
 /**
  Strips whitespace from both ends of the string.
  */

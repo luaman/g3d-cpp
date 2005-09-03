@@ -5,16 +5,16 @@
 
  @maintainer Corey Taylor 
  @created 	  2004-05-21
- @edited  	  2004-10-21
+ @edited  	  2005-09-21
     
- Copyright 2000-2002, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
 */
 
 #ifndef G3D_WIN32WINDOW_H
 #define G3D_WIN32WINDOW_H
 
-#include <G3D/platform.h>
+#include "G3D/platform.h"
 
 // This file is only used on Windows
 #ifdef G3D_WIN32

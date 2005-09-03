@@ -9,7 +9,7 @@
 #ifndef G3D_SHAPE_H
 #define G3D_SHAPE_H
 
-#include <graphics3D.h>
+#include "../graphics3D.h"
 
 namespace G3D {
 

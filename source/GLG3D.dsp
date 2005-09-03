@@ -335,6 +335,10 @@ SOURCE=.\include\GLG3D\shadowVolume.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\Shape.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\Sky.h
 # End Source File
 # Begin Source File

@@ -531,7 +531,7 @@ void App::computeFeatureRating() {
 }
 
 App::App(const GAppSettings& settings) : GApp(settings) {
-    window()->setCaption("GFX-Meter");
+    window()->setCaption("GFX-Meter 0.5");
     applet = new Report(this);
 }
 

@@ -25,6 +25,9 @@ typedef ReferenceCountedPointer<class MD2Model> MD2ModelRef;
 /**
  Quake II model class.
  <P>
+ See demos/MD2Model for an example of how to use this class.
+
+ <P>
  Models are centered about their waist.  To figure out where the feet are you
  might want to look at the bounding box for the stand/walk animations.
  
