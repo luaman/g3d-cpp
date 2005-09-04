@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2005-08-20
+ @edited  2005-09-05
  */
 
 #include "../include/G3DAll.h"
@@ -39,6 +39,7 @@ void testGChunk();
 
 void perfSystemMemcpy();
 void testSystemMemcpy();
+void testSystemMemset();
 
 void testReferenceCount();
 
@@ -585,9 +586,6 @@ void measureAABoxCollisionPerformance() {
 }
 
 
-
-
-
 void testColor3uint8Array() {
     printf("Array<Color3uint8>\n");
     Array<Color3uint8> x(2);
@@ -611,24 +609,6 @@ void testColor3uint8Array() {
 }
 
 
-void testMemset() {
-    printf("System::memset\n");
-	static const int k = 100;
-	static uint8 a[k];
-	
-	int i;
-
-	for (i = 0; i < k; ++i) {
-		a[i] = i & 255;
-	}
-
-	System::memset(a, 4, k);
-
-	for (i = 0; i < k; ++i) {
-		debugAssert(a[i] == 4);
-	}
-
-}
 
 void testFloat() {
     printf("Test Float\n");
@@ -823,11 +803,10 @@ int main(int argc, char* argv[]) {
 
     testFloat();
     printf("  passed\n");
-	testMemset();
-    printf("  passed\n");
-
+    
     testRandom();
 
+	testSystemMemset();
     testSystemMemcpy();
 
     testTextInput();

@@ -905,6 +905,9 @@
 				RelativePath="include\GLG3D\shadowVolume.h">
 			</File>
 			<File
+				RelativePath="include\GLG3D\Shape.h">
+			</File>
+			<File
 				RelativePath="include\GLG3D\Sky.h">
 			</File>
 			<File
