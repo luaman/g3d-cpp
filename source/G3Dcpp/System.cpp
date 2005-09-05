@@ -234,6 +234,8 @@ const std::string& System::version() {
 }
 
 void System::init() {
+    // Cannot use most G3D data structures or utility functions in here because
+    // they are not initialized.
 
     if (System::initialized) {
         return;
@@ -241,12 +243,20 @@ void System::init() {
 
     System::initialized = true;
 
-    _version = format("G3D %d.%02d",
-        G3D_VER / 10000,
-        (G3D_VER / 100) % 100);
+    {
+        char tmp[1024];
 
-    if ((G3D_VER % 100) != 0) {
-        _version += format(" beta %d", G3D_VER % 100);
+
+        sprintf(tmp, "G3D %d.%02d",
+            G3D_VER / 10000,
+            (G3D_VER / 100) % 100);
+
+        _version = tmp;
+
+        if ((G3D_VER % 100) != 0) {
+            sprintf(tmp, " beta %d", G3D_VER % 100);
+            _version += tmp;
+        }
     }
 
     unsigned long eaxreg, ebxreg, ecxreg, edxreg;
@@ -381,23 +391,31 @@ void System::init() {
         }
 
         uint32 maxAddr = (uint32)systemInfo.lpMaximumApplicationAddress;
-        _cpuArch = format(
-                    "%d x %d-bit %s processor",
-                    systemInfo.dwNumberOfProcessors,
-                    (int)(::log((double)maxAddr) / ::log(2.0) + 2.0),
-                    arch);
+        {
+            char tmp[2048];
+
+            sprintf(tmp, "%d x %d-bit %s processor",
+                        systemInfo.dwNumberOfProcessors,
+                        (int)(::log((double)maxAddr) / ::log(2.0) + 2.0),
+                        arch);
+            _cpuArch = tmp;
+        }
 
         OSVERSIONINFO osVersionInfo;
         osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
         bool success = GetVersionEx(&osVersionInfo) != 0;
 
         if (success) {
-            _operatingSystem = format("Windows %d.%d build %d Platform %d %s",
+            char tmp[2048];
+
+            sprintf(tmp, "Windows %d.%d build %d Platform %d %s",
                 osVersionInfo.dwMajorVersion, 
                 osVersionInfo.dwMinorVersion,
                 osVersionInfo.dwBuildNumber,
                 osVersionInfo.dwPlatformId,
                 osVersionInfo.szCSDVersion);
+
+             _operatingSystem = tmp;
         } else {
             _operatingSystem = "Windows";
         }
