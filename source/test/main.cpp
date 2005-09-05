@@ -763,6 +763,9 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testSystemMemset();
+    testSystemMemcpy();
+
     testQueue();
 
     testMatrix();
@@ -805,9 +808,6 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
     
     testRandom();
-
-	testSystemMemset();
-    testSystemMemcpy();
 
     testTextInput();
     printf("  passed\n");
