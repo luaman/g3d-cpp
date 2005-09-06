@@ -51,7 +51,6 @@ public:
 
 
 
-
 class App : public GApp {
 protected:
     void main();
@@ -172,10 +171,12 @@ bool hasBuggyCubeMapTexCoords();
 
 void App::main() {
 
+	debugController.setActive(false);
     hasBuggyCubeMapTexCoords();
+    window()->swapGLBuffers();
+    while(true);
 
 	setDebugMode(true);
-	debugController.setActive(true);
 
     // Load objects here
     sky = NULL;//Sky::create(NULL, dataDir + "sky/");
@@ -380,6 +381,12 @@ bool hasBuggyCubeMapTexCoords() {
     // Save current GL state
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
+    glDrawBuffer(GL_BACK);
+    glClearColor(0,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glDisable(GL_DEPTH_TEST);
+
     GLenum target[] = {
         GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
         GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
@@ -399,12 +406,14 @@ bool hasBuggyCubeMapTexCoords() {
          0,  0, -1};
 
     // Face colors
-    unsigned int color[6];
+    unsigned char color[6];
 
     // Create a cube map
     unsigned int id;
     glGenTextures(1, &id);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
     glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, id);
+    glEnable(GL_TEXTURE_CUBE_MAP_ARB);
     
     {
 
@@ -419,13 +428,26 @@ bool hasBuggyCubeMapTexCoords() {
 
             // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
             // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-            glTexImage2D(target[f], 0, GL_RGB, N, N, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+            glTexImage2D(target[f], 0, GL_RGBA, N, N, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+            debugAssertGLOk();
         }
     }
+    
 
     // Set orthogonal projection
+    float viewport[4];
+    glGetFloatv(GL_VIEWPORT, viewport);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(viewport[0], viewport[0] + viewport[2], viewport[1] + viewport[3], viewport[1], -1, 10);
 
-    // TODO
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+    glDisable(GL_TEXTURE_GEN_R);
 
     // Render one sample from each cube map face
     glDisable(GL_LIGHTING);
@@ -433,8 +455,9 @@ bool hasBuggyCubeMapTexCoords() {
     glBegin(GL_QUADS);
         glColor3f(1, 1, 1);
         for (int f = 0; f < 6; ++f) {
-            const float s = 10;
+            const float s = 10.0f;
             glTexCoord3fv(direction + 3 * f);
+//            glColor3f(color[f] / 255.0, color[f] / 255.0, color[f] / 255.0);
             glVertex2f(f * s, 0);
             glVertex2f(f * s, s);
             glVertex2f((f + 1) * s, s);
@@ -443,12 +466,22 @@ bool hasBuggyCubeMapTexCoords() {
     glEnd();
 
     // Read back results
-    // TODO
+    unsigned int readback[60];
+    glReadPixels(0, 0, 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
+
+    // Test result for errors
+    bool texbug = false;
+    for (int f = 0; f < 6; ++f) {
+        if ((readback[f * 10 + 5] & 0xFF) != color[f]) {
+            texbug = true;
+            break;
+        }
+    }
 
     glPopAttrib();
     glDeleteTextures(1, &id);
 
-    return false;
+    return texbug;
 }
 
 
