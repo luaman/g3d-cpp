@@ -168,8 +168,12 @@ void Demo::doGraphics() {
     }
 }
 
+bool hasBuggyCubeMapTexCoords();
 
 void App::main() {
+
+    hasBuggyCubeMapTexCoords();
+
 	setDebugMode(true);
 	debugController.setActive(true);
 
@@ -364,6 +368,88 @@ void Welder::weld() {
     }
 }
 
+bool hasBuggyCubeMapTexCoords() {
+
+    bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
+
+    if (! hasCubeMap) {
+        // No cube map == no bug.
+        return false;
+    }
+
+    // Save current GL state
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+    GLenum target[] = {
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
+        GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
+        GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
+        GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
+        GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
+        GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
+
+
+    // Every three is a vector in one direction
+    float direction[] = {
+         1,  0,  0,
+        -1,  0,  0,
+         0,  1,  0,
+         0, -1,  0,
+         0,  0,  1,
+         0,  0, -1};
+
+    // Face colors
+    unsigned int color[6];
+
+    // Create a cube map
+    unsigned int id;
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, id);
+    
+    {
+
+        const int N = 4;
+        unsigned int image[N * N];
+        for (int f = 0; f < 6; ++f) {
+
+            color[f] = f * 40;
+
+            // Fill each face with a different color
+            memset(image, color[f], N * N * sizeof(unsigned int));
+
+            // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
+            // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
+            glTexImage2D(target[f], 0, GL_RGB, N, N, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        }
+    }
+
+    // Set orthogonal projection
+
+    // TODO
+
+    // Render one sample from each cube map face
+    glDisable(GL_LIGHTING);
+    glCullFace(GL_NONE);
+    glBegin(GL_QUADS);
+        glColor3f(1, 1, 1);
+        for (int f = 0; f < 6; ++f) {
+            const float s = 10;
+            glTexCoord3fv(direction + 3 * f);
+            glVertex2f(f * s, 0);
+            glVertex2f(f * s, s);
+            glVertex2f((f + 1) * s, s);
+            glVertex2f((f + 1) * s, 0);
+        }
+    glEnd();
+
+    // Read back results
+    // TODO
+
+    glPopAttrib();
+    glDeleteTextures(1, &id);
+
+    return false;
+}
 
 
 int main(int argc, char** argv) {
@@ -386,11 +472,12 @@ int main(int argc, char** argv) {
 
     GAppSettings settings;
     settings.useNetwork = false;
-    settings.window.fullScreen = true;
-    settings.window.framed = false;
+    settings.window.fullScreen = false;
+    settings.window.framed = true;
     settings.window.width = 800;
     settings.window.height = 600;
-    settings.window.fsaaSamples = 4;
+    settings.window.fsaaSamples = 1;
+
 
     App(settings).run();
     return 0;
