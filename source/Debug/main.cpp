@@ -172,6 +172,7 @@ bool hasBuggyCubeMapTexCoords();
 void App::main() {
 
 	debugController.setActive(false);
+//    debugAssert(! 
     hasBuggyCubeMapTexCoords();
     window()->swapGLBuffers();
     while(true);
@@ -426,6 +427,10 @@ bool hasBuggyCubeMapTexCoords() {
             // Fill each face with a different color
             memset(image, color[f], N * N * sizeof(unsigned int));
 
+            // Now set the center and border to not match
+            memset(image, 0xFF, N * sizeof(unsigned int));
+            image[N / 2 + (N / 2) * N] = 0;
+
             // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
             // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
             glTexImage2D(target[f], 0, GL_RGBA, N, N, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
@@ -469,7 +474,7 @@ bool hasBuggyCubeMapTexCoords() {
 
     // Read back results
     unsigned int readback[60];
-    glReadPixels(0, 0, 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
+    glReadPixels(0, viewport[3] - 5, 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
 
     // Test result for errors
     bool texbug = false;
