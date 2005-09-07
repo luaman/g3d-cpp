@@ -431,6 +431,9 @@ bool hasBuggyCubeMapTexCoords() {
             glTexImage2D(target[f], 0, GL_RGBA, N, N, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
             debugAssertGLOk();
         }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
     
 
@@ -457,7 +460,6 @@ bool hasBuggyCubeMapTexCoords() {
         for (int f = 0; f < 6; ++f) {
             const float s = 10.0f;
             glTexCoord3fv(direction + 3 * f);
-//            glColor3f(color[f] / 255.0, color[f] / 255.0, color[f] / 255.0);
             glVertex2f(f * s, 0);
             glVertex2f(f * s, s);
             glVertex2f((f + 1) * s, s);
