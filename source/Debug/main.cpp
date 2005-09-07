@@ -172,15 +172,12 @@ bool hasBuggyCubeMapTexCoords();
 void App::main() {
 
 	debugController.setActive(false);
-//    debugAssert(! 
-    hasBuggyCubeMapTexCoords();
-    window()->swapGLBuffers();
-    while(true);
+    hasBuggyCubeMapTexCoords();    window()->swapGLBuffers();    while(true);
 
 	setDebugMode(true);
 
     // Load objects here
-    sky = Sky::create(NULL, dataDir + "sky/");
+    sky = Sky::create(NULL, "C:/morgan/data/sky/", "test/testcube_*.jpg");
     
     applet->run();
 }
@@ -399,12 +396,12 @@ bool hasBuggyCubeMapTexCoords() {
 
     // Every three is a vector in one direction
     float direction[] = {
-         1,  .25,  0,
-        -1,  .25,  0,
-         .25,  1,  0,
-         .25, -1,  0,
-         0,  .25,  1,
-         0,  .25, -1};
+         1,  0,  0,
+        -1,  0,  0,
+         0,  1,  0,
+         0, -1,  0,
+         0,  0,  1,
+         0,  0, -1};
 
     // Face colors
     unsigned char color[6];
@@ -418,7 +415,7 @@ bool hasBuggyCubeMapTexCoords() {
     
     {
 
-        const int N = 4;
+        const int N = 64;
         unsigned int image[N * N];
         for (int f = 0; f < 6; ++f) {
 
@@ -430,7 +427,7 @@ bool hasBuggyCubeMapTexCoords() {
             // Now set the border to not match
             memset(image, 0xFF, N * sizeof(unsigned int));
             memset(image + N * (N - 1), 0, N * sizeof(unsigned int));
-//            image[N / 2 + (N / 2) * N] = 0;
+            ((unsigned char*)&image[N / 2 + (N / 2) * N])[f % 3] = 0xFF;
 
             // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
             // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
@@ -440,9 +437,9 @@ bool hasBuggyCubeMapTexCoords() {
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
         glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R, GL_CLAMP);
     }
     
 
