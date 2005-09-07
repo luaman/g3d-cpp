@@ -180,7 +180,7 @@ void App::main() {
 	setDebugMode(true);
 
     // Load objects here
-    sky = NULL;//Sky::create(NULL, dataDir + "sky/");
+    sky = Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
 }
@@ -399,12 +399,12 @@ bool hasBuggyCubeMapTexCoords() {
 
     // Every three is a vector in one direction
     float direction[] = {
-         1,  0,  0,
-        -1,  0,  0,
-         0,  1,  0,
-         0, -1,  0,
-         0,  0,  1,
-         0,  0, -1};
+         1,  .25,  0,
+        -1,  .25,  0,
+         .25,  1,  0,
+         .25, -1,  0,
+         0,  .25,  1,
+         0,  .25, -1};
 
     // Face colors
     unsigned char color[6];
@@ -427,9 +427,10 @@ bool hasBuggyCubeMapTexCoords() {
             // Fill each face with a different color
             memset(image, color[f], N * N * sizeof(unsigned int));
 
-            // Now set the center and border to not match
+            // Now set the border to not match
             memset(image, 0xFF, N * sizeof(unsigned int));
-            image[N / 2 + (N / 2) * N] = 0;
+            memset(image + N * (N - 1), 0, N * sizeof(unsigned int));
+//            image[N / 2 + (N / 2) * N] = 0;
 
             // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
             // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
