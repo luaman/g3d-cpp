@@ -593,11 +593,21 @@ public:
       return data[n];
    }
 
+   inline T& operator[](unsigned int n) {
+      debugAssert((n < num));
+      return data[n];
+   }
+
    /**
     Performs bounds checks in debug mode
     */
     inline const T& operator[](int n) const {
         debugAssert((n >= 0) && (n < num));
+        return data[n];
+    }
+
+    inline const T& operator[](unsigned int n) const {
+        debugAssert((n < num));
         return data[n];
     }
 
