@@ -415,7 +415,7 @@ bool hasBuggyCubeMapTexCoords() {
     
     {
 
-        const int N = 64;
+        const int N = 16;
         unsigned int image[N * N];
         for (int f = 0; f < 6; ++f) {
 
@@ -463,12 +463,25 @@ bool hasBuggyCubeMapTexCoords() {
     glCullFace(GL_NONE);
     glBegin(GL_QUADS);
         glColor3f(1, 1, 1);
+        Box b(Vector3(-1,-1,-1), Vector3(1,1,1));
         for (int f = 0; f < 6; ++f) {
             const float s = 10.0f;
-            glTexCoord3fv(direction + 3 * f);
+
+            Vector3 t[4];
+
+            b.getFaceCorners(f, t[0], t[1], t[2], t[3]);
+
+//            glTexCoord3fv(direction + 3 * f);
+            glTexCoord3fv(t[0]);
             glVertex2f(f * s, 0);
+
+            glTexCoord3fv(t[1]);
             glVertex2f(f * s, s);
+
+            glTexCoord3fv(t[2]);
             glVertex2f((f + 1) * s, s);
+
+            glTexCoord3fv(t[3]);
             glVertex2f((f + 1) * s, 0);
         }
     glEnd();
