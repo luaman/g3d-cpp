@@ -172,7 +172,7 @@ bool hasBuggyCubeMapTexCoords();
 void App::main() {
 
 	debugController.setActive(false);
-    hasBuggyCubeMapTexCoords();    window()->swapGLBuffers();    while(true);
+    hasBuggyCubeMapTexCoords(); window()->swapGLBuffers(); while(true);
 
 	setDebugMode(true);
 
@@ -425,9 +425,9 @@ bool hasBuggyCubeMapTexCoords() {
             memset(image, color[f], N * N * sizeof(unsigned int));
 
             // Now set the border to not match
-            memset(image, 0xFF, N * sizeof(unsigned int));
-            memset(image + N * (N - 1), 0, N * sizeof(unsigned int));
-            ((unsigned char*)&image[N / 2  - 1 + (N / 2) * N])[f % 3] = 0xFF;
+            //memset(image, 0xFF, N * sizeof(unsigned int));
+            //memset(image + N * (N - 1), 0, N * sizeof(unsigned int));
+            //((unsigned char*)&image[N / 2  - 1 + (N / 2) * N])[f % 3] = 0xFF;
 
             // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
             // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
@@ -453,13 +453,14 @@ bool hasBuggyCubeMapTexCoords() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    /*
 
-    TextureRef tex = Texture::fromFile("D:/games/data/sky/test/testcube_*.jpg", TextureFormat::AUTO, 
-        Texture::CLAMP, Texture::NO_INTERPOLATION, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0); 
+    TextureRef tex = Texture::fromFile("c:/morgan/data/sky/test/testcube_*.jpg", TextureFormat::AUTO, 
+        Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0); 
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
     glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, tex->getOpenGLID());
-
+    */
     glDisable(GL_TEXTURE_GEN_S);
     glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_GEN_R);
@@ -473,22 +474,24 @@ bool hasBuggyCubeMapTexCoords() {
         for (int f = 0; f < 6; ++f) {
             const float s = 10.0f;
 
+            // Only occurs when using glMultiTexCoord3fvARB and glVertex4f together
             Vector3 t[4];
 
             b.getFaceCorners(f, t[0], t[1], t[2], t[3]);
 
-//            glTexCoord3fv(direction + 3 * f);
-            glTexCoord3fv(t[0]);
-            glVertex2f(f * s, 0);
+#define glTexCoord3f(v) glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, v)
+            glTexCoord3f(t[0]);
 
-            glTexCoord3fv(t[1]);
-            glVertex2f(f * s, s);
+            glVertex4f(f * s, 0, -1, 1);
 
-            glTexCoord3fv(t[2]);
-            glVertex4f((f + 1) * s, s, 0, 0);
+            glTexCoord3f(t[1]);
+            glVertex4f(f * s, s, -1, 1);
 
-            glTexCoord3fv(t[3]);
-            glVertex2f((f + 1) * s, 0);
+            glTexCoord3f(t[2]);
+            glVertex4f((f + 1) * s, s, -1, 1);
+
+            glTexCoord3f(t[3]);
+            glVertex4f((f + 1) * s, 0, -1, 1);
         }
     glEnd();
 
