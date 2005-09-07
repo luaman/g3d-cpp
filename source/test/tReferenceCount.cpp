@@ -79,6 +79,10 @@ typedef G3D::ReferenceCountedPointer<RCPFoo> RCPFooRef;
 
 
 
+class RefSubclass : public RCPFoo {
+};
+typedef G3D::ReferenceCountedPointer<RefSubclass> RefSubclassRef;
+
 
 class Reftest : public ReferenceCountedObject {
 public:
@@ -102,6 +106,11 @@ typedef ReferenceCountedPointer<Reftest> ARef;
 typedef ReferenceCountedPointer<Reftest2> ARef2;
 Array<std::string> Reftest::sequence;
 
+
+/* Called from testRCP to test automatic down-casting */
+static void subclasstest(const RCPFooRef& b) {
+    (void)b;
+}
 
 static void testRCP() {
     printf("ReferenceCountedPointer");
@@ -172,6 +181,24 @@ static void testRCP() {
         // Should not compile
 //        ARef2 one = new Reftest("1");
     }
+
+
+    // Test subclassing
+
+    {
+        RefSubclassRef s = new RefSubclass();
+        RCPFooRef b;
+
+        // s is a subclass, so this should call the templated
+        // constructor and succeed.
+        b = s;
+
+        // Likewise
+        subclasstest(s);
+    }
+
+
+
 }
 
 void testReferenceCount() {

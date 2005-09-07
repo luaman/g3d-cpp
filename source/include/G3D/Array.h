@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2005-08-28
+  @edited  2005-09-05
 
   Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
@@ -49,10 +49,17 @@ const int SORT_DECREASING = -1;
  You will get the error "no appropriate default constructor found"
  if they do not.
 
+ Do not use with objects that overload placement <code>operator new</code>,
+ since the speed of Array is partly due to pooled allocation.
+
  If SSE is defined Arrays allocate the first element aligned to
  16 bytes.
 
- Unlike std::vector, Array is optimized for graphics use.  The default
+
+ Array is highly optimized compared to std::vector.  
+ Array operations are less expensive than on std::vector and for large
+ amounts of data, Array consumes only 1.5x the total size of the 
+ data, while std::vector consumes 2.0x.  The default
  array takes up zero heap space.  The first resize (or append)
  operation grows it to a reasonable internal size so it is efficient
  to append to small arrays.  Memory is allocated using
@@ -75,8 +82,8 @@ private:
     /** 0...num-1 are initialized elements, num...numAllocated-1 are not */
     T*              data;
 
-    int          num;
-    int          numAllocated;
+    int             num;
+    int             numAllocated;
 
     void init(int n, int a) {
         debugAssert(n <= a);
@@ -353,7 +360,7 @@ public:
               } else {
 
                   // Increase the underlying size of the array.  Grow aggressively
-                  // up to 1k, less aggressively up to 6k, and then grow relatively
+                  // up to 50k, less aggressively up to 100k, and then grow relatively
                   // slowly (1.5x per resize) to avoid excessive space consumption.
                   //
                   // These numbers are tweaked according to performance tests.
@@ -361,10 +368,12 @@ public:
                   float growFactor = 3.0;
 
                   size_t oldSizeBytes = numAllocated * sizeof(T);
-                  if (oldSizeBytes > 6000) {
+                  if (oldSizeBytes > 100000) {
+                      // Avoid bloat
                       growFactor = 1.5;
-                  } else if (oldSizeBytes > 1024) {
-                      growFactor = 1.8;
+                  } else if (oldSizeBytes > 50000) {
+                      // This is what std:: uses at all times
+                      growFactor = 2.0;
                   }
 
                   numAllocated = (num - numAllocated) + (int)(numAllocated * growFactor);
@@ -377,7 +386,7 @@ public:
               realloc(oldNum);
           }
 
-      } else if ((num <= numAllocated / 2) && shrinkIfNecessary && (num > minSize)) {
+      } else if ((num <= numAllocated / 3) && shrinkIfNecessary && (num > minSize)) {
           // Shrink the underlying array
 
           // Only copy over old elements that still remain after resizing
@@ -387,6 +396,8 @@ public:
       }
 
       // Call the constructors on newly revealed elements.
+      // Do not use parens because we don't want the intializer
+      // invoked for POD types.
       for (int i = oldNum; i < num; i++) {
           new (data + i) T;
       }
@@ -510,6 +521,44 @@ public:
        append(array);
    }
 
+   /** Alias to provide std::vector compatibility */
+   inline void push_back(const T& v) {
+       push(v);
+   }
+
+   /** "The member function removes the last element of the controlled sequence, which must be non-empty."
+        For compatibility with std::vector. */
+   inline void pop_back() {
+       pop();
+   }
+
+   /** 
+      "The member function returns the storage currently allocated to hold the controlled
+       sequence, a value at least as large as size()" 
+       For compatibility with std::vector.
+   */
+   int capacity() const {
+       return numAllocated;
+   }
+
+   /** 
+      "The member function returns a reference to the first element of the controlled sequence, 
+       which must be non-empty." 
+       For compatibility with std::vector.
+   */
+   T& front() {
+       return *this[0];
+   }
+
+   /** 
+      "The member function returns a reference to the first element of the controlled sequence, 
+       which must be non-empty." 
+       For compatibility with std::vector.
+   */
+   const T& front() const {
+       return *this[0];
+   }
+
    /**
     Removes the last element and returns it.
     */
@@ -519,6 +568,22 @@ public:
        resize(num - 1, shrinkUnderlyingArrayIfNecessary);
        return temp;
    }
+
+
+   /**
+    "The member function swaps the controlled sequences between *this and str."
+
+    This is slower than the optimal std implementation; please post on the G3D user's forum
+    if you need a fast version.
+
+    For compatibility with std::vector.
+    */
+   void swap(Array<T>& str) {
+       Array<T> temp = str;
+       str = *this;
+       *this = temp;
+   }
+
 
    /**
     Performs bounds checks in debug mode

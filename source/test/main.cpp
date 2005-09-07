@@ -693,6 +693,7 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {
+
     RenderDevice* renderDevice = NULL;
     
 
@@ -713,12 +714,11 @@ int main(int argc, char* argv[]) {
 
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
+        perfArray();
 
         perfTable();
 
         printf("%s\n", System::mallocPerformance().c_str());
-
-        perfArray();
 
         perfQueue();
 

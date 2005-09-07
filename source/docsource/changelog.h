@@ -35,6 +35,8 @@
   <P>
    Changes in 6.07:
    <UL>
+    <LI> Optimized G3D::Array, Table, Queue, and Set for performance.  Now significantly (up to 10x) faster
+         than their std::counterparts.
     <LI> Vector3(Vector2, float) constructor
     <LI> G3D::GLCaps::hasBug_glMultiTexCoord3fvARB
     <LI> Improved G3D::ReferenceCountedPointer documentation to make subclassing features clearer
