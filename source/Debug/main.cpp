@@ -427,7 +427,7 @@ bool hasBuggyCubeMapTexCoords() {
             // Now set the border to not match
             memset(image, 0xFF, N * sizeof(unsigned int));
             memset(image + N * (N - 1), 0, N * sizeof(unsigned int));
-            ((unsigned char*)&image[N / 2 + (N / 2) * N])[f % 3] = 0xFF;
+            ((unsigned char*)&image[N / 2  - 1 + (N / 2) * N])[f % 3] = 0xFF;
 
             // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
             // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
