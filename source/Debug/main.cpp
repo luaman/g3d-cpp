@@ -471,26 +471,52 @@ bool hasBuggyCubeMapTexCoords() {
     glBegin(GL_QUADS);
         glColor3f(1, 1, 1);
         Box b(Vector3(-1,-1,-1), Vector3(1,1,1));
+
+        static const float corner[] = {
+            1.000000, -1.000000, 1.000000,
+            1.000000, -1.000000, -1.000000,
+            1.000000, 1.000000, -1.000000,
+            1.000000, 1.000000, 1.000000,
+
+            -1.000000, 1.000000, 1.000000,
+            -1.000000, 1.000000, -1.000000,
+            -1.000000, -1.000000, -1.000000,
+            -1.000000, -1.000000, 1.000000,
+
+            1.000000, 1.000000, 1.000000,
+            1.000000, 1.000000, -1.000000,
+            -1.000000, 1.000000, -1.000000,
+            -1.000000, 1.000000, 1.000000,
+
+            1.000000, -1.000000, 1.000000,
+            -1.000000, -1.000000, 1.000000,
+            -1.000000, -1.000000, -1.000000,
+            1.000000, -1.000000, -1.000000,
+
+            -1.000000, -1.000000, 1.000000,
+            1.000000, -1.000000, 1.000000,
+            1.000000, 1.000000, 1.000000,
+            -1.000000, 1.000000, 1.000000,
+
+            -1.000000, 1.000000, -1.000000,
+            1.000000, 1.000000, -1.000000,
+            1.000000, -1.000000, -1.000000,
+            -1.000000, -1.000000, -1.000000};
+
         for (int f = 0; f < 6; ++f) {
             const float s = 10.0f;
 
-            // Only occurs when using glMultiTexCoord3fvARB and glVertex4f together
-            Vector3 t[4];
-
-            b.getFaceCorners(f, t[0], t[1], t[2], t[3]);
-
-#define glTexCoord3f(v) glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, v)
-            glTexCoord3f(t[0]);
+            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 0);
 
             glVertex4f(f * s, 0, -1, 1);
 
-            glTexCoord3f(t[1]);
+            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 3);
             glVertex4f(f * s, s, -1, 1);
 
-            glTexCoord3f(t[2]);
+            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 6);
             glVertex4f((f + 1) * s, s, -1, 1);
 
-            glTexCoord3f(t[3]);
+            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 9);
             glVertex4f((f + 1) * s, 0, -1, 1);
         }
     glEnd();
