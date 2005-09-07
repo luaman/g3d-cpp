@@ -454,6 +454,12 @@ bool hasBuggyCubeMapTexCoords() {
     glLoadIdentity();
 
 
+    TextureRef tex = Texture::fromFile("D:/games/data/sky/test/testcube_*.jpg", TextureFormat::AUTO, 
+        Texture::CLAMP, Texture::NO_INTERPOLATION, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0); 
+
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, tex->getOpenGLID());
+
     glDisable(GL_TEXTURE_GEN_S);
     glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_GEN_R);
