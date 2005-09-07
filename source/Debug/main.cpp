@@ -167,17 +167,14 @@ void Demo::doGraphics() {
     }
 }
 
-bool hasBuggyCubeMapTexCoords();
 
 void App::main() {
 
 	debugController.setActive(false);
-    hasBuggyCubeMapTexCoords(); window()->swapGLBuffers(); while(true);
-
 	setDebugMode(true);
 
     // Load objects here
-    sky = Sky::create(NULL, "C:/morgan/data/sky/", "test/testcube_*.jpg");
+    sky = NULL;//Sky::create(NULL, "C:/morgan/data/sky/", "test/testcube_*.jpg");
     
     applet->run();
 }
@@ -367,178 +364,6 @@ void Welder::weld() {
     }
 }
 
-bool hasBuggyCubeMapTexCoords() {
-
-    bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
-
-    if (! hasCubeMap) {
-        // No cube map == no bug.
-        return false;
-    }
-
-    // Save current GL state
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-    glDrawBuffer(GL_BACK);
-    glClearColor(0,1,1,1);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glDisable(GL_DEPTH_TEST);
-
-    GLenum target[] = {
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
-        GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
-        GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
-
-
-    // Every three is a vector in one direction
-    float direction[] = {
-         1,  0,  0,
-        -1,  0,  0,
-         0,  1,  0,
-         0, -1,  0,
-         0,  0,  1,
-         0,  0, -1};
-
-    // Face colors
-    unsigned char color[6];
-
-    // Create a cube map
-    unsigned int id;
-    glGenTextures(1, &id);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, id);
-    glEnable(GL_TEXTURE_CUBE_MAP_ARB);
-    
-    {
-
-        const int N = 16;
-        unsigned int image[N * N];
-        for (int f = 0; f < 6; ++f) {
-
-            color[f] = f * 40;
-
-            // Fill each face with a different color
-            memset(image, color[f], N * N * sizeof(unsigned int));
-
-            // Now set the border to not match
-            //memset(image, 0xFF, N * sizeof(unsigned int));
-            //memset(image + N * (N - 1), 0, N * sizeof(unsigned int));
-            //((unsigned char*)&image[N / 2  - 1 + (N / 2) * N])[f % 3] = 0xFF;
-
-            // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
-            // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-            glTexImage2D(target[f], 0, GL_RGBA, N, N, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-            debugAssertGLOk();
-        }
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R, GL_CLAMP);
-    }
-    
-
-    // Set orthogonal projection
-    float viewport[4];
-    glGetFloatv(GL_VIEWPORT, viewport);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(viewport[0], viewport[0] + viewport[2], viewport[1] + viewport[3], viewport[1], -1, 10);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    /*
-
-    TextureRef tex = Texture::fromFile("c:/morgan/data/sky/test/testcube_*.jpg", TextureFormat::AUTO, 
-        Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0); 
-
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, tex->getOpenGLID());
-    */
-    glDisable(GL_TEXTURE_GEN_S);
-    glDisable(GL_TEXTURE_GEN_T);
-    glDisable(GL_TEXTURE_GEN_R);
-
-    // Render one sample from each cube map face
-    glDisable(GL_LIGHTING);
-    glCullFace(GL_NONE);
-    glBegin(GL_QUADS);
-        glColor3f(1, 1, 1);
-        Box b(Vector3(-1,-1,-1), Vector3(1,1,1));
-
-        static const float corner[] = {
-            1.000000, -1.000000, 1.000000,
-            1.000000, -1.000000, -1.000000,
-            1.000000, 1.000000, -1.000000,
-            1.000000, 1.000000, 1.000000,
-
-            -1.000000, 1.000000, 1.000000,
-            -1.000000, 1.000000, -1.000000,
-            -1.000000, -1.000000, -1.000000,
-            -1.000000, -1.000000, 1.000000,
-
-            1.000000, 1.000000, 1.000000,
-            1.000000, 1.000000, -1.000000,
-            -1.000000, 1.000000, -1.000000,
-            -1.000000, 1.000000, 1.000000,
-
-            1.000000, -1.000000, 1.000000,
-            -1.000000, -1.000000, 1.000000,
-            -1.000000, -1.000000, -1.000000,
-            1.000000, -1.000000, -1.000000,
-
-            -1.000000, -1.000000, 1.000000,
-            1.000000, -1.000000, 1.000000,
-            1.000000, 1.000000, 1.000000,
-            -1.000000, 1.000000, 1.000000,
-
-            -1.000000, 1.000000, -1.000000,
-            1.000000, 1.000000, -1.000000,
-            1.000000, -1.000000, -1.000000,
-            -1.000000, -1.000000, -1.000000};
-
-        for (int f = 0; f < 6; ++f) {
-            const float s = 10.0f;
-
-            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 0);
-
-            glVertex4f(f * s, 0, -1, 1);
-
-            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 3);
-            glVertex4f(f * s, s, -1, 1);
-
-            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 6);
-            glVertex4f((f + 1) * s, s, -1, 1);
-
-            glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 9);
-            glVertex4f((f + 1) * s, 0, -1, 1);
-        }
-    glEnd();
-
-    // Read back results
-    unsigned int readback[60];
-    glReadPixels(0, viewport[3] - 5, 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
-
-    // Test result for errors
-    bool texbug = false;
-    for (int f = 0; f < 6; ++f) {
-        if ((readback[f * 10 + 5] & 0xFF) != color[f]) {
-            texbug = true;
-            break;
-        }
-    }
-
-    glPopAttrib();
-    glDeleteTextures(1, &id);
-
-    return texbug;
-}
 
 
 int main(int argc, char** argv) {

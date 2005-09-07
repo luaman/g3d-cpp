@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-06-01
+  @edited  2005-09-07
 */
 
 #include "GLG3D/GLCaps.h"
@@ -549,5 +549,165 @@ const std::string& GLCaps::renderer() {
 
 ////////////////////////////////////////////////////////////
 
+bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
+
+    bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
+
+    if (! hasCubeMap) {
+        // No cube map == no bug.
+        return false;
+    }
+
+    // Save current GL state
+    unsigned int id;
+    glGenTextures(1, &id);
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+        glDrawBuffer(GL_BACK);
+        glReadBuffer(GL_BACK);
+        glClearColor(0,1,1,1);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glDisable(GL_DEPTH_TEST);
+
+        GLenum target[] = {
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
+
+
+        // Every three is a vector in one direction
+        float direction[] = {
+             1,  0,  0,
+            -1,  0,  0,
+             0,  1,  0,
+             0, -1,  0,
+             0,  0,  1,
+             0,  0, -1};
+
+        // Face colors
+        unsigned char color[6];
+
+        // Create a cube map
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+        glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, id);
+        glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+    
+        {
+
+            const int N = 16;
+            unsigned int image[N * N];
+            for (int f = 0; f < 6; ++f) {
+
+                color[f] = f * 40;
+
+                // Fill each face with a different color
+                memset(image, color[f], N * N * sizeof(unsigned int));
+
+                // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
+                // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
+                glTexImage2D(target[f], 0, GL_RGBA, N, N, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+                debugAssertGLOk();
+            }
+
+            glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+            glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_R, GL_CLAMP);
+        }
+    
+
+        // Set orthogonal projection
+        float viewport[4];
+        glGetFloatv(GL_VIEWPORT, viewport);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(viewport[0], viewport[0] + viewport[2], viewport[1] + viewport[3], viewport[1], -1, 10);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glDisable(GL_TEXTURE_GEN_S);
+        glDisable(GL_TEXTURE_GEN_T);
+        glDisable(GL_TEXTURE_GEN_R);
+
+        // Render one sample from each cube map face
+        glDisable(GL_LIGHTING);
+        glDisable(GL_CULL_FACE);
+        glBegin(GL_QUADS);
+            glColor3f(1, 1, 1);
+
+            static const float corner[] = {
+                1.000000, -1.000000, 1.000000,
+                1.000000, -1.000000, -1.000000,
+                1.000000, 1.000000, -1.000000,
+                1.000000, 1.000000, 1.000000,
+
+                -1.000000, 1.000000, 1.000000,
+                -1.000000, 1.000000, -1.000000,
+                -1.000000, -1.000000, -1.000000,
+                -1.000000, -1.000000, 1.000000,
+
+                1.000000, 1.000000, 1.000000,
+                1.000000, 1.000000, -1.000000,
+                -1.000000, 1.000000, -1.000000,
+                -1.000000, 1.000000, 1.000000,
+
+                1.000000, -1.000000, 1.000000,
+                -1.000000, -1.000000, 1.000000,
+                -1.000000, -1.000000, -1.000000,
+                1.000000, -1.000000, -1.000000,
+
+                -1.000000, -1.000000, 1.000000,
+                1.000000, -1.000000, 1.000000,
+                1.000000, 1.000000, 1.000000,
+                -1.000000, 1.000000, 1.000000,
+
+                -1.000000, 1.000000, -1.000000,
+                1.000000, 1.000000, -1.000000,
+                1.000000, -1.000000, -1.000000,
+                -1.000000, -1.000000, -1.000000};
+
+            for (int f = 0; f < 6; ++f) {
+                const float s = 10.0f;
+
+                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 0);
+
+                glVertex4f(f * s, 0, -1, 1);
+
+                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 3);
+                glVertex4f(f * s, s, -1, 1);
+
+                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 6);
+                glVertex4f((f + 1) * s, s, -1, 1);
+
+                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 9);
+                glVertex4f((f + 1) * s, 0, -1, 1);
+            }
+        glEnd();
+
+        // Read back results
+        unsigned int readback[60];
+        glReadPixels(0, viewport[3] - 5, 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
+
+        // Test result for errors
+        bool texbug = false;
+        for (int f = 0; f < 6; ++f) {
+            if ((readback[f * 10 + 5] & 0xFF) != color[f]) {
+                texbug = true;
+                break;
+            }
+        }
+
+    glPopAttrib();
+
+    glDeleteTextures(1, &id);
+
+    return texbug;
+}
 
 }

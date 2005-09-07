@@ -36,6 +36,7 @@
    Changes in 6.07:
    <UL>
     <LI> Vector3(Vector2, float) constructor
+    <LI> G3D::GLCaps::hasBug_glMultiTexCoord3fvARB
     <LI> Improved G3D::ReferenceCountedPointer documentation to make subclassing features clearer
     <LI> G3D::Shape
     <LI> G3D::Cylinder

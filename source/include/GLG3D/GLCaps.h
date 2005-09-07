@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2005-06-20
+ @edited  2005-09-07
 
- Copyright 2004, Morgan McGuire.
+ Copyright 2005, Morgan McGuire.
  All rights reserved.
 */
 
@@ -180,6 +180,18 @@ public:
     static inline bool supports_GL_ARB_texture_cube_map() {
         return supports_GL_EXT_texture_cube_map();
     }
+
+    /**
+     Returns true if cube map support has a specific known bug on this card.
+     Returns false if cube maps are not supported at all on this card.
+
+     Call after OpenGL is intialized.  Will render on the backbuffer.
+
+     On some Radeon Mobility cards, glMultiTexCoord3fvARB and glVertex4fv together
+     create incorrect texture lookups from cube maps.  Using glVertex3fv or glTexCoord
+     with glActiveTextureARB avoids this problem, as does using normal map generation.
+     */
+    static bool hasBug_glMultiTexCoord3fvARB();
 
 };
 

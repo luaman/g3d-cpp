@@ -459,15 +459,15 @@ void App::main() {
 void App::countBugs() {
     bugCount = 0;
 
-    if (beginsWith(GLCaps::renderer(), "MOBILITY RADEON") &&
-        beginsWith(GLCaps::driverVersion(), "6.14.10.6")) {
-        // Radeon mobility has a cube-map bug where 
+    if (GLCaps::hasBug_glMultiTexCoord3fvARB()) {
+        // Radeon mobility has a cube map bug where 
         // tex coords are handled incorrectly.
         ++bugCount;
     } else if (beginsWith(GLCaps::renderer(), "RADEON") &&
         GLCaps::supports_GL_ARB_shadow() &&
         GLCaps::supports_GL_ARB_shading_language_100()) {
         // Slow shadow map and GLSL texture binding bugs.
+        // TODO: add actual tests
         bugCount += 2;
     }
 }
