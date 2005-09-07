@@ -485,7 +485,7 @@ bool hasBuggyCubeMapTexCoords() {
             glVertex2f(f * s, s);
 
             glTexCoord3fv(t[2]);
-            glVertex2f((f + 1) * s, s);
+            glVertex4f((f + 1) * s, s, 0, 0);
 
             glTexCoord3fv(t[3]);
             glVertex2f((f + 1) * s, 0);
