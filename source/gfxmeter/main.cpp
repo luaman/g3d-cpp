@@ -14,6 +14,7 @@
 
 #include "Report.h"
 #include "App.h"
+#define FAST
 
 static const float gfxMeterVersion = 0.6;
 
@@ -250,7 +251,13 @@ void App::computeFeatureRating() {
 App::App(const GAppSettings& settings) : GApp(settings) {
     window()->setCaption(format("gfx-meter %03.1f", gfxMeterVersion));
 
-    showSplashScreen();
+#   ifdef FAST
+        showSplashScreen();
+#   endif
+
+    if (reportFont.isNull()) {
+        reportFont = GFont::fromFile(NULL, dataDir + "arial.fnt");
+    }
 
     applet = new Report(this);
 }

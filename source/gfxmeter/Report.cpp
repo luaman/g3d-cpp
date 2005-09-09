@@ -96,6 +96,19 @@ static void drawBar(RenderDevice* rd, int value, const Vector2& p) {
 }
 
 
+void Report::drawPopup() {
+    int w = app->renderDevice->getWidth();
+    int h = app->renderDevice->getHeight();
+
+    // Drop shadow
+    app->renderDevice->pushState();
+        app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        Rect2D rect = Rect2D::xywh(w/2 - 20, h/2 - 20, w/2, h/2);
+        Draw::rect2D(rect + Vector2(10, 10), app->renderDevice, Color4(0, 0, 0, 0.25));
+    app->renderDevice->popState();
+}
+
+
 void Report::doGraphics() {
     app->renderDevice->setColorClearValue(Color3::white());
     app->renderDevice->clear();
@@ -230,6 +243,8 @@ void Report::doGraphics() {
 
 #       undef LABEL
         
+        //  Draw the popup
+        drawPopup();
 
     app->renderDevice->pop2D();
 }

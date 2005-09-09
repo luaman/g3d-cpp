@@ -58,17 +58,22 @@ public:
  Renders the summary page
  */
 class Report : public GApplet {
-public:
 
     MD2                 knight;
     MD2                 ogre;
 
     class App*          app;
 
-    Report(App* app);
-
     /** Draw some nice graphics */
     void doFunStuff();
+
+    /** Draws the popup window, but not its contents */
+    void drawPopup();
+
+public:
+
+    Report(App* app);
+
 
     virtual ~Report() {}
 

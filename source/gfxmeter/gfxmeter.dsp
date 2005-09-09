@@ -110,6 +110,10 @@ SOURCE=.\measureVertexPerformance.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Report.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\shaderVersions.cpp
 # End Source File
 # Begin Source File
@@ -120,6 +124,14 @@ SOURCE=.\speed.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\App.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Report.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
