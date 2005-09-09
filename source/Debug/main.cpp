@@ -74,37 +74,6 @@ void Demo::init()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 0, 0));
-
-/*    GImage maskInput(app->dataDir + "/smallfont.bmp");
-
-    // write font mask
-    TextOutput maskOutput(app->dataDir + "/font_mask.cpp");
-
-    maskOutput.printf("unsigned char font_mask[256][2000] = {\n");
-
-    for (int i = 0; i < 256; ++i) {
-        Vector2 letterBounds = app->debugFont->get2DStringBounds(G3D::format("%c", (char)i), 12);
-
-        maskOutput.printf("{");
-
-        maskOutput.printf("%d,%d,", (int)letterBounds.x, (int)letterBounds.y);
-
-        int startX = (i % 16) * app->debugFont->texelSize().x;
-        int startY = (i / 16) * app->debugFont->texelSize().y;
-
-        for (int j = 0; j < (int)app->debugFont->texelSize().y; ++j) {
-            for (int k = 0; k < (int)app->debugFont->texelSize().x; ++k) {
-                int pixelX = startX + k;
-                int pixelY = startY + j;
-                maskOutput.printf("%d,", maskInput.pixel3(pixelX, pixelY).r);
-            }
-        }
-        maskOutput.printf("},\n");
-    }
-
-    maskOutput.printf("};\n");
-    maskOutput.commit();
-*/
 }
 
 
