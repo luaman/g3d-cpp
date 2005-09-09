@@ -13,7 +13,21 @@
 #endif
 
 int CPU_speed_in_MHz();
-void measurePerformance(GWindow* window);
+/**
+ FPS  = frames per second
+ VPS  = vertices per second
+
+ RAM  = vertices stored in main memory
+ VBO  = vertices stored in vertex buffer object
+ VBOI = vertices stored in VBO, interleaved, and using smaller indices (theoretically memory optimal)
+ */
+void measureVertexPerformance(
+    GWindow* w,     
+    int&   numTris,
+    float& beginEndFPS,
+    float& drawElementsRAMFPS, 
+    float& drawElementsVBOFPS, 
+    float& drawElementsVBOIFPS);
 
 void shaderVersions(
     std::string& regStr,
@@ -365,9 +379,32 @@ void App::main() {
 	setDebugMode(false);
 	debugController.setActive(false);
 
-    measurePerformance(window());
-//window()->swapGLBuffers();
-//while(true);
+    {
+        int   numTris;
+        float beginEndFPS;
+        float drawElementsRAMFPS; 
+        float drawElementsVBOFPS;
+        float drawElementsVBOIFPS;
+
+        measureVertexPerformance(window(), numTris, 
+            beginEndFPS, 
+            drawElementsRAMFPS,
+            drawElementsVBOFPS,
+            drawElementsVBOIFPS);
+
+        Log::common()->printf("\nDetailed Performance Tests\n\n");
+        Log::common()->printf("   * Vertex Rate\n");
+        Log::common()->printf("    3 objects with %d tris, 2 lights, 1 texture, and 4 attributes\n\n", numTris); 
+        Log::common()->printf("    Method                           FPS       Mverts/sec\n");
+        Log::common()->printf("    -------------------------------------------------------\n");
+        Log::common()->printf("    glBegin/glEndFPS:                %5.1f      %5.1f\n", beginEndFPS, beginEndFPS * 3 * numTris / 1e6);
+        Log::common()->printf("    glDrawElements(RAM):             %5.1f      %5.1f\n", drawElementsRAMFPS, drawElementsRAMFPS * 3 * numTris / 1e6);
+        Log::common()->printf("    glDrawElements(VBO):             %5.1f      %5.1f\n", drawElementsVBOFPS, drawElementsVBOFPS * 3 * numTris / 1e6);
+        Log::common()->printf("      interleaved + uint16 index:    %5.1f      %5.1f\n", drawElementsVBOIFPS, drawElementsVBOIFPS * 3 * numTris / 1e6);
+        Log::common()->printf("\n\n");
+    }
+    
+    //window()->swapGLBuffers();while(true);
 
     // Choose a card logo
     {

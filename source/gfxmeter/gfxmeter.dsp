@@ -106,7 +106,7 @@ SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\measurePerformance.cpp
+SOURCE=.\measureVertexPerformance.cpp
 # End Source File
 # Begin Source File
 
