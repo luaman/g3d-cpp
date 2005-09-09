@@ -1,20 +1,6 @@
 /**
   @file gfxmeter/main.cpp
 
-
-  multitexture
-  vs level
-  ps level
-
-  cube map
-  shadow map
-  vertex array
-
-  2-side stencil
-  texture compression
-  fbo
-
-  cube map bug (radeon 9000)
   slow/shadow map (radeon)
 
   @author Morgan McGuire, matrix@graphics3d.com
@@ -27,7 +13,7 @@
 #endif
 
 int CPU_speed_in_MHz();
-
+void measurePerformance(GWindow* window);
 
 void shaderVersions(
     std::string& regStr,
@@ -379,6 +365,9 @@ void App::main() {
 	setDebugMode(false);
 	debugController.setActive(false);
 
+    measurePerformance(window());
+//window()->swapGLBuffers();
+//while(true);
 
     // Choose a card logo
     {
@@ -531,7 +520,7 @@ void App::computeFeatureRating() {
 }
 
 App::App(const GAppSettings& settings) : GApp(settings) {
-    window()->setCaption("GFX-Meter 0.5");
+    window()->setCaption("GFX-Meter 0.6");
     applet = new Report(this);
 }
 
