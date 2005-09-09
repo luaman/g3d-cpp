@@ -17,6 +17,7 @@
 
 #include "G3D/debug.h"
 
+
 namespace G3D {
 
 /** Base class for WeakReferenceCountedPointer */

@@ -311,6 +311,10 @@ SOURCE=.\include\G3D\Array.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\G3D\AtomicInt32.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3D\BinaryFormat.h
 # End Source File
 # Begin Source File

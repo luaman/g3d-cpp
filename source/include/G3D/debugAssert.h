@@ -156,10 +156,10 @@ namespace _internal {
     #endif
 
     // In the release build, just define away assertions.
-    #define rawBreak()
-    #define debugAssert(exp)
-    #define debugAssertM(exp, message)
-    #define debugBreak()
+    #define rawBreak() do {} while(0)
+    #define debugAssert(exp) do {} while(0)
+    #define debugAssertM(exp, message) do {} while(0)
+    #define debugBreak() do {} while(0)
 
     // But keep the 'always' assertions
     #define alwaysAssertM(exp, message) { \

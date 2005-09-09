@@ -1160,17 +1160,19 @@ public:
         }
         tinyPoolSize = maxTinyBuffers;
 
-        #   ifdef G3D_WIN32
+#       ifdef G3D_WIN32
             InitializeCriticalSection(&mutex);
-        #   else
+#       else
             pthread_mutex_init(&mutex, NULL);
-        #   endif
+#       endif
     }
 
     ~BufferPool() {
         ::free(tinyHeap);
 #       ifdef G3D_WIN32
             DeleteCriticalSection(&mutex);
+#       else
+            // No destruction on pthreads
 #       endif
     }
 
