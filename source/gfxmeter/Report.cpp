@@ -18,6 +18,8 @@ Report::Report(App* _app) : GApplet(_app), app(_app) {
 
 
 void Report::init()  {
+    popup = NONE;
+
     // Called before Report::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
@@ -54,11 +56,30 @@ void Report::doSimulation(SimTime dt) {
 }
 
 
-void Report::doLogic() {
+void Report::doLogic() {    
+    int w = app->renderDevice->getWidth();
+    int h = app->renderDevice->getHeight();
+
+    Vector2 mouse = app->userInput->mouseXY();
+
+    if (app->userInput->keyPressed(SDL_LEFT_MOUSE_KEY)) {
+        if (popup == NONE) {
+            if (performanceButton.contains(mouse)) {
+                popup = PERFORMANCE;
+            }
+        } else {
+            popup = NONE;
+        }
+    }
+
     if (app->userInput->keyPressed(SDLK_ESCAPE)) {
-        // Even when we aren't in debug mode, quit on escape.
-        endApplet = true;
-        app->endProgram = true;
+        if (popup == NONE) {
+            // Even when we aren't in debug mode, quit on escape.
+            endApplet = true;
+            app->endProgram = true;
+        } else {
+            popup = NONE;
+        }
     }
 
 }
@@ -96,7 +117,7 @@ static void drawBar(RenderDevice* rd, int value, const Vector2& p) {
 }
 
 
-void Report::drawPopup() {
+Rect2D Report::drawPopup(const char* title) {
     int w = app->renderDevice->getWidth();
     int h = app->renderDevice->getHeight();
 
@@ -104,8 +125,27 @@ void Report::drawPopup() {
     app->renderDevice->pushState();
         app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         Rect2D rect = Rect2D::xywh(w/2 - 20, h/2 - 20, w/2, h/2);
-        Draw::rect2D(rect + Vector2(10, 10), app->renderDevice, Color4(0, 0, 0, 0.25));
+        Draw::rect2D(rect + Vector2(5, 5), app->renderDevice, Color4(0, 0, 0, 0.15));
     app->renderDevice->popState();
+
+    // White box
+    Draw::rect2D(rect, app->renderDevice, Color3::white());
+    Draw::rect2DBorder(rect, app->renderDevice, Color3::black());
+
+    // The close box
+    Draw::rect2DBorder(Rect2D::xywh(rect.x1() - 16, rect.y0(), 16, 16), app->renderDevice, Color3::black());
+    app->renderDevice->setColor(Color3::black());
+    app->renderDevice->beginPrimitive(RenderDevice::LINES);
+        app->renderDevice->sendVertex(Vector2(rect.x1() - 14, rect.y0() + 2));
+        app->renderDevice->sendVertex(Vector2(rect.x1() - 2, rect.y0() + 14));   
+        app->renderDevice->sendVertex(Vector2(rect.x1() - 2, rect.y0() + 2));
+        app->renderDevice->sendVertex(Vector2(rect.x1() - 14, rect.y0() + 14));   
+    app->renderDevice->endPrimitive();
+
+    float s = w * 0.013;
+    app->titleFont->draw2D(app->renderDevice, title, Vector2(rect.x0() + 4, rect.y0()), s * 1.5, Color3::black(), Color4::clear(), GFont::XALIGN_LEFT, GFont::YALIGN_TOP);
+
+    return rect;
 }
 
 
@@ -221,7 +261,9 @@ void Report::doGraphics() {
         app->performanceRating = app->renderDevice->getFrameRate() / 2.0;
 
         p.y += s * 4;
-        app->titleFont->draw2D(app->renderDevice, "Speed", p - Vector2(w * 0.0075, 0), s * 2, Color3::white() * 0.4);
+        performanceButton = Rect2D::xywh(p,
+            app->titleFont->draw2D(app->renderDevice, "Speed", p - Vector2(w * 0.0075, 0), s * 2, Color3::white() * 0.4));
+
         p.y += app->reportFont->draw2D(app->renderDevice, format("%5.1f", iRound(app->performanceRating * 10) / 10.0), Vector2(x0 - s*2, p.y), s*2, Color3::red() * 0.5).y;
         drawBar(app->renderDevice, app->performanceRating, p);
 
@@ -234,17 +276,55 @@ void Report::doGraphics() {
 
 
         p.y = h - 50;
-#define PRINT(str) p.y += app->reportFont->draw2D(app->renderDevice, str, p, 8, Color3::black()).y;
+#       define PRINT(str) p.y += app->reportFont->draw2D(app->renderDevice, str, p, 8, Color3::black()).y;
 
         PRINT("These ratings are based on the performance of G3D apps.");
         PRINT("They may not be representative of overall 3D performance.");
         PRINT("Speed is based on both processor and graphics card. Upgrading");
         PRINT("your graphics driver may improve Quality and Features.");
-
+#       undef  PRINT
 #       undef LABEL
-        
-        //  Draw the popup
-        drawPopup();
+
+        switch (popup) {
+        case NONE:
+            break;
+
+        case PERFORMANCE:
+            {
+                //  Draw the popup box
+                Rect2D box = drawPopup("Performance Details");
+                p.x = box.x0() + 10;
+                p.y = box.y0() + 30;
+
+                std::string str;
+
+                float factor = 3 * app->vertexPerformance.numTris / 1e6;
+
+#               define PRINT(cap, val)   \
+                    app->reportFont->draw2D(app->renderDevice, cap, p, s, Color3::black());\
+                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val > 0) ? \
+                        format("%5.1f", app->vertexPerformance.val) : \
+                        std::string("X"), p + Vector2(200, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
+                    p.y += app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val > 0) ? \
+                        format("%5.1f", factor * app->vertexPerformance.val) : \
+                        std::string("X"), p + Vector2(300, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT).y;
+
+                app->reportFont->draw2D(app->renderDevice, "FPS*", p + Vector2(200, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
+                p.y += app->reportFont->draw2D(app->renderDevice, "MVerts/s", p + Vector2(300, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
+                
+                PRINT("glBegin/glEnd", beginEndFPS);
+                PRINT("glDrawElements", drawElementsRAMFPS); 
+                PRINT("  + VBO", drawElementsVBOFPS);
+                PRINT("  + uint16", drawElementsVBO16FPS);
+                PRINT("  + interleaving", drawElementsVBOIFPS);
+                PRINT("Peak (no shading)", drawElementsVBOPeakFPS);
+#               undef PRINT
+
+                p.y += s;
+                p.y += app->reportFont->draw2D(app->renderDevice, format("* FPS at %d polys/frame", 
+                    app->vertexPerformance.numTris), p + Vector2(20, 0), s, Color3::black()).y;
+            }
+        }
 
     app->renderDevice->pop2D();
 }

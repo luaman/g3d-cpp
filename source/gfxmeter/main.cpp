@@ -14,7 +14,7 @@
 
 #include "Report.h"
 #include "App.h"
-#define FAST
+//#define FAST
 
 static const float gfxMeterVersion = 0.6;
 
@@ -34,7 +34,9 @@ void measureVertexPerformance(
     float& beginEndFPS,
     float& drawElementsRAMFPS, 
     float& drawElementsVBOFPS, 
-    float& drawElementsVBOIFPS);
+    float& drawElementsVBO16FPS, 
+    float& drawElementsVBOIFPS,
+    float& drawElementsVBOPeakFPS);
 
 void shaderVersions(
     std::string& regStr,
@@ -145,7 +147,7 @@ void App::main() {
     Log::common()->printf("   GLSL:      %s\n", glslShader.c_str());
     Log::common()->printf("\n\n");
 
-
+#   ifndef FAST
     {
         measureVertexPerformance(
             window(),
@@ -153,7 +155,9 @@ void App::main() {
             vertexPerformance.beginEndFPS, 
             vertexPerformance.drawElementsRAMFPS,
             vertexPerformance.drawElementsVBOFPS,
-            vertexPerformance.drawElementsVBOIFPS);
+            vertexPerformance.drawElementsVBO16FPS,
+            vertexPerformance.drawElementsVBOIFPS,
+            vertexPerformance.drawElementsVBOPeakFPS);
 
         Log::common()->printf("\nDetailed Performance Tests\n\n");
         Log::common()->printf("   * Vertex Rate\n");
@@ -161,11 +165,14 @@ void App::main() {
         Log::common()->printf("    Method                           FPS       Mverts/sec\n");
         Log::common()->printf("    -------------------------------------------------------\n");
         Log::common()->printf("    glBegin/glEndFPS:                %5.1f      %5.1f\n", vertexPerformance.beginEndFPS, vertexPerformance.beginEndFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("    glDrawElements(RAM):             %5.1f      %5.1f\n", vertexPerformance.drawElementsRAMFPS, vertexPerformance.drawElementsRAMFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("    glDrawElements(VBO):             %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOFPS, vertexPerformance.drawElementsVBOFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("      interleaved + uint16 index:    %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOIFPS, vertexPerformance.drawElementsVBOIFPS * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("    glDrawElements:                  %5.1f      %5.1f\n", vertexPerformance.drawElementsRAMFPS, vertexPerformance.drawElementsRAMFPS * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("        + VBO                        %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOFPS, vertexPerformance.drawElementsVBOFPS * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("        + uint16 index               %5.1f      %5.1f\n", vertexPerformance.drawElementsVBO16FPS, vertexPerformance.drawElementsVBO16FPS * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("        + interleaved                %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOIFPS, vertexPerformance.drawElementsVBOIFPS * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("    Peak                             %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOPeakFPS, vertexPerformance.drawElementsVBOPeakFPS * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("\n\n");
     }
+#   endif
     
     // Load objects here
     sky = NULL;//Sky::create(NULL, dataDir + "sky/");
@@ -251,7 +258,7 @@ void App::computeFeatureRating() {
 App::App(const GAppSettings& settings) : GApp(settings) {
     window()->setCaption(format("gfx-meter %03.1f", gfxMeterVersion));
 
-#   ifdef FAST
+#   ifndef FAST
         showSplashScreen();
 #   endif
 

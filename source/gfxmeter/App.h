@@ -37,7 +37,10 @@ public:
         float               beginEndFPS;
         float               drawElementsRAMFPS; 
         float               drawElementsVBOFPS; 
+        float               drawElementsVBO16FPS; 
         float               drawElementsVBOIFPS;
+        /* Turn everything off and just slam vertices through */
+        float               drawElementsVBOPeakFPS;
     };
 
     VertexPerformance       vertexPerformance;

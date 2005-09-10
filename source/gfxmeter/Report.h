@@ -62,13 +62,20 @@ class Report : public GApplet {
     MD2                 knight;
     MD2                 ogre;
 
+    enum Popup {NONE, PERFORMANCE};
+
+    Popup               popup;
+
+    Rect2D              performanceButton;
+    Rect2D              closeButton;
+
     class App*          app;
 
     /** Draw some nice graphics */
     void doFunStuff();
 
-    /** Draws the popup window, but not its contents */
-    void drawPopup();
+    /** Draws the popup window, but not its contents.  Returns the window bounds. */
+    Rect2D drawPopup(const char* title);
 
 public:
 

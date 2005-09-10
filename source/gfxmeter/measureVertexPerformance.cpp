@@ -10,11 +10,16 @@
 float measureBeginEndPerformance(class Model&);
 float measureDrawElementsRAMPerformance(class Model&);
 float measureDrawElementsVBOPerformance(class Model&);
+float measureDrawElementsVBO16Performance(class Model&);
 float measureDrawElementsVBOIPerformance(class Model&);
+float measureDrawElementsVBOPeakPerformance(class Model&);
 
 /** Number of frames to render in tests */
-static const int frames = 15;
+static const int frames = 16;
 
+
+/** Number of models per frame */
+int count = 7;
 
 class Model {
 private:
@@ -93,7 +98,9 @@ void measureVertexPerformance(
     float& beginEndFPS,
     float& drawElementsRAMFPS, 
     float& drawElementsVBOFPS, 
-    float& drawElementsVBOIFPS) {
+    float& drawElementsVBO16FPS, 
+    float& drawElementsVBOIFPS,
+    float& drawElementsVBOPeakFPS) {
 
     window = w;
     Model model("bunny.ifs");
@@ -101,10 +108,11 @@ void measureVertexPerformance(
     beginEndFPS = measureBeginEndPerformance(model);
     drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
     drawElementsVBOFPS = measureDrawElementsVBOPerformance(model);
+    drawElementsVBO16FPS = measureDrawElementsVBO16Performance(model);
     drawElementsVBOIFPS = measureDrawElementsVBOIPerformance(model);
+    drawElementsVBOPeakFPS = measureDrawElementsVBOPeakPerformance(model);
 
-    numTris = 3 * model.cpuIndex.size();
-
+    numTris = count * model.cpuIndex.size() / 3;
 }
 
 
@@ -165,8 +173,6 @@ float measureBeginEndPerformance(Model& model) {
 
     configureCameraAndLights();
     
-    // number of models per frame
-    int count = 3;
 
     float k = 0;
 
@@ -224,9 +230,6 @@ float measureDrawElementsRAMPerformance(Model& model) {
 
     configureCameraAndLights();
     
-    // number of models per frame
-    int count = 3;
-
     float k = 0;
 
     double t0 = System::time();
@@ -330,9 +333,6 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
     configureCameraAndLights();
     
-    // number of models per frame
-    int count = 3;
-
     float k = 0;
 
     double t0 = System::time();
@@ -376,6 +376,120 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
     return frames / (System::time() - t0);
 }
+
+
+
+float measureDrawElementsVBO16Performance(Model& model) {
+    
+    bool hasVBO = 
+        (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
+            (glGenBuffersARB != NULL) && 
+            (glBufferDataARB != NULL) &&
+            (glDeleteBuffersARB != NULL);
+
+    if (! hasVBO) {
+        return 0.0;
+    }
+
+    // Load the vertex arrays
+
+    // Number of indices
+    const int N = model.cpuIndex.size();
+    // Number of vertices
+    const int V = model.cpuVertex.size();
+    const int*   index   = model.cpuIndex.begin();
+    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
+    const float* normal  = reinterpret_cast<const float*>(model.cpuNormal.begin());
+    const float* color   = reinterpret_cast<const float*>(model.cpuColor.begin());
+    const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
+
+    std::vector<unsigned short> index16(N);
+    for (int i = 0; i < N; ++i) {
+        index16[i] = (uint16)index[i];
+    }
+    
+    GLuint vbo, indexBuffer;
+    glGenBuffersARB(1, &vbo);
+    glGenBuffersARB(1, &indexBuffer);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+    size_t vertexSize   = V * sizeof(float) * 3;
+    size_t normalSize   = V * sizeof(float) * 3;
+    size_t texCoordSize = V * sizeof(float) * 2;
+    size_t colorSize    = V * sizeof(float) * 3;   
+    size_t totalSize    = vertexSize + normalSize + texCoordSize + colorSize;
+
+    size_t indexSize    = N * sizeof(unsigned short);
+
+    // Pointers relative to the start of the vbo in video memory
+    // (would interleaving be faster?)
+    GLintptrARB vertexPtr   = 0;
+    GLintptrARB normalPtr   = vertexSize + vertexPtr;
+    GLintptrARB colorPtr    = normalSize + normalPtr;
+    GLintptrARB texCoordPtr = colorSize  + colorPtr;
+
+    GLintptrARB indexPtr    = 0;
+
+    // Upload data
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, index16.begin(), GL_STATIC_DRAW_ARB);
+
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
+
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,  vertexSize, vertex);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,       colorSize, color);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,      normalSize, normal);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, texCoord);
+
+    configureCameraAndLights();
+    
+    float k = 0;
+
+    double t0 = System::time();
+    for (int j = 0; j < frames; ++j) {
+        k += 3;
+        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, model.textureID);
+
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
+        glColorPointer(3, GL_FLOAT, 0, (void*)colorPtr);
+        glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+        glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+
+        for (int c = 0; c < count; ++c) {
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glTranslatef(c - (count - 1) / 2.0, 0, -2);
+            glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+            glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_SHORT, (void*)indexPtr);
+        }
+
+        glSwapBuffers();
+
+    }
+
+
+    glPopClientAttrib();
+    glPopAttrib();
+
+    glDeleteBuffersARB(1, &indexBuffer);
+    glDeleteBuffersARB(1, &vbo);
+
+    return frames / (System::time() - t0);
+}
+
 
 
 float measureDrawElementsVBOIPerformance(Model& model) {
@@ -466,9 +580,6 @@ float measureDrawElementsVBOIPerformance(Model& model) {
 
     configureCameraAndLights();
     
-    // number of models per frame
-    int count = 3;
-
     float k = 0;
 
     double t0 = System::time();
@@ -498,6 +609,107 @@ float measureDrawElementsVBOIPerformance(Model& model) {
 
         glSwapBuffers();
 
+    }
+
+
+    glPopClientAttrib();
+    glPopAttrib();
+
+    glDeleteBuffersARB(1, &indexBuffer);
+    glDeleteBuffersARB(1, &vbo);
+
+    return frames / (System::time() - t0);
+}
+
+float measureDrawElementsVBOPeakPerformance(Model& model) {
+    
+    bool hasVBO = 
+        (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
+            (glGenBuffersARB != NULL) && 
+            (glBufferDataARB != NULL) &&
+            (glDeleteBuffersARB != NULL);
+
+    if (! hasVBO) {
+        return 0.0;
+    }
+
+    // Load the vertex arrays
+
+    // Number of indices
+    const int N = model.cpuIndex.size();
+    // Number of vertices
+    const int V = model.cpuVertex.size();
+    const int*   index   = model.cpuIndex.begin();
+    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
+
+    std::vector<unsigned short> index16(N);
+    for (int i = 0; i < N; ++i) {
+        index16[i] = (uint16)index[i];
+    }
+    
+    GLuint vbo, indexBuffer;
+    glGenBuffersARB(1, &vbo);
+    glGenBuffersARB(1, &indexBuffer);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+    size_t vertexSize   = V * sizeof(float) * 3;
+    size_t totalSize    = vertexSize;
+    size_t indexSize    = N * sizeof(unsigned short);
+
+    // Pointers relative to the start of the vbo in video memory
+    // (would interleaving be faster?)
+    GLintptrARB vertexPtr   = 0;
+
+    GLintptrARB indexPtr    = 0;
+
+    // Upload data
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, index16.begin(), GL_STATIC_DRAW_ARB);
+
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexSize, vertex, GL_STATIC_DRAW_ARB);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    float w = 0.8, h = 0.6;
+    glFrustum(-w/2, w/2, -h/2, h/2, 0.5, 100);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glShadeModel(GL_SMOOTH);
+    glDisable(GL_NORMALIZE);
+    glDisable(GL_COLOR_MATERIAL);
+
+    glCullFace(GL_BACK);
+    
+    float k = 0;
+
+    double t0 = System::time();
+    for (int j = 0; j < frames; ++j) {
+        k += 3;
+        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+
+        for (int c = 0; c < count; ++c) {
+            static const float col[] = {1, 0, 0, 1, 0, 0};
+            glColor3fv(col + (c % 3));
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glTranslatef(c - (count - 1) / 2.0, 0, -2);
+            glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+            glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_SHORT, (void*)indexPtr);
+        }
+
+        glSwapBuffers();
     }
 
 
