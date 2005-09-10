@@ -180,6 +180,10 @@ public:
         return xyxy(x, y, x + w, y + h);
     }
 
+    inline static Rect2D xywh(const Vector2& v, const Vector2& w) {
+        return xyxy(v.x, v.y, v.x + w.x, v.y + w.y);
+    }
+
     inline bool contains(const Vector2& v) const {
         return (v.x >= min.x) && (v.y >= min.y) && (v.x <= max.x) && (v.y <= max.y);
     }
