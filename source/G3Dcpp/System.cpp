@@ -286,29 +286,34 @@ void System::init() {
         // a string with the processor vendor tag.
         #ifdef _MSC_VER
             __asm {
+                push eax
+                push ebx
+                push ecx
+                push edx
                 mov eax, 0
                 cpuid
                 mov eaxreg, eax
                 mov ebxreg, ebx
                 mov edxreg, edx
                 mov ecxreg, ecx
+                pop edx
+                pop ecx
+                pop ebx
+                pop eax
             }
         #elif defined(__GNUC__) && defined(i386)
             asm (
-                "mov %%eax, 0\n"
+                "movl $0, %%eax\n"
                 "cpuid\n"
-                "mov %[eaxreg], %%eax\n"
-                "mov %[ebxreg], %%ebx\n"
-                "mov %[edxreg], %%edx\n"
-                "mov %[ecxreg], %%ecx\n" : 
-                [eaxreg] "=m" (eaxreg), 
-                [ebxreg] "=m" (ebxreg), 
-                [edxreg] "=m" (edxreg), 
-                [ecxreg] "=m" (ecxreg) 
+                : 
+                "=a" (eaxreg), 
+                "=b" (ebxreg), 
+                "=c" (edxreg), 
+                "=d" (ecxreg) 
                 :
                 // No inputs
                 : 
-                "eax","ebx","ecx","edx" );
+                "%eax","%ebx","%ecx","%edx" );
         #else
             ebxreg = 0;
             edxreg = 0;
@@ -328,13 +333,28 @@ void System::init() {
         // Then we read the ext. CPUID level 0x80000000
         #ifdef _MSC_VER
             __asm {
+                push eax
+                push ebx
+                push ecx
+                push edx
                 mov eax, 0x80000000
                 cpuid
                 mov eaxreg, eax
+                pop edx
+                pop ecx
+                pop ebx
+                pop eax
             }
         #elif defined(__GNUC__) && defined(i386)
-            // TODO: Linux
-            eaxreg = 0;
+            asm (
+                "movl $0x80000000, %%eax \n"
+                "cpuid                   \n"
+                : 
+                "=a" (eaxreg)
+                :
+                // No inputs
+                : 
+                "%eax", "%ebx", "%ecx", "%edx" );
         #else
             eaxreg = 0;
         #endif
@@ -492,7 +512,10 @@ void checkForCPUID() {
     
 #   ifdef _MSC_VER
         __asm {
-            pushfd
+                push eax
+                push ebx
+                pushfd
+                pushfd
                 pop   eax
                 mov   ebx, eax
                 xor   eax, 0x00200000 
@@ -500,31 +523,31 @@ void checkForCPUID() {
                 popfd
                 pushfd
                 pop   eax
+                popfd
                 xor   eax, ebx 
                 mov   bitChanged, eax
+                pop ebx
+                pop eax
         }
 
 #    elif defined(__GNUC__) && defined(i386)
         // Linux
-        int has_CPUID = 0;
         __asm__ (
 "        pushfl                      # Get original EFLAGS             \n"
 "        popl    %%eax                                                 \n"
-"        movl    %%eax,%%ecx                                           \n"
-"        xorl    $0x200000,%%eax     # Flip ID bit in EFLAGS           \n"
+"        movl    %%eax, %%ecx                                          \n"
+"        xorl    $0x200000, %%eax    # Flip ID bit in EFLAGS           \n"
 "        pushl   %%eax               # Save new EFLAGS value on stack  \n"
 "        popfl                       # Replace current EFLAGS value    \n"
 "        pushfl                      # Get new EFLAGS                  \n"
 "        popl    %%eax               # Store new EFLAGS in EAX         \n"
-"        xorl    %%ecx,%%eax         # Can not toggle ID bit,          \n"
-"        jz      1f                  # Processor=80486                 \n"
-"        movl    $1,%0               # We have CPUID support           \n"
-"1:                                                                    \n"
-        : "=m" (has_CPUID)
-        :
+"        popfl                                                         \n"
+"        xorl    %%ecx, %%eax        # Can not toggle ID bit,          \n"
+"        movl    %%eax, %0           # We have CPUID support           \n"
+        : "=m" (bitChanged)
+        : // No inputs
         : "%eax", "%ecx"
         );
-        _cpuID = (has_CPUID != 0);
 
 #    else               
        // Unknown architecture
@@ -565,20 +588,14 @@ void getStandardProcessorExtensions() {
     #elif defined(__GNUC__) && defined(i386)
         // Linux
         __asm__ (
-"push %%eax\n"
-"push %%ebx\n"
-"push %%ecx\n"
-"push %%edx\n"
-"        xorl    %%eax,%%eax                                           \n"
-"        incl    %%eax                                                 \n"
-"        cpuid                       # Get family/model/stepping/features\n"
-"        movl    %%edx,%0                                              \n"
-"pop %%edx\n"
-"pop %%ecx\n"
-"pop %%ebx\n"
-"pop %%eax\n"
-        : "=m" (features)
-        );
+                "movl    $1, %%eax                                                 \n"
+                "cpuid                       # Get family/model/stepping/features  \n"
+                : 
+                "=d" (features)
+                : 
+                // No inputs
+                : 
+                "%eax", "%ebx", "%ecx", "%edx" );
 
     #else
         // Other
