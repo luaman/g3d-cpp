@@ -539,6 +539,7 @@ void checkForCPUID() {
         // Linux
         __asm__ (
 "        pushfl                      # Get original EFLAGS             \n"
+"        pushfl                                                        \n"
 "        popl    %%eax                                                 \n"
 "        movl    %%eax, %%ecx                                          \n"
 "        xorl    $0x200000, %%eax    # Flip ID bit in EFLAGS           \n"
