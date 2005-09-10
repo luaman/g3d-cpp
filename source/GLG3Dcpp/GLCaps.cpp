@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-09-07
+  @edited  2005-09-10
 */
 
 #include "GLG3D/GLCaps.h"
@@ -556,6 +556,8 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
 
     if (initialized) {
         return value;
+    } else {
+        initialized = true;
     }
 
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
@@ -718,5 +720,243 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
 
     return value;
 }
+
+
+/** Called from hasBug_slowVBO */
+static void configureCameraAndLights() {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    float w = 0.8, h = 0.6;
+    glFrustum(-w/2, w/2, -h/2, h/2, 0.5, 100);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glShadeModel(GL_SMOOTH);
+
+    glCullFace(GL_BACK);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    {
+        float pos[4] = {-1.0, 1.0, 1.0, 0.0};
+        glLightfv(GL_LIGHT0, GL_POSITION, pos);
+
+        float col[4] = {1.0, 1.0, 1.0, 1.0};
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, col);
+
+    }
+
+    glEnable(GL_LIGHT1);
+    {
+        float pos[4] = {1.0, -1.0, 1.0, 0.0};
+        glLightfv(GL_LIGHT1, GL_POSITION, pos);
+
+        float col[4] = {0.4, 0.1, 0.1, 1.0};
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, col);
+    }
+
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    {
+        float amb[4] = {0.5, 0.5, 0.5, 1.0};
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+    }
+
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+}
+
+bool GLCaps::hasBug_slowVBO() {
+    static bool initialized = false;
+    static bool value;
+
+    if (initialized) {
+        return value;
+    } else {
+        initialized = true;
+    }
+    
+    bool hasVBO = 
+        (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
+            (glGenBuffersARB != NULL) && 
+            (glBufferDataARB != NULL) &&
+            (glDeleteBuffersARB != NULL);
+
+    if (! hasVBO) {
+        value = false;
+        return false;
+    }
+
+    // Load the vertex arrays
+
+    // Number of indices
+    const int N = 3 * 10000;
+
+    // Number of vertices
+    const int V = 4096;
+
+    // Make some random triangles
+    std::vector<int> index(N);
+    for (int i = 0; i < N; ++i) {
+        index[i] = rand() % V;
+    }
+
+    // Create data
+    std::vector<float> vertex(V * 3), normal(V * 3), texCoord(V * 2);
+    for (int i = 0; i < V; ++i) {
+        float n[3], s = 0;
+
+        for (int j = 0; j < 3; ++j) {
+            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 2;
+            n[j] = (rand() / (double)RAND_MAX) - 0.5;
+            s += n[j] * n[j];
+        }
+        if (s == 0) {
+            s = 1;
+        } else {
+            s = 1.0 / sqrt(s);
+        }
+        for (int j = 0; j < 3; ++j) {
+            normal[i * 3 + j] = n[j] / s;
+        }
+
+        for (int j = 0; j < 2; ++j) {
+            texCoord[i * 2 + j] = rand() / (double)RAND_MAX;
+        }
+    }
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+    GLuint vbo, indexBuffer;
+    glGenBuffersARB(1, &vbo);
+    glGenBuffersARB(1, &indexBuffer);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+    size_t vertexSize   = V * sizeof(float) * 3;
+    size_t normalSize   = V * sizeof(float) * 3;
+    size_t texCoordSize = V * sizeof(float) * 2;
+    size_t totalSize    = vertexSize + normalSize + texCoordSize;
+
+    size_t indexSize    = N * sizeof(int);
+
+    // Pointers relative to the start of the vbo in video memory
+    // (would interleaving be faster?)
+    GLintptrARB vertexPtr   = 0;
+    GLintptrARB normalPtr   = vertexSize + vertexPtr;
+    GLintptrARB texCoordPtr = normalSize  + normalPtr;
+
+    GLintptrARB indexPtr    = 0;
+
+    // Upload data
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, index.begin(), GL_STATIC_DRAW_ARB);
+
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
+
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, vertex.begin());
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, normal.begin());
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, texCoord.begin());
+
+    configureCameraAndLights();
+    
+    // number of objects to draw
+    const int count = 2;
+    const int frames = 3;
+
+    // Time for each rendering method
+    double VBOTime;
+    double RAMTime;
+
+    {
+        double t0 = 0;
+        float k = 0;
+        for (int j = 0; j < frames; ++j) {
+            // Don't count the first frame against us; it is cache warmup
+            if (frames == 1) {
+                t0 = System::time();
+            }
+            k += 3;
+            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            //glEnable(GL_TEXTURE_2D);
+            //glBindTexture(GL_TEXTURE_2D, model.textureID);
+
+            glEnableClientState(GL_NORMAL_ARRAY);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+            glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
+            glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+            glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+
+            for (int c = 0; c < count; ++c) {
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                glTranslatef(c - (count - 1) / 2.0, 0, -2);
+                glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+                glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
+            }
+        }
+        VBOTime = System::time() - t0;
+    }
+
+    glPopClientAttrib();
+    glPopAttrib();
+
+    glDeleteBuffersARB(1, &indexBuffer);
+    glDeleteBuffersARB(1, &vbo);
+
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    {
+        double t0 = 0;
+        float k = 0;
+        for (int j = 0; j < frames; ++j) {
+            // Don't count the first frame against us; it is cache warmup
+            if (frames == 1) {
+                t0 = System::time();
+            }
+            k += 3;
+            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            //glEnable(GL_TEXTURE_2D);
+            //glBindTexture(GL_TEXTURE_2D, model.textureID);
+
+            glEnableClientState(GL_NORMAL_ARRAY);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+            glNormalPointer(GL_FLOAT, 0, normal.begin());
+            glTexCoordPointer(2, GL_FLOAT, 0, texCoord.begin());
+            glVertexPointer(3, GL_FLOAT, 0, vertex.begin());
+
+            for (int c = 0; c < count; ++c) {
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                glTranslatef(c - (count - 1) / 2.0, 0, -2);
+                glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+                glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, index.begin());
+            }
+        }
+        RAMTime = System::time() - t0;
+    }
+    glPopClientAttrib();
+    glPopAttrib();
+
+    glPopClientAttrib();
+    glPopAttrib();
+
+    // See if the RAM performance was conservatively faster.
+    value = RAMTime < VBOTime * 0.9;
+    return value;
+}
+    
 
 }

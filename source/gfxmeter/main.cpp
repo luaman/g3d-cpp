@@ -21,12 +21,13 @@ static const float gfxMeterVersion = 0.6;
 int CPU_speed_in_MHz();
 
 /**
- FPS  = frames per second
- VPS  = vertices per second
+ FPS   = frames per second
+ VPS   = vertices per second
 
- RAM  = vertices stored in main memory
- VBO  = vertices stored in vertex buffer object
- VBOI = vertices stored in VBO, interleaved, and using smaller indices (theoretically memory optimal)
+ RAM   = vertices stored in main memory
+ VBO   = vertices stored in vertex buffer object
+ VBO16 = using smaller indices
+ VBOI  = vertices stored in VBO, interleaved
  */
 void measureVertexPerformance(
     GWindow* w,     
@@ -169,7 +170,7 @@ void App::main() {
         Log::common()->printf("        + VBO                        %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOFPS, vertexPerformance.drawElementsVBOFPS * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("        + uint16 index               %5.1f      %5.1f\n", vertexPerformance.drawElementsVBO16FPS, vertexPerformance.drawElementsVBO16FPS * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("        + interleaved                %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOIFPS, vertexPerformance.drawElementsVBOIFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("    Peak                             %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOPeakFPS, vertexPerformance.drawElementsVBOPeakFPS * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("    Peak (no shading)                %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOPeakFPS, vertexPerformance.drawElementsVBOPeakFPS * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("\n\n");
     }
 #   endif
@@ -185,10 +186,14 @@ void App::countBugs() {
     bugCount = 0;
 
     if (GLCaps::hasBug_glMultiTexCoord3fvARB()) {
-        // Radeon mobility has a cube map bug where 
-        // tex coords are handled incorrectly.
         ++bugCount;
-    } else if (beginsWith(GLCaps::renderer(), "RADEON") &&
+    } 
+
+    if (GLCaps::hasBug_slowVBO()) {
+        ++bugCount;
+    } 
+    
+    if (beginsWith(GLCaps::renderer(), "RADEON") &&
         GLCaps::supports_GL_ARB_shadow() &&
         GLCaps::supports_GL_ARB_shading_language_100()) {
         // Slow shadow map and GLSL texture binding bugs.
@@ -256,6 +261,7 @@ void App::computeFeatureRating() {
 }
 
 App::App(const GAppSettings& settings) : GApp(settings) {
+
     window()->setCaption(format("gfx-meter %03.1f", gfxMeterVersion));
 
 #   ifndef FAST

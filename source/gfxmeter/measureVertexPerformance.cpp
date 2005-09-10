@@ -105,6 +105,7 @@ void measureVertexPerformance(
     window = w;
     Model model("bunny.ifs");
 
+
     beginEndFPS = measureBeginEndPerformance(model);
     drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
     drawElementsVBOFPS = measureDrawElementsVBOPerformance(model);
@@ -620,6 +621,7 @@ float measureDrawElementsVBOIPerformance(Model& model) {
 
     return frames / (System::time() - t0);
 }
+
 
 float measureDrawElementsVBOPeakPerformance(Model& model) {
     

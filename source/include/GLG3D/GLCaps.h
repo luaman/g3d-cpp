@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2005-09-07
+ @edited  2005-09-10
 
  Copyright 2005, Morgan McGuire.
  All rights reserved.
@@ -67,10 +67,11 @@ namespace G3D {
 	</UL>
 
   These methods do not appear in the documentation because they
-  are generated using macros.  They may return false when 
-  the extension string actually contains the extension because G3D
-  recognizes known bugs in drivers and disables extensions if they
-  are known to have a bug in the specific version present.
+  are generated using macros.
+
+  The <code>hasBug_</code> methods detect specific common bugs on
+  graphics cards.  They can be used to switch to fallback rendering
+  paths.
  */
 class GLCaps {
 private:
@@ -185,13 +186,29 @@ public:
      Returns true if cube map support has a specific known bug on this card.
      Returns false if cube maps are not supported at all on this card.
 
-     Call after OpenGL is intialized.  Will render on the backbuffer.
+     Call after OpenGL is intialized.  Will render on the backbuffer but not make
+     the backbuffer visible.  Safe to call multiple times; the result is memoized.
 
      On some Radeon Mobility cards, glMultiTexCoord3fvARB and glVertex4fv together
      create incorrect texture lookups from cube maps.  Using glVertex3fv or glTexCoord
      with glActiveTextureARB avoids this problem, as does using normal map generation.
      */
     static bool hasBug_glMultiTexCoord3fvARB();
+
+    /**
+     Returns true if GL_VERTEX_BUFFER_OBJECTs, which are supposed to be faster
+     than rendering out of main memory, are actually slower than main memory 
+     on this machine.  If this returns true, then glDrawArrays out of main memory
+     was faster than VBO and the bug is present.  On cards with this bug, it has
+     also been observed that glBegin/glEnd is even faster than glDrawArrays, which
+     is a second bug not currently detected by GLCaps.
+
+     Call after OpenGL is intialized.  Will render on the backbuffer but not make
+     the backbuffer visible.  Safe to call multiple times; the result is memoized.
+
+     Returns false if VBO is not supported at all on this card.
+     */
+    static bool hasBug_slowVBO();
 
 };
 
