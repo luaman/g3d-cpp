@@ -303,13 +303,17 @@ void System::init() {
             }
         #elif defined(__GNUC__) && defined(i386)
             asm (
-                "movl $0, %%eax\n"
-                "cpuid\n"
+                "movl $0, %%eax \n"
+                "cpuid          \n"
+                "movl %%eax, %0 \n"
+                "movl %%ebx, %1 \n"
+                "movl %%ecx, %2 \n"
+                "movl %%edx, %3 \n"
                 : 
-                "=a" (eaxreg), 
-                "=b" (ebxreg), 
-                "=c" (edxreg), 
-                "=d" (ecxreg) 
+                "=m" (eaxreg), 
+                "=m" (ebxreg), 
+                "=m" (ecxreg), 
+                "=m" (edxreg) 
                 :
                 // No inputs
                 : 
@@ -349,8 +353,9 @@ void System::init() {
             asm (
                 "movl $0x80000000, %%eax \n"
                 "cpuid                   \n"
+                "movl %%eax, %0          \n"
                 : 
-                "=a" (eaxreg)
+                "=m" (eaxreg)
                 :
                 // No inputs
                 : 
@@ -590,8 +595,9 @@ void getStandardProcessorExtensions() {
         __asm__ (
                 "movl    $1, %%eax                                                 \n"
                 "cpuid                       # Get family/model/stepping/features  \n"
+                "movl    %%edx, %0                                                 \n"
                 : 
-                "=d" (features)
+                "=m" (features)
                 : 
                 // No inputs
                 : 
