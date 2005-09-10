@@ -57,7 +57,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copying data files...
-PostBuild_Cmds=..\bin\CopyIfNewer --exclusions data-files\* build\install
+PostBuild_Cmds=..\bin\CopyIfNewer --exclusions data-files\* build\install	..\bin\CopyIfNewer --exclusions ..\demos\*.dll build\install
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "gfxmeter - Win32 Debug"
@@ -88,7 +88,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copying data files...
-PostBuild_Cmds=..\bin\CopyIfNewer --exclusions data-files\* build\install
+PostBuild_Cmds=..\bin\CopyIfNewer --exclusions data-files\* build\install	..\bin\CopyIfNewer --exclusions ..\demos\*.dll build\install
 # End Special Build Tool
 
 !ENDIF 

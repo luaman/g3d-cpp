@@ -15,7 +15,7 @@
 #include "Report.h"
 #include "App.h"
 //#define FAST
-
+ 
 static const float gfxMeterVersion = 0.6;
 
 int CPU_speed_in_MHz();
