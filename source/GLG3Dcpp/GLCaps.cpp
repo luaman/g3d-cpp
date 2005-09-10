@@ -10,6 +10,7 @@
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/RenderDevice.h" // TODO: remove
 #include <sstream>
 
 #ifdef G3D_WIN32
@@ -765,6 +766,7 @@ static void configureCameraAndLights() {
     glEnable(GL_COLOR_MATERIAL);
 }
 
+
 bool GLCaps::hasBug_slowVBO() {
     static bool initialized = false;
     static bool value;
@@ -789,15 +791,15 @@ bool GLCaps::hasBug_slowVBO() {
     // Load the vertex arrays
 
     // Number of indices
-    const int N = 3 * 10000;
+    const int N = 3 * 20000;
 
     // Number of vertices
-    const int V = 2000;
+    const int V = 5000;
 
     // Make some random triangles
     std::vector<int> index(N);
     for (int i = 0; i < N; ++i) {
-        index[i] = (i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
+        index[i] = i % V;//(i * 2 + (int)(20 * (float)rand() / RAND_MAX)) % V;
     }
 
     // Create data
@@ -806,7 +808,8 @@ bool GLCaps::hasBug_slowVBO() {
         float n[3], s = 0;
 
         for (int j = 0; j < 3; ++j) {
-            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 2;
+            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.2;
+
             n[j] = (rand() / (double)RAND_MAX) - 0.5;
             s += n[j] * n[j];
         }
@@ -820,7 +823,7 @@ bool GLCaps::hasBug_slowVBO() {
         }
 
         for (int j = 0; j < 2; ++j) {
-            texCoord[i * 2 + j] = rand() / (double)RAND_MAX;
+            texCoord[i * 2 + j] = vertex[i * 3 + j];
         }
     }
 
@@ -860,10 +863,9 @@ bool GLCaps::hasBug_slowVBO() {
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, normal.begin());
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, texCoord.begin());
 
-    configureCameraAndLights();
     
     // number of objects to draw
-    const int count = 2;
+    const int count = 10;
     const int frames = 3;
 
     debugAssert(frames >= 2);
@@ -872,10 +874,18 @@ bool GLCaps::hasBug_slowVBO() {
     double VBOTime;
     double RAMTime;
 
+    configureCameraAndLights();
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+
+    //////////// VBO
     {
         double t0 = 0;
         float k = 0;
+        glFinish();
         for (int j = 0; j < frames; ++j) {
+            glColor3f(1, .5, 0);
+
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
                 t0 = System::time();
@@ -903,6 +913,7 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
             }
+    //        RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers(); while(true);
         }
         glFinish();
         VBOTime = System::time() - t0;
@@ -914,12 +925,20 @@ bool GLCaps::hasBug_slowVBO() {
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
 
+    ///////////////////////// RAM
     glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
     glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+    configureCameraAndLights();
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
     {
         double t0 = 0;
         float k = 0;
+        glFinish();
         for (int j = 0; j < frames; ++j) {
+            glColor3f(1, .5, 0);
+
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
                 t0 = System::time();
@@ -954,13 +973,14 @@ bool GLCaps::hasBug_slowVBO() {
     glPopClientAttrib();
     glPopAttrib();
 
+
     glPopClientAttrib();
     glPopAttrib();
 
     Log::common()->printf("RAM time = %fs     VBO time = %fs\n", RAMTime, VBOTime);
 
     // See if the RAM performance was conservatively faster.
-    value = RAMTime < VBOTime * 0.9;
+    value = RAMTime < VBOTime * 0.7;
     return value;
 }
     

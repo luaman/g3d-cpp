@@ -185,14 +185,15 @@ void App::main() {
 void App::countBugs() {
     bugCount = 0;
 
+    Log::common()->printf("\n\nBugs:\n");
     if (GLCaps::hasBug_glMultiTexCoord3fvARB()) {
         ++bugCount;
-        Log::common()->printf("Detected glMultiTexCoord3fvARB bug\n\n");
+        Log::common()->printf("   Detected glMultiTexCoord3fvARB bug\n\n");
     } 
 
     if (GLCaps::hasBug_slowVBO()) {
         ++bugCount;
-        Log::common()->printf("Detected slowVBO bug\n\n");
+        Log::common()->printf("   Detected slowVBO bug\n\n");
     } 
     
     if (beginsWith(GLCaps::renderer(), "RADEON") &&
@@ -200,8 +201,8 @@ void App::countBugs() {
         GLCaps::supports_GL_ARB_shading_language_100()) {
         // Slow shadow map and GLSL texture binding bugs.
         // TODO: add actual tests
-        Log::common()->printf("Detected slowShadowMap bug\n\n");
-        Log::common()->printf("Detected GLSL Texture Binding bug\n\n");
+        Log::common()->printf("   Detected slowShadowMap bug\n\n");
+        Log::common()->printf("   Detected GLSL Texture Binding bug\n\n");
         bugCount += 2;
     }
 }
