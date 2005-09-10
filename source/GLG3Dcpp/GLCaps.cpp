@@ -10,7 +10,6 @@
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
-#include "GLG3D/RenderDevice.h" // TODO: remove
 #include <sstream>
 
 #ifdef G3D_WIN32
@@ -766,7 +765,6 @@ static void configureCameraAndLights() {
     glEnable(GL_COLOR_MATERIAL);
 }
 
-
 bool GLCaps::hasBug_slowVBO() {
     static bool initialized = false;
     static bool value;
@@ -791,15 +789,15 @@ bool GLCaps::hasBug_slowVBO() {
     // Load the vertex arrays
 
     // Number of indices
-    const int N = 3 * 20000;
+    const int N = 69451 * 3;
 
-    // Number of vertices
-    const int V = 5000;
+    // Number of vertices (matches the stanford bunny)
+    const int V = 35947;
 
     // Make some random triangles
     std::vector<int> index(N);
     for (int i = 0; i < N; ++i) {
-        index[i] = i % V;//(i * 2 + (int)(20 * (float)rand() / RAND_MAX)) % V;
+        index[i] = (i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
     }
 
     // Create data
@@ -808,8 +806,7 @@ bool GLCaps::hasBug_slowVBO() {
         float n[3], s = 0;
 
         for (int j = 0; j < 3; ++j) {
-            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.2;
-
+            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 2;
             n[j] = (rand() / (double)RAND_MAX) - 0.5;
             s += n[j] * n[j];
         }
@@ -823,7 +820,7 @@ bool GLCaps::hasBug_slowVBO() {
         }
 
         for (int j = 0; j < 2; ++j) {
-            texCoord[i * 2 + j] = vertex[i * 3 + j];
+            texCoord[i * 2 + j] = rand() / (double)RAND_MAX;
         }
     }
 
@@ -854,18 +851,19 @@ bool GLCaps::hasBug_slowVBO() {
 
     // Upload data
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, index.begin(), GL_STATIC_DRAW_ARB);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &index[0], GL_STATIC_DRAW_ARB);
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
 
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, vertex.begin());
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, normal.begin());
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, texCoord.begin());
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, &vertex[0]);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, &normal[0]);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
 
+    configureCameraAndLights();
     
     // number of objects to draw
-    const int count = 10;
+    const int count = 2;
     const int frames = 3;
 
     debugAssert(frames >= 2);
@@ -874,28 +872,18 @@ bool GLCaps::hasBug_slowVBO() {
     double VBOTime;
     double RAMTime;
 
-    configureCameraAndLights();
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
-
-    //////////// VBO
     {
         double t0 = 0;
         float k = 0;
+        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glFinish();
         for (int j = 0; j < frames; ++j) {
-            glColor3f(1, .5, 0);
-
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
                 t0 = System::time();
             }
             k += 3;
-            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            //glEnable(GL_TEXTURE_2D);
-            //glBindTexture(GL_TEXTURE_2D, model.textureID);
 
             glEnableClientState(GL_NORMAL_ARRAY);
             glEnableClientState(GL_VERTEX_ARRAY);
@@ -913,7 +901,6 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
             }
-    //        RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers(); while(true);
         }
         glFinish();
         VBOTime = System::time() - t0;
@@ -925,38 +912,28 @@ bool GLCaps::hasBug_slowVBO() {
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
 
-    ///////////////////////// RAM
     glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
     glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-    configureCameraAndLights();
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
     {
         double t0 = 0;
         float k = 0;
+        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glFinish();
         for (int j = 0; j < frames; ++j) {
-            glColor3f(1, .5, 0);
-
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
                 t0 = System::time();
             }
             k += 3;
-            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            //glEnable(GL_TEXTURE_2D);
-            //glBindTexture(GL_TEXTURE_2D, model.textureID);
 
             glEnableClientState(GL_NORMAL_ARRAY);
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-            glNormalPointer(GL_FLOAT, 0, normal.begin());
-            glTexCoordPointer(2, GL_FLOAT, 0, texCoord.begin());
-            glVertexPointer(3, GL_FLOAT, 0, vertex.begin());
+            glNormalPointer(GL_FLOAT, 0, &normal[0]);
+            glTexCoordPointer(2, GL_FLOAT, 0, &texCoord[0]);
+            glVertexPointer(3, GL_FLOAT, 0, &vertex[0]);
 
             for (int c = 0; c < count; ++c) {
                 glMatrixMode(GL_MODELVIEW);
@@ -964,7 +941,7 @@ bool GLCaps::hasBug_slowVBO() {
                 glTranslatef(c - (count - 1) / 2.0, 0, -2);
                 glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
 
-                glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, index.begin());
+                glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, &index[0]);
             }
         }
         glFinish();
@@ -973,14 +950,13 @@ bool GLCaps::hasBug_slowVBO() {
     glPopClientAttrib();
     glPopAttrib();
 
-
     glPopClientAttrib();
     glPopAttrib();
 
     Log::common()->printf("RAM time = %fs     VBO time = %fs\n", RAMTime, VBOTime);
 
     // See if the RAM performance was conservatively faster.
-    value = RAMTime < VBOTime * 0.7;
+    value = RAMTime < VBOTime * 0.9;
     return value;
 }
     

@@ -162,7 +162,7 @@ void App::main() {
 
         Log::common()->printf("\nDetailed Performance Tests\n\n");
         Log::common()->printf("   * Vertex Rate\n");
-        Log::common()->printf("    3 objects with %d tris, 2 lights, 1 texture, and 4 attributes\n\n", vertexPerformance.numTris); 
+        Log::common()->printf("    %d tris, 2 lights, 1 texture, and 4 attributes\n\n", vertexPerformance.numTris); 
         Log::common()->printf("    Method                           FPS       Mverts/sec\n");
         Log::common()->printf("    -------------------------------------------------------\n");
         Log::common()->printf("    glBegin/glEndFPS:                %5.1f      %5.1f\n", vertexPerformance.beginEndFPS, vertexPerformance.beginEndFPS * 3 * vertexPerformance.numTris / 1e6);
