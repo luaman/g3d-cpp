@@ -11,7 +11,7 @@
 from buildlib import *
 
 # The library version number
-version = "6_07-b03"
+version = "6_07"
 
 # Setup versions for supporting programs
 aclocal    = "aclocal"

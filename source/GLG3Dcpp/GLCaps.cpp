@@ -551,11 +551,19 @@ const std::string& GLCaps::renderer() {
 
 bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
 
+    static bool initialized = false;
+    static bool value;
+
+    if (initialized) {
+        return value;
+    }
+
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
     if (! hasCubeMap) {
+        value = false;
         // No cube map == no bug.
-        return false;
+        return value;
     }
 
     // Save current GL state
@@ -706,8 +714,9 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
     glPopAttrib();
 
     glDeleteTextures(1, &id);
+    value = texbug;
 
-    return texbug;
+    return value;
 }
 
 }
