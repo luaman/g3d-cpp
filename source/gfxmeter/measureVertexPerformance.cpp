@@ -19,7 +19,7 @@ static const int frames = 16;
 
 
 /** Number of models per frame */
-int count = 7;
+int count = 4;
 
 class Model {
 private:

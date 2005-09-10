@@ -789,7 +789,7 @@ bool GLCaps::hasBug_slowVBO() {
     // Load the vertex arrays
 
     // Number of indices
-    const int N = 3 * 10000;
+    const int N = 3 * 40000;
 
     // Number of vertices
     const int V = 4096;
@@ -866,6 +866,8 @@ bool GLCaps::hasBug_slowVBO() {
     const int count = 2;
     const int frames = 3;
 
+    debugAssert(frames >= 2);
+
     // Time for each rendering method
     double VBOTime;
     double RAMTime;
@@ -875,7 +877,7 @@ bool GLCaps::hasBug_slowVBO() {
         float k = 0;
         for (int j = 0; j < frames; ++j) {
             // Don't count the first frame against us; it is cache warmup
-            if (frames == 1) {
+            if (j == 1) {
                 t0 = System::time();
             }
             k += 3;
@@ -918,7 +920,7 @@ bool GLCaps::hasBug_slowVBO() {
         float k = 0;
         for (int j = 0; j < frames; ++j) {
             // Don't count the first frame against us; it is cache warmup
-            if (frames == 1) {
+            if (j == 1) {
                 t0 = System::time();
             }
             k += 3;
@@ -952,6 +954,8 @@ bool GLCaps::hasBug_slowVBO() {
 
     glPopClientAttrib();
     glPopAttrib();
+
+    Log::common()->printf("RAM time = %fs     VBO time = %fs\n", RAMTime, VBOTime);
 
     // See if the RAM performance was conservatively faster.
     value = RAMTime < VBOTime * 0.9;
