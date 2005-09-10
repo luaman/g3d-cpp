@@ -798,7 +798,7 @@ bool GLCaps::hasBug_slowVBO() {
     // Make some random triangles
     std::vector<int> index(N);
     for (int i = 0; i < N; ++i) {
-        index[i] = i % V;//(i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
+        index[i] = (i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
     }
 
     // Create data
@@ -807,7 +807,7 @@ bool GLCaps::hasBug_slowVBO() {
         float n[3], s = 0;
 
         for (int j = 0; j < 3; ++j) {
-            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.2;
+            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.3;
             n[j] = (rand() / (double)RAND_MAX) - 0.5;
             s += n[j] * n[j];
         }
@@ -862,7 +862,7 @@ bool GLCaps::hasBug_slowVBO() {
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
     
     // number of objects to draw
-    const int count = 3;
+    const int count = 4;
     const int frames = 5;
 
     debugAssert(frames >= 2);
@@ -879,6 +879,7 @@ bool GLCaps::hasBug_slowVBO() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glColor3f(1, .5, 0);
         glFinish();
+        Sleep(0.05);
         for (int j = 0; j < frames; ++j) {
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
@@ -924,6 +925,7 @@ bool GLCaps::hasBug_slowVBO() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glColor3f(1, .5, 0);
         glFinish();
+        Sleep(0.05);
         for (int j = 0; j < frames; ++j) {
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
@@ -947,6 +949,7 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, &index[0]);
             }
+//            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers(); while(true);
         }
         glFinish();
         RAMTime = System::time() - t0;
@@ -957,7 +960,7 @@ bool GLCaps::hasBug_slowVBO() {
     glPopClientAttrib();
     glPopAttrib();
 
-    Log::common()->printf("RAM time = %fs     VBO time = %fs\n", RAMTime, VBOTime);
+    Log::common()->printf("RAM performance = %f FPS     VBO performance = %f FPS\n", (float)(frames - 1) / RAMTime, (float)(frames - 1)/ VBOTime);
 
     // See if the RAM performance was conservatively faster.
     value = RAMTime < VBOTime * 0.9;
