@@ -904,6 +904,7 @@ bool GLCaps::hasBug_slowVBO() {
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
             }
         }
+        glFinish();
         VBOTime = System::time() - t0;
     }
 
@@ -947,6 +948,7 @@ bool GLCaps::hasBug_slowVBO() {
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, index.begin());
             }
         }
+        glFinish();
         RAMTime = System::time() - t0;
     }
     glPopClientAttrib();

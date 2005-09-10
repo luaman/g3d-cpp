@@ -105,7 +105,6 @@ void measureVertexPerformance(
     window = w;
     Model model("bunny.ifs");
 
-
     beginEndFPS = measureBeginEndPerformance(model);
     drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
     drawElementsVBOFPS = measureDrawElementsVBOPerformance(model);
@@ -267,6 +266,7 @@ float measureDrawElementsRAMPerformance(Model& model) {
 
     glPopClientAttrib();
     glPopAttrib();
+    glFinish();
 
     return frames / (System::time() - t0);
 }
@@ -374,6 +374,7 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
+    glFinish();
 
     return frames / (System::time() - t0);
 }
@@ -487,6 +488,7 @@ float measureDrawElementsVBO16Performance(Model& model) {
 
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
+    glFinish();
 
     return frames / (System::time() - t0);
 }
@@ -618,6 +620,7 @@ float measureDrawElementsVBOIPerformance(Model& model) {
 
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
+    glFinish();
 
     return frames / (System::time() - t0);
 }
@@ -720,6 +723,7 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
 
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
+    glFinish();
 
     return frames / (System::time() - t0);
 }
