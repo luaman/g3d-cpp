@@ -789,15 +789,15 @@ bool GLCaps::hasBug_slowVBO() {
     // Load the vertex arrays
 
     // Number of indices
-    const int N = 3 * 40000;
+    const int N = 3 * 10000;
 
     // Number of vertices
-    const int V = 4096;
+    const int V = 2000;
 
     // Make some random triangles
     std::vector<int> index(N);
     for (int i = 0; i < N; ++i) {
-        index[i] = rand() % V;
+        index[i] = (i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
     }
 
     // Create data
