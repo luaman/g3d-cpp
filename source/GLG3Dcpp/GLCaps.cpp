@@ -10,6 +10,7 @@
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/RenderDevice.h"// TODO: remove
 #include <sstream>
 
 #ifdef G3D_WIN32
@@ -797,7 +798,7 @@ bool GLCaps::hasBug_slowVBO() {
     // Make some random triangles
     std::vector<int> index(N);
     for (int i = 0; i < N; ++i) {
-        index[i] = (i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
+        index[i] = i % V;//(i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
     }
 
     // Create data
@@ -806,7 +807,7 @@ bool GLCaps::hasBug_slowVBO() {
         float n[3], s = 0;
 
         for (int j = 0; j < 3; ++j) {
-            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 2;
+            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.2;
             n[j] = (rand() / (double)RAND_MAX) - 0.5;
             s += n[j] * n[j];
         }
@@ -859,12 +860,10 @@ bool GLCaps::hasBug_slowVBO() {
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, &vertex[0]);
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, &normal[0]);
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
-
-    configureCameraAndLights();
     
     // number of objects to draw
-    const int count = 2;
-    const int frames = 3;
+    const int count = 3;
+    const int frames = 5;
 
     debugAssert(frames >= 2);
 
@@ -875,8 +874,10 @@ bool GLCaps::hasBug_slowVBO() {
     {
         double t0 = 0;
         float k = 0;
+        configureCameraAndLights();
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glColor3f(1, .5, 0);
         glFinish();
         for (int j = 0; j < frames; ++j) {
             // Don't count the first frame against us; it is cache warmup
@@ -886,8 +887,8 @@ bool GLCaps::hasBug_slowVBO() {
             k += 3;
 
             glEnableClientState(GL_NORMAL_ARRAY);
-            glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glEnableClientState(GL_VERTEX_ARRAY);
 
             glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
             glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
@@ -901,6 +902,7 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
             }
+//            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers(); while(true);
         }
         glFinish();
         VBOTime = System::time() - t0;
@@ -917,8 +919,10 @@ bool GLCaps::hasBug_slowVBO() {
     {
         double t0 = 0;
         float k = 0;
+        configureCameraAndLights();
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glColor3f(1, .5, 0);
         glFinish();
         for (int j = 0; j < frames; ++j) {
             // Don't count the first frame against us; it is cache warmup
