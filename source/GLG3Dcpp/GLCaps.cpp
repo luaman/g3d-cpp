@@ -10,8 +10,6 @@
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
-//#include "GLG3D/RenderDevice.h"// TODO: remove
-//#include "GLG3D/IFSModel.h" // TODO: remove
 #include <sstream>
 
 #ifdef G3D_WIN32
@@ -769,7 +767,7 @@ static void configureCameraAndLights() {
     glEnable(GL_COLOR_MATERIAL);
 }
 
-
+#if 0  // TODO: morgan, remove?
 bool GLCaps::hasBug_slowVBO() {
     static bool initialized = false;
     static bool value;
@@ -1016,5 +1014,6 @@ bool GLCaps::hasBug_slowVBO() {
     return value;
 }
     
+#endif
 
 }

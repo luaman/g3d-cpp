@@ -2,6 +2,7 @@
   @file gfxmeter/main.cpp
 
   slow/shadow map (radeon)
+  texture color bug (radeon 7500)
 
   @author Morgan McGuire, matrix@graphics3d.com
  */
@@ -28,16 +29,18 @@ int CPU_speed_in_MHz();
  VBO   = vertices stored in vertex buffer object
  VBO16 = using smaller indices
  VBOI  = vertices stored in VBO, interleaved
+
+ First array element is low coherence, second is high coherence
  */
 void measureVertexPerformance(
     GWindow* w,     
     int&   numTris,
-    float& beginEndFPS,
-    float& drawElementsRAMFPS, 
-    float& drawElementsVBOFPS, 
-    float& drawElementsVBO16FPS, 
-    float& drawElementsVBOIFPS,
-    float& drawElementsVBOPeakFPS);
+    float  beginEndFPS[2],
+    float  drawElementsRAMFPS[2], 
+    float  drawElementsVBOFPS[2], 
+    float  drawElementsVBO16FPS[2], 
+    float  drawElementsVBOIFPS[2],
+    float  drawElementsVBOPeakFPS[2]);
 
 void shaderVersions(
     std::string& regStr,
@@ -162,14 +165,15 @@ void App::main() {
         Log::common()->printf("\nDetailed Performance Tests\n\n");
         Log::common()->printf("   * Vertex Rate\n");
         Log::common()->printf("    %d tris, 2 lights, 1 texture, and 4 attributes\n\n", vertexPerformance.numTris); 
-        Log::common()->printf("    Method                           FPS       Mverts/sec\n");
-        Log::common()->printf("    -------------------------------------------------------\n");
-        Log::common()->printf("    glBegin/glEndFPS:                %5.1f      %5.1f\n", vertexPerformance.beginEndFPS, vertexPerformance.beginEndFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("    glDrawElements:                  %5.1f      %5.1f\n", vertexPerformance.drawElementsRAMFPS, vertexPerformance.drawElementsRAMFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("        + VBO                        %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOFPS, vertexPerformance.drawElementsVBOFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("        + uint16 index               %5.1f      %5.1f\n", vertexPerformance.drawElementsVBO16FPS, vertexPerformance.drawElementsVBO16FPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("        + interleaved                %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOIFPS, vertexPerformance.drawElementsVBOIFPS * 3 * vertexPerformance.numTris / 1e6);
-        Log::common()->printf("    Peak (no shading)                %5.1f      %5.1f\n", vertexPerformance.drawElementsVBOPeakFPS, vertexPerformance.drawElementsVBOPeakFPS * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("                             Low Coherence [ High Coherence ]\n");
+        Log::common()->printf("    Method                           FPS   [  FPS  |Mverts/sec]\n");
+        Log::common()->printf("   ------------------------------------------------+---------\n");
+        Log::common()->printf("    glBegin/glEndFPS:                %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.beginEndFPS[0], vertexPerformance.beginEndFPS[1], vertexPerformance.beginEndFPS[1] * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("    glDrawElements:                  %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsRAMFPS[0], vertexPerformance.drawElementsRAMFPS[1], vertexPerformance.drawElementsRAMFPS[1] * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("        + VBO                        %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsVBOFPS[0], vertexPerformance.drawElementsVBOFPS[1], vertexPerformance.drawElementsVBOFPS[1] * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("        + uint16 index               %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsVBO16FPS[0], vertexPerformance.drawElementsVBO16FPS[1], vertexPerformance.drawElementsVBO16FPS[1] * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("        + interleaved                %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsVBOIFPS[0], vertexPerformance.drawElementsVBOIFPS[1], vertexPerformance.drawElementsVBOIFPS[1] * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("        without shading              %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsVBOPeakFPS[0], vertexPerformance.drawElementsVBOPeakFPS[1], vertexPerformance.drawElementsVBOPeakFPS[1] * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("\n\n");
     }
 #   endif
@@ -190,11 +194,6 @@ void App::countBugs() {
     if (GLCaps::hasBug_glMultiTexCoord3fvARB()) {
         ++bugCount;
         Log::common()->printf("   Detected glMultiTexCoord3fvARB bug\n\n");
-    } 
-
-    if (GLCaps::hasBug_slowVBO()) {
-        ++bugCount;
-        Log::common()->printf("   Detected slowVBO bug\n\n");
     } 
     
     if (beginsWith(GLCaps::renderer(), "RADEON") &&

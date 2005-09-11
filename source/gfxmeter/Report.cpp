@@ -318,8 +318,8 @@ void Report::doGraphics() {
                 app->reportFont->draw2D(app->renderDevice, "Incoherent", p + Vector2(220, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
                 p.y += app->reportFont->draw2D(app->renderDevice, "Coherent", p + Vector2(350, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
 
-                app->reportFont->draw2D(app->renderDevice, "FPS*  MVerts/s", p + Vector2(220, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
-                p.y += app->reportFont->draw2D(app->renderDevice, "FPS*  MVerts/s", p + Vector2(350, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
+                app->reportFont->draw2D(app->renderDevice, "FPS*   MVerts/s", p + Vector2(240, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
+                p.y += app->reportFont->draw2D(app->renderDevice, "FPS*   MVerts/s", p + Vector2(370, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
                 
                 PRINT("glBegin/glEnd", beginEndFPS);
                 PRINT("glDrawElements", drawElementsRAMFPS); 

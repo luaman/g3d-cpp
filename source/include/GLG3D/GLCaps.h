@@ -197,6 +197,8 @@ public:
      */
     static bool hasBug_glMultiTexCoord3fvARB();
 
+#if 0 // TODO: morgan, remove?
+
     /**
      Returns true if GL_VERTEX_BUFFER_OBJECTs, which are supposed to be faster
      than rendering out of main memory, are actually slower than main memory 
@@ -211,7 +213,7 @@ public:
      Returns false if VBO is not supported at all on this card.
      */
     static bool hasBug_slowVBO();
-
+#endif
 };
 
 

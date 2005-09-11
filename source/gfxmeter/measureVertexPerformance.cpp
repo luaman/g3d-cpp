@@ -6,6 +6,9 @@
  */
 #include "../include/G3DAll.h"
 
+// TODO: run 2x, once with bunny and once with gear to measure
+// cache coherence effects.
+
 // All return FPS
 float measureBeginEndPerformance(class Model&);
 float measureDrawElementsRAMPerformance(class Model&);
@@ -55,17 +58,15 @@ public:
     GLuint                          textureID;
 
 
-    /** Only the constructor uses G3D */
+    /** If given an IFS filename, loads it, otherwise generates
+        a gear with high vertex coherence.
+        Only the constructor uses G3D.  */
     Model(const std::string& filename) {
 
         tex = Texture::fromFile("tiny.jpg");
         textureID = tex->getOpenGLID();
 
-        // The gear shape produces better memory coherence so 
-        // it renders faster.
-        enum {GEAR, BUNNY} shape = GEAR;
-
-        if (shape == BUNNY) {
+        if (filename != "") {
             PosedModelRef m = IFSModel::create(filename)->pose();
             // Copy fields out into arrays
             {
@@ -99,6 +100,8 @@ public:
                 }
             }
         } else {
+
+            // Generate gear
             // Vertices per side
             const int sq = 187;
 
@@ -183,25 +186,33 @@ void glSwapBuffers() {
 
 void measureVertexPerformance(
     GWindow* w,     
-    int&   numTris,
-    float& beginEndFPS,
-    float& drawElementsRAMFPS, 
-    float& drawElementsVBOFPS, 
-    float& drawElementsVBO16FPS, 
-    float& drawElementsVBOIFPS,
-    float& drawElementsVBOPeakFPS) {
+    int&    numTris,
+    float   beginEndFPS[2],
+    float   drawElementsRAMFPS[2], 
+    float   drawElementsVBOFPS[2], 
+    float   drawElementsVBO16FPS[2], 
+    float   drawElementsVBOIFPS[2],
+    float   drawElementsVBOPeakFPS[2]) {
 
     window = w;
-    Model model("bunny.ifs");
+    std::string filename = "bunny.ifs";
 
-    beginEndFPS = measureBeginEndPerformance(model);
-    drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
-    drawElementsVBOFPS = measureDrawElementsVBOPerformance(model);
-    drawElementsVBO16FPS = measureDrawElementsVBO16Performance(model);
-    drawElementsVBOIFPS = measureDrawElementsVBOIPerformance(model);
-    drawElementsVBOPeakFPS = measureDrawElementsVBOPeakPerformance(model);
+    for (int i = 0; i < 2; ++i) {
+        Model model(filename);
 
-    numTris = count * model.cpuIndex.size() / 3;
+        beginEndFPS[i] = measureBeginEndPerformance(model);
+        drawElementsRAMFPS[i] = measureDrawElementsRAMPerformance(model);
+        drawElementsVBOFPS[i] = measureDrawElementsVBOPerformance(model);
+        drawElementsVBO16FPS[i] = measureDrawElementsVBO16Performance(model);
+        drawElementsVBOIFPS[i] = measureDrawElementsVBOIPerformance(model);
+        drawElementsVBOPeakFPS[i] = measureDrawElementsVBOPeakPerformance(model);
+
+        numTris = count * model.cpuIndex.size() / 3;
+
+        // Second time around, load the gear
+        filename = "";
+    }
+
 }
 
 
@@ -454,9 +465,7 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
                     glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
                 }
-                //glSwapBuffers();
-                RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
-                //glFlush();
+                glSwapBuffers();
             }
             glFinish();
             t1 = System::time();

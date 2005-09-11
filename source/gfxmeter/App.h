@@ -33,13 +33,13 @@ public:
 
     struct VertexPerformance {
         int                 numTris;
-        float               beginEndFPS;
-        float               drawElementsRAMFPS; 
-        float               drawElementsVBOFPS; 
-        float               drawElementsVBO16FPS; 
-        float               drawElementsVBOIFPS;
-        /* Turn everything off and just slam vertices through */
-        float               drawElementsVBOPeakFPS;
+        float               beginEndFPS[2];
+        float               drawElementsRAMFPS[2]; 
+        float               drawElementsVBOFPS[2]; 
+        float               drawElementsVBO16FPS[2]; 
+        float               drawElementsVBOIFPS[2];
+        /* Turn shading off and just slam vertices through */
+        float               drawElementsVBOPeakFPS[2];
     };
 
     VertexPerformance       vertexPerformance;
