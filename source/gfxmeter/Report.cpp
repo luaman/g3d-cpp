@@ -302,27 +302,38 @@ void Report::doGraphics() {
 
 #               define PRINT(cap, val)   \
                     app->reportFont->draw2D(app->renderDevice, cap, p, s, Color3::black());\
-                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val > 0) ? \
-                        format("%5.1f", app->vertexPerformance.val) : \
-                        std::string("X"), p + Vector2(200, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
-                    p.y += app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val > 0) ? \
-                        format("%5.1f", factor * app->vertexPerformance.val) : \
-                        std::string("X"), p + Vector2(300, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT).y;
+                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[0] > 0) ? \
+                        format("%5.1f", app->vertexPerformance.val[0]) : \
+                        std::string("X"), p + Vector2(190, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
+                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[0] > 0) ? \
+                        format("%5.1f", factor * app->vertexPerformance.val[0]) : \
+                        std::string("X"), p + Vector2(240, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
+                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[1] > 0) ? \
+                        format("%5.1f", app->vertexPerformance.val[1]) : \
+                        std::string("X"), p + Vector2(330, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
+                    p.y += app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[1] > 0) ? \
+                        format("%5.1f", factor * app->vertexPerformance.val[1]) : \
+                        std::string("X"), p + Vector2(380, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT).y;
 
-                app->reportFont->draw2D(app->renderDevice, "FPS*", p + Vector2(200, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
-                p.y += app->reportFont->draw2D(app->renderDevice, "MVerts/s", p + Vector2(300, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
+                app->reportFont->draw2D(app->renderDevice, "Incoherent", p + Vector2(220, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
+                p.y += app->reportFont->draw2D(app->renderDevice, "Coherent", p + Vector2(350, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
+
+                app->reportFont->draw2D(app->renderDevice, "FPS*  MVerts/s", p + Vector2(220, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
+                p.y += app->reportFont->draw2D(app->renderDevice, "FPS*  MVerts/s", p + Vector2(350, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
                 
                 PRINT("glBegin/glEnd", beginEndFPS);
                 PRINT("glDrawElements", drawElementsRAMFPS); 
                 PRINT("  + VBO", drawElementsVBOFPS);
                 PRINT("  + uint16", drawElementsVBO16FPS);
                 PRINT("  + interleaving", drawElementsVBOIFPS);
-                PRINT("Peak (no shading)", drawElementsVBOPeakFPS);
+                PRINT("  without shading)", drawElementsVBOPeakFPS);
+
+
 #               undef PRINT
 
                 p.y += s;
-                p.y += app->reportFont->draw2D(app->renderDevice, format("* FPS at %d polys/frame", 
-                    app->vertexPerformance.numTris), p + Vector2(20, 0), s, Color3::black()).y;
+                p.y += app->reportFont->draw2D(app->renderDevice, format("* FPS at %d k polys/frame.", 
+                    iRound(app->vertexPerformance.numTris/1000)), p + Vector2(20, 0), s, Color3::black()).y;
             }
         }
 
