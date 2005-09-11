@@ -807,7 +807,7 @@ bool GLCaps::hasBug_slowVBO() {
         float n[3], s = 0;
 
         for (int j = 0; j < 3; ++j) {
-            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.3;
+            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.5;
             n[j] = (rand() / (double)RAND_MAX) - 0.5;
             s += n[j] * n[j];
         }
@@ -825,15 +825,9 @@ bool GLCaps::hasBug_slowVBO() {
         }
     }
 
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
-
-    GLuint vbo, indexBuffer;
-    glGenBuffersARB(1, &vbo);
-    glGenBuffersARB(1, &indexBuffer);
-
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+    // number of objects to draw
+    const int count = 4;
+    const int frames = 5;
 
     size_t vertexSize   = V * sizeof(float) * 3;
     size_t normalSize   = V * sizeof(float) * 3;
@@ -842,72 +836,78 @@ bool GLCaps::hasBug_slowVBO() {
 
     size_t indexSize    = N * sizeof(int);
 
-    // Pointers relative to the start of the vbo in video memory
-    // (would interleaving be faster?)
-    GLintptrARB vertexPtr   = 0;
-    GLintptrARB normalPtr   = vertexSize + vertexPtr;
-    GLintptrARB texCoordPtr = normalSize  + normalPtr;
-
-    GLintptrARB indexPtr    = 0;
-
-    // Upload data
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &index[0], GL_STATIC_DRAW_ARB);
-
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
-
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, &vertex[0]);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, &normal[0]);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
-    
-    // number of objects to draw
-    const int count = 4;
-    const int frames = 5;
-
     debugAssert(frames >= 2);
 
     // Time for each rendering method
     double VBOTime;
     double RAMTime;
 
-    {
-        double t0 = 0;
-        float k = 0;
-        configureCameraAndLights();
-        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glColor3f(1, .5, 0);
-        glFinish();
-        Sleep(0.05);
-        for (int j = 0; j < frames; ++j) {
-            // Don't count the first frame against us; it is cache warmup
-            if (j == 1) {
-                t0 = System::time();
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+        GLuint vbo, indexBuffer;
+        glGenBuffersARB(1, &vbo);
+        glGenBuffersARB(1, &indexBuffer);
+
+        // Pointers relative to the start of the vbo in video memory
+        // (would interleaving be faster?)
+        GLintptrARB vertexPtr   = 0;
+        GLintptrARB normalPtr   = vertexSize + vertexPtr;
+        GLintptrARB texCoordPtr = normalSize  + normalPtr;
+
+        GLintptrARB indexPtr    = 0;
+
+        // Upload data
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
+        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &index[0], GL_STATIC_DRAW_ARB);
+
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
+
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, &vertex[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, &normal[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
+    
+        {
+            double t0 = 0;
+            float k = 0;
+            configureCameraAndLights();
+            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glColor3f(1, .5, 0);
+            glFinish();
+            Sleep(0.05);
+            for (int j = 0; j < frames; ++j) {
+                // Don't count the first frame against us; it is cache warmup
+                if (j == 1) {
+                    t0 = System::time();
+                }
+                k += 3;
+
+                glEnableClientState(GL_NORMAL_ARRAY);
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                glEnableClientState(GL_VERTEX_ARRAY);
+
+                glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
+                glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+                glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+
+                for (int c = 0; c < count; ++c) {
+                    glMatrixMode(GL_MODELVIEW);
+                    glLoadIdentity();
+                    glTranslatef(c - (count - 1) / 2.0, 0, -2);
+                    glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+                    glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
+                }
+                RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
             }
-            k += 3;
-
-            glEnableClientState(GL_NORMAL_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-            glEnableClientState(GL_VERTEX_ARRAY);
-
-            glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
-            glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
-            glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
-
-            for (int c = 0; c < count; ++c) {
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-                glTranslatef(c - (count - 1) / 2.0, 0, -2);
-                glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
-
-                glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
-            }
-//            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers(); while(true);
+            glFinish();
+            VBOTime = System::time() - t0;
         }
-        glFinish();
-        VBOTime = System::time() - t0;
-    }
 
     glPopClientAttrib();
     glPopAttrib();
@@ -949,7 +949,7 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, &index[0]);
             }
-//            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers(); while(true);
+            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
         }
         glFinish();
         RAMTime = System::time() - t0;
