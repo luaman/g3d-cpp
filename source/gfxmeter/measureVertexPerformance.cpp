@@ -4,7 +4,7 @@
   Measures the performance of rendering in various modes on this machine.
 
  */
-#include <G3DAll.h>
+#include "../include/G3DAll.h"
 
 // All return FPS
 float measureBeginEndPerformance(class Model&);
@@ -179,12 +179,12 @@ void measureVertexPerformance(
     window = w;
     Model model("bunny.ifs");
 
-    beginEndFPS = measureBeginEndPerformance(model);
-    drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
+//    beginEndFPS = measureBeginEndPerformance(model);
+//    drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
     drawElementsVBOFPS = measureDrawElementsVBOPerformance(model);
-    drawElementsVBO16FPS = measureDrawElementsVBO16Performance(model);
-    drawElementsVBOIFPS = measureDrawElementsVBOIPerformance(model);
-    drawElementsVBOPeakFPS = measureDrawElementsVBOPeakPerformance(model);
+//    drawElementsVBO16FPS = measureDrawElementsVBO16Performance(model);
+//    drawElementsVBOIFPS = measureDrawElementsVBOIPerformance(model);
+//    drawElementsVBOPeakFPS = measureDrawElementsVBOPeakPerformance(model);
 
     numTris = count * model.cpuIndex.size() / 3;
 }
@@ -243,7 +243,6 @@ float measureBeginEndPerformance(Model& model) {
     const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
-
 
     configureCameraAndLights();
     
@@ -347,7 +346,8 @@ float measureDrawElementsRAMPerformance(Model& model) {
 
 
 float measureDrawElementsVBOPerformance(Model& model) {
-    
+    GLCaps::hasBug_slowVBO();
+
     bool hasVBO = 
         (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
             (glGenBuffersARB != NULL) && 
@@ -357,7 +357,163 @@ float measureDrawElementsVBOPerformance(Model& model) {
     if (! hasVBO) {
         return 0.0;
     }
+    // Load the vertex arrays.  It is important to create a reasonably coherent object;
+    // random triangles are a pathological case for the graphics card and will produce
+    // poor rendering performance.
 
+    // Vertices per side
+    const int sq = 187;
+
+    // Number of indices
+    const int N = (sq - 1) * (sq - 1) * 3 * 2;
+
+    // Number of vertices
+    const int V = sq * sq;
+
+    // Make a grid of triangles
+    std::vector<int> index(N);
+    {
+        int k = 0;
+        for (int i = 0; i < sq - 1; ++i) {
+            for (int j = 0; j < sq - 1; ++j) {
+                debugAssert(k < N - 5);
+
+                // Bottom triangle
+                index[k + 0] = i + j * sq;
+                index[k + 1] = i + (j + 1) * sq;
+                index[k + 2] = (i + 1) + (j + 1) * sq;
+
+                // Top triangle
+                index[k + 3] = i + j * sq;
+                index[k + 4] = (i + 1) + (j + 1) * sq;
+                index[k + 5] = (i + 1) + j * sq;
+
+                k += 6;
+            }
+        }
+    }
+
+    // Create data
+    std::vector<float> vertex(V * 3), normal(V * 3), texCoord(V * 2), color(V * 4);
+
+    // Map V indices to a sq x sq grid
+    for (int i = 0; i < sq; ++i) {
+        for (int j = 0; j < sq; ++j) {
+
+            int v = (i + j * sq) * 3;
+            float x = (i / (float)sq - 0.5) * 2;
+            float y = 0.5 - j / (float)sq;
+            float a = x * 2 * 3.1415927;
+            float r = ceil(cos(a * 10)) * 0.05 + 0.3; 
+            vertex[v + 0] = -cos(a) * r;
+            vertex[v + 1] = y;
+            vertex[v + 2] = sin(a) * r;
+
+            // Scale the normal
+            float s = 1.0 / sqrt(0.0001 + square(vertex[v]) + square(vertex[v + 1]) + square(vertex[v + 2]));
+            normal[v] = vertex[v] * s;
+            normal[v + 1] = vertex[v + 1] * s;
+            normal[v + 2] = vertex[v + 2] * s;
+
+            v = (i + j * sq) * 4;
+            color[v + 0] = r + 0.7;
+            color[v + 1] = 0.5;
+            color[v + 2] = 1.0 - r;
+            color[v + 3] = 1.0;
+
+
+            v = (i + j * sq) * 2;
+            texCoord[v] = i / (float)sq;
+            texCoord[v + 1] = j / (float)sq;
+        }
+    }
+
+    // number of objects to draw
+    const int count = 4;
+    const int frames = 15;
+
+    size_t vertexSize   = V * sizeof(float) * 3;
+    size_t normalSize   = V * sizeof(float) * 3;
+    size_t colorSize    = V * sizeof(float) * 4;
+    size_t texCoordSize = V * sizeof(float) * 2;
+    size_t totalSize    = vertexSize + normalSize + texCoordSize + colorSize;
+
+    size_t indexSize    = N * sizeof(int);
+
+    double t0 = System::time();
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+        GLuint vbo, indexBuffer;
+        glGenBuffersARB(1, &vbo);
+        glGenBuffersARB(1, &indexBuffer);
+
+        // Pointers relative to the start of the vbo in video memory
+        GLintptrARB vertexPtr   = 0;
+        GLintptrARB normalPtr   = vertexSize + vertexPtr;
+        GLintptrARB texCoordPtr = normalSize  + normalPtr;
+        GLintptrARB colorPtr    = texCoordSize + texCoordPtr;
+
+        GLintptrARB indexPtr    = 0;
+
+        // Upload data
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
+        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &index[0], GL_STATIC_DRAW_ARB);
+
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
+
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize,   &normal[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize,    &color[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize,   &vertex[0]);
+ double t1;   
+        {
+            float k = 0;
+            configureCameraAndLights();
+            glDisable(GL_TEXTURE_2D);
+            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+            glColor3f(1, .5, 0);
+            glFinish();
+            Sleep(0.05);
+            t0 = System::time();
+            for (int j = 0; j < frames; ++j) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                k += 3;
+
+                glEnableClientState(GL_NORMAL_ARRAY);
+                glEnableClientState(GL_COLOR_ARRAY);
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                glEnableClientState(GL_VERTEX_ARRAY);
+
+                glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
+                glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+                glColorPointer(4, GL_FLOAT, 0, (void*)colorPtr);
+                glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+
+                for (int c = 0; c < count; ++c) {
+                    glMatrixMode(GL_MODELVIEW);
+                    glLoadIdentity();
+                    glTranslatef(c - (count - 1) / 2.0, 0, -2);
+                    glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+                    glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
+                }
+                //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+                glSwapBuffers();
+            }
+            glFinish();
+           t1 = System::time();
+        }
+
+    glPopClientAttrib();
+    glPopAttrib();
+
+    glDeleteBuffersARB(1, &indexBuffer);
+    glDeleteBuffersARB(1, &vbo);
+
+/*
     // Load the vertex arrays
 
     // Number of indices
@@ -370,6 +526,14 @@ float measureDrawElementsVBOPerformance(Model& model) {
     const float* color   = reinterpret_cast<const float*>(model.cpuColor.begin());
     const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
 
+    std::vector<float> color2(model.cpuColor.size() * 4);
+    for (int i = 0; i < model.cpuColor.size(); ++i) {
+        color2[i * 4 + 0] = model.cpuColor[i].x;
+        color2[i * 4 + 1] = model.cpuColor[i].y;
+        color2[i * 4 + 2] = model.cpuColor[i].z;
+        color2[i * 4 + 3] = 1.0;
+    }
+
     GLuint vbo, indexBuffer;
     glGenBuffersARB(1, &vbo);
     glGenBuffersARB(1, &indexBuffer);
@@ -380,7 +544,7 @@ float measureDrawElementsVBOPerformance(Model& model) {
     size_t vertexSize   = V * sizeof(float) * 3;
     size_t normalSize   = V * sizeof(float) * 3;
     size_t texCoordSize = V * sizeof(float) * 2;
-    size_t colorSize    = V * sizeof(float) * 3;   
+    size_t colorSize    = V * sizeof(float) * 4;   
     size_t totalSize    = vertexSize + normalSize + texCoordSize + colorSize;
 
     size_t indexSize    = N * sizeof(int);
@@ -389,8 +553,8 @@ float measureDrawElementsVBOPerformance(Model& model) {
     // (would interleaving be faster?)
     GLintptrARB vertexPtr   = 0;
     GLintptrARB normalPtr   = vertexSize + vertexPtr;
-    GLintptrARB colorPtr    = normalSize + normalPtr;
-    GLintptrARB texCoordPtr = colorSize  + colorPtr;
+    GLintptrARB texCoordPtr = normalSize + normalPtr;
+    GLintptrARB colorPtr    = texCoordSize + texCoordPtr;
 
     GLintptrARB indexPtr    = 0;
 
@@ -401,32 +565,37 @@ float measureDrawElementsVBOPerformance(Model& model) {
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
 
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, vertex);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize, color);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, normal);
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, texCoord);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, normal);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize, &color2[0]);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, vertex);
+    color2.resize(0);
 
     configureCameraAndLights();
+    glDisable(GL_TEXTURE_2D);
     
     float k = 0;
 
+    glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+    glFinish();
     double t0 = System::time();
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, model.textureID);
+    for (int j = 0; j < frames; ++j) {
+        k += 3;
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //glEnable(GL_TEXTURE_2D);
+        //glBindTexture(GL_TEXTURE_2D, model.textureID);
 
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
 
         glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
-        glColorPointer(3, GL_FLOAT, 0, (void*)colorPtr);
         glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+        glColorPointer(4, GL_FLOAT, 0, (void*)colorPtr);
         glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
-    for (int j = 0; j < frames; ++j) {
-        k += 3;
-        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (int c = 0; c < count; ++c) {
             glMatrixMode(GL_MODELVIEW);
@@ -438,7 +607,6 @@ float measureDrawElementsVBOPerformance(Model& model) {
         }
 
         glSwapBuffers();
-
     }
 
 
@@ -447,9 +615,9 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
-    glFinish();
+    */
 
-    return frames / (System::time() - t0);
+    return frames / (t1 - t0);
 }
 
 

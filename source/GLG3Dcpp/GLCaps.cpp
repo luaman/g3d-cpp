@@ -777,7 +777,7 @@ bool GLCaps::hasBug_slowVBO() {
     if (initialized) {
         return value;
     } else {
-        initialized = true;
+        //initialized = true;
     }
     
     bool hasVBO = 
@@ -892,7 +892,6 @@ bool GLCaps::hasBug_slowVBO() {
         glGenBuffersARB(1, &indexBuffer);
 
         // Pointers relative to the start of the vbo in video memory
-        // (would interleaving be faster?)
         GLintptrARB vertexPtr   = 0;
         GLintptrARB normalPtr   = vertexSize + vertexPtr;
         GLintptrARB texCoordPtr = normalSize  + normalPtr;
