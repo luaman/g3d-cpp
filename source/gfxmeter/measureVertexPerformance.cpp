@@ -17,6 +17,8 @@ float measureDrawElementsVBOPeakPerformance(class Model&);
 /** Number of frames to render in tests */
 static const int frames = 15;
 
+/** How fast to rotate the objects */
+static const float kstep = 360.0 / (frames + 2);
 
 /** Number of models per frame */
 int count = 4;
@@ -197,7 +199,7 @@ void measureVertexPerformance(
     drawElementsVBOFPS = measureDrawElementsVBOPerformance(model);
     drawElementsVBO16FPS = measureDrawElementsVBO16Performance(model);
     drawElementsVBOIFPS = measureDrawElementsVBOIPerformance(model);
-//    drawElementsVBOPeakFPS = measureDrawElementsVBOPeakPerformance(model);
+    drawElementsVBOPeakFPS = measureDrawElementsVBOPeakPerformance(model);
 
     numTris = count * model.cpuIndex.size() / 3;
 }
@@ -268,7 +270,7 @@ float measureBeginEndPerformance(Model& model) {
         if (j == 1) {
             t0 = System::time();
         }
-        k += 3;
+        k += kstep;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -325,7 +327,7 @@ float measureDrawElementsRAMPerformance(Model& model) {
         if (j == 1) {
             t0 = System::time();
         }
-        k += 3;
+        k += kstep;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -364,7 +366,6 @@ float measureDrawElementsRAMPerformance(Model& model) {
 
 
 float measureDrawElementsVBOPerformance(Model& model) {
-    GLCaps::hasBug_slowVBO();
 
     bool hasVBO = 
         (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
@@ -430,7 +431,7 @@ float measureDrawElementsVBOPerformance(Model& model) {
                 if (j == 1) {
                     t0 = System::time();
                 }
-                k += 3;
+                k += kstep;
 
                 glEnable(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, model.textureID);
@@ -538,7 +539,7 @@ float measureDrawElementsVBO16Performance(Model& model) {
             t0 = System::time();
         }
 
-        k += 3;
+        k += kstep;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -674,7 +675,7 @@ float measureDrawElementsVBOIPerformance(Model& model) {
         if (j == 1) {
             t0 = System::time();
         }
-        k += 3;
+        k += kstep;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -733,13 +734,8 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     // Number of vertices
     const int V = model.cpuVertex.size();
     const unsigned int*   index   = model.cpuIndex.begin();
-    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
+    const float* vertex  = reinterpret_cast<const float*>(&model.cpuVertex[0]);
 
-    std::vector<unsigned short> index16(N);
-    for (int i = 0; i < N; ++i) {
-        index16[i] = (uint16)index[i];
-    }
-    
     GLuint vbo, indexBuffer;
     glGenBuffersARB(1, &vbo);
     glGenBuffersARB(1, &indexBuffer);
@@ -759,7 +755,7 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
 
     // Upload data
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, index16.begin(), GL_STATIC_DRAW_ARB);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &model.cpuIndex16[0], GL_STATIC_DRAW_ARB);
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexSize, vertex, GL_STATIC_DRAW_ARB);
@@ -780,15 +776,19 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     
     float k = 0;
 
-    double t0 = System::time();
-    for (int j = 0; j < frames; ++j) {
-        k += 3;
+    double t0 = 0, t1 = 0;
+    glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+    glFinish();
+    for (int j = 0; j < frames + 1; ++j) {
+        if (j == 1) {
+            t0 = System::time();
+        }
+        k += kstep;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
 
         for (int c = 0; c < count; ++c) {
             static const float col[] = {1, 0, 0, 1, 0, 0};
@@ -804,7 +804,8 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
 
         glSwapBuffers();
     }
-
+    glFinish();
+    t1 = System::time();
 
     glPopClientAttrib();
     glPopAttrib();
@@ -813,5 +814,5 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     glDeleteBuffersARB(1, &vbo);
     glFinish();
 
-    return frames / (System::time() - t0);
+    return frames / (t1 - t0);
 }
