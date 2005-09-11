@@ -50,7 +50,7 @@ public:
     /** Only the constructor uses G3D */
     Model(const std::string& filename) {
 
-        tex = Texture::fromFile("gears.jpg");
+        tex = Texture::fromFile("tiny.jpg");
         textureID = tex->getOpenGLID();
 
         // The gear shape produces better memory coherence so 
@@ -411,16 +411,16 @@ float measureDrawElementsVBOPerformance(Model& model) {
     float k = 0;
 
     double t0 = System::time();
-//        glEnable(GL_TEXTURE_2D);
-//        glBindTexture(GL_TEXTURE_2D, model.textureID);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, model.textureID);
 
         glEnableClientState(GL_NORMAL_ARRAY);
-//        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
         glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
-//        glColorPointer(3, GL_FLOAT, 0, (void*)colorPtr);
+        glColorPointer(3, GL_FLOAT, 0, (void*)colorPtr);
         glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
         glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
     for (int j = 0; j < frames; ++j) {
