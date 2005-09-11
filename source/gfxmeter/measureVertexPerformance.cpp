@@ -38,13 +38,19 @@ public:
         float x, y, z;
     };
 
-    std::vector<int>    cpuIndex;
-    std::vector<Vec3>   cpuVertex;
-    std::vector<Vec2>   cpuTexCoord;
-    std::vector<Vec3>   cpuColor;
-    std::vector<Vec3>   cpuNormal;
+    class Vec4 {
+    public:
+        float x, y, z, w;
+    };
 
-    GLuint              textureID;
+    std::vector<unsigned int>       cpuIndex;
+    std::vector<unsigned short>     cpuIndex16;
+    std::vector<Vec3>               cpuVertex;
+    std::vector<Vec2>               cpuTexCoord;
+    std::vector<Vec4>               cpuColor;
+    std::vector<Vec3>               cpuNormal;
+
+    GLuint                          textureID;
 
 
     /** Only the constructor uses G3D */
@@ -82,6 +88,7 @@ public:
                     cpuColor[i].x = g.normalArray[i].x * 0.5 + 0.5;
                     cpuColor[i].y = g.normalArray[i].y * 0.5 + 0.5;
                     cpuColor[i].z = g.normalArray[i].z * 0.5 + 0.5;
+                    cpuColor[i].w = 1.0f;
 
                     // Cylindrical projection to get tex coords
                     Vector3 dir = g.vertexArray[i].direction();
@@ -152,11 +159,17 @@ public:
                     cpuColor[v].x = r + 0.7;
                     cpuColor[v].y = 0.5;
                     cpuColor[v].z = 1.0 - r;
+                    cpuColor[v].w = 1.0f;
 
                     cpuTexCoord[v].x = i / (float)sq;
                     cpuTexCoord[v].y = j / (float)sq;
                 }
             }
+        } // if
+
+        cpuIndex16.resize(cpuIndex.size());
+        for (int i = 0; i < cpuIndex.size(); ++i) {
+            cpuIndex16[i] = (uint16)cpuIndex[i];
         }
     }
 };
@@ -179,11 +192,11 @@ void measureVertexPerformance(
     window = w;
     Model model("bunny.ifs");
 
-//    beginEndFPS = measureBeginEndPerformance(model);
-//    drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
+    beginEndFPS = measureBeginEndPerformance(model);
+    drawElementsRAMFPS = measureDrawElementsRAMPerformance(model);
     drawElementsVBOFPS = measureDrawElementsVBOPerformance(model);
-//    drawElementsVBO16FPS = measureDrawElementsVBO16Performance(model);
-//    drawElementsVBOIFPS = measureDrawElementsVBOIPerformance(model);
+    drawElementsVBO16FPS = measureDrawElementsVBO16Performance(model);
+    drawElementsVBOIFPS = measureDrawElementsVBOIPerformance(model);
 //    drawElementsVBOPeakFPS = measureDrawElementsVBOPeakPerformance(model);
 
     numTris = count * model.cpuIndex.size() / 3;
@@ -236,11 +249,11 @@ static void configureCameraAndLights() {
 float measureBeginEndPerformance(Model& model) {
 
     int N = model.cpuIndex.size();
-    const int*   index   = model.cpuIndex.begin();
-    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
-    const float* normal  = reinterpret_cast<const float*>(model.cpuNormal.begin());
-    const float* color   = reinterpret_cast<const float*>(model.cpuColor.begin());
-    const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
+    const unsigned int*   index   = &model.cpuIndex[0];
+    const float* vertex  = reinterpret_cast<const float*>(&model.cpuVertex[0]);
+    const float* normal  = reinterpret_cast<const float*>(&model.cpuNormal[0]);
+    const float* color   = reinterpret_cast<const float*>(&model.cpuColor[0]);
+    const float* texCoord= reinterpret_cast<const float*>(&model.cpuTexCoord[0]);
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
@@ -249,8 +262,12 @@ float measureBeginEndPerformance(Model& model) {
 
     float k = 0;
 
-    double t0 = System::time();
-    for (int j = 0; j < frames; ++j) {
+    double t0 = 0, t1 = 0;
+    for (int j = 0; j < frames + 1; ++j) {
+        // Don't count the first frame against us; it is cache warmup
+        if (j == 1) {
+            t0 = System::time();
+        }
         k += 3;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -268,17 +285,18 @@ float measureBeginEndPerformance(Model& model) {
             for (int i = 0; i < N; ++i) {
                 const int v = index[i];
                 const int v3 = 3 * v;
-                glNormal3fv(normal + v3);
-                glColor3fv(color + v3);
+                glColor4fv(color + v * 4);
                 glTexCoord2fv(texCoord + v + v);
+                glNormal3fv(normal + v3);
                 glVertex3fv(vertex + v3);
             }
             glEnd();
         }
 
         glSwapBuffers();
-
     }
+    glFinish();
+    t1 = System::time();
 
     glPopAttrib();
 
@@ -292,11 +310,6 @@ float measureDrawElementsRAMPerformance(Model& model) {
     const int N = model.cpuIndex.size();
     // Number of vertices
     const int V = model.cpuVertex.size();
-    const int*   index   = model.cpuIndex.begin();
-    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
-    const float* normal  = reinterpret_cast<const float*>(model.cpuNormal.begin());
-    const float* color   = reinterpret_cast<const float*>(model.cpuColor.begin());
-    const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
@@ -305,8 +318,13 @@ float measureDrawElementsRAMPerformance(Model& model) {
     
     float k = 0;
 
-    double t0 = System::time();
-    for (int j = 0; j < frames; ++j) {
+    double t0 = 0, t1 = 0;
+    glFinish();
+    for (int j = 0; j < frames + 1; ++j) {
+        // Don't count the first frame against us; it is cache warmup
+        if (j == 1) {
+            t0 = System::time();
+        }
         k += 3;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -325,23 +343,23 @@ float measureDrawElementsRAMPerformance(Model& model) {
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-            glNormalPointer(GL_FLOAT, 0, normal);
-            glColorPointer(3, GL_FLOAT, 0, color);
-            glTexCoordPointer(2, GL_FLOAT, 0, texCoord);
-            glVertexPointer(3, GL_FLOAT, 0,vertex);
+            glNormalPointer(GL_FLOAT, 0, &model.cpuNormal[0]);
+            glColorPointer(4, GL_FLOAT, 0, &model.cpuColor[0]);
+            glTexCoordPointer(2, GL_FLOAT, 0, &model.cpuTexCoord[0]);
+            glVertexPointer(3, GL_FLOAT, 0, &model.cpuVertex[0]);
 
-            glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, index);
+            glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, &model.cpuIndex[0]);
         }
 
         glSwapBuffers();
-
     }
+    glFinish();
+    t1 = System::time();
 
     glPopClientAttrib();
     glPopAttrib();
-    glFinish();
 
-    return frames / (System::time() - t0);
+    return frames / (t1 - t0);
 }
 
 
@@ -357,80 +375,9 @@ float measureDrawElementsVBOPerformance(Model& model) {
     if (! hasVBO) {
         return 0.0;
     }
-    // Load the vertex arrays.  It is important to create a reasonably coherent object;
-    // random triangles are a pathological case for the graphics card and will produce
-    // poor rendering performance.
 
-    // Vertices per side
-    const int sq = 187;
-
-    // Number of indices
-    const int N = (sq - 1) * (sq - 1) * 3 * 2;
-
-    // Number of vertices
-    const int V = sq * sq;
-
-    // Make a grid of triangles
-    std::vector<int> index(N);
-    {
-        int k = 0;
-        for (int i = 0; i < sq - 1; ++i) {
-            for (int j = 0; j < sq - 1; ++j) {
-                debugAssert(k < N - 5);
-
-                // Bottom triangle
-                index[k + 0] = i + j * sq;
-                index[k + 1] = i + (j + 1) * sq;
-                index[k + 2] = (i + 1) + (j + 1) * sq;
-
-                // Top triangle
-                index[k + 3] = i + j * sq;
-                index[k + 4] = (i + 1) + (j + 1) * sq;
-                index[k + 5] = (i + 1) + j * sq;
-
-                k += 6;
-            }
-        }
-    }
-
-    // Create data
-    std::vector<float> vertex(V * 3), normal(V * 3), texCoord(V * 2), color(V * 4);
-
-    // Map V indices to a sq x sq grid
-    for (int i = 0; i < sq; ++i) {
-        for (int j = 0; j < sq; ++j) {
-
-            int v = (i + j * sq) * 3;
-            float x = (i / (float)sq - 0.5) * 2;
-            float y = 0.5 - j / (float)sq;
-            float a = x * 2 * 3.1415927;
-            float r = ceil(cos(a * 10)) * 0.05 + 0.3; 
-            vertex[v + 0] = -cos(a) * r;
-            vertex[v + 1] = y;
-            vertex[v + 2] = sin(a) * r;
-
-            // Scale the normal
-            float s = 1.0 / sqrt(0.0001 + square(vertex[v]) + square(vertex[v + 1]) + square(vertex[v + 2]));
-            normal[v] = vertex[v] * s;
-            normal[v + 1] = vertex[v + 1] * s;
-            normal[v + 2] = vertex[v + 2] * s;
-
-            v = (i + j * sq) * 4;
-            color[v + 0] = r + 0.7;
-            color[v + 1] = 0.5;
-            color[v + 2] = 1.0 - r;
-            color[v + 3] = 1.0;
-
-
-            v = (i + j * sq) * 2;
-            texCoord[v] = i / (float)sq;
-            texCoord[v + 1] = j / (float)sq;
-        }
-    }
-
-    // number of objects to draw
-    const int count = 4;
-    const int frames = 15;
+    int N = model.cpuIndex.size();
+    int V = model.cpuVertex.size();
 
     size_t vertexSize   = V * sizeof(float) * 3;
     size_t normalSize   = V * sizeof(float) * 3;
@@ -459,15 +406,15 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
         // Upload data
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
-        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &index[0], GL_STATIC_DRAW_ARB);
+        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &model.cpuIndex[0], GL_STATIC_DRAW_ARB);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
 
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize,   &normal[0]);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize,    &color[0]);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize,   &vertex[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &model.cpuTexCoord[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize,   &model.cpuNormal[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize,    &model.cpuColor[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize,   &model.cpuVertex[0]);
         double t1;
 
         {
@@ -477,8 +424,7 @@ float measureDrawElementsVBOPerformance(Model& model) {
             glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
             glColor3f(1, .5, 0);
             glFinish();
-            System::sleep(0.05);
-            for (int j = 0; j < frames; ++j) {
+            for (int j = 0; j < frames + 1; ++j) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 // Don't count the first frame against us; it is cache warmup
                 if (j == 1) {
@@ -522,110 +468,6 @@ float measureDrawElementsVBOPerformance(Model& model) {
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
 
-/*
-    // Load the vertex arrays
-
-    // Number of indices
-    const int N = model.cpuIndex.size();
-    // Number of vertices
-    const int V = model.cpuVertex.size();
-    const int*   index   = model.cpuIndex.begin();
-    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
-    const float* normal  = reinterpret_cast<const float*>(model.cpuNormal.begin());
-    const float* color   = reinterpret_cast<const float*>(model.cpuColor.begin());
-    const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
-
-    std::vector<float> color2(model.cpuColor.size() * 4);
-    for (int i = 0; i < model.cpuColor.size(); ++i) {
-        color2[i * 4 + 0] = model.cpuColor[i].x;
-        color2[i * 4 + 1] = model.cpuColor[i].y;
-        color2[i * 4 + 2] = model.cpuColor[i].z;
-        color2[i * 4 + 3] = 1.0;
-    }
-
-    GLuint vbo, indexBuffer;
-    glGenBuffersARB(1, &vbo);
-    glGenBuffersARB(1, &indexBuffer);
-
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
-
-    size_t vertexSize   = V * sizeof(float) * 3;
-    size_t normalSize   = V * sizeof(float) * 3;
-    size_t texCoordSize = V * sizeof(float) * 2;
-    size_t colorSize    = V * sizeof(float) * 4;   
-    size_t totalSize    = vertexSize + normalSize + texCoordSize + colorSize;
-
-    size_t indexSize    = N * sizeof(int);
-
-    // Pointers relative to the start of the vbo in video memory
-    // (would interleaving be faster?)
-    GLintptrARB vertexPtr   = 0;
-    GLintptrARB normalPtr   = vertexSize + vertexPtr;
-    GLintptrARB texCoordPtr = normalSize + normalPtr;
-    GLintptrARB colorPtr    = texCoordSize + texCoordPtr;
-
-    GLintptrARB indexPtr    = 0;
-
-    // Upload data
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, index, GL_STATIC_DRAW_ARB);
-
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
-
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, texCoord);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, normal);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize, &color2[0]);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, vertex);
-    color2.resize(0);
-
-    configureCameraAndLights();
-    glDisable(GL_TEXTURE_2D);
-    
-    float k = 0;
-
-    glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-    glFinish();
-    double t0 = System::time();
-    for (int j = 0; j < frames; ++j) {
-        k += 3;
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //glEnable(GL_TEXTURE_2D);
-        //glBindTexture(GL_TEXTURE_2D, model.textureID);
-
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
-        glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
-        glColorPointer(4, GL_FLOAT, 0, (void*)colorPtr);
-        glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
-
-        for (int c = 0; c < count; ++c) {
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            glTranslatef(c - (count - 1) / 2.0, 0, -2);
-            glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
-
-            glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
-        }
-
-        glSwapBuffers();
-    }
-
-
-    glPopClientAttrib();
-    glPopAttrib();
-
-    glDeleteBuffersARB(1, &indexBuffer);
-    glDeleteBuffersARB(1, &vbo);
-    */
-
     return frames / (t1 - t0);
 }
 
@@ -649,16 +491,6 @@ float measureDrawElementsVBO16Performance(Model& model) {
     const int N = model.cpuIndex.size();
     // Number of vertices
     const int V = model.cpuVertex.size();
-    const int*   index   = model.cpuIndex.begin();
-    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
-    const float* normal  = reinterpret_cast<const float*>(model.cpuNormal.begin());
-    const float* color   = reinterpret_cast<const float*>(model.cpuColor.begin());
-    const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
-
-    std::vector<unsigned short> index16(N);
-    for (int i = 0; i < N; ++i) {
-        index16[i] = (uint16)index[i];
-    }
     
     GLuint vbo, indexBuffer;
     glGenBuffersARB(1, &vbo);
@@ -670,7 +502,7 @@ float measureDrawElementsVBO16Performance(Model& model) {
     size_t vertexSize   = V * sizeof(float) * 3;
     size_t normalSize   = V * sizeof(float) * 3;
     size_t texCoordSize = V * sizeof(float) * 2;
-    size_t colorSize    = V * sizeof(float) * 3;   
+    size_t colorSize    = V * sizeof(float) * 4;   
     size_t totalSize    = vertexSize + normalSize + texCoordSize + colorSize;
 
     size_t indexSize    = N * sizeof(unsigned short);
@@ -686,22 +518,26 @@ float measureDrawElementsVBO16Performance(Model& model) {
 
     // Upload data
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, index16.begin(), GL_STATIC_DRAW_ARB);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &model.cpuIndex16[0], GL_STATIC_DRAW_ARB);
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
 
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,  vertexSize, vertex);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,       colorSize, color);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,      normalSize, normal);
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, texCoord);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,  vertexSize, &model.cpuVertex[0]);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,       colorSize, &model.cpuColor[0]);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,      normalSize, &model.cpuNormal[0]);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &model.cpuTexCoord[0]);
 
     configureCameraAndLights();
     
     float k = 0;
 
-    double t0 = System::time();
-    for (int j = 0; j < frames; ++j) {
+    double t0 = 0, t1 = 0;
+    for (int j = 0; j < frames + 1; ++j) {
+        if (j == 1) {
+            t0 = System::time();
+        }
+
         k += 3;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -709,14 +545,14 @@ float measureDrawElementsVBO16Performance(Model& model) {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, model.textureID);
 
-        glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
 
-        glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
-        glColorPointer(3, GL_FLOAT, 0, (void*)colorPtr);
+        glColorPointer(4, GL_FLOAT, 0, (void*)colorPtr);
         glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+        glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
         glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
 
         for (int c = 0; c < count; ++c) {
@@ -732,15 +568,16 @@ float measureDrawElementsVBO16Performance(Model& model) {
 
     }
 
+    glFinish();
+    t1 = System::time();
 
     glPopClientAttrib();
     glPopAttrib();
 
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
-    glFinish();
 
-    return frames / (System::time() - t0);
+    return frames / (t1 - t0);
 }
 
 
@@ -763,11 +600,6 @@ float measureDrawElementsVBOIPerformance(Model& model) {
     const int N = model.cpuIndex.size();
     // Number of vertices
     const int V = model.cpuVertex.size();
-    const int*   index   = model.cpuIndex.begin();
-    const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
-    const float* normal  = reinterpret_cast<const float*>(model.cpuNormal.begin());
-    const float* color   = reinterpret_cast<const float*>(model.cpuColor.begin());
-    const float* texCoord= reinterpret_cast<const float*>(model.cpuTexCoord.begin());
 
     GLuint vbo, indexBuffer;
     glGenBuffersARB(1, &vbo);
@@ -794,39 +626,41 @@ float measureDrawElementsVBOIPerformance(Model& model) {
     GLintptrARB indexPtr    = 0;
 
     // Upload data
-    std::vector<unsigned short> index16(N);
-    for (int i = 0; i < N; ++i) {
-        index16[i] = (uint16)index[i];
-    }
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, N * sizeof(unsigned short), index16.begin(), GL_STATIC_DRAW_ARB);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, N * sizeof(unsigned short), &model.cpuIndex16[0], GL_STATIC_DRAW_ARB);
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
     float* interleave = (float*)malloc(totalSize);
     // Interleave the buffers in memory
     float* ptr = interleave;
     for (int i = 0; i < V; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            ptr[0] = texCoord[i * 2 + j];
-            ++ptr;
-        }
-
-        for (int j = 0; j < 3; ++j) {
-            ptr[0] = color[i * 3 + j];
-            ++ptr;
-        }
-        ptr[0] = 1.0f;  // alpha
+        ptr[0] = model.cpuTexCoord[i].x;
+        ++ptr;
+        ptr[0] = model.cpuTexCoord[i].y;
         ++ptr;
 
-        for (int j = 0; j < 3; ++j) {
-            ptr[0] = normal[i * 3 + j];
-            ++ptr;
-        }
+        ptr[0] = model.cpuColor[i].x;
+        ++ptr;
+        ptr[0] = model.cpuColor[i].y;
+        ++ptr;
+        ptr[0] = model.cpuColor[i].z;
+        ++ptr;
+        ptr[0] = model.cpuColor[i].w;
+        ++ptr;
 
-        for (int j = 0; j < 3; ++j) {
-            ptr[0] = vertex[i * 3 + j];
-            ++ptr;
-        }
+        ptr[0] = model.cpuNormal[i].x;
+        ++ptr;
+        ptr[0] = model.cpuNormal[i].y;
+        ++ptr;
+        ptr[0] = model.cpuNormal[i].z;
+        ++ptr;
+
+        ptr[0] = model.cpuVertex[i].x;
+        ++ptr;
+        ptr[0] = model.cpuVertex[i].y;
+        ++ptr;
+        ptr[0] = model.cpuVertex[i].z;
+        ++ptr;
     }
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, interleave, GL_STATIC_DRAW_ARB);
     free(interleave);
@@ -835,8 +669,11 @@ float measureDrawElementsVBOIPerformance(Model& model) {
     
     float k = 0;
 
-    double t0 = System::time();
-    for (int j = 0; j < frames; ++j) {
+    double t0 = 0, t1 = 0;
+    for (int j = 0; j < frames + 1; ++j) {
+        if (j == 1) {
+            t0 = System::time();
+        }
         k += 3;
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -863,6 +700,8 @@ float measureDrawElementsVBOIPerformance(Model& model) {
         glSwapBuffers();
 
     }
+    glFinish();
+    t1 = System::time();
 
 
     glPopClientAttrib();
@@ -870,9 +709,8 @@ float measureDrawElementsVBOIPerformance(Model& model) {
 
     glDeleteBuffersARB(1, &indexBuffer);
     glDeleteBuffersARB(1, &vbo);
-    glFinish();
 
-    return frames / (System::time() - t0);
+    return frames / (t1 - t0);
 }
 
 
@@ -894,7 +732,7 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     const int N = model.cpuIndex.size();
     // Number of vertices
     const int V = model.cpuVertex.size();
-    const int*   index   = model.cpuIndex.begin();
+    const unsigned int*   index   = model.cpuIndex.begin();
     const float* vertex  = reinterpret_cast<const float*>(model.cpuVertex.begin());
 
     std::vector<unsigned short> index16(N);
