@@ -486,6 +486,9 @@ float measureDrawElementsVBOPerformance(Model& model) {
                 }
                 k += 3;
 
+                glEnable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, model.textureID);
+
                 glEnableClientState(GL_NORMAL_ARRAY);
                 glEnableClientState(GL_COLOR_ARRAY);
                 glEnableClientState(GL_TEXTURE_COORD_ARRAY);
