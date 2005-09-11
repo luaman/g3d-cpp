@@ -733,8 +733,6 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     const int N = model.cpuIndex.size();
     // Number of vertices
     const int V = model.cpuVertex.size();
-    const unsigned int*   index   = model.cpuIndex.begin();
-    const float* vertex  = reinterpret_cast<const float*>(&model.cpuVertex[0]);
 
     GLuint vbo, indexBuffer;
     glGenBuffersARB(1, &vbo);
@@ -747,10 +745,7 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     size_t totalSize    = vertexSize;
     size_t indexSize    = N * sizeof(unsigned short);
 
-    // Pointers relative to the start of the vbo in video memory
-    // (would interleaving be faster?)
     GLintptrARB vertexPtr   = 0;
-
     GLintptrARB indexPtr    = 0;
 
     // Upload data
@@ -758,7 +753,7 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &model.cpuIndex16[0], GL_STATIC_DRAW_ARB);
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexSize, vertex, GL_STATIC_DRAW_ARB);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexSize, &model.cpuVertex[0], GL_STATIC_DRAW_ARB);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -777,7 +772,6 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
     float k = 0;
 
     double t0 = 0, t1 = 0;
-    glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
     glFinish();
     for (int j = 0; j < frames + 1; ++j) {
         if (j == 1) {
@@ -789,7 +783,6 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
 
         glEnableClientState(GL_VERTEX_ARRAY);
 
-
         for (int c = 0; c < count; ++c) {
             static const float col[] = {1, 0, 0, 1, 0, 0};
             glColor3fv(col + (c % 3));
@@ -799,6 +792,7 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
             glTranslatef(c - (count - 1) / 2.0, 0, -2);
             glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
 
+            glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
             glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_SHORT, (void*)indexPtr);
         }
 
