@@ -11,6 +11,7 @@
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/RenderDevice.h"// TODO: remove
+#include "GLG3D/IFSModel.h" // TODO: remove
 #include <sstream>
 
 #ifdef G3D_WIN32
@@ -788,46 +789,73 @@ bool GLCaps::hasBug_slowVBO() {
         return false;
     }
 
-    // Load the vertex arrays
+
+    // Load the vertex arrays.  It is important to create a reasonably coherent object;
+    // random triangles are a pathological case for the graphics card and will produce
+    // poor rendering performance.
+
+    // Vertices per side
+    const int sq = 188;
 
     // Number of indices
-    const int N = 69451 * 3;
+    const int N = (sq - 1) * (sq - 1) * 3 * 2;
 
-    // Number of vertices (matches the stanford bunny)
-    const int V = 35947;
+    // Number of vertices
+    const int V = sq * sq;
 
-    // Make some random triangles
+    // Make a grid of triangles
     std::vector<int> index(N);
-    for (int i = 0; i < N; ++i) {
-        index[i] = (i * 3 + (int)(10 * (float)rand() / RAND_MAX)) % V;
+    {
+        int k = 0;
+        for (int i = 0; i < sq - 1; ++i) {
+            for (int j = 0; j < sq - 1; ++j) {
+                debugAssert(k < N - 5);
+
+                // Bottom triangle
+                index[k + 0] = i + j * sq;
+                index[k + 1] = i + (j + 1) * sq;
+                index[k + 2] = (i + 1) + (j + 1) * sq;
+
+                // Top triangle
+                index[k + 3] = i + j * sq;
+                index[k + 4] = (i + 1) + (j + 1) * sq;
+                index[k + 5] = (i + 1) + j * sq;
+
+                k += 6;
+            }
+        }
     }
 
     // Create data
     std::vector<float> vertex(V * 3), normal(V * 3), texCoord(V * 2);
-    for (int i = 0; i < V; ++i) {
-        float n[3], s = 0;
 
-        for (int j = 0; j < 3; ++j) {
-            vertex[i * 3 + j] = ((rand() / (double)RAND_MAX) - 0.5) * 0.5;
-            n[j] = (rand() / (double)RAND_MAX) - 0.5;
-            s += n[j] * n[j];
-        }
-        if (s == 0) {
-            s = 1;
-        } else {
-            s = 1.0 / sqrt(s);
-        }
-        for (int j = 0; j < 3; ++j) {
-            normal[i * 3 + j] = n[j] / s;
-        }
+    // Map V indices to a sq x sq grid
+    for (int i = 0; i < sq; ++i) {
+        for (int j = 0; j < sq; ++j) {
 
-        for (int j = 0; j < 2; ++j) {
-            texCoord[i * 2 + j] = vertex[i * 3 + j];//rand() / (double)RAND_MAX;
+            int v = (i + j * sq) * 3;
+            float x = (i / (float)sq - 0.5) * 2;
+            float y = 0.5 - j / (float)sq;
+            float a = x * 2 * 3.1415927;
+            float r = cos(a * 4) * 0.05 + 0.3; 
+            vertex[v + 0] = -cos(a) * r;
+            vertex[v + 1] = y;
+            vertex[v + 2] = sin(a) * r;
+
+            // Scale the normal
+            float s = 1.0 / sqrt(0.0001 + square(vertex[v]) + square(vertex[v + 1]) + square(vertex[v + 2]));
+            normal[v] = vertex[v] * s;
+            normal[v + 1] = vertex[v + 1] * s;
+            normal[v + 2] = vertex[v + 2] * s;
+
+            v = (i + j * sq) * 2;
+            texCoord[v] = i / (float)sq;
+            texCoord[v + 1] = j / (float)sq;
         }
     }
 
     // number of objects to draw
-    const int count = 1;
+    const int count = 4;
     const int frames = 15;
 
     size_t vertexSize   = V * sizeof(float) * 3;
@@ -879,10 +907,10 @@ bool GLCaps::hasBug_slowVBO() {
             glDisable(GL_TEXTURE_2D);
             glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
             glColor3f(1, .5, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glFinish();
             Sleep(0.05);
             for (int j = 0; j < frames; ++j) {
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 // Don't count the first frame against us; it is cache warmup
                 if (j == 1) {
                     t0 = System::time();
@@ -905,7 +933,7 @@ bool GLCaps::hasBug_slowVBO() {
 
                     glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
                 }
-                RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+                //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
             }
             glFinish();
             VBOTime = System::time() - t0;
@@ -926,11 +954,11 @@ bool GLCaps::hasBug_slowVBO() {
         glDisable(GL_TEXTURE_2D);
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glColor3f(1, .5, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glFinish();
         Sleep(0.05);
 
         for (int j = 0; j < frames; ++j) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
                 t0 = System::time();
@@ -953,7 +981,7 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, &index[0]);
             }
-            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+            //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
         }
         glFinish();
         RAMTime = System::time() - t0;
