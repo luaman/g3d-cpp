@@ -56,6 +56,7 @@ namespace G3D {
     <LI>GL_EXT_texture_r
     <LI>GL_EXT_stencil_wrap
     <LI>GL_EXT_stencil_two_side
+    <LI>GL_ATI_separate_stencil
     <LI>GL_EXT_texture_compression_s3tc
     <LI>GL_EXT_texture_cube_map, GL_ARB_texture_cube_map
     <LI>GL_ARB_shadow
@@ -125,6 +126,7 @@ private:
     DECLARE_EXT(GL_EXT_texture_3D);
     DECLARE_EXT(GL_EXT_stencil_wrap);
     DECLARE_EXT(GL_EXT_stencil_two_side);
+    DECLARE_EXT(GL_ATI_separate_stencil);    
     DECLARE_EXT(GL_EXT_texture_compression_s3tc);
     DECLARE_EXT(GL_EXT_texture_cube_map);
     DECLARE_EXT(GL_ARB_shadow);

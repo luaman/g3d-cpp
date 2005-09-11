@@ -180,7 +180,7 @@ void Report::doGraphics() {
         p.y += s * 2;
         LABEL("Extensions");
         PRINT(std::string("FSAA:                           ") + ((GLCaps::supports("WGL_ARB_multisample") || GLCaps::supports("GL_ARB_multisample")) ? "Yes" : "No"));
-        PRINT(std::string("Two-sided Stencil:        ") + (GLCaps::supports("GL_EXT_stencil_two_side") ? "Yes" : "No"));
+        PRINT(std::string("Two-sided Stencil:        ") + ((GLCaps::supports("GL_EXT_stencil_two_side") || GLCaps::supports("GL_ATI_separate_stencil")) ? "Yes" : "No"));
         PRINT(std::string("Stencil Wrap:               ") + (GLCaps::supports("GL_EXT_stencil_wrap") ? "Yes" : "No"));
         PRINT(std::string("Texture Compression: ") + (GLCaps::supports("GL_EXT_texture_compression_s3tc") ? "Yes" : "No"));
         PRINT(std::string("Shadow Maps:             ") + (GLCaps::supports("GL_ARB_shadow") ? "Yes" : "No"));

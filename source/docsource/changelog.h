@@ -38,6 +38,7 @@
     <LI> Optimized G3D::Array, Table, Queue, and Set for performance.  Now significantly (up to 10x) faster
          than their std::counterparts.
     <LI> Vector3(Vector2, float) constructor
+    <LI> GLCaps::supports_GL_ATI_separate_stencil
     <LI> GLCaps can now test a card/driver and detect specific bugs:
         <ul><li>G3D::GLCaps::hasBug_glMultiTexCoord3fvARB
         <LI> G3D::GLCaps::hasBug_slowVBO
