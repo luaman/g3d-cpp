@@ -10,8 +10,8 @@
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
-#include "GLG3D/RenderDevice.h"// TODO: remove
-#include "GLG3D/IFSModel.h" // TODO: remove
+//#include "GLG3D/RenderDevice.h"// TODO: remove
+//#include "GLG3D/IFSModel.h" // TODO: remove
 #include <sstream>
 
 #ifdef G3D_WIN32
@@ -869,7 +869,7 @@ bool GLCaps::hasBug_slowVBO() {
     size_t normalSize   = V * sizeof(float) * 3;
     size_t colorSize    = V * sizeof(float) * 4;
     size_t texCoordSize = V * sizeof(float) * 2;
-    size_t totalSize    = vertexSize + normalSize + texCoordSize;
+    size_t totalSize    = vertexSize + normalSize + texCoordSize + colorSize;
 
     size_t indexSize    = N * sizeof(int);
 
@@ -903,7 +903,7 @@ bool GLCaps::hasBug_slowVBO() {
         glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &index[0], GL_STATIC_DRAW_ARB);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize + colorSize, NULL, GL_STATIC_DRAW_ARB);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
 
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize,   &normal[0]);
@@ -945,8 +945,8 @@ bool GLCaps::hasBug_slowVBO() {
 
                     glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
                 }
-                RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
-                //glFlush();
+                //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+                glFlush();
             }
             glFinish();
             VBOTime = System::time() - t0;
@@ -979,10 +979,12 @@ bool GLCaps::hasBug_slowVBO() {
             k += 3;
 
             glEnableClientState(GL_NORMAL_ARRAY);
-            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_COLOR_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glEnableClientState(GL_VERTEX_ARRAY);
 
             glNormalPointer(GL_FLOAT, 0, &normal[0]);
+            glColorPointer(4, GL_FLOAT, 0, &color[0]);
             glTexCoordPointer(2, GL_FLOAT, 0, &texCoord[0]);
             glVertexPointer(3, GL_FLOAT, 0, &vertex[0]);
 
@@ -994,8 +996,8 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, &index[0]);
             }
-            //glFlush();
-            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+            glFlush();
+            //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
         }
         glFinish();
         RAMTime = System::time() - t0;

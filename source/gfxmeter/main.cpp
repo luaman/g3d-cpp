@@ -46,7 +46,7 @@ void shaderVersions(
 
 
 void App::showSplashScreen() {
-    gfxMeterTexture = Texture::fromFile("gears.jpg", TextureFormat::AUTO, Texture::CLAMP);
+    TextureRef gfxMeterTexture = Texture::fromFile("gears.jpg", TextureFormat::AUTO, Texture::CLAMP);
 
     for (int i = 0; i < 2; ++i) {
         renderDevice->push2D();
@@ -140,7 +140,6 @@ void App::main() {
 
     shaderVersions(combineShader, asmShader, glslShader);
     computeFeatureRating();
-    countBugs();
 
     Log::common()->printf("Shaders:\n");
     Log::common()->printf("   Combiners: %s\n", combineShader.c_str());
@@ -174,6 +173,8 @@ void App::main() {
         Log::common()->printf("\n\n");
     }
 #   endif
+
+    countBugs();
     
     // Load objects here
     sky = NULL;//Sky::create(NULL, dataDir + "sky/");

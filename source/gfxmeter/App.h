@@ -26,8 +26,6 @@ public:
     std::string             asmShader;
     std::string             glslShader;
 
-    TextureRef              gfxMeterTexture;
-
     int                     featureRating;
     float                   performanceRating;
     int                     bugCount;
