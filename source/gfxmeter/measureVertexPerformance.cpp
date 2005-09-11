@@ -504,8 +504,8 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
                     glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
                 }
-                //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
-                glFlush();
+                RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+                //glFlush();
             }
             glFinish();
             t1 = System::time();
