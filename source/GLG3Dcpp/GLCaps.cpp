@@ -706,7 +706,7 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
 
         // Read back results
         unsigned int readback[60];
-        glReadPixels(0, viewport[3] - 5, 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
+        glReadPixels(0, (int)(viewport[3] - 5), 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
 
         // Test result for errors
         bool texbug = false;
@@ -866,6 +866,7 @@ bool GLCaps::hasBug_slowVBO() {
     // number of objects to draw
     const int count = 4;
     const int frames = 15;
+    double t0 = 0;
 
     size_t vertexSize   = V * sizeof(float) * 3;
     size_t normalSize   = V * sizeof(float) * 3;
@@ -912,15 +913,14 @@ bool GLCaps::hasBug_slowVBO() {
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize,   &vertex[0]);
     
         {
-            double t0 = 0;
             float k = 0;
             configureCameraAndLights();
             glDisable(GL_TEXTURE_2D);
             glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
             glColor3f(1, .5, 0);
             glFinish();
-            Sleep(0.05);
-            for (int j = 0; j < frames; ++j) {
+            System::sleep(0.05);
+            for (int j = 0; j < frames + 1; ++j) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 // Don't count the first frame against us; it is cache warmup
                 if (j == 1) {
@@ -962,14 +962,13 @@ bool GLCaps::hasBug_slowVBO() {
     glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     {
-        double t0 = 0;
         float k = 0;
         configureCameraAndLights();
         glDisable(GL_TEXTURE_2D);
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glColor3f(1, .5, 0);
         glFinish();
-        Sleep(0.05);
+        System::sleep(0.05);
 
         for (int j = 0; j < frames; ++j) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

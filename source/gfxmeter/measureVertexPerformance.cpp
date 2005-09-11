@@ -15,7 +15,7 @@ float measureDrawElementsVBOIPerformance(class Model&);
 float measureDrawElementsVBOPeakPerformance(class Model&);
 
 /** Number of frames to render in tests */
-static const int frames = 16;
+static const int frames = 15;
 
 
 /** Number of models per frame */
@@ -468,7 +468,8 @@ float measureDrawElementsVBOPerformance(Model& model) {
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize,   &normal[0]);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize,    &color[0]);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize,   &vertex[0]);
- double t1;   
+        double t1;
+
         {
             float k = 0;
             configureCameraAndLights();
@@ -476,9 +477,50 @@ float measureDrawElementsVBOPerformance(Model& model) {
             glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
             glColor3f(1, .5, 0);
             glFinish();
-            Sleep(0.05);
-            t0 = System::time();
+            System::sleep(0.05);
             for (int j = 0; j < frames; ++j) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                // Don't count the first frame against us; it is cache warmup
+                if (j == 1) {
+                    t0 = System::time();
+                }
+                k += 3;
+
+                glEnableClientState(GL_NORMAL_ARRAY);
+                glEnableClientState(GL_COLOR_ARRAY);
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                glEnableClientState(GL_VERTEX_ARRAY);
+
+                glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
+                glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+                glColorPointer(4, GL_FLOAT, 0, (void*)colorPtr);
+                glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+
+                for (int c = 0; c < count; ++c) {
+                    glMatrixMode(GL_MODELVIEW);
+                    glLoadIdentity();
+                    glTranslatef(c - (count - 1) / 2.0, 0, -2);
+                    glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+                    glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
+                }
+                //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+                glFlush();
+            }
+            glFinish();
+            t1 = System::time();
+        }
+
+        if (false) {
+            float k = 0;
+            configureCameraAndLights();
+            glDisable(GL_TEXTURE_2D);
+            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+            glColor3f(1, .5, 0);
+            glFinish();
+            System::sleep(0.05);
+            t0 = System::time();
+            for (int j = 0; j < frames + 1; ++j) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 k += 3;
 
