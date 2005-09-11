@@ -440,7 +440,7 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
     size_t indexSize    = N * sizeof(int);
 
-    double t0 = System::time();
+    double t0 = 0;
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
@@ -507,6 +507,7 @@ float measureDrawElementsVBOPerformance(Model& model) {
 
                     glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
                 }
+                //glSwapBuffers();
                 RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
                 //glFlush();
             }
@@ -514,43 +515,6 @@ float measureDrawElementsVBOPerformance(Model& model) {
             t1 = System::time();
         }
 
-        if (false) {
-            float k = 0;
-            configureCameraAndLights();
-            glDisable(GL_TEXTURE_2D);
-            glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-            glColor3f(1, .5, 0);
-            glFinish();
-            System::sleep(0.05);
-            t0 = System::time();
-            for (int j = 0; j < frames + 1; ++j) {
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                k += 3;
-
-                glEnableClientState(GL_NORMAL_ARRAY);
-                glEnableClientState(GL_COLOR_ARRAY);
-                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                glEnableClientState(GL_VERTEX_ARRAY);
-
-                glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
-                glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
-                glColorPointer(4, GL_FLOAT, 0, (void*)colorPtr);
-                glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
-
-                for (int c = 0; c < count; ++c) {
-                    glMatrixMode(GL_MODELVIEW);
-                    glLoadIdentity();
-                    glTranslatef(c - (count - 1) / 2.0, 0, -2);
-                    glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
-
-                    glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
-                }
-                //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
-                glSwapBuffers();
-            }
-            glFinish();
-           t1 = System::time();
-        }
 
     glPopClientAttrib();
     glPopAttrib();
