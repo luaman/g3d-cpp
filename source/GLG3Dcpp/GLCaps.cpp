@@ -795,7 +795,7 @@ bool GLCaps::hasBug_slowVBO() {
     // poor rendering performance.
 
     // Vertices per side
-    const int sq = 188;
+    const int sq = 187;
 
     // Number of indices
     const int N = (sq - 1) * (sq - 1) * 3 * 2;
@@ -827,7 +827,7 @@ bool GLCaps::hasBug_slowVBO() {
     }
 
     // Create data
-    std::vector<float> vertex(V * 3), normal(V * 3), texCoord(V * 2);
+    std::vector<float> vertex(V * 3), normal(V * 3), texCoord(V * 2), color(V * 4);
 
     // Map V indices to a sq x sq grid
     for (int i = 0; i < sq; ++i) {
@@ -837,7 +837,7 @@ bool GLCaps::hasBug_slowVBO() {
             float x = (i / (float)sq - 0.5) * 2;
             float y = 0.5 - j / (float)sq;
             float a = x * 2 * 3.1415927;
-            float r = cos(a * 4) * 0.05 + 0.3; 
+            float r = ceil(cos(a * 10)) * 0.05 + 0.3; 
             vertex[v + 0] = -cos(a) * r;
             vertex[v + 1] = y;
             vertex[v + 2] = sin(a) * r;
@@ -847,6 +847,13 @@ bool GLCaps::hasBug_slowVBO() {
             normal[v] = vertex[v] * s;
             normal[v + 1] = vertex[v + 1] * s;
             normal[v + 2] = vertex[v + 2] * s;
+
+            v = (i + j * sq) * 4;
+            color[v + 0] = r + 0.7;
+            color[v + 1] = 0.5;
+            color[v + 2] = 1.0 - r;
+            color[v + 3] = 1.0;
+
 
             v = (i + j * sq) * 2;
             texCoord[v] = i / (float)sq;
@@ -860,6 +867,7 @@ bool GLCaps::hasBug_slowVBO() {
 
     size_t vertexSize   = V * sizeof(float) * 3;
     size_t normalSize   = V * sizeof(float) * 3;
+    size_t colorSize    = V * sizeof(float) * 4;
     size_t texCoordSize = V * sizeof(float) * 2;
     size_t totalSize    = vertexSize + normalSize + texCoordSize;
 
@@ -886,6 +894,7 @@ bool GLCaps::hasBug_slowVBO() {
         GLintptrARB vertexPtr   = 0;
         GLintptrARB normalPtr   = vertexSize + vertexPtr;
         GLintptrARB texCoordPtr = normalSize  + normalPtr;
+        GLintptrARB colorPtr    = texCoordSize + texCoordPtr;
 
         GLintptrARB indexPtr    = 0;
 
@@ -894,11 +903,12 @@ bool GLCaps::hasBug_slowVBO() {
         glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexSize, &index[0], GL_STATIC_DRAW_ARB);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize, NULL, GL_STATIC_DRAW_ARB);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, totalSize + colorSize, NULL, GL_STATIC_DRAW_ARB);
 
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize, &vertex[0]);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize, &normal[0]);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, texCoordPtr, texCoordSize, &texCoord[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, normalPtr,   normalSize,   &normal[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, colorPtr,    colorSize,    &color[0]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, vertexPtr,   vertexSize,   &vertex[0]);
     
         {
             double t0 = 0;
@@ -907,10 +917,10 @@ bool GLCaps::hasBug_slowVBO() {
             glDisable(GL_TEXTURE_2D);
             glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
             glColor3f(1, .5, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glFinish();
             Sleep(0.05);
             for (int j = 0; j < frames; ++j) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 // Don't count the first frame against us; it is cache warmup
                 if (j == 1) {
                     t0 = System::time();
@@ -918,11 +928,13 @@ bool GLCaps::hasBug_slowVBO() {
                 k += 3;
 
                 glEnableClientState(GL_NORMAL_ARRAY);
+                glEnableClientState(GL_COLOR_ARRAY);
                 glEnableClientState(GL_TEXTURE_COORD_ARRAY);
                 glEnableClientState(GL_VERTEX_ARRAY);
 
                 glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
                 glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
+                glColorPointer(4, GL_FLOAT, 0, (void*)colorPtr);
                 glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
 
                 for (int c = 0; c < count; ++c) {
@@ -933,7 +945,8 @@ bool GLCaps::hasBug_slowVBO() {
 
                     glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, (void*)indexPtr);
                 }
-                //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+                RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+                //glFlush();
             }
             glFinish();
             VBOTime = System::time() - t0;
@@ -954,11 +967,11 @@ bool GLCaps::hasBug_slowVBO() {
         glDisable(GL_TEXTURE_2D);
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
         glColor3f(1, .5, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glFinish();
         Sleep(0.05);
 
         for (int j = 0; j < frames; ++j) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
                 t0 = System::time();
@@ -981,7 +994,8 @@ bool GLCaps::hasBug_slowVBO() {
 
                 glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_INT, &index[0]);
             }
-            //RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
+            //glFlush();
+            RenderDevice::lastRenderDeviceCreated->window()->swapGLBuffers();
         }
         glFinish();
         RAMTime = System::time() - t0;
@@ -992,6 +1006,7 @@ bool GLCaps::hasBug_slowVBO() {
     glPopClientAttrib();
     glPopAttrib();
 
+    Log::common()->printf("\n%d triangles\n", count * N / 3);
     Log::common()->printf("RAM performance = %f FPS     VBO performance = %f FPS\n", (float)(frames - 1) / RAMTime, (float)(frames - 1)/ VBOTime);
 
     // See if the RAM performance was conservatively faster.

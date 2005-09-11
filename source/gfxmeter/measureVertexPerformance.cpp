@@ -50,38 +50,112 @@ public:
     /** Only the constructor uses G3D */
     Model(const std::string& filename) {
 
-        PosedModelRef m = IFSModel::create(filename)->pose();
         tex = Texture::fromFile("gears.jpg");
         textureID = tex->getOpenGLID();
 
-        // Copy fields out into arrays
-        {
-            const Array<int>& index = m->triangleIndices();
-            int N = index.size();
+        // The gear shape produces better memory coherence so 
+        // it renders faster.
+        enum {GEAR, BUNNY} shape = GEAR;
+
+        if (shape == BUNNY) {
+            PosedModelRef m = IFSModel::create(filename)->pose();
+            // Copy fields out into arrays
+            {
+                const Array<int>& index = m->triangleIndices();
+                int N = index.size();
+                cpuIndex.resize(N);
+                System::memcpy(cpuIndex.begin(), index.getCArray(), sizeof(int) * N);
+            }
+
+            {
+                const MeshAlg::Geometry& g = m->objectSpaceGeometry(); 
+                int N = g.vertexArray.size();
+                cpuVertex.resize(N);
+                cpuNormal.resize(N);
+                cpuColor.resize(N);
+                cpuTexCoord.resize(N);
+                System::memcpy(cpuVertex.begin(), g.vertexArray.getCArray(), N * sizeof(Vec3));
+                System::memcpy(cpuNormal.begin(), g.normalArray.getCArray(), N * sizeof(Vec3));
+
+                for (int i = 0; i < N; ++i) {
+                    // Copy the normals over the colors, too
+                    cpuColor[i].x = g.normalArray[i].x * 0.5 + 0.5;
+                    cpuColor[i].y = g.normalArray[i].y * 0.5 + 0.5;
+                    cpuColor[i].z = g.normalArray[i].z * 0.5 + 0.5;
+
+                    // Cylindrical projection to get tex coords
+                    Vector3 dir = g.vertexArray[i].direction();
+                    cpuTexCoord[i].x = (atan2(dir.x, dir.z) / G3D_TWO_PI + 0.5) * 5;
+                    cpuTexCoord[i].y = (0.5 - dir.y * 0.5) * 5;
+                }
+            }
+        } else {
+            // Vertices per side
+            const int sq = 187;
+
+            // Number of indices
+            const int N = (sq - 1) * (sq - 1) * 3 * 2;
+
+            // Number of vertices
+            const int V = sq * sq;
+
+            // Make a grid of triangles
             cpuIndex.resize(N);
-            System::memcpy(cpuIndex.begin(), index.getCArray(), sizeof(int) * N);
-        }
+            {
+                int k = 0;
+                for (int i = 0; i < sq - 1; ++i) {
+                    for (int j = 0; j < sq - 1; ++j) {
+                        debugAssert(k < N - 5);
 
-        {
-            const MeshAlg::Geometry& g = m->objectSpaceGeometry(); 
-            int N = g.vertexArray.size();
-            cpuVertex.resize(N);
-            cpuNormal.resize(N);
-            cpuColor.resize(N);
-            cpuTexCoord.resize(N);
-            System::memcpy(cpuVertex.begin(), g.vertexArray.getCArray(), N * sizeof(Vec3));
-            System::memcpy(cpuNormal.begin(), g.normalArray.getCArray(), N * sizeof(Vec3));
+                        // Bottom triangle
+                        cpuIndex[k + 0] = i + j * sq;
+                        cpuIndex[k + 1] = i + (j + 1) * sq;
+                        cpuIndex[k + 2] = (i + 1) + (j + 1) * sq;
 
-            for (int i = 0; i < N; ++i) {
-                // Copy the normals over the colors, too
-                cpuColor[i].x = g.normalArray[i].x * 0.5 + 0.5;
-                cpuColor[i].y = g.normalArray[i].y * 0.5 + 0.5;
-                cpuColor[i].z = g.normalArray[i].z * 0.5 + 0.5;
+                        // Top triangle
+                        cpuIndex[k + 3] = i + j * sq;
+                        cpuIndex[k + 4] = (i + 1) + (j + 1) * sq;
+                        cpuIndex[k + 5] = (i + 1) + j * sq;
 
-                // Cylindrical projection to get tex coords
-                Vector3 dir = g.vertexArray[i].direction();
-                cpuTexCoord[i].x = (atan2(dir.x, dir.z) / G3D_TWO_PI + 0.5) * 5;
-                cpuTexCoord[i].y = (0.5 - dir.y * 0.5) * 5;
+                        k += 6;
+                    }
+                }
+            }
+
+            // Create data
+            cpuVertex.resize(V);
+            cpuNormal.resize(V);
+            cpuTexCoord.resize(V);
+            cpuColor.resize(V);
+
+            // Map V indices to a sq x sq grid
+            for (int i = 0; i < sq; ++i) {
+                for (int j = 0; j < sq; ++j) {
+
+                    int v = (i + j * sq);
+
+                    float x = (i / (float)sq - 0.5) * 2;
+                    float y = 0.5 - j / (float)sq;
+                    float a = x * 2 * 3.1415927;
+                    float r = ceil(cos(a * 10)) * 0.05 + 0.3;
+
+                    cpuVertex[v].x = -cos(a) * r;
+                    cpuVertex[v].y = y;
+                    cpuVertex[v].z = sin(a) * r;
+
+                    // Scale the normal
+                    float s = 1.0 / sqrt(0.0001 + square(cpuVertex[v].x) + square(cpuVertex[v].y) + square(cpuVertex[v].z));
+                    cpuNormal[v].y = cpuVertex[v].x * s;
+                    cpuNormal[v].x = cpuVertex[v].y * s;
+                    cpuNormal[v].z = cpuVertex[v].z * s;
+
+                    cpuColor[v].x = r + 0.7;
+                    cpuColor[v].y = 0.5;
+                    cpuColor[v].z = 1.0 - r;
+
+                    cpuTexCoord[v].x = i / (float)sq;
+                    cpuTexCoord[v].y = j / (float)sq;
+                }
             }
         }
     }
@@ -337,23 +411,22 @@ float measureDrawElementsVBOPerformance(Model& model) {
     float k = 0;
 
     double t0 = System::time();
-    for (int j = 0; j < frames; ++j) {
-        k += 3;
-        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, model.textureID);
+//        glEnable(GL_TEXTURE_2D);
+//        glBindTexture(GL_TEXTURE_2D, model.textureID);
 
         glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
+//        glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
         glNormalPointer(GL_FLOAT, 0, (void*)normalPtr);
-        glColorPointer(3, GL_FLOAT, 0, (void*)colorPtr);
+//        glColorPointer(3, GL_FLOAT, 0, (void*)colorPtr);
         glTexCoordPointer(2, GL_FLOAT, 0, (void*)texCoordPtr);
         glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+    for (int j = 0; j < frames; ++j) {
+        k += 3;
+        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (int c = 0; c < count; ++c) {
             glMatrixMode(GL_MODELVIEW);
