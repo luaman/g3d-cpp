@@ -766,6 +766,7 @@ static void configureCameraAndLights() {
     glEnable(GL_COLOR_MATERIAL);
 }
 
+
 bool GLCaps::hasBug_slowVBO() {
     static bool initialized = false;
     static bool value;
@@ -821,13 +822,13 @@ bool GLCaps::hasBug_slowVBO() {
         }
 
         for (int j = 0; j < 2; ++j) {
-            texCoord[i * 2 + j] = rand() / (double)RAND_MAX;
+            texCoord[i * 2 + j] = vertex[i * 3 + j];//rand() / (double)RAND_MAX;
         }
     }
 
     // number of objects to draw
-    const int count = 4;
-    const int frames = 5;
+    const int count = 1;
+    const int frames = 15;
 
     size_t vertexSize   = V * sizeof(float) * 3;
     size_t normalSize   = V * sizeof(float) * 3;
@@ -875,12 +876,13 @@ bool GLCaps::hasBug_slowVBO() {
             double t0 = 0;
             float k = 0;
             configureCameraAndLights();
+            glDisable(GL_TEXTURE_2D);
             glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glColor3f(1, .5, 0);
             glFinish();
             Sleep(0.05);
             for (int j = 0; j < frames; ++j) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 // Don't count the first frame against us; it is cache warmup
                 if (j == 1) {
                     t0 = System::time();
@@ -921,12 +923,14 @@ bool GLCaps::hasBug_slowVBO() {
         double t0 = 0;
         float k = 0;
         configureCameraAndLights();
+        glDisable(GL_TEXTURE_2D);
         glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glColor3f(1, .5, 0);
         glFinish();
         Sleep(0.05);
+
         for (int j = 0; j < frames; ++j) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // Don't count the first frame against us; it is cache warmup
             if (j == 1) {
                 t0 = System::time();
