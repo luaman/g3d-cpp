@@ -151,10 +151,8 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 	<LI>
 	Confirm that you've installed %G3D correctly by installing and running one of the demos:<BR>
 	<CODE>cd g3d/demos/GLG3D_Demo</CODE><BR>
-	<CODE>cp your_iCompile_script iCompile</CODE><BR>
-	<CODE>iCompile</CODE><BR>
-	<CODE>distrib/GLG3D_Demo-debug</CODE><BR>
-	This should run the GLG3D demo; you should see many airplanes of various colors flying around in a beautiful blue sky. 
+	<CODE>icompile --run</CODE><BR>
+	This should run the GLG3D demo; you should see many colored airplanesflying around a pink and blue sky. 
 	</LI>
 
   @section osx OS X

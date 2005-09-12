@@ -46,13 +46,23 @@ public:
         lo = hi = v;
     }
 
+    /** Assumes that low is less than or equal to high along each dimension.
+        To have this automatically enforced, use
+        <code>AABox(low.min(high), low.max(high));</code>
+    */
     inline AABox(const Vector3& low, const Vector3& high) {
         set(low, high);
     }
 
+    /** Assumes that low is less than or equal to high along each dimension.
+    */
     inline void set(const Vector3& low, const Vector3& high) {
-        lo = low.min(high);
-        hi = high.max(low);
+        debugAssert(
+            (low.x <= high.x) &&
+            (low.y <= high.y) &&
+            (low.z <= high.z));
+        lo = low;
+        hi = high;
     }
 
 	void serialize(class BinaryOutput& b) const;
