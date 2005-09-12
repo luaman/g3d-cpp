@@ -144,8 +144,10 @@ Token TextInput::nextToken() {
                 // Just a regular division
                 whitespaceDone = true;
             }
-        } else if ((options.otherCommentCharacter != '\0') &&
-                   (c == options.otherCommentCharacter)) {
+        } else if (((options.otherCommentCharacter != '\0') &&
+                    (c == options.otherCommentCharacter)) ||
+                   ((options.otherCommentCharacter2 != '\0') &&
+                    (c == options.otherCommentCharacter2))) {
             // Single line comment
             whitespaceDone = false;
             while (! isNewline(c) && (c != EOF)) {
@@ -285,8 +287,10 @@ Token TextInput::nextToken() {
             break;
 
         case '\\':
-            if ((options.otherCommentCharacter != '\0') &&
-                (peekNextChar() == options.otherCommentCharacter)) {
+            if (((options.otherCommentCharacter != '\0') &&
+                (peekNextChar() == options.otherCommentCharacter) ||
+                (options.otherCommentCharacter2 != '\0') &&
+                (peekNextChar() == options.otherCommentCharacter2))) {
                 // Return the raw comment character instead of
                 // the backslash
                 t._string = popNextChar();
@@ -500,8 +504,10 @@ void TextInput::parseQuotedString(char delimiter, Token& t) {
                 break;
 
             default:
-                if ((c == options.otherCommentCharacter) && 
-                    (options.otherCommentCharacter != '\0')) {
+                if (((c == options.otherCommentCharacter) && 
+                     (options.otherCommentCharacter != '\0')) ||
+                    ((c == options.otherCommentCharacter) && 
+                     (options.otherCommentCharacter != '\0'))) {
                     t._string += options.otherCommentCharacter;
                 } 
                 // otherwise, some illegal escape sequence; skip it.

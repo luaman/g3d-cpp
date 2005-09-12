@@ -8,7 +8,7 @@
  @cite Based on a lexer written by Aaron Orenstein. 
 
  @created 2002-11-27
- @edited  2005-02-24
+ @edited  2005-09-24
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -187,6 +187,11 @@ public:
          */
         char                otherCommentCharacter;
 
+        /** Another (optional) 1-comment character.  Useful for files that support 
+            multiple comment syntaxes.
+         */
+        char                otherCommentCharacter2;
+
         /** If true, "-1" parses as the number -1 instead of the symbol "-" followed
             by the number 1.  Default is true.*/
         bool                signedNumbers;
@@ -196,7 +201,8 @@ public:
     		Backquote (`) is always parsed as a symbol. */
 		bool				singleQuotedStrings;
 
-        Options () : cppComments(true), otherCommentCharacter('\0'), signedNumbers(true), singleQuotedStrings(true) {}
+        Options () : cppComments(true), otherCommentCharacter('\0'), otherCommentCharacter2('\0'),
+            signedNumbers(true), singleQuotedStrings(true) {}
     };
 
 private:
