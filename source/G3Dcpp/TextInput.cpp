@@ -83,13 +83,13 @@ int TextInput::popNextChar() {
         return EOF;
     }
 
-    bufferLast++;
+    ++bufferLast;
     unsigned char c = buffer[bufferLast];
     if (c == '\n') {
-        lineNumber++;
+        ++lineNumber;
         charNumber = 0;
     } else if (c != '\r') {
-        charNumber++;
+        ++charNumber;
     }
 
     return c;
@@ -131,7 +131,7 @@ Token TextInput::nextToken() {
                 while (! isNewline(c) && (c != EOF)) {
                     c = popNextChar();
                 }
-            } else if (c2 == '*') {
+            } else if ((c2 == '*') && options.cComments) {
                 // Multi-line comment
                 whitespaceDone = false;
                 c2 = popNextChar();
@@ -166,6 +166,7 @@ Token TextInput::nextToken() {
     }
     
     switch (c) {
+    // Complicated symbols-- all fall through to a special handler
     case '\\':
     case '(': 
     case ')':
@@ -196,7 +197,6 @@ Token TextInput::nextToken() {
 		t._extendedType = Token::SYMBOL_TYPE;
         t._string = c;
 
-        // Complex symbols
         switch (c) {
         case '-':
             {
@@ -285,8 +285,9 @@ Token TextInput::nextToken() {
                 }
             }
             break;
-
+            
         case '\\':
+            // This might be an escaped comment character
             if (((options.otherCommentCharacter != '\0') &&
                 (peekNextChar() == options.otherCommentCharacter) ||
                 (options.otherCommentCharacter2 != '\0') &&
@@ -480,7 +481,7 @@ void TextInput::parseQuotedString(char delimiter, Token& t) {
             break;
         }
 
-        if (c == '\\') {
+        if (options.escapeSequencesInStrings && (c == '\\')) {
             // Escaped character
             c = popNextChar();
             switch (c) {
@@ -588,6 +589,20 @@ void TextInput::readSymbol(const std::string& symbol) {
 }
 
 
+void TextInput::readString(const std::string& s) {
+    Token t(peek());
+    if (t._type == Token::STRING) {
+        if (t._string == s) {
+            // Consume the token
+            read();
+        } else {
+            throw WrongString(sourceFile, lineNumber, charNumber, s, t._string);
+        }
+    } else {
+        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::SYMBOL, t._type);
+    }
+}
+
 
 TextInput::TextInput(const std::string& filename, const Options& opt) : options(opt) {
     init();
@@ -669,6 +684,18 @@ TextInput::WrongSymbol::WrongSymbol(
 }
 
 
+TextInput::WrongString::WrongString(
+    const std::string&  src,
+    int                 ln,
+    int                 ch,
+    const std::string&  e,
+    const std::string&  a) : 
+    TokenException(src, ln, ch), expected(e), actual(a) {
+
+    message += 
+        format("Expected string '%s', found string '%s'.",
+                e.c_str(), a.c_str());
+}
 void deserialize(bool& b, TextInput& ti) {
     b = ti.readSymbol() == "true";
 }

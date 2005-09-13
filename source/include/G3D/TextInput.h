@@ -171,10 +171,22 @@ public:
 
     class Options {
     public:
+        /** If true, slash-star marks a multi-line comment.  Default is true. */
+        bool                cComments;
+
         /** If true, // begins a single line comment, the results of
             which will not appear in
             Default is true. */
         bool                cppComments;
+
+        /** If true, \r, \n, \t, \0, \\ and other escale sequences inside strings
+            are converted to the equivalent C++ escaped character.  If false,
+            slashes are treated literally.  It is convenient to set to false if
+            reading Windows paths, for example, like c:\foo\bar.
+
+            Default is true.
+            */
+        bool                escapeSequencesInStrings;
 
         /** If non-null, specifies a character that begins single line 
             comments ('#' and '%' are popular choices).  This 
@@ -201,7 +213,8 @@ public:
     		Backquote (`) is always parsed as a symbol. */
 		bool				singleQuotedStrings;
 
-        Options () : cppComments(true), otherCommentCharacter('\0'), otherCommentCharacter2('\0'),
+        Options () : cComments(true), cppComments(true), escapeSequencesInStrings(true), 
+            otherCommentCharacter('\0'), otherCommentCharacter2('\0'),
             signedNumbers(true), singleQuotedStrings(true) {}
     };
 
@@ -313,6 +326,21 @@ public:
             const std::string&  a);
     };
 
+
+    class WrongString : public TokenException {
+    public:
+        std::string             expected;
+        std::string             actual;
+
+        WrongString(
+            const std::string&  src,
+            int                 ln,
+            int                 ch,
+            const std::string&  e,
+            const std::string&  a);
+    };
+
+
     TextInput(const std::string& filename, const Options& options = Options());
 
     enum FS {FROM_STRING};
@@ -349,6 +377,9 @@ public:
     /** Reads a string or throws WrongTokenType.  The quotes are taken off of strings. */
     std::string readString();
     
+    /** Reads a specific string or throws either WrongTokenType or WrongString. */
+    void readString(const std::string& s);
+
     /** Reads a symbol or throws WrongTokenType */
     std::string readSymbol();
 

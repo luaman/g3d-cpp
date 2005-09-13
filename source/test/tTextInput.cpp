@@ -3,6 +3,24 @@
 void testTextInput() {
     printf("TextInput\n");
 
+    {
+        // Quoted string with escapes.  The actual expression we are parsing looks like:
+        // "\\"
+ 		TextInput ti(TextInput::FROM_STRING, "\"\\\\\"");
+		ti.readString("\\");
+	}
+
+    {
+        // Quoted string without escapes: read as two backslashes
+        // (the test itself has to escape the backslashes, just to write them).
+        // The actual expression we are parsing is:
+        // "\"
+        TextInput::Options opt;
+        opt.escapeSequencesInStrings = false;
+ 		TextInput ti(TextInput::FROM_STRING, "\"\\\"", opt);
+		ti.readString("\\");
+	}
+
 	{
  		TextInput ti(TextInput::FROM_STRING, "a \'foo\' bar");
 
