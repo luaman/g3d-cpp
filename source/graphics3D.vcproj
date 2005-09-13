@@ -1176,6 +1176,9 @@
 				RelativePath="include\G3D\Array.h">
 			</File>
 			<File
+				RelativePath="include\G3D\AtomicInt32.h">
+			</File>
+			<File
 				RelativePath="include\G3D\BinaryFormat.h">
 			</File>
 			<File
