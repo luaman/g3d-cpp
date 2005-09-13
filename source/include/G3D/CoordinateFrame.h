@@ -151,7 +151,10 @@ public:
      Transforms the point into world space.
      */
     inline Vector3 pointToWorldSpace(const Vector3& v) const {
-        return rotation * v + translation;
+        return Vector3(
+			rotation[0][0] * v[0] + rotation[0][1] * v[1] + rotation[0][2] * v[2] + translation[0],
+			rotation[1][0] * v[0] + rotation[1][1] * v[1] + rotation[1][2] * v[2] + translation[1],
+			rotation[2][0] * v[0] + rotation[2][1] * v[1] + rotation[2][2] * v[2] + translation[2]);
     }
 
     /**
