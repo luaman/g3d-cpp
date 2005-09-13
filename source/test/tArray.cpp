@@ -90,9 +90,8 @@ void perfArray() {
         // Measure time for short array allocation
         uint64 vectorAllocBig,  vectorAllocSmall;
         uint64 arrayAllocBig,   arrayAllocSmall;
-//        uint64 mallocAllocBig,  mallocAllocSmall;
 
-        const int M = 4000;
+        const int M = 3000;
 
         // Run many times to filter out startup behavior
         for (int j = 0; j < 3; ++j) {
@@ -125,8 +124,6 @@ void perfArray() {
         printf("                           Big class           int \n");
         printf("  G3D::Array               %9.02f     %9.02f\n", (double)arrayAllocBig/M, (double)arrayAllocSmall/M);
         printf("  std::vector              %9.02f     %9.02f\n", (double)vectorAllocBig/M, (double)vectorAllocSmall/M);
-//        printf("  realloc(*)               %9.02f     %9.02f\n", (double)mallocResizeBig/M, (double)mallocResizeSmall/M);
-//        printf("    * does not call constructor or destructor!\n\n");
         printf("\n\n");
     }
 

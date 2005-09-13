@@ -56,6 +56,8 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
     debugAssertGLOk();
 
     _window = renderDevice->window();
+    _window->makeCurrent();
+    debugAssertGLOk();
 
     if (settings.useNetwork) {
         networkDevice = new NetworkDevice();

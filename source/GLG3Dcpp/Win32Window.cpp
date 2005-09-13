@@ -5,9 +5,9 @@
   @cite       Written by Corey Taylor & Morgan McGuire
   @cite       Special thanks to Max McGuire of Ironlore
   @created 	  2004-05-21
-  @edited  	  2005-03-16
+  @edited  	  2005-09-13
     
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
 */
 
@@ -894,6 +894,14 @@ void Win32Window::initWGL() {
 }
 
 
+void Win32Window::makeCurrent() const {
+	if (wglMakeCurrent(_hDC, _glContext) == FALSE)	{
+        debugAssertM(false, "Failed to set context");
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
     Static helper functions for Win32Window
 */

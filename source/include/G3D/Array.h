@@ -5,7 +5,7 @@
   @cite Portions written by Aaron Orenstein, a@orenstein.name
  
   @created 2001-03-11
-  @edited  2005-09-05
+  @edited  2005-09-12
 
   Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
@@ -360,7 +360,7 @@ public:
               } else {
 
                   // Increase the underlying size of the array.  Grow aggressively
-                  // up to 50k, less aggressively up to 100k, and then grow relatively
+                  // up to 50k, less aggressively up to 200k, and then grow relatively
                   // slowly (1.5x per resize) to avoid excessive space consumption.
                   //
                   // These numbers are tweaked according to performance tests.
@@ -368,7 +368,7 @@ public:
                   float growFactor = 3.0;
 
                   size_t oldSizeBytes = numAllocated * sizeof(T);
-                  if (oldSizeBytes > 100000) {
+                  if (oldSizeBytes > 200000) {
                       // Avoid bloat
                       growFactor = 1.5;
                   } else if (oldSizeBytes > 50000) {

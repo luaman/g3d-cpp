@@ -173,6 +173,8 @@ public:
     virtual bool mouseVisible() const;
 	
     virtual bool requiresMainLoop() const;
+
+    virtual void makeCurrent() const;
 };
 
 

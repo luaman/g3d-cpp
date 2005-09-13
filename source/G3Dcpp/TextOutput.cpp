@@ -71,7 +71,7 @@ void TextOutput::popIndent() {
 static std::string escape(const std::string& string) {
     std::string result = "";
 
-    for (size_t i = 0; i < string.length(); ++i) {
+    for (std::string::size_type i = 0; i < string.length(); ++i) {
         char c = string.at(i);
         switch (c) {
         case '\0':

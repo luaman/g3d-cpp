@@ -136,6 +136,8 @@ public:
         HDC      win32HDC() const;
         HWND     win32HWND() const;
     #endif
+
+//    virtual void makeCurrent() const;
 };
 
 } // namespace

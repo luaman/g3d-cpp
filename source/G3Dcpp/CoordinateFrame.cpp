@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2004-01-10
+ @edited  2005-09-12
 */
 
 #include "G3D/CoordinateFrame.h"
@@ -185,12 +185,16 @@ CoordinateFrame CoordinateFrame::lerp(
     const CoordinateFrame&  other,
     double                  alpha) const {
 
-    Quat q1 = Quat(this->rotation);
-    Quat q2 = Quat(other.rotation);
+    if (alpha == 1.0) {
+        return *this;
+    } else {
+        Quat q1 = Quat(this->rotation);
+        Quat q2 = Quat(other.rotation);
 
-    return CoordinateFrame(
-        q1.slerp(q2, alpha).toRotationMatrix(),
-        this->translation * (1 - alpha) + other.translation * alpha);
+        return CoordinateFrame(
+            q1.slerp(q2, alpha).toRotationMatrix(),
+            this->translation * (1 - alpha) + other.translation * alpha);
+    }
 } 
 
 

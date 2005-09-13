@@ -7,8 +7,8 @@
   @cite Bug fix by Darius Jazayeri, jazayeri@MIT.EDU
 
   @created 2001-04-22
-  @edited  2005-08-10
-  Copyright 2000-2004, Morgan McGuire.
+  @edited  2005-09-12
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
  */
 
@@ -556,6 +556,7 @@ public:
 
    /**
     Returns the value associated with key.
+    @deprecated Use get(key, val) or 
     */
    Value& get(const Key& key) const {
 
@@ -575,6 +576,29 @@ public:
       // The next line is here just to make
       // a compiler warning go away.
       return node->entry.value;
+   }
+
+   /**
+    If the key is present in the table, val is set to the associated value and returns true.
+    If the key is not present, returns false.
+    */
+   bool get(const Key& key, Value& val) const {
+      unsigned int code = hashCode(key);
+      unsigned int b = code % numBuckets;
+
+      Node* node = bucket[b];
+
+      while (node != NULL) {
+          if ((node->hashCode == code) && (node->entry.key == key)) {
+             // found key
+             val = node->entry.value;
+             return true;
+          }
+          node = node->next;
+      }
+
+      // Failed to find key
+      return false;
    }
 
    /**

@@ -35,6 +35,7 @@
   <P>
    Changes in 6.07:
    <UL>
+    <LI> GWindow::makeCurrent
     <LI> AABox::AABox enforces the constraint low <= high
     <LI> Optimized G3D::Array, Table, Queue, and Set for performance.  Now significantly (up to 10x) faster
          than their std::counterparts.

@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2005-01-05
+  @edited  2005-09-13
 */
 
 #ifndef G3D_GWINDOW_H
@@ -51,6 +51,10 @@ typedef SDL_Event GEvent;
 
  All dimensions are of the client area (inside the frame, if the
  window has a frame).
+
+ After instantiation, a GWindow guarantees that the OpenGL context for this
+ window is bound.  It may be unbound by later code--use GWindow::makeCurrent
+ if you have multiple windows in your application.
 
  <B>Subclassing</B>
 
@@ -329,6 +333,16 @@ public:
         while (notDone()) {
             executeLoopBody();
         }
+    }
+
+    /**
+      Makes the OpenGL context of this window current.
+      <b>beta</b>
+
+      <p>Default implementation does nothing--future releases
+      will guarantee correct OpenGL context switching.
+     */
+    virtual void makeCurrent() const {
     }
 
 };
