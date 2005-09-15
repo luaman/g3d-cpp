@@ -67,6 +67,12 @@ static void mouseButton(bool, int, DWORD, GEvent&);
 static void initWin32KeyMap();
 static void printPixelFormatDescription(int, HDC, TextOutput&);
 
+/** Return the G3D window class, which owns a private DC. 
+    See http://www.starstonesoftware.com/OpenGL/whyyou.htm
+    for a discussion of why this is necessary. */
+static const char* G3DWndClass();
+
+
 Win32Window::Win32Window(const GWindowSettings& s) {
     initWGL();
 
@@ -83,7 +89,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 
 	settings = s;
     
-	std::string name = "G3D";
+	std::string name = "";
     
     // Add the non-client area
 	RECT rect;
@@ -117,7 +123,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     int startX = 0;
     int startY = 0;
 
-    if (!s.fullScreen) {
+    if (! s.fullScreen) {
         if (s.center) {
             
             startX = (GetSystemMetrics(SM_CXSCREEN) - total_width) / 2;
@@ -132,7 +138,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
     clientX = settings.x = startX;
     clientY = settings.y = startY;
     
-    HWND window = CreateWindow("window", 
+    HWND window = CreateWindow(G3DWndClass(), 
         name.c_str(),
         style,
         startX,
@@ -489,20 +495,12 @@ void Win32Window::swapGLBuffers() {
 
 void Win32Window::close() {
     PostMessage(window, WM_CLOSE, 0, 0);
-    /*
-    TODO: do we need this?
-    wglDeleteContext(_glContext);					
-	_glContext = 0;	
-	ReleaseDC(window, _hDC);	
-	window = 0;				
-	DestroyWindow(window);			
-	window = 0;
-*/
 }
 
 
 Win32Window::~Win32Window() {
     close();
+    // Do not need to release private HDC's
 
     delete _diDevices;
 }
@@ -894,7 +892,7 @@ void Win32Window::initWGL() {
 }
 
 
-void Win32Window::makeCurrent() const {
+void Win32Window::reallyMakeCurrent() const {
 	if (wglMakeCurrent(_hDC, _glContext) == FALSE)	{
         debugAssertM(false, "Failed to set context");
 	}
@@ -1369,6 +1367,36 @@ static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
     out.printf("\n");
 }
 
+
+static const char* G3DWndClass() {
+
+    static char const* g3dWindowClassName = NULL;
+
+    if (g3dWindowClassName == NULL) {
+        
+        WNDCLASS wndcls;
+        
+        wndcls.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | CS_OWNDC;
+        wndcls.lpfnWndProc = DefWindowProc;
+        wndcls.cbClsExtra = wndcls.cbWndExtra = 0;
+        wndcls.hInstance = ::GetModuleHandle(NULL);
+        wndcls.hIcon = NULL;
+        wndcls.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+        wndcls.hbrBackground = NULL;
+        wndcls.lpszMenuName = NULL;
+        wndcls.lpszClassName = "G3DWindow";
+        
+        if (!RegisterClass(&wndcls)) {
+            Log::common()->printf("\n**** WARNING: could not create G3DWindow class ****\n");
+            // error!  Return the default window class.
+            return "window";
+        }
+        
+        g3dWindowClassName = wndcls.lpszClassName;        
+    }
+    
+    return g3dWindowClassName;
+}
 
 } // G3D namespace
 

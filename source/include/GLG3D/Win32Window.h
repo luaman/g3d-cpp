@@ -100,6 +100,8 @@ public:
 
     static Win32Window* create(const GWindowSettings& settings, HWND hwnd);
 
+    /** The HDC should be a private CS_OWNDC device context because it is assumed to
+        be perisistant.*/
     static Win32Window* create(const GWindowSettings& settings, HDC hdc);
 	
     virtual ~Win32Window();
@@ -174,7 +176,8 @@ public:
 	
     virtual bool requiresMainLoop() const;
 
-    virtual void makeCurrent() const;
+protected:
+    virtual void reallyMakeCurrent() const;
 };
 
 

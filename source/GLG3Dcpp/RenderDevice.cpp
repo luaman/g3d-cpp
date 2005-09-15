@@ -25,6 +25,9 @@
 
 namespace G3D {
 
+const GWindow* GWindow::current = NULL;
+
+
 RenderDevice* RenderDevice::lastRenderDeviceCreated = NULL;
 
 static void _glViewport(double a, double b, double c, double d) {
@@ -256,8 +259,6 @@ bool RenderDevice::init(GWindow* window, Log* log) {
            "*********************************************************\n\n");
     }
 
-    setCaption("Graphics3D");
-
 	glViewport(0, 0, getWidth(), getHeight());
 
     int depthBits, stencilBits, redBits, greenBits, blueBits, alphaBits;
@@ -353,6 +354,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         enableAlphaWrite();
     }
 
+    setCaption("Graphics3D");
     return true;
 }
 

@@ -222,40 +222,13 @@ Matrix3 Matrix3::operator* (const Matrix3& rkMatrix) const {
 }
 
 //----------------------------------------------------------------------------
-Vector3 Matrix3::operator* (const Vector3& rkPoint) const {
-    Vector3 kProd;
-
-    for (int iRow = 0; iRow < 3; iRow++) {
-        kProd[iRow] =
-            m_aafEntry[iRow][0] * rkPoint[0] +
-            m_aafEntry[iRow][1] * rkPoint[1] +
-            m_aafEntry[iRow][2] * rkPoint[2];
-    }
-
-    return kProd;
-}
-
-//----------------------------------------------------------------------------
-Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix) {
-    Vector3 kProd;
-
-    for (int iRow = 0; iRow < 3; iRow++) {
-        kProd[iRow] =
-            rkPoint[0] * rkMatrix.m_aafEntry[0][iRow] +
-            rkPoint[1] * rkMatrix.m_aafEntry[1][iRow] +
-            rkPoint[2] * rkMatrix.m_aafEntry[2][iRow];
-    }
-
-    return kProd;
-}
-
-//----------------------------------------------------------------------------
 Matrix3 Matrix3::operator- () const {
     Matrix3 kNeg;
 
     for (int iRow = 0; iRow < 3; iRow++) {
-        for (int iCol = 0; iCol < 3; iCol++)
+        for (int iCol = 0; iCol < 3; iCol++) {
             kNeg[iRow][iCol] = -m_aafEntry[iRow][iCol];
+        }
     }
 
     return kNeg;
@@ -266,8 +239,9 @@ Matrix3 Matrix3::operator* (float fScalar) const {
     Matrix3 kProd;
 
     for (int iRow = 0; iRow < 3; iRow++) {
-        for (int iCol = 0; iCol < 3; iCol++)
+        for (int iCol = 0; iCol < 3; iCol++) {
             kProd[iRow][iCol] = fScalar * m_aafEntry[iRow][iCol];
+        }
     }
 
     return kProd;

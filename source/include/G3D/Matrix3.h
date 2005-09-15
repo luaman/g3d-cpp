@@ -100,7 +100,19 @@ public:
     /**
      * matrix * vector [3x3 * 3x1 = 3x1]
      */
-    Vector3 operator* (const Vector3& rkVector) const;
+    inline Vector3 operator* (const Vector3& v) const {
+        Vector3 kProd;
+
+        for (int r = 0; r < 3; ++r) {
+            kProd[r] =
+                m_aafEntry[r][0] * v[0] +
+                m_aafEntry[r][1] * v[1] +
+                m_aafEntry[r][2] * v[2];
+        }
+
+        return kProd;
+    }
+
 
     /**
      * vector * matrix [1x3 * 3x3 = 1x3]
@@ -260,6 +272,21 @@ protected:
 
     float m_aafEntry[3][3];
 };
+
+
+//----------------------------------------------------------------------------
+inline Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix) {
+    Vector3 kProd;
+
+    for (int r = 0; r < 3; ++r) {
+        kProd[r] =
+            rkPoint[0] * rkMatrix.m_aafEntry[0][r] +
+            rkPoint[1] * rkMatrix.m_aafEntry[1][r] +
+            rkPoint[2] * rkMatrix.m_aafEntry[2][r];
+    }
+
+    return kProd;
+}
 
 
 } // namespace

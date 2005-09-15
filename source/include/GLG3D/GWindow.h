@@ -335,14 +335,28 @@ public:
         }
     }
 
-    /**
-      Makes the OpenGL context of this window current.
-      <b>beta</b>
+private:
+    /** Tracks the current GWindow.  If back-to-back calls are made to make
+        the same GWindow current, they are ignored. */
+    static const GWindow* current;
 
-      <p>Default implementation does nothing--future releases
-      will guarantee correct OpenGL context switching.
+protected:
+    /** Override this with the glMakeCurrent call appropriate for your window.*/
+    virtual void reallyMakeCurrent() const {
+    }
+
+public:
+
+    /**
+      Makes the OpenGL context of this window current.  If you have multiple
+      windows, call this before rendering to one of them.
+      <b>beta</b>
      */
-    virtual void makeCurrent() const {
+    inline void makeCurrent() const {
+        if (current != this) {
+            reallyMakeCurrent();
+            current = this;
+        }
     }
 
 };
