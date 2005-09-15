@@ -113,11 +113,6 @@ protected:
 
 public:
 
-    /** Closes the window and frees any resources associated with it.
-        When subclassing, put any shutdown code (e.g. SDL_Quit()) in 
-        your destructor.  Put initialization code (e.g. SDL_Init()) in
-        the constructor. */
-    virtual ~GWindow() {}
 
     /** Return the <I>actual</I> properties of this window (as opposed to
         the desired settings from which it was initialized) */
@@ -346,6 +341,16 @@ protected:
     }
 
 public:
+    /** Closes the window and frees any resources associated with it.
+        When subclassing, put any shutdown code (e.g. SDL_Quit()) in 
+        your destructor.  Put initialization code (e.g. SDL_Init()) in
+        the constructor. */
+    virtual ~GWindow() {
+        if (current == this) {
+            // Once this window is destroyed, there will be no current context.
+            current = NULL;
+        }
+    }
 
     /**
       Makes the OpenGL context of this window current.  If you have multiple
