@@ -550,14 +550,30 @@ const std::string& GLCaps::renderer() {
 
 
 ////////////////////////////////////////////////////////////
+/** Tests for hasBug_glMultiTexCoord3fvARB and hasBug_glNormalMapTexGenARB */
+void cubeMapBugs(bool& mtc, bool& nmt);
 
 bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
+    bool a, b;
+    cubeMapBugs(a, b);
+    return a;
+}
 
+bool GLCaps::hasBug_normalMapTexGen() {
+    bool a, b;
+    cubeMapBugs(a, b);
+    return b;
+}
+
+
+static void cubeMapBugs(bool& mtc, bool& nmt) {
     static bool initialized = false;
-    static bool value;
+    static bool valuemtc, valuenmt;
 
     if (initialized) {
-        return value;
+        mtc = valuemtc;
+        nmt = valuenmt;
+        return;
     } else {
         initialized = true;
     }
@@ -565,9 +581,10 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
     if (! hasCubeMap) {
-        value = false;
+        valuemtc = false;
+        valuenmt = false;
         // No cube map == no bug.
-        return value;
+        return;
     }
 
     // Save current GL state
@@ -578,7 +595,7 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
         glDrawBuffer(GL_BACK);
         glReadBuffer(GL_BACK);
         glClearColor(0,1,1,1);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glDisable(GL_DEPTH_TEST);
 
@@ -643,6 +660,10 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
+        glActiveTextureARB(GL_TEXTURE0_ARB + 0);
+        glMatrixMode(GL_TEXTURE);
+        glLoadIdentity();
+
         glDisable(GL_TEXTURE_GEN_S);
         glDisable(GL_TEXTURE_GEN_T);
         glDisable(GL_TEXTURE_GEN_R);
@@ -650,77 +671,102 @@ bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
         // Render one sample from each cube map face
         glDisable(GL_LIGHTING);
         glDisable(GL_CULL_FACE);
-        glBegin(GL_QUADS);
-            glColor3f(1, 1, 1);
+        glColor3f(1, 1, 1);
 
-            static const float corner[] = {
-                1.000000, -1.000000, 1.000000,
-                1.000000, -1.000000, -1.000000,
-                1.000000, 1.000000, -1.000000,
-                1.000000, 1.000000, 1.000000,
+        static const float corner[] = {
+            1.000000, -1.000000, 1.000000,
+            1.000000, -1.000000, -1.000000,
+            1.000000, 1.000000, -1.000000,
+            1.000000, 1.000000, 1.000000,
 
-                -1.000000, 1.000000, 1.000000,
-                -1.000000, 1.000000, -1.000000,
-                -1.000000, -1.000000, -1.000000,
-                -1.000000, -1.000000, 1.000000,
+            -1.000000, 1.000000, 1.000000,
+            -1.000000, 1.000000, -1.000000,
+            -1.000000, -1.000000, -1.000000,
+            -1.000000, -1.000000, 1.000000,
 
-                1.000000, 1.000000, 1.000000,
-                1.000000, 1.000000, -1.000000,
-                -1.000000, 1.000000, -1.000000,
-                -1.000000, 1.000000, 1.000000,
+            1.000000, 1.000000, 1.000000,
+            1.000000, 1.000000, -1.000000,
+            -1.000000, 1.000000, -1.000000,
+            -1.000000, 1.000000, 1.000000,
 
-                1.000000, -1.000000, 1.000000,
-                -1.000000, -1.000000, 1.000000,
-                -1.000000, -1.000000, -1.000000,
-                1.000000, -1.000000, -1.000000,
+            1.000000, -1.000000, 1.000000,
+            -1.000000, -1.000000, 1.000000,
+            -1.000000, -1.000000, -1.000000,
+            1.000000, -1.000000, -1.000000,
 
-                -1.000000, -1.000000, 1.000000,
-                1.000000, -1.000000, 1.000000,
-                1.000000, 1.000000, 1.000000,
-                -1.000000, 1.000000, 1.000000,
+            -1.000000, -1.000000, 1.000000,
+            1.000000, -1.000000, 1.000000,
+            1.000000, 1.000000, 1.000000,
+            -1.000000, 1.000000, 1.000000,
 
-                -1.000000, 1.000000, -1.000000,
-                1.000000, 1.000000, -1.000000,
-                1.000000, -1.000000, -1.000000,
-                -1.000000, -1.000000, -1.000000};
+            -1.000000, 1.000000, -1.000000,
+            1.000000, 1.000000, -1.000000,
+            1.000000, -1.000000, -1.000000,
+            -1.000000, -1.000000, -1.000000};
 
+        for (int i = 0; i < 2; ++i) {
+            // First time through, use multitex coord
+            if (i == 1) {
+                // Second time through, use normal map generation
+                glActiveTextureARB(GL_TEXTURE0_ARB + 0);
+                glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
+                glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
+                glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
+                glEnable(GL_TEXTURE_GEN_S);
+                glEnable(GL_TEXTURE_GEN_T);
+                glEnable(GL_TEXTURE_GEN_R);
+            }
+
+            glBegin(GL_QUADS);
+
+                for (int f = 0; f < 6; ++f) {
+                    const float s = 10.0f;
+
+                    glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 0);
+                    glNormal3fv(corner + 12 * f + 0);
+                    glVertex4f(f * s, 0, -1, 1);
+
+                    glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 3);
+                    glNormal3fv(corner + 12 * f + 3);
+                    glVertex4f(f * s, s, -1, 1);
+
+                    glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 6);
+                    glNormal3fv(corner + 12 * f + 6);
+                    glVertex4f((f + 1) * s, s, -1, 1);
+
+                    glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 9);
+                    glNormal3fv(corner + 12 * f + 9);
+                    glVertex4f((f + 1) * s, 0, -1, 1);
+                }
+            glEnd();
+
+            // Read back results
+            unsigned int readback[60];
+            glReadPixels(0, (int)(viewport[3] - 5), 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
+
+            // Test result for errors
+            bool texbug = false;
             for (int f = 0; f < 6; ++f) {
-                const float s = 10.0f;
-
-                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 0);
-
-                glVertex4f(f * s, 0, -1, 1);
-
-                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 3);
-                glVertex4f(f * s, s, -1, 1);
-
-                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 6);
-                glVertex4f((f + 1) * s, s, -1, 1);
-
-                glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, corner + 12 * f + 9);
-                glVertex4f((f + 1) * s, 0, -1, 1);
+                if ((readback[f * 10 + 5] & 0xFF) != color[f]) {
+                    texbug = true;
+                    break;
+                }
             }
-        glEnd();
 
-        // Read back results
-        unsigned int readback[60];
-        glReadPixels(0, (int)(viewport[3] - 5), 60, 1, GL_RGBA, GL_UNSIGNED_BYTE, readback);
-
-        // Test result for errors
-        bool texbug = false;
-        for (int f = 0; f < 6; ++f) {
-            if ((readback[f * 10 + 5] & 0xFF) != color[f]) {
-                texbug = true;
-                break;
+            if (i == 0) {
+                valuemtc = texbug;
+            } else {
+                valuenmt = texbug;
             }
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
 
     glPopAttrib();
 
     glDeleteTextures(1, &id);
-    value = texbug;
 
-    return value;
+    mtc = valuemtc;
+    nmt = valuenmt;
 }
 
 

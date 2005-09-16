@@ -109,7 +109,7 @@ SkyRef Sky::fromFile(
     TextureRef faceTextures[6];
     bool useCubeMap;
 
-    if (GLCaps::supports_GL_ARB_texture_cube_map()) {
+    if (GLCaps::supports_GL_ARB_texture_cube_map() && ! GLCaps::hasBug_normalMapTexGen()) {
    
         if (_filename[1] == "") {
             faceTextures[0] = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0);

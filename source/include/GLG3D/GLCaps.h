@@ -191,11 +191,25 @@ public:
      Call after OpenGL is intialized.  Will render on the backbuffer but not make
      the backbuffer visible.  Safe to call multiple times; the result is memoized.
 
-     On some Radeon Mobility cards, glMultiTexCoord3fvARB and glVertex4fv together
+     On some Radeon Mobility cards (up to Mobility 9200), glMultiTexCoord3fvARB and glVertex4fv together
      create incorrect texture lookups from cube maps.  Using glVertex3fv or glTexCoord
      with glActiveTextureARB avoids this problem, as does using normal map generation.
      */
     static bool hasBug_glMultiTexCoord3fvARB();
+
+    /**
+     Returns true if cube map support has a specific known bug on this card.
+     Returns false if cube maps are not supported at all on this card.
+
+     Call after OpenGL is intialized.  Will render on the backbuffer but not make
+     the backbuffer visible.  Safe to call multiple times; the result is memoized.
+
+     Radeon Mobility 7500 has been shown to have a bug where not only does
+     hasBug_glMultiTexCoord3fvARB() exist, but normal maps can't work around 
+     the problem.
+     */
+    static bool GLCaps::hasBug_normalMapTexGen();
+
 
 #if 0 // TODO: morgan, remove?
 

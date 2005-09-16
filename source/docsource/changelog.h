@@ -47,7 +47,7 @@
     <LI> GLCaps::supports_GL_ATI_separate_stencil
     <LI> GLCaps can now test a card/driver and detect specific bugs:
         <ul><li>G3D::GLCaps::hasBug_glMultiTexCoord3fvARB
-        <LI> G3D::GLCaps::hasBug_slowVBO
+        <LI> G3D::GLCaps::hasBug_normalMapTexGen
         </ul>
     <LI> Improved G3D::ReferenceCountedPointer documentation to make subclassing features clearer
     <LI> G3D::Shape

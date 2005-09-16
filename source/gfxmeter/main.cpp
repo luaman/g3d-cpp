@@ -15,7 +15,7 @@
 
 #include "Report.h"
 #include "App.h"
-//#define FAST
+#define FAST
  
 static const float gfxMeterVersion = 0.6;
 
@@ -196,6 +196,12 @@ void App::countBugs() {
         Log::common()->printf("   Detected glMultiTexCoord3fvARB bug\n\n");
     } 
     
+
+    if (GLCaps::hasBug_normalMapTexGen()) {
+        ++bugCount;
+        Log::common()->printf("   Detected normalMapTexGen bug\n\n");
+    } 
+
     if (beginsWith(GLCaps::renderer(), "RADEON") &&
         GLCaps::supports_GL_ARB_shadow() &&
         GLCaps::supports_GL_ARB_shading_language_100()) {
