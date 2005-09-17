@@ -551,7 +551,7 @@ const std::string& GLCaps::renderer() {
 
 ////////////////////////////////////////////////////////////
 /** Tests for hasBug_glMultiTexCoord3fvARB and hasBug_glNormalMapTexGenARB */
-void cubeMapBugs(bool& mtc, bool& nmt);
+static void cubeMapBugs(bool& mtc, bool& nmt);
 
 bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
     bool a, b;
