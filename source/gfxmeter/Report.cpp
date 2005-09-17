@@ -326,7 +326,7 @@ void Report::doGraphics() {
                 PRINT("  + VBO", drawElementsVBOFPS);
                 PRINT("  + uint16", drawElementsVBO16FPS);
                 PRINT("  + interleaving", drawElementsVBOIFPS);
-                PRINT("  without shading)", drawElementsVBOPeakFPS);
+                PRINT("  (without shading)", drawElementsVBOPeakFPS);
 
 
 #               undef PRINT

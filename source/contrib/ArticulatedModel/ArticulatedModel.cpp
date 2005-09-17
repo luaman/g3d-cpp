@@ -90,7 +90,8 @@ void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFram
         }
 
         part.cframe = object.keyframe.approxCoordinateFrame();
-        part.cframe.translation = xform.pointToWorldSpace(part.cframe.translation);
+        // Scale and rotate the cframe positions, but do not translate them
+        part.cframe.translation = xform.rotation * part.cframe.translation;
 
         part.name = name;
         partNameToIndex.set(part.name, p);

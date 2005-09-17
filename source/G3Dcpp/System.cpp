@@ -131,7 +131,6 @@ static bool                                     _sse                = false;
 static bool                                     _sse2               = false;
 static bool                                     _3dnow              = false;
 static std::string                              _cpuVendor          = "Unknown";
-bool System::initialized = false;
 static bool                                     _cpuID              = false;
 static G3DEndian                                _machineEndian      = G3D_LITTLE_ENDIAN;
 static std::string                              _cpuArch            = "Unknown";
@@ -233,15 +232,18 @@ const std::string& System::version() {
     return _version;
 }
 
+
 void System::init() {
     // Cannot use most G3D data structures or utility functions in here because
     // they are not initialized.
 
-    if (System::initialized) {
+    static bool initialized = false;
+
+    if (initialized) {
         return;
     }
 
-    System::initialized = true;
+    initialized = true;
 
     {
         char tmp[1024];
@@ -1154,11 +1156,19 @@ private:
 
 public:
 
+    /** Count of memory allocations that have occurred. */
     int totalMallocs;
     int mallocsFromTinyPool;
     int mallocsFromSmallPool;
     int mallocsFromMedPool;
 
+    /** Amount of memory currently allocated (according to the application). 
+        This does not count the memory still remaining in the buffer pool,
+        but does count extra memory required for rounding off to the size
+        of a buffer.
+        Primarily useful for detecting leaks.*/
+    // TODO: make me an atomic int!
+    int bytesAllocated;
 
     BufferPool() {
         totalMallocs         = 0;
@@ -1167,6 +1177,7 @@ public:
         mallocsFromSmallPool = 0;
         mallocsFromMedPool   = 0;
 
+        bytesAllocated       = true;
 
         tinyPoolSize = 0;
         tinyHeap = NULL;
@@ -1208,7 +1219,7 @@ public:
 
         if (inTinyHeap(ptr)) {
             if (bytes <= tinyBufferSize) {
-                // The old pointer actually had enough space
+                // The old pointer actually had enough space.
                 return ptr;
             } else {
                 // Free the old pointer and malloc
@@ -1279,7 +1290,11 @@ public:
                 return ptr;
             }
         }
+
+        bytesAllocated += 4 + bytes;
         unlock();
+
+        // Heap allocate
 
         // Allocate 4 extra bytes for our size header (unfortunate,
         // since malloc already added its own header).
@@ -1324,6 +1339,7 @@ public:
                 return;
             }
         }
+        bytesAllocated -= bytes + 4;
         unlock();
 
         // Free; the buffer pools are full or this is too big to store.

@@ -89,6 +89,10 @@ public:
         rotation(rotation), translation(translation) {
     }
 
+    CoordinateFrame(const Matrix3 &rotation) :
+        rotation(rotation), translation(Vector3::zero()) {
+    }
+
     CoordinateFrame(class BinaryInput& b);
 
     void deserialize(class BinaryInput& b);
@@ -233,6 +237,14 @@ public:
     CoordinateFrame operator*(const CoordinateFrame &other) const {
         return CoordinateFrame(rotation * other.rotation,
                                pointToWorldSpace(other.translation));
+    }
+
+    CoordinateFrame operator+(const Vector3& v) const {
+        return CoordinateFrame(rotation, translation + v);
+    }
+
+    CoordinateFrame operator-(const Vector3& v) const {
+        return CoordinateFrame(rotation, translation - v);
     }
 
     void lookAt(const Vector3& target);

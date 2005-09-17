@@ -198,6 +198,7 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
 	init(hwnd);
 
     _windowActive = hasFocus();
+    _diDevices = new _DirectInput(window);
 }
 
 
@@ -213,6 +214,7 @@ Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) {
 	init(hwnd);
 
     _windowActive = hasFocus();
+    _diDevices = new _DirectInput(window);
 }
 
 

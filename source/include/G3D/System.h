@@ -63,9 +63,8 @@ std::string license();
 class System {
 public:
 
-	/** */
+	/** Called automatically by the other System routines.*/
 	static void init();
-	static bool initialized;
 
 	/** */
 	static bool hasMMX();

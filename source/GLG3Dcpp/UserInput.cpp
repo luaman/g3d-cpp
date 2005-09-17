@@ -56,9 +56,6 @@ void UserInput::init(
     _window = window;
     windowCenter = Vector2(window->width() / 2, window->height() / 2);
 
-    keyState.resize(SDL_CUSTOM_LAST);
-    keyFunction.resize(keyState.size());
-
 	up = left = down = right = false;
 	jx = jy = 0.0;
 
@@ -78,6 +75,9 @@ void UserInput::init(
         keyMapping->set(SDLK_s, DOWN);
     }
 
+    // Will be initialized by setKeyMapping
+    keyState.resize(SDL_CUSTOM_LAST);
+    keyFunction.resize(keyState.size());
     setKeyMapping(keyMapping);
 
     if (tempMapping) {
