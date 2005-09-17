@@ -33,4 +33,4 @@ libGLG3D_debug_a_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
 						   ../../../source/GLG3Dcpp/SDLWindow.cpp \
                            ../../../source/GLG3Dcpp/DDSTexture.cpp
 
-libGLG3D_debug_a_CPPFLAGS=-I../../../source/include -Wall $(SDL_CFLAGS) -D_DEBUG -msse2 
+libGLG3D_debug_a_CPPFLAGS=-I../../../source/include -Wall $(SDL_CFLAGS) -D_DEBUG
