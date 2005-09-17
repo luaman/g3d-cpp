@@ -144,7 +144,7 @@ static LARGE_INTEGER                            _counterFrequency;
 static struct timeval                           _start;
 #endif
 
-static std::string                              _version            = "Unknown";
+static char                                     versionCstr[1024];
 
 #ifdef G3D_OSX
     long System::m_OSXCPUSpeed;
@@ -229,6 +229,8 @@ const std::string& System::cpuArchitecture() {
 
 const std::string& System::version() {
     init();
+
+    static const std::string _version = versionCstr;
     return _version;
 }
 
@@ -245,20 +247,15 @@ void System::init() {
 
     initialized = true;
 
-    {
-        char tmp[1024];
-
-
-        sprintf(tmp, "G3D %d.%02d",
+    if ((G3D_VER % 100) != 0) {
+        sprintf(versionCstr, "G3D %d.%02d beta %d",
+            G3D_VER / 10000,
+            (G3D_VER / 100) % 100,
+            G3D_VER % 100);
+    } else {
+        sprintf(versionCstr, "G3D %d.%02d",
             G3D_VER / 10000,
             (G3D_VER / 100) % 100);
-
-        _version = tmp;
-
-        if ((G3D_VER % 100) != 0) {
-            sprintf(tmp, " beta %d", G3D_VER % 100);
-            _version += tmp;
-        }
     }
 
     unsigned long eaxreg, ebxreg, ecxreg, edxreg;
