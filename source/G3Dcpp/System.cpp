@@ -130,11 +130,11 @@ static bool                                     _mmx                = false;
 static bool                                     _sse                = false;
 static bool                                     _sse2               = false;
 static bool                                     _3dnow              = false;
-static std::string                              _cpuVendor          = "Unknown";
+static char                                     _cpuVendorCstr[1024] = {'U', 'n', 'k', 'n', 'o', 'w', 'n', '\0'};
 static bool                                     _cpuID              = false;
 static G3DEndian                                _machineEndian      = G3D_LITTLE_ENDIAN;
-static std::string                              _cpuArch            = "Unknown";
-static std::string                              _operatingSystem    = "Unknown";
+static char                                     _cpuArchCstr[1024];
+static char                                     _operatingSystemCstr[1024];
 
 #ifdef G3D_WIN32
 /** Used by getTick() for timing */
@@ -207,6 +207,7 @@ bool System::has3DNow() {
 
 const std::string& System::cpuVendor() {
     init();
+    static const std::string _cpuVendor = _cpuVendorCstr;
     return _cpuVendor;
 }
 
@@ -218,12 +219,14 @@ G3DEndian System::machineEndian() {
 
 const std::string& System::operatingSystem() {
     init();
+    static const std::string _operatingSystem =_operatingSystemCstr;
     return _operatingSystem;
 }
         
 
 const std::string& System::cpuArchitecture() {
     init();
+    static const std::string _cpuArch = _cpuArchCstr;
     return _cpuArch;
 }
 
@@ -260,9 +263,6 @@ void System::init() {
 
     unsigned long eaxreg, ebxreg, ecxreg, edxreg;
     eaxreg = ebxreg = ecxreg = edxreg = 0;
-
-    char cpuVendorTmp[13];
-    (void)cpuVendorTmp;
  
     // First of all we check if the CPUID command is available
     checkForCPUID();
@@ -324,11 +324,10 @@ void System::init() {
         #endif
 
         // Then we connect the single register values to the vendor string
-        *((unsigned long *) cpuVendorTmp)       = ebxreg;
-        *((unsigned long *) (cpuVendorTmp + 4)) = edxreg;
-        *((unsigned long *) (cpuVendorTmp + 8)) = ecxreg;
-        cpuVendorTmp[12] = '\0';
-        _cpuVendor = cpuVendorTmp;
+        *((unsigned long *) _cpuVendorCstr)       = ebxreg;
+        *((unsigned long *) (_cpuVendorCstr + 4)) = edxreg;
+        *((unsigned long *) (_cpuVendorCstr + 8)) = ecxreg;
+        _cpuVendorCstr[12] = '\0';
 
         // We can also read the max. supported standard CPUID level
         maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
@@ -372,19 +371,19 @@ void System::init() {
         // but on Linux will stand.
         switch (ebxreg) {
         case 0x756E6547:        // GenuineIntel
-            _cpuArch = "Intel Processor";
+            strcpy(_cpuArchCstr, "Intel Processor");
             break;
             
         case 0x68747541:        // AuthenticAMD
-            _cpuArch = "AMD Processor";
+            strcpy(_cpuArchCstr, "AMD Processor");
             break;
 
         case 0x69727943:        // CyrixInstead
-            _cpuArch = "Cyrix Processor";
+            strcpy(_cpuArchCstr, "Cyrix Processor");
             break;
 
         default:
-            _cpuArch = "Unknown Processor Vendor";
+            strcpy(_cpuArchCstr, "Unknown Processor Vendor");
             break;
         }
     }
@@ -415,33 +414,24 @@ void System::init() {
         }
 
         uint32 maxAddr = (uint32)systemInfo.lpMaximumApplicationAddress;
-        {
-            char tmp[2048];
-
-            sprintf(tmp, "%d x %d-bit %s processor",
-                        systemInfo.dwNumberOfProcessors,
-                        (int)(::log((double)maxAddr) / ::log(2.0) + 2.0),
-                        arch);
-            _cpuArch = tmp;
-        }
+        sprintf(_cpuArchCstr, "%d x %d-bit %s processor",
+                    systemInfo.dwNumberOfProcessors,
+                    (int)(::log((double)maxAddr) / ::log(2.0) + 2.0),
+                    arch);
 
         OSVERSIONINFO osVersionInfo;
         osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
         bool success = GetVersionEx(&osVersionInfo) != 0;
 
         if (success) {
-            char tmp[2048];
-
-            sprintf(tmp, "Windows %d.%d build %d Platform %d %s",
+            sprintf(_operatingSystemCstr, "Windows %d.%d build %d Platform %d %s",
                 osVersionInfo.dwMajorVersion, 
                 osVersionInfo.dwMinorVersion,
                 osVersionInfo.dwBuildNumber,
                 osVersionInfo.dwPlatformId,
                 osVersionInfo.szCSDVersion);
-
-             _operatingSystem = tmp;
         } else {
-            _operatingSystem = "Windows";
+            strcpy(_operatingSystemCstr, "Windows");
         }
     
     #elif defined(G3D_LINUX)
@@ -460,7 +450,7 @@ void System::init() {
             }
             fclose(f);
 
-            _operatingSystem = r;
+            strcpy(_operatingSystemCstr, r);
             ::free(r);
         }
 
@@ -469,15 +459,13 @@ void System::init() {
         //Operating System:
         SInt32 macVersion;
         Gestalt(gestaltSystemVersion, &macVersion);
-        
-        int major = 10;
+
+        int major = (macVersion >> 8) & 0xFF;
         int minor = (macVersion >> 4) & 0xF;
         int revision = macVersion & 0xF;
-        
-        std::ostringstream ss;
-        ss << "OS X " << major << "." << minor << "." << revision;
-        _operatingSystem = ss.str();
-        
+
+        sprintf(_operatingSystemCStr, "OS X %x.%d.%d\n", major, minor, revision); 
+                 
         //Clock Cycle Timing Information:
         Gestalt('pclk', &System::m_OSXCPUSpeed);
         m_secondsPerNS = 1.0 / 1.0e9;
@@ -487,16 +475,16 @@ void System::init() {
         Gestalt('cpuf', &CPUtype);
         switch (CPUtype){
         case 0x0108:
-            _cpuArch = "PPC G3";
-            _cpuVendor = "Motorola";
+            strcpy(_cpuArchCstr, "PPC G3");
+            strcpy(_cpuVendorCstr, "Motorola");
             break;
         case 0x010C:
-            _cpuArch = "PPC G4";
-            _cpuVendor = "Motorola";
+            strcpy(_cpuArchCstr, "PPC G4");
+            strcpy(_cpuVendorCstr, "Motorola");
             break;
         case 0x0139:
-            _cpuArch = "PPC G5";
-            _cpuVendor = "IBM";
+            strcpy(_cpuArchCstr, "PPC G5");
+            strcpy(_cpuVendorCstr, "IBM");
             break;
         }
             
