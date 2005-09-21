@@ -286,6 +286,14 @@ public:
     virtual Vector3 randomInteriorPoint() const {
         return geometry.randomInteriorPoint();
     }
+
+    virtual float area() const {
+        return geometry.area();
+    }
+
+    virtual float volume() const {
+        return geometry.volume();
+    }
 };
 
 

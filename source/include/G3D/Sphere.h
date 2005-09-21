@@ -102,7 +102,12 @@ public:
 
     double volume() const;
 
+    /** @deprecated */
     double surfaceArea() const;
+
+    inline float area() const {
+        return surfaceArea();
+    }
 
     /**
      Uniformly distributed on the surface.
