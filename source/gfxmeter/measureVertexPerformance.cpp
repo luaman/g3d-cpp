@@ -73,7 +73,7 @@ public:
                 const Array<int>& index = m->triangleIndices();
                 int N = index.size();
                 cpuIndex.resize(N);
-                System::memcpy(cpuIndex.begin(), index.getCArray(), sizeof(int) * N);
+                System::memcpy(&cpuIndex[0], index.getCArray(), sizeof(int) * N);
             }
 
             {
@@ -83,8 +83,8 @@ public:
                 cpuNormal.resize(N);
                 cpuColor.resize(N);
                 cpuTexCoord.resize(N);
-                System::memcpy(cpuVertex.begin(), g.vertexArray.getCArray(), N * sizeof(Vec3));
-                System::memcpy(cpuNormal.begin(), g.normalArray.getCArray(), N * sizeof(Vec3));
+                System::memcpy(&cpuVertex[0], g.vertexArray.getCArray(), N * sizeof(Vec3));
+                System::memcpy(&cpuNormal[0], g.normalArray.getCArray(), N * sizeof(Vec3));
 
                 for (int i = 0; i < N; ++i) {
                     // Copy the normals over the colors, too
