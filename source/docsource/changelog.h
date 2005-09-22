@@ -36,6 +36,7 @@
    Changes in 6.07:
    <UL>
     <LI> G3D::GWindow::makeCurrent
+    <LI> Win32 release binaries now built with no debug information (used to have line numbers)
     <LI> AABox::AABox enforces the constraint low <= high
     <LI> Optimized G3D::Array, Table, Queue, and Set for performance.  Now significantly (up to 10x) faster
          than their std::counterparts.
