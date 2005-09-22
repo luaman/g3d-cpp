@@ -40,7 +40,7 @@
 
 
 
-version = [0, 4, 4]
+version = [0, 4, 5]
 import sys, string, os, os.path, fileinput, tempfile, shutil, re
 import commands, pickle, time, ConfigParser
 from string import ljust
@@ -65,6 +65,7 @@ NO                        = False
 
 BUILDDIR                  = 'build'
 DISTRIBDIR                = 'install'
+
 
 # Temp directory where scratch and .o files are stored, relative to rootDir
 tempDir                   = '.icompile-temp/'
@@ -128,10 +129,16 @@ defaultCompilerName       = ''
 # Supresses all non-error output. Set by setVariables.
 quiet                     = NO
 
+# e.g. linux-gcc4.0
+platform                  = ''
+
 defaultDynamicLibs = []
 defaultStaticLibs = []
 
-def printVariables(icompileargs, progargs):
+# allfiles is a list of all files on which something depends.  May be empty list.
+# 
+def printVariables(icompileargs, progargs, allfiles = []):
+    print "platform               = '" + platform + "'"
     print "rootDir                = '" + rootDir + "'"
     print "projectName            = '" + projectName + "'"
     print "target                 = " + target
@@ -144,7 +151,9 @@ def printVariables(icompileargs, progargs):
     print "quiet                  =", quiet
     print "--run args             =", progargs
     print "compilerName           = '" + compilerName() + "'"
-    print "compilerOptions        =", compilerOptions()
+    print "compilerOptions        =", getCompilerOptions(allfiles,
+                                         compilerWarningOptions +
+                                         compilerVerboseOptions)
     print "compilerWarningOptions =", compilerWarningOptions
     print "compilerVerboseOptions =", compilerVerboseOptions
     print "linkerOptions          =", linkerOptions()
@@ -638,7 +647,8 @@ def getVersion(filename):
 
 
 _excludeDirPatterns = \
-    ['^CVS$', \
+    ['^.svn$',\
+     '^CVS$', \
      '^Debug$', \
      '^Release$', \
      '^graveyard$', \
@@ -1342,6 +1352,8 @@ def printVersion():
 
 def printHelp():
     print ("""
+iCompile: the zero-configuration build system
+    
 icompile  [--doc] [--opt|--debug] [--verbose] [--clean] [--version]
           [--quiet] [--help] [--run|--gdb ...]
 
@@ -1381,7 +1393,41 @@ See manual.html or http://ice.sf.net for full information.
 """)
     sys.exit(0)
 
+##############################################################################
+#                            Discover Platform                               #
+##############################################################################
 
+def discoverPlatform():
+    global platform
+
+    OS = ''
+    compiler = ''
+
+    # Figure out the os
+    if (os.name == 'posix'):
+        OS = 'linux'
+    else:
+        raise 'Error', 'iCompile only supports linux and os/x'
+
+    # Figure out the compiler
+    c = compilerName()
+
+    compiler = _basename(c)
+
+    if (compiler[0:3] == 'g++') or (compiler[0:3] == 'gcc'):
+        compiler = 'g++'
+
+    # Append the major and minor compiler version number to the compiler name
+    v = getVersion(c)    
+    if len(v) > 2:
+        v = v[0:2]
+    if len(v) < 2:
+        # Version number was short; add a 0 minor number
+        v = v + 0
+    compiler += string.join(map(str, v), '.')
+
+    platform = OS + '-' + compiler
+    
 ##############################################################################
 #                            Build Documentation                             #
 ##############################################################################
@@ -1453,7 +1499,9 @@ def buildClean():
 def getDependencies(file, iteration = 1):
     # We need to use the -msse2 flad during dependency checking because of the way
     # xmmintrin.h is set up
-    raw = shell(compilerName() + ' --depend -msse2 ' + getCompilerOptions([]) + ' ' + file, verbose)
+    raw = shell(compilerName() + ' --depend -msse2 ' +
+                   string.join(getCompilerOptions([]), ' ') + ' ' + file,
+                verbose)
 
     if beginsWith(raw, 'In file included from'):
         # If there was an error, the output will have the form
@@ -1611,7 +1659,7 @@ def getOutOfDateFiles(cfiles, dependencies, files):
         rebuild = (otime < icompileTime)
 
         if rebuild and verbose:
-            print "The compile script is newer than " + ofile
+            print "iCompile is newer than " + ofile
 
         if not rebuild:
             # Check dependencies
@@ -1640,24 +1688,25 @@ includeTable = {
 """allFiles is a list of all files on which something
    depends for the project.
 
+   Returns a list of strings
+
    extraOpts are options that are needed for compilation
    but not dependency checking:
      compilerWarningOptions + compilerVerboseOptions
    """
-# TODO: merge with compilerOptions
 def getCompilerOptions(allFiles, extraOpts = []):
-    opt = (' ' + string.join(compilerOptions(), ' ') + ' ' +
-            string.join(extraOpts, ' ') +
-           ' -c ')
+    opt = configCompilerOptions() + extraOpts + ['-c']
     
     for i in includePaths():
-        opt += '-I' + i + ' '
+        opt += ['-I' + i]
 
     # See if the xmm intrinsics are being used
-    for f in allFiles:
-        if f[-11:] == 'xmmintrin.h':
-            opt += '-msse2'
-            break
+    # This was disabled because -msse2 allows code generation,
+    # not just explicit use of intrinsics
+    #for f in allFiles:
+    #    if f[-11:] == 'xmmintrin.h':
+    #        opt += ['-msse2']
+    #        break
         
     return opt
 
@@ -1951,8 +2000,7 @@ def buildBinary():
     # Definitely need to link if no executable exists
     relink = not os.path.exists(binaryDir + binaryName)
 
-    copt = getCompilerOptions(files, compilerWarningOptions +
-                              compilerVerboseOptions)
+    copt = string.join(getCompilerOptions(files, compilerWarningOptions + compilerVerboseOptions), ' ')
 
     if verbose:
         print "\nBuilding out of date files\n"    
@@ -2079,6 +2127,7 @@ def gdbCompiledProgram(progArgs):
 
 """ Returns the exit code """
 def runCompile(args, progArgs):
+    global verbose
     doGDB = "--gdb" in args
     doRun = "--run" in args
 
@@ -2093,7 +2142,11 @@ def runCompile(args, progArgs):
         return -1
 
     if verbose:
-        printVariables(args, progArgs)
+        # Temporarily turn off verbose so that dependencies don't print spam
+        verbose = False
+        (cfiles, dependencies, files) = getDependencyInformation()
+        verbose = True
+        printVariables(args, progArgs, files)
     
     if ("--clean" in args):
         buildClean()
@@ -2256,23 +2309,24 @@ def setVariables(args):
         target                 = DEBUG
         d                      = 'd'
 
+    discoverPlatform()
+    
     # Binary name
     if (binaryType == EXE):
         binaryDir  = BUILDDIR + '/' + DISTRIBDIR + '/'
         binaryName = projectName + d
     elif (binaryType == DLL):
-        binaryDir  = BUILDDIR + '/' + DISTRIBDIR + '/lib/'
+        binaryDir  = BUILDDIR + '/' + DISTRIBDIR + '/' + platform + '-lib/'
         binaryName = 'lib' + projectName + d + '.so'
     elif (binaryType == LIB):
-        binaryDir  = BUILDDIR + '/' + DISTRIBDIR + '/lib/'
+        binaryDir  = BUILDDIR + '/' + DISTRIBDIR + '/' + platform + '-lib/'
         binaryName = 'lib' + projectName + d + '.a'
 
     stripDebugSymbols = (target == DEBUG)
 
     # Make separate directories for object files based on
     # debug/release
-    objDir = tempDir + os.name + '/' + target + '/'
-
+    objDir = tempDir + platform + '/' + target + '/'
 
 
 #################################################################
@@ -2421,7 +2475,7 @@ def libraryPaths():
 def compilerName():
     return configGet(config, 'GLOBAL', 'compiler')
 
-def compilerOptions():
+def configCompilerOptions():
     return string.split(configGet(config, target, 'compileoptions'), ' ')
 
 def linkerOptions():
@@ -2447,6 +2501,7 @@ if __name__ == '__main__':
     loadCache(cacheFilename)
 
     setVariables(args)
+    
     configureCompiler()
     
     ret = runCompile(args, progArgs)
