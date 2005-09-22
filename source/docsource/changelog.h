@@ -40,7 +40,8 @@
     <LI> AABox::AABox enforces the constraint low <= high
     <LI> Optimized G3D::Array, Table, Queue, and Set for performance.  Now significantly (up to 10x) faster
          than their std::counterparts.
-    <LI> Vector3(Vector2, float) constructor
+    <LI> G3D::Vector3(Vector2, float) constructor
+    <LI> G3D::Vector2::fastDirection
     <LI> G3D::TextInput::Options::cComments
     <LI> G3D::TextInput::Options::escapeSequencesInStrings
     <LI> G3D::TextInput::Options::otherCommentCharacter2

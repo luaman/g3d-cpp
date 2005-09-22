@@ -113,6 +113,14 @@ public:
     // vector operations
     double length() const;
     Vector2 direction() const;
+    /**
+     Potentially less accurate but faster than direction().
+     Only works if System::hasSSE is true.
+     */
+    Vector2 fastDirection() const {
+        return direction();
+    }
+
     double squaredLength () const;
     double dot (const Vector2& rkVector) const;
     double unitize (double fTolerance = 1e-06);
