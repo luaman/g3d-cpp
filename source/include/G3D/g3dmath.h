@@ -124,6 +124,7 @@ typedef unsigned int	uint32;
     typedef long long		   int64;
     typedef unsigned long long uint64;
 #endif
+typedef unsigned int uint;
 
 typedef float			float32;
 typedef double			float64;

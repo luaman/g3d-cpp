@@ -28,8 +28,6 @@
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/VAR.h"
 
-typedef unsigned int uint;
-
 namespace G3D {
 
 class VAR;
