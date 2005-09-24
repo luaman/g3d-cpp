@@ -594,7 +594,7 @@ public:
    }
 
    inline T& operator[](unsigned int n) {
-      debugAssert((n < num));
+      debugAssert(((int)n < num));
       return data[n];
    }
 
