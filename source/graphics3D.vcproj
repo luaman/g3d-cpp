@@ -33,7 +33,6 @@
 				ProgramDataBaseFileName=".\../temp/debug/g3d/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
