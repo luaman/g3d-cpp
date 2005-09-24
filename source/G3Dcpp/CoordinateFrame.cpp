@@ -186,6 +186,8 @@ CoordinateFrame CoordinateFrame::lerp(
     double                  alpha) const {
 
     if (alpha == 1.0) {
+        return other;
+    } else if (alpha == 0.0) {
         return *this;
     } else {
         Quat q1 = Quat(this->rotation);

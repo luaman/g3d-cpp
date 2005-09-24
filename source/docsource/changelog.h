@@ -117,6 +117,7 @@
      <LI> Fix: [ 1124491 ] Remove GL_SAMPLER_2DRECT_ARB
      <LI> Fix: [ 1257113 ] G3D::Queue problems comining pushFront and pushBack
      <LI> Fix: MeshAlg::Weld now linear time (was O(n^2) due to a bug)
+     <LI> Fix: [ 1298873 ] fast & correct CoordinateFrame::lerp
    </UL>
 
   <P>

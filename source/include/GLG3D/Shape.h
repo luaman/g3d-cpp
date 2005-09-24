@@ -21,6 +21,8 @@ namespace G3D {
    
    The Shape classes provide a parallel set of classes to the G3D primitives
    that support more functionality.
+
+   <b>BETA API</b> This API is subject to change in future releases.
   */
 class Shape : public ReferenceCountedObject {
 public:
@@ -140,6 +142,12 @@ class BoxShape : public Shape {
 public:
 
     inline BoxShape(const G3D::Box& b) : geometry(b) {}
+
+    /** Creates a box of the given extents centered at the origin. */
+    inline BoxShape(const Vector3& extent) : geometry(-extent/2, extent) {}
+
+    /** Creates a box of the given extents centered at the origin. */
+    inline BoxShape(float x, float y, float z) : geometry(Vector3(-x/2, -y/2, -z/2), Vector3(x/2, y/2, z/2)) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -263,6 +271,11 @@ class SphereShape : public Shape {
 public:
 
     inline SphereShape(const G3D::Sphere& s) : geometry(s) {}
+
+    inline SphereShape(const Vector3& center, float radius) : geometry(center, radius) {}
+
+    /** Creates a sphere centered at the origin with the given radius. */
+    inline SphereShape(float radius) : geometry(Vector3::zero(), radius) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
