@@ -17,8 +17,10 @@ namespace G3D {
  An integer that may safely be used on different threads without
  external locking.
 
- On Win32 and Linux this is implemented without locks.  On PPC,
- the current implementation uses locks and is comparatively slow.
+ On Win32 and Linux this is implemented without locks.  
+
+ On PPC, AtomicInt32 is currently not atomic.  A future implementation may use locks 
+ and be comparatively slow.
 
  <B>BETA API</B>  This is unsupported and may change
  */
@@ -83,25 +85,33 @@ public:
     }
 
     /** Returns the old value, before the add. */
-    inline int32 exchangeAdd(const int32 x) {
+    inline int32 add(const int32 x) {
 #       if defined(G3D_WIN32)
             return InterlockedExchangeAdd(&value, x);
 #       elif defined(G3D_LINUX)
-            asm volatile ("lock; xaddl %0, %1"
-                          : "=r"(x), "=m"(value) // outputs
-                          : "0"(x), "m"(value)   // inputs
-                          : "memory", "cc");
-            return x;
+            int32 old, temp;
+            
+            asm volatile ("0:\n\t"
+                  "lwarx  %0,0,%2\n\t"
+                  "add    %1,%0,%3\n\t"
+                  "stwcx. %1,0,%2\n\t"
+                  "bne-   0b"
+
+                  : "=&r" (old), "=&r" (temp)
+                  : "b" (mem), "r" (delta)
+                  : "memory", "cc");
+             return old;
 #       elif defined(G3D_OSX)
-            return x;
+            int32 old = value;
+            value += x;
+            return old;
 #       endif
     }
 
     /** Returns old value. */
-    inline int32 exchangeSub(const int32 x) {
+    inline int32 sub(const int32 x) {
         return exchangeAdd(-x);
     }
-
 
     inline void increment() {
 #       if defined(G3D_WIN32)
@@ -109,6 +119,8 @@ public:
             InterlockedIncrement(&value);
 #       elif defined(G3D_LINUX)
             exchangeAdd(1);
+#       elif defined(G3D_OSX)
+            ++value;
 #       endif
     }
 
@@ -118,14 +130,16 @@ public:
             // Note: returns the newly decremented value
             return InterlockedDecrement(&value) != 0;
 #       elif defined(G3D_LINUX)
-            unsigned char prev;
+            unsigned char nz;
 
             asm volatile ("lock; decl %1;\n\t"
                           "setnz %%al"
-                          : "=a" (prev)
+                          : "=a" (nz)
                           : "m" (value)
                           : "memory", "cc");
-            return prev;
+            return nz;
+#       elif defined(G3D_OSX)
+            return (--value) != 0;
 #       endif
     }
 
@@ -148,6 +162,10 @@ public:
                           : "r" (exchange), "m" (value), "0"(comperand)
                           : "memory", "cc");
             return ret;
+#       elif defined(G3D_OSX)
+            int32 old = value;
+            value = (value == comperand) ? value;
+            return old;
 #       endif
     }
 
