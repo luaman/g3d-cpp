@@ -75,7 +75,7 @@ public:
 #       elif defined(G3D_LINUX)
             value = x.value;
 #       elif defined(G3D_OSX)
-            value = x;
+            value = x.value;
 #       endif
     }
 
@@ -87,10 +87,21 @@ public:
     /** Returns the old value, before the add. */
     inline int32 add(const int32 x) {
 #       if defined(G3D_WIN32)
+
             return InterlockedExchangeAdd(&value, x);
+
 #       elif defined(G3D_LINUX)
-            int32 old, temp;
+
+            int32 old;
+            asm volatile ("lock; xaddl %0,%1"
+                  : "=r"(old), "=m"(value) /* outputs */
+                  : "0"(x), "m"(value)   /* inputs */
+                  : "memory", "cc");
+            return old;
             
+#       elif defined(G3D_OSX)
+
+            int32 old, temp;
             asm volatile ("0:\n\t"
                   "lwarx  %0,0,%2\n\t"
                   "add    %1,%0,%3\n\t"
@@ -98,13 +109,10 @@ public:
                   "bne-   0b"
 
                   : "=&r" (old), "=&r" (temp)
-                  : "b" (mem), "r" (delta)
+                  : "b" (value), "r" (x)
                   : "memory", "cc");
+
              return old;
-#       elif defined(G3D_OSX)
-            int32 old = value;
-            value += x;
-            return old;
 #       endif
     }
 
@@ -118,9 +126,9 @@ public:
             // Note: returns the newly incremented value
             InterlockedIncrement(&value);
 #       elif defined(G3D_LINUX)
-            exchangeAdd(1);
+            add(1);
 #       elif defined(G3D_OSX)
-            ++value;
+            add(1);
 #       endif
     }
 
@@ -139,6 +147,7 @@ public:
                           : "memory", "cc");
             return nz;
 #       elif defined(G3D_OSX)
+            // TODO: PPC
             return (--value) != 0;
 #       endif
     }
@@ -163,13 +172,25 @@ public:
                           : "memory", "cc");
             return ret;
 #       elif defined(G3D_OSX)
-            int32 old = value;
-            value = (value == comperand) ? value;
+            apr_uint32_t old;
+                                                                                
+            asm volatile ("0:\n\t"                   /* retry local label     */
+                          "lwarx  %0,0,%1\n\t"       /* load prev and reserve */
+                          "cmpw   %0,%3\n\t"         /* does it match cmp?    */
+                          "bne-   1f\n\t"            /* ...no, bail out       */
+                          "stwcx. %2,0,%1\n\t"       /* ...yes, conditionally
+                                                        store swap            */
+                          "bne-   0b\n\t"            /* start over if we lost
+                                                        the reservation       */
+                          "1:"                       /* exit local label      */
+                          
+                          : "=&r"(old)                        /* output      */
+                          : "b" (&value), "r" (exchange), "r"(comperand)    /* inputs      */
+                          : "memory", "cc");                   /* clobbered   */
             return old;
 #       endif
     }
 
-    // TODO: do we need compareAndSetPointer?  Why?
 };
 
 } // namespace
