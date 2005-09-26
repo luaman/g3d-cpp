@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2005-08-10
-  @edited  2005-08-28
+  @edited  2005-09-25
 */
 #ifndef G3D_SHAPE_H
 #define G3D_SHAPE_H
@@ -12,6 +12,8 @@
 #include "../graphics3D.h"
 
 namespace G3D {
+
+typedef ReferenceCountedPointer<class Shape> ShapeRef;
 
 /** 
    Base class for other shapes.  G3D primitives like Box and Cylinder
@@ -132,6 +134,10 @@ public:
     virtual Vector3 randomInteriorPoint() const = 0;
 
     virtual ~Shape() {}
+
+    /** Returns a new shape that is the same as this one, transformed to the world space
+        of the coordinate frame. */
+    virtual Shape* transform(const CoordinateFrame& cframe) const = 0;
 };
 
 
@@ -141,10 +147,10 @@ class BoxShape : public Shape {
 
 public:
 
-    inline BoxShape(const G3D::Box& b) : geometry(b) {}
+    explicit inline BoxShape(const G3D::Box& b) : geometry(b) {}
 
     /** Creates a box of the given extents centered at the origin. */
-    inline BoxShape(const Vector3& extent) : geometry(-extent/2, extent) {}
+    explicit inline BoxShape(const Vector3& extent) : geometry(-extent/2, extent) {}
 
     /** Creates a box of the given extents centered at the origin. */
     inline BoxShape(float x, float y, float z) : geometry(Vector3(-x/2, -y/2, -z/2), Vector3(x/2, y/2, z/2)) {}
@@ -179,6 +185,10 @@ public:
     virtual Vector3 randomInteriorPoint() const {
         return geometry.randomInteriorPoint();
     }
+
+    virtual Shape* transform(const CoordinateFrame& cframe) const {
+        return new BoxShape(cframe.toWorldSpace(geometry));
+    }
 };
 
 
@@ -188,7 +198,7 @@ class RayShape : public Shape {
 
 public:
 
-    inline RayShape(const G3D::Ray& r) : geometry(r) {}
+    explicit inline RayShape(const G3D::Ray& r) : geometry(r) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -220,6 +230,10 @@ public:
     virtual Vector3 randomInteriorPoint() const {
         return Vector3::nan();
     }
+
+    virtual Shape* transform(const CoordinateFrame& cframe) const {
+        return new RayShape(cframe.toWorldSpace(geometry));
+    }
 };
 
 
@@ -229,7 +243,7 @@ class CylinderShape : public Shape {
 
 public:
 
-    inline CylinderShape(const G3D::Cylinder& c) : geometry(c) {}
+    explicit inline CylinderShape(const G3D::Cylinder& c) : geometry(c) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -261,6 +275,10 @@ public:
     virtual Vector3 randomInteriorPoint() const {
         return geometry.randomInteriorPoint();
     }
+
+    virtual Shape* transform(const CoordinateFrame& cframe) const {
+        return new CylinderShape(cframe.toWorldSpace(geometry));
+    }
 };
 
 
@@ -270,7 +288,7 @@ class SphereShape : public Shape {
 
 public:
 
-    inline SphereShape(const G3D::Sphere& s) : geometry(s) {}
+    explicit inline SphereShape(const G3D::Sphere& s) : geometry(s) {}
 
     inline SphereShape(const Vector3& center, float radius) : geometry(center, radius) {}
 
@@ -307,6 +325,10 @@ public:
     virtual float volume() const {
         return geometry.volume();
     }
+
+    virtual Shape* transform(const CoordinateFrame& cframe) const {
+        return new SphereShape(cframe.toWorldSpace(geometry));
+    }
 };
 
 
@@ -315,7 +337,7 @@ public:
 
     G3D::Capsule         geometry;
 
-    inline CapsuleShape(const G3D::Capsule& c) : geometry(c) {}
+    explicit inline CapsuleShape(const G3D::Capsule& c) : geometry(c) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -346,6 +368,10 @@ public:
     virtual Vector3 randomInteriorPoint() const {
         return geometry.randomInteriorPoint();
     }
+
+    virtual Shape* transform(const CoordinateFrame& cframe) const {
+        return new CapsuleShape(cframe.toWorldSpace(geometry));
+    }
 };
 
 
@@ -355,7 +381,7 @@ class PlaneShape : public Shape {
 
 public:
 
-    inline PlaneShape(const G3D::Plane& p) : geometry(p) {}
+    explicit inline PlaneShape(const G3D::Plane& p) : geometry(p) {}
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -386,6 +412,10 @@ public:
 
     virtual Vector3 randomInteriorPoint() const {
         return Vector3::nan();
+    }
+
+    virtual Shape* transform(const CoordinateFrame& cframe) const {
+        return new PlaneShape(cframe.toWorldSpace(geometry));
     }
 };
 

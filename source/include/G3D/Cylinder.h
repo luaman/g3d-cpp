@@ -60,7 +60,7 @@ public:
 
     float volume() const;
 
-    float radius() const;
+    float radius() const; 
 
     /** Center of mass */
     inline Vector3 center() const {

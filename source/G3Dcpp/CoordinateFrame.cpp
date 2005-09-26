@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2005-09-12
+ @edited  2005-09-25
 */
 
 #include "G3D/CoordinateFrame.h"
@@ -17,6 +17,8 @@
 #include "G3D/Sphere.h"
 #include "G3D/Triangle.h"
 #include "G3D/Ray.h"
+#include "G3D/Capsule.h"
+#include "G3D/Cylinder.h"
 
 namespace G3D {
 
@@ -77,11 +79,23 @@ Triangle CoordinateFrame::toWorldSpace(const Triangle& t) const {
         pointToWorldSpace(t.vertex(2)));
 }
 
+Cylinder CoordinateFrame::toWorldSpace(const Cylinder& c) const {
+    return Cylinder(
+        pointToWorldSpace(c.getPoint1()), 
+        pointToWorldSpace(c.getPoint2()), 
+        c.radius());
+}
+
+Capsule CoordinateFrame::toWorldSpace(const Capsule& c) const {
+    return Capsule(
+        pointToWorldSpace(c.getPoint1()), 
+        pointToWorldSpace(c.getPoint2()), 
+        c.getRadius());
+}
 
 Box CoordinateFrame::toWorldSpace(const AABox& b) const {
     return toWorldSpace(b.toBox());
 }
-
 
 Box CoordinateFrame::toWorldSpace(const Box& b) const {
     Box out(b);

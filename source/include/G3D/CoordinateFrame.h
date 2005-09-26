@@ -217,6 +217,10 @@ public:
 
     class Box toWorldSpace(const class Box& b) const;
 
+    class Cylinder toWorldSpace(const class Cylinder& b) const;
+
+    class Capsule toWorldSpace(const class Capsule& b) const;
+
     class Plane toWorldSpace(const class Plane& p) const;
 
     class Sphere toWorldSpace(const class Sphere& b) const;

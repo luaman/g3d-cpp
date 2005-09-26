@@ -607,7 +607,7 @@ public:
     }
 
     inline const T& operator[](unsigned int n) const {
-        debugAssert((n < num));
+        debugAssert(((int)n < num));
         return data[n];
     }
 
