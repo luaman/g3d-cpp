@@ -1,6 +1,17 @@
+/**
+ @file AtomicInt32.h
+
+ @maintainer Morgan McGuire, matrix@graphics3d.com
+
+ @created 2005-09-01
+ @edited  2005-09-26
+ */
+#ifndef G3D_ATOMICINT32_H
+#define G3D_ATOMICINT32_H
 
 #include "platform.h"
 
+namespace G3D {
 
 /**
  An integer that may safely be used on different threads without
@@ -8,6 +19,8 @@
 
  On Win32 and Linux this is implemented without locks.  On PPC,
  the current implementation uses locks and is comparatively slow.
+
+ <B>BETA API</B>  This is unsupported and may change
  */
 //TODO: PPC
 class AtomicInt32 {
@@ -17,13 +30,15 @@ private:
 
 public:
 
-    // TODO: why does APR use interlocked exchange for this?
-
     /** Atomic set */
     explicit inline AtomicInt32(const int32 x) {
 #       if defined(G3D_WIN32)
+            // Asignment is done this way because APR does it this way.
+            // Morgan believes that volatile should be sufficient, however.
             InterlockedExchange(&value, x);
 #       elif defined(G3D_LINUX)
+            value = x;
+#       elif defined(G3D_OSX)
             value = x;
 #       endif
     }
@@ -34,6 +49,8 @@ public:
             InterlockedExchange(&value, x.value);
 #       elif defined(G3D_LINUX)
             value = x.value;
+#       elif defined(G3D_OSX)
+            value = x;
 #       endif
     }
 
@@ -43,18 +60,26 @@ public:
             InterlockedExchange(&value, x);
 #       elif defined(G3D_LINUX)
             value = x;
+#       elif defined(G3D_OSX)
+            value = x;
 #       endif
         return *this;
     }
 
     /** Atomic set */
-    inline const int32 operator=(const Atomic& x) {
+    inline const void operator=(const Atomic& x) {
 #       if defined(G3D_WIN32)
             InterlockedExchange(&value, x.value);
 #       elif defined(G3D_LINUX)
             value = x.value;
+#       elif defined(G3D_OSX)
+            value = x;
 #       endif
-        return *this;
+    }
+
+    /** Returns the current value */
+    inline const int32 value() const {
+        return value;
     }
 
     /** Returns the old value, before the add. */
@@ -67,6 +92,8 @@ public:
                           : "0"(x), "m"(value)   // inputs
                           : "memory", "cc");
             return x;
+#       elif defined(G3D_OSX)
+            return x;
 #       endif
     }
 
@@ -78,18 +105,19 @@ public:
 
     inline void increment() {
 #       if defined(G3D_WIN32)
+            // Note: returns the newly incremented value
             InterlockedIncrement(&value);
 #       elif defined(G3D_LINUX)
-            // TODO: cgd: why doesn't APR use the incl instruction?
             exchangeAdd(1);
 #       endif
     }
 
-    inline void decrement() {
+    /** Returns zero if the result is zero after decrement, non-zero otherwise.*/
+    inline uint32 decrement() {
 #       if defined(G3D_WIN32)
-            InterlockedDecrement(&value);
+            // Note: returns the newly decremented value
+            return InterlockedDecrement(&value) != 0;
 #       elif defined(G3D_LINUX)
-            // TODO: cgd: why is this unsigned char?
             unsigned char prev;
 
             asm volatile ("lock; decl %1;\n\t"
@@ -102,11 +130,13 @@ public:
     }
 
 
-    /** Atomic test-and-set:  if this == comperand then this := exchange
+    /** Atomic test-and-set:  if <code>*this == comperand</code> then <code>*this := exchange</code> else do nothing.
+        In both cases, returns the old value of <code>*this</code>.
     
         Performs an atomic comparison of this with the Comperand value. 
         If this is equal to the Comperand value, the Exchange value is stored in this.
         Otherwise, no operation is performed.
+
      */ 
     inline int32 compareAndSet(const int32 comperand, const int32 exchange) {
 #       if defined(G3D_WIN32)
@@ -121,5 +151,9 @@ public:
 #       endif
     }
 
-    // TODO: cgd: do we need compareAndSetPointer?  Why?
-}
+    // TODO: do we need compareAndSetPointer?  Why?
+};
+
+} // namespace
+
+#endif

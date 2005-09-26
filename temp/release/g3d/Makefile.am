@@ -7,6 +7,7 @@ libG3D_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Box.cpp \
                          ../../../source/G3Dcpp/GImage.cpp \
                          ../../../source/G3Dcpp/Capsule.cpp \
+                         ../../../source/G3Dcpp/Cylinder.cpp \
                          ../../../source/G3Dcpp/CollisionDetection.cpp \
                          ../../../source/G3Dcpp/Color3.cpp \
                          ../../../source/G3Dcpp/Color3uint8.cpp \

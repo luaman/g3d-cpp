@@ -134,10 +134,6 @@ public:
     virtual Vector3 randomInteriorPoint() const = 0;
 
     virtual ~Shape() {}
-
-    /** Returns a new shape that is the same as this one, transformed to the world space
-        of the coordinate frame. */
-    virtual Shape* transform(const CoordinateFrame& cframe) const = 0;
 };
 
 
@@ -185,10 +181,6 @@ public:
     virtual Vector3 randomInteriorPoint() const {
         return geometry.randomInteriorPoint();
     }
-
-    virtual Shape* transform(const CoordinateFrame& cframe) const {
-        return new BoxShape(cframe.toWorldSpace(geometry));
-    }
 };
 
 
@@ -231,9 +223,6 @@ public:
         return Vector3::nan();
     }
 
-    virtual Shape* transform(const CoordinateFrame& cframe) const {
-        return new RayShape(cframe.toWorldSpace(geometry));
-    }
 };
 
 
@@ -276,9 +265,6 @@ public:
         return geometry.randomInteriorPoint();
     }
 
-    virtual Shape* transform(const CoordinateFrame& cframe) const {
-        return new CylinderShape(cframe.toWorldSpace(geometry));
-    }
 };
 
 
@@ -326,9 +312,6 @@ public:
         return geometry.volume();
     }
 
-    virtual Shape* transform(const CoordinateFrame& cframe) const {
-        return new SphereShape(cframe.toWorldSpace(geometry));
-    }
 };
 
 
@@ -369,9 +352,6 @@ public:
         return geometry.randomInteriorPoint();
     }
 
-    virtual Shape* transform(const CoordinateFrame& cframe) const {
-        return new CapsuleShape(cframe.toWorldSpace(geometry));
-    }
 };
 
 
@@ -414,9 +394,6 @@ public:
         return Vector3::nan();
     }
 
-    virtual Shape* transform(const CoordinateFrame& cframe) const {
-        return new PlaneShape(cframe.toWorldSpace(geometry));
-    }
 };
 
 }
