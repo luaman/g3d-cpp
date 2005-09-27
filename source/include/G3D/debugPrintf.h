@@ -55,11 +55,11 @@ namespace G3D {
             // Windows can't handle really long strings sent to
             // the console, so we break the string.
             if (s.size() < MAX_STRING_LEN) {
-                OutputDebugString(s.c_str());
+                OutputDebugStringA(s.c_str());
             } else {
                 for (unsigned int i = 0; i < s.size(); i += MAX_STRING_LEN) {
                     std::string sub = s.substr(i, MAX_STRING_LEN);
-                    OutputDebugString(sub.c_str());
+                    OutputDebugStringA(sub.c_str());
                 }
             }
         #else
