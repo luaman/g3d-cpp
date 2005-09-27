@@ -98,6 +98,8 @@ Section "Add G3D Directories to MSVC6"
 
   SectionIn 1
 
+  MessageBox MB_YESNO "This installer can only handle 1K sized strings.  This limit applies to the Include and Library directory lists individually.$\nThe MSVC7 Include and Library directories are not in the registry and will not have this problem.$\nDo you want to continue?" IDNO No_include
+
   ReadRegStr $R0 HKEY_CURRENT_USER "SOFTWARE\Microsoft\DevStudio\6.0\Build System\Components\Platforms\Win32 (x86)\Directories" "Include Dirs"
   IfErrors No_include
 
@@ -230,18 +232,21 @@ Section "Add G3D Directories to MSVC7"
 
   SectionIn 1
 
+  ; Create temp file for piecemeal read/write
+  FileOpen $1 "$TEMP\g3d_vccomponents.dat" w
+  IfErrors No_71_dat
+
   ; put 7.0 location into $R0
-  Push "$PROFILE\Local Settings\Application Data\Microsoft\VisualStudio\7.0\VCComponents.dat"
-  Pop $R0
+  StrCpy $R0 "$PROFILE\Local Settings\Application Data\Microsoft\VisualStudio\7.0\VCComponents.dat"
   FileOpen $0 $R0 r
   IfErrors No_70_dat Read_vccomponents_loop
 No_70_dat:
   ; put 7.1 location into $R0
-  Push "$PROFILE\Local Settings\Application Data\Microsoft\VisualStudio\7.1\VCComponents.dat"
-  Pop $R0
+  StrCpy $R0 "$PROFILE\Local Settings\Application Data\Microsoft\VisualStudio\7.1\VCComponents.dat"
   FileOpen $0 $R0 r
   IfErrors No_71_dat
 Read_vccomponents_loop:    
+  ; Start reading in
   FileRead $0 $R1
   IfErrors Finished_vccomponents_read
   Push $R1
@@ -259,11 +264,11 @@ Add_dir_to_include:
   StrLen $R3 $R2
   IntCmpU 0 $R3 Finish_adding_include Add_line_to_temp
 Finish_adding_include:
-  StrLen $R3 $R1
-  IntOp $R3 $R3 - 2
-  StrCpy $R1 $R1 $R3
-  StrCpy $R1 "$R1;$INSTDIR\include$\r$\n"
-  Goto Add_line_to_temp
+  FileWrite $1 "Include Dirs="
+  StrCpy $R2 $R1 1024 13
+  FileWrite $1 "$INSTDIR\include;"
+  FileWrite $1 $R2
+  Goto Read_vccomponents_loop
 
 Check_library_dirs:
   Push $R1
@@ -279,26 +284,26 @@ Check_library_dirs:
   StrLen $R3 $R2
   IntCmpU 0 $R3 Finish_adding_lib Add_line_to_temp
 Finish_adding_lib:
-  StrLen $R3 $R1
-  IntOp $R3 $R3 - 2
-  StrCpy $R1 $R1 $R3
-  StrCpy $R1 "$R1;$INSTDIR\win32-7-lib$\r$\n"
-  Goto Add_line_to_temp
+  FileWrite $1 "Library Dirs="
+  StrCpy $R2 $R1 1024 13
+  FileWrite $1 "$INSTDIR\win32-7-lib;"
+  FileWrite $1 $R2
+  Goto Read_vccomponents_loop
   
 Add_line_to_temp:
-  StrCpy $R9 $R9$R1
+  FileWrite $1 $R1
   Goto Read_vccomponents_loop
 
 
 Finished_vccomponents_read:
   FileClose $0
-  FileOpen $0 $R0 w
-  IfErrors No_71_dat
-  FileWrite $0 $R9
-  Fileclose $0
+  Fileclose $1
+  CopyFiles /SILENT "$TEMP\g3d_vccomponents.dat" $R0
+  Goto Clean_end
 
 No_71_dat:
-
+  Fileclose $1
+Clean_end:
 
 SectionEnd
 
@@ -383,11 +388,37 @@ Section "Download G3D 6 Data Module"
 
   SectionIn 1
 
-  ExecShell open "http://prdownloads.sourceforge.net/g3d-cpp/g3d-data-6_00.zip?download"
+  StrCpy $0 "http://prdownloads.sourceforge.net/g3d-cpp/g3d-data-6_00.zip?download"
+
+  Call openLinkNewWindow
   
 SectionEnd
 
 
+
+;;
+;; Open browser to monitor releases
+;;
+Section "Monitor Final Releases"
+
+  StrCpy $0 "https://sourceforge.net/project/filemodule_monitor.php?filemodule_id=77698"
+  
+  Call openLinkNewWindow
+
+SectionEnd
+
+
+
+;;
+;; Open browser to monitor releases
+;;
+Section "Monitor Beta Releases"
+
+  StrCpy $0 "https://sourceforge.net/project/filemodule_monitor.php?filemodule_id=100364"
+  
+  Call openLinkNewWindow
+
+SectionEnd
 
 
 ;; Functions
@@ -433,3 +464,36 @@ SectionEnd
    Pop $R2
    Exch $R1
  FunctionEnd
+
+
+Function openLinkNewWindow
+  Push $3 
+  Push $2
+  Push $1
+  Push $0
+  ReadRegStr $0 HKCR "http\shell\open\command" ""
+# Get browser path
+    DetailPrint $0
+  StrCpy $2 '"'
+  StrCpy $1 $0 1
+  StrCmp $1 $2 +2 # if path is not enclosed in " look for space as final char
+    StrCpy $2 ' '
+  StrCpy $3 1
+  loop:
+    StrCpy $1 $0 1 $3
+    StrCmp $1 $2 found
+    StrCmp $1 "" found
+    IntOp $3 $3 + 1
+    Goto loop
+ 
+  found:
+    StrCpy $1 $0 $3
+    StrCmp $2 " " +2
+      StrCpy $1 '$1"'
+ 
+  Pop $0
+  Exec '$1 $0'
+  Pop $1
+  Pop $2
+  Pop $3
+FunctionEnd
