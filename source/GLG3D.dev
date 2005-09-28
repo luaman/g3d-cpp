@@ -1,7 +1,7 @@
 [Project]
 FileName=GLG3D.dev
 Name=GLG3D
-UnitCount=35
+UnitCount=36
 Type=2
 Ver=1
 ObjFiles=
@@ -389,6 +389,16 @@ BuildCmd=
 
 [Unit35]
 FileName=GLG3Dcpp\VertexProgram.cpp
+CompileCpp=1
+Folder=GLG3D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit36]
+FileName=GLG3Dcpp\Shape.cpp
 CompileCpp=1
 Folder=GLG3D
 Compile=1
