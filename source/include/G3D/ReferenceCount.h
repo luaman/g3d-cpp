@@ -237,13 +237,36 @@ public:
     inline ReferenceCountedPointer() : pointer(NULL) {}
 
     /**
-      Allow compile time subtyping rule 
+      Allow silent cast <i>to</i> the base class.
+    
+      <pre>
+        SubRef  s = new Sub();
+        BaseRef b = s;
+      </pre>
+
+      i.e., compile-time subtyping rule 
       RCP&lt;<I>T</I>&gt; &lt;: RCP&lt;<I>S</I>&gt; if <I>T</I> &lt;: <I>S</I>
      */
     template <class S>
     inline ReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(NULL) {
         setPointer(p.getPointer());
     }
+
+#   if (! defined(MSC_VER) || (MSC_VER >= 1300))
+    /**
+      Explicit cast to a subclass.  Acts like dynamic cast; the result will be NULL if
+      the cast cannot succeed.  Not supported on VC6.
+      <pre>
+        SubRef  s = new Sub();
+        BaseRef b = s;
+        s = b.downcast<Sub>();   // Note that the argument is the object type, not the pointer type.
+      </pre>
+      */
+    template <class S>
+    ReferenceCountedPointer<S> downcast() {
+        return ReferenceCountedPointer<S>(dynamic_cast<S*>(pointer));
+    }
+#   endif
 
     // We need an explicit version of the copy constructor as well or 
     // the default copy constructor will be used.
@@ -320,7 +343,8 @@ public:
  Weak pointers are commonly used in caches, where it is important to hold
  a pointer to an object without keeping that object alive solely for the
  cache's benefit (i.e., the object can be collected as soon as all
- pointers to it <B>outside</B> the cache are gone).
+ pointers to it <B>outside</B> the cache are gone).  They are also convenient
+ for adding back-pointers in tree and list structures.
 
  Weak pointers may become NULL at any point (when their target is collected).
  Therefore the only way to reference the target is to convert to a strong

@@ -51,6 +51,7 @@
         <ul><li>G3D::GLCaps::hasBug_glMultiTexCoord3fvARB
         <LI> G3D::GLCaps::hasBug_normalMapTexGen
         </ul>
+    <LI> G3D::ReferenceCountedPointer::downcast for non VC6 compilers
     <LI> Improved G3D::ReferenceCountedPointer documentation to make subclassing features clearer
     <LI> Moved typedef for uint into G3D namespace and into g3d (was in glg3d)
     <LI> G3D::Shape
