@@ -658,8 +658,8 @@ void Map::checkMoveNode(
         frac2       = 0;
     }
 
-    frac  = clamp(0, frac,  1);
-    frac2 = clamp(0, frac2, 1);
+    frac  = clamp(frac, 0,  1);
+    frac2 = clamp(frac2, 0, 1);
 
     float mid = start + (end - start) * frac;
     Vector3 midPos = startPos + (endPos - startPos) * frac;
