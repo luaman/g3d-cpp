@@ -80,7 +80,7 @@ Box::Box(
     const Vector3& min,
     const Vector3& max) {
 
-    init(min, max);
+    init(min.min(max), min.max(max));
 
 }
 

@@ -242,7 +242,10 @@ public:
        }
        
        System::alignedFree(data);
+       // Set to 0 in case this Array is global and gets referenced during app exit
        data = NULL;
+	   num = 0;
+       numAllocated = 0;
    }
 
 

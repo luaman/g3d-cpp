@@ -81,8 +81,6 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 	_inputCapture = false;
     _windowActive = false;
 
-    memset(_sdlKeys, 0, sizeof(_sdlKeys));
-
     if (!sdlKeysInitialized) {
         initWin32KeyMap();
     }
@@ -501,7 +499,8 @@ void Win32Window::close() {
 
 
 Win32Window::~Win32Window() {
-    close();
+    ::DestroyWindow(window);
+//    close();
     // Do not need to release private HDC's
 
     delete _diDevices;
@@ -1195,6 +1194,7 @@ static void mouseButton(bool down, int keyEvent, DWORD flags, GEvent& e) {
  Initializes SDL to Win32 key map
  */
 static void initWin32KeyMap() {
+    memset(_sdlKeys, 0, sizeof(_sdlKeys));
 
 	_sdlKeys[VK_BACK] = SDLK_BACKSPACE;
 	_sdlKeys[VK_TAB] = SDLK_TAB;

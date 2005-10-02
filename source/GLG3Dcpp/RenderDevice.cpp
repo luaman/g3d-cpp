@@ -98,6 +98,8 @@ void RenderDevice::setVARAreaMilestone() {
     MilestoneRef milestone = createMilestone("VAR Milestone");
     setMilestone(milestone);
 
+    debugAssert(currentVARArea.notNull());
+
     // Overwrite any preexisting milestone
     currentVARArea->milestone = milestone;
     currentVARArea->renderDevice = this;

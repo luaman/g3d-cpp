@@ -76,7 +76,10 @@ public:
     /**
      Returns the point where the Ray and plane intersect.  If there
      is no intersection, returns a point at infinity.
-     */
+
+      Planes are considered one-sided, so the ray will not intersect
+      a plane where the normal faces in the traveling direction.
+    */
     Vector3 intersection(const class Plane& plane) const;
 
     /**

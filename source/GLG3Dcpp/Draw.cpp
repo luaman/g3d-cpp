@@ -474,18 +474,19 @@ void Draw::cylinder(
                     renderDevice->setNormal(Vector3::unitY());
                     renderDevice->sendVertex(top);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        const double yaw0 = -y * G3D_PI * 2.0 / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + top);
                     }
                 renderDevice->endPrimitive();
 
+                // Bottom
                 renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
                     renderDevice->setNormal(-Vector3::unitY());
                     renderDevice->sendVertex(Vector3::zero());
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const double yaw0 = -y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + bot);

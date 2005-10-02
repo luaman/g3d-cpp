@@ -45,7 +45,7 @@ void VAR::init(
 	elementSize              = eltSize;
 
     size_t size              = elementSize * numElements;
-    _maxSize                  = size;
+    _maxSize                 = size;
 
     debugAssertM(
         (elementSize % sizeOfGLFormat(underlyingRepresentation)) == 0,
@@ -60,7 +60,7 @@ void VAR::init(
 	size_t pointerOffset = ((8 - (size_t)_pointer % 8) % 8);
 
     // Adjust pointer to new 8-byte alignment
-    _pointer = (uint*)_pointer + pointerOffset;
+    _pointer = (uint8*)_pointer + pointerOffset;
 
     size_t newAlignedSize = size + pointerOffset;
 
