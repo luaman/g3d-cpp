@@ -33,6 +33,12 @@
    </TD></TR></TABLE>
 
   <P>
+   Changes in 6.08:
+    <UL>
+      <LI>
+    </UL>
+
+  <P>
    Changes in 6.07:
    <UL>
     <LI> G3D::GWindow::makeCurrent
