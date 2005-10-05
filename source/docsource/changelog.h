@@ -38,6 +38,7 @@
     <UL>
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
+      <LI> Fix: [ 1313293 ] 6.08: TextInput gets symbol extendedType() wrong [Chris Demetriou]
     </UL>
 
   <P>

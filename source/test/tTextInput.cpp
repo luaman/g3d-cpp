@@ -92,7 +92,8 @@ void testTextInput() {
         t = ti.read();
         debugAssert(t.type() == Token::END);
     }
-    
+
+    {
 
     TextInput::Options opt;
     opt.cppComments = false;
@@ -175,6 +176,7 @@ void testTextInput() {
     debugAssert(s.string() == "bar");
 
     debugAssert(t.type() == Token::END);
+    }
     
     {
         TextInput ti(TextInput::FROM_STRING, "-1 +1 2.6");
@@ -220,4 +222,33 @@ void testTextInput() {
         n = ti.readNumber();
         debugAssert(n == -.51);
     }
+
+
+    {
+        G3D::TextInput::Options ti_opts;
+        const std::string str = "'";
+        ti_opts.singleQuotedStrings = false;
+
+        G3D::TextInput ti(G3D::TextInput::FROM_STRING, str, ti_opts);
+
+        G3D::Token t = ti.read();
+
+        /*
+        printf("t.string       = %s\n", t.string().c_str());
+        printf("t.type         = %d\n", t.type());
+        printf("t.extendedType = %d\n", t.extendedType());
+
+        printf("\n");
+        printf("SYMBOL         = %d\n", G3D::Token::SYMBOL);
+        printf("END            = %d\n", G3D::Token::END);
+
+        printf("\n");
+        printf("SYMBOL_TYPE    = %d\n", G3D::Token::SYMBOL_TYPE);
+        printf("END_TYPE       = %d\n", G3D::Token::END_TYPE);
+        */
+
+        alwaysAssertM(t.type() == G3D::Token::SYMBOL, "");
+        alwaysAssertM(t.extendedType() == G3D::Token::SYMBOL_TYPE, "");
+    }
+
 }

@@ -417,6 +417,7 @@ numLabel:
         // [A-Za-z_][A-Za-z_0-9]*
 
         t._type = Token::SYMBOL;
+        t._extendedType = Token::SYMBOL_TYPE;
         t._string = "";
         do {
             t._string += c;
@@ -441,6 +442,7 @@ numLabel:
 		} else {
 			t._string = c;
 			t._type = Token::SYMBOL;
+			t._extendedType = Token::SYMBOL_TYPE;
 		}
         return t;
 
