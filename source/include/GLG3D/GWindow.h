@@ -333,12 +333,20 @@ public:
 private:
     /** Tracks the current GWindow.  If back-to-back calls are made to make
         the same GWindow current, they are ignored. */
-    static const GWindow* current;
+    static const GWindow* m_current;
+
+    friend class RenderDevice;
+
+    class RenderDevice* m_renderDevice;
 
 protected:
+
+    GWindow() : m_renderDevice(NULL) {}
+
     /** Override this with the glMakeCurrent call appropriate for your window.*/
     virtual void reallyMakeCurrent() const {
     }
+    
 
 public:
     /** Closes the window and frees any resources associated with it.
@@ -346,21 +354,32 @@ public:
         your destructor.  Put initialization code (e.g. SDL_Init()) in
         the constructor. */
     virtual ~GWindow() {
-        if (current == this) {
+        if (m_current == this) {
             // Once this window is destroyed, there will be no current context.
-            current = NULL;
+            m_current = NULL;
         }
     }
 
+    /** 
+      If a RenderDevice has been created and initialized for this window, 
+      returns that renderDevice.  Otherwise returns NULL.
+      */
+    inline RenderDevice* renderDevice() const {
+        return m_renderDevice;
+    }
+
+    inline static const GWindow* current() {
+        return m_current;
+    }
     /**
       Makes the OpenGL context of this window current.  If you have multiple
       windows, call this before rendering to one of them.
       <b>beta</b>
      */
     inline void makeCurrent() const {
-        if (current != this) {
+        if (m_current != this) {
             reallyMakeCurrent();
-            current = this;
+            m_current = this;
         }
     }
 

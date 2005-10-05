@@ -25,7 +25,7 @@
 
 namespace G3D {
 
-const GWindow* GWindow::current = NULL;
+const GWindow* GWindow::m_current = NULL;
 
 
 RenderDevice* RenderDevice::lastRenderDeviceCreated = NULL;
@@ -356,7 +356,10 @@ bool RenderDevice::init(GWindow* window, Log* log) {
         enableAlphaWrite();
     }
 
-    setCaption("Graphics3D");
+    setCaption("3D");
+    
+    _window->m_renderDevice = this;
+
     return true;
 }
 

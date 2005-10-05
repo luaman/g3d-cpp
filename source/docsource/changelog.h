@@ -19,8 +19,7 @@
        <LI>All <A HREF="deprecated.html">deprecated</A> functionality will be removed.
        <LI>G3D::MeshAlg arguments will change-- e.g., many routines will no longer compute face/vertex normals for you
        <LI>SDL will no longer be automatically linked into the Win32 build
-       <LI>Application infrastructure (GApp, GApplet, Sky, etc.) will move to a separate library from GLG3D
-       <LI>Some contrib classes will move into the main API (e.g., SuperShader, ArticulatedModel, ToneMap)
+       <LI>Some contrib classes will move into the main API (e.g., SuperShader, ArticulatedModel, ToneMap, Matrix)
        <LI>GApplet methods will change to:
           <UL>
             <LI> doUserInput(UserInput*) (current doUserInput will be renamed and private)
@@ -29,13 +28,16 @@
             <LI> doNetwork()
             <LI> doLogic()
           </UL>
+       <LI>The libraries will be renamed to g3util.h / g3util.lib and g3d.h / g3d.lib to clarify their use
+       <LI>G3D::GEvent will become a standalone class instead of a typedef.  All event constants will be renamed.
      </UL>
    </TD></TR></TABLE>
 
   <P>
    Changes in 6.08:
     <UL>
-      <LI>
+      <LI> G3D::GWindow::renderDevice()
+      <LI> G3D::GWindow::current()
     </UL>
 
   <P>
