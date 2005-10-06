@@ -14,6 +14,7 @@ The 6.05 release team:
    <BR>Erik Cassel
    <BR>John Chisholm
    <BR>Jauhn Dabz
+   <BR>Chris Demetriou
    <BR>Dave Eberly
    <BR>Kevin Egan
    <BR>Cass Everitt

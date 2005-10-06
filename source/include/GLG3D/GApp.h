@@ -84,7 +84,35 @@ protected:
      */
     virtual void main() = 0;
 
+    friend class GApplet;
+    Stopwatch           m_graphicsWatch;
+    Stopwatch           m_logicWatch;
+    Stopwatch           m_networkWatch;
+    Stopwatch           m_userInputWatch;
+    Stopwatch           m_simulationWatch;
+
 public:
+
+    const Stopwatch graphicsWatch() const {
+        return m_graphicsWatch;
+    }
+
+    const Stopwatch logicWatch() const {
+        return m_logicWatch;
+    }
+
+    const Stopwatch networkWatch() const {
+        return m_networkWatch;
+    }
+
+    const Stopwatch userInputWatch() const {
+        return m_userInputWatch;
+    }
+
+
+    const Stopwatch simulationWatch() const {
+        return m_simulationWatch;
+    }
 
     /** Initialized to GAppSettings::dataDir, or if that is "<AUTO>", 
         to System::demoFindData(). To make your program
@@ -297,6 +325,7 @@ protected:
      */
     virtual void doSimulation(RealTime rdt) {};
 
+
     /**
      Override and implement.  The debugCamera's projection and object to world
      matrices are set by default; you can set other cameras as desired. 
@@ -304,9 +333,14 @@ protected:
      
 	 See <A HREF="../demos/main.cpp">demos/main.cpp</A> for an example of
 	 overriding lights.
-      
+
+     @deprecated
      */
     virtual void doGraphics() = 0;
+
+    virtual void doGraphics(RenderDevice* rd) {
+        doGraphics();
+    }
 
     /**
      Called from run.
@@ -335,7 +369,10 @@ protected:
     virtual void cleanup() {}
     
     /**
-     Override if you need to explicitly handle events.
+     It is recommended to override doUserInput instead of this method.
+
+     Override if you need to explicitly handle events in the order
+     they appear.
      Note that the userInput contains a record of all
      keys pressed/held, mouse, and joystick state, so 
      you do not have to override this method to handle
@@ -343,7 +380,7 @@ protected:
 
      The default implementation does nothing.
      */
-    virtual void processEvent(const SDL_Event& event) {};
+    virtual void processEvent(const SDL_Event& event) {}
 
     /**
      Updates the userInput.  Called from run.  Rarely needs to be
@@ -356,6 +393,11 @@ protected:
       you can override to handle events.
      */
     void doUserInput();
+
+    /**
+     Routine for processing user input from the previous frame.
+     */
+    virtual void doUserInput(UserInput* userInput) {}
 };
 
 }

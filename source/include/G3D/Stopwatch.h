@@ -44,11 +44,10 @@ private:
 
     /** Weighted fps */
     double                  emwaFPS;
+    double                  m_smoothFPS;
 
     /** Weighted duration */
     RealTime                emwaDuration;
-
-    Queue<double>           oldFPS;
 
     /** The overhead for calling into the class. */
     int64                   cycleOverhead;
@@ -84,7 +83,7 @@ public:
       This is useful if you
       are displaying the frame rate in real-time and want a stable (readable) number.*/
     double smoothFPS() const {
-        return emwaFPS;
+        return m_smoothFPS;
     }
 
     /** The elapsed cycle time between tick and tock.  An attempt is made to factor out all

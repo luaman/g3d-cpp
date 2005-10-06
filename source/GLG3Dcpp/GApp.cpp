@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2005-02-24
+ @edited  2005-10-06
  */
 
 #include "G3D/platform.h"
@@ -238,7 +238,7 @@ void GApp::renderDebugInfo() {
                     pos, size, color, Color3::black());
                 pos.y += size * 1.5;
 
-                std::string s = format("%d fps", iRound(renderDevice->getFrameRate()));
+                std::string s = format("%-4dfps", iRound(m_graphicsWatch.smoothFPS()));
                 debugFont->draw2D(s, pos, size, statColor, Color3::black());
 
                 pos.x += size * 8;
@@ -253,6 +253,40 @@ void GApp::renderDebugInfo() {
                 s = format("GL Calls: %d/%d Maj; %d/%d Min",
                     majGL, majAll, minGL, minAll);
                 debugFont->draw2D(s, pos, size, statColor, Color3::black());
+
+                pos.x = x;
+                pos.y += size * 1.5;
+
+                {
+                float g = m_graphicsWatch.smoothElapsedTime();
+                float n = m_networkWatch.smoothElapsedTime();
+                float s = m_simulationWatch.smoothElapsedTime();
+                float L = m_logicWatch.smoothElapsedTime();
+                float u = m_userInputWatch.smoothElapsedTime();
+
+                float total = g + n + s + L + u;
+
+                // We must have waited for the remaining time
+                float wait = 0;
+                if (m_graphicsWatch.smoothFPS() > 0) {
+                    wait = 1.0 / m_graphicsWatch.smoothFPS() - total;
+                    wait = max(0, wait);
+                }
+
+                float norm = 100.0 / (total + wait);
+
+                // Normalize the numbers
+                g *= norm;
+                n *= norm;
+                s *= norm;
+                L *= norm;
+                u *= norm;
+                wait *= norm;
+
+                std::string str = format("Time: %3.0f%% Gfx, %3.0f%% Sim, %3.0f%% Lgc, %3.0f%% Net, %3.0f%% UI, %3.0f%% wait", 
+                    g, s, L, n, u, wait);
+                debugFont->draw2D(str, pos, size, statColor, Color3::black());
+                }
 
                 pos.x = x;
                 pos.y += size * 3;
@@ -294,22 +328,32 @@ void GApplet::oneFrame() {
     RealTime timeStep = now - lastTime;
 
     // User input
+    app->m_userInputWatch.tick();
     doUserInput();
+    doUserInput(app->userInput);
+    app->m_userInputWatch.tock();
 
     // Network
+    app->m_networkWatch.tick();
     doNetwork();
+    app->m_networkWatch.tock();
 
     // Simulation
+    app->m_simulationWatch.tick();
     if (app->debugController.active()) {
         app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
     	app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
     }
     doSimulation(timeStep);
+    app->m_simulationWatch.tock();
 
     // Logic
+    app->m_logicWatch.tick();
     doLogic();
+    app->m_logicWatch.tock();
 
     // Graphics
+    app->m_graphicsWatch.tick();
     app->renderDevice->beginFrame();
         app->renderDevice->pushState();
             doGraphics();
@@ -317,6 +361,7 @@ void GApplet::oneFrame() {
         app->renderDebugInfo();
     app->renderDevice->endFrame();
     app->debugText.clear();
+    app->m_graphicsWatch.tock();
 
     if ((endApplet || app->endProgram) && app->window()->requiresMainLoop()) {
         app->window()->popLoopBody();

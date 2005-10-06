@@ -16,7 +16,7 @@
 namespace G3D {
 
 Stopwatch::Stopwatch() : inBetween(false), lastDuration(0), lastCycleCount(0), 
-    lastTockTime(-1), m_fps(0), emwaFPS(0), emwaDuration(0) {
+    lastTockTime(-1), m_fps(0), m_smoothFPS(0), emwaFPS(0), emwaDuration(0) {
     computeOverhead();
 }
 
@@ -60,17 +60,27 @@ void Stopwatch::tock() {
     if (lastTockTime != -1.0) {
         m_fps = 1.0 / (now - lastTockTime);
 
-        if (emwaFPS == 0) {
+        // Time smooth the average
+        emwaFPS = m_fps * 0.01 + emwaFPS * 0.99;
+
+        if (abs(emwaFPS - m_fps) > max(emwaFPS, m_fps) * 0.08) {
+            // The difference between emwa and m_fps is way off
+            // update emwa directly.
             emwaFPS = m_fps;
+        }
+        
+        // Update m_smoothFPS only when the value varies significantly
+        // We round so as to not mislead the user as to the accuracy of 
+        // the number.
+        if (m_smoothFPS == 0) {
+            m_smoothFPS = m_fps;
+        } else if (emwaFPS <= 10) {
+            if (::abs(m_smoothFPS - emwaFPS) > .75) {
+                m_smoothFPS = floor(emwaFPS * 10.0 + 0.5) / 10.0;
+            }
         } else {
-            if (m_fps <= 10) {
-                if (::abs(emwaFPS - m_fps) > .75) {
-                    emwaFPS = floor(m_fps * 10.0 + 0.5) / 10.0;
-                }
-            } else {
-                if (::abs(emwaFPS - m_fps) > 1) {
-                    emwaFPS = floor(m_fps + 0.5);
-                }
+            if (::abs(m_smoothFPS - emwaFPS) > 1.25) {
+                m_smoothFPS = floor(emwaFPS + 0.5);
             }
         }
     }

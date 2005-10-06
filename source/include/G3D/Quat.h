@@ -167,7 +167,7 @@ public:
 
 
     /** Is the magnitude nearly 1.0? */
-    inline bool isUnit(double tolerance = 1e-5) const {
+    inline bool isUnit(double tolerance = 1e-4) const {
         return abs(dot(*this) - 1.0) < tolerance * tolerance;
     }
     
