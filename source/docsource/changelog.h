@@ -36,6 +36,9 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::GApplet::doUserInput
+      <LI> G3D::GApp prints time for each component
+      <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
       <LI> Fix: [ 1313293 ] 6.08: TextInput gets symbol extendedType() wrong [Chris Demetriou]

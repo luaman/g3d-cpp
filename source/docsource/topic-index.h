@@ -285,7 +285,7 @@
         G3D::setAssertionHook,
         G3D::setFailureHook
 
-     <LI><B>I/O</B> &nbsp; &nbsp;
+     <LI><B>System</B> &nbsp; &nbsp;
         G3D::BinaryFormat, G3D::byteSize, G3D::binaryFormatOf,
         G3D::BinaryInput, 
         G3D::BinaryOutput, 
@@ -308,6 +308,7 @@
         G3D::prompt, 
         G3D::readFileAsString,
         G3D::System,
+        G3D::Stopwatch,
         G3D::resolveFilename,
         G3D::TextInput,
 		G3D::TextOutput,
