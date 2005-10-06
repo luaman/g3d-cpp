@@ -31,6 +31,8 @@ public:
 
     class App*          app;
 
+    Stopwatch           st;
+
     Demo(App* app);
 
     virtual ~Demo() {}
@@ -104,7 +106,7 @@ void Demo::doLogic() {
 
 
 void Demo::doGraphics() {
-
+st.tick();
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
@@ -134,6 +136,9 @@ void Demo::doGraphics() {
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(app->renderDevice, lighting);
     }
+st.tock();
+app->debugPrintf("%f fps, %f fps", st.FPS(), st.smoothFPS());
+app->debugPrintf("%f s, %f s", st.elapsedTime(), st.smoothElapsedTime());
 }
 
 

@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /GR /GX /Od /I "include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# SUBTRACT CPP /Z<none> /Fr
+# SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -252,6 +252,10 @@ SOURCE=.\G3Dcpp\Ray.cpp
 # Begin Source File
 
 SOURCE=.\G3Dcpp\Sphere.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\G3Dcpp\Stopwatch.cpp
 # End Source File
 # Begin Source File
 
@@ -520,6 +524,10 @@ SOURCE=.\include\G3D\Sphere.h
 # Begin Source File
 
 SOURCE=.\include\G3D\spline.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Stopwatch.h
 # End Source File
 # Begin Source File
 
