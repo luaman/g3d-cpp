@@ -15,8 +15,8 @@ extern "C" {
 	#include "../IJG/jconfig.h"
 	#include "../IJG/cdjpeg.h"
 #else
-	#include "../IJG/jconfig.h"
-	#include "../IJG/jpeglib.h"
+	#include "jconfig.h"
+	#include "jpeglib.h"
 #endif
 }
 
