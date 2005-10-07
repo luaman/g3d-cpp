@@ -167,8 +167,8 @@ public:
 
 
     /** Is the magnitude nearly 1.0? */
-    inline bool isUnit(double tolerance = 1e-4) const {
-        return abs(dot(*this) - 1.0) < tolerance * tolerance;
+    inline bool isUnit(double tolerance = 1e-5) const {
+        return abs(dot(*this) - 1.0) < tolerance;
     }
     
 
@@ -176,19 +176,44 @@ public:
         return sqrt(dot(*this));
     }
 
-
-    /** log q = [Av, 0] where q = [sin(A) * v, cos(A)].
-        Only for unit quaternions */
     inline Quat log() const {
+        if ((x == 0) && (y == 0) && (z == 0)) {
+            if (w > 0) {
+                return Quat(0, 0, 0, ::log(w));
+            } else if (w < 0) {
+                // Log of a negative number.  Multivalued, any number of the form
+                // (PI * v, ln(-q.w))
+                return Quat(G3D_PI, 0, 0, ::log(-w));
+            } else {
+                 // log of zero!
+                 return Quat(nan(), nan(), nan(), nan());
+            }
+        } else {
+            // Partly imaginary.
+            double imagLen = sqrt(x * x + y * y + z * z);
+            double len = sqrt(imagLen * imagLen + w * w);
+            double theta = atan2(imagLen, w);
+            double t = theta / imagLen;
+            return Quat(t * x, t * y, t * z, ::log(len));
+        }
+    }
+    /*
+    /** log q = [Av, 0] where q = [sin(A) * v, cos(A)].
+        Only for unit quaternions 
         debugAssertM(isUnit(), "Log only defined for unit quaternions");
         // Solve for A in q = [sin(A)*v, cos(A)]
         Vector3 u(x, y, z);
         double len = u.magnitude();
+
+        if (len == 0.0) {
+            return 
+        }
         double A = atan2((double)w, len);
         Vector3 v = u / len;
         
         return Quat(v * A, 0);
     }
+    */
 
     /** exp q = [sin(A) * v, cos(A)] where q = [Av, 0].
         Only defined for pure-vector quaternions */

@@ -36,6 +36,7 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::Quat::log for non-unit quats and for real-only quats.
       <LI> G3D::GApplet::doUserInput
       <LI> G3D::GApp prints time for each component
       <LI> G3D::Stopwatch
