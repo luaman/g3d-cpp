@@ -15,8 +15,9 @@
 
 namespace G3D {
 
-Stopwatch::Stopwatch() : inBetween(false), lastDuration(0), lastCycleCount(0), 
-    lastTockTime(-1), m_fps(0), m_smoothFPS(0), emwaFPS(0), emwaDuration(0) {
+Stopwatch::Stopwatch() : inBetween(false), lastTockTime(-1), 
+    lastDuration(0), lastCycleCount(0), m_fps(0), emwaFPS(0),
+    m_smoothFPS(0), emwaDuration(0) {
     computeOverhead();
 }
 
@@ -75,11 +76,11 @@ void Stopwatch::tock() {
         if (m_smoothFPS == 0) {
             m_smoothFPS = m_fps;
         } else if (emwaFPS <= 10) {
-            if (::abs(m_smoothFPS - emwaFPS) > .75) {
+            if (::fabs(m_smoothFPS - emwaFPS) > .75) {
                 m_smoothFPS = floor(emwaFPS * 10.0 + 0.5) / 10.0;
             }
         } else {
-            if (::abs(m_smoothFPS - emwaFPS) > 1.25) {
+            if (::fabs(m_smoothFPS - emwaFPS) > 1.25) {
                 m_smoothFPS = floor(emwaFPS + 0.5);
             }
         }
@@ -91,3 +92,4 @@ void Stopwatch::tock() {
 }
 
 }
+

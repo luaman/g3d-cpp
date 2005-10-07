@@ -27,7 +27,7 @@ libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Matrix4.cpp \
                          ../../../source/G3Dcpp/MeshAlg.cpp \
                          ../../../source/G3Dcpp/MeshAlgAdjacency.cpp \
-					     ../../../source/G3Dcpp/MeshAlgWeld.cpp \
+                         ../../../source/G3Dcpp/MeshAlgWeld.cpp \
                          ../../../source/G3Dcpp/NetworkDevice.cpp \
                          ../../../source/G3Dcpp/NetAddress.cpp \
                          ../../../source/G3Dcpp/PhysicsFrame.cpp \
@@ -35,6 +35,7 @@ libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Quat.cpp \
                          ../../../source/G3Dcpp/Ray.cpp \
                          ../../../source/G3Dcpp/Sphere.cpp \
+                         ../../../source/G3Dcpp/Stopwatch.cpp \
                          ../../../source/G3Dcpp/System.cpp \
                          ../../../source/G3Dcpp/TextInput.cpp \
                          ../../../source/G3Dcpp/TextOutput.cpp \
