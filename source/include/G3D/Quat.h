@@ -192,7 +192,7 @@ public:
             // Partly imaginary.
             double imagLen = sqrt(x * x + y * y + z * z);
             double len = sqrt(imagLen * imagLen + w * w);
-            double theta = atan2(imagLen, w);
+            double theta = atan2(imagLen, (double)w);
             double t = theta / imagLen;
             return Quat(t * x, t * y, t * z, ::log(len));
         }
