@@ -210,24 +210,6 @@ public:
      */
     static bool GLCaps::hasBug_normalMapTexGen();
 
-
-#if 0 // TODO: morgan, remove?
-
-    /**
-     Returns true if GL_VERTEX_BUFFER_OBJECTs, which are supposed to be faster
-     than rendering out of main memory, are actually slower than main memory 
-     on this machine.  If this returns true, then glDrawArrays out of main memory
-     was faster than VBO and the bug is present.  On cards with this bug, it has
-     also been observed that glBegin/glEnd is even faster than glDrawArrays, which
-     is a second bug not currently detected by GLCaps.
-
-     Call after OpenGL is intialized.  Will render on the backbuffer but not make
-     the backbuffer visible.  Safe to call multiple times; the result is memoized.
-
-     Returns false if VBO is not supported at all on this card.
-     */
-    static bool hasBug_slowVBO();
-#endif
 };
 
 

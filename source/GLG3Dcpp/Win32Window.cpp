@@ -365,6 +365,8 @@ void Win32Window::init(HWND hwnd) {
     if (!wglMakeCurrent(_hDC, _glContext)) {
         alwaysAssertM(false, "Failed to make OpenGL context current.");
     }
+
+    loadExtensions();
 }
 
 

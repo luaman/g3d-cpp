@@ -271,6 +271,8 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
             debugAssert(joy[i]);
         }
 	}
+
+    loadExtensions();
 }
 
 

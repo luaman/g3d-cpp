@@ -111,6 +111,12 @@ protected:
     /** Subclasses should call from their idle function. */
     void executeLoopBody();
 
+    /** Subclasses are required to call this
+        from the end of their constructor/create function to
+        finish initializing OpenGL. 
+    */
+    void loadExtensions();
+
 public:
 
 

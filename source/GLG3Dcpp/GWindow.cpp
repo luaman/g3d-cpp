@@ -4,13 +4,19 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-11-16
- @edited  2004-11-16
+ @edited  2005-10-16
  */
 
 #include "GLG3D/GWindow.h"
 #include "GLG3D/GApp.h"
+#include "GLG3D/GLCaps.h"
 
 namespace G3D {
+
+void GWindow::loadExtensions() {
+    GLCaps::loadExtensions();
+}
+
 
 void GWindow::executeLoopBody() {
     if (notDone()) {
