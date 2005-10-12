@@ -59,7 +59,8 @@ def dispatchOnTarget(validTargets, help):
 """Regular explression patterns that will be excluded from copying by 
     copyIfNewer."""
 _excludeFromCopyingPatterns =\
-    ['\.ncb$', \
+    ['\^.svn$', \
+     '\.ncb$', \
     '\.opt$', \
     '\.ilk$', \
     '\.pdb$', \
