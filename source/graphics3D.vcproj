@@ -962,6 +962,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="G3Dcpp\Stopwatch.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="G3Dcpp\stringutils.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1332,6 +1352,9 @@
 			</File>
 			<File
 				RelativePath="include\G3D\spline.h">
+			</File>
+			<File
+				RelativePath="include\G3D\Stopwatch.h">
 			</File>
 			<File
 				RelativePath="include\G3D\stringutils.h">
