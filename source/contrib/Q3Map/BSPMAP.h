@@ -416,6 +416,7 @@ private:
     Array<int>          leafBrushArray;
 
     BSPModel            staticModel;
+    Array<BSPModel>     dynamicModels;
     Vector3             lightVolumesGrid;
     Vector3             lightVolumesInvSizes;
     int                 lightVolumesCount;
@@ -475,6 +476,7 @@ private:
     void loadLeafBrushes    (BinaryInput& bi, const class BSPLump& lump);
     void loadPlanes         (BinaryInput& bi, const class BSPLump& lump);
     void loadStaticModel    (BinaryInput& bi, const class BSPLump& lump);
+    void loadDynamicModels  (BinaryInput& bi, const class BSPLump& lump);
     void loadLightVolumes   (BinaryInput& bi, const class BSPLump& lump);
 
     void loadQ1VisData      (BinaryInput& bi, const class BSPLump& lump);

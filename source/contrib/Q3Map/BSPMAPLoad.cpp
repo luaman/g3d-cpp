@@ -236,6 +236,7 @@ void Map::loadQ3(BinaryInput& bi, const std::string& resPath) {
     loadLeafBrushes  (bi, lumps[BSPLump::Q3_LEAFBRUSHES_LUMP]);
     loadPlanes       (bi, lumps[BSPLump::Q3_PLANES_LUMP]);
     loadStaticModel  (bi, lumps[BSPLump::Q3_MODELS_LUMP]);
+    loadDynamicModels(bi, lumps[BSPLump::Q3_MODELS_LUMP]);
     loadLightVolumes (bi, lumps[BSPLump::Q3_LIGHTVOLUMES_LUMP]);
     loadQ3VisData    (bi, lumps[BSPLump::Q3_VISDATA_LUMP]);
 }
@@ -485,7 +486,6 @@ void Map::loadTextures(
         }
 
         std::string filename = resPath + textureData[ct].name;
-
         // The filename doesn't have an extension.  See which extension is
         // available.
     
@@ -712,10 +712,9 @@ void Map::loadPlanes(
 void Map::loadStaticModel(
     BinaryInput&           bi,
     const BSPLump&         lump) {
-    
     bi.setPosition(lump.offset);
     bi.readBytes(sizeof(BSPModel), &staticModel);
-
+	
     Vector3 a = staticModel.min * LOAD_SCALE;
     Vector3 b = staticModel.max * LOAD_SCALE;
     swizzle(a);
@@ -726,6 +725,39 @@ void Map::loadStaticModel(
 
     debugAssert(staticModel.max.y > staticModel.min.y);
     debugAssert(staticModel.max.z > staticModel.min.z);
+}
+
+void Map::loadDynamicModels(
+    BinaryInput&           bi,
+    const BSPLump&         lump) {
+	int totalModels = lump.length/sizeof(BSPModel);
+	if(totalModels < 2){
+		return;
+	}
+	BSPModel* modelData = new BSPModel[totalModels];
+    bi.setPosition(lump.offset);
+    bi.readBytes(totalModels * sizeof(BSPModel), modelData);
+	for(int i = 1; i < totalModels; ++i){
+		BSPModel curr;
+		Vector3 a = modelData[i].min * LOAD_SCALE;
+		Vector3 b = modelData[i].max * LOAD_SCALE;
+		swizzle(a);
+		swizzle(b);
+
+		curr.min = a.min(b);
+		curr.max = a.max(b);
+
+		curr.brushIndex = modelData[i].brushIndex;
+		curr.faceIndex = modelData[i].faceIndex;
+		curr.numOfBrushes = modelData[i].numOfBrushes;
+		curr.numOfFaces = modelData[i].numOfFaces;
+
+		debugAssert(curr.max.y > curr.min.y);
+		debugAssert(curr.max.z > curr.min.z);
+
+		dynamicModels.append(curr);
+	}
+	delete[] modelData;
 }
 
 
@@ -750,7 +782,8 @@ void Map::loadLightVolumes(
 }
 
 static double log2(double x) {
-    return log(x) / log(2);
+	//double two =2.0;
+    return log(x) / log(2.0);
 }
 /**
  Sets the specified bit of the byte array.

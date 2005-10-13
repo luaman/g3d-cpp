@@ -48,6 +48,7 @@ The 6.05 release team:
    <BR>Tomas Moller
    <BR>Nick Musurca
    <BR>Edward Resnick
+   <BR>Alex Rice
    <BR>Jack Ritter
    <BR>Nate Robbins
    <BR>Joshua Schpok

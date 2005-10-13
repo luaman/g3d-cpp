@@ -37,26 +37,6 @@
 
 
 /**
-  @file demos/main.cpp
-
-  This is a sample main.cpp to get you started with G3D.  It is
-  designed to make writing an application easy.  Although the
-  GApp/GApplet infrastructure is helpful for most projects,
-  you are not restricted to using it-- choose the level of
-  support that is best for your project (see the G3D Map in the
-  documentation).
-
-  @author Morgan McGuire, matrix@graphics3d.com
- */
-
-#include <G3DAll.h>
-
-#if G3D_VER < 60500
-    #error Requires G3D 6.05
-#endif
-
-
-/**
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
  */
@@ -120,8 +100,6 @@ public:
     ~App();
 };
 
-const std::string App::QUAKE_DIR = "d:/users/morgan/projects/bsp/distrib/data/";
-
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
@@ -178,16 +156,12 @@ void App::main() {
     clipMovement = true;
 
     sky = Sky::create(renderDevice, dataDir + "sky/");
-
     debugCamera.setNearPlaneZ(-.1);
     debugCamera.setFarPlaneZ(-inf());
-
     debugController.init(renderDevice, userInput);
     debugController.setMoveRate(500 * BSPMAP::LOAD_SCALE);
     debugController.setActive(true);
-
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
-
     // Load the map
     map = new BSPMAP::Map();
     bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_ricochet.bsp");
