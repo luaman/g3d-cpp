@@ -9,7 +9,8 @@
 #ifndef G3D_ATOMICINT32_H
 #define G3D_ATOMICINT32_H
 
-#include "platform.h"
+#include "G3D/platform.h"
+#include "G3D/g3dmath.h"
 
 namespace G3D {
 
@@ -27,8 +28,13 @@ namespace G3D {
 //TODO: PPC
 class AtomicInt32 {
 private:
+    friend class AtomicInt32;
 
-    volatile int32           value;
+#if defined (G3D_WIN32)
+    volatile LONG           _value;
+#else
+    volatile int32          _value;
+#endif
 
 public:
 
@@ -37,65 +43,65 @@ public:
 #       if defined(G3D_WIN32)
             // Asignment is done this way because APR does it this way.
             // Morgan believes that volatile should be sufficient, however.
-            InterlockedExchange(&value, x);
+            InterlockedExchange(&_value, x);
 #       elif defined(G3D_LINUX)
-            value = x;
+            _value = x;
 #       elif defined(G3D_OSX)
-            value = x;
+            _value = x;
 #       endif
     }
 
     /** Atomic set */
-    inline AtomicInt32(const Atomic& x) {
+    inline AtomicInt32(const AtomicInt32& x) {
 #       if defined(G3D_WIN32)
-            InterlockedExchange(&value, x.value);
+            InterlockedExchange(&_value, x._value);
 #       elif defined(G3D_LINUX)
-            value = x.value;
+            _value = x._value;
 #       elif defined(G3D_OSX)
-            value = x;
+            _value = x;
 #       endif
     }
 
     /** Atomic set */
     inline const AtomicInt32& operator=(const int32 x) {
 #       if defined(G3D_WIN32)
-            InterlockedExchange(&value, x);
+            InterlockedExchange(&_value, x);
 #       elif defined(G3D_LINUX)
-            value = x;
+            _value = x;
 #       elif defined(G3D_OSX)
-            value = x;
+            _value = x;
 #       endif
         return *this;
     }
 
     /** Atomic set */
-    inline const void operator=(const Atomic& x) {
+    inline const void operator=(const AtomicInt32& x) {
 #       if defined(G3D_WIN32)
-            InterlockedExchange(&value, x.value);
+            InterlockedExchange(&_value, x._value);
 #       elif defined(G3D_LINUX)
-            value = x.value;
+            _value = x._value;
 #       elif defined(G3D_OSX)
-            value = x.value;
+            _value = x._value;
 #       endif
     }
 
     /** Returns the current value */
     inline const int32 value() const {
-        return value;
+        return _value;
     }
 
     /** Returns the old value, before the add. */
     inline int32 add(const int32 x) {
 #       if defined(G3D_WIN32)
 
-            return InterlockedExchangeAdd(&value, x);
+            return InterlockedExchangeAdd(&_value, x);
 
 #       elif defined(G3D_LINUX)
 
             int32 old;
             asm volatile ("lock; xaddl %0,%1"
-                  : "=r"(old), "=m"(value) /* outputs */
-                  : "0"(x), "m"(value)   /* inputs */
+                  : "=r"(old), "=m"(_value) /* outputs */
+                  : "0"(x), "m"(_value)   /* inputs */
                   : "memory", "cc");
             return old;
             
@@ -109,7 +115,7 @@ public:
                   "bne-   0b"
 
                   : "=&r" (old), "=&r" (temp)
-                  : "b" (value), "r" (x)
+                  : "b" (_value), "r" (x)
                   : "memory", "cc");
 
              return old;
@@ -118,13 +124,13 @@ public:
 
     /** Returns old value. */
     inline int32 sub(const int32 x) {
-        return exchangeAdd(-x);
+        return add(-x);
     }
 
     inline void increment() {
 #       if defined(G3D_WIN32)
             // Note: returns the newly incremented value
-            InterlockedIncrement(&value);
+            InterlockedIncrement(&_value);
 #       elif defined(G3D_LINUX)
             add(1);
 #       elif defined(G3D_OSX)
@@ -136,19 +142,19 @@ public:
     inline uint32 decrement() {
 #       if defined(G3D_WIN32)
             // Note: returns the newly decremented value
-            return InterlockedDecrement(&value) != 0;
+            return InterlockedDecrement(&_value) != 0;
 #       elif defined(G3D_LINUX)
             unsigned char nz;
 
             asm volatile ("lock; decl %1;\n\t"
                           "setnz %%al"
                           : "=a" (nz)
-                          : "m" (value)
+                          : "m" (_value)
                           : "memory", "cc");
             return nz;
 #       elif defined(G3D_OSX)
             // TODO: PPC
-            return (--value) != 0;
+            return (--_value) != 0;
 #       endif
     }
 
@@ -163,12 +169,12 @@ public:
      */ 
     inline int32 compareAndSet(const int32 comperand, const int32 exchange) {
 #       if defined(G3D_WIN32)
-            return InterlockedCompareExchange(&value, exchange, comperand);
+            return InterlockedCompareExchange(&_value, exchange, comperand);
 #       elif defined(G3D_LINUX)
             int32 ret;
             asm volatile ("lock; cmpxchgl %1, %2"
                           : "=a" (ret)
-                          : "r" (exchange), "m" (value), "0"(comperand)
+                          : "r" (exchange), "m" (_value), "0"(comperand)
                           : "memory", "cc");
             return ret;
 #       elif defined(G3D_OSX)
@@ -185,7 +191,7 @@ public:
                           "1:"                       /* exit local label      */
                           
                           : "=&r"(old)                        /* output      */
-                          : "b" (&value), "r" (exchange), "r"(comperand)    /* inputs      */
+                          : "b" (&_value), "r" (exchange), "r"(comperand)    /* inputs      */
                           : "memory", "cc");                   /* clobbered   */
             return old;
 #       endif
