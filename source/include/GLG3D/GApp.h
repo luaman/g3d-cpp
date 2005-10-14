@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2005-02-20
+ @edited  2005-10-20
  */
 
 #ifndef G3D_GAPP_H
@@ -257,7 +257,46 @@ private:
 
     RealTime            now, lastTime;
 
+    double              m_simTimeRate;
+    RealTime            m_realTime;
+    SimTime             m_simTime;
+
 public:
+
+    /** Amount of time that passes in simTime for every second of realTime.
+        e.g., 1.0 == real-time, 2.0 == fast, 0.5 == slow, 0.0 = stop time.
+        Default is 1.0.
+        */
+    inline double simTimeRate() const {
+        return m_simTimeRate;
+    }
+
+    virtual void setSimTimeRate(double s) {
+        m_simTimeRate = s;
+    }
+
+    /** Accumulated wall-clock time since init was called on this applet. 
+        Since this time is accumulated, it may drift from the true
+        wall-clock obtained by System::time().*/
+    inline RealTime realTime() const {
+        return m_realTime;
+    }
+
+    virtual void setRealTime(RealTime r) {
+        m_realTime = r;
+    }
+
+    /** In-simulation time since init was called on this applet.  
+        Takes into account simTimeSpeed.  Automatically incremented
+        after doSimulation.
+      */
+    inline SimTime simTime() const {
+        return m_simTime;
+    }
+
+    virtual void setSimTime(SimTime s) {
+        m_simTime = s;
+    }
 
     /** @param _app This is usually your own subclass of GApp.*/
     GApplet(GApp* _app);
@@ -321,9 +360,13 @@ protected:
         
      Default implementation does nothing.
 
+     simTime() and realTime() are incremented after doSimulation is called, so 
+     at the beginning of call the current time is the end of the previous frame.
+
      @param rdt Elapsed real-world time since the last call to doSimulation.
+     @param sdt Elapsed sim-world time since the last call to doSimulation.
      */
-    virtual void doSimulation(RealTime rdt) {};
+    virtual void doSimulation(RealTime rdt, SimTime sdt) {}
 
 
     /**
@@ -358,9 +401,13 @@ protected:
 
     /**
      Invoked every time run is called.  Default implementation
-     does nothing.
+     resets timers and simTimeRate.
      */
-    virtual void init() {}
+    virtual void init() {
+        m_simTime     = 0;
+        m_realTime    = 0;
+        m_simTimeRate = 1.0;
+    }
 
     /**
      Invoked at the end of every run call.  Default implementation

@@ -36,6 +36,7 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::GApplet tracks real and simulation time.
       <LI> contrib/Q3Map updated to correctly render instanced objects [Alex Rice]
       <LI> G3D::GWindow subclasses now required to invoke GWindow::loadExtensions
       <LI> G3D::Quat::log for non-unit quats and for real-only quats.

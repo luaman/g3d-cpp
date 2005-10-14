@@ -305,7 +305,7 @@ void GApp::renderDebugInfo() {
 //////////////////////////////////////////////
 
 
-GApplet::GApplet(GApp* _app) : app(_app) {
+GApplet::GApplet(GApp* _app) : app(_app), m_simTimeRate(1.0), m_simTime(0), m_realTime(0) {
     debugAssert(app != NULL);
 }
 
@@ -344,7 +344,11 @@ void GApplet::oneFrame() {
         app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
     	app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
     }
-    doSimulation(timeStep);
+    float rate = simTimeRate();    
+    doSimulation(timeStep, timeStep * rate);
+    setRealTime(realTime() + timeStep);
+    setSimTime(simTime() + timeStep * rate);
+
     app->m_simulationWatch.tock();
 
     // Logic
