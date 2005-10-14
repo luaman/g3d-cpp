@@ -93,24 +93,24 @@ protected:
 
 public:
 
-    const Stopwatch graphicsWatch() const {
+    const Stopwatch& graphicsWatch() const {
         return m_graphicsWatch;
     }
 
-    const Stopwatch logicWatch() const {
+    const Stopwatch& logicWatch() const {
         return m_logicWatch;
     }
 
-    const Stopwatch networkWatch() const {
+    const Stopwatch& networkWatch() const {
         return m_networkWatch;
     }
 
-    const Stopwatch userInputWatch() const {
+    const Stopwatch& userInputWatch() const {
         return m_userInputWatch;
     }
 
 
-    const Stopwatch simulationWatch() const {
+    const Stopwatch& simulationWatch() const {
         return m_simulationWatch;
     }
 

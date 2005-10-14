@@ -36,6 +36,7 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::Queue::fastClear [Chris Demetriou]
       <LI> G3D::GLCaps bug tests now run in a separate GL context [Erik Cassel]
       <LI> G3D::GApplet tracks real and simulation time.
       <LI> contrib/Q3Map updated to correctly render instanced objects [Alex Rice]
@@ -46,6 +47,7 @@
       <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
+      <LI> Fix: [ 1326423 ] G3D::Queue::_copy broken [Chris Demetriou]
       <LI> Fix: [ 1313293 ] 6.08: TextInput gets symbol extendedType() wrong [Chris Demetriou]
     </UL>
 

@@ -47,10 +47,11 @@ void Stopwatch::tock() {
     System::endCycleCount(cycleStart);
     RealTime now = System::time();
     lastDuration = now - timeStart;
-    if (emwaDuration == 0) {
+    if (abs(emwaDuration - lastDuration) > max(emwaDuration, lastDuration) * 0.50) {
+        // Off by more than 50%
         emwaDuration = lastDuration;
     } else {
-        emwaDuration = lastDuration * 0.01 + emwaDuration * 0.99;
+        emwaDuration = lastDuration * 0.05 + emwaDuration * 0.95;
     }
 
     lastCycleCount = cycleStart - cycleOverhead;

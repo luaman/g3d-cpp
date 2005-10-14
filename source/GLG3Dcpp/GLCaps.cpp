@@ -3,17 +3,21 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-09-10
+  @edited  2005-10-16
 */
 
 #include "GLG3D/GLCaps.h"
+#include "GLG3D/GWindow.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
 #include <sstream>
 
 #ifdef G3D_WIN32
-    #include <winver.h>
+#   include <winver.h>
+#   include "GLG3D/Win32Window.h"
+#else
+#   include "GLG3D/X11Window.h"
 #endif
 
 namespace G3D {
@@ -550,6 +554,42 @@ const std::string& GLCaps::renderer() {
 
 
 ////////////////////////////////////////////////////////////
+
+/** 
+ When constructed, makes a new OpenGL window that can be used
+ for performing rendering tests. 
+*/
+class TempGLContext {
+
+    /** Old current window.  Will be restored on exit if not null */
+    const GWindow* const current;
+
+    GWindow* tempWindow;
+
+public:
+
+    TempGLContext() : current(GWindow::current()) {
+        GWindowSettings settings;
+        settings.visible = false;
+#       ifdef G3D_WIN32
+            tempWindow = Win32Window::create(settings);
+#       else
+            tempWindow = X11Window::create(settings);
+#       endif
+        tempWindow->makeCurrent();
+    }
+
+    ~TempGLContext() {
+        delete tempWindow;
+
+        // Restore the old window
+        if (current != NULL) {
+            current->makeCurrent();
+        }
+    }
+};
+ 
+
 /** Tests for hasBug_glMultiTexCoord3fvARB and hasBug_glNormalMapTexGenARB */
 static void cubeMapBugs(bool& mtc, bool& nmt);
 
@@ -577,6 +617,8 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
     } else {
         initialized = true;
     }
+
+    TempGLContext tempContext;
 
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
