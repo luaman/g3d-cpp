@@ -69,12 +69,17 @@ private:
      */
     int                 numAllocated;
 
+    /** If a clear was needed, assumes it already occured */
     void _copy(const Queue& other) {
-        data = (T*)System::malloc(sizeof(T) * other.numAllocated, 16);
+        debugAssert(data == NULL);
+        data = (T*)System::malloc(sizeof(T) * other.numAllocated);
         debugAssert(data);
+        head = other.head;
+        num = other.num;
+        numAllocated = other.numAllocated;
 
         FIND_ENDS;
-    	
+
         for (int i = head; i < firstEnd; ++i) {
             new (data + i)T(other.data[i]);
         }
@@ -133,18 +138,18 @@ private:
 
 public:
 
-    Queue() {
-        numAllocated = 0;
-        head         = 0;
-        num          = 0;
-        data         = NULL;
+    Queue() : 
+      numAllocated(0),
+      head(0),
+      num(0),
+      data(NULL) {
     }
 
 
     /**
     Copy constructor
     */
-    Queue(const Queue& other) {
+    Queue(const Queue& other) : data(NULL) {
        _copy(other);
     }
 

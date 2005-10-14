@@ -245,8 +245,24 @@ static void check(Queue<int>& q) {
 }
 
 
+static void testCopy() {
+    Queue<int> q1, q2;
+    for (int i = 0; i < 10; ++i) {
+        q1.pushBack(i);
+    }
+
+    q2 = q1;
+
+    for (int i = 0; i < 10; ++i) {
+        debugAssert(q2[i] == q1[i]);
+    }
+}
+
+
 void testQueue() {
     printf("Queue ");
+
+    testCopy();
 
     {
         Queue<int> q;
