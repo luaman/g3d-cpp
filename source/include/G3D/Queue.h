@@ -240,9 +240,14 @@ public:
    }
 
    /**
-    Removes all elements.
+    Removes all elements (invoking their destructors).
+
+    @param freeStorage If false, the underlying array is not deallocated
+    (allowing fast push in the future), however, the size of the Queue
+    is reported as zero.
+    
     */
-   void clear() {
+   void clear(bool freeStorage = true) {
 
        FIND_ENDS;
        
@@ -257,10 +262,17 @@ public:
        }
        
        num = 0;
-       numAllocated = 0;
        head = 0;
-       System::free(data);
-       data = NULL;
+       if (freeStorage) {
+           numAllocated = 0;
+           System::free(data);
+           data = NULL;
+       }
+   }
+
+   /** Clear without freeing the underlying array. */
+   void fastClear() {
+       clear(false);
    }
 
    /**
