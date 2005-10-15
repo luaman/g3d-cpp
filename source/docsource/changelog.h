@@ -47,6 +47,7 @@
       <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
+      <LI> Fix: G3D::Draw::rect2DBorder inner border was 1 pixel too thick.
       <LI> Fix: [ 1326173 ] Win32Window::init should call makeCurrent.[Erik Cassel]
       <LI> Fix: [ 1326423 ] G3D::Queue::_copy broken [Chris Demetriou]
       <LI> Fix: [ 1313293 ] 6.08: TextInput gets symbol extendedType() wrong [Chris Demetriou]

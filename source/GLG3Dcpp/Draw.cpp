@@ -1087,7 +1087,7 @@ void Draw::rect2DBorder(
     //
     //
     const Rect2D outer = rect.border(iFloor(outerBorder));
-    const Rect2D inner = rect.border(iFloor(-innerBorder)); 
+    const Rect2D inner = rect.border(iFloor(1 - innerBorder)); 
 
     rd->pushState();
     rd->setColor(color);
