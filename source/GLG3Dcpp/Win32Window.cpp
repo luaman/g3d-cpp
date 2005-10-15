@@ -362,9 +362,8 @@ void Win32Window::init(HWND hwnd) {
 
 	alwaysAssertM(_glContext != NULL, "Failed to create OpenGL context.");
 
-    loadExtensions();
-
     makeCurrent();
+    loadExtensions();
 }
 
 
