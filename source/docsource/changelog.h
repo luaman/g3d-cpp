@@ -37,6 +37,7 @@
    Changes in 6.08:
     <UL>
       <LI> G3D::Queue::fastClear [Chris Demetriou]
+      <LI> G3D::Rect2D::x0y1 and x1y0
       <LI> G3D::GLCaps bug tests now run in a separate GL context [Erik Cassel]
       <LI> G3D::GApplet tracks real and simulation time.
       <LI> contrib/Q3Map updated to correctly render instanced objects [Alex Rice]

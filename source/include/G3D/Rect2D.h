@@ -138,6 +138,14 @@ public:
         return min;
     }
 
+    inline Vector2 x1y0() const {
+        return Vector2(max.x, min.y);
+    }
+
+    inline Vector2 x0y1() const {
+        return Vector2(min.x, max.y);
+    }
+
     /** Max,max corner */
     inline Vector2 x1y1() const {
         return max;
