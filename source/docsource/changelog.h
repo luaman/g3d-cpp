@@ -36,6 +36,7 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::Draw::fastRect2D
       <LI> G3D::System::outOfMemoryCallback
       <LI> G3D::Queue::fastClear [Chris Demetriou]
       <LI> G3D::Rect2D::x0y1 and x1y0

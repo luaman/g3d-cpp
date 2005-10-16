@@ -1069,6 +1069,32 @@ void Draw::rect2D(
 }
 
 
+void Draw::fastRect2D(
+    const Rect2D& rect,
+    RenderDevice* rd,
+    const Color4& color) {
+
+    static const Rect2D texCoord = Rect2D::xywh(0, 0, 1, 1);
+    rd->setColor(color);
+    rd->beginPrimitive(RenderDevice::QUADS);
+        
+        rd->setTexCoord(0, texCoord.x0y0());
+        rd->sendVertex(rect.x0y0());
+
+        rd->setTexCoord(0, texCoord.x0y1());
+        rd->sendVertex(rect.x0y1());
+        
+        rd->setTexCoord(0, texCoord.x1y1());
+        rd->sendVertex(rect.x1y1());
+
+        rd->setTexCoord(0, texCoord.x1y0());
+        rd->sendVertex(rect.x1y0());
+
+    rd->endPrimitive();
+}
+
+
+
 void Draw::rect2DBorder(
     const class Rect2D& rect,
     RenderDevice* rd,
