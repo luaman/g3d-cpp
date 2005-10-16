@@ -252,8 +252,18 @@ public:
   credits.
 
  
-  A GApplet divides operation into "frames".  For each frame, there are several routines
-  invoked.
+  For each frame, the GApplet has several tasks that can be implemented by overriding
+  base class methods.  The use of cooperative, round-robbin scheduling avoids the need
+  for threads in most applications.  These tasks are:
+
+  <ul>
+   <li> doGraphics(G3D::RenderDevice*)
+   <li> doUserInput(G3D::UserInput*)
+   <li> doLogic()
+   <li> doNetwork()
+   <li> doSimulation(G3D::RealTime, G3D::SimTime)
+   <li> doWait(G3D::RealTime cumulativeTime)
+  </ul>
 
 
   To invoke a GApplet and let it control the main loop, call

@@ -117,6 +117,11 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
 
         // Construct a projection and view matrix for the camera so we can 
         // render the scene from the light's point of view
+
+        // Since we're working with a directional light, 
+        // we want to make the center of projection for the shadow map
+        // be in the direction of the light but at a finite distance 
+        // to preserve z precision.
         Matrix4 lightProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
 
         CoordinateFrame lightCFrame;

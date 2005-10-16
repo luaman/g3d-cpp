@@ -111,8 +111,33 @@ public:
      The result must be freed with free.
 
      Threadsafe on Win32.
+
+     @sa calloc realloc OutOfMemoryCallback free
      */
     static void* malloc(size_t bytes);
+
+    /**
+     @param size Size of memory that the system was trying to allocate
+     @param recoverable If true, the system will attempt to allocate again
+            if the callback returns true.  If false, malloc is going to return 
+            NULL and this invocation is just to notify the application.
+     @return Return true to force malloc to attempt allocation again if the
+            error was recoverable.
+     */
+    typedef bool (*OutOfMemoryCallback)(size_t size, bool recoverable);
+
+    /**
+     When System::malloc fails to allocate memory because the system is
+     out of memory, it invokes this handler (if it is not NULL).
+     The argument to the callback is the amount of memory that malloc
+     was trying to allocate when it ran out.  If the callback returns
+     true, System::malloc will attempt to allocate the memory again.
+     If the callback returns false, then System::malloc will return NULL.
+
+     You can use outOfMemoryCallback to free data structures or to 
+     register the failure.
+     */
+    static OutOfMemoryCallback outOfMemoryCallback;
 
     /**
      Version of realloc that works with System::malloc.

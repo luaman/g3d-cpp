@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-08-31
+  @edited  2005-10-16
  */
 
 #include "G3D/platform.h"
@@ -145,6 +145,7 @@ static struct timeval                           _start;
 #endif
 
 static char                                     versionCstr[1024];
+System::OutOfMemoryCallback                     System::outOfMemoryCallback = NULL;
 
 #ifdef G3D_OSX
     long System::m_OSXCPUSpeed;
@@ -1111,6 +1112,16 @@ private:
 
     }
 
+    void flushPool(MemBlock* pool, int& poolSize) {
+        for (int i = 0; i < poolSize; ++i) {
+            ::free(pool->ptr);
+            pool->ptr = NULL;
+            pool->bytes = 0;
+        }
+        poolSize = 0;
+    }
+
+
     /**  Allocate out of a specific pool->  Return NULL if no suitable 
          memory was found. 
     
@@ -1164,12 +1175,12 @@ public:
 
         bytesAllocated       = true;
 
-        tinyPoolSize = 0;
-        tinyHeap = NULL;
+        tinyPoolSize         = 0;
+        tinyHeap             = NULL;
 
-        smallPoolSize = 0;
+        smallPoolSize        = 0;
 
-        medPoolSize = 0;
+        medPoolSize          = 0;
 
 
         // Initialize the tiny heap as a bunch of pointers into one
@@ -1186,6 +1197,7 @@ public:
             pthread_mutex_init(&mutex, NULL);
 #       endif
     }
+
 
     ~BufferPool() {
         ::free(tinyHeap);
@@ -1284,6 +1296,30 @@ public:
         // Allocate 4 extra bytes for our size header (unfortunate,
         // since malloc already added its own header).
         void* ptr = ::malloc(bytes + 4);
+
+        if (ptr == NULL) {
+            // Flush memory pools to try and recover space
+            flushPool(smallPool, smallPoolSize);
+            flushPool(medPool, medPoolSize);
+            ptr = ::malloc(bytes + 4);
+        }
+
+
+        if (ptr == NULL) {
+            if ((System::outOfMemoryCallback != NULL) &&
+                (System::outOfMemoryCallback(bytes + 4, true) == true)) {
+                // Re-attempt the malloc
+                ptr = ::malloc(bytes + 4);
+            }
+        }
+
+        if (ptr == NULL) {
+            if (System::outOfMemoryCallback != NULL) {
+                // Notify the application
+                System::outOfMemoryCallback(bytes + 4, false);
+            }
+            return NULL;
+        }
 
         *(uint32*)ptr = bytes;
 
