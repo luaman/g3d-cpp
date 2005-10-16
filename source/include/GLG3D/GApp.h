@@ -246,10 +246,19 @@ public:
 };
 
 /**
+  A self-contained mode of operation for an application; a "screen".
+  One large-scale state of an application.  For example, a game might have one GApplet subclass
+  for the title screen, one for the main menu, one for the game itself, and one for the
+  credits.
 
- To invoke a GApplet and let it control the main loop, call
- run().  To control the main loop explicitly, invoke beginRun on
- initialization, call oneFrame() from the main loop, and call endRun on cleanup.
+ 
+  A GApplet divides operation into "frames".  For each frame, there are several routines
+  invoked.
+
+
+  To invoke a GApplet and let it control the main loop, call
+  run().  To control the main loop explicitly, invoke beginRun on
+  initialization, call oneFrame() from the main loop, and call endRun on cleanup.
  */ 
 class GApplet {
 private:
