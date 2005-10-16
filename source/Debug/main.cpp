@@ -13,8 +13,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60700
-    #error Requires G3D 6.0
+#if G3D_VER < 60800
+    #error Requires G3D 6.08
 #endif
 
 
@@ -41,9 +41,11 @@ public:
 
 	virtual void doNetwork();
 
-    virtual void doSimulation(SimTime dt);
+    virtual void doSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doGraphics();
+    virtual void doGraphics(RenderDevice* rd);
+
+    virtual void doUserInput(UserInput* ui);
 
     virtual void cleanup();
 
@@ -73,6 +75,7 @@ void Demo::init()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
+    GApplet::init();
 }
 
 
@@ -81,18 +84,24 @@ void Demo::cleanup() {
 }
 
 
+void Demo::doLogic() {
+    // Add non-simulation game logic and AI code here
+}
+
+
 void Demo::doNetwork() {
 	// Poll net messages here
 }
 
 
-void Demo::doSimulation(SimTime dt) {
-	// Add physical simulation here
+void Demo::doSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+	// Add physical simulation here.  You can make your time advancement
+    // based on any of the three arguments.
 }
 
 
-void Demo::doLogic() {
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+void Demo::doUserInput(UserInput* ui) {
+    if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
         app->endProgram = true;
@@ -102,7 +111,7 @@ void Demo::doLogic() {
 }
 
 
-void Demo::doGraphics() {
+void Demo::doGraphics(RenderDevice* rd) {
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
@@ -152,6 +161,7 @@ App::~App() {
 
 int main(int argc, char** argv) {
     GAppSettings settings;
+    settings.useNetwork = false;
     App(settings).run();
     return 0;
 }

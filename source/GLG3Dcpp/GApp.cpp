@@ -263,17 +263,11 @@ void GApp::renderDebugInfo() {
                 float s = m_simulationWatch.smoothElapsedTime();
                 float L = m_logicWatch.smoothElapsedTime();
                 float u = m_userInputWatch.smoothElapsedTime();
+                float w = m_waitWatch.smoothElapsedTime();
 
-                float total = g + n + s + L + u;
+                float total = g + n + s + L + u + w;
 
-                // We must have waited for the remaining time
-                float wait = 0;
-                if (m_graphicsWatch.smoothFPS() > 0) {
-                    wait = 1.0 / m_graphicsWatch.smoothFPS() - total;
-                    wait = max(0, wait);
-                }
-
-                float norm = 100.0 / (total + wait);
+                float norm = 100.0 / total;
 
                 // Normalize the numbers
                 g *= norm;
@@ -281,10 +275,11 @@ void GApp::renderDebugInfo() {
                 s *= norm;
                 L *= norm;
                 u *= norm;
-                wait *= norm;
+                w *= norm;
 
-                std::string str = format("Time: %3.0f%% Gfx, %3.0f%% Sim, %3.0f%% Lgc, %3.0f%% Net, %3.0f%% UI, %3.0f%% wait", 
-                    g, s, L, n, u, wait);
+                std::string str = 
+                    format("Time: %3.0f%% Gfx, %3.0f%% Sim, %3.0f%% Lgc, %3.0f%% Net, %3.0f%% UI, %3.0f%% wait", 
+                        g, s, L, n, u, w);
                 debugFont->draw2D(str, pos, size, statColor, Color3::black());
                 }
 
@@ -305,7 +300,14 @@ void GApp::renderDebugInfo() {
 //////////////////////////////////////////////
 
 
-GApplet::GApplet(GApp* _app) : app(_app), m_simTimeRate(1.0), m_simTime(0), m_realTime(0) {
+GApplet::GApplet(GApp* _app) : 
+    app(_app), 
+    m_simTimeRate(1.0), 
+    m_simTime(0), 
+    m_realTime(0), 
+    m_desiredFrameRate(inf()),
+    lastWaitTime(System::time()) {
+    
     debugAssert(app != NULL);
 }
 
@@ -340,36 +342,53 @@ void GApplet::oneFrame() {
 
     // Simulation
     app->m_simulationWatch.tick();
-    if (app->debugController.active()) {
-        app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-    	app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
-    }
-    float rate = simTimeRate();    
-    doSimulation(timeStep, timeStep * rate);
-    setRealTime(realTime() + timeStep);
-    setSimTime(simTime() + timeStep * rate);
-
+        if (app->debugController.active()) {
+            app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
+    	    app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
+        }
+        float rate = simTimeRate();    
+        doSimulation(timeStep, timeStep * rate, desiredFrameDuration() * rate);
+        setRealTime(realTime() + timeStep);
+        setSimTime(simTime() + timeStep * rate);
     app->m_simulationWatch.tock();
 
     // Logic
     app->m_logicWatch.tick();
-    doLogic();
+        doLogic();
     app->m_logicWatch.tock();
+
+    // Wait
+    // Note: we might end up spending all of our time inside of RenderDevice::beginFrame.  Waiting
+    // here isn't double waiting, though, because while we're sleeping the CPU the GPU is working
+    // to catch up.
+    app->m_waitWatch.tick();
+    {
+        RealTime now = System::time();
+        // Compute accumulated time
+        doWait(now - lastWaitTime, desiredFrameDuration());
+        lastWaitTime = now;
+    }
+    app->m_waitWatch.tock();
 
     // Graphics
     app->m_graphicsWatch.tick();
-    app->renderDevice->beginFrame();
-        app->renderDevice->pushState();
-            doGraphics();
-        app->renderDevice->popState();
-        app->renderDebugInfo();
-    app->renderDevice->endFrame();
-    app->debugText.clear();
+        app->renderDevice->beginFrame();
+            app->renderDevice->pushState();
+                doGraphics(app->renderDevice);
+            app->renderDevice->popState();
+            app->renderDebugInfo();
+        app->renderDevice->endFrame();
+        app->debugText.clear();
     app->m_graphicsWatch.tock();
 
     if ((endApplet || app->endProgram) && app->window()->requiresMainLoop()) {
         app->window()->popLoopBody();
     }
+}
+
+
+void GApplet::doWait(RealTime t, RealTime desiredT) {
+    System::sleep(max(0, desiredT - t));
 }
 
 

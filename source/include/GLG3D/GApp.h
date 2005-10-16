@@ -90,11 +90,16 @@ protected:
     Stopwatch           m_networkWatch;
     Stopwatch           m_userInputWatch;
     Stopwatch           m_simulationWatch;
+    Stopwatch           m_waitWatch;
 
 public:
 
     const Stopwatch& graphicsWatch() const {
         return m_graphicsWatch;
+    }
+
+    const Stopwatch& waitWatch() const {
+        return m_waitWatch;
     }
 
     const Stopwatch& logicWatch() const {
@@ -262,7 +267,7 @@ public:
    <li> doLogic()
    <li> doNetwork()
    <li> doSimulation(G3D::RealTime, G3D::SimTime)
-   <li> doWait(G3D::RealTime cumulativeTime)
+   <li> doWait(G3D::RealTime cumulativeTime, G3D::RealTime desiredCumulativeTime)
   </ul>
 
 
@@ -274,8 +279,13 @@ class GApplet {
 private:
     GApp*               app;
 
+    /** Used by doSimulation for elapsed time. */
     RealTime            now, lastTime;
 
+    /** Used by doWait for elapsed time. */
+    RealTime            lastWaitTime;
+
+    float               m_desiredFrameRate;
     double              m_simTimeRate;
     RealTime            m_realTime;
     SimTime             m_simTime;
@@ -315,6 +325,21 @@ public:
 
     virtual void setSimTime(SimTime s) {
         m_simTime = s;
+    }
+
+    /** Change to invoke frame limiting via doWait.
+        Defaults to inf() */
+    virtual void setDesiredFrameRate(float fps) {
+        debugAssert(fps > 0);
+        m_desiredFrameRate = fps;
+    }
+
+    float desiredFrameRate() const {
+        return m_desiredFrameRate;
+    }
+
+    RealTime desiredFrameDuration() const {
+        return 1.0 / m_desiredFrameRate;
     }
 
     /** @param _app This is usually your own subclass of GApp.*/
@@ -373,6 +398,9 @@ protected:
      */
     bool                endApplet;
 
+    /** @deprecated */
+    virtual void doSimulation(RealTime rdt) {}
+
     /**
      Override this with your simulation code.
      Called from GApp::run.
@@ -384,8 +412,11 @@ protected:
 
      @param rdt Elapsed real-world time since the last call to doSimulation.
      @param sdt Elapsed sim-world time since the last call to doSimulation.
+     @param idt Elapsed ideal sim-world time (according to desiredFrameDuration).  Use this for perfectly reproducible timing results.
      */
-    virtual void doSimulation(RealTime rdt, SimTime sdt) {}
+    virtual void doSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+        doSimulation(sdt);
+    }
 
 
     /**
@@ -398,7 +429,7 @@ protected:
 
      @deprecated
      */
-    virtual void doGraphics() = 0;
+    virtual void doGraphics() {}
 
     virtual void doGraphics(RenderDevice* rd) {
         doGraphics();
@@ -412,6 +443,18 @@ protected:
     virtual void doNetwork() {}
 
     /**
+      Task to be used for frame rate limiting.  Frame rate limiting is useful
+      to avoid overloading a maching that is running background tasks and
+      for situations where fixed time steps are needed for simulation and there
+      is no reason to render faster.
+
+
+      Default implementation waits until cumulativeTime + time
+      in wait is greater than or equal to @a frameDuration = 1 / desiredFrameRate.
+      */
+    virtual void doWait(RealTime cumulativeTime, RealTime frameDuration);
+
+    /**
      Update any state you need to here.  This is a good place for
      AI code, for example.  Called after network and user input,
      before simulation.
@@ -421,11 +464,14 @@ protected:
     /**
      Invoked every time run is called.  Default implementation
      resets timers and simTimeRate.
+
+     Sublcasses should invoke GApplet::init to reset the timers.
      */
     virtual void init() {
         m_simTime     = 0;
         m_realTime    = 0;
         m_simTimeRate = 1.0;
+        lastWaitTime  = System::time();
     }
 
     /**
@@ -439,6 +485,7 @@ protected:
 
      Override if you need to explicitly handle events in the order
      they appear.
+     
      Note that the userInput contains a record of all
      keys pressed/held, mouse, and joystick state, so 
      you do not have to override this method to handle
