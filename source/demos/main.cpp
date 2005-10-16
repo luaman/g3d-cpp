@@ -76,7 +76,6 @@ void Demo::init()  {
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-//    setDesiredFrameRate(60);
     GApplet::init();
 }
 

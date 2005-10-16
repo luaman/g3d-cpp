@@ -366,7 +366,7 @@ void GApplet::oneFrame() {
         RealTime now = System::time();
         // Compute accumulated time
         doWait(now - lastWaitTime, desiredFrameDuration());
-        lastWaitTime = now;
+        lastWaitTime = System::time();
     }
     app->m_waitWatch.tock();
 
