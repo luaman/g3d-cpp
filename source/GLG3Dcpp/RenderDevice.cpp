@@ -871,7 +871,7 @@ void RenderDevice::setState(
     setSpecularCoefficient(newState.specular);
     setShininess(newState.shininess);
 
-    if (newState.lights != state.lights) {
+    if (newState.lights.changed) {//(newState.lights != state.lights) {
         if (newState.lights.lighting) {
             enableLighting();
         } else {
@@ -898,7 +898,7 @@ void RenderDevice::setState(
     setColor(newState.color);
     setNormal(newState.normal);
 
-    for (int u = iMax(_numTextures, _numTextureCoords) - 1; u >= 0; --u) {
+    for (int u = 1/*iMax(_numTextures, _numTextureCoords) - 1*/; u >= 0; --u) {
         if (newState.textureUnit[u] != state.textureUnit[u]) {
 
             if (u < (int)numTextures()) {
@@ -951,7 +951,7 @@ void RenderDevice::enableTwoSidedLighting() {
     if (! state.lights.twoSidedLighting) {
         glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
         state.lights.twoSidedLighting = true;
-
+        state.lights.changed = true;
         minGLStateChange();
     }
 }
@@ -962,15 +962,9 @@ void RenderDevice::disableTwoSidedLighting() {
     if (state.lights.twoSidedLighting) {
         glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 0);
         state.lights.twoSidedLighting = false;
+        state.lights.changed = true;
         minGLStateChange();
     }
-}
-
-
-void RenderDevice::runObjectShader() {
-	if (! state.objectShader.isNull()) {
-		state.objectShader->run(this);
-	}
 }
 
 
@@ -1100,36 +1094,6 @@ void RenderDevice::setDrawBuffer(Buffer b) {
             return;
             break;
         }
-    }
-}
-
-void RenderDevice::setShadeMode(ShadeMode s) {
-    minStateChange();
-    if (s != state.shadeMode) {
-        state.shadeMode = s;
-        if (s == SHADE_FLAT) {
-            glShadeModel(GL_FLAT);
-        } else {
-            glShadeModel(GL_SMOOTH);
-        }
-        minGLStateChange();
-    }
-}
-
-
-void RenderDevice::setDepthRange(
-    double              low,
-    double              high) {
-
-    majStateChange();
-
-    if ((state.lowDepthRange != low) ||
-        (state.highDepthRange != high)) {
-        glDepthRange(low, high);
-        state.lowDepthRange = low;
-        state.highDepthRange = high;
-
-        majGLStateChange();
     }
 }
 
@@ -1648,99 +1612,6 @@ void RenderDevice::setAlphaTest(AlphaTest test, double reference) {
 }
 
 
-void RenderDevice::setAlphaWrite(bool a) {
-    if (a) {
-        enableAlphaWrite();
-    } else {
-        disableAlphaWrite();
-    }
-}
-
-
-void RenderDevice::setColorWrite(bool a) {
-    if (a) {
-        enableColorWrite();
-    } else {
-        disableColorWrite();
-    }
-}
-
-
-void RenderDevice::setDepthWrite(bool a) {
-    if (a) {
-        enableDepthWrite();
-    } else {
-        disableDepthWrite();
-    }
-}
-
-
-void RenderDevice::enableAlphaWrite() {
-    debugAssert(! inPrimitive);
-    minStateChange();
-    if (! state.alphaWrite) {
-        minGLStateChange();
-        GLint c = state.colorWrite ? GL_TRUE : GL_FALSE;
-        glColorMask(c, c, c, GL_TRUE);
-        state.alphaWrite = true;
-    }
-}
-
-
-void RenderDevice::disableAlphaWrite() {
-    debugAssert(! inPrimitive);
-    minStateChange();
-    if (state.alphaWrite) {
-        minGLStateChange();
-        GLint c = state.colorWrite ? GL_TRUE : GL_FALSE;
-        glColorMask(c, c, c, GL_FALSE);
-        state.alphaWrite = false;
-    }
-}
-
-void RenderDevice::enableColorWrite() {
-    debugAssert(! inPrimitive);
-    minStateChange();
-    if (! state.colorWrite) {
-        minGLStateChange();
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, state.alphaWrite ? GL_TRUE : GL_FALSE);
-        state.colorWrite = true;
-    }
-}
-
-
-void RenderDevice::disableColorWrite() {
-    debugAssert(! inPrimitive);
-
-    minStateChange();
-    if (state.colorWrite) {
-        minGLStateChange();
-        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, state.alphaWrite ? GL_TRUE : GL_FALSE);
-        state.colorWrite = false;
-    }
-}
-
-
-void RenderDevice::enableDepthWrite() {
-    debugAssert(! inPrimitive);
-    minStateChange();
-    if (! state.depthWrite) {
-        minGLStateChange();
-        glDepthMask(GL_TRUE);
-        state.depthWrite = true;
-    }
-}
-
-
-void RenderDevice::disableDepthWrite() {
-    debugAssert(! inPrimitive);
-    minStateChange();
-    if (state.depthWrite) {
-        minGLStateChange();
-        glDepthMask(GL_FALSE);
-        state.depthWrite = false;
-    }
-}
 
 
 GLint RenderDevice::toGLStencilOp(RenderDevice::StencilOp op) const {
@@ -2170,6 +2041,7 @@ void RenderDevice::setAmbientLightColor(
              color.b / lightSaturation,
              1.0f};
     
+        state.lights.changed = true;
         minGLStateChange();
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, c);
         state.lights.ambient = color;
@@ -2187,6 +2059,7 @@ void RenderDevice::enableLighting() {
     debugAssert(! inPrimitive);
     minStateChange();
     if (! state.lights.lighting) {
+        state.lights.changed = true;
         glEnable(GL_LIGHTING);
         minGLStateChange();
         state.lights.lighting = true;
@@ -2198,6 +2071,7 @@ void RenderDevice::disableLighting() {
     debugAssert(! inPrimitive);
     minStateChange();
     if (state.lights.lighting) {
+        state.lights.changed = true;
         glDisable(GL_LIGHTING);
         minGLStateChange();
         state.lights.lighting = false;
@@ -2970,7 +2844,6 @@ void RenderDevice::setLight(int i, void* x) {
 
 
 void RenderDevice::setLight(int i, const GLight* _light, bool force) {
-    
     debugAssert(i >= 0);
     debugAssert(i < MAX_LIGHTS);
     int gi = GL_LIGHT0 + i;
@@ -2985,6 +2858,7 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
         if (state.lights.lightEnabled[i] || force) {
             // Don't bother copying this light over
             state.lights.lightEnabled[i] = false;
+            state.lights.changed = true;
             glDisable(gi);
         }
 
@@ -3000,10 +2874,12 @@ void RenderDevice::setLight(int i, const GLight* _light, bool force) {
         if (! state.lights.lightEnabled[i] || force) {
             glEnable(gi);
             state.lights.lightEnabled[i] = true;
+            state.lights.changed = true;
         }
 
     
         if ((state.lights.light[i] != light) || force) {
+            state.lights.changed = true;
             state.lights.light[i] = light;
 
             minGLStateChange();
