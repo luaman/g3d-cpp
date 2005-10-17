@@ -27,16 +27,16 @@ typedef ReferenceCountedPointer<class GFont> GFontRef;
  */
 class GFont : public ReferenceCountedObject {
 public:
-    /** Constant for draw2DString.  Specifies the horizontal alignment
+    /** Constant for draw2D.  Specifies the horizontal alignment
 	of an entire string relative to the supplied x,y position */
     enum XAlign {XALIGN_RIGHT, XALIGN_LEFT, XALIGN_CENTER};
 
-    /** Constant for draw2DString.  Specifies the vertical alignment
+    /** Constant for draw2D.  Specifies the vertical alignment
 	of the characters relative to the supplied x,y position.
       */
     enum YAlign {YALIGN_TOP, YALIGN_BASELINE, YALIGN_CENTER, YALIGN_BOTTOM};
 
-    /** Constant for draw2DString.  Proportional width (default)
+    /** Constant for draw2D.  Proportional width (default)
         spaces characters based on their size.  Fixed spacing gives
         uniform spacing regardless of character width. */
     enum Spacing {PROPORTIONAL_SPACING, FIXED_SPACING};
@@ -123,7 +123,8 @@ public:
 
     /**
      Draws a proportional width font string.  Assumes device->push2D()
-     has been called.  Leaves all rendering state as it was.
+     has been called.  Leaves all rendering state as it was, except for the
+     texture coordinate on unit 0.
 
      @param size The distance between successive lines of text.  Specify
      texelSize().y / 1.5 to get 1:1 texel to pixel

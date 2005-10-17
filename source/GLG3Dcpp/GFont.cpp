@@ -87,10 +87,6 @@ Vector2 GFont::drawString(
     // bilinear interpolation interactions with mipmapping.
     float sy = h / charHeight;
 
-    if (GLCaps::supports_GL_ARB_multitexture()) {
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-    }
-
     float x0 = 0;
     for (int i = 0; i < n; ++i) {
         char c = s[i] & 127; // s[i] % 128; avoid using illegal chars
@@ -192,12 +188,12 @@ Vector2 GFont::draw2D(
         break;
     }
 
-
     double m[] = 
        {1.0 / texture->getTexelWidth(), 0, 0, 0,
         0, 1.0 / texture->getTexelHeight(), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1};
+
     renderDevice->pushState();
         renderDevice->disableLighting();
         renderDevice->setTextureMatrix(0, m);
@@ -212,11 +208,15 @@ Vector2 GFont::draw2D(
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
         const float b = renderDevice->getBrightScale();
+
+        if (GLCaps::supports_GL_ARB_multitexture()) {
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+
         renderDevice->beginPrimitive(RenderDevice::QUADS);
             // Draw border
             if (border.a > 0.05) {
-                glColor4f(border.r * b, border.g * b, border.b * b, border.a);
-                renderDevice->minGLStateChange(1);
+                renderDevice->setColor(Color4(border.r * b, border.g * b, border.b * b, border.a));
                 for (int dy = -1; dy <= 1; dy += 2) {
                     for (int dx = -1; dx <= 1; dx += 2) {
                         drawString(renderDevice, s, x + dx, y + dy, w, h, spacing);
@@ -225,12 +225,12 @@ Vector2 GFont::draw2D(
             }
 
             // Draw foreground
-            glColor4f(color.r * b, color.g * b, color.b * b, color.a);
-            renderDevice->minGLStateChange(1);
+            renderDevice->setColor(Color4(color.r * b, color.g * b, color.b * b, color.a));
             const Vector2 bounds = drawString(renderDevice, s, x, y, w, h, spacing);
         renderDevice->endPrimitive();
-
     renderDevice->popState();
+
+    debugAssertGLOk();
 
     return bounds;
 }
