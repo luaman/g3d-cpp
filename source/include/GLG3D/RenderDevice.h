@@ -1625,6 +1625,26 @@ public:
 
 };
 
+
+inline void RenderDevice::pushState() {
+    debugAssert(! inPrimitive);
+
+    // TODO: track the highest light and texture number used so that we don't
+    // pay for iterating through others
+
+    // TODO: save the texgen and fog bits in the renderDevice state stack
+    // 
+    //  glPushAttrib(GL_TEXTURE_BIT | GL_FOG_BIT);
+    stateStack.push(state);
+}
+
+inline void RenderDevice::popState() {
+    debugAssert(! inPrimitive);
+    debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
+    setState(stateStack.pop());
+//    glPopAttrib();
+}
+
 } // namespace
 
 #endif

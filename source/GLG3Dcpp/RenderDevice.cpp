@@ -762,30 +762,10 @@ RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0
 }
 
 
-void RenderDevice::pushState() {
-    debugAssert(! inPrimitive);
-
-    // TODO: track the highest light and texture number used so that we don't
-    // pay for iterating through others
-
-    // TODO: save the texgen and fog bits in the renderDevice state stack
-    // 
-    //  glPushAttrib(GL_TEXTURE_BIT | GL_FOG_BIT);
-    stateStack.push(state);
-}
-
-
 void RenderDevice::resetState() {
     setState(RenderState(getWidth(), getHeight()));
 }
 
-
-void RenderDevice::popState() {
-    debugAssert(! inPrimitive);
-    debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
-    setState(stateStack.pop());
-//    glPopAttrib();
-}
 
 bool RenderDevice::RenderState::Lights::operator==(const Lights& other) const {
     for (int L = 0; L < MAX_LIGHTS; ++L) {
@@ -1189,6 +1169,7 @@ void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
 
     GLint mask = 0;
 
+    // TODO: do we need to enable write to clear these buffers?
     pushState();
     if (clearColor) {
         mask |= GL_COLOR_BUFFER_BIT;
