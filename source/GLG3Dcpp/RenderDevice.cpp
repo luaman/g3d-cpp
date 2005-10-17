@@ -750,7 +750,7 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 }
 
 
-RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0) {
+RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0), texGenEnabled(0) {
     texCoord        = Vector4(0,0,0,1);
     combineMode     = TEX_MODULATE;
 
@@ -931,7 +931,7 @@ void RenderDevice::setState(
                     setTextureLODBias(u, newState.textureUnit[u].LODBias);
                 }
             }
-            setTexCoord(u, newState.textureUnit[u].texCoord);
+            setTexCoord(u, newState.textureUnit[u].texCoord);            
         }
     }
 

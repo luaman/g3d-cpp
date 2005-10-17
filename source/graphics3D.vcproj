@@ -602,9 +602,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\G3Dcpp\GThread.cpp">
-			</File>
-			<File
 				RelativePath="G3Dcpp\license.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1289,9 +1286,6 @@
 			</File>
 			<File
 				RelativePath="include\graphics3D.h">
-			</File>
-			<File
-				RelativePath=".\include\G3d\GThread.h">
 			</File>
 			<File
 				RelativePath="include\G3D\Line.h">

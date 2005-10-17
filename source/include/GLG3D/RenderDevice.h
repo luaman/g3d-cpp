@@ -1122,6 +1122,11 @@ public:
 
             /** NULL if not bound */
             TextureRef              texture;
+
+            /** Is tex coord generation enabled for R,S,T,Q?  Each
+                byte is one field.*/
+            uint32                  texGenEnabled;
+
             float                   textureMatrix[16];
             CombineMode             combineMode;
             float                   LODBias;
@@ -1134,7 +1139,8 @@ public:
                     (texture == other.texture) &&
                     (memcmp(textureMatrix, other.textureMatrix, sizeof(float)*16) == 0) &&
                     (combineMode == other.combineMode) &&
-                    (LODBias == other.LODBias);
+                    (LODBias == other.LODBias) &&
+                    (texGenEnabled == other.texGenEnabled);
             }
 
             inline bool operator!=(const TextureUnit& other) const {
@@ -1197,7 +1203,6 @@ public:
         Rect2D                      viewport;
         Rect2D                      clip2D;
         bool                        useClip2D;
-
 
         bool                        depthWrite;
         bool                        colorWrite;
