@@ -892,8 +892,8 @@ void Draw::sphereSection(
     cframe.translation += cframe.rotation * sphere.center;
     cframe.rotation = cframe.rotation * sphere.radius;
 
-    glPushAttrib(GL_ENABLE_BIT);
 
+    glPushAttrib(GL_ENABLE_BIT);
     if (GLCaps::supports("GL_EXT_rescale_normal")) {
         // Switch to using GL_RESCALE_NORMAL, which should be slightly faster.
         glDisable(GL_NORMALIZE);

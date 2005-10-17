@@ -283,25 +283,35 @@ private:
     uint32 mDebugNumMajorStateChanges;
     uint32 mDebugNumMinorStateChanges;
 
-    // These are abstracted to make it easy to put breakpoints in them
-    inline void majStateChange() {
-        ++mDebugNumMajorStateChanges;
-    }
-
-    inline void minStateChange() {
-        ++mDebugNumMinorStateChanges;
-    }
-
-    inline void majGLStateChange() {
-        ++mDebugNumMajorOpenGLStateChanges;
-    }
-
-    inline void minGLStateChange() {
-        ++mDebugNumMinorOpenGLStateChanges;
-    }
-
-    ////////////////////////////////////////////////////////////////////
 public:
+    // These are abstracted to make it easy to put breakpoints in them
+    /**
+      State change to RenderDevice.
+      Use to update the state change statistics when raw OpenGL calls are made. */
+    inline void majStateChange(int inc = 1) {
+        mDebugNumMajorStateChanges += inc;
+    }
+
+    /** 
+      State change to RenderDevice.
+     Use to update the state change statistics when raw OpenGL calls are made. */
+    inline void minStateChange(int inc = 1) {
+        mDebugNumMinorStateChanges += inc;
+    }
+
+    /** 
+     State change to OpenGL (possibly because of a state change to RenderDevice).
+      Use to update the state change statistics when raw OpenGL calls are made. */
+    inline void majGLStateChange(int inc = 1) {
+        mDebugNumMajorOpenGLStateChanges += 1;
+    }
+
+    /** 
+      State change to OpenGL (possibly because of a state change to RenderDevice).
+      Use to update the state change statistics when raw OpenGL calls are made. */
+    inline void minGLStateChange(int inc = 1) {
+        mDebugNumMinorOpenGLStateChanges += 1;
+    }
 
     /** Allows the UserInput to find the RenderDevice 
         @deprecated */

@@ -2885,6 +2885,7 @@ void RenderDevice::beginIndexedPrimitives() {
 	debugAssert(! inPrimitive);
 	debugAssert(! inIndexedPrimitive);
 
+    // TODO: can we avoid this push?
 	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT); 
 
 	inIndexedPrimitive = true;
@@ -2894,6 +2895,9 @@ void RenderDevice::beginIndexedPrimitives() {
 void RenderDevice::endIndexedPrimitives() {
 	debugAssert(! inPrimitive);
 	debugAssert(inIndexedPrimitive);
+
+    // TODO:
+    //glBindBufferARB(GL_ARRAY_BUFFER_ARB, area->glbuffer);
 
 	glPopClientAttrib();
 	inIndexedPrimitive = false;

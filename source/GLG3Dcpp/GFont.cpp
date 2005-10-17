@@ -85,43 +85,62 @@ Vector2 GFont::drawString(
 
     // Shrink the vertical texture coordinates by 1 texel to avoid
     // bilinear interpolation interactions with mipmapping.
-    double sy = h / charHeight;
+    float sy = h / charHeight;
 
-    double x0 = 0;
+    if (GLCaps::supports_GL_ARB_multitexture()) {
+        glActiveTextureARB(GL_TEXTURE0_ARB);
+    }
+
+    float x0 = 0;
     for (int i = 0; i < n; ++i) {
-        char c = s[i] & 127;
+        char c = s[i] & 127; // s[i] % 128; avoid using illegal chars
 
         if (c != ' ') {
             int row   = c / 16;
-            int col   = c % 16;
+            int col   = c & 15; // c % 16
 
             // Fixed width
-            double sx = 0;
+            float sx = 0;
             
             if (spacing == PROPORTIONAL_SPACING) {
-                sx = (charWidth - subWidth[(int)c]) * propW / 2.0;
+                sx = (charWidth - subWidth[(int)c]) * propW * 0.5f;
             }
 
-            renderDevice->setTexCoord(0, Vector2(col * charWidth, row * charHeight + 1));
-            renderDevice->sendVertex(Vector2(x - sx,     y + sy));
+            float xx = x - sx;
+            //renderDevice->setTexCoord(0, Vector2(col * charWidth, row * charHeight + 1));
+            //renderDevice->sendVertex(Vector2(x - sx,     y + sy));
+            glTexCoord2f(col * charWidth, row * charHeight + 1);
+            glVertex2f(xx,     y + sy);
 
-            renderDevice->setTexCoord(0, Vector2(col * charWidth, (row + 1) * charHeight - 2));
-            renderDevice->sendVertex(Vector2(x- sx,      y + h - sy)); 
+            //renderDevice->setTexCoord(0, Vector2(col * charWidth, (row + 1) * charHeight - 2));
+            //renderDevice->sendVertex(Vector2(x- sx,      y + h - sy)); 
+            glTexCoord2f(col * charWidth, (row + 1) * charHeight - 2);
+            glVertex2f(xx,     y + h - sy); 
 
-            renderDevice->setTexCoord(0, Vector2((col + 1) * charWidth - 1, (row + 1) * charHeight - 2));
-            renderDevice->sendVertex(Vector2(x + w - sx, y + h - sy)); 
+            xx += w;
+            //renderDevice->setTexCoord(0, Vector2((col + 1) * charWidth - 1, (row + 1) * charHeight - 2));
+            //renderDevice->sendVertex(Vector2(x + w - sx, y + h - sy)); 
+            glTexCoord2f((col + 1) * charWidth - 1, (row + 1) * charHeight - 2);
+            glVertex2f(xx, y + h - sy); 
 
-            renderDevice->setTexCoord(0, Vector2((col + 1) * charWidth - 1, row * charHeight + 1));
-            renderDevice->sendVertex(Vector2(x + w - sx, y + sy));
+            //renderDevice->setTexCoord(0, Vector2((col + 1) * charWidth - 1, row * charHeight + 1));
+            //renderDevice->sendVertex(Vector2(x + w - sx, y + sy));            
+            glTexCoord2f((col + 1) * charWidth - 1, row * charHeight + 1);
+            glVertex2f(xx, y + sy);
                         
         }
 
         if (spacing == PROPORTIONAL_SPACING) {
             x += propW * subWidth[(int)c];
         } else {
-            x += propW * subWidth[(int)'M'] * 0.85;
+            x += propW * subWidth[(int)'M'] * 0.85f;
         }
     }
+
+    renderDevice->minGLStateChange(8 * n);
+    renderDevice->minGLStateChange(8 * n);
+
+    // TODO: update the RenderDevice state count
     return Vector2(x - x0, h);
 }
 

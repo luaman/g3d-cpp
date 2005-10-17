@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2005-10-06
+ @edited  2005-10-16
  */
 
 #include "G3D/platform.h"
@@ -15,6 +15,7 @@
 #include "GLG3D/UserInput.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/Shader.h"
+#include "GLG3D/Draw.h"
 
 namespace G3D {
 
@@ -232,27 +233,30 @@ void GApp::renderDebugInfo() {
 
             if (debugShowRenderingStats) {
 
+                renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+                Draw::fastRect2D(Rect2D::xywh(2, 2, 796, size * 5), renderDevice, Color4(0, 0, 0, 0.3));
+
                 Color3 statColor = Color3::yellow();
 
                 debugFont->draw2D(renderDevice->getCardDescription() + "   " + System::version(), 
-                    pos, size, color, Color3::black());
+                    pos, size, color);
                 pos.y += size * 1.5;
 
                 std::string s = format("%-4dfps", iRound(m_graphicsWatch.smoothFPS()));
-                debugFont->draw2D(s, pos, size, statColor, Color3::black());
+                debugFont->draw2D(s, pos, size, statColor);
 
                 pos.x += size * 8;
                 s = format("%3.1gM tris", iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1);
-                debugFont->draw2D(s, pos, size, statColor, Color3::black());
+                debugFont->draw2D(s, pos, size, statColor);
 
                 pos.x += size * 8;
                 s = format("%3.1gM tris/s", iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1);
-                debugFont->draw2D(s, pos, size, statColor, Color3::black());
+                debugFont->draw2D(s, pos, size, statColor);
 
                 pos.x += size * 14;
                 s = format("GL Calls: %d/%d Maj; %d/%d Min",
                     majGL, majAll, minGL, minAll);
-                debugFont->draw2D(s, pos, size, statColor, Color3::black());
+                debugFont->draw2D(s, pos, size, statColor);
 
                 pos.x = x;
                 pos.y += size * 1.5;
@@ -280,7 +284,7 @@ void GApp::renderDebugInfo() {
                 std::string str = 
                     format("Time: %3.0f%% Gfx, %3.0f%% Sim, %3.0f%% Lgc, %3.0f%% Net, %3.0f%% UI, %3.0f%% wait", 
                         g, s, L, n, u, w);
-                debugFont->draw2D(str, pos, size, statColor, Color3::black());
+                debugFont->draw2D(str, pos, size, statColor);
                 }
 
                 pos.x = x;
