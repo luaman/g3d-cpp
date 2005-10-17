@@ -537,17 +537,17 @@ public:
         return state.drawBuffer;
     }
 
-    void setDepthRange(double low, double high);
+    inline void setDepthRange(double low, double high);
 
     /** @deprecated Use setColorWrite */
-    void enableColorWrite();
-    void disableColorWrite();
+    inline void enableColorWrite();
+    inline void disableColorWrite();
 
     /** Color writing is on by default.  Disabling color write allows a program to 
         render to the depth and stencil buffers without creating a visible image in the frame buffer.  
         This is useful for occlusion culling, shadow rendering, and some computational solid geometry algorithms.  
         Rendering may be significantly accelerated when color write is disabled. */
-    void setColorWrite(bool b);
+    inline void setColorWrite(bool b);
 
     /** Returns true if colorWrite is enabled */
     bool colorWrite() const;
@@ -555,8 +555,8 @@ public:
     /** Defaults to true if the screen has an alpha channel, otherwise
         defaults to false.
         @deprecated Use setAlphaWrite */
-    void enableAlphaWrite();
-    void disableAlphaWrite();
+    inline void enableAlphaWrite();
+    inline void disableAlphaWrite();
 
     /** The frame buffer may optionally have an alpha channel for each pixel, depending on how
         the G3D::GWindow was initialized (see G3D::RenderDevice::init, and G3D::GWindowSettings).
@@ -565,12 +565,12 @@ public:
     
         Rendering to the alpha channel does not produce transparency effects--this is an alpha
         output, not an alpha input.  See RenderDevice::setBlendFunc for a discussion of blending.*/
-    void setAlphaWrite(bool b);
+    inline void setAlphaWrite(bool b);
 
     /** @deprecated Use setDepthWrite */
-    void enableDepthWrite();
-    void disableDepthWrite();
-    void setDepthWrite(bool b);
+    inline void enableDepthWrite();
+    inline void disableDepthWrite();
+    inline void setDepthWrite(bool b);
 
     /** Returns true if depthWrite is enabled */
     bool depthWrite() const;
@@ -581,7 +581,7 @@ public:
     /**
      Equivalent to glShadeModel
      */
-    void setShadeMode(ShadeMode s);
+    inline void setShadeMode(ShadeMode s);
 
     /**
      If wrapping is not supported on the device, the nearest mode is
@@ -1101,7 +1101,7 @@ public:
 
 	/** Called immediately before a primitive group 
         @deprecated*/
-	void runObjectShader();
+	inline void runObjectShader();
 
 	/** Called immediately before a primitive group */
     void beforePrimitive();
@@ -1167,6 +1167,15 @@ public:
             // Ambient light level
             Color4                      ambient;
             bool                        lighting;
+
+            /** True if lights have been written to since the last pushState.
+                This is set to false in pushState and to true whenever
+                a light changes.*/
+            bool                        changed;
+
+            // default changed to true so that a fresh Lights object will
+            // provoke a state reset.  Pushstate supresses this
+            Lights() : changed(true) {}
 
             bool operator==(const Lights& other) const;
 
@@ -1636,6 +1645,9 @@ inline void RenderDevice::pushState() {
     // 
     //  glPushAttrib(GL_TEXTURE_BIT | GL_FOG_BIT);
     stateStack.push(state);
+
+    // Note that the lights are unchanged since the previous state
+    state.lights.changed = false;
 }
 
 inline void RenderDevice::popState() {
@@ -1643,6 +1655,135 @@ inline void RenderDevice::popState() {
     debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
     setState(stateStack.pop());
 //    glPopAttrib();
+}
+
+
+inline void RenderDevice::setAlphaWrite(bool a) {
+    if (a) {
+        enableAlphaWrite();
+    } else {
+        disableAlphaWrite();
+    }
+}
+
+
+inline void RenderDevice::setColorWrite(bool a) {
+    if (a) {
+        enableColorWrite();
+    } else {
+        disableColorWrite();
+    }
+}
+
+
+inline void RenderDevice::setDepthWrite(bool a) {
+    if (a) {
+        enableDepthWrite();
+    } else {
+        disableDepthWrite();
+    }
+}
+
+
+inline void RenderDevice::enableAlphaWrite() {
+    debugAssert(! inPrimitive);
+    minStateChange();
+    if (! state.alphaWrite) {
+        minGLStateChange();
+        GLint c = state.colorWrite ? GL_TRUE : GL_FALSE;
+        glColorMask(c, c, c, GL_TRUE);
+        state.alphaWrite = true;
+    }
+}
+
+
+inline void RenderDevice::disableAlphaWrite() {
+    debugAssert(! inPrimitive);
+    minStateChange();
+    if (state.alphaWrite) {
+        minGLStateChange();
+        GLint c = state.colorWrite ? GL_TRUE : GL_FALSE;
+        glColorMask(c, c, c, GL_FALSE);
+        state.alphaWrite = false;
+    }
+}
+
+inline void RenderDevice::enableColorWrite() {
+    debugAssert(! inPrimitive);
+    minStateChange();
+    if (! state.colorWrite) {
+        minGLStateChange();
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, state.alphaWrite ? GL_TRUE : GL_FALSE);
+        state.colorWrite = true;
+    }
+}
+
+
+inline void RenderDevice::disableColorWrite() {
+    debugAssert(! inPrimitive);
+
+    minStateChange();
+    if (state.colorWrite) {
+        minGLStateChange();
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, state.alphaWrite ? GL_TRUE : GL_FALSE);
+        state.colorWrite = false;
+    }
+}
+
+
+inline void RenderDevice::enableDepthWrite() {
+    debugAssert(! inPrimitive);
+    minStateChange();
+    if (! state.depthWrite) {
+        minGLStateChange();
+        glDepthMask(GL_TRUE);
+        state.depthWrite = true;
+    }
+}
+
+
+inline void RenderDevice::disableDepthWrite() {
+    debugAssert(! inPrimitive);
+    minStateChange();
+    if (state.depthWrite) {
+        minGLStateChange();
+        glDepthMask(GL_FALSE);
+        state.depthWrite = false;
+    }
+}
+
+
+inline void RenderDevice::setShadeMode(ShadeMode s) {
+    minStateChange();
+    if (s != state.shadeMode) {
+        state.shadeMode = s;
+        glShadeModel((s == SHADE_FLAT) ? GL_FLAT : GL_SMOOTH);
+        minGLStateChange();
+    }
+}
+
+
+inline void RenderDevice::setDepthRange(
+    double              low,
+    double              high) {
+
+    majStateChange();
+
+    if ((state.lowDepthRange != low) ||
+        (state.highDepthRange != high)) {
+        glDepthRange(low, high);
+        state.lowDepthRange = low;
+        state.highDepthRange = high;
+
+        minGLStateChange();
+    }
+}
+
+
+inline void RenderDevice::runObjectShader() {
+	if (! state.objectShader.isNull()) {
+		state.objectShader->run(this);
+	}
 }
 
 } // namespace

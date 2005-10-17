@@ -215,7 +215,8 @@ Vector2 GFont::draw2D(
         renderDevice->beginPrimitive(RenderDevice::QUADS);
             // Draw border
             if (border.a > 0.05) {
-                renderDevice->setColor(Color4(border.r * b, border.g * b, border.b * b, border.a));
+                glColor4f(border.r * b, border.g * b, border.b * b, border.a);
+                renderDevice->minGLStateChange(1);
                 for (int dy = -1; dy <= 1; dy += 2) {
                     for (int dx = -1; dx <= 1; dx += 2) {
                         drawString(renderDevice, s, x + dx, y + dy, w, h, spacing);
@@ -224,7 +225,8 @@ Vector2 GFont::draw2D(
             }
 
             // Draw foreground
-            renderDevice->setColor(Color4(color.r * b, color.g * b, color.b * b, color.a));
+            glColor4f(color.r * b, color.g * b, color.b * b, color.a);
+            renderDevice->minGLStateChange(1);
             const Vector2 bounds = drawString(renderDevice, s, x, y, w, h, spacing);
         renderDevice->endPrimitive();
 

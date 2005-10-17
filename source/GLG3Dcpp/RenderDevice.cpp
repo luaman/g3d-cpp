@@ -898,7 +898,7 @@ void RenderDevice::setState(
     setColor(newState.color);
     setNormal(newState.normal);
 
-    for (int u = 1/*iMax(_numTextures, _numTextureCoords) - 1*/; u >= 0; --u) {
+    for (int u = iMax(_numTextures, _numTextureCoords) - 1; u >= 0; --u) {
         if (newState.textureUnit[u] != state.textureUnit[u]) {
 
             if (u < (int)numTextures()) {
