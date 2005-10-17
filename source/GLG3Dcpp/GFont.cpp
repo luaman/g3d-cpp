@@ -192,20 +192,21 @@ Vector2 GFont::draw2D(
 
         renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
 
+        const float b = renderDevice->getBrightScale();
         renderDevice->beginPrimitive(RenderDevice::QUADS);
+            // Draw border
             if (border.a > 0.05) {
-                renderDevice->setColor(border);
+                renderDevice->setColor(Color4(border.r * b, border.g * b, border.b * b, border.a));
                 for (int dy = -1; dy <= 1; dy += 2) {
                     for (int dx = -1; dx <= 1; dx += 2) {
                         drawString(renderDevice, s, x + dx, y + dy, w, h, spacing);
                     }
                 }
             }
-            renderDevice->setColor(
-		        Color4(color.r * renderDevice->getBrightScale(),
-			    color.g * renderDevice->getBrightScale(),
-			    color.b * renderDevice->getBrightScale(), color.a));
-          Vector2 bounds = drawString(renderDevice, s, x, y, w, h, spacing);
+
+            // Draw foreground
+            renderDevice->setColor(Color4(color.r * b, color.g * b, color.b * b, color.a));
+            const Vector2 bounds = drawString(renderDevice, s, x, y, w, h, spacing);
         renderDevice->endPrimitive();
 
     renderDevice->popState();

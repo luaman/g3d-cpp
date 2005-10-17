@@ -77,7 +77,7 @@ void Demo::init()  {
     app->debugCamera.lookAt(Vector3(0, 2, 0));
     GApplet::init();
 
-    setDesiredFrameRate(30);
+    setDesiredFrameRate(90);
 }
 
 
@@ -118,6 +118,12 @@ void Demo::doGraphics(RenderDevice* rd) {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
+    
+    for (int i = 0; i < 35; ++i) {
+        app->debugPrintf("XXXXXXXXXX");
+    }
+    
+
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
@@ -132,6 +138,11 @@ void Demo::doGraphics(RenderDevice* rd) {
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
 //		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+        for (int i = 0; i < 30; ++i) {
+            rd->pushState();
+                rd->setColor(Color3::white());
+            rd->popState();
+        }
 
     app->renderDevice->disableLighting();
 
@@ -146,7 +157,7 @@ void App::main() {
 	debugController.setActive(true);
 
     // Load objects here
-    sky = Sky::create(NULL, dataDir + "sky/");
+    sky = NULL;//Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
 }

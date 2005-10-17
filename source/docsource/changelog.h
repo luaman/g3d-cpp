@@ -36,6 +36,7 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::RenderDevice::pushState no longer stores GL texgen and fog information--10% speedup.           
       <LI> G3D::Draw::fastRect2D
       <LI> G3D::System::outOfMemoryCallback
       <LI> G3D::Queue::fastClear [Chris Demetriou]

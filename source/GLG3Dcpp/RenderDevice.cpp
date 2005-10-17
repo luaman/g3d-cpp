@@ -763,10 +763,14 @@ RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0
 
 
 void RenderDevice::pushState() {
-
     debugAssert(! inPrimitive);
 
-    glPushAttrib(GL_TEXTURE_BIT | GL_FOG_BIT);
+    // TODO: track the highest light and texture number used so that we don't
+    // pay for iterating through others
+
+    // TODO: save the texgen and fog bits in the renderDevice state stack
+    // 
+    //  glPushAttrib(GL_TEXTURE_BIT | GL_FOG_BIT);
     stateStack.push(state);
 }
 
@@ -780,7 +784,7 @@ void RenderDevice::popState() {
     debugAssert(! inPrimitive);
     debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
     setState(stateStack.pop());
-    glPopAttrib();
+//    glPopAttrib();
 }
 
 bool RenderDevice::RenderState::Lights::operator==(const Lights& other) const {
@@ -958,6 +962,7 @@ void RenderDevice::setState(
     if (supportsPixelProgram()) {
         setPixelProgram(newState.pixelProgram);
     }
+    
 }
 
 
