@@ -13,8 +13,28 @@ static void mul(float (&A)[3][3], float (&B)[3][3], float (&C)[3][3]) {
 }
 
 
+static void testEuler() {
+    float x = 1;
+    float y = 2;
+    float z = -3;
+
+    float x2, y2, z2;
+
+    Matrix3 rX = Matrix3::fromAxisAngle(Vector3::UNIT_X, x);
+    Matrix3 rY = Matrix3::fromAxisAngle(Vector3::UNIT_Y, y);
+    Matrix3 rZ = Matrix3::fromAxisAngle(Vector3::UNIT_Z, z);
+    Matrix3 rot = rZ * rX * rY;
+    rot.toEulerAnglesZXY(x2, y2, z2);
+    debugAssert(fuzzyEq(x, x2));
+    debugAssert(fuzzyEq(y, y2));
+    debugAssert(fuzzyEq(z, z2));
+}
+
+
 void testMatrix3() {
     printf("G3D::Matrix3  ");
+
+    testEuler();
 
     {
         Matrix3 M = Matrix3::identity();

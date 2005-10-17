@@ -157,7 +157,7 @@ void App::main() {
 	debugController.setActive(true);
 
     // Load objects here
-    sky = NULL;//Sky::create(NULL, dataDir + "sky/");
+    sky = Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
 }

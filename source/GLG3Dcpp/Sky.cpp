@@ -401,6 +401,11 @@ void Sky::renderBox(RenderDevice* renderDevice) const {
         vertex(renderDevice, +s, -s, +s, 1, 0);
 	renderDevice->endPrimitive();
 
+    if (cube) {
+        glDisable(GL_TEXTURE_GEN_S);
+        glDisable(GL_TEXTURE_GEN_T);
+        glDisable(GL_TEXTURE_GEN_R);
+    }
     renderDevice->popState();
 
 }
@@ -426,6 +431,7 @@ void Sky::render(
         renderDevice->setCullFace(RenderDevice::CULL_BACK);
         renderDevice->disableDepthWrite();
         renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
+
 
 	    // Draw the sky box
         renderDevice->resetTextureUnit(0);

@@ -9,15 +9,15 @@
 
 #include "../include/G3DAll.h"
 
-#if G3D_VER < 60700
-    #error Requires G3D 6.07
+#if G3D_VER < 60800
+    #error Requires G3D 6.08
 #endif
 
 #include "Report.h"
 #include "App.h"
 //#define FAST
  
-static const float gfxMeterVersion = 0.6;
+static const float gfxMeterVersion = 0.7;
 
 int CPU_speed_in_MHz();
 
@@ -53,6 +53,7 @@ void App::showSplashScreen() {
 
     for (int i = 0; i < 2; ++i) {
         renderDevice->push2D();
+        
             renderDevice->setColorClearValue(Color3::white());
             renderDevice->clear();
 
@@ -75,6 +76,7 @@ void App::showSplashScreen() {
             reportFont = GFont::fromFile(NULL, dataDir + "arial.fnt");
         }
     }
+    
 }
 
 
@@ -127,7 +129,6 @@ void App::main() {
         std::string filename = "";
         std::string os = System::operatingSystem ();
 
-        //Windows 5.0 build 2195 Platform 2 Service Pack 4
         if (beginsWith(os, "Windows 5.0")) {
             filename = "win2k.jpg";
         } else if (beginsWith(os, "Windows 5.1")) {

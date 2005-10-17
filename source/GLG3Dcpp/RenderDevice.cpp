@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2005-07-05
+ @edited  2005-10-10
  */
 
 
@@ -775,6 +775,10 @@ bool RenderDevice::RenderState::Lights::operator==(const Lights& other) const {
         }
     }
 
+    debugAssertM(changed == false,
+        "Should never enter lighting comparison "
+        "when lighting has not changed.");
+
     return 
         (lighting == other.lighting) && 
         (ambient == other.ambient) &&
@@ -871,7 +875,7 @@ void RenderDevice::setState(
     setSpecularCoefficient(newState.specular);
     setShininess(newState.shininess);
 
-    if (newState.lights.changed) {//(newState.lights != state.lights) {
+    if (state.lights.changed) {//(newState.lights != state.lights) {
         if (newState.lights.lighting) {
             enableLighting();
         } else {
@@ -2059,10 +2063,10 @@ void RenderDevice::enableLighting() {
     debugAssert(! inPrimitive);
     minStateChange();
     if (! state.lights.lighting) {
-        state.lights.changed = true;
         glEnable(GL_LIGHTING);
         minGLStateChange();
         state.lights.lighting = true;
+        state.lights.changed = true;
     }
 }
 
@@ -2071,10 +2075,10 @@ void RenderDevice::disableLighting() {
     debugAssert(! inPrimitive);
     minStateChange();
     if (state.lights.lighting) {
-        state.lights.changed = true;
         glDisable(GL_LIGHTING);
         minGLStateChange();
         state.lights.lighting = false;
+        state.lights.changed = true;
     }
 }
 

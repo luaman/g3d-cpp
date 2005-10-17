@@ -93,7 +93,6 @@ void Report::doFunStuff() {
 
         app->renderDevice->setProjectionAndCameraMatrix(camera);
 
-
         knight.renderShadow(app->renderDevice);
         ogre.renderShadow(app->renderDevice);
 
@@ -258,7 +257,7 @@ void Report::doGraphics() {
         drawBar(app->renderDevice, app->featureRating, p);
 
         // Designed to put NV40 at 50
-        app->performanceRating = app->renderDevice->getFrameRate() / 2.0;
+        app->performanceRating = app->renderDevice->getFrameRate() / 4.0;
 
         p.y += s * 4;
         performanceButton = Rect2D::xywh(p,

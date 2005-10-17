@@ -105,7 +105,6 @@ void Demo::doGraphics() {
         scene.render(lighting);
     app->renderDevice->popState();
 
-    //app->debugPrintf("%s\n", System::mallocPerformance().c_str());
 }
 
 

@@ -179,7 +179,9 @@ Win32Window::Win32Window(const GWindowSettings& s) {
             setIcon(defaultIcon);
         } catch (const GImage::Error& e) {
             // Throw away default icon
-            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+            #ifdef G3D_LINUX
+                fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
+            #endif
 		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
             Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
         }

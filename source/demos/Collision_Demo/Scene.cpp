@@ -111,7 +111,6 @@ void Scene::generateShadowMap(
 
 
 void Scene::render(const LightingParameters& lighting) const {
-
     // Construct a projection and view matrix for the camera so we can 
     // render the scene from the light's point of view
     Matrix4 lightProjectionMatrix(Matrix4::orthogonalProjection(-lightProjX, lightProjX, -lightProjY, lightProjY, lightProjNear, lightProjFar));
@@ -136,6 +135,7 @@ void Scene::render(const LightingParameters& lighting) const {
     if (sky != NULL) {
 		sky->render(lighting);
     }
+
     debugAssertGLOk();
     app->renderDevice->pushState();
     
@@ -163,6 +163,7 @@ void Scene::render(const LightingParameters& lighting) const {
     if (sky != NULL) {
         sky->renderLensFlare(lighting);
     }
+    
 }
 
 

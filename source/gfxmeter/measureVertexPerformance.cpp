@@ -197,6 +197,8 @@ void measureVertexPerformance(
     window = w;
     std::string filename = "bunny.ifs";
 
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+
     for (int i = 0; i < 2; ++i) {
         Model model(filename);
 
@@ -213,6 +215,7 @@ void measureVertexPerformance(
         filename = "";
     }
 
+    glPopAttrib();
 }
 
 

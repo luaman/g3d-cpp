@@ -1641,12 +1641,11 @@ inline void RenderDevice::pushState() {
     // TODO: track the highest light and texture number used so that we don't
     // pay for iterating through others
 
-    // TODO: save the texgen and fog bits in the renderDevice state stack
-    // 
-    //  glPushAttrib(GL_TEXTURE_BIT | GL_FOG_BIT);
     stateStack.push(state);
 
-    // Note that the lights are unchanged since the previous state
+    // Record that that the lights are unchanged since the previous state.
+    // This allows popState to restore the lighting environment efficiently.
+
     state.lights.changed = false;
 }
 
@@ -1654,7 +1653,6 @@ inline void RenderDevice::popState() {
     debugAssert(! inPrimitive);
     debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
     setState(stateStack.pop());
-//    glPopAttrib();
 }
 
 
