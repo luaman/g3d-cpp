@@ -1070,27 +1070,31 @@ void Draw::rect2D(
 
 
 void Draw::fastRect2D(
-    const Rect2D& rect,
-    RenderDevice* rd,
-    const Color4& color) {
+    const Rect2D&       rect,
+    RenderDevice*       rd,
+    const Color4&       color) {
 
-    static const Rect2D texCoord = Rect2D::xywh(0, 0, 1, 1);
     rd->setColor(color);
+    // Use begin primitive in case there are any 
+    // lazy state changes pending.
     rd->beginPrimitive(RenderDevice::QUADS);
         
-        rd->setTexCoord(0, texCoord.x0y0());
-        rd->sendVertex(rect.x0y0());
+        glTexCoord2f(0, 0);
+        glVertex2f(rect.x0(), rect.y0());
 
-        rd->setTexCoord(0, texCoord.x0y1());
-        rd->sendVertex(rect.x0y1());
-        
-        rd->setTexCoord(0, texCoord.x1y1());
-        rd->sendVertex(rect.x1y1());
+        glTexCoord2f(0, 1);
+        glVertex2f(rect.x0(), rect.y1());
 
-        rd->setTexCoord(0, texCoord.x1y0());
-        rd->sendVertex(rect.x1y0());
+        glTexCoord2f(1, 1);
+        glVertex2f(rect.x1(), rect.y1());
+
+        glTexCoord2f(1, 0);
+        glVertex2f(rect.x1(), rect.y0());
 
     rd->endPrimitive();
+
+    // Record the cost of the raw OpenGL calls
+    rd->minGLStateChange(8);
 }
 
 

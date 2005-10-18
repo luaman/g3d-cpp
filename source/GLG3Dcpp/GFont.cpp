@@ -205,7 +205,7 @@ Vector2 GFont::draw2D(
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA,
 				   RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
 
-        renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
+        renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 1/255.0);
 
         const float b = renderDevice->getBrightScale();
 

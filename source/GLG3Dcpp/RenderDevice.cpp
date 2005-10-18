@@ -426,8 +426,6 @@ void RenderDevice::setVideoMode() {
         }
     #endif
 
-	glClearDepth(1.0);
-
     {
         if (debugLog) {
             debugLog->printf("Setting brightness to %g\n", 
@@ -478,105 +476,8 @@ void RenderDevice::setVideoMode() {
     if (GLCaps::supports("GL_NV_multisample_filter_hint")) {
         glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     }
-    glEnable(GL_NORMALIZE);
 
-    debugAssertGLOk();
-    if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-        glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-    }
-
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
-
-    // Compute specular term correctly
-    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-    debugAssertGLOk();
-
-    if (debugLog) debugLog->println("Setting initial rendering state.\n");
-    glDisable(GL_LIGHT0);
-    debugAssertGLOk();
-    {
-        // WARNING: this must be kept in sync with the 
-        // RenderState constructor
-        state = RenderState(getWidth(), getHeight());
-
-        _glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
-        glDepthMask(GL_TRUE);
-        glColorMask(1,1,1,0);
-
-        if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-            glActiveStencilFaceEXT(GL_BACK);
-        }
-        for (int i = 0; i < 2; ++i) {
-            glStencilMask(~0);
-            glDisable(GL_STENCIL_TEST);
-            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-            glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
-            glDisable(GL_ALPHA_TEST);
-            if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-                glActiveStencilFaceEXT(GL_FRONT);
-            }
-        }
-
-        glDepthFunc(GL_LEQUAL);
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_SCISSOR_TEST);
-
-        glDisable(GL_BLEND);
-        glDisable(GL_POLYGON_OFFSET_FILL);
-        glLineWidth(1);
-        glPointSize(1);
-
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.lights.ambient);
-        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, state.lights.twoSidedLighting);
-
-        glDisable(GL_LIGHTING);
-
-        glDrawBuffer(GL_BACK);
-
-        for (int i = 0; i < MAX_LIGHTS; ++i) {
-            setLight(i, NULL, true);
-        }
-        glColor4d(1, 1, 1, 1);
-        glNormal3d(0, 0, 0);
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        setShininess(state.shininess);
-        setSpecularCoefficient(state.specular);
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glShadeModel(GL_FLAT);
-
-        glClearStencil(0);
-        glClearDepth(1);
-        glClearColor(0,0,0,1);
-        glMatrixMode(GL_PROJECTION);
-        glLoadMatrix(state.matrices.projectionMatrix);
-        glMatrixMode(GL_MODELVIEW);
-
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-
-        glDepthRange(0, 1);
-
-        // Set up the texture units.
-        if (glMultiTexCoord4fvARB != NULL) {
-            for (int t = _numTextureCoords - 1; t >= 0; --t) {
-                float f[] = {0,0,0,1};
-                glMultiTexCoord4fvARB(GL_TEXTURE0_ARB + t, f);
-            }
-        } else if (_numTextureCoords > 0) {
-            glTexCoord(Vector4(0,0,0,1));
-        }
-
-        if (glActiveTextureARB != NULL) {
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-        }
-    }
-    debugAssertGLOk();
+    resetState();
 
     if (debugLog) debugLog->printf("Done setting initial state.\n");
 }
@@ -763,7 +664,110 @@ RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0
 
 
 void RenderDevice::resetState() {
-    setState(RenderState(getWidth(), getHeight()));
+    state = RenderState(getWidth(), getHeight());
+
+	glClearDepth(1.0);
+
+    glEnable(GL_NORMALIZE);
+
+    debugAssertGLOk();
+    if (GLCaps::supports_GL_EXT_stencil_two_side()) {
+        glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+    }
+
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+
+    // Compute specular term correctly
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    debugAssertGLOk();
+
+    if (debugLog) debugLog->println("Setting initial rendering state.\n");
+    glDisable(GL_LIGHT0);
+    debugAssertGLOk();
+    {
+        // WARNING: this must be kept in sync with the 
+        // RenderState constructor
+        state = RenderState(getWidth(), getHeight());
+
+        _glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
+        glDepthMask(GL_TRUE);
+        glColorMask(1,1,1,0);
+
+        if (GLCaps::supports_GL_EXT_stencil_two_side()) {
+            glActiveStencilFaceEXT(GL_BACK);
+        }
+        for (int i = 0; i < 2; ++i) {
+            glStencilMask(~0);
+            glDisable(GL_STENCIL_TEST);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+            glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
+            glDisable(GL_ALPHA_TEST);
+            if (GLCaps::supports_GL_EXT_stencil_two_side()) {
+                glActiveStencilFaceEXT(GL_FRONT);
+            }
+        }
+
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_SCISSOR_TEST);
+
+        glDisable(GL_BLEND);
+        glDisable(GL_POLYGON_OFFSET_FILL);
+        glLineWidth(1);
+        glPointSize(1);
+
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, state.lights.ambient);
+        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, state.lights.twoSidedLighting);
+
+        glDisable(GL_LIGHTING);
+
+        glDrawBuffer(GL_BACK);
+
+        for (int i = 0; i < MAX_LIGHTS; ++i) {
+            setLight(i, NULL, true);
+        }
+        glColor4d(1, 1, 1, 1);
+        glNormal3d(0, 0, 0);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        setShininess(state.shininess);
+        setSpecularCoefficient(state.specular);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glShadeModel(GL_FLAT);
+
+        glClearStencil(0);
+        glClearDepth(1);
+        glClearColor(0,0,0,1);
+        glMatrixMode(GL_PROJECTION);
+        glLoadMatrix(state.matrices.projectionMatrix);
+        glMatrixMode(GL_MODELVIEW);
+
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+
+        glDepthRange(0, 1);
+
+        // Set up the texture units.
+        if (glMultiTexCoord4fvARB != NULL) {
+            for (int t = _numTextureCoords - 1; t >= 0; --t) {
+                float f[] = {0,0,0,1};
+                glMultiTexCoord4fvARB(GL_TEXTURE0_ARB + t, f);
+            }
+        } else if (_numTextureCoords > 0) {
+            glTexCoord(Vector4(0,0,0,1));
+        }
+
+        if (glActiveTextureARB != NULL) {
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
+    }
+    debugAssertGLOk();
+
 }
 
 
@@ -1192,6 +1196,7 @@ void RenderDevice::beginFrame() {
     mDebugNumMinorOpenGLStateChanges = 0;
     mDebugNumMajorStateChanges = 0;
     mDebugNumMinorStateChanges = 0;
+    mDebugPushStateCalls = 0;
 
     ++beginEndFrame;
     triangleCount = 0;
@@ -3107,6 +3112,11 @@ bool RenderDevice::supportsVertexBufferObject() const {
 
 uint32 RenderDevice::debugNumMajorOpenGLStateChanges() const {
     return mDebugNumMajorOpenGLStateChanges;
+}
+
+
+uint32 RenderDevice::debugNumPushStateCalls() const {
+    return mDebugPushStateCalls;
 }
 
 

@@ -138,6 +138,7 @@ void Demo::doGraphics(RenderDevice* rd) {
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
 //		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+        
         for (int i = 0; i < 30; ++i) {
             rd->pushState();
                 rd->setColor(Color3::white());

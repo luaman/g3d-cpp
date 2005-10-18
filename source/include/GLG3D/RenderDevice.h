@@ -282,6 +282,7 @@ private:
     uint32 mDebugNumMinorOpenGLStateChanges;
     uint32 mDebugNumMajorStateChanges;
     uint32 mDebugNumMinorStateChanges;
+    uint32 mDebugPushStateCalls;
 
 public:
     // These are abstracted to make it easy to put breakpoints in them
@@ -342,6 +343,7 @@ public:
     uint32 debugNumMinorOpenGLStateChanges() const;
     uint32 debugNumMajorStateChanges() const;
     uint32 debugNumMinorStateChanges() const;
+    uint32 debugNumPushStateCalls() const;
 
     RenderDevice();
 
@@ -1096,8 +1098,7 @@ public:
     void enableTwoSidedLighting();
     void disableTwoSidedLighting();
 
-//private: // TODO
-    public:
+private:
 
 	/** Called immediately before a primitive group 
         @deprecated*/
@@ -1318,6 +1319,7 @@ public:
      */
     Array<RenderState>              stateStack;
 
+    /** Only called from pushState */
     void setState(
         const RenderState&          newState);
 
@@ -1647,6 +1649,7 @@ inline void RenderDevice::pushState() {
     // This allows popState to restore the lighting environment efficiently.
 
     state.lights.changed = false;
+    mDebugPushStateCalls += 1;
 }
 
 inline void RenderDevice::popState() {

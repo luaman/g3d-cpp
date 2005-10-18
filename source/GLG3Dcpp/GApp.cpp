@@ -223,6 +223,7 @@ void GApp::renderDebugInfo() {
         int majAll = renderDevice->debugNumMajorStateChanges();
         int minGL  = renderDevice->debugNumMinorOpenGLStateChanges();
         int minAll = renderDevice->debugNumMinorStateChanges();
+        int pushCalls = renderDevice->debugNumPushStateCalls();
 
         renderDevice->push2D();
             Color3 color = Color3::white();
@@ -254,8 +255,8 @@ void GApp::renderDebugInfo() {
                 debugFont->draw2D(s, pos, size, statColor);
 
                 pos.x += size * 14;
-                s = format("GL Calls: %d/%d Maj; %d/%d Min",
-                    majGL, majAll, minGL, minAll);
+                s = format("GL Calls: %d/%d Maj; %d/%d Min;  %d push",
+                    majGL, majAll, minGL, minAll, pushCalls);
                 debugFont->draw2D(s, pos, size, statColor);
 
                 pos.x = x;
