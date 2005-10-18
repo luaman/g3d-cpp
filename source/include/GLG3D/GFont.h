@@ -65,6 +65,18 @@ private:
         double                  h,
         Spacing                 spacing) const;
 
+    /** Packs vertices for rendering the string
+        into the array as tex/vertex, tex/vertex, ...
+     */
+    Vector2 computePackedArray(
+        const std::string&  s,
+        double              x,
+        double              y,
+        double              w,
+        double              h,
+        Spacing             spacing,
+        Array<Vector2>&     array) const;
+
     class RenderDevice*             renderDevice;
 
     GFont(class RenderDevice* renderDevice, const std::string& filename);

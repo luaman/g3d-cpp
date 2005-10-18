@@ -141,6 +141,85 @@ Vector2 GFont::drawString(
 }
 
 
+Vector2 GFont::computePackedArray(
+    const std::string&  s,
+    double              x,
+    double              y,
+    double              w,
+    double              h,
+    Spacing             spacing,
+    Array<Vector2>&     array) const {
+
+    const double propW = w / charWidth;
+    const int n = s.length();
+
+    // Shrink the vertical texture coordinates by 1 texel to avoid
+    // bilinear interpolation interactions with mipmapping.
+    float sy = h / charHeight;
+
+    float x0 = 0;
+
+    const float mwidth = subWidth[(int)'M'] * 0.85f * propW;
+
+    int count = -1;
+    for (int i = 0; i < n; ++i) {
+        char c = s[i] & 127; // s[i] % 128; avoid using illegal chars
+
+        if (c != ' ') {
+            int row   = c / 16;
+            int col   = c & 15; // c % 16
+
+            // Fixed width
+            float sx = (spacing == PROPORTIONAL_SPACING) ?
+                (charWidth - subWidth[(int)c]) * propW * 0.5f : 0.0;
+
+            float xx = x - sx;
+            // Tex, Vert
+            ++count;
+            array[count].x = col * charWidth;
+            array[count].y = row * charHeight + 1;
+
+            ++count;
+            array[count].x = xx;
+            array[count].y = y + sy;
+
+            
+            ++count;
+            array[count].x = col * charWidth;
+            array[count].y = (row + 1) * charHeight - 2;
+            
+            ++count;
+            array[count].x = xx;
+            array[count].y = y + h - sy;
+
+
+            xx += w;
+            ++count;
+            array[count].x = (col + 1) * charWidth - 1;
+            array[count].y = (row + 1) * charHeight - 2;
+            
+            ++count;
+            array[count].x = xx;
+            array[count].y = y + h - sy;
+    
+
+            ++count;
+            array[count].x = (col + 1) * charWidth - 1;
+            array[count].y = row * charHeight + 1;
+
+            ++count;
+            array[count].x = xx;
+            array[count].y = y + sy;
+        }
+
+        x += (spacing == PROPORTIONAL_SPACING) ?
+            propW * subWidth[(int)c] : mwidth;
+    }
+
+    return Vector2(x - x0, h);
+}
+
+
 Vector2 GFont::draw2D(
     RenderDevice*               renderDevice,
     const std::string&          s,
@@ -213,21 +292,53 @@ Vector2 GFont::draw2D(
             glActiveTextureARB(GL_TEXTURE0_ARB);
         }
 
-        renderDevice->beginPrimitive(RenderDevice::QUADS);
-            // Draw border
-            if (border.a > 0.05) {
-                renderDevice->setColor(Color4(border.r * b, border.g * b, border.b * b, border.a));
-                for (int dy = -1; dy <= 1; dy += 2) {
-                    for (int dx = -1; dx <= 1; dx += 2) {
-                        drawString(renderDevice, s, x + dx, y + dy, w, h, spacing);
+
+        int numChars = 0;
+        for (int i = 0; i < s.length(); ++i) {
+            numChars += ((s[i] % 128) != ' ') ? 1 : 0;
+        }
+
+        // Packed vertex array; tex coord and vertex are interlaced
+        // For each character we need 4 vertices.
+        Array<Vector2> array(numChars * 4 * 2);
+        Vector2 bounds = computePackedArray(s, x, y, w, h, spacing, array);
+
+        int N = numChars * 4;
+
+        // TODO: make a syncToOpenGL call to do this
+        // renderDevice->beginPrimitive(RenderDevice::QUADS); renderDevice->endPrimitive();
+
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        // 2 coordinates per element, float elements, stride (for interlacing), count, pointer
+        glTexCoordPointer(2, GL_FLOAT, sizeof(Vector2) * 2, &array[0]);
+        glVertexPointer(2, GL_FLOAT, sizeof(Vector2) * 2, &array[1]);
+
+        if (border.a > 0.05) {
+            renderDevice->setColor(Color4(border.r * b, border.g * b, border.b * b, border.a));
+            glMatrixMode(GL_MODELVIEW);
+            float lastDx = 0, lastDy = 0;
+            for (int dy = -1; dy <= 1; dy += 2) {
+                for (int dx = -1; dx <= 1; dx += 2) {
+                    if ((dx != 0) || (dy != 0)) {
+                        // Shift modelview matrix by dx, dy, but also undo the 
+                        // shift from the previous outline
+                        glTranslatef(dx - lastDx, dy - lastDy, 0);
+                        glDrawArrays(GL_QUADS, 0, N);
+                        lastDx = dx; lastDy = dy;
                     }
                 }
             }
+            glTranslatef(-lastDx, -lastDy, 0);
+        }
 
-            // Draw foreground
-            renderDevice->setColor(Color4(color.r * b, color.g * b, color.b * b, color.a));
-            const Vector2 bounds = drawString(renderDevice, s, x, y, w, h, spacing);
-        renderDevice->endPrimitive();
+        // Draw foreground
+        renderDevice->setColor(Color4(color.r * b, color.g * b, color.b * b, color.a));
+        glDrawArrays(GL_QUADS, 0, N);
+
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
     renderDevice->popState();
 
     debugAssertGLOk();
@@ -317,10 +428,12 @@ Vector2 GFont::draw3D(
                 renderDevice->setColor(border);
                 for (int dy = -1; dy <= 1; dy += 2) {
                     for (int dx = -1; dx <= 1; dx += 2) {
-                        drawString(renderDevice, s,
-				           x + dx * borderOffset, 
-				           y + dy * borderOffset,
-				           w, h, spacing);
+                        if ((dx != 0) || (dy != 0)) {
+                            drawString(renderDevice, s,
+				               x + dx * borderOffset, 
+				               y + dy * borderOffset,
+				               w, h, spacing);
+                        }
                     }
                 }
             }
