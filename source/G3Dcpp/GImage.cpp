@@ -1181,7 +1181,14 @@ void GImage::decodeICO(
 	// Read the mask into the alpha channel
 	int bitsPerRow  = width;
 	int bytesPerRow = iCeil((double)bitsPerRow / 8);
-	for (int y = height - 1; y >= 0; --y) {
+
+    // For bitmaps, each scanline is dword-aligned.
+    //BMScanWidth = (width + 1) >> 1;
+    if (bytesPerRow & 3) {
+        bytesPerRow += 4 - (bytesPerRow & 3);
+    }
+    
+    for (int y = height - 1; y >= 0; --y) {
 		int x = 0;
 		// Read the row
 		for (int i = 0; i < bytesPerRow; ++i) {
