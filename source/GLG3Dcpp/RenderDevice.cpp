@@ -927,7 +927,7 @@ void RenderDevice::setState(
 
     setDepthRange(newState.lowDepthRange, newState.highDepthRange);
 
-    if (newState.matrices != state.matrices) { 
+    if (state.matrices.changed) { //(newState.matrices != state.matrices) { 
         if (newState.matrices.cameraToWorldMatrix != state.matrices.cameraToWorldMatrix) {
             setCameraToWorldMatrix(newState.matrices.cameraToWorldMatrix);
         }
@@ -2096,6 +2096,7 @@ void RenderDevice::setObjectToWorldMatrix(
 
     // No test to see if it is already equal; this is called frequently and is
     // usually different.
+    state.matrices.changed = true;
     state.matrices.objectToWorldMatrix = cFrame;
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrix(state.matrices.cameraToWorldMatrixInverse * state.matrices.objectToWorldMatrix);
@@ -2115,6 +2116,7 @@ void RenderDevice::setCameraToWorldMatrix(
     majStateChange();
     majGLStateChange();
     
+    state.matrices.changed = true;
     state.matrices.cameraToWorldMatrix = cFrame;
     state.matrices.cameraToWorldMatrixInverse = cFrame.inverse();
 
@@ -2159,6 +2161,7 @@ void RenderDevice::setProjectionMatrix(const Matrix4& P) {
     minStateChange();
     if (state.matrices.projectionMatrix != P) {
         state.matrices.projectionMatrix = P;
+        state.matrices.changed = true;
         glMatrixMode(GL_PROJECTION);
         glLoadMatrix(P);
         glMatrixMode(GL_MODELVIEW);
@@ -2760,8 +2763,7 @@ void RenderDevice::endIndexedPrimitives() {
 	debugAssert(! inPrimitive);
 	debugAssert(inIndexedPrimitive);
 
-    // TODO:
-    //glBindBufferARB(GL_ARRAY_BUFFER_ARB, area->glbuffer);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 
 	glPopClientAttrib();
 	inIndexedPrimitive = false;
@@ -3090,18 +3092,8 @@ bool RenderDevice::supportsTextureRectangle() const {
 }
 
 
-bool RenderDevice::supportsVertexProgram() const {
-    return GLCaps::supports_GL_ARB_vertex_program();
-}
-
-
 bool RenderDevice::supportsVertexProgramNV2() const {
     return GLCaps::supports_GL_NV_vertex_program2();
-}
-
-
-bool RenderDevice::supportsPixelProgram() const {
-    return GLCaps::supports_GL_ARB_fragment_program();
 }
 
 

@@ -139,7 +139,7 @@ void Demo::doGraphics(RenderDevice* rd) {
 
 //		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
         
-        for (int i = 0; i < 30; ++i) {
+        for (int i = 0; i < 100; ++i) {
             rd->pushState();
                 rd->setColor(Color3::white());
             rd->popState();

@@ -1210,6 +1210,9 @@ private:
             CoordinateFrame             cameraToWorldMatrix;
             CoordinateFrame             cameraToWorldMatrixInverse;
             Matrix4                     projectionMatrix;
+            bool                        changed;
+
+            inline Matrices() : changed(true) {}
 
             bool operator==(const Matrices& other) const;
 
@@ -1371,7 +1374,7 @@ public:
      @deprecated
      Use VertexAndPixelShader
      */
-    bool supportsVertexProgram() const;
+    inline bool supportsVertexProgram() const;
 
     /**
      When true, NVIDIA Vertex Program 2.0 vertex programs can
@@ -1385,7 +1388,7 @@ public:
      @deprecated
      Use VertexAndPixelShader
      */
-    bool supportsPixelProgram() const;
+    inline bool supportsPixelProgram() const;
 
     /**
      When true, VAR arrays will be in video, not main memory,
@@ -1786,6 +1789,17 @@ inline void RenderDevice::runObjectShader() {
 		state.objectShader->run(this);
 	}
 }
+
+
+inline bool RenderDevice::supportsPixelProgram() const {
+    return GLCaps::supports_GL_ARB_fragment_program();
+}
+
+
+inline bool RenderDevice::supportsVertexProgram() const {
+    return GLCaps::supports_GL_ARB_vertex_program();
+}
+
 
 } // namespace
 

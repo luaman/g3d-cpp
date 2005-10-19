@@ -75,7 +75,7 @@ private:
         double              w,
         double              h,
         Spacing             spacing,
-        Array<Vector2>&     array) const;
+        Vector2*            array) const;
 
     class RenderDevice*             renderDevice;
 

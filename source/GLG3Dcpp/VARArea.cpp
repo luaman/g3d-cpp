@@ -53,7 +53,7 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
     switch (mode) {
     case VBO_MEMORY:
         {
-            glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+            //glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
                 glGenBuffersARB(1, &glbuffer);
                 glBindBufferARB(GL_ARRAY_BUFFER_ARB, glbuffer);
 
@@ -84,8 +84,9 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
                 // The basePointer is always NULL for a VBO
                 basePointer = NULL;
 
-            glPopClientAttrib();
-            debugAssertGLOk();    
+                glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+            //glPopClientAttrib();
+            debugAssertGLOk();
         }
         break;
 

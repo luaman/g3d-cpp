@@ -243,19 +243,11 @@ void GApp::renderDebugInfo() {
                     pos, size, color);
                 pos.y += size * 1.5;
 
-                std::string s = format("%-4dfps", iRound(m_graphicsWatch.smoothFPS()));
-                debugFont->draw2D(s, pos, size, statColor);
-
-                pos.x += size * 8;
-                s = format("%3.1gM tris", iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1);
-                debugFont->draw2D(s, pos, size, statColor);
-
-                pos.x += size * 8;
-                s = format("%3.1gM tris/s", iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1);
-                debugFont->draw2D(s, pos, size, statColor);
-
-                pos.x += size * 14;
-                s = format("GL Calls: %d/%d Maj; %d/%d Min;  %d push",
+                std::string s = format(
+                    "% 4dfps % 4.1gM tris % 4.1gM tris/s   GL Calls: %d/%d Maj; %d/%d Min; %d push", 
+                    iRound(m_graphicsWatch.smoothFPS()),
+                    iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1,
+                    iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1,
                     majGL, majAll, minGL, minAll, pushCalls);
                 debugFont->draw2D(s, pos, size, statColor);
 

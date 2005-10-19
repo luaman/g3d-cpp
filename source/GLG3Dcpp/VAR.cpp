@@ -129,8 +129,8 @@ void VAR::uploadToCard(const void* sourcePtr, int dstPtrOffset, size_t size) {
         // use VBO on its own.
         glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
             glBindBufferARB(GL_ARRAY_BUFFER_ARB, area->glbuffer);
-
             glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (GLintptrARB)ptr, size, sourcePtr);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         glPopClientAttrib();
         break;
 
