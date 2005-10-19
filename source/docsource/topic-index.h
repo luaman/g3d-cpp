@@ -286,6 +286,7 @@
         G3D::setFailureHook
 
      <LI><B>System</B> &nbsp; &nbsp;
+        G3D::AtomicInt32,
         G3D::BinaryFormat, G3D::byteSize, G3D::binaryFormatOf,
         G3D::BinaryInput, 
         G3D::BinaryOutput, 
@@ -301,6 +302,7 @@
         G3D::filenamePath,
         G3D::fileIsNewer,
         G3D::G3DEndian,
+        G3D::GThread,
         G3D::getFiles, 
         G3D::getDirs,
         G3D::msgBox,
