@@ -6,9 +6,18 @@
 
  */
 
+#ifndef G3D_GTHREAD_H
+#define G3D_GTHREAD_H
+
 #include <string>
 
 #include "G3D/AtomicInt32.h"
+
+#ifdef G3D_WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
 
 namespace G3D {
 
@@ -22,15 +31,15 @@ namespace _internal {
 class GThread {
 private:
 
-    _internal::GThreadPrivate* pthread;
+    _internal::GThreadPrivate*          pthread;
 
     // Thread handle to hold HANDLE and pthread_t
-    void* handle;
+    void*                               handle;
 
     // Used for thread closure signaling
-    AtomicInt32 signalInt32;
+    AtomicInt32                         signalInt32;
 
-    std::string _name;
+    std::string                         _name;
 
     // Not implemented on purpose, don't use
     GThread& operator=(const GThread&);
@@ -87,6 +96,9 @@ public:
 protected:
     friend class _internal::GThreadPrivate;
 
+    #define CHECK_STOP_SIGNAL \
+        {if (signalInt32.value()) return;}
+
     virtual void main() = 0;
 };
 
@@ -106,4 +118,53 @@ protected:
 }
 
 
+/**
+    GMutex's documentation
+*/
+class GMutex {
+private:
+#   ifdef G3D_WIN32
+    CRITICAL_SECTION                    handle;
+#   else
+    pthread_mutex_t                     handle;
+#   endif
+
+public:
+    GMutex();
+    ~GMutex();
+
+//    /** Only available on NT and later. */
+//    bool tryLock();
+
+    void lock();
+
+    void unlock();
+};
+
+
+/**
+    GMutexLock's documentation.
+    Automatically locks while in scope.
+*/
+class GMutexLock {
+private:
+    GMutex* m;
+
+    GMutexLock(const GMutexLock &mlock);
+    GMutexLock &operator=(const GMutexLock &);
+    bool operator==(const GMutexLock&);
+
+public:
+    GMutexLock(GMutex* mutex) {
+        m = mutex;
+        m->lock();
+    }
+
+    ~GMutexLock() {
+        m->unlock();
+    }
+};
+
 } // namespace G3D
+
+#endif //G3D_GTHREAD_H
