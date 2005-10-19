@@ -109,6 +109,10 @@ void Demo::doUserInput(UserInput* ui) {
         app->endProgram = true;
     }
 
+    if (ui->keyPressed(SDLK_F10)) {
+        endApplet = true;
+    }
+
 	// Add other key handling here
 }
 
