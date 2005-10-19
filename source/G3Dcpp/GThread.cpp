@@ -76,6 +76,13 @@ GThread* GThread::create(const std::string& name, void (*proc)()) {
 }
 
 bool GThread::start() {
+
+    debugAssertM(!pthread->completed, "Thread has already executed.");
+
+    if (pthread->completed) {
+        return false;
+    }
+
     DWORD threadId;
 
     handle = ::CreateThread(
@@ -109,6 +116,48 @@ void GThread::signalStopSafely() {
 
 void GThread::waitForCompletion() {
     ::WaitForSingleObject(pthread->event, INFINITE);
+}
+
+
+GMutex::GMutex() {
+#   ifdef G3D_WIN32
+    ::InitializeCriticalSection(&handle);
+#   else
+    pthread_mutex_init(&handle, NULL);
+#   endif
+}
+
+GMutex::~GMutex() {
+    //TODO: Debug check for locked
+#   ifdef G3D_WIN32
+    ::DeleteCriticalSection(&handle);
+#   else
+    pthread_mutex_destroy(&handle);
+#   endif
+}
+
+//bool GMutex::tryLock() {
+//#   ifdef G3D_WIN32
+//    return ::TryEnterCriticalSection(&handle);
+//#   else
+//    return pthread_mutex_trylock(&handle);
+//#   endif
+//}
+
+void GMutex::lock() {
+#   ifdef G3D_WIN32
+    ::EnterCriticalSection(&handle);
+#   else
+    pthread_mutex_lock(&handle);
+#   endif
+}
+
+void GMutex::unlock() {
+#   ifdef G3D_WIN32
+    ::LeaveCriticalSection(&handle);
+#   else
+    pthread_mutex_unlock();
+#   endif
 }
 
 } // namespace G3D
