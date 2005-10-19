@@ -86,6 +86,8 @@
 #include "G3D/TextOutput.h"
 #include "G3D/MeshBuilder.h"
 #include "G3D/Stopwatch.h"
+#include "G3D/AtomicIn32.h"
+#include "G3D/GThread.h"
 
 #endif
 
