@@ -12,6 +12,8 @@
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 
+#if _MSC_VER > 1200
+
 namespace G3D {
 
 /**
@@ -20,69 +22,37 @@ namespace G3D {
 
  On Win32 and Linux this is implemented without locks.  
 
- On PPC, AtomicInt32 is currently not atomic.  A future implementation may use locks 
- and be comparatively slow.
-
  <B>BETA API</B>  This is unsupported and may change
  */
-//TODO: PPC
 class AtomicInt32 {
 private:
     friend class AtomicInt32;
 
-#if defined (G3D_WIN32)
-    volatile LONG           _value;
-#else
     volatile int32          _value;
-#endif
 
 public:
 
     /** Atomic set */
     explicit inline AtomicInt32(const int32 x) {
-#       if defined(G3D_WIN32)
-            // Asignment is done this way because APR does it this way.
-            // Morgan believes that volatile should be sufficient, however.
-            InterlockedExchange(&_value, x);
-#       elif defined(G3D_LINUX)
-            _value = x;
-#       elif defined(G3D_OSX)
-            _value = x;
-#       endif
+        // APR does this assignment using InterlockedExchange
+        // Morgan believes that volatile should be sufficient, however.
+        _value = x;
     }
 
     /** Atomic set */
     inline AtomicInt32(const AtomicInt32& x) {
-#       if defined(G3D_WIN32)
-            InterlockedExchange(&_value, x._value);
-#       elif defined(G3D_LINUX)
-            _value = x._value;
-#       elif defined(G3D_OSX)
-            _value = x;
-#       endif
+        _value = x._value;
     }
 
     /** Atomic set */
     inline const AtomicInt32& operator=(const int32 x) {
-#       if defined(G3D_WIN32)
-            InterlockedExchange(&_value, x);
-#       elif defined(G3D_LINUX)
-            _value = x;
-#       elif defined(G3D_OSX)
-            _value = x;
-#       endif
+        _value = x;
         return *this;
     }
 
     /** Atomic set */
     inline const void operator=(const AtomicInt32& x) {
-#       if defined(G3D_WIN32)
-            InterlockedExchange(&_value, x._value);
-#       elif defined(G3D_LINUX)
-            _value = x._value;
-#       elif defined(G3D_OSX)
-            _value = x._value;
-#       endif
+        _value = x._value;
     }
 
     /** Returns the current value */
@@ -200,5 +170,5 @@ public:
 };
 
 } // namespace
-
+#endif
 #endif

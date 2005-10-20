@@ -9,6 +9,8 @@
 #ifndef G3D_GTHREAD_H
 #define G3D_GTHREAD_H
 
+#if _MSC_VER > 1200
+
 #include <string>
 
 #include "G3D/AtomicInt32.h"
@@ -167,4 +169,5 @@ public:
 
 } // namespace G3D
 
+#endif
 #endif //G3D_GTHREAD_H
