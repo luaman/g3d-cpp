@@ -1648,10 +1648,12 @@ inline void RenderDevice::pushState() {
 
     stateStack.push(state);
 
-    // Record that that the lights are unchanged since the previous state.
+    // Record that that the lights and matrices are unchanged since the previous state.
     // This allows popState to restore the lighting environment efficiently.
 
     state.lights.changed = false;
+    state.matrices.changed = false;
+
     mDebugPushStateCalls += 1;
 }
 
