@@ -124,7 +124,7 @@ void Demo::doGraphics(RenderDevice* rd) {
 
     
     for (int i = 0; i < 35; ++i) {
-        app->debugPrintf("XXXXXXXXXX");
+    //    app->debugPrintf("XXXXXXXXXX");
     }
     
 
@@ -142,12 +142,14 @@ void Demo::doGraphics(RenderDevice* rd) {
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
 //		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+
         
         for (int i = 0; i < 100; ++i) {
             rd->pushState();
                 rd->setColor(Color3::white());
             rd->popState();
         }
+        
 
     app->renderDevice->disableLighting();
 
@@ -162,7 +164,7 @@ void App::main() {
 	debugController.setActive(true);
 
     // Load objects here
-    sky = Sky::create(NULL, dataDir + "sky/");
+    sky = NULL;//Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
 }

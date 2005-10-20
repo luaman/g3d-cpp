@@ -242,7 +242,7 @@ void GApp::renderDebugInfo() {
                 debugFont->draw2D(renderDevice->getCardDescription() + "   " + System::version(), 
                     pos, size, color);
                 pos.y += size * 1.5;
-
+                
                 std::string s = format(
                     "% 4dfps % 4.1gM tris % 4.1gM tris/s   GL Calls: %d/%d Maj; %d/%d Min; %d push", 
                     iRound(m_graphicsWatch.smoothFPS()),

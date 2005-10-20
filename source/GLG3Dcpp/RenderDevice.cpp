@@ -568,23 +568,23 @@ void RenderDevice::pop2D() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-RenderDevice::RenderState::RenderState(int width, int height) {
+RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
 
     // WARNING: this must be kept in sync with the initialization code
     // in init();
-    viewport                    = Rect2D::xywh(0, 0, width, height);
+    viewport(Rect2D::xywh(0, 0, width, height)),
 
-    useClip2D                   = false;
+    useClip2D(false),
 
-    depthWrite                  = true;
-    colorWrite                  = true;
-    alphaWrite                  = false;
+    depthWrite(true),
+    colorWrite(true),
+    alphaWrite(false),
 
-    lights.twoSidedLighting     = false;
+    lights.twoSidedLighting(false),
 
-    depthTest                   = DEPTH_LEQUAL;
-    alphaTest                   = ALPHA_ALWAYS_PASS;
-    alphaReference              = 0.0;
+    depthTest(DEPTH_LEQUAL),
+    alphaTest(ALPHA_ALWAYS_PASS),
+    alphaReference(0.0) {
 
     srcBlendFunc                = BLEND_ONE;
     dstBlendFunc                = BLEND_ZERO;
@@ -648,6 +648,9 @@ RenderDevice::RenderState::RenderState(int width, int height) {
 
     lowDepthRange               = 0;
     highDepthRange              = 1;
+
+
+    highestTextureUnitThatChanged = htutc;
 }
 
 
@@ -688,7 +691,7 @@ void RenderDevice::resetState() {
     {
         // WARNING: this must be kept in sync with the 
         // RenderState constructor
-        state = RenderState(getWidth(), getHeight());
+        state = RenderState(getWidth(), getHeight(), iMax(_numTextures, _numTextureCoords) - 1);
 
         _glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
         glDepthMask(GL_TRUE);
@@ -906,7 +909,7 @@ void RenderDevice::setState(
     setColor(newState.color);
     setNormal(newState.normal);
 
-    for (int u = iMax(_numTextures, _numTextureCoords) - 1; u >= 0; --u) {
+    for (int u = state.highestTextureUnitThatChanged; u >= 0; --u) {
         if (newState.textureUnit[u] != state.textureUnit[u]) {
 
             if (u < (int)numTextures()) {
@@ -951,6 +954,10 @@ void RenderDevice::setState(
         setPixelProgram(newState.pixelProgram);
     }
     
+    // Adopt the popped state's deltas relative the state that it replaced.
+    state.highestTextureUnitThatChanged = newState.highestTextureUnitThatChanged;
+    state.matrices.changed = newState.matrices.changed;
+    state.lights.changed = newState.lights.changed;
 }
 
 
@@ -1131,6 +1138,30 @@ void RenderDevice::setCullFace(CullFace f) {
 
         state.cullFace = f;
     }
+}
+
+
+
+void RenderDevice::pushState() {
+    debugAssert(! inPrimitive);
+
+    stateStack.push(state);
+
+    // Record that that the lights and matrices are unchanged since the previous state.
+    // This allows popState to restore the lighting environment efficiently.
+
+    state.lights.changed = false;
+    state.matrices.changed = false;
+    state.highestTextureUnitThatChanged = -1;
+
+    mDebugPushStateCalls += 1;
+}
+
+
+void RenderDevice::popState() {
+    debugAssert(! inPrimitive);
+    debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
+    setState(stateStack.pop());
 }
 
 
@@ -2184,6 +2215,7 @@ void RenderDevice::forceSetTextureMatrix(int unit, const float* m) {
     minStateChange();
     minGLStateChange();
 
+    state.touchedTextureUnit(unit);
     memcpy(state.textureUnit[unit].textureMatrix, m, sizeof(float)*16);
     if (GLCaps::supports_GL_ARB_multitexture()) {
         glActiveTextureARB(GL_TEXTURE0_ARB + unit);
@@ -2300,6 +2332,7 @@ void RenderDevice::setTextureLODBias(
 
     minStateChange();
     if (state.textureUnit[unit].LODBias != bias) {
+        state.touchedTextureUnit(unit);
 
         if (GLCaps::supports_GL_ARB_multitexture()) {
             glActiveTextureARB(GL_TEXTURE0_ARB + unit);
@@ -2328,6 +2361,7 @@ void RenderDevice::setTextureCombineMode(
 
     if ((state.textureUnit[unit].combineMode != mode)) {
         minGLStateChange();
+        state.touchedTextureUnit(unit);
 
         state.textureUnit[unit].combineMode = mode;
 
@@ -2392,6 +2426,7 @@ void RenderDevice::resetTextureUnit(
 
     RenderState newState(state);
     state.textureUnit[unit] = RenderState::TextureUnit();
+    state.touchedTextureUnit(unit);
     setState(newState);
 }
 
@@ -2439,6 +2474,7 @@ void RenderDevice::setTexCoord(uint unit, const Vector4& texCoord) {
         debugAssertM(unit == 0, "This machine has only one texture unit");
         glTexCoord(texCoord);
     }
+    state.touchedTextureUnit(unit);
     minStateChange();
     minGLStateChange();
 }
@@ -2582,6 +2618,7 @@ void RenderDevice::setTexture(
     majGLStateChange();
 
     state.textureUnit[unit].texture = texture;
+    state.touchedTextureUnit(unit);
 
     if (GLCaps::supports_GL_ARB_multitexture()) {
         glActiveTextureARB(GL_TEXTURE0_ARB + unit);

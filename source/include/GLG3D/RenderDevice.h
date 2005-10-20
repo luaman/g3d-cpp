@@ -367,9 +367,7 @@ public:
 
     /**
      Checkmarks all RenderDevice state (anything that can be set 
-     using RenderDevice methods).  Also saves the OpenGL fog and
-     texture coordinate generation state (GL_TEXTURE_BIT | GL_FOG_BIT) 
-     that is not otherwise managed by RenderDevice.
+     using RenderDevice methods).
 
      If you are using some other OpenGL state that is not covered by
      any of the above (e.g., the glReadBuffer and other buffer options),
@@ -1134,10 +1132,6 @@ private:
             /** NULL if not bound */
             TextureRef              texture;
 
-            /** Is tex coord generation enabled for R,S,T,Q?  Each
-                byte is one field.*/
-            uint32                  texGenEnabled;
-
             float                   textureMatrix[16];
             CombineMode             combineMode;
             float                   LODBias;
@@ -1150,8 +1144,7 @@ private:
                     (texture == other.texture) &&
                     (memcmp(textureMatrix, other.textureMatrix, sizeof(float)*16) == 0) &&
                     (combineMode == other.combineMode) &&
-                    (LODBias == other.LODBias) &&
-                    (texGenEnabled == other.texGenEnabled);
+                    (LODBias == other.LODBias);
             }
 
             inline bool operator!=(const TextureUnit& other) const {
@@ -1277,10 +1270,18 @@ private:
 
         Color4                      color;
         Vector3                     normal;
+
+        /** Index of the highest texture unit that changed since pushState,
+            used for short-circuiting work in popstate */
+        int                         highestTextureUnitThatChanged;
         TextureUnit                 textureUnit[GLCaps::G3D_MAX_TEXTURE_UNITS];
         Matrices                    matrices;
 
-        RenderState(int width = 1, int height = 1);
+        inline void touchedTextureUnit(int u) {
+            highestTextureUnitThatChanged = iMax(highestTextureUnitThatChanged, u);
+        }
+
+        RenderState(int width = 1, int height = 1, int highestTextureUnitThatChanged = GLCaps::G3D_MAX_TEXTURE_UNITS);
 
         bool operator==(const RenderState& other) const;
     };
@@ -1638,30 +1639,6 @@ public:
     #endif
 
 };
-
-
-inline void RenderDevice::pushState() {
-    debugAssert(! inPrimitive);
-
-    // TODO: track the highest light and texture number used so that we don't
-    // pay for iterating through others
-
-    stateStack.push(state);
-
-    // Record that that the lights and matrices are unchanged since the previous state.
-    // This allows popState to restore the lighting environment efficiently.
-
-    state.lights.changed = false;
-    state.matrices.changed = false;
-
-    mDebugPushStateCalls += 1;
-}
-
-inline void RenderDevice::popState() {
-    debugAssert(! inPrimitive);
-    debugAssertM(stateStack.size() > 0, "More calls to RenderDevice::pushState() than RenderDevice::popState().");
-    setState(stateStack.pop());
-}
 
 
 inline void RenderDevice::setAlphaWrite(bool a) {
