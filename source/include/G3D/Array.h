@@ -425,6 +425,8 @@ public:
             T tmp = value;
             append(tmp);
         } else {
+            // Here we run the empty initializer where we don't have to, but
+            // this simplifies the computation.
             resize(num + 1, DONT_SHRINK_UNDERLYING_ARRAY);
             data[num - 1] = value;
         }
@@ -436,6 +438,12 @@ public:
             T t1 = v1;
             T t2 = v2;
             append(t1, t2);
+        } else if (num + 1 < numAllocated) {
+            // This is a simple situation; just stick it in the next free slot using
+            // the copy constructor.
+            new (data + num) T(v1);
+            new (data + num + 1) T(v2);
+            num += 2;
         } else {
             resize(num + 2, DONT_SHRINK_UNDERLYING_ARRAY);
             data[num - 2] = v1;
@@ -450,6 +458,13 @@ public:
             T t2 = v2;
             T t3 = v3;
             append(t1, t2, t3);
+        } else if (num + 2 < numAllocated) {
+            // This is a simple situation; just stick it in the next free slot using
+            // the copy constructor.
+            new (data + num) T(v1);
+            new (data + num + 1) T(v2);
+            new (data + num + 2) T(v3);
+            num += 3;
         } else {
             resize(num + 3, DONT_SHRINK_UNDERLYING_ARRAY);
             data[num - 3] = v1;
@@ -466,6 +481,14 @@ public:
             T t3 = v3;
             T t4 = v4;
             append(t1, t2, t3, t4);
+        } else if (num + 3 < numAllocated) {
+            // This is a simple situation; just stick it in the next free slot using
+            // the copy constructor.
+            new (data + num) T(v1);
+            new (data + num + 1) T(v2);
+            new (data + num + 2) T(v3);
+            new (data + num + 3) T(v4);
+            num += 4;
         } else {
             resize(num + 4, DONT_SHRINK_UNDERLYING_ARRAY);
             data[num - 4] = v1;
@@ -570,6 +593,12 @@ public:
        T temp = data[num - 1];
        resize(num - 1, shrinkUnderlyingArrayIfNecessary);
        return temp;
+   }
+
+   /** Pops the last element and discards it.  Faster than pop.*/
+   inline void popDiscard(bool shrinkUnderlyingArrayIfNecessary = false) {
+       debugAssert(num > 0);
+       resize(num - 1, shrinkUnderlyingArrayIfNecessary);
    }
 
 

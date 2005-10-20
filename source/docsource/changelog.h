@@ -36,7 +36,9 @@
   <P>
    Changes in 6.08:
     <UL>
-      <LI> G3D::GFont::draw 2x faster than in G3D 6.07
+      <LI> G3D::Array::popDiscard
+      <LI> Optimized multi-argument Array::append
+      <LI> G3D::GFont 2x faster than in G3D 6.07
       <LI> G3D::RenderDevice::pushState 2x faster than in G3D 6.07
       <LI> G3D::RenderDevice::pushState no longer stores GL texgen and fog information           
       <LI> G3D::Draw::fastRect2D
