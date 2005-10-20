@@ -1437,6 +1437,14 @@ public:
     /** Returns true after RenderDevice::init has been called. */
     bool initialized() const;
 
+    inline const Color4& color() const {
+        return state.color;
+    }
+
+    inline ShadeMode shadeMode() const {
+        return state.shadeMode;
+    }
+
 	/**
 	 Shuts down the system.  This should be the last call you make.
 	 */

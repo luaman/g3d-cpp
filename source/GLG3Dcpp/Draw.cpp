@@ -160,44 +160,46 @@ void Draw::ray(
     v = w.cross(u).direction();
     Vector3 back = tip - u * 0.3 * scale;
 
-    renderDevice->pushState();
-        renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
-        renderDevice->setColor(color);
+    RenderDevice::ShadeMode oldShadeMode = renderDevice->shadeMode();
+    Color4 oldColor = renderDevice->color();
 
-        double r = scale * .1;
-        // Arrow head
-        renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
-            renderDevice->setNormal(u);
-            for (int a = 0; a < SPHERE_SECTIONS; ++a) {
-                double angle0 = a * G3D_PI * 2.0 / SPHERE_SECTIONS;
-                double angle1 = (a + 1) * G3D_PI * 2.0 / SPHERE_SECTIONS;
-                Vector3 dir0 = cos(angle0) * v + sin(angle0) * w;
-                Vector3 dir1 = cos(angle1) * v + sin(angle1) * w;
+    renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+    renderDevice->setColor(color);
 
-                renderDevice->setNormal(dir0);
-                renderDevice->sendVertex(tip);
+    float r = scale * .1;
+    // Arrow head.  Need this beginprimitive call to sync up G3D and OpenGL
+    renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
+        renderDevice->setNormal(u);
+        for (int a = 0; a < SPHERE_SECTIONS; ++a) {
+            float angle0 = a * G3D_PI * 2.0 / SPHERE_SECTIONS;
+            float angle1 = (a + 1) * G3D_PI * 2.0 / SPHERE_SECTIONS;
+            Vector3 dir0(cos(angle0) * v + sin(angle0) * w);
+            Vector3 dir1(cos(angle1) * v + sin(angle1) * w);
+            glNormal3fv(dir0);
+            glVertex3fv(tip);
 
-                renderDevice->sendVertex(back + dir0 * r);
+            glVertex3fv(back + dir0 * r);
 
-                renderDevice->setNormal(dir1);
-                renderDevice->sendVertex(back + dir1 * r);
-            }
-        renderDevice->endPrimitive();
+            glNormal3fv(dir1);
+            glVertex3fv(back + dir1 * r);                
+        }
+    renderDevice->endPrimitive();
+    renderDevice->minGLStateChange(SPHERE_SECTIONS * 5);
 
-        // Back of arrow head
-        renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
-            renderDevice->setNormal(-u);
-            for (int a = 0; a <= SPHERE_SECTIONS; ++a) {
-                double angle = a * G3D_PI * 2.0 / SPHERE_SECTIONS;
-                Vector3 dir = sin(angle) * v + cos(angle) * w;
-                renderDevice->sendVertex(back + dir * r);
-            }
-        renderDevice->endPrimitive();
+    // Back of arrow head
+    glBegin(GL_TRIANGLE_FAN);
+        glNormal3fv(-u);
+        for (int a = 0; a <= SPHERE_SECTIONS; ++a) {
+            float angle = a * G3D_PI * 2.0 / SPHERE_SECTIONS;
+            Vector3 dir = sin(angle) * v + cos(angle) * w;
+            glVertex3fv(back + dir * r);
+        }
+    glEnd();
+    renderDevice->minGLStateChange(SPHERE_SECTIONS);
 
-    renderDevice->popState();
-
+    renderDevice->setColor(oldColor);
+    renderDevice->setShadeMode(oldShadeMode);
     lineSegment(LineSegment::fromTwoPoints(ray.origin, back), renderDevice, color, scale);
-
 }
 
 

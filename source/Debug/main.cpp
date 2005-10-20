@@ -141,14 +141,15 @@ void Demo::doGraphics(RenderDevice* rd) {
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
-//		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
 
-        
+        /*
         for (int i = 0; i < 100; ++i) {
             rd->pushState();
                 rd->setColor(Color3::white());
             rd->popState();
         }
+        */
         
 
     app->renderDevice->disableLighting();
