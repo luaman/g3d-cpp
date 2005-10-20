@@ -580,11 +580,12 @@ RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
     colorWrite(true),
     alphaWrite(false),
 
-    lights.twoSidedLighting(false),
-
     depthTest(DEPTH_LEQUAL),
     alphaTest(ALPHA_ALWAYS_PASS),
     alphaReference(0.0) {
+
+    lights.twoSidedLighting =    false;
+
 
     srcBlendFunc                = BLEND_ONE;
     dstBlendFunc                = BLEND_ZERO;
@@ -654,7 +655,7 @@ RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
 }
 
 
-RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0), texGenEnabled(0) {
+RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0) {
     texCoord        = Vector4(0,0,0,1);
     combineMode     = TEX_MODULATE;
 
