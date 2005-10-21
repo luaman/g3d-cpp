@@ -574,7 +574,7 @@ public:
 #       ifdef G3D_WIN32
             tempWindow = Win32Window::create(settings);
 #       else
-            tempWindow = X11Window::create(settings);
+            tempWindow = new X11Window(settings);
 #       endif
         tempWindow->makeCurrent();
     }
@@ -1105,3 +1105,4 @@ bool GLCaps::hasBug_slowVBO() {
 #endif
 
 }
+
