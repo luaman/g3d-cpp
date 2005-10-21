@@ -30,7 +30,7 @@ public:
         completed = false;
     }
 
-    static DWORD WINAPI GThreadProc(LPVOID param) {
+    static DWORD WINAPI GThreadProc_windows(LPVOID param) {
         GThread* current = (GThread*)param;
         current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
         current->pthread->running = true;
@@ -40,6 +40,18 @@ public:
         current->pthread->completed = true;
         ::SetEvent(current->pthread->event);
         return 0;
+    }
+
+    static void* GThreadProc_pthread(LPVOID param) {
+        GThread* current = (GThread*)param;
+        current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+        current->pthread->running = true;
+        current->pthread->completed = false;
+        current->main();
+        current->pthread->running = false;
+        current->pthread->completed = true;
+        ::SetEvent(current->pthread->event);
+        return (void*)NULL;
     }
 };
 
@@ -83,22 +95,37 @@ bool GThread::start() {
         return false;
     }
 
+#   ifdef G3D_WIN32
     DWORD threadId;
 
     handle = ::CreateThread(
         NULL,
         0,
-        &_internal::GThreadPrivate::GThreadProc,
+        &_internal::GThreadPrivate::GThreadProc_windows,
         this,
         0,
         &threadId);
 
     return (handle != NULL);
+#   else
+    if (!pthread_create(((pthread_t)handle,
+                        &_internal::GThreadPrivate::GThreadProc_windows, 
+                        this)) {
+        return true;
+    } else {
+        handle = NULL;
+        return false
+    }
+#   endif
 }
 
 void GThread::terminate() {
     if (handle) {
+#       ifdef G3D_WIN32
         ::TerminateThread(handle, 0);
+#       else
+#       endif
+        handle = NULL;
     }
 }
 
@@ -115,7 +142,11 @@ void GThread::signalStopSafely() {
 }
 
 void GThread::waitForCompletion() {
+#   ifdef G3D_WIN32
     ::WaitForSingleObject(pthread->event, INFINITE);
+#   else
+    pthread_join((pthread_t)handle, NULL);
+#   endif
 }
 
 
