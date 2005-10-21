@@ -66,21 +66,21 @@ public:
      */
     inline void set(int i) {
         debugAssert(i >= 0);
-        debugAssert((i >> 5) < size);
+        debugAssert((int)(i >> 5) < (int)size);
         // Note: i >> 5 == i / 32, i & 31 == i % 32
         bits[i >> 5] |= (1 << (i & 31));
     }
 
     inline int isOn(int i) const {
         debugAssert(i >= 0);
-        debugAssert((i >> 5) < size);
+        debugAssert((i >> 5) < (int)size);
 
         return bits[i >> 5] & (1 << (i & 31));
     }
 
     inline void clear(int i) {
         debugAssert(i >= 0);
-        debugAssert((i >> 5) < size);
+        debugAssert((i >> 5) < (int)size);
 
         bits[i >> 5] &= ~(1 << (i & 31));
     }

@@ -435,6 +435,7 @@ void Map::loadFaces(
  load multiple times-- the previously loaded model will be freed correctly.
 */
 static TextureRef loadBrightTexture(const std::string& filename, double brighten = 1.0) {
+    debugAssert(fileExists(filename));
     return Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten);
 }
 
@@ -506,10 +507,11 @@ void Map::loadLightMaps(
     uint8 brighten[256];
     for (int i = 0; i < 256; ++i) {
         // Code to leave intensity unmodified:
-        brighten[i] = i;
+        //brighten[i] = i;
 
         // Code to brighten:
-        // brighten[i] = iClamp(0, pow(i / 200.0, 1.4) * 700, 255);
+        //brighten[i] = iClamp(pow(i / 200.0, 1.4) * 700, 0, 255);
+        brighten[i] = iClamp(i * 1.5 + 25, 0, 255);
     }
 
     int lightmapsCount = lump.length / sizeof(lightmapData);

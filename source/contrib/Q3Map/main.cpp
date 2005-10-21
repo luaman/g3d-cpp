@@ -164,7 +164,9 @@ void App::main() {
 	renderDevice->setColorClearValue(Color3(.1, .5, 1));
     // Load the map
     map = new BSPMAP::Map();
+//    bool ret = map->load("D:/media/models/q3/maps/matrix/", "dojo.bsp");
     bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_ricochet.bsp");
+//    bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_revolution.bsp");
 
     // Old debugging code:
 //    bool ret = map->load(QUAKE_DIR, "charon3dm11v2.bsp");
@@ -216,7 +218,7 @@ void Demo::doSimulation(GameTime timeStep) {
 
     Vector3 originalTrans = app->debugController.getCoordinateFrame().translation;
 
-    app->debugController.doSimulation(clamp(0.0, timeStep, 0.1));
+    app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
 
     CoordinateFrame newCframe;
     app->debugController.getCoordinateFrame(newCframe);
