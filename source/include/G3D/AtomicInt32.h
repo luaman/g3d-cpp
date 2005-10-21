@@ -28,7 +28,11 @@ class AtomicInt32 {
 private:
     friend class AtomicInt32;
 
+#   if defined(G3D_WIN32) && (_MSC_VER > 1200)
+    volatile long           _value;
+#   else
     volatile int32          _value;
+#   endif
 
 public:
 

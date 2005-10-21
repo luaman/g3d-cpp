@@ -199,7 +199,9 @@ public:
         will be in video memory, and some will be backed by main memory 
         even if nominally stored in video memory, so the total size may
         exceed the video memory size.*/
-    static size_t sizeOfAllVARAreasInMemory();
+    static size_t sizeOfAllVARAreasInMemory() {
+        return _sizeOfAllVARAreasInMemory;
+    }
 
     /** Releases all VARAreas. Called before shutdown by RenderDevice. */
     static void cleanupAllVARAreas();

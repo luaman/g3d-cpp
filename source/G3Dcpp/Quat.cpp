@@ -31,21 +31,40 @@ Quat Quat::fromAxisAngleRotation(
 Quat::Quat(
     const Matrix3& rot) {
 
-    static const int plus1mod3[] = {1, 2, 0};
+//    static const int plus1mod3[] = {1, 2, 0};
 
     // Trace of the matrix
-    double tr = rot[0][0] + rot[1][1] + rot[2][2];
+    float tr = rot[0][0] + rot[1][1] + rot[2][2] + 1;
 
     if (tr > 0.0) {
-        double c = sqrt(tr + 1.0);
+        float c = sqrt(tr);
         w = (float) c * 0.5;
         c = 0.5 / c;
 
-        x = -(rot[1][2] - rot[2][1]) * c;
-        y = -(rot[2][0] - rot[0][2]) * c;
-        z = -(rot[0][1] - rot[1][0]) * c;
-    } else {
+        x = (rot[2][1] - rot[1][2]) * c;
+        y = (rot[0][2] - rot[2][0]) * c;
+        z = (rot[1][0] - rot[0][1]) * c;
+    } else if ( rot[0][0] > rot[1][1] && rot[0][0] > rot[2][2] ) {
+        float s = 2.0f * sqrtf( 1.0f + rot[0][0] - rot[1][1] - rot[2][2]);
+        x = 0.25f * s;
+        y = (rot[0][1] + rot[1][0] ) / s;
+        z = (rot[0][2] + rot[2][0] ) / s;
+        w = (rot[1][2] - rot[2][1] ) / s;
 
+    } else if (rot[1][1] > rot[2][2]) {
+        float s = 2.0f * sqrtf( 1.0f + rot[1][1] - rot[0][0] - rot[2][2]);
+        x = (rot[0][1] + rot[1][0] ) / s;
+        y = 0.25f * s;
+        z = (rot[1][2] + rot[2][1] ) / s;
+        w = (rot[0][2] - rot[2][0] ) / s;
+    } else {
+        float s = 2.0f * sqrtf( 1.0f + rot[2][2] - rot[0][0] - rot[1][1] );
+        x = (rot[0][2] + rot[2][0] ) / s;
+        y = (rot[1][2] + rot[2][1] ) / s;
+        z = 0.25f * s;
+        w = (rot[0][1] - rot[1][0] ) / s;
+    }
+        /*
         // Find the largest diagonal component
         int i = 0;
         
@@ -69,7 +88,7 @@ Quat::Quat(
         w    = (rot[j][k] - rot[k][j]) * c;
         v[j] = -(rot[i][j] + rot[j][i]) * c;
         v[k] = -(rot[i][k] + rot[k][i]) * c;
-    }
+        */
 }
 
 

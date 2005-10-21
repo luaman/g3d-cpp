@@ -693,7 +693,10 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {
-
+    Matrix3 M = Matrix3(-0.5074, 0.0401, 0.8608,
+ 		        0.0278, 0.9992, -0.0301,
+ 		        -0.8613, 0.0087, -0.5081);
+    Quat q(M);
 
     RenderDevice* renderDevice = NULL;
     
