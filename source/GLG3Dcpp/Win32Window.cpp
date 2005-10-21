@@ -500,9 +500,9 @@ void Win32Window::close() {
 
 
 Win32Window::~Win32Window() {
+    // Call Win32Window::close() if you want
+    // to catch a window closure
     ::DestroyWindow(window);
-//    close();
-    // Do not need to release private HDC's
 
     delete _diDevices;
 }
@@ -545,8 +545,7 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.state = SDL_PRESSED;
 
                 // Need the repeat messages to find LSHIFT and RSHIFT
-				//if (((message.lParam >> 30) & 0x01) == 0) {
-                if ((message.lParam & 0x0f) == 1) {
+				if (!((message.lParam >> 30) & 0x01)) {
 					// This is not an autorepeat message
 					makeKeyEvent(message.wParam, message.lParam, e);
 					return true;
@@ -557,13 +556,8 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.type = SDL_KEYUP;
 				e.key.state = SDL_RELEASED;
 
-                // Need the repeat messages to find LSHIFT and RSHIFT
-				//if (((message.lParam  >> 30 )& 0x01) == 0) {
-                if ((message.lParam & 0x0f) == 1) {
-					// This is not an autorepeat message
-					makeKeyEvent(message.wParam, message.lParam, e);
-					return true;
-				}
+				makeKeyEvent(message.wParam, message.lParam, e);
+				return true;
 				break;
 
             case WM_LBUTTONDOWN:
