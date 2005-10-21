@@ -135,12 +135,12 @@ std::string vformat(const char* fmt, va_list argPtr) {
 
     int numChars = vsnprintf(stackBuffer, bufSize, fmt, argPtr);
 
-    if (numChars > bufSize) {
+    if (numChars >= bufSize) {
       // We didn't allocate a big enough string.
-      char* heapBuffer = (char*)System::malloc(numChars * sizeof(char));
+      char* heapBuffer = (char*)System::malloc((numChars + 1) * sizeof(char));
 
       assert(heapBuffer);
-      int numChars2 = vsnprintf(heapBuffer, numChars, fmt, argPtr);
+      int numChars2 = vsnprintf(heapBuffer, numChars + 1, fmt, argPtr);
       assert(numChars2 == numChars);
 
       std::string result(heapBuffer);
