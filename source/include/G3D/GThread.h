@@ -19,6 +19,7 @@
 #include <windows.h>
 #else
 #include <pthread.h>
+#include <signal.h>
 #endif
 
 namespace G3D {
