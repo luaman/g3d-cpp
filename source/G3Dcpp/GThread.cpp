@@ -7,8 +7,6 @@
  @edited  2005-09-24
  */
 
-#include <windows.h>
-
 #include "G3D/GThread.h"
 #include "G3D/debugAssert.h"
 
@@ -124,6 +122,7 @@ void GThread::terminate() {
 #       ifdef G3D_WIN32
         ::TerminateThread(handle, 0);
 #       else
+        pthread_kill((pthread_t)handle, SIGTHR);
 #       endif
         handle = NULL;
     }
