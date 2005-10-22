@@ -220,7 +220,9 @@ static int isFileGood(FILE* f) {
 
 FILE* _robustTmpfile() {
     FILE* t = tmpfile();
+#ifdef _WIN32
 	char* n = NULL;
+#endif
 	char name[256];
 
     if (isFileGood(t)) {
