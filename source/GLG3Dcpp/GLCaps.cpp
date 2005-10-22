@@ -16,6 +16,8 @@
 #ifdef G3D_WIN32
 #   include <winver.h>
 #   include "GLG3D/Win32Window.h"
+#elif defined(G3D_OSX)
+#	include "GLG3D/SDLWindow.h"
 #else
 #   include "GLG3D/X11Window.h"
 #endif
@@ -573,6 +575,8 @@ public:
         settings.visible = false;
 #       ifdef G3D_WIN32
             tempWindow = Win32Window::create(settings);
+#		elif defined(G3D_OSX)
+			tempWindow = new SDLWindow(settings);
 #       else
             tempWindow = new X11Window(settings);
 #       endif
@@ -651,13 +655,13 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
 
 
         // Every three is a vector in one direction
-        float direction[] = {
+/*        float direction[] = {
              1,  0,  0,
             -1,  0,  0,
              0,  1,  0,
              0, -1,  0,
              0,  0,  1,
-             0,  0, -1};
+             0,  0, -1};*/
 
         // Face colors
         unsigned char color[6];
