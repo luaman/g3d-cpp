@@ -19,7 +19,7 @@ $(DEMOS):
 	cd $@; \
         chmod u+x $(IC); \
 	$(IC) --opt; \
-	cp -f '_build/distrib/$@' '../$@_exe'; \
+	cp -f '_build/distrib/$@d' '../$@d_exe'; \
 	cd ../;
 
 .PHONY: clean
