@@ -294,7 +294,7 @@ Vector2 GFont::draw2D(
 
 
         int numChars = 0;
-        for (int i = 0; i < s.length(); ++i) {
+        for (unsigned int i = 0; i < s.length(); ++i) {
             numChars += ((s[i] % 128) != ' ') ? 1 : 0;
         }
 
@@ -550,7 +550,7 @@ void GFont::convertRAWINItoPWF(const std::string& infileBase, std::string outfil
         // Pad
         const uint8* ptr = pixel.getCArray();
     
-        int num = width * (width / 2);
+//        int num = width * (width / 2);
         for (int y = 0; y < height2; ++y) {
             // Write the row
             out.writeBytes(ptr, width);
