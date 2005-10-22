@@ -9,7 +9,9 @@
     #include <sys/types.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
+#ifndef SOCKADDR_IN
     #define SOCKADDR_IN struct sockaddr_in
+#endif
     #define SOCKET int
 #endif
 
