@@ -197,7 +197,6 @@ public:
             return Quat(t * x, t * y, t * z, ::log(len));
         }
     }
-    /*
     /** log q = [Av, 0] where q = [sin(A) * v, cos(A)].
         Only for unit quaternions 
         debugAssertM(isUnit(), "Log only defined for unit quaternions");
