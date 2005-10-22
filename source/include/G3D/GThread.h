@@ -2,18 +2,16 @@
   @file GThread.h
  
   @created 2005-09-22
-  @edited  2005-09-24
+  @edited  2005-10-22
 
  */
 
 #ifndef G3D_GTHREAD_H
 #define G3D_GTHREAD_H
 
-#if _MSC_VER > 1200
+#include "G3D/platform.h"
 
 #include <string>
-
-#include "G3D/AtomicInt32.h"
 
 #ifdef G3D_WIN32
 #include <windows.h>
@@ -21,6 +19,7 @@
 #include <pthread.h>
 #include <signal.h>
 #endif
+
 
 namespace G3D {
 
@@ -39,12 +38,10 @@ private:
     // Thread handle to hold HANDLE and pthread_t
     void*                               handle;
 
-    // Used for thread closure signaling
-    AtomicInt32                         signalInt32;
-
     std::string                         _name;
 
     // Not implemented on purpose, don't use
+    GThread(const GThread &);
     GThread& operator=(const GThread&);
     bool operator==(const GThread&);
 
@@ -57,34 +54,24 @@ public:
         return new _internal::TemplateThread(name, proc);
     }
 
+    /** Constructs a basic GThread without requiring a subclass.
+
+        @param proc The global or static function for the threadMain() */
     static GThread* create(const std::string& name, void (*proc)());
 
     /** Starts the thread and executes main() */
     bool start();
 
-    /**
-        Terminates the thread without notifying or
-        waiting for a cancelation point. 
-        
-        Use of stopSafely() is preferred. */
+    /** Terminates the thread without notifying or
+        waiting for a cancelation point. */
     void terminate();
 
     /**
-        Returns true is the thread and main() are
-        currently executing, otherwise returns false. */
+        Returns true if threadMain is currently executing. */
     bool running();
 
+    /** Returns completed status of thread. */
     bool completed();
-
-    /**
-        Signals an internal condition to exit the thread
-        safely. Use with wait() to safely stop thread.
-        
-        TODO: Specify macro to use in thread that checks
-        for the signal or loop an inlined call of main that
-        is wrapped by a signal check and tell the user
-        not to do an infinite loop in main(). */
-    void signalStopSafely();
 
     /** 
         Waits for the thread to finish executing. 
@@ -92,6 +79,7 @@ public:
         TODO: Does this need a timeout? */
     void waitForCompletion();
 
+    /** Returns thread name */
     const std::string& name() {
         return _name;
     }
@@ -99,10 +87,7 @@ public:
 protected:
     friend class _internal::GThreadPrivate;
 
-    #define CHECK_STOP_SIGNAL \
-        {if (signalInt32.value()) return;}
-
-    virtual void main() = 0;
+    virtual void threadMain() = 0;
 };
 
 namespace _internal {
@@ -114,7 +99,7 @@ public:
     TemplateThread(const std::string& name, void (C::*proc)()):
         GThread(name), wrapperProc(proc) { }
 protected:
-    virtual void main() {
+    virtual void threadMain() {
         wrapperProc();
     }
 };
@@ -132,15 +117,19 @@ private:
     pthread_mutex_t                     handle;
 #   endif
 
+    // Not implemented on purpose, don't use
+    GMutex(const GMutex &mlock);
+    GMutex &operator=(const GMutex &);
+    bool operator==(const GMutex&);
+
 public:
     GMutex();
     ~GMutex();
 
-//    /** Only available on NT and later. */
-//    bool tryLock();
-
+    /** Locks the mutex or blocks until available. */
     void lock();
 
+    /** Unlocks the mutex. */
     void unlock();
 };
 
@@ -153,6 +142,7 @@ class GMutexLock {
 private:
     GMutex* m;
 
+    // Not implemented on purpose, don't use
     GMutexLock(const GMutexLock &mlock);
     GMutexLock &operator=(const GMutexLock &);
     bool operator==(const GMutexLock&);
@@ -170,5 +160,4 @@ public:
 
 } // namespace G3D
 
-#endif
 #endif //G3D_GTHREAD_H
