@@ -2,3 +2,5 @@
 .libs
 *.lo
 Makefile.in
+.DS_Store
+
