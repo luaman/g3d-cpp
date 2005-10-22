@@ -299,11 +299,11 @@ void GApp::renderDebugInfo() {
 
 GApplet::GApplet(GApp* _app) : 
     app(_app), 
-    m_simTimeRate(1.0), 
-    m_simTime(0), 
-    m_realTime(0), 
+	lastWaitTime(System::time()),
     m_desiredFrameRate(inf()),
-    lastWaitTime(System::time()) {
+    m_simTimeRate(1.0), 
+    m_realTime(0), 
+    m_simTime(0) {
     
     debugAssert(app != NULL);
 }
