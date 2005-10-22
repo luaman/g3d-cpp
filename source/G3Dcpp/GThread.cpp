@@ -4,7 +4,7 @@
  GThread class.
 
  @created 2005-09-24
- @edited  2005-09-24
+ @edited  2005-10-22
  */
 
 #include "G3D/GThread.h"
@@ -33,7 +33,7 @@ public:
         current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
         current->pthread->running = true;
         current->pthread->completed = false;
-        current->main();
+        current->threadMain();
         current->pthread->running = false;
         current->pthread->completed = true;
         ::SetEvent(current->pthread->event);
@@ -45,7 +45,7 @@ public:
         current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
         current->pthread->running = true;
         current->pthread->completed = false;
-        current->main();
+        current->threadMain();
         current->pthread->running = false;
         current->pthread->completed = true;
         ::SetEvent(current->pthread->event);
@@ -60,7 +60,7 @@ public:
     BasicThread(const std::string& name, void (*proc)()):
         GThread(name), wrapperProc(proc) { }
 protected:
-    virtual void main() {
+    virtual void threadMain() {
         wrapperProc();
     }
 };
@@ -70,8 +70,7 @@ protected:
 
 GThread::GThread(const std::string& name):
     _name(name),
-    handle(NULL),
-    signalInt32(0) {
+    handle(NULL) {
 
     pthread = new _internal::GThreadPrivate;
 }
@@ -134,10 +133,6 @@ bool GThread::running() {
 
 bool GThread::completed() {
     return pthread->completed;
-}
-
-void GThread::signalStopSafely() {
-    signalInt32 = 1;
 }
 
 void GThread::waitForCompletion() {
