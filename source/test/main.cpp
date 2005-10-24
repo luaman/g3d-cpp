@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2005-09-05
+ @edited  2005-10-24
  */
 
 #include "../include/G3DAll.h"
@@ -62,6 +62,8 @@ void testAdjacency();
 
 void testTable();
 void perfTable();
+
+void testAtomicInt32();
 
 void measureBSPPerformance() {
 
@@ -693,11 +695,6 @@ void testAABSPTreeSerialize() {
 
 
 int main(int argc, char* argv[]) {
-    Matrix3 M = Matrix3(-0.5074, 0.0401, 0.8608,
- 		        0.0278, 0.9992, -0.0301,
- 		        -0.8613, 0.0087, -0.5081);
-    Quat q(M);
-
     RenderDevice* renderDevice = NULL;
     
 
@@ -766,6 +763,8 @@ int main(int argc, char* argv[]) {
 #   else
 
     printf("\n\nTests:\n\n");
+
+    testAtomicInt32();
 
     testSystemMemset();
     testSystemMemcpy();
