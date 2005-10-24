@@ -1,6 +1,6 @@
 #include "../include/G3DAll.h"
 
-void tAtomicInt32() {
+void testAtomicInt32() {
     
 }
 
