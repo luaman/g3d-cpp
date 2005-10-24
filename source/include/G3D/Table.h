@@ -44,6 +44,10 @@ inline unsigned int hashCode(const int a) {
 	return a;
 }
 
+inline unsigned int hashCode(const G3D::uint32 a) {
+	return a;
+}
+
 inline unsigned int hashCode(const G3D::uint64 a) {
 	return a;
 }
