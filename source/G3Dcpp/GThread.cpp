@@ -35,7 +35,7 @@ public:
 
 #   ifdef G3D_WIN32
     
-    static DWORD WINAPI GThreadProcs(LPVOID param) {
+    static DWORD WINAPI GThreadProc(LPVOID param) {
         GThread* current = (GThread*)param;
         current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
         current->pthread->running = true;
