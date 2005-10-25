@@ -136,6 +136,14 @@ public:
     static const Vector2& zero();
     static const Vector2& unitX();
     static const Vector2& unitY();
+    static const Vector2& inf(); 
+    static const Vector2& nan();
+    /** smallest (most negative) representable vector */
+    static const Vector2& minFinite(); 
+    /** Largest representable vector */
+    static const Vector2& maxFinite();
+
+
 
     // Deprecated. See Matrix3::identity() for details.
     /** @deprecated Use Vector2::zero() */

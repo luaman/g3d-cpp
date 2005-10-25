@@ -9,7 +9,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2004-09-06
+ @edited  2005-10-24
  */
 
 #include <stdlib.h>
@@ -37,6 +37,28 @@ const Vector2& Vector2::unitY() {
     static Vector2 v(0, 1);
     return v;
 }
+
+const Vector2& Vector2::inf() { 
+	static Vector2 v(G3D::inf(), G3D::inf());
+	return v; 
+}
+
+const Vector2& Vector2::nan() { 
+	static Vector2 v(G3D::nan(), G3D::nan()); 
+	return v; 
+}
+
+const Vector2& Vector2::minFinite() {
+	static Vector2 v(-FLT_MAX, -FLT_MAX); 
+	return v; 
+}
+
+const Vector2& Vector2::maxFinite() {
+	static Vector2 v(FLT_MAX, FLT_MAX); 
+	return v; 
+}
+
+
 
 // Deprecated.
 const Vector2 Vector2::ZERO(0, 0);
