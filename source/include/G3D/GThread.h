@@ -20,7 +20,7 @@
 #include <signal.h>
 #endif
 
-
+#if 0
 namespace G3D {
 
 namespace _internal {
@@ -160,4 +160,5 @@ public:
 
 } // namespace G3D
 
+#endif
 #endif //G3D_GTHREAD_H
