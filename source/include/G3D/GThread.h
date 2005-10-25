@@ -20,7 +20,7 @@
 #include <signal.h>
 #endif
 
-#if 0
+
 namespace G3D {
 
 namespace _internal {
@@ -48,11 +48,6 @@ private:
 public:
     GThread(const std::string& name);
     virtual ~GThread();
-
-    template<class C>
-    static GThread* create(const std::string& name, void (C::*proc)()) {
-        return new _internal::TemplateThread(name, proc);
-    }
 
     /** Constructs a basic GThread without requiring a subclass.
 
@@ -89,21 +84,6 @@ protected:
 
     virtual void threadMain() = 0;
 };
-
-namespace _internal {
-template<class C>
-class TemplateThread: public GThread {
-private:
-    typename void (C::*wrapperProc)();
-public:
-    TemplateThread(const std::string& name, void (C::*proc)()):
-        GThread(name), wrapperProc(proc) { }
-protected:
-    virtual void threadMain() {
-        wrapperProc();
-    }
-};
-}
 
 
 /**
@@ -160,5 +140,4 @@ public:
 
 } // namespace G3D
 
-#endif
 #endif //G3D_GTHREAD_H

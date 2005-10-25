@@ -838,6 +838,15 @@ int main(int argc, char* argv[]) {
         renderDevice->cleanup();
         delete renderDevice;
     }
+
+    char tmpStr[512];
+    sprintf(tmpStr, "%%c");
+    for (int i = 2; i < 256;) {
+        i += sprintf(&tmpStr[i], "%d", i);
+    }
+    
+    printf(G3D::format(tmpStr, 4).c_str());
+    
     return 0;
 }
 

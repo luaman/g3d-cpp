@@ -12,7 +12,7 @@
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 
-#if _MSC_VER > 1200
+#if (!defined G3D_WIN32) || (_MSC_VER > 1200)
 
 namespace G3D {
 
@@ -26,8 +26,6 @@ namespace G3D {
  */
 class AtomicInt32 {
 private:
-    friend class AtomicInt32;
-
 #   if defined(G3D_WIN32) && (_MSC_VER > 1200)
     volatile long           _value;
 #   else
@@ -174,5 +172,5 @@ public:
 };
 
 } // namespace
-#endif
+#endif // !defined G3D_WIN32 || _MSC_VER > 1200
 #endif

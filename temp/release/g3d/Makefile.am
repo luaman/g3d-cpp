@@ -19,6 +19,7 @@ libG3D_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Discovery.cpp \
                          ../../../source/G3Dcpp/GLight.cpp \
                          ../../../source/G3Dcpp/GCamera.cpp \
+                         ../../../source/G3Dcpp/GThread.cpp \
                          ../../../source/G3Dcpp/license.cpp \
                          ../../../source/G3Dcpp/Line.cpp \
                          ../../../source/G3Dcpp/LineSegment.cpp \

@@ -15,11 +15,16 @@ namespace G3D {
 
 namespace _internal {
 
+using G3D::GThread;
+
 class GThreadPrivate {
 public:
     bool running;
     bool completed;
+
+#   ifdef G3D_WIN32
     HANDLE event;
+#   endif
 
     GThreadPrivate():
         running(false),
@@ -28,7 +33,9 @@ public:
         completed = false;
     }
 
-    static DWORD WINAPI GThreadProc_windows(LPVOID param) {
+#   ifdef G3D_WIN32
+    
+    static DWORD WINAPI GThreadProcs(LPVOID param) {
         GThread* current = (GThread*)param;
         current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
         current->pthread->running = true;
@@ -39,18 +46,20 @@ public:
         ::SetEvent(current->pthread->event);
         return 0;
     }
-
-    static void* GThreadProc_pthread(LPVOID param) {
+    
+#   else
+    
+    static void* GThreadProc(void* param) {
         GThread* current = (GThread*)param;
-        current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
         current->pthread->running = true;
         current->pthread->completed = false;
         current->threadMain();
         current->pthread->running = false;
         current->pthread->completed = true;
-        ::SetEvent(current->pthread->event);
         return (void*)NULL;
     }
+
+#   endif
 };
 
 class BasicThread: public GThread {
@@ -69,8 +78,8 @@ protected:
 
 
 GThread::GThread(const std::string& name):
-    _name(name),
-    handle(NULL) {
+    handle(NULL),
+    _name(name) {
 
     pthread = new _internal::GThreadPrivate;
 }
@@ -98,20 +107,21 @@ bool GThread::start() {
     handle = ::CreateThread(
         NULL,
         0,
-        &_internal::GThreadPrivate::GThreadProc_windows,
+        &_internal::GThreadPrivate::GThreadProc,
         this,
         0,
         &threadId);
 
     return (handle != NULL);
 #   else
-    if (!pthread_create(((pthread_t)handle,
-                        &_internal::GThreadPrivate::GThreadProc_windows, 
+    if (!pthread_create((pthread_t*)&handle,
+                        NULL,
+                        &_internal::GThreadPrivate::GThreadProc, 
                         this)) {
         return true;
     } else {
         handle = NULL;
-        return false
+        return false;
     }
 #   endif
 }
@@ -121,7 +131,7 @@ void GThread::terminate() {
 #       ifdef G3D_WIN32
         ::TerminateThread(handle, 0);
 #       else
-        pthread_kill((pthread_t)handle, SIGTHR);
+        pthread_kill((pthread_t)handle, SIGSTOP);
 #       endif
         handle = NULL;
     }
@@ -181,7 +191,7 @@ void GMutex::unlock() {
 #   ifdef G3D_WIN32
     ::LeaveCriticalSection(&handle);
 #   else
-    pthread_mutex_unlock();
+    pthread_mutex_unlock(&handle);
 #   endif
 }
 
