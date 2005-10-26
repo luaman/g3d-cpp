@@ -8,7 +8,7 @@
   @cite See also http://www.jelovic.com/articles/cpp_without_memory_errors_slides.htm
 
   @created 2001-10-23
-  @edited  2005-09-01
+  @edited  2005-10-24
 
 */
 
@@ -16,7 +16,7 @@
 #define G3D_RGC_H
 
 #include "G3D/debug.h"
-
+#include "G3D/AtomicInt32.h"
 
 namespace G3D {
 
@@ -112,7 +112,7 @@ public:
      The long name is to keep this from accidentally conflicting with
      a subclass's variable name.  Do not explicitly manipulate this value.
      */
-    int                         ReferenceCountedObject_refCount;
+    AtomicInt32                 ReferenceCountedObject_refCount;
  
     /**
      Linked list of all weak pointers that reference this (some may be on the stack!). 
@@ -185,31 +185,28 @@ public:
 
 private:
 
-    void registerReference() { 
-        pointer->ReferenceCountedObject_refCount += 1;
+    /** Atomically increments the reference count.  */
+    void registerReference() {
+        // Note that the ref count can be zero if this is the first pointer to it
+        debugAssertM(pointer->ReferenceCountedObject_refCount.value() >= 0, 
+                     "Negative reference count detected.");
+        pointer->ReferenceCountedObject_refCount.increment();
         //debugPrintf("  ++0x%x\n", pointer);
         //debugPrintf("  [0x%x] = %d\n", pointer, pointer->ReferenceCountedObject_refCount);
     }
 
-
-    int deregisterReference() {
-        if (pointer->ReferenceCountedObject_refCount > 0) {
-            pointer->ReferenceCountedObject_refCount -= 1;
-            //debugPrintf("  --0x%x\n", pointer);
-            //debugPrintf("  [0x%x] = %d\n", pointer, pointer->ReferenceCountedObject_refCount);
-        }
-
-        return pointer->ReferenceCountedObject_refCount;
-    }
-
-
+    /** Nulls out the pointer and drops a reference. IF the reference count hits zero*/
     void zeroPointer() {
         if (pointer != NULL) {
 
             debugAssert(G3D::isValidHeapPointer(pointer));
 
-            if (deregisterReference() <= 0) {
-                // We held the last reference, so delete the object
+            if (pointer->ReferenceCountedObject_refCount.decrement() == 0) {
+                // We held the last reference, so delete the object.
+                // This test is threadsafe because there is no way for
+                // the reference count to increase after the last
+                // reference was dropped (assuming the application does
+                // not voilate the class abstraction).
                 //debugPrintf("  delete 0x%x\n", pointer);
                 delete pointer;
             }
@@ -333,7 +330,8 @@ public:
      @deprecated Use WeakReferenceCountedPointer for caches
      */
     inline int isLastReference() const {
-        return (pointer->ReferenceCountedObject_refCount == 1);
+        // TODO: atomic
+        return (pointer->ReferenceCountedObject_refCount.value() == 1);
     }
 };
 

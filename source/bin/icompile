@@ -2117,7 +2117,7 @@ def gdbCompiledProgram(progArgs):
     #          -x   Run the gdb commands we wrote out to the command file
     #          -cd  Working directory
     #          -f   Print files and line numbers in Emacs-compatible format
-    cmd = ('gdb -x ../' + commandFile + ' -cd ' + binaryDir +
+    cmd = ('gdb -x ../../' + commandFile + ' -cd ' + binaryDir +
                 ' -q -f ' + binaryName)
     print cmd
     printBar()

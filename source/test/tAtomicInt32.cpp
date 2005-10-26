@@ -38,7 +38,6 @@ void testAtomicInt32() {
         a = 6;
         a.sub(-3);
         debugAssert(a.value() == 9);
-        
     }
 
     printf("passed\n");

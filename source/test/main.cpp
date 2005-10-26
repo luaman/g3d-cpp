@@ -764,6 +764,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testReferenceCount();
+
     testAtomicInt32();
 
     testSystemMemset();
@@ -789,7 +791,6 @@ int main(int argc, char* argv[]) {
 
     testBinaryIO();
 
-    testReferenceCount();
 
     testPlane();
     printf("  passed\n");

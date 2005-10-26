@@ -14,6 +14,7 @@
 
 #if (!defined G3D_WIN32) || (_MSC_VER > 1200)
 
+
 namespace G3D {
 
 /**

@@ -139,10 +139,10 @@ private:
 public:
 
     Queue() : 
-      numAllocated(0),
       head(0),
+      data(NULL),
       num(0),
-      data(NULL) {
+      numAllocated(0) {
     }
 
 

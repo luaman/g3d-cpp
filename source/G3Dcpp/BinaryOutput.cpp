@@ -310,7 +310,8 @@ void BinaryOutput::commit(bool flush) {
     const char* mode = (alreadyWritten > 0) ? "ab" : "wb";
 
     FILE* file = fopen(filename.c_str(), mode);
-    debugAssert(file);
+    debugAssertM(file, 
+                 std::string("Could not open '") + filename + "'");
 
     alreadyWritten += bufferLen;
 
