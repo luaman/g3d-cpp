@@ -52,8 +52,15 @@ public:
  Multiple inheritance from a reference counted object is dangerous-- use 
  at your own risk.
 
+ ReferenceCountedPointer and ReferenceCountedObject are threadsafe.
+ You can create and drop references on multiple threads without
+ violating integrity.  WeakReferenceCountedPointer is <i>not</i>
+ threadsafe.  Introducing a weak pointer destroys all thread safety,
+ even for strong pointers to the same object (this is inherent in the
+ design of the class; we cannot fix it without slowing down the
+ performance of reference counted objects.)
 
-<B>Usage Example</B>
+ <B>Usage Example</B>
 
   <PRE>
 

@@ -36,6 +36,9 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> Threadsafe G3D::ReferenceCountedPointer
+      <LI> G3D::AtomicInt32
+      <LI> G3D::GThread [Corey]
       <LI> G3D::Array::popDiscard
       <LI> Optimized multi-argument Array::append
       <LI> G3D::GFont 2x faster than in G3D 6.07
