@@ -12,9 +12,6 @@
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 
-#if (!defined G3D_WIN32) || (_MSC_VER > 1200)
-
-
 namespace G3D {
 
 /**
@@ -27,11 +24,18 @@ namespace G3D {
  */
 class AtomicInt32 {
 private:
-#   if defined(G3D_WIN32) && (_MSC_VER > 1200)
+#   if defined(G3D_WIN32) 
+#   if (_MSC_VER <= 1200)
+        // On VC6 the type of the argument is non-volatile
+#       define VCAST (long*)
+#   else
+#       define VCAST
+#   endif
     volatile long           _value;
 #   else
     volatile int32          _value;
 #   endif
+
 
 public:
 
@@ -67,7 +71,7 @@ public:
     inline int32 add(const int32 x) {
 #       if defined(G3D_WIN32)
 
-            return InterlockedExchangeAdd(&_value, x);
+            return InterlockedExchangeAdd(VCAST &_value, x);
 
 #       elif defined(G3D_LINUX)
 
@@ -103,7 +107,7 @@ public:
     inline void increment() {
 #       if defined(G3D_WIN32)
             // Note: returns the newly incremented value
-            InterlockedIncrement(&_value);
+            InterlockedIncrement(VCAST &_value);
 #       elif defined(G3D_LINUX)
             add(1);
 #       elif defined(G3D_OSX)
@@ -115,7 +119,7 @@ public:
     inline uint32 decrement() {
 #       if defined(G3D_WIN32)
             // Note: returns the newly decremented value
-            return InterlockedDecrement(&_value) != 0;
+            return InterlockedDecrement(VCAST &_value) != 0;
 #       elif defined(G3D_LINUX)
             unsigned char nz;
 
@@ -139,10 +143,17 @@ public:
         If this is equal to the Comperand value, the Exchange value is stored in this.
         Otherwise, no operation is performed.
 
+        Under VC6 the sign bit may be lost.
+
      */ 
     inline int32 compareAndSet(const int32 comperand, const int32 exchange) {
 #       if defined(G3D_WIN32)
-            return InterlockedCompareExchange(&_value, exchange, comperand);
+#           if (_MSC_VER <= 1200)
+                // Specification changed after VC6 from PVOID* to volatile int*
+                return (int32)InterlockedCompareExchange((PVOID*)&_value, (PVOID)exchange, (PVOID)comperand);
+#           else
+                return InterlockedCompareExchange(VCAST &_value, exchange, comperand);
+#           endif
 #       elif defined(G3D_LINUX)
             int32 ret;
             asm volatile ("lock; cmpxchgl %1, %2"
@@ -173,5 +184,5 @@ public:
 };
 
 } // namespace
-#endif // !defined G3D_WIN32 || _MSC_VER > 1200
+
 #endif
