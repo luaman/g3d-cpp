@@ -110,19 +110,24 @@ public:
 
     /**
      The long name is to keep this from accidentally conflicting with
-     a subclass's variable name.  Do not explicitly manipulate this value.
+     a subclass's variable name.  Do not use or explicitly manipulate
+     this value--its type may change in the future and is not part
+     of the supported API.
      */
     AtomicInt32                 ReferenceCountedObject_refCount;
  
     /**
-     Linked list of all weak pointers that reference this (some may be on the stack!). 
-     Do not explicitly manipulate this value.
+     Linked list of all weak pointers that reference this (some may be
+     on the stack!).  Do not use or explicitly manipulate this value.
      */
     _WeakPtrLinkedList*         ReferenceCountedObject_weakPointer;
 
 protected:
 
-    ReferenceCountedObject() : ReferenceCountedObject_refCount(0), ReferenceCountedObject_weakPointer(0) {
+    ReferenceCountedObject() : 
+        ReferenceCountedObject_refCount(0), 
+        ReferenceCountedObject_weakPointer(0) {
+
         debugAssertM(isValidHeapPointer(this), 
             "Reference counted objects must be allocated on the heap.");
     }
@@ -130,13 +135,13 @@ protected:
 public:
 
     virtual ~ReferenceCountedObject() {
-        // Tell all of my weak pointers that I'm gone
+        // Tell all of my weak pointers that I'm gone.
         
         _WeakPtrLinkedList* node = ReferenceCountedObject_weakPointer;
 
         while (node != 0) {
 
-            // Notify
+            // Notify the weak pointer that it is going away
             node->weakPtr->objectCollected();
 
             // Free the node and advance
@@ -159,8 +164,9 @@ public:
     }
 
     ReferenceCountedObject& operator=(const ReferenceCountedObject& other) {
-        // Nothing changes when I am assigned; the reference count is the same
-        // (although my super-class probably changes).
+        // Nothing changes when I am assigned; the reference count on
+        // both objects is the same (although my super-class probably
+        // changes).
         return *this;
     }
 };
@@ -175,63 +181,72 @@ template <class T>
 class ReferenceCountedPointer {
 private:
 
-    T*           pointer;
+    T*           m_pointer;
 
 public:
+    inline T* pointer() const {
+        return m_pointer;
+    }
 
+    /** @deprecated use pointer() */
     inline T* getPointer() const {
-        return pointer;
+        return m_pointer;
     }
 
 private:
 
-    /** Atomically increments the reference count.  */
-    void registerReference() {
-        // Note that the ref count can be zero if this is the first pointer to it
-        debugAssertM(pointer->ReferenceCountedObject_refCount.value() >= 0, 
-                     "Negative reference count detected.");
-        pointer->ReferenceCountedObject_refCount.increment();
-        //debugPrintf("  ++0x%x\n", pointer);
-        //debugPrintf("  [0x%x] = %d\n", pointer, pointer->ReferenceCountedObject_refCount);
-    }
-
-    /** Nulls out the pointer and drops a reference. IF the reference count hits zero*/
+    /** Nulls out the pointer and drops a reference. IF the reference
+        count hits zero. */
     void zeroPointer() {
-        if (pointer != NULL) {
+        if (m_pointer != NULL) {
 
-            debugAssert(G3D::isValidHeapPointer(pointer));
+            debugAssert(G3D::isValidHeapPointer(m_pointer));
+            debugAssertM(m_pointer->ReferenceCountedObject_refCount.value() > 0,
+                        "Dangling reference detected.");
 
-            if (pointer->ReferenceCountedObject_refCount.decrement() == 0) {
+            // Only delete if this instance caused the count to hit
+            // exactly zero.  If there is a race condition, the value
+            // may be zero after decrement returns, but only one of
+            // the instances will get a zero return value.
+            if (m_pointer->ReferenceCountedObject_refCount.decrement() == 0) {
                 // We held the last reference, so delete the object.
                 // This test is threadsafe because there is no way for
                 // the reference count to increase after the last
                 // reference was dropped (assuming the application does
                 // not voilate the class abstraction).
-                //debugPrintf("  delete 0x%x\n", pointer);
-                delete pointer;
+                //debugPrintf("  delete 0x%x\n", m_pointer);
+                delete m_pointer;
             }
 
-            pointer = NULL;
+            m_pointer = NULL;
         }
     }
 
-
+    /** Non-atomic (except for the referencec increment).  Can only be
+        called in contexts like the copy constructor or initial
+        constructor where it is known that the reference count will
+        not hit zero on some other thread. */
     void setPointer(T* x) {
-        if (x != pointer) {
+        if (x != m_pointer) {
             zeroPointer();
 
             if (x != NULL) {
                 debugAssert(G3D::isValidHeapPointer(x));
 
-		        pointer = x;
-		        registerReference();
+		        m_pointer = x;
+
+                // Note that the ref count can be zero if this is the
+                // first pointer to it
+                debugAssertM(m_pointer->ReferenceCountedObject_refCount.value() >= 0, 
+                             "Negative reference count detected.");
+                m_pointer->ReferenceCountedObject_refCount.increment();
             }
         }
     }
 
 public:      
 
-    inline ReferenceCountedPointer() : pointer(NULL) {}
+    inline ReferenceCountedPointer() : m_pointer(NULL) {}
 
     /**
       Allow silent cast <i>to</i> the base class.
@@ -245,7 +260,8 @@ public:
       RCP&lt;<I>T</I>&gt; &lt;: RCP&lt;<I>S</I>&gt; if <I>T</I> &lt;: <I>S</I>
      */
     template <class S>
-    inline ReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(NULL) {
+    inline ReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : 
+        m_pointer(NULL) {
         setPointer(p.getPointer());
     }
 
@@ -256,24 +272,24 @@ public:
       <pre>
         SubRef  s = new Sub();
         BaseRef b = s;
-        s = b.downcast<Sub>();   // Note that the argument is the object type, not the pointer type.
+        s = b.downcast<Sub>();   // Note that the template argument is the object type, not the pointer type.
       </pre>
       */
     template <class S>
     ReferenceCountedPointer<S> downcast() {
-        return ReferenceCountedPointer<S>(dynamic_cast<S*>(pointer));
+        return ReferenceCountedPointer<S>(dynamic_cast<S*>(m_pointer));
     }
 #   endif
 
     // We need an explicit version of the copy constructor as well or 
     // the default copy constructor will be used.
-    inline ReferenceCountedPointer(const ReferenceCountedPointer<T>& p) : pointer(NULL) {
-        setPointer(p.pointer);
+    inline ReferenceCountedPointer(const ReferenceCountedPointer<T>& p) : m_pointer(NULL) {
+        setPointer(p.m_pointer);
     }
 
     /** Allows construction from a raw pointer.  That object will thereafter be
         reference counted -- do not call delete on it. */
-    inline ReferenceCountedPointer(T* p) : pointer(NULL) { 
+    inline ReferenceCountedPointer(T* p) : m_pointer(NULL) { 
         setPointer(p); 
     }
     
@@ -283,7 +299,7 @@ public:
   
 
     inline const ReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<T>& p) {
-        setPointer(p.pointer);
+        setPointer(p.m_pointer);
         return *this;
     }   
 
@@ -295,31 +311,32 @@ public:
 
 
     inline bool operator==(const ReferenceCountedPointer<T>& y) const { 
-        return (pointer == y.pointer); 
+        return (m_pointer == y.m_pointer); 
     }
 
 
     inline bool operator!=(const ReferenceCountedPointer<T>& y) const { 
-        return (pointer != y.pointer); 
+        return (m_pointer != y.m_pointer); 
     }
 
 
     inline T& operator*() const {
-        return (*pointer);
+        debugAssert(m_pointer != NULL);
+        return (*m_pointer);
     }
 
 
     inline T* operator->() const {
-        return pointer;
+        return m_pointer;
     }
 
 
     inline bool isNull() const {
-        return (pointer == NULL);
+        return (m_pointer == NULL);
     }
 
     inline bool notNull() const {
-        return (pointer != NULL);
+        return (m_pointer != NULL);
     }
 
     // TODO: distinguish between last strong and last any pointer
@@ -327,11 +344,13 @@ public:
      Returns true if this is the last reference to an object.
      Useful for flushing memoization caches-- a cache that holds the last
      reference is unnecessarily keeping an object alive.
+
+     <b>Not threadsafe.</b>
+
      @deprecated Use WeakReferenceCountedPointer for caches
      */
     inline int isLastReference() const {
-        // TODO: atomic
-        return (pointer->ReferenceCountedObject_refCount.value() == 1);
+        return (m_pointer->ReferenceCountedObject_refCount.value() == 1);
     }
 };
 
@@ -352,23 +371,71 @@ template <class T>
 class WeakReferenceCountedPointer : public _WeakPtr {
 private:
 
+    /** NULL if the object has been collected. */
     T*          pointer;
 
+public:
+    /**
+      Creates a strong pointer, which prevents the object from being
+      garbage collected.  The strong pointer may be NULL, which means
+      that the underlying.
+      */
+    //  There is intentionally no way to check if the
+    //  WeakReferenceCountedPointer has a null reference without
+    //  creating a strong pointer since there is no safe way to use
+    //  that information-- the pointer could be collected by a
+    //  subsequent statement.
+    ReferenceCountedPointer<T> createStrongPtr() const {
+        // TODO: What if the object's destructor is called while we
+        // are in this method?
+        return ReferenceCountedPointer<T>(pointer);
+    }
+
+
+private:
+
+    /** 
+        Thread issues: safe because this is only called when another
+        object is guaranteed to keep p alive for the duration of this
+        call.
+     */
     void setPointer(T* p) {
+        // TODO: must prevent the object from being collected while in
+        // this method
+
         zeroPointer();
         pointer = p;
 
         if (pointer != 0) {
+            // TODO: threadsafe: must update the list atomically
+
             // Add myself to the head of my target's list of weak pointers
             _WeakPtrLinkedList* head = 
-                new _WeakPtrLinkedList(this, pointer->ReferenceCountedObject_weakPointer);
+                new _WeakPtrLinkedList
+                (this, 
+                 pointer->ReferenceCountedObject_weakPointer);
+
             pointer->ReferenceCountedObject_weakPointer = head;
+        } else {
+
         }
     }
 
-    /** Removes this from its target's list of weak pointers */
+
+    /** 
+        Removes this from its target's list of weak pointers.  Called
+        when the weak pointer goes out of scope.
+
+        Thread issues: depends on the thread safety of createStrongPtr.
+     */
     void zeroPointer() {
-        if (pointer != 0) {
+        // Grab a strong reference to prevent the object from being collected while we
+        // are traversing its list.
+        ReferenceCountedPointer<T> strong = createStrongPtr();
+
+        // If the following test fails then the object was collected before we
+        // reached it.
+        if (strong.notNull()) {
             debugAssertM(pointer->ReferenceCountedObject_weakPointer != NULL,
                 "Weak pointer exists without a backpointer from the object.");
             
@@ -388,6 +455,8 @@ private:
             // Now delete the node corresponding to me
             delete temp;
         }
+
+        pointer = NULL;
     }
 
 public:
@@ -400,11 +469,13 @@ public:
      */
     template <class S>
     inline WeakReferenceCountedPointer(const WeakReferenceCountedPointer<S>& p) : pointer(0) {
+        // Threadsafe: the object cannot be collected while the other pointer exists.
         setPointer(p.pointer);
     }
 
     template <class S>
     inline WeakReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(0) {
+        // Threadsafe: the object cannot be collected while the other pointer exists.
         setPointer(p.getPointer());
     }
 
@@ -424,6 +495,8 @@ public:
     }
 
     WeakReferenceCountedPointer<T>& operator=(const WeakReferenceCountedPointer<T>& other) {
+        // Threadsafe: the object cannot be collected while the other pointer exists.
+
         // I now point at other's target
         setPointer(other.pointer);
 
@@ -431,6 +504,9 @@ public:
     }
 
     WeakReferenceCountedPointer<T>& operator=(const ReferenceCountedPointer<T>& other) {
+
+        // Threadsafe: the object cannot be collected while the other pointer exists.
+
         // I now point at other's target
         setPointer(other.getPointer());
 
@@ -447,22 +523,12 @@ public:
 
 protected:
 
+    /** Invoked by the destructor on ReferenceCountedPointer. */
     virtual void objectCollected() {
-        debugAssert(pointer != NULL);
+        debugAssertM(pointer != NULL,
+                     "Removed a weak pointer twice.");
         pointer = NULL;
     }
-
-public:
-    /**
-      Creates a strong pointer, which prevents the object from being garbage collected.
-      The strong pointer may be NULL, which means that the underlying.
-      */
-    //  There is intentionally no way to check if the WeakReferenceCountedPointer has a 
-    //  null reference without creating a strong pointer since there is no safe way to
-    //  use that information-- the pointer could be collected by a subsequent statement.
-    ReferenceCountedPointer<T> createStrongPtr() const {
-        return ReferenceCountedPointer<T>(pointer);
-    };
 
 };
 

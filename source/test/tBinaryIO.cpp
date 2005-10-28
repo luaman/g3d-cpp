@@ -119,14 +119,14 @@ static void testBitSerialization() {
 
 static void testCompression() {
     printf("BinaryInput & BinaryOutput\n");
-    BinaryOutput f("/tmp/out.t", G3D_LITTLE_ENDIAN);
+    BinaryOutput f("out.t", G3D_LITTLE_ENDIAN);
 
     f.writeUInt32(1234);
     f.writeFloat64(1.234);
     f.compress();
     f.commit();
 
-    BinaryInput g("/tmp/out.t", G3D_LITTLE_ENDIAN, true);
+    BinaryInput g("out.t", G3D_LITTLE_ENDIAN, true);
     uint32 i = g.readUInt32();
     debugAssert(i == 1234); (void)i;
     double j = g.readFloat64();

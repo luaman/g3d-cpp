@@ -1,4 +1,7 @@
 #include "../include/G3DAll.h"
+#ifdef G3D_LINUX
+#include <pthread.h>
+#endif
 
 class WKFoo : public ReferenceCountedObject {
 public:
@@ -196,12 +199,93 @@ static void testRCP() {
         // Likewise
         subclasstest(s);
     }
+}
+
+RCPFooRef f1, f2, f3;
+
+RCPFooRef someFunction(const RCPFooRef& f) {
+    return f;
+}
 
 
+/** Causes many accesses against global variables f1, f2, and f3 in an attempt
+    to create race conditions.
+*/
+void* threadProc(void* x) {
+    for (int i = 0; i < 100000; ++i) {
+        // Increase and decrease counter
+        {
+            RCPFooRef x = f1;
+        }
+        
+        // Swap; exercises counters
+        {
+            RCPFooRef temp = f2;
+            f2 = f3;
+            f3 = f2;
+        }
 
+        // Let counter hit zero (maybe; depends on other thread)
+        f1 = NULL;
+        
+        // Swap; exercises counters
+        {
+            RCPFooRef temp = f2;
+            f2 = f3;
+            f3 = f2;
+        }
+        
+        f1 = new RCPFoo();
+
+        f2 = someFunction(f2);
+        {
+            // Copy constructor
+            RCPFooRef x(f2);
+            f2 = x;
+        }
+
+        // Subclass assignment
+        f3 = new RefSubclass();
+
+        {
+            RCPFooRef temp = f2;
+            f2 = f3;
+            f3 = f2;
+        }
+
+        // Swap; exercises counters
+        {
+            RCPFooRef temp = f1;
+            f1 = f3;
+            f3 = f1;
+        }
+    }
+
+    return NULL;
+}
+
+static void testThreads() {
+    f1 = f2 = f3 = NULL;
+
+    f1 = new RCPFoo();
+    f2 = new RCPFoo();
+    f3 = new RCPFoo();
+
+#   ifdef G3D_LINUX
+    {
+        pthread_t thread;
+
+        // Race two copies of the thread proc
+        pthread_create(&thread, NULL, threadProc, NULL);
+        threadProc(NULL);
+        
+        pthread_join(thread, NULL);
+    }
+#   endif
 }
 
 void testReferenceCount() {
     testWeakPointer();
     testRCP();
+    testThreads();
 }
