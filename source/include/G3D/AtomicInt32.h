@@ -39,6 +39,9 @@ private:
 
 public:
 
+    /** Initial value is undefined. */
+    inline AtomicInt32() {}
+
     /** Atomic set */
     explicit inline AtomicInt32(const int32 x) {
         // APR does this assignment using InterlockedExchange

@@ -71,27 +71,47 @@ void TextInput::push(const Token& t) {
 
 
 bool TextInput::hasMore() {
-    return
-        (bufferLast <= (int)buffer.length() - 1) &&
-        (peek()._type != Token::END);
+    return (peek()._type != Token::END);
 }
 
 
-int TextInput::popNextChar() {
+int TextInput::eatInputChar() {
     // Don't go off the end
-    if (bufferLast == (int)(buffer.length() - 1)) {
+    if (currentCharOffset >= (unsigned int)buffer.length()) {
         return EOF;
     }
 
-    ++bufferLast;
-    unsigned char c = buffer[bufferLast];
+    unsigned char c = buffer[currentCharOffset];
+    ++currentCharOffset;
+
+    // update lineNumber and charNumber to reflect the location of the *next*
+    // character which will be read.
+    //
+    // We update even for CR because the user is allowed to do arbitrarily
+    // stupid things, like put a bunch of literal CRs inside a quoted string.
+    //
+    // We eat all whitespace between tokens, so they should never see a
+    // lineNumber that points to a CR.  However, if they have some kind of
+    // syntax error in a token that appears *after* a quoted string
+    // containing CRs, they should get a correct character number.  ("ugh!")
+
     if (c == '\n') {
         ++lineNumber;
-        charNumber = 0;
-    } else if (c != '\r') {
+        charNumber = 1;
+    } else {
         ++charNumber;
     }
 
+    return c;
+}
+
+int TextInput::peekInputChar(unsigned int distance) {
+    // Don't go off the end
+    if ((currentCharOffset + distance) >= (unsigned int)buffer.length()) {
+        return EOF;
+    }
+
+    unsigned char c = buffer[currentCharOffset + distance];
     return c;
 }
 
@@ -104,7 +124,7 @@ Token TextInput::nextToken() {
 	t._type         = Token::END;
 	t._extendedType = Token::END_TYPE;
 
-    char c = popNextChar();
+    int c = peekInputChar();
     if (c == EOF) {
         return t;
     }
@@ -114,48 +134,55 @@ Token TextInput::nextToken() {
         whitespaceDone = true;
 
         // Consume whitespace
-        if (isWhiteSpace(c)) {
-            whitespaceDone = false;
-            while (isWhiteSpace(c)) {
-                c = popNextChar();
-            }
+        while (isWhiteSpace(c)) {
+            c = eatAndPeekInputChar();
         }
 
-        // Comments 
-        if (c == '/') {
-            int c2 = peekNextChar();
+        int c2 = peekInputChar(1);
+        if ((options.cppComments && c == '/' && c2 == '/')
+            || (options.otherCommentCharacter != '\0'
+                && c == options.otherCommentCharacter)
+            || (options.otherCommentCharacter2 != '\0'
+                && c == options.otherCommentCharacter2)) {
+            
+            // Single line comment, consume to newline or EOF.
 
-            if ((c2 == '/') && options.cppComments) {
-                // Single line comment
-                whitespaceDone = false;
-                while (! isNewline(c) && (c != EOF)) {
-                    c = popNextChar();
-                }
-            } else if ((c2 == '*') && options.cComments) {
-                // Multi-line comment
-                whitespaceDone = false;
-                c2 = popNextChar();
-                while (! ((c == '*') && (c2 == '/'))) {
-                    c = c2;
-                    c2 = popNextChar();
-                }
-                c = popNextChar();
-            } else {
-                // Just a regular division
-                whitespaceDone = true;
-            }
-        } else if (((options.otherCommentCharacter != '\0') &&
-                    (c == options.otherCommentCharacter)) ||
-                   ((options.otherCommentCharacter2 != '\0') &&
-                    (c == options.otherCommentCharacter2))) {
-            // Single line comment
+            do {
+                c = eatAndPeekInputChar();
+            } while (! isNewline(c) && c != EOF);
+
+            // There is whitespace after the comment (in particular, the
+            // newline that terminates the comment).  There might also be
+            // whitespace at the start of the next line.
             whitespaceDone = false;
-            while (! isNewline(c) && (c != EOF)) {
-                c = popNextChar();
+
+        } else if (options.cComments
+                   && c == '/' && c2 == '*') {
+
+            // consume both start-comment chars, can't let the trailing one
+            // help close the comment.
+            eatInputChar();
+            eatInputChar();
+
+            // Multi-line comment, consume to end-marker or EOF.
+            c = peekInputChar();
+            c2 = peekInputChar(1);
+            while (! (c == '*' && c2 == '/')
+                   && c != EOF) {
+                eatInputChar();
+                c = c2;
+                c2 = peekInputChar(1);
             }
+            eatInputChar();      // eat closing '*'
+            eatInputChar();      // eat closing '/'
+
+            c = peekInputChar();
+
+            // May be whitespace after comment.
+            whitespaceDone = false;
         }
 
-    }  // While ! whitespaceDone
+    }  // while (! whitespaceDone)
 
     t._line      = lineNumber;
     t._character = charNumber;
@@ -164,174 +191,165 @@ Token TextInput::nextToken() {
     if (c == EOF) {
         return t;
     }
-    
+
+    // Does appropriate setup for a symbol (including setting up the token
+    // string to start with 'c'), eats the input character, and overwrites
+    // 'c' with the peeked next input character.
+#define SETUP_SYMBOL(c)                                                         \
+    do {                                                                        \
+        t._type = Token::SYMBOL;                                                \
+        t._extendedType = Token::SYMBOL_TYPE;                                   \
+        t._string = c;                                                          \
+        c = eatAndPeekInputChar();                                              \
+    } while (0)
+
     switch (c) {
-    // Complicated symbols-- all fall through to a special handler
-    case '\\':
+
+    case '@':                   // Simple symbols -> just themselves.
     case '(': 
     case ')':
     case ',':
-    case '*':
-    case '/':
-    case ':':
     case ';':
-    case '&':
-    case '|':
     case '{':
     case '}':
     case '[':
     case ']':
-    case '^':
     case '#':
     case '$':
-    case '@':
-    case '~':
     case '?':
-    case '-':
-    case '+':
-    case '>':
-    case '<':
-    case '!':
-    case '=':
-        t._type = Token::SYMBOL; 
-		t._extendedType = Token::SYMBOL_TYPE;
-        t._string = c;
+        SETUP_SYMBOL(c);
+        return t;
+
+    case '-':                   // negative number, -, --, -=, or ->
+        SETUP_SYMBOL(c);
 
         switch (c) {
-        case '-':
-            {
-                char c2 = peekNextChar();
+        case '>':               // ->
+        case '-':               // --
+        case '=':               // -=
+            t._string += c;
+            eatInputChar();
+            return t;
+        }
 
-                // Could be a negative number, -, --, -=, or ->
-                switch (c2) {
-                case '>':
-                case '-':
-                case '=':
-                    t._string += popNextChar();
-                    return t;
-                }
+        if (options.signedNumbers
+            && (isDigit(c) || (c == '.' && isDigit(peekInputChar(1))))) {
 
-                // need to read ahead 1 more
-                c2 = popNextChar();
+            // Negative number.  'c' is still the first digit, and is
+            // the next input char.
 
-                if (options.signedNumbers && 
-                    (isDigit(c2) || 
-                    ((c2 == '.') && isDigit(peekNextChar())))) {
-                    // Negative number
-                    c = c2;
-                    goto numLabel;
-                } else {
-                    pushNextChar(c2);
-                }
-            }
+            goto numLabel;
+        }
 
-            break;
+        // plain -
+        return t;
 
-        case '+':
-            {
-                char c2 = peekNextChar();
+    case '+':                   // positive number, +, ++, or +=
+        SETUP_SYMBOL(c);
 
-                switch (c2) {
-                case '+':
-                case '=':
-                    t._string += popNextChar();
-                    return t;
-                }
+        switch (c) {
+        case '+':               // ++
+        case '=':               // +=
+            t._string += c;
+            eatInputChar();
+            return t;
+        }
 
-                // need to read ahead 1 more
-                c2 = popNextChar();
+        if (options.signedNumbers
+            && (isDigit(c) || (c == '.' && isDigit(peekInputChar(1))))) {
 
-                if (options.signedNumbers &&
-                    (isDigit(c2) || 
-                    ((c2 == '.') && isDigit(peekNextChar())))) {
-                    // Positive number
-                    c = c2;
-                    goto numLabel;
-                } else {
-                    pushNextChar(c2);
-                }
-            }
-            break;
+            // Positive number.  'c' is still the first digit, and is
+            // the next input char.
 
-        case ':':
-            if (peekNextChar() == ':') {
-                t._string += popNextChar();
-                return t;
-            }
-            break;
-
-        case '*':
-        case '/':
-        case '!':
-        case '~':
-        case '=':
-            // ==, *=, /=, !=, ~=
-            if (peekNextChar() == '=') {
-                t._string += popNextChar();
-                return t;
-            }
-            break;
-
-        case '>':
-        case '<':
-        case '|':
-        case '&':
-            // >>, <<, <=, >=, |=, ||, &=, &&
-            {
-                char c2 = peekNextChar();
-                if ((c2 == '=') || (c2 == c)) {
-                    t._string += popNextChar();
-                    return t;
-                }
-            }
-            break;
-            
-        case '\\':
-            // This might be an escaped comment character
-            if (((options.otherCommentCharacter != '\0') &&
-                (peekNextChar() == options.otherCommentCharacter) ||
-                (options.otherCommentCharacter2 != '\0') &&
-                (peekNextChar() == options.otherCommentCharacter2))) {
-                // Return the raw comment character instead of
-                // the backslash
-                t._string = popNextChar();
-            }
+            goto numLabel;
         }
 
         return t;
 
-    // .  ..  ...
-    case '.':
+    case ':':                   // : or ::
+        SETUP_SYMBOL(c);
+        
+        if (c == ':') {
+            t._string += c;
+            eatInputChar();
+            return t;
+        }
+        return t;
+
+    case '*':                   // * or *=
+    case '/':                   // / or /=
+    case '!':                   // ! or !=
+    case '~':                   // ~ or ~=
+    case '=':                   // = or ==
+    case '^':                   // ^ or ^=
+        SETUP_SYMBOL(c);
+        
+        if (c == '=') {
+            t._string += c;
+            eatInputChar();
+            return t;
+        }
+        return t;
+
+    case '>':                   // >, >>,or >=
+    case '<':                   // <<, <<, or <=
+    case '|':                   // ||, ||, or |=
+    case '&':                   // &, &&, or &=
         {
-            t._type = Token::SYMBOL;
-			t._extendedType = Token::SYMBOL_TYPE;
-            t._string = '.';
-            if (peekNextChar() == '.') {
-                popNextChar();
-                t._string += '.';
+            int orig_c = c;
+            SETUP_SYMBOL(c);
 
-                if (peekNextChar() == '.') {
-                    // ...
-                    t._string += '.';
-                    popNextChar();
-                } else {
-                    // ..
-                }
-            } else {
-                // See if this is a number or a dot
-
-                if (isDigit(peekNextChar())) {
-                    // This is a number.  Abort immediately.
-                    // The number code will reuse c, so don't
-                    // push it back on.
-                    break;
-                } else {
-                    // A single dot
-                }
+            if ((c == '=') || (orig_c == c)) {
+                t._string += c;
+                eatInputChar();
+                return t;
             }
         }
         return t;
-    } // switch c
+            
+    case '\\':                // backslash or escaped comment char.
+        SETUP_SYMBOL(c);
+
+        if ((options.otherCommentCharacter != '\0'
+             && c == options.otherCommentCharacter)
+            || (options.otherCommentCharacter2 != '\0'
+                && c == options.otherCommentCharacter2)) {
+            
+            // escaped comment character.  Return the raw comment
+            // char (no backslash).
+
+            t._string = c;
+            eatInputChar();
+            return t;
+        }
+        return t;
+
+    case '.':                   // number, ., .., or ...
+        SETUP_SYMBOL(c);
+
+        if (c == '.') {         // .. or ...
+            t._string += c;
+            c = eatAndPeekInputChar();
+
+            if (c == '.') {     // ...
+                t._string += c;
+                eatInputChar();
+            }
+            return t;
+        }
+
+        if (isDigit(c)) {
+            // Number.  'c' is the first digit, and is still the next input
+            // char.
+
+            goto numLabel;
+        }
+
+        return t;
+
+    } // switch (c)
+
+#undef SETUP_SYMBOL
 
 numLabel:
     if (isDigit(c) || (c == '.')) {
@@ -354,27 +372,27 @@ numLabel:
 			t._extendedType = Token::INTEGER_TYPE;
 		}
 
-        if ((c == '0') && (peekNextChar() == 'x')) {
+        if ((c == '0') && (peekInputChar(1) == 'x')) {
             // Hex number
             t._string += "0x";
 
-            // skip the x
-            popNextChar();
+            // skip the 0x
+            eatInputChar();
+            eatInputChar();
 
-            c = popNextChar();
+            c = peekInputChar();
             while (isDigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f'))) {
                 t._string += c;
-                c = popNextChar();
+                c = eatAndPeekInputChar();
             }
 
         } else {
 
             // Read the part before the decimal.
-            do {
+            while (isDigit(c)) {
                 t._string += c;
-                c = popNextChar();
-            } while (isDigit(c));
-
+                c = eatAndPeekInputChar();
+            }
     
             // Read the decimal, if one exists
             if (c == '.') {
@@ -383,33 +401,31 @@ numLabel:
                 // The '.' was a decimal point, not the start of a
                 // method or range operator
                 t._string += c;
-                c = popNextChar();
+                c = eatAndPeekInputChar();
 
                 // Read the part after the decimal
                 while (isDigit(c)) {
                     t._string += c;
-                    c = popNextChar();
+                    c = eatAndPeekInputChar();
                 }
             }
 
             if ((c == 'e') || (c == 'E')) {
 				t._extendedType = Token::FLOATING_POINT_TYPE;
                 t._string += c;
-                if ((peekNextChar() == '-') || (peekNextChar() == '+')) {
-                    t._string += popNextChar();
+
+                c = eatAndPeekInputChar();
+                if ((c == '-') || (c == '+')) {
+                    t._string += c;
+                    c = eatAndPeekInputChar();                    
                 }
 
-                c = popNextChar();
                 while (isDigit(c)) {
                     t._string += c;
-                    c = popNextChar();
+                    c = eatAndPeekInputChar();
                 }
             }
         }
-
-        // Push back the extra one we read.
-        pushNextChar(c);
-
         return t;
 
     } else if (isLetter(c) || (c == '_')) {
@@ -421,21 +437,25 @@ numLabel:
         t._string = "";
         do {
             t._string += c;
-            c = popNextChar();
+            c = eatAndPeekInputChar();
         } while (isLetter(c) || isDigit(c) || (c == '_'));
 
-
-        // put back the extra character we read past the end.
-        pushNextChar(c);
         return t;
 
     } else if (c == '\"') {
+
+        // Discard the double-quote.
+        eatInputChar();
 
         // Double quoted string
 		parseQuotedString('\"', t);
         return t;
 
     } else if (c == '\'') {
+
+        // Discard the single-quote.
+        eatInputChar();
+
 		if (options.singleQuotedStrings) {
 			// Single quoted string
 			parseQuotedString('\'', t);
@@ -461,7 +481,8 @@ numLabel:
 }
 
 
-void TextInput::parseQuotedString(char delimiter, Token& t) {
+void TextInput::parseQuotedString(unsigned char delimiter, Token& t) {
+
     t._type = Token::STRING;
 
 	if (delimiter == '\'') {
@@ -471,21 +492,21 @@ void TextInput::parseQuotedString(char delimiter, Token& t) {
 	}
 
     while (true) {
-        char c = popNextChar();
+        // We're definitely going to consume the next input char, so we get
+        // it right now.  This makes the condition handling below a bit easier.
+        int c = eatInputChar();
 
         if (c == EOF) {
-            // END inside a quoted string.
-            break;
-        }
-            
-        if (c == delimiter) {
-            // End of the string
+            // END inside a quoted string.  (We finish the string.)
             break;
         }
 
         if (options.escapeSequencesInStrings && (c == '\\')) {
-            // Escaped character
-            c = popNextChar();
+            // An escaped character.  We're definitely going to consume it,
+            // so we get it (and consume it) now.
+
+            c = eatInputChar();
+
             switch (c) {
             case 'r':
                 t._string += '\r';
@@ -509,125 +530,151 @@ void TextInput::parseQuotedString(char delimiter, Token& t) {
             default:
                 if (((c == options.otherCommentCharacter) && 
                      (options.otherCommentCharacter != '\0')) ||
-                    ((c == options.otherCommentCharacter) && 
-                     (options.otherCommentCharacter != '\0'))) {
-                    t._string += options.otherCommentCharacter;
+                    ((c == options.otherCommentCharacter2) && 
+                     (options.otherCommentCharacter2 != '\0'))) {
+                    t._string += c;
                 } 
                 // otherwise, some illegal escape sequence; skip it.
+                break;
+
             } // switch
+
+        } else if (c == delimiter) {
+            // End of the string.  Already consumed the character.
+            break;
         } else {
+            // All other chars, go on to the string.  Already consumed the
+            // character.
             t._string += c;
         }
+
     }
 }
 
 
 double TextInput::readNumber() {
-    Token t(peek());
+    Token t(read());
 
-    if ((t._type == Token::SYMBOL) && (! options.signedNumbers) && ((t._string == "-") || (t._string == "+"))) {
-        // Read the token
-        t = read();
+    if (t._type == Token::NUMBER) {               // fast path
+        return t.number();
+    }
 
-        // Peek one more token
-        Token t2(peek());
+    if (! options.signedNumbers
+        && t._type == Token::SYMBOL
+        && (t._string == "-" || t._string == "+")) {
 
-        if (t2._type == Token::NUMBER) {
-            // Read the second one.
-            t2 = read();
+        Token t2(read());
+
+        if (t2._type == Token::NUMBER) {          // fast path
+
             if (t._string == "-") {
                 return -t2.number();
             } else {
                 return t2.number();
             }
-        } else {
-            push(t);
-            // Push back the first token and throw an exception
-            throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::NUMBER, t._type);
         }
 
-    } else if (t._type == Token::NUMBER) {
-        // Consume the token
-        return read().number();
-    } else {
-        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::NUMBER, t._type);
-        return 0;
+        // push back the second token.
+        push(t2);
     }
+
+    // Push initial token back, and throw an error.  We intentionally
+    // indicate that the wrong type is the type of the initial token.
+    // Logically, the number started there.
+    push(t);
+    throw WrongTokenType(options.sourceFileName, t.line(), t.character(),
+                         Token::NUMBER, t._type); 
 }
 
 
-std::string TextInput::readString() {
-    Token t(peek());
-    if (t._type == Token::STRING) {
-        return read()._string;
-    } else {
-        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::STRING, t._type);
+Token TextInput::readStringToken() {
+    Token t(read());
+
+    if (t._type == Token::STRING) {               // fast path
+        return t;
     }
+
+    push(t);
+    throw WrongTokenType(options.sourceFileName, t.line(), t.character(),
+                         Token::STRING, t._type);
+}
+
+std::string TextInput::readString() {
+    return readStringToken()._string;
+}
+
+void TextInput::readString(const std::string& s) {
+    Token t(readStringToken());
+
+    if (t._string == s) {                         // fast path
+        return;
+    }
+
+    push(t);
+    throw WrongString(options.sourceFileName, t.line(), t.character(),
+                      s, t._string);
+}
+
+
+Token TextInput::readSymbolToken() {
+    Token t(read());
+    
+    if (t._type == Token::SYMBOL) {               // fast path
+        return t;
+    }
+
+    push(t);
+    throw WrongTokenType(options.sourceFileName, t.line(), t.character(),
+                         Token::SYMBOL, t._type);
 }
 
 
 std::string TextInput::readSymbol() {
-    Token t(peek());
-    if (t._type == Token::SYMBOL) {
-        return read()._string;
-    } else {
-        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::SYMBOL, t._type);
-    }
+    return readSymbolToken()._string;
 }
-
 
 void TextInput::readSymbol(const std::string& symbol) {
-    Token t(peek());
-    if (t._type == Token::SYMBOL) {
-        if (t._string == symbol) {
-            // Consume the token
-            read();
-        } else {
-            throw WrongSymbol(sourceFile, lineNumber, charNumber, symbol, t._string);
-        }
-    } else {
-        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::SYMBOL, t._type);
-    }
-}
+    Token t(readSymbolToken());
 
-
-void TextInput::readString(const std::string& s) {
-    Token t(peek());
-    if (t._type == Token::STRING) {
-        if (t._string == s) {
-            // Consume the token
-            read();
-        } else {
-            throw WrongString(sourceFile, lineNumber, charNumber, s, t._string);
-        }
-    } else {
-        throw WrongTokenType(sourceFile, lineNumber, charNumber, Token::SYMBOL, t._type);
+    if (t._string == symbol) {                    // fast path
+        return;
     }
+
+    push(t);
+    throw WrongSymbol(options.sourceFileName, t.line(), t.character(),
+                      symbol, t._string);
 }
 
 
 TextInput::TextInput(const std::string& filename, const Options& opt) : options(opt) {
     init();
     BinaryInput input(filename, G3D_LITTLE_ENDIAN);
-    sourceFile = filename;
+    if (options.sourceFileName.empty()) {
+        options.sourceFileName = filename;
+    }
     int n = input.size();
-    buffer.resize(n + 1);
+    buffer.resize(n);
     System::memcpy(buffer.getCArray(), input.getCArray(), n);
-    buffer.last() = EOF;
 }
 
 
 TextInput::TextInput(FS fs, const std::string& str, const Options& opt) : options(opt) {
     (void)fs;
     init();
-    if (str.length() < 14) {
-        sourceFile = std::string("\"") + str + "\"";
-    } else {
-        sourceFile = std::string("\"") + str.substr(0, 10) + "...\"";
+    if (options.sourceFileName.empty()) {
+        if (str.length() < 14) {
+            options.sourceFileName = std::string("\"") + str + "\"";
+        } else {
+            options.sourceFileName = std::string("\"") + str.substr(0, 10) + "...\"";
+        }
     }
-    buffer.resize(str.length() + 1);
-    System::memcpy(buffer.getCArray(), str.c_str(), buffer.size() - 1);
-    buffer.last() = EOF;
+    buffer.resize(str.length()); // we don't bother copying trailing NUL.
+    System::memcpy(buffer.getCArray(), str.c_str(), buffer.size());
+}
+
+
+const std::string& TextInput::filename() const {
+    return options.sourceFileName;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -666,9 +713,8 @@ TextInput::WrongTokenType::WrongTokenType(
     Token::Type         a) :
     TokenException(src, ln, ch), expected(e), actual(a) {
          
-    message += 
-        format("Expected token of type %s, found type %s.",
-        tokenTypeToString(e), tokenTypeToString(a));
+    message += format("Expected token of type %s, found type %s.",
+                      tokenTypeToString(e), tokenTypeToString(a));
 }
 
 
@@ -680,9 +726,8 @@ TextInput::WrongSymbol::WrongSymbol(
     const std::string&  a) : 
     TokenException(src, ln, ch), expected(e), actual(a) {
 
-    message += 
-        format("Expected symbol '%s', found symbol '%s'.",
-                e.c_str(), a.c_str());
+    message += format("Expected symbol '%s', found symbol '%s'.",
+                      e.c_str(), a.c_str());
 }
 
 
@@ -694,10 +739,11 @@ TextInput::WrongString::WrongString(
     const std::string&  a) : 
     TokenException(src, ln, ch), expected(e), actual(a) {
 
-    message += 
-        format("Expected string '%s', found string '%s'.",
-                e.c_str(), a.c_str());
+    message += format("Expected string '%s', found string '%s'.",
+                      e.c_str(), a.c_str());
 }
+
+
 void deserialize(bool& b, TextInput& ti) {
     b = ti.readSymbol() == "true";
 }
@@ -723,4 +769,3 @@ void deserialize(float& b, TextInput& ti) {
 }
 
 } // namespace
-

@@ -56,6 +56,7 @@
 #    endif
 #endif
 
+
 // Verify that the supported compilers are being used and that this is a known
 // processor.
 
@@ -68,6 +69,8 @@
 #       error G3D only supports x86 machines on Linux.
 #   endif
 
+#   define G3D_DEPRECATED(msg) __attribute__((__deprecated__))
+
 #   ifndef __cdecl
 #       define __cdecl __attribute__((cdecl))
 #   endif
@@ -76,6 +79,7 @@
 #       define __stdcall __attribute__((stdcall))
 #   endif
 #endif
+
 
 #ifdef G3D_OSX
     #ifndef __GNUC__
@@ -86,9 +90,15 @@
         #error G3D only supports PowerPC processors on OS X.
     #endif
 
-    #ifndef __cdecl
-        #define __cdecl __attribute__((cdecl))
-    #endif
+#   ifndef __cdecl
+#       define __cdecl __attribute__((cdecl))
+#   endif
+
+#   ifndef __stdcall
+#       define __stdcall __attribute__((stdcall))
+#   endif
+
+#   define G3D_DEPRECATED(msg) __attribute__((__deprecated__))
 #endif
 
 
@@ -102,6 +112,7 @@
 
 #    endif
 
+#   define G3D_DEPRECATED(msg) __declspec(deprecated(msg))
 
 // Disable 'name too long for browse information' warning
 #   pragma warning (disable : 4786)

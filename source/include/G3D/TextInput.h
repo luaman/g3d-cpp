@@ -47,6 +47,7 @@ public:
 		END_TYPE};
 
 private:
+
     friend class TextInput;
 
     std::string             _string;
@@ -59,7 +60,8 @@ public:
 
     Token() : _string(""), _line(0), _character(0), _type(END), _extendedType(END_TYPE) {}
 
-    Token(Type t, ExtendedType e, const std::string& s, int L, int c) : _string(s), _line(L), _character(c), _type(t), _extendedType(e) {}
+    Token(Type t, ExtendedType e, const std::string& s, int L, int c)
+        : _string(s), _line(L), _character(c), _type(t), _extendedType(e) {}
 
     Type type() const {
         return _type;
@@ -69,16 +71,27 @@ public:
         return _extendedType;
     }
 
-	/** The value of a single or double quote string, not including the quotes, or the name of a symbol. */
+	/**
+     The value of a single or double quote string (not including the quotes),
+     the name of a symbol, or the textual representation of a number as
+     parsed from the input.
+     */
     std::string string() const {
         return _string;
     }
 
-	/** Line from which this token was parsed.  Starts at 1. */
+	/**
+     Starting line of the input from which this token was parsed.  Starts
+     at 1.
+     */
     int line() const {
         return _line;
     }
-	/** Character position from which this token was parsed.  Starts at 1. */
+
+	/**
+     Starting character position in the input line from which this token was
+     parsed.  Starts at 1.
+     */
     int character() const {
         return _character;
     }
@@ -102,8 +115,6 @@ public:
             return 0.0;
         }
     }
-
-
 };
 
 
@@ -118,7 +129,7 @@ public:
   <DT><CODE>Token::DOUBLE_QUOTED_TYPE</CODE> string of characters surrounded by double quotes, e.g., "x", "abc\txyz", "b o b".
   <DT><CODE>Token::SYMBOL_TYPE</CODE> legal C++ operators, keywords, and identifiers.  e.g., >=, Foo, _X, class, {
   <DT><CODE>Token::INTEGER_TYPE</CODE> numbers without decimal places or exponential notation. e.g., 10, 0x17F, 32, 0, -155
-  <DT><CODE>Token::FLOATING_POINT_TYPE</CODE> numbers with decimal places or exponential nottion. e.g., 1e3, -1.2, .4, 0.5
+  <DT><CODE>Token::FLOATING_POINT_TYPE</CODE> numbers with decimal places or exponential notation. e.g., 1e3, -1.2, .4, 0.5
 
  <P>The special ".." and "..." tokens are recognized in addition to normal C++ operators.
 
@@ -169,38 +180,37 @@ public:
 class TextInput {
 public:
 
+    /** Tokenizer configuration options.  */
     class Options {
     public:
         /** If true, slash-star marks a multi-line comment.  Default is true. */
         bool                cComments;
 
-        /** If true, // begins a single line comment, the results of
-            which will not appear in
-            Default is true. */
+        /** If true, // begins a single line comment.  Default is true. */
         bool                cppComments;
 
-        /** If true, \r, \n, \t, \0, \\ and other escale sequences inside strings
-            are converted to the equivalent C++ escaped character.  If false,
-            slashes are treated literally.  It is convenient to set to false if
-            reading Windows paths, for example, like c:\foo\bar.
+        /** If true, \r, \n, \t, \0, \\ and other escape sequences inside
+            strings are converted to the equivalent C++ escaped character.
+            If false, backslashes are treated literally.  It is convenient to
+            set to false if reading Windows paths, for example, like
+            c:\foo\bar.
 
             Default is true.
-            */
+         */
         bool                escapeSequencesInStrings;
 
-        /** If non-null, specifies a character that begins single line 
-            comments ('#' and '%' are popular choices).  This 
-            is independent of the cppComments flag.  If the 
-            character appears in text with a backslash in front of 
-            it, it is considered escaped and is not treated as 
-            a comment character.
+        /** If non-NUL, specifies a character that begins single line
+            comments ('#' and '%' are popular choices).  This is independent
+            of the cppComments flag.  If the character appears in text with a
+            backslash in front of it, it is considered escaped and is not
+            treated as a comment character.
 
             Default is '\0'.
          */
         char                otherCommentCharacter;
 
-        /** Another (optional) 1-comment character.  Useful for files that support 
-            multiple comment syntaxes.
+        /** Another (optional) 1-comment character.  Useful for files that
+            support multiple comment syntaxes.  Default is '\0'.
          */
         char                otherCommentCharacter2;
 
@@ -213,9 +223,26 @@ public:
     		Backquote (`) is always parsed as a symbol. */
 		bool				singleQuotedStrings;
 
-        Options () : cComments(true), cppComments(true), escapeSequencesInStrings(true), 
-            otherCommentCharacter('\0'), otherCommentCharacter2('\0'),
-            signedNumbers(true), singleQuotedStrings(true) {}
+        /** If set to a non-empty string, that string will be used in place
+            of the real file name (or in place of a pseudonym constructed
+            from the buffer if given FROM_STRING) in tokens and exceptions. 
+            
+            Default is empty.
+        */
+        std::string         sourceFileName;
+
+    
+        /** Added to the line number reported by peekLineNumber and in exceptions.
+            Useful for concatenating files that are parsed separately.
+            Default is zero. */
+        int                 startingLineNumberOffset;
+
+        Options ()
+            : cComments(true), cppComments(true), escapeSequencesInStrings(true), 
+              otherCommentCharacter('\0'), otherCommentCharacter2('\0'),
+              signedNumbers(true), singleQuotedStrings(true), sourceFileName(),
+              startingLineNumberOffset(0)
+        { }
     };
 
 private:
@@ -223,73 +250,117 @@ private:
     std::deque<Token>       stack;
 
     /**
-     The character you'll get if you peek 1 ahead
-     */
-    Array<char>             peekChar;
-
-    /**
-     Characters to be parsed.
+     Characters to be tokenized.
      */
     Array<char>             buffer;
 
     /**
-     Last character index consumed.
+     Offset of current character (the next character to consumed) in input buffer.
      */
-    int                     bufferLast;
-    int                     lineNumber;
+    unsigned int            currentCharOffset;
 
     /**
-     Number of characters from the beginning of the line. 
-     */
-    int                     charNumber;
+     Line number of next character to be consumed from the input buffer.  (1
+     indicates first line of input.)
 
-    std::string             sourceFile;
-    
+     Note that this is the line number of the @e next character to be
+     consumed from the input, not the line number of the @e last character
+     consumed!
+     */
+    unsigned int            lineNumber;
+
+    /**
+     Character number (within the line) of the next character to be consumed
+     from the input buffer.  (1 indicates first character of the line).
+
+     Note that this is the character number of the @e next character to be
+     consumed from the input, not the character number of the @e last
+     character consumed!
+     */
+    unsigned int            charNumber;
+
+    /** Configuration options.  This includes the file name that will be
+        reported in tokens and exceptions.  */
     Options                 options;
 
     void init() {
-        sourceFile = "";
-        charNumber = 0;
-        bufferLast = -1;
-        lineNumber = 1;
+        currentCharOffset = 0;
+        charNumber = 1;
+        lineNumber = 1 + options.startingLineNumberOffset;
     }
 
     /**
-     Returns the next character and sets filename and linenumber
-     to reflect the location where the character came from.
+     Consumes the next character from the input buffer, and returns that
+     character.  Updates lineNumber and charNumber to reflect the location of
+     the next character in the input buffer.
+
+     Note: you shouldn't be using the return value of this function in most
+     cases.  In general, you should peekInputChar() to get the next
+     character, determine what to do with it, then consume it with this
+     function (or with eatAndPeekInputChar()).  Given that usage, in most
+     instances you already know what this function would return!
      */
-    int popNextChar();
+    int eatInputChar();
 
-    inline char peekNextChar() {
-        return buffer[bufferLast + 1];
+    /**
+     Returns the next character from the input buffer, without consuming any
+     characters.  Can also be used to look deeper into the input buffer.
+     Does not modify lineNumber or charNumber.
+
+     @param distance Index of the character in the input buffer to peek at,
+     relative to the next character.  Default is 0, for the next character in
+     the input buffer.
+     */
+    int peekInputChar(unsigned int distance = 0);
+
+    /**
+     Helper function to consume the next character in the input buffer and
+     peek at the one following (without consuming it).
+     */
+    inline int eatAndPeekInputChar() {
+        eatInputChar();
+        return peekInputChar(0);
     }
 
-    inline void pushNextChar(char c) {
-        if (c != EOF) {
-            debugAssert(c == buffer[bufferLast]);
-            bufferLast--;
-        }
-    }
-
-    /** Read the next token or EOF */
+    /**
+     Read the next token, returning an END token if no more input is
+     available.
+     */
     Token nextToken();
 
-	/** Helper for nextToken.  Appends characters to t._string until
-	    the end delimiter is reached. */
-	void parseQuotedString(char delimiter, Token& t);
+	/**
+     Helper for nextToken.  Appends characters to t._string until the end
+     delimiter is reached.
+
+     When called, the next character in the input buffer should be first the
+     first character after the opening delimiter character.
+     */
+	void parseQuotedString(unsigned char delimiter, Token& t);
 
 public:
 
     class TokenException {
     public:
+        /** Name of file being parsed when exception occurred.  */
         std::string     sourceFile;
+
+        /** Line number of start of token which caused the exception.  1 is
+            the first line of the file.  Note that you can use 
+            TextInput::Options::startingLineNumberOffset to shift the effective line
+            number that is reported.
+         */
         int             line;
+
+        /** Character number in the line of start of token which caused the
+            exception.  1 is the character in the line.
+         */
         int             character;
 
         /** Pre-formatted error message */
         std::string     message;
 
         virtual ~TokenException() {}
+
     protected:
 
         TokenException(
@@ -327,6 +398,7 @@ public:
     };
 
 
+    /** String read from input did not match expected string.  */
     class WrongString : public TokenException {
     public:
         std::string             expected;
@@ -340,12 +412,12 @@ public:
             const std::string&  a);
     };
 
-
     TextInput(const std::string& filename, const Options& options = Options());
 
     enum FS {FROM_STRING};
-    /** Creates input directly from a string.
-        The first argument must be TextInput::FROM_STRING.*/
+    /** Creates input directly from a string.  The first argument must be
+        TextInput::FROM_STRING.
+    */
     TextInput(FS fs, const std::string& str, const Options& options = Options());
 
     /** Returns true while there are tokens remaining. */
@@ -368,30 +440,103 @@ public:
     */
     Token read();
 
-    /** Throws WrongTokenType if the next token is not a number or
-        a plus or minus sign followed by a number.  In the latter case,
-        this will read two tokens and combine them into a single number. 
-        When an exception is thrown no tokens are consumed.*/
+
+    /** Read one token (or possibly two) as a number or throws
+        WrongTokenType, and returns the number.
+
+        If the first token in the input is a number, it is returned directly.
+
+        If TextInput::Options::signedNumbers is false and the input stream
+        contains a '+' or '-' symbol token immediately followed by a number
+        token, both tokens will be consumed and a single token will be
+        returned by this method.
+
+        WrongTokenType will be thrown if one of the input conditions
+        described above is not satisfied.  When an exception is thrown, no
+        tokens are consumed.
+    */
     double readNumber();
 
-    /** Reads a string or throws WrongTokenType.  The quotes are taken off of strings. */
+
+    /** Reads a string token or throws WrongTokenType, and returns the token.
+
+        Use this method (rather than readString) if you want the token's
+        location as well as its value.
+
+        WrongTokenType will be thrown if the next token in the input stream
+        is not a string.  When an exception is thrown, no tokens are
+        consumed.
+    */
+    Token readStringToken();
+
+    /** Like readStringToken, but returns the token's string.
+
+        Use this method (rather than readStringToken) if you want the token's
+        value but don't really care about its location in the input.  Use of
+        readStringToken is encouraged for better error reporting.
+    */
     std::string readString();
-    
-    /** Reads a specific string or throws either WrongTokenType or WrongString. */
+
+    /** Reads a specific string token or throws either WrongTokenType or
+        WrongString.  If the next token in the input is a string matching @p
+        s, it will be consumed.
+
+        Use this method if you want to match a specific string from the
+        input.  In that case, typically error reporting related to the token
+        is only going to occur because of a mismatch, so no location
+        information is needed by the caller.
+
+        WrongTokenType will be thrown if the next token in the input stream
+        is not a string.  WrongString will be thrown if the next token in the
+        input stream is a string but does not match the @p s parameter.  When
+        an exception is thrown, no tokens are consumed.
+      */
     void readString(const std::string& s);
 
-    /** Reads a symbol or throws WrongTokenType */
+
+    /** Reads a symbol token or throws WrongTokenType, and returns the token.
+
+        Use this method (rather than readSymbol) if you want the token's
+        location as well as its value.
+
+        WrongTokenType will be thrown if the next token in the input stream
+        is not a symbol.  When an exception is thrown, no tokens are
+        consumed.
+    */
+    Token readSymbolToken();
+
+    /** Like readSymbolToken, but returns the token's string.
+
+        Use this method (rather than readSymbolToken) if you want the token's
+        value but don't really care about its location in the input.  Use of
+        readSymbolToken is encouraged for better error reporting.
+    */
     std::string readSymbol();
 
-    /** Reads a specific symbol or throws either WrongTokenType or WrongSymbol*/
+    /** Reads a specific symbol token or throws either WrongTokenType or
+        WrongSymbol.  If the next token in the input is a symbol matching @p
+        symbol, it will be consumed.
+
+        Use this method if you want to match a specific symbol from the
+        input.  In that case, typically error reporting related to the token
+        is only going to occur because of a mismatch, so no location
+        information is needed by the caller.
+
+        WrongTokenType will be thrown if the next token in the input stream
+        is not a symbol.  WrongSymbol will be thrown if the next token in the
+        input stream is a symbol but does not match the @p symbol parameter.
+        When an exception is thrown, no tokens are consumed.
+    */
     void readSymbol(const std::string& symbol);
 
-    /** Reads a series of specific symbols.  See readSymbol */
+
+    /** Read a series of two specific symbols.  See readSymbol.  */
     inline void readSymbols(const std::string& s1, const std::string& s2) {
         readSymbol(s1);
         readSymbol(s2);
     }
 
+    /** Read a series of three specific symbols.  See readSymbol.  */
     inline void readSymbols(
         const std::string& s1, 
         const std::string& s2, 
@@ -401,6 +546,7 @@ public:
         readSymbol(s3);
     }
 
+    /** Read a series of four specific symbols.  See readSymbol.  */
     inline void readSymbols(
         const std::string& s1, 
         const std::string& s2, 
@@ -412,19 +558,32 @@ public:
         readSymbol(s4);
     }
 
-    /** Look at the next token but don't extract it */
+    /** Return a copy of the next token in the input stream, but don't remove
+        it from the input stream.
+    */
     Token peek();
 
-    /** Returns the line number for the <B>next</B> token */
+    /** Returns the line number for the @e next token.  See also peek.  */
     int peekLineNumber();
 
-    /** Returns the character number (relative to the line) for the <B>next</B> token */
+    /** Returns the character number (relative to the line) for the @e next
+        token in the input stream.  See also peek.
+    */
     int peekCharacterNumber();
 
-    /** Take a previously read token and push it back (used
-        in the rare case where more than one token of read-ahead
-        is needed so peek doesn't suffice). */
+    /** Take a previously read token and push it back at the front of the
+        input stream.
+
+        Can be used in the case where more than one token of read-ahead is
+        needed (i.e., when peek doesn't suffice).
+    */
     void push(const Token& t);
+
+    /** Returns the filename from which this input is drawn, or the first few
+        characters of the string if created from a string.
+        If options::filename is non-empty that will replace the
+        true filename.*/
+    const std::string& filename() const;
 };
 
 void deserialize(bool& b, TextInput& ti);
@@ -437,3 +596,4 @@ void deserialize(std::string& b, TextInput& ti);
 } // namespace
 
 #endif
+
