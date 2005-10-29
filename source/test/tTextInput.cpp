@@ -454,5 +454,56 @@ void testTextInput() {
         CHECK_TOKEN_POS(t, 1, 1);
         alwaysAssertM(t.string() == "foo", "");
     }
+
+    // Signed numbers, parsed two different ways
+    {
+        TextInput t(TextInput::FROM_STRING, "- 5");
+        Token x = t.read();
+        CHECK_TOKEN_TYPE(x, Token::SYMBOL, Token::SYMBOL_TYPE);
+        alwaysAssertM(x.string() == "-", "");
+        
+        x = t.read();
+        CHECK_TOKEN_TYPE(x, Token::NUMBER, Token::INTEGER_TYPE);
+        alwaysAssertM(x.number() == 5, "");
+    }
+
+    {
+        TextInput::Options opt;
+        opt.signedNumbers = false;
+        TextInput t(TextInput::FROM_STRING, "-5", opt);
+        alwaysAssertM(t.readNumber() == -5, "");
+    }
+
+    {
+        TextInput::Options opt;
+        opt.signedNumbers = false;
+        TextInput t(TextInput::FROM_STRING, "- 5", opt);
+        try {
+            t.readNumber();
+            alwaysAssertM(false, "Incorrect parse");
+        } catch (...) {
+        }
+    }
+
+    // Test Nan and inf    
+    {
+        TextInput::Options opt;
+        opt.msvcSpecials = true;
+        TextInput t(TextInput::FROM_STRING, "-1.#INF00", opt);
+        double n = t.readNumber();
+        alwaysAssertM(n == -inf(), "");
+    }
+    {
+        TextInput::Options opt;
+        opt.msvcSpecials = true;
+        TextInput t(TextInput::FROM_STRING, "1.#INF00", opt);
+        alwaysAssertM(t.readNumber() == inf(), "");
+    }
+    {
+        TextInput::Options opt;
+        opt.msvcSpecials = true;
+        TextInput t(TextInput::FROM_STRING, "-1.#IND00", opt);
+        alwaysAssertM(isNaN(t.readNumber()), "");
+    }
     
 }

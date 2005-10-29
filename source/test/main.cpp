@@ -696,7 +696,6 @@ void testAABSPTreeSerialize() {
 
 int main(int argc, char* argv[]) {
     RenderDevice* renderDevice = NULL;
-    
 
     NetworkDevice* networkDevice = NULL;//new NetworkDevice();
     if (networkDevice) {networkDevice->init();}

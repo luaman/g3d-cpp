@@ -95,6 +95,8 @@ int TextInput::eatInputChar() {
     // syntax error in a token that appears *after* a quoted string
     // containing CRs, they should get a correct character number.  ("ugh!")
 
+    // TODO: http://sourceforge.net/tracker/index.php?func=detail&aid=1341266&group_id=76879&atid=548565
+
     if (c == '\n') {
         ++lineNumber;
         charNumber = 1;
@@ -394,23 +396,61 @@ numLabel:
                 c = eatAndPeekInputChar();
             }
     
+            // True if we are reading a floating-point special type
+            bool isSpecial = false;
+
             // Read the decimal, if one exists
             if (c == '.') {
 				t._extendedType = Token::FLOATING_POINT_TYPE;
 
-                // The '.' was a decimal point, not the start of a
+                // The '.' character was a decimal point, not the start of a
                 // method or range operator
                 t._string += c;
                 c = eatAndPeekInputChar();
 
-                // Read the part after the decimal
-                while (isDigit(c)) {
-                    t._string += c;
+                // Floating point specials (msvc format only)
+                if (options.msvcSpecials && (c == '#')) {
+                    isSpecial = true;
+                    // We are reading a floating point special value of the form
+                    // -1.#IND00, -1.#INF00, or 1.#INF00
                     c = eatAndPeekInputChar();
+                    if (c != 'I') {
+                        throw TokenException("Incorrect floating-point special (inf or nan) format.",
+                            t.line(), charNumber);
+                    }
+                    c = eatAndPeekInputChar();
+                    if (c != 'N') {
+                        throw TokenException("Incorrect floating-point special (inf or nan) format.",
+                            t.line(), charNumber);
+                    }
+                    t._string += "#IN";
+                    c = eatAndPeekInputChar();
+                    if ((c != 'F') && (c != 'D')) {
+                        throw TokenException("Incorrect floating-point special (inf or nan) format.",
+                            t.line(), charNumber);
+                    }
+                    t._string += c;
+                    for (int j = 0; j < 2; ++j) {
+                        c = eatAndPeekInputChar();
+                        if (c != '0') {
+                            throw TokenException("Incorrect floating-point special (inf or nan) format.",
+                                t.line(), charNumber);
+                        }
+                        t._string += c;
+                    }
+
+                } else {
+
+                    // Read the part after the decimal
+                    while (isDigit(c)) {
+                        t._string += c;
+                        c = eatAndPeekInputChar();
+                    }
                 }
             }
 
-            if ((c == 'e') || (c == 'E')) {
+            if (! isSpecial && ((c == 'e') || (c == 'E'))) {
+                // Read exponent
 				t._extendedType = Token::FLOATING_POINT_TYPE;
                 t._string += c;
 
@@ -555,17 +595,21 @@ void TextInput::parseQuotedString(unsigned char delimiter, Token& t) {
 double TextInput::readNumber() {
     Token t(read());
 
-    if (t._type == Token::NUMBER) {               // fast path
+    if (t._type == Token::NUMBER) {
         return t.number();
     }
 
+    // Even if signedNumbers is disabled, readNumber attempts to
+    // read a signed number, so we handle that case here.
     if (! options.signedNumbers
-        && t._type == Token::SYMBOL
-        && (t._string == "-" || t._string == "+")) {
+        && (t._type == Token::SYMBOL)
+        && ((t._string == "-") 
+             || (t._string == "+"))) {
 
         Token t2(read());
 
-        if (t2._type == Token::NUMBER) {          // fast path
+        if ((t2._type == Token::NUMBER)
+            && (t2._character == t._character + 1)) {
 
             if (t._string == "-") {
                 return -t2.number();

@@ -50,7 +50,11 @@ private:
 
     friend class TextInput;
 
+    /** 
+      Holds the actual value, which might be any type.  If a number, it will be 
+      parsed at runtime.*/
     std::string             _string;
+
     int                     _line;
     int                     _character;
     Type                    _type;
@@ -73,8 +77,8 @@ public:
 
 	/**
      The value of a single or double quote string (not including the quotes),
-     the name of a symbol, or the textual representation of a number as
-     parsed from the input.
+     the name of a symbol, or the exact textual representation of a number as
+     parsed from the input. 
      */
     std::string string() const {
         return _string;
@@ -96,9 +100,21 @@ public:
         return _character;
     }
 
-    /** Return the numeric value for a number type. */
+    /** Return the numeric value for a number type, or zero if this is not a number type.*/
     double number() const {
         if (_type == NUMBER) {
+            if (_string == "-1.#IND00") {
+                return nan();
+            }
+
+            if (_string == "1.#INF00") {
+                return inf();
+            }
+
+            if (_string == "-1.#INF00") {
+                return -inf();
+            }
+
             double n;
             if ((_string.length() > 2) &&
                 (_string[0] == '0') &&
@@ -119,7 +135,8 @@ public:
 
 
 /**
- A simple tokenizer for reading text files.  TextInput handles C++ like
+ A simple style tokenizer for reading text files that also supports C++-like syntaxes.  
+ TextInput handles a superset of C++/Java-like
  text including single line comments, block comments, quoted strings with
  escape sequences, and operators.  TextInput recognizes four categories of
  tokens, which are separated by white space, quotation marks, or the end of 
@@ -237,11 +254,39 @@ public:
             Default is zero. */
         int                 startingLineNumberOffset;
 
+        /** 
+          Parse -1.#IND00 as the floating point number returned by nan(),
+          -1.#INF00 as -inf(), and 1.#INF00 as inf().  Note that the C99 standard
+          specifies that a variety of formats like "NaN" and "nan" are to be used;
+          these are easier to parse yourself and not currently supported by readNumber.
+
+          An alternative to specifying msvcSpecials is to read numbers as:
+          <pre>
+            Token x = t.read();
+            Token y = t.peek();
+            if ((x.string() == "-1.") && 
+                (y.string() == "#INF00") && 
+                (y.character() == x.character() + 3) &&
+                (y.line() == x.line()) {
+                t.read();
+                return nan();
+            }
+            // ... similar cases for inf
+          </pre>
+
+          If the single-comment character was #, the floating point special format
+          overrides the comment and will be parsed instead.
+
+          If signedNumbers is false msvcSpecials will not be parsed.
+
+          Default is false (for backwards compatibility). */
+        bool                msvcSpecials;
+
         Options ()
             : cComments(true), cppComments(true), escapeSequencesInStrings(true), 
               otherCommentCharacter('\0'), otherCommentCharacter2('\0'),
               signedNumbers(true), singleQuotedStrings(true), sourceFileName(),
-              startingLineNumberOffset(0)
+              startingLineNumberOffset(0), msvcSpecials(false)
         { }
     };
 

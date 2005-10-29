@@ -37,6 +37,7 @@
    Changes in 6.08:
     <UL>
       <LI> G3D::TextInput::filename
+      <LI> G3D::TextInput::Options::msvcSpecials
       <LI> G3D::TextInput::Options::startingLineNumberOffset
       <LI> G3D::TextInput::readSymbolToken [cgd]
       <LI> G3D::TextInput::readStringToken [cgd]
