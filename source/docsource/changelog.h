@@ -36,6 +36,10 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::TextInput::filename
+      <LI> G3D::TextInput::Options::startingLineNumberOffset
+      <LI> G3D::TextInput::readSymbolToken [cgd]
+      <LI> G3D::TextInput::readStringToken [cgd]
       <LI> G3D_DEPRECATED macro
       <LI> Threadsafe G3D::ReferenceCountedPointer
       <LI> G3D::AtomicInt32
@@ -59,10 +63,8 @@
       <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
-      <LI> G3D::TextInput::filename
-      <LI> G3D::TextInput::Options::startingLineNumberOffset
       <LI> Fix: G3D::TextInput now parses ^=, character 255 correctly [cgd]
-      <LI> Fix: G3D::TextInput now reports line numbers correctly [cgd]
+      <LI> Fix: G3D::TextInput now reports line numbers correctly with raw newlines [cgd]
       <LI> Fix: .ICO files with transparency loaded incorrectly [Corey]
       <LI> Fix: G3D::Draw::rect2DBorder inner border was 1 pixel too thick.
       <LI> Fix: [ 1326173 ] Win32Window::init should call makeCurrent.[Erik Cassel]

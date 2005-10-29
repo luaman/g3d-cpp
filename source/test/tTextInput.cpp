@@ -7,7 +7,13 @@ void testTextInput() {
         // Quoted string with escapes.  The actual expression we are parsing looks like:
         // "\\"
  		TextInput ti(TextInput::FROM_STRING, "\"\\\\\"");
+        Token t;
+
 		ti.readString("\\");
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
 	}
 
     {
@@ -16,30 +22,53 @@ void testTextInput() {
         // The actual expression we are parsing is:
         // "\"
         TextInput::Options opt;
+        Token t;
+
         opt.escapeSequencesInStrings = false;
  		TextInput ti(TextInput::FROM_STRING, "\"\\\"", opt);
 		ti.readString("\\");
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
 	}
 
 	{
  		TextInput ti(TextInput::FROM_STRING, "a \'foo\' bar");
+        Token t;
 
 		ti.readSymbol("a");
-		Token t = ti.read();
+
+		t = ti.read();
 		debugAssert(t.extendedType() == Token::SINGLE_QUOTED_TYPE);
 		debugAssert(t.string() == "foo");
 		ti.readSymbol("bar");
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
 	}
 
     {
         TextInput ti(TextInput::FROM_STRING, "2.x");
+        Token t;
 
         debugAssert(ti.readNumber() == 2);
         ti.readSymbol("x");
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
     }
     {
         TextInput ti(TextInput::FROM_STRING, "1.E7");
+        Token t;
+
         debugAssert(ti.readNumber() == 1.E7);
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
     }
 
     {
@@ -51,6 +80,10 @@ void testTextInput() {
         t = ti.read();
         debugAssert(t.type() == Token::NUMBER);
         debugAssert(t.number() == 123);
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
     }
 
     {
@@ -76,6 +109,10 @@ void testTextInput() {
         t = ti.read();
         debugAssert(t.type() == Token::NUMBER);
         debugAssert(t.number() == 2);
+
+        t = ti.read();
+        debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
     }
 
     {
@@ -91,6 +128,7 @@ void testTextInput() {
 
         t = ti.read();
         debugAssert(t.type() == Token::END);
+        debugAssert(!ti.hasMore());
     }
 
     {
@@ -251,4 +289,170 @@ void testTextInput() {
         alwaysAssertM(t.extendedType() == G3D::Token::SYMBOL_TYPE, "");
     }
 
+#define CHECK_EXC_POS(e, lnum, chnum)                                        \
+    do {                                                                     \
+        alwaysAssertM((e).line == (lnum) && (e).character == (chnum), "");   \
+    } while (0)
+#define CHECK_TOKEN_POS(t, lnum, chnum)                                      \
+    do {                                                                     \
+        alwaysAssertM((t).line() == (lnum)                                   \
+                      && (t).character() == (chnum), "");                    \
+    } while (0)
+#define CHECK_TOKEN_TYPE(t, typ, etyp)                                       \
+    do {                                                                     \
+        alwaysAssertM((t).type() == (typ), "");                              \
+        alwaysAssertM((t).extendedType() == (etyp), "");                     \
+    } while (0)
+#define CHECK_SYM_TOKEN(ti, str, lnum, chnum)                                \
+    do {                                                                     \
+        Token _t;                                                            \
+        _t = (ti).read();                                                    \
+        CHECK_TOKEN_TYPE(_t, Token::SYMBOL, Token::SYMBOL_TYPE);             \
+                                                                             \
+        CHECK_TOKEN_POS(_t, (lnum), (chnum));                                \
+        alwaysAssertM(_t.string() == (str), "");                             \
+    } while (0)
+#define CHECK_END_TOKEN(ti, lnum, chnum)                                     \
+    do {                                                                     \
+        Token _t;                                                            \
+        _t = (ti).read();                                                    \
+        CHECK_TOKEN_TYPE(_t, Token::END, Token::END_TYPE);                   \
+        CHECK_TOKEN_POS(_t, (lnum), (chnum));                                \
+    } while (0)
+
+    // Basic line number checking test.  Formerly would skip over line
+    // numbers (i.e., report 1, 3, 5, 7 as the lines for the tokens), because
+    // the newline would be consumed, pushed back to the input stream, then
+    // consumed again (reincrementing the line number.)
+    {
+        TextInput ti(TextInput::FROM_STRING, "foo\nbar\nbaz\n");
+        CHECK_SYM_TOKEN(ti, "foo", 1, 1);
+        CHECK_SYM_TOKEN(ti, "bar", 2, 1);
+        CHECK_SYM_TOKEN(ti, "baz", 3, 1);
+        CHECK_END_TOKEN(ti,        4, 1);
+    }
+
+#define CHECK_ONE_SPECIAL_SYM(s)                                             \
+    do {                                                                     \
+        TextInput ti(TextInput::FROM_STRING, "\n a" s "b\n ");               \
+        CHECK_SYM_TOKEN(ti, "a", 2, 2);                                      \
+        CHECK_SYM_TOKEN(ti,   s, 2, 3);                                      \
+        CHECK_SYM_TOKEN(ti, "b", 2, 3 + strlen(s));                          \
+        CHECK_END_TOKEN(ti,      3, 2);                                      \
+    } while (0)
+
+    CHECK_ONE_SPECIAL_SYM("@");
+    CHECK_ONE_SPECIAL_SYM("(");
+    CHECK_ONE_SPECIAL_SYM(")");
+    CHECK_ONE_SPECIAL_SYM(",");
+    CHECK_ONE_SPECIAL_SYM(";");
+    CHECK_ONE_SPECIAL_SYM("{");
+    CHECK_ONE_SPECIAL_SYM("}");
+    CHECK_ONE_SPECIAL_SYM("[");
+    CHECK_ONE_SPECIAL_SYM("]");
+    CHECK_ONE_SPECIAL_SYM("#");
+    CHECK_ONE_SPECIAL_SYM("$");
+    CHECK_ONE_SPECIAL_SYM("?");
+
+    CHECK_ONE_SPECIAL_SYM("-");
+    CHECK_ONE_SPECIAL_SYM("--");
+    CHECK_ONE_SPECIAL_SYM("-=");
+    CHECK_ONE_SPECIAL_SYM("->");
+
+    CHECK_ONE_SPECIAL_SYM("+");
+    CHECK_ONE_SPECIAL_SYM("++");
+    CHECK_ONE_SPECIAL_SYM("+=");
+
+    CHECK_ONE_SPECIAL_SYM(":");
+    CHECK_ONE_SPECIAL_SYM("::");
+
+    CHECK_ONE_SPECIAL_SYM("*");
+    CHECK_ONE_SPECIAL_SYM("*=");
+    CHECK_ONE_SPECIAL_SYM("/");
+    CHECK_ONE_SPECIAL_SYM("/=");
+    CHECK_ONE_SPECIAL_SYM("!");
+    CHECK_ONE_SPECIAL_SYM("!=");
+    CHECK_ONE_SPECIAL_SYM("~");
+    CHECK_ONE_SPECIAL_SYM("~=");
+    CHECK_ONE_SPECIAL_SYM("=");
+    CHECK_ONE_SPECIAL_SYM("==");
+    CHECK_ONE_SPECIAL_SYM("^");
+    // Formerly (mistakenly) tokenized as symbol "^"
+    CHECK_ONE_SPECIAL_SYM("^=");
+
+    CHECK_ONE_SPECIAL_SYM(">");
+    CHECK_ONE_SPECIAL_SYM(">>");
+    CHECK_ONE_SPECIAL_SYM(">=");
+    CHECK_ONE_SPECIAL_SYM("<");
+    CHECK_ONE_SPECIAL_SYM("<<");
+    CHECK_ONE_SPECIAL_SYM("<=");
+    CHECK_ONE_SPECIAL_SYM("|");
+    CHECK_ONE_SPECIAL_SYM("||");
+    CHECK_ONE_SPECIAL_SYM("|=");
+    CHECK_ONE_SPECIAL_SYM("&");
+    CHECK_ONE_SPECIAL_SYM("&&");
+    CHECK_ONE_SPECIAL_SYM("&=");
+
+    CHECK_ONE_SPECIAL_SYM("\\");
+
+    CHECK_ONE_SPECIAL_SYM(".");
+    CHECK_ONE_SPECIAL_SYM("..");
+    CHECK_ONE_SPECIAL_SYM("...");
+
+#undef CHECK_ONE_SPECIAL_SYM
+
+    // Formerly would loop infinitely if EOF seen in multi-line comment.
+    {
+        TextInput ti(TextInput::FROM_STRING, "/* ... comment to end");
+        CHECK_END_TOKEN(ti, 1, 22);
+    }
+
+    // Formerly would terminate quoted string after "foobar", having
+    // mistaken \377 for EOF.
+    {
+        // This is a quoted string "foobarybaz", but with the 'y' replaced by
+        // character 0xff (Latin-1 'y' with diaeresis a.k.a. HTML &yuml;).
+        // It should parse into a quoted string with exactly those chars.
+
+        TextInput ti(TextInput::FROM_STRING, "\"foobar\377baz\"");
+        ti.readString("foobar\377baz");
+        CHECK_END_TOKEN(ti, 1, 13);
+    }
+
+    {
+        TextInput ti(TextInput::FROM_STRING, "[ foo \n  bar\n");
+        bool got_exc;
+        try {
+            ti.readSymbols("[", "foo", "]");
+        } catch (TextInput::WrongSymbol e) {
+            got_exc = true;
+            alwaysAssertM(e.expected == "]", "");
+            alwaysAssertM(e.actual == "bar", "");
+            CHECK_EXC_POS(e, 2, 3);
+        }
+        alwaysAssertM(got_exc, "");
+    }
+
+    // Test file pseudonym creation.
+    {
+        TextInput ti(TextInput::FROM_STRING, "foo");
+        Token t;
+        t = ti.read();
+        CHECK_TOKEN_TYPE(t, Token::SYMBOL, Token::SYMBOL_TYPE);
+        CHECK_TOKEN_POS(t, 1, 1);
+        alwaysAssertM(t.string() == "foo", "");
+    }
+    
+    // Test filename override.
+    {
+        TextInput::Options tio;
+        tio.sourceFileName = "<stdin>";
+        TextInput ti(TextInput::FROM_STRING, "foo", tio);
+        Token t;
+        t = ti.read();
+        CHECK_TOKEN_TYPE(t, Token::SYMBOL, Token::SYMBOL_TYPE);
+        CHECK_TOKEN_POS(t, 1, 1);
+        alwaysAssertM(t.string() == "foo", "");
+    }
+    
 }
