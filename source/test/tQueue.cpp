@@ -199,24 +199,36 @@ void perfQueue() {
 
 
     printf(" Pile-up push front cycles per elt (max queue size = %d)\n", enqueuesize);
-    printf("  G3D::Queue<int>             %5.02f\n",  g3dEnquequeFSmall / (float)enqueuesize);
-    printf("  std::deque<int>             %5.02f\n",  stdEnquequeFSmall / (float)enqueuesize);
-    printf("  G3D::Queue<BigE>            %5.02f\n",  g3dEnquequeFLarge / (float)enqueuesize);
-    printf("  std::deque<BigE>            %5.02f\n",  stdEnquequeFLarge / (float)enqueuesize);
+    printf("  G3D::Queue<int>             %5.02f\n",  g3dEnquequeFSmall / 
+(float)enqueuesize);
+    printf("  std::deque<int>             %5.02f\n",  stdEnquequeFSmall / 
+(float)enqueuesize);
+    printf("  G3D::Queue<BigE>            %5.02f\n",  g3dEnquequeFLarge / 
+(float)enqueuesize);
+    printf("  std::deque<BigE>            %5.02f\n",  stdEnquequeFLarge / 
+(float)enqueuesize);
     printf("\n");
 
     printf(" Pile-up push back cycles per elt (max queue size = %d)\n", enqueuesize);
-    printf("  G3D::Queue<int>             %5.02f\n",  g3dEnquequeBSmall / (float)enqueuesize);
-    printf("  std::deque<int>             %5.02f\n",  stdEnquequeBSmall / (float)enqueuesize);
-    printf("  G3D::Queue<BigE>            %5.02f\n",  g3dEnquequeBLarge / (float)enqueuesize);
-    printf("  std::deque<BigE>            %5.02f\n",  stdEnquequeBLarge / (float)enqueuesize);
+    printf("  G3D::Queue<int>             %5.02f\n",  g3dEnquequeBSmall / 
+(float)enqueuesize);
+    printf("  std::deque<int>             %5.02f\n",  stdEnquequeBSmall / 
+(float)enqueuesize);
+    printf("  G3D::Queue<BigE>            %5.02f\n",  g3dEnquequeBLarge / 
+(float)enqueuesize);
+    printf("  std::deque<BigE>            %5.02f\n",  stdEnquequeBLarge / 
+(float)enqueuesize);
     printf("\n");
 
     printf(" Streaming cycles per iteration (queue size = %d)\n", qsize);
-    printf("  G3D::Queue<int>             %5.02f\n",  g3dStreamSmall / (float)iterations);
-    printf("  std::deque<int>             %5.02f\n",  stdStreamSmall / (float)iterations);
-    printf("  G3D::Queue<BigE>            %5.02f\n",  g3dStreamLarge / (float)iterations);
-    printf("  std::deque<BigE>            %5.02f\n",  stdStreamLarge / (float)iterations);
+    printf("  G3D::Queue<int>             %5.02f\n",  g3dStreamSmall / 
+(float)iterations);
+    printf("  std::deque<int>             %5.02f\n",  stdStreamSmall / 
+(float)iterations);
+    printf("  G3D::Queue<BigE>            %5.02f\n",  g3dStreamLarge / 
+(float)iterations);
+    printf("  std::deque<BigE>            %5.02f\n",  stdStreamLarge / 
+(float)iterations);
 
 
     printf("\n\n");
@@ -339,6 +351,20 @@ void testQueue() {
         q.popFront();
         check(q);
     }
+
+    // Sanity check queue copying.
+    {
+        Queue<int> q;
+        q.pushBack(1);
+        q.pushBack(2);
+        q.pushBack(3);
+ 
+        check(q);
+
+        Queue<int> r(q);
+        check(r);
+    }
+    
     printf("succeeded\n");
 }
 

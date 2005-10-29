@@ -71,6 +71,7 @@
       <LI> Fix: [ 1326173 ] Win32Window::init should call makeCurrent.[Erik Cassel]
       <LI> Fix: [ 1326423 ] G3D::Queue::_copy broken [Chris Demetriou]
       <LI> Fix: [ 1313293 ] 6.08: TextInput gets symbol extendedType() wrong [Chris Demetriou]
+      <LI> Fix: Quat from Matrix3  now computes trace correctly (gave negative quats in some cases) 
     </UL>
 
   <P>
