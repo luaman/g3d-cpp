@@ -411,30 +411,42 @@ numLabel:
                 // Floating point specials (msvc format only)
                 if (options.msvcSpecials && (c == '#')) {
                     isSpecial = true;
-                    // We are reading a floating point special value of the form
-                    // -1.#IND00, -1.#INF00, or 1.#INF00
+                    // We are reading a floating point special value
+                    // of the form -1.#IND00, -1.#INF00, or 1.#INF00
                     c = eatAndPeekInputChar();
                     if (c != 'I') {
-                        throw TokenException("Incorrect floating-point special (inf or nan) format.",
+                        throw BadMSVCSpecial
+                            (
+                             "Incorrect floating-point special (inf or nan) "
+                             "format.",
                             t.line(), charNumber);
                     }
                     c = eatAndPeekInputChar();
                     if (c != 'N') {
-                        throw TokenException("Incorrect floating-point special (inf or nan) format.",
+                        throw BadMSVCSpecial
+                            (
+                             "Incorrect floating-point special (inf or nan) "
+                             "format.",
                             t.line(), charNumber);
                     }
                     t._string += "#IN";
                     c = eatAndPeekInputChar();
                     if ((c != 'F') && (c != 'D')) {
-                        throw TokenException("Incorrect floating-point special (inf or nan) format.",
+                        throw BadMSVCSpecial
+                            (
+                             "Incorrect floating-point special (inf or nan) "
+                             "format.",
                             t.line(), charNumber);
                     }
                     t._string += c;
                     for (int j = 0; j < 2; ++j) {
                         c = eatAndPeekInputChar();
                         if (c != '0') {
-                            throw TokenException("Incorrect floating-point special (inf or nan) format.",
-                                t.line(), charNumber);
+                            throw BadMSVCSpecial
+                                (
+                                 "Incorrect floating-point special (inf or"
+                                 "nan) format.",
+                                 t.line(), charNumber);
                         }
                         t._string += c;
                     }
@@ -759,6 +771,14 @@ TextInput::WrongTokenType::WrongTokenType(
          
     message += format("Expected token of type %s, found type %s.",
                       tokenTypeToString(e), tokenTypeToString(a));
+}
+
+
+TextInput::BadMSVCSpecial::BadMSVCSpecial(
+    const std::string&  src,
+    int                 ln,
+    int                 ch)
+    TokenException(src, ln, ch) {
 }
 
 
