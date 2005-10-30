@@ -62,7 +62,12 @@ private:
 
 public:
 
-    Token() : _string(""), _line(0), _character(0), _type(END), _extendedType(END_TYPE) {}
+    Token() : 
+        _string(""), 
+        _line(0), 
+        _character(0), 
+        _type(END), 
+        _extendedType(END_TYPE) {}
 
     Token(Type t, ExtendedType e, const std::string& s, int L, int c)
         : _string(s), _line(L), _character(c), _type(t), _extendedType(e) {}
@@ -80,7 +85,7 @@ public:
      the name of a symbol, or the exact textual representation of a number as
      parsed from the input. 
      */
-    std::string string() const {
+    const std::string& string() const {
         return _string;
     }
 
@@ -100,7 +105,9 @@ public:
         return _character;
     }
 
-    /** Return the numeric value for a number type, or zero if this is not a number type.*/
+    /** Return the numeric value for a number type, or zero if this is
+        not a number type.
+    */
     double number() const {
         if (_type == NUMBER) {
             if (_string == "-1.#IND00") {
@@ -135,12 +142,12 @@ public:
 
 
 /**
- A simple style tokenizer for reading text files that also supports C++-like syntaxes.  
- TextInput handles a superset of C++/Java-like
- text including single line comments, block comments, quoted strings with
- escape sequences, and operators.  TextInput recognizes four categories of
- tokens, which are separated by white space, quotation marks, or the end of 
- a recognized operator:
+ A simple style tokenizer for reading text files that also supports
+ C++-like syntaxes.  TextInput handles a superset of C++/Java-like
+ text including single line comments, block comments, quoted strings
+ with escape sequences, and operators.  TextInput recognizes four
+ categories of tokens, which are separated by white space, quotation
+ marks, or the end of a recognized operator:
 
   <DT><CODE>Token::SINGLE_QUOTED_TYPE</CODE> string of characters surrounded by single quotes, e.g., 'x', '\0', 'foo'.
   <DT><CODE>Token::DOUBLE_QUOTED_TYPE</CODE> string of characters surrounded by double quotes, e.g., "x", "abc\txyz", "b o b".
@@ -153,17 +160,19 @@ public:
  Negative numbers are handled specially because of the ambiguity between unary minus and negative numbers-- 
  see the note on TextInput::read.
 
-  TextInput does not have helper functions for types with non-obvious formatting, or 
-  helpers that would be redundant.  Use the serialize methods instead for 
-  parsing specific types like int, Vector3, and Color3.
+  TextInput does not have helper functions for types with non-obvious
+  formatting, or helpers that would be redundant.  Use the serialize
+  methods instead for parsing specific types like int, Vector3, and
+  Color3.
 
-  Inside quoted strings escape sequences are converted.  Thus the string
-  token for ["a\nb"] is 'a', followed by a newline, followed by 'b'.  Outside
-  of quoted strings, escape sequences are not converted, so the token sequence
-  for [a\nb] is symbol 'a', symbol '\', symbol 'nb' (this matches what a C++ parser
-  would do).  The exception is that a specified TextInput::Options::otherCommentCharacter
-  preceeded by a backslash is assumed to be an escaped comment character and is
-  returned as a symbol token instead of being parsed as a comment 
+  Inside quoted strings escape sequences are converted.  Thus the
+  string token for ["a\nb"] is 'a', followed by a newline, followed by
+  'b'.  Outside of quoted strings, escape sequences are not converted,
+  so the token sequence for [a\nb] is symbol 'a', symbol '\', symbol
+  'nb' (this matches what a C++ parser would do).  The exception is
+  that a specified TextInput::Options::otherCommentCharacter preceeded
+  by a backslash is assumed to be an escaped comment character and is
+  returned as a symbol token instead of being parsed as a comment
   (this is what a LaTex or VRML parser would do).
 
   <B>Examples</B>
@@ -200,7 +209,8 @@ public:
     /** Tokenizer configuration options.  */
     class Options {
     public:
-        /** If true, slash-star marks a multi-line comment.  Default is true. */
+        /** If true, slash-star marks a multi-line comment.  Default
+            is true. */
         bool                cComments;
 
         /** If true, // begins a single line comment.  Default is true. */
@@ -231,34 +241,37 @@ public:
          */
         char                otherCommentCharacter2;
 
-        /** If true, "-1" parses as the number -1 instead of the symbol "-" followed
-            by the number 1.  Default is true.*/
+        /** If true, "-1" parses as the number -1 instead of the
+            symbol "-" followed by the number 1.  Default is true.*/
         bool                signedNumbers;
 
-		/** If true, strings can be marked with single quotes (e.g., 'aaa'). 
-		    If false, the quote character is parsed as a symbol. Default is true.
-    		Backquote (`) is always parsed as a symbol. */
+		/** If true, strings can be marked with single quotes (e.g.,
+		    'aaa').  If false, the quote character is parsed as a
+		    symbol. Default is true.  Backquote (`) is always parsed
+		    as a symbol. */
 		bool				singleQuotedStrings;
 
-        /** If set to a non-empty string, that string will be used in place
-            of the real file name (or in place of a pseudonym constructed
-            from the buffer if given FROM_STRING) in tokens and exceptions. 
+        /** If set to a non-empty string, that string will be used in
+            place of the real file name (or in place of a pseudonym
+            constructed from the buffer if given FROM_STRING) in
+            tokens and exceptions.
             
             Default is empty.
         */
         std::string         sourceFileName;
 
     
-        /** Added to the line number reported by peekLineNumber and in exceptions.
-            Useful for concatenating files that are parsed separately.
-            Default is zero. */
+        /** Added to the line number reported by peekLineNumber and in
+            exceptions.  Useful for concatenating files that are
+            parsed separately.  Default is zero. */
         int                 startingLineNumberOffset;
 
         /** 
-          Parse -1.#IND00 as the floating point number returned by nan(),
-          -1.#INF00 as -inf(), and 1.#INF00 as inf().  Note that the C99 standard
-          specifies that a variety of formats like "NaN" and "nan" are to be used;
-          these are easier to parse yourself and not currently supported by readNumber.
+          Parse -1.#IND00 as the floating point number returned by
+          nan(), -1.#INF00 as -inf(), and 1.#INF00 as inf().  Note
+          that the C99 standard specifies that a variety of formats
+          like "NaN" and "nan" are to be used; these are easier to
+          parse yourself and not currently supported by readNumber.
 
           An alternative to specifying msvcSpecials is to read numbers as:
           <pre>
@@ -274,8 +287,9 @@ public:
             // ... similar cases for inf
           </pre>
 
-          If the single-comment character was #, the floating point special format
-          overrides the comment and will be parsed instead.
+          If the single-comment character was #, the floating point
+          special format overrides the comment and will be parsed
+          instead.
 
           If signedNumbers is false msvcSpecials will not be parsed.
 
@@ -300,7 +314,8 @@ private:
     Array<char>             buffer;
 
     /**
-     Offset of current character (the next character to consumed) in input buffer.
+     Offset of current character (the next character to consumed) in
+     input buffer.
      */
     unsigned int            currentCharOffset;
 
@@ -407,12 +422,23 @@ public:
         virtual ~TokenException() {}
 
     protected:
-
+        
         TokenException(
             const std::string&  src,
             int                 ln,
             int                 ch);
 
+    };
+
+    /** While parsing a number of the form 1.#IN?00, ? was 
+        not 'D' or 'F'. */
+    class BadMSVCSpecial : public TokenException {
+    public:
+
+        BadMSVCSpecial(
+            const std::string&  src,
+            int                 ln,
+            int                 ch);
     };
 
     /** Thrown by the read methods. */

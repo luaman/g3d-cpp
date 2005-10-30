@@ -777,7 +777,7 @@ TextInput::WrongTokenType::WrongTokenType(
 TextInput::BadMSVCSpecial::BadMSVCSpecial(
     const std::string&  src,
     int                 ln,
-    int                 ch)
+    int                 ch) :
     TokenException(src, ln, ch) {
 }
 
