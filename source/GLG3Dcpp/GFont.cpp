@@ -300,7 +300,7 @@ Vector2 GFont::draw2D(
 
         // Packed vertex array; tex coord and vertex are interlaced
         // For each character we need 4 vertices.
-        Vector2 *array = (Vector2*)alloca(numChars * 4 * 2 * sizeof(Vector2));
+        Vector2 array[numChars * 4 * 2];
         const Vector2 bounds = computePackedArray(s, x, y, w, h, spacing, array);
 
         int N = numChars * 4;
