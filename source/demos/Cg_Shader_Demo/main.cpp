@@ -22,6 +22,8 @@
 #ifdef G3D_WIN32
     #include <direct.h>
     #define _chdir chdir
+#else
+    #include <unistd.h>
 #endif
 #include "Mesh.h"
 
