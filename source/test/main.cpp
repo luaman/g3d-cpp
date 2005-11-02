@@ -714,7 +714,7 @@ int main(int argc, char* argv[]) {
 
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
-        /*
+
         perfArray();
 
         perfTable();
@@ -724,9 +724,9 @@ int main(int argc, char* argv[]) {
         perfQueue();
 
         perfMatrix3();
-*/        
+
         perfTextOutput();
-        return 0;
+
         perfSystemMemcpy();
 
         perfBinaryIO();
