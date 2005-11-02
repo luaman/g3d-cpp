@@ -17,13 +17,18 @@ namespace G3D {
 typedef ReferenceCountedPointer<class GFont> GFontRef;
 
 /**
- Font class for use with RenderDevice.
+ Font class for use with RenderDevice.  Renders variable size and color 
+ fonts from high-resolution bitmaps.
+
+ Font rendering is (inherently) slow-- you can achieve better performance
+ for static text by creating bitmap textures with whole words and 
+ sentences on them.
  <P>
- The following fonts are provided with G3D in the <CODE>data/font</CODE> directory.  See
- the <CODE>copyright.txt</CODE> file in that directory for information about the
- source of these files and rules for distribution.
- <P>
- <IMG SRC="font.png">
+
+ The following fonts are provided with G3D in the
+ <CODE>data/font</CODE> directory.  See the <CODE>copyright.txt</CODE>
+ file in that directory for information about the source of these
+ files and rules for distribution.  <P> <IMG SRC="font.png">
  */
 class GFont : public ReferenceCountedObject {
 public:
@@ -83,6 +88,10 @@ private:
 
 public:
 
+    /** @deprecated */
+    static GFontRef G3D_DEPRECATED("Use fromFile(std::string)") 
+        fromFile(class RenderDevice* renderDevice, const std::string& filename);
+
     /** The filename must be a FNT (proportional width font) file.
         <P> If a font file is not found, an assertion will fail, an
         exception will be thrown, and texelSize() will return (0, 0).
@@ -105,29 +114,34 @@ public:
            (pow(width, 2) / 2) * int8  Texture data
           </pre>
         The width of a character's bounding box is always width / 16.  The height is always width / 8.
-
-     @param renderDevice May be NULL.
     */
-    static GFontRef fromFile(class RenderDevice* renderDevice, const std::string& filename);
+    static GFontRef fromFile(const std::string& filename);
 
     /**
-     Converts an 8-bit RAW font texture and INI file as produced by the Bitmap Font Builder program
-     to a graphics3d PWF font.  inFile should have no extension-- .raw and .ini will be appended to
-     it.  outfile should end with ".FNT" or be "" for the default.
-     <P>
+     Converts an 8-bit RAW font texture and INI file as produced by
+     the Bitmap Font Builder program to a graphics3d PWF font.  inFile
+     should have no extension-- .raw and .ini will be appended to it.
+     outfile should end with ".FNT" or be "" for the default.  <P>
+
       The Bitmap Font Builder program can be downloaded from http://www.lmnopc.com/bitmapfontbuilder/
-      Use the full ASCII character set; the conversion will strip infrequently used characters
-	  automatically. Write out RAW files with characters CENTER aligned and right side up using 
-	  this program.  
-	  Then, also write out an INI file; this contains the width of each character in the font. 
-      Example:
+
+      Use the full ASCII character set; the conversion will strip
+	  infrequently used characters automatically. Write out RAW files
+	  with characters CENTER aligned and right side up using this
+	  program.  Then, also write out an INI file; this contains the
+	  width of each character in the font.  Example: 
+
       <PRE>
-          GFont::convertRAWINItoPWF("c:/tmp/g3dfont/news", "d:/graphics3d/book/cpp/data/font/news.fnt");
-      </PRE>
-	  @param infileBase The name of the raw/ini files
-      @param outfile Defaults to infileBase + ".fnt"
+	  GFont::convertRAWINItoPWF("c:/tmp/g3dfont/news",
+	                            "d:/graphics3d/book/cpp/data/font/news.fnt"); 
+      </PRE> 
+
+      @param infileBase The name of the raw/ini files @param outfile Defaults
+	  to infileBase + ".fnt"
      */
-    static void convertRAWINItoPWF(const std::string& infileBase, std::string outfile = "");
+    static void convertRAWINItoPWF
+    (const std::string& infileBase, 
+     std::string outfile = "");
 
 
     /** Returns the natural character width and height of this font. */
@@ -174,7 +188,7 @@ public:
 
     /** @deprecated  Use the version that accepts a RenderDevice as the 1st argument.
      */
-    Vector2 draw2D(
+    Vector2 G3D_DEPRECATED("Use RenderDevice* version") draw2D(
         const std::string&  s,
         const Vector2&      pos2D,
         double              size    = 12,
@@ -207,7 +221,7 @@ public:
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 
     /** @deprecated Use the version that accepts a RenderDevice as the 1st argument.*/
-    Vector2 draw3D(
+    Vector2 G3D_DEPRECATED("Use RenderDevice* version") draw3D(
         const std::string&          s,
         const CoordinateFrame&      pos3D,
         double              size    = .1,
@@ -240,4 +254,3 @@ typedef GFontRef CFontRef;
 
 }
 #endif
-

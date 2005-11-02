@@ -289,6 +289,7 @@ private:
     double              m_simTimeRate;
     RealTime            m_realTime;
     SimTime             m_simTime;
+    SimTime             m_idealSimTime;
 
 public:
 
@@ -321,6 +322,19 @@ public:
       */
     inline SimTime simTime() const {
         return m_simTime;
+    }
+
+    virtual void setIdealSimTime(SimTime s) {
+        m_idealSimTime = s;
+    }
+
+    /**
+       Simulation time that is always advanced by precisely the
+       desiredFrameDuration * simTimeRate, regardless of the 
+       actual frame duration.
+     */
+    inline SimTime idealSimTime() const {
+        return m_idealSimTime;
     }
 
     virtual void setSimTime(SimTime s) {
@@ -368,19 +382,19 @@ public:
     /**
       Usually you'll call GApplet::run instead.  This is used by GApp.
 
-      Prepare for running.
-      The default implementation sets endApplet to false,
-      calls init(), copies the debug camera position to the debug camera controller,
+      Prepare for running.  The default implementation sets endApplet
+      to false, calls GApplet::onInit(), copies the debug camera
+      position to the debug camera controller,
     */
     void beginRun();
 
     /** 
       Usually you'll call GApplet::run instead.  This is used by GApp.
 
-      A single frame of rendering, simulation, AI, events, networking, etc. 
-      Invokes the doXXX methods.  For use with GWindows that require a main loop.
-      This if your GWindow does not require control of the main loop, GApp will
-      call this for you.
+      A single frame of rendering, simulation, AI, events, networking,
+      etc.  Invokes the onXXX methods.  For use with GWindows that
+      require a main loop.  This if your GWindow does not require
+      control of the main loop, GApp will call this for you.
     */
     void oneFrame();
 
@@ -399,7 +413,8 @@ protected:
     bool                endApplet;
 
     /** @deprecated */
-    virtual void doSimulation(RealTime rdt) {}
+    virtual void G3D_DEPRECATED("Use onSimulation")
+        doSimulation(RealTime rdt) {}
 
     /**
      Override this with your simulation code.
@@ -407,14 +422,22 @@ protected:
         
      Default implementation does nothing.
 
-     simTime() and realTime() are incremented after doSimulation is called, so 
-     at the beginning of call the current time is the end of the previous frame.
+     simTime(), idealSimTime() and realTime() are incremented after
+     doSimulation is called, so at the beginning of call the current
+     time is the end of the previous frame.
 
      @param rdt Elapsed real-world time since the last call to doSimulation.
-     @param sdt Elapsed sim-world time since the last call to doSimulation.
-     @param idt Elapsed ideal sim-world time (according to desiredFrameDuration).  Use this for perfectly reproducible timing results.
+
+     @param sdt Elapsed sim-world time since the last call to
+     doSimulation, computed by multiplying the wall-clock time by the
+     simulation time rate.
+
+     @param idt Elapsed ideal sim-world time.  Use this for perfectly
+     reproducible timing results.  Ideal time always advances by the
+     desiredFrameDuration * simTimeRate, no matter how much wall-clock
+     time has elapsed.
      */
-    virtual void doSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
         doSimulation(sdt);
     }
 
@@ -429,45 +452,66 @@ protected:
 
      @deprecated
      */
-    virtual void doGraphics() {}
+    virtual void G3D_DEPRECATED("Used onGraphics") 
+        doGraphics() {}
 
-    virtual void doGraphics(RenderDevice* rd) {
+    /** Rendering callback. */
+    virtual void onGraphics(RenderDevice* rd) {
         doGraphics();
     }
+
+
+    /**
+       @deprecated
+     */
+    virtual void G3D_DEPRECATED("Use onNetwork") doNetwork() {}
 
     /**
      Called from run.
      For a networked app, override this to implement your
      network message polling.
      */
-    virtual void doNetwork() {}
+    virtual void onNetwork() {
+        doNetwork();
+    }
 
     /**
-      Task to be used for frame rate limiting.  Frame rate limiting is useful
+      Task to be used for frame rate limiting.  
+
+      Overriding onWait is not recommended.
+
+      Frame rate limiting is useful
       to avoid overloading a maching that is running background tasks and
       for situations where fixed time steps are needed for simulation and there
       is no reason to render faster.
 
-
-      Default implementation waits until cumulativeTime + time
+      Default implementation System::sleep()s until cumulativeTime + time
       in wait is greater than or equal to @a frameDuration = 1 / desiredFrameRate.
       */
-    virtual void doWait(RealTime cumulativeTime, RealTime frameDuration);
+    virtual void onWait(RealTime cumulativeTime, RealTime frameDuration);
+
+    /**
+     Update any state you need to here.  This is a good place for
+     AI code, for example.  Called after network and user input,
+     before simulation.
+     @deprecated
+     */
+    virtual void G3D_DEPRECATED("Use onLogic") 
+        doLogic() {}
 
     /**
      Update any state you need to here.  This is a good place for
      AI code, for example.  Called after network and user input,
      before simulation.
      */
-    virtual void doLogic() {}
+    virtual void onLogic() {
+        doLogic();
+    }
 
     /**
-     Invoked every time run is called.  Default implementation
-     resets timers and simTimeRate.
-
-     Sublcasses should invoke GApplet::init to reset the timers.
+       @deprecated
      */
-    virtual void init() {
+    virtual void G3D_DEPRECATED("use onInit") init() {
         m_simTime     = 0;
         m_realTime    = 0;
         m_simTimeRate = 1.0;
@@ -475,11 +519,34 @@ protected:
     }
 
     /**
+     Invoked every time run is called.  Default implementation
+     resets timers and simTimeRate.
+
+     Sublcasses should invoke GApplet::init to reset the timers.
+     */
+    virtual void onInit() {
+        init();
+    }
+
+    /**
+     Invoked at the end of every run call.  Default implementation
+     does nothing.
+     @deprecated
+     */
+    virtual void G3D_DEPRECATED("use onCleanup") cleanup() {}
+
+    /**
      Invoked at the end of every run call.  Default implementation
      does nothing.
      */
-    virtual void cleanup() {}
+    virtual void onCleanup() {
+        cleanup();
+    }
     
+    /** @deprecated */
+    virtual void G3D_DEPRECATED("use onEvent")
+        processEvent(const SDL_Event& event) {}
+
     /**
      It is recommended to override doUserInput instead of this method.
 
@@ -493,7 +560,9 @@ protected:
 
      The default implementation does nothing.
      */
-    virtual void processEvent(const SDL_Event& event) {}
+    virtual void onEvent(const SDL_Event& event) {
+        processEvent(event);
+    }
 
     /**
      Updates the userInput.  Called from run.  Rarely needs to be
@@ -505,12 +574,12 @@ protected:
      @deprecated In 7.0, will be private and doUserInput will be a function
       you can override to handle events.
      */
-    void doUserInput();
+    void G3D_DEPRECATED("use onUserInput") doUserInput();
 
     /**
      Routine for processing user input from the previous frame.
      */
-    virtual void doUserInput(UserInput* userInput) {}
+    virtual void onUserInput(class UserInput* userInput) {}
 };
 
 }

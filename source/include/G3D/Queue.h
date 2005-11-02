@@ -132,7 +132,7 @@ private:
       */
     inline void reserveSpace() {
         if (num == numAllocated) {
-            repackAndRealloc(iRound(numAllocated * 3 + 20));
+            repackAndRealloc(numAllocated * 3 + 20);
         }
     }
 

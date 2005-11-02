@@ -93,15 +93,6 @@ inline int iSign (double fValue) {
 }
 
 //----------------------------------------------------------------------------
-inline int iRound(double fValue) {
-    if (fValue >= 0) {
-        return (int)(fValue + 0.5);
-    } else {
-        return -(int)(-fValue + 0.5);
-    }
-}
-
-//----------------------------------------------------------------------------
 inline double abs (double fValue) {
     return double(::fabs(fValue));
 }

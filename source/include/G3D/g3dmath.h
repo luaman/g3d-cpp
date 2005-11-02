@@ -26,13 +26,68 @@
 #include <ctype.h>
 #include <float.h>
 #include <limits>
+
+/*These defines enable functionality introduced with the 1999 ISO C
+**standard. They must be defined before the inclusion of math.h to
+**engage them. If optimisation is enabled, these functions will be 
+**inlined. With optimisation switched off, you have to link in the
+**maths library using -lm.
+*/
+
+#define _ISOC9X_SOURCE1
+#define _ISOC99_SOURCE1
+#define __USE_ISOC9X1
+#define __USE_ISOC991
+
 #include <math.h>
+
 #include "G3D/debug.h"
 
 #undef min
 #undef max
 
 namespace G3D {
+
+#ifdef _MSC_VER
+
+/**
+   Win32 implementation of the C99 fast rounding routines.
+   
+   @cite routines are
+   Copyright (C) 2001 Erik de Castro Lopo <erikd AT mega-nerd DOT com>
+   
+   Permission to use, copy, modify, distribute, and sell this file for any 
+   purpose is hereby granted without fee, provided that the above copyright 
+   and this permission notice appear in all copies.  No representations are
+   made about the suitability of this software for any purpose.  It is 
+   provided "as is" without express or implied warranty.
+*/
+
+__inline long int lrint (double flt) {
+    int intgr;
+
+    _asm {
+        fld flt
+        fistp intgr
+    };
+
+    return intgr;
+}
+
+__inline long int lrintf(float flt) {
+    int intgr;
+
+    _asm {
+        fld flt
+        fistp intgr
+    };
+
+    return intgr;
+}
+#endif
+
+
+
 
 #ifdef _MSC_VER
     // disable: "conversion from 'double' to 'float', possible loss of
@@ -159,9 +214,30 @@ inline float lerp(float a, float b, float f) {
 int iWrap(int val, int hi);
 
 int iFloor(double fValue);
+
 int iSign(int iValue);
 int iSign(double fValue);
-int iRound(double fValue);
+
+inline int iSign(float f) {
+    return iSign((double)f);
+}
+
+
+/** 
+    Fast round to integer using the lrint routine.
+    Typically 6x faster than casting to integer.
+ */
+inline int iRound(double fValue) {
+    return lrint(fValue);
+}
+
+/** 
+    Fast round to integer using the lrint routine.
+    Typically 6x faster than casting to integer.
+ */
+inline int iRound(float f) {
+    return lrintf(f);
+}
 
 /**
  Returns a random number uniformly at random between low and hi

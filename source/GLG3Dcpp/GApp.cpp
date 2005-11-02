@@ -312,10 +312,11 @@ GApplet::GApplet(GApp* _app) :
 void GApplet::beginRun() {
     endApplet = false;
 
-    init();
+    onInit();
 
     // Move the controller to the camera's location
-    app->debugController.setCoordinateFrame(app->debugCamera.getCoordinateFrame());
+    app->debugController.setCoordinateFrame
+        (app->debugCamera.getCoordinateFrame());
 
     now = System::getTick() - 0.001;
 }
@@ -328,41 +329,45 @@ void GApplet::oneFrame() {
 
     // User input
     app->m_userInputWatch.tick();
-    doUserInput();
-    doUserInput(app->userInput);
+    doUserInput(); // TODO: remove
+    onUserInput(app->userInput);
     app->m_userInputWatch.tock();
 
     // Network
     app->m_networkWatch.tick();
-    doNetwork();
+    onNetwork();
     app->m_networkWatch.tock();
 
     // Simulation
     app->m_simulationWatch.tick();
         if (app->debugController.active()) {
             app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-    	    app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
+    	    app->debugCamera.setCoordinateFrame
+                (app->debugController.getCoordinateFrame());
         }
-        float rate = simTimeRate();    
-        doSimulation(timeStep, timeStep * rate, desiredFrameDuration() * rate);
+        double rate = simTimeRate();    
+        onSimulation(timeStep, timeStep * rate, desiredFrameDuration() * rate);
         setRealTime(realTime() + timeStep);
         setSimTime(simTime() + timeStep * rate);
+        setIdealSimTime(idealSimTime() + desiredFrameDuration() * rate);
     app->m_simulationWatch.tock();
 
     // Logic
     app->m_logicWatch.tick();
-        doLogic();
+        onLogic();
     app->m_logicWatch.tock();
 
-    // Wait
-    // Note: we might end up spending all of our time inside of RenderDevice::beginFrame.  Waiting
-    // here isn't double waiting, though, because while we're sleeping the CPU the GPU is working
+    // Wait 
+    // Note: we might end up spending all of our time inside of
+    // RenderDevice::beginFrame.  Waiting here isn't double waiting,
+    // though, because while we're sleeping the CPU the GPU is working
     // to catch up.
+
     app->m_waitWatch.tick();
     {
         RealTime now = System::time();
         // Compute accumulated time
-        doWait(now - lastWaitTime, desiredFrameDuration());
+        onWait(now - lastWaitTime, desiredFrameDuration());
         lastWaitTime = System::time();
     }
     app->m_waitWatch.tock();
@@ -371,7 +376,7 @@ void GApplet::oneFrame() {
     app->m_graphicsWatch.tick();
         app->renderDevice->beginFrame();
             app->renderDevice->pushState();
-                doGraphics(app->renderDevice);
+                onGraphics(app->renderDevice);
             app->renderDevice->popState();
             app->renderDebugInfo();
         app->renderDevice->endFrame();
@@ -384,13 +389,13 @@ void GApplet::oneFrame() {
 }
 
 
-void GApplet::doWait(RealTime t, RealTime desiredT) {
+void GApplet::onWait(RealTime t, RealTime desiredT) {
     System::sleep(max(0, desiredT - t));
 }
 
 
 void GApplet::endRun() {
-    cleanup();
+    onCleanup();
 
     Log::common()->section("Files Used");
     for (int i = 0; i < _internal::currentFilesUsed.size(); ++i) {
@@ -437,8 +442,12 @@ void GApplet::doUserInput() {
 
         case SDL_VIDEORESIZE:
             if (app->autoResize) {
-                app->renderDevice->notifyResize(event.resize.w, event.resize.h);
-                Rect2D full = Rect2D::xywh(0, 0, app->renderDevice->getWidth(), app->renderDevice->getHeight());
+                app->renderDevice->notifyResize
+                    (event.resize.w, event.resize.h);
+                Rect2D full = 
+                    Rect2D::xywh(0, 0, 
+                                 app->renderDevice->getWidth(), 
+                                 app->renderDevice->getHeight());
                 app->renderDevice->setViewport(full);
             }
             break;
@@ -454,8 +463,11 @@ void GApplet::doUserInput() {
             case SDLK_TAB:
                 // Make sure it wasn't ALT-TAB that was pressed !
                 if (app->debugMode() && app->debugTabSwitchCamera && 
-                    ! (app->userInput->keyDown(SDLK_RALT) || app->userInput->keyDown(SDLK_LALT))) {
-                    app->debugController.setActive(! app->debugController.active());
+                    ! (app->userInput->keyDown(SDLK_RALT) || 
+                       app->userInput->keyDown(SDLK_LALT))) {
+
+                    app->debugController.setActive
+                        (! app->debugController.active());
                 }
                 break;
 

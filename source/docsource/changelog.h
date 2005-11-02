@@ -20,14 +20,7 @@
        <LI>G3D::MeshAlg arguments will change-- e.g., many routines will no longer compute face/vertex normals for you
        <LI>SDL will no longer be automatically linked into the Win32 build
        <LI>Some contrib classes will move into the main API (e.g., SuperShader, ArticulatedModel, ToneMap, Matrix)
-       <LI>GApplet methods will change to:
-          <UL>
-            <LI> doUserInput(UserInput*) (current doUserInput will be renamed and private)
-            <LI> doGraphics(RenderDevice*)
-            <LI> doSimulation(RealTime time, RealTime timeStep)
-            <LI> doNetwork()
-            <LI> doLogic()
-          </UL>
+       <LI>GApplet methods will change to exclusively use the onUserInput, onGraphics, etc. forms.  doGraphics, etc. forms will be removed. 
        <LI>The libraries will be renamed to g3util.h / g3util.lib and g3d.h / g3d.lib to clarify their use
        <LI>G3D::GEvent will become a standalone class instead of a typedef.  All event constants will be renamed.
      </UL>
@@ -36,6 +29,8 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> Optimized G3D::iRound (now faster than casting!)
+      <LI> #G3D_DEPRECATED macro
       <LI> G3D::TextInput::filename
       <LI> G3D::TextInput::Options::msvcSpecials
       <LI> G3D::TextInput::Options::startingLineNumberOffset

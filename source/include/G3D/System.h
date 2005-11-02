@@ -173,9 +173,10 @@ public:
 
     /**
      Returns the fully qualified filename for the currently running executable.
-     This is more reliable than arg[0], which may be intentionally set to an incorrect
-     value by a calling program, relative to a now non-current directory, or obfuscated
-     by sym-links.
+
+     This is more reliable than arg[0], which may be intentionally set
+     to an incorrect value by a calling program, relative to a now
+     non-current directory, or obfuscated by sym-links.
 
      @cite Linux version written by Nicolai Haehnle <prefect_@gmx.net>, http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-getexename&forum=cotd&id=-1
      */
@@ -282,31 +283,32 @@ public:
 
 #ifdef _MSC_VER
     inline uint64 System::getCycleCount() {
-       uint32 timehi, timelo;
+        uint32 timehi, timelo;
 
-       // Use the assembly instruction rdtsc, which gets the current
-       // cycle count (since the process started) and puts it in edx:eax.
-       __asm
-       {
-          rdtsc
-          mov timehi, edx;
-          mov timelo, eax;
-       }
+        // Use the assembly instruction rdtsc, which gets the current
+        // cycle count (since the process started) and puts it in edx:eax.
+        __asm
+            {
+                rdtsc;
+                mov timehi, edx;
+                mov timelo, eax;
+            }
 
-       return ((uint64)timehi << 32) + (uint64)timelo;
+        return ((uint64)timehi << 32) + (uint64)timelo;
     }
 
 #elif (defined(G3D_LINUX) || defined(G3D_MINGW32))
 
     inline uint64 System::getCycleCount() {
-       uint32 timehi, timelo;
+        uint32 timehi, timelo;
 
-       __asm__ __volatile__ (
-          "rdtsc            "
-          : "=a" (timelo),
-            "=d" (timehi)
-          : );
-       return ((uint64)timehi << 32) + (uint64)timelo;
+        __asm__ __volatile__ (
+            "rdtsc            "
+            : "=a" (timelo),
+              "=d" (timehi)
+            : );
+
+        return ((uint64)timehi << 32) + (uint64)timelo;
     }
 
 #elif defined(G3D_OSX)
@@ -334,13 +336,15 @@ inline void System::endCycleCount(uint64& cycleCount) {
 	#else
 		AbsoluteTime end = UpTime();
 		init();
-		Nanoseconds diffNS = AbsoluteDeltaToNanoseconds(end, UInt64ToUnsignedWide(cycleCount));
-		cycleCount = (uint64) ((double) (System::m_OSXCPUSpeed) * (double) UnsignedWideToUInt64(diffNS) * m_secondsPerNS);
+		Nanoseconds diffNS = 
+            AbsoluteDeltaToNanoseconds(end, UInt64ToUnsignedWide(cycleCount));
+		cycleCount = 
+            (uint64) ((double) (System::m_OSXCPUSpeed) * 
+                      (double) UnsignedWideToUInt64(diffNS) * m_secondsPerNS);
 	#endif
 }
 
 
 } // namespace
-
 
 #endif
