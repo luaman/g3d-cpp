@@ -109,10 +109,15 @@
         // This trick will generate a warning; disable the warning
 #       pragma warning (disable : 4127)
 #       define for if (false) {} else for
-
 #    endif
 
-#   define G3D_DEPRECATED(msg) __declspec(deprecated(msg))
+#   if (_MSC_VER <= 1200)
+//      Nothing we can do on VC6 for deprecated functions
+#      define G3D_DEPRECATED(msg)
+#   else
+#      define G3D_DEPRECATED(msg) __declspec(deprecated(msg))
+#   endif
+
 
 // Disable 'name too long for browse information' warning
 #   pragma warning (disable : 4786)

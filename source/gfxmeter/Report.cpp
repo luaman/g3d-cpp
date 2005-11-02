@@ -332,7 +332,7 @@ void Report::doGraphics() {
 
                 p.y += s;
                 p.y += app->reportFont->draw2D(app->renderDevice, format("* FPS at %d k polys/frame.", 
-                    iRound(app->vertexPerformance.numTris/1000)), p + Vector2(20, 0), s, Color3::black()).y;
+                    iRound(app->vertexPerformance.numTris / 1000.0)), p + Vector2(20, 0), s, Color3::black()).y;
             }
         }
 
