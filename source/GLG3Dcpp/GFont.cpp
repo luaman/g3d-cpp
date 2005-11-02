@@ -304,13 +304,12 @@ Vector2 GFont::draw2D(
 
         // Packed vertex array; tex coord and vertex are interlaced
         // For each character we need 4 vertices.
-#       if defined(_MSC_VER) && (_MSC_VER <= 1200)
+
         // MSVC 6 cannot use static allocation with a variable size argument
-        // so we revert to the more compiler specific alloca call.
+        // so we revert to the more compiler specific alloca call. Gcc does not
+        // implement array[variable] well, so we use this everywhere.
         Vector2* array = (Vector2*)alloca(numChars * 4 * 2 * sizeof Vector2);
-#       else
-        Vector2 array[numChars * 4 * 2];
-#       endif
+
         const Vector2 bounds = computePackedArray(s, x, y, w, h, spacing, array);
 
         int N = numChars * 4;
