@@ -115,7 +115,7 @@
 //      Nothing we can do on VC6 for deprecated functions
 #      define G3D_DEPRECATED(msg)
 #   else
-#      define G3D_DEPRECATED(msg) __declspec(deprecated(msg))
+#      define G3D_DEPRECATED(msg) __declspec(deprecated)
 #   endif
 
 
