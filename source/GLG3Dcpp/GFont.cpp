@@ -166,8 +166,8 @@ Vector2 GFont::computePackedArray(
         char c = s[i] & 127; // s[i] % 128; avoid using illegal chars
 
         if (c != ' ') {
-            int row   = c / 16;
-            int col   = c & 15; // c % 16
+            int row   = c >> 4; // fast version of c / 16
+            int col   = c & 15; // fast version of c % 16
 
             // Fixed width
             float sx = (spacing == PROPORTIONAL_SPACING) ?
@@ -297,10 +297,20 @@ Vector2 GFont::draw2D(
         for (unsigned int i = 0; i < s.length(); ++i) {
             numChars += ((s[i] % 128) != ' ') ? 1 : 0;
         }
+        if (numChars == 0) {
+            renderDevice->popState();
+            return Vector2(0, h);
+        }
 
         // Packed vertex array; tex coord and vertex are interlaced
         // For each character we need 4 vertices.
+#       if defined(_MSC_VER) && (_MSC_VER <= 1200)
+        // MSVC 6 cannot use static allocation with a variable size argument
+        // so we revert to the more compiler specific alloca call.
+        Vector2* array = (Vector2*)alloca(numChars * 4 * 2 * sizeof Vector2);
+#       else
         Vector2 array[numChars * 4 * 2];
+#       endif
         const Vector2 bounds = computePackedArray(s, x, y, w, h, spacing, array);
 
         int N = numChars * 4;

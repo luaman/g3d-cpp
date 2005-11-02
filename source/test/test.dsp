@@ -95,6 +95,10 @@ SOURCE=.\tArray.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tAtomicInt32.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tBinaryIO.cpp
 # End Source File
 # Begin Source File
