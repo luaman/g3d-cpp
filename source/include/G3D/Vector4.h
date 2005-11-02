@@ -55,7 +55,8 @@ public:
     // WARNING.  These member functions rely on
     // (1) Vector4 not having virtual functions
     // (2) the data packed in a 4*sizeof(float) memory block
-    float& operator[] (int i) const; 
+    float& operator[] (int i);
+    const float& operator[] (int i) const;
     operator float* ();
     operator const float* () const;
 

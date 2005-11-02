@@ -50,7 +50,8 @@ public:
     void serialize(class TextOutput& t) const;
     void deserialize(class TextInput& t);
 
-    float& operator[] (int i) const;
+    float& operator[] (int i);
+    const float& operator[] (int i) const;
     operator float* ();
     operator const float* () const;
 

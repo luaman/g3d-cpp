@@ -35,6 +35,15 @@ public:
     Vector2int16(const class Vector2& v);
     Vector2int16(class BinaryInput& bi);
 
+    inline G3D::int16& operator[] (int i) {
+        return ((G3D::int16*)this)[i];
+    }
+
+    inline const G3D::int16& operator[] (int i) const {
+        return ((G3D::int16*)this)[i];
+    }
+
+
     inline bool operator== (const Vector2int16& rkVector) const {
         return ((int32*)this)[0] == ((int32*)&rkVector)[0];
     }

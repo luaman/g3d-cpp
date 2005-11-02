@@ -60,7 +60,12 @@ inline Vector2::Vector2 (const Vector2int16& v) : x(v.x), y(v.y) {
 }
 
 //----------------------------------------------------------------------------
-inline float& Vector2::operator[] (int i) const {
+inline float& Vector2::operator[] (int i) {
+    return ((float*)this)[i];
+}
+
+//----------------------------------------------------------------------------
+inline const float& Vector2::operator[] (int i) const {
     return ((float*)this)[i];
 }
 
