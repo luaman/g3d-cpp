@@ -201,8 +201,13 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
     // TODO: keep track of the last space character we saw so we don't
     // have to always search.
 
-    if (option.wordWrap == Options::WRAP_NONE) {
-        // TODO: optimize for strings without newlines
+    if ((option.wordWrap == Options::WRAP_NONE) ||
+        (currentColumn + (int)str.size() <= option.numColumns)) {
+        // No word-wrapping is needed
+
+        // Add one character at a time.
+        // TODO: optimize for strings without newlines to add multiple
+        // characters.
         for (uint32 i = 0; i < str.size(); ++i) {
             indentAppend(str[i]);
         }
@@ -271,7 +276,7 @@ void TextOutput::wordWrapIndentAppend(const std::string& str) {
                     writeNewline();
                     indentAppend(str[i]);
                 } else {
-                    // Must be Options::WRAP_WHEN_POSSIBLE
+                    // Must be Options::WRAP_WITHOUT_BREAKING
                     //
                     // Don't write the newline; we'll come back to
                     // the word wrap code after writing another character

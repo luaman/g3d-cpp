@@ -62,8 +62,8 @@ void perfMatrix3() {
     printf("Matrix3:\n");
     uint64 raw, opt, overhead, naive;
 
-    // 10 million operations
-    int n = 10 * 1024 * 1024;
+    // 0.5 million operations
+    int n = 0.5 * 1024 * 1024;
 
     // Use two copies to avoid nice cache behavior
     Matrix3 A = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2);
@@ -99,11 +99,12 @@ void perfMatrix3() {
     raw -= overhead;
     opt -= overhead;
 
-    printf("   C = A.transpose(): %g cycles/mul\n", 
-        (double)raw / (3*n));
-    printf("     transpose(A, C): %g cycles/mul\n\n", 
-        (double)opt / (3*n));
-    
+    printf(" Transpose Performance                       outcome\n");
+    printf("     transpose(A, C): %g cycles/mul       %s\n\n", 
+        (double)opt / (3*n), (opt/(3*n) < 400) ? " ok " : "FAIL");
+    printf("   C = A.transpose(): %g cycles/mul       %s\n", 
+        (double)raw / (3*n), (raw/(3*n) < 150) ? " ok " : "FAIL");
+    printf("\n");
     /////////////////////////////////
 
 
@@ -140,8 +141,8 @@ void perfMatrix3() {
     raw -= overhead;
     opt -= overhead;
     
-    printf("     C = A * B          %g cycles/mul\n", (double)raw / (3*n));
-    printf("  mul(A, B, C)          %g cycles/mul\n", (double)opt / (3*n));
+    printf("  mul(A, B, C)          %g cycles/mul     %s\n", (double)opt / (3*n), (opt/(3*n) < 250) ? " ok " : "FAIL");
+    printf("     C = A * B          %g cycles/mul     %s\n", (double)raw / (3*n), (raw/(3*n) < 500) ? " ok " : "FAIL");
     printf("  naive for-loops       %g cycles/mul\n", (double)naive / (3*n));
 
     printf("\n\n");

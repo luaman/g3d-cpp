@@ -63,8 +63,8 @@ public:
     public:
         /** 
           WRAP_NONE             Word wrapping is disabled
-          WRAP_WHERE_POSSIBLE   Word-wrap, but don't break continuous lines that
-                                are longer than numColumns
+          WRAP_WITHOUT_BREAKING Word-wrap, but don't break continuous lines that
+                                are longer than numColumns (default)
           WRAP_ALWAYS           Wrap even if it means breaking a continuous line or
                                 a quoted string.
 
@@ -73,6 +73,7 @@ public:
         */
         enum WordWrapMode {WRAP_NONE, WRAP_WITHOUT_BREAKING, WRAP_ALWAYS};
 
+        /** Defaults to WRAP_WITHOUT_BREAKING */
         WordWrapMode        wordWrap;
 
         /** Is word-wrapping allowed to insert newlines inside double quotes?

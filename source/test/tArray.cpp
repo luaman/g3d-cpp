@@ -121,9 +121,16 @@ void perfArray() {
         }
 
         printf(" Array cycles/alloc for short arrays\n\n");
-        printf("                           Big class           int \n");
-        printf("  G3D::Array               %9.02f     %9.02f\n", (double)arrayAllocBig/M, (double)arrayAllocSmall/M);
-        printf("  std::vector              %9.02f     %9.02f\n", (double)vectorAllocBig/M, (double)vectorAllocSmall/M);
+        printf("                           Big class           int      outcome\n");
+        bool G3Dwin = 
+            (arrayAllocBig <= vectorAllocBig * 1.1) &&
+            (arrayAllocSmall <= vectorAllocSmall * 1.1);
+
+        printf("  G3D::Array               %9.02f     %9.02f     %s\n", 
+               (double)arrayAllocBig/M, (double)arrayAllocSmall/M,
+               G3Dwin ? " ok " : "FAIL");
+        printf("  std::vector              %9.02f     %9.02f\n", 
+               (double)vectorAllocBig/M, (double)vectorAllocSmall/M);
         printf("\n\n");
     }
 
@@ -133,7 +140,7 @@ void perfArray() {
     uint64 arrayResizeBig,   arrayResizeSmall;
     uint64 mallocResizeBig,  mallocResizeSmall;
 
-    const int M = 4000;
+    const int M = 10000;
 
     //  Low and high bounds for resize tests
     const int L = 1;
@@ -166,7 +173,7 @@ void perfArray() {
                 array.resize(i, false);
             }
         }
-        System::endCycleCount(arrayResizeSmall);   
+        System::endCycleCount(arrayResizeSmall); 
 
         System::beginCycleCount(arrayResizeBig);
         {
@@ -201,8 +208,14 @@ void perfArray() {
 
     {
         printf(" Array cycles/resize (%d resizes)\n\n", M);
-        printf("                           Big class           int \n");
-        printf("  G3D::Array               %9.02f     %9.02f\n", (double)arrayResizeBig/M, (double)arrayResizeSmall/M);
+        printf("                           Big class           int     outcome\n");
+        bool G3Dwin = 
+            (arrayResizeBig <= vectorResizeBig * 1.1) &&
+            (arrayResizeSmall <= vectorResizeSmall * 1.1);
+
+        printf("  G3D::Array               %9.02f     %9.02f     %s\n", 
+               (double)arrayResizeBig/M, (double)arrayResizeSmall/M,
+               G3Dwin ? " ok " : "FAIL");
         printf("  std::vector              %9.02f     %9.02f\n", (double)vectorResizeBig/M, (double)vectorResizeSmall/M);
         printf("  realloc(*)               %9.02f     %9.02f\n", (double)mallocResizeBig/M, (double)mallocResizeSmall/M);
         printf("    * does not call constructor or destructor!\n\n");

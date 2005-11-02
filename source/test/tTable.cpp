@@ -210,17 +210,23 @@ void perfTest(const char* description, const K* keys, const V* vals, int M) {
 
     float N = M;
     printf("%s\n", description);
-    printf("Table       %9.1f  %9.1f  %9.1f\n", (float)tableSet / N, (float)tableGet / N, (float)tableRemove / N); 
-    printf("map         %9.1f  %9.1f  %9.1f\n", (float)mapSet / N, (float)mapGet / N, (float)mapRemove / N); 
+    bool G3Dwin = 
+        (tableSet <= mapSet) &&
+        (tableGet <= mapGet) &&
+        (tableRemove <= mapRemove);
+    printf("Table         %9.1f  %9.1f  %9.1f   %s\n", 
+           (float)tableSet / N, (float)tableGet / N, (float)tableRemove / N,
+           G3Dwin ? " ok " : "FAIL"); 
 #   ifdef HAS_HASH_MAP
-    printf("hash_map    %9.1f  %9.1f  %9.1f\n", (float)hashMapSet / N, (float)hashMapGet / N, (float)hashMapRemove / N); 
+    printf("std::hash_map %9.1f  %9.1f  %9.1f\n", (float)hashMapSet / N, (float)hashMapGet / N, (float)hashMapRemove / N); 
 #   endif
+    printf("std::map      %9.1f  %9.1f  %9.1f\n", (float)mapSet / N, (float)mapGet / N, (float)mapRemove / N); 
     printf("\n");
 }
 
 
 void perfTable() {
-    printf("              insert       fetch     remove\n");
+    printf("                insert       fetch     remove    outcome\n");
 
     const int M = 300;
     {

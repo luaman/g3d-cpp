@@ -336,11 +336,9 @@ public:
       int oldNum = num;
       num = n;
 
-      if (num < oldNum) {
-          // Call the destructors on newly hidden elements
-          for (int i = num; i < oldNum; ++i) {
-             (data + i)->~T();
-          }
+      // Call the destructors on newly hidden elements if there are any
+      for (int i = num; i < oldNum; ++i) {
+          (data + i)->~T();
       }
 
       // Once allocated, always maintain 10 elements or 32 bytes, whichever is higher.
@@ -363,7 +361,7 @@ public:
               } else {
 
                   // Increase the underlying size of the array.  Grow aggressively
-                  // up to 50k, less aggressively up to 200k, and then grow relatively
+                  // up to 64k, less aggressively up to 400k, and then grow relatively
                   // slowly (1.5x per resize) to avoid excessive space consumption.
                   //
                   // These numbers are tweaked according to performance tests.
@@ -371,10 +369,10 @@ public:
                   float growFactor = 3.0;
 
                   size_t oldSizeBytes = numAllocated * sizeof(T);
-                  if (oldSizeBytes > 200000) {
+                  if (oldSizeBytes > 400000) {
                       // Avoid bloat
                       growFactor = 1.5;
-                  } else if (oldSizeBytes > 50000) {
+                  } else if (oldSizeBytes > 64000) {
                       // This is what std:: uses at all times
                       growFactor = 2.0;
                   }
@@ -401,7 +399,7 @@ public:
       // Call the constructors on newly revealed elements.
       // Do not use parens because we don't want the intializer
       // invoked for POD types.
-      for (int i = oldNum; i < num; i++) {
+      for (int i = oldNum; i < num; ++i) {
           new (data + i) T;
       }
    }
