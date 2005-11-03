@@ -62,7 +62,7 @@
 
 #ifdef G3D_LINUX
 #   ifndef __GNUC__
-#       error G3d only supports the gcc compiler on Linux.
+#       error G3D only supports the gcc compiler on Linux.
 #   endif
 
 #   ifndef __i386__
@@ -78,6 +78,9 @@
 #   ifndef __stdcall
 #       define __stdcall __attribute__((stdcall))
 #   endif
+
+#   define G3D_CHECK_PRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
+#   define G3D_CHECK_VPRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
 #endif
 
 
@@ -99,6 +102,9 @@
 #   endif
 
 #   define G3D_DEPRECATED(msg) __attribute__((__deprecated__))
+
+#   define G3D_CHECK_PRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
+#   define G3D_CHECK_VPRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
 #endif
 
 
@@ -124,6 +130,8 @@
 
 #   define restrict
 
+#   define G3D_CHECK_PRINTF_ARGS 
+#   define G3D_CHECK_VPRINTF_ARGS
 
     // On MSVC, we need to link against the multithreaded DLL version of
     // the C++ runtime because that is what SDL and ZLIB are compiled

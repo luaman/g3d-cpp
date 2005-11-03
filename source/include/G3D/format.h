@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2000-09-09
- @edited  2004-01-03
+ @edited  2005-11-03
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
  */
 
@@ -42,14 +42,14 @@ namespace G3D {
  */
 std::string   __cdecl format(
     const char*                 fmt
-    ...);
+    ...) G3D_CHECK_PRINTF_ARGS;
 
 /**
   Like format, but can be called with the argument list from a ... function.
  */
 std::string vformat(
     const char*                 fmt,
-    va_list                     argPtr);
+    va_list                     argPtr) G3D_CHECK_VPRINTF_ARGS;
 
 
 }; // namespace

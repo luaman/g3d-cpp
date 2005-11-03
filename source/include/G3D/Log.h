@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @cite Backtrace by Aaron Orenstein
   @created 2001-08-04
-  @edited  2003-08-04
+  @edited  2005-11-04
  */
 
 #ifndef G3D_LOG_H
@@ -72,9 +72,9 @@ public:
     /**
      Given arguments like printf, writes characters to the debug text overlay.
      */
-    void __cdecl printf(const char* fmt, ...);
+    void __cdecl printf(const char* fmt, ...) G3D_CHECK_PRINTF_ARGS;
 
-    void __cdecl vprintf(const char*, va_list argPtr);
+    void __cdecl vprintf(const char*, va_list argPtr) G3D_CHECK_VPRINTF_ARGS;
 
     static Log* common();
 

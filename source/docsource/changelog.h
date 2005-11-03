@@ -31,6 +31,9 @@
     <UL>
       <LI> Optimized G3D::iRound (now faster than casting!)
       <LI> #G3D_DEPRECATED macro
+      <LI> #G3D_CHECK_PRINTF_ARGS, #G3D_CHECK_VPRINTF_ARGS macros to allow
+           checking of printf argument strings under gcc at compile time with
+           -Wformat.
       <LI> G3D::TextInput::filename
       <LI> G3D::TextInput::Options::msvcSpecials
       <LI> G3D::TextInput::Options::startingLineNumberOffset

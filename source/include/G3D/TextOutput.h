@@ -3,9 +3,9 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-06-21
-  @edited  2004-11-05
+  @edited  2005-11-05
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2005, Morgan McGuire.
   All rights reserved.
  */
 
@@ -215,11 +215,11 @@ public:
 
     /** Normal printf conventions.  Note that the output will be reformatted
         for word-wrapping and newlines */
-    void __cdecl printf(const char* fmt, ...);
+    void __cdecl printf(const char* fmt, ...) G3D_CHECK_PRINTF_ARGS;
 
     // Can't pass by reference because that confuses va_start
-    void __cdecl printf(const std::string fmt, ...);
-    void __cdecl vprintf(const char* fmt, va_list argPtr);
+    void __cdecl printf(const std::string fmt, ...) G3D_CHECK_PRINTF_ARGS;
+    void __cdecl vprintf(const char* fmt, va_list argPtr) G3D_CHECK_VPRINTF_ARGS;
 };
 
 // Primitive serializers
