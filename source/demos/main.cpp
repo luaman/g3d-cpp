@@ -35,19 +35,19 @@ public:
 
     virtual ~Demo() {}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onLogic();
 
-	virtual void doNetwork();
+	virtual void onNetwork();
 
-    virtual void doSimulation(RealTime rdt, SimTime sdt, SimTime idt);
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doGraphics(RenderDevice* rd);
+    virtual void onGraphics(RenderDevice* rd);
 
-    virtual void doUserInput(UserInput* ui);
+    virtual void onUserInput(UserInput* ui);
 
-    virtual void cleanup();
+    virtual void onCleanup();
 
 };
 
@@ -71,37 +71,37 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Demo::init()  {
+void Demo::onInit()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-    GApplet::init();
+    GApplet::onInit();
 }
 
 
-void Demo::cleanup() {
+void Demo::onCleanup() {
     // Called when Demo::run() exits
 }
 
 
-void Demo::doLogic() {
+void Demo::onLogic() {
     // Add non-simulation game logic and AI code here
 }
 
 
-void Demo::doNetwork() {
+void Demo::onNetwork() {
 	// Poll net messages here
 }
 
 
-void Demo::doSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 	// Add physical simulation here.  You can make your time advancement
     // based on any of the three arguments.
 }
 
 
-void Demo::doUserInput(UserInput* ui) {
+void Demo::onUserInput(UserInput* ui) {
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
@@ -112,7 +112,7 @@ void Demo::doUserInput(UserInput* ui) {
 }
 
 
-void Demo::doGraphics(RenderDevice* rd) {
+void Demo::onGraphics(RenderDevice* rd) {
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);

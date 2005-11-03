@@ -452,7 +452,7 @@ protected:
 
      @deprecated
      */
-    virtual void G3D_DEPRECATED("Used onGraphics") 
+    virtual void G3D_DEPRECATED("Use onGraphics") 
         doGraphics() {}
 
     /** Rendering callback. */
