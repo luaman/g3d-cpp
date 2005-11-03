@@ -868,7 +868,8 @@ bool GLCaps::hasBug_mipmapGeneration() {
         initialized = true;
         value = 
             GLCaps::supports("GL_SGIS_generate_mipmap") &&
-		    beginsWith(renderer(), "MOBILITY RADEON 9");
+		    (beginsWith(renderer(), "MOBILITY RADEON 9") ||
+		     beginsWith(renderer(), "MOBILITY RADEON 57"));
     }
 
     return value;

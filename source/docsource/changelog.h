@@ -62,6 +62,7 @@
       <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
+      <LI> Fix: [ 1293151 ] 6.08: ArticulatedModel clipping on Radeon -- disabled auto-mipmap generation on mobile radeon 9xxx
       <LI> Fix: G3D::TextInput now parses ^=, character 255 correctly [cgd]
       <LI> Fix: G3D::TextInput now reports line numbers correctly with raw newlines [cgd]
       <LI> Fix: .ICO files with transparency loaded incorrectly [Corey]
