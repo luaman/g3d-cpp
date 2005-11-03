@@ -35,7 +35,8 @@ static bool hasAutoMipMap() {
     if (! initialized) {
         initialized = true;
         std::string ext = (char*)glGetString(GL_EXTENSIONS);
-        ham = (ext.find("GL_SGIS_generate_mipmap") != std::string::npos);
+        ham = (ext.find("GL_SGIS_generate_mipmap") != std::string::npos) &&
+            ! GLCaps::hasBug_mipmapGeneration();
     }
 
     return ham;
@@ -47,6 +48,8 @@ static bool hasAutoMipMap() {
 /**
  Pushes all OpenGL texture state.
  */
+// TODO: this is slow; push only absolutely necessary state
+// or back up state that will be corrupted.
 static void glStatePush() {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
@@ -114,6 +117,7 @@ static void createTexture(
     case GL_TEXTURE_2D:
         if ((! isPow2(width) || ! isPow2(height)) &&
             (! useNPOT || ! GLCaps::supports_GL_ARB_texture_non_power_of_two())) {
+            // NPOT texture with useNPOT disabled: resize to a power of two
 
             debugAssertM(! compressed,
                 "This device does not support NPOT compressed textures.");
@@ -124,6 +128,7 @@ static void createTexture(
             height = ceilPow2(height);
 
             bytes = new uint8[width * height * bytesPerPixel];
+            freeBytes = true;
 
             // Rescale the image to a power of 2
             gluScaleImage(
@@ -137,25 +142,28 @@ static void createTexture(
                 GL_UNSIGNED_BYTE,
                 bytes);
 
-            freeBytes = true;
         }
 
         // Intentionally fall through for power of 2 case
 
     case GL_TEXTURE_RECTANGLE_EXT:
 
+        // Note code falling through from above
+
         if (compressed) {
             
             debugAssertM((target != GL_TEXTURE_RECTANGLE_EXT),
                 "Compressed textures must be DIM_2D.");
 
-            glCompressedTexImage2DARB(target, mipLevel, bytesActualFormat, width, height, 0, (bytesPerPixel * ((width + 3) / 4) * ((height + 3) / 4)), rawBytes);
-            break;
-        }
+            glCompressedTexImage2DARB(target, mipLevel, bytesActualFormat, width, 
+                height, 0, (bytesPerPixel * ((width + 3) / 4) * ((height + 3) / 4)), rawBytes);
 
-        // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
-        // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-        glTexImage2D(target, mipLevel, textureFormat, width, height, 0, bytesFormat, GL_UNSIGNED_BYTE, bytes);
+        } else {
+
+            // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
+            // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
+            glTexImage2D(target, mipLevel, textureFormat, width, height, 0, bytesFormat, GL_UNSIGNED_BYTE, bytes);
+        }
         break;
 
     default:
@@ -250,8 +258,9 @@ static void setTexParameters(
     }
     glTexParameteri(target, GL_TEXTURE_WRAP_S, mode);
     glTexParameteri(target, GL_TEXTURE_WRAP_T, mode);
-    if (supports3D)
-      glTexParameteri(target, GL_TEXTURE_WRAP_R, mode);
+    if (supports3D) {
+        glTexParameteri(target, GL_TEXTURE_WRAP_R, mode);
+    }
 
     debugAssertGLOk();
 
@@ -707,7 +716,7 @@ TextureRef Texture::fromMemory(
 
     debugAssert(bytesFormat);
     
-    // Check for at least one miplevel
+    // Check for at least one miplevel on the incoming data
     int numMipMaps = bytes.length();
     debugAssert( numMipMaps > 0 );
 

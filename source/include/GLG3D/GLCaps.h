@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2005-09-10
+ @edited  2005-11-10
 
- Copyright 2005, Morgan McGuire.
+ Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
 */
 
@@ -209,6 +209,15 @@ public:
      the problem.
      */
     static bool GLCaps::hasBug_normalMapTexGen();
+
+    /**
+      Returns true if SGIS auto mip-map generation occasionally
+      produces buggy results (usually, pieces of other textures in
+      the low-level mipmaps).
+
+      Radeon Mobility 9200 has this bug for some drivers.
+     */
+    static bool GLCaps::hasBug_mipmapGeneration();
 
 };
 

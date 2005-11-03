@@ -11,6 +11,7 @@ void App::loadScene() {
 
     RealTime t0 = System::time();
 
+#if LOAD_ALL
     if (true) {
         CoordinateFrame xform;
 
@@ -51,7 +52,6 @@ void App::loadScene() {
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,2,0))));
         Log::common()->printf("Ghost: %gs\n", System::time() - t0); t0 = System::time();
     }
-#if LOAD_ALL
 
     if (true) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("sphere.ifs", 1);
@@ -190,7 +190,7 @@ void App::loadScene() {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
     }
 
-    if (false) {
+    if (true) {
         CoordinateFrame xform;
 
         xform.rotation[0][0] = xform.rotation[1][1] = xform.rotation[2][2] = 0.04;

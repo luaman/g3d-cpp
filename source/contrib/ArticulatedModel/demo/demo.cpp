@@ -151,7 +151,7 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
             app->renderDevice->disableColorWrite();
         }
 
-        // Avoid acne
+        // Avoid z-fighting
         app->renderDevice->setPolygonOffset(2);
 
         app->renderDevice->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);

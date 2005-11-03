@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-10-16
+  @edited  2005-11-16
 */
 
 #include "GLG3D/GLCaps.h"
@@ -857,6 +857,21 @@ static void configureCameraAndLights() {
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
+}
+
+
+bool GLCaps::hasBug_mipmapGeneration() {
+    static bool initialized = false;
+    static bool value;
+
+    if (! initialized) {
+        initialized = true;
+        value = 
+            GLCaps::supports("GL_SGIS_generate_mipmap") &&
+		    beginsWith(renderer(), "MOBILITY RADEON 9");
+    }
+
+    return value;
 }
 
 #if 0  // TODO: morgan, remove?
