@@ -308,7 +308,7 @@ Vector2 GFont::draw2D(
         // MSVC 6 cannot use static allocation with a variable size argument
         // so we revert to the more compiler specific alloca call. Gcc does not
         // implement array[variable] well, so we use this everywhere.
-        Vector2* array = (Vector2*)alloca(numChars * 4 * 2 * sizeof Vector2);
+        Vector2* array = (Vector2*)System::malloc(numChars * 4 * 2 * sizeof Vector2);
 
         const Vector2 bounds = computePackedArray(s, x, y, w, h, spacing, array);
 
@@ -350,6 +350,7 @@ Vector2 GFont::draw2D(
         glDisableClientState(GL_VERTEX_ARRAY);
     renderDevice->popState();
 
+    System::free(array);
     debugAssertGLOk();
 
     return bounds;
