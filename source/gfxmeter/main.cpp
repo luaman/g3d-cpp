@@ -15,7 +15,7 @@
 
 #include "Report.h"
 #include "App.h"
-//#define FAST
+#define FAST
  
 static const float gfxMeterVersion = 0.7;
 
@@ -212,6 +212,12 @@ void App::countBugs() {
         Log::common()->printf("   Detected GLSL Texture Binding bug\n\n");
         bugCount += 2;
     }
+
+    if (GLCaps::hasBug_mipmapGeneration()) {
+        ++bugCount;
+        Log::common()->printf("   Detected mipmapGeneration bug\n\n");
+    } 
+    
 }
 
 

@@ -866,10 +866,12 @@ bool GLCaps::hasBug_mipmapGeneration() {
 
     if (! initialized) {
         initialized = true;
+        const std::string& r = renderer();
         value = 
             GLCaps::supports("GL_SGIS_generate_mipmap") &&
-		    (beginsWith(renderer(), "MOBILITY RADEON 9") ||
-		     beginsWith(renderer(), "MOBILITY RADEON 57"));
+		    (beginsWith(r, "MOBILITY RADEON 90") ||
+		     beginsWith(r, "MOBILITY RADEON 57") ||
+		     beginsWith(r, "Intel 854G"));
     }
 
     return value;
