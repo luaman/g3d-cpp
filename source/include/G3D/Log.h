@@ -72,9 +72,11 @@ public:
     /**
      Given arguments like printf, writes characters to the debug text overlay.
      */
-    void __cdecl printf(const char* fmt, ...) G3D_CHECK_PRINTF_ARGS;
+    // We want G3D_CHECK_PRINTF_ARGS here, but that conflicts with the
+    // overload.
+    void __cdecl printf(const char* fmt, ...) G3D_CHECK_PRINTF_METHOD_ARGS;
 
-    void __cdecl vprintf(const char*, va_list argPtr) G3D_CHECK_VPRINTF_ARGS;
+    void __cdecl vprintf(const char*, va_list argPtr) G3D_CHECK_VPRINTF_METHOD_ARGS;
 
     static Log* common();
 

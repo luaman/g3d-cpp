@@ -10,6 +10,8 @@
 #include "GLG3D/GFont.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/TextureFormat.h"
+#include "G3D/Vector2.h"
+#include "G3D/System.h"
 
 namespace G3D {
 
@@ -308,7 +310,7 @@ Vector2 GFont::draw2D(
         // MSVC 6 cannot use static allocation with a variable size argument
         // so we revert to the more compiler specific alloca call. Gcc does not
         // implement array[variable] well, so we use this everywhere.
-        Vector2* array = (Vector2*)System::malloc(numChars * 4 * 2 * sizeof Vector2);
+        Vector2* array = (Vector2*)System::malloc(numChars * 4 * 2 * sizeof(Vector2));
 
         const Vector2 bounds = computePackedArray(s, x, y, w, h, spacing, array);
 

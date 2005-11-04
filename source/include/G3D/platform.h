@@ -79,8 +79,10 @@
 #       define __stdcall __attribute__((stdcall))
 #   endif
 
-#   define G3D_CHECK_PRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
-#   define G3D_CHECK_VPRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
+#   define G3D_CHECK_PRINTF_METHOD_ARGS   __attribute__((__format__(__printf__, 2, 3)))
+#   define G3D_CHECK_VPRINTF_METHOD_ARGS  __attribute__((__format__(__printf__, 2, 0)))
+#   define G3D_CHECK_PRINTF_ARGS          __attribute__((__format__(__printf__, 1, 2)))
+#   define G3D_CHECK_VPRINTF_ARGS         __attribute__((__format__(__printf__, 1, 0)))
 #endif
 
 
@@ -103,8 +105,10 @@
 
 #   define G3D_DEPRECATED(msg) __attribute__((__deprecated__))
 
-#   define G3D_CHECK_PRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
-#   define G3D_CHECK_VPRINTF_ARGS __attribute__((__format__(__printf__, 1, 2)))
+#   define G3D_CHECK_PRINTF_METHOD_ARGS   __attribute__((__format__(__printf__, 2, 3)))
+#   define G3D_CHECK_VPRINTF_METHOD_ARGS  __attribute__((__format__(__printf__, 2, 0)))
+#   define G3D_CHECK_PRINTF_ARGS          __attribute__((__format__(__printf__, 1, 2)))
+#   define G3D_CHECK_VPRINTF_ARGS         __attribute__((__format__(__printf__, 1, 0)))
 #endif
 
 
@@ -132,6 +136,8 @@
 
 #   define G3D_CHECK_PRINTF_ARGS 
 #   define G3D_CHECK_VPRINTF_ARGS
+#   define G3D_CHECK_PRINTF_METHOD_ARGS 
+#   define G3D_CHECK_VPRINTF_METHOD_ARGS
 
     // On MSVC, we need to link against the multithreaded DLL version of
     // the C++ runtime because that is what SDL and ZLIB are compiled
