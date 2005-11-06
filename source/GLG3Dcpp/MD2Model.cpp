@@ -52,9 +52,9 @@ const MD2Model::MD2AnimInfo MD2Model::animationTable[MD2Model::MAX_ANIMATIONS] =
 };
 
 
-MD2ModelRef MD2Model::create(const std::string& filename) {
+MD2ModelRef MD2Model::create(const std::string& filename, float s) {
     MD2Model* model = new MD2Model();
-    model->load(filename);
+    model->load(filename, s);
     return model;
 }
 

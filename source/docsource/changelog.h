@@ -30,6 +30,7 @@
    Changes in 6.08:
     <UL>
       <LI> Optimized G3D::iRound (now faster than casting!)
+      <LI> G3D::MD2Model::create now accepts a scale factor
       <LI> #G3D_DEPRECATED macro
       <LI> #G3D_CHECK_PRINTF_ARGS, #G3D_CHECK_VPRINTF_ARGS macros to allow
            checking of printf argument strings under gcc at compile time with
@@ -70,7 +71,9 @@
       <LI> Fix: [ 1326173 ] Win32Window::init should call makeCurrent.[Erik Cassel]
       <LI> Fix: [ 1326423 ] G3D::Queue::_copy broken [Chris Demetriou]
       <LI> Fix: [ 1313293 ] 6.08: TextInput gets symbol extendedType() wrong [Chris Demetriou]
-      <LI> Fix: Quat from Matrix3  now computes trace correctly (gave negative quats in some cases) 
+      <LI> Fix: Quat(Matrix3) now computes trace correctly (gave negative quats in some cases) 
+      <LI> Fix: Setting RenderDevice::polygonOffset now always produces a depth shift,
+                even for faces perpendicular to the view axis.
     </UL>
 
   <P>

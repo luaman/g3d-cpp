@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-21
- @edited  2004-04-20
+ @edited  2005-11-20
  */
 
 #ifndef G3D_MD2MODEL_H
@@ -330,7 +330,7 @@ protected:
     MD2Model() {}
 
     /** Called from create */
-    void load(const std::string& filename);
+    void load(const std::string& filename, float scale);
 
     /**
      Wipe all data structures.  Called from load.
@@ -373,9 +373,13 @@ public:
     }
 
     /**
-     @filename The tris.md2 file
+     @filename The tris.md2 file.  Note that most MD2 
+      files are stored in two files, tris.md2 and weapon.md2.  
+      You will have to load both as separate models.
+
+     @param scale Optional scale factor to apply while loading.
      */
-    static MD2ModelRef create(const std::string& filename);
+    static MD2ModelRef create(const std::string& filename, float scale = 1.0f);
 
     virtual ~MD2Model() {}
 

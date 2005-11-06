@@ -2445,7 +2445,7 @@ void RenderDevice::setPolygonOffset(
             glEnable(GL_POLYGON_OFFSET_FILL);
             glEnable(GL_POLYGON_OFFSET_LINE);
             glEnable(GL_POLYGON_OFFSET_POINT);
-            glPolygonOffset(offset, 0);
+            glPolygonOffset(offset, sign(offset));
         } else {
             glDisable(GL_POLYGON_OFFSET_POINT);
             glDisable(GL_POLYGON_OFFSET_FILL);

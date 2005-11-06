@@ -84,7 +84,7 @@ void MD2Model::reset() {
 }
 
 
-void MD2Model::load(const std::string& filename) {
+void MD2Model::load(const std::string& filename, float resize) {
 
     // If models are being reloaded it is dangerous to trust the interpolation cache.
     interpolatedModel = NULL;
@@ -120,7 +120,6 @@ void MD2Model::load(const std::string& filename) {
 
     loadTextureFilenames(b, header.numSkins, header.offsetSkins);
 
-
     for (int f = 0; f < keyFrame.size(); ++f) {
         MD2Frame md2Frame;
 
@@ -144,7 +143,7 @@ void MD2Model::load(const std::string& filename) {
 
             Vector3& vertex = keyFrame[f].vertexArray[v];
             for (i = 0; i < 3; ++i) {
-                vertex[permute[i]] = (b.readUInt8() * md2Frame.scale[i] + md2Frame.translate[i]) * scale[permute[i]];
+                vertex[permute[i]] = (b.readUInt8() * resize * md2Frame.scale[i] + md2Frame.translate[i]) * scale[permute[i]];
             }
 
             uint8 normalIndex = b.readUInt8();
