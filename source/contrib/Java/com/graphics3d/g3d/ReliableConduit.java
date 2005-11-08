@@ -211,6 +211,10 @@ public class ReliableConduit {
         }
     }
 
+    public boolean ok() {
+        return (sock != null) && sock.isConnected();
+    }
+
     /** 
         If a message is waiting, deserializes the waiting message into
         message and returns true, otherwise returns false.  You can
