@@ -156,13 +156,13 @@ void IFSModel::save(
 		to.printf("%d\n%d\n",vertex.size(), nF);
 
 		for(uint32 i = 0; i < (uint32)vertex.size(); ++i) {
-			to.printf("%f\n",vertex[i].x);
-			to.printf("%f\n",vertex[i].y);
+			to.printf("%f ",vertex[i].x);
+			to.printf("%f ",vertex[i].y);
 			to.printf("%f\n",vertex[i].z);
 		}
 
 		for(uint32 i = 0; i < (uint32)nF; ++i) {
-			to.printf("3 %d \t %d \t %d \n", index[3*i], index[3*i + 1], index[3*i + 2]);
+			to.printf("3 %d  %d  %d\n", index[3*i], index[3*i + 1], index[3*i + 2]);
 		}
 
 		to.commit(false);
