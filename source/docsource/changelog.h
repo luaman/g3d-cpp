@@ -71,6 +71,7 @@
       <LI> Fix: [ 1326173 ] Win32Window::init should call makeCurrent.[Erik Cassel]
       <LI> Fix: [ 1326423 ] G3D::Queue::_copy broken [Chris Demetriou]
       <LI> Fix: [ 1313293 ] 6.08: TextInput gets symbol extendedType() wrong [Chris Demetriou]
+      <LI> Fix: IFSModel::save, for PLY2  forgot newlines [Peter]
       <LI> Fix: Quat(Matrix3) now computes trace correctly (gave negative quats in some cases) 
       <LI> Fix: Setting RenderDevice::polygonOffset now always produces a depth shift,
                 even for faces perpendicular to the view axis.
