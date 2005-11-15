@@ -29,6 +29,9 @@
   <P>
    Changes in 6.08:
     <UL>
+	  <LI> G3D::Color3::fromHSV [Peter]
+	  <LI> G3D::Color3::toHSV   [Peter]
+	  <LI> G3D::Color3::jetColorMap [Peter]
       <LI> Optimized G3D::iRound (now faster than casting!)
       <LI> G3D::MD2Model::create now accepts a scale factor
       <LI> #G3D_DEPRECATED macro

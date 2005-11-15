@@ -8,7 +8,7 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2001-06-02
- @edited  2004-05-03
+ @edited  2005-11-13
 
  Copyright 2000-2004, Morgan McGuire.
  All rights reserved.
@@ -136,6 +136,19 @@ public:
     inline double average() const {
         return sum() / 3.0;
     }
+
+
+	/**
+	 *  Converts from HSV to RGB , note: toHSV(fromHSV(_hsv)) may not be _hsv, if it is at a grey point or black point.
+	 *  The components of _hsv should lie in the unit interval. 
+	 *  @cite Alvy Ray Smith SIGGRAPH 1978 "Color Gamut Transform Pairs"
+	 **/
+	static Color3 fromHSV(const Vector3& _hsv);
+	static Vector3 toHSV(const Color3& _rgb);
+
+	/** Duplicates the matlab jet colormap maps [0,1] --> (r,g,b) where blue is close to  0 and red is close to 1. */
+	static Color3 jetColorMap(const float& val);
+
 
 
     std::string toString() const;
