@@ -571,7 +571,7 @@ public:
        For compatibility with std::vector.
    */
    T& front() {
-       return *this[0];
+       return (*this)[0];
    }
 
    /** 
@@ -580,7 +580,7 @@ public:
        For compatibility with std::vector.
    */
    const T& front() const {
-       return *this[0];
+       return (*this)[0];
    }
 
    /**

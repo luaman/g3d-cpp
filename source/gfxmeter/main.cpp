@@ -15,7 +15,7 @@
 
 #include "Report.h"
 #include "App.h"
-#define FAST
+//#define FAST
  
 static const float gfxMeterVersion = 0.7;
 
