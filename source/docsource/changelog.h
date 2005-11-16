@@ -29,6 +29,8 @@
   <P>
    Changes in 6.08:
     <UL>
+	  <LI> G3D::Matrix3::toString [Peter]
+	  <LI> G3D::Matrix4::toString [Peter]
 	  <LI> G3D::Color3::fromHSV [Peter]
 	  <LI> G3D::Color3::toHSV   [Peter]
 	  <LI> G3D::Color3::jetColorMap [Peter]

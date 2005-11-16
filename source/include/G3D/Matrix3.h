@@ -224,6 +224,7 @@ public:
 
     static void tensorProduct (const Vector3& rkU, const Vector3& rkV,
                                Matrix3& rkProduct);
+	std::string toString() const;
 
     static const float EPSILON; 
 

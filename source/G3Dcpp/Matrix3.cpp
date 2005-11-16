@@ -1640,5 +1640,15 @@ void Matrix3::_transpose(const Matrix3& A, Matrix3& out) {
     out[2][2] = A.m_aafEntry[2][2];
 }
 
+//-----------------------------------------------------------------------------
+std::string Matrix3::toString() const {
+    return G3D::format("[%g, %g, %g; %g, %g, %g; %g, %g, %g]", 
+			m_aafEntry[0][0], m_aafEntry[0][1], m_aafEntry[0][2],
+			m_aafEntry[1][0], m_aafEntry[1][1], m_aafEntry[1][2],
+			m_aafEntry[2][0], m_aafEntry[2][1], m_aafEntry[2][2]);
+}
+
+
+
 } // namespace
 

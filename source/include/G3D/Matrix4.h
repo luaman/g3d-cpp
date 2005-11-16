@@ -136,6 +136,8 @@ public:
     /** Serializes row-major */
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
+
+	std::string toString() const;
 };
 
 } // namespace
