@@ -622,6 +622,8 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
         initialized = true;
     }
 
+    GLCaps::loadExtensions();
+
     TempGLContext tempContext;
 
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
@@ -871,7 +873,8 @@ bool GLCaps::hasBug_mipmapGeneration() {
             GLCaps::supports("GL_SGIS_generate_mipmap") &&
 		    (beginsWith(r, "MOBILITY RADEON 90") ||
 		     beginsWith(r, "MOBILITY RADEON 57") ||
-		     beginsWith(r, "Intel 854G"));
+		     beginsWith(r, "Intel 854G") ||
+		     beginsWith(r, "Intel 845G"));
     }
 
     return value;

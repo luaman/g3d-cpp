@@ -6,8 +6,6 @@
  */
 #include "../include/G3DAll.h"
 
-// TODO: run 2x, once with bunny and once with gear to measure
-// cache coherence effects.
 
 // All return FPS
 float measureBeginEndPerformance(class Model&);

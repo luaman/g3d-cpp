@@ -68,6 +68,7 @@
       <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
+      <LI> Fix: Array::front now compiles under gcc
       <LI> Fix: G3D::Ray::distance used to measure against the origin [David]
       <LI> Fix: [ 1293151 ] 6.08: ArticulatedModel clipping on Radeon -- disabled auto-mipmap generation on mobile radeon 9xxx
       <LI> Fix: G3D::TextInput now parses ^=, character 255 correctly [cgd]
