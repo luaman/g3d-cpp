@@ -3,15 +3,23 @@
 
 There are a few confusing error messages you can run into when compiling,
 linking, and debugging programs that use G3D.  Here are the common fixes.
+<BR>
+<BR>
+<I>Most linker errors are caused by linking against the wrong version of the G3D libraries.<BR>
+VC6 needs the "win32-lib" directory, VC7.1 uses the "win32-lib-7" directory.<BR>
+The VC8 libraries must currently be built from CVS by the end user. ("win32-lib-8" directory).</I>
+<P>
+
+
 
 <P><B>MSVCPRT.LIB(MSVCP60.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::assign(class s
 td::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,unsigned int,unsigned int)" (?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ABV12@II@Z) already defined in xxx(yyy)</B>
 <P>
-G3D changes the linker settings for files, so you should generally #include <G3DAll.h> or #include<graphics3d.h> before any other includes and use it in every source (or header) file.  Also, include all of G3D and not just the specific class you are using. 
+G3D changes the linker settings for files, so you should generally #include <G3DAll.h> or #include<graphics3d.h> before any other includes and use it in every source (or header) file.  Also, include all of G3D and not just the specific class you are using.
 
 <P><B><CODE>Error C2440: 'delete' : cannot convert from 'class G3D::ReferenceCountedPointer<class G3D::GFont>' to '' No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called</CODE></B>
 <P>
-You called <CODE>delete</CODE> on a reference counted class.  You do not need to delete G3D::GFontRef, G3D::TextureRef or any other Ref class; just 
+You called <CODE>delete</CODE> on a reference counted class.  You do not need to delete G3D::GFontRef, G3D::TextureRef or any other Ref class; just
 set them to NULL when you don't need them and the underlying memory will be recovered.
 
 <P><B>../include\G3D/ReferenceCount.h(159) : error C2664: 'setPointer' : cannot convert parameter 1 from 'class G3D::Shader *' to 'class SphereMap *'
@@ -19,18 +27,18 @@ set them to NULL when you don't need them and the underlying memory will be reco
         D:\games\cpp\source\Debug\main.cpp(167) : see reference to function template instantiation '__thiscall G3D::ReferenceCountedPointer<class SphereMap>::G3D::ReferenceCountedPointer<class SphereMap>(const class G3D::ReferenceCountedPointer<clas
 s G3D::Shader> &)' being compiled</B><P>
 
-You tried to assign a reference counted pointer from the wrong type 
+You tried to assign a reference counted pointer from the wrong type
 (e.g. TextureRef a = GFontRef::create().
 
 <P><B>error C2440: 'return' : cannot convert from 'class A *' to 'class B *'
 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
 d:\games\cpp\source\include\g3d\referencecount.h(194) : see reference to function template instantiation 'class B *__cdecl G3D::ReferenceCountedPointer<class B>::safecast(class A *)' being compiled</B>
 <P>
-You tried to assign a reference counted pointer from the wrong type 
+You tried to assign a reference counted pointer from the wrong type
 (e.g. TextureRef a = GFontRef::create().
 
 <P><B>Program "randomly" crashes AMD systems</B><P>
-See the 
+See the
 <A HREF="http://support.microsoft.com/default.aspx?scid=http://support.microsoft.com:80/support/kb/articles/Q270/7/15.ASP&NoWebContent=1">Microsoft Knowledge Base article</A>.
 
 <P><B>undefined symbol SDL_main</B><P>
@@ -64,38 +72,9 @@ is no good...  make sure you have
 <P><B><CODE>
 msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::~basic_string<char,struct std::char_traits<char>,class std::allocator<char> >(void)" (??1?$basic_strin
 g@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@XZ) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >(char const *,class basic_
-string<char,struct std::char_traits<char>,class std::allocator<char> >::allocator<char> const &)" (??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@PBDABV?$allocator@D@1@@Z) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: char const * __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::c_str(void)const " (?c_str@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@Q
-BEPBDXZ) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::operator=(cl
-ass std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (??4?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV01@ABV01@@Z) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >(class basic_string<char,s
-truct std::char_traits<char>,class std::allocator<char> >::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@ABV01@@Z) already defined in main.
-obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: static double __cdecl std::numeric_limits<double>::infinity(void)" (?infinity@?$numeric_limits@N@std@@SANXZ) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: static double __cdecl std::numeric_limits<double>::quiet_NaN(void)" (?quiet_NaN@?$numeric_limits@N@std@@SANXZ) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: unsigned int __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::size(void)const " (?size@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBE
-IXZ) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::operator+=(c
-lass std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (??Y?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV01@ABV01@@Z) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "bool __cdecl std::operator==(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,char const *)" (??8std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocat
-or@D@2@@0@PBD@Z) already defined in main.obj
-msvcprtd.lib(MSVCP60D.dll) : error LNK2005: "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > & __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::operator+=(c
-har const *)" (??Y?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV01@PBD@Z) already defined in main.obj
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _fflush already defined in LIBCD.lib(fflush.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _fclose already defined in LIBCD.lib(fclose.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _free already defined in LIBCD.lib(dbgheap.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _realloc already defined in LIBCD.lib(dbgheap.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __vsnprintf already defined in LIBCD.lib(vsnprint.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _exit already defined in LIBCD.lib(crt0dat.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _malloc already defined in LIBCD.lib(dbgheap.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __CrtIsValidHeapPointer already defined in LIBCD.lib(dbgheap.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __CrtIsValidPointer already defined in LIBCD.lib(dbgheap.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _sprintf already defined in LIBCD.lib(sprintf.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _toupper already defined in LIBCD.lib(toupper.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _tolower already defined in LIBCD.lib(tolower.obj)
-MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _calloc already defined in LIBCD.lib(dbgheap.obj)
+
+...
+
 MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: _strncpy already defined in LIBCD.lib(strncpy.obj)
 MSVCRTD.lib(MSVCRTD.dll) : error LNK2005: __isctype already defined in LIBCD.lib(isctype.obj)
 LINK : warning LNK4098: defaultlib "MSVCRTD" conflicts with use of other libs; use /NODEFAULTLIB:library
@@ -104,26 +83,26 @@ Debug/GLG3D_Demo.exe : fatal error LNK1169: one or more multiply defined symbols
 
    <P>
    You are linking against the wrong standard library.  Navigate the MSVC menus to
-   Project:Settings:C++:Code Generation and select 
+   Project:Settings:C++:Code Generation and select
    "Debug Multithreaded DLL" for your debug build and "Multithreaded DLL" for
    your release build.
    <P>
 
 <P>
-<B><CODE>array.h(233) : error C2512: : no appropriate default constructor available 
+<B><CODE>array.h(233) : error C2512: : no appropriate default constructor available
    array.h(195) : while compiling class-template member function 'void __thiscall G3D::Array<class X>::resize(int,bool)'</CODE></B>
 
-<P> You created a G3D::Array of a class that does not provide a default 
-constructor (constructor with no arguments).  Define a default constructor 
-for your class-- G3D::Array needs it to initialize new elements when you 
+<P> You created a G3D::Array of a class that does not provide a default
+constructor (constructor with no arguments).  Define a default constructor
+for your class-- G3D::Array needs it to initialize new elements when you
 invoke G3D::Array::resize().
 
-<P><B><CODE>sdlmain.lib(SDL_main.obj) : error LNK2005: _main already defined in main.obj</CODE></B> 
+<P><B><CODE>sdlmain.lib(SDL_main.obj) : error LNK2005: _main already defined in main.obj</CODE></B>
 <BR>You need to <CODE>\#include &lt;SDL.h&gt;</CODE> in your main.cpp file.
 
 <P>
 <B><CODE>error LNK2001: unresolved external symbol _glActiveTextureARB</CODE></B>
-<BR>Some other (e.g. MSVC .NET) program's include directory is listed before the 
+<BR>Some other (e.g. MSVC .NET) program's include directory is listed before the
 G3D directory and contains conflicting OpenGL drivers.  Reorder the include directories
 under Tools/Options/Directories
 
@@ -134,13 +113,13 @@ under Tools/Options/Directories
 
 <B>LINK : fatal error LNK1181: cannot open input file
    "glg3d.lib"</B> <BR> You need to add the graphics3d/lib directory
-   to your library path (instructions above) 
+   to your library path (instructions above)
 
 <P><B>"warning LNK4229: invalid directive" in MSVC build</B><P>
 When linking against G3D's libraries the following linker errors are produced
-<CODE>G3D-debug.lib(TextInput.obj) : warning LNK4229: invalid directive '/alternatename:__imp_??$?9DU?$char_traits@D@std@@V?$allocator@D@1@@std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z=__imp_??9std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z' encountered; ignored 
-G3D-debug.lib(TextInput.obj) : warning LNK4229: invalid directive '/alternatename:__imp_??$?8DU?$char_traits@D@std@@V?$allocator@D@1@@std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z=__imp_??8std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z' encountered; ignored 
-G3D-debug.lib(TextInput.obj) : warning LNK4229: invalid directive '/alternatename:__imp_??$?8DU?$char_traits@D@std@@V?$allocator@D@1@@std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@0@Z=__imp_??8std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@0@Z' encountered; ignored 
+<CODE>G3D-debug.lib(TextInput.obj) : warning LNK4229: invalid directive '/alternatename:__imp_??$?9DU?$char_traits@D@std@@V?$allocator@D@1@@std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z=__imp_??9std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z' encountered; ignored
+G3D-debug.lib(TextInput.obj) : warning LNK4229: invalid directive '/alternatename:__imp_??$?8DU?$char_traits@D@std@@V?$allocator@D@1@@std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z=__imp_??8std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@PBD@Z' encountered; ignored
+G3D-debug.lib(TextInput.obj) : warning LNK4229: invalid directive '/alternatename:__imp_??$?8DU?$char_traits@D@std@@V?$allocator@D@1@@std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@0@Z=__imp_??8std@@YA_NABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@0@0@Z' encountered; ignored
 </CODE>
 etc...
 
@@ -154,6 +133,27 @@ There are three solutions:<P>
 2. Build G3D without debug info (Project:Settings:C++:Debug Info)<P>
 3. Use an official G3D build, since they are created without debug info.
 
-<P><B>Building with Visual C++ 2005 Express Beta</B><P>
-To build G3D with Microsoft's free compiler, you will need to link against Windows platform libraries. Specifically, user32.lib and gdi32.lib are included in the Windows Core SDK. These are not included with the compiler, but can be downloaded. Details are available at http://lab.msdn.microsoft.com/express/visualc/usingpsdk/default.aspx
+
+<P><B>My G3D based project will not build with Visual Studio 2005<BR>
+or<BR>
+Error linking:<BR>
+error LNK2001: unresolved external symbol "__declspec(dllimport) public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::iterator __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::end(void)"
+</B><P>
+
+G3D 6.07 and below does not include library files that link with Visual Studio 2005 (VC++ 8 runtime), as VS2005 was not available at the time of G3D release.
+This problem will be solved with the upcoming release of G3D 6.08.
+Until then, the recommended solution is to checkout the CVS source of G3D, open the solution in VS2005 and convert the project. Then build the libraries. This will build the library files with VC++ 8, which can then be used with a VS2005 based project.
+
+<P><B>/usr/lib/gcc-lib/i586-suse-linux/3.3.5/../../../../i586-suse-linux/bin/ld: Warning: type of symbol `glGenerateMipmapEXT' changed from 2 to 1 in /t/3rdParty/g3d-6_07/linux-lib/libGLG3D_debug.a(libGLG3D_debug_a-glcalls.o)<BR>
+And<BR>
+/t/3rdParty/g3d-6_07/linux-lib/libGLG3D_debug.a(libGLG3D_debug_a-Texture.o)(.text+0x18e): In function `dimensionToTarget':
+../../../source/GLG3Dcpp/Texture.cpp:82: undefined reference to `G3D::_internal::_releaseInputGrab_()'
+</B><P>
+
+The source is being linked in the wrong order for the dependencies.
+To fix this, link GLG3D, G3D and then GL in that order.
+A sample compile command would look like:<BR>
+	g++ -L<DIRECTORY> -o<OUTPUT>./main.o -lGLG3D_debug -ljpeg -lSDL -lpng -lG3D_debug -lGL -lGLU
+
+
 */
