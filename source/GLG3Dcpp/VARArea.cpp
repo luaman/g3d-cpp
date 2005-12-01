@@ -43,6 +43,7 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
             (glBufferDataARB != NULL) &&
             (glDeleteBuffersARB != NULL) &&			
 			! GLCaps::hasBug_slowVBO()) {
+			mode = VBO_MEMORY;
         } else {
             mode = MAIN_MEMORY;
         }
