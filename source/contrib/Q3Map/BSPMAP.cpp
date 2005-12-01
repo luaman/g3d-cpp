@@ -10,7 +10,7 @@
 #include "BSPMAP.h"
 
 extern Log*   debugLog;
-extern CFont* font;
+extern GFont* font;
 
 namespace BSPMAP {
 
@@ -89,6 +89,8 @@ void Map::initRender(GCamera& camera) {
 
 
 void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
+    // Adjust intensity for tone mapping
+    float adjustBrightness = 0.4;
 
 	Array<FaceSet*> opaqueFaceArray;
 	Array<FaceSet*> translucentFaceArray;
@@ -107,13 +109,14 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 		glClientActiveTextureARB(GL_TEXTURE1_ARB);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glEnable(GL_TEXTURE_2D);
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		glClientActiveTextureARB(GL_TEXTURE0_ARB);        
 		glEnable(GL_TEXTURE_2D);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-		glColor(Color3::WHITE);
+		glColor(Color3::white() * adjustBrightness);
 		renderFaces(renderDevice, camera, opaqueFaceArray);
 
 		// Translucent
@@ -123,11 +126,13 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 		glEnable(GL_ALPHA_TEST);
 		glDisable(GL_CULL_FACE);
 
+        glColor(Color3::white() * adjustBrightness);
 		renderFaces(renderDevice, camera, translucentFaceArray);
 
 	glPopClientAttrib();
 	glPopAttrib();
-/*
+
+#if 0
 	
 	// Draw debugging data
 	renderDevice->pushState();
@@ -136,7 +141,7 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 		renderDevice->setLineWidth(0.5);
 		glColor(Color3::WHITE);
 		glBegin(GL_LINES);
-		for (i = 0; i < debugLine.size(); ++i) {
+		for (int i = 0; i < debugLine.size(); ++i) {
 			glVertex(debugLine[i].start);
 			glVertex(debugLine[i].stop);
 		}
@@ -148,7 +153,7 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 	renderDevice->popState();
 
 	
-
+/*
 	renderDevice->push2D();
 
 	for (i = 0; i < debugString.size(); ++i) {
@@ -160,7 +165,8 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 		200, 10, 15, Color3::WHITE, Color3::BLACK);
 
 	renderDevice->pop2D();
-	*/
+    */
+#endif
 }
 
 
@@ -326,7 +332,7 @@ void Map::renderFaces(
 					glEnable(GL_TEXTURE_2D);
 					glClientActiveTextureARB(GL_TEXTURE0_ARB);
 					glBindTexture(GL_TEXTURE_2D, texture->getOpenGLID());
-					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);                                
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);  
 				} else {
 					glDisable(GL_TEXTURE_2D);
 				}

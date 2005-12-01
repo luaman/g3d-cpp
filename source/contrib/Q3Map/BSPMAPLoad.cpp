@@ -298,31 +298,96 @@ void Map::loadLumps(
 }
 
 
-void Map::loadEntities(
-    BinaryInput&           bi,
-    const BSPLump&         lump) {
+void Map::loadEntities(BinaryInput&	bi,const BSPLump& lump){
+	char* entities = new char[lump.length];
+	bi.setPosition(lump.offset);
 
-    char* entities = new char[lump.length];
-    bi.setPosition(lump.offset);
-
-    bi.readBytes(lump.length, entities);
-    char* entity = strtok(entities, "}");
-
-    do {
-        if (strstr(entity, "\"info_player_deathmatch\"")) {
-
-            char* pt = strstr(entity, "\"origin\"");
-            startingPosition.x =  atoi(strtok(pt + 10," ")) * LOAD_SCALE;
-            startingPosition.z = -atoi(strtok(NULL," "))    * LOAD_SCALE;
-            startingPosition.y =  atoi(strtok(NULL,"\""))   * LOAD_SCALE;
-            break;
-        }
-
-        entity = strtok(NULL, "}");
-
-    } while (entity);
-
-    delete entities;
+	bi.readBytes(lump.length, entities);
+	std::string	entityString;
+	if(entities	!= NULL){
+		entityString = std::string(entities);
+		if(entityString == std::string()){
+			startingPosition = Vector3::ZERO;
+			return;			
+		}
+	}
+	else{
+		startingPosition = Vector3::ZERO;
+		return;
+	}
+	G3D::Array<std::string> entityStrArray = G3D::stringSplit(entityString,'}');
+	for(int	i =	0; i < entityStrArray.size(); ++i){
+		std::string	entity = entityStrArray[i];
+		G3D::Array<std::string>	subArray = G3D::stringSplit(entity,'\n');
+		BSPEntity currEntity;
+		currEntity.position	= Vector3::INF3;
+		currEntity.spawnflags =	0;
+		currEntity.modelNum = -1;
+		for(int	j =	0; j < subArray.size();	++j){
+			std::string	subStr = std::string(subArray[j]);
+			char* pt = strstr(subStr.c_str(), "\"classname\"");
+			if (pt){
+				char* name = strtok(pt + 13,"\"	");
+				if(name){
+					currEntity.name	= name + format(" %d",i);
+				}
+				continue;
+			}
+			pt = strstr(subStr.c_str(),	"\"origin\"");
+			if(pt){
+				char temp[40];
+				strcpy(temp,pt);
+				Vector3	pos;
+				pos.x =	 atoi(strtok(pt	+ 10," ")) * LOAD_SCALE;
+				pos.z =	-atoi(strtok(NULL," "))	   * LOAD_SCALE;
+				pos.y =	 atoi(strtok(NULL,"\""))   * LOAD_SCALE;
+				currEntity.position	= pos;
+				continue;
+			}
+			pt = strstr(subStr.c_str(),	"\"spawnflags\"");
+			if(pt){
+				currEntity.spawnflags =	atoi(strtok(pt+13,"\""));
+				continue;
+			}
+			pt = strstr(subStr.c_str(),	"\"targetname\"");
+			if(pt){
+				char* name = strtok(pt + 14,"\"	");
+				if(name){
+					currEntity.targetName = name;
+				}
+				continue;
+			}
+			pt = strstr(subStr.c_str(),	"\"model\"");
+			if(pt){
+				currEntity.modelNum = atoi(strtok(pt+10,"\"")) - 1;
+				continue;
+			}
+			pt = strstr(subStr.c_str(),	"\"target\"");
+			if(pt){
+				char* name = strtok(pt + 10,"\"	");
+				if(name){
+					currEntity.target = name;
+				}
+				continue;
+			}
+			if(subStr != "{" &&	subStr != "\n{"	&& subStr != "\n"){
+				currEntity.otherInfo +=	subStr;
+				currEntity.otherInfo +=	"\n";
+			}
+		}
+		if(currEntity.name != std::string()){
+			if(strstr(currEntity.name.c_str(),"info_player_deathmatch")){
+				if(currEntity.position != Vector3::INF3){
+					startingPosition = currEntity.position;
+				}
+				else{
+					startingPosition = Vector3::ZERO;
+				}
+			}
+			entityArray.append(currEntity);
+		}
+	}
+	delete entities;
 }
 
 
@@ -441,15 +506,16 @@ static TextureRef loadBrightTexture(const std::string& filename, double brighten
 
 
 TextureRef Map::loadTexture(const std::string& filename) {
-    try {
+    float brighten = 2.0;
 
+    try {
         if (fileExists(filename + ".jpg")) {
 
-            return loadBrightTexture(filename + ".jpg", 2.0);
+            return loadBrightTexture(filename + ".jpg", brighten);
 
         } else if (fileExists(filename + ".tga")) {
 
-            return loadBrightTexture(filename + ".tga", 2.0);
+            return loadBrightTexture(filename + ".tga", brighten);
 
         } else {
             Log::common()->printf("Texture missing: \"%s\"\n", filename.c_str());

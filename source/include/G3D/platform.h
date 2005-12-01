@@ -69,7 +69,7 @@
 #       error G3D only supports x86 machines on Linux.
 #   endif
 
-#   define G3D_DEPRECATED(msg) __attribute__((__deprecated__))
+#   define G3D_DEPRECATED __attribute__((__deprecated__))
 
 #   ifndef __cdecl
 #       define __cdecl __attribute__((cdecl))
@@ -103,7 +103,7 @@
 #       define __stdcall __attribute__((stdcall))
 #   endif
 
-#   define G3D_DEPRECATED(msg) __attribute__((__deprecated__))
+#   define G3D_DEPRECATED __attribute__((__deprecated__))
 
 #   define G3D_CHECK_PRINTF_METHOD_ARGS   __attribute__((__format__(__printf__, 2, 3)))
 #   define G3D_CHECK_VPRINTF_METHOD_ARGS  __attribute__((__format__(__printf__, 2, 0)))
@@ -123,9 +123,9 @@
 
 #   if (_MSC_VER <= 1200)
 //      Nothing we can do on VC6 for deprecated functions
-#      define G3D_DEPRECATED(msg)
+#      define G3D_DEPRECATED
 #   else
-#      define G3D_DEPRECATED(msg) __declspec(deprecated)
+#      define G3D_DEPRECATED __declspec(deprecated)
 #   endif
 
 

@@ -471,7 +471,7 @@ void Draw::cylinder(
             renderDevice->setColor(solidColor);
             for (int k = 0; k < numPasses; ++k) {
 
-                // TOP
+                // Top
                 renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
                     renderDevice->setNormal(Vector3::unitY());
                     renderDevice->sendVertex(top);
@@ -486,7 +486,7 @@ void Draw::cylinder(
                 // Bottom
                 renderDevice->beginPrimitive(RenderDevice::TRIANGLE_FAN);
                     renderDevice->setNormal(-Vector3::unitY());
-                    renderDevice->sendVertex(Vector3::zero());
+                    renderDevice->sendVertex(bot);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
                         const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));

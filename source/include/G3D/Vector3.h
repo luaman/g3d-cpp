@@ -147,7 +147,7 @@ public:
     Vector3& operator/= (const Vector3& v);
 
     /** @deprecated Use magnitude */
-    double length() const;
+	double G3D_DEPRECATED length() const;
 
     inline double magnitude() const {
         return length();

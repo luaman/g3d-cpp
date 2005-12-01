@@ -181,7 +181,7 @@ public:
                                    const Vector3& rkS, const Matrix3& rkR);
 
     /** Gram-Schmidt orthonormalization (applied to columns of rotation matrix) */
-    void orthonormalize ();
+    void orthonormalize();
 
     /** orthogonal Q, diagonal D, upper triangular U stored as (u01,u02,u12) */
     void qDUDecomposition (Matrix3& rkQ, Vector3& rkD,

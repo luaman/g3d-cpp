@@ -413,7 +413,7 @@ protected:
     bool                endApplet;
 
     /** @deprecated */
-    virtual void G3D_DEPRECATED("Use onSimulation")
+    virtual void G3D_DEPRECATED
         doSimulation(RealTime rdt) {}
 
     /**
@@ -452,7 +452,7 @@ protected:
 
      @deprecated
      */
-    virtual void G3D_DEPRECATED("Use onGraphics") 
+    virtual void G3D_DEPRECATED
         doGraphics() {}
 
     /** Rendering callback. */
@@ -464,7 +464,7 @@ protected:
     /**
        @deprecated
      */
-    virtual void G3D_DEPRECATED("Use onNetwork") doNetwork() {}
+    virtual void G3D_DEPRECATED doNetwork() {}
 
     /**
      Called from run.
@@ -496,7 +496,7 @@ protected:
      before simulation.
      @deprecated
      */
-    virtual void G3D_DEPRECATED("Use onLogic") 
+    virtual void G3D_DEPRECATED 
         doLogic() {}
 
     /**
@@ -511,7 +511,7 @@ protected:
     /**
        @deprecated
      */
-    virtual void G3D_DEPRECATED("use onInit") init() {
+    virtual void G3D_DEPRECATED init() {
         m_simTime     = 0;
         m_realTime    = 0;
         m_simTimeRate = 1.0;
@@ -533,7 +533,7 @@ protected:
      does nothing.
      @deprecated
      */
-    virtual void G3D_DEPRECATED("use onCleanup") cleanup() {}
+    virtual void G3D_DEPRECATED cleanup() {}
 
     /**
      Invoked at the end of every run call.  Default implementation
@@ -544,7 +544,7 @@ protected:
     }
     
     /** @deprecated */
-    virtual void G3D_DEPRECATED("use onEvent")
+    virtual void G3D_DEPRECATED
         processEvent(const SDL_Event& event) {}
 
     /**
@@ -574,7 +574,7 @@ protected:
      @deprecated In 7.0, will be private and doUserInput will be a function
       you can override to handle events.
      */
-    void G3D_DEPRECATED("use onUserInput") doUserInput();
+    void G3D_DEPRECATED doUserInput();
 
     /**
      Routine for processing user input from the previous frame.

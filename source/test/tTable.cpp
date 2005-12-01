@@ -1,13 +1,21 @@
 #include "../include/G3DAll.h"
 #include <map>
 
-
-#if defined(G3D_WIN32) && (_MSC_VER >= 1300)
+// TODO: remove the  && (_MSC_VER < 1400)
+#if defined(G3D_WIN32) && (_MSC_VER >= 1300) && (_MSC_VER < 1400)
 #   define HAS_HASH_MAP
 #endif
 
 #ifdef HAS_HASH_MAP
 #   include <hash_map>
+#ifdef G3D_LINUX
+using std::hash_map;
+#endif
+#endif
+
+// For demonstrating VC8 bug
+#ifdef HAS_HASH_MAP
+hash_map<int, int> x;
 #endif
 
 class TableKey : public Hashable {
@@ -174,7 +182,7 @@ void perfTest(const char* description, const K* keys, const V* vals, int M) {
         /////////////////////////////////
 
 #       ifdef HAS_HASH_MAP
-        {std::hash_map<K, V> t;
+        {hash_map<K, V> t;
         System::beginCycleCount(hashMapSet);
         for (int i = 0; i < M; ++i) {
             t[keys[i]] = vals[i];
@@ -218,7 +226,7 @@ void perfTest(const char* description, const K* keys, const V* vals, int M) {
            (float)tableSet / N, (float)tableGet / N, (float)tableRemove / N,
            G3Dwin ? " ok " : "FAIL"); 
 #   ifdef HAS_HASH_MAP
-    printf("std::hash_map %9.1f  %9.1f  %9.1f\n", (float)hashMapSet / N, (float)hashMapGet / N, (float)hashMapRemove / N); 
+    printf("hash_map      %9.1f  %9.1f  %9.1f\n", (float)hashMapSet / N, (float)hashMapGet / N, (float)hashMapRemove / N); 
 #   endif
     printf("std::map      %9.1f  %9.1f  %9.1f\n", (float)mapSet / N, (float)mapGet / N, (float)mapRemove / N); 
     printf("\n");

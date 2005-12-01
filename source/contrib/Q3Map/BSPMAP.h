@@ -23,6 +23,7 @@
 
 
 namespace BSPMAP {
+using namespace G3D;
 
 /**
  Quake uses a coordinate system that is scaled differently from ours.
@@ -38,8 +39,8 @@ class BitSet {
 private:
 
     /** Size of the bits array */
-    uint32          size;
-    uint32*         bits;
+    G3D::uint32          size;
+    G3D::uint32*         bits;
 
 public:
 
@@ -57,7 +58,7 @@ public:
 
         size = iCeil(count / 32.0);
 
-        bits = new uint32[size];
+        bits = new G3D::uint32[size];
         clearAll();
     }
 
@@ -86,7 +87,7 @@ public:
     }
 
     void clearAll()	{
-        memset(bits, 0, sizeof(uint32) * size);
+        memset(bits, 0, sizeof(G3D::uint32) * size);
     }
 };
 
@@ -229,12 +230,22 @@ public:
     int                 numOfBrushes;
 };
 
+class BSPEntity {
+public:
+    Vector3             position;
+	std::string         name;
+	int					spawnflags;
+	std::string         targetName;
+	std::string         target;
+	int                 modelNum;
+	std::string         otherInfo;
+};
 
 class LightVolume {
 public:
-    uint8               ambient[3];
-    uint8               directional[3];
-    uint8               direction[2];
+    G3D::uint8               ambient[3];
+    G3D::uint8               directional[3];
+    G3D::uint8               direction[2];
 };
 
 
@@ -242,7 +253,7 @@ class VisData {
 public:
     int                 clustersCount;
     int                 bytesPerCluster;
-    uint8*              bitsets;
+    G3D::uint8*              bitsets;
 };
 
 
@@ -328,14 +339,14 @@ public:
          */
         int                 level;
         Array<Vertex>       vertex;
-        Array<uint32>       indexes;
+        Array<G3D::uint32>       indexes;
 
-        Array<int32>        trianglesPerRow;
+        Array<G3D::int32>        trianglesPerRow;
 
         /**
          Pointers into the indexes array.
          */
-        Array<uint32*>      rowIndexes;
+        Array<G3D::uint32*>      rowIndexes;
 
     public:
 
@@ -438,6 +449,7 @@ private:
     TextureRef          defaultTexture;
     TextureRef          defaultLightmap;
 
+	Array<BSPEntity>	entityArray;
     Vector3             startingPosition;
 
     /**
@@ -492,7 +504,7 @@ private:
         Called from loadQ1VisData and loadHLVisData. 
 
         Deletes both arrays when done.*/
-    void decompressQ1VisData(uint8*   pvsBuffer, uint32*  visOffset);
+    void decompressQ1VisData(G3D::uint8*   pvsBuffer, G3D::uint32*  visOffset);
 
     /** Called from load to verify the integrity of the data that was just loaded. */
     void verifyData();
@@ -562,6 +574,12 @@ public:
 
     Vector3 getStartingPosition() const {
         return startingPosition;
+    }
+    const Array<BSPEntity>& getEntityList() const {
+        return entityArray;
+    }
+    const Array<BSPModel>& getModelList() const {
+		return dynamicModels;
     }
 
     /**

@@ -89,7 +89,7 @@ private:
 public:
 
     /** @deprecated */
-    static GFontRef G3D_DEPRECATED("Use fromFile(std::string)") 
+    static GFontRef G3D_DEPRECATED
         fromFile(class RenderDevice* renderDevice, const std::string& filename);
 
     /** The filename must be a FNT (proportional width font) file.
@@ -188,7 +188,7 @@ public:
 
     /** @deprecated  Use the version that accepts a RenderDevice as the 1st argument.
      */
-    Vector2 G3D_DEPRECATED("Use RenderDevice* version") draw2D(
+    Vector2 G3D_DEPRECATED draw2D(
         const std::string&  s,
         const Vector2&      pos2D,
         double              size    = 12,
@@ -221,7 +221,7 @@ public:
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 
     /** @deprecated Use the version that accepts a RenderDevice as the 1st argument.*/
-    Vector2 G3D_DEPRECATED("Use RenderDevice* version") draw3D(
+    Vector2 G3D_DEPRECATED draw3D(
         const std::string&          s,
         const CoordinateFrame&      pos3D,
         double              size    = .1,

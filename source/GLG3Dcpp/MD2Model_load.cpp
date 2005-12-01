@@ -143,8 +143,10 @@ void MD2Model::load(const std::string& filename, float resize) {
 
             Vector3& vertex = keyFrame[f].vertexArray[v];
             for (i = 0; i < 3; ++i) {
-                vertex[permute[i]] = (b.readUInt8() * resize * md2Frame.scale[i] + md2Frame.translate[i]) * scale[permute[i]];
+                vertex[permute[i]] = (b.readUInt8() * md2Frame.scale[i] + md2Frame.translate[i]) * scale[permute[i]];
             }
+
+            vertex *= resize;
 
             uint8 normalIndex = b.readUInt8();
             debugAssert(normalIndex < 162);
