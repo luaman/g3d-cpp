@@ -73,13 +73,20 @@ static void printPixelFormatDescription(int, HDC, TextOutput&);
 static const char* G3DWndClass();
 
 
-Win32Window::Win32Window(const GWindowSettings& s) {
+Win32Window* Win32Window::_shareWindow = NULL;
+
+
+Win32Window::Win32Window(const GWindowSettings& s, bool creatingShareWindow)
+:createdWindow(true)
+,_diDevices(NULL)
+{
     initWGL();
 
 	_hDC = NULL;
 	_mouseVisible = true;
 	_inputCapture = false;
     _windowActive = false;
+	_thread = ::GetCurrentThread();
 
     if (!sdlKeysInitialized) {
         initWin32KeyMap();
@@ -166,7 +173,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
         }
     }
 
-	init(window);
+	init(window, creatingShareWindow);
 
     // Set default icon if available
     if (settings.defaultIconFilename != "nodefault") {
@@ -179,9 +186,7 @@ Win32Window::Win32Window(const GWindowSettings& s) {
             setIcon(defaultIcon);
         } catch (const GImage::Error& e) {
             // Throw away default icon
-            #ifdef G3D_LINUX
-                fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
-            #endif
+            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
 		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
             Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
         }
@@ -191,9 +196,11 @@ Win32Window::Win32Window(const GWindowSettings& s) {
 }
 
 
-Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
+
+Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) : createdWindow(false) {
     initWGL();
 
+	_thread = ::GetCurrentThread();
 	settings = s;
 	init(hwnd);
 
@@ -202,9 +209,10 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) {
 }
 
 
-Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) {
+Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) : createdWindow(false)  {
     initWGL();
 
+	_thread = ::GetCurrentThread();
 	settings = s;
 
     HWND hwnd = ::WindowFromDC(hdc);
@@ -241,7 +249,11 @@ Win32Window* Win32Window::create(const GWindowSettings& settings, HDC hdc) {
 }
 
 
-void Win32Window::init(HWND hwnd) {
+void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
+
+	if (! creatingShareWindow) {
+		createShareWindow(settings);
+	}
 
 	window = hwnd;
 
@@ -250,18 +262,6 @@ void Win32Window::init(HWND hwnd) {
  
     // Setup the pixel format properties for the output device
     _hDC = GetDC(window);
-
-    /*
-#ifdef _DEBUG
-    int numSupported = DescribePixelFormat(_hDC, 0, 0, NULL);
-    TextOutput textOutFormat("pixelFormats.txt");
-    textOutFormat.printf("%d Pixel Formats\n\n\n", numSupported);
-    for(int i = 1; i <= numSupported; ++i) {
-        printPixelFormatDescription(i, _hDC, textOutFormat);
-    }
-    textOutFormat.commit();
-#endif
-*/
 
     bool foundARBFormat = false;
     int pixelFormat = 0;
@@ -317,7 +317,6 @@ void Win32Window::init(HWND hwnd) {
         
         // Corey - I don't think it does, but now I check for valid pixelFormat + valid return only.
 
- 
         if ( valid && (pixelFormat > 0)) {
             // Found a valid format
             foundARBFormat = true;
@@ -364,8 +363,13 @@ void Win32Window::init(HWND hwnd) {
 
 	alwaysAssertM(_glContext != NULL, "Failed to create OpenGL context.");
 
-    makeCurrent();
-    loadExtensions();
+	if (! creatingShareWindow) {
+		// Now share resources with the global window
+		wglShareLists(_shareWindow->_glContext, _glContext);
+	}
+
+	this->makeCurrent();
+	loadExtensions();
 }
 
 
@@ -500,9 +504,17 @@ void Win32Window::close() {
 
 
 Win32Window::~Win32Window() {
-    // Call Win32Window::close() if you want
-    // to catch a window closure
-    ::DestroyWindow(window);
+	if (GWindow::current() == this) {
+		if (wglMakeCurrent(NULL, NULL) == FALSE)	{
+			debugAssertM(false, "Failed to set context");
+		}
+	}
+
+	if (createdWindow) {
+		close();
+	}
+
+    // Do not need to release private HDC's
 
     delete _diDevices;
 }
@@ -888,7 +900,33 @@ void Win32Window::initWGL() {
 }
 
 
+
+
+void Win32Window::createShareWindow(GWindowSettings settings) {
+	static bool init = false;
+	if (init) {
+		return;
+	}
+	
+	init = true;	
+
+	// We want a small (low memory), invisible window
+	settings.visible = false;
+	settings.width = 16;
+	settings.height = 16;
+	settings.framed = false;
+
+	// This call will force us to re-enter createShareWindow, however
+	// the second time through init will be true, so we'll skip the 
+	// recursion.
+	_shareWindow = new Win32Window(settings, true);
+}
+
+
 void Win32Window::reallyMakeCurrent() const {
+	debugAssertM(_thread == ::GetCurrentThread(), 
+		"Cannot call GWindow::makeCurrent on different threads.");
+
 	if (wglMakeCurrent(_hDC, _glContext) == FALSE)	{
         debugAssertM(false, "Failed to set context");
 	}

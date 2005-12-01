@@ -56,6 +56,9 @@ private:
 	int				     clientX;
 	int					 clientY;
 
+	/** Only one thread allowed for use with Win32Window::makeCurrent */
+	HANDLE				 _thread;
+
     Array<GEvent>        sizeEventInjects;
 
     void injectSizeEvent(int width, int height) {
@@ -68,8 +71,20 @@ private:
 
 	static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 
-	/** Called from both constructors */
-	void init(HWND hwnd);
+	/** Called from all constructors */
+	void init(HWND hwnd, bool creatingShareWindow = false);
+
+	static Win32Window*			_shareWindow;	
+
+	/** OpenGL technically does not allow sharing of resources between
+	  multiple windows (although this tends to work most of the time
+	  in practice), so we create an invisible HDC and context with which
+	  to explicitly share all resources. 
+	  
+	  @param s The settings describing the pixel format of the windows with which
+	  resources will be shared.  Sharing may fail if all windows do not have the
+	  same format.*/ 
+	static void createShareWindow(GWindowSettings s);
 
     /** Initializes the WGL extensions by creating and then destroying a window.  
         Also registers our window class.  
@@ -80,7 +95,7 @@ private:
     static void initWGL();
     
 	/** Constructs from a new window */
-	explicit Win32Window(const GWindowSettings& settings);
+	explicit Win32Window(const GWindowSettings& settings, bool creatingShareWindow = false);
 
 	/** Constructs from an existing window */
 	explicit Win32Window(const GWindowSettings& settings, HWND hwnd);
@@ -89,7 +104,7 @@ private:
 	explicit Win32Window(const GWindowSettings& settings, HDC hdc);
 
     HWND                 window;
-
+	const bool		     createdWindow;
 public:
 
 	

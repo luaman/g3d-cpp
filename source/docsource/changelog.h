@@ -30,6 +30,7 @@
    Changes in 6.08:
     <UL>
 	  <LI> G3D::Win32Window now shares textures and vertex buffers across all GL contexts
+	  <LI> G3D::Win32Window now enforces single-threading among GL contexts
 	  <LI> G3D::GLCaps::slowVBO
 	  <LI> G3D::VARArea now uses main memory vertex buffers on cards with slow VBO implementations.
 	  <LI> G3D::Matrix3::toString [Peter]
