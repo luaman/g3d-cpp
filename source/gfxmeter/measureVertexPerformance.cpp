@@ -22,7 +22,7 @@ static const int frames = 15;
 static const float kstep = 360.0 / (frames + 2);
 
 /** Number of models per frame */
-int count = 4;
+int count = 5;
 
 class Model {
 private:

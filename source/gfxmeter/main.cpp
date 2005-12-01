@@ -17,7 +17,7 @@
 #include "App.h"
 //#define FAST
  
-static const float gfxMeterVersion = 0.7;
+static const float gfxMeterVersion = 0.8;
 
 int CPU_speed_in_MHz();
 
@@ -202,6 +202,11 @@ void App::countBugs() {
         ++bugCount;
         Log::common()->printf("   Detected normalMapTexGen bug\n\n");
     } 
+
+    if (GLCaps::hasBug_slowVBO()) {
+        ++bugCount;
+        Log::common()->printf("   Detected slowVBO bug\n\n");
+    }
 
     if (beginsWith(GLCaps::renderer(), "RADEON") &&
         GLCaps::supports_GL_ARB_shadow() &&

@@ -257,7 +257,7 @@ void Report::doGraphics() {
         drawBar(app->renderDevice, app->featureRating, p);
 
         // Designed to put NV40 at 50
-        app->performanceRating = app->renderDevice->getFrameRate() / 4.0;
+        app->performanceRating = app->renderDevice->getFrameRate() / 5.0;
 
         p.y += s * 4;
         performanceButton = Rect2D::xywh(p,
