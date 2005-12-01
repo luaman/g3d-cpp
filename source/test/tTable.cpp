@@ -8,9 +8,7 @@
 
 #ifdef HAS_HASH_MAP
 #   include <hash_map>
-#ifdef G3D_LINUX
 using std::hash_map;
-#endif
 #endif
 
 // For demonstrating VC8 bug

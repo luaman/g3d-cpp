@@ -22,6 +22,8 @@
 #   include "GLG3D/X11Window.h"
 #endif
 
+#include "GLG3D/SDLWindow.h"
+
 namespace G3D {
 
 bool GLCaps::loadedExtensions = false;
@@ -624,7 +626,10 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
 
     GLCaps::loadExtensions();
 
-    TempGLContext tempContext;
+	std::auto_ptr<TempGLContext> context;
+	if (dynamic_cast<const SDLWindow*>(GWindow::current())==NULL) {
+		context.reset(new TempGLContext());		// Create a temp context to use
+	}
 
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
@@ -869,18 +874,24 @@ bool GLCaps::hasBug_mipmapGeneration() {
     if (! initialized) {
         initialized = true;
         const std::string& r = renderer();
+
+		// The mip-maps are arbitrarily corrupted; we have not yet generated
+		// a reliable test for this case.
+
         value = 
             GLCaps::supports("GL_SGIS_generate_mipmap") &&
 		    (beginsWith(r, "MOBILITY RADEON 90") ||
 		     beginsWith(r, "MOBILITY RADEON 57") ||
-		     beginsWith(r, "Intel 854G") ||
-		     beginsWith(r, "Intel 845G"));
+		     beginsWith(r, "Intel 845G") ||
+		     beginsWith(r, "Intel 854G"));
+		if (value)
+			Log::common()->printf("hasBug_mipmapGeneration (%s)\n", r.c_str());
     }
 
     return value;
 }
 
-#if 0  // TODO: morgan, remove?
+
 bool GLCaps::hasBug_slowVBO() {
     static bool initialized = false;
     static bool value;
@@ -898,9 +909,20 @@ bool GLCaps::hasBug_slowVBO() {
             (glDeleteBuffersARB != NULL);
 
     if (! hasVBO) {
+		// Don't have VBO; don't have a bug!
         value = false;
         return false;
     }
+
+	const std::string& r = renderer();
+
+    value = beginsWith(r, "MOBILITY RADEON 7500");
+	return value;
+
+	std::auto_ptr<TempGLContext> context;
+	if (dynamic_cast<const SDLWindow*>(GWindow::current())==NULL) {
+		context.reset(new TempGLContext());		// Create a temp context to use
+	}
 
 
     // Load the vertex arrays.  It is important to create a reasonably coherent object;
@@ -1126,8 +1148,6 @@ bool GLCaps::hasBug_slowVBO() {
     value = RAMTime < VBOTime * 0.9;
     return value;
 }
-    
-#endif
 
 }
 

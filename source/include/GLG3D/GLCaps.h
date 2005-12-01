@@ -208,7 +208,7 @@ public:
      hasBug_glMultiTexCoord3fvARB() exist, but normal maps can't work around 
      the problem.
      */
-    static bool GLCaps::hasBug_normalMapTexGen();
+    static bool hasBug_normalMapTexGen();
 
     /**
       Returns true if SGIS auto mip-map generation occasionally
@@ -217,7 +217,15 @@ public:
 
       Radeon Mobility 9200 has this bug for some drivers.
      */
-    static bool GLCaps::hasBug_mipmapGeneration();
+    static bool hasBug_mipmapGeneration();
+
+/**
+	 Some graphics cards (e.g. Radeon Mobility 7500) support the VBO extension
+	 but it is slower than main memory in most cases due to poor cache behavior.
+	 This method performs a speed test the first time it is invoked and identifies
+	 those cards.
+	*/
+	static bool hasBug_slowVBO();
 
 };
 

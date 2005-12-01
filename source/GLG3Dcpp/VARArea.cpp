@@ -41,8 +41,8 @@ VARArea::VARArea(size_t _size, UsageHint hint) : size(_size) {
         if (GLCaps::supports_GL_ARB_vertex_buffer_object() &&
             (glGenBuffersARB != NULL) && 
             (glBufferDataARB != NULL) &&
-            (glDeleteBuffersARB != NULL)) {
-            mode = VBO_MEMORY;
+            (glDeleteBuffersARB != NULL) &&			
+			! GLCaps::hasBug_slowVBO()) {
         } else {
             mode = MAIN_MEMORY;
         }
