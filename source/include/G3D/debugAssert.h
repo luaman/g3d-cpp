@@ -134,7 +134,7 @@ namespace _internal {
         #define __debugPromptShowDialog__ true
     #endif
 
-    #define debugAssertM(exp, message) { \
+    #define debugAssertM(exp, message) do { \
         static bool __debugAssertIgnoreAlways__ = false; \
         if (!__debugAssertIgnoreAlways__ && !(exp)) { \
             G3D::_internal::_releaseInputGrab_(); \
@@ -144,7 +144,7 @@ namespace _internal {
             } \
             G3D::_internal::_restoreInputGrab_(); \
         } \
-    }
+    } while (0)
 
     #define alwaysAssertM debugAssertM
 
@@ -156,10 +156,10 @@ namespace _internal {
     #endif
 
     // In the release build, just define away assertions.
-    #define rawBreak() do {} while(0)
-    #define debugAssert(exp) do {} while(0)
-    #define debugAssertM(exp, message) do {} while(0)
-    #define debugBreak() do {} while(0)
+    #define rawBreak() while (0) {}
+    #define debugAssert(exp) while (0) {}
+    #define debugAssertM(exp, message) while (0) {}
+    #define debugBreak() while (0) {}
 
     // But keep the 'always' assertions
     #define alwaysAssertM(exp, message) { \
