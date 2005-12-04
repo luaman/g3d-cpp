@@ -46,7 +46,6 @@ TextureRef ToneMap::getBloomMap(RenderDevice* rd) const {
 
 void ToneMap::applyPS14ATI(RenderDevice* rd) {
 
-
     // TODO: obey viewport
 
     // TODO: gamma correct
@@ -147,8 +146,11 @@ void ToneMap::applyPS20(RenderDevice* rd) {
     resizeImages(rd);
     TextureRef bloomMap = getBloomMap(rd);
 
+    const Vector2 screenScale(1.0 / rd->width(), 1.0 / rd->height());
+    bloomFilterShader->args.set("screenScale", screenScale);
     bloomFilterShader->args.set("screenImage", screenImage);
 
+    bloomShader->args.set("screenScale", screenScale);
     bloomShader->args.set("screenImage", screenImage);
     bloomShader->args.set("bloomMap",    bloomMap);
     bloomShader->args.set("gamma",       RG);
@@ -162,22 +164,21 @@ void ToneMap::applyPS20(RenderDevice* rd) {
     
         // Shrink and filter
         rd->setShader(bloomFilterShader);
-        Draw::rect2D(smallRect, rd, Color3::white(), rect);
+        Draw::rect2D(smallRect, rd, Color3::white());
     
         // Blend in the previous bloom map for temporal coherence and a nice motion blur.  
         // Due to a bug on NVIDIA cards, we have to do this with a separate pass; 
-        // sampler2Drects with different
-        // sizes don't work correctly in the same shader.
+        // sampler2Ds with different sizes don't work correctly in the same shader. (TODO: verify that this is still a problem!)
         rd->setShader(NULL);
         rd->setTexture(0, bloomMap);
         rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-        Draw::rect2D(smallRect, rd, Color4(1, 1, 1, 0.25), smallRect);
+        Draw::rect2D(smallRect, rd, Color4(1, 1, 1, 0.25));
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);    
         bloomMap->copyFromScreen(smallRect);
     
         rd->setShader(bloomShader);
 
-        Draw::rect2D(rect, rd, Color3::white(), smallRect);
+        Draw::rect2D(rect, rd, Color3::white());
     rd->pop2D();
 }
 
@@ -264,7 +265,6 @@ void ToneMap::makeShadersPS14ATI() {
         glColorFragmentOp2ATI(GL_ADD_ATI, GL_REG_0_ATI, GL_NONE, GL_NONE, 
                               GL_REG_1_ATI, GL_NONE, GL_NONE,
                               GL_REG_2_ATI, GL_NONE, GL_NONE);
-
         
         // R0 = texcoord 0
         //glPassTexCoordATI(GL_REG_0_ATI, GL_TEXTURE0_ARB, GL_SWIZZLE_STR_ATI);
@@ -280,7 +280,9 @@ void ToneMap::makeShadersPS20() {
     // Create a filtered, thresholded low-resolution version of an image.
     bloomFilterShader = Shader::fromStrings("",         
         STR(
-        uniform sampler2DRect screenImage;
+        /* (1/w, 1/h) */
+        uniform vec2          screenScale;
+        uniform sampler2D     screenImage;
     
         // Only allows bright pixels to pass
         vec4 threshold(vec4 v) {
@@ -296,13 +298,13 @@ void ToneMap::makeShadersPS20() {
         void main(void) {
             // The center pixel on the full screen.  Shift by 1/2 texel to
             // sample two texels at once via bilinear interpolation.
-            vec2 p = gl_TexCoord[0].xy + vec2(0.5, 0.5);
+            vec2 p = gl_TexCoord[0].xy + vec2(0.5, 0.5) * screenScale;
         
             vec4 color = vec4(0,0,0,0);
         
             for (int dx = -5; dx <= 5; dx += 2) {
                 for (int dy = -5; dy <= 5; dy += 2) {
-                    color += threshold(texture2DRect(screenImage, p + vec2(dx, dy)));
+                    color += threshold(texture2D(screenImage, p + vec2(dx, dy) * screenScale));
                 }
             }
         
@@ -318,8 +320,10 @@ void ToneMap::makeShadersPS20() {
     // Combine the bloom map with the screen image
     bloomShader = Shader::fromStrings("",
         STR(
-        uniform sampler2DRect screenImage;
-        uniform sampler2DRect bloomMap;
+        /* (1/w, 1/h) */
+        uniform vec2          _screenScale;
+        uniform sampler2D     screenImage;
+        uniform sampler2D     bloomMap;
         uniform sampler2D     gamma; 
     
         void main(void) {
@@ -328,28 +332,31 @@ void ToneMap::makeShadersPS20() {
         
             // Brighten the screen image by 1/0.75, since we darkened the 
             // scene when rendering to avoid saturation.
-            vec3 screenColor = texture2DRect(screenImage, gl_TexCoord[0].xy * 8.0) * 1.34;
+            vec3 screenColor = texture2D(screenImage, gl_TexCoord[0].xy).rgb * 1.34;
 
             // Apply gamma correction
             screenColor.rg = texture2D(gamma, screenColor.rg).rg;
             screenColor.b  = texture2D(gamma, screenColor.rb).g; 
 
+            // Bloom filter is 8x smaller
+            vec2 screenScale = screenScale / 8;
+
             vec4 bloomColor = 
             
                 // Add the bloom (brightened by a factor of 2.5)
-                (texture2DRect(bloomMap, p) +
+                (texture2D(bloomMap, p) +
             
-                (texture2DRect(bloomMap, p + vec2(-0.8,  0.8)) + 
-                 texture2DRect(bloomMap, p + vec2( 0.8,  0.8)) + 
-                 texture2DRect(bloomMap, p + vec2(-0.8, -0.8)) + 
-                 texture2DRect(bloomMap, p + vec2( 0.8, -0.8))) * 0.5 + 
+                (texture2D(bloomMap, p + vec2(-0.8,  0.8) * screenScale) + 
+                 texture2D(bloomMap, p + vec2( 0.8,  0.8) * screenScale) + 
+                 texture2D(bloomMap, p + vec2(-0.8, -0.8) * screenScale) + 
+                 texture2D(bloomMap, p + vec2( 0.8, -0.8) * screenScale)) * 0.5 + 
 
-                 texture2DRect(bloomMap, p + vec2( 0.0, -1.0)) + 
-                 texture2DRect(bloomMap, p + vec2(-1.0,  0.0)) + 
-                 texture2DRect(bloomMap, p + vec2( 1.0,  0.0)) + 
-                 texture2DRect(bloomMap, p + vec2( 0.0,  1.0))) * 2.5 / 7.0;
+                 texture2D(bloomMap, p + vec2( 0.0, -1.0) * screenScale) + 
+                 texture2D(bloomMap, p + vec2(-1.0,  0.0) * screenScale) + 
+                 texture2D(bloomMap, p + vec2( 1.0,  0.0) * screenScale) + 
+                 texture2D(bloomMap, p + vec2( 0.0,  1.0) * screenScale)) * 2.5 / 7.0;
 
-            // Apply gamma
+            // Apply bloom
             gl_FragColor.rgb = screenColor + bloomColor.rgb; 
         }        
         ));
@@ -361,10 +368,8 @@ ToneMap::ToneMap() : mEnabled(true) {
     if (profile == UNINITIALIZED) {
         profile = NO_TONE;
         
-        if (GLCaps::supports_GL_EXT_texture_rectangle()) {
-            if (Shader::supportsPixelShaders() && 
-                ! beginsWith(GLCaps::vendor(), "ATI")) {
-                // TODO: enable ATI when they support sampler2DRect
+        if (GLCaps::supports_GL_ARB_texture_non_power_of_two()) {
+            if (Shader::supportsPixelShaders()) {
                 profile = PS20;
             } else if (GLCaps::supports("GL_ARB_texture_env_crossbar") &&
                 GLCaps::supports("GL_ARB_texture_env_combine") &&
@@ -408,13 +413,13 @@ void ToneMap::resizeImages(RenderDevice* rd) {
         
         screenImage = Texture::createEmpty(viewport.width(), viewport.height(), 
             "Copied Screen Image", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT,
+            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT,
             Texture::DEPTH_NORMAL, 1.0);
 
         for (int i = 0; i < (stereo ? 2 : 1); ++i) {
             stereoBloomMap[i] = Texture::createEmpty(viewport.width() / BLOOMSCALE, viewport.height() / BLOOMSCALE, 
                 "Bloom map", TextureFormat::RGB8,
-                Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_RECT, 
+                Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT, 
                 Texture::DEPTH_NORMAL, 1.0);
         }
     }

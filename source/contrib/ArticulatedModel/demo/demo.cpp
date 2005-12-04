@@ -48,13 +48,13 @@ public:
 
     Demo(App* app);    
 
-    virtual void init();
+    virtual void onInit();
 
     virtual void doSimulation(RealTime dt);
 
-    virtual void doLogic();
+    virtual void onUserInput(UserInput* ui);
 
-    virtual void doGraphics();
+    virtual void onGraphics(RenderDevice* rd);
 
 };
 
@@ -81,7 +81,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Demo::init()  {
+void Demo::onInit()  {
 	// Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 0, 10));
     app->debugCamera.lookAt(Vector3(0, 0, 0));
@@ -92,17 +92,18 @@ void Demo::doSimulation(RealTime dt) {
 }
 
 
-void Demo::doLogic() {
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+void Demo::onUserInput(UserInput* ui) {
+    if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
         app->endProgram = true;
     }
 
-    if (app->userInput->keyPressed(' ')) {
+    if (ui->keyPressed(' ')) {
         toneMap.setEnabled(! toneMap.enabled());
     }
 }
+
 
 bool debugShadows = false;
 
@@ -168,7 +169,7 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
 
 
 
-void Demo::doGraphics() {
+void Demo::onGraphics(RenderDevice* rd) {
     LightingRef        lighting      = toneMap.prepareLighting(app->lighting);
     LightingParameters skyParameters = toneMap.prepareLightingParameters(app->skyParameters);
 
@@ -209,44 +210,51 @@ void Demo::doGraphics() {
         lighting->shadowedLightArray.clear();
     }
 
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
-    app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
-
+    rd->setProjectionAndCameraMatrix(app->debugCamera);
+    rd->setObjectToWorldMatrix(CoordinateFrame());
 
     app->debugPrintf("%d opaque, %d transparent\n", opaque.size(), transparent.size());
 
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    rd->setColorClearValue(Color3(.1, .5, 1));
 
-    app->renderDevice->clear(app->sky.notNull(), true, true);
+    rd->clear(app->sky.notNull(), true, true);
     if (app->sky.notNull()) {
         app->sky->render(skyParameters);
     }
 
-    app->renderDevice->pushState();
+    rd->pushState();
         // Opaque unshadowed
         for (int m = 0; m < opaque.size(); ++m) {
-            opaque[m]->renderNonShadowed(app->renderDevice, lighting);
+            opaque[m]->renderNonShadowed(rd, lighting);
         }
 
         // Opaque shadowed
         if (lighting->shadowedLightArray.size() > 0) {
             for (int m = 0; m < opaque.size(); ++m) {
-                opaque[m]->renderShadowMappedLightPass(app->renderDevice, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+                opaque[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
             }
         }
 
         // Transparent
         for (int m = 0; m < transparent.size(); ++m) {
-            transparent[m]->renderNonShadowed(app->renderDevice, lighting);
+            transparent[m]->renderNonShadowed(rd, lighting);
             if (lighting->shadowedLightArray.size() > 0) {
-                transparent[m]->renderShadowMappedLightPass(app->renderDevice, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+                transparent[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
             }
         }
 
-    app->renderDevice->popState();
+    rd->popState();
 
-    toneMap.apply(app->renderDevice);
+    /*
+    rd->clear();
+    rd->push2D();
+        rd->setColor(Color3::white());
+        Draw::rect2D(Rect2D::xywh(400,400,10,10),rd);
+    rd->pop2D();
+    */
+
+    toneMap.apply(rd);
         
 
     if (app->sky.notNull()) {
@@ -265,13 +273,13 @@ void Demo::doGraphics() {
     if (beginsWith(GLCaps::vendor(), "ATI")) {
         app->debugPrintf("\nWARNING: Demo is flakey on ATI cards.");
     } else {
-        app->renderDevice->push2D();
-        app->renderDevice->setTexture(0, logo);
-        app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+        rd->push2D();
+        rd->setTexture(0, logo);
+        rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         Draw::rect2D(
-            Rect2D::xywh(app->renderDevice->getWidth() - 96,app->renderDevice->getHeight() - 96, 64, 64), 
-            app->renderDevice, Color4(1,1,1,0.7));
-        app->renderDevice->pop2D();
+            Rect2D::xywh(rd->getWidth() - 96,rd->getHeight() - 96, 64, 64), 
+            rd, Color4(1,1,1,0.7));
+        rd->pop2D();
     }
 
     app->debugPrintf("\n");
