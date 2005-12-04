@@ -2,13 +2,17 @@
 #include <map>
 
 // TODO: remove the  && (_MSC_VER < 1400)
-#if defined(G3D_WIN32) && (_MSC_VER >= 1300) && (_MSC_VER < 1400)
+#if defined(G3D_WIN32) && (_MSC_VER >= 1300)
 #   define HAS_HASH_MAP
 #endif
 
 #ifdef HAS_HASH_MAP
 #   include <hash_map>
-using std::hash_map;
+#   if defined(_MSC_VER) && (_MSC_VER >= 1400)
+        using stdext::hash_map;
+#   else
+        using std::hash_map;
+#   endif
 #endif
 
 // For demonstrating VC8 bug
