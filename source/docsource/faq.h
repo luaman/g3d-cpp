@@ -139,15 +139,15 @@ project, I will invite them to join the core team.
 
 In core team members, I value most:
 
-* Reliability
+- Reliability
   - Complete tasks you've committed to
   - Maintain a presence by posting in in bug tickets and forums
-* Professionalism
+- Professionalism
   - Treat users and other developers with respect
   - Test changes carefully
   - Embrace the whole role: documentation, testing, advocacy
-* Enthusiasm!
-
+- Enthusiasm!
+.
 Note that we don't need the most *skilled* C++ developers in
 the world--we need the most reliabile, professional, and
 enthusiastic developers.

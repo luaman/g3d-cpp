@@ -1,6 +1,6 @@
 /**
   @file CollisionDetection.h
-  
+
 
   Moving collision detection for simple primitives.
 
@@ -13,6 +13,7 @@
 
   @created 2001-11-19
   @edited  2004-08-27
+  @edited  2005-12-08  Comments added by Daniel Hilferty
 
   Copyright 2000-2004, Morgan McGuire.
   All rights reserved.
@@ -36,24 +37,27 @@ namespace G3D {
   Collision detection primitives and tools for building
   higher order collision detection schemes.
 
-  These routines provide <I>moving</I> collision detection.
-  This allows you to detect collisions that occur during a period
-  of time, as opposed to the intersection of two static bodies.
-  The routines detect collisions between static primitives and moving
-  spheres or points.  Because you can choose your reference frame,
-  however, you can assign a velocity to a primitive by subtracting
-  that same velocity from the sphere or point.
-
-  The Magic Software Library provides sophisticated static collision
-  detection if that is needed.
+  These routines provide <I>moving</I> and static collision detection.
+  Moving collision detection allows the calculation of collisions that
+  occur during a period of time -- as opposed to the intersection of 
+  two static bodies.
+  
+  Moving collision detection routines detect collisions between
+  <I>only</I> static primitives and moving spheres or points.  Since the 
+  reference frame can be user defined, these functions can be used to
+  detect the collision between two moving bodies by subtracting
+  the velocity vector of one object from the velocity vector of the 
+  sphere or point the detection is to occur with.  This unified 
+  velocity vector will act as if both objects are moving simultaneously.
 
   Collisions are detected for single-sided objects only.  That is,
   no collision is detected when <I>leaving</I> a primitive or passing
-  through a plane or triangle opposite the normal... except for point-sphere.
+  through a plane or triangle opposite the normal... except for the 
+  point-sphere calculation or when otherwise noted.
 
   For a sphere, the collision location returned is the point in world
   space where the surface of the sphere and the fixed object meet.
-  It is <B>not</B> not the position of the center of the sphere at
+  It is <B>not</B> the position of the center of the sphere at
   the time of the collision.
 
   The collision normal returned is the surface normal to the fixed
@@ -62,10 +66,24 @@ namespace G3D {
 class CollisionDetection {
 private:
 
-	/** Provides the default argument for the location parameter */
+	/**
+	 Default parameter if value passed to a function as reference is
+	 not to be calculated.  Must be explicitly supported by function.
+	 */
 	static Vector3 ignore;
+
+	/**
+	 Default parameter if value passed to a function as reference is
+	 not to be calculated.  Must be explicitly supported by function.
+	 */
     static bool    ignoreBool;
+
+	/**
+	 Default parameter if value passed to a function as reference is
+	 not to be calculated.  Must be explicitly supported by function.
+	 */
     static Array<Vector3> ignoreArray;
+
 
     // Static class!
     CollisionDetection() {}
@@ -73,30 +91,63 @@ private:
 
 public:
 
-    /** converts an index [0, 15] to the corresponding separating axis,
-      does not return normalized vector in the edge-edge case
-      (indices 6 through 15)
-     */
+    /**
+      Converts an index [0, 15] to the corresponding separating axis.
+      Does not return normalized vector in the edge-edge case
+      (indices 6 through 15).
+
+	  @param separatingAxisIndex	Separating axis.
+	  @param box1					Box 1.
+	  @param box2					Box 2.
+
+ 	  @return Axis that separates the two boxes.
+  	 */
     static Vector3 separatingAxisForSolidBoxSolidBox(
             const int       separatingAxisIndex,
             const Box &     box1,
             const Box &     box2);
 
-    /** tests whether any axes for two boxes are parallel,
-      if they are then axis1 and axis2 are set to be the
-      parallel axes for box1 and box2 respectively
-     */
+    /**
+	  Tests whether two boxes have axes that are parallel to
+	  each other.  If they are, axis1 and axis2 are set to be
+	  the parallel axes for both box1 and box2 respectively.
+
+	  @param ca			Dot products of each of the boxes axes
+	  @param epsilon	Fudge factor (small unit by which the dot
+	  					products may vary and still be considered
+	  					zero).
+	  @param axis1		Parallel Axis 1. [Post Condition]
+	  @param axis2		Parallel Axis 2. [Post Condition]
+
+	  @return true  - If boxes have a parallel axis
+	  @return false - otherwise.
+ 	 */
     static bool parallelAxisForSolidBoxSolidBox(
             const double*   ca,
             const double    epsilon,
             int &           axis1,
             int &           axis2);
 
-    /** returns the projected distance between the two boxes along
+    /**
+      Calculates the projected distance between the two boxes along
       the specified separating axis, negative distances correspond
-      to an overlap along that separating axis.
-      the distance is not divided by denominator dot(L, L),
-      see penetrationDepthForFixedSphereFixedBox() for more details
+      to an overlap along that separating axis.  The distance is not
+      divided by denominator dot(L, L), see
+      penetrationDepthForFixedSphereFixedBox() for more details
+
+      @param separatingAxisIndex
+	  @param a Box 1's bounding sphere vector
+	  @param b Box 2's bounding sphere vector
+	  @param D Vector between Box 1 and Box 2's center points
+	  @param c Pointer to array of dot products of the axes of Box 1
+	           and Box 2.
+	  @param ca Pointer to array of unsigned dot products of the axes
+	            of Box 1 and Box 2.
+	  @param ad Pointer to array of dot products of Box 1 axes and D.
+	  @param bd Pointer to array of dot products of Box 2 axes and D.
+
+      @return Projected distance between the two boxes along the
+      specified separating axis.
      */
     static inline double projectedDistanceForSolidBoxSolidBox(
             const int           separatingAxisIndex,
@@ -212,14 +263,41 @@ public:
     }
 
 
-    /** the following space requirements must be met:
-      c[] 9 elements, ca[] 9 elements, ad[] 3 elements, bd[] 3 elements,
-     
-      adobted from David Eberly's papers, variables used in this function
+	/**
+	  Creates a set of standard information about two boxes in order to
+	  solve for their collision.  This information includes a vector to
+	  the radius of the bounding sphere for each box, the vector between
+	  each boxes' center and a series of dot products between differing
+	  important vectors.  These dot products include those between the axes
+	  of both boxes (signed and unsigned values), and the dot products
+	  between all the axes of box1 and the boxes' center vector and box2
+	  and the boxes' center vector.
+
+	  @pre The following space requirements must be met:
+      		- c[]  9 elements
+      		- ca[] 9 elements
+      		- ad[] 3 elements
+      		- bd[] 3 elements
+
+	  @cite dobted from David Eberly's papers, variables used in this function
       correspond to variables used in pages 6 and 7 in the pdf
       http://www.magic-software.com/Intersection.html
       http://www.magic-software.com/Documentation/DynamicCollisionDetection.pdf
-     */
+
+      @note Links are out-dated. (Kept to preserve origin and authorship)
+
+	  @param box1 Box 1
+	  @param box2 Box 2
+	  @param a Box 1's bounding sphere vector
+	  @param b Box 2's bounding sphere vector
+	  @param D Vector between Box 1 and Box 2's center points
+	  @param c Pointer to array of dot products of the axes of Box 1
+	           and Box 2.
+	  @param ca Pointer to array of unsigned dot products of the axes
+	            of Box 1 and Box 2.
+	  @param ad Pointer to array of dot products of Box 1 axes and D.
+	  @param bd Pointer to array of dot products of Box 2 axes and D.
+	 */
     static void fillSolidBoxSolidBoxInfo(
             const Box &     box1,
             const Box &     box2,
@@ -231,60 +309,108 @@ public:
             double*         ad,
             double*         bd);
 
-    /** return false - two boxes definitely do not intersect
-      return true  - the boxes may intersect, further work must be done
-     */
+	/**
+	  Performs a simple bounding sphere check between two boxes to determine
+	  whether these boxes could <i>possibly</i> intersect.  This is a very
+	  cheap operation (three dot products, two sqrts and a few others).  If
+	  it returns true, an intersection is possible, but not necessarily
+	  guaranteed.
+
+	  @param a Vector from box A's center to an outer vertex
+	  @param b Vector from box B's center to an outer vertex
+	  @param D Distance between the centers of the two boxes
+
+	  @return true - if possible intersection
+	  @return false - otherwise (This does not guarantee an intersection)
+	 */
     static bool conservativeBoxBoxTest(
             const Vector3 &     a,
             const Vector3 &     b,
             const Vector3 &     D);
 
-    /** adobted from David Eberly's papers, variables used in this function
+	/**
+ 	  Determines whether two fixed solid boxes intersect.
+
+      @note To speed up collision detection, the lastSeparatingAxis from
+      the previous time step can be passed in and that plane can be
+      checked first.  If the separating axis was not saved, or if the
+      two boxes intersected then lastSeparatingAxis should equal -1.
+
+	  @cite Adobted from David Eberly's papers, variables used in this function
       correspond to variables used in pages 6 and 7 in the pdf
       http://www.magic-software.com/Intersection.html
       http://www.magic-software.com/Documentation/DynamicCollisionDetection.pdf
-     
-      to speed up collision detection, if two objects do not intersect
-      the lastSeparatingAxis from the previous time step can be passed in,
-      and that plane can be checked first.  If the separating axis
-      was not saved, or if the two boxes intersected then
-      lastSeparatingAxis should equal -1
-     */
+
+ 	  @param box1				Box 1.
+ 	  @param box2				Box 2.
+ 	  @param lastSeparatingAxis	Last separating axis.
+ 	  							(optimization - see note)
+
+	  @return true  - Intersection.
+	  @return false - otherwise.
+	 */
     static bool fixedSolidBoxIntersectsFixedSolidBox(
         const Box&      box1,
         const Box&      box2,
         const int       lastSeparatingAxis = -1);
 
-    /** variables and algorithm based on derivation at the following website:
-      http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
-     */
+    /**
+	  Calculates the closest points on two lines with each other.   If the
+	  lines are parallel then using the starting point, else calculate the
+	  closest point on each line to the other.
+
+	  @note This is very similiar to calculating the intersection of two lines.
+	  Logically then, the two points calculated would be identical if calculated
+	  with inifinite precision, but with the finite precision of floating point
+	  calculations, these values could (will) differ as the line slope approaches
+	  zero or inifinity.
+
+	  @cite variables and algorithm based on derivation at the following website:
+      	    http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
+
+	  @param line1		Line 1.
+	  @param line2		Line 2.
+	  @param closest1	Closest point on line 1.
+	  @param closest2	Closest point on line 2.
+ 	*/
     static void closestPointsBetweenLineAndLine(
             const Line &    line1,
             const Line &    line2,
             Vector3 &       closest1,
             Vector3 &       closest2);
 
-    /** adobted from David Eberly's papers, variables used in this function
+    /**
+	  Calculates the depth of penetration between two fixed boxes.
+      Contact normal faces away from box1 and into box2.  If there is
+      contact, only one contact point is returned.  The minimally
+      violated separating plane is computed
+         - if the separating axis corresponds to a face
+              the contact point is half way between the deepest vertex
+              and the face
+         - if the separating axis corresponds to two edges
+              the contact point is the midpoint of the smallest line
+              segment between the two edge lines
+
+	  @note This is very similiar to calculating the intersection of two lines.
+	  Logically then, the two points calculated would be identical if calculated
+	  with inifinite precision, but with the finite precision of floating point
+	  calculations, these values could (will) differ as the line slope approaches
+	  zero or inifinity.
+
+	  @cite adobted from David Eberly's papers, variables used in this function
       correspond to variables used in pages 6 and 7 in the pdf
       http://www.magic-software.com/Intersection.html
       http://www.magic-software.com/Documentation/DynamicCollisionDetection.pdf
-     
-      to speed up collision detection, if two objects do not intersect
-      the lastSeparatingAxis from the previous time step can be passed in,
-      and that plane can be checked first.  If the separating axis
-      was not saved, or if the two boxes intersected then
-      lastSeparatingAxis should equal -1
-     
-      normal faces away from box1 and into box2
-      if there is contact only one contact point is returned
-          the minimally violated separating plane is computed
-          if the separating axis corresponds to a face
-              the contact point is half way between the deepest vertex
-              and the face
-          if the separating axis corresponds to two edges
-              the contact point is the midpoint of the smallest line
-              segment between the two edge lines
-     */
+
+	  @param box1				Box 1
+	  @param box2				Box 2
+	  @param contactPoints		Contact point between boxes. [Post Condition]
+	  @param contactNormals		Surface normal at contact point. [Post Condition]
+	  @param lastSeparatingAxis	Last separating axis. (Used for optimization)
+
+	  @return Depth of penetration between the two boxes.  If there is no
+ 	   intersection between the boxes, then a negative value is returned.
+ 	*/
     static double penetrationDepthForFixedBoxFixedBox(
         const Box&          box1,
         const Box&          box2,
@@ -293,53 +419,123 @@ public:
         const int           lastSeparatingAxis = -1);
 
     /**
-     Returns the penetration depth (negative if there is no penetration)
-     of the two spheres and a series of contact points.  The normal
-     returned points <B>away</B> from the object A, although it may
-     represent a perpendicular to either the faces of object B or object A
-     depending on their relative orientations.
-     */
+	  Calculates the depth of penetration between two fixed spheres as well
+	  as the deepest point of Sphere A that penetrates Sphere B. The normal
+      returned points <B>away</B> from the object A, although it may
+      represent a perpendicular to either the faces of object B or object A
+      depending on their relative orientations.
+
+	  @param sphereA		Fixed Sphere A.
+	  @param sphereB		Fixed Sphere B.
+	  @param contactPoints	Sphere A's deepest point that penetrates Sphere B.
+	 						[Post Condition]
+	  @param contactNormals	Normal at penetration point. [Post Condition]
+
+	  @return Depth of penetration.  If there is no intersection between the
+	 		 objects then the depth will be a negative value.
+	 */
     static double penetrationDepthForFixedSphereFixedSphere(
         const class Sphere& sphereA,
         const Sphere&       sphereB,
         Array<Vector3>&     contactPoints,
         Array<Vector3>&     contactNormals = ignoreArray);
-    
+
     /**
-     @cite Adapted from Jim Arvo's method in Graphics Gems
-     See also http://www.win.tue.nl/~gino/solid/gdc2001depth.pdf
-     */
+	  Calculates the depth of penetration between a fixed sphere and a fixed
+	  box as well as the deepest point of the sphere that penetrates the box
+	  and the normal at that intersection.
+
+	  @note There are three possible intersections between a sphere and box.
+	  - Sphere completely contained in the box
+	  - Sphere intersects one edge
+	  - Sphere intersects one vertex
+
+	  The contact point and contact normal vary for each of these situations.
+	  - Sphere contained in Box:
+	 	- Normal is based on side of least penetration (as is the depth calculation).
+	 	- Point is based on center of sphere
+	  - Sphere intersects one edge
+	 	- Normal is based on vector from the box center to the point of depth.
+	 	- Point is closest point to the sphere on the line
+	  - Sphere intersects one vertex
+	 	- Normal is based on vector from the box center to the vertex of penetration.
+	 	- Point is vertex of penetration.
+
+      @cite Adapted from Jim Arvo's method in Graphics Gems
+      See also http://www.win.tue.nl/~gino/solid/gdc2001depth.pdf
+
+	  @param sphere			Fixed Sphere.
+	  @param box			Fixed Box.
+	  @param contactPoints	Sphere point that penetrates the box. [Post Condition]
+	  @param contactNormals	Normal at the penetration point. [Post Condition]
+
+	  @return Depth of penetration.  If there is no intersection between the
+	 		  objects then the depth will be a negative value.
+ 	 */
     static double penetrationDepthForFixedSphereFixedBox(
         const Sphere&       sphere,
         const Box&          box,
         Array<Vector3>&     contactPoints,
         Array<Vector3>&     contactNormals = ignoreArray);
-                                                                 
+
+	/**
+	  Calculates the depth of penetration between a Fixed Sphere and a Fixed
+	  Plane as well as the deepest point of the sphere that penetrates the plane
+	  and the plane normal at that intersection.
+
+	  @param sphere			Fixed Sphere.
+	  @param plane			Fixed Plane.
+	  @param contactPoints	Sphere point that penetrates the plane.
+	 						[Post Condition]
+	  @param contactNormals	Normal at penetration point. [Post Condition]
+
+ 	  @return Depth of penetration.  If there is no intersection between the
+	  		 objects then the depth will be a negative value.
+ 	 */
     static double penetrationDepthForFixedSphereFixedPlane(
         const Sphere&       sphereA,
         const class Plane&  planeB,
         Array<Vector3>&     contactPoints,
         Array<Vector3>&     contactNormals = ignoreArray);
 
+	/**
+	  Calculates the depth of penetration between a fixed box and a fixed
+	  plane as well as the vertexes of the box that penetrate the plane
+	  and the plane normals at those intersections.
+
+	  @param box			Fixed Box.
+	  @param plane			Fixed Plane.
+	  @param contactPoints	Box points that penetrate the plane.
+	 						[Post Condition]
+	  @param contactNormals	Normals at penetration points [Post Condition]
+
+	  @return Depth of penetration.  If there is no intersection between the
+	 		 objects then the depth will be a negative value.
+ 	*/
     static double penetrationDepthForFixedBoxFixedPlane(
         const Box&          box,
         const Plane&        plane,
         Array<Vector3>&     contactPoints,
         Array<Vector3>&     contactNormals = ignoreArray);
-    
-    /**
-     Returns the amount of time until the point intersects the plane 
-     (the plane is one sided; the point can only hit the side the 
-     normal faces out of).  The return value is inf if no 
-     collision will occur, zero if the point is already in the plane.
-     
-     To perform a two sided collision, call twice, once for each direction
-     of the plane normal.
 
-     @param location The location of the collision is point + velocity * time.
-      This is returned in location, if a collision occurs.  Otherwise location
-      is the infinite vector.
-     */
+	/**
+ 	  Calculates time between the intersection of a moving point and a fixed
+ 	  plane.
+
+ 	  @note This is only a one sided collision test.   The side defined by
+ 	  the plane's surface normal is the only one tested.  For a two sided
+ 	  collision, call the function once for each side's surface normal.
+
+ 	  @param point		Moving point.
+ 	  @param velocity	Point's velocity.
+ 	  @param plane		Fixed plane.
+ 	  @param location	Location of collision. [Post Condition]
+ 	  					(Infinite vector on no collision)
+ 	  @param outNormal	Plane's surface normal. [Post Condition]
+
+ 	  @return Time til collision.  If there is no collision then the return
+ 	          value will be inf().
+ 	*/
     static double collisionTimeForMovingPointFixedPlane(
         const Vector3&			point,
         const Vector3&			velocity,
@@ -347,30 +543,85 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    /** One-sided triangle */
-    static inline double collisionTimeForMovingPointFixedTriangle(
-        const Vector3& orig,
-        const Vector3& dir,
-        const Vector3& vert0,
-        const Vector3& vert1,
-        const Vector3& vert2) {
-        return Ray::fromOriginAndDirection(orig, dir).intersectionTime(vert0, vert1, vert2);
-    }
+	/**
+ 	  Calculates time between the intersection of a moving point and a fixed
+ 	  triangle.
 
+ 	  @note This is only a one sided collision test.   The side defined by
+ 	  the triangle's surface normal is the only one tested.  For a two sided
+ 	  collision, call the function once for each side's surface normal.
+
+ 	  @param orig		Moving point.
+ 	  @param dir		Point's velocity.
+	  @param v0 		Triangle vertex 1.
+	  @param v1 		Triangle vertex 2.
+	  @param v2 		Triangle vertex 3
+ 	  @param location	Location of collision. [Post Condition]
+ 	  					(Infinite vector on no collision)
+
+ 	  @return Time til collision.  If there is no collision then the return
+ 	          value will be inf().
+ 	*/
     inline static double collisionTimeForMovingPointFixedTriangle(
         const Vector3& orig,
         const Vector3& dir,
-        const Vector3& vert0,
-        const Vector3& vert1,
-        const Vector3& vert2,
+        const Vector3& v0,
+        const Vector3& v1,
+        const Vector3& v2) {
+        return Ray::fromOriginAndDirection(orig, dir).intersectionTime(v0, v1, v2);
+    }
+
+	/**
+ 	  Calculates time between the intersection of a moving point and a fixed
+ 	  triangle.
+
+ 	  @note This is only a one sided collision test.   The side defined by
+ 	  the triangle's surface normal is the only one tested.  For a two sided
+ 	  collision, call the function once for each side's surface normal.
+
+ 	  @param orig		Moving point.
+ 	  @param dir		Point's velocity.
+	  @param v0 		Triangle vertex 1.
+	  @param v1 		Triangle vertex 2.
+	  @param v2 		Triangle vertex 3
+ 	  @param location	Location of collision. [Post Condition]
+ 	  					(Infinite vector on no collision)
+
+ 	  @return Time til collision.  If there is no collision then the return
+ 	          value will be inf().
+ 	*/
+    inline static double collisionTimeForMovingPointFixedTriangle(
+        const Vector3& orig,
+        const Vector3& dir,
+        const Vector3& v0,
+        const Vector3& v1,
+        const Vector3& v2,
         Vector3&       location) {
-        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, vert0, vert1, vert2);
+        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, v0, v1, v2);
         if (t < inf()) {
             location = orig + dir * t;
         }
         return t;
     }
 
+	/**
+ 	  Calculates time between the intersection of a moving point and a fixed
+ 	  triangle.
+
+ 	  @note This is only a one sided collision test.   The side defined by
+ 	  the triangle's surface normal is the only one tested.  For a two sided
+ 	  collision, call the function once for each side's surface normal.
+
+ 	  @param orig		Moving point.
+ 	  @param dir		Point's velocity.
+ 	  @param tri		Fixed triangle.
+ 	  @param location	Location of collision. [Post Condition]
+ 	  					(Infinite vector on no collision)
+ 	  @param normal		Triangle's surface normal. [Post Condition]
+
+ 	  @return Time til collision.  If there is no collision then the return
+ 	          value will be inf().
+ 	*/
     inline static double collisionTimeForMovingPointFixedTriangle(
         const Vector3&  orig,
         const Vector3&  dir,
@@ -386,18 +637,38 @@ public:
         return t;
     }
 
+	/**
+ 	  Calculates time between the intersection of a moving point and a fixed
+ 	  triangle.
+
+ 	  @note This is only a one sided collision test.   The side defined by
+ 	  the triangle's surface normal is the only one tested.  For a two sided
+ 	  collision, call the function once for each side's surface normal.
+
+ 	  @param orig		Moving point.
+ 	  @param dir		Point's velocity.
+	  @param v0 		Triangle vertex 1.
+	  @param v1 		Triangle vertex 2.
+	  @param v2 		Triangle vertex 3
+ 	  @param location	Location of collision. [Post Condition]
+ 	  					(Infinite vector on no collision)
+ 	  @param normal		Triangle's surface normal. [Post Condition]
+
+ 	  @return Time til collision.  If there is no collision then the return
+ 	          value will be inf().
+ 	*/
     inline static double collisionTimeForMovingPointFixedTriangle(
         const Vector3& orig,
         const Vector3& dir,
-        const Vector3& vert0,
-        const Vector3& vert1,
-        const Vector3& vert2,
+        const Vector3& v0,
+        const Vector3& v1,
+        const Vector3& v2,
         Vector3&       location,
         Vector3&       normal) {
-        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, vert0, vert1, vert2);
+        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, v0, v1, v2);
         if (t < inf()) {
             location = orig + dir * t;
-            normal   = (vert2 - vert0).cross(vert1 - vert0).direction();
+            normal   = (v2 - v0).cross(v1 - v0).direction();
         }
         return t;
     }
@@ -421,8 +692,22 @@ public:
         bool&                   inside = ignoreBool,
         Vector3&                outNormal = ignore);
 
-    /** Avoids the sqrt from collisionTimeForMovingPointFixedAABox.
-        Returns true if there is a collision, false otherwise.*/
+    /**
+	 Calculates time between the intersection of a moving point and a fixed
+	 Axis-Aligned Box (AABox).
+
+	 @note Avoids the sqrt from collisionTimeForMovingPointFixedAABox.
+
+	 @param point		Moving point.
+	 @param velocity	Sphere's velocity.
+	 @param box			Fixed AAbox.
+	 @param location	Location of collision. [Post Condition]
+	 @param Inside		Does the ray originate inside the box? [Post Condition]
+	 @param normal		Box's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
     static bool collisionLocationForMovingPointFixedAABox(
         const Vector3&			point,
         const Vector3&			velocity,
@@ -431,15 +716,44 @@ public:
         bool&                   inside = ignoreBool,
         Vector3&                normal = ignore);
 
-    /** When the ray is already inside, detects the exiting intersection */
+    /**
+	 Calculates time between the intersection of a moving point and a fixed
+	 sphere.
+
+	 @note When ray is starts inside the rectangle, the exiting intersection
+	 is detected.
+
+	 @param point		Moving point.
+	 @param velocity	Point's velocity.
+	 @param Sphere		Fixed Sphere.
+	 @param location	Location of collision. [Post Condition]
+	 @param outNormal	Sphere's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
     static double collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,
         const Vector3&			velocity,
-        const class Sphere&		sphere,                                                       
+        const class Sphere&		sphere,
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    /** If the point is already inside the box, no collision: inf is returned */
+    /**
+	 Calculates time between the intersection of a moving point and a fixed
+	 box.
+
+	 @note If the point is already inside the box, no collision: inf is returned.
+
+	 @param point		Moving point.
+	 @param velocity	Sphere's velocity.
+	 @param box			Fixed box.
+	 @param location	Position of collision. [Post Condition]
+	 @param outNormal	Box's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
     static double collisionTimeForMovingPointFixedBox(
         const Vector3&			point,
         const Vector3&			velocity,
@@ -448,8 +762,25 @@ public:
         Vector3&                outNormal = ignore);
 
 	/**
-	  The 4 vertices are assumed to form a rectangle.
-	 */
+	 Calculates time between the intersection of a moving point and a fixed
+	 rectangle defined by the points v0, v1, v2, & v3.
+
+	 @note This is only a one sided collision test.   The side defined by
+	 the rectangle's surface normal is the only one tested.  For a two sided
+	 collision, call the function once for each side's surface normal.
+
+	 @param point		Moving point.
+	 @param velocity	Sphere's velocity.
+	 @param v0 			Rectangle vertex 1.
+	 @param v1 			Rectangle vertex 2.
+	 @param v2 			Rectangle vertex 3
+	 @param v3 			Rectangle vertex 4.
+	 @param location	Location of collision [Post Condition]
+	 @param outNormal	Rectangle's surface normal. [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
     static double collisionTimeForMovingPointFixedRectangle(
         const Vector3&			point,
         const Vector3&			velocity,
@@ -460,6 +791,19 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
+	/**
+	 Calculates time between the intersection of a moving point and a fixed
+	 capsule.
+
+	 @param point		Moving point.
+	 @param velocity	Point's velocity.
+	 @param capsule		Fixed capsule.
+	 @param location	Location of collision. [Post Condition]
+	 @param outNormal	Capsule's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
 	static double collisionTimeForMovingPointFixedCapsule(
 		const Vector3&		    point,
 		const Vector3&		    velocity,
@@ -467,8 +811,20 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
-    /////////////////////////
+	/**
+	 Calculates time between the intersection of a moving sphere and a fixed
+	 triangle.
 
+	 @param sphere		Moving sphere.
+	 @param velocity	Sphere's velocity.
+	 @param plane		Fixed Plane.
+	 @param location	Location of collision -- not center position of sphere
+	 					at the collision time. [Post Condition]
+	 @param outNormal	Box's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+	 */
     static double collisionTimeForMovingSphereFixedPlane(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
@@ -476,6 +832,20 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
+	/**
+	 Calculates time between the intersection of a moving sphere and a fixed
+	 triangle.
+
+	 @param sphere		Moving sphere.
+	 @param velocity	Sphere's velocity.
+	 @param triangle	Fixed Triangle.
+	 @param location	Location of collision -- not center position of sphere
+	 					at the collision time. [Post Condition]
+	 @param outNormal	Box's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+	*/
     static double collisionTimeForMovingSphereFixedTriangle(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
@@ -483,6 +853,23 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
+	/**
+	 Calculates time between the intersection of a moving sphere and a fixed
+	 rectangle defined by the points v0, v1, v2, & v3.
+
+	 @param sphere		Moving sphere.
+	 @param velocity	Sphere's velocity.
+	 @param v0 			Rectangle vertex 1.
+	 @param v1 			Rectangle vertex 2.
+	 @param v2 			Rectangle vertex 3
+	 @param v3 			Rectangle vertex 4.
+	 @param location	Location of collision -- not center position of sphere
+	 					at the collision time. [Post Condition]
+	 @param outNormal	Box's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
     static double collisionTimeForMovingSphereFixedRectangle(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
@@ -493,6 +880,23 @@ public:
         Vector3&				outLocation,
         Vector3&                outNormal = ignore);
 
+	/**
+	 Calculates time between the intersection of a moving sphere and a fixed
+	 box.
+
+	 @note This function will not detect an intersection between a moving object
+	 that is already interpenetrating the fixed object.
+
+	 @param sphere		Moving sphere.
+	 @param velocity	Sphere's velocity.
+	 @param box			Fixed box.
+	 @param location	Location of collision -- not center position of sphere
+	 					at the collision time. [Post Condition]
+	 @param outNormal	Box's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
     static double collisionTimeForMovingSphereFixedBox(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
@@ -501,8 +905,22 @@ public:
         Vector3&                outNormal = ignore);
 
     /**
-      This won't detect a collision if the sphere is already interpenetrating the fixed sphere.
-    */
+	 Calculates time between the intersection of a moving sphere and a fixed
+	 sphere.
+
+	 @note This won't detect a collision if the sphere is already interpenetrating
+	       the fixed sphere.
+
+	 @param movingSphere	Moving sphere.
+	 @param velocity		Sphere's velocity.
+	 @param fixedSphere		Fixed Sphere.
+	 @param location		Location of collision -- not center position of sphere
+	 						at the collision time. [Post Condition]
+	 @param outNormal		Sphere's surface normal to collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
 	static double collisionTimeForMovingSphereFixedSphere(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
@@ -511,8 +929,22 @@ public:
         Vector3&                outNormal = ignore);
 
     /**
-      This won't detect a collision if the sphere is already interpenetrating the capsule
-    */
+	 Calculates time between the intersection of a moving sphere and a fixed
+	 capsule.
+
+	 @note This won't detect a collision if the sphere is already
+	       interpenetrating the capsule.
+
+	 @param sphere		Moving sphere.
+	 @param velocity	Sphere's velocity.
+	 @param capsule		Fixed capsule.
+	 @param location	Location of collision -- not center position of sphere
+	 					at the collision time. [Post Condition]
+	 @param outNormal	Capsule's surface normal to the collision [Post Condition]
+
+	 @return Time til collision.  If there is no collision then the return
+	         value will be inf().
+ 	*/
 	static double collisionTimeForMovingSphereFixedCapsule(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
@@ -521,9 +953,20 @@ public:
         Vector3&                outNormal = ignore);
 
     /**
-     Returns the direction the sphere should bounce if it collided with
-     an object at collisionTime and collisionLocation.
-     */
+	 Finds the direction of bounce that a sphere would have when it 
+	 intersects an object with the  given time of collision, the 
+	 collision location and the collision normal.
+
+	 @note This function works like a pong style ball bounce.
+
+	 @param sphere				Moving sphere.
+	 @param velocity			Sphere's velocity.
+	 @param collisionTime		Time of collision.
+	 @param collisionLocation	Collision location.
+	 @param collisionNormal		Surface collision normal.
+
+	 @return Direction of bounce.
+ 	*/
     static Vector3 bounceDirection(
         const class Sphere&		sphere,
         const Vector3&			velocity,
@@ -532,32 +975,56 @@ public:
         const Vector3&          collisionNormal);
 
     /**
-     Returns the direction the sphere should slide if it collided with
-     an object at collisionTime and collisionLocation and will hug the surface.
-     */
+	 Finds the direction of slide given a moving sphere, its velocity, the
+	 time of collision and the collision location.  This function works as
+	 if the sphere intersects the surface and continues to hug it.
+
+	 @note The result will work well for calculating the movement of a player
+	 who collides with an object and continues moving along the object instead
+	 of just bouncing off it.
+
+	 @param sphere				Moving sphere.
+	 @param velocity			Sphere's velocity.
+	 @param collisionTime		Time of collision
+	 @param collisionLocation	Collision location.
+
+	 @return Direction of slide.
+ 	*/
     static Vector3 slideDirection(
         const class Sphere&		sphere,
         const Vector3&			velocity,
         const float				collisionTime,
         const Vector3&			collisionLocation);
 
-    /**
-     Returns the point on the line segment closest to the input point.
-     */
-    static Vector3 closestPointOnLineSegment(
+	/**
+	 Finds the closest point on a line segment to a given point.
+
+	 @param v0 line vertex 1.
+	 @param v1 line vertex 2.
+	 @param point External point.
+
+	 @return Closests point to <code>point</code> on the line segment.
+ 	*/
+	static Vector3 closestPointOnLineSegment(
         const Vector3&			v0,
         const Vector3&			v1,
         const Vector3&			point);
 
     /**
-     This is the fast version of the function.
+	 Finds the closest point on a line segment to a given point.
 
-     @param v0 The starting vertex of the line segment
-     @param v1 The ending vertex of the line segment
-     @param edgeLength The length of the segment
-     @param edgeDirection The direction of the segment (unit length)
-     @param point The point in question.
-     */
+	 @note This is an optimization to closestPointOnLineSegment.  Edge length
+	 and direction can be used in this function if already pre-calculated.  This
+	 prevents doing the same work twice.
+
+	 @param v0 line vertex 1.
+	 @param v1 line vertex 2.
+     @param edgeDirection The direction of the segment (unit length).
+     @param edgeLength The length of the segment.
+     @param point External point.
+
+	 @return Closests point to <code>point</code> on the line segment.
+ 	*/
     static Vector3 closestPointOnLineSegment(
         const Vector3&			v0,
         const Vector3&			v1,
@@ -566,15 +1033,40 @@ public:
         const Vector3&			point);
 
     /**
-     Returns the point on the perimeter of the triangle closest to the input point and 
-     returns it in location.  The return value is the distance to that point.
-     */
+	 Finds the closest point on the perimeter of the triangle to an external point;
+	 given a triangle defined by three points v0, v1, & v2, and the external point.
+
+	 @param v0 Triangle vertex 1.
+	 @param v1 Triangle vertex 2.
+	 @param v2 Triangle vertex 3.
+	 @param point External point.
+
+	 @return Closests point to <code>point</code> on the perimeter of the
+	 triangle.
+ 	*/
     static Vector3 closestPointToTrianglePerimeter(
-        const Vector3&			v0, 
+        const Vector3&			v0,
         const Vector3&			v1,
         const Vector3&			v2,
         const Vector3&			point);
 
+	/**
+	 Finds the closest point on the perimeter of the triangle to an external point;
+	 given a triangle defined by the array of points v, its edge directions and
+	 their lengths, as well as the external point.
+
+	 @note This is an optimization to closestPointToTrianglePerimeter.  Edge length
+	 and direction can be used in this function if already pre-calculated.  This
+	 prevents doing the same work twice.
+
+	 @param v0 Triangle vertex 1.
+	 @param v1 Triangle vertex 2.
+	 @param v2 Triangle vertex 3.
+	 @param point External point.
+
+	 @return Closests point to <code>point</code> on the perimeter of the
+	 triangle.
+ 	*/
     static Vector3 closestPointToTrianglePerimeter(
         const Vector3           v[3],
         const Vector3           edgeDirection[3],
@@ -582,8 +1074,20 @@ public:
         const Vector3&			point);
 
     /**
-     Returns true if a point <B>known to be in the plane of a triangle</B> is inside of its bounds.
-     */
+	 Tests whether a point is contained within the triangle defined by
+	 v0, v1, & v2 and its plane's normal.
+
+	 @param v0 Triangle vertex 1.
+	 @param v1 Triangle vertex 2.
+	 @param v2 Triangle vertex 3.
+	 @param normal Normal to triangle's plane.
+	 @param point The point in question.
+	 @param primaryAxis Primary axis of triangle.  This will be detected
+	        if not given. This parameter is provided as an optimization.
+
+	 @return true  - if point is inside the triangle.
+	 @return false - otherwise
+ 	*/
     static bool isPointInsideTriangle(
         const Vector3&			v0,
         const Vector3&			v1,
@@ -591,35 +1095,90 @@ public:
         const Vector3&			normal,
         const Vector3&			point,
         Vector3::Axis  primaryAxis = Vector3::DETECT_AXIS);
-    
-    /**
-     Returns true if any part of the sphere is inside the box
-     during the time period (inf means "ever").  Useful for
-     performing bounding-box collision detection.
-     */
+
+     /**
+	  Tests for the intersection of a moving sphere and a fixed box in a
+	  given time limit.
+
+	  @note Returns true if any part of the sphere is inside the box
+     		during the time period (inf means "ever").  Useful for
+		    performing bounding-box collision detection.
+
+	  @param sphere 		Moving sphere.
+	  @param velocity 	Velocity of moving sphere.
+	  @param box 		Fixed box.
+	  @param timeLimit 	Time limit for intersection test.
+
+	  @return true  -  if the two objects will touch.
+	  @return false - if there is no intersection.
+ 	*/
     static bool movingSpherePassesThroughFixedBox(
         const Sphere&           sphere,
         const Vector3&          velocity,
         const Box&              box,
         double                  timeLimit = inf());
 
+	/**
+	 Tests for the intersection of a moving sphere and a fixed sphere in a
+	 given time limit.
+
+	 @note This function will not detect an intersection between a moving object
+	 that is already interpenetrating the fixed object.
+
+	 @param sphere 		Moving sphere.
+	 @param velocity 	Velocity of moving sphere.
+	 @param fixedSphere Fixed sphere.
+	 @param timeLimit 	Time limit for intersection test.
+
+	 @return true  -  if the two spheres will touch.
+	 @return false - if there is no intersection.
+ 	*/
     static bool movingSpherePassesThroughFixedSphere(
         const Sphere&           sphere,
         const Vector3&          velocity,
         const Sphere&           fixedSphere,
         double                  timeLimit = inf());
 
+	/**
+	 Tests for the intersection of two fixed spheres.
+
+	 @param sphere1 Fixed sphere 1.
+	 @param sphere2 Fixed sphere 2.
+
+	 @return true -  if the two spheres touch.
+	 @return false - if there is no intersection.
+ 	*/
     static bool fixedSolidSphereIntersectsFixedSolidSphere(
         const Sphere&           sphere1,
         const Sphere&           sphere2);
 
+	/**
+	 Tests for the intersection of a fixed sphere and a fixed box.
+
+	 @param sphere Fixed sphere.
+	 @param box    Fixed box.
+
+	 @return true  -  if the two objects touch.
+	 @return false - if there is no intersection.
+ 	*/
     static bool fixedSolidSphereIntersectsFixedSolidBox(
         const Sphere&           sphere,
         const Box&              box);
 
     /**
-     Returns true if a point in the plane of a triangle is inside of its bounds.
-     */
+	 Tests whether a point is inside a rectangle defined by the vertexes
+	 v0, v1, v2, & v3, and the rectangle's plane normal.
+
+	 @param v0 Rectangle vertex 1.
+	 @param v1 Rectangle vertex 2.
+	 @param v2 Rectangle vertex 3.
+	 @param v3 Rectangle vertex 4.
+	 @param normal Normal to rectangle's plane.
+	 @param point The point in question.
+
+	 @return true  - if point is inside the rectangle.
+	 @return false - otherwise
+ 	*/
     static bool isPointInsideRectangle(
         const Vector3&			v0,
         const Vector3&			v1,
@@ -629,9 +1188,19 @@ public:
         const Vector3&			point);
 
     /**
-     Returns the point on the perimeter of the rectangle closest to the input point and 
-     returns it in location.  The return value is the distance to that point.
-     */
+	 Finds the closest point on the perimeter of the rectangle to an
+	 external point; given a rectangle defined by four points v0, v1,
+	 v2, & v3, and the external point.
+
+	 @param v0 Rectangle vertex 1.
+	 @param v1 Rectangle vertex 2.
+	 @param v2 Rectangle vertex 3.
+	 @param v3 Rectangle vertex 4.
+	 @param point External point.
+
+	 @return Closests point to <code>point</code> on the perimeter of the
+ 	 rectangle.
+ 	 */
     static Vector3 closestPointToRectanglePerimeter(
         const Vector3&			v0,
         const Vector3&			v1,
@@ -639,7 +1208,20 @@ public:
         const Vector3&			v3,
         const Vector3&			point);
 
-    static Vector3 closestPointToRectangle(
+     /**
+	  Finds the closest point in the rectangle to an external point; Given
+	  a rectangle defined by four points v0, v1, v2, & v3, and the external
+	  point.
+
+	  @param v0 Rectangle vertex 1.
+	  @param v1 Rectangle vertex 2.
+	  @param v2 Rectangle vertex 3
+	  @param v3 Rectangle vertex 4.
+	  @param point External point.
+
+      @return Closet point in the rectangle to the external point.
+	  */
+	 static Vector3 closestPointToRectangle(
         const Vector3&			v0,
         const Vector3&			v1,
         const Vector3&			v2,
@@ -649,4 +1231,4 @@ public:
 
 } // namespace
 
-#endif
+#endif // G3D_COLLISIONDETECTION_H
