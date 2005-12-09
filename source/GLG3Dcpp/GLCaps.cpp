@@ -626,10 +626,13 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
 
     GLCaps::loadExtensions();
 
+    /*
+    TODO: Morgan
 	std::auto_ptr<TempGLContext> context;
 	if (dynamic_cast<const SDLWindow*>(GWindow::current())==NULL) {
 		context.reset(new TempGLContext());		// Create a temp context to use
 	}
+    */
 
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
@@ -919,10 +922,13 @@ bool GLCaps::hasBug_slowVBO() {
     value = beginsWith(r, "MOBILITY RADEON 7500");
 	return value;
 
+    /*
+    TODO: Morgan
 	std::auto_ptr<TempGLContext> context;
 	if (dynamic_cast<const SDLWindow*>(GWindow::current())==NULL) {
 		context.reset(new TempGLContext());		// Create a temp context to use
 	}
+    */
 
 
     // Load the vertex arrays.  It is important to create a reasonably coherent object;

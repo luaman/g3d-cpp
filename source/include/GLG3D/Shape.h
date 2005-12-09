@@ -24,13 +24,14 @@ typedef ReferenceCountedPointer<class Shape> ShapeRef;
    The Shape classes provide a parallel set of classes to the G3D primitives
    that support more functionality.
 
+   Mesh shapes are intentionally immutable because they precompute data.
+
    <b>BETA API</b> This API is subject to change in future releases.
   */
 class Shape : public ReferenceCountedObject {
 public:
 
-    /** Mesh is reserved */
-    enum Type {MESH=1, BOX, CYLINDER, SPHERE, RAY, CAPSULE, PLANE};
+    enum Type {NONE = 0, MESH = 1, BOX, CYLINDER, SPHERE, RAY, CAPSULE, PLANE};
 
     static std::string typeToString(Type t);
 
@@ -114,6 +115,17 @@ public:
         return p;
     }
 
+    virtual const Array<int>& indexArray() const {
+        debugAssertM(false, "Not a mesh");
+        static Array<int> x;
+        return x;
+    }
+
+    virtual const Array<Vector3>& vertexArray() const {
+        debugAssertM(false, "Not a mesh");
+        static Array<Vector3> x;
+        return x;
+    }
 
     /** Surface area of the outside of this object. */
     virtual float area() const = 0;
@@ -135,6 +147,54 @@ public:
 
     virtual ~Shape() {}
 };
+
+/** 
+ Mesh shape is intended for debugging and for collision detection.  It is not a general purpose
+ mesh. 
+
+ @sa G3D::PosedModel, G3D::IFSModel, G3D::MD2Model, G3D::MeshAlg, contrib/ArticulatedModel/ArticulatedModel.h
+ */
+class MeshShape : public Shape {
+
+    Array<Vector3>      _vertexArray;
+    Array<int>          _indexArray;
+    double              _area;
+
+public:
+
+    /** Copies the geometry from the arrays.
+        The index array must describe a triangle list; you can
+        convert other primitives using the MeshAlg methods.*/
+    inline MeshShape(const Array<Vector3>& vertex, const Array<int>& index) : _vertexArray(vertex), _indexArray(index) {
+        debugAssert(index.size() % 3 == 0);
+    }
+
+    virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
+
+    virtual Type type() {
+        return MESH;
+    }
+
+    virtual const Array<Vector3>& vertexArray() const {  
+        return _vertexArray;
+    }
+
+    /** Tri-list index array */
+    virtual const Array<int>& indexArray() const {
+        return _indexArray;
+    }
+
+    virtual float area() const;
+
+    /** No volume; Mesh is treated as a 2D surface */
+    virtual float volume() const;
+
+    virtual void getRandomSurfacePoint(Vector3& P, 
+                                       Vector3& N = Vector3::dummy) const;
+
+    /** Returns a point on the surface */
+    virtual Vector3 randomInteriorPoint() const;
+}; // Mesh
 
 
 class BoxShape : public Shape {

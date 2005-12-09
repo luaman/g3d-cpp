@@ -44,7 +44,7 @@ namespace G3D {
   similarly to GLCaps::supports_GL_EXT_texture_rectangle():
 
   <UL>
-    <LI>GL_ARB_non_power_of_two
+    <LI>GL_ARB_texture_non_power_of_two
     <LI>GL_EXT_texture_rectangle
     <LI>GL_ARB_vertex_program
     <LI>GL_NV_vertex_program2
