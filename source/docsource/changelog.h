@@ -72,6 +72,9 @@
       <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
+      <LI> Fix: [ 1370665 ] hash_map moved to stdext in VC8 (2005)
+      <LI> Fix: ToneMap extended to use DIM_2D_NPOT instead of DIM_2D_RECT
+      <LI> Fix: Texture::copyFromScreen now works with DIM_2D_NPOT textures
 	  <LI> Fix: Wrapped debugAssertM in do {} while (0) to ensure correct compilation in single-line statements [ERik Cassel]
       <LI> Fix: G3D::Draw::cylinder now renders the bottom correctly
       <LI> Fix: Array::front now compiles under gcc

@@ -991,7 +991,7 @@ void Texture::copyFromScreen(
     this->width   = (int)rect.width();
     this->height  = (int)rect.height();
     this->depth   = 1;
-    debugAssert(this->dimension == DIM_2D || this->dimension == DIM_2D_RECT);
+    debugAssert(this->dimension == DIM_2D || this->dimension == DIM_2D_RECT || this->dimension == DIM_2D_NPOT);
 
     if (GLCaps::supports_GL_ARB_multitexture()) {
         glActiveTextureARB(GL_TEXTURE0_ARB);
