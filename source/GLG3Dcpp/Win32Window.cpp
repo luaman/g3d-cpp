@@ -66,6 +66,8 @@ static void makeKeyEvent(int, int, GEvent&);
 static void mouseButton(bool, int, DWORD, GEvent&);
 static void initWin32KeyMap();
 static void printPixelFormatDescription(int, HDC, TextOutput&);
+static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
+
 
 /** Return the G3D window class, which owns a private DC. 
     See http://www.starstonesoftware.com/OpenGL/whyyou.htm
@@ -80,6 +82,8 @@ Win32Window::Win32Window(const GWindowSettings& s, bool creatingShareWindow)
 :createdWindow(true)
 ,_diDevices(NULL)
 {
+    _receivedCloseEvent = false;
+
     initWGL();
 
 	_hDC = NULL;
@@ -540,18 +544,13 @@ std::string Win32Window::caption() {
 
 bool Win32Window::pollEvent(GEvent& e) {
 	MSG message;
-            
+
     while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
         TranslateMessage(&message);
 		DispatchMessage(&message);
 
         if (message.hwnd == window) {
             switch (message.message) {
-            case WM_QUIT:
-                e.type = SDL_QUIT;
-                return true;
-                break;
-
             case WM_KEYDOWN:
 				e.key.type = SDL_KEYDOWN;
 				e.key.state = SDL_PRESSED;
@@ -604,6 +603,17 @@ bool Win32Window::pollEvent(GEvent& e) {
             } // switch
         } // if
     } // while
+
+    // We never seem to "receive" the WM_QUIT message 
+    // so test for WM_CLOSE in the window_proc
+    if (_receivedCloseEvent) {
+
+        // Reset so SDL_QUIT is only sent once
+        _receivedCloseEvent = false;
+
+        e.type = SDL_QUIT;
+        return true;
+    }
 
     RECT rect;
     GetWindowRect(window, &rect);
@@ -678,44 +688,6 @@ void Win32Window::setGammaRamp(const Array<uint16>& gammaRamp) {
     if (! success) {
         if (debugLog) {debugLog->println("Error setting gamma ramp! (Possibly LCD monitor)");}
     }
-}
-
-
-LRESULT WINAPI Win32Window::window_proc(
-    HWND                window,
-    UINT                message,
-    WPARAM              wparam,
-    LPARAM              lparam) {
-    
-    Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
-    
-    if (this_window != NULL) {
-        switch (message) {
-        case WM_ACTIVATE:
-            if ((LOWORD(wparam) != WA_INACTIVE) &&
-                (HIWORD(wparam) == 0) &&
-                ((HWND)lparam != this_window->hwnd())) { // non-zero is minimized 
-                this_window->_windowActive = true;
-            } else if ((HWND)lparam != this_window->hwnd()) {
-                this_window->_windowActive = false;
-            }
-            break;
-
-        case WM_CLOSE:
-            PostMessage(this_window->hwnd(), WM_QUIT, 0, 0);
-            return 0;
-            break;
-
-        case WM_SIZE:
-            if ((wparam == SIZE_MAXIMIZED) ||
-                (wparam == SIZE_RESTORED)) {
-                this_window->injectSizeEvent(LOWORD(lparam), HIWORD(lparam));
-            }
-            break;
-        }
-    }
-    
-    return DefWindowProc(window, message, wparam, lparam);
 }
 
 
@@ -1402,6 +1374,45 @@ static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
     out.printf("\n");
 }
 
+static LRESULT WINAPI window_proc(
+    HWND                window,
+    UINT                message,
+    WPARAM              wparam,
+    LPARAM              lparam) {
+    
+    Win32Window* this_window = (Win32Window*)GetWindowLong(window, GWL_USERDATA);
+    
+    if (this_window != NULL) {
+        switch (message) {
+        case WM_ACTIVATE:
+            if ((LOWORD(wparam) != WA_INACTIVE) &&
+                (HIWORD(wparam) == 0) &&
+                ((HWND)lparam != this_window->hwnd())) { // non-zero is minimized 
+                this_window->_windowActive = true;
+            } else if ((HWND)lparam != this_window->hwnd()) {
+                this_window->_windowActive = false;
+            }
+            break;
+
+        case WM_CLOSE:
+            this_window->_receivedCloseEvent = true;
+            Log::common()->println("WM_CLOSE received.");
+			break;
+
+        case WM_DESTROY:
+            Log::common()->println("WM_DESTROY received.");
+
+        case WM_SIZE:
+            if ((wparam == SIZE_MAXIMIZED) ||
+                (wparam == SIZE_RESTORED)) {
+                this_window->injectSizeEvent(LOWORD(lparam), HIWORD(lparam));
+            }
+            break;
+        }
+    }
+    
+    return DefWindowProc(window, message, wparam, lparam);
+}
 
 static const char* G3DWndClass() {
 
@@ -1412,7 +1423,7 @@ static const char* G3DWndClass() {
         WNDCLASS wndcls;
         
         wndcls.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | CS_OWNDC;
-        wndcls.lpfnWndProc = DefWindowProc;
+        wndcls.lpfnWndProc = window_proc;
         wndcls.cbClsExtra = wndcls.cbWndExtra = 0;
         wndcls.hInstance = ::GetModuleHandle(NULL);
         wndcls.hIcon = NULL;

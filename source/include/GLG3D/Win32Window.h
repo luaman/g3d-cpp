@@ -35,14 +35,14 @@ class Win32Window : public GWindow {
 private:
 	
 	GWindowSettings		 settings;
-	int                  _width;
-    int                  _height;
 	std::string			 _title;
     HDC                  _hDC;
 	HGLRC				 _glContext;
 	bool				 _mouseVisible;
 	bool				 _inputCapture;
     bool                 _windowActive;
+
+    bool                 _receivedCloseEvent;
 
     /** Mouse Button State Array: false - up, true - down
         [0] - left, [1] - middle, [2] - right */
@@ -69,9 +69,9 @@ private:
         sizeEventInjects.append(e);
     }
 
-	static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
-
-	/** Called from all constructors */
+    friend static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
+	
+    /** Called from all constructors */
 	void init(HWND hwnd, bool creatingShareWindow = false);
 
 	static Win32Window*			_shareWindow;	
@@ -105,6 +105,7 @@ private:
 
     HWND                 window;
 	const bool		     createdWindow;
+
 public:
 
 	
