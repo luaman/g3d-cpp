@@ -782,7 +782,7 @@ TextureRef Texture::fromMemory(
     glStatePop();
 
     if ((dimension != DIM_2D_RECT) &&
-        ((dimension != DIM_2D_NPOT && dimension != DIM_CUBE_MAP_NPOT) || (! GLCaps::supports_GL_ARB_texture_non_power_of_two()))) {
+        ((dimension != DIM_2D_NPOT && dimension != DIM_CUBE_MAP_NPOT))) {
         width  = ceilPow2(width);
         height = ceilPow2(height);
     }
@@ -1044,7 +1044,7 @@ void Texture::copyFromScreen(
     // Set up new state
     debugAssertM(width == rect.width(), "Cube maps require all six faces to have the same dimensions");
     debugAssertM(height == rect.height(), "Cube maps require all six faces to have the same dimensions");
-    debugAssert(this->dimension == DIM_CUBE_MAP);
+    debugAssert(this->dimension == DIM_CUBE_MAP || this->dimension == DIM_CUBE_MAP_NPOT);
     debugAssert(face >= 0);
     debugAssert(face < 6);
 
