@@ -36,7 +36,7 @@
 #include "G3D/Array.h"
 #include "G3D/fileutils.h"
 #ifdef G3D_WIN32
-  #include "zlib/zlib.h"
+  #include "../zlib/zlib.h"
 #else
   #include <zlib.h>
 #endif
