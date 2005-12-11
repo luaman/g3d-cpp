@@ -1397,11 +1397,7 @@ static LRESULT WINAPI window_proc(
 
         case WM_CLOSE:
             this_window->_receivedCloseEvent = true;
-            Log::common()->println("WM_CLOSE received.");
 			break;
-
-        case WM_DESTROY:
-            Log::common()->println("WM_DESTROY received.");
 
         case WM_SIZE:
             if ((wparam == SIZE_MAXIMIZED) ||
