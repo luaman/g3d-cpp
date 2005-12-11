@@ -515,6 +515,7 @@ Win32Window::~Win32Window() {
 	}
 
 	if (createdWindow) {
+        SetWindowLong(window, GWL_USERDATA, (LONG)NULL);
 		close();
 	}
 
