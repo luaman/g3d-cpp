@@ -158,16 +158,21 @@ class MeshShape : public Shape {
 
     Array<Vector3>      _vertexArray;
     Array<int>          _indexArray;
+
+    /** If true, the bspTree and _area have been initialized. */
+    bool                _hasTree;
+    AABSPTree<Triangle> _bspTree;
     double              _area;
+
+    /** Creates _bspTree */
+    void buildBSP();
 
 public:
 
     /** Copies the geometry from the arrays.
         The index array must describe a triangle list; you can
         convert other primitives using the MeshAlg methods.*/
-    inline MeshShape(const Array<Vector3>& vertex, const Array<int>& index) : _vertexArray(vertex), _indexArray(index) {
-        debugAssert(index.size() % 3 == 0);
-    }
+    MeshShape(const Array<Vector3>& vertex, const Array<int>& index);
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
@@ -175,15 +180,24 @@ public:
         return MESH;
     }
 
-    virtual const Array<Vector3>& vertexArray() const {  
+    const Array<Vector3>& vertexArray() const {  
         return _vertexArray;
     }
 
-    /** Tri-list index array */
-    virtual const Array<int>& indexArray() const {
+    /** Tri-list index array into vertexArray(). */
+    const Array<int>& indexArray() const {
         return _indexArray;
     }
 
+    /** Not computed until the first call to bspTree, area, or getRandomSurfacePoint. */
+    virtual const AABSPTree<Triangle>& bspTree() const {
+        if (! _hasTree) {
+            const_cast<MeshShape*>(this)->buildBSP();
+        }
+        return _bspTree;
+    }
+
+    /** Slow the first time it is called because the BSP tree must be computed. */
     virtual float area() const;
 
     /** No volume; Mesh is treated as a 2D surface */

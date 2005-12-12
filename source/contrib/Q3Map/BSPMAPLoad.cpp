@@ -325,15 +325,18 @@ void Map::loadEntities(BinaryInput&	bi,const BSPLump& lump){
 		currEntity.modelNum = -1;
 		for(int	j =	0; j < subArray.size();	++j){
 			std::string	subStr = std::string(subArray[j]);
-			char* pt = strstr(subStr.c_str(), "\"classname\"");
+// TODO: Clean this code up to use TextInput and not strtok, which mutates the
+// underlying data in a way that is scary.			
+#pragma message(" Fix destructive useage of strtok in BSPMAPLoad.cpp ")
+			char* pt = const_cast<char*>(strstr(subStr.c_str(), "\"classname\""));
 			if (pt){
-				char* name = strtok(pt + 13,"\"	");
+				const char* name = strtok(pt + 13, "\"	");
 				if(name){
 					currEntity.name	= name + format(" %d",i);
 				}
 				continue;
 			}
-			pt = strstr(subStr.c_str(),	"\"origin\"");
+			pt = const_cast<char*>(strstr(subStr.c_str(),	"\"origin\""));
 			if(pt){
 				char temp[40];
 				strcpy(temp,pt);
@@ -344,12 +347,12 @@ void Map::loadEntities(BinaryInput&	bi,const BSPLump& lump){
 				currEntity.position	= pos;
 				continue;
 			}
-			pt = strstr(subStr.c_str(),	"\"spawnflags\"");
+			pt = const_cast<char*>(strstr(subStr.c_str(),	"\"spawnflags\""));
 			if(pt){
 				currEntity.spawnflags =	atoi(strtok(pt+13,"\""));
 				continue;
 			}
-			pt = strstr(subStr.c_str(),	"\"targetname\"");
+			pt = const_cast<char*>(strstr(subStr.c_str(),	"\"targetname\""));
 			if(pt){
 				char* name = strtok(pt + 14,"\"	");
 				if(name){
@@ -357,12 +360,12 @@ void Map::loadEntities(BinaryInput&	bi,const BSPLump& lump){
 				}
 				continue;
 			}
-			pt = strstr(subStr.c_str(),	"\"model\"");
+			pt = const_cast<char*>(strstr(subStr.c_str(),	"\"model\""));
 			if(pt){
 				currEntity.modelNum = atoi(strtok(pt+10,"\"")) - 1;
 				continue;
 			}
-			pt = strstr(subStr.c_str(),	"\"target\"");
+			pt = const_cast<char*>(strstr(subStr.c_str(),	"\"target\""));
 			if(pt){
 				char* name = strtok(pt + 10,"\"	");
 				if(name){

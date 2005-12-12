@@ -40,10 +40,44 @@ std::string Shape::typeToString(Type t) {
     return "";
 }
 
+////////////////////////////////////////////////////////////////////////
+
+MeshShape::MeshShape(
+    const Array<Vector3>& vertex, 
+    const Array<int>& index) : 
+    _vertexArray(vertex), 
+    _indexArray(index),
+    _hasTree(false) {
+    
+    debugAssert(index.size() % 3 == 0);
+    debugAssert(index.size() >= 0);
+}
+
+
+void MeshShape::buildBSP() {
+    debugAssert(! _hasTree);
+
+    _area = 0;
+    for (int i = 0; i < _indexArray.size(); i += 3) {
+        const int v0 = _indexArray[i];
+        const int v1 = _indexArray[i + 1];
+        const int v2 = _indexArray[i + 2];
+
+        Triangle tri(_vertexArray[v0], _vertexArray[v1], _vertexArray[v2]);
+        _area += tri.area();
+        _bspTree.insert(tri);
+    }
+    _bspTree.balance();
+
+    _hasTree = true;
+}
+
 
 float MeshShape::area() const {
-    debugAssert(false); // TODO        
-    return 0;
+    if (! _hasTree) {
+        const_cast<MeshShape*>(this)->buildBSP();
+    }
+    return _area;
 }
 
 
@@ -56,7 +90,34 @@ void MeshShape::getRandomSurfacePoint(
     Vector3& P,
     Vector3& N) const {
     
-    debugAssert(false); // TODO
+    if (! _hasTree) {
+        const_cast<MeshShape*>(this)->buildBSP();
+    }
+
+    // Choose uniformly at random based on surface area
+    float sum = random(0, _area);
+    typedef AABSPTree<Triangle>::Iterator IT;
+
+    IT it  = _bspTree.begin();
+    IT end = _bspTree.end();
+
+    while (it != end) {
+        const Triangle& tri = *it;
+        sum -= tri.area();
+        if (sum <= 0) {
+            // We want a point from this triangle.
+            N = tri.normal();
+            P = tri.randomPoint();
+            return;
+        }
+        ++it;
+    }
+    
+    // Should never get here, but we might due to roundoff.  Choose a point 
+    // on the first triangle.
+    const Triangle& tri = *_bspTree.begin();
+    N = tri.normal();
+    P = tri.randomPoint();
 }
 
 
@@ -106,6 +167,7 @@ void MeshShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 s
     rd->popState();
 }
 
+////////////////////////////////////////////////////////////////////////
 
 void BoxShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor, Color4 wireColor) {
     CoordinateFrame cframe0 = rd->getObjectToWorldMatrix();

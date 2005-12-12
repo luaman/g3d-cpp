@@ -16,7 +16,7 @@
 #ifndef BSPMAP_H
 #define BSPMAP_H
 
-#include <G3DAll.h>
+#include "dojo/g3dHelper.h"
 #include <stdlib.h>
 #include <memory.h>
 #include <math.h>
@@ -337,8 +337,8 @@ public:
          Number of edges each side is split into.
          The total number of trangles will be 2 * level^2.
          */
-        int                 level;
-        Array<Vertex>       vertex;
+        int                      level;
+        Array<Vertex>            vertex;
         Array<G3D::uint32>       indexes;
 
         Array<G3D::int32>        trianglesPerRow;
@@ -427,7 +427,9 @@ private:
     Array<int>          leafBrushArray;
 
     BSPModel            staticModel;
+public:
     Array<BSPModel>     dynamicModels;
+private:
     Vector3             lightVolumesGrid;
     Vector3             lightVolumesInvSizes;
     int                 lightVolumesCount;
@@ -589,11 +591,19 @@ public:
     void initRender(GCamera& camera);
     void render(GCamera& camera, void* object);
 
-    /**
-     Save the mesh in matriance format.
-     The lightmaps will be stored in the 'lm_reference' subdirectory.
-     */
-    void saveMatrianceFormat(std::string saveDirectory);
+    /** Returns the triangles in the map for use outside of this class.
+        */
+    void getTriangles(
+        Array<Vector3>&     outVertexArray,
+        Array<Vector3>&     outNormalArray,
+        Array<int>&         outIndexArray,
+        Array<Vector2>&     outTexCoordArray,
+        Array<Vector2>&     outLightCoordArray,
+        Array<int>&         outLightMapIndexArray,
+        Array<int>&         outTexCoordIndexArray,
+        Array<TextureRef>&  outTextureMapArray,
+        Array<TextureRef>&  outLightMapArray) const;
+
 };
 
 } // namepsace

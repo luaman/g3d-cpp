@@ -90,7 +90,7 @@ void Map::initRender(GCamera& camera) {
 
 void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
     // Adjust intensity for tone mapping
-    float adjustBrightness = 0.4;
+    float adjustBrightness = 1;//0.4; // TODO
 
 	Array<FaceSet*> opaqueFaceArray;
 	Array<FaceSet*> translucentFaceArray;
@@ -955,42 +955,40 @@ void Mesh::updateSortKey(
 	sortKey = (map->vertexArray[firstVertex].position - origin).dot(zAxis);
 }
 
-/////////////////////////////////////////////////////////////////////////
 
-class MatrianceTri {
-public:
+void Map::getTriangles(
+    Array<Vector3>&     outVertexArray,
+    Array<Vector3>&     outNormalArray,
+    Array<int>&         outIndexArray,
+    Array<Vector2>&     outTexCoordArray,
+    Array<Vector2>&     outLightCoordArray,
+    Array<int>&         outLightMapIndexArray,
+    Array<int>&         outTexCoordIndexArray,
+    Array<TextureRef>&  outTextureMapArray,
+    Array<TextureRef>&  outLightMapArray) const {
 
-	class Vertex {
-	public:
-		Vector3     position;
-		Vector2     lightCoord;
-	};
+    // Copy the textures
+    outLightMapArray = lightmaps;
+    outTextureMapArray = textures;
 
-	Color3uint8     color;
-	int             lightMapIndex;
+    // Resize the output arrays
+    const int n = vertexArray.size();
+    outVertexArray.resize(n);
+    outLightCoordArray.resize(n);
+    outTexCoordArray.resize(n);
+    outNormalArray.resize(n);
 
-	Vertex          vertex[3];
+    // Spread the input over the output arrays
+    for (int i = 0; i < vertexArray.size(); ++i) {
+        const Vertex& vertex  = vertexArray[i];
 
-};
+        outVertexArray[i]     = vertex.position;
+        outLightCoordArray[i] = vertex.lightmapCoord;
+        outTexCoordArray[i]   = vertex.textureCoord;
+        outNormalArray[i]     = vertex.normal;
+    }
 
-void Map::saveMatrianceFormat(std::string saveDirectory) {
-
-	if (! endsWith(saveDirectory, "/") && ! endsWith(saveDirectory, "\\")) {
-		saveDirectory += "/";
-	}
-
-	createDirectory(saveDirectory);
-
-	BinaryOutput bo(saveDirectory + "mesh.dat", G3D_LITTLE_ENDIAN);
-
-	bo.writeInt32(lightmaps.size());
-	for (int i = 0; i < lightmaps.size(); ++i) {
-		bo.writeString(format("lm_%03d.jpg", i));
-	}
-
-	// Get triangles
-	Array<MatrianceTri> triArray;
-
+    // Extract the indices
 	for (int f = 0; f < faceArray.size(); ++f) {
 		// Only render map faces (not entity faces), which have valid light maps
 		if (faceArray[f]->lightmapID >= 0) {
@@ -999,9 +997,7 @@ void Map::saveMatrianceFormat(std::string saveDirectory) {
 				{
 					const Mesh* mesh = dynamic_cast<const Mesh*>(faceArray[f]);
 					for (int t = 0; t < mesh->meshVertexesCount / 3; ++t) {
-						MatrianceTri& tri = triArray.next();
-						tri.color = Color3uint8(Color3::WHITE);
-						tri.lightMapIndex = mesh->lightmapID;
+                        outLightMapIndexArray.append(mesh->lightmapID);
 						debugAssert(mesh->lightmapID >= 0);
 
 						for (int v = 0; v < 3; ++v) {
@@ -1010,8 +1006,8 @@ void Map::saveMatrianceFormat(std::string saveDirectory) {
 							int i = mesh->firstMeshVertex + t * 3 + (2 - v);
 							// Compute the index into the vertex array
 							int index = meshVertexArray[i] + mesh->firstVertex;
-							tri.vertex[v].lightCoord = vertexArray[index].lightmapCoord;
-							tri.vertex[v].position   = vertexArray[index].position;
+
+                            outIndexArray.append(index);
 						}
 					}
 				}
@@ -1021,7 +1017,9 @@ void Map::saveMatrianceFormat(std::string saveDirectory) {
 				break;
 
 			case FaceSet::PATCH:
-				{
+                // TODO: Morgan add these vertices at the end of the array
+				/*
+                {
 					const Patch* patch = dynamic_cast<const Patch*>(faceArray[f]);
 					for (int b = 0; b < patch->bezierArray.size(); ++b) {
 						const Patch::Bezier2D& bezier = patch->bezierArray[b];
@@ -1065,6 +1063,7 @@ void Map::saveMatrianceFormat(std::string saveDirectory) {
 						}
 					}
 				}
+                */
 				break;
 
 			default:
@@ -1073,33 +1072,8 @@ void Map::saveMatrianceFormat(std::string saveDirectory) {
 		}
 	}
 
-	bo.writeInt32(triArray.size());
-	for (int t = 0; t < triArray.size(); ++t) {
-		const MatrianceTri& tri = triArray[t];
-		debugAssert(tri.lightMapIndex >= 0);
-		bo.writeInt32(tri.lightMapIndex);
-		bo.writeUInt32(tri.color.asUInt32());
-		for (int v = 0; v < 3; ++v) {
-			bo.writeVector3(tri.vertex[v].position);
-			bo.writeVector2(tri.vertex[v].lightCoord);
-		}
-	}
-
-	bo.commit();
-
-	// Light maps
-	createDirectory(saveDirectory + "lm_reference");
-	for (int L = 0; L < lightmaps.size(); ++L) {
-		TextureRef lightmap = lightmaps[L];
-		CImage im(lightmap->getTexelWidth(), lightmap->getTexelHeight(), 3);
-		
-		glBindTexture(GL_TEXTURE_2D, lightmap->getOpenGLID());
-		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, im.byte());
-
-		im.save(saveDirectory + format("lm_reference/lm_%03d.jpg", L));
-	}
-
 }
+
 
 }
 
