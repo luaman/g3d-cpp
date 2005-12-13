@@ -186,6 +186,8 @@
     //#define ZLIB_DLL
     //#pragma comment(lib, "zdll.lib")
 
+    #pragma comment(lib, "zlib.lib")
+
     #pragma comment(lib, "ws2_32.lib")
     #pragma comment(lib, "winmm.lib")
     #pragma comment(lib, "imagehlp.lib")

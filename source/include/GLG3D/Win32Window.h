@@ -34,6 +34,8 @@ using _internal::_DirectInput;
 class Win32Window : public GWindow {
 private:
 	
+    static Array<GWindowSettings> _supportedSettings;
+
 	GWindowSettings		 settings;
 	std::string			 _title;
     HDC                  _hDC;
@@ -108,7 +110,10 @@ private:
 
 public:
 
-	
+	static const Array<GWindowSettings>& SupportedWindowSettings();
+
+    static bool ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest);
+
     /** Different subclasses will be returned depending on
         whether DirectInput8 is available. You must delete 
         the window returned when you are done with it. */
