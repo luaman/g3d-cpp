@@ -74,6 +74,7 @@ static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPAR
     for a discussion of why this is necessary. */
 static const char* G3DWndClass();
 
+Array<GWindowSettings> Win32Window::_supportedSettings;
 
 Win32Window* Win32Window::_shareWindow = NULL;
 
@@ -376,6 +377,13 @@ void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
 	loadExtensions();
 }
 
+const Array<GWindowSettings>& Win32Window::SupportedWindowSettings() {
+    return _supportedSettings;
+}
+
+bool Win32Window::ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest) {
+    return false;
+}
 
 int Win32Window::width() const {
 	return settings.width;
@@ -571,6 +579,22 @@ bool Win32Window::pollEvent(GEvent& e) {
 				makeKeyEvent(message.wParam, message.lParam, e);
 				return true;
 				break;
+
+            case WM_SYSKEYDOWN:
+                if (message.wParam == VK_F10) {
+                    if (((message.lParam >> 30) & 0x1) == 0) {
+                        makeKeyEvent(message.wParam, message.lParam, e);
+                        return true;
+                    }
+                }
+                break;
+
+            case WM_SYSKEYUP:
+                if (message.wParam == VK_F10) {
+                    makeKeyEvent(message.wParam, message.lParam, e);
+                    return true;
+                }
+                break;
 
             case WM_LBUTTONDOWN:
 				mouseButton(true, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
