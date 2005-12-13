@@ -752,12 +752,13 @@ int main(int argc, char* argv[]) {
             renderDevice = new RenderDevice();
         }
     
+        renderDevice->init(settings);
+
         if (renderDevice) {
             renderDevice->describeSystem(s);
             printf("%s\n", s.c_str());
         }
 
-        renderDevice->init(settings);
         measureRDPushPopPerformance(renderDevice);
 
 #   else
