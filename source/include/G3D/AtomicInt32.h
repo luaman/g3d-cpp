@@ -18,7 +18,7 @@ namespace G3D {
  An integer that may safely be used on different threads without
  external locking.
 
- On Win32 and Linux this is implemented without locks.  
+ On Win32, Linux, and Mac OS X this is implemented without locks.  
 
  <B>BETA API</B>  This is unsupported and may change
  */
@@ -86,19 +86,22 @@ public:
             return old;
             
 #       elif defined(G3D_OSX)
+			int32 prev, temp;
 
-            int32 old, temp;
-            asm volatile ("0:\n\t"
-                  "lwarx  %0,0,%2\n\t"
-                  "add    %1,%0,%3\n\t"
-                  "stwcx. %1,0,%2\n\t"
-                  "bne-   0b"
+			asm volatile ("0:\n\t"                   /* retry local label     */
+						  "lwarx  %0,0,%2\n\t"       /* load prev and reserve */
+						  "add    %1,%0,%3\n\t"      /* temp = prev + delta   */
+						  "stwcx. %1,0,%2\n\t"       /* conditionally store   */
+						  "bne-   0b"                /* start over if we lost
+														the reservation       */
 
-                  : "=&r" (old), "=&r" (temp)
-                  : "b" (_value), "r" (x)
-                  : "memory", "cc");
-
-             return old;
+						  /*XXX find a cleaner way to define the temp         
+						   *    it's not an output
+						   */
+						  : "=&r" (prev), "=&r" (temp)        /* output, temp */
+						  : "b" (&_value), "r" (x)            /* inputs       */
+						  : "memory", "cc");                  /* clobbered    */
+			return prev;
 #       endif
     }
 
@@ -133,8 +136,7 @@ public:
                           : "memory", "cc");
             return nz;
 #       elif defined(G3D_OSX)
-            // TODO: PPC
-            return (--_value) != 0;
+            return add(-1) != 0;
 #       endif
     }
 
@@ -165,22 +167,22 @@ public:
                           : "memory", "cc");
             return ret;
 #       elif defined(G3D_OSX)
-            apr_uint32_t old;
-                                                                                
-            asm volatile ("0:\n\t"                   /* retry local label     */
-                          "lwarx  %0,0,%1\n\t"       /* load prev and reserve */
-                          "cmpw   %0,%3\n\t"         /* does it match cmp?    */
-                          "bne-   1f\n\t"            /* ...no, bail out       */
-                          "stwcx. %2,0,%1\n\t"       /* ...yes, conditionally
-                                                        store swap            */
-                          "bne-   0b\n\t"            /* start over if we lost
-                                                        the reservation       */
-                          "1:"                       /* exit local label      */
-                          
-                          : "=&r"(old)                        /* output      */
-                          : "b" (&_value), "r" (exchange), "r"(comperand)    /* inputs      */
-                          : "memory", "cc");                   /* clobbered   */
-            return old;
+			int32 prev;
+
+			asm volatile ("0:\n\t"                   /* retry local label     */
+						  "lwarx  %0,0,%1\n\t"       /* load prev and reserve */
+						  "cmpw   %0,%3\n\t"         /* does it match cmp?    */
+						  "bne-   1f\n\t"            /* ...no, bail out       */
+						  "stwcx. %2,0,%1\n\t"       /* ...yes, conditionally
+														store swap            */
+						  "bne-   0b\n\t"            /* start over if we lost
+														the reservation       */
+						  "1:"                       /* exit local label      */
+
+						  : "=&r"(prev)                                       /* output      */
+						  : "b" (&_value), "r" (exchange), "r"(comperand)    /* inputs      */
+						  : "memory", "cc");                                  /* clobbered   */
+			return prev;
 #       endif
     }
 
