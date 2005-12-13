@@ -238,6 +238,10 @@
 		3EF42A8F077978740047B13F /* GWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3EF42A8E077978740047B13F /* GWindow.cpp */; };
 		3EFE6A250735D82A00E12815 /* VARArea.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3EFE6A240735D82A00E12815 /* VARArea.cpp */; };
 		3EFE6A2D0735E0C400E12815 /* MeshBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3EFE6A2C0735E0C400E12815 /* MeshBuilder.cpp */; };
+		503382290935445000C574FC /* tAtomicInt32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 503382280935445000C574FC /* tAtomicInt32.cpp */; };
+		5033822B0935449400C574FC /* Stopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5033822A0935449400C574FC /* Stopwatch.cpp */; };
+		5033822D093544D900C574FC /* AtomicInt32.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822C093544D900C574FC /* AtomicInt32.h */; };
+		5033822F093544F400C574FC /* Stopwatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822E093544F400C574FC /* Stopwatch.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -585,6 +589,10 @@
 		3EF42A8E077978740047B13F /* GWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GWindow.cpp; path = ../source/GLG3Dcpp/GWindow.cpp; sourceTree = "<group>"; };
 		3EFE6A240735D82A00E12815 /* VARArea.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VARArea.cpp; path = ../source/GLG3Dcpp/VARArea.cpp; sourceTree = "<group>"; };
 		3EFE6A2C0735E0C400E12815 /* MeshBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MeshBuilder.cpp; path = ../source/G3Dcpp/MeshBuilder.cpp; sourceTree = "<group>"; };
+		503382280935445000C574FC /* tAtomicInt32.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tAtomicInt32.cpp; path = ../source/test/tAtomicInt32.cpp; sourceTree = SOURCE_ROOT; };
+		5033822A0935449400C574FC /* Stopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Stopwatch.cpp; path = ../source/G3Dcpp/Stopwatch.cpp; sourceTree = SOURCE_ROOT; };
+		5033822C093544D900C574FC /* AtomicInt32.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AtomicInt32.h; path = ../source/include/G3D/AtomicInt32.h; sourceTree = SOURCE_ROOT; };
+		5033822E093544F400C574FC /* Stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Stopwatch.h; path = ../source/include/G3D/Stopwatch.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -876,6 +884,7 @@
 				0F55FF0706DCC59C008DD4F8 /* BinaryOutput.cpp */,
 				0F55FF0806DCC59C008DD4F8 /* BinaryInput.cpp */,
 				0F55FF0906DCC59C008DD4F8 /* AABox.cpp */,
+				5033822A0935449400C574FC /* Stopwatch.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -883,6 +892,8 @@
 		0F55FF3C06DCC5E2008DD4F8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				5033822E093544F400C574FC /* Stopwatch.h */,
+				5033822C093544D900C574FC /* AtomicInt32.h */,
 				3E659E9E08DC17DD00E47E2E /* BinaryFormat.h */,
 				3E659E9F08DC17DD00E47E2E /* Cylinder.h */,
 				3ED14F8707C1DE3700FA7AE0 /* NetAddress.h */,
@@ -980,6 +991,7 @@
 		0FCB740406DF63EA001A7213 /* G3D Test */ = {
 			isa = PBXGroup;
 			children = (
+				503382280935445000C574FC /* tAtomicInt32.cpp */,
 				3E659EAA08DC186000E47E2E /* tArray.cpp */,
 				3E659EAB08DC186000E47E2E /* tBinaryIO.cpp */,
 				3E659EAC08DC186000E47E2E /* tCollisionDetection.cpp */,
@@ -1099,6 +1111,8 @@
 				3ED14F8C07C1DE3700FA7AE0 /* MeshBuilder.h in Headers */,
 				3E659EA008DC17DD00E47E2E /* BinaryFormat.h in Headers */,
 				3E659EA108DC17DD00E47E2E /* Cylinder.h in Headers */,
+				5033822D093544D900C574FC /* AtomicInt32.h in Headers */,
+				5033822F093544F400C574FC /* Stopwatch.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1393,6 +1407,7 @@
 				3ED14F8E07C1DE6000FA7AE0 /* NetAddress.cpp in Sources */,
 				3E659EA408DC17F700E47E2E /* BinaryFormat.cpp in Sources */,
 				3E659EA508DC17F700E47E2E /* Cylinder.cpp in Sources */,
+				5033822B0935449400C574FC /* Stopwatch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1418,6 +1433,7 @@
 				3E659EC708DC186000E47E2E /* tTable.cpp in Sources */,
 				3E659EC808DC186000E47E2E /* tTextInput.cpp in Sources */,
 				3E659EC908DC186000E47E2E /* tTextOutput.cpp in Sources */,
+				503382290935445000C574FC /* tAtomicInt32.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
