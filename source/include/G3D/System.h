@@ -272,10 +272,10 @@ public:
     static void describeSystem(
         std::string&        s);
 
-protected:
+private:
     /**
 	 (CKO) Note: Not sure why these are specifically needed
-	 for OS X. I made them NOT public though.
+	 for OS X. I made them private though.
 	*/
 #   ifdef G3D_OSX
 		static long m_OSXCPUSpeed; //In Cycles/Second
