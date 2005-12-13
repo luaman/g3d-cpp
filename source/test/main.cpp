@@ -765,9 +765,9 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
-    testReferenceCount();
-
     testAtomicInt32();
+
+    testReferenceCount();
 
     testSystemMemset();
     testSystemMemcpy();
