@@ -262,13 +262,6 @@ public:
     /** Set an environment variable for the current process */
     static void setEnv(const std::string& name, const std::string& value);
 	
-    // TODO: Why are these in the public API?
-#   ifdef G3D_OSX
-		static long m_OSXCPUSpeed; //In Cycles/Second
-		static double m_secondsPerNS;
-#   endif
-
-
     /**
      Prints a human-readable description of this machine
      to the text output stream.  Either argument may be NULL.
@@ -278,6 +271,16 @@ public:
 
     static void describeSystem(
         std::string&        s);
+
+protected:
+    /**
+	 (CKO) Note: Not sure why these are specifically needed
+	 for OS X. I made them NOT public though.
+	*/
+#   ifdef G3D_OSX
+		static long m_OSXCPUSpeed; //In Cycles/Second
+		static double m_secondsPerNS;
+#   endif
 };
 
 
