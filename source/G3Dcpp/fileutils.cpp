@@ -28,8 +28,15 @@
 #include <stdio.h>
 #include "G3D/BinaryOutput.h"
 
+/**
+ Pick up libjpeg headers locally on Windows, but from the system on all other platforms.
+*/
 extern "C" {
-  #include "../IJG/jpeglib.h"
+#ifdef _MSC_VER
+	#include "../IJG/jpeglib.h"
+#else
+	#include <jpeglib.h>
+#endif
 }
 
 #ifdef G3D_WIN32

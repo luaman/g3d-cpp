@@ -10,13 +10,16 @@
 #include "G3D/TextInput.h"
 #include "G3D/TextOutput.h"
 
+/**
+ Pick up libjpeg headers locally on Windows, but from the system on all other platforms.
+*/
 extern "C" {
 #ifdef _MSC_VER
 	#include "../IJG/jconfig.h"
 	#include "../IJG/cdjpeg.h"
 #else
-	#include "jconfig.h"
-	#include "jpeglib.h"
+	#include <jconfig.h>
+	#include <jpeglib.h>
 #endif
 }
 
