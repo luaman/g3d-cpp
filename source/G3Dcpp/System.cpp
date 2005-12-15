@@ -465,7 +465,7 @@ void System::init() {
         int minor = (macVersion >> 4) & 0xF;
         int revision = macVersion & 0xF;
 
-        sprintf(_operatingSystemCstr, "OS X %d.%d.%d", major, minor, revision); 
+        sprintf(_operatingSystemCstr, "OS X %x.%x.%x", major, minor, revision); 
                  
         //Clock Cycle Timing Information:
         Gestalt('pclk', &System::m_OSXCPUSpeed);
