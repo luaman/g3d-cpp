@@ -150,12 +150,9 @@ void ToneMap::applyPS20(RenderDevice* rd) {
     bloomFilterShader->args.set("screenScale", screenScale);
     bloomFilterShader->args.set("screenImage", screenImage);
 
-    bloomShader->args.set("screenScale", screenScale);
-    bloomShader->args.set("screenImage", screenImage);
-    bloomShader->args.set("bloomMap",    bloomMap);
-    bloomShader->args.set("gamma",       RG);
-
     rd->push2D();
+        rd->setAlphaTest(RenderDevice::ALPHA_ALWAYS_PASS, 0);    
+        rd->setColor(Color3::white());
         // Undo renderdevice's 0.35 translation
         rd->setCameraToWorldMatrix(CoordinateFrame(Matrix3::identity(), Vector3(0, 0, 0.0)));
         Rect2D rect = Rect2D::xywh(0, 0, rd->width(), rd->height());
@@ -165,20 +162,26 @@ void ToneMap::applyPS20(RenderDevice* rd) {
         // Shrink and filter
         rd->setShader(bloomFilterShader);
         Draw::rect2D(smallRect, rd, Color3::white());
-    
-        // Blend in the previous bloom map for temporal coherence and a nice motion blur.  
-        // Due to a bug on NVIDIA cards, we have to do this with a separate pass; 
-        // sampler2Ds with different sizes don't work correctly in the same shader. (TODO: verify that this is still a problem!)
-        rd->setShader(NULL);
-        rd->setTexture(0, bloomMap);
-        rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-        Draw::rect2D(smallRect, rd, Color4(1, 1, 1, 0.25));
-        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);    
-        bloomMap->copyFromScreen(smallRect);
-    
-        rd->setShader(bloomShader);
 
-        Draw::rect2D(rect, rd, Color3::white());
+        bool showBloomMap = false;
+        if (! showBloomMap) {
+            // Blend in the previous bloom map for temporal coherence and a nice motion blur.  
+            // Due to a bug on NVIDIA cards, we have to do this with a separate pass; 
+            // sampler2Ds with different sizes don't work correctly in the same shader. (TODO: verify that this is still a problem!)
+            rd->setShader(NULL);
+            rd->setTexture(0, bloomMap);
+            rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+            Draw::rect2D(smallRect, rd, Color4(1, 1, 1, 0.25));
+
+            rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
+            bloomMap->copyFromScreen(smallRect);
+            bloomShader->args.set("screenScale", screenScale);
+            bloomShader->args.set("screenImage", screenImage);
+            bloomShader->args.set("bloomMap",    bloomMap);
+            bloomShader->args.set("gamma",       RG);
+            rd->setShader(bloomShader);
+            Draw::rect2D(rect, rd, Color3::white());
+        }
     rd->pop2D();
 }
 
@@ -287,12 +290,9 @@ void ToneMap::makeShadersPS20() {
         // Only allows bright pixels to pass
         vec4 threshold(vec4 v) {
             // Threshold cutoff
-            const float T = 0.875;
+            const float T = 0.875 * 3;
         
-            const float S = 1.0 / (1.0 - T);
-        
-            return 
-                clamp((v - vec4(T,T,T,0)) * S, vec4(0,0,0,0), vec4(1,1,1,1));
+            return (v.x + v.y + v.z) > T ? v : vec4(0.0, 0.0, 0.0, 0.0);
         }
     
         void main(void) {
@@ -357,7 +357,8 @@ void ToneMap::makeShadersPS20() {
                  texture2D(bloomMap, p + vec2( 0.0,  1.0) * screenScale)) * 2.5 / 7.0;
 
             // Apply bloom
-            gl_FragColor.rgb = screenColor + bloomColor.rgb; 
+            gl_FragColor.rgb = screenColor + bloomColor.rgb;
+            gl_FragColor.a = 1;
         }        
         ));
     
