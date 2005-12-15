@@ -2802,9 +2802,11 @@ void RenderDevice::endIndexedPrimitives() {
 	debugAssert(! inPrimitive);
 	debugAssert(inIndexedPrimitive);
 
+
   if (GLCaps::supports_GL_ARB_vertex_buffer_object()) {
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
   }
+
 
 	glPopClientAttrib();
 	inIndexedPrimitive = false;
