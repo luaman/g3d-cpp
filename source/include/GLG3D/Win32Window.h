@@ -110,10 +110,6 @@ private:
 
 public:
 
-	static const Array<GWindowSettings>& SupportedWindowSettings();
-
-    static bool ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest);
-
     /** Different subclasses will be returned depending on
         whether DirectInput8 is available. You must delete 
         the window returned when you are done with it. */
@@ -124,6 +120,22 @@ public:
     /** The HDC should be a private CS_OWNDC device context because it is assumed to
         be perisistant.*/
     static Win32Window* create(const GWindowSettings& settings, HDC hdc);
+
+    /** Finds all of the compatible GWindowSettings supported by hardware.
+
+        The width and height fields always refer to full-screen resolution.
+
+        Only width, height, rgbBits, alphaBits, depthBits, stencilBits, fsaaSamples,
+        stereo and refreshRate are valid. */
+    static const Array<GWindowSettings>& SupportedWindowSettings();
+
+    /** Finds the closest match to the desired GWindowSettings.
+
+        The width and height fields always refer to full-screen resolution.
+
+        Only width, height, rgbBits, alphaBits, depthBits, stencilBits, fsaaSamples,
+        stereo and refreshRate are valid. */
+    static bool ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest);
 	
     virtual ~Win32Window();
 	
