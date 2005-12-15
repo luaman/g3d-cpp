@@ -136,7 +136,8 @@ public:
                           : "memory", "cc");
             return nz;
 #       elif defined(G3D_OSX)
-            return add(-1) != 0;
+			// Note: add returns the old value. We will only be 0, if we were 1 prior to this.
+            return add(-1) != 1;
 #       endif
     }
 
