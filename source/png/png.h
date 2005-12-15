@@ -343,10 +343,10 @@
 #ifndef PNG_VERSION_INFO_ONLY
 
 /* include the compression library's header */
-#ifdef G3D_WIN32
- #include "../zlib/zlib.h"
+#ifdef WIN32
+    #include "../zlib/zlib.h"
 #else
- #include <zlib.h>
+    #include <zlib.h>
 #endif
 
 /* include all user configurable info, including optional assembler routines */
