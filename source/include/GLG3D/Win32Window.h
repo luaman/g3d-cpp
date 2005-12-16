@@ -34,7 +34,7 @@ using _internal::_DirectInput;
 class Win32Window : public GWindow {
 private:
 	
-    static Array<GWindowSettings> _supportedSettings;
+    //static Array<GWindowSettings> _supportedSettings;
 
 	GWindowSettings		 settings;
 	std::string			 _title;
@@ -127,7 +127,7 @@ public:
 
         Only width, height, rgbBits, alphaBits, depthBits, stencilBits, fsaaSamples,
         stereo and refreshRate are valid. */
-    static const Array<GWindowSettings>& SupportedWindowSettings();
+    //static const Array<GWindowSettings>& SupportedWindowSettings();
 
     /** Finds the closest match to the desired GWindowSettings.
 
@@ -135,7 +135,7 @@ public:
 
         Only width, height, rgbBits, alphaBits, depthBits, stencilBits, fsaaSamples,
         stereo and refreshRate are valid. */
-    static bool ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest);
+    //static bool ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest);
 	
     virtual ~Win32Window();
 	

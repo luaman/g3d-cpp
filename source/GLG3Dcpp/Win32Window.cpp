@@ -74,7 +74,7 @@ static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPAR
     for a discussion of why this is necessary. */
 static const char* G3DWndClass();
 
-Array<GWindowSettings> Win32Window::_supportedSettings;
+//Array<GWindowSettings> Win32Window::_supportedSettings;
 
 Win32Window* Win32Window::_shareWindow = NULL;
 
@@ -377,6 +377,7 @@ void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
 	loadExtensions();
 }
 
+/* TODO
 const Array<GWindowSettings>& Win32Window::SupportedWindowSettings() {
     return _supportedSettings;
 }
@@ -384,6 +385,7 @@ const Array<GWindowSettings>& Win32Window::SupportedWindowSettings() {
 bool Win32Window::ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest) {
     return false;
 }
+*/
 
 int Win32Window::width() const {
 	return settings.width;
