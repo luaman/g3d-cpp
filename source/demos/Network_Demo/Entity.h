@@ -12,7 +12,7 @@
 #include <G3DAll.h>
 #include "Model.h"
 
-typedef int ID;
+typedef long unsigned int ID;
 enum {NO_ID = 0};
 
 /**
