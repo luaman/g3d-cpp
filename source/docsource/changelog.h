@@ -75,6 +75,7 @@
       <LI> G3D::Stopwatch
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
+      <LI> Fix: [ 1358477 ] ray-plane intersection bug [Dan Keefe]
       <LI> Fix: [ 1370665 ] hash_map moved to stdext in VC8 (2005)
       <LI> Fix: ToneMap extended to use DIM_2D_NPOT instead of DIM_2D_RECT
       <LI> Fix: Texture::copyFromScreen now works with DIM_2D_NPOT textures
@@ -94,6 +95,7 @@
       <LI> Fix: Quat(Matrix3) now computes trace correctly (gave negative quats in some cases) 
       <LI> Fix: Setting RenderDevice::polygonOffset now always produces a depth shift,
                 even for faces perpendicular to the view axis.
+      <LI> Fix: GImage now auto-resolves formats for files with 1 character base names
     </UL>
 
   <P>

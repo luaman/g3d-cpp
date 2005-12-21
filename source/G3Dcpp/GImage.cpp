@@ -1934,9 +1934,10 @@ GImage::Format GImage::resolveFormat(
     std::string extension;
 
     // Try to detect from the filename's extension
-    if (filename.size() > 5) {
+    if (filename.size() >= 5) {
+        int n = iMax(filename.size() - 1, 5);
         // Search backwards for the "."
-        for (int i = 1; i <= 5; ++i) {
+        for (int i = 1; i <= n; ++i) {
             if (filename[filename.size() - i] == '.') {
                 // Upper case
                 extension = toUpper(filename.substr(filename.size() - i + 1));
