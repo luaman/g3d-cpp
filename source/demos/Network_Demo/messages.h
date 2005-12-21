@@ -30,9 +30,9 @@ public:
     /**
      The ID assigned to the player.
      */
-    ID                                  id;
+    EID                                  id;
 
-    SignOnMessage() : id(NO_ID) {}
+    SignOnMessage() : id(NO_EID) {}
     SignOnMessage(ID _id) : id(_id) {}
 
     virtual void serialize(BinaryOutput& b) const {
