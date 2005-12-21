@@ -155,8 +155,8 @@ void MD2Model::load(const std::string& filename, float resize) {
             min_1 = min_1.min(vertex);
             max_1 = max_1.max(vertex);
 
-            if (vertex.squaredLength() > rad_1) {
-                rad_1 = vertex.squaredLength();
+            if (vertex.squaredMagnitude() > rad_1) {
+                rad_1 = vertex.squaredMagnitude();
             }
         }
 

@@ -263,30 +263,30 @@ void MeshAlg::computeAreaStatistics(
     debugAssert(indexArray.size() % 3 == 0);
 
     Array<double> area(indexArray.size() / 3);
-    Array<double> length(indexArray.size());
+    Array<double> magnitude(indexArray.size());
 
     for (int i = 0; i < indexArray.size(); i += 3) {
         const Vector3& v0 = vertexArray[indexArray[i]];
         const Vector3& v1 = vertexArray[indexArray[i + 1]];
         const Vector3& v2 = vertexArray[indexArray[i + 2]];
 
-        area[i / 3] = (v1 - v0).cross(v2 - v0).length() / 2.0;
-        length[i] = (v1 - v0).length();
-        length[i + 1] = (v2 - v1).length();
-        length[i + 2] = (v0 - v2).length();
+        area[i / 3] = (v1 - v0).cross(v2 - v0).magnitude() / 2.0;
+        magnitude[i] = (v1 - v0).magnitude();
+        magnitude[i + 1] = (v2 - v1).magnitude();
+        magnitude[i + 2] = (v0 - v2).magnitude();
     }
 
     area.sort();
-    length.sort();
+    magnitude.sort();
 
-    minEdgeLength = max(0, length[0]);
-    maxEdgeLength = max(0, length.last());
-    medianEdgeLength = max(0, length[length.size() / 2]);
+    minEdgeLength = max(0, magnitude[0]);
+    maxEdgeLength = max(0, magnitude.last());
+    medianEdgeLength = max(0, magnitude[magnitude.size() / 2]);
     meanEdgeLength = 0;
-    for (int i = 0; i < length.size(); ++i) {
-        meanEdgeLength += length[i];
+    for (int i = 0; i < magnitude.size(); ++i) {
+        meanEdgeLength += magnitude[i];
     }
-    meanEdgeLength /= length.size();
+    meanEdgeLength /= magnitude.size();
 
     minFaceArea = max(0, area[0]);
     maxFaceArea = max(0, area.last());
@@ -375,11 +375,11 @@ void MeshAlg::computeBounds(
     Vector3 dia2 = xmax;
     {
         // Set xspan = distance between the 2 points xmin & xmax (squared)
-        double xspan = (xmax - xmin).squaredLength();
+        double xspan = (xmax - xmin).squaredMagnitude();
 
         // Same for y & z spans
-        double yspan = (ymax - ymin).squaredLength();
-        double zspan = (zmax - zmin).squaredLength();
+        double yspan = (ymax - ymin).squaredMagnitude();
+        double zspan = (zmax - zmin).squaredMagnitude();
     
         double maxspan = xspan;
 
@@ -405,7 +405,7 @@ void MeshAlg::computeBounds(
     // calculate initial radius^2 and radius 
     Vector3 d = dia2 - sphere.center;
 
-    double radSq = d.squaredLength();
+    double radSq = d.squaredMagnitude();
     double rad  = sqrt(radSq);
 
     // SECOND PASS: increment current sphere
@@ -416,7 +416,7 @@ void MeshAlg::computeBounds(
 
         d = vertex - center;
 
-        double old_to_p_sq = d.squaredLength();
+        double old_to_p_sq = d.squaredMagnitude();
 
     	// do r^2 test first 
         if (old_to_p_sq > radSq) {
@@ -512,7 +512,7 @@ void MeshAlg::computeTangentVectors(
 
     // Normalize the tangent so it contributes
     // equally at the vertex (TODO: do we need this?)
-    if (fuzzyEq(tangent.length(), 0.0)) {
+    if (fuzzyEq(tangent.magnitude(), 0.0)) {
         tangent = Vector3::unitX();
     } else {
         tangent = tangent.direction();
@@ -557,7 +557,7 @@ void MeshAlg::computeTangentVectors(
     // Normalize the binormal so that it contributes
     // an equal amount to the per-vertex value (TODO: do we need this? 
     // Nelson Max showed that we don't for computing per-vertex normals)
-    if (fuzzyEq(binormal.length(), 0.0)) {
+    if (fuzzyEq(binormal.magnitude(), 0.0)) {
         binormal = Vector3::unitZ();
     } else {
         binormal = binormal.direction();

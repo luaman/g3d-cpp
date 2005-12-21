@@ -40,7 +40,7 @@ float ConvexPolygon::getArea() const {
         int i1 = v - 1;
         int i2 = v;
 
-        sum += (_vertex[i1] - _vertex[i0]).cross(_vertex[i2] - _vertex[i0]).length() / 2; 
+        sum += (_vertex[i1] - _vertex[i0]).cross(_vertex[i2] - _vertex[i0]).magnitude() / 2; 
     }
 
     return sum;
@@ -359,9 +359,9 @@ for (int xx=0; xx < numVertices; xx++) {
             // matching edge index
             int index = 0;
             int num = edge.length();
-            double distance = (edge[index].start - last_vertex).squaredLength();
+            double distance = (edge[index].start - last_vertex).squaredMagnitude();
             for (int e = 1; e < num; e++) {
-                double d = (edge[e].start - last_vertex).squaredLength();
+                double d = (edge[e].start - last_vertex).squaredMagnitude();
 
                 if (d < distance) {
                     // This is the new closest one

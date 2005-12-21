@@ -68,7 +68,7 @@ float Cylinder::radius() const {
 
 float Cylinder::volume() const {
 	return
-		G3D_PI * square(m_radius) * (p1 - p2).length();
+		G3D_PI * square(m_radius) * (p1 - p2).magnitude();
 }
 
 

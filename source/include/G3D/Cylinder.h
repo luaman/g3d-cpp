@@ -68,7 +68,7 @@ public:
     }
 
     inline float height() const {
-        return (p1 - p2).length();
+        return (p1 - p2).magnitude();
     }
 
     /** Random world space point with outward facing normal. */

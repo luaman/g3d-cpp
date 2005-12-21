@@ -110,9 +110,9 @@ bool CollisionDetection::conservativeBoxBoxTest(
         const Vector3 & a, const Vector3 & b, const Vector3 & D) {
     // do a quick bounding sphere test because it is relatively
     // cheap, (three dot products, two sqrts, and a few others)
-    double boxRadius1 = a.length();
-    double boxRadius2 = b.length();
-    return (D.squaredLength() < square(boxRadius1 + boxRadius2));
+    double boxRadius1 = a.magnitude();
+    double boxRadius2 = b.magnitude();
+    return (D.squaredMagnitude() < square(boxRadius1 + boxRadius2));
 }
 
 
@@ -501,7 +501,7 @@ double CollisionDetection::penetrationDepthForFixedSphereFixedBox(
 
     // Squared distance between the outside of the box and the
     // sphere center.
-    double d2 = Vector3::zero().max(distOutsideBox).squaredLength();
+    double d2 = Vector3::zero().max(distOutsideBox).squaredMagnitude();
 
     if (d2 > square(sphere.radius)) {
         // There is no penetration because the distance is greater
@@ -641,9 +641,9 @@ double CollisionDetection::penetrationDepthForFixedSphereFixedSphere(
 
     Vector3 axis = sphereB.center - sphereA.center;
     double radius = sphereA.radius + sphereB.radius;
-    double len = axis.length();
-    axis /= len;
-    double depth = -(len - radius);
+    double mag = axis.magnitude();
+    axis /= mag;
+    double depth = -(mag - radius);
 
     contactPoints.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
     contactNormals.resize(0, DONT_SHRINK_UNDERLYING_ARRAY);
@@ -763,7 +763,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedSphere(
     Vector3&        location,
     Vector3&        outNormal) {
 
-    double  speed     = velocity.length();
+    double  speed     = velocity.magnitude();
     Vector3 direction = velocity / speed;
 
     Vector3 L = sphere.center - point;
@@ -977,7 +977,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedAABox(
     Vector3&                normal) {
 
     if (collisionLocationForMovingPointFixedAABox(origin, dir, box, location, Inside, normal)) {
-        return (location - origin).length();
+        return (location - origin).magnitude();
     } else {
         return inf();
     }
@@ -1301,7 +1301,7 @@ double CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 	Vector3&		    location,
     Vector3&            outNormal) {
 
-	double timeScale = velocity.length();
+	double timeScale = velocity.magnitude();
 
     if (timeScale == 0.0) {
         timeScale = 1;
@@ -1317,8 +1317,8 @@ double CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 		// intersection, that one is exiting the capsule.  
 
 		// Find the entering intersection (the first one that occurs).
-		double d0 = (intersection[0] - point).squaredLength();
-		double d1 = (intersection[1] - point).squaredLength();
+		double d0 = (intersection[0] - point).squaredMagnitude();
+		double d1 = (intersection[1] - point).squaredMagnitude();
 
         // Compute the surface normal (if we aren't ignoring the result)
         if (&outNormal != &ignore) {
@@ -1414,7 +1414,7 @@ double CollisionDetection::collisionTimeForMovingSphereFixedTriangle(
     // they will hit.
 
     // Closest point on the triangle to the sphere intersection with the plane.
-    Vector3 point = closestPointToTrianglePerimeter(triangle._vertex, triangle.edgeDirection, triangle.edgeLength, outLocation);
+    Vector3 point = closestPointToTrianglePerimeter(triangle._vertex, triangle.edgeDirection, triangle.edgeMagnitude, outLocation);
 
     double t = collisionTimeForMovingPointFixedSphere(point, -velocity, sphere, dummy, dummy);
 
@@ -1531,7 +1531,7 @@ Vector3 CollisionDetection::bounceDirection(
     Vector3 sphereLocation  = sphere.center + velocity * collisionTime;
 
     Vector3 normal          = (sphereLocation - collisionLocation);
-    if (fuzzyEq(normal.squaredLength(), 0)) {
+    if (fuzzyEq(normal.squaredMagnitude(), 0)) {
         normal = collisionNormal;
     } else {
         normal.unitize();
@@ -1565,7 +1565,7 @@ Vector3 CollisionDetection::closestPointOnLineSegment(
     const Vector3& point) {
 
     Vector3 edge       = (v1 - v0);
-    double  edgeLength = edge.length();
+    double  edgeLength = edge.magnitude();
 
     return closestPointOnLineSegment(v0, v1, edge / edgeLength, edgeLength, point);
 }
@@ -1579,7 +1579,7 @@ Vector3 CollisionDetection::closestPointOnLineSegment(
     const Vector3& point) {
 
     debugAssert((v1 - v0).direction().fuzzyEq(edgeDirection));
-    debugAssert(fuzzyEq((v1 - v0).length(), edgeLength));
+    debugAssert(fuzzyEq((v1 - v0).magnitude(), edgeLength));
 
     Vector3 c = point - v0;
     double t = edgeDirection.dot(c);
@@ -1605,7 +1605,7 @@ Vector3 CollisionDetection::closestPointToTrianglePerimeter(
     double edgeLength[3];
     
     for (int i = 0; i < 3; ++i) {
-        edgeLength[i] = edgeDirection[i].length();
+        edgeLength[i] = edgeDirection[i].magnitude();
         edgeDirection[i] /= edgeLength[i];
     }
 
@@ -1630,7 +1630,7 @@ Vector3 CollisionDetection::closestPointToTrianglePerimeter(
 
     for (int i = 0; i < 3; ++i) {
         r[i] = closestPointOnLineSegment(v[i], v[next[i]], edgeDirection[i], edgeLength[i], point);
-        d[i] = (r[i] - point).squaredLength();
+        d[i] = (r[i] - point).squaredMagnitude();
     }
 
     if (d[0] < d[1]) {
@@ -1743,10 +1743,10 @@ Vector3 CollisionDetection::closestPointToRectanglePerimeter(
     Vector3 r2 = closestPointOnLineSegment(v2, v3, point);
     Vector3 r3 = closestPointOnLineSegment(v3, v0, point);
 
-    double d0 = (r0 - point).squaredLength();
-    double d1 = (r1 - point).squaredLength();
-    double d2 = (r2 - point).squaredLength();
-    double d3 = (r3 - point).squaredLength();
+    double d0 = (r0 - point).squaredMagnitude();
+    double d1 = (r1 - point).squaredMagnitude();
+    double d2 = (r2 - point).squaredMagnitude();
+    double d3 = (r3 - point).squaredMagnitude();
 
     if (d0 < d1) {
         if (d0 < d2) {
@@ -1808,7 +1808,7 @@ bool CollisionDetection::fixedSolidSphereIntersectsFixedSolidSphere(
     const Sphere&           sphere1,
     const Sphere&           sphere2) {
     
-    return (sphere1.center - sphere2.center).squaredLength() < square(sphere1.radius + sphere2.radius);
+    return (sphere1.center - sphere2.center).squaredMagnitude() < square(sphere1.radius + sphere2.radius);
 }
 
 
@@ -1830,7 +1830,7 @@ bool CollisionDetection::fixedSolidSphereIntersectsFixedSolidBox(
     for (f = 0; f < 6; ++f) {
         Vector3 v0, v1, v2, v3;
         box.getFaceCorners(f, v0, v1, v2, v3);
-        if ((closestPointToRectangle(v0, v1, v2, v3, sphere.center) - sphere.center).squaredLength() <= r2) {
+        if ((closestPointToRectangle(v0, v1, v2, v3, sphere.center) - sphere.center).squaredMagnitude() <= r2) {
             return true;
         }
     }

@@ -60,11 +60,11 @@ public:
      Returns the distance between point and the line
      */
     double distance(const Vector3& p) const {
-        return (closestPoint(p) - p).length();
+        return (closestPoint(p) - p).magnitude();
     }
 
     double distanceSquared(const Vector3& p) const {
-        return (closestPoint(p) - p).squaredLength();
+        return (closestPoint(p) - p).squaredMagnitude();
     }
 
     /** Returns true if some part of this segment is inside the sphere */

@@ -49,7 +49,7 @@ public:
     /** Distance between the sphere centers.  The total extent of the cylinder is 
         2r + h. */
     inline float height() const {
-        return (p1 - p2).length();
+        return (p1 - p2).magnitude();
     }
 
     inline Vector3 center() const {

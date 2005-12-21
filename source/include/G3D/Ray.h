@@ -70,7 +70,7 @@ public:
      Returns the closest distance between point and the Ray
      */
     double distance(const Vector3& point) const {
-        return (closestPoint(point) - point).length();
+        return (closestPoint(point) - point).magnitude();
     }
 
     /**

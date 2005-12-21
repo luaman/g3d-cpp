@@ -31,12 +31,12 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
 
     for (int i = 0; i < 3; ++i) {
         const Vector3 e  = _vertex[next[i]] - _vertex[i];
-        edgeLength[i]    = e.length();
+        edgeMagnitude[i]    = e.magnitude();
 
-        if (edgeLength[i] == 0) {
+        if (edgeMagnitude[i] == 0) {
             edgeDirection[i] = Vector3::zero();
         } else {
-            edgeDirection[i] = e / edgeLength[i];
+            edgeDirection[i] = e / edgeMagnitude[i];
         }
     }
 
@@ -44,7 +44,7 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
     edge02 = _vertex[2] - _vertex[0];
 
     _primaryAxis = _plane.normal().primaryAxis();
-    _area =  edgeDirection[0].cross(edgeDirection[2]).length() * (edgeLength[0] * edgeLength[2]);
+    _area =  edgeDirection[0].cross(edgeDirection[2]).magnitude() * (edgeMagnitude[0] * edgeMagnitude[2]);
 
 }
 

@@ -99,9 +99,9 @@ Plane::Plane(
 
 Plane Plane::fromEquation(double a, double b, double c, double d) {
     Vector3 n(a, b, c);
-    double length = n.length();
-    d /= length;
-    n /= length;
+    double magnitude = n.magnitude();
+    d /= magnitude;
+    n /= magnitude;
     return Plane(n, -d);
 }
 

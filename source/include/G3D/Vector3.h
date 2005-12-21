@@ -149,9 +149,7 @@ public:
     /** @deprecated Use magnitude */
 	double G3D_DEPRECATED length() const;
 
-    inline double magnitude() const {
-        return length();
-    }
+    double magnitude() const;
     
     /**
      The result is a nan vector if the length is almost zero.
@@ -184,13 +182,13 @@ public:
      returns a unit vector.
      */
     inline Vector3 directionOrZero() const {
-        double len = length();
-        if (G3D::fuzzyEq(len, 0.0)) {
+        double mag = magnitude();
+        if (G3D::fuzzyEq(mag, 0.0)) {
             return Vector3::zero();
-        } else if (G3D::fuzzyEq(len, 1.0)) {
+        } else if (G3D::fuzzyEq(mag, 1.0)) {
             return *this;
         } else {
-            return *this * (1.0 / len);
+            return *this * (1.0 / mag);
         }
     }
 
@@ -237,15 +235,13 @@ public:
     }
 
     /** @deprecated Use squaredMagnitude */
-    double squaredLength() const;
+    double G3D_DEPRECATED squaredLength() const;
 
-    inline double squaredMagnitude () const {
-        return squaredLength();
-    }
-
+    double squaredMagnitude () const;
+	
     /** @deprecated Use squaredMagnitude */
     inline double norm() const {
-        return squaredLength();
+        return squaredMagnitude();
     }
 
     double dot(const Vector3& rkVector) const;

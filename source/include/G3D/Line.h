@@ -68,7 +68,7 @@ public:
       Returns the distance between point and the line
      */
     double distance(const Vector3& point) const {
-        return (closestPoint(point) - point).length();
+        return (closestPoint(point) - point).magnitude();
     }
 
     /** Returns a point on the line */

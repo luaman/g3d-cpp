@@ -141,7 +141,7 @@ Vector3 Vector3::random() {
         result = Vector3(symmetricRandom(), 
                          symmetricRandom(),
                          symmetricRandom());
-    } while (result.squaredLength() >= 1);
+    } while (result.squaredMagnitude() >= 1);
 
     result.unitize();
 
@@ -181,18 +181,18 @@ Vector3& Vector3::operator/= (double fScalar) {
 
 //----------------------------------------------------------------------------
 double Vector3::unitize (double fTolerance) {
-	double fLength = length();
+	double fMagnitude = magnitude();
 
-    if (fLength > fTolerance) {
-		float fInvLength = 1.0 / fLength;
-        x *= fInvLength;
-        y *= fInvLength;
-        z *= fInvLength;
+    if (fMagnitude > fTolerance) {
+		float fInvMagnitude = 1.0 / fMagnitude;
+        x *= fInvMagnitude;
+        y *= fInvMagnitude;
+        z *= fInvMagnitude;
     } else {
-        fLength = 0.0;
+        fMagnitude = 0.0;
     }
 
-    return fLength;
+    return fMagnitude;
 }
 
 //----------------------------------------------------------------------------

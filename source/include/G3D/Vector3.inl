@@ -78,13 +78,13 @@ inline Vector3& Vector3::operator= (const Vector3& rkVector) {
 //----------------------------------------------------------------------------
 
 inline bool Vector3::fuzzyEq(const Vector3& other) const {
-    return G3D::fuzzyEq((*this - other).squaredLength(), 0);
+    return G3D::fuzzyEq((*this - other).squaredMagnitude(), 0);
 }
 
 //----------------------------------------------------------------------------
 
 inline bool Vector3::fuzzyNe(const Vector3& other) const {
-    return G3D::fuzzyNe((*this - other).squaredLength(), 0);
+    return G3D::fuzzyNe((*this - other).squaredMagnitude(), 0);
 }
 
 //----------------------------------------------------------------------------
@@ -174,13 +174,23 @@ inline Vector3& Vector3::operator/= (const Vector3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline double Vector3::squaredLength () const {
+inline double Vector3::squaredMagnitude () const {
     return x*x + y*y + z*z;
 }
 
 //----------------------------------------------------------------------------
-inline double Vector3::length() const {
+inline double Vector3::squaredLength () const {
+    return squaredMagnitude();
+}
+
+//----------------------------------------------------------------------------
+inline double Vector3::magnitude() const {
     return sqrt(x*x + y*y + z*z);
+}
+
+//----------------------------------------------------------------------------
+inline double Vector3::length() const {
+    return magnitude();
 }
 
 //----------------------------------------------------------------------------
@@ -229,13 +239,13 @@ inline Vector3 Vector3::max(const Vector3 &v) const {
 
 //----------------------------------------------------------------------------
 inline bool Vector3::isZero() const {
-    return G3D::fuzzyEq(squaredLength(), 0.0);
+    return G3D::fuzzyEq(squaredMagnitude(), 0.0);
 }
 
 //----------------------------------------------------------------------------
 
 inline bool Vector3::isUnit() const {
-    return G3D::fuzzyEq(squaredLength(), 1.0);
+    return G3D::fuzzyEq(squaredMagnitude(), 1.0);
 }
 
 }

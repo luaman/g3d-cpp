@@ -347,7 +347,7 @@ void Draw::capsule(
     cframe.rotation.setColumn(2, Z);
 
     double radius = capsule.getRadius();
-    double height = (capsule.getPoint2() - capsule.getPoint1()).length();
+    double height = (capsule.getPoint2() - capsule.getPoint1()).magnitude();
 
     // Always render upright in object space
     Sphere sphere1(Vector3::zero(), radius);

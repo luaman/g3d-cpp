@@ -125,7 +125,7 @@ int Welder::getIndex(const Vector3& vertex) {
     const List& list = grid[ix][iy][iz];
 
     for (int i = 0; i < list.size(); ++i) {
-        double d = (newVertexArray[list[i]] - vertex).squaredLength();
+        double d = (newVertexArray[list[i]] - vertex).squaredMagnitude();
 
         if (d < distanceSquared) {
             distanceSquared = d;

@@ -43,7 +43,7 @@ std::string Sphere::toString() const {
 
 
 bool Sphere::contains(const Vector3& point) const {
-    double distance = (center - point).squaredLength();
+    double distance = (center - point).squaredMagnitude();
     return distance <= (radius * radius);
 }
 
@@ -166,7 +166,7 @@ Vector3 Sphere::randomInteriorPoint() const {
         result = Vector3(symmetricRandom(), 
                          symmetricRandom(),
                          symmetricRandom());
-    } while (result.squaredLength() >= 1);
+    } while (result.squaredMagnitude() >= 1);
 
     return result * radius + center;
 }

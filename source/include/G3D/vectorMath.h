@@ -60,7 +60,7 @@ inline Vector2 normalize(const Vector2& v) {
 }
 
 inline Vector3 normalize(const Vector3& v) {
-    return v / v.length();
+    return v / v.magnitude();
 }
 
 inline Vector4 normalize(const Vector4& v) {
@@ -204,7 +204,7 @@ inline double length(const Vector2& v) {
 }
 
 inline double length(const Vector3& v) {
-    return v.length();
+    return v.magnitude();
 }
 
 inline double length(const Vector4& v) {

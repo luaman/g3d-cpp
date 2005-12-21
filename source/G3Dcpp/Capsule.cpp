@@ -73,7 +73,7 @@ double Capsule::getVolume() const {
 		pow(radius, 3) * G3D_PI * 4 / 3 +
 
 		// Cylinder volume
-		pow(radius, 2) * (p1 - p2).length();
+		pow(radius, 2) * (p1 - p2).magnitude();
 }
 
 
@@ -84,7 +84,7 @@ double Capsule::getSurfaceArea() const {
 		pow(radius, 2) * 4 * G3D_PI +
 
 		// Cylinder area
-		2 * G3D_PI * radius * (p1 - p2).length();
+		2 * G3D_PI * radius * (p1 - p2).magnitude();
 }
 
 

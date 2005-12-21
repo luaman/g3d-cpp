@@ -27,21 +27,21 @@ Vector3 LineSegment::closestPoint(const Vector3& p) const {
     //    t/direction.length() <= direction.length()
     //      t <= direction.squaredLength()
 
-    if ((t >= 0) && (t <= direction.squaredLength())) {
+    if ((t >= 0) && (t <= direction.squaredMagnitude())) {
     
         // The point falls within the segment.  Normalize direction,
         // divide t by the length of direction.
-        return _point + direction * t / direction.squaredLength();
+        return _point + direction * t / direction.squaredMagnitude();
     
     } else {
 
         // The point does not fall within the segment; see which end is closer.
 
         // Distance from 0, squared
-        double d0Squared = v.squaredLength();
+        double d0Squared = v.squaredMagnitude();
 
         // Distance from 1, squared
-        double d1Squared = (v - direction).squaredLength();
+        double d1Squared = (v - direction).squaredMagnitude();
 
         if (d0Squared < d1Squared) {
 

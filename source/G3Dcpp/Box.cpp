@@ -63,7 +63,7 @@ void Box::deserialize(class BinaryInput& b) {
     _axis[2] = _corner[0] - _corner[4];
 
     for (i = 0; i < 3; ++i) {
-        _extent[i] = _axis[i].length();
+        _extent[i] = _axis[i].magnitude();
         _axis[i] /= _extent[i];
     }
 

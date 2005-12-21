@@ -38,7 +38,7 @@ private:
 
     /** edgeDirection[i] is the normalized vector v[i+1] - v[i] */
     Vector3                     edgeDirection[3];
-    double                      edgeLength[3];
+    double                      edgeMagnitude[3];
     Plane                       _plane;
     Vector3::Axis               _primaryAxis;
 
