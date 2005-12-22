@@ -3,10 +3,10 @@
 # Build G3D libraries and copy them to the current directory,
 # then build a tarfile. 
 #
-# Script maintained by Ben Landon (professor_chaos at users dot sourceforge dot net)
+# Script maintained by Casey O'Donnell (ckodonnell at users dot sourceforge dot net)
 #
 
-XCODE_PROJECT=G3DOSX.xcode
+XCODE_PROJECT=G3DOSX.xcodeproj
 
 # SDLMain.h and SDLMain.m are required to built SDL applications on 
 # OS X.  Authorship information for these two files is in the text
@@ -22,7 +22,7 @@ xcodebuild -project $XCODE_PROJECT clean
 rm ./build/*.a
 
 # Build the Development (aka debug) build style
-xcodebuild -project $XCODE_PROJECT -target GLG3D -buildstyle Development
+xcodebuild -project $XCODE_PROJECT -target GLG3D -configuration Development
 cp ./build/libjpeg.a libjpeg_debug.a
 cp ./build/libG3D.a libG3D_debug.a
 cp ./build/libGLG3D.a libGLG3D_debug.a
@@ -32,7 +32,7 @@ xcodebuild -project $XCODE_PROJECT clean
 rm ./build/*.a
 
 # Build the Deployement (aka Release) build style
-xcodebuild -project $XCODE_PROJECT -target GLG3D -buildstyle Deployment
+xcodebuild -project $XCODE_PROJECT -target GLG3D -Configuration Deployment
 cp ./build/libjpeg.a libjpeg.a
 cp ./build/libG3D.a libG3D.a
 cp ./build/libGLG3D.a libGLG3D.a
