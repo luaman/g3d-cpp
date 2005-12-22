@@ -14,11 +14,15 @@ Concepts <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD><
     On Windows, just <CODE>#include <G3DAll.h></CODE>.  Your program will automatically
     link against %G3D.
 		
-    On Linux and OS X you must write a Makefile and statically link against g3d.a and glg3d.a
+    On Linux you must write a Makefile and statically link against g3d.a and glg3d.a
     (release mode) or g3d-debug.a and glg3d-debug.a.  You must also link against zlib,
     sdl, and the jpeg library.  The iCompile program at http://ice.sf.net is an alternative
     to Makefiles that can automatically detect that your program uses G3D and SDL 
     and link appropriately.  
+
+	On Mac OS X, you should follow the directions at \link guidemacosx Setting up
+	a Project in Mac OS X \endlink. For information on compiling G3D, you should refer to
+	\link guideinstall the Mac OS X compilation instructions \endlink.
 
     See the \link guidetutorial Tutorial \endlink for more details.
 

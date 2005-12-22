@@ -155,9 +155,9 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 	This should run the GLG3D demo; you should see many colored airplanesflying around a pink and blue sky. 
 	</LI>
 
-  @section osx OS X
+  @section osx Mac OS X
 
-  See \link guidemacosx Setting Up a Project in Mac OS X\endlink for complete instructions on installing %G3D on the mac. 
+  See \link guidemacosx Setting Up a Project in Mac OS X\endlink for complete instructions on getting %G3D on the mac running with your own code. 
 
   @section build Building G3D
 
@@ -172,8 +172,48 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
   <LI>Customize the library code.
   </LI>
   </UL>
+<P>
+<I>We recommend using Xcode 2.1 or 2.2 to build G3D, and then using the same version of Xcode to build your G3D programs, both using Xcode project files included in the source distribution, and from the command line. Here, we first give instructions to get prerequisites required to build either way, then directions to build with Xcode, then include the instructions for a more traditional, unix/command-line style build.</I>
+</P>
+<LI>
+<P><B>Common Setup</B></P>
+	<OL>
+	<LI>Install Apple's Xcode Development Environment 2.2, from <A HREF="http://developer.apple.com/tools/download/">Apple's Developer Site</A>. (It may seem like you have to pay for the privilege of joining the Apple Developer Connection (ADC), but in fact you can get a web-only membership for free.)</LI>
+	<LI>Install the <A HREF="http://www.libsdl.org/release/SDL-devel-1.2.9.pkg.tar.gz">SDL 1.2.9 Development Library</A>.</LI>
+	</OL>
+</LI>
+<LI>
+<P><B>Building G3D with Xcode</B></P>
+	<OL>
+	<LI>Get a copy of the source tree, either via <A HREF="http://sourceforge.net/cvs/?group_id=76879">cvs</A> or via the src zip, available on the <A HREF="http://sourceforge.net/project/showfiles.php?group_id=76879">downloads</A> page. Expand the zip.</LI>
+	<LI>Double-click on <tt>G3D/cpp/G3DOSX/G3DOSX.xcodeproj</tt>. This will launch Xcode. </LI>
+	<LI>In Xcode, locate the main toolbar. At the far left of the toolbar, set the active target to G3DTest. Hit "Build." </LI>
+	<LI>Command-Shift-B brings up the "Build Results" window. The last line in the output in that window should be "Build succeeded."</LI>
+	<LI>With the active target set to G3DTest, hit the "Run" button. The console should come up and give you lots of interesting information about G3D's performance on your machine. Congratulations, you have built G3D on Mac OS X.</LI>
+	<LI>Having built G3D, you will probably want to run a demo. We recommend taking advantage of the <tt>*.xcodeproj</tt> files included in some of the demo directories. They work, if you leave them in their current directory. Open <tt>G3D/cpp/source/demos/VAR_Demo/VAR_Demo.xcode</tt>. Hit "Build and Go", and you should see little purple and orange planes flying around in a circle.</LI>
+	</OL>
+</LI>
+<LI>
+<P><B>Building G3D from the command line</B></P>
+	<OL>
+	<LI> <I>gcc 4.0 is the current version for Mac OS X</I></LI>
+	<LI> Install the <A HREF="http://www.cwi.nl/ftp/jack/python/mac/MacPython222active.bin">Python 2.2.2 tool</A>.
+	<LI> Install the <A HREF="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.3-rc3.macosx.bin.tar.gz">Doxygen 1.3.2 tool</A>.
+	<LI> Install the <A HREF="http://ftp.gnu.org/gnu/automake/automake-1.7.5.tar.gz">automake 1.7.5</A> tool (and the corresponding aclocal version).
+	<LI> Install the <A HREF="http://ftp.gnu.org/gnu/autoconf/autoconf-2.57.tar.gz">autoconf 2.57</A> tool.
+	<LI> Add the paths for these tools to your PATH environment variable (usually in your .cshrc, .tcshrc, or .bashrc file).
 
-  To build %G3D, see the <A HREF="build-instructions.html">build instructions</A>.
+	<LI>TODO: set up LD_LIBRARY_PATH
+
+	<LI> Log out so all changes can take effect.
+	<P>
+	<LI>Run "<CODE>chmod u+x build</CODE>" in the <CODE>cpp</CODE> directory.
+	<LI>Run "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory
+	<LI>The library and demos will compile in the source tree
+	</OL>
+	</P>
+</LI>
+  Also see the <A HREF="build-instructions.html">build instructions</A>.
   
    \section defines #defines
     G3D pays attention to the following #defines.
