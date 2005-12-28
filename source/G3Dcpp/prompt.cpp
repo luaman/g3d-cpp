@@ -53,10 +53,10 @@ public:
         dialogTemplate->style |= DS_SETFONT;
       }
         
-      dialogTemplate->x     = x;
-      dialogTemplate->y     = y;
-      dialogTemplate->cx    = w;
-      dialogTemplate->cy    = h;
+      dialogTemplate->x     = (short)x;
+      dialogTemplate->y     = (short)y;
+      dialogTemplate->cx    = (short)w;
+      dialogTemplate->cy    = (short)h;
       dialogTemplate->cdit  = 0;
         
       dialogTemplate->dwExtendedStyle = 0;
@@ -80,10 +80,10 @@ public:
       DLGITEMTEMPLATE item;
 
       item.style = style;
-      item.x     = x;
-      item.y     = y;
-      item.cx    = w;
-      item.cy    = h;
+      item.x     = (short)x;
+      item.y     = (short)y;
+      item.cx    = (short)w;
+      item.cy    = (short)h;
       item.id    = id;
 
       item.dwExtendedStyle = exStyle;
@@ -194,10 +194,10 @@ protected:
       if (font != NULL) {
           item.style |= DS_SETFONT;
       }
-      item.x     = x;
-      item.y     = y;
-      item.cx    = w;
-      item.cy    = h;
+      item.x     = (short)x;
+      item.y     = (short)y;
+      item.cx    = (short)w;
+      item.cy    = (short)h;
       item.id    = id;
 
       item.dwExtendedStyle = exStyle;
@@ -323,7 +323,7 @@ INT_PTR CALLBACK PromptDlgProc(HWND hDlg, UINT msg,
     case WM_NCDESTROY:
         // Under SDL 1.2.6 we get a NCDESTROY message for no reason and the
         // window is immediately closed.  This is here to debug the problem.
-        {int x = 1;}
+        (void)0;
         break;
 
     }
@@ -372,7 +372,7 @@ static int guiPrompt(
         int y = height - buttonHeight - buttonSpacing;
 
         dialogTemplate.AddButton(choice[i], WS_VISIBLE | WS_TABSTOP, 0,
-                           x, y, buttonWidth, buttonHeight, IDC_BUTTON0 + i);
+                           x, y, buttonWidth, buttonHeight, IDC_BUTTON0 + (WORD)i);
         
     }
 

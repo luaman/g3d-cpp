@@ -716,6 +716,10 @@ void MeshAlg::debugCheckConsistency(
             debugAssert(vertexArray[face.vertexIndex[i]].inFace(f));
         }
     }
+#else
+    (void)faceArray;
+    (void)edgeArray;
+    (void)vertexArray;
 #endif // _DEBUG
 }
 

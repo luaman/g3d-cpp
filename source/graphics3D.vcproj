@@ -83,7 +83,7 @@
 				AssemblerListingLocation=".\../temp/release/g3d/"
 				ObjectFile=".\../temp/release/g3d/"
 				ProgramDataBaseFileName=".\../temp/release/g3d/"
-				WarningLevel="3"
+				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool

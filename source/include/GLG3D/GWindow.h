@@ -178,7 +178,9 @@ public:
         or the window has no frame.  <I>May also fail if the GWindow implementation's
         underlying GUI library is too limited.</I>
         @param image May have any dimension supported by underlying OS.*/
-    virtual void setIcon(const GImage& image) {}
+    virtual void setIcon(const GImage& image) {
+        (void)image;
+    }
 
 	virtual void setIcon(const std::string& imageFilename) {
 		setIcon(GImage(imageFilename));
@@ -208,6 +210,7 @@ public:
         returns false.  The caller is responsible for invoking GWindow::notifyResize
         with any resize events; the GWindow does not notify itself. */
     virtual bool pollEvent(GEvent& e) {
+        (void)e;
         return false;
     }
 

@@ -13,6 +13,11 @@
 #ifndef G3D_BINARYINPUT_H
 #define G3D_BINARYINPUT_H
 
+#ifdef _MSC_VER
+// Disable conditional expression is constant, which occurs incorrectly on inlined functions
+#   pragma warning( disable : 4127 )
+#endif
+
 #include <assert.h>
 #include <string>
 #include <vector>

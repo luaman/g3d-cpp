@@ -1082,10 +1082,15 @@ private:
 #       endif
     }
 
-    /** Malloc out of the tiny heap.
-    
-         */
+    /** 
+     Malloc out of the tiny heap.
+     */
     inline void* tinyMalloc(size_t bytes) {
+        // Note that we ignore the actual byte size
+        // and create a constant size block.
+        (void)bytes;
+        debugAssert(tinyBufferSize >= bytes);
+
         void* ptr = NULL;
 
         if (tinyPoolSize > 0) {

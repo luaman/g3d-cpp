@@ -65,9 +65,12 @@ static bool ChangeResolution(int, int, int, int);
 static void makeKeyEvent(int, int, GEvent&);
 static void mouseButton(bool, int, DWORD, GEvent&);
 static void initWin32KeyMap();
-static void printPixelFormatDescription(int, HDC, TextOutput&);
 static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 
+#if 0
+// For use when debugging format negotiation
+static void printPixelFormatDescription(int, HDC, TextOutput&);
+#endif
 
 /** Return the G3D window class, which owns a private DC. 
     See http://www.starstonesoftware.com/OpenGL/whyyou.htm
@@ -1204,6 +1207,8 @@ static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
  Configures a mouse up/down event
  */
 static void mouseButton(bool down, int keyEvent, DWORD flags, GEvent& e) {
+    (void)flags;
+    // TODO: process flags
 	if (down) {
 		e.key.type  = SDL_KEYDOWN;
 		e.key.state = SDL_PRESSED;
@@ -1323,6 +1328,7 @@ static void initWin32KeyMap() {
 }
 
 
+#if 0
 static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
 
     PIXELFORMATDESCRIPTOR pixelFormat;
@@ -1400,6 +1406,7 @@ static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
 
     out.printf("\n");
 }
+#endif
 
 static LRESULT WINAPI window_proc(
     HWND                window,

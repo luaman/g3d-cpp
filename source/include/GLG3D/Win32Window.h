@@ -108,6 +108,9 @@ private:
     HWND                 window;
 	const bool		     createdWindow;
 
+    // Intentionally illegal (private)
+    Win32Window& operator=(const Win32Window& other);
+
 public:
 
     /** Different subclasses will be returned depending on

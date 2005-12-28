@@ -12,6 +12,12 @@
 #ifndef G3D_MATRIX4_H
 #define G3D_MATRIX4_H
 
+
+#ifdef _MSC_VER
+// Disable conditional expression is constant, which occurs incorrectly on inlined functions
+#   pragma warning( disable : 4127 )
+#endif
+
 #include "G3D/debugAssert.h"
 
 namespace G3D {

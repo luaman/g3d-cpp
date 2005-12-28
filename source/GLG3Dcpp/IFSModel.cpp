@@ -38,7 +38,7 @@ void IFSModel::reset() {
 
 
 IFSModelRef IFSModel::create(const std::string& filename, double scale, const CoordinateFrame& cframe, const bool weld) {
-    return create(filename, Vector3(scale, scale, scale), cframe);
+    return create(filename, Vector3(scale, scale, scale), cframe, weld);
 }
 
 
@@ -483,6 +483,8 @@ int IFSModel::PosedIFSModel::numWeldedBoundaryEdges() const {
 
 
 const Array<Vector3>& IFSModel::PosedIFSModel::objectSpaceFaceNormals(bool normalize) const {
+    // Normals are always unit length
+    (void)normalize;
     return model->faceNormalArray;
 }
 

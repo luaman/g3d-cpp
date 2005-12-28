@@ -226,7 +226,7 @@ private:
             // No data was created by serialization.
             // We need to send at least one byte because receive assumes that
             // a zero length message is an error.
-            b.writeUInt8(-1);
+            b.writeUInt8(0xFF);
         }
     
         uint32 len = b.getLength() - 8;

@@ -171,6 +171,7 @@ public:
     }
 
     ReferenceCountedObject& operator=(const ReferenceCountedObject& other) {
+        (void)other;
         // Nothing changes when I am assigned; the reference count on
         // both objects is the same (although my super-class probably
         // changes).

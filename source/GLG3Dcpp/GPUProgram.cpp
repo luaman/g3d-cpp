@@ -175,11 +175,11 @@ void GPUProgram::genPrograms(int num, unsigned int* id) const {
     switch (extension) {
     case NVIDIA:
         alwaysAssertM(glGenProgramsNV != NULL, "Requires an NVIDIA card with the GL_NV_vertex_program extension");
-        glGenProgramsNV(1, id);
+        glGenProgramsNV(num, id);
         break;
 
     case ARB:
-        glGenProgramsARB(1, id);
+        glGenProgramsARB(num, id);
         break;
     }
 }
@@ -189,11 +189,11 @@ void GPUProgram::deletePrograms(int num, unsigned int* id) const {
 
     switch (extension) {
     case NVIDIA:
-        glDeleteProgramsNV(1, id);
+        glDeleteProgramsNV(num, id);
         break;
 
     case ARB:
-        glDeleteProgramsARB(1, id);
+        glDeleteProgramsARB(num, id);
         break;
     }
 }

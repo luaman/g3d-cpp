@@ -12,6 +12,10 @@
 #include "png.h"
 #ifdef PNG_WRITE_SUPPORTED
 
+#ifdef _MSC_VER
+#   pragma warning( disable : 4244 )
+#endif
+
 /* Place a 32-bit number into a buffer in PNG byte order.  We work
  * with unsigned numbers for convenience, although one supported
  * ancillary chunk uses signed (two's complement) numbers.

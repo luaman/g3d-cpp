@@ -157,7 +157,7 @@ void BinaryOutput::reserveBytesWhenOutOfMemory(size_t bytes) {
         debugAssert(file);
 
         size_t count = fwrite(buffer, 1, writeBytes, file);
-        debugAssert((int)count == writeBytes);
+        debugAssert((int)count == writeBytes); (void)count;
 
         fclose(file);
         file = NULL;

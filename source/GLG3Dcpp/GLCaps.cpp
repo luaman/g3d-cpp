@@ -35,7 +35,9 @@ int GLCaps::_numTextureUnits = 0;
 /**
  Dummy function to which unloaded extensions can be set.
  */
-static void __stdcall glIgnore(GLenum e) {}
+static void __stdcall glIgnore(GLenum e) {
+    (void)e;
+}
 
 /** Cache of values supplied to supportsTextureFormat.
     Works on pointers since there is no way for users
@@ -571,6 +573,8 @@ class TempGLContext {
 
     GWindow* tempWindow;
 
+    TempGLContext& operator=(const TempGLContext& other);
+
 public:
 
     TempGLContext() : current(GWindow::current()) {
@@ -986,6 +990,8 @@ bool GLCaps::hasBug_slowVBO() {
     value = beginsWith(r, "MOBILITY RADEON 7500");
 	return value;
 
+    // TODO: Make a real test for this case
+#if 0
     USE_TEMPORARY_CONTEXT;
 
     // Load the vertex arrays.  It is important to create a reasonably coherent object;
@@ -1210,6 +1216,7 @@ bool GLCaps::hasBug_slowVBO() {
     // See if the RAM performance was conservatively faster.
     value = RAMTime < VBOTime * 0.9;
     return value;
+#endif
 }
 
 }

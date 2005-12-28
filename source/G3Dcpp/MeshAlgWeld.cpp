@@ -21,6 +21,11 @@ namespace G3D {
 namespace _internal {
 
 class Welder {
+private:
+
+    // Intentionally illegal
+    Welder& operator=(const Welder& w);
+
 public:
     /** Indices of newVertexArray elements in <B>or near</B> a grid cell. */
     typedef Array<int> List;

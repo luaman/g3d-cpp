@@ -180,8 +180,8 @@ bool _handleDebugAssert_(
 
     case cAbort:
         exit(-1);
-        return false;
         break;
+
     default:
         // Shouldn't get here
         return false;
@@ -198,6 +198,8 @@ bool _handleErrorCheck_(
     int                 lineNumber,
     bool&               ignoreAlways,
     bool                useGuiPrompt) {
+
+    (void)ignoreAlways;
 
     std::string dialogTitle = "Critical Error";
     std::string dialogText = "";

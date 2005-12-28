@@ -304,14 +304,14 @@ public:
      State change to OpenGL (possibly because of a state change to RenderDevice).
       Use to update the state change statistics when raw OpenGL calls are made. */
     inline void majGLStateChange(int inc = 1) {
-        mDebugNumMajorOpenGLStateChanges += 1;
+        mDebugNumMajorOpenGLStateChanges += inc;
     }
 
     /** 
       State change to OpenGL (possibly because of a state change to RenderDevice).
       Use to update the state change statistics when raw OpenGL calls are made. */
     inline void minGLStateChange(int inc = 1) {
-        mDebugNumMinorOpenGLStateChanges += 1;
+        mDebugNumMinorOpenGLStateChanges += inc;
     }
 
     /** Allows the UserInput to find the RenderDevice 

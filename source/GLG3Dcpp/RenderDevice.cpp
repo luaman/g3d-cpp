@@ -702,7 +702,7 @@ void RenderDevice::resetState() {
             glActiveStencilFaceEXT(GL_BACK);
         }
         for (int i = 0; i < 2; ++i) {
-            glStencilMask(~0);
+            glStencilMask((GLuint)~0);
             glDisable(GL_STENCIL_TEST);
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
@@ -1191,7 +1191,7 @@ void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
 
     if (clearStencil) {
         mask |= GL_STENCIL_BUFFER_BIT;
-        glStencilMask(~0);
+        glStencilMask((GLuint)~0);
         minGLStateChange();
         minStateChange();
     }
@@ -2892,7 +2892,7 @@ void RenderDevice::setLight(int i, const GLight& light) {
 
 
 void RenderDevice::setLight(int i, void* x) {
-    debugAssert(x == NULL);
+    debugAssert(x == NULL); (void)x;
     setLight(i, NULL, false);
 }
 

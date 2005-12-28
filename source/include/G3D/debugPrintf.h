@@ -73,7 +73,9 @@ namespace G3D {
 
     // The compiler should optimize away this empty call, unless the
     // arguments are function calls.
-    inline void __cdecl debugPrintf(const char* fmt ...) {};
+    inline void __cdecl debugPrintf(const char* fmt ...) {
+        (void)fmt;
+    };
 
 #endif
 

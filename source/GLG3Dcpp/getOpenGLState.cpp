@@ -128,7 +128,6 @@ GLdouble glGetDouble(GLenum which) {
     return result[0];
 }
 
-
 static std::string getClippingState() {
 	std::string result;
 
@@ -148,7 +147,6 @@ static std::string getClippingState() {
 
 	return result;
 }
-
 
 static std::string getLightingState(bool showDisabled) {
     std::string result;
@@ -407,6 +405,10 @@ std::string getOpenGLState(bool showDisabled) {
     result += "///////////////////////////////////////////////////////////////////\n";
     result += "//                         Lighting                              //\n\n";
     result += getLightingState(showDisabled);
+
+    result += "///////////////////////////////////////////////////////////////////\n";
+    result += "//                         Clipping                              //\n\n";
+    result += getClippingState(showDisabled);
 
     result += "///////////////////////////////////////////////////////////////////\n";
     result += "//                         Textures                              //\n\n";

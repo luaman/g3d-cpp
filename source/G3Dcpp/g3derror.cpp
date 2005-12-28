@@ -26,14 +26,12 @@ ErrorConstant _utility_error(
     const char*			filename,
     int					line) {
 
+        (void)line;
+        (void)filename;
     time_t t;
     time(&t);
 
-    //fprintf(stderr, "__________________________________________________________________\n");
-    //fprintf(stderr, "%s  %s at %s:%d\n", ctime(&t), level, filename, line);
-    //fprintf(stderr, "\"%s\"\n\n", message);
-
-      if (showPrompt) {
+    if (showPrompt) {
         if (strcmp(level, "Critical Error") == 0) {
             char* choice[] = {"Quit"};
             prompt(level, message, (const char **)choice, 1);

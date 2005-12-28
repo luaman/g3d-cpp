@@ -29,7 +29,6 @@ size_t Texture::_sizeOfAllTexturesInMemory = 0;
  Returns true if the system supports automatic MIP-map generation.
  */
 static bool hasAutoMipMap() {
-    return false;
     static bool initialized = false;
     static bool ham = false;
 
@@ -716,6 +715,7 @@ TextureRef Texture::fromMemory(
     float                               maxAnisotropy) {
         
     debugAssert(bytesFormat);
+    (void)depth;
     
     // Check for at least one miplevel on the incoming data
     int numMipMaps = bytes.length();

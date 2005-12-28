@@ -414,7 +414,9 @@ protected:
 
     /** @deprecated */
     virtual void G3D_DEPRECATED
-        doSimulation(RealTime rdt) {}
+        doSimulation(RealTime rdt) {
+            (void)rdt;
+    }
 
     /**
      Override this with your simulation code.
@@ -438,6 +440,8 @@ protected:
      time has elapsed.
      */
     virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+        (void)idt;
+        (void)rdt;
         doSimulation(sdt);
     }
 
@@ -457,6 +461,7 @@ protected:
 
     /** Rendering callback. */
     virtual void onGraphics(RenderDevice* rd) {
+        (void)rd;
         doGraphics();
     }
 
@@ -544,8 +549,9 @@ protected:
     }
     
     /** @deprecated */
-    virtual void G3D_DEPRECATED
-        processEvent(const SDL_Event& event) {}
+    virtual void G3D_DEPRECATED processEvent(const SDL_Event& event) {
+        (void)event;
+    }
 
     /**
      It is recommended to override doUserInput instead of this method.
@@ -579,7 +585,9 @@ protected:
     /**
      Routine for processing user input from the previous frame.
      */
-    virtual void onUserInput(class UserInput* userInput) {}
+    virtual void onUserInput(class UserInput* userInput) {
+        (void)userInput;
+    }
 };
 
 }

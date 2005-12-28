@@ -1105,26 +1105,6 @@ bool NetListener::clientWaiting() const {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void var(TextOutput& t, const std::string& name, const std::string& val) {
-    t.writeSymbols(name,"=");
-    t.writeString(val);
-    t.writeNewline();
-}
-
-
-static void var(TextOutput& t, const std::string& name, const bool val) {
-    t.writeSymbols(name, "=", val ? "Yes" : "No");
-    t.writeNewline();
-}
-
-
-static void var(TextOutput& t, const std::string& name, const int val) {
-    t.writeSymbols(name,"=");
-    t.writeNumber(val);
-    t.writeNewline();
-}
-
-
 void NetworkDevice::describeSystem(
     TextOutput& t) {
 

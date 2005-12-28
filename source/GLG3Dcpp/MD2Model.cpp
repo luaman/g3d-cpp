@@ -432,7 +432,7 @@ int MD2Model::getFrameNumber(const Pose& pose) {
 static const uint32 maxVARVerts = 1600; 
 
 void MD2Model::allocateVertexArrays(RenderDevice* renderDevice) {
-
+    (void)renderDevice;
     size_t size = maxVARVerts * (24 + sizeof(Vector3) * 2 + sizeof(Vector2int16));
 
     for (int i = 0; i < NUM_VAR_AREAS; ++i) {

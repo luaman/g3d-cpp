@@ -19,6 +19,11 @@
 #ifndef G3DMATH_H
 #define G3DMATH_H
 
+#ifdef _MSC_VER
+// Disable conditional expression is constant, which occurs incorrectly on inlined functions
+#   pragma warning( disable : 4127 )
+#endif
+
 // Prevent MSVC from defining min and max macros
 #define NOMINMAX
 

@@ -9,6 +9,11 @@
 
 #include <stdlib.h>
 
+#ifdef _MSC_VER
+// Disable conditional expression is constant, which occurs incorrectly on inlined functions
+#   pragma warning( disable : 4127 )
+#endif
+
 namespace G3D {
 
 inline bool isNaN(double x) {

@@ -14,6 +14,9 @@ namespace G3D {
 
 double gaussRandom(double mean, double stdev) {
 
+    // TODO: stdev not used
+    (void)stdev; (void)mean;
+
     // Gaussian random numbers are generated two at a time.
     // On alternating calls we just return the previously
     // computed pair value.

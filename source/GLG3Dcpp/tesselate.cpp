@@ -48,6 +48,7 @@ static void __stdcall _tesselateVertex(Vector3* v, TessData* data) {
 }
 
 static void __stdcall _tesselateEnd(TessData* data) {
+    (void)data;
 }
 
 /**
@@ -60,6 +61,9 @@ static void __stdcall _tesselateCombine(
     GLfloat         w[4],
     Vector3**       vertex,
     TessData*       data) {
+
+    (void)w;
+    (void)dummy;
 
     // Just copy data from the coordinates
     data->allocStack.append(Vector3(coords[0], coords[1], coords[2]));

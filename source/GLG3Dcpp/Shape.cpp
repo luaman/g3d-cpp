@@ -202,6 +202,7 @@ void CapsuleShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color
 
 
 void RayShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor, Color4 wireColor) {
+    (void)wireColor;
     CoordinateFrame cframe0 = rd->getObjectToWorldMatrix();
     rd->setObjectToWorldMatrix(cframe0 * cframe);
     Draw::ray(geometry, rd, solidColor);
