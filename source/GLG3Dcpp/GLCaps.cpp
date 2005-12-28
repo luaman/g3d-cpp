@@ -829,6 +829,7 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
 }
 
 
+#if 0
 /** Called from hasBug_slowVBO */
 static void configureCameraAndLights() {
     glMatrixMode(GL_PROJECTION);
@@ -871,6 +872,7 @@ static void configureCameraAndLights() {
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 }
+#endif
 
 
 bool GLCaps::hasBug_redBlueMipmapSwap() {
