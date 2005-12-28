@@ -48,7 +48,7 @@ private:
     EntityTable         entityTable;
 
     /** ID of my entity */
-    ID                  localID;
+    Entity::ID          localID;
 
     GCamera             camera;
 

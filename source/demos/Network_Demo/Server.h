@@ -21,7 +21,7 @@ public:
     /**
      The ID of the object associated with this client.
      */
-    ID                                  id;
+    Entity::ID                          id;
 
     /**
      1/2 the ping time.
@@ -29,7 +29,7 @@ public:
     RealTime                            oneWayLatency;
 
     ClientProxy() {}
-    ClientProxy(ID _id) : id(_id), oneWayLatency(0) {}
+    ClientProxy(Entity::ID _id) : id(_id), oneWayLatency(0) {}
 };
 
 
@@ -67,7 +67,7 @@ private:
     EntityTable                 entityTable;
 
     /** Generates a fresh ID */
-    ID newID();
+    Entity::ID newID();
 
     /** Called from doNetwork when listener has an incoming client */
     void acceptIncomingClient();

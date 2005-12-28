@@ -30,10 +30,10 @@ public:
     /**
      The ID assigned to the player.
      */
-    EID                                  id;
+    Entity::ID                               id;
 
-    SignOnMessage() : id(NO_EID) {}
-    SignOnMessage(ID _id) : id(_id) {}
+    SignOnMessage() : id(Entity::NO_ID) {}
+    SignOnMessage(Entity::ID _id) : id(_id) {}
 
     virtual void serialize(BinaryOutput& b) const {
         b.writeInt32(id);
@@ -55,7 +55,7 @@ class EntityStateMessage {
 public:
 
     /** ID of the object for which these controls apply */
-    ID                          id;
+    Entity::ID                  id;
     Controls                    controls;
     PhysicsFrame                frame;
     Vector3                     velocity;

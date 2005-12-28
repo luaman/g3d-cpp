@@ -12,9 +12,6 @@
 #include <G3DAll.h>
 #include "Model.h"
 
-typedef int EID;
-enum {NO_EID = 0};
-
 /**
  Entity controls.
  */
@@ -50,6 +47,8 @@ public:
  */
 class Entity {
 public:
+    typedef int ID;
+    enum {NO_ID = 0};
 
     enum ModelType {NONE = 0, HELICOPTER};
 
@@ -60,7 +59,7 @@ public:
       */
     static const RealTime     networkLerpTime;
 
-    EID                  id;
+    ID                  id;
 
     Color3              color;
 
@@ -121,7 +120,7 @@ public:
         (The server side only updates the controls, not the state.)
         If localID == id, the controls are not updated because this
         entity is being controlled locally. */
-    void clientUpdateFromStateMessage(class EntityStateMessage& msg, EID localID);
+    void clientUpdateFromStateMessage(class EntityStateMessage& msg, Entity::ID localID);
 
     void doSimulation(SimTime dt);
 
@@ -132,7 +131,7 @@ public:
 };
 
 
-typedef Table<EID, Entity> EntityTable;
+typedef Table<Entity::ID, Entity> EntityTable;
 
 void simulateEntities(EntityTable& entityTable, SimTime dt);
 

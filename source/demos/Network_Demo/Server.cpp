@@ -22,8 +22,8 @@ Server::Server(App* app) : app(app) {
 }
 
 
-ID Server::newID() {
-    static ID lastID = 0;
+Entity::ID Server::newID() {
+    static Entity::ID lastID = 0;
     return ++lastID;
 }
 

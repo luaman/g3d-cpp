@@ -26,7 +26,7 @@ void Client::init()  {
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
 
-    localID = NO_EID;
+    localID = Entity::NO_ID;
 
     // Connect
     serverProxy.connect(selectedServer.address);
