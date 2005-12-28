@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-11-16
+  @edited  2005-12-27
 */
 
 #include "GLG3D/GLCaps.h"
@@ -504,6 +504,7 @@ bool GLCaps::supports(const std::string& extension) {
 
 
 bool GLCaps::supports(const TextureFormat* fmt) {
+
     // First, check if we've already tested this format
     if (! _supportedTextureFormat.containsKey(fmt)) {
         uint8 bytes[8 * 8 * 4];
@@ -612,6 +613,19 @@ bool GLCaps::hasBug_normalMapTexGen() {
 }
 
 
+#ifdef G3D_WIN32
+  // If not using SDL, create a temporary GL context.
+  // Written using ? operator because "reset" method
+  // is not available on MSVC6.
+#   define USE_TEMPORARY_CONTEXT\
+	std::auto_ptr<TempGLContext> context(\
+	 (dynamic_cast<const SDLWindow*>(GWindow::current()) == NULL) ? \
+       new TempGLContext() : NULL);
+
+#else
+#   define USE_TEMPORARY_CONTEXT
+#endif
+
 static void cubeMapBugs(bool& mtc, bool& nmt) {
     static bool initialized = false;
     static bool valuemtc, valuenmt;
@@ -626,13 +640,7 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
 
     GLCaps::loadExtensions();
 
-    /*
-    TODO: Morgan
-	std::auto_ptr<TempGLContext> context;
-	if (dynamic_cast<const SDLWindow*>(GWindow::current())==NULL) {
-		context.reset(new TempGLContext());		// Create a temp context to use
-	}
-    */
+    USE_TEMPORARY_CONTEXT;
 
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
@@ -663,15 +671,6 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
             GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
             GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB};
 
-
-        // Every three is a vector in one direction
-/*        float direction[] = {
-             1,  0,  0,
-            -1,  0,  0,
-             0,  1,  0,
-             0, -1,  0,
-             0,  0,  1,
-             0,  0, -1};*/
 
         // Face colors
         unsigned char color[6];
@@ -870,6 +869,71 @@ static void configureCameraAndLights() {
 }
 
 
+bool GLCaps::hasBug_redBlueMipmapSwap() {
+    static bool initialized = false;
+    static bool value = false;
+
+    if (initialized) {
+        return value;
+    }
+
+    initialized = true;
+
+    USE_TEMPORARY_CONTEXT;
+
+    static bool hasAutoMipmap = false;
+    {
+        std::string ext = (char*)glGetString(GL_EXTENSIONS);
+        hasAutoMipmap = (ext.find("GL_SGIS_generate_mipmap") != std::string::npos);
+    }
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    GLuint id;
+    glGenTextures(1, &id);
+
+    glBindTexture(GL_TEXTURE_2D, id);
+
+    if (hasAutoMipmap) {
+        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+    }
+
+    int N = 4 * 4 * 3;
+    uint8* bytes = new uint8[N];
+
+    memset(bytes, 0, 4*4*3);
+    for (int i = 0; i < N; i += 3) {
+        bytes[i] = 0xFF;
+    }
+
+    // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
+    // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 4, 4, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+
+    // Read the data back.
+    glGetTexImage(GL_TEXTURE_2D,
+			      0,
+			      GL_RGB,
+			      GL_UNSIGNED_BYTE,
+			      bytes);
+
+    Log::common()->printf("%d %d %d", bytes[0], bytes[1], bytes[2]);
+
+    // Verify that the data made the round trip correctly
+    value = 
+        (bytes[0] != 0xFF) ||
+        (bytes[1] != 0x00) ||
+        (bytes[2] != 0x00);
+
+    delete[] bytes;
+
+    // Draw to the screen.
+
+    glDeleteTextures(1, &id);
+    glPopAttrib();
+
+    return value;
+}
+
 bool GLCaps::hasBug_mipmapGeneration() {
     static bool initialized = false;
     static bool value;
@@ -922,14 +986,7 @@ bool GLCaps::hasBug_slowVBO() {
     value = beginsWith(r, "MOBILITY RADEON 7500");
 	return value;
 
-    /*
-    TODO: Morgan
-	std::auto_ptr<TempGLContext> context;
-	if (dynamic_cast<const SDLWindow*>(GWindow::current())==NULL) {
-		context.reset(new TempGLContext());		// Create a temp context to use
-	}
-    */
-
+    USE_TEMPORARY_CONTEXT;
 
     // Load the vertex arrays.  It is important to create a reasonably coherent object;
     // random triangles are a pathological case for the graphics card and will produce

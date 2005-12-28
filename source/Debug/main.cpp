@@ -31,6 +31,8 @@ public:
 
     class App*          app;
 
+    TextureRef texture[2];
+
     Demo(App* app);
 
     virtual ~Demo() {}
@@ -70,12 +72,76 @@ public:
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
-
 void Demo::onInit()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
     GApplet::init();
+
+    texture[0] = NULL;//Texture::fromFile("0.jpg");
+//    GImage im0("0.jpg");
+
+//    GImage im(512,512,3);
+//    GImage im("1.bmp");
+//    im.save("1.bmp");
+    
+    // Fixes
+//    memcpy(im.byte() + 512*3 * 25, im0.byte(), 512*3 * 24);
+
+    // Still broken
+//    memset(im.byte() + 512 * 3 * 50, 0, 512*3 * 462);
+
+    // Still broken
+  /*  
+
+    for (int i = 0; i < 512 * 512 * 3; ++i) {
+        uint8& c = *(im.byte() + i);
+        c = 0;
+    }
+    
+
+    // Still broken!
+    for (int i = 0; i < 512 * 512 * 3; i += 3) {
+        uint8& c = *(im.byte() + i);
+        c = 0xFF;
+    }
+    */
+
+//    memcpy(b, im.byte(), 512*512*3);
+
+    // X = 3 fails, X = 4 succeeds
+    static const int X = 3;
+    uint8* b = new uint8[4*4*X];
+
+
+    memset(b, 0, 4*4*X);
+    for (int i = 0; i < 4 * 4 * X; i += X) {
+        b[i] = 0xFF;
+    }
+
+    // Format bug only occurs when using bilinear interpolation
+    texture[1] = Texture::fromMemory("Red", b, (X == 3) ? TextureFormat::RGB8 : TextureFormat::RGBA8, 4, 4);
+    //, TextureFormat::AUTO, Texture::TILE, Texture::NO_INTERPOLATION, Texture::DIM_2D);
+    delete[] b;
+    
+    b = new uint8[4*4*3];
+    glBindTexture(GL_TEXTURE_2D, texture[1]->getOpenGLID());
+    glGetTexImage(GL_TEXTURE_2D,
+			      0,
+			      GL_RGB,
+			      GL_UNSIGNED_BYTE,
+			      b);
+
+    Log::common()->printf("%d %d %d", b[0], b[1], b[2]);
+/*    
+    alwaysAssertM(b[0] == 0xFF, "Read back value with Red != 0xFF");
+    alwaysAssertM(b[1] == 0x00, "Read back value with Green != 0x00");
+    alwaysAssertM(b[2] == 0x00, "Read back value with Blue != 0x00");
+  */  
+    delete[] b;
+
+   // alwaysAssertM(! GLCaps::hasBug_redBlueMipmapSwap(), "Red and blue are swapped.");
+
 
     setDesiredFrameRate(90);
 }
@@ -123,11 +189,6 @@ void Demo::onGraphics(RenderDevice* rd) {
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
     
-    for (int i = 0; i < 35; ++i) {
-    //    app->debugPrintf("XXXXXXXXXX");
-    }
-    
-
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
 
@@ -136,6 +197,16 @@ void Demo::onGraphics(RenderDevice* rd) {
         app->sky->render(app->renderDevice, lighting);
     }
 
+    app->renderDevice->push2D();
+        Rect2D rect = Rect2D::xywh(0, 100, 100, 100);
+        app->renderDevice->setTexture(0, texture[0]);
+        Draw::rect2D(rect, rd);
+
+        rect = rect + Vector2(200, 0);
+        app->renderDevice->setTexture(0, texture[1]);
+        Draw::rect2D(rect, rd);
+
+    app->renderDevice->pop2D();
     // Setup lighting
     app->renderDevice->enableLighting();
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));

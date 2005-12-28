@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2005-11-10
+ @edited  2005-11-27
 
- Copyright 2000-2005, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
 */
 
@@ -198,7 +198,8 @@ public:
     static bool hasBug_glMultiTexCoord3fvARB();
 
     /**
-     Returns true if cube map support has a specific known bug on this card.
+     Returns true if cube map support has a specific known bug on this card that
+     prevents correct normal map coordinate generation.
      Returns false if cube maps are not supported at all on this card.
 
      Call after OpenGL is intialized.  Will render on the backbuffer but not make
@@ -207,8 +208,20 @@ public:
      Radeon Mobility 7500 has been shown to have a bug where not only does
      hasBug_glMultiTexCoord3fvARB() exist, but normal maps can't work around 
      the problem.
+
+     If detected, G3D::Sky will revert to non-cube map textures.
      */
     static bool hasBug_normalMapTexGen();
+
+    /**
+    Radeon mobility 7500 occasionally flips the red and blue channels
+    when auto-generating mipmaps.  This has proven to be a reliable test
+    for this bug. 
+
+    If this bug is detected, G3D::Texture switches to RGBA8 formats for
+    RGB8 data.
+    */
+    static bool hasBug_redBlueMipmapSwap();
 
     /**
       Returns true if SGIS auto mip-map generation occasionally
@@ -216,10 +229,12 @@ public:
       the low-level mipmaps).
 
       Radeon Mobility 9200 has this bug for some drivers.
+
+      If this bug is detected, G3D::Texture reverts to software mipmap generation.
      */
     static bool hasBug_mipmapGeneration();
 
-/**
+    /**
 	 Some graphics cards (e.g. Radeon Mobility 7500) support the VBO extension
 	 but it is slower than main memory in most cases due to poor cache behavior.
 	 This method performs a speed test the first time it is invoked and identifies

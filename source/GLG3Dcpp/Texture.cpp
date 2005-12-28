@@ -29,6 +29,7 @@ size_t Texture::_sizeOfAllTexturesInMemory = 0;
  Returns true if the system supports automatic MIP-map generation.
  */
 static bool hasAutoMipMap() {
+    return false;
     static bool initialized = false;
     static bool ham = false;
 
@@ -713,7 +714,7 @@ TextureRef Texture::fromMemory(
     Dimension                           dimension,
     DepthReadMode                       depthRead,
     float                               maxAnisotropy) {
-
+        
     debugAssert(bytesFormat);
     
     // Check for at least one miplevel on the incoming data
@@ -728,12 +729,21 @@ TextureRef Texture::fromMemory(
         desiredFormat = bytesFormat;
     }
 
+    if (GLCaps::hasBug_redBlueMipmapSwap() && (desiredFormat == TextureFormat::RGB8)) {
+        desiredFormat = TextureFormat::RGBA8;
+    }
+
+    debugAssertM(GLCaps::supports(desiredFormat), "Unsupported texture format.");
+
     glStatePush();
 
         glEnable(target);
         glBindTexture(target, textureID);
         if (isMipMapformat(interpolate) && hasAutoMipMap() && (numMipMaps == 1)) {
-            // Enable hardware MIP-map generation
+            // Enable hardware MIP-map generation.
+            // Must enable before setting the level 0 image (we'll set it again
+            // in setTexParameters, but that is intended primarily for 
+            // the case where that function is called for a pre-existing GL texture ID).
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
         }
 

@@ -208,6 +208,11 @@ void App::countBugs() {
         Log::common()->printf("   Detected slowVBO bug\n\n");
     }
 
+    if (GLCaps::hasBug_redBlueMipmapSwap()) {
+        ++bugCount;
+        Log::common()->printf("   Detected redBlueMipmapSwap bug\n\n");
+    }
+
     if (beginsWith(GLCaps::renderer(), "RADEON") &&
         GLCaps::supports_GL_ARB_shadow() &&
         GLCaps::supports_GL_ARB_shading_language_100()) {
