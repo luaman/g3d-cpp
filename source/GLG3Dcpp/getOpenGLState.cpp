@@ -408,7 +408,7 @@ std::string getOpenGLState(bool showDisabled) {
 
     result += "///////////////////////////////////////////////////////////////////\n";
     result += "//                         Clipping                              //\n\n";
-    result += getClippingState(showDisabled);
+    result += getClippingState();
 
     result += "///////////////////////////////////////////////////////////////////\n";
     result += "//                         Textures                              //\n\n";

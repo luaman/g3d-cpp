@@ -13,6 +13,11 @@
 #include "G3D/platform.h"
 #include "GLG3D/RenderDevice.h"
 
+#if defined(_MSC_VER) && !defined(_NDEBUG)
+// Disable unreachable code warning in debug mode
+#   pragma warning( disable : 4702 )
+#endif
+
 namespace G3D {
 
 void GPUProgram::ArgList::set(const std::string& var, const TextureRef& val) {
