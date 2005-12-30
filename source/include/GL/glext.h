@@ -1779,6 +1779,14 @@ typedef unsigned long GLhandleARB;  // shader object handle
 #define GL_GENERATE_MIPMAP_HINT_SGIS      0x8192
 #endif
 
+// Occlusion query
+#define GL_QUERY_COUNTER_BITS_ARB         0x8864
+#define GL_CURRENT_QUERY_ARB              0x8865
+#define GL_QUERY_RESULT_ARB               0x8866
+#define GL_QUERY_RESULT_AVAILABLE_ARB     0x8867
+#define GL_SAMPLES_PASSED_ARB             0x8914
+
+
 #ifndef GL_SGIS_multisample
 #define GL_MULTISAMPLE_SGIS               0x809D
 #define GL_SAMPLE_ALPHA_TO_MASK_SGIS      0x809E

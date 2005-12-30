@@ -291,6 +291,7 @@
         G3D::BinaryInput, 
         G3D::BinaryOutput, 
         G3D::copyFile, 
+        G3D::crc32,
         G3D::createDirectory,
         G3D::createTempFile, 
         G3D::isDirectory,

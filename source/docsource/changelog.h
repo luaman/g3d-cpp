@@ -32,6 +32,8 @@
       <LI> zlib upgraded to 1.2.3 [Corey]
       <LI> zlib now statically linked on Win32 (no longer requires zlib1.dll at runtime) [Corey]
       <LI> G3D::MeshShape
+      <LI> G3D::crc32
+      <LI> Added occlusion query #defines [Nick Bray]
 	  <LI> G3D::Win32Window now shares textures and vertex buffers across all GL contexts
 	  <LI> G3D::Win32Window now enforces single-threading among GL contexts
 	  <LI> G3D::GLCaps::slowVBO

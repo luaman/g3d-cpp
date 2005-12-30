@@ -44,6 +44,16 @@ std::string license();
 
 
 /**
+ Computes the CRC32 value of a byte array.  CRC32 is designed to be a hash
+ function that produces different values for similar strings.
+
+ This implementation is compatible with PKZIP and GZIP.
+
+ Based on http://www.gamedev.net/reference/programming/features/crc32/
+*/
+uint32 crc32(const void* bytes, size_t numBytes);
+
+/**
  OS and processor abstraction.  The first time any method is called the processor
  will be analyzed.  Future calls are then fast.
 
