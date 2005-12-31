@@ -71,7 +71,7 @@ inline unsigned int hashCode(const G3D::Hashable& a) {
  String hashing function for use with Table.
  */
 inline unsigned int hashCode(const std::string& a) {
-    return crc32(a.c_str(), a.size());
+    return G3D::crc32(a.c_str(), a.size());
 }
 
 namespace G3D {
