@@ -126,7 +126,8 @@ Although %G3D uses SDL
 (http://www.libsdl.org) for platform window management, you can use the G3D::GWindow API 
 to replace SDL with a platform-specific or alternative library.  Users have 
 contributed unsupported GWindow implementations for wxWindows, qtWindows, and the 
-Win32 API that can be found in the contrib directory.
+Win32 API that can be found in the contrib directory.  Version 7.00 of G3D will not use
+SDL at all on Windows by default to reduce the size of your dependencies.
 
 The contrib directory also contains AudioDevice implementations for FMOD 
 (http://www.fmod.org) and SDL_Mixer (http://www.libsdl.com/sdl_mixer).

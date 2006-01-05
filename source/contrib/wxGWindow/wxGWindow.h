@@ -1,5 +1,5 @@
 /**
-  Binding to allow G3D within wxWindows.
+  Binding to allow G3D within wxWindows 2.6.2.
 
   You must have already installed wxWindows for your platform and
   compiled it with OpenGL bindings:
@@ -8,12 +8,14 @@
      and set wxUSE_GLCANVAS to 1... on Unix, pass --with-opengl 
      to configure to compile using OpenGL or Mesa."
 
-  Including this file automatically links against all necessary
-  files on Windows.
+  <b>Including this file automatically links against all necessary
+  files on Windows.</B>
+
+  Include this before including G3D, and at the top of all your source files.
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-10-02
-  @edited  2004-11-14
+  @edited  2006-01-04
  */
 #ifndef G3D_wxGWindow_H
 #define G3D_wxGWindow_H
@@ -23,14 +25,14 @@
 
 // Link against wxWindows
 #ifdef G3D_WIN32
-    #ifdef _DEBUG
-        #pragma comment(lib, "wxbase25d.lib")
-        #pragma comment(lib, "wxmsw25d_core.lib")
-        #pragma comment(lib, "wxmsw25d_gl.lib")
+    #if defined(_DEBUG) && !defined(G3D_DEBUGRELEASE)
+        #pragma comment(lib, "wxbase26d.lib")
+        #pragma comment(lib, "wxmsw26d_core.lib")
+        #pragma comment(lib, "wxmsw26d_gl.lib")
     #else
-        #pragma comment(lib, "wxbase25.lib")
-        #pragma comment(lib, "wxmsw25_core.lib")
-        #pragma comment(lib, "wxmsw25_gl.lib")
+        #pragma comment(lib, "wxbase26.lib")
+        #pragma comment(lib, "wxmsw26_core.lib")
+        #pragma comment(lib, "wxmsw26_gl.lib")
     #endif
 
     #pragma comment(lib, "rpcrt4.lib")

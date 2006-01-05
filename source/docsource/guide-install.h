@@ -234,8 +234,15 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
      <B>NO_SDL_MAIN</B> - Do not attempt to link against sdlmain.lib.
 
     <P>
-     <B>_DEBUG</B> - Build in debug mode.  This enables debugAssert, 
-     debugBreak, debugAssertM, array bounds checks, etc.
+     <B>_DEBUG</B> - Build in debug mode and link against the debug runtime DLLs.  This enables debugAssert, 
+     debugBreak, debugAssertM, array bounds checks, etc. (Can be overriden by G3D_DEBUGRELEASE)
+     <P>
+     <B>G3D_DEBUG</B> - Enable debugAssert, 
+     debugBreak, debugAssertM, array bounds checks, but relies on the _DEBUG flag to indicate whether
+     to compile in debug or release mode.(Can be overriden by G3D_DEBUGRELEASE)
+   <P>
+   <B>G3D_DEBUGRELEASE</B> (or G3D_RELEASEDEBUG)- Use the release build of G3D and the standard library, but keep assertions
+   that check for user errors.  This mode allows your program to run fast but still be debuggable.
     <P>
      <B>G3D_DEBUG_NOGUI</B> - When building in debug mode, this flag
       says to use stdout and not popups on Windows for assertion 

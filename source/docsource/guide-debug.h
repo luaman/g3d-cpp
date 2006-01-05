@@ -12,7 +12,6 @@ Application Framework <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
 
     G3D provides many services to help you find bugs in your own code.
 
-
 	Debug and release builds are different!
 	
     Use the debug binaries with your debug build (and build them yourself if you want to step into the G3D source code.)
@@ -21,6 +20,9 @@ Application Framework <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
     the debug target of your project-- many errors in your code will be caught in debug mode by 
     %G3D.
 
+    Some programmers like to use a combined "Debug/Release" (aka "Develop") mode, where libraries are all in release mode for performance but
+    their own application is in debug mode for easy debugging.  To use this mode, either define the symbol "G3D_DEBUGRELEASE" <I>or</I> undefine _DEBUG and #define G3D_DEBUG
+    before including G3D.
 
     %G3D provides assertion statements that are more powerful than those included with
     the C runtime.  They break at the line of your code where the assertion was violated

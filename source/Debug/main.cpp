@@ -252,6 +252,16 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
+
+    std::string x[] = {"c:/ironlore/foo", "c:/program files/bar/a", "c:/ironlore/bar", "d:/bannana", "c:/ironlore/cod"};
+
+    std::string a = "a";
+    Set<uint32> y;
+    for (int i = 0; i < 5; ++i) {
+        y.insert(hashCode(x[i]));
+    }
+    int g = y.size();
+
     GAppSettings settings;
     settings.useNetwork = false;
     App(settings).run();

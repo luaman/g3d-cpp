@@ -19,6 +19,7 @@
 #include "G3D/debug.h"
 #include "G3D/System.h"
 #include "G3D/g3dmath.h"
+//#include <hash_map>
 #include <assert.h>
 #include <string>
 
@@ -71,6 +72,8 @@ inline unsigned int hashCode(const G3D::Hashable& a) {
  String hashing function for use with Table.
  */
 inline unsigned int hashCode(const std::string& a) {
+//    static stdext::hash_value<std::string> hash;
+//    return hash(a);
     return G3D::crc32(a.c_str(), a.size());
 }
 

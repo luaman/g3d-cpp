@@ -17,9 +17,9 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-08-26
-  @edited  2004-01-02
+  @edited  2006-01-02
 
- Copyright 2000-2004, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
@@ -106,7 +106,7 @@ namespace _internal {
  @internal
  */
 
-#ifdef _DEBUG
+#ifdef G3D_DEBUG
 
     #ifndef G3D_OSX
         #if defined(_MSC_VER) 

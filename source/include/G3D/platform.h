@@ -18,6 +18,17 @@
  */
 #define G3D_VER 60800
 
+#if defined(G3D_RELEASEDEBUG)
+#   define G3D_DEBUGRELEASE
+#endif
+
+#if defined(G3D_DEBUGRELEASE) && defined(_DEBUG)
+#   undef _DEBUG
+#endif
+
+#if !defined(G3D_DEBUG) && defined(_DEBUG)
+#   define G3D_DEBUG
+#endif
 
 #ifdef _MSC_VER 
     #define G3D_WIN32 

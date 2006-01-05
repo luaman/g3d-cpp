@@ -29,6 +29,8 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> contrib/wxGWindow now uses wxWidgets 2.6.2
+      <LI> G3D_DEBUG now controls whether debug code is enabled; it defaults to the value of _DEBUG
       <LI> zlib upgraded to 1.2.3 [Corey]
       <LI> zlib now statically linked on Win32 (no longer requires zlib1.dll at runtime) [Corey]
       <LI> G3D::MeshShape
