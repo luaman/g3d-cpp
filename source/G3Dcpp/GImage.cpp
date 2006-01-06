@@ -1266,7 +1266,7 @@ void GImage::decodeBMP(
 
         int numColors = input.readUInt32();
 
-        palette = (uint8*)malloc(numColors * 3);
+        palette = (uint8*)System::malloc(numColors * 3);
         debugAssert(palette);
 
         // Skip past the end of the header to the palette info
@@ -1303,7 +1303,7 @@ void GImage::decodeBMP(
         hDir   = -1;
     }
 
-    _byte = (uint8*)malloc(width * height * 3);
+    _byte = (uint8*)System::malloc(width * height * 3);
     debugAssert(_byte);
 
     int BMScanWidth;
@@ -1436,6 +1436,10 @@ void GImage::decodeBMP(
 
     } else if (bitCount == 16) {
 
+        System::free(_byte);
+        _byte = NULL;
+        System::free(palette); 
+        palette = NULL;
     	throw Error("16-bit bitmaps not supported", input.getFilename());
 
 	} else if (bitCount == 24) {
@@ -1474,16 +1478,22 @@ void GImage::decodeBMP(
 
 	} else if (bitCount == 32) {
 
+        System::free(_byte);
+        _byte = NULL;
+        System::free(palette); 
+        palette = NULL;
     	throw Error("32 bit bitmaps not supported", input.getFilename());
     
     } else {
         // We support all possible bit depths, so if the
         //     code gets here, it's not even a real bitmap.
-        free(_byte);
+        System::free(_byte);
         _byte = NULL;
         throw Error("Not a bitmap!", input.getFilename());
 	}
 
+    System::free(palette); 
+    palette = NULL;
 }
 
 

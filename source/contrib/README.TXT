@@ -2,6 +2,8 @@ This directory contains user-submitted source code that works with G3D.  This co
 
 ArcticulatedModel - Rigid body heirarchy and high-quality scene graph rendering demo.  Loads 3DS, IFS, PLY2.  By Morgan.
 
+AVI           - Read and write AVI files on Win32. By Morgan.
+
 Matrix        - Efficient N x M matrix class.  By Morgan.
 
 Java          - Java implementations of G3D classes.  (The C++ G3D is a port of the Java version, which we are slowly cleaning and releasing). By Morgan.
