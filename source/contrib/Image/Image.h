@@ -7,21 +7,21 @@
  @created 2004-10-10
  @edited  2004-10-10
  */
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef G3D_IMAGE_H
+#define G3D_IMAGE_H
 
 #include <G3DAll.h>
 
 /**
-  Templated image.  There are two type parameters-- the first is
-  the type operated on by computation and the second is the type 
-  used to store the "pixel" values efficiently.  The T constructor
+  Templated image.  There are two type parameters-- the first (@a T) is
+  the type operated on by computation and the second (@ Storage) is the type 
+  used to store the "pixel" values efficiently.  The T::T(Storage&) constructor
   is used to convert between storage and computation types.
-  Storage is often an integer version of T, for example 
-  Image<double, uint8>.
+  @a Storage is often an integer version of @a T, for example 
+  <code>Image<double, uint8></code>.  By default, the storage type is the computation type.
 
   The computation type can be any that 
-  supports lerp, +, -, *, and /.
+  supports lerp, +, -, *, /, and an empty constructor.
 
   Assign value:
 
@@ -49,7 +49,7 @@
   
   @author Morgan McGuire, morgan@cs.brown.edu
  */
-template<class T, class Storage=T> class Image {
+template<class T, class Storage=T> class Image : public ReferenceCountedObject {
 //
 // It doesn't make sense to automatically convert from T back to S
 // because the rounding rule (and scaling) is application dependent.
@@ -64,11 +64,17 @@ public:
 
 private:
 
+    /** Width, in pixels. */
     uint32              w;
+
+    /** Height, in pixels. */
     uint32              h;
-    /** The zero value */
+
+    /** The zero value.  Set by the constructor. */
     T                   ZERO;
+
     WrapMode            _wrapMode;
+
     Array<Storage>      data;
 
     /** Handles the exceptional cases from get */
@@ -146,17 +152,21 @@ private:
         return sum;
     }
 
-public:
-
-    Image(int w = 0, int h = 0, WrapMode wrap = WRAP_ERROR) : _wrapMode(wrap) {
+    Image(int w, int h, WrapMode wrap) : _wrapMode(wrap) {
         resize(w, h);
 
         // Ensure that the zero value is zero.
-        ZERO *= 0.0; 
+        ZERO = ZERO * 0.0; 
     }
 
+public:
 
-    /** Resizes without clearing, leaving garbage.*/
+    static ImageRef create(int w = 0, int h = 0, WrapMode wrap = WRAP_ERROR) {
+        return new Image(w, h, wrap);
+    }
+
+    /** Resizes without clearing, leaving garbage.
+      */
     void resize(uint32 newW, uint32 newH) {
         if (newW != w || newH != h) {
             w = newW;
@@ -191,21 +201,30 @@ public:
         return _get(x, y);
     }
 
-    /** Synonym for the im(x,y) operator, since that syntax is 
+
+    /** Synonym for operator(), since that syntax is 
         frightening despite its convenience and some may wish
         to avoid it.*/
     const Storage& get(int x, int y) const {
         return _get(x, y)
     }
 
-    void set(int x, int y, Storage& v) {
+    void set(int x, int y, const Storage& v) {
         _get(x, y) = v;
     }
+
+
+    void setAll(const Storage& v) {
+        for(int i = 0; i < data.size(); ++i) {
+            data[i] = v;
+        }
+    }
+
 
     /** Returns the nearest neighbor.  Pixel values are considered
         to be at the upper left corner. */
     T nearest(double x, double y) const {
-        return T((*this)(iFloor(x), iFloor(y)));
+        return T((*this)(iRound(x), iRound(y)));
     }
 
 
@@ -286,7 +305,7 @@ public:
 
     /** Number of bytes occupied by the image data and this structure */
     size_t sizeInMemory() const {
-        return data.size() * sizeof(T) + sizeof(*this);
+        return data.size() * sizeof(Storage) + sizeof(*this);
     }
 
 
@@ -300,4 +319,4 @@ public:
     }
 };
 
-#endif IMAGE_H
+#endif // G3D_IMAGE_H
