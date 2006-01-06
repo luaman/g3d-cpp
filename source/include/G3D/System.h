@@ -126,6 +126,8 @@ public:
      */
     static void* malloc(size_t bytes);
 
+    static void* calloc(size_t n, size_t x);
+
     /**
      @param size Size of memory that the system was trying to allocate
      @param recoverable If true, the system will attempt to allocate again

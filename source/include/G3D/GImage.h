@@ -422,6 +422,8 @@ public:
     static bool copySubImage(GImage & dest, const GImage & src,
         int srcX, int srcY, int srcWidth, int srcHeight);
 
+    void convertToRGBA();
+
     /**
       Returns true if format is supported.  Format
       should be an extension string (e.g. "BMP").

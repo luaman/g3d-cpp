@@ -29,6 +29,8 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> G3D::System::calloc
+      <LI> G3D::GImage::convertToRGBA
       <LI> contrib/AVI can read most AVI files on Windows.
       <LI> contrib/wxGWindow now uses wxWidgets 2.6.2
       <LI> G3D_DEBUG now controls whether debug code is enabled; it defaults to the value of _DEBUG

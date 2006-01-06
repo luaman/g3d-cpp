@@ -181,7 +181,7 @@ AVIReader::~AVIReader() {
 }
 
 
-void AVIReader::getFrame(int f, GImage& im) {
+void AVIReader::getFrame(int f, GImage& im, int channels) {
 
     LPBITMAPINFOHEADER lpbi;
     lpbi = (LPBITMAPINFOHEADER)AVIStreamGetFrame(pgf, f);
@@ -191,19 +191,53 @@ void AVIReader::getFrame(int f, GImage& im) {
     // are slightly shifted :(
     const Color3uint8* pData = (Color3uint8*)((uint8*)lpbi + lpbi->biSize + 12);
 
-    im.resize(m_width, m_height, 3);
+    alwaysAssertM((channels == 1) || (channels == 3) || (channels == 4), "Illegal number of channels");
+
+    im.resize(m_width, m_height, channels);
 
     // Copy the data from pData to the image, rearranging as necessary
-    for (int y = 0; y < m_height; ++y) {
-        const Color3uint8* srcRow = pData + y * m_width;
-        Color3uint8*       dstRow = im.pixel3() + (m_height - y - 1) * m_width;
+    switch(channels) {
+    case 1:
+        for (int y = 0; y < m_height; ++y) {
+            const Color3uint8* srcRow = pData + y * m_width;
+            uint8*             dstRow = im.byte() + (m_height - y - 1) * m_width;
 
-        for (int x = 0; x < m_width; ++x) {
-            const Color3uint8& src = srcRow[x];
-            Color3uint8&       dst = dstRow[x];
-            dst.r = src.b;
-            dst.g = src.g;
-            dst.b = src.r;
+            for (int x = 0; x < m_width; ++x) {
+                const Color3uint8& src = srcRow[x];
+                dstRow[x] = ((int)src.r + (int)src.g + (int)src.b) / 3;
+            }
         }
+        break;
+
+    case 3:
+        for (int y = 0; y < m_height; ++y) {
+            const Color3uint8* srcRow = pData + y * m_width;
+            Color3uint8*       dstRow = im.pixel3() + (m_height - y - 1) * m_width;
+
+            for (int x = 0; x < m_width; ++x) {
+                const Color3uint8& src = srcRow[x];
+                Color3uint8&       dst = dstRow[x];
+                dst.r = src.b;
+                dst.g = src.g;
+                dst.b = src.r;
+            }
+        }
+        break;
+
+    case 4:
+        for (int y = 0; y < m_height; ++y) {
+            const Color3uint8* srcRow = pData + y * m_width;
+            Color4uint8*       dstRow = im.pixel4() + (m_height - y - 1) * m_width;
+
+            for (int x = 0; x < m_width; ++x) {
+                const Color3uint8& src = srcRow[x];
+                Color4uint8&       dst = dstRow[x];
+                dst.r = src.b;
+                dst.g = src.g;
+                dst.b = src.r;
+                dst.a = 255;
+            }
+        }
+        break;
     }
 }

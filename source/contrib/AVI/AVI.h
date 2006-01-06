@@ -83,8 +83,10 @@ public:
     /** Overwrites any existing contents in im. 
         See G3D::Texture::fromGImage to convert this to a texture
         for rendering.
+
+        @param desiredChannels Must be 1 (grayscale), 3 (RGB), or 4 (RGBA, where A = 255)
      */
-    void getFrame(int f, G3D::GImage& im);
+    void getFrame(int f, G3D::GImage& im, int desiredChannels = 4);
 
     bool ok() const {
         return m_ok;

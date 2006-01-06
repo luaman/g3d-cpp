@@ -1505,6 +1505,12 @@ void* System::malloc(size_t bytes) {
     return bufferpool->malloc(bytes);
 }
 
+void* System::calloc(size_t n, size_t x) {
+    void* b = System::malloc(n * x);
+    System::memset(b, 0, n * x);
+    return b;
+}
+
 
 void* System::realloc(void* block, size_t bytes) {
     initMem();

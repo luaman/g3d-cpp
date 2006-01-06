@@ -354,7 +354,7 @@ void flipRGBVertical(
     
     // Allocate a temp row so the operation
     // is still safe if in == out
-    uint8* temp = (uint8*) malloc(width * 3);
+        uint8* temp = (uint8*)System::malloc(width * 3);
     alwaysAssertM(temp != NULL, "Out of memory");
 
     for (int i = 0; i < height / 2; ++i) {
@@ -366,7 +366,7 @@ void flipRGBVertical(
         System::memcpy(out + botOff, temp,        oneRow);
     }
 
-    free(temp);
+    System::free(temp);
 }
 
 
@@ -379,7 +379,7 @@ void flipRGBAVertical(
     
     // Allocate a temp row so the operation
     // is still safe if in == out
-    uint8* temp = (uint8*) malloc(width * 4);
+    uint8* temp = (uint8*)System::malloc(width * 4);
     alwaysAssertM(temp != NULL, "Out of memory");
 
     for (int i = 0; i < height / 2; ++i) {
@@ -391,7 +391,7 @@ void flipRGBAVertical(
         System::memcpy(out + botOff, temp,        oneRow);
     }
 
-    free(temp);
+    System::free(temp);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -602,7 +602,7 @@ void GImage::encodeJPEG(
     // Specify the destination for the compressed data.
     // (Overestimate the size)
     int buffer_size = width * height * 3 + 200;
-	JOCTET* compressed_data = (JOCTET*)malloc(buffer_size);
+    JOCTET* compressed_data = (JOCTET*)System::malloc(buffer_size);
 	jpeg_memory_dest(&cinfo, compressed_data, buffer_size);
 
 
@@ -652,7 +652,7 @@ void GImage::encodeJPEG(
     out.writeBytes(compressed_data, outLength);
 
     // Free the conservative buffer.
-    free(compressed_data);
+    System::free(compressed_data);
     compressed_data = NULL;
 }
 
@@ -886,7 +886,7 @@ void GImage::decodeTGA(
     // Image ID
     input.skip(IDLength);
 
-    _byte = (uint8*)malloc(width * height * channels);
+    _byte = (uint8*)System::malloc(width * height * channels);
     debugAssert(_byte);
 	
     // Pixel data
@@ -964,7 +964,7 @@ void GImage::decodeICO(
 	height = input.readUInt8();
 	int numColors = input.readUInt8();
 	
-    _byte = (uint8*)malloc(width * height * channels);
+    _byte = (uint8*)System::malloc(width * height * channels);
     debugAssert(_byte);
 
 	// Bit mask for packed bits
@@ -1528,7 +1528,7 @@ void GImage::decodeJPEG(
 	this->height    = cinfo.output_height;
 
 	// Prepare the pointer object for the pixel data
-	_byte = (uint8*)malloc(width * height * 3);
+    _byte = (uint8*)System::malloc(width * height * 3);
 
  	// JSAMPLEs per row in output buffer
     int bpp         = cinfo.output_components;
@@ -1660,7 +1660,7 @@ void GImage::decodePCX(
     }
 
 	// Prepare the pointer object for the pixel data
-	_byte = (uint8*)malloc(width * height * 3);
+    _byte = (uint8*)System::malloc(width * height * 3);
 
     if ((paletteType == 1) && (planes == 3)) {
 
@@ -1825,14 +1825,14 @@ void GImage::decodePNG(
 
     if (color_type == PNG_COLOR_TYPE_RGBA) {
         this->channels = 4;
-        this->_byte = (uint8*)malloc(width * height * 4);
+        this->_byte = (uint8*)System::malloc(width * height * 4);
     } else if ((color_type == PNG_COLOR_TYPE_RGB) || 
                (color_type == PNG_COLOR_TYPE_PALETTE)) {
         this->channels = 3;
-        this->_byte = (uint8*)malloc(width * height * 3);
+        this->_byte = (uint8*)System::malloc(width * height * 3);
     } else if (color_type == PNG_COLOR_TYPE_GRAY) {
         this->channels = 1;
-        this->_byte = (uint8*)malloc(width * height);
+        this->_byte = (uint8*)System::malloc(width * height);
     } else {
         throw GImage::Error("Unsupported PNG bit-depth or type.", input.getFilename());
     }
@@ -1902,8 +1902,8 @@ void GImage::decodePPM(
     this->width = ppmWidth;
     this->height = ppmHeight;
     this->channels = 3;
-    // always scale down to 1byte per channel
-    this->_byte = (uint8*)malloc(width * height * 3);
+    // always scale down to 1 byte per channel
+    this->_byte = (uint8*)System::malloc(width * height * 3);
 
     // Read in the image data.  I am not validating if the values match the maxColor
     // requirements.  I only scale if needed to fit within the byte available.
@@ -2072,7 +2072,7 @@ void GImage::resize(
     this->width = width;
     this->height = height;
     this->channels = channels;
-    _byte = (uint8*)calloc(width * height * channels, sizeof(uint8));
+    _byte = (uint8*)System::calloc(width * height * channels, sizeof(uint8));
     debugAssert(isValidHeapPointer(_byte));
 }
 
@@ -2086,7 +2086,7 @@ void GImage::_copy(
     height = other.height;
     channels = other.channels;
     int s  = width * height * channels * sizeof(uint8);
-    _byte  = (uint8*)malloc(s);
+    _byte  = (uint8*)System::malloc(s);
     debugAssert(isValidHeapPointer(_byte));
     memcpy(_byte, other._byte, s);
 }
@@ -2107,7 +2107,7 @@ GImage::~GImage() {
 void GImage::clear() {
     width = 0;
     height = 0;
-    free(_byte);
+    System::free(_byte);
     _byte = NULL;
 }
 
@@ -2217,7 +2217,7 @@ void GImage::encode(
 
     encode(format, out);
 
-    outData = (uint8*)malloc(out.size());
+    outData = (uint8*)System::malloc(out.size());
     debugAssert(outData);
     outLength = out.size();
 
@@ -2572,6 +2572,53 @@ void BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
     #undef B_BGG
     #undef B_GRG
     #undef B_GRR
+}
+
+
+void GImage::convertToRGBA() {
+    switch(channels) {
+    case 1:
+        {            
+            // Spread
+            Color4uint8* dst = (Color4uint8*)System::malloc(width * height * 4);
+            for (int i = width * height; i > 0; ++i) {
+                const uint8  s = _byte[i];
+                Color4uint8& d = dst[i]; 
+                d.r = d.g = d.b = s;
+                d.a = 255;
+            }
+            System::free(_byte);
+            _byte = (uint8*)dst;
+            channels = 4;
+        }
+        break;
+
+    case 3:
+        {            
+            // Add alpha
+            Color4uint8* dst = (Color4uint8*)System::malloc(width * height * 4);
+            Color3uint8* src = (Color3uint8*)_byte;
+            for (int i = width * height; i > 0; ++i) {
+                const Color3uint8   s = src[i];
+                Color4uint8&        d = dst[i]; 
+                d.r = s.r;
+                d.g = s.g;
+                d.b = s.b;
+                d.a = 255;
+            }
+            System::free(_byte);
+            _byte = (uint8*)dst;
+            channels = 4;
+        }
+        break;
+
+    case 4:
+        // Already RGBA
+        return;
+
+    default:
+        alwaysAssertM(false, "Bad number of channels in input image");
+    }
 }
 
 };
