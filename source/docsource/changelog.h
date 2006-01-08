@@ -29,6 +29,7 @@
   <P>
    Changes in 6.08:
     <UL>
+      <LI> Various Rect2D helpers [Nick Bray]
       <LI> G3D::System::calloc
       <LI> G3D::GImage::convertToRGBA
       <LI> contrib/AVI can read most AVI files on Windows.

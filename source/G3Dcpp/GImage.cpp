@@ -2581,7 +2581,7 @@ void GImage::convertToRGBA() {
         {            
             // Spread
             Color4uint8* dst = (Color4uint8*)System::malloc(width * height * 4);
-            for (int i = width * height; i > 0; ++i) {
+            for (int i = width * height - 1; i >= 0; --i) {
                 const uint8  s = _byte[i];
                 Color4uint8& d = dst[i]; 
                 d.r = d.g = d.b = s;
@@ -2598,7 +2598,7 @@ void GImage::convertToRGBA() {
             // Add alpha
             Color4uint8* dst = (Color4uint8*)System::malloc(width * height * 4);
             Color3uint8* src = (Color3uint8*)_byte;
-            for (int i = width * height; i > 0; ++i) {
+            for (int i = width * height - 1; i >= 0; --i) {
                 const Color3uint8   s = src[i];
                 Color4uint8&        d = dst[i]; 
                 d.r = s.r;

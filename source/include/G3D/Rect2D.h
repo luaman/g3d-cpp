@@ -109,6 +109,17 @@ private:
 
 public:
 
+    inline Rect2D() : min(0, 0), max(0, 0) {}
+
+    /** Creates a rectangle at 0,0 with the given width and height*/
+    inline Rect2D(const Vector2& wh) : min(0, 0), max(wh.x, wh.y) {}
+
+    /** Computes a rectangle that contains both @a a and @a b.*/
+    inline Rect2D(const Rect2D& a, const Rect2D& b) {
+        min = a.min.min(b.min);
+        max = a.max.max(b.max);
+    }
+
     inline double width() const {
         return max.x - min.x;
     }
@@ -160,11 +171,6 @@ public:
         return (max + min) * 0.5;
     }
 
-    inline Rect2D() : min(0, 0), max(0, 0) {}
-
-    /** Creates a rectangle at 0,0 with the given width and height*/
-    inline Rect2D(const Vector2& wh) : min(0, 0), max(wh.x, wh.y) {}
-
     inline static Rect2D xyxy(double x0, double y0, double x1, double y1) {
         Rect2D r;
         
@@ -195,6 +201,25 @@ public:
 
     inline bool contains(const Vector2& v) const {
         return (v.x >= min.x) && (v.y >= min.y) && (v.x <= max.x) && (v.y <= max.y);
+    }
+
+    inline bool contains(const Rect2D& r) const {
+        return (min.x <= r.min.x) && (min.y <= r.min.y) &&
+               (max.x >= r.max.x) && (max.y >= r.max.y);
+    }
+
+    /** True if there is non-zero area to the intersection between @a this and @a r.
+        Note that two rectangles that are adjacent do not intersect because there is
+        zero area to the overlap, even though one of them "contains" the corners of the other.*/
+    inline bool intersects(const Rect2D& r) const {
+        return (min.x < r.max.x) && (min.y < r.max.y) &&
+               (max.x > r.min.x) && (max.y > r.min.y);
+    }
+
+    /** Like intersection, but counts the adjacent case as touching. */
+    inline bool intersectsOrTouches(const Rect2D& r) const {
+        return (min.x <= r.max.x) && (min.y <= r.max.y) &&
+               (max.x >= r.min.x) && (max.y >= r.min.y);
     }
 
     inline Rect2D operator*(double s) const {
@@ -300,6 +325,19 @@ public:
             double x = (width() - w) / 2;
             return Rect2D::xywh(x, 0, w, height()) + corner(0);
         }
+    }
+
+    /**
+     Returns the overlap region between the two rectangles.  This may have zero area
+     if they do not intersect.  See the two-Rect2D constructor for a way to compute
+     a union-like rectangle.
+     */
+    Rect2D intersection(const Rect2D& other) const {
+        return Rect2D::xyxy(min.max(other.min), max.min(other.max));
+    }
+
+    float area() const {
+        return width() * height();
     }
 };
 

@@ -63,12 +63,13 @@ private:
 
     AVIFILEINFO     info;
 
-    std::string     m_fourCC;
-
     int             m_numFrames;
 
     int             m_width;
     int             m_height;
+
+    /** "fourCC" */
+    std::string     m_codec;
 
 public:
 
@@ -96,12 +97,13 @@ public:
         return m_numFrames;
     }
 
-    const std::string& fourCC() const {
-        return m_fourCC;
-    }
-
     const std::string& errorString() const {
         return m_error;
+    }
+
+    /** "fourCC" */
+    const std::string& codec() const {
+        return m_codec;
     }
 
     int frameWidth() const {
@@ -113,19 +115,34 @@ public:
     }
 };
 
-#if 0
+
+/**
+ Writes AVI files
+ @cite http://www.wischik.com/lu/programmer/avi_utils.html
+*/
 class AVIWriter {
 private:
     
     bool            m_ok;
     std::string     m_errorString;
+    std::string     m_filename;
+    std::string     m_codec;
 
 public:
 
-    AVIWriter(const std::string& filename);
+    /**
+     The compression codecs available depend on the drivers installed
+     on your machine.
+
+     @param codec A string returned from AVIWriter::getCodecs
+     */
+    AVIWriter(const std::string& filename, const std::string& codec);
 
     /** Closes the file */
     ~AVIWriter();
+
+    /** Returns an array of the strings that may be passed to the constructor. */
+    static void getCodecs(Array<std::string>& comp);
 
     bool ok() const {
         return m_ok;
@@ -135,14 +152,18 @@ public:
         return m_errorString;
     }
 
-    /** All frames must have the same dimensions and number of channels.*/
+    /** All frames must have the same dimensions and number of channels. */
     void writeFrame(const GImage& im);
 
     const std::string& filename() const {
         return m_filename;
     }
+
+    /** "fourCC" */
+    const std::string& codec() const {
+        return m_codec;
+    }
 };
-#endif
 
 }
 

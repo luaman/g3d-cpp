@@ -98,7 +98,7 @@ AVIReader::AVIReader(const std::string& filename) :
         temp[2] = (videoInfo.fccHandler >> 8) & 0xFF;
         temp[3] = videoInfo.fccHandler & 0xFF;
         temp[4] = '\0';
-        m_fourCC = std::string(temp);
+        m_codec = std::string(temp);
     }
 
     m_numFrames = videoInfo.dwLength;
@@ -240,4 +240,26 @@ void AVIReader::getFrame(int f, GImage& im, int channels) {
         }
         break;
     }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+AVIWriter::AVIWriter(const std::string& filename, const std::string& codec) {
+    // TODO
+}
+
+
+AVIWriter::~AVIWriter() {
+    // TODO
+}
+
+
+void AVIWriter::writeFrame(const GImage& im) {
+    // TODO
+}
+
+void AVIWriter::getCodecs(Array<std::string>& comp) {
+    // TODO
 }
