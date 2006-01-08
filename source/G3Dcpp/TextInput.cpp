@@ -6,30 +6,12 @@
  @cite Based on a lexer written by Aaron Orenstein. 
  
  @created 2001-11-27
- @edited  2005-02-24
+ @edited  2006-01-10
  */
 
 #include "G3D/TextInput.h"
 #include "G3D/BinaryInput.h"
-
-// These standard C functions are renamed for clarity/naming
-// conventions and to return bool, not int.
-static inline bool isWhiteSpace(const char c) {
-    return isspace(c) != 0;
-}
-
-static inline bool isNewline(const char c) {
-    return (c == '\n') || (c == '\r');
-}
-
-static inline bool isDigit(const char c) {
-    return isdigit(c) != 0;
-}
-
-static inline bool isLetter(const char c) {
-    return isalpha(c) != 0;
-}
-
+#include "G3D/stringutils.h"
 
 namespace G3D {
 

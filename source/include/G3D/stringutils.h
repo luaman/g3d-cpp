@@ -87,6 +87,33 @@ std::string stringJoin(
 std::string trimWhitespace(
     const std::string&              s);
 
+/** These standard C functions are renamed for clarity/naming
+   conventions and to return bool, not int.
+   */
+inline bool isWhiteSpace(const char c) {
+    return isspace(c) != 0;
+}
+
+/** These standard C functions are renamed for clarity/naming
+   conventions and to return bool, not int.
+   */
+inline bool isNewline(const char c) {
+    return (c == '\n') || (c == '\r');
+}
+
+/** These standard C functions are renamed for clarity/naming
+   conventions and to return bool, not int.
+   */
+inline bool isDigit(const char c) {
+    return isdigit(c) != 0;
+}
+
+/** These standard C functions are renamed for clarity/naming
+   conventions and to return bool, not int.
+   */
+inline bool isLetter(const char c) {
+    return isalpha(c) != 0;
+}
 }; // namespace
 
 #endif

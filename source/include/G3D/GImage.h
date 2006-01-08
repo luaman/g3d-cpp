@@ -9,12 +9,13 @@
   @cite BMP code by John Chisholm, based on code by Edward "CGameProgrammer" Resnick <A HREF="mailto:cgp@gdnmail.net">mailto:cgp@gdnmail.net</A> at <A HREF="ftp://ftp.flipcode.com/cotd/LoadPicture.txt">ftp://ftp.flipcode.com/cotd/LoadPicture.txt</A>
   @cite PCX format described in the ZSOFT PCX manual http://www.nist.fss.ru/hr/doc/spec/pcx.htm#2
   @cite PNG compress/decompressor is the <A HREF="http://www.libpng.org/pub/png/libpng.html">libpng library</A>, used in accordance with their license.
+  @cite PPM code by Morgan McGuire based on http://netpbm.sourceforge.net/doc/ppm.html
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2004-05-29
+  @edited  2006-01-10
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
 
  */
@@ -139,14 +140,10 @@ void BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int inHeight, const uint8* i
 void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out);
 
 /**
-  Interface to image compression & file formats. The free Image Magick Magick Wand API 
-  (http://www.imagemagick.org/www/api/magick_wand.html) provides a more powerful
-  API for image manipulation and wider set of image load/save formats.  It is 
-  recommended over GImage (we don't include it directly in G3D because their license
-  is more restrictive than the BSD one).
-
-  Supported formats (decode and encode): Color JPEG, PNG, (Uncompressed)TGA 24, (Uncompressed)TGA 32, BMP 1, BMP 4, BMP 8, BMP 24.
-  8-bit paletted PCX, 24-bit PCX, ICO and PPM_ASCII are supported for decoding only.
+  Interface to image compression & file formats. 
+ 
+  Supported formats (decode and encode): Color JPEG, PNG, (Uncompressed)TGA 24, (Uncompressed)TGA 32, BMP 1, BMP 4, BMP 8, BMP 24, PPM (P6), and PPM ASCII (P3).
+  8-bit paletted PCX, 24-bit PCX, and ICO are supported for decoding only.
 
   Sample usage:
 
@@ -173,7 +170,14 @@ void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* i
     // Saving to disk
     im3.save("out.jpg");
   </PRE>
- */
+
+  The free Image Magick Magick Wand API 
+  (http://www.imagemagick.org/www/api/magick_wand.html) provides a more powerful
+  API for image manipulation and wider set of image load/save formats.  It is 
+  recommended over GImage (we don't include it directly in G3D because their license
+  is more restrictive than the BSD one).
+
+  */
 class GImage {
 private:
     uint8*                _byte;
@@ -191,7 +195,7 @@ public:
         std::string filename;
     };
 
-    enum Format {JPEG, BMP, TGA, PCX, ICO, PNG, PPM_ASCII, AUTODETECT, UNKNOWN};
+    enum Format {JPEG, BMP, TGA, PCX, ICO, PNG, PPM_ASCII, PPM, AUTODETECT, UNKNOWN};
 
     int                     width;
     int                     height;
@@ -288,6 +292,9 @@ private:
     void encodePPM(
         BinaryOutput&       out) const;
 
+    void encodePPMASCII(
+        BinaryOutput&       out) const;
+
     /**
      Decodes the buffer into this image.
      @format Guaranteed correct format.
@@ -315,6 +322,9 @@ private:
         BinaryInput&        input);
 
     void decodePPM(
+        BinaryInput&        input);
+
+    void decodePPMASCII(
         BinaryInput&        input);
 
     /**

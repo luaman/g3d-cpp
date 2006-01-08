@@ -2,13 +2,14 @@
   @file GImage.cpp
   @author Morgan McGuire, morgan@graphics3d.com
   @created 2002-05-27
-  @edited  2004-05-29
+  @edited  2006-01-10
  */
 #include "G3D/platform.h"
 #include "G3D/GImage.h"
 #include "G3D/debug.h"
 #include "G3D/TextInput.h"
 #include "G3D/TextOutput.h"
+#include "G3D/stringutils.h"
 
 /**
  Pick up libjpeg headers locally on Windows, but from the system on all other platforms.
@@ -762,7 +763,7 @@ void GImage::encodePNG(
     png_destroy_write_struct(&png_ptr, &info_ptr);
 }
 
-void GImage::encodePPM(
+void GImage::encodePPMASCII(
     BinaryOutput&       out) const {
 
     debugAssert(channels == 3);
@@ -785,6 +786,19 @@ void GImage::encodePPM(
     out.writeString(ppm.commitString());
 }
 
+void GImage::encodePPM(
+    BinaryOutput&       out) const {
+
+    // http://netpbm.sourceforge.net/doc/ppm.html
+    debugAssert(channels == 3);
+
+    std::string header = format("P6 %d %d 255 ", width, height);
+
+    out.writeBytes(header.c_str(), header.size());
+
+    out.writeBytes(this->pixel3(), width * height * 3);
+}
+
 
 void GImage::decode(
     BinaryInput&        input,
@@ -792,6 +806,10 @@ void GImage::decode(
 
     switch (format) {
     case PPM_ASCII:
+        decodePPMASCII(input);
+        break;
+
+    case PPM:
         decodePPM(input);
         break;
 
@@ -1854,7 +1872,7 @@ void GImage::decodePNG(
     png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
 }
 
-void GImage::decodePPM(
+void GImage::decodePPMASCII(
     BinaryInput&        input) {
 
     int ppmWidth;
@@ -1930,6 +1948,62 @@ void GImage::decodePPM(
     }
 }
 
+/** Consumes whitespace up to and including a number, but not the following character */
+static int scanUInt(BinaryInput& input) {
+    char c = input.readUInt8();
+    while (isWhiteSpace(c)) {
+        c = input.readUInt8();
+    }
+
+    std::string s;
+    s += c;
+    c = input.readUInt8();
+    while (!isWhiteSpace(c)) {
+        s += c;
+        c = input.readUInt8();
+    }
+
+    // Back up one to avoid consuming the last character
+    input.setPosition(input.getPosition() - 1);
+
+    int x;
+    sscanf(s.c_str(), "%d");
+    return x;
+}
+
+void GImage::decodePPM(
+    BinaryInput&        input) {
+
+    char head[2];
+    int w, h;
+
+    input.readBytes(head, 2);
+    if (head[0] != 'P' || head[1] != '6') {
+        throw GImage::Error("Invalid PPM Header.", input.getFilename());
+    }
+
+    w = scanUInt(input);
+    h = scanUInt(input);
+
+    // Skip the max color specifier
+    scanUInt(input);
+
+    if ((w < 0) ||
+        (h < 0) ||
+        (w > 100000) ||
+        (h > 100000)) {
+        throw GImage::Error("Invalid PPM size in header.", input.getFilename());
+    }
+
+    // Trailing whitespace
+    input.readUInt8();
+
+    resize(w, h, 3);
+
+    input.readBytes(_byte, width * height * 3);
+}
+
+
 GImage::Format GImage::resolveFormat(
     const std::string&  filename,
     const uint8*        data,
@@ -1956,6 +2030,17 @@ GImage::Format GImage::resolveFormat(
         }
     }
 
+    if (extension == "PPM") {
+        // There are two PPM formats; we handle them differently
+        if (dataLen > 3) {
+            if (!memcmp(data, "P6", 2)) {
+                return PPM;
+            } else {
+                return PPM_ASCII;
+            }
+        }
+    }
+
     Format tmp = stringToFormat(extension);
     if ((tmp != AUTODETECT) && (tmp != UNKNOWN)) {
         return tmp;
@@ -1969,6 +2054,10 @@ GImage::Format GImage::resolveFormat(
 
     if ((dataLen > 3) && (!memcmp(data, "P3", 2) || !memcmp(data, "P2", 2) || !memcmp(data, "P1", 2))) {
         return PPM_ASCII;
+    }
+
+    if ((dataLen > 3) && !memcmp(data, "P6", 2)) {
+        return PPM;
     }
 
     if (dataLen > 8) {
@@ -2192,6 +2281,8 @@ GImage::Format GImage::stringToFormat(
         return ICO;
     } else if (extension == "PNG") {
         return PNG;
+    } else if (extension == "PPM") {
+        return PPM;
     } else {
         return UNKNOWN;
     }
@@ -2231,6 +2322,10 @@ void GImage::encode(
 
     switch (format) {
     case PPM_ASCII:
+        encodePPMASCII(out);
+        break;
+
+    case PPM:
         encodePPM(out);
         break;
 

@@ -26,9 +26,10 @@
      </UL>
    </TD></TR></TABLE>
 
-  <P>
+  <P>   
    Changes in 6.08:
     <UL>
+      <LI> G3D::GImage now supports PPM binary
       <LI> Various Rect2D helpers [Nick Bray]
       <LI> G3D::System::build
       <LI> G3D::System::calloc

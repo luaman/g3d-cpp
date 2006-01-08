@@ -1,13 +1,28 @@
 /**
 @page contributors Contributors
 
-The 6.05 release team:
-     <B>Morgan McGuire, Corey Taylor, Peter Sibley, and Ben Landon</B>
+ <b>Team Members</b>
+ <br><i>(6.08 Release Team)</i>
+  <br>Morgan McGuire [Brown] - Win32 Lead (Project Manager)
+  <br>Corey Taylor [EA] - Linux Lead
+  <br>Casey O'Donnell [RPI]- OS X Lead
+  <br>Tom Wardill - Doc Lead
+  <br>Daniel Hilferty [US Air Force] - Documentation
+  <br>Rich [Codemasters] Deeson - Documentation
 
-   This library contains code and resources contributed by the
+  <P><i>(Other Team Members)</i>
+  <br>Peter Sibley [Brown] - Developer
+  <br>Dan Keefe [Brown] - Developer
+  <br>Ben Landon [Sensible] - Developer
+  <br>Kevin Egan [Rhythm & Hues] - Developer
+  <br>Dmitri [Brown] - Developer
+  <br>Gabe Taubman - Developer (OS X)
+
+   <b>Previous Contributors and Cited Sources</b>
+   <br>This library contains code and resources contributed by the
    following people, or based open code and articles by them:
 
-   <BR>David Baszucki
+   <p>David Baszucki
    <BR>Seth Block
    <BR>Nicholas Bray
    <BR>Nick Capens
@@ -55,7 +70,7 @@ The 6.05 release team:
    <BR>Joshua Schpok
    <BR>Sebastian Schubert
    <BR>SGI
-   <BR>Sascha Becker Shine
+   <BR>Ben Shine
    <BR>Peter Sibley
    <BR>Corey Taylor
    <BR>Pierre Terdiman
