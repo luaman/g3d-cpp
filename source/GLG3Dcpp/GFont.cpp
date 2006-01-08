@@ -15,6 +15,10 @@
 
 namespace G3D {
 
+CFontRef GFont::fromFile(const std::string& filename) {
+    return new GFont(NULL, filename);
+}
+
 CFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
     return new GFont(_rd, filename);
 }

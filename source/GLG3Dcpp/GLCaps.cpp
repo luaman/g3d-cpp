@@ -497,6 +497,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
     }
     debugAssertGLOk();
 
+    hasBug_redBlueMipmapSwap();
 }
 
 
@@ -623,7 +624,7 @@ bool GLCaps::hasBug_normalMapTexGen() {
   // is not available on MSVC6.
 #   define USE_TEMPORARY_CONTEXT\
 	std::auto_ptr<TempGLContext> context(\
-	 (dynamic_cast<const SDLWindow*>(GWindow::current()) == NULL) ? \
+	 (dynamic_cast<const Win32Window*>(GWindow::current()) != NULL) ? \
        new TempGLContext() : NULL);
 
 #else

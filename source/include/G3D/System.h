@@ -197,6 +197,11 @@ public:
     /** G3D Version string */
     static const std::string& version();
 
+    /** 
+      Either Debug or Release, depending on whether _DEBUG was defined at compile-time for the library.
+      */
+    static const std::string& build();
+
     /**
      Causes the current thread to yield for the specified duration
      and consume almost no CPU.

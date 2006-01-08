@@ -313,6 +313,17 @@ const std::string& System::cpuArchitecture() {
     return _cpuArch;
 }
 
+const std::string& System::build() {
+    const static std::string b =
+#   ifdef _DEBUG
+        "Debug";
+#   else 
+        "Release";
+#   endif
+
+    return b;
+}
+
 const std::string& System::version() {
     init();
 
