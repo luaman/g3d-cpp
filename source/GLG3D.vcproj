@@ -83,7 +83,7 @@
 				AssemblerListingLocation=".\../temp/release/glg3d/"
 				ObjectFile=".\../temp/release/glg3d/"
 				ProgramDataBaseFileName=".\../temp/release/glg3d/"
-				WarningLevel="4"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool

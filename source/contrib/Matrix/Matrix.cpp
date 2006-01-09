@@ -172,15 +172,17 @@ void Matrix::arrayDivInPlace(const Matrix& _B) {
 
 #undef INPLACE
 
+Matrix Matrix::fromDiagonal(const Matrix& d) {
+    debugAssert((d.rows() == 1) || (d.cols() == 1));
 
-Matrix Matrix::fromDiagonal(const Array<T>& d) {
-    Matrix D = zero(d.length(), d.length());
-    for (int i = 0; i < d.length(); ++i) {
-        D.set(i, i, d[i]);
+    int n = d.numElements();
+    Matrix D = zero(n, n);
+    for (int i = 0; i < n; ++i) {
+        D.set(i, i, d.impl->data[i]);
     }
+
     return D;
 }
-
 
 void Matrix::set(int r, int c, T v) {
     if (! impl.isLastReference()) {
@@ -418,6 +420,24 @@ void Matrix::swapAndNegateCols(int c0, int c1) {
     impl->swapAndNegateCols(c0, c1);
 }
 
+Matrix Matrix::subMatrix(int r1, int r2, int c1, int c2) const {
+    debugAssert(r2>=r1);
+    debugAssert(c2>=c1);
+    debugAssert(c2<cols());
+    debugAssert(r2<rows());
+    debugAssert(r1>=0);
+    debugAssert(c1>=0);
+
+    Matrix X(r2 - r1 + 1, c2 - c1 + 1);
+
+    for (int r = 0; r < X.rows(); ++r) {
+        for (int c = 0; c < X.cols(); ++c) {
+            X.set(r, c, get(r + r1, c + c1));
+        }
+    }
+
+    return X;
+}
 
 bool Matrix::anyNonZero() const {
     return impl->anyNonZero();
@@ -429,23 +449,14 @@ bool Matrix::allNonZero() const {
 }
 
 
-void Matrix::svd(Matrix& U, Matrix& D, Matrix& V, bool sort) const {
+void Matrix::svd(Matrix& U, Array<T>& d, Matrix& V, bool sort) const {
     debugAssert(rows() >= cols());
-    debugAssertM(&D != &V, "Arguments to SVD must be different matrices");
-    debugAssertM(&D != &U, "Arguments to SVD must be different matrices");
-    debugAssertM(&D != this, "Arguments to SVD must be different matrices");
+    debugAssertM(&U != &V, "Arguments to SVD must be different matrices");
+    debugAssertM(&U != this, "Arguments to SVD must be different matrices");
     debugAssertM(&V != this, "Arguments to SVD must be different matrices");
 
     int R = rows();
     int C = cols();
-
-    // Make sure we don't overwrite a shared matrix
-    if (D.impl.isLastReference()) {
-        D.impl->setSize(C, C);
-        D.impl->setZero();
-    } else {
-        D = Matrix::zero(C, C);
-    }
 
     // Make sure we don't overwrite a shared matrix
     if (! V.impl.isLastReference()) {
@@ -459,7 +470,7 @@ void Matrix::svd(Matrix& U, Matrix& D, Matrix& V, bool sort) const {
         U.impl = new Impl(*impl);
     }
 
-    Array<float> d(C);
+    d.resize(C);
     const char* ret = svdCore(U.impl->elt, R, C, d.getCArray(), V.impl->elt);
 
     debugAssertM(ret == NULL, ret);
@@ -491,10 +502,6 @@ void Matrix::svd(Matrix& U, Matrix& D, Matrix& V, bool sort) const {
             V.setCol(c0, Vold.col(c1));
         }
 
-    }
-
-    for (int i = 0; i < C; ++i) {
-        D.impl->set(i, i, d[i]);
     }
 }
 
@@ -894,6 +901,49 @@ void Matrix::Impl::withoutRowAndCol(int excludeRow, int excludeCol, Impl& out) c
     }
 }
 
+
+Matrix Matrix::pseudoInverse(float tolerance) const {
+    if (cols() > rows()) {
+        return transpose().pseudoInverse(tolerance).transpose();
+    }
+
+    Matrix U, V;
+    Array<T> d;
+
+    svd(U, d, V);
+
+    if (rows() == 1) {
+        d.resize(1);
+    }
+
+    if (tolerance < 0) {
+        // TODO: Should be eps(d[0]), which is the largest diagonal
+        tolerance = G3D::max(rows(), cols()) * 0.0001;
+    }
+
+    Matrix X;
+
+    int r = 0;
+    for (int i = 0; i < d.size(); ++i) {
+        if (d[i] > tolerance) {
+            d[i] = 1.0 / d[i];
+            ++r;
+        }
+    }
+
+    if (r == 0) {
+        // There were no non-zero elements
+        X = zero(cols(), rows());
+    } else {
+        // Use the first r columns
+        U = U.subMatrix(0, U.rows() - 1, 0, r - 1).transpose();
+        V = V.subMatrix(0, V.rows() - 1, 0, r - 1);
+
+        X = V * Matrix::fromDiagonal(d) * U;
+    }
+
+    return X;
+}
 
 void Matrix::Impl::inverseInPlaceGaussJordan() {
     debugAssert(R == C);

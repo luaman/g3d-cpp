@@ -291,7 +291,16 @@ public:
 
     Matrix(const Matrix4& M) : impl(new Impl(M)) {}
 
-    static Matrix fromDiagonal(const Array<T>& d);
+    template<class S>
+    static Matrix fromDiagonal(const Array<S>& d) {
+        Matrix D = zero(d.length(), d.length());
+        for (int i = 0; i < d.length(); ++i) {
+            D.set(i, i, d[i]);
+        }
+        return D;
+    }
+
+    static Matrix fromDiagonal(const Matrix& d);
 
     /** Returns a new matrix that is all zero. */
     Matrix(int R, int C) : impl(new Impl(R, C)) {
@@ -487,24 +496,32 @@ public:
         return Matrix(A);
     }
 
-    /**
-     (A<SUP>T</SUP>A)<SUP>-1</SUP>A<SUP>T</SUP>
+    /**     
+     (A<SUP>T</SUP>A)<SUP>-1</SUP>A<SUP>T</SUP>) computed 
+     using SVD.
+
+     @param tolerance Use -1 for automatic tolerance.
      */
-    inline Matrix pseudoInverse() const {
+    Matrix pseudoInverse(float tolerance = -1) const;
+
+    /**
+     (A<SUP>T</SUP>A)<SUP>-1</SUP>A<SUP>T</SUP>) computed
+     using Gauss-Jordan elimination.
+     */
+    inline Matrix gaussJordanPseudoInverse() const {
         Matrix trans = transpose();
         return (trans * (*this)).inverse() * trans;
     }
 
     /** Singular value decomposition.  Factors into three matrices 
-        such that this = U * D * V.transpose().
+        such that this = U * fromDiagonal(d) * V.transpose().
 
         The matrix must have at least as many rows as columns.
          
         @param sort If true (default), the singular values
-        are arranged so that D is sorted from largest to smallest
-        along the diagonal. 
+        are arranged so that D is sorted from largest to smallest.
         */
-    void svd(Matrix& U, Matrix& D, Matrix& V, bool sort = true) const;
+    void svd(Matrix& U, Array<T>& d, Matrix& V, bool sort = true) const;
 
     void set(int r, int c, T v);
 

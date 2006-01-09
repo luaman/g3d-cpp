@@ -166,12 +166,13 @@ void testMatrix() {
         A.set(2, 0,  4.0);  A.set(2, 1, -4.0);  A.set(2, 2, 10.0);
         A = Matrix::random(27, 15);
 
-        Matrix U, D, V;
+        Array<float> D;
+        Matrix U, V;
 
         A.svd(U, D, V);
 
         // Verify that we can reconstruct
-        Matrix B = U * D * V.transpose();
+        Matrix B = U * Matrix::fromDiagonal(D) * V.transpose();
 
         Matrix test = abs(A - B) < 0.1;
 
@@ -187,6 +188,24 @@ void testMatrix() {
         debugAssert(m < 0.01);
         (void)m;
     }
+
+    /*
+    Matrix a(3, 5);
+    a.set(0,0, 1);  a.set(0,1, 2); a.set(0,2,  3); a.set(0,3, 4);  a.set(0,4,  5);
+    a.set(1,0, 3);  a.set(1,1, 5); a.set(1,2,  3); a.set(1,3, 1);  a.set(1,4,  2);
+    a.set(2,0, 1);  a.set(2,1, 1); a.set(2,2,  1); a.set(2,3, 1);  a.set(2,4,  1);
+
+    Matrix b = a;
+    b.set(0,0, 1.8124); b.set(0,1,    0.5341); b.set(0,2,    2.8930); b.set(0,3,    5.2519); b.set(0,4,    4.8829);
+    b.set(1,0, 2.5930); b.set(1,1,   2.6022); b.set(1,2,    4.2760); b.set(1,3,    5.9497); b.set(1,4,    6.3751);
+
+    a.debugPrint("a");
+    a.debugPrint("b");
+
+    Matrix H = b * a.pseudoInverse();
+    H.debugPrint("H");
+    */
+
 
     printf("passed\n");
 }
