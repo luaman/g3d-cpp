@@ -22,7 +22,7 @@ class ToneMap {
 private:
 
     /** PS14ATI shaders */
-    static uint                 gammaShaderPS14ATI; 
+    static unsigned int                 gammaShaderPS14ATI; 
 
     /** PS20 shaders */
     static ShaderRef            bloomShader, bloomFilterShader;
