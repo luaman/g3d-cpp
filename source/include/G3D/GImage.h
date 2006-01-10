@@ -33,111 +33,6 @@
 #include "G3D/Color4uint8.h"
 
 namespace G3D {
-   
-/**
- @param in        RGB buffer of numPixels * 3 bytes
- @param out       Buffer of numPixels * 4 bytes
- @param numPixels Number of RGB pixels to convert
- */
-void RGBtoRGBA(
-    const uint8*            in,
-    uint8*                  out,
-    int                     numPixels);
-
-void RGBtoBGR(
-    const uint8*            in,
-    uint8*                  out,
-    int                     numPixels);
-
-/**
- Win32 32-bit HDC format.
- */
-void RGBtoBGRA(
-    const uint8*            in,
-    uint8*                  out,
-    int                     numPixels);
-
-void RGBtoARGB(
-    const uint8*            in,
-    uint8*                  out,
-    int                     numPixels);
-
-
-/**
- Uses the red channel of the second image as an alpha channel.
- */
-void RGBxRGBtoRGBA(
-    const uint8*            colorRGB,
-    const uint8*            alphaRGB,
-    uint8*                  out,
-    int                     numPixels);
-    
-/**
- Flips the image along the vertical axis.
- Safe for in == out.
- */
-void flipRGBVertical(
-    const uint8*            in,
-    uint8*                  out,
-    int                     width,
-    int                     height);
-
-void flipRGBAVertical(
-    const uint8*            in,
-    uint8*                  out,
-    int                     width,
-    int                     height);
-
-/**
- Given a tangent space bump map, computes a new image where the
- RGB channels are a tangent space normal map and the alpha channel
- is the original bump map.  Assumes the input image is tileable.
-
- In the resulting image, x = red = tangent, y = green = binormal, and z = blue = normal. 
-
- Particularly useful as part of the idiom:
- <PRE>
- 	GImage normal;
-	computeNormalMap(GImage(filename), normal);
-	return Texture::fromGImage(filename, normal);
- </PRE>
-
-  @param lowPassBump If true, a 9x9 filter of 1's is used to low-pass filter the elevations,
-       which produces better results for parallax mapping.
-
-  @param scaleHeightByNz After computing normals, scale the height by |N.z|, a trick that
-       reduces texture swim in steep areas for parallax mapping.
-
-  @cite ATI demo
- */
-void computeNormalMap(
-    const class GImage& bump, 
-    class GImage& normal,
-    bool lowPassBump = false,
-    bool scaleHeightByNz = false);
-
-/**
-  Bayer demosaicing using the filter proposed in 
-
-HIGH-QUALITY LINEAR INTERPOLATION FOR DEMOSAICING OF BAYER-PATTERNED COLOR IMAGES
-Henrique S. Malvar, Li-wei He, and Ross Cutler
-
-  The filter wraps at the image boundaries.
-*/
-void BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
-
-
-
-/** Fast conversion; the output has 1/2 the size of the input in each direction. Assumes in != out.
- See G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC for a much better result. */
-void BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int inHeight, const uint8* in, uint8* out);
-
-/** Attempt to undo fast conversion of G3D::BAYER_G8B8_R8G8_to_Quarter_R8G8B8; 
-    the green channel will lose data. Assumes in != out 
-    The input should have size 3 * inWidth * inHeight.  The output should have size
-    2 * inWidth * 2 * inHeight.
-*/
-void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out);
 
 /**
   Interface to image compression & file formats. 
@@ -471,7 +366,246 @@ public:
 
 	/** Returns the size of this object in bytes */
 	int sizeInMemory() const;
+
+
+    /** Ok for in == out */
+    static void R8G8B8_to_Y8U8V8(int width, int height, const uint8* in, uint8* out);
+
+    /** Ok for in == out */
+    static void Y8U8V8_to_R8G8B8(int width, int height, const uint8* in, uint8* out);
+
+    /**
+    @param in        RGB buffer of numPixels * 3 bytes
+    @param out       Buffer of numPixels * 4 bytes
+    @param numPixels Number of RGB pixels to convert
+    */
+    static void RGBtoRGBA(
+        const uint8*            in,
+        uint8*                  out,
+        int                     numPixels);
+
+    static void RGBtoBGR(
+        const uint8*            in,
+        uint8*                  out,
+        int                     numPixels);
+
+    /**
+    Win32 32-bit HDC format.
+    */
+    static void RGBtoBGRA(
+        const uint8*            in,
+        uint8*                  out,
+        int                     numPixels);
+
+    static void RGBtoARGB(
+        const uint8*            in,
+        uint8*                  out,
+        int                     numPixels);
+
+    /**
+    Uses the red channel of the second image as an alpha channel.
+    */
+    static void RGBxRGBtoRGBA(
+        const uint8*            colorRGB,
+        const uint8*            alphaRGB,
+        uint8*                  out,
+        int                     numPixels);
+        
+    /**
+    Flips the image along the vertical axis.
+    Safe for in == out.
+    */
+    static void flipRGBVertical(
+        const uint8*            in,
+        uint8*                  out,
+        int                     width,
+        int                     height);
+
+    static void flipRGBAVertical(
+        const uint8*            in,
+        uint8*                  out,
+        int                     width,
+        int                     height);
+
+    /**
+    Given a tangent space bump map, computes a new image where the
+    RGB channels are a tangent space normal map and the alpha channel
+    is the original bump map.  Assumes the input image is tileable.
+
+    In the resulting image, x = red = tangent, y = green = binormal, and z = blue = normal. 
+
+    Particularly useful as part of the idiom:
+    <PRE>
+ 	    GImage normal;
+	    computeNormalMap(GImage(filename), normal);
+	    return Texture::fromGImage(filename, normal);
+    </PRE>
+
+    @param lowPassBump If true, a 9x9 filter of 1's is used to low-pass filter the elevations,
+        which produces better results for parallax mapping.
+
+    @param scaleHeightByNz After computing normals, scale the height by |N.z|, a trick that
+        reduces texture swim in steep areas for parallax mapping.
+
+    @cite ATI demo
+    */
+    static void computeNormalMap(
+        const class GImage& bump, 
+        class GImage& normal,
+        bool lowPassBump = false,
+        bool scaleHeightByNz = false);
+
+    /**
+    Bayer demosaicing using the filter proposed in 
+
+    HIGH-QUALITY LINEAR INTERPOLATION FOR DEMOSAICING OF BAYER-PATTERNED COLOR IMAGES
+    Henrique S. Malvar, Li-wei He, and Ross Cutler
+
+    The filter wraps at the image boundaries.
+    */
+    static void BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
+
+    /** Fast conversion; the output has 1/2 the size of the input in each direction. Assumes in != out.
+    See G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC for a much better result. */
+    static void BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int inHeight, const uint8* in, uint8* out);
+
+    /** Attempt to undo fast conversion of G3D::BAYER_G8B8_R8G8_to_Quarter_R8G8B8; 
+        the green channel will lose data. Assumes in != out 
+        The input should have size 3 * inWidth * inHeight.  The output should have size
+        2 * inWidth * 2 * inHeight.
+    */
+    static void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out);
 };
+
+
+   
+/**
+ @param in        RGB buffer of numPixels * 3 bytes
+ @param out       Buffer of numPixels * 4 bytes
+ @param numPixels Number of RGB pixels to convert
+ */
+void G3D_DEPRECATED RGBtoRGBA(
+    const uint8*            in,
+    uint8*                  out,
+    int                     numPixels) {
+    GImage::RGBtoRGBA(in, out, numPixels);
+}
+
+void G3D_DEPRECATED RGBtoBGR(
+    const uint8*            in,
+    uint8*                  out,
+    int                     numPixels) {
+    GImage::RGBtoBGR(in, out, numPixels);
+}
+
+/**
+ Win32 32-bit HDC format.
+ */
+void G3D_DEPRECATED RGBtoBGRA(
+    const uint8*            in,
+    uint8*                  out,
+    int                     numPixels) {
+    GImage::RGBtoBGRA(in, out, numPixels);
+}
+
+void G3D_DEPRECATED RGBtoARGB(
+    const uint8*            in,
+    uint8*                  out,
+    int                     numPixels) {
+    GImage::RGBtoARGB(in, out, numPixels);
+}
+
+
+/**
+ Uses the red channel of the second image as an alpha channel.
+ */
+void G3D_DEPRECATED RGBxRGBtoRGBA(
+    const uint8*            colorRGB,
+    const uint8*            alphaRGB,
+    uint8*                  out,
+    int                     numPixels) {
+    GImage::RGBxRGBtoRGBA(colorRGB, alphaRGB, out, numPixels);
+}
+    
+/**
+ Flips the image along the vertical axis.
+ Safe for in == out.
+ */
+void G3D_DEPRECATED flipRGBVertical(
+    const uint8*            in,
+    uint8*                  out,
+    int                     width,
+    int                     height) {
+    GImage::flipRGBVertical(in, out, width, height);
+}
+
+void G3D_DEPRECATED flipRGBAVertical(
+    const uint8*            in,
+    uint8*                  out,
+    int                     width,
+    int                     height) {
+    GImage::flipRGBAVertical(in, out, width, height);
+}
+
+/**
+ Given a tangent space bump map, computes a new image where the
+ RGB channels are a tangent space normal map and the alpha channel
+ is the original bump map.  Assumes the input image is tileable.
+
+ In the resulting image, x = red = tangent, y = green = binormal, and z = blue = normal. 
+
+ Particularly useful as part of the idiom:
+ <PRE>
+ 	GImage normal;
+	computeNormalMap(GImage(filename), normal);
+	return Texture::fromGImage(filename, normal);
+ </PRE>
+
+  @param lowPassBump If true, a 9x9 filter of 1's is used to low-pass filter the elevations,
+       which produces better results for parallax mapping.
+
+  @param scaleHeightByNz After computing normals, scale the height by |N.z|, a trick that
+       reduces texture swim in steep areas for parallax mapping.
+
+  @cite ATI demo
+ */
+void G3D_DEPRECATED computeNormalMap(
+    const class GImage& bump, 
+    class GImage& normal,
+    bool lowPassBump = false,
+    bool scaleHeightByNz = false) {
+    GImage::computeNormalMap(bump, normal, lowPassBump, scaleHeightByNz);
+}
+
+/**
+  Bayer demosaicing using the filter proposed in 
+
+HIGH-QUALITY LINEAR INTERPOLATION FOR DEMOSAICING OF BAYER-PATTERNED COLOR IMAGES
+Henrique S. Malvar, Li-wei He, and Ross Cutler
+
+  The filter wraps at the image boundaries.
+*/
+void G3D_DEPRECATED BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
+    GImage::BAYER_G8B8_R8G8_to_R8G8B8_MHC(w, h, in, _out);
+}
+
+
+
+/** Fast conversion; the output has 1/2 the size of the input in each direction. Assumes in != out.
+ See G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC for a much better result. */
+void G3D_DEPRECATED BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int inHeight, const uint8* in, uint8* out) {
+    GImage::BAYER_G8B8_R8G8_to_Quarter_R8G8B8(inWidth, inHeight, in, out);
+}
+
+/** Attempt to undo fast conversion of G3D::BAYER_G8B8_R8G8_to_Quarter_R8G8B8; 
+    the green channel will lose data. Assumes in != out 
+    The input should have size 3 * inWidth * inHeight.  The output should have size
+    2 * inWidth * 2 * inHeight.
+*/
+void G3D_DEPRECATED Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out) {
+    GImage::Quarter_R8G8B8_to_BAYER_G8B8_R8G8(inWidth, inHeight, in, out);
+}
+
 
 /**
  @deprecated

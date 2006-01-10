@@ -262,7 +262,7 @@ static void jpeg_memory_src (
 
 namespace G3D {
    
-void RGBtoRGBA(
+void GImage::RGBtoRGBA(
     const uint8*    in,
     uint8*          out,
     int                     numPixels) {
@@ -279,7 +279,7 @@ void RGBtoRGBA(
 }
 
 
-void RGBtoBGRA(
+void GImage::RGBtoBGRA(
     const uint8*    in,
     uint8*          out,
     int                     numPixels) {
@@ -296,7 +296,7 @@ void RGBtoBGRA(
 }
 
 
-void RGBtoBGR(
+void GImage::RGBtoBGR(
     const uint8*    in,
     uint8*          out,
     int                     numPixels) {
@@ -311,8 +311,7 @@ void RGBtoBGR(
 }
 
 
-
-void RGBxRGBtoRGBA(
+void GImage::RGBxRGBtoRGBA(
     const uint8*            colorRGB,
     const uint8*            alphaRGB,
     uint8*                  out,
@@ -329,7 +328,8 @@ void RGBxRGBtoRGBA(
     }
 }
 
-void RGBtoARGB(
+
+void GImage::RGBtoARGB(
     const uint8*            in,
     uint8*                  out,
     int                     numPixels) {
@@ -346,7 +346,7 @@ void RGBtoARGB(
 }
 
 
-void flipRGBVertical(
+void GImage::flipRGBVertical(
     const uint8*            in,
     uint8*                  out,
     int                     width,
@@ -371,7 +371,7 @@ void flipRGBVertical(
 }
 
 
-void flipRGBAVertical(
+void GImage::flipRGBAVertical(
     const uint8*            in,
     uint8*                  out,
     int                     width,
@@ -2385,7 +2385,7 @@ int GImage::sizeInMemory() const {
 }
 
 
-void computeNormalMap(
+void GImage::computeNormalMap(
     const GImage&       bump,
     GImage&             normal,
     bool                lowPassBump,
@@ -2466,8 +2466,7 @@ void computeNormalMap(
 }
 
 
-
-void BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int width, int height, const uint8* in, uint8* out) {
+void GImage::BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int width, int height, const uint8* in, uint8* out) {
     debugAssert(in != out);
 
     int halfHeight = height / 2;
@@ -2488,7 +2487,7 @@ void BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int width, int height, const uint8* in, u
 }
 
 
-void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out) {
+void GImage::Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out) {
     // Undo quarter-size Bayer as best we can.  This code isn't very efficient, but it
     // also isn't used very frequently.
 
@@ -2527,7 +2526,7 @@ void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* i
 
 
 /** Applies a 5x5 filter to monochrome image I (wrapping at the boundaries) */
-uint8 applyFilter(
+static uint8 applyFilter(
     const uint8*    I,
     int             x,
     int             y,
@@ -2555,7 +2554,7 @@ uint8 applyFilter(
 }
 
 
-void BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
+void GImage::BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
 
     debugAssert(in != _out);
 
@@ -2716,5 +2715,37 @@ void GImage::convertToRGBA() {
     }
 }
 
-};
+void GImage::R8G8B8_to_Y8U8V8(int width, int height, const uint8* _in, uint8* _out) {
+    const Color3uint8* in = reinterpret_cast<const Color3uint8*>(_in);
+    Color3uint8* out = reinterpret_cast<Color3uint8*>(_out);
+
+    Color3uint8 p;
+    for (int i = width * height - 1; i >= 0; --i) {
+        p.r = iClamp(iRound(in->r *  0.229 + in->g *  0.587 + in->b *  0.114), 0, 255);
+        p.g = iClamp(iRound(in->r * -0.147 + in->g * -0.289 + in->b *  0.436) + 127, 0, 255);
+        p.b = iClamp(iRound(in->r *  0.615 + in->g * -0.515 + in->b * -0.100) + 127, 0, 255);
+        *out = p;
+        ++in;
+        ++out;
+    }
+}
+
+
+
+void GImage::Y8U8V8_to_R8G8B8(int width, int height, const uint8* _in, uint8* _out) {
+    const Color3uint8* in = reinterpret_cast<const Color3uint8*>(_in);
+    Color3uint8* out = reinterpret_cast<Color3uint8*>(_out);
+
+    Color3uint8 p;
+    for (int i = width * height - 1; i >= 0; --i) {
+        p.r = iClamp(iRound(in->r *  1.0753 +                   (in->b - 127) *  1.2256), 0, 255);
+        p.g = iClamp(iRound(in->r *  1.0753 + (in->g - 127) * -0.3946 + (in->b - 127) * -0.4947), 0, 255);
+        p.b = iClamp(iRound(in->r *  1.0753 + (in->g - 127) *  2.0320 + (in->b - 127) *  0.0853), 0, 255);
+        *out = p;
+        ++in;
+        ++out;
+    }
+}
+
+}
 

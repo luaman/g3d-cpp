@@ -29,6 +29,9 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> Moved most image manipulation routines into GImage.
+      <LI> G3D::GImage::R8G8B8_to_Y8U8V8
+      <LI> G3D::GImage::Y8U8V8_to_R8G8B8
       <LI> G3D::GImage now supports PPM binary
       <LI> Various Rect2D helpers [Nick Bray]
       <LI> ConvexPolyhedron improved clipping [Nick Bray]
