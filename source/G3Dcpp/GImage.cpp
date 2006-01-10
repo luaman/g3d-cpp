@@ -355,11 +355,13 @@ void GImage::flipRGBVertical(
     
     // Allocate a temp row so the operation
     // is still safe if in == out
-        uint8* temp = (uint8*)System::malloc(width * 3);
-    alwaysAssertM(temp != NULL, "Out of memory");
+    uint8* temp = (uint8*)System::malloc(width * 3);
+    alwaysAssertM(temp != NULL, "Out of memory"); 
 
-    for (int i = 0; i < height / 2; ++i) {
-        int oneRow = width * 3;
+    int oneRow = width * 3;
+
+    // if height is an odd value, don't swap odd middle row
+    for (int i = 0; i < (height / 2) ; ++i) {
         int topOff = i * oneRow;
         int botOff = (height - i - 1) * oneRow;
         System::memcpy(temp,         in + topOff, oneRow);
@@ -383,8 +385,10 @@ void GImage::flipRGBAVertical(
     uint8* temp = (uint8*)System::malloc(width * 4);
     alwaysAssertM(temp != NULL, "Out of memory");
 
+    int oneRow = width * 4;
+
+    // if height is an odd value, don't swap odd middle row
     for (int i = 0; i < height / 2; ++i) {
-        int oneRow = width * 4;
         int topOff = i * oneRow;
         int botOff = (height - i - 1) * oneRow;
         System::memcpy(temp,         in + topOff, oneRow);
@@ -1967,7 +1971,7 @@ static int scanUInt(BinaryInput& input) {
     input.setPosition(input.getPosition() - 1);
 
     int x;
-    sscanf(s.c_str(), "%d");
+    sscanf(s.c_str(), "%d", &x);
     return x;
 }
 
