@@ -484,14 +484,14 @@ public:
  @param out       Buffer of numPixels * 4 bytes
  @param numPixels Number of RGB pixels to convert
  */
-static void G3D_DEPRECATED RGBtoRGBA(
+inline void G3D_DEPRECATED RGBtoRGBA(
     const uint8*            in,
     uint8*                  out,
     int                     numPixels) {
     GImage::RGBtoRGBA(in, out, numPixels);
 }
 
-static void G3D_DEPRECATED RGBtoBGR(
+inline void G3D_DEPRECATED RGBtoBGR(
     const uint8*            in,
     uint8*                  out,
     int                     numPixels) {
@@ -501,14 +501,14 @@ static void G3D_DEPRECATED RGBtoBGR(
 /**
  Win32 32-bit HDC format.
  */
-static void G3D_DEPRECATED RGBtoBGRA(
+inline void G3D_DEPRECATED RGBtoBGRA(
     const uint8*            in,
     uint8*                  out,
     int                     numPixels) {
     GImage::RGBtoBGRA(in, out, numPixels);
 }
 
-static void G3D_DEPRECATED RGBtoARGB(
+inline void G3D_DEPRECATED RGBtoARGB(
     const uint8*            in,
     uint8*                  out,
     int                     numPixels) {
@@ -519,7 +519,7 @@ static void G3D_DEPRECATED RGBtoARGB(
 /**
  Uses the red channel of the second image as an alpha channel.
  */
-static void G3D_DEPRECATED RGBxRGBtoRGBA(
+inline void G3D_DEPRECATED RGBxRGBtoRGBA(
     const uint8*            colorRGB,
     const uint8*            alphaRGB,
     uint8*                  out,
@@ -531,7 +531,7 @@ static void G3D_DEPRECATED RGBxRGBtoRGBA(
  Flips the image along the vertical axis.
  Safe for in == out.
  */
-static void G3D_DEPRECATED flipRGBVertical(
+inline void G3D_DEPRECATED flipRGBVertical(
     const uint8*            in,
     uint8*                  out,
     int                     width,
@@ -539,7 +539,7 @@ static void G3D_DEPRECATED flipRGBVertical(
     GImage::flipRGBVertical(in, out, width, height);
 }
 
-static void G3D_DEPRECATED flipRGBAVertical(
+inline void G3D_DEPRECATED flipRGBAVertical(
     const uint8*            in,
     uint8*                  out,
     int                     width,
@@ -569,7 +569,7 @@ static void G3D_DEPRECATED flipRGBAVertical(
 
   @cite ATI demo
  */
-static void G3D_DEPRECATED computeNormalMap(
+inline void G3D_DEPRECATED computeNormalMap(
     const class GImage& bump, 
     class GImage& normal,
     bool lowPassBump = false,
@@ -585,7 +585,7 @@ Henrique S. Malvar, Li-wei He, and Ross Cutler
 
   The filter wraps at the image boundaries.
 */
-static void G3D_DEPRECATED BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
+inline void G3D_DEPRECATED BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
     GImage::BAYER_G8B8_R8G8_to_R8G8B8_MHC(w, h, in, _out);
 }
 
@@ -593,7 +593,7 @@ static void G3D_DEPRECATED BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uin
 
 /** Fast conversion; the output has 1/2 the size of the input in each direction. Assumes in != out.
  See G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC for a much better result. */
-static void G3D_DEPRECATED BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int inHeight, const uint8* in, uint8* out) {
+inline void G3D_DEPRECATED BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int inHeight, const uint8* in, uint8* out) {
     GImage::BAYER_G8B8_R8G8_to_Quarter_R8G8B8(inWidth, inHeight, in, out);
 }
 
@@ -602,7 +602,7 @@ static void G3D_DEPRECATED BAYER_G8B8_R8G8_to_Quarter_R8G8B8(int inWidth, int in
     The input should have size 3 * inWidth * inHeight.  The output should have size
     2 * inWidth * 2 * inHeight.
 */
-static void G3D_DEPRECATED Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out) {
+inline void G3D_DEPRECATED Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out) {
     GImage::Quarter_R8G8B8_to_BAYER_G8B8_R8G8(inWidth, inHeight, in, out);
 }
 
