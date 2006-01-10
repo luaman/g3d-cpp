@@ -842,12 +842,12 @@ const Array<MeshAlg::Vertex>& MD2Model::PosedMD2Model::weldedVertices() const {
 
 
 void MD2Model::PosedMD2Model::getObjectSpaceBoundingSphere(Sphere& s) const {
-    s = model->animationBoundingSphere[pose.animation];
+    s = model->animationBoundingSphere[iAbs(pose.animation)];
 }
 
 
 void MD2Model::PosedMD2Model::getObjectSpaceBoundingBox(Box& b) const {
-    b = model->animationBoundingBox[pose.animation];
+    b = model->animationBoundingBox[iAbs(pose.animation)];
 }
 
 

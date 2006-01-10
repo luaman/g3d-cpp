@@ -31,6 +31,7 @@
     <UL>
       <LI> G3D::GImage now supports PPM binary
       <LI> Various Rect2D helpers [Nick Bray]
+      <LI> ConvexPolyhedron improved clipping [Nick Bray]
       <LI> G3D::System::build
       <LI> G3D::System::calloc
       <LI> G3D::GImage::convertToRGBA

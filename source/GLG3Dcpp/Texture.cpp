@@ -36,7 +36,8 @@ static bool hasAutoMipMap() {
         initialized = true;
         std::string ext = (char*)glGetString(GL_EXTENSIONS);
         ham = (ext.find("GL_SGIS_generate_mipmap") != std::string::npos) &&
-            ! GLCaps::hasBug_mipmapGeneration();
+            ! GLCaps::hasBug_mipmapGeneration() &&
+            ! GLCaps::hasBug_redBlueMipmapSwap();
     }
 
     return ham;

@@ -4,9 +4,9 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-11-11
-  @edited  2003-04-29
+  @edited  2006-01-10
  
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -78,6 +78,16 @@ public:
     */
     void cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon &below, DirectedEdge& newEdge);
     void cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon &below);
+
+	/**
+		When a cut plane grazes a vertex in the polygon, two near-identical vertices may be created.
+		The closeness of these two points can cause a number of problems, such as ConvexPolygon::normal() 
+		returning an infinite vector.  It should be noted, however, that not all applications are 
+		sensitive to near-identical vertices.
+
+		removeDuplicateVertices() detects and eliminates redundant vertices.
+	*/
+	void removeDuplicateVertices();
 
     /**
      O(n) in the number of edges

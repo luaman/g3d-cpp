@@ -4,9 +4,9 @@
   @author Morgan McGuire, morgan@graphics3d.com
 
   @created 2001-11-11
-  @edited  2005-02-24
+  @edited  2006-01-10
  
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -40,7 +40,7 @@ float ConvexPolygon::getArea() const {
         int i1 = v - 1;
         int i2 = v;
 
-        sum += (_vertex[i1] - _vertex[i0]).cross(_vertex[i2] - _vertex[i0]).magnitude() / 2; 
+        sum += (_vertex[i1] - _vertex[i0]).cross(_vertex[i2] - _vertex[i0]).length() / 2; 
     }
 
     return sum;
@@ -191,6 +191,24 @@ ConvexPolygon ConvexPolygon::inverse() const {
     return result;
 }
 
+void ConvexPolygon::removeDuplicateVertices(){
+	// Any valid polygon should have 3 or more vertices, but why take chances?
+	if(_vertex.size() >= 2){
+
+		// Remove duplicate vertices.
+		for(int i=0;i<_vertex.size()-1;++i){
+			if(_vertex[i].fuzzyEq(_vertex[i+1])){
+				_vertex.remove(i+1);
+				--i; // Don't move forward.
+			}
+		}
+		
+		// Check the last vertex against the first.
+		if(_vertex[_vertex.size()-1].fuzzyEq(_vertex[0])){
+			_vertex.pop();
+		}
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -359,9 +377,9 @@ for (int xx=0; xx < numVertices; xx++) {
             // matching edge index
             int index = 0;
             int num = edge.length();
-            double distance = (edge[index].start - last_vertex).squaredMagnitude();
+            double distance = (edge[index].start - last_vertex).squaredLength();
             for (int e = 1; e < num; e++) {
-                double d = (edge[e].start - last_vertex).squaredMagnitude();
+                double d = (edge[e].start - last_vertex).squaredLength();
 
                 if (d < distance) {
                     // This is the new closest one
