@@ -120,25 +120,82 @@ public:
         std::string&        filenameBeforeWildCard,
         std::string&        filenameAfterWildCard);
 
+
+    /**
+     All parameters of a texture that are independent of the underlying image data.
+     */
+    class Parameters {
+    public:
+
+        /** Default is TRILINEAR_MIPMAP */
+        InterpolateMode             interpolateMode;
+
+        /** Default is TILE */
+        WrapMode                    wrapMode;
+
+        /** Default is DEPTH_NORMAL */
+        DepthReadMode               depthReadMode;
+
+        /** Default is 2.0 */
+        float                       maxAnisotropy;
+
+        /** Default is true */
+        bool                        autoMipMap;
+
+        Parameters();
+
+        static const Parameters& defaults();
+
+        /** 
+          Useful defaults for video/image processing.
+          BILINEAR_NO_MIPMAP / CLAMP / DEPTH_NORMAL / 1.0 / false
+        */
+        static const Parameters& video();
+
+        /** 
+          Useful defaults for shadow maps.
+          BILINEAR_NO_MIPMAP / CLAMP / DEPTH_LEQUAL / 1.0 / false
+        */
+        static const Parameters& shadow();
+
+        /*
+         Coming in a future version...
+        void serialize(class BinaryOutput& b);
+        void deserialize(class BinaryInput& b);
+        void serialize(class TextOutput& t);
+        void deserialize(class TextInput& t);
+        */
+
+        uint32 hashCode() const;
+    };
+
 private:
 
     /** OpenGL texture ID */
 	GLuint                          textureID;
 
-    std::string                     name;
+    /** TODO: Remove */
+    DepthReadMode                   _depthRead;
+    /** TODO: Remove */
+    float                           _maxAnisotropy;
+    /** TODO: Remove */
     InterpolateMode                 interpolate;
+    /** TODO: Remove */
     WrapMode                        wrap;
+
+    /** Duplicates the values above.  Set in the base constructor. */
+    Parameters                      _parameters;
+
+    std::string                     name;
     Dimension                       dimension;
+    bool                            _opaque;
+
     const class TextureFormat*      format;
     int                             width;
     int                             height;
     int                             depth;
-    bool                            _opaque;
-    DepthReadMode                   _depthRead;
-    float                           _maxAnisotropy;
 
     static size_t                   _sizeOfAllTexturesInMemory;
-
 
     Texture(
         const std::string&          _name,
@@ -161,7 +218,7 @@ public:
     /**
      Creates an empty texture (useful for later reading from the screen).
      */
-    static TextureRef createEmpty(
+    static TextureRef G3D_DEPRECATED createEmpty(
         int                             width,
         int                             height,
         const std::string&              name           = "Texture",
@@ -171,6 +228,19 @@ public:
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
         float                           maxAnisotropy  = 2.0);
+
+    /**
+     Creates an empty texture (useful for later reading from the screen).
+     */
+    inline static TextureRef createEmpty(
+        const std::string&              name,
+        int                             width,
+        int                             height,
+        const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
+        Dimension                       dimension      = DIM_2D,
+        const Parameters&               param          = Parameters::defaults()) {
+        return Texture::createEmpty(width, height, name, desiredFormat, param.wrapMode, param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
+    }
 
     /**
      Wrap and interpolate will override the existing parameters on the
@@ -190,14 +260,8 @@ public:
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
         float                           maxAnisotropy  = 2.0);
 
-    /**
-     Creates a texture from a single image.  The image must have a format understood
-     by G3D::GImage.  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
-     _ft, _bk, ... following the G3D::Sky documentation.
-     @param brighten A value to multiply all color channels by; useful for loading
-            dark Quake textures.
-     */
-    static TextureRef fromFile(
+
+    static TextureRef G3D_DEPRECATED fromFile(
         const std::string&              filename,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         WrapMode                        wrap           = TILE,
@@ -206,6 +270,22 @@ public:
         double                          brighten       = 1.0,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
         float                           maxAnisotropy  = 2.0);
+
+    /**
+     Creates a texture from a single image.  The image must have a format understood
+     by G3D::GImage.  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
+     _ft, _bk, ... following the G3D::Sky documentation.
+     @param brighten A value to multiply all color channels by; useful for loading
+            dark Quake textures.
+     */    
+    inline static TextureRef fromFile(
+        const std::string&              filename,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
+        Dimension                       dimension      = DIM_2D,
+        double                          brighten       = 1.0,
+        const Parameters&               param          = Parameters::defaults()) {
+        return Texture::fromFile(filename, desiredFormat, param.wrapMode, param.interpolateMode, dimension, brighten, param.depthReadMode, param.maxAnisotropy);
+    }
 
     /**
      Creates a cube map from six independently named files.  The first
@@ -263,7 +343,7 @@ public:
         InterpolateMode                     interpolate    = TRILINEAR_MIPMAP,
         Dimension                           dimension      = DIM_2D,
         DepthReadMode                       depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        float                               maxAnisotropy  = 2.0);
 
     /**
      The bytes are described by byteFormat, which may differ from the
@@ -287,7 +367,8 @@ public:
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
         float                           maxAnisotropy  = 2.0);
 
-	static TextureRef fromMemory(
+    /** Use the constructor that accepts Texture::Parameters. */
+	static TextureRef G3D_DEPRECATED fromMemory(
         const std::string&              name,
         const uint8*                    bytes,
         const class TextureFormat*      bytesFormat,
@@ -307,7 +388,26 @@ public:
 			desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
 	}
 
-    static TextureRef fromGImage(
+	inline static TextureRef fromMemory(
+        const std::string&              name,
+        const uint8*                    bytes,
+        const class TextureFormat*      bytesFormat,
+        int                             width,
+        int                             height,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
+        Dimension                       dimension = DIM_2D,
+        const Parameters&               param = Parameters::defaults()) {
+
+		const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+		b[0] = bytes;
+
+		return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
+			desiredFormat, param.wrapMode, param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
+    }
+
+
+    /** Use the constructor that accepts Texture::Parameters. */
+    static TextureRef G3D_DEPRECATED fromGImage(
         const std::string&              name,
         const GImage&                   image,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
@@ -316,6 +416,15 @@ public:
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
         float                           maxAnisotropy  = 2.0);
+
+    inline static TextureRef fromGImage(
+        const std::string&              name,
+        const GImage&                   image,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
+        Dimension                       dimension      = DIM_2D,
+        const Parameters&               param = Parameters::defaults()) {
+        return fromGImage(name, image, desiredFormat, param.wrapMode, param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
+    }
 
     /** Creates another texture that is the same as this one but contains only
         an alpha channel.  Alpha-only textures are useful as mattes.  
@@ -389,7 +498,7 @@ public:
      this is false).
      
      RenderDevice watches this flag and performs the appropriate transformation.
-     If you are not using RenderDevice, you must do it yourself.
+     If you are not using RenderDevice (or are writing shaders), you must do it yourself.
      */
     bool invertY;
 
@@ -421,11 +530,13 @@ public:
         return _opaque;
     }
 
-    inline DepthReadMode depthReadMode() const {
+    /** @deprecated use Texture::parameters. */
+    inline DepthReadMode G3D_DEPRECATED depthReadMode() const {
         return _depthRead;
     }
 
-    inline float maxAnisotropy() const {
+    /** @deprecated use Texture::parameters. */
+    inline float G3D_DEPRECATED maxAnisotropy() const {
         return _maxAnisotropy;
     }
 
@@ -434,12 +545,12 @@ public:
     }
 
 	/** @deprecated Use texelWidth */
-    inline const int getTexelWidth() const {
+    inline const int G3D_DEPRECATED getTexelWidth() const {
         return width;
     }
 
 	/** @deprecated Use texelHeight */
-    inline const int getTexelHeight() const {
+    inline const int G3D_DEPRECATED getTexelHeight() const {
         return height;
     }
 
@@ -447,7 +558,7 @@ public:
      For 3D textures.
 	 @deprecated Use texelDepth
      */
-    inline const int getTexelDepth() const {
+    inline const int G3D_DEPRECATED getTexelDepth() const {
         return depth;
     }
 
@@ -463,6 +574,7 @@ public:
         return Vector2(width, height);
     }
 
+    /** Returns a rectangle whose width and height match the dimensions of the texture. */
     inline Rect2D rect2DBounds() const {
         return Rect2D::xywh(0, 0, width, height);
     }
@@ -478,15 +590,18 @@ public:
         return name;
     }
 
-    inline InterpolateMode getInterpolateMode() const {
+    /** @deprecated use Texture::parameters. */
+    inline InterpolateMode G3D_DEPRECATED getInterpolateMode() const {
         return interpolate;
     }
 
-	/** @deprecated use wrapMode */
+	/** @deprecated use Texture::parameters. */
     inline WrapMode getWrapMode() const {
         return wrap;
     }
-    inline WrapMode wrapMode() const {
+
+    /** @deprecated use Texture::parameters. */
+    inline WrapMode G3D_DEPRECATED wrapMode() const {
         return wrap;
     }
 
@@ -494,7 +609,7 @@ public:
         return format;
     }
     
-    inline Dimension getDimension() const {
+    inline Dimension G3D_DEPRECATED getDimension() const {
         return dimension;
     }
 
@@ -507,6 +622,8 @@ public:
      The OpenGL texture target this binds (e.g. GL_TEXTURE_2D)
      */
     unsigned int getOpenGLTextureTarget() const;
+
+    const Parameters& parameters() const;
 
 private:
 
@@ -552,23 +669,25 @@ private:
     };
 };
 
-inline bool operator==(const TextureRef& a, const void* b) {
+inline bool G3D_DEPRECATED operator==(const TextureRef& a, const void* b) {
     return (b == NULL) && (a == (TextureRef)NULL);
 }
 
-inline bool operator==(const void* a, const TextureRef& b) {
+inline bool G3D_DEPRECATED operator==(const void* a, const TextureRef& b) {
     return b == a;
 }
 
-inline bool operator!=(const TextureRef& a, const void* b) {
+inline bool G3D_DEPRECATED operator!=(const TextureRef& a, const void* b) {
     return !(a == b);
 }
 
-inline bool operator!=(const void* b, const TextureRef& a) {
+inline bool G3D_DEPRECATED operator!=(const void* b, const TextureRef& a) {
     return !(a == b);
 }
 
 
 } // namespace
+
+G3D::uint32 hashCode(const G3D::Texture::Parameters& p);
 
 #endif

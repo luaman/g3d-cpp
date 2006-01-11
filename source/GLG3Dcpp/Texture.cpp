@@ -19,6 +19,10 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/GLCaps.h"
 
+G3D::uint32 hashCode(const G3D::Texture::Parameters& p) {
+    return p.hashCode();
+}
+
 namespace G3D {
 
 static const char* cubeMapString[] = {"ft", "bk", "up", "dn", "rt", "lf"};
@@ -43,6 +47,81 @@ static bool hasAutoMipMap() {
     return ham;
 }
 
+
+Texture::Parameters::Parameters() : 
+    interpolateMode(TRILINEAR_MIPMAP),
+    wrapMode(TILE),
+    depthReadMode(DEPTH_NORMAL),
+    maxAnisotropy(2.0),
+    autoMipMap(true) {
+}
+
+const Texture::Parameters& Texture::Parameters::defaults() {
+    static Parameters param;
+    return param;
+}
+
+const Texture::Parameters& Texture::Parameters::video() {
+
+    static bool initialized = false;
+    static Parameters param;
+
+    if (! initialized) {
+        initialized = true;
+        param.interpolateMode = BILINEAR_NO_MIPMAP;
+        param.wrapMode = CLAMP;
+        param.depthReadMode = DEPTH_NORMAL;
+        param.maxAnisotropy = 1.0;
+        param.autoMipMap = false;
+    }
+
+    return param;
+}
+
+
+const Texture::Parameters& Texture::Parameters::shadow() {
+
+    static bool initialized = false;
+    static Parameters param;
+
+    if (! initialized) {
+        initialized = true;
+        param.interpolateMode = BILINEAR_NO_MIPMAP;
+        param.wrapMode = CLAMP;
+        param.depthReadMode = DEPTH_LEQUAL;
+        param.maxAnisotropy = 1.0;
+        param.autoMipMap = false;
+    }
+
+    return param;
+}
+
+/*
+void Texture::Parameters::serialize(class BinaryOutput& b) {
+    // TODO: use chunk format
+
+}
+
+void Texture::Parameters::deserialize(class BinaryInput& b) {
+
+}
+
+void Texture::Parameters::serialize(class TextOutput& t) {
+    // TODO: ini-like format
+}
+
+void Texture::Parameters::deserialize(class TextInput& t) {
+}
+*/
+
+uint32 Texture::Parameters::hashCode() const {
+    return 
+        (uint32)interpolateMode + 
+        16 * (uint32)wrapMode + 
+        256 * (uint32)depthReadMode + 
+        (autoMipMap ? 512 : 0) +
+        (uint32)(1024 * maxAnisotropy);
+}
 
 
 
@@ -332,6 +411,9 @@ static void setTexParameters(
 
 /////////////////////////////////////////////////////////////////////////////
 
+const Texture::Parameters& Texture::parameters() const {
+    return _parameters;
+}
 
 Texture::Texture(
     const std::string&      _name,
@@ -353,6 +435,11 @@ Texture::Texture(
 
     debugAssert(_format);
     debugAssertGLOk();
+
+    _parameters.interpolateMode = _interpolate;
+    _parameters.wrapMode = _wrap;
+    _parameters.maxAnisotropy = _aniso;
+    _parameters.depthReadMode = __dr;
 
     glStatePush();
 
