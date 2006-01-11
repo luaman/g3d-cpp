@@ -155,6 +155,7 @@ void Demo::doNetwork() {
 
 void Demo::doSimulation(SimTime dt) {
 	// Add physical simulation here
+    gameTime += 20;
 }
 
 

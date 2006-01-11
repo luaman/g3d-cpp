@@ -29,6 +29,8 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> Changed SECOND, MINUTE, DAY, HOUR, SUNRISE, SUNSET, MIDNIGHT, METER, KILOMETER to enum values instead of #defines
+      <LI> G3D::Texture::Parameters; deprecated most Texture constructors in favor of ones that use this class
       <LI> Moved most image manipulation routines into GImage.
       <LI> G3D::GImage::R8G8B8_to_Y8U8V8
       <LI> G3D::GImage::Y8U8V8_to_R8G8B8

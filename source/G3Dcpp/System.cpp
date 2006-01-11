@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-12-29
+  @edited  2006-01-10
  */
 
 #include "G3D/platform.h"
@@ -24,6 +24,7 @@
 #include "G3D/g3derror.h"
 #include "G3D/fileutils.h"
 #include "G3D/TextOutput.h"
+#include "G3D/G3DGameUnits.h"
 
 #ifdef G3D_WIN32
 
@@ -1059,7 +1060,7 @@ void initTime() {
         struct _timeb t;
         _ftime(&t);
 
-        realWorldGetTickTime0 = (RealTime)t.time - t.timezone * MINUTE + (t.dstflag ? HOUR : 0);
+        realWorldGetTickTime0 = (RealTime)t.time - t.timezone * G3D::MINUTE + (t.dstflag ? G3D::HOUR : 0);
 
     #else
         gettimeofday(&_start, NULL);
