@@ -374,21 +374,14 @@ public:
         const class TextureFormat*      bytesFormat,
         int                             width,
         int                             height,
-        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
-        WrapMode                        wrap           = TILE,
+        const class TextureFormat*      desiredFormat,
+        WrapMode                        wrap,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0) {
+        float                           maxAnisotropy  = 2.0);
 
-		const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
-		b[0] = bytes;
-
-		return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
-			desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
-	}
-
-	inline static TextureRef fromMemory(
+	 static TextureRef fromMemory(
         const std::string&              name,
         const uint8*                    bytes,
         const class TextureFormat*      bytesFormat,
@@ -396,14 +389,7 @@ public:
         int                             height,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         Dimension                       dimension = DIM_2D,
-        const Parameters&               param = Parameters::defaults()) {
-
-		const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
-		b[0] = bytes;
-
-		return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
-			desiredFormat, param.wrapMode, param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
-    }
+        const Parameters&               param = Parameters::defaults());
 
 
     /** Use the constructor that accepts Texture::Parameters. */

@@ -470,6 +470,46 @@ Texture::Texture(
 }
 
 
+TextureRef Texture::fromMemory(
+    const std::string&              name,
+    const uint8*                    bytes,
+    const class TextureFormat*      bytesFormat,
+    int                             width,
+    int                             height,
+    const class TextureFormat*      desiredFormat,
+    Dimension                       dimension,
+    const Parameters&               param) {
+
+	const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+	b[0] = bytes;
+
+	return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
+		desiredFormat, param.wrapMode, param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
+}
+
+
+TextureRef Texture::fromMemory(
+    const std::string&              name,
+    const uint8*                    bytes,
+    const class TextureFormat*      bytesFormat,
+    int                             width,
+    int                             height,
+    const class TextureFormat*      desiredFormat,
+    WrapMode                        wrap,
+    InterpolateMode                 interpolate,
+    Dimension                       dimension,
+    DepthReadMode                   depthRead,
+    float                           maxAnisotropy) {
+
+	const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+	b[0] = bytes;
+
+	return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
+		desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
+}
+
+
+
 TextureRef Texture::fromGLTexture(
     const std::string&      name,
     GLuint                  textureID,
