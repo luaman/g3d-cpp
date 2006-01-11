@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2005-11-27
+ @edited  2006-01-10
 
  Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
@@ -139,6 +139,9 @@ private:
 #undef DECLARE_EXT
 
     static Set<std::string>         extensionSet;
+
+    /** Runs all of the hasBug_ methods. Called from loadExtensions(). */
+    static void checkForBugs();
 
 public:
 

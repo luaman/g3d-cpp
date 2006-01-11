@@ -497,9 +497,18 @@ void GLCaps::loadExtensions(Log* debugLog) {
     }
     debugAssertGLOk();
 
-    hasBug_redBlueMipmapSwap();
+    checkForBugs();
 }
 
+
+void GLCaps::checkForBugs() {
+    // Call these functions so that their values are all memoized
+    hasBug_glMultiTexCoord3fvARB();
+    hasBug_normalMapTexGen();
+    hasBug_redBlueMipmapSwap();
+    hasBug_mipmapGeneration();
+    hasBug_slowVBO();
+}
 
 bool GLCaps::supports(const std::string& extension) {
     return extensionSet.contains(extension);
@@ -617,7 +626,9 @@ bool GLCaps::hasBug_normalMapTexGen() {
     return b;
 }
 
+#define USE_TEMPORARY_CONTEXT
 
+/*
 #ifdef G3D_WIN32
   // If not using SDL, create a temporary GL context.
   // Written using ? operator because "reset" method
@@ -630,6 +641,7 @@ bool GLCaps::hasBug_normalMapTexGen() {
 #else
 #   define USE_TEMPORARY_CONTEXT
 #endif
+*/
 
 static void cubeMapBugs(bool& mtc, bool& nmt) {
     static bool initialized = false;
@@ -642,8 +654,6 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
     } else {
         initialized = true;
     }
-
-    GLCaps::loadExtensions();
 
     USE_TEMPORARY_CONTEXT;
 
