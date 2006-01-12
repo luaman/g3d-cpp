@@ -196,11 +196,13 @@ inline double max(double x, double y) {
 }
 
 //----------------------------------------------------------------------------
+/** @deprecated use std::min */
 inline int iMin(int x, int y) {
     return (x >= y) ? y : x;
 }
 
 //----------------------------------------------------------------------------
+/** @deprecated use std::min */
 inline int iMax(int x, int y) {
     return (x >= y) ? x : y;
 }
