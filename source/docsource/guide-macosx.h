@@ -55,14 +55,14 @@ that it is actually the name of your new project.
 </li>
 <LI>
 <STRONG>Delete Unused Files</STRONG> - Because Xcode created some files for you, which
-you do not need, you will now delete them from your system. Select <tt>main.m</tt>, 
-<tt>MainMenu.nib</tt>, and <tt>MY_PROJ_Prefix.pch</tt> (hold down command/apple key to
-multiple select, or do each one individually). Hit the delete button on your keyboard,
-or select <I>Delete</I> from the <I>Edit</I> menu. Xcode will ask you, <I>"The
-references to be deleted refer to files on your disk.  Do you wish to delete only the
-references and not the related files?"<I> You can go ahead and select <I>"Delete
-References & Files"</I> because these will no longer be needed. If it makes you
-nervous, feel free to just select <I>"Delete References"</I>.
+you do not need, you will now delete them from your system. Select <tt>main.m</tt> 
+and <tt>MainMenu.nib</tt> (hold down command/apple key to multiple select, or do each
+one individually). Hit the delete button on your keyboard, or select <I>Delete</I>
+from the <I>Edit</I> menu. Xcode will ask you, <I>"The references to be deleted refer
+to files on your disk.  Do you wish to delete only the references and not the related
+files?"<I> You can go ahead and select <I>"Delete References & Files"</I> because these
+will no longer be needed. If it makes you nervous, feel free to just select <I>"Delete
+References"</I>.
 </LI>
 <LI>
 <STRONG>Remove Unused Referenced Libraries</STRONG> - Xcode also added some library
