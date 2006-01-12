@@ -48,9 +48,12 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
 
     debugLog	 = new Log(settings.logFilename);
     renderDevice = new RenderDevice();
+
     if (window != NULL) {
+        _hasUserCreatedWindow = true;
         renderDevice->init(window, debugLog);
     } else {
+        _hasUserCreatedWindow = false;    
         renderDevice->init(settings.window, debugLog);
     }
 
@@ -183,6 +186,11 @@ GApp::~GApp() {
     renderDevice->cleanup();
     delete renderDevice;
     renderDevice = NULL;
+
+    if (_hasUserCreatedWindow) {
+        delete _window;
+        _window = NULL;
+    }
 
     VARArea::cleanupAllVARAreas();
 
@@ -438,6 +446,7 @@ void GApplet::doUserInput() {
         switch(event.type) {
         case SDL_QUIT:
 	        app->endProgram = true;
+            endApplet = true;
 	        break;
 
         case SDL_VIDEORESIZE:

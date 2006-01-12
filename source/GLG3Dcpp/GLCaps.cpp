@@ -46,14 +46,10 @@ static void __stdcall glIgnore(GLenum e) {
 static Table<const TextureFormat*, bool>      _supportedTextureFormat;
 
 Set<std::string> GLCaps::extensionSet;
-std::string GLCaps::_glVersion;
-std::string GLCaps::_driverVendor;
-std::string GLCaps::_driverVersion;
-std::string GLCaps::_glRenderer;
 
 
 GLCaps::Vendor GLCaps::computeVendor() {
-    std::string s = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    std::string s = vendor();
 
     if (s == "ATI Technologies Inc.") {
         return ATI;
@@ -191,13 +187,16 @@ void GLCaps::loadExtensions(Log* debugLog) {
         return;
     }
 
+    // Don't create a temporary context but require one to continue
+    alwaysAssertM(wglGetCurrentContext(), "Unable to load OpenGL extensions without context.");
+
     loadedExtensions = true;
 
-	_driverVendor   = (char*)glGetString(GL_VENDOR);
-	_glRenderer     = (char*)glGetString(GL_RENDERER);
-	_glVersion      = (char*)glGetString(GL_VERSION);
-	_driverVersion  = getDriverVersion();
-
+    // Initialize statically cached strings
+	vendor();
+    renderer();
+    glVersion();
+    driverVersion();
 
     #define LOAD_EXTENSION(name) \
         *((void**)&name) = glGetProcAddress(#name);
@@ -452,8 +451,8 @@ void GLCaps::loadExtensions(Log* debugLog) {
 		// GL Version:     1.3.3842 WinXP Release
 		// Driver version: 6.14.10.6371
 
-		if (beginsWith(_glRenderer, "MOBILITY RADEON") &&
-			beginsWith(std::string(_driverVersion), "6.14.10.6")) {
+		if (beginsWith(renderer(), "MOBILITY RADEON") &&
+			beginsWith(driverVersion(), "6.14.10.6")) {
             Log::common()->printf("WARNING: This ATI Radeon Mobility card has a known bug with cube maps.\n"
                 "   Put cube map texture coordinates in the normals and use ARB_NORMAL_MAP to work around.\n\n");
         }
@@ -502,7 +501,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
 
 
 void GLCaps::checkForBugs() {
-    // Call these functions so that their values are all memoized
+    // Call these functions so that their values are all statically initialized
     hasBug_glMultiTexCoord3fvARB();
     hasBug_normalMapTexGen();
     hasBug_redBlueMipmapSwap();
@@ -548,100 +547,55 @@ bool GLCaps::supports(const TextureFormat* fmt) {
 
 const std::string& GLCaps::glVersion() {
 	loadExtensions();
-	return _glVersion;
+
+    static std::string _glVersion = (char*)glGetString(GL_VERSION);
+    return _glVersion;
 }
 
 
 const std::string& GLCaps::driverVersion() {
 	loadExtensions();
+
+    static std::string _driverVersion = getDriverVersion().c_str();
 	return _driverVersion;
 }
 
 
 const std::string& GLCaps::vendor() {
 	loadExtensions();
+
+    static std::string _driverVendor = (char*)glGetString(GL_VENDOR);
 	return _driverVendor;
 }
 
 
 const std::string& GLCaps::renderer() {
 	loadExtensions();
+
+    static std::string _glRenderer = (char*)glGetString(GL_RENDERER);
 	return _glRenderer;
 }
 
-
-////////////////////////////////////////////////////////////
-
-/** 
- When constructed, makes a new OpenGL window that can be used
- for performing rendering tests. 
-*/
-class TempGLContext {
-
-    /** Old current window.  Will be restored on exit if not null */
-    const GWindow* const current;
-
-    GWindow* tempWindow;
-
-    TempGLContext& operator=(const TempGLContext& other);
-
-public:
-
-    TempGLContext() : current(GWindow::current()) {
-        GWindowSettings settings;
-        settings.visible = false;
-#       ifdef G3D_WIN32
-            tempWindow = Win32Window::create(settings);
-#		elif defined(G3D_OSX)
-			tempWindow = new SDLWindow(settings);
-#       else
-            tempWindow = new X11Window(settings);
-#       endif
-        tempWindow->makeCurrent();
-    }
-
-    ~TempGLContext() {
-        delete tempWindow;
-
-        // Restore the old window
-        if (current != NULL) {
-            current->makeCurrent();
-        }
-    }
-};
  
 
 /** Tests for hasBug_glMultiTexCoord3fvARB and hasBug_glNormalMapTexGenARB */
 static void cubeMapBugs(bool& mtc, bool& nmt);
 
 bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
+    loadExtensions();
+
     bool a, b;
     cubeMapBugs(a, b);
     return a;
 }
 
 bool GLCaps::hasBug_normalMapTexGen() {
+    loadExtensions();
+
     bool a, b;
     cubeMapBugs(a, b);
     return b;
 }
-
-#define USE_TEMPORARY_CONTEXT
-
-/*
-#ifdef G3D_WIN32
-  // If not using SDL, create a temporary GL context.
-  // Written using ? operator because "reset" method
-  // is not available on MSVC6.
-#   define USE_TEMPORARY_CONTEXT\
-	std::auto_ptr<TempGLContext> context(\
-	 (dynamic_cast<const Win32Window*>(GWindow::current()) != NULL) ? \
-       new TempGLContext() : NULL);
-
-#else
-#   define USE_TEMPORARY_CONTEXT
-#endif
-*/
 
 static void cubeMapBugs(bool& mtc, bool& nmt) {
     static bool initialized = false;
@@ -654,8 +608,6 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
     } else {
         initialized = true;
     }
-
-    USE_TEMPORARY_CONTEXT;
 
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
@@ -894,9 +846,9 @@ bool GLCaps::hasBug_redBlueMipmapSwap() {
         return value;
     }
 
-    initialized = true;
+    loadExtensions();
 
-    USE_TEMPORARY_CONTEXT;
+    initialized = true;
 
     static bool hasAutoMipmap = false;
     {
@@ -933,7 +885,7 @@ bool GLCaps::hasBug_redBlueMipmapSwap() {
 			      GL_UNSIGNED_BYTE,
 			      bytes);
 
-    Log::common()->printf("%d %d %d", bytes[0], bytes[1], bytes[2]);
+    Log::common()->printf("%d %d %d\n", bytes[0], bytes[1], bytes[2]);
 
     // Verify that the data made the round trip correctly
     value = 
@@ -956,6 +908,8 @@ bool GLCaps::hasBug_mipmapGeneration() {
     static bool value;
 
     if (! initialized) {
+        loadExtensions();
+
         initialized = true;
         const std::string& r = renderer();
 
@@ -986,6 +940,8 @@ bool GLCaps::hasBug_slowVBO() {
         //initialized = true;
     }
     
+    loadExtensions();
+
     bool hasVBO = 
         (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
             (glGenBuffersARB != NULL) && 

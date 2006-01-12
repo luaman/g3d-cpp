@@ -74,6 +74,7 @@ private:
     void loadFont(const std::string& fontName);
 
     GWindow*                _window;
+    bool                    _hasUserCreatedWindow;
 
 protected:
 

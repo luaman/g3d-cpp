@@ -81,12 +81,6 @@ private:
     /** True when loadExtensions has already been called */
     static bool         loadedExtensions;
 
-	/** Set by loadExtensions */
-	static std::string  _glVersion;
-	static std::string  _driverVendor;
-	static std::string  _driverVersion;
-	static std::string  _glRenderer;
-
     static int          _numTextureCoords;
     static int          _numTextures;
     static int          _numTextureUnits;
@@ -96,7 +90,7 @@ private:
 	/**
 	 Returns the version string for the video driver.
 
-	 @cite Based in part on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp
+	 @cite Based in part on code by Ted Peck tpeck@roundwave.com http://www.codeproject.com/dll/ShowVer.asp      
 	 */
 	static std::string getDriverVersion();
   
