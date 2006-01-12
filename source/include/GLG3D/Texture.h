@@ -263,8 +263,8 @@ public:
 
     static TextureRef G3D_DEPRECATED fromFile(
         const std::string&              filename,
-        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
-        WrapMode                        wrap           = TILE,
+        const class TextureFormat*      desiredFormat,
+        WrapMode                        wrap,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0,
@@ -610,6 +610,12 @@ public:
     unsigned int getOpenGLTextureTarget() const;
 
     const Parameters& parameters() const;
+
+    void setAutoMipMap(bool b);
+
+    /** For a texture with automipmap off that supports the FrameBufferObject extension, 
+       generate mipmaps from the level 0 mipmap immediately.  For other textures, does nothing.*/
+    void generateMipMaps();
 
 private:
 
