@@ -188,7 +188,7 @@ void GLCaps::loadExtensions(Log* debugLog) {
     }
 
     // Don't create a temporary context but require one to continue
-    alwaysAssertM(wglGetCurrentContext(), "Unable to load OpenGL extensions without context.");
+    alwaysAssertM(glGetCurrentContext(), "Unable to load OpenGL extensions without context.");
 
     loadedExtensions = true;
 
