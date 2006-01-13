@@ -57,7 +57,6 @@ static bool hasWGLMultiSampleSupport = false;
 static PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = NULL;
 
 static unsigned int _sdlKeys[SDLK_LAST];
-static bool keyStates[SDLK_LAST];
 static bool sdlKeysInitialized = false;
 
 // Prototype static helper functions at end of file
@@ -194,7 +193,6 @@ Win32Window::Win32Window(const GWindowSettings& s, bool creatingShareWindow)
             setIcon(defaultIcon);
         } catch (const GImage::Error& e) {
             // Throw away default icon
-            fprintf(stderr, "GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
 		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
             Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
         }
@@ -267,6 +265,9 @@ void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
 
     // Initialize mouse buttons to up
     _mouseButtons[0] = _mouseButtons[1] = _mouseButtons[2] = false;
+
+    // Clear all keyboard buttons to up (not down)
+    memset(_keyboardButtons, 0, sizeof(_keyboardButtons));
  
     // Setup the pixel format properties for the output device
     _hDC = GetDC(window);
@@ -557,11 +558,23 @@ std::string Win32Window::caption() {
 
 
 bool Win32Window::pollEvent(GEvent& e) {
-	MSG message;
+    MSG message;
 
     while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
         TranslateMessage(&message);
 		DispatchMessage(&message);
+
+        if (message.message == WM_SYSCOMMAND) {
+			e.key.type = SDL_KEYDOWN;
+			e.key.state = SDL_PRESSED;
+
+            // Only upper 12-bits are public
+            if ((message.wParam & 0xFFF0) == SC_KEYMENU) {
+                // Generate key event for Alt
+                makeKeyEvent(VK_MENU, message.lParam, e);
+                return true;
+            }
+        }
 
         if (message.hwnd == window) {
             switch (message.message) {
@@ -569,10 +582,17 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.type = SDL_KEYDOWN;
 				e.key.state = SDL_PRESSED;
 
+                // Fix invalid repeat key flag
+                if (justReceivedFocus) {
+                    justReceivedFocus = false;
+                    message.lParam &= ~(0x40000000);
+                }
+
                 // Need the repeat messages to find LSHIFT and RSHIFT
 				if (!((message.lParam >> 30) & 0x01)) {
 					// This is not an autorepeat message
 					makeKeyEvent(message.wParam, message.lParam, e);
+                    _keyboardButtons[message.wParam] = true;
 					return true;
 				}
 				break;
@@ -582,21 +602,30 @@ bool Win32Window::pollEvent(GEvent& e) {
 				e.key.state = SDL_RELEASED;
 
 				makeKeyEvent(message.wParam, message.lParam, e);
+                _keyboardButtons[message.wParam] = false;
 				return true;
 				break;
 
             case WM_SYSKEYDOWN:
+				e.key.type = SDL_KEYDOWN;
+				e.key.state = SDL_PRESSED;
+
                 if (message.wParam == VK_F10) {
                     if (((message.lParam >> 30) & 0x1) == 0) {
                         makeKeyEvent(message.wParam, message.lParam, e);
+                       _keyboardButtons[message.wParam] = true;
                         return true;
                     }
                 }
                 break;
 
             case WM_SYSKEYUP:
+				e.key.type = SDL_KEYUP;
+				e.key.state = SDL_RELEASED;
+
                 if (message.wParam == VK_F10) {
                     makeKeyEvent(message.wParam, message.lParam, e);
+                    _keyboardButtons[message.wParam] = false;
                     return true;
                 }
                 break;
@@ -630,6 +659,18 @@ bool Win32Window::pollEvent(GEvent& e) {
 				mouseButton(false, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
                 _mouseButtons[2] = false;
 				return true;
+
+            case WM_SYSCOMMAND:
+				e.key.type = SDL_KEYDOWN;
+				e.key.state = SDL_PRESSED;
+
+                // Only upper 12-bits are public
+                if ((message.wParam & 0xFFF0) == SC_KEYMENU) {
+                    // Generate key event for Alt
+                    makeKeyEvent(VK_MENU, message.lParam, e);
+                    return true;
+                }
+                break;
             } // switch
         } // if
     } // while
@@ -663,8 +704,12 @@ bool Win32Window::pollEvent(GEvent& e) {
         clientY += GetSystemMetrics(settings.resizable ? SM_CYSIZEFRAME : SM_CYFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
     }
 
+    // Check for a resize event and use only most recent
+    // Just use an array instead of used flag and variable
+    // This will be clearer in the 7.0 event system
     if (sizeEventInjects.size() > 0) {
-        e = sizeEventInjects.pop();
+        e = sizeEventInjects.last();
+        sizeEventInjects.clear();
         return true;
     }
 
@@ -984,222 +1029,37 @@ static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
 }
 
 
-static void makeKeyEvent(int wparam, int lparam, GEvent& e) {
-    static uint16 currentMods = KMOD_NONE; 
-	char c = wparam;
+static void makeKeyEvent(int vkCode, int lParam, GEvent& e) {
 
-	e.key.keysym.unicode = 0;
+	// G3D::UserInput only uses the GEvent::key::keysym::sym value
+    // No need to set the rest of the structure
 
-    if ((c >= 'A') && (c <= 'Z')) {
+    bool extended = (lParam >> 24) & 0x01;
+
+    // Check for normal letter event
+    // Fix VK_SHIFT, VK_CONTROL, VK_MENU to Left/Right equivalents    
+    if ((vkCode >= 'A') && (vkCode <= 'Z')) {
+
         // Make key codes lower case canonically
-        e.key.keysym.sym = (SDLKey)(c - 'A' + 'a');
-    } else if ((wparam >= 0x10) && (wparam <= 0x12)) {
-        // Fix VK_SHIFT, VK_CONTROL, VK_MENU to Left/Right equivalents
-        switch (wparam) {
-            case VK_SHIFT:
-                if (!(currentMods & KMOD_LSHIFT) && !(currentMods & KMOD_RSHIFT)) {
-                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 1) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
-                    }
-                } else if ((currentMods & KMOD_LSHIFT) && (currentMods & KMOD_RSHIFT)) {
-                    if (((::GetKeyState(VK_LSHIFT) >> 7) & 0x01) == 0) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RSHIFT : SDLK_LSHIFT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LSHIFT : SDLK_RSHIFT;
-                    }
-                } else {
-                    if (e.key.state == SDL_PRESSED) {
-                        if (currentMods & KMOD_LSHIFT) {
-                            e.key.keysym.sym = SDLK_RSHIFT;
-                        } else {
-                            e.key.keysym.sym = SDLK_LSHIFT;
-                        }
-                    } else {
-                        if (currentMods & KMOD_LSHIFT) {
-                            e.key.keysym.sym = SDLK_LSHIFT;
-                        } else {
-                            e.key.keysym.sym = SDLK_RSHIFT;
-                        }
-                    }
-                }
-                break;
-            case VK_CONTROL:
-                if (!(currentMods & KMOD_LCTRL) && !(currentMods & KMOD_RCTRL)) {
-                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 1) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
-                    }
-                } else if ((currentMods & KMOD_LCTRL) && (currentMods & KMOD_RCTRL)) {
-                    if (((::GetKeyState(VK_LCONTROL) >> 7) & 0x01) == 0) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RCTRL : SDLK_LCTRL;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LCTRL : SDLK_RCTRL;
-                    }
-                } else {
-                    if (e.key.state == SDL_PRESSED) {
-                        if (currentMods & KMOD_LCTRL) {
-                            e.key.keysym.sym = SDLK_RCTRL;
-                        } else {
-                            e.key.keysym.sym = SDLK_LCTRL;
-                        }
-                    } else {
-                        if (currentMods & KMOD_LCTRL) {
-                            e.key.keysym.sym = SDLK_LCTRL;
-                        } else {
-                            e.key.keysym.sym = SDLK_RCTRL;
-                        }
-                    }
-                }
-                break;
-            case VK_MENU:
-                if (!(currentMods & KMOD_LALT) && !(currentMods & KMOD_RALT)) {
-                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 1) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
-                    }
-                } else if ((currentMods & KMOD_LALT) && (currentMods & KMOD_RALT)) {
-                    if (((::GetKeyState(VK_LMENU) >> 7) & 0x01) == 0) {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_RALT : SDLK_LALT;
-                    } else {
-                        e.key.keysym.sym = (e.key.state == SDL_PRESSED) ? SDLK_LALT : SDLK_RALT;
-                    }
-                } else {
-                    if (e.key.state == SDL_PRESSED) {
-                        if (currentMods & KMOD_LALT) {
-                            e.key.keysym.sym = SDLK_RALT;
-                        } else {
-                            e.key.keysym.sym = SDLK_LALT;
-                        }
-                    } else {
-                        if (currentMods & KMOD_LALT) {
-                            e.key.keysym.sym = SDLK_LALT;
-                        } else {
-                            e.key.keysym.sym = SDLK_RALT;
-                        }
-                    }
-                }
-                break;
-            default:
-                e.key.keysym.sym = (SDLKey)0;
-                e.key.keysym.scancode = (SDLKey)0;
-                return;
-                break;
-        }
+        e.key.keysym.sym = (SDLKey)(vkCode - 'A' + 'a');
+
+    } else if (vkCode == VK_SHIFT) {
+
+        e.key.keysym.sym = (SDLKey)(extended ? SDLK_RSHIFT : SDLK_LSHIFT);
+
+    } else if (vkCode == VK_CONTROL) {
+
+        e.key.keysym.sym = (SDLKey)(extended ? SDLK_RCTRL : SDLK_LCTRL);
+
+    } else if (vkCode == VK_MENU) {
+
+        e.key.keysym.sym = (SDLKey)(extended ? SDLK_RALT : SDLK_LALT);
+
     } else {
-        e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(wparam, 0, SDLK_LAST)];
+
+        e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(vkCode, 0, SDLK_LAST)];
+
     }
-
-    // Check to see if it is a repeat message
-    if ((e.key.state == SDL_PRESSED)) {
-        if (keyStates[e.key.keysym.sym]) {
-            e.key.keysym.sym = (SDLKey)(e.key.keysym.scancode = e.key.keysym.unicode = 0);
-            e.key.keysym.mod = KMOD_NONE;
-            return;
-        } else {
-            keyStates[e.key.keysym.sym] = true;
-        }
-    } else {
-        keyStates[e.key.keysym.sym] = false;
-    }
-
-    e.key.keysym.scancode = (lparam >> 16) & 0x07;
-
-    e.key.keysym.mod = KMOD_NONE;
-
-    if (e.key.state == SDL_PRESSED) {
-		switch (e.key.keysym.sym) {
-			case SDLK_NUMLOCK:
-				currentMods ^= KMOD_NUM;
-                if ( ! (currentMods&KMOD_NUM) ) {
-					e.key.state = SDL_RELEASED;
-                }
-				e.key.keysym.mod = (SDLMod)currentMods;
-				break;
-			case SDLK_CAPSLOCK:
-				currentMods ^= KMOD_CAPS;
-				if ( ! (currentMods&KMOD_CAPS) )
-					e.key.state = SDL_RELEASED;
-				e.key.keysym.mod = (SDLMod)currentMods;
-				break;
-			case SDLK_LCTRL:
-				currentMods |= KMOD_LCTRL;
-				break;
-			case SDLK_RCTRL:
-				currentMods |= KMOD_RCTRL;
-				break;
-			case SDLK_LSHIFT:
-				currentMods |= KMOD_LSHIFT;
-				break;
-			case SDLK_RSHIFT:
-				currentMods |= KMOD_RSHIFT;
-				break;
-			case SDLK_LALT:
-				currentMods |= KMOD_LALT;
-				break;
-			case SDLK_RALT:
-				currentMods |= KMOD_RALT;
-				break;
-			case SDLK_LMETA:
-				currentMods |= KMOD_LMETA;
-				break;
-			case SDLK_RMETA:
-				currentMods |= KMOD_RMETA;
-				break;
-			case SDLK_MODE:
-				currentMods |= KMOD_MODE;
-				break;
-		}
-	} else {
-		switch (e.key.keysym.sym) {
-			case SDLK_NUMLOCK:
-			case SDLK_CAPSLOCK:
-                e.key.keysym.unicode = 0;
-                e.key.keysym.sym = (SDLKey)0;
-                e.key.keysym.scancode = 0;
-                return;
-                break;
-            case SDLK_LCTRL:
-				currentMods &= ~KMOD_LCTRL;
-				break;
-			case SDLK_RCTRL:
-				currentMods &= ~KMOD_RCTRL;
-				break;
-			case SDLK_LSHIFT:
-				currentMods &= ~KMOD_LSHIFT;
-				break;
-			case SDLK_RSHIFT:
-				currentMods &= ~KMOD_RSHIFT;
-				break;
-			case SDLK_LALT:
-				currentMods &= ~KMOD_LALT;
-				break;
-			case SDLK_RALT:
-				currentMods &= ~KMOD_RALT;
-				break;
-			case SDLK_LMETA:
-				currentMods &= ~KMOD_LMETA;
-				break;
-			case SDLK_RMETA:
-				currentMods &= ~KMOD_RMETA;
-				break;
-			case SDLK_MODE:
-				currentMods &= ~KMOD_MODE;
-				break;
-		}
-    }
-
-    e.key.keysym.mod = (SDLMod)currentMods;
-
-    uint8 keyboardState[256];
-    uint8 ascii[2];
-    ::GetKeyboardState(keyboardState);
-    e.key.keysym.unicode = ::ToAscii(wparam, e.key.keysym.scancode, keyboardState, (uint16*)ascii, 0) == 1 ? ascii[0] : 0;
-
-	// Bit 24 is 1 if this is the right hand version of ALT or CTRL					
 }
 
 
@@ -1436,6 +1296,27 @@ static LRESULT WINAPI window_proc(
             if ((wparam == SIZE_MAXIMIZED) ||
                 (wparam == SIZE_RESTORED)) {
                 this_window->injectSizeEvent(LOWORD(lparam), HIWORD(lparam));
+            }
+            break;
+
+        case WM_SETFOCUS:
+            this_window->justReceivedFocus = true;
+            break;
+
+        case WM_KILLFOCUS:
+            for (int i = 0; i < sizeof(this_window->_keyboardButtons); ++i) {
+                if (this_window->_keyboardButtons[i]) {
+                    ::PostMessage(window, WM_KEYUP, i, 0);
+                }
+            }
+            memset(this_window->_keyboardButtons, 0, sizeof(this_window->_keyboardButtons));
+            break;
+
+        case WM_SYSCOMMAND:
+            // Only upper 12-bits are public
+            if ((wparam & 0xFFF0) == SC_KEYMENU) {
+                // Ignore Alt button that opens system menu, freezes render
+                return 0;
             }
             break;
         }

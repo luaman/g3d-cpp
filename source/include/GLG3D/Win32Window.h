@@ -49,6 +49,7 @@ private:
     /** Mouse Button State Array: false - up, true - down
         [0] - left, [1] - middle, [2] - right */
     bool                 _mouseButtons[3];
+    bool                 _keyboardButtons[0xFF];
 
     _DirectInput*        _diDevices;
 
@@ -70,6 +71,8 @@ private:
         e.resize.h = height;
         sizeEventInjects.append(e);
     }
+
+    bool                justReceivedFocus;
 
     friend static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 	
