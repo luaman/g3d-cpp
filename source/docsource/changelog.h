@@ -33,6 +33,7 @@
       <LI> G3D::Texture::Parameters; deprecated most Texture constructors in favor of ones that use this class
       <LI> Moved most image manipulation routines into GImage.
       <LI> G3D::GImage now allocates the underlying buffer in multiples of bytes to allow slight overflor for MMX algorithms
+      <LI> G3D::GImage::BAYER_R8G8_G8R8_to_R8G8B8_MHC
       <LI> G3D::GImage::R8G8B8_to_Y8U8V8
       <LI> G3D::GImage::Y8U8V8_to_R8G8B8
       <LI> G3D::GImage now supports PPM binary
