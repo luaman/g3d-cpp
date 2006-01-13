@@ -2117,7 +2117,7 @@ void GImage::load(
     clear();
 
     try {
-        BinaryInput b = BinaryInput(filename, G3D_LITTLE_ENDIAN);
+        BinaryInput b(filename, G3D_LITTLE_ENDIAN);
         if (b.size() <= 0) {
             throw Error("File not found.", filename);
         }
@@ -2134,7 +2134,7 @@ GImage::GImage(
     int                 length,
     Format              format) {
 
-    BinaryInput b = BinaryInput(data, length, G3D_LITTLE_ENDIAN);
+    BinaryInput b(data, length, G3D_LITTLE_ENDIAN);
     // It is safe to cast away the const because we
     // know we don't corrupt the data.
 
@@ -2299,7 +2299,7 @@ void GImage::save(
     const std::string& filename,
     Format             format) const {
 
-    BinaryOutput b = BinaryOutput(filename, G3D_LITTLE_ENDIAN);
+    BinaryOutput b(filename, G3D_LITTLE_ENDIAN);
     encode(resolveFormat(filename, NULL, 0, format), b);
     b.commit(false);
 }
@@ -2310,7 +2310,7 @@ void GImage::encode(
     uint8*&             outData,
     int&                outLength) const {
 
-    BinaryOutput out = BinaryOutput();
+    BinaryOutput out;
 
     encode(format, out);
 
