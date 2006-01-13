@@ -1018,7 +1018,13 @@ void Draw::fullScreenImage(const GImage& im, RenderDevice* renderDevice) {
         glPixelZoom((float)renderDevice->getWidth() / (float)im.width, 
                    -(float)renderDevice->getHeight() / (float)im.height);
         glRasterPos4d(0.0, 0.0, 0.0, 1.0);
+
+        glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glDrawPixels(im.width, im.height, (im.channels == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid*)im.byte());
+
+        glPopClientAttrib();
     renderDevice->pop2D();
 }
 

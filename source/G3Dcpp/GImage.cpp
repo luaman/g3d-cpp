@@ -2167,11 +2167,6 @@ void GImage::resize(
     this->channels = channels;
     size_t sz = width * height * channels;
 
-    // Round the allocated size up to the nearest multiple of 8
-    // since glReadPixels and other calls may
-    // overflow the buffer slightly.
-    sz = iCeil((float)sz / 8) * 8 + 16;
-
     _byte = (uint8*)System::calloc(sz, sizeof(uint8));
     debugAssert(isValidHeapPointer(_byte));
 }

@@ -2706,9 +2706,15 @@ void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer, bool getAlpha
         // Only resize if the current size is not correct
         dest.resize(getWidth(), getHeight(), ch);
     }
+
+    glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, getWidth(), getHeight(), 
         getAlpha ? GL_RGBA : GL_RGB,
-        GL_UNSIGNED_BYTE, dest.byte());
+        GL_UNSIGNED_BYTE, dest.byte());    
+
+    glPopClientAttrib();
 
     // Flip right side up
     if (getAlpha) {
@@ -2741,6 +2747,7 @@ void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer, bool getAlpha
             }
         }
     }
+
 }
 
 

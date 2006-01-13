@@ -75,8 +75,9 @@ void UserInput::init(
         keyMapping->set(SDLK_s, DOWN);
     }
 
-    // Will be initialized by setKeyMapping
+    // Will be initialized by setKeyMapping don't need to memset
     keyState.resize(SDL_CUSTOM_LAST);
+    
     keyFunction.resize(keyState.size());
     setKeyMapping(keyMapping);
 
