@@ -252,8 +252,8 @@ void copyFile(
     #else
         // TODO: don't use BinaryInput and BinaryOutput
         // Read it all in, then dump it out
-        BinaryInput  in  = BinaryInput(source, G3D_LITTLE_ENDIAN);
-        BinaryOutput out = BinaryOutput(dest, G3D_LITTLE_ENDIAN);
+        BinaryInput  in(source, G3D_LITTLE_ENDIAN);
+        BinaryOutput out(dest, G3D_LITTLE_ENDIAN);
         out.writeBytes(in.getCArray(), in.size());
         out.commit(false);
     #endif
