@@ -27,7 +27,7 @@ namespace _internal {
     class GThreadPrivate;
 }
         
-#if 0
+
 /**
     GThread's documentation
 */
@@ -139,7 +139,7 @@ public:
     }
 };
 
-#endif
+
 } // namespace G3D
 
 #endif //G3D_GTHREAD_H

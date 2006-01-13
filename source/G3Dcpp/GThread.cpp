@@ -10,7 +10,7 @@
 #include "G3D/GThread.h"
 #include "G3D/debugAssert.h"
 
-#if 0
+
 namespace G3D {
 
 namespace _internal {
@@ -196,4 +196,3 @@ void GMutex::unlock() {
 }
 
 } // namespace G3D
-#endif
