@@ -37,7 +37,7 @@ namespace G3D {
 /**
   Interface to image compression & file formats. 
  
-  Supported formats (decode and encode): Color JPEG, PNG, (Uncompressed)TGA 24, (Uncompressed)TGA 32, BMP 1, BMP 4, BMP 8, BMP 24, PPM (P6), and PPM ASCII (P3).
+  Supported formats (decode and encode): Color JPEG, PNG, (Uncompressed)TGA 24, (Uncompressed)TGA 32, BMP 1, BMP 4, BMP 8, BMP 24, PPM (P6), and PPM ASCII (P1, P2, P3).
   8-bit paletted PCX, 24-bit PCX, and ICO are supported for decoding only.
 
   Sample usage:
