@@ -2564,68 +2564,126 @@ static uint8 applyFilter(
     return (uint8)iClamp(iRound(sum / denom), 0, 255);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Bayer conversions
+//
+
+// There are two kinds of rows (GR and BG).
+// In each row, there are two kinds of pixels (G/R, B/G).
+// We express the four kinds of INPUT pixels as:
+//    GRG, GRG, BGB, BGG
+//
+// There are three kinds of OUTPUT pixels: R, G, B.
+// Thus there are nominally 12 different I/O combinations, 
+// but several are impulses because needed output at that 
+// location *is* the input (e.g., G_GRG and G_BGG).
+//
+// The following 5x5 row-major filters are named as output_input.
+
+// Green
+static const float G_GRR[5][5] =
+{{     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f},
+{     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
+{    -1.0f,      2.0f,      4.0f,      2.0f,     -1.0f},
+{     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
+{     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f}};
+
+static const float G_BGB[5][5] =
+{{     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f},
+{     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
+{    -1.0f,      2.0f,      4.0f,      2.0f,     -1.0f},
+{     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
+{     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f}};
+
+// Red 
+//(the caption in the paper is wrong for this case:
+// "R row B column really means R row G column"
+static const float R_GRG[5][5] =
+{{     0.0,      0.0,      0.5,      0.0,      0.0},
+{     0.0,     -1.0,      0.0,     -1.0,      0.0},
+{    -1.0,      4.0,      5.0,      4.0,     -1.0},
+{     0.0,     -1.0,      0.0,     -1.0,      0.0},
+{     0.0,      0.0,      0.5,      0.0,      0.0}};
+
+static const float R_BGG[5][5] =
+{{     0.0,      0.0,     -1.0,      0.0,      0.0},
+{     0.0,     -1.0,      4.0,     -1.0,      0.0},
+{     0.5,      0.0,      5.0,      0.0,      0.5},
+{     0.0,     -1.0,      4.0,     -1.0,      0.0},
+{     0.0,      0.0,     -1.0,      0.0,      0.0}};
+
+static const float R_BGB[5][5] =
+{{     0.0,      0.0, -3.0/2.0,      0.0,      0.0},
+{     0.0,      2.0,      0.0,      2.0,      0.0},
+{-3.0/2.0,      0.0,      6.0,      0.0, -3.0/2.0},
+{     0.0,      2.0,      0.0,      2.0,      0.0},
+{     0.0,      0.0, -3.0/2.0,      0.0,      0.0}};
+
+
+// Blue 
+//(the caption in the paper is wrong for this case:
+// "B row R column really means B row G column")
+#define B_BGG R_GRG
+#define B_GRG R_BGG
+#define B_GRR R_BGB
+
+
+void GImage::BAYER_R8G8_G8R8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
+    debugAssert(in != _out);
+
+    Color3uint8* out = (Color3uint8*)_out;
+
+    for (int y = 0; y < h; ++y) {
+
+        // Row beginning in the input array.
+        int offset = y * w;
+
+        // RG row
+        for (int x = 0; x < w; ++x, ++out) {
+            // R pixel
+            {
+                out->r = in[x + offset];
+                out->g = applyFilter(in, x, y, w, h, G_GRR);
+                out->b = applyFilter(in, x, y, w, h, B_GRR);
+            }
+            ++x; ++out;
+
+            // G pixel
+            {
+                out->r = applyFilter(in, x, y, w, h, R_GRG);
+                out->g = in[x + offset];
+                out->b = applyFilter(in, x, y, w, h, B_GRG);
+            }
+        }
+
+        ++y;
+        offset += w;
+
+        // GB row
+        for (int x = 0; x < w; ++x, ++out) {
+            // G pixel
+            {
+                out->r = applyFilter(in, x, y, w, h, R_BGG);
+                out->g = in[x + offset];
+                out->b = applyFilter(in, x, y, w, h, B_BGG);
+            }
+            ++x; ++out;
+
+            // B pixel
+            {
+                out->r = applyFilter(in, x, y, w, h, R_BGB);
+                out->g = applyFilter(in, x, y, w, h, G_BGB);
+                out->b = in[x + offset];
+            }
+        }
+    }
+}
+
 
 void GImage::BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
 
     debugAssert(in != _out);
-
-    // There are two kinds of rows (GR and BG).
-    // In each row, there are two kinds of pixels (G/R, B/G).
-    // We express the four kinds of INPUT pixels as:
-    //    GRG, GRG, BGB, BGG
-    //
-    // There are three kinds of OUTPUT pixels: R, G, B.
-    // Thus there are nominally 12 different I/O combinations, 
-    // but several are impulses because needed output at that 
-    // location *is* the input (e.g., G_GRG and G_BGG).
-    //
-    // The following 5x5 row-major filters are named as output_input.
-
-    // Green
-    static const float G_GRR[5][5] =
-   {{     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f},
-    {     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
-    {    -1.0f,      2.0f,      4.0f,      2.0f,     -1.0f},
-    {     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
-    {     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f}};
-
-    static const float G_BGB[5][5] =
-   {{     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f},
-    {     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
-    {    -1.0f,      2.0f,      4.0f,      2.0f,     -1.0f},
-    {     0.0f,      0.0f,      2.0f,      0.0f,      0.0f},
-    {     0.0f,      0.0f,     -1.0f,      0.0f,      0.0f}};
-
-    // Red 
-    //(the caption in the paper is wrong for this case:
-    // "R row B column really means R row G column"
-    static const float R_GRG[5][5] =
-   {{     0.0,      0.0,      0.5,      0.0,      0.0},
-    {     0.0,     -1.0,      0.0,     -1.0,      0.0},
-    {    -1.0,      4.0,      5.0,      4.0,     -1.0},
-    {     0.0,     -1.0,      0.0,     -1.0,      0.0},
-    {     0.0,      0.0,      0.5,      0.0,      0.0}};
-    
-    static const float R_BGG[5][5] =
-   {{     0.0,      0.0,     -1.0,      0.0,      0.0},
-    {     0.0,     -1.0,      4.0,     -1.0,      0.0},
-    {     0.5,      0.0,      5.0,      0.0,      0.5},
-    {     0.0,     -1.0,      4.0,     -1.0,      0.0},
-    {     0.0,      0.0,     -1.0,      0.0,      0.0}};
-
-    static const float R_BGB[5][5] =
-   {{     0.0,      0.0, -3.0/2.0,      0.0,      0.0},
-    {     0.0,      2.0,      0.0,      2.0,      0.0},
-    {-3.0/2.0,      0.0,      6.0,      0.0, -3.0/2.0},
-    {     0.0,      2.0,      0.0,      2.0,      0.0},
-    {     0.0,      0.0, -3.0/2.0,      0.0,      0.0}};
-
-    // Blue 
-    //(the caption in the paper is wrong for this case:
-    // "B row R column really means B row G column"
-    #define B_BGG R_GRG
-    #define B_GRG R_BGG
-    #define B_GRR R_BGB
 
     Color3uint8* out = (Color3uint8*)_out;
 
@@ -2674,46 +2732,86 @@ void GImage::BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8*
         }
     }
 
-    #undef B_BGG
-    #undef B_GRG
-    #undef B_GRR
 }
 
+#undef B_BGG
+#undef B_GRG
+#undef B_GRR
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void GImage::convertToL8() {
+    switch(channels) {
+    case 1:
+        return;
+
+    case 3:
+        {            
+            // Average
+            Color3uint8* src = (Color3uint8*)_byte;
+            _byte = NULL;
+            resize(width, height, 1);
+            for (int i = width * height - 1; i >= 0; --i) {
+                const Color3uint8   s = src[i];
+                uint8&              d = _byte[i]; 
+                d = ((int)s.r + (int)s.g + (int)s.b) / 3;
+            }
+            System::free(src);
+        }
+        break;
+
+    case 4:
+        {            
+            // Average
+            Color4uint8* src = (Color4uint8*)_byte;
+            _byte = NULL;
+            resize(width, height, 1);
+            for (int i = width * height - 1; i >= 0; --i) {
+                const Color4uint8   s = src[i];
+                uint8&              d = _byte[i]; 
+                d = ((int)s.r + (int)s.g + (int)s.b) / 3;
+            }
+            System::free(src);
+        }
+        return;
+
+    default:
+        alwaysAssertM(false, "Bad number of channels in input image");
+    }
+}
 
 void GImage::convertToRGBA() {
     switch(channels) {
     case 1:
         {            
             // Spread
-            Color4uint8* dst = (Color4uint8*)System::malloc(width * height * 4);
+            uint8* old = _byte;
+            _byte = NULL;
+            resize(width, height, 4);
             for (int i = width * height - 1; i >= 0; --i) {
-                const uint8  s = _byte[i];
-                Color4uint8& d = dst[i]; 
+                const uint8  s = old[i];
+                Color4uint8& d = ((Color4uint8*)_byte)[i]; 
                 d.r = d.g = d.b = s;
                 d.a = 255;
             }
             System::free(_byte);
-            _byte = (uint8*)dst;
-            channels = 4;
         }
         break;
 
     case 3:
         {            
             // Add alpha
-            Color4uint8* dst = (Color4uint8*)System::malloc(width * height * 4);
-            Color3uint8* src = (Color3uint8*)_byte;
+            Color3uint8* old = (Color3uint8*)_byte;
+            _byte = NULL;
+            resize(width, height, 4);
             for (int i = width * height - 1; i >= 0; --i) {
-                const Color3uint8   s = src[i];
-                Color4uint8&        d = dst[i]; 
+                const Color3uint8   s = old[i];
+                Color4uint8&        d = ((Color4uint8*)_byte)[i]; 
                 d.r = s.r;
                 d.g = s.g;
                 d.b = s.b;
                 d.a = 255;
             }
-            System::free(_byte);
-            _byte = (uint8*)dst;
-            channels = 4;
+            System::free(old);
         }
         break;
 
