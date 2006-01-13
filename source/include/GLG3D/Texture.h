@@ -611,6 +611,10 @@ public:
 
     const Parameters& parameters() const;
 
+    /** Set the autoMipMap value, which only affects textures when they are rendered 
+        to or copied from the screen.
+
+        You can read the automipmap value from <code>parameters().autoMipMap</code>. */
     void setAutoMipMap(bool b);
 
     /** For a texture with automipmap off that supports the FrameBufferObject extension, 

@@ -56,10 +56,12 @@ Texture::Parameters::Parameters() :
     autoMipMap(true) {
 }
 
+
 const Texture::Parameters& Texture::Parameters::defaults() {
     static Parameters param;
     return param;
 }
+
 
 const Texture::Parameters& Texture::Parameters::video() {
 
@@ -295,7 +297,8 @@ static void setTexParameters(
     Texture::WrapMode               wrap,
     Texture::InterpolateMode        interpolate,
     Texture::DepthReadMode          depthRead,
-    float                           maxAnisotropy) {
+    float                           maxAnisotropy,
+    bool                            autoMipMap) {
 
     debugAssert(
         target == GL_TEXTURE_2D ||
@@ -359,7 +362,7 @@ static void setTexParameters(
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
-        if (hasAutoMipMap()) {  
+        if (hasAutoMipMap() && autoMipMap) {  
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
         }
         break;
@@ -368,7 +371,7 @@ static void setTexParameters(
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
-        if (hasAutoMipMap()) {  
+        if (hasAutoMipMap() && autoMipMap) {  
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
         }
         break;
@@ -440,6 +443,7 @@ Texture::Texture(
     _parameters.wrapMode = _wrap;
     _parameters.maxAnisotropy = _aniso;
     _parameters.depthReadMode = __dr;
+    _parameters.autoMipMap = true;
 
     glStatePush();
 
@@ -461,7 +465,7 @@ Texture::Texture(
         interpolate         = _interpolate;
         wrap                = _wrap;
         debugAssertGLOk();
-        setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy);
+        setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy, _parameters.autoMipMap);
         debugAssertGLOk();
     glStatePop();
     debugAssertGLOk();
@@ -508,6 +512,23 @@ TextureRef Texture::fromMemory(
 		desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
 }
 
+
+void Texture::setAutoMipMap(bool b) {
+    _parameters.autoMipMap = b;
+
+    // Update the OpenGL state
+    GLenum target = dimensionToTarget(dimension);
+
+    glPushAttrib(GL_TEXTURE_BIT);
+    glBindTexture(target, textureID);
+
+    if (hasAutoMipMap()) {
+        glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, b ? GL_TRUE : GL_FALSE);
+    }
+
+    // Restore the old texture
+    glPopAttrib();
+}
 
 
 TextureRef Texture::fromGLTexture(
@@ -1156,7 +1177,7 @@ void Texture::copyFromScreen(
 
     debugAssertGLOk();
     // Reset the original properties
-    setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy);
+    setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy, _parameters.autoMipMap);
 
     debugAssertGLOk();
     glDisable(target);
