@@ -242,6 +242,8 @@
 		5033822B0935449400C574FC /* Stopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5033822A0935449400C574FC /* Stopwatch.cpp */; };
 		5033822D093544D900C574FC /* AtomicInt32.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822C093544D900C574FC /* AtomicInt32.h */; };
 		5033822F093544F400C574FC /* Stopwatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822E093544F400C574FC /* Stopwatch.h */; };
+		50C3DE1F0978085900757A38 /* GThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C3DE1E0978085900757A38 /* GThread.h */; };
+		50C3DE210978087000757A38 /* GThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C3DE200978087000757A38 /* GThread.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -593,6 +595,8 @@
 		5033822A0935449400C574FC /* Stopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Stopwatch.cpp; path = ../source/G3Dcpp/Stopwatch.cpp; sourceTree = SOURCE_ROOT; };
 		5033822C093544D900C574FC /* AtomicInt32.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AtomicInt32.h; path = ../source/include/G3D/AtomicInt32.h; sourceTree = SOURCE_ROOT; };
 		5033822E093544F400C574FC /* Stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Stopwatch.h; path = ../source/include/G3D/Stopwatch.h; sourceTree = SOURCE_ROOT; };
+		50C3DE1E0978085900757A38 /* GThread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GThread.h; path = ../source/include/G3D/GThread.h; sourceTree = SOURCE_ROOT; };
+		50C3DE200978087000757A38 /* GThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GThread.cpp; path = ../source/G3Dcpp/GThread.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -832,6 +836,7 @@
 		0F55FF3B06DCC5C1008DD4F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				50C3DE200978087000757A38 /* GThread.cpp */,
 				3E659EA208DC17F700E47E2E /* BinaryFormat.cpp */,
 				3E659EA308DC17F700E47E2E /* Cylinder.cpp */,
 				3ED14F8D07C1DE6000FA7AE0 /* NetAddress.cpp */,
@@ -892,6 +897,7 @@
 		0F55FF3C06DCC5E2008DD4F8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				50C3DE1E0978085900757A38 /* GThread.h */,
 				5033822E093544F400C574FC /* Stopwatch.h */,
 				5033822C093544D900C574FC /* AtomicInt32.h */,
 				3E659E9E08DC17DD00E47E2E /* BinaryFormat.h */,
@@ -1113,6 +1119,7 @@
 				3E659EA108DC17DD00E47E2E /* Cylinder.h in Headers */,
 				5033822D093544D900C574FC /* AtomicInt32.h in Headers */,
 				5033822F093544F400C574FC /* Stopwatch.h in Headers */,
+				50C3DE1F0978085900757A38 /* GThread.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1408,6 +1415,7 @@
 				3E659EA408DC17F700E47E2E /* BinaryFormat.cpp in Sources */,
 				3E659EA508DC17F700E47E2E /* Cylinder.cpp in Sources */,
 				5033822B0935449400C574FC /* Stopwatch.cpp in Sources */,
+				50C3DE210978087000757A38 /* GThread.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
