@@ -97,6 +97,10 @@ private:
         }
     }
 
+    // Not implemented on purpose, don't use
+    BinaryOutput(const BinaryOutput &);
+    BinaryOutput& operator=(const BinaryOutput&);
+    bool operator==(const BinaryOutput&);
 
 public:
 

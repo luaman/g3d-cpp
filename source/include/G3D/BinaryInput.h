@@ -133,6 +133,11 @@ private:
         }
     }
 
+    // Not implemented on purpose, don't use
+    BinaryInput(const BinaryInput &);
+    BinaryInput& operator=(const BinaryInput&);
+    bool operator==(const BinaryInput&);
+
 public:
 
     /** false, constant to use with the copyMemory option */
