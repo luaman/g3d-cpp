@@ -183,6 +183,10 @@ SOURCE=.\G3Dcpp\GLight.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\GThread.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\license.cpp
 # End Source File
 # Begin Source File
@@ -436,6 +440,10 @@ SOURCE=.\include\G3D\GLight.h
 # Begin Source File
 
 SOURCE=.\include\graphics3D.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\GThread.h
 # End Source File
 # Begin Source File
 

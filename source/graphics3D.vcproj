@@ -601,6 +601,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="G3Dcpp\GThread.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="G3Dcpp\license.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1285,6 +1305,9 @@
 			</File>
 			<File
 				RelativePath="include\graphics3D.h">
+			</File>
+			<File
+				RelativePath="include\G3D\GThread.h">
 			</File>
 			<File
 				RelativePath="include\G3D\Line.h">
