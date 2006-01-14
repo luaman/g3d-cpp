@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-05-23
- @edited  2004-02-13
+ @edited  2006-01-11
  */
 
 #include "GLG3D/TextureFormat.h"
@@ -78,6 +78,16 @@ const TextureFormat* TextureFormat::DEPTH32   = new TextureFormat(1, false, GL_D
 
 const TextureFormat* TextureFormat::AUTO      = NULL;
 
+// These formats are for use with Renderbuffers only!
+const TextureFormat* TextureFormat::STENCIL1 = new TextureFormat(1, false, GL_STENCIL_INDEX1_EXT, GL_STENCIL_INDEX_EXT, 0, 0, 0, 0, 0, 0, 1, 1, !OPAQUEx, INT);
+	
+const TextureFormat* TextureFormat::STENCIL4 = new TextureFormat(1, false, GL_STENCIL_INDEX4_EXT, GL_STENCIL_INDEX_EXT, 0, 0, 0, 0, 0, 0, 4, 4, !OPAQUEx, INT);
+	
+const TextureFormat* TextureFormat::STENCIL8 = new TextureFormat(1, false, GL_STENCIL_INDEX8_EXT, GL_STENCIL_INDEX_EXT, 0, 0, 0, 0, 0, 0, 8, 8, !OPAQUEx, INT);
+	
+const TextureFormat* TextureFormat::STENCIL16 = new TextureFormat(1, false, GL_STENCIL_INDEX16_EXT, GL_STENCIL_INDEX_EXT, 0, 0, 0, 0, 0, 0, 16, 16, !OPAQUEx, INT);
+
+
 const TextureFormat* TextureFormat::depth(int depthBits) {
 
     if (depthBits == SAME_AS_SCREEN) {
@@ -98,6 +108,32 @@ const TextureFormat* TextureFormat::depth(int depthBits) {
     default:
         debugAssertM(false, "Depth must be 16, 24, or 32.");
         return DEPTH32;
+    }
+}
+
+const TextureFormat* TextureFormat::stencil(int bits) {
+
+    if (bits == SAME_AS_SCREEN) {
+        // Detect screen depth
+        bits = glGetInteger(GL_STENCIL_BITS);
+    }
+
+    switch (bits) {
+    case 1:
+        return STENCIL1;
+
+    case 4:
+        return STENCIL4;
+
+    case 8:
+        return STENCIL8;
+
+    case 16:
+        return STENCIL16;
+
+    default:
+        debugAssertM(false, "Stencil must be 1, 4, 8 or 16.");
+        return STENCIL16;
     }
 }
 

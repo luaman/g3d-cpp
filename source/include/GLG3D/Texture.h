@@ -664,7 +664,7 @@ private:
         }
     };
 };
-
+/*
 inline bool G3D_DEPRECATED operator==(const TextureRef& a, const void* b) {
     return (b == NULL) && (a == (TextureRef)NULL);
 }
@@ -680,7 +680,7 @@ inline bool G3D_DEPRECATED operator!=(const TextureRef& a, const void* b) {
 inline bool G3D_DEPRECATED operator!=(const void* b, const TextureRef& a) {
     return !(a == b);
 }
-
+*/
 
 } // namespace
 

@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-05-23
-  @edited  2004-07-17
+  @edited  2005-01-11
 */
 
 #ifndef GLG3D_TEXTUREFORMAT_H
@@ -183,7 +183,15 @@ public:
 
     static const TextureFormat* DEPTH32;
 
-    /**
+    static const TextureFormat* STENCIL1;
+
+    static const TextureFormat* STENCIL4;
+
+    static const TextureFormat* STENCIL8;
+
+    static const TextureFormat* STENCIL16;
+    
+	/**
      NULL pointer; indicates that the texture class should choose
      either RGBA8 or RGB8 depending on the presence of an alpha channel
      in the input.
@@ -195,6 +203,12 @@ public:
      specified.
      */
     static const TextureFormat* depth(int depthBits = SAME_AS_SCREEN);
+
+    /**
+     Returns STENCIL1, STENCIL4, STENCIL8 or STENCIL16 according to the bits
+     specified.
+     */
+    static const TextureFormat* stencil(int bits = SAME_AS_SCREEN);
 };
 
 }

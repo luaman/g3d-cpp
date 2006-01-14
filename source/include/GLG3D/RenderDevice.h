@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2005-06-01
+  @edited  2006-01-11
 
   Copyright 2001-2005, Morgan McGuire
 */
@@ -27,6 +27,7 @@
 #include "GLG3D/GWindow.h"
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/VAR.h"
+#include "GLG3D/Framebuffer.h"
 
 namespace G3D {
 
@@ -939,7 +940,7 @@ public:
 	template<class T>
 	void sendIndices(RenderDevice::Primitive primitive, int numIndices, 
                      const T* index) {
-		
+		debugAssertM(currentFramebufferComplete(), "Incomplete Framebuffer");
         internalSendIndices(primitive, sizeof(T), numIndices, index);
 
         // Mark all active arrays as busy.
@@ -1225,6 +1226,7 @@ private:
         bool                        alphaWrite;
 
         Buffer                      drawBuffer;
+		FramebufferRef				framebuffer;
 
         DepthTest                   depthTest;
         AlphaTest                   alphaTest;
@@ -1407,6 +1409,24 @@ public:
     inline double getLightSaturation() const {
         return lightSaturation;
     }
+
+    /**
+     Sets the framebuffer to render to.  Use NULL to set the desired rendering 
+     target to the windowing system display.
+
+     @param fbo Framebuffer to render to.
+    */
+    void setFramebuffer (const FramebufferRef &fbo);
+
+    /**
+     Checks to ensure that the current framebuffer is complete and error free.  
+     If you are using an offscreen Framebuffer object then this function should
+     be called prior to rendering to the target.
+
+     @return false On Incomplete Framebuffer Error
+     @return true On Complete Framebuffer
+    */
+    bool currentFramebufferComplete ();
 
     void push2D();
 

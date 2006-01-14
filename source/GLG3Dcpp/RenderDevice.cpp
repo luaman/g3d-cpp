@@ -16,6 +16,7 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
+#include "GLG3D/Framebuffer.h"
 #ifdef G3D_WIN32
     #include "GLG3D/Win32Window.h"
 #else
@@ -34,7 +35,6 @@ static void _glViewport(double a, double b, double c, double d) {
     glViewport(iRound(a), iRound(b), 
 	       iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
 }
-
 
 static GLenum primitiveToGLenum(RenderDevice::Primitive primitive) {
 	switch (primitive) {
@@ -584,6 +584,8 @@ RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
     alphaTest(ALPHA_ALWAYS_PASS),
     alphaReference(0.0) {
 
+	framebuffer = G3D::Framebuffer::fromGLFramebuffer("Window System Framebuffer", 0);
+
     lights.twoSidedLighting =    false;
 
 
@@ -851,6 +853,8 @@ void RenderDevice::setState(
     }
 
     setDrawBuffer(newState.drawBuffer);
+
+    setFramebuffer(newState.framebuffer);
 
     setShadeMode(newState.shadeMode);
     setDepthTest(newState.depthTest);
@@ -1169,6 +1173,7 @@ void RenderDevice::popState() {
 
 void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
     debugAssert(! inPrimitive);
+    debugAssert(currentFramebufferComplete());
     majStateChange();
     majGLStateChange();
 
@@ -1409,6 +1414,35 @@ void RenderDevice::setProjectionAndCameraMatrix(const GCamera& camera) {
 
 Rect2D RenderDevice::getViewport() const {
     return state.viewport;
+}
+
+
+void RenderDevice::setFramebuffer (const FramebufferRef &fbo) {
+    // Check for extension
+    if (fbo != state.framebuffer) {
+        if (!GLCaps::supports_GL_EXT_framebuffer_object()) {
+            debugAssertM(false, "Framebuffer Object not supported!");
+        } else {
+            // Set Framebuffer
+            if (fbo.isNull()) {
+                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+                glViewport(0, 0, this->getWidth(), this->getHeight());               
+            } else {
+                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo->getOpenGLID());
+                glViewport(0, 0, fbo->Width(), fbo->Height());
+            }
+        }
+    }
+}
+
+
+bool RenderDevice::currentFramebufferComplete () {
+    std::string reason;
+    
+    if (!state.framebuffer.isNull())
+        return state.framebuffer->isComplete(reason);
+    else
+        return true;
 }
 
 
@@ -2530,6 +2564,7 @@ void RenderDevice::sendVertex(const Vector4& vertex) {
 
 void RenderDevice::beginPrimitive(Primitive p) {
     debugAssertM(! inPrimitive, "Already inside a primitive");
+    debugAssertM( currentFramebufferComplete(), "Bound Framebuffer Incomplete!");
 
     beforePrimitive();
 	runObjectShader();

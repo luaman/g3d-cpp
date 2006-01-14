@@ -68,6 +68,8 @@
 #include "GLG3D/Shader.h"
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/Shape.h"
+#include "GLG3D/Renderbuffer.h"
+#include "GLG3D/Framebuffer.h"
 
 #ifdef G3D_WIN32
 #include "GLG3D/Win32Window.h"
