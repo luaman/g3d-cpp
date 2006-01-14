@@ -21,13 +21,13 @@ Plane::Plane(class BinaryInput& b) {
 
 void Plane::serialize(class BinaryOutput& b) const {
 	_normal.serialize(b);
-	b.writeFloat64(distance);
+	b.writeFloat64(_distance);
 }
 
 
 void Plane::deserialize(class BinaryInput& b) {
 	_normal.deserialize(b);
-	distance = b.readFloat64();
+	_distance = b.readFloat64();
 }
 
 
@@ -74,7 +74,7 @@ Plane::Plane(
     }
 
     _normal   = dir1.cross(dir2).direction();
-    distance = _normal.dot(point0.xyz());
+    _distance = _normal.dot(point0.xyz());
 }
 
 
@@ -84,7 +84,7 @@ Plane::Plane(
     const Vector3&      point2) {
 
     _normal   = (point1 - point0).cross(point2 - point0).direction();
-    distance = _normal.dot(point0);
+    _distance = _normal.dot(point0);
 }
 
 
@@ -93,7 +93,7 @@ Plane::Plane(
     const Vector3&      point) {
 
     _normal   = __normal.direction();
-    distance  = _normal.dot(point);
+    _distance  = _normal.dot(point);
 }
 
 
@@ -108,7 +108,7 @@ Plane Plane::fromEquation(double a, double b, double c, double d) {
 
 void Plane::flip() {
     _normal   = -_normal;
-    distance  = -distance;
+    _distance  = -_distance;
 }
 
 
@@ -120,7 +120,7 @@ void Plane::getEquation(Vector3& n, float& d) const {
 
 void Plane::getEquation(Vector3& n, double& d) const {
     n = _normal;
-    d = -distance;
+    d = -_distance;
 }
 
 
@@ -137,12 +137,12 @@ void Plane::getEquation(double& a, double& b, double& c, double& d) const {
     a = _normal.x;
     b = _normal.y;
     c = _normal.z;
-    d = -distance;
+    d = -_distance;
 }
 
 
 std::string Plane::toString() const {
-    return format("Plane(%g, %g, %g, %g)", _normal.x, _normal.y, _normal.z, distance);
+    return format("Plane(%g, %g, %g, %g)", _normal.x, _normal.y, _normal.z, _distance);
 }
 
 }

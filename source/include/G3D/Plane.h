@@ -26,17 +26,17 @@ private:
 
     /** normal.Dot(x,y,z) = distance */
     Vector3						_normal;
-    float						distance;
+    float						_distance;
 
     /**
      Assumes the normal has unit length.
      */
-    Plane(const Vector3& n, double d) : _normal(n), distance(d) {
+    Plane(const Vector3& n, double d) : _normal(n), _distance(d) {
     }
 
 public:
 
-    Plane() : _normal(Vector3::unitY()), distance(0) {
+    Plane() : _normal(Vector3::unitY()), _distance(0) {
     }
 
     /**
@@ -81,7 +81,7 @@ public:
 
         // We can get away with putting values *at* the limits of the float32 range into
         // a dot product, since the dot product is carried out on float64.
-        return _normal.dot(point) >= distance;
+        return _normal.dot(point) >= _distance;
     }
 
     /**
@@ -102,19 +102,27 @@ public:
      */
     inline bool halfSpaceContainsFinite(const Vector3& point) const {
         debugAssert(point.isFinite());
-        return _normal.dot(point) >= distance;
+        return _normal.dot(point) >= _distance;
     }
 
     /**
      Returns true if the point is nearly in the plane.
      */
     inline bool fuzzyContains(const Vector3 &point) const {
-        return fuzzyEq(point.dot(_normal), distance);
+        return fuzzyEq(point.dot(_normal), _distance);
     }
 
 	inline const Vector3& normal() const {
 		return _normal;
 	}
+
+    inline float distance(const Vector3& x) const {
+        return (closestPoint(x) - x).magnitude();
+    }
+
+    inline Vector3 closestPoint(const Vector3& x) const {
+        return x + (_normal * (_distance - _normal.dot(x)));
+    }
 
     /**
      Inverts the facing direction of the plane so the new normal
