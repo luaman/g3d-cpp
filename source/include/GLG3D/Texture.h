@@ -526,7 +526,11 @@ public:
         return _maxAnisotropy;
     }
 
-    inline unsigned int getOpenGLID() const {
+    inline unsigned int G3D_DEPRECATED getOpenGLID() const {
+        return textureID;
+    }
+
+    inline unsigned int openGLID() const {
         return textureID;
     }
 

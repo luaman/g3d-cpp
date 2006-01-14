@@ -1417,32 +1417,31 @@ Rect2D RenderDevice::getViewport() const {
 }
 
 
-void RenderDevice::setFramebuffer (const FramebufferRef &fbo) {
+void RenderDevice::setFramebuffer(const FramebufferRef &fbo) {
     // Check for extension
+    majStateChange();
     if (fbo != state.framebuffer) {
-        if (!GLCaps::supports_GL_EXT_framebuffer_object()) {
-            debugAssertM(false, "Framebuffer Object not supported!");
+        majGLStateChange();
+        // Set Framebuffer
+        if (fbo.isNull()) {
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
         } else {
-            // Set Framebuffer
-            if (fbo.isNull()) {
-                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-                glViewport(0, 0, this->getWidth(), this->getHeight());               
-            } else {
-                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo->getOpenGLID());
-                glViewport(0, 0, fbo->Width(), fbo->Height());
-            }
+            debugAssertM(GLCaps::supports_GL_EXT_framebuffer_object(), "Framebuffer Object not supported!");
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo->openGLID());
         }
+        state.framebuffer = fbo;
     }
 }
 
 
-bool RenderDevice::currentFramebufferComplete () {
+bool RenderDevice::currentFramebufferComplete() {
     std::string reason;
     
-    if (!state.framebuffer.isNull())
+    if (!state.framebuffer.isNull()) {
         return state.framebuffer->isComplete(reason);
-    else
+    } else {
         return true;
+    }
 }
 
 

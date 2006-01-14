@@ -99,6 +99,10 @@ SOURCE=.\GLG3Dcpp\edgeFeatures.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\Framebuffer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\G3DGameUnits.cpp
 # End Source File
 # Begin Source File
@@ -164,6 +168,10 @@ SOURCE=.\GLG3Dcpp\PixelProgram.cpp
 # Begin Source File
 
 SOURCE=.\GLG3Dcpp\PosedModel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\GLG3Dcpp\Renderbuffer.cpp
 # End Source File
 # Begin Source File
 
@@ -243,6 +251,10 @@ SOURCE=.\include\GLG3D\edgeFeatures.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\Framebuffer.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\G3DAll.h
 # End Source File
 # Begin Source File
@@ -316,6 +328,10 @@ SOURCE=.\include\GLG3D\PixelProgram.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\PosedModel.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\Renderbuffer.h
 # End Source File
 # Begin Source File
 

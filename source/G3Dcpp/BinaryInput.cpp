@@ -9,7 +9,7 @@
 
   <PRE>
     {    
-    BinaryOutput b = BinaryOutput("c:/tmp/test.b", BinaryOutput::LITTLE_ENDIAN);
+    BinaryOutput b("c:/tmp/test.b", BinaryOutput::LITTLE_ENDIAN);
 
     float f = 3.1415926;
     int i = 1027221;
@@ -21,7 +21,7 @@
     b.commit();
     
 
-    BinaryInput in = BinaryInput("c:/tmp/test.b", BinaryInput::LITTLE_ENDIAN);
+    BinaryInput in("c:/tmp/test.b", BinaryInput::LITTLE_ENDIAN);
 
     debugAssert(f == in.readFloat32());
     int ii = in.readInt32();

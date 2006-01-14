@@ -17,6 +17,8 @@
 
 #include "GLG3D/Texture.h"
 #include "GLG3D/Renderbuffer.h"
+#include "G3D/Array.h"
+#include "G3D/Table.h"
 #include <string.h>
 
 namespace G3D {
@@ -99,46 +101,14 @@ typedef ReferenceCountedPointer<class Framebuffer> FramebufferRef;
 	<B>BETA API</B> -- Subject to change
 */
 class Framebuffer : public ReferenceCountedObject {
-private:
-
-    Array <RenderbufferRef>         rbAttachments;
-    Array <TextureRef>              texAttachments;
-
-	/** OpenGL Object ID */
-	GLuint							framebufferID;
-
-	/** Framebuffer name */
-	std::string                     name;
-
-	/** 
-	 Not yet implemented yet -- for non-gl error checking to pre-check
-	 for Framebuffer completeness.  Width & Height should also be
-	 implemented for this check.
-	*/
-    const class TextureFormat*      format;
-
-    /**
-     Framebuffer Height
-     */
-    GLuint                          height;
-    GLuint                          width;
-
-    /**
-     Number of currently bound attachments.
-     */
-    int                             numAttachments;
-
-	/** Default Constructor. */
-	Framebuffer (const std::string &name, GLuint framebufferID);
-
 public:
 
-	/**
+    /**
 	 Specifies the attachment to which a framebuffer-attachable-image
 	 (Renderbuffer or a Texture image) will be attached.  These mirror
 	 the OpenGL definition as do their values.
 	 */
-	enum Attachment {
+	enum AttachmentPoint {
 		COLOR_ATTACHMENT0 = 0x8CE0,
         COLOR_ATTACHMENT1 = 0x8CE1,
         COLOR_ATTACHMENT2 = 0x8CE2,
@@ -158,8 +128,61 @@ public:
         DEPTH_ATTACHMENT = 0x8D00,
 		STENCIL_ATTACHMENT = 0x8D20};
 
+private:
+
+    class Attachment {
+    public:
+        enum Type {TEXTURE, RENDERBUFFER};
+        Type type;
+
+        RenderbufferRef             renderbuffer;
+        TextureRef                  texture;
+
+        Attachment() {}
+        Attachment(const RenderbufferRef& r) : type(RENDERBUFFER), renderbuffer(r) {}
+        Attachment(const TextureRef& r) : type(TEXTURE), texture(r) {}
+    };
+
+    /**
+     Slots are not specified if they correspond to NULL elements.
+     */
+    Table<AttachmentPoint, Attachment>  attachmentTable;
+
+	/** OpenGL Object ID */
+	GLuint							framebufferID;
+
+	/** Framebuffer name */
+	std::string                     m_name;
+
+	/** 
+	 Not yet implemented yet -- for non-gl error checking to pre-check
+	 for Framebuffer completeness.  Width & Height should also be
+	 implemented for this check.
+	*/
+    const class TextureFormat*      format;
+
+    /**
+     Framebuffer Height
+     */
+    GLuint                          m_height;
+    GLuint                          m_width;
+
+    /**
+     Number of currently bound attachments.  When this hits zero we can
+     add attachments with new sizes.
+     */
+    int                             numAttachments;
+
+	/** Default Constructor. */
+	Framebuffer(const std::string& name, GLuint framebufferID);
+
+    static std::string              ignore;
+
+public:
+
+
 	/** Reclaims OpenGL ID */
-	~Framebuffer ();
+	~Framebuffer();
 
 	/**
 	 Creates a framebuffer object from an OpenGL context.
@@ -167,64 +190,57 @@ public:
 	 @param name			Name of framebuffer
 	 @param framebufferID	OpenGL id of ramebuffer
 	 */
-	static FramebufferRef fromGLFramebuffer (const std::string &_name, GLuint _framebufferID);
+	static FramebufferRef fromGLFramebuffer(const std::string& name, GLuint framebufferID);
 
 	/**
 	 Creates a framebuffer object from scratch.
 
 	 @param name			Name of framebuffer
 	 */
-	static FramebufferRef createFramebuffer (const std::string &_name);
+	static FramebufferRef create(const std::string& name);
+
+    /** Overload used when setting attachment points to NULL */
+    void set(AttachmentPoint ap, const void* n);
 
 	/**
-	 Binds a texture to the Framebuffer.	 
+	 Set one of the attachment points to reference a texture.  Set to NULL to unset.
 
 	 @param texture		Texture to bind to the framebuffer.
-	 @param attachment	Attachment point to bind texture to.
+	 @param ap	Attachment point to bind texture to.
 	 */
-	void bindTexture (const TextureRef& texture, G3D::Framebuffer::Attachment attachment);
+	void set(AttachmentPoint ap, const TextureRef& texture);
 
 	/**
-	 Unbinds a texture from the Framebuffer.
-
-	 @param attachment Attachment to which the texture should be unbound.
-	 */
-	void unbindTexture (const G3D::Framebuffer::Attachment attachment);
-
-	/**
-	 Bind a renderbuffer to the Framebuffer
+	 Set one of the attachment points to reference a renderbuffer.  Set to NULL to unset.
 
 	 @param renderbuffer	Renderbuffer to bind to the framebuffer
-	 @param attachment		Attachment point to bind renderbuffer to.
+	 @param slot		Attachment point to bind renderbuffer to.
 	 */
-	void bindRenderbuffer (const RenderbufferRef& renderbuffer, const G3D::Framebuffer::Attachment attachment);
-
-	/**
-	 Unbinds a renderbuffer from the Framebuffer.
-
-	 @param attachment Attachment to which the texture should be unbound.
-	 */
-	void unbindRenderbuffer (const G3D::Framebuffer::Attachment attachment);
+	void set(AttachmentPoint ap, const RenderbufferRef& renderbuffer);
 
     /**
      Gets the OpenGL ID of the framebuffer object.
      */
-	inline unsigned int getOpenGLID() const {
+	inline unsigned int openGLID() const {
         return framebufferID;
     }
 
     /**
      Gets the OpenGL ID of the framebuffer object.
      */
-	inline unsigned int Width() const {
-        return width;
+	inline unsigned int width() const {
+        return m_width;
     }
 
     /**
      Gets the OpenGL ID of the framebuffer object.
      */
-	inline unsigned int Height() const {
-        return height;
+	inline unsigned int height() const {
+        return m_height;
+    }
+
+    inline const std::string& name() const {
+        return m_name;
     }
 
     /**
@@ -238,12 +254,13 @@ public:
      @return true   If complete framebuffer.
      @return false  If incomplete or error.
      */
-    bool isComplete (std::string& whyNot);
+    bool isComplete(std::string& whyNot = ignore);
 
-}; // End Framebuffer Class Declaration
+}; // class Framebuffer 
 
 
-} // End G3D
+} //  G3D
 
+unsigned int hashCode(const G3D::Framebuffer::AttachmentPoint& a);
 
 #endif // GLG3D_FRAMEBUFFER_H

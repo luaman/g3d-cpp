@@ -181,6 +181,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="GLG3Dcpp\Framebuffer.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="GLG3Dcpp\G3DGameUnits.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -521,6 +541,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="GLG3Dcpp\Renderbuffer.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="GLG3Dcpp\RenderDevice.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -834,6 +874,9 @@
 				RelativePath="include\GLG3D\edgeFeatures.h">
 			</File>
 			<File
+				RelativePath="include\GLG3D\Framebuffer.h">
+			</File>
+			<File
 				RelativePath="include\G3DAll.h">
 			</File>
 			<File
@@ -889,6 +932,9 @@
 			</File>
 			<File
 				RelativePath="include\GLG3D\PosedModel.h">
+			</File>
+			<File
+				RelativePath="include\GLG3D\Renderbuffer.h">
 			</File>
 			<File
 				RelativePath="include\GLG3D\RenderDevice.h">
