@@ -574,6 +574,8 @@ void MeshAlg::computeTangentSpaceBasis(
     Array<Vector3>&             tangent,
     Array<Vector3>&             binormal) {
 
+    debugAssertM(faceArray.size() != 0, "Unable to calculate valid tangent space without faces.");
+
     // The three vertices and texCoords of each face
     Vector3 position[3];
     Vector2 texCoord[3];
