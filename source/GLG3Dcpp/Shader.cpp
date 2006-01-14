@@ -14,6 +14,12 @@
 
 namespace G3D {
 
+bool Shader::hasArgument(const std::string& argname) const {
+    const Set<std::string>& uniformNames = _vertexAndPixelShader->uniformNames;
+    return uniformNames.contains(argname);
+}
+
+
 bool Shader::ok() const {
     return _vertexAndPixelShader->ok();
 }

@@ -582,6 +582,9 @@ public:
         they will take effect immediately.*/
     VertexAndPixelShader::ArgList   args;
 
+    /** Returns true if this shader is declared to accept the specified argument. */
+    bool hasArgument(const std::string& argname) const;
+
     static ShaderRef fromFiles(
         const std::string& vertexFile, 
         const std::string& pixelFile,

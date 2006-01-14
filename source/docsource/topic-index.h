@@ -60,12 +60,14 @@
  <UL>
   <LI><B>OpenGL Abstraction</B> &nbsp; &nbsp;
     G3D::Draw,
+    G3D::Framebuffer,
     G3D::GLCaps,
     G3D::glDisableAllTextures,
     G3D::glToScreen,
     G3D::Milestone,
     G3D::ObjectShader,
     G3D::PixelProgram,
+    G3D::Renderbuffer,
     G3D::RenderDevice,
     G3D::RenderDeviceSettings,
     G3D::Texture,

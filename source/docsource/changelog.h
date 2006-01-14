@@ -29,6 +29,8 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> G3D::Framebuffer and G3D::Renderbuffer to implement the Framebuffer_object extension [Dan Hilferty]
+      <LI> G3D::Shader::hasArgument
       <LI> Changed SECOND, MINUTE, DAY, HOUR, SUNRISE, SUNSET, MIDNIGHT, METER, KILOMETER to enum values instead of #defines
       <LI> G3D::Texture::Parameters; deprecated most Texture constructors in favor of ones that use this class
       <LI> Moved most image manipulation routines into GImage.
