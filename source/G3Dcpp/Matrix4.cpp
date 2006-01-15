@@ -62,16 +62,16 @@ Matrix4::Matrix4(const class CoordinateFrame& cframe) {
 
 
 Matrix4 Matrix4::orthogonalProjection(
-    double            left,
-    double            right,
-    double            bottom,
-    double            top,
-    double            nearval,
-    double            farval) {
+    float            left,
+    float            right,
+    float            bottom,
+    float            top,
+    float            nearval,
+    float            farval) {
 
     // Adapted from Mesa
-    double x, y, z;
-    double tx,  ty, tz;
+    float x, y, z;
+    float tx,  ty, tz;
 
     x = 2.0 / (right-left);
     y = 2.0 / (top-bottom);
@@ -81,35 +81,35 @@ Matrix4 Matrix4::orthogonalProjection(
     tz = -(farval+nearval) / (farval-nearval);
 
     return 
-        Matrix4( x , 0.0, 0.0,  tx,
-                0.0,  y , 0.0,  ty,
-                0.0, 0.0,  z ,  tz,
-                0.0, 0.0, 0.0, 1.0);
+        Matrix4( x , 0.0f, 0.0f,  tx,
+                0.0f,  y , 0.0f,  ty,
+                0.0f, 0.0f,  z ,  tz,
+                0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 
 Matrix4 Matrix4::perspectiveProjection(
-    double left,    
-    double right,
-    double bottom,  
-    double top,
-    double nearval, 
-    double farval) {
+    float left,    
+    float right,
+    float bottom,  
+    float top,
+    float nearval, 
+    float farval) {
 
-    double x, y, a, b, c, d;
+    float x, y, a, b, c, d;
 
-    x = (2.0*nearval) / (right-left);
-    y = (2.0*nearval) / (top-bottom);
+    x = (2.0f*nearval) / (right-left);
+    y = (2.0f*nearval) / (top-bottom);
     a = (right+left) / (right-left);
     b = (top+bottom) / (top-bottom);
 
     if ((float)farval >= (float)inf()) {
        // Infinite view frustum
-       c = -1.0;
-       d = -2.0 * nearval;
+       c = -1.0f;
+       d = -2.0f * nearval;
     } else {
        c = -(farval+nearval) / (farval-nearval);
-       d = -(2.0*farval*nearval) / (farval-nearval);
+       d = -(2.0f*farval*nearval) / (farval-nearval);
     }
 
     return Matrix4(
@@ -208,7 +208,7 @@ Matrix4 Matrix4::operator*(const Matrix4& other) const {
 }
 
 
-Matrix4 Matrix4::operator*(const double s) const {
+Matrix4 Matrix4::operator*(const float s) const {
     Matrix4 result;
     for (int r = 0; r < 4; ++r) {
         for (int c = 0; c < 4; ++c) {
@@ -270,7 +270,7 @@ bool Matrix4::operator==(const Matrix4& other) const {
 }
 
 
-double Matrix4::determinant() const {
+float Matrix4::determinant() const {
     // Determinant is the dot product of the first row and the first row
     // of cofactors (i.e. the first col of the adjoint matrix)
 	return cofactor().getRow(0).dot(getRow(0));
@@ -315,7 +315,7 @@ Matrix4 Matrix4::cofactor() const {
 }
 
 
-double Matrix4::subDeterminant(int excludeRow, int excludeCol) const {
+float Matrix4::subDeterminant(int excludeRow, int excludeCol) const {
     // Compute non-excluded row and column indices
     int row[3];
     int col[3];

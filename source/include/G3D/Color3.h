@@ -36,7 +36,7 @@ public:
 
     Color3(class BinaryInput& bi);
 
-    Color3(double r, double g, double b);
+    Color3(float r, float g, float b);
 
     Color3(const class Vector3& v);
     
@@ -83,17 +83,17 @@ public:
     // arithmetic operations
     Color3 operator+ (const Color3& rkVector) const;
     Color3 operator- (const Color3& rkVector) const;
-    Color3 operator* (double fScalar) const;
+    Color3 operator* (float fScalar) const;
     Color3 operator* (const Color3& rkVector) const;
-    Color3 operator/ (double fScalar) const;
+    Color3 operator/ (float fScalar) const;
     Color3 operator- () const;
 
     // arithmetic updates
     Color3& operator+= (const Color3& rkVector);
     Color3& operator-= (const Color3& rkVector);
     Color3& operator*= (const Color3& rkVector);
-    Color3& operator*= (double fScalar);
-    Color3& operator/= (double fScalar);
+    Color3& operator*= (float fScalar);
+    Color3& operator/= (float fScalar);
 
     bool fuzzyEq(const Color3& other) const;
     bool fuzzyNe(const Color3& other) const;
@@ -117,14 +117,14 @@ public:
 
 
     inline Color3 max(const Color3& other) const {
-        return Color3(G3D::max(r, other.r), G3D::max(g, other.g), G3D::max(b, other.b));
+        return Color3(std::max<float>(r, other.r), std::max<float>(g, other.g), std::max<float>(b, other.b));
     }
 
     inline Color3 min(const Color3& other) const {
-        return Color3(G3D::min(r, other.r), G3D::min(g, other.g), G3D::min(b, other.b));
+        return Color3(std::min<float>(r, other.r), std::min<float>(g, other.g), std::min<float>(b, other.b));
     }
 
-	inline Color3 lerp(const Color3& other, double a) const {
+	inline Color3 lerp(const Color3& other, float a) const {
         return (*this) + (other - *this) * a; 
 
     }
@@ -196,7 +196,7 @@ public:
 
 };
 
-inline G3D::Color3 operator* (double s, const G3D::Color3& c) {
+inline G3D::Color3 operator* (float s, const G3D::Color3& c) {
     return c * s;
 }
 

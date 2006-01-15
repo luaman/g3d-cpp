@@ -21,7 +21,7 @@
     // http://download.microsoft.com/download/vb60ent/Update/6/W9X2KXP/EN-US/vcpp5.exe
     //
     // to get this file.
-    #include <xmmintrin.h>
+#   include <xmmintrin.h>
 #endif
 
 inline unsigned int hashCode(const G3D::Vector3& v) {
@@ -31,19 +31,19 @@ inline unsigned int hashCode(const G3D::Vector3& v) {
 namespace G3D {
 
 //----------------------------------------------------------------------------
-inline Vector3::Vector3() : x(0.0), y(0.0), z(0.0) {
+inline Vector3::Vector3() : x(0.0f), y(0.0f), z(0.0f) {
 }
 
 //----------------------------------------------------------------------------
 
-inline Vector3::Vector3 (double fX, double fY, double fZ) : x(fX), y(fY), z(fZ) {
+inline Vector3::Vector3 (float fX, float fY, float fZ) : x(fX), y(fY), z(fZ) {
 }
 
 //----------------------------------------------------------------------------
 inline Vector3::Vector3 (float V[3]) : x(V[0]), y(V[1]), z(V[2]){
 }
 //----------------------------------------------------------------------------
-inline Vector3::Vector3 (double V[3]) : x(V[0]), y(V[1]), z(V[2]){
+inline Vector3::Vector3 (double V[3]) : x((float)V[0]), y((float)V[1]), z((float)V[2]){
 }
 
 //----------------------------------------------------------------------------
@@ -114,13 +114,12 @@ inline Vector3 Vector3::operator- (const Vector3& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3 Vector3::operator* (double fScalar) const {
-    return Vector3(fScalar*x, fScalar*y, fScalar*z);
-}
-
-//----------------------------------------------------------------------------
 inline Vector3 Vector3::operator* (const Vector3& rkVector) const {
     return Vector3(x * rkVector.x, y * rkVector.y, z * rkVector.z);
+}
+
+inline Vector3 Vector3::operator*(float f) const {
+    return Vector3(x * f, y * f, z * f);
 }
 
 //----------------------------------------------------------------------------
@@ -150,7 +149,7 @@ inline Vector3& Vector3::operator-= (const Vector3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Vector3& Vector3::operator*= (double fScalar) {
+inline Vector3& Vector3::operator*= (float fScalar) {
     x *= fScalar;
     y *= fScalar;
     z *= fScalar;
@@ -174,28 +173,28 @@ inline Vector3& Vector3::operator/= (const Vector3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline double Vector3::squaredMagnitude () const {
+inline float Vector3::squaredMagnitude () const {
     return x*x + y*y + z*z;
 }
 
 //----------------------------------------------------------------------------
-inline double Vector3::squaredLength () const {
+inline float Vector3::squaredLength () const {
     return squaredMagnitude();
 }
 
 //----------------------------------------------------------------------------
-inline double Vector3::magnitude() const {
+inline float Vector3::magnitude() const {
     return sqrt(x*x + y*y + z*z);
 }
 
 //----------------------------------------------------------------------------
-inline double Vector3::length() const {
+inline float Vector3::length() const {
     return magnitude();
 }
 
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::direction () const {
-    float lenSquared = x * x + y * y + z * z;
+    float lenSquared = squaredMagnitude();
     float invSqrt = 1/sqrt(lenSquared);
     return Vector3(x * invSqrt, y * invSqrt, z * invSqrt);
 }
@@ -209,7 +208,7 @@ inline Vector3 Vector3::fastDirection () const {
 }
 
 //----------------------------------------------------------------------------
-inline double Vector3::dot (const Vector3& rkVector) const {
+inline float Vector3::dot (const Vector3& rkVector) const {
     return x*rkVector.x + y*rkVector.y + z*rkVector.z;
 }
 
@@ -229,12 +228,12 @@ inline Vector3 Vector3::unitCross (const Vector3& rkVector) const {
 
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::min(const Vector3 &v) const {
-    return Vector3(G3D::min(v.x, x), G3D::min(v.y, y), G3D::min(v.z, z));
+    return Vector3(std::min<float>(v.x, x), std::min<float>(v.y, y), std::min<float>(v.z, z));
 }
 
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::max(const Vector3 &v) const {
-    return Vector3(G3D::max(v.x, x), G3D::max(v.y, y), G3D::max(v.z, z));
+    return Vector3(std::max<float>(v.x, x), std::max<float>(v.y, y), std::max<float>(v.z, z));
 }
 
 //----------------------------------------------------------------------------
@@ -248,4 +247,4 @@ inline bool Vector3::isUnit() const {
     return G3D::fuzzyEq(squaredMagnitude(), 1.0);
 }
 
-}
+} // namespace

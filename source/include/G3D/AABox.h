@@ -193,9 +193,9 @@ public:
     }
 
     /** @deprecated */
-    inline double surfaceArea() const {
+    inline float surfaceArea() const {
         Vector3 diag = hi - lo;
-        return 2 * (diag.x * diag.y + diag.y * diag.z + diag.x * diag.z);
+        return 2.0f * (diag.x * diag.y + diag.y * diag.z + diag.x * diag.z);
     }
 
     inline float area() const {

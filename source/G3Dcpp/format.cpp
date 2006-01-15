@@ -23,7 +23,8 @@
 
 #ifdef _MSC_VER
     // disable: "C++ exception handler used"
-    #pragma warning (disable : 4530)
+#   pragma warning (push)
+#   pragma warning (disable : 4530)
 #endif // _MSC_VER
 
 // If your platform does not have vsnprintf, you can find a
@@ -161,7 +162,11 @@ std::string vformat(const char* fmt, va_list argPtr) {
 } // namespace
 
 #ifdef G3D_WIN32
-  #undef vsnprintf
+#   undef vsnprintf
+#endif
+
+#ifdef _MSC_VER
+#   pragma warning (pop)
 #endif
 
 #undef NEWLINE

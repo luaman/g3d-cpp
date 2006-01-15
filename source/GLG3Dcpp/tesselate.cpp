@@ -66,7 +66,7 @@ static void __stdcall _tesselateCombine(
     (void)dummy;
 
     // Just copy data from the coordinates
-    data->allocStack.append(Vector3(coords[0], coords[1], coords[2]));
+    data->allocStack.append(Vector3((float)coords[0], (float)coords[1], (float)coords[2]));
     *vertex = &(data->allocStack[data->allocStack.size() - 1]);
 }
 

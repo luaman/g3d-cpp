@@ -15,7 +15,11 @@
 
 #ifdef _MSC_VER
 // Disable conditional expression is constant, which occurs incorrectly on inlined functions
+#   pragma  warning(push)
 #   pragma warning( disable : 4127 )
+
+// signed/unsigned warnings (TODO: revisit)
+#   pragma warning (disable:4267)
 #endif
 
 #include <assert.h>
@@ -35,10 +39,6 @@
 #include "G3D/debug.h"
 #include "G3D/System.h"
 
-#ifdef G3D_WIN32
-    // Disable unsigned/signed warnings
-    #pragma warning (disable:4267)
-#endif
 
 namespace G3D {
 
@@ -426,3 +426,6 @@ public:
 
 #endif
 
+#ifdef _MSC_VER
+#   pragma  warning(pop)
+#endif

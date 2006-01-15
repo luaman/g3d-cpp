@@ -13,6 +13,12 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/stringutils.h"
 
+#ifdef _MSC_VER
+#   pragma warning (push)
+// conversion from 'int' to 'char', possible loss of data (TODO: fix underlying problems)
+#   pragma warning (disable: 4244)
+#endif
+
 namespace G3D {
 
 
@@ -322,7 +328,7 @@ Token TextInput::nextToken() {
             return t;
         }
 
-        if (isDigit(c)) {
+        if (isDigit((char)c)) {
             // Number.  'c' is the first digit, and is still the next input
             // char.
 
@@ -430,14 +436,14 @@ numLabel:
                                  "nan) format.",
                                  t.line(), charNumber);
                         }
-                        t._string += c;
+                        t._string += (char)c;
                     }
 
                 } else {
 
                     // Read the part after the decimal
-                    while (isDigit(c)) {
-                        t._string += c;
+                    while (isDigit((char)c)) {
+                        t._string += (char)c;
                         c = eatAndPeekInputChar();
                     }
                 }
@@ -558,7 +564,7 @@ void TextInput::parseQuotedString(unsigned char delimiter, Token& t) {
             case '\\':
             case '\"':
             case '\'':
-                t._string += c;
+                t._string += (char)c;
                 break;
 
             default:
@@ -579,7 +585,7 @@ void TextInput::parseQuotedString(unsigned char delimiter, Token& t) {
         } else {
             // All other chars, go on to the string.  Already consumed the
             // character.
-            t._string += c;
+            t._string += (char)c;
         }
 
     }
@@ -801,7 +807,7 @@ void deserialize(int& b, TextInput& ti) {
 
 
 void deserialize(uint8& b, TextInput& ti) {
-    b = iRound(ti.readNumber());
+    b = (uint8)iRound(ti.readNumber());
 }
 
 
@@ -811,7 +817,11 @@ void deserialize(double& b, TextInput& ti) {
 
 
 void deserialize(float& b, TextInput& ti) {
-    b = ti.readNumber();
+    b = (float)ti.readNumber();
 }
 
 } // namespace
+
+#ifdef _MSC_VER
+#   pragma warning (pop)
+#endif

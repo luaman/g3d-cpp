@@ -9,8 +9,9 @@
  
  
  @created 2001-06-02
- @edited  2003-05-13
-  Copyright 2000-2004, Morgan McGuire.
+ @edited  2006-01-14
+
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -26,14 +27,12 @@ namespace G3D {
 
 //----------------------------------------------------------------------------
 inline Vector2::Vector2 () {
-    x = y = 0;
+    x = y = 0.0f;
 }
 
 //----------------------------------------------------------------------------
 
-inline Vector2::Vector2(double fS, double fT) {
-    x = fS;
-    y = fT;
+inline Vector2::Vector2(float _x, float _y) : x(_x), y(_y) {
 }
 
 //----------------------------------------------------------------------------
@@ -45,8 +44,8 @@ inline Vector2::Vector2 (float afCoordinate[2]) {
 //----------------------------------------------------------------------------
 
 inline Vector2::Vector2 (double afCoordinate[2]) {
-    x = afCoordinate[0];
-    y = afCoordinate[1];
+    x = (float)afCoordinate[0];
+    y = (float)afCoordinate[1];
 }
 
 //----------------------------------------------------------------------------
@@ -106,7 +105,7 @@ inline Vector2 Vector2::operator- (const Vector2& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector2 Vector2::operator* (double fScalar) const {
+inline Vector2 Vector2::operator* (float fScalar) const {
     return Vector2(fScalar*x, fScalar*y);
 }
 
@@ -134,11 +133,12 @@ inline Vector2& Vector2::operator-= (const Vector2& rkVector) {
 
 //----------------------------------------------------------------------------
 
-inline Vector2& Vector2::operator*= (double fScalar) {
+inline Vector2& Vector2::operator*= (float fScalar) {
     x *= fScalar;
     y *= fScalar;
     return *this;
 }
+
 
 //----------------------------------------------------------------------------
 
@@ -155,7 +155,6 @@ inline Vector2& Vector2::operator/= (const Vector2& rkVector) {
     y /= rkVector.y;
     return *this;
 }
-
 //----------------------------------------------------------------------------
 
 inline Vector2 Vector2::operator* (const Vector2& rkVector) const {
@@ -169,12 +168,12 @@ inline Vector2 Vector2::operator/ (const Vector2& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline double Vector2::squaredLength () const {
+inline float Vector2::squaredLength () const {
     return x*x + y*y;
 }
 
 //----------------------------------------------------------------------------
-inline double Vector2::length () const {
+inline float Vector2::length () const {
     return sqrt(x*x + y*y);
 }
 
@@ -182,8 +181,8 @@ inline double Vector2::length () const {
 inline Vector2 Vector2::direction () const {
     float lenSquared = x * x + y * y;
 
-    if (lenSquared != 1.0) {
-        return *this / sqrt(lenSquared);
+    if (lenSquared != 1.0f) {
+        return *this / (float)sqrt(lenSquared);
     } else {
         return *this;
     }
@@ -191,20 +190,20 @@ inline Vector2 Vector2::direction () const {
 
 //----------------------------------------------------------------------------
 
-inline double Vector2::dot (const Vector2& rkVector) const {
+inline float Vector2::dot (const Vector2& rkVector) const {
     return x*rkVector.x + y*rkVector.y;
 }
 
 //----------------------------------------------------------------------------
 
 inline Vector2 Vector2::min(const Vector2 &v) const {
-    return Vector2(G3D::min(v.x, x), G3D::min(v.y, y));
+    return Vector2(std::min<float>(v.x, x), std::min<float>(v.y, y));
 }
 
 //----------------------------------------------------------------------------
 
 inline Vector2 Vector2::max(const Vector2 &v) const {
-    return Vector2(G3D::max(v.x, x), G3D::max(v.y, y));
+    return Vector2(std::max<float>(v.x, x), std::max<float>(v.y, y));
 }
 
 //----------------------------------------------------------------------------

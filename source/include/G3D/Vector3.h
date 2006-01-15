@@ -9,7 +9,7 @@
  
   @created 2001-06-02
   @edited  2005-08-23
-  Copyright 2000-2005, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -72,8 +72,8 @@ public:
     // construction
     Vector3();
     Vector3(class BinaryInput& b);
-    Vector3(double _x, double _y, double _z);
-    Vector3(const class Vector2& v, double _z);
+    Vector3(float _x, float _y, float _z);
+    Vector3(const class Vector2& v, float _z);
     Vector3(float coordinate[3]);
     Vector3(double coordinate[3]);
     Vector3(const Vector3& rkVector);
@@ -132,8 +132,8 @@ public:
     // arithmetic operations
     Vector3 operator+ (const Vector3& v) const;
     Vector3 operator- (const Vector3& v) const;
-    Vector3 operator* (double s) const;
-    Vector3 operator/ (double s) const;
+    Vector3 operator* (float s) const;
+    Vector3 operator/ (float s) const;
     Vector3 operator* (const Vector3& v) const;
     Vector3 operator/ (const Vector3& v) const;
     Vector3 operator- () const;
@@ -141,15 +141,15 @@ public:
     // arithmetic updates
     Vector3& operator+= (const Vector3& v);
     Vector3& operator-= (const Vector3& v);
-    Vector3& operator*= (double s);
-    Vector3& operator/= (double s);
+    Vector3& operator*= (float s);
+    Vector3& operator/= (float s);
     Vector3& operator*= (const Vector3& v);
     Vector3& operator/= (const Vector3& v);
 
     /** @deprecated Use magnitude */
-	double G3D_DEPRECATED length() const;
+	float G3D_DEPRECATED length() const;
 
-    double magnitude() const;
+    float magnitude() const;
     
     /**
      The result is a nan vector if the length is almost zero.
@@ -182,13 +182,13 @@ public:
      returns a unit vector.
      */
     inline Vector3 directionOrZero() const {
-        double mag = magnitude();
-        if (G3D::fuzzyEq(mag, 0.0)) {
+        float mag = magnitude();
+        if (G3D::fuzzyEq(mag, 0.0f)) {
             return Vector3::zero();
-        } else if (G3D::fuzzyEq(mag, 1.0)) {
+        } else if (G3D::fuzzyEq(mag, 1.0f)) {
             return *this;
         } else {
-            return *this * (1.0 / mag);
+            return *this * (1.0f / mag);
         }
     }
 
@@ -221,8 +221,8 @@ public:
      */
     Vector3 refractionDirection(
         const Vector3&  normal,
-        double          iInside,
-        double          iOutside) const;
+        float           iInside,
+        float           iOutside) const;
 
     /** Synonym for direction */
     inline Vector3 unit() const {
@@ -235,17 +235,17 @@ public:
     }
 
     /** @deprecated Use squaredMagnitude */
-    double G3D_DEPRECATED squaredLength() const;
+    float G3D_DEPRECATED squaredLength() const;
 
-    double squaredMagnitude () const;
+    float squaredMagnitude () const;
 	
     /** @deprecated Use squaredMagnitude */
-    inline double norm() const {
+    inline float norm() const {
         return squaredMagnitude();
     }
 
-    double dot(const Vector3& rkVector) const;
-    double unitize(double fTolerance = 1e-06);
+    float dot(const Vector3& rkVector) const;
+    float unitize(float fTolerance = 1e-06);
     /** Cross product.  Note that two cross products in a row
         can be computed more cheaply: v1 x (v2 x v3) = (v1 dot v3) v2  - (v1 dot v2) v3.
       */
@@ -284,7 +284,7 @@ public:
     /**
      Linear interpolation
      */
-    inline Vector3 lerp(const Vector3& v, double alpha) const {
+    inline Vector3 lerp(const Vector3& v, float alpha) const {
         return (*this) + (v - *this) * alpha; 
     }
 
@@ -314,12 +314,12 @@ public:
     static void generateOrthonormalBasis (Vector3& rkU, Vector3& rkV,
                                           Vector3& rkW, bool bUnitLengthW = true);
 
-    inline double sum() const {
+    inline float sum() const {
         return x + y + z;
     }
 
-    inline double average() const {
-        return sum() / 3.0;
+    inline float average() const {
+        return sum() / 3.0f;
     }
 
     // Special values.
@@ -327,8 +327,8 @@ public:
     inline static const Vector3& unitX()    { static Vector3 v(1, 0, 0); return v; }
     inline static const Vector3& unitY()    { static Vector3 v(0, 1, 0); return v; }
     inline static const Vector3& unitZ()    { static Vector3 v(0, 0, 1); return v; }
-    inline static const Vector3& inf()      { static Vector3 v(G3D::inf(), G3D::inf(), G3D::inf()); return v; }
-    inline static const Vector3& nan()      { static Vector3 v(G3D::nan(), G3D::nan(), G3D::nan()); return v; }
+    inline static const Vector3& inf()      { static Vector3 v((float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf()); return v; }
+    inline static const Vector3& nan()      { static Vector3 v((float)G3D::nan(), (float)G3D::nan(), (float)G3D::nan()); return v; }
     /** Smallest (most negative) representable vector */
     inline static const Vector3& minFinite(){ static Vector3 v(-FLT_MAX, -FLT_MAX, -FLT_MAX); return v; }
     /** Largest representable vector */
@@ -480,17 +480,16 @@ public:
     static Vector3 dummy;
 };
 
-
-inline G3D::Vector3 operator*(double s, const G3D::Vector3& v) {
-    return v * s;
-}
-
 inline G3D::Vector3 operator*(float s, const G3D::Vector3& v) {
     return v * s;
 }
 
+inline G3D::Vector3 operator*(double s, const G3D::Vector3& v) {
+    return v * (float)s;
+}
+
 inline G3D::Vector3 operator*(int s, const G3D::Vector3& v) {
-    return v * s;
+    return v * (float)s;
 }
 
 std::ostream& operator<<(std::ostream& os, const Vector3&);

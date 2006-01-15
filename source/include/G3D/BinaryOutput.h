@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-02-24
+ @edited  2006-01-24
 
- Copyright 2000-2005, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
@@ -28,6 +28,11 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/System.h"
 
+#ifdef _MSC_VER
+#   pragma warning (push)
+// Conditional is constant (wrong in inline)
+#   pragma warning (disable : 4127)
+#endif
 namespace G3D {
 
 /**
@@ -401,3 +406,6 @@ public:
 }
 #endif
 
+#ifdef _MSC_VER
+#   pragma warning (pop)
+#endif

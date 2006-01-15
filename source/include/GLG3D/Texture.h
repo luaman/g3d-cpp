@@ -567,12 +567,12 @@ public:
     }
 
     inline Vector2 vector2Bounds() const {
-        return Vector2(width, height);
+        return Vector2((float)width, (float)height);
     }
 
     /** Returns a rectangle whose width and height match the dimensions of the texture. */
     inline Rect2D rect2DBounds() const {
-        return Rect2D::xywh(0, 0, width, height);
+        return Rect2D::xywh(0, 0, (float)width, (float)height);
     }
 
     /**

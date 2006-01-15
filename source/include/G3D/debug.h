@@ -25,9 +25,10 @@ namespace G3D {
 
 #ifdef G3D_WIN32
     // Turn off 64-bit warnings
-    #pragma warning( disable : 4312)
-    #pragma warning( disable : 4267)
-    #pragma warning( disable : 4311)
+#   pragma warning(push)
+#   pragma warning( disable : 4312)
+#   pragma warning( disable : 4267)
+#   pragma warning( disable : 4311)
 #endif
 
 
@@ -57,9 +58,7 @@ inline bool isValidPointer(const void* x) {
 }
 
 #ifdef G3D_WIN32
-    #pragma warning( default : 4312)
-    #pragma warning( default : 4267)
-    #pragma warning( default : 4311)
+#   pragma warning(pop)
 #endif
 
 }

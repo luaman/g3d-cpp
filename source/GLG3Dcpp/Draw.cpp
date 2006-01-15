@@ -55,7 +55,7 @@ void Draw::axes(
     const Color4&       xColor,
     const Color4&       yColor,
     const Color4&       zColor,
-    double              scale) {
+    float               scale) {
 
     axes(CoordinateFrame(), renderDevice, xColor, yColor, zColor, scale);
 }
@@ -66,7 +66,7 @@ void Draw::arrow(
     const Vector3&      direction,
     RenderDevice*       renderDevice,
     const Color4&       color,
-    double              scale) {
+    float               scale) {
     ray(Ray::fromOriginAndDirection(start, direction), renderDevice, color, scale);
 }
 
@@ -77,7 +77,7 @@ void Draw::axes(
     const Color4&       xColor,
     const Color4&       yColor,
     const Color4&       zColor,
-    double              scale) {
+    float               scale) {
 
     Vector3 c = cframe.translation;
     Vector3 x = cframe.rotation.getColumn(0).direction() * 2 * scale;
@@ -89,13 +89,13 @@ void Draw::axes(
     Draw::arrow(c, z, renderDevice, zColor, scale);
   
     // Text label scale
-    const double xx = -3;
-    const double yy = xx * 1.4;
+    const float xx = -3;
+    const float yy = xx * 1.4f;
 
     // Project the 3D locations of the labels
-    Vector4 xc2D = renderDevice->project(c + x * 1.1);
-    Vector4 yc2D = renderDevice->project(c + y * 1.1);
-    Vector4 zc2D = renderDevice->project(c + z * 1.1);
+    Vector4 xc2D = renderDevice->project(c + x * 1.1f);
+    Vector4 yc2D = renderDevice->project(c + y * 1.1f);
+    Vector4 zc2D = renderDevice->project(c + z * 1.1f);
 
     // If coordinates are behind the viewer, transform off screen
     Vector2 x2D = (xc2D.w > 0) ? xc2D.xy() : Vector2(-2000, -2000);
@@ -103,9 +103,9 @@ void Draw::axes(
     Vector2 z2D = (zc2D.w > 0) ? zc2D.xy() : Vector2(-2000, -2000);
 
     // Compute the size of the labels
-    double xS = (xc2D.w > 0) ? clamp(10 * xc2D.w * scale, .1, 5) : 0;
-    double yS = (yc2D.w > 0) ? clamp(10 * yc2D.w * scale, .1, 5) : 0;
-    double zS = (zc2D.w > 0) ? clamp(10 * zc2D.w * scale, .1, 5) : 0;
+    float xS = (xc2D.w > 0) ? clamp(10 * xc2D.w * scale, .1f, 5) : 0;
+    float yS = (yc2D.w > 0) ? clamp(10 * yc2D.w * scale, .1f, 5) : 0;
+    float zS = (zc2D.w > 0) ? clamp(10 * zc2D.w * scale, .1f, 5) : 0;
 
     renderDevice->push2D();
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
@@ -113,14 +113,14 @@ void Draw::axes(
 
         renderDevice->beginPrimitive(RenderDevice::LINES);
             // X
-            renderDevice->setColor(xColor * 0.8);
+            renderDevice->setColor(xColor * 0.8f);
             renderDevice->sendVertex(Vector2(-xx,  yy) * xS + x2D);
             renderDevice->sendVertex(Vector2( xx, -yy) * xS + x2D);
             renderDevice->sendVertex(Vector2( xx,  yy) * xS + x2D);
             renderDevice->sendVertex(Vector2(-xx, -yy) * xS + x2D);
 
             // Y
-            renderDevice->setColor(yColor * 0.8);
+            renderDevice->setColor(yColor * 0.8f);
             renderDevice->sendVertex(Vector2(-xx,  yy) * yS + y2D);
             renderDevice->sendVertex(Vector2(  0,  0)  * yS + y2D);
             renderDevice->sendVertex(Vector2(  0,  0)  * yS + y2D);
@@ -131,7 +131,7 @@ void Draw::axes(
 
         renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
             // Z
-            renderDevice->setColor(zColor * 0.8);    
+            renderDevice->setColor(zColor * 0.8f);    
             renderDevice->sendVertex(Vector2( xx,  yy) * zS + z2D);
             renderDevice->sendVertex(Vector2(-xx,  yy) * zS + z2D);
             renderDevice->sendVertex(Vector2( xx, -yy) * zS + z2D);
@@ -145,7 +145,7 @@ void Draw::ray(
     const Ray&          ray,
     RenderDevice*       renderDevice,
     const Color4&       color,
-    double              scale) {
+    float               scale) {
 
     Vector3 tip = ray.origin + ray.direction;
     // Create a coordinate frame at the tip
@@ -158,7 +158,7 @@ void Draw::ray(
     }
     Vector3 w = u.cross(v).direction();
     v = w.cross(u).direction();
-    Vector3 back = tip - u * 0.3 * scale;
+    Vector3 back = tip - u * 0.3f * scale;
 
     RenderDevice::ShadeMode oldShadeMode = renderDevice->shadeMode();
     Color4 oldColor = renderDevice->color();
@@ -166,13 +166,13 @@ void Draw::ray(
     renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
     renderDevice->setColor(color);
 
-    float r = scale * .1;
+    float r = scale * .1f;
     // Arrow head.  Need this beginprimitive call to sync up G3D and OpenGL
     renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
         renderDevice->setNormal(u);
         for (int a = 0; a < SPHERE_SECTIONS; ++a) {
-            float angle0 = a * G3D_PI * 2.0 / SPHERE_SECTIONS;
-            float angle1 = (a + 1) * G3D_PI * 2.0 / SPHERE_SECTIONS;
+            float angle0 = a * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
+            float angle1 = (a + 1) * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
             Vector3 dir0(cos(angle0) * v + sin(angle0) * w);
             Vector3 dir1(cos(angle1) * v + sin(angle1) * w);
             glNormal3fv(dir0);
@@ -191,7 +191,7 @@ void Draw::ray(
     glBegin(GL_TRIANGLE_FAN);
         glNormal3fv(-u);
         for (int a = 0; a <= SPHERE_SECTIONS; ++a) {
-            float angle = a * G3D_PI * 2.0 / SPHERE_SECTIONS;
+            float angle = a * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
             Vector3 dir = sin(angle) * v + cos(angle) * w;
             glVertex3fv(back + dir * r);
         }
@@ -219,7 +219,7 @@ void Draw::plane(
     {
         double d;
         plane.getEquation(N, d);
-        P = N * d;
+        P = N * (float)d;
     }
 
     CoordinateFrame cframe1(P);
@@ -249,7 +249,7 @@ void Draw::plane(
         float r1 = 100;
         renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
             for (int i = 0; i <= N; ++i) {
-                float a = i * G3D_TWO_PI / N;
+                float a = i * (float)G3D_TWO_PI / N;
                 float c = cos(a);
                 float s = sin(a);
 
@@ -271,7 +271,7 @@ void Draw::plane(
 
             renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                 for (int i = 0; i <= N; ++i) {
-                    float a = i * G3D_TWO_PI / N;
+                    float a = i * (float)G3D_TWO_PI / N;
                     float c = cos(a);
                     float s = sin(a);
 
@@ -348,8 +348,8 @@ void Draw::capsule(
     cframe.rotation.setColumn(1, Y);
     cframe.rotation.setColumn(2, Z);
 
-    double radius = capsule.getRadius();
-    double height = (capsule.getPoint2() - capsule.getPoint1()).magnitude();
+    float radius = capsule.getRadius();
+    float height = (capsule.getPoint2() - capsule.getPoint1()).magnitude();
 
     // Always render upright in object space
     Sphere sphere1(Vector3::zero(), radius);
@@ -381,7 +381,7 @@ void Draw::capsule(
                 // Cylinder faces
                 renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
                         renderDevice->setNormal(v0);
@@ -408,8 +408,8 @@ void Draw::capsule(
             renderDevice->setLineWidth(2);
             renderDevice->beginPrimitive(RenderDevice::LINES);
                 for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
-                    const double yaw0 = y * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
-                    const double yaw1 = (y + 1) * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
+                    const float yaw0 = y * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
+                    const float yaw1 = (y + 1) * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
 
                     Vector3 v0(cos(yaw0), 0, sin(yaw0));
                     Vector3 v1(cos(yaw1), 0, sin(yaw1));
@@ -422,7 +422,7 @@ void Draw::capsule(
 
                 // Edge lines
                 for (int y = 0; y < 8; ++y) {
-                    const double yaw = y * G3D_PI / 4;
+                    const float yaw = y * (float)G3D_PI / 4;
                     const Vector3 x(cos(yaw), 0, sin(yaw));
         
                     renderDevice->setNormal(x);
@@ -442,13 +442,12 @@ void Draw::cylinder(
     const Color4&        solidColor,
     const Color4&        wireColor) {
 
-    // TODO: use getReferenceFrame
     CoordinateFrame cframe;
     
     cylinder.getReferenceFrame(cframe);
 
-    double radius = cylinder.radius();
-    double height = cylinder.height();
+    float radius = cylinder.radius();
+    float height = cylinder.height();
 
     // Always render upright in object space
     Vector3 bot(0, -height / 2, 0);
@@ -478,7 +477,7 @@ void Draw::cylinder(
                     renderDevice->setNormal(Vector3::unitY());
                     renderDevice->sendVertex(top);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const double yaw0 = -y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        const float yaw0 = -y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + top);
@@ -490,7 +489,7 @@ void Draw::cylinder(
                     renderDevice->setNormal(-Vector3::unitY());
                     renderDevice->sendVertex(bot);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + bot);
@@ -500,7 +499,7 @@ void Draw::cylinder(
                 // Cylinder faces
                 renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const double yaw0 = y * G3D_PI * 2.0 / SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
 
                         renderDevice->setNormal(v0);
@@ -525,8 +524,8 @@ void Draw::cylinder(
                 for (int z = 0; z < 3; ++z) {
                     Vector3 center(0, 0.0, 0);
                     for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
-                        const double yaw0 = y * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
-                        const double yaw1 = (y + 1) * G3D_PI * 2.0 / WIRE_SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
+                        const float yaw1 = (y + 1) * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
 
                         Vector3 v0(cos(yaw0), 0, sin(yaw0));
                         Vector3 v1(cos(yaw1), 0, sin(yaw1));
@@ -540,7 +539,7 @@ void Draw::cylinder(
 
                 // Edge lines
                 for (int y = 0; y < 8; ++y) {
-                    const double yaw = y * G3D_PI / 4;
+                    const float yaw = y * (float)G3D_PI / 4;
                     const Vector3 x(cos(yaw), 0, sin(yaw));
                     const Vector3 xr = x * radius;
     
@@ -570,7 +569,7 @@ void Draw::vertexNormals(
     const MeshAlg::Geometry&    geometry,
     RenderDevice*               renderDevice,
     const Color4&               color,
-    double                      scale) {
+    float                       scale) {
 
     renderDevice->pushState();
         renderDevice->setColor(color);
@@ -579,7 +578,7 @@ void Draw::vertexNormals(
         const Array<Vector3>& vertexArray = geometry.vertexArray;
         const Array<Vector3>& normalArray = geometry.normalArray;
 
-        const double D = clamp(5.0 / ::pow((double)vertexArray.size(), .25), 0.1, .8) * scale;
+        const float D = clamp(5.0f / ::pow((float)vertexArray.size(), 0.25f), 0.1f, .8f) * scale;
         
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
@@ -592,16 +591,16 @@ void Draw::vertexNormals(
         renderDevice->setLineWidth(2);
         renderDevice->beginPrimitive(RenderDevice::LINES);
             for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .96);
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .96f);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84f);
             }
         renderDevice->endPrimitive();
 
         renderDevice->setLineWidth(3);
         renderDevice->beginPrimitive(RenderDevice::LINES);
             for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .92);
-                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .92f);
+                renderDevice->sendVertex(vertexArray[v] + normalArray[v] * D * .84f);
             }
         renderDevice->endPrimitive();
     renderDevice->popState();
@@ -613,13 +612,13 @@ void Draw::vertexVectors(
     const Array<Vector3>&       directionArray,
     RenderDevice*               renderDevice,
     const Color4&               color,
-    double                      scale) {
+    float                       scale) {
 
     renderDevice->pushState();
         renderDevice->setColor(color);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
 
-        const double D = clamp(5.0 / ::pow((double)vertexArray.size(), .25), 0.1, .8) * scale;
+        const float D = clamp(5.0f / ::pow((float)vertexArray.size(), 0.25f), 0.1f, .8f) * scale;
         
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
@@ -632,16 +631,16 @@ void Draw::vertexVectors(
         renderDevice->setLineWidth(2);
         renderDevice->beginPrimitive(RenderDevice::LINES);
             for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .96);
-                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84);
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .96f);
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84f);
             }
         renderDevice->endPrimitive();
 
         renderDevice->setLineWidth(3);
         renderDevice->beginPrimitive(RenderDevice::LINES);
             for (int v = 0; v < vertexArray.size(); ++v) {
-                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .92);
-                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84);
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .92f);
+                renderDevice->sendVertex(vertexArray[v] + directionArray[v] * D * .84f);
             }
         renderDevice->endPrimitive();
     renderDevice->popState();
@@ -667,7 +666,7 @@ void Draw::line(
             renderDevice->sendVertex(Vector4(-d, 0));
 
             for (int i = -10; i <= 10; i += 2) {
-                renderDevice->sendVertex(v0 + d * i * 100.0);
+                renderDevice->sendVertex(v0 + d * (float)i * 100.0f);
             }
 
             // Off to infinity
@@ -681,7 +680,7 @@ void Draw::lineSegment(
     const LineSegment&  lineSegment,
     RenderDevice*       renderDevice,
     const Color4&       color,
-    double              scale) {
+    float               scale) {
 
     renderDevice->pushState();
 
@@ -840,18 +839,18 @@ void Draw::wireSphereSection(
         renderDevice->setCullFace(RenderDevice::CULL_BACK);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
 
-        double radius = sphere.radius;
+        float radius = sphere.radius;
         const Vector3& center = sphere.center;
 
         // Wire frame
         for (int y = 0; y < 8; ++y) {
-            const double yaw = y * G3D_PI / 4;
+            const float yaw = y * (float)G3D_PI / 4;
             const Vector3 x(cos(yaw) * radius, 0, sin(yaw) * radius);
             //const Vector3 z(-sin(yaw) * radius, 0, cos(yaw) * radius);
 
             renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
                 for (int p = start; p <= stop; ++p) {
-                    const double pitch0 = p * G3D_PI / (sections * 0.5);
+                    const float pitch0 = p * (float)G3D_PI / (sections * 0.5f);
 
                     Vector3 v0 = cos(pitch0) * x + Vector3::unitY() * radius * sin(pitch0);
                     renderDevice->setNormal(v0.direction());
@@ -864,11 +863,11 @@ void Draw::wireSphereSection(
         int a = bottom ? -1 : 0;
         int b = top ? 1 : 0; 
         for (int p = a; p <= b; ++p) {
-            const double pitch = p * G3D_PI / 6;
+            const float pitch = p * (float)G3D_PI / 6;
 
             renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
                 for (int y = 0; y <= sections; ++y) {
-                    const double yaw0 = y * G3D_PI / 13;
+                    const float yaw0 = y * (float)G3D_PI / 13;
                     Vector3 v0 = Vector3(cos(yaw0) * cos(pitch), sin(pitch), sin(yaw0) * cos(pitch)) * radius;
                     renderDevice->setNormal(v0.direction());
                     renderDevice->sendVertex(v0 + center);
@@ -918,35 +917,35 @@ void Draw::sphereSection(
             // The normals are the same as the vertices for a sphere
             Array<Vector3> vertex;
 
-            stripIndexArray.resize(iFloor((G3D_PI / (double)SPHERE_PITCH_SECTIONS) + 2 * 
+            stripIndexArray.resize(iFloor((G3D_PI / (float)SPHERE_PITCH_SECTIONS) + 2 * 
                                    (G3D_PI * 2.0 / SPHERE_YAW_SECTIONS)));
 
             int i = 0;
 
             for (int p = 0; p < SPHERE_PITCH_SECTIONS; ++p) {
-                const double& pitch0 = p * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
-                const double& pitch1 = (p + 1) * G3D_PI / (double)SPHERE_PITCH_SECTIONS;
+                const float pitch0 = p * (float)G3D_PI / SPHERE_PITCH_SECTIONS;
+                const float pitch1 = (p + 1) * (float)G3D_PI / SPHERE_PITCH_SECTIONS;
 
-                const double& sp0 = sin(pitch0);
-                const double& sp1 = sin(pitch1);
-                const double& cp0 = cos(pitch0);
-                const double& cp1 = cos(pitch1);
+                const float sp0 = sin(pitch0);
+                const float sp1 = sin(pitch1);
+                const float cp0 = cos(pitch0);
+                const float cp1 = cos(pitch1);
 
                 for (int y = 0; y <= SPHERE_YAW_SECTIONS; ++y) {
-                    const double& yaw = -y * G3D_PI * 2.0 / SPHERE_YAW_SECTIONS;
+                    const float yaw = -y * (float)G3D_PI * 2.0f / SPHERE_YAW_SECTIONS;
 
-                    const double& cy = cos(yaw);
-                    const double& sy = sin(yaw);
+                    const float cy = cos(yaw);
+                    const float sy = sin(yaw);
 
-                    const Vector3& v0 = Vector3(cy * sp0, cp0, sy * sp0);
-                    const Vector3& v1 = Vector3(cy * sp1, cp1, sy * sp1);
+                    const Vector3 v0(cy * sp0, cp0, sy * sp0);
+                    const Vector3 v1(cy * sp1, cp1, sy * sp1);
 
                     vertex.append(v0, v1);
                     stripIndexArray.append(i, i + 1);
                     i += 2;
                 }
 
-                const Vector3& degen = Vector3(1.0 * sp1, cp1, 0.0 * sp1);
+                const Vector3& degen = Vector3(1.0f * sp1, cp1, 0.0f * sp1);
 
                 vertex.append(degen, degen);
                 stripIndexArray.append(i, i + 1);
@@ -1113,8 +1112,8 @@ void Draw::rect2DBorder(
     const class Rect2D& rect,
     RenderDevice* rd,
     const Color4& color,
-    double outerBorder,
-    double innerBorder) {
+    float outerBorder,
+    float innerBorder) {
 
 
     //
@@ -1126,8 +1125,8 @@ void Draw::rect2DBorder(
     //   *   *                            *   *
     //
     //
-    const Rect2D outer = rect.border(iFloor(outerBorder));
-    const Rect2D inner = rect.border(iFloor(-innerBorder)); 
+    const Rect2D outer = rect.border(outerBorder);
+    const Rect2D inner = rect.border(-innerBorder); 
 
     rd->pushState();
     rd->setColor(color);

@@ -21,11 +21,12 @@
 #include <algorithm>
 
 #ifdef G3D_WIN32
-    #include <new.h>
+#   include <new.h>
     
+#   pragma warning (push)
     // debug information too long
-    #pragma warning( disable : 4312)
-    #pragma warning( disable : 4786)
+#   pragma warning( disable : 4312)
+#   pragma warning( disable : 4786)
 #endif
 
 
@@ -837,3 +838,6 @@ template<class T> bool contains(const T* array, int len, const T& e) {
 
 #endif
 
+#ifdef G3D_WIN32
+#   pragma warning (push)
+#endif

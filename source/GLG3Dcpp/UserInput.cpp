@@ -54,7 +54,7 @@ void UserInput::init(
     alwaysAssertM(window != NULL, "Window must not be NULL");
 
     _window = window;
-    windowCenter = Vector2(window->width() / 2, window->height() / 2);
+    windowCenter = Vector2((float)window->width() / 2.0f, (float)window->height() / 2.0f);
 
 	up = left = down = right = false;
 	jx = jy = 0.0;
@@ -171,7 +171,7 @@ void UserInput::endEvents() {
     }
 
     windowCenter =
-        Vector2(window()->width() / 2, window()->height() / 2);
+        Vector2((float)window()->width(), (float)window()->height()) / 2.0f;
 
     Vector2 oldMouse = mouse;
     _window->getRelativeMouseState(mouse, mouseButtons);
@@ -216,34 +216,34 @@ void UserInput::endEvents() {
 }
 
 
-double UserInput::getX() const {
+float UserInput::getX() const {
 
 	if (left && !right) {
-		return -1.0;
+		return -1.0f;
 	} else if (right && !left) {
-		return 1.0;
+		return 1.0f;
 	}
 
 	if (useJoystick && (fabs(jx) > 0.1)) {
-		return jx;
+		return (float)jx;
 	}
 
-	return 0.0;
+	return 0.0f;
 }
 
 
-double UserInput::getY() const {
+float UserInput::getY() const {
 	if (down && !up) {
-		return -1.0;
+		return -1.0f;
 	} else if (up && !down) {
-		return 1.0;
+		return 1.0f;
 	}
 
 	if (useJoystick && (fabs(jy) > 0.1)) {
-		return jy;
+		return (float)jy;
 	}
 
-	return 0.0;
+	return 0.0f;
 }
 
 
@@ -283,12 +283,12 @@ void UserInput::processKey(KeyCode code, int event) {
 }
 
 
-double UserInput::mouseDX() const {
+float UserInput::mouseDX() const {
     return deltaMouse.x;
 }
 
 
-double UserInput::mouseDY() const {
+float UserInput::mouseDY() const {
     return deltaMouse.y;
 }
 
@@ -298,7 +298,7 @@ Vector2 UserInput::mouseDXY() const {
 }
 
 
-void UserInput::setMouseXY(double x, double y) {
+void UserInput::setMouseXY(float x, float y) {
     mouse.x = x;
     mouse.y = y;
     guiMouse = mouse;

@@ -9,7 +9,7 @@
 
 
  @created 2002-06-25
- @edited  2004-02-23
+ @edited  2006-01-10
  */
 
 #include <stdlib.h>
@@ -23,13 +23,17 @@
 namespace G3D {
 
 const Color4& Color4::zero() {
-    static Color4 c(0.0, 0.0, 0.0, 0.0);
+    static Color4 c(0.0f, 0.0f, 0.0f, 0.0f);
+    return c;
+}
+
+const Color4& Color4::inf() {
+    static Color4 c((float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf());
     return c;
 }
 
 const Color4& Color4::clear() {
-    static Color4 c(0.0, 0.0, 0.0, 0.0);
-    return c;
+    return Color4::zero();
 }
 
 Color4::Color4(const Vector4& v) {
@@ -40,15 +44,11 @@ Color4::Color4(const Vector4& v) {
 }
 
 // Deprecated.
-const Color4 Color4::ZERO   (0.0, 0.0, 0.0, 0.0);
-const Color4 Color4::CLEAR  (0.0, 0.0, 0.0, 0.0);
+const Color4 Color4::ZERO   (0.0f, 0.0f, 0.0f, 0.0f);
+const Color4 Color4::CLEAR  (0.0f, 0.0f, 0.0f, 0.0f);
 
-
-Color4::Color4(const Color4uint8& c) {
-    r = c.r / 255.0;
-    g = c.g / 255.0;
-    b = c.b / 255.0;
-    a = c.a / 255.0;
+Color4::Color4(const Color4uint8& c) : r(c.r), g(c.g), b(c.b), a(c.a) {
+    *this /= 255.0f;
 }
 
 unsigned int Color4::hashCode() const {
@@ -61,10 +61,11 @@ unsigned int Color4::hashCode() const {
 }
 
 Color4 Color4::fromARGB(uint32 x) {
-    return Color4((x >> 16) & 0xFF, 
-                  (x >> 8) & 0xFF,
-                  x & 0xFF, 
-                  (x >> 24) & 0xFF) / 255.0;
+    return Color4(
+        (float)((x >> 16) & 0xFF), 
+        (float)((x >> 8) & 0xFF),
+        (float)(x & 0xFF), 
+        (float)((x >> 24) & 0xFF)) / 255.0;
 }
 
 
@@ -91,11 +92,11 @@ void Color4::serialize(BinaryOutput& bo) const {
 
 //----------------------------------------------------------------------------
 
-Color4 Color4::operator/ (double fScalar) const {
+Color4 Color4::operator/ (float fScalar) const {
     Color4 kQuot;
 
-    if (fScalar != 0.0) {
-		float fInvScalar = 1.0 / fScalar;
+    if (fScalar != 0.0f) {
+		float fInvScalar = 1.0f / fScalar;
         kQuot.r = fInvScalar * r;
         kQuot.g = fInvScalar * g;
         kQuot.b = fInvScalar * b;
@@ -104,24 +105,24 @@ Color4 Color4::operator/ (double fScalar) const {
 
     } else {
 
-        return Color4(G3D::inf(), G3D::inf(), G3D::inf(), G3D::inf());
+        return Color4::inf();
     }
 }
 
 //----------------------------------------------------------------------------
 
-Color4& Color4::operator/= (double fScalar) {
-    if (fScalar != 0.0) {
-		float fInvScalar = 1.0 / fScalar;
+Color4& Color4::operator/= (float fScalar) {
+    if (fScalar != 0.0f) {
+		float fInvScalar = 1.0f / fScalar;
         r *= fInvScalar;
         g *= fInvScalar;
         b *= fInvScalar;
         a *= fInvScalar;
     } else {
-        r = G3D::inf();
-        g = G3D::inf();
-        b = G3D::inf();
-        a = G3D::inf();
+        r = (float)G3D::inf();
+        g = (float)G3D::inf();
+        b = (float)G3D::inf();
+        a = (float)G3D::inf();
     }
 
     return *this;

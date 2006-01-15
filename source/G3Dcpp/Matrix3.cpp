@@ -19,7 +19,7 @@
 
 namespace G3D {
 
-const float Matrix3::EPSILON = 1e-06;
+const float Matrix3::EPSILON = 1e-06f;
 
 const Matrix3& Matrix3::zero() {
     static Matrix3 m(0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -35,7 +35,7 @@ const Matrix3& Matrix3::identity() {
 const Matrix3 Matrix3::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0);
 const Matrix3 Matrix3::IDENTITY(1, 0, 0, 0, 1, 0, 0, 0, 1);
 
-const float Matrix3::ms_fSvdEpsilon = 1e-04;
+const float Matrix3::ms_fSvdEpsilon = 1e-04f;
 const int Matrix3::ms_iSvdMaxIterations = 32;
 
 Matrix3::Matrix3(BinaryInput& b) {
@@ -899,20 +899,20 @@ float Matrix3::maxCubicRoot (float afCoeff[3]) {
     // This yields the assertions c[0] < 0 and c[2]*c[2] >= 3*c[1].
 
     // quick out for uniform scale (triple root)
-    const float fOneThird = 1.0 / 3.0;
-    const float fEpsilon = 1e-06;
-    float fDiscr = afCoeff[2] * afCoeff[2] - 3.0 * afCoeff[1];
+    const float fOneThird = 1.0f / 3.0f;
+    const float fEpsilon = 1e-06f;
+    float fDiscr = afCoeff[2] * afCoeff[2] - 3.0f * afCoeff[1];
 
     if ( fDiscr <= fEpsilon )
         return -fOneThird*afCoeff[2];
 
     // Compute an upper bound on roots of P(x).  This assumes that A^T*A
     // has been scaled by its largest entry.
-    float fX = 1.0;
+    float fX = 1.0f;
 
     float fPoly = afCoeff[0] + fX * (afCoeff[1] + fX * (afCoeff[2] + fX));
 
-    if ( fPoly < 0.0 ) {
+    if ( fPoly < 0.0f ) {
         // uses a matrix norm to find an upper bound on maximum root
         fX = G3D::abs(afCoeff[0]);
         float fTmp = 1.0 + G3D::abs(afCoeff[1]);
@@ -927,7 +927,7 @@ float Matrix3::maxCubicRoot (float afCoeff[3]) {
     }
 
     // Newton's method to find root
-    float fTwoC2 = 2.0 * afCoeff[2];
+    float fTwoC2 = 2.0f * afCoeff[2];
 
     for (int i = 0; i < 16; i++) {
         fPoly = afCoeff[0] + fX * (afCoeff[1] + fX * (afCoeff[2] + fX));
@@ -935,7 +935,7 @@ float Matrix3::maxCubicRoot (float afCoeff[3]) {
         if ( G3D::abs(fPoly) <= fEpsilon )
             return fX;
 
-        float fDeriv = afCoeff[1] + fX * (fTwoC2 + 3.0 * fX);
+        float fDeriv = afCoeff[1] + fX * (fTwoC2 + 3.0f * fX);
 
         fX -= fPoly / fDeriv;
     }
@@ -1104,8 +1104,8 @@ bool Matrix3::toEulerAnglesXYZ (float& rfXAngle, float& rfYAngle,
     //        cz*sx*sy+cx*sz  cx*cz-sx*sy*sz -cy*sx
     //       -cx*cz*sy+sx*sz  cz*sx+cx*sy*sz  cx*cy
 
-    if ( m_aafEntry[0][2] < 1.0 ) {
-        if ( m_aafEntry[0][2] > -1.0 ) {
+    if ( m_aafEntry[0][2] < 1.0f ) {
+        if ( m_aafEntry[0][2] > -1.0f ) {
             rfXAngle = G3D::aTan2( -m_aafEntry[1][2], m_aafEntry[2][2]);
             rfYAngle = (float) G3D::aSin(m_aafEntry[0][2]);
             rfZAngle = G3D::aTan2( -m_aafEntry[0][1], m_aafEntry[0][0]);
@@ -1113,15 +1113,15 @@ bool Matrix3::toEulerAnglesXYZ (float& rfXAngle, float& rfYAngle,
         } else {
             // WARNING.  Not unique.  XA - ZA = -atan2(r10,r11)
             rfXAngle = -G3D::aTan2(m_aafEntry[1][0], m_aafEntry[1][1]);
-            rfYAngle = -G3D_HALF_PI;
-            rfZAngle = 0.0;
+            rfYAngle = -(float)G3D_HALF_PI;
+            rfZAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  XAngle + ZAngle = atan2(r10,r11)
         rfXAngle = G3D::aTan2(m_aafEntry[1][0], m_aafEntry[1][1]);
-        rfYAngle = G3D_HALF_PI;
-        rfZAngle = 0.0;
+        rfYAngle = (float)G3D_HALF_PI;
+        rfZAngle = 0.0f;
         return false;
     }
 }
@@ -1133,8 +1133,8 @@ bool Matrix3::toEulerAnglesXZY (float& rfXAngle, float& rfZAngle,
     //        sx*sy+cx*cy*sz  cx*cz          -cy*sx+cx*sy*sz
     //       -cx*sy+cy*sx*sz  cz*sx           cx*cy+sx*sy*sz
 
-    if ( m_aafEntry[0][1] < 1.0 ) {
-        if ( m_aafEntry[0][1] > -1.0 ) {
+    if ( m_aafEntry[0][1] < 1.0f ) {
+        if ( m_aafEntry[0][1] > -1.0f ) {
             rfXAngle = G3D::aTan2(m_aafEntry[2][1], m_aafEntry[1][1]);
             rfZAngle = (float) asin( -m_aafEntry[0][1]);
             rfYAngle = G3D::aTan2(m_aafEntry[0][2], m_aafEntry[0][0]);
@@ -1142,15 +1142,15 @@ bool Matrix3::toEulerAnglesXZY (float& rfXAngle, float& rfZAngle,
         } else {
             // WARNING.  Not unique.  XA - YA = atan2(r20,r22)
             rfXAngle = G3D::aTan2(m_aafEntry[2][0], m_aafEntry[2][2]);
-            rfZAngle = G3D_HALF_PI;
+            rfZAngle = (float)G3D_HALF_PI;
             rfYAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  XA + YA = atan2(-r20,r22)
         rfXAngle = G3D::aTan2( -m_aafEntry[2][0], m_aafEntry[2][2]);
-        rfZAngle = -G3D_HALF_PI;
-        rfYAngle = 0.0;
+        rfZAngle = -(float)G3D_HALF_PI;
+        rfYAngle = 0.0f;
         return false;
     }
 }
@@ -1171,15 +1171,15 @@ bool Matrix3::toEulerAnglesYXZ (float& rfYAngle, float& rfXAngle,
         } else {
             // WARNING.  Not unique.  YA - ZA = atan2(r01,r00)
             rfYAngle = G3D::aTan2(m_aafEntry[0][1], m_aafEntry[0][0]);
-            rfXAngle = G3D_HALF_PI;
+            rfXAngle = (float)G3D_HALF_PI;
             rfZAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  YA + ZA = atan2(-r01,r00)
         rfYAngle = G3D::aTan2( -m_aafEntry[0][1], m_aafEntry[0][0]);
-        rfXAngle = -G3D_HALF_PI;
-        rfZAngle = 0.0;
+        rfXAngle = -(float)G3D_HALF_PI;
+        rfZAngle = 0.0f;
         return false;
     }
 }
@@ -1200,15 +1200,15 @@ bool Matrix3::toEulerAnglesYZX (float& rfYAngle, float& rfZAngle,
         } else {
             // WARNING.  Not unique.  YA - XA = -atan2(r21,r22);
             rfYAngle = -G3D::aTan2(m_aafEntry[2][1], m_aafEntry[2][2]);
-            rfZAngle = -G3D_HALF_PI;
+            rfZAngle = -(float)G3D_HALF_PI;
             rfXAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  YA + XA = atan2(r21,r22)
         rfYAngle = G3D::aTan2(m_aafEntry[2][1], m_aafEntry[2][2]);
-        rfZAngle = G3D_HALF_PI;
-        rfXAngle = 0.0;
+        rfZAngle = (float)G3D_HALF_PI;
+        rfXAngle = 0.0f;
         return false;
     }
 }
@@ -1229,15 +1229,15 @@ bool Matrix3::toEulerAnglesZXY (float& rfZAngle, float& rfXAngle,
         } else {
             // WARNING.  Not unique.  ZA - YA = -atan(r02,r00)
             rfZAngle = -G3D::aTan2(m_aafEntry[0][2], m_aafEntry[0][0]);
-            rfXAngle = -G3D_HALF_PI;
-            rfYAngle = 0.0;
+            rfXAngle = -(float)G3D_HALF_PI;
+            rfYAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  ZA + YA = atan2(r02,r00)
         rfZAngle = G3D::aTan2(m_aafEntry[0][2], m_aafEntry[0][0]);
-        rfXAngle = G3D_HALF_PI;
-        rfYAngle = 0.0;
+        rfXAngle = (float)G3D_HALF_PI;
+        rfYAngle = 0.0f;
         return false;
     }
 }
@@ -1258,15 +1258,15 @@ bool Matrix3::toEulerAnglesZYX (float& rfZAngle, float& rfYAngle,
         } else {
             // WARNING.  Not unique.  ZA - XA = -atan2(r01,r02)
             rfZAngle = -G3D::aTan2(m_aafEntry[0][1], m_aafEntry[0][2]);
-            rfYAngle = G3D_HALF_PI;
-            rfXAngle = 0.0;
+            rfYAngle = (float)G3D_HALF_PI;
+            rfXAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  ZA + XA = atan2(-r01,-r02)
         rfZAngle = G3D::aTan2( -m_aafEntry[0][1], -m_aafEntry[0][2]);
-        rfYAngle = -G3D_HALF_PI;
-        rfXAngle = 0.0;
+        rfYAngle = -(float)G3D_HALF_PI;
+        rfXAngle = 0.0f;
         return false;
     }
 }
@@ -1278,15 +1278,15 @@ Matrix3 Matrix3::fromEulerAnglesXYZ (float fYAngle, float fPAngle,
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
-    Matrix3 kXMat(1.0, 0.0, 0.0, 0.0, fCos, -fSin, 0.0, fSin, fCos);
+    Matrix3 kXMat(1.0f, 0.0f, 0.0f, 0.0f, fCos, -fSin, 0.0, fSin, fCos);
 
     fCos = cos(fPAngle);
     fSin = sin(fPAngle);
-    Matrix3 kYMat(fCos, 0.0, fSin, 0.0, 1.0, 0.0, -fSin, 0.0, fCos);
+    Matrix3 kYMat(fCos, 0.0f, fSin, 0.0f, 1.0f, 0.0f, -fSin, 0.0f, fCos);
 
     fCos = cos(fRAngle);
     fSin = sin(fRAngle);
-    Matrix3 kZMat(fCos, -fSin, 0.0, fSin, fCos, 0.0, 0.0, 0.0, 1.0);
+    Matrix3 kZMat(fCos, -fSin, 0.0f, fSin, fCos, 0.0f, 0.0f, 0.0f, 1.0f);
 
     return kXMat * (kYMat * kZMat);
 }

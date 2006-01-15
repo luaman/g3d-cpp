@@ -65,17 +65,17 @@ public:
     bool contains(const Vector3& p) const;
 
     /** @deprecated */
-	double getRadius() const;
+	float getRadius() const;
 
     /** @deprecated Use volume() */
-	double getVolume() const;
+	float getVolume() const;
 
     inline float volume() const {
         return getVolume();
     }
 
     /** @deprecated */
-	double getSurfaceArea() const;
+	float getSurfaceArea() const;
 
     inline float area() const {
         return getSurfaceArea();

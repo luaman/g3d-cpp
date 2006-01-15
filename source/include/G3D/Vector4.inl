@@ -101,7 +101,7 @@ inline Vector4 Vector4::operator- (const Vector4& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Vector4 Vector4::operator* (double fScalar) const {
+inline Vector4 Vector4::operator* (float fScalar) const {
     return Vector4(fScalar*x, fScalar*y, fScalar*z, fScalar*w);
 }
 
@@ -136,7 +136,7 @@ inline Vector4 Vector4::lerp(const Vector4& v, float alpha) const {
 
 
 //----------------------------------------------------------------------------
-inline Vector4& Vector4::operator*= (double fScalar) {
+inline Vector4& Vector4::operator*= (float fScalar) {
     x *= fScalar;
     y *= fScalar;
     z *= fScalar;
@@ -152,17 +152,17 @@ inline float Vector4::dot(const Vector4& rkVector) const {
 
 //----------------------------------------------------------------------------
 inline Vector4 Vector4::min(const Vector4 &v) const {
-    return Vector4(G3D::min(v.x, x), G3D::min(v.y, y), G3D::min(v.z, z), G3D::min(v.w, w));
+    return Vector4(std::min<float>(v.x, x), std::min<float>(v.y, y), std::min<float>(v.z, z), std::min<float>(v.w, w));
 }
 
 //----------------------------------------------------------------------------
 inline Vector4 Vector4::max(const Vector4 &v) const {
-    return Vector4(G3D::max(v.x, x), G3D::max(v.y, y), G3D::max(v.z, z), G3D::max(v.w, w));
+    return Vector4(std::max<float>(v.x, x), std::max<float>(v.y, y), std::max<float>(v.z, z), std::max<float>(v.w, w));
 }
 
 //----------------------------------------------------------------------------
 inline bool Vector4::isZero() const {
-    return (x == 0.0) && (y == 0.0) && (z == 0.0) && (w == 0.0);
+    return (x == 0.0f) && (y == 0.0f) && (z == 0.0f) && (w == 0.0f);
 }
 
 //----------------------------------------------------------------------------
@@ -179,13 +179,13 @@ inline bool Vector4::isUnit() const {
 
 //----------------------------------------------------------------------------
 
-inline double Vector4::length() const {
+inline float Vector4::length() const {
     return sqrt(squaredLength());
 }
 
 //----------------------------------------------------------------------------
 
-inline double Vector4::squaredLength() const {
+inline float Vector4::squaredLength() const {
     return x * x + y * y + z * z + w * w;
 }
 

@@ -74,7 +74,7 @@ void measureBSPPerformance() {
     
     for (int i = 0; i < NUM_POINTS; ++i) {
         Vector3 pt = Vector3(random(-10, 10), random(-10, 10), random(-10, 10));
-        AABox box(pt, pt + Vector3(.1, .1, .1));
+        AABox box(pt, pt + Vector3(.1f, .1f, .1f));
         array.append(box);
         tree.insert(box);
     }
@@ -237,9 +237,9 @@ void testPlane() {
     }
 
     {
-        Plane p(Vector3(4, 6, .1),
-                Vector3(-.2, 6, .1),
-                Vector3(-.2, 6, -.1));
+        Plane p(Vector3(4, 6, .1f),
+                Vector3(-.2f, 6, .1f),
+                Vector3(-.2f, 6, -.1f));
 
         Vector3 n = p.normal();
         debugAssert(n.fuzzyEq(Vector3(0,-1,0)));
@@ -538,7 +538,7 @@ void measureTriangleCollisionPerformance() {
         Triangle triangle(v0, v1, v2);
         int n = 1024;
         int i;
-        Ray ray = Ray::fromOriginAndDirection(Vector3(-.15,1,-.15), vel);
+        Ray ray = Ray::fromOriginAndDirection(Vector3(-.15f,1,-.15f), vel);
 
         System::beginCycleCount(raw);
         for (i = 0; i < n; ++i) {

@@ -273,11 +273,11 @@ void GCamera::getFrustum(const Rect2D& viewport, Frustum& fr) const {
     // The volume is the convex hull of the vertices definining the view
     // frustum and the light source point at infinity.
 
-    const double x               = getViewportWidth(viewport) / 2;
-    const double y               = getViewportHeight(viewport) / 2;
-    const double z               = getNearPlaneZ();
-    const double w               = z / getFarPlaneZ();
-	const double fovx            = x * fieldOfView / y;
+    const float x               = getViewportWidth(viewport) / 2;
+    const float y               = getViewportHeight(viewport) / 2;
+    const float z               = getNearPlaneZ();
+    const float w               = z / getFarPlaneZ();
+	const float fovx            = x * fieldOfView / y;
 
     // Near face (ccw from UR)
     fr.vertexPos.append(
@@ -384,10 +384,10 @@ void GCamera::get3DViewportCorners(
 
     // Must be kept in sync with getFrustum()
 
-    const double sign            = CoordinateFrame::zLookDirection;
-    const double w               = -sign * getViewportWidth(viewport) / 2;
-    const double h               = getViewportHeight(viewport) / 2;
-    const double z               = -sign * getNearPlaneZ();
+    const float sign            = CoordinateFrame::zLookDirection;
+    const float w               = -sign * getViewportWidth(viewport) / 2;
+    const float h               = getViewportHeight(viewport) / 2;
+    const float z               = -sign * getNearPlaneZ();
 
     // Compute the points
     outUR = Vector3( w,  h, z);

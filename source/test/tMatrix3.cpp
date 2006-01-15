@@ -66,12 +66,12 @@ void perfMatrix3() {
     int n = 0.5 * 1024 * 1024;
 
     // Use two copies to avoid nice cache behavior
-    Matrix3 A = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2);
-    Matrix3 B = Matrix3::fromAxisAngle(Vector3(0, 1, -1), .2);
+    Matrix3 A = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2f);
+    Matrix3 B = Matrix3::fromAxisAngle(Vector3(0, 1, -1), .2f);
     Matrix3 C = Matrix3::zero();
 
-    Matrix3 D = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2);
-    Matrix3 E = Matrix3::fromAxisAngle(Vector3(0, 1, -1), .2);
+    Matrix3 D = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2f);
+    Matrix3 E = Matrix3::fromAxisAngle(Vector3(0, 1, -1), .2f);
     Matrix3 F = Matrix3::zero();
 
     int i;

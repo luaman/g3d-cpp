@@ -17,12 +17,12 @@ namespace G3D {
 
 Quat Quat::fromAxisAngleRotation(
     const Vector3&      axis,
-    double              angle) {
+    float               angle) {
 
     Quat q;
 
-    q.w = cos(angle / 2);
-    q.imag() = axis.direction() * sin(angle / 2); 
+    q.w = cos(angle / 2.0f);
+    q.imag() = axis.direction() * sin(angle / 2.0f); 
 
     return q;
 }
@@ -38,8 +38,8 @@ Quat::Quat(
 
     if (tr > 0.0) {
         float c = sqrt(tr);
-        w = (float) c * 0.5;
-        c = 0.5 / c;
+        w = (float)c * 0.5f;
+        c = 0.5f / c;
 
         x = (rot[2][1] - rot[1][2]) * c;
         y = (rot[0][2] - rot[2][0]) * c;
@@ -101,9 +101,9 @@ void Quat::toAxisAngleRotation(
     axis = Vector3(x, y, z);
     angle = 2 * acos(w);
 
-    double len = sqrt(1.0f - w * w);
+    float len = sqrt(1.0f - w * w);
 
-    if (fuzzyGt(abs(len), 0)) {
+    if (fuzzyGt(abs(len), 0.0f)) {
         axis /= len;
     }
 
@@ -124,7 +124,7 @@ void Quat::toAxisAngleRotation(
 
     // Make the angle positive.
 
-	if (angle < 0) {		
+	if (angle < 0.0f) {		
 		angle = -angle;
         axis = -axis;
 	}
@@ -149,38 +149,38 @@ void Quat::toRotationMatrix(
     
 Quat Quat::slerp(
     const Quat&         quat1,
-    double              alpha) const {
+    float               alpha) const {
 
     // From: http://www.darwin3d.com/gamedev/articles/col0498.pdf
 
     const Quat& quat0 = *this;
     Quat tmpQuat1;
-    double omega, cosom, sinom, scale0, scale1;
+    float omega, cosom, sinom, scale0, scale1;
 
     // Compute the cosine of the angle
     // between the quaternions
     
     cosom = quat0.dot(quat1);
     
-    if (cosom < 0) {
+    if (cosom < 0.0f) {
         // Change the sign to fix dot-product
-        tmpQuat1 = quat1 * (-1.0);
+        tmpQuat1 = quat1 * -1.0f;
         cosom = quat0.dot(tmpQuat1);
     } else {
         tmpQuat1 = quat1;
     }
 
-    alwaysAssertM((cosom >= 0), "Quaternion slerp failed to find shortest path.");
+    alwaysAssertM(cosom >= 0.0f, "Quaternion slerp failed to find shortest path.");
 
-    if ((1.0 - cosom) > 0.001) {
+    if ((1.0f - cosom) > 0.001f) {
         // For large angles, slerp
         omega = acos(cosom);
         sinom = sin(omega);
-        scale0 = sin((1.0 - alpha) * omega) / sinom;
+        scale0 = sin((1.0f - alpha) * omega) / sinom;
         scale1 = sin(alpha * omega) / sinom;
     } else {
         // For small angles, linear interpolate
-        scale0 = 1.0 - alpha;
+        scale0 = 1.0f- alpha;
         scale1 = alpha;
     }
 
@@ -192,19 +192,20 @@ Quat Quat::operator*(const Quat& other) const {
     // Following Watt & Watt, page 360
     const Vector3& v1 = imag();
     const Vector3& v2 = other.imag();
-    double         s1 = w;
-    double         s2 = other.w;
+    float          s1 = w;
+    float          s2 = other.w;
 
     return Quat(s1*v2 + s2*v1 + v1.cross(v2), s1*s2 - v1.dot(v2));
 }
 
 // From "Uniform Random Rotations", Ken Shoemake, Graphics Gems III.
 Quat Quat::unitRandom() {
-    double x0 = G3D::unitRandom();
-    double r1 = sqrt(1 - x0), r2 = sqrt(x0);
-    double t1 = G3D_TWO_PI * G3D::unitRandom(), t2 = G3D_TWO_PI * G3D::unitRandom();
-    double c1 = cos(t1), s1 = sin(t1);
-    double c2 = cos(t2), s2 = sin(t2);
+    float x0 = (float)G3D::unitRandom();
+    float r1 = sqrt(1 - x0), r2 = sqrt(x0);
+    float t1 = (float)G3D_TWO_PI * (float)G3D::unitRandom();
+    float t2 = (float)G3D_TWO_PI * (float)G3D::unitRandom();
+    float c1 = cos(t1), s1 = sin(t1);
+    float c2 = cos(t2), s2 = sin(t2);
     return Quat(s1 * r1, c1 * r1, s2 * r2, c2 * r2);
 }
 

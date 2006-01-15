@@ -147,11 +147,11 @@ public:
     }
    
     inline Vector2 vector2Bounds() const {
-        return Vector2(m_width, m_height);
+        return Vector2((float)m_width, (float)m_height);
     }
 
     inline Rect2D rect2DBounds() const {
-        return Rect2D::xywh(0, 0, m_width, m_height);
+        return Rect2D::xywh(0, 0, (float)m_width, (float)m_height);
     }
 
 }; // class Renderbuffer

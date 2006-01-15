@@ -9,8 +9,8 @@
   @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
   @created 2001-06-02
-  @edited  2004-01-22
-  Copyright 2000-2004, Morgan McGuire.
+  @edited  2006-01-14
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
 */
 
@@ -38,7 +38,7 @@ public:
     // construction
     Vector2();
     Vector2(class BinaryInput& b);
-    Vector2(double x, double y);
+    Vector2(float x, float y);
     Vector2(float coordinate[2]);
     Vector2(double coordinate[2]);
     Vector2(const Vector2& rkVector);
@@ -74,20 +74,20 @@ public:
     // arithmetic operations
     Vector2 operator+ (const Vector2& rkVector) const;
     Vector2 operator- (const Vector2& rkVector) const;
-    Vector2 operator* (double fScalar) const;
+    Vector2 operator* (float fScalar) const;
     Vector2 operator* (const Vector2& rkVector) const;
     Vector2 operator/ (const Vector2& rkVector) const;
-    Vector2 operator/ (double fScalar) const;
+    Vector2 operator/ (float fScalar) const;
     Vector2 operator- () const;
 
-    inline double sum() const {
+    inline float sum() const {
         return x + y;
     }
 
     /**
      Linear interpolation
      */
-    inline Vector2 lerp(const Vector2& v, double alpha) const {
+    inline Vector2 lerp(const Vector2& v, float alpha) const {
         return (*this) + (v - *this) * alpha; 
     }
 
@@ -99,20 +99,20 @@ public:
 
     inline Vector2 clamp(float low, float high) const {
         return Vector2(
-            G3D::clamp(x, low, high),
-            G3D::clamp(y, low, high));
+            (float)G3D::clamp(x, low, high),
+            (float)G3D::clamp(y, low, high));
     }
 
     // arithmetic updates
     Vector2& operator+= (const Vector2& rkVector);
     Vector2& operator-= (const Vector2& rkVector);
-    Vector2& operator*= (double fScalar);
-    Vector2& operator/= (double fScalar);
+    Vector2& operator*= (float fScalar);
+    Vector2& operator/= (float fScalar);
     Vector2& operator*= (const Vector2& rkVector);
     Vector2& operator/= (const Vector2& rkVector);
 
     // vector operations
-    double length() const;
+    float length() const;
     Vector2 direction() const;
     /**
      Potentially less accurate but faster than direction().
@@ -122,9 +122,9 @@ public:
         return direction();
     }
 
-    double squaredLength () const;
-    double dot (const Vector2& rkVector) const;
-    double unitize (double fTolerance = 1e-06);
+    float squaredLength () const;
+    float dot (const Vector2& rkVector) const;
+    float unitize (float fTolerance = 1e-06);
 
     Vector2 min(const Vector2 &v) const;
     Vector2 max(const Vector2 &v) const;
@@ -196,19 +196,24 @@ public:
 };
 
 inline Vector2 operator*(double s, const Vector2& v) {
+    return v * (float)s;
+}
+
+inline Vector2 operator*(float s, const Vector2& v) {
     return v * s;
 }
+
 inline Vector2 operator*(int s, const Vector2& v) {
-    return v * s;
+    return v * (float)s;
 }
 }
 
 // Intentionally outside namespace to avoid operator overloading confusion
 inline G3D::Vector2 operator*(double s, const G3D::Vector2& v) {
-    return v * s;
+    return v * (float)s;
 }
 inline G3D::Vector2 operator*(int s, const G3D::Vector2& v) {
-    return v * s;
+    return v * (float)s;
 }
 
 

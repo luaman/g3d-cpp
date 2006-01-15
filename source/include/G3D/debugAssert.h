@@ -17,7 +17,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-08-26
-  @edited  2006-01-02
+  @edited  2006-01-12
 
  Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
@@ -30,7 +30,9 @@
 #include "G3D/platform.h"
 
 #ifdef G3D_WIN32
-    #include <windows.h>
+#   include <windows.h>
+// conditional expression is constant
+#   pragma warning (disable : 4127)
 #endif
 
 #ifdef G3D_LINUX
@@ -45,6 +47,7 @@
     // Need this for DebugStr()
     #import <CoreServices/CoreServices.h>
 #endif
+
 
 /**
  @def debugBreak()

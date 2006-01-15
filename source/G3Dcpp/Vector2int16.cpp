@@ -4,7 +4,7 @@
  @author Morgan McGuire, matrix@graphics3d.com
   
  @created 2003-08-09
- @edited  2003-08-09
+ @edited  2006-01-10
  */
 
 #include "G3D/g3dmath.h"
@@ -16,8 +16,8 @@
 namespace G3D {
 
 Vector2int16::Vector2int16(const class Vector2& v) {
-    x = iFloor(v.x + 0.5);
-    y = iFloor(v.y + 0.5);
+    x = (int16)iFloor(v.x + 0.5);
+    y = (int16)iFloor(v.y + 0.5);
 }
 
 

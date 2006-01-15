@@ -49,7 +49,7 @@ CoordinateFrame PhysicsFrame::toCoordinateFrame() const {
 
 PhysicsFrame PhysicsFrame::lerp(
     const PhysicsFrame&     other,
-    double                  alpha) const {
+    float                   alpha) const {
 
     PhysicsFrame result;
 
@@ -61,7 +61,7 @@ PhysicsFrame PhysicsFrame::lerp(
 
 
 PhysicsFrame PhysicsFrame::integrate(
-    double                  t,
+    float                   t,
     const PhysicsFrame&     dx) {
 
     PhysicsFrame result;
@@ -74,7 +74,7 @@ PhysicsFrame PhysicsFrame::integrate(
 
 
 PhysicsFrame PhysicsFrame::integrate(
-    double                  t,
+    float                   t,
     const PhysicsFrame&     dx,
     const PhysicsFrame&     ddx) {
 

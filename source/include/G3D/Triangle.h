@@ -8,7 +8,7 @@
 
  @cite Random point method by  Greg Turk, Generating random points in triangles.  In A. S. Glassner, ed., Graphics Gems, pp. 24-28. Academic Press, 1990
 
- Copyright 2000-2005, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
@@ -47,7 +47,7 @@ private:
     /** vertex[2] - vertex[0] */
     Vector3                     edge02;
 
-    double                      _area;
+    float                       _area;
 
     void init(const Vector3& v0, const Vector3& v1, const Vector3& v2);
 

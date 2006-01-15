@@ -4,15 +4,12 @@
  Math util class.
  
  @maintainer Morgan McGuire, matrix@graphics3d.com
- @cite Portions by Laura Wollstadt 
- @cite Portions based on Dave Eberly's Magic Software Library
-        at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  @cite highestBit by Jukka Liimatta
  
  @created 2001-06-02
- @edited  2004-07-25
+ @edited  2006-01-16
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
@@ -21,7 +18,8 @@
 
 #ifdef _MSC_VER
 // Disable conditional expression is constant, which occurs incorrectly on inlined functions
-#   pragma warning( disable : 4127 )
+#   pragma warning (push)
+#   pragma warning (disable : 4127)
 #endif
 
 // Prevent MSVC from defining min and max macros
@@ -461,6 +459,9 @@ inline double wrap(double t, double hi) {
 
 } // namespace
 
+#ifdef _MSC_VER
+#   pragma warning (pop)
+#endif
 
 #include "g3dmath.inl"
 

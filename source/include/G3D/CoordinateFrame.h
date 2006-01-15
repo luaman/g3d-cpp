@@ -4,9 +4,9 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2005-07-07
+ @edited  2006-01-07
 
- Copyright 2000-2005, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
 */
 
@@ -306,7 +306,7 @@ public:
      */
     CoordinateFrame lerp(
         const CoordinateFrame&  other,
-        double                  alpha) const;
+        float                   alpha) const;
 
 };
 

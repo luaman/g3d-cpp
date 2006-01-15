@@ -85,7 +85,14 @@ GThread::GThread(const std::string& name):
 }
 
 GThread::~GThread() {
+#   ifdef G3D_WIN32
+#       pragma warning( push )
+#       pragma warning( disable : 4127 )
+#   endif
     alwaysAssertM(pthread->running, "Deleting thread while running.");
+#   ifdef G3D_WIN32
+#       pragma warning( pop )
+#   endif
     delete pthread;
 }
 

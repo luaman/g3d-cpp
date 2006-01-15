@@ -126,7 +126,7 @@ inline Color4 Color4::operator- (const Color4& other) const {
 
 //----------------------------------------------------------------------------
 
-inline Color4 Color4::operator* (double fScalar) const {
+inline Color4 Color4::operator* (float fScalar) const {
     return Color4(fScalar * r, fScalar * g, fScalar * b, fScalar * a);
 }
 
@@ -165,7 +165,7 @@ inline Color4& Color4::operator-= (const Color4& other) {
 
 //----------------------------------------------------------------------------
 
-inline Color4& Color4::operator*= (double fScalar) {
+inline Color4& Color4::operator*= (float fScalar) {
     r *= fScalar;
     g *= fScalar;
     b *= fScalar;

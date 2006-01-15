@@ -197,7 +197,7 @@ public:
         const Vector3&      point) const;
 
     /** @deprecated */
-    double surfaceArea() const;
+    float surfaceArea() const;
 
     inline float area() const {
         return surfaceArea();

@@ -15,6 +15,7 @@
 
 #if defined(_MSC_VER) && !defined(_NDEBUG)
 // Disable unreachable code warning in debug mode
+#   pragma warning( push )
 #   pragma warning( disable : 4702 )
 #endif
 
@@ -783,3 +784,6 @@ void GPUProgram::BindingTable::parse(const std::string& code) {
 
 }
 
+#if defined(_MSC_VER) && !defined(_NDEBUG)
+#   pragma warning( pop )
+#endif

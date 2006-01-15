@@ -12,9 +12,9 @@
 #ifndef G3D_MATRIX4_H
 #define G3D_MATRIX4_H
 
-
 #ifdef _MSC_VER
 // Disable conditional expression is constant, which occurs incorrectly on inlined functions
+#   pragma warning (push)
 #   pragma warning( disable : 4127 )
 #endif
 
@@ -36,7 +36,7 @@ private:
       Computes the determinant of the 3x3 matrix that lacks excludeRow
       and excludeCol. 
     */
-    double subDeterminant(int excludeRow, int excludeCol) const;
+    float subDeterminant(int excludeRow, int excludeCol) const;
 
 public:
     Matrix4(
@@ -98,27 +98,27 @@ public:
      Constructs an orthogonal projection matrix from the given parameters.
      */
     static Matrix4 orthogonalProjection(
-        double            left,
-        double            right,
-        double            bottom,
-        double            top,
-        double            nearval,
-        double            farval);
+        float            left,
+        float            right,
+        float            bottom,
+        float            top,
+        float            nearval,
+        float            farval);
 
     static Matrix4 perspectiveProjection(
-        double            left,
-        double            right,
-        double            bottom,
-        double            top,
-        double            nearval,
-        double            farval);
+        float            left,
+        float            right,
+        float            bottom,
+        float            top,
+        float            nearval,
+        float            farval);
 
     void setRow(int r, const class Vector4& v);
     void setColumn(int c, const Vector4& v);
     Vector4 getRow(int r) const;
     Vector4 getColumn(int c) const;
 
-    Matrix4 operator*(const double s) const;
+    Matrix4 operator*(const float s) const;
     Vector4 operator*(const Vector4& vector) const;
 
     Matrix4 transpose() const;
@@ -126,7 +126,7 @@ public:
     bool operator!=(const Matrix4& other) const;
     bool operator==(const Matrix4& other) const;
 
-    double determinant() const;
+    float determinant() const;
     Matrix4 inverse() const;
 
     /** 
@@ -150,3 +150,6 @@ public:
 
 #endif
 
+#ifdef _MSC_VER
+#   pragma warning (pop)
+#endif

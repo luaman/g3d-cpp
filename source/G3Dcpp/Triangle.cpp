@@ -36,7 +36,7 @@ void Triangle::init(const Vector3& v0, const Vector3& v1, const Vector3& v2) {
         if (edgeMagnitude[i] == 0) {
             edgeDirection[i] = Vector3::zero();
         } else {
-            edgeDirection[i] = e / edgeMagnitude[i];
+            edgeDirection[i] = e / (float)edgeMagnitude[i];
         }
     }
 
@@ -105,14 +105,14 @@ Vector3 Triangle::center() const {
 Vector3 Triangle::randomPoint() const {
     // Choose a random point in the parallelogram
 
-    double s = unitRandom();
-    double t = unitRandom();
+    float s = (float)unitRandom();
+    float t = (float)unitRandom();
 
-    if (t > 1.0 - s) {
+    if (t > 1.0f - s) {
         // Outside the triangle; reflect about the
         // diagonal of the parallelogram
-        t = 1.0 - t;
-        s = 1.0 - s;
+        t = 1.0f - t;
+        s = 1.0f - s;
     }
 
     return edge01 * s + edge02 * t + _vertex[0];

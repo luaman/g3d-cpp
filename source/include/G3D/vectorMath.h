@@ -68,15 +68,15 @@ inline Vector4 normalize(const Vector4& v) {
 }
 
 inline Vector2 abs(const Vector2& v) {
-    return Vector2(abs(v.x), abs(v.y));
+    return Vector2(::fabs(v.x), ::fabs(v.y));
 }
 
 inline Vector3 abs(const Vector3& v) {
-    return Vector3(abs(v.x), abs(v.y), abs(v.z));
+    return Vector3(::fabs(v.x), ::fabs(v.y), ::fabs(v.z));
 }
 
 inline Vector4 abs(const Vector4& v) {
-    return Vector4(abs(v.x), abs(v.y), abs(v.z), abs(v.w));
+    return Vector4(::fabs(v.x), ::fabs(v.y), ::fabs(v.z), ::fabs(v.w));
 }
 
 inline bool all(const Vector2& v) {
@@ -115,19 +115,19 @@ inline Vector4 clamp(const Vector4& v, const Vector4& a, const Vector4& b) {
     return v.clamp(a, b);
 }
 
-inline Vector2 lerp(const Vector2& v1, const Vector2& v2, double f) {
+inline Vector2 lerp(const Vector2& v1, const Vector2& v2, float f) {
     return v1.lerp(v2, f);
 }
 
-inline Vector3 lerp(const Vector3& v1, const Vector3& v2, double f) {
+inline Vector3 lerp(const Vector3& v1, const Vector3& v2, float f) {
     return v1.lerp(v2, f);
 }
 
-inline Vector4 lerp(const Vector4& v1, const Vector4& v2, double f) {
+inline Vector4 lerp(const Vector4& v1, const Vector4& v2, float f) {
     return v1.lerp(v2, f);
 }
 
-inline Color3 lerp(const Color3& v1, const Color3& v2, double f) {
+inline Color3 lerp(const Color3& v1, const Color3& v2, float f) {
     return v1.lerp(v2, f);
 }
 
@@ -184,30 +184,30 @@ inline Color4 max(const Color4& v1, const Color4& v2) {
 }
 
 inline Vector2 sign(const Vector2& v) {
-    return Vector2(sign(v.x), sign(v.y));
+    return Vector2((float)sign(v.x), (float)sign(v.y));
 }
 
 inline Vector3 sign(const Vector3& v) {
-    return Vector3(sign(v.x), sign(v.y), sign(v.z));
+    return Vector3((float)sign(v.x), (float)sign(v.y), (float)sign(v.z));
 }
 
 inline Vector4 sign(const Vector4& v) {
-    return Vector4(sign(v.x), sign(v.y), sign(v.z), sign(v.w));
+    return Vector4((float)sign(v.x), (float)sign(v.y), (float)sign(v.z), (float)sign(v.w));
 }
 
-inline double length(float v) {
-    return abs(v);
+inline float length(float v) {
+    return ::fabs(v);
 }
 
-inline double length(const Vector2& v) {
+inline float length(const Vector2& v) {
     return v.length();
 }
 
-inline double length(const Vector3& v) {
+inline float length(const Vector3& v) {
     return v.magnitude();
 }
 
-inline double length(const Vector4& v) {
+inline float length(const Vector4& v) {
     return v.length();
 }
 

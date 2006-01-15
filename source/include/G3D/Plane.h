@@ -31,7 +31,7 @@ private:
     /**
      Assumes the normal has unit length.
      */
-    Plane(const Vector3& n, double d) : _normal(n), _distance(d) {
+    Plane(const Vector3& n, float d) : _normal(n), _distance(d) {
     }
 
 public:
@@ -63,7 +63,7 @@ public:
         const Vector3&      __normal,
         const Vector3&      point);
 
-    static Plane fromEquation(double a, double b, double c, double d);
+    static Plane fromEquation(float a, float b, float c, float d);
 
 	Plane(class BinaryInput& b);
 	void serialize(class BinaryOutput& b) const;

@@ -59,7 +59,7 @@ Plane CoordinateFrame::toWorldSpace(const Plane& p) const {
     Vector3 N, P;
     double d;
     p.getEquation(N, d);
-    P = N * d;
+    P = N * (float)d;
     P = pointToWorldSpace(P);
     N = normalToWorldSpace(N);
     return Plane(N, P);
@@ -197,7 +197,7 @@ void CoordinateFrame::lookAt(
 
 CoordinateFrame CoordinateFrame::lerp(
     const CoordinateFrame&  other,
-    double                  alpha) const {
+    float                   alpha) const {
 
     if (alpha == 1.0) {
         return other;

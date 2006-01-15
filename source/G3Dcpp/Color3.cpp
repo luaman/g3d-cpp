@@ -38,12 +38,12 @@ const Color3& Color3::blue() {
 }
 
 const Color3& Color3::purple() {
-    static Color3 c(0.7, 0, 1);
+    static Color3 c(0.7f, 0, 1);
     return c;
 }
 
 const Color3& Color3::cyan() {
-    static Color3 c(0, .7, 1);
+    static Color3 c(0, .7f, 1);
     return c;
 }
 
@@ -53,12 +53,12 @@ const Color3& Color3::yellow() {
 }
 
 const Color3& Color3::brown() {
-    static Color3 c(.5, .5, 0);
+    static Color3 c(.5f, .5f, 0);
     return c;
 }
 
 const Color3& Color3::orange() {
-    static Color3 c(1, 0.5, 0);
+    static Color3 c(1, 0.5f, 0);
     return c;
 }
 
@@ -68,7 +68,7 @@ const Color3& Color3::black() {
 }
 
 const Color3& Color3::gray() {
-    static Color3 c(.7, .7, .7);
+    static Color3 c(.7f, .7f, .7f);
     return c;
 }
 
@@ -85,13 +85,13 @@ Color3::Color3(BinaryInput& bi) {
 const Color3 Color3::RED(1, 0, 0);
 const Color3 Color3::GREEN(0, 1, 0);
 const Color3 Color3::BLUE(0, 0, 1);
-const Color3 Color3::PURPLE(0.7, 0, 1);
-const Color3 Color3::CYAN(0, .7, 1);
+const Color3 Color3::PURPLE(0.7f, 0, 1);
+const Color3 Color3::CYAN(0, 0.7f, 1);
 const Color3 Color3::YELLOW(1, 1, 0);
-const Color3 Color3::BROWN(.5, .5, 0);
-const Color3 Color3::ORANGE(1, 0.5, 0);
+const Color3 Color3::BROWN(0.5f, 0.5f, 0);
+const Color3 Color3::ORANGE(1, 0.5f, 0);
 const Color3 Color3::BLACK(0, 0, 0);
-const Color3 Color3::GRAY(.7, .7, .7);
+const Color3 Color3::GRAY(.7f, .7f, .7f);
 const Color3 Color3::WHITE(1, 1, 1);
 
 
@@ -136,31 +136,31 @@ Color3::Color3(const Vector3& v) {
 
 
 Color3::Color3(const class Color3uint8& other) {
-    r = other.r / 255.0;
-    g = other.g / 255.0;
-    b = other.b / 255.0;
+    r = other.r / 255.0f;
+    g = other.g / 255.0f;
+    b = other.b / 255.0f;
 }
 
 
 Color3 Color3::fromARGB(uint32 x) {
-    return Color3((x >> 16) & 0xFF, (x >> 8) & 0xFF, x & 0xFF) / 255.0;
+    return Color3((float)((x >> 16) & 0xFF), (float)((x >> 8) & 0xFF), (float)(x & 0xFF)) / 255.0f;
 }
 
 //----------------------------------------------------------------------------
 
 
 Color3 Color3::random() {
-    return Color3(G3D::unitRandom(), 
-                  G3D::unitRandom(),
-                  G3D::unitRandom()).direction();
+    return Color3((float)G3D::unitRandom(), 
+                  (float)G3D::unitRandom(),
+                  (float)G3D::unitRandom()).direction();
 }
 
 //----------------------------------------------------------------------------
-Color3 Color3::operator/ (double fScalar) const {
+Color3 Color3::operator/ (float fScalar) const {
     Color3 kQuot;
 
-    if (fScalar != 0.0) {
-		float fInvScalar = 1.0 / fScalar;
+    if (fScalar != 0.0f) {
+		float fInvScalar = 1.0f / fScalar;
         kQuot.r = fInvScalar * r;
         kQuot.g = fInvScalar * g;
         kQuot.b = fInvScalar * b;
@@ -168,21 +168,21 @@ Color3 Color3::operator/ (double fScalar) const {
 
     } else {
 
-        return Color3(G3D::inf(), G3D::inf(), G3D::inf());
+        return Color3((float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf());
     }
 }
 
 //----------------------------------------------------------------------------
-Color3& Color3::operator/= (double fScalar) {
+Color3& Color3::operator/= (float fScalar) {
     if (fScalar != 0.0) {
-		double fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0f / fScalar;
         r *= fInvScalar;
         g *= fInvScalar;
         b *= fInvScalar;
     } else {
-        r = G3D::inf();
-        g = G3D::inf();
-        b = G3D::inf();
+        r = (float)G3D::inf();
+        g = (float)G3D::inf();
+        b = (float)G3D::inf();
     }
 
     return *this;
@@ -210,34 +210,30 @@ Color3 Color3::fromHSV(const Vector3& _hsv) {
 			&& (_hsv.y <= 1.0 && _hsv.y >= 0.0) 
 			&& ( _hsv.z <= 1.0 && _hsv.z >= 0.0), "H,S,V must be between [0,1]");
 	const int i = G3D::iFloor(6.0*_hsv.x);
-	const double f = 6.0*_hsv.x - i;
-	const double m = _hsv.z * (1.0 - (_hsv.y));
-	const double n = _hsv.z * (1.0 - (_hsv.y * f));
-	const double k = _hsv.z * (1.0 - (_hsv.y * (1 - f)));
+	const float f = 6.0*_hsv.x - i;
+	const float m = _hsv.z * (1.0 - (_hsv.y));
+	const float n = _hsv.z * (1.0 - (_hsv.y * f));
+	const float k = _hsv.z * (1.0 - (_hsv.y * (1 - f)));
 	switch(i) {
-		case 0:
-			return Color3(_hsv.z, k, m);
-		break;
+	case 0:
+		return Color3(_hsv.z, k, m);
 
-		case 1:
-			return Color3(n, _hsv.z, m);
-		break;
+	case 1:
+		return Color3(n, _hsv.z, m);
 
-		case 2:
-			return Color3(m, _hsv.z, k);
-		break;
+	case 2:
+		return Color3(m, _hsv.z, k);
 
-		case 3:
-			return Color3(m, n, _hsv.z);
-		break;
+	case 3:
+		return Color3(m, n, _hsv.z);
 
-		case 4:
-			return Color3(k, m, _hsv.z);
-		break;
+	case 4:
+		return Color3(k, m, _hsv.z);
 
-		case 5:
-			return Color3(_hsv.z, m, n);
-		break;
+	case 5:
+		return Color3(_hsv.z, m, n);
+
+    default:
 		debugAssertM(false, "fell through switch..");
 	}
 	return Color3::black();

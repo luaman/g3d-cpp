@@ -90,14 +90,14 @@ public:
     bool fuzzyEq(const Vector4& other) const;
     bool fuzzyNe(const Vector4& other) const;
 
-    inline static const Vector4& inf()      { static Vector4 v(G3D::inf(), G3D::inf(), G3D::inf(), G3D::inf()); return v; }
-    inline static const Vector4& nan()      { static Vector4 v(G3D::nan(), G3D::nan(), G3D::nan(), G3D::nan()); return v; }
+    inline static const Vector4& inf()      { static Vector4 v((float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf()); return v; }
+    inline static const Vector4& nan()      { static Vector4 v((float)G3D::nan(), (float)G3D::nan(), (float)G3D::nan(), (float)G3D::nan()); return v; }
 
     /** sqrt(this->dot(*this)) */
-    double length() const;
-    double squaredLength() const;
+    float length() const;
+    float squaredLength() const;
 
-    inline double sum() const {
+    inline float sum() const {
         return x + y + z + w;
     }
 
@@ -122,16 +122,16 @@ public:
         return Vector4(x / rkVector.x, y / rkVector.y, z / rkVector.z, w / rkVector.w);
     }
 
-    Vector4 operator* (double fScalar) const;
-    Vector4 operator/ (double fScalar) const;
+    Vector4 operator* (float fScalar) const;
+    Vector4 operator/ (float fScalar) const;
     Vector4 operator- () const;
-    friend Vector4 operator* (double fScalar, const Vector4& rkVector);
+    friend Vector4 operator* (float, const Vector4& rkVector);
 
     // arithmetic updates
     Vector4& operator+= (const Vector4& rkVector);
     Vector4& operator-= (const Vector4& rkVector);
-    Vector4& operator*= (double fScalar);
-    Vector4& operator/= (double fScalar);
+    Vector4& operator*= (float fScalar);
+    Vector4& operator/= (float fScalar);
 
     inline Vector4 clamp(const Vector4& low, const Vector4& high) const {
         return Vector4(
@@ -510,7 +510,7 @@ public:
 
 }
 
-inline G3D::Vector4 operator* (double s, const G3D::Vector4& v) {
+inline G3D::Vector4 operator* (float s, const G3D::Vector4& v) {
     return v * s;
 }
 

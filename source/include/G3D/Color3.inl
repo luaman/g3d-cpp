@@ -22,7 +22,7 @@ inline Color3::Color3 () {
 
 //----------------------------------------------------------------------------
 
-inline Color3::Color3(double fX, double fY, double fZ) {
+inline Color3::Color3(float fX, float fY, float fZ) {
     r = fX;
     g = fY;
     b = fZ;
@@ -95,7 +95,7 @@ inline Color3 Color3::operator- (const Color3& rkVector) const {
 }
 
 //----------------------------------------------------------------------------
-inline Color3 Color3::operator* (double fScalar) const {
+inline Color3 Color3::operator* (float fScalar) const {
     return Color3(fScalar*r, fScalar*g, fScalar*b);
 }
 
@@ -126,7 +126,7 @@ inline Color3& Color3::operator-= (const Color3& rkVector) {
 }
 
 //----------------------------------------------------------------------------
-inline Color3& Color3::operator*= (double fScalar) {
+inline Color3& Color3::operator*= (float fScalar) {
     r *= fScalar;
     g *= fScalar;
     b *= fScalar;

@@ -410,10 +410,10 @@ void Win32Window::setDimensions(const Rect2D& dims) {
     int W = ::GetSystemMetrics(SM_CXSCREEN);
     int H = ::GetSystemMetrics(SM_CYSCREEN);
 
-    int x = iClamp(dims.x0(), 0, W);
-    int y = iClamp(dims.y0(), 0, H);
-    int w = iClamp(dims.width(), 1, W);
-    int h = iClamp(dims.height(), 1, H);
+    int x = iClamp((int)dims.x0(), 0, W);
+    int y = iClamp((int)dims.y0(), 0, H);
+    int w = iClamp((int)dims.width(), 1, W);
+    int h = iClamp((int)dims.height(), 1, H);
 
     // Set dimensions and repaint.
     ::MoveWindow(window, x, y, w, h, true);
@@ -421,7 +421,7 @@ void Win32Window::setDimensions(const Rect2D& dims) {
 
 
 Rect2D Win32Window::dimensions() const {
-	return Rect2D::xywh(clientX, clientY, width(), height());
+	return Rect2D::xywh((float)clientX, (float)clientY, (float)width(), (float)height());
 }
 
 
@@ -783,8 +783,8 @@ void Win32Window::setRelativeMousePosition(const Vector2& p) {
 void Win32Window::getRelativeMouseState(Vector2& p, uint8& mouseButtons) const {
     int x, y;
     getRelativeMouseState(x, y, mouseButtons);
-    p.x = x;
-    p.y = y;
+    p.x = (float)x;
+    p.y = (float)y;
 }
 
 

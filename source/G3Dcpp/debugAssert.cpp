@@ -23,7 +23,8 @@
 
 #ifdef G3D_WIN32
     // disable: "C++ exception handler used"
-    #pragma warning (disable : 4530)
+#   pragma warning (push)
+#   pragma warning (disable : 4530)
 #endif
 
 using namespace std;
@@ -310,6 +311,8 @@ void setFailureHook(AssertionHook hook) {
 }
 
 
-}; // namespace
+} // namespace
 
-
+#ifdef G3D_WIN32
+#   pragma warning (pop)
+#endif

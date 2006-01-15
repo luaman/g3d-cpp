@@ -1567,14 +1567,14 @@ public:
      Should be on the range 0 (perfectly diffuse) to 1 (bright specular
      highlight).
      */
-    void setSpecularCoefficient(double s);
+    void setSpecularCoefficient(float s);
     void setSpecularCoefficient(const Color3& c);
 
     /**
      Sets the current shininess exponent used in the lighting equation.
      On the range 0 (large highlight) to 255 (tiny, focussed highlight).
      */
-    void setShininess(double s);
+    void setShininess(float s);
 
     /**
      You must also RenderDevice::enableLighting.

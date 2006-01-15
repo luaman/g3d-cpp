@@ -52,19 +52,19 @@ void testCollisionDetection() {
 
     {
         Sphere s(Vector3(5, 0, 0), 1);
-        Box    f(Vector3(-1, -1.5, -2), Vector3(4.5, 2, 8));
+        Box    f(Vector3(-1, -1.5f, -2), Vector3(4.5f, 2, 8));
         debugAssert(CollisionDetection::fixedSolidSphereIntersectsFixedSolidBox(s, f));
     }
 
     {
-        Sphere s(Vector3(0, 0, 0), .1);
-        Box    f(Vector3(-1, -1.5, -2), Vector3(4.5, 2, 8));
+        Sphere s(Vector3(0, 0, 0), .1f);
+        Box    f(Vector3(-1, -1.5f, -2), Vector3(4.5f, 2, 8));
         debugAssert(CollisionDetection::fixedSolidSphereIntersectsFixedSolidBox(s, f));
     }
 
     {
         Sphere s(Vector3(6, 0, 0), 1);
-        Box    f(Vector3(-1, -1.5, -2), Vector3(4.5, 2, 8));
+        Box    f(Vector3(-1, -1.5f, -2), Vector3(4.5f, 2, 8));
         debugAssert(! CollisionDetection::fixedSolidSphereIntersectsFixedSolidBox(s, f));
     }
 
@@ -73,7 +73,7 @@ void testCollisionDetection() {
         Vector3 v0(0, 0, 0);
         Vector3 v1(0, 0, -1);
         Vector3 v2(-1, 0, 0);
-        Ray ray = Ray::fromOriginAndDirection(Vector3(-.15, 1,-.15), Vector3(0, -1, 0));
+        Ray ray = Ray::fromOriginAndDirection(Vector3(-.15f, 1,-.15f), Vector3(0, -1, 0));
         Vector3 location, normal;
         double t = ray.intersectionTime(v0, v1, v2);
         debugAssert(t == 1.0);
@@ -89,7 +89,7 @@ void testCollisionDetection() {
         debugAssert(t == inf());
 
         // Time scale
-        ray = Ray::fromOriginAndDirection(Vector3(-.15, 1,-.15), Vector3(0, -2, 0));
+        ray = Ray::fromOriginAndDirection(Vector3(-.15f, 1,-.15f), Vector3(0, -2, 0));
         t = ray.intersectionTime(v0, v1, v2);
 
         debugAssert(t == 0.5);

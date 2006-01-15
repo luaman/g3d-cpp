@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-11-16
- @edited  2005-10-16
+ @edited  2006-01-16
  */
 
 #include "GLG3D/GWindow.h"

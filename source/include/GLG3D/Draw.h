@@ -65,7 +65,7 @@ private:
      Returns the scale due to perspective at
      a point for a line.
      */
-    static double perspectiveLineThickness(
+    static float perspectiveLineThickness(
         RenderDevice*       rd,
         const class Vector3&      pt);
 
@@ -86,25 +86,25 @@ public:
     static void box(
         const Box&          box,
         RenderDevice*       rd,
-        const Color4&       solidColor = Color4(1,.2,.2,.5),
+        const Color4&       solidColor = Color4(1,.2f,.2f,.5f),
         const Color4&       wireColor  = Color3::black());
 
     static void box(
         const AABox&        box,
         RenderDevice*       rd,
-        const Color4&       solidColor = Color4(1,.2,.2,.5),
+        const Color4&       solidColor = Color4(1,.2f,.2f,.5f),
         const Color4&       wireColor  = Color3::black());
 
     static void sphere(
         const Sphere&       sphere,
         RenderDevice*       rd,
-        const Color4&       solidColor = Color4(1, 1, 0, .5),
+        const Color4&       solidColor = Color4(1, 1, 0, .5f),
         const Color4&       wireColor  = Color3::black());
 
     static void plane(
         const Plane&        plane,
         RenderDevice*       rd,
-        const Color4&       solidColor = Color4(.2, .2, 1, .5),
+        const Color4&       solidColor = Color4(.2f, .2f, 1, .5f),
         const Color4&       wireColor  = Color3::black());
 
     static void line(
@@ -116,7 +116,7 @@ public:
         const LineSegment&  lineSegment,
         RenderDevice*       rd,
         const Color4&       color = Color3::black(),
-        double              scale = 1);
+        float               scale = 1);
 
     /**
      Renders per-vertex normals as thin arrows.  The length
@@ -127,7 +127,7 @@ public:
         const G3D::MeshAlg::Geometry&    geometry,
         RenderDevice*               renderDevice,
         const Color4&               color = Color3::green() * .5,
-        double                      scale = 1);
+        float                       scale = 1);
 
     /**
      Convenient for rendering tangent space basis vectors.
@@ -137,7 +137,7 @@ public:
         const Array<Vector3>&       directionArray,
         RenderDevice*               renderDevice,
         const Color4&               color = Color3::red() * 0.5,
-        double                      scale = 1);
+        float                       scale = 1);
 
     static void capsule(
        const Capsule&       capsule, 
@@ -152,17 +152,17 @@ public:
        const Color4&        wireColor = Color3::black());
 
     static void ray(
-        const class Ray&          ray,
+        const class Ray&    ray,
         RenderDevice*       renderDevice,
         const Color4&       color = Color3::orange(),
-        double              scale = 1);
+        float               scale = 1);
     
     static void arrow(
         const Vector3&      start,
         const Vector3&      direction,
         RenderDevice*       renderDevice,
         const Color4&       color = Color3::orange(),
-        double              scale = 1.0);
+        float               scale = 1.0f);
 
     static void axes(
         const class CoordinateFrame& cframe,
@@ -170,14 +170,15 @@ public:
         const Color4&       xColor = Color3::red(),
         const Color4&       yColor = Color3::green(),
         const Color4&       zColor = Color3::blue(),
-        double              scale = 1.0);
+        float               scale = 1.0f);
 
     static void axes(
         RenderDevice*       renderDevice,
         const Color4&       xColor = Color3::red(),
         const Color4&       yColor = Color3::green(),
         const Color4&       zColor = Color3::blue(),
-        double              scale = 1.0);
+        float               scale = 1.0f);
+
     /**
     Provided texture coordinates are upper bounds; tex
     coords will vary from (0,0) to those bounds.
@@ -217,13 +218,13 @@ public:
         const class Rect2D& rect,
         RenderDevice* rd,
         const Color4& color = Color3::black(),
-        double innerBorder = 0,
-        double outerBorder = 1);
+        float innerBorder = 0,
+        float outerBorder = 1);
 
     static void frustum(
         const class GCamera::Frustum& frustum,
         RenderDevice* rd,
-        const Color4& color = Color4(1,.4,.4,0.2),
+        const Color4& color = Color4(1,.4f,.4f,0.2f),
         const Color4& wire = Color3::black());
 
     /**

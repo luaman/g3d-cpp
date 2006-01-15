@@ -1419,7 +1419,7 @@ public:
 
             axis.resize(_joysticks[joystick].numAxes,false);
             for (uint32 a = 0; a < _joysticks[joystick].numAxes; ++a) {
-                axis[a] = ((float)(((LONG*)&data)[_joysticks[joystick].axisOffsets[a]] - 32768) / 32768.0); 
+                axis[a] = (float)((double)(((LONG*)&data)[_joysticks[joystick].axisOffsets[a]] - 32768) / 32768.0); 
             }
 
             return true;

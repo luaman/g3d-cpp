@@ -52,7 +52,7 @@
 #endif
 
 #ifdef G3D_WIN32
-// Turn off warnings about deprecated C routines
+// Turn off warnings about deprecated C routines (TODO: revisit)
 #	pragma warning (disable : 4996)
 #endif
 
@@ -142,6 +142,8 @@
 
 // Disable 'name too long for browse information' warning
 #   pragma warning (disable : 4786)
+// TODO: remove
+#   pragma warning (disable : 4244)
 
 #   define restrict
 

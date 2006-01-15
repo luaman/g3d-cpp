@@ -41,7 +41,7 @@ public:
 
     Sphere(
         const Vector3&  center,
-        double          radius) {
+        float           radius) {
 
         this->center = center;
         this->radius = radius;
@@ -100,10 +100,10 @@ public:
 		const uint32  			testMask		  = -1) const;
     virtual std::string toString() const;
 
-    double volume() const;
+    float volume() const;
 
     /** @deprecated */
-    double surfaceArea() const;
+    float surfaceArea() const;
 
     inline float area() const {
         return surfaceArea();

@@ -41,7 +41,7 @@ private:
      */
     template<class T>
     static bool clipSide2D(
-        const double p, bool clipGreater, int axis, 
+        const float p, bool clipGreater, int axis, 
         const Array<T>& inPoly, Array<T>& outPoly) {
 
         outPoly.clear();
@@ -50,7 +50,7 @@ private:
         Vector2 pt1;
         bool c1 = true;
 
-        double negate = clipGreater ? -1 : 1;
+        float negate = clipGreater ? -1 : 1;
 
         // Find a point that is not clipped
         for (i0 = 0; (i0 < inPoly.length()) && c1; ++i0) {
@@ -87,7 +87,7 @@ private:
                 // only one point is clipped, find where the line crosses the clipping plane
 
 
-                double alpha;
+                float alpha;
                 if (pt2[axis] == pt1[axis]) {
                     alpha = 0;
                 } else {
@@ -120,27 +120,27 @@ public:
         max = a.max.max(b.max);
     }
 
-    inline double width() const {
+    inline float width() const {
         return max.x - min.x;
     }
 
-    inline double height() const {
+    inline float height() const {
         return max.y - min.y;
     }
 
-    inline double x0() const {
+    inline float x0() const {
         return min.x;
     }
 
-    inline double x1() const {
+    inline float x1() const {
         return max.x;
     }
 
-    inline double y0() const {
+    inline float y0() const {
         return min.y;
     }
 
-    inline double y1() const {
+    inline float y1() const {
         return max.y;
     }
 
@@ -171,13 +171,13 @@ public:
         return (max + min) * 0.5;
     }
 
-    inline static Rect2D xyxy(double x0, double y0, double x1, double y1) {
+    inline static Rect2D xyxy(float x0, float y0, float x1, float y1) {
         Rect2D r;
         
-        r.min.x = G3D::min(x0, x1);
-        r.min.y = G3D::min(y0, y1);
-        r.max.x = G3D::max(x0, x1);
-        r.max.y = G3D::max(y0, y1);
+        r.min.x = std::min<float>(x0, x1);
+        r.min.y = std::min<float>(y0, y1);
+        r.max.x = std::min<float>(x0, x1);
+        r.max.y = std::min<float>(y0, y1);
 
         return r;
     }
@@ -191,7 +191,7 @@ public:
         return r;
     }
 
-    inline static Rect2D xywh(double x, double y, double w, double h) {
+    inline static Rect2D xywh(float x, float y, float w, float h) {
         return xyxy(x, y, x + w, y + h);
     }
 
@@ -222,11 +222,11 @@ public:
                (max.x >= r.min.x) && (max.y >= r.min.y);
     }
 
-    inline Rect2D operator*(double s) const {
+    inline Rect2D operator*(float s) const {
         return xyxy(min.x * s, min.y * s, max.x * s, max.y * s);
     }
 
-    inline Rect2D operator/(double s) const {
+    inline Rect2D operator/(float s) const {
         return xyxy(min / s, max / s);
     }
 
@@ -267,11 +267,11 @@ public:
 
     /** Returns a new Rect2D that is bigger/smaller by the specified amount 
         (negative is shrink.) */
-    inline Rect2D border(int delta) const {
+    inline Rect2D border(float delta) const {
         return Rect2D::xywh(x0() + delta, 
                      y0() + delta, 
-                     width() - 2 * delta, 
-                     height() - 2 * delta);
+                     width() - 2.0f * delta, 
+                     height() - 2.0f * delta);
     }
 
 
@@ -310,19 +310,19 @@ public:
         while maintaining the aspect ratio of x:y.  Convenient for
         displaying images in odd-shaped windows.
     */
-    Rect2D largestCenteredSubRect(double ww, double hh) const {
-        double textureAspect = hh / ww;
-        double viewAspect = height() / width();
+    Rect2D largestCenteredSubRect(float ww, float hh) const {
+        float textureAspect = hh / ww;
+        float viewAspect = height() / width();
 
         if (viewAspect > textureAspect) {
             // The view is too tall
-            double h = width() * textureAspect;
-            double y = (height() - h) / 2;
+            float h = width() * textureAspect;
+            float y = (height() - h) / 2;
             return Rect2D::xywh(0, y, width(), h) + corner(0);
         } else {
             // The view is too wide
-            double w = height() / textureAspect;
-            double x = (width() - w) / 2;
+            float w = height() / textureAspect;
+            float x = (width() - w) / 2;
             return Rect2D::xywh(x, 0, w, height()) + corner(0);
         }
     }

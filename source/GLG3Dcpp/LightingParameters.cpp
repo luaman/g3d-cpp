@@ -15,6 +15,10 @@
    #define _timeb timeb
    #define _ftime ftime
 #endif
+#ifdef _MSC_VER
+#   pragma warning(push)
+#   pragma warning(disable : 4305)
+#endif
 
 namespace G3D {
 
@@ -71,15 +75,15 @@ void LightingParameters::setTime(const GameTime _time) {
     trueStarFrame.rotation = Matrix3::fromEulerAnglesXYZ(aX, aY, aZ);
     
     // sunAngle = 0 at midnight
-    double sourceAngle = 2 * G3D_PI * time / DAY;
+    float sourceAngle = 2 * (float)G3D_PI * time / DAY;
     
     // Calculate fake solar and lunar positions
     sunPosition.x = sin(sourceAngle);
     sunPosition.y = -cos(sourceAngle);
     sunPosition.z = 0;
 
-    moonPosition.x = sin(sourceAngle + G3D_PI);
-    moonPosition.y = -cos(sourceAngle + G3D_PI);
+    moonPosition.x = sin(sourceAngle + (float)G3D_PI);
+    moonPosition.y = -cos(sourceAngle + (float)G3D_PI);
     moonPosition.z = 0;
 
     // Calculate "true" solar and lunar positions
@@ -93,13 +97,13 @@ void LightingParameters::setTime(const GameTime _time) {
 	// not taken into account, but this should only account
 	// for a 5 degree margin of error at most.
     
-	double dayOfYearOffset = (_time - (_time*floor(_time / solarYear)))/DAY;
+	float dayOfYearOffset = (_time - (_time*floor(_time / solarYear)))/DAY;
     moonPhase = floor(_time / moonPhaseInterval) + initialMoonPhase;
 
-	double latRad = toRadians(geoLatitude);
-	double sunOffset = -earthTilt*cos(G3D_PI*(dayOfYearOffset-halfSolarYear)/halfSolarYear) - latRad;
-	double moonOffset = ((-earthTilt+moonTilt)*sin(moonPhase*4)) - latRad;
-	double curMoonPhase = (moonPhase*G3D_PI*2);
+	float latRad = toRadians(geoLatitude);
+	float sunOffset = -earthTilt*cos(G3D_PI*(dayOfYearOffset-halfSolarYear)/halfSolarYear) - latRad;
+	float moonOffset = ((-earthTilt+moonTilt)*sin(moonPhase*4)) - latRad;
+	float curMoonPhase = (moonPhase*G3D_PI*2);
 
     Matrix3 rotMat = Matrix3::fromAxisAngle(Vector3::unitZ().cross(sunPosition), sunOffset);
     trueSunPosition = rotMat * sunPosition;
@@ -114,7 +118,7 @@ void LightingParameters::setTime(const GameTime _time) {
     if (!physicallyCorrect) {
         if ((sourceAngle < (G3D_PI / 2)) || (sourceAngle > (3 * G3D_PI / 2))) {
             source = MOON;
-            sourceAngle += G3D_PI;
+            sourceAngle += (float)G3D_PI;
         } else {
             source = SUN;
         }
@@ -122,7 +126,7 @@ void LightingParameters::setTime(const GameTime _time) {
         lightDirection.x = sin(sourceAngle);
         lightDirection.y = -cos(sourceAngle);
         lightDirection.z = 0;
-    } else if (trueSunPosition.y > -.3) {
+    } else if (trueSunPosition.y > -.3f) {
 	    // The sun is always the stronger light source. When using
 	    // physically correct parameters, the sun and moon will
 	    // occasionally be in the visible sky at the same time.
@@ -133,12 +137,12 @@ void LightingParameters::setTime(const GameTime _time) {
 		lightDirection = trueMoonPosition;
 	}
     
-    const Color3 dayAmbient = Color3::white() * .40;
-    const Color3 dayDiffuse = Color3::white() * .75;
+    const Color3 dayAmbient = Color3::white() * .40f;
+    const Color3 dayDiffuse = Color3::white() * .75f;
 
     {
         static const double times[] = {MIDNIGHT,               SUNRISE - HOUR,         SUNRISE,              SUNRISE + sunRiseAndSetTime / 4,  SUNRISE + sunRiseAndSetTime,    SUNSET - sunRiseAndSetTime,     SUNSET - sunRiseAndSetTime / 2, SUNSET,                SUNSET + HOUR/2,       DAY};
-        static const Color3 color[] = {Color3(.2, .2, .2),  Color3(.1, .1, .1),    Color3(0,0,0),        Color3(.6, .6, 0),                dayDiffuse,                     dayDiffuse,                   Color3(.1, .1, .075),           Color3(.1, .05, .05),  Color3(.1, .1, .1), Color3(.2, .2, .2)};
+        static const Color3 color[] = {Color3(.2f, .2f, .2f),  Color3(.1f, .1, .1),    Color3(0,0,0),        Color3(.6, .6, 0),                dayDiffuse,                     dayDiffuse,                   Color3(.1, .1, .075),           Color3(.1, .05, .05),  Color3(.1, .1, .1), Color3(.2, .2, .2)};
         lightColor = linearSpline(time, times, color, 10);
     }
 
@@ -170,4 +174,7 @@ GLight LightingParameters::directionalLight() const {
 
 }
 
+#ifdef _MSC_VER
+#   pragma warning(pop)
+#endif
 

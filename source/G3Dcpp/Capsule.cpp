@@ -62,12 +62,12 @@ Vector3 Capsule::getPoint2() const {
 }
 
 
-double Capsule::getRadius() const {
+float Capsule::getRadius() const {
 	return radius;
 }
 
 
-double Capsule::getVolume() const {
+float Capsule::getVolume() const {
 	return 
 		// Sphere volume
 		pow(radius, 3) * G3D_PI * 4 / 3 +
@@ -77,7 +77,7 @@ double Capsule::getVolume() const {
 }
 
 
-double Capsule::getSurfaceArea() const {
+float Capsule::getSurfaceArea() const {
 
 	return
 		// Sphere area

@@ -211,7 +211,7 @@ Sky::Sky(
 
 			    star[i] = Vector4(x, y, z, 0);
 
-			    starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .3;
+			    starIntensity[i] = square(SHORT_TO_FLOAT(in.readInt16())) + .3f;
 	        }
         } else {
 		    // Create a random starfield
@@ -219,7 +219,7 @@ Sky::Sky(
     	    starIntensity.resize(star.size());
    		    for (i = star.size() - 1; i >= 0; --i) {
    			    star[i] = Vector4(Vector3::random(), 0);
-   			    starIntensity[i] = square(unitRandom()) + .3;
+   			    starIntensity[i] = square(unitRandom()) + .3f;
    		    }
  	    }
     }
@@ -288,14 +288,14 @@ void Sky::vertex(RenderDevice* renderDevice,
             // Move the edge coordinates towards the center just
             // enough that the black clamped border isn't sampled.
             if (s == 0) {
-                s += (0.6 / (float)texture[0]->texelWidth());
+                s += (0.6f / (float)texture[0]->texelWidth());
             } else if (s == 1) {
-                s -= (0.6 / (float)texture[0]->texelWidth());
+                s -= (0.6f / (float)texture[0]->texelWidth());
             }
             if (t == 0) {
-                t += (0.6 / (float)texture[0]->texelHeight());
+                t += (0.6f / (float)texture[0]->texelHeight());
             } else if (t == 1) {
-                t -= (0.6 / (float)texture[0]->texelHeight());
+                t -= (0.6f / (float)texture[0]->texelHeight());
             }
         }
         renderDevice->setTexCoord(0, Vector2(s, t));
@@ -337,7 +337,7 @@ void Sky::renderBox(RenderDevice* renderDevice) const {
         renderDevice->setTexture(0, texture[BK]);
     }
 
-    double s = 1;
+    float s = 1;
     renderDevice->beginPrimitive(RenderDevice::QUADS);
         vertex(renderDevice, -s, +s, -s, 0, 0);
         vertex(renderDevice, -s, -s, -s, 0, 1);
@@ -510,11 +510,11 @@ void Sky::drawSun(
     
     renderDevice->setTexture(0, sun);
     renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
-    Color3 c(lighting.emissiveScale * .8);
+    Color3 c(lighting.emissiveScale * .8f);
 
     if (sunPosition.y < 0) {
         // Fade out the sun as it goes below the horizon
-        c *= max(0, (sunPosition.y + .1) * 10);
+        c *= max(0, (sunPosition.y + .1f) * 10);
     }
 
     drawCelestialSphere(renderDevice, L, X, Y, .12, c);
@@ -618,7 +618,7 @@ void Sky::renderLensFlare(
                 renderDevice->setTexture(0, disk);
                 for (int i = 0; i < numFlares; ++i) {
                     drawCelestialSphere(renderDevice, 
-                         C + (C - L) * position[i], X, Y, size[i], 
+                         C + (C - L) * (float)position[i], X, Y, (float)size[i], 
                          Color4(color[i] * lighting.emissiveScale * flareBrightness, 1));
                 }
             }

@@ -9,7 +9,7 @@
   at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2005-10-24
+ @edited  2006-01-16
  */
 
 #include <stdlib.h>
@@ -39,12 +39,12 @@ const Vector2& Vector2::unitY() {
 }
 
 const Vector2& Vector2::inf() { 
-	static Vector2 v(G3D::inf(), G3D::inf());
+	static Vector2 v((float)G3D::inf(), (float)G3D::inf());
 	return v; 
 }
 
 const Vector2& Vector2::nan() { 
-	static Vector2 v(G3D::nan(), G3D::nan()); 
+	static Vector2 v((float)G3D::nan(), (float)G3D::nan()); 
 	return v; 
 }
 
@@ -90,9 +90,9 @@ void Vector2::serialize(BinaryOutput& b) const {
 
 void Vector2::deserialize(TextInput& t) {
     t.readSymbol("(");
-    x = t.readNumber();
+    x = (float)t.readNumber();
     t.readSymbol(",");
-    y = t.readNumber();
+    y = (float)t.readNumber();
     t.readSymbol(")");
 }
 
@@ -111,8 +111,8 @@ Vector2 Vector2::random() {
     Vector2 result;
 
     do {
-        result = Vector2(symmetricRandom(), symmetricRandom());
-    } while ((result.squaredLength() > 1) || (result.squaredLength() == 1.0));
+        result = Vector2((float)symmetricRandom(), (float)symmetricRandom());
+    } while ((result.squaredLength() > 1.0f) || (result.squaredLength() == 1.0f));
 
     result.unitize();
 
@@ -120,39 +120,39 @@ Vector2 Vector2::random() {
 }
 
 //----------------------------------------------------------------------------
-Vector2 Vector2::operator/ (double fScalar) const {
+Vector2 Vector2::operator/ (float fScalar) const {
     Vector2 kQuot;
 
-    if ( fScalar != 0.0 ) {
-		double fInvScalar = 1.0 / fScalar;
+    if ( fScalar != 0.0f ) {
+		float fInvScalar = 1.0f / fScalar;
         kQuot.x = fInvScalar * x;
         kQuot.y = fInvScalar * y;
         return kQuot;
     } else {
-        return Vector2(G3D::inf(), G3D::inf());
+        return Vector2::inf();
     }
 }
 
 //----------------------------------------------------------------------------
-Vector2& Vector2::operator/= (double fScalar) {
-    if (fScalar != 0.0) {
-		double fInvScalar = 1.0 / fScalar;
+Vector2& Vector2::operator/= (float fScalar) {
+    if (fScalar != 0.0f) {
+		float fInvScalar = 1.0f / fScalar;
         x *= fInvScalar;
         y *= fInvScalar;
     } else {
-        x = G3D::inf();
-        y = G3D::inf();
+        x = (float)G3D::inf();
+        y = (float)G3D::inf();
     }
 
     return *this;
 }
 
 //----------------------------------------------------------------------------
-double Vector2::unitize (double fTolerance) {
-	double fLength = length();
+float Vector2::unitize (float fTolerance) {
+	float fLength = length();
 
     if (fLength > fTolerance) {
-		double fInvLength = 1.0 / fLength;
+		float fInvLength = 1.0f / fLength;
         x *= fInvLength;
         y *= fInvLength;
     } else {

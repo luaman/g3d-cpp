@@ -24,6 +24,8 @@
 #include <string>
 
 #ifdef G3D_WIN32
+#   pragma warning (push)
+    // Debug name too long warning
 #   pragma warning (disable : 4786)
 #endif
 
@@ -51,7 +53,7 @@ inline unsigned int hashCode(const G3D::uint32 a) {
 }
 
 inline unsigned int hashCode(const G3D::uint64 a) {
-	return a;
+	return (unsigned int)a;
 }
 
 /**
@@ -79,10 +81,6 @@ inline unsigned int hashCode(const std::string& a) {
 
 namespace G3D {
 
-#ifdef _MSC_VER
-    // Debug name too long warning
-    #pragma warning (disable : 4786)
-#endif // _MSC_VER
 
 /**
  An unordered data structure mapping keys to values.
@@ -689,4 +687,7 @@ public:
 
 } // namespace
 
+#endif
+#ifdef G3D_WIN32
+#   pragma warning (pop)
 #endif

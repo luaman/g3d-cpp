@@ -32,7 +32,7 @@ void Sphere::serialize(class BinaryOutput& b) const {
 
 void Sphere::deserialize(class BinaryInput& b) {
 	center.deserialize(b);
-	radius = b.readFloat64();
+	radius = (float)b.readFloat64();
 }
 
 
@@ -163,22 +163,22 @@ Vector3 Sphere::randomSurfacePoint() const {
 Vector3 Sphere::randomInteriorPoint() const {
     Vector3 result;
     do {
-        result = Vector3(symmetricRandom(), 
-                         symmetricRandom(),
-                         symmetricRandom());
-    } while (result.squaredMagnitude() >= 1);
+        result = Vector3((float)symmetricRandom(), 
+                         (float)symmetricRandom(),
+                         (float)symmetricRandom());
+    } while (result.squaredMagnitude() >= 1.0f);
 
     return result * radius + center;
 }
 
 
-double Sphere::volume() const {
-    return G3D_PI * (4.0 / 3.0) * pow(radius, 3);
+float Sphere::volume() const {
+    return (float)G3D_PI * (4.0f / 3.0f) * pow(radius, 3.0f);
 }
 
 
-double Sphere::surfaceArea() const {
-    return G3D_PI * 4 * pow(radius, 2);
+float Sphere::surfaceArea() const {
+    return (float)G3D_PI * 4.0f * pow(radius, 2.0f);
 }
 
 

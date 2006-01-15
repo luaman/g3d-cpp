@@ -166,7 +166,7 @@ public:
     virtual void setDimensions(const Rect2D& dims);
 	
     virtual void setPosition(int x, int y) {
-        setDimensions( Rect2D::xywh(x, y, settings.width, settings.height) );
+        setDimensions( Rect2D::xywh((float)x, (float)y, (float)settings.width, (float)settings.height) );
 	}
 	
     virtual bool hasFocus() const;

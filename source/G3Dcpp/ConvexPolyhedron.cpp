@@ -265,7 +265,7 @@ void ConvexPolyhedron::cut(const Plane& plane, ConvexPolyhedron &above, ConvexPo
 
         // This number has to be fairly large to prevent precision problems down
         // the road.
-        const float eps = 0.005;
+        const float eps = 0.005f;
         for (f = face.length() - 1; (f >= 0) && (!ruledOut); f--) {
             const ConvexPolygon& poly = face[f];
             for (int v = poly._vertex.length() - 1; (v >= 0) && (!ruledOut); v--) { 

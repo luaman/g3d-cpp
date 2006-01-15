@@ -29,8 +29,8 @@ public:
     void renderShadow(RenderDevice* rd) {
         CoordinateFrame cframe2 = cframe;
         cframe2.rotation.setColumn(1, Vector3::zero());
-        cframe2.translation.y -= 1.7;
-        rd->setColor(Color3(.9, .9, 1));
+        cframe2.translation.y -= 1.7f;
+        rd->setColor(Color3(.9f, .9f, 1));
 
         PosedModelRef m = model->pose(cframe2, pose);
 

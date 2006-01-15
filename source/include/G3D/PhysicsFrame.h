@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-08
- @edited  2002-09-28
+ @edited  2006-01-10
 */
 
 #ifndef G3D_PHYSICSFRAME_H
@@ -60,14 +60,14 @@ public:
      */
     PhysicsFrame lerp(
         const PhysicsFrame&     other,
-        double                  alpha) const;
+        float                   alpha) const;
 
     /** 
      this + t * dx
      @deprecated
      */
     PhysicsFrame integrate(
-        double                  t,
+        float                   t,
         const PhysicsFrame&     dx);
 
     /** 
@@ -75,7 +75,7 @@ public:
      @deprecated
      */
     PhysicsFrame integrate(
-        double                  t,
+        float                   t,
         const PhysicsFrame&     dx,
         const PhysicsFrame&     ddx);
 
@@ -84,6 +84,6 @@ public:
     void serialize(class BinaryOutput& b) const;
 };
 
-}; // namespace
+} // namespace
 
 #endif

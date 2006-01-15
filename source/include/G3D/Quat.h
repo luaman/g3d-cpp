@@ -62,11 +62,11 @@ public:
     Quat(
         const Matrix3& rot);
 
-    inline Quat(double _x, double _y, double _z, double _w) :
+    inline Quat(float _x, float _y, float _z, float _w) :
         x(_x), y(_y), z(_z), w(_w) {}
 
     /** Defaults to a pure vector quaternion */
-    inline Quat(const Vector3& v, double _w = 0) : x(v.x), y(v.y), z(v.z), w(_w) {
+    inline Quat(const Vector3& v, float _w = 0) : x(v.x), y(v.y), z(v.z), w(_w) {
     }
 
     /**
@@ -94,7 +94,7 @@ public:
     /** q = [sin(angle/2)*axis, cos(angle/2)] */
     static Quat Quat::fromAxisAngleRotation(
         const Vector3&      axis,
-        double              angle);
+        float               angle);
 
     /** Returns the axis and angle of rotation represented
         by this quaternion (i.e. q = [sin(angle/2)*axis, cos(angle/2)]) */
@@ -113,7 +113,7 @@ public:
      */
     Quat slerp(
         const Quat&         other,
-        double              alpha) const;
+        float               alpha) const;
 
     /**
      Negates the imaginary part.
@@ -122,25 +122,25 @@ public:
         return Quat(-x, -y, -z, w);
     }
 
-    inline double sum() const {
+    inline float sum() const {
         return x + y + z + w;
     }
 
-    inline double average() const {
-        return sum() / 4.0;
+    inline float average() const {
+        return sum() / 4.0f;
     }
 
-    inline Quat operator*(double s) const {
+    inline Quat operator*(float s) const {
         return Quat(x * s, y * s, z * s, w * s);
     }
 
-    friend Quat operator* (double s, const Quat& q);
+    friend Quat operator* (float s, const Quat& q);
 
-    inline Quat operator/(double s) const {
+    inline Quat operator/(float s) const {
         return Quat(x / s, y / s, z / s, w / s);
     }
 
-    inline double dot(const Quat& other) const {
+    inline float dot(const Quat& other) const {
         return (x * other.x) + (y * other.y) + (z * other.z) + (w * other.w);
     }
 
@@ -167,12 +167,12 @@ public:
 
 
     /** Is the magnitude nearly 1.0? */
-    inline bool isUnit(double tolerance = 1e-5) const {
-        return abs(dot(*this) - 1.0) < tolerance;
+    inline bool isUnit(float tolerance = 1e-5) const {
+        return abs(dot(*this) - 1.0f) < tolerance;
     }
     
 
-    inline double magnitude() const {
+    inline float magnitude() const {
         return sqrt(dot(*this));
     }
 
@@ -183,17 +183,17 @@ public:
             } else if (w < 0) {
                 // Log of a negative number.  Multivalued, any number of the form
                 // (PI * v, ln(-q.w))
-                return Quat(G3D_PI, 0, 0, ::log(-w));
+                return Quat((float)G3D_PI, 0, 0, ::log(-w));
             } else {
                  // log of zero!
-                 return Quat(nan(), nan(), nan(), nan());
+                 return Quat((float)nan(), (float)nan(), (float)nan(), (float)nan());
             }
         } else {
             // Partly imaginary.
-            double imagLen = sqrt(x * x + y * y + z * z);
-            double len = sqrt(imagLen * imagLen + w * w);
-            double theta = atan2(imagLen, (double)w);
-            double t = theta / imagLen;
+            float imagLen = sqrt(x * x + y * y + z * z);
+            float len = sqrt(imagLen * imagLen + w * w);
+            float theta = atan2(imagLen, (float)w);
+            float t = theta / imagLen;
             return Quat(t * x, t * y, t * z, ::log(len));
         }
     }
@@ -219,7 +219,7 @@ public:
     inline Quat exp() const {
         debugAssertM(w == 0, "exp only defined for vector quaternions");
         Vector3 u(x, y, z);
-        double A = u.magnitude();
+        float A = u.magnitude();
         Vector3 v = u / A;
         return Quat(sin(A) * v, cos(A));
     }
@@ -233,7 +233,7 @@ public:
      Note that q.pow(a).pow(b) == q.pow(a + b)
      @cite Dam98 pg 21
      */
-    inline Quat pow(double x) const {
+    inline Quat pow(float x) const {
         return (log() * x).exp();
     }
 
@@ -243,8 +243,8 @@ public:
      Use toUnit()
      */
     inline Quat unitize() const {
-        double mag2 = dot(*this);
-        if (fuzzyEq(mag2, 1.0)) {
+        float mag2 = dot(*this);
+        if (fuzzyEq(mag2, 1.0f)) {
             return *this;
         } else {
             return *this / sqrt(mag2);
@@ -265,7 +265,7 @@ public:
      n(q) value used in Eberly's 1999 paper, which is the square of the
      norm.
      */
-    inline double norm() const {
+    inline float norm() const {
         return magnitude();
     }
 
@@ -638,7 +638,7 @@ inline Quat log(const Quat& q) {
 }
 
 inline G3D::Quat operator*(double s, const G3D::Quat& q) {
-    return q * s;
+    return q * (float)s;
 }
 
 inline G3D::Quat operator*(float s, const G3D::Quat& q) {
@@ -649,7 +649,7 @@ inline G3D::Quat operator*(float s, const G3D::Quat& q) {
 
 // Outside the namespace to avoid overloading confusion for C++
 inline G3D::Quat pow(const G3D::Quat& q, double x) {
-    return q.pow(x);
+    return q.pow((float)x);
 }
 
 

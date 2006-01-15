@@ -27,7 +27,7 @@ void Plane::serialize(class BinaryOutput& b) const {
 
 void Plane::deserialize(class BinaryInput& b) {
 	_normal.deserialize(b);
-	_distance = b.readFloat64();
+	_distance = (float)b.readFloat64();
 }
 
 
@@ -97,9 +97,9 @@ Plane::Plane(
 }
 
 
-Plane Plane::fromEquation(double a, double b, double c, double d) {
+Plane Plane::fromEquation(float a, float b, float c, float d) {
     Vector3 n(a, b, c);
-    double magnitude = n.magnitude();
+    float magnitude = n.magnitude();
     d /= magnitude;
     n /= magnitude;
     return Plane(n, -d);
@@ -115,7 +115,7 @@ void Plane::flip() {
 void Plane::getEquation(Vector3& n, float& d) const {
     double _d;
     getEquation(n, _d);
-    d = _d;
+    d = (float)_d;
 }
 
 void Plane::getEquation(Vector3& n, double& d) const {
@@ -127,10 +127,10 @@ void Plane::getEquation(Vector3& n, double& d) const {
 void Plane::getEquation(float& a, float& b, float& c, float& d) const {
     double _a, _b, _c, _d;
     getEquation(_a, _b, _c, _d);
-    a = _a;
-    b = _b;
-    c = _c;
-    d = _d;
+    a = (float)_a;
+    b = (float)_b;
+    c = (float)_c;
+    d = (float)_d;
 }
 
 void Plane::getEquation(double& a, double& b, double& c, double& d) const {

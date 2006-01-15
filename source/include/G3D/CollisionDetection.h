@@ -12,10 +12,9 @@
   Thanks to Max McGuire of Iron Lore for various bug fixes.
 
   @created 2001-11-19
-  @edited  2004-08-27
-  @edited  2005-12-08  Comments added by Daniel Hilferty
+  @edited  2006-01-10
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -149,7 +148,7 @@ public:
       @return Projected distance between the two boxes along the
       specified separating axis.
      */
-    static inline double projectedDistanceForSolidBoxSolidBox(
+    static float projectedDistanceForSolidBoxSolidBox(
             const int           separatingAxisIndex,
             const Vector3 &     a,
             const Vector3 &     b,
@@ -157,110 +156,7 @@ public:
             const double*       c,
             const double*       ca,
             const double*       ad,
-            const double*       bd)
-    {
-        (void)D;
-
-        double R0 = 0.0;
-        double R1 = 0.0;
-        double R = 0.0;
-        switch (separatingAxisIndex) {
-        case 0:
-            // A0
-            R0 = a[0];
-            R1 = b[0] * ca[0] + b[1] * ca[1] + b[2] * ca[2];
-            R = fabs(ad[0]);
-            break;
-        case 1:
-            // A1
-            R0 = a[1];
-            R1 = b[0] * ca[3] + b[1] * ca[4] + b[2] * ca[5];
-            R = fabs(ad[1]);
-            break;
-        case 2:
-            // A2
-            R0 = a[2];
-            R1 = b[0] * ca[6] + b[1] * ca[7] + b[2] * ca[8];
-            R = fabs(ad[2]);
-            break;
-        case 3:
-            // B0
-            R0 = a[0] * ca[0] + a[1] * ca[3] + a[2] * ca[6];
-            R1 = b[0];
-            R = fabs(bd[0]);
-            break;
-        case 4:
-            // B1
-            R0 = a[0] * ca[1] + a[1] * ca[4] + a[2] * ca[7];
-            R1 = b[1];
-            R = fabs(bd[1]);
-            break;
-        case 5:
-            // B2
-            R0 = a[0] * ca[2] + a[1] * ca[5] + a[2] * ca[8];
-            R1 = b[2];
-            R = fabs(bd[2]);
-            break;
-        case 6:
-            // A0 x B0
-            R0 = a[1] * ca[6] + a[2] * ca[3];
-            R1 = b[1] * ca[2] + b[2] * ca[1];
-            R = fabs(c[3] * ad[2] - c[6] * ad[1]);
-            break;
-        case 7:
-            // A0 x B1
-            R0 = a[1] * ca[7] + a[2] * ca[4];
-            R1 = b[0] * ca[2] + b[2] * ca[0];
-            R = fabs(c[4] * ad[2] - c[7] * ad[1]);
-            break;
-        case 8:
-            // A0 x B2
-            R0 = a[1] * ca[8] + a[2] * ca[5];
-            R1 = b[0] * ca[1] + b[1] * ca[0];
-            R = fabs(c[5] * ad[2] - c[8] * ad[1]);
-            break;
-        case 9:
-            // A1 x B0
-            R0 = a[0] * ca[6] + a[2] * ca[0];
-            R1 = b[1] * ca[5] + b[2] * ca[4];
-            R = fabs(c[6] * ad[0] - c[0] * ad[2]);
-            break;
-        case 10:
-            // A1 x B1
-            R0 = a[0] * ca[7] + a[2] * ca[1];
-            R1 = b[0] * ca[5] + b[2] * ca[3];
-            R = fabs(c[7] * ad[0] - c[1] * ad[2]);
-            break;
-        case 11:
-            // A1 x B2
-            R0 = a[0] * ca[8] + a[2] * ca[2];
-            R1 = b[0] * ca[4] + b[1] * ca[3];
-            R = fabs(c[8] * ad[0] - c[2] * ad[2]);
-            break;
-        case 12:
-            // A2 x B0
-            R0 = a[0] * ca[3] + a[1] * ca[0];
-            R1 = b[1] * ca[8] + b[2] * ca[7];
-            R = fabs(c[0] * ad[1] - c[3] * ad[0]);
-            break;
-        case 13:
-            // A2 x B1
-            R0 = a[0] * ca[4] + a[1] * ca[1];
-            R1 = b[0] * ca[8] + b[2] * ca[6];
-            R = fabs(c[1] * ad[1] - c[4] * ad[0]);
-            break;
-        case 14:
-            // A2 x B2
-            R0 = a[0] * ca[5] + a[1] * ca[2];
-            R1 = b[0] * ca[7] + b[1] * ca[6];
-            R = fabs(c[2] * ad[1] - c[5] * ad[0]);
-            break;
-        default:
-            debugAssertM(false, "fell through switch statement");
-        }
-
-        return (R - (R0 + R1));
-    }
+            const double*       bd);
 
 
 	/**
@@ -411,7 +307,7 @@ public:
 	  @return Depth of penetration between the two boxes.  If there is no
  	   intersection between the boxes, then a negative value is returned.
  	*/
-    static double penetrationDepthForFixedBoxFixedBox(
+    static float penetrationDepthForFixedBoxFixedBox(
         const Box&          box1,
         const Box&          box2,
         Array<Vector3>&     contactPoints,
@@ -434,7 +330,7 @@ public:
 	  @return Depth of penetration.  If there is no intersection between the
 	 		 objects then the depth will be a negative value.
 	 */
-    static double penetrationDepthForFixedSphereFixedSphere(
+    static float penetrationDepthForFixedSphereFixedSphere(
         const class Sphere& sphereA,
         const Sphere&       sphereB,
         Array<Vector3>&     contactPoints,
@@ -472,7 +368,7 @@ public:
 	  @return Depth of penetration.  If there is no intersection between the
 	 		  objects then the depth will be a negative value.
  	 */
-    static double penetrationDepthForFixedSphereFixedBox(
+    static float penetrationDepthForFixedSphereFixedBox(
         const Sphere&       sphere,
         const Box&          box,
         Array<Vector3>&     contactPoints,
@@ -492,7 +388,7 @@ public:
  	  @return Depth of penetration.  If there is no intersection between the
 	  		 objects then the depth will be a negative value.
  	 */
-    static double penetrationDepthForFixedSphereFixedPlane(
+    static float penetrationDepthForFixedSphereFixedPlane(
         const Sphere&       sphereA,
         const class Plane&  planeB,
         Array<Vector3>&     contactPoints,
@@ -512,7 +408,7 @@ public:
 	  @return Depth of penetration.  If there is no intersection between the
 	 		 objects then the depth will be a negative value.
  	*/
-    static double penetrationDepthForFixedBoxFixedPlane(
+    static float penetrationDepthForFixedBoxFixedPlane(
         const Box&          box,
         const Plane&        plane,
         Array<Vector3>&     contactPoints,
@@ -536,7 +432,7 @@ public:
  	  @return Time til collision.  If there is no collision then the return
  	          value will be inf().
  	*/
-    static double collisionTimeForMovingPointFixedPlane(
+    static float collisionTimeForMovingPointFixedPlane(
         const Vector3&			point,
         const Vector3&			velocity,
         const class Plane&		plane,
@@ -562,7 +458,7 @@ public:
  	  @return Time til collision.  If there is no collision then the return
  	          value will be inf().
  	*/
-    inline static double collisionTimeForMovingPointFixedTriangle(
+    inline static float collisionTimeForMovingPointFixedTriangle(
         const Vector3& orig,
         const Vector3& dir,
         const Vector3& v0,
@@ -590,14 +486,14 @@ public:
  	  @return Time til collision.  If there is no collision then the return
  	          value will be inf().
  	*/
-    inline static double collisionTimeForMovingPointFixedTriangle(
+    inline static float collisionTimeForMovingPointFixedTriangle(
         const Vector3& orig,
         const Vector3& dir,
         const Vector3& v0,
         const Vector3& v1,
         const Vector3& v2,
         Vector3&       location) {
-        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, v0, v1, v2);
+        float t = collisionTimeForMovingPointFixedTriangle(orig, dir, v0, v1, v2);
         if (t < inf()) {
             location = orig + dir * t;
         }
@@ -622,14 +518,16 @@ public:
  	  @return Time til collision.  If there is no collision then the return
  	          value will be inf().
  	*/
-    inline static double collisionTimeForMovingPointFixedTriangle(
+    inline static float collisionTimeForMovingPointFixedTriangle(
         const Vector3&  orig,
         const Vector3&  dir,
         const Triangle& tri,
         Vector3&        location = ignore,
         Vector3&        normal   = ignore) {
-        double t = collisionTimeForMovingPointFixedTriangle(
+
+        float t = collisionTimeForMovingPointFixedTriangle(
             orig, dir, tri.vertex(0), tri.vertex(1), tri.vertex(2));
+        
         if ((t < inf()) && (&location != &ignore)) {
             location = orig + dir * t;
             normal   = tri.normal();
@@ -657,7 +555,7 @@ public:
  	  @return Time til collision.  If there is no collision then the return
  	          value will be inf().
  	*/
-    inline static double collisionTimeForMovingPointFixedTriangle(
+    inline static float collisionTimeForMovingPointFixedTriangle(
         const Vector3& orig,
         const Vector3& dir,
         const Vector3& v0,
@@ -665,7 +563,7 @@ public:
         const Vector3& v2,
         Vector3&       location,
         Vector3&       normal) {
-        double t = collisionTimeForMovingPointFixedTriangle(orig, dir, v0, v1, v2);
+        float t = collisionTimeForMovingPointFixedTriangle(orig, dir, v0, v1, v2);
         if (t < inf()) {
             location = orig + dir * t;
             normal   = (v2 - v0).cross(v1 - v0).direction();
@@ -684,7 +582,7 @@ public:
      @cite Epsilon value added by Klaus Hartmann
      @cite http://www.codercorner.com/RayAABB.cpp
      */
-    static double collisionTimeForMovingPointFixedAABox(
+    static float collisionTimeForMovingPointFixedAABox(
         const Vector3&			point,
         const Vector3&			velocity,
         const class AABox&      box,
@@ -732,7 +630,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-    static double collisionTimeForMovingPointFixedSphere(
+    static float collisionTimeForMovingPointFixedSphere(
         const Vector3&			point,
         const Vector3&			velocity,
         const class Sphere&		sphere,
@@ -754,7 +652,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-    static double collisionTimeForMovingPointFixedBox(
+    static float collisionTimeForMovingPointFixedBox(
         const Vector3&			point,
         const Vector3&			velocity,
         const class  Box&		box,
@@ -781,7 +679,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-    static double collisionTimeForMovingPointFixedRectangle(
+    static float collisionTimeForMovingPointFixedRectangle(
         const Vector3&			point,
         const Vector3&			velocity,
         const Vector3&			v0,
@@ -804,7 +702,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-	static double collisionTimeForMovingPointFixedCapsule(
+	static float collisionTimeForMovingPointFixedCapsule(
 		const Vector3&		    point,
 		const Vector3&		    velocity,
 		const class Capsule&	capsule,
@@ -825,7 +723,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
 	 */
-    static double collisionTimeForMovingSphereFixedPlane(
+    static float collisionTimeForMovingSphereFixedPlane(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
         const class Plane&		plane,
@@ -846,7 +744,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
 	*/
-    static double collisionTimeForMovingSphereFixedTriangle(
+    static float collisionTimeForMovingSphereFixedTriangle(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
         const Triangle&       triangle,
@@ -870,7 +768,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-    static double collisionTimeForMovingSphereFixedRectangle(
+    static float collisionTimeForMovingSphereFixedRectangle(
         const class Sphere&		sphere,
         const Vector3&	    	velocity,
         const Vector3&	    	v0,
@@ -897,7 +795,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-    static double collisionTimeForMovingSphereFixedBox(
+    static float collisionTimeForMovingSphereFixedBox(
         const class Sphere&		sphere,
         const Vector3&		    velocity,
         const class Box&		box,
@@ -921,7 +819,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-	static double collisionTimeForMovingSphereFixedSphere(
+	static float collisionTimeForMovingSphereFixedSphere(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
 		const class Sphere&	    fixedSphere,
@@ -945,7 +843,7 @@ public:
 	 @return Time til collision.  If there is no collision then the return
 	         value will be inf().
  	*/
-	static double collisionTimeForMovingSphereFixedCapsule(
+	static float collisionTimeForMovingSphereFixedCapsule(
 		const class Sphere&		sphere,
 		const Vector3&		    velocity,
 		const class Capsule&	capsule,
@@ -1029,7 +927,7 @@ public:
         const Vector3&			v0,
         const Vector3&			v1,
         const Vector3&          edgeDirection,
-        double                  edgeLength,
+        float                  edgeLength,
         const Vector3&			point);
 
     /**

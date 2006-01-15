@@ -8,7 +8,7 @@
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
  
  @created 2001-06-02
- @edited  2005-08-30
+ @edited  2006-01-30
  */
 
 #include <limits>
@@ -34,10 +34,10 @@ const Vector3 Vector3::ZERO3(0, 0, 0);
 const Vector3 Vector3::UNIT_X(1, 0, 0);
 const Vector3 Vector3::UNIT_Y(0, 1, 0);
 const Vector3 Vector3::UNIT_Z(0, 0, 1);
-const Vector3 Vector3::INF3(G3D::inf(), G3D::inf(), G3D::inf());
-const Vector3 Vector3::NAN3(G3D::nan(), G3D::nan(), G3D::nan());
+const Vector3 Vector3::INF3((float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf());
+const Vector3 Vector3::NAN3((float)G3D::nan(), (float)G3D::nan(), (float)G3D::nan());
 
-Vector3::Vector3(const class Vector2& v, double _z) : x(v.x), y(v.y), z(_z) {
+Vector3::Vector3(const class Vector2& v, float _z) : x(v.x), y(v.y), z(_z) {
 }
 
 Vector3::Axis Vector3::primaryAxis() const {
@@ -107,11 +107,11 @@ void Vector3::deserialize(BinaryInput& b) {
 
 void Vector3::deserialize(TextInput& t) {
     t.readSymbol("(");
-    x = t.readNumber();
+    x = (float)t.readNumber();
     t.readSymbol(",");
-    y = t.readNumber();
+    y = (float)t.readNumber();
     t.readSymbol(",");
-    z = t.readNumber();
+    z = (float)t.readNumber();
     t.readSymbol(")");
 }
 
@@ -138,10 +138,10 @@ Vector3 Vector3::random() {
     Vector3 result;
 
     do {
-        result = Vector3(symmetricRandom(), 
-                         symmetricRandom(),
-                         symmetricRandom());
-    } while (result.squaredMagnitude() >= 1);
+        result = Vector3((float)symmetricRandom(), 
+                         (float)symmetricRandom(),
+                         (float)symmetricRandom());
+    } while (result.squaredMagnitude() >= 1.0f);
 
     result.unitize();
 
@@ -149,11 +149,11 @@ Vector3 Vector3::random() {
 }
 
 //----------------------------------------------------------------------------
-Vector3 Vector3::operator/ (double fScalar) const {
+Vector3 Vector3::operator/ (float fScalar) const {
     Vector3 kQuot;
 
     if ( fScalar != 0.0 ) {
-		float fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0f / fScalar;
         kQuot.x = fInvScalar * x;
         kQuot.y = fInvScalar * y;
         kQuot.z = fInvScalar * z;
@@ -164,32 +164,32 @@ Vector3 Vector3::operator/ (double fScalar) const {
 }
 
 //----------------------------------------------------------------------------
-Vector3& Vector3::operator/= (double fScalar) {
+Vector3& Vector3::operator/= (float fScalar) {
     if (fScalar != 0.0) {
-		float fInvScalar = 1.0 / fScalar;
+		float fInvScalar = 1.0f / fScalar;
         x *= fInvScalar;
         y *= fInvScalar;
         z *= fInvScalar;
     } else {
-        x = G3D::inf();
-        y = G3D::inf();
-        z = G3D::inf();
+        x = (float)G3D::inf();
+        y = (float)G3D::inf();
+        z = (float)G3D::inf();
     }
 
     return *this;
 }
 
 //----------------------------------------------------------------------------
-double Vector3::unitize (double fTolerance) {
-	double fMagnitude = magnitude();
+float Vector3::unitize (float fTolerance) {
+	float fMagnitude = magnitude();
 
     if (fMagnitude > fTolerance) {
-		float fInvMagnitude = 1.0 / fMagnitude;
+		float fInvMagnitude = 1.0f / fMagnitude;
         x *= fInvMagnitude;
         y *= fInvMagnitude;
         z *= fInvMagnitude;
     } else {
-        fMagnitude = 0.0;
+        fMagnitude = 0.0f;
     }
 
     return fMagnitude;
@@ -254,8 +254,8 @@ Vector3 Vector3::reflectionDirection(const Vector3& normal) const {
 
 Vector3 Vector3::refractionDirection(
     const Vector3&  normal,
-    double          iInside,
-    double          iOutside) const {
+    float           iInside,
+    float           iOutside) const {
 
     // From pg. 24 of Henrik Wann Jensen. Realistic Image Synthesis
     // Using Photon Mapping.  AK Peters. ISBN: 1568811470. July 2001.
@@ -265,19 +265,19 @@ Vector3 Vector3::refractionDirection(
     const Vector3 W = -direction();
     Vector3 N = normal.direction();
 
-    double h1 = iOutside;
-    double h2 = iInside;
+    float h1 = iOutside;
+    float h2 = iInside;
 
-    if (normal.dot(*this) > 0) {
+    if (normal.dot(*this) > 0.0f) {
         h1 = iInside;
         h2 = iOutside;
         N  = -N;
     }
 
-    const double hRatio = h1 / h2;
-    const double WdotN = W.dot(N);
+    const float hRatio = h1 / h2;
+    const float WdotN = W.dot(N);
 
-    double det = 1.0 - square(hRatio) * (1.0 - square(WdotN));
+    float det = 1.0f - (float)square(hRatio) * (1.0f - (float)square(WdotN));
 
     if (det < 0) {
         // Total internal reflection
@@ -352,7 +352,7 @@ Matrix3 Vector3::cross() const {
 
 
 void serialize(const Vector3::Axis& a, class BinaryOutput& bo) {
-    bo.writeUInt8((int)a);
+    bo.writeUInt8((uint8)a);
 }
 
 void deserialize(Vector3::Axis& a, class BinaryInput& bi) {

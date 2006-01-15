@@ -611,9 +611,9 @@ RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
     renderMode                  = RenderDevice::RENDER_SOLID;
 
     shininess                   = 15;
-    specular                    = Color3::white() * 0.8;
+    specular                    = Color3::white() * 0.8f;
 
-    lights.ambient              = Color4(0.25, 0.25, 0.25, 1.0);
+    lights.ambient              = Color4(0.25f, 0.25f, 0.25f, 1.0f);
 
     lights.lighting             = false;
     color                       = Color4(1,1,1,1);
@@ -645,7 +645,7 @@ RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
     double aspect;
     aspect = (double)viewport.width() / viewport.height();
 
-    matrices.projectionMatrix = Matrix4::perspectiveProjection(-aspect, aspect, -1, 1, 0.1, 100.0);
+    matrices.projectionMatrix = Matrix4::perspectiveProjection(-aspect, aspect, -1, 1, 0.1f, 100.0f);
 
     cullFace                    = CULL_BACK;
 
@@ -1028,12 +1028,12 @@ void RenderDevice::setSpecularCoefficient(const Color3& c) {
 }
 
 
-void RenderDevice::setSpecularCoefficient(double s) {
+void RenderDevice::setSpecularCoefficient(float s) {
     setSpecularCoefficient(s * Color3::white());
 }
 
 
-void RenderDevice::setShininess(double s) {
+void RenderDevice::setShininess(float s) {
     minStateChange();
     if (state.shininess != s) {
         state.shininess = s;
@@ -3050,7 +3050,7 @@ void RenderDevice::configureShadowMap(
     static const Matrix4 bias(
         0.5f, 0.0f, 0.0f, 0.5f,
         0.0f, 0.5f, 0.0f, 0.5f,
-        0.0f, 0.0f, 0.5f, 0.5f - .000001,
+        0.0f, 0.0f, 0.5f, 0.5f - .000001f,
         0.0f, 0.0f, 0.0f, 1.0f);
     
     Matrix4 textureMatrix = glGetMatrix(GL_TEXTURE_MATRIX);

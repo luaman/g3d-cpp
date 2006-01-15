@@ -153,9 +153,9 @@ int Welder::getIndex(const Vector3& vertex) {
 
         Set<List*> neighbors;
 
-        for (int dx = -1; dx <= +1; ++dx) {
-            for (int dy = -1; dy <= +1; ++dy) {
-                for (int dz = -1; dz <= +1; ++dz) {
+        for (float dx = -1; dx <= +1; ++dx) {
+            for (float dy = -1; dy <= +1; ++dy) {
+                for (float dz = -1; dz <= +1; ++dz) {
                     int ix, iy, iz;
                     toGridCoords(vertex + Vector3(dx, dy, dz) * radius, ix, iy, iz);
                     neighbors.insert(&(grid[ix][iy][iz]));

@@ -118,7 +118,7 @@ float Box::volume() const {
 }
 
 
-double Box::surfaceArea() const {
+float Box::surfaceArea() const {
     return _area;
 }
 
@@ -331,31 +331,31 @@ bool Box::contains(
 
 
 void Box::getRandomSurfacePoint(Vector3& P, Vector3& N) const {
-    double aXY = _extent.x * _extent.y;
-    double aYZ = _extent.y * _extent.z;
-    double aZX = _extent.z * _extent.x;
+    float aXY = _extent.x * _extent.y;
+    float aYZ = _extent.y * _extent.z;
+    float aZX = _extent.z * _extent.x;
 
-    double r = random(0, aXY + aYZ + aZX);
+    float r = (float)random(0, aXY + aYZ + aZX);
 
     // Choose evenly between positive and negative face planes
-    double d = (random(0, 1) < 0.5) ? -1 : 1;
+    float d = (random(0, 1) < 0.5f) ? -1.0f : 1.0f;
 
     // The probability of choosing a given face is proportional to
     // its area.
     if (r < aXY) {
-        P = _axis[0] * random(-0.5, 0.5) * _extent.x +
-            _axis[1] * random(-0.5, 0.5) * _extent.y +
-            _center + _axis[2] * d * _extent.z * 0.5;
+        P = _axis[0] * (float)random(-0.5, 0.5) * _extent.x +
+            _axis[1] * (float)random(-0.5, 0.5) * _extent.y +
+            _center + _axis[2] * d * _extent.z * 0.5f;
         N = _axis[2] * d;
     } else if (r < aYZ) {
-        P = _axis[1] * random(-0.5, 0.5) * _extent.y +
-            _axis[2] * random(-0.5, 0.5) * _extent.z +
-            _center + _axis[0] * d * _extent.x * 0.5;
+        P = _axis[1] * (float)random(-0.5, 0.5) * _extent.y +
+            _axis[2] * (float)random(-0.5, 0.5) * _extent.z +
+            _center + _axis[0] * d * _extent.x * 0.5f;
         N = _axis[0] * d;
     } else {
-        P = _axis[2] * random(-0.5, 0.5) * _extent.z +
-            _axis[0] * random(-0.5, 0.5) * _extent.x +
-            _center + _axis[1] * d * _extent.y * 0.5;
+        P = _axis[2] * (float)random(-0.5, 0.5) * _extent.z +
+            _axis[0] *(float) random(-0.5, 0.5) * _extent.x +
+            _center + _axis[1] * d * _extent.y * 0.5f;
         N = _axis[1] * d;
     }
 }
@@ -365,7 +365,7 @@ Vector3 Box::randomInteriorPoint() const {
     Vector3 sum = _center;
 
     for (int a = 0; a < 3; ++a) {
-        sum += _axis[a] * random(-0.5, 0.5) * _extent[a];
+        sum += _axis[a] * (float)random(-0.5, 0.5) * _extent[a];
     }
 
     return sum;

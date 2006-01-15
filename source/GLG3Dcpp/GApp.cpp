@@ -243,19 +243,19 @@ void GApp::renderDebugInfo() {
             if (debugShowRenderingStats) {
 
                 renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-                Draw::fastRect2D(Rect2D::xywh(2, 2, 796, size * 5), renderDevice, Color4(0, 0, 0, 0.3));
+                Draw::fastRect2D(Rect2D::xywh(2, 2, 796, size * 5), renderDevice, Color4(0, 0, 0, 0.3f));
 
                 Color3 statColor = Color3::yellow();
 
                 debugFont->draw2D(renderDevice->getCardDescription() + "   " + System::version(), 
                     pos, size, color);
-                pos.y += size * 1.5;
+                pos.y += size * 1.5f;
                 
                 std::string s = format(
                     "% 4dfps % 4.1gM tris % 4.1gM tris/s   GL Calls: %d/%d Maj; %d/%d Min; %d push", 
                     iRound(m_graphicsWatch.smoothFPS()),
-                    iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1,
-                    iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1,
+                    iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1f,
+                    iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1f,
                     majGL, majAll, minGL, minAll, pushCalls);
                 debugFont->draw2D(s, pos, size, statColor);
 

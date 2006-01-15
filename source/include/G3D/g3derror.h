@@ -22,7 +22,8 @@
 
 #ifdef _MSC_VER
     // disable: "C++ exception handler used"
-    #pragma warning (disable : 4530)
+#   pragma warning (push)
+#   pragma warning (disable : 4530)
 #endif // _MSC_VER
 
 /**
@@ -71,4 +72,8 @@ ErrorConstant _utility_error(const std::string &level, const std::string &messag
 
 }; // namespace
 
+#endif
+
+#ifdef _MSC_VER
+#   pragma warning (pop)
 #endif
