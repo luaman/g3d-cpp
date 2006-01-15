@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-05-23
-  @edited  2005-01-11
+  @edited  2006-01-11
 */
 
 #ifndef GLG3D_TEXTUREFORMAT_H
@@ -18,20 +18,111 @@ namespace G3D {
 /**
  Used to describe texture formats to the G3D::Texture class.
  Don't construct these; use the static constants provided.
+
+ @deprecated In 7.00, all static members will become functions with the 
+ same name to avoid global initialization issues.
  */
 class TextureFormat {
 public:
+
+    enum Code {
+        CODE_L8,
+        CODE_L16,
+        CODE_L16F,
+        CODE_L32F,
+
+        CODE_A8,
+        CODE_A16,
+        CODE_A16F,
+        CODE_A32F,
+
+        CODE_LA4,
+        CODE_LA8,
+        CODE_LA16,
+        CODE_LA16F,
+        CODE_LA32F,
+
+        CODE_RGB5,
+        CODE_RGB5A1,
+        CODE_RGB8,
+        CODE_RGB16,
+        CODE_RGB16F,
+        CODE_RGB32F,
+
+        CODE_ARGB8,
+        CODE_BGR8,
+
+        CODE_RGBA8,
+        CODE_RGBA16,
+        CODE_RGBA16F,
+        CODE_RGBA32F,
+
+        CODE_BAYER_RGGB8,
+        CODE_BAYER_GRBG8,
+        CODE_BAYER_GBRG8,
+        CODE_BAYER_BGGR8,
+        CODE_BAYER_RGGB32F,
+        CODE_BAYER_GRBG32F,
+        CODE_BAYER_GBRG32F,
+        CODE_BAYER_BGGR32F,
+
+        CODE_HSV8,
+        CODE_HSV32F,
+
+        CODE_YUV8,
+        CODE_YUV32F,
+
+        CODE_RGB_DXT1,
+        CODE_RGBA_DXT1,
+        CODE_RGBA_DXT3,
+        CODE_RGBA_DXT5,
+
+        CODE_DEPTH16,
+        CODE_DEPTH24,
+        CODE_DEPTH32,
+        
+        CODE_STENCIL1,
+        CODE_STENCIL4,
+        CODE_STENCIL8,
+        CODE_STENCIL16
+        };
+
+    enum ColorSpace {
+        COLOR_SPACE_NONE,
+        COLOR_SPACE_RGB,
+        COLOR_SPACE_HSV,
+        COLOR_SPACE_YUV
+    };
+
+    enum BayerPattern {
+        BAYER_PATTERN_NONE,
+        BAYER_PATTERN_RGGB,
+        BAYER_PATTERN_GRBG,
+        BAYER_PATTERN_GBRG,
+        BAYER_PATTERN_BGGR
+    };
 
     /**
      Number of channels (1 for a depth texture).
      */
     int                 numComponents;
     bool                compressed;
-    
+
+    /** Useful for serializing */
+    Code                code;
+
+    ColorSpace          colorSpace;
+
+    BayerPattern        bayerPattern;
+
     /**
-     The GL format equivalent to this one.
+     The GL format equivalent to this one.  Zero if there is no equivalent.
      */
     GLenum              OpenGLFormat;
+
+    /**
+     The GL base format equivalent to this one (e.g., GL_RGB, GL_ALPHA).  Zero if there is no equivalent.
+     */
     GLenum              OpenGLBaseFormat;
 
     int                 luminanceBits;
@@ -56,6 +147,8 @@ public:
      */
     int                 blueBits;
 
+    int                 stencilBits;
+
     /**
      Number of depth bits (for depth textures; e.g. shadow maps)
      */
@@ -73,7 +166,6 @@ public:
      4 bytes.
      */
     int                 hardwareBitsPerTexel;
-
 
     /**
      True if there is no alpha channel for this texture.
@@ -96,10 +188,14 @@ private:
         int             _greenBits,
         int             _blueBits,
         int             _depthBits,
+        int             _stencilBits,
         int             _hardwareBitsPerTexel,
         int             _packedBitsPerTexel,
         bool            _opaque,
-        bool            _floatingPoint) : 
+        bool            _floatingPoint,
+        Code            _code,
+        ColorSpace      _colorSpace,
+        BayerPattern    _bayerPattern = BAYER_PATTERN_NONE) : 
         numComponents(_numComponents),
         compressed(_compressed),
         OpenGLFormat(_glFormat),
@@ -110,10 +206,14 @@ private:
         greenBits(_greenBits),
         blueBits(_blueBits),
         depthBits(_depthBits),
+        stencilBits(_stencilBits),
         packedBitsPerTexel(_packedBitsPerTexel),
         hardwareBitsPerTexel(_hardwareBitsPerTexel),
         opaque(_opaque),
-        floatingPoint(_floatingPoint) {
+        floatingPoint(_floatingPoint),
+        code(_code),
+        colorSpace(_colorSpace),
+        bayerPattern(_bayerPattern) {
     }
 
 public:

@@ -29,6 +29,7 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> G3D::TextureFormat::code, G3D::TextureFormat::colorSpace
       <LI> <B>incompatible change</B> G3D::MeshAlg::computeTangentSpace basis now computes a right-handed coordinate frame,
            where the binormal direction is the negative of the direction it faced in G3D 6.07.
       <LI> Exposed G3D::RenderDevice::beforePrimitive and G3D::RenderDevice::afterPrimitive to end-user code for
