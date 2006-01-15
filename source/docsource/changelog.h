@@ -29,6 +29,8 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> All keys are reset to up when Win32Window loses focus. [Corey]
+      <LI> Added Plane::distance and Plane::closestPoint helper methods. [Corey] 
       <LI> G3D::TextureFormat::code, G3D::TextureFormat::colorSpace
       <LI> <B>incompatible change</B> G3D::MeshAlg::computeTangentSpace basis now computes a right-handed coordinate frame,
            where the binormal direction is the negative of the direction it faced in G3D 6.07.
@@ -103,6 +105,10 @@
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
       <LI> G3D::GLCaps::hasBug_redBlueMipmapSwap and workaround for G3D::Texture on Radeon 7500
+      <LI> Fix: <B>incompatible change</B> BinaryInput/BinaryOutput copy constructors and assignments were accessible. [Corey]
+      <LI> Fix: RenderDevice::screenshotPic would corrupt GImage's heap. [Corey]
+      <LI> Fix: Alt-Tab window switching caused an invalid Alt key state. [Corey]
+      <LI> Fix: Incorrect window size event in Win32Window sent to OpenGL. [Corey]
       <LI> Fix: [ 1227915 ] Textures don't bind on ATI under GLSL.
       <LI> Fix: [ 1358477 ] ray-plane intersection bug [Dan Keefe]
       <LI> Fix: [ 1370665 ] hash_map moved to stdext in VC8 (2005)
