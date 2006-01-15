@@ -1097,17 +1097,22 @@ public:
     void enableTwoSidedLighting();
     void disableTwoSidedLighting();
 
+	/** Automatically called immediately before a primitive group.  User code should only
+        call this if making raw OpenGL calls (i.e., "glBegin"), in which case it should be
+        called immediately before the glBegin and afterPrimitve should be called immediately
+        after the glEnd.
+      */
+    void beforePrimitive();
+
+    /** Automatically called immediately after a primitive group. See also beforePrimitive.*/
+    void afterPrimitive();
+
 private:
 
 	/** Called immediately before a primitive group 
         @deprecated*/
 	inline void runObjectShader();
 
-	/** Called immediately before a primitive group */
-    void beforePrimitive();
-
-    /** Called immediately after a primitive group */
-    void afterPrimitive();
 
     /**
      For performance, we don't actually unbind a texture when

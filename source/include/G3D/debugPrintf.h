@@ -34,15 +34,15 @@ namespace G3D {
  @fn void __cdecl debugPrintf(const char *fmt ...)
  
   Prints a string from arguments of the style of printf.
-  If _DEBUG is not defined, does nothing.  On Windows, the
+  If G3D_DEBUG is not defined, does nothing.  On Windows, the
   string is printed to the output window in MSVC.  On other
   platforms, the string is printed to stderr.
  */
 
-#ifdef _DEBUG
+#ifdef G3D_DEBUG
 
     // This function is inlined so that it can be turned off depending
-    // on the linked program's _DEBUG setting (not the _DEBUG setting
+    // on the linked program's G3D_DEBUG setting (not the G3D_DEBUG setting
     // the library was compiled against).
     inline void __cdecl debugPrintf(const char* fmt ...) {
 

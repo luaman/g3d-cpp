@@ -418,6 +418,45 @@ const Texture::Parameters& Texture::parameters() const {
     return _parameters;
 }
 
+
+
+void Texture::getImage(GImage& dst) const {
+    int channels = 0;
+
+    switch(format->OpenGLBaseFormat) {
+    case GL_LUMINANCE:
+        channels = 1;
+        break;
+
+    case GL_RGB:
+        channels = 3;
+        break;
+
+    case GL_RGBA:
+        channels = 4;
+        break;
+
+    default:
+        alwaysAssertM(false, "This texture format is not appropriate for reading to an image.");
+    }
+
+    dst.resize(width, height, channels);
+
+    GLenum target = dimensionToTarget(dimension);
+
+    glPushAttrib(GL_TEXTURE_BIT);
+    glBindTexture(target, textureID);
+
+    glGetTexImage(
+       target,
+       0,
+       format->OpenGLBaseFormat,
+       GL_UNSIGNED_BYTE,
+       dst.byte());
+
+    glPopAttrib();
+}
+
 Texture::Texture(
     const std::string&      _name,
     GLuint                  _textureID,

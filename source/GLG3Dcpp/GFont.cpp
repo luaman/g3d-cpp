@@ -320,8 +320,7 @@ Vector2 GFont::draw2D(
 
         int N = numChars * 4;
 
-        // TODO: make a syncToOpenGL call to do this
-        // renderDevice->beginPrimitive(RenderDevice::QUADS); renderDevice->endPrimitive();
+        renderDevice->beforePrimitive();
 
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
@@ -354,6 +353,8 @@ Vector2 GFont::draw2D(
 
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
+
+        renderDevice->afterPrimitive();
     renderDevice->popState();
 
     System::free(array);

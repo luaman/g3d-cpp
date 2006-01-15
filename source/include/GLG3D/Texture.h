@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2005-05-06
+  @edited  2006-14-06
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -529,6 +529,12 @@ public:
     inline unsigned int G3D_DEPRECATED getOpenGLID() const {
         return textureID;
     }
+
+    /**
+     Returns the level 0 mip-map data in the format that most closely matches
+     the internal texture format.
+     */
+    void getImage(GImage& dst) const;
 
     inline unsigned int openGLID() const {
         return textureID;

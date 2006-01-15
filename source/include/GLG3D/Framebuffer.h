@@ -264,3 +264,4 @@ public:
 unsigned int hashCode(const G3D::Framebuffer::AttachmentPoint& a);
 
 #endif // GLG3D_FRAMEBUFFER_H
+
