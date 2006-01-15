@@ -20,7 +20,7 @@
 
 //#define FAST
  
-static const float gfxMeterVersion = 0.8;
+static const float gfxMeterVersion = 0.8f;
 
 int CPU_speed_in_MHz();
 

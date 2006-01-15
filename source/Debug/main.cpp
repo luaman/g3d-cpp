@@ -13,6 +13,9 @@
 
 #include <G3DAll.h>
 
+#include "../contrib/Matrix/Matrix.h"
+#include "../contrib/Matrix/Matrix.cpp"
+
 #if G3D_VER < 60800
     #error Requires G3D 6.08
 #endif
@@ -30,6 +33,8 @@ public:
     // state, put it in the App.
 
     class App*          app;
+
+    RealTime            computeTime;
 
     TextureRef texture[2];
 
@@ -78,7 +83,24 @@ void Demo::onInit()  {
     app->debugCamera.lookAt(Vector3(0, 2, 0));
     GApplet::init();
 
-    texture[0] = NULL;//Texture::fromFile("0.jpg");
+    texture[0] = NULL;
+
+    GImage src("rggb.bmp");
+    GImage dst(src.width, src.height, 3);
+
+    src.convertToL8();
+    Stopwatch timer;
+
+    timer.tick();
+    GImage::BAYER_R8G8_G8R8_to_R8G8B8_MHC(src.width, src.height, src.byte(), dst.byte());
+    timer.tock();
+
+    computeTime = timer.elapsedTime();
+
+    texture[1] = Texture::fromGImage("bayer", dst, TextureFormat::RGB8, Texture::DIM_2D_NPOT, Texture::Parameters::video());
+
+#if 0
+    //Texture::fromFile("0.jpg");
 //    GImage im0("0.jpg");
 
 //    GImage im(512,512,3);
@@ -120,7 +142,7 @@ void Demo::onInit()  {
     }
 
     // Format bug only occurs when using bilinear interpolation
-    texture[1] = Texture::fromMemory("Red", b, (X == 3) ? TextureFormat::RGB8 : TextureFormat::RGBA8, 4, 4);
+    texture[1] = Texture::fromMemory("Red", b, (X == 3) ? TextureFormat::RGB8 : TextureFormat::RGBA8, 4, 4, TextureFormat::AUTO, Texture::TILE);//Texture::Parameters::defaults());
     //, TextureFormat::AUTO, Texture::TILE, Texture::NO_INTERPOLATION, Texture::DIM_2D);
     delete[] b;
     
@@ -141,7 +163,7 @@ void Demo::onInit()  {
     delete[] b;
 
    // alwaysAssertM(! GLCaps::hasBug_redBlueMipmapSwap(), "Red and blue are swapped.");
-
+#endif
 
     setDesiredFrameRate(90);
 }
@@ -198,13 +220,14 @@ void Demo::onGraphics(RenderDevice* rd) {
     }
 
     app->renderDevice->push2D();
-        Rect2D rect = Rect2D::xywh(0, 100, 100, 100);
-        app->renderDevice->setTexture(0, texture[0]);
-        Draw::rect2D(rect, rd);
 
-        rect = rect + Vector2(200, 0);
+        app->debugPrintf("Time: %fs", computeTime);
+
+        app->renderDevice->setCameraToWorldMatrix(CoordinateFrame());
+
+        Rect2D rect = texture[1]->rect2DBounds();
         app->renderDevice->setTexture(0, texture[1]);
-        Draw::rect2D(rect, rd);
+        Draw::rect2D(rect/2, rd);
 
     app->renderDevice->pop2D();
     // Setup lighting
@@ -252,15 +275,6 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-
-    std::string x[] = {"c:/ironlore/foo", "c:/program files/bar/a", "c:/ironlore/bar", "d:/bannana", "c:/ironlore/cod"};
-
-    std::string a = "a";
-    Set<uint32> y;
-    for (int i = 0; i < 5; ++i) {
-        y.insert(hashCode(x[i]));
-    }
-    int g = y.size();
 
     GAppSettings settings;
     settings.useNetwork = false;

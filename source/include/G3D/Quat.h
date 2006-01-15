@@ -6,12 +6,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-10-24
+  @edited  2005-01-10
  */
 
 #ifndef G3D_QUAT_H
 #define G3D_QUAT_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Vector3.h"
 #include "G3D/Matrix3.h"
@@ -173,28 +174,28 @@ public:
     
 
     inline float magnitude() const {
-        return sqrt(dot(*this));
+        return sqrtf(dot(*this));
     }
 
     inline Quat log() const {
         if ((x == 0) && (y == 0) && (z == 0)) {
             if (w > 0) {
-                return Quat(0, 0, 0, ::log(w));
+                return Quat(0, 0, 0, ::logf(w));
             } else if (w < 0) {
                 // Log of a negative number.  Multivalued, any number of the form
                 // (PI * v, ln(-q.w))
-                return Quat((float)G3D_PI, 0, 0, ::log(-w));
+                return Quat((float)G3D_PI, 0, 0, ::logf(-w));
             } else {
                  // log of zero!
                  return Quat((float)nan(), (float)nan(), (float)nan(), (float)nan());
             }
         } else {
             // Partly imaginary.
-            float imagLen = sqrt(x * x + y * y + z * z);
-            float len = sqrt(imagLen * imagLen + w * w);
-            float theta = atan2(imagLen, (float)w);
+            float imagLen = sqrtf(x * x + y * y + z * z);
+            float len = sqrtf(imagLen * imagLen + w * w);
+            float theta = atan2f(imagLen, (float)w);
             float t = theta / imagLen;
-            return Quat(t * x, t * y, t * z, ::log(len));
+            return Quat(t * x, t * y, t * z, ::logf(len));
         }
     }
     /** log q = [Av, 0] where q = [sin(A) * v, cos(A)].
@@ -221,7 +222,7 @@ public:
         Vector3 u(x, y, z);
         float A = u.magnitude();
         Vector3 v = u / A;
-        return Quat(sin(A) * v, cos(A));
+        return Quat(sinf(A) * v, cosf(A));
     }
 
 
@@ -247,7 +248,7 @@ public:
         if (fuzzyEq(mag2, 1.0f)) {
             return *this;
         } else {
-            return *this / sqrt(mag2);
+            return *this / sqrtf(mag2);
         }
     }
 

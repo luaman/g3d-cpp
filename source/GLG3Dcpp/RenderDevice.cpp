@@ -387,8 +387,7 @@ void RenderDevice::setGamma(
         gammaRamp[i] =
             (uint16)min(65535, 
                       max(0, 
-                      pow((brightness * (i + 1)) / 256.0, gamma) * 
-                          65535 + 0.5));
+                      (int)(pow((brightness * (i + 1)) / 256.0, gamma) * 65535 + 0.5)));
 	}
     
     _window->setGammaRamp(gammaRamp);

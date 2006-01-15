@@ -201,11 +201,14 @@ Quat Quat::operator*(const Quat& other) const {
 // From "Uniform Random Rotations", Ken Shoemake, Graphics Gems III.
 Quat Quat::unitRandom() {
     float x0 = (float)G3D::unitRandom();
-    float r1 = sqrt(1 - x0), r2 = sqrt(x0);
+    float r1 = sqrtf(1 - x0), 
+          r2 = sqrtf(x0);
     float t1 = (float)G3D_TWO_PI * (float)G3D::unitRandom();
     float t2 = (float)G3D_TWO_PI * (float)G3D::unitRandom();
-    float c1 = cos(t1), s1 = sin(t1);
-    float c2 = cos(t2), s2 = sin(t2);
+    float c1 = cosf(t1), 
+          s1 = sinf(t1);
+    float c2 = cosf(t2), 
+          s2 = sinf(t2);
     return Quat(s1 * r1, c1 * r1, s2 * r2, c2 * r2);
 }
 

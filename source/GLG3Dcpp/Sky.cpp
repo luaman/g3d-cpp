@@ -492,7 +492,7 @@ void Sky::drawMoonAndStars(
     renderDevice->setTexture(0, moon);
     renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
     renderDevice->setAlphaTest(RenderDevice::ALPHA_GEQUAL, 0.05);
-    drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(lighting.emissiveScale, min(1, max(0, moonPosition.y * 4))));
+    drawCelestialSphere(renderDevice, L, X, Y, .06, Color4(lighting.emissiveScale, min(1.0f, max(0.0f, moonPosition.y * 4.0f))));
 }
 
 
@@ -514,10 +514,10 @@ void Sky::drawSun(
 
     if (sunPosition.y < 0) {
         // Fade out the sun as it goes below the horizon
-        c *= max(0, (sunPosition.y + .1f) * 10);
+        c *= max(0.0f, (sunPosition.y + 0.1f) * 10.0f);
     }
 
-    drawCelestialSphere(renderDevice, L, X, Y, .12, c);
+    drawCelestialSphere(renderDevice, L, X, Y, 0.12f, c);
 }
 
 
@@ -582,7 +582,7 @@ void Sky::renderLensFlare(
                                            RenderDevice::BLEND_ONE);
 
                 // Make flares fade out near sunset and sunrise
-                double flareBrightness = sqrt(max(sunPosition.y * 4, 0));
+                float flareBrightness = sqrtf(max(sunPosition.y * 4.0f, 0.0f));
 
                 // Sun position
                 Vector4 L(sunPosition,0);
@@ -600,13 +600,13 @@ void Sky::renderLensFlare(
 
                     Color4 col =
                         Color4(1,1,1,1) * (occlusionAttenuation *
-                            0.4 * max(0.0, min(1.0, 1.0 - sunPosition.y * 2.0 / sqrt(2.0))));
+                            0.4f * max(0.0f, min(1.0f, 1.0f - sunPosition.y * 2.0f / sqrtf(2.0f))));
                     drawCelestialSphere(renderDevice, L, X , Y, 0.6, col);
                 }
 
                 renderDevice->setTexture(0, sun);
-                drawCelestialSphere(renderDevice, L, X, Y, .13,
-                                    lighting.emissiveScale * fractionOfSunVisible * .5);
+                drawCelestialSphere(renderDevice, L, X, Y, .13f,
+                                    lighting.emissiveScale * fractionOfSunVisible * .5f);
 
                 // Lens flare
                 Vector4 C(camera.getLookVector(), 0);

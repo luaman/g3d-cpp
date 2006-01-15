@@ -7,12 +7,12 @@
  @edited  2005-02-24
  */
 
+#include "G3D/platform.h"
 #include "GLG3D/tesselate.h"
 #include "G3D/Vector3.h"
 #include "G3D/Array.h"
 #include "G3D/Triangle.h"
 #include "GLG3D/glheaders.h"
-#include "G3D/platform.h"
 
 namespace G3D {
 

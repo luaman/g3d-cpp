@@ -6,9 +6,10 @@
  @author Morgan McGuire, graphics3d.com
 
  @created 2001-06-02
- @edited  2005-06-08
+ @edited  2006-01-08
 */
 
+#include "G3D/platform.h"
 #include <memory.h>
 #include <assert.h>
 #include "G3D/Matrix3.h"
@@ -58,21 +59,21 @@ bool Matrix3::fuzzyEq(const Matrix3& b) const {
 Matrix3::Matrix3(const Quat& _q) {
     // implementation from Watt and Watt, pg 362
     Quat q = _q.unitize();
-    double xx = 2.0 * q.x * q.x;
-    double xy = 2.0 * q.x * q.y;
-    double xz = 2.0 * q.x * q.z;
-    double xw = 2.0 * q.x * q.w;
+    float xx = 2.0f * q.x * q.x;
+    float xy = 2.0f * q.x * q.y;
+    float xz = 2.0f * q.x * q.z;
+    float xw = 2.0f * q.x * q.w;
 
-    double yy = 2.0 * q.y * q.y;
-    double yz = 2.0 * q.y * q.z;
-    double yw = 2.0 * q.y * q.w;
+    float yy = 2.0f * q.y * q.y;
+    float yz = 2.0f * q.y * q.z;
+    float yw = 2.0f * q.y * q.w;
 
-    double zz = 2.0 * q.z * q.z;
-    double zw = 2.0 * q.z * q.w;
+    float zz = 2.0f * q.z * q.z;
+    float zw = 2.0f * q.z * q.w;
 
-    set(1.0 - yy - zz,    xy - zw,        xz + yw,
-        xy + zw,          1.0 - xx - zz,  yz - xw,
-        xz - yw,          yz + xw,        1.0 - xx - yy);
+    set(1.0f - yy - zz,    xy - zw,        xz + yw,
+        xy + zw,          1.0f - xx - zz,  yz - xw,
+        xz - yw,          yz + xw,        1.0f - xx - yy);
 }
 
 //----------------------------------------------------------------------------
@@ -1251,9 +1252,9 @@ bool Matrix3::toEulerAnglesZYX (float& rfZAngle, float& rfYAngle,
 
     if ( m_aafEntry[2][0] < 1.0 ) {
         if ( m_aafEntry[2][0] > -1.0 ) {
-            rfZAngle = G3D::aTan2(m_aafEntry[1][0], m_aafEntry[0][0]);
-            rfYAngle = G3D::aSin(-(double)m_aafEntry[2][1]);
-            rfXAngle = G3D::aTan2(m_aafEntry[2][1], m_aafEntry[2][2]);
+            rfZAngle = atan2f(m_aafEntry[1][0], m_aafEntry[0][0]);
+            rfYAngle = asinf(-(double)m_aafEntry[2][1]);
+            rfXAngle = atan2f(m_aafEntry[2][1], m_aafEntry[2][2]);
             return true;
         } else {
             // WARNING.  Not unique.  ZA - XA = -atan2(r01,r02)
@@ -1276,16 +1277,16 @@ Matrix3 Matrix3::fromEulerAnglesXYZ (float fYAngle, float fPAngle,
                                   float fRAngle) {
     float fCos, fSin;
 
-    fCos = cos(fYAngle);
-    fSin = sin(fYAngle);
+    fCos = cosf(fYAngle);
+    fSin = sinf(fYAngle);
     Matrix3 kXMat(1.0f, 0.0f, 0.0f, 0.0f, fCos, -fSin, 0.0, fSin, fCos);
 
-    fCos = cos(fPAngle);
-    fSin = sin(fPAngle);
+    fCos = cosf(fPAngle);
+    fSin = sinf(fPAngle);
     Matrix3 kYMat(fCos, 0.0f, fSin, 0.0f, 1.0f, 0.0f, -fSin, 0.0f, fCos);
 
-    fCos = cos(fRAngle);
-    fSin = sin(fRAngle);
+    fCos = cosf(fRAngle);
+    fSin = sinf(fRAngle);
     Matrix3 kZMat(fCos, -fSin, 0.0f, fSin, fCos, 0.0f, 0.0f, 0.0f, 1.0f);
 
     return kXMat * (kYMat * kZMat);
@@ -1297,57 +1298,63 @@ Matrix3 Matrix3::fromEulerAnglesXZY (float fYAngle, float fPAngle,
 
     float fCos, fSin;
 
-    fCos = cos(fYAngle);
-    fSin = sin(fYAngle);
+    fCos = cosf(fYAngle);
+    fSin = sinf(fYAngle);
     Matrix3 kXMat(1.0, 0.0, 0.0, 0.0, fCos, -fSin, 0.0, fSin, fCos);
 
-    fCos = cos(fPAngle);
-    fSin = sin(fPAngle);
+    fCos = cosf(fPAngle);
+    fSin = sinf(fPAngle);
     Matrix3 kZMat(fCos, -fSin, 0.0, fSin, fCos, 0.0, 0.0, 0.0, 1.0);
 
-    fCos = cos(fRAngle);
-    fSin = sin(fRAngle);
+    fCos = cosf(fRAngle);
+    fSin = sinf(fRAngle);
     Matrix3 kYMat(fCos, 0.0, fSin, 0.0, 1.0, 0.0, -fSin, 0.0, fCos);
 
     return kXMat * (kZMat * kYMat);
 }
 
 //----------------------------------------------------------------------------
-Matrix3 Matrix3::fromEulerAnglesYXZ (float fYAngle, float fPAngle,
-                                  float fRAngle) {
+Matrix3 Matrix3::fromEulerAnglesYXZ(
+    float fYAngle, 
+    float fPAngle,
+    float fRAngle) {
+    
     float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
-    Matrix3 kYMat(fCos, 0.0, fSin, 0.0, 1.0, 0.0, -fSin, 0.0, fCos);
+    Matrix3 kYMat(fCos, 0.0f, fSin, 0.0f, 1.0f, 0.0f, -fSin, 0.0f, fCos);
 
     fCos = cos(fPAngle);
     fSin = sin(fPAngle);
-    Matrix3 kXMat(1.0, 0.0, 0.0, 0.0, fCos, -fSin, 0.0, fSin, fCos);
+    Matrix3 kXMat(1.0f, 0.0f, 0.0f, 0.0f, fCos, -fSin, 0.0f, fSin, fCos);
 
     fCos = cos(fRAngle);
     fSin = sin(fRAngle);
-    Matrix3 kZMat(fCos, -fSin, 0.0, fSin, fCos, 0.0, 0.0, 0.0, 1.0);
+    Matrix3 kZMat(fCos, -fSin, 0.0f, fSin, fCos, 0.0f, 0.0f, 0.0f, 1.0f);
 
     return kYMat * (kXMat * kZMat);
 }
 
 //----------------------------------------------------------------------------
-Matrix3 Matrix3::fromEulerAnglesYZX (float fYAngle, float fPAngle,
-                                  float fRAngle) {
+Matrix3 Matrix3::fromEulerAnglesYZX(
+    float fYAngle, 
+    float fPAngle,
+    float fRAngle) {
+
     float fCos, fSin;
 
     fCos = cos(fYAngle);
     fSin = sin(fYAngle);
-    Matrix3 kYMat(fCos, 0.0, fSin, 0.0, 1.0, 0.0, -fSin, 0.0, fCos);
+    Matrix3 kYMat(fCos, 0.0f, fSin, 0.0f, 1.0f, 0.0f, -fSin, 0.0f, fCos);
 
     fCos = cos(fPAngle);
     fSin = sin(fPAngle);
-    Matrix3 kZMat(fCos, -fSin, 0.0, fSin, fCos, 0.0, 0.0, 0.0, 1.0);
+    Matrix3 kZMat(fCos, -fSin, 0.0f, fSin, fCos, 0.0f, 0.0f, 0.0f, 1.0f);
 
     fCos = cos(fRAngle);
     fSin = sin(fRAngle);
-    Matrix3 kXMat(1.0, 0.0, 0.0, 0.0, fCos, -fSin, 0.0, fSin, fCos);
+    Matrix3 kXMat(1.0f, 0.0f, 0.0f, 0.0f, fCos, -fSin, 0.0f, fSin, fCos);
 
     return kYMat * (kZMat * kXMat);
 }

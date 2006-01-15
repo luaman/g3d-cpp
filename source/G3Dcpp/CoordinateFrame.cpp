@@ -6,9 +6,10 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-06-02
- @edited  2005-09-25
+ @edited  2006-01-25
 */
 
+#include "G3D/platform.h"
 #include "G3D/CoordinateFrame.h"
 #include "G3D/Quat.h"
 #include "G3D/Matrix4.h"
@@ -48,7 +49,7 @@ Plane CoordinateFrame::toObjectSpace(const Plane& p) const {
     Vector3 N, P;
     double d;
     p.getEquation(N, d);
-    P = N * d;
+    P = N * (float)d;
     P = pointToObjectSpace(P);
     N = normalToObjectSpace(N);
     return Plane(N, P);

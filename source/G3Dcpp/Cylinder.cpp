@@ -6,10 +6,11 @@
  @created 2003-02-07
  @edited  2005-08-18
 
- Copyright 2000-2005, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
+#include "G3D/platform.h"
 #include "G3D/Cylinder.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
@@ -27,7 +28,7 @@ Cylinder::Cylinder() {
 }
 
 
-Cylinder::Cylinder(const Vector3& _p1, const Vector3& _p2, double _r) 
+Cylinder::Cylinder(const Vector3& _p1, const Vector3& _p2, float _r) 
 	: p1(_p1), p2(_p2), m_radius(_r) {
 }
 

@@ -4,9 +4,10 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2005-08-24
+ @edited  2006-01-18
  */
 
+#include "G3D/platform.h"
 #include "GLG3D/Draw.h"
 #include "graphics3D.h"
 #include "GLG3D/RenderDevice.h"
@@ -250,8 +251,8 @@ void Draw::plane(
         renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
             for (int i = 0; i <= N; ++i) {
                 float a = i * (float)G3D_TWO_PI / N;
-                float c = cos(a);
-                float s = sin(a);
+                float c = cosf(a);
+                float s = sinf(a);
 
                 renderDevice->sendVertex(Vector3(c * r1, s * r1, 0));
                 renderDevice->sendVertex(Vector4(c, s, 0, 0));
@@ -272,8 +273,8 @@ void Draw::plane(
             renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                 for (int i = 0; i <= N; ++i) {
                     float a = i * (float)G3D_TWO_PI / N;
-                    float c = cos(a);
-                    float s = sin(a);
+                    float c = cosf(a);
+                    float s = sinf(a);
 
                     renderDevice->sendVertex(Vector3(c * r1, s * r1, 0));
                     renderDevice->sendVertex(Vector3(c * r2, s * r2, 0));
@@ -382,7 +383,7 @@ void Draw::capsule(
                 renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
                         const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
-                        Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
+                        Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->setNormal(v0);
                         renderDevice->sendVertex(v0 * radius);
@@ -411,8 +412,8 @@ void Draw::capsule(
                     const float yaw0 = y * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
                     const float yaw1 = (y + 1) * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
 
-                    Vector3 v0(cos(yaw0), 0, sin(yaw0));
-                    Vector3 v1(cos(yaw1), 0, sin(yaw1));
+                    Vector3 v0(cosf(yaw0), 0, sinf(yaw0));
+                    Vector3 v1(cosf(yaw1), 0, sinf(yaw1));
 
                     renderDevice->setNormal(v0);
                     renderDevice->sendVertex(v0 * radius + center);
@@ -423,7 +424,7 @@ void Draw::capsule(
                 // Edge lines
                 for (int y = 0; y < 8; ++y) {
                     const float yaw = y * (float)G3D_PI / 4;
-                    const Vector3 x(cos(yaw), 0, sin(yaw));
+                    const Vector3 x(cosf(yaw), 0, sinf(yaw));
         
                     renderDevice->setNormal(x);
                     renderDevice->sendVertex(x * radius);
@@ -478,7 +479,7 @@ void Draw::cylinder(
                     renderDevice->sendVertex(top);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
                         const float yaw0 = -y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
-                        Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
+                        Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + top);
                     }
@@ -490,7 +491,7 @@ void Draw::cylinder(
                     renderDevice->sendVertex(bot);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
                         const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
-                        Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
+                        Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + bot);
                     }
@@ -500,7 +501,7 @@ void Draw::cylinder(
                 renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
                         const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
-                        Vector3 v0 = Vector3(cos(yaw0), 0, sin(yaw0));
+                        Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->setNormal(v0);
                         renderDevice->sendVertex(v0 * radius + bot);
@@ -578,7 +579,7 @@ void Draw::vertexNormals(
         const Array<Vector3>& vertexArray = geometry.vertexArray;
         const Array<Vector3>& normalArray = geometry.normalArray;
 
-        const float D = clamp(5.0f / ::pow((float)vertexArray.size(), 0.25f), 0.1f, .8f) * scale;
+        const float D = clamp(5.0f / ::powf((float)vertexArray.size(), 0.25f), 0.1f, .8f) * scale;
         
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
@@ -618,7 +619,7 @@ void Draw::vertexVectors(
         renderDevice->setColor(color);
         renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
 
-        const float D = clamp(5.0f / ::pow((float)vertexArray.size(), 0.25f), 0.1f, .8f) * scale;
+        const float D = clamp(5.0f / ::powf((float)vertexArray.size(), 0.25f), 0.1f, 0.8f) * scale;
         
         renderDevice->setLineWidth(1);
         renderDevice->beginPrimitive(RenderDevice::LINES);
@@ -694,13 +695,13 @@ void Draw::lineSegment(
         Vector4 s0 = renderDevice->project(v0);
         Vector4 s1 = renderDevice->project(v1);
 
-        double L = 2 * scale;
+        float L = 2 * scale;
         if ((s0.w > 0) && (s1.w > 0)) {
-            L = 15 * (s0.w + s1.w) / 2;
+            L = 15.0f * (s0.w + s1.w) / 2.0f;
         } else if (s0.w > 0) {
-            L = max(15 * s0.w, 10);
+            L = max(15 * s0.w, 10.0f);
         } else if (s1.w > 0) {
-            L = max(15 * s1.w, 10);
+            L = max(15.0f * s1.w, 10.0f);
         }
 
         renderDevice->setLineWidth(L);
@@ -852,7 +853,7 @@ void Draw::wireSphereSection(
                 for (int p = start; p <= stop; ++p) {
                     const float pitch0 = p * (float)G3D_PI / (sections * 0.5f);
 
-                    Vector3 v0 = cos(pitch0) * x + Vector3::unitY() * radius * sin(pitch0);
+                    Vector3 v0 = cosf(pitch0) * x + Vector3::unitY() * radius * sinf(pitch0);
                     renderDevice->setNormal(v0.direction());
                     renderDevice->sendVertex(v0 + center);
                 }

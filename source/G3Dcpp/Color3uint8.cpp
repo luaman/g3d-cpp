@@ -4,9 +4,10 @@
  @author Morgan McGuire, matrix@graphics3d.com
   
  @created 2003-04-07
- @edited  2003-04-07
+ @edited  2006-01-07
  */
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Color3uint8.h"
 #include "G3D/Color3.h"

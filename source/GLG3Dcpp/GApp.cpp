@@ -398,7 +398,7 @@ void GApplet::oneFrame() {
 
 
 void GApplet::onWait(RealTime t, RealTime desiredT) {
-    System::sleep(max(0, desiredT - t));
+    System::sleep(max(0.0, desiredT - t));
 }
 
 

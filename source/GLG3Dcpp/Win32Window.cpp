@@ -11,6 +11,7 @@
   All rights reserved.
 */
 
+#include <windows.h>
 #include "G3D/platform.h"
 #include "GLG3D/GLCaps.h"
 
