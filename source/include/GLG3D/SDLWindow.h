@@ -17,6 +17,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 #else
+#undef WIN32_LEAN_AND_MEAN
 #include <SDL.h>
 #include <SDL_syswm.h>
 #endif

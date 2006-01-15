@@ -19,7 +19,7 @@ float measureDrawElementsVBOPeakPerformance(class Model&);
 static const int frames = 15;
 
 /** How fast to rotate the objects */
-static const float kstep = 360.0 / (frames + 2);
+static const float kstep = 360.0f / (frames + 2.0f);
 
 /** Number of models per frame */
 int count = 5;
@@ -220,8 +220,8 @@ void measureVertexPerformance(
 static void configureCameraAndLights() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    float w = 0.8, h = 0.6;
-    glFrustum(-w/2, w/2, -h/2, h/2, 0.5, 100);
+    float w = 0.8f, h = 0.6f;
+    glFrustum(-w/2, w/2, -h/2, h/2, 0.5f, 100);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -232,26 +232,26 @@ static void configureCameraAndLights() {
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     {
-        float pos[4] = {-1.0, 1.0, 1.0, 0.0};
+        float pos[4] = {-1.0f, 1.0f, 1.0f, 0.0f};
         glLightfv(GL_LIGHT0, GL_POSITION, pos);
 
-        float col[4] = {1.0, 1.0, 1.0, 1.0};
+        float col[4] = {1.0f, 1.0f, 1.0f, 1.0f};
         glLightfv(GL_LIGHT0, GL_DIFFUSE, col);
 
     }
 
     glEnable(GL_LIGHT1);
     {
-        float pos[4] = {1.0, -1.0, 1.0, 0.0};
+        float pos[4] = {1.0f, -1.0f, 1.0f, 0.0f};
         glLightfv(GL_LIGHT1, GL_POSITION, pos);
 
-        float col[4] = {0.4, 0.1, 0.1, 1.0};
+        float col[4] = {0.4f, 0.1f, 0.1f, 1.0f};
         glLightfv(GL_LIGHT1, GL_DIFFUSE, col);
     }
 
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
     {
-        float amb[4] = {0.5, 0.5, 0.5, 1.0};
+        float amb[4] = {0.5f, 0.5f, 0.5f, 1.0f};
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
     }
 
@@ -767,8 +767,8 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    float w = 0.8, h = 0.6;
-    glFrustum(-w/2, w/2, -h/2, h/2, 0.5, 100);
+    float w = 0.8f, h = 0.6f;
+    glFrustum(-w/2, w/2, -h/2, h/2, 0.5f, 100);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

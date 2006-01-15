@@ -89,7 +89,7 @@ void Report::doFunStuff() {
     app->renderDevice->pushState();
         GCamera camera;
         camera.setCoordinateFrame(Vector3(0,1,10));
-        camera.lookAt(Vector3(0,2.8,0));
+        camera.lookAt(Vector3(0,2.8f,0));
 
         app->renderDevice->setProjectionAndCameraMatrix(camera);
 
@@ -97,8 +97,8 @@ void Report::doFunStuff() {
         ogre.renderShadow(app->renderDevice);
 
         app->renderDevice->enableLighting();
-        app->renderDevice->setLight(0, GLight::directional(Vector3(-1,1,2).direction(), Color3(.8,.8,.7)));
-        app->renderDevice->setLight(1, GLight::directional(Vector3(.5,-1,1).direction(), Color3::red() * 0.2));
+        app->renderDevice->setLight(0, GLight::directional(Vector3(-1,1,2).direction(), Color3(.8f,.8f,.7f)));
+        app->renderDevice->setLight(1, GLight::directional(Vector3(.5f,-1,1).direction(), Color3::red() * 0.2f));
         app->renderDevice->setAmbientLightColor(Color3(.5,.5,.6));
 
         knight.render(app->renderDevice);
@@ -109,8 +109,8 @@ void Report::doFunStuff() {
 
 
 static void drawBar(RenderDevice* rd, int value, const Vector2& p) {
-    float s = rd->getWidth() * 0.35 / 100.0;
-    Draw::rect2D(Rect2D::xywh(p.x, p.y, 100 * s, 20), rd, Color3::white() * 0.9);
+    float s = rd->getWidth() * 0.35f / 100.0f;
+    Draw::rect2D(Rect2D::xywh(p.x, p.y, 100 * s, 20), rd, Color3::white() * 0.9f);
     Draw::rect2D(Rect2D::xywh(p.x, p.y, value * s, 20), rd, Color3::yellow());
     Draw::rect2DBorder(Rect2D::xywh(p.x, p.y, 100 * s, 20), rd, Color3::black());
 }
@@ -161,7 +161,7 @@ void Report::doGraphics() {
 
         ///////////////////////////////////////
         // Left panel
-#       define LABEL(str) p.y += app->titleFont->draw2D(app->renderDevice, str, p - Vector2(w * 0.0075, 0), s * 2, Color3::white() * 0.4).y
+#       define LABEL(str) p.y += app->titleFont->draw2D(app->renderDevice, str, p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4).y
 #       define PRINT(str) p.y += app->reportFont->draw2D(app->renderDevice, str, p, s, Color3::black()).y
 
         int x0 = w * 0.015;
@@ -189,9 +189,9 @@ void Report::doGraphics() {
             
         ///////////////////////////////////////
         // Right Panel
-        x0 = w * 0.6;
+        x0 = w * 0.6f;
         // Cursor position
-        p = Vector2(x0, h * 0.02);
+        p = Vector2(x0, h * 0.02f);
 
         // Graphics Card
         LABEL("Graphics Card");
