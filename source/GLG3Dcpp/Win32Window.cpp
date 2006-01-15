@@ -378,7 +378,10 @@ void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
 	}
 
 	this->makeCurrent();
-	loadExtensions();
+
+	if (! creatingShareWindow) {
+    	loadExtensions();
+    }
 }
 
 /* TODO
