@@ -8,6 +8,7 @@
   @edited  2006-01-19
  */
 
+#include "G3D/platform.h"
 #include "G3D/CollisionDetection.h"
 #include "G3D/debugAssert.h"
 #include "G3D/vectorMath.h"
@@ -48,6 +49,10 @@ Vector3 CollisionDetection::separatingAxisForSolidBoxSolidBox(
     return axis;
 }
 
+#ifdef G3D_WIN32
+#   pragma warning (push)
+#   pragma warning (disable : 4244)
+#endif
 
 float CollisionDetection::projectedDistanceForSolidBoxSolidBox(
     const int           separatingAxisIndex,
@@ -419,7 +424,7 @@ float CollisionDetection::penetrationDepthForFixedBoxFixedBox(
 			// find the negative penetration value with the smallest magnitude,
 			// the adjustment done for the edge-edge cases only increases
 			// magnitude by dividing by a number smaller than 1 and greater than 0
-			float projectedDistance = edgeDistances[i - 6];
+			float projectedDistance = (float)edgeDistances[i - 6];
 			if (projectedDistance > penetration) {
 				Vector3 L = separatingAxisForSolidBoxSolidBox(i, box1, box2);
 				projectedDistance /= dot(L, L);
@@ -581,10 +586,10 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
         // square of that distance to the total distance from 
         // the box.
 
-        double distanceFromLow  = -halfExtent[a] - center[a];
-        double distanceFromHigh = center[a] - halfExtent[a];
+        float distanceFromLow  = -halfExtent[a] - center[a];
+        float distanceFromHigh = center[a] - halfExtent[a];
 
-        if (abs(distanceFromLow) < abs(distanceFromHigh)) {
+        if (fabsf(distanceFromLow) < fabsf(distanceFromHigh)) {
             distOutsideBox[a] = distanceFromLow;
         } else {
             distOutsideBox[a] = distanceFromHigh;
@@ -614,7 +619,7 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
 
     // Squared distance between the outside of the box and the
     // sphere center.
-    double d2 = Vector3::zero().max(distOutsideBox).squaredMagnitude();
+    float d2 = Vector3::zero().max(distOutsideBox).squaredMagnitude();
 
     if (d2 > square(sphere.radius)) {
         // There is no penetration because the distance is greater
@@ -673,7 +678,7 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedBox(
             contactNormals.append(N);
 
             // Penetration depth:
-            depth = sphere.radius - sqrt(d2);
+            depth = sphere.radius - sqrtf(d2);
 
             // Compute the contact point from the penetration depth
             contactPoints.append(sphere.center + N * (sphere.radius - depth));
@@ -1989,3 +1994,6 @@ bool CollisionDetection::movingSpherePassesThroughFixedSphere(
 
 
 } // namespace
+#ifdef G3D_WIN32
+#pragma warning (pop)
+#endif

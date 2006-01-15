@@ -40,8 +40,6 @@ extern "C" {
 }
 
 #ifdef G3D_WIN32
-    // For CopyFile
-    #include <windows.h>
     //for _mkdir and _stat
     #include <direct.h>
 #else

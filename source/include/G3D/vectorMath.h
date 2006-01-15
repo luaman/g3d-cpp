@@ -68,15 +68,15 @@ inline Vector4 normalize(const Vector4& v) {
 }
 
 inline Vector2 abs(const Vector2& v) {
-    return Vector2(::fabs(v.x), ::fabs(v.y));
+    return Vector2(::fabsf(v.x), ::fabsf(v.y));
 }
 
 inline Vector3 abs(const Vector3& v) {
-    return Vector3(::fabs(v.x), ::fabs(v.y), ::fabs(v.z));
+    return Vector3(::fabsf(v.x), ::fabsf(v.y), ::fabsf(v.z));
 }
 
 inline Vector4 abs(const Vector4& v) {
-    return Vector4(::fabs(v.x), ::fabs(v.y), ::fabs(v.z), ::fabs(v.w));
+    return Vector4(::fabsf(v.x), ::fabsf(v.y), ::fabsf(v.z), ::fabsf(v.w));
 }
 
 inline bool all(const Vector2& v) {
@@ -196,7 +196,7 @@ inline Vector4 sign(const Vector4& v) {
 }
 
 inline float length(float v) {
-    return ::fabs(v);
+    return ::fabsf(v);
 }
 
 inline float length(const Vector2& v) {
@@ -217,7 +217,7 @@ inline float length(const Vector4& v) {
  perceptual response.
  */
 inline Color3 log(const Color3& c) {
-    return Color3(::log(c.r), ::log(c.g), ::log(c.b));
+    return Color3(::logf(c.r), ::logf(c.g), ::logf(c.b));
 }
 
 }

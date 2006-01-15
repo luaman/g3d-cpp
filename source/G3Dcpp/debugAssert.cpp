@@ -12,7 +12,6 @@
 #include "G3D/debugAssert.h"
 #include "G3D/platform.h"
 #ifdef G3D_WIN32
-    #include "windows.h"
     #include <tchar.h>
 #endif
 #include "G3D/format.h"

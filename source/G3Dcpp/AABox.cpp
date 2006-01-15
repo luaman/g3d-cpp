@@ -4,8 +4,14 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2004-01-10
-  @edited  2004-07-11
+  @edited  2006-01-11
 */
+
+#include "G3D/platform.h"
+#   if defined(_MSC_VER) && (_MSC_VER <= 1200)
+        // VC6 std:: has signed/unsigned problems
+#       pragma warning (disable : 4018)
+#   endif
 
 #include "G3D/AABox.h"
 #include "G3D/Box.h"
@@ -34,11 +40,11 @@ void AABox::deserialize(class BinaryInput& b) {
 }
 
 
-void AABox::split(const Vector3::Axis& axis, double location, AABox& low, AABox& high) const {
+void AABox::split(const Vector3::Axis& axis, float location, AABox& low, AABox& high) const {
     // Low, medium, and high along the chosen axis
-    double L = min(location, lo[axis]);
-    double M = min(max(location, lo[axis]), hi[axis]);
-    double H = max(location, hi[axis]);
+    float L = G3D::min(location, lo[axis]);
+    float M = G3D::min(G3D::max(location, lo[axis]), hi[axis]);
+    float H = G3D::max(location, hi[axis]);
 
     // Copy over this box.
     high = low = *this;
@@ -53,14 +59,14 @@ void AABox::split(const Vector3::Axis& axis, double location, AABox& low, AABox&
 
 Vector3 AABox::randomSurfacePoint() const {
     Vector3 extent = hi - lo;
-    double aXY = extent.x * extent.y;
-    double aYZ = extent.y * extent.z;
-    double aZX = extent.z * extent.x;
+    float aXY = extent.x * extent.y;
+    float aYZ = extent.y * extent.z;
+    float aZX = extent.z * extent.x;
 
-    double r = random(0, aXY + aYZ + aZX);
+    float r = (float)random(0, aXY + aYZ + aZX);
 
     // Choose evenly between positive and negative face planes
-    double d = (random(0, 1) < 0.5) ? 0 : 1;
+    float d = ((float)random(0, 1) < 0.5) ? 0.0f : 1.0f;
 
     // The probability of choosing a given face is proportional to
     // its area.
@@ -68,29 +74,32 @@ Vector3 AABox::randomSurfacePoint() const {
         return 
             lo + 
             Vector3(
-                random(0, extent.x),
-                random(0, extent.y),
+                (float)random(0, extent.x),
+                (float)random(0, extent.y),
                 d * extent.z);
     } else if (r < aYZ) {
         return 
             lo + 
             Vector3(
                 d * extent.x,
-                random(0, extent.y),
-                random(0, extent.z));
+                (float)random(0, extent.y),
+                (float)random(0, extent.z));
     } else {
         return 
             lo + 
             Vector3(
-                random(0, extent.x),
+                (float)random(0, extent.x),
                 d * extent.y,
-                random(0, extent.z));
+                (float)random(0, extent.z));
     }
 }
 
 
 Vector3 AABox::randomInteriorPoint() const {
-    return Vector3(random(lo.x, hi.x), random(lo.y, hi.y), random(lo.z, hi.z));
+    return Vector3(
+        (float)random(lo.x, hi.x), 
+        (float)random(lo.y, hi.y), 
+        (float)random(lo.z, hi.z));
 }
 
 

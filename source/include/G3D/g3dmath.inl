@@ -187,23 +187,14 @@ inline double distance(double x, double y, double z) {
 }
 
 //----------------------------------------------------------------------------
-inline double min(double x, double y) {
-    return (x >= y) ? y : x;
-}
 
-//----------------------------------------------------------------------------
-inline double max(double x, double y) {
-    return (x >= y) ? x : y;
-}
-
-//----------------------------------------------------------------------------
-/** @deprecated use std::min */
+/** @deprecated use G3D::min */
 inline int iMin(int x, int y) {
     return (x >= y) ? y : x;
 }
 
 //----------------------------------------------------------------------------
-/** @deprecated use std::min */
+/** @deprecated use G3D::min */
 inline int iMax(int x, int y) {
     return (x >= y) ? x : y;
 }

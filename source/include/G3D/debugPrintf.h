@@ -9,23 +9,22 @@
  @created 2001-08-26
  @edited  2002-08-07
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
 #ifndef G3D_DEBUGPRINTF_H
 #define G3D_DEBUGPRINTF_H
 
+#include <windows.h>
+#include "G3D/platform.h"
 #include <stdio.h>
 #include <cstdarg>
 #include "G3D/format.h"
 #include <string>
-#include "G3D/platform.h"
 
 #ifndef G3D_WIN32
     #include <stdarg.h>
-#else
-	#include <windows.h>
 #endif
 
 namespace G3D {

@@ -184,7 +184,7 @@ inline float Vector3::squaredLength () const {
 
 //----------------------------------------------------------------------------
 inline float Vector3::magnitude() const {
-    return sqrt(x*x + y*y + z*z);
+    return sqrtf(x*x + y*y + z*z);
 }
 
 //----------------------------------------------------------------------------
@@ -195,7 +195,7 @@ inline float Vector3::length() const {
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::direction () const {
     float lenSquared = squaredMagnitude();
-    float invSqrt = 1/sqrt(lenSquared);
+    float invSqrt = 1.0f / sqrtf(lenSquared);
     return Vector3(x * invSqrt, y * invSqrt, z * invSqrt);
 }
 
@@ -228,23 +228,23 @@ inline Vector3 Vector3::unitCross (const Vector3& rkVector) const {
 
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::min(const Vector3 &v) const {
-    return Vector3(std::min<float>(v.x, x), std::min<float>(v.y, y), std::min<float>(v.z, z));
+    return Vector3(G3D::min(v.x, x), G3D::min(v.y, y), G3D::min(v.z, z));
 }
 
 //----------------------------------------------------------------------------
 inline Vector3 Vector3::max(const Vector3 &v) const {
-    return Vector3(std::max<float>(v.x, x), std::max<float>(v.y, y), std::max<float>(v.z, z));
+    return Vector3(G3D::max(v.x, x), G3D::max(v.y, y), G3D::max(v.z, z));
 }
 
 //----------------------------------------------------------------------------
 inline bool Vector3::isZero() const {
-    return G3D::fuzzyEq(squaredMagnitude(), 0.0);
+    return G3D::fuzzyEq(squaredMagnitude(), 0.0f);
 }
 
 //----------------------------------------------------------------------------
 
 inline bool Vector3::isUnit() const {
-    return G3D::fuzzyEq(squaredMagnitude(), 1.0);
+    return G3D::fuzzyEq(squaredMagnitude(), 1.0f);
 }
 
 } // namespace

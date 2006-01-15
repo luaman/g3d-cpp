@@ -6,13 +6,14 @@
  @created 2003-02-07
  @edited  2005-08-20
 
- Copyright 2000-2005, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
 #ifndef G3D_CAPSULE_H
 #define G3D_CAPSULE_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Vector3.h"
 #include "G3D/Line.h"
@@ -29,7 +30,7 @@ private:
 
 public:
 
-    /** @deprecated To be replaced with a radius accessor.*/
+    /** @deprecated To be replaced with a (float) radius accessor of the same name.*/
 	double			radius;
 
     /** Uninitialized */

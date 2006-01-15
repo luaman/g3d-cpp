@@ -63,7 +63,7 @@ Vector3 Capsule::getPoint2() const {
 
 
 float Capsule::getRadius() const {
-	return radius;
+	return (float)radius;
 }
 
 

@@ -14,7 +14,6 @@
 #include <time.h>
 
 #ifdef G3D_WIN32
-    #include <Windows.h>
     #include <imagehlp.h>
 #else
     #include <stdarg.h>

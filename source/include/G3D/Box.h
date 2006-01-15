@@ -7,15 +7,16 @@
  
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   @created 2001-06-02
-  @edited  2005-09-05
+  @edited  2006-01-05
 
-  Copyright 2000-2005, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
 #ifndef G3D_BOX_H
 #define G3D_BOX_H
 
+#include "G3D/platform.h"
 #include "G3D/Vector3.h"
 #include "G3D/CoordinateFrame.h"
 #include "G3D/Array.h"
@@ -61,8 +62,8 @@ private:
      */
     Vector3 _extent;
 
-    double  _area;
-    double  _volume;
+    float  _area;
+    float  _volume;
 
     void init(
         const Vector3& min,
@@ -137,9 +138,9 @@ public:
      Distance from corner(0) to the next corner
      along the box's local axis a.
      */
-    inline double extent(int a) const {
+    inline float extent(int a) const {
         debugAssert(a < 3);
-        return _extent[a];
+        return (float)_extent[a];
     }
 
     inline Vector3 extent() const {

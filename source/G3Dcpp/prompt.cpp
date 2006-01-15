@@ -15,7 +15,6 @@
 #include <stdio.h>
 
 #ifdef G3D_WIN32
-    #include <windows.h>
     #include <strstream>
     #include <conio.h>
 #else

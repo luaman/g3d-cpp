@@ -152,12 +152,12 @@ inline float Vector4::dot(const Vector4& rkVector) const {
 
 //----------------------------------------------------------------------------
 inline Vector4 Vector4::min(const Vector4 &v) const {
-    return Vector4(std::min<float>(v.x, x), std::min<float>(v.y, y), std::min<float>(v.z, z), std::min<float>(v.w, w));
+    return Vector4(G3D::min(v.x, x), G3D::min(v.y, y), G3D::min(v.z, z), G3D::min(v.w, w));
 }
 
 //----------------------------------------------------------------------------
 inline Vector4 Vector4::max(const Vector4 &v) const {
-    return Vector4(std::max<float>(v.x, x), std::max<float>(v.y, y), std::max<float>(v.z, z), std::max<float>(v.w, w));
+    return Vector4(G3D::max(v.x, x), G3D::max(v.y, y), G3D::max(v.z, z), G3D::max(v.w, w));
 }
 
 //----------------------------------------------------------------------------
@@ -180,7 +180,7 @@ inline bool Vector4::isUnit() const {
 //----------------------------------------------------------------------------
 
 inline float Vector4::length() const {
-    return sqrt(squaredLength());
+    return sqrtf(squaredLength());
 }
 
 //----------------------------------------------------------------------------
@@ -190,3 +190,4 @@ inline float Vector4::squaredLength() const {
 }
 
 }
+

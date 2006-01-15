@@ -107,11 +107,11 @@ public:
     std::string toString() const;
 
     inline Color4 max(const Color4& other) const {
-        return Color4(std::max<float>(r, other.r), std::max<float>(g, other.g), std::max<float>(b, other.b), std::max<float>(a, other.a));
+        return Color4(G3D::max(r, other.r), G3D::max(g, other.g), G3D::max(b, other.b), G3D::max(a, other.a));
     }
 
     inline Color4 min(const Color4& other) const {
-        return Color4(std::min<float>(r, other.r), std::min<float>(g, other.g), std::min<float>(b, other.b), std::min<float>(a, other.a));
+        return Color4(G3D::min(r, other.r), G3D::min(g, other.g), G3D::min(b, other.b), G3D::min(a, other.a));
     }
 
     /** r + g + b + a */

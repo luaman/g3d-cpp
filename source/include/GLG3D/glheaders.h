@@ -8,7 +8,7 @@
  @created 2002-08-07
  @edited  2005-04-10
 
- Copyright 2002-2005, Morgan McGuire.
+ Copyright 2002-2006, Morgan McGuire.
  All rights reserved.
 */
 
@@ -16,11 +16,8 @@
 #define G3D_GLHEADERS_H
 
 #include "G3D/platform.h"
-#ifdef G3D_WIN32
-  #ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN
-  #endif
-  #include "windows.h"
+#if defined(G3D_WIN32) && ! defined(WIN32_LEAN_AND_MEAN)
+#   define WIN32_LEAN_AND_MEAN
 #endif
 
 #ifdef G3D_LINUX

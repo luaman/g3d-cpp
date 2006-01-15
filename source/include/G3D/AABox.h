@@ -6,9 +6,9 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-10
-  @edited  2004-07-07
+  @edited  2006-01-10
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -138,7 +138,7 @@ public:
      the part that was closer to negative infinity along axis, high contains
      the other part.  Either may have zero volume.
      */
-    void split(const Vector3::Axis& axis, double location, AABox& low, AABox& high) const;
+    void split(const Vector3::Axis& axis, float location, AABox& low, AABox& high) const;
 
 	/**
 	 Conservative culling test for up to 32 planes.	

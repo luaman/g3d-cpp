@@ -20,10 +20,18 @@
 // Disable conditional expression is constant, which occurs incorrectly on inlined functions
 #   pragma warning (push)
 #   pragma warning (disable : 4127)
-#endif
+// disable: "C++ exception handler used"
+#   pragma warning (disable : 4530)
 
-// Prevent MSVC from defining min and max macros
-#define NOMINMAX
+    // disable: "conversion from 'double' to 'float', possible loss of
+    // data
+//    #pragma warning (disable : 4244)
+
+    // disable: "truncation from 'double' to 'float'
+  //  #pragma warning (disable : 4305)
+
+
+#endif
 
 #include "G3D/platform.h"
 #include <ctype.h>
@@ -89,21 +97,6 @@ __inline long int lrintf(float flt) {
 }
 #endif
 
-
-
-
-#ifdef _MSC_VER
-    // disable: "conversion from 'double' to 'float', possible loss of
-    // data
-    #pragma warning (disable : 4244)
-
-    // disable: "truncation from 'double' to 'float'
-    #pragma warning (disable : 4305)
-
-    // disable: "C++ exception handler used"
-    #pragma warning (disable : 4530)
-
-#endif // _MSC_VER
 
 
 const double fuzzyEpsilon = 0.000001;
@@ -288,8 +281,52 @@ double gaussRandom(double mean = 0.0, double stdev = 1.0);
 
 /** [-1, 1] */
 double symmetricRandom ();
-double min(double x, double y);
-double max(double x, double y);
+
+#if defined(_MSC_VER) && (_MSC_VER <= 1200)
+
+    /** VC6 lacks std::min and std::max */
+    inline double min(double x, double y) {
+        return std::_cpp_min(x, y);
+    }
+
+    /** VC6 lacks std::min and std::max */
+    inline float min(float x, float y) {
+        return std::_cpp_min(x, y);
+    }
+
+    /** VC6 lacks std::min and std::max */
+    inline int min(int x, int y) {
+        return std::_cpp_min(x, y);
+    }
+
+    /** VC6 lacks std::min and std::max */
+    inline double max(double x, double y) {
+        return std::_cpp_max(x, y);
+    }
+
+    /** VC6 lacks std::min and std::max */
+    inline float max(float x, float y) {
+        return std::_cpp_max(x, y);
+    }
+
+    /** VC6 lacks std::min and std::max */
+    inline int max(int x, int y) {
+        return std::_cpp_max(x, y);
+    }
+
+#else
+    template <class T>
+    inline T min(const T& x, const T& y) {
+        return std::min<T>(x, y);
+    }
+
+    template <class T>
+    inline T max(const T& x, const T& y) {
+        return std::max<T>(x, y);
+    }
+
+#endif
+
 int iMin(int x, int y);
 int iMax(int x, int y);
 

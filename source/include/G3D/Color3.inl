@@ -147,15 +147,15 @@ inline float Color3::squaredLength () const {
 
 //----------------------------------------------------------------------------
 inline float Color3::length () const {
-    return sqrt(r*r + g*g + b*b);
+    return sqrtf(r*r + g*g + b*b);
 }
 
 //----------------------------------------------------------------------------
 inline Color3 Color3::direction () const {
     float lenSquared = r * r + g * g + b * b;
 
-    if (lenSquared != 1.0) {
-        return *this / sqrt(lenSquared);
+    if (lenSquared != 1.0f) {
+        return *this / sqrtf(lenSquared);
     } else {
         return *this;
     }

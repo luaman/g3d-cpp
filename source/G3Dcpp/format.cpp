@@ -12,7 +12,6 @@
 #include "G3D/System.h"
 
 #ifdef G3D_WIN32
-    #include <windows.h>
     #include <math.h>
     #define vsnprintf _vsnprintf
     #define NEWLINE "\r\n"

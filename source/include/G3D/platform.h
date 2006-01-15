@@ -225,6 +225,15 @@
         #endif
     #endif
 
+#   define WIN32_LEAN_AND_MEAN 1
+#   define NOMINMAX
+#   include <windows.h>
+
+#   if defined(_MSC_VER) && (_MSC_VER <= 1200)
+        // VC6 std:: has signed/unsigned problems
+#       pragma warning (disable : 4018)
+#   endif
+
 #endif
 
 /** 

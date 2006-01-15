@@ -30,7 +30,6 @@
 #include "G3D/platform.h"
 
 #ifdef G3D_WIN32
-#   include <windows.h>
 // conditional expression is constant
 #   pragma warning (disable : 4127)
 #endif

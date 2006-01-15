@@ -4,14 +4,14 @@
  Color class.
 
  @author Morgan McGuire, matrix@graphics3d.com
- @cite Portions by Laura Wollstadt, graphics3d.com
  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
 
 
  @created 2001-06-02
- @edited  2005-11-13
+ @edited  2006-01-13
  */
 
+#include "G3D/platform.h"
 #include <stdlib.h>
 #include "G3D/Color3.h"
 #include "G3D/Vector3.h"
@@ -193,12 +193,12 @@ float Color3::unitize (float fTolerance) {
 	float fLength = length();
 
     if ( fLength > fTolerance ) {
-		float fInvLength = 1.0 / fLength;
+		float fInvLength = 1.0f / fLength;
         r *= fInvLength;
         g *= fInvLength;
         b *= fInvLength;
     } else {
-        fLength = 0.0;
+        fLength = 0.0f;
     }
 
     return fLength;
@@ -210,10 +210,10 @@ Color3 Color3::fromHSV(const Vector3& _hsv) {
 			&& (_hsv.y <= 1.0 && _hsv.y >= 0.0) 
 			&& ( _hsv.z <= 1.0 && _hsv.z >= 0.0), "H,S,V must be between [0,1]");
 	const int i = G3D::iFloor(6.0*_hsv.x);
-	const float f = 6.0*_hsv.x - i;
-	const float m = _hsv.z * (1.0 - (_hsv.y));
-	const float n = _hsv.z * (1.0 - (_hsv.y * f));
-	const float k = _hsv.z * (1.0 - (_hsv.y * (1 - f)));
+	const float f = 6.0f * _hsv.x - i;
+	const float m = _hsv.z * (1.0f - (_hsv.y));
+	const float n = _hsv.z * (1.0f - (_hsv.y * f));
+	const float k = _hsv.z * (1.0f - (_hsv.y * (1 - f)));
 	switch(i) {
 	case 0:
 		return Color3(_hsv.z, k, m);
@@ -248,15 +248,18 @@ Vector3 Color3::toHSV(const Color3& _rgb) {
 	if (G3D::fuzzyEq(hsv.z, 0.0f)) {
 		return hsv;
 	}
-	const double x =  G3D::min(G3D::min(_rgb.r, _rgb.g), _rgb.b);
+	
+    const float x =  G3D::min(G3D::min(_rgb.r, _rgb.g), _rgb.b);
 	hsv.y = (hsv.z - x) / hsv.z; 
-	if (G3D::fuzzyEq(hsv.y, 0.0f)) {
+
+    if (G3D::fuzzyEq(hsv.y, 0.0f)) {
 		return hsv;
 	}
+
 	Vector3 rgbN;
-	rgbN.x = (hsv.z - _rgb.r)/(hsv.z - x);
-	rgbN.y = (hsv.z - _rgb.g)/(hsv.z - x);
-	rgbN.z = (hsv.z - _rgb.b)/(hsv.z - x);
+	rgbN.x = (hsv.z - _rgb.r) / (hsv.z - x);
+	rgbN.y = (hsv.z - _rgb.g) / (hsv.z - x);
+	rgbN.z = (hsv.z - _rgb.b) / (hsv.z - x);
 
 	if (_rgb.r == hsv.z) {  // note from the max we know that it exactly equals one of the three.
 		hsv.x = (_rgb.g == x)? 5.0f + rgbN.z : 1.0f - rgbN.y;
@@ -265,7 +268,9 @@ Vector3 Color3::toHSV(const Color3& _rgb) {
 	} else {
 		hsv.x = (_rgb.r == x)? 3.0f + rgbN.y : 5.0f - rgbN.x;
 	}
-	hsv.x /= 6.0; 
+	
+    hsv.x /= 6.0f;
+
 	return hsv;
 }
 
