@@ -33,6 +33,11 @@ private:
     VAR                         normalArray;
     VAR                         texCoordArray;
 
+    // For debug vertex lines
+    Array<Vector3>              dbgVertexArray;
+    Array<Vector3>              dbgBinormalArray;
+    Array<Vector3>              dbgTangentArray;
+
     Array<int>                  indexArray;
 
     Mesh(

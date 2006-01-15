@@ -52,6 +52,10 @@ Mesh::Mesh(
 
 	MeshAlg::computeTangentSpaceBasis(vertex, tex, normal, face, tangent, binormal);
 
+    dbgVertexArray = vertex;
+    dbgTangentArray = tangent;
+    dbgBinormalArray = binormal;
+
     // Negate the binormal
     for (int i = 0; i < binormal.length(); ++i) {
         binormal[i] = -binormal[i];
@@ -92,4 +96,6 @@ void Mesh::render(RenderDevice* rd) {
 		rd->setNormalArray(normalArray);
 		rd->sendIndices(RenderDevice::TRIANGLES, indexArray);
 	rd->endIndexedPrimitives();
+    Draw::vertexVectors(dbgVertexArray, dbgTangentArray, rd);
+    Draw::vertexVectors(dbgVertexArray, dbgBinormalArray, rd);
 }
