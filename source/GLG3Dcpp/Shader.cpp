@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2005-02-24
+ @edited  2006-01-15
  */
 
 #include "GLG3D/Shader.h"
@@ -482,6 +482,11 @@ void VertexAndPixelShader::computeUniformArray() {
     GLint maxLength;
     GLint uniformCount;
 
+    // On ATI cards, we are required to call glUseProgramObjectARB before glGetUniformLocationARB.
+    // First, store the old program.
+    GLenum oldProgram = glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
+    glUseProgramObjectARB(glProgramObject());
+
     // Get the number of uniforms, and the length of the longest name.
     glGetObjectParameterivARB(glProgramObject(), GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, &maxLength);
     glGetObjectParameterivARB(glProgramObject(), GL_OBJECT_ACTIVE_UNIFORMS_ARB, &uniformCount);
@@ -522,6 +527,8 @@ void VertexAndPixelShader::computeUniformArray() {
     }
 
     free(name);
+
+    glUseProgramObjectARB(oldProgram);
 }
 
 
