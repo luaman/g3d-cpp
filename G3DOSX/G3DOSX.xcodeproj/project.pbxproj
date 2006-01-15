@@ -242,6 +242,8 @@
 		5033822B0935449400C574FC /* Stopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5033822A0935449400C574FC /* Stopwatch.cpp */; };
 		5033822D093544D900C574FC /* AtomicInt32.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822C093544D900C574FC /* AtomicInt32.h */; };
 		5033822F093544F400C574FC /* Stopwatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822E093544F400C574FC /* Stopwatch.h */; };
+		5035CB05097A257A00A120E5 /* Framebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5035CB04097A257A00A120E5 /* Framebuffer.cpp */; };
+		5035CB08097A258C00A120E5 /* Framebuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5035CB01097A252500A120E5 /* Framebuffer.h */; };
 		50C3DE1F0978085900757A38 /* GThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C3DE1E0978085900757A38 /* GThread.h */; };
 		50C3DE210978087000757A38 /* GThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C3DE200978087000757A38 /* GThread.cpp */; };
 /* End PBXBuildFile section */
@@ -595,6 +597,8 @@
 		5033822A0935449400C574FC /* Stopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Stopwatch.cpp; path = ../source/G3Dcpp/Stopwatch.cpp; sourceTree = SOURCE_ROOT; };
 		5033822C093544D900C574FC /* AtomicInt32.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AtomicInt32.h; path = ../source/include/G3D/AtomicInt32.h; sourceTree = SOURCE_ROOT; };
 		5033822E093544F400C574FC /* Stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Stopwatch.h; path = ../source/include/G3D/Stopwatch.h; sourceTree = SOURCE_ROOT; };
+		5035CB01097A252500A120E5 /* Framebuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Framebuffer.h; path = ../source/include/GLG3D/Framebuffer.h; sourceTree = SOURCE_ROOT; };
+		5035CB04097A257A00A120E5 /* Framebuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Framebuffer.cpp; path = ../source/GLG3Dcpp/Framebuffer.cpp; sourceTree = SOURCE_ROOT; };
 		50C3DE1E0978085900757A38 /* GThread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GThread.h; path = ../source/include/G3D/GThread.h; sourceTree = SOURCE_ROOT; };
 		50C3DE200978087000757A38 /* GThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GThread.cpp; path = ../source/G3Dcpp/GThread.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -719,6 +723,7 @@
 		0F5500FC06DD5F56008DD4F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				5035CB04097A257A00A120E5 /* Framebuffer.cpp */,
 				3E659EA808DC183900E47E2E /* Shape.cpp */,
 				0F55009206DD5F28008DD4F8 /* VertexProgram.cpp */,
 				3EFE6A240735D82A00E12815 /* VARArea.cpp */,
@@ -760,6 +765,7 @@
 		0F55010106DD5F5D008DD4F8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				5035CB01097A252500A120E5 /* Framebuffer.h */,
 				3E659EA608DC182400E47E2E /* Shape.h */,
 				0F55010C06DD5F77008DD4F8 /* VertexProgram.h */,
 				0F55010D06DD5F77008DD4F8 /* VARArea.h */,
@@ -1086,6 +1092,7 @@
 				0F55014E06DD5F77008DD4F8 /* edgeFeatures.h in Headers */,
 				0F55014F06DD5F77008DD4F8 /* Draw.h in Headers */,
 				3E659EA708DC182400E47E2E /* Shape.h in Headers */,
+				5035CB08097A258C00A120E5 /* Framebuffer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1292,6 +1299,7 @@
 				3EFE6A250735D82A00E12815 /* VARArea.cpp in Sources */,
 				3EF42A8F077978740047B13F /* GWindow.cpp in Sources */,
 				3E659EA908DC183900E47E2E /* Shape.cpp in Sources */,
+				5035CB05097A257A00A120E5 /* Framebuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
