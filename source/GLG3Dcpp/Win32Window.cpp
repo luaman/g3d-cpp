@@ -1,17 +1,18 @@
 /**
   @file Win32Window.cpp
 
-  @maintainer Morgan McGuire, matrix@graphics3d.com 
+  @maintainer Corey Taylor, vejita@users.sf.net 
   @cite       Written by Corey Taylor & Morgan McGuire
   @cite       Special thanks to Max McGuire of Ironlore
   @created 	  2004-05-21
-  @edited  	  2005-09-13
+  @edited  	  2006-01-15
     
-  Copyright 2000-2005, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
 */
 
 #include "G3D/platform.h"
+#include "GLG3D/GLCaps.h"
 
 // This file is ignored on other platforms
 #ifdef G3D_WIN32
@@ -193,8 +194,8 @@ Win32Window::Win32Window(const GWindowSettings& s, bool creatingShareWindow)
             setIcon(defaultIcon);
         } catch (const GImage::Error& e) {
             // Throw away default icon
-		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);
-            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename, e.reason);            
+		    debugPrintf("GWindow's default icon failed to load: %s (%s)", e.filename.c_str(), e.reason.c_str());
+            Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename.c_str(), e.reason.c_str());            
         }
     }
 
@@ -380,7 +381,7 @@ void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
 	this->makeCurrent();
 
 	if (! creatingShareWindow) {
-    	loadExtensions();
+        GLCaps::init();
     }
 }
 

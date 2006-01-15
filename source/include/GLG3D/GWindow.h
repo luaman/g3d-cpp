@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2005-09-13
+  @edited  2006-01-15
 */
 
 #ifndef G3D_GWINDOW_H
@@ -114,8 +114,10 @@ protected:
     /** Subclasses are required to call this
         from the end of their constructor/create function to
         finish initializing OpenGL. 
+
+        @deprecated Call GLCaps::init instead.
     */
-    void loadExtensions();
+    void G3D_DEPRECATED loadExtensions();
 
 public:
 

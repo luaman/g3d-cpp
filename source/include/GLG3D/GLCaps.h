@@ -78,8 +78,14 @@ class GLCaps {
 private:
 	enum Vendor {ATI, NVIDIA, ARB};
 
+    /** True when init has been called */
+    static bool         _initialized;
+
     /** True when loadExtensions has already been called */
-    static bool         loadedExtensions;
+    static bool         _loadedExtensions;
+
+    /** True when checkAllBugs has been called. */
+    static bool         _checkedForBugs;
 
     static int          _numTextureCoords;
     static int          _numTextures;
@@ -134,8 +140,20 @@ private:
 
     static Set<std::string>         extensionSet;
 
-    /** Runs all of the hasBug_ methods. Called from loadExtensions(). */
-    static void checkForBugs();
+    static bool bug_glMultiTexCoord3fvARB;
+    static bool bug_normalMapTexGen;
+    static bool bug_redBlueMipmapSwap;
+    static bool bug_mipmapGeneration;
+	static bool bug_slowVBO;
+
+    /** Tests for hasBug_glMultiTexCoord3fvARB and hasBug_glNormalMapTexGenARB */
+    static void checkBug_cubeMapBugs();
+    static void checkBug_redBlueMipmapSwap();
+    static void checkBug_mipmapGeneration();
+    static void checkBug_slowVBO();
+
+    /** Runs all of the checkBug_ methods. Called from loadExtensions(). */
+    static void checkAllBugs();
 
 public:
 
@@ -148,7 +166,16 @@ public:
         Call this once at the beginning of the program,
         after a video device is created.  This is called
         for you if you use G3D::RenderDevice.*/
-    static void loadExtensions(class Log* debugLog = NULL);
+    static void init();
+
+    /** Loads OpenGL extensions (e.g. glBindBufferARB).
+        Call this once at the beginning of the program,
+        after a video device is created.  This is called
+        for you if you use G3D::RenderDevice.
+        
+        @deprecated Use GLCaps::init
+        */
+    static void G3D_DEPRECATED loadExtensions(class Log* debugLog = NULL);
 
     static bool supports(const std::string& extName);
 

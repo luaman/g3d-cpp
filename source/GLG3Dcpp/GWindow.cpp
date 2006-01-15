@@ -14,9 +14,8 @@
 namespace G3D {
 
 void GWindow::loadExtensions() {
-    GLCaps::loadExtensions();
+    GLCaps::init();
 }
-
 
 void GWindow::executeLoopBody() {
     if (notDone()) {

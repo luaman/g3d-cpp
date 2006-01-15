@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2005-12-27
+  @edited  2006-01-15
 */
 
 #include "GLG3D/GLCaps.h"
@@ -12,7 +12,7 @@
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
 #include <sstream>
-
+/*
 #ifdef G3D_WIN32
 #   include <winver.h>
 #   include "GLG3D/Win32Window.h"
@@ -23,14 +23,25 @@
 #endif
 
 #include "GLG3D/SDLWindow.h"
-
+*/
 namespace G3D {
 
-bool GLCaps::loadedExtensions = false;
+// Global init flags for GLCaps.  Because this is an integer constant (equal to zero),
+// we can safely assume that it will be initialized before this translation unit is
+// entered.
+bool GLCaps::_loadedExtensions = false;
+bool GLCaps::_initialized = false;
+bool GLCaps::_checkedForBugs = false;
 
 int GLCaps::_numTextureCoords = 0;
 int GLCaps::_numTextures = 0;
 int GLCaps::_numTextureUnits = 0;
+
+bool GLCaps::bug_glMultiTexCoord3fvARB = false;
+bool GLCaps::bug_normalMapTexGen = false;
+bool GLCaps::bug_redBlueMipmapSwap = false;
+bool GLCaps::bug_mipmapGeneration = false;
+bool GLCaps::bug_slowVBO = false;
 
 /**
  Dummy function to which unloaded extensions can be set.
@@ -154,6 +165,13 @@ std::string GLCaps::getDriverVersion() {
     #endif
 }
 
+void GLCaps::init() {
+    // TODO for 7.0: Call loadExtensions followed by checkAllBugs.  Remove
+    // checkAllBugs from the end of loadExtensions.
+
+    loadExtensions(Log::common());
+}
+
 // We're going to need exactly the same code for each of 
 // several extensions.
 #define DECLARE_EXT(extname)    bool GLCaps::_supports_##extname = false; 
@@ -180,17 +198,18 @@ std::string GLCaps::getDriverVersion() {
     DECLARE_EXT(GL_EXT_framebuffer_object);
 #undef DECLARE_EXT
 
-
 void GLCaps::loadExtensions(Log* debugLog) {
 
-    if (loadedExtensions) {
+    if (_loadedExtensions) {
         return;
+    } else {
+        _loadedExtensions = true;
     }
 
-    // Don't create a temporary context but require one to continue
-    alwaysAssertM(glGetCurrentContext(), "Unable to load OpenGL extensions without context.");
+    alwaysAssertM(! _initialized, "Internal error.");
 
-    loadedExtensions = true;
+    // Require an OpenGL context to continue
+    alwaysAssertM(glGetCurrentContext(), "Unable to load OpenGL extensions without a current context.");
 
     // Initialize statically cached strings
 	vendor();
@@ -200,11 +219,6 @@ void GLCaps::loadExtensions(Log* debugLog) {
 
     #define LOAD_EXTENSION(name) \
         *((void**)&name) = glGetProcAddress(#name);
-/*
-       if (debugLog) {debugLog->print("Loading " #name " extension");} \
-        *((void**)&name) = glGetProcAddress(#name); \
-       if (debugLog) {debugLog->printf("(0x%x)\n", name);}
-*/
 
     // Don't load the multitexture extensions when they are
     // statically linked
@@ -496,18 +510,56 @@ void GLCaps::loadExtensions(Log* debugLog) {
     }
     debugAssertGLOk();
 
-    checkForBugs();
+    checkAllBugs();
+
+    _initialized = true;
 }
 
 
-void GLCaps::checkForBugs() {
-    // Call these functions so that their values are all statically initialized
-    hasBug_glMultiTexCoord3fvARB();
-    hasBug_normalMapTexGen();
-    hasBug_redBlueMipmapSwap();
-    hasBug_mipmapGeneration();
-    hasBug_slowVBO();
+void GLCaps::checkAllBugs() {
+    if (_checkedForBugs) {
+        return;
+    } else {
+        _checkedForBugs = true;
+    }
+
+    alwaysAssertM(_loadedExtensions, "Cannot check for OpenGL bugs before extensions are loaded.");
+
+    checkBug_cubeMapBugs();
+    checkBug_redBlueMipmapSwap();
+    checkBug_mipmapGeneration();
+    checkBug_slowVBO();
 }
+
+
+bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
+    alwaysAssertM(_initialized, "GLCaps has not been initialized.");
+    return bug_glMultiTexCoord3fvARB;
+}
+
+bool GLCaps::hasBug_normalMapTexGen() {
+    alwaysAssertM(_initialized, "GLCaps has not been initialized.");
+    return bug_normalMapTexGen;
+}
+
+
+bool GLCaps::hasBug_redBlueMipmapSwap() {
+    alwaysAssertM(_initialized, "GLCaps has not been initialized.");
+    return bug_redBlueMipmapSwap;
+}
+
+
+bool GLCaps::hasBug_mipmapGeneration() {
+    alwaysAssertM(_initialized, "GLCaps has not been initialized.");
+    return bug_mipmapGeneration;
+}
+
+
+bool GLCaps::hasBug_slowVBO() {
+    alwaysAssertM(_initialized, "GLCaps has not been initialized.");
+    return bug_slowVBO;
+}
+
 
 bool GLCaps::supports(const std::string& extension) {
     return extensionSet.contains(extension);
@@ -546,74 +598,40 @@ bool GLCaps::supports(const TextureFormat* fmt) {
 
 
 const std::string& GLCaps::glVersion() {
-	loadExtensions();
-
+    alwaysAssertM(_loadedExtensions, "Cannot call GLCaps::glVersion before GLCaps::init().");
     static std::string _glVersion = (char*)glGetString(GL_VERSION);
     return _glVersion;
 }
 
 
 const std::string& GLCaps::driverVersion() {
-	loadExtensions();
-
+    alwaysAssertM(_loadedExtensions, "Cannot call GLCaps::driverVersion before GLCaps::init().");
     static std::string _driverVersion = getDriverVersion().c_str();
 	return _driverVersion;
 }
 
 
 const std::string& GLCaps::vendor() {
-	loadExtensions();
-
+    alwaysAssertM(_loadedExtensions, "Cannot call GLCaps::vendor before GLCaps::init().");
     static std::string _driverVendor = (char*)glGetString(GL_VENDOR);
 	return _driverVendor;
 }
 
 
 const std::string& GLCaps::renderer() {
-	loadExtensions();
-
+    alwaysAssertM(_loadedExtensions, "Cannot call GLCaps::renderer before GLCaps::init().");
     static std::string _glRenderer = (char*)glGetString(GL_RENDERER);
 	return _glRenderer;
 }
 
  
 
-/** Tests for hasBug_glMultiTexCoord3fvARB and hasBug_glNormalMapTexGenARB */
-static void cubeMapBugs(bool& mtc, bool& nmt);
-
-bool GLCaps::hasBug_glMultiTexCoord3fvARB() {
-    loadExtensions();
-
-    bool a, b;
-    cubeMapBugs(a, b);
-    return a;
-}
-
-bool GLCaps::hasBug_normalMapTexGen() {
-    loadExtensions();
-
-    bool a, b;
-    cubeMapBugs(a, b);
-    return b;
-}
-
-static void cubeMapBugs(bool& mtc, bool& nmt) {
-    static bool initialized = false;
-    static bool valuemtc, valuenmt;
-
-    if (initialized) {
-        mtc = valuemtc;
-        nmt = valuenmt;
-        return;
-    } else {
-        initialized = true;
-    }
-
+void GLCaps::checkBug_cubeMapBugs() {
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;
 
     if (! hasCubeMap) {
-        valuemtc = false;
-        valuenmt = false;
+        bug_glMultiTexCoord3fvARB = false;
+        bug_normalMapTexGen = false;
         // No cube map == no bug.
         return;
     }
@@ -776,9 +794,9 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
             }
 
             if (i == 0) {
-                valuemtc = texbug;
+                bug_glMultiTexCoord3fvARB = texbug;
             } else {
-                valuenmt = texbug;
+                bug_normalMapTexGen = texbug;
             }
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
@@ -786,9 +804,6 @@ static void cubeMapBugs(bool& mtc, bool& nmt) {
     glPopAttrib();
 
     glDeleteTextures(1, &id);
-
-    mtc = valuemtc;
-    nmt = valuenmt;
 }
 
 
@@ -838,18 +853,7 @@ static void configureCameraAndLights() {
 #endif
 
 
-bool GLCaps::hasBug_redBlueMipmapSwap() {
-    static bool initialized = false;
-    static bool value = false;
-
-    if (initialized) {
-        return value;
-    }
-
-    loadExtensions();
-
-    initialized = true;
-
+void GLCaps::checkBug_redBlueMipmapSwap() {
     static bool hasAutoMipmap = false;
     {
         std::string ext = (char*)glGetString(GL_EXTENSIONS);
@@ -885,10 +889,8 @@ bool GLCaps::hasBug_redBlueMipmapSwap() {
 			      GL_UNSIGNED_BYTE,
 			      bytes);
 
-    Log::common()->printf("%d %d %d\n", bytes[0], bytes[1], bytes[2]);
-
     // Verify that the data made the round trip correctly
-    value = 
+    bug_redBlueMipmapSwap = 
         (bytes[0] != 0xFF) ||
         (bytes[1] != 0x00) ||
         (bytes[2] != 0x00);
@@ -899,49 +901,24 @@ bool GLCaps::hasBug_redBlueMipmapSwap() {
 
     glDeleteTextures(1, &id);
     glPopAttrib();
-
-    return value;
 }
 
-bool GLCaps::hasBug_mipmapGeneration() {
-    static bool initialized = false;
-    static bool value;
+void GLCaps::checkBug_mipmapGeneration() {
+    const std::string& r = renderer();
 
-    if (! initialized) {
-        loadExtensions();
+	// The mip-maps are arbitrarily corrupted; we have not yet generated
+	// a reliable test for this case.
 
-        initialized = true;
-        const std::string& r = renderer();
-
-		// The mip-maps are arbitrarily corrupted; we have not yet generated
-		// a reliable test for this case.
-
-        value = 
-            GLCaps::supports("GL_SGIS_generate_mipmap") &&
-		    (beginsWith(r, "MOBILITY RADEON 90") ||
-		     beginsWith(r, "MOBILITY RADEON 57") ||
-		     beginsWith(r, "Intel 845G") ||
-		     beginsWith(r, "Intel 854G"));
-		if (value)
-			Log::common()->printf("hasBug_mipmapGeneration (%s)\n", r.c_str());
-    }
-
-    return value;
+    bug_mipmapGeneration = 
+        GLCaps::supports("GL_SGIS_generate_mipmap") &&
+		(beginsWith(r, "MOBILITY RADEON 90") ||
+		    beginsWith(r, "MOBILITY RADEON 57") ||
+		    beginsWith(r, "Intel 845G") ||
+		    beginsWith(r, "Intel 854G"));
 }
 
 
-bool GLCaps::hasBug_slowVBO() {
-    static bool initialized = false;
-    static bool value;
-
-    if (initialized) {
-        return value;
-    } else {
-        //initialized = true;
-    }
-    
-    loadExtensions();
-
+void GLCaps::checkBug_slowVBO() {
     bool hasVBO = 
         (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
             (glGenBuffersARB != NULL) && 
@@ -950,14 +927,14 @@ bool GLCaps::hasBug_slowVBO() {
 
     if (! hasVBO) {
 		// Don't have VBO; don't have a bug!
-        value = false;
-        return false;
+        bug_slowVBO = false;
+        return;
     }
 
 	const std::string& r = renderer();
 
-    value = beginsWith(r, "MOBILITY RADEON 7500");
-	return value;
+    bug_slowVBO = beginsWith(r, "MOBILITY RADEON 7500");
+	return;
 
     // TODO: Make a real test for this case
 #if 0

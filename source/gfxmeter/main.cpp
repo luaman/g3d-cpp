@@ -2,7 +2,6 @@
   @file gfxmeter/main.cpp
 
   slow/shadow map (radeon)
-  texture color bug (radeon 7500)
 
   @author Morgan McGuire, matrix@graphics3d.com
  */
@@ -15,6 +14,10 @@
 
 #include "Report.h"
 #include "App.h"
+#ifdef G3D_WIN32
+#   include <direct.h>
+#endif
+
 //#define FAST
  
 static const float gfxMeterVersion = 0.8;
@@ -75,8 +78,7 @@ void App::showSplashScreen() {
         if (reportFont.isNull()) {
             reportFont = GFont::fromFile(NULL, dataDir + "arial.fnt");
         }
-    }
-    
+    }    
 }
 
 
@@ -316,6 +318,16 @@ int main(int argc, char** argv) {
     settings.window.fsaaSamples = 4;
     settings.dataDir = "./";
     settings.window.defaultIconFilename = "g3d.ico";
+
+    if (!fileExists(settings.window.defaultIconFilename)) {
+        // We are probably running in the debugger and launched from the wrong directory
+        _chdir("build/install");
+    }
+
+    if (!fileExists(settings.window.defaultIconFilename)) {
+        msgBox("gfxmeter was run from the wrong directory and can't find its data files.", "Error");
+        return -1;
+    }
 
     App(settings).run();
     return 0;

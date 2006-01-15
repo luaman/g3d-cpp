@@ -248,6 +248,8 @@ Compiling and Linking <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I>
       says to use stdout and not popups on Windows for assertion 
       failures and error messages.  On Linux the console is always used.
 
+      <P>
+      <B>G3D_GL_ARB_multitexture_static</B> - Assume OpenGL 1.3 when compiling the G3D library (specifically for Linux).  Not used in end-user code.
     <P>
      <B>_WIN32</B> - Build using Windows API calls 
 
