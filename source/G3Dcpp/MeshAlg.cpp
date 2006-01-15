@@ -563,6 +563,9 @@ void MeshAlg::computeTangentVectors(
         binormal = binormal.direction();
     }
 
+    // This computation gives the opposite convention of what we want.
+    binormal = -binormal;
+
 }
 
 

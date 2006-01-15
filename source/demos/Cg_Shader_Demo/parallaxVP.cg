@@ -38,7 +38,7 @@ VOUT main(
     // the tangent to object matrix).  We take care
     // of translation explicitly first, so this is just 
     // the rotation component.
-    float3x3 T = float3x3(vin.binormal, -vin.tangent, vin.normal);
+    float3x3 T = float3x3(-vin.binormal, -vin.tangent, vin.normal);
 
     vout.light = mul(T, (osLight.xyz - vin.position.xyz * osLight.w));
     vout.eye   = mul(T, osEye - vin.position);

@@ -300,7 +300,10 @@ public:
      Computes tangent and binormal vectors,
      which provide a (mostly) consistent
      parameterization over the surface for
-     effects like bump mapping.
+     effects like bump mapping.  In the resulting coordinate frame, 
+     T = x (varies with texture s coordinate), B = y (varies with negative texture t coordinate), 
+     and N = z for a right-handed coordinate frame.  If a billboard is vertical on the screen
+     in view of the camera, the tangent space matches the camera's coordinate frame.
 
      The vertex, texCoord, tangent, and binormal
      arrays are parallel arrays.

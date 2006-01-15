@@ -397,7 +397,7 @@ public:
         const std::string&              name,
         const GImage&                   image,
         const class TextureFormat*      desiredFormat,
-        WrapMode                        wrap           = TILE,
+        WrapMode                        wrap,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,

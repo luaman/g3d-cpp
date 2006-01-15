@@ -51,11 +51,6 @@ Mesh::Mesh(
 	MeshAlg::computeAdjacency(vertex, index, face, tmpEdge, tmpVertex);
 
 	MeshAlg::computeTangentSpaceBasis(vertex, tex, normal, face, tangent, binormal);
-
-    // Negate the binormal; G3D computes it backwards
-    for (int i = 0; i < binormal.length(); ++i) {
-        binormal[i] = -binormal[i];
-    }
     
     // For visualization purposes, store the basis
     dbgVertexArray   = vertex;
