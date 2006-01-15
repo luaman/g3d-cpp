@@ -37,6 +37,7 @@ private:
     Array<Vector3>              dbgVertexArray;
     Array<Vector3>              dbgBinormalArray;
     Array<Vector3>              dbgTangentArray;
+    Array<Vector3>              dbgNormalArray;
 
     Array<int>                  indexArray;
 

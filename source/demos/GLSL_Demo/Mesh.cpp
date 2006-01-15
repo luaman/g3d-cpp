@@ -52,23 +52,17 @@ Mesh::Mesh(
 
 	MeshAlg::computeTangentSpaceBasis(vertex, tex, normal, face, tangent, binormal);
 
-    dbgVertexArray = vertex;
-    dbgTangentArray = tangent;
-    dbgBinormalArray = binormal;
-
-    // Negate the binormal
+    // Negate the binormal; G3D computes it backwards
     for (int i = 0; i < binormal.length(); ++i) {
         binormal[i] = -binormal[i];
     }
     
-    
-    // TODO: remove
-    // Force the TBN space to be identity for testing
-    for (int i = 0; i < binormal.length(); ++i) {
-        tangent[i]  = Vector3(1,0,0);
-        binormal[i] = Vector3(0,1,0);
-    }
-    
+    // For visualization purposes, store the basis
+    dbgVertexArray   = vertex;
+    dbgTangentArray  = tangent;
+    dbgBinormalArray = binormal;
+    dbgNormalArray   = normal;
+
     /*
     for (int i = 0; i < binormal.length(); ++i) {
         debugPrintf("%s %s %s\n", 
@@ -96,6 +90,10 @@ void Mesh::render(RenderDevice* rd) {
 		rd->setNormalArray(normalArray);
 		rd->sendIndices(RenderDevice::TRIANGLES, indexArray);
 	rd->endIndexedPrimitives();
-    Draw::vertexVectors(dbgVertexArray, dbgTangentArray, rd);
-    Draw::vertexVectors(dbgVertexArray, dbgBinormalArray, rd);
+
+    rd->setShader(NULL);
+    // For debugging purposes, render the tangent space basis
+    Draw::vertexVectors(dbgVertexArray, dbgTangentArray, rd, Color3::red());
+    Draw::vertexVectors(dbgVertexArray, dbgBinormalArray, rd, Color3::green());
+    Draw::vertexVectors(dbgVertexArray, dbgNormalArray, rd, Color3::blue());
 }
