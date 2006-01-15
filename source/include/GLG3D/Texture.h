@@ -396,7 +396,7 @@ public:
     static TextureRef G3D_DEPRECATED fromGImage(
         const std::string&              name,
         const GImage&                   image,
-        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
+        const class TextureFormat*      desiredFormat,
         WrapMode                        wrap           = TILE,
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,

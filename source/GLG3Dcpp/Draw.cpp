@@ -187,6 +187,7 @@ void Draw::ray(
     renderDevice->minGLStateChange(SPHERE_SECTIONS * 5);
 
     // Back of arrow head
+    renderDevice->beforePrimitive();
     glBegin(GL_TRIANGLE_FAN);
         glNormal3fv(-u);
         for (int a = 0; a <= SPHERE_SECTIONS; ++a) {
@@ -195,6 +196,7 @@ void Draw::ray(
             glVertex3fv(back + dir * r);
         }
     glEnd();
+    renderDevice->afterPrimitive();
     renderDevice->minGLStateChange(SPHERE_SECTIONS);
 
     renderDevice->setColor(oldColor);
