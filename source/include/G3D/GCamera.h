@@ -32,25 +32,25 @@ private:
     /**
     Vertical field of view (in radians)
     */
-    double						fieldOfView;
+    float						fieldOfView;
 
     /** 
      The image plane depth corresponding to a vertical field of 
      view, where the film size is 1x1.  
      */
-    double						imagePlaneDepth;
+    float						imagePlaneDepth;
 
     /**
      Clipping plane, *not* imaging plane.  Positive numbers.
      */
-    double						nearPlane;
+    float						nearPlane;
 
     /**
      Positive 
      */
-    double						farPlane;
+    float						farPlane;
 
-    CoordinateFrame                                     cframe;
+    CoordinateFrame             cframe;
 
 public:
 
@@ -95,7 +95,7 @@ public:
 	  <LI> toRadians(140) - Wide angle
 	 </UL>
  	*/
-	void setFieldOfView(double angle);
+	void setFieldOfView(float angle);
 
 	/**
 	Sets the field of view based on a desired image plane depth
@@ -107,7 +107,7 @@ public:
 	generally not the pixel dimensions of the image.  
 	*/
 	void setImagePlaneDepth(
-        double                                  depth,
+        float                                   depth,
         const class Rect2D&                     viewport);
 
 	inline double getFieldOfView() const {
@@ -129,7 +129,7 @@ public:
      Returns the pixel area covered by a shape of the given
      world space area at the given z value (z must be negative).
      */
-    double worldToScreenSpaceArea(double area, double z, const class Rect2D& viewport) const;
+    float worldToScreenSpaceArea(float area, float z, const class Rect2D& viewport) const;
 
     /**
      Returns the world space 3D viewport corners.  These
@@ -149,7 +149,7 @@ public:
      of view for film of dimensions width x height.  See
      setImagePlaneDepth for a discussion of worldspace values width and height. 
     */
-    double getImagePlaneDepth(
+    float getImagePlaneDepth(
         const class Rect2D&                     viewport) const;
 
 
@@ -165,31 +165,31 @@ public:
       through pixel centers, add 0.5 to x and y.        
     */
     Ray worldRay(
-        double                                  x,
-        double                                  y,
+        float                                  x,
+        float                                  y,
         const class Rect2D&                     viewport) const;
 
 
     /**
       Returns a negative z-value.
      */
-    inline double getNearPlaneZ() const {
+    inline float getNearPlaneZ() const {
         return -nearPlane;
     }
 
     /**
      Returns a negative z-value.
      */
-    inline double getFarPlaneZ() const {
+    inline float getFarPlaneZ() const {
         return -farPlane;
     }
 
-	inline void setFarPlaneZ(double z) {
+	inline void setFarPlaneZ(float z) {
 		debugAssert(z < 0);
 		farPlane = -z;
 	}
 
-	inline void setNearPlaneZ(double z) {
+	inline void setNearPlaneZ(float z) {
 		debugAssert(z < 0);
 		nearPlane = -z;
 	}
@@ -197,13 +197,13 @@ public:
     /**
      Returns the GCamera space width of the viewport.
      */
-    double getViewportWidth(
+    float getViewportWidth(
         const class Rect2D&                     viewport) const;
 
     /**
      Returns the GCamera space height of the viewport.
      */
-    double getViewportHeight(       
+    float getViewportHeight(       
         const class Rect2D&                     viewport) const;
 
     /**
@@ -244,8 +244,8 @@ public:
 
    GCamera::Frustum frustum(const Rect2D& viewport) const;
 
-   /** Read and Write camera parameters */
-	void serialize(class BinaryOutput& bo) const;
+    /** Read and Write camera parameters */
+    void serialize(class BinaryOutput& bo) const;
 	void deserialize(class BinaryInput& bi);
    
 };

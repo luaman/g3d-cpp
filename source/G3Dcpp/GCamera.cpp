@@ -4,9 +4,10 @@
   @author Morgan McGuire, matrix@graphics3d.com
  
   @created 2001-04-15
-  @edited  2005-07-11
+  @edited  2006-01-11
 */
 
+#include "G3D/platform.h"
 #include "G3D/GCamera.h"
 #include "G3D/Rect2D.h"
 #include "G3D/BinaryInput.h"
@@ -17,9 +18,9 @@ namespace G3D {
 
 
 GCamera::GCamera() {
-    nearPlane   = 0.1;
-    farPlane    = inf();
-	setFieldOfView(toRadians(55));
+    nearPlane   = 0.1f;
+    farPlane    = (float)inf();
+	setFieldOfView((float)toRadians(55.0f));
 }
 
 
@@ -42,27 +43,27 @@ void GCamera::setCoordinateFrame(const CoordinateFrame& c) {
 }
 
 
-void GCamera::setFieldOfView(double angle) {
+void GCamera::setFieldOfView(float angle) {
 	debugAssert((angle < G3D_PI) && (angle > 0));
 
 	fieldOfView = angle;
 
 	// Solve for the corresponding image plane depth, as if the extent
 	// of the film was 1x1.
-	imagePlaneDepth = 1 / (2 * tan(angle / 2.0));
+	imagePlaneDepth = 1.0f / (2.0f * tanf(angle / 2.0f));
 }
  
 
 void GCamera::setImagePlaneDepth(
-    double                                  depth,
+    float                                   depth,
     const class Rect2D&                     viewport) {
 	
     debugAssert(depth > 0);
-	setFieldOfView(2 * atan(viewport.height() / (2 * depth)));
+	setFieldOfView(2.0f * atanf(viewport.height() / (2.0f * depth)));
 }
 
 
-double GCamera::getImagePlaneDepth(
+float GCamera::getImagePlaneDepth(
     const class Rect2D&                     viewport) const {
 
     // The image plane depth has been pre-computed for 
@@ -73,20 +74,20 @@ double GCamera::getImagePlaneDepth(
 }
 
 
-double GCamera::getViewportWidth(const Rect2D& viewport) const {
+float GCamera::getViewportWidth(const Rect2D& viewport) const {
     return getViewportHeight(viewport) * viewport.width() / viewport.height();
 }
 
 
-double GCamera::getViewportHeight(const Rect2D& viewport) const {
+float GCamera::getViewportHeight(const Rect2D& viewport) const {
     (void)viewport;
     return nearPlane / imagePlaneDepth;
 }
 
 
 Ray GCamera::worldRay(
-    double                                  x,
-    double                                  y,
+    float                                  x,
+    float                                  y,
     const Rect2D&                           viewport) const {
 
     int screenWidth  = iFloor(viewport.width());
@@ -96,8 +97,8 @@ Ray GCamera::worldRay(
     // Set the origin to 0
     out.origin = Vector3::zero();
 
-    double cx = screenWidth  / 2.0;
-    double cy = screenHeight / 2.0;
+    float cx = screenWidth  / 2.0f;
+    float cy = screenHeight / 2.0f;
 
     out.direction =
         Vector3( (x - cx) * -CoordinateFrame::zLookDirection,
@@ -121,7 +122,7 @@ Vector3 GCamera::project(
     int screenHeight = (int)viewport.height();
 
     Vector3 out = cframe.pointToObjectSpace(point);
-    double w = out.z * CoordinateFrame::zLookDirection;
+    float w = out.z * CoordinateFrame::zLookDirection;
 
     if (w <= 0) {
         return Vector3::inf();
@@ -129,29 +130,29 @@ Vector3 GCamera::project(
     debugAssert(w > 0);
 
     // Find where it hits an image plane of these dimensions
-    double zImagePlane = getImagePlaneDepth(viewport);
+    float zImagePlane = getImagePlaneDepth(viewport);
 
     // Recover the distance
-    double rhw = zImagePlane / w;
+    float rhw = zImagePlane / w;
 
     // Add the image center, flip the y axis
-    out.x = screenWidth / 2.0 - (rhw * out.x * CoordinateFrame::zLookDirection);
-    out.y = screenHeight / 2.0 - (rhw * out.y);
+    out.x = screenWidth / 2.0f - (rhw * out.x * CoordinateFrame::zLookDirection);
+    out.y = screenHeight / 2.0f - (rhw * out.y);
     out.z = rhw;
 
     return out;
 }
 
 
-double GCamera::worldToScreenSpaceArea(double area, double z, const Rect2D& viewport) const {
+float GCamera::worldToScreenSpaceArea(float area, float z, const Rect2D& viewport) const {
 
     if (z >= 0) {
-        return inf();
+        return (float)inf();
     }
 
-    double zImagePlane = getImagePlaneDepth(viewport);
+    float zImagePlane = getImagePlaneDepth(viewport);
 
-    return area * square(zImagePlane / z);
+    return area * (float)square(zImagePlane / z);
 }
 
 
@@ -306,7 +307,7 @@ void GCamera::getFrustum(const Rect2D& viewport, Frustum& fr) const {
     fr.faceArray.append(face);
 
     // Right plane
-    face.plane = Plane(Vector3(-cos(fovx/2), 0, -sin(fovx/2)), Vector3::zero());
+    face.plane = Plane(Vector3(-cosf(fovx/2), 0, -sinf(fovx/2)), Vector3::zero());
     face.vertexIndex[0] = 0;
     face.vertexIndex[1] = 4;
     face.vertexIndex[2] = 7;
@@ -322,7 +323,7 @@ void GCamera::getFrustum(const Rect2D& viewport, Frustum& fr) const {
     fr.faceArray.append(face);
 
     // Top plane
-    face.plane = Plane(Vector3(0, -cos(fieldOfView/2), -sin(fieldOfView/2)), Vector3::zero());
+    face.plane = Plane(Vector3(0, -cosf(fieldOfView/2.0f), -sinf(fieldOfView/2.0f)), Vector3::zero());
     face.vertexIndex[0] = 1;
     face.vertexIndex[1] = 5;
     face.vertexIndex[2] = 4;
@@ -385,8 +386,8 @@ void GCamera::get3DViewportCorners(
     // Must be kept in sync with getFrustum()
 
     const float sign            = CoordinateFrame::zLookDirection;
-    const float w               = -sign * getViewportWidth(viewport) / 2;
-    const float h               = getViewportHeight(viewport) / 2;
+    const float w               = -sign * getViewportWidth(viewport) / 2.0f;
+    const float h               = getViewportHeight(viewport) / 2.0f;
     const float z               = -sign * getNearPlaneZ();
 
     // Compute the points
@@ -425,12 +426,12 @@ void GCamera::serialize(BinaryOutput& bo) const {
 
 
 void GCamera::deserialize(BinaryInput& bi) {
-	fieldOfView = bi.readFloat64();
-	imagePlaneDepth = bi.readFloat64();
-	nearPlane = bi.readFloat64();
-	debugAssert(nearPlane > 0.0);
-	farPlane = bi.readFloat64();
-	debugAssert(farPlane > 0.0);
+	fieldOfView = (float)bi.readFloat64();
+	imagePlaneDepth = (float)bi.readFloat64();
+	nearPlane = (float)bi.readFloat64();
+	debugAssert(nearPlane > 0.0f);
+	farPlane = (float)bi.readFloat64();
+	debugAssert(farPlane > 0.0f);
 	cframe.deserialize(bi);
 }
 
