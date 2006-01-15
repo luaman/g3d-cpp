@@ -102,6 +102,7 @@
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
       <LI> G3D::GLCaps::hasBug_redBlueMipmapSwap and workaround for G3D::Texture on Radeon 7500
+      <LI> Fix: [ 1227915 ] Textures don't bind on ATI under GLSL.
       <LI> Fix: [ 1358477 ] ray-plane intersection bug [Dan Keefe]
       <LI> Fix: [ 1370665 ] hash_map moved to stdext in VC8 (2005)
       <LI> Fix: ToneMap extended to use DIM_2D_NPOT instead of DIM_2D_RECT

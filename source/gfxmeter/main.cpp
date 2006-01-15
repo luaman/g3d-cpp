@@ -54,31 +54,29 @@ void shaderVersions(
 void App::showSplashScreen() {
     TextureRef gfxMeterTexture = Texture::fromFile("gears.jpg", TextureFormat::AUTO, Texture::CLAMP);
 
-    for (int i = 0; i < 2; ++i) {
-        renderDevice->push2D();
-        
-            renderDevice->setColorClearValue(Color3::white());
-            renderDevice->clear();
+    // Load the font
+    if (reportFont.isNull()) {
+        reportFont = GFont::fromFile(NULL, dataDir + "arial.fnt");
+    }
 
-            int s = gfxMeterTexture->getTexelWidth();
-            int w = 800, h = 600;
-            renderDevice->setTexture(0, gfxMeterTexture);
-            Draw::rect2D(Rect2D::xywh(w/2-s/2,h/2-s/2,s,s), renderDevice);
+    renderDevice->push2D();
+    
+        renderDevice->setColorClearValue(Color3::white());
+        renderDevice->clear();
 
-            // Second time through, render some text
-            if (reportFont.notNull()) {
-                reportFont->draw2D(renderDevice, "Profiling your system...", Vector2(w/2, h/2+s/2 + 10), 
-                    19, Color3::black(), Color4::clear(), GFont::XALIGN_CENTER);
-            }
+        int s = gfxMeterTexture->getTexelWidth();
+        int w = 800, h = 600;
+        renderDevice->setTexture(0, gfxMeterTexture);
+        Draw::rect2D(Rect2D::xywh(w/2-s/2,h/2-s/2,s,s), renderDevice);
 
-        renderDevice->pop2D();
-        window()->swapGLBuffers();
-
-        // Load the font
-        if (reportFont.isNull()) {
-            reportFont = GFont::fromFile(NULL, dataDir + "arial.fnt");
+        // Second time through, render some text
+        if (reportFont.notNull()) {
+            reportFont->draw2D(renderDevice, "Profiling your system...", Vector2(w/2, h/2+s/2 + 10), 
+                19, Color3::black(), Color4::clear(), GFont::XALIGN_CENTER);
         }
-    }    
+
+    renderDevice->pop2D();
+    window()->swapGLBuffers();
 }
 
 
