@@ -939,6 +939,8 @@ Matrix Matrix::pseudoInverse(float tolerance) const {
         U = U.subMatrix(0, U.rows() - 1, 0, r - 1).transpose();
         V = V.subMatrix(0, V.rows() - 1, 0, r - 1);
 
+        d.resize(r);
+
         X = V * Matrix::fromDiagonal(d) * U;
     }
 
