@@ -5,6 +5,8 @@
 
 #include "AVI.h"
 
+namespace G3D {
+
 /** 
  The Windows AVI interface uses global intialization state.  We add a 
  reference count to allow multiple simultaneously open files.  Access this
@@ -262,4 +264,6 @@ void AVIWriter::writeFrame(const GImage& im) {
 
 void AVIWriter::getCodecs(Array<std::string>& comp) {
     // TODO
+}
+
 }
