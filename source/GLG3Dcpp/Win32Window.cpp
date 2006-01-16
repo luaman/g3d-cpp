@@ -11,7 +11,9 @@
   All rights reserved.
 */
 
+#ifdef _MSC_VER
 #include <windows.h>
+#endif
 #include "G3D/platform.h"
 #include "GLG3D/GLCaps.h"
 
