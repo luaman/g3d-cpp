@@ -21,7 +21,7 @@
 #include <algorithm>
 
 #ifdef G3D_WIN32
-#   include <new.h>
+#   include <new>
     
 #   pragma warning (push)
     // debug information too long

@@ -13,7 +13,7 @@
 #include "GLG3D/GWindowSettings.h"
 
 // For SDL_Event
-#if (defined(G3D_OSX)||defined(G3D_MINGW32))
+#if defined(G3D_OSX)
 #include <SDL/SDL_events.h>
 #elif defined(G3D_WIN32)
 #include <SDL_events.h>

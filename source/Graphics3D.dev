@@ -1,7 +1,7 @@
 [Project]
 FileName=Graphics3D.dev
 Name=Graphics3D
-UnitCount=52
+UnitCount=53
 Type=2
 Ver=1
 ObjFiles=
@@ -559,6 +559,16 @@ BuildCmd=
 
 [Unit52]
 FileName=G3Dcpp\Cylinder.cpp
+CompileCpp=1
+Folder=Graphics3D
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit53]
+FileName=G3Dcpp\GThread.cpp
 CompileCpp=1
 Folder=Graphics3D
 Compile=1

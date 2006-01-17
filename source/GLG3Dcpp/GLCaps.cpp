@@ -128,8 +128,8 @@ std::string GLCaps::getDriverVersion() {
 
         void* buffer = new uint8[size];
 
-        if (GetFileVersionInfo(lpdriver, NULL, size, buffer) == 0) {
-            delete[] buffer;
+        if (GetFileVersionInfo(lpdriver, 0, size, buffer) == 0) {
+            delete[] (uint8*)buffer;
             return "Unknown";
         }
 
@@ -157,7 +157,7 @@ std::string GLCaps::getDriverVersion() {
                 pValue->dwProductVersionLS & 0xFFFF);
         }
 
-        delete[] buffer;
+        delete[] (uint8*)buffer;
 
         return result;
     #else

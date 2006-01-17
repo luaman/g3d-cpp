@@ -15,7 +15,7 @@
  Pick up libjpeg headers locally on Windows, but from the system on all other platforms.
 */
 extern "C" {
-#ifdef _MSC_VER
+#ifdef G3D_WIN32
 	#include "../IJG/jconfig.h"
 	#include "../IJG/cdjpeg.h"
 #else

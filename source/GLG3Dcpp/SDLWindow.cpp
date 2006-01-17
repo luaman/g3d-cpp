@@ -322,10 +322,10 @@ void SDLWindow::setDimensions(const Rect2D& dims) {
         int W = screenWidth();
         int H = screenHeight();
 
-        int x = iClamp(dims.x0(), 0, W);
-        int y = iClamp(dims.y0(), 0, H);
-        int w = iClamp(dims.width(), 1, W);
-        int h = iClamp(dims.height(), 1, H);
+        int x = iClamp((int)dims.x0(), 0, W);
+        int y = iClamp((int)dims.y0(), 0, H);
+        int w = iClamp((int)dims.width(), 1, W);
+        int h = iClamp((int)dims.height(), 1, H);
 
         SetWindowPos(_Win32HWND, NULL, x, y, w, h, SWP_NOZORDER);
         // Do not update settings-- wait for an event to notify us

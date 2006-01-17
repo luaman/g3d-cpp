@@ -17,7 +17,7 @@
 #ifndef G3D_GRAPHICS3D_H
 #define G3D_GRAPHICS3D_H
 
-#define NOMINMAX
+#define NOMINMAX 1
 #ifdef min
     #undef min
 #endif

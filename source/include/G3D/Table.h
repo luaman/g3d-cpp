@@ -56,6 +56,10 @@ inline unsigned int hashCode(const G3D::uint64 a) {
 	return (unsigned int)a;
 }
 
+inline unsigned int hashCode(const void* a) {
+	return (unsigned int)a;
+}
+
 /**
  Default class pointer hash.
  */

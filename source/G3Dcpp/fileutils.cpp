@@ -32,7 +32,7 @@
  Pick up libjpeg headers locally on Windows, but from the system on all other platforms.
 */
 extern "C" {
-#ifdef _MSC_VER
+#if (defined(_MSC_VER) || defined(__MINGW32__))
 	#include "../IJG/jpeglib.h"
 #else
 	#include <jpeglib.h>

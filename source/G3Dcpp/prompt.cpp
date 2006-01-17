@@ -15,7 +15,11 @@
 #include <stdio.h>
 
 #ifdef G3D_WIN32
-    #include <strstream>
+    #if (defined(G3D_MINGW32) || (_MSC_VER > 1200))
+        #include <sstream>
+    #else
+        #include <sstrstream>
+    #endif
     #include <conio.h>
 #else
     #define _getch getchar

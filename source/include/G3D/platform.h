@@ -145,7 +145,10 @@
 // TODO: remove
 #   pragma warning (disable : 4244)
 
-#   define restrict
+// Mingw32 defines restrict
+#   ifndef G3D_MINGW32
+#          define restrict
+#   endif
 
 #   define G3D_CHECK_PRINTF_ARGS 
 #   define G3D_CHECK_VPRINTF_ARGS
@@ -229,7 +232,7 @@
 #       define WIN32_LEAN_AND_MEAN 1
 #   endif
 
-#   define NOMINMAX
+#   define NOMINMAX 1
 #   include <windows.h>
 
 #   if defined(_MSC_VER) && (_MSC_VER <= 1200)

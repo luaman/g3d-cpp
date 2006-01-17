@@ -1107,7 +1107,7 @@ public:
 			    }
 			    
 			    startTime = minTime;
-			    endTime   = min(maxTime, splitTime);
+			    endTime   = min((double)maxTime, splitTime);
                 endTime2  = square(endTime);
 
 			    double rayLocation = ray.origin[splitAxis] +

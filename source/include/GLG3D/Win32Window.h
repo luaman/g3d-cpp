@@ -28,6 +28,7 @@ namespace G3D {
 // Forward declaration so directinput8.h is included in cpp
 namespace _internal {
 class _DirectInput;
+static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 }
 using _internal::_DirectInput;
 
@@ -74,7 +75,7 @@ private:
 
     bool                justReceivedFocus;
 
-    friend static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
+    friend LRESULT WINAPI _internal::window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 	
     /** Called from all constructors */
 	void init(HWND hwnd, bool creatingShareWindow = false);

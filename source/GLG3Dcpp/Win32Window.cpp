@@ -66,7 +66,7 @@ static bool ChangeResolution(int, int, int, int);
 static void makeKeyEvent(int, int, GEvent&);
 static void mouseButton(bool, int, DWORD, GEvent&);
 static void initWin32KeyMap();
-static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
+//static LRESULT WINAPI _internal::window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
 
 #if 0
 // For use when debugging format negotiation
@@ -858,7 +858,7 @@ void Win32Window::initWGL() {
     WNDCLASS window_class;
     
     window_class.style         = CS_HREDRAW | CS_VREDRAW;
-    window_class.lpfnWndProc   = window_proc;
+    window_class.lpfnWndProc   = _internal::window_proc;
     window_class.cbClsExtra    = 0; 
     window_class.cbWndExtra    = 0;
     window_class.hInstance     = GetModuleHandle(NULL);
@@ -1273,6 +1273,7 @@ static void printPixelFormatDescription(int format, HDC hdc, TextOutput& out) {
 }
 #endif
 
+namespace _internal{
 static LRESULT WINAPI window_proc(
     HWND                window,
     UINT                message,
@@ -1329,6 +1330,7 @@ static LRESULT WINAPI window_proc(
     
     return DefWindowProc(window, message, wparam, lparam);
 }
+}
 
 static const char* G3DWndClass() {
 
@@ -1339,7 +1341,7 @@ static const char* G3DWndClass() {
         WNDCLASS wndcls;
         
         wndcls.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | CS_OWNDC;
-        wndcls.lpfnWndProc = window_proc;
+        wndcls.lpfnWndProc = _internal::window_proc;
         wndcls.cbClsExtra = wndcls.cbWndExtra = 0;
         wndcls.hInstance = ::GetModuleHandle(NULL);
         wndcls.hIcon = NULL;
