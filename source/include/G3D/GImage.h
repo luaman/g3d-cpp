@@ -121,6 +121,20 @@ public:
     }
 
     /** Returns the pixel at (x, y), where (0,0) is the upper left. */
+    inline const uint8& pixel1(int x, int y) const {
+        debugAssert(x >= 0 && x < width);
+        debugAssert(y >= 0 && y < height);
+        return byte()[x + y * width];
+    }
+
+    /** Returns the pixel at (x, y), where (0,0) is the upper left. */
+    inline uint8& pixel1(int x, int y) {
+        debugAssert(x >= 0 && x < width);
+        debugAssert(y >= 0 && y < height);
+        return byte()[x + y * width];
+    }
+
+    /** Returns the pixel at (x, y), where (0,0) is the upper left. */
     inline const Color3uint8& pixel3(int x, int y) const {
         debugAssert(x >= 0 && x < width);
         debugAssert(y >= 0 && y < height);

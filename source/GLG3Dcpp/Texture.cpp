@@ -420,10 +420,35 @@ const Texture::Parameters& Texture::parameters() const {
 
 
 
-void Texture::getImage(GImage& dst) const {
+void Texture::getImage(GImage& dst, const TextureFormat* outFormat) const {
+    alwaysAssertM(outFormat == TextureFormat::AUTO ||
+                  outFormat == TextureFormat::RGB8 ||
+                  outFormat == TextureFormat::RGBA8 ||
+                  outFormat == TextureFormat::L8 ||
+                  outFormat == TextureFormat::A8, "Illegal texture format.");
+
+    if (outFormat == TextureFormat::AUTO) {
+        switch(format->OpenGLBaseFormat) { 
+        case GL_LUMINANCE:
+            outFormat = TextureFormat::L8;
+            break;
+
+        case GL_RGB:
+            outFormat = TextureFormat::RGB8;
+            break;
+
+        case GL_RGBA:
+            // Fall through intentionally
+        default:
+            outFormat = TextureFormat::RGBA8;
+            break;
+        }
+    }
+
     int channels = 0;
 
-    switch(format->OpenGLBaseFormat) {
+
+    switch(outFormat->OpenGLBaseFormat) {
     case GL_LUMINANCE:
         channels = 1;
         break;
@@ -450,7 +475,7 @@ void Texture::getImage(GImage& dst) const {
     glGetTexImage(
        target,
        0,
-       format->OpenGLBaseFormat,
+       outFormat->OpenGLBaseFormat,
        GL_UNSIGNED_BYTE,
        dst.byte());
 

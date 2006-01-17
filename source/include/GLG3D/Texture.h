@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2006-14-06
+  @edited  2006-01-15
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -532,9 +532,10 @@ public:
 
     /**
      Returns the level 0 mip-map data in the format that most closely matches
-     the internal texture format.
+     outFormat.
+     @param outFormat Must be one of: TextureFormat::AUTO, TextureFormat::RGB8, TextureFormat::RGBA8, TextureFormat::L8, TextureFormat::A8
      */
-    void getImage(GImage& dst) const;
+    void getImage(GImage& dst, const TextureFormat* outFormat = TextureFormat::AUTO) const;
 
     inline unsigned int openGLID() const {
         return textureID;
