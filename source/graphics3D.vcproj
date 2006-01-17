@@ -30,7 +30,7 @@
 				AssemblerListingLocation=".\../temp/debug/g3d/"
 				ObjectFile=".\../temp/debug/g3d/"
 				ProgramDataBaseFileName=".\../temp/debug/g3d/"
-				WarningLevel="3"
+				WarningLevel="2"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="0"/>

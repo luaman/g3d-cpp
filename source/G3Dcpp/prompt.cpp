@@ -18,7 +18,7 @@
     #if (defined(G3D_MINGW32) || (_MSC_VER > 1200))
         #include <sstream>
     #else
-        #include <sstrstream>
+        #include <strstream>
     #endif
     #include <conio.h>
 #else

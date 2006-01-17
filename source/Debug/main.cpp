@@ -13,6 +13,8 @@
 
 #include <G3DAll.h>
 
+#include "../contrib/AVI/AVI.h"
+#include "../contrib/AVI/AVI.cpp"
 #include "../contrib/Matrix/Matrix.h"
 #include "../contrib/Matrix/Matrix.cpp"
 
@@ -175,88 +177,18 @@ void Demo::onInit()  {
     GApplet::init();
 
     texture[0] = NULL;
+    texture[1] = Texture::fromGImage("bayer", dst, TextureFormat::RGB8, Texture::DIM_2D_NPOT, Texture::Parameters::video());
 
-    //GImage src("rggb.bmp");
-    //GImage dst(src.width, src.height, 3);
+    {
+        AVIReader avi("C:/Projects/cpp/source/contrib/AVI/test5.avi");
+        debugAssertM(avi.ok(), avi.errorString());
+        
+        GImage im;
+        avi.getFrame(0, im);
 
-    //src.convertToL8();
-    //Stopwatch timer;
-
-    //timer.tick();
-    //GImage::BAYER_R8G8_G8R8_to_R8G8B8_MHC(src.width, src.height, src.byte(), dst.byte());
-    //timer.tock();
-
-    //computeTime = timer.elapsedTime();
-
-    //texture[1] = Texture::fromGImage("bayer", dst, TextureFormat::RGB8, Texture::DIM_2D_NPOT, Texture::Parameters::video());
-
-#if 0
-    //Texture::fromFile("0.jpg");
-//    GImage im0("0.jpg");
-
-//    GImage im(512,512,3);
-//    GImage im("1.bmp");
-//    im.save("1.bmp");
-    
-    // Fixes
-//    memcpy(im.byte() + 512*3 * 25, im0.byte(), 512*3 * 24);
-
-    // Still broken
-//    memset(im.byte() + 512 * 3 * 50, 0, 512*3 * 462);
-
-    // Still broken
-  /*  
-
-    for (int i = 0; i < 512 * 512 * 3; ++i) {
-        uint8& c = *(im.byte() + i);
-        c = 0;
-    }
-    
-
-    // Still broken!
-    for (int i = 0; i < 512 * 512 * 3; i += 3) {
-        uint8& c = *(im.byte() + i);
-        c = 0xFF;
-    }
-    */
-
-//    memcpy(b, im.byte(), 512*512*3);
-
-    // X = 3 fails, X = 4 succeeds
-    static const int X = 3;
-    uint8* b = new uint8[4*4*X];
-
-
-    memset(b, 0, 4*4*X);
-    for (int i = 0; i < 4 * 4 * X; i += X) {
-        b[i] = 0xFF;
+        texture[0] = Texture::fromGImage(avi.filename(), im);
     }
 
-    // Format bug only occurs when using bilinear interpolation
-    texture[1] = Texture::fromMemory("Red", b, (X == 3) ? TextureFormat::RGB8 : TextureFormat::RGBA8, 4, 4, TextureFormat::AUTO, Texture::TILE);//Texture::Parameters::defaults());
-    //, TextureFormat::AUTO, Texture::TILE, Texture::NO_INTERPOLATION, Texture::DIM_2D);
-    delete[] b;
-    
-    b = new uint8[4*4*3];
-    glBindTexture(GL_TEXTURE_2D, texture[1]->getOpenGLID());
-    glGetTexImage(GL_TEXTURE_2D,
-			      0,
-			      GL_RGB,
-			      GL_UNSIGNED_BYTE,
-			      b);
-
-    Log::common()->printf("%d %d %d\n", b[0], b[1], b[2]);
-/*    
-    alwaysAssertM(b[0] == 0xFF, "Read back value with Red != 0xFF");
-    alwaysAssertM(b[1] == 0x00, "Read back value with Green != 0x00");
-    alwaysAssertM(b[2] == 0x00, "Read back value with Blue != 0x00");
-  */  
-    delete[] b;
-
-   // alwaysAssertM(! GLCaps::hasBug_redBlueMipmapSwap(), "Red and blue are swapped.");
-#endif
-
-    setDesiredFrameRate(90);
      
     double s = 2; 
     vertex.append(G3D::Vector3(-s, 0, -s)); 
@@ -365,23 +297,47 @@ void Demo::onGraphics(RenderDevice* rd) {
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
     
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
 
     if (app->sky.notNull()) {
         app->sky->render(app->renderDevice, lighting);
     }
 
+<<<<<<< main.cpp
+    app->renderDevice->push2D();
+<<<<<<< main.cpp
+        Rect2D rect = Rect2D::xywh(0, 100, 640, 480);
+        app->renderDevice->setTexture(0, texture[0]);
+        Draw::rect2D(rect, rd);
+=======
+>>>>>>> 1.241
+
+<<<<<<< main.cpp
+       // rect = rect + Vector2(200, 0);
+       // app->renderDevice->setTexture(0, texture[1]);
+       // Draw::rect2D(rect, rd);
+=======
+        app->debugPrintf("Time: %fs", computeTime);
+=======
     //app->renderDevice->push2D();
 
     //    app->debugPrintf("Time: %fs", computeTime);
 
     //    app->renderDevice->setCameraToWorldMatrix(CoordinateFrame());
+>>>>>>> 1.242
 
     //    Rect2D rect = texture[1]->rect2DBounds();
     //    app->renderDevice->setTexture(0, texture[1]);
     //    Draw::rect2D(rect/2, rd);
 
+<<<<<<< main.cpp
+        Rect2D rect = texture[1]->rect2DBounds();
+        app->renderDevice->setTexture(0, texture[1]);
+        Draw::rect2D(rect/2, rd);
+>>>>>>> 1.241
+=======
     //app->renderDevice->pop2D();
+>>>>>>> 1.242
 
     // Setup lighting
     app->renderDevice->enableLighting();
@@ -438,6 +394,16 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
+<<<<<<< main.cpp
+
+<<<<<<< main.cpp
+    GImage x(100, 100, 3);
+    x.convertToRGBA();
+
+=======
+>>>>>>> 1.241
+=======
+>>>>>>> 1.242
     GAppSettings settings;
     settings.useNetwork = false;
     settings.window.resizable = true;
