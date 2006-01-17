@@ -73,9 +73,9 @@ Matrix4 Matrix4::orthogonalProjection(
     float x, y, z;
     float tx,  ty, tz;
 
-    x = 2.0 / (right-left);
-    y = 2.0 / (top-bottom);
-    z = -2.0 / (farval-nearval);
+    x = 2.0f / (right-left);
+    y = 2.0f / (top-bottom);
+    z = -2.0f / (farval-nearval);
     tx = -(right+left) / (right-left);
     ty = -(top+bottom) / (top-bottom);
     tz = -(farval+nearval) / (farval-nearval);
@@ -333,15 +333,15 @@ float Matrix4::subDeterminant(int excludeRow, int excludeCol) const {
     }
 
     // Compute the first row of cofactors 
-    double cofactor00 = 
+    float cofactor00 = 
       elt[row[1]][col[1]] * elt[row[2]][col[2]] -
       elt[row[1]][col[2]] * elt[row[2]][col[1]];
 
-    double cofactor10 = 
+    float cofactor10 = 
       elt[row[1]][col[2]] * elt[row[2]][col[0]] -
       elt[row[1]][col[0]] * elt[row[2]][col[2]];
 
-    double cofactor20 = 
+    float cofactor20 = 
       elt[row[1]][col[0]] * elt[row[2]][col[1]] -
       elt[row[1]][col[1]] * elt[row[2]][col[0]];
 

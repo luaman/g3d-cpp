@@ -145,6 +145,12 @@
 // TODO: remove
 #   pragma warning (disable : 4244)
 
+#	if defined(_MSC_VER) && (_MSC_VER <= 1200)
+		//	VC6 std:: has signed problems in it	
+#		pragma warning (disable : 4018)
+#	endif
+
+
 // Mingw32 defines restrict
 #   ifndef G3D_MINGW32
 #          define restrict

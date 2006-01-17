@@ -373,7 +373,7 @@ bool fuzzyLe(double a, double b);
  Computes 1 / sqrt(x).
  */
 inline float rsq(float x) {
-    return 1.0f / sqrt(x);
+    return 1.0f / sqrtf(x);
 }
 
 /**

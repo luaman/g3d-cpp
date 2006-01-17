@@ -25,7 +25,7 @@ Vector3 Line::intersection(const Plane& plane) const {
         return Vector3::inf();
 
     } else {
-        double t = -(d + _point.dot(normal)) / rate;
+        float t = -(d + _point.dot(normal)) / rate;
 
         return _point + _direction * t;
     }

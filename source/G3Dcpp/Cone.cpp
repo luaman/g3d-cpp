@@ -34,10 +34,10 @@ Cone::Cone(const Vector3& tip, const Box& box) {
     this->direction = (box.getCenter() - tip).direction();
 
     // Find the biggest angle
-    double smallestDotProduct = direction.dot((box.corner(0) - tip).direction());
+    float smallestDotProduct = direction.dot((box.corner(0) - tip).direction());
 
     for (int i = 1; i < 8; ++i) {
-        double dp = direction.dot((box.corner(i) - tip).direction());
+        float dp = direction.dot((box.corner(i) - tip).direction());
 
         assert(dp > 0);
 
@@ -46,7 +46,7 @@ Cone::Cone(const Vector3& tip, const Box& box) {
         }
     }
 
-    angle = acos(smallestDotProduct);
+    angle = acosf(smallestDotProduct);
 }
 
 
@@ -60,7 +60,7 @@ bool Cone::intersects(const Sphere& b) const {
     // Move the tip backwards, effectively making the cone bigger
     // to account for the radius of the sphere.
 
-    Vector3 tip = this->tip - direction * b.radius / sin(angle);
+    Vector3 tip = this->tip - direction * b.radius / sinf(angle);
 
     return Cone(tip, direction, angle).contains(b.center);
 }
@@ -70,9 +70,9 @@ bool Cone::contains(const Vector3& v) const {
 
     Vector3 d = (v - tip).direction();
 
-    double x = d.dot(direction);
+    float x = d.dot(direction);
 
-    return (x > 0) && (x >= cos(angle));
+    return (x > 0) && (x >= cosf(angle));
 }
 
 }; // namespace

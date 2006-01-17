@@ -8,15 +8,16 @@
       at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
  @created 2002-06-25
- @edited  2003-04-08
+ @edited  2006-01-16
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
 #ifndef G3D_COLOR4_H
 #define G3D_COLOR4_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Color3.h"
 #include <string>

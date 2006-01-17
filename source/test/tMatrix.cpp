@@ -174,7 +174,7 @@ void testMatrix() {
         // Verify that we can reconstruct
         Matrix B = U * Matrix::fromDiagonal(D) * V.transpose();
 
-        Matrix test = abs(A - B) < 0.1;
+        Matrix test = abs(A - B) < 0.1f;
 
 //        A.debugPrint("A");
 //        U.debugPrint("U");
@@ -184,8 +184,8 @@ void testMatrix() {
 
         debugAssert(test.allNonZero());
 
-        double m = (A - B).norm() / A.norm();
-        debugAssert(m < 0.01);
+        float m = (A - B).norm() / A.norm();
+        debugAssert(m < 0.01f);
         (void)m;
     }
 
