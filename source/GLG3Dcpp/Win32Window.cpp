@@ -11,15 +11,13 @@
   All rights reserved.
 */
 
-#ifdef _MSC_VER
-#include <windows.h>
-#endif
 #include "G3D/platform.h"
 #include "GLG3D/GLCaps.h"
 
 // This file is ignored on other platforms
 #ifdef G3D_WIN32
 
+#include <windows.h>
 #include "graphics3d.h"
 #include "GLG3D/Win32Window.h"
 #include "GLG3D/glcalls.h"

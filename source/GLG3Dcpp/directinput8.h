@@ -14,6 +14,7 @@
     #error This is a Win32-only file
 #endif
 
+#include <unknwn.h>
 #include <initguid.h>
 
 
