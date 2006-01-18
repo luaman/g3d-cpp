@@ -309,6 +309,11 @@ public:
      specified.
      */
     static const TextureFormat* stencil(int bits = SAME_AS_SCREEN);
+
+    /**
+     Returns the matching TextureFormat* identified by the Code.
+     */
+    static const TextureFormat* fromCode(TextureFormat::Code code);
 };
 
 }

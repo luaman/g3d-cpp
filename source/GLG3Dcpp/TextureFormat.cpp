@@ -136,4 +136,145 @@ const TextureFormat* TextureFormat::stencil(int bits) {
     }
 }
 
+const TextureFormat* fromCode(TextureFormat::Code code) {
+    switch (code) {
+    case TextureFormat::CODE_L8:
+        return TextureFormat::L8;
+        break;
+    case TextureFormat::CODE_L16:
+        return TextureFormat::L16;
+        break;
+    case TextureFormat::CODE_L16F:
+        return TextureFormat::L16F;
+        break;
+    case TextureFormat::CODE_L32F:
+        return TextureFormat::L32F;
+        break;
+
+    case TextureFormat::CODE_A8:
+        return TextureFormat::A8;
+        break;
+    case TextureFormat::CODE_A16:
+        return TextureFormat::A16;
+        break;
+    case TextureFormat::CODE_A16F:
+        return TextureFormat::A16F;
+        break;
+    case TextureFormat::CODE_A32F:
+        return TextureFormat::A32F;
+        break;
+
+    case TextureFormat::CODE_LA4:
+        return TextureFormat::LA4;
+        break;
+    case TextureFormat::CODE_LA8:
+        return TextureFormat::LA8;
+        break;
+    case TextureFormat::CODE_LA16:
+        return TextureFormat::LA16;
+        break;
+    case TextureFormat::CODE_LA16F:
+        return TextureFormat::LA16F;
+        break;
+    case TextureFormat::CODE_LA32F:
+        return TextureFormat::LA32F;
+        break;
+
+    case TextureFormat::CODE_RGB5:
+        return TextureFormat::RGB5;
+        break;
+    case TextureFormat::CODE_RGB5A1:
+        return TextureFormat::RGB5A1;
+        break;
+    case TextureFormat::CODE_RGB8:
+        return TextureFormat::RGB8;
+        break;
+    case TextureFormat::CODE_RGB16:
+        return TextureFormat::RGB16;
+        break;
+    case TextureFormat::CODE_RGB16F:
+        return TextureFormat::RGB16F;
+        break;
+    case TextureFormat::CODE_RGB32F:
+        return TextureFormat::RGB32F;
+        break;
+
+    case TextureFormat::CODE_ARGB8:
+        debugAssertM(TextureFormat::AUTO, "Unsupported TextureFormat at decoding.");
+        return TextureFormat::AUTO;
+        break;
+    case TextureFormat::CODE_BGR8:
+        debugAssertM(TextureFormat::AUTO, "Unsupported TextureFormat at decoding.");
+        return TextureFormat::AUTO;
+        break;
+
+    case TextureFormat::CODE_RGBA8:
+        return TextureFormat::RGBA8;
+        break;
+    case TextureFormat::CODE_RGBA16:
+        return TextureFormat::RGBA16;
+        break;
+    case TextureFormat::CODE_RGBA16F:
+        return TextureFormat::RGBA16F;
+        break;
+    case TextureFormat::CODE_RGBA32F:
+        return TextureFormat::RGBA32F;
+        break;
+
+    case TextureFormat::CODE_BAYER_RGGB8:
+    case TextureFormat::CODE_BAYER_GRBG8:
+    case TextureFormat::CODE_BAYER_GBRG8:
+    case TextureFormat::CODE_BAYER_BGGR8:
+    case TextureFormat::CODE_BAYER_RGGB32F:
+    case TextureFormat::CODE_BAYER_GRBG32F:
+    case TextureFormat::CODE_BAYER_GBRG32F:
+    case TextureFormat::CODE_BAYER_BGGR32F:
+
+    case TextureFormat::CODE_HSV8:
+    case TextureFormat::CODE_HSV32F:
+
+    case TextureFormat::CODE_YUV8:
+    case TextureFormat::CODE_YUV32F:
+        debugAssertM(TextureFormat::AUTO, "Unsupported TextureFormat at decoding.");
+        return TextureFormat::AUTO;
+        break;
+
+    case TextureFormat::CODE_RGB_DXT1:
+        return TextureFormat::RGB_DXT1;
+        break;
+    case TextureFormat::CODE_RGBA_DXT1:
+        return TextureFormat::RGBA_DXT1;
+        break;
+    case TextureFormat::CODE_RGBA_DXT3:
+        return TextureFormat::RGBA_DXT3;
+        break;
+    case TextureFormat::CODE_RGBA_DXT5:
+        return TextureFormat::RGBA_DXT5;
+        break;
+
+    case TextureFormat::CODE_DEPTH16:
+        return TextureFormat::DEPTH16;
+        break;
+    case TextureFormat::CODE_DEPTH24:
+        return TextureFormat::DEPTH24;
+        break;
+    case TextureFormat::CODE_DEPTH32:
+        return TextureFormat::DEPTH32;
+        break;
+
+    case TextureFormat::CODE_STENCIL1:
+        return TextureFormat::STENCIL1;
+        break;
+    case TextureFormat::CODE_STENCIL4:
+        return TextureFormat::STENCIL4;
+        break;
+    case TextureFormat::CODE_STENCIL8:
+        return TextureFormat::STENCIL8;
+        break;
+    case TextureFormat::CODE_STENCIL16:
+        return TextureFormat::STENCIL16;
+        break;
+    }
+}
+
 }
