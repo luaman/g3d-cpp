@@ -16,15 +16,14 @@
 #ifndef G3D_DEBUGPRINTF_H
 #define G3D_DEBUGPRINTF_H
 
-#include <windows.h>
 #include "G3D/platform.h"
 #include <stdio.h>
 #include <cstdarg>
 #include "G3D/format.h"
 #include <string>
 
-#ifndef G3D_WIN32
-    #include <stdarg.h>
+#ifdef G3D_WIN32
+    #include <windows.h>
 #endif
 
 namespace G3D {
