@@ -29,6 +29,7 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI  Added TextureFormat::fromCode() [Corey]
       <LI> All keys are reset to up when Win32Window loses focus. [Corey]
       <LI> Added Plane::distance and Plane::closestPoint helper methods. [Corey] 
       <LI> G3D::TextureFormat::code, G3D::TextureFormat::colorSpace
