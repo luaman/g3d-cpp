@@ -7,6 +7,34 @@
 
 namespace G3D {
 
+
+/** 
+@cite http://msdn.microsoft.com/library/default.asp?url=/library/en-us/multimed/htm/_win32_avifileopen.asp
+*/
+
+static const char* aviErrorCodeToString(HRESULT result) {
+    switch (result) {
+    case AVIERR_BADFORMAT:
+        return "could not be read, is a corrupt, or is in an unrecognized format.";
+
+    case AVIERR_MEMORY:
+        return "could not be opened because of insufficient memory.";
+    
+    case AVIERR_FILEREAD:
+        return "could not be opened because a disk error occurred while reading.";
+
+    case AVIERR_FILEOPEN:
+        return "could not be opened because a disk error occurred.";
+
+    case REGDB_E_CLASSNOTREG:
+        return "has no associated file type in the registry.";
+
+    default:
+        return "triggered an unknown error and could not be opened.";
+    }
+}
+
+
 /** 
  The Windows AVI interface uses global intialization state.  We add a 
  reference count to allow multiple simultaneously open files.  Access this
@@ -248,22 +276,272 @@ void AVIReader::getFrame(int f, GImage& im, int channels) {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-AVIWriter::AVIWriter(const std::string& filename, const std::string& codec) {
-    // TODO
+AVIWriter::AVIWriter(
+    const std::string& filename, 
+    int width, 
+    int height, 
+    int period, 
+    const std::string& codec,
+    bool promptForCompressOptions) : 
+        state(STATE_WRITING), 
+        pAviFile(NULL), 
+        m_filename(filename), 
+        m_ok(true),
+        m_width(width),
+        m_height(height),
+        m_codec(codec) {
+
+    AVIInit();    
+
+    alwaysAssertM(codec.length() == 4, "codec must have exactly four characters.");
+
+    if (fileExists(filename)) {
+        // Delete the file so we can overwrite without error
+        BOOL success = DeleteFile(filename.c_str());
+    }
+
+    HRESULT result = AVIFileOpen(&pAviFile, filename.c_str(), OF_CREATE, NULL);
+
+    if (result != AVIERR_OK) {
+        setError(aviErrorCodeToString(result));
+        return;
+    }
+
+    m_period = period;
+    audio = NULL;
+    video = NULL;
+    compressedVideo = NULL;
+    nframe = 0; 
+    nsamp = 0;
+
+    frameBytes = m_width * m_height * 3;
+
+    createStreams(promptForCompressOptions);
+}
+
+
+void AVIWriter::setError(const std::string& str) {
+
+    m_errorString = std::string("File '") + m_filename + "' " + str;
+    m_ok = false;
+
+    if (state == STATE_WRITING) {
+        AVIExit();
+    }
+
+    state = STATE_ERROR;
+}
+
+
+void AVIWriter::createStreams(bool promptForCompressOptions) {
+
+    debugAssert(video == NULL);
+    debugAssert(compressedVideo == NULL);
+
+    HRESULT result;
+
+    // create the stream
+    AVISTREAMINFO strhdr;
+    ZeroMemory(&strhdr, sizeof(strhdr));
+
+    strhdr.fccType = streamtypeVIDEO;// stream type
+    strhdr.fccHandler = 0;
+    strhdr.dwScale = m_period;
+    strhdr.dwRate = 1000;
+    strhdr.dwSuggestedBufferSize = frameBytes;
+
+    SetRect(&strhdr.rcFrame, 0, 0, m_width, m_height);
+
+    result = AVIFileCreateStream(pAviFile, &video, &strhdr);
+    if (result != AVIERR_OK) {
+        setError("encountered an error while writing a frame.");
+        return;
+    }
+
+    /*
+    typedef struct { 
+    DWORD  fccType; 
+    DWORD  fccHandler; 
+    DWORD  dwKeyFrameEvery; 
+    DWORD  dwQuality; 
+    DWORD  dwBytesPerSecond; 
+    DWORD  dwFlags; 
+    LPVOID lpFormat; 
+    DWORD  cbFormat; 
+    LPVOID lpParms; 
+    DWORD  cbParms; 
+    DWORD  dwInterleaveEvery; 
+    } AVICOMPRESSOPTIONS; 
+    */
+    AVICOMPRESSOPTIONS myopts;
+    ZeroMemory(&myopts, sizeof(myopts));
+
+    // Default to raw, uncompressed frames
+    myopts.fccType = streamtypeVIDEO;
+    myopts.fccHandler = mmioFOURCC(m_codec[0], m_codec[1], m_codec[2], m_codec[3]);
+    myopts.dwFlags = AVICOMPRESSF_VALID;
+    myopts.dwQuality = 100;
+
+    AVICOMPRESSOPTIONS* optionArray[1];
+    optionArray[0] = &myopts;
+
+    if (promptForCompressOptions) { 
+        BOOL result = (BOOL)AVISaveOptions(NULL, 0, 1, &video, optionArray);
+
+        if (result == false) {
+            // User aborted
+            AVISaveOptionsFree(1, optionArray);            
+            setError("was aborted by user dialog.");
+            return;
+        }
+    }
+
+    result = AVIMakeCompressedStream(&compressedVideo, video, optionArray[0], NULL);
+    if (promptForCompressOptions) {
+        // Save the compression options
+        AVISaveOptionsFree(1, optionArray);
+    }
+
+    if (result != AVIERR_OK) {
+        setError("had a problem creating a compressed video stream.");
+        return;
+    }
+
+    BITMAPINFOHEADER    bi;
+    bi.biSize             = sizeof(BITMAPINFOHEADER);
+    bi.biWidth            = m_width;
+    // Normally, negative height means flip upside down (to the format G3D wants),
+    // however the AVI functions don't support that convention.
+    bi.biHeight           = m_height;
+    bi.biPlanes           = 1;
+    bi.biBitCount         = 24;
+    bi.biCompression      = BI_RGB;
+    bi.biSizeImage        = 0; // May be zero for RGB images
+    bi.biXPelsPerMeter    = 0;
+    bi.biYPelsPerMeter    = 0;
+    bi.biClrUsed          = 3;
+    bi.biClrImportant     = 0;
+
+    const int position = 0;
+    result = AVIStreamSetFormat(compressedVideo, position, &bi, bi.biSize + bi.biClrUsed * sizeof(RGBQUAD));
+
+    if (result != AVIERR_OK) {
+        setError("had a problem setting the compressed video stream format.");
+        return;
+    }
 }
 
 
 AVIWriter::~AVIWriter() {
-    // TODO
+    alwaysAssertM(state == STATE_COMMITTED || state == STATE_ABORTED || state == STATE_ERROR, 
+        "Destroyed AVIWriter without committing or aborting");
 }
 
 
 void AVIWriter::writeFrame(const GImage& im) {
-    // TODO
+    if (! ok()) {
+        debugAssertM(ok(), "Can't write to error file.");
+        return;
+    }
+
+    if ((im.width != m_width) || (im.height != m_height)) {
+        debugAssertM(false, "Dimensions of each frame must match");
+        return;
+    }   
+
+
+    static GImage out;
+    out.resize(im.width, im.height, 4);
+
+    // Copy im to out, flipping and converting to 3 channels
+    switch (im.channels) {
+    case 1:
+        // TODO: We could handle this by using an 8-bit bitmap format when setting the color channels
+        // Flip and spread colors
+        for (int y = 0; y < im.height; ++y) {
+            for (int x = 0; x < im.width; ++x) {
+                const uint8 s = im.pixel1(x, y);
+                Color3uint8 d;
+                d.r = s; d.g = s; d.b = s;
+                out.pixel3(x, out.height - y - 1) = d;
+            }
+        }
+        break;
+
+    case 3:
+        // Flip upside down
+        GImage::flipRGBVertical(im.byte(), out.byte(), im.width, im.height);
+
+        // Swap color channels
+        GImage::RGBtoBGR(out.byte(), out.byte(), out.width * out.height);
+        break;
+
+    case 4:
+        // Flip and convert colors to dib format
+        for (int y = 0; y < im.height; ++y) {
+            for (int x = 0; x < im.width; ++x) {
+                const Color4uint8& s = im.pixel4(x, y);
+                Color3uint8 d;
+                d.r = s.b; d.g = s.g; d.b = s.r;
+                out.pixel3(x, out.height - y - 1) = d;
+            }
+        }
+        break;
+    }
+
+
+    HRESULT result = AVIStreamWrite(compressedVideo, nframe, 1, out.byte(), frameBytes, AVIIF_KEYFRAME, NULL, NULL);
+    if (result != AVIERR_OK) {
+        setError("encountered an error while writing a frame.");
+        return;
+    }
+    ++nframe;   
 }
+
 
 void AVIWriter::getCodecs(Array<std::string>& comp) {
     // TODO
 }
+
+
+void AVIWriter::closeFile() {
+    debugAssert(state == STATE_WRITING);
+    debugAssert(pAviFile);
+
+    if (audio) {
+        AVIStreamRelease(audio);
+        audio = NULL;
+    }
+
+    if (compressedVideo) {
+        AVIStreamRelease(compressedVideo);
+        compressedVideo = NULL;
+    }
+
+    if (video) {
+        AVIStreamRelease(video);
+        video = NULL;
+    }
+
+    AVIFileRelease(pAviFile);
+    pAviFile = NULL;
+    AVIExit();
+}
+
+void AVIWriter::commit() {
+    alwaysAssertM(state == STATE_WRITING, "Cannot commit when not writing a file.");
+
+    closeFile();
+    state = STATE_COMMITTED;
+}
+
+
+void AVIWriter::abort() {
+    alwaysAssertM(state == STATE_WRITING, "Cannot abort when not writing a file.");
+
+    closeFile();
+    state = STATE_ABORTED;
+}
+
 
 }

@@ -13,7 +13,7 @@
 #endif
 
 #ifndef _MSC_VER
-#   error GVideo is for Win32 only
+#   error AVIReader and AVIWriter are for Win32 only
 #endif
 
 #pragma comment(lib, "winmm.lib")
@@ -123,10 +123,47 @@ public:
 class AVIWriter {
 private:
     
+    enum State {STATE_WRITING, STATE_COMMITTED, STATE_ABORTED, STATE_ERROR};
+
+    State           state;
+
     bool            m_ok;
     std::string     m_errorString;
     std::string     m_filename;
     std::string     m_codec;
+
+    PAVIFILE        pAviFile;
+
+    /** (.nChanels=0 if none was given).  Not used. */
+    WAVEFORMATEX    wfx;
+
+    /** Specified in CreateAvi, used when the video stream is first created */
+    int             m_period;
+
+    /** audio stream, not used */
+    PAVISTREAM      audio;
+
+    /** Created by createStreams */
+    PAVISTREAM      video;
+
+    /** Created by createStreams */
+    PAVISTREAM      compressedVideo;
+
+    /**  which frame will be added next, which sample will be added next */
+    unsigned long   nframe, nsamp;
+
+    int             m_width;
+    int             m_height;
+
+    /** Size of a frame. */
+    size_t          frameBytes;
+
+    void createStreams(bool promptForCompressOptions);
+
+    void setError(const std::string& errorString);
+    
+    /** Does not change the state */
+    void closeFile();
 
 public:
 
@@ -134,17 +171,30 @@ public:
      The compression codecs available depend on the drivers installed
      on your machine.
 
-     @param codec A string returned from AVIWriter::getCodecs
+     @param codec A string returned from AVIWriter::getCodecs.  Some popular ones are:
+       "MSVC" Microsoft video 1
+       "DIB " Uncompressed
+       "DIVX" DivX
      */
-    AVIWriter(const std::string& filename, const std::string& codec);
+    AVIWriter(
+        const std::string&  filename, 
+        int                 width,
+        int                 height,
+        int                 period,
+        const std::string&  codec = "DIB ",
+        bool                promptForCompressOptions = false);
 
-    /** Closes the file */
+    /** Commit or abort must have been called before the destructor.*/
     ~AVIWriter();
+
+    void commit();
+
+    void abort();
 
     /** Returns an array of the strings that may be passed to the constructor. */
     static void getCodecs(Array<std::string>& comp);
 
-    bool ok() const {
+    inline bool ok() const {
         return m_ok;
     }
 
@@ -160,8 +210,16 @@ public:
     }
 
     /** "fourCC" */
-    const std::string& codec() const {
+    inline const std::string& codec() const {
         return m_codec;
+    }
+
+    inline const int width() const {
+        return m_width;
+    }
+
+    inline const int height() const {
+        return m_height;
     }
 };
 
