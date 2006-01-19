@@ -299,14 +299,18 @@ void GImage::RGBtoBGRA(
 void GImage::RGBtoBGR(
     const uint8*    in,
     uint8*          out,
-    int                     numPixels) {
+    int             numPixels) {
 
     for (int i = 0; i < numPixels; ++i) {
         int i3 = i * 3;
 
-        out[i3 + 2] = in[i3 + 0]; 
-        out[i3 + 1] = in[i3 + 1]; 
-        out[i3 + 0] = in[i3 + 2];
+        int r = in[i3 + 0];
+        int g = in[i3 + 1];
+        int b = in[i3 + 2];
+
+        out[i3 + 2] = r; 
+        out[i3 + 1] = g; 
+        out[i3 + 0] = b;
     }
 }
 
@@ -359,9 +363,10 @@ void GImage::flipRGBVertical(
     alwaysAssertM(temp != NULL, "Out of memory"); 
 
     int oneRow = width * 3;
+    int N = height / 2;
 
     // if height is an odd value, don't swap odd middle row
-    for (int i = 0; i < (height / 2) ; ++i) {
+    for (int i = 0; i < N; ++i) {
         int topOff = i * oneRow;
         int botOff = (height - i - 1) * oneRow;
         System::memcpy(temp,         in + topOff, oneRow);

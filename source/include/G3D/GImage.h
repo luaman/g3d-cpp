@@ -401,6 +401,7 @@ public:
         uint8*                  out,
         int                     numPixels);
 
+    /** Safe for in == out */
     static void RGBtoBGR(
         const uint8*            in,
         uint8*                  out,
