@@ -39,7 +39,7 @@ void testMeshAlgTangentSpace() {
 
     for (int i = 0; i < 4; ++i) {
         debugAssert(tangent[i].fuzzyEq(Vector3::unitX()));
-        debugAssert(binormal[i].fuzzyEq(-Vector3::unitY()));
+        debugAssert(binormal[i].fuzzyEq(Vector3::unitY()));
     }
 
     printf("passed\n");
