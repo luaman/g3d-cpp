@@ -17,6 +17,7 @@ Notes:
 
 namespace G3D {
 
+std::string Framebuffer::ignore;
 
 Framebuffer::Framebuffer(
     const std::string&  _name, 
@@ -30,8 +31,10 @@ Framebuffer::Framebuffer(
 
 
 Framebuffer::~Framebuffer () {
-    glDeleteFramebuffersEXT(1, &framebufferID);
-    framebufferID = 0;
+    if (framebufferID != 0) {
+        glDeleteFramebuffersEXT(1, &framebufferID);
+        framebufferID = 0;
+    }
 }
 
 

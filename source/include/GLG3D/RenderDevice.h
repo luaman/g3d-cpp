@@ -1231,6 +1231,7 @@ private:
         bool                        alphaWrite;
 
         Buffer                      drawBuffer;
+
 		FramebufferRef				framebuffer;
 
         DepthTest                   depthTest;
@@ -1431,7 +1432,9 @@ public:
      @return false On Incomplete Framebuffer Error
      @return true On Complete Framebuffer
     */
-    bool currentFramebufferComplete ();
+    inline bool currentFramebufferComplete() const {
+        return state.framebuffer.isNull() || state.framebuffer->isComplete();
+    }
 
     void push2D();
 

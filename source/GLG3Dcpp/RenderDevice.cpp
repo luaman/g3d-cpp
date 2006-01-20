@@ -1425,21 +1425,11 @@ void RenderDevice::setFramebuffer(const FramebufferRef &fbo) {
         if (fbo.isNull()) {
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
         } else {
-            debugAssertM(GLCaps::supports_GL_EXT_framebuffer_object(), "Framebuffer Object not supported!");
+            debugAssertM(GLCaps::supports_GL_EXT_framebuffer_object(), 
+                "Framebuffer Object not supported!");
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo->openGLID());
         }
         state.framebuffer = fbo;
-    }
-}
-
-
-bool RenderDevice::currentFramebufferComplete() {
-    std::string reason;
-    
-    if (!state.framebuffer.isNull()) {
-        return state.framebuffer->isComplete(reason);
-    } else {
-        return true;
     }
 }
 
