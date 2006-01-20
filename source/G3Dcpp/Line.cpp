@@ -50,7 +50,7 @@ void Line::deserialize(class BinaryInput& b) {
 
 
 Vector3 Line::closestPoint(const Vector3& pt) const {
-    double t = _direction.dot(pt - _point);
+    float t = _direction.dot(pt - _point);
     return _point + _direction * t;
 }
 

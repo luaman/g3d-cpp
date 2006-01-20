@@ -124,7 +124,7 @@ Rect2D Report::drawPopup(const char* title) {
     app->renderDevice->pushState();
         app->renderDevice->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         Rect2D rect = Rect2D::xywh(w/2 - 20, h/2 - 20, w/2, h/2);
-        Draw::rect2D(rect + Vector2(5, 5), app->renderDevice, Color4(0, 0, 0, 0.15));
+        Draw::rect2D(rect + Vector2(5, 5), app->renderDevice, Color4(0, 0, 0, 0.15f));
     app->renderDevice->popState();
 
     // White box
@@ -161,7 +161,7 @@ void Report::doGraphics() {
 
         ///////////////////////////////////////
         // Left panel
-#       define LABEL(str) p.y += app->titleFont->draw2D(app->renderDevice, str, p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4).y
+#       define LABEL(str) p.y += app->titleFont->draw2D(app->renderDevice, str, p - Vector2((float)w * 0.0075f, 0), s * 2, Color3::white() * 0.4f).y
 #       define PRINT(str) p.y += app->reportFont->draw2D(app->renderDevice, str, p, s, Color3::black()).y
 
         int x0 = w * 0.015;
@@ -252,7 +252,7 @@ void Report::doGraphics() {
         p.y += s * 4;
 
         x0 = w - s * 10;
-        app->titleFont->draw2D(app->renderDevice, "Features", p - Vector2(w * 0.0075, 0), s * 2, Color3::white() * 0.4);
+        app->titleFont->draw2D(app->renderDevice, "Features", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);
         p.y += app->reportFont->draw2D(app->renderDevice, format("f%d", app->featureRating), Vector2(x0, p.y), s*2, Color3::red() * 0.5).y;
         drawBar(app->renderDevice, app->featureRating, p);
 
@@ -261,14 +261,14 @@ void Report::doGraphics() {
 
         p.y += s * 4;
         performanceButton = Rect2D::xywh(p,
-            app->titleFont->draw2D(app->renderDevice, "Speed", p - Vector2(w * 0.0075, 0), s * 2, Color3::white() * 0.4));
+            app->titleFont->draw2D(app->renderDevice, "Speed", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f));
 
-        p.y += app->reportFont->draw2D(app->renderDevice, format("%5.1f", iRound(app->performanceRating * 10) / 10.0), Vector2(x0 - s*2, p.y), s*2, Color3::red() * 0.5).y;
+        p.y += app->reportFont->draw2D(app->renderDevice, format("%5.1f", iRound(app->performanceRating * 10) / 10.0f), Vector2(x0 - s*2, p.y), s*2, Color3::red() * 0.5).y;
         drawBar(app->renderDevice, app->performanceRating, p);
 
         p.y += s * 4;
-        app->titleFont->draw2D(app->renderDevice, "Quality", p - Vector2(w * 0.0075, 0), s * 2, Color3::white() * 0.4);
-        p.y += app->reportFont->draw2D(app->renderDevice, quality(app->bugCount), Vector2(x0, p.y), s*2, Color3::red() * 0.5).y;
+        app->titleFont->draw2D(app->renderDevice, "Quality", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);
+        p.y += app->reportFont->draw2D(app->renderDevice, quality(app->bugCount), Vector2(x0, p.y), s*2, Color3::red() * 0.5f).y;
         drawBar(app->renderDevice, iClamp(100 - app->bugCount * 10, 0, 100), p);
 
 #       undef PRINT

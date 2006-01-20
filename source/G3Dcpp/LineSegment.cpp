@@ -21,7 +21,7 @@ Vector3 LineSegment::closestPoint(const Vector3& p) const {
 
     // Projection of v onto the line segment scaled by 
     // the length of direction.
-    double t = direction.dot(v);
+    float t = direction.dot(v);
 
     // Avoid some square roots.  Derivation:
     //    t/direction.length() <= direction.length()
@@ -38,10 +38,10 @@ Vector3 LineSegment::closestPoint(const Vector3& p) const {
         // The point does not fall within the segment; see which end is closer.
 
         // Distance from 0, squared
-        double d0Squared = v.squaredMagnitude();
+        float d0Squared = v.squaredMagnitude();
 
         // Distance from 1, squared
-        double d1Squared = (v - direction).squaredMagnitude();
+        float d1Squared = (v - direction).squaredMagnitude();
 
         if (d0Squared < d1Squared) {
 

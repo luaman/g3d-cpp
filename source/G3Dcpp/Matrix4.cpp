@@ -289,9 +289,9 @@ Matrix4 Matrix4::inverse() const {
 
     // Determinant is the dot product of the first row and the first row
     // of cofactors (i.e. the first col of the adjoint matrix)
-	double det = A.getColumn(0).dot(getRow(0));
+	float det = A.getColumn(0).dot(getRow(0));
 
-	return A * (1.0 / det);
+	return A * (1.0f / det);
 }
 
 
@@ -304,7 +304,7 @@ Matrix4 Matrix4::cofactor() const {
     for (int r = 0; r < 4; ++r) {
         for (int c = 0; c < 4; ++c) {
             // Compute the determinant of the 3x3 submatrix
-            double det = subDeterminant(r, c);
+            float det = subDeterminant(r, c);
             out.elt[r][c] = i * det;
             i = -i;
         }
