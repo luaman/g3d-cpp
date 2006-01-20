@@ -4,9 +4,10 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-02-08
- @edited  2003-10-28
+ @edited  2006-01-20
  */
 
+#include "G3D/platform.h"
 #include "G3D/LineSegment.h"
 #include "G3D/Sphere.h"
 #include "G3D/debug.h"

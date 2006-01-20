@@ -111,6 +111,10 @@ SOURCE=.\tGChunk.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tGThread.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tMatrix.cpp
 # End Source File
 # Begin Source File

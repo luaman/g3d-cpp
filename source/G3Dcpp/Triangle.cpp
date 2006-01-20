@@ -4,12 +4,13 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-04-06
- @edited  2004-03-23
+ @edited  2006-01-20
 
- Copyright 2000-2004, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
+#include "G3D/platform.h"
 #include "G3D/Triangle.h"
 #include "G3D/Plane.h"
 #include "G3D/BinaryInput.h"

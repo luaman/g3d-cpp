@@ -7,8 +7,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60400
-    #error Requires G3D 6.04
+#if G3D_VER < 60800
+    #error Requires G3D 6.08
 #endif
 
 class App : public GApp {
@@ -144,7 +144,7 @@ void App::main() {
 
     camera.init(VideoCapture::enumerateDeviceNames()[0], 128, 96);
     // Load objects here
-    sky = Sky::create(renderDevice, "F:\\libs\\g3d-6_04-b05\\data\\sky\\"); //dataDir + "sky/");
+    sky = Sky::create(renderDevice);//, "F:\\libs\\g3d-6_04-b05\\data\\sky\\"); //dataDir + "sky/");
     
     Demo(this).run();
 }

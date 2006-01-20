@@ -98,127 +98,6 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
 void Demo::onInit()  {
 
-    Stopwatch watch;
-    double min, max;
-    double dmin, dmax;
-    int imin, imax;
-
-    int numLoops = 1000000;
-
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        dmin = std::min(102.3423 * i, 3000.3 * i);
-    }
-    watch.tock();
-    min = watch.elapsedTime();
-    Log::common()->printf("std::min -- %f seconds.\n", (double)min, dmin);
-    
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        dmin = G3D::min(102.3423 * i, 3000.3 * i);
-    }
-    watch.tock();
-    min = watch.elapsedTime();
-    Log::common()->printf("G3D::min -- %f seconds.\n", (double)min, dmin);
-
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        dmax = std::max(102.3423 * i, 3000.3 * i);
-    }
-    watch.tock();
-    max = watch.elapsedTime();
-    Log::common()->printf("std::max -- %f seconds.\n", (double)max, dmax);
-    
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        dmax = G3D::max(102.3423 * i, 3000.3 * i);
-    }
-    watch.tock();
-    max = watch.elapsedTime();
-    Log::common()->printf("G3D::max -- %f seconds.\n", (double)max, dmax);
-
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        imin = std::min(102 * i, 3000 * i);
-    }
-    watch.tock();
-    min = watch.elapsedTime();
-    Log::common()->printf("std::min -- %f seconds.\n", (double)min, imin);
-    
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        imin = G3D::iMin(102 * i, 3000 * i);
-    }
-    watch.tock();
-    min = watch.elapsedTime();
-    Log::common()->printf("G3D::iMin -- %f seconds.\n", (double)min, imin);
-
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        imax = std::max(102 * i, 3000 * i);
-    }
-    watch.tock();
-    max = watch.elapsedTime();
-    Log::common()->printf("std::max -- %f seconds.\n", (double)max, imax);
-    
-    watch.tick();
-    for (int i = 0; i < numLoops; ++i) {
-        imax = G3D::iMax(102 * i, 3000 * i);
-    }
-    watch.tock();
-    max = watch.elapsedTime();
-    Log::common()->printf("G3D::iMax -- %f seconds.\n", (double)max, imax);
-
-    gameTime = G3D::toSeconds(11, 00, 00, AM);
-
-    // Called before Demo::run() beings
-    app->debugCamera.setPosition(Vector3(0, 2, 10));
-    app->debugCamera.lookAt(Vector3(0, 0, 0));
-    GApplet::init();
-
-    texture[0] = NULL;
-    texture[1] = Texture::fromGImage("bayer", dst, TextureFormat::RGB8, Texture::DIM_2D_NPOT, Texture::Parameters::video());
-
-    {
-        AVIReader avi("C:/Projects/cpp/source/contrib/AVI/test5.avi");
-        debugAssertM(avi.ok(), avi.errorString());
-        
-        GImage im;
-        avi.getFrame(0, im);
-
-        texture[0] = Texture::fromGImage(avi.filename(), im);
-    }
-
-     
-    double s = 2; 
-    vertex.append(G3D::Vector3(-s, 0, -s)); 
-    vertex.append(G3D::Vector3( s, 0, -s)); 
-    vertex.append(G3D::Vector3( s, 0, s)); 
-    vertex.append(G3D::Vector3(-s, 0, s)); 
-     
-    normal.append(G3D::Vector3::UNIT_Y); 
-    normal.append(G3D::Vector3::UNIT_Y); 
-    normal.append(G3D::Vector3::UNIT_Y); 
-    normal.append(G3D::Vector3::UNIT_Y); 
-     
-    tex.append(G3D::Vector2(0, 1)); 
-    tex.append(G3D::Vector2(1, 1)); 
-    tex.append(G3D::Vector2(1, 0)); 
-    tex.append(G3D::Vector2(0, 0)); 
-     
-    index.append(0, 1, 2); 
-    index.append(0, 2, 3); 
-     
-    G3D::Array<G3D::MeshAlg::Face> face; 
-    G3D::MeshAlg::computeAdjacency(vertex, index, face, G3D::Array<G3D::MeshAlg::Edge>(), G3D::Array<G3D::MeshAlg::Vertex>()); 
-    G3D::MeshAlg::computeTangentSpaceBasis(vertex, tex, normal, face, tangent, binormal); 
-
-    varArea         = VARArea::create(1024 * 1024, VARArea::WRITE_ONCE);
-    vertexArray     = VAR(vertex,   varArea);
-    normalArray     = VAR(normal,   varArea);
-
-    //Plane pl(Vector3(0, 1, 0), Vector3(20, 20, 20));
-    //float distance = pl.distance(Vector3(0, 21, 0));
 }
 
 
@@ -303,41 +182,10 @@ void Demo::onGraphics(RenderDevice* rd) {
         app->sky->render(app->renderDevice, lighting);
     }
 
-<<<<<<< main.cpp
     app->renderDevice->push2D();
-<<<<<<< main.cpp
         Rect2D rect = Rect2D::xywh(0, 100, 640, 480);
         app->renderDevice->setTexture(0, texture[0]);
         Draw::rect2D(rect, rd);
-=======
->>>>>>> 1.241
-
-<<<<<<< main.cpp
-       // rect = rect + Vector2(200, 0);
-       // app->renderDevice->setTexture(0, texture[1]);
-       // Draw::rect2D(rect, rd);
-=======
-        app->debugPrintf("Time: %fs", computeTime);
-=======
-    //app->renderDevice->push2D();
-
-    //    app->debugPrintf("Time: %fs", computeTime);
-
-    //    app->renderDevice->setCameraToWorldMatrix(CoordinateFrame());
->>>>>>> 1.242
-
-    //    Rect2D rect = texture[1]->rect2DBounds();
-    //    app->renderDevice->setTexture(0, texture[1]);
-    //    Draw::rect2D(rect/2, rd);
-
-<<<<<<< main.cpp
-        Rect2D rect = texture[1]->rect2DBounds();
-        app->renderDevice->setTexture(0, texture[1]);
-        Draw::rect2D(rect/2, rd);
->>>>>>> 1.241
-=======
-    //app->renderDevice->pop2D();
->>>>>>> 1.242
 
     // Setup lighting
     app->renderDevice->enableLighting();
@@ -394,16 +242,17 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-<<<<<<< main.cpp
 
-<<<<<<< main.cpp
-    GImage x(100, 100, 3);
-    x.convertToRGBA();
+    GImage im("D:/games/data/image/testimage.tga");
 
-=======
->>>>>>> 1.241
-=======
->>>>>>> 1.242
+    {
+        AVIWriter avi("c:/tmp/test.avi", im.width, im.height, 100, "", true);
+        alwaysAssertM(avi.ok(), avi.errorString());
+        avi.writeFrame(im);
+        avi.commit();
+    }
+
+    exit(0);
     GAppSettings settings;
     settings.useNetwork = false;
     settings.window.resizable = true;
