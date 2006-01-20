@@ -76,7 +76,7 @@ void ConvexPolygon::cut(const Plane& plane, ConvexPolygon &above, ConvexPolygon 
         Vector3 pt = _vertex[0];
 
         plane.getEquation(a,b,c,d);
-        float r = (a * pt.x + b * pt.y + c * pt.z + d);
+        float r = (float)(a * pt.x + b * pt.y + c * pt.z + d);
 
         if (fuzzyGe(r, 0)) {
             // The polygon is entirely in the plane.

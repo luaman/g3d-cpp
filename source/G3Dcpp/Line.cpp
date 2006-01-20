@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2001-06-02
-  @edited  2003-10-28
+  @edited  2006-01-28
  */
 
 #include "G3D/Line.h"
@@ -15,10 +15,10 @@
 namespace G3D {
 
 Vector3 Line::intersection(const Plane& plane) const {
-    double d;
+    float d;
     Vector3 normal = plane.normal();
     plane.getEquation(normal, d);
-    double rate = _direction.dot(normal);
+    float rate = _direction.dot(normal);
 
     if (rate == 0) {
 

@@ -274,6 +274,9 @@ const TextureFormat* fromCode(TextureFormat::Code code) {
     case TextureFormat::CODE_STENCIL16:
         return TextureFormat::STENCIL16;
         break;
+
+    default:
+        return NULL;
     }
 }
 

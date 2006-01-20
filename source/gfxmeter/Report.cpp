@@ -99,7 +99,7 @@ void Report::doFunStuff() {
         app->renderDevice->enableLighting();
         app->renderDevice->setLight(0, GLight::directional(Vector3(-1,1,2).direction(), Color3(.8f,.8f,.7f)));
         app->renderDevice->setLight(1, GLight::directional(Vector3(.5f,-1,1).direction(), Color3::red() * 0.2f));
-        app->renderDevice->setAmbientLightColor(Color3(.5,.5,.6));
+        app->renderDevice->setAmbientLightColor(Color3(.5f,.5f,.6f));
 
         knight.render(app->renderDevice);
         ogre.render(app->renderDevice);
