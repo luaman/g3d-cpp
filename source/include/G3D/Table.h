@@ -57,7 +57,10 @@ inline unsigned int hashCode(const G3D::uint64 a) {
 }
 
 inline unsigned int hashCode(const void* a) {
-	return (unsigned int)a;
+	// Avoid 64-bit pointer cast problems by turning
+	// the pointer itself into an array of integers.
+	int* intPtr = (int*)(((unsigned char*)&a) + (sizeof(void*) - sizeof(int)));
+	return *intPtr;
 }
 
 /**
@@ -582,7 +585,7 @@ public:
     If the key is not present, returns false.
     */
    bool get(const Key& key, Value& val) const {
-      unsigned int code = hashCode(key);
+	  unsigned int code = ::hashCode(key);
       unsigned int b = code % numBuckets;
 
       Node* node = bucket[b];
