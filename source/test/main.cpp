@@ -65,6 +65,8 @@ void perfTable();
 
 void testAtomicInt32();
 
+void testGThread();
+
 void measureBSPPerformance() {
 
     Array<AABox>                array;
@@ -766,6 +768,8 @@ int main(int argc, char* argv[]) {
     printf("\n\nTests:\n\n");
 
     testAtomicInt32();
+
+    testGThread();
 
     testReferenceCount();
 
