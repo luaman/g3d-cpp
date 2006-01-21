@@ -639,7 +639,11 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
     for (int u = 0; u < uniformArray.size(); ++u) {
         const UniformDeclaration& decl = uniformArray[u];
 
-        ++numVariables;
+        // Only count variables that need to be set in code
+        if (!decl.dummy) {
+            ++numVariables;
+        }
+
         bool declared = args.argTable.containsKey(decl.name);
 
         if (! declared && ! decl.dummy) {
