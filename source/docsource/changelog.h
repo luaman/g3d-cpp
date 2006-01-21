@@ -32,7 +32,7 @@
       <LI> Added GThread and GMutex classes. [Corey]
       <LI> Added TextureFormat::fromCode(). [Corey]
       <LI> All keys are reset to up when Win32Window loses focus. [Corey]
-      <LI> Added Plane::distance and Plane::closestPoint helper methods. [Corey] 
+      <LI> Added Plane::distance() and Plane::closestPoint() helper methods. [Corey] 
       <LI> G3D::TextureFormat::code, G3D::TextureFormat::colorSpace
       <LI> <B>incompatible change</B> G3D::MeshAlg::computeTangentSpace basis now computes a right-handed coordinate frame,
            where the binormal direction is the negative of the direction it faced in G3D 6.07.
@@ -107,6 +107,8 @@
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
       <LI> G3D::GLCaps::hasBug_redBlueMipmapSwap and workaround for G3D::Texture on Radeon 7500
+      <LI> Fix: Ignoring extra/unused set Shader arguments. [Corey]
+      <LI> Fix: [ 1229205 ] uniform texture array (Could not set indexed array uniforms). [Corey]
       <LI> Fix: <B>incompatible change</B> BinaryInput/BinaryOutput copy constructors and assignments were accessible. [Corey]
       <LI> Fix: RenderDevice::screenshotPic would corrupt GImage's heap. [Corey]
       <LI> Fix: Alt-Tab window switching caused an invalid Alt key state. [Corey]
