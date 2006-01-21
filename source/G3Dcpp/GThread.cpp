@@ -29,15 +29,18 @@ public:
     GThreadPrivate():
         running(false),
         completed(false) {
-        running = false;
-        completed = false;
+
+#   ifdef G3D_WIN32
+        event = NULL;
+#   endif
+
     }
 
 #   ifdef G3D_WIN32
     
     static DWORD WINAPI GThreadProc(LPVOID param) {
         GThread* current = (GThread*)param;
-        current->pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+        debugAssert(current->pthread->event);
         current->pthread->running = true;
         current->pthread->completed = false;
         current->threadMain();
@@ -89,9 +92,14 @@ GThread::~GThread() {
 #       pragma warning( push )
 #       pragma warning( disable : 4127 )
 #   endif
-    alwaysAssertM(pthread->running, "Deleting thread while running.");
+    alwaysAssertM(pthread->completed, "Deleting thread while running.");
 #   ifdef G3D_WIN32
 #       pragma warning( pop )
+
+    if (pthread->event) {
+        ::CloseHandle(pthread->event);
+    }
+
 #   endif
     delete pthread;
 }
@@ -111,6 +119,9 @@ bool GThread::start() {
 #   ifdef G3D_WIN32
     DWORD threadId;
 
+    pthread->event = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+    debugAssert(pthread->event);
+
     handle = ::CreateThread(
         NULL,
         0,
@@ -118,6 +129,11 @@ bool GThread::start() {
         this,
         0,
         &threadId);
+
+    if (handle == NULL) {
+        ::CloseHandle(pthread->event);
+        pthread->event = NULL;
+    }
 
     return (handle != NULL);
 #   else
@@ -154,8 +170,10 @@ bool GThread::completed() {
 
 void GThread::waitForCompletion() {
 #   ifdef G3D_WIN32
+    debugAssert(pthread->event);
     ::WaitForSingleObject(pthread->event, INFINITE);
 #   else
+    debugAssert(handle);
     pthread_join((pthread_t)handle, NULL);
 #   endif
 }
