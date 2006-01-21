@@ -116,12 +116,15 @@ public:
 		return _normal;
 	}
 
+    /**
+      Returns distance from point to plane. Distance is negative if point is behind (not in plane in direction opposite normal) the plane.
+    */
     inline float distance(const Vector3& x) const {
-        return (closestPoint(x) - x).magnitude();
+        return (_normal.dot(x) - _distance);
     }
 
     inline Vector3 closestPoint(const Vector3& x) const {
-        return x + (_normal * (_distance - _normal.dot(x)));
+        return x + (_normal * (-distance(x)));
     }
 
     /**
