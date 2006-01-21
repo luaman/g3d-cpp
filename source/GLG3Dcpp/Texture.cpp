@@ -1181,7 +1181,8 @@ static GLenum getCurrentBuffer(bool useBack) {
             return GL_BACK_RIGHT;
 
         default:
-            return GL_BACK;
+			// FBO goes here
+            return draw;
         }
     } else {
         switch (draw) {
@@ -1194,7 +1195,8 @@ static GLenum getCurrentBuffer(bool useBack) {
             return GL_FRONT_RIGHT;
 
         default:
-            return GL_FRONT;
+			// FBO goes here
+            return draw;
         }
     }
 }
@@ -1207,8 +1209,6 @@ void Texture::copyFromScreen(
     glStatePush();
 
     glReadBuffer(getCurrentBuffer(useBackBuffer));
-	// Hide the error from trying to set an illegal buffer
-	glGetError();
 
     _sizeOfAllTexturesInMemory -= sizeInMemory();
 
@@ -1265,8 +1265,6 @@ void Texture::copyFromScreen(
     glStatePush();
 
     glReadBuffer(getCurrentBuffer(useBackBuffer));
-	// Hide the error from trying to set an illegal buffer
-	glGetError();
 
     // Set up new state
     debugAssertM(width == rect.width(), "Cube maps require all six faces to have the same dimensions");
