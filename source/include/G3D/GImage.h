@@ -343,6 +343,8 @@ public:
 
     void convertToRGBA();
 
+    void convertToRGB();
+
     /** Averages color channels if they exist */
     void convertToL8();
 

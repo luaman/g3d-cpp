@@ -599,6 +599,15 @@ void GImage::encodeTGA(
 
 void GImage::encodeJPEG(
     BinaryOutput&           out) const {
+
+	if (channels != 3) {
+		// Convert to three channel
+		GImage tmp = *this;
+		tmp.convertToRGB();
+		tmp.encodeJPEG(out);
+		return;
+	}
+
     debugAssert(channels == 3);
     out.setEndian(G3D_LITTLE_ENDIAN);
 
@@ -2779,6 +2788,7 @@ void GImage::convertToL8() {
     }
 }
 
+
 void GImage::convertToRGBA() {
     switch(channels) {
     case 1:
@@ -2823,6 +2833,50 @@ void GImage::convertToRGBA() {
         alwaysAssertM(false, "Bad number of channels in input image");
     }
 }
+
+
+void GImage::convertToRGB() {
+    switch(channels) {
+    case 1:
+        {            
+            // Spread
+            uint8* old = _byte;
+            _byte = NULL;
+            resize(width, height, 4);
+            for (int i = width * height - 1; i >= 0; --i) {
+                const uint8  s = old[i];
+                Color3uint8& d = ((Color3uint8*)_byte)[i]; 
+                d.r = d.g = d.b = s;
+            }
+            System::free(_byte);
+        }
+        break;
+
+    case 3:
+		return;
+
+    case 4:
+		// Strip alpha
+        {            
+            Color4uint8* old = (Color4uint8*)_byte;
+            _byte = NULL;
+            resize(width, height, 3);
+            for (int i = width * height - 1; i >= 0; --i) {
+                const Color4uint8   s = old[i];
+                Color3uint8&        d = ((Color3uint8*)_byte)[i]; 
+                d.r = s.r;
+                d.g = s.g;
+                d.b = s.b;
+            }
+            System::free(old);
+        }
+        break;
+
+    default:
+        alwaysAssertM(false, "Bad number of channels in input image");
+    }
+}
+
 
 void GImage::R8G8B8_to_Y8U8V8(int width, int height, const uint8* _in, uint8* _out) {
     const Color3uint8* in = reinterpret_cast<const Color3uint8*>(_in);
