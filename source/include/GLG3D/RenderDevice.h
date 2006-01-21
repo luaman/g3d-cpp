@@ -1352,6 +1352,8 @@ private:
      */
     Table<const TextureFormat*, bool>      _supportedTextureFormat;
 
+	void push2D(const FramebufferRef& fb, const Rect2D& viewport);
+
 public:
 
     /** @deprecated 
@@ -1423,9 +1425,12 @@ public:
      Sets the framebuffer to render to.  Use NULL to set the desired rendering 
      target to the windowing system display.
 
+	 Note that if the new framebuffer has different dimensions than the current one
+	 the projectionMatrix and viewport will likely be incorrect.
+
      @param fbo Framebuffer to render to.
     */
-    void setFramebuffer (const FramebufferRef &fbo);
+    void setFramebuffer(const FramebufferRef &fbo);
 
     /**
      Checks to ensure that the current framebuffer is complete and error free.  
@@ -1441,6 +1446,11 @@ public:
     }
 
     void push2D();
+
+	/** 
+	 Pushes all state, switches to the new framebuffer, and resizes the viewport and projection matrix accordingly.
+	 */
+    void push2D(const FramebufferRef& fb);
 
     /**
      Set up for traditional 2D rendering (origin = upper left, y increases downwards).
@@ -1527,7 +1537,7 @@ public:
 	/**
      @deprecated
 	 */
-    int getWidth() const;
+    int G3D_DEPRECATED getWidth() const;
 
 	/**
 	 Pixel dimensions of the OpenGL window interior
@@ -1537,7 +1547,7 @@ public:
     /**
      @deprecated
      */
-    int getHeight() const;
+    int G3D_DEPRECATED getHeight() const;
 
 	/**
 	 Pixel dimensions of the OpenGL window interior

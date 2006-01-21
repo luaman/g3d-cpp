@@ -169,37 +169,39 @@ void Demo::onUserInput(UserInput* ui) {
 
 
 void Demo::onGraphics(RenderDevice* rd) {
-	rd->push2D();
- 
-		// Create Texture
-		static TextureRef tex = Texture::createEmpty(256, 256, "Rendered Texture", TextureFormat::RGBA8);
+	// Create Texture
+	static TextureRef tex = Texture::createEmpty(256, 256, "Rendered Texture", TextureFormat::RGB8, Texture::CLAMP, Texture::NO_INTERPOLATION, Texture::DIM_2D);
 
-		// Create a framebuffer that uses this texture as the color buffer
-		static FramebufferRef fb = Framebuffer::create("Offscreen target");
+	// Create a framebuffer that uses this texture as the color buffer
+	static FramebufferRef fb = Framebuffer::create("Offscreen target");
+	bool init = false;
+
+	if (! init) {
 		fb->set(Framebuffer::COLOR_ATTACHMENT0, tex);
+		init = true;
+	}
 
-		// Set framebuffer as the render target
-		rd->setFramebuffer(fb);
+	// Set framebuffer as the render target
+	rd->push2D(fb);
 
 		// Draw on the texture
-		Draw::rect2D(Rect2D::xyxy(0,0,128,256), rd, Color3::white());
-		Draw::rect2D(Rect2D::xyxy(128,0,128,256), rd, Color3::red());
+		Draw::rect2D(Rect2D::xywh(0,0,128,256), rd, Color3::white());
+		Draw::rect2D(Rect2D::xywh(128,0,128,256), rd, Color3::red());
 
 		// Restore renderdevice state (old frame buffer)
 	rd->pop2D();
-	// Remove the texture from the framebuffer
-//	fb->set(Framebuffer::COLOR_ATTACHMENT0, NULL);
 
+	app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+
+	// Remove the texture from the framebuffer
+	//	fb->set(Framebuffer::COLOR_ATTACHMENT0, NULL);
 
 	// Can now render from the texture
 
-    app->renderDevice->clear(app->sky.isNull(), true, true);
-
-    LightingParameters lighting(gameTime);
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
     
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
+    app->renderDevice->clear();
 
     app->renderDevice->push2D();
 		rd->setTexture(0, tex);

@@ -488,22 +488,30 @@ void RenderDevice::setCaption(const std::string& caption) {
 
 
 int RenderDevice::getWidth() const {
-    return _window->width();
+	return width();
 }
 
 
 int RenderDevice::getHeight() const {
-    return _window->height();
+	return height();
 }
 
 
 int RenderDevice::width() const {
-    return _window->width();
+	if (state.framebuffer.isNull()) {
+	    return _window->width();
+	} else {
+		return state.framebuffer->width();
+	}
 }
 
 
 int RenderDevice::height() const {
-    return _window->height();
+	if (state.framebuffer.isNull()) {
+	    return _window->height();
+	} else {
+		return state.framebuffer->height();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -543,9 +551,19 @@ void RenderDevice::push2D() {
     push2D(getViewport());
 }
 
-
 void RenderDevice::push2D(const Rect2D& viewport) {
+	push2D(NULL, viewport);
+}
+
+void RenderDevice::push2D(const FramebufferRef& fb) {
+	const Rect2D& viewport = fb.notNull() ? fb->rect2DBounds() : Rect2D::xywh(0, 0, _window->width(), _window->height());
+	push2D(fb, viewport);
+}
+
+void RenderDevice::push2D(const FramebufferRef& fb, const Rect2D& viewport) {
     pushState();
+
+	setFramebuffer(fb);
     setDepthTest(DEPTH_ALWAYS_PASS);
     disableLighting();
     setCullFace(CULL_NONE);
@@ -824,6 +842,14 @@ void RenderDevice::setState(
     // methods will (for the most part) minimize
     // the state changes so we can set all of the
     // new state explicitly.
+    
+	// Set framebuffer first, since it can affect the viewport
+	if (state.framebuffer != newState.framebuffer) {
+		setFramebuffer(newState.framebuffer);
+
+		// Intentionally corrupt the viewport, forcing renderdevice to reset it
+		state.viewport = Rect2D::xywh(-1,-1,-1,-1);
+	}
 
     setViewport(newState.viewport);
 
@@ -852,8 +878,6 @@ void RenderDevice::setState(
     }
 
     setDrawBuffer(newState.drawBuffer);
-
-    setFramebuffer(newState.framebuffer);
 
     setShadeMode(newState.shadeMode);
     setDepthTest(newState.depthTest);
@@ -1359,7 +1383,8 @@ void RenderDevice::setViewport(const Rect2D& v) {
     minStateChange();
     if (state.viewport != v) {
         // Flip to OpenGL y-axis
-        _glViewport(v.x0(), getHeight() - v.y1(), v.width(), v.height());
+		float h = height();
+        _glViewport(v.x0(), h - v.y1(), v.width(), v.height());
         state.viewport = v;
         minGLStateChange();
     }
