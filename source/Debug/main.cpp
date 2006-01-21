@@ -188,6 +188,9 @@ void Demo::onGraphics(RenderDevice* rd) {
 		Draw::rect2D(Rect2D::xywh(0,0,128,256), rd, Color3::white());
 		Draw::rect2D(Rect2D::xywh(128,0,128,256), rd, Color3::red());
 
+TextureRef dst = Texture::createEmpty("", 64, 64, TextureFormat::RGBA8, Texture::DIM_2D_NPOT, Texture::Parameters::video());
+dst->copyFromScreen(dst->rect2DBounds());
+
 		// Restore renderdevice state (old frame buffer)
 	rd->pop2D();
 
