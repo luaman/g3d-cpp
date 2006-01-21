@@ -285,6 +285,9 @@ private:
     uint32 mDebugNumMinorStateChanges;
     uint32 mDebugPushStateCalls;
 
+	/** Potentially slow. */
+	bool checkFramebuffer() const;
+
 public:
     // These are abstracted to make it easy to put breakpoints in them
     /**
@@ -1433,7 +1436,8 @@ public:
      @return true On Complete Framebuffer
     */
     inline bool currentFramebufferComplete() const {
-        return state.framebuffer.isNull() || state.framebuffer->isComplete();
+        return state.framebuffer.isNull() || 
+			   checkFramebuffer();
     }
 
     void push2D();

@@ -9,15 +9,14 @@ Notes:
 </UL>
 
 @created 2006-01-07
-@edited  2006-01-11
+@edited  2006-01-20
 */
 
 #include "GLG3D/Framebuffer.h"
 #include "GLG3D/glcalls.h"
+#include "GLG3D/GLCaps.h"
 
 namespace G3D {
-
-std::string Framebuffer::ignore;
 
 Framebuffer::Framebuffer(
     const std::string&  _name, 
@@ -39,7 +38,10 @@ Framebuffer::~Framebuffer () {
 
 
 FramebufferRef Framebuffer::fromGLFramebuffer(const std::string& _name, GLuint _framebufferID) {
-    // TODO: If there are existing attachments, find their size
+    alwaysAssertM(_framebufferID == 0 || GLCaps::supports_GL_EXT_framebuffer_object(), 
+        "Framebuffer Object not supported!");
+
+	// TODO: If there are existing attachments, find their size
     return new Framebuffer(_name, _framebufferID);
 }
 
@@ -60,6 +62,7 @@ void Framebuffer::set(AttachmentPoint ap, const void* n) {
 
     // Get current framebuffer
     GLint origFB = glGetInteger(GL_FRAMEBUFFER_BINDING_EXT);
+    debugAssertGLOk();
 
     // If we aren't already bound, bind us now
     if (origFB != openGLID()) {
@@ -71,9 +74,16 @@ void Framebuffer::set(AttachmentPoint ap, const void* n) {
     if (attachmentTable.containsKey(ap)) { 
         // Detach
         if (attachmentTable[ap].type == Attachment::TEXTURE) {
+
             glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, ap, 0, 0, 0);
+			debugAssertGLOk();
+
+			if (attachmentTable[ap].hadAutoMipMap) {
+				attachmentTable[ap].texture->setAutoMipMap(true);
+			}
         } else {
             glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, ap, GL_RENDERBUFFER_EXT, 0);
+			debugAssertGLOk();
         }
 
         --numAttachments;
@@ -87,6 +97,7 @@ void Framebuffer::set(AttachmentPoint ap, const void* n) {
     if (origFB != openGLID()) {
         // Bind original framebuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, origFB);
+        debugAssertGLOk();
     }
 }
 
@@ -121,6 +132,9 @@ void Framebuffer::set(AttachmentPoint ap, const TextureRef& texture) {
            "All attachments bound to a Framebuffer must have identical dimensions!");
     }
     
+    if (! attachmentTable.containsKey(ap)) {
+        attachmentTable.set(ap, Attachment(texture));
+    }
 
     // Bind texture to framebuffer
     glFramebufferTexture2DEXT(
@@ -128,10 +142,7 @@ void Framebuffer::set(AttachmentPoint ap, const TextureRef& texture) {
         ap, 
         texture->getOpenGLTextureTarget(), 
         texture->openGLID(), 0);
-
-    if (!attachmentTable.containsKey(ap)) {
-        attachmentTable.set(ap, Attachment(texture));
-    }
+    debugAssertGLOk();
 
     // If we were already bound, don't bother restoring
     if (origFB != openGLID()) {
@@ -191,50 +202,6 @@ void Framebuffer::set(
 
     debugAssertGLOk();
 }
-
-
-bool Framebuffer::isComplete(std::string& whyNot) {
-    GLenum status;
-    status = (GLenum)glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-
-    switch(status) {
-    case GL_FRAMEBUFFER_COMPLETE_EXT:
-        return true;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENTS_EXT:
-        whyNot = "Framebuffer Incomplete: Incomplete Attachment.";
-        return false;
-
-    case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-        whyNot = "Unsupported framebuffer format.";
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-        whyNot = "Framebuffer Incomplete: Missing attachment.";
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-        whyNot = "Framebuffer Incomplete: Attached images must have same dimensions.";
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-        whyNot = "Framebuffer Incomplete: Attached images must have same format.";
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-        whyNot = "Framebuffer Incomplete: Missing draw buffer.";
-        return false;
-
-    case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-        whyNot = "Framebuffer Incomplete: Missing read buffer.";
-        return false;
-
-    default:
-        whyNot = "Framebuffer Incomplete: Unknown error.";
-    }
-    return false;    
-}
-
 
 } // G3D
 

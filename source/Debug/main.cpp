@@ -169,6 +169,29 @@ void Demo::onUserInput(UserInput* ui) {
 
 
 void Demo::onGraphics(RenderDevice* rd) {
+	rd->push2D();
+ 
+		// Create Texture
+		static TextureRef tex = Texture::createEmpty(256, 256, "Rendered Texture", TextureFormat::RGBA8);
+
+		// Create a framebuffer that uses this texture as the color buffer
+		static FramebufferRef fb = Framebuffer::create("Offscreen target");
+		fb->set(Framebuffer::COLOR_ATTACHMENT0, tex);
+
+		// Set framebuffer as the render target
+		rd->setFramebuffer(fb);
+
+		// Draw on the texture
+		Draw::rect2D(Rect2D::xyxy(0,0,128,256), rd, Color3::white());
+		Draw::rect2D(Rect2D::xyxy(128,0,128,256), rd, Color3::red());
+
+		// Restore renderdevice state (old frame buffer)
+	rd->pop2D();
+	// Remove the texture from the framebuffer
+//	fb->set(Framebuffer::COLOR_ATTACHMENT0, NULL);
+
+
+	// Can now render from the texture
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
 
@@ -178,45 +201,10 @@ void Demo::onGraphics(RenderDevice* rd) {
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
 
-    if (app->sky.notNull()) {
-        app->sky->render(app->renderDevice, lighting);
-    }
-
     app->renderDevice->push2D();
-        Rect2D rect = Rect2D::xywh(0, 100, 640, 480);
-        app->renderDevice->setTexture(0, texture[0]);
-        Draw::rect2D(rect, rd);
-
-    // Setup lighting
-    app->renderDevice->enableLighting();
-
-    app->renderDevice->setAmbientLightColor(lighting.ambient);
-
-	Draw::axes(app->renderDevice);
-
-	rd->beginIndexedPrimitives();
-        // The mapping from properties to texture coordinates is implicit in the bump shader
-		rd->setVertexArray(vertexArray);
-		rd->setNormalArray(normalArray);
-		rd->sendIndices(RenderDevice::TRIANGLES, index);
-	rd->endIndexedPrimitives();
-
-    app->renderDevice->disableLighting();
-
-    if (app->sky.notNull()) {
-        app->sky->renderLensFlare(app->renderDevice, lighting);
-    }
-
-    app->renderDevice->push2D();
-        app->debugFont->draw2D(modKeys[0] ? "DOWN": "UP", Vector2(0, 300));
-        app->debugFont->draw2D(modKeys[1] ? "DOWN": "UP", Vector2(0, 315));
-        app->debugFont->draw2D(modKeys[2] ? "DOWN": "UP", Vector2(0, 330));
-        app->debugFont->draw2D(modKeys[3] ? "DOWN": "UP", Vector2(0, 345));
-        app->debugFont->draw2D(modKeys[4] ? "DOWN": "UP", Vector2(0, 360));
-        app->debugFont->draw2D(modKeys[5] ? "DOWN": "UP", Vector2(0, 375));
-    app->renderDevice->pop2D();
-
-    //Draw::fullScreenImage(GImage(app->dataDir + "image/checkerboard.jpg"), app->renderDevice);
+		rd->setTexture(0, tex);
+		Draw::rect2D(Rect2D::xywh(10,10,256,256), rd);
+	app->renderDevice->pop2D();
 }
 
 
@@ -242,17 +230,18 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-
+/*
     GImage im("D:/games/data/image/testimage.tga");
 
     {
-        AVIWriter avi("c:/tmp/test.avi", im.width, im.height, 100, "", true);
+        AVIWriter avi("c:/tmp/test.avi", im.width, im.height, 100);
         alwaysAssertM(avi.ok(), avi.errorString());
         avi.writeFrame(im);
         avi.commit();
     }
 
     exit(0);
+	*/
     GAppSettings settings;
     settings.useNetwork = false;
     settings.window.resizable = true;

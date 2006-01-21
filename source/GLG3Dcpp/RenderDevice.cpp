@@ -583,7 +583,7 @@ RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
     alphaTest(ALPHA_ALWAYS_PASS),
     alphaReference(0.0) {
 
-	framebuffer = G3D::Framebuffer::fromGLFramebuffer("Window System Framebuffer", 0);
+	framebuffer = NULL;//Framebuffer::fromGLFramebuffer("Window System Framebuffer", 0);
 
     lights.twoSidedLighting =    false;
 
@@ -3197,6 +3197,51 @@ uint32 RenderDevice::debugNumMajorStateChanges() const {
 
 uint32 RenderDevice::debugNumMinorStateChanges() const {
     return mDebugNumMinorStateChanges;
+}
+
+bool RenderDevice::checkFramebuffer() const {
+    GLenum status;
+    status = (GLenum)glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+
+	static std::string whyNot;
+
+    switch(status) {
+    case GL_FRAMEBUFFER_COMPLETE_EXT:
+        return true;
+
+    case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENTS_EXT:
+        whyNot = "Framebuffer Incomplete: Incomplete Attachment.";
+		break;
+
+    case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+        whyNot = "Unsupported framebuffer format.";
+		break;
+
+    case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+        whyNot = "Framebuffer Incomplete: Missing attachment.";
+		break;
+
+    case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+        whyNot = "Framebuffer Incomplete: Attached images must have same dimensions.";
+		break;
+
+    case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+        whyNot = "Framebuffer Incomplete: Attached images must have same format.";
+		break;
+
+    case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+        whyNot = "Framebuffer Incomplete: Missing draw buffer.";
+		break;
+
+    case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+        whyNot = "Framebuffer Incomplete: Missing read buffer.";
+		break;
+
+    default:
+        whyNot = "Framebuffer Incomplete: Unknown error.";
+    }
+
+    return false;    
 }
 
 

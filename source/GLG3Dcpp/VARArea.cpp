@@ -6,11 +6,11 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2003-01-08
- @edited  2005-02-06
+ @edited  2006-01-06
  */
 
-#include "GLG3D/RenderDevice.h"
 #include "G3D/Log.h"
+#include "GLG3D/RenderDevice.h"
 #include "GLG3D/glheaders.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/VAR.h"

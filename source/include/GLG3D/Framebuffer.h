@@ -50,33 +50,30 @@ typedef ReferenceCountedPointer<class Framebuffer> FramebufferRef;
  Framebuffer Example:
 
  <PRE>
- // Create Framebuffer
-  FramebuffeRef fb = G3D::Framebuffer::createFramebuffer ("offscreen target");
+	rd->push2D();
  
- // Create Texture
-  TextureRef tex = G3D::Texture::createEmpty(256, 256, "texture1", 
- 											 G3D::TextureFormat::RGBA16, 
- 											 G3D::Texture::WrapMode::TILE, 
-											 G3D::Texture::InterpolateMode::NO_INTERPOLATION, 
-											 G3D::Texture::Dimension::DIM_2D);
+		// Create Texture
+		TextureRef tex = Texture::createEmpty(256, 256, "Rendered Texture", TextureFormat::RGBA8);
 
-  // Bind Texture to Framebuffer
-  fb->bindTexture (tex);
+		// Create a framebuffer that uses this texture as the color buffer
+		FramebufferRef fb = Framebuffer::create("Offscreen target");
+		fb->set(Framebuffer::COLOR_ATTACHMENT0, tex);
 
-  // Set framebuffer as the render target
-  app->renderDevice->setFramebuffer(fb);
+		// Set framebuffer as the render target
+		rd->setFramebuffer(fb);
 
-  if (app->renderDevice->checkFramebufferStatus() != 0) {
- 	// Render code here
- 	...
-  }
+		// Draw on the texture
+		Draw::rect2D(Rect2D::xyxy(0,0,128,256), rd, Color3::white());
+		Draw::rect2D(Rect2D::xyxy(128,0,128,256), rd, Color3::red());
 
-  // Set Screen as render target
-  app->renderDevice->setFramebuffer(NULL);
+		// Remove the texture from the framebuffer
+		fb->set(Framebuffer::COLOR_ATTACHMENT0, NULL);
 
-  // Now tex can be used as a texture to render to the display
-  .... More render code ....
- </PRE>
+		// Restore renderdevice state (old frame buffer)
+	rd->pop2D();
+
+	// Can now render using tex as a texture
+  </PRE>
 
  In addition to Textures, Renderbuffers may also be bound to the
  Framebuffer.   This is done in a very similar manner to the Texture
@@ -138,9 +135,16 @@ private:
         RenderbufferRef             renderbuffer;
         TextureRef                  texture;
 
+		/** True if the texture had autoMipMap on when it was set. */
+		bool						hadAutoMipMap;
+
         Attachment() {}
         Attachment(const RenderbufferRef& r) : type(RENDERBUFFER), renderbuffer(r) {}
-        Attachment(const TextureRef& r) : type(TEXTURE), texture(r) {}
+        Attachment(const TextureRef& r) : type(TEXTURE), texture(r), hadAutoMipMap(r->parameters().autoMipMap) {
+			if (hadAutoMipMap) {
+				texture->setAutoMipMap(false);
+			}
+		}
     };
 
     /**
@@ -176,12 +180,25 @@ private:
 	/** Default Constructor. */
 	Framebuffer(const std::string& name, GLuint framebufferID);
 
-    static std::string              ignore;
+	friend class RenderDevice;
+
+    /**
+     Checks to see if the framebuffer is complete.  
+
+     NOTE: This function is meant to be called by RenderDevice through currentFramebufferComplete.
+     The results are unpredictable if this function is directly called by the user.  
+
+     @param whyNot Defined when the test fails.  Will contain the reason for failure.
+
+     @return true   If complete framebuffer.
+     @return false  If incomplete or error.
+     */
+	bool debugIsComplete(std::string& whyNot) const;
 
 public:
 
 
-	/** Reclaims OpenGL ID */
+	/** Reclaims OpenGL ID.  All buffers/textures are automatically detacted on destruction. */
 	~Framebuffer();
 
 	/**
@@ -204,6 +221,11 @@ public:
 
 	/**
 	 Set one of the attachment points to reference a texture.  Set to NULL to unset.
+	 Auto-mipmap will automatically be disabled on set.  It will be re-enabled when 
+	 the texture is unbound.
+
+	 Do not use a texture that is bound to the *current* framebuffer for rendering,
+	 however, you can render using a texture that is bound on a different frame buffer.
 
 	 @param texture		Texture to bind to the framebuffer.
 	 @param ap	Attachment point to bind texture to.
@@ -242,19 +264,6 @@ public:
     inline const std::string& name() const {
         return m_name;
     }
-
-    /**
-     Checks to see if the framebuffer is complete.  
-
-     NOTE: This function is meant to be called by RenderDevice through currentFramebufferComplete.
-     The results are unpredictable if this function is directly called by the user.  
-
-     @param whyNot Defined when the test fails.  Will contain the reason for failure.
-
-     @return true   If complete framebuffer.
-     @return false  If incomplete or error.
-     */
-    bool isComplete(std::string& whyNot = ignore);
 
 }; // class Framebuffer 
 
