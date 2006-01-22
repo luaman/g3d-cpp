@@ -75,7 +75,7 @@ void Framebuffer::set(AttachmentPoint ap, const void* n) {
         // Detach
         if (attachmentTable[ap].type == Attachment::TEXTURE) {
 
-            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, ap, 0, 0, 0);
+            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, ap, GL_TEXTURE_2D, 0, 0);
 			debugAssertGLOk();
 
 			if (attachmentTable[ap].hadAutoMipMap) {
