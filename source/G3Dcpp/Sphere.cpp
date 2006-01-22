@@ -9,6 +9,7 @@
  @edited  2004-07-05
  */
 
+#include "G3D/platform.h"
 #include "G3D/Sphere.h"
 #include "G3D/stringutils.h"
 #include "G3D/BinaryOutput.h"
@@ -173,12 +174,12 @@ Vector3 Sphere::randomInteriorPoint() const {
 
 
 float Sphere::volume() const {
-    return (float)G3D_PI * (4.0f / 3.0f) * pow(radius, 3.0f);
+    return (float)G3D_PI * (4.0f / 3.0f) * powf((float)radius, 3.0f);
 }
 
 
 float Sphere::surfaceArea() const {
-    return (float)G3D_PI * 4.0f * pow(radius, 2.0f);
+    return (float)G3D_PI * 4.0f * powf((float)radius, 2.0f);
 }
 
 

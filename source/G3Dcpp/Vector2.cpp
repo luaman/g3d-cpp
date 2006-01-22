@@ -12,6 +12,7 @@
  @edited  2006-01-16
  */
 
+#include "G3D/platform.h"
 #include <stdlib.h>
 #include "G3D/Vector2.h"
 #include "G3D/g3dmath.h"

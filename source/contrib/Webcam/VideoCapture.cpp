@@ -1,5 +1,4 @@
 #include "VideoCapture.h"
-
 #include "stdafx.h"
 
 #include <pdh.h>

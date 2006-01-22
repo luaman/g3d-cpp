@@ -92,7 +92,7 @@ void Demo::doGraphics() {
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
@@ -144,7 +144,7 @@ void App::main() {
 
     camera.init(VideoCapture::enumerateDeviceNames()[0], 128, 96);
     // Load objects here
-    sky = Sky::create(renderDevice);//, "F:\\libs\\g3d-6_04-b05\\data\\sky\\"); //dataDir + "sky/");
+    sky = Sky::create(renderDevice, dataDir + "sky/");
     
     Demo(this).run();
 }

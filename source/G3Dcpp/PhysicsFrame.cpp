@@ -4,9 +4,10 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2002-07-09
- @edited  2004-10-25
+ @edited  2006-01-25
 */
 
+#include "G3D/platform.h"
 #include "G3D/PhysicsFrame.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"

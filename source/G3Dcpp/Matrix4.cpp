@@ -5,9 +5,10 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-10-02
-  @edited  2004-12-05
+  @edited  2006-01-05
  */
 
+#include "G3D/platform.h"
 #include "G3D/Matrix4.h"
 #include "G3D/Vector4.h"
 #include "G3D/BinaryInput.h"

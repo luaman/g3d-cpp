@@ -1,14 +1,17 @@
 #ifndef VIDEOCAPTURE_H
 #define VIDEOCAPTURE_H
 
+#include "StdAfx.h"
 #include <G3DAll.h>
 
-//#include <atlbase.h>
-//#include <atlconv.h>
+#include <atlbase.h>
+#include <atlconv.h>
 
 // C:\Program Files\Microsoft Visual Studio\directx\SDK (C++)\Samples\C++\DirectShow\BaseClasses
 // put that on your include path for project.
 #include <Streams.h>
+//#include <d3d9types.h>
+//#include <dshow.h>
 
 /**
   * G3D VIDEO CAPTURE LIBRARY
