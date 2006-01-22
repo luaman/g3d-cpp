@@ -46,8 +46,8 @@ void Helicopter::render(
 
     positionShader->cframe.rotation = positionShader->cframe.rotation * rot2 * rot1;
     positionShader->cframe.translation += 
-        cframe.rotation.getColumn(1) * 0.85 +
-        cframe.rotation.getColumn(2) * -2.25;
+        cframe.rotation.getColumn(1) * 0.85f +
+        cframe.rotation.getColumn(2) * -2.25f;
 
     rotor->render(rd);
 

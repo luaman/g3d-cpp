@@ -209,7 +209,7 @@ void Client::doLogic() {
 
         double mx = mouse.x;
         // Create a dead zone
-        mx = max(0, G3D::abs(mx) - 0.25) * sign(mx);
+        mx = max(0.0f, fabsf(mx) - 0.25f) * sign(mx);
 
         newControls.desiredYawVelocity = mx * toRadians(180);
 
@@ -265,7 +265,7 @@ void Client::doGraphics() {
     app->renderDevice->setProjectionAndCameraMatrix(cam);
 
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
@@ -276,7 +276,7 @@ void Client::doGraphics() {
     app->renderDevice->enableLighting();
 		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
         // Splash light
-        app->renderDevice->setLight(1, GLight::directional(-Vector3::UNIT_Y, Color3::WHITE * 0.20, false));
+        app->renderDevice->setLight(1, GLight::directional(-Vector3::unitY(), Color3::white() * 0.20f, false));
 		app->renderDevice->setAmbientLightColor(lighting.ambient);
 
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
@@ -286,7 +286,7 @@ void Client::doGraphics() {
         for (int x = -10; x < 10; x+=4) {
             for (int z = -10; z < 10; z+=4) {
                 Vector3 v(x * 20, -10, z * 20); 
-                Draw::box(AABox(v, v + Vector3(1,.2,1)), app->renderDevice, Color3::RED, Color3::BLACK);
+                Draw::box(AABox(v, v + Vector3(1,.2f,1)), app->renderDevice, Color3::RED, Color3::BLACK);
             }
         }
 
@@ -316,12 +316,12 @@ void Client::doGraphics() {
         // Server crash messages
         if (! serverProxy.ok()) {
             app->font->draw2D("Lost connection to server.", Vector2(5, 5), 14,
-                Color3(1.0, 0.4, 0.4), Color3::BLACK);
+                Color3(1.0f, 0.4f, 0.4f), Color3::BLACK);
         }
 
         if (app->hostingServer && ! app->hostingServer->ok()) {
             app->font->draw2D("(Local Server Crashed)", Vector2(5, 25), 14,
-                Color3(1.0, 0.4, 0.4), Color3::BLACK);
+                Color3(1.0f, 0.4f, 0.4f), Color3::BLACK);
         }
     app->renderDevice->pop2D();
 
