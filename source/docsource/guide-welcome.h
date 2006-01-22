@@ -6,27 +6,27 @@
 
 @section Welcome
 <IMG SRC="3dengine.jpg" ALIGN=RIGHT >
-%G3D is a commercial-grade 3D Engine available as Open Source (BSD License).  
-It is used in games, tech demos, research papers, military simulators, and 
-university courses.  It provides a set of routines and structures so common 
+%G3D is a commercial-grade 3D Engine available as Open Source (BSD License).
+It is used in games, tech demos, research papers, military simulators, and
+university courses.  It provides a set of routines and structures so common
 that they are needed in almost every graphics program.  It makes low-level
 libraries like OpenGL and sockets easier to use without limiting functionality
-or performance.  %G3D gives you a rock-solid, highly optimized base from which 
+or performance.  %G3D gives you a rock-solid, highly optimized base from which
 to build your application.
 
 %G3D does not contain scene graph or GUI routines.  Because of this, you have much
 more flexibility in how you structure your programs.  The tradeoff is that
-you have to know more about 3D programming.  %G3D is intended for users who are already 
-familiar with C++ and DirectX or OpenGL.  Several good GUI libraries exist and 
+you have to know more about 3D programming.  %G3D is intended for users who are already
+familiar with C++ and DirectX or OpenGL.  Several good GUI libraries exist and
 we recommend using one with %G3D if your project has extensive UI needs.
 
-This manual begins with a \link guidetutorial Tutorial \endlink and 
+This manual begins with a \link guidetutorial Tutorial \endlink and
 \link guideapp Application Framework \endlink that help
-programmers who know C++ but are either new to 3D or starting without 
+programmers who know C++ but are either new to 3D or starting without
 a base of 3D code get up and running quickly.  The demos directory also contains
 a starter <A HREF="../demos/main.cpp">main.cpp</A> for the
 application framework (it is how the %G3D developers usually
-start a new project in their own work).  
+start a new project in their own work).
 
 The library also provides lower-level interfaces that programmers who are
 already working with OpenGL and existing code may prefer.  See the
@@ -34,7 +34,7 @@ Notes for Expert Users at the end of this chapter for more information.
 
 @section chapters Table of Contents
 
-This is the first release of the library to include this overview manual, and 
+This is the first release of the library to include this overview manual, and
 not all sections are complete. However the individual entry points
 of the library are extensively documented and new overview content will
 arrive with each point release.
@@ -62,7 +62,7 @@ arrive with each point release.
   Building the Library,
   <CODE>\#define</CODE>s</TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>  
+  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>
 
   <TR><TD VALIGN=TOP>\link guideconcepts Concepts \endlink</TD><TD>
   Immediate Mode Graphics,
@@ -82,8 +82,12 @@ arrive with each point release.
    Applets, Models, Selection, FPS Controls
   </TD></TR>
 
+  <TR><TD VALIGN=TOP>\link guideopengl Using OpenGL with G3D\endlink</TD><TD VALIGN=TOP>
+     How to use raw OpenGL commands with G3D
+  </TD></TR>
+
   <TR><TD VALIGN=TOP>\link guidevar Vertex Arrays \endlink</TD><TD VALIGN=TOP>
-   Creating, managing, and rendering from vertex arrays (video memory) 
+   Creating, managing, and rendering from vertex arrays (video memory)
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidemeshes Working with Meshes \endlink</TD><TD VALIGN=TOP>
@@ -118,7 +122,7 @@ arrive with each point release.
   Cartoon Rendering, Shadows, Reflections
   </TD></TR>
 
-  
+
   <TR><TD VALIGN=TOP>\link guideshaders Shaders \endlink</TD><TD VALIGN=TOP>
   Supported Languages,
   Tools,
@@ -129,15 +133,15 @@ arrive with each point release.
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link faq General FAQ \endlink</TD><TD></TD></TR>
 <TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
-<TR><TD VALIGN=TOP COLSPAN=2>Index: 
+<TR><TD VALIGN=TOP COLSPAN=2>Index:
 \link indexedbytopic By Topic \endlink |
 Alphabetic <A HREF="classes.html">Classes</A> and <A HREF="globals_func.html">Functions</A> |
 \link frequent Frequently Used (bookmark this!) \endlink
-</TD></TR> 
+</TD></TR>
 </TABLE>
 
 <HR>
-Manual and Library source code 
+Manual and Library source code
 <DT>Copyright 2000-2004, Morgan McGuire.
 <DT>All rights reserved.
 */
