@@ -92,7 +92,7 @@ GThread::~GThread() {
 #       pragma warning( push )
 #       pragma warning( disable : 4127 )
 #   endif
-    alwaysAssertM(pthread->completed, "Deleting thread while running.");
+    alwaysAssertM(!pthread->running, "Deleting thread while running.");
 #   ifdef G3D_WIN32
 #       pragma warning( pop )
 
