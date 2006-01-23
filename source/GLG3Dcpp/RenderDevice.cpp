@@ -601,7 +601,7 @@ RenderDevice::RenderState::RenderState(int width, int height, int htutc) :
     alphaTest(ALPHA_ALWAYS_PASS),
     alphaReference(0.0) {
 
-	framebuffer = NULL;//Framebuffer::fromGLFramebuffer("Window System Framebuffer", 0);
+	framebuffer = NULL;
 
     lights.twoSidedLighting =    false;
 
@@ -1105,6 +1105,14 @@ RenderDevice::RenderMode RenderDevice::renderMode() const {
 void RenderDevice::setDrawBuffer(Buffer b) {
     minStateChange();
 
+    if (state.framebuffer.isNull()) {
+        alwaysAssertM((b >= BUFFER_BACK) && (b <= BUFFER_CURRENT), 
+                  "Drawing to a color buffer is only supported by application-created framebuffers!");
+    } else {
+        alwaysAssertM((b >= BUFFER_COLOR0) && (b <= BUFFER_COLOR15), 
+                  "Visible buffers cannot be specified for application-created framebuffers!");
+    }
+
     if (b != state.drawBuffer) {
         minGLStateChange();
 
@@ -1133,6 +1141,67 @@ void RenderDevice::setDrawBuffer(Buffer b) {
         case BUFFER_BACK_RIGHT:
             glDrawBuffer(GL_BACK_RIGHT);
             break;
+
+        case BUFFER_COLOR0:
+            glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+            break;
+
+        case BUFFER_COLOR1:
+            glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
+            break;
+
+        case BUFFER_COLOR2:
+            glDrawBuffer(GL_COLOR_ATTACHMENT2_EXT);
+            break;
+        case BUFFER_COLOR3:
+            glDrawBuffer(GL_COLOR_ATTACHMENT3_EXT);
+            break;
+
+        case BUFFER_COLOR4:
+            glDrawBuffer(GL_COLOR_ATTACHMENT4_EXT);
+            break;
+
+        case BUFFER_COLOR5:
+            glDrawBuffer(GL_COLOR_ATTACHMENT5_EXT);
+            break;
+
+        case BUFFER_COLOR6:
+            glDrawBuffer(GL_COLOR_ATTACHMENT6_EXT);
+            break;
+
+        case BUFFER_COLOR7:
+            glDrawBuffer(GL_COLOR_ATTACHMENT7_EXT);
+            break;
+        case BUFFER_COLOR8:
+            glDrawBuffer(GL_COLOR_ATTACHMENT8_EXT);
+            break;
+
+        case BUFFER_COLOR9:
+            glDrawBuffer(GL_COLOR_ATTACHMENT9_EXT);
+            break;
+
+        case BUFFER_COLOR10:
+            glDrawBuffer(GL_COLOR_ATTACHMENT10_EXT);
+            break;
+        case BUFFER_COLOR11:
+            glDrawBuffer(GL_COLOR_ATTACHMENT11_EXT);
+            break;
+
+        case BUFFER_COLOR12:
+            glDrawBuffer(GL_COLOR_ATTACHMENT12_EXT);
+            break;
+
+        case BUFFER_COLOR13:
+            glDrawBuffer(GL_COLOR_ATTACHMENT13_EXT);
+            break;
+
+        case BUFFER_COLOR14:
+            glDrawBuffer(GL_COLOR_ATTACHMENT14_EXT);
+            break;
+        case BUFFER_COLOR15:
+            glDrawBuffer(GL_COLOR_ATTACHMENT15_EXT);
+            break;
+
         case BUFFER_CURRENT:
             return;
             break;
@@ -1448,8 +1517,10 @@ void RenderDevice::setFramebuffer(const FramebufferRef &fbo) {
         majGLStateChange();
         // Set Framebuffer
         if (fbo.isNull()) {
+            state.drawBuffer = BUFFER_BACK;
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
         } else {
+            state.drawBuffer = BUFFER_COLOR0;
             debugAssertM(GLCaps::supports_GL_EXT_framebuffer_object(), 
                 "Framebuffer Object not supported!");
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo->openGLID());

@@ -1,4 +1,4 @@
-/** @mainpage %G3D Manual
+/** @mainpage G3D Manual
 
 <CENTER>
 <IMG SRC="G3D.jpg">

@@ -162,8 +162,8 @@ public:
                     QUADS = MeshAlg::QUADS, 
                     QUAD_STRIP = MeshAlg::QUAD_STRIP, 
                     POINTS = MeshAlg::POINTS};
-
-	/** RENDER_CURRENT = preserve whatever the render mode is currently set to.  */
+   	
+    /** RENDER_CURRENT = preserve whatever the render mode is currently set to.  */
     enum RenderMode {RENDER_SOLID, RENDER_WIREFRAME, RENDER_POINTS, RENDER_CURRENT};
 
     
@@ -453,9 +453,29 @@ public:
                       TEX_ADD_SIGNED, TEX_SUBTRACT, TEX_DOT3_RGB, TEX_DOT3_RGBA,
                       TEX_CURRENT};
 
-    enum Buffer      {BUFFER_BACK,       BUFFER_FRONT,
-                      BUFFER_BACK_LEFT,  BUFFER_FRONT_LEFT,
-                      BUFFER_BACK_RIGHT, BUFFER_FRONT_RIGHT, BUFFER_CURRENT};
+    enum Buffer      {BUFFER_BACK   = 0x0,       
+                      BUFFER_FRONT  = 0x1,
+                      BUFFER_BACK_LEFT = 0x2,  
+                      BUFFER_FRONT_LEFT = 0x3,
+                      BUFFER_BACK_RIGHT = 0x4, 
+                      BUFFER_FRONT_RIGHT = 0x5, 
+                      BUFFER_CURRENT = 0x6,
+                      BUFFER_COLOR0 = 0x8CE0,     
+                      BUFFER_COLOR1 = 0x8CE1,
+                      BUFFER_COLOR2 = 0x8CE2,     
+                      BUFFER_COLOR3 = 0x8CE3,
+                      BUFFER_COLOR4 = 0x8CE4,     
+                      BUFFER_COLOR5 = 0x8CE5,
+                      BUFFER_COLOR6 = 0x8CE6,     
+                      BUFFER_COLOR7 = 0x8CE7,
+                      BUFFER_COLOR8 = 0x8CE8,     
+                      BUFFER_COLOR9 = 0x8CE9,
+                      BUFFER_COLOR10 = 0x8CEA,    
+                      BUFFER_COLOR11 = 0x8CEB,
+                      BUFFER_COLOR12 = 0x8CEC,    
+                      BUFFER_COLOR13 = 0x8CED,
+                      BUFFER_COLOR14 = 0x8CEE,    
+                      BUFFER_COLOR15 = 0x8CEF};
 
     /**
      Call to begin the rendering frame.
@@ -533,7 +553,10 @@ public:
 
     /**
      Sets the frame buffer that is written to.  Used to intentionally
-     draw to the front buffer and for stereo rendering.
+     draw to the front buffer and for stereo rendering.  Its operation is sensitive
+     to the current framebuffer being written to. If the framebuffer is the primary
+     display then only visible buffers may be specified.  If the framebuffer is an
+     application-created framebuffer then only color attachments may be specified.
      */
     void setDrawBuffer(Buffer drawBuffer);
 
