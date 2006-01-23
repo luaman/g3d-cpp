@@ -19,7 +19,9 @@ There are several reoccuring questions that appear at the <A HREF="http://source
 12. <a href="#orthographic">Is there a way to make the GCamera do an orthographic projection?</a><BR>
 13. <a href="#VS2005">My G3D based project will not build with Visual Studio 2005</a><BR>
 14. <a href="#fullscreen">A fullscreen application shows the window title bar</a><BR>
-15. <a href="#join">How can I join the G3D Core Dev team</a><BR>
+15. <a href="#headers">Why are the headers out of date?/What header files are included with G3D</a><BR>
+16. <a href="#buildsystem">Why does the source distribution not include the build system?</a><BR>
+17. <a href="#join">How can I join the G3D Core Dev team</a><BR>
 
 <a NAME="graphicscard"></a>
 <B>What graphics hardware does G3D support?</B><P>
@@ -125,6 +127,31 @@ Please see the equivalent error in the Error FAQ.
 
 The window is showing the frames.
 Create an unframed window with GWindowSettings::framed = false;
+
+<a NAME="headers"></a>
+<P><B>Why are the headers out of date? / What header files are included with G3D?</B><P>
+We intentionally use our own version of the OpenGL headers because we have found that most Linux systems have out of date headers.<BR>
+Often the user (e.g., a student) does not have root access and can't correct this, so we just supply our own.<BR>
+On Linux G3D will use your libjpeg, libpng, and libz headers.  We include ours only for Win32.<BR>
+
+<a NAME="buildsystem"></a>
+<P><B>Why does the source distribution not include the build system?</B><P>
+The "source" distribution intentionally does not include the G3D build system.<BR>
+It is provided to help document G3D, not to rebuild it. <BR>
+This is primarily because the build system is complex (it covers many platforms) and we aren't in a position to offer support for the build system yet.
+It is also because building requires many files that we don't include in the source distro to make the download size smaller.<BR>
+<BR>
+Check out from CVS if you'd like to build G3D. Once the latest G3D source has been checked out, building is easy: <BR>on Linux, type:<BR>
+<PRE>
+
+chmod u+x build
+./build install <targetdir>
+</PRE>
+
+This build command also works on Win32 and OSX, but it requires Python to be installed.<BR>
+
+We are currently in the process of redesigning the build system; hopefully the new version will be something that we're comfortable releasing with the source distro.<BR>
+
 
 <a NAME="join"></a>
 <P><B>How can I Join the G3D Core Dev Team?</B><P>
