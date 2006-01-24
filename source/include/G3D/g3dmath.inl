@@ -156,7 +156,7 @@ inline double G3D_DEPRECATED unitRandom () {
 }
 
 inline float uniformRandom(float low, float hi) {
-    return G3D::clamp((low + hi) * float(::rand()) / float(RAND_MAX) + low, low, hi);
+    return (hi - low) * float(::rand()) / float(RAND_MAX) + low;
 }
 
 
