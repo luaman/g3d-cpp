@@ -453,29 +453,17 @@ public:
                       TEX_ADD_SIGNED, TEX_SUBTRACT, TEX_DOT3_RGB, TEX_DOT3_RGBA,
                       TEX_CURRENT};
 
-    enum Buffer      {BUFFER_BACK   = 0x0,       
-                      BUFFER_FRONT  = 0x1,
-                      BUFFER_BACK_LEFT = 0x2,  
-                      BUFFER_FRONT_LEFT = 0x3,
-                      BUFFER_BACK_RIGHT = 0x4, 
-                      BUFFER_FRONT_RIGHT = 0x5, 
-                      BUFFER_CURRENT = 0x6,
-                      BUFFER_COLOR0 = 0x8CE0,     
-                      BUFFER_COLOR1 = 0x8CE1,
-                      BUFFER_COLOR2 = 0x8CE2,     
-                      BUFFER_COLOR3 = 0x8CE3,
-                      BUFFER_COLOR4 = 0x8CE4,     
-                      BUFFER_COLOR5 = 0x8CE5,
-                      BUFFER_COLOR6 = 0x8CE6,     
-                      BUFFER_COLOR7 = 0x8CE7,
-                      BUFFER_COLOR8 = 0x8CE8,     
-                      BUFFER_COLOR9 = 0x8CE9,
-                      BUFFER_COLOR10 = 0x8CEA,    
-                      BUFFER_COLOR11 = 0x8CEB,
-                      BUFFER_COLOR12 = 0x8CEC,    
-                      BUFFER_COLOR13 = 0x8CED,
-                      BUFFER_COLOR14 = 0x8CEE,    
-                      BUFFER_COLOR15 = 0x8CEF};
+    #define MAX_BUFFER_SIZE 27
+
+    enum Buffer      {BUFFER_NONE, BUFFER_FRONT_LEFT, BUFFER_FRONT_RIGHT, BUFFER_BACK_LEFT,
+                      BUFFER_BACK_RIGHT, BUFFER_FRONT, BUFFER_BACK, BUFFER_LEFT, BUFFER_RIGHT, 
+                      BUFFER_FRONT_AND_BACK, BUFFER_CURRENT,
+                      BUFFER_COLOR0, BUFFER_COLOR1, BUFFER_COLOR2, BUFFER_COLOR3,
+                      BUFFER_COLOR4, BUFFER_COLOR5, BUFFER_COLOR6, BUFFER_COLOR7,
+                      BUFFER_COLOR8, BUFFER_COLOR9, BUFFER_COLOR10, BUFFER_COLOR11,
+                      BUFFER_COLOR12, BUFFER_COLOR13, BUFFER_COLOR14, BUFFER_COLOR15};
+
+    GLenum BufferToGL[MAX_BUFFER_SIZE];
 
     /**
      Call to begin the rendering frame.

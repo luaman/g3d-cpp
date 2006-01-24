@@ -31,6 +31,37 @@ const GWindow* GWindow::m_current = NULL;
 
 RenderDevice* RenderDevice::lastRenderDeviceCreated = NULL;
 
+
+GLenum BufferToGL[MAX_BUFFER_SIZE] = {GL_NONE,
+                                      GL_FRONT_LEFT,
+                                      GL_FRONT_RIGHT,
+                                      GL_BACK_LEFT,
+                                      GL_BACK_RIGHT,
+                                      GL_FRONT,
+                                      GL_BACK,
+                                      GL_LEFT,
+                                      GL_RIGHT,
+                                      GL_FRONT_AND_BACK,
+                                      0xFFFF,                   //BUFFER_CURRENT
+                                      GL_COLOR_ATTACHMENT0_EXT,
+                                      GL_COLOR_ATTACHMENT1_EXT,
+                                      GL_COLOR_ATTACHMENT2_EXT,
+                                      GL_COLOR_ATTACHMENT3_EXT,
+                                      GL_COLOR_ATTACHMENT4_EXT,
+                                      GL_COLOR_ATTACHMENT5_EXT,
+                                      GL_COLOR_ATTACHMENT6_EXT,
+                                      GL_COLOR_ATTACHMENT7_EXT,
+                                      GL_COLOR_ATTACHMENT8_EXT,
+                                      GL_COLOR_ATTACHMENT9_EXT,
+                                      GL_COLOR_ATTACHMENT10_EXT,
+                                      GL_COLOR_ATTACHMENT11_EXT,
+                                      GL_COLOR_ATTACHMENT12_EXT,
+                                      GL_COLOR_ATTACHMENT13_EXT,
+                                      GL_COLOR_ATTACHMENT14_EXT,
+                                      GL_COLOR_ATTACHMENT15_EXT};
+
+
+
 static void _glViewport(double a, double b, double c, double d) {
     glViewport(iRound(a), iRound(b), 
 	       iRound(a + c) - iRound(a), iRound(b + d) - iRound(b));
@@ -1105,107 +1136,20 @@ RenderDevice::RenderMode RenderDevice::renderMode() const {
 void RenderDevice::setDrawBuffer(Buffer b) {
     minStateChange();
 
+    if (b == BUFFER_CURRENT) return;
+
     if (state.framebuffer.isNull()) {
-        alwaysAssertM((b >= BUFFER_BACK) && (b <= BUFFER_CURRENT), 
+        alwaysAssertM((b >= BUFFER_NONE) && (b <= BUFFER_CURRENT), 
                   "Drawing to a color buffer is only supported by application-created framebuffers!");
     } else {
-        alwaysAssertM((b >= BUFFER_COLOR0) && (b <= BUFFER_COLOR15), 
+        alwaysAssertM((b >= BUFFER_CURRENT) && (b <= BUFFER_COLOR15), 
                   "Visible buffers cannot be specified for application-created framebuffers!");
     }
 
     if (b != state.drawBuffer) {
         minGLStateChange();
-
         state.drawBuffer = b;
-        switch (b) {
-        case BUFFER_FRONT:
-            glDrawBuffer(GL_FRONT);
-            break;
-
-        case BUFFER_FRONT_LEFT:
-            glDrawBuffer(GL_FRONT_LEFT);
-            break;
-
-        case BUFFER_FRONT_RIGHT:
-            glDrawBuffer(GL_FRONT_RIGHT);
-            break;
-
-        case BUFFER_BACK:
-            glDrawBuffer(GL_BACK);
-            break;
-
-        case BUFFER_BACK_LEFT:
-            glDrawBuffer(GL_BACK_LEFT);
-            break;
-
-        case BUFFER_BACK_RIGHT:
-            glDrawBuffer(GL_BACK_RIGHT);
-            break;
-
-        case BUFFER_COLOR0:
-            glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-            break;
-
-        case BUFFER_COLOR1:
-            glDrawBuffer(GL_COLOR_ATTACHMENT1_EXT);
-            break;
-
-        case BUFFER_COLOR2:
-            glDrawBuffer(GL_COLOR_ATTACHMENT2_EXT);
-            break;
-        case BUFFER_COLOR3:
-            glDrawBuffer(GL_COLOR_ATTACHMENT3_EXT);
-            break;
-
-        case BUFFER_COLOR4:
-            glDrawBuffer(GL_COLOR_ATTACHMENT4_EXT);
-            break;
-
-        case BUFFER_COLOR5:
-            glDrawBuffer(GL_COLOR_ATTACHMENT5_EXT);
-            break;
-
-        case BUFFER_COLOR6:
-            glDrawBuffer(GL_COLOR_ATTACHMENT6_EXT);
-            break;
-
-        case BUFFER_COLOR7:
-            glDrawBuffer(GL_COLOR_ATTACHMENT7_EXT);
-            break;
-        case BUFFER_COLOR8:
-            glDrawBuffer(GL_COLOR_ATTACHMENT8_EXT);
-            break;
-
-        case BUFFER_COLOR9:
-            glDrawBuffer(GL_COLOR_ATTACHMENT9_EXT);
-            break;
-
-        case BUFFER_COLOR10:
-            glDrawBuffer(GL_COLOR_ATTACHMENT10_EXT);
-            break;
-        case BUFFER_COLOR11:
-            glDrawBuffer(GL_COLOR_ATTACHMENT11_EXT);
-            break;
-
-        case BUFFER_COLOR12:
-            glDrawBuffer(GL_COLOR_ATTACHMENT12_EXT);
-            break;
-
-        case BUFFER_COLOR13:
-            glDrawBuffer(GL_COLOR_ATTACHMENT13_EXT);
-            break;
-
-        case BUFFER_COLOR14:
-            glDrawBuffer(GL_COLOR_ATTACHMENT14_EXT);
-            break;
-        case BUFFER_COLOR15:
-            glDrawBuffer(GL_COLOR_ATTACHMENT15_EXT);
-            break;
-
-        case BUFFER_CURRENT:
-            return;
-            break;
-        }
+        glDrawBuffer (BufferToGL[state.drawBuffer]);
     }
 }
 
