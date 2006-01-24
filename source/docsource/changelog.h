@@ -107,6 +107,7 @@
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
       <LI> G3D::GLCaps::hasBug_redBlueMipmapSwap and workaround for G3D::Texture on Radeon 7500
+      <LI> Fix: gaussRandom is unit gaussian [Corey]
       <LI> Fix: Ignoring extra/unused set Shader arguments. [Corey]
       <LI> Fix: [ 1229205 ] uniform texture array (Could not set indexed array uniforms). [Corey]
       <LI> Fix: <B>incompatible change</B> BinaryInput/BinaryOutput copy constructors and assignments were accessible. [Corey]
