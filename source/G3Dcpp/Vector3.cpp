@@ -138,9 +138,9 @@ Vector3 Vector3::random() {
     Vector3 result;
 
     do {
-        result = Vector3((float)symmetricRandom(), 
-                         (float)symmetricRandom(),
-                         (float)symmetricRandom());
+        result = Vector3(uniformRandom(-1.0, 1.0), 
+                         uniformRandom(-1.0, 1.0),
+                         uniformRandom(-1.0, 1.0));
     } while (result.squaredMagnitude() >= 1.0f);
 
     result.unitize();

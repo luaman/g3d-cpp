@@ -151,13 +151,17 @@ inline double sign (double fValue) {
     return 0.0;
 }
 
-//----------------------------------------------------------------------------
-inline double unitRandom () {
+inline double G3D_DEPRECATED unitRandom () {
     return double(::rand()) / double(RAND_MAX);
 }
 
+inline float uniformRandom(float low, float hi) {
+    return G3D::clamp((low + hi) * float(::rand()) / float(RAND_MAX) + low, low, hi);
+}
+
+
 //----------------------------------------------------------------------------
-inline double symmetricRandom () {
+inline double G3D_DEPRECATED symmetricRandom () {
     return 2.0 * double(::rand()) / double(RAND_MAX) - 1.0;
 }
 

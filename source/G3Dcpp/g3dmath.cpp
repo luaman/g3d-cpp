@@ -12,37 +12,23 @@
 
 namespace G3D {
 
-double gaussRandom(double mean, double stdev) {
+float gaussRandom(float mean, float stdev) {
 
-    // TODO: stdev not used
-    (void)stdev; (void)mean;
+    // Using Box-Mueller method from http://www.taygeta.com/random/gaussian.html
+    // Modified to specify standard deviation and mean of distribution
+    float w, x1, x2;
 
-    // Gaussian random numbers are generated two at a time.
-    // On alternating calls we just return the previously
-    // computed pair value.
-    static bool holding = false;
-    static double v2 = 0;
-
-    if (holding) {
-        holding = false;
-        return v2;
-    }
-
-    double w, x1, x2;
-
+    // Loop until w is less than 1 so that log(w) is negative
     do {
-     x1 = symmetricRandom();
-     x2 = symmetricRandom();
+        x1 = uniformRandom(-1.0, 1.0);
+        x2 = uniformRandom(-1.0, 1.0);
 
-     w = square(x1) + square(x2);
-    } while (w >= 1.0);
+        w = float(square(x1) + square(x2));
+    } while (w > 1.0f);
 
-    w = sqrt((-2.0 * log(w) ) / w);
-
-    double v1 = x1 * w;
-    v2 = x2 * w;
-
-    return v1; 
+    // Transform to gassian distribution
+    // Multiply by sigma (stdev ^ 2) and add mean.
+    return x2 * (float)square(stdev) * sqrtf((-2.0f * logf(w) ) / w) + mean; 
 }
 
 
@@ -81,7 +67,7 @@ int iRandom(int low, int high) {
 }
 
 
-double random(double low, double high) {
+double G3D_DEPRECATED random(double low, double high) {
 	return low + (high - low) * rand() / (double)RAND_MAX;
 }
 

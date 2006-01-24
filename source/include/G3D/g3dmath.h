@@ -266,21 +266,33 @@ bool isNaN(double x);
  */
 int iMod3(int x);
 
-/** [0, 1] */
+/** 
+ [0, 1]
+ @deprecated use uniformRandom()
+ */
 double unitRandom ();
 
 /**
  Uniform random number between low and hi, inclusive.
+ @deprecated use uniformRandom()
  */
 double random(double low, double hi);
 
 /**
+ [-1, 1]
+ @deprecated use uniformRandom()
+ */
+double symmetricRandom ();
+
+/**
+ Uniform random number between low and hi, inclusive. [low, hi]
+ */
+float uniformRandom(float low = 0.0, float hi = 1.0);
+
+/**
  Normally distributed random number. 
  */
-double gaussRandom(double mean = 0.0, double stdev = 1.0);
-
-/** [-1, 1] */
-double symmetricRandom ();
+float gaussRandom(float mean = 0.0, float stdev = 1.0);
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1200)
 
