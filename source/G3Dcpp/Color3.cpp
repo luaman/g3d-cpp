@@ -150,9 +150,9 @@ Color3 Color3::fromARGB(uint32 x) {
 
 
 Color3 Color3::random() {
-    return Color3((float)G3D::unitRandom(), 
-                  (float)G3D::unitRandom(),
-                  (float)G3D::unitRandom()).direction();
+    return Color3(uniformRandom(), 
+                  uniformRandom(),
+                  uniformRandom()).direction();
 }
 
 //----------------------------------------------------------------------------

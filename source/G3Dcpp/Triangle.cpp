@@ -106,8 +106,8 @@ Vector3 Triangle::center() const {
 Vector3 Triangle::randomPoint() const {
     // Choose a random point in the parallelogram
 
-    float s = (float)unitRandom();
-    float t = (float)unitRandom();
+    float s = uniformRandom();
+    float t = uniformRandom();
 
     if (t > 1.0f - s) {
         // Outside the triangle; reflect about the

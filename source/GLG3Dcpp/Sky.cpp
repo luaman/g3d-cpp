@@ -219,7 +219,7 @@ Sky::Sky(
     	    starIntensity.resize(star.size());
    		    for (i = star.size() - 1; i >= 0; --i) {
    			    star[i] = Vector4(Vector3::random(), 0);
-   			    starIntensity[i] = square(unitRandom()) + .3f;
+   			    starIntensity[i] = square(uniformRandom()) + .3f;
    		    }
  	    }
     }
