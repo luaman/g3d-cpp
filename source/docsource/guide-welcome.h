@@ -129,6 +129,10 @@ arrive with each point release.
   Sample Shaders</TD></TR>
 
 
+  <TR><TD VALIGN=TOP>\link guidefbo Framebuffer Object \endlink</TD><TD VALIGN=TOP>
+  Tutorial on using framebuffer objects.</TD></TR>
+
+
 <TR><TD>\link deprecated Deprecated \endlink</TD><TD>APIs to be removed in 7.0</TD></TR>
 <TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
 <TR><TD>\link faq General FAQ \endlink</TD><TD></TD></TR>
