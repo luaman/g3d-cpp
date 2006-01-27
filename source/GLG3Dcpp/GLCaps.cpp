@@ -200,6 +200,8 @@ void GLCaps::init() {
 
 void GLCaps::loadExtensions(Log* debugLog) {
 
+    debugAssert(glGetString(GL_VENDOR) != NULL);
+
     if (_loadedExtensions) {
         return;
     } else {

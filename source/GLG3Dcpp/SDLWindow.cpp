@@ -220,6 +220,9 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         }
     #endif
 
+	// Register this window as the current window
+	makeCurrent();
+
     // Adjust window position
     #ifdef G3D_WIN32
         if (! settings.fullScreen) {

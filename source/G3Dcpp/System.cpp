@@ -1473,6 +1473,7 @@ public:
 static BufferPool* bufferpool = NULL;
 
 std::string System::mallocPerformance() {    
+#ifndef NO_BUFFERPOOL
     if (bufferpool->totalMallocs > 0) {
 
         int pooled = bufferpool->mallocsFromTinyPool +
@@ -1490,17 +1491,23 @@ std::string System::mallocPerformance() {
     } else {
         return "No System::malloc calls made yet.";
     }
+#else
+	return "NO_BUFFERPOOL";
+#endif
 }
 
 
 void System::resetMallocPerformanceCounters() {
+#ifndef NO_BUFFERPOOL
     bufferpool->totalMallocs         = 0;
     bufferpool->mallocsFromMedPool   = 0;
     bufferpool->mallocsFromSmallPool = 0;
     bufferpool->mallocsFromTinyPool  = 0;
+#endif
 }
 
 
+#ifndef NO_BUFFERPOOL
 void initMem() {
     // Putting the test here ensures that the system is always
     // initialized, even when globals are being allocated.
@@ -1510,28 +1517,45 @@ void initMem() {
         initialized = true;
     }
 }
+#endif
 
 
 void* System::malloc(size_t bytes) {
+#ifndef NO_BUFFERPOOL
     initMem();
     return bufferpool->malloc(bytes);
+#else
+    return ::malloc(bytes);
+#endif
 }
 
 void* System::calloc(size_t n, size_t x) {
+#ifndef NO_BUFFERPOOL
     void* b = System::malloc(n * x);
     System::memset(b, 0, n * x);
     return b;
+#else
+    return ::calloc(n, x);
+#endif
 }
 
 
 void* System::realloc(void* block, size_t bytes) {
+#ifndef NO_BUFFERPOOL
     initMem();
     return bufferpool->realloc(block, bytes);
+#else
+	return ::realloc(block, bytes);
+#endif
 }
 
 
 void System::free(void* p) {
+#ifndef NO_BUFFERPOOL
     bufferpool->free(p);
+#else
+	return ::free(p);
+#endif
 }
 
 

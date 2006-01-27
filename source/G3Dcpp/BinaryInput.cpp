@@ -138,6 +138,7 @@ void BinaryInput::loadIntoMemory(int startPosition, int minLength) {
         // This happens if there was little memory available during the initial constructor
         // read but more memory has since been freed.
         bufferLength = minLength;
+		debugAssert(freeBuffer);
         buffer = (uint8*)System::realloc(buffer, bufferLength);
         if (buffer == NULL) {
             throw "Tried to read a larger memory chunk than could fit in memory. (2)";
@@ -209,6 +210,7 @@ BinaryInput::BinaryInput(
         // Read the decompressed size from the first 4 bytes
         length = G3D::readUInt32(data, swapBytes);
 
+		debugAssert(freeBuffer);
         buffer = (uint8*)System::malloc(length);
 
         uint32 L = length;
@@ -222,8 +224,10 @@ BinaryInput::BinaryInput(
 	    length = dataLen;
         bufferLength = length;
         if (! copyMemory) {
+ 			debugAssert(!freeBuffer);
             buffer = const_cast<uint8*>(data);
         } else {
+			debugAssert(freeBuffer);
             buffer = (uint8*)System::malloc(length);
             memcpy(buffer, data, dataLen);
         }
@@ -271,6 +275,7 @@ BinaryInput::BinaryInput(
         bufferLength = length;
     }
 
+	debugAssert(freeBuffer);
     buffer = (uint8*)System::malloc(bufferLength);
     if (buffer == NULL) {
         if (compressed) {

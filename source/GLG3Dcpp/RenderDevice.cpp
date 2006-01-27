@@ -883,6 +883,7 @@ void RenderDevice::setState(
 	}
 
     setViewport(newState.viewport);
+    debugAssertGLOk();
 
     if (newState.useClip2D) {
         enableClip2D(newState.clip2D);
@@ -907,15 +908,18 @@ void RenderDevice::setState(
     } else {
         disableAlphaWrite();
     }
+    debugAssertGLOk();
 
     setDrawBuffer(newState.drawBuffer);
 
     setShadeMode(newState.shadeMode);
     setDepthTest(newState.depthTest);
+    debugAssertGLOk();
 
     if (newState.stencil != state.stencil) {
         setStencilConstant(newState.stencil.stencilReference);
 
+		debugAssertGLOk();
         setStencilTest(newState.stencil.stencilTest);
 
         setStencilOp(
