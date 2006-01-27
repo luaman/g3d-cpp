@@ -451,7 +451,7 @@ void AVIWriter::writeFrame(const GImage& im) {
 
 
     static GImage out;
-    out.resize(im.width, im.height, 4);
+    out.resize(im.width, im.height, 3);
 
     // Copy im to out, flipping and converting to 3 channels
     switch (im.channels) {
