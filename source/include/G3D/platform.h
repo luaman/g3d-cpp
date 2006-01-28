@@ -31,7 +31,7 @@
 #endif
 
 #ifdef _MSC_VER 
-    #define G3D_WIN32 
+    #define G3D_WIN32
 #elif __MINGW32__
     #define G3D_WIN32 
     #define G3D_MINGW32 
@@ -150,6 +150,7 @@
 #		pragma warning (disable : 4018)
 #	endif
 
+#   define ZLIB_WINAPI
 
 // Mingw32 defines restrict
 #   ifndef G3D_MINGW32
