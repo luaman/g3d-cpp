@@ -196,6 +196,8 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
     SDL_VERSION(&info.version);
     SDL_GetWMInfo(&info);
 
+    _glContext = glGetCurrentContext();
+
     #if defined(G3D_WIN32)
         // Extract SDL HDC/HWND on Win32
         _Win32HWND  = info.window;
@@ -219,9 +221,6 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
             G3D::_internal::x11Window  = info.info.x11.window;
         }
     #endif
-
-	// Register this window as the current window
-	makeCurrent();
 
     // Adjust window position
     #ifdef G3D_WIN32
@@ -276,6 +275,9 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 	}
 
     loadExtensions();
+
+	// Register this window as the current window
+	makeCurrent();
 }
 
 
@@ -617,5 +619,21 @@ HWND SDLWindow::win32HWND() const {
 }
 
 #endif
+
+void SDLWindow::reallyMakeCurrent() const {
+#   ifdef G3D_WIN32
+	    if (wglMakeCurrent(_Win32HDC, _glContext) == FALSE)	{
+            debugAssertM(false, "Failed to set context");
+	    }
+#   elif defined(G3D_LINUX)
+        if (! glXMakeCurrent(_X11Display, _X11Window, _glContext)) {
+            debugAssertM(false, "Failed to set context");
+        }
+#   elif defined(G3D_OSX)
+        
+#   else
+#       error SDLWindow not implemented for this platform.
+#   endif
+}
 
 } // namespace

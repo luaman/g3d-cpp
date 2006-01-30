@@ -6,9 +6,10 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-07-09
- @edited  2002-08-23
+ @edited  2006-01-29
 */
 
+#include "G3D/platform.h"
 #include "G3D/Cone.h"
 #include "G3D/Line.h"
 #include "G3D/Sphere.h"

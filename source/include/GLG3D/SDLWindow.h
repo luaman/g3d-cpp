@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2004-10-29
+  @edited  2006-01-29
 */
 
 #ifndef G3D_SDLWINDOW_H
@@ -12,6 +12,7 @@
 #include "graphics3D.h"
 #include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
+#include "GLG3D/glcalls.h"
 
 #if defined(G3D_OSX)
 #include <SDL/SDL.h>
@@ -58,6 +59,7 @@ private:
 
     bool                        _mouseVisible;
 
+    GLContext                   _glContext;
     #if defined(G3D_LINUX)
         Display*                _X11Display;
         Window                  _X11Window;
@@ -66,6 +68,10 @@ private:
         HDC                     _Win32HDC;
         HWND                    _Win32HWND;
     #endif
+
+protected:
+    
+    virtual void reallyMakeCurrent() const;
 
 public:
 

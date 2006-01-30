@@ -2842,13 +2842,13 @@ void GImage::convertToRGB() {
             // Spread
             uint8* old = _byte;
             _byte = NULL;
-            resize(width, height, 4);
+            resize(width, height, 3);
             for (int i = width * height - 1; i >= 0; --i) {
                 const uint8  s = old[i];
                 Color3uint8& d = ((Color3uint8*)_byte)[i]; 
                 d.r = d.g = d.b = s;
             }
-            System::free(_byte);
+            System::free(old);
         }
         break;
 

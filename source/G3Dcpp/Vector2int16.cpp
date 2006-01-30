@@ -4,9 +4,10 @@
  @author Morgan McGuire, matrix@graphics3d.com
   
  @created 2003-08-09
- @edited  2006-01-10
+ @edited  2006-01-29
  */
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Vector2int16.h"
 #include "G3D/Vector2.h"

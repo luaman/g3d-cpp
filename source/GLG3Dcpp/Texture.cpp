@@ -429,6 +429,10 @@ void Texture::getImage(GImage& dst, const TextureFormat* outFormat) const {
 
     if (outFormat == TextureFormat::AUTO) {
         switch(format->OpenGLBaseFormat) { 
+        case GL_ALPHA:
+            outFormat = TextureFormat::A8;
+            break;
+
         case GL_LUMINANCE:
             outFormat = TextureFormat::L8;
             break;
@@ -450,6 +454,7 @@ void Texture::getImage(GImage& dst, const TextureFormat* outFormat) const {
 
     switch(outFormat->OpenGLBaseFormat) {
     case GL_LUMINANCE:
+    case GL_ALPHA:
         channels = 1;
         break;
 
