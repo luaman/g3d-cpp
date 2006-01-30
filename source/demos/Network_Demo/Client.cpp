@@ -21,7 +21,7 @@ Client::Client(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Client::init()  {
+void Client::onInit()  {
     // Called before Client::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
@@ -34,20 +34,22 @@ void Client::init()  {
     camera.setPosition(Vector3::ZERO);
     camera.lookAt(-Vector3::UNIT_Z);
     Log::common()->printf("Client::init\n");
+
+    setDesiredFrameRate(40);
 }
 
 
-void Client::cleanup() {
+void Client::onCleanup() {
     // Called when Client::run() exits
     entityTable.clear();
 }
 
 
-void Client::doNetwork() {
+void Client::onNetwork() {
 
 	// Poll net messages here
     if (app->hostingServer) {
-        app->hostingServer->doNetwork();
+        app->hostingServer->onNetwork();
     }
 
     while (serverProxy.net->messageWaiting() && serverProxy.net->ok()) {
@@ -119,43 +121,18 @@ void Client::simulateCamera(SimTime dt) {
 }
 
 
-void Client::doSimulation(SimTime dt) {
+void Client::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     if (app->hostingServer) {
-        app->hostingServer->doSimulation(dt);
+        app->hostingServer->onSimulation(rdt, sdt, idt);
     }
 
-    simulateEntities(entityTable, dt);
+    simulateEntities(entityTable, sdt);
 
-    simulateCamera(dt);
+    simulateCamera(sdt);
 }
 
-
-/**
- Allow other applications some time.
- */
-static void manageFrameRate() {
-    const double targetFrameRate = 40;
-
-    // Sleep if we have more performance than needed
-    static RealTime last = 0;
-    RealTime now = System::getTick();
-    double actualFrameTime = now - last;
-    RealTime desiredFrameTime = 1.0 / targetFrameRate;
-    RealTime delta = desiredFrameTime - actualFrameTime;
-    if (delta > 0.0) {
-        System::sleep(min(delta, 0.1));
-    }
-    last = now;
-}
-
-
-void Client::doLogic() {
-
-//    if (! app->hostingServer) {
-//        manageFrameRate();
-//    }
-
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+void Client::onUserInput(UserInput* ui) {
+    if (ui->keyPressed(SDLK_ESCAPE)) {
         // Quit back to main menu
         endApplet = true;
     }
@@ -255,7 +232,7 @@ void Client::renderEntities() {
 }
 
 
-void Client::doGraphics() {
+void Client::onGraphics(RenderDevice* rd) {
 
     RealTime now = System::time();
 
@@ -326,7 +303,7 @@ void Client::doGraphics() {
     app->renderDevice->pop2D();
 
     if (app->hostingServer) {
-        app->hostingServer->doGraphics();
+        app->hostingServer->onGraphics(rd);
     }
 }
 

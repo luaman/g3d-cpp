@@ -7,7 +7,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
- @edited  2004-06-23
+ @edited  2006-01-29
  */
 
 #include <G3DAll.h>
@@ -94,17 +94,15 @@ public:
 
     virtual ~Demo() {}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onUserInput(UserInput*);
 
-	virtual void doNetwork();
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onGraphics(RenderDevice*);
 
-    virtual void doGraphics();
-
-    virtual void cleanup();
+    virtual void onCleanup();
 
 };
 
@@ -119,7 +117,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Demo::init()  {
+void Demo::onInit()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
@@ -135,7 +133,7 @@ void Demo::init()  {
 }
 
 
-void Demo::cleanup() {
+void Demo::onCleanup() {
     varStatic->reset();
 
     app->debugLog->printf("Static VAR peak size was  %d bytes.\n",
@@ -148,32 +146,27 @@ void Demo::cleanup() {
 }
 
 
-void Demo::doNetwork() {
-	// Poll net messages here
-}
-
-
-void Demo::doSimulation(SimTime dt) {
+void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 	// Add physical simulation here
     gameTime += 20;
 }
 
 
-void Demo::doLogic() {
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+void Demo::onUserInput(UserInput* ui) {
+    if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
         app->endProgram = true;
     }
 
-    if (app->userInput->keyPressed(' ')) {
+    if (ui->keyPressed(' ')) {
         renderMethod =
           (RenderMethod)((renderMethod + 1) % NUM_RENDER_METHODS);
     }
 }
 
 
-void Demo::doGraphics() {
+void Demo::onGraphics(RenderDevice* rd) {
 
     app->renderDevice->clear(sky == NULL, true, false);
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);

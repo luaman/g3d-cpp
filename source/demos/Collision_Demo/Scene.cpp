@@ -333,7 +333,7 @@ void Scene::simulate(GameTime duration) {
                     // We don't move to the actual collision time because roundoff could
                     // cause interpenetration, which would get us stuck on thin or sharp
                     // objects or cause us to miss a subsequent collision.
-                    delta = max(0, delta - 0.0005);
+                    delta = max(0.0, delta - 0.0005);
                     obj->sphere.center += obj->velocity * delta;
                 }
 
@@ -351,7 +351,7 @@ void Scene::simulate(GameTime duration) {
 
                     Vector3 tangent = (obj->sphere.center - collisionLocation).direction();
 
-                    bounceDirection = (bounceDirection + tangent * 0.5).direction();     
+                    bounceDirection = (bounceDirection + tangent * 0.5f).direction();     
                 }
 
                 // Apply acceleration, then change direction.  If we apply acceleration after
@@ -373,7 +373,7 @@ void Scene::simulate(GameTime duration) {
                     // takes into account the fact that we need a larger cutoff
                     // velocity for "moving too slowly: bring this object to rest"
                     // when large accelerations are at play.
-                    av /= duration * pow(acceleration.squaredLength(), .75);
+                    av /= duration * pow(acceleration.squaredLength(), 0.75f);
                 }
 
                 if ((an < 0) && (nv * duration <= 0.05) && ROLLING_CONTACT) {

@@ -3,7 +3,7 @@
 
   @author Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2004-03-30
+  @edited  2006-01-29
  */
 
 #ifndef CLIENT_H
@@ -70,17 +70,17 @@ public:
     
     virtual ~Client(){}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onUserInput(UserInput* ui);
 
-	virtual void doNetwork();
+	virtual void onNetwork();
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doGraphics();
+    virtual void onGraphics(RenderDevice* rd);
 
-    virtual void cleanup();
+    virtual void onCleanup();
 
 };
 

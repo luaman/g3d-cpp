@@ -79,21 +79,19 @@ public:
     class App*              app;
 
     Array<EntityRef>        entityArray;
-    double                  bumpScale;
+    float                   bumpScale;
 
     Viewer(App* app);    
     
     virtual ~Viewer() {}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onUserInput(UserInput* ui);
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doGraphics();
-
-    virtual void cleanup();
+    virtual void onGraphics(RenderDevice* rd);
 };
 
 

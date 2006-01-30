@@ -2,7 +2,7 @@
  @file GLSL_Demo/main.cpp
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2004-06-25
- @edited  2004-09-18
+ @edited  2006-01-29
  */
 
 #include "header.h"

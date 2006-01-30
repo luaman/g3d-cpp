@@ -39,13 +39,11 @@ public:
 
     virtual ~Demo();
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doSimulation(SimTime dt);
-
-    virtual void doGraphics();
+    virtual void onGraphics(RenderDevice*rd);
 };
 
 #endif

@@ -83,14 +83,11 @@ public:
 
     bool ok() const;
 
-    /** Called from Client::doNetwork */
-    void doNetwork();
+    void onNetwork();
 
-    /** Called from Client::doSimulation */
-    void doSimulation(SimTime dt);
+    void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    /** Called from Client::doGraphics for debugging purposes only */
-    void doGraphics();
+    void onGraphics(RenderDevice* rd);
 };
 
 #endif

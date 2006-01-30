@@ -14,14 +14,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-10
-  @edited  2005-02-24
+  @edited  2006-01-29
  */ 
 
 #include <G3DAll.h>
 #ifdef _MSC_VER
   #include <direct.h>
 #endif
-
 
 class Model {
 
@@ -78,13 +77,13 @@ public:
 
     virtual ~Demo() {}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onLogic();
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doGraphics();
+    virtual void onGraphics(RenderDevice*);
 
 };
 
@@ -96,15 +95,15 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Demo::init() {
+void Demo::onInit() {
     
     model        = new Model(app->dataDir + "ifs/cow.ifs");
 
     app->debugController.setMoveRate(1);
 
-    app->debugController.setPosition(Vector3(2, .2, -2));
+    app->debugController.setPosition(Vector3(2, 0.2f, -2));
     app->debugController.lookAt(Vector3(-2,0,2));
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
 
     std::string p = "ASM_Shader_Demo/";
     if (! fileExists(p + "twist.vp")) {
@@ -115,52 +114,52 @@ void Demo::init() {
 }
 
 
-void Demo::doSimulation(GameTime timeStep) {
+void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     // Simulation
-    app->debugController.doSimulation(max(0.1, min(0, timeStep)));
+    app->debugController.doSimulation(max(0.1, min(0.0, rdt)));
     app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
 }
 
 
-void Demo::doGraphics() {
-    app->renderDevice->setAmbientLightColor(Color3::white() * .5);
-    app->renderDevice->clear(true, true, true);
+void Demo::onGraphics(RenderDevice* rd) {
+    rd->setAmbientLightColor(Color3::white() * .5);
+    rd->clear(true, true, true);
 
-    app->renderDevice->pushState();
-        app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    rd->pushState();
+        rd->setProjectionAndCameraMatrix(app->debugCamera);
         double angle = cos(System::getTick()) / 2;
         glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0, cos(angle), 1, sin(angle), 1);
 
-        app->renderDevice->setVertexProgram(distort);
+        rd->setVertexProgram(distort);
 
         // Set depth buffer
-        app->renderDevice->disableColorWrite();
+        rd->disableColorWrite();
         model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
-        app->renderDevice->enableColorWrite();
+        rd->enableColorWrite();
     
         // Draw translucent
-        app->renderDevice->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
-        app->renderDevice->disableDepthWrite();
-        app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+        rd->setDepthTest(RenderDevice::DEPTH_ALWAYS_PASS);
+        rd->disableDepthWrite();
+        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
         model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
 
         // Wireframe
-        app->renderDevice->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
-        app->renderDevice->setRenderMode(RenderDevice::RENDER_WIREFRAME);
+        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
+        rd->setRenderMode(RenderDevice::RENDER_WIREFRAME);
 //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        app->renderDevice->setPolygonOffset(-.25);
-        app->renderDevice->setColor(Color3::black());
-        app->renderDevice->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+        rd->setPolygonOffset(-.25);
+        rd->setColor(Color3::black());
+        rd->setDepthTest(RenderDevice::DEPTH_LEQUAL);
         model->render(CoordinateFrame(), LightingParameters(G3D::toSeconds(11,00,00,AM)));
-        app->renderDevice->setRenderMode(RenderDevice::RENDER_SOLID);
+        rd->setRenderMode(RenderDevice::RENDER_SOLID);
 //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    app->renderDevice->popState();
+    rd->popState();
     
-    Draw::axes(app->renderDevice);
+    Draw::axes(rd);
 }
 
 
-void Demo::doLogic() {
+void Demo::onLogic() {
 
     if (app->userInput->keyPressed(SDLK_ESCAPE)) {
         app->endProgram = true;
@@ -300,5 +299,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
-

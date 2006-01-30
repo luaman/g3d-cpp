@@ -23,7 +23,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2003-02-07
- @edited  2004-06-20
+ @edited  2006-01-29
  */
 #include <G3DAll.h>
 #include "Model.h"
@@ -52,7 +52,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app), gameTime(0) {
 }
 
 
-void Demo::init()  {
+void Demo::onInit()  {
     app->debugCamera.setPosition(Vector3(15, 20, 15));
     app->debugCamera.lookAt(Vector3(-2,3,-5));
     app->debugController.setActive(false);
@@ -63,6 +63,7 @@ void Demo::init()  {
     
     gameTime     = G3D::toSeconds(10, 00, 00, AM); 
 
+    setDesiredFrameRate(60);
     simStartTime = System::time();
 }
 
@@ -73,44 +74,36 @@ Demo::~Demo() {
     ::varStatic = NULL;
 }
 
-void Demo::doSimulation(SimTime timeStep) {
+void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     if (simStartTime + 10 < System::time()) {
+        // Periodically reset
         scene.clear();
         buildScene();
         simStartTime = System::time();
     }
 
-    scene.simulate(timeStep);
+    scene.simulate(idt);
 }
 
 
-void Demo::doLogic() {
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
-        // Even when we aren't in debug mode, quit on escape.
-        endApplet = true;
-        app->endProgram = true;
-    }
-}
-
-
-void Demo::doGraphics() {
-    app->renderDevice->pushState();
+void Demo::onGraphics(RenderDevice* rd) {
+    rd->pushState();
     
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    rd->setProjectionAndCameraMatrix(app->debugCamera);
         
         LightingParameters lighting(gameTime);
-        lighting.lightDirection = (lighting.lightDirection + Vector3(0,0,.4)).direction();
-        lighting.ambient = lighting.ambient + Color3(.3,.3,.4);
+        lighting.lightDirection = (lighting.lightDirection + Vector3(0,0,.4f)).direction();
+        lighting.ambient = lighting.ambient + Color3(.3f,.3f,.4f);
 
         scene.render(lighting);
-    app->renderDevice->popState();
-
+    rd->popState();
 }
 
 
 void App::main() {
-  debugAssertGLOk();
+    debugAssertGLOk();
     setDebugMode(true);
+    debugQuitOnEscape = true;
     Demo(this).run();
 }
 
@@ -120,13 +113,9 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 
 int main(int argc, char** argv) {
-
     app = new App(GAppSettings());
-    
     app->run();
-
     Model::freeModels();
-
     delete app;
 
     return 0;

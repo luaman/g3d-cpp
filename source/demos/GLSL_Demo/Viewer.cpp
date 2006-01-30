@@ -12,23 +12,19 @@ Viewer::Viewer(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Viewer::init()  {
+void Viewer::onInit()  {
     app->debugCamera.setPosition(Vector3(0, 0, 4));
     app->debugCamera.lookAt(Vector3(0, 0, 0));
 
 	entityArray.append(Entity::create(Mesh::quad(), CoordinateFrame()));
-    bumpScale = 0.04;
+    bumpScale = 0.04f;
     
     app->debugLog->println("Done Viewer::init");
 }
 
 
-void Viewer::cleanup() {
-    // Called when Viewer::run() exits
-}
+void Viewer::onSimulation(RealTime rdt, SimTime dt, SimTime idt) {
 
-
-void Viewer::doSimulation(SimTime dt) {
 	double t = System::getTick();
 	for (int e = 0; e < entityArray.size(); ++e) {
 		EntityRef& entity = entityArray[e];
@@ -44,42 +40,42 @@ void Viewer::doSimulation(SimTime dt) {
 }
 
 
-void Viewer::doLogic() {
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+void Viewer::onUserInput(UserInput* ui) {
+    if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
         app->endProgram = true;
     }
 
-	if (app->userInput->keyPressed('p')) {
+	if (ui->keyPressed('p')) {
 		// Toggle parallax
 		if (bumpScale > 0) {
-			bumpScale = 0.0;
+			bumpScale = 0.0f;
 		} else {
-			bumpScale = 0.05;
+			bumpScale = 0.05f;
 		}
 	}
 }
 
 
-void Viewer::doGraphics() {
+void Viewer::onGraphics(RenderDevice* rd) {
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    rd->setProjectionAndCameraMatrix(app->debugCamera);
 
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    rd->setColorClearValue(Color3(0.1f, 0.5f, 1.0f));
 
-    app->renderDevice->clear(app->sky.isNull(), true, true);
+    rd->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
         app->sky->render(lighting);
     }
 
-    app->renderDevice->enableLighting();
-		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-		app->renderDevice->setAmbientLightColor(lighting.ambient);
+    rd->enableLighting();
+		rd->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+		rd->setAmbientLightColor(lighting.ambient);
 
 
-        CoordinateFrame camera = app->renderDevice->getCameraToWorldMatrix();
+        CoordinateFrame camera = rd->getCameraToWorldMatrix();
         app->bumpShader->args.set("wsLightPos",      Vector4(lighting.lightDirection, 0));
         app->bumpShader->args.set("wsEyePos",        camera.translation);
         app->bumpShader->args.set("texture",         app->textureMap);
@@ -89,15 +85,15 @@ void Viewer::doGraphics() {
 	    app->bumpShader->args.set("bumpScale",       bumpScale);
         app->bumpShader->args.set("environmentMap",  app->sky->getEnvironmentMap());
 
-        app->renderDevice->setShader(app->bumpShader);
+        rd->setShader(app->bumpShader);
         debugAssertGLOk();
 		for (int e = 0; e < entityArray.size(); ++e) {
-			entityArray[e]->render(app->renderDevice);
+			entityArray[e]->render(rd);
             debugAssertGLOk();
 		}
-        app->renderDevice->setShader(NULL);
+        rd->setShader(NULL);
 
-    app->renderDevice->disableLighting();
+    rd->disableLighting();
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);

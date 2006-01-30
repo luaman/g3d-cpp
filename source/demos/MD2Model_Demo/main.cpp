@@ -5,7 +5,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2005-03-14
+  @edited  2006-01-29
  */ 
 
 #include <G3DAll.h>
@@ -55,13 +55,13 @@ public:
 
     virtual ~Demo() {}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doGraphics();
+    virtual void onGraphics(RenderDevice* rd);
 
-    virtual void doLogic();
+    virtual void onUserInput(UserInput* ui);
 
     void loadModels(const std::string& dir);
 
@@ -82,12 +82,12 @@ Demo::Demo(App* _app): GApplet(_app),
 }
 
 
-void Demo::init() {
+void Demo::onInit() {
 
     app->renderDevice->setCaption("G3D::MD2Model Demo");
 
     app->debugCamera.setPosition(Vector3(0, 1, -13));
-    app->debugCamera.lookAt(Vector3(0,1.6,-8));
+    app->debugCamera.lookAt(Vector3(0,1.6f,-8));
 
     app->renderDevice->setColorClearValue(Color3(1, 1, 1));
 
@@ -114,14 +114,15 @@ void Demo::init() {
 }
 
 
-void Demo::doSimulation(GameTime timeStep) {
-    
+void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+    RealTime timeStep = sdt;
+
     app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
     Vector3 v = app->debugController.getPosition();
 
     // Keep the camera above the ground plane
-    if (v.y < .1) {
-        app->debugController.setPosition(Vector3(v.x, .1, v.z));
+    if (v.y < .1f) {
+        app->debugController.setPosition(Vector3(v.x, .1f, v.z));
     }
 
 	app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
@@ -179,7 +180,7 @@ void Demo::drawCharWithShadow(CoordinateFrame cframe, MD2Model::Pose& pose) {
 }
 
 
-void Demo::doGraphics() {
+void Demo::onGraphics(RenderDevice* rd) {
 
     LightingParameters lighting(G3D::toSeconds(10, 00, 00, AM));
 
@@ -237,10 +238,10 @@ void Demo::doGraphics() {
         // Ground plane (to hide parts of characters that stick through ground)
         app->renderDevice->setColor(Color3::white());
         app->renderDevice->beginPrimitive(RenderDevice::QUADS);
-            app->renderDevice->sendVertex(Vector3(-50, -.01, 50));
-            app->renderDevice->sendVertex(Vector3(50, -.01, 50));
-            app->renderDevice->sendVertex(Vector3(50, -.01, -50));
-            app->renderDevice->sendVertex(Vector3(-50, -.01, -50));
+            app->renderDevice->sendVertex(Vector3(-50, -.01f, 50));
+            app->renderDevice->sendVertex(Vector3(50, -.01f, 50));
+            app->renderDevice->sendVertex(Vector3(50, -.01f, -50));
+            app->renderDevice->sendVertex(Vector3(-50, -.01f, -50));
         app->renderDevice->endPrimitive();
     app->renderDevice->popState();
 
@@ -339,15 +340,8 @@ void Demo::load(const std::string& name) {
 }
 
 
-void Demo::doLogic() {
-
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
-        endApplet = true;
-        app->endProgram = true;
-        return;
-    }
-
-    if (app->userInput->keyPressed(SDLK_e)) {
+void Demo::onUserInput(UserInput* ui) {
+    if (ui->keyPressed(SDLK_e)) {
         currentModel = (currentModel + 1) % modelNameArray.size();
         load(modelNameArray[currentModel]);
         return;
@@ -362,6 +356,7 @@ App::App(const GAppSettings& settings): GApp(settings) {
 void App::main() {
     setDebugMode(false);
     debugController.setActive(true);
+    debugQuitOnEscape = true;
 
     applet = new Demo(this);
 

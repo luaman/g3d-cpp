@@ -28,7 +28,7 @@ Entity::ID Server::newID() {
 }
 
 
-void Server::doNetwork() {
+void Server::onNetwork() {
     discoveryServer.doNetwork();
 
     if (listener->clientWaiting()) {
@@ -147,8 +147,8 @@ void Server::acceptIncomingClient() {
 }
 
 
-void Server::doSimulation(SimTime dt) {
-    simulateEntities(entityTable, dt);
+void Server::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+    simulateEntities(entityTable, sdt);
 }
 
 
@@ -175,7 +175,7 @@ void Server::fastRemoveClient(int i) {
 }
 
 
-void Server::doGraphics() {
+void Server::onGraphics(RenderDevice* rd) {
     app->renderDevice->push2D();
 
         Draw::rect2D(Rect2D::xywh(0,0,200,200), app->renderDevice, Color3::white() * 0.5);

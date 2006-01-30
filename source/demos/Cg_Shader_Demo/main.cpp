@@ -66,17 +66,15 @@ public:
     PixelProgramRef         parallaxPP;
     VertexProgramRef        parallaxVP;
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onLogic();
 
-	virtual void doNetwork();
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onGraphics(RenderDevice*);
 
-    virtual void doGraphics();
-
-    virtual void cleanup();
+    virtual void onCleanup();
 
 };
 
@@ -103,30 +101,14 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Demo::init()  {
+void Demo::onInit()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 4, 3));
     app->debugCamera.lookAt(Vector3(0, 1, 0));
 }
 
-
-void Demo::cleanup() {
-    // Called when Demo::run() exits
-}
-
-
-void Demo::doNetwork() {
-	// Poll net messages here
-}
-
-
-void Demo::doSimulation(SimTime dt) {
-	// Add physical simulation here
-}
-
-
-void Demo::doLogic() {
-    if (app->userInput->keyPressed(SDLK_ESCAPE)) {
+void Demo::onUserInput(UserInput* ui) {
+    if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
         app->endProgram = true;
@@ -136,38 +118,36 @@ void Demo::doLogic() {
 }
 
 
-void Demo::doGraphics() {
-
-    System::sleep(.005);
+void Demo::onGraphics(RenderDevice* rd) {
 
     LightingParameters lighting(G3D::toSeconds(2, 00, 00, AM), false);
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    rd->setProjectionAndCameraMatrix(app->debugCamera);
 
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    rd->setColorClearValue(Color3(0.1f, 0.5f, 1.0f));
 
-    app->renderDevice->clear(app->sky.isNull(), true, true);
-    if (! app->sky.isNull()) {
+    rd->clear(app->sky.isNull(), true, true);
+    if (app->sky.notNull()) {
         app->sky->render(lighting);
     }
 
     // Create a light 
-    Vector4 wsLight(1,2.5,2,1);
+    Vector4 wsLight(1.0f, 2.5f, 2.0f, 1.0f);
 //    Vector4 wsLight(0,1,0,0);
 
     // Setup lighting
-    app->renderDevice->enableLighting();
-		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-		app->renderDevice->setAmbientLightColor(lighting.ambient);
+    rd->enableLighting();
+		rd->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+		rd->setAmbientLightColor(lighting.ambient);
 
         CoordinateFrame cframe;
         // Rotate the quad
         cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), System::getTick() * .1);
 
-        app->renderDevice->pushState();
+        rd->pushState();
             GPUProgram::ArgList vertexArgs;
 
-            app->renderDevice->setObjectToWorldMatrix(cframe);
+            rd->setObjectToWorldMatrix(cframe);
 
             // Take the light to object space
             Vector4 osLight = cframe.toObjectSpace(wsLight);
@@ -175,32 +155,32 @@ void Demo::doGraphics() {
             // Take the viewer to object space
             Vector3 osEye = cframe.pointToObjectSpace(app->debugCamera.getCoordinateFrame().translation);
 
-            vertexArgs.set("MVP", app->renderDevice->getModelViewProjectionMatrix());
+            vertexArgs.set("MVP", rd->getModelViewProjectionMatrix());
             vertexArgs.set("osLight", osLight);
             vertexArgs.set("osEye", osEye);
-            app->renderDevice->setVertexProgram(parallaxVP, vertexArgs);
+            rd->setVertexProgram(parallaxVP, vertexArgs);
 
             GPUProgram::ArgList pixelArgs;
             pixelArgs.set("texture", texture);
             pixelArgs.set("normalMap", normalMap);
-            app->renderDevice->setPixelProgram(parallaxPP, pixelArgs);
+            rd->setPixelProgram(parallaxPP, pixelArgs);
 
-            model.render(app->renderDevice);
-        app->renderDevice->popState();
+            model.render(rd);
+        rd->popState();
 
 
-    app->renderDevice->disableLighting();
+    rd->disableLighting();
 
-    Draw::sphere(Sphere(wsLight.xyz(), .1), app->renderDevice, Color3::white(), Color4::clear());
+    Draw::sphere(Sphere(wsLight.xyz(), .1), rd, Color3::white(), Color4::clear());
 
-    if (! app->sky.isNull()) {
+    if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
     }
 
-    app->renderDevice->push2D();
+    rd->push2D();
         app->debugFont->draw2D("The surface is a single quad textured with parallax bump mapping and per-pixel shading.", Vector2(10, 10), 10, Color3::white(), Color3::black());
         app->debugFont->draw2D("Press TAB to toggle to first person camera controls.", Vector2(10, 30), 10, Color3::white(), Color3::black());
-    app->renderDevice->pop2D();
+    rd->pop2D();
 }
 
 
