@@ -327,6 +327,13 @@ void Report::doGraphics() {
                 PRINT("  + interleaving", drawElementsVBOIFPS);
                 PRINT("  (without shading)", drawElementsVBOPeakFPS);
 
+                app->reportFont->draw2D(app->renderDevice, "glDrawArrays", p, s, Color3::black());
+                app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.drawArraysVBOPeakFPS > 0) ? \
+                    format("%5.1f", app->vertexPerformance.drawArraysVBOPeakFPS) : \
+                    std::string("X"), p + Vector2(330, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
+                p.y += app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.drawArraysVBOPeakFPS > 0) ? \
+                    format("%5.1f", factor * app->vertexPerformance.drawArraysVBOPeakFPS) : \
+                    std::string("X"), p + Vector2(380, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT).y;
 
 #               undef PRINT
 

@@ -43,7 +43,8 @@ void measureVertexPerformance(
     float  drawElementsVBOFPS[2], 
     float  drawElementsVBO16FPS[2], 
     float  drawElementsVBOIFPS[2],
-    float  drawElementsVBOPeakFPS[2]);
+    float  drawElementsVBOPeakFPS[2],
+    float& drawArraysVBOPeakFPS);
 
 void shaderVersions(
     std::string& regStr,
@@ -161,7 +162,8 @@ void App::main() {
             vertexPerformance.drawElementsVBOFPS,
             vertexPerformance.drawElementsVBO16FPS,
             vertexPerformance.drawElementsVBOIFPS,
-            vertexPerformance.drawElementsVBOPeakFPS);
+            vertexPerformance.drawElementsVBOPeakFPS,
+            vertexPerformance.drawArraysVBOPeakFPS);
 
         Log::common()->printf("\nDetailed Performance Tests\n\n");
         Log::common()->printf("   * Vertex Rate\n");
@@ -175,6 +177,7 @@ void App::main() {
         Log::common()->printf("        + uint16 index               %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsVBO16FPS[0], vertexPerformance.drawElementsVBO16FPS[1], vertexPerformance.drawElementsVBO16FPS[1] * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("        + interleaved                %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsVBOIFPS[0], vertexPerformance.drawElementsVBOIFPS[1], vertexPerformance.drawElementsVBOIFPS[1] * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("        without shading              %5.1f [ %5.1f | %5.1f ]\n", vertexPerformance.drawElementsVBOPeakFPS[0], vertexPerformance.drawElementsVBOPeakFPS[1], vertexPerformance.drawElementsVBOPeakFPS[1] * 3 * vertexPerformance.numTris / 1e6);
+        Log::common()->printf("    glDrawArrays Peak:                     [ %5.1f | %5.1f ]\n", vertexPerformance.drawArraysVBOPeakFPS, vertexPerformance.drawArraysVBOPeakFPS * 3 * vertexPerformance.numTris / 1e6);
         Log::common()->printf("\n\n");
     }
 #   endif

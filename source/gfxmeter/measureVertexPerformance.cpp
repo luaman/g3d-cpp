@@ -6,7 +6,6 @@
  */
 #include "../include/G3DAll.h"
 
-
 // All return FPS
 float measureBeginEndPerformance(class Model&);
 float measureDrawElementsRAMPerformance(class Model&);
@@ -14,6 +13,7 @@ float measureDrawElementsVBOPerformance(class Model&);
 float measureDrawElementsVBO16Performance(class Model&);
 float measureDrawElementsVBOIPerformance(class Model&);
 float measureDrawElementsVBOPeakPerformance(class Model&);
+float measureDrawArraysVBOPeakPerformance(class Model&);
 
 /** Number of frames to render in tests */
 static const int frames = 15;
@@ -55,6 +55,26 @@ public:
 
     GLuint                          textureID;
 
+    /** Flattens an existing model so that the indices are linear */
+    void flatten() {
+        const Model source(*this);
+
+        int N = source.cpuIndex.size();
+        cpuVertex.resize(N);
+        cpuTexCoord.resize(N);
+        cpuColor.resize(N);
+        cpuNormal.resize(N);
+        cpuIndex.resize(0);
+        cpuIndex16.resize(0);
+
+        for (int i = 0; i < N; ++i) {
+            int v = source.cpuIndex[i];
+            cpuVertex[i] = source.cpuVertex[v];
+            cpuTexCoord[i] = source.cpuTexCoord[v];
+            cpuColor[i] = source.cpuColor[v];
+            cpuNormal[i] = source.cpuNormal[v];
+        }
+    }
 
     /** If given an IFS filename, loads it, otherwise generates
         a gear with high vertex coherence.
@@ -190,7 +210,8 @@ void measureVertexPerformance(
     float   drawElementsVBOFPS[2], 
     float   drawElementsVBO16FPS[2], 
     float   drawElementsVBOIFPS[2],
-    float   drawElementsVBOPeakFPS[2]) {
+    float   drawElementsVBOPeakFPS[2],
+    float&  drawArraysVBOPeakFPS) {
 
     window = w;
     std::string filename = "bunny.ifs";
@@ -209,6 +230,10 @@ void measureVertexPerformance(
 
         numTris = count * model.cpuIndex.size() / 3;
 
+        if (i == 1) {
+            model.flatten();
+            drawArraysVBOPeakFPS = measureDrawArraysVBOPeakPerformance(model);
+        }
         // Second time around, load the gear
         filename = "";
     }
@@ -804,6 +829,95 @@ float measureDrawElementsVBOPeakPerformance(Model& model) {
 
             glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
             glDrawElements(GL_TRIANGLES, N, GL_UNSIGNED_SHORT, (void*)indexPtr);
+        }
+
+        glSwapBuffers();
+    }
+    glFinish();
+    t1 = System::time();
+
+    glPopClientAttrib();
+    glPopAttrib();
+
+    glDeleteBuffersARB(1, &indexBuffer);
+    glDeleteBuffersARB(1, &vbo);
+    glFinish();
+
+    return frames / (t1 - t0);
+}
+
+float measureDrawArraysVBOPeakPerformance(Model& model) {
+    
+    bool hasVBO = 
+        (strstr((char*)glGetString(GL_EXTENSIONS), "GL_ARB_vertex_buffer_object") != NULL) &&
+            (glGenBuffersARB != NULL) && 
+            (glBufferDataARB != NULL) &&
+            (glDeleteBuffersARB != NULL);
+
+    if (! hasVBO) {
+        return 0.0;
+    }
+
+    // Load the vertex arrays
+
+    // Number of vertices
+    const int V = model.cpuVertex.size();
+
+    GLuint vbo, indexBuffer;
+    glGenBuffersARB(1, &vbo);
+    glGenBuffersARB(1, &indexBuffer);
+
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+    size_t vertexSize   = V * sizeof(float) * 3;
+    size_t totalSize    = vertexSize;
+
+    GLintptrARB vertexPtr   = 0;
+
+    // Upload data
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexSize, &model.cpuVertex[0], GL_STATIC_DRAW_ARB);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    float w = 0.8f, h = 0.6f;
+    glFrustum(-w/2, w/2, -h/2, h/2, 0.5f, 100);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glShadeModel(GL_SMOOTH);
+    glDisable(GL_NORMALIZE);
+    glDisable(GL_COLOR_MATERIAL);
+
+    glCullFace(GL_BACK);
+    
+    float k = 0;
+
+    double t0 = 0, t1 = 0;
+    glFinish();
+    for (int j = 0; j < frames + 1; ++j) {
+        if (j == 1) {
+            t0 = System::time();
+        }
+        k += kstep;
+        glClearColor(1.0f, 1.0f, 1.0f, 0.04f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        for (int c = 0; c < count; ++c) {
+            static const float col[] = {1, 0, 0, 1, 0, 0};
+            glColor3fv(col + (c % 3));
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glTranslatef(c - (count - 1) / 2.0, 0, -2);
+            glRotatef(k * ((c & 1) * 2 - 1) + 90, 0, 1, 0);
+
+            glVertexPointer(3, GL_FLOAT, 0, (void*)vertexPtr);
+            glDrawArrays(GL_TRIANGLES, 0, V);
         }
 
         glSwapBuffers();

@@ -40,6 +40,7 @@ public:
         float               drawElementsVBOIFPS[2];
         /* Turn shading off and just slam vertices through */
         float               drawElementsVBOPeakFPS[2];
+        float               drawArraysVBOPeakFPS;
     };
 
     VertexPerformance       vertexPerformance;

@@ -29,6 +29,10 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> Across-the-board performance optimizations.  Most apps should render 10% faster.
+           Includes removal of Milestones when using VBO VAR [Nick Bray], GFont::draw2D and 
+           Draw::rect2D stripped down to raw OpenGL, consistent internal use of float,
+           increased RenderDevice state change optimization.
       <LI> Added GThread and GMutex classes. [Corey]
       <LI> Added TextureFormat::fromCode(). [Corey]
       <LI> All keys are reset to up when Win32Window loses focus. [Corey]

@@ -126,6 +126,13 @@ RenderDevice::RenderDevice() : _window(NULL), deleteWindow(false) {
 
 
 void RenderDevice::setVARAreaMilestone() {
+    currentVARArea->renderDevice = this;
+    if (VARArea::mode == VARArea::VBO_MEMORY) {
+        // We don't need milestones when using VBO; the spec guarantees
+        // correct synchronization.
+        return;
+    }
+
     MilestoneRef milestone = createMilestone("VAR Milestone");
     setMilestone(milestone);
 
@@ -133,7 +140,6 @@ void RenderDevice::setVARAreaMilestone() {
 
     // Overwrite any preexisting milestone
     currentVARArea->milestone = milestone;
-    currentVARArea->renderDevice = this;
 }
 
 
