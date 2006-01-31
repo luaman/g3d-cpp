@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-07-08
- @edited  2005-10-10
+ @edited  2006-01-30
  */
 
 
@@ -127,6 +127,7 @@ RenderDevice::RenderDevice() : _window(NULL), deleteWindow(false) {
 
 void RenderDevice::setVARAreaMilestone() {
     currentVARArea->renderDevice = this;
+
     if (VARArea::mode == VARArea::VBO_MEMORY) {
         // We don't need milestones when using VBO; the spec guarantees
         // correct synchronization.
