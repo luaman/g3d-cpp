@@ -141,7 +141,11 @@ protected:
 
 public:
 
-    virtual ~ReferenceCountedObject() {
+    /** Automatically called immediately before the object is deleted. 
+        This is not called from the destructor because it needs to be invoked
+        before the subclass destructor.
+      */
+    void ReferenceCountedObject_zeroWeakPointers() {
         // Tell all of my weak pointers that I'm gone.
         
         _WeakPtrLinkedList* node = ReferenceCountedObject_weakPointer;
@@ -157,6 +161,9 @@ public:
             delete tmp;
         }
     }
+
+    virtual ~ReferenceCountedObject() {}
+
 
     /**
       Note: copies will initially start out with 0 
@@ -223,6 +230,7 @@ private:
                 // reference was dropped (assuming the application does
                 // not voilate the class abstraction).
                 //debugPrintf("  delete 0x%x\n", m_pointer);
+                m_pointer->ReferenceCountedObject_zeroWeakPointers();
                 delete m_pointer;
             }
 
