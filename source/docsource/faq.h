@@ -21,7 +21,8 @@ There are several reoccuring questions that appear at the <A HREF="http://source
 14. <a href="#fullscreen">A fullscreen application shows the window title bar</a><BR>
 15. <a href="#headers">Why are the headers out of date?/What header files are included with G3D</a><BR>
 16. <a href="#buildsystem">Why does the source distribution not include the build system?</a><BR>
-17. <a href="#join">How can I join the G3D Core Dev team</a><BR>
+17. <a href="#precision">Float / Double precision errors. Warnings in truncation, or overload errors with argument types</a><BR>
+18. <a href="#join">How can I join the G3D Core Dev team</a><BR>
 
 <a NAME="graphicscard"></a>
 <B>What graphics hardware does G3D support?</B><P>
@@ -151,6 +152,23 @@ chmod u+x build
 This build command also works on Win32 and OSX, but it requires Python to be installed.<BR>
 
 We are currently in the process of redesigning the build system; hopefully the new version will be something that we're comfortable releasing with the source distro.<BR>
+
+<a NAME="precision"></a>
+<P><B>Float / Double precision errors. Warnings in truncation, or overload errors with argument types</B><P>
+In 6.08, we changed most the pass-by-value arguments from double to float to increase performance and
+trigger truncation warnings (i.e., to show you where you might be losing precision).  <BR>
+This will likely cause your code to generate warnings like:
+<PRE>  warning C4305: 'argument' : truncation from 'double' to 'float'</PRE>
+These are usually caused by using double constants for float arguments, like:<BR>
+<PRE>Vector3(0.1, 2.0, 0.3). </PRE>
+The solution is to use float or int constants, like:<BR>
+<PRE>Vector3(0.1f, 2, 0.3f) or Vector3(0.1f, 2.0f, 0.3f). </PRE>
+You can also work around this on Microsoft compilers with the command #pragma warnings (disable : 4305).<BR>
+
+Occasionally, this change will cause an overload to become ambiguous, generating an error like:
+ <PRE>error C2665: 'G3D::max' : none of the 5 overloads could convert all the argument types</PRE>
+In this case, change your code to ensure that both of the arguments to the function have the same type. <BR>
+E.g., <PRE>max(1.0, 2.0f) -> max(1.0f, 2.0f).</PRE>
 
 
 <a NAME="join"></a>
