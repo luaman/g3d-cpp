@@ -41,7 +41,7 @@ VOUT main(
     float3x3 T = float3x3(-vin.binormal, -vin.tangent, vin.normal);
 
     vout.light = mul(T, (osLight.xyz - vin.position.xyz * osLight.w));
-    vout.eye   = mul(T, osEye - vin.position);
+    vout.eye   = mul(T, osEye - vin.position.xyz);
 
     return vout;
 }

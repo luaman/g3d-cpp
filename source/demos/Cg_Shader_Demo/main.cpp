@@ -68,14 +68,9 @@ public:
 
     virtual void onInit();
 
-    virtual void onLogic();
-
-    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
+    virtual void onUserInput(UserInput*);
 
     virtual void onGraphics(RenderDevice*);
-
-    virtual void onCleanup();
-
 };
 
 
@@ -171,7 +166,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
     rd->disableLighting();
 
-    Draw::sphere(Sphere(wsLight.xyz(), .1), rd, Color3::white(), Color4::clear());
+    Draw::sphere(Sphere(wsLight.xyz(), .1f), rd, Color3::white(), Color4::clear());
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
