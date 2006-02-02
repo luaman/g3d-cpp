@@ -235,11 +235,11 @@ public:
      (i.e. if the edge has only one adjacent face) it will appear in the 
      array with one  face index set to MeshAlg::Face::NONE.
 
-     @param vertexArray Vertex positions to use when deciding colocation.
-     @param indexArray  Order to traverse vertices to make triangles
-     @param faceArray   <I>Output</I>
-     @param edgeArray   <I>Output</I>.  Sorted so that boundary edges are at the end of the array. 
-     @param vertexArray <I>Output</I> 
+     @param vertexGeometry  %Vertex positions to use when deciding colocation.
+     @param indexArray      Order to traverse vertices to make triangles
+     @param faceArray       <I>Output</I>
+     @param edgeArray       <I>Output</I>.  Sorted so that boundary edges are at the end of the array. 
+     @param vertexArray     <I>Output</I> 
      */
     static void computeAdjacency(
         const Array<Vector3>&   vertexGeometry,
@@ -260,8 +260,21 @@ public:
         Array<Edge>&            edgeArray,
         Array< Array<int> >&    facesAdjacentToVertex);
 
+    /**
+     Computes some basic mesh statistics including: min, max mean and median, 
+     edge lengths; and min, mean, median, and max face area.
 
-
+     @param vertexGeometry      %Vertex positions to use when deciding colocation.
+     @param indexArray          Order to traverse vertices to make triangles
+     @param minEdgeLength       Minimum edge length
+     @param meanEdgeLength      Mean edge length
+     @param medianEdgeLength    Median edge length
+     @param maxEdgeLength       Max edge length
+     @param minFaceArea         Minimum face area
+     @param meanFaceArea        Mean face area
+     @param medianFaceArea      Median face area
+     @param maxFaceArea         Max face area
+     */
     static void computeAreaStatistics(
         const Array<Vector3>&   vertexArray,
         const Array<int>&       indexArray,
