@@ -82,6 +82,40 @@ int screenHeight(Display* display) {
 #endif
 
 
+#if defined(G3D_LINUX)
+
+/** Replacement for the default assertion hook on Linux. */
+static bool SDL_handleDebugAssert_(
+    const char* expression,
+    const std::string& message,
+    const char* filename,
+    int         lineNumber,
+    bool&       ignoreAlways,
+    bool        useGuiPrompt) {
+
+    SDL_ShowCursor(SDL_ENABLE);
+    SDL_WM_GrabInput(SDL_GRAB_OFF);
+	
+	return _internal::_handleDebugAssert_(expression, message, filename, lineNumber, ignoreAlways, useGuiPrompt);
+}
+
+/** Replacement for the default failure hook on Linux. */
+static bool SDL_handleErrorCheck_(
+    const char* expression,
+    const std::string& message,
+    const char* filename,
+    int         lineNumber,
+    bool&       ignoreAlways,
+    bool        useGuiPrompt) {
+
+    SDL_ShowCursor(SDL_ENABLE);
+    SDL_WM_GrabInput(SDL_GRAB_OFF);
+
+	return _internal::_handleErrorCheck_(expression, message, filename, lineNumber, ignoreAlways, useGuiPrompt);
+}
+#endif
+
+
 SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
 	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | 
@@ -278,7 +312,21 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
 
 	// Register this window as the current window
 	makeCurrent();
+
+#	if defined(G3D_LINUX)
+		// If G3D is using the default assertion hooks, replace them with our own that use
+		// SDL functions to release the mouse, since we've been unable to implement
+		// a non-SDL way of releasing the mouse using the X11 handle directly.
+		if (assertionHook() == _internal::_handleDebugAssert_) {
+			setFailureHook(SDL_handleDebugAssert_);
+		}
+
+		if (failureHook() == _internal::_handleErrorCheck_) {
+			setFailureHook(SDL_handleErrorCheck_);
+		}
+#	endif
 }
+
 
 
 SDLWindow::~SDLWindow() {

@@ -20,8 +20,30 @@ typedef ReferenceCountedPointer<WKFoo>     WKFooRef;
 typedef WeakReferenceCountedPointer<WKFoo> WKFooWeakRef;
 
 
+namespace Circle {
+class A;
+class B : public G3D::ReferenceCountedObject {
+public:
+    G3D::WeakReferenceCountedPointer<A> weakRefToA;
+};
+
+class A : public G3D::ReferenceCountedObject {
+public:
+    G3D::ReferenceCountedPointer<B> refToB;
+};
+}
+
+void testCycle() {
+    G3D::ReferenceCountedPointer<Circle::A> a = new Circle::A();
+    a->refToB = new Circle::B();
+    a->refToB->weakRefToA = a;
+    a = NULL;
+}
+
 void testWeakPointer() {
     printf("WeakReferenceCountedPointer ");
+
+    testCycle();
 
     WKFooWeakRef wB;
     {

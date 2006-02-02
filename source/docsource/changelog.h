@@ -35,7 +35,6 @@
            increased RenderDevice state change optimization.
       <LI> Added GThread and GMutex classes. [Corey]
       <LI> Added TextureFormat::fromCode(). [Corey]
-      <LI> All keys are reset to up when Win32Window loses focus. [Corey]
       <LI> Added Plane::distance() and Plane::closestPoint() helper methods. [Corey] 
       <LI> G3D::TextureFormat::code, G3D::TextureFormat::colorSpace
       <LI> <B>incompatible change</B> G3D::MeshAlg::computeTangentSpace basis now computes a right-handed coordinate frame,
@@ -111,7 +110,10 @@
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
       <LI> G3D::GLCaps::hasBug_redBlueMipmapSwap and workaround for G3D::Texture on Radeon 7500
+	  <LI> Fix: G3D::SDLWindow now releases the mouse on Linux during an assertion.
+      <LI> Fix: All keys are reset to up when Win32Window loses focus. [Corey]
       <LI> Fix: gaussRandom is unit gaussian [Corey]
+      <LI> Fix: [ 1418276 ] 6.08: Unsupported format for depth texture
       <LI> Fix: Ignoring extra/unused set Shader arguments. [Corey]
       <LI> Fix: [ 1229205 ] uniform texture array (Could not set indexed array uniforms). [Corey]
       <LI> Fix: <B>incompatible change</B> BinaryInput/BinaryOutput copy constructors and assignments were accessible. [Corey]
@@ -127,7 +129,7 @@
       <LI> Fix: G3D::Draw::cylinder now renders the bottom correctly
       <LI> Fix: Array::front now compiles under gcc
       <LI> Fix: G3D::Ray::distance used to measure against the origin [David]
-      <LI> Fix: [ 1293151 ] 6.08: ArticulatedModel clipping on Radeon -- disabled auto-mipmap generation on mobile radeon 9xxx
+      <LI> Fix: [ 1293151 ] ArticulatedModel clipping on Radeon -- disabled auto-mipmap generation on mobile radeon 9xxx
       <LI> Fix: G3D::TextInput now parses ^=, character 255 correctly [cgd]
       <LI> Fix: G3D::TextInput now reports line numbers correctly with raw newlines [cgd]
       <LI> Fix: .ICO files with transparency loaded incorrectly [Corey]
@@ -140,6 +142,7 @@
       <LI> Fix: Setting RenderDevice::polygonOffset now always produces a depth shift,
                 even for faces perpendicular to the view axis.
       <LI> Fix: GImage now auto-resolves formats for files with 1 character base names
+      <LI> Fix: WeakReferenceCountedPointer cycle bug
     </UL>
 
   <P>

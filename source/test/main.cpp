@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2006-01-24
+ @edited  2006-01-30
  */
 
 #include "../include/G3DAll.h"
@@ -767,13 +767,14 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testReferenceCount();
+
     testAtomicInt32();
 
     testGThread();
 
-    testReferenceCount();
-
     testSystemMemset();
+
     testSystemMemcpy();
 
     testQueue();

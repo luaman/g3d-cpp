@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-26
- @edited  2005-02-28
+ @edited  2006-02-02
  */
 
 #include "G3D/debugAssert.h"
@@ -305,8 +305,16 @@ void setAssertionHook(AssertionHook hook) {
 	G3D::_internal::_debugHook = hook;
 }
 
+AssertionHook assertionHook() {
+	return 	G3D::_internal::_debugHook;
+}
+
 void setFailureHook(AssertionHook hook) {
 	G3D::_internal::_failureHook = hook;
+}
+
+AssertionHook failureHook() {
+	return G3D::_internal::_failureHook;
 }
 
 

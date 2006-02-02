@@ -90,12 +90,15 @@ typedef bool (*AssertionHook)(
 */
 void setAssertionHook(AssertionHook hook);
 
+AssertionHook assertionHook();
+
 /**
  Called by alwaysAssertM in case of failure in release mode.  If returns
  true then the program exits with -1 (you can replace this with your own
- version that throws an exception or has other failure modes.
+ version that throws an exception or has other failure modes).
  */
 void setFailureHook(AssertionHook hook);
+AssertionHook failureHook();
 
 namespace _internal {
     extern AssertionHook _debugHook;
