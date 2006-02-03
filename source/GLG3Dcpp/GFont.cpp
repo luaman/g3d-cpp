@@ -26,8 +26,6 @@ CFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
 
 GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
 
-//    debugAssertM(renderDevice->initialized(), 
-//        "You must call RenderDevice::init before constructing a GFont");
     debugAssertM(GLCaps::supports(TextureFormat::A8),
         "This graphics card does not support the GL_ALPHA8 texture format used by GFont.");
     debugAssertGLOk();
@@ -237,11 +235,13 @@ Vector2 GFont::draw2D(
     YAlign                      yalign,
     Spacing                     spacing) const {
 
-    double x = pos2D.x;
-    double y = pos2D.y;
+	debugAssert(renderDevice != NULL);
 
-    double h = size * 1.5;
-    double w = h * charWidth / charHeight;
+    float x = pos2D.x;
+    float y = pos2D.y;
+
+    float h = size * 1.5f;
+    float w = h * charWidth / charHeight;
 
     switch (xalign) {
     case XALIGN_RIGHT:
@@ -273,9 +273,9 @@ Vector2 GFont::draw2D(
         break;
     }
 
-    double m[] = 
-       {1.0 / texture->getTexelWidth(), 0, 0, 0,
-        0, 1.0 / texture->getTexelHeight(), 0, 0,
+    float m[] = 
+       {1.0f / texture->getTexelWidth(), 0, 0, 0,
+        0, 1.0f / texture->getTexelHeight(), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1};
 
@@ -375,6 +375,8 @@ Vector2 GFont::draw3D(
     YAlign                      yalign,
     Spacing                     spacing) const {
     
+	debugAssert(renderDevice != NULL);
+
     double x = 0;
     double y = 0;
 

@@ -189,7 +189,16 @@ void MD2Model::load(const std::string& filename, float resize) {
             }
 
             animationBoundingBox[a]    = Box(min, max);
-            animationBoundingSphere[a] = Sphere(Vector3::zero(), rad);
+
+			// Sometimes the sphere bounding the box is tighter than the one we calculated.
+			const double boxRadSq = (max-min).squaredMagnitude()*0.25;
+
+			if(boxRadSq >= rad*rad){
+				animationBoundingSphere[a] = Sphere(Vector3::zero(), rad);
+			}else{
+				animationBoundingSphere[a] = Sphere((max+min)*0.5, sqrt(boxRadSq));
+			}
+
         } else {
             // This animation is not supported by this model
             animationBoundingBox[a]    = Box(Vector3::zero(), Vector3::zero());

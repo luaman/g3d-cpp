@@ -3,9 +3,9 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2003-09-14
-  @edited  2005-06-01
+  @edited  2006-02-03
 
-  Copyright 2000-2005, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
 
  */
@@ -435,8 +435,18 @@ void MeshAlg::computeBounds(
 		}	
 	}
 
-    box = Box(Vector3(xmin.x, ymin.y, zmin.z), Vector3(xmax.x, ymax.y, zmax.z));
-    sphere = Sphere(center, rad);
+	const Vector3 min(xmin.x, ymin.y, zmin.z);
+	const Vector3 max(xmax.x, ymax.y, zmax.z);
+
+    box = Box(min, max);
+
+	const double boxRadSq = (max-min).squaredMagnitude()*0.25;
+
+	if(boxRadSq >= radSq){
+		sphere = Sphere(center, rad);
+	}else{
+		sphere = Sphere((max+min)*0.5, sqrt(boxRadSq));
+	}
 }
 
 

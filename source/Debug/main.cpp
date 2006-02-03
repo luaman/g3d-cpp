@@ -94,6 +94,7 @@ public:
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     memset(modKeys, 0, sizeof(modKeys));
+    Shader::fromFiles("", "scratch.txt");
 }
 
 void Demo::onInit()  {
@@ -218,9 +219,17 @@ void App::main() {
 	debugController.setActive(true);
 
     // Load objects here
-    sky = Sky::create(NULL, dataDir + "sky/");
+//    sky = Sky::create(NULL, dataDir + "sky/");
     
+    TextureRef t= Texture::fromFile("c:/projects/data/image/testimage.tga");
+	GImage im;
+	t->getImage(im, TextureFormat::RGBA8);
+	im.save("c:/tmp/tmp.jpg");
+	exit(0);
+
     applet->run();
+
+
 }
 
 

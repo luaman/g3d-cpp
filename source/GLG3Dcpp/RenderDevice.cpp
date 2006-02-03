@@ -1419,7 +1419,13 @@ void RenderDevice::enableClip2D(const Rect2D& clip) {
     minStateChange();
     minGLStateChange();
     state.clip2D = clip;
-    glScissor((int)clip.x0(), getHeight() - (int)(clip.y0() + clip.height()), (int)clip.width(), (int)clip.height());
+
+	int clipX0 = iFloor(clip.x0());
+	int clipY0 = iFloor(clip.y0());
+	int clipX1 = iCeil(clip.x1());
+	int clipY1 = iCeil(clip.y1());
+
+	glScissor(clipX0, getHeight() - clipY1, clipX1 - clipX0, clipY1 - clipY0);
 
     if (! state.useClip2D) {
         glEnable(GL_SCISSOR_TEST);

@@ -210,7 +210,7 @@ public:
 
 private:
 
-    /** Nulls out the pointer and drops a reference. IF the reference
+    /** Nulls out the pointer and drops a reference. If the reference
         count hits zero. */
     void zeroPointer() {
         if (m_pointer != NULL) {
@@ -230,6 +230,11 @@ private:
                 // reference was dropped (assuming the application does
                 // not voilate the class abstraction).
                 //debugPrintf("  delete 0x%x\n", m_pointer);
+
+                // We must zero the weak pointers *before* deletion in case there
+                // are cycles of weak references.
+                // Note that since there are no strong references at this point,
+                // it is perfectly fair to zero the weak pointers anyway.
                 m_pointer->ReferenceCountedObject_zeroWeakPointers();
                 delete m_pointer;
             }
