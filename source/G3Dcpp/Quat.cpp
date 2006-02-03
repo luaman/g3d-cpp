@@ -6,7 +6,7 @@
   @author Morgan McGuire, graphics3d.com
   
   @created 2002-01-23
-  @edited  2004-10-25
+  @edited  2006-01-31
  */
 
 #include "G3D/Quat.h"
@@ -149,42 +149,34 @@ void Quat::toRotationMatrix(
     
 Quat Quat::slerp(
     const Quat&         quat1,
-    float               alpha) const {
+    float               alpha,
+    float               threshold) const {
 
-    // From: http://www.darwin3d.com/gamedev/articles/col0498.pdf
+    // From: Game Physics -- David Eberly pg 538-540
+    // Modified to include Morgan's original lerp
 
     const Quat& quat0 = *this;
-    Quat tmpQuat1;
-    float omega, cosom, sinom, scale0, scale1;
 
-    // Compute the cosine of the angle
-    // between the quaternions
+    // angle between quaternion rotations
+    float phi;
     
-    cosom = quat0.dot(quat1);
+    // Compute cosine of angle then get angle
+    // Using G3D::aCos will clamp the angle to 0 and pi
+    phi = G3D::aCos(quat0.dot(quat1));
     
-    if (cosom < 0.0f) {
-        // Change the sign to fix dot-product
-        tmpQuat1 = quat1 * -1.0f;
-        cosom = quat0.dot(tmpQuat1);
-    } else {
-        tmpQuat1 = quat1;
-    }
+    float scale0, scale1;
 
-    alwaysAssertM(cosom >= 0.0f, "Quaternion slerp failed to find shortest path.");
-
-    if ((1.0f - cosom) > 0.001f) {
+    if (phi >= threshold) {
         // For large angles, slerp
-        omega = acos(cosom);
-        sinom = sin(omega);
-        scale0 = sin((1.0f - alpha) * omega) / sinom;
-        scale1 = sin(alpha * omega) / sinom;
+        scale0 = sin((1.0f - alpha) * phi);
+        scale1 = sin(alpha * phi);
+        return ( (quat0 * scale0) + (quat1 * scale1) ) / sin(phi);
     } else {
         // For small angles, linear interpolate
-        scale0 = 1.0f- alpha;
+        scale0 = 1.0f - alpha;
         scale1 = alpha;
+        return quat0 * scale0 + quat1 * scale1;
     }
-
-    return quat0 * scale0 + tmpQuat1 * scale1;
 }
 
 Quat Quat::operator*(const Quat& other) const {

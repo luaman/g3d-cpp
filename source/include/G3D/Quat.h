@@ -111,10 +111,15 @@ public:
     /**
      Spherical linear interpolation: linear interpolation along the 
      shortest (3D) great-circle route between two quaternions.
+
+     Note: Correct rotations are expected between 0 and PI in the right order.
+
+     @param threshold [optional] smallest angle between rotations that will slerp instead of lerp. 0.0 will always slerp. 
      */
     Quat slerp(
         const Quat&         other,
-        float               alpha) const;
+        float               alpha,
+        float               threshold = 0.05f) const;
 
     /**
      Negates the imaginary part.
