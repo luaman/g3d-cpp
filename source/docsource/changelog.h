@@ -29,6 +29,7 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> Added optional argument to Quat::slerp() for slerp/lerp angle threshold. [Corey]
       <LI> Across-the-board performance optimizations.  Most apps should render 10% faster.
            Includes removal of Milestones when using VBO VAR [Nick Bray], GFont::draw2D and 
            Draw::rect2D stripped down to raw OpenGL, consistent internal use of float,
@@ -110,6 +111,7 @@
       <LI> G3D::GWindow::renderDevice()
       <LI> G3D::GWindow::current()
       <LI> G3D::GLCaps::hasBug_redBlueMipmapSwap and workaround for G3D::Texture on Radeon 7500
+      <LI> Fix: Quat::slerp has invalid shortest path [Corey]
 	  <LI> Fix: G3D::SDLWindow now releases the mouse on Linux during an assertion.
       <LI> Fix: All keys are reset to up when Win32Window loses focus. [Corey]
       <LI> Fix: gaussRandom is unit gaussian [Corey]
