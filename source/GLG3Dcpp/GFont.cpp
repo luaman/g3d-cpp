@@ -15,30 +15,36 @@
 
 namespace G3D {
 
-CFontRef GFont::fromFile(const std::string& filename) {
-    return new GFont(NULL, filename);
+GFontRef GFont::fromFile(const std::string& filename) {
+    if (! fileExists(filename)) {
+        debugAssertM(false, format("Could not load font: %s", filename.c_str()));
+        return NULL;
+    }
+
+    BinaryInput b(filename, G3D_LITTLE_ENDIAN, true);
+    return new GFont(NULL, filename, b);
 }
 
-CFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
-    return new GFont(_rd, filename);
+GFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
+    if (! fileExists(filename)) {
+        debugAssertM(false, format("Could not load font: %s", filename.c_str()));
+        return NULL;
+    }
+
+    BinaryInput b(filename, G3D_LITTLE_ENDIAN, true);
+    return new GFont(_rd, filename, b);
 }
 
+GFontRef GFont::fromMemory(const std::string& name, const uint8* bytes, const int size) {
+    BinaryInput b(bytes, size, G3D_LITTLE_ENDIAN, true, false); 
+    return new GFont(NULL, name, b);
+} 
 
-GFont::GFont(RenderDevice* _rd, const std::string& filename) : renderDevice(_rd) {
+GFont::GFont(RenderDevice* _rd, const std::string& filename, BinaryInput& b) : renderDevice(_rd) {
 
     debugAssertM(GLCaps::supports(TextureFormat::A8),
         "This graphics card does not support the GL_ALPHA8 texture format used by GFont.");
     debugAssertGLOk();
-
-    if (! fileExists(filename)) {
-        debugAssertM(false, format("ERROR: Could not load font: %s", filename.c_str()));
-        charWidth  = 0;
-        charHeight = 0;
-        memset(subWidth, 0, 128);
-        return;
-    }
-
-    BinaryInput b(filename, G3D_LITTLE_ENDIAN, true);
 
     int ver = b.readInt32();
     debugAssertM(ver == 1, "Can't read font files other than version 1");

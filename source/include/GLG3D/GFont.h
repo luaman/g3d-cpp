@@ -11,6 +11,7 @@
 #define G3D_GFONT_H
 
 #include "GLG3D/Texture.h"
+#include "G3D/BinaryInput.h"
 
 namespace G3D {
 
@@ -84,7 +85,7 @@ private:
 
     class RenderDevice*             renderDevice;
 
-    GFont(class RenderDevice* renderDevice, const std::string& filename);
+    GFont(class RenderDevice* renderDevice, const std::string& filename, BinaryInput& b);
 
 public:
 
@@ -116,6 +117,9 @@ public:
         The width of a character's bounding box is always width / 16.  The height is always width / 8.
     */
     static GFontRef fromFile(const std::string& filename);
+
+    /** see GFont::fromFile */
+    static GFontRef fromMemory(const std::string& name, const uint8* bytes, const int size);
 
     /**
      Converts an 8-bit RAW font texture and INI file as produced by
