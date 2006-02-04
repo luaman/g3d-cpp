@@ -29,6 +29,7 @@
   <P>   
    Changes in 6.08:
     <UL>
+      <LI> Added GFont::fromMemory() [Corey]
       <LI> Added optional argument to Quat::slerp() for slerp/lerp angle threshold. [Corey]
       <LI> Across-the-board performance optimizations.  Most apps should render 10% faster.
            Includes removal of Milestones when using VBO VAR [Nick Bray], GFont::draw2D and 
