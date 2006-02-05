@@ -36,25 +36,11 @@ public:
 
     class App*          app;
 
+    float               angle;
     GameTime            gameTime;
 
-    G3D::Array<G3D::Vector3> vertex; 
-    G3D::Array<G3D::Vector3> normal; 
-    G3D::Array<G3D::Vector2> tex; 
-    G3D::Array<int> index; 
-
-    G3D::Array<G3D::Vector3> binormal; 
-    G3D::Array<G3D::Vector3> tangent; 
-
-    RealTime            computeTime;
-
-    TextureRef texture[2];
-
-    VARAreaRef varArea;
-    VAR vertexArray;
-    VAR normalArray;
-
-    bool modKeys[6];
+    IFSModelRef         ifsModel;
+    MD2ModelRef         md2Model;
 
     Demo(App* app);
 
@@ -93,8 +79,9 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-    memset(modKeys, 0, sizeof(modKeys));
-    Shader::fromFiles("", "scratch.txt");
+    ifsModel = IFSModel::create("D:/games/data/ifs/cylinder.ifs");
+    md2Model = MD2Model::create("D:/games/data/quake2/players/pknight/tris.md2");
+    angle = 45;
 }
 
 void Demo::onInit()  {
@@ -123,7 +110,6 @@ void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 
     gameTime += sdt;
 
-    //app->debugController.setCoordinateFrame(app->debugController.getCoordinateFrame());
 }
 
 
@@ -134,83 +120,48 @@ void Demo::onUserInput(UserInput* ui) {
         app->endProgram = true;
     }
 
-    if (ui->keyDown(SDLK_F10)) {
-        endApplet = true;
+    if (ui->keyPressed(SDLK_EQUALS)) {
+        angle += 5;
     }
-
-    if (ui->keyPressed(SDLK_p)) {
-        GImage img;
-        app->renderDevice->screenshotPic(img);
-        img.save(app->dataDir + "pic.png");
+    if (ui->keyPressed(SDLK_MINUS)) {
+        angle -= 5;
     }
-
 	// Add other key handling here
 
-    memset(modKeys, 0, sizeof(modKeys));
-
-    if (ui->keyDown(SDLK_LALT)) {
-        modKeys[0] = true;
-    }
-    if (ui->keyDown(SDLK_RALT)) {
-        modKeys[1] = true;
-    }
-    if (ui->keyDown(SDLK_LCTRL)) {
-        modKeys[2] = true;
-    }
-    if (ui->keyDown(SDLK_RCTRL)) {
-        modKeys[3] = true;
-    }
-    if (ui->keyDown(SDLK_LSHIFT)) {
-        modKeys[4] = true;
-    }
-    if (ui->keyDown(SDLK_RSHIFT)) {
-        modKeys[5] = true;
-    }
 }
 
 
 void Demo::onGraphics(RenderDevice* rd) {
-	// Create Texture
-	static TextureRef tex = Texture::createEmpty(256, 256, "Rendered Texture", TextureFormat::RGB8, Texture::CLAMP, Texture::NO_INTERPOLATION, Texture::DIM_2D);
-
-	// Create a framebuffer that uses this texture as the color buffer
-	static FramebufferRef fb = Framebuffer::create("Offscreen target");
-	bool init = false;
-
-	if (! init) {
-		fb->set(Framebuffer::COLOR_ATTACHMENT0, tex);
-		init = true;
-	}
-
-	// Set framebuffer as the render target
-	rd->push2D(fb);
-
-		// Draw on the texture
-		Draw::rect2D(Rect2D::xywh(0,0,128,256), rd, Color3::white());
-		Draw::rect2D(Rect2D::xywh(128,0,256,256), rd, Color3::red());
-
-TextureRef dst = Texture::createEmpty("", 64, 64, TextureFormat::RGBA8, Texture::DIM_2D_NPOT, Texture::Parameters::video());
-dst->copyFromScreen(dst->rect2DBounds());
-
-		// Restore renderdevice state (old frame buffer)
-	rd->pop2D();
 
 	app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
-	// Remove the texture from the framebuffer
-	//	fb->set(Framebuffer::COLOR_ATTACHMENT0, NULL);
-
 	// Can now render from the texture
-
     
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
     app->renderDevice->clear();
 
-    app->renderDevice->push2D();
-		rd->setTexture(0, tex);
-		Draw::rect2D(Rect2D::xywh(10,10,256,256), rd);
-	app->renderDevice->pop2D();
+    app->renderDevice->pushState();
+        rd->enableColorWrite();
+        Draw::axes(rd);
+        
+        
+        PosedModelRef posed = md2Model->pose(CoordinateFrame(), MD2Model::Pose());
+            //ifsModel->pose(CoordinateFrame());
+        
+        posed->render(rd);
+
+        app->renderDevice->disableDepthWrite();
+        app->renderDevice->setTexture(0, NULL);
+        app->renderDevice->disableLighting();
+        app->renderDevice->setColor(Color3::blue());
+        app->renderDevice->setLineWidth(4.0);
+        G3D::drawFeatureEdges(app->renderDevice, posed, toRadians(angle));
+        
+
+    app->renderDevice->popState();
+
+    app->debugPrintf("%g degrees", angle);
 }
 
 
@@ -221,12 +172,6 @@ void App::main() {
     // Load objects here
 //    sky = Sky::create(NULL, dataDir + "sky/");
     
-    TextureRef t= Texture::fromFile("c:/projects/data/image/testimage.tga");
-	GImage im;
-	t->getImage(im, TextureFormat::RGBA8);
-	im.save("c:/tmp/tmp.jpg");
-	exit(0);
-
     applet->run();
 
 
@@ -244,18 +189,6 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-/*
-    GImage im("D:/games/data/image/testimage.tga");
-
-    {
-        AVIWriter avi("c:/tmp/test.avi", im.width, im.height, 100);
-        alwaysAssertM(avi.ok(), avi.errorString());
-        avi.writeFrame(im);
-        avi.commit();
-    }
-
-    exit(0);
-	*/
     GAppSettings settings;
     settings.useNetwork = false;
     settings.window.resizable = true;

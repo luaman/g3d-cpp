@@ -13,13 +13,17 @@
 
 namespace G3D {
 
-void drawFeatureEdges(RenderDevice* renderDevice, const PosedModelRef& model) {
+void drawFeatureEdges(RenderDevice* renderDevice, const PosedModelRef& model, float creaseAngle) {
+
+    float dotThreshold = max(cosf(creaseAngle), 0.0f);
+
+    bool drawCreases = (creaseAngle <= G3D_PI / 2);
 
     const Vector3 wsEye = renderDevice->getCameraToWorldMatrix().translation;
 
-    const Array<MeshAlg::Edge>&     edgeArray   = model->edges();
-    const Array<Vector3>&           faceNormal  = model->objectSpaceFaceNormals(false);
-    const Array<MeshAlg::Face>&     faceArray   = model->faces();
+    const Array<MeshAlg::Edge>&     edgeArray   = model->weldedEdges();
+    const Array<Vector3>&           faceNormal  = model->objectSpaceFaceNormals(drawCreases);
+    const Array<MeshAlg::Face>&     faceArray   = model->weldedFaces();
     const Array<Vector3>&           vertexArray = model->objectSpaceGeometry().vertexArray;
 
     // Work in the object space of the model so we don't
@@ -54,7 +58,8 @@ void drawFeatureEdges(RenderDevice* renderDevice, const PosedModelRef& model) {
             (backface[f0] ^ backface[f1]) ||
 
             // Front-face creases:
-            ((faceNormal[f0].dot(faceNormal[f1]) <= 0.1) && 
+            (drawCreases &&
+             (faceNormal[f0].dot(faceNormal[f1]) <= dotThreshold) && 
              ! (backface[f0] && backface[f1]))) {
 
             cpuVertexArray.append(

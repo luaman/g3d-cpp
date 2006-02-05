@@ -105,8 +105,10 @@ GApp::GApp(const GAppSettings& settings, GWindow* window) {
     debugController.init(renderDevice, userInput);
     debugController.setMoveRate(10);
     debugController.setPosition(Vector3(0, 0, 4));
-    debugController.lookAt(Vector3(0, 0, 0));
+    debugController.lookAt(Vector3::zero());
     debugController.setActive(true);
+    debugCamera.setPosition(debugController.getPosition());
+    debugCamera.lookAt(Vector3::zero());
 
     autoResize                  = true;
     _debugMode                  = false;

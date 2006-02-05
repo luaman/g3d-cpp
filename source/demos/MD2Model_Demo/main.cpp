@@ -31,6 +31,13 @@ public:
  rendering mode so you can fly around the scene.
  */
 class Demo : public GApplet {
+    void loadModels(const std::string& dir);
+
+    void loadSkins(const std::string& dir, double brighten);
+
+    void load(const std::string& name);
+
+    void drawCharWithShadow(CoordinateFrame cframe, MD2Model::Pose& pose);
 public:
 
     class App*              app;
@@ -63,13 +70,6 @@ public:
 
     virtual void onUserInput(UserInput* ui);
 
-    void loadModels(const std::string& dir);
-
-    void loadSkins(const std::string& dir, double brighten);
-
-    void load(const std::string& name);
-
-    void drawCharWithShadow(CoordinateFrame cframe, MD2Model::Pose& pose);
 };
 
 
@@ -168,6 +168,16 @@ void Demo::drawCharWithShadow(CoordinateFrame cframe, MD2Model::Pose& pose) {
         app->renderDevice->setTexture(0, weaponTexture);
         weapon->pose(cframe, pose)->render(app->renderDevice);
     }
+
+
+    app->renderDevice->pushState();
+        app->renderDevice->disableDepthWrite();
+        app->renderDevice->setTexture(0, NULL);
+        app->renderDevice->disableLighting();
+        app->renderDevice->setColor(Color3::blue());
+        app->renderDevice->setLineWidth(2.0);
+        G3D::drawFeatureEdges(app->renderDevice, model->pose(cframe, pose));
+    app->renderDevice->popState();
 
     // Shadow
     app->renderDevice->setTexture(0, NULL);
@@ -341,6 +351,8 @@ void Demo::load(const std::string& name) {
 
 
 void Demo::onUserInput(UserInput* ui) {
+    GApplet::onUserInput(ui);
+
     if (ui->keyPressed(SDLK_e)) {
         currentModel = (currentModel + 1) % modelNameArray.size();
         load(modelNameArray[currentModel]);
@@ -354,8 +366,9 @@ App::App(const GAppSettings& settings): GApp(settings) {
 
 
 void App::main() {
-    setDebugMode(false);
-    debugController.setActive(true);
+    setDebugMode(true);
+    debugController.setActive(false);
+    debugShowRenderingStats = false;
     debugQuitOnEscape = true;
 
     applet = new Demo(this);

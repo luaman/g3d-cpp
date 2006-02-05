@@ -8,7 +8,7 @@
   <br>Casey O'Donnell [RPI]- OS X Lead
   <br>Tom Wardill - Doc Lead
   <br>Daniel Hilferty [US Air Force] - Documentation
-  <br>Rich [Codemasters] Deeson - Documentation
+  <br>Rich Deeson [Codemasters] - Documentation
 
   <P><i>(Other Team Members)</i>
   <br>Peter Sibley [Brown] - Developer

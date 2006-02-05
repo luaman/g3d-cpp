@@ -875,7 +875,7 @@ void MD2Model::PosedMD2Model::render(RenderDevice* renderDevice) const {
 const Array<Vector3>& MD2Model::PosedMD2Model::objectSpaceFaceNormals(bool normalize) const {
     if (faceNormals.size() == 0) {
         MeshAlg::computeFaceNormals(objectSpaceGeometry().vertexArray, faces(), 
-            const_cast<PosedMD2Model*>(this)->faceNormals, normalize);
+            const_cast<PosedMD2Model*>(this)->faceNormals, true);
     }
 
     return faceNormals;
