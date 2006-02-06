@@ -181,7 +181,8 @@ static void createTexture(
     int             bytesPerPixel,
     int             mipLevel = 0,
     bool            compressed = false,
-    bool            useNPOT = false) {
+    bool            useNPOT = false,
+    float           rescaleFactor = 1.0f) {
 
     uint8* bytes = const_cast<uint8*>(rawBytes);
 
@@ -206,8 +207,8 @@ static void createTexture(
 
             int oldWidth = width;
             int oldHeight = height;
-            width  = ceilPow2(width);
-            height = ceilPow2(height);
+            width  = ceilPow2(width * rescaleFactor);
+            height = ceilPow2(height * rescaleFactor);
 
             bytes = new uint8[width * height * bytesPerPixel];
             freeBytes = true;
@@ -261,11 +262,13 @@ static void createTexture(
 
 static void createMipMapTexture(    
     GLenum          target,
-    const uint8*    bytes,
+    const uint8*    _bytes,
     int             bytesFormat,
     int             width,
     int             height,
-    GLenum          textureFormat) {
+    GLenum          textureFormat,
+    size_t          bytesFormatBytesPerPixel,
+    float           rescaleFactor) {
 
     switch (target) {
     case GL_TEXTURE_2D:
@@ -276,8 +279,37 @@ static void createMipMapTexture(
     case GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB:
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB:
         {
+            bool freeBytes = false;
+            const uint8* bytes = _bytes;
+
+            if (rescaleFactor != 1.0f) {
+                int oldWidth = width;
+                int oldHeight = height;
+                width  = ceilPow2(width * rescaleFactor);
+                height = ceilPow2(height * rescaleFactor);
+
+                bytes = new uint8[width * height * bytesFormatBytesPerPixel];
+                freeBytes = true;
+
+                // Rescale the image to a power of 2
+                gluScaleImage(
+                    bytesFormat,
+                    oldWidth,
+                    oldHeight,
+                    GL_UNSIGNED_BYTE,
+                    _bytes,
+                    width,
+                    height,
+                    GL_UNSIGNED_BYTE,
+                    (void*)bytes);
+            }
+
             int r = gluBuild2DMipmaps(target, textureFormat, width, height, bytesFormat, GL_UNSIGNED_BYTE, bytes);
             debugAssertM(r == 0, (const char*)gluErrorString(r)); (void)r;
+
+            if (freeBytes) {
+                delete[] const_cast<uint8*>(bytes);
+            }
             break;
         }
 
@@ -572,13 +604,15 @@ TextureRef Texture::fromMemory(
     InterpolateMode                 interpolate,
     Dimension                       dimension,
     DepthReadMode                   depthRead,
-    float                           maxAnisotropy) {
+    float                           maxAnisotropy,
+    float                           scale) {
 
 	const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 	b[0] = bytes;
 
 	return Texture::fromMemory(name, b, bytesFormat, width, height, 1, 
-		desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
+		desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy,
+        scale);
 }
 
 
@@ -645,7 +679,8 @@ TextureRef Texture::fromFile(
     Dimension                       dimension,
     double                          brighten,
     DepthReadMode                   depthRead,
-    float                           maxAnisotropy) {
+    float                           maxAnisotropy,
+    float                           sizeFactor) {
 
     std::string realFilename[6];
 
@@ -710,7 +745,7 @@ TextureRef Texture::fromFile(
             mapHeight = iMax(1,iFloor(mapHeight/2));
         }
 
-        return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
+        return Texture::fromMemory(filename[0], byteMipMapFaces, bytesFormat, ddsTexture.getWidth(), ddsTexture.getHeight(), 1, desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy, sizeFactor);
     }
 
     // Test for both DIM_CUBE_MAP and DIM_CUBE_MAP_NPOT
@@ -768,7 +803,7 @@ TextureRef Texture::fromFile(
         Texture::fromMemory(filename[0], array, format,
             image[0].width, image[0].height, 1,
             desiredFormat, wrap, interpolate, dimension,
-            depthRead, maxAnisotropy);
+            depthRead, maxAnisotropy, sizeFactor);
 
     return t;
 }
@@ -782,7 +817,8 @@ TextureRef Texture::fromFile(
     Dimension               dimension,
     double                  brighten,
     DepthReadMode           depthRead,
-    float                   maxAnisotropy) {
+    float                   maxAnisotropy,
+    float                   scale) {
 
     std::string f[6];
     f[0] = filename;
@@ -792,7 +828,7 @@ TextureRef Texture::fromFile(
     f[4] = "";
     f[5] = "";
 
-    return fromFile(f, desiredFormat, wrap, interpolate, dimension, brighten, depthRead, maxAnisotropy);
+    return fromFile(f, desiredFormat, wrap, interpolate, dimension, brighten, depthRead, maxAnisotropy, scale);
 }
 
 
@@ -930,7 +966,8 @@ TextureRef Texture::fromMemory(
     InterpolateMode                     interpolate,
     Dimension                           dimension,
     DepthReadMode                       depthRead,
-    float                               maxAnisotropy) {
+    float                               maxAnisotropy,
+    float                               rescaleFactor) {
         
     debugAssert(bytesFormat);
     (void)depth;
@@ -990,7 +1027,8 @@ TextureRef Texture::fromMemory(
 
                     createMipMapTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]),
                                   bytesFormat->OpenGLBaseFormat,
-                                  mipWidth, mipHeight, desiredFormat->OpenGLFormat);
+                                  mipWidth, mipHeight, desiredFormat->OpenGLFormat,
+                                  rescaleFactor, desiredFormat->packedBitsPerTexel / 8);
                 } else {
                     const bool useNPOT = (dimension == DIM_2D_NPOT) ?
                         true : (dimension == DIM_CUBE_MAP_NPOT) ?
@@ -998,7 +1036,8 @@ TextureRef Texture::fromMemory(
 
                     createTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]), bytesFormat->OpenGLBaseFormat,
                                   bytesFormat->OpenGLFormat, mipWidth, mipHeight, desiredFormat->OpenGLFormat, 
-                                  bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed, useNPOT);
+                                  bytesFormat->packedBitsPerTexel / 8, mipLevel, bytesFormat->compressed, useNPOT, 
+                                  rescaleFactor);
                 }
 
                 debugAssertGLOk();
@@ -1037,7 +1076,8 @@ TextureRef Texture::fromMemory(
     InterpolateMode         interpolate,
     Dimension               dimension,
     DepthReadMode           depthRead,
-    float                   maxAnisotropy) {
+    float                   maxAnisotropy,
+    float                   rescaleFactor) {
 
     Array< Array<const void* > > arrayMipMapFaces(1);
 
@@ -1050,7 +1090,8 @@ TextureRef Texture::fromMemory(
     }
 
     return Texture::fromMemory(name, arrayMipMapFaces, bytesFormat, width, height, 
-        depth, desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy);
+        depth, desiredFormat, wrap, interpolate, dimension, depthRead, maxAnisotropy,
+        rescaleFactor);
 }
 
 

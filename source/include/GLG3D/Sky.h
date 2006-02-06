@@ -120,41 +120,48 @@ public:
         Color banding will occur at low quality settings.
 
      @param renderDevice May be NULL, if a non-NULL argument is provided to G3D::Sky::render.
+
+     @param scaleDownFactor Resize the texture by 1/scaleDownFactor in each dimension.  Should be a power of two.
+              Useful for creating a skybox that occupies less memory on low-end cards.
      */
     static SkyRef fromFile(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
         bool                                    drawCelestialBodies = true,
-        double                                  quality = 1.0);
+        double                                  quality = 1.0,
+        int                                     scaleDownFactor = 1);
 
     static SkyRef fromFile(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string                       filename[6],
         bool                                    drawCelestialBodies = true,
-        double                                  quality = 1.0);
+        double                                  quality = 1.0,
+        int                                     scaleDownFactor = 1);
 
     /** @deprecated Converted to Sky::fromFile */
-    static SkyRef create(
+    static SkyRef G3D_DEPRECATED create(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
         bool                                    drawCelestialBodies = true,
-        double                                  quality = 1.0) {
+        double                                  quality = 1.0,
+        int                                     scaleDownFactor = 1) {
 
-        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality);
+        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality, scaleDownFactor);
     }
 
     /** @deprecated Converted to Sky::fromFile */
-    static SkyRef create(
+    static SkyRef G3D_DEPRECATED create(
         class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string                       filename[6],
         bool                                    drawCelestialBodies = true,
-        double                                  quality = 1.0) {
+        double                                  quality = 1.0,
+        int                                     scaleDownFactor = 1) {
 
-        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality);
+        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality, scaleDownFactor);
     }
 
     /**

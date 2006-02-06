@@ -7,6 +7,7 @@
  @edited  2004-03-19
  */
 
+#include "G3D/platform.h"
 #include "G3D/Ray.h"
 #include "G3D/Plane.h"
 #include "G3D/Sphere.h"

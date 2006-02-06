@@ -170,15 +170,6 @@ void Demo::drawCharWithShadow(CoordinateFrame cframe, MD2Model::Pose& pose) {
     }
 
 
-    app->renderDevice->pushState();
-        app->renderDevice->disableDepthWrite();
-        app->renderDevice->setTexture(0, NULL);
-        app->renderDevice->disableLighting();
-        app->renderDevice->setColor(Color3::blue());
-        app->renderDevice->setLineWidth(2.0);
-        G3D::drawFeatureEdges(app->renderDevice, model->pose(cframe, pose));
-    app->renderDevice->popState();
-
     // Shadow
     app->renderDevice->setTexture(0, NULL);
     cframe.translation.y = 0;

@@ -51,14 +51,15 @@ SkyRef Sky::fromFile(
     const std::string&                  directory,
     const std::string&                  filename,
     bool                                _drawCelestialBodies,
-    double                              quality) {
+    double                              quality,
+    int                                 scaleDownFactor) {
 
     std::string f[6];
     f[0] = filename;
     for (int i = 1; i < 6; ++i) {
         f[i] = "";
     }
-    return Sky::fromFile(rd, directory, f, _drawCelestialBodies, quality);
+    return Sky::fromFile(rd, directory, f, _drawCelestialBodies, quality, scaleDownFactor);
 }
 
 
@@ -67,7 +68,8 @@ SkyRef Sky::fromFile(
     const std::string&                  directory,
     const std::string                   _filename[6],
     bool                                _drawCelestialBodies,
-    double                              quality) {
+    double                              quality,
+    int                                 scaleDownFactor) {
 
     debugAssertM(
         (directory == "") || 
@@ -112,31 +114,40 @@ SkyRef Sky::fromFile(
     if (GLCaps::supports_GL_ARB_texture_cube_map() && ! GLCaps::hasBug_normalMapTexGen()) {
    
         if (_filename[1] == "") {
-            faceTextures[0] = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0);
+            // Specified one cube map
+            faceTextures[0] = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
         } else {
-            faceTextures[0] = Texture::fromFile(_filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0);
+            // Specified six filenames
+            faceTextures[0] = Texture::fromFile(_filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
         }
 
+        // For the cube map case, we don't need the other five texture slots
         for (int t = 1; t < 6; ++t) {
             faceTextures[t] = NULL;
         }
 
         useCubeMap = true;
 
-    } else {    
+    } else {
+
+        // This card doesn't support cube maps; it probably has low memory as well, so we
+        // switch to bilinear instead of trilinear to save space on the mipmaps.
+
         static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
 
         if (_filename[1] == "") {
+            // Specified one cube map
             for (int t = 0; t < 6; ++t) {
                 faceTextures[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
-                    format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D,
-                    1.0, Texture::DEPTH_NORMAL, 1.0);
+                    format, Texture::CLAMP, Texture::BILINEAR_MIPMAP, Texture::DIM_2D,
+                    1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
             }
         } else {
+            // Specified six textures
             for (int t = 0; t < 6; ++t) {
                 faceTextures[t] = Texture::fromFile(_filename[t], 
-                    format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D,
-                    1.0, Texture::DEPTH_NORMAL, 1.0);
+                    format, Texture::CLAMP, Texture::BILINEAR_MIPMAP, Texture::DIM_2D,
+                    1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
             }
         }
 

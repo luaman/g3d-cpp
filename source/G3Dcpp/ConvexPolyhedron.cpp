@@ -10,6 +10,7 @@
   All rights reserved.
  */
 
+#include "G3D/platform.h"
 #include "G3D/ConvexPolyhedron.h"
 #include "G3D/debug.h"
 

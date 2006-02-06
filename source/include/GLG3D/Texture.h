@@ -169,6 +169,25 @@ public:
         uint32 hashCode() const;
     };
 
+    class PreProcess {
+    public:
+
+        /** Amount to brighten colors by (useful for Quake textures, which are dark). */
+        float                       brighten;
+
+        /** Amount to resize images by before loading to save memory; 
+            typically a negative power of 2 (e.g., 1.0, 0.5, 0.25). */
+        float                       scaleFactor;
+
+        PreProcess() : brighten(1.0f), scaleFactor(1.0f) {}
+
+        static PreProcess& defaults() {
+            static PreProcess p;
+            return p;
+        }
+
+    };
+
 private:
 
     /** OpenGL texture ID */
@@ -239,7 +258,8 @@ public:
         const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
         Dimension                       dimension      = DIM_2D,
         const Parameters&               param          = Parameters::defaults()) {
-        return Texture::createEmpty(width, height, name, desiredFormat, param.wrapMode, param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
+        return Texture::createEmpty(width, height, name, desiredFormat, param.wrapMode, 
+               param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
     }
 
     /**
@@ -258,7 +278,7 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        float                           maxAnisotropy  = 2.0f);
 
 
     static TextureRef G3D_DEPRECATED fromFile(
@@ -269,7 +289,8 @@ public:
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        float                           maxAnisotropy  = 2.0f,
+        float                           resizeFactor   = 1.0f);
 
     /**
      Creates a texture from a single image.  The image must have a format understood
@@ -282,9 +303,17 @@ public:
         const std::string&              filename,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         Dimension                       dimension      = DIM_2D,
-        double                          brighten       = 1.0,
-        const Parameters&               param          = Parameters::defaults()) {
-        return Texture::fromFile(filename, desiredFormat, param.wrapMode, param.interpolateMode, dimension, brighten, param.depthReadMode, param.maxAnisotropy);
+        const Parameters&               param          = Parameters::defaults(),
+        const PreProcess&               process        = PreProcess()) {
+        return Texture::fromFile(
+            filename, 
+            desiredFormat, 
+            param.wrapMode, 
+            param.interpolateMode, 
+            dimension, process.brighten, 
+            param.depthReadMode, 
+            param.maxAnisotropy, 
+            process.scaleFactor);
     }
 
     /**
@@ -299,7 +328,8 @@ public:
         Dimension                       dimension      = DIM_2D,
         double                          brighten       = 1.0,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        float                           maxAnisotropy  = 2.0,
+        float                           resizeFactor   = 1.0f);
 
     /**
      Creates a texture from the colors of filename and takes the alpha values
@@ -343,7 +373,8 @@ public:
         InterpolateMode                     interpolate    = TRILINEAR_MIPMAP,
         Dimension                           dimension      = DIM_2D,
         DepthReadMode                       depthRead      = DEPTH_NORMAL,
-        float                               maxAnisotropy  = 2.0);
+        float                               maxAnisotropy  = 2.0,
+        float                               resizeFactor   = 1.0f);
 
     /**
      The bytes are described by byteFormat, which may differ from the
@@ -365,7 +396,8 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        float                           maxAnisotropy  = 2.0,
+        float                           resizeFactor   = 1.0f);
 
     /** Use the constructor that accepts Texture::Parameters. */
 	static TextureRef G3D_DEPRECATED fromMemory(
@@ -379,7 +411,8 @@ public:
         InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
         DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        float                           maxAnisotropy  = 2.0,
+        float                           resizeFactor   = 1.0f);
 
 	 static TextureRef fromMemory(
         const std::string&              name,
