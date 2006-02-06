@@ -198,6 +198,9 @@ private:
         BayerPattern    _bayerPattern = BAYER_PATTERN_NONE) : 
         numComponents(_numComponents),
         compressed(_compressed),
+        code(_code),
+        colorSpace(_colorSpace),
+        bayerPattern(_bayerPattern),
         OpenGLFormat(_glFormat),
         OpenGLBaseFormat(_glBaseFormat),
         luminanceBits(_luminanceBits),
@@ -205,15 +208,12 @@ private:
         redBits(_redBits),
         greenBits(_greenBits),
         blueBits(_blueBits),
-        depthBits(_depthBits),
         stencilBits(_stencilBits),
+        depthBits(_depthBits),
         packedBitsPerTexel(_packedBitsPerTexel),
         hardwareBitsPerTexel(_hardwareBitsPerTexel),
         opaque(_opaque),
-        floatingPoint(_floatingPoint),
-        code(_code),
-        colorSpace(_colorSpace),
-        bayerPattern(_bayerPattern) {
+        floatingPoint(_floatingPoint) {
     }
 
 public:

@@ -34,6 +34,7 @@ public:
 
     SignOnMessage() : id(Entity::NO_ID) {}
     SignOnMessage(Entity::ID _id) : id(_id) {}
+    virtual ~SignOnMessage() {}
 
     virtual void serialize(BinaryOutput& b) const {
         b.writeInt32(id);
@@ -59,6 +60,8 @@ public:
     Controls                    controls;
     PhysicsFrame                frame;
     Vector3                     velocity;
+
+    virtual ~EntityStateMessage() {}
 
     virtual void serialize(BinaryOutput& b) const;
 

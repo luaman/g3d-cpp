@@ -8,6 +8,7 @@
 
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/glcalls.h"
+#include "GLG3D/GLCaps.h"
 
 #ifdef G3D_WIN32
     // GetSystemMetrics parameters missing in header files
@@ -308,7 +309,7 @@ SDLWindow::SDLWindow(const GWindowSettings& settings) {
         }
 	}
 
-    loadExtensions();
+    GLCaps::init();
 
 	// Register this window as the current window
 	makeCurrent();
@@ -675,7 +676,10 @@ void SDLWindow::reallyMakeCurrent() const {
 	    }
 #   elif defined(G3D_LINUX)
         if (! glXMakeCurrent(_X11Display, _X11Window, _glContext)) {
-            debugAssertM(false, "Failed to set context");
+            //debugAssertM(false, "Failed to set context");
+            // only check OpenGL as False seems to be returned when
+            // context is already current
+            debugAssertGLOk();
         }
 #   elif defined(G3D_OSX)
         

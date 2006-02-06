@@ -14,7 +14,7 @@ extern App* app;
 
 const RealTime Entity::networkLerpTime = 0.2;
 
-Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::ZERO), tip(Matrix3::identity()), oldDesiredVelocityTime(-100) {
+Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::ZERO), oldDesiredVelocityTime(-100), tip(Matrix3::identity()) {
 }
 
 

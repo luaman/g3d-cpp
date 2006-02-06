@@ -234,8 +234,6 @@ void Client::renderEntities() {
 
 void Client::onGraphics(RenderDevice* rd) {
 
-    RealTime now = System::time();
-
     const GCamera& cam = app->debugController.active() ? app->debugCamera : camera;
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
@@ -284,7 +282,7 @@ void Client::onGraphics(RenderDevice* rd) {
                     app->renderDevice->getViewport());
 
                 if (pos.isFinite()) {
-                    app->font->draw2D(entity.name, pos.xy(), 16, Color3::WHITE, Color3::BLACK,
+                    app->font->draw2D(app->renderDevice, entity.name, pos.xy(), 16, Color3::WHITE, Color3::BLACK,
                         GFont::XALIGN_CENTER);
                 }
             }
@@ -292,12 +290,12 @@ void Client::onGraphics(RenderDevice* rd) {
 
         // Server crash messages
         if (! serverProxy.ok()) {
-            app->font->draw2D("Lost connection to server.", Vector2(5, 5), 14,
+            app->font->draw2D(app->renderDevice, "Lost connection to server.", Vector2(5, 5), 14,
                 Color3(1.0f, 0.4f, 0.4f), Color3::BLACK);
         }
 
         if (app->hostingServer && ! app->hostingServer->ok()) {
-            app->font->draw2D("(Local Server Crashed)", Vector2(5, 25), 14,
+            app->font->draw2D(app->renderDevice, "(Local Server Crashed)", Vector2(5, 25), 14,
                 Color3(1.0f, 0.4f, 0.4f), Color3::BLACK);
         }
     app->renderDevice->pop2D();

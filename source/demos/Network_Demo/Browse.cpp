@@ -67,8 +67,8 @@ void Browse::doGraphics() {
     app->renderDevice->clear(true, true, true);
 
     app->renderDevice->push2D();
-        double width            = app->renderDevice->getWidth();
-        double height           = app->renderDevice->getHeight();
+        double width            = app->renderDevice->width();
+        double height           = app->renderDevice->height();
         double titleFontSize    = 30 * width / 800;
         double optionFontSize   = 25 * width / 800;
         Color4 titleFontColor   = Color3::BLACK;
@@ -77,7 +77,7 @@ void Browse::doGraphics() {
         Color4 optionFontBorder = Color3::BLACK;
 
         double y = 10;
-        app->font->draw2D("Choose A Network Demo Server", Vector2(width / 2, y),
+        app->font->draw2D(app->renderDevice, "Choose A Network Demo Server", Vector2(width / 2, y),
             titleFontSize, titleFontColor, titleFontBorder, GFont::XALIGN_CENTER);
         y += titleFontSize * 2;
 
@@ -86,7 +86,7 @@ void Browse::doGraphics() {
         // Display the servers found
         for (int s = 0; s < discoveryClient.serverList.size(); ++s) {
             
-            Vector2 bounds = app->font->draw2D(discoveryClient.serverList[s].name,
+            Vector2 bounds = app->font->draw2D(app->renderDevice, discoveryClient.serverList[s].name,
                 Vector2(width / 2, y),
                 optionFontSize, optionFontColor, 
                 optionFontBorder, GFont::XALIGN_CENTER);
@@ -97,7 +97,7 @@ void Browse::doGraphics() {
         }
 
         if (discoveryClient.serverList.size() == 0) {
-            app->font->draw2D("(No servers found-- host one yourself!)",
+            app->font->draw2D(app->renderDevice, "(No servers found-- host one yourself!)",
                 Vector2(width / 2, y),
                 optionFontSize, titleFontColor, 
                 titleFontBorder, GFont::XALIGN_CENTER);
@@ -107,12 +107,12 @@ void Browse::doGraphics() {
 
         y = height - optionFontSize * 6;
 
-        Vector2 bounds = app->font->draw2D("Create Server", Vector2(width / 2, y),
+        Vector2 bounds = app->font->draw2D(app->renderDevice, "Create Server", Vector2(width / 2, y),
             optionFontSize, optionFontColor, optionFontBorder, GFont::XALIGN_CENTER);
         button.append(Rect2D::xywh(width / 2 - bounds.x / 2, y, bounds.x, bounds.y));
         y += optionFontSize * 2;
 
-        bounds = app->font->draw2D("Exit", Vector2(width / 2, y),
+        bounds = app->font->draw2D(app->renderDevice, "Exit", Vector2(width / 2, y),
             optionFontSize, optionFontColor, optionFontBorder, GFont::XALIGN_CENTER);
         button.append(Rect2D::xywh(width / 2 - bounds.x / 2, y, bounds.x, bounds.y));
         y += optionFontSize * 2;

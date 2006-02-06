@@ -120,13 +120,13 @@ void App::main() {
 void showError(const std::string& s1, const std::string& s2, RenderDevice* rd, GFontRef font) {
     RealTime t0 = System::time();
 
-    double w = rd->getWidth();
+    double w = rd->width();
     while (System::time() < t0 + 4) {
         rd->beginFrame();
             rd->clear();
             rd->push2D();
-                font->draw2D(s1, Vector2(w/2, 100), 30, Color3::cyan(), Color3::black(), GFont::XALIGN_CENTER);
-                font->draw2D(s2, Vector2(w/2, 200), 20, Color3::cyan(), Color3::black(), GFont::XALIGN_CENTER);
+                font->draw2D(rd, s1, Vector2(w/2, 100), 30, Color3::cyan(), Color3::black(), GFont::XALIGN_CENTER);
+                font->draw2D(rd, s2, Vector2(w/2, 200), 20, Color3::cyan(), Color3::black(), GFont::XALIGN_CENTER);
             rd->pop2D();
         rd->endFrame();
     }
