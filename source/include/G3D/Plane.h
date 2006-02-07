@@ -127,6 +127,11 @@ public:
         return x + (_normal * (-distance(x)));
     }
 
+    /** Returns normal * distance from origin */
+    Vector3 center() const {
+        return _normal * _distance;
+    }
+
     /**
      Inverts the facing direction of the plane so the new normal
      is the inverse of the old normal.

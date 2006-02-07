@@ -69,6 +69,10 @@ void MeshShape::buildBSP() {
     }
     _bspTree.balance();
 
+    Box box;
+    MeshAlg::computeBounds(_vertexArray, box, _boundingSphere);
+    _boundingSphere.getBounds(_boundingAABox);
+
     _hasTree = true;
 }
 
@@ -85,6 +89,27 @@ float MeshShape::volume() const {
     return 0;
 }
 
+Vector3 MeshShape::center() const {
+    if (! _hasTree) {
+        const_cast<MeshShape*>(this)->buildBSP();
+    }
+
+    return _boundingAABox.center();
+}
+
+Sphere MeshShape::boundingSphere() const {
+    if (! _hasTree) {
+        const_cast<MeshShape*>(this)->buildBSP();
+    }
+    return _boundingSphere;
+}
+
+AABox MeshShape::boundingAABox() const {
+    if (! _hasTree) {
+        const_cast<MeshShape*>(this)->buildBSP();
+    }
+    return _boundingAABox;
+}
 
 void MeshShape::getRandomSurfacePoint(
     Vector3& P,

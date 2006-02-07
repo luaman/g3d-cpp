@@ -17,6 +17,7 @@
 #include "G3D/g3dmath.h"
 #include "G3D/Vector3.h"
 #include "G3D/Line.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 
@@ -80,6 +81,13 @@ public:
 
     inline float area() const {
         return getSurfaceArea();
+    }
+
+    void getBounds(AABox& out) const {
+        Vector3 min = p1 - (Vector3(1, 1, 1) * radius);
+        Vector3 max = p2 + (Vector3(1, 1, 1) * radius);
+
+        out = AABox(min, max);
     }
 
     /** Random world space point with outward facing normal. */

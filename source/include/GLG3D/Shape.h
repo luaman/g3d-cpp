@@ -133,6 +133,15 @@ public:
     /** Volume of the interior of this object. */
     virtual float volume() const = 0;
 
+    /** Center of mass for this object. */
+    virtual Vector3 center() const = 0;
+
+    /** Bounding sphere of this object. */
+    virtual Sphere boundingSphere() const = 0;
+
+    /** Bounding axis aligned box of this object. */
+    virtual AABox boundingAABox() const = 0;
+
     /** A point selected uniformly at random with respect to the
         surface area of this object.  Not available on the Plane or
         Ray, which have infinite extent.  The normal has unit length
@@ -159,10 +168,12 @@ class MeshShape : public Shape {
     Array<Vector3>      _vertexArray;
     Array<int>          _indexArray;
 
-    /** If true, the bspTree and _area have been initialized. */
+    /** If true, the bspTree and _area, _boundingSphere, _boundingAABox have been initialized. */
     bool                _hasTree;
     AABSPTree<Triangle> _bspTree;
     double              _area;
+    Sphere              _boundingSphere;
+    AABox               _boundingAABox;
 
     /** Creates _bspTree */
     void buildBSP();
@@ -202,6 +213,12 @@ public:
 
     /** No volume; Mesh is treated as a 2D surface */
     virtual float volume() const;
+
+    virtual Vector3 center() const;
+
+    virtual Sphere boundingSphere() const;
+
+    virtual AABox boundingAABox() const;
 
     virtual void getRandomSurfacePoint(Vector3& P, 
                                        Vector3& N = Vector3::dummy) const;
@@ -247,6 +264,21 @@ public:
         return geometry.volume();
     }
 
+    virtual Vector3 center() const {
+        return geometry.center();
+    }
+
+    virtual Sphere boundingSphere() const {
+        Sphere s(geometry.center(), geometry.extent().magnitude() / 2);
+        return s;
+    }
+
+    virtual AABox boundingAABox() const {
+        AABox aab;
+        geometry.getBounds(aab);
+        return aab;
+    }
+
     virtual void getRandomSurfacePoint(Vector3& P, 
                                        Vector3& N = Vector3::dummy) const {
         geometry.getRandomSurfacePoint(P, N);
@@ -286,6 +318,23 @@ public:
 
     virtual float volume() const {
         return 0.0f;
+    }
+
+    /** Set to origin of ray. */
+    virtual Vector3 center() const {
+        return geometry.origin;
+    }
+
+    virtual Sphere BoundingSphere() const {
+        debugAssertM(false, "No bounding sphere for ray.");
+        static Sphere s;
+        return s;
+    }
+
+    virtual AABox BoundingAABox() const {
+        debugAssertM(false, "No bounding axis aligned box for ray.");
+        static AABox aab;
+        return aab;
     }
 
     virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const {
@@ -328,6 +377,24 @@ public:
 
     virtual float volume() const {
         return geometry.volume();
+    }
+
+    virtual Vector3 center() const {
+        return geometry.center();
+    }
+
+    virtual Sphere boundingSphere() const {
+        Vector3 v(0, geometry.height() / 2, 0);
+        v += Vector3(geometry.radius(), 0, 0);
+        Sphere s(geometry.center(), ::abs(v.magnitude()));
+        return s;
+    }
+
+    virtual AABox boundingAABox() const {
+        Vector3 min = geometry.getPoint1() - (Vector3(1, 1, 1) * geometry.radius());
+        Vector3 max = geometry.getPoint2() + (Vector3(1, 1, 1) * geometry.radius());
+        AABox aab(min, max);
+        return aab;
     }
 
     virtual void getRandomSurfacePoint(Vector3& P, 
@@ -386,6 +453,19 @@ public:
         return geometry.volume();
     }
 
+    virtual Vector3 center() const {
+        return geometry.center;
+    }
+
+    virtual Sphere boundingSphere() const {
+        return geometry;
+    }
+
+    virtual AABox boundingAABox() const {
+        AABox aab;
+        geometry.getBounds(aab);
+        return aab;
+    }
 };
 
 
@@ -418,6 +498,20 @@ public:
         return geometry.volume();
     }
 
+    virtual Vector3 center() const {
+        return geometry.center();
+    }
+
+    virtual Sphere boundingSphere() const {
+        Sphere s(geometry.center(), ::abs((geometry.center() - geometry.getPoint1()).magnitude()) + geometry.radius);
+        return s;
+    }
+
+    virtual AABox boundingAABox() const {
+        AABox aab;
+        geometry.getBounds(aab);
+        return aab;
+    }
     virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const {
         geometry.getRandomSurfacePoint(P, N);
     }
@@ -458,6 +552,16 @@ public:
     virtual float volume() const {
         return 0.0;
     }
+
+    virtual Vector3 center() const {
+        return geometry.center();
+    }
+
+    /** not implemented */
+    virtual Sphere boundingSphere() const;
+
+    /** not implemented */
+    virtual AABox boundingAABox() const;
 
     virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const {
         P = Vector3::nan();
