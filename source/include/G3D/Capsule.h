@@ -83,12 +83,8 @@ public:
         return getSurfaceArea();
     }
 
-    void getBounds(AABox& out) const {
-        Vector3 min = p1.min(p2) - (Vector3(1, 1, 1) * radius);
-        Vector3 max = p1.max(p2) + (Vector3(1, 1, 1) * radius);
-
-        out = AABox(min, max);
-    }
+    /** Get axis aligned bounding box */
+    void getBounds(AABox& out) const;
 
     /** Random world space point with outward facing normal. */
     void getRandomSurfacePoint(Vector3& P, Vector3& N) const;

@@ -82,6 +82,11 @@ float Cylinder::area() const {
         2.0f * G3D_PI * square(mRadius);
 }
 
+void Cylinder::getBounds(AABox& out) const {
+    Vector3 min = p1.min(p2) - (Vector3(1, 1, 1) * mRadius);
+    Vector3 max = p1.max(p2) + (Vector3(1, 1, 1) * mRadius);
+    out = AABox(min, max);
+}
 
 bool Cylinder::contains(const Vector3& p) const { 
     return LineSegment::fromTwoPoints(p1, p2).distanceSquared(p) <= square(mRadius);

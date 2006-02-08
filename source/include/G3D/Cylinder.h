@@ -72,11 +72,10 @@ public:
         return (p1 - p2).magnitude();
     }
 
-    void getBounds(AABox& out) const {
-        Vector3 min = p1.min(p2) - (Vector3(1, 1, 1) * mRadius);
-        Vector3 max = p1.max(p2) + (Vector3(1, 1, 1) * mRadius);
-        out = AABox(min, max);
-    }
+    /**
+     Get close axis aligned bounding box.
+     With vertical world orientation, the top and bottom might not be very tight. */
+    void getBounds(AABox& out) const;
 
     /** Random world space point with outward facing normal. */
     void getRandomSurfacePoint(Vector3& P, Vector3& N) const;

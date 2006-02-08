@@ -88,6 +88,13 @@ float Capsule::getSurfaceArea() const {
 }
 
 
+void Capsule::getBounds(AABox& out) const {
+    Vector3 min = p1.min(p2) - (Vector3(1, 1, 1) * radius);
+    Vector3 max = p1.max(p2) + (Vector3(1, 1, 1) * radius);
+
+    out = AABox(min, max);
+}
+
 bool Capsule::contains(const Vector3& p) const { 
     return LineSegment::fromTwoPoints(p1, p2).distanceSquared(p) <= square(radius);
 }
