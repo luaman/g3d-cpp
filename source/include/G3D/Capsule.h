@@ -84,8 +84,8 @@ public:
     }
 
     void getBounds(AABox& out) const {
-        Vector3 min = p1 - (Vector3(1, 1, 1) * radius);
-        Vector3 max = p2 + (Vector3(1, 1, 1) * radius);
+        Vector3 min = p1.min(p2) - (Vector3(1, 1, 1) * radius);
+        Vector3 max = p1.max(p2) + (Vector3(1, 1, 1) * radius);
 
         out = AABox(min, max);
     }

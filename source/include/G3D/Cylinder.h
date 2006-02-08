@@ -16,6 +16,7 @@
 #include "G3D/g3dmath.h"
 #include "G3D/Vector3.h"
 #include "G3D/Line.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 
@@ -27,7 +28,7 @@ private:
 	Vector3			p1;
 	Vector3			p2;
 
-	float           m_radius;
+	float           mRadius;
 
 public:
 
@@ -69,6 +70,12 @@ public:
 
     inline float height() const {
         return (p1 - p2).magnitude();
+    }
+
+    void getBounds(AABox& out) const {
+        Vector3 min = p1.min(p2) - (Vector3(1, 1, 1) * mRadius);
+        Vector3 max = p1.max(p2) + (Vector3(1, 1, 1) * mRadius);
+        out = AABox(min, max);
     }
 
     /** Random world space point with outward facing normal. */

@@ -29,21 +29,21 @@ Cylinder::Cylinder() {
 
 
 Cylinder::Cylinder(const Vector3& _p1, const Vector3& _p2, float _r) 
-	: p1(_p1), p2(_p2), m_radius(_r) {
+	: p1(_p1), p2(_p2), mRadius(_r) {
 }
 
 
 void Cylinder::serialize(class BinaryOutput& b) const {
 	p1.serialize(b);
 	p2.serialize(b);
-	b.writeFloat64(m_radius);
+	b.writeFloat64(mRadius);
 }
 
 
 void Cylinder::deserialize(class BinaryInput& b) {
 	p1.deserialize(b);
 	p2.deserialize(b);
-	m_radius = b.readFloat64();
+	mRadius = b.readFloat64();
 }
 
 
@@ -63,28 +63,28 @@ Vector3 Cylinder::getPoint2() const {
 
 
 float Cylinder::radius() const {
-	return m_radius;
+	return mRadius;
 }
 
 
 float Cylinder::volume() const {
 	return
-		G3D_PI * square(m_radius) * (p1 - p2).magnitude();
+		G3D_PI * square(mRadius) * (p1 - p2).magnitude();
 }
 
 
 float Cylinder::area() const {
 	return
         // Sides
-		(2.0f * G3D_PI * m_radius) * height() +
+		(2.0f * G3D_PI * mRadius) * height() +
 
         // Caps
-        2.0f * G3D_PI * square(m_radius);
+        2.0f * G3D_PI * square(mRadius);
 }
 
 
 bool Cylinder::contains(const Vector3& p) const { 
-    return LineSegment::fromTwoPoints(p1, p2).distanceSquared(p) <= square(m_radius);
+    return LineSegment::fromTwoPoints(p1, p2).distanceSquared(p) <= square(mRadius);
 }
 
 

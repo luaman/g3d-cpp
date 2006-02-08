@@ -391,9 +391,8 @@ public:
     }
 
     virtual AABox boundingAABox() const {
-        Vector3 min = geometry.getPoint1() - (Vector3(1, 1, 1) * geometry.radius());
-        Vector3 max = geometry.getPoint2() + (Vector3(1, 1, 1) * geometry.radius());
-        AABox aab(min, max);
+        AABox aab;
+        geometry.getBounds(aab);
         return aab;
     }
 
