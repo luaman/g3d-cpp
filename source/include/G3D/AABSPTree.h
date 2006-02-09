@@ -244,7 +244,7 @@ private:
         Node(const Node& other) : valueArray(other.valueArray) {
             splitAxis       = other.splitAxis;
             splitLocation   = other.splitLocation;
-            splitBounds     = other.bounds;
+            splitBounds     = other.splitBounds;            
             for (int i = 0; i < 2; ++i) {
                 child[i] = NULL;
             }
