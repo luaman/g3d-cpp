@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2004-10-07
+  @edited  2006-01-07
  */ 
 
 
@@ -26,9 +26,6 @@ typedef ReferenceCountedPointer<class IFSModel> IFSModelRef;
  many other formats (e.g. 3DS, SM, OBJ, MD2) to IFS format
  using the IFSBuilder sample code provided with G3D.
 
- IFS models are geometric meshes; they don't have texture
- coordinates, animation, or other data and are primarily
- useful for scientific research.
  */
 class IFSModel : public ReferenceCountedObject {
 private:
@@ -65,22 +62,24 @@ private:
 
     friend class PosedIFSModel;
 
+    std::string                 name;
     std::string                 filename;
-    MeshAlg::Geometry           geometry;
     Array<int>                  indexArray;
+    Array<MeshAlg::Vertex>      vertexArray;
+    Array<Vector2>				texArray;
+
+    MeshAlg::Geometry           geometry;
+    Array<MeshAlg::Face>        faceArray;
+    Array<MeshAlg::Edge>        edgeArray;
     Array<Vector3>              faceNormalArray;
     Array<MeshAlg::Face>        weldedFaceArray;
     Array<MeshAlg::Edge>        weldedEdgeArray;
     Array<MeshAlg::Vertex>      weldedVertexArray;
-    Array<MeshAlg::Face>        faceArray;
-    Array<MeshAlg::Edge>        edgeArray;
-    Array<MeshAlg::Vertex>      vertexArray;
-	Array<Vector2>				texArray;
-    Sphere                      boundingSphere;
-    Box                         boundingBox;
     int                         numBoundaryEdges;
     int                         numWeldedBoundaryEdges;
-    std::string                 name;
+    Sphere                      boundingSphere;
+    Box                         boundingBox;
+
 
     /** Shared by all models */
     static VARAreaRef           varArea;
