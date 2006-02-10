@@ -58,6 +58,7 @@ fastlib    Build the lib target without reconfig on Linux (not recommended)
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip, g3d-data-""" + version + """.zip
 source     Build g3d-src-""" + version + """.zip only
 doc        Run doxygen and copy the html directory and contrib directory
+online_doc Run doxygen and copy the html directory and contrib directory (with google search)
 clean      Delete the build, release, temp, and install directories
 test       Build the tests (assumes you already build lib)
 help       Display this message
@@ -318,6 +319,26 @@ def doc(args):
     copyIfNewer('source/contrib', installDir(args) + '/contrib')
     setPermissions(args)
 
+
+###############################################################################
+#                                                                             #
+#                          online_doc Target                                  #
+#                                                                             #
+###############################################################################
+    
+def online_doc(args):
+    os.chdir("source")
+    run(doxygen, ['OnlineDoxyfile'])
+    os.chdir("..")
+    # Hand-written docs
+    copyIfNewer('source/html', installDir(args) + '/html')
+    # Generated docs
+    copyIfNewer('temp/html', installDir(args) + '/html')
+    # Contrib
+    copyIfNewer('source/contrib', installDir(args) + '/contrib')
+    setPermissions(args)
+    
+
 ###############################################################################
 #                                                                             #
 #                             install Target                                  #
@@ -511,4 +532,4 @@ def release(args):
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, lib7, lib8, fastlib, install, source, doc, test, clean, release], buildHelp)
+dispatchOnTarget([lib, lib7, lib8, fastlib, install, source, doc, online_doc, test, clean, release], buildHelp)

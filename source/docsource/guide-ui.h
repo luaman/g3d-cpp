@@ -31,7 +31,7 @@ of a UserInput object and a trivial instance where it is polled for inputs.
 
     userInput = new UserInput (thisWindow);
 
-    ::SDL_Event event;
+    GEvent event;
 
     userInput->beginEvents();
     while (SDL_PollEvent(&event)) {
@@ -62,7 +62,9 @@ for further explanations.
 processing takes place between the beginEvents and endEvents statements.  
 Any actions outside this block will not be processed.   
 
-@section fp-camera G3D::FPCameraController
+@section ui_button
+
+@section ui_fpcamera G3D::FPCameraController
 
 <P> The G3D::FPCameraController replaces the deprecated ManualCameraController to 
 implement a Quake style 3D control interface.  Its use is best illustrated in
