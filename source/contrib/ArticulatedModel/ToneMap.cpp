@@ -321,7 +321,7 @@ void ToneMap::makeShadersPS20() {
     bloomShader = Shader::fromStrings("",
         STR(
         /* (1/w, 1/h) */
-        uniform vec2          _screenScale;
+        uniform vec2          screenScale;
         uniform sampler2D     screenImage;
         uniform sampler2D     bloomMap;
         uniform sampler2D     gamma; 
