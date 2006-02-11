@@ -43,6 +43,7 @@
 #include "G3D/platform.h"
 #include "G3D/G3DGameUnits.h"
 #include "G3D/NetworkDevice.h"
+#include "G3D/Log.h"
 #include <time.h>
 
 /**
