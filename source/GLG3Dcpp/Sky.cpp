@@ -472,10 +472,10 @@ void Sky::drawMoonAndStars(
     Vector4 Y(moonPosition.cross(LcrossZ), 0);
 
     // Draw stars
-    if (lighting.moonPosition.y > -0.3) {
+    if (lighting.moonPosition.y > -0.3f) {
 
-        double k = (3 - square(lighting.skyAmbient.length()));// * renderDevice->getBrightScale();
-		double s = k;
+        float k = (3.001 - square(lighting.skyAmbient.length()));// * renderDevice->getBrightScale();
+		float s = k;
 		k *= renderDevice->getBrightScale();
 		renderDevice->pushState();
             // Rotate stars
@@ -484,10 +484,10 @@ void Sky::drawMoonAndStars(
 
             // We use raw GL calls here for performance since the changing point size
             // precludes the use of a vertex array.
-            glPushAttrib(GL_ALL_ATTRIB_BITS);
+            glPushAttrib(GL_POINT_BIT|GL_CURRENT_BIT);
 
                 for (int i = star.size() - 1; i >= 0; --i) {
-                    const double b = starIntensity[i] * k;
+                    const float b = starIntensity[i] * k;
 					glPointSize(starIntensity[i] * s);
 					glBegin(GL_POINTS);
 						glColor3f(b * lighting.emissiveScale.r, b * lighting.emissiveScale.g, b * lighting.emissiveScale.b);
