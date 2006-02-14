@@ -6,7 +6,7 @@
 @cite http://oss.sgi.com/projects/ogl-sample/registry/EXT/framebuffer_object.txt
 
 @created 2006-01-07
-@edited  2006-01-11
+@edited  2006-02-14
 */
 
 #include "GLG3D/Renderbuffer.h"
@@ -24,18 +24,18 @@ Renderbuffer::Renderbuffer (
     const G3D::TextureFormat*	_format, 
     const int					_width, 
     const int					_height) : 
-    m_name(_name),
-    m_imageID(_imageID),
-    m_format(_format),
-    m_width(_width),
-    m_height(_height) {
+    mName(_name),
+    mImageID(_imageID),
+    mFormat(_format),
+    mWidth(_width),
+    mHeight(_height) {
 
     // Intentionally empty
 }
 
 
 Renderbuffer::~Renderbuffer () {
-    glDeleteRenderbuffersEXT(1, &m_imageID);
+    glDeleteRenderbuffersEXT(1, &mImageID);
 }
 
 

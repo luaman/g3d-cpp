@@ -4,7 +4,7 @@
   @maintainer Daniel Hilferty, djhilferty@users.sourceforge.net
 
   @created 2006-01-06
-  @edited  2006-01-11
+  @edited  2006-02-14
 */
 
 #ifndef GLG3D_RENDERBUFFER_H
@@ -64,19 +64,19 @@ class Renderbuffer : public ReferenceCountedObject {
 private:
 
 	/** Renderbuffer name */
-    std::string						m_name;
+    std::string						mName;
 
 	/** OpenGL Object ID */
-	GLuint							m_imageID;
+	GLuint							mImageID;
 
 	/** Texel format */
-    const class TextureFormat*      m_format;
+    const class TextureFormat*      mFormat;
 
 	/** Buffer width */
-    int								m_width;
+    int								mWidth;
 
 	/** Buffer height */
-    int								m_height;
+    int								mHeight;
 
 	/** Constructor */
 	Renderbuffer (	
@@ -127,31 +127,31 @@ public:
      functionality not directly exposed by G3D.
 	*/
     inline unsigned int openGLID() const {
-        return m_imageID;
+        return mImageID;
 	}
 
     inline const TextureFormat* format() const {
-        return m_format;
+        return mFormat;
     }
 
     inline const std::string& name() const {
-        return m_name;
+        return mName;
     }
 
 	inline unsigned int width() const {
-        return m_width;
+        return mWidth;
     }
 
 	inline unsigned int height() const {
-        return m_height;
+        return mHeight;
     }
    
     inline Vector2 vector2Bounds() const {
-        return Vector2((float)m_width, (float)m_height);
+        return Vector2((float)mWidth, (float)mHeight);
     }
 
     inline Rect2D rect2DBounds() const {
-        return Rect2D::xywh(0, 0, (float)m_width, (float)m_height);
+        return Rect2D::xywh(0.0f, 0.0f, (float)mWidth, (float)mHeight);
     }
 
 }; // class Renderbuffer
