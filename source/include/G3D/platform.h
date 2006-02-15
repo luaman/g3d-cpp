@@ -205,35 +205,13 @@
 
     // Now set up external linking
 
-    // These lines would link the ZLIB DLL, however we now use static linking
-    //#define ZLIB_DLL
-    //#pragma comment(lib, "zdll.lib")
-
-    #pragma comment(lib, "zlib.lib")
-
-    #pragma comment(lib, "ws2_32.lib")
-    #pragma comment(lib, "winmm.lib")
-    #pragma comment(lib, "imagehlp.lib")
-    #pragma comment(lib, "gdi32.lib")
-    #pragma comment(lib, "user32.lib")
-    #pragma comment(lib, "kernel32.lib")
-    #pragma comment(lib, "version.lib")
 
     #ifdef _DEBUG
         // zlib and SDL were linked against the release MSVCRT; force
         // the debug version.
         #pragma comment(linker, "/NODEFAULTLIB:MSVCRT.LIB")
+#	endif
 
-        // Don't link against G3D when building G3D itself.
-        #ifndef G3D_BUILDING_LIBRARY_DLL
-           #pragma comment(lib, "G3D-debug.lib")
-        #endif
-    #else
-        // Don't link against G3D when building G3D itself.
-        #ifndef G3D_BUILDING_LIBRARY_DLL
-            #pragma comment(lib, "G3D.lib")
-        #endif
-    #endif
 
 #   ifndef WIN32_LEAN_AND_MEAN
 #       define WIN32_LEAN_AND_MEAN 1

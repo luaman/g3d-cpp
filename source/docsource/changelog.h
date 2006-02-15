@@ -29,6 +29,7 @@
   <P>   
    Changes in 6.08:
     <UL>
+	  <LI> Moved Win32 linker statements out of platform.h for IncrediBuild compatibility.
       <LI> G3D::Texture and G3D::Sky now accept a rescaling factor
       <LI> Added GFont::fromMemory() [Corey]
       <LI> Added optional argument to Quat::slerp() for slerp/lerp angle threshold. [Corey]
