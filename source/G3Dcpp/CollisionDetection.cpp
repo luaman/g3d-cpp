@@ -793,7 +793,7 @@ float CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
 
     if (depth >= 0) {
         contactPoints.append(N * (depth - sphereA.radius) + sphereA.center);
-        contactNormals.append(-N);
+        contactNormals.append(N);
     }
 
     return depth;
