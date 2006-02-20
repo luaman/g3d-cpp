@@ -222,6 +222,39 @@ Matrix3 Matrix3::operator* (const Matrix3& rkMatrix) const {
     return kProd;
 }
 
+Matrix3& Matrix3::operator+= (const Matrix3& rkMatrix) {
+    for (int iRow = 0; iRow < 3; iRow++) {
+        for (int iCol = 0; iCol < 3; iCol++) {
+            m_aafEntry[iRow][iCol] = m_aafEntry[iRow][iCol] + rkMatrix.m_aafEntry[iRow][iCol];
+        }
+    }
+
+    return *this;
+}
+
+Matrix3& Matrix3::operator-= (const Matrix3& rkMatrix) {
+    for (int iRow = 0; iRow < 3; iRow++) {
+        for (int iCol = 0; iCol < 3; iCol++) {
+            m_aafEntry[iRow][iCol] = m_aafEntry[iRow][iCol] - rkMatrix.m_aafEntry[iRow][iCol];
+        }
+    }
+
+    return *this;
+}
+
+Matrix3& Matrix3::operator*= (const Matrix3& rkMatrix) {
+    for (int iRow = 0; iRow < 3; iRow++) {
+        for (int iCol = 0; iCol < 3; iCol++) {
+            m_aafEntry[iRow][iCol] =
+                m_aafEntry[iRow][0] * rkMatrix.m_aafEntry[0][iCol] +
+                m_aafEntry[iRow][1] * rkMatrix.m_aafEntry[1][iCol] +
+                m_aafEntry[iRow][2] * rkMatrix.m_aafEntry[2][iCol];
+        }
+    }
+
+    return *this;
+}
+
 //----------------------------------------------------------------------------
 Matrix3 Matrix3::operator- () const {
     Matrix3 kNeg;

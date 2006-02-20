@@ -97,6 +97,10 @@ public:
     Matrix3 operator* (const Matrix3& rkMatrix) const;
     Matrix3 operator- () const;
 
+    Matrix3& operator+= (const Matrix3& rkMatrix);
+    Matrix3& operator-= (const Matrix3& rkMatrix);
+    Matrix3& operator*= (const Matrix3& rkMatrix);
+
     /**
      * matrix * vector [3x3 * 3x1 = 3x1]
      */
