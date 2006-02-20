@@ -332,7 +332,7 @@ public:
      if they do not intersect.  See the two-Rect2D constructor for a way to compute
      a union-like rectangle.
      */
-    Rect2D intersection(const Rect2D& other) const {
+    Rect2D intersect(const Rect2D& other) const {
 		if (intersects(other)) {
 			return Rect2D::xyxy(min.max(other.min), max.min(other.max));
 		}else{
