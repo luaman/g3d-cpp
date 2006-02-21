@@ -13,11 +13,7 @@
 		0F0B7E7006DEEC38002E4048 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F0B7E6F06DEEC38002E4048 /* SDL.framework */; };
 		3E9F693F087F496500553053 /* libGLG3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E9F693D087F496500553053 /* libGLG3D.a */; };
 		3E9F6940087F496500553053 /* libG3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E9F693E087F496500553053 /* libG3D.a */; };
-		501DC24E095C45A000AEDA83 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 501DC24C095C45A000AEDA83 /* App.h */; };
-		501DC24F095C45A000AEDA83 /* demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 501DC24D095C45A000AEDA83 /* demo.cpp */; };
-		501DC25A095C45BA00AEDA83 /* all.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 501DC250095C45B900AEDA83 /* all.cpp */; };
-		501DC25B095C45BA00AEDA83 /* all.h in Headers */ = {isa = PBXBuildFile; fileRef = 501DC251095C45B900AEDA83 /* all.h */; };
-		501DC27B095C486600AEDA83 /* loadScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 501DC27A095C486600AEDA83 /* loadScene.cpp */; };
+		50065A0609927E5A00B10CF4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50065A0509927E5A00B10CF4 /* main.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -61,11 +57,7 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		3E9F693D087F496500553053 /* libGLG3D.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLG3D.a; path = ../../../G3DOSX/build/Development/libGLG3D.a; sourceTree = SOURCE_ROOT; };
 		3E9F693E087F496500553053 /* libG3D.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libG3D.a; path = ../../../G3DOSX/build/Development/libG3D.a; sourceTree = SOURCE_ROOT; };
-		501DC24C095C45A000AEDA83 /* App.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
-		501DC24D095C45A000AEDA83 /* demo.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = demo.cpp; sourceTree = "<group>"; };
-		501DC250095C45B900AEDA83 /* all.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = all.cpp; path = ../all.cpp; sourceTree = SOURCE_ROOT; };
-		501DC251095C45B900AEDA83 /* all.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = all.h; path = ../all.h; sourceTree = SOURCE_ROOT; };
-		501DC27A095C486600AEDA83 /* loadScene.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = loadScene.cpp; sourceTree = "<group>"; };
+		50065A0509927E5A00B10CF4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* VAR_Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VAR_Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -106,11 +98,7 @@
 		29B97315FDCFA39411CA2CEA /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				501DC27A095C486600AEDA83 /* loadScene.cpp */,
-				501DC250095C45B900AEDA83 /* all.cpp */,
-				501DC251095C45B900AEDA83 /* all.h */,
-				501DC24C095C45A000AEDA83 /* App.h */,
-				501DC24D095C45A000AEDA83 /* demo.cpp */,
+				50065A0509927E5A00B10CF4 /* main.cpp */,
 				0F0B7E3606DEE751002E4048 /* SDLMain.m */,
 				0F0B7E3406DEE749002E4048 /* SDLMain.h */,
 			);
@@ -137,8 +125,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F0B7E3506DEE749002E4048 /* SDLMain.h in Headers */,
-				501DC24E095C45A000AEDA83 /* App.h in Headers */,
-				501DC25B095C45BA00AEDA83 /* all.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,9 +220,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F0B7E3706DEE751002E4048 /* SDLMain.m in Sources */,
-				501DC24F095C45A000AEDA83 /* demo.cpp in Sources */,
-				501DC25A095C45BA00AEDA83 /* all.cpp in Sources */,
-				501DC27B095C486600AEDA83 /* loadScene.cpp in Sources */,
+				50065A0609927E5A00B10CF4 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
