@@ -13,7 +13,7 @@ void testCollisionDetection() {
         float depth = CollisionDetection::penetrationDepthForFixedSphereFixedPlane(
             s, p, contact, outNormal);
 
-        debugAssert(outNormal[0] == -p.normal());
+        debugAssert(outNormal[0] == p.normal());
         debugAssert(depth == 0);
 
         s = Sphere(Vector3(0,2,0), 1);
