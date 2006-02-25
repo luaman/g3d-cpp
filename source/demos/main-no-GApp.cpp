@@ -9,13 +9,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2004-06-24
+  @edited  2006-01-24
  */ 
 
 #include <G3DAll.h>
 
-#if G3D_VER != 60400
-    #error Requires G3D 6.04
+#if G3D_VER != 60800
+    #error Requires G3D 6.08
 #endif
 
 std::string             DATA_DIR;

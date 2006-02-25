@@ -475,15 +475,52 @@ ReliableConduit::ReliableConduit(
 
     if (nd->debugLog) { nd->debugLog->println("Ok"); }
 
+    // Setup socket options (both constructors should set the same options)
+
     // Disable Nagle's algorithm (we send lots of small packets)
     const int T = true;
     if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, 
                    (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
+        
         if (nd->debugLog) {
             nd->debugLog->println("WARNING: Disabling Nagel's "
                                   "algorithm failed.");
             nd->debugLog->println(socketErrorCode());
         }
+    }
+    else if (nd->debugLog) {
+        nd->debugLog->println("Disabled Nagel's algorithm.");
+    }
+
+    // Set the NO LINGER option so the socket doesn't hang around if
+    // there is unsent data in the queue when it closes.
+    struct linger ling;
+    ling.l_onoff  = 0;
+    ling.l_linger = 0;
+    if (setsockopt(sock, SOL_SOCKET, SO_LINGER, 
+                   (const char*)&ling, sizeof(ling)) == SOCKET_ERROR) {
+        
+        if (nd->debugLog) {
+            nd->debugLog->println("WARNING: Setting socket no linger failed.");
+            nd->debugLog->println(socketErrorCode());
+        }
+    }
+    else if (nd->debugLog) {
+        nd->debugLog->println("Set socket option no_linger.");
+    }
+
+    // Set reuse address so that a new server can start up soon after
+    // an old one has closed.
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, 
+                   (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
+        
+        if (nd->debugLog) {
+            nd->debugLog->println("WARNING: Setting socket reuseaddr failed.");
+            nd->debugLog->println(socketErrorCode());
+        }
+    }
+    else if (nd->debugLog) {
+        nd->debugLog->println("Set socket option reuseaddr.");
     }
 
     // Ideally, we'd like to specify IPTOS_LOWDELAY as well.
@@ -537,6 +574,60 @@ ReliableConduit::ReliableConduit(
     addr                = _addr;
 
     messageType         = 0;
+
+    // Setup socket options (both constructors should set the same options)
+
+    // Disable Nagle's algorithm (we send lots of small packets)
+    const int T = true;
+    if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, 
+                   (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
+        
+        if (nd->debugLog) {
+            nd->debugLog->println("WARNING: Disabling Nagel's "
+                                  "algorithm failed.");
+            nd->debugLog->println(socketErrorCode());
+        }
+    }
+    else if (nd->debugLog) {
+        nd->debugLog->println("Disabled Nagel's algorithm.");
+    }
+
+    // Set the NO LINGER option so the socket doesn't hang around if
+    // there is unsent data in the queue when it closes.
+    struct linger ling;
+    ling.l_onoff  = 0;
+    ling.l_linger = 0;
+    if (setsockopt(sock, SOL_SOCKET, SO_LINGER, 
+                   (const char*)&ling, sizeof(ling)) == SOCKET_ERROR) {
+        
+        if (nd->debugLog) {
+            nd->debugLog->println("WARNING: Setting socket no linger failed.");
+            nd->debugLog->println(socketErrorCode());
+        }
+    }
+    else if (nd->debugLog) {
+        nd->debugLog->println("Set socket option no_linger.");
+    }
+
+    // Set reuse address so that a new server can start up soon after
+    // an old one has closed.
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, 
+                   (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
+        
+        if (nd->debugLog) {
+            nd->debugLog->println("WARNING: Setting socket reuseaddr failed.");
+            nd->debugLog->println(socketErrorCode());
+        }
+    }
+    else if (nd->debugLog) {
+        nd->debugLog->println("Set socket option reuseaddr.");
+    }
+
+    // Ideally, we'd like to specify IPTOS_LOWDELAY as well.
+
+    if (nd->debugLog) {
+        logSocketInfo(nd->debugLog, sock);
+    }
 }
 
 

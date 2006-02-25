@@ -149,6 +149,7 @@
                 even for faces perpendicular to the view axis.
       <LI> Fix: GImage now auto-resolves formats for files with 1 character base names
       <LI> Fix: WeakReferenceCountedPointer cycle bug
+      <LI> Fix: Corrected lag encountered when using some ReliableConduit constructors [Dan Keefe]
     </UL>
 
   <P>
