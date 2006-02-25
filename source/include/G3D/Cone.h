@@ -7,15 +7,16 @@
  @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
   
  @created 2001-06-02
- @edited  2002-08-23
+ @edited  2006-02-23
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
 #ifndef G3D_CONE_H
 #define G3D_CONE_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Vector3.h"
 

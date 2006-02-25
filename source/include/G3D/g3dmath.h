@@ -22,15 +22,6 @@
 #   pragma warning (disable : 4127)
 // disable: "C++ exception handler used"
 #   pragma warning (disable : 4530)
-
-    // disable: "conversion from 'double' to 'float', possible loss of
-    // data
-//    #pragma warning (disable : 4244)
-
-    // disable: "truncation from 'double' to 'float'
-  //  #pragma warning (disable : 4305)
-
-
 #endif
 
 #include "G3D/platform.h"

@@ -18,11 +18,12 @@
 
 #include "G3D/platform.h"
 #include "G3D/Vector3.h"
-#include "G3D/CoordinateFrame.h"
 #include "G3D/Array.h"
 #include "G3D/Plane.h"
 
 namespace G3D {
+
+class CoordinateFrame;
 
 /**
  An arbitrary 3D box, useful as a bounding box. 

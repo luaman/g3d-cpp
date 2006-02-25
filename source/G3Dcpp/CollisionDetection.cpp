@@ -5,9 +5,10 @@
   @cite Bounce direction based on Paul Nettle's ftp://ftp.3dmaileffects.com/pub/FluidStudios/CollisionDetection/Fluid_Studios_Generic_Collision_Detection_for_Games_Using_Ellipsoids.pdf and comments by Max McGuire.  Ray-sphere code by Eric Haines.
 
   @created 2001-11-24
-  @edited  2006-01-19
+  @edited  2006-02-19
  */
 
+#include "G3D/CoordinateFrame.h"
 #include "G3D/platform.h"
 #include "G3D/CollisionDetection.h"
 #include "G3D/debugAssert.h"

@@ -16,6 +16,8 @@
 #include "G3D/LineSegment.h"
 #include "G3D/Sphere.h"
 #include "G3D/CoordinateFrame.h"
+#include "G3D/Line.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 

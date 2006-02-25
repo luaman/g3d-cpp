@@ -4,12 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2005-07-11
+  @edited  2006-02-11
 */
 
 #ifndef G3D_GCAMERA_H
 #define G3D_GCAMERA_H
 
+#include "G3D/platform.h"
 #include "G3D/CoordinateFrame.h"
 #include "G3D/Vector3.h"
 #include "G3D/Plane.h"

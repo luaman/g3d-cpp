@@ -5,13 +5,14 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-06-02
-  @edited  2005-08-05
+  @edited  2006-02-05
 */
 
 #include "G3D/Box.h"
 #include "G3D/debug.h"
 #include "G3D/Plane.h"
 #include "G3D/AABox.h"
+#include "G3D/CoordinateFrame.h"
 
 namespace G3D {
 

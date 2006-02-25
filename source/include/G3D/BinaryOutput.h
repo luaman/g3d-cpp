@@ -13,6 +13,7 @@
 #ifndef G3D_BINARYOUTPUT_H
 #define G3D_BINARYOUTPUT_H
 
+#include "G3D/platform.h"
 #include <assert.h>
 #include <string>
 #include <sys/stat.h>

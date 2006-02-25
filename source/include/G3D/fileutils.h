@@ -4,15 +4,16 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @author  2002-06-06
- @edited  2004-11-04
+ @edited  2006-02-04
 
- Copyright 2000-2003, Morgan McGuire.
+ Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
  */
 
 #ifndef G3D_FILEUTILS_H
 #define G3D_FILEUTILS_H
 
+#include "G3D/platform.h"
 #include <string>
 #include <stdio.h>
 #include "G3D/Array.h"

@@ -14,6 +14,7 @@
 #ifndef G3D_AABSPTREE_H
 #define G3D_AABSPTREE_H
 
+#include "G3D/platform.h"
 #include "G3D/Array.h"
 #include "G3D/Table.h"
 #include "G3D/Vector3.h"

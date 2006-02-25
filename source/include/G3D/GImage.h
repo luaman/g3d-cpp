@@ -23,17 +23,17 @@
 #ifndef G3D_GIMAGE_H
 #define G3D_GIMAGE_H
 
+#include "G3D/platform.h"
 #include <string>
 #include "G3D/Array.h"
 #include "G3D/g3dmath.h"
-#include "G3D/BinaryInput.h"
-#include "G3D/BinaryOutput.h"
 #include "G3D/stringutils.h"
 #include "G3D/Color3uint8.h"
 #include "G3D/Color4uint8.h"
 
 namespace G3D {
-
+class BinaryInput;
+class BinaryOutput;
 /**
   Interface to image compression & file formats. 
  

@@ -6,7 +6,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-04-17
- @edited  2004-07-05
+ @edited  2006-02-05
  */
 
 #include "G3D/platform.h"
@@ -15,6 +15,7 @@
 #include "G3D/BinaryOutput.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/AABox.h"
+#include "G3D/Plane.h"
 
 namespace G3D {
 

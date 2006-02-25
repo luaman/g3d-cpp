@@ -189,6 +189,22 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
+
+    std::string p = "c:/projects/TalkMaterials/";
+    GImage a(p + "xyz-a.jpg");
+    GImage aF(p + "xyz-aF.png");
+    GImage G(p +"xyz-SantacruzG.jpg");
+
+	assert(G.width == a.width);
+
+    for (int i = 0; i < G.width * G.height * 3; ++i) {
+        float alpha = a.byte()[i] / 255.0;
+        G.byte()[i] = iClamp(G.byte()[i] * (1.0f - alpha) + aF.byte()[i], 0, 255);
+    }
+
+    G.save(p + "xyz-SantacruzC.jpg");
+    exit(0);
+
     GAppSettings settings;
     settings.useNetwork = false;
     settings.window.resizable = true;

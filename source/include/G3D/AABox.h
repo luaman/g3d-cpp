@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2004-01-10
-  @edited  2006-01-10
+  @edited  2006-02-10
 
   Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
@@ -15,10 +15,10 @@
 #ifndef G3D_AABOX_H
 #define G3D_AABOX_H
 
+#include "G3D/platform.h"
 #include "G3D/Vector3.h"
 #include "G3D/debug.h"
 #include "G3D/Array.h"
-#include "G3D/Plane.h"
 
 namespace G3D {
 

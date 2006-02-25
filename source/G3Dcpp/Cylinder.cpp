@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2003-02-07
- @edited  2005-08-18
+ @edited  2006-02-18
 
  Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
@@ -16,6 +16,8 @@
 #include "G3D/BinaryOutput.h"
 #include "G3D/LineSegment.h"
 #include "G3D/CoordinateFrame.h"
+#include "G3D/Line.h"
+#include "G3D/AABox.h"
 
 namespace G3D {
 
