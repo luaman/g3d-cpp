@@ -73,7 +73,10 @@ h1 {
 
 table.mdTable {
     background:		#FFF0B0;
-    width:			100%; }
+    width:			100%; 
+    border-style:   solid;
+    border-color:   #6666FF;
+    border-width:   1px; }
 
 td.md { 
     background-color: #FFF0B0; 
