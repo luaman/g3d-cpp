@@ -3,9 +3,12 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2005-02-24
+  @edited  2006-02-24
 */
 
+#include "G3D/Log.h"
+#include "G3D/g3derror.h"
+#include "G3D/Rect2D.h"
 #include "GLG3D/SDLWindow.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/GLCaps.h"

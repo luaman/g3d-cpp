@@ -12,8 +12,8 @@
  @edited  2005-04-05
 */
 
-#include "GLG3D/glcalls.h"
 #include "graphics3D.h"
+#include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/getOpenGLState.h"
@@ -668,6 +668,11 @@ static void brightenImage(uint8* byte, int n, double brighten, int skipAlpha) {
             byte[i] = bright[byte[i]];
         }
     }
+}
+
+
+Rect2D Texture::rect2DBounds() const {
+    return Rect2D::xywh(0, 0, (float)width, (float)height);
 }
 
 

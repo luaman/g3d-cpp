@@ -4,15 +4,15 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-10-04
-  @edited  2005-02-11
+  @edited  2006-02-11
 */
 
 #ifndef G3D_SKY_H
 #define G3D_SKY_H
 
+#include "G3D/platform.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/RenderDevice.h"
-#include "graphics3D.h"
 
 namespace G3D {
 

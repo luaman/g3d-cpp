@@ -4,13 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @cite       Created by Morgan McGuire & Seth Block
   @created 2001-08-05
-  @edited  2003-04-07
+  @edited  2006-02-07
 */
 
-#ifndef GETOPENGLSTATE_H
-#define GETOPENGLSTATE_H
+#ifndef G3D_GETOPENGLSTATE_H
+#define G3D_GETOPENGLSTATE_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
 #include "GLG3D/glheaders.h"
 #include "GLG3D/glcalls.h"
 

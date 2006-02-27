@@ -4,11 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-15
-  @edited  2005-02-24
+  @edited  2006-02-24
  */ 
 
 #include "GLG3D/PosedModel.h"
 #include "GLG3D/RenderDevice.h"
+#include "G3D/Sphere.h"
+#include "G3D/Box.h"
 
 namespace G3D {
 

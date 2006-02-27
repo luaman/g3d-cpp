@@ -9,7 +9,8 @@
 
 
 #include "G3D/platform.h"
-
+#include "G3D/Log.h"
+#include "G3D/GCamera.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
@@ -17,6 +18,8 @@
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
 #include "GLG3D/Framebuffer.h"
+#include "G3D/fileutils.h"
+#include <time.h>
 #ifdef G3D_WIN32
     #include "GLG3D/Win32Window.h"
 #else

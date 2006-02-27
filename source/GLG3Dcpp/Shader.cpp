@@ -4,9 +4,10 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2004-04-24
- @edited  2006-01-15
+ @edited  2006-02-15
  */
 
+#include "G3D/fileutils.h"
 #include "GLG3D/Shader.h"
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/getOpenGLState.h"

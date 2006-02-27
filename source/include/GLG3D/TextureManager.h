@@ -5,14 +5,15 @@
   @cite by Morgan McGuire & Peter Sibley
 
   @created 2003-11-25
-  @edited  2003-12-01
+  @edited  2006-02-01
 */
 
 #ifndef G3D_TEXTUREMANAGER_H
 #define G3D_TEXTUREMANAGER_H
 
-#include "graphics3D.h"
+#include "G3D/Table.h"
 #include "GLG3D/Texture.h"
+#include <string>
 
 namespace G3D {
 

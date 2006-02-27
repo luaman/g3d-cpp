@@ -4,9 +4,10 @@
   @author Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-10-04
-  @edited  2005-02-11
+  @edited  2006-02-11
   */
 
+#include "G3D/fileutils.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/Sky.h"
 #include "GLG3D/LightingParameters.h"

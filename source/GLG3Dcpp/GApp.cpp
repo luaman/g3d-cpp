@@ -11,6 +11,9 @@
 
 #include "GLG3D/GApp.h"
 #include "G3D/GCamera.h"
+#include "G3D/fileutils.h"
+#include "G3D/Log.h"
+#include "G3D/NetworkDevice.h"
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/UserInput.h"
 #include "GLG3D/GWindow.h"

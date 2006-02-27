@@ -3,13 +3,15 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2006-01-15
+  @edited  2006-02-15
 */
 
 #ifndef G3D_GWINDOW_H
 #define G3D_GWINDOW_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/GImage.h"
+#include "G3D/Array.h"
 #include "GLG3D/GWindowSettings.h"
 
 // For SDL_Event
@@ -29,7 +31,10 @@
 
 namespace G3D {
 
+/** @deprecated To be replaced in 7.00 with a new implementation. */
 typedef SDL_Event GEvent;
+
+class Rect2D;
 
 /**
  Interface to window APIs for window management, event processing,

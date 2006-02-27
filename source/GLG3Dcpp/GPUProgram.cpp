@@ -10,7 +10,12 @@
 #include "GLG3D/GPUProgram.h"
 #include "GLG3D/getOpenGLState.h"
 #include "G3D/debugAssert.h"
+#include "G3D/debug.h"
+#include "G3D/prompt.h"
 #include "G3D/platform.h"
+#include "G3D/fileutils.h"
+#include "G3D/Log.h"
+#include "G3D/g3derror.h"
 #include "GLG3D/RenderDevice.h"
 
 #if defined(_MSC_VER) && !defined(_NDEBUG)

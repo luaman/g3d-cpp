@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2005-02-10
+ @edited  2006-02-10
  */
 
 #ifndef G3D_GFONT_H
@@ -12,6 +12,8 @@
 
 #include "GLG3D/Texture.h"
 #include "G3D/BinaryInput.h"
+#include "G3D/CoordinateFrame.h"
+#include <string>
 
 namespace G3D {
 

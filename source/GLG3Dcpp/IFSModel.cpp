@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2005-02-24
+  @edited  2006-02-24
  */ 
 
 
@@ -14,6 +14,10 @@
 #include "GLG3D/IFSModel.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/VAR.h"
+#include "G3D/fileutils.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
+
 namespace G3D {
 
 VARAreaRef IFSModel::varArea = NULL;

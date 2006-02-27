@@ -37,6 +37,7 @@
            Includes removal of Milestones when using VBO VAR [Nick Bray], GFont::draw2D and 
            Draw::rect2D stripped down to raw OpenGL, consistent internal use of float,
            increased RenderDevice state change optimization.
+	  <LI> Minimized header interdependencies (GLG3D headers no longer include all of G3D)
       <LI> Added GThread and GMutex classes. [Corey]
       <LI> Added TextureFormat::fromCode(). [Corey]
       <LI> Added Plane::distance() and Plane::closestPoint() helper methods. [Corey] 

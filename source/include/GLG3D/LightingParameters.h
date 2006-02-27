@@ -12,10 +12,15 @@
 #ifndef G3D_LIGHTINGPARAMETERS_H
 #define G3D_LIGHTINGPARAMETERS_H
 
-#include "graphics3D.h"
-#include "Texture.h"
+#include "G3D/platform.h"
+#include "GLG3D/Texture.h"
+#include "G3D/Color3.h"
+#include "G3D/Vector3.h"
+#include "G3D/CoordinateFrame.h"
 
 namespace G3D {
+
+class GLight;
 
 #define BROWN_UNIVERSITY_LATITUDE 41.7333f
 #define BROWN_UNIVERSITY_LONGITUDE 71.4333f

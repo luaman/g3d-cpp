@@ -14,6 +14,8 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/RenderDevice.h"
 #include "G3D/NetworkDevice.h"
+#include "G3D/Log.h"
+
 #include <sstream>
 
 namespace G3D {
@@ -1166,9 +1168,7 @@ void describeSystem(
 
 	System::describeSystem(t);
 	rd->describeSystem(t);
-
-	// TODO: Why does this cause a linker error?
-	//nd->describeSystem(t);
+	nd->describeSystem(t);
 }
 
 

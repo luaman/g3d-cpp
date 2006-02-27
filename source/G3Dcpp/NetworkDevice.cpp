@@ -3,17 +3,12 @@
 
  @maintainer Morgan McGuire, morgan@cs.brown.edu
  @created 2002-11-22
- @edited  2005-02-24
+ @edited  2006-02-24
  */
 
 #include <stdlib.h>
 #include <time.h>
 #include "G3D/platform.h"
-
-#ifdef G3D_WIN32
-    #include <malloc.h>
-#endif
-
 #include "G3D/TextOutput.h"
 #include "G3D/NetworkDevice.h"
 #include "G3D/NetAddress.h"
@@ -192,8 +187,7 @@ std::string NetworkDevice::localHostName() const {
     return gethostbyname(ac)->h_name;
 }
 
-
-bool NetworkDevice::init(class Log* _log) {
+bool NetworkDevice::init(G3D::Log* _log) {
     debugAssert(!initialized);
     debugLog = _log;
 

@@ -16,6 +16,7 @@
 #include "G3D/platform.h"
 #include "G3D/Set.h"
 #include "GLG3D/glheaders.h"
+#include "G3D/NetworkDevice.h"
 #include <string>
 
 namespace G3D {

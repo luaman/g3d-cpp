@@ -12,6 +12,8 @@
     #include <xmmintrin.h>
 #endif
 
+#include "G3D/Log.h"
+#include "G3D/BinaryInput.h"
 #include "GLG3D/VARArea.h"
 #include "GLG3D/MD2Model.h"
 #include "GLG3D/VAR.h"

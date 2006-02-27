@@ -11,11 +11,16 @@
 #define GLG3D_TEXTURE_H
 
 #include "G3D/ReferenceCount.h"
+#include "G3D/Array.h"
 #include "GLG3D/glheaders.h"
 #include "GLG3D/TextureFormat.h"
+#include "G3D/Vector2.h"
 
 namespace G3D {
 
+class GImage;
+class Rect2D;
+class Matrix3;
 
 typedef ReferenceCountedPointer<class Texture> TextureRef;
 
@@ -605,9 +610,7 @@ public:
     }
 
     /** Returns a rectangle whose width and height match the dimensions of the texture. */
-    inline Rect2D rect2DBounds() const {
-        return Rect2D::xywh(0, 0, (float)width, (float)height);
-    }
+    Rect2D rect2DBounds() const;
 
     /**
      For 3D textures.

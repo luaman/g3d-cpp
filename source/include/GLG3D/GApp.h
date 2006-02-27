@@ -4,17 +4,19 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2005-10-20
+ @edited  2006-02-20
  */
 
 #ifndef G3D_GAPP_H
 #define G3D_GAPP_H
 
+#include "G3D/Stopwatch.h"
 #include "GLG3D/GFont.h"
 #include "G3D/GCamera.h"
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/TextureManager.h"
+#include "G3D/NetworkDevice.h"
 
 namespace G3D {
 

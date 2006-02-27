@@ -9,15 +9,17 @@
  </UL>
 
  @created 2004-09-30
- @edited  2004-09-30
+ @edited  2006-02-30
 */
 
+#include "G3D/platform.h"
+#include "G3D/Log.h"
 #include "GLG3D/glcalls.h"
-#include "graphics3D.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/GLCaps.h"
+#include "G3D/BinaryInput.h"
 
 namespace G3D {
 

@@ -4,13 +4,15 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-08-09
-  @edited  2003-08-09
+  @edited  2006-02-09
 */
 
 #ifndef GLG3D_MILESTONE_H
 #define GLG3D_MILESTONE_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/ReferenceCount.h"
+#include "G3D/Array.h"
 
 namespace G3D {
 

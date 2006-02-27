@@ -4,13 +4,13 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
  
  @created 2001-12-16
- @edited  2004-01-31
+ @edited  2006-02-31
  */
 
 #ifndef G3D_SHADOWVOLUME_H
 #define G3D_SHADOWVOLUME_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
 #include "GLG3D/PosedModel.h"
 
 namespace G3D {

@@ -4,15 +4,21 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2005-02-18
+ @edited  2006-02-18
  */
 
 #ifndef G3D_SHADER_H
 #define G3D_SHADER_H
 
-#include "graphics3D.h"
-#include "glheaders.h"
+#include "GLG3D/glheaders.h"
 #include "GLG3D/Texture.h"
+#include "G3D/Set.h"
+#include "G3D/Vector4.h"
+#include "G3D/CoordinateFrame.h"
+#include "G3D/Vector3.h"
+#include "G3D/Color4.h"
+#include "G3D/Color3.h"
+#include <string>
 
 namespace G3D {
 

@@ -3,11 +3,14 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10
-  @edited  2004-05-16
+  @edited  2006-02-16
 */
 
 #ifndef G3D_GWINDOWSETTINGS_H
 #define G3D_GWINDOWSETTINGS_H
+
+#include "G3D/platform.h"
+#include <string>
 
 namespace G3D {
 

@@ -4,15 +4,23 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-10-29
- @edited  2006-01-18
+ @edited  2006-02-18
  */
 
 #include "G3D/platform.h"
+#include "G3D/Rect2D.h"
+#include "G3D/AABox.h"
+#include "G3D/Box.h"
+#include "G3D/Ray.h"
+#include "G3D/Sphere.h"
+#include "G3D/Line.h"
+#include "G3D/LineSegment.h"
+#include "G3D/Capsule.h"
+#include "G3D/Cylinder.h"
 #include "GLG3D/Draw.h"
-#include "graphics3D.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/GLCaps.h"
-#include "G3D/Rect2D.h"
+#include "G3D/MeshAlg.h"
 
 namespace G3D {
 

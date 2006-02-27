@@ -4,17 +4,19 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2005-06-28
+  @edited  2006-02-28
 */
 
 #ifndef G3D_FPCAMERACONTROLLER_H
 #define G3D_FPCAMERACONTROLLER_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/Vector3.h"
+#include "G3D/CoordinateFrame.h"
 
 namespace G3D {
 
-
+class CoordinateFrame;
 
 /**
  Uses a First Person (Quake-style) mapping to translate keyboard and mouse input

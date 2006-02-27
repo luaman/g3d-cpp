@@ -13,7 +13,9 @@
 #ifndef G3D_MD2MODEL_H
 #define G3D_MD2MODEL_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/Box.h"
+#include "G3D/Sphere.h"
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/PosedModel.h"

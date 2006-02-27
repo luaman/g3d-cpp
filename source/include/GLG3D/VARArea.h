@@ -2,13 +2,13 @@
   @file VARArea.h
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2003-08-09
-  @edited  2005-02-06
+  @edited  2006-02-06
 */
 
 #ifndef GLG3D_VARAREA_H
 #define GLG3D_VARAREA_H
 
-#include "graphics3D.h"
+#include "G3D/ReferenceCount.h"
 #include "GLG3D/Milestone.h"
 
 namespace G3D {

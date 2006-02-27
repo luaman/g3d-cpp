@@ -11,8 +11,14 @@
 #define GLG3D_GPUPROGRAM_H
 
 #include "GLG3D/glheaders.h"
-
+#include "G3D/Vector4.h"
 #include "GLG3D/Texture.h"
+#include "G3D/TextInput.h"
+#include "G3D/Table.h"
+#include "G3D/Matrix3.h"
+#include "G3D/Matrix4.h"
+#include "G3D/Color4.h"
+#include "G3D/CoordinateFrame.h"
 
 namespace G3D {
 

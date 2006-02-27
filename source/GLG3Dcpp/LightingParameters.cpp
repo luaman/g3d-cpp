@@ -3,11 +3,13 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-05
- @edited  2005-06-01
+ @edited  2006-06-28
  */
 
 #include "GLG3D/LightingParameters.h"
 #include "G3D/Matrix3.h"
+#include "G3D/spline.h"
+#include "G3D/GLight.h"
 #include <sys/timeb.h>
 #include <sys/types.h> 
 

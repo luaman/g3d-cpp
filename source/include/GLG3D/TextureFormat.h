@@ -10,7 +10,7 @@
 #ifndef GLG3D_TEXTUREFORMAT_H
 #define GLG3D_TEXTUREFORMAT_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
 #include "GLG3D/glheaders.h"
 
 namespace G3D {

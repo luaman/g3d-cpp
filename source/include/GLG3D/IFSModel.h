@@ -6,14 +6,17 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2006-01-07
+  @edited  2006-02-07
  */ 
 
 
 #ifndef GLG3D_IFSMODEL_H
 #define GLG3D_IFSMODEL_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/Sphere.h"
+#include "G3D/AABox.h"
+#include "G3D/Box.h"
 #include "GLG3D/PosedModel.h"
 
 namespace G3D {

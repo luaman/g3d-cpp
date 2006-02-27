@@ -34,11 +34,11 @@
 
  @maintainer Morgan McGuire, morgan@graphics3d.com
  @created 2002-11-22
- @edited  2005-07-05
+ @edited  2006-02-25
  */
 
-#ifndef NETWORKDEVICE_H
-#define NETWORKDEVICE_H
+#ifndef G3D_NETWORKDEVICE_H
+#define G3D_NETWORKDEVICE_H
 
 #include "G3D/platform.h"
 #include <string>
@@ -725,6 +725,15 @@ public:
 
     NetworkDevice();
 
+    /**
+     Returns false if there was a problem initializing the network.
+     */
+    bool init(class Log* log = NULL);
+
+    /**
+     Shuts down the network device.
+     */
+    void cleanup();
 
     /**
      Prints a human-readable description of this machine
@@ -750,15 +759,6 @@ public:
         returns all of them. */
     void localHostAddresses(Array<NetAddress>& array) const;
 
-    /**
-     Returns false if there was a problem initializing the network.
-     */
-    bool init(class Log* log = NULL);
-
-    /**
-     Shuts down the network device.
-     */
-    void cleanup();
 
     /**
      If receivePort is specified and enableReceive is true, the conduit can 

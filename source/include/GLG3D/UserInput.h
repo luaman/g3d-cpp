@@ -4,13 +4,16 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-09-28
-  @edited  2004-02-28
+  @edited  2006-02-28
  */
 
 #ifndef G3D_USERINPUT_H
 #define G3D_USERINPUT_H
 
 #include "G3D/platform.h"
+#include "G3D/Array.h"
+#include "G3D/Table.h"
+#include "G3D/Vector2.h"
 
 #if (defined(G3D_OSX))
 #include <SDL/SDL_events.h>

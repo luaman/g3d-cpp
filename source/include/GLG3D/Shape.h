@@ -4,12 +4,22 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2005-08-10
-  @edited  2005-09-25
+  @edited  2006-02-25
 */
 #ifndef G3D_SHAPE_H
 #define G3D_SHAPE_H
 
-#include "../graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/ReferenceCount.h"
+#include "G3D/Triangle.h"
+#include "G3D/Sphere.h"
+#include "G3D/Plane.h"
+#include "G3D/Ray.h"
+#include "G3D/Cylinder.h"
+#include "G3D/Capsule.h"
+#include "G3D/Color4.h"
+#include "G3D/Box.h"
+#include "G3D/AABSPTree.h"
 
 namespace G3D {
 

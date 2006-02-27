@@ -3,12 +3,16 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2002-08-07
-  @edited  2005-06-01
+  @edited  2006-02-01
 */
 
+#include "G3D/Matrix3.h"
+#include "G3D/Matrix4.h"
+#include "G3D/CoordinateFrame.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/GLCaps.h"
+
 
 #if defined(G3D_OSX)
 #include <mach-o/dyld.h>

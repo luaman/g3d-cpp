@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2002-11-02
- @edited  2005-02-10
+ @edited  2006-02-10
  */
 
 #include "GLG3D/GFont.h"
@@ -12,6 +12,9 @@
 #include "GLG3D/TextureFormat.h"
 #include "G3D/Vector2.h"
 #include "G3D/System.h"
+#include "G3D/fileutils.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
 
 namespace G3D {
 

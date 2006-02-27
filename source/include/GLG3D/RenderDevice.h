@@ -10,13 +10,17 @@
   @created 2001-05-29
   @edited  2006-01-11
 
-  Copyright 2001-2005, Morgan McGuire
+  Copyright 2001-2006, Morgan McGuire
 */
 
 #ifndef GLG3D_RENDERDEVICE_H
 #define GLG3D_RENDERDEVICE_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/Array.h"
+#include "G3D/GLight.h"
+#include "G3D/TextOutput.h"
+#include "G3D/MeshAlg.h"
 #include "GLG3D/Texture.h"
 #include "GLG3D/Milestone.h"
 #include "GLG3D/VertexProgram.h"
