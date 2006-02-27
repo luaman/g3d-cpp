@@ -5,7 +5,10 @@
 </CENTER>
 
 @section Welcome
-<IMG SRC="3dengine.jpg" ALIGN=RIGHT >
+<div>
+\htmlonly
+<IMG SRC="3dengine.jpg" style="float: right;">
+\endhtmlonly
 %G3D is a commercial-grade 3D Engine available as Open Source (BSD License).
 It is used in games, tech demos, research papers, military simulators, and
 university courses.  It provides a set of routines and structures so common
@@ -31,6 +34,7 @@ start a new project in their own work).
 The library also provides lower-level interfaces that programmers who are
 already working with OpenGL and existing code may prefer.  See the
 Notes for Expert Users at the end of this chapter for more information.
+</div>
 
 @section chapters Table of Contents
 
@@ -82,7 +86,7 @@ arrive with each point release.
    Applets, Models, Selection, FPS Controls
   </TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guideopengl Using OpenGL with G3D\endlink</TD><TD VALIGN=TOP>
+  <TR><TD VALIGN=TOP>\link guideopengl Using OpenGL with %G3D\endlink</TD><TD VALIGN=TOP>
      How to use raw OpenGL commands with G3D
   </TD></TR>
 
@@ -146,7 +150,7 @@ Alphabetic <A HREF="classes.html">Classes</A> and <A HREF="globals_func.html">Fu
 
 <HR>
 Manual and Library source code
-<DT>Copyright 2000-2004, Morgan McGuire.
+<DT>Copyright 2004-2006, Morgan McGuire.
 <DT>All rights reserved.
 */
 

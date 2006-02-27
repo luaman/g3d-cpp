@@ -8,7 +8,7 @@ Concepts</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 Debugging <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
-
+s
 @section Introduction
 
 <img src="splash.jpg" width=600></img>
@@ -516,5 +516,5 @@ G3D::RenderDevice::configureReflectionMap)</li>
 object outlining technique by Max McGuire</a>. G3D::RenderDevice has several 
 methods that support the stencil buffer.</li>
 
-Tutorial questions, comments, feedback? Mail to sbshine at users.sourceforge.net. 
+Tutorial questions, comments, feedback? Check out the <a href="http://sourceforge.net/forum/forum.php?forum_id=262426">G3D users forum</a>.
  */
