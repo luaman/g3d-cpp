@@ -24,6 +24,9 @@
 #include "G3D/Triangle.h"
 #include "G3D/Ray.h"
 #include "G3D/GCamera.h"
+#include "G3D/BinaryInput.h"
+#include "G3D/BinaryOutput.h"
+#include "G3D/CollisionDetection.h"
 #include <algorithm>
 
 inline void getBounds(const G3D::Vector3& v, G3D::AABox& out) {
