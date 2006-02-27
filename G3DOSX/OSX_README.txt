@@ -3,28 +3,22 @@ How to Build a G3D application on OS X
 Caveats
 -------
 
-The G3D libraries on OS X are still in a state of early development,
-and there are not yet many users.  Consequently, you may find the OS X
-version of OS X less reliable than the Win32 or Linux versions.  The
-use of G3D on OS X for CS 224 is even not supported and is fraught
-with peril.  You've been warned. 
+Setting up G3D projects for use with Apple Xcode is rather complicated, mostly due to the weirdnesses of Xcode and Cocoa development. G3D applications on OS X must be Cocoa applications due to the SDL implementation. This document will walk you through setting up a project. 
 
-However, if you're really bold and daring, you really like Xcode, and
-you really like your Macintosh, you're welcome to try it out.  
+These instructions assume that you have some basic familiarity with Xcode. 
+These instructions have been designed for OS X 10.4 (Tiger) and Xcode 2.1/2.2. Previous versions should of Xcode should work acceptably, though we do not provide any project files or support for them. Project Builder might work, but hasn't been tested. Previous versions of Xcode have been used with G3D, though we are primarily using as up-to-date as possible versions
 
-OS X version 10.3 (Panther) is the only version where G3D is known to
-work to any degree.  It is possible that G3D will work on previous
-versions of OS X, but I don't know if anyone has ever done it. 
+If you just want to see G3D in action on the Mac, just open a demo project's *.xcodeproj file and hit, "build and run."
 
 Prerequisites
 -------------
 
 You will need:
 
-1.) OS X version 10.3 (Panther)
-2.) The Developer Tools from OS X 10.3, including Xcode
+1.) OS X version 10.4 (Tiger)
+2.) The Developer Tools from OS X 10.4, including Xcode
 
-3.) SDL Development Libraries, version 1.2.6.  Available
+3.) SDL Development Libraries, version 1.2.9.  Available
     at http://www.libsdl.org/ 
 
     You will need the two files SDLMain.m and SDLMain.h
@@ -34,94 +28,44 @@ You will need:
     for comments. 
 
 4.) The G3D libraries, obviously.  You will need the files
-    libG3D.a, libGLG3D.a and libjpeg.a
+    libG3D.a and libGLG3D.a
 
-How to Build a G3D application on OS X version 10.3 Using Xcode
+How to Build a G3D application on OS X version 10.4 Using Xcode
 ---------------------------------------------------------------
 
-1.) Start Xcode 
+1.) Start Xcode.
 
-2.) Start a new project by selecting the menu item
-    File/New Project
+2.) Create a New Project - Select File and New Project... In the dialog box that follows, select Cocoa Application under the heading Application. Pick a name and location for your new project and select finish. You should now have a window in Xcode with your new project in it. If you see MY_PROJ anywhere below, assume that it is actually the name of your new project.
 
-3.) Select Cocoa Project 
+3.) Delete Unused Files - Because Xcode created some files for you, which you do not need, you will now delete them from your system. Select main.m and MainMenu.nib (hold down command/apple key to multiple select, or do each one individually). Hit the delete button on your keyboard, or select Delete from the Edit menu. Xcode will ask you, "The references to be deleted refer to files on your disk. Do you wish to delete only the references and not the related files?" You can go ahead and select "Delete References & Files" because these will no longer be needed. If it makes you nervous, feel free to just select "Delete References".
 
-4.) Selecting a new Cocoa Project automatically generates
-    main.m and a precompiled header (whose name depends 
-    on your project name, but it always ends in .pch).
-    If you want to use a precompiled header, you can 
-    place any includes in this .pch file, but you
-    should probably remove Cocoa.h.
+4.) Remove Unused Referenced Libraries - Xcode also added some library references to your project, which are unnecessary. Select AppKit.framework, CoreData.framework, and Foundation.framework. Hit the delete button on your keyboard, or select Delete from the Edit menu. DO NOT GO ON AUTO PILOT HERE. Xcode will ask you, "The references to be deleted refer to files on your disk. Do you wish to delete only the references and not the related files?" Make sure you select "Delete References". That should be the default button.
+Create a new main.cpp containing a main() routine, or copy the main.cpp from the source/demos/ directory to your project's directory, and add the new or existing file to your Xcode project.
 
-5.) Add SDLMain.m and SDLMain.h to your project.
-    you absolutely need these. Use the Project/Add Files menu
-    for this. 
+5.) Add OpenGL.framework to your Xcode project. - OpenGL.framework is always located in /System/Library/Frameworks/. The dialog for adding the framework to the project has a checkbox labeled "Copy items into destination group's folder (if needed)". Make sure that this checkbox is unchecked.
 
-6.) Add the OpenGL and SDL frameworks to your project. 
-    Use the Project/Add Frameworks menu for this. 
+6.) Add SDL.framework to your Xcode project. - SDL.framework should be located in /Library/Frameworks or ~/Library/Frameworks. The dialog for adding the framework to the project has a checkbox labeled "Copy items into destination group's folder (if needed)". Make sure that this checkbox is unchecked.
 
-7.) Add the following libraries to your project 
-    libGLG3D.a, libG3D.a, libjpeg.a to your project.  I often
-    have to use the Finder to drag and drop these files into
-    my project.  I also typically put them in the "Frameworks"
-    section, before OpenGL.framework or SDL.framework.
-  
-8.) Disable the ZeroLink flag in the Xcode settings
-    for this project.  ZeroLink is an Xcode feature 
-    that allows for faster startup when debugging 
-    or running a program from the Xcode IDE, but 
-    this feature is not compatible with SDL.  
+7.) Add the path to the %G3D header files to the include search path. - This setting is in the same location as Framework Search Paths. Select the project icon, press Command-I (or right-click/ctrl-click and "Get Info"), and then modify the "Header Search Path" entry to include the search path to the %G3D headers.
 
-7.)  Add the Zlib library
+8.) Add the %G3D libraries to the project. - Using the Project/Add To Project menu (or right-click/ctrl-click on "Frameworks" and "Add" - "Existing Frameworks"), add libG3D.a and libGLG3D.a to the project. Recent versions of %G3D for OS X built the Independent JPEG Group (IJG) code into a separate library (libjpeg.a). The IJG code has only recently been folded into libG3D.a. If you're using %G3D 6.03 or earlier, you might have to add libjpeg.a to your project.
 
-    Add -lz to "Other Linker Flags" in the project settings. 
+9.) Add "-lz" to "Other Linker Flags". - This tells the linker to use the system's version of zlib, which G3D requires.
 
-    To get to this setting, select the toplevel icon 
-    in the left pane of your Xcode project.  For example,	
-    if your project is called "MyApp", there will be a blue
-    Xcode with the label "MyApp" in the "Groups and Files" 
-    pane of your Xcode project.  Select this icon, and then 
-    select the menu item "Project/Get Info" (or use the
-    key equivalent Command-I). Select the "Styles" tab
-    for the project info.  Under the "Common Settings" 
-    pane, there is a setting called "Other Linker Flags".
-    Add -lz to "Other Linker Flags" on all build Styles.
-    Usually there is a build style for Development
-    and one for Deployment.
+10.) Very important: Set the link order of libraries. - This is non-obvious but very important. Failure to set the link order of libraries will give inexplicable link failures. In the left pane of the Xcode project, select the "Target" item. This will have at least one item under it corresponding to the name of the application. Select the application target (it will have a triangle next to it) and expand the triangle by clicking on it. Under the "Frameworks and Libraries" group make sure that libG3D.a and libGLG3D.a are listed before OpenGL.framework. Failure to do this will result in over 80 link errors related to OpenGL extensions.
 
-8.) You'll have to add the appropriate header paths 
-    to your Xcode project so the compiler can find the
-    G3D header files.
+11.) Add SDLMain.m and SDLMain.h. - SDL for OS X requires that we build SDLMain.m into the project. Failure to do this will result in the symbol _main being undefined when you try to link your %G3D application. SDLMain.m and SDLMain.h are included in %G3D for OS X for convenience. Note that they are not part of %G3D per se, and they are part of the SDL distribution.
 
+12.) Write Your Code! - You can now write code for %G3D just like you would for Linux or Windows.
 
-How to Build a G3D Application on OS/X Using Project Builder
-------------------------------------------------------------
+13.) Optional: Nullify Windows Cludges. - Define __stdcall and __cdecl to evaluate to nothing in the preprocessor: __stdcall and __cdecl are needed for Windows code, but they don't do anything on OS X. You can add __stdcall= and __cdecl= to the "Preprocessor Macros" section of the Project Info.
 
-<This section is still under development> 
-
-Setting up your project for use with SDL is the most
-painful part of using Xcode and G3D.  On the other hand,
-using SDL with Project Builder is fairly straightforward.
-
-1.) Open Project Builder
-2.) Start a new project.
-3.) Select "SDL Application" in the "New Project" dialog. 
-4.) Add the G3D libraries: libjpeg.a, libG3D.a and libGLG3D.a
-5.) Write your main function and then compile. 
-
-
+14.) Optional: Set Relative Paths. - In general when working in Xcode, make sure all source files have Path Type "Relative to Enclosing Group" or "Relative to Project" selected in file info (rather than "Absolute Path"). This is so that if the Xcode project is moved or a directory name is changed, the project file links will not break. If you highlight all source and header files and press Cmd-I, you can set Path Type easily.
 
 If you have problems
 --------------------
 
 If you have a problem with G3D on OS X, feel free to post to the
 G3D user's forum on Sourceforge. 
-
-
-
-
-
-
-
 
 

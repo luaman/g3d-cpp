@@ -12,30 +12,27 @@ XCODE_PROJECT=G3DOSX.xcodeproj
 # OS X.  Authorship information for these two files is in the text
 # of each file. 
 
-FILES="SDLMain.h SDLMain.m libjpeg.a libjpeg_debug.a libG3D.a libG3D_debug.a \
-libGLG3D.a libGLG3D_debug.a OSX_README.txt" 
+FILES="SDLMain.h SDLMain.m libG3D.a libG3D_debug.a libGLG3D.a libGLG3D_debug.a OSX_README.txt" 
 
 # Remove any libraries that are hanging around this directory.
 rm *.a 
 
 xcodebuild -project $XCODE_PROJECT clean
-rm ./build/*.a
+rm ./build/Development/*.a
 
 # Build the Development (aka debug) build style
 xcodebuild -project $XCODE_PROJECT -target GLG3D -configuration Development
-cp ./build/libjpeg.a libjpeg_debug.a
-cp ./build/libG3D.a libG3D_debug.a
-cp ./build/libGLG3D.a libGLG3D_debug.a
+cp ./build/Development/libG3D.a libG3D_debug.a
+cp ./build/Development/libGLG3D.a libGLG3D_debug.a
 
 # We have to clean what we just built 
 xcodebuild -project $XCODE_PROJECT clean
-rm ./build/*.a
+rm ./build/Deployment/*.a
 
 # Build the Deployement (aka Release) build style
-xcodebuild -project $XCODE_PROJECT -target GLG3D -Configuration Deployment
-cp ./build/libjpeg.a libjpeg.a
-cp ./build/libG3D.a libG3D.a
-cp ./build/libGLG3D.a libGLG3D.a
+xcodebuild -project $XCODE_PROJECT -target GLG3D -configuration Deployment
+cp ./build/Deployment/libG3D.a libG3D.a
+cp ./build/Deployment/libGLG3D.a libGLG3D.a
 
 # Delete the osx-lib.tar.gz file if it exists
 rm osx-lib.tar.gz
