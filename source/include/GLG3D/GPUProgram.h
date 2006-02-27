@@ -4,13 +4,12 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-04-13
-  @edited  2004-04-25
+  @edited  2006-02-25
 */
 
 #ifndef GLG3D_GPUPROGRAM_H
 #define GLG3D_GPUPROGRAM_H
 
-#include "graphics3D.h"
 #include "GLG3D/glheaders.h"
 
 #include "GLG3D/Texture.h"

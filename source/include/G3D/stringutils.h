@@ -10,6 +10,7 @@
 #ifndef G3D_STRINGUTILS_H
 #define G3D_STRINGUTILS_H
 
+#include "G3D/platform.h"
 #include "G3D/Array.h"
 #include <string>
 

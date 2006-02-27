@@ -6,17 +6,25 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2002-08-07
- @edited  2005-05-05
+ @edited  2006-02-05
 
- Copyright 2002-2005, Morgan McGuire.
+ Copyright 2002-2006, Morgan McGuire.
  All rights reserved.
 */
 
 #ifndef G3D_GLCALLS_H
 #define G3D_GLCALLS_H
 
-#include "graphics3D.h"
 #include "G3D/platform.h"
+#include "G3D/Vector2.h"
+#include "G3D/Vector3.h"
+#include "G3D/Vector3int16.h"
+#include "G3D/Vector4.h"
+#include "G3D/Color3.h"
+#include "G3D/Color3uint8.h"
+#include "G3D/Color4.h"
+#include "G3D/Color4uint8.h"
+#include "G3D/debugAssert.h"
 #include "GLG3D/glheaders.h"
 #ifdef _DEBUG
 // Needed for debugAssertGLOk
@@ -24,6 +32,11 @@
 #endif
 
 namespace G3D {
+
+class CoordinateFrame;
+class Matrix3;
+class Matrix4;
+
 
 /**
  Produces a debugAssert that no OpenGL error has been produced.

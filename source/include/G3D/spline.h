@@ -12,6 +12,7 @@
 
 namespace G3D {
 
+#include "G3D/platform.h"
 #include "G3D/debug.h"
 #include "G3D/Array.h"
 #include "G3D/g3dmath.h"

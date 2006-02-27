@@ -1,51 +1,66 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="doc"
-	SccProjectName=""
-	SccLocalPath=""
-	Keyword="MakeFileProj">
+	ProjectGUID="{615D11E5-B33F-4FDA-A898-354CC1DC3A88}"
+	Keyword="MakeFileProj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\doc___Win32_Debug"
 			IntermediateDirectory=".\doc___Win32_Debug"
 			ConfigurationType="10"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\doc___Win32_Debug/doc.tlb"
-				HeaderFileName=""/>
+				HeaderFileName=""
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="10"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\Release/doc.tlb"
-				HeaderFileName=""/>
+				HeaderFileName=""
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -53,98 +68,127 @@
 	<Files>
 		<Filter
 			Name="Build Scripts"
-			Filter="">
+			>
 			<File
-				RelativePath="..\build.py">
+				RelativePath="..\build.py"
+				>
 			</File>
 			<File
-				RelativePath="..\buildlib.py">
+				RelativePath="..\buildlib.py"
+				>
 			</File>
 			<File
-				RelativePath="Doxyfile">
+				RelativePath="Doxyfile"
+				>
 			</File>
 			<File
-				RelativePath="..\g3dinstaller.nsi">
+				RelativePath="..\g3dinstaller.nsi"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Guide"
-			Filter="">
+			>
 			<File
-				RelativePath="docsource\guide-app.h">
+				RelativePath="docsource\guide-app.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-compiling.h">
+				RelativePath="docsource\guide-compiling.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-concepts.h">
+				RelativePath="docsource\guide-concepts.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-debug.h">
+				RelativePath="docsource\guide-debug.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-effects.h">
+				RelativePath="docsource\guide-effects.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-files.h">
+				RelativePath="docsource\guide-files.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-install.h">
+				RelativePath="docsource\guide-install.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-intro.h">
+				RelativePath="docsource\guide-intro.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-meshes.h">
+				RelativePath="docsource\guide-meshes.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-physics.h">
+				RelativePath="docsource\guide-physics.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-shaders.h">
+				RelativePath="docsource\guide-shaders.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-tutorial.h">
+				RelativePath="docsource\guide-tutorial.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-ui.h">
+				RelativePath="docsource\guide-ui.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-var.h">
+				RelativePath="docsource\guide-var.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\guide-welcome.h">
+				RelativePath="docsource\guide-welcome.h"
+				>
 			</File>
 			<File
-				RelativePath="docsource\license.h">
+				RelativePath="docsource\license.h"
+				>
 			</File>
 		</Filter>
 		<File
-			RelativePath="docsource\changelog.h">
+			RelativePath="docsource\changelog.h"
+			>
 		</File>
 		<File
-			RelativePath="docsource\contributors.h">
+			RelativePath="docsource\contributors.h"
+			>
 		</File>
 		<File
-			RelativePath="docsource\error.h">
+			RelativePath="docsource\error.h"
+			>
 		</File>
 		<File
-			RelativePath="html\footer.html">
+			RelativePath="html\footer.html"
+			>
 		</File>
 		<File
-			RelativePath="docsource\frequent.h">
+			RelativePath="docsource\frequent.h"
+			>
 		</File>
 		<File
-			RelativePath="html\gettingstarted.html">
+			RelativePath="html\gettingstarted.html"
+			>
 		</File>
 		<File
-			RelativePath="html\header.html">
+			RelativePath="html\header.html"
+			>
 		</File>
 		<File
-			RelativePath="..\readme.html">
+			RelativePath="..\readme.html"
+			>
 		</File>
 		<File
-			RelativePath="docsource\topic-index.h">
+			RelativePath="docsource\topic-index.h"
+			>
 		</File>
 	</Files>
 	<Globals>

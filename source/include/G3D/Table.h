@@ -15,11 +15,11 @@
 #ifndef G3D_TABLE_H
 #define G3D_TABLE_H
 
+#include "G3D/platform.h"
 #include "G3D/Array.h"
 #include "G3D/debug.h"
 #include "G3D/System.h"
 #include "G3D/g3dmath.h"
-//#include <hash_map>
 #include <assert.h>
 #include <string>
 

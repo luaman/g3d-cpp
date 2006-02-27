@@ -13,9 +13,10 @@
 #ifndef G3D_STOPWATCH_H
 #define G3D_STOPWATCH_H
 
-#include "Queue.h"
-#include "G3DGameUnits.h"
-#include "g3dmath.h"
+#include "G3D/platform.h"
+#include "G3D/Queue.h"
+#include "G3D/G3DGameUnits.h"
+#include "G3D/g3dmath.h"
 
 namespace G3D {
 

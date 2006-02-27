@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2004-03-28
- @edited  2006-01-10
+ @edited  2006-02-28
 
  Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
@@ -13,9 +13,10 @@
 #ifndef G3D_GLCAPS_H
 #define G3D_GLCAPS_H
 
-#include "graphics3D.h"
 #include "G3D/platform.h"
+#include "G3D/Set.h"
 #include "GLG3D/glheaders.h"
+#include <string>
 
 namespace G3D {
 
@@ -276,17 +277,12 @@ public:
 void describeSystem(
     class RenderDevice*  rd, 
     class NetworkDevice* nd, 
-    TextOutput& t);
+    class TextOutput& t);
 
-inline void describeSystem(
+void describeSystem(
     class RenderDevice*  rd, 
     class NetworkDevice* nd, 
-    std::string&        s) {
-    
-    TextOutput t;
-    describeSystem(rd, nd, t);
-    t.commitString(s);
-}
+    std::string&        s);
 
 } // namespace
 

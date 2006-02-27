@@ -21,7 +21,7 @@
 #include <string>
 
 #ifdef G3D_OSX
-#include <CoreServices/CoreServices.h>
+#	include <CoreServices/CoreServices.h>
 #endif
 
 namespace G3D {

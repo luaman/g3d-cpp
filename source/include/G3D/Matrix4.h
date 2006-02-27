@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
  
   @created 2003-10-02
-  @edited  2004-12-05
+  @edited  2006-02-05
  */
 
 #ifndef G3D_MATRIX4_H
@@ -18,6 +18,7 @@
 #   pragma warning( disable : 4127 )
 #endif
 
+#include "G3D/platform.h"
 #include "G3D/debugAssert.h"
 
 namespace G3D {

@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /GR /GX /Od /I "include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "_CRT_SECURE_NO_DEPRECATE" /FD /GZ /c
-# SUBTRACT CPP /Z<none> /Fr /YX
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -596,14 +596,6 @@ SOURCE=.\include\G3D\Vector4.inl
 # Begin Source File
 
 SOURCE=.\include\G3D\vectorMath.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\zconf.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\zlib.h
 # End Source File
 # End Group
 # Begin Group "IJG"

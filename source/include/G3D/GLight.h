@@ -4,12 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2003-11-12
-  @edited  2005-03-08
+  @edited  2006-02-08
 */
 
 #ifndef G3D_GLIGHT_H
 #define G3D_GLIGHT_H
 
+#include "G3D/platform.h"
 #include "G3D/Vector4.h"
 #include "G3D/Vector3.h"
 #include "G3D/Color4.h"

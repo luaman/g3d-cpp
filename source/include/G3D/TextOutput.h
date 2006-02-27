@@ -5,13 +5,14 @@
   @created 2004-06-21
   @edited  2005-11-05
 
-  Copyright 2000-2005, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
 #ifndef G3D_TEXTOUTPUT_H
 #define G3D_TEXTOUTPUT_H
 
+#include "G3D/platform.h"
 #include "G3D/Array.h"
 #include <string>
 

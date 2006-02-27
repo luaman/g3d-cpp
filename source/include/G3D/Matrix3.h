@@ -8,12 +8,13 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2005-08-20
+  @edited  2006-02-20
  */
 
 #ifndef G3D_MATRIX3_H
 #define G3D_MATRIX3_H
 
+#include "G3D/platform.h"
 #include "G3D/Vector3.h"
 #include "G3D/Vector4.h"
 #include "G3D/debugAssert.h"

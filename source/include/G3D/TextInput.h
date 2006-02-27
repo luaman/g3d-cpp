@@ -17,6 +17,7 @@
 #ifndef G3D_TEXTINPUT_H
 #define G3D_TEXTINPUT_H
 
+#include "G3D/platform.h"
 #include "G3D/Array.h"
 #include <string>
 #include <queue>

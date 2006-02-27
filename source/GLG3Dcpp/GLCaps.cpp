@@ -6,24 +6,16 @@
   @edited  2006-01-15
 */
 
+#include "G3D/TextOutput.h"
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/getOpenGLState.h"
+#include "GLG3D/RenderDevice.h"
+#include "G3D/NetworkDevice.h"
 #include <sstream>
-/*
-#ifdef G3D_WIN32
-#   include <winver.h>
-#   include "GLG3D/Win32Window.h"
-#elif defined(G3D_OSX)
-#	include "GLG3D/SDLWindow.h"
-#else
-#   include "GLG3D/X11Window.h"
-#endif
 
-#include "GLG3D/SDLWindow.h"
-*/
 namespace G3D {
 
 // Global init flags for GLCaps.  Because this is an integer constant (equal to zero),
@@ -1165,6 +1157,29 @@ void GLCaps::checkBug_slowVBO() {
     value = RAMTime < VBOTime * 0.9;
     return value;
 #endif
+}
+
+void describeSystem(
+    class RenderDevice*  rd, 
+    class NetworkDevice* nd, 
+    TextOutput& t) {
+
+	System::describeSystem(t);
+	rd->describeSystem(t);
+
+	// TODO: Why does this cause a linker error?
+	//nd->describeSystem(t);
+}
+
+
+void describeSystem(
+    class RenderDevice*  rd, 
+    class NetworkDevice* nd, 
+    std::string&        s) {
+    
+    TextOutput t;
+    describeSystem(rd, nd, t);
+    t.commitString(s);
 }
 
 }

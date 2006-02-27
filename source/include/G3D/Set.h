@@ -6,12 +6,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-12-09
-  @edited  2005-08-20
+  @edited  2006-02-20
  */
 
 #ifndef G3D_SET_H
 #define G3D_SET_H
 
+#include "G3D/platform.h"
 #include "G3D/Table.h"
 #include <assert.h>
 #include <string>

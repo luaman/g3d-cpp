@@ -23,7 +23,6 @@
 #endif
 
 
-#include "graphics3D.h"
 #include "GLG3D/GWindow.h"
 
 namespace G3D {

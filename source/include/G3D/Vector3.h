@@ -16,6 +16,7 @@
 #ifndef G3D_VECTOR3_H
 #define G3D_VECTOR3_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Vector2.h"
 #include <iostream>

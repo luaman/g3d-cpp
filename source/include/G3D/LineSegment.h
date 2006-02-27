@@ -4,12 +4,13 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-02-08
- @edited  2003-02-22
+ @edited  2006-02-22
  */
 
 #ifndef G3D_LINESEGMENT_H
 #define G3D_LINESEGMENT_H
 
+#include "G3D/platform.h"
 #include "G3D/Vector3.h"
 
 namespace G3D {

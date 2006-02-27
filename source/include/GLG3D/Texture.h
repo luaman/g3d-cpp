@@ -4,13 +4,13 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2006-01-15
+  @edited  2006-02-28
 */
 
 #ifndef GLG3D_TEXTURE_H
 #define GLG3D_TEXTURE_H
 
-#include "graphics3D.h"
+#include "G3D/ReferenceCount.h"
 #include "GLG3D/glheaders.h"
 #include "GLG3D/TextureFormat.h"
 

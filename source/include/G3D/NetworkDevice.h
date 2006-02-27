@@ -62,6 +62,7 @@
 
 namespace G3D {
 
+class TextOutput;
 
 /**
  Interface for data sent through a conduit.
@@ -730,7 +731,7 @@ public:
      to the text output stream.  Either argument may be NULL.
      */
     void describeSystem(
-        class TextOutput& t);
+        TextOutput& t);
 
     void describeSystem(
         std::string&        s);

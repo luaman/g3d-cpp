@@ -8,13 +8,14 @@
   @created 2002-07-09
   @edited  2005-03-28
 
-  Copyright 2000-2005, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
 #ifndef G3D_VECTOR4_H
 #define G3D_VECTOR4_H
 
+#include "G3D/platform.h"
 #include "G3D/g3dmath.h"
 #include "G3D/Vector3.h"
 #include "G3D/Vector2.h"

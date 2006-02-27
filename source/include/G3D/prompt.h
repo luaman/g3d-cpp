@@ -11,6 +11,7 @@
 #ifndef G3D_PROMPT_H
 #define G3D_PROMPT_H
 
+#include "platform.h"
 #include <string>
 
 namespace G3D {
@@ -28,8 +29,9 @@ namespace G3D {
 
   @cite Windows dialog interface by Max McGuire, mmcguire@ironlore.com
   @cite Font setting code by Kurt Miller, kurt@flipcode.com
+  @deprecated
  */
-int prompt(
+int G3D_DEPRECATED prompt(
     const char*     windowTitle,
     const char*     promptx,
     const char**    choice,
@@ -41,8 +43,9 @@ int prompt(
   the number of the user's choice (the first is 0, if there are no
   choices, returns 0).
   <P>Uses GUI under Win32, stdout prompt otherwise.
+  @deprecated
  */
-inline int prompt(
+inline int G3D_DEPRECATED prompt(
     const char*     windowTitle,
     const char*     promptx,
     const char**    choice,
@@ -54,12 +57,12 @@ inline int prompt(
 
 /**
  Displays a GUI prompt with "Ok" as the only choice.
-
+ @deprecated 
  <B>Note:</B> SDL 1.2.6 interferes with this and causes it to return
  immediately.  If you use SDL, use SDL 1.2.5, which does not have that
  problem.
  */
-void msgBox(
+void G3D_DEPRECATED msgBox(
     const std::string& message,
     const std::string& title="Message");
 

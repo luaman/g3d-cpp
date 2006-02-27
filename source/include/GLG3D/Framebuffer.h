@@ -9,16 +9,17 @@
  </UL>
 
  @created 2006-01-07
- @edited  2006-01-11
+ @edited  2006-02-22
 */
 
 #ifndef GLG3D_FRAMEBUFFER_H
 #define GLG3D_FRAMEBUFFER_H
 
-#include "GLG3D/Texture.h"
-#include "GLG3D/Renderbuffer.h"
 #include "G3D/Array.h"
 #include "G3D/Table.h"
+#include "G3D/Rect2D.h"
+#include "GLG3D/Texture.h"
+#include "GLG3D/Renderbuffer.h"
 #include <string.h>
 
 namespace G3D {
@@ -281,7 +282,7 @@ public:
     }
 
 	inline Rect2D rect2DBounds() const {
-		return Rect2D::xywh(0, 0, m_width, m_height);
+		return Rect2D::xywh(0, 0, (float)m_width, (float)m_height);
 	}
 
     inline const std::string& name() const {

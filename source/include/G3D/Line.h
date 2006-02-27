@@ -6,12 +6,13 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-06-02
- @edited  2004-03-28
+ @edited  2006-02-28
  */
 
 #ifndef G3D_LINE_H
 #define G3D_LINE_H
 
+#include "G3D/platform.h"
 #include "G3D/Vector3.h"
 
 namespace G3D {

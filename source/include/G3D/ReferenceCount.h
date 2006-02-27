@@ -8,13 +8,14 @@
   @cite See also http://www.jelovic.com/articles/cpp_without_memory_errors_slides.htm
 
   @created 2001-10-23
-  @edited  2005-10-24
+  @edited  2006-02-24
 
 */
 
 #ifndef G3D_RGC_H
 #define G3D_RGC_H
 
+#include "G3D/platform.h"
 #include "G3D/debug.h"
 #include "G3D/AtomicInt32.h"
 

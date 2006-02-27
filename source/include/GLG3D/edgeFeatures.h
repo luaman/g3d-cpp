@@ -10,7 +10,8 @@
 #ifndef G3D_FEATUREEDGES_H
 #define G3D_FEATUREEDGES_H
 
-#include "graphics3D.h"
+#include "G3D/platform.h"
+#include "G3D/g3dmath.h"
 #include "GLG3D/PosedModel.h"
 
 namespace G3D {

@@ -5,15 +5,16 @@
 
   @created 2003-08-09
   @edited  2004-01-03
-  Copyright 2000-2004, Morgan McGuire.
+
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
 #ifndef VECTOR2INT16_H
 #define VECTOR2INT16_H
 
-#include "G3D/g3dmath.h"
 #include "G3D/platform.h"
+#include "G3D/g3dmath.h"
 
 namespace G3D {
 
