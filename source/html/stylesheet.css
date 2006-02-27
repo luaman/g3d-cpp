@@ -4,7 +4,7 @@
     @maintainer Daniel J. Hilferty, daniel@hilferty.org
     
     @created    23-Feb-2006
-    @edited     23-Feb-2006
+    @edited     27-Feb-2006
  */
 
 a.qindex {}
@@ -21,18 +21,18 @@ a.elRef {
 a.code { 
     text-decoration: none; 
     font-weight: normal; 
-    color: #4444ee; }
+    color: #2929ee; }
 
 a.codeRef { 
     font-weight: normal; 
-    color: #4444ee; }
+    color: #2929ee; }
 
 a:hover { 
     text-decoration: none; 
-    background-color: #C0C0FF; }
+    background-color: #E0E0FF; }
 
 a:visited {
-    color: #3333FF; }
+    color: #2929ee; }
 
 body {
     background: white; 
@@ -71,26 +71,23 @@ div.groupText {
 h1 { 
     text-align: center; }
 
+table.mdTable, td.md, td.mdname1, td.mdname {
+    background:		#FFFF90; }
+
 table.mdTable {
-    background:		#FFF0B0;
     width:			100%; 
     border-style:   solid;
     border-color:   #676767;
     border-width:   1px; }
 
 td.md { 
-    background-color: #FFF0B0; 
     font-weight: bold; }
 
-td.mdname1 { 
-    background-color: #FFF0B0; 
+td.mdname1, td.mdname { 
     font-weight: bold; 
     color: #602020; }
 
 td.mdname { 
-    background-color: #FFF0B0; 
-    font-weight: bold; 
-    color: #602020; 
     width: 600px; }
 
 td.memItemLeft, td.memItemRight {
@@ -127,3 +124,4 @@ span.comment       { color: #800000 }
 span.preprocessor  { color: #806020 }
 span.stringliteral { color: #002080 }
 span.charliteral   { color: #008080 }
+.charliteral   { color: #008080 }
