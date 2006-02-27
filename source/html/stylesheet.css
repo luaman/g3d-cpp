@@ -73,6 +73,8 @@ h1 {
 
 table.mdTable, td.md, td.mdname1, td.mdname {
     background:		#FFFF90; }
+table.mdTable, td.md, td.mdname1, td.mdname {
+    background:		#E0E0E0; }
 
 table.mdTable {
     width:			100%; 
