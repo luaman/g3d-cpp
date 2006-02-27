@@ -32,7 +32,7 @@ a:hover {
     background-color: #C0C0FF; }
 
 a:visited {
-    color: #338899; }
+    color: #3333FF; }
 
 body {
     background: white; 
@@ -75,7 +75,7 @@ table.mdTable {
     background:		#FFF0B0;
     width:			100%; 
     border-style:   solid;
-    border-color:   #6666FF;
+    border-color:   #676767;
     border-width:   1px; }
 
 td.md { 
