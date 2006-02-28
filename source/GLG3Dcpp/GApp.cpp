@@ -353,16 +353,16 @@ void GApplet::oneFrame() {
 
     // Simulation
     app->m_simulationWatch.tick();
-        if (app->debugController.active()) {
-            app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-    	    app->debugCamera.setCoordinateFrame
-                (app->debugController.getCoordinateFrame());
-        }
-        double rate = simTimeRate();    
-        onSimulation(timeStep, timeStep * rate, desiredFrameDuration() * rate);
-        setRealTime(realTime() + timeStep);
-        setSimTime(simTime() + timeStep * rate);
-        setIdealSimTime(idealSimTime() + desiredFrameDuration() * rate);
+		if (app->debugController.active()) {
+			app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
+			app->debugCamera.setCoordinateFrame
+				(app->debugController.getCoordinateFrame());
+		}
+		double rate = simTimeRate();    
+		onSimulation(timeStep, timeStep * rate, desiredFrameDuration() * rate);
+		setRealTime(realTime() + timeStep);
+		setSimTime(simTime() + timeStep * rate);
+		setIdealSimTime(idealSimTime() + desiredFrameDuration() * rate);
     app->m_simulationWatch.tock();
 
     // Logic

@@ -380,7 +380,7 @@ public:
       is required for backwards compatibility; in version 7.00 it will
       change).
     */
-    void run();
+    virtual void run();
 
     /**
       Usually you'll call GApplet::run instead.  This is used by GApp.
@@ -389,7 +389,7 @@ public:
       to false, calls GApplet::onInit(), copies the debug camera
       position to the debug camera controller,
     */
-    void beginRun();
+    virtual void beginRun();
 
     /** 
       Usually you'll call GApplet::run instead.  This is used by GApp.
@@ -399,14 +399,14 @@ public:
       require a main loop.  This if your GWindow does not require
       control of the main loop, GApp will call this for you.
     */
-    void oneFrame();
+    virtual void oneFrame();
 
     /**
       Usually you'll call GApplet::run instead.  This is used by GApp.
 
       Invokes cleanup().
      */
-    void endRun();
+    virtual void endRun();
 
 protected:
 

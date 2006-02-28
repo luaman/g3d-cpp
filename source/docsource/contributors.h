@@ -2,21 +2,21 @@
 @page contributors Contributors
 
  <b>Team Members</b>
- <br><i>(6.08 Release Team)</i>
+ <br><i>6.08 Release Team</i>
   <br>Morgan McGuire [Brown] - Win32 Lead (Project Manager)
   <br>Corey Taylor [EA] - Linux Lead
   <br>Casey O'Donnell [RPI]- OS X Lead
   <br>Tom Wardill - Doc Lead
   <br>Daniel Hilferty [US Air Force] - Documentation
-  <br>Rich Deeson [Codemasters] - Documentation
-
-  <P><i>(Other Team Members)</i>
-  <br>Peter Sibley [Brown] - Developer
   <br>Dan Keefe [Brown] - Developer
+
+  <P><i>Other Team Members</i>
+  <br>Peter Sibley [Brown] - Developer
   <br>Ben Landon [Sensible] - Developer
   <br>Kevin Egan [Rhythm & Hues] - Developer
   <br>Dmitri [Brown] - Developer
   <br>Gabe Taubman - Developer (OS X)
+  <br>Rich Deeson [Codemasters] - Documentation
 
    <b>Previous Contributors and Cited Sources</b>
    <br>This library contains code and resources contributed by the

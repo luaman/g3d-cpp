@@ -13,7 +13,7 @@
  * or in pipe mode.
  */
 
-/* @(#) $Id: minigzip.c,v 1.1 2005/12/10 09:28:30 vejita Exp $ */
+/* @(#) $Id: minigzip.c,v 1.2 2006/02/28 00:52:23 morgan3d Exp $ */
 
 #include <stdio.h>
 #include "zlib.h"
@@ -52,6 +52,10 @@
 
 #ifndef WIN32 /* unlink already in stdio.h for WIN32 */
   extern int unlink OF((const char *));
+#endif
+
+#ifdef _MSC_VER
+#	pragma warning (disable : 4996)
 #endif
 
 #ifndef GZ_SUFFIX
