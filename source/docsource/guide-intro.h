@@ -99,9 +99,10 @@ The library contains code, documentation, and demos from over 30
 \link contributors contributors \endlink.  The team leads are:
 
 <B>Morgan McGuire</B> has been the %G3D project manager and Windows team lead 
-since 2000.  He is a 3D software consultant with Masters degrees in electrical engineering and computer
-science from MIT and Brown University.  He has been a senior architect at several 
-companies in the graphics  industry and published award-winning research papers.
+since 2000.  He is a 3D software consultant with a Masters degree in electrical engineering from MIT and a 
+PhD in computer graphics from Brown University.  He has been a senior architect at several 
+companies in the graphics industry, worked on several commercial games including <I>Titan Quest</I>, 
+and published award-winning research papers.
 
 <B>Corey Taylor</B> is the %G3D Linux team lead.  
 His professional software 
