@@ -296,6 +296,10 @@ private:
 
 public:
 
+	inline int simIterations() const {
+		return m_simIterations;
+	}
+
     /** Amount of time that passes in simTime for every second of realTime.
         e.g., 1.0 == real-time, 2.0 == fast, 0.5 == slow, 0.0 = stop time.
         Default is 1.0.
