@@ -78,6 +78,10 @@ SOURCE=.\Doxyfile
 
 SOURCE=..\g3dinstaller.nsi
 # End Source File
+# Begin Source File
+
+SOURCE=.\OnlineDoxyfile
+# End Source File
 # End Group
 # Begin Group "Guide"
 
