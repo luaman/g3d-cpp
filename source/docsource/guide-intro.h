@@ -105,10 +105,10 @@ companies in the graphics industry, worked on several commercial games including
 and published award-winning research papers.
 
 <B>Corey Taylor</B> is the %G3D Linux team lead.  
-His professional software 
+His past professional software 
 experience covers both Windows, Linux and RTOS fields developing flight control
 and planning software, video and input control systems, and embedded development
-and testing.  He has worked with G3D since early 2004.
+and testing.  He is currently developing 3D games at Electronic Arts.
   
 <B>Gabe Taubman</B> and <B>Benjamin Landon</B> provide OS X support.  Gabe has been a Mac user since 1998
 and took first prize in the 2004 undergraduate ACM SIGGRAPH Student Research Competition 
