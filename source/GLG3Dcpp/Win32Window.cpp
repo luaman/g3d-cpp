@@ -1036,13 +1036,11 @@ static bool ChangeResolution(int width, int height, int bpp, int refreshRate) {
 
 static void makeKeyEvent(int vkCode, int lParam, GEvent& e) {
 
-	// G3D::UserInput only uses the GEvent::key::keysym::sym value
-    // No need to set the rest of the structure
-
+    // If true, we're looking at the right hand version of
+    // Fix VK_SHIFT, VK_CONTROL, VK_MENU
     bool extended = (lParam >> 24) & 0x01;
 
     // Check for normal letter event
-    // Fix VK_SHIFT, VK_CONTROL, VK_MENU to Left/Right equivalents    
     if ((vkCode >= 'A') && (vkCode <= 'Z')) {
 
         // Make key codes lower case canonically
@@ -1065,6 +1063,13 @@ static void makeKeyEvent(int vkCode, int lParam, GEvent& e) {
         e.key.keysym.sym = (SDLKey)_sdlKeys[iClamp(vkCode, 0, SDLK_LAST)];
 
     }
+
+    e.key.keysym.scancode = MapVirtualKey(vkCode, 0); 
+        //(lParam >> 16) & 0x7F;
+
+    static PBYTE lpKeyState;
+    GetKeyboardState(lpKeyState);   
+    ToUnicode(vkCode, e.key.keysym.scancode, lpKeyState, (LPWSTR)&e.key.keysym.unicode, 1, 0);
 }
 
 

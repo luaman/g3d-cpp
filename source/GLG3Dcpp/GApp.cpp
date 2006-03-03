@@ -448,6 +448,11 @@ void GApplet::doUserInput() {
     // Event handling
     GEvent event;
     while (app->window()->pollEvent(event)) {
+
+        if (onEvent(event)) {
+            continue;
+        }
+
         switch(event.type) {
         case SDL_QUIT:
 	        app->endProgram = true;
@@ -494,8 +499,6 @@ void GApplet::doUserInput() {
 
         default:;
         }
-
-        processEvent(event);
 
         app->userInput->processEvent(event);
     }
