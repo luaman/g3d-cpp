@@ -1071,26 +1071,30 @@ static void makeKeyEvent(int vkCode, int lParam, GEvent& e) {
     GetKeyboardState(lpKeyState);
 
     int mod = 0;
-    if (lpKeyState[VK_LSHIFT]) {
+    if (lpKeyState[VK_LSHIFT] & 0x80) {
         mod = mod | KMOD_LSHIFT;
     }
 
-    if (lpKeyState[VK_RSHIFT]) {
+    if (lpKeyState[VK_RSHIFT] & 0x80) {
         mod = mod | KMOD_RSHIFT;
     }
 
-    if (lpKeyState[VK_LCONTROL]) {
+    if (lpKeyState[VK_LCONTROL] & 0x80) {
         mod = mod | KMOD_LCTRL;
     }
 
-    if (lpKeyState[VK_RMENU]) {
-        mod = mod | KMOD_RALT;
+    if (lpKeyState[VK_RCONTROL] & 0x80) {
+        mod = mod | KMOD_RCTRL;
     }
 
-    if (lpKeyState[VK_RMENU]) {
+    if (lpKeyState[VK_LMENU] & 0x80) {
+        mod = mod | KMOD_LALT;
+    }
+
+    if (lpKeyState[VK_RMENU] & 0x80) {
         mod = mod | KMOD_RALT;
     }
-    e.key.keysym.mod = (SDLMod)0;
+    e.key.keysym.mod = (SDLMod)mod;
 
     ToUnicode(vkCode, e.key.keysym.scancode, lpKeyState, (LPWSTR)&e.key.keysym.unicode, 1, 0);
 }
@@ -1115,8 +1119,35 @@ static void mouseButton(bool down, int keyEvent, DWORD flags, GEvent& e) {
 
 
     e.key.keysym.scancode = 0;
-    // TODO: fwKeys = wParam;        // key flags 
-    e.key.keysym.mod = KMOD_NONE;
+
+    static BYTE lpKeyState[256];
+    GetKeyboardState(lpKeyState);
+
+    int mod = 0;
+    if (lpKeyState[VK_LSHIFT] & 0x80) {
+        mod = mod | KMOD_LSHIFT;
+    }
+
+    if (lpKeyState[VK_RSHIFT] & 0x80) {
+        mod = mod | KMOD_RSHIFT;
+    }
+
+    if (lpKeyState[VK_LCONTROL] & 0x80) {
+        mod = mod | KMOD_LCTRL;
+    }
+
+    if (lpKeyState[VK_RCONTROL] & 0x80) {
+        mod = mod | KMOD_RCTRL;
+    }
+
+    if (lpKeyState[VK_LMENU] & 0x80) {
+        mod = mod | KMOD_LALT;
+    }
+
+    if (lpKeyState[VK_RMENU] & 0x80) {
+        mod = mod | KMOD_RALT;
+    }
+    e.key.keysym.mod = (SDLMod)mod;
 }
 
 
