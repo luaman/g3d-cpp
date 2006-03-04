@@ -296,10 +296,6 @@ private:
 
 public:
 
-	inline int simIterations() const {
-		return m_simIterations;
-	}
-
     /** Amount of time that passes in simTime for every second of realTime.
         e.g., 1.0 == real-time, 2.0 == fast, 0.5 == slow, 0.0 = stop time.
         Default is 1.0.
@@ -555,8 +551,8 @@ protected:
         cleanup();
     }
     
-    /** @deprecated */
-    virtual void G3D_DEPRECATED processEvent(const SDL_Event& event) {
+    /** @deprecated Use onEvent */
+    virtual void G3D_DEPRECATED processEvent(const GEvent& event) {
         (void)event;
     }
 
@@ -571,10 +567,13 @@ protected:
      you do not have to override this method to handle
      basic input events.
 
+     Return true if the event has been consumed (i.e., no-one else including GApp should process it further).
+
      The default implementation does nothing.
      */
-    virtual void onEvent(const SDL_Event& event) {
+    virtual bool onEvent(const GEvent& event) {
         processEvent(event);
+        return false;
     }
 
     /**

@@ -1067,8 +1067,31 @@ static void makeKeyEvent(int vkCode, int lParam, GEvent& e) {
     e.key.keysym.scancode = MapVirtualKey(vkCode, 0); 
         //(lParam >> 16) & 0x7F;
 
-    static PBYTE lpKeyState;
-    GetKeyboardState(lpKeyState);   
+    static BYTE lpKeyState[256];
+    GetKeyboardState(lpKeyState);
+
+    int mod = 0;
+    if (lpKeyState[VK_LSHIFT]) {
+        mod = mod | KMOD_LSHIFT;
+    }
+
+    if (lpKeyState[VK_RSHIFT]) {
+        mod = mod | KMOD_RSHIFT;
+    }
+
+    if (lpKeyState[VK_LCONTROL]) {
+        mod = mod | KMOD_LCTRL;
+    }
+
+    if (lpKeyState[VK_RMENU]) {
+        mod = mod | KMOD_RALT;
+    }
+
+    if (lpKeyState[VK_RMENU]) {
+        mod = mod | KMOD_RALT;
+    }
+    e.key.keysym.mod = (SDLMod)0;
+
     ToUnicode(vkCode, e.key.keysym.scancode, lpKeyState, (LPWSTR)&e.key.keysym.unicode, 1, 0);
 }
 

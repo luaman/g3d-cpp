@@ -10,7 +10,7 @@
    will be supported until (at least) the next major release.
 
    <TABLE><TR><TD>
-   <I>The next major, incompatible release will be G3D 7.00, planned for release in January 2006 (there will be betas
+   <I>The next major, incompatible release will be G3D 7.00, planned for release in December 2006 (there will be betas
       and point releases before then). We plan to streamline the API by making the following changes:</I>
      <UL>
        <LI>G3D::Sky create methods will no longer accept a G3D::RenderDevice.
@@ -26,6 +26,13 @@
      </UL>
    </TD></TR></TABLE>
 
+   <P>
+   Changes in 6.09:
+   <UL>
+    <LI> GApplet::onEvent can now consume (prevent GApp from seeing) the event
+    <LI> Fix: Win32GWindow now produces correct character and scan codes for key events
+    <LI> Fix: GApplet::onEvent calls GApplet::processEvent by default
+   </UL>
   <P>   
    Changes in 6.08:
     <UL>
