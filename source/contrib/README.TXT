@@ -35,3 +35,5 @@ Q3Map         - Quake 3 map loader. Morgan.
 VideoSerializer - Lossless compression of video for streaming across a network or saving to disk.  By Morgan.
 
 GChunk        - Simplifies reading and writing of chunk file formats.  Beta for 6.07. By Morgan.
+
+GConsole      - In-game command line console support.  By Morgan.

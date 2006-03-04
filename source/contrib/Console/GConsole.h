@@ -12,8 +12,8 @@
 
 #include "G3D/platform.h"
 
-#if G3D_VER < 60800
-    #error Requires G3D 6.08 or later
+#if G3D_VER < 60900
+    #error Requires G3D 6.09 or later
 #endif
 
 #include "G3D/Array.h"
