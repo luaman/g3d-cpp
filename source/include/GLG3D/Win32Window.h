@@ -37,7 +37,7 @@ private:
 	
     //static Array<GWindowSettings> _supportedSettings;
 
-	GWindowSettings		 settings;
+	Settings			 settings;
 	std::string			 _title;
     HDC                  _hDC;
 	HGLRC				 _glContext;
@@ -90,7 +90,7 @@ private:
 	  @param s The settings describing the pixel format of the windows with which
 	  resources will be shared.  Sharing may fail if all windows do not have the
 	  same format.*/ 
-	static void createShareWindow(GWindowSettings s);
+	static void createShareWindow(GWindow::Settings s);
 
     /** Initializes the WGL extensions by creating and then destroying a window.  
         Also registers our window class.  
@@ -101,13 +101,13 @@ private:
     static void initWGL();
     
 	/** Constructs from a new window */
-	explicit Win32Window(const GWindowSettings& settings, bool creatingShareWindow = false);
+	explicit Win32Window(const GWindow::Settings& settings, bool creatingShareWindow = false);
 
 	/** Constructs from an existing window */
-	explicit Win32Window(const GWindowSettings& settings, HWND hwnd);
+	explicit Win32Window(const GWindow::Settings& settings, HWND hwnd);
 
 	/** Constructs from an existing window */
-	explicit Win32Window(const GWindowSettings& settings, HDC hdc);
+	explicit Win32Window(const GWindow::Settings& settings, HDC hdc);
 
     HWND                 window;
 	const bool		     createdWindow;
@@ -120,13 +120,13 @@ public:
     /** Different subclasses will be returned depending on
         whether DirectInput8 is available. You must delete 
         the window returned when you are done with it. */
-    static Win32Window* create(const GWindowSettings& settings=GWindowSettings());
+    static Win32Window* create(const GWindow::Settings& settings = GWindow::Settings());
 
-    static Win32Window* create(const GWindowSettings& settings, HWND hwnd);
+    static Win32Window* create(const GWindow::Settings& settings, HWND hwnd);
 
     /** The HDC should be a private CS_OWNDC device context because it is assumed to
         be perisistant.*/
-    static Win32Window* create(const GWindowSettings& settings, HDC hdc);
+    static Win32Window* create(const GWindow::Settings& settings, HDC hdc);
 
     /** Finds all of the compatible GWindowSettings supported by hardware.
 
@@ -156,7 +156,7 @@ public:
 		return _hDC;
 	}
 
-	void getSettings(GWindowSettings& settings) const;
+	void getSettings(GWindow::Settings& settings) const;
 	
     virtual int width() const;
 	

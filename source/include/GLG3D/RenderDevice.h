@@ -8,7 +8,7 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2001-05-29
-  @edited  2006-01-11
+  @edited  2006-03-04
 
   Copyright 2001-2006, Morgan McGuire
 */
@@ -58,7 +58,7 @@ class VAR;
      is enabled by default.  You may be able to get a slight speed increase
      by disabling GL_NORMALIZE or using GL_SCALE_NORMAL instead.
 
- <P> For stereo rendering, set <CODE>GWindowSettings::stereo = true</CODE>
+ <P> For stereo rendering, set <CODE>GWindow::Settings::stereo = true</CODE>
      and use RenderDevice::setDrawBuffer to switch which eye is being rendered.  Only
      use RenderDevice::beginFrame/RenderDevice::endFrame once per frame,
      but do clear both buffers separately.
@@ -71,7 +71,7 @@ class VAR;
  Example
   <PRE>
    RenderDevice renderDevice = new RenderDevice();
-   renderDevice->init(GWindowSettings());
+   renderDevice->init(GWindow::Settings());
   </PRE>
 
   RenderDevice requires SDL and OpenGL.  
@@ -578,7 +578,7 @@ public:
     inline void disableAlphaWrite();
 
     /** The frame buffer may optionally have an alpha channel for each pixel, depending on how
-        the G3D::GWindow was initialized (see G3D::RenderDevice::init, and G3D::GWindowSettings).
+        the G3D::GWindow was initialized (see G3D::RenderDevice::init, and G3D::GWindow::Settings).
         When the alpha channel is present, rendering to the screen also renders to the alpha 
         channel by default.  Alpha writing is used for render-to-texture and deferred lighting effects.
     
@@ -1484,7 +1484,7 @@ public:
      routine (provided for backwards compatibility).  The constructed
      window is deleted on shutdown.
      */
-    bool init(const GWindowSettings& settings = GWindowSettings(), class Log* log = NULL);
+    bool init(const GWindow::Settings& settings = GWindow::Settings(), class Log* log = NULL);
 
     /**
      The renderDevice will <B>not</B> delete the window on cleanup.

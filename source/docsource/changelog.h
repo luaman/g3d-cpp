@@ -29,6 +29,9 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> Renamed GAppSettings to G3D::GApp::Settings (old name is supported but deprecated)
+	<LI> Renamed GWindowSettings to G3D::GWindow::Settings (old name is supported but deprecated)
+	<LI> Renamed TextInput::Options to G3D::TextInput::Options (old name is supported but deprecated)
     <LI> GApplet::onEvent can now consume (prevent GApp from seeing) the event
     <LI> Fix: Win32GWindow now produces correct character and scan codes for key events
     <LI> Fix: GApplet::onEvent calls GApplet::processEvent by default

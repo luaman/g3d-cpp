@@ -78,12 +78,12 @@ static void printPixelFormatDescription(int, HDC, TextOutput&);
     for a discussion of why this is necessary. */
 static const char* G3DWndClass();
 
-//Array<GWindowSettings> Win32Window::_supportedSettings;
+//Array<GWindow::Settings> Win32Window::_supportedSettings;
 
 Win32Window* Win32Window::_shareWindow = NULL;
 
 
-Win32Window::Win32Window(const GWindowSettings& s, bool creatingShareWindow)
+Win32Window::Win32Window(const GWindow::Settings& s, bool creatingShareWindow)
 :createdWindow(true)
 ,_diDevices(NULL)
 {
@@ -205,7 +205,7 @@ Win32Window::Win32Window(const GWindowSettings& s, bool creatingShareWindow)
 
 
 
-Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) : createdWindow(false) {
+Win32Window::Win32Window(const GWindow::Settings& s, HWND hwnd) : createdWindow(false) {
     initWGL();
 
 	_thread = ::GetCurrentThread();
@@ -217,7 +217,7 @@ Win32Window::Win32Window(const GWindowSettings& s, HWND hwnd) : createdWindow(fa
 }
 
 
-Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) : createdWindow(false)  {
+Win32Window::Win32Window(const GWindow::Settings& s, HDC hdc) : createdWindow(false)  {
     initWGL();
 
 	_thread = ::GetCurrentThread();
@@ -234,7 +234,7 @@ Win32Window::Win32Window(const GWindowSettings& s, HDC hdc) : createdWindow(fals
 }
 
 
-Win32Window* Win32Window::create(const GWindowSettings& settings) {
+Win32Window* Win32Window::create(const GWindow::Settings& settings) {
 
     // Create Win32Window which uses DI8 joysticks but WM_ keyboard messages
     return new Win32Window(settings);    
@@ -242,14 +242,14 @@ Win32Window* Win32Window::create(const GWindowSettings& settings) {
 }
 
 
-Win32Window* Win32Window::create(const GWindowSettings& settings, HWND hwnd) {
+Win32Window* Win32Window::create(const GWindow::Settings& settings, HWND hwnd) {
 
     // Create Win32Window which uses DI8 joysticks but WM_ keyboard messages
     return new Win32Window(settings, hwnd);    
     
 }
 
-Win32Window* Win32Window::create(const GWindowSettings& settings, HDC hdc) {
+Win32Window* Win32Window::create(const GWindow::Settings& settings, HDC hdc) {
 
     // Create Win32Window which uses DI8 joysticks but WM_ keyboard messages
     return new Win32Window(settings, hdc);    
@@ -387,11 +387,11 @@ void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
 }
 
 /* TODO
-const Array<GWindowSettings>& Win32Window::SupportedWindowSettings() {
+const Array<GWindow::Settings>& Win32Window::SupportedWindowSettings() {
     return _supportedSettings;
 }
 
-bool Win32Window::ClosestSupportedWindowSettings(const GWindowSettings& desired, GWindowSettings& closest) {
+bool Win32Window::ClosestSupportedWindowSettings(const GWindow::Settings& desired, GWindow::Settings& closest) {
     return false;
 }
 */
@@ -544,7 +544,7 @@ Win32Window::~Win32Window() {
 }
 
 
-void Win32Window::getSettings(GWindowSettings& s) const {
+void Win32Window::getSettings(GWindow::Settings& s) const {
 	s = settings;
 }
 
@@ -954,7 +954,7 @@ void Win32Window::initWGL() {
 
 
 
-void Win32Window::createShareWindow(GWindowSettings settings) {
+void Win32Window::createShareWindow(GWindow::Settings settings) {
 	static bool init = false;
 	if (init) {
 		return;

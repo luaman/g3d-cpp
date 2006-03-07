@@ -32,7 +32,7 @@ static void writeLicense() {
 }
 
 
-GApp::GApp(const GAppSettings& settings, GWindow* window) {
+GApp::GApp(const Settings& settings, GWindow* window) {
     debugLog          = NULL;
     debugFont         = NULL;
     endProgram        = false;
@@ -141,7 +141,7 @@ void GApp::loadFont(const std::string& fontName) {
     } else {
         debugLog->printf(
             "Warning: G3D::GApp could not load font \"%s\".\n"
-            "This may be because the G3D::GAppSettings::dataDir was not\n"
+            "This may be because the G3D::GApp::Settings::dataDir was not\n"
             "properly set in main().\n",
             filename.c_str());
 

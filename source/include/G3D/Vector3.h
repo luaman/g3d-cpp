@@ -79,10 +79,13 @@ public:
     Vector3(double coordinate[3]);
     Vector3(const Vector3& rkVector);
     Vector3(const class Vector3int16& v);
+	Vector3(class TextInput& t);
 
+	/** Format is three float32's */
     void serialize(class BinaryOutput& b) const;
     void deserialize(class BinaryInput& b);
 
+	/** Format is "(%f, %f, %f)" */
     void serialize(class TextOutput& t) const;
     void deserialize(class TextInput& t);
     

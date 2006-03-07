@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2006-02-20
+ @edited  2006-03-04
  */
 
 #ifndef G3D_GAPP_H
@@ -17,52 +17,56 @@
 #include "GLG3D/RenderDevice.h"
 #include "GLG3D/TextureManager.h"
 #include "G3D/NetworkDevice.h"
+#include "GLG3D/GWindow.h"
 
 namespace G3D {
 
 class RenderDevice;
 class UserInput;
 
-class GAppSettings {
-public:
-    RenderDeviceSettings    window;
-
-    /**
-     If "<AUTO>", G3D will search for the standard
-     data files.  It is recommended that you override this
-     default and set dataDir to a directory relative
-     to your executable (e.g. "./data/")
-     so your programs can be distributed to users who
-     do not have full the G3D data directory.
-     */
-    std::string             dataDir;
-
-    /**
-     Can be relative to the G3D data directory (e.g. "font/dominant.fnt")
-     or relative to the current directory.
-     Default is "console-small.fnt"
-     */
-    std::string             debugFontName;
-
-    std::string             logFilename;
-
-    /** 
-      When true, GAapp ensures that g3d-license.txt exists in the current
-      directory.  That file is written from the return value of G3D::license() */
-    bool                    writeLicenseFile;
-
-    /** When true, the networkDevice is initialized.  Defaults to true. */
-    bool                    useNetwork;
-
-    GAppSettings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), 
-        logFilename("log.txt"), writeLicenseFile(true), useNetwork(true) {
-    }
-};
-
 /**
   See @link guideapp @endlink for the philosophy of GApp and GApplet. 
  */
 class GApp {
+public:
+
+	class Settings {
+	public:
+		GWindow::Settings    window;
+
+		/**
+		 If "<AUTO>", G3D will search for the standard
+		 data files.  It is recommended that you override this
+		 default and set dataDir to a directory relative
+		 to your executable (e.g. "./data/")
+		 so your programs can be distributed to users who
+		 do not have full the G3D data directory.
+		 */
+		std::string             dataDir;
+
+		/**
+		 Can be relative to the G3D data directory (e.g. "font/dominant.fnt")
+		 or relative to the current directory.
+		 Default is "console-small.fnt"
+		 */
+		std::string             debugFontName;
+
+		std::string             logFilename;
+
+		/** 
+		  When true, GAapp ensures that g3d-license.txt exists in the current
+		  directory.  That file is written from the return value of G3D::license() */
+		bool                    writeLicenseFile;
+
+		/** When true, the networkDevice is initialized.  Defaults to true. */
+		bool                    useNetwork;
+
+		Settings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), 
+			logFilename("log.txt"), writeLicenseFile(true), useNetwork(true) {
+		}
+	};
+
+
 private:
     bool                    _debugMode;
 
@@ -122,7 +126,7 @@ public:
         return m_simulationWatch;
     }
 
-    /** Initialized to GAppSettings::dataDir, or if that is "<AUTO>", 
+    /** Initialized to GApp::Settings::dataDir, or if that is "<AUTO>", 
         to System::demoFindData(). To make your program
         distributable, override the default 
         and copy all data files you need to a local directory.
@@ -242,7 +246,7 @@ public:
          argument is useful for substituting a different window
          system (e.g. GlutWindow)
      */
-    GApp(const GAppSettings& settings = GAppSettings(), GWindow* window = NULL);
+    GApp(const Settings& options = Settings(), GWindow* window = NULL);
 
     virtual ~GApp();
 
@@ -595,6 +599,11 @@ protected:
         (void)userInput;
     }
 };
+
+/**
+ @deprecated Use GApp::Settings.  GAppSettings will be removed in 7.0 
+ */
+typedef GApp::Settings GAppSettings;
 
 }
 

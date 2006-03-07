@@ -85,6 +85,9 @@ double frand() {
     return rand() / (double) RAND_MAX;
 }
 
+Vector3::Vector3(TextInput& t) {
+	deserialize(t);
+}
 
 Vector3::Vector3(BinaryInput& b) {
     deserialize(b);

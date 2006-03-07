@@ -171,7 +171,7 @@ public:
   'b'.  Outside of quoted strings, escape sequences are not converted,
   so the token sequence for [a\nb] is symbol 'a', symbol '\', symbol
   'nb' (this matches what a C++ parser would do).  The exception is
-  that a specified TextInput::Options::otherCommentCharacter preceeded
+  that a specified TextInput::Settings::otherCommentCharacter preceeded
   by a backslash is assumed to be an escaped comment character and is
   returned as a symbol token instead of being parsed as a comment
   (this is what a LaTex or VRML parser would do).
@@ -208,7 +208,7 @@ class TextInput {
 public:
 
     /** Tokenizer configuration options.  */
-    class Options {
+    class Settings {
     public:
         /** If true, slash-star marks a multi-line comment.  Default
             is true. */
@@ -297,13 +297,16 @@ public:
           Default is false (for backwards compatibility). */
         bool                msvcSpecials;
 
-        Options ()
+        Settings ()
             : cComments(true), cppComments(true), escapeSequencesInStrings(true), 
               otherCommentCharacter('\0'), otherCommentCharacter2('\0'),
               signedNumbers(true), singleQuotedStrings(true), sourceFileName(),
               startingLineNumberOffset(0), msvcSpecials(false)
         { }
     };
+
+	/** @deprecated */
+	typedef Settings Options;
 
 private:
 
@@ -342,7 +345,7 @@ private:
 
     /** Configuration options.  This includes the file name that will be
         reported in tokens and exceptions.  */
-    Options                 options;
+    Settings                options;
 
     void init() {
         currentCharOffset = 0;
@@ -407,7 +410,7 @@ public:
 
         /** Line number of start of token which caused the exception.  1 is
             the first line of the file.  Note that you can use 
-            TextInput::Options::startingLineNumberOffset to shift the effective line
+            TextInput::Settings::startingLineNumberOffset to shift the effective line
             number that is reported.
          */
         int             line;
@@ -484,13 +487,13 @@ public:
             const std::string&  a);
     };
 
-    TextInput(const std::string& filename, const Options& options = Options());
+    TextInput(const std::string& filename, const Settings& settings = Settings());
 
     enum FS {FROM_STRING};
     /** Creates input directly from a string.  The first argument must be
         TextInput::FROM_STRING.
     */
-    TextInput(FS fs, const std::string& str, const Options& options = Options());
+    TextInput(FS fs, const std::string& str, const Settings& settings = Settings());
 
     /** Returns true while there are tokens remaining. */
     bool hasMore();
@@ -498,11 +501,11 @@ public:
     /** Read the next token (which will be the END token if ! hasMore()).
     
         Signed numbers can be handled in one of two modes.  If the option 
-        TextInput::Options::signedNumbers is true,
+        TextInput::Settings::signedNumbers is true,
         A '+' or '-' immediately before a number is prepended onto that number and
         if there is intervening whitespace, it is read as a separate symbol.
 
-        If TextInput::Options::signedNumbers is false,
+        If TextInput::Settings::signedNumbers is false,
         read() does not distinguish between a plus or minus symbol next
         to a number and a positive/negative number itself.  For example, "x - 1" and "x -1"
         will be parsed the same way by read().  
@@ -518,7 +521,7 @@ public:
 
         If the first token in the input is a number, it is returned directly.
 
-        If TextInput::Options::signedNumbers is false and the input stream
+        If TextInput::Settings::signedNumbers is false and the input stream
         contains a '+' or '-' symbol token immediately followed by a number
         token, both tokens will be consumed and a single token will be
         returned by this method.
