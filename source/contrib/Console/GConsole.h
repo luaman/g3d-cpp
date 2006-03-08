@@ -119,6 +119,15 @@ private:
 
     GFontRef            m_font;
 
+    /** Current history line being retrieved when using UP/DOWN.
+        When a history command is used unmodified,
+        the history index sticks.  Otherwise it resets to the end
+        of the list on Enter.*/
+    int                 m_historyIndex;
+
+    /** When true, the history item has been modified since the last UP/DOWN. */
+    bool                m_resetHistoryIndexOnEnter;
+
     /** Previously executed commands. */
     Array<string>       m_history;
 
@@ -180,6 +189,10 @@ private:
     /** Invoked when the user presses enter. */
     void issueCommand();
 
+    /** Called from repeatKeysym on UP/DOWN. */
+    void historySelect(int direction);
+
+    /** Issues text to the buffer. */
     void print(const string& s, const Color4& c);
 
 public:

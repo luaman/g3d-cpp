@@ -15,7 +15,8 @@ GConsole::GConsole(const GFontRef& f, const Settings& s, Callback callback, void
     m_cursorPos(0),
     m_callback(callback),
     m_callbackData(data),
-    m_bufferShift(0) {
+    m_bufferShift(0),
+    m_resetHistoryIndexOnEnter(true) {
 
     debugAssert(m_font.notNull());
 
@@ -34,6 +35,8 @@ GConsole::GConsole(const GFontRef& f, const Settings& s, Callback callback, void
     m_currentLine = "load \"horse.ifs\"";
     m_cursorPos = m_currentLine.size() + 1;
     */
+
+    m_historyIndex = m_history.size() - 1;
 }
 
 
@@ -65,6 +68,13 @@ void GConsole::issueCommand() {
     }
 
     m_history.push(oldCommandLine);
+
+    if (m_resetHistoryIndexOnEnter) {
+        // Note that we need to go one past the end of the list so that
+        // the first up arrow allows us to hit the last element.
+        m_historyIndex = m_history.size();
+        m_resetHistoryIndexOnEnter = true;
+    }
 
     onCommand(oldCommandLine);
 }
@@ -151,6 +161,7 @@ void GConsole::processRepeatKeysym() {
             m_currentLine = 
                 m_currentLine.substr(0, m_cursorPos) + 
                 m_currentLine.substr(m_cursorPos + 1, string::npos);
+            m_resetHistoryIndexOnEnter = true;
         }
         break;
 
@@ -161,16 +172,21 @@ void GConsole::processRepeatKeysym() {
                 ((m_cursorPos < m_currentLine.size()) ? 
                   m_currentLine.substr(m_cursorPos, string::npos) :
                   string());
+            m_resetHistoryIndexOnEnter = true;
            --m_cursorPos;
         }
         break;
 
     case SDLK_UP:
-        // TODO: history
+        if (m_historyIndex > 0) {
+            historySelect(-1);
+        }
         break;
 
     case SDLK_DOWN:
-        // TODO: history
+        if (m_historyIndex < m_history.size() - 1) {
+            historySelect(+1);
+        }
         break;
 
     case SDLK_TAB:
@@ -212,6 +228,7 @@ void GConsole::processRepeatKeysym() {
                   string());
             ++m_cursorPos;
 
+            m_resetHistoryIndexOnEnter = true;
         } else {
             // This key wasn't processed by the console
             debugAssertM(false, "Unexpected repeat key");
@@ -220,8 +237,17 @@ void GConsole::processRepeatKeysym() {
 }
 
 
+void GConsole::historySelect(int direction) {
+    m_historyIndex += direction;
+    m_currentLine = m_history[m_historyIndex];
+    m_cursorPos = m_currentLine.size();
+    m_resetHistoryIndexOnEnter = false;
+}
+
+
 void GConsole::completeCommand(int direction) {
     // TODO
+    m_resetHistoryIndexOnEnter = true;
 }
 
 void GConsole::setRepeatKeysym(SDL_keysym key) {
