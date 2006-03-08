@@ -9,19 +9,13 @@
 
 namespace G3D {
 
-GConsole::GConsole(const GFontRef& f, Callback callback, void* data) :
+GConsole::GConsole(const GFontRef& f, const Settings& s, Callback callback, void* data) :
     m_font(f),
-    m_lineHeight(13),
-    m_numVisibleLines(10),
+    m_settings(s),
     m_cursorPos(0),
-    m_blinkRate(3),
-    m_keyRepeatRate(16),
-    m_keyRepeatDelay(0.25),
-    m_commandEcho(true),
     m_callback(callback),
     m_callbackData(data),
-    m_bufferShift(0),
-    m_maxBufferLength(2000) {
+    m_bufferShift(0) {
 
     debugAssert(m_font.notNull());
 
@@ -66,8 +60,8 @@ void GConsole::issueCommand() {
     // Jump back to the end
     m_bufferShift = 0;
 
-    if (m_commandEcho) {
-        print(oldCommandLine);
+    if (m_settings.commandEcho) {
+        print(oldCommandLine, m_settings.defaultCommandColor);
     }
 
     m_history.push(oldCommandLine);
@@ -103,21 +97,38 @@ void __cdecl GConsole::printf(const char* fmt, ...) {
 
 
 void __cdecl GConsole::vprintf(const char* fmt, va_list argPtr) {
-    print(vformat(fmt, argPtr));
+    print(vformat(fmt, argPtr), m_settings.defaultPrintColor);
 }
 
 
-void GConsole::print(const string& s) {
+void GConsole::print(const string& s, const Color4& c) {
     // If the buffer is too long, pop one from the front
-    if (m_buffer.size() >= m_maxBufferLength) {
+    if (m_buffer.size() >= m_settings.maxBufferLength) {
         m_buffer.popFront();
     }
 
-    m_buffer.pushBack(s);
+    m_buffer.pushBack(Text(s, c));
+}
+
+
+void GConsole::beginCompletion() {
+    // TODO: If we are in the middle of the string, 
+    // only try to complete a filename
+    m_completionBase = m_currentLine;
+}
+
+
+void GConsole::endCompletion() {
+    // Cancel the current completion
+    m_completionBase = string();
 }
 
 
 void GConsole::processRepeatKeysym() {
+    if (m_repeatKeysym.sym != SDLK_TAB) {
+        endCompletion();
+    }
+
     switch (m_repeatKeysym.sym) {
     case SDLK_UNKNOWN:
         // No key
@@ -163,11 +174,16 @@ void GConsole::processRepeatKeysym() {
         break;
 
     case SDLK_TAB:
-        // TODO: command completion
+        // Command completion
+        if ((m_repeatKeysym.mod & KMOD_SHIFT) != 0) {
+            completeCommand(-1);
+        } else {
+            completeCommand(1);
+        }
         break;
 
     case SDLK_PAGEUP:
-        if (m_bufferShift < m_buffer.length() - m_numVisibleLines + 1) {
+        if (m_bufferShift < m_buffer.length() - m_settings.numVisibleLines + 1) {
             ++m_bufferShift;
         }
         break;
@@ -204,9 +220,13 @@ void GConsole::processRepeatKeysym() {
 }
 
 
+void GConsole::completeCommand(int direction) {
+    // TODO
+}
+
 void GConsole::setRepeatKeysym(SDL_keysym key) {
     m_keyDownTime = System::time();
-    m_keyRepeatTime = m_keyDownTime + m_keyRepeatDelay;
+    m_keyRepeatTime = m_keyDownTime + m_settings.keyRepeatDelay;
     m_repeatKeysym = key;
 }
 
@@ -291,7 +311,7 @@ void GConsole::onGraphics(RenderDevice* rd) {
 
     static const Color4 backColor(0.0f, 0.0f, 0.0f, 0.3f);
     static const float  pad = 2;
-    const float         fontSize = m_lineHeight - 3;
+    const float         fontSize = m_settings.lineHeight - 3;
    
     Rect2D rect;
 
@@ -302,22 +322,22 @@ void GConsole::onGraphics(RenderDevice* rd) {
     // If a key is being pressed, process it on a steady repeat schedule.
     if (hasKeyDown && (now > m_keyRepeatTime)) {
         processRepeatKeysym();
-        m_keyRepeatTime = now + 1.0 / m_keyRepeatRate;
+        m_keyRepeatTime = now + 1.0 / m_settings.keyRepeatRate;
     }
 
 
     // Only blink the cursor when keys are not being pressed or
     // have not recently been pressed.
-    bool solidCursor = hasKeyDown || (now - m_keyRepeatTime < 1.0 / m_blinkRate);
+    bool solidCursor = hasKeyDown || (now - m_keyRepeatTime < 1.0 / m_settings.blinkRate);
     if (! solidCursor) {
         static const RealTime zero = System::time();
-        solidCursor = isOdd((int)((now - zero) * m_blinkRate));
+        solidCursor = isOdd((int)((now - zero) * m_settings.blinkRate));
     }
 
     {
         float w = rd->getWidth();
         float h = rd->getHeight();
-        float myHeight = m_lineHeight * m_numVisibleLines + pad * 2;
+        float myHeight = m_settings.lineHeight * m_settings.numVisibleLines + pad * 2;
 
         rect = Rect2D::xywh(pad, h - myHeight - pad, w - pad * 2, myHeight);
     }
@@ -329,10 +349,10 @@ void GConsole::onGraphics(RenderDevice* rd) {
 
         rect = Rect2D::xyxy(rect.x0y0() + Vector2(2,1), rect.x1y1() - Vector2(2,1));
         // Print history
-        for (int count = 0; count < m_numVisibleLines - 1; ++count) {
+        for (int count = 0; count < m_settings.numVisibleLines - 1; ++count) {
             int q = m_buffer.size() - count - 1 - m_bufferShift;
             if (q >= 0) {
-                m_font->draw2D(rd, m_buffer[q], rect.x0y1() - Vector2(0, m_lineHeight * (count + 2)), fontSize, Color3::white());
+                m_font->draw2D(rd, m_buffer[q].value, rect.x0y1() - Vector2(0, m_settings.lineHeight * (count + 2)), fontSize, m_buffer[q].color);
             }
         }
 
@@ -341,13 +361,13 @@ void GConsole::onGraphics(RenderDevice* rd) {
             rd->setColor(Color3::white());
             rd->setLineWidth(1.0f);
             rd->beginPrimitive(RenderDevice::LINES);
-                Vector2 v(rect.x0() - 0.3, rect.y1() - m_lineHeight - 1 - 0.3);
+                Vector2 v(rect.x0() - 0.3, rect.y1() - m_settings.lineHeight + 1 - 0.3);
                 rd->sendVertex(v);
                 rd->sendVertex(v + Vector2(rect.width(), 0));
             rd->endPrimitive();
         }
 
-        m_font->draw2D(rd, m_currentLine, rect.x0y1() - Vector2(0, m_lineHeight), fontSize, Color3::white());
+        m_font->draw2D(rd, m_currentLine, rect.x0y1() - Vector2(0, m_settings.lineHeight), fontSize, m_settings.defaultCommandColor);
 
         // Draw cursor
         if (solidCursor) {
@@ -358,7 +378,7 @@ void GConsole::onGraphics(RenderDevice* rd) {
                 bounds = m_font->get2DStringBounds(m_currentLine.substr(0, m_cursorPos), fontSize);
             }
 
-            m_font->draw2D(rd, "_", rect.x0y1() + Vector2(bounds.x, -m_lineHeight), fontSize, Color3::white());
+            m_font->draw2D(rd, "_", rect.x0y1() + Vector2(bounds.x, -m_settings.lineHeight), fontSize, m_settings.defaultCommandColor);
         }
 
     rd->pop2D();

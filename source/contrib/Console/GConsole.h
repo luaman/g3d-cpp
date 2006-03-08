@@ -41,6 +41,7 @@ class RenderDevice;
  Right arrow: cursor right
 
  Tab: reserved for substitute current completion
+ Shift+Tab: Reserved for command completion
 
  <B>Beta API</B>
  Future versions may support access to the constants for blink rate and key repeat,
@@ -49,6 +50,50 @@ class RenderDevice;
  */
 class GConsole {
 public:
+    class Settings {
+    public:
+        /** Cursor flashes per second. */
+        float               blinkRate;
+
+        /** Keypresses per second. */
+        float               keyRepeatRate;
+
+        /** Pixel height between lines when displayed. (font is slightly smaller than this) */
+        float               lineHeight;
+
+        /** Number of lines visible at any time. */
+        int                 numVisibleLines;
+
+        /** Maximum number of lines of scrollback */
+        int                 maxBufferLength;
+
+        /** Delay before the first key repeat in seconds. */
+        RealTime            keyRepeatDelay;
+
+        /** If true, commands are shown in the buffer. */
+        bool                commandEcho;
+
+        /** If true, tab completion includes filenames from the local disk. */
+        bool                allowFilenameCompletion;
+
+        Color4              defaultCommandColor;
+
+        Color4              defaultPrintColor;
+
+        Settings() : 
+            lineHeight(13),
+            numVisibleLines(10),
+            blinkRate(3),
+            keyRepeatRate(16),
+            keyRepeatDelay(0.25),
+            commandEcho(true),
+            maxBufferLength(2000),
+            allowFilenameCompletion(true),
+            defaultCommandColor(Color3::white()),
+            defaultPrintColor(0.8, 1.0, 0.8) {
+            }
+    };
+
     /** To allow later change to std::wstring */
     typedef std::string string;
 
@@ -58,23 +103,13 @@ public:
 
 protected:
 
-    /** Cursor flashes per second. */
-    float               m_blinkRate;
-
-    /** Keypresses per second. */
-    float               m_keyRepeatRate;
-
-    /** Pixel height between lines when displayed. */
-    float               m_lineHeight;
-
-    /** Number of lines visible at any time. */
-    int                 m_numVisibleLines;
-
     /** Invoked when the user presses enter.  
         Default implementation calls m_callback. */
     virtual void onCommand(const string& command);
 
 private:
+
+    Settings            m_settings;
 
     Callback            m_callback;
     void*               m_callbackData;
@@ -82,27 +117,37 @@ private:
     /** Key that is currently auto-repeating. */
     SDL_keysym          m_repeatKeysym;
 
-    /** If true, typed commands are automatically added to the buffer. */
-    bool                m_commandEcho;
-
     GFontRef            m_font;
 
     /** Previously executed commands. */
     Array<string>       m_history;
 
-    /** Previously displayed text. */
-    Queue<string>       m_buffer;
+    class Text {
+    public:
+        string          value;
+        Color4          color;
 
-    int                 m_maxBufferLength;
+        inline Text() {}
+        inline Text(const string& s, const Color4& c) : value(s), color(c) {}
+    };
+
+    /** Previously displayed text. */
+    Queue<Text>         m_buffer;
 
     /** Number of lines before the end of the buffer that are visible (affected
         by page up/page down).*/
     int                 m_bufferShift;
 
+    /** True when the console is open and processing events.*/
     bool                m_active;
 
     /** Currently entered command. */
     string              m_currentLine;
+
+    /** When command completion has begun, this is the base string off 
+        which completions are being matched.  Set to the empty string 
+        as soon as a non-tab key is pressed.*/
+    string              m_completionBase;
 
     /** Position of the cursor within m_currentLine (0 is the first slot) */
     int                 m_cursorPos;
@@ -113,8 +158,15 @@ private:
     /** Time at which the key will repeat (if down). */
     RealTime            m_keyRepeatTime;
 
-    /** Delay before the first key repeat. */
-    RealTime            m_keyRepeatDelay;
+    /** Invoked from processRepeatKeysym when a non-completion key is pressed. 
+        */
+    void endCompletion();
+
+    /** Called from processCompletion the first time TAB is pressed. */
+    void beginCompletion();
+
+    /** Invoked from processRepeatKeysym to handle command completion keys. */
+    void completeCommand(int direction);
 
     /** Called from onEvent when a key is pressed. */
     void setRepeatKeysym(SDL_keysym key);
@@ -128,11 +180,11 @@ private:
     /** Invoked when the user presses enter. */
     void issueCommand();
 
-    void print(const string& s);
+    void print(const string& s, const Color4& c);
 
 public:
 
-    GConsole(const GFontRef& f, Callback c = NULL, void* callbackData = NULL);
+    GConsole(const GFontRef& f, const Settings& s = Settings(), Callback c = NULL, void* callbackData = NULL);
 
     virtual ~GConsole();
 

@@ -37,7 +37,8 @@ void GConsoleApplet::printHelp() {
 }
 
 GConsoleApplet::GConsoleApplet(GApp* _app) : GApplet(_app), m_app(_app) {
-    m_console = new GConsole(m_app->debugFont, _consoleCallback, this);
+    GConsole::Settings s;
+    m_console = new GConsole(m_app->debugFont, s, _consoleCallback, this);
     printHelp();
 }
 
