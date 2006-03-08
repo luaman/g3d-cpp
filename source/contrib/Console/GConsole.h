@@ -50,6 +50,9 @@ class RenderDevice;
  */
 class GConsole {
 public:
+    /** To allow later change to std::wstring */
+    typedef std::string string;
+
     class Settings {
     public:
         /** Cursor flashes per second. */
@@ -74,11 +77,20 @@ public:
         bool                commandEcho;
 
         /** If true, tab completion includes filenames from the local disk. */
-        bool                allowFilenameCompletion;
+        bool                performFilenameCompletion;
+
+        /** If true, tab completion includes issued commands and commands in the completionSeed array. */
+        bool                performCommandCompletion;
 
         Color4              defaultCommandColor;
 
         Color4              defaultPrintColor;
+
+        /** 
+         Commands that can be completed by TAB, in addition to those in the history.
+         Include common keywords here, for example, to seed the command completion buffer.
+         */
+        Array<string>       commandCompletionSeed;
 
         Settings() : 
             lineHeight(13),
@@ -93,9 +105,6 @@ public:
             defaultPrintColor(0.8, 1.0, 0.8) {
             }
     };
-
-    /** To allow later change to std::wstring */
-    typedef std::string string;
 
     typedef void(*Callback)(const string&, void*);
 
