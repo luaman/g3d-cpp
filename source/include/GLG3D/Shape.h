@@ -566,11 +566,13 @@ public:
         return geometry.center();
     }
 
-    /** not implemented */
-    virtual Sphere boundingSphere() const;
+    virtual Sphere boundingSphere() const {
+        return Sphere(geometry.center(), inf());
+    }
 
-    /** not implemented */
-    virtual AABox boundingAABox() const;
+    virtual AABox boundingAABox() const {
+        return AABox(-Vector3::inf(), Vector3::inf());
+    }
 
     virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const {
         P = Vector3::nan();

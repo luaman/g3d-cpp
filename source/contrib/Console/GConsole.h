@@ -89,6 +89,7 @@ public:
         /** 
          Commands that can be completed by TAB, in addition to those in the history.
          Include common keywords here, for example, to seed the command completion buffer.
+         Commands that were actually typed by the user will take precedence.
          */
         Array<string>       commandCompletionSeed;
 
@@ -100,7 +101,8 @@ public:
             keyRepeatDelay(0.25),
             commandEcho(true),
             maxBufferLength(2000),
-            allowFilenameCompletion(true),
+            performFilenameCompletion(true),
+            performCommandCompletion(true),
             defaultCommandColor(Color3::white()),
             defaultPrintColor(0.8, 1.0, 0.8) {
             }
@@ -175,6 +177,12 @@ private:
 
     /** Time at which the key will repeat (if down). */
     RealTime            m_keyRepeatTime;
+
+    /** Filled out by beginCompletion.*/
+    Array<string>       m_completionArray;
+
+    /** Index of the current completion in the m_completionArray */
+    int                 m_completionArrayIndex;
 
     /** Invoked from processRepeatKeysym when a non-completion key is pressed. 
         */

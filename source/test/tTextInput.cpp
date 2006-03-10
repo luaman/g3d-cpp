@@ -4,6 +4,17 @@ void testTextInput() {
     printf("TextInput\n");
 
     {
+        // Parse floats
+ 		TextInput ti(TextInput::FROM_STRING, ".1");
+        debugAssert(ti.readNumber() == 0.1);
+    }
+    {
+ 		TextInput ti(TextInput::FROM_STRING, "..1");
+        debugAssert(ti.readSymbol() == "..");
+        debugAssert(ti.readNumber() == 1);
+    }
+
+    {
         // Quoted string with escapes.  The actual expression we are parsing looks like:
         // "\\"
  		TextInput ti(TextInput::FROM_STRING, "\"\\\\\"");

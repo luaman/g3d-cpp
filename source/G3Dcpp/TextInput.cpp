@@ -186,12 +186,12 @@ Token TextInput::nextToken() {
     // string to start with 'c'), eats the input character, and overwrites
     // 'c' with the peeked next input character.
 #define SETUP_SYMBOL(c)                                                         \
-    do {                                                                        \
+    {                                                                        \
         t._type = Token::SYMBOL;                                                \
         t._extendedType = Token::SYMBOL_TYPE;                                   \
         t._string = c;                                                          \
         c = eatAndPeekInputChar();                                              \
-    } while (0)
+    }
 
     switch (c) {
 
@@ -315,6 +315,11 @@ Token TextInput::nextToken() {
         return t;
 
     case '.':                   // number, ., .., or ...
+        if (isDigit(peekInputChar(1))) {
+            // We're parsing a float that began without a leading zero
+            goto numLabel;
+        }
+
         SETUP_SYMBOL(c);
 
         if (c == '.') {         // .. or ...
@@ -326,13 +331,6 @@ Token TextInput::nextToken() {
                 eatInputChar();
             }
             return t;
-        }
-
-        if (isDigit((char)c)) {
-            // Number.  'c' is the first digit, and is still the next input
-            // char.
-
-            goto numLabel;
         }
 
         return t;

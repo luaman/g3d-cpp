@@ -79,9 +79,6 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
-    ifsModel = IFSModel::create("D:/games/data/ifs/cylinder.ifs");
-    md2Model = MD2Model::create("D:/games/data/quake2/players/pknight/tris.md2");
-    angle = 45;
 }
 
 void Demo::onInit()  {
@@ -146,17 +143,6 @@ void Demo::onGraphics(RenderDevice* rd) {
         Draw::axes(rd);
         
         
-        PosedModelRef posed = md2Model->pose(CoordinateFrame(), MD2Model::Pose());
-            //ifsModel->pose(CoordinateFrame());
-        
-        posed->render(rd);
-
-        app->renderDevice->disableDepthWrite();
-        app->renderDevice->setTexture(0, NULL);
-        app->renderDevice->disableLighting();
-        app->renderDevice->setColor(Color3::blue());
-        app->renderDevice->setLineWidth(4.0);
-        G3D::drawFeatureEdges(app->renderDevice, posed, toRadians(angle));
         
 
     app->renderDevice->popState();

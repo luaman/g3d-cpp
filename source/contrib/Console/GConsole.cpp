@@ -121,10 +121,38 @@ void GConsole::print(const string& s, const Color4& c) {
 }
 
 
+static void parseForCompletion(
+    const GConsole::string&  source,
+    const int                x,
+    GConsole::string&        beginStr,
+    GConsole::string&        endStr) {
+    // TODO:
+    // Search backwards for a non-identifier character (start one before cursor)
+    // Search forwards for a non-identifier character
+}
+
 void GConsole::beginCompletion() {
-    // TODO: If we are in the middle of the string, 
-    // only try to complete a filename
-    m_completionBase = m_currentLine;
+    m_completionArray.fastClear();
+
+    // Push the current line on so that we can scroll back to it
+    m_completionArray.push(m_currentLine);
+    m_completionArrayIndex = 0;
+
+    // TODO: Separate the current line into two pieces; before and after the current word.
+    // A word follows normal C++ identifier rules.
+    string beginStr;
+    string endStr;
+
+    parseForCompletion(m_currentLine, m_cursorPos, beginStr, endStr);
+
+
+    // TODO: Generate filename completions
+
+    // TODO: Generate command completions against history (should this be against the buffer?)
+
+    // TODO: Generate command completions against seed
+
+    // TODO: Compute alternatives
 }
 
 

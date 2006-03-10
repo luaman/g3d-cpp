@@ -35,6 +35,7 @@
     <LI> GApplet::onEvent can now consume (prevent GApp from seeing) the event
     <LI> Fix: Win32GWindow now produces correct character and scan codes for key events
     <LI> Fix: GApplet::onEvent calls GApplet::processEvent by default
+    <LI> Fix: [ 1444320 ] TextInput parses ".1" as "1" instead of "0.1"
    </UL>
   <P>   
    Changes in 6.08:
