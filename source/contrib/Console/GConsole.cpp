@@ -91,6 +91,98 @@ void GConsole::clearHistory() {
 }
 
 
+void GConsole::paste(const string& s) {
+    if (s.empty()) {
+        // Nothing to do
+        return;
+    }
+
+    int i = 0;
+
+    // Separate the string by newlines and paste each individually
+    do {
+        int j = s.find('\n', i);
+
+        bool issue = true;
+
+        if (j == string::npos) {
+            j = s.size();
+            issue = false;
+        }
+            
+        string insert = s.substr(i, j - i + 1);
+
+        if (! insert.empty()) {
+            if (insert[0] == '\r') {
+                // On Win32, we can conceivably get carriage returns next to newlines in a paste
+                insert = insert.substr(1, insert.size() - 1);
+            }
+
+            if (! insert.empty() && (insert[insert.size() - 1] == '\r')) {
+                insert = insert.substr(0, insert.size() - 1);
+            }
+
+            if (! insert.empty()) {
+                string begin  = m_currentLine.substr(0, max(0, m_cursorPos - 1));
+                string end    = m_currentLine.substr(m_cursorPos, m_currentLine.size() - m_cursorPos + 1);
+
+                m_currentLine = begin + insert + end;
+                m_cursorPos += insert.size();
+            }
+        }
+
+        if (issue) {
+            issueCommand();
+        }
+
+        i = j + 1;
+    } while (i < s.size());
+}
+
+
+void GConsole::copyClipboard(const string& s) const {
+#   ifdef G3D_WIN32
+        if (OpenClipboard(NULL)) {
+            HGLOBAL hMem = GlobalAlloc(GHND | GMEM_DDESHARE, s.size() + 1);
+            if (hMem) {
+                char *pMem = (char*)GlobalLock(hMem);
+                strcpy(pMem, s.c_str());
+                GlobalUnlock(hMem);
+
+                EmptyClipboard();
+                SetClipboardData(CF_TEXT, hMem);
+            }
+
+            CloseClipboard();
+            GlobalFree(hMem);
+        }
+#   endif
+}
+
+
+void GConsole::pasteClipboard() {
+    string s;
+
+#   ifdef G3D_WIN32
+        if (OpenClipboard(NULL)) {
+            HANDLE h = GetClipboardData(CF_TEXT);
+
+            if (h) {
+	            char* temp = (char*)GlobalLock(h);
+                if (temp) {
+    	            s = temp;
+                }
+                temp = NULL;
+	            GlobalUnlock(h);
+            }
+            CloseClipboard();
+        }
+#   endif
+
+    paste(s);
+}
+
+
 void __cdecl GConsole::printf(const char* fmt, ...) {
 	va_list arg_list;
 	va_start(arg_list, fmt);
@@ -483,9 +575,31 @@ bool GConsole::onEvent(const GEvent& event) {
             break;
 
         default:
-            if ((event.key.keysym.sym >= SDLK_SPACE) &&
+
+            if ((((event.key.keysym.mod & KMOD_CTRL) != 0) &&
+                 (event.key.keysym.sym == SDLK_v)) ||
+                (((event.key.keysym.mod & KMOD_SHIFT) != 0) &&
+                (event.key.keysym.sym == SDLK_INSERT))) {
+
+                // Paste (not autorepeatable)
+                pasteClipboard();
+                return true;
+
+            } else if (((event.key.keysym.mod & KMOD_CTRL) != 0) &&
+                (event.key.keysym.sym == SDLK_k)) {
+
+                // Cut (not autorepeatable)
+                string cut = m_currentLine.substr(m_cursorPos);
+                m_currentLine = m_currentLine.substr(0, m_cursorPos);
+
+                copyClipboard(cut);
+
+                return true;
+
+            } else if ((event.key.keysym.sym >= SDLK_SPACE) &&
                 (event.key.keysym.sym <= SDLK_z)) {
 
+                // A normal character
                 setRepeatKeysym(event.key.keysym);
                 processRepeatKeysym();
                 return true;
@@ -515,7 +629,6 @@ void GConsole::onGraphics(RenderDevice* rd) {
         return;
     }
 
-    static const Color4 backColor(0.0f, 0.0f, 0.0f, 0.3f);
     static const float  pad = 2;
     const float         fontSize = m_settings.lineHeight - 3;
    
@@ -551,9 +664,11 @@ void GConsole::onGraphics(RenderDevice* rd) {
     rd->push2D();
 
         rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
-        Draw::fastRect2D(rect, rd, backColor);
+        if (m_settings.backgroundColor.a > 0) {
+            Draw::fastRect2D(rect, rd, m_settings.backgroundColor);
+        }
 
-        rect = Rect2D::xyxy(rect.x0y0() + Vector2(2,1), rect.x1y1() - Vector2(2,1));
+        rect = Rect2D::xyxy(rect.x0y0() + Vector2(2,1), rect.x1y1() - Vector2(2, 1));
         // Print history
         for (int count = 0; count < m_settings.numVisibleLines - 1; ++count) {
             int q = m_buffer.size() - count - 1 - m_bufferShift;
