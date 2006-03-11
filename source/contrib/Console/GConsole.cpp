@@ -4,8 +4,10 @@
 */
 
 #include "GConsole.h"
-#include <GLG3D/RenderDevice.h>
-#include <GLG3D/Draw.h>
+#include "G3D/stringutils.h"
+#include "G3D/fileutils.h"
+#include "GLG3D/RenderDevice.h"
+#include "GLG3D/Draw.h"
 
 namespace G3D {
 
@@ -16,25 +18,14 @@ GConsole::GConsole(const GFontRef& f, const Settings& s, Callback callback, void
     m_callback(callback),
     m_callbackData(data),
     m_bufferShift(0),
-    m_resetHistoryIndexOnEnter(true) {
+    m_resetHistoryIndexOnEnter(true),
+    m_inCompletion(false) {
 
     debugAssert(m_font.notNull());
 
     unsetRepeatKeysym();
     m_keyDownTime = System::time();
     setActive(true);
-
-    /*
-    // For debugging:
-    for (int i = 0; i < 100; ++i) {
-        m_buffer.pushBack(format("%d %d %d %d %d", i, i, i, i, i));
-    }
-    m_buffer.pushBack("set basecolor = (1, 0, 1)");
-    m_buffer.pushBack("clear scene");
-    m_buffer.pushBack("cd ..");
-    m_currentLine = "load \"horse.ifs\"";
-    m_cursorPos = m_currentLine.size() + 1;
-    */
 
     m_historyIndex = m_history.size() - 1;
 }
@@ -65,6 +56,8 @@ void GConsole::issueCommand() {
 
     if (m_settings.commandEcho) {
         print(oldCommandLine, m_settings.defaultCommandColor);
+    } else {
+        addToCompletionHistory(oldCommandLine);
     }
 
     m_history.push(oldCommandLine);
@@ -112,6 +105,8 @@ void __cdecl GConsole::vprintf(const char* fmt, va_list argPtr) {
 
 
 void GConsole::print(const string& s, const Color4& c) {
+    addToCompletionHistory(s);
+
     // If the buffer is too long, pop one from the front
     if (m_buffer.size() >= m_settings.maxBufferLength) {
         m_buffer.popFront();
@@ -125,45 +120,197 @@ static void parseForCompletion(
     const GConsole::string&  source,
     const int                x,
     GConsole::string&        beginStr,
+    GConsole::string&        matchStr,
     GConsole::string&        endStr) {
-    // TODO:
+
     // Search backwards for a non-identifier character (start one before cursor)
-    // Search forwards for a non-identifier character
+    int i = x - 1;
+
+    while ((i >= 0) && (isDigit(source[i]) || isLetter(source[i]))) {
+        --i;
+    }
+
+    beginStr = source.substr(0, i + 1);
+    matchStr = source.substr(i + 1, x - i - 1);
+    endStr   = source.substr(x, source.size() - x + 1);
 }
+
+
+inline static bool isQuote(char c) {
+    return (c == '\'') || (c == '\"');
+}
+
+
+void GConsole::generateFilenameCompletions(Array<string>& files) {
+
+    if (m_cursorPos == 0) {
+        // Nothing to do
+        return;
+    }
+
+    // Walk backwards, looking for a slash space or a quote that breaks the filename)
+    int i = m_cursorPos - 1;
+
+    while ((i > 0) && 
+            ! isWhiteSpace(m_currentLine[i]) &&
+            ! isQuote(m_currentLine[i])) {
+        --i;
+    }
+
+    string filespec = m_currentLine.substr(i, m_cursorPos - i + 1) + "*";
+
+    getFiles(filespec, files, false);
+    getDirs(filespec, files, false);
+}
+
 
 void GConsole::beginCompletion() {
     m_completionArray.fastClear();
 
-    // Push the current line on so that we can scroll back to it
-    m_completionArray.push(m_currentLine);
+    // Separate the current line into two pieces; before and after the current word.
+    // A word follows normal C++ identifier rules.
+    string matchStr;
+
+    parseForCompletion(m_currentLine, m_cursorPos, m_completionBeginStr, matchStr, m_completionEndStr);
+
+    // Push the current command on so that we can TAB back to it
+    m_completionArray.push(matchStr);
     m_completionArrayIndex = 0;
 
-    // TODO: Separate the current line into two pieces; before and after the current word.
-    // A word follows normal C++ identifier rules.
-    string beginStr;
-    string endStr;
+    // Don't insert the same completion more than once
+    static Set<string> alreadySeen;
 
-    parseForCompletion(m_currentLine, m_cursorPos, beginStr, endStr);
+    if (m_settings.performFilenameCompletion) {
+        static Array<string> fcomplete;
+
+        generateFilenameCompletions(fcomplete);
+
+        for (int i = 0; i < fcomplete.size(); ++i) {
+            const string& s = fcomplete[i];
+            if (! alreadySeen.contains(s)) {
+                m_completionArray.push(s);
+            }
+        }
+
+        fcomplete.fastClear();
+    }
 
 
-    // TODO: Generate filename completions
+    if (m_settings.performCommandCompletion && ! matchStr.empty()) {
+        // Generate command completions against completionHistory
+        for (int i = 0; i < m_completionHistory.size(); ++i) {
+            const string& s = m_completionHistory[i];
+            if (beginsWith(s, matchStr) && ! alreadySeen.contains(s)) {
+                m_completionArray.push(s);
+            }
+        }
 
-    // TODO: Generate command completions against history (should this be against the buffer?)
+        // Generate command completions against seed array
+        for (int i = 0; i < m_settings.commandCompletionSeed.size(); ++i) {
+            const string& s = m_settings.commandCompletionSeed[i];
+            if (beginsWith(s, matchStr) && ! alreadySeen.contains(s)) {
+                m_completionArray.push(s);
+            }
+        }
+    }
 
-    // TODO: Generate command completions against seed
+    if (m_completionArray.size() > 1) {
+        // We found at least one new alternative to the current string
+        m_inCompletion = true;
+    }
 
-    // TODO: Compute alternatives
+    alreadySeen.clear();
 }
 
 
 void GConsole::endCompletion() {
     // Cancel the current completion
-    m_completionBase = string();
+    m_inCompletion = false;
+}
+
+
+void GConsole::addTokenToCompletionHistory(const string& s) {
+    // See if already present
+    if (m_completionHistorySet.contains(s)) {
+        return;
+    }
+
+    // See if we need to remove a queue element
+    if (m_completionHistory.size() > m_settings.maxCompletionHistorySize) {
+        m_completionHistorySet.remove(m_completionHistory.popFront());
+    }
+
+    m_completionHistory.pushBack(s);
+    m_completionHistorySet.insert(s);
+}
+
+
+void GConsole::addToCompletionHistory(const string& s) {
+    // Parse tokens.  
+
+    // This algorithm treats a token as a legal C++ identifier, number, or string.
+    // A better algorithm might follow the one from emacs, which considers pathnames
+    // and operator-separated tokens to also be tokens when combined.
+
+    static bool initialized = false;
+    static TextInput::Settings settings;
+    if (! initialized) {
+
+        settings.cComments = false;
+        settings.cppComments = false;
+        settings.msvcSpecials = false;
+
+        initialized = true;
+    }
+
+    try {
+        TextInput t(TextInput::FROM_STRING, s, settings);
+
+        while (t.hasMore()) {
+            Token x = t.read();
+
+            // No point in considering one-character completions
+            if (x.string().size() > 1) {
+                if (x.type() == Token::STRING) {
+                    // Recurse into the string to grab its tokens
+                    addToCompletionHistory(x.string());
+                } else {
+                    // Add the raw unparsed string contents
+                    addTokenToCompletionHistory(x.string());
+                } // if string
+            } // if
+        } // while
+    } catch (...) {
+        // In the event of a parse exception we just give up on this string;
+        // the worst that will happen is that we'll miss the opportunity to 
+        // add some tokens.
+    }
+}
+
+
+void GConsole::completeCommand(int direction) {
+    if (! m_inCompletion) {
+        beginCompletion();
+
+        if (! m_inCompletion) {
+            // No identifier under cursor
+            return;
+        }
+    }
+
+    // Compose new command line
+    m_completionArrayIndex = (m_completionArrayIndex + m_completionArray.size() + direction) % m_completionArray.size();
+
+    const string& str = m_completionArray[m_completionArrayIndex];
+    m_currentLine = m_completionBeginStr + str + m_completionEndStr;
+    m_cursorPos = m_completionBeginStr.size() + str.size();
+
+    m_resetHistoryIndexOnEnter = true;
 }
 
 
 void GConsole::processRepeatKeysym() {
-    if (m_repeatKeysym.sym != SDLK_TAB) {
+    if ((m_repeatKeysym.sym != SDLK_TAB) && m_inCompletion) {
         endCompletion();
     }
 
@@ -182,6 +329,14 @@ void GConsole::processRepeatKeysym() {
         if (m_cursorPos > 0) {
             --m_cursorPos;
         }
+        break;
+
+    case SDLK_HOME:
+        m_cursorPos = 0;
+        break;
+
+    case SDLK_END:
+        m_cursorPos = m_currentLine.size();
         break;
 
     case SDLK_DELETE:
@@ -273,11 +428,6 @@ void GConsole::historySelect(int direction) {
 }
 
 
-void GConsole::completeCommand(int direction) {
-    // TODO
-    m_resetHistoryIndexOnEnter = true;
-}
-
 void GConsole::setRepeatKeysym(SDL_keysym key) {
     m_keyDownTime = System::time();
     m_keyRepeatTime = m_keyDownTime + m_settings.keyRepeatDelay;
@@ -325,6 +475,8 @@ bool GConsole::onEvent(const GEvent& event) {
         case SDLK_PAGEUP:
         case SDLK_PAGEDOWN:
         case SDLK_RETURN:
+        case SDLK_HOME:
+        case SDLK_END:
             setRepeatKeysym(event.key.keysym);
             processRepeatKeysym();
             return true;

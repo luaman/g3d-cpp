@@ -25,19 +25,21 @@ void GConsoleApplet::consoleCallback(const std::string& cmd) {
 }
 
 void GConsoleApplet::printHelp() {
-    m_console->printf(" -----------------------------------------\n");
+    m_console->printf(" ----------------------------------------------------\n");
     m_console->printf(" PAGEUP/PAGEDOWN    Scroll console buffer\n");
     m_console->printf(" LEFT/RIGHT         Move cursor\n");
     m_console->printf(" ESCAPE             Close console\n");
     m_console->printf(" ~                  Open console\n");
     m_console->printf(" ENTER              Execute command\n");
+    m_console->printf(" TAB                Autocomplete variable or filename\n");
     m_console->printf(" exit               Quit program\n");
     m_console->printf(" help               Print this information\n");
-    m_console->printf(" -----------------------------------------\n");
+    m_console->printf(" ----------------------------------------------------\n");
 }
 
 GConsoleApplet::GConsoleApplet(GApp* _app) : GApplet(_app), m_app(_app) {
     GConsole::Settings s;
+
     m_console = new GConsole(m_app->debugFont, s, _consoleCallback, this);
     printHelp();
 }

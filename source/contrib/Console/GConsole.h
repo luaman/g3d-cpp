@@ -18,6 +18,7 @@
 
 #include "G3D/Array.h"
 #include "G3D/Queue.h"
+#include "G3D/Set.h"
 #include "GLG3D/GFont.h"
 #include "GLG3D/GWindow.h"
 
@@ -32,19 +33,22 @@ class RenderDevice;
  the callback function; this allows you to add a command processor either
  by subclassing GConsole or by passing a function to the constructor.
 
- ~: Open console (or write your own code that calls setActive)
- Esc: close console
- Enter: issue command
- Up arrow: scroll through history
- Down arrow: scroll through history
- Left arrow: cursor left
- Right arrow: cursor right
-
- Tab: reserved for substitute current completion
- Shift+Tab: Reserved for command completion
+ <ul>
+ <li>~: Open console (or write your own code that calls setActive)
+ <li>Esc: close console
+ <li>Enter: issue command
+ <li>Up arrow: scroll through history
+ <li>Down arrow: scroll through history
+ <li>Left arrow: cursor left
+ <li>Right arrow: cursor right
+ <li>Home: Cursor all the way to the left
+ <li>End: Cursor all the way to the right
+ <li>Tab: Complete current command or filename
+ <li>Shift+Tab: Complete current command or filename (forward search)
+ </ul>
 
  <B>Beta API</B>
- Future versions may support access to the constants for blink rate and key repeat,
+ <dt>Future versions may support access to the constants for blink rate and key repeat,
  provide colored fonts and line wrapping.
 
  */
@@ -82,6 +86,10 @@ public:
         /** If true, tab completion includes issued commands and commands in the completionSeed array. */
         bool                performCommandCompletion;
 
+        /** Number of unique tokens to keep for command completion purposes.
+            Does not include commandCompletionSeed elements in the count. */
+        int                 maxCompletionHistorySize;
+
         Color4              defaultCommandColor;
 
         Color4              defaultPrintColor;
@@ -95,18 +103,19 @@ public:
 
         Settings() : 
             lineHeight(13),
-            numVisibleLines(10),
+            numVisibleLines(11),
             blinkRate(3),
-            keyRepeatRate(16),
+            keyRepeatRate(18),
             keyRepeatDelay(0.25),
             commandEcho(true),
             maxBufferLength(2000),
             performFilenameCompletion(true),
             performCommandCompletion(true),
             defaultCommandColor(Color3::white()),
-            defaultPrintColor(0.8, 1.0, 0.8) {
-            }
-    };
+            defaultPrintColor(0.8, 1.0, 0.8),
+            maxCompletionHistorySize(3000) {
+        }
+    }; // Settings
 
     typedef void(*Callback)(const string&, void*);
 
@@ -118,7 +127,7 @@ protected:
         Default implementation calls m_callback. */
     virtual void onCommand(const string& command);
 
-private:
+protected:
 
     Settings            m_settings;
 
@@ -164,10 +173,52 @@ private:
     /** Currently entered command. */
     string              m_currentLine;
 
-    /** When command completion has begun, this is the base string off 
-        which completions are being matched.  Set to the empty string 
-        as soon as a non-tab key is pressed.*/
-    string              m_completionBase;
+    ///////////////////////////////////////////////////////////////////////////
+    /** True when we have already generated a list of potential completions and
+        are now simply scrolling through them.*/
+    bool                m_inCompletion;
+
+    /** String to prepend onto the current completion list during scrolling.*/
+    string              m_completionBeginStr;
+
+    /** String to append onto the current completion list during scrolling.*/
+    string              m_completionEndStr;
+
+    /** Filled out by beginCompletion.*/
+    Array<string>       m_completionArray;
+
+    /** Index of the current completion in the m_completionArray */
+    int                 m_completionArrayIndex;
+
+    /** Buffer of identifiers to use for completions.  Updated by print and by issueCommand.*/
+    Queue<string>       m_completionHistory;
+
+    /** All the strings that are in m_completionHistory.*/
+    Set<string>         m_completionHistorySet;
+
+    /** Called from processCompletion the first time TAB is pressed. */
+    void beginCompletion();
+
+    /** Invoked from processRepeatKeysym when a non-completion key is pressed. 
+        */
+    void endCompletion();
+
+    /** Parses the string and adds new tokens to the completion history. 
+        Called from issueCommand and print.*/
+    virtual void addToCompletionHistory(const string& s);
+
+    /** Only called from addToCompletionHistory. */
+    void addTokenToCompletionHistory(const string& s);
+
+    /** Invoked from processRepeatKeysym to handle command completion keys. */
+    void completeCommand(int direction);
+
+    /** Called from beginCompletion to append filename and directory-based completions onto
+        fcomplete.
+     */
+    void generateFilenameCompletions(Array<string>& fcomplete);
+
+    ///////////////////////////////////////////////////////////////////////////
 
     /** Position of the cursor within m_currentLine (0 is the first slot) */
     int                 m_cursorPos;
@@ -178,21 +229,6 @@ private:
     /** Time at which the key will repeat (if down). */
     RealTime            m_keyRepeatTime;
 
-    /** Filled out by beginCompletion.*/
-    Array<string>       m_completionArray;
-
-    /** Index of the current completion in the m_completionArray */
-    int                 m_completionArrayIndex;
-
-    /** Invoked from processRepeatKeysym when a non-completion key is pressed. 
-        */
-    void endCompletion();
-
-    /** Called from processCompletion the first time TAB is pressed. */
-    void beginCompletion();
-
-    /** Invoked from processRepeatKeysym to handle command completion keys. */
-    void completeCommand(int direction);
 
     /** Called from onEvent when a key is pressed. */
     void setRepeatKeysym(SDL_keysym key);
@@ -210,7 +246,7 @@ private:
     void historySelect(int direction);
 
     /** Issues text to the buffer. */
-    void print(const string& s, const Color4& c);
+    virtual void print(const string& s, const Color4& c);
 
 public:
 

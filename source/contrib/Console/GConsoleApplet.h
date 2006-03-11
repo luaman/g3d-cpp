@@ -10,7 +10,10 @@
 
 namespace G3D {
 
-/** */
+/** 
+ This is an example of how to hook a GConsole up to a GApplet.  You can either subclass this
+ sample class or write your own program that calls GConsole's doGraphics and onEvent methods.
+ */
 class GConsoleApplet : public GApplet {
 private:
 
