@@ -147,7 +147,6 @@ void Demo::onGraphics(RenderDevice* rd) {
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(true);
 
     // Load objects here
     sky = Sky::create(NULL, dataDir + "sky/");
