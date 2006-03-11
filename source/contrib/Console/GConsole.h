@@ -43,6 +43,8 @@ class RenderDevice;
  <li>Right arrow: cursor right
  <li>Home: Cursor all the way to the left
  <li>End: Cursor all the way to the right
+ <li>Ctrl+V, Shift+Ins, Ctrl+Y: Paste clipboard contents (Win32 only)
+ <li>Ctrl+K: Cut from cursor to end of line (and copy to clipboard on Win32)
  <li>Tab: Complete current command or filename
  <li>Shift+Tab: Complete current command or filename (forward search)
  </ul>
@@ -94,6 +96,8 @@ public:
 
         Color4              defaultPrintColor;
 
+        Color4              backgroundColor;
+
         /** 
          Commands that can be completed by TAB, in addition to those in the history.
          Include common keywords here, for example, to seed the command completion buffer.
@@ -106,14 +110,15 @@ public:
             numVisibleLines(11),
             blinkRate(3),
             keyRepeatRate(18),
-            keyRepeatDelay(0.25),
+            keyRepeatDelay(0.25f),
             commandEcho(true),
             maxBufferLength(2000),
             performFilenameCompletion(true),
             performCommandCompletion(true),
             defaultCommandColor(Color3::white()),
-            defaultPrintColor(0.8, 1.0, 0.8),
-            maxCompletionHistorySize(3000) {
+            defaultPrintColor(0.8f, 1.0f, 0.8f),
+            maxCompletionHistorySize(3000),
+            backgroundColor(0, 0, 0, 0.3f) {
         }
     }; // Settings
 
@@ -248,6 +253,13 @@ protected:
     /** Issues text to the buffer. */
     virtual void print(const string& s, const Color4& c);
 
+    /** On Win32, calls paste with the clipboard text contents.  Does nothing on other
+       platforms (yet) */
+    void pasteClipboard();
+
+    /** Copies the text to the clipboard on Win32. */
+    void copyClipboard(const string& s) const;
+
 public:
 
     GConsole(const GFontRef& f, const Settings& s = Settings(), Callback c = NULL, void* callbackData = NULL);
@@ -259,6 +271,11 @@ public:
     inline bool active() const {
         return m_active;
     }
+
+    /** Insert the string as if it was typed at the command line.
+        If the string contains newlines they will cause commands to issue. 
+        */
+    void paste(const string& s);
 
     /** Clear displayed text. */
     void clearBuffer();

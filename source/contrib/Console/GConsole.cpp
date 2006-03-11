@@ -577,7 +577,8 @@ bool GConsole::onEvent(const GEvent& event) {
         default:
 
             if ((((event.key.keysym.mod & KMOD_CTRL) != 0) &&
-                 (event.key.keysym.sym == SDLK_v)) ||
+                 ((event.key.keysym.sym == SDLK_v) || (event.key.keysym.sym == SDLK_y))) ||
+
                 (((event.key.keysym.mod & KMOD_SHIFT) != 0) &&
                 (event.key.keysym.sym == SDLK_INSERT))) {
 
