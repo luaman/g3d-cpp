@@ -239,7 +239,7 @@ public:
         /** Mapping of face indices to materials */
         Array<FaceMat>              faceMatArray;
 
-        Object() : pivot(Vector3::ZERO) {
+        Object() : pivot(Vector3::ZERO), keyframe(Matrix4::identity()) {
         }
     };
 
