@@ -36,6 +36,7 @@
     <LI> G3D::isSlash, G3D::isQuote
     <LI> GApplet::onEvent can now consume (prevent GApp from seeing) the event
     <LI> [1421201] Removed excess gl (NVIDIA) headers
+	<LI> Fix: [ 1383042 ] free static variables on shutdown
     <LI> Fix: Win32GWindow now produces correct character and scan codes for key events
     <LI> Fix: GApplet::onEvent calls GApplet::processEvent by default
     <LI> Fix: [ 1444320 ] TextInput parses ".1" as "1" instead of "0.1"

@@ -280,4 +280,79 @@ const TextureFormat* fromCode(TextureFormat::Code code) {
     }
 }
 
+
+static class TextureFormatCleanup {
+public:
+
+	~TextureFormatCleanup() {
+        delete const_cast<TextureFormat*>(TextureFormat::L8);
+
+        delete const_cast<TextureFormat*>(TextureFormat::L16);
+
+        delete const_cast<TextureFormat*>(TextureFormat::L16F);
+    
+        delete const_cast<TextureFormat*>(TextureFormat::L32F);
+
+        delete const_cast<TextureFormat*>(TextureFormat::A8);
+
+        delete const_cast<TextureFormat*>(TextureFormat::A16);
+
+        delete const_cast<TextureFormat*>(TextureFormat::A16F);
+    
+        delete const_cast<TextureFormat*>(TextureFormat::A32F);
+
+        delete const_cast<TextureFormat*>(TextureFormat::LA4);
+
+        delete const_cast<TextureFormat*>(TextureFormat::LA8);
+
+        delete const_cast<TextureFormat*>(TextureFormat::LA16);
+
+        delete const_cast<TextureFormat*>(TextureFormat::LA16F);
+    
+        delete const_cast<TextureFormat*>(TextureFormat::LA32F);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGB5);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGB5A1);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGB8);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGB16);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGB16F);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGB32F);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGBA8);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGBA16);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGBA16F);
+    
+        delete const_cast<TextureFormat*>(TextureFormat::RGBA32F);
+    
+        delete const_cast<TextureFormat*>(TextureFormat::RGB_DXT1);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGBA_DXT1);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGBA_DXT3);
+
+        delete const_cast<TextureFormat*>(TextureFormat::RGBA_DXT5);
+
+        delete const_cast<TextureFormat*>(TextureFormat::DEPTH16);
+
+        delete const_cast<TextureFormat*>(TextureFormat::DEPTH24);
+
+        delete const_cast<TextureFormat*>(TextureFormat::DEPTH32);
+
+        delete const_cast<TextureFormat*>(TextureFormat::STENCIL1);
+
+        delete const_cast<TextureFormat*>(TextureFormat::STENCIL4);
+
+        delete const_cast<TextureFormat*>(TextureFormat::STENCIL8);
+
+        delete const_cast<TextureFormat*>(TextureFormat::STENCIL16);
+	}
+} _textureFormatCleanup;
+
 }
