@@ -4,9 +4,9 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2003-04-07
-  @edited  2003-06-24
+  @edited  2006-03-24
 
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -15,6 +15,7 @@
 
 #include "G3D/g3dmath.h"
 #include "G3D/platform.h"
+#include "G3D/Color3uint8.h"
 
 namespace G3D {
 
@@ -46,6 +47,10 @@ public:
     Color4uint8() : r(0), g(0), b(0), a(0) {}
 
     Color4uint8(const class Color4& c);
+
+    Color4uint8(const uint8 _r, const uint8 _g, const uint8 _b, const uint8 _a) : r(_r), g(_g), b(_b), a(_a) {}
+
+    Color4uint8(const Color3uint8& c, const uint8 _a) : r(c.r), g(c.g), b(c.b), a(_a) {}
 
     Color4uint8(class BinaryInput& bi);
 

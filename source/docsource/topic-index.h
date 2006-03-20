@@ -231,14 +231,21 @@
      <LI><B>String</B> &nbsp; &nbsp;
         G3D::beginsWith, 
         G3D::endsWith, 
+        G3D::format,
+        G3D::isSpace,
+        G3D::isSlash,
+        G3D::isWhiteSpace,
+        G3D::isDigit,
+        G3D::isNewline,
+        G3D::isLetter,
+        G3D::isQuote,
         G3D::license, 
-        G3D::stringSplit,
-        G3D::stringJoin, 
-        G3D::format, 
         G3D::vformat, 
         G3D::wordWrap, 
         G3D::stringCompare, 
         G3D::stringPtrCompare, 
+        G3D::stringSplit,
+        G3D::stringJoin, 
         G3D::toUpper, 
         G3D::toLower,
         G3D::NEWLINE, 
@@ -287,7 +294,7 @@
         G3D::setAssertionHook,
         G3D::setFailureHook
 
-     <LI><B>System</B> &nbsp; &nbsp;
+     <LI><B>System + Files</B> &nbsp; &nbsp;
         G3D::AtomicInt32,
         G3D::BinaryFormat, G3D::byteSize, G3D::binaryFormatOf,
         G3D::BinaryInput, 

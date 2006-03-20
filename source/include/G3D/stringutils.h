@@ -115,6 +115,15 @@ inline bool isDigit(const char c) {
 inline bool isLetter(const char c) {
     return isalpha(c) != 0;
 }
+
+inline bool isSlash(const char c) {
+    return (c == '\\') || (c == '/');
+}
+
+inline bool isQuote(const char c) {
+    return (c == '\'') || (c == '\"');
+}
+
 }; // namespace
 
 #endif

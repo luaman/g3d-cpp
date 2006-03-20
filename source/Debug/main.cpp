@@ -13,13 +13,8 @@
 
 #include <G3DAll.h>
 
-#include "../contrib/AVI/AVI.h"
-#include "../contrib/AVI/AVI.cpp"
-#include "../contrib/Matrix/Matrix.h"
-#include "../contrib/Matrix/Matrix.cpp"
-
-#if G3D_VER < 60800
-    #error Requires G3D 6.08
+#if G3D_VER < 60900
+    #error Requires G3D 6.09
 #endif
 
 
@@ -138,28 +133,31 @@ void Demo::onGraphics(RenderDevice* rd) {
     app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
     app->renderDevice->clear();
 
+    /*
     app->renderDevice->pushState();
         rd->enableColorWrite();
         Draw::axes(rd);
-        
-        
-        
-
     app->renderDevice->popState();
-
-    app->debugPrintf("%g degrees", angle);
+    */
+    rd->push2D();
+        GImage im(1024, 768, 3);
+        GImage::makeCheckerboard(im);        
+        TextureRef t = Texture::fromGImage("Checker", im, TextureFormat::AUTO, Texture::DIM_2D_NPOT, Texture::Parameters::video());
+        rd->setTexture(0, t);
+        Draw::rect2D(t->rect2DBounds(), rd);
+    rd->pop2D();
 }
 
 
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(true);
+    debugShowRenderingStats = false;
 
     // Load objects here
 //    sky = Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
-
 
 }
 

@@ -4,14 +4,14 @@
   @maintainer Morgan McGuire, graphics3d.com
  
   @created 2003-04-07
-  @edited  2003-06-24
+  @edited  2006-06-24
 
-  Copyright 2000-2003, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
-#ifndef COLOR3UINT8_H
-#define COLOR3UINT8_H
+#ifndef G3D_COLOR3UINT8_H
+#define G3D_COLOR3UINT8_H
 
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
@@ -43,6 +43,8 @@ public:
     uint8       b;
 
     Color3uint8() : r(0), g(0), b(0) {}
+
+    Color3uint8(const uint8 _r, const uint8 _g, const uint8 _b) : r(_r), g(_g), b(_b) {}
 
     Color3uint8(const class Color3& c);
 

@@ -259,11 +259,6 @@ void copyFile(
 
 //////////////////////////////////////////////////////////////////////////////
 
-static bool isSlash(char c) {
-    return (c == '\\') || (c == '/');
-}
-
-
 void parseFilename(
     const std::string&  filename,
     std::string&        root,

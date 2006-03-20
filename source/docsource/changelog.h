@@ -29,10 +29,13 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> GImage::makeCheckerboard
     <LI> Renamed GAppSettings to G3D::GApp::Settings (old name is supported but deprecated)
 	<LI> Renamed GWindowSettings to G3D::GWindow::Settings (old name is supported but deprecated)
 	<LI> Renamed TextInput::Options to G3D::TextInput::Options (old name is supported but deprecated)
+    <LI> G3D::isSlash, G3D::isQuote
     <LI> GApplet::onEvent can now consume (prevent GApp from seeing) the event
+    <LI> [1421201] Removed excess gl (NVIDIA) headers
     <LI> Fix: Win32GWindow now produces correct character and scan codes for key events
     <LI> Fix: GApplet::onEvent calls GApplet::processEvent by default
     <LI> Fix: [ 1444320 ] TextInput parses ".1" as "1" instead of "0.1"

@@ -767,6 +767,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testCollisionDetection();    
+
     testReferenceCount();
 
     testAtomicInt32();
@@ -826,8 +828,6 @@ int main(int argc, char* argv[]) {
 
     testBox();
     printf("  passed\n");
-
-    testCollisionDetection();    
 
     testColor3uint8Array();
     printf("  passed\n");

@@ -496,8 +496,12 @@ public:
         2 * inWidth * 2 * inHeight.
     */
     static void Quarter_R8G8B8_to_BAYER_G8B8_R8G8(int inWidth, int inHeight, const uint8* in, uint8* out);
-};
 
+    /** Overwrites every pixel with one of the two colors in a checkerboard pattern.
+        The fields used from the two colors depend on the current number of channels in @a im. 
+        */
+    static void makeCheckerboard(GImage& im, int checkerSize = 1, const Color4uint8& color1 = Color4uint8(255,255,255,255), const Color4uint8& color2 = Color4uint8(0,0,0,255));
+};
 
    
 /**

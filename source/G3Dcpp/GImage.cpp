@@ -2912,5 +2912,19 @@ void GImage::Y8U8V8_to_R8G8B8(int width, int height, const uint8* _in, uint8* _o
     }
 }
 
+
+void GImage::makeCheckerboard(GImage& im, int checkerSize, const Color4uint8& A, const Color4uint8& B) {
+    for (int y = 0; y < im.height; ++y) {
+        for (int x = 0; x < im.width; ++x) {
+            bool checker = isOdd((x / checkerSize) + (y / checkerSize));
+            const Color4uint8& color = checker ? A : B;
+            for (int c = 0; c < im.channels; ++c) {
+                uint8* v = im.byte() + (x + y * im.width) * im.channels + c;
+                *v = color[c];
+            }
+        }
+    }
+}
+
 }
 

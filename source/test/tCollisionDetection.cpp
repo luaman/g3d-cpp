@@ -14,6 +14,7 @@ void testCollisionDetection() {
             s, p, contact, outNormal);
 
         debugAssert(outNormal[0] == p.normal());
+        debugAssert(contact[0] == Vector3::zero());
         debugAssert(depth == 0);
 
         s = Sphere(Vector3(0,2,0), 1);
