@@ -144,6 +144,10 @@ SOURCE=".\docsource\guide-var.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\docsource\guide-video.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\docsource\guide-welcome.h"
 # End Source File
 # Begin Source File
