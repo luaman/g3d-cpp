@@ -270,9 +270,9 @@ BinaryInput::BinaryInput(
     if (! compressed && (length > INITIAL_BUFFER_LENGTH)) {
         // Read only a subset of the file so we don't consume
         // all available memory.
-        bufferLength = INITIAL_BUFFER_LENGTH;
-    } else {
         bufferLength = length;
+    } else {
+        bufferLength = INITIAL_BUFFER_LENGTH;
     }
 
 	debugAssert(freeBuffer);
