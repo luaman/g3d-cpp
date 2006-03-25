@@ -440,6 +440,7 @@ static void setTexParameters(
             glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC_ARB, 
                 (depthRead == Texture::DEPTH_LEQUAL) ? GL_LEQUAL : GL_GEQUAL);
         }
+
     }
     debugAssertGLOk();
 }
@@ -999,6 +1000,7 @@ TextureRef Texture::fromMemory(
 
         glEnable(target);
         glBindTexture(target, textureID);
+        debugAssertGLOk();
         if (isMipMapformat(interpolate) && hasAutoMipMap() && (numMipMaps == 1)) {
             // Enable hardware MIP-map generation.
             // Must enable before setting the level 0 image (we'll set it again
@@ -1165,6 +1167,7 @@ TextureRef Texture::createEmpty(
     Texture::DepthReadMode           depthRead,
     float                            maxAnisotropy) {
 
+    debugAssertGLOk();
     debugAssertM(desiredFormat, "desiredFormat may not be TextureFormat::AUTO");
 
     // We must pretend the input is in the desired format otherwise 
@@ -1175,8 +1178,11 @@ TextureRef Texture::createEmpty(
         bytes[i] = data.getCArray();
     }
 
-    return Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, 
+    TextureRef t = Texture::fromMemory(name, bytes, desiredFormat, w, h, 1, desiredFormat, 
         wrap, interpolate, dimension, depthRead, maxAnisotropy);
+
+    debugAssertGLOk();
+    return t;
 }
 
 

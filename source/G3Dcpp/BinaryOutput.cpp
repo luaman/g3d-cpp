@@ -112,7 +112,10 @@ void BinaryOutput::reallocBuffer(size_t bytes, size_t oldBufferLen) {
     size_t newBufferLen = (int)(bufferLen * 1.5) + 100;
     uint8* newBuffer = NULL;
 
-    if ((filename != "<memory>") || (newBufferLen < MAX_BINARYOUTPUT_BUFFER_SIZE)) {
+    if ((filename == "<memory>") || (newBufferLen < MAX_BINARYOUTPUT_BUFFER_SIZE)) {
+        // We're either writing to memory (in which case we *have* to try and allocate)
+        // or we've been asked to allocate a reasonable size buffer.
+
         //debugPrintf("  realloc(%d)\n", newBufferLen); 
         newBuffer = (uint8*)System::realloc(buffer, newBufferLen);
         if (newBuffer != NULL) {

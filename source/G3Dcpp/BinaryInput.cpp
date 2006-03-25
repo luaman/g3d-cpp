@@ -270,9 +270,11 @@ BinaryInput::BinaryInput(
     if (! compressed && (length > INITIAL_BUFFER_LENGTH)) {
         // Read only a subset of the file so we don't consume
         // all available memory.
-        bufferLength = length;
-    } else {
         bufferLength = INITIAL_BUFFER_LENGTH;
+    } else {
+        // Either the length is fine or the file is compressed
+        // and requires us to read the whole thing for zlib.
+        bufferLength = length;
     }
 
 	debugAssert(freeBuffer);

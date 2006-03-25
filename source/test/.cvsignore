@@ -3,3 +3,7 @@
 Makefile.in
 test
 Debug
+log.txt
+file.dat
+out.t
+huge.bin

@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2006-01-30
+ @edited  2006-03-30
  */
 
 #include "../include/G3DAll.h"
@@ -23,6 +23,7 @@ using namespace G3D;
 #endif
 #include <string>
 
+#define RUN_SLOW_TESTS
 
 // Forward declarations
 void perfArray();
@@ -53,7 +54,7 @@ void perfQueue();
 void testQueue();
 
 void testBinaryIO();
-void testHugeBinaryOutput();
+void testHugeBinaryIO();
 void perfBinaryIO();
 
 void testTextInput();
@@ -767,6 +768,11 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+#   ifdef RUN_SLOW_TESTS
+        testHugeBinaryIO();
+        printf("  passed\n");
+#   endif
+
     testCollisionDetection();    
 
     testReferenceCount();
@@ -792,10 +798,6 @@ int main(int argc, char* argv[]) {
     testAABSPTreeSerialize();
     printf("  passed\n");
 
-#   ifdef RUN_SLOW_TESTS
-        testHugeBinaryOutput();
-        printf("  passed\n");
-#   endif
 
     testBinaryIO();
 

@@ -1,24 +1,40 @@
 #include "../include/G3DAll.h"
 
-void testHugeBinaryOutput() {
-    printf("BinaryOutput Huge Files\n");
+void testHugeBinaryIO() {
+    printf("BinaryOutput Huge Files");
     if (fileExists("huge.bin")) {
         system("del huge.bin");
     }
 
-    size_t s = 1024 * 1024 * 2;
-    uint8* giantBuffer = (uint8*) malloc(s);
+    size_t testSize = 1024 * 1024 * 600;
+
+    size_t stepSize = 1024 * 1024 * 2;
+    uint8* giantBuffer = new uint8[stepSize];
     debugAssert(giantBuffer);
 
-    BinaryOutput* b = new BinaryOutput("huge.bin", G3D_LITTLE_ENDIAN);
-    for (int i = 0; i = 1024 * 1024 * 1024 / s; ++i) {
-        b->writeBytes(giantBuffer, s);
+    {
+        BinaryOutput b("huge.bin", G3D_LITTLE_ENDIAN);
+        for (int i = 0; i < testSize / stepSize; ++i) {
+            b.writeBytes(giantBuffer, stepSize);
+        }
+        b.commit();
     }
 
-    delete b;
+    printf("BinaryInput Huge Files\n");
 
-    b = NULL;
+    {
+        BinaryInput b("huge.bin", G3D_LITTLE_ENDIAN);
 
+        for (int i = 0; i < testSize / stepSize; ++i) {
+            b.readBytes(giantBuffer, stepSize);
+        }
+    }
+
+    delete giantBuffer;
+
+    if (fileExists("huge.bin")) {
+        system("del huge.bin");
+    }
 }
 
 static void testBitSerialization() {
