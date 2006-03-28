@@ -3,7 +3,13 @@
 void testHugeBinaryIO() {
     printf("BinaryOutput Huge Files");
     if (fileExists("huge.bin")) {
+#if defined(G3D_WIN32)
         system("del huge.bin");
+#elif defined(G3D_LINUX)
+		system("rm huge.bin");
+#elif defined(G3D_OSX)
+		system("rm huge.bin");
+#endif
     }
 
     size_t testSize = 1024 * 1024 * 600;
@@ -33,7 +39,13 @@ void testHugeBinaryIO() {
     delete giantBuffer;
 
     if (fileExists("huge.bin")) {
+#if defined(G3D_WIN32)
         system("del huge.bin");
+#elif defined(G3D_LINUX)
+		system("rm huge.bin");
+#elif defined(G3D_OSX)
+		system("rm huge.bin");
+#endif
     }
 }
 
