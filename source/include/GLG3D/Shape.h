@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2005-08-10
-  @edited  2006-02-25
+  @edited  2006-03-25
 */
 #ifndef G3D_SHAPE_H
 #define G3D_SHAPE_H
@@ -45,7 +45,7 @@ public:
 
     static std::string typeToString(Type t);
 
-    virtual Type type() = 0;
+    virtual Type type() const = 0;
    
     virtual void render(
         class RenderDevice* rd, 
@@ -197,7 +197,7 @@ public:
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
-    virtual Type type() {
+    virtual Type type() const {
         return MESH;
     }
 
@@ -254,7 +254,7 @@ public:
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
-    virtual Type type() {
+    virtual Type type() const {
         return BOX;
     }
 
@@ -310,7 +310,7 @@ public:
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
-    virtual Type type() {
+    virtual Type type() const {
         return RAY;
     }
 
@@ -369,7 +369,7 @@ public:
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
-    virtual Type type() {
+    virtual Type type() const {
         return CYLINDER;
     }
 
@@ -433,7 +433,7 @@ public:
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
-    virtual Type type() {
+    virtual Type type() const {
         return SPHERE;
     }
 
@@ -487,7 +487,7 @@ public:
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
-    virtual Type type() {
+    virtual Type type() const {
         return CAPSULE;
     }
 
@@ -542,7 +542,7 @@ public:
 
     virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
 
-    virtual Type type() {
+    virtual Type type() const {
         return PLANE;
     }
 

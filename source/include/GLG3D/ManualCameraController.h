@@ -19,7 +19,7 @@ namespace G3D {
 class CoordinateFrame;
 
 /**
- Uses a First Person (Quake-style) mapping to translate keyboard and mouse input
+ Uses a First Person (Quake- or World of Warcraft style) mapping to translate keyboard and mouse input
  into a flying camera position.  The result is an Euler-angle 
  camera controller suitable for games and fly-throughs.  
 
@@ -35,7 +35,22 @@ class CoordinateFrame;
 
  */
 class FPCameraController {
-	
+public:
+    /**
+     MOUSE_DIRECT              = Shooter/Quake style (default), mouse cursor is hidden and mouse controls yaw/pitch
+     MOUSE_DIRECT_RIGHT_BUTTON = RPG/World of Warcraft style, on right mouse button cursor is hidden and mouse controls yaw/pitch
+     MOUSE_SCROLL_AT_EDGE      = Leaves mouse cursor visible and rotates while mouse is near the window edge
+     MOUSE_PUSH_AT_EDGE        = Leaves mouse cursor visible and rotates when the mouse is actively pushing against the window edge
+     */
+    enum MouseMode {
+        MOUSE_DIRECT,
+        MOUSE_DIRECT_RIGHT_BUTTON,
+        MOUSE_SCROLL_AT_EDGE,
+        MOUSE_PUSH_AT_EDGE
+    };
+
+private:
+
 	/** m/s */
 	double                      maxMoveRate;
 
@@ -51,6 +66,8 @@ class FPCameraController {
     bool                        _active;
 
     class UserInput*            userInput;
+
+    MouseMode                   m_mouseMode;
 
 public:
 
@@ -77,6 +94,10 @@ public:
         you might hit a breakpoint while the controller is active and it
         would be annoying to not be able to move the mouse.*/
     void setActive(bool a);
+
+    MouseMode mouseMode() const;
+
+    void setMouseMode(MouseMode m);
 
     bool active() const;
 

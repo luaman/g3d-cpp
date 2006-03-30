@@ -127,7 +127,12 @@ Win32Window::Win32Window(const GWindow::Settings& s, bool creatingShareWindow)
         style |= WS_POPUP;
     }
 
+    int oldTop = rect.top;
+    int oldLeft = rect.left;
 	AdjustWindowRect(&rect, style, false);
+
+    clientRectOffset.x = rect.left - oldLeft;
+    clientRectOffset.y = rect.top - oldTop;
 
 	int total_width  = rect.right - rect.left;
 	int total_height = rect.bottom - rect.top;
@@ -835,7 +840,9 @@ void Win32Window::setInputCapture(bool c) {
 		_inputCapture = c;
 
 		if (_inputCapture) {
-			RECT rect = {clientX, clientY, (clientX + settings.width), (clientY + settings.height)};
+
+            RECT rect = {clientRectOffset.x + clientX, clientY + clientRectOffset.y, (clientX + settings.width + clientRectOffset.x), 
+            (clientY + settings.height + clientRectOffset.y)};
 			ClipCursor(&rect);
 		} else {
 			ClipCursor(NULL);

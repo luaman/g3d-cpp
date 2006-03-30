@@ -32,11 +32,13 @@ static LRESULT WINAPI window_proc(HWND window, UINT message, WPARAM wparam, LPAR
 }
 using _internal::_DirectInput;
 
+
 class Win32Window : public GWindow {
 private:
 	
     //static Array<GWindowSettings> _supportedSettings;
 
+    Vector2              clientRectOffset;
 	Settings			 settings;
 	std::string			 _title;
     HDC                  _hDC;

@@ -15,11 +15,11 @@
 
 namespace G3D {
 
-FPCameraController::FPCameraController() {}
+FPCameraController::FPCameraController() : m_mouseMode(MOUSE_DIRECT) {}
 
 
 FPCameraController::FPCameraController(
-    RenderDevice* rd, UserInput* ui) {
+    RenderDevice* rd, UserInput* ui) : m_mouseMode(MOUSE_DIRECT) {
     init(rd, ui);
 }
 
@@ -39,6 +39,30 @@ FPCameraController::~FPCameraController() {
 }
 
 
+FPCameraController::MouseMode FPCameraController::mouseMode() const {
+    return m_mouseMode;
+}
+
+
+void FPCameraController::setMouseMode(FPCameraController::MouseMode m) {
+    if (m_mouseMode != m) {
+        bool wasActive = active();
+
+        if (wasActive) {
+            // Toggle activity to let the cursor and 
+            // state variables reset.
+            setActive(false);
+
+        }
+
+        m_mouseMode = m;
+
+        if (wasActive) {
+            setActive(true);
+        }
+    }
+}
+
 bool FPCameraController::active() const {
     return _active;
 }
@@ -50,13 +74,32 @@ void FPCameraController::reset() {
     pitch       = 0;
 	translation = Vector3::zero();
     setMoveRate(10);
-	setTurnRate(G3D_PI / 4);
+	setTurnRate(G3D_PI * 5);
 }
 
 
 void FPCameraController::setActive(bool a) {
     _active = a;
-    userInput->setPureDeltaMouse(a);
+
+    switch (m_mouseMode) {
+    case MOUSE_DIRECT:
+        userInput->setPureDeltaMouse(_active);
+        break;
+
+    case MOUSE_DIRECT_RIGHT_BUTTON:
+        // Only turn on when activeand the right mouse button is down
+        userInput->setPureDeltaMouse(_active && userInput->keyDown(SDL_RIGHT_MOUSE_KEY));
+        break;
+
+    case MOUSE_SCROLL_AT_EDGE:
+    case MOUSE_PUSH_AT_EDGE:        
+        userInput->setPureDeltaMouse(false);
+        userInput->window()->setInputCapture(_active);
+        break;
+
+    default:
+        debugAssert(false);
+    }
 }
 
 
@@ -86,36 +129,93 @@ void FPCameraController::doSimulation(
     if (! _active) {
         return;
     }
-           
-    // Translation direction
-    Vector2 direction(userInput->getX(), userInput->getY());
-    direction.unitize();
 
-	// Translate forward
-	translation += (getLookVector() * direction.y + 
-        getStrafeVector() * direction.x) * elapsedTime * maxMoveRate;
+    {
+        // Translation direction
+        Vector2 direction(userInput->getX(), userInput->getY());
+        direction.unitize();
+
+        // Translate forward
+        translation += (getLookVector() * direction.y + 
+            getStrafeVector() * direction.x) * elapsedTime * maxMoveRate;
+    }
     
-    Vector2 delta = userInput->mouseDXY() / 100.0;
+    // Desired change in yaw and pitch
+    Vector2 delta;
+    float maxTurn = maxTurnRate * elapsedTime;
 
-    // Turn rate limiter
-    if (G3D::abs(delta.x) > maxTurnRate) {
-        delta.x = maxTurnRate * G3D::sign(delta.x);
+    switch (m_mouseMode) {
+    case MOUSE_DIRECT_RIGHT_BUTTON:
+        {
+            bool mouseDown = userInput->keyDown(SDL_RIGHT_MOUSE_KEY);
+            userInput->setPureDeltaMouse(mouseDown);
+            if (! mouseDown) {
+                // Skip bottom case
+                break;
+            }
+        }
+        // Intentionally fall through to MOUSE_DIRECT
+
+    case MOUSE_DIRECT:
+        delta = userInput->mouseDXY() / 100.0f;
+        break;
+
+
+    case MOUSE_SCROLL_AT_EDGE:
+        {
+            // TODO: when we have an onGraphics method, track the actual viewport
+            Rect2D viewport = Rect2D::xywh(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
+            Vector2 mouse = userInput->mouseXY();
+
+            Vector2 hotExtent(max(50.0f, viewport.width() / 8), 
+                              max(50.0f, viewport.height() / 6));
+
+            // The hot region is outside this rect
+            Rect2D hotRegion = Rect2D::xyxy(
+                viewport.x0() + hotExtent.x, viewport.y0() + hotExtent.y,
+                viewport.x1() - hotExtent.y, viewport.y1() - hotExtent.y);
+
+            // See if the mouse is near an edge
+            if (mouse.x <= hotRegion.x0()) {
+                delta.x = -square(1.0 - (mouse.x - viewport.x0()) / hotExtent.x);
+                // - Yaw
+            } else if (mouse.x >= hotRegion.x1()) {
+                delta.x = square(1.0 - (viewport.x1() - mouse.x) / hotExtent.x);
+                // + Yaw
+            }
+
+            if (mouse.y <= hotRegion.y0()) {
+                delta.y = -square(1.0 - (mouse.y - viewport.y0()) / hotExtent.y) * 0.6;
+                // - pitch
+            } else if (mouse.y >= hotRegion.y1()) {
+                delta.y = square(1.0 - (viewport.y1() - mouse.y) / hotExtent.y) * 0.6;
+                // + pitch
+            }
+
+            delta *= maxTurn / 5;
+        }
+        break;
+
+//    case MOUSE_PUSH_AT_EDGE: 
+    default:
+        debugAssert(false);
     }
 
-    if (G3D::abs(delta.y) > maxTurnRate) {
-        delta.y = maxTurnRate * G3D::sign(delta.y);
+
+    // Turn rate limiter
+    if (G3D::abs(delta.x) > maxTurn) {
+        delta.x = maxTurn * G3D::sign(delta.x);
+    }
+
+    if (G3D::abs(delta.y) > maxTurn) {
+        delta.y = maxTurn * G3D::sign(delta.y);
     }
 
     yaw   += delta.x;
-	pitch += delta.y;
+    pitch += delta.y;
 
-    // Clamp pitch (looking straight up or down)
-    //pitch = clamp(pitch, -G3D_PI / 2, G3D_PI / 2);
-
-    // As a patch for the setCoordinateFrame bug, we prevent 
+    // As a patch for a setCoordinateFrame bug, we prevent 
     // the camera from looking exactly along the y-axis.
-
-    // Remove when bug is fixed
     pitch = clamp(pitch, -G3D_PI / 2 + 0.001, G3D_PI / 2 - 0.001);
 }
 

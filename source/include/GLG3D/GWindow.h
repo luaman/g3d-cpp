@@ -93,10 +93,10 @@ public:
 
 		int     height;
 
-		/** Initial x position (can be overridden by fullScreen and center) */
+		/** Initial x position of the client area in screen space(can be overridden by fullScreen and center) */
 		int     x;
 
-		/** Initial y position (can be overridden by fullScreen and center) */
+		/** Initial y position of the client area in screen space(can be overridden by fullScreen and center) */
 		int     y;
 
 		/** If true, overrides the x and y settings */
@@ -257,6 +257,7 @@ public:
 
     /**
      Fails silently if unable to change the position.
+     Sets the window (not client) position.
      */
     virtual void setPosition(int x, int y) = 0;
 

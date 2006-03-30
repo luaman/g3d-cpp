@@ -75,6 +75,12 @@ public:
         return !(*this == other);
     }
 
+    bool fuzzyEq(const CoordinateFrame& other) const;
+
+    bool fuzzyIsIdentity() const;
+
+    bool isIdentity() const;
+
     /**
      Initializes to the identity coordinate frame.
      */
