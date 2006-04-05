@@ -301,7 +301,6 @@ Vector2 UserInput::mouseDXY() const {
 void UserInput::setMouseXY(float x, float y) {
     mouse.x = x;
     mouse.y = y;
-    guiMouse = mouse;
     _window->setRelativeMousePosition(mouse);
 }
 
@@ -371,31 +370,31 @@ void UserInput::grabMouse() {
     
     mouse = windowCenter;
     _window->setRelativeMousePosition(mouse);
-    deltaMouse = Vector2(0,0);
+    deltaMouse = Vector2(0, 0);
  
-    window()->setMouseVisible(false);
+    window()->incMouseHideCount();
 
-    #ifndef _DEBUG
+    #ifndef G3D_DEBUG
         // In debug mode, don't grab the cursor because
         // it is annoying when you hit a breakpoint and
         // can't move the mouse.
-        window()->setInputCapture(true);
+        window()->incInputCaptureCount();
     #endif
 }
 
 
 void UserInput::releaseMouse() {
-    #ifndef _DEBUG
+    #ifndef G3D_DEBUG
         // In debug mode, don't grab the cursor because
         // it is annoying when you hit a breakpoint and
         // cannot move the mouse.
-        window()->setInputCapture(false);
+        window()->decInputCaptureCount();
     #endif
 
     // Restore the old mouse position
     setMouseXY(guiMouse);
 
-    window()->setMouseVisible(true);
+    window()->decMouseHideCount();
 }
 
 

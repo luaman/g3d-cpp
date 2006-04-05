@@ -15,11 +15,11 @@
 
 namespace G3D {
 
-FPCameraController::FPCameraController() : m_mouseMode(MOUSE_DIRECT) {}
+FPCameraController::FPCameraController() : m_mouseMode(MOUSE_DIRECT), _active(false) {}
 
 
 FPCameraController::FPCameraController(
-    RenderDevice* rd, UserInput* ui) : m_mouseMode(MOUSE_DIRECT) {
+    RenderDevice* rd, UserInput* ui) : m_mouseMode(MOUSE_DIRECT), _active(false) {
     init(rd, ui);
 }
 
@@ -79,6 +79,9 @@ void FPCameraController::reset() {
 
 
 void FPCameraController::setActive(bool a) {
+    if (_active == a) {
+        return;
+    }
     _active = a;
 
     switch (m_mouseMode) {
@@ -94,7 +97,11 @@ void FPCameraController::setActive(bool a) {
     case MOUSE_SCROLL_AT_EDGE:
     case MOUSE_PUSH_AT_EDGE:        
         userInput->setPureDeltaMouse(false);
-        userInput->window()->setInputCapture(_active);
+        if (_active) {
+            userInput->window()->incInputCaptureCount();
+        } else {
+            userInput->window()->decInputCaptureCount();
+        }
         break;
 
     default:

@@ -84,6 +84,7 @@ std::auto_ptr<Win32Window> Win32Window::_shareWindow(NULL);
 Win32Window::Win32Window(const GWindow::Settings& s, bool creatingShareWindow)
 :createdWindow(true)
 ,_diDevices(NULL)
+
 {
     _receivedCloseEvent = false;
 
@@ -131,8 +132,8 @@ Win32Window::Win32Window(const GWindow::Settings& s, bool creatingShareWindow)
     int oldLeft = rect.left;
 	AdjustWindowRect(&rect, style, false);
 
-    clientRectOffset.x = rect.left - oldLeft;
-    clientRectOffset.y = rect.top - oldTop;
+    clientRectOffset.x = oldLeft - rect.left;
+    clientRectOffset.y = oldTop - rect.top;
 
 	int total_width  = rect.right - rect.left;
 	int total_height = rect.bottom - rect.top;
@@ -436,7 +437,7 @@ bool Win32Window::hasFocus() const {
 
 
 std::string Win32Window::getAPIVersion() const {
-	return "";
+	return "1.1";
 }
 
 
@@ -534,6 +535,10 @@ Win32Window::~Win32Window() {
 		if (wglMakeCurrent(NULL, NULL) == FALSE)	{
 			debugAssertM(false, "Failed to set context");
 		}
+
+        // Release the mouse
+        setMouseVisible(true);
+        setInputCapture(false);
 	}
 
 	if (createdWindow) {
@@ -726,6 +731,8 @@ bool Win32Window::pollEvent(GEvent& e) {
 
 
 void Win32Window::setMouseVisible(bool b) {
+    m_mouseHideCount = b ? 0 : 1;
+
     if (_mouseVisible == b) {
         return;
     }
@@ -836,19 +843,29 @@ void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Ar
 
 
 void Win32Window::setInputCapture(bool c) {
+    m_inputCaptureCount = c ? 1 : 0;
+
 	if (c != _inputCapture) {
 		_inputCapture = c;
 
 		if (_inputCapture) {
+            RECT wrect;
+            GetWindowRect(window, &wrect);
+            clientX = wrect.left;
+            clientY = wrect.top;
 
-            RECT rect = {clientRectOffset.x + clientX, clientY + clientRectOffset.y, (clientX + settings.width + clientRectOffset.x), 
-            (clientY + settings.height + clientRectOffset.y)};
+            RECT rect = 
+            {clientX + clientRectOffset.x, 
+             clientY + clientRectOffset.y, 
+             clientX + settings.width + clientRectOffset.x, 
+             clientY + settings.height + clientRectOffset.y};
 			ClipCursor(&rect);
 		} else {
 			ClipCursor(NULL);
 		}
 	}
 }
+
 
 void Win32Window::initWGL() {
     
@@ -955,8 +972,6 @@ void Win32Window::initWGL() {
 	DestroyWindow(hWnd);			
 	hWnd = 0;
 }
-
-
 
 
 void Win32Window::createShareWindow(GWindow::Settings settings) {

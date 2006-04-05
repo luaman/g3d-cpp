@@ -1,7 +1,7 @@
 #include "../include/G3DAll.h"
 
 void testHugeBinaryIO() {
-    printf("BinaryOutput Huge Files");
+    printf("BinaryOutput Large Files\n");
     if (fileExists("huge.bin")) {
 #if defined(G3D_WIN32)
         system("del huge.bin");
@@ -20,18 +20,18 @@ void testHugeBinaryIO() {
 
     {
         BinaryOutput b("huge.bin", G3D_LITTLE_ENDIAN);
-        for (int i = 0; i < testSize / stepSize; ++i) {
+        for (int i = 0; i < (int)testSize / (int)stepSize; ++i) {
             b.writeBytes(giantBuffer, stepSize);
         }
         b.commit();
     }
 
-    printf("BinaryInput Huge Files\n");
+    printf("BinaryInput Large Files\n");
 
     {
         BinaryInput b("huge.bin", G3D_LITTLE_ENDIAN);
 
-        for (int i = 0; i < testSize / stepSize; ++i) {
+        for (int i = 0; i < (int)testSize / (int)stepSize; ++i) {
             b.readBytes(giantBuffer, stepSize);
         }
     }

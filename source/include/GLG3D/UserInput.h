@@ -122,9 +122,12 @@ private:
     /** Called from setPureDeltaMouse */
     void releaseMouse();
 
-    /** Position of the mouse before setPureDeltaMouse = true.
-        This position is returned by mouseXY. */
+    /** 
+        This position is returned by mouseXY. 
+        Also the last position of the mouse before
+        setPureDeltaMouse = true.*/
     Vector2                 guiMouse;
+
 
     /** Center of the window.  Recomputed in endEvents. */
     Vector2                 windowCenter;
@@ -255,7 +258,7 @@ public:
 	 input from the user.  Keyboard overrides joystick.
      @deprecated
 	 */
-	float getX() const;
+	float G3D_DEPRECATED getX() const;
 
 	/**
 	 Returns a number between -1 and 1 indicating the vertical
@@ -263,12 +266,12 @@ public:
 	 Keyboard overrides joystick.
      @deprecated
 	 */
-	float getY() const;
+	float G3D_DEPRECATED getY() const;
 
     /**
      @deprecated
      */
-    Vector2 getXY() const {
+    Vector2 G3D_DEPRECATED getXY() const {
         return Vector2(getX(), getY());
     }
 
@@ -277,17 +280,17 @@ public:
     }
 
     /** @deprecated */
-    inline Vector2 getMouseXY() const {
+    inline Vector2 G3D_DEPRECATED getMouseXY() const {
         return guiMouse;
     }
 
     /** @deprecated */
-	inline float getMouseX() const {
+	inline float G3D_DEPRECATED getMouseX() const {
 		return guiMouse.x;
 	}
 
     /** @deprecated */
-	inline float getMouseY() const {
+	inline float G3D_DEPRECATED getMouseY() const {
 		return guiMouse.y;
 	}
 

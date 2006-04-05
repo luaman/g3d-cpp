@@ -29,19 +29,27 @@
    <P>
    Changes in 6.09:
    <UL>
+
+    <LI> G3D::Win32Window and G3D::SDLWindow now release input capture and make the mouse visible on destruction
+    <LI> G3D::GWindow::setInputCaptureCount, G3D::GWindow::inputCaptureCount, G3D::GWindow::incInputCaptureCount, G3D::GWindow::decInputCaptureCount
+    <LI> GImage::makeCheckerboard
     <LI> G3D::Vector3::one()
     <LI> G3D::Shader now supports g3d_size(sampler2D) and g3d_invSize(sampler2D) extensions in GLSL shaders.
-    <LI> G3D::GImage::makeCheckerboard
     <LI> Renamed GAppSettings to G3D::GApp::Settings (old name is supported but deprecated)
 	<LI> Renamed GWindowSettings to G3D::GWindow::Settings (old name is supported but deprecated)
 	<LI> Renamed TextInput::Options to G3D::TextInput::Options (old name is supported but deprecated)
+    <LI> G3D::FPManualController::setAutoActive for World of Warcraft style controller
     <LI> G3D::isSlash, G3D::isQuote
-    <LI> GApplet::onEvent can now consume (prevent GApp from seeing) the event
+    <LI> G3D::GApplet::onEvent can now consume (i.e., prevent G3D::GApp from seeing) the event
+    <LI> G3D::CoordinateFrame::fuzzyIsIdentity, G3D::CoordinateFrame::isIdentity, G3D::CoordinateFrame::fuzzyEq
     <LI> [1421201] Removed excess gl (NVIDIA) headers
+    <LI> Fix: G3D::UserInput now restores the mouse position after pureDeltaMouse is turned off
+    <LI> Fix: G3D::Win32Window now clips precisely to the client area during an input grab.
 	<LI> Fix: [ 1383042 ] free static variables on shutdown
-    <LI> Fix: Win32GWindow now produces correct character and scan codes for key events
-    <LI> Fix: GApplet::onEvent calls GApplet::processEvent by default
+    <LI> Fix: G3D::Win32Window now produces correct character and scan codes for key events
+    <LI> Fix: G3D::GApplet::onEvent calls GApplet::processEvent by default
     <LI> Fix: [ 1444320 ] TextInput parses ".1" as "1" instead of "0.1"
+    <LI> Fix: G3D::Shape::type is now const
    </UL>
   <P>   
    Changes in 6.08:

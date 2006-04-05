@@ -339,6 +339,10 @@ SDLWindow::~SDLWindow() {
   		SDL_JoystickClose(joy[j]);
 	}
 
+    // Release the mouse
+    setMouseVisible(true);
+    setInputCapture(false);
+
     joy.clear();
 
     SDL_Quit();
@@ -610,6 +614,8 @@ void SDLWindow::getRelativeMouseState(double& x, double& y, uint8& mouseButtons)
 
 
 void SDLWindow::setMouseVisible(bool v) {
+    m_mouseHideCount = v ? 0 : 1;
+
     if (v) {
         SDL_ShowCursor(SDL_ENABLE);
     } else {
@@ -626,6 +632,8 @@ bool SDLWindow::mouseVisible() const {
 
 
 void SDLWindow::setInputCapture(bool c) {
+    m_inputCaptureCount = c ? 1 : 0;
+
     if (_inputCapture != c) {
         _inputCapture = c;
 

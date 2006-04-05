@@ -227,8 +227,10 @@ protected:
     */
     void G3D_DEPRECATED loadExtensions();
 
-public:
+    int                     m_inputCaptureCount;
+    int                     m_mouseHideCount;
 
+public:
 
     /** Return the <I>actual</I> properties of this window (as opposed to
         the desired settings from which it was initialized) */
@@ -349,15 +351,88 @@ public:
 
     /** 
       Capture the keyboard and mouse focus, locking the mouse to the client area of this window.
+      Sets the inputCaptureCount to 1 if @a c is true and 0 if @a c is false
+      @deprecated use setInputCaptureCount
      */
-    virtual void setInputCapture(bool c) = 0;
+    virtual void G3D_DEPRECATED setInputCapture(bool c) = 0;
 
-    /** Returns the current state of input capture */
-    virtual bool inputCapture() const = 0;
+    void setInputCaptureCount(int c) {
+        if ((m_inputCaptureCount > 0) && (c <= 0)) {
+            // Release mouse
+            setInputCapture(false);
+        } else if ((m_inputCaptureCount <= 0) && (c > 0)) {
+            // Capture mouse
+            setInputCapture(true);
+        }
 
-    virtual void setMouseVisible(bool b) = 0;
+        // Set this variable after the setInputCapture statements since
+        // they corrupt its value.
+        m_inputCaptureCount = c;
+    }
 
-    virtual bool mouseVisible() const = 0;
+
+    /**
+      If the count is 1 or greater, then the keyboard and mouse focus is captured, 
+      locking the mouse to the client area of this window.  The use of a count instead of 
+      an explicit capture/release API allows multiple parts of a program to capture input
+      without accidentally releasing and enclosing capture.
+      */
+    int inputCaptureCount() const {
+        return m_inputCaptureCount;
+    }
+
+    virtual void incInputCaptureCount() {
+        setInputCaptureCount(inputCaptureCount() + 1);
+    }
+
+    virtual void decInputCaptureCount() {
+        setInputCaptureCount(inputCaptureCount() - 1);
+    }
+
+    /** Returns the current state of input capture.
+        @deprecated use setInputCaptureCount
+      */
+    virtual bool G3D_DEPRECATED inputCapture() const = 0;
+
+
+    /** @deprecated Use setMouseVisibleCount */
+    virtual void G3D_DEPRECATED setMouseVisible(bool b) = 0;
+
+    /** @deprecated Use mouseVisibleCount */
+    virtual bool G3D_DEPRECATED mouseVisible() const = 0;
+
+    void setMouseHideCount(int c) {
+        if ((m_mouseHideCount > 0) && (c <= 0)) {
+            // Release mouse
+            setMouseVisible(true);
+        } else if ((m_mouseHideCount <= 0) && (c > 0)) {
+            // Capture mouse
+            setMouseVisible(false);
+        }
+
+        // Set this variable after the setMouseVisible statements since
+        // they corrupt its value.
+        m_mouseHideCount = c;
+    }
+
+
+    /**
+      If the count is 1 or greater, then the keyboard and mouse focus is captured, 
+      locking the mouse to the client area of this window.  The use of a count instead of 
+      an explicit capture/release API allows multiple parts of a program to capture input
+      without accidentally releasing and enclosing capture.
+      */
+    int mouseHideCount() const {
+        return m_mouseHideCount;
+    }
+
+    virtual void incMouseHideCount() {
+        setMouseHideCount(mouseHideCount() + 1);
+    }
+
+    virtual void decMouseHideCount() {
+        setMouseHideCount(mouseHideCount() - 1);
+    }
 
     /** Windows for which this is true require a program
         to hand control of the main loop to GWindow::startMainLoop.
@@ -461,12 +536,12 @@ private:
 
 protected:
 
-    GWindow() : m_renderDevice(NULL) {}
+    GWindow() : m_renderDevice(NULL), m_inputCaptureCount(0), m_mouseHideCount(0) {}
+
 
     /** Override this with the glMakeCurrent call appropriate for your window.*/
     virtual void reallyMakeCurrent() const {
-    }
-    
+    }    
 
 public:
     /** Closes the window and frees any resources associated with it.
