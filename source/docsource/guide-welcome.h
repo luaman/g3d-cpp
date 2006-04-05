@@ -57,7 +57,9 @@ arrive with each point release.
   Beta and Deprecated APIs,
   Notes for Expert Users</TD></TR>
 
-  <TR><TD>\link license License (BSD/IJG) \endlink</TD><TD></TD></TR>
+  <TR><TD>\link license License (BSD/IJG) \endlink</TD><TD>
+  The appropriate licenses for G3D and dependencies.
+  </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guideinstall Installing G3D \endlink</TD><TD VALIGN=TOP>
   WindowsXP/2000,
@@ -66,7 +68,9 @@ arrive with each point release.
   Building the Library,
   <CODE>\#define</CODE>s</TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD></TD></TR>
+  <TR><TD VALIGN=TOP>\link guidecompiling Compiling and Linking with G3D \endlink</TD><TD>
+  Guides to compilation of G3D based programs and projects.
+  </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guideconcepts Concepts \endlink</TD><TD>
   Immediate Mode Graphics,
@@ -76,10 +80,12 @@ arrive with each point release.
   Layerd APIs,
   Data Directory</TD></TR>
 
-  <TR><TD VALIGN=TOP>\link guidetutorial Tutorial \endlink</TD><TD>
+  <TR><TD VALIGN=TOP>\link guidetutorial Tutorial \endlink</TD><TD VALIGN=TOP>
+  The G3D tutorial, an excellent place to start with G3D.
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidedebug Debugging \endlink</TD><TD VALIGN=TOP>
+  Debugging in a G3D Application.
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guideapp Application Framework \endlink</TD><TD VALIGN=TOP>
@@ -99,6 +105,7 @@ arrive with each point release.
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guideui User Input\endlink</TD><TD VALIGN=TOP>
+  How to manage User Input in a G3D Application.
   </TD></TR>
 
   <TR><TD VALIGN=TOP>\link guidefiles Files & Networks \endlink</TD><TD VALIGN=TOP>
@@ -138,9 +145,10 @@ arrive with each point release.
 
 
 <TR><TD>\link deprecated Deprecated \endlink</TD><TD>APIs to be removed in 7.0</TD></TR>
-<TR><TD>\link changelog Change Log \endlink</TD><TD></TD></TR>
-<TR><TD>\link faq General FAQ \endlink</TD><TD></TD></TR>
-<TR><TD>\link errorfaq Error FAQ \endlink</TD><TD></TD></TR>
+<TR><TD>\link changelog Change Log \endlink</TD><TD>Changes between G3D Releases</TD></TR>
+<TR><TD>\link faq General FAQ \endlink</TD><TD>General Frequently Asked Questions</TD></TR>
+<TR><TD>\link errorfaq Error FAQ \endlink</TD><TD>Frequently Asked Questions (Common Errors)</TD></TR>
+<TR><TD>\link contributors G3D Contributors \endlink</TD><TD>The G3D Team, past and present</TD></TR>
 <TR><TD VALIGN=TOP COLSPAN=2>Index:
 \link indexedbytopic By Topic \endlink |
 Alphabetic <A HREF="classes.html">Classes</A> and <A HREF="globals_func.html">Functions</A> |
