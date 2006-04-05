@@ -40,9 +40,9 @@ Using OpenGL with G3D<IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I><
  It important to avoid off-by-one errors when rendering such Textures.  
  
  The G3D::Texture::DIM_2D_NPOT texture dimension allows non-power of two size textures (e.g., 640 x 480).  
- The G3D::Texture::CLAMP mode ensures that.
+ The G3D::Texture::CLAMP mode ensures that reads will not wrap around to the other side.
 
- G3D::RenderDevice::push2D automatically
+ G3D::RenderDevice::push2D automatically applies a slight shift 
 
 <pre>
     GImage im(1024, 768, 3);
@@ -58,5 +58,8 @@ Using OpenGL with G3D<IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I><
         rd->pop2D();
     }
 </pre>
+
+ When sampling from an image texture, it is often useful to know how large a texel is in the normalized [0, 1] texture coordinate space.
+ G3D::Shader supports an extension to GLSL where the expression <code>g3d_size(sampler)</code> returns the size of
 
   */

@@ -36,9 +36,7 @@ enum UseG3DUniforms {DEFINE_G3D_UNIFORMS, DO_NOT_DEFINE_G3D_UNIFORMS};
 
 
 /**
-
   @deprecated Use G3D::Shader instead, which provides a superset of functionality.
-
 
   An ObjectShader is run once per primitive group.
   A primitive group is defined by either the pair of calls 
@@ -150,10 +148,6 @@ public:
 
   <B>BETA API</B>
   This API is subject to change.
-  Due to a bug in the ATI drivers, VertexAndPixelShader and does not currently work
-  on ATI cards (new drivers are expected in September).  It works fine on NVIDIA cards
-  with June 2004 drivers and later.
-
  */
 class VertexAndPixelShader : public ReferenceCountedObject {
 public:
@@ -214,7 +208,26 @@ protected:
 
 		std::string					_shaderType;
 
+        /**
+         Replaces all instances of 
+           <code>"g3d_sampler2DSize(name)"</code> with 
+           <code>"     (g3d_sz2D_name.xy)"</code> and
+
+           <code>"g3d_sampler2DInvSize(name)"</code> with
+           <code>"        (g3d_sz2D_name.zw)"</code> 
+           
+          Note that both replacements will leave column numbers the same in error messages.  The
+          <code>()</code> wrapper ensures that <code>.xy</code> fields are accessible using
+          normal syntax off the result; it is the same as the standard practice of wrapping macros
+          in parentheses.
+
+          and adds "uniform vec4 g3d_sz2D_name;" to the uniform string.
+
+          Called from init.
+         */
+        void replaceG3DSize(std::string& code, std::string& uniformString);
 	public:
+
 		void init(
 			const std::string& name,
 			const std::string& code,
@@ -259,7 +272,6 @@ protected:
 		}
 	};
 
-
     static std::string      ignore;
 
     GPUShader				vertexShader;
@@ -285,9 +297,10 @@ protected:
     void computeUniformArray();
 
     /** Finds any uniform variables in the code that are not already in 
-        the uniform array and adds them (helps surpress warnings about 
-        setting variables that have been compiled away-- those warnings
-        are annoying when temporarily commenting out code) */
+        the uniform array that OpenGL returned and adds them to that array.
+        This causes VertexAndPixelShader to surpress warnings about 
+        setting variables that have been compiled away--those warnings
+        are annoying when temporarily commenting out code. */
     void addUniformsFromCode(const std::string& code);
 
     /** Does not contain g3d_ uniforms if they were compiled away */
@@ -296,7 +309,7 @@ protected:
     /** Does not contain g3d_ uniforms if they were compiled away */
     Set<std::string>            uniformNames;
 
-    /** Returns true for types that are textures (e.g. GL_TEXTURE_2D) */
+    /** Returns true for types that are textures (e.g., GL_TEXTURE_2D) */
     static bool isSamplerType(GLenum e);
 
 	VertexAndPixelShader(
@@ -510,7 +523,15 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
     uniform int  g3d_NumLights;        // 1 + highest index of the enabled lights
     uniform int  g3d_NumTextures;      // 1 + highest index of the enabled textures
     uniform vec4 g3d_ObjectLight0;     // g3d_WorldToObject * gl_LightState[0].position
+
+    vec2 g3d_sampler2DSize(sampler2D t);        // Returns the x and y dimensions of t
+    vec2 g3d_sampler2DInvSize(sampler2D t);     // Returns vec2(1.0, 1.0) / g3d_size(t) at no additional cost
   </PRE>
+
+  <code>g3d_sampler2DSize</code> and <code>g3d_sampler2DInvSize</code> require that there be no additional space between
+  the function name and parens and no space between the parens and sampler name.  There is no cost for
+  definining and then not using any of these; unused variables do not increase the runtime cost of the
+  shader.
 
   If your shader begins with <CODE>#include</CODE> or <CODE>#define</CODE> the
   line numbers will be off by one in error messages because the G3D uniforms are 
@@ -531,7 +552,7 @@ typedef ReferenceCountedPointer<class Shader>  ShaderRef;
 
   Vertex
   shaders are widely supported, so this will run on any graphics card produced since 2001
-  (e.g. GeForce3 and up).  Pixel shaders are only available on newer cards 
+  (e.g. GeForce3 and up).  Pixel shaders are available on "newer" cards 
   (e.g. GeForceFX 5200 and up).
 
   <PRE>
