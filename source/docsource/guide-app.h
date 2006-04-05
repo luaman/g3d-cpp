@@ -33,13 +33,15 @@ program should quit.
 GApp contains a lot of functionality that might make your life easier or better! In particular,
 look at G3D::GWindowSettings for lots of rendering controls. G3D::GApp's construct takes an optional
 G3D::GAppSettings argument, whose window attribute is an instance of G3D::GWindowSettings. To turn on
-full-screen anti-aliasing, use G3D::GWindowSettings.fsaaSamples. You can even turn on stereo
-with G3D::GWindowSettings.stereo, set where the window should initially appear with G3D::GWindowSettings.stereo.x,
-or set the window to start up as full-screen with G3D::GWindowSettings.fullscreen.
+full-screen anti-aliasing, use G3D::GWindowSettings.fsaaSamples. <br>
+Full screen mode can be set using G3D::GWindowSettings.fullScreen, just set this value to true. <br>
+Also, the initial position of the window can be moved using G3D::GWindowSettings.x and G3D::GWindowSettings.y. An alternative method of performing
+this is to set the G3D::GWindowSettings.center, if this is set to true, the window will appear in the center
+of the screen. It is even possible to use stereo hardware with G3D, using G3D::GWindowSettings.stereo.
 
-GApp also gives you a camera with keyboard controls (a, s, d, w) and mouse controls
-(left-mouse-button to look around), which you can use before you've written your own
-camera/navigation controls. SeeG3D::GApp::debugCamera. You also get an easy way to exit -- just hit escape.
+Using G3D::GApp::debugController, it is possible to get 'FPS style' controls (W,A,S,D and mouse look) at the start
+of the development, this then be replaced when development is at a stage to support it. See the main.cpp in demos
+for an example of this in use and how to activate it.
 
 @section applets Applets
 
