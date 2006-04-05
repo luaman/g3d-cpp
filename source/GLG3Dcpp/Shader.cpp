@@ -700,15 +700,21 @@ void VertexAndPixelShader::validateArgList(const ArgList& args) const {
             declared = args.argTable.containsKey(textureName);
             performTypeCheck = false;
 
+            if (! declared && ! decl.dummy) {
+                throw ArgumentError(
+                    format("No value provided for VertexAndPixelShader uniform variable %s.",
+                        textureName.c_str()));
+            }
+
         } else {
 
             declared = args.argTable.containsKey(decl.name);
-        }
 
-        if (! declared && ! decl.dummy) {
-            throw ArgumentError(
-                format("No value provided for VertexAndPixelShader uniform variable %s of type %s.",
-                    decl.name.c_str(), GLenumToString(decl.type)));
+            if (! declared && ! decl.dummy) {
+                throw ArgumentError(
+                    format("No value provided for VertexAndPixelShader uniform variable %s of type %s.",
+                        decl.name.c_str(), GLenumToString(decl.type)));
+            }
         }
 
         if (declared && performTypeCheck) {
