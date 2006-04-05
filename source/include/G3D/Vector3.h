@@ -328,6 +328,7 @@ public:
 
     // Special values.
     inline static const Vector3& zero()     { static Vector3 v(0, 0, 0); return v; }
+    inline static const Vector3& one()      { static Vector3 v(1, 1, 1); return v; }
     inline static const Vector3& unitX()    { static Vector3 v(1, 0, 0); return v; }
     inline static const Vector3& unitY()    { static Vector3 v(0, 1, 0); return v; }
     inline static const Vector3& unitZ()    { static Vector3 v(0, 0, 1); return v; }

@@ -10,7 +10,7 @@
    will be supported until (at least) the next major release.
 
    <TABLE><TR><TD>
-   <I>The next major, incompatible release will be G3D 7.00, planned for release in December 2006 (there will be betas
+   <I>The next major, incompatible release will be G3D 7.00, planned for release in January 2007 (there will be betas
       and point releases before then). We plan to streamline the API by making the following changes:</I>
      <UL>
        <LI>G3D::Sky create methods will no longer accept a G3D::RenderDevice.
@@ -21,7 +21,7 @@
        <LI>SDL will no longer be automatically linked into the Win32 build
        <LI>Some contrib classes will move into the main API (e.g., SuperShader, ArticulatedModel, ToneMap, Matrix)
        <LI>GApplet methods will change to exclusively use the onUserInput, onGraphics, etc. forms.  doGraphics, etc. forms will be removed. 
-       <LI>The libraries will be renamed to g3util.h / g3util.lib and g3d.h / g3d.lib to clarify their use
+       <LI>The main headers and library names will change
        <LI>G3D::GEvent will become a standalone class instead of a typedef.  All event constants will be renamed.
      </UL>
    </TD></TR></TABLE>
@@ -29,7 +29,9 @@
    <P>
    Changes in 6.09:
    <UL>
-    <LI> GImage::makeCheckerboard
+    <LI> G3D::Vector3::one()
+    <LI> G3D::Shader now supports g3d_size(sampler2D) and g3d_invSize(sampler2D) extensions in GLSL shaders.
+    <LI> G3D::GImage::makeCheckerboard
     <LI> Renamed GAppSettings to G3D::GApp::Settings (old name is supported but deprecated)
 	<LI> Renamed GWindowSettings to G3D::GWindow::Settings (old name is supported but deprecated)
 	<LI> Renamed TextInput::Options to G3D::TextInput::Options (old name is supported but deprecated)

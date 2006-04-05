@@ -8,7 +8,7 @@
   @cite Portions based on Dave Eberly's Magic Software Library at <A HREF="http://www.magic-software.com">http://www.magic-software.com</A>
  
   @created 2001-06-02
-  @edited  2006-02-20
+  @edited  2006-04-05
  */
 
 #ifndef G3D_MATRIX3_H
@@ -25,6 +25,10 @@ namespace G3D {
   3x3 matrix.  Do not subclass.
  */
 class Matrix3 {
+private:
+
+    float m_aafEntry[3][3];
+
 public:
 
     /** Initial values are undefined for performance.  See also 
@@ -276,7 +280,6 @@ protected:
     // support for spectral norm
     static float maxCubicRoot (float afCoeff[3]);
 
-    float m_aafEntry[3][3];
 };
 
 

@@ -4,7 +4,8 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2005-09-09
+# @edited  2006-02-29
+#
 # Each build target is a procedure.
 #
 
@@ -57,6 +58,7 @@ lib8       Same as 'lib', but use VC8 on Windows instead of VC6
 fastlib    Build the lib target without reconfig on Linux (not recommended) 
 release    Build g3d-""" + version + """.zip, g3d-src-""" + version + """.zip, g3d-data-""" + version + """.zip
 source     Build g3d-src-""" + version + """.zip only
+aux        Copy data, bin, and demos directories to the installation dir
 doc        Run doxygen and copy the html directory and contrib directory
 online_doc Run doxygen and copy the html directory and contrib directory (with google search)
 clean      Delete the build, release, temp, and install directories
@@ -408,12 +410,26 @@ def install(args, copyData=1, fromRelease=False):
                 lib7(args)
 
             if has8:
+                if has7:
+                    print 'Please convert the project files from VC7.1 to VC8 and press a key...'
+                    getch() 
                 lib8(args)
 
     else:
         lib(args)
     doc(args)
     
+    aux(args, copyData)
+
+    setPermissions(args)
+
+###############################################################################
+#                                                                             #
+#                              aux Target                                     #
+#                                                                             #
+###############################################################################
+
+def aux(args, copyData=0):
     # Copy the demos
     copyIfNewer('source/demos', installDir(args) + '/demos')
 
@@ -427,8 +443,6 @@ def install(args, copyData=1, fromRelease=False):
 
     if (copyData):
         copyIfNewer('../data', installDir(args) + '/data')
-
-    setPermissions(args)
 
 ###############################################################################
 #                                                                             #
@@ -486,27 +500,29 @@ def release(args):
             #print line
             raise 'Error', 'There is a Program Database setting in one of the projects.'
 
-    rmdir('release')
+    prebuilt = 0
 
-    rmdir('temp')
-    rmdir('install')
+    if not prebuilt:
+        rmdir('release')
+        rmdir('temp')
+        rmdir('install')
+        mkdir('release')
 
-    mkdir('release')
+        source(args)
 
-    # TODO: Make sure the linux binaries are already built
-    
-    # Install to the 'install' directory
-    install([], 0, True)
+        # TODO: Make sure the linux binaries are already built
 
-    # Copy Linux and OS X lib directories.  They should be
-    # manually placed in cpp/linux-lib and cpp/osx-lib before
-    # building this target.
-    copyIfNewer('linux-lib', installDir([]) + '/linux-lib')
-    copyIfNewer('osx-lib', installDir([]) + '/osx-lib')
+        # Install to the 'install' directory
+        install([], 0, True)
 
-    zip('install/*', 'release/g3d-' + version + '.zip')
+        # Copy Linux and OS X lib directories.  They should be
+        # manually placed in cpp/linux-lib and cpp/osx-lib before
+        # building this target.
+        copyIfNewer('linux-lib', installDir([]) + '/linux-lib')
+        copyIfNewer('osx-lib', installDir([]) + '/osx-lib')
 
-    source(args)
+    #zip('install/*', 'release/g3d-' + version + '.zip')
+
     setPermissions(args)
 
     # Make a separate zipfile for the data
@@ -532,4 +548,4 @@ def release(args):
 #                                                                             #
 ###############################################################################
 
-dispatchOnTarget([lib, lib7, lib8, fastlib, install, source, doc, online_doc, test, clean, release], buildHelp)
+dispatchOnTarget([lib, lib7, aux, lib8, fastlib, install, source, doc, online_doc, test, clean, release], buildHelp)

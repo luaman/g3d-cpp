@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2001-03-04
- @edited  2006-01-07
+ @edited  2006-04-07
 
  Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
@@ -48,14 +48,7 @@ general than a CoordinateFrame, some information may be lost.
 See also: G3D::Matrix4, G3D::Quat
 */
 class CoordinateFrame {
-
 public:
-
-    /**
-     The direction an object "looks" relative to its own axes.
-     @deprecated This is always -1 and will be fixed at that value in future releases.
-     */
-    static const float				zLookDirection;
 
     /**
      Takes object space points to world space.
@@ -66,6 +59,12 @@ public:
      Takes object space points to world space.
      */
     Vector3							translation;
+
+    /**
+     The direction an object "looks" relative to its own axes.
+     @deprecated This is always -1 and will be fixed at that value in future releases.
+     */
+    static const float				zLookDirection;
 
     inline bool operator==(const CoordinateFrame& other) const {
         return (translation == other.translation) && (rotation == other.rotation);
