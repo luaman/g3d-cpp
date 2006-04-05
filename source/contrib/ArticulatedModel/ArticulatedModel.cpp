@@ -90,6 +90,10 @@ void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFram
         }
 
         part.cframe = object.keyframe.approxCoordinateFrame();
+        debugAssert(part.cframe.rotation.getColumn(0).isFinite());
+        debugAssert(part.cframe.rotation.getColumn(1).isFinite());
+        debugAssert(part.cframe.rotation.getColumn(2).isFinite());
+
         // Scale and rotate the cframe positions, but do not translate them
         part.cframe.translation = xform.rotation * part.cframe.translation;
 

@@ -10,7 +10,11 @@
 #ifndef SUPERSHADER_H
 #define SUPERSHADER_H
 
-#include <G3DAll.h>
+#include "G3D/ReferenceCount.h"
+#include "GLG3D/LightingParameters.h"
+#include "GLG3D/Shader.h"
+
+using namespace G3D;
 
 typedef ReferenceCountedPointer<class SuperShader> SuperShaderRef;
 

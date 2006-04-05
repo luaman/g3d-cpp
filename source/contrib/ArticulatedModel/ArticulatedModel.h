@@ -12,7 +12,10 @@
 #define G3D_ARTICULATEDMODEL
 
 #include "SuperShader.h"
-
+#include "G3D/Sphere.h"
+#include "G3D/Box.h"
+#include "GLG3D/VAR.h"
+#include "GLG3D/PosedModel.h"
 
 typedef ReferenceCountedPointer<class ArticulatedModel> ArticulatedModelRef;
 

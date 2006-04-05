@@ -5,19 +5,21 @@
  */
 
 #include "SuperShader.h"
+#include "GLG3D/RenderDevice.h"
+#include "G3D/fileutils.h"
 
-// Material arguments
-// TODO: remove
-static TextureRef defaultNormalMap;
-// TODO: remove
-static TextureRef _whiteMap;
-
-static TextureRef _whiteCubeMap;
 
 void SuperShader::configureShader(
     const LightingRef&              lighting,
     const Material&                 material,
     VertexAndPixelShader::ArgList&  args) {
+    // Material arguments
+    // TODO: remove
+    static TextureRef defaultNormalMap;
+    // TODO: remove
+    static TextureRef _whiteMap;
+
+    static TextureRef _whiteCubeMap;
     
     if (material.diffuse.constant != Color3::black()) {
         args.set("diffuseConstant",         material.diffuse.constant);
@@ -98,14 +100,20 @@ void SuperShader::configureShadowShader(
     
     // TODO: don't even set fields that have no corresponding map
     if (material.diffuse.map.notNull()) {
-        args.set("diffuseMap",              material.diffuse.map);
+        args.set("diffuseMap",          material.diffuse.map);
     }
 
     // TODO: bind only the constants that are used
     args.set("diffuseConstant",         material.diffuse.constant);
-    args.set("specularMap",             material.specular.map.notNull() ? material.specular.map : _whiteMap);
+
+    if (material.specular.map.notNull()) {
+        args.set("specularMap",         material.specular.map);
+    }
     args.set("specularConstant",        material.specular.constant);
-    args.set("specularExponentMap",     material.specularExponent.map.notNull() ? material.specularExponent.map : _whiteMap);
+
+    if (material.specularExponent.map.notNull()) {
+        args.set("specularExponentMap",     material.specularExponent.map);
+    }
     args.set("specularExponentConstant",material.specularExponent.constant);
 
     if (material.normalBumpMap.notNull() && (material.bumpMapScale != 0)) {
@@ -126,7 +134,7 @@ void SuperShader::configureShadowShader(
     static const Matrix4 bias(
         0.5f, 0.0f, 0.0f, 0.5f,
         0.0f, 0.5f, 0.0f, 0.5f,
-        0.0f, 0.0f, 0.5f, 0.5f - 0.003,
+        0.0f, 0.0f, 0.5f, 0.5f - 0.003f,
         0.0f, 0.0f, 0.0f, 1.0f);
 
     args.set("lightMVP",        bias * lightMVP);
@@ -289,7 +297,7 @@ void SuperShader::createShaders(
     nonShadowedShader   = p.nonShadowedShader;
     shadowMappedShader  = p.shadowMappedShader;
 
-
+/*
     // TODO: remove
     if (_whiteMap.isNull()) {
         GImage im(4,4,3);
@@ -330,6 +338,7 @@ void SuperShader::createShaders(
         }
         defaultNormalMap = Texture::fromGImage("Normal Map", im, TextureFormat::RGBA8);
     }
+    */
 }
 
 

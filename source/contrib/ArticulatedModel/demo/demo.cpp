@@ -215,8 +215,10 @@ void Demo::onGraphics(RenderDevice* rd) {
 
     app->debugPrintf("%d opaque, %d transparent\n", opaque.size(), transparent.size());
 
+    toneMap.beginFrame(rd);
+
     // Cyan background
-    rd->setColorClearValue(Color3(.1, .5, 1));
+    rd->setColorClearValue(Color3(.1f, .5f, 1));
 
     rd->clear(app->sky.notNull(), true, true);
     if (app->sky.notNull()) {
@@ -252,14 +254,13 @@ void Demo::onGraphics(RenderDevice* rd) {
         rd->setColor(Color3::white());
         Draw::rect2D(Rect2D::xywh(400,400,10,10),rd);
     rd->pop2D();
-    */
-
-    toneMap.apply(rd);
-        
+    */        
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(skyParameters);
     }
+
+    toneMap.endFrame(rd);
 
     app->debugPrintf("Tone Map %s\n", toneMap.enabled() ? "On" : "Off");
     app->debugPrintf("%s Profile %s\n", toString(ArticulatedModel::profile()),
@@ -278,7 +279,7 @@ void Demo::onGraphics(RenderDevice* rd) {
         rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         Draw::rect2D(
             Rect2D::xywh(rd->getWidth() - 96,rd->getHeight() - 96, 64, 64), 
-            rd, Color4(1,1,1,0.7));
+            rd, Color4(1,1,1,0.7f));
         rd->pop2D();
     }
 

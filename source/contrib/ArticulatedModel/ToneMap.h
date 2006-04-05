@@ -1,19 +1,45 @@
-#ifndef TONEMAP_H
-#define TONEMAP_H
+#ifndef G3D_TONEMAP_H
+#define G3D_TONEMAP_H
 
-#include <G3DAll.h>
+#include <GLG3D/RenderDevice.h>
+#include <GLG3D/Texture.h>
+#include <GLG3D/Shader.h>
+#include <GLG3D/LightingParameters.h>
 
-/** Applies inverse gamma and bloom. 
+namespace G3D {
 
-  Example:
+/** 
+  Applies gamma correction and bloom. 
+
+  In the real world, the shadow under a car is about 1,000,000 times darker than 
+  the specular highlight off its hood.  Most computer displays can only represent
+  a dynamic range of 255 values (eight bits) per color channel, so bright areas
+  are blown out and all detail is lost in dark areas.  This is the dynamic range problem
+  of displays.
+  
+  Furthermore, displays were 
+  designed for 2D rendering where rgb=128 should <i>appear</i> half as bright as rgb=255.
+  In contrast, 3D rendering simulates light, so rgb=128 should have half as much <i>energy</i>
+  as rgb=255, which does not correspond to the perception of half as bright.  This is the
+  gamma ramp problem.
+
+  There are many sophisticated algorithms for altering a rendered image to correct both of these.
+  This ToneMap class uses an algorithm that is not the most sophisticated, but is extremely
+  fast and produces attractive results.  It alters the lights in a scene to conserve
+  dynamic range and then post-processes an image to make overexposed areas "glow" and 
+  correct the gamma ramp for all other areas.  The resulting images have more detail in dark areas
+  and appear more realistic than unprocessed ones.
+
+  Use Example:
 
   <PRE>
-  void doGraphics() {
+  void onGraphics(RenderDevice* rd) {
     LightingRef        lighting      = toneMap.prepareLighting(app->lighting);
     LightingParameters skyParameters = toneMap.prepareLightingParameters(app->skyParameters);
 
+    toneMap.beginFrame(rd);
        // rendering code ...
-    toneMap.apply(app->renderDevice);
+    toneMap.endFrame(rd);
   }
   </PRE>
 
@@ -22,10 +48,11 @@ class ToneMap {
 private:
 
     /** PS14ATI shaders */
-    static unsigned int                 gammaShaderPS14ATI; 
+    static unsigned int         gammaShaderPS14ATI; 
 
-    /** PS20 shaders */
-    static ShaderRef            bloomShader, bloomFilterShader;
+
+    /** Three pass algorithm. */
+    static ShaderRef            bloomShader[3];
 
     TextureRef                  screenImage;
 
@@ -34,11 +61,14 @@ private:
     /** When in stereo mode, BloomMap 0 is the left eye, bloom map 1 is the right eye. */
     TextureRef                  stereoBloomMap[2];
 
+    /** Intermediate result used when computing the bloom map.  This is 1/4 the horizontal resolution of the screen.*/
+    TextureRef                  bloomMapIntermediate;
+
     bool                        mEnabled;
 
     /** Inverse gamma ramps. */
     // For programmable we don't use B
-    static TextureRef RG, B;
+    static TextureRef           RG, B;
 
     static void makeGammaCorrectionTextures();
 
@@ -57,7 +87,10 @@ private:
     void applyPS14ATI(RenderDevice* rd);
     void applyPS14NVIDIA(RenderDevice* rd);
 
-    /** Returns the appropriate bloom map for the current draw buffer */
+    /** Called from resizeImages and to clear the old bloom map on occasion. */
+    void resizeBloomMap(int w, int h);
+
+    /** Returns the appropriate bloom map for the current draw buffer (i.e., resolves stereo issues)*/
     TextureRef getBloomMap(RenderDevice* rd) const;
 
 public:
@@ -81,9 +114,14 @@ public:
     /** Call before rendering the scene to create a tone-mapping compatible lighting environment. */
     LightingParameters prepareLightingParameters(const LightingParameters& L) const;
 
-    /** Call after rendering the rest of the scene to apply tone mapping.*/
-    void apply(RenderDevice* rd);
+    /** Call before rendering anything (including clearing the screen. */
+    void beginFrame(RenderDevice* rd);
+
+    /** Call after rendering the rest of the scene to apply tone mapping. */
+    void endFrame(RenderDevice* rd);
 
 };
+
+}
 
 #endif
