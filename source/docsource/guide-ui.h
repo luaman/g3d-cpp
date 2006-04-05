@@ -34,8 +34,7 @@ of a UserInput object and a trivial instance where it is polled for inputs.
     GEvent event;
 
     userInput->beginEvents();
-    while (SDL_PollEvent(&event)) {
-        userInput->processEvent(event);
+    while (renderDevice->window()->pollEvent(&event)) {
 
         switch (event.type) {
         case SDL_QUIT:
@@ -46,6 +45,8 @@ of a UserInput object and a trivial instance where it is polled for inputs.
         if (userInput->keyPressed(SDLK_PLUS)) {
             .... do something on '+' button pressed
         }
+
+	userInput->processEvent(event);
     }
     userInput->endEvents();
 
