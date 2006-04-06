@@ -5,8 +5,6 @@
  
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
-  @cite Portions based on Dave Eberly's Magic Software Library at http://www.magic-software.com
- 
   @created 2001-06-02
   @edited  2005-08-23
   Copyright 2000-2006, Morgan McGuire.
@@ -244,12 +242,14 @@ public:
     float squaredMagnitude () const;
 	
     /** @deprecated Use squaredMagnitude */
-    inline float norm() const {
+    inline float G3D_DEPRECATED norm() const {
         return squaredMagnitude();
     }
 
     float dot(const Vector3& rkVector) const;
-    float unitize(float fTolerance = 1e-06);
+    
+    float G3D_DEPRECATED unitize(float fTolerance = 1e-06);
+
     /** Cross product.  Note that two cross products in a row
         can be computed more cheaply: v1 x (v2 x v3) = (v1 dot v3) v2  - (v1 dot v2) v3.
       */

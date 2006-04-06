@@ -266,7 +266,7 @@ public:
 
      @deprecated Use send(type, message)
      */
-    void send(const NetMessage* m);
+    void G3D_DEPRECATED send(const NetMessage* m);
 
     // The message is actually copied from the socket to an internal buffer during
     // this call.  Receive only deserializes.
@@ -329,12 +329,12 @@ public:
     }
 
     /** @deprecated */
-    inline void send(const NetMessage& m) {
+    inline void G3D_DEPRECATED send(const NetMessage& m) {
         send(m.type(), m);
     }
 
     /** @deprecated */
-    inline void send() {
+    inline void G3D_DEPRECATED send() {
         send(0xffffffff);
     }
 
@@ -351,7 +351,7 @@ public:
         than 5k) this is extremely unlikely to occur.
         @deprecated Use receive(T)
     */
-    bool receive(NetMessage* m);
+    bool G3D_DEPRECATED receive(NetMessage* m);
 
     /** 
         If a message is waiting, deserializes the waiting message into

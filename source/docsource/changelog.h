@@ -29,7 +29,7 @@
    <P>
    Changes in 6.09:
    <UL>
-
+    <LI> G3D::Crypto with MD5 and CRC32 hashes
     <LI> G3D::Win32Window and G3D::SDLWindow now release input capture and make the mouse visible on destruction
     <LI> G3D::GWindow::setInputCaptureCount, G3D::GWindow::inputCaptureCount, G3D::GWindow::incInputCaptureCount, G3D::GWindow::decInputCaptureCount
     <LI> GImage::makeCheckerboard

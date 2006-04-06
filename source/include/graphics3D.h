@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2006-02-14
+ @edited  2006-04-06
 
  Copyright 2001-2006, Morgan McGuire.
  All rights reserved.
@@ -28,6 +28,7 @@
 #include "G3D/platform.h"
 #include "G3D/Array.h"
 #include "G3D/Queue.h"
+#include "G3D/Crypto.h"
 #include "G3D/format.h"
 #include "G3D/Vector2.h"
 #include "G3D/Vector3.h"

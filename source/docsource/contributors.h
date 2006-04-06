@@ -31,6 +31,7 @@
    <BR>Jauhn Dabz
    <BR>Erik de Castro Lopo 
    <BR>Chris Demetriou
+   <BR>L. Peter Deutsch
    <BR>Dave Eberly
    <BR>Kevin Egan
    <BR>Cass Everitt

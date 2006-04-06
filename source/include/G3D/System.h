@@ -50,8 +50,9 @@ std::string license();
  This implementation is compatible with PKZIP and GZIP.
 
  Based on http://www.gamedev.net/reference/programming/features/crc32/
+ @deprecated Use Crypto::crc32
 */
-uint32 crc32(const void* bytes, size_t numBytes);
+uint32 G3D_DEPRECATED crc32(const void* bytes, size_t numBytes);
 
 /**
  OS and processor abstraction.  The first time any method is called the processor
