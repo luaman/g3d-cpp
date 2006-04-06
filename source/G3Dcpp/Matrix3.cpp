@@ -6,7 +6,7 @@
  @author Morgan McGuire, graphics3d.com
 
  @created 2001-06-02
- @edited  2006-01-08
+ @edited  2006-04-06
 */
 
 #include "G3D/platform.h"
@@ -243,15 +243,17 @@ Matrix3& Matrix3::operator-= (const Matrix3& rkMatrix) {
 }
 
 Matrix3& Matrix3::operator*= (const Matrix3& rkMatrix) {
+    Matrix3 mulMat;
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            m_aafEntry[iRow][iCol] =
+            mulMat.m_aafEntry[iRow][iCol] =
                 m_aafEntry[iRow][0] * rkMatrix.m_aafEntry[0][iCol] +
                 m_aafEntry[iRow][1] * rkMatrix.m_aafEntry[1][iCol] +
                 m_aafEntry[iRow][2] * rkMatrix.m_aafEntry[2][iCol];
         }
     }
 
+    *this = mulMat;
     return *this;
 }
 
