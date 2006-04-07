@@ -19,6 +19,19 @@
 
 namespace G3D {
 
+BigInt::BigInt(const uint8* b, size_t n, int s) {
+
+    setSize(n);
+    System::memcpy(byte, b, n);
+
+    sgn = s;
+
+    stripLeadingZeros();
+
+    debugAssertM((sgn != 0) || (numBytes == 0),
+        "Cannot have a sign bit of zero on a non-zero number.");
+}
+
 
 void BigInt::setSize(int n) {
     if (n == numBytes) {

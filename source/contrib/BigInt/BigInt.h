@@ -45,9 +45,14 @@ private:
     // it leads to fas allocation and copying and we don't often need
     // to grow the array anyway.
 
+    // As a future optimization we could maintain a fixed size array (say, int64)
+    // and only allocate when exceeding that size.
+
     /** Big endian, unsigned. Always contains the minimum number 
         of bytes needed to represent the current number.*/
     uint8*      byte;
+
+    /** Length of byte */
     int         numBytes;
 
     /** 0, 1, or -1.  Always zero for the number zero */
@@ -90,12 +95,22 @@ public:
 
     /** Zero */
     BigInt();
+
     BigInt(uint32 x);
+
     BigInt(int32 x);
+
     BigInt(int64 x);
+
+    /** Creates a big-endian signed number */
+    BigInt(const uint8* bytes, size_t numBytes, int sign = 1);
+
     BigInt(const BigInt&);
+
     BigInt(const MD5Hash&);
+
     explicit BigInt(class BinaryInput&);
+
     ~BigInt();
 
     /** Returns the largest non-zero byte index in unsigned big-endian
@@ -104,7 +119,7 @@ public:
         return numBytes;
     }
 
-    /** Returns +/-1 */
+    /** Returns 1, 0, or -1 */
     inline int sign() const {
         return sgn;
     }
@@ -112,11 +127,13 @@ public:
     /** If the string begins with "0x", "+0x", or "-0x" it is parsed as hex, 
         otherwise it is parsed as decimal.*/
     BigInt(const std::string& s);
+
     BigInt(const char* s);
 
+    /** Uniform pseudorandom number, inclusive of the bounds. */
     static BigInt random(const BigInt& low, const BigInt& high);
 
-    /** Generates a random number between 0 and (2^numBits)-1. */
+    /** Generates a random number between 0 and (2^numBits)-1 using BigInt::random() */
     static BigInt randomNumBits(int numBits);
 
     /** 
