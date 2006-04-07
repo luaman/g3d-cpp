@@ -34,6 +34,34 @@ void testCompare() {
         debugAssert(a == 0);
         debugAssert(a != 1);
     }
+
+    {
+        BigInt a(500);
+        BigInt b(200);
+        debugAssert(a > b);
+        debugAssert(b < a);
+    }
+
+    {
+        BigInt a(-5000000);
+        BigInt b(-2000000);
+        debugAssert(a < b);
+        debugAssert(b > a);
+    }
+
+    {
+        BigInt a(-5000000);
+        BigInt b(-2000000);
+        debugAssert(a <= b);
+        debugAssert(b >= a);
+    }
+
+    {
+        BigInt a(10000);
+        BigInt b(10000);
+        debugAssert(a <= b);
+        debugAssert(b >= a);
+    }
 }
 
 
@@ -112,12 +140,29 @@ void testMul() {
 }
 
 
+void testConvert() {
+    {
+        BigInt a(-72137);
+        int32 x = a.int32();
+        debugAssert(x == -72137);
+    }
+
+    {
+        int64 y = 12345678901L;
+        BigInt a(y);
+        int64 x = a.int64();
+        debugAssert(x == y);
+    }
+}
+
+
 int main(int argc, const char* argv) {
 
     testParser();
     testCompare();
     testAdd();
     testMul();
+    testConvert();
 
     return 0;
 }

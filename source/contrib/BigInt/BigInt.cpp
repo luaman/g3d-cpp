@@ -14,6 +14,7 @@
 #include "G3D/System.h"
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
+#include "G3D/Crypto.h"
 #include "BigInt.h"
 
 namespace G3D {
@@ -87,6 +88,19 @@ BigInt::BigInt() : byte(NULL), numBytes(0), sgn(0) {
 }
 
 
+BigInt::BigInt(const G3D::MD5Hash& h) : byte(NULL), numBytes(0), sgn(0) {
+    setSize(16);
+    
+    for (int i = 0; i < 16; ++i) {
+        byte[i] = h[i];
+    }
+
+    sgn = 1;
+
+    stripLeadingZeros();
+}
+
+
 BigInt::~BigInt() {
     System::free(byte);
     byte = 0;
@@ -142,11 +156,11 @@ BigInt::BigInt(G3D::int64 x) : byte(NULL), numBytes(0), sgn(G3D::iSign(x)) {
         ((a > 0) ? 1 : 0) +
         ((a > 0xFF) ? 1 : 0) +
         ((a > 0xFFFF) ? 1 : 0) +
-        ((a > 0xFFFFFF) ? 1 : 0);
-        ((a > 0xFFFFFFFF) ? 1 : 0);
-        ((a > 0xFFFFFFFFFF) ? 1 : 0);
-        ((a > 0xFFFFFFFFFFFF) ? 1 : 0);
-        ((a > 0xFFFFFFFFFFFFFF) ? 1 : 0);
+        ((a > 0xFFFFFF) ? 1 : 0) +
+        ((a > 0xFFFFFFFFL) ? 1 : 0) +
+        ((a > 0xFFFFFFFFFFL) ? 1 : 0) +
+        ((a > 0xFFFFFFFFFFFFL) ? 1 : 0) +
+        ((a > 0xFFFFFFFFFFFFFFL) ? 1 : 0);
 
     setSize(n);
 
@@ -470,13 +484,16 @@ BigInt BigInt::operator^(const BigInt& x) const {
 
 
 bool BigInt::operator>(const BigInt& y) const {
-    debugAssertM(false, "TODO");
-    return false;
+    return compare(y, *this, false);
 }
 
 
 bool BigInt::operator<(const BigInt& y) const {
-    const BigInt& x = *this;
+    return compare(*this, y, false);
+}
+
+
+bool BigInt::compare(const BigInt& x, const BigInt& y, bool ifEqual) {
 
     // See what we can determine from the signs
     if (x.sgn != y.sgn) {
@@ -485,7 +502,7 @@ bool BigInt::operator<(const BigInt& y) const {
 
     if (x.isZero() && y.isZero()) {
         // They are equal
-        return false;
+        return ifEqual;
     }
 
     // At this point, we must have two positive or two negative numbers.
@@ -498,7 +515,7 @@ bool BigInt::operator<(const BigInt& y) const {
     }
 
     // On the same order; we have to walk the bytes
-    for (int i = numBytes - 1; i >= 0; --i) {
+    for (int i = x.numBytes - 1; i >= 0; --i) {
         if (x.byte[i] * flip > y.byte[i] * flip) {
             // x is bigger (smaller) than y
             return false;
@@ -509,19 +526,17 @@ bool BigInt::operator<(const BigInt& y) const {
     }
 
     // The numbers must have been exactly equal
-    return false;
+    return ifEqual;
 }
 
 
 bool BigInt::operator>=(const BigInt& y) const {
-    debugAssertM(false, "TODO");
-    return false;
+    return compare(y, *this, true);
 }
 
 
 bool BigInt::operator<=(const BigInt& y) const {
-    debugAssertM(false, "TODO");
-    return false;
+    return compare(*this, y, true);
 }
 
 
@@ -802,15 +817,91 @@ void BigInt::parseDec(const char* str) {
 
 int32 BigInt::int32() const {
     debugAssertM(numBytes <= 4, "BigInt is too large to convert to int32.");
-    // TODO
-    return 0;
+
+    if (numBytes == 4) {
+        uint8 highByte = byte[4];
+        if (sgn == 1) {           
+            debugAssertM(highByte <= 0x7F,
+                "BigInt is too large to convert to int32.");
+        } else {
+            debugAssertM(highByte <= 0x80,
+                "BigInt is too (negatively) large to convert to int32.");
+        }
+    }
+
+    G3D::int32 x = 0;
+
+    for (int i = numBytes - 1; i >= 0; --i) {
+        x = (x << 8) + byte[i];
+    }
+
+    return x * sgn;
+}
+
+
+uint32 BigInt::uint32() const {
+    debugAssertM(numBytes <= 4, "BigInt is too large to convert to uint32.");
+    debugAssertM(sgn < 1, "Cannot convert a negative BigInt to uint32.");
+
+    G3D::uint32 x = 0;
+
+    for (int i = numBytes - 1; i >= 0; --i) {
+        x = (x << 8) + byte[i];
+    }
+
+    return x;
+}
+
+
+uint64 BigInt::uint64() const {
+    debugAssertM(numBytes <= 8, "BigInt is too large to convert to uint64.");
+    debugAssertM(sgn < 1, "Cannot convert a negative BigInt to uint64.");
+
+    G3D::uint64 x = 0;
+
+    for (int i = numBytes - 1; i >= 0; --i) {
+        x = (x << 8) + byte[i];
+    }
+
+    return x;
 }
 
 
 int64 BigInt::int64() const {
     debugAssertM(numBytes <= 8, "BigInt is too large to convert to int64.");
-    // TODO
-    return 0;
+
+    if (numBytes == 8) {
+        uint8 highByte = byte[8];
+        if (sgn == 1) {           
+            debugAssertM(highByte <= 0x7F,
+                "BigInt is too large to convert to int64.");
+        } else {
+            debugAssertM(highByte <= 0x80,
+                "BigInt is too (negatively) large to convert to int64.");
+        }
+    }
+
+    G3D::int64 x = 0;
+
+    for (int i = numBytes - 1; i >= 0; --i) {
+        x = (x << 8) + byte[i];
+    }
+
+    return x * sgn;
+}
+
+
+MD5Hash BigInt::MD5Hash() const {
+    G3D::MD5Hash h;
+
+    debugAssertM(sgn > -1, "Cannot convert a negative BigInt to a MD5Hash.");
+    debugAssertM(numBytes <= 16, "BigInt is too large to convert to MD5Hash.");
+
+    for (int i = 0; i < 16; ++i) {
+        h[i] = (*this)[i];
+    }
+
+    return h;
 }
 
 

@@ -18,6 +18,8 @@
 
 namespace G3D {
 
+class MD5Hash;
+
 /** 
   Representation of arbitrary length integers.
   The implementation is not optimized for performance; it
@@ -27,16 +29,12 @@ namespace G3D {
 
   The following operations have not be implemented in this 
   version:
+
   operator/
-  operator/=
-  operator>
-  operator>=
-  operator<=
   toString()
   pow();
   random
   randomNumBits
-  operator^
   operator%
  */
 class BigInt {
@@ -85,6 +83,9 @@ private:
     /** Shifts to the left(positive) or right(negative) the specified number of digits.*/
     void shift255(int count);
 
+    /** Performs x < y, or x <= y if ifEqual is true.*/
+    static bool compare(const BigInt& x, const BigInt& y, bool ifEqual);
+
 public:
 
     /** Zero */
@@ -93,6 +94,7 @@ public:
     BigInt(int32 x);
     BigInt(int64 x);
     BigInt(const BigInt&);
+    BigInt(const MD5Hash&);
     explicit BigInt(class BinaryInput&);
     ~BigInt();
 
@@ -154,6 +156,18 @@ public:
 
     /** Assertion fails if out of range. */
     int64 int64() const;
+
+    /** Assertion fails if out of range. */
+    uint32 uint32() const;
+
+    /** Assertion fails if out of range. */
+    uint64 uint64() const;
+
+    /** 
+      Returns this positive, <= 512 bit number as an MD5Hash.  Does <b>not</b> return the
+      hash of this BigInt!
+    */
+    MD5Hash MD5Hash() const;
 
     /** Decimal representation */
     std::string toString() const;
