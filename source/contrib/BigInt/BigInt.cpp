@@ -138,6 +138,28 @@ void BigInt::setUnsignedInt32(G3D::uint32 a) {
 }
 
 
+void BigInt::setUnsignedInt64(G3D::uint64 a) {
+    // Efficiently find the number of bytes needed to represent a
+    int n =
+        ((a > 0) ? 1 : 0) +
+        ((a > 0xFF) ? 1 : 0) +
+        ((a > 0xFFFF) ? 1 : 0) +
+        ((a > 0xFFFFFF) ? 1 : 0) +
+        ((a > 0xFFFFFFFFL) ? 1 : 0) +
+        ((a > 0xFFFFFFFFFFL) ? 1 : 0) +
+        ((a > 0xFFFFFFFFFFFFL) ? 1 : 0) +
+        ((a > 0xFFFFFFFFFFFFFFL) ? 1 : 0);
+
+    setSize(n);
+
+    // Read in from low to high
+    for (int i = 0; i < n; ++i) {
+        byte[i] = a & 0xFF;
+        a = a >> 8;
+    }
+}
+
+
 BigInt::BigInt(G3D::uint32 x) : byte(NULL), numBytes(0), sgn((x > 0) ? 1 : 0) {
     setUnsignedInt32(x);
 }
@@ -159,31 +181,16 @@ int iSign(G3D::int64 x) {
     }
 }
 
+
 BigInt::BigInt(G3D::int64 x) : byte(NULL), numBytes(0), sgn(G3D::iSign(x)) {
     // Make unsigned
-    G3D::int64 a = x * sgn;
-
-
-    // Efficiently find the number of bytes needed to represent a
-    int n =
-        ((a > 0) ? 1 : 0) +
-        ((a > 0xFF) ? 1 : 0) +
-        ((a > 0xFFFF) ? 1 : 0) +
-        ((a > 0xFFFFFF) ? 1 : 0) +
-        ((a > 0xFFFFFFFFL) ? 1 : 0) +
-        ((a > 0xFFFFFFFFFFL) ? 1 : 0) +
-        ((a > 0xFFFFFFFFFFFFL) ? 1 : 0) +
-        ((a > 0xFFFFFFFFFFFFFFL) ? 1 : 0);
-
-    setSize(n);
-
-    // Read in from low to high
-    for (int i = 0; i < n; ++i) {
-        byte[i] = a & 0xFF;
-        a = a >> 8;
-    }
+    setUnsignedInt64((G3D::uint64)(x * sgn));
 }
 
+
+BigInt::BigInt(G3D::uint64 x) : byte(NULL), numBytes(0), sgn((x > 0) ? 1 : 0) {
+    setUnsignedInt64(x);
+}
 
 
 BigInt::BigInt(const BigInt& x) : byte(NULL), numBytes(0), sgn(0) {
@@ -361,16 +368,16 @@ BigInt BigInt::operator-(const BigInt& y) const {
 
         if (a < b) {
             // Need to borrow
-            debugAssertM(borrowIndex > i,
+            debugAssertM(borrowIndex < i,
                 "Shouldn't have to borrow if we have already borrowed.");
             // Search for a non-zero
-            int borrowIndex = i + 1;
+            borrowIndex = i + 1;
             while (x.byte[borrowIndex] == 0) {
                 ++borrowIndex;
             }
 
-            // We can now add to a
-            a += 255;
+            // We can now add the borrowed value to a
+            a += 256;
         }
 
 
@@ -385,9 +392,104 @@ BigInt BigInt::operator-(const BigInt& y) const {
 }
 
 
-BigInt BigInt::operator/(const BigInt& x) const {
-    debugAssertM(false, "TODO");
-    return BigInt();
+uint64 BigInt::closeDiv(const BigInt& x, const BigInt& y, BigInt& remainder) {
+    // Compare the top several digits (unless y only has one digit)
+    int numDigits = min(6, y.size());
+
+    debugAssert(x.size() <= y.size() + 1);
+
+    // Extract the top digits.  Note that if x is longer than y
+    // the operator[] takes care of inserting a zero into b for us.
+    G3D::uint64 a = 0, b = 0;
+    for (G3D::uint64 i = 0; i < numDigits; ++i) {
+        a = (a << 8) + x[x.size() - 1 - i];
+        b = (b << 8) + y[y.size() - 1 - i];
+    }
+
+    // Form our guess from the top digits
+    G3D::uint64 c = a / b;
+
+    // Compute the remainder
+    BigInt z;
+    
+    do {
+        z = y * c;
+        printf("%d - %d\n", x.int32(), z.int32());
+        remainder = x - z;
+
+        if (remainder.sgn < 0) {
+            // We guessed too big of a factor because we have a negative remainder
+            debugPrintf("Warning: overshoot in division\n");
+            debugAssert(c > 1);
+            --c;
+        }
+    } while (remainder.sgn < 0);
+
+    while (remainder > y) {
+        ++c;
+        z = y * c;
+        remainder = x - z;
+        debugPrintf("Warning: undershoot in division\n");
+    }
+
+    return c;
+}
+
+
+BigInt BigInt::operator/(const BigInt& _y) const {
+
+    const BigInt& _x = *this;
+
+    if (_y.isZero()) {
+        debugAssertM(_y.nonZero(), "Divide by zero");
+        return BigInt();
+    }
+
+    if (_x.isZero()) {
+        // 0 over anything is zero
+        return BigInt();
+    }
+
+    if (_y.numBytes > _x.numBytes) {
+        // The result has to be zero if y >> x
+        return BigInt();
+    }
+
+    // Throw away the signs
+    BigInt x = _x.abs();
+    BigInt y = _y.abs();
+
+    // Grab the first subset of x (from the major end) that is bigger than y
+    //
+    //     x5 x4 x3 x2 x1 x0
+    //   end^       ^start
+    //
+    int subEnd   = x.numBytes - 1;
+    int subStart = subEnd - y.numBytes + 1;
+
+    debugAssert(subStart >= 0);
+    
+    if (x.byte[subStart] > y.byte[y.numBytes]) {
+        // We need one more byte; y is still bigger than our subset
+        if (subStart == 0) {
+            // Y is larger than X; the result must be zero
+            return BigInt();        
+        } else {
+            --subStart;
+        }
+    }
+
+    // See (approximately) how many times
+    // TODO: compute a subset of x from these numbers
+
+    BigInt remainder;
+    int c = closeDiv(x, y, remainder);
+
+//    debugAssertM(false, "TODO");
+    
+    BigInt result = c;
+    result.sgn = _x.sgn * _y.sgn;
+    return result;
 }
 
 
@@ -525,6 +627,9 @@ bool BigInt::compare(const BigInt& x, const BigInt& y, bool ifEqual) {
     if (x.numBytes * flip < y.numBytes * flip) {
         // x is trivially smaller (larger) than y
         return true;
+    } else if (x.numBytes * flip > y.numBytes * flip) {
+        // x is trivially larger (smaller) than y
+        return false;
     }
 
     // On the same order; we have to walk the bytes
@@ -712,9 +817,89 @@ BigInt BigInt::abs() const {
 }
 
 
-BigInt BigInt::pow(const BigInt& x) const {
-    debugAssertM(false, "TODO");
-    return BigInt();
+BigInt BigInt::powMod(int x, BigInt& y) const {
+    debugAssertM(x >= 0, "Exponent must be non-negative");
+
+    switch (x) {
+    case 0:
+        return BigInt();
+
+    case 1:
+        return *this;
+
+    case 2:
+        return ((*this) * (*this)) % y;
+
+    case 3:
+        return ((((*this) * (*this)) % y) * (*this)) % y;
+
+    case 4:
+        {
+            BigInt tmp = ((*this) * (*this)) % y;
+            return (tmp * tmp) % y;
+        }
+
+    default:
+        {
+            // For large powers, factor the operation
+            // perform only a log number of multiplications
+            int a = 2;
+            BigInt tmp = ((*this) * (*this)) % y;
+            while (a < x / 2) {
+                tmp = (tmp * tmp) % y;
+                a *= 2;
+            }
+
+            if (a == x) {
+                return tmp;
+            } else {
+                return (tmp * powMod(x - a, y)) % y;
+            }
+        }    
+    }
+}
+
+
+BigInt BigInt::pow(int x) const {
+    debugAssertM(x >= 0, "Exponent must be non-negative");
+
+    switch (x) {
+    case 0:
+        return BigInt();
+
+    case 1:
+        return *this;
+
+    case 2:
+        return (*this) * (*this);
+
+    case 3:
+        return (*this) * (*this) * (*this);
+
+    case 4:
+        {
+            BigInt tmp = (*this) * (*this);
+            return tmp * tmp;
+        }
+
+    default:
+        {
+            // For large powers, factor the operation
+            // perform only a log number of multiplications
+            int a = 2;
+            BigInt tmp = (*this) * (*this);
+            while (a < x / 2) {
+                tmp *= tmp;
+                a *= 2;
+            }
+
+            if (a == x) {
+                return tmp;
+            } else {
+                return tmp * pow(x - a);
+            }
+        }
+    }
 }
 
 

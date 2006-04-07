@@ -31,11 +31,10 @@ class MD5Hash;
   version:
 
   operator/
+  operator%
   toString()
-  pow();
   random
   randomNumBits
-  operator%
  */
 class BigInt {
 private:
@@ -83,13 +82,23 @@ private:
     }
 
     /** Called from the int constructors */
-    void setUnsignedInt32(uint32 x);
+    void setUnsignedInt32(G3D::uint32 x);
+    void setUnsignedInt64(G3D::uint64 a);
 
     /** Shifts to the left(positive) or right(negative) the specified number of digits.*/
     void shift255(int count);
 
     /** Performs x < y, or x <= y if ifEqual is true.*/
     static bool compare(const BigInt& x, const BigInt& y, bool ifEqual);
+
+
+    /** 
+      Solves for x/y, where y is smaller than x and both are within 2^9
+      of each other, and both are positive.
+
+      Used inside operator/
+     */
+    static uint64 closeDiv(const BigInt& x, const BigInt& y, BigInt& remainder);
 
 public:
 
@@ -99,6 +108,8 @@ public:
     BigInt(uint32 x);
 
     BigInt(int32 x);
+
+    BigInt(uint64 x);
 
     BigInt(int64 x);
 
@@ -193,7 +204,11 @@ public:
 
     BigInt abs() const;
 
-    BigInt pow(const BigInt&) const;
+    BigInt pow(int) const;
+
+    /** Computes this^p % m without huge intermediate results.
+      */
+    BigInt powMod(const int p, BigInt& m) const;
 };
 
 BigInt abs(const BigInt&);
