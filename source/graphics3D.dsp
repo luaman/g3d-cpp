@@ -143,6 +143,14 @@ SOURCE=.\G3Dcpp\CoordinateFrame.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\Crypto.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\G3Dcpp\Crypto_md5.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Cylinder.cpp
 # End Source File
 # Begin Source File
@@ -380,6 +388,10 @@ SOURCE=.\include\G3D\ConvexPolyhedron.h
 # Begin Source File
 
 SOURCE=.\include\G3D\CoordinateFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\Crypto.h
 # End Source File
 # Begin Source File
 

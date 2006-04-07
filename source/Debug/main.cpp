@@ -12,11 +12,11 @@
  */
 
 #include <G3DAll.h>
+#include "controller.h"
 
 #if G3D_VER < 60900
     #error Requires G3D 6.09
 #endif
-
 
 /**
  This simple demo applet uses the debug mode as the regular
@@ -30,6 +30,8 @@ public:
     // state, put it in the App.
 
     class App*          app;
+
+    TranslationController controller;
 
     float               angle;
     GameTime            gameTime;
@@ -93,6 +95,7 @@ void Demo::onLogic() {
 
 void Demo::onNetwork() {
 	// Poll net messages here
+    controller.onNetwork();
 }
 
 
@@ -102,10 +105,13 @@ void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 
     gameTime += sdt;
 
+    controller.onSimulation(rdt, sdt, idt);
 }
 
 
 void Demo::onUserInput(UserInput* ui) {
+    controller.onUserInput(ui);
+
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
@@ -131,14 +137,18 @@ void Demo::onGraphics(RenderDevice* rd) {
     
     // Cyan background
     app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
+ 
     app->renderDevice->clear();
+    if (app->sky.notNull()) {
+        app->sky->render(rd, LightingParameters(toSeconds(10,00,00, AM)));
+    }
 
-    /*
     app->renderDevice->pushState();
-        rd->enableColorWrite();
-        Draw::axes(rd);
+    controller.onGraphics(rd);
+//        Draw::axes(rd);
     app->renderDevice->popState();
-    */
+    
+    /*
     rd->push2D();
         GImage im(1024, 768, 3);
         GImage::makeCheckerboard(im);        
@@ -146,6 +156,7 @@ void Demo::onGraphics(RenderDevice* rd) {
         rd->setTexture(0, t);
         Draw::rect2D(t->rect2DBounds(), rd);
     rd->pop2D();
+    */
 }
 
 
@@ -154,8 +165,10 @@ void App::main() {
 	debugController.setActive(true);
     debugShowRenderingStats = false;
 
+//    debugController.setMouseMode(FPCameraController::MOUSE_SCROLL_AT_EDGE);
+
     // Load objects here
-//    sky = Sky::create(NULL, dataDir + "sky/");
+    sky = Sky::create(NULL, dataDir + "sky/");
     
     applet->run();
 

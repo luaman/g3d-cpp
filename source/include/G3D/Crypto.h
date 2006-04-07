@@ -80,6 +80,15 @@ public:
      @cite Based on implementation by L. Peter Deutsch, ghost@aladdin.com
      */
     MD5Hash md5(const void* bytes, size_t numBytes);
+
+    /**
+     Returns the nth prime less than 2000 in constant time.  The first prime has index
+     0 and is the number 2.
+     */
+    static int smallPrime(int n);
+
+    /** Returns 1 + the largest value that can be passed to smallPrime. */
+    static int numSmallPrimes();
 };
 
 }
