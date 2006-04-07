@@ -156,11 +156,16 @@ void PosedModel::renderNonShadowed(
     rd->pushState();
         if (rd->colorWrite()) {
             rd->setAmbientLightColor(lighting->ambientTop);
-            rd->setLight(0, GLight::directional(-Vector3::unitY(), 
-                lighting->ambientBottom - lighting->ambientTop, false));
+            Color3 C = lighting->ambientBottom - lighting->ambientTop;
+
+            int shift = 0;
+            if ((C.r != 0) || (C.g != 0) || (C.b != 0)) {
+                rd->setLight(0, GLight::directional(-Vector3::unitY(), C, false));
+                ++shift;
+            }
 
             for (int L = 0; L < iMin(7, lighting->lightArray.size()); ++L) {
-                rd->setLight(L + 1, lighting->lightArray[L]);
+                rd->setLight(L + shift, lighting->lightArray[L]);
             }
             rd->enableLighting();
         }
@@ -174,6 +179,7 @@ void PosedModel::renderShadowedLightPass(
     const GLight& light) const {
 
     rd->pushState();
+        rd->enableLighting();
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
         rd->setLight(0, light);
         rd->setAmbientLightColor(Color3::black());
@@ -192,6 +198,7 @@ void PosedModel::renderShadowMappedLightPass(
         rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
         rd->configureShadowMap(1, lightMVP, shadowMap);
         rd->setLight(0, light);
+        rd->enableLighting();
         rd->setAmbientLightColor(Color3::black());
         render(rd);
     rd->popState();

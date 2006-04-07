@@ -866,7 +866,7 @@ int MD2Model::PosedMD2Model::numWeldedBoundaryEdges() const {
 void MD2Model::PosedMD2Model::render(RenderDevice* renderDevice) const {
     renderDevice->pushState();
         renderDevice->setObjectToWorldMatrix(coordinateFrame());
-        if (useMaterial) {
+        if (useMaterial && renderDevice->colorWrite()) {
             material.configure(renderDevice);
         }
         model->render(renderDevice, pose);
