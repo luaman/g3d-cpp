@@ -153,13 +153,23 @@ void main(void) {
     // Compute projected shadow coord.
     vec4 projShadowCoord = shadowCoord / shadowCoord.w;
 
-    const float s = 0.5 / 512.0;
+	// Used to produce vectors to the 8-neighbors, which leads to a smoother
+	// shadow result
+    vec4 s = vec4(g3d_sampler2DInvSize(shadowMap), -g3d_sampler2DInvSize(shadowMap).x, 0.0);
+    vec4 d = s * 0.71;
+
     vec3 shadow =
-         (shadow2D(shadowMap, projShadowCoord.xyz).xyz +
-          shadow2D(shadowMap, projShadowCoord.xyz + vec3( s,  s, 0.0)).xyz +
-          shadow2D(shadowMap, projShadowCoord.xyz + vec3( s, -s, 0.0)).xyz +
-          shadow2D(shadowMap, projShadowCoord.xyz + vec3(-s,  s, 0.0)).xyz +
-          shadow2D(shadowMap, projShadowCoord.xyz + vec3(-s, -s, 0.0)).xyz) / 5.0;
+         (shadow2D(shadowMap, projShadowCoord.xyz).rgb +
+         
+          shadow2D(shadowMap, projShadowCoord.xyz + s.xww).rgb +
+          shadow2D(shadowMap, projShadowCoord.xyz - s.xww).rgb +
+          shadow2D(shadowMap, projShadowCoord.xyz + s.wyw).rgb +
+          shadow2D(shadowMap, projShadowCoord.xyz - s.wyw).rgb +
+
+          shadow2D(shadowMap, projShadowCoord.xyz + d.xyw).rgb +
+          shadow2D(shadowMap, projShadowCoord.xyz - d.zyw).rgb +
+          shadow2D(shadowMap, projShadowCoord.xyz + d.zyw).rgb +
+          shadow2D(shadowMap, projShadowCoord.xyz - d.xyw).rgb) / 9.0;
 
     gl_FragColor.rgb =
             accessibility * lightColor * shadow *
