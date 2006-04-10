@@ -263,6 +263,10 @@ SOURCE=.\G3Dcpp\Ray.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\G3Dcpp\RegistryUtil.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\G3Dcpp\Sphere.cpp
 # End Source File
 # Begin Source File
@@ -532,6 +536,10 @@ SOURCE=.\include\G3D\Rect2D.h
 # Begin Source File
 
 SOURCE=.\include\G3D\ReferenceCount.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\RegistryUtil.h
 # End Source File
 # Begin Source File
 

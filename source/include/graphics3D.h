@@ -89,6 +89,7 @@
 #include "G3D/Stopwatch.h"
 #include "G3D/AtomicInt32.h"
 #include "G3D/GThread.h"
+#include "G3D/RegistryUtil.h"
 
 
 #ifdef G3D_WIN32
