@@ -47,10 +47,10 @@ extern "C"
 #endif
 
 /* Initialize the algorithm. */
-void md5_init(md5_state_t *pms);
+static void md5_init(md5_state_t *pms);
 
 /* Append a string to the message. */
-void md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes);
+static void md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes);
 
 /* Finish the message and return the digest. */
 void md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
@@ -93,7 +93,7 @@ MD5Hash Crypto::md5(const void* data, size_t n) {
   ghost@aladdin.com
 
  */
-/* $Id: Crypto_md5.cpp,v 1.1 2006/04/06 20:00:22 morgan3d Exp $ */
+/* $Id: Crypto_md5.cpp,v 1.2 2006/04/10 18:13:16 ckodonnell Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
 
