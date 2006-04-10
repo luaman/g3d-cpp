@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04E8193809EA7F1C0015B5ED /* RegistryUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E8193709EA7F1C0015B5ED /* RegistryUtil.cpp */; };
+		04E8193A09EA7F370015B5ED /* RegistryUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E8193909EA7F370015B5ED /* RegistryUtil.h */; };
+		04E8193D09EA82260015B5ED /* Crypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E8193C09EA82260015B5ED /* Crypto.h */; };
+		04E8194009EA82390015B5ED /* Crypto_md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E8193E09EA82390015B5ED /* Crypto_md5.cpp */; };
+		04E8194109EA82390015B5ED /* Crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E8193F09EA82390015B5ED /* Crypto.cpp */; };
 		0F55000006DCCB08008DD4F8 /* jcdctmgr.c in Sources */ = {isa = PBXBuildFile; fileRef = 0F55FFC406DCCB08008DD4F8 /* jcdctmgr.c */; };
 		0F55000106DCCB08008DD4F8 /* jccolor.c in Sources */ = {isa = PBXBuildFile; fileRef = 0F55FFC506DCCB08008DD4F8 /* jccolor.c */; };
 		0F55000206DCCB08008DD4F8 /* jccoefct.c in Sources */ = {isa = PBXBuildFile; fileRef = 0F55FFC606DCCB08008DD4F8 /* jccoefct.c */; };
@@ -297,6 +302,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04E8193709EA7F1C0015B5ED /* RegistryUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = RegistryUtil.cpp; path = ../source/G3Dcpp/RegistryUtil.cpp; sourceTree = SOURCE_ROOT; };
+		04E8193909EA7F370015B5ED /* RegistryUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RegistryUtil.h; path = ../source/include/G3D/RegistryUtil.h; sourceTree = SOURCE_ROOT; };
+		04E8193C09EA82260015B5ED /* Crypto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Crypto.h; path = ../source/include/G3D/Crypto.h; sourceTree = SOURCE_ROOT; };
+		04E8193E09EA82390015B5ED /* Crypto_md5.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Crypto_md5.cpp; path = ../source/G3Dcpp/Crypto_md5.cpp; sourceTree = SOURCE_ROOT; };
+		04E8193F09EA82390015B5ED /* Crypto.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Crypto.cpp; path = ../source/G3Dcpp/Crypto.cpp; sourceTree = SOURCE_ROOT; };
 		0F55008D06DD5F07008DD4F8 /* libGLG3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGLG3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F55009206DD5F28008DD4F8 /* VertexProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VertexProgram.cpp; path = ../source/GLG3Dcpp/VertexProgram.cpp; sourceTree = SOURCE_ROOT; };
 		0F55009406DD5F28008DD4F8 /* VAR.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VAR.cpp; path = ../source/GLG3Dcpp/VAR.cpp; sourceTree = SOURCE_ROOT; };
@@ -844,6 +854,9 @@
 		0F55FF3B06DCC5C1008DD4F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				04E8193E09EA82390015B5ED /* Crypto_md5.cpp */,
+				04E8193F09EA82390015B5ED /* Crypto.cpp */,
+				04E8193709EA7F1C0015B5ED /* RegistryUtil.cpp */,
 				50C3DE200978087000757A38 /* GThread.cpp */,
 				3E659EA208DC17F700E47E2E /* BinaryFormat.cpp */,
 				3E659EA308DC17F700E47E2E /* Cylinder.cpp */,
@@ -905,6 +918,8 @@
 		0F55FF3C06DCC5E2008DD4F8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				04E8193C09EA82260015B5ED /* Crypto.h */,
+				04E8193909EA7F370015B5ED /* RegistryUtil.h */,
 				50C3DE1E0978085900757A38 /* GThread.h */,
 				5033822E093544F400C574FC /* Stopwatch.h */,
 				5033822C093544D900C574FC /* AtomicInt32.h */,
@@ -1130,6 +1145,8 @@
 				5033822D093544D900C574FC /* AtomicInt32.h in Headers */,
 				5033822F093544F400C574FC /* Stopwatch.h in Headers */,
 				50C3DE1F0978085900757A38 /* GThread.h in Headers */,
+				04E8193A09EA7F370015B5ED /* RegistryUtil.h in Headers */,
+				04E8193D09EA82260015B5ED /* Crypto.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1427,6 +1444,9 @@
 				3E659EA508DC17F700E47E2E /* Cylinder.cpp in Sources */,
 				5033822B0935449400C574FC /* Stopwatch.cpp in Sources */,
 				50C3DE210978087000757A38 /* GThread.cpp in Sources */,
+				04E8193809EA7F1C0015B5ED /* RegistryUtil.cpp in Sources */,
+				04E8194009EA82390015B5ED /* Crypto_md5.cpp in Sources */,
+				04E8194109EA82390015B5ED /* Crypto.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
