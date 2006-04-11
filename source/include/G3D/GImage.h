@@ -240,16 +240,17 @@ private:
      Given [maybe] a filename, memory buffer, and [maybe] a format, 
      returns the most likely format of this file.
      */
-    Format resolveFormat(
+    static Format resolveFormat(
         const std::string&  filename,
         const uint8*        data,
         int                 dataLen,
-        Format              maybeFormat) const;
+        Format              maybeFormat);
 
     void _copy(
         const GImage&       other);
 
 public:
+    static Format resolveFormat(const std::string& filename);
 
     GImage() {
         width = height = channels = 0;

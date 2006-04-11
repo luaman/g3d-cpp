@@ -203,13 +203,11 @@ Win32Window::Win32Window(const GWindow::Settings& s, bool creatingShareWindow)
             Log::common()->printf("GWindow's default icon failed to load: %s (%s)", e.filename.c_str(), e.reason.c_str());            
         }
     }
-
-    _diDevices = new _DirectInput(window);
 }
 
 
 
-Win32Window::Win32Window(const GWindow::Settings& s, HWND hwnd) : createdWindow(false) {
+Win32Window::Win32Window(const GWindow::Settings& s, HWND hwnd) : createdWindow(false), _diDevices(NULL) {
     initWGL();
 
 	_thread = ::GetCurrentThread();
@@ -217,11 +215,10 @@ Win32Window::Win32Window(const GWindow::Settings& s, HWND hwnd) : createdWindow(
 	init(hwnd);
 
     _windowActive = hasFocus();
-    _diDevices = new _DirectInput(window);
 }
 
 
-Win32Window::Win32Window(const GWindow::Settings& s, HDC hdc) : createdWindow(false)  {
+Win32Window::Win32Window(const GWindow::Settings& s, HDC hdc) : createdWindow(false), _diDevices(NULL)  {
     initWGL();
 
 	_thread = ::GetCurrentThread();
@@ -234,7 +231,6 @@ Win32Window::Win32Window(const GWindow::Settings& s, HDC hdc) : createdWindow(fa
 	init(hwnd);
 
     _windowActive = hasFocus();
-    _diDevices = new _DirectInput(window);
 }
 
 
@@ -820,20 +816,27 @@ void Win32Window::getRelativeMouseState(double& x, double& y, uint8& mouseButton
     y = iy;
 }
 
+inline void Win32Window::enableDirectInput() const {
+    if (_diDevices==NULL)
+		_diDevices = new _DirectInput(window);
+}
 
 int Win32Window::numJoysticks() const {
+	enableDirectInput();
     return _diDevices->getNumJoysticks();
 }
 
 
 std::string Win32Window::joystickName(unsigned int sticknum)
 {
+	enableDirectInput();
     return _diDevices->getJoystickName(sticknum);
 }
 
 
 void Win32Window::getJoystickState(unsigned int stickNum, Array<float>& axis, Array<bool>& button) {
 
+	enableDirectInput();
     if (!_diDevices->joystickExists(stickNum)) {
         return;
     }

@@ -78,7 +78,7 @@ namespace G3D {
  */
 class GLCaps {
 private:
-	enum Vendor {ATI, NVIDIA, ARB};
+	enum Vendor {ATI, NVIDIA, MESA, ARB};
 
     /** True when init has been called */
     static bool         _initialized;

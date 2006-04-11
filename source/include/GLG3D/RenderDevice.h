@@ -289,8 +289,12 @@ private:
     uint32 mDebugNumMinorStateChanges;
     uint32 mDebugPushStateCalls;
 
-	/** Potentially slow. */
-	bool checkFramebuffer() const;
+    static std::string dummyString;
+
+	/** Returns true if the frame buffer is complete, or a string in 
+        whyIncomplete explaining the problem.
+        Potentially slow. */
+    bool checkFramebuffer(std::string& whyIncomplete = dummyString) const;
 
 public:
     // These are abstracted to make it easy to put breakpoints in them
@@ -1449,15 +1453,13 @@ public:
 
     /**
      Checks to ensure that the current framebuffer is complete and error free.  
-     If you are using an offscreen Framebuffer object then this function should
-     be called prior to rendering to the target.
 
      @return false On Incomplete Framebuffer Error
      @return true On Complete Framebuffer
     */
-    inline bool currentFramebufferComplete() const {
+    inline bool currentFramebufferComplete(std::string& whyIncomplete = dummyString) const {
         return state.framebuffer.isNull() || 
-			   checkFramebuffer();
+			   checkFramebuffer(whyIncomplete);
     }
 
     void push2D();

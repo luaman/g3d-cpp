@@ -15,6 +15,8 @@
 #define G3D_WIN32WINDOW_H
 
 #include "G3D/platform.h"
+#include "G3D/Set.h"
+#include "G3D/Rect2D.h"
 
 // This file is only used on Windows
 #ifdef G3D_WIN32
@@ -54,7 +56,7 @@ private:
     bool                 _mouseButtons[3];
     bool                 _keyboardButtons[0xFF];
 
-    _DirectInput*        _diDevices;
+    mutable _DirectInput*        _diDevices;
 
     G3D::Set< int >      _usedIcons;
 
@@ -220,6 +222,9 @@ public:
 
 protected:
     virtual void reallyMakeCurrent() const;
+
+private:
+	inline void enableDirectInput() const;
 };
 
 

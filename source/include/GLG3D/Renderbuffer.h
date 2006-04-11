@@ -31,32 +31,9 @@ typedef ReferenceCountedPointer<class Renderbuffer> RenderbufferRef;
  example of a pure Renderbuffer would be a Stencil buffer.  All other 
  Renderbuffers could just as easily be implemented as textures.
 
- Example:
+ See G3D::Framebuffer for a detailed example.
 
-	<PRE>
-		// Create Renderbuffer
-		Renderbuffer rb = G3D::Renderbuffer::createEmpty("Depth buffer", DEPTH16, 256, 256);
-
-		// Create Framebuffer
-		FramebuffeRef fb = G3D::Framebuffer::createFramebuffer("offscreen target");
-
-		// Bind renderbuffer
-		fb->bindRenderbuffer(rb, G3D::FRAMEBUFFER::Attachment::DEPTH_COMPONENT);
-		
-		// Bind Framebuffer
-		app->renderDevice->setFramebuffer(fb);
-		
-		// Check status and render away!
-		if (app->renderDevice->checkFramebufferStatus() != 0) {
-			// Render code here
-			....
-		}
-
-		// Depth buffer can now be used at will for shadow maps and such
-        TODO: show me how
-	</PRE>
-
-	<B>BETA API</B> -- Subject to change
+ <B>BETA API</B> -- Subject to change
 
   @cite http://oss.sgi.com/projects/ogl-sample/registry/EXT/framebuffer_object.txt
 */

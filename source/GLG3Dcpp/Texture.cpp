@@ -554,12 +554,14 @@ Texture::Texture(
 
         name = _name;
 
-        if ((_dimension != DIM_CUBE_MAP) && (_dimension != DIM_CUBE_MAP_NPOT)) {
-            glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &width);
-            glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &height);
-        } else {
-            width = height = 1;
-        }
+		// For cube map, we can't read "cube map" but must choose a face
+		GLenum readbackTarget = target;
+		if ((_dimension == DIM_CUBE_MAP) || (_dimension == DIM_CUBE_MAP_NPOT)) {
+			readbackTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
+		}
+
+        glGetTexLevelParameteriv(readbackTarget, 0, GL_TEXTURE_WIDTH, &width);
+        glGetTexLevelParameteriv(readbackTarget, 0, GL_TEXTURE_HEIGHT, &height);
 
         depth = 1;
         invertY = false;

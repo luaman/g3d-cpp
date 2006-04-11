@@ -17,10 +17,9 @@
 #include "G3D/Color3.h"
 #include "G3D/Vector3.h"
 #include "G3D/CoordinateFrame.h"
+#include "G3D/GLight.h"
 
 namespace G3D {
-
-class GLight;
 
 #define BROWN_UNIVERSITY_LATITUDE 41.7333f
 #define BROWN_UNIVERSITY_LONGITUDE 71.4333f

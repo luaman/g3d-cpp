@@ -9,7 +9,7 @@
  </UL>
 
  @created 2006-01-07
- @edited  2006-02-22
+ @edited  2006-04-07
 */
 
 #ifndef GLG3D_FRAMEBUFFER_H
@@ -102,18 +102,27 @@ typedef ReferenceCountedPointer<class Framebuffer> FramebufferRef;
 
  Note:  Not any combination of images may be attached to a Framebuffer.
  OpenGL lays out some restrictions that must be considered:
-	1) In order to render to a Framebuffer, there must be at least
+
+ <ol>
+	<li> In order to render to a Framebuffer, there must be at least
 	one image (Renderbuffer or Texture) attached to an attachment point.
-	2) All images must have the same height and width.
-	3) All images attached to a COLOR_ATTACHMENT[n] point must have
+	<li> All images must have the same height and width.
+	<li> All images attached to a COLOR_ATTACHMENT[n] point must have
 	the same internal format (RGBA8, RGBA16...etc)
-	4) If RenderDevice->setDrawBuffer is used then the specified 
+	<li> If RenderDevice->setDrawBuffer is used then the specified 
 	attachment point must have a bound image.
-	5) The combination of internal formats of attached images does not
-	violate some implementation-dependent set of restrictions (ie. Your
+	<li> The combination of internal formats of attached images does not
+	violate some implementation-dependent set of restrictions (i.e., Your
 	graphics card must completely implement all combinations that you
 	plan to use!)
+ </ol>
 
+ If you create a Framebuffer with a single, depth Renderbuffer attached
+ (e.g., for shadow map rendering)
+ it is complete in the OpenGL sense, however you will receive a completeness
+ error because the glDrawBuffer and glReadBuffer attached to that 
+ Framebuffer have incorrect defaults.  To fix this, call <code>glDrawBuffer(GL_NONE);glReadBuffer(GL_NONE);</code>
+ <b>after</b> binding the Framebuffer to the RenderDevice but before rendering.
 
 	<B>BETA API</B> -- Subject to change
 */
@@ -282,7 +291,7 @@ public:
     }
 
 	inline Rect2D rect2DBounds() const {
-		return Rect2D::xywh(0, 0, (float)m_width, (float)m_height);
+		return Rect2D::xywh(0.0f, 0.0f, (float)m_width, (float)m_height);
 	}
 
     inline const std::string& name() const {

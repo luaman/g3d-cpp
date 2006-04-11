@@ -87,6 +87,29 @@ public:
         Texture::Dimension          dimension = Texture::DIM_2D,  
         double                      brighten = 1.0);
 
+	/************************************************************************/
+	/* Caches a texture                                                                      */
+	/************************************************************************/
+	bool cacheTexture(
+		TextureRef					texture,
+		const std::string&          filename, 
+		const TextureFormat*        desiredFormat = TextureFormat::AUTO,  
+		Texture::WrapMode           wrap = Texture::TILE,  
+		Texture::InterpolateMode    interpolate = Texture::TRILINEAR_MIPMAP,  
+		Texture::Dimension          dimension = Texture::DIM_2D,  
+		double                      brighten = 1.0);
+
+	/************************************************************************/
+	/* Finds - but does not load - a texture                                                                      */
+	/************************************************************************/
+	TextureRef findTexture(
+		const std::string&          filename, 
+		const TextureFormat*        desiredFormat = TextureFormat::AUTO,  
+		Texture::WrapMode           wrap = Texture::TILE,  
+		Texture::InterpolateMode    interpolate = Texture::TRILINEAR_MIPMAP,  
+		Texture::Dimension          dimension = Texture::DIM_2D,  
+		double                      brighten = 1.0);
+
     /** 
      Sets the maxiumum amount of memory that the cache will use before it starts to purge old entries.
      */

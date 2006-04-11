@@ -1223,7 +1223,10 @@ void RenderDevice::popState() {
 
 void RenderDevice::clear(bool clearColor, bool clearDepth, bool clearStencil) {
     debugAssert(! inPrimitive);
-    debugAssert(currentFramebufferComplete());
+#   ifdef G3D_DEBUG
+    std::string why;
+    debugAssertM(currentFramebufferComplete(why), why);
+#   endif
     majStateChange();
     majGLStateChange();
 
@@ -3259,11 +3262,10 @@ uint32 RenderDevice::debugNumMinorStateChanges() const {
     return mDebugNumMinorStateChanges;
 }
 
-bool RenderDevice::checkFramebuffer() const {
+std::string RenderDevice::dummyString;
+bool RenderDevice::checkFramebuffer(std::string& whyNot) const {
     GLenum status;
     status = (GLenum)glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-
-	static std::string whyNot;
 
     switch(status) {
     case GL_FRAMEBUFFER_COMPLETE_EXT:

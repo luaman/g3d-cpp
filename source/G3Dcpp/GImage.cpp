@@ -2023,12 +2023,20 @@ void GImage::decodePPM(
     input.readBytes(_byte, width * height * 3);
 }
 
+GImage::Format GImage::resolveFormat(const std::string&  filename) {
+    BinaryInput b(filename, G3D_LITTLE_ENDIAN);
+    if (b.size() <= 0) {
+        throw Error("File not found.", filename);
+    }
+
+    return resolveFormat(filename, b.getCArray(), b.size(), AUTODETECT);
+}
 
 GImage::Format GImage::resolveFormat(
     const std::string&  filename,
     const uint8*        data,
     int                 dataLen,
-    Format              maybeFormat) const {
+    Format              maybeFormat) {
 
     // Return the provided format if it is specified.
     if (maybeFormat != AUTODETECT) {

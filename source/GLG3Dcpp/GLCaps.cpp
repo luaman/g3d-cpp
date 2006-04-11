@@ -60,7 +60,9 @@ GLCaps::Vendor GLCaps::computeVendor() {
         return ATI;
     } else if (s == "NVIDIA Corporation") {
         return NVIDIA;
-    } else {
+    } else if (s == "Brian Paul") {
+		return MESA;
+	} else {
         return ARB;
     }
 }
@@ -84,6 +86,19 @@ struct VS_VERSIONINFO {
 #endif
 
 std::string GLCaps::getDriverVersion() {
+	if (computeVendor() == MESA) {
+		// Mesa includes the driver version in the renderer version
+		// e.g., "1.5 Mesa 6.4.2"
+
+		static std::string _glVersion = (char*)glGetString(GL_VERSION);
+		int i = _glVersion.rfind(' ');
+		if (i == std::string::npos) {
+			return "Unknown (bad MESA driver string)";
+		} else {
+			return _glVersion.substr(i + 1, _glVersion.length() - i);
+		}
+	}
+
     #ifdef G3D_WIN32
     
         std::string driver;
@@ -106,7 +121,7 @@ std::string GLCaps::getDriverVersion() {
         case NVIDIA:
             driver = driver + "\\nv4_disp.dll";
             break;
-
+		
         default:
             return "Unknown (Unknown vendor)";
 
