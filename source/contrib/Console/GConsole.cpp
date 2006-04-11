@@ -4,10 +4,10 @@
 */
 
 #include "GConsole.h"
-#include "G3D/stringutils.h"
-#include "G3D/fileutils.h"
-#include "GLG3D/RenderDevice.h"
-#include "GLG3D/Draw.h"
+#include "g3d/G3D/stringutils.h"
+#include "g3d/G3D/fileutils.h"
+#include "g3d/GLG3D/RenderDevice.h"
+#include "g3d/GLG3D/Draw.h"
 
 namespace G3D {
 
@@ -70,6 +70,12 @@ void GConsole::issueCommand() {
     }
 
     onCommand(oldCommandLine);
+}
+
+
+void GConsole::setCallback(Callback c, void* d) {
+    m_callback = c;
+    m_callbackData = d;
 }
 
 
@@ -136,7 +142,7 @@ void GConsole::paste(const string& s) {
         }
 
         i = j + 1;
-    } while (i < s.size());
+    } while (i < (int)s.size());
 }
 
 
@@ -228,9 +234,10 @@ static void parseForCompletion(
 }
 
 
-inline static bool isQuote(char c) {
+/*inline static bool isQuote(char c) {
     return (c == '\'') || (c == '\"');
 }
+*/
 
 
 void GConsole::generateFilenameCompletions(Array<string>& files) {
@@ -412,7 +419,7 @@ void GConsole::processRepeatKeysym() {
         break;
 
     case SDLK_RIGHT:
-        if (m_cursorPos < m_currentLine.size()) {
+        if (m_cursorPos < (int)m_currentLine.size()) {
             ++m_cursorPos;
         }
         break;
@@ -432,7 +439,7 @@ void GConsole::processRepeatKeysym() {
         break;
 
     case SDLK_DELETE:
-        if (m_cursorPos < m_currentLine.size()) {
+        if (m_cursorPos < (int)m_currentLine.size()) {
             m_currentLine = 
                 m_currentLine.substr(0, m_cursorPos) + 
                 m_currentLine.substr(m_cursorPos + 1, string::npos);
@@ -444,7 +451,7 @@ void GConsole::processRepeatKeysym() {
         if (m_cursorPos > 0) {
             m_currentLine = 
                 m_currentLine.substr(0, m_cursorPos - 1) + 
-                ((m_cursorPos < m_currentLine.size()) ? 
+                ((m_cursorPos < (int)m_currentLine.size()) ? 
                   m_currentLine.substr(m_cursorPos, string::npos) :
                   string());
             m_resetHistoryIndexOnEnter = true;
@@ -498,7 +505,7 @@ void GConsole::processRepeatKeysym() {
             m_currentLine = 
                 m_currentLine.substr(0, m_cursorPos) + 
                 c +
-                ((m_cursorPos < m_currentLine.size()) ? 
+                ((m_cursorPos < (int)m_currentLine.size()) ? 
                   m_currentLine.substr(m_cursorPos, string::npos) :
                   string());
             ++m_cursorPos;

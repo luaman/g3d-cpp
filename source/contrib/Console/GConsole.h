@@ -10,17 +10,17 @@
 #ifndef G3D_GCONSOLE_H
 #define G3D_GCONSOLE_H
 
-#include "G3D/platform.h"
+#include "g3d/G3D/platform.h"
 
 #if G3D_VER < 60900
     #error Requires G3D 6.09 or later
 #endif
 
-#include "G3D/Array.h"
-#include "G3D/Queue.h"
-#include "G3D/Set.h"
-#include "GLG3D/GFont.h"
-#include "GLG3D/GWindow.h"
+#include "g3d/G3D/Array.h"
+#include "g3d/G3D/Queue.h"
+#include "g3d/G3D/Set.h"
+#include "g3d/GLG3D/GFont.h"
+#include "g3d/GLG3D/GWindow.h"
 
 namespace G3D {
 
