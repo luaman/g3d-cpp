@@ -2,10 +2,8 @@
 
   \htmlonly
 <TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
-<A HREF="guidedebug.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
-Debugging</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
-<A HREF="guideopengl.html">
-Using OpenGL with G3D<IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+<A HREF="guidefbo.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Framebuffer Objects</A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
  @section Classes

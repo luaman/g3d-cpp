@@ -143,6 +143,9 @@ arrive with each point release.
   <TR><TD VALIGN=TOP>\link guidefbo Framebuffer Object \endlink</TD><TD VALIGN=TOP>
   Tutorial on using framebuffer objects.</TD></TR>
 
+ <TR><TD VALIGN=TOP>\link guidevideo Video in G3D \endlink</TD><TD VALIGN=TOP>
+  Gudie to using the video support within G3D</TD></TR>
+
 
 <TR><TD>\link deprecated Deprecated \endlink</TD><TD>APIs to be removed in 7.0</TD></TR>
 <TR><TD>\link changelog Change Log \endlink</TD><TD>Changes between G3D Releases</TD></TR>

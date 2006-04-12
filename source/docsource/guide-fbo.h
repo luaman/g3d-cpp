@@ -3,7 +3,10 @@
   \htmlonly
 <TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
 <A HREF="guideshaders.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
-Shaders</A></I></FONT></TD><TD ALIGN=RIGHT> </TD></TR></TABLE>
+Shaders</A></I></FONT></TD><TD ALIGN=RIGHT> </TD>
+<TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidevideo.html">
+Video<IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
     @section overview Framebuffer Overview
