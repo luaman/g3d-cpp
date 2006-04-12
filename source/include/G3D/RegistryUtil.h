@@ -9,7 +9,7 @@
 */
 
 #ifndef G3D_REGISTRYUTIL_H
-#define G3D_REGISTRYTUIL_H
+#define G3D_REGISTRYUTIL_H
 
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
@@ -60,6 +60,22 @@ public:
 
     /** returns false if the key could not be read for any reason. */
     static bool readString(const std::string& key, std::string& valueData);
+
+    /** returns false if the key could not be written for any reason. */
+    static bool write32bitNumber(const std::string& key, int32 valueData);
+
+    /** 
+      Writes an arbitrary amount of data to a binary registry key.
+      returns false if the key could not be written for any reason.
+    
+      @param valueData pointer to the input buffer
+      @param dataSize size of the input buffer that should be written
+    */
+    static bool writeBinaryData(const std::string& key, const uint8* valueData, uint32 dataSize);
+
+    /** returns false if the key could not be written for any reason. */
+    static bool writeString(const std::string& key, const std::string& valueData);
+
 };
 
 } // namespace G3D
