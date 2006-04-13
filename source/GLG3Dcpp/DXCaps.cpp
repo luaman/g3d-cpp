@@ -9,10 +9,14 @@
 */
 
 #include "GLG3D/DXCaps.h"
+#include "G3D/platform.h"
 #include "G3D/RegistryUtil.h"
+#include "G3D/System.h"
 
 // This file is only used on Windows
 #ifdef G3D_WIN32
+#include <initguid.h>
+#include <objbase.h>
 
 namespace G3D {
 
@@ -39,6 +43,97 @@ uint32 DXCaps::getVersion() {
     }
 
     return dxVersion;
+}
+
+// IDirectDraw2 interface pieces required for getVideoMemorySize()
+DEFINE_GUID( CLSID_DirectDraw,                  0xD7B70EE0,0x4340,0x11CF,0xB0,0x63,0x00,0x20,0xAF,0xC2,0xCD,0x35 );
+DEFINE_GUID( IID_IDirectDraw2,                  0xB3A6F3E0,0x2B43,0x11CF,0xA2,0xDE,0x00,0xAA,0x00,0xB9,0x33,0x56 );
+
+/*
+ * DDSCAPS
+ */
+typedef struct _DDSCAPS
+{
+    DWORD       dwCaps;         // capabilities of surface wanted
+} DDSCAPS;
+
+typedef DDSCAPS FAR* LPDDSCAPS;
+
+#undef INTERFACE
+#define INTERFACE IDirectDraw2
+DECLARE_INTERFACE_( IDirectDraw2, IUnknown )
+{
+    /*** IUnknown methods ***/
+    STDMETHOD(QueryInterface) (THIS_ REFIID riid, LPVOID FAR * ppvObj) PURE;
+    STDMETHOD_(ULONG,AddRef) (THIS)  PURE;
+    STDMETHOD_(ULONG,Release) (THIS) PURE;
+    /*** IDirectDraw methods ***/
+    STDMETHOD(Compact)(THIS) PURE;
+    STDMETHOD(CreateClipper)(THIS_ DWORD, LPVOID FAR*, IUnknown FAR * ) PURE;
+    STDMETHOD(CreatePalette)(THIS_ DWORD, LPVOID, LPVOID FAR*, IUnknown FAR * ) PURE;
+    STDMETHOD(CreateSurface)(THIS_  LPVOID, LPVOID FAR *, IUnknown FAR *) PURE;
+    STDMETHOD(DuplicateSurface)( THIS_ LPVOID, LPVOID FAR * ) PURE;
+    STDMETHOD(EnumDisplayModes)( THIS_ DWORD, LPVOID, LPVOID, LPVOID ) PURE;
+    STDMETHOD(EnumSurfaces)(THIS_ DWORD, LPVOID, LPVOID,LPVOID ) PURE;
+    STDMETHOD(FlipToGDISurface)(THIS) PURE;
+    STDMETHOD(GetCaps)( THIS_ LPVOID, LPVOID) PURE;
+    STDMETHOD(GetDisplayMode)( THIS_ LPVOID) PURE;
+    STDMETHOD(GetFourCCCodes)(THIS_  LPDWORD, LPDWORD ) PURE;
+    STDMETHOD(GetGDISurface)(THIS_ LPVOID FAR *) PURE;
+    STDMETHOD(GetMonitorFrequency)(THIS_ LPDWORD) PURE;
+    STDMETHOD(GetScanLine)(THIS_ LPDWORD) PURE;
+    STDMETHOD(GetVerticalBlankStatus)(THIS_ LPBOOL ) PURE;
+    STDMETHOD(Initialize)(THIS_ GUID FAR *) PURE;
+    STDMETHOD(RestoreDisplayMode)(THIS) PURE;
+    STDMETHOD(SetCooperativeLevel)(THIS_ HWND, DWORD) PURE;
+    STDMETHOD(SetDisplayMode)(THIS_ DWORD, DWORD,DWORD, DWORD, DWORD) PURE;
+    STDMETHOD(WaitForVerticalBlank)(THIS_ DWORD, HANDLE ) PURE;
+    /*** Added in the v2 interface ***/
+    STDMETHOD(GetAvailableVidMem)(THIS_ LPDDSCAPS, LPDWORD, LPDWORD) PURE;
+};
+
+/*
+ * Indicates that this surface exists in video memory.
+ */
+#define DDSCAPS_VIDEOMEMORY                     0x00004000l
+
+/*
+ * Indicates that a video memory surface is resident in true, local video
+ * memory rather than non-local video memory. If this flag is specified then
+ * so must DDSCAPS_VIDEOMEMORY. This flag is mutually exclusive with
+ * DDSCAPS_NONLOCALVIDMEM.
+ */
+#define DDSCAPS_LOCALVIDMEM                     0x10000000l
+
+
+uint32 DXCaps::getVideoMemorySize() {
+     
+    CoInitialize(NULL);
+    IDirectDraw2* ddraw = NULL;
+
+    uint32 totalVidSize = 0;
+    uint32 freeVidSize  = 0;
+
+    if ( !FAILED(CoCreateInstance( CLSID_DirectDraw, NULL, CLSCTX_INPROC_SERVER, IID_IDirectDraw2, (LPVOID*)&ddraw)) ) {
+
+        ddraw->Initialize(0);
+
+        DDSCAPS ddsCaps;
+        System::memset(&ddsCaps, 0, sizeof(DDSCAPS));
+
+        ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_LOCALVIDMEM;
+
+        if ( FAILED(ddraw->GetAvailableVidMem(&ddsCaps, reinterpret_cast<LPDWORD>(&totalVidSize), reinterpret_cast<LPDWORD>(&freeVidSize))) ) {
+            totalVidSize = 0;
+            freeVidSize  = 0;
+        }
+
+        ddraw->Release();
+    }
+
+    CoUninitialize();
+
+    return (totalVidSize / (1024 * 1024));
 }
 
 

@@ -28,6 +28,11 @@ public:
         in the form (major * 100) + minor.  eg. 900 is 9.0 and 901 is 9.1
     */
     static uint32 getVersion();
+
+    /**
+        Returns the amount of video memory detected by Direct3D in megabytes.
+    */
+    static uint32 getVideoMemorySize();
 };
 
 } // namespace G3D
