@@ -93,7 +93,7 @@ MD5Hash Crypto::md5(const void* data, size_t n) {
   ghost@aladdin.com
 
  */
-/* $Id: Crypto_md5.cpp,v 1.2 2006/04/10 18:13:16 ckodonnell Exp $ */
+/* $Id: Crypto_md5.cpp,v 1.3 2006/04/14 22:48:35 morgan3d Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
 
@@ -389,7 +389,7 @@ md5_process(md5_state_t *pms, const md5_byte_t *data /*[64]*/)
     pms->abcd[3] += d;
 }
 
-static void
+void
 md5_init(md5_state_t *pms)
 {
     pms->count[0] = pms->count[1] = 0;
@@ -399,7 +399,7 @@ md5_init(md5_state_t *pms)
     pms->abcd[3] = 0x10325476;
 }
 
-static void
+void
 md5_append(md5_state_t *pms, const md5_byte_t *data, int nbytes)
 {
     const md5_byte_t *p = data;

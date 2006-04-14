@@ -55,6 +55,20 @@ bool Matrix3::fuzzyEq(const Matrix3& b) const {
 }
 
 
+bool Matrix3::isOrthonormal() const {
+    Vector3 X = getColumn(0);
+    Vector3 Y = getColumn(1);
+    Vector3 Z = getColumn(2);
+
+    return 
+        (G3D::fuzzyEq(X.dot(Y), 0.0f) &&
+         G3D::fuzzyEq(Y.dot(Z), 0.0f) &&
+         G3D::fuzzyEq(X.dot(Z), 0.0f) &&
+         G3D::fuzzyEq(X.squaredMagnitude(), 1.0f) &&
+         G3D::fuzzyEq(Y.squaredMagnitude(), 1.0f) &&
+         G3D::fuzzyEq(Z.squaredMagnitude(), 1.0f));
+}
+
 //----------------------------------------------------------------------------
 Matrix3::Matrix3(const Quat& _q) {
     // implementation from Watt and Watt, pg 362
