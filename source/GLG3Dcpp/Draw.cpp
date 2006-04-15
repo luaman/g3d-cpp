@@ -905,10 +905,14 @@ void Draw::sphereSection(
     cframe.rotation = cframe.rotation * sphere.radius;
 
 
-    glPushAttrib(GL_ENABLE_BIT);
+    // Track enable bits individually instead of using slow glPush
+    bool resetNormalize = false;
     if (GLCaps::supports("GL_EXT_rescale_normal")) {
         // Switch to using GL_RESCALE_NORMAL, which should be slightly faster.
-        glDisable(GL_NORMALIZE);
+        resetNormalize = (glIsEnabled(GL_NORMALIZE) == GL_TRUE);
+        if (resetNormalize) {
+            glDisable(GL_NORMALIZE);
+        }
         glEnable(GL_RESCALE_NORMAL);
     }
 
@@ -981,7 +985,10 @@ void Draw::sphereSection(
 
     renderDevice->popState();
 
-    glPopAttrib();
+    if (resetNormalize) {
+        glDisable(GL_RESCALE_NORMAL);
+        glEnable(GL_NORMALIZE);
+    }
 }
 
 
