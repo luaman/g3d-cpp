@@ -106,15 +106,15 @@ DECLARE_INTERFACE_( IDirectDraw2, IUnknown )
 #define DDSCAPS_LOCALVIDMEM                     0x10000000l
 
 
-uint32 DXCaps::getVideoMemorySize() {
+uint64 DXCaps::getVideoMemorySize() {
      
     CoInitialize(NULL);
     IDirectDraw2* ddraw = NULL;
 
-    uint32 totalVidSize = 0;
-    uint32 freeVidSize  = 0;
+    DWORD totalVidSize = 0;
+    DWORD freeVidSize  = 0;
 
-    if ( !FAILED(CoCreateInstance( CLSID_DirectDraw, NULL, CLSCTX_INPROC_SERVER, IID_IDirectDraw2, (LPVOID*)&ddraw)) ) {
+    if ( !FAILED(CoCreateInstance( CLSID_DirectDraw, NULL, CLSCTX_INPROC_SERVER, IID_IDirectDraw2, reinterpret_cast<LPVOID*>(&ddraw))) ) {
 
         ddraw->Initialize(0);
 
@@ -123,7 +123,7 @@ uint32 DXCaps::getVideoMemorySize() {
 
         ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY | DDSCAPS_LOCALVIDMEM;
 
-        if ( FAILED(ddraw->GetAvailableVidMem(&ddsCaps, reinterpret_cast<LPDWORD>(&totalVidSize), reinterpret_cast<LPDWORD>(&freeVidSize))) ) {
+        if ( FAILED(ddraw->GetAvailableVidMem(&ddsCaps, &totalVidSize, &freeVidSize)) ) {
             totalVidSize = 0;
             freeVidSize  = 0;
         }
@@ -133,7 +133,7 @@ uint32 DXCaps::getVideoMemorySize() {
 
     CoUninitialize();
 
-    return (totalVidSize / (1024 * 1024));
+    return totalVidSize;
 }
 
 

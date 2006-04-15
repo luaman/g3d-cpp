@@ -30,9 +30,9 @@ public:
     static uint32 getVersion();
 
     /**
-        Returns the amount of video memory detected by Direct3D in megabytes.
+        Returns the amount of video memory detected by Direct3D in bytes.
     */
-    static uint32 getVideoMemorySize();
+    static uint64 getVideoMemorySize();
 };
 
 } // namespace G3D

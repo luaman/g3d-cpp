@@ -17,15 +17,14 @@
 #include "windows.h"
 
 // declare HKEY constants as needed for VC6
-
 #if !defined(HKEY_PERFORMANCE_DATA)
-    #define HKEY_PERFORMANCE_DATA       (( HKEY ) (ULONG_PTR)((LONG)0x80000004) )
+    #define HKEY_PERFORMANCE_DATA       (( HKEY ) ((LONG)0x80000004) )
 #endif
 #if !defined(HKEY_PERFORMANCE_TEXT)
-    #define HKEY_PERFORMANCE_TEXT       (( HKEY ) (ULONG_PTR)((LONG)0x80000050) )
+    #define HKEY_PERFORMANCE_TEXT       (( HKEY ) ((LONG)0x80000050) )
 #endif
 #if !defined(HKEY_PERFORMANCE_NLSTEXT)
-    #define HKEY_PERFORMANCE_NLSTEXT    (( HKEY ) (ULONG_PTR)((LONG)0x80000060) )
+    #define HKEY_PERFORMANCE_NLSTEXT    (( HKEY ) ((LONG)0x80000060) )
 #endif
 
 namespace G3D {
