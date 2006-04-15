@@ -907,12 +907,12 @@ void Draw::sphereSection(
 
     // Track enable bits individually instead of using slow glPush
     bool resetNormalize = false;
+    bool usedRescaleNormal = false;
     if (GLCaps::supports("GL_EXT_rescale_normal")) {
         // Switch to using GL_RESCALE_NORMAL, which should be slightly faster.
         resetNormalize = (glIsEnabled(GL_NORMALIZE) == GL_TRUE);
-        if (resetNormalize) {
-            glDisable(GL_NORMALIZE);
-        }
+        usedRescaleNormal = true;
+        glDisable(GL_NORMALIZE);
         glEnable(GL_RESCALE_NORMAL);
     }
 
@@ -985,9 +985,11 @@ void Draw::sphereSection(
 
     renderDevice->popState();
 
-    if (resetNormalize) {
+    if (usedRescaleNormal) {
         glDisable(GL_RESCALE_NORMAL);
-        glEnable(GL_NORMALIZE);
+        if (resetNormalize) {
+            glEnable(GL_NORMALIZE);
+        }
     }
 }
 
