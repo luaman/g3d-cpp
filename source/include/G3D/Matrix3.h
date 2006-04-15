@@ -176,7 +176,9 @@ public:
         }
     }
 
-    // utilities
+    /** Returns true if the rows and column L2 norms are 1.0 and the rows are orthogonal. */
+    bool isOrthonormal() const;
+
     Matrix3 transpose () const;
     bool inverse (Matrix3& rkInverse, float fTolerance = 1e-06) const;
     Matrix3 inverse (float fTolerance = 1e-06) const;
