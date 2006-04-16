@@ -29,9 +29,15 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> G3D::LineSegment2D
+    <LI> G3D::ConvexPolygon2D
+    <LI> G3D::AxesShape
     <LI> G3D::Crypto with MD5 and CRC32 hashes
+    <LI> TextureManager::findTexture, TextureManager::cacheTexture [Erik]
+    <LI> Win32Window::_directInput created on-demand [Erik]
+    <LI> WeakReferenceCountedPointer has more comparison operators [Erik]
     <LI> GImage::resolveFormat utility function [Erik]
-    <LI> GLCaps supports MESA [Erik]
+    <LI> GLCaps supports MESA
     <LI> G3D::Win32Window and G3D::SDLWindow now release input capture and make the mouse visible on destruction
     <LI> G3D::GWindow::setInputCaptureCount, G3D::GWindow::inputCaptureCount, G3D::GWindow::incInputCaptureCount, G3D::GWindow::decInputCaptureCount
     <LI> GImage::makeCheckerboard
@@ -44,6 +50,7 @@
     <LI> G3D::isSlash, G3D::isQuote
     <LI> G3D::GApplet::onEvent can now consume (i.e., prevent G3D::GApp from seeing) the event
     <LI> G3D::CoordinateFrame::fuzzyIsIdentity, G3D::CoordinateFrame::isIdentity, G3D::CoordinateFrame::fuzzyEq
+    <LI> Matrix3::isOrthonormal
     <LI> [1421201] Removed excess gl (NVIDIA) headers
     <LI> Fix: Shadow map rendering of default PosedModels now enables lighting
     <LI> Fix: G3D::UserInput now restores the mouse position after pureDeltaMouse is turned off
@@ -54,11 +61,8 @@
     <LI> Fix: [ 1444320 ] TextInput parses ".1" as "1" instead of "0.1"
     <LI> Fix: G3D::Shape::type is now const
     <LI> Fix: 0 --> 0.0f FrameBuffer.h [Erik]
-    <LI> Fix: Fixed Texture read-back dimensions for cube-map [Erik]
+    <LI> Fix: Fixed Texture read-back dimensions for cube-map
     <LI> Fix: Missing #include in LightingParameters.h [Erik]
-    <LI> TextureManager::findTexture, TextureManager::cacheTexture [Erik]
-    <LI> Win32Window::_directInput created on-demand [Erik]
-    <LI> WeakReferenceCountedPointer has more comparison operators [Erik]
    </UL>
   <P>   
    Changes in 6.08:

@@ -41,7 +41,7 @@ typedef ReferenceCountedPointer<class Shape> ShapeRef;
 class Shape : public ReferenceCountedObject {
 public:
 
-    enum Type {NONE = 0, MESH = 1, BOX, CYLINDER, SPHERE, RAY, CAPSULE, PLANE};
+    enum Type {NONE = 0, MESH = 1, BOX, CYLINDER, SPHERE, RAY, CAPSULE, PLANE, AXES};
 
     static std::string typeToString(Type t);
 
@@ -57,6 +57,12 @@ public:
         debugAssertM(false, "Not a box");
         static Box b;
         return b;
+    }
+
+    virtual CoordinateFrame& axes() {
+        debugAssertM(false, "Not axes");
+        static CoordinateFrame c;
+        return c;
     }
 
     virtual const Box& box() const { 
@@ -335,27 +341,86 @@ public:
         return geometry.origin;
     }
 
+    /** Bounds the graphic representation of the ray */
     virtual Sphere BoundingSphere() const {
-        debugAssertM(false, "No bounding sphere for ray.");
-        static Sphere s;
-        return s;
+        return Sphere(geometry.origin + geometry.direction / 2, geometry.direction.length() / 2);
     }
 
+    /** Bounds the graphic representation of the ray */
     virtual AABox BoundingAABox() const {
         debugAssertM(false, "No bounding axis aligned box for ray.");
         static AABox aab;
         return aab;
     }
 
+    /** Returns a point along the ray.  The normal is NaN */
     virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const {
-        P = Vector3::nan();
+        P = randomInteriorPoint();
+        N = Vector3::nan();
+    }
+
+    /** Returns a random point along the ray */
+    virtual Vector3 randomInteriorPoint() const {
+        return geometry.origin + geometry.direction * unitRandom();
+    }
+
+};
+
+
+class AxesShape : public Shape {
+    
+    G3D::CoordinateFrame  geometry;
+
+public:
+
+    explicit inline AxesShape(const G3D::CoordinateFrame& a) : geometry(a) {}
+
+    virtual void render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor = Color4(.5,.5,0,.5), Color4 wireColor = Color3::black());
+
+    virtual Type type() const {
+        return AXES;
+    }
+
+    virtual CoordinateFrame& axes() { 
+        return geometry;
+    }
+
+    virtual const CoordinateFrame& axes() const { 
+        return geometry;
+    }
+
+    virtual float area() const {
+        return 0.0f;
+    }
+
+    virtual float volume() const {
+        return 0.0f;
+    }
+
+    virtual Vector3 center() const {
+        return geometry.translation;
+    }
+
+    /** Returns a bound on the graphic representation of the axes */
+    virtual Sphere BoundingSphere() const {
+        return Sphere(geometry.translation, 1);
+    }
+
+    virtual AABox BoundingAABox() const {
+        debugAssertM(false, "No bounding axis aligned box for axes.");
+        static AABox aab;
+        return aab;
+    }
+
+    /** Returns the origin, normal = NaN*/
+    virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const {
+        P = geometry.translation;
         N = Vector3::nan();
     }
 
     virtual Vector3 randomInteriorPoint() const {
-        return Vector3::nan();
+        return geometry.translation;
     }
-
 };
 
 

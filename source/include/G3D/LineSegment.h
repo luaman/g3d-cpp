@@ -75,6 +75,33 @@ public:
 
 };
 
+
+class LineSegment2D {
+private:
+
+    Vector2         m_origin;
+
+    /** Not normalized */
+    Vector2         m_direction;
+
+    /** Length of m_direction */
+    float           m_length;
+
+public:
+    
+    LineSegment2D() {}
+
+    static LineSegment2D fromTwoPoints(const Vector2& p0, const Vector2& p1);
+
+    Vector2 point(int i) const;
+
+    Vector2 closestPoint(const Vector2& Q) const;
+
+    float distance(const Vector2& p) const;
+
+    float length() const;
+};
+
 } // namespace
 
 

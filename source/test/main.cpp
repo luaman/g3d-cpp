@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2006-03-30
+ @edited  2006-04-10
  */
 
 #include "../include/G3DAll.h"
@@ -67,6 +67,14 @@ void perfTable();
 void testAtomicInt32();
 
 void testGThread();
+
+void testConvexPolygon2D() {
+    Array<Vector2> v;
+    v.append(Vector2(0, 0), Vector2(1,1), Vector2(2, 0));
+    ConvexPolygon2D C(v);
+    debugAssert(! C.contains(Vector2(10, 2)));
+    debugAssert(C.contains(Vector2(1, 0.5)));
+}
 
 void measureBSPPerformance() {
 
@@ -768,11 +776,6 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
-#   ifdef RUN_SLOW_TESTS
-        testHugeBinaryIO();
-        printf("  passed\n");
-#   endif
-
     testCollisionDetection();    
 
     testReferenceCount();
@@ -795,12 +798,12 @@ int main(int argc, char* argv[]) {
 
     testGChunk();
 
-    testAABSPTreeSerialize();
+    printf("ConvexPolygon2D\n");
+    testConvexPolygon2D();
     printf("  passed\n");
 
-
-    testBinaryIO();
-
+    testAABSPTreeSerialize();
+    printf("  passed\n");
 
     testPlane();
     printf("  passed\n");
@@ -837,6 +840,13 @@ int main(int argc, char* argv[]) {
     printf("  passed\n");
     testSwizzle();
 
+    testBinaryIO();
+
+#   ifdef RUN_SLOW_TESTS
+        testHugeBinaryIO();
+        printf("  passed\n");
+#   endif
+
     printf("%s\n", System::mallocPerformance().c_str());
     System::resetMallocPerformanceCounters();
 
@@ -847,14 +857,6 @@ int main(int argc, char* argv[]) {
         renderDevice->cleanup();
         delete renderDevice;
     }
-
-    char tmpStr[512];
-    sprintf(tmpStr, "%%c");
-    for (int i = 2; i < 256;) {
-        i += sprintf(&tmpStr[i], "%d", i);
-    }
-    
-    printf(G3D::format(tmpStr, 4).c_str());
     
     return 0;
 }

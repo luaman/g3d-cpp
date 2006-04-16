@@ -14,30 +14,14 @@
 namespace G3D {
 
 std::string Shape::typeToString(Type t) {
-    switch (t) {
-    case MESH:
-        return "MESH";
-    
-    case BOX:
-        return "BOX";
-    
-    case CYLINDER:
-        return "CYLINDER";
-    
-    case SPHERE:
-        return "SPHERE";
-    
-    case RAY:
-        return "RAY";
+    const static std::string name[] = 
+    {"NONE", "MESH", "BOX", "CYLINDER", "SPHERE", "RAY", "CAPSULE", "PLANE", "AXES"};
 
-    case CAPSULE:
-        return "CAPSULE";
-
-    case PLANE:
-        return "PLANE";
+    if (t <= AXES) {
+        return name[t];
+    } else {
+        return "";
     }
-
-    return "";
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -231,6 +215,16 @@ void RayShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 so
     CoordinateFrame cframe0 = rd->getObjectToWorldMatrix();
     rd->setObjectToWorldMatrix(cframe0 * cframe);
     Draw::ray(geometry, rd, solidColor);
+    rd->setObjectToWorldMatrix(cframe0);
+}
+
+
+void AxesShape::render(RenderDevice* rd, const CoordinateFrame& cframe, Color4 solidColor, Color4 wireColor) {
+    (void)wireColor;
+    (void)solidColor;
+    CoordinateFrame cframe0 = rd->getObjectToWorldMatrix();
+    rd->setObjectToWorldMatrix(cframe0 * cframe);
+    Draw::axes(geometry, rd);
     rd->setObjectToWorldMatrix(cframe0);
 }
 

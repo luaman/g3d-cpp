@@ -516,5 +516,11 @@ void testTextInput() {
         TextInput t(TextInput::FROM_STRING, "-1.#IND00", opt);
         alwaysAssertM(isNaN(t.readNumber()), "");
     }
+    {
+        TextInput t(TextInput::FROM_STRING, "fafaosadoas");
+        alwaysAssertM(t.hasMore(), "");
+        t.readSymbol();
+        alwaysAssertM(! t.hasMore(), "");
+    }
     
 }

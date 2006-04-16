@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-11-11
-  @edited  2006-01-10
+  @edited  2006-04-10
  
   Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
@@ -15,6 +15,7 @@
 
 #include "G3D/platform.h"
 #include "G3D/Vector3.h"
+#include "G3D/Vector2.h"
 #include "G3D/CoordinateFrame.h"
 #include "G3D/Plane.h"
 #include "G3D/Line.h"
@@ -138,6 +139,36 @@ public:
      */
     void cut(const Plane& plane, ConvexPolyhedron &above, ConvexPolyhedron &below);
 };
+
+/**
+
+    */
+class ConvexPolygon2D {
+private:
+
+    Array<Vector2>          m_vertex;
+
+public:
+
+    ConvexPolygon2D() {}
+
+    /** 
+     Points are counter-clockwise in a Y = down, X = right coordinate
+     system.
+     */
+    ConvexPolygon2D(const Array<Vector2>& pts, bool reverse = false);
+
+    inline int numVertices() const {
+        return m_vertex.size();
+    }
+
+    inline const Vector2& vertex(int index) const {
+        debugAssert((index >= 0) && (index <= m_vertex.size()));
+    }
+
+    bool contains(const Vector2& p) const;
+};
+
 
 } // namespace
 #endif

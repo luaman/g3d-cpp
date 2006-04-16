@@ -24,6 +24,8 @@ namespace G3D {
  This class allows you to manage a set of textures with cached loading.
  Textures with no external references are cleared when the cache exceeds
  a pre-set size hint.
+
+ @deprecated This will be moved to contrib in release 7.00
  */
 class TextureManager {
 private:

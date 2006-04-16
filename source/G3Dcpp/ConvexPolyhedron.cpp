@@ -407,5 +407,41 @@ for (int xx=0; xx < numVertices; xx++) {
     debugAssert((below.face.length() == 0) || (below.face.length() >= 4));
 }
 
+///////////////////////////////////////////////
+
+ConvexPolygon2D::ConvexPolygon2D(const Array<Vector2>& pts, bool reverse) : m_vertex(pts) {
+    if (reverse) {
+        m_vertex.reverse();
+    }
+}
+
+
+bool ConvexPolygon2D::contains(const Vector2& p) const {
+    // Compute the signed area of each polygon from p to an edge.  
+    // If the area is non-negative for all polygons then p is inside 
+    // the polygon.  (To adapt this algorithm for a concave polygon,
+    // the *sum* of the areas must be non-negative).
+
+    for (int i0 = 0; i0 < m_vertex.size(); ++i0) {
+        int i1 = (i0 + 1) % m_vertex.size();
+        const Vector2& v0 = m_vertex[i0];
+        const Vector2& v1 = m_vertex[i1];
+
+        Vector2 e0 = v0 - p;
+        Vector2 e1 = v1 - p;
+
+        // Area = (1/2) cross product, negated to be ccw in
+        // a 2D space; we neglect the 1/2
+        float area = -(e0.x * e1.y - e0.y * e1.x);
+
+        if (area < 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 }
 

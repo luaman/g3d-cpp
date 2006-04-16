@@ -112,6 +112,8 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 </PRE>
+
+@deprecated To be replaced by boost::shared_ptr in 7.0
  */
 class ReferenceCountedObject {
 public:
@@ -192,6 +194,7 @@ public:
 /**
  Use ReferenceCountedPointer<T> in place of T* in your program.
  T must subclass ReferenceCountedObject.
+@deprecated To be replaced by boost::shared_ptr in 7.0
  */
 template <class T>
 class ReferenceCountedPointer {
@@ -404,6 +407,8 @@ public:
  Weak pointers may become NULL at any point (when their target is collected).
  Therefore the only way to reference the target is to convert to a strong
  pointer and then check that it is not NULL.
+
+@deprecated To be replaced by boost::weak_ptr in 7.0
  */
 template <class T>
 class WeakReferenceCountedPointer : public _WeakPtr {
