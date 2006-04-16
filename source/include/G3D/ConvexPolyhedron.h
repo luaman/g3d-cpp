@@ -164,6 +164,7 @@ public:
 
     inline const Vector2& vertex(int index) const {
         debugAssert((index >= 0) && (index <= m_vertex.size()));
+        return m_vertex[index];
     }
 
     bool contains(const Vector2& p) const;
