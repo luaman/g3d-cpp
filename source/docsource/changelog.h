@@ -29,6 +29,9 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> System::getEnv()
+    <LI> G3D::DXCaps
+    <LI> G3D::RegistryUtil
     <LI> G3D::LineSegment2D
     <LI> G3D::ConvexPolygon2D
     <LI> G3D::AxesShape
