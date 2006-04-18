@@ -122,7 +122,7 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 		// Translucent
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glAlphaFunc(GL_GREATER, 0.2);
+		glAlphaFunc(GL_GREATER, 0.2f);
 		glEnable(GL_ALPHA_TEST);
 		glDisable(GL_CULL_FACE);
 
@@ -242,12 +242,12 @@ void Map::getVisibleFaces(
 
 				// Ignore untextured faces
 				TextureRef texture = textures[face->textureID];
-				if ((face->lightmapID < 0) && (texture == NULL)) {
+				if ((face->lightmapID < 0) && texture.isNull()) {
 					continue;
 				}
 
 				face->updateSortKey(this, zAxis, origin);
-				if ((texture == NULL) || (texture->opaque())) {
+				if ((texture.isNull()) || texture->opaque()) {
 					opaqueFaceArray.append(face);
 				} else {
 					translucentFaceArray.append(face);
@@ -290,11 +290,11 @@ void Map::getVisibleFaces(
 			FaceSet* face = faceArray[currentModel.faceIndex + f];
 			// Ignore untextured faces
 			TextureRef texture = textures[face->textureID];
-			if ((face->lightmapID < 0) && (texture == NULL)) {
+			if ((face->lightmapID < 0) && texture.isNull()) {
 				continue;
 			}
 			face->updateSortKey(this, zAxis, origin);
-			if ((texture == NULL) || (texture->opaque())) {
+			if (texture.isNull() || texture->opaque()) {
 				opaqueFaceArray.append(face);
 			} else {
 				translucentFaceArray.append(face);
@@ -324,11 +324,11 @@ void Map::renderFaces(
 				glActiveTextureARB(GL_TEXTURE0_ARB);
 				texture = textures[theFace->textureID];
 
-				if (texture == NULL) {
+				if (texture.isNull()) {
 					texture = defaultTexture;
 				}
 
-				if (texture != NULL) {
+				if (texture.notNull()) {
 					glEnable(GL_TEXTURE_2D);
 					glClientActiveTextureARB(GL_TEXTURE0_ARB);
 					glBindTexture(GL_TEXTURE_2D, texture->getOpenGLID());
@@ -354,7 +354,7 @@ void Map::renderFaces(
 				if (theFace->lightmapID >= 0) {
 					glBindTexture(GL_TEXTURE_2D, lightmaps[theFace->lightmapID]->getOpenGLID());
 				} else {
-					if (defaultLightmap != NULL) {
+					if (defaultLightmap.notNull()) {
 						glBindTexture(GL_TEXTURE_2D, defaultLightmap->getOpenGLID());
 					}
 				}

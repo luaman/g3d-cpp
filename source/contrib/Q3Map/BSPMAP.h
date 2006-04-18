@@ -16,7 +16,7 @@
 #ifndef BSPMAP_H
 #define BSPMAP_H
 
-#include "dojo/g3dHelper.h"
+#include <G3DAll.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <math.h>
