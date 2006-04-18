@@ -280,6 +280,9 @@ public:
     /** Set an environment variable for the current process */
     static void setEnv(const std::string& name, const std::string& value);
 	
+    /** Get an environment variable for the current process.  Returns NULL if the variable doesn't exist. */
+    static const char* getEnv(const std::string& name);
+
     /**
      Prints a human-readable description of this machine
      to the text output stream.  Either argument may be NULL.

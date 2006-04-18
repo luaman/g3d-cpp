@@ -1556,15 +1556,13 @@ void System::alignedFree(void* _ptr) {
 
 
 void System::setEnv(const std::string& name, const std::string& value) {
-    #ifdef G3D_WIN32
-        std::string cmd = name + "=" + value;
-        putenv(name.c_str());
-    #else
-        setenv(name.c_str(), value.c_str(), 1);
-    #endif
+    std::string cmd = name + "=" + value;
+    putenv(name.c_str());
 }
 
-
+const char* System::getEnv(const std::string& name) {
+    return getenv(name.c_str());
+}
 
 static void var(TextOutput& t, const std::string& name, const std::string& val) {
     t.writeSymbols(name,"=");
