@@ -188,14 +188,15 @@ Quat Quat::slerp(
     
     // Compute cosine of angle then get angle
     // Using G3D::aCos will clamp the angle to 0 and pi
-    phi = G3D::aCos((float)quat0.dot(quat1));
+    phi = static_cast<float>(G3D::aCos(quat0.dot(quat1)));
     
-    float scale0, scale1;
-
     if (phi >= threshold) {
         // For large angles, slerp
+        float scale0, scale1;
+
         scale0 = sin((1.0f - alpha) * phi);
         scale1 = sin(alpha * phi);
+        
         return ( (quat0 * scale0) + (quat1 * scale1) ) / sin(phi);
     } else {
         // For small angles, linear interpolate

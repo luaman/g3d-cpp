@@ -278,12 +278,12 @@ double symmetricRandom ();
 /**
  Uniform random number between low and hi, inclusive. [low, hi]
  */
-float uniformRandom(float low = 0.0, float hi = 1.0);
+float uniformRandom(float low = 0.0f, float hi = 1.0f);
 
 /**
  Normally distributed random number. 
  */
-float gaussRandom(float mean = 0.0, float stdev = 1.0);
+float gaussRandom(float mean = 0.0f, float stdev = 1.0f);
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1200)
 
