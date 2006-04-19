@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="test"
-	ProjectGUID="{FAC15599-A189-47D4-B1E4-B408BAE84299}"
+	ProjectGUID="{5CE5085D-3FF7-4B37-8D97-641509EE91B1}"
 	>
 	<Platforms>
 		<Platform
@@ -146,6 +146,7 @@
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
+				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
