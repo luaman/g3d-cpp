@@ -140,14 +140,14 @@ SkyRef Sky::fromFile(
             // Specified one cube map
             for (int t = 0; t < 6; ++t) {
                 faceTextures[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
-                    format, Texture::CLAMP, Texture::BILINEAR_MIPMAP, Texture::DIM_2D,
+                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D,
                     1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
             }
         } else {
             // Specified six textures
             for (int t = 0; t < 6; ++t) {
                 faceTextures[t] = Texture::fromFile(_filename[t], 
-                    format, Texture::CLAMP, Texture::BILINEAR_MIPMAP, Texture::DIM_2D,
+                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D,
                     1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
             }
         }

@@ -81,6 +81,14 @@ public:
         return w;
     }
 
+	bool fuzzyEq(const Quat& q) {
+		return G3D::fuzzyEq(x, q.x) && G3D::fuzzyEq(y, q.y) && G3D::fuzzyEq(z, q.z) && G3D::fuzzyEq(w, q.w);
+	}
+
+	inline Quat operator-() const {
+		return Quat(-x, -y, -z, -w);
+	}
+
     /**
      Returns the imaginary part (x, y, z)
      */
@@ -103,6 +111,14 @@ public:
         Vector3&            axis,
         double&             angle) const;
 
+    void toAxisAngleRotation(
+        Vector3&            axis,
+        float&              angle) const {
+		double d;
+		toAxisAngleRotation(axis, d);
+		angle = (float)d;
+	}
+
     Matrix3 toRotationMatrix() const;
 
     void toRotationMatrix(
@@ -114,12 +130,18 @@ public:
 
      Note: Correct rotations are expected between 0 and PI in the right order.
 
-     @param threshold [optional] smallest angle between rotations that will slerp instead of lerp. 0.0 will always slerp. 
+     @cite Based on Game Physics -- David Eberly pg 538-540
+     @param threshold Critical angle between between rotations at which
+	        the algorithm switches to normalized lerp, which is more
+			numerically stable in those situations. 0.0 will always slerp. 
      */
     Quat slerp(
         const Quat&         other,
         float               alpha,
         float               threshold = 0.05f) const;
+
+	/** Normalized linear interpolation of quaternion components. */
+	Quat nlerp(const Quat& other, float alpha) const;
 
     /**
      Negates the imaginary part.
@@ -140,6 +162,7 @@ public:
         return Quat(x * s, y * s, z * s, w * s);
     }
 
+	/** @cite Based on Watt & Watt, page 360 */
     friend Quat operator* (float s, const Quat& q);
 
     inline Quat operator/(float s) const {
@@ -250,7 +273,7 @@ public:
      */
     inline Quat unitize() const {
         float mag2 = dot(*this);
-        if (fuzzyEq(mag2, 1.0f)) {
+        if (G3D::fuzzyEq(mag2, 1.0f)) {
             return *this;
         } else {
             return *this / sqrtf(mag2);
@@ -283,7 +306,9 @@ public:
     const float& operator[] (int i) const;
     float& operator[] (int i);
 
-    /** Generate uniform random unit quaternion (i.e. random "direction") */
+    /** Generate uniform random unit quaternion (i.e. random "direction") 
+	@cite From "Uniform Random Rotations", Ken Shoemake, Graphics Gems III.
+   */
     static Quat unitRandom();
 
     void deserialize(class BinaryInput& b);

@@ -31,7 +31,9 @@ Quat Quat::fromAxisAngleRotation(
 Quat::Quat(
     const Matrix3& rot) {
 
-//    static const int plus1mod3[] = {1, 2, 0};
+/*
+    In G3D version 6.09, this commented out code was reverted to the optimized implementation below it.
+	The optimized code contains one fewer branch and is more numerically stable.
 
     // Trace of the matrix
     float tr = rot[0][0] + rot[1][1] + rot[2][2] + 1;
@@ -64,31 +66,51 @@ Quat::Quat(
         z = 0.25f * s;
         w = (rot[0][1] - rot[1][0] ) / s;
     }
-        /*
-        // Find the largest diagonal component
-        int i = 0;
-        
-        if (rot[1][1] > rot[0][0]) {
-            i = 1;
-        }
+	*/
+    static const int plus1mod3[] = {1, 2, 0};
 
-        if (rot[2][2] > rot[i][i]) {
-            i = 2;
-        }
+    // Find the index of the largest diagonal component
+    int i = 0;
+    
+    if (rot[1][1] > rot[0][0]) {
+        i = 1;
+    }
 
-        int j = plus1mod3[i];
-        int k = plus1mod3[j];
+    if (rot[2][2] > rot[i][i]) {
+        i = 2;
+    }
 
-        double c = sqrt((rot[i][i] - (rot[j][j] + rot[k][k])) + 1.0);
+	// Find the indices of the other elements
+    int j = plus1mod3[i];
+    int k = plus1mod3[j];
 
-        float* v = (float*)(this);
+	// Index the elements of the vector part of the quaternion as a float*
+    float* v = (float*)(this);
 
-        v[i] = -c * 0.5;
-        c    = 0.5 / c;
-        w    = (rot[j][k] - rot[k][j]) * c;
-        v[j] = -(rot[i][j] + rot[j][i]) * c;
-        v[k] = -(rot[i][k] + rot[k][i]) * c;
-        */
+	// If we attempted to pre-normalize and trusted the matrix to be
+	// perfectly orthonormal, the result would be:
+	//
+    //   double c = sqrt((rot[i][i] - (rot[j][j] + rot[k][k])) + 1.0)
+    //   v[i] = -c * 0.5
+    //   v[j] = -(rot[i][j] + rot[j][i]) * 0.5 / c
+    //   v[k] = -(rot[i][k] + rot[k][i]) * 0.5 / c
+    //   w    =  (rot[j][k] - rot[k][j]) * 0.5 / c
+	//
+	// Since we're going to pay the sqrt anyway, we perform a post normalization, which also
+	// fixes any poorly normalized input.  Multiply all elements by 2*c in the above, giving:
+
+    double c2 = (rot[i][i] - (rot[j][j] + rot[k][k])) + 1.0;
+    v[i] = -c2;
+    w    =  (rot[j][k] - rot[k][j]);
+    v[j] = -(rot[i][j] + rot[j][i]);
+    v[k] = -(rot[i][k] + rot[k][i]);
+
+	// We now have the correct result with the wrong magnitude, so normalize it:
+	float s = 1.0f / sqrt(x*x + y*y + z*z + w*w);
+	x *= s;
+	y *= s;
+	z *= s;
+	w *= s;
 }
 
 
@@ -153,7 +175,11 @@ Quat Quat::slerp(
     float               threshold) const {
 
     // From: Game Physics -- David Eberly pg 538-540
-    // Modified to include Morgan's original lerp
+    // Modified to include lerp for small angles, which
+	// is a common practice.
+
+	// See also:
+	// http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/index.html
 
     const Quat& quat0 = *this;
 
@@ -162,7 +188,7 @@ Quat Quat::slerp(
     
     // Compute cosine of angle then get angle
     // Using G3D::aCos will clamp the angle to 0 and pi
-    phi = G3D::aCos(quat0.dot(quat1));
+    phi = G3D::aCos((float)quat0.dot(quat1));
     
     float scale0, scale1;
 
@@ -173,11 +199,19 @@ Quat Quat::slerp(
         return ( (quat0 * scale0) + (quat1 * scale1) ) / sin(phi);
     } else {
         // For small angles, linear interpolate
-        scale0 = 1.0f - alpha;
-        scale1 = alpha;
-        return quat0 * scale0 + quat1 * scale1;
+		return quat0.nlerp(quat1, alpha);
     }
 }
+
+
+Quat Quat::nlerp(
+    const Quat&         quat1,
+    float               alpha) const {
+
+    Quat result = (*this) * (1.0f - alpha) + quat1 * alpha;
+	return result / result.magnitude();
+}
+
 
 Quat Quat::operator*(const Quat& other) const {
 
@@ -189,6 +223,7 @@ Quat Quat::operator*(const Quat& other) const {
 
     return Quat(s1*v2 + s2*v1 + v1.cross(v2), s1*s2 - v1.dot(v2));
 }
+
 
 // From "Uniform Random Rotations", Ken Shoemake, Graphics Gems III.
 Quat Quat::unitRandom() {

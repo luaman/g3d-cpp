@@ -90,7 +90,7 @@ __inline long int lrintf(float flt) {
 
 
 
-const double fuzzyEpsilon = 0.000001;
+const double fuzzyEpsilon = 0.00001;
 
 /** Returns a reference to a static double.
     This value should not be tested against directly, instead

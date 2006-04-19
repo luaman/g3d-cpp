@@ -588,7 +588,7 @@ bool GLCaps::supports(const TextureFormat* fmt) {
             // See if we can create a texture in this format
             unsigned int id;
             glGenTextures(1, &id);
-            glBindTexture(id, GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, id);
 
             // Clear the old error flag
             glGetError();

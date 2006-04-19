@@ -1,7 +1,7 @@
 /**
  @file Texture.cpp
 
- @author Morgan McGuire, morgan@blueaxion.com
+ @author Morgan McGuire, morgan3d@graphics3d.com
 
  Notes:
  <UL>
@@ -1037,7 +1037,7 @@ TextureRef Texture::fromMemory(
                     createMipMapTexture(target, reinterpret_cast<const uint8*>(bytes[mipLevel][f]),
                                   bytesFormat->OpenGLBaseFormat,
                                   mipWidth, mipHeight, desiredFormat->OpenGLFormat,
-                                  rescaleFactor, desiredFormat->packedBitsPerTexel / 8);
+                                  desiredFormat->packedBitsPerTexel / 8, rescaleFactor);
                 } else {
                     const bool useNPOT = (dimension == DIM_2D_NPOT) ?
                         true : (dimension == DIM_CUBE_MAP_NPOT) ?

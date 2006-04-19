@@ -31,6 +31,9 @@
    <UL>
     <LI> System::getEnv()
     <LI> G3D::DXCaps
+	<LI> G3D::Quat::fuzzyEq
+	<LI> G3D::Quat::operator-
+	<LI> Increased fuzzyEpsilon by a factor of 10 to take into account the new float32 focus of the APIs
     <LI> G3D::RegistryUtil
     <LI> G3D::LineSegment2D
     <LI> G3D::ConvexPolygon2D
@@ -55,6 +58,7 @@
     <LI> G3D::CoordinateFrame::fuzzyIsIdentity, G3D::CoordinateFrame::isIdentity, G3D::CoordinateFrame::fuzzyEq
     <LI> Matrix3::isOrthonormal
     <LI> [1421201] Removed excess gl (NVIDIA) headers
+    <LI> Fix: GLCaps::supports(TextureFormat) now returns correct results on all cards
     <LI> Fix: Shadow map rendering of default PosedModels now enables lighting
     <LI> Fix: G3D::UserInput now restores the mouse position after pureDeltaMouse is turned off
     <LI> Fix: G3D::Win32Window now clips precisely to the client area during an input grab.

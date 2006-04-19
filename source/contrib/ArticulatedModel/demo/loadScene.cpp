@@ -1,6 +1,6 @@
 #include "App.h"
 
-#define LOAD_ALL 1
+#define LOAD_ALL 0
 
 void App::loadScene() {
     const std::string path = "";
@@ -11,20 +11,17 @@ void App::loadScene() {
 
     RealTime t0 = System::time();
 
-    if (false) {
-        ArticulatedModelRef model = ArticulatedModel::fromFile("C:/Projects/data/ifs/saddle.ifs", 1);
+    if (true) {
+        ArticulatedModelRef model = ArticulatedModel::fromFile("sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
         model->partArray[0].triListArray[0].twoSided = false;
-        material.diffuse = Color3::red() * 0.6f;
-        material.reflect = Color3::white() * 0.5f;
-        material.specular = Color3::white();
-        material.specularExponent = Color3::white() * 20;
+        material.diffuse = Color3::white() * 1.0f;
+        material.specular = Color3::white() * 0.7f;
+        material.specularExponent = Color3::white() * 60;
         model->updateAll();
 
-        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,0))));
-        x += 2;
-        Log::common()->printf("Saddle: %gs\n", System::time() - t0); t0 = System::time();
+        entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
     }
 
 #if LOAD_ALL
@@ -426,7 +423,6 @@ void App::loadScene() {
         entityArray.append(Entity::create(model, CoordinateFrame(rot180, Vector3(x,0,0))));
         x += 2;
     }
-
 #endif
     if (true) {
         ArticulatedModelRef model = ArticulatedModel::createEmpty();

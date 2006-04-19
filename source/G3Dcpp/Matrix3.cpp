@@ -46,7 +46,7 @@ Matrix3::Matrix3(BinaryInput& b) {
 bool Matrix3::fuzzyEq(const Matrix3& b) const {
     for (int r = 0; r < 3; ++r) {
         for (int c = 0; c < 3; ++c) {
-            if (! G3D::fuzzyEq(m_aafEntry[r][c], b[r][c])) {
+            if (! G3D::fuzzyEq(elt[r][c], b[r][c])) {
                 return false;
             }
         }
@@ -71,7 +71,8 @@ bool Matrix3::isOrthonormal() const {
 
 //----------------------------------------------------------------------------
 Matrix3::Matrix3(const Quat& _q) {
-    // implementation from Watt and Watt, pg 362
+    // Implementation from Watt and Watt, pg 362
+	// See also http://www.flipcode.com/documents/matrfaq.html#Q54
     Quat q = _q.unitize();
     float xx = 2.0f * q.x * q.x;
     float xy = 2.0f * q.x * q.y;
@@ -93,12 +94,12 @@ Matrix3::Matrix3(const Quat& _q) {
 //----------------------------------------------------------------------------
 
 Matrix3::Matrix3 (const float aafEntry[3][3]) {
-    memcpy(m_aafEntry, aafEntry, 9*sizeof(float));
+    memcpy(elt, aafEntry, 9*sizeof(float));
 }
 
 //----------------------------------------------------------------------------
 Matrix3::Matrix3 (const Matrix3& rkMatrix) {
-    memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9*sizeof(float));
+    memcpy(elt, rkMatrix.elt, 9*sizeof(float));
 }
 
 //----------------------------------------------------------------------------
@@ -116,15 +117,15 @@ void Matrix3::set(
           float fEntry10, float fEntry11, float fEntry12, 
           float fEntry20, float fEntry21, float fEntry22) {
 
-    m_aafEntry[0][0] = fEntry00;
-    m_aafEntry[0][1] = fEntry01;
-    m_aafEntry[0][2] = fEntry02;
-    m_aafEntry[1][0] = fEntry10;
-    m_aafEntry[1][1] = fEntry11;
-    m_aafEntry[1][2] = fEntry12;
-    m_aafEntry[2][0] = fEntry20;
-    m_aafEntry[2][1] = fEntry21;
-    m_aafEntry[2][2] = fEntry22;
+    elt[0][0] = fEntry00;
+    elt[0][1] = fEntry01;
+    elt[0][2] = fEntry02;
+    elt[1][0] = fEntry10;
+    elt[1][1] = fEntry11;
+    elt[1][2] = fEntry12;
+    elt[2][0] = fEntry20;
+    elt[2][1] = fEntry21;
+    elt[2][2] = fEntry22;
 }
 
 
@@ -132,7 +133,7 @@ void Matrix3::deserialize(BinaryInput& b) {
     int r,c;
     for (c = 0; c < 3; ++c) {
         for (r = 0; r < 3; ++r) {
-            m_aafEntry[r][c] = b.readFloat32();
+            elt[r][c] = b.readFloat32();
         }
     }
 }
@@ -142,7 +143,7 @@ void Matrix3::serialize(BinaryOutput& b) const {
     int r,c;
     for (c = 0; c < 3; ++c) {
         for (r = 0; r < 3; ++r) {
-            b.writeFloat32(m_aafEntry[r][c]);
+            b.writeFloat32(elt[r][c]);
         }
     }
 }
@@ -151,27 +152,27 @@ void Matrix3::serialize(BinaryOutput& b) const {
 //----------------------------------------------------------------------------
 Vector3 Matrix3::getColumn (int iCol) const {
     assert((0 <= iCol) && (iCol < 3));
-    return Vector3(m_aafEntry[0][iCol], m_aafEntry[1][iCol],
-                   m_aafEntry[2][iCol]);
+    return Vector3(elt[0][iCol], elt[1][iCol],
+                   elt[2][iCol]);
 }
 
 Vector3 Matrix3::getRow (int iRow) const {
-    return Vector3(m_aafEntry[iRow][0], m_aafEntry[iRow][1], m_aafEntry[iRow][2]);
+    return Vector3(elt[iRow][0], elt[iRow][1], elt[iRow][2]);
 }
 
 void Matrix3::setColumn(int iCol, const Vector3 &vector) {
     debugAssert((iCol >= 0) && (iCol < 3));
-    m_aafEntry[0][iCol] = vector.x;
-    m_aafEntry[1][iCol] = vector.y;
-    m_aafEntry[2][iCol] = vector.z;
+    elt[0][iCol] = vector.x;
+    elt[1][iCol] = vector.y;
+    elt[2][iCol] = vector.z;
 }
 
 
 void Matrix3::setRow(int iRow, const Vector3 &vector) {
     debugAssert((iRow >= 0) && (iRow < 3));
-    m_aafEntry[iRow][0] = vector.x;
-    m_aafEntry[iRow][1] = vector.y;
-    m_aafEntry[iRow][2] = vector.z;
+    elt[iRow][0] = vector.x;
+    elt[iRow][1] = vector.y;
+    elt[iRow][2] = vector.z;
 }
 
 
@@ -179,7 +180,7 @@ void Matrix3::setRow(int iRow, const Vector3 &vector) {
 bool Matrix3::operator== (const Matrix3& rkMatrix) const {
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            if ( m_aafEntry[iRow][iCol] != rkMatrix.m_aafEntry[iRow][iCol] )
+            if ( elt[iRow][iCol] != rkMatrix.elt[iRow][iCol] )
                 return false;
         }
     }
@@ -198,8 +199,8 @@ Matrix3 Matrix3::operator+ (const Matrix3& rkMatrix) const {
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            kSum.m_aafEntry[iRow][iCol] = m_aafEntry[iRow][iCol] +
-                                          rkMatrix.m_aafEntry[iRow][iCol];
+            kSum.elt[iRow][iCol] = elt[iRow][iCol] +
+                                          rkMatrix.elt[iRow][iCol];
         }
     }
 
@@ -212,8 +213,8 @@ Matrix3 Matrix3::operator- (const Matrix3& rkMatrix) const {
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            kDiff.m_aafEntry[iRow][iCol] = m_aafEntry[iRow][iCol] -
-                                           rkMatrix.m_aafEntry[iRow][iCol];
+            kDiff.elt[iRow][iCol] = elt[iRow][iCol] -
+                                           rkMatrix.elt[iRow][iCol];
         }
     }
 
@@ -226,10 +227,10 @@ Matrix3 Matrix3::operator* (const Matrix3& rkMatrix) const {
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            kProd.m_aafEntry[iRow][iCol] =
-                m_aafEntry[iRow][0] * rkMatrix.m_aafEntry[0][iCol] +
-                m_aafEntry[iRow][1] * rkMatrix.m_aafEntry[1][iCol] +
-                m_aafEntry[iRow][2] * rkMatrix.m_aafEntry[2][iCol];
+            kProd.elt[iRow][iCol] =
+                elt[iRow][0] * rkMatrix.elt[0][iCol] +
+                elt[iRow][1] * rkMatrix.elt[1][iCol] +
+                elt[iRow][2] * rkMatrix.elt[2][iCol];
         }
     }
 
@@ -239,7 +240,7 @@ Matrix3 Matrix3::operator* (const Matrix3& rkMatrix) const {
 Matrix3& Matrix3::operator+= (const Matrix3& rkMatrix) {
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            m_aafEntry[iRow][iCol] = m_aafEntry[iRow][iCol] + rkMatrix.m_aafEntry[iRow][iCol];
+            elt[iRow][iCol] = elt[iRow][iCol] + rkMatrix.elt[iRow][iCol];
         }
     }
 
@@ -249,7 +250,7 @@ Matrix3& Matrix3::operator+= (const Matrix3& rkMatrix) {
 Matrix3& Matrix3::operator-= (const Matrix3& rkMatrix) {
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            m_aafEntry[iRow][iCol] = m_aafEntry[iRow][iCol] - rkMatrix.m_aafEntry[iRow][iCol];
+            elt[iRow][iCol] = elt[iRow][iCol] - rkMatrix.elt[iRow][iCol];
         }
     }
 
@@ -260,10 +261,10 @@ Matrix3& Matrix3::operator*= (const Matrix3& rkMatrix) {
     Matrix3 mulMat;
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            mulMat.m_aafEntry[iRow][iCol] =
-                m_aafEntry[iRow][0] * rkMatrix.m_aafEntry[0][iCol] +
-                m_aafEntry[iRow][1] * rkMatrix.m_aafEntry[1][iCol] +
-                m_aafEntry[iRow][2] * rkMatrix.m_aafEntry[2][iCol];
+            mulMat.elt[iRow][iCol] =
+                elt[iRow][0] * rkMatrix.elt[0][iCol] +
+                elt[iRow][1] * rkMatrix.elt[1][iCol] +
+                elt[iRow][2] * rkMatrix.elt[2][iCol];
         }
     }
 
@@ -277,7 +278,7 @@ Matrix3 Matrix3::operator- () const {
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            kNeg[iRow][iCol] = -m_aafEntry[iRow][iCol];
+            kNeg[iRow][iCol] = -elt[iRow][iCol];
         }
     }
 
@@ -290,7 +291,7 @@ Matrix3 Matrix3::operator* (float fScalar) const {
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            kProd[iRow][iCol] = fScalar * m_aafEntry[iRow][iCol];
+            kProd[iRow][iCol] = fScalar * elt[iRow][iCol];
         }
     }
 
@@ -303,7 +304,7 @@ Matrix3 operator* (double fScalar, const Matrix3& rkMatrix) {
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            kProd[iRow][iCol] = fScalar * rkMatrix.m_aafEntry[iRow][iCol];
+            kProd[iRow][iCol] = fScalar * rkMatrix.elt[iRow][iCol];
         }
     }
 
@@ -324,7 +325,7 @@ Matrix3 Matrix3::transpose () const {
 
     for (int iRow = 0; iRow < 3; iRow++) {
         for (int iCol = 0; iCol < 3; iCol++) {
-            kTranspose[iRow][iCol] = m_aafEntry[iCol][iRow];
+            kTranspose[iRow][iCol] = elt[iCol][iRow];
         }
     }
 
@@ -336,29 +337,29 @@ bool Matrix3::inverse (Matrix3& rkInverse, float fTolerance) const {
     // Invert a 3x3 using cofactors.  This is about 8 times faster than
     // the Numerical Recipes code which uses Gaussian elimination.
 
-    rkInverse[0][0] = m_aafEntry[1][1] * m_aafEntry[2][2] -
-                      m_aafEntry[1][2] * m_aafEntry[2][1];
-    rkInverse[0][1] = m_aafEntry[0][2] * m_aafEntry[2][1] -
-                      m_aafEntry[0][1] * m_aafEntry[2][2];
-    rkInverse[0][2] = m_aafEntry[0][1] * m_aafEntry[1][2] -
-                      m_aafEntry[0][2] * m_aafEntry[1][1];
-    rkInverse[1][0] = m_aafEntry[1][2] * m_aafEntry[2][0] -
-                      m_aafEntry[1][0] * m_aafEntry[2][2];
-    rkInverse[1][1] = m_aafEntry[0][0] * m_aafEntry[2][2] -
-                      m_aafEntry[0][2] * m_aafEntry[2][0];
-    rkInverse[1][2] = m_aafEntry[0][2] * m_aafEntry[1][0] -
-                      m_aafEntry[0][0] * m_aafEntry[1][2];
-    rkInverse[2][0] = m_aafEntry[1][0] * m_aafEntry[2][1] -
-                      m_aafEntry[1][1] * m_aafEntry[2][0];
-    rkInverse[2][1] = m_aafEntry[0][1] * m_aafEntry[2][0] -
-                      m_aafEntry[0][0] * m_aafEntry[2][1];
-    rkInverse[2][2] = m_aafEntry[0][0] * m_aafEntry[1][1] -
-                      m_aafEntry[0][1] * m_aafEntry[1][0];
+    rkInverse[0][0] = elt[1][1] * elt[2][2] -
+                      elt[1][2] * elt[2][1];
+    rkInverse[0][1] = elt[0][2] * elt[2][1] -
+                      elt[0][1] * elt[2][2];
+    rkInverse[0][2] = elt[0][1] * elt[1][2] -
+                      elt[0][2] * elt[1][1];
+    rkInverse[1][0] = elt[1][2] * elt[2][0] -
+                      elt[1][0] * elt[2][2];
+    rkInverse[1][1] = elt[0][0] * elt[2][2] -
+                      elt[0][2] * elt[2][0];
+    rkInverse[1][2] = elt[0][2] * elt[1][0] -
+                      elt[0][0] * elt[1][2];
+    rkInverse[2][0] = elt[1][0] * elt[2][1] -
+                      elt[1][1] * elt[2][0];
+    rkInverse[2][1] = elt[0][1] * elt[2][0] -
+                      elt[0][0] * elt[2][1];
+    rkInverse[2][2] = elt[0][0] * elt[1][1] -
+                      elt[0][1] * elt[1][0];
 
     float fDet =
-        m_aafEntry[0][0] * rkInverse[0][0] +
-        m_aafEntry[0][1] * rkInverse[1][0] +
-        m_aafEntry[0][2] * rkInverse[2][0];
+        elt[0][0] * rkInverse[0][0] +
+        elt[0][1] * rkInverse[1][0] +
+        elt[0][2] * rkInverse[2][0];
 
     if ( G3D::abs(fDet) <= fTolerance )
         return false;
@@ -382,17 +383,17 @@ Matrix3 Matrix3::inverse (float fTolerance) const {
 
 //----------------------------------------------------------------------------
 float Matrix3::determinant () const {
-    float fCofactor00 = m_aafEntry[1][1] * m_aafEntry[2][2] -
-                       m_aafEntry[1][2] * m_aafEntry[2][1];
-    float fCofactor10 = m_aafEntry[1][2] * m_aafEntry[2][0] -
-                       m_aafEntry[1][0] * m_aafEntry[2][2];
-    float fCofactor20 = m_aafEntry[1][0] * m_aafEntry[2][1] -
-                       m_aafEntry[1][1] * m_aafEntry[2][0];
+    float fCofactor00 = elt[1][1] * elt[2][2] -
+                       elt[1][2] * elt[2][1];
+    float fCofactor10 = elt[1][2] * elt[2][0] -
+                       elt[1][0] * elt[2][2];
+    float fCofactor20 = elt[1][0] * elt[2][1] -
+                       elt[1][1] * elt[2][0];
 
     float fDet =
-        m_aafEntry[0][0] * fCofactor00 +
-        m_aafEntry[0][1] * fCofactor10 +
-        m_aafEntry[0][2] * fCofactor20;
+        elt[0][0] * fCofactor00 +
+        elt[0][1] * fCofactor10 +
+        elt[0][2] * fCofactor20;
 
     return fDet;
 }
@@ -757,10 +758,10 @@ void Matrix3::singularValueComposition (const Matrix3& kL,
     // product L*S*R
     for (iRow = 0; iRow < 3; iRow++) {
         for (iCol = 0; iCol < 3; iCol++) {
-            m_aafEntry[iRow][iCol] = 0.0;
+            elt[iRow][iCol] = 0.0;
 
             for (int iMid = 0; iMid < 3; iMid++)
-                m_aafEntry[iRow][iCol] += kL[iRow][iMid] * kTmp[iMid][iCol];
+                elt[iRow][iCol] += kL[iRow][iMid] * kTmp[iMid][iCol];
         }
     }
 }
@@ -778,54 +779,54 @@ void Matrix3::orthonormalize () {
     // product of vectors A and B.
 
     // compute q0
-    float fInvLength = 1.0 / sqrt(m_aafEntry[0][0] * m_aafEntry[0][0]
-                                       + m_aafEntry[1][0] * m_aafEntry[1][0] +
-                                       m_aafEntry[2][0] * m_aafEntry[2][0]);
+    float fInvLength = 1.0 / sqrt(elt[0][0] * elt[0][0]
+                                       + elt[1][0] * elt[1][0] +
+                                       elt[2][0] * elt[2][0]);
 
-    m_aafEntry[0][0] *= fInvLength;
-    m_aafEntry[1][0] *= fInvLength;
-    m_aafEntry[2][0] *= fInvLength;
+    elt[0][0] *= fInvLength;
+    elt[1][0] *= fInvLength;
+    elt[2][0] *= fInvLength;
 
     // compute q1
     float fDot0 =
-        m_aafEntry[0][0] * m_aafEntry[0][1] +
-        m_aafEntry[1][0] * m_aafEntry[1][1] +
-        m_aafEntry[2][0] * m_aafEntry[2][1];
+        elt[0][0] * elt[0][1] +
+        elt[1][0] * elt[1][1] +
+        elt[2][0] * elt[2][1];
 
-    m_aafEntry[0][1] -= fDot0 * m_aafEntry[0][0];
-    m_aafEntry[1][1] -= fDot0 * m_aafEntry[1][0];
-    m_aafEntry[2][1] -= fDot0 * m_aafEntry[2][0];
+    elt[0][1] -= fDot0 * elt[0][0];
+    elt[1][1] -= fDot0 * elt[1][0];
+    elt[2][1] -= fDot0 * elt[2][0];
 
-    fInvLength = 1.0 / sqrt(m_aafEntry[0][1] * m_aafEntry[0][1] +
-                                  m_aafEntry[1][1] * m_aafEntry[1][1] +
-                                  m_aafEntry[2][1] * m_aafEntry[2][1]);
+    fInvLength = 1.0 / sqrt(elt[0][1] * elt[0][1] +
+                                  elt[1][1] * elt[1][1] +
+                                  elt[2][1] * elt[2][1]);
 
-    m_aafEntry[0][1] *= fInvLength;
-    m_aafEntry[1][1] *= fInvLength;
-    m_aafEntry[2][1] *= fInvLength;
+    elt[0][1] *= fInvLength;
+    elt[1][1] *= fInvLength;
+    elt[2][1] *= fInvLength;
 
     // compute q2
     float fDot1 =
-        m_aafEntry[0][1] * m_aafEntry[0][2] +
-        m_aafEntry[1][1] * m_aafEntry[1][2] +
-        m_aafEntry[2][1] * m_aafEntry[2][2];
+        elt[0][1] * elt[0][2] +
+        elt[1][1] * elt[1][2] +
+        elt[2][1] * elt[2][2];
 
     fDot0 =
-        m_aafEntry[0][0] * m_aafEntry[0][2] +
-        m_aafEntry[1][0] * m_aafEntry[1][2] +
-        m_aafEntry[2][0] * m_aafEntry[2][2];
+        elt[0][0] * elt[0][2] +
+        elt[1][0] * elt[1][2] +
+        elt[2][0] * elt[2][2];
 
-    m_aafEntry[0][2] -= fDot0 * m_aafEntry[0][0] + fDot1 * m_aafEntry[0][1];
-    m_aafEntry[1][2] -= fDot0 * m_aafEntry[1][0] + fDot1 * m_aafEntry[1][1];
-    m_aafEntry[2][2] -= fDot0 * m_aafEntry[2][0] + fDot1 * m_aafEntry[2][1];
+    elt[0][2] -= fDot0 * elt[0][0] + fDot1 * elt[0][1];
+    elt[1][2] -= fDot0 * elt[1][0] + fDot1 * elt[1][1];
+    elt[2][2] -= fDot0 * elt[2][0] + fDot1 * elt[2][1];
 
-    fInvLength = 1.0 / sqrt(m_aafEntry[0][2] * m_aafEntry[0][2] +
-                                  m_aafEntry[1][2] * m_aafEntry[1][2] +
-                                  m_aafEntry[2][2] * m_aafEntry[2][2]);
+    fInvLength = 1.0 / sqrt(elt[0][2] * elt[0][2] +
+                                  elt[1][2] * elt[1][2] +
+                                  elt[2][2] * elt[2][2]);
 
-    m_aafEntry[0][2] *= fInvLength;
-    m_aafEntry[1][2] *= fInvLength;
-    m_aafEntry[2][2] *= fInvLength;
+    elt[0][2] *= fInvLength;
+    elt[1][2] *= fInvLength;
+    elt[2][2] *= fInvLength;
 }
 
 //----------------------------------------------------------------------------
@@ -859,31 +860,31 @@ void Matrix3::qDUDecomposition (Matrix3& kQ,
     // U stores the entries U[0] = u01, U[1] = u02, U[2] = u12
 
     // build orthogonal matrix Q
-    float fInvLength = 1.0 / sqrt(m_aafEntry[0][0] * m_aafEntry[0][0]
-                                       + m_aafEntry[1][0] * m_aafEntry[1][0] +
-                                       m_aafEntry[2][0] * m_aafEntry[2][0]);
-    kQ[0][0] = m_aafEntry[0][0] * fInvLength;
-    kQ[1][0] = m_aafEntry[1][0] * fInvLength;
-    kQ[2][0] = m_aafEntry[2][0] * fInvLength;
+    float fInvLength = 1.0 / sqrt(elt[0][0] * elt[0][0]
+                                       + elt[1][0] * elt[1][0] +
+                                       elt[2][0] * elt[2][0]);
+    kQ[0][0] = elt[0][0] * fInvLength;
+    kQ[1][0] = elt[1][0] * fInvLength;
+    kQ[2][0] = elt[2][0] * fInvLength;
 
-    float fDot = kQ[0][0] * m_aafEntry[0][1] + kQ[1][0] * m_aafEntry[1][1] +
-                kQ[2][0] * m_aafEntry[2][1];
-    kQ[0][1] = m_aafEntry[0][1] - fDot * kQ[0][0];
-    kQ[1][1] = m_aafEntry[1][1] - fDot * kQ[1][0];
-    kQ[2][1] = m_aafEntry[2][1] - fDot * kQ[2][0];
+    float fDot = kQ[0][0] * elt[0][1] + kQ[1][0] * elt[1][1] +
+                kQ[2][0] * elt[2][1];
+    kQ[0][1] = elt[0][1] - fDot * kQ[0][0];
+    kQ[1][1] = elt[1][1] - fDot * kQ[1][0];
+    kQ[2][1] = elt[2][1] - fDot * kQ[2][0];
     fInvLength = 1.0 / sqrt(kQ[0][1] * kQ[0][1] + kQ[1][1] * kQ[1][1] +
                                   kQ[2][1] * kQ[2][1]);
     kQ[0][1] *= fInvLength;
     kQ[1][1] *= fInvLength;
     kQ[2][1] *= fInvLength;
 
-    fDot = kQ[0][0] * m_aafEntry[0][2] + kQ[1][0] * m_aafEntry[1][2] +
-           kQ[2][0] * m_aafEntry[2][2];
-    kQ[0][2] = m_aafEntry[0][2] - fDot * kQ[0][0];
-    kQ[1][2] = m_aafEntry[1][2] - fDot * kQ[1][0];
-    kQ[2][2] = m_aafEntry[2][2] - fDot * kQ[2][0];
-    fDot = kQ[0][1] * m_aafEntry[0][2] + kQ[1][1] * m_aafEntry[1][2] +
-           kQ[2][1] * m_aafEntry[2][2];
+    fDot = kQ[0][0] * elt[0][2] + kQ[1][0] * elt[1][2] +
+           kQ[2][0] * elt[2][2];
+    kQ[0][2] = elt[0][2] - fDot * kQ[0][0];
+    kQ[1][2] = elt[1][2] - fDot * kQ[1][0];
+    kQ[2][2] = elt[2][2] - fDot * kQ[2][0];
+    fDot = kQ[0][1] * elt[0][2] + kQ[1][1] * elt[1][2] +
+           kQ[2][1] * elt[2][2];
     kQ[0][2] -= fDot * kQ[0][1];
     kQ[1][2] -= fDot * kQ[1][1];
     kQ[2][2] -= fDot * kQ[2][1];
@@ -907,23 +908,23 @@ void Matrix3::qDUDecomposition (Matrix3& kQ,
     // build "right" matrix R
     Matrix3 kR;
 
-    kR[0][0] = kQ[0][0] * m_aafEntry[0][0] + kQ[1][0] * m_aafEntry[1][0] +
-               kQ[2][0] * m_aafEntry[2][0];
+    kR[0][0] = kQ[0][0] * elt[0][0] + kQ[1][0] * elt[1][0] +
+               kQ[2][0] * elt[2][0];
 
-    kR[0][1] = kQ[0][0] * m_aafEntry[0][1] + kQ[1][0] * m_aafEntry[1][1] +
-               kQ[2][0] * m_aafEntry[2][1];
+    kR[0][1] = kQ[0][0] * elt[0][1] + kQ[1][0] * elt[1][1] +
+               kQ[2][0] * elt[2][1];
 
-    kR[1][1] = kQ[0][1] * m_aafEntry[0][1] + kQ[1][1] * m_aafEntry[1][1] +
-               kQ[2][1] * m_aafEntry[2][1];
+    kR[1][1] = kQ[0][1] * elt[0][1] + kQ[1][1] * elt[1][1] +
+               kQ[2][1] * elt[2][1];
 
-    kR[0][2] = kQ[0][0] * m_aafEntry[0][2] + kQ[1][0] * m_aafEntry[1][2] +
-               kQ[2][0] * m_aafEntry[2][2];
+    kR[0][2] = kQ[0][0] * elt[0][2] + kQ[1][0] * elt[1][2] +
+               kQ[2][0] * elt[2][2];
 
-    kR[1][2] = kQ[0][1] * m_aafEntry[0][2] + kQ[1][1] * m_aafEntry[1][2] +
-               kQ[2][1] * m_aafEntry[2][2];
+    kR[1][2] = kQ[0][1] * elt[0][2] + kQ[1][1] * elt[1][2] +
+               kQ[2][1] * elt[2][2];
 
-    kR[2][2] = kQ[0][2] * m_aafEntry[0][2] + kQ[1][2] * m_aafEntry[1][2] +
-               kQ[2][2] * m_aafEntry[2][2];
+    kR[2][2] = kQ[0][2] * elt[0][2] + kQ[1][2] * elt[1][2] +
+               kQ[2][2] * elt[2][2];
 
     // the scaling component
     kD[0] = kR[0][0];
@@ -1005,7 +1006,7 @@ float Matrix3::spectralNorm () const {
 
             for (int iMid = 0; iMid < 3; iMid++) {
                 kP[iRow][iCol] +=
-                    m_aafEntry[iMid][iRow] * m_aafEntry[iMid][iCol];
+                    elt[iMid][iRow] * elt[iMid][iCol];
             }
 
             if ( kP[iRow][iCol] > fPmax )
@@ -1058,53 +1059,53 @@ void Matrix3::toAxisAngle (Vector3& rkAxis, float& rfRadians) const {
     // z^2-1.  We can solve these for axis (x,y,z).  Because the angle is pi,
     // it does not matter which sign you choose on the square roots.
 
-    float fTrace = m_aafEntry[0][0] + m_aafEntry[1][1] + m_aafEntry[2][2];
+    float fTrace = elt[0][0] + elt[1][1] + elt[2][2];
     float fCos = 0.5 * (fTrace - 1.0);
     rfRadians = G3D::aCos(fCos);  // in [0,PI]
 
     if ( rfRadians > 0.0 ) {
         if ( rfRadians < G3D_PI ) {
-            rkAxis.x = m_aafEntry[2][1] - m_aafEntry[1][2];
-            rkAxis.y = m_aafEntry[0][2] - m_aafEntry[2][0];
-            rkAxis.z = m_aafEntry[1][0] - m_aafEntry[0][1];
+            rkAxis.x = elt[2][1] - elt[1][2];
+            rkAxis.y = elt[0][2] - elt[2][0];
+            rkAxis.z = elt[1][0] - elt[0][1];
             rkAxis.unitize();
         } else {
             // angle is PI
             float fHalfInverse;
 
-            if ( m_aafEntry[0][0] >= m_aafEntry[1][1] ) {
+            if ( elt[0][0] >= elt[1][1] ) {
                 // r00 >= r11
-                if ( m_aafEntry[0][0] >= m_aafEntry[2][2] ) {
+                if ( elt[0][0] >= elt[2][2] ) {
                     // r00 is maximum diagonal term
-                    rkAxis.x = 0.5 * sqrt(m_aafEntry[0][0] -
-                                                m_aafEntry[1][1] - m_aafEntry[2][2] + 1.0);
+                    rkAxis.x = 0.5 * sqrt(elt[0][0] -
+                                                elt[1][1] - elt[2][2] + 1.0);
                     fHalfInverse = 0.5 / rkAxis.x;
-                    rkAxis.y = fHalfInverse * m_aafEntry[0][1];
-                    rkAxis.z = fHalfInverse * m_aafEntry[0][2];
+                    rkAxis.y = fHalfInverse * elt[0][1];
+                    rkAxis.z = fHalfInverse * elt[0][2];
                 } else {
                     // r22 is maximum diagonal term
-                    rkAxis.z = 0.5 * sqrt(m_aafEntry[2][2] -
-                                                m_aafEntry[0][0] - m_aafEntry[1][1] + 1.0);
+                    rkAxis.z = 0.5 * sqrt(elt[2][2] -
+                                                elt[0][0] - elt[1][1] + 1.0);
                     fHalfInverse = 0.5 / rkAxis.z;
-                    rkAxis.x = fHalfInverse * m_aafEntry[0][2];
-                    rkAxis.y = fHalfInverse * m_aafEntry[1][2];
+                    rkAxis.x = fHalfInverse * elt[0][2];
+                    rkAxis.y = fHalfInverse * elt[1][2];
                 }
             } else {
                 // r11 > r00
-                if ( m_aafEntry[1][1] >= m_aafEntry[2][2] ) {
+                if ( elt[1][1] >= elt[2][2] ) {
                     // r11 is maximum diagonal term
-                    rkAxis.y = 0.5 * sqrt(m_aafEntry[1][1] -
-                                                m_aafEntry[0][0] - m_aafEntry[2][2] + 1.0);
+                    rkAxis.y = 0.5 * sqrt(elt[1][1] -
+                                                elt[0][0] - elt[2][2] + 1.0);
                     fHalfInverse = 0.5 / rkAxis.y;
-                    rkAxis.x = fHalfInverse * m_aafEntry[0][1];
-                    rkAxis.z = fHalfInverse * m_aafEntry[1][2];
+                    rkAxis.x = fHalfInverse * elt[0][1];
+                    rkAxis.z = fHalfInverse * elt[1][2];
                 } else {
                     // r22 is maximum diagonal term
-                    rkAxis.z = 0.5 * sqrt(m_aafEntry[2][2] -
-                                                m_aafEntry[0][0] - m_aafEntry[1][1] + 1.0);
+                    rkAxis.z = 0.5 * sqrt(elt[2][2] -
+                                                elt[0][0] - elt[1][1] + 1.0);
                     fHalfInverse = 0.5 / rkAxis.z;
-                    rkAxis.x = fHalfInverse * m_aafEntry[0][2];
-                    rkAxis.y = fHalfInverse * m_aafEntry[1][2];
+                    rkAxis.x = fHalfInverse * elt[0][2];
+                    rkAxis.y = fHalfInverse * elt[1][2];
                 }
             }
         }
@@ -1134,15 +1135,15 @@ Matrix3 Matrix3::fromAxisAngle (const Vector3& rkAxis, float fRadians) {
     float fYSin = rkAxis.y * fSin;
     float fZSin = rkAxis.z * fSin;
 
-    m.m_aafEntry[0][0] = fX2 * fOneMinusCos + fCos;
-    m.m_aafEntry[0][1] = fXYM - fZSin;
-    m.m_aafEntry[0][2] = fXZM + fYSin;
-    m.m_aafEntry[1][0] = fXYM + fZSin;
-    m.m_aafEntry[1][1] = fY2 * fOneMinusCos + fCos;
-    m.m_aafEntry[1][2] = fYZM - fXSin;
-    m.m_aafEntry[2][0] = fXZM - fYSin;
-    m.m_aafEntry[2][1] = fYZM + fXSin;
-    m.m_aafEntry[2][2] = fZ2 * fOneMinusCos + fCos;
+    m.elt[0][0] = fX2 * fOneMinusCos + fCos;
+    m.elt[0][1] = fXYM - fZSin;
+    m.elt[0][2] = fXZM + fYSin;
+    m.elt[1][0] = fXYM + fZSin;
+    m.elt[1][1] = fY2 * fOneMinusCos + fCos;
+    m.elt[1][2] = fYZM - fXSin;
+    m.elt[2][0] = fXZM - fYSin;
+    m.elt[2][1] = fYZM + fXSin;
+    m.elt[2][2] = fZ2 * fOneMinusCos + fCos;
 
     return m;
 }
@@ -1154,22 +1155,22 @@ bool Matrix3::toEulerAnglesXYZ (float& rfXAngle, float& rfYAngle,
     //        cz*sx*sy+cx*sz  cx*cz-sx*sy*sz -cy*sx
     //       -cx*cz*sy+sx*sz  cz*sx+cx*sy*sz  cx*cy
 
-    if ( m_aafEntry[0][2] < 1.0f ) {
-        if ( m_aafEntry[0][2] > -1.0f ) {
-            rfXAngle = G3D::aTan2( -m_aafEntry[1][2], m_aafEntry[2][2]);
-            rfYAngle = (float) G3D::aSin(m_aafEntry[0][2]);
-            rfZAngle = G3D::aTan2( -m_aafEntry[0][1], m_aafEntry[0][0]);
+    if ( elt[0][2] < 1.0f ) {
+        if ( elt[0][2] > -1.0f ) {
+            rfXAngle = G3D::aTan2( -elt[1][2], elt[2][2]);
+            rfYAngle = (float) G3D::aSin(elt[0][2]);
+            rfZAngle = G3D::aTan2( -elt[0][1], elt[0][0]);
             return true;
         } else {
             // WARNING.  Not unique.  XA - ZA = -atan2(r10,r11)
-            rfXAngle = -G3D::aTan2(m_aafEntry[1][0], m_aafEntry[1][1]);
+            rfXAngle = -G3D::aTan2(elt[1][0], elt[1][1]);
             rfYAngle = -(float)G3D_HALF_PI;
             rfZAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  XAngle + ZAngle = atan2(r10,r11)
-        rfXAngle = G3D::aTan2(m_aafEntry[1][0], m_aafEntry[1][1]);
+        rfXAngle = G3D::aTan2(elt[1][0], elt[1][1]);
         rfYAngle = (float)G3D_HALF_PI;
         rfZAngle = 0.0f;
         return false;
@@ -1183,22 +1184,22 @@ bool Matrix3::toEulerAnglesXZY (float& rfXAngle, float& rfZAngle,
     //        sx*sy+cx*cy*sz  cx*cz          -cy*sx+cx*sy*sz
     //       -cx*sy+cy*sx*sz  cz*sx           cx*cy+sx*sy*sz
 
-    if ( m_aafEntry[0][1] < 1.0f ) {
-        if ( m_aafEntry[0][1] > -1.0f ) {
-            rfXAngle = G3D::aTan2(m_aafEntry[2][1], m_aafEntry[1][1]);
-            rfZAngle = (float) asin( -m_aafEntry[0][1]);
-            rfYAngle = G3D::aTan2(m_aafEntry[0][2], m_aafEntry[0][0]);
+    if ( elt[0][1] < 1.0f ) {
+        if ( elt[0][1] > -1.0f ) {
+            rfXAngle = G3D::aTan2(elt[2][1], elt[1][1]);
+            rfZAngle = (float) asin( -elt[0][1]);
+            rfYAngle = G3D::aTan2(elt[0][2], elt[0][0]);
             return true;
         } else {
             // WARNING.  Not unique.  XA - YA = atan2(r20,r22)
-            rfXAngle = G3D::aTan2(m_aafEntry[2][0], m_aafEntry[2][2]);
+            rfXAngle = G3D::aTan2(elt[2][0], elt[2][2]);
             rfZAngle = (float)G3D_HALF_PI;
             rfYAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  XA + YA = atan2(-r20,r22)
-        rfXAngle = G3D::aTan2( -m_aafEntry[2][0], m_aafEntry[2][2]);
+        rfXAngle = G3D::aTan2( -elt[2][0], elt[2][2]);
         rfZAngle = -(float)G3D_HALF_PI;
         rfYAngle = 0.0f;
         return false;
@@ -1212,22 +1213,22 @@ bool Matrix3::toEulerAnglesYXZ (float& rfYAngle, float& rfXAngle,
     //        cx*sz           cx*cz          -sx
     //       -cz*sy+cy*sx*sz  cy*cz*sx+sy*sz  cx*cy
 
-    if ( m_aafEntry[1][2] < 1.0 ) {
-        if ( m_aafEntry[1][2] > -1.0 ) {
-            rfYAngle = G3D::aTan2(m_aafEntry[0][2], m_aafEntry[2][2]);
-            rfXAngle = (float) asin( -m_aafEntry[1][2]);
-            rfZAngle = G3D::aTan2(m_aafEntry[1][0], m_aafEntry[1][1]);
+    if ( elt[1][2] < 1.0 ) {
+        if ( elt[1][2] > -1.0 ) {
+            rfYAngle = G3D::aTan2(elt[0][2], elt[2][2]);
+            rfXAngle = (float) asin( -elt[1][2]);
+            rfZAngle = G3D::aTan2(elt[1][0], elt[1][1]);
             return true;
         } else {
             // WARNING.  Not unique.  YA - ZA = atan2(r01,r00)
-            rfYAngle = G3D::aTan2(m_aafEntry[0][1], m_aafEntry[0][0]);
+            rfYAngle = G3D::aTan2(elt[0][1], elt[0][0]);
             rfXAngle = (float)G3D_HALF_PI;
             rfZAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  YA + ZA = atan2(-r01,r00)
-        rfYAngle = G3D::aTan2( -m_aafEntry[0][1], m_aafEntry[0][0]);
+        rfYAngle = G3D::aTan2( -elt[0][1], elt[0][0]);
         rfXAngle = -(float)G3D_HALF_PI;
         rfZAngle = 0.0f;
         return false;
@@ -1241,22 +1242,22 @@ bool Matrix3::toEulerAnglesYZX (float& rfYAngle, float& rfZAngle,
     //        sz              cx*cz          -cz*sx
     //       -cz*sy           cy*sx+cx*sy*sz  cx*cy-sx*sy*sz
 
-    if ( m_aafEntry[1][0] < 1.0 ) {
-        if ( m_aafEntry[1][0] > -1.0 ) {
-            rfYAngle = G3D::aTan2( -m_aafEntry[2][0], m_aafEntry[0][0]);
-            rfZAngle = (float) asin(m_aafEntry[1][0]);
-            rfXAngle = G3D::aTan2( -m_aafEntry[1][2], m_aafEntry[1][1]);
+    if ( elt[1][0] < 1.0 ) {
+        if ( elt[1][0] > -1.0 ) {
+            rfYAngle = G3D::aTan2( -elt[2][0], elt[0][0]);
+            rfZAngle = (float) asin(elt[1][0]);
+            rfXAngle = G3D::aTan2( -elt[1][2], elt[1][1]);
             return true;
         } else {
             // WARNING.  Not unique.  YA - XA = -atan2(r21,r22);
-            rfYAngle = -G3D::aTan2(m_aafEntry[2][1], m_aafEntry[2][2]);
+            rfYAngle = -G3D::aTan2(elt[2][1], elt[2][2]);
             rfZAngle = -(float)G3D_HALF_PI;
             rfXAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  YA + XA = atan2(r21,r22)
-        rfYAngle = G3D::aTan2(m_aafEntry[2][1], m_aafEntry[2][2]);
+        rfYAngle = G3D::aTan2(elt[2][1], elt[2][2]);
         rfZAngle = (float)G3D_HALF_PI;
         rfXAngle = 0.0f;
         return false;
@@ -1270,22 +1271,22 @@ bool Matrix3::toEulerAnglesZXY (float& rfZAngle, float& rfXAngle,
     //        cz*sx*sy+cy*sz  cx*cz          -cy*cz*sx+sy*sz
     //       -cx*sy           sx              cx*cy
 
-    if ( m_aafEntry[2][1] < 1.0 ) {
-        if ( m_aafEntry[2][1] > -1.0 ) {
-            rfZAngle = G3D::aTan2( -m_aafEntry[0][1], m_aafEntry[1][1]);
-            rfXAngle = (float) asin(m_aafEntry[2][1]);
-            rfYAngle = G3D::aTan2( -m_aafEntry[2][0], m_aafEntry[2][2]);
+    if ( elt[2][1] < 1.0 ) {
+        if ( elt[2][1] > -1.0 ) {
+            rfZAngle = G3D::aTan2( -elt[0][1], elt[1][1]);
+            rfXAngle = (float) asin(elt[2][1]);
+            rfYAngle = G3D::aTan2( -elt[2][0], elt[2][2]);
             return true;
         } else {
             // WARNING.  Not unique.  ZA - YA = -atan(r02,r00)
-            rfZAngle = -G3D::aTan2(m_aafEntry[0][2], m_aafEntry[0][0]);
+            rfZAngle = -G3D::aTan2(elt[0][2], elt[0][0]);
             rfXAngle = -(float)G3D_HALF_PI;
             rfYAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  ZA + YA = atan2(r02,r00)
-        rfZAngle = G3D::aTan2(m_aafEntry[0][2], m_aafEntry[0][0]);
+        rfZAngle = G3D::aTan2(elt[0][2], elt[0][0]);
         rfXAngle = (float)G3D_HALF_PI;
         rfYAngle = 0.0f;
         return false;
@@ -1299,22 +1300,22 @@ bool Matrix3::toEulerAnglesZYX (float& rfZAngle, float& rfYAngle,
     //        cy*sz           cx*cz+sx*sy*sz -cz*sx+cx*sy*sz
     //       -sy              cy*sx           cx*cy
 
-    if ( m_aafEntry[2][0] < 1.0 ) {
-        if ( m_aafEntry[2][0] > -1.0 ) {
-            rfZAngle = atan2f(m_aafEntry[1][0], m_aafEntry[0][0]);
-            rfYAngle = asinf(-(double)m_aafEntry[2][1]);
-            rfXAngle = atan2f(m_aafEntry[2][1], m_aafEntry[2][2]);
+    if ( elt[2][0] < 1.0 ) {
+        if ( elt[2][0] > -1.0 ) {
+            rfZAngle = atan2f(elt[1][0], elt[0][0]);
+            rfYAngle = asinf(-(double)elt[2][1]);
+            rfXAngle = atan2f(elt[2][1], elt[2][2]);
             return true;
         } else {
             // WARNING.  Not unique.  ZA - XA = -atan2(r01,r02)
-            rfZAngle = -G3D::aTan2(m_aafEntry[0][1], m_aafEntry[0][2]);
+            rfZAngle = -G3D::aTan2(elt[0][1], elt[0][2]);
             rfYAngle = (float)G3D_HALF_PI;
             rfXAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  ZA + XA = atan2(-r01,-r02)
-        rfZAngle = G3D::aTan2( -m_aafEntry[0][1], -m_aafEntry[0][2]);
+        rfZAngle = G3D::aTan2( -elt[0][1], -elt[0][2]);
         rfYAngle = -(float)G3D_HALF_PI;
         rfXAngle = 0.0f;
         return false;
@@ -1458,12 +1459,12 @@ void Matrix3::tridiagonal (float afDiag[3], float afSubDiag[3]) {
     //     diag, diagonal entries of T
     //     subd, subdiagonal entries of T (T is symmetric)
 
-    float fA = m_aafEntry[0][0];
-    float fB = m_aafEntry[0][1];
-    float fC = m_aafEntry[0][2];
-    float fD = m_aafEntry[1][1];
-    float fE = m_aafEntry[1][2];
-    float fF = m_aafEntry[2][2];
+    float fA = elt[0][0];
+    float fB = elt[0][1];
+    float fC = elt[0][2];
+    float fD = elt[1][1];
+    float fE = elt[1][2];
+    float fF = elt[2][2];
 
     afDiag[0] = fA;
     afSubDiag[2] = 0.0;
@@ -1478,29 +1479,29 @@ void Matrix3::tridiagonal (float afDiag[3], float afSubDiag[3]) {
         afDiag[2] = fF - fC * fQ;
         afSubDiag[0] = fLength;
         afSubDiag[1] = fE - fB * fQ;
-        m_aafEntry[0][0] = 1.0;
-        m_aafEntry[0][1] = 0.0;
-        m_aafEntry[0][2] = 0.0;
-        m_aafEntry[1][0] = 0.0;
-        m_aafEntry[1][1] = fB;
-        m_aafEntry[1][2] = fC;
-        m_aafEntry[2][0] = 0.0;
-        m_aafEntry[2][1] = fC;
-        m_aafEntry[2][2] = -fB;
+        elt[0][0] = 1.0;
+        elt[0][1] = 0.0;
+        elt[0][2] = 0.0;
+        elt[1][0] = 0.0;
+        elt[1][1] = fB;
+        elt[1][2] = fC;
+        elt[2][0] = 0.0;
+        elt[2][1] = fC;
+        elt[2][2] = -fB;
     } else {
         afDiag[1] = fD;
         afDiag[2] = fF;
         afSubDiag[0] = fB;
         afSubDiag[1] = fE;
-        m_aafEntry[0][0] = 1.0;
-        m_aafEntry[0][1] = 0.0;
-        m_aafEntry[0][2] = 0.0;
-        m_aafEntry[1][0] = 0.0;
-        m_aafEntry[1][1] = 1.0;
-        m_aafEntry[1][2] = 0.0;
-        m_aafEntry[2][0] = 0.0;
-        m_aafEntry[2][1] = 0.0;
-        m_aafEntry[2][2] = 1.0;
+        elt[0][0] = 1.0;
+        elt[0][1] = 0.0;
+        elt[0][2] = 0.0;
+        elt[1][0] = 0.0;
+        elt[1][1] = 1.0;
+        elt[1][2] = 0.0;
+        elt[2][0] = 0.0;
+        elt[2][1] = 0.0;
+        elt[2][2] = 1.0;
     }
 }
 
@@ -1567,10 +1568,10 @@ bool Matrix3::qLAlgorithm (float afDiag[3], float afSubDiag[3]) {
                 fTmp0 = fCos * fTmp1 - fTmp4;
 
                 for (int iRow = 0; iRow < 3; iRow++) {
-                    fTmp3 = m_aafEntry[iRow][i2 + 1];
-                    m_aafEntry[iRow][i2 + 1] = fSin * m_aafEntry[iRow][i2] +
+                    fTmp3 = elt[iRow][i2 + 1];
+                    elt[iRow][i2 + 1] = fSin * elt[iRow][i2] +
                                                fCos * fTmp3;
-                    m_aafEntry[iRow][i2] = fCos * m_aafEntry[iRow][i2] -
+                    elt[iRow][i2] = fCos * elt[iRow][i2] -
                                            fSin * fTmp3;
                 }
             }
@@ -1635,73 +1636,73 @@ void Matrix3::tensorProduct (const Vector3& rkU, const Vector3& rkV,
 //
 // -morgan
 void Matrix3::_mul(const Matrix3& A, const Matrix3& B, Matrix3& out) {
-    const float* ARowPtr = A.m_aafEntry[0];
-    float* outRowPtr     = out.m_aafEntry[0];
+    const float* ARowPtr = A.elt[0];
+    float* outRowPtr     = out.elt[0];
         outRowPtr[0] =
-            ARowPtr[0] * B.m_aafEntry[0][0] +
-            ARowPtr[1] * B.m_aafEntry[1][0] +
-            ARowPtr[2] * B.m_aafEntry[2][0];
+            ARowPtr[0] * B.elt[0][0] +
+            ARowPtr[1] * B.elt[1][0] +
+            ARowPtr[2] * B.elt[2][0];
         outRowPtr[1] =
-            ARowPtr[0] * B.m_aafEntry[0][1] +
-            ARowPtr[1] * B.m_aafEntry[1][1] +
-            ARowPtr[2] * B.m_aafEntry[2][1];
+            ARowPtr[0] * B.elt[0][1] +
+            ARowPtr[1] * B.elt[1][1] +
+            ARowPtr[2] * B.elt[2][1];
         outRowPtr[2] =
-            ARowPtr[0] * B.m_aafEntry[0][2] +
-            ARowPtr[1] * B.m_aafEntry[1][2] +
-            ARowPtr[2] * B.m_aafEntry[2][2];
+            ARowPtr[0] * B.elt[0][2] +
+            ARowPtr[1] * B.elt[1][2] +
+            ARowPtr[2] * B.elt[2][2];
 
-    ARowPtr       = A.m_aafEntry[1];
-    outRowPtr     = out.m_aafEntry[1];
-
-        outRowPtr[0] =
-            ARowPtr[0] * B.m_aafEntry[0][0] +
-            ARowPtr[1] * B.m_aafEntry[1][0] +
-            ARowPtr[2] * B.m_aafEntry[2][0];
-        outRowPtr[1] =
-            ARowPtr[0] * B.m_aafEntry[0][1] +
-            ARowPtr[1] * B.m_aafEntry[1][1] +
-            ARowPtr[2] * B.m_aafEntry[2][1];
-        outRowPtr[2] =
-            ARowPtr[0] * B.m_aafEntry[0][2] +
-            ARowPtr[1] * B.m_aafEntry[1][2] +
-            ARowPtr[2] * B.m_aafEntry[2][2];
-
-    ARowPtr       = A.m_aafEntry[2];
-    outRowPtr     = out.m_aafEntry[2];
+    ARowPtr       = A.elt[1];
+    outRowPtr     = out.elt[1];
 
         outRowPtr[0] =
-            ARowPtr[0] * B.m_aafEntry[0][0] +
-            ARowPtr[1] * B.m_aafEntry[1][0] +
-            ARowPtr[2] * B.m_aafEntry[2][0];
+            ARowPtr[0] * B.elt[0][0] +
+            ARowPtr[1] * B.elt[1][0] +
+            ARowPtr[2] * B.elt[2][0];
         outRowPtr[1] =
-            ARowPtr[0] * B.m_aafEntry[0][1] +
-            ARowPtr[1] * B.m_aafEntry[1][1] +
-            ARowPtr[2] * B.m_aafEntry[2][1];
+            ARowPtr[0] * B.elt[0][1] +
+            ARowPtr[1] * B.elt[1][1] +
+            ARowPtr[2] * B.elt[2][1];
         outRowPtr[2] =
-            ARowPtr[0] * B.m_aafEntry[0][2] +
-            ARowPtr[1] * B.m_aafEntry[1][2] +
-            ARowPtr[2] * B.m_aafEntry[2][2];
+            ARowPtr[0] * B.elt[0][2] +
+            ARowPtr[1] * B.elt[1][2] +
+            ARowPtr[2] * B.elt[2][2];
+
+    ARowPtr       = A.elt[2];
+    outRowPtr     = out.elt[2];
+
+        outRowPtr[0] =
+            ARowPtr[0] * B.elt[0][0] +
+            ARowPtr[1] * B.elt[1][0] +
+            ARowPtr[2] * B.elt[2][0];
+        outRowPtr[1] =
+            ARowPtr[0] * B.elt[0][1] +
+            ARowPtr[1] * B.elt[1][1] +
+            ARowPtr[2] * B.elt[2][1];
+        outRowPtr[2] =
+            ARowPtr[0] * B.elt[0][2] +
+            ARowPtr[1] * B.elt[1][2] +
+            ARowPtr[2] * B.elt[2][2];
 }
 
 //----------------------------------------------------------------------------
 void Matrix3::_transpose(const Matrix3& A, Matrix3& out) {
-    out[0][0] = A.m_aafEntry[0][0];
-    out[0][1] = A.m_aafEntry[1][0];
-    out[0][2] = A.m_aafEntry[2][0];
-    out[1][0] = A.m_aafEntry[0][1];
-    out[1][1] = A.m_aafEntry[1][1];
-    out[1][2] = A.m_aafEntry[2][1];
-    out[2][0] = A.m_aafEntry[0][2];
-    out[2][1] = A.m_aafEntry[1][2];
-    out[2][2] = A.m_aafEntry[2][2];
+    out[0][0] = A.elt[0][0];
+    out[0][1] = A.elt[1][0];
+    out[0][2] = A.elt[2][0];
+    out[1][0] = A.elt[0][1];
+    out[1][1] = A.elt[1][1];
+    out[1][2] = A.elt[2][1];
+    out[2][0] = A.elt[0][2];
+    out[2][1] = A.elt[1][2];
+    out[2][2] = A.elt[2][2];
 }
 
 //-----------------------------------------------------------------------------
 std::string Matrix3::toString() const {
     return G3D::format("[%g, %g, %g; %g, %g, %g; %g, %g, %g]", 
-			m_aafEntry[0][0], m_aafEntry[0][1], m_aafEntry[0][2],
-			m_aafEntry[1][0], m_aafEntry[1][1], m_aafEntry[1][2],
-			m_aafEntry[2][0], m_aafEntry[2][1], m_aafEntry[2][2]);
+			elt[0][0], elt[0][1], elt[0][2],
+			elt[1][0], elt[1][1], elt[1][2],
+			elt[2][0], elt[2][1], elt[2][2]);
 }
 
 

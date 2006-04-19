@@ -27,7 +27,7 @@ namespace G3D {
 class Matrix3 {
 private:
 
-    float m_aafEntry[3][3];
+    float elt[3][3];
 
 public:
 
@@ -45,7 +45,8 @@ public:
 	bool fuzzyEq(const Matrix3& b) const;
 
     /** Constructs a matrix from a quaternion.
-        @cite Graphics Gems II, p. 351--354*/
+        @cite Graphics Gems II, p. 351--354
+ 	    @cite Implementation from Watt and Watt, pg 362*/
     Matrix3(const class Quat& q);
 
     void serialize(class BinaryOutput& b) const;
@@ -64,21 +65,21 @@ public:
     inline float* operator[] (int iRow) {
         debugAssert(iRow >= 0);
         debugAssert(iRow < 3);
-        return (float*)&m_aafEntry[iRow][0];
+        return (float*)&elt[iRow][0];
     }
 
     inline const float* operator[] (int iRow) const {
         debugAssert(iRow >= 0);
         debugAssert(iRow < 3);
-        return (const float*)&m_aafEntry[iRow][0];
+        return (const float*)&elt[iRow][0];
     }
 
     inline operator float* () {
-        return (float*)&m_aafEntry[0][0];
+        return (float*)&elt[0][0];
     }
 
     inline operator const float* () const{
-        return (const float*)&m_aafEntry[0][0];
+        return (const float*)&elt[0][0];
     }
 
     Vector3 getColumn (int iCol) const;
@@ -88,7 +89,7 @@ public:
 
     // assignment and comparison
     inline Matrix3& operator= (const Matrix3& rkMatrix) {
-        memcpy(m_aafEntry, rkMatrix.m_aafEntry, 9 * sizeof(float));
+        memcpy(elt, rkMatrix.elt, 9 * sizeof(float));
         return *this;
     }
 
@@ -114,9 +115,9 @@ public:
 
         for (int r = 0; r < 3; ++r) {
             kProd[r] =
-                m_aafEntry[r][0] * v[0] +
-                m_aafEntry[r][1] * v[1] +
-                m_aafEntry[r][2] * v[2];
+                elt[r][0] * v[0] +
+                elt[r][1] * v[1] +
+                elt[r][2] * v[2];
         }
 
         return kProd;
@@ -291,9 +292,9 @@ inline Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix) {
 
     for (int r = 0; r < 3; ++r) {
         kProd[r] =
-            rkPoint[0] * rkMatrix.m_aafEntry[0][r] +
-            rkPoint[1] * rkMatrix.m_aafEntry[1][r] +
-            rkPoint[2] * rkMatrix.m_aafEntry[2][r];
+            rkPoint[0] * rkMatrix.elt[0][r] +
+            rkPoint[1] * rkMatrix.elt[1][r] +
+            rkPoint[2] * rkMatrix.elt[2][r];
     }
 
     return kProd;

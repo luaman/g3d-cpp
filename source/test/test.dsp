@@ -131,6 +131,10 @@ SOURCE=.\tMeshAlgTangentSpace.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tQuat.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tQueue.cpp
 # End Source File
 # Begin Source File

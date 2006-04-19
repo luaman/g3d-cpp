@@ -38,6 +38,8 @@ void testCollisionDetection();
 
 void testGChunk();
 
+void testQuat();
+
 void perfSystemMemcpy();
 void testSystemMemcpy();
 void testSystemMemset();
@@ -775,6 +777,8 @@ int main(int argc, char* argv[]) {
 #   else
 
     printf("\n\nTests:\n\n");
+
+	testQuat();
 
     testCollisionDetection();    
 
