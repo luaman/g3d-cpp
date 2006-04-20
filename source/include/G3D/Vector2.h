@@ -412,13 +412,13 @@ inline bool Vector2::isFinite() const {
 
 
 inline bool Vector2::isZero() const {
-    return (x == 0.0) && (y == 0.0);
+    return (x == 0.0f) && (y == 0.0f);
 }
 
 
 
 inline bool Vector2::isUnit() const {
-    return squaredLength() == 1.0;
+    return squaredLength() == 1.0f;
 }
 
 }

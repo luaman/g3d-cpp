@@ -184,7 +184,7 @@ Vector2 GFont::computePackedArray(
 
             // Fixed width
             float sx = (spacing == PROPORTIONAL_SPACING) ?
-                (charWidth - subWidth[(int)c]) * propW * 0.5f : 0.0;
+                (charWidth - subWidth[(int)c]) * propW * 0.5f : 0.0f;
 
             float xx = x - sx;
             // Tex, Vert
@@ -338,7 +338,7 @@ Vector2 GFont::draw2D(
         glTexCoordPointer(2, GL_FLOAT, sizeof(Vector2) * 2, &array[0]);
         glVertexPointer(2, GL_FLOAT, sizeof(Vector2) * 2, &array[1]);
 
-        if (border.a > 0.05) {
+        if (border.a > 0.05f) {
             renderDevice->setColor(Color4(border.r * b, border.g * b, border.b * b, border.a));
             glMatrixMode(GL_MODELVIEW);
             float lastDx = 0, lastDy = 0;
@@ -447,7 +447,7 @@ Vector2 GFont::draw3D(
         renderDevice->disableLighting();
         renderDevice->beginPrimitive(RenderDevice::QUADS);
 
-            if (border.a > 0.05) {
+            if (border.a > 0.05f) {
 
 	        // Make the equivalent of a 3D "1 pixel" offset (the
 	        // default 2D text size is 12-pt with a 1pix border)

@@ -624,7 +624,7 @@ public:
     }
 
     virtual float volume() const {
-        return 0.0;
+        return 0.0f;
     }
 
     virtual Vector3 center() const {

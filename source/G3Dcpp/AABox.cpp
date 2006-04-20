@@ -66,7 +66,7 @@ Vector3 AABox::randomSurfacePoint() const {
     float r = (float)random(0, aXY + aYZ + aZX);
 
     // Choose evenly between positive and negative face planes
-    float d = ((float)random(0, 1) < 0.5) ? 0.0f : 1.0f;
+    float d = ((float)random(0, 1) < 0.5f) ? 0.0f : 1.0f;
 
     // The probability of choosing a given face is proportional to
     // its area.

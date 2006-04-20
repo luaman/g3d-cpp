@@ -417,9 +417,9 @@ void GCamera::lookAt(const Vector3& position, const Vector3& up) {
 void GCamera::serialize(BinaryOutput& bo) const {
 	bo.writeFloat64(fieldOfView);
 	bo.writeFloat64(imagePlaneDepth);
-	debugAssert(nearPlane > 0.0);
+	debugAssert(nearPlane > 0.0f);
 	bo.writeFloat64(nearPlane);
-	debugAssert(farPlane > 0.0);
+	debugAssert(farPlane > 0.0f);
 	bo.writeFloat64(farPlane);
 	cframe.serialize(bo);
 }

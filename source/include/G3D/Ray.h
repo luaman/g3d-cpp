@@ -225,7 +225,7 @@ inline float Ray::intersectionTime(
     
     // calculate U parameter and test bounds
     u = DOT(tvec, pvec);
-    if ((u < 0.0) || (u > det)) {
+    if ((u < 0.0f) || (u > det)) {
         // Hit the plane outside the triangle
         return (float)inf();
     }
@@ -235,7 +235,7 @@ inline float Ray::intersectionTime(
     
     // calculate V parameter and test bounds
     v = DOT(direction, qvec);
-    if ((v < 0.0) || (u + v > det)) {
+    if ((v < 0.0f) || (u + v > det)) {
         // Hit the plane outside the triangle
         return (float)inf();
     }
@@ -287,7 +287,7 @@ inline float Ray::intersectionTime(
     
     // calculate U parameter and test bounds
     u = DOT(tvec, pvec);
-    if ((u < 0.0) || (u > det)) {
+    if ((u < 0.0f) || (u > det)) {
         // Hit the plane outside the triangle
         return (float)inf();
     }

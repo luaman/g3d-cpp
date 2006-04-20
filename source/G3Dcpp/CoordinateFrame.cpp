@@ -242,9 +242,9 @@ CoordinateFrame CoordinateFrame::lerp(
     const CoordinateFrame&  other,
     float                   alpha) const {
 
-    if (alpha == 1.0) {
+    if (alpha == 1.0f) {
         return other;
-    } else if (alpha == 0.0) {
+    } else if (alpha == 0.0f) {
         return *this;
     } else {
         Quat q1 = Quat(this->rotation);

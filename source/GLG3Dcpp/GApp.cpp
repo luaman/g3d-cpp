@@ -277,7 +277,7 @@ void GApp::renderDebugInfo() {
 
                 float total = g + n + s + L + u + w;
 
-                float norm = 100.0 / total;
+                float norm = 100.0f / total;
 
                 // Normalize the numbers
                 g *= norm;

@@ -103,7 +103,7 @@ static void vertexExtrude(
         dest[i].x = source[i].x - L.x;
         dest[i].y = source[i].y - L.y;
         dest[i].z = source[i].z - L.z;
-        dest[i].w = 0.0;
+        dest[i].w = 0.0f;
     }
 }
 

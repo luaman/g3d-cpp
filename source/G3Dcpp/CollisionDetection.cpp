@@ -67,9 +67,9 @@ float CollisionDetection::projectedDistanceForSolidBoxSolidBox(
 {
     (void)D;
 
-    float R0 = 0.0;
-    float R1 = 0.0;
-    float R = 0.0;
+    float R0 = 0.0f;
+    float R1 = 0.0f;
+    float R = 0.0f;
     switch (separatingAxisIndex) {
     case 0:
         // A0

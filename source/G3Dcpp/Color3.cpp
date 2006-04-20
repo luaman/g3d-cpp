@@ -174,7 +174,7 @@ Color3 Color3::operator/ (float fScalar) const {
 
 //----------------------------------------------------------------------------
 Color3& Color3::operator/= (float fScalar) {
-    if (fScalar != 0.0) {
+    if (fScalar != 0.0f) {
 		float fInvScalar = 1.0f / fScalar;
         r *= fInvScalar;
         g *= fInvScalar;
@@ -206,9 +206,9 @@ float Color3::unitize (float fTolerance) {
 
 //----------------------------------------------------------------------------
 Color3 Color3::fromHSV(const Vector3& _hsv) {
-	debugAssertM((_hsv.x <= 1.0 && _hsv.x >= 0.0)
-			&& (_hsv.y <= 1.0 && _hsv.y >= 0.0) 
-			&& ( _hsv.z <= 1.0 && _hsv.z >= 0.0), "H,S,V must be between [0,1]");
+	debugAssertM((_hsv.x <= 1.0f && _hsv.x >= 0.0f)
+			&& (_hsv.y <= 1.0f && _hsv.y >= 0.0f) 
+			&& ( _hsv.z <= 1.0f && _hsv.z >= 0.0f), "H,S,V must be between [0,1]");
 	const int i = G3D::iFloor(6.0*_hsv.x);
 	const float f = 6.0f * _hsv.x - i;
 	const float m = _hsv.z * (1.0f - (_hsv.y));
@@ -240,9 +240,9 @@ Color3 Color3::fromHSV(const Vector3& _hsv) {
 }
 
 Vector3 Color3::toHSV(const Color3& _rgb) {
-	debugAssertM((_rgb.r <= 1.0 && _rgb.r >= 0.0) 
-			&& (_rgb.g <= 1.0 && _rgb.g >= 0.0)
-			&& (_rgb.b <= 1.0 && _rgb.b >= 0.0), "R,G,B must be between [0,1]");
+	debugAssertM((_rgb.r <= 1.0f && _rgb.r >= 0.0f) 
+			&& (_rgb.g <= 1.0f && _rgb.g >= 0.0f)
+			&& (_rgb.b <= 1.0f && _rgb.b >= 0.0f), "R,G,B must be between [0,1]");
 	Vector3 hsv = Vector3::zero();
 	hsv.z = G3D::max(G3D::max(_rgb.r, _rgb.g), _rgb.b);
 	if (G3D::fuzzyEq(hsv.z, 0.0f)) {
@@ -275,7 +275,7 @@ Vector3 Color3::toHSV(const Color3& _rgb) {
 }
 
 Color3 Color3::jetColorMap(const float& val) {
-	debugAssertM(val <= 1.0 && val >= 0.0 , "value should be in [0,1]");
+	debugAssertM(val <= 1.0f && val >= 0.0f , "value should be in [0,1]");
 
 	//truncated triangles where sides have slope 4
 	Color3 jet;
