@@ -70,15 +70,10 @@ Quat::Quat(
     static const int plus1mod3[] = {1, 2, 0};
 
     // Find the index of the largest diagonal component
-    int i = 0;
-    
-    if (rot[1][1] > rot[0][0]) {
-        i = 1;
-    }
-
-    if (rot[2][2] > rot[i][i]) {
-        i = 2;
-    }
+	// These ? operations hopefully compile to conditional
+	// move instructions instead of branches.
+    int i = (rot[1][1] > rot[0][0]) ? 1 : 0;
+    i = (rot[2][2] > rot[i][i]) ? 2 : i;
 
 	// Find the indices of the other elements
     int j = plus1mod3[i];
@@ -99,8 +94,9 @@ Quat::Quat(
 	// Since we're going to pay the sqrt anyway, we perform a post normalization, which also
 	// fixes any poorly normalized input.  Multiply all elements by 2*c in the above, giving:
 
-    double c2 = (rot[i][i] - (rot[j][j] + rot[k][k])) + 1.0;
-    v[i] = -c2;
+	// nc2 = -c^2
+    double nc2 = ((rot[j][j] + rot[k][k]) - rot[i][i]) - 1.0;
+    v[i] =  nc2;
     w    =  (rot[j][k] - rot[k][j]);
     v[j] = -(rot[i][j] + rot[j][i]);
     v[k] = -(rot[i][k] + rot[k][i]);
