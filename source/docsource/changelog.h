@@ -63,6 +63,7 @@
     <LI> Fix: G3D::UserInput now restores the mouse position after pureDeltaMouse is turned off
     <LI> Fix: G3D::Win32Window now clips precisely to the client area during an input grab.
 	<LI> Fix: [ 1383042 ] free static variables on shutdown
+	<LI> Fix: [1449115 ] Texture loading for odd-byte rows
     <LI> Fix: G3D::Win32Window now produces correct character and scan codes for key events
     <LI> Fix: G3D::GApplet::onEvent calls GApplet::processEvent by default
     <LI> Fix: [ 1444320 ] TextInput parses ".1" as "1" instead of "0.1"

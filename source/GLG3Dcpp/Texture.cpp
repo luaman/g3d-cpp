@@ -1000,6 +1000,9 @@ TextureRef Texture::fromMemory(
 
     glStatePush();
 
+		// Set unpacking alignment
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
         glEnable(target);
         glBindTexture(target, textureID);
         debugAssertGLOk();
