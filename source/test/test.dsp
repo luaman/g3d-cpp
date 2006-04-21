@@ -91,6 +91,10 @@ SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tAABSPTree.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tArray.cpp
 # End Source File
 # Begin Source File

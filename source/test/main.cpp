@@ -40,6 +40,8 @@ void testGChunk();
 
 void testQuat();
 
+void testAABSPTree();
+
 void perfSystemMemcpy();
 void testSystemMemcpy();
 void testSystemMemset();
@@ -688,24 +690,6 @@ void measureRDPushPopPerformance(RenderDevice* rd) {
 
 
 
-void testAABSPTreeSerialize() {
-    printf("AABSPTree::serializeStructure\n");
-
-    AABSPTree<Vector3> tree;
-    int N = 1000;
-
-    for (int i = 0; i < N; ++i) {
-        tree.insert(Vector3::random());
-    }
-    tree.balance();
-
-    // Save the struture
-    BinaryOutput b("test-bsp.dat", G3D_LITTLE_ENDIAN);
-    tree.serializeStructure(b);
-    b.commit();
-
-}
-
 
 int main(int argc, char* argv[]) {
     RenderDevice* renderDevice = NULL;
@@ -778,6 +762,9 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+
+	testAABSPTree();
+
 	testQuat();
 
     testCollisionDetection();    
@@ -804,9 +791,6 @@ int main(int argc, char* argv[]) {
 
     printf("ConvexPolygon2D\n");
     testConvexPolygon2D();
-    printf("  passed\n");
-
-    testAABSPTreeSerialize();
     printf("  passed\n");
 
     testPlane();

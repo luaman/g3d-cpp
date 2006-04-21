@@ -58,6 +58,7 @@
     <LI> G3D::CoordinateFrame::fuzzyIsIdentity, G3D::CoordinateFrame::isIdentity, G3D::CoordinateFrame::fuzzyEq
     <LI> Matrix3::isOrthonormal
     <LI> [1421201] Removed excess gl (NVIDIA) headers
+	<LI> Fix: [ 1166057 ]  AABSPTree::beginBoxIntersection
     <LI> Fix: GLCaps::supports(TextureFormat) now returns correct results on all cards
     <LI> Fix: Shadow map rendering of default PosedModels now enables lighting
     <LI> Fix: G3D::UserInput now restores the mouse position after pureDeltaMouse is turned off

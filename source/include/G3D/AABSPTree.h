@@ -871,9 +871,12 @@ public:
 
         /** True if this is the "end" iterator instance */
         bool            isEnd;
+
+        /** The box that we're testing against. */
         AABox           box;
 
-        Node*     node;
+        /** Node that we're currently looking at.  Undefined if isEnd is true. */
+        Node*           node;
 
         /** Nodes waiting to be processed */
         // We could use backpointers within the tree and careful
@@ -882,13 +885,14 @@ public:
         // caller uses post increment (which they shouldn't!).
         Array<Node*>    stack;
 
-        /** The next index of current->valueArray to return. */
-        int             v;
+        /** The next index of current->valueArray to return. 
+            Undefined when isEnd is true.*/
+        int             nextValueArrayIndex;
 
         BoxIntersectionIterator() : isEnd(true) {}
         
         BoxIntersectionIterator(const AABox& b, const Node* root) : 
-           box(b), isEnd(node != NULL), v(-1), node(const_cast<Node*>(root)) {
+           box(b), isEnd(root == NULL), nextValueArrayIndex(-1), node(const_cast<Node*>(root)) {
 
            // We intentionally start at the "-1" index of the current node
            // so we can use the preincrement operator to move ourselves to
@@ -913,7 +917,8 @@ public:
                 // Two non-end iterators; see if they match.  This is kind of 
                 // silly; users shouldn't call == on iterators in general unless
                 // one of them is the end iterator.
-                if ((box != other.box) || (node != other.node) || (v != other.v) ||
+                if ((box != other.box) || (node != other.node) || 
+                    (nextValueArrayIndex != other.nextValueArrayIndex) ||
                     (stack.length() != other.stack.length())) {
                     return false;
                 }
@@ -934,35 +939,55 @@ public:
          Pre increment.
          */
         BoxIntersectionIterator& operator++() {
-            ++v;
-            while (! isEnd && (v >= node->valueArray.length())) {
-                // We've exhausted the elements at this node (possibly because
-                // we just switched to a child node with no members).
+            ++nextValueArrayIndex;
 
-                // If the right child overlaps the box, push it onto the stack for
-                // processing.
-                if ((node->child[1] != NULL) &&
-                    (box.high()[node->splitAxis] > node->splitLocation)) {
-                    stack.push(node->child[1]);
-                }
+			bool foundIntersection = false;
+            while (! isEnd && ! foundIntersection) {
+
+				// Search for the next node if we've exhausted this one
+                while ((! isEnd) &&  (nextValueArrayIndex >= node->valueArray.length())) {
+					// If we entered this loop, then the iterator has exhausted the elements at 
+					// node (possibly because it just switched to a child node with no members).
+					// This loop continues until it finds a node with members or reaches
+					// the end of the whole intersection search.
+
+					// If the right child overlaps the box, push it onto the stack for
+					// processing.
+					if ((node->child[1] != NULL) &&
+						(box.high()[node->splitAxis] > node->splitLocation)) {
+						stack.push(node->child[1]);
+					}
                 
-                // If the left child overlaps the box, push it onto the stack for
-                // processing.
-                if ((node->child[0] != NULL) &&
-                    (box.low()[node->splitAxis] < node->splitLocation)) {
-                    stack.push(node->child[0]);
-                }
+					// If the left child overlaps the box, push it onto the stack for
+					// processing.
+					if ((node->child[0] != NULL) &&
+						(box.low()[node->splitAxis] < node->splitLocation)) {
+						stack.push(node->child[0]);
+					}
 
-                if (stack.length() > 0) {
-                    // Go on to the next node (which may be either one of the ones we 
-                    // just pushed, or one from farther back the tree).
-                    node = stack.pop();
-                    v = 0;
-                } else {
-                    // That was the last node; we're done iterating
-                    isEnd = true;
-                }
+					if (stack.length() > 0) {
+						// Go on to the next node (which may be either one of the ones we 
+						// just pushed, or one from farther back the tree).
+						node = stack.pop();
+						nextValueArrayIndex = 0;
+					} else {
+						// That was the last node; we're done iterating
+						isEnd = true;
+					}
+				}
+
+				// Search for the next intersection at this node until we run out of children
+				while (! isEnd && ! foundIntersection && (nextValueArrayIndex < node->valueArray.length())) {
+					if (box.intersects(node->valueArray[nextValueArrayIndex].bounds)) {
+						foundIntersection = true;
+					} else {
+						++nextValueArrayIndex;
+						// If we exhaust this node, we'll loop around the master loop 
+						// to find a new node.
+					}
+				}
             }
+
             return *this;
         }
 
@@ -979,21 +1004,21 @@ public:
             to a member */
         const T& operator*() const {
             alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
-            return node->valueArray[v].value;
+            return node->valueArray[nextValueArrayIndex].value;
         }
 
         /** Overloaded dereference operator so the iterator can masquerade as a pointer
             to a member */
         T const * operator->() const {
             alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
-            return &(stack.last()->valueArray[v].value);
+            return &(stack.last()->valueArray[nextValueArrayIndex].value);
         }
 
         /** Overloaded cast operator so the iterator can masquerade as a pointer
             to a member */
         operator T*() const {
             alwaysAssertM(! isEnd, "Can't dereference the end element of an iterator");
-            return &(stack.last()->valueArray[v].value);
+            return &(stack.last()->valueArray[nextValueArrayIndex].value);
         }
     };
 
