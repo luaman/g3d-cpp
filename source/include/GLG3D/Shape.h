@@ -461,7 +461,7 @@ public:
     virtual Sphere boundingSphere() const {
         Vector3 v(0, geometry.height() / 2, 0);
         v += Vector3(geometry.radius(), 0, 0);
-        Sphere s(geometry.center(), ::abs(v.magnitude()));
+        Sphere s(geometry.center(), G3D::abs(v.magnitude()));
         return s;
     }
 
@@ -577,7 +577,7 @@ public:
     }
 
     virtual Sphere boundingSphere() const {
-        Sphere s(geometry.center(), ::abs((geometry.center() - geometry.getPoint1()).magnitude()) + geometry.radius);
+        Sphere s(geometry.center(), G3D::abs((geometry.center() - geometry.getPoint1()).magnitude()) + geometry.radius);
         return s;
     }
 

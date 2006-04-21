@@ -203,6 +203,8 @@ private:
     T*           m_pointer;
 
 public:
+	typedef T element_type;
+
     inline T* pointer() const {
         return m_pointer;
     }

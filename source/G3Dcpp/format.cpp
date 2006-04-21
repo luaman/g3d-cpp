@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
 
  @created 2000-09-09
- @edited  2005-08-30
+ @edited  2006-04-30
 */
 
 #include "G3D/format.h"
@@ -105,7 +105,7 @@ std::string vformat(const char *fmt, va_list argPtr) {
         while ((vsnprintf(heapBuffer, heapSize, fmt, argPtr) == -1) &&
             (heapSize  < maxSize)) {
 
-            heapSize *= ::pow((double)2.0, powSize++);
+            heapSize = iCeil(heapSize * ::pow((double)2.0, powSize++));
             heapBuffer = (char*)System::realloc(heapBuffer, heapSize);
         }
 

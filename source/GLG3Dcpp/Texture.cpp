@@ -207,8 +207,8 @@ static void createTexture(
 
             int oldWidth = width;
             int oldHeight = height;
-            width  = ceilPow2(width * rescaleFactor);
-            height = ceilPow2(height * rescaleFactor);
+            width  = ceilPow2(static_cast<unsigned int>(width * rescaleFactor));
+            height = ceilPow2(static_cast<unsigned int>(height * rescaleFactor));
 
             bytes = new uint8[width * height * bytesPerPixel];
             freeBytes = true;
@@ -285,8 +285,8 @@ static void createMipMapTexture(
             if (rescaleFactor != 1.0f) {
                 int oldWidth = width;
                 int oldHeight = height;
-                width  = ceilPow2(width * rescaleFactor);
-                height = ceilPow2(height * rescaleFactor);
+                width  = ceilPow2(static_cast<unsigned int>(width * rescaleFactor));
+                height = ceilPow2(static_cast<unsigned int>(height * rescaleFactor));
 
                 bytes = new uint8[width * height * bytesFormatBytesPerPixel];
                 freeBytes = true;
