@@ -155,6 +155,9 @@ public:
     /** 
      Points are counter-clockwise in a Y = down, X = right coordinate
      system.
+
+     @param reverse If true, the points are reversed (i.e. winding direction is changed)
+     before the polygon is created.
      */
     ConvexPolygon2D(const Array<Vector2>& pts, bool reverse = false);
 
@@ -167,7 +170,8 @@ public:
         return m_vertex[index];
     }
 
-    bool contains(const Vector2& p) const;
+    /** @param reverseWinding If true, the winding direction of the polygon is reversed for this test.*/
+    bool contains(const Vector2& p, bool reverseWinding = false) const;
 };
 
 
