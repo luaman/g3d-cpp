@@ -59,8 +59,7 @@ Vector3 LineSegment::closestPoint(const Vector3& p) const {
 
 }
 
-
-Vector3 LineSegment::endPoint(int i) const {
+Vector3 LineSegment::point(int i) const {
     switch (i) {
     case 0:
         return _point;
@@ -72,6 +71,11 @@ Vector3 LineSegment::endPoint(int i) const {
         debugAssertM(i == 0 || i == 1, "Argument to point must be 0 or 1");
         return _point;
     }
+}
+
+
+Vector3 LineSegment::endPoint(int i) const {
+    return point(i);
 }
 
 

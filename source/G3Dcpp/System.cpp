@@ -1557,7 +1557,11 @@ void System::alignedFree(void* _ptr) {
 
 void System::setEnv(const std::string& name, const std::string& value) {
     std::string cmd = name + "=" + value;
-    putenv(name.c_str());
+#   ifdef G3D_WIN32
+        _putenv(cmd.c_str());
+#   else
+        putenv(cmd.c_str());
+#   endif
 }
 
 const char* System::getEnv(const std::string& name) {
