@@ -416,11 +416,13 @@ ConvexPolygon2D::ConvexPolygon2D(const Array<Vector2>& pts, bool reverse) : m_ve
 }
 
 
-bool ConvexPolygon2D::contains(const Vector2& p) const {
+bool ConvexPolygon2D::contains(const Vector2& p, bool reverse) const {
     // Compute the signed area of each polygon from p to an edge.  
     // If the area is non-negative for all polygons then p is inside 
     // the polygon.  (To adapt this algorithm for a concave polygon,
     // the *sum* of the areas must be non-negative).
+
+    float r = reverse ? -1 : 1;
 
     for (int i0 = 0; i0 < m_vertex.size(); ++i0) {
         int i1 = (i0 + 1) % m_vertex.size();
@@ -434,7 +436,7 @@ bool ConvexPolygon2D::contains(const Vector2& p) const {
         // a 2D space; we neglect the 1/2
         float area = -(e0.x * e1.y - e0.y * e1.x);
 
-        if (area < 0) {
+        if (area * r < 0) {
             return false;
         }
     }

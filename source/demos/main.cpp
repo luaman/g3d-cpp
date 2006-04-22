@@ -118,7 +118,7 @@ void Demo::onGraphics(RenderDevice* rd) {
     app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    app->renderDevice->setColorClearValue(Color3(0.1f, 0.5f, 1.0f));
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {

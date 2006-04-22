@@ -662,6 +662,7 @@ bool ReliableConduit::messageWaiting() const {
             // return false.
             return false;
         }
+        break;
 
     case NO_MESSAGE:
         if (Conduit::messageWaiting()) {

@@ -18,14 +18,16 @@ public class ReliableConduit {
 
     private static enum State {RECEIVING, HOLDING, NO_MESSAGE};
     
-    // From Conduit
-    long                          mSent;
-    long                          mReceived;
-    long                          bSent;
-    long                          bReceived;
-    SocketChannel                 sock;
-    
-    private State state;
+    long                                    mSent;
+    long                                    mReceived;
+    long                                    bSent;
+    long                                    bReceived;
+    SocketChannel                           sock;
+
+    /** Used to implement readPending*/
+    Selector                                selector;
+
+    private State                           state;
 
     private InetSocketAddress               addr;
     
@@ -48,7 +50,7 @@ public class ReliableConduit {
     /** Size occupied by the current message... so far.  This will be
         equal to messageSize when the whole message has arrived. 
       */
-    private int                            receiveBufferUsedSize;
+    private int                             receiveBufferUsedSize;
 
     public void sendBuffer(BinaryOutput b) throws IOException {
         if (sock.isConnected()) {
@@ -59,10 +61,18 @@ public class ReliableConduit {
         }
     }
 
-    /** Accumulates whatever part of the message (not the header) is still waiting
-        on the socket into the receiveBuffer during state = RECEIVING mode.  
-        Closes the socket if anything goes wrong.
-        When receiveBufferUsedSize == messageSize, the entire message has arrived. */
+    /** Returns true if this socket has a read pending. */
+    private boolean readWaiting() throws IOException {
+        int numReadyForRead = selector.selectNow();        
+        return numReadyForRead > 0;
+    }
+
+
+    /** Accumulates whatever part of the message (not the header) is
+        still waiting on the socket into the receiveBuffer during
+        state = RECEIVING mode.  Closes the socket if anything goes
+        wrong.  When receiveBufferUsedSize == messageSize, the entire
+        message has arrived. */
     private void receiveIntoBuffer() throws IOException {
     
         if (sock.isConnected()) {
@@ -81,11 +91,15 @@ public class ReliableConduit {
     private void receiveHeader() throws IOException {
         ByteBuffer headerBuffer = ByteBuffer.allocate(8);
         headerBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        
+
         if (sock.isConnected()) {
+
             int numRead = sock.read(headerBuffer);
+
             if (numRead > 0) {
+
                 if (headerBuffer.remaining() == 0) {
+
                     messageType = headerBuffer.getInt(0);
                     // Size is in network byte order
                     byte sizeArray[] = headerBuffer.array();
@@ -95,6 +109,7 @@ public class ReliableConduit {
                         (int)sizeArray[7];
                     receiveBuffer = ByteBuffer.allocate(messageSize);
                     state = State.RECEIVING;
+
                 } else {
                     state = State.NO_MESSAGE;
                     sock.close();
@@ -110,29 +125,62 @@ public class ReliableConduit {
         messageSize = 0;
         state = State.NO_MESSAGE;
         sock = SocketChannel.open(addr);
+
+        // To use select we have to switch to non-blocking mode
+        sock.configureBlocking(false);
+
+        // Create and register with a Selector
+        selector = Selector.open();
+        sock.register(selector, sock.validOps(), sock);
     }
 
-    // The message is actually copied from the socket to an internal buffer during
-    // this call.  Receive only deserializes.
+    // The message is actually copied from the socket to an internal
+    // buffer during this call.  Receive only deserializes.
     public boolean messageWaiting() throws IOException {
-        if (state == State.HOLDING) {
+        switch (state) {
+        case HOLDING:
+            // We've already read the message and are waiting
+            // for a receive call.
             return true;
-        } else if (state == State.RECEIVING) {
-            receiveIntoBuffer();
-            
-            if (receiveBufferUsedSize == messageSize) {
-                state = State.HOLDING;
-                return true;
-            }
-        } else if (state == State.NO_MESSAGE) {
-            
-            receiveHeader();
-            
-            if (messageSize > 0) {
-                return messageWaiting();
-            } else {
+
+        case RECEIVING:
+            if (! ok()) {
                 return false;
             }
+
+            // We're currently receiving the message.  Read a little more.
+            receiveIntoBuffer();
+            
+            if (messageSize == receiveBufferUsedSize) {
+                // We've read the whole mesage.  Switch to holding state 
+                // and return true.
+                state = State.HOLDING;
+                return true;
+            } else {
+                // There are more bytes left to read.  We'll read them on
+                // the next call.  Because the *entire* message is not ready,
+                // return false.
+                return false;
+            }
+
+            // Note that both paths above have a return statement
+
+        case NO_MESSAGE:
+
+            if (readWaiting()) {
+                // Loop back around now that we're in the receive state; we
+                // may be able to read the whole message before returning 
+                // to the caller.
+                state = State.RECEIVING;
+                receiveHeader();
+
+                return messageWaiting();
+            } else {
+                // No message incoming.
+                return false;
+            }
+
+            // Note that both paths above have a return statement
         }
         
         return false;

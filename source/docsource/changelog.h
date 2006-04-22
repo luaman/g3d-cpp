@@ -38,6 +38,7 @@
     <LI> G3D::LineSegment2D
     <LI> G3D::ConvexPolygon2D
     <LI> G3D::AxesShape
+    <LI> contrib/shaders/showDepth
     <LI> G3D::Crypto with MD5 and CRC32 hashes
     <LI> TextureManager::findTexture, TextureManager::cacheTexture [Erik]
     <LI> Win32Window::_directInput created on-demand [Erik]
@@ -58,6 +59,7 @@
     <LI> G3D::CoordinateFrame::fuzzyIsIdentity, G3D::CoordinateFrame::isIdentity, G3D::CoordinateFrame::fuzzyEq
     <LI> Matrix3::isOrthonormal
     <LI> [1421201] Removed excess gl (NVIDIA) headers
+    <LI> Fix: com.graphics3d.g3d.ReliableConduit now correctly selects on the waiting socket
 	<LI> Fix: [ 1166057 ]  AABSPTree::beginBoxIntersection
     <LI> Fix: GLCaps::supports(TextureFormat) now returns correct results on all cards
     <LI> Fix: Shadow map rendering of default PosedModels now enables lighting
