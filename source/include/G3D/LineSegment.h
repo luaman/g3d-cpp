@@ -49,8 +49,15 @@ public:
     }
 
 
-    /** Returns end point 0 or 1 */
-    Vector3 endPoint(int i) const;
+    /** Returns end point 0 or 1.
+        @deprecated Use point. */
+    Vector3 G3D_DEPRECATED endPoint(int i) const;
+
+    Vector3 point(int i) const;
+
+    inline float length() const {
+        return direction.magnitude();
+    }
 
     /**
      * Returns the closest point on the line segment to point.
