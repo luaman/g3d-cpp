@@ -26,13 +26,14 @@
     <A HREF="../demos/MD2Model_Demo">MD2Model_Demo</A>
 
   <LI><B>Application Structure</B> &nbsp; &nbsp;
+    G3D::FirstPersonManipulator,
     G3D::GApp, 
     G3D::GApplet, 
     G3D::GAppSettings,
-    G3D::GModule, 
+    G3D::GModule,
     G3D::GModuleManager
-    G3D::UserInput,
-    G3D::FPCameraController
+    G3D::Manipulator,
+    G3D::UserInput
   <BR>
   See also demo code
     <A HREF="../demos/main.cpp">main.cpp</A>, 

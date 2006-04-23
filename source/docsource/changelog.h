@@ -29,6 +29,8 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> G3D::Manipulator
+    <LI> G3D::GApplet now runs installed G3D::GModules (except for graphics, which is left to the progrmamer)
     <LI> G3D::GApp::addModule, G3D::GApplet::addModule, G3D::GApp::removeModule, G3D::GApplet::removeModule
     <LI> G3D::GModule, G3D::GModuleManager
     <LI> G3D::System::getEnv()

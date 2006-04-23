@@ -1,50 +1,73 @@
 /**
-  @file FPCameraController.cpp
+  @file FirstPersonManipulator.cpp
 
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2004-09-04
+  @edited  2006-04-22
 */
 
 #include "G3D/platform.h"
 
+#include "G3D/Rect2D.h"
 #include "GLG3D/ManualCameraController.h"
-#include "GLG3D/RenderDevice.h"
+#include "GLG3D/GWindow.h"
 #include "GLG3D/UserInput.h"
 
 namespace G3D {
 
-FPCameraController::FPCameraController() : m_mouseMode(MOUSE_DIRECT), _active(false) {}
+FirstPersonManipulatorRef FirstPersonManipulator::create() {
+    return new FirstPersonManipulator();
+}
+
+FirstPersonManipulator::FirstPersonManipulator() : m_mouseMode(MOUSE_DIRECT), _active(false) {}
 
 
-FPCameraController::FPCameraController(
+FirstPersonManipulator::FirstPersonManipulator(
     RenderDevice* rd, UserInput* ui) : m_mouseMode(MOUSE_DIRECT), _active(false) {
     init(rd, ui);
 }
 
 
-void FPCameraController::init(class RenderDevice* device, class UserInput* input) {
-    renderDevice = device;
+CoordinateFrame FirstPersonManipulator::getCoordinateFrame() const {
+    return frame();
+}
+
+
+void FirstPersonManipulator::getCoordinateFrame(CoordinateFrame& c) const {
+    getFrame(c);
+}
+
+
+void FirstPersonManipulator::getFrame(CoordinateFrame& c) const {
+	c.translation = translation;
+    c.rotation = Matrix3::fromEulerAnglesZYX(0, -yaw, -pitch);
+}
+
+
+CoordinateFrame FirstPersonManipulator::frame() const {
+	CoordinateFrame c;
+	getFrame(c);
+	return c;
+}
+
+
+void FirstPersonManipulator::init(class RenderDevice* device, class UserInput* input) {
     userInput    = input;
-
-    debugAssert(renderDevice);
-    debugAssertM(renderDevice->initialized(), "You must call RenderDevice::init before constructing a FPCameraController");
-
     reset();
 }
 
 
-FPCameraController::~FPCameraController() {
+FirstPersonManipulator::~FirstPersonManipulator() {
 }
 
 
-FPCameraController::MouseMode FPCameraController::mouseMode() const {
+FirstPersonManipulator::MouseMode FirstPersonManipulator::mouseMode() const {
     return m_mouseMode;
 }
 
 
-void FPCameraController::setMouseMode(FPCameraController::MouseMode m) {
+void FirstPersonManipulator::setMouseMode(FirstPersonManipulator::MouseMode m) {
     if (m_mouseMode != m) {
         bool wasActive = active();
 
@@ -63,12 +86,12 @@ void FPCameraController::setMouseMode(FPCameraController::MouseMode m) {
     }
 }
 
-bool FPCameraController::active() const {
+bool FirstPersonManipulator::active() const {
     return _active;
 }
 
 
-void FPCameraController::reset() {
+void FirstPersonManipulator::reset() {
     _active      = false;
     yaw         = -G3D_PI/2;
     pitch       = 0;
@@ -78,7 +101,7 @@ void FPCameraController::reset() {
 }
 
 
-void FPCameraController::setActive(bool a) {
+void FirstPersonManipulator::setActive(bool a) {
     if (_active == a) {
         return;
     }
@@ -110,17 +133,17 @@ void FPCameraController::setActive(bool a) {
 }
 
 
-void FPCameraController::setMoveRate(double metersPerSecond) {
+void FirstPersonManipulator::setMoveRate(double metersPerSecond) {
     maxMoveRate = metersPerSecond;
 }
 
 
-void FPCameraController::setTurnRate(double radiansPerSecond) {
+void FirstPersonManipulator::setTurnRate(double radiansPerSecond) {
     maxTurnRate = radiansPerSecond;
 }
 
 
-void FPCameraController::lookAt(
+void FirstPersonManipulator::lookAt(
     const Vector3&      position) {
 
     const Vector3 look = (position - translation);
@@ -130,12 +153,62 @@ void FPCameraController::lookAt(
 }
 
 
-void FPCameraController::doSimulation(
+void FirstPersonManipulator::doSimulation(
     double              elapsedTime) {
 
+    onSimulation(elapsedTime, elapsedTime, elapsedTime);
+}
+
+
+void FirstPersonManipulator::setFrame(const CoordinateFrame& c) {
+    Vector3 look = c.getLookVector();
+
+    setPosition(c.translation);
+
+    // this is work towards a patch for bug #1022341
+    /*
+    if (fuzzyEq(abs(look.dot(Vector3::unitY())), 1.0)) {
+        // Looking straight up or down; lookAt won't work
+        float dummy;
+        float y, p;
+        c.rotation.toEulerAnglesZYX(dummy, y, p);
+        yaw = -y;
+        pitch = -p;
+
+    } else {
+    */
+        lookAt(c.translation + look);
+//    }
+}
+
+
+void FirstPersonManipulator::setCoordinateFrame(const CoordinateFrame& c) {
+    setFrame(c);
+}
+
+
+void FirstPersonManipulator::getPosedModel(Array<PosedModelRef>& p3d, Array<PosedModel2DRef>& p2d) {
+}
+
+
+void FirstPersonManipulator::onNetwork() {
+}
+
+
+void FirstPersonManipulator::onLogic() {
+}
+
+
+void FirstPersonManipulator::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     if (! _active) {
         return;
     }
+
+    if (userInput == NULL) {
+        return;
+    }
+
+    RealTime elapsedTime = sdt;
 
     {
         // Translation direction
@@ -170,8 +243,7 @@ void FPCameraController::doSimulation(
 
     case MOUSE_SCROLL_AT_EDGE:
         {
-            // TODO: when we have an onGraphics method, track the actual viewport
-            Rect2D viewport = Rect2D::xywh(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
+            Rect2D viewport = Rect2D::xywh(0, 0, userInput->window()->width(), userInput->window()->height());
             Vector2 mouse = userInput->mouseXY();
 
             Vector2 hotExtent(max(50.0f, viewport.width() / 8), 
@@ -227,38 +299,13 @@ void FPCameraController::doSimulation(
 }
 
 
-CoordinateFrame FPCameraController::getCoordinateFrame() const {
-	CoordinateFrame c;
-	getCoordinateFrame(c);
-	return c;
+void FirstPersonManipulator::onUserInput(UserInput* ui) {
+    userInput = ui;
 }
 
 
-void FPCameraController::getCoordinateFrame(CoordinateFrame& c) const {
-	c.translation = translation;
-    c.rotation = Matrix3::fromEulerAnglesZYX(0, -yaw, -pitch);
-}
-
-
-void FPCameraController::setCoordinateFrame(const CoordinateFrame& c) {
-    Vector3 look = c.getLookVector();
-
-    setPosition(c.translation);
-
-    // this is work towards a patch for bug #1022341
-    /*
-    if (fuzzyEq(abs(look.dot(Vector3::unitY())), 1.0)) {
-        // Looking straight up or down; lookAt won't work
-        float dummy;
-        float y, p;
-        c.rotation.toEulerAnglesZYX(dummy, y, p);
-        yaw = -y;
-        pitch = -p;
-
-    } else {
-    */
-        lookAt(c.translation + look);
-//    }
+bool FirstPersonManipulator::onEvent(const GEvent& event) {
+    return false;
 }
 
 

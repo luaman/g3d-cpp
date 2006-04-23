@@ -7,16 +7,19 @@
   @edited  2006-02-28
 */
 
-#ifndef G3D_FPCAMERACONTROLLER_H
-#define G3D_FPCAMERACONTROLLER_H
+#ifndef G3D_ManualCameraController_H
+#define G3D_ManualCameraController_H
 
 #include "G3D/platform.h"
 #include "G3D/Vector3.h"
 #include "G3D/CoordinateFrame.h"
+#include "GLG3D/GModule.h"
 
 namespace G3D {
 
 class CoordinateFrame;
+
+typedef ReferenceCountedPointer<class FirstPersonManipulator> FirstPersonManipulatorRef;
 
 /**
  Uses a First Person (Quake- or World of Warcraft style) mapping to translate keyboard and mouse input
@@ -34,7 +37,7 @@ class CoordinateFrame;
   </OL>
 
  */
-class FPCameraController {
+class FirstPersonManipulator : public Manipulator {
 public:
     /**
      MOUSE_DIRECT              = Shooter/Quake style (default), mouse cursor is hidden and mouse controls yaw/pitch
@@ -61,8 +64,6 @@ private:
     double                      pitch;
 	Vector3                     translation;
 
-    class RenderDevice*         renderDevice;
-
     bool                        _active;
 
     class UserInput*            userInput;
@@ -71,18 +72,26 @@ private:
 
 public:
 
-	FPCameraController();
+    /** @deprecated Use create. */
+	G3D_DEPRECATED FirstPersonManipulator();
 
-    /** Creates and initializes */
-	FPCameraController(class RenderDevice*, class UserInput*);
+    /** Creates and initializes.
+        @deprecated Use create.
+      */
+	G3D_DEPRECATED FirstPersonManipulator(class RenderDevice*, class UserInput*);
     
-    /** You need to call setActive(true) before the controller will work. */
-    void init(class RenderDevice* device, class UserInput* input);
+    static FirstPersonManipulatorRef create();
+        
+
+    /** You need to call setActive(true) before the controller will work. 
+        @deprecated Not needed anymore
+      */
+    void G3D_DEPRECATED init(class RenderDevice* device, class UserInput* input);
 
     /** Deactivates the controller */
-    virtual ~FPCameraController();
+    virtual ~FirstPersonManipulator();
 
-    /** When active, the FPCameraController takes over the mouse.  It turns
+    /** When active, the FirstPersonManipulator takes over the mouse.  It turns
         off the mouse cursor and switches to first person controller style.
         Use this to toggle between your menu system and first person camera control.
 
@@ -113,8 +122,9 @@ public:
 	/**
 	 Increments the ManualCameraController's orientation and position.
      Invoke once per simulation step.
+     @deprecated
 	 */
-	void doSimulation(
+	void G3D_DEPRECATED doSimulation(
         double                  elapsedTime);
 
 	void setPosition(const Vector3& t) {
@@ -144,19 +154,42 @@ public:
 		return getCoordinateFrame().getRightVector();
 	}
 
-	CoordinateFrame getCoordinateFrame() const;
+    /** @deprecated Use frame */
+	CoordinateFrame G3D_DEPRECATED getCoordinateFrame() const;
 
-	void getCoordinateFrame(CoordinateFrame& c) const;
+    /** @deprecated Use getFrame.
+      */
+	void G3D_DEPRECATED getCoordinateFrame(CoordinateFrame& c) const;
+
+
+    /** @deprecated Use setFrame */
+    void G3D_DEPRECATED setCoordinateFrame(const CoordinateFrame& c);
 
     /**
       Sets to the closest legal controller orientation to the coordinate frame.
-    */
-    void setCoordinateFrame(const CoordinateFrame& c);
+     */
+    void setFrame(const CoordinateFrame& c);
+
+    // Inherited from Manipulator
+	virtual void getFrame(CoordinateFrame& c) const;
+    virtual CoordinateFrame frame() const;
+
+    // Inherited from GModule
+    virtual void getPosedModel(Array<PosedModelRef>& p3d, Array<PosedModel2DRef>& p2d);
+    virtual void onNetwork();
+    virtual void onLogic();
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
+    virtual void onUserInput(UserInput* ui);
+    virtual bool onEvent(const GEvent& event);
 };
 
-/** Use FPCameraController instead 
+/** Use FirstPersonManipulator instead 
     @deprecated */
-typedef FPCameraController ManualCameraController;
+typedef FirstPersonManipulator FPCameraController;
+
+/** Use FirstPersonManipulator instead 
+    @deprecated */
+typedef FirstPersonManipulator ManualCameraController;
 
 }
 #endif

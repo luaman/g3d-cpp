@@ -155,6 +155,22 @@ public:
     virtual void onLogic();
 };
 
+
+/**
+ Exports a coordinate frame, typically in response to user input.
+ Examples:
+ G3D::ThirdPersonManipulator,
+ G3D::FirstPersonManipulator
+ */
+class Manipulator : public GModule {
+public:
+
+    virtual void getFrame(CoordinateFrame& c) const = 0;
+
+    virtual CoordinateFrame frame() const = 0;
+};
+
+
 } // G3D
 
 #endif

@@ -163,7 +163,9 @@ public:
     GCamera					debugCamera;
 
     /**
-     When in debugMode
+     When in debugMode, this allows first person (Quake game-style) control
+     using the arrow keys or W,A,S,D and the mouse.
+     @deprecated Will become a FirstPersonManipulatorRef in 7.00
      */
     ManualCameraController  debugController;
 
