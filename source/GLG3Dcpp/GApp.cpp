@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2003-11-03
- @edited  2005-10-16
+ @edited  2006-04-22
  */
 
 #include "G3D/platform.h"
@@ -37,6 +37,7 @@ GApp::GApp(const Settings& settings, GWindow* window) {
     debugFont         = NULL;
     endProgram        = false;
     _debugControllerWasActive = false;
+    m_moduleManager = GModuleManager::create();
 
     if (settings.dataDir == "<AUTO>") {
         dataDir = demoFindData(false);
@@ -307,6 +308,15 @@ void GApp::renderDebugInfo() {
     }
 }
 
+void GApp::addModule(const GModuleRef& module, GModuleManager::EventPriority priority) {
+    m_moduleManager->add(module, priority);
+}
+
+
+void GApp::removeModule(const GModuleRef& module) {
+    m_moduleManager->remove(module);
+}
+
 //////////////////////////////////////////////
 
 
@@ -316,9 +326,82 @@ GApplet::GApplet(GApp* _app) :
     m_desiredFrameRate(inf()),
     m_simTimeRate(1.0), 
     m_realTime(0), 
-    m_simTime(0) {
+    m_simTime(0),
+    m_moduleManager(GModuleManager::create()) {
     
     debugAssert(app != NULL);
+}
+
+
+bool GApplet::onEvent(const GEvent& event) {
+    processEvent(event); // TODO: Remove when deprecated
+
+    return GModuleManager::onEvent(event, app->m_moduleManager, m_moduleManager);
+}
+
+
+void GApplet::getPosedModel(
+    Array<PosedModelRef>& posedArray, 
+    Array<PosedModel2DRef>& posed2DArray) {
+
+    m_moduleManager->getPosedModel(posedArray, posed2DArray);
+    app->m_moduleManager->getPosedModel(posedArray, posed2DArray);
+
+}
+
+
+void GApplet::onGraphics(RenderDevice* rd) {
+    (void)rd;
+    doGraphics();
+}
+
+
+void GApplet::doGraphics() {
+    Array<PosedModelRef>        posedArray;
+    Array<PosedModel2DRef>      posed2DArray;
+    Array<PosedModelRef>        opaque, transparent;
+
+    // By default, render the installed modules
+    getPosedModel(posedArray, posed2DArray);
+
+    // 3D
+    if (posedArray.size() > 0) {
+        Vector3 lookVector = app->renderDevice->getCameraToWorldMatrix().lookVector();
+        PosedModel::sort(posedArray, lookVector, opaque, transparent);
+
+        for (int i = 0; i < opaque.size(); ++i) {
+            opaque[i]->render(app->renderDevice);
+        }
+
+        for (int i = 0; i < transparent.size(); ++i) {
+            transparent[i]->render(app->renderDevice);
+        }
+    }
+
+    // 2D
+    if (posed2DArray.size() > 0) {
+        app->renderDevice->push2D();
+            PosedModel2D::sort(posed2DArray);
+            for (int i = 0; i < posed2DArray.size(); ++i) {
+                posed2DArray[i]->render(app->renderDevice);
+            }
+        app->renderDevice->pop2D();
+    }
+}
+
+
+void GApplet::onNetwork() {
+    doNetwork();
+}
+
+    
+void GApplet::addModule(const GModuleRef& module, GModuleManager::EventPriority priority) {
+    m_moduleManager->add(module, priority);
+}
+
+
+void GApplet::removeModule(const GModuleRef& module) {
+    m_moduleManager->remove(module);
 }
 
 
@@ -344,11 +427,15 @@ void GApplet::oneFrame() {
     app->m_userInputWatch.tick();
     doUserInput(); // TODO: remove
     onUserInput(app->userInput);
+    app->m_moduleManager->onUserInput(app->userInput);
+    m_moduleManager->onUserInput(app->userInput);
     app->m_userInputWatch.tock();
 
     // Network
     app->m_networkWatch.tick();
     onNetwork();
+    app->m_moduleManager->onNetwork();
+    m_moduleManager->onNetwork();
     app->m_networkWatch.tock();
 
     // Simulation
@@ -358,15 +445,24 @@ void GApplet::oneFrame() {
 			(app->debugController.getCoordinateFrame());
 
 		double rate = simTimeRate();    
-		onSimulation(timeStep, timeStep * rate, desiredFrameDuration() * rate);
-		setRealTime(realTime() + timeStep);
-		setSimTime(simTime() + timeStep * rate);
-		setIdealSimTime(idealSimTime() + desiredFrameDuration() * rate);
+        RealTime rdt = timeStep;
+        SimTime  sdt = timeStep * rate;
+        SimTime  idt = desiredFrameDuration() * rate;
+
+		onSimulation(rdt, sdt, idt);
+        app->m_moduleManager->onSimulation(rdt, sdt, idt);
+        m_moduleManager->onSimulation(rdt, sdt, idt);
+
+		setRealTime(realTime() + rdt);
+		setSimTime(simTime() + sdt);
+		setIdealSimTime(idealSimTime() + idt);
     app->m_simulationWatch.tock();
 
     // Logic
     app->m_logicWatch.tick();
         onLogic();
+        app->m_moduleManager->onLogic();
+        m_moduleManager->onLogic();
     app->m_logicWatch.tock();
 
     // Wait 

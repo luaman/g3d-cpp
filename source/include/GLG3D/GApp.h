@@ -18,6 +18,7 @@
 #include "GLG3D/TextureManager.h"
 #include "G3D/NetworkDevice.h"
 #include "GLG3D/GWindow.h"
+#include "GLG3D/GModule.h"
 
 namespace G3D {
 
@@ -25,10 +26,11 @@ class RenderDevice;
 class UserInput;
 
 /**
-  See @link guideapp @endlink for the philosophy of GApp and GApplet. 
+  See @link guideapp @endlink for a discussion of GApp and GApplet. 
  */
 class GApp {
 public:
+    friend class GApplet;
 
 	class Settings {
 	public:
@@ -98,6 +100,8 @@ protected:
     Stopwatch           m_userInputWatch;
     Stopwatch           m_simulationWatch;
     Stopwatch           m_waitWatch;
+
+    GModuleManagerRef   m_moduleManager;
 
 public:
 
@@ -255,7 +259,23 @@ public:
      */
     void run();
 
+    /**
+     Installs a module.  Actual insertion may be delayed until the next frame.
+     See GApplet::addModule for further discussion.
+
+     @beta
+     */
+    virtual void addModule(const GModuleRef& module, GModuleManager::EventPriority p = GModuleManager::NORMAL_PRIORITY);
+
+
+    /**
+     The actual removal of the module may be delayed until the next frame.
+     See GApplet::removeModule for further discussion.
+     @beta
+     */
+    virtual void removeModule(const GModuleRef& module);
 };
+
 
 /**
   A self-contained mode of operation for an application; a "screen".
@@ -298,7 +318,41 @@ private:
     SimTime             m_simTime;
     SimTime             m_idealSimTime;
 
+protected:
+
+    GModuleManagerRef   m_moduleManager;
+
 public:
+
+    /**
+     Installs a module.  Actual insertion may be delayed until the next frame.
+
+     Modules can be installed either on a GApp or a GApplet.  Those installed
+     on the GApp will be run by the GApplet every frame in addition to its own.
+     
+     By default events have NORMAL_PRIORITY. HIGH_PRIORITY is only intended
+     for debugging modules that need to temporarily superceed other components.
+
+     All modules within the same priority class receive events
+     with undetermined priority.  All high priority modules
+     receive events before.
+     
+     Event priority is important because a module can consume
+     events, preventing other modules from observing them.
+     For example, a debugging console might run at high priority 
+     so that it can consume arrow keys before they reach a normal priority
+     first-person controller.
+
+     @beta
+     */
+    virtual void addModule(const GModuleRef& module, GModuleManager::EventPriority p = GModuleManager::NORMAL_PRIORITY);
+
+
+    /**
+     The actual removal of the module may be delayed until the next frame.
+     @beta
+     */
+    virtual void removeModule(const GModuleRef& module);
 
     /** Amount of time that passes in simTime for every second of realTime.
         e.g., 1.0 == real-time, 2.0 == fast, 0.5 == slow, 0.0 = stop time.
@@ -413,6 +467,12 @@ public:
     virtual void endRun();
 
 protected:
+    
+
+    /** Default implementation poses the managed modules from the GApplet and GApp.*/
+    virtual void getPosedModel(
+        Array<PosedModelRef>& posedArray, 
+        Array<PosedModel2DRef>& posed2DArray);
 
     /**
      Set to false to break out of the run() loop.
@@ -463,14 +523,21 @@ protected:
 
      @deprecated
      */
-    virtual void G3D_DEPRECATED
-        doGraphics() {}
+    virtual void G3D_DEPRECATED doGraphics();
 
-    /** Rendering callback. */
-    virtual void onGraphics(RenderDevice* rd) {
-        (void)rd;
-        doGraphics();
-    }
+    /**
+     Rendering callback.
+
+     Override and implement.  The debugCamera's projection and object to world
+     matrices are set by default; you can set other cameras as desired. 
+     RenderDevice::beginFrame and endFrame are called for you.
+     
+     Use getPosedModel() to obtain the installed GModules to be rendered.
+
+	 See <A HREF="../demos/main.cpp">demos/main.cpp</A> for an example of
+	 overriding lights.
+     */
+    virtual void onGraphics(RenderDevice* rd);
 
 
     /**
@@ -479,13 +546,10 @@ protected:
     virtual void G3D_DEPRECATED doNetwork() {}
 
     /**
-     Called from run.
      For a networked app, override this to implement your
      network message polling.
      */
-    virtual void onNetwork() {
-        doNetwork();
-    }
+    virtual void onNetwork();
 
     /**
       Task to be used for frame rate limiting.  
@@ -575,10 +639,7 @@ protected:
 
      The default implementation does nothing.
      */
-    virtual bool onEvent(const GEvent& event) {
-        processEvent(event);
-        return false;
-    }
+    virtual bool onEvent(const GEvent& event);
 
     /**
      Updates the userInput.  Called from run.  Rarely needs to be

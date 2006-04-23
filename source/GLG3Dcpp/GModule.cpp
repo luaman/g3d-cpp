@@ -18,7 +18,29 @@ GModuleManagerRef GModuleManager::create() {
 }
 
 
-GModuleManager::GModuleManager() : m_locked(false) {
+GModuleManager::GModuleManager() : m_locked(false), m_size(0), m_removeAll(false) {
+}
+
+
+int GModuleManager::size() const {
+    return m_size;
+}
+
+
+const GModuleRef& GModuleManager::operator[](int i) const {
+    debugAssert(i >= 0 && i < m_size);
+    for (int p = NUM_PRIORITY - 1; p >= 0; --p) {
+        if (i < m_moduleArray[p].size()) {
+            return m_moduleArray[p][i];
+        } else {
+            // Look in the next array.  We are guaranteed
+            // not to underflow by the assertion above.
+            i -= m_moduleArray[p].size();
+        }
+    }
+
+    static GModuleRef tmp;
+    return tmp;
 }
 
 
@@ -59,6 +81,7 @@ void GModuleManager::remove(const GModuleRef& m) {
             int j = m_moduleArray[p].findIndex(m);
             if (j != -1) {
                 m_moduleArray[p].fastRemove(j);
+                --m_size;
                 return;
             }
         }
@@ -72,6 +95,7 @@ void GModuleManager::add(const GModuleRef& m, EventPriority p) {
     if (m_locked) {
         m_addList.append(Add(m, p));
     } else {
+        ++m_size;
         m_moduleArray[p].append(m);
     }
 }
@@ -91,12 +115,14 @@ void GModuleManager::clear() {
 // This same iteration code is used to implement
 // all GModule methods concisely.
 #define ITERATOR(body)\
+    beginLock();\
     for (int p = NUM_PRIORITY - 1; p >= 0; --p) {\
         Array<GModuleRef>& array = m_moduleArray[p];\
         for (int i = array.size() - 1; i >= 0; --i) {\
             body;\
         }\
-    }
+    }\
+    endLock();
 
 void GModuleManager::getPosedModel(
     Array<PosedModelRef>& posedArray, 
@@ -112,7 +138,7 @@ void GModuleManager::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 
 bool GModuleManager::onEvent(const GEvent& event) {
     // if the event is ever consumed, abort iteration
-    ITERATOR(if (array[i]->onEvent(event)) { return true; });
+    ITERATOR(if (array[i]->onEvent(event)) { endLock(); return true; });
     return false;
 }
 
@@ -129,5 +155,37 @@ void GModuleManager::onLogic() {
 }
 
 #undef ITERATOR
+
+
+bool GModuleManager::onEvent(const GEvent& event, GModuleManagerRef& a, GModuleManagerRef& b) {
+    a->beginLock();
+    b->beginLock();
+
+    for (int p = NUM_PRIORITY - 1; p >= 0; --p) {
+
+        // Process each, interlaced
+        for (int k = 0; k < 2; ++k) {
+            Array<GModuleRef>& array = 
+                (k == 0) ?
+                    a->m_moduleArray[p] :
+                    b->m_moduleArray[p];
+                
+            for (int i = array.size() - 1; i >= 0; --i) {
+                if (array[i]->onEvent(event)) {
+                    b->endLock();
+                    a->endLock();
+                    return true;
+                }
+            }
+        }
+
+    }
+    
+    b->endLock();
+    a->endLock();
+
+    return false;
+}
+
 
 } // G3D

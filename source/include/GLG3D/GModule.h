@@ -26,19 +26,17 @@ typedef ReferenceCountedPointer<class GModule> GModuleRef;
 
 /**
  Interface for 2D or 3D objects that experience standard
- virtual world events and are rendered.  This is the most primitive
- form of scene graph representation; it enables a number of 
- other useful G3D pieces to mix and match.
+ virtual world events and are rendered.
 
- Modules are intended for use with GApp and GApplet; 
- the GApplet should maintain a list of them and
- invoke the appropriate methods each frame.
+ GModule is an interface for "widget"-like objects.  You could think of it as a bare-bones scene graph.
+
+ Modules are objects like the FPController, GConsole, and debug text overlay that need to receive almost the same set of events (onXXX methods) as a GApplet and that you would like to be called from the corresponding methods of a GApplet.  They are a way to break large pieces of functionality for UI and debugging off so that they can be mixed and matched.
+
 
  @beta
  */
 class GModule : public ReferenceCountedObject {
 public:
-    // Keep this class pure virtual!
 
     /** 
      Appends a posed model for this object to the array, if it has a graphic representation.
@@ -49,7 +47,6 @@ public:
         Array<PosedModelRef>& posedArray, 
         Array<PosedModel2DRef>& posed2DArray) = 0;
 
-    // TODO: should this be divided between before/on/after?
     virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt) = 0;
 
     /** Returning true consumes the event and prevents other GModules from seeing it. */
@@ -93,6 +90,9 @@ private:
 
     Array<GModuleRef>   m_removeList;
 
+    /** Number of elements. */
+    int                 m_size;
+
     bool                m_locked;
 
     /** If true, when the lock is lifted all objects should be removed. */
@@ -113,17 +113,34 @@ public:
 
     void endLock();
 
-    /** Priorities should generally not be used; they are largely for supporting
+    /** 
+        If a lock is in effect, the add may be delayed until the unlock.
+
+        Priorities should generally not be used; they are largely for supporting
         debugging components at HIGH_PRIORITY that intercept events before they
         can hit the regular infrastructure.
       */
     void add(const GModuleRef& m, EventPriority p = NORMAL_PRIORITY);
 
+    /**
+       If a lock is in effect the remove will be delayed until the unlock.
+     */
     void remove(const GModuleRef& m);
 
+    /**
+     Removes all.
+     */
     void clear();
 
-    void getPosedModel(
+    int size() const;
+
+    /** Runs the event handles of each manager interlaced, as if all the modules from a were in b.*/
+    static bool onEvent(const GEvent& event, GModuleManagerRef& a, GModuleManagerRef& b);
+
+    const GModuleRef& operator[](int i) const;
+
+    /** Calls getPosedModel on all children.*/
+    virtual void getPosedModel(
         Array<PosedModelRef>& posedArray, 
         Array<PosedModel2DRef>& posed2DArray);
 

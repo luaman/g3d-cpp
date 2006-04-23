@@ -336,17 +336,17 @@ class PosedModel2D : public ReferenceCountedObject {
 public:
 
     /** Assumes that the RenderDevice is configured in in RenderDevice::push2D mode. */
-    virtual void render2D(RenderDevice* rd) const = 0;
+    virtual void render(RenderDevice* rd) const = 0;
 
     /** Conservative 2D rendering bounds.
      */
-    virtual Rect2D bounds2D() const = 0;
+    virtual Rect2D bounds() const = 0;
 
     /**
      2D objects are drawn from back to front, creating the perception of overlap.
      0 = closest to the front, 1 = closest to the back. 
      */
-    virtual float depth2D() const = 0;
+    virtual float depth() const = 0;
 
     /** Sorts from farthest to nearest. */
     static void sort(Array<PosedModel2DRef>& array);
