@@ -79,7 +79,7 @@ public:
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     GConsole::Settings s;
     m_console = GConsole::create(app->debugFont, s, _consoleCallback, this);
-    addModule(m_console);
+    addModule(m_console, GApp::HIGH_PRIORITY);
     printHelp();
 }
 
