@@ -368,4 +368,14 @@ int PosedModelWrapper::numWeldedBoundaryEdges() const {
     return model->numWeldedBoundaryEdges();
 }
 
+////////////////////////////////////////////////////
+
+static bool depthGreaterThan(const PosedModel2DRef& a, const PosedModel2DRef& b) {
+    return a->depth2D() > b->depth2D();
+}
+
+void PosedModel2D::sort(Array<PosedModel2DRef>& array) {
+    array.sort(depthGreaterThan);
+}
+
 }

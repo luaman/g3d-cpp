@@ -40,6 +40,7 @@ GENERATE_TESTLIST      = NO
 GENERATE_BUGLIST       = NO
 GENERATE_DEPRECATEDLIST= YES
 ALIASES                = "cite=\par Referenced Code:\n" \
+                         "beta=\par <b>BETA API</b> Likely to receive incompatible changes in future releases.\n" \
                          "created=\par Created:\n" \
                          "edited=\par Last modified:\n" \
                          "maintainer=\par Maintainer:\n" \

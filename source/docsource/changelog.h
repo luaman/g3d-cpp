@@ -29,10 +29,13 @@
    <P>
    Changes in 6.09:
    <UL>
-    <LI> System::getEnv()
+    <LI> G3D::GModule, G3D::GModuleManager
+    <LI> G3D::System::getEnv()
+    <LI> G3D::PosedModel2D
     <LI> G3D::DXCaps
 	<LI> G3D::Quat::fuzzyEq
 	<LI> G3D::Quat::operator-
+    <LI> G3D::LineSegment::length, G3D::LineSegment::point
 	<LI> Increased fuzzyEpsilon by a factor of 10 to take into account the new float32 focus of the APIs
     <LI> G3D::RegistryUtil
     <LI> G3D::LineSegment2D

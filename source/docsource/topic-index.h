@@ -15,6 +15,7 @@
     G3D::Shape,
     G3D::MD2Model,
     G3D::PosedModel,
+    G3D::PosedModel2D,
     G3D::PosedModelWrapper
     G3D::Sky
     <BR>See also contrib & demo code 
@@ -28,8 +29,10 @@
     G3D::GApp, 
     G3D::GApplet, 
     G3D::GAppSettings,
+    G3D::GModule, 
+    G3D::GModuleManager
     G3D::UserInput,
-    G3D::ManualCameraController
+    G3D::FPCameraController
   <BR>
   See also demo code
     <A HREF="../demos/main.cpp">main.cpp</A>, 
