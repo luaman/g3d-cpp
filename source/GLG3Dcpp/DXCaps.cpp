@@ -15,8 +15,8 @@
 
 // This file is only used on Windows
 #ifdef G3D_WIN32
-#include <initguid.h>
 #include <objbase.h>
+#include <initguid.h>
 
 namespace G3D {
 
