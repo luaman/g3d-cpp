@@ -4,12 +4,16 @@
 */
 
 #include "GConsole.h"
-#include "g3d/G3D/stringutils.h"
-#include "g3d/G3D/fileutils.h"
-#include "g3d/GLG3D/RenderDevice.h"
-#include "g3d/GLG3D/Draw.h"
+#include "G3D/stringutils.h"
+#include "G3D/fileutils.h"
+#include "GLG3D/RenderDevice.h"
+#include "GLG3D/Draw.h"
 
 namespace G3D {
+
+GConsoleRef GConsole::create(const GFontRef& f, const Settings& s, Callback callback, void* data) {
+    return new GConsole(f, s, callback, data);
+}
 
 GConsole::GConsole(const GFontRef& f, const Settings& s, Callback callback, void* data) :
     m_font(f),
@@ -19,7 +23,8 @@ GConsole::GConsole(const GFontRef& f, const Settings& s, Callback callback, void
     m_callbackData(data),
     m_bufferShift(0),
     m_resetHistoryIndexOnEnter(true),
-    m_inCompletion(false) {
+    m_inCompletion(false),
+    m_rect(Rect2D::xywh(-(float)inf(), -(float)inf(), (float)inf(), (float)inf())) {
 
     debugAssert(m_font.notNull());
 
@@ -28,6 +33,8 @@ GConsole::GConsole(const GFontRef& f, const Settings& s, Callback callback, void
     setActive(true);
 
     m_historyIndex = m_history.size() - 1;
+
+    m_posedModel2D = new PosedGConsole2D(this);
 }
 
 
@@ -40,6 +47,20 @@ void GConsole::setActive(bool a) {
     if (m_active != a) {
         unsetRepeatKeysym();
         m_active = a;
+
+        if (m_active) {
+            // Conservative; this will be refined in render
+            m_rect = Rect2D::xywh(-(float)inf(), -(float)inf(), (float)inf(), (float)inf());
+        } else {
+            m_rect = Rect2D::xywh(0,0,0,0);
+        }
+    }
+}
+
+
+void GConsole::getPosedModel(Array<PosedModelRef>& posedArray, Array<PosedModel2DRef>& posed2DArray) {
+    if (m_active) {
+        posed2DArray.append(m_posedModel2D);
     }
 }
 
@@ -631,7 +652,7 @@ bool GConsole::onEvent(const GEvent& event) {
 }
 
 
-void GConsole::onGraphics(RenderDevice* rd) {
+void GConsole::render(RenderDevice* rd) {
     
     if (! m_active) {
         return;
@@ -666,7 +687,7 @@ void GConsole::onGraphics(RenderDevice* rd) {
         float h = rd->getHeight();
         float myHeight = m_settings.lineHeight * m_settings.numVisibleLines + pad * 2;
 
-        rect = Rect2D::xywh(pad, h - myHeight - pad, w - pad * 2, myHeight);
+        rect = m_rect = Rect2D::xywh(pad, h - myHeight - pad, w - pad * 2, myHeight);
     }
 
     rd->push2D();
@@ -711,6 +732,38 @@ void GConsole::onGraphics(RenderDevice* rd) {
         }
 
     rd->pop2D();
+}
+
+
+void GConsole::onNetwork() {
+}
+
+
+void GConsole::onLogic() {
+}
+
+
+void GConsole::onUserInput(UserInput* ui) {
+}
+
+
+void GConsole::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
+}
+
+//////////////////////////////////////////////
+
+GConsole::PosedGConsole2D::PosedGConsole2D(GConsole* c) : m_console(c) {}
+
+void GConsole::PosedGConsole2D::render(RenderDevice* rd) const {
+    m_console->render(rd);
+}
+
+Rect2D GConsole::PosedGConsole2D::bounds() const {
+    return m_console->m_rect;
+}
+
+float GConsole::PosedGConsole2D::depth() const {
+    return 0.5;
 }
 
 } // G3D

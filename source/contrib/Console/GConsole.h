@@ -10,21 +10,25 @@
 #ifndef G3D_GCONSOLE_H
 #define G3D_GCONSOLE_H
 
-#include "g3d/G3D/platform.h"
+#include "G3D/platform.h"
 
 #if G3D_VER < 60900
     #error Requires G3D 6.09 or later
 #endif
 
-#include "g3d/G3D/Array.h"
-#include "g3d/G3D/Queue.h"
-#include "g3d/G3D/Set.h"
-#include "g3d/GLG3D/GFont.h"
-#include "g3d/GLG3D/GWindow.h"
+#include "G3D/Array.h"
+#include "G3D/Queue.h"
+#include "G3D/Set.h"
+#include "G3D/Rect2D.h"
+#include "GLG3D/GFont.h"
+#include "GLG3D/GWindow.h"
+#include "GLG3D/GModule.h"
 
 namespace G3D {
 
 class RenderDevice;
+
+typedef ReferenceCountedPointer<class GConsole> GConsoleRef;
 
 /**
  Command-line console.
@@ -54,7 +58,7 @@ class RenderDevice;
  provide colored fonts and line wrapping.
 
  */
-class GConsole {
+class GConsole : public GModule {
 public:
     /** To allow later change to std::wstring */
     typedef std::string string;
@@ -132,6 +136,23 @@ protected:
         Default implementation calls m_callback. */
     virtual void onCommand(const string& command);
 
+    class PosedGConsole2D : public PosedModel2D {
+    private:
+        GConsole*           m_console;
+
+    public:
+
+        PosedGConsole2D(GConsole* c);
+
+        virtual void render(RenderDevice* rd) const;
+
+        virtual Rect2D bounds() const;
+
+        virtual float depth() const;
+    };
+
+    PosedModel2DRef         m_posedModel2D;
+
 protected:
 
     Settings            m_settings;
@@ -155,6 +176,8 @@ protected:
 
     /** Previously executed commands. */
     Array<string>       m_history;
+
+    Rect2D              m_rect;
 
     class Text {
     public:
@@ -241,7 +264,7 @@ protected:
     /** Called from onEvent when the repeat key is released. */
     void unsetRepeatKeysym();
 
-    /** Called from onGraphics and onEvent to enact the action triggered by the repeat key. */
+    /** Called from render and onEvent to enact the action triggered by the repeat key. */
     void processRepeatKeysym();
 
     /** Invoked when the user presses enter. */
@@ -260,9 +283,11 @@ protected:
     /** Copies the text to the clipboard on Win32. */
     void copyClipboard(const string& s) const;
 
+    GConsole(const GFontRef& f, const Settings& s, Callback c, void* callbackData);
+
 public:
 
-    GConsole(const GFontRef& f, const Settings& s = Settings(), Callback c = NULL, void* callbackData = NULL);
+    static GConsoleRef create(const GFontRef& f, const Settings& s = Settings(), Callback c = NULL, void* callbackData = NULL);
 
     virtual ~GConsole();
 
@@ -290,10 +315,23 @@ public:
     void __cdecl vprintf(const char*, va_list argPtr) G3D_CHECK_VPRINTF_METHOD_ARGS;
 
     /** Call to render the console */
-    void onGraphics(RenderDevice* rd);
+    void render(RenderDevice* rd);
 
+    ////////////////////////////////
+    // Inherited from GModule
+    
     /** Pass all events to the console. It returns true if it processed (consumed) the event.*/
-    bool onEvent(const GEvent& event);
+    virtual bool onEvent(const GEvent& event);
+
+    virtual void onNetwork();
+    
+    virtual void onLogic();
+
+    virtual void onUserInput(UserInput* ui);
+
+    virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
+
+    virtual void getPosedModel(Array<PosedModelRef>& posedArray, Array<PosedModel2DRef>& posed2DArray);
 };
 
 } //G3D

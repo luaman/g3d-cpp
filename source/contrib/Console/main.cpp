@@ -10,7 +10,6 @@
 
 #include <G3DAll.h>
 #include "GConsole.h"
-#include "GConsoleApplet.h"
 
 #if G3D_VER < 60800
     #error Requires G3D 6.08
@@ -21,7 +20,19 @@
  This simple demo applet uses the debug mode as the regular
  rendering mode so you can fly around the scene.
  */
-class Demo : public GConsoleApplet {
+class Demo : public GApplet {
+private:
+
+    void consoleCallback(const std::string& cmd);
+    
+    static void _consoleCallback(const std::string& cmd, void* me) {
+        static_cast<Demo*>(me)->consoleCallback(cmd);
+    }
+
+    void printHelp();
+
+    GConsoleRef         m_console;
+
 public:
 
     // Add state that should be visible to this applet.
@@ -65,7 +76,41 @@ public:
 };
 
 
-Demo::Demo(App* _app) : GConsoleApplet(_app), app(_app) {
+Demo::Demo(App* _app) : GApplet(_app), app(_app) {
+    GConsole::Settings s;
+    m_console = GConsole::create(app->debugFont, s, _consoleCallback, this);
+    addModule(m_console);
+    printHelp();
+}
+
+
+void Demo::consoleCallback(const std::string& cmd) {
+    // Extremely simple interpreter.  You could easily connect to a scripting language
+    // like lua or Python, or write your own language here.  See G3D::TextInput
+    // for an easy way of parsing this string into useful tokens.
+
+    if (cmd == "exit") {
+        endApplet = true;
+        app->endProgram = true;
+        return;
+    }
+
+    if (cmd == "help") {
+        printHelp();
+    }
+}
+
+void Demo::printHelp() {
+    m_console->printf(" ----------------------------------------------------\n");
+    m_console->printf(" PAGEUP/PAGEDOWN    Scroll console buffer\n");
+    m_console->printf(" LEFT/RIGHT         Move cursor\n");
+    m_console->printf(" ESCAPE             Close console\n");
+    m_console->printf(" ~                  Open console\n");
+    m_console->printf(" ENTER              Execute command\n");
+    m_console->printf(" TAB                Autocomplete variable or filename\n");
+    m_console->printf(" exit               Quit program\n");
+    m_console->printf(" help               Print this information\n");
+    m_console->printf(" ----------------------------------------------------\n");
 }
 
 
@@ -73,33 +118,27 @@ void Demo::onInit()  {
     // Called before Demo::run() beings
     app->debugCamera.setPosition(Vector3(0, 2, 10));
     app->debugCamera.lookAt(Vector3(0, 2, 0));
-
-    GConsoleApplet::onInit();
 }
 
 
 void Demo::onCleanup() {
     // Called when Demo::run() exits
-    GConsoleApplet::onCleanup();
 }
 
 
 void Demo::onLogic() {
     // Add non-simulation game logic and AI code here
-    GConsoleApplet::onLogic();
 }
 
 
 void Demo::onNetwork() {
 	// Poll net messages here
-    GConsoleApplet::onNetwork();
 }
 
 
 void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 	// Add physical simulation here.  You can make your time advancement
     // based on any of the three arguments.
-    GConsoleApplet::onSimulation(rdt, sdt, idt);
 }
 
 
@@ -110,8 +149,6 @@ void Demo::onUserInput(UserInput* ui) {
         app->endProgram = true;
     }
 
-	// Add other key handling here
-    GConsoleApplet::onUserInput(ui);
 }
 
 
@@ -141,7 +178,8 @@ void Demo::onGraphics(RenderDevice* rd) {
         app->sky->renderLensFlare(app->renderDevice, lighting);
     }
 
-    GConsoleApplet::onGraphics(rd);
+    // Process the modules
+    GApplet::onGraphics(rd);
 }
 
 

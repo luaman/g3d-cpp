@@ -158,10 +158,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GConsoleApplet.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -173,10 +169,6 @@
 			>
 			<File
 				RelativePath=".\GConsole.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GConsoleApplet.h"
 				>
 			</File>
 		</Filter>
