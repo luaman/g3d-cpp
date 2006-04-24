@@ -16,6 +16,8 @@ libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                          ../../../source/G3Dcpp/Cone.cpp \
                          ../../../source/G3Dcpp/ConvexPolyhedron.cpp \
                          ../../../source/G3Dcpp/CoordinateFrame.cpp \
+                         ../../../source/G3Dcpp/Crypto.cpp \
+                         ../../../source/G3Dcpp/Crypto_md5.cpp \
                          ../../../source/G3Dcpp/Discovery.cpp \
                          ../../../source/G3Dcpp/GLight.cpp \
                          ../../../source/G3Dcpp/GCamera.cpp \

@@ -1560,7 +1560,8 @@ void System::setEnv(const std::string& name, const std::string& value) {
 #   ifdef G3D_WIN32
         _putenv(cmd.c_str());
 #   else
-        putenv(cmd.c_str());
+        // Many linux implementations of putenv expect char*
+        putenv(const_cast<char*>(cmd.c_str()));
 #   endif
 }
 

@@ -5,6 +5,7 @@ libGLG3D_a_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/TextureManager.cpp \
                      ../../../source/GLG3Dcpp/G3DGameUnits.cpp \
                      ../../../source/GLG3Dcpp/edgeFeatures.cpp \
+                     ../../../source/GLG3Dcpp/Framebuffer.cpp \
                      ../../../source/GLG3Dcpp/GApp.cpp \
                      ../../../source/GLG3Dcpp/GPUProgram.cpp \
                      ../../../source/GLG3Dcpp/GWindow.cpp \
@@ -17,6 +18,7 @@ libGLG3D_a_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/PixelProgram.cpp \
                      ../../../source/GLG3Dcpp/PosedModel.cpp \
                      ../../../source/GLG3Dcpp/RenderDevice.cpp \
+                     ../../../source/GLG3Dcpp/Renderbuffer.cpp \
                      ../../../source/GLG3Dcpp/Sky.cpp \
                      ../../../source/GLG3Dcpp/Texture.cpp \
                      ../../../source/GLG3Dcpp/TextureFormat.cpp \
@@ -31,6 +33,7 @@ libGLG3D_a_SOURCES= ../../../source/GLG3Dcpp/GFont.cpp \
                      ../../../source/GLG3Dcpp/glenumtostring.cpp \
                      ../../../source/GLG3Dcpp/Shader.cpp \
                      ../../../source/GLG3Dcpp/SDLWindow.cpp \
-                     ../../../source/GLG3Dcpp/DDSTexture.cpp
+                     ../../../source/GLG3Dcpp/DDSTexture.cpp \
+                     ../../../source/GLG3Dcpp/GModule.cpp
 
 libGLG3D_a_CPPFLAGS=-I../../../source/include -Wall $(SDL_CFLAGS)
