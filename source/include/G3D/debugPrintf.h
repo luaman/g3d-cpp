@@ -22,9 +22,6 @@
 #include "G3D/format.h"
 #include <string>
 
-#ifdef G3D_WIN32
-    #include <windows.h>
-#endif
 
 namespace G3D {
 

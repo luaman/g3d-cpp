@@ -12,7 +12,11 @@
  @edited  2005-04-05
 */
 
-#include "graphics3D.h"
+#include "G3D/Log.h"
+#include "G3D/Matrix3.h"
+#include "G3D/Rect2D.h"
+#include "G3D/GImage.h"
+#include "G3D/fileutils.h"
 #include "GLG3D/glcalls.h"
 #include "GLG3D/TextureFormat.h"
 #include "GLG3D/Texture.h"

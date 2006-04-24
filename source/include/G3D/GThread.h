@@ -13,11 +13,9 @@
 
 #include <string>
 
-#ifdef G3D_WIN32
-#include <windows.h>
-#else
-#include <pthread.h>
-#include <signal.h>
+#ifndef G3D_WIN32
+#   include <pthread.h>
+#   include <signal.h>
 #endif
 
 

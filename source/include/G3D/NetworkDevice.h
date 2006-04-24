@@ -41,24 +41,16 @@
 #define G3D_NETWORKDEVICE_H
 
 #include "G3D/platform.h"
+
+#include "G3D/NetAddress.h"
+
 #include <string>
 #include <iostream>
 #include "G3D/g3dmath.h"
-#ifdef _WIN32
-    #include <winsock.h>
-#else
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-#ifndef SOCKADDR_IN
-    #define SOCKADDR_IN struct sockaddr_in
-#endif
-    #define SOCKET int
-#endif
+
 #include "G3D/ReferenceCount.h"
 #include "G3D/Array.h"
 #include "G3D/BinaryOutput.h"
-#include "G3D/NetAddress.h"
 
 namespace G3D {
 

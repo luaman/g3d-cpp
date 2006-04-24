@@ -2,19 +2,19 @@
  @file RegistryUtil.cpp
 
  @created 2006-04-06
- @edited  2006-04-06
+ @edited  2006-04-24
 
  Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
 */
 
-#include "G3D/RegistryUtil.h"
-#include "G3D/System.h"
+#include "G3D/platform.h"
 
 // This file is only used on Windows
 #ifdef G3D_WIN32
 
-#include "windows.h"
+#include "G3D/RegistryUtil.h"
+#include "G3D/System.h"
 
 // declare HKEY constants as needed for VC6
 #if !defined(HKEY_PERFORMANCE_DATA)

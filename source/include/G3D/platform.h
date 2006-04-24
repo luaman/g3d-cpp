@@ -139,6 +139,11 @@
 #      define G3D_DEPRECATED __declspec(deprecated)
 #   endif
 
+// Prevent Winsock conflicts by hiding the winsock API
+#ifndef _WINSOCKAPI_
+#   define _G3D_INTERNAL_HIDE_WINSOCK_
+#   define _WINSOCKAPI_
+#   endif
 
 // Disable 'name too long for browse information' warning
 #   pragma warning (disable : 4786)
@@ -205,7 +210,6 @@
 
     // Now set up external linking
 
-
     #ifdef _DEBUG
         // zlib and SDL were linked against the release MSVCRT; force
         // the debug version.
@@ -217,8 +221,15 @@
 #       define WIN32_LEAN_AND_MEAN 1
 #   endif
 
+
 #   define NOMINMAX 1
 #   include <windows.h>
+
+#ifdef _G3D_INTERNAL_HIDE_WINSOCK_
+#   undef _G3D_INTERNAL_HIDE_WINSOCK_
+#   undef _WINSOCKAPI_
+#endif
+
 
 #   if defined(_MSC_VER) && (_MSC_VER <= 1200)
         // VC6 std:: has signed/unsigned problems

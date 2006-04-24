@@ -29,6 +29,7 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> NetworkDevice now uses Winsock2.0 on Windows (controlled by the G3D_WINSOCK_MAJOR_VERSION/G3D_WINSOCK_MINOR_VERSION settings in NetAddress.h)
     <LI> G3D::Manipulator
     <LI> G3D::GApplet now runs installed G3D::GModules (except for graphics, which is left to the progrmamer)
     <LI> G3D::GApp::addModule, G3D::GApplet::addModule, G3D::GApp::removeModule, G3D::GApplet::removeModule

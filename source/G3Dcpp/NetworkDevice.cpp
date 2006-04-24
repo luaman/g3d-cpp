@@ -197,7 +197,7 @@ bool NetworkDevice::init(G3D::Log* _log) {
             debugLog->println("Starting WinSock networking.\n");
         }
         WSADATA wsda;		    
-        WSAStartup(MAKEWORD(1,1), &wsda);
+        WSAStartup(MAKEWORD(G3D_WINSOCK_MAJOR_VERSION, G3D_WINSOCK_MINOR_VERSION), &wsda);
 
         if (debugLog) {
             std::string machine = localHostName();

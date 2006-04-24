@@ -22,7 +22,6 @@
 #ifdef G3D_WIN32
 
 #include "GLG3D/GWindow.h"
-#include <windows.h>
 #include <string>
 
 namespace G3D {
