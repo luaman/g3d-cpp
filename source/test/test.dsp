@@ -91,6 +91,10 @@ SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tAABox.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tAABSPTree.cpp
 # End Source File
 # Begin Source File
@@ -148,6 +152,10 @@ SOURCE=.\tRandom.cpp
 # Begin Source File
 
 SOURCE=.\tReferenceCount.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tReliableConduit.cpp
 # End Source File
 # Begin Source File
 

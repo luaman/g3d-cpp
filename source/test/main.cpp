@@ -35,12 +35,18 @@ void testMatrix3();
 void perfMatrix3();
 
 void testCollisionDetection();
+void perfCollisionDetection();
 
 void testGChunk();
 
 void testQuat();
 
+void perfAABSPTree();
 void testAABSPTree();
+
+void testAABox();
+
+void testReliableConduit(NetworkDevice*);
 
 void perfSystemMemcpy();
 void testSystemMemcpy();
@@ -72,6 +78,7 @@ void testAtomicInt32();
 
 void testGThread();
 
+
 void testConvexPolygon2D() {
     Array<Vector2> v;
     v.append(Vector2(0, 0), Vector2(1,1), Vector2(2, 0));
@@ -79,69 +86,6 @@ void testConvexPolygon2D() {
     debugAssert(! C.contains(Vector2(10, 2)));
     debugAssert(C.contains(Vector2(1, 0.5)));
 }
-
-void measureBSPPerformance() {
-
-    Array<AABox>                array;
-    AABSPTree<AABox>            tree;
-    
-    const int NUM_POINTS = 100000;
-    
-    for (int i = 0; i < NUM_POINTS; ++i) {
-        Vector3 pt = Vector3(random(-10, 10), random(-10, 10), random(-10, 10));
-        AABox box(pt, pt + Vector3(.1f, .1f, .1f));
-        array.append(box);
-        tree.insert(box);
-    }
-
-    tree.balance();
-
-    uint64 bspcount, arraycount, boxcount;
-
-    // Run twice to get cache issues out of the way
-    for (int it = 0; it < 2; ++it) {
-        Array<Plane> plane;
-        plane.append(Plane(Vector3(-1, 0, 0), Vector3(3, 1, 1)));
-        plane.append(Plane(Vector3(1, 0, 0), Vector3(1, 1, 1)));
-        plane.append(Plane(Vector3(0, 0, -1), Vector3(1, 1, 3)));
-        plane.append(Plane(Vector3(0, 0, 1), Vector3(1, 1, 1)));
-        plane.append(Plane(Vector3(0,-1, 0), Vector3(1, 3, 1)));
-        plane.append(Plane(Vector3(0, 1, 0), Vector3(1, -3, 1)));
-
-        AABox box(Vector3(1, 1, 1), Vector3(3,3,3));
-
-        Array<AABox> point;
-
-        System::beginCycleCount(bspcount);
-        tree.getIntersectingMembers(plane, point);
-        System::endCycleCount(bspcount);
-
-        point.clear();
-
-        System::beginCycleCount(boxcount);
-        tree.getIntersectingMembers(box, point);
-        System::endCycleCount(boxcount);
-
-        point.clear();
-
-        System::beginCycleCount(arraycount);
-        for (int i = 0; i < array.size(); ++i) {
-            if (! array[i].culledBy(plane)) {
-                point.append(array[i]);
-            }
-        }
-        System::endCycleCount(arraycount);
-    }
-
-    printf("AABSPTree<AABox>::getIntersectingMembers(plane) %g Mcycles\n"
-           "AABSPTree<AABox>::getIntersectingMembers(box)   %g Mcycles\n"
-           "Culled by on Array<AABox>                       %g Mcycles\n\n", 
-           bspcount / 1e6, 
-           boxcount / 1e6,
-           arraycount / 1e6);
-}
-
-
 
 
 
@@ -287,91 +231,6 @@ void testPlane() {
 }
 
 
-void testAABoxCulledBy() {
-    const uint32 b00000000 = 0;
-    const uint32 b00000001 = 1;
-    const uint32 b00000010 = 2;
-    const uint32 b00000011 = 3;
-    const uint32 b00000100 = 4;
-    const uint32 b00000101 = 5;
-    const uint32 b00000110 = 6;
-    const uint32 b00000111 = 7;
-    const uint32 b00001000 = 8;
-
-    // Avoid unused variable warnings
-    (void)b00000000;
-    (void)b00000001;
-    (void)b00000010;
-    (void)b00000011;
-    (void)b00000100;
-    (void)b00000101;
-    (void)b00000110;
-    (void)b00000111;
-    (void)b00001000;
-
-    printf("AABox::culledBy\n");
-
-    Array<Plane> planes;
-
-    // Planes at +/- 1
-    planes.append(Plane(Vector3(-1,0,0), Vector3(1,0,0)));
-    planes.append(Plane(Vector3(1,0,0), Vector3(-1,0,0)));
-
-    AABox box(Vector3(-0.5, 0, 0), Vector3(0.5, 1, 1));
-    
-    uint32 parentMask, childMask;
-    int index = 0;
-    bool culled;
-
-    // Contained case
-    parentMask = (uint32)-1; childMask = 0; index = 0;
-    culled = box.culledBy(planes, index, parentMask, childMask);
-    debugAssert(index == -1);
-    debugAssert(! culled);
-    debugAssert(childMask == b00000000);
-
-    // Positive straddle
-    box = AABox(Vector3(0.5, 0, 0), Vector3(1.5, 1, 1));
-    parentMask = (uint32)-1; childMask = 0; index = 0;
-    culled = box.culledBy(planes, index, parentMask, childMask);
-    debugAssert(index == -1);
-    debugAssert(! culled);
-    debugAssert(childMask == b00000001);
-    
-    // Negative straddle
-    box = AABox(Vector3(-1.5, 0, 0), Vector3(0.5, 1, 1));
-    parentMask = (uint32)-1; childMask = 0; index = 0;
-    culled = box.culledBy(planes, index, parentMask, childMask);
-    debugAssert(index == -1);
-    debugAssert(! culled);
-    debugAssert(childMask == b00000010);
-
-    // Full straddle
-    box = AABox(Vector3(-1.5, 0, 0), Vector3(1.5, 1, 1));
-    parentMask = (uint32)-1; childMask = 0; index = 0;
-    culled = box.culledBy(planes, index, parentMask, childMask);
-    debugAssert(index == -1);
-    debugAssert(! culled);
-    debugAssert(childMask == b00000011);
-
-    // Negative culled 
-    box = AABox(Vector3(-2.5, 0, 0), Vector3(-1.5, 1, 1));
-    parentMask = (uint32)-1; childMask = 0; index = 0;
-    culled = box.culledBy(planes, index, parentMask, childMask);
-    debugAssert(index == 1);
-    debugAssert(culled);
-
-    // Positive culled 
-    box = AABox(Vector3(1.5, 0, 0), Vector3(2.5, 1, 1));
-    parentMask = (uint32)-1; childMask = 0; index = 0;
-    culled = box.culledBy(planes, index, parentMask, childMask);
-    debugAssert(index == 0);
-    debugAssert(culled);
-
-    GCamera camera;
-    camera.getClipPlanes(Rect2D::xywh(0,0,640,480), planes);
-}
-
 
 class A {
 public:
@@ -484,125 +343,6 @@ void measureNormalizationPerformance() {
 }
 
 
-
-void measureTriangleCollisionPerformance() {
-    printf("----------------------------------------------------------\n");
-    {
-    uint64 raw, opt;
-
-    Vector3 v0(0, 0, 0);
-    Vector3 v1(0, 0, -1);
-    Vector3 v2(-1, 0, 0);
-    Sphere sphere(Vector3(.5,1,-.5), 1);
-    Vector3 vel(0, -1, 0);
-    Vector3 location, normal;
-    Triangle triangle(v0, v1, v2);
-    int n = 1024;
-    int i;
-
-    System::beginCycleCount(raw);
-    for (i = 0; i < n; ++i) {
-        double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, Triangle(v0, v1, v2), location, normal);
-        (void)t;
-    }
-    System::endCycleCount(raw);
-
-    System::beginCycleCount(opt);
-    for (i = 0; i < n; ++i) {
-        double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, triangle, location, normal);
-        (void)t;
-    }
-    System::endCycleCount(opt);
-
-    printf("Sphere-Triangle collision detection on 3 vertices: %d cycles\n", (int)(raw / n));
-    printf("Sphere-Triangle collision detection on Triangle:   %d cycles\n", (int)(opt / n));
-    }
-    {
-        uint64 raw;
-
-        Vector3 v0(0, 0, 0);
-        Vector3 v1(0, 0, -1);
-        Vector3 v2(-1, 0, 0);
-        Sphere sphere(Vector3(.5,1,-.5), 1);
-        Vector3 vel(0, -1, 0);
-        Vector3 location, normal;
-        Triangle triangle(v0, v1, v2);
-        int n = 1024;
-        int i;
-        Ray ray = Ray::fromOriginAndDirection(Vector3(3,-1,-.25), vel);
-
-        System::beginCycleCount(raw);
-        for (i = 0; i < n; ++i) {
-            double t = ray.intersectionTime(triangle);
-                //CollisionDetection::collisionTimeForMovingPointFixedTriangle(
-                //sphere, vel, triangle, location, normal);
-            (void)t;
-        }
-        System::endCycleCount(raw);
-        printf("Miss:\n");
-        printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
-    }
-    {
-        uint64 raw;
-
-        Vector3 v0(0, 0, 0);
-        Vector3 v1(0, 0, -1);
-        Vector3 v2(-1, 0, 0);
-        Vector3 vel(0, -1, 0);
-        Vector3 location, normal;
-        Triangle triangle(v0, v1, v2);
-        int n = 1024;
-        int i;
-        Ray ray = Ray::fromOriginAndDirection(Vector3(-.15f,1,-.15f), vel);
-
-        System::beginCycleCount(raw);
-        for (i = 0; i < n; ++i) {
-            double t = ray.intersectionTime(triangle);
-            (void)t;
-        }
-        System::endCycleCount(raw);
-
-        printf("Hit:\n");
-        printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
-    }
-}
-
-
-void measureAABoxCollisionPerformance() {
-    printf("----------------------------------------------------------\n");
-
-    uint64 raw, opt;
-
-    AABox aabox(Vector3(-1, -1, -1), Vector3(1,2,3));
-    Box   box = aabox.toBox();
-
-    Vector3 pt1(0,10,0);
-    Vector3 vel1(0,-1,0);
-    Vector3 location, normal;
-    int n = 1024;
-    int i;
-
-    System::beginCycleCount(raw);
-    for (i = 0; i < n; ++i) {
-        double t = CollisionDetection::collisionTimeForMovingPointFixedBox(
-            pt1, vel1, box, location, normal);
-        (void)t;
-    }
-    System::endCycleCount(raw);
-
-    System::beginCycleCount(opt);
-    for (i = 0; i < n; ++i) {
-        double t = CollisionDetection::collisionTimeForMovingPointFixedAABox(
-            pt1, vel1, aabox, location);
-        (void)t;
-    }
-    System::endCycleCount(opt);
-
-    printf("Ray-Box:   %d cycles\n", (int)(raw / n));
-    printf("Ray-AABox: %d cycles\n", (int)(opt / n));
-}
-
-
 void testColor3uint8Array() {
     printf("Array<Color3uint8>\n");
     Array<Color3uint8> x(2);
@@ -694,7 +434,7 @@ void measureRDPushPopPerformance(RenderDevice* rd) {
 int main(int argc, char* argv[]) {
     RenderDevice* renderDevice = NULL;
 
-    NetworkDevice* networkDevice = NULL;//new NetworkDevice();
+    NetworkDevice* networkDevice = new NetworkDevice();
     if (networkDevice) {networkDevice->init();}
 
     std::string s;
@@ -706,8 +446,6 @@ int main(int argc, char* argv[]) {
         printf("%s\n", s.c_str());
     }
 
-    if (networkDevice) {networkDevice->cleanup();}
-    delete networkDevice;
 
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
@@ -728,10 +466,9 @@ int main(int argc, char* argv[]) {
 
         perfBinaryIO();
 
-        measureBSPPerformance();
-        measureTriangleCollisionPerformance();
-        measureAABoxCollisionPerformance();
-        measureAABoxCollisionPerformance();
+        perfAABSPTree();
+
+		perfCollisionDetection();
 
         measureMemsetPerformance();
         measureNormalizationPerformance();
@@ -762,6 +499,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+
+	testReliableConduit(networkDevice);
 
 	testAABSPTree();
 
@@ -796,8 +535,7 @@ int main(int argc, char* argv[]) {
     testPlane();
     printf("  passed\n");
 
-    testAABoxCulledBy();
-    printf("  passed\n");
+    testAABox();
 
     testRandom();
     printf("  passed\n");
@@ -846,6 +584,11 @@ int main(int argc, char* argv[]) {
         delete renderDevice;
     }
     
+    if (networkDevice) {
+		networkDevice->cleanup();
+	    delete networkDevice;
+	}
+
     return 0;
 }
 

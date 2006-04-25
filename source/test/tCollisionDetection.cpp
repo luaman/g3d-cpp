@@ -1,5 +1,123 @@
 #include "../include/G3DAll.h"
 
+static void measureTriangleCollisionPerformance() {
+    printf("----------------------------------------------------------\n");
+    {
+    uint64 raw, opt;
+
+    Vector3 v0(0, 0, 0);
+    Vector3 v1(0, 0, -1);
+    Vector3 v2(-1, 0, 0);
+    Sphere sphere(Vector3(.5,1,-.5), 1);
+    Vector3 vel(0, -1, 0);
+    Vector3 location, normal;
+    Triangle triangle(v0, v1, v2);
+    int n = 1024;
+    int i;
+
+    System::beginCycleCount(raw);
+    for (i = 0; i < n; ++i) {
+        double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, Triangle(v0, v1, v2), location, normal);
+        (void)t;
+    }
+    System::endCycleCount(raw);
+
+    System::beginCycleCount(opt);
+    for (i = 0; i < n; ++i) {
+        double t = CollisionDetection::collisionTimeForMovingSphereFixedTriangle(sphere, vel, triangle, location, normal);
+        (void)t;
+    }
+    System::endCycleCount(opt);
+
+    printf("Sphere-Triangle collision detection on 3 vertices: %d cycles\n", (int)(raw / n));
+    printf("Sphere-Triangle collision detection on Triangle:   %d cycles\n", (int)(opt / n));
+    }
+    {
+        uint64 raw;
+
+        Vector3 v0(0, 0, 0);
+        Vector3 v1(0, 0, -1);
+        Vector3 v2(-1, 0, 0);
+        Sphere sphere(Vector3(.5,1,-.5), 1);
+        Vector3 vel(0, -1, 0);
+        Vector3 location, normal;
+        Triangle triangle(v0, v1, v2);
+        int n = 1024;
+        int i;
+        Ray ray = Ray::fromOriginAndDirection(Vector3(3,-1,-.25), vel);
+
+        System::beginCycleCount(raw);
+        for (i = 0; i < n; ++i) {
+            double t = ray.intersectionTime(triangle);
+                //CollisionDetection::collisionTimeForMovingPointFixedTriangle(
+                //sphere, vel, triangle, location, normal);
+            (void)t;
+        }
+        System::endCycleCount(raw);
+        printf("Miss:\n");
+        printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
+    }
+    {
+        uint64 raw;
+
+        Vector3 v0(0, 0, 0);
+        Vector3 v1(0, 0, -1);
+        Vector3 v2(-1, 0, 0);
+        Vector3 vel(0, -1, 0);
+        Vector3 location, normal;
+        Triangle triangle(v0, v1, v2);
+        int n = 1024;
+        int i;
+        Ray ray = Ray::fromOriginAndDirection(Vector3(-.15f,1,-.15f), vel);
+
+        System::beginCycleCount(raw);
+        for (i = 0; i < n; ++i) {
+            double t = ray.intersectionTime(triangle);
+            (void)t;
+        }
+        System::endCycleCount(raw);
+
+        printf("Hit:\n");
+        printf("ray.intersectionTime(triangle): %d cycles\n", (int)(raw / n));
+    }
+}
+
+
+static void measureAABoxCollisionPerformance() {
+    printf("----------------------------------------------------------\n");
+
+    uint64 raw, opt;
+
+    AABox aabox(Vector3(-1, -1, -1), Vector3(1,2,3));
+    Box   box = aabox.toBox();
+
+    Vector3 pt1(0,10,0);
+    Vector3 vel1(0,-1,0);
+    Vector3 location, normal;
+    int n = 1024;
+    int i;
+
+    System::beginCycleCount(raw);
+    for (i = 0; i < n; ++i) {
+        double t = CollisionDetection::collisionTimeForMovingPointFixedBox(
+            pt1, vel1, box, location, normal);
+        (void)t;
+    }
+    System::endCycleCount(raw);
+
+    System::beginCycleCount(opt);
+    for (i = 0; i < n; ++i) {
+        double t = CollisionDetection::collisionTimeForMovingPointFixedAABox(
+            pt1, vel1, aabox, location);
+        (void)t;
+    }
+    System::endCycleCount(opt);
+
+    printf("Ray-Box:   %d cycles\n", (int)(raw / n));
+    printf("Ray-AABox: %d cycles\n", (int)(opt / n));
+}
+
+
 void testCollisionDetection() {
     printf("CollisionDetection ");
 
@@ -97,4 +215,10 @@ void testCollisionDetection() {
     }
 
     printf("passed\n");
+}
+
+
+void perfCollisionDetection() {
+	measureTriangleCollisionPerformance();
+	measureAABoxCollisionPerformance();
 }
