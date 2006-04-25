@@ -15,6 +15,14 @@
 #include "G3D/BinaryInput.h"
 #include "G3D/BinaryOutput.h"
 #include "G3D/Crypto.h"
+
+#ifdef G3D_WIN32
+#	ifndef _WIN32_WINNT
+// Required for Wincrypt
+#		define _WIN32_WINNT 0x0400
+#	endif
+#	include "Wincrypt.h"
+#endif
 #include "BigInt.h"
 
 namespace G3D {
@@ -67,7 +75,7 @@ void BigInt::shift255(int count) {
         // Shift right
         uint8* old = byte;
         int oldCount = numBytes;
-        numBytes = max(0, numBytes + count);
+        numBytes = G3D::max(0, numBytes + count);
 
         if (numBytes == 0) {
             sgn = 0;
@@ -217,8 +225,52 @@ BigInt::BigInt(const char* s) : byte(NULL), numBytes(0), sgn(0) {
 
 
 BigInt BigInt::random(const BigInt& low, const BigInt& high) {
-    // TODO:
-    return BigInt();
+	debugAssert(high >= low);
+
+	BigInt range = high - low;
+
+	BigInt result;
+	result.setSize(range.numBytes);
+	result.sgn = 1;
+
+	// Fill the buffer with random bytes
+#	ifdef _WIN32
+		HCRYPTPROV hProv;
+
+		BOOL success = CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+		debugAssert(success); 
+		
+		success = CryptGenRandom(hProv, result.numBytes, result.byte);
+		debugAssert(success);
+
+		success = CryptReleaseContext(hProv, 0);
+		debugAssert(success);
+#	else
+#		error BigInt::random only implemented on Win32.  Use OpenSSL.
+#	endif
+
+	result.stripLeadingZeros();
+	result = result + low;
+
+    return result;
+}
+
+
+BigInt BigInt::max(const BigInt& other) const {
+	if (*this > other) {
+		return *this;
+	} else {
+		return other;
+	}
+}
+
+
+BigInt BigInt::min(const BigInt& other) const {
+	if (*this < other) {
+		return *this;
+	} else {
+		return other;
+	}
 }
 
 
@@ -282,7 +334,7 @@ BigInt BigInt::operator+(const BigInt& y) const {
     // At this point we only have to compute the sum of two positive numbers
     // (although the sign bits in x and y may be arbitrary).
 
-    int n = max(x.numBytes, y.numBytes);
+    int n = G3D::max(x.numBytes, y.numBytes);
     int i = 0;
     int carry = 0;
 
@@ -394,7 +446,7 @@ BigInt BigInt::operator-(const BigInt& y) const {
 
 uint64 BigInt::closeDiv(const BigInt& x, const BigInt& y, BigInt& remainder) {
     // Compare the top several digits (unless y only has one digit)
-    int numDigits = min(6, y.size());
+    int numDigits = G3D::min(6, y.size());
 
     debugAssert(x.size() <= y.size() + 1);
 
@@ -437,6 +489,8 @@ uint64 BigInt::closeDiv(const BigInt& x, const BigInt& y, BigInt& remainder) {
 
 
 BigInt BigInt::operator/(const BigInt& _y) const {
+
+	alwaysAssertM(false, "Division not implemented");
 
     const BigInt& _x = *this;
 
@@ -557,7 +611,7 @@ BigInt BigInt::operator&(const BigInt& x) const {
     BigInt result;
 
     // The result can be no longer than the shortest value
-    result.setSize(min(x.numBytes, numBytes));
+    result.setSize(G3D::min(x.numBytes, numBytes));
 
     for (int i = 0; i < result.numBytes; ++i) {
         result.byte[i] = byte[i] & x.byte[i];
@@ -571,7 +625,7 @@ BigInt BigInt::operator|(const BigInt& x) const {
     BigInt result;
 
     // The result can be no shorter than the longest value
-    result.setSize(max(x.numBytes, numBytes));
+    result.setSize(G3D::max(x.numBytes, numBytes));
 
     for (int i = 0; i < result.numBytes; ++i) {
         // Let the operator[] do the boundary case work for us
@@ -586,7 +640,7 @@ BigInt BigInt::operator^(const BigInt& x) const {
     BigInt result;
 
     // The result size depends on values.  Conservatively go long
-    result.setSize(max(x.numBytes, numBytes));
+    result.setSize(G3D::max(x.numBytes, numBytes));
 
     for (int i = 0; i < result.numBytes; ++i) {
         // Let the operator[] do the boundary case work for us

@@ -57,6 +57,7 @@ private:
     /** 0, 1, or -1.  Always zero for the number zero */
     int         sgn;
 
+	/** n is the number of bytes */
     void setSize(int n);
 
     /** Parses the hex or decimal representation and 
@@ -205,6 +206,10 @@ public:
     BigInt abs() const;
 
     BigInt pow(int) const;
+
+	BigInt max(const BigInt& other) const;
+
+	BigInt min(const BigInt& other) const;
 
     /** Computes this^p % m without huge intermediate results.
       */

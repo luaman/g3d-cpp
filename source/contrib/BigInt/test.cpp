@@ -1,7 +1,6 @@
 
 #include <G3DAll.h>
 #include "BigInt.h"
-//#include "BigInt.cpp"
 
 using namespace G3D;
 
@@ -190,12 +189,21 @@ void testConvert() {
 
 
 int main(int argc, const char* argv) {
+
+	for (int i = 0; i < 20; ++i) {
+		BigInt x = BigInt::random(0, 255);
+		debugPrintf("%d\n", x.int32());
+	}
+
+	/*
     testParser();
     testCompare();
     testAdd();
     testMul();
     testPow();
     testConvert();
+*/
+
 /*
     BigInt x = 1024;
     BigInt y = 16;
