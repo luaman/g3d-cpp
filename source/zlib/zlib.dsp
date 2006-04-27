@@ -91,10 +91,6 @@ SOURCE=.\inftrees.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\minigzip.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\trees.c
 # End Source File
 # Begin Source File
