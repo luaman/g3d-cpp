@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2006-02-07
+  @edited  2006-04-26
  */ 
 
 
@@ -17,6 +17,7 @@
 #include "G3D/Sphere.h"
 #include "G3D/AABox.h"
 #include "G3D/Box.h"
+#include "G3D/System.h"
 #include "GLG3D/PosedModel.h"
 
 namespace G3D {
@@ -97,6 +98,13 @@ private:
     void reset();
 
 public:
+    static void* operator new(size_t size) {
+        return System::malloc(size);
+    }
+
+    static void operator delete(void* p) {
+        System::free(p);
+    }
 
     virtual ~IFSModel();
 

@@ -1039,7 +1039,7 @@ RealTime System::getLocalTime() {
 
 ////////////////////////////////////////////////////////////////
 class BufferPool {
-private:
+public:
 
     /** Only store buffers up to these sizes (in bytes) in each pool->
         Different pools have different management strategies.
@@ -1047,10 +1047,17 @@ private:
         A large block is preallocated for tiny buffers; they are used with
         tremendous frequency.  Other buffers are allocated as demanded.
       */
-    enum {tinyBufferSize = 64, smallBufferSize = 1000, medBufferSize = 5000};
+    enum {tinyBufferSize = 128, smallBufferSize = 1024, medBufferSize = 4096};
 
-    /** Most buffers we're allowed to store. */
-    enum {maxTinyBuffers = 5000, maxSmallBuffers = 100, maxMedBuffers = 30};
+    /** 
+       Most buffers we're allowed to store.
+       64000 * 128  = 8 MB
+        8192 * 1024 = 8 MB
+        1024 * 4096 = 4 MB
+     */
+    enum {maxTinyBuffers = 64000, maxSmallBuffers = 8192, maxMedBuffers = 1024};
+
+private:
 
     class MemBlock {
     public:
@@ -1389,6 +1396,36 @@ public:
         // Free; the buffer pools are full or this is too big to store.
         ::free((uint8*)ptr - 4);
     }
+
+    std::string performance() const {
+        if (totalMallocs > 0) {
+            int pooled = mallocsFromTinyPool +
+                         mallocsFromSmallPool + 
+                         mallocsFromMedPool;
+
+            int total = totalMallocs;
+
+            return format("malloc performance: %5.1f%% <= %db, %5.1f%% <= %db, "
+                          "%5.1f%% <= %db, %5.1f%% > %db",
+                          100.0 * mallocsFromTinyPool  / total,
+                          BufferPool::tinyBufferSize,
+                          100.0 * mallocsFromSmallPool / total,
+                          BufferPool::smallBufferSize,
+                          100.0 * mallocsFromMedPool   / total,
+                          BufferPool::medBufferSize,
+                          100.0 * (1.0 - (double)pooled / total),
+                          BufferPool::medBufferSize);
+        } else {
+            return "No System::malloc calls made yet.";
+        }
+    }
+
+    std::string status() const {
+        return format("allocated shared buffers: %5d/%d x %db, %5d/%d x %db, %5d/%d x %db",
+            maxTinyBuffers - tinyPoolSize, maxTinyBuffers, tinyBufferSize,
+            maxSmallBuffers - smallPoolSize, maxSmallBuffers, smallBufferSize,
+            maxMedBuffers - medPoolSize, maxMedBuffers, medBufferSize);
+    }
 };
 
 // Dynamically allocated because we need to ensure that
@@ -1398,23 +1435,15 @@ static BufferPool* bufferpool = NULL;
 
 std::string System::mallocPerformance() {    
 #ifndef NO_BUFFERPOOL
-    if (bufferpool->totalMallocs > 0) {
+    return bufferpool->performance();
+#else
+	return "NO_BUFFERPOOL";
+#endif
+}
 
-        int pooled = bufferpool->mallocsFromTinyPool +
-                     bufferpool->mallocsFromSmallPool + 
-                     bufferpool->mallocsFromMedPool;
-
-        int total = bufferpool->totalMallocs;
-
-        return format("malloc perf:  %5.1f%% tiny   %5.1f%% small   "
-                      "%5.1f%% med   %5.1f%% heap", 
-                      100.0 * bufferpool->mallocsFromTinyPool  / total,
-                      100.0 * bufferpool->mallocsFromSmallPool / total,
-                      100.0 * bufferpool->mallocsFromMedPool   / total,
-                      100.0 * (1.0 - (double)pooled / total));
-    } else {
-        return "No System::malloc calls made yet.";
-    }
+std::string System::mallocStatus() {    
+#ifndef NO_BUFFERPOOL
+    return bufferpool->status();
 #else
 	return "NO_BUFFERPOOL";
 #endif
@@ -1432,7 +1461,7 @@ void System::resetMallocPerformanceCounters() {
 
 
 #ifndef NO_BUFFERPOOL
-void initMem() {
+inline void initMem() {
     // Putting the test here ensures that the system is always
     // initialized, even when globals are being allocated.
     static bool initialized = false;

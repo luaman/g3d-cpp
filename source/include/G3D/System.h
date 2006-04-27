@@ -8,7 +8,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2005-09-06
+  @edited  2006-04-26
  */
 
 #ifndef G3D_SYSTEM_H
@@ -161,6 +161,12 @@ public:
         "heap" memory was slow to allocate; the other data sizes are comparatively fast.*/
     static std::string mallocPerformance();
     static void resetMallocPerformanceCounters();
+
+    /** 
+       Returns a string describing the current usage of the buffer pools used for
+       optimizing System::malloc.
+     */
+    static std::string mallocStatus();
 
     /**
      Free data allocated with System::malloc.

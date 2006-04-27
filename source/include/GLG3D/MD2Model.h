@@ -176,6 +176,14 @@ protected:
 
     class PosedMD2Model : public PosedModel {
     public:
+        static void* operator new(size_t size) {
+            return System::malloc(size);
+        }
+
+        static void operator delete(void* p) {
+            System::free(p);
+        }
+
         MD2ModelRef             model;
         CoordinateFrame         cframe;
         Pose                    pose;

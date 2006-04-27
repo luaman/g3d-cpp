@@ -98,10 +98,11 @@ however contrib/AudioDevice provides code to help you use some popular audio lib
 The library contains code, documentation, and demos from over 30 
 \link contributors contributors \endlink.  The team leads are:
 
-<B>Morgan McGuire</B> has been the %G3D project manager and Windows team lead 
-since 2000.  He is a 3D software consultant with a Masters degree in electrical engineering from MIT and a 
-PhD in computer graphics from Brown University.  He has been a senior architect at several 
-companies in the graphics industry, worked on several commercial games including <I>Titan Quest</I>, 
+<B>Dr. Morgan McGuire</B> has been the %G3D project manager and Windows team lead 
+since 2000.  He is a professor of computer science at Williams College and
+3D software consultant.  He holds a Masters degree in electrical engineering from MIT and a 
+PhD in computer graphics from Brown University.  Morgan has been a senior architect at several 
+companies in the graphics industry, worked on several commercial games including IronLore's <I>Titan Quest</I>, 
 and published award-winning research papers.
 
 <B>Corey Taylor</B> is the %G3D Linux team lead.  
@@ -110,7 +111,9 @@ experience covers both Windows, Linux and RTOS fields developing flight control
 and planning software, video and input control systems, and embedded development
 and testing.  He is currently developing 3D games at Electronic Arts.
   
-<B>Gabe Taubman</B> and <B>Benjamin Landon</B> provide OS X support.  Gabe has been a Mac user since 1998
+<B>Casey O'Donnel</B> is the %G3D OS X team lead.
+
+<B>Gabe Taubman</B> and <B>Benjamin Landon</B> provide additional OS X support.  Gabe has been a Mac user since 1998
 and took first prize in the 2004 undergraduate ACM SIGGRAPH Student Research Competition 
 with his %G3D-based blast wave simulator.  He is currently a junior at Brown University.
 Ben is a senior engineer at Sensable Technologies and has 20 years of experience in 

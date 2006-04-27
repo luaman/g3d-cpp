@@ -29,6 +29,10 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> G3D::System::mallocStatus
+    <LI> IFSModel and MD2Model now allocated their posed models using System::malloc
+    <LI> Increased the memory maintained by G3D::System for buffer pools up to a total of 20 MB: 8 MB tiny (preallocated), 8 MB small, 4 MB medium.  This was observed to 
+         dramatically increase performance (15x) in real programs that were performance limited by memory allocation time.
     <LI> NetworkDevice now uses Winsock2.0 on Windows (controlled by the G3D_WINSOCK_MAJOR_VERSION/G3D_WINSOCK_MINOR_VERSION settings in NetAddress.h)
     <LI> G3D::Manipulator
     <LI> G3D::GApplet now runs installed G3D::GModules (except for graphics, which is left to the progrmamer)
