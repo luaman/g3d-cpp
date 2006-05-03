@@ -289,6 +289,7 @@ void Demo::onGraphics(RenderDevice* rd) {
     app->debugPrintf("ESC to quit\n");
 
     app->debugPrintf("%s\n", System::mallocPerformance().c_str());
+    app->debugPrintf("%s\n", System::mallocStatus().c_str());
 
 }
 

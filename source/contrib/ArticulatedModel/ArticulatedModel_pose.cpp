@@ -4,11 +4,10 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-11-20
-  @edited  2005-11-25
+  @edited  2006-05-03
 
-  Copyright 2004-2005, Morgan McGuire
+  Copyright 2004-2006, Morgan McGuire
  */
-//todo:hack reflections for cards w/o cube maps
 #include "ArticulatedModel.h"
 
 class PosedArticulatedModel : public PosedModel {
@@ -25,7 +24,19 @@ private:
     /** Object to world space */
     CoordinateFrame         cframe;
 
-    std::string             _name;
+    const char*             _name;
+
+    inline PosedArticulatedModel(const CoordinateFrame& c, const char* n) : cframe(c), _name(n) {}
+
+public:
+
+    static void* operator new(size_t size) {
+        return System::malloc(size);
+    }
+
+    static void operator delete(void* p) {
+        System::free(p);
+    }
 
 protected:
 
@@ -135,6 +146,58 @@ public:
 };
 
 
+void ArticulatedModel::renderNonShadowed(
+    const Array<PosedModelRef>& posedArray, 
+    RenderDevice* rd, 
+    const LightingRef& lighting) {
+
+    // TODO : Optimize
+    for (int i = 0; i < posedArray.size(); ++i) {
+        debugAssertM(
+            dynamic_cast<const PosedArticulatedModel*>(posedArray[i].getPointer()),
+            "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
+        posedArray[i]->renderNonShadowed(rd, lighting);
+    }
+}
+
+
+void ArticulatedModel::renderShadowMappedLightPass(
+    const Array<PosedModelRef>&    posedArray, 
+    RenderDevice*                   rd, 
+    const GLight&                   light, 
+    const Matrix4&                  lightMVP, 
+    const TextureRef&               shadowMap) {
+
+    // TODO : Optimize
+    for (int i = 0; i < posedArray.size(); ++i) {
+        debugAssertM(
+            dynamic_cast<const PosedArticulatedModel*>(posedArray[i].getPointer()),
+            "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
+        posedArray[i]->renderShadowMappedLightPass(rd, light, lightMVP, shadowMap);
+    }
+}
+
+
+void ArticulatedModel::extractOpaquePosedAModels(
+    Array<PosedModelRef>&   all, 
+    Array<PosedModelRef>&   opaqueAmodels) {
+    
+    for (int i = 0; i < all.size(); ++i) {
+        ReferenceCountedPointer<PosedArticulatedModel> m = all[i].downcast<PosedArticulatedModel>();
+
+        if (m.notNull() && ! m->hasTransparency()) {
+            // This is a most-derived subclass and is opaque
+
+            opaqueAmodels.append(m);
+            all.fastRemove(i);
+            // Iterate over again
+            --i;
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////
+
 /** PS14 often needs a dummy texture map in order to enable a combiner */
 static TextureRef whiteMap() {
     static TextureRef map;
@@ -184,10 +247,8 @@ void ArticulatedModel::Part::pose(
     if (hasGeometry()) {
 
         for (int t = 0; t < triListArray.size(); ++t) {
-            PosedArticulatedModel* posed = new PosedArticulatedModel();
+            PosedArticulatedModel* posed = new PosedArticulatedModel(frame, model->name.c_str());
 
-            posed->cframe = frame;
-            posed->_name = model->name + ": " + name;
             posed->partIndex = partIndex;
             posed->listIndex = t;
             posed->model = model;
@@ -206,15 +267,16 @@ void ArticulatedModel::Part::pose(
     }
 }
 
-
-
 void PosedArticulatedModel::render(RenderDevice* renderDevice) const {
 
     const ArticulatedModel::Part& part = model->partArray[partIndex];
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
     const SuperShader::Material& material = triList.material;
 
-    renderDevice->pushState();
+    // Only configure color if the renderer requires it
+    if (renderDevice->colorWrite()) {
+        renderDevice->pushState();
+
         renderDevice->setTexture(0, material.diffuse.map);
         renderDevice->setColor(material.diffuse.constant);
 
@@ -223,18 +285,19 @@ void PosedArticulatedModel::render(RenderDevice* renderDevice) const {
 
 
         if (triList.twoSided) {
-            renderDevice->pushState();
             renderDevice->enableTwoSidedLighting();
-            renderDevice->setCullFace(RenderDevice::CULL_NONE);
         }
+    }
 
-        sendGeometry(renderDevice);
+    if (triList.twoSided) {
+        renderDevice->setCullFace(RenderDevice::CULL_NONE);
+    }
 
-        if (triList.twoSided) {
-            renderDevice->popState();
-        }
+    sendGeometry(renderDevice);
 
-    renderDevice->popState();
+    if (renderDevice->colorWrite()) {
+        renderDevice->popState();
+    }
 }
 
 
@@ -260,7 +323,6 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
     bool renderedOnce = false;
 
     rd->pushState();
-
         rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
 
         switch (ArticulatedModel::profile()) {
@@ -278,7 +340,7 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
 
         default:
             debugAssertM(false, "Fell through switch");
-        }
+        }        
     rd->popState();
 
     return renderedOnce;
@@ -387,7 +449,7 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
         }
 
         if (renderedOnce) {
-            // Make sure we add this pass to the previous terms
+            // Make sure we add this pass to the previous already-rendered terms
             rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
         }
 
@@ -638,7 +700,7 @@ void PosedArticulatedModel::renderNonShadowed(
         bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
 
         if (triList.twoSided && ps20) {
-            // gl_FrontFacing doesn't work on most cards, so we have to draw two-sided objects twice
+            // gl_FrontFacing doesn't work on most cards inside the shader, so we have to draw two-sided objects twice
             rd->setCullFace(RenderDevice::CULL_FRONT);
             triList.nonShadowedShader->args.set("backside", -1.0f);
             renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);

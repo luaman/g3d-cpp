@@ -32,6 +32,31 @@ private:
     friend class Part;
 
 public:
+
+    /** Renders an array of PosedAModels in the order that they appear in the array, taking advantage of 
+        the fact that all objects have the same subclass to optimize the rendering calls.*/
+    static void renderNonShadowed(
+        const Array<PosedModelRef>& posedArray, 
+        RenderDevice* rd, 
+        const LightingRef& lighting);
+
+    /** Renders an array of PosedAModels in the order that they appear in the array, taking advantage of 
+        the fact that all objects have the same subclass to optimize the rendering calls.*/
+    static void renderShadowMappedLightPass(
+        const Array<PosedModelRef>& posedAModelArray, 
+        RenderDevice* rd, 
+        const GLight& light, 
+        const Matrix4& lightMVP, 
+        const TextureRef& shadowMap);
+
+    /** Removes the opaque PosedAModels from array @a all and appends them to the opaqueAmodels array (transparents
+        must be rendered inline with other model types).
+        This produces an array for the array versions of renderNonShadowed and renderShadowMappedLightPass. 
+        */
+    static void extractOpaquePosedAModels(
+        Array<PosedModelRef>& all, 
+        Array<PosedModelRef>& opaqueAmodels);
+
     /** Classification of a graphics card. 
         FIXED_FUNCTION  Use OpenGL fixed function lighting only.
         PS14            Use pixel shader 1.4 (texture crossbar; adds specular maps)
@@ -59,9 +84,17 @@ public:
 
     static const Pose DEFAULT_POSE;
 
+    /**
+      A named sub-set of the model that has a single reference frame.  A Part's reference
+      is relative to its parent's.
+
+      Transparent rendering may produce artifacts if Parts are large or non-convex. 
+     */
     class Part {
     public:
 
+        /** A set of triangles that have a single material and can be rendered as a 
+            single OpenGL primitive. */
 	    class TriList {
 	    public:
 		    Array<int>		  	    indexArray;
@@ -90,7 +123,6 @@ public:
                 Must be invoked manually if the geometry is later changed. */
             void computeBounds(const Part& parentPart);
 	    };
-
 
         /** Each part must have a unique name */
         std::string                 name;
@@ -164,7 +196,8 @@ public:
     /** Returns the index in partArray of the part with this name */
     Table<std::string, int>     partNameToIndex;
 
-    /** All parts. */
+    /** All parts. Root parts are identified by (parent == -1).
+     */
     Array<Part>                 partArray;
 
     /** Update normals, var, and shaders on all Parts.  If you modify Parts explicitly,

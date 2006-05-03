@@ -11,6 +11,9 @@ const ArticulatedModel::Pose ArticulatedModel::DEFAULT_POSE;
 ArticulatedModel::GraphicsProfile ArticulatedModel::profile() {
     static GraphicsProfile p = UNKNOWN;
 
+// Temporary, since shaders are slow
+p = FIXED_FUNCTION;
+
     if (p == UNKNOWN) {
         if (GLCaps::supports_GL_ARB_shader_objects()) {
             p = PS20;
@@ -90,10 +93,6 @@ void ArticulatedModel::init3DS(const std::string& filename, const CoordinateFram
         }
 
         part.cframe = object.keyframe.approxCoordinateFrame();
-        debugAssert(part.cframe.rotation.getColumn(0).isFinite());
-        debugAssert(part.cframe.rotation.getColumn(1).isFinite());
-        debugAssert(part.cframe.rotation.getColumn(2).isFinite());
-
         // Scale and rotate the cframe positions, but do not translate them
         part.cframe.translation = xform.rotation * part.cframe.translation;
 
