@@ -88,6 +88,14 @@ private:
     /** Shared by all models */
     static VARAreaRef           varArea;
 
+    // Used by the last object to render.  If the
+    // new model is the same as the old one, an upload
+    // step can be avoided.
+    static IFSModelRef          lastModel;
+    static VAR                  lastVertexVAR;
+    static VAR                  lastNormalVAR;
+    static VAR                  lastTexCoordVAR;
+
     /** Only called from create */
     IFSModel();
     

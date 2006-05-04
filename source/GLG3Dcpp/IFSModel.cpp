@@ -6,7 +6,7 @@
   @cite Original IFS code by Nate Robbins
 
   @created 2003-11-12
-  @edited  2006-02-24
+  @edited  2006-04-30
  */ 
 
 
@@ -20,7 +20,12 @@
 
 namespace G3D {
 
-VARAreaRef IFSModel::varArea = NULL;
+// Cached between render calls
+VARAreaRef  IFSModel::varArea;
+IFSModelRef IFSModel::lastModel;
+VAR         IFSModel::lastVertexVAR;
+VAR         IFSModel::lastNormalVAR;
+VAR         IFSModel::lastTexCoordVAR;
 
 
 IFSModel::IFSModel() {
@@ -310,7 +315,7 @@ IFSModel::PosedIFSModel::PosedIFSModel(
 
 void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
 
-    renderDevice->pushState();
+//    renderDevice->pushState();
 
         if (useMaterial) {
             material.configure(renderDevice);
@@ -318,7 +323,7 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
 
         renderDevice->setObjectToWorldMatrix(coordinateFrame());
 
-        const size_t varSize = 1024 * 1024;
+        const size_t varSize = 2 * 1024 * 1024;
         if (IFSModel::varArea.isNull()) {
             // Initialize VAR
             IFSModel::varArea = VARArea::create(varSize);
@@ -326,16 +331,41 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
 
         if (perVertexNormals) {
             renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+            size_t modelSize = sizeof(Vector3) * 2 * model->geometry.vertexArray.size() + 
+								  sizeof(Vector2) * model->texArray.size();
+
             if (! IFSModel::varArea.isNull() && 
-				 (varArea->totalSize() >= sizeof(Vector3) * 2 * model->geometry.vertexArray.size() + 
-										  sizeof(Vector2) * model->texArray.size())) {
+			    (varArea->totalSize() >= modelSize)) {
                 // Can use VAR
 
-                varArea->reset();
+                if (varArea->freeSize() < modelSize + 128) {
+                    // Not enough free space left in the common area;
+                    // reset it to allocate new arrays (this might
+                    // stall the pipeline).  Otherwise, just allocate
+                    // on top of what was already there.
+                    varArea->reset();
 
-                VAR vertex(model->geometry.vertexArray, IFSModel::varArea);
-                VAR normal(model->geometry.normalArray, IFSModel::varArea);
-				VAR tex(model->texArray, IFSModel::varArea);
+                    // Resetting invalidates the old VAR arrays.
+                    // Just knock out the lastModel to prevent a match.
+
+                    lastModel = NULL;
+                }
+
+                VAR vertex;
+                VAR normal;
+				VAR tex;
+
+                if (model != lastModel) {
+                    // Upload new data (cache miss)
+                    lastModel       = model;
+                    lastVertexVAR   = VAR(model->geometry.vertexArray, IFSModel::varArea);
+                    lastNormalVAR   = VAR(model->geometry.normalArray, IFSModel::varArea);
+				    lastTexCoordVAR = VAR(model->texArray, IFSModel::varArea);
+                }
+
+                vertex = lastVertexVAR;
+                normal = lastNormalVAR;
+                tex    = lastTexCoordVAR;
 
                 renderDevice->beginIndexedPrimitives();
 					if (model->texArray.size() > 0) {
@@ -402,7 +432,7 @@ void IFSModel::PosedIFSModel::render(RenderDevice* renderDevice) const {
 				}
             renderDevice->endPrimitive();
         }
-    renderDevice->popState();
+  //  renderDevice->popState();
 }
 
 

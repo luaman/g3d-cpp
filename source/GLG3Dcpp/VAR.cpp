@@ -59,6 +59,10 @@ void VAR::init(
 	// Ensure that the next memory address is 8-byte aligned
 	size_t pointerOffset = ((8 - (size_t)_pointer % 8) % 8);
 
+    if (_numElements == 0) {
+        pointerOffset = 0;
+    }
+
     // Adjust pointer to new 8-byte alignment
     _pointer = (uint8*)_pointer + pointerOffset;
 
@@ -67,11 +71,13 @@ void VAR::init(
 	alwaysAssertM(newAlignedSize <= area->freeSize(),
         "VARArea too small to hold new VAR (possibly due to rounding to 8-byte boundaries).");
 
-    // Update VARArea values
-    area->updateAllocation(newAlignedSize);
-
 	// Upload the data
-    uploadToCard(sourcePtr, 0, size);
+    if (size > 0) {
+        // Update VARArea values
+        area->updateAllocation(newAlignedSize);
+
+        uploadToCard(sourcePtr, 0, size);
+    }
 }
 
 
@@ -100,7 +106,9 @@ void VAR::update(
         " be using an unsupported type in a vertex array.");
 	
 	// Upload the data
-    uploadToCard(sourcePtr, 0, size);
+    if (size > 0) {
+        uploadToCard(sourcePtr, 0, size);
+    }
 }
 
 
@@ -120,7 +128,6 @@ void VAR::set(int index, const void* value, GLenum glformat, size_t eltSize) {
 
 
 void VAR::uploadToCard(const void* sourcePtr, int dstPtrOffset, size_t size) {
-
     void* ptr = (void*)((uint)_pointer + dstPtrOffset);
 
     switch (VARArea::mode) {

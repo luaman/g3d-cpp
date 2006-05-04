@@ -31,7 +31,7 @@ public:
 
     class App*          app;
 
-    TranslationController controller;
+    ThirdPersonManipulatorRef manipulator;
 
     float               angle;
     GameTime            gameTime;
@@ -76,10 +76,27 @@ public:
 
 
 Demo::Demo(App* _app) : GApplet(_app), app(_app) {
+    manipulator = new ThirdPersonManipulator();
+    addModule(manipulator);
 }
 
 void Demo::onInit()  {
+    ifsModel = IFSModel::create("c:/projects/cpp/source/data/ifs/p51-mustang.ifs");
 
+    CoordinateFrame obj = CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(30)), Vector3(2, 0, 0));
+    
+    app->debugCamera.setPosition(Vector3(5,5,5));
+    app->debugCamera.lookAt(Vector3::zero());
+
+
+    // World control
+//    manipulator->setFrame(obj);
+//    manipulator->setControlFrame(CoordinateFrame());
+
+
+    // Local control
+    manipulator->setFrame(obj);
+    manipulator->setControlFrame(obj);
 }
 
 
@@ -95,7 +112,6 @@ void Demo::onLogic() {
 
 void Demo::onNetwork() {
 	// Poll net messages here
-    controller.onNetwork();
 }
 
 
@@ -104,14 +120,10 @@ void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     // based on any of the three arguments.
 
     gameTime += sdt;
-
-    controller.onSimulation(rdt, sdt, idt);
 }
 
 
 void Demo::onUserInput(UserInput* ui) {
-    controller.onUserInput(ui);
-
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
@@ -140,32 +152,47 @@ void Demo::onGraphics(RenderDevice* rd) {
  
     app->renderDevice->clear();
     if (app->sky.notNull()) {
-        app->sky->render(rd, LightingParameters(toSeconds(10,00,00, AM)));
+        app->sky->render(rd, LightingParameters(G3D::toSeconds(10,00,00, AM)));
     }
 
-    app->renderDevice->pushState();
-    controller.onGraphics(rd);
-//        Draw::axes(rd);
-    app->renderDevice->popState();
-    
-    /*
-    rd->push2D();
-        GImage im(1024, 768, 3);
-        GImage::makeCheckerboard(im);        
-        TextureRef t = Texture::fromGImage("Checker", im, TextureFormat::AUTO, Texture::DIM_2D_NPOT, Texture::Parameters::video());
-        rd->setTexture(0, t);
-        Draw::rect2D(t->rect2DBounds(), rd);
-    rd->pop2D();
-    */
+    static Array<PosedModelRef> posedArray;
+    static Array<PosedModel2DRef> posed2DArray;
+
+    static bool init = false;
+
+    if (! init) {
+        posedArray.fastClear();
+        posed2DArray.fastClear();
+
+        for (int i = 0; i < 1000; ++i) {
+            posedArray.append(ifsModel->pose(CoordinateFrame(Vector3(i / 10,i % 10,0)/10.0f)));
+        }
+
+        init = true;
+    }
+
+    rd->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() * 0.5f));
+    rd->enableLighting();
+    rd->setAmbientLightColor(Color3::white() * 0.5);
+
+//  posedArray.append(ifsModel->pose(manipulator->frame()));
+    for (int i = 0; i < posedArray.size(); ++i) {
+        posedArray[i]->render(rd);
+    }
+
+//   GApplet::onGraphics(rd);
+
+//   Draw::axes(rd);
+
 }
 
 
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(true);
-    debugShowRenderingStats = false;
+    debugShowRenderingStats = true;
 
-//    debugController.setMouseMode(FPCameraController::MOUSE_SCROLL_AT_EDGE);
+    debugController.setMouseMode(FPCameraController::MOUSE_DIRECT_RIGHT_BUTTON);
 
     // Load objects here
     sky = Sky::create(NULL, dataDir + "sky/");

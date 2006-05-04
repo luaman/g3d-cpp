@@ -44,7 +44,7 @@ public:
      if the agent is mutated. 
      */
     virtual void getPosedModel(
-        Array<PosedModelRef>& posedArray, 
+        Array<PosedModelRef>& posedArray,
         Array<PosedModel2DRef>& posed2DArray) = 0;
 
     virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt) = 0;

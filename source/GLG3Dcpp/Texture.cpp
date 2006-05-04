@@ -1222,6 +1222,10 @@ Texture::~Texture() {
 
 unsigned int Texture::newGLTextureID() {
     unsigned int t;
+
+    // Clear the OpenGL error flag
+    glGetError();
+
     glGenTextures(1, &t);
 
     alwaysAssertM(glGetError() != GL_INVALID_OPERATION, 

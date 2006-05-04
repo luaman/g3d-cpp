@@ -99,6 +99,12 @@ public:
         Array<PosedModelRef>&       opaque,
         Array<PosedModelRef>&       transparent);
 
+    /** Sorts the array in place along the look vector from front-to-back.*/
+    static void sort(
+        const Array<PosedModelRef>& inModels, 
+        const Vector3&              wsLookVector,
+        Array<PosedModelRef>&       opaque);
+
     /** Object to world space coordinate frame.*/
     virtual void getCoordinateFrame(CoordinateFrame& c) const = 0;
 

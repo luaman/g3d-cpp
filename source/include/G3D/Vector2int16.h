@@ -37,10 +37,12 @@ public:
     Vector2int16(class BinaryInput& bi);
 
     inline G3D::int16& operator[] (int i) {
+        debugAssert(((unsigned int)i) <= 1);
         return ((G3D::int16*)this)[i];
     }
 
     inline const G3D::int16& operator[] (int i) const {
+        debugAssert(((unsigned int)i) <= 1);
         return ((G3D::int16*)this)[i];
     }
 

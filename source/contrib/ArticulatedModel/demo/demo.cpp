@@ -9,8 +9,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60700
-    #error Requires G3D 6.07
+#if G3D_VER < 60900
+    #error Requires G3D 6.09
 #endif
 
 #include "App.h"
@@ -137,7 +137,6 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         app->renderDevice->setColorClearValue(Color3::white());
         app->renderDevice->clear(debugShadows, true, false);
 
-
         app->renderDevice->enableDepthWrite();
         app->renderDevice->setViewport(rect);
 
@@ -173,8 +172,16 @@ void Demo::onGraphics(RenderDevice* rd) {
     LightingRef        lighting      = toneMap.prepareLighting(app->lighting);
     LightingParameters skyParameters = toneMap.prepareLightingParameters(app->skyParameters);
 
+    if (! GLCaps::supports_GL_ARB_shadow() && (lighting->shadowedLightArray.size() > 0)) {
+        // We're not going to be able to draw shadows, so move the shadowed lights into
+        // the unshadowed category.
+        lighting->lightArray.append(lighting->shadowedLightArray);
+        lighting->shadowedLightArray.clear();
+    }
+
     // Pose all
-    Array<PosedModelRef> posedModels;
+    Array<PosedModel2DRef> posed2D;
+    Array<PosedModelRef> posedModels, opaqueAModel, otherOpaque, transparent;
 
     for (int e = 0; e < app->entityArray.size(); ++e) {
         static RealTime t0 = System::time();
@@ -189,13 +196,19 @@ void Demo::onGraphics(RenderDevice* rd) {
 
         app->entityArray[e]->model->pose(posedModels, app->entityArray[e]->cframe, app->entityArray[e]->pose);
     }
-    Array<PosedModelRef> opaque, transparent;
-    PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), opaque, transparent);
+
+    // Get any GModule models
+    getPosedModel(posedModels, posed2D);
 
     if (GLCaps::supports_GL_ARB_shadow() && (lighting->shadowedLightArray.size() > 0)) {     
         // Generate shadow map
-        generateShadowMap(lighting->shadowedLightArray[0], opaque);
+        generateShadowMap(lighting->shadowedLightArray[0], posedModels);
     }
+
+    // Separate and sort the models
+    ArticulatedModel::extractOpaquePosedAModels(posedModels, opaqueAModel);
+    PosedModel::sort(opaqueAModel, app->debugCamera.getCoordinateFrame().lookVector(), opaqueAModel);
+    PosedModel::sort(posedModels, app->debugCamera.getCoordinateFrame().lookVector(), otherOpaque, transparent);
 
     /////////////////////////////////////////////////////////////////////
 
@@ -203,17 +216,10 @@ void Demo::onGraphics(RenderDevice* rd) {
         return;
     }
 
-    if (! GLCaps::supports_GL_ARB_shadow() && (lighting->shadowedLightArray.size() > 0)) {
-        // We're not going to be able to draw shadows, so move the shadowed lights into
-        // the unshadowed category.
-        lighting->lightArray.append(lighting->shadowedLightArray);
-        lighting->shadowedLightArray.clear();
-    }
-
     rd->setProjectionAndCameraMatrix(app->debugCamera);
     rd->setObjectToWorldMatrix(CoordinateFrame());
 
-    app->debugPrintf("%d opaque, %d transparent\n", opaque.size(), transparent.size());
+    app->debugPrintf("%d opt opaque, %d opaque, %d transparent\n", opaqueAModel.size(), otherOpaque.size(), transparent.size());
 
     toneMap.beginFrame(rd);
 
@@ -225,36 +231,27 @@ void Demo::onGraphics(RenderDevice* rd) {
         app->sky->render(skyParameters);
     }
 
-    rd->pushState();
-        // Opaque unshadowed
-        for (int m = 0; m < opaque.size(); ++m) {
-            opaque[m]->renderNonShadowed(rd, lighting);
-        }
+    // Opaque unshadowed
+    ArticulatedModel::renderNonShadowed(opaqueAModel, rd, lighting);
+    for (int m = 0; m < otherOpaque.size(); ++m) {
+        otherOpaque[m]->renderNonShadowed(rd, lighting);
+    }
 
-        // Opaque shadowed
+    // Opaque shadowed
+    if (lighting->shadowedLightArray.size() > 0) {
+        ArticulatedModel::renderShadowMappedLightPass(opaqueAModel, rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+        for (int m = 0; m < otherOpaque.size(); ++m) {
+            otherOpaque[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
+        }
+    }
+
+    // Transparent
+    for (int m = 0; m < transparent.size(); ++m) {
+        transparent[m]->renderNonShadowed(rd, lighting);
         if (lighting->shadowedLightArray.size() > 0) {
-            for (int m = 0; m < opaque.size(); ++m) {
-                opaque[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
-            }
+            transparent[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
         }
-
-        // Transparent
-        for (int m = 0; m < transparent.size(); ++m) {
-            transparent[m]->renderNonShadowed(rd, lighting);
-            if (lighting->shadowedLightArray.size() > 0) {
-                transparent[m]->renderShadowMappedLightPass(rd, lighting->shadowedLightArray[0], lightMVP, shadowMap);
-            }
-        }
-
-    rd->popState();
-
-    /*
-    rd->clear();
-    rd->push2D();
-        rd->setColor(Color3::white());
-        Draw::rect2D(Rect2D::xywh(400,400,10,10),rd);
-    rd->pop2D();
-    */        
+    }
 
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(skyParameters);

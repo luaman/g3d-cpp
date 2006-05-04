@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
  
  @created 2004-04-25
- @edited  2006-02-18
+ @edited  2006-05-04
  */
 
 #ifndef G3D_SHADER_H
@@ -595,9 +595,10 @@ protected:
 
     VertexAndPixelShaderRef         _vertexAndPixelShader;
     UseG3DUniforms                  _useUniforms;
+    bool                            _preserveState;
 
     inline Shader(VertexAndPixelShaderRef v, UseG3DUniforms u) : 
-        _vertexAndPixelShader(v), _useUniforms(u) {}
+        _vertexAndPixelShader(v), _useUniforms(u), _preserveState(true) {}
 
     /** For subclasses to invoke */
     inline Shader() {}
@@ -634,6 +635,21 @@ public:
         const std::string& pixelCode,
         UseG3DUniforms u = DEFINE_G3D_UNIFORMS) {
         return new Shader(VertexAndPixelShader::fromStrings(vertexName, vertexCode, pixelName, pixelCode, u, DEBUG_SHADER), u);
+    }
+
+    /** When true, any RenderDevice state that the shader configured before a primitive it restores at
+        the end of the primitive.  When false, the shader is allowed to corrupt state.  Corruption is fast and is
+        useful
+        when you know that the next primitive will also be rendered with a shader, since shaders tend
+        to set all of the state that they need.
+
+        Defaults to true */
+    virtual void setPreserveState(bool s) {
+        _preserveState = s;
+    }
+
+    virtual bool preserveState() const {
+        return _preserveState;
     }
 
     virtual bool ok() const;

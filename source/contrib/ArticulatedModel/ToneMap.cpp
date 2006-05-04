@@ -153,7 +153,6 @@ void ToneMap::applyPS20(RenderDevice* rd) {
     TextureRef bloomMap = getBloomMap(rd);
 
     rd->push2D();
-        
         rd->setAlphaTest(RenderDevice::ALPHA_ALWAYS_PASS, 0);    
         rd->setColor(Color3::white());
         // Undo renderdevice's 0.35 translation
@@ -163,11 +162,10 @@ void ToneMap::applyPS20(RenderDevice* rd) {
         // Grab the image of the screen that was just rendered
         Rect2D rect = Rect2D::xywh(0, 0, rd->width(), rd->height());
         screenImage->copyFromScreen(rect);
-    
         // Threshold, gaussian blur horizontally, and subsample so that we have an image 1/4 as wide.
         bloomShader[0]->args.set("screenImage", screenImage);
         rd->setShader(bloomShader[0]);
-        Draw::rect2D(bloomMapIntermediate->rect2DBounds(), rd);
+        Draw::fastRect2D(bloomMapIntermediate->rect2DBounds(), rd);
         bloomMapIntermediate->copyFromScreen(bloomMapIntermediate->rect2DBounds());
 
         // Gaussian filter vertically and subsample so that we have an image 1/4 as high and 
@@ -176,7 +174,7 @@ void ToneMap::applyPS20(RenderDevice* rd) {
         bloomShader[1]->args.set("bloomImage",  bloomMapIntermediate);
         bloomShader[1]->args.set("oldBloom",    bloomMap);
         rd->setShader(bloomShader[1]);
-        Draw::rect2D(bloomMap->rect2DBounds(), rd);
+        Draw::fastRect2D(bloomMap->rect2DBounds(), rd);
         bloomMap->copyFromScreen(bloomMap->rect2DBounds());
 
         bool showBloomMap = false; // Set to true for debugging
@@ -186,8 +184,8 @@ void ToneMap::applyPS20(RenderDevice* rd) {
             bloomShader[2]->args.set("bloomImage",  bloomMap);
             bloomShader[2]->args.set("gamma",       RG);
             rd->setShader(bloomShader[2]);
-            Draw::rect2D(rect, rd);
-        }
+            Draw::fastRect2D(rect, rd);
+        }                
     rd->pop2D();
 }
 
@@ -401,6 +399,11 @@ void ToneMap::makeShadersPS20() {
         }
         ));
   
+    // Shaders don't need to preserve state since tonemap is wrapped in
+    // push2D
+    for (int i = 0; i < 3; ++i) {
+        bloomShader[i]->setPreserveState(false);
+    }
 }
 
 

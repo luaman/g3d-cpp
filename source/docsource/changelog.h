@@ -29,7 +29,10 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> Optimized IFSModel rendering by increasing internal VAR cache size and reducing the number of state changes.  
+        Can now render more than 1000 IFSModels at 30 fps on GeForce 7800.
     <LI> G3D::System::mallocStatus
+    <LI> Range checking on Vector2int16::operator[]
     <LI> IFSModel and MD2Model now allocated their posed models using System::malloc
     <LI> Increased the memory maintained by G3D::System for buffer pools up to a total of 20 MB: 8 MB tiny (preallocated), 8 MB small, 4 MB medium.  This was observed to 
          dramatically increase performance (15x) in real programs that were performance limited by memory allocation time.
@@ -85,6 +88,7 @@
     <LI> Fix: 0 --> 0.0f FrameBuffer.h [Erik]
     <LI> Fix: Fixed Texture read-back dimensions for cube-map
     <LI> Fix: Missing #include in LightingParameters.h [Erik]
+    <LI> Fix: Quad triangle counts are now accurate (were off by factor of 4 in 6.08)
    </UL>
   <P>   
    Changes in 6.08:

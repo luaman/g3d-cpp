@@ -43,7 +43,9 @@ bool Shader::supportsVertexShaders() {
 
 
 void Shader::beforePrimitive(class RenderDevice* renderDevice) {
-    renderDevice->pushState();
+    if (_preserveState) {
+        renderDevice->pushState();
+    }
 
     if (_useUniforms == DEFINE_G3D_UNIFORMS) {
         const CoordinateFrame& o2w = renderDevice->getObjectToWorldMatrix();
@@ -104,7 +106,9 @@ void Shader::beforePrimitive(class RenderDevice* renderDevice) {
 
 
 void Shader::afterPrimitive(class RenderDevice* renderDevice) {
-    renderDevice->popState();
+    if (_preserveState) {
+        renderDevice->popState();
+    }
 }
 
 

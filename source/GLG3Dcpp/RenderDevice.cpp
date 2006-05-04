@@ -2664,11 +2664,11 @@ void RenderDevice::countTriangles(RenderDevice::Primitive primitive, int numVert
         break;
 
     case QUADS:
-        triangleCount += ((numVertices / 4) / 2);
+        triangleCount += ((numVertices / 4) * 2);
         break;
 
     case QUAD_STRIP:
-        triangleCount += (((numVertices / 2) - 1) / 2);
+        triangleCount += (((numVertices / 2) - 1) * 2);
         break;
 
     case POINTS:
