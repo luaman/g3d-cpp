@@ -8,8 +8,8 @@
 
 #include "../include/G3DAll.h"
 
-#if G3D_VER < 60800
-    #error Requires G3D 6.08
+#if G3D_VER < 60900
+    #error Requires G3D 6.09
 #endif
 
 #include "Report.h"
@@ -18,9 +18,9 @@
 #   include <direct.h>
 #endif
 
-//#define FAST
+#define FAST
  
-static const float gfxMeterVersion = 0.8f;
+static const float gfxMeterVersion = 0.9f;
 
 int CPU_speed_in_MHz();
 

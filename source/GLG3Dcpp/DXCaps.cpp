@@ -2,7 +2,9 @@
  @file DXCaps.cpp
 
  @created 2006-04-06
- @edited  2006-04-06
+ @edited  2006-05-06
+
+ @maintainer Corey Taylor
 
  Copyright 2000-2006, Morgan McGuire.
  All rights reserved.
@@ -21,8 +23,13 @@
 namespace G3D {
 
 
-uint32 DXCaps::getVersion() {
-    uint32 dxVersion = 0;
+uint32 DXCaps::version() {
+    static uint32 dxVersion = 0;
+    static bool init = false;
+
+    if (init) {
+        return dxVersion;
+    }
 
     if ( RegistryUtil::keyExists("HKEY_LOCAL_MACHINE\\Software\\Microsoft\\DirectX") ) {
         std::string versionString;
@@ -41,6 +48,8 @@ uint32 DXCaps::getVersion() {
             }
         }
     }
+
+    init = true;
 
     return dxVersion;
 }
@@ -106,12 +115,17 @@ DECLARE_INTERFACE_( IDirectDraw2, IUnknown )
 #define DDSCAPS_LOCALVIDMEM                     0x10000000l
 
 
-uint64 DXCaps::getVideoMemorySize() {
-     
+uint64 DXCaps::videoMemorySize() {
+    static DWORD totalVidSize = 0;
+    static bool init = false;
+
+    if (init) {
+        return totalVidSize;
+    }
+
     CoInitialize(NULL);
     IDirectDraw2* ddraw = NULL;
 
-    DWORD totalVidSize = 0;
     DWORD freeVidSize  = 0;
 
     if ( !FAILED(CoCreateInstance( CLSID_DirectDraw, NULL, CLSCTX_INPROC_SERVER, IID_IDirectDraw2, reinterpret_cast<LPVOID*>(&ddraw))) ) {
@@ -132,6 +146,7 @@ uint64 DXCaps::getVideoMemorySize() {
     }
 
     CoUninitialize();
+    init = true;
 
     return totalVidSize;
 }

@@ -74,6 +74,7 @@
 
 #ifdef G3D_WIN32
 #include "GLG3D/Win32Window.h"
+#include "GLG3D/DXCaps.h"
 #endif
 
 #ifdef G3D_LINUX

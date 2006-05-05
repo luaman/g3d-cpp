@@ -203,6 +203,14 @@ void Report::doGraphics() {
         PRINT(GLCaps::renderer().c_str());
         PRINT(format("Driver Version %s", GLCaps::driverVersion().c_str()));
 
+#       ifdef G3D_WIN32        
+            PRINT(format("%d MB Video RAM", DXCaps::videoMemorySize() / (1024 * 1024)));
+            {
+                uint32 ver = DXCaps::version();
+                PRINT(format("DirectX %d.%d", ver/100, ver%100));
+            }
+#       endif
+
         p.y += s * 2;
 
         // Processor
@@ -249,7 +257,7 @@ void Report::doGraphics() {
         }
         PRINT(System::operatingSystem().c_str());
 
-        p.y += s * 4;
+        p.y += s * 3;
 
         x0 = w - s * 10;
         app->titleFont->draw2D(app->renderDevice, "Features", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);
