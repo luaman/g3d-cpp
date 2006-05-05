@@ -5,11 +5,16 @@ import Test.*;
 
 /**
  <PRE>
+
+  javac -cp . com/graphics3d/g3d/*.java
+  javac -cp . Test/*.java
   javac -cp . TestMain.java
+
   java -cp . -ea TestMain TestMain
 </PRE>
  */
 class TestMain {
+
     public static void main(String[] args) {
         boolean assertionsOn = false;
         assert assertionsOn = true;

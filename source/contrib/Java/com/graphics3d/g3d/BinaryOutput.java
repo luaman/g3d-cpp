@@ -17,6 +17,7 @@ import java.nio.ByteOrder;
   <LI> No compressed files
   <LI> No bit-reading
   <LI> No Vector, Color read methods
+  <LI> "getByteArray" == "getCArray"
  </UL> 
 
  @author Morgan McGuire
@@ -65,7 +66,7 @@ public class BinaryOutput {
         data = new byte[128];
     }
 
-    byte[] getCArray() {
+    byte[] getByteArray() {
         return data;
     }
 

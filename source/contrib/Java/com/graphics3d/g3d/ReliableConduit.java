@@ -23,7 +23,7 @@ public class ReliableConduit {
     long                                    mReceived;
     long                                    bSent;
     long                                    bReceived;
-    SocketChannel                           sock;
+    SocketChannel                           channel;
 
     /** Used to implement readPending*/
     Selector                                selector;
@@ -53,18 +53,41 @@ public class ReliableConduit {
       */
     private int                             receiveBufferUsedSize;
 
-    public void sendBuffer(BinaryOutput b) throws IOException {
-        if (sock.isConnected()) {
+    private void sendBuffer(BinaryOutput b) throws IOException {
+        if (channel.isConnected()) {
             ByteBuffer tmpBuffer = ByteBuffer.allocate(b.size());
-            tmpBuffer.put(b.getCArray(), 0, b.size());
+
+            // Write the header
+            tmpBuffer.put(b.getByteArray(), 0, b.size());
             tmpBuffer.rewind();
-            sock.write(tmpBuffer);
+
+            // Send the buffer
+            int len = b.size();
+            int sent = 0;
+            int count = 0;
+
+            final int maxCount = 100;
+            while ((sent < len) && (count < maxCount)) {
+                int sentThisTime = channel.write(tmpBuffer);             
+                sent += sentThisTime;
+                if (sentThisTime == 0) {
+                    // We're not making any progress
+                    ++count;
+                }
+                //System.out.println("" + sent + "/" + len + " bytes sent.");
+            }
+
+            if (count == maxCount) {
+                throw new IOException("Timed out while attempting to send.");
+            }
         }
     }
 
     /** Returns true if this socket has a read pending. */
     private boolean readWaiting() throws IOException {
-        int numReadyForRead = selector.selectNow();        
+        int numReadyForRead = selector.selectNow();
+
+        // System.out.println("readWaiting: " + numReadyForRead + " sockets ready");
         return numReadyForRead > 0;
     }
 
@@ -76,8 +99,8 @@ public class ReliableConduit {
         message has arrived. */
     private void receiveIntoBuffer() throws IOException {
     
-        if (sock.isConnected()) {
-            int recieved = sock.read(receiveBuffer);
+        if (channel.isConnected()) {
+            int recieved = channel.read(receiveBuffer);
 
             if (receiveBuffer.remaining() == 0) {
                 state = State.HOLDING;
@@ -88,14 +111,27 @@ public class ReliableConduit {
         }
     }
 
+    private static byte int8ToByte(int x) {
+        assert x >= 0 && x <= 255;
+        return (byte)x;
+    }
+
+    private static int byteToInt8(byte b) {
+        if (b < 0) {
+            return 256 + (int)b;
+        } else {
+            return b;
+        }
+    }
+
     /** Receives the messageType and messageSize from the socket. */
     private void receiveHeader() throws IOException {
         ByteBuffer headerBuffer = ByteBuffer.allocate(8);
         headerBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        if (sock.isConnected()) {
+        if (channel.isConnected()) {
 
-            int numRead = sock.read(headerBuffer);
+            int numRead = channel.read(headerBuffer);
 
             if (numRead > 0) {
 
@@ -104,35 +140,57 @@ public class ReliableConduit {
                     messageType = headerBuffer.getInt(0);
                     // Size is in network byte order
                     byte sizeArray[] = headerBuffer.array();
-                    messageSize = ((int)sizeArray[4] << 24) + 
-                        ((int)sizeArray[5] << 16) +
-                        ((int)sizeArray[6] << 8) + 
-                        (int)sizeArray[7];
+                    messageSize = 
+                        (byteToInt8(sizeArray[4]) << 24) + 
+                        (byteToInt8(sizeArray[5]) << 16) +
+                        (byteToInt8(sizeArray[6]) << 8) + 
+                         byteToInt8(sizeArray[7]);
                     receiveBuffer = ByteBuffer.allocate(messageSize);
                     state = State.RECEIVING;
-
+                    
+                    // System.out.println("Received message size = " + messageSize);
+                    // System.out.println("Received header = " + sizeArray[4] + ", " + sizeArray[5] + ", " + sizeArray[6] + ", " + sizeArray[7]);
                 } else {
+
                     state = State.NO_MESSAGE;
-                    sock.close();
+                    channel.close();
                 }
             }
         }
     }
 
     public ReliableConduit(InetSocketAddress addr) throws IOException {
+        this(SocketChannel.open(addr));
+    }
+
+    public ReliableConduit(String hostname, int port) throws IOException {
+        this(new InetSocketAddress(hostname, port));
+    }
+
+    public ReliableConduit(SocketChannel s) throws IOException {
+        channel = s;
+
         receiveBuffer = ByteBuffer.allocate(0);
         receiveBufferUsedSize = 0;
         messageType = 0;
         messageSize = 0;
         state = State.NO_MESSAGE;
-        sock = SocketChannel.open(addr);
 
-        // To use select we have to switch to non-blocking mode
-        sock.configureBlocking(false);
+        try {
+            // To use select we have to switch to non-blocking mode
+            channel.configureBlocking(false);
+        
+            // Create and register with a Selector
+            selector = Selector.open();
+        } catch (java.nio.channels.ClosedChannelException e) {
+            throw new IOException("Could not open Selector: " + 
+                                  e.toString());
+        }
 
-        // Create and register with a Selector
-        selector = Selector.open();
-        sock.register(selector, sock.validOps(), sock);
+        channel.register(selector, SelectionKey.OP_READ, channel);
+
+        // Disable Nagel's algorithm to reduce latency
+        channel.socket().setTcpNoDelay(false);
     }
 
     // The message is actually copied from the socket to an internal
@@ -140,6 +198,7 @@ public class ReliableConduit {
     public boolean messageWaiting() throws IOException {
         switch (state) {
         case HOLDING:
+            //System.out.println("messageWaiting: HOLDING");
             // We've already read the message and are waiting
             // for a receive call.
             return true;
@@ -156,6 +215,7 @@ public class ReliableConduit {
                 // We've read the whole mesage.  Switch to holding state 
                 // and return true.
                 state = State.HOLDING;
+                //System.out.println("messageWaiting: RECEIVING->HOLDING");
                 return true;
             } else {
                 // There are more bytes left to read.  We'll read them on
@@ -172,6 +232,7 @@ public class ReliableConduit {
                 // Loop back around now that we're in the receive state; we
                 // may be able to read the whole message before returning 
                 // to the caller.
+                //System.out.println("messageWaiting: NO_MESSAGE->RECEIVING");
                 state = State.RECEIVING;
                 receiveHeader();
 
@@ -205,18 +266,22 @@ public class ReliableConduit {
         
         // Write header
         binaryOutput.writeInt32(type);
-        binaryOutput.writeInt32(0);
+        binaryOutput.writeInt32(0);  // Size
         
         // Serialize message
         message.serialize(binaryOutput);
         
-        // Fix message size
-        int size = binaryOutput.size() - 8;
-        byte output[] = binaryOutput.getCArray();
-        output[4] = (byte)(size >> 24); 
-        output[5] = (byte)(size >> 16); 
-        output[6] = (byte)(size >> 8); 
+        // Correct the message size
+        int size = binaryOutput.size() - 8; // Size less header
+
+        //System.out.println("Sent message size (less header) = " + size);
+        byte output[] = binaryOutput.getByteArray();
+        output[4] = (byte)((size >> 24) & 0xFF); 
+        output[5] = (byte)((size >> 16) & 0xFF); 
+        output[6] = (byte)((size >> 8) & 0xFF); 
         output[7] = (byte)(size & 0xFF);
+
+        //System.out.println("Sent header = " + output[4] + ", " + output[5] + ", " + output[6] + ", " + output[7]);
         
         sendBuffer(binaryOutput);
     }
@@ -239,9 +304,9 @@ public class ReliableConduit {
             // Serialize message
             m.serialize(binaryOutput);
         
-            // Fix message size
-            int size = binaryOutput.size() - 8;
-            byte output[] = binaryOutput.getCArray();
+            // Go back to the beginning and correct the message size
+            int size = binaryOutput.size() - 8; // Size less header
+            byte output[] = binaryOutput.getByteArray();
             output[4] = (byte)(size >> 24); 
             output[5] = (byte)(size >> 16); 
             output[6] = (byte)(size >> 8); 
@@ -262,7 +327,7 @@ public class ReliableConduit {
     }
 
     public boolean ok() {
-        return (sock != null) && sock.isConnected();
+        return (channel != null) && channel.isConnected();
     }
 
     /** 
