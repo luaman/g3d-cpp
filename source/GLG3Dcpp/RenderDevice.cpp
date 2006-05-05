@@ -7,7 +7,6 @@
  @edited  2006-01-30
  */
 
-
 #include "G3D/platform.h"
 #include "G3D/Log.h"
 #include "G3D/GCamera.h"
@@ -63,7 +62,34 @@ GLenum BufferToGL[MAX_BUFFER_SIZE] = {GL_NONE,
                                       GL_COLOR_ATTACHMENT14_EXT,
                                       GL_COLOR_ATTACHMENT15_EXT};
 
+static GLint toGLBlendFunc(RenderDevice::BlendFunc b) {
+    switch (b) {
+    case RenderDevice::BLEND_SRC_ALPHA:
+        return GL_SRC_ALPHA;
+        
+    case RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA:
+        return GL_ONE_MINUS_SRC_ALPHA;
 
+    case RenderDevice::BLEND_ONE:
+        return GL_ONE;
+        
+    case RenderDevice::BLEND_ZERO:
+        return GL_ZERO;
+
+    case RenderDevice::BLEND_SRC_COLOR:
+        return GL_SRC_COLOR;
+
+    case RenderDevice::BLEND_DST_COLOR:
+        return GL_DST_COLOR;
+
+    case RenderDevice::BLEND_ONE_MINUS_SRC_COLOR:
+        return GL_ONE_MINUS_SRC_COLOR;
+
+    default:
+        debugAssertM(false, "Fell through switch");
+        return GL_ZERO;
+    }
+}
 
 static void _glViewport(double a, double b, double c, double d) {
     glViewport(iRound(a), iRound(b), 
@@ -1553,48 +1579,66 @@ void RenderDevice::setDepthTest(DepthTest test) {
     }
 }
 
+static GLenum toGLEnum(RenderDevice::StencilTest t) {
 
-static void _setStencilTest(RenderDevice::StencilTest test, int reference) {
+    switch (t) {
+    case RenderDevice::STENCIL_CURRENT:
+        return 0;
+
+    case RenderDevice::STENCIL_ALWAYS_PASS:
+        return GL_ALWAYS;
+
+    case RenderDevice::STENCIL_LESS:
+        return GL_LESS;
+
+    case RenderDevice::STENCIL_LEQUAL:
+        return GL_LEQUAL;
+
+    case RenderDevice::STENCIL_GREATER:
+        return GL_GREATER;
+
+    case RenderDevice::STENCIL_GEQUAL:
+        return GL_GEQUAL;
+
+    case RenderDevice::STENCIL_EQUAL:
+        return GL_EQUAL;
+
+    case RenderDevice::STENCIL_NOTEQUAL:
+        return GL_NOTEQUAL;
+
+    case RenderDevice::STENCIL_NEVER_PASS:
+        return GL_NEVER;
+
+    default:
+        debugAssertM(false, "Fell through switch");
+        return GL_NONE;
+    }
+}
+
+
+void RenderDevice::_setStencilTest(RenderDevice::StencilTest test, int reference) {
 
 	if (test == RenderDevice::STENCIL_CURRENT) {
 		return;
 	}
 
-    switch (test) {
-    case RenderDevice::STENCIL_ALWAYS_PASS:
-        glStencilFunc(GL_ALWAYS, reference, 0xFFFFFF);
-        break;
+    const GLenum t = toGLEnum(test);
 
-    case RenderDevice::STENCIL_LESS:
-        glStencilFunc(GL_LESS, reference, 0xFFFFFF);
-        break;
-
-    case RenderDevice::STENCIL_LEQUAL:
-        glStencilFunc(GL_LEQUAL, reference, 0xFFFFFF);
-        break;
-
-    case RenderDevice::STENCIL_GREATER:
-        glStencilFunc(GL_GREATER, reference, 0xFFFFFF);
-        break;
-
-    case RenderDevice::STENCIL_GEQUAL:
-        glStencilFunc(GL_GEQUAL, reference, 0xFFFFFF);
-        break;
-
-    case RenderDevice::STENCIL_EQUAL:
-        glStencilFunc(GL_EQUAL, reference, 0xFFFFFF);
-        break;
-
-    case RenderDevice::STENCIL_NOTEQUAL:
-        glStencilFunc(GL_NOTEQUAL, reference, 0xFFFFFF);
-        break;
-
-    case RenderDevice::STENCIL_NEVER_PASS:
-        glStencilFunc(GL_NEVER, reference, 0xFFFFFF);
-        break;
-
-    default:
-        debugAssertM(false, "Fell through switch");
+    if (GLCaps::supports_GL_EXT_stencil_two_side()) {
+        // NVIDIA/EXT
+        glActiveStencilFaceEXT(GL_BACK);
+        glStencilFunc(t, reference, 0xFFFFFFFF);
+        glActiveStencilFaceEXT(GL_FRONT);
+        glStencilFunc(t, reference, 0xFFFFFFFF);
+        minGLStateChange(4);
+    } else if (GLCaps::supports_GL_ATI_separate_stencil()) {
+        // ATI
+        glStencilFuncSeparateATI(t, t, reference, 0xFFFFFFFF);
+        minGLStateChange(1);
+    } else {
+        // Default OpenGL
+        glStencilFunc(t, reference, 0xFFFFFFFF);
+        minGLStateChange(1);
     }
 }
 
@@ -1604,21 +1648,11 @@ void RenderDevice::setStencilConstant(int reference) {
 
     debugAssert(! inPrimitive);
     if (state.stencil.stencilReference != reference) {
+
         state.stencil.stencilReference = reference;
-
-        if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-            glActiveStencilFaceEXT(GL_BACK);
-        }
-
-        minGLStateChange();
         _setStencilTest(state.stencil.stencilTest, reference);
+        minStateChange();
 
-        if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-            glActiveStencilFaceEXT(GL_FRONT);
-            minStateChange();
-            minGLStateChange();
-            _setStencilTest(state.stencil.stencilTest, reference);
-        }
     }
 }
 
@@ -1638,6 +1672,7 @@ void RenderDevice::setStencilTest(StencilTest test) {
         if (test == STENCIL_ALWAYS_PASS) {
 
             // Can't actually disable if the stencil op is using the test as well
+            // due to an OpenGL limitation.
             if ((state.stencil.frontStencilFail   == STENCIL_KEEP) &&
                 (state.stencil.frontStencilZFail  == STENCIL_KEEP) &&
                 (state.stencil.frontStencilZPass  == STENCIL_KEEP) &&
@@ -1649,20 +1684,9 @@ void RenderDevice::setStencilTest(StencilTest test) {
                 glDisable(GL_STENCIL_TEST);
             }
 
-
         } else {
 
-            if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-                glActiveStencilFaceEXT(GL_BACK);
-            }
-
-            minGLStateChange();
             _setStencilTest(test, state.stencil.stencilReference);
-
-            if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-                glActiveStencilFaceEXT(GL_FRONT);
-                _setStencilTest(test, state.stencil.stencilReference);
-            }
         }
 
         state.stencil.stencilTest = test;
@@ -1936,32 +1960,53 @@ void RenderDevice::setStencilOp(
 	if ((frontStencilFail  != state.stencil.frontStencilFail) ||
         (frontZFail        != state.stencil.frontStencilZFail) ||
         (frontZPass        != state.stencil.frontStencilZPass) || 
-        (GLCaps::supports_GL_EXT_stencil_two_side() && 
+        (GLCaps::supports_two_sided_stencil() && 
         ((backStencilFail  != state.stencil.backStencilFail) ||
          (backZFail        != state.stencil.backStencilZFail) ||
          (backZPass        != state.stencil.backStencilZPass)))) { 
 
-        minGLStateChange();
         if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-            glActiveStencilFaceEXT(GL_FRONT);
-        }
+            // NVIDIA
 
-        // Set front face operation
-        glStencilOp(
-            toGLStencilOp(frontStencilFail),
-            toGLStencilOp(frontZFail),
-            toGLStencilOp(frontZPass));
-
-        // Set back face operation
-        if (GLCaps::supports_GL_EXT_stencil_two_side()) {
+            // Set back face operation
             glActiveStencilFaceEXT(GL_BACK);
-
             glStencilOp(
                 toGLStencilOp(backStencilFail),
                 toGLStencilOp(backZFail),
                 toGLStencilOp(backZPass));
             
+            // Set front face operation
             glActiveStencilFaceEXT(GL_FRONT);
+            glStencilOp(
+                toGLStencilOp(frontStencilFail),
+                toGLStencilOp(frontZFail),
+                toGLStencilOp(frontZPass));
+
+            minGLStateChange(4);
+
+        } else if (GLCaps::supports_GL_ATI_separate_stencil()) {
+            // ATI
+            minGLStateChange(2);
+            glStencilOpSeparateATI(GL_FRONT, 
+                toGLStencilOp(frontStencilFail),
+                toGLStencilOp(frontZFail),
+                toGLStencilOp(frontZPass));
+
+            glStencilOpSeparateATI(GL_BACK, 
+                toGLStencilOp(backStencilFail),
+                toGLStencilOp(backZFail),
+                toGLStencilOp(backZPass));
+
+        } else {
+            // Generic OpenGL
+
+            // Set front face operation
+            glStencilOp(
+                toGLStencilOp(frontStencilFail),
+                toGLStencilOp(frontZFail),
+                toGLStencilOp(frontZPass));
+
+            minGLStateChange(1);
         }
 
 
@@ -1970,7 +2015,7 @@ void RenderDevice::setStencilOp(
         if ((frontStencilFail  == STENCIL_KEEP) &&
             (frontZPass        == STENCIL_KEEP) && 
             (frontZFail        == STENCIL_KEEP) &&
-            (! GLCaps::supports_GL_EXT_stencil_two_side() ||
+            (! GLCaps::supports_two_sided_stencil() ||
             ((backStencilFail  == STENCIL_KEEP) &&
              (backZPass        == STENCIL_KEEP) &&
              (backZFail        == STENCIL_KEEP)))) {
@@ -1992,17 +2037,7 @@ void RenderDevice::setStencilOp(
             if (state.stencil.stencilTest == STENCIL_ALWAYS_PASS) {
                 // Test is not already on
                 glEnable(GL_STENCIL_TEST);
-
-                if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-                    glActiveStencilFaceEXT(GL_BACK);
-                }
-
-                glStencilFunc(GL_ALWAYS, state.stencil.stencilReference, 0xFFFFFF);
-
-                if (GLCaps::supports_GL_EXT_stencil_two_side()) {
-                    glActiveStencilFaceEXT(GL_FRONT);
-                    glStencilFunc(GL_ALWAYS, state.stencil.stencilReference, 0xFFFFFF);
-                }
+                _setStencilTest(state.stencil.stencilTest, state.stencil.stencilReference);
             }
         }
 
@@ -2046,36 +2081,6 @@ static GLenum toGLBlendEq(RenderDevice::BlendEq e) {
     case RenderDevice::BLENDEQ_REVERSE_SUBTRACT:
         debugAssert(GLCaps::supports("GL_EXT_blend_subtract"));
         return GL_FUNC_REVERSE_SUBTRACT;
-
-    default:
-        debugAssertM(false, "Fell through switch");
-        return GL_ZERO;
-    }
-}
-
-
-static GLint toGLBlendFunc(RenderDevice::BlendFunc b) {
-    switch (b) {
-    case RenderDevice::BLEND_SRC_ALPHA:
-        return GL_SRC_ALPHA;
-        
-    case RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA:
-        return GL_ONE_MINUS_SRC_ALPHA;
-
-    case RenderDevice::BLEND_ONE:
-        return GL_ONE;
-        
-    case RenderDevice::BLEND_ZERO:
-        return GL_ZERO;
-
-    case RenderDevice::BLEND_SRC_COLOR:
-        return GL_SRC_COLOR;
-
-    case RenderDevice::BLEND_DST_COLOR:
-        return GL_DST_COLOR;
-
-    case RenderDevice::BLEND_ONE_MINUS_SRC_COLOR:
-        return GL_ONE_MINUS_SRC_COLOR;
 
     default:
         debugAssertM(false, "Fell through switch");
@@ -2714,7 +2719,7 @@ void RenderDevice::setTexture(
 
     // Turn off whatever was on previously if this is a fixed function unit
     if (fixedFunction) {
-      glDisableAllTextures();
+        glDisableAllTextures();
     }
 
     if (texture.notNull()) {
@@ -3389,3 +3394,4 @@ void RenderDevice::describeSystem(
 }
 
 } // namespace
+

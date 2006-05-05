@@ -30,6 +30,7 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> Full loading of the GL_ATI_separate_stencil extension, support within RenderDevice
     <LI> G3D::Texture::Settings::maxMipMap
     <LI> Renamed Texture::Parameters to Texture::Settings (backwards compatible typedef added)
     <LI> Optimized IFSModel rendering by increasing internal VAR cache size and reducing the number of state changes.  
@@ -97,7 +98,7 @@
    </UL>
   <P>   
    Changes in 6.08:
-    <UL>
+    <UL>      
 	  <LI> Moved Win32 linker statements out of platform.h for IncrediBuild compatibility.
       <LI> G3D::Texture and G3D::Sky now accept a rescaling factor
       <LI> Added GFont::fromMemory() [Corey]

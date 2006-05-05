@@ -31,10 +31,61 @@
 #include <G3DAll.h>
 #include "BSPMAP.h"
 
-#if G3D_VER < 60500
-    #error Requires G3D 6.05
+#if G3D_VER < 60900
+    #error Requires G3D 6.09
 #endif
 
+
+class DepthBlur {
+private:
+
+    ShaderRef           shader;
+
+    TextureRef          depth;
+    TextureRef          color;
+
+    void allocateTextures(const Rect2D& screenRect) {
+        if (depth.isNull() || 
+            (depth->vector2Bounds() != screenRect.wh())) {
+        /*
+            Texture::Parameters depthParameters;
+            depthParameters.autoMipMap = false;
+            depthParameters.maxAnisotropy = 1;
+            depthParameters.wrapMode = Texture::CLAMP;
+            depthParameters.interpolateMode = Texture::NO_INTERPOLATION;
+*/
+            depth = Texture::createEmpty("Depth Buffer", screenRect.width(), screenRect.height(),
+                TextureFormat::depth(), Texture::DIM_2D_NPOT, Texture::Parameters::video());
+
+            color = Texture::createEmpty("Color Buffer", screenRect.width(), screenRect.height(),
+                TextureFormat::RGB8, Texture::DIM_2D_NPOT, Texture::Parameters::video());
+
+            shader->args.set("depth", depth);
+            shader->args.set("color", color);
+        }
+    }
+
+public:
+
+    DepthBlur() {
+        shader = Shader::fromFiles("", "depthblur.frg");
+    }
+
+    void apply(RenderDevice* rd) {
+        rd->push2D();
+            Rect2D screenRect = rd->getViewport();
+            allocateTextures(screenRect);
+            
+            // Read back the depth buffer
+            depth->copyFromScreen(screenRect, true);
+            color->copyFromScreen(screenRect, true);
+
+            rd->setShader(shader);
+            Draw::rect2D(screenRect, rd);
+        rd->pop2D();
+    }
+
+};
 
 /**
  This simple demo applet uses the debug mode as the regular
@@ -48,6 +99,8 @@ public:
     // state, put it in the App.
 
     class App*          app;
+
+    DepthBlur           depthBlur;
 
     Demo(App* app);
 
@@ -142,6 +195,8 @@ void Demo::doGraphics() {
     if (app->sky.notNull()) {
         app->sky->renderLensFlare(lighting);
     }
+
+    depthBlur.apply(app->renderDevice);
 }
 
 
@@ -156,40 +211,21 @@ void App::main() {
     clipMovement = true;
 
     sky = Sky::create(renderDevice, dataDir + "sky/");
-    debugCamera.setNearPlaneZ(-.1);
-    debugCamera.setFarPlaneZ(-inf());
+    debugCamera.setNearPlaneZ(-0.5f);
+    debugCamera.setFarPlaneZ(-100);//(float)-inf());
     debugController.init(renderDevice, userInput);
     debugController.setMoveRate(500 * BSPMAP::LOAD_SCALE);
     debugController.setActive(true);
-	renderDevice->setColorClearValue(Color3(.1, .5, 1));
+	renderDevice->setColorClearValue(Color3(0.1f, 0.5f, 1.0f));
     // Load the map
     map = new BSPMAP::Map();
-//    bool ret = map->load("D:/media/models/q3/maps/matrix/", "dojo.bsp");
-    bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_ricochet.bsp");
-//    bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_revolution.bsp");
-
-    // Old debugging code:
-//    bool ret = map->load(QUAKE_DIR, "charon3dm11v2.bsp");
-
-//    std::string HL_DIR = "C:/Sierra/Half-Life/valve/";
-//    bool ret = map->load(HL_DIR, "frenzy.bsp");
-
-//    bool ret = map->load("c:/tmp/true/", "tc_prison.bsp");
-   // map->saveMatrianceFormat("D:/games/matriance/scenes/Prison");
-//    bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_casa.bsp");
-//    bool ret = map->load("D:/media/bfpq3/dacreek0/", "dacreek.bsp");
-
-//    bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_sands.bsp");
-//    bool ret = map->load("D:/media/models/q3/maps/dystopia/", "dystopia.bsp");
-//    bool ret = map->load("D:/media/models/q3/maps/matrix/", "lobby.bsp");
-//    bool ret = map->load("D:/media/models/q3/maps/matrix/", "dojo.bsp");
-//    bool ret = map->load("D:/media/models/q3/maps/ra/", "ra3map1.bsp");
-//    bool ret = map->load("D:/media/models/q3/maps/ra/", "ra3map2.bsp");  
+    bool ret = map->load("D:/games/dojo/scratch/data-files/q3/", "ut_ricochet.bsp");
+//    bool ret = map->load("D:/media/models/q3/maps/urbanterror/", "ut_ricochet.bsp");
       
     debugAssert(ret); (void)ret;
 
     debugController.setPosition(map->getStartingPosition());
-    debugController.lookAt(map->getStartingPosition() - Vector3::UNIT_Z);
+    debugController.lookAt(map->getStartingPosition() - Vector3::unitZ());
     debugCamera.setCoordinateFrame(debugController.getCoordinateFrame());
     
     applet->run();

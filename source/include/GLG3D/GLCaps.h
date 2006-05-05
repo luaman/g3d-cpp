@@ -38,7 +38,7 @@ namespace G3D {
 
  Note that GL_NV_texture_rectangle and GL_EXT_texture_rectangle
  have exactly the same constants, so supports_GL_EXT_texture_rectangle
- returns true if GL_NV_texture_rectangle is supported.
+ returns true if either is supported.
 
  GLCaps assumes all OpenGL contexts have the same capabilities.
 
@@ -192,6 +192,10 @@ public:
 
 	static const std::string& renderer();
 
+    /** Returns true if either GL_EXT_stencil_two_side or GL_ATI_separate_stencil is supported.
+        Convenient becaused G3D::RenderDevice unifies those extensions. */
+    static bool supports_two_sided_stencil();
+ 
     inline static int numTextureCoords() {
         return _numTextureCoords;
     }

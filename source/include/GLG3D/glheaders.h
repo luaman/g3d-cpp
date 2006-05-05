@@ -306,6 +306,10 @@ extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 
+// ATI separate stencil
+extern PFNGLSTENCILFUNCSEPARATEATIPROC glStencilFuncSeparateATI;
+extern PFNGLSTENCILOPSEPARATEATIPROC glStencilOpSeparateATI;
+
 #if defined(G3D_OSX)
 namespace G3D
 {

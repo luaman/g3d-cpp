@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2006-01-15
+  @edited  2006-05-10
 */
 
 #include "G3D/TextOutput.h"
@@ -363,6 +363,9 @@ void GLCaps::loadExtensions(Log* debugLog) {
     
     LOAD_EXTENSION(glTexImage3DEXT);
 
+    LOAD_EXTENSION(glStencilFuncSeparateATI);
+    LOAD_EXTENSION(glStencilOpSeparateATI);
+
     #ifdef G3D_WIN32
         
         LOAD_EXTENSION(wglEnableGenlockI3D);
@@ -636,6 +639,12 @@ const std::string& GLCaps::renderer() {
 }
 
  
+bool GLCaps::supports_two_sided_stencil() {
+    return 
+        GLCaps::supports_GL_ATI_separate_stencil() ||
+        GLCaps::supports_GL_EXT_stencil_two_side();
+}
+
 
 void GLCaps::checkBug_cubeMapBugs() {
     bool hasCubeMap = strstr((char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_cube_map") != NULL;

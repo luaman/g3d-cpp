@@ -57,7 +57,7 @@ void endMarkShadows(RenderDevice* renderDevice);
           for (int L = 0; L < light.size(); ++L) {
             beginMarkShadows(renderDevice);
                 for (int m = 0; m < model.size(); ++m) {
-                    markShadows(renderDevice, model[m], light[L]);
+                    markShadows(renderDevice, model[m], light[L].position);
                 }
             endMarkShadows(renderDevice);
 

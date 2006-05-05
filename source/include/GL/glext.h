@@ -300,6 +300,14 @@ extern "C" {
 #define GL_OBJECT_SHADER_SOURCE_LENGTH_ARB      0x8B88
 #endif
 
+
+#ifndef GL_ATI_separate_stencil
+#define GL_STENCIL_BACK_FUNC_ATI                            0x8800
+#define GL_STENCIL_BACK_FAIL_ATI                            0x8801
+#define GL_STENCIL_BACK_PASS_DEPTH_FAIL_ATI                 0x8802
+#define GL_STENCIL_BACK_PASS_DEPTH_PASS_ATI                 0x8803
+#endif
+
 #ifndef GL_ARB_fragment_program
 #define GL_FRAGMENT_PROGRAM_ARB                     0x8804
 #define GL_PROGRAM_ALU_INSTRUCTIONS_ARB             0x8805
@@ -3646,6 +3654,16 @@ typedef void (APIENTRY * PFNGLCLAMPCOLORARBPROC) (GLenum target, GLenum clamp);
 
 #ifndef GL_ARB_pixel_buffer_object
 #define GL_ARB_pixel_buffer_object 1
+#endif
+
+#ifndef GL_ATI_separate_stencil
+#define GL_ATI_separate_stencil 1
+#ifdef GL_GLEXT_PROTOTYPES
+GLAPI void APIENTRY glStencilFuncSeparateATI (GLenum frontfunc, GLenum backfunc, int ref, unsigned int mask);
+GLAPI void APIENTRY StencilOpSeparateATI( GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef void (APIENTRY * PFNGLSTENCILFUNCSEPARATEATIPROC) (GLenum frontfunc, GLenum backfunc, int ref, unsigned int mask);
+typedef void (APIENTRY * PFNGLSTENCILOPSEPARATEATIPROC) ( GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
 #endif
 
 #ifdef __cplusplus

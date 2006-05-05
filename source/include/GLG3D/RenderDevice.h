@@ -297,6 +297,7 @@ private:
     bool checkFramebuffer(std::string& whyIncomplete = dummyString) const;
 
 public:
+
     // These are abstracted to make it easy to put breakpoints in them
     /**
       State change to RenderDevice.
@@ -1373,6 +1374,9 @@ private:
 
 	void push2D(const FramebufferRef& fb, const Rect2D& viewport);
 
+    /** Sets the stencil test using the two-sided extension appropriate to this machine.*/
+    void _setStencilTest(StencilTest test, int reference);
+
 public:
 
     /** @deprecated 
@@ -1391,7 +1395,7 @@ public:
       can set the front and back operations to different values.
 
       @deprecated 
-      Use GLCaps::supports_GL_ARB_stencil_two_side instead.
+      Use GLCaps::supports_two_sided_stencil instead.
      
     */
     bool supportsTwoSidedStencil() const;
