@@ -11,6 +11,7 @@ import java.nio.channels.*;
  
  Differences from the C++ version:
  <UL>
+  <LI>Created standalone instead of using a NetworkDevice
  </UL> 
 
  */
@@ -228,7 +229,8 @@ public class ReliableConduit {
         BinarySerializable          m) throws IOException {
         
         if (array.length > 0) {
-            BinaryOutput binaryOutput = new BinaryOutput(ByteOrder.LITTLE_ENDIAN);
+            BinaryOutput binaryOutput = 
+                new BinaryOutput(ByteOrder.LITTLE_ENDIAN);
 
             // Write header
             binaryOutput.writeInt32(type);
@@ -276,7 +278,8 @@ public class ReliableConduit {
         }
 
         // Deserialize
-        BinaryInput b = new BinaryInput(receiveBuffer.array(), 0, ByteOrder.LITTLE_ENDIAN, false);
+        BinaryInput b = new BinaryInput(receiveBuffer.array(), 0, 
+                                        ByteOrder.LITTLE_ENDIAN, false);
         message.deserialize(b);
         
         // Don't let anyone read this message again.  We leave the buffer

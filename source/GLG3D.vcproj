@@ -32,6 +32,7 @@
 				ProgramDataBaseFileName=".\../temp/debug/glg3d/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -141,6 +142,26 @@
 			</File>
 			<File
 				RelativePath="GLG3Dcpp\Draw.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="GLG3Dcpp\DXCaps.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -888,6 +909,9 @@
 			</File>
 			<File
 				RelativePath="include\GLG3D\Draw.h">
+			</File>
+			<File
+				RelativePath="include\GLG3D\DXCaps.h">
 			</File>
 			<File
 				RelativePath="include\GLG3D\edgeFeatures.h">

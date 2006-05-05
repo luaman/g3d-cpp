@@ -532,9 +532,11 @@ Win32Window::~Win32Window() {
 			debugAssertM(false, "Failed to set context");
 		}
 
-        // Release the mouse
-        setMouseVisible(true);
-        setInputCapture(false);
+        if (createdWindow) {
+            // Release the mouse
+            setMouseVisible(true);
+            setInputCapture(false);
+        }
 	}
 
 	if (createdWindow) {

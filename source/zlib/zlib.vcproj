@@ -157,16 +157,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="minigzip.c">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="trees.c">
 				<FileConfiguration
 					Name="Release|Win32">

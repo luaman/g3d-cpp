@@ -23,7 +23,7 @@
 #include "GLG3D/getOpenGLState.h"
 #include "GLG3D/GLCaps.h"
 
-G3D::uint32 hashCode(const G3D::Texture::Parameters& p) {
+G3D::uint32 hashCode(const G3D::Texture::Settings& p) {
     return p.hashCode();
 }
 
@@ -52,25 +52,27 @@ static bool hasAutoMipMap() {
 }
 
 
-Texture::Parameters::Parameters() : 
+Texture::Settings::Settings() : 
     interpolateMode(TRILINEAR_MIPMAP),
     wrapMode(TILE),
     depthReadMode(DEPTH_NORMAL),
     maxAnisotropy(2.0),
-    autoMipMap(true) {
+    autoMipMap(true),
+    minMipMap(-1000),
+    maxMipMap(1000) {
 }
 
 
-const Texture::Parameters& Texture::Parameters::defaults() {
-    static Parameters param;
+const Texture::Settings& Texture::Settings::defaults() {
+    static Settings param;
     return param;
 }
 
 
-const Texture::Parameters& Texture::Parameters::video() {
+const Texture::Settings& Texture::Settings::video() {
 
     static bool initialized = false;
-    static Parameters param;
+    static Settings param;
 
     if (! initialized) {
         initialized = true;
@@ -85,10 +87,10 @@ const Texture::Parameters& Texture::Parameters::video() {
 }
 
 
-const Texture::Parameters& Texture::Parameters::shadow() {
+const Texture::Settings& Texture::Settings::shadow() {
 
     static bool initialized = false;
-    static Parameters param;
+    static Settings param;
 
     if (! initialized) {
         initialized = true;
@@ -103,30 +105,31 @@ const Texture::Parameters& Texture::Parameters::shadow() {
 }
 
 /*
-void Texture::Parameters::serialize(class BinaryOutput& b) {
+void Texture::Settings::serialize(class BinaryOutput& b) {
     // TODO: use chunk format
 
 }
 
-void Texture::Parameters::deserialize(class BinaryInput& b) {
+void Texture::Settings::deserialize(class BinaryInput& b) {
 
 }
 
-void Texture::Parameters::serialize(class TextOutput& t) {
+void Texture::Settings::serialize(class TextOutput& t) {
     // TODO: ini-like format
 }
 
-void Texture::Parameters::deserialize(class TextInput& t) {
+void Texture::Settings::deserialize(class TextInput& t) {
 }
 */
 
-uint32 Texture::Parameters::hashCode() const {
+uint32 Texture::Settings::hashCode() const {
     return 
         (uint32)interpolateMode + 
         16 * (uint32)wrapMode + 
         256 * (uint32)depthReadMode + 
         (autoMipMap ? 512 : 0) +
-        (uint32)(1024 * maxAnisotropy);
+        (uint32)(1024 * maxAnisotropy) +
+        (minMipMap ^ (maxMipMap << 16));
 }
 
 
@@ -330,11 +333,7 @@ static void createMipMapTexture(
  */
 static void setTexParameters(
     GLenum                          target,
-    Texture::WrapMode               wrap,
-    Texture::InterpolateMode        interpolate,
-    Texture::DepthReadMode          depthRead,
-    float                           maxAnisotropy,
-    bool                            autoMipMap) {
+    const Texture::Settings&        settings) {
 
     debugAssert(
         target == GL_TEXTURE_2D ||
@@ -348,7 +347,7 @@ static void setTexParameters(
     bool supports3D = GLCaps::supports_GL_EXT_texture_3D();
     GLenum mode = GL_NONE;
     
-    switch (wrap) {
+    switch (settings.wrapMode) {
     case Texture::TILE:
       mode = GL_REPEAT;
       break;
@@ -383,8 +382,13 @@ static void setTexParameters(
 
     debugAssertGLOk();
 
+    if (GLCaps::supports("GL_EXT_texture_lod")) {
+        glTexParameteri(target, GL_TEXTURE_MAX_LOD_SGIS, settings.maxMipMap);
+        glTexParameteri(target, GL_TEXTURE_MIN_LOD_SGIS, settings.minMipMap);
+    }
 
-    switch (interpolate) {
+
+    switch (settings.interpolateMode) {
     case Texture::TRILINEAR_MIPMAP:
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -398,7 +402,7 @@ static void setTexParameters(
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
-        if (hasAutoMipMap() && autoMipMap) {  
+        if (hasAutoMipMap() && settings.autoMipMap) {  
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
         }
         break;
@@ -407,7 +411,7 @@ static void setTexParameters(
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
-        if (hasAutoMipMap() && autoMipMap) {  
+        if (hasAutoMipMap() && settings.autoMipMap) {  
             glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
         }
         break;
@@ -432,17 +436,17 @@ static void setTexParameters(
     static const bool anisotropic = GLCaps::supports("GL_EXT_texture_filter_anisotropic");
 
     if (anisotropic) {
-        glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy);
+        glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, settings.maxAnisotropy);
     }
 
     if (GLCaps::supports_GL_ARB_shadow()) {
-        if (depthRead == Texture::DEPTH_NORMAL) {
+        if (settings.depthReadMode == Texture::DEPTH_NORMAL) {
             glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE);
         } else {
             glTexParameteri(target, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 
             glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC_ARB, 
-                (depthRead == Texture::DEPTH_LEQUAL) ? GL_LEQUAL : GL_GEQUAL);
+                (settings.depthReadMode == Texture::DEPTH_LEQUAL) ? GL_LEQUAL : GL_GEQUAL);
         }
 
     }
@@ -451,10 +455,13 @@ static void setTexParameters(
 
 /////////////////////////////////////////////////////////////////////////////
 
-const Texture::Parameters& Texture::parameters() const {
-    return _parameters;
+const Texture::Settings& Texture::parameters() const {
+    return _settings;
 }
 
+const Texture::Settings& Texture::settings() const {
+    return _settings;
+}
 
 
 void Texture::getImage(GImage& dst, const TextureFormat* outFormat) const {
@@ -545,11 +552,11 @@ Texture::Texture(
     debugAssert(_format);
     debugAssertGLOk();
 
-    _parameters.interpolateMode = _interpolate;
-    _parameters.wrapMode = _wrap;
-    _parameters.maxAnisotropy = _aniso;
-    _parameters.depthReadMode = __dr;
-    _parameters.autoMipMap = true;
+    _settings.interpolateMode = _interpolate;
+    _settings.wrapMode = _wrap;
+    _settings.maxAnisotropy = _aniso;
+    _settings.depthReadMode = __dr;
+    _settings.autoMipMap = true;
 
     glStatePush();
 
@@ -573,7 +580,7 @@ Texture::Texture(
         interpolate         = _interpolate;
         wrap                = _wrap;
         debugAssertGLOk();
-        setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy, _parameters.autoMipMap);
+        setTexParameters(target, _settings);
         debugAssertGLOk();
     glStatePop();
     debugAssertGLOk();
@@ -590,7 +597,7 @@ TextureRef Texture::fromMemory(
     int                             height,
     const class TextureFormat*      desiredFormat,
     Dimension                       dimension,
-    const Parameters&               param) {
+    const Settings&               param) {
 
 	const uint8* b[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 	b[0] = bytes;
@@ -624,7 +631,7 @@ TextureRef Texture::fromMemory(
 
 
 void Texture::setAutoMipMap(bool b) {
-    _parameters.autoMipMap = b;
+    _settings.autoMipMap = b;
 
     // Update the OpenGL state
     GLenum target = dimensionToTarget(dimension);
@@ -1313,7 +1320,7 @@ void Texture::copyFromScreen(
 
     debugAssertGLOk();
     // Reset the original properties
-    setTexParameters(target, wrap, interpolate, _depthRead, _maxAnisotropy, _parameters.autoMipMap);
+    setTexParameters(target, _settings);
 
     debugAssertGLOk();
     glDisable(target);

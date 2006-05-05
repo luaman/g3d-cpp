@@ -1,11 +1,12 @@
 import com.graphics3d.g3d.*;
 import java.math.*;
 import java.io.*;
+import Test.*;
 
 /**
  <PRE>
-  javac -cp . Test.java
-  java -classpath . -ea Test Test
+  javac -cp . TestMain.java
+  java -cp . -ea TestMain TestMain
 </PRE>
  */
 class TestMain {
@@ -13,11 +14,13 @@ class TestMain {
         boolean assertionsOn = false;
         assert assertionsOn = true;
         if (! assertionsOn) {
-            System.out.println("Must run Test with 'java -ea Test'.");
+            System.out.println("Must run TestMain with 'java -ea TestMain'.");
             System.exit(-1);
         }
 
-        Test.BinaryIO.test();
+        TestReliableConduit.test();
+        TestBinaryIO.test();
+
         System.out.println("All tests passed.");
     }
     

@@ -13,22 +13,25 @@
    <I>The next major, incompatible release will be G3D 7.00, planned for release in January 2007 (there will be betas
       and point releases before then). We plan to streamline the API by making the following changes:</I>
      <UL>
+       <LI>All <A HREF="deprecated.html">deprecated</A> functionality will be removed.
        <LI>G3D::Sky create methods will no longer accept a G3D::RenderDevice.
        <LI>G3D::GFont::fromFile method will no longer accept a G3D::RenderDevice.
-       <LI>All accessor "get" methods that return a value will have their prefix removed (e.g. G3D::RenderDevice::getObjectToWorldMatrix -> G3D::RenderDevice::objectToWorldMatrix).
-       <LI>All <A HREF="deprecated.html">deprecated</A> functionality will be removed.
+       <LI>All accessor "get" methods that return a value will have their prefix removed (e.g., G3D::RenderDevice::getObjectToWorldMatrix -> G3D::RenderDevice::objectToWorldMatrix).
        <LI>G3D::MeshAlg arguments will change-- e.g., many routines will no longer compute face/vertex normals for you
        <LI>SDL will no longer be automatically linked into the Win32 build
        <LI>Some contrib classes will move into the main API (e.g., SuperShader, ArticulatedModel, ToneMap, Matrix)
        <LI>GApplet methods will change to exclusively use the onUserInput, onGraphics, etc. forms.  doGraphics, etc. forms will be removed. 
-       <LI>The main headers and library names will change
        <LI>G3D::GEvent will become a standalone class instead of a typedef.  All event constants will be renamed.
+       <LI>The main headers and library names may change
+       <LI>The directory structure for third party libraries (e.g., libjpeg) may change
      </UL>
    </TD></TR></TABLE>
 
    <P>
    Changes in 6.09:
    <UL>
+    <LI> G3D::Texture::Settings::maxMipMap
+    <LI> Renamed Texture::Parameters to Texture::Settings (backwards compatible typedef added)
     <LI> Optimized IFSModel rendering by increasing internal VAR cache size and reducing the number of state changes.  
         Can now render more than 1000 IFSModels at 30 fps on GeForce 7800.
     <LI> G3D::System::mallocStatus
@@ -44,6 +47,7 @@
     <LI> G3D::System::getEnv()
     <LI> G3D::PosedModel2D
     <LI> G3D::DXCaps
+    <LI> Increased precision of several Quat operations
 	<LI> G3D::Quat::fuzzyEq
 	<LI> G3D::Quat::operator-
     <LI> G3D::LineSegment::length, G3D::LineSegment::point
@@ -73,6 +77,7 @@
     <LI> G3D::CoordinateFrame::fuzzyIsIdentity, G3D::CoordinateFrame::isIdentity, G3D::CoordinateFrame::fuzzyEq
     <LI> Matrix3::isOrthonormal
     <LI> [1421201] Removed excess gl (NVIDIA) headers
+    <LI> Win32Window destructor now releases the mouse if it was captured and the current GL context is that window and the window was not created from an existing HDC/HWND
     <LI> Fix: com.graphics3d.g3d.ReliableConduit now correctly selects on the waiting socket
 	<LI> Fix: [ 1166057 ]  AABSPTree::beginBoxIntersection
     <LI> Fix: GLCaps::supports(TextureFormat) now returns correct results on all cards

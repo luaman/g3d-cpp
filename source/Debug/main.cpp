@@ -154,36 +154,9 @@ void Demo::onGraphics(RenderDevice* rd) {
     if (app->sky.notNull()) {
         app->sky->render(rd, LightingParameters(G3D::toSeconds(10,00,00, AM)));
     }
+ 
 
-    static Array<PosedModelRef> posedArray;
-    static Array<PosedModel2DRef> posed2DArray;
-
-    static bool init = false;
-
-    if (! init) {
-        posedArray.fastClear();
-        posed2DArray.fastClear();
-
-        for (int i = 0; i < 1000; ++i) {
-            posedArray.append(ifsModel->pose(CoordinateFrame(Vector3(i / 10,i % 10,0)/10.0f)));
-        }
-
-        init = true;
-    }
-
-    rd->setLight(0, GLight::directional(Vector3(1,1,1), Color3::white() * 0.5f));
-    rd->enableLighting();
-    rd->setAmbientLightColor(Color3::white() * 0.5);
-
-//  posedArray.append(ifsModel->pose(manipulator->frame()));
-    for (int i = 0; i < posedArray.size(); ++i) {
-        posedArray[i]->render(rd);
-    }
-
-//   GApplet::onGraphics(rd);
-
-//   Draw::axes(rd);
-
+    GApplet::onGraphics(rd);
 }
 
 

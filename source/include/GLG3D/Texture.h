@@ -129,7 +129,7 @@ public:
     /**
      All parameters of a texture that are independent of the underlying image data.
      */
-    class Parameters {
+    class Settings {
     public:
 
         /** Default is TRILINEAR_MIPMAP */
@@ -147,21 +147,41 @@ public:
         /** Default is true */
         bool                        autoMipMap;
 
-        Parameters();
+        /**
+         Highest MIP-map level that will be used during rendering.  The highest
+         level that actually exists will be L = log(max(width, height), 2)), although
+         it is fine to set maxMipMap higher than this.  Must be larger than minMipMap.
+         Default is 1000.
 
-        static const Parameters& defaults();
+         Setting the max mipmap level is useful for preventing adjacent areas of
+         a texture from being blurred together when viewed at a distance.  It may
+         decrease performance, however, by forcing a larger texture into cache
+         than would otherwise be required.
+         */
+        int                         maxMipMap;
+
+        /**
+         Lowest MIP-map level that will be used during rendering.  Level 0 is the
+         full-size image.  Default is -1000, matching the OpenGL spec.
+         @cite http://oss.sgi.com/projects/ogl-sample/registry/SGIS/texture_lod.txt
+         */
+        int                         minMipMap;
+
+        Settings();
+
+        static const Settings& defaults();
 
         /** 
           Useful defaults for video/image processing.
           BILINEAR_NO_MIPMAP / CLAMP / DEPTH_NORMAL / 1.0 / false
         */
-        static const Parameters& video();
+        static const Settings& video();
 
         /** 
           Useful defaults for shadow maps.
           BILINEAR_NO_MIPMAP / CLAMP / DEPTH_LEQUAL / 1.0 / false
         */
-        static const Parameters& shadow();
+        static const Settings& shadow();
 
         /*
          Coming in a future version...
@@ -173,6 +193,11 @@ public:
 
         uint32 hashCode() const;
     };
+
+    /**
+     @deprecated Use Texture::Settings
+     */
+    typedef Settings Parameters;
 
     class PreProcess {
     public:
@@ -208,7 +233,7 @@ private:
     WrapMode                        wrap;
 
     /** Duplicates the values above.  Set in the base constructor. */
-    Parameters                      _parameters;
+    Settings                        _settings;
 
     std::string                     name;
     Dimension                       dimension;
@@ -656,12 +681,18 @@ public:
      */
     unsigned int getOpenGLTextureTarget() const;
 
-    const Parameters& parameters() const;
+    /**
+     @deprecated Use settings()
+     */
+    const Parameters& G3D_DEPRECATED parameters() const;
+
+    const Settings& settings() const;
 
     /** Set the autoMipMap value, which only affects textures when they are rendered 
         to or copied from the screen.
 
-        You can read the automipmap value from <code>parameters().autoMipMap</code>. */
+        You can read the automipmap value from <code>settings().autoMipMap</code>. 
+        */
     void setAutoMipMap(bool b);
 
     /** For a texture with automipmap off that supports the FrameBufferObject extension, 
