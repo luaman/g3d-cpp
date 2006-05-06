@@ -252,6 +252,14 @@
 		50C3DE1F0978085900757A38 /* GThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C3DE1E0978085900757A38 /* GThread.h */; };
 		50C3DE210978087000757A38 /* GThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C3DE200978087000757A38 /* GThread.cpp */; };
 		50F70A0C098138CB004BED35 /* tGThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F70A0B098138CB004BED35 /* tGThread.cpp */; };
+		50F81BFA0A09D193001CBC38 /* tAABox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81BF80A09D193001CBC38 /* tAABox.cpp */; };
+		50F81BFB0A09D193001CBC38 /* tAABSPTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81BF90A09D193001CBC38 /* tAABSPTree.cpp */; };
+		50F81BFE0A09D238001CBC38 /* tQuat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81BFC0A09D238001CBC38 /* tQuat.cpp */; };
+		50F81BFF0A09D238001CBC38 /* tReliableConduit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81BFD0A09D238001CBC38 /* tReliableConduit.cpp */; };
+		50F81C020A09D3AB001CBC38 /* GModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 50F81C000A09D3AB001CBC38 /* GModule.h */; };
+		50F81C030A09D3AC001CBC38 /* Renderbuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 50F81C010A09D3AB001CBC38 /* Renderbuffer.h */; };
+		50F81C060A09D3CC001CBC38 /* GModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81C040A09D3CC001CBC38 /* GModule.cpp */; };
+		50F81C070A09D3CC001CBC38 /* Renderbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81C050A09D3CC001CBC38 /* Renderbuffer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -613,6 +621,14 @@
 		50C3DE1E0978085900757A38 /* GThread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GThread.h; path = ../source/include/G3D/GThread.h; sourceTree = SOURCE_ROOT; };
 		50C3DE200978087000757A38 /* GThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GThread.cpp; path = ../source/G3Dcpp/GThread.cpp; sourceTree = SOURCE_ROOT; };
 		50F70A0B098138CB004BED35 /* tGThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tGThread.cpp; path = ../source/test/tGThread.cpp; sourceTree = SOURCE_ROOT; };
+		50F81BF80A09D193001CBC38 /* tAABox.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tAABox.cpp; path = ../source/test/tAABox.cpp; sourceTree = SOURCE_ROOT; };
+		50F81BF90A09D193001CBC38 /* tAABSPTree.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tAABSPTree.cpp; path = ../source/test/tAABSPTree.cpp; sourceTree = SOURCE_ROOT; };
+		50F81BFC0A09D238001CBC38 /* tQuat.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tQuat.cpp; path = ../source/test/tQuat.cpp; sourceTree = SOURCE_ROOT; };
+		50F81BFD0A09D238001CBC38 /* tReliableConduit.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tReliableConduit.cpp; path = ../source/test/tReliableConduit.cpp; sourceTree = SOURCE_ROOT; };
+		50F81C000A09D3AB001CBC38 /* GModule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GModule.h; path = ../source/include/GLG3D/GModule.h; sourceTree = SOURCE_ROOT; };
+		50F81C010A09D3AB001CBC38 /* Renderbuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Renderbuffer.h; path = ../source/include/GLG3D/Renderbuffer.h; sourceTree = SOURCE_ROOT; };
+		50F81C040A09D3CC001CBC38 /* GModule.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GModule.cpp; path = ../source/GLG3Dcpp/GModule.cpp; sourceTree = SOURCE_ROOT; };
+		50F81C050A09D3CC001CBC38 /* Renderbuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Renderbuffer.cpp; path = ../source/GLG3Dcpp/Renderbuffer.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -735,6 +751,8 @@
 		0F5500FC06DD5F56008DD4F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				50F81C040A09D3CC001CBC38 /* GModule.cpp */,
+				50F81C050A09D3CC001CBC38 /* Renderbuffer.cpp */,
 				5035CB04097A257A00A120E5 /* Framebuffer.cpp */,
 				3E659EA808DC183900E47E2E /* Shape.cpp */,
 				0F55009206DD5F28008DD4F8 /* VertexProgram.cpp */,
@@ -777,6 +795,8 @@
 		0F55010106DD5F5D008DD4F8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				50F81C000A09D3AB001CBC38 /* GModule.h */,
+				50F81C010A09D3AB001CBC38 /* Renderbuffer.h */,
 				5035CB01097A252500A120E5 /* Framebuffer.h */,
 				3E659EA608DC182400E47E2E /* Shape.h */,
 				0F55010C06DD5F77008DD4F8 /* VertexProgram.h */,
@@ -1020,6 +1040,10 @@
 		0FCB740406DF63EA001A7213 /* G3D Test */ = {
 			isa = PBXGroup;
 			children = (
+				50F81BFC0A09D238001CBC38 /* tQuat.cpp */,
+				50F81BFD0A09D238001CBC38 /* tReliableConduit.cpp */,
+				50F81BF80A09D193001CBC38 /* tAABox.cpp */,
+				50F81BF90A09D193001CBC38 /* tAABSPTree.cpp */,
 				50F70A0B098138CB004BED35 /* tGThread.cpp */,
 				503382280935445000C574FC /* tAtomicInt32.cpp */,
 				3E659EAA08DC186000E47E2E /* tArray.cpp */,
@@ -1111,6 +1135,8 @@
 				0F55014F06DD5F77008DD4F8 /* Draw.h in Headers */,
 				3E659EA708DC182400E47E2E /* Shape.h in Headers */,
 				5035CB08097A258C00A120E5 /* Framebuffer.h in Headers */,
+				50F81C020A09D3AB001CBC38 /* GModule.h in Headers */,
+				50F81C030A09D3AC001CBC38 /* Renderbuffer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1320,6 +1346,8 @@
 				3EF42A8F077978740047B13F /* GWindow.cpp in Sources */,
 				3E659EA908DC183900E47E2E /* Shape.cpp in Sources */,
 				5035CB05097A257A00A120E5 /* Framebuffer.cpp in Sources */,
+				50F81C060A09D3CC001CBC38 /* GModule.cpp in Sources */,
+				50F81C070A09D3CC001CBC38 /* Renderbuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1474,6 +1502,10 @@
 				3E659EC908DC186000E47E2E /* tTextOutput.cpp in Sources */,
 				503382290935445000C574FC /* tAtomicInt32.cpp in Sources */,
 				50F70A0C098138CB004BED35 /* tGThread.cpp in Sources */,
+				50F81BFA0A09D193001CBC38 /* tAABox.cpp in Sources */,
+				50F81BFB0A09D193001CBC38 /* tAABSPTree.cpp in Sources */,
+				50F81BFE0A09D238001CBC38 /* tQuat.cpp in Sources */,
+				50F81BFF0A09D238001CBC38 /* tReliableConduit.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
