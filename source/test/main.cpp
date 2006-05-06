@@ -76,6 +76,8 @@ void perfTable();
 
 void testAtomicInt32();
 
+void testCoordinateFrame();
+
 void testGThread();
 
 
@@ -411,6 +413,24 @@ void testSwizzle() {
     v2 = v1.xy() + v1.yz();
 }
 
+
+void testCoordinateFrame() {
+    printf("CoordinateFrame ");
+
+    CoordinateFrame c;
+
+
+    float h = c.getHeading();
+    debugAssert(h == 0);
+
+    c.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(45));
+
+    h = c.getHeading();
+    debugAssert(fuzzyEq(h, toRadians(45)));
+
+    printf("passed\n");
+}
+
 void measureRDPushPopPerformance(RenderDevice* rd) {
     uint64 identityCycles;
 
@@ -499,6 +519,7 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testCoordinateFrame();
 
 	testReliableConduit(networkDevice);
 

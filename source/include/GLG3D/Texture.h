@@ -684,7 +684,7 @@ public:
     /**
      @deprecated Use settings()
      */
-    const Parameters& G3D_DEPRECATED parameters() const;
+    const Settings& parameters() const;
 
     const Settings& settings() const;
 

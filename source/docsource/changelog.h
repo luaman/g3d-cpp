@@ -95,6 +95,7 @@
     <LI> Fix: Fixed Texture read-back dimensions for cube-map
     <LI> Fix: Missing #include in LightingParameters.h [Erik]
     <LI> Fix: Quad triangle counts are now accurate (were off by factor of 4 in 6.08)
+    <LI> Fix: G3D::CoordinateFrame::getHeading was flipped front-to-back
    </UL>
   <P>   
    Changes in 6.08:

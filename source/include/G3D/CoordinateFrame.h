@@ -132,12 +132,16 @@ public:
     std::string toXML() const;
 
     /**
-     Returns the heading as an angle in radians, where
-    north is 0 and west is PI/2
+     Returns the heading of the lookVector as an angle in radians relative to
+     the world -z axis.  That is, a counter-clockwise heading where north (-z) 
+     is 0 and west (-x) is PI/2.
+
+     Note that the heading ignores the Y axis, so an inverted
+     object has an inverted heading.
      */
     inline float getHeading() const {
         Vector3 look = rotation.getColumn(2);
-        float angle = (float) atan2( -look.z, look.x);
+        float angle = -(float) atan2(-look.x, look.z);
         return angle;
     }
 
