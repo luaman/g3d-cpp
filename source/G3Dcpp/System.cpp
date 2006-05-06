@@ -1051,11 +1051,11 @@ public:
 
     /** 
        Most buffers we're allowed to store.
-       64000 * 128  = 8 MB
-        8192 * 1024 = 8 MB
-        1024 * 4096 = 4 MB
+       64000 * 128  = 8 MB (preallocated)
+        1024 * 1024 = 1 MB (allocated on demand)
+        1024 * 4096 = 4 MB (allocated on demand)
      */
-    enum {maxTinyBuffers = 64000, maxSmallBuffers = 8192, maxMedBuffers = 1024};
+    enum {maxTinyBuffers = 64000, maxSmallBuffers = 1024, maxMedBuffers = 1024};
 
 private:
 
@@ -1158,7 +1158,7 @@ private:
          */
     void* malloc(MemBlock* pool, int& poolSize, size_t bytes) {
 
-        // TODO: find the smallest block that satisfies the request.
+        // OPT: find the smallest block that satisfies the request.
 
         // See if there's something we can use in the buffer pool->
         // Search backwards since usually we'll re-use the last one.
@@ -1421,10 +1421,8 @@ public:
     }
 
     std::string status() const {
-        return format("allocated shared buffers: %5d/%d x %db, %5d/%d x %db, %5d/%d x %db",
-            maxTinyBuffers - tinyPoolSize, maxTinyBuffers, tinyBufferSize,
-            maxSmallBuffers - smallPoolSize, maxSmallBuffers, smallBufferSize,
-            maxMedBuffers - medPoolSize, maxMedBuffers, medBufferSize);
+        return format("preallocated shared buffers: %5d/%d x %db",
+            maxTinyBuffers - tinyPoolSize, maxTinyBuffers, tinyBufferSize);
     }
 };
 

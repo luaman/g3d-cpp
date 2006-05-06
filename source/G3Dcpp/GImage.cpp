@@ -2648,7 +2648,7 @@ static const float R_BGB[5][5] =
 #define B_GRR R_BGB
 
 
-void GImage::BAYER_R8G8_G8R8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
+void GImage::BAYER_R8G8_G8B8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
     debugAssert(in != _out);
 
     Color3uint8* out = (Color3uint8*)_out;
@@ -2697,6 +2697,31 @@ void GImage::BAYER_R8G8_G8R8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8*
             }
         }
     }
+}
+
+static void swapRedAndBlue(int N, Color3uint8* out) {
+    for (int i = N - 1; i >= 0; --i) {
+        uint8 tmp = out[i].r;
+        out[i].r = out[i].b;
+        out[i].b = tmp;
+    }
+}
+
+void GImage::BAYER_G8R8_B8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
+    // Run the equivalent function for red
+    BAYER_G8B8_R8G8_to_R8G8B8_MHC(w, h, in, _out);
+
+    // Now swap red and blue
+    swapRedAndBlue(w * h, (Color3uint8*)_out);
+}
+
+
+void GImage::BAYER_B8G8_G8R8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out) {
+    // Run the equivalent function for red
+    BAYER_R8G8_G8B8_to_R8G8B8_MHC(w, h, in, _out);
+
+    // Now swap red and blue
+    swapRedAndBlue(w * h, (Color3uint8*)_out);
 }
 
 
