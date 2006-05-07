@@ -1,7 +1,37 @@
 #include "../include/G3DAll.h"
 
 static void testMatrixConversion() {
-	// Round trip M->q->M
+
+    {
+        // This is a known corner case
+        Matrix3 M = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(180));
+        Quat q(M);
+        Matrix3 M2 = q.toRotationMatrix();
+
+		for (int r = 0; r < 3; ++r) {
+			for (int c = 0; c < 3; ++c) {
+				debugAssert(abs(M[r][c] - M2[r][c]) < 0.0005);
+			}
+		}
+    }
+
+    {
+        // This is a known corner case (near the one above)
+        Matrix3 M(-0.99999988, 0, 0,
+                   0, 1, 0,
+                   0, 0, -0.99999988);
+        Quat q(M);
+        Matrix3 M2 = q.toRotationMatrix();
+
+		for (int r = 0; r < 3; ++r) {
+			for (int c = 0; c < 3; ++c) {
+				debugAssert(abs(M[r][c] - M2[r][c]) < 0.0005);
+			}
+		}
+    }
+
+
+    // Round trip M->q->M
 	for (int i = 0; i < 100; ++i) {
 		Matrix3 M = Matrix3::fromAxisAngle(Vector3::random(), random(0, G3D_TWO_PI));
 		Quat q(M);

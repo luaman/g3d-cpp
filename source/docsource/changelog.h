@@ -31,15 +31,19 @@
    Changes in 6.09:
    <UL>
     <LI> Full loading of the GL_ATI_separate_stencil extension, support within RenderDevice
+    <LI> platform.h undefines WIN32_LEAN_AND_MEAN, NOMINMAX after it has defined them
     <LI> G3D::Texture::Settings::maxMipMap
     <LI> Renamed Texture::Parameters to Texture::Settings (backwards compatible typedef added)
     <LI> Optimized IFSModel rendering by increasing internal VAR cache size and reducing the number of state changes.  
         Can now render more than 1000 IFSModels at 30 fps on GeForce 7800.
     <LI> G3D::System::mallocStatus
     <LI> Range checking on Vector2int16::operator[]
+    <li> GImage::BAYER_G8R8_B8G8_to_R8G8B8_MHC, GImage::BAYER_B8G8_G8R8_to_R8G8B8_MHC
     <LI> IFSModel and MD2Model now allocated their posed models using System::malloc
-    <LI> Increased the memory maintained by G3D::System for buffer pools up to a total of 20 MB: 8 MB tiny (preallocated), 8 MB small, 4 MB medium.  This was observed to 
-         dramatically increase performance (15x) in real programs that were performance limited by memory allocation time.
+    <LI> Increased the memory maintained by G3D::System for buffer pools up to a total of 13 MB: 
+         8 MB tiny (preallocated), 1 MB small (on demand), 4 MB medium (on demand).  This was observed to 
+         dramatically increase performance (15x) in real programs that were 
+         performance limited by memory allocation time.
     <LI> NetworkDevice now uses Winsock2.0 on Windows (controlled by the G3D_WINSOCK_MAJOR_VERSION/G3D_WINSOCK_MINOR_VERSION settings in NetAddress.h)
     <LI> G3D::Manipulator
     <LI> G3D::GApplet now runs installed G3D::GModules (except for graphics, which is left to the progrmamer)
@@ -89,12 +93,13 @@
 	<LI> Fix: [1449115 ] Texture loading for odd-byte rows
     <LI> Fix: G3D::Win32Window now produces correct character and scan codes for key events
     <LI> Fix: G3D::GApplet::onEvent calls GApplet::processEvent by default
-    <LI> Fix: [ 1444320 ] TextInput parses ".1" as "1" instead of "0.1"
+    <LI> Fix: [ 1444320 ] TextInput parsed ".1" as "1" instead of "0.1"
     <LI> Fix: G3D::Shape::type is now const
     <LI> Fix: 0 --> 0.0f FrameBuffer.h [Erik]
     <LI> Fix: Fixed Texture read-back dimensions for cube-map
     <LI> Fix: Missing #include in LightingParameters.h [Erik]
     <LI> Fix: Quad triangle counts are now accurate (were off by factor of 4 in 6.08)
+    <LI> Fix: contrib/ArticulatedModel now correctly masks all components using the diffuse alpha in fixed function mode
     <LI> Fix: G3D::CoordinateFrame::getHeading was flipped front-to-back
    </UL>
   <P>   

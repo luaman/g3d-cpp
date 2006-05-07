@@ -417,16 +417,17 @@ void testSwizzle() {
 void testCoordinateFrame() {
     printf("CoordinateFrame ");
 
-    CoordinateFrame c;
+    // Test getHeading at a variety of angles
+    for (int i = -175; i <= 175; i += 5) {
+        CoordinateFrame c;
+        float h = c.getHeading();
+        debugAssert(h == 0);
 
+        c.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(i));
 
-    float h = c.getHeading();
-    debugAssert(h == 0);
-
-    c.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(45));
-
-    h = c.getHeading();
-    debugAssert(fuzzyEq(h, toRadians(45)));
+        h = c.getHeading();
+        debugAssert(fuzzyEq(h, toRadians(i)));
+    }
 
     printf("passed\n");
 }
