@@ -1,0 +1,161 @@
+<html>
+<head>
+<title>G3D Build Specification</title>
+</head>
+<body>
+<h1>G3D Build Specification</h1>
+
+This document describes the desired specification for the inputs,
+outputs, and properties of the build system for G3D.  It does not
+discuss particular implementations; those will be proposed in future
+documents.
+<p>
+This build system is intended to be rolled out in the G3D 7.00 release
+but may slip to a future release if it cannot be implemented in time.
+<p>
+Please discuss this document on the <a
+href="http://g3d-cpp.sourceforge.net/forums/viewforum.php?f=1">new
+forums</a>.  If Morgan accepts your proposed changes he will ask you
+to add them to this page directly.
+<p>
+
+<hr>
+<h2>Contents</h2>
+<ul>
+ <li><a href="#sourcetree">Source Directory Tree</a>
+ <li><a href="#buildtree">Build Directory Tree</a>
+</ul>
+
+<hr>
+<a name="sourcetree">
+<h2>Source Directory Tree</h2>
+<pre>
+  <img src="folder.png"> <b>g3d/</b>                                    <font color=#009000>New CVS Module</font>
+  |--<img src="folder.png"> <b>g3d.lib/</b>
+  |  |--<img src="folder.png"><b>include/</b>
+  |  |  |-- AABox.h
+  |  |  `-- ...
+  |  |-- AABox.cpp
+  |  `-- ...
+  |
+  |--<img src="folder.png"> <b>glg3d.lib/</b>
+  |  |--<img src="folder.png"> <b>gl/</b>
+  |  |  `-- ...
+  |  `-- ...
+  |
+  |--<img src="folder.png"> <b>zlib.lib/</b>
+  |  |-- alder32.c
+  |  |-- zlib.h
+  |  `-- ...
+  |
+  |--<img src="folder.png"> <b>libpng.lib/</b>
+  |     ...
+  |
+  |--<img src="folder.png"> <b>libjpeg.lib/</b>
+  |     ...
+  |
+  |--<img src="folder.png"> <b>boost.lib/</b>
+  |     ...
+  |
+  |-- .cvsignore
+  |
+  :
+</pre>
+
+<hr width=50%>
+
+<ul>
+  <li> OpenGL headers are usually out of date on end-user machines.  So we include our own private GL headers under glg3d.
+</ul>
+
+<hr>
+<a name="buildtree">
+<h2>Build Directory Tree</h2>
+
+The build tree sits at the top level inside the CVS module.  This
+keeps all G3D files localized.  Note that the "install" subdirectory
+is what is copied elsewhere when installing the library.
+<p>
+
+<pre>  
+  <img src="folder.png"> <b>g3d/</b>                                    <font color=#009000>New CVS Module</font>
+  |
+  :
+  |
+  `--<img src="folder.png"> <b>build/</b>                               <font color=#009000>Base of the build tree</font>
+     |--<img src="folder.png"> <b>doc/</b>
+     |--<img src="folder.png"> <b>install/</b>
+     |  |--<img src="folder.png"> <b>doc/</b>
+     |  |   `-- ...
+     |  |
+     |  |--<img src="folder.png"> <b>include/</b>
+     |  |  |--<img src="folder.png"> <b>g3d/</b>
+     |  |  |  |-- AABox.h
+     |  |  |  |-- graphics3d.h
+     |  |  |  `-- ...
+     |  |  |
+     |  |  |--<img src="folder.png"> <b>glg3d/</b>
+     |  |  |  |--<img src="folder.png"> <b>gl/</b>
+     |  |  |  |   `-- ...
+     |  |  |  |
+     |  |  |  `-- ...
+     |  |  |
+     |  |  |--<img src="folder.png"> <b>boost/</b>
+     |  |  |  `--  ...
+     |  |  |
+     |  |  `--<img src="folder.png"> <b>zlib/</b>
+     |  |     `-- zlib.h
+     |  |   
+     |  |--<img src="folder.png"> <b>win32-vc6.0-lib/</b>
+     |  |  `-- ...
+     |  |
+     |  |
+     |  |--<img src="folder.png"> <b>win32-vc7.1-lib/</b>
+     |  |  `-- ...
+     |  |
+     |  |--<img src="folder.png"> <b>win32-vc8.0-lib/</b>
+     |  |  |-- g3d.lib
+     |  |  |-- glg3d.lib
+     |  |  |-- g3d-debug.lib
+     |  |  |-- glg3d-debug.lib
+     |  |  |-- zlib.lib
+     |  |  |-- libpng.lib
+     |  |  `-- libjpg.lib
+     |  |
+     |  |--<img src="folder.png"> <b>demos/</b>
+     |  |  |--<img src="folder.png"> <b>VARDemo/</b>
+     |  |  |   `--   main.cpp
+     |  |  |
+     |  |  `--...
+     |  |
+     |  |--<img src="folder.png"> <b>data/</b>
+     |  |  |--<img src="folder.png"> <b>fonts/</b>
+     |  |  |  `-- ...
+     |  |  |
+     |  |  `-- ...
+     |  |
+     |  `--<img src="folder.png"> <b>contrib/</b>
+     |     |--<img src="folder.png"> <b>ArticulatedModel/</b>
+     |     |  `-- ...
+     |     |
+     |     `-- ...
+     |
+     `--<img src="folder.png"> <b>temp/</b>
+        |--<img src="folder.png"> <b>g3d.lib/</b>
+        |  |--<img src="folder.png"> <b>debug/</b>
+        |  |   |-- AABox.obj
+        |  |   `-- ...
+        |  |
+        |  `--<img src="folder.png"> <b>release/</b>
+        |     `--...
+        |
+        |--<img src="folder.png"> <b>glg3d.lib/</b>
+        |  `-- ...
+        |
+        `--<img src="folder.png"> <b>zlib.lib/</b>
+           `-- ...
+
+</pre>
+
+</body>
+</html>
