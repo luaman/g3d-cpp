@@ -67,6 +67,12 @@ private:
      */
     Vector3 reflectAbout(const Vector3& normal) const;
 
+    // Hidden operators
+    bool operator<(const Vector3&) const;
+    bool operator>(const Vector3&) const;
+    bool operator<=(const Vector3&) const;
+    bool operator>=(const Vector3&) const;
+
 public:
     // construction
     Vector3();

@@ -29,6 +29,12 @@ namespace G3D {
  memory layout.
  */
 class Color4 {
+private:
+    // Hidden operators
+    bool operator<(const Color4&) const;
+    bool operator>(const Color4&) const;
+    bool operator<=(const Color4&) const;
+    bool operator>=(const Color4&) const;
 
 public:
 

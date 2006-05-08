@@ -32,7 +32,13 @@ class Vector4;
  memory layout.
  */
 class Vector4 {
-    
+private:
+    // Hidden operators
+    bool operator<(const Vector4&) const;
+    bool operator>(const Vector4&) const;
+    bool operator<=(const Vector4&) const;
+    bool operator>=(const Vector4&) const;
+
 public:
     // construction
     Vector4();

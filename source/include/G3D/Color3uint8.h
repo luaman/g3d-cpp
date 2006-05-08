@@ -37,6 +37,13 @@ namespace G3D {
 #endif
 
 class Color3uint8 {
+private:
+    // Hidden operators
+    bool operator<(const Color3uint8&) const;
+    bool operator>(const Color3uint8&) const;
+    bool operator<=(const Color3uint8&) const;
+    bool operator>=(const Color3uint8&) const;
+
 public:
     uint8       r;
     uint8       g;

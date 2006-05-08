@@ -45,6 +45,13 @@ namespace G3D {
   @cite Erik B. Dam, Martin Koch, Martin Lillholm, Quaternions, Interpolation and Animation.  Technical Report DIKU-TR-98/5, Department of Computer Science, University of Copenhagen, Denmark.  1998.
  */
 class Quat {
+private:
+    // Hidden operators
+    bool operator<(const Quat&) const;
+    bool operator>(const Quat&) const;
+    bool operator<=(const Quat&) const;
+    bool operator>=(const Quat&) const;
+
 public:
 
     /**

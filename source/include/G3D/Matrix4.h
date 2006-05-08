@@ -39,6 +39,12 @@ private:
     */
     float subDeterminant(int excludeRow, int excludeCol) const;
 
+    // Hidden operators
+    bool operator<(const Matrix4&) const;
+    bool operator>(const Matrix4&) const;
+    bool operator<=(const Matrix4&) const;
+    bool operator>=(const Matrix4&) const;
+
 public:
     Matrix4(
         float r1c1, float r1c2, float r1c3, float r1c4,

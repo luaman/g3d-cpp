@@ -29,6 +29,12 @@ private:
 
     float elt[3][3];
 
+    // Hidden operators
+    bool operator<(const Matrix3&) const;
+    bool operator>(const Matrix3&) const;
+    bool operator<=(const Matrix3&) const;
+    bool operator>=(const Matrix3&) const;
+
 public:
 
     /** Initial values are undefined for performance.  See also 

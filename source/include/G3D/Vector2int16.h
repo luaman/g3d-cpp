@@ -27,6 +27,13 @@ namespace G3D {
 #endif
 
 class Vector2int16 {
+private:
+    // Hidden operators
+    bool operator<(const Vector2int16&) const;
+    bool operator>(const Vector2int16&) const;
+    bool operator<=(const Vector2int16&) const;
+    bool operator>=(const Vector2int16&) const;
+
 public:
     G3D::int16              x;
     G3D::int16              y;
