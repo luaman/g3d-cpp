@@ -64,9 +64,9 @@ static void testSlerp() {
 		float a0 = 0;
 
         // End
-		float a1 = G3D_PI * 3/4;
+		float a1 = (float)(G3D_PI * 3/2);
 
-		float a2 = (G3D_PI * 3/4 + G3D_PI * 2) / 2;
+		float a2 = (float)((G3D_PI * 3/2 + G3D_PI * 2) / 2);
 
 		Quat q0 = Quat::fromAxisAngleRotation(axis, a0);
 		Quat q1 = Quat::fromAxisAngleRotation(axis, a1);
@@ -79,17 +79,7 @@ static void testSlerp() {
 		Vector3 raxis;
 		rq2.toAxisAngleRotation(raxis, ra2);
 
-        // Note that a sign flip on *both* the axis and angle is ok.
-        // Change so that the angle is canonically positive for testing
-        // purposes.
-        if (ra2 < 0) {
-            ra2 = -ra2;
-            raxis = -raxis;
-        }
-        
-		debugAssert(fuzzyEq(ra2, a2));
-		debugAssert(raxis.fuzzyEq(axis));
-		debugAssert(rq2.fuzzyEq(q2));
+		debugAssert(rq2.sameRotation(q2));
     }
 
     // Test general slerp
@@ -126,9 +116,8 @@ static void testSlerp() {
 void testQuat() {
 	printf("Quat ");
 
-	testMatrixConversion();
 	testSlerp();
-
+	testMatrixConversion();
 
 	printf("passed\n");
 }

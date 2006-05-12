@@ -31,42 +31,6 @@ Quat Quat::fromAxisAngleRotation(
 Quat::Quat(
     const Matrix3& rot) {
 
-/*
-    In G3D version 6.09, this commented out code was reverted to the optimized implementation below it.
-	The optimized code contains one fewer branch and is more numerically stable.
-
-    // Trace of the matrix
-    float tr = rot[0][0] + rot[1][1] + rot[2][2] + 1;
-
-    if (tr > 0.0) {
-        float c = sqrt(tr);
-        w = (float)c * 0.5f;
-        c = 0.5f / c;
-
-        x = (rot[2][1] - rot[1][2]) * c;
-        y = (rot[0][2] - rot[2][0]) * c;
-        z = (rot[1][0] - rot[0][1]) * c;
-    } else if ( rot[0][0] > rot[1][1] && rot[0][0] > rot[2][2] ) {
-        float s = 2.0f * sqrtf( 1.0f + rot[0][0] - rot[1][1] - rot[2][2]);
-        x = 0.25f * s;
-        y = (rot[0][1] + rot[1][0] ) / s;
-        z = (rot[0][2] + rot[2][0] ) / s;
-        w = (rot[1][2] - rot[2][1] ) / s;
-
-    } else if (rot[1][1] > rot[2][2]) {
-        float s = 2.0f * sqrtf( 1.0f + rot[1][1] - rot[0][0] - rot[2][2]);
-        x = (rot[0][1] + rot[1][0] ) / s;
-        y = 0.25f * s;
-        z = (rot[1][2] + rot[2][1] ) / s;
-        w = (rot[0][2] - rot[2][0] ) / s;
-    } else {
-        float s = 2.0f * sqrtf( 1.0f + rot[2][2] - rot[0][0] - rot[1][1] );
-        x = (rot[0][2] + rot[2][0] ) / s;
-        y = (rot[1][2] + rot[2][1] ) / s;
-        z = 0.25f * s;
-        w = (rot[0][1] - rot[1][0] ) / s;
-    }
-	*/
     static const int plus1mod3[] = {1, 2, 0};
 
     // Find the index of the largest diagonal component
@@ -166,7 +130,7 @@ void Quat::toRotationMatrix(
 
     
 Quat Quat::slerp(
-    const Quat&         quat1,
+    const Quat&         _quat1,
     float               alpha,
     float               threshold) const {
 
@@ -178,13 +142,22 @@ Quat Quat::slerp(
 	// http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/index.html
 
     const Quat& quat0 = *this;
+    Quat quat1 = _quat1;
 
     // angle between quaternion rotations
     float phi;
-    
-    // Compute cosine of angle then get angle
+    float cosphi = quat0.dot(quat1);
+
+
+    if (cosphi < 0) {
+        // Change the sign and fix the dot product; we need to
+        // loop the other way to get the shortest path
+        quat1 = -quat1;
+        cosphi = quat0.dot(quat1);
+    }
+
     // Using G3D::aCos will clamp the angle to 0 and pi
-    phi = static_cast<float>(G3D::aCos(quat0.dot(quat1)));
+    phi = static_cast<float>(G3D::aCos(cosphi));
     
     if (phi >= threshold) {
         // For large angles, slerp

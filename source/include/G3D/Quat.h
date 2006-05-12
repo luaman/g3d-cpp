@@ -6,7 +6,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
   
   @created 2002-01-23
-  @edited  2005-01-10
+  @edited  2006-05-10
  */
 
 #ifndef G3D_QUAT_H
@@ -88,9 +88,17 @@ public:
         return w;
     }
 
+    /** Note: two quats can represent the Quat::sameRotation and not be equal. */
 	bool fuzzyEq(const Quat& q) {
 		return G3D::fuzzyEq(x, q.x) && G3D::fuzzyEq(y, q.y) && G3D::fuzzyEq(z, q.z) && G3D::fuzzyEq(w, q.w);
 	}
+
+    /** True if these quaternions represent the same rotation (note that every rotation is 
+        represented by two values; q and -q).
+      */
+    bool sameRotation(const Quat& q) {
+        return fuzzyEq(q) || fuzzyEq(-q);
+    }
 
 	inline Quat operator-() const {
 		return Quat(-x, -y, -z, -w);
