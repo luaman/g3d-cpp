@@ -35,29 +35,41 @@ to add them to this page directly.
   |  |--<img src="folder.png"><b>include/</b>
   |  |  |-- AABox.h
   |  |  `-- ...
+  |  |
   |  |-- AABox.cpp
   |  `-- ...
   |
-  |--<img src="folder.png"> <b>glg3d.lib/</b>
-  |  |--<img src="folder.png"> <b>gl/</b>
+  |--<img src="folder.png"> <b>glg3d.lib/</b>                           <font color=#009000>Rendering + UI library</font>
+  |  |--<img src="folder.png"> <b>gl/</b>                               <font color=#009000>Customized OpenGL Headers</font>
   |  |  `-- ...
   |  `-- ...
   |
-  |--<img src="folder.png"> <b>zlib.lib/</b>
+  |--<img src="folder.png"> <b>zlib.lib/</b>                            <font color=#009000>3<sup>rd</sup> party library</font>
   |  |-- alder32.c
   |  |-- zlib.h
   |  `-- ...
   |
-  |--<img src="folder.png"> <b>libpng.lib/</b>
+  |--<img src="folder.png"> <b>libpng.lib/</b>                          <font color=#009000>3<sup>rd</sup> party library</font>
   |     ...
   |
-  |--<img src="folder.png"> <b>libjpeg.lib/</b>
-  |     ...
+  |--<img src="folder.png"> <b>libjpeg.lib/</b>                         <font color=#009000>3<sup>rd</sup> party library</font>
+  |  `-- ...
   |
-  |--<img src="folder.png"> <b>boost.lib/</b>
-  |     ...
+  |--<img src="folder.png"> <b>boost.lib/</b>                           <font color=#009000>3<sup>rd</sup> party library</font>
+  |  `--<img src="folder.png"> <b>include/</b>
+  |     `-- ...
   |
-  |-- .cvsignore
+  |--<img src="folder.png"> <b>sensei/</b>                              <font color=#009000>G3D Profiler & Debugger Tool</font>
+  |  |-- main.cpp
+  |  `-- ...
+  |
+  |--<img src="folder.png"> <b>gfxmeter/</b>                            <font color=#009000>G3D Benchmark Tool</font>
+  |  |-- main.cpp
+  |  `-- ...
+  |
+  |-- build
+  |-- build.bat
+  |-- .svnignore
   |
   :
 </pre>
@@ -66,6 +78,7 @@ to add them to this page directly.
 
 <ul>
   <li> OpenGL headers are usually out of date on end-user machines.  So we include our own private GL headers under glg3d.
+  <li> 3<sup>rd</sup> party libraries are provided primarily for Win32 users who don't have these standard tools.  G3D depends on these.
 </ul>
 
 <hr>
