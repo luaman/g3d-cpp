@@ -9,20 +9,20 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2002-02-27
-  @edited  2006-01-24
+  @edited  2006-05-10
  */ 
 
 #include <G3DAll.h>
 
-#if G3D_VER != 60800
-    #error Requires G3D 6.08
+#if G3D_VER != 60900
+    #error Requires G3D 6.09
 #endif
 
 std::string             DATA_DIR;
 
 Log*                    debugLog		= NULL;
 RenderDevice*           renderDevice	= NULL;
-CFontRef                font			= NULL;
+GFontRef                font			= NULL;
 UserInput*              userInput		= NULL;
 ManualCameraController* controller      = NULL;
 GCamera  				camera;
@@ -33,12 +33,13 @@ void doGraphics();
 void doUserInput();
 
 
+// No error checking
 int main(int argc, char** argv) {
 
     // Initialize
     DATA_DIR     = demoFindData();
-    debugLog	 = new Log();
-    renderDevice = new RenderDevice();
+    debugLog	 = new Log;
+    renderDevice = new RenderDevice;
     RenderDeviceSettings settings;
     settings.fsaaSamples = 1;
     settings.resizable = true;
@@ -49,17 +50,17 @@ int main(int argc, char** argv) {
     font         = GFont::fromFile(renderDevice, DATA_DIR + "font/dominant.fnt");
 
     controller   = new ManualCameraController(renderDevice, userInput);
+
     controller->setMoveRate(10);
-
-    controller->setPosition(Vector3(0, 0, 4));
-    controller->lookAt(Vector3(-2,3,-5));
-
-    renderDevice->resetState();
-	renderDevice->setColorClearValue(Color3(.1, .5, 1));
+    controller->setPosition(Vector3(0.0f, 0.0f, 4.0f));
+    controller->lookAt(Vector3(-2.0f, 3.0f, -5.0f));
 
     controller->setActive(true);
 
-    RealTime now = System::getTick() - 0.001, lastTime;
+    renderDevice->resetState();
+	renderDevice->setColorClearValue(Color3(0.1f, 0.5f, 1.0f));
+
+    RealTime now = System::getTick() - 0.001f, lastTime;
 
     // Main loop
     do {
@@ -73,7 +74,7 @@ int main(int argc, char** argv) {
 
         doGraphics();
    
-    } while (! endProgram);
+    } while ( !endProgram );
 
     // Cleanup
     delete controller;
@@ -110,7 +111,8 @@ void doGraphics() {
             renderDevice->setProjectionAndCameraMatrix(camera);
 
             renderDevice->enableLighting();
-            renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+            renderDevice->setLight(0, GLight::directional(lighting.lightDirection, 
+lighting.lightColor));
             renderDevice->setAmbientLightColor(lighting.ambient);
 
             Draw::axes(renderDevice);
@@ -126,24 +128,25 @@ void doUserInput() {
     userInput->beginEvents();
 
     // Event handling
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch(event.type) {
+    GEvent inputEvent;
+    while ( renderDevice->window()->pollEvent(inputEvent) ) {
+        switch(inputEvent.type) {
         case SDL_QUIT:
 	        endProgram = true;
 	        break;
 
         case SDL_VIDEORESIZE:
             {
-                renderDevice->notifyResize(event.resize.w, event.resize.h);
-                Rect2D full = Rect2D::xywh(0, 0, renderDevice->getWidth(), renderDevice->getHeight());
+                renderDevice->notifyResize(inputEvent.resize.w, inputEvent.resize.h);
+                Rect2D full = Rect2D::xywh(0.0f, 0.0f, renderDevice->getWidth(), 
+renderDevice->getHeight());
                 renderDevice->setViewport(full);
             }
             break;
 
 
 	    case SDL_KEYDOWN:
-            switch (event.key.keysym.sym) {
+            switch (inputEvent.key.keysym.sym) {
             case SDLK_ESCAPE:
                 endProgram = true;
                 break;
@@ -162,7 +165,7 @@ void doUserInput() {
         default:;
         }
 
-        userInput->processEvent(event);
+        userInput->processEvent(inputEvent);
     }
 
     userInput->endEvents();
