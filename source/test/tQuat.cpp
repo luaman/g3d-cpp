@@ -17,9 +17,9 @@ static void testMatrixConversion() {
 
     {
         // This is a known corner case (near the one above)
-        Matrix3 M(-0.99999988, 0, 0,
+        Matrix3 M(-0.99999988f, 0, 0,
                    0, 1, 0,
-                   0, 0, -0.99999988);
+                   0, 0, -0.99999988f);
         Quat q(M);
         Matrix3 M2 = q.toRotationMatrix();
 

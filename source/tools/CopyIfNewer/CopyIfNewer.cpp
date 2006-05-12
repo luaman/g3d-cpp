@@ -1,3 +1,4 @@
+#include <g3d/platform.h>
 #include <graphics3d.h>
 
 using namespace G3D;
@@ -40,7 +41,7 @@ void copyIfNewer(bool exclusions, std::string sourcespec, std::string destspec) 
         if (! exclusions || (fileArray[f][0] != '~')) {
             std::string s = path + fileArray[f];
             std::string d = destspec + fileArray[f];
-            if (fileIsNewer(s, d)) {
+            if (true || fileIsNewer(s, d)) {
                 printf("copy %s %s\n", s.c_str(), d.c_str());
                 copyFile(s, d);
             }

@@ -417,6 +417,14 @@ void testSwizzle() {
 void testCoordinateFrame() {
     printf("CoordinateFrame ");
 
+    {
+        // Easy case
+        CoordinateFrame c;
+        c.lookAt(Vector3(-1, 0, -1));
+        float h = c.getHeading();
+        debugAssert(fuzzyEq(h, G3D_PI / 4));
+    }
+
     // Test getHeading at a variety of angles
     for (int i = -175; i <= 175; i += 5) {
         CoordinateFrame c;
@@ -448,8 +456,6 @@ void measureRDPushPopPerformance(RenderDevice* rd) {
 
     printf("RenderDevice::push+pop:             %g cycles\n", identityCycles / (double)N);
 }
-
-
 
 
 int main(int argc, char* argv[]) {

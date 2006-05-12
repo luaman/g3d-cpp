@@ -39,6 +39,8 @@ public:
     IFSModelRef         ifsModel;
     MD2ModelRef         md2Model;
 
+    Array<PosedModelRef>    models;
+
     Demo(App* app);
 
     virtual ~Demo() {}
@@ -81,7 +83,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 void Demo::onInit()  {
-    ifsModel = IFSModel::create("c:/projects/cpp/source/data/ifs/p51-mustang.ifs");
+    ifsModel = IFSModel::create("d:/games/cpp/source/data/ifs/p51-mustang.ifs");
 
     CoordinateFrame obj = CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(30)), Vector3(2, 0, 0));
     
@@ -93,6 +95,8 @@ void Demo::onInit()  {
 //    manipulator->setFrame(obj);
 //    manipulator->setControlFrame(CoordinateFrame());
 
+    models.append(IFSModel::create("D:/games/data/ifs/square.ifs")->pose());
+    models.append(IFSModel::create("D:/games/cpp/source/data/ifs/p51-mustang.ifs")->pose(Vector3(0,2,0)));
 
     // Local control
     manipulator->setFrame(obj);
@@ -143,6 +147,8 @@ void Demo::onUserInput(UserInput* ui) {
 
 void Demo::onGraphics(RenderDevice* rd) {
 
+    debugAssert(GLCaps::supports_two_sided_stencil());
+
 	app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
 
 	// Can now render from the texture
@@ -154,7 +160,36 @@ void Demo::onGraphics(RenderDevice* rd) {
     if (app->sky.notNull()) {
         app->sky->render(rd, LightingParameters(G3D::toSeconds(10,00,00, AM)));
     }
- 
+
+    rd->pushState();
+    rd->enableLighting();
+    //Configure ambient light
+    rd->setAmbientLightColor(Color3::white() * .25);
+
+    for (int m = 0; m < models.size(); ++m) {
+        models[m]->render(rd);
+    }
+
+    GLight light = GLight::directional(Vector3(0,1,0), Color3::white() * 0.5);
+    rd->disableDepthWrite();    
+    beginMarkShadows(rd);
+        for (int m = 0; m < models.size(); ++m) {
+            markShadows(rd, models[m], light.position);
+        }
+    endMarkShadows(rd);
+
+    rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+    rd->setStencilTest(RenderDevice::STENCIL_EQUAL);
+    rd->setStencilConstant(0);
+    rd->setAmbientLightColor(Color3::black());
+    rd->setDepthTest(RenderDevice::DEPTH_LEQUAL);
+
+    rd->setLight(0, light);
+    for (int m = 0; m < models.size(); ++m) {
+        models[m]->render(rd);
+    }
+
+    rd->popState();
 
     GApplet::onGraphics(rd);
 }
