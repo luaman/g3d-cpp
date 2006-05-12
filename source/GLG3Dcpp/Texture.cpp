@@ -1412,6 +1412,9 @@ void Texture::getCameraRotation(CubeFace face, Matrix3& outMatrix) {
 
 size_t Texture::sizeInMemory() const {
 
+	if (!TextureFormat::valid)
+		return 0;
+
     int base = (width * height * depth * format->hardwareBitsPerTexel) / 8;
 
     int total = 0;

@@ -298,6 +298,76 @@ private:
 
 public:
 
+	class DebugSettings {
+	public:
+		/** 
+		Stop rendering after @a primitiveCutoff primitives (i.e., RenderDevice::beginPrimitive or 
+		RenderDevice::sendIndices calls) have been processed.  The last primitive rendered before 
+		the cutoff will be shown as a wireframe mesh.
+
+        -1 means render all.  Default is -1
+		*/
+		int				primitiveCutoff;
+
+		/** Forces wireframe mode for all primitives. Default is false. */
+		bool			forceWireframe;
+
+        enum Pipeline {
+            // Ignore all draw calls
+            PIPELINE_NONE,
+
+            // Process vertices but not pixels
+            PIPELINE_VERTICES_ONLY,
+
+            // Process full pipeline of vertices and pixels
+            PIPELINE_FULL
+        };
+
+        /** Default is PIPELINE_FULL */
+        Pipeline        pipeline;
+
+        enum Reveal {
+            REVEAL_COLOR,
+            REVEAL_DEPTH,
+            REVEAL_STENCIL,
+            REVEAL_ALPHA,
+            REVEAL_OVERDRAW
+        };
+
+        /** Default is REVEAL_COLOR */
+        Reveal          reveal;
+	};
+
+
+	class StatusInfo {
+	public:
+		uint32			minorStateChangeCount;
+		uint32			minorOpenGLStateChangeCount;
+
+		uint32			majorStateChangeCount;
+		uint32			majorOpenGLStateChangeCount;
+
+		uint32			pushStateCount;
+
+		uint32			primitiveCount;
+
+		/** Triangles in the last frame */
+		uint32			triangleCount;
+
+		/** Amount of time spent in swapbuffers (when large, indicates 
+		    that the GPU is blocking the CPU). */
+		RealTime		swapbuffersTime;
+
+        /** Inverse of beginframe->endframe time.  Accounts for the frame
+            timing of the system as a whole, not just graphics.*/
+		float			frameRate;
+
+		/** Exponentially weighted moving average of frame rate */
+		float			smoothFrameRate;
+
+		float			triangleRate;		
+	};
+
     // These are abstracted to make it easy to put breakpoints in them
     /**
       State change to RenderDevice.
@@ -526,6 +596,11 @@ public:
      filter.
      */
     double getTrianglesPerFrame() const;
+
+	/** Returns the number of triangles rendered since beginFrame.*/
+	inline int getTriangleCount() const {
+		return triangleCount;
+	}
 
     /**
      Use ALWAYS_PASS to shut off testing.

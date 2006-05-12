@@ -56,10 +56,55 @@ static void testMatrixConversion() {
 
 
 static void testSlerp() {
+    // Test that we take the shortest path
+    {
+        Vector3 axis = Vector3::unitY();
+
+        // Start
+		float a0 = 0;
+
+        // End
+		float a1 = G3D_PI * 3/4;
+
+		float a2 = (G3D_PI * 3/4 + G3D_PI * 2) / 2;
+
+		Quat q0 = Quat::fromAxisAngleRotation(axis, a0);
+		Quat q1 = Quat::fromAxisAngleRotation(axis, a1);
+		Quat q2 = Quat::fromAxisAngleRotation(axis, a2);
+
+        // slerp result
+		Quat rq2 = q0.slerp(q1, 0.5);
+
+		float ra2;
+		Vector3 raxis;
+		rq2.toAxisAngleRotation(raxis, ra2);
+
+        // Note that a sign flip on *both* the axis and angle is ok.
+        // Change so that the angle is canonically positive for testing
+        // purposes.
+        if (ra2 < 0) {
+            ra2 = -ra2;
+            raxis = -raxis;
+        }
+        
+		debugAssert(fuzzyEq(ra2, a2));
+		debugAssert(raxis.fuzzyEq(axis));
+		debugAssert(rq2.fuzzyEq(q2));
+    }
+
+    // Test general slerp
 	for (int i = 0; i < 100; ++i) {
 		Vector3 axis = Vector3::random();
+
+        // We test 0->PI because that way we know the shortest path is
+        // always between them (and not wrapping around the other way).
+
+        // Start
 		float a0 = random(0, G3D_PI);
-		float a1 = random(a0, G3D_PI);
+
+        // End
+		float a1 = random(0, G3D_PI);
+
 		float a2 = (a0 + a1) / 2;
 		Quat q0 = Quat::fromAxisAngleRotation(axis, a0);
 		Quat q1 = Quat::fromAxisAngleRotation(axis, a1);

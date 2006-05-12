@@ -301,7 +301,9 @@ void Win32Window::init(HWND hwnd, bool creatingShareWindow) {
         iAttributes.append(WGL_DEPTH_BITS_ARB,     settings.depthBits);
         iAttributes.append(WGL_STENCIL_BITS_ARB,   settings.stencilBits);
         iAttributes.append(WGL_STEREO_ARB,         settings.stereo);
-        if (hasWGLMultiSampleSupport) {
+        if (hasWGLMultiSampleSupport && (settings.fsaaSamples > 1)) {
+            // On some ATI cards, even setting the samples to false will turn it on,
+            // so we only take this branch when FSAA is explicitly requested.
             iAttributes.append(WGL_SAMPLE_BUFFERS_ARB, settings.fsaaSamples > 1);
 		    iAttributes.append(WGL_SAMPLES_ARB,        settings.fsaaSamples);
         } else {

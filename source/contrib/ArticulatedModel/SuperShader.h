@@ -54,6 +54,10 @@ public:
             return (constant.r == 1) && (constant.g == 1) && (constant.b == 1) && map.isNull();
         }
 
+        inline bool operator==(const Component& other) const {
+            return (constant == other.constant) && (map == other.map);
+        }
+
         /** Returns true if both components will produce similar non-zero terms in a
             lighting equation.  Black and white are only similar to themselves. */
         inline bool similarTo(const Component& other) const{
@@ -130,14 +134,43 @@ public:
             already be factored in to the normal map normals.*/
         float                   bumpMapScale;
 
+        /**
+         If the diffuse texture is changed, set this to true.  Defaults to true.
+         */
+        bool                    changed;
+
         Material() : diffuse(1), emit(0), 
             specular(0.25), specularExponent(60), 
-            transmit(0), reflect(0) {
+            transmit(0), reflect(0), changed(true) {
         }
 
         /** Returns true if this material uses similar terms as other
             (used by SuperShader), although the actual textures may differ. */
         bool similarTo(const Material& other) const;
+
+        /** 
+         To be identical, two materials must not only have the same images in their
+         textures but must share pointers to the same underlying Texture objects.
+         */
+        inline bool operator==(const Material& other) const {
+            return (diffuse == other.diffuse) &&
+                   (specular == other.specular) &&
+                   (specularExponent == other.specularExponent) &&
+                   (transmit == other.transmit) &&
+                   (reflect == other.reflect) &&
+                   (normalBumpMap == other.normalBumpMap) &&
+                   (bumpMapScale == other.bumpMapScale);
+        }
+
+        inline bool operator!=(const Material& other) const {
+            return !(*this == other);
+        }
+
+        /** 
+          If Material::changed is true, copies the diffuse texture's alpha channel to 
+          all other maps.
+         */
+        void enforceDiffuseMask();
 	};
 
     /** Configures the material arguments on a SuperShader for

@@ -25,6 +25,7 @@ namespace G3D {
 class TextureFormat {
 public:
 
+	static bool valid;		// A hack to deal with app destruction. Set to false when static TextureFormats are deleted
     enum Code {
         CODE_L8,
         CODE_L16,

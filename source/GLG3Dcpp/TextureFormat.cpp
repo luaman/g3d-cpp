@@ -87,6 +87,8 @@ const TextureFormat* TextureFormat::STENCIL16 = new TextureFormat(1, false, GL_S
 
 const TextureFormat* TextureFormat::AUTO      = NULL;
 
+bool TextureFormat::valid = true;
+
 const TextureFormat* TextureFormat::depth(int depthBits) {
 
     if (depthBits == SAME_AS_SCREEN) {
@@ -285,6 +287,8 @@ static class TextureFormatCleanup {
 public:
 
 	~TextureFormatCleanup() {
+		TextureFormat::valid = false;
+
         delete const_cast<TextureFormat*>(TextureFormat::L8);
 
         delete const_cast<TextureFormat*>(TextureFormat::L16);
