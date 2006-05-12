@@ -483,9 +483,13 @@ public:
     Henrique S. Malvar, Li-wei He, and Ross Cutler
 
     The filter wraps at the image boundaries.
+
+    Assumes in != out.
     */
     static void BAYER_G8B8_R8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
-    static void BAYER_R8G8_G8R8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
+    static void BAYER_G8R8_B8G8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
+    static void BAYER_R8G8_G8B8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
+    static void BAYER_B8G8_G8R8_to_R8G8B8_MHC(int w, int h, const uint8* in, uint8* _out);
 
     /** Fast conversion; the output has 1/2 the size of the input in each direction. Assumes in != out.
     See G3D::BAYER_G8B8_R8G8_to_R8G8B8_MHC for a much better result. */

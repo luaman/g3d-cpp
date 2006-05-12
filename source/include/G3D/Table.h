@@ -83,9 +83,9 @@ inline unsigned int hashCode(const G3D::Hashable& a) {
  String hashing function for use with Table.
  */
 inline unsigned int hashCode(const std::string& a) {
-    static const std::collate<char>& col = std::use_facet< std::collate<char> > (std::locale::empty( ));
-    return col.hash(a.c_str(), a.c_str() + a.size());
-    //return G3D::Crypto::crc32(a.c_str(), a.size());
+    //static const std::collate<char>& col = std::use_facet< std::collate<char> > (std::locale::empty( ));
+    //return col.hash(a.c_str(), a.c_str() + a.size());
+    return G3D::Crypto::crc32(a.c_str(), a.size());
 }
 
 namespace G3D {

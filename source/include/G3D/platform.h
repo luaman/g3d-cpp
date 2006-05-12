@@ -224,6 +224,8 @@
 
 #   define NOMINMAX 1
 #   include <windows.h>
+#   undef WIN32_LEAN_AND_MEAN
+#   undef NOMINMAX
 
 #ifdef _G3D_INTERNAL_HIDE_WINSOCK_
 #   undef _G3D_INTERNAL_HIDE_WINSOCK_
