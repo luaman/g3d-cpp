@@ -22,10 +22,35 @@ to add them to this page directly.
 <hr>
 <h2>Contents</h2>
 <ul>
+ <li><a href="#mandate">Mandate</a>
  <li><a href="#sourcetree">Source Directory Tree</a>
  <li><a href="#externaltree">External Directory Tree</a>
  <li><a href="#buildtree">Build Directory Tree</a>
 </ul>
+
+<hr>
+<a name="mandate">
+<h2>Mandate</h2>
+
+<ol>
+ <li> Compile static libraries
+ <li> All generated files go under one subdirectory
+ <li> No project files neeed to be modified when new files are added
+ <li> Same commands used to execute the build on all platforms
+ <li> Builds from multiple compilers can sit side-by-side
+ <li> Build system requires only a single, easy-to-install tool (so that users can easily build by themselves)
+ <li> Build targets: 
+   <ol>  
+     <li> <b>debug-lib</b> - Static libraries and headers    
+     <li> <b>release-lib</b> - Static libraries and headers
+     <li> <b>lib</b> - debug-lib, release-lib
+     <li> <b>doc</b> - Documentation, data, and demos
+     <li> <b>test</b> - Automated tests; depends on lib
+     <li> <b>source</b> - zipfile of source tree without SVN directories
+     <li> <b>all</b> - lib, doc, test, source
+     <li> <b>clean</b> - Remove all generated files
+   </ol>
+</ol>
 
 <hr>
 <a name="sourcetree">
