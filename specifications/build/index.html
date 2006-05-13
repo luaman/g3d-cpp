@@ -23,12 +23,18 @@ to add them to this page directly.
 <h2>Contents</h2>
 <ul>
  <li><a href="#sourcetree">Source Directory Tree</a>
+ <li><a href="#externaltree">External Directory Tree</a>
  <li><a href="#buildtree">Build Directory Tree</a>
 </ul>
 
 <hr>
 <a name="sourcetree">
 <h2>Source Directory Tree</h2>
+
+The source tree contains code needed to compile G3D, tools, and
+documentation for all platforms.  It is a checkout of the 'g3d'
+module from subversion.
+
 <pre>
   <img src="folder.png"> <b>g3d/</b>                                    <font color=#009000>New CVS Module</font>
   |--<img src="folder.png"> <b>g3d.lib/</b>
@@ -44,28 +50,21 @@ to add them to this page directly.
   |  |  `-- ...
   |  `-- ...
   |
-  |--<img src="folder.png"> <b>zlib.lib/</b>                            <font color=#009000>3<sup>rd</sup> party library</font>
-  |  |-- alder32.c
-  |  |-- zlib.h
-  |  `-- ...
-  |
-  |--<img src="folder.png"> <b>libpng.lib/</b>                          <font color=#009000>3<sup>rd</sup> party library</font>
-  |     ...
-  |
-  |--<img src="folder.png"> <b>libjpeg.lib/</b>                         <font color=#009000>3<sup>rd</sup> party library</font>
-  |  `-- ...
-  |
-  |--<img src="folder.png"> <b>boost.lib/</b>                           <font color=#009000>3<sup>rd</sup> party library</font>
-  |  `--<img src="folder.png"> <b>include/</b>
-  |     `-- ...
-  |
   |--<img src="folder.png"> <b>sensei/</b>                              <font color=#009000>G3D Profiler & Debugger Tool</font>
   |  |-- main.cpp
   |  `-- ...
   |
+  |--<img src="folder.png"> <b>demos/</b>                               <font color=#009000>Demos</font>
+  |
+  |--<img src="folder.png"> <b>docsource/</b>                           <font color=#009000>Documentation-only headers</font>
+  |
   |--<img src="folder.png"> <b>gfxmeter/</b>                            <font color=#009000>G3D Benchmark Tool</font>
   |  |-- main.cpp
   |  `-- ...
+  |
+  |--<img src="folder.png"> <b>contrib/</b>                             <font color=#009000>Unsupported code</font>
+  |
+  |--<img src="folder.png"> <b>data/</b>                                <font color=#009000>Standard data files</font>
   |
   |-- build
   |-- build.bat
@@ -82,6 +81,40 @@ to add them to this page directly.
 </ul>
 
 <hr>
+<a name="externaltree">
+<h2>External Directory Tree</h2>
+
+The external tree contains code needed to compile 3<sup>rd</sup> party
+libraries on which G3D (at least, for Win32) depends.  It is a checkout
+of the 'external' module from subversion.
+
+<pre>
+  <img src="folder.png"> <b>g3d-external/</b>                           <font color=#009000>New SVN Module</font>
+  |--<img src="folder.png"> <b>libpng.lib/</b>                          <font color=#009000>PNG</font>
+  |     ...
+  |
+  |--<img src="folder.png"> <b>libjpeg.lib/</b>                         <font color=#009000>JPEG</font>
+  |  `-- ...
+  |
+  |--<img src="folder.png"> <b>boost.lib/</b>                           <font color=#009000>Utility</font>
+  |  `--<img src="folder.png"> <b>include/</b>
+  |     `-- ...
+  |
+  |--<img src="folder.png"> <b>ode.dll/</b>                             <font color=#009000>Physics</font>
+  |  `--<img src="folder.png"> <b>include/</b>
+  |     `-- ...
+  |
+  |--<img src="folder.png"> <b>wx.dll/</b>                              <font color=#009000>GUI</font>
+  |  `--<img src="folder.png"> <b>include/</b>
+  |     `-- ...
+  |
+  |-- .svnignore
+  |
+  :
+</pre>
+
+<hr width=50%>
+
 <a name="buildtree">
 <h2>Build Directory Tree</h2>
 
