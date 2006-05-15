@@ -103,6 +103,7 @@
     <LI> Fix: Quad triangle counts are now accurate (were off by factor of 4 in 6.08)
     <LI> Fix: contrib/ArticulatedModel now correctly masks all components using the diffuse alpha in fixed function mode
     <LI> Fix: G3D::CoordinateFrame::getHeading was flipped front-to-back
+    <LI> Fix: [ 1404487 ] Missing Alt key up/down events on Win32
    </UL>
   <P>   
    Changes in 6.08:

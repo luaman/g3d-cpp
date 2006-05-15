@@ -577,21 +577,11 @@ bool Win32Window::pollEvent(GEvent& e) {
         TranslateMessage(&message);
 		DispatchMessage(&message);
 
-        if (message.message == WM_SYSCOMMAND) {
-			e.key.type = SDL_KEYDOWN;
-			e.key.state = SDL_PRESSED;
-
-            // Only upper 12-bits are public
-            if ((message.wParam & 0xFFF0) == SC_KEYMENU) {
-                // Generate key event for Alt
-                makeKeyEvent(VK_MENU, message.lParam, e);
-                return true;
-            }
-        }
-
         if (message.hwnd == window) {
             switch (message.message) {
             case WM_KEYDOWN:
+            case WM_SYSKEYDOWN:
+
 				e.key.type = SDL_KEYDOWN;
 				e.key.state = SDL_PRESSED;
 
@@ -610,7 +600,9 @@ bool Win32Window::pollEvent(GEvent& e) {
 				}
 				break;
 
+
 			case WM_KEYUP:
+            case WM_SYSKEYUP:
 				e.key.type = SDL_KEYUP;
 				e.key.state = SDL_RELEASED;
 
@@ -619,29 +611,6 @@ bool Win32Window::pollEvent(GEvent& e) {
 				return true;
 				break;
 
-            case WM_SYSKEYDOWN:
-				e.key.type = SDL_KEYDOWN;
-				e.key.state = SDL_PRESSED;
-
-                if (message.wParam == VK_F10) {
-                    if (((message.lParam >> 30) & 0x1) == 0) {
-                        makeKeyEvent(message.wParam, message.lParam, e);
-                       _keyboardButtons[message.wParam] = true;
-                        return true;
-                    }
-                }
-                break;
-
-            case WM_SYSKEYUP:
-				e.key.type = SDL_KEYUP;
-				e.key.state = SDL_RELEASED;
-
-                if (message.wParam == VK_F10) {
-                    makeKeyEvent(message.wParam, message.lParam, e);
-                    _keyboardButtons[message.wParam] = false;
-                    return true;
-                }
-                break;
 
             case WM_LBUTTONDOWN:
 				mouseButton(true, SDL_LEFT_MOUSE_KEY, message.wParam, e); 
@@ -672,18 +641,6 @@ bool Win32Window::pollEvent(GEvent& e) {
 				mouseButton(false, SDL_RIGHT_MOUSE_KEY, message.wParam, e); 
                 _mouseButtons[2] = false;
 				return true;
-
-            case WM_SYSCOMMAND:
-				e.key.type = SDL_KEYDOWN;
-				e.key.state = SDL_PRESSED;
-
-                // Only upper 12-bits are public
-                if ((message.wParam & 0xFFF0) == SC_KEYMENU) {
-                    // Generate key event for Alt
-                    makeKeyEvent(VK_MENU, message.lParam, e);
-                    return true;
-                }
-                break;
             } // switch
         } // if
     } // while
