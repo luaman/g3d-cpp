@@ -111,7 +111,14 @@ experience covers both Windows, Linux and RTOS fields developing flight control
 and planning software, video and input control systems, and embedded development
 and testing.  He is currently developing 3D games at Electronic Arts.
   
-<B>Casey O'Donnel</B> is the %G3D OS X team lead.
+<B>Casey O'Donnell</B> is the %G3D OS X team lead. Casey has been a Mac user since 1986 when his mom first brought
+home a mac, and a code geek since 1994. A brief tryst with AutoDesk and the development of a cross-platform 3D
+sound system required him to convert to windows for a time, but that has been solved by going back into the academy.
+Casey is a PhD student at Rensselaer Polytechnic Institute (RPI) in upstate (Troy) New York state. His current work
+looks at the politics and economics of the video game industry, and in particular the console game industry. Though
+his methods are largely anthropological, he still spends a significant amount of his time playing with code.
+Casey's undergraduate degree was from Drake University in Des Moines, Iowa, where he recieved was a computer science
+and mathematics major (and a sociology minor and women's studies concentration).
 
 <B>Gabe Taubman</B> and <B>Benjamin Landon</B> provide additional OS X support.  Gabe has been a Mac user since 1998
 and took first prize in the 2004 undergraduate ACM SIGGRAPH Student Research Competition 
