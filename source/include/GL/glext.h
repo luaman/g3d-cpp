@@ -3656,6 +3656,15 @@ typedef void (APIENTRY * PFNGLCLAMPCOLORARBPROC) (GLenum target, GLenum clamp);
 #define GL_ARB_pixel_buffer_object 1
 #endif
 
+#ifndef GL_EXT_depth_bounds_test
+#define GL_EXT_depth_bounds_test 1
+
+#define GL_DEPTH_BOUNDS_TEST_EXT 0x8890
+#define GL_DEPTH_BOUNDS_EXT 0x8891
+
+typedef void (APIENTRY * PFNGLDEPTHBOUNDSEXTPROC) (GLclampd zmin, GLclampd zmax);
+#endif
+
 #ifndef GL_ATI_separate_stencil
 #define GL_ATI_separate_stencil 1
 #ifdef GL_GLEXT_PROTOTYPES

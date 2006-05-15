@@ -340,4 +340,6 @@ extern PFNWGLDESTROYPBUFFEREXTPROC wglDestroyPbufferEXT;
 #endif
 
 
+extern PFNGLDEPTHBOUNDSEXTPROC glDepthBoundsEXT;
+
 #endif

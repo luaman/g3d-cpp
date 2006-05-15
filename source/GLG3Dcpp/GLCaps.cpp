@@ -416,6 +416,10 @@ void GLCaps::loadExtensions(Log* debugLog) {
     LOAD_EXTENSION(glGetQueryObjectivARB);
     LOAD_EXTENSION(glGetQueryObjectuivARB);
     LOAD_EXTENSION(glIsQueryARB);
+
+    // Depth bounds
+    LOAD_EXTENSION(glDepthBoundsEXT);
+
     #undef LOAD_EXTENSION
 
     std::istringstream extensions;

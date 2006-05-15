@@ -30,6 +30,7 @@
    <P>
    Changes in 6.09:
    <UL>
+    <LI> glDepthBoundsEXT
     <LI> G3D::Quat::sameRotation
     <LI> Full loading of the GL_ATI_separate_stencil extension, support within RenderDevice
     <LI> platform.h undefines WIN32_LEAN_AND_MEAN, NOMINMAX after it has defined them
