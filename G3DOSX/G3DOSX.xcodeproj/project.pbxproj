@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		047A46500A18FF3A00ACA743 /* GImage_bayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047A464A0A18FF3A00ACA743 /* GImage_bayer.cpp */; };
+		047A46510A18FF3A00ACA743 /* GImage_bmp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047A464B0A18FF3A00ACA743 /* GImage_bmp.cpp */; };
+		047A46520A18FF3A00ACA743 /* GImage_jpeg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047A464C0A18FF3A00ACA743 /* GImage_jpeg.cpp */; };
+		047A46530A18FF3A00ACA743 /* GImage_png.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047A464D0A18FF3A00ACA743 /* GImage_png.cpp */; };
+		047A46540A18FF3A00ACA743 /* GImage_ppm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047A464E0A18FF3A00ACA743 /* GImage_ppm.cpp */; };
+		047A46550A18FF3A00ACA743 /* GImage_tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047A464F0A18FF3A00ACA743 /* GImage_tga.cpp */; };
 		04E8193809EA7F1C0015B5ED /* RegistryUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04E8193709EA7F1C0015B5ED /* RegistryUtil.cpp */; };
 		04E8193A09EA7F370015B5ED /* RegistryUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E8193909EA7F370015B5ED /* RegistryUtil.h */; };
 		04E8193D09EA82260015B5ED /* Crypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 04E8193C09EA82260015B5ED /* Crypto.h */; };
@@ -310,6 +316,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		047A464A0A18FF3A00ACA743 /* GImage_bayer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GImage_bayer.cpp; path = ../source/G3Dcpp/GImage_bayer.cpp; sourceTree = SOURCE_ROOT; };
+		047A464B0A18FF3A00ACA743 /* GImage_bmp.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GImage_bmp.cpp; path = ../source/G3Dcpp/GImage_bmp.cpp; sourceTree = SOURCE_ROOT; };
+		047A464C0A18FF3A00ACA743 /* GImage_jpeg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GImage_jpeg.cpp; path = ../source/G3Dcpp/GImage_jpeg.cpp; sourceTree = SOURCE_ROOT; };
+		047A464D0A18FF3A00ACA743 /* GImage_png.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GImage_png.cpp; path = ../source/G3Dcpp/GImage_png.cpp; sourceTree = SOURCE_ROOT; };
+		047A464E0A18FF3A00ACA743 /* GImage_ppm.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GImage_ppm.cpp; path = ../source/G3Dcpp/GImage_ppm.cpp; sourceTree = SOURCE_ROOT; };
+		047A464F0A18FF3A00ACA743 /* GImage_tga.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GImage_tga.cpp; path = ../source/G3Dcpp/GImage_tga.cpp; sourceTree = SOURCE_ROOT; };
 		04E8193709EA7F1C0015B5ED /* RegistryUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = RegistryUtil.cpp; path = ../source/G3Dcpp/RegistryUtil.cpp; sourceTree = SOURCE_ROOT; };
 		04E8193909EA7F370015B5ED /* RegistryUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RegistryUtil.h; path = ../source/include/G3D/RegistryUtil.h; sourceTree = SOURCE_ROOT; };
 		04E8193C09EA82260015B5ED /* Crypto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Crypto.h; path = ../source/include/G3D/Crypto.h; sourceTree = SOURCE_ROOT; };
@@ -910,6 +922,12 @@
 				0F55FEF306DCC59C008DD4F8 /* license.cpp */,
 				0F55FEF406DCC59C008DD4F8 /* GLight.cpp */,
 				0F55FEF506DCC59C008DD4F8 /* GImage.cpp */,
+				047A464A0A18FF3A00ACA743 /* GImage_bayer.cpp */,
+				047A464B0A18FF3A00ACA743 /* GImage_bmp.cpp */,
+				047A464C0A18FF3A00ACA743 /* GImage_jpeg.cpp */,
+				047A464D0A18FF3A00ACA743 /* GImage_png.cpp */,
+				047A464E0A18FF3A00ACA743 /* GImage_ppm.cpp */,
+				047A464F0A18FF3A00ACA743 /* GImage_tga.cpp */,
 				0F55FEF606DCC59C008DD4F8 /* GCamera.cpp */,
 				0F55FEF706DCC59C008DD4F8 /* g3dmath.cpp */,
 				0F55FEF806DCC59C008DD4F8 /* g3derror.cpp */,
@@ -1475,6 +1493,12 @@
 				04E8193809EA7F1C0015B5ED /* RegistryUtil.cpp in Sources */,
 				04E8194009EA82390015B5ED /* Crypto_md5.cpp in Sources */,
 				04E8194109EA82390015B5ED /* Crypto.cpp in Sources */,
+				047A46500A18FF3A00ACA743 /* GImage_bayer.cpp in Sources */,
+				047A46510A18FF3A00ACA743 /* GImage_bmp.cpp in Sources */,
+				047A46520A18FF3A00ACA743 /* GImage_jpeg.cpp in Sources */,
+				047A46530A18FF3A00ACA743 /* GImage_png.cpp in Sources */,
+				047A46540A18FF3A00ACA743 /* GImage_ppm.cpp in Sources */,
+				047A46550A18FF3A00ACA743 /* GImage_tga.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
