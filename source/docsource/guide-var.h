@@ -2,8 +2,8 @@
 
   \htmlonly
 <TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
-<A HREF="guideopengl.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
-Using OpenGL with G3D</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
+<A HREF="guidenetwork.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
+Networking with G3D</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
 <A HREF="guidemeshes.html">
 Working with Meshes<IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly

@@ -96,6 +96,10 @@ arrive with each point release.
      How to use raw OpenGL commands with G3D
   </TD></TR>
 
+  <TR><TD VALIGN=TOP>\link guidenetwork Networking with %G3D\endlink</TD><TD VALIGN=TOP>
+       Using the network interfaces of G3D
+  </TD></TR>
+
   <TR><TD VALIGN=TOP>\link guidevar Vertex Arrays \endlink</TD><TD VALIGN=TOP>
    Creating, managing, and rendering from vertex arrays (video memory)
   </TD></TR>

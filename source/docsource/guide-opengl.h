@@ -4,8 +4,8 @@
 <TABLE BORDER=0 WIDTH=80%><TR><TD><I><FONT FACE="Arial">
 <A HREF="guideapp.html"><IMG SRC="backarrow.gif" BORDER=0 ALIGN=MIDDLE>
 Application Framework</A></I></FONT></TD><TD ALIGN=RIGHT><FONT FACE="Arial"><I>
-<A HREF="guidevar.html">
-Vertex Arrays <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
+<A HREF="guidenetwork.html">
+Networking with G3D <IMG SRC="forwardarrow.gif" BORDER=0 ALIGN=MIDDLE></A></I></FONT></TD></TR></TABLE>
 \endhtmlonly
 
 It is possible to mix 'raw' OpenGL calls with the G3D rendering engine. This can give more flexibility in the rendering cycle,
