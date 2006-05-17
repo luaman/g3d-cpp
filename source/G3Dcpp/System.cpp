@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2006-01-10
+  @edited  2006-05-17
  */
 
 #include "G3D/platform.h"
@@ -31,6 +31,7 @@
 
     #include <conio.h>
     #include <sys/timeb.h>
+#   include "G3D/RegistryUtil.h"
 
 #elif defined(G3D_LINUX) 
 
@@ -131,7 +132,7 @@ std::string demoFindData(bool errorIfNotFound) {
     return "";
 }
 
-
+static int                                      _CPUSpeed           = 0;
 static bool                                     _rdtsc              = false;
 static bool                                     _mmx                = false;
 static bool                                     _sse                = false;
@@ -408,6 +409,8 @@ void System::init() {
     }
 
     #ifdef G3D_WIN32
+        bool success = RegistryUtil::readInt32("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0\\~MHz", _CPUSpeed);
+
         SYSTEM_INFO systemInfo;
         GetSystemInfo(&systemInfo);
         char* arch;
@@ -433,14 +436,15 @@ void System::init() {
         }
 
         uint32 maxAddr = (uint32)systemInfo.lpMaximumApplicationAddress;
-        sprintf(_cpuArchCstr, "%d x %d-bit %s processor",
+        sprintf(_cpuArchCstr, "%d x %d-bit %s processor @ %4.1 GHz",
                     systemInfo.dwNumberOfProcessors,
                     (int)(::log((double)maxAddr) / ::log(2.0) + 2.0),
-                    arch);
+                    arch,
+                    _CPUSpeed / (1024.0 * 1024));
 
         OSVERSIONINFO osVersionInfo;
         osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-        bool success = GetVersionEx(&osVersionInfo) != 0;
+        success = GetVersionEx(&osVersionInfo) != 0;
 
         if (success) {
             sprintf(_operatingSystemCstr, "Windows %d.%d build %d Platform %d %s",
@@ -487,6 +491,7 @@ void System::init() {
                  
         //Clock Cycle Timing Information:
         Gestalt('pclk', &System::m_OSXCPUSpeed);
+        _CPUSpeed = iRound((double)m_OSXCPUSpeed / (1024 * 1024));
         m_secondsPerNS = 1.0 / 1.0e9;
         
         //System Architecture:
@@ -1662,5 +1667,8 @@ void System::describeSystem(
     t.writeNewline();
 }
 
+int System::cpuSpeedMHz() {
+    return _CPUSpeed;
+}
 
 }  // namespace

@@ -299,6 +299,10 @@ public:
     static void describeSystem(
         std::string&        s);
 
+    /** Returns the speed of processor 0 in MHz. 
+        Always returns 0 on linux.*/
+    static int cpuSpeedMHz();
+
 private:
     /**
 	 (CKO) Note: Not sure why these are specifically needed
