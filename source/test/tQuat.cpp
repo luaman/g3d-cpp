@@ -30,10 +30,18 @@ static void testMatrixConversion() {
 		}
     }
 
+    {
+
+    }
 
     // Round trip M->q->M
 	for (int i = 0; i < 100; ++i) {
 		Matrix3 M = Matrix3::fromAxisAngle(Vector3::random(), random(0, G3D_TWO_PI));
+        if (i == 0) {
+            // Corner case, make sure we test it first.
+            M = Matrix3::identity();
+        }
+
 		Quat q(M);
 		Matrix3 M2 = q.toRotationMatrix();
 

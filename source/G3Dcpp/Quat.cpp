@@ -66,11 +66,20 @@ Quat::Quat(
     v[k] = -(rot[i][k] + rot[k][i]);
 
 	// We now have the correct result with the wrong magnitude, so normalize it:
-	float s = 1.0f / sqrt(x*x + y*y + z*z + w*w);
-	x *= s;
-	y *= s;
-	z *= s;
-	w *= s;
+    float s = sqrt(x*x + y*y + z*z + w*w);
+    if (s > 0.00001f) {
+	    s = 1.0f / s;
+	    x *= s;
+	    y *= s;
+	    z *= s;
+	    w *= s;
+    } else {
+        // The quaternion is nearly zero.  Make it 0 0 0 1
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+        w = 1.0f;
+    }
 }
 
 
