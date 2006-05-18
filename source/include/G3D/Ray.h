@@ -154,7 +154,7 @@ public:
             triangle.edge01, triangle.edge02);
     }
 
-    inline float Ray::intersectionTime(
+    inline float intersectionTime(
         const Triangle& triangle,
         double&         w0,
         double&         w1,
