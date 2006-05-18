@@ -74,8 +74,6 @@ class VAR;
    renderDevice->init(GWindow::Settings());
   </PRE>
 
-  RenderDevice requires SDL and OpenGL.  
-
   <P>
   Example 2 (textured quad)
   <PRE>
@@ -1561,7 +1559,7 @@ public:
     void pop2D();
  
     /**
-     Automatically constructs an SDLWindow then calls the other init
+     Automatically constructs a Win32Window (on Win32), X11Window (on Linux) or SDLWindow (OS X) then calls the other init
      routine (provided for backwards compatibility).  The constructed
      window is deleted on shutdown.
      */
