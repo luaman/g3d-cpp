@@ -526,6 +526,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testCollisionDetection();    
+
     testCoordinateFrame();
 
 	testReliableConduit(networkDevice);
@@ -533,8 +535,6 @@ int main(int argc, char* argv[]) {
 	testAABSPTree();
 
 	testQuat();
-
-    testCollisionDetection();    
 
     testReferenceCount();
 

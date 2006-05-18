@@ -142,6 +142,21 @@ void Demo::onUserInput(UserInput* ui) {
     }
 	// Add other key handling here
 
+    if (ui->keyDown(SDLK_LALT)) {
+        app->debugPrintf("ALT PRESSED");
+    }
+    
+    if (ui->keyDown(SDLK_LCTRL)) {
+        app->debugPrintf("CTRL PRESSED");
+    }
+
+    if (ui->keyDown(SDLK_F10)) {
+        app->debugPrintf("F10 PRESSED");
+    }
+
+    if (ui->keyDown(SDLK_F11)) {
+        app->debugPrintf("F11 PRESSED");
+    }
 }
 
 

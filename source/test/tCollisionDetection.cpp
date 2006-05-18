@@ -121,6 +121,18 @@ static void measureAABoxCollisionPerformance() {
 void testCollisionDetection() {
     printf("CollisionDetection ");
 
+    {
+        Vector3 pos(2.0f, 0.0f, 2.5f); 
+        Vector3 dir(-1.0f, 0.0f, -1.0f); 
+        dir.unitize(); 
+
+        Box myBox(G3D::Vector3(-1,-1,-1), G3D::Vector3(1,1,1)); 
+        Vector3 loc, normal;
+
+        float t = CollisionDetection::collisionTimeForMovingPointFixedBox(pos, dir, myBox, loc, normal);
+        debugAssert(normal.fuzzyEq(Vector3(0,0,1)));
+    }
+
 
     {
         Sphere s(Vector3(0,1,0), 1);

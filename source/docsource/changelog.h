@@ -104,6 +104,7 @@
     <LI> Fix: contrib/ArticulatedModel now correctly masks all components using the diffuse alpha in fixed function mode
     <LI> Fix: G3D::CoordinateFrame::getHeading was flipped front-to-back
     <LI> Fix: [ 1404487 ] Missing Alt key up/down events on Win32
+    <LI> Fix: [ 1484924 ] collisionTimeForMovingPointFixedBox normals
    </UL>
   <P>   
    Changes in 6.08:

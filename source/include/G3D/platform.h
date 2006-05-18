@@ -124,6 +124,11 @@
 
 
 #ifdef G3D_WIN32
+// Microsoft Visual C++ 7.1	_MSC_VER = 1310
+// Microsoft Visual C++ 7.0	_MSC_VER = 1300
+// Microsoft Visual C++ 6.0	_MSC_VER = 1200
+// Microsoft Visual C++ 5.0	_MSC_VER = 1100
+
     // Old versions of MSVC (6.0 and previous) don't
     // support C99 for loop scoping rules.  This fixes them.
 #   if (_MSC_VER <= 1200)

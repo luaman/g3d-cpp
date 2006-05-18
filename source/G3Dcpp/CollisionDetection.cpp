@@ -1065,16 +1065,18 @@ float CollisionDetection::collisionTimeForMovingPointFixedBox(
 
     Vector3 normal;
     Vector3 v[4];
+
+    // Prime the loop
     int f = 0;
     box.getFaceCorners(f, v[0], v[1], v[2], v[3]);
     bestTime = collisionTimeForMovingPointFixedRectangle(point, velocity, v[0], v[1], v[2], v[3], location, normal);
-
     outNormal = normal;
 
+    // Check other faces
     for (f = 1; f < 6; ++f) {
         Vector3 pos;
         box.getFaceCorners(f, v[0], v[1], v[2], v[3]);
-        float time = collisionTimeForMovingPointFixedRectangle(point, velocity, v[0], v[1], v[2], v[3], pos, outNormal);
+        float time = collisionTimeForMovingPointFixedRectangle(point, velocity, v[0], v[1], v[2], v[3], pos, normal);
         if (time < bestTime) {
             bestTime = time;
             outNormal = normal;
