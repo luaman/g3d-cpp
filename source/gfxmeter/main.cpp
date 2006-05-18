@@ -322,7 +322,11 @@ int main(int argc, char** argv) {
 
     if (!fileExists(settings.window.defaultIconFilename)) {
         // We are probably running in the debugger and launched from the wrong directory
+#ifdef G3D_WIN32
         _chdir("build/install");
+#else
+        chdir("build/install");
+#endif
     }
 
     if (!fileExists(settings.window.defaultIconFilename)) {
