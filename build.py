@@ -467,7 +467,7 @@ def source(args):
     if (os.name != 'nt'):
         raise 'Error', 'Can only build source on Windows.'
     rmdir('temp/sourcecopy')
-    copyIfNewer('source', 'temp/sourcecopy')
+    copyIfNewer('.', 'temp/sourcecopy')
 
     # Remove certain huge files
     rm('temp/sourcecopy/g3ddocs.tag')
