@@ -57,7 +57,7 @@ void showError(const std::string& s1, const std::string& s2, RenderDevice* rd, G
 void App::main() {
 	setDebugMode(true);
 	debugController.setActive(false);
-	debugShowRenderingStats = true;
+	debugShowRenderingStats = false;
     debugQuitOnEscape = false;
 
     // Load objects here

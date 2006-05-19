@@ -176,6 +176,7 @@ void Server::fastRemoveClient(int i) {
 
 
 void Server::onGraphics(RenderDevice* rd) {
+    /*
     app->renderDevice->push2D();
 
         Draw::rect2D(Rect2D::xywh(0,0,200,200), app->renderDevice, Color3::white() * 0.5);
@@ -190,4 +191,5 @@ void Server::onGraphics(RenderDevice* rd) {
             Draw::ray(Ray::fromOriginAndDirection(pos, dir), app->renderDevice, e->value.color, 50);
         }
     app->renderDevice->pop2D();
+    */
 }

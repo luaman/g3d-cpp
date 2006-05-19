@@ -256,14 +256,14 @@ void Client::onGraphics(RenderDevice* rd) {
 
 		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
 
-        renderEntities();
-
         for (int x = -10; x < 10; x+=4) {
             for (int z = -10; z < 10; z+=4) {
                 Vector3 v(x * 20, -10, z * 20); 
-                Draw::box(AABox(v, v + Vector3(1,.2f,1)), app->renderDevice, Color3::RED, Color3::BLACK);
+                Draw::box(AABox(v, v + Vector3(2,.2f,2)), app->renderDevice, Color3::RED, Color3::BLACK);
             }
         }
+
+        renderEntities();
 
     app->renderDevice->disableLighting();
 
