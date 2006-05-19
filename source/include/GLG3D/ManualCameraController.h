@@ -72,13 +72,19 @@ private:
 
 public:
 
+    // G3D_DEPRECATED removed from in front of the constructor below -
+    // doesn't compile on linux
+
     /** @deprecated Use create. */
-	G3D_DEPRECATED FirstPersonManipulator();
+    FirstPersonManipulator();
+
+    // G3D_DEPRECATED removed from in front of the constructor below -
+    // doesn't compile on linux
 
     /** Creates and initializes.
         @deprecated Use create.
       */
-	G3D_DEPRECATED FirstPersonManipulator(class RenderDevice*, class UserInput*);
+    FirstPersonManipulator(class RenderDevice*, class UserInput*);
     
     static FirstPersonManipulatorRef create();
         
