@@ -470,14 +470,14 @@ def source(args):
     copyIfNewer('.', 'temp/sourcecopy')
 
     # Remove certain huge files
-    rm('temp/sourcecopy/g3ddocs.tag')
-    rm('temp/sourcecopy/html/G3D-Map.ppt')
+    rm('temp/sourcecopy/source/g3ddocs.tag')
+    rm('temp/sourcecopy/source/html/G3D-Map.ppt')
 
     # Remove all executables
-    files = os.listdir('temp/sourcecopy/demos')
+    files = os.listdir('temp/sourcecopy/source/demos')
     for f in files:
         if (f[-4:] == '.exe'):
-            rm('temp/sourcecopy/demos/' + f)
+            rm('temp/sourcecopy/demos/source/' + f)
 
     # Source zip
     zip('temp/sourcecopy/*', 'release/g3d-src-' + version + '.zip')
