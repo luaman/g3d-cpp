@@ -4,7 +4,7 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2006-02-29
+# @edited  2006-05-29
 #
 # Each build target is a procedure.
 #
@@ -12,7 +12,7 @@
 from buildlib import *
 
 # The library version number
-version = "6_09"
+version = "6_10"
 
 # Setup versions for supporting programs
 aclocal    = "aclocal"

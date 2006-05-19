@@ -28,6 +28,11 @@
    </TD></TR></TABLE>
 
    <P>
+   Changes in 6.10:
+    <UL>
+    </UL>
+
+   <P>
    Changes in 6.09:
    <UL>
     <LI> glDepthBoundsEXT
