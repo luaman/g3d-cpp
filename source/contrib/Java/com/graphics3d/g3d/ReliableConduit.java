@@ -88,7 +88,7 @@ public class ReliableConduit {
         int numReadyForRead = selector.selectNow();
 
         // System.out.println("readWaiting: " + numReadyForRead + " sockets ready");
-        return numReadyForRead > 0;
+        return (numReadyForRead > 0);
     }
 
 
@@ -100,14 +100,18 @@ public class ReliableConduit {
     private void receiveIntoBuffer() throws IOException {
     
         if (channel.isConnected()) {
-            int recieved = channel.read(receiveBuffer);
-
+            int received = channel.read(receiveBuffer);
+            
+            // This implementation assumes that SocketChannel.read always appends to the receiveBuffer.
+            // Verify that this is actually how SocketChannel works (the docs are ambiguous)
+            receiveBufferUsedSize += received;
+            assert (receiveBuffer.position() == receiveBufferUsedSize);
+            
             if (receiveBuffer.remaining() == 0) {
                 state = State.HOLDING;
-                receiveBufferUsedSize = messageSize;
-            } else {
-                receiveBufferUsedSize += messageSize;
+                assert(receiveBufferUsedSize == messageSize);
             }
+            
         }
     }
 
@@ -124,8 +128,11 @@ public class ReliableConduit {
         }
     }
 
-    /** Receives the messageType and messageSize from the socket. */
-    private void receiveHeader() throws IOException {
+  
+    /** Receives the messageType and messageSize from the socket. 
+        Returns false if nothing was actually read.
+     */
+    private boolean receiveHeader() throws IOException {
         ByteBuffer headerBuffer = ByteBuffer.allocate(8);
         headerBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
@@ -133,14 +140,18 @@ public class ReliableConduit {
 
             int numRead = channel.read(headerBuffer);
 
+            // If nothing
             if (numRead > 0) {
 
-                if (headerBuffer.remaining() == 0) {
+                // Make sure we read the entire header
+                if ((numRead == 8) && (headerBuffer.remaining() == 0)) {
 
                     messageType = headerBuffer.getInt(0);
                     // Size is in network byte order
                     byte sizeArray[] = headerBuffer.array();
-                    messageSize = 
+                    
+                    // The header is big endian according to the G3D spec
+                    messageSize =
                         (byteToInt8(sizeArray[4]) << 24) + 
                         (byteToInt8(sizeArray[5]) << 16) +
                         (byteToInt8(sizeArray[6]) << 8) + 
@@ -150,6 +161,7 @@ public class ReliableConduit {
                     
                     // System.out.println("Received message size = " + messageSize);
                     // System.out.println("Received header = " + sizeArray[4] + ", " + sizeArray[5] + ", " + sizeArray[6] + ", " + sizeArray[7]);
+                    return true;
                 } else {
 
                     state = State.NO_MESSAGE;
@@ -157,6 +169,8 @@ public class ReliableConduit {
                 }
             }
         }
+        
+        return false;
     }
 
     public ReliableConduit(InetSocketAddress addr) throws IOException {
@@ -190,7 +204,7 @@ public class ReliableConduit {
         channel.register(selector, SelectionKey.OP_READ, channel);
 
         // Disable Nagel's algorithm to reduce latency
-        channel.socket().setTcpNoDelay(false);
+        channel.socket().setTcpNoDelay(true);
     }
 
     // The message is actually copied from the socket to an internal
@@ -236,6 +250,10 @@ public class ReliableConduit {
                 state = State.RECEIVING;
                 receiveHeader();
 
+                return messageWaiting();
+            } else if (receiveHeader()) {
+                // Sometimes Selector.selectNow returns zero even when a packet is waiting.
+                state = State.RECEIVING;
                 return messageWaiting();
             } else {
                 // No message incoming.
