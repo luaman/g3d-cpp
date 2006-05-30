@@ -285,8 +285,8 @@ void Demo::onGraphics(RenderDevice* rd) {
     app->debugPrintf("SPACE to toggle ToneMap\n");
     app->debugPrintf("ESC to quit\n");
 
-    app->debugPrintf("%s\n", System::mallocPerformance().c_str());
-    app->debugPrintf("%s\n", System::mallocStatus().c_str());
+    //app->debugPrintf("%s\n", System::mallocPerformance().c_str());
+    //app->debugPrintf("%s\n", System::mallocStatus().c_str());
 
 }
 

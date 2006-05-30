@@ -10,6 +10,8 @@
  */
 #include "ArticulatedModel.h"
 
+static void setAdditive(RenderDevice* rd, bool& additive);
+
 class PosedArticulatedModel : public PosedModel {
 private:
     friend class ArticulatedModel;
@@ -151,30 +153,154 @@ void ArticulatedModel::renderNonShadowed(
     RenderDevice* rd, 
     const LightingRef& lighting) {
 
-    // TODO : Optimize
-    for (int i = 0; i < posedArray.size(); ++i) {
-        debugAssertM(
-            dynamic_cast<const PosedArticulatedModel*>(posedArray[i].getPointer()),
-            "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
-        posedArray[i]->renderNonShadowed(rd, lighting);
-    }
+    rd->pushState();
+        rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
+
+        // Lighting will be turned on and off by subroutines
+        rd->disableLighting();
+
+        const bool ps20 = ArticulatedModel::profile() == ArticulatedModel::PS20;
+
+        for (int p = 0; p < posedArray.size(); ++p) {
+            const PosedArticulatedModel* posed = dynamic_cast<const PosedArticulatedModel*>(posedArray[p].getPointer());
+            debugAssertM(posed != NULL,
+                "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
+
+            if (! rd->colorWrite()) {
+                // No need for fancy shading
+                posed->render(rd);
+                continue;
+            }
+
+            const ArticulatedModel::Part& part = posed->model->partArray[posed->partIndex];
+            const ArticulatedModel::Part::TriList& triList = part.triListArray[posed->listIndex];
+            const SuperShader::Material& material = triList.material;
+            
+            const_cast<SuperShader::Material&>(material).enforceDiffuseMask();
+
+            debugAssertM(material.transmit.isBlack(), 
+                "Transparent object passed through the batch version of "
+                "ArticulatedModel::renderNonShadowed, which is intended exclusively for opaque objects.");
+
+            // Alpha blend will be changed by subroutines so we restore it for each object
+            rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
+            rd->setDepthWrite(true);
+
+            if (triList.twoSided) {
+                if (! ps20) {
+                    rd->enableTwoSidedLighting();
+                    rd->setCullFace(RenderDevice::CULL_NONE);
+                } else {
+                    // Even if back face culling is reversed, for two-sided objects 
+                    // we always draw the front.
+                    rd->setCullFace(RenderDevice::CULL_BACK);
+                }
+            }
+
+            bool wroteDepth = posed->renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+
+            if (triList.twoSided && ps20) {
+                // gl_FrontFacing doesn't work on most cards inside the shader, so we have to draw two-sided objects twice
+                rd->setCullFace(RenderDevice::CULL_FRONT);
+                triList.nonShadowedShader->args.set("backside", -1.0f);
+                posed->renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+                triList.nonShadowedShader->args.set("backside", 1.0f);
+            }
+
+            if (! wroteDepth) {
+                // We failed to write to the depth buffer, so
+                // do so now.
+                rd->disableLighting();
+                rd->setColor(Color3::black());
+                posed->sendGeometry(rd);
+                rd->enableLighting();
+            }
+
+            if (triList.twoSided) {
+                rd->disableTwoSidedLighting();
+                rd->setCullFace(RenderDevice::CULL_BACK);
+            }
+        }
+    rd->popState();
 }
 
 
 void ArticulatedModel::renderShadowMappedLightPass(
-    const Array<PosedModelRef>&    posedArray, 
+    const Array<PosedModelRef>&     posedArray, 
     RenderDevice*                   rd, 
     const GLight&                   light, 
     const Matrix4&                  lightMVP, 
     const TextureRef&               shadowMap) {
 
-    // TODO : Optimize
-    for (int i = 0; i < posedArray.size(); ++i) {
-        debugAssertM(
-            dynamic_cast<const PosedArticulatedModel*>(posedArray[i].getPointer()),
-            "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
-        posedArray[i]->renderShadowMappedLightPass(rd, light, lightMVP, shadowMap);
-    }
+    rd->pushState();
+        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
+
+        rd->setCullFace(RenderDevice::CULL_BACK);
+
+        rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
+
+        for (int i = 0; i < posedArray.size(); ++i) {
+            const PosedArticulatedModel* posed = dynamic_cast<const PosedArticulatedModel*>(posedArray[i].getPointer());
+            debugAssertM(posed != NULL,
+                "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
+
+            const ArticulatedModel::Part& part              = posed->model->partArray[posed->partIndex];
+            const ArticulatedModel::Part::TriList& triList  = part.triListArray[posed->listIndex];
+            const SuperShader::Material& material           = triList.material;
+            const_cast<SuperShader::Material&>(material).enforceDiffuseMask();
+
+            if (material.diffuse.isBlack() && material.specular.isBlack()) {
+                // Nothing to draw for this object
+                continue;
+            }
+
+            // This switch could go outside the loop, however doing so would lead to code repetition
+            // without any real increase in performance.
+
+            switch (ArticulatedModel::profile()) {
+            case ArticulatedModel::PS14:
+                // Intentionally fall through; there is no
+                // optimized PS14 path for this function.
+
+            case ArticulatedModel::FIXED_FUNCTION:
+                if (triList.twoSided) {
+                    rd->enableTwoSidedLighting();
+                    rd->setCullFace(RenderDevice::CULL_NONE);
+                }
+
+                posed->renderFFShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+
+                if (triList.twoSided) {
+                    rd->disableTwoSidedLighting();
+                    rd->setCullFace(RenderDevice::CULL_BACK);
+                }
+                break;
+
+            case ArticulatedModel::PS20:
+                if (triList.twoSided) {
+                    // Even if back face culling is reversed, for two-sided objects 
+                    // we always draw the front.
+                    rd->setCullFace(RenderDevice::CULL_BACK);
+                }
+
+                posed->renderPS20ShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+
+                if (triList.twoSided) {
+                    // The GLSL built-in gl_FrontFacing does not work on most cards, so we have to draw 
+                    // two-sided objects twice since there is no way to distinguish them in the shader.
+                    rd->setCullFace(RenderDevice::CULL_FRONT);
+                    triList.shadowMappedShader->args.set("backside", -1.0f);
+                    posed->renderPS20ShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
+                    triList.shadowMappedShader->args.set("backside", 1.0f);
+                    rd->setCullFace(RenderDevice::CULL_BACK);
+                }
+                break;
+
+            default:
+                debugAssertM(false, "Fell through switch");
+            }
+        }
+    rd->popState();
 }
 
 
@@ -273,16 +399,21 @@ void PosedArticulatedModel::render(RenderDevice* renderDevice) const {
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
     const SuperShader::Material& material = triList.material;
 
+    bool color = 
+        renderDevice->colorWrite() ||
+        (material.diffuse.map.notNull() && ! material.diffuse.map->opaque());
+
     // Only configure color if the renderer requires it
-    if (renderDevice->colorWrite()) {
+    if (color) {
         renderDevice->pushState();
+
+        renderDevice->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
 
         renderDevice->setTexture(0, material.diffuse.map);
         renderDevice->setColor(material.diffuse.constant);
 
         renderDevice->setSpecularCoefficient(material.specular.constant);
         renderDevice->setShininess(material.specularExponent.constant.average());
-
 
         if (triList.twoSided) {
             renderDevice->enableTwoSidedLighting();
@@ -295,7 +426,11 @@ void PosedArticulatedModel::render(RenderDevice* renderDevice) const {
 
     sendGeometry(renderDevice);
 
-    if (renderDevice->colorWrite()) {
+    if (triList.twoSided) {
+        renderDevice->setCullFace(RenderDevice::CULL_BACK);
+    }
+
+    if (color) {
         renderDevice->popState();
     }
 }
@@ -322,26 +457,26 @@ bool PosedArticulatedModel::renderNonShadowedOpaqueTerms(
 
     bool renderedOnce = false;
 
-    rd->pushState();
-        rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
+    switch (ArticulatedModel::profile()) {
+    case ArticulatedModel::FIXED_FUNCTION:
+        renderedOnce = renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+        break;
 
-        switch (ArticulatedModel::profile()) {
-        case ArticulatedModel::FIXED_FUNCTION:
-            renderedOnce = renderFFNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
-            break;
-
-        case ArticulatedModel::PS14:
+    case ArticulatedModel::PS14:
+        rd->pushState();
             renderedOnce = renderPS14NonShadowedOpaqueTerms(rd, lighting, part, triList, material);
-            break;
+        rd->popState();
+        break;
 
-        case ArticulatedModel::PS20:
+    case ArticulatedModel::PS20:
+        rd->pushState();
             renderedOnce = renderPS20NonShadowedOpaqueTerms(rd, lighting, part, triList, material);
-            break;
+        rd->popState();
+        break;
 
-        default:
-            debugAssertM(false, "Fell through switch");
-        }        
-    rd->popState();
+    default:
+        debugAssertM(false, "Fell through switch");
+    }        
 
     return renderedOnce;
 }
@@ -425,8 +560,8 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
     }
 
     // Add ambient + lights
-    rd->enableLighting();
     if (! material.diffuse.isBlack() || ! material.specular.isBlack()) {
+        rd->enableLighting();
         rd->setTexture(0, material.diffuse.map);
         rd->setColor(material.diffuse.constant);
 
@@ -454,7 +589,8 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
         }
 
         sendGeometry(rd);
-        setAdditive(rd, renderedOnce);
+        renderedOnce = true;
+        rd->disableLighting();
     }
 
     return renderedOnce;
@@ -637,87 +773,58 @@ void PosedArticulatedModel::renderNonShadowed(
     RenderDevice*                   rd,
     const LightingRef&              lighting) const {
 
-    if (! rd->colorWrite()) {
-        // No need for fancy shading
-        render(rd);
-        return;
-    }
-
     const ArticulatedModel::Part& part = model->partArray[partIndex];
     const ArticulatedModel::Part::TriList& triList = part.triListArray[listIndex];
     const SuperShader::Material& material = triList.material;
 
-    rd->pushState();
-    rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
+    // The transparent rendering path is not optimized to amortize state changes because 
+    // it is only called by the single-object version of this function.  Only
+    // opaque objects are batched together.
 
     if (! material.transmit.isBlack()) {
-        // Transparent
-        bool oldDepthWrite = rd->depthWrite();
+        rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
+        rd->pushState();
+            // Transparent
+            bool oldDepthWrite = rd->depthWrite();
 
-        // Render backfaces first, and then front faces
-        int passes = triList.twoSided ? 2 : 1;
+            // Render backfaces first, and then front faces
+            int passes = triList.twoSided ? 2 : 1;
 
-        if (triList.twoSided) {
-            // We're going to render the front and back faces separately.
-            rd->setCullFace(RenderDevice::CULL_FRONT);
-            rd->enableTwoSidedLighting();
-        }
-
-        for (int i = 0; i < passes; ++i) {
-            rd->disableLighting();
-
-            // Modulate background by transparent color
-            rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
-            rd->setTexture(0, material.transmit.map);
-            rd->setColor(material.transmit.constant);
-            sendGeometry(rd);
-
-            bool alreadyAdditive = false;
-            setAdditive(rd, alreadyAdditive);
-            renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
-        
-            // restore depth write
-            rd->setDepthWrite(oldDepthWrite);
-            rd->setCullFace(RenderDevice::CULL_BACK);
-        }
-    } else {
-        // Opaque
-        rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ZERO);
-
-        bool ps20 = ArticulatedModel::profile() == ArticulatedModel::PS20;
-
-        if (triList.twoSided) {
-            if (! ps20) {
+            if (triList.twoSided) {
+                // We're going to render the front and back faces separately.
+                rd->setCullFace(RenderDevice::CULL_FRONT);
                 rd->enableTwoSidedLighting();
-                rd->setCullFace(RenderDevice::CULL_NONE);
-            } else {
-                // Even if back face culling is reversed, for two-sided objects 
-                // we always draw the front.
+            }
+
+            for (int i = 0; i < passes; ++i) {
+                rd->disableLighting();
+
+                // Modulate background by transparent color
+                rd->setBlendFunc(RenderDevice::BLEND_ZERO, RenderDevice::BLEND_SRC_COLOR);
+                rd->setTexture(0, material.transmit.map);
+                rd->setColor(material.transmit.constant);
+                sendGeometry(rd);
+
+                bool alreadyAdditive = false;
+                setAdditive(rd, alreadyAdditive);
+                renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+            
+                // restore depth write
+                rd->setDepthWrite(oldDepthWrite);
                 rd->setCullFace(RenderDevice::CULL_BACK);
             }
-        }
+        rd->popState();
+    } else {
 
-        bool wroteDepth = renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
+        // This is the unoptimized, single-object version of renderShadowMappedLightPass.
+        // It just calls the optimized version with a single-element array.
 
-        if (triList.twoSided && ps20) {
-            // gl_FrontFacing doesn't work on most cards inside the shader, so we have to draw two-sided objects twice
-            rd->setCullFace(RenderDevice::CULL_FRONT);
-            triList.nonShadowedShader->args.set("backside", -1.0f);
-            renderNonShadowedOpaqueTerms(rd, lighting, part, triList, material);
-            triList.nonShadowedShader->args.set("backside", 1.0f);
-        }
-        
+        static Array<PosedModelRef> posedArray;
 
-        if (! wroteDepth) {
-            // We failed to write to the depth buffer, so
-            // do so now.
-            rd->disableLighting();
-            rd->setColor(Color3::black());
-            sendGeometry(rd);
-        }
+        posedArray.resize(1);
+        posedArray[0] = PosedModelRef(const_cast<PosedArticulatedModel*>(this));
+        ArticulatedModel::renderNonShadowed(posedArray, rd, lighting);
     }
-
-    rd->popState();
 }
 
 
@@ -729,56 +836,20 @@ void PosedArticulatedModel::renderShadowedLightPass(
     debugAssertM(false, "Unimplemented");
 }
 
-
 void PosedArticulatedModel::renderShadowMappedLightPass(
     RenderDevice*       rd, 
     const GLight&       light, 
     const Matrix4&      lightMVP, 
     const TextureRef&   shadowMap) const {
 
-    const ArticulatedModel::Part& part              = model->partArray[partIndex];
-    const ArticulatedModel::Part::TriList& triList  = part.triListArray[listIndex];
-    const SuperShader::Material& material           = triList.material;
+    // This is the unoptimized, single-object version of renderShadowMappedLightPass.
+    // It just calls the optimized version with a single-element array.
 
-    if (material.diffuse.isBlack() && material.specular.isBlack()) {
-        return;
-    }
+    static Array<PosedModelRef> posedArray;
 
-    rd->pushState();
-        rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
-
-        switch (ArticulatedModel::profile()) {
-        case ArticulatedModel::FIXED_FUNCTION:
-        case ArticulatedModel::PS14:
-            if (triList.twoSided) {
-                rd->enableTwoSidedLighting();
-                rd->setCullFace(RenderDevice::CULL_NONE);
-            }
-            renderFFShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
-            break;
-
-        case ArticulatedModel::PS20:
-            if (triList.twoSided) {
-                // Even if back face culling is reversed, for two-sided objects 
-                // we always draw the front.
-                rd->setCullFace(RenderDevice::CULL_BACK);
-            }
-
-            renderPS20ShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
-
-            if (triList.twoSided) {
-                // gl_FrontFacing doesn't work on most cards, so we have to draw two-sided objects twice
-                rd->setCullFace(RenderDevice::CULL_FRONT);
-                triList.shadowMappedShader->args.set("backside", -1.0f);
-                renderPS20ShadowMappedLightPass(rd, light, lightMVP, shadowMap, part, triList, material);
-                triList.shadowMappedShader->args.set("backside", 1.0f);
-            }
-            break;
-
-        default:
-            debugAssertM(false, "Fell through switch");
-        }
-    rd->popState();
+    posedArray.resize(1);
+    posedArray[0] = PosedModelRef(const_cast<PosedArticulatedModel*>(this));
+    ArticulatedModel::renderShadowMappedLightPass(posedArray, rd, light, lightMVP, shadowMap);
 }
 
 
@@ -791,13 +862,6 @@ void PosedArticulatedModel::renderPS20ShadowMappedLightPass(
     const ArticulatedModel::Part::TriList& triList,
     const SuperShader::Material& material) const {
 
-    if (material.specular.isBlack() &&
-        material.diffuse.isBlack()) {
-        // Nothing to draw
-        return;
-    }
-
-    rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
     SuperShader::configureShadowShader(light, lightMVP, shadowMap, material, triList.shadowMappedShader->args);
     rd->setShader(triList.shadowMappedShader);
     sendGeometry(rd);
@@ -816,8 +880,6 @@ void PosedArticulatedModel::renderFFShadowMappedLightPass(
     rd->configureShadowMap(1, lightMVP, shadowMap);
 
     rd->setObjectToWorldMatrix(cframe);
-
-    rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
 
     rd->setTexture(0, material.diffuse.map);
     rd->setColor(material.diffuse.constant);

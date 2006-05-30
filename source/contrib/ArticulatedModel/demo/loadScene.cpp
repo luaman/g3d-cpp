@@ -1,6 +1,6 @@
 #include "App.h"
 
-#define LOAD_ALL 0
+#define LOAD_ALL 1
 
 void App::loadScene() {
     const std::string path = "";
@@ -11,7 +11,7 @@ void App::loadScene() {
 
     RealTime t0 = System::time();
 
-    if (true) {
+    if (false) {
         ArticulatedModelRef model = ArticulatedModel::fromFile("sphere.ifs", 1);
 
         SuperShader::Material& material = model->partArray[0].triListArray[0].material;
@@ -21,7 +21,10 @@ void App::loadScene() {
         material.specularExponent = Color3::white() * 60;
         model->updateAll();
 
+    //for (int i = 0; i < 100; ++i) {
         entityArray.append(Entity::create(model, CoordinateFrame(Vector3(x,0,-2))));
+        x += 0.1;
+    //}
     }
 
 #if LOAD_ALL
