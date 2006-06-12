@@ -1,5 +1,5 @@
 /**
-  @file Window.h
+  @file GWindow.h
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2005-02-10

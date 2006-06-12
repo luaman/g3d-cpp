@@ -223,6 +223,10 @@ SOURCE=.\GLG3Dcpp\TextureManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\ThirdPersonManipulator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\UserInput.cpp
 # End Source File
 # Begin Source File
@@ -388,6 +392,10 @@ SOURCE=.\include\GLG3D\TextureFormat.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\TextureManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\GLG3D\ThirdPersonManipulator.h
 # End Source File
 # Begin Source File
 

@@ -311,7 +311,6 @@ void GImage::decodePCX(
         input.readBytes(sizeof(palette), palette);
         input.setPosition(imageBeginning);
         
-
         Color3uint8* pixel = pixel3();
         
         // The palette indices are run length encoded.
@@ -331,7 +330,9 @@ void GImage::decodePCX(
 
             // Set the whole run
             for (int i = length - 1; i >= 0; --i, ++p) {
-                debugAssert(p < width * height);
+                if (p > width * height) {
+                    break;
+                }
                 pixel[p] = color;
             }
 

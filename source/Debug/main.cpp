@@ -12,7 +12,7 @@
  */
 
 #include <G3DAll.h>
-#include "controller.h"
+//#include "controller.h"
 
 #if G3D_VER < 60900
     #error Requires G3D 6.09
@@ -83,7 +83,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 void Demo::onInit()  {
-    ifsModel = IFSModel::create("d:/games/cpp/source/data/ifs/p51-mustang.ifs");
+    ifsModel = IFSModel::create("c:/projects/cpp/source/data/ifs/p51-mustang.ifs");
 
     CoordinateFrame obj = CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(30)), Vector3(2, 0, 0));
     
@@ -95,8 +95,8 @@ void Demo::onInit()  {
 //    manipulator->setFrame(obj);
 //    manipulator->setControlFrame(CoordinateFrame());
 
-    models.append(IFSModel::create("D:/games/data/ifs/square.ifs")->pose());
-    models.append(IFSModel::create("D:/games/cpp/source/data/ifs/p51-mustang.ifs")->pose(Vector3(0,2,0)));
+//    models.append(IFSModel::create("D:/games/data/ifs/square.ifs")->pose());
+//    models.append(IFSModel::create("D:/games/cpp/source/data/ifs/p51-mustang.ifs")->pose(Vector3(0,2,0)));
 
     // Local control
     manipulator->setFrame(obj);
@@ -236,7 +236,6 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-
     GAppSettings settings;
     settings.useNetwork = false;
     settings.window.resizable = true;

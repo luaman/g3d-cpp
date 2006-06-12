@@ -33,6 +33,7 @@
     G3D::GModule,
     G3D::GModuleManager
     G3D::Manipulator,
+    G3D::ThirdPersonManipulator,
     G3D::UserInput
   <BR>
   See also demo code
