@@ -260,6 +260,7 @@
         STR
 
      <LI><B>Data structures</B> &nbsp; &nbsp;
+	    G3D::AnyVal,
         G3D::AABSPTree,
 		G3D::Array,
 		G3D::Queue,

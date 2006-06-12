@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="Debug"
-	ProjectGUID="{FE762B2E-7276-4633-859B-AEFEB5002FC1}"
+	ProjectGUID="{4ACFD45E-90E8-4AF4-8750-14003D57CB53}"
 	>
 	<Platforms>
 		<Platform
@@ -18,7 +18,7 @@
 			OutputDirectory=".\..\temp\Debug\Debug"
 			IntermediateDirectory=".\..\temp\Debug\Debug"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -49,20 +49,19 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\..\temp\Debug\Debug/Debug.pch"
 				AssemblerListingLocation=".\..\temp\Debug\Debug/"
 				ObjectFile=".\..\temp\Debug\Debug/"
 				ProgramDataBaseFileName=".\..\temp\Debug\Debug/"
-				BrowseInformation="1"
+				BrowseInformation="2"
 				BrowseInformationFile=".\..\temp\Debug\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
-				CompileAs="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -78,7 +77,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile=".\..\temp\Debug\Debug/Debug.exe"
-				LinkIncremental="1"
+				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\temp\win32-lib,win32-lib"
 				GenerateDebugInformation="true"
@@ -97,6 +96,8 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\..\temp\Debug\Debug/Debug.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -116,7 +117,7 @@
 			OutputDirectory=".\..\temp\Debug\Release"
 			IntermediateDirectory=".\..\temp\Debug\Release"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -152,7 +153,6 @@
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\..\temp\Debug\Release/Debug.pch"
 				AssemblerListingLocation=".\..\temp\Debug\Release/"
 				ObjectFile=".\..\temp\Debug\Release/"
@@ -160,7 +160,6 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				CompileAs="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -194,6 +193,8 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\..\temp\Debug\Release/Debug.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -224,11 +225,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -236,10 +234,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="2"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>

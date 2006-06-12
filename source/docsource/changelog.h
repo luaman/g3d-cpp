@@ -30,6 +30,7 @@
    <P>
    Changes in 6.10:
     <UL>
+	 <LI> G3D::AnyVal
      <LI> G3D::ThirdPersonManipulator
     </UL>
 

@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /GR /GX /Od /I "include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "_CRT_SECURE_NO_DEPRECATE" /FD /GZ /c
-# SUBTRACT CPP /Z<none> /Fr /YX
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -88,6 +88,10 @@ LIB32=link.exe -lib
 # Begin Source File
 
 SOURCE=.\G3Dcpp\AABox.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\G3Dcpp\AnyVal.cpp
 # End Source File
 # Begin Source File
 
@@ -348,6 +352,10 @@ SOURCE=.\include\G3D\AABox.h
 # Begin Source File
 
 SOURCE=.\include\G3D\AABSPTree.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\G3D\AnyVal.h
 # End Source File
 # Begin Source File
 

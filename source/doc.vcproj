@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="doc"
-	ProjectGUID="{6C99D46B-EB05-409A-96BA-DA0DF7F26412}"
+	ProjectGUID="{E446DB24-D811-47D4-9E8B-4863E7D4F7B5}"
 	Keyword="MakeFileProj"
 	>
 	<Platforms>
@@ -19,7 +19,7 @@
 			OutputDirectory=".\doc___Win32_Debug"
 			IntermediateDirectory=".\doc___Win32_Debug"
 			ConfigurationType="10"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -43,7 +43,7 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="10"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
