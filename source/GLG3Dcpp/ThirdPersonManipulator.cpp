@@ -482,6 +482,19 @@ void ThirdPersonManipulator::computeProjection(RenderDevice* rd) {
 }
 
 
+bool ThirdPersonManipulator::enabled() const {
+    return m_enabled;
+}
+
+
+void ThirdPersonManipulator::setEnabled(bool e) {
+    if (! e && m_dragging) {
+            m_dragging = false;
+    }
+    m_enabled = e;
+}
+
+
 ThirdPersonManipulator::ThirdPersonManipulator() : 
     m_axisScale(1), 
     m_dragging(false), 
@@ -490,7 +503,8 @@ ThirdPersonManipulator::ThirdPersonManipulator() :
     m_overAxis(NO_AXIS),
     m_translationEnabled(true),
     m_rotationEnabled(true),
-    m_doubleAxisDrag(false) {
+    m_doubleAxisDrag(false),
+    m_enabled(true) {
 
     for (int i = 0; i < NUM_GEOMS; ++i) {
         m_usingAxis[i] = false;
@@ -599,8 +613,10 @@ void ThirdPersonManipulator::getPosedModel(
     Array<PosedModelRef>& posedArray, 
     Array<PosedModel2DRef>& posed2DArray) {
 
-    (void)posed2DArray;
-    posedArray.append(m_posedModel);
+    if (m_enabled) {
+        (void)posed2DArray;
+        posedArray.append(m_posedModel);
+    }
 }
 
 
@@ -642,6 +658,10 @@ bool ThirdPersonManipulator::onEvent(const GEvent& event) {
 
 
 void ThirdPersonManipulator::onUserInput(UserInput* ui) {
+    if (! m_enabled) {
+        return;
+    }
+
     if (m_dragging) {
         if (ui->keyDown(m_dragKey)) {
             // Continue dragging

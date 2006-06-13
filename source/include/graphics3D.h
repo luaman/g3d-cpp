@@ -7,7 +7,7 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2001-08-25
- @edited  2006-04-06
+ @edited  2006-06-06
 
  Copyright 2001-2006, Morgan McGuire.
  All rights reserved.
@@ -90,7 +90,7 @@
 #include "G3D/AtomicInt32.h"
 #include "G3D/GThread.h"
 #include "G3D/RegistryUtil.h"
-
+#include "G3D/AnyVal.h"
 
 #ifdef G3D_WIN32
     // These lines would link the ZLIB DLL, however we now use static linking

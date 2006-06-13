@@ -277,6 +277,8 @@ private:
 
     bool                    m_translationEnabled;
 
+    bool                    m_enabled;
+
     /** 
       true for each axis that is currently being used for the drag.
      */
@@ -326,6 +328,10 @@ public:
     void setTranslationEnabled(bool r);
 
     bool translationEnabled() const;
+
+    bool enabled() const;
+
+    void setEnabled(bool e);
 
     /** Given the desired start frame for the axes and the 
         desired frame for the object, returns the offsetFrame

@@ -58,6 +58,58 @@ class BinaryOutput;
     // If there was no "enabled" value, this will return the default instead of failing
     bool enabled = dict.get("enabled").boolean(true);
   </pre>
+
+  <p>
+  <b>What's the difference from boost::any?</b>
+  <br>I think that AnyVal will be easier for novice C++ users.  It addresses the problem that
+   even though G3D::TextInput makes reading configuration files extremely simple, many people
+   still don't use it.  So AnyVal makes it ridiculously simple to read and write a tree of G3D 
+   types to a file. 
+
+   <i>AnyVal:</i>
+<pre>
+{
+AnyVal tree(TextInput("config.txt"));
+
+bool enabled = tree.get("enabled", false);
+Vector3 direction = tree.get("direction", Vector3::zero());
+...
+}
+</pre>
+
+<i>boost:</i>
+<pre>
+{
+bool enabled = false;
+Vector3 direction;
+Table<boost::any> tree;
+
+ ...write lots of file parsing code...
+
+   if (tree.containsKey("enabled")) {
+      const boost::any& val = tree["enabled"];
+      try
+      {
+        enabled = any_cast<bool>(val);
+      }
+      catch(const boost::bad_any_cast &)
+      {
+      }
+    }
+
+   if (tree.containsKey("direction")) {
+      const boost::any& val = tree["direction"];
+      try
+      {
+        direction = any_cast<Vector3>(val);
+      }
+      catch(const boost::bad_any_cast &)
+      {
+      }
+    }
+   ...
+}
+</pre>
  */
 class AnyVal {
 public:
