@@ -265,14 +265,17 @@ void Report::doGraphics() {
         drawBar(app->renderDevice, app->featureRating, p);
 
         // Designed to put NV40 at 50
-        app->performanceRating = app->renderDevice->getFrameRate() / 5.0;
+        app->performanceRating = log(app->renderDevice->getFrameRate()) * 15.0f;
 
         p.y += s * 4;
         performanceButton = Rect2D::xywh(p,
             app->titleFont->draw2D(app->renderDevice, "Speed", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f));
 
-        p.y += app->reportFont->draw2D(app->renderDevice, format("%5.1f", iRound(app->performanceRating * 10) / 10.0f), Vector2(x0 - s*2, p.y), s*2, Color3::red() * 0.5).y;
-        drawBar(app->renderDevice, app->performanceRating, p);
+		{
+			float spd = iRound(app->performanceRating * 10) / 10.0f;
+	        p.y += app->reportFont->draw2D(app->renderDevice, format("%5.1f", spd), Vector2(x0 - s*2, p.y), s*2, Color3::red() * 0.5).y;
+		}
+        drawBar(app->renderDevice, min(app->performanceRating, 100.0f), p);
 
         p.y += s * 4;
         app->titleFont->draw2D(app->renderDevice, "Quality", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);

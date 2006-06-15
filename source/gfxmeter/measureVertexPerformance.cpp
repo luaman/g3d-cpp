@@ -191,7 +191,7 @@ public:
         } // if
 
         cpuIndex16.resize(cpuIndex.size());
-        for (uint16 i = 0; i < cpuIndex.size(); ++i) {
+        for (int i = 0; i < cpuIndex.size(); ++i) {
             cpuIndex16[i] = (uint16)cpuIndex[i];
         }
     }

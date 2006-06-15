@@ -92,6 +92,14 @@ void DelayOverhead(uint32 time) {
 
 
 int CPU_speed_in_MHz() {
+
+	int s = System::cpuSpeedMHz();
+
+	if (s > 200 && s < 100000) {
+		// Trust the registry
+		return s;
+	}
+
 	const int N = 2;
 
     // Execution time, in milliseconds
