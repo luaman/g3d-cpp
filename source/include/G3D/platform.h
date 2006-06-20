@@ -102,8 +102,8 @@
         #error G3D only supports the gcc compiler on OS X.
     #endif
 
-    #ifndef __POWERPC__
-        #error G3D only supports PowerPC processors on OS X.
+    #ifndef __POWERPC__ || __i386__
+        #error G3D only supports PowerPC or Intel processors on OS X.
     #endif
 
 #   ifndef __cdecl

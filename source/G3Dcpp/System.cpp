@@ -303,7 +303,7 @@ void System::init() {
         // We read the standard CPUID level 0x00000000 which should
         // be available on every x86 processor.  This fills out
         // a string with the processor vendor tag.
-        #ifdef _MSC_VER
+        #ifdef _MSC_VER || defined(G3D_OSX_INTEL)
             __asm {
                 push eax
                 push ebx
@@ -353,7 +353,7 @@ void System::init() {
         maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
 
         // Then we read the ext. CPUID level 0x80000000
-        #ifdef _MSC_VER
+        #if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
             __asm {
                 push eax
                 push ebx
@@ -510,6 +510,10 @@ void System::init() {
             strcpy(_cpuArchCstr, "PPC G5");
             strcpy(_cpuVendorCstr, "IBM");
             break;
+		case FOUR_CHAR_CODE('ixxx'):
+			strcpy(_cpuArchCstr, "Core Duo");
+			strcpy(_cpuVendorCstr, "Intel");
+			break;
         }
             
     #endif
@@ -526,7 +530,7 @@ void checkForCPUID() {
     // We've to check if we can toggle the flag register bit 21.
     // If we can't the processor does not support the CPUID command.
     
-#   ifdef _MSC_VER
+#   if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
         __asm {
                 push eax
                 push ebx
@@ -585,8 +589,8 @@ void getStandardProcessorExtensions() {
     // Invoking CPUID with '1' in EAX fills out edx with a bit string.
     // The bits of this value indicate the presence or absence of 
     // useful processor features.
-    #ifdef _MSC_VER
-        // Windows
+    #if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
+        // Windows or OSX Intel
 
             __asm {
             push eax

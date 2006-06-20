@@ -76,7 +76,7 @@ public:
 
             return InterlockedExchangeAdd(VCAST &_value, x);
 
-#       elif defined(G3D_LINUX)
+#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
 
             int32 old;
             asm volatile ("lock; xaddl %0,%1"
@@ -114,7 +114,7 @@ public:
 #       if defined(G3D_WIN32)
             // Note: returns the newly incremented value
             InterlockedIncrement(VCAST &_value);
-#       elif defined(G3D_LINUX)
+#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
             add(1);
 #       elif defined(G3D_OSX)
             add(1);
@@ -126,7 +126,7 @@ public:
 #       if defined(G3D_WIN32)
             // Note: returns the newly decremented value
             return InterlockedDecrement(VCAST &_value) != 0;
-#       elif defined(G3D_LINUX)
+#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
             unsigned char nz;
 
             asm volatile ("lock; decl %1;\n\t"
@@ -162,7 +162,7 @@ public:
 #          else
                 return InterlockedCompareExchange(VCAST &_value, exchange, comperand);
 #          endif
-#       elif defined(G3D_LINUX)
+#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
             int32 ret;
             asm volatile ("lock; cmpxchgl %1, %2"
                           : "=a" (ret)
