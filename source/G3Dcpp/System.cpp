@@ -31,7 +31,7 @@
 
     #include <conio.h>
     #include <sys/timeb.h>
-#   include "G3D/RegistryUtil.h"
+	#include "G3D/RegistryUtil.h"
 
 #elif defined(G3D_LINUX) 
 
@@ -53,11 +53,13 @@
     #include <stdio.h>
     #include <errno.h>
     #include <sys/types.h>
+	#include <sys/sysctl.h>
     #include <sys/select.h>
+    #include <sys/time.h>
     #include <termios.h>
     #include <unistd.h>
-    #include <sys/time.h>
     #include <pthread.h>
+	#include <mach-o/arch.h>
 
     #include <sstream>
     #include <CoreServices/CoreServices.h>
@@ -137,6 +139,7 @@ static bool                                     _rdtsc              = false;
 static bool                                     _mmx                = false;
 static bool                                     _sse                = false;
 static bool                                     _sse2               = false;
+static bool                                     _sse3               = false;
 static bool                                     _3dnow              = false;
 static char                                     _cpuVendorCstr[1024] = {'U', 'n', 'k', 'n', 'o', 'w', 'n', '\0'};
 static bool                                     _cpuID              = false;
@@ -156,8 +159,8 @@ static char                                     versionCstr[1024];
 System::OutOfMemoryCallback                     System::outOfMemoryCallback = NULL;
 
 #ifdef G3D_OSX
-    long System::m_OSXCPUSpeed;
-    double System::m_secondsPerNS;
+long											System::m_OSXCPUSpeed;
+double											System::m_secondsPerNS;
 #endif
 
 /** The Real-World time of System::getTick() time 0.  Set by initTime */
@@ -165,7 +168,7 @@ static RealTime             realWorldGetTickTime0;
 
 
 static int               maxSupportedCPUIDLevel = 0;
-static int            maxSupportedExtendedLevel = 0;
+static int               maxSupportedExtendedLevel = 0;
 
 #define checkBit(var, bit)   ((var & (1 << bit)) ? true : false)
 
@@ -201,6 +204,10 @@ bool System::hasSSE2() {
     return _sse2;
 }
 
+bool System::hasSSE3() {
+	init();
+	return _sse3;
+}
 
 bool System::hasMMX() {
     init();
@@ -303,7 +310,7 @@ void System::init() {
         // We read the standard CPUID level 0x00000000 which should
         // be available on every x86 processor.  This fills out
         // a string with the processor vendor tag.
-        #ifdef _MSC_VER || defined(G3D_OSX_INTEL)
+        #if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
             __asm {
                 push eax
                 push ebx
@@ -495,27 +502,29 @@ void System::init() {
         m_secondsPerNS = 1.0 / 1.0e9;
         
         //System Architecture:
-        SInt32 CPUtype;
-        Gestalt('cpuf', &CPUtype);
-        switch (CPUtype){
-        case 0x0108:
-            strcpy(_cpuArchCstr, "PPC G3");
-            strcpy(_cpuVendorCstr, "Motorola");
-            break;
-        case 0x010C:
-            strcpy(_cpuArchCstr, "PPC G4");
-            strcpy(_cpuVendorCstr, "Motorola");
-            break;
-        case 0x0139:
-            strcpy(_cpuArchCstr, "PPC G5");
-            strcpy(_cpuVendorCstr, "IBM");
-            break;
-		case FOUR_CHAR_CODE('ixxx'):
-			strcpy(_cpuArchCstr, "Core Duo");
-			strcpy(_cpuVendorCstr, "Intel");
-			break;
-        }
-            
+		const NXArchInfo* pInfo = NXGetLocalArchInfo();
+		
+		if(pInfo){
+			strcpy(_cpuArchCstr, pInfo->description);
+			
+			switch(pInfo->cputype){
+			case CPU_TYPE_POWERPC:
+				switch(pInfo->cpusubtype){
+				case CPU_SUBTYPE_POWERPC_750:
+				case CPU_SUBTYPE_POWERPC_7400:
+				case CPU_SUBTYPE_POWERPC_7450:
+					strcpy(_cpuVendorCstr, "Motorola");
+					break;
+				case CPU_SUBTYPE_POWERPC_970:
+					strcpy(_cpuVendorCstr, "IBM");
+					break;
+				}
+				break;
+			case CPU_TYPE_I386:
+				strcpy(_cpuVendorCstr, "Intel");
+				break;
+			}
+		}
     #endif
 
     initTime();
@@ -624,48 +633,44 @@ void getStandardProcessorExtensions() {
         features = 0;
     #endif
     
-        // FPU_FloatingPointUnit                                                        = checkBit(features, 0);
-        // VME_Virtual8086ModeEnhancements                                      = checkBit(features, 1);
-        // DE_DebuggingExtensions                                                       = checkBit(features, 2);
-        // PSE_PageSizeExtensions                                                       = checkBit(features, 3);
-        // TSC_TimeStampCounter                                                         = checkBit(features, 4);
-        // MSR_ModelSpecificRegisters                                           = checkBit(features, 5);
-        // PAE_PhysicalAddressExtension                                         = checkBit(features, 6);
-        // MCE_MachineCheckException                                            = checkBit(features, 7);
-        // CX8_COMPXCHG8B_Instruction                                           = checkBit(features, 8);
+        // FPU_FloatingPointUnit                                = checkBit(features, 0);
+        // VME_Virtual8086ModeEnhancements                      = checkBit(features, 1);
+        // DE_DebuggingExtensions                               = checkBit(features, 2);
+        // PSE_PageSizeExtensions                               = checkBit(features, 3);
+        // TSC_TimeStampCounter                                 = checkBit(features, 4);
+        // MSR_ModelSpecificRegisters                           = checkBit(features, 5);
+        // PAE_PhysicalAddressExtension                         = checkBit(features, 6);
+        // MCE_MachineCheckException                            = checkBit(features, 7);
+        // CX8_COMPXCHG8B_Instruction                           = checkBit(features, 8);
         // APIC_AdvancedProgrammableInterruptController         = checkBit(features, 9);
-        // APIC_ID                                                                                      = (ebxreg >> 24) & 0xFF;
-        // SEP_FastSystemCall                                                           = checkBit(features, 11);
-        // MTRR_MemoryTypeRangeRegisters                                        = checkBit(features, 12);
-        // PGE_PTE_GlobalFlag                                                           = checkBit(features, 13);
-        // MCA_MachineCheckArchitecture                                         = checkBit(features, 14);
+        // APIC_ID                                              = (ebxreg >> 24) & 0xFF;
+        // SEP_FastSystemCall                                   = checkBit(features, 11);
+        // MTRR_MemoryTypeRangeRegisters                        = checkBit(features, 12);
+        // PGE_PTE_GlobalFlag                                   = checkBit(features, 13);
+        // MCA_MachineCheckArchitecture                         = checkBit(features, 14);
         // CMOV_ConditionalMoveAndCompareInstructions           = checkBit(features, 15);
 
     // (According to SDL)
-        _rdtsc                                                                  = checkBit(features, 16);
-
-        // PSE36_36bitPageSizeExtension                                         = checkBit(features, 17);
-        // PN_ProcessorSerialNumber                                                     = checkBit(features, 18);
-        // CLFSH_CFLUSH_Instruction                                                     = checkBit(features, 19);
-        // CLFLUSH_InstructionCacheLineSize                                     = (ebxreg >> 8) & 0xFF;
-        // DS_DebugStore                                                                        = checkBit(features, 21);
-        // ACPI_ThermalMonitorAndClockControl                           = checkBit(features, 22);
-        _mmx                                                                                            = checkBit(features, 23);
-        // FXSR_FastStreamingSIMD_ExtensionsSaveRestore         = checkBit(features, 24);
-        _sse                                                                                            = checkBit(features, 25);
-        _sse2                                                                                           = checkBit(features, 26);
-        // SS_SelfSnoop                                                                         = checkBit(features, 27);
-        // HT_HyperThreading                                                            = checkBit(features, 28);
-        // HT_HyterThreadingSiblings = (ebxreg >> 16) & 0xFF;
-        // TM_ThermalMonitor                                                            = checkBit(features, 29);
-        // IA64_Intel64BitArchitecture                                          = checkBit(features, 30);
-        _3dnow                                              = checkBit(features, 31);
+        _rdtsc                                                   = checkBit(features, 16);
+        // PSE36_36bitPageSizeExtension                          = checkBit(features, 17);
+        // PN_ProcessorSerialNumber                              = checkBit(features, 18);
+        // CLFSH_CFLUSH_Instruction                              = checkBit(features, 19);
+        // CLFLUSH_InstructionCacheLineSize                      = (ebxreg >> 8) & 0xFF;
+        // DS_DebugStore                                         = checkBit(features, 21);
+        // ACPI_ThermalMonitorAndClockControl                    = checkBit(features, 22);
+        _mmx                                                     = checkBit(features, 23);
+        // FXSR_FastStreamingSIMD_ExtensionsSaveRestore          = checkBit(features, 24);
+        _sse                                                     = checkBit(features, 25);
+        _sse2                                                    = checkBit(features, 26);
+        // SS_SelfSnoop                                          = checkBit(features, 27);
+        // HT_HyperThreading                                     = checkBit(features, 28);
+        // HT_HyterThreadingSiblings                             = (ebxreg >> 16) & 0xFF;
+        // TM_ThermalMonitor                                     = checkBit(features, 29);
+        // IA64_Intel64BitArchitecture                           = checkBit(features, 30);
+        _3dnow                                                   = checkBit(features, 31);
 }
 
-
 #undef checkBit
-
-
 
 #if defined(SSE)
 
