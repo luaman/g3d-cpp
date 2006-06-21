@@ -101,10 +101,14 @@
     #ifndef __GNUC__
         #error G3D only supports the gcc compiler on OS X.
     #endif
-
-    #ifndef __POWERPC__ || __i386__
-        #error G3D only supports PowerPC or Intel processors on OS X.
-    #endif
+	
+	#if defined(__i386__)
+		#define G3D_OSX_INTEL
+	#elif defined(__PPC__)
+		#define G3D_OSX_PPC
+	#else
+		#define G3D_OSX_UNKNOWN
+	#endif
 
 #   ifndef __cdecl
 #       define __cdecl __attribute__((cdecl))
