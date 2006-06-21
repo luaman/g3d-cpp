@@ -4,13 +4,17 @@
  @maintainer Morgan McGuire, matrix@graphics3d.com
 
  @created 2005-09-01
- @edited  2005-09-26
+ @edited  2006-06-21
  */
 #ifndef G3D_ATOMICINT32_H
 #define G3D_ATOMICINT32_H
 
 #include "G3D/platform.h"
 #include "G3D/g3dmath.h"
+
+#if defined(G3D_OSX)
+	#include <libkern/OSAtomic.h>
+#endif
 
 namespace G3D {
 
@@ -32,6 +36,8 @@ private:
 #       define VCAST
 #   endif
     volatile long           _value;
+#   elif defined(G3D_OSX)
+	int32_t					_value;
 #   else
     volatile int32          _value;
 #   endif
@@ -76,7 +82,7 @@ public:
 
             return InterlockedExchangeAdd(VCAST &_value, x);
 
-#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
+#       elif defined(G3D_LINUX)
 
             int32 old;
             asm volatile ("lock; xaddl %0,%1"
@@ -86,22 +92,11 @@ public:
             return old;
             
 #       elif defined(G3D_OSX)
-			int32 prev, temp;
 
-			asm volatile ("0:\n\t"                   /* retry local label     */
-						  "lwarx  %0,0,%2\n\t"       /* load prev and reserve */
-						  "add    %1,%0,%3\n\t"      /* temp = prev + delta   */
-						  "stwcx. %1,0,%2\n\t"       /* conditionally store   */
-						  "bne-   0b"                /* start over if we lost
-														the reservation       */
+			int32 old = _value;
+			OSAtomicAdd32(x, &_value);
+			return old;
 
-						  /*XXX find a cleaner way to define the temp         
-						   *    it's not an output
-						   */
-						  : "=&r" (prev), "=&r" (temp)        /* output, temp */
-						  : "b" (&_value), "r" (x)            /* inputs       */
-						  : "memory", "cc");                  /* clobbered    */
-			return prev;
 #       endif
     }
 
@@ -114,10 +109,11 @@ public:
 #       if defined(G3D_WIN32)
             // Note: returns the newly incremented value
             InterlockedIncrement(VCAST &_value);
-#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
+#       elif defined(G3D_LINUX)
             add(1);
 #       elif defined(G3D_OSX)
-            add(1);
+            // Note: returns the newly incremented value
+			OSAtomicIncrement32(&_value);
 #       endif
     }
 
@@ -126,7 +122,7 @@ public:
 #       if defined(G3D_WIN32)
             // Note: returns the newly decremented value
             return InterlockedDecrement(VCAST &_value) != 0;
-#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
+#       elif defined(G3D_LINUX)
             unsigned char nz;
 
             asm volatile ("lock; decl %1;\n\t"
@@ -136,8 +132,8 @@ public:
                           : "memory", "cc");
             return nz;
 #       elif defined(G3D_OSX)
-			// Note: add returns the old value. We will only be 0, if we were 1 prior to this.
-            return add(-1) != 1;
+			// Note: returns the newly decremented value
+            return OSAtomicDecrement32(&_value);
 #       endif
     }
 
@@ -162,7 +158,7 @@ public:
 #          else
                 return InterlockedCompareExchange(VCAST &_value, exchange, comperand);
 #          endif
-#       elif defined(G3D_LINUX) || defined(G3D_OSX_INTEL)
+#       elif defined(G3D_LINUX)
             int32 ret;
             asm volatile ("lock; cmpxchgl %1, %2"
                           : "=a" (ret)
@@ -170,22 +166,11 @@ public:
                           : "memory", "cc");
             return ret;
 #       elif defined(G3D_OSX)
-			int32 prev;
+			int32 old = _value;
 
-			asm volatile ("0:\n\t"                   /* retry local label     */
-						  "lwarx  %0,0,%1\n\t"       /* load prev and reserve */
-						  "cmpw   %0,%3\n\t"         /* does it match cmp?    */
-						  "bne-   1f\n\t"            /* ...no, bail out       */
-						  "stwcx. %2,0,%1\n\t"       /* ...yes, conditionally
-														store swap            */
-						  "bne-   0b\n\t"            /* start over if we lost
-														the reservation       */
-						  "1:"                       /* exit local label      */
+			OSAtomicCompareAndSwap32(comperand, exchange, &_value);
 
-						  : "=&r"(prev)                                       /* output      */
-						  : "b" (&_value), "r" (exchange), "r"(comperand)    /* inputs      */
-						  : "memory", "cc");                                  /* clobbered   */
-			return prev;
+			return old;
 #       endif
     }
 
