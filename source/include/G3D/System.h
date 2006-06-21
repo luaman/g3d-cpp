@@ -90,6 +90,9 @@ public:
 	static bool hasSSE2();
 	
 	/** */
+	static bool hasSSE3();
+	
+	/** */
 	static bool has3DNow();
 
 	
