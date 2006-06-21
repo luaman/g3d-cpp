@@ -138,7 +138,7 @@ static void subclasstest(const RCPFooRef& b) {
 }
 
 static void testRCP() {
-    printf("ReferenceCountedPointer");
+    printf("ReferenceCountedPointer ");
 
     debugAssert(numRCPFoo == 0);
     RCPFooRef a = new RCPFoo();
@@ -221,6 +221,8 @@ static void testRCP() {
         // Likewise
         subclasstest(s);
     }
+	
+	printf("passed.\n");
 }
 
 RCPFooRef f1, f2, f3;
