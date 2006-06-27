@@ -119,21 +119,14 @@ Studio\Common\MSDev98\Bin\;c:\doxygen;c:\python\bin</CODE>.
 <B><FONT SIZE=5>Building G3D from the command line</FONT></B>
 </P>
 <OL>
-<LI> <I>gcc 4.0 is the current version for Mac OS X</I></LI>
-<LI> Install the <A HREF="http://www.cwi.nl/ftp/jack/python/mac/MacPython222active.bin">Python 2.2.2 tool</A>.
-<LI> Install the <A HREF="ftp://ftp.stack.nl/pub/users/dimitri/doxygen-1.3-rc3.macosx.bin.tar.gz">Doxygen 1.3.2 tool</A>.
-<LI> Install the <A HREF="http://ftp.gnu.org/gnu/automake/automake-1.7.5.tar.gz">automake 1.7.5</A> tool (and the corresponding aclocal version).
-<LI> Install the <A HREF="http://ftp.gnu.org/gnu/autoconf/autoconf-2.57.tar.gz">autoconf 2.57</A> tool.
-<LI> Add the paths for these tools to your PATH environment variable (usually in your .cshrc, .tcshrc, or .bashrc file).
-
-<LI>TODO: set up LD_LIBRARY_PATH
-
-<LI> Log out so all changes can take effect.
-<P>
-<LI>Run "<CODE>chmod u+x build</CODE>" in the <CODE>cpp</CODE> directory.
-<LI>Run "<CODE>./build install</CODE>" in the <CODE>cpp</CODE> directory
-<LI>The library and demos will compile in the source tree
-</OL>
+<LI> Install <a href="http://www.doxygen.org">Doxygen</a>
+<LI> Add the path for Doxygen to your PATH environment variable (by adding <code>PATH=/Applications/Doxygen.app/Contents/Resources/:$PATH</code> to your ~/.bashrc file).
+<LI> TODO: set up LD_LIBRARY_PATH
+<LI> Type <code>source ~/.bashrc</code> or log out so all changes can take effect.
+<li> Execute <code>chmod u+x build</code> in the cpp directory.
+<li> Run <code>./build install <i>targetdir</i></code> in the cpp directory
+<li> The library and demos will compile into <i>targetdir</i>
+</ol>
 </P>
 <HR>
 <H1>Directories</H1>
