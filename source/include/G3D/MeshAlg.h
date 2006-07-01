@@ -132,7 +132,7 @@ public:
             if (e < 0) {
                 e = ~e;
             }
-            return contains(edgeIndex, 3, e) || contains(edgeIndex, 3, ~e);
+            return contains(edgeIndex, 2, e) || contains(edgeIndex, 2, ~e);
         }
 
         /** Contains the forward edge e if e >= 0 and the backward edge 
