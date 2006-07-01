@@ -33,6 +33,8 @@
      <LI> G3D::RenderDevice::swapBuffers
 	 <LI> G3D::AnyVal
      <LI> G3D::ThirdPersonManipulator
+     <LI> Added support for GL_SGIS_texture_lod in Texture.
+     <LI> Fix: [ 1490655 ] MeshAlg::Edge::containVertex goes off the end of the array
      <LI> Fix: [ 1511729 ] NVIDIA rectangle generates errors in mipmap code
      <LI> Fix: [ 1507296 ] RenderDevice must swapBuffer on resize
     </UL>

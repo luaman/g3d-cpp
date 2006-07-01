@@ -388,7 +388,11 @@ static void setTexParameters(
         (settings.interpolateMode != Texture::NO_INTERPOLATION) &&
         (settings.interpolateMode != Texture::NEAREST_NO_MIPMAP);
 
-    if (hasMipMaps && GLCaps::supports("GL_EXT_texture_lod")) {
+    if (hasMipMaps &&
+        (GLCaps::supports("GL_EXT_texture_lod") || 
+         GLCaps::supports("GL_SGIS_texture_lod"))) {
+
+        // I can find no documentation for GL_EXT_texture_lod even though many cards claim to support it - Morgan 6/30/06
         glTexParameteri(target, GL_TEXTURE_MAX_LOD_SGIS, settings.maxMipMap);
         glTexParameteri(target, GL_TEXTURE_MIN_LOD_SGIS, settings.minMipMap);
     }
