@@ -30,8 +30,11 @@
    <P>
    Changes in 6.10:
     <UL>
+     <LI> G3D::RenderDevice::swapBuffers
 	 <LI> G3D::AnyVal
      <LI> G3D::ThirdPersonManipulator
+     <LI> Fix: [ 1511729 ] NVIDIA rectangle generates errors in mipmap code
+     <LI> Fix: [ 1507296 ] RenderDevice must swapBuffer on resize
     </UL>
 
    <P>

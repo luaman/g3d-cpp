@@ -12,7 +12,6 @@
  */
 
 #include <G3DAll.h>
-//#include "controller.h"
 
 #if G3D_VER < 60900
     #error Requires G3D 6.09

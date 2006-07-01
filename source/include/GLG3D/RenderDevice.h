@@ -129,11 +129,7 @@ class VAR;
         }
     }
   </pre>
-
-  Only flip the buffers once; that is, call renderDevice->swapBuffers
-  once per frame (not once per eye).  If you use G3D::GApp, it takes
-  care of this for you.
-
+  
   <B>Multiple displays</B>
   If you are using multiple synchronized displays (e.g. the CAVE),
   see:
@@ -559,6 +555,10 @@ public:
     inline bool swapBuffersAutomatically() const {
         return _swapBuffersAutomatically;
     }
+
+    /** Manually swap the front and back buffers.  Using swapBuffersAutomatically() is recommended
+        instead of manually swapping because it has higher performance.*/
+    void swapBuffers();
 
     /** 
         By default, GWindow::swapGLBuffers is invoked automatically
@@ -1600,7 +1600,12 @@ public:
 
     /**
      Notify RenderDevice that the window size has changed.  
-     Called in response to a user resize event.  An example
+     You must call this in response to a user resize event if you do not use G3D::GApp.  
+     
+     Forces a swapBuffers() call, as required by most 
+     OpenGL implementations.
+          
+     An example
      using SDL:
      <PRE>
         SDL_Event event;
