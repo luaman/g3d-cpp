@@ -113,9 +113,6 @@ public:
      */
     inline CoordinateFrame inverse() const {
         CoordinateFrame out;
-        // Use left multiply to avoid data dependence with the
-        // transpose operation.
-//        out.translation = -translation * out.rotation;
         out.rotation = rotation.transpose();
         out.translation = -out.rotation * translation;
         return out;
@@ -204,11 +201,13 @@ public:
      Transforms the vector into object space (no translation).
      */
     inline Vector3 vectorToObjectSpace(const Vector3 &v) const {
-        return rotation.transpose() * v;
+        // Multiply on the left (same as rotation.transpose() * v)
+        return v * rotation;
     }
 
     inline Vector3 normalToObjectSpace(const Vector3 &v) const {
-        return rotation.transpose() * v;
+        // Multiply on the left (same as rotation.transpose() * v)
+        return v * rotation;
     }
 
     void pointToWorldSpace(const Array<Vector3>& v, Array<Vector3>& vout) const;

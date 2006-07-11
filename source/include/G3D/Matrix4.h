@@ -103,12 +103,19 @@ public:
 
     /**
      Constructs an orthogonal projection matrix from the given parameters.
+     Near and far are the <b>NEGATIVE</b> of the near and far plane Z values
+     (to follow OpenGL conventions).
      */
     static Matrix4 orthogonalProjection(
         float            left,
         float            right,
         float            bottom,
         float            top,
+        float            nearval,
+        float            farval);
+
+    static Matrix4 orthogonalProjection(
+        const class Rect2D& rect,
         float            nearval,
         float            farval);
 

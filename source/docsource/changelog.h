@@ -30,6 +30,8 @@
    <P>
    Changes in 6.10:
     <UL>
+     <LI> Optimized G3D::CoordinateFrame::pointToObjectSpace to be fully inlined via left-multiplication
+     <LI> G3D::Matrix4::orthogonalProjection from a G3D::Rect2D
      <LI> G3D::RenderDevice::swapBuffers
 	 <LI> G3D::AnyVal
      <LI> G3D::ThirdPersonManipulator

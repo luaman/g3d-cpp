@@ -293,6 +293,7 @@ protected:
 
 
 //----------------------------------------------------------------------------
+/**  <code>v * M == M.transpose() * v</code> */
 inline Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix) {
     Vector3 kProd;
 
