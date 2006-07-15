@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = G3D
 PROJECT_NUMBER         = "version 6.10 2006-06-01"
-OUTPUT_DIRECTORY       = ../temp
+OUTPUT_DIRECTORY       = ../temp$(OUTPUT_DEST)
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = NO
@@ -63,7 +63,7 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = include/ docsource/
-FILE_PATTERNS          = 
+FILE_PATTERNS          = *.h *.dox
 RECURSIVE              = YES
 EXCLUDE                = graveyard \
                          IJG \
@@ -105,8 +105,8 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = html/header.html
-HTML_FOOTER            = html/footer.html
+HTML_HEADER            = $(HEADER_FILE)
+HTML_FOOTER            = $(FOOTER_FILE)
 HTML_STYLESHEET        = html/stylesheet.css
 HTML_ALIGN_MEMBERS     = YES
 GENERATE_HTMLHELP      = NO

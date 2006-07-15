@@ -311,7 +311,8 @@ def test(args):
     
 def doc(args):
     os.chdir("source")
-    run(doxygen, [])
+    env = dict ([('HEADER_FILE', 'html/header.html'), ('FOOTER_FILE', 'html/footer.html')])
+    run (doxygen, ['Doxyfile'], env)
     os.chdir("..")
     # Hand-written docs
     copyIfNewer('source/html', installDir(args) + '/html')
@@ -330,14 +331,14 @@ def doc(args):
     
 def online_doc(args):
     os.chdir("source")
-    run(doxygen, ['OnlineDoxyfile'])
+    env = dict ([('HEADER_FILE', 'html/online_header.html'), ('FOOTER_FILE', 'html/online_footer.html')])
+    env["OUTPUT_DEST"] = "/online"
+    run (doxygen, ['Doxyfile'], env)
     os.chdir("..")
     # Hand-written docs
-    copyIfNewer('source/html', installDir(args) + '/html')
+    copyIfNewer('source/html', installDir(args) + '/online_docs')
     # Generated docs
-    copyIfNewer('temp/html', installDir(args) + '/html')
-    # Contrib
-    copyIfNewer('source/contrib', installDir(args) + '/contrib')
+    copyIfNewer('temp/online/html', installDir(args) + '/online_docs')
     setPermissions(args)
     
 

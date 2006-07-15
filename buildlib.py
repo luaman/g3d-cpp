@@ -375,7 +375,7 @@ args must be a list.
 Switches the slashes from unix to dos style in program.
 Blocks until shell returns, then returns the exit code of the program.
 """
-def run(program, args = []):
+def run(program, args = [], env = {}):
     program = removeQuotes(to_local_path(program))
 
     # Windows doesn't support spawnvp, so we have to locate the binary
@@ -392,9 +392,9 @@ def run(program, args = []):
 
     if (os.name == 'nt'):
         # Windows doesn't support spawnvp
-        exitcode = os.spawnv(os.P_WAIT, program, args)
+        exitcode = os.spawnve(os.P_WAIT, program, args, env)
     else:
-        exitcode = os.spawnvp(os.P_WAIT, program, args)
+        exitcode = os.spawnvp(os.P_WAIT, program, args, env)
 
     # Since we mutated the list, remove the element
     # that was inserted.
