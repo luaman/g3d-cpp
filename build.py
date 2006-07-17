@@ -31,7 +31,8 @@ if (os.name == 'nt'):
     # VC 6.0; use 'win32-vc7' for .NET
     platform = 'win32'
 else:
-    platform = {'Linux' : 'linux', \
+    platform = {'FreeBSD' : 'linux', \
+                'Linux' : 'linux', \
                 'Darwin' : 'osx'}[os.uname()[0]]
 
 ###############################################################################
