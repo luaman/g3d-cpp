@@ -88,92 +88,124 @@ SOURCE=.\OnlineDoxyfile
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=".\docsource\guide-app.h"
+SOURCE=.\docsource\changelog.dox
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-compiling.h"
+SOURCE=.\docsource\contributors.dox
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-concepts.h"
+SOURCE=.\docsource\error.dox
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-debug.h"
+SOURCE=.\docsource\faq.dox
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-effects.h"
+SOURCE=.\docsource\frequent.dox
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-files.h"
+SOURCE=".\docsource\guide-app.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-install.h"
+SOURCE=".\docsource\guide-brown.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-intro.h"
+SOURCE=".\docsource\guide-collision.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-meshes.h"
+SOURCE=".\docsource\guide-compiling.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-physics.h"
+SOURCE=".\docsource\guide-concepts.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-shaders.h"
+SOURCE=".\docsource\guide-debug.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-tutorial.h"
+SOURCE=".\docsource\guide-effects.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-ui.h"
+SOURCE=".\docsource\guide-fbo.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-var.h"
+SOURCE=".\docsource\guide-files.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-video.h"
+SOURCE=".\docsource\guide-install.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=".\docsource\guide-welcome.h"
+SOURCE=".\docsource\guide-intro.dox"
 # End Source File
 # Begin Source File
 
-SOURCE=.\docsource\license.h
+SOURCE=".\docsource\guide-macosx.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-meshes.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-network.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-opengl.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-physics.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-shaders.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-tutorial.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-ui.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-var.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-video.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\guide-welcome.dox"
+# End Source File
+# Begin Source File
+
+SOURCE=.\docsource\license.dox
+# End Source File
+# Begin Source File
+
+SOURCE=".\docsource\topic-index.dox"
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=.\docsource\changelog.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\docsource\contributors.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\docsource\error.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\html\footer.html
-# End Source File
-# Begin Source File
-
-SOURCE=.\docsource\frequent.h
 # End Source File
 # Begin Source File
 
@@ -186,10 +218,6 @@ SOURCE=.\html\header.html
 # Begin Source File
 
 SOURCE=..\readme.html
-# End Source File
-# Begin Source File
-
-SOURCE=".\docsource\topic-index.h"
 # End Source File
 # End Target
 # End Project
