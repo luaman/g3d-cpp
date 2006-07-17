@@ -132,7 +132,7 @@ public:
             if (e < 0) {
                 e = ~e;
             }
-            return contains(edgeIndex, 2, e) || contains(edgeIndex, 2, ~e);
+            return contains(edgeIndex, 3, e) || contains(edgeIndex, 3, ~e);
         }
 
         /** Contains the forward edge e if e >= 0 and the backward edge 
@@ -152,7 +152,7 @@ public:
         int                     vertexIndex[2];
         
         inline bool containsVertex(int v) const {
-            return contains(vertexIndex, 3, v);
+            return contains(vertexIndex, 2, v);
         }
 
         /**
