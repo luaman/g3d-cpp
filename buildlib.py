@@ -402,41 +402,6 @@ def run(program, args = [], env = {}):
 
     return exitcode
 
-###############################################################################
-
-"""Run a program with command line arguments.
-
-args must be a list.
-Switches the slashes from unix to dos style in program.
-Blocks until shell returns, then returns the exit code of the program.
-"""
-def run(program, args = []):
-    program = removeQuotes(to_local_path(program))
-
-    # Windows doesn't support spawnvp, so we have to locate the binary
-    if (os.name == 'nt'):
-        program = findBinary(program)
-
-    # spawn requires specification of argv[0]
-    # Because the program name may contain spaces, we
-    # add quotes around it.
-    args.insert(0, '"' + program + '"')
-    print string.join(args) + '\n'
-
-    print '\n'
-
-    if (os.name == 'nt'):
-        # Windows doesn't support spawnvp
-        exitcode = os.spawnv(os.P_WAIT, program, args)
-    else:
-        exitcode = os.spawnvp(os.P_WAIT, program, args)
-
-    # Since we mutated the list, remove the element
-    # that was inserted.
-    args.pop(0)
-
-    return exitcode
-
 
 ###############################################################################
 def isDigit(c):
