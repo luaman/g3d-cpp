@@ -100,8 +100,9 @@ void LineSegment::deserialize(class BinaryInput& b) {
 	direction.deserialize(b);
 }
 
+
 Vector3 LineSegment::randomPoint() const {
-    return _point + random(0, 1) * direction;
+    return _point + uniformRandom(0, 1) * direction;
 }
 
 

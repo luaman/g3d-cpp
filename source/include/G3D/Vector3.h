@@ -345,22 +345,6 @@ public:
     /** Largest representable vector */
     inline static const Vector3& maxFinite(){ static Vector3 v(FLT_MAX, FLT_MAX, FLT_MAX); return v; }
 
-    // Deprecated. See Matrix3::identity() for details.
-    /** @deprecated Use Vector3::zero() */
-    static const Vector3 ZERO;
-    /** @deprecated Use Vector3::zero() */
-    static const Vector3 ZERO3;
-    /** @deprecated Use Vector3::unitX() */
-    static const Vector3 UNIT_X;
-    /** @deprecated Use Vector3::unitY() */
-    static const Vector3 UNIT_Y;
-    /** @deprecated Use Vector3::unitZ() */
-    static const Vector3 UNIT_Z;
-    /** @deprecated Use Vector3::inf() */
-    static const Vector3 INF3;
-    /** @deprecated Use Vector3::nan() */
-    static const Vector3 NAN3;
-
     // 2-char swizzles
 
     Vector2 xx() const;

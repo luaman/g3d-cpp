@@ -222,7 +222,7 @@ private:
             b.writeUInt8(0xFF);
         }
     
-        uint32 len = b.getLength() - 8;
+        uint32 len = b.size() - 8;
     
         // We send the length first to tell recv how much data to read.
         // Here we abuse BinaryOutput a bit and write directly into

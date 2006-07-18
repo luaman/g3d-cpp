@@ -132,12 +132,6 @@ public:
     static const Color4& clear();
 
     static const Color4& inf();
-
-    // Deprecated. See Matrix3::identity() for details.
-    /** @deprecated Use Color4::zero() */
-    static const Color4 ZERO;
-    /** @deprecated Use Color4::clear() */
-    static const Color4 CLEAR;
 };
 
 /**

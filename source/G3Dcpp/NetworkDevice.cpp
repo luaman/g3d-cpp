@@ -697,7 +697,7 @@ uint32 ReliableConduit::waitingMessageType() {
 
 
 void ReliableConduit::sendBuffer(const BinaryOutput& b) {
-    int ret = ::send(sock, (const char*)b.getCArray(), b.getLength(), 0);
+    int ret = ::send(sock, (const char*)b.getCArray(), b.size(), 0);
     
     if (ret == SOCKET_ERROR) {
         if (nd->debugLog) {
@@ -709,11 +709,11 @@ void ReliableConduit::sendBuffer(const BinaryOutput& b) {
     }
 
     ++mSent;
-    bSent += b.getLength();
+    bSent += b.size();
 
     // Verify the packet was actually sent
     // Conversion to unsigned is safe because -1 is caught earlier
-    debugAssert(ret == b.getLength());
+    debugAssert(ret == b.size());
 }
 
 
@@ -963,7 +963,7 @@ void LightweightConduit::serializeMessage(const NetMessage* m,
 
 
 void LightweightConduit::sendBuffer(const NetAddress& a, BinaryOutput& b) {
-    if (sendto(sock, (const char*)b.getCArray(), b.getLength(), 0,
+    if (sendto(sock, (const char*)b.getCArray(), b.size(), 0,
        (struct sockaddr *) &(a.addr), sizeof(a.addr)) == SOCKET_ERROR) {
         if (nd->debugLog) {
             nd->debugLog->printf("Error occured while sending packet "
@@ -973,7 +973,7 @@ void LightweightConduit::sendBuffer(const NetAddress& a, BinaryOutput& b) {
         nd->closesocket(sock);
     } else {
         ++mSent;
-        bSent += b.getLength();
+        bSent += b.size();
     }
 }
 

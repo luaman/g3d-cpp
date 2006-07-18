@@ -176,30 +176,6 @@ public:
     static const Color3& black();
     static const Color3& gray();
     static const Color3& white();
-    
-    // Deprecated. See Matrix3::identity() for details.
-    /** @deprecated Use Color3::red() */
-    static const Color3 RED;      
-    /** @deprecated Use Color3::green() */
-    static const Color3 GREEN;
-    /** @deprecated Use Color3::blue() */
-    static const Color3 BLUE;
-    /** @deprecated Use Color3::purple() */
-    static const Color3 PURPLE;
-    /** @deprecated Use Color3::cyan() */
-    static const Color3 CYAN;
-    /** @deprecated Use Color3::yellow() */
-    static const Color3 YELLOW;
-    /** @deprecated Use Color3::brown() */
-    static const Color3 BROWN;
-    /** @deprecated Use Color3::orange() */
-    static const Color3 ORANGE;
-    /** @deprecated Use Color3::black() */
-    static const Color3 BLACK;
-    /** @deprecated Use Color3::gray() */
-    static const Color3 GRAY;
-    /** @deprecated Use Color3::white() */
-    static const Color3 WHITE;
 
 };
 
@@ -208,7 +184,6 @@ inline G3D::Color3 operator* (float s, const G3D::Color3& c) {
 }
 
 } // namespace
-
 
 
 

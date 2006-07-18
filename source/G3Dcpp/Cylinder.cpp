@@ -118,14 +118,14 @@ void Cylinder::getRandomSurfacePoint(Vector3& p, Vector3& N) const {
     float capRelArea  = square(r) / 2.0f;
     float sideRelArea = r * h;
 
-    float r1 = random(0, capRelArea * 2 + sideRelArea);
+    float r1 = uniformRandom(0, capRelArea * 2 + sideRelArea);
 
     if (r1 < capRelArea * 2) {
 
         // Select a point uniformly at random on a disk
         // @cite http://mathworld.wolfram.com/DiskPointPicking.html
-        float a = random(0, G3D_TWO_PI);
-        float r2 = sqrt(random(0, 1)) * r;
+        float a = uniformRandom(0, (float)G3D_TWO_PI);
+        float r2 = sqrt(uniformRandom(0, 1)) * r;
         p.x = cos(a) * r2;
         p.z = sin(a) * r2;
 
@@ -142,13 +142,13 @@ void Cylinder::getRandomSurfacePoint(Vector3& p, Vector3& N) const {
         }
     } else {
         // Side
-        float a = random(0, G3D_TWO_PI);
+        float a = uniformRandom(0, (float)G3D_TWO_PI);
         N.x = cos(a);
         N.y = 0;
         N.z = sin(a);
         p.x = N.x * r;
         p.z = N.y * r;
-        p.y = random(-h / 2.0f, h / 2.0f);
+        p.y = uniformRandom(-h / 2.0f, h / 2.0f);
     }
 
     // Transform to world space
@@ -168,11 +168,11 @@ Vector3 Cylinder::randomInteriorPoint() const {
 
     // Select a point uniformly at random on a disk
     // @cite http://mathworld.wolfram.com/DiskPointPicking.html
-    float a = random(0, G3D_TWO_PI);
-    float r2 = sqrt(random(0, 1)) * r;
+    float a = uniformRandom(0, (float)G3D_TWO_PI);
+    float r2 = sqrt(uniformRandom(0, 1)) * r;
 
     Vector3 p(  cos(a) * r2,
-                random(-h / 2.0f, h / 2.0f),
+                uniformRandom(-h / 2.0f, h / 2.0f),
                 sin(a) * r2);
 
     // Transform to world space

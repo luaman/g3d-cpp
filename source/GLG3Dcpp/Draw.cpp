@@ -347,9 +347,9 @@ void Draw::capsule(
     const Color4&        solidColor,
     const Color4&        wireColor) {
 
-    CoordinateFrame cframe(capsule.getPoint1());
+    CoordinateFrame cframe(capsule.point(0));
 
-    Vector3 Y = (capsule.getPoint2() - capsule.getPoint1()).direction();
+    Vector3 Y = (capsule.point(1) - capsule.point(1)).direction();
     Vector3 X = (abs(Y.dot(Vector3::unitX())) > 0.9) ? Vector3::unitY() : Vector3::unitX();
     Vector3 Z = X.cross(Y).direction();
     X = Y.cross(Z);        
@@ -357,8 +357,8 @@ void Draw::capsule(
     cframe.rotation.setColumn(1, Y);
     cframe.rotation.setColumn(2, Z);
 
-    float radius = capsule.getRadius();
-    float height = (capsule.getPoint2() - capsule.getPoint1()).magnitude();
+    float radius = capsule.radius();
+    float height = (capsule.point(1) - capsule.point(0)).magnitude();
 
     // Always render upright in object space
     Sphere sphere1(Vector3::zero(), radius);
@@ -740,7 +740,7 @@ void Draw::box(
     const Color4&       solidColor,
     const Color4&       wireColor) {
 
-    box(_box.toBox(), renderDevice, solidColor, wireColor);
+    box(Box(_box), renderDevice, solidColor, wireColor);
 }
 
 
@@ -791,7 +791,7 @@ void Draw::box(
             renderDevice->setColor(wireColor);
             renderDevice->setLineWidth(2);
 
-            Vector3 c = box.getCenter();
+            Vector3 c = box.center();
             Vector3 v;
 
             // Wire frame
@@ -801,11 +801,11 @@ void Draw::box(
                 // Front and back
                 for (int i = 0; i < 8; i += 4) {
                     for (int j = 0; j < 4; ++j) {
-                        v = box.getCorner(i + j);
+                        v = box.corner(i + j);
                         renderDevice->setNormal((v - c).direction());
                         renderDevice->sendVertex(v);
 
-                        v = box.getCorner(i + ((j + 1) % 4));
+                        v = box.corner(i + ((j + 1) % 4));
                         renderDevice->setNormal((v - c).direction());
                         renderDevice->sendVertex(v);
                     }
@@ -813,11 +813,11 @@ void Draw::box(
 
                 // Sides
                 for (int i = 0; i < 4; ++i) {
-                    v = box.getCorner(i);
+                    v = box.corner(i);
                     renderDevice->setNormal((v - c).direction());
                     renderDevice->sendVertex(v);
 
-                    v = box.getCorner(i + 4);
+                    v = box.corner(i + 4);
                     renderDevice->setNormal((v - c).direction());
                     renderDevice->sendVertex(v);
                 }

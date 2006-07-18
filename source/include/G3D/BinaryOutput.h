@@ -183,14 +183,6 @@ public:
         return (int)bufferLen + (int)alreadyWritten;
     }
 
-    /**
-     Returns the length of the file in bytes.
-     @deprecated use BinaryOutput.size
-     */
-    inline int getLength() const {
-        return length();
-    }
-
     inline int size() const {
         return length();
     }
@@ -225,11 +217,6 @@ public:
      */
     inline int position() const {
         return (int)pos + (int)alreadyWritten;
-    }
-
-    /** @deprecated */
-    inline int getPosition() const {
-        return position();
     }
 
 

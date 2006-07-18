@@ -330,7 +330,7 @@ Texture::DDSTexture::DDSTexture(const std::string& filename) :
             throw G3D::format("Loading \"%s\" failed. Not a DDS file.\n", filename.c_str());
         }
 
-        ddsInput.readBytes(sizeof(ddsSurfaceDesc), &ddsSurfaceDesc);
+        ddsInput.readBytes(&ddsSurfaceDesc, sizeof(ddsSurfaceDesc));
 
         // Check the texture size for powers of 2.
         debugAssert( isPow2(ddsSurfaceDesc.dwWidth) );

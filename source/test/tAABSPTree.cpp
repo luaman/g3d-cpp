@@ -59,7 +59,7 @@ void perfAABSPTree() {
     const int NUM_POINTS = 100000;
     
     for (int i = 0; i < NUM_POINTS; ++i) {
-        Vector3 pt = Vector3(random(-10, 10), random(-10, 10), random(-10, 10));
+        Vector3 pt = Vector3(uniformRandom(-10, 10), uniformRandom(-10, 10), uniformRandom(-10, 10));
         AABox box(pt, pt + Vector3(.1f, .1f, .1f));
         array.append(box);
         tree.insert(box);

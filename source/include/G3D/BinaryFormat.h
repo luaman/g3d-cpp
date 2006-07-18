@@ -56,16 +56,6 @@ enum BinaryFormat {
     LAST_BINFMT
 };
 
-/**
- The order in which the bytes of an integer are stored on a machine.
- Intel/AMD chips tend to be G3D_LITTLE_ENDIAN, Mac PPC's and Suns are
- G3D_BIG_ENDIAN.  However, this is primarily used to specify the byte
- order of file formats, which are fixed.
-  
- @deprecated Use BinaryIO::BIG_ENDIAN and BinaryIO::LITTLE_ENDIAN
- */
-enum G3DEndian {G3D_BIG_ENDIAN=0, G3D_LITTLE_ENDIAN=1};
-
 }
 
 /** A macro that maps G3D types to format constants.

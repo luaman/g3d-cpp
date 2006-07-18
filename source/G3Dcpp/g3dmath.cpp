@@ -67,8 +67,4 @@ int iRandom(int low, int high) {
 }
 
 
-double G3D_DEPRECATED random(double low, double high) {
-	return low + (high - low) * rand() / (double)RAND_MAX;
-}
-
 }

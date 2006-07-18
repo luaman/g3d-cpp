@@ -25,7 +25,7 @@ static void png_read_data(
     debugAssert( length >= 0 );
     debugAssert( data != NULL );
 
-    ((BinaryInput*)png_ptr->io_ptr)->readBytes(length, data);
+    ((BinaryInput*)png_ptr->io_ptr)->readBytes(data, length);
 }
 
 //libpng required function signature

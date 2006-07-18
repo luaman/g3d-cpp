@@ -330,21 +330,21 @@ BinaryInput::BinaryInput(
 }
 
 
+void BinaryInput::readBytes(void* bytes, int n) {
+    prepareToRead(n);
+    debugAssert(isValidPointer(bytes));
+
+    memcpy(bytes, buffer + pos, n);
+    pos += n;
+}
+
+
 BinaryInput::~BinaryInput() {
 
     if (freeBuffer) {
         System::free(buffer);
     }
     buffer = NULL;
-}
-
-
-void BinaryInput::readBytes(int n, void* bytes) {
-    prepareToRead(n);
-    debugAssert(isValidPointer(bytes));
-
-    memcpy(bytes, buffer + pos, n);
-    pos += n;
 }
 
 

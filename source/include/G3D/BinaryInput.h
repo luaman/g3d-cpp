@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, graphics3d.com
  
  @created 2001-08-09
- @edited  2005-06-07
+ @edited  2006-07-19
 
  Copyright 2000-2005, Morgan McGuire.
  All rights reserved.
@@ -19,7 +19,7 @@
 #   pragma warning( disable : 4127 )
 
 // signed/unsigned warnings (TODO: revisit)
-#   pragma warning (disable:4267)
+//#   pragma warning (disable:4267)
 #endif
 
 #include <assert.h>
@@ -337,16 +337,8 @@ public:
 
     /**
      Returns the data in bytes.
-     @deprecated Use readBytes(void*, int).
      */
-    void readBytes(int n, void* bytes);
-
-    /**
-     Returns the data in bytes.
-     */
-    inline void readBytes(void* bytes, int n) {
-        readBytes(n, bytes);
-    }
+    void readBytes(void* bytes, int n);
 
     /**
      Reads an n character string.  The string is not

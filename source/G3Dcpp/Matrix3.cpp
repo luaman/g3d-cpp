@@ -32,9 +32,6 @@ const Matrix3& Matrix3::identity() {
     return m;
 }
 
-// Deprecated.
-const Matrix3 Matrix3::ZERO(0, 0, 0, 0, 0, 0, 0, 0, 0);
-const Matrix3 Matrix3::IDENTITY(1, 0, 0, 0, 1, 0, 0, 0, 1);
 
 const float Matrix3::ms_fSvdEpsilon = 1e-04f;
 const int Matrix3::ms_iSvdMaxIterations = 32;

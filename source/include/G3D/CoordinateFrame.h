@@ -60,12 +60,6 @@ public:
      */
     Vector3							translation;
 
-    /**
-     The direction an object "looks" relative to its own axes.
-     @deprecated This is always -1 and will be fixed at that value in future releases.
-     */
-    static const float				zLookDirection;
-
     inline bool operator==(const CoordinateFrame& other) const {
         return (translation == other.translation) && (rotation == other.rotation);
     }
@@ -268,12 +262,12 @@ public:
 
     /** @deprecated See lookVector */
 	inline Vector3 getLookVector() const {
-		return rotation.getColumn(2) * zLookDirection;
+		return -rotation.getColumn(2);
 	}
 
     /** The direction this camera is looking (its negative z axis)*/
 	inline Vector3 lookVector() const {
-		return rotation.getColumn(2) * zLookDirection;
+		return -rotation.getColumn(2);
 	}
 
     /** Returns the ray starting at the camera origin travelling in direction CoordinateFrame::lookVector. */

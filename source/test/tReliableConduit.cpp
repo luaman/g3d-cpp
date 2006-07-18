@@ -8,7 +8,7 @@ public:
 	std::string		s;
 	float32			f;
 
-	Message() : i32(iRandom(-10000, 10000)), i64(iRandom(-10000000, 1000000)), f(random(-10000, 10000)) {
+	Message() : i32(iRandom(-10000, 10000)), i64(iRandom(-10000000, 1000000)), f(uniformRandom(-10000, 10000)) {
 		for (int x = 0; x < 20; ++x) {
 			s = s + (char)('A' + iRandom(0, 26));
 		}

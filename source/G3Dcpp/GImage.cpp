@@ -232,7 +232,7 @@ void GImage::decodePCX(
     uint16 vertDPI      = input.readUInt16();
 
     Color3uint8 colorMap[16];
-    input.readBytes(48, colorMap);
+    input.readBytes(colorMap, 48);
 
     input.skip(1);
 
@@ -308,7 +308,7 @@ void GImage::decodePCX(
             Log::common()->printf("Warning: Corrupted PCX file (palette marker byte was missing) \"%s\"\nLoading anyway\n\n", input.getFilename().c_str());
         }
 
-        input.readBytes(sizeof(palette), palette);
+        input.readBytes(palette, sizeof(palette));
         input.setPosition(imageBeginning);
         
         Color3uint8* pixel = pixel3();

@@ -19,6 +19,7 @@
 #include "G3D/Vector3.h"
 #include "G3D/debug.h"
 #include "G3D/Array.h"
+#include "G3D/Plane.h"
 
 namespace G3D {
 
@@ -110,28 +111,11 @@ public:
         return hi[a] - lo[a];
     }
 
+
     inline Vector3 extent() const {
         return hi - lo;
     }
 
-    /**
-	 @deprecated Use culledBy(Array<Plane>&)
-     */
-    bool culledBy(
-        const class Plane*  plane,
-        int                 numPlanes,
-		int32&				cullingPlaneIndex,
-		const uint32  		testMask,
-        uint32&             childMask) const;
-
-    /**
-	 @deprecated Use culledBy(Array<Plane>&)
-     */
-    bool culledBy(
-        const class Plane*  plane,
-        int                 numPlanes,
-		int32&				cullingPlaneIndex = dummy,
-		const uint32  		testMask = 0xFFFFFF) const;
 
     /**
      Splits the box into two AABoxes along the specified axis.  low contains
@@ -192,14 +176,9 @@ public:
             (point.z <= hi.z);
     }
 
-    /** @deprecated */
-    inline float surfaceArea() const {
+    inline float area() const {
         Vector3 diag = hi - lo;
         return 2.0f * (diag.x * diag.y + diag.y * diag.z + diag.x * diag.z);
-    }
-
-    inline float area() const {
-        return surfaceArea();
     }
 
     inline float volume() const {
@@ -210,9 +189,6 @@ public:
     Vector3 randomInteriorPoint() const;
 
     Vector3 randomSurfacePoint() const;
-
-    /** @deprecated use Box constructor */
-    class Box toBox() const;
 
     /** Returns true if there is any overlap */
     bool intersects(const AABox& other) const;

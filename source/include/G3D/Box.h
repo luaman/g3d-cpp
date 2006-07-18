@@ -109,18 +109,6 @@ public:
         return _center;
     }
 
-    inline Vector3 getCenter() const {
-        return center();
-    }
-
-    /**
-     Returns a corner (0 <= i < 8)
-     @deprecated
-     */
-    inline Vector3 getCorner(int i) const {
-        debugAssert(i < 8);
-        return _corner[i];
-    }
 
     inline Vector3 corner(int i) const {
         debugAssert(i < 8);
@@ -159,24 +147,6 @@ public:
         Vector3&            v2,
         Vector3&            v3) const;
 
-/**
-	 @deprecated Use culledBy(Array<Plane>&)
-     */
-    bool culledBy(
-        const class Plane*  plane,
-        int                 numPlanes,
-		int32&				cullingPlaneIndex,
-		const uint32  		testMask,
-        uint32&             childMask) const;
-
-    /**
-	 @deprecated Use culledBy(Array<Plane>&)
-     */
-    bool culledBy(
-        const class Plane*  plane,
-        int                 numPlanes,
-		int32&				cullingPlaneIndex = dummy,
-		const uint32  		testMask = -1) const;
 
 	/**
       See AABox::culledBy
@@ -198,26 +168,11 @@ public:
     bool contains(
         const Vector3&      point) const;
 
-    /** @deprecated */
-    float surfaceArea() const;
-
-    inline float area() const {
-        return surfaceArea();
-    }
+    float area() const;
 
     float volume() const;
 
     void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const;
-
-    /**
-      @deprecated
-     Uniformly distributed on the surface.
-     */
-    inline Vector3 randomSurfacePoint() const {
-        Vector3 V;
-        getRandomSurfacePoint(V);
-        return V;
-    }
 
     /**
      Uniformly distributed on the interior (includes surface)

@@ -23,7 +23,7 @@ using namespace G3D;
 #endif
 #include <string>
 
-#define RUN_SLOW_TESTS
+//#define RUN_SLOW_TESTS
 
 // Forward declarations
 void perfArray();
@@ -119,10 +119,10 @@ void testBox() {
 
     Vector3 v0, v1, v2, v3, n1, n2;
 
-    v0 = box.getCorner(0);
-    v1 = box.getCorner(1);
-    v2 = box.getCorner(2);
-    v3 = box.getCorner(3);
+    v0 = box.corner(0);
+    v1 = box.corner(1);
+    v2 = box.corner(2);
+    v3 = box.corner(3);
 
     debugAssert(v0 == Vector3(0,0,1));
     debugAssert(v1 == Vector3(1,0,1));
@@ -153,13 +153,13 @@ void testAABoxCollision() {
 
     for (int i = 0; i < 1000; ++i) {
 
-        Vector3 pt1 = Vector3::random() * random(0, 10);
+        Vector3 pt1 = Vector3::random() * uniformRandom(0, 10);
         Vector3 vel1 = Vector3::random();
 
         Vector3 low = Vector3::random() * 5;
-        Vector3 extent(random(0,4), random(0,4), random(0,4));
+        Vector3 extent(uniformRandom(0,4), uniformRandom(0,4), uniformRandom(0,4));
         AABox aabox(low, low + extent);
-        Box   box = aabox.toBox();
+        Box   box = aabox;
 
         double boxTime = CollisionDetection::collisionTimeForMovingPointFixedBox(
             pt1, vel1, box, boxlocation, normal);

@@ -29,10 +29,9 @@ private:
 	Vector3			p1;
 	Vector3			p2;
 
+	float			_radius;
 public:
 
-    /** @deprecated To be replaced with a (float) radius accessor of the same name.*/
-	double			radius;
 
     /** Uninitialized */
     Capsule();
@@ -42,11 +41,17 @@ public:
 	void deserialize(class BinaryInput& b);
 	
 	/** The line down the center of the capsule */
-	Line getAxis() const;
+	Line axis() const;
 
-	Vector3 getPoint1() const;
+	inline float radius() const {
+		return _radius;
+	}
 
-	Vector3 getPoint2() const;
+	/** Argument may be 0 or 1 */
+	inline Vector3 point(int i) const {
+		debugAssert(i == 0 || i == 1);
+		return (i == 0) ? p1 : p2;
+	}
 
     /** Distance between the sphere centers.  The total extent of the cylinder is 
         2r + h. */
@@ -66,22 +71,9 @@ public:
      */
     bool contains(const Vector3& p) const;
 
-    /** @deprecated */
-	float getRadius() const;
+    float volume() const;
 
-    /** @deprecated Use volume() */
-	float getVolume() const;
-
-    inline float volume() const {
-        return getVolume();
-    }
-
-    /** @deprecated */
-	float getSurfaceArea() const;
-
-    inline float area() const {
-        return getSurfaceArea();
-    }
+    float area() const;
 
     /** Get axis aligned bounding box */
     void getBounds(AABox& out) const;

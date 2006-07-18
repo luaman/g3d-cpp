@@ -20,9 +20,9 @@ static void testEuler() {
 
     float x2, y2, z2;
 
-    Matrix3 rX = Matrix3::fromAxisAngle(Vector3::UNIT_X, x);
-    Matrix3 rY = Matrix3::fromAxisAngle(Vector3::UNIT_Y, y);
-    Matrix3 rZ = Matrix3::fromAxisAngle(Vector3::UNIT_Z, z);
+    Matrix3 rX = Matrix3::fromAxisAngle(Vector3::unitX(), x);
+    Matrix3 rY = Matrix3::fromAxisAngle(Vector3::unitY(), y);
+    Matrix3 rZ = Matrix3::fromAxisAngle(Vector3::unitZ(), z);
     Matrix3 rot = rZ * rX * rY;
     rot.toEulerAnglesZXY(x2, y2, z2);
     debugAssert(fuzzyEq(x, x2));
@@ -40,7 +40,7 @@ void testMatrix3() {
         Matrix3 M = Matrix3::identity();
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
-                M[i][j] = random(0, 1);
+                M[i][j] = uniformRandom(0, 1);
             }
         }
 

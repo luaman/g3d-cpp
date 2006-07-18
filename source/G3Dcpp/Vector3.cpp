@@ -28,17 +28,10 @@ namespace G3D {
 
 Vector3 Vector3::dummy;
 
-// Deprecated.
-const Vector3 Vector3::ZERO(0, 0, 0);
-const Vector3 Vector3::ZERO3(0, 0, 0);
-const Vector3 Vector3::UNIT_X(1, 0, 0);
-const Vector3 Vector3::UNIT_Y(0, 1, 0);
-const Vector3 Vector3::UNIT_Z(0, 0, 1);
-const Vector3 Vector3::INF3((float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf());
-const Vector3 Vector3::NAN3((float)G3D::nan(), (float)G3D::nan(), (float)G3D::nan());
 
 Vector3::Vector3(const class Vector2& v, float _z) : x(v.x), y(v.y), z(_z) {
 }
+
 
 Vector3::Axis Vector3::primaryAxis() const {
     
@@ -212,8 +205,8 @@ Vector3 Vector3::reflectAbout(const Vector3& normal) const {
 
 //----------------------------------------------------------------------------
 Vector3 Vector3::cosRandom(const Vector3& normal) {
-    double e1 = G3D::random(0, 1);
-    double e2 = G3D::random(0, 1);
+    double e1 = G3D::uniformRandom(0, 1);
+    double e2 = G3D::uniformRandom(0, 1);
 
     // Angle from normal
     double theta = acos(sqrt(e1));

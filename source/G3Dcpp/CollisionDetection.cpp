@@ -472,9 +472,9 @@ float CollisionDetection::penetrationDepthForFixedBoxFixedBox(
         // find the vertex that is farthest away in the direction
         // face normal direction
         int deepestPointIndex = 0;
-        float deepestPointDot = dot(faceNormal, vertexBox->getCorner(0));
+        float deepestPointDot = dot(faceNormal, vertexBox->corner(0));
         for (int i = 1; i < 8; i++) {
-            float dotProduct = dot(faceNormal, vertexBox->getCorner(i));
+            float dotProduct = dot(faceNormal, vertexBox->corner(i));
             if (dotProduct < deepestPointDot) {
                 deepestPointDot = dotProduct;
                 deepestPointIndex = i;
@@ -483,7 +483,7 @@ float CollisionDetection::penetrationDepthForFixedBoxFixedBox(
         
         // return the point half way between the deepest point and the
         // contacting face
-        contactPoint = vertexBox->getCorner(deepestPointIndex) +
+        contactPoint = vertexBox->corner(deepestPointIndex) +
             (-penetration * 0.5 * faceNormal);
     } else {
         // edge-edge case, find the two ege lines
@@ -1221,7 +1221,7 @@ static int findRayCapsuleIntersectionAux(
     const Capsule&		rkCapsule,
 	double   			afT[2]) {
 
-	Vector3 capsuleDirection = rkCapsule.getPoint2() - rkCapsule.getPoint1();
+	Vector3 capsuleDirection = rkCapsule.point(1) - rkCapsule.point(0);
 
     // set up quadratic Q(t) = a*t^2 + 2*b*t + c
     Vector3 kU, kV, kW = capsuleDirection;
@@ -1233,9 +1233,9 @@ static int findRayCapsuleIntersectionAux(
     float fEpsilon = 1e-6f;
 
     float fInvDLength = 1.0f/fDLength;
-    Vector3 kDiff = rkOrigin - rkCapsule.getPoint1();
+    Vector3 kDiff = rkOrigin - rkCapsule.point(0);
     Vector3 kP(kU.dot(kDiff),kV.dot(kDiff),kW.dot(kDiff));
-    float fRadiusSqr = square(rkCapsule.getRadius());
+    float fRadiusSqr = square(rkCapsule.radius());
 
     float fInv, fA, fB, fC, fDiscr, fRoot, fT, fTmp;
 
@@ -1415,7 +1415,7 @@ static bool findRayCapsuleIntersection(
 }
 
 float CollisionDetection::collisionTimeForMovingPointFixedCapsule(
-	const Vector3&		point,
+	const Vector3&		_point,
 	const Vector3&		velocity,
 	const Capsule&		capsule,
 	Vector3&		    location,
@@ -1430,20 +1430,20 @@ float CollisionDetection::collisionTimeForMovingPointFixedCapsule(
 	Vector3 direction = velocity / timeScale;
 	int numIntersections;
 	Vector3 intersection[2];
-	findRayCapsuleIntersection(Ray::fromOriginAndDirection(point, direction), capsule, numIntersections, intersection);
+	findRayCapsuleIntersection(Ray::fromOriginAndDirection(_point, direction), capsule, numIntersections, intersection);
 
 	if (numIntersections == 2) {
 		// A collision can only occur if there are two intersections.  If there is one
 		// intersection, that one is exiting the capsule.  
 
 		// Find the entering intersection (the first one that occurs).
-		float d0 = (intersection[0] - point).squaredMagnitude();
-		float d1 = (intersection[1] - point).squaredMagnitude();
+		float d0 = (intersection[0] - _point).squaredMagnitude();
+		float d1 = (intersection[1] - _point).squaredMagnitude();
 
         // Compute the surface normal (if we aren't ignoring the result)
         if (&outNormal != &ignore) {
-            Vector3 p2 = LineSegment::fromTwoPoints(capsule.getPoint1(), capsule.getPoint2()).closestPoint(point);
-            outNormal = (point - p2).direction();
+            Vector3 p2 = LineSegment::fromTwoPoints(capsule.point(0), capsule.point(1)).closestPoint(_point);
+            outNormal = (_point - p2).direction();
         }
 
         if (d0 > d1) {
@@ -1625,7 +1625,7 @@ float CollisionDetection::collisionTimeForMovingSphereFixedCapsule(
 
     (void)outNormal;
 
-	Capsule _capsule(capsule.getPoint1(), capsule.getPoint2(), capsule.getRadius() + sphere.radius);
+	Capsule _capsule(capsule.point(0), capsule.point(1), capsule.radius() + sphere.radius);
 
     Vector3 normal;
 	double time = collisionTimeForMovingPointFixedCapsule(sphere.center, velocity, _capsule, location, normal);

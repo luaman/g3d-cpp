@@ -281,7 +281,7 @@ Matrix Matrix::one(int R, int C) {
 Matrix Matrix::random(int R, int C) {
     Impl* A = new Impl(R, C);
     for (int i = R * C - 1; i >= 0; --i) {
-        A->data[i] = G3D::random(0.0, 1.0);
+        A->data[i] = G3D::uniformRandom(0.0, 1.0);
     }
     return Matrix(A);
 }

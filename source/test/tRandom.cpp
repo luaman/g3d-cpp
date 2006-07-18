@@ -24,7 +24,7 @@ void testRandom() {
     (void)difference;
 
     for (int i = 0; i < 100; ++i) {
-        double r = random(0, 1);
+        double r = uniformRandom(0, 1);
         debugAssert(r >= 0.0);
         debugAssert(r <= 1.0);
         (void)r;

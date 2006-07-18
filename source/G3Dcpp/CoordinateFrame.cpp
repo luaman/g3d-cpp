@@ -23,8 +23,6 @@
 
 namespace G3D {
 
-const float CoordinateFrame::zLookDirection = -1;
-
 Ray CoordinateFrame::lookRay() const {
     return Ray::fromOriginAndDirection(translation, lookVector());
 }
@@ -122,6 +120,7 @@ Triangle CoordinateFrame::toWorldSpace(const Triangle& t) const {
         pointToWorldSpace(t.vertex(2)));
 }
 
+
 Cylinder CoordinateFrame::toWorldSpace(const Cylinder& c) const {
     return Cylinder(
         pointToWorldSpace(c.getPoint1()), 
@@ -129,25 +128,28 @@ Cylinder CoordinateFrame::toWorldSpace(const Cylinder& c) const {
         c.radius());
 }
 
+
 Capsule CoordinateFrame::toWorldSpace(const Capsule& c) const {
     return Capsule(
-        pointToWorldSpace(c.getPoint1()), 
-        pointToWorldSpace(c.getPoint2()), 
-        c.getRadius());
+        pointToWorldSpace(c.point(0)), 
+        pointToWorldSpace(c.point(1)), 
+        c.radius());
 }
 
+
 Box CoordinateFrame::toWorldSpace(const AABox& b) const {
-    return toWorldSpace(b.toBox());
+    return toWorldSpace(Box(b));
 }
+
 
 Box CoordinateFrame::toWorldSpace(const Box& b) const {
     Box out(b);
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; ++i) {
         out._corner[i] = pointToWorldSpace(out._corner[i]);
     }
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; ++i) {
         out._axis[i] = vectorToWorldSpace(out._axis[i]);
     }
 
@@ -163,7 +165,7 @@ Box CoordinateFrame::toObjectSpace(const Box &b) const {
 
 
 Box CoordinateFrame::toObjectSpace(const AABox& b) const {
-    return toObjectSpace(b.toBox());
+    return toObjectSpace(Box(b));
 }
 
 

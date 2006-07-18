@@ -44,27 +44,24 @@ const Vector2& Vector2::inf() {
 	return v; 
 }
 
+
 const Vector2& Vector2::nan() { 
 	static Vector2 v((float)G3D::nan(), (float)G3D::nan()); 
 	return v; 
 }
+
 
 const Vector2& Vector2::minFinite() {
 	static Vector2 v(-FLT_MAX, -FLT_MAX); 
 	return v; 
 }
 
+
 const Vector2& Vector2::maxFinite() {
 	static Vector2 v(FLT_MAX, FLT_MAX); 
 	return v; 
 }
 
-
-
-// Deprecated.
-const Vector2 Vector2::ZERO(0, 0);
-const Vector2 Vector2::UNIT_S(1, 0);
-const Vector2 Vector2::UNIT_T(0, 1);
 
 unsigned int Vector2::hashCode() const {
     unsigned int xhash = (*(int*)(void*)(&x));
@@ -73,14 +70,17 @@ unsigned int Vector2::hashCode() const {
     return xhash + (yhash * 37);
 }
 
+
 Vector2::Vector2(BinaryInput& b) {
     deserialize(b);
 }
+
 
 void Vector2::deserialize(BinaryInput& b) {
     x = b.readFloat32();
     y = b.readFloat32();
 }
+
 
 void Vector2::serialize(BinaryOutput& b) const {
     b.writeFloat32(x);

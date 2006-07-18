@@ -23,10 +23,6 @@
 
 namespace G3D {
 
-Box AABox::toBox() const {
-    return Box(lo, hi);
-}
-
 
 void AABox::serialize(class BinaryOutput& b) const {
     b.writeVector3(lo);
@@ -63,10 +59,10 @@ Vector3 AABox::randomSurfacePoint() const {
     float aYZ = extent.y * extent.z;
     float aZX = extent.z * extent.x;
 
-    float r = (float)random(0, aXY + aYZ + aZX);
+    float r = (float)uniformRandom(0.0f, aXY + aYZ + aZX);
 
     // Choose evenly between positive and negative face planes
-    float d = ((float)random(0, 1) < 0.5f) ? 0.0f : 1.0f;
+    float d = ((float)uniformRandom(0, 1) < 0.5f) ? 0.0f : 1.0f;
 
     // The probability of choosing a given face is proportional to
     // its area.
@@ -74,32 +70,32 @@ Vector3 AABox::randomSurfacePoint() const {
         return 
             lo + 
             Vector3(
-                (float)random(0, extent.x),
-                (float)random(0, extent.y),
+                (float)uniformRandom(0.0f, extent.x),
+                (float)uniformRandom(0.0f, extent.y),
                 d * extent.z);
     } else if (r < aYZ) {
         return 
             lo + 
             Vector3(
                 d * extent.x,
-                (float)random(0, extent.y),
-                (float)random(0, extent.z));
+                (float)uniformRandom(0, extent.y),
+                (float)uniformRandom(0, extent.z));
     } else {
         return 
             lo + 
             Vector3(
-                (float)random(0, extent.x),
+                (float)uniformRandom(0, extent.x),
                 d * extent.y,
-                (float)random(0, extent.z));
+                (float)uniformRandom(0, extent.z));
     }
 }
 
 
 Vector3 AABox::randomInteriorPoint() const {
     return Vector3(
-        (float)random(lo.x, hi.x), 
-        (float)random(lo.y, hi.y), 
-        (float)random(lo.z, hi.z));
+        (float)uniformRandom(lo.x, hi.x), 
+        (float)uniformRandom(lo.y, hi.y), 
+        (float)uniformRandom(lo.z, hi.z));
 }
 
 
@@ -121,38 +117,17 @@ bool AABox::intersects(const AABox& other) const {
     return true;
 }
 
-
-bool AABox::culledBy(
-    const Array<Plane>&		plane,
-	int&				    cullingPlaneIndex,
-	const uint32			inMask,
-	uint32&					outMask) const {
-
-	return culledBy(plane.getCArray(), plane.size(), cullingPlaneIndex, inMask, outMask);
-}
-
-
-bool AABox::culledBy(
-    const Array<Plane>&		plane,
-	int&				    cullingPlaneIndex,
-	const uint32			inMask) const {
-
-	return culledBy(plane.getCArray(), plane.size(), cullingPlaneIndex, inMask);
-}
-
-
 int AABox::dummy = 0;
 
 
 bool AABox::culledBy(
-    const class Plane*  plane,
-    int                 numPlanes,
+    const Array<Plane>&	plane,
 	int&				cullingPlane,
 	const uint32		_inMask,
     uint32&             childMask) const {
 
 	uint32 inMask = _inMask;
-	assert(numPlanes < 31);
+	assert(plane.size() < 31);
 
     childMask = 0;
 
@@ -166,7 +141,7 @@ bool AABox::culledBy(
 
     // See if there is one plane for which all of the
 	// vertices are in the negative half space.
-    for (int p = 0; p < numPlanes; p++) {
+    for (int p = 0; p < plane.size(); ++p) {
 
 		// Only test planes that are not masked
 		if ((inMask & 1) != 0) {
@@ -226,13 +201,12 @@ bool AABox::culledBy(
 
 
 bool AABox::culledBy(
-    const class Plane*  plane,
-    int                 numPlanes,
+    const Array<Plane>& plane,
 	int&				cullingPlane,
 	const uint32		_inMask) const {
 
 	uint32 inMask = _inMask;
-	assert(numPlanes < 31);
+	assert(plane.size() < 31);
     
     const bool finite = 
         (abs(lo.x) < G3D::inf()) &&
@@ -244,7 +218,7 @@ bool AABox::culledBy(
 
     // See if there is one plane for which all of the
 	// vertices are in the negative half space.
-    for (int p = 0; p < numPlanes; p++) {
+    for (int p = 0; p < plane.size(); ++p) {
 
 		// Only test planes that are not masked
 		if ((inMask & 1) != 0) {

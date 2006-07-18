@@ -27,6 +27,7 @@ const Matrix4& Matrix4::identity() {
     return m;
 }
 
+
 const Matrix4& Matrix4::zero() {
     static Matrix4 m(
         0, 0, 0, 0,
@@ -36,18 +37,6 @@ const Matrix4& Matrix4::zero() {
     return m;
 }
 
-// Deprecated.
-const Matrix4 Matrix4::IDENTITY
-  = Matrix4(1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1);
-
-const Matrix4 Matrix4::ZERO
-  = Matrix4(0, 0, 0, 0,
-            0, 0, 0, 0,
-            0, 0, 0, 0,
-            0, 0, 0, 0);
 
 Matrix4::Matrix4(const class CoordinateFrame& cframe) {
     for (int r = 0; r < 3; ++r) {

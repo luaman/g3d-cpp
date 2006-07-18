@@ -89,7 +89,7 @@ static void measureAABoxCollisionPerformance() {
     uint64 raw, opt;
 
     AABox aabox(Vector3(-1, -1, -1), Vector3(1,2,3));
-    Box   box = aabox.toBox();
+    Box   box = aabox;
 
     Vector3 pt1(0,10,0);
     Vector3 vel1(0,-1,0);

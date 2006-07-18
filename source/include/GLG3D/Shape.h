@@ -577,7 +577,7 @@ public:
     }
 
     virtual Sphere boundingSphere() const {
-        Sphere s(geometry.center(), G3D::abs((geometry.center() - geometry.getPoint1()).magnitude()) + geometry.radius);
+        Sphere s(geometry.center(), G3D::abs((geometry.center() - geometry.point(0)).magnitude()) + geometry.radius());
         return s;
     }
 
@@ -586,6 +586,7 @@ public:
         geometry.getBounds(aab);
         return aab;
     }
+
     virtual void getRandomSurfacePoint(Vector3& P, Vector3& N = Vector3::dummy) const {
         geometry.getRandomSurfacePoint(P, N);
     }

@@ -101,9 +101,9 @@ Ray GCamera::worldRay(
     float cy = screenHeight / 2.0f;
 
     out.direction =
-        Vector3( (x - cx) * -CoordinateFrame::zLookDirection,
+        Vector3( (x - cx),
                 -(y - cy),
-                 getImagePlaneDepth(viewport) * CoordinateFrame::zLookDirection);
+                -getImagePlaneDepth(viewport));
 
     out = cframe.toWorldSpace(out);
 
@@ -122,7 +122,7 @@ Vector3 GCamera::project(
     int screenHeight = (int)viewport.height();
 
     Vector3 out = cframe.pointToObjectSpace(point);
-    float w = out.z * CoordinateFrame::zLookDirection;
+    float w = -out.z;
 
     if (w <= 0) {
         return Vector3::inf();
@@ -136,7 +136,7 @@ Vector3 GCamera::project(
     float rhw = zImagePlane / w;
 
     // Add the image center, flip the y axis
-    out.x = screenWidth / 2.0f - (rhw * out.x * CoordinateFrame::zLookDirection);
+    out.x = screenWidth / 2.0f + (rhw * out.x);
     out.y = screenHeight / 2.0f - (rhw * out.y);
     out.z = rhw;
 
@@ -384,11 +384,9 @@ void GCamera::get3DViewportCorners(
     Vector3& outLR) const {
 
     // Must be kept in sync with getFrustum()
-
-    const float sign            = CoordinateFrame::zLookDirection;
-    const float w               = -sign * getViewportWidth(viewport) / 2.0f;
+    const float w               = getViewportWidth(viewport) / 2.0f;
     const float h               = getViewportHeight(viewport) / 2.0f;
-    const float z               = -sign * getNearPlaneZ();
+    const float z               = getNearPlaneZ();
 
     // Compute the points
     outUR = Vector3( w,  h, z);

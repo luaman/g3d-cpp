@@ -134,7 +134,7 @@ public:
 
     /** Begin a write chunk.  Use GChunk::finish() when done.*/
     GChunk(G3D::BinaryOutput& b, uint16 name, BinaryFormat format = CUSTOM_BINFMT) :
-        startPos(b.getPosition()), name(name), format(format), count(count), finished(false), mode(WRITE) {
+        startPos(b.position()), name(name), format(format), count(count), finished(false), mode(WRITE) {
 
         b.writeUInt16(name);
         b.writeUInt16(format);

@@ -27,14 +27,17 @@ const Color4& Color4::zero() {
     return c;
 }
 
+
 const Color4& Color4::inf() {
     static Color4 c((float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf(), (float)G3D::inf());
     return c;
 }
 
+
 const Color4& Color4::clear() {
     return Color4::zero();
 }
+
 
 Color4::Color4(const Vector4& v) {
     r = v.x;
@@ -43,9 +46,6 @@ Color4::Color4(const Vector4& v) {
     a = v.w;
 }
 
-// Deprecated.
-const Color4 Color4::ZERO   (0.0f, 0.0f, 0.0f, 0.0f);
-const Color4 Color4::CLEAR  (0.0f, 0.0f, 0.0f, 0.0f);
 
 Color4::Color4(const Color4uint8& c) : r(c.r), g(c.g), b(c.b), a(c.a) {
     *this /= 255.0f;

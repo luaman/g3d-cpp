@@ -119,7 +119,7 @@ float Box::volume() const {
 }
 
 
-float Box::surfaceArea() const {
+float Box::area() const {
     return _area;
 }
 
@@ -174,42 +174,23 @@ void Box::getFaceCorners(int f, Vector3& v0, Vector3& v1, Vector3& v2, Vector3& 
 }
 
 
-bool Box::culledBy(
-    const Array<Plane>&		plane,
-	int&				    cullingPlaneIndex,
-	const uint32			inMask,
-	uint32&					outMask) const {
-
-	return culledBy(plane.getCArray(), plane.size(), cullingPlaneIndex, inMask, outMask);
-}
-
-
-bool Box::culledBy(
-    const Array<Plane>&		plane,
-	int&				    cullingPlaneIndex,
-	const uint32			inMask) const {
-
-	return culledBy(plane.getCArray(), plane.size(), cullingPlaneIndex, inMask);
-}
-
 
 int Box::dummy = 0;
 
 bool Box::culledBy(
-    const class Plane*  plane,
-    int                 numPlanes,
+    const Array<Plane>& plane,
 	int&				cullingPlane,
 	const uint32		_inMask,
     uint32&             childMask) const {
 
 	uint32 inMask = _inMask;
-	assert(numPlanes < 31);
+	assert(plane.size() < 31);
 
     childMask = 0;
 
     // See if there is one plane for which all of the
 	// vertices are in the negative half space.
-    for (int p = 0; p < numPlanes; p++) {
+    for (int p = 0; p < plane.size(); ++p) {
 
 		// Only test planes that are not masked
 		if ((inMask & 1) != 0) {
@@ -223,7 +204,7 @@ bool Box::culledBy(
             // side of the plane (i.e. if we are straddling).  That
             // occurs when (numContained < v) && (numContained > 0)
 			for (v = 0; (v < 8) && ((numContained == v) || (numContained == 0)); ++v) {
-                if (plane[p].halfSpaceContains(getCorner(v))) {
+                if (plane[p].halfSpaceContains(_corner[v])) {
                     ++numContained;
                 }
 			}
@@ -257,17 +238,16 @@ bool Box::culledBy(
 
 
 bool Box::culledBy(
-    const class Plane*  plane,
-    int                 numPlanes,
+    const Array<Plane>& plane,
 	int&				cullingPlane,
 	const uint32		_inMask) const {
 
 	uint32 inMask = _inMask;
-	assert(numPlanes < 31);
+	assert(plane.size() < 31);
 
     // See if there is one plane for which all of the
 	// vertices are in the negative half space.
-    for (int p = 0; p < numPlanes; p++) {
+    for (int p = 0; p < plane.size(); ++p) {
 
 		// Only test planes that are not masked
 		if ((inMask & 1) != 0) {
@@ -280,7 +260,7 @@ bool Box::culledBy(
 			// not culled by the plane... early out when at least one point
             // is in the positive half space.
 			for (v = 0; (v < 8) && culled; ++v) {
-                culled = ! plane[p].halfSpaceContains(getCorner(v));
+                culled = ! plane[p].halfSpaceContains(corner(v));
 			}
 
 			if (culled) {
@@ -336,26 +316,26 @@ void Box::getRandomSurfacePoint(Vector3& P, Vector3& N) const {
     float aYZ = _extent.y * _extent.z;
     float aZX = _extent.z * _extent.x;
 
-    float r = (float)random(0, aXY + aYZ + aZX);
+    float r = (float)uniformRandom(0, aXY + aYZ + aZX);
 
     // Choose evenly between positive and negative face planes
-    float d = (random(0, 1) < 0.5f) ? -1.0f : 1.0f;
+    float d = (uniformRandom(0, 1) < 0.5f) ? -1.0f : 1.0f;
 
     // The probability of choosing a given face is proportional to
     // its area.
     if (r < aXY) {
-        P = _axis[0] * (float)random(-0.5, 0.5) * _extent.x +
-            _axis[1] * (float)random(-0.5, 0.5) * _extent.y +
+        P = _axis[0] * (float)uniformRandom(-0.5, 0.5) * _extent.x +
+            _axis[1] * (float)uniformRandom(-0.5, 0.5) * _extent.y +
             _center + _axis[2] * d * _extent.z * 0.5f;
         N = _axis[2] * d;
     } else if (r < aYZ) {
-        P = _axis[1] * (float)random(-0.5, 0.5) * _extent.y +
-            _axis[2] * (float)random(-0.5, 0.5) * _extent.z +
+        P = _axis[1] * (float)uniformRandom(-0.5, 0.5) * _extent.y +
+            _axis[2] * (float)uniformRandom(-0.5, 0.5) * _extent.z +
             _center + _axis[0] * d * _extent.x * 0.5f;
         N = _axis[0] * d;
     } else {
-        P = _axis[2] * (float)random(-0.5, 0.5) * _extent.z +
-            _axis[0] *(float) random(-0.5, 0.5) * _extent.x +
+        P = _axis[2] * (float)uniformRandom(-0.5, 0.5) * _extent.z +
+            _axis[0] *(float) uniformRandom(-0.5, 0.5) * _extent.x +
             _center + _axis[1] * d * _extent.y * 0.5f;
         N = _axis[1] * d;
     }
@@ -366,7 +346,7 @@ Vector3 Box::randomInteriorPoint() const {
     Vector3 sum = _center;
 
     for (int a = 0; a < 3; ++a) {
-        sum += _axis[a] * (float)random(-0.5, 0.5) * _extent[a];
+        sum += _axis[a] * (float)uniformRandom(-0.5, 0.5) * _extent[a];
     }
 
     return sum;

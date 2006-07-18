@@ -23,76 +23,74 @@
 namespace G3D {
 
 const Color3& Color3::red() {
-    static Color3 c(1, 0, 0);
+    static Color3 c(1.0f, 0.0f, 0.0f);
     return c;
 }
+
 
 const Color3& Color3::green() {
-    static Color3 c(0, 1, 0);
+    static Color3 c(0.0f, 1.0f, 0.0f);
     return c;
 }
+
 
 const Color3& Color3::blue() {
-    static Color3 c(0, 0, 1);
+    static Color3 c(0.0f, 0.0f, 1.0f);
     return c;
 }
+
 
 const Color3& Color3::purple() {
-    static Color3 c(0.7f, 0, 1);
+    static Color3 c(0.7f, 0.0f, 1.0f);
     return c;
 }
+
 
 const Color3& Color3::cyan() {
-    static Color3 c(0, .7f, 1);
+    static Color3 c(0.0f, 0.7f, 1.0f);
     return c;
 }
+
 
 const Color3& Color3::yellow() {
-    static Color3 c(1, 1, 0);
+    static Color3 c(1.0f, 1.0f, 0.0f);
     return c;
 }
+
 
 const Color3& Color3::brown() {
-    static Color3 c(.5f, .5f, 0);
+    static Color3 c(0.5f, 0.5f, 0.0f);
     return c;
 }
+
 
 const Color3& Color3::orange() {
-    static Color3 c(1, 0.5f, 0);
+    static Color3 c(1.0f, 0.5f, 0.0f);
     return c;
 }
+
 
 const Color3& Color3::black() {
-    static Color3 c(0, 0, 0);
+    static Color3 c(0.0f, 0.0f, 0.0f);
     return c;
 }
 
+
 const Color3& Color3::gray() {
-    static Color3 c(.7f, .7f, .7f);
+    static Color3 c(0.7f, 0.7f, 0.7f);
     return c;
 }
+
 
 const Color3& Color3::white() {
     static Color3 c(1, 1, 1);
     return c;
 }
 
+
 Color3::Color3(BinaryInput& bi) {
     deserialize(bi);
 }
-
-// Deprecated.
-const Color3 Color3::RED(1, 0, 0);
-const Color3 Color3::GREEN(0, 1, 0);
-const Color3 Color3::BLUE(0, 0, 1);
-const Color3 Color3::PURPLE(0.7f, 0, 1);
-const Color3 Color3::CYAN(0, 0.7f, 1);
-const Color3 Color3::YELLOW(1, 1, 0);
-const Color3 Color3::BROWN(0.5f, 0.5f, 0);
-const Color3 Color3::ORANGE(1, 0.5f, 0);
-const Color3 Color3::BLACK(0, 0, 0);
-const Color3 Color3::GRAY(.7f, .7f, .7f);
-const Color3 Color3::WHITE(1, 1, 1);
 
 
 void Color3::deserialize(BinaryInput& bi) {
@@ -111,9 +109,9 @@ void Color3::serialize(BinaryOutput& bo) const {
 
 const Color3& Color3::wheelRandom() {
     static const Color3 colorArray[8] =
-    {Color3::BLUE,   Color3::RED,    Color3::GREEN,
-     Color3::ORANGE, Color3::YELLOW, 
-     Color3::CYAN,   Color3::PURPLE, Color3::BROWN};
+    {Color3::blue(),   Color3::red(),    Color3::green(),
+     Color3::orange(), Color3::yellow(), 
+     Color3::cyan(),   Color3::purple(), Color3::brown()};
 
     return colorArray[iRandom(0, 7)];
 }
