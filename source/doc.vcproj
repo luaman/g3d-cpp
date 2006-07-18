@@ -66,9 +66,6 @@
 			<File
 				RelativePath="..\g3dinstaller.nsi">
 			</File>
-			<File
-				RelativePath="OnlineDoxyfile">
-			</File>
 		</Filter>
 		<Filter
 			Name="Guide"

@@ -4,7 +4,7 @@
 # General configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = G3D
-PROJECT_NUMBER         = "version 6.10 2006-06-01"
+PROJECT_NUMBER         = "version 7.00 2006-08-01"
 OUTPUT_DIRECTORY       = ../temp$(OUTPUT_DEST)
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
