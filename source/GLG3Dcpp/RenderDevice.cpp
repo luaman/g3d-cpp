@@ -2814,9 +2814,9 @@ void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer, bool getAlpha
 
     // Flip right side up
     if (getAlpha) {
-        flipRGBAVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
+		GImage::flipRGBAVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
     } else {
-        flipRGBVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
+        GImage::flipRGBVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
     }
 
     // Restore the read buffer to the back
