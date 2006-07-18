@@ -1043,7 +1043,7 @@ public:
         if (root == NULL) {
             return;
         }
-        root->getIntersectingMembers(box, Sphere(Vector3::ZERO, 0), members, false);
+        root->getIntersectingMembers(box, Sphere(Vector3::zero(), 0), members, false);
     }
 
 
