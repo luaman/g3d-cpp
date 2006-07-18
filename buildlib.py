@@ -392,9 +392,15 @@ def run(program, args = [], env = {}):
 
     if (os.name == 'nt'):
         # Windows doesn't support spawnvp
-        exitcode = os.spawnve(os.P_WAIT, program, args, env)
+        if env != {}:
+            exitcode = os.spawnve(os.P_WAIT, program, args, env)
+        else:
+            exitcode = os.spawnv(os.P_WAIT, program, args)
     else:
-        exitcode = os.spawnvpe(os.P_WAIT, program, args, env)
+        if env != {}:
+            exitcode = os.spawnvpe(os.P_WAIT, program, args, env)
+        else:
+            exitcode = os.spawnvp(os.P_WAIT, program, args)
 
     # Since we mutated the list, remove the element
     # that was inserted.
