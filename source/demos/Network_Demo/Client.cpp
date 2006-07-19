@@ -303,6 +303,8 @@ void Client::onGraphics(RenderDevice* rd) {
     if (app->hostingServer) {
         app->hostingServer->onGraphics(rd);
     }
+
+	GApplet::onGraphics(rd);
 }
 
 

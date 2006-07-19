@@ -481,12 +481,6 @@ protected:
      */
     bool                endApplet;
 
-    /** @deprecated */
-    virtual void G3D_DEPRECATED
-        doSimulation(RealTime rdt) {
-            (void)rdt;
-    }
-
     /**
      Override this with your simulation code.
      Called from GApp::run.
@@ -511,21 +505,8 @@ protected:
     virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
         (void)idt;
         (void)rdt;
-        doSimulation(sdt);
+		(void)sdt;
     }
-
-
-    /**
-     Override and implement.  The debugCamera's projection and object to world
-     matrices are set by default; you can set other cameras as desired. 
-     RenderDevice::beginFrame and endFrame are called for you.
-     
-	 See <A HREF="../demos/main.cpp">demos/main.cpp</A> for an example of
-	 overriding lights.
-
-     @deprecated
-     */
-    virtual void G3D_DEPRECATED doGraphics();
 
     /**
      Rendering callback.
@@ -543,15 +524,10 @@ protected:
 
 
     /**
-       @deprecated
-     */
-    virtual void G3D_DEPRECATED doNetwork() {}
-
-    /**
      For a networked app, override this to implement your
      network message polling.
      */
-    virtual void onNetwork();
+    virtual void onNetwork() {}
 
     /**
       Task to be used for frame rate limiting.  
@@ -568,33 +544,13 @@ protected:
       */
     virtual void onWait(RealTime cumulativeTime, RealTime frameDuration);
 
-    /**
-     Update any state you need to here.  This is a good place for
-     AI code, for example.  Called after network and user input,
-     before simulation.
-     @deprecated
-     */
-    virtual void G3D_DEPRECATED 
-        doLogic() {}
 
     /**
      Update any state you need to here.  This is a good place for
      AI code, for example.  Called after network and user input,
      before simulation.
      */
-    virtual void onLogic() {
-        doLogic();
-    }
-
-    /**
-       @deprecated
-     */
-    virtual void G3D_DEPRECATED init() {
-        m_simTime     = 0;
-        m_realTime    = 0;
-        m_simTimeRate = 1.0;
-        lastWaitTime  = System::time();
-    }
+    virtual void onLogic() {}
 
     /**
      Invoked every time run is called.  Default implementation
@@ -603,31 +559,20 @@ protected:
      Sublcasses should invoke GApplet::init to reset the timers.
      */
     virtual void onInit() {
-        init();
-    }
-
-    /**
-     Invoked at the end of every run call.  Default implementation
-     does nothing.
-     @deprecated
-     */
-    virtual void G3D_DEPRECATED cleanup() {}
+        m_simTime     = 0;
+        m_realTime    = 0;
+        m_simTimeRate = 1.0;
+        lastWaitTime  = System::time();
+	}
 
     /**
      Invoked at the end of every run call.  Default implementation
      does nothing.
      */
-    virtual void onCleanup() {
-        cleanup();
-    }
+    virtual void onCleanup() {}
     
-    /** @deprecated Use onEvent */
-    virtual void G3D_DEPRECATED processEvent(const GEvent& event) {
-        (void)event;
-    }
-
     /**
-     It is recommended to override doUserInput instead of this method.
+     It is recommended to override onUserInput() instead of this method.
 
      Override if you need to explicitly handle events in the order
      they appear.
@@ -643,24 +588,19 @@ protected:
      */
     virtual bool onEvent(const GEvent& event);
 
-    /**
-     Updates the userInput.  Called from run.  Rarely needs to be
-     called by user programs.
-
-     Never overriden by a subclass.
-     Instead, override GApp::processEvent to handle your own events.
-
-     @deprecated In 7.0, will be private and doUserInput will be a function
-      you can override to handle events.
-     */
-    void G3D_DEPRECATED doUserInput();
 
     /**
      Routine for processing user input from the previous frame.
+	 Default handles ESC.
      */
-    virtual void onUserInput(class UserInput* userInput) {
-        (void)userInput;
-    }
+    virtual void onUserInput(class UserInput* userInput);
+
+protected:
+	class DoNotOverrideThisMethod {};
+	/** Here to catch bugs upgrading from G3D 6.10 to 7.00 */
+    virtual DoNotOverrideThisMethod G3D_DEPRECATED doUserInput(class UserInput* userInput) {(void)userInput; return DoNotOverrideThisMethod();}
+    virtual DoNotOverrideThisMethod G3D_DEPRECATED doSimulation(RealTime rdt){(void)rdt; return DoNotOverrideThisMethod();}
+    virtual DoNotOverrideThisMethod G3D_DEPRECATED doGraphics(){ return DoNotOverrideThisMethod(); }
 };
 
 /**

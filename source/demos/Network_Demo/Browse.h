@@ -52,17 +52,15 @@ public:
 
     virtual ~Browse() {}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onLogic();
 
-	virtual void doNetwork();
+	virtual void onNetwork();
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onGraphics(RenderDevice* rd);
 
-    virtual void doGraphics();
-
-    virtual void cleanup();
+    virtual void onCleanup();
 };
 
 #endif

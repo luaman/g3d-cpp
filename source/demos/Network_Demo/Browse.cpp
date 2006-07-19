@@ -13,13 +13,13 @@ Browse::Browse(App* app) : GApplet(app), app(app) {
 }
 
 
-void Browse::init() {
+void Browse::onInit() {
     discoveryClient.init(app->networkDevice, &app->discoverySettings);
     host = false;
 }
 
 
-void Browse::doLogic() {
+void Browse::onLogic() {
     if (app->userInput->keyPressed(SDL_LEFT_MOUSE_KEY)) {
         const int HOST = button.size() - 2;
         const int EXIT = button.size() - 1;
@@ -51,24 +51,20 @@ void Browse::doLogic() {
 }
 
 
-void Browse::doNetwork() {
+void Browse::onNetwork() {
     // Allow the discovery client talk to the
     // network and search for servers.
     discoveryClient.doNetwork();
 }
 
 
-void Browse::doSimulation(SimTime dt) {
-}
+void Browse::onGraphics(RenderDevice* rd) {
+    rd->setColorClearValue(Color3::white());
+    rd->clear(true, true, true);
 
-
-void Browse::doGraphics() {
-    app->renderDevice->setColorClearValue(Color3::white());
-    app->renderDevice->clear(true, true, true);
-
-    app->renderDevice->push2D();
-        double width            = app->renderDevice->width();
-        double height           = app->renderDevice->height();
+    rd->push2D();
+        double width            = rd->width();
+        double height           = rd->height();
         double titleFontSize    = 30 * width / 800;
         double optionFontSize   = 25 * width / 800;
         Color4 titleFontColor   = Color3::black();
@@ -77,7 +73,7 @@ void Browse::doGraphics() {
         Color4 optionFontBorder = Color3::black();
 
         double y = 10;
-        app->font->draw2D(app->renderDevice, "Choose A Network Demo Server", Vector2(width / 2, y),
+        app->font->draw2D(rd, "Choose A Network Demo Server", Vector2(width / 2, y),
             titleFontSize, titleFontColor, titleFontBorder, GFont::XALIGN_CENTER);
         y += titleFontSize * 2;
 
@@ -86,7 +82,7 @@ void Browse::doGraphics() {
         // Display the servers found
         for (int s = 0; s < discoveryClient.serverList.size(); ++s) {
             
-            Vector2 bounds = app->font->draw2D(app->renderDevice, discoveryClient.serverList[s].name,
+            Vector2 bounds = app->font->draw2D(rd, discoveryClient.serverList[s].name,
                 Vector2(width / 2, y),
                 optionFontSize, optionFontColor, 
                 optionFontBorder, GFont::XALIGN_CENTER);
@@ -97,7 +93,7 @@ void Browse::doGraphics() {
         }
 
         if (discoveryClient.serverList.size() == 0) {
-            app->font->draw2D(app->renderDevice, "(No servers found-- host one yourself!)",
+            app->font->draw2D(rd, "(No servers found-- host one yourself!)",
                 Vector2(width / 2, y),
                 optionFontSize, titleFontColor, 
                 titleFontBorder, GFont::XALIGN_CENTER);
@@ -107,20 +103,22 @@ void Browse::doGraphics() {
 
         y = height - optionFontSize * 6;
 
-        Vector2 bounds = app->font->draw2D(app->renderDevice, "Create Server", Vector2(width / 2, y),
+        Vector2 bounds = app->font->draw2D(rd, "Create Server", Vector2(width / 2, y),
             optionFontSize, optionFontColor, optionFontBorder, GFont::XALIGN_CENTER);
         button.append(Rect2D::xywh(width / 2 - bounds.x / 2, y, bounds.x, bounds.y));
         y += optionFontSize * 2;
 
-        bounds = app->font->draw2D(app->renderDevice, "Exit", Vector2(width / 2, y),
+        bounds = app->font->draw2D(rd, "Exit", Vector2(width / 2, y),
             optionFontSize, optionFontColor, optionFontBorder, GFont::XALIGN_CENTER);
         button.append(Rect2D::xywh(width / 2 - bounds.x / 2, y, bounds.x, bounds.y));
         y += optionFontSize * 2;
 
-    app->renderDevice->pop2D();
+    rd->pop2D();
+
+	GApplet::onGraphics(rd);
 }
 
 
-void Browse::cleanup() {
+void Browse::onCleanup() {
     discoveryClient.cleanup();
 }

@@ -111,7 +111,7 @@ void Server::acceptIncomingClient() {
         }
         entity.modelType            = Entity::HELICOPTER;
         entity.frame.translation    = Vector3::random() * 10;
-        entity.frame.rotation       = Matrix3::fromAxisAngle(Vector3::unitY(), uniformRandom(0, (float)G3D_TWO_PI));
+        entity.frame.rotation       = Matrix3::fromAxisAngle(Vector3::unitY(), uniformRandom(0, (float)twoPi()));
         entity.name                 = randomName();
 
         entityTable.set(entity.id, entity);

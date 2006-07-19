@@ -138,8 +138,8 @@ XIFSModel::XIFSModel(const std::string& filename, bool t) : _twoSided(t) {
 
     std::string f = toLower(filename);
 
-    createCylinder(); return;
-
+    createOctoSphere(); return;
+    //createCylinder(); return;
     //createHalfGear(); return;
     //createGrid(flat2D, 1024, true); return;
     //createGrid(lumpy2D, 1024, true); return;
@@ -190,6 +190,153 @@ void XIFSModel::createCylinder() {
     }
 
     set(builder);
+}
+
+
+void createOctoSphere() {
+    MeshBuilder builder(false);
+
+    int N = 36;
+
+    class Tri {
+    public:
+        Vector3 v[3];
+        Vector2 t[3];
+    };
+
+    Array<Tri> triArray;
+
+    // Start with an octahedron
+    Tri tri;
+
+    // On the texture map, order of triangles:
+    //   ___________
+    //  | 4  /|\    |
+    //  |  /0 | 3\7 |
+    //  |/____|____\|
+    //  |\ 1  | 2  /| 
+    //  | 5\  |  /6 |
+    //  |____\|/____|
+
+    // "Front"
+    // 0
+    tri.v[0] = Vector3( 0,  1,  0);  tri.t[0] = Vector2(0.5f, 0.0f);
+    tri.v[1] = Vector3(-1,  0,  0);  tri.t[1] = Vector2(0.0f, 0.5f);
+    tri.v[2] = Vector3( 0,  0,  1);  tri.t[2] = Vector2(0.5f, 0.5f);
+    triArray.append(tri);
+
+    // 1
+    tri.v[0] = Vector3( 0,  0,  1);  tri.t[0] = Vector2(0.5f, 0.5f);
+    tri.v[1] = Vector3(-1,  0,  0);  tri.t[1] = Vector2(0.0f, 0.5f);
+    tri.v[2] = Vector3( 0, -1,  0);  tri.t[2] = Vector2(0.5f, 1.0f);
+    triArray.append(tri);
+
+    // 2
+    tri.v[0] = Vector3( 1,  0,  0);  tri.t[0] = Vector2(1.0f, 0.5f);
+    tri.v[1] = Vector3( 0,  0,  1);  tri.t[1] = Vector2(0.5f, 0.5f);
+    tri.v[2] = Vector3( 0, -1,  0);  tri.t[2] = Vector2(0.5f, 1.0f);
+    triArray.append(tri);
+
+    // 3
+    tri.v[0] = Vector3( 0,  1,  0);  tri.t[0] = Vector2(0.5f, 0.0f);
+    tri.v[1] = Vector3( 0,  0,  1);  tri.t[1] = Vector2(0.5f, 0.5f);
+    tri.v[2] = Vector3( 1,  0,  0);  tri.t[2] = Vector2(1.0f, 0.5f);
+    triArray.append(tri);
+
+    // "Back"
+    // 4
+    tri.v[0] = Vector3( 0,  1,  0);  tri.t[0] = Vector2(0.5f, 0.0f);
+    tri.v[1] = Vector3( 0,  0, -1);  tri.t[1] = Vector2(0.0f, 0.0f);
+    tri.v[2] = Vector3(-1,  0,  0);  tri.t[2] = Vector2(0.0f, 0.5f);
+    triArray.append(tri);
+
+    // 5
+    tri.v[0] = Vector3(-1,  0,  0);  tri.t[0] = Vector2(0.0f, 0.5f);
+    tri.v[1] = Vector3( 0,  0, -1);  tri.t[1] = Vector2(0.0f, 1.0f);
+    tri.v[2] = Vector3( 0, -1,  0);  tri.t[2] = Vector2(0.5f, 1.0f);
+    triArray.append(tri);
+
+    // 6
+    tri.v[0] = Vector3( 0, -1,  0);  tri.t[0] = Vector2(0.5f, 1.0f);
+    tri.v[1] = Vector3( 0,  0, -1);  tri.t[1] = Vector2(1.0f, 1.0f);
+    tri.v[2] = Vector3( 1,  0,  0);  tri.t[2] = Vector2(1.0f, 0.5f);
+    triArray.append(tri);
+
+    // 7
+    tri.v[0] = Vector3( 1,  0,  0);  tri.t[0] = Vector2(1.0f, 0.5f);
+    tri.v[1] = Vector3( 0,  0, -1);  tri.t[1] = Vector2(1.0f, 0.0f);
+    tri.v[2] = Vector3( 0,  1,  0);  tri.t[2] = Vector2(0.5f, 0.0f);
+    triArray.append(tri);
+
+    // Now subdivide
+    Array<Tri> newArray;
+    // Generates 512 polygons
+    for (int subdivisions = 0; subdivisions < 3; ++subdivisions) {
+        newArray.clear();
+        for (int t = 0; t < triArray.size(); ++t) {
+            Tri& oldTri = triArray[t];
+
+            //         C
+            //         /\
+            //        /  \
+            //       /    \
+            //     F/______\E
+            //     / \    / \
+            //    /   \  /   \
+            //   /_____\/_____\
+            //  A      D       B 
+            //
+
+            Vector3 VA = oldTri.v[0];
+            Vector3 VB = oldTri.v[1];
+            Vector3 VC = oldTri.v[2];
+            Vector3 VD = (VA + VB).direction(); 
+            Vector3 VE = (VB + VC).direction(); 
+            Vector3 VF = (VC + VA).direction(); 
+
+            Vector2 TA = oldTri.t[0];
+            Vector2 TB = oldTri.t[1];
+            Vector2 TC = oldTri.t[2];
+            Vector2 TD = (VA + VB) / 2.0f;
+            Vector2 TE = (VB + VC) / 2.0f;
+            Vector2 TF = (VC + VA) / 2.0f;
+
+            tri.v[0] = VA; tri.t[0] = TA;
+            tri.v[1] = VD; tri.t[1] = TD;
+            tri.v[2] = VF; tri.t[2] = TF;
+            newArray.append(tri);
+
+            tri.v[0] = VD; tri.t[0] = TD;
+            tri.v[1] = VB; tri.t[1] = TB;
+            tri.v[2] = VE; tri.t[2] = TE;
+            newArray.append(tri);
+
+            tri.v[0] = VF; tri.t[0] = TF;
+            tri.v[1] = VE; tri.t[1] = TE;
+            tri.v[2] = VC; tri.t[2] = TC;
+            newArray.append(tri);
+
+            tri.v[0] = VD; tri.t[0] = TD;
+            tri.v[1] = VE; tri.t[1] = TE;
+            tri.v[2] = VF; tri.t[2] = TF;
+            newArray.append(tri);
+        }
+        triArray = newArray;
+    }
+
+    // Convert to an indexed triangle list
+    Array<Vector3> vertex;
+    Array<Vector2> tex;
+    Array<int>     index;
+    for (int t = 0; t < triArray.size(); ++t) {
+        vertex.append(triArray[t].v[0], triArray[t].v[1], triArray[t].v[2]);
+        tex.append(triArray[t].t[0], triArray[t].t[1], triArray[t].t[2]);
+        index.append(t * 3, t * 3 + 1, t * 3 + 2);
+    }
+
+    // TODO: Weld
+
+    // TODO: Save
 }
 
 

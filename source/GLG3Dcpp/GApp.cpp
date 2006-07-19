@@ -334,8 +334,6 @@ GApplet::GApplet(GApp* _app) :
 
 
 bool GApplet::onEvent(const GEvent& event) {
-    processEvent(event); // TODO: Remove when deprecated
-
     return GModuleManager::onEvent(event, app->m_moduleManager, m_moduleManager);
 }
 
@@ -351,12 +349,6 @@ void GApplet::getPosedModel(
 
 
 void GApplet::onGraphics(RenderDevice* rd) {
-    (void)rd;
-    doGraphics();
-}
-
-
-void GApplet::doGraphics() {
     Array<PosedModelRef>        posedArray;
     Array<PosedModel2DRef>      posed2DArray;
     Array<PosedModelRef>        opaque, transparent;
@@ -389,11 +381,6 @@ void GApplet::doGraphics() {
     }
 }
 
-
-void GApplet::onNetwork() {
-    doNetwork();
-}
-
     
 void GApplet::addModule(const GModuleRef& module, GModuleManager::EventPriority priority) {
     m_moduleManager->add(module, priority);
@@ -424,7 +411,6 @@ void GApplet::oneFrame() {
 
     // User input
     app->m_userInputWatch.tick();
-    doUserInput(); // TODO: remove
     onUserInput(app->userInput);
     app->m_moduleManager->onUserInput(app->userInput);
     m_moduleManager->onUserInput(app->userInput);
@@ -534,9 +520,9 @@ void GApplet::run() {
 }
 
 
-void GApplet::doUserInput() {
+void GApplet::onUserInput(UserInput* userInput) {
 
-    app->userInput->beginEvents();
+    userInput->beginEvents();
 
     // Event handling
     GEvent event;
@@ -593,10 +579,10 @@ void GApplet::doUserInput() {
         default:;
         }
 
-        app->userInput->processEvent(event);
+        userInput->processEvent(event);
     }
 
-    app->userInput->endEvents();
+    userInput->endEvents();
 }
 
 }

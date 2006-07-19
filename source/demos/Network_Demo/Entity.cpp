@@ -107,7 +107,7 @@ void Entity::doSimulation(SimTime dt) {
     // reasonable simulator.
 
     CoordinateFrame cframe = coordinateFrame();
-    pose.rotorAngle = wrap(pose.rotorAngle - dt * 20, -G3D_PI * 100, G3D_PI * 100);
+    pose.rotorAngle = wrap(pose.rotorAngle - dt * 20, -pi() * 100, pi() * 100);
 
     Vector3 acceleration;
     
@@ -135,7 +135,7 @@ void Entity::doSimulation(SimTime dt) {
 
         if (alpha < 1.0) {
             // Use cosine interpolation rate
-            alpha = (1 - cos(alpha * G3D_PI)) * 0.5;
+            alpha = (1 - cos(alpha * pi())) * 0.5;
             currentTiltVelocity = oldDesiredVelocity.lerp(controls.desiredVelocity, alpha); 
         }
 
