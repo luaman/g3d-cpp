@@ -589,10 +589,6 @@ public:
         return _maxAnisotropy;
     }
 
-    inline unsigned int G3D_DEPRECATED getOpenGLID() const {
-        return textureID;
-    }
-
     /**
      Returns the level 0 mip-map data in the format that most closely matches
      outFormat.
@@ -602,24 +598,6 @@ public:
 
     inline unsigned int openGLID() const {
         return textureID;
-    }
-
-	/** @deprecated Use texelWidth */
-    inline const int G3D_DEPRECATED getTexelWidth() const {
-        return width;
-    }
-
-	/** @deprecated Use texelHeight */
-    inline const int G3D_DEPRECATED getTexelHeight() const {
-        return height;
-    }
-
-    /**
-     For 3D textures.
-	 @deprecated Use texelDepth
-     */
-    inline const int G3D_DEPRECATED getTexelDepth() const {
-        return depth;
     }
 
     inline const int texelWidth() const {
@@ -679,7 +657,7 @@ public:
     /**
      The OpenGL texture target this binds (e.g. GL_TEXTURE_2D)
      */
-    unsigned int getOpenGLTextureTarget() const;
+    unsigned int openGLTextureTarget() const;
 
     /**
      @deprecated Use settings()
@@ -742,23 +720,6 @@ private:
         }
     };
 };
-/*
-inline bool G3D_DEPRECATED operator==(const TextureRef& a, const void* b) {
-    return (b == NULL) && (a == (TextureRef)NULL);
-}
-
-inline bool G3D_DEPRECATED operator==(const void* a, const TextureRef& b) {
-    return b == a;
-}
-
-inline bool G3D_DEPRECATED operator!=(const TextureRef& a, const void* b) {
-    return !(a == b);
-}
-
-inline bool G3D_DEPRECATED operator!=(const void* b, const TextureRef& a) {
-    return !(a == b);
-}
-*/
 
 } // namespace
 

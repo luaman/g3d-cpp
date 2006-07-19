@@ -1452,7 +1452,7 @@ size_t Texture::sizeInMemory() const {
 }
 
 
-unsigned int Texture::getOpenGLTextureTarget() const {
+unsigned int Texture::openGLTextureTarget() const {
     switch (dimension) {
     case DIM_CUBE_MAP_NPOT:
     case DIM_CUBE_MAP:

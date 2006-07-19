@@ -285,8 +285,8 @@ Vector2 GFont::draw2D(
     }
 
     float m[] = 
-       {1.0f / texture->getTexelWidth(), 0, 0, 0,
-        0, 1.0f / texture->getTexelHeight(), 0, 0,
+       {1.0f / texture->texelWidth(), 0, 0, 0,
+        0, 1.0f / texture->texelHeight(), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1};
 
@@ -426,8 +426,8 @@ Vector2 GFont::draw3D(
 
 
     double m[] = 
-       {1.0 / texture->getTexelWidth(), 0, 0, 0,
-        0, 1.0 / texture->getTexelHeight(), 0, 0,
+       {1.0 / texture->texelWidth(), 0, 0, 0,
+        0, 1.0 / texture->texelHeight(), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1};
 

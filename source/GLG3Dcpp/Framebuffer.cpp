@@ -140,7 +140,7 @@ void Framebuffer::set(AttachmentPoint ap, const TextureRef& texture) {
     glFramebufferTexture2DEXT(
         GL_FRAMEBUFFER_EXT, 
         ap, 
-        texture->getOpenGLTextureTarget(), 
+        texture->openGLTextureTarget(), 
         texture->openGLID(), 0);
     debugAssertGLOk();
 

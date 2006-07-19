@@ -2336,7 +2336,7 @@ void RenderDevice::forceSetTextureMatrix(int unit, const float* m) {
         float ymax = 1.0;
     
         if (texture->getDimension() == Texture::DIM_2D_RECT) {
-            ymax = texture->getTexelHeight();
+            ymax = texture->texelHeight();
         }
 
         float m[16] = 
@@ -2728,8 +2728,8 @@ void RenderDevice::setTexture(
     }
 
     if (texture.notNull()) {
-        GLint id = texture->getOpenGLID();
-        GLint u = texture->getOpenGLTextureTarget();
+        GLint id = texture->openGLID();
+        GLint u = texture->openGLTextureTarget();
 
         if ((GLint)currentlyBoundTexture[unit] != id) {
             glBindTexture(u, id);
