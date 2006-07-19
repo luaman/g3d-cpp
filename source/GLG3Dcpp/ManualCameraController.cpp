@@ -83,11 +83,11 @@ bool FirstPersonManipulator::active() const {
 
 void FirstPersonManipulator::reset() {
     _active      = false;
-    yaw         = -G3D_PI/2;
+    yaw         = -halfPi();
     pitch       = 0;
 	translation = Vector3::zero();
     setMoveRate(10);
-	setTurnRate(G3D_PI * 5);
+	setTurnRate(pi() * 5);
 }
 
 
@@ -280,7 +280,7 @@ void FirstPersonManipulator::onSimulation(RealTime rdt, SimTime sdt, SimTime idt
 
     // As a patch for a setCoordinateFrame bug, we prevent 
     // the camera from looking exactly along the y-axis.
-    pitch = clamp(pitch, -G3D_PI / 2 + 0.001, G3D_PI / 2 - 0.001);
+    pitch = clamp(pitch, -halfPi() + 0.001, halfPi() - 0.001);
 }
 
 

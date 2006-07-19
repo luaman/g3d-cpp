@@ -71,17 +71,17 @@ float Cylinder::radius() const {
 
 float Cylinder::volume() const {
 	return
-		G3D_PI * square(mRadius) * (p1 - p2).magnitude();
+		(float)pi() * square(mRadius) * (p1 - p2).magnitude();
 }
 
 
 float Cylinder::area() const {
 	return
         // Sides
-		(2.0f * G3D_PI * mRadius) * height() +
+		(twoPi() * mRadius) * height() +
 
-        // Caps
-        2.0f * G3D_PI * square(mRadius);
+         // Caps
+         twoPi() * square(mRadius);
 }
 
 void Cylinder::getBounds(AABox& out) const {
@@ -124,7 +124,7 @@ void Cylinder::getRandomSurfacePoint(Vector3& p, Vector3& N) const {
 
         // Select a point uniformly at random on a disk
         // @cite http://mathworld.wolfram.com/DiskPointPicking.html
-        float a = uniformRandom(0, (float)G3D_TWO_PI);
+        float a = uniformRandom(0, (float)twoPi());
         float r2 = sqrt(uniformRandom(0, 1)) * r;
         p.x = cos(a) * r2;
         p.z = sin(a) * r2;
@@ -142,7 +142,7 @@ void Cylinder::getRandomSurfacePoint(Vector3& p, Vector3& N) const {
         }
     } else {
         // Side
-        float a = uniformRandom(0, (float)G3D_TWO_PI);
+        float a = uniformRandom(0, (float)twoPi());
         N.x = cos(a);
         N.y = 0;
         N.z = sin(a);
@@ -168,7 +168,7 @@ Vector3 Cylinder::randomInteriorPoint() const {
 
     // Select a point uniformly at random on a disk
     // @cite http://mathworld.wolfram.com/DiskPointPicking.html
-    float a = uniformRandom(0, (float)G3D_TWO_PI);
+    float a = uniformRandom(0, (float)twoPi());
     float r2 = sqrt(uniformRandom(0, 1)) * r;
 
     Vector3 p(  cos(a) * r2,

@@ -36,7 +36,7 @@ static void testMatrixConversion() {
 
     // Round trip M->q->M
 	for (int i = 0; i < 100; ++i) {
-		Matrix3 M = Matrix3::fromAxisAngle(Vector3::random(), uniformRandom(0, (float)G3D_TWO_PI));
+		Matrix3 M = Matrix3::fromAxisAngle(Vector3::random(), uniformRandom(0, (float)twoPi()));
         if (i == 0) {
             // Corner case, make sure we test it first.
             M = Matrix3::identity();
@@ -54,7 +54,7 @@ static void testMatrixConversion() {
 
 	// Round trip q->M->q
 	for (int i = 0; i < 100; ++i) {
-		Quat q1 = Quat::fromAxisAngleRotation(Vector3::random(), uniformRandom(0, (float)G3D_TWO_PI));
+		Quat q1 = Quat::fromAxisAngleRotation(Vector3::random(), uniformRandom(0, (float)twoPi()));
 		Matrix3 M = q1.toRotationMatrix();
 		Quat q2(M);
 
@@ -72,9 +72,9 @@ static void testSlerp() {
 		float a0 = 0;
 
         // End
-		float a1 = (float)(G3D_PI * 3/2);
+		float a1 = (float)(halfPi() * 3);
 
-		float a2 = (float)((G3D_PI * 3/2 + G3D_PI * 2) / 2);
+		float a2 = (float)((halfPi() * 3 + twoPi()) / 2);
 
 		Quat q0 = Quat::fromAxisAngleRotation(axis, a0);
 		Quat q1 = Quat::fromAxisAngleRotation(axis, a1);
@@ -98,10 +98,10 @@ static void testSlerp() {
         // always between them (and not wrapping around the other way).
 
         // Start
-		float a0 = uniformRandom(0, (float)G3D_PI);
+		float a0 = uniformRandom(0, (float)pi());
 
         // End
-		float a1 = uniformRandom(0, (float)G3D_PI);
+		float a1 = uniformRandom(0, (float)pi());
 
 		float a2 = (a0 + a1) / 2;
 		Quat q0 = Quat::fromAxisAngleRotation(axis, a0);

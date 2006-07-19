@@ -17,7 +17,7 @@ void drawFeatureEdges(RenderDevice* renderDevice, const PosedModelRef& model, fl
 
     float dotThreshold = max(cosf(creaseAngle), 0.0f);
 
-    bool drawCreases = (creaseAngle <= G3D_PI / 2);
+    bool drawCreases = (creaseAngle <= pi() / 2);
 
     const Vector3 wsEye = renderDevice->getCameraToWorldMatrix().translation;
 

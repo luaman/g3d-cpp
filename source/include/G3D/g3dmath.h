@@ -142,15 +142,6 @@ inline const double& twoPi() {
     return p;
 }
 
-/** @def G3D_PI
-    @deprecated Use G3D::pi() instead. */
-#define G3D_PI      (3.1415926535898)
-/** @def G3D_HALF_PI
-    @deprecated Use G3D::halfPi() instead. */
-#define G3D_HALF_PI (1.5707963267949)
-/** @def G3D_TWO_PI
-    @deprecated Use G3D::twoPi() instead. */
-#define G3D_TWO_PI  (6.283185)
 
 typedef signed char		int8;
 typedef unsigned char	uint8;

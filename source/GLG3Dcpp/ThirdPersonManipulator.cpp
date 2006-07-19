@@ -554,7 +554,7 @@ ThirdPersonManipulator::ThirdPersonManipulator() :
     const float ROT_RADIUS = 0.7f;
     vertex.resize(ROT_SEGMENTS + 1);
     for (int v = 0; v <= ROT_SEGMENTS; ++v) {
-        float a = G3D_PI * 2.0f * (float)v / ROT_SEGMENTS;
+        float a = twoPi() * (float)v / ROT_SEGMENTS;
         vertex[v].x = 0;
         vertex[v].y = cos(a) * ROT_RADIUS;
         vertex[v].z = sin(a) * ROT_RADIUS;

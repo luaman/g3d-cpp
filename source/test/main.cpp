@@ -422,7 +422,7 @@ void testCoordinateFrame() {
         CoordinateFrame c;
         c.lookAt(Vector3(-1, 0, -1));
         float h = c.getHeading();
-        debugAssert(fuzzyEq(h, G3D_PI / 4));
+        debugAssert(fuzzyEq(h, pi() / 4));
     }
 
     // Test getHeading at a variety of angles

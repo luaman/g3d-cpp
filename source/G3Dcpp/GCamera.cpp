@@ -44,7 +44,7 @@ void GCamera::setCoordinateFrame(const CoordinateFrame& c) {
 
 
 void GCamera::setFieldOfView(float angle) {
-	debugAssert((angle < G3D_PI) && (angle > 0));
+	debugAssert((angle < pi()) && (angle > 0));
 
 	fieldOfView = angle;
 

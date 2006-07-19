@@ -1394,27 +1394,27 @@ void Texture::copyFromScreen(
 void Texture::getCameraRotation(CubeFace face, Matrix3& outMatrix) {
     switch (face) {
     case CUBE_POS_X:
-        outMatrix = Matrix3::fromEulerAnglesYXZ((float)G3D_HALF_PI, (float)G3D_PI, 0);
+        outMatrix = Matrix3::fromEulerAnglesYXZ((float)halfPi(), (float)pi(), 0);
         break;
 
     case CUBE_NEG_X:
-        outMatrix = Matrix3::fromEulerAnglesYXZ(-(float)G3D_HALF_PI, (float)G3D_PI, 0);
+        outMatrix = Matrix3::fromEulerAnglesYXZ(-(float)halfPi(), (float)pi(), 0);
         break;
 
     case CUBE_POS_Y:
-        outMatrix = Matrix3::fromEulerAnglesXYZ((float)G3D_HALF_PI, 0, 0);
+        outMatrix = Matrix3::fromEulerAnglesXYZ((float)halfPi(), 0, 0);
         break;
 
     case CUBE_NEG_Y:
-        outMatrix = Matrix3::fromEulerAnglesXYZ(-(float)G3D_HALF_PI, 0, 0);
+        outMatrix = Matrix3::fromEulerAnglesXYZ(-(float)halfPi(), 0, 0);
         break;
 
     case CUBE_POS_Z:
-        outMatrix = Matrix3::fromEulerAnglesYZX((float)G3D_PI, (float)G3D_PI, 0);
+        outMatrix = Matrix3::fromEulerAnglesYZX((float)pi(), (float)pi(), 0);
         break;
 
     case CUBE_NEG_Z:
-        outMatrix = Matrix3::fromAxisAngle(Vector3::unitZ(), (float)G3D_PI);
+        outMatrix = Matrix3::fromAxisAngle(Vector3::unitZ(), (float)pi());
         break;
     }
 }

@@ -212,7 +212,7 @@ Vector3 Vector3::cosRandom(const Vector3& normal) {
     double theta = acos(sqrt(e1));
 
     // Angle about normal
-    double phi   = 2 * G3D_PI * e2;
+    double phi   = 2 * pi() * e2;
 
     // Make a coordinate system
     Vector3 U = normal.direction();

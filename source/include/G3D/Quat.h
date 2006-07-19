@@ -227,7 +227,7 @@ public:
             } else if (w < 0) {
                 // Log of a negative number.  Multivalued, any number of the form
                 // (PI * v, ln(-q.w))
-                return Quat((float)G3D_PI, 0, 0, ::logf(-w));
+                return Quat((float)pi(), 0, 0, ::logf(-w));
             } else {
                  // log of zero!
                  return Quat((float)nan(), (float)nan(), (float)nan(), (float)nan());

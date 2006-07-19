@@ -64,7 +64,7 @@ void LightingParameters::setTime(const GameTime _time) {
     double time = _time - floor(_time / DAY) * DAY;
 
     // Calculate starfield coordinate frame
-    double starRot = initialStarRot - (2*G3D_PI*(_time - (_time*floor(_time / SIDEREAL_DAY)))/SIDEREAL_DAY);
+    double starRot = initialStarRot - (twoPi() * (_time - (_time*floor(_time / SIDEREAL_DAY)))/SIDEREAL_DAY);
     float aX, aY, aZ;
     starVec.x = cos(starRot);
     starVec.y = 0;
@@ -77,15 +77,15 @@ void LightingParameters::setTime(const GameTime _time) {
     trueStarFrame.rotation = Matrix3::fromEulerAnglesXYZ(aX, aY, aZ);
     
     // sunAngle = 0 at midnight
-    float sourceAngle = 2 * (float)G3D_PI * time / DAY;
+    float sourceAngle = (float)twoPi() * time / DAY;
     
     // Calculate fake solar and lunar positions
     sunPosition.x = sin(sourceAngle);
     sunPosition.y = -cos(sourceAngle);
     sunPosition.z = 0;
 
-    moonPosition.x = sin(sourceAngle + (float)G3D_PI);
-    moonPosition.y = -cos(sourceAngle + (float)G3D_PI);
+    moonPosition.x = sin(sourceAngle + (float)pi());
+    moonPosition.y = -cos(sourceAngle + (float)pi());
     moonPosition.z = 0;
 
     // Calculate "true" solar and lunar positions
@@ -103,9 +103,9 @@ void LightingParameters::setTime(const GameTime _time) {
     moonPhase = floor(_time / moonPhaseInterval) + initialMoonPhase;
 
 	float latRad = toRadians(geoLatitude);
-	float sunOffset = -earthTilt*cos(G3D_PI*(dayOfYearOffset-halfSolarYear)/halfSolarYear) - latRad;
+	float sunOffset = -earthTilt*cos(pi()*(dayOfYearOffset-halfSolarYear)/halfSolarYear) - latRad;
 	float moonOffset = ((-earthTilt+moonTilt)*sin(moonPhase*4)) - latRad;
-	float curMoonPhase = (moonPhase*G3D_PI*2);
+	float curMoonPhase = (moonPhase * twoPi());
 
     Matrix3 rotMat = Matrix3::fromAxisAngle(Vector3::unitZ().cross(sunPosition), sunOffset);
     trueSunPosition = rotMat * sunPosition;
@@ -118,9 +118,9 @@ void LightingParameters::setTime(const GameTime _time) {
 
     // Determine which light source we observe.
     if (!physicallyCorrect) {
-        if ((sourceAngle < (G3D_PI / 2)) || (sourceAngle > (3 * G3D_PI / 2))) {
+        if ((sourceAngle < halfPi()) || (sourceAngle > (3 * halfPi()))) {
             source = MOON;
-            sourceAngle += (float)G3D_PI;
+            sourceAngle += (float)pi();
         } else {
             source = SUN;
         }

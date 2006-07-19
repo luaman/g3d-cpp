@@ -1061,7 +1061,7 @@ void Matrix3::toAxisAngle (Vector3& rkAxis, float& rfRadians) const {
     rfRadians = G3D::aCos(fCos);  // in [0,PI]
 
     if ( rfRadians > 0.0 ) {
-        if ( rfRadians < G3D_PI ) {
+        if ( rfRadians < pi() ) {
             rkAxis.x = elt[2][1] - elt[1][2];
             rkAxis.y = elt[0][2] - elt[2][0];
             rkAxis.z = elt[1][0] - elt[0][1];
@@ -1161,14 +1161,14 @@ bool Matrix3::toEulerAnglesXYZ (float& rfXAngle, float& rfYAngle,
         } else {
             // WARNING.  Not unique.  XA - ZA = -atan2(r10,r11)
             rfXAngle = -G3D::aTan2(elt[1][0], elt[1][1]);
-            rfYAngle = -(float)G3D_HALF_PI;
+            rfYAngle = -(float)halfPi();
             rfZAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  XAngle + ZAngle = atan2(r10,r11)
         rfXAngle = G3D::aTan2(elt[1][0], elt[1][1]);
-        rfYAngle = (float)G3D_HALF_PI;
+        rfYAngle = (float)halfPi();
         rfZAngle = 0.0f;
         return false;
     }
@@ -1190,14 +1190,14 @@ bool Matrix3::toEulerAnglesXZY (float& rfXAngle, float& rfZAngle,
         } else {
             // WARNING.  Not unique.  XA - YA = atan2(r20,r22)
             rfXAngle = G3D::aTan2(elt[2][0], elt[2][2]);
-            rfZAngle = (float)G3D_HALF_PI;
+            rfZAngle = (float)halfPi();
             rfYAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  XA + YA = atan2(-r20,r22)
         rfXAngle = G3D::aTan2( -elt[2][0], elt[2][2]);
-        rfZAngle = -(float)G3D_HALF_PI;
+        rfZAngle = -(float)halfPi();
         rfYAngle = 0.0f;
         return false;
     }
@@ -1219,14 +1219,14 @@ bool Matrix3::toEulerAnglesYXZ (float& rfYAngle, float& rfXAngle,
         } else {
             // WARNING.  Not unique.  YA - ZA = atan2(r01,r00)
             rfYAngle = G3D::aTan2(elt[0][1], elt[0][0]);
-            rfXAngle = (float)G3D_HALF_PI;
+            rfXAngle = (float)halfPi();
             rfZAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  YA + ZA = atan2(-r01,r00)
         rfYAngle = G3D::aTan2( -elt[0][1], elt[0][0]);
-        rfXAngle = -(float)G3D_HALF_PI;
+        rfXAngle = -(float)halfPi();
         rfZAngle = 0.0f;
         return false;
     }
@@ -1248,14 +1248,14 @@ bool Matrix3::toEulerAnglesYZX (float& rfYAngle, float& rfZAngle,
         } else {
             // WARNING.  Not unique.  YA - XA = -atan2(r21,r22);
             rfYAngle = -G3D::aTan2(elt[2][1], elt[2][2]);
-            rfZAngle = -(float)G3D_HALF_PI;
+            rfZAngle = -(float)halfPi();
             rfXAngle = 0.0;
             return false;
         }
     } else {
         // WARNING.  Not unique.  YA + XA = atan2(r21,r22)
         rfYAngle = G3D::aTan2(elt[2][1], elt[2][2]);
-        rfZAngle = (float)G3D_HALF_PI;
+        rfZAngle = (float)halfPi();
         rfXAngle = 0.0f;
         return false;
     }
@@ -1277,14 +1277,14 @@ bool Matrix3::toEulerAnglesZXY (float& rfZAngle, float& rfXAngle,
         } else {
             // WARNING.  Not unique.  ZA - YA = -atan(r02,r00)
             rfZAngle = -G3D::aTan2(elt[0][2], elt[0][0]);
-            rfXAngle = -(float)G3D_HALF_PI;
+            rfXAngle = -(float)halfPi();
             rfYAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  ZA + YA = atan2(r02,r00)
         rfZAngle = G3D::aTan2(elt[0][2], elt[0][0]);
-        rfXAngle = (float)G3D_HALF_PI;
+        rfXAngle = (float)halfPi();
         rfYAngle = 0.0f;
         return false;
     }
@@ -1306,14 +1306,14 @@ bool Matrix3::toEulerAnglesZYX (float& rfZAngle, float& rfYAngle,
         } else {
             // WARNING.  Not unique.  ZA - XA = -atan2(r01,r02)
             rfZAngle = -G3D::aTan2(elt[0][1], elt[0][2]);
-            rfYAngle = (float)G3D_HALF_PI;
+            rfYAngle = (float)halfPi();
             rfXAngle = 0.0f;
             return false;
         }
     } else {
         // WARNING.  Not unique.  ZA + XA = atan2(-r01,-r02)
         rfZAngle = G3D::aTan2( -elt[0][1], -elt[0][2]);
-        rfYAngle = -(float)G3D_HALF_PI;
+        rfYAngle = -(float)halfPi();
         rfXAngle = 0.0f;
         return false;
     }

@@ -57,7 +57,7 @@ Line Capsule::axis() const {
 float Capsule::volume() const {
 	return 
 		// Sphere volume
-		pow(_radius, 3) * G3D_PI * 4 / 3 +
+		pow(_radius, 3) * pi() * 4 / 3 +
 
 		// Cylinder volume
 		pow(_radius, 2) * (p1 - p2).magnitude();
@@ -68,10 +68,10 @@ float Capsule::area() const {
 
 	return
 		// Sphere area
-		pow(_radius, 2) * 4 * G3D_PI +
+		pow(_radius, 2) * 4 * pi() +
 
 		// Cylinder area
-		2 * G3D_PI * _radius * (p1 - p2).magnitude();
+		twoPi() * _radius * (p1 - p2).magnitude();
 }
 
 
@@ -108,7 +108,7 @@ void Capsule::getRandomSurfacePoint(Vector3& p, Vector3& N) const {
         p.y += sign(p.y) * h / 2.0f;
     } else {
         // Side
-        float a = uniformRandom(0, (float)G3D_TWO_PI);
+        float a = uniformRandom(0, (float)twoPi());
         N.x = cos(a);
         N.y = 0;
         N.z = sin(a);
@@ -147,8 +147,8 @@ Vector3 Capsule::randomInteriorPoint() const {
 
     Vector3 p;
 
-    float hemiVolume = G3D_PI * (r*r*r) * 4 / 6.0;
-    float cylVolume = G3D_PI * square(r) * h;
+    float hemiVolume = pi() * (r*r*r) * 4 / 6.0;
+    float cylVolume = pi() * square(r) * h;
     
     float r1 = uniformRandom(0, 2.0 * hemiVolume + cylVolume);
 
@@ -161,7 +161,7 @@ Vector3 Capsule::randomInteriorPoint() const {
     } else {
 
         // Select a point uniformly at random on a disk
-        float a = uniformRandom(0, (float)G3D_TWO_PI);
+        float a = uniformRandom(0, (float)twoPi());
         float r2 = sqrt(uniformRandom(0, 1)) * r;
 
         p = Vector3(cos(a) * r2,

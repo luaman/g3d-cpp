@@ -105,12 +105,12 @@ void Quat::toAxisAngleRotation(
 		axis = -axis;
     }
 
-	while (angle > 2 * G3D_PI) {
-        angle -= 2 * G3D_PI;
+	while (angle > twoPi()) {
+        angle -= twoPi();
     }
 
-	if (abs(angle) > G3D_PI) {
-		angle -= 2 * G3D_PI;
+	if (abs(angle) > pi()) {
+		angle -= twoPi();
     }
 
     // Make the angle positive.

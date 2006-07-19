@@ -175,12 +175,12 @@ Vector3 Sphere::randomInteriorPoint() const {
 
 
 float Sphere::volume() const {
-    return (float)G3D_PI * (4.0f / 3.0f) * powf((float)radius, 3.0f);
+    return (float)pi() * (4.0f / 3.0f) * powf((float)radius, 3.0f);
 }
 
 
 float Sphere::surfaceArea() const {
-    return (float)G3D_PI * 4.0f * powf((float)radius, 2.0f);
+    return (float)pi() * 4.0f * powf((float)radius, 2.0f);
 }
 
 

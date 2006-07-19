@@ -111,7 +111,7 @@ inline double aCos (double fValue) {
         else
             return 0.0;
     } else {
-        return G3D_PI;
+        return pi();
     }
 }
 
@@ -121,10 +121,10 @@ inline double aSin (double fValue) {
         if ( fValue < 1.0 ) {
             return double(::asin(fValue));
         } else {
-            return -G3D_HALF_PI;
+            return -halfPi();
         }
     } else {
-        return G3D_HALF_PI;
+        return halfPi();
     }
 }
 
@@ -229,11 +229,11 @@ inline bool isEven(int num) {
 }
 
 inline double toRadians(double deg) {
-    return deg * G3D_PI / 180.0;
+    return deg * pi() / 180.0;
 }
 
 inline double toDegrees(double rad) {
-    return rad * 180.0 / G3D_PI;
+    return rad * 180.0 / pi();
 }
 
 /**

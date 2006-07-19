@@ -180,8 +180,8 @@ void Draw::ray(
     renderDevice->beginPrimitive(RenderDevice::TRIANGLES);
         renderDevice->setNormal(u);
         for (int a = 0; a < SPHERE_SECTIONS; ++a) {
-            float angle0 = a * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
-            float angle1 = (a + 1) * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
+            float angle0 = a * (float)pi() / SPHERE_SECTIONS;
+            float angle1 = (a + 1) * (float)twoPi() / SPHERE_SECTIONS;
             Vector3 dir0(cos(angle0) * v + sin(angle0) * w);
             Vector3 dir1(cos(angle1) * v + sin(angle1) * w);
             glNormal3fv(dir0);
@@ -200,7 +200,7 @@ void Draw::ray(
     glBegin(GL_TRIANGLE_FAN);
         glNormal3fv(-u);
         for (int a = 0; a <= SPHERE_SECTIONS; ++a) {
-            float angle = a * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
+            float angle = a * (float)twoPi() / SPHERE_SECTIONS;
             Vector3 dir = sin(angle) * v + cos(angle) * w;
             glVertex3fv(back + dir * r);
         }
@@ -258,7 +258,7 @@ void Draw::plane(
         float r1 = 100;
         renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
             for (int i = 0; i <= N; ++i) {
-                float a = i * (float)G3D_TWO_PI / N;
+                float a = i * (float)twoPi() / N;
                 float c = cosf(a);
                 float s = sinf(a);
 
@@ -280,7 +280,7 @@ void Draw::plane(
 
             renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                 for (int i = 0; i <= N; ++i) {
-                    float a = i * (float)G3D_TWO_PI / N;
+                    float a = i * (float)twoPi() / N;
                     float c = cosf(a);
                     float s = sinf(a);
 
@@ -390,7 +390,7 @@ void Draw::capsule(
                 // Cylinder faces
                 renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)twoPi() / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->setNormal(v0);
@@ -417,8 +417,8 @@ void Draw::capsule(
             renderDevice->setLineWidth(2);
             renderDevice->beginPrimitive(RenderDevice::LINES);
                 for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
-                    const float yaw0 = y * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
-                    const float yaw1 = (y + 1) * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
+                    const float yaw0 = y * (float)twoPi() / WIRE_SPHERE_SECTIONS;
+                    const float yaw1 = (y + 1) * (float)twoPi() / WIRE_SPHERE_SECTIONS;
 
                     Vector3 v0(cosf(yaw0), 0, sinf(yaw0));
                     Vector3 v1(cosf(yaw1), 0, sinf(yaw1));
@@ -431,7 +431,7 @@ void Draw::capsule(
 
                 // Edge lines
                 for (int y = 0; y < 8; ++y) {
-                    const float yaw = y * (float)G3D_PI / 4;
+                    const float yaw = y * (float)pi() / 4;
                     const Vector3 x(cosf(yaw), 0, sinf(yaw));
         
                     renderDevice->setNormal(x);
@@ -486,7 +486,7 @@ void Draw::cylinder(
                     renderDevice->setNormal(Vector3::unitY());
                     renderDevice->sendVertex(top);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const float yaw0 = -y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
+                        const float yaw0 = -y * (float)twoPi() / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + top);
@@ -498,7 +498,7 @@ void Draw::cylinder(
                     renderDevice->setNormal(-Vector3::unitY());
                     renderDevice->sendVertex(bot);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)twoPi() / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->sendVertex(v0 * radius + bot);
@@ -508,7 +508,7 @@ void Draw::cylinder(
                 // Cylinder faces
                 renderDevice->beginPrimitive(RenderDevice::QUAD_STRIP);
                     for (int y = 0; y <= SPHERE_SECTIONS; ++y) {
-                        const float yaw0 = y * (float)G3D_PI * 2.0f / SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)twoPi() / SPHERE_SECTIONS;
                         Vector3 v0 = Vector3(cosf(yaw0), 0, sinf(yaw0));
 
                         renderDevice->setNormal(v0);
@@ -533,8 +533,8 @@ void Draw::cylinder(
                 for (int z = 0; z < 3; ++z) {
                     Vector3 center(0, 0.0, 0);
                     for (int y = 0; y < WIRE_SPHERE_SECTIONS; ++y) {
-                        const float yaw0 = y * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
-                        const float yaw1 = (y + 1) * (float)G3D_PI * 2.0f / WIRE_SPHERE_SECTIONS;
+                        const float yaw0 = y * (float)twoPi() / WIRE_SPHERE_SECTIONS;
+                        const float yaw1 = (y + 1) * (float)twoPi() / WIRE_SPHERE_SECTIONS;
 
                         Vector3 v0(cos(yaw0), 0, sin(yaw0));
                         Vector3 v1(cos(yaw1), 0, sin(yaw1));
@@ -548,7 +548,7 @@ void Draw::cylinder(
 
                 // Edge lines
                 for (int y = 0; y < 8; ++y) {
-                    const float yaw = y * (float)G3D_PI / 4;
+                    const float yaw = y * (float)pi() / 4;
                     const Vector3 x(cos(yaw), 0, sin(yaw));
                     const Vector3 xr = x * radius;
     
@@ -853,13 +853,13 @@ void Draw::wireSphereSection(
 
         // Wire frame
         for (int y = 0; y < 8; ++y) {
-            const float yaw = y * (float)G3D_PI / 4;
+            const float yaw = y * (float)pi() / 4;
             const Vector3 x(cos(yaw) * radius, 0, sin(yaw) * radius);
             //const Vector3 z(-sin(yaw) * radius, 0, cos(yaw) * radius);
 
             renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
                 for (int p = start; p <= stop; ++p) {
-                    const float pitch0 = p * (float)G3D_PI / (sections * 0.5f);
+                    const float pitch0 = p * (float)pi() / (sections * 0.5f);
 
                     Vector3 v0 = cosf(pitch0) * x + Vector3::unitY() * radius * sinf(pitch0);
                     renderDevice->setNormal(v0.direction());
@@ -872,11 +872,11 @@ void Draw::wireSphereSection(
         int a = bottom ? -1 : 0;
         int b = top ? 1 : 0; 
         for (int p = a; p <= b; ++p) {
-            const float pitch = p * (float)G3D_PI / 6;
+            const float pitch = p * (float)pi() / 6;
 
             renderDevice->beginPrimitive(RenderDevice::LINE_STRIP);
                 for (int y = 0; y <= sections; ++y) {
-                    const float yaw0 = y * (float)G3D_PI / 13;
+                    const float yaw0 = y * (float)pi() / 13;
                     Vector3 v0 = Vector3(cos(yaw0) * cos(pitch), sin(pitch), sin(yaw0) * cos(pitch)) * radius;
                     renderDevice->setNormal(v0.direction());
                     renderDevice->sendVertex(v0 + center);
@@ -930,14 +930,14 @@ void Draw::sphereSection(
             // The normals are the same as the vertices for a sphere
             Array<Vector3> vertex;
 
-            stripIndexArray.resize(iFloor((G3D_PI / (float)SPHERE_PITCH_SECTIONS) + 2 * 
-                                   (G3D_PI * 2.0 / SPHERE_YAW_SECTIONS)));
+            stripIndexArray.resize(iFloor((pi() / (float)SPHERE_PITCH_SECTIONS) + 2 * 
+                                   (twoPi() / SPHERE_YAW_SECTIONS)));
 
             int i = 0;
 
             for (int p = 0; p < SPHERE_PITCH_SECTIONS; ++p) {
-                const float pitch0 = p * (float)G3D_PI / SPHERE_PITCH_SECTIONS;
-                const float pitch1 = (p + 1) * (float)G3D_PI / SPHERE_PITCH_SECTIONS;
+                const float pitch0 = p * (float)pi() / SPHERE_PITCH_SECTIONS;
+                const float pitch1 = (p + 1) * (float)pi() / SPHERE_PITCH_SECTIONS;
 
                 const float sp0 = sin(pitch0);
                 const float sp1 = sin(pitch1);
@@ -945,7 +945,7 @@ void Draw::sphereSection(
                 const float cp1 = cos(pitch1);
 
                 for (int y = 0; y <= SPHERE_YAW_SECTIONS; ++y) {
-                    const float yaw = -y * (float)G3D_PI * 2.0f / SPHERE_YAW_SECTIONS;
+                    const float yaw = -y * (float)twoPi() / SPHERE_YAW_SECTIONS;
 
                     const float cy = cos(yaw);
                     const float sy = sin(yaw);
